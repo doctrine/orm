@@ -566,7 +566,7 @@ class SqlWalker implements TreeWalker
             $sql .= ' ORDER BY ' . $orderBySql;
         }
 
-        $sql = $this->platform->modifyLimitQuery($sql, $limit, $offset ?? 0);
+        $sql = $this->platform->modifyLimitQuery($sql, $limit, $offset);
 
         if ($lockMode === LockMode::NONE) {
             return $sql;
