@@ -32,9 +32,9 @@ and year of production as primary keys:
         class Car
         {
             public function __construct(
-                #[Id, Column(type: 'string')]
+                #[Id, Column]
                 private string $name,
-                #[Id, Column(type: 'integer')]
+                #[Id, Column]
                 private int $year,
             ) {
             }
@@ -131,7 +131,7 @@ And for querying you can use arrays to both DQL and EntityRepositories:
 
     $dql = "SELECT c FROM VehicleCatalogue\Model\Car c WHERE c.id = ?1";
     $audi = $em->createQuery($dql)
-               ->setParameter(1, array("name" => "Audi A8", "year" => 2010))
+               ->setParameter(1, ["name" => "Audi A8", "year" => 2010])
                ->getSingleResult();
 
 You can also use this entity in associations. Doctrine will then generate two foreign keys one for ``name``
@@ -179,9 +179,9 @@ We keep up the example of an Article with arbitrary attributes, the mapping look
         #[Entity]
         class Article
         {
-            #[Id, Column(type: 'integer'), GeneratedValue]
+            #[Id, Column, GeneratedValue]
             private int|null $id = null;
-            #[Column(type: 'string')]
+            #[Column]
             private string $title;
 
             /** @var ArrayCollection<string, ArticleAttribute> */
@@ -200,10 +200,10 @@ We keep up the example of an Article with arbitrary attributes, the mapping look
             #[Id, ManyToOne(targetEntity: Article::class, inversedBy: 'attributes')]
             private Article $article;
 
-            #[Id, Column(type: 'string')]
+            #[Id, Column]
             private string $attribute;
 
-            #[Column(type: 'string')]
+            #[Column]
             private string $value;
 
             public function __construct(string $name, string $value, Article $article)
@@ -317,7 +317,7 @@ One good example for this is a user-address relationship:
         #[Entity]
         class User
         {
-            #[Id, Column(type: 'integer'), GeneratedValue]
+            #[Id, Column, GeneratedValue]
             private int|null $id = null;
         }
 
@@ -365,18 +365,18 @@ of products purchased and maybe even the current price.
     #[Entity]
     class Order
     {
-        #[Id, Column(type: 'integer'), GeneratedValue]
+        #[Id, Column, GeneratedValue]
         private int|null $id = null;
 
         /** @var ArrayCollection<int, OrderItem> */
         #[OneToMany(targetEntity: OrderItem::class, mappedBy: 'order')]
         private Collection $items;
 
-        #[Column(type: 'boolean')]
+        #[Column]
         private bool $paid = false;
-        #[Column(type: 'boolean')]
+        #[Column]
         private bool $shipped = false;
-        #[Column(type: 'datetime')]
+        #[Column]
         private DateTime $created;
 
         public function __construct(
@@ -391,16 +391,16 @@ of products purchased and maybe even the current price.
     #[Entity]
     class Product
     {
-        #[Id, Column(type: 'integer'), GeneratedValue]
+        #[Id, Column, GeneratedValue]
         private int|null $id = null;
 
-        #[Column(type: 'string')]
+        #[Column]
         private string $name;
 
-        #[Column(type: 'decimal')]
-        private float $currentPrice;
+        #[Column]
+        private int $currentPrice;
 
-        public function getCurrentPrice(): float
+        public function getCurrentPrice(): int
         {
             return $this->currentPrice;
         }
@@ -415,11 +415,11 @@ of products purchased and maybe even the current price.
         #[Id, ManyToOne(targetEntity: Product::class)]
         private Product|null $product = null;
 
-        #[Column(type: 'integer')]
+        #[Column]
         private int $amount = 1;
 
-        #[Column(type: 'decimal')]
-        private float $offeredPrice;
+        #[Column]
+        private int $offeredPrice;
 
         public function __construct(Order $order, Product $product, int $amount = 1)
         {
