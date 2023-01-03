@@ -169,7 +169,52 @@ We keep up the example of an Article with arbitrary attributes, the mapping look
 
 .. configuration-block::
 
-    .. code-block:: php
+    .. code-block:: attribute
+
+        <?php
+        namespace Application\Model;
+
+        use Doctrine\Common\Collections\ArrayCollection;
+
+        #[Entity]
+        class Article
+        {
+            #[Id, Column(type: 'integer'), GeneratedValue]
+            private int|null $id = null;
+            #[Column(type: 'string')]
+            private string $title;
+
+            /** @var ArrayCollection<string, ArticleAttribute> */
+            #[OneToMany(targetEntity: ArticleAttribute::class, mappedBy: 'article', cascade: ['ALL'], indexBy: 'attribute')]
+            private Collection $attributes;
+
+            public function addAttribute(string $name, ArticleAttribute $value): void
+            {
+                $this->attributes[$name] = new ArticleAttribute($name, $value, $this);
+            }
+        }
+
+        #[Entity]
+        class ArticleAttribute
+        {
+            #[Id, ManyToOne(targetEntity: Article::class, inversedBy: 'attributes')]
+            private Article $article;
+
+            #[Id, Column(type: 'string')]
+            private string $attribute;
+
+            #[Column(type: 'string')]
+            private string $value;
+
+            public function __construct(string $name, string $value, Article $article)
+            {
+                $this->attribute = $name;
+                $this->value = $value;
+                $this->article = $article;
+            }
+        }
+
+    .. code-block:: annotation
 
         <?php
         namespace Application\Model;
@@ -213,51 +258,6 @@ We keep up the example of an Article with arbitrary attributes, the mapping look
             private string $value;
 
             public function __construct($name, $value, $article)
-            {
-                $this->attribute = $name;
-                $this->value = $value;
-                $this->article = $article;
-            }
-        }
-
-    .. code-block:: attribute
-
-        <?php
-        namespace Application\Model;
-
-        use Doctrine\Common\Collections\ArrayCollection;
-
-        #[Entity]
-        class Article
-        {
-            #[Id, Column(type: 'integer'), GeneratedValue]
-            private int|null $id = null;
-            #[Column(type: 'string')]
-            private string $title;
-
-            /** @var ArrayCollection<string, ArticleAttribute> */
-            #[OneToMany(targetEntity: ArticleAttribute::class, mappedBy: 'article', cascade: ['ALL'], indexBy: 'attribute')]
-            private Collection $attributes;
-
-            public function addAttribute(string $name, ArticleAttribute $value): void
-            {
-                $this->attributes[$name] = new ArticleAttribute($name, $value, $this);
-            }
-        }
-
-        #[Entity]
-        class ArticleAttribute
-        {
-            #[Id, ManyToOne(targetEntity: Article::class, inversedBy: 'attributes')]
-            private Article $article;
-
-            #[Id, Column(type: 'string')]
-            private string $attribute;
-
-            #[Column(type: 'string')]
-            private string $value;
-
-            public function __construct(string $name, string $value, Article $article)
             {
                 $this->attribute = $name;
                 $this->value = $value;
