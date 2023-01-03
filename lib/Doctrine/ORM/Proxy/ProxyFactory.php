@@ -18,10 +18,12 @@ use Doctrine\ORM\UnitOfWork;
 use Doctrine\ORM\Utility\IdentifierFlattener;
 use Doctrine\Persistence\Mapping\ClassMetadata;
 use Doctrine\Persistence\Proxy;
+use ReflectionClass;
 use Symfony\Component\VarExporter\ProxyHelper;
 use Symfony\Component\VarExporter\VarExporter;
 
 use function array_flip;
+use function array_merge;
 use function str_replace;
 use function strpos;
 use function substr;
@@ -311,10 +313,39 @@ EOPHP;
 
     private function generateSkippedProperties(ClassMetadata $class): string
     {
-        $skippedProperties = ['__isCloning' => true];
-        $identifiers       = array_flip($class->getIdentifierFieldNames());
+        $skippedProperties = array_merge(
+            ['__isCloning' => true],
+            $this->collectClassSkippedProperties(
+                $class->getReflectionClass(),
+                $class,
+                array_flip($class->getIdentifierFieldNames())
+            )
+        );
 
-        foreach ($class->getReflectionClass()->getProperties() as $property) {
+        uksort($skippedProperties, 'strnatcmp');
+
+        $code = VarExporter::export($skippedProperties);
+
+        return str_replace([VarExporter::export($class->getName()), "\n"], ['parent::class', "\n        "], $code);
+    }
+
+    /**
+     * @psalm-param array<string, int> $identifiers
+
+     * @psalm-return array<string, true>
+     */
+    private function collectClassSkippedProperties(
+        ReflectionClass $refClass,
+        ClassMetadata $class,
+        array $identifiers,
+        bool $processPrivatePropertiesOnly = false
+    ): array {
+        $skippedProperties = [];
+        foreach ($refClass->getProperties() as $property) {
+            if ($processPrivatePropertiesOnly && ! $property->isPrivate()) {
+                continue;
+            }
+
             $name = $property->getName();
 
             if ($property->isStatic() || (($class->hasField($name) || $class->hasAssociation($name)) && ! isset($identifiers[$name]))) {
@@ -326,13 +357,20 @@ EOPHP;
             $skippedProperties[$prefix . $name] = true;
         }
 
-        uksort($skippedProperties, 'strnatcmp');
+        $parentClass = $refClass->getParentClass();
+        if ($parentClass !== false) {
+            return array_merge(
+                $skippedProperties,
+                $this->collectClassSkippedProperties(
+                    $parentClass,
+                    $class,
+                    $identifiers,
+                    true
+                )
+            );
+        }
 
-        $code = VarExporter::export($skippedProperties);
-        $code = str_replace(VarExporter::export($class->getName()), 'parent::class', $code);
-        $code = str_replace("\n", "\n        ", $code);
-
-        return $code;
+        return $skippedProperties;
     }
 
     private function generateSerializeImpl(ClassMetadata $class): string
