@@ -82,27 +82,6 @@ and year of production as primary keys:
             }
         }
 
-    .. code-block:: annotation
-
-        <?php
-        /**
-         * @Entity
-         */
-        class User
-        {
-            /** @Id @Column(type="integer") @GeneratedValue */
-            private int|null $id = null;
-        }
-
-        /**
-         * @Entity
-         */
-        class Address
-        {
-            /** @Id @OneToOne(targetEntity="User") */
-            private User|null $user = null;
-        }
-
     .. code-block:: xml
 
         <?xml version="1.0" encoding="UTF-8"?>
