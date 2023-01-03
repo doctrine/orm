@@ -60,7 +60,7 @@ final class AttributeReader
      *
      * @template T of MappingAttribute
      */
-    public function getPropertyAttribute(ReflectionProperty $property, $attributeName)
+    public function getPropertyAttribute(ReflectionProperty $property, string $attributeName)
     {
         if ($this->isRepeatable($attributeName)) {
             throw new LogicException(sprintf(

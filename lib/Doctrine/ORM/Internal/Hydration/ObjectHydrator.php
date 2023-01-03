@@ -45,7 +45,7 @@ class ObjectHydrator extends AbstractHydrator
     private array $initializedCollections = [];
 
     /** @var array<string, PersistentCollection> */
-    private $uninitializedCollections = [];
+    private array $uninitializedCollections = [];
 
     /** @var mixed[] */
     private array $existingCollections = [];

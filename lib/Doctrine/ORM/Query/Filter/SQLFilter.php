@@ -10,6 +10,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Query\ParameterTypeInferer;
 use InvalidArgumentException;
+use Stringable;
 
 use function array_map;
 use function implode;
@@ -23,7 +24,7 @@ use function serialize;
  *
  * @abstract
  */
-abstract class SQLFilter
+abstract class SQLFilter implements Stringable
 {
     /**
      * Parameters for the filter.

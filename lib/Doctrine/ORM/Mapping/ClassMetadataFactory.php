@@ -588,6 +588,8 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
 
     protected function getDriver(): MappingDriver
     {
+        assert($this->driver !== null);
+
         return $this->driver;
     }
 

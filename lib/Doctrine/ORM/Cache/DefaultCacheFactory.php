@@ -47,7 +47,7 @@ class DefaultCacheFactory implements CacheFactory
         $this->fileLockRegionDirectory = $fileLockRegionDirectory;
     }
 
-    public function getFileLockRegionDirectory(): string
+    public function getFileLockRegionDirectory(): string|null
     {
         return $this->fileLockRegionDirectory;
     }
