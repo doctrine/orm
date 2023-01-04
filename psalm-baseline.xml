@@ -35,14 +35,6 @@
       <code>getCacheFactory</code>
     </PossiblyNullReference>
   </file>
-  <file src="lib/Doctrine/ORM/Cache/DefaultCacheFactory.php">
-    <InvalidNullableReturnType occurrences="1">
-      <code>string</code>
-    </InvalidNullableReturnType>
-    <NullableReturnStatement occurrences="1">
-      <code>$this-&gt;fileLockRegionDirectory</code>
-    </NullableReturnStatement>
-  </file>
   <file src="lib/Doctrine/ORM/Cache/DefaultEntityHydrator.php">
     <PossiblyNullArrayOffset occurrences="1">
       <code>$targetClassMetadata-&gt;associationMappings</code>
@@ -345,15 +337,9 @@
     <InvalidArrayOffset occurrences="1">
       <code>$subClass-&gt;table[$indexType][$indexName]</code>
     </InvalidArrayOffset>
-    <InvalidNullableReturnType occurrences="1">
-      <code>MappingDriver</code>
-    </InvalidNullableReturnType>
     <InvalidPropertyAssignmentValue occurrences="1">
       <code>$subClass-&gt;table</code>
     </InvalidPropertyAssignmentValue>
-    <NullableReturnStatement occurrences="1">
-      <code>$this-&gt;driver</code>
-    </NullableReturnStatement>
     <PossiblyInvalidArrayAssignment occurrences="1">
       <code>$subClass-&gt;table[$indexType][$indexName]</code>
     </PossiblyInvalidArrayAssignment>
