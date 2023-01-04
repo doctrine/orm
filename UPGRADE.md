@@ -1,5 +1,21 @@
 # Upgrade to 3.0
 
+## Removed `getEntityManager()` in `Doctrine\ORM\Event\OnClearEventArgs` and `Doctrine\ORM\Event\*FlushEventArgs`
+
+Use `getObjectManager()` instead.
+
+## BC BREAK: Removed `Doctrine\ORM\Event\LifecycleEventArgs` class.
+
+Use one of the dedicated event classes instead:
+
+* `Doctrine\ORM\Event\PrePersistEventArgs`
+* `Doctrine\ORM\Event\PreUpdateEventArgs`
+* `Doctrine\ORM\Event\PreRemoveEventArgs`
+* `Doctrine\ORM\Event\PostPersistEventArgs`
+* `Doctrine\ORM\Event\PostUpdateEventArgs`
+* `Doctrine\ORM\Event\PostRemoveEventArgs`
+* `Doctrine\ORM\Event\PostLoadEventArgs`
+
 ## BC BREAK: Removed `AttributeDriver::$entityAnnotationClasses` and `AttributeDriver::getReader()`
 
 * If you need to change the behavior of `AttributeDriver::isTransient()`,
@@ -180,7 +196,7 @@ class MyStrategy implements NamingStrategy
 }
 ```
 
-## BC BREAK: Remove `StaticPHPDriver` and `DriverChain` 
+## BC BREAK: Remove `StaticPHPDriver` and `DriverChain`
 
 Use `Doctrine\Persistence\Mapping\Driver\StaticPHPDriver` and
 `Doctrine\Persistence\Mapping\Driver\MappingDriverChain` from
