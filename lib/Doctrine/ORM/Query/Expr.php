@@ -531,7 +531,7 @@ class Expr
      *
      * @param scalar $literal Argument to be converted to literal.
      */
-    public function literal(mixed $literal): Expr\Literal
+    public function literal(bool|string|int|float $literal): Expr\Literal
     {
         return new Expr\Literal($this->quoteLiteral($literal));
     }
@@ -541,7 +541,7 @@ class Expr
      *
      * @param scalar $literal The literal value.
      */
-    private function quoteLiteral(mixed $literal): string
+    private function quoteLiteral(bool|string|int|float $literal): string
     {
         if (is_int($literal) || is_float($literal)) {
             return (string) $literal;

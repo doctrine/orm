@@ -31,10 +31,8 @@ class SingleTableDeleteUpdateExecutor extends AbstractSqlExecutor
 
     /**
      * {@inheritDoc}
-     *
-     * @return int
      */
-    public function execute(Connection $conn, array $params, array $types)
+    public function execute(Connection $conn, array $params, array $types): int
     {
         if ($conn instanceof PrimaryReadReplicaConnection) {
             $conn->ensureConnectedToPrimary();

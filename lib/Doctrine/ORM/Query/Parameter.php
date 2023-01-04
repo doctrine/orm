@@ -24,7 +24,7 @@ class Parameter
     /**
      * The parameter name.
      */
-    private string $name;
+    private readonly string $name;
 
     /**
      * The parameter value.
@@ -39,7 +39,7 @@ class Parameter
     /**
      * Whether the parameter type was explicitly specified or not
      */
-    private bool $typeSpecified;
+    private readonly bool $typeSpecified;
 
     public function __construct(int|string $name, mixed $value, mixed $type = null)
     {

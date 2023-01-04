@@ -23,10 +23,8 @@ class SingleSelectExecutor extends AbstractSqlExecutor
 
     /**
      * {@inheritDoc}
-     *
-     * @return Result
      */
-    public function execute(Connection $conn, array $params, array $types)
+    public function execute(Connection $conn, array $params, array $types): Result
     {
         return $conn->executeQuery($this->_sqlStatements, $params, $types, $this->queryCacheProfile);
     }

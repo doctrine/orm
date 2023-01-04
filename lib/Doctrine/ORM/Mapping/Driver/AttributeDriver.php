@@ -20,7 +20,6 @@ use function assert;
 use function class_exists;
 use function constant;
 use function defined;
-use function get_class;
 
 class AttributeDriver implements MappingDriver
 {
@@ -31,7 +30,7 @@ class AttributeDriver implements MappingDriver
         Mapping\MappedSuperclass::class => 2,
     ];
 
-    private AttributeReader $reader;
+    private readonly AttributeReader $reader;
 
     /** @param array<string> $paths */
     public function __construct(array $paths)
@@ -46,7 +45,7 @@ class AttributeDriver implements MappingDriver
 
         foreach ($classAttributes as $a) {
             $attr = $a instanceof RepeatableAttributeCollection ? $a[0] : $a;
-            if (isset(self::ENTITY_ATTRIBUTE_CLASSES[get_class($attr)])) {
+            if (isset(self::ENTITY_ATTRIBUTE_CLASSES[$attr::class])) {
                 return false;
             }
         }

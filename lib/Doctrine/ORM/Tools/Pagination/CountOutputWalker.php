@@ -38,8 +38,8 @@ use function sprintf;
  */
 class CountOutputWalker extends SqlWalker
 {
-    private AbstractPlatform $platform;
-    private ResultSetMapping $rsm;
+    private readonly AbstractPlatform $platform;
+    private readonly ResultSetMapping $rsm;
 
     /**
      * {@inheritdoc}
