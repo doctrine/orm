@@ -2773,9 +2773,8 @@
     <PossiblyNullIterator occurrences="1">
       <code>$orderByClause-&gt;orderByItems</code>
     </PossiblyNullIterator>
-    <PossiblyNullPropertyAssignmentValue occurrences="3">
+    <PossiblyNullPropertyAssignmentValue occurrences="2">
       <code>$AST-&gt;orderByClause</code>
-      <code>$query-&gt;getFirstResult()</code>
       <code>$query-&gt;getMaxResults()</code>
     </PossiblyNullPropertyAssignmentValue>
     <PossiblyNullPropertyFetch occurrences="1">
