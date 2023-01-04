@@ -584,11 +584,11 @@ final class Query extends AbstractQuery
 
     /**
      * Gets the position of the first result the query object was set to retrieve (the "offset").
-     * Returns NULL if {@link setFirstResult} was not applied to this query.
+     * Returns 0 if {@link setFirstResult} was not applied to this query.
      *
-     * @return int|null The position of the first result.
+     * @return int The position of the first result.
      */
-    public function getFirstResult(): int|null
+    public function getFirstResult(): int
     {
         return $this->firstResult;
     }

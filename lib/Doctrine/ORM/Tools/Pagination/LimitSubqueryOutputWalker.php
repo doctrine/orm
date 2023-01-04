@@ -87,7 +87,7 @@ class LimitSubqueryOutputWalker extends SqlWalker
         $this->rsm      = $parserResult->getResultSetMapping();
 
         // Reset limit and offset
-        $this->firstResult = $query->getFirstResult() ?? 0;
+        $this->firstResult = $query->getFirstResult();
         $this->maxResults  = $query->getMaxResults();
         $query->setFirstResult(0)->setMaxResults(null);
 
