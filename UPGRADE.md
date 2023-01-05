@@ -141,6 +141,12 @@ Use one of the dedicated event classes instead:
 * `Doctrine\ORM\Event\PostRemoveEventArgs`
 * `Doctrine\ORM\Event\PostLoadEventArgs`
 
+## BC BREAK: Changed entity changeset when a `Collection` is modified
+
+When working with an entity with a `Collection` property, when that property
+is changed, the changeset stored in `UnitOfWork` includes the old and the new
+value of this property as an array of two items.
+
 ## BC BREAK: Removed `AttributeDriver::$entityAnnotationClasses` and `AttributeDriver::getReader()`
 
 * If you need to change the behavior of `AttributeDriver::isTransient()`,

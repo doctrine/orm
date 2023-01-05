@@ -514,7 +514,7 @@ class UnitOfWork implements PropertyChangedListener
      * Gets the changeset for an entity.
      *
      * @return mixed[][]
-     * @psalm-return array<string, array{mixed, mixed}|PersistentCollection>
+     * @psalm-return array<string, array{mixed, mixed}>
      */
     public function & getEntityChangeSet(object $entity): array
     {
@@ -715,7 +715,7 @@ class UnitOfWork implements PropertyChangedListener
                     }
 
                     $this->collectionDeletions[$coid] = $orgValue;
-                    $changeSet[$propName]             = $orgValue; // Signal changeset, to-many assocs will be ignored.
+                    $changeSet[$propName]             = [$orgValue, $actualValue];
 
                     continue;
                 }

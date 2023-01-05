@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Event;
 
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\PersistentCollection;
 use Doctrine\Persistence\Event\LifecycleEventArgs;
 use InvalidArgumentException;
 
@@ -19,12 +18,12 @@ use function sprintf;
  */
 class PreUpdateEventArgs extends LifecycleEventArgs
 {
-    /** @var array<string, array{mixed, mixed}|PersistentCollection> */
+    /** @var array<string, array{mixed, mixed}> */
     private array $entityChangeSet;
 
     /**
      * @param mixed[][] $changeSet
-     * @psalm-param array<string, array{mixed, mixed}|PersistentCollection> $changeSet
+     * @psalm-param array<string, array{mixed, mixed}> $changeSet
      */
     public function __construct(object $entity, EntityManagerInterface $em, array &$changeSet)
     {
@@ -37,7 +36,7 @@ class PreUpdateEventArgs extends LifecycleEventArgs
      * Retrieves entity changeset.
      *
      * @return mixed[][]
-     * @psalm-return array<string, array{mixed, mixed}|PersistentCollection>
+     * @psalm-return array<string, array{mixed, mixed}>
      */
     public function getEntityChangeSet(): array
     {
