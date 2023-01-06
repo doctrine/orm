@@ -6,6 +6,7 @@ namespace Doctrine\ORM\Event;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\PersistentCollection;
+use Doctrine\Persistence\Event\LifecycleEventArgs;
 use InvalidArgumentException;
 
 use function get_debug_type;
@@ -13,6 +14,8 @@ use function sprintf;
 
 /**
  * Class that holds event arguments for a preUpdate event.
+ *
+ * @extends LifecycleEventArgs<EntityManagerInterface>
  */
 class PreUpdateEventArgs extends LifecycleEventArgs
 {

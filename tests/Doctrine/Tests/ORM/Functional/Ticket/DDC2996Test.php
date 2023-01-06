@@ -76,7 +76,7 @@ class DDC2996UserPreference
     #[PreFlush]
     public function preFlush($event): void
     {
-        $em  = $event->getEntityManager();
+        $em  = $event->getObjectManager();
         $uow = $em->getUnitOfWork();
 
         if ($uow->getOriginalEntityData($this->user)) {
