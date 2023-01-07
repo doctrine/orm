@@ -10,6 +10,7 @@ use Doctrine\ORM\Internal\SQLResultCasing;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Utility\PersisterHelper;
 use InvalidArgumentException;
+use Stringable;
 
 use function in_array;
 use function sprintf;
@@ -17,7 +18,7 @@ use function sprintf;
 /**
  * A ResultSetMappingBuilder uses the EntityManager to automatically populate entity fields.
  */
-class ResultSetMappingBuilder extends ResultSetMapping
+class ResultSetMappingBuilder extends ResultSetMapping implements Stringable
 {
     use SQLResultCasing;
 

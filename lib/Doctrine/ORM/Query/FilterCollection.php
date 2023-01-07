@@ -29,7 +29,7 @@ class FilterCollection
      */
     public const FILTERS_STATE_DIRTY = 2;
 
-    private Configuration $config;
+    private readonly Configuration $config;
 
     /**
      * Instances of enabled filters.

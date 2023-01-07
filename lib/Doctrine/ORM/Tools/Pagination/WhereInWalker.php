@@ -146,8 +146,9 @@ class WhereInWalker extends TreeWalkerAdapter
             ->getEntityManager()
             ->getConnection();
 
-        $query->setParameter(self::PAGINATOR_ID_ALIAS, array_map(static function ($id) use ($connection, $type) {
-            return $connection->convertToDatabaseValue($id, $type);
-        }, $identifiers));
+        $query->setParameter(
+            self::PAGINATOR_ID_ALIAS,
+            array_map(static fn (mixed $id): mixed => $connection->convertToDatabaseValue($id, $type), $identifiers),
+        );
     }
 }

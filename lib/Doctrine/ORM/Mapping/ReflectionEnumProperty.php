@@ -9,7 +9,6 @@ use ReflectionProperty;
 use ValueError;
 
 use function array_map;
-use function get_class;
 use function is_array;
 
 final class ReflectionEnumProperty extends ReflectionProperty
@@ -55,9 +54,7 @@ final class ReflectionEnumProperty extends ReflectionProperty
     {
         if ($value !== null) {
             if (is_array($value)) {
-                $value = array_map(function ($item) use ($object): BackedEnum {
-                    return $this->initializeEnumValue($object, $item);
-                }, $value);
+                $value = array_map(fn (int|string|BackedEnum $item): BackedEnum => $this->initializeEnumValue($object, $item), $value);
             } else {
                 $value = $this->initializeEnumValue($object, $value);
             }
@@ -78,7 +75,7 @@ final class ReflectionEnumProperty extends ReflectionProperty
             return $enumType::from($value);
         } catch (ValueError $e) {
             throw MappingException::invalidEnumValue(
-                get_class($object),
+                $object::class,
                 $this->originalReflectionProperty->getName(),
                 (string) $value,
                 $enumType,
