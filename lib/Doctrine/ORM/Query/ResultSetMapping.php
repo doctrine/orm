@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Query;
 
-use function array_merge;
 use function count;
 
 /**
@@ -226,7 +225,7 @@ class ResultSetMapping
     {
         $found = false;
 
-        foreach (array_merge($this->metaMappings, $this->fieldMappings) as $columnName => $columnFieldName) {
+        foreach ([...$this->metaMappings, ...$this->fieldMappings] as $columnName => $columnFieldName) {
             if (! ($columnFieldName === $fieldName && $this->columnOwnerMap[$columnName] === $alias)) {
                 continue;
             }
@@ -387,7 +386,7 @@ class ResultSetMapping
      *
      * @return $this
      */
-    public function addEnumResult($columnName, $enumType)
+    public function addEnumResult(string $columnName, string $enumType): static
     {
         $this->enumMappings[$columnName] = $enumType;
 

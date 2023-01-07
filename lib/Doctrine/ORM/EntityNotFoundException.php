@@ -18,12 +18,9 @@ class EntityNotFoundException extends RuntimeException implements ORMException
     /**
      * Static constructor.
      *
-     * @param string   $className
      * @param string[] $id
-     *
-     * @return self
      */
-    public static function fromClassNameAndIdentifier($className, array $id)
+    public static function fromClassNameAndIdentifier(string $className, array $id): self
     {
         $ids = [];
 
