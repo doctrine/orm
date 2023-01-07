@@ -189,7 +189,7 @@
 
     <rule ref="PSR2.Methods.MethodDeclaration.Underscore">
         <exclude-pattern>lib/Doctrine/ORM/AbstractQuery.php</exclude-pattern>
-        <exclude-pattern>lib/Doctrine/ORM/Mapping/ClassMetadataInfo.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/Mapping/ClassMetadata.php</exclude-pattern>
         <exclude-pattern>lib/Doctrine/ORM/NativeQuery.php</exclude-pattern>
         <exclude-pattern>lib/Doctrine/ORM/Query.php</exclude-pattern>
         <exclude-pattern>lib/Doctrine/ORM/Query/TreeWalkerAdapter.php</exclude-pattern>

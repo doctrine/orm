@@ -1585,7 +1585,7 @@ abstract class GH10288EnumTypePerson
             ],
         );
 
-        $metadata->setIdGeneratorType(ORM\ClassMetadataInfo::GENERATOR_TYPE_NONE);
+        $metadata->setIdGeneratorType(ORM\ClassMetadata::GENERATOR_TYPE_NONE);
     }
 }
 

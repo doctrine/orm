@@ -82,7 +82,7 @@
                 <!-- Persistence 2 compatibility -->
                 <file name="lib/Doctrine/ORM/EntityManager.php"/>
                 <file name="lib/Doctrine/ORM/Mapping/ClassMetadataFactory.php"/>
-                <file name="lib/Doctrine/ORM/Mapping/ClassMetadataInfo.php"/>
+                <file name="lib/Doctrine/ORM/Mapping/ClassMetadata.php"/>
             </errorLevel>
         </MissingParamType>
         <PropertyNotSetInConstructor>
@@ -152,7 +152,7 @@
         <ArgumentTypeCoercion>
             <errorLevel type="suppress">
                 <!-- See https://github.com/JetBrains/phpstorm-stubs/pull/1383 -->
-                <file name="lib/Doctrine/ORM/Mapping/ClassMetadataInfo.php"/>
+                <file name="lib/Doctrine/ORM/Mapping/ClassMetadata.php"/>
             </errorLevel>
         </ArgumentTypeCoercion>
     </issueHandlers>

@@ -31,7 +31,6 @@ use Doctrine\ORM\Id\AssignedGenerator;
 use Doctrine\ORM\Internal\CommitOrderCalculator;
 use Doctrine\ORM\Internal\HydrationCompleteHandler;
 use Doctrine\ORM\Mapping\ClassMetadata;
-use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\ORM\Persisters\Collection\CollectionPersister;
 use Doctrine\ORM\Persisters\Collection\ManyToManyPersister;
@@ -79,7 +78,7 @@ use function sprintf;
  *
  * Internal note: This class contains highly performance-sensitive code.
  *
- * @psalm-import-type AssociationMapping from ClassMetadataInfo
+ * @psalm-import-type AssociationMapping from ClassMetadata
  */
 class UnitOfWork implements PropertyChangedListener
 {
