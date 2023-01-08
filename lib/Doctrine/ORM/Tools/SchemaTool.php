@@ -136,7 +136,7 @@ class SchemaTool
             )
         ) {
             throw MappingException::invalidIndexConfiguration(
-                $class,
+                (string) $class,
                 $indexData['name'] ?? 'unnamed',
             );
         }
