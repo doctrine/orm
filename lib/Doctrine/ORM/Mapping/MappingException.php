@@ -27,7 +27,7 @@ use const PHP_EOL;
 class MappingException extends Exception implements ORMException
 {
     /**
-     * @param string $entityName
+     * @param class-string $entityName
      *
      * @return MappingException
      */
@@ -330,7 +330,7 @@ class MappingException extends Exception implements ORMException
     }
 
     /**
-     * @param string $className
+     * @param class-string $className
      *
      * @return MappingException
      */
