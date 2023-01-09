@@ -1014,10 +1014,6 @@
     </MissingParamType>
   </file>
   <file src="lib/Doctrine/ORM/Mapping/MappingException.php">
-    <ArgumentTypeCoercion occurrences="2">
-      <code>$className</code>
-      <code>$entityName</code>
-    </ArgumentTypeCoercion>
     <MissingParamType occurrences="4">
       <code>$className</code>
       <code>$className</code>
