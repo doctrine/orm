@@ -623,14 +623,6 @@
       <code>$xmlRoot-&gt;getName() === 'mapped-superclass'</code>
     </TypeDoesNotContainType>
   </file>
-  <file src="lib/Doctrine/ORM/Mapping/MappingException.php">
-    <MissingParamType occurrences="4">
-      <code>$className</code>
-      <code>$className</code>
-      <code>$indexName</code>
-      <code>$indexName</code>
-    </MissingParamType>
-  </file>
   <file src="lib/Doctrine/ORM/Mapping/ReflectionEmbeddedProperty.php">
     <MethodSignatureMismatch occurrences="1">
       <code>$object</code>
