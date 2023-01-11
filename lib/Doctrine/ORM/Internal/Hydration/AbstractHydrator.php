@@ -537,12 +537,11 @@ abstract class AbstractHydrator
     }
 
     /**
-     * @param mixed                    $value
      * @param class-string<BackedEnum> $enumType
      *
      * @return BackedEnum|array<BackedEnum>
      */
-    final protected function buildEnum($value, string $enumType)
+    final protected function buildEnum(mixed $value, string $enumType): BackedEnum|array
     {
         if (is_array($value)) {
             return array_map(
