@@ -30,6 +30,7 @@ use function array_diff_key;
 use function array_filter;
 use function array_flip;
 use function array_intersect_key;
+use function array_merge;
 use function assert;
 use function count;
 use function current;
@@ -456,6 +457,8 @@ class SchemaTool
     /**
      * Gathers the column definitions as required by the DBAL of all field mappings
      * found in the given class.
+     *
+     * @param list<class-string> $stiClassesBeingProcessed
      */
     private function gatherColumns(ClassMetadata $class, Table $table, array $stiClassesBeingProcessed = []): void
     {
