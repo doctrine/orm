@@ -226,9 +226,9 @@ class SchemaTool
                 $subclassesToProcess = [];
                 foreach ($class->subClasses as $subClassName) {
                     $subclassesToProcess[] = $subClassName;
-                    $subClass = $this->em->getClassMetadata($subClassName);
+                    $subClass              = $this->em->getClassMetadata($subClassName);
                     foreach (array_merge($subClass->fieldMappings, $subClass->associationMappings) as $mapping) {
-                        if (isset($mapping['inherited']) && $mapping['inherited'] !== $class->name && !in_array($mapping['inherited'], $subclassesToProcess)) {
+                        if (isset($mapping['inherited']) && $mapping['inherited'] !== $class->name && ! in_array($mapping['inherited'], $subclassesToProcess)) {
                             $subclassesToProcess[] = $mapping['inherited'];
                         }
                     }

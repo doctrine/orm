@@ -49,9 +49,10 @@ class GH10387Test extends OrmTestCase
 class GH10387EntitiesOnlyRoot
 {
     /**
-     * @var int
      * @ORM\Id
      * @ORM\Column
+     *
+     * @var string
      */
     private $id;
 }
@@ -62,8 +63,9 @@ class GH10387EntitiesOnlyRoot
 class GH10387EntitiesOnlyMiddle extends GH10387EntitiesOnlyRoot
 {
     /**
-     * @var string
      * @ORM\Column(name="middle_class_field")
+     *
+     * @var string
      */
     private $parentValue;
 }
@@ -74,8 +76,9 @@ class GH10387EntitiesOnlyMiddle extends GH10387EntitiesOnlyRoot
 class GH10387EntitiesOnlyLeaf extends GH10387EntitiesOnlyMiddle
 {
     /**
-     * @var string
      * @ORM\Column(name="leaf_class_field")
+     *
+     * @var string
      */
     private $childValue;
 }
@@ -90,9 +93,10 @@ class GH10387EntitiesOnlyLeaf extends GH10387EntitiesOnlyMiddle
 class GH10387MappedSuperclassRoot
 {
     /**
-     * @var int
      * @ORM\Id
      * @ORM\Column
+     *
+     * @var string
      */
     private $id;
 }
@@ -103,8 +107,9 @@ class GH10387MappedSuperclassRoot
 class GH10387MappedSuperclassMiddle extends GH10387MappedSuperclassRoot
 {
     /**
-     * @var string
      * @ORM\Column(name="middle_class_field")
+     *
+     * @var string
      */
     private $parentValue;
 }
@@ -115,8 +120,9 @@ class GH10387MappedSuperclassMiddle extends GH10387MappedSuperclassRoot
 class GH10387MappedSuperclassLeaf extends GH10387MappedSuperclassMiddle
 {
     /**
-     * @var string
      * @ORM\Column(name="leaf_class_field")
+     *
+     * @var string
      */
     private $childValue;
 }
@@ -132,9 +138,10 @@ class GH10387MappedSuperclassLeaf extends GH10387MappedSuperclassMiddle
 abstract class GH10387AbstractEntitiesRoot
 {
     /**
-     * @var int
      * @ORM\Id
      * @ORM\Column
+     *
+     * @var string
      */
     private $id;
 }
@@ -145,8 +152,9 @@ abstract class GH10387AbstractEntitiesRoot
 abstract class GH10387AbstractEntitiesMiddle extends GH10387AbstractEntitiesRoot
 {
     /**
-     * @var string
      * @ORM\Column(name="middle_class_field")
+     *
+     * @var string
      */
     private $parentValue;
 }
@@ -157,8 +165,9 @@ abstract class GH10387AbstractEntitiesMiddle extends GH10387AbstractEntitiesRoot
 class GH10387AbstractEntitiesLeaf extends GH10387AbstractEntitiesMiddle
 {
     /**
-     * @var string
      * @ORM\Column(name="leaf_class_field")
+     *
+     * @var string
      */
     private $childValue;
 }
