@@ -208,17 +208,7 @@ class SchemaTool
             $table = $schema->createTable($this->quoteStrategy->getTableName($class, $this->platform));
 
             if ($class->isInheritanceTypeSingleTable()) {
-                // This is a list of the all the classes in the inheritance tree rooted at $class that
-                // will be processed to gather the necessary columns.
-                //
-                // There may be abstract entity classes in the middle of the inheritance tree that
-                // need not show up in the discriminator map and thus will not be in $class->subClasses.
-                // Fields from these classes will be indicated as "inherited" in child classes, but may
-                // not be skipped when gathering column definitions, since the "originating" class (which
-                // actually contains the field) is never proecessed itself.
-                $stiClassesBeingProcessed = array_merge([$class->name], $class->subClasses);
-
-                $this->gatherColumns($class, $table, $stiClassesBeingProcessed);
+                $this->gatherColumns($class, $table);
                 $this->gatherRelationsSql($class, $table, $schema, $addedFks, $blacklistedFks);
 
                 // Add the discriminator column
@@ -230,9 +220,23 @@ class SchemaTool
                     $processedClasses[$parentClassName] = true;
                 }
 
+                // Find classes that provide inherited fields but that are not in the list of subclasses.
+                // This is the case for abstract entity classes in the middle of the inheritance tree
+                // that are not included in the discriminator map.
+                $subclassesToProcess = [];
                 foreach ($class->subClasses as $subClassName) {
+                    $subclassesToProcess[] = $subClassName;
                     $subClass = $this->em->getClassMetadata($subClassName);
-                    $this->gatherColumns($subClass, $table, $stiClassesBeingProcessed);
+                    foreach (array_merge($subClass->fieldMappings, $subClass->associationMappings) as $mapping) {
+                        if (isset($mapping['inherited']) && $mapping['inherited'] !== $class->name && !in_array($mapping['inherited'], $subclassesToProcess)) {
+                            $subclassesToProcess[] = $mapping['inherited'];
+                        }
+                    }
+                }
+
+                foreach ($subclassesToProcess as $subClassName) {
+                    $subClass = $this->em->getClassMetadata($subClassName);
+                    $this->gatherColumns($subClass, $table);
                     $this->gatherRelationsSql($subClass, $table, $schema, $addedFks, $blacklistedFks);
                     $processedClasses[$subClassName] = true;
                 }
@@ -457,15 +461,13 @@ class SchemaTool
     /**
      * Gathers the column definitions as required by the DBAL of all field mappings
      * found in the given class.
-     *
-     * @param list<class-string> $stiClassesBeingProcessed
      */
-    private function gatherColumns(ClassMetadata $class, Table $table, array $stiClassesBeingProcessed = []): void
+    private function gatherColumns(ClassMetadata $class, Table $table): void
     {
         $pkColumns = [];
 
         foreach ($class->fieldMappings as $mapping) {
-            if ($class->isInheritanceTypeSingleTable() && isset($mapping['inherited']) && in_array($mapping['inherited'], $stiClassesBeingProcessed)) {
+            if ($class->isInheritanceTypeSingleTable() && isset($mapping['inherited'])) {
                 continue;
             }
 
