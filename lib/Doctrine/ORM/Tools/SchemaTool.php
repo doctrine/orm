@@ -207,7 +207,17 @@ class SchemaTool
             $table = $schema->createTable($this->quoteStrategy->getTableName($class, $this->platform));
 
             if ($class->isInheritanceTypeSingleTable()) {
-                $this->gatherColumns($class, $table);
+                // This is a list of the all the classes in the inheritance tree rooted at $class that
+                // will be processed to gather the necessary columns.
+                //
+                // There may be abstract entity classes in the middle of the inheritance tree that
+                // need not show up in the discriminator map and thus will not be in $class->subClasses.
+                // Fields from these classes will be indicated as "inherited" in child classes, but may
+                // not be skipped when gathering column definitions, since the "originating" class (which
+                // actually contains the field) is never proecessed itself.
+                $stiClassesBeingProcessed = array_merge([$class->name], $class->subClasses);
+
+                $this->gatherColumns($class, $table, $stiClassesBeingProcessed);
                 $this->gatherRelationsSql($class, $table, $schema, $addedFks, $blacklistedFks);
 
                 // Add the discriminator column
@@ -221,7 +231,7 @@ class SchemaTool
 
                 foreach ($class->subClasses as $subClassName) {
                     $subClass = $this->em->getClassMetadata($subClassName);
-                    $this->gatherColumns($subClass, $table);
+                    $this->gatherColumns($subClass, $table, $stiClassesBeingProcessed);
                     $this->gatherRelationsSql($subClass, $table, $schema, $addedFks, $blacklistedFks);
                     $processedClasses[$subClassName] = true;
                 }
@@ -447,12 +457,12 @@ class SchemaTool
      * Gathers the column definitions as required by the DBAL of all field mappings
      * found in the given class.
      */
-    private function gatherColumns(ClassMetadata $class, Table $table): void
+    private function gatherColumns(ClassMetadata $class, Table $table, array $stiClassesBeingProcessed = []): void
     {
         $pkColumns = [];
 
         foreach ($class->fieldMappings as $mapping) {
-            if ($class->isInheritanceTypeSingleTable() && isset($mapping['inherited'])) {
+            if ($class->isInheritanceTypeSingleTable() && isset($mapping['inherited']) && in_array($mapping['inherited'], $stiClassesBeingProcessed)) {
                 continue;
             }
 
