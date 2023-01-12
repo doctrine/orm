@@ -12,9 +12,9 @@ use Generator;
 use function array_map;
 
 /**
- * @group GH-9145
+ * @group GH-10387
  */
-class GH9145Test extends OrmTestCase
+class GH10387Test extends OrmTestCase
 {
     /**
      * @dataProvider classHierachies
@@ -34,9 +34,9 @@ class GH9145Test extends OrmTestCase
 
     public function classHierachies(): Generator
     {
-        yield 'hierarchy with Entity classes only' => [[GH9145_EntitiesOnly_Root::class, GH9145_EntitiesOnly_Middle::class, GH9145_EntitiesOnly_Leaf::class]];
-        yield 'MappedSuperclass in the middle of the hierarchy' => [[GH9145_MappedSuperclass_Root::class, GH9145_MappedSuperclass_Middle::class, GH9145_MappedSuperclass_Leaf::class]];
-        yield 'abstract entity the the root and in the middle of the hierarchy' => [[GH9145_AbstractEntities_Root::class, GH9145_AbstractEntities_Middle::class, GH9145_AbstractEntities_Leaf::class]];
+        yield 'hierarchy with Entity classes only' => [[GH10387_EntitiesOnly_Root::class, GH10387_EntitiesOnly_Middle::class, GH10387_EntitiesOnly_Leaf::class]];
+        yield 'MappedSuperclass in the middle of the hierarchy' => [[GH10387_MappedSuperclass_Root::class, GH10387_MappedSuperclass_Middle::class, GH10387_MappedSuperclass_Leaf::class]];
+        yield 'abstract entity the the root and in the middle of the hierarchy' => [[GH10387_AbstractEntities_Root::class, GH10387_AbstractEntities_Middle::class, GH10387_AbstractEntities_Leaf::class]];
     }
 }
 
@@ -44,9 +44,9 @@ class GH9145Test extends OrmTestCase
  * @ORM\Entity
  * @ORM\Table(name="root")
  * @ORM\InheritanceType("SINGLE_TABLE")
- * @ORM\DiscriminatorMap({ "A": "GH9145_EntitiesOnly_Root", "B": "GH9145_EntitiesOnly_Middle", "C": "GH9145_EntitiesOnly_Leaf"})
+ * @ORM\DiscriminatorMap({ "A": "GH10387_EntitiesOnly_Root", "B": "GH10387_EntitiesOnly_Middle", "C": "GH10387_EntitiesOnly_Leaf"})
  */
-class GH9145_EntitiesOnly_Root
+class GH10387_EntitiesOnly_Root
 {
     /**
      * @ORM\Id
@@ -58,7 +58,7 @@ class GH9145_EntitiesOnly_Root
 /**
  * @ORM\Entity
  */
-class GH9145_EntitiesOnly_Middle extends GH9145_EntitiesOnly_Root
+class GH10387_EntitiesOnly_Middle extends GH10387_EntitiesOnly_Root
 {
     /** @ORM\Column(name="middle_class_field") */
     private $parentValue;
@@ -67,7 +67,7 @@ class GH9145_EntitiesOnly_Middle extends GH9145_EntitiesOnly_Root
 /**
  * @ORM\Entity
  */
-class GH9145_EntitiesOnly_Leaf extends GH9145_EntitiesOnly_Middle
+class GH10387_EntitiesOnly_Leaf extends GH10387_EntitiesOnly_Middle
 {
     /** @ORM\Column(name="leaf_class_field") */
     private $childValue;
@@ -77,10 +77,10 @@ class GH9145_EntitiesOnly_Leaf extends GH9145_EntitiesOnly_Middle
  * @ORM\Entity
  * @ORM\Table(name="root")
  * @ORM\InheritanceType("SINGLE_TABLE")
- * @ORM\DiscriminatorMap({ "A": "GH9145_MappedSuperclass_Root", "B": "GH9145_MappedSuperclass_Leaf"})
+ * @ORM\DiscriminatorMap({ "A": "GH10387_MappedSuperclass_Root", "B": "GH10387_MappedSuperclass_Leaf"})
  * ^- This DiscriminatorMap contains the Entity classes only, not the Mapped Superclass
  */
-class GH9145_MappedSuperclass_Root
+class GH10387_MappedSuperclass_Root
 {
     /**
      * @ORM\Id
@@ -92,7 +92,7 @@ class GH9145_MappedSuperclass_Root
 /**
  * @ORM\MappedSuperclass
  */
-class GH9145_MappedSuperclass_Middle extends GH9145_MappedSuperclass_Root
+class GH10387_MappedSuperclass_Middle extends GH10387_MappedSuperclass_Root
 {
     /** @ORM\Column(name="middle_class_field") */
     private $parentValue;
@@ -101,7 +101,7 @@ class GH9145_MappedSuperclass_Middle extends GH9145_MappedSuperclass_Root
 /**
  * @ORM\Entity
  */
-class GH9145_MappedSuperclass_Leaf extends GH9145_MappedSuperclass_Middle
+class GH10387_MappedSuperclass_Leaf extends GH10387_MappedSuperclass_Middle
 {
     /** @ORM\Column(name="leaf_class_field") */
     private $childValue;
@@ -112,10 +112,10 @@ class GH9145_MappedSuperclass_Leaf extends GH9145_MappedSuperclass_Middle
  * @ORM\Entity
  * @ORM\Table(name="root")
  * @ORM\InheritanceType("SINGLE_TABLE")
- * @ORM\DiscriminatorMap({ "A": "GH9145_AbstractEntities_Leaf"})
+ * @ORM\DiscriminatorMap({ "A": "GH10387_AbstractEntities_Leaf"})
  * ^- This DiscriminatorMap contains the single non-abstract Entity class only
  */
-abstract class GH9145_AbstractEntities_Root
+abstract class GH10387_AbstractEntities_Root
 {
     /**
      * @ORM\Id
@@ -127,7 +127,7 @@ abstract class GH9145_AbstractEntities_Root
 /**
  * @ORM\Entity
  */
-abstract class GH9145_AbstractEntities_Middle extends GH9145_AbstractEntities_Root
+abstract class GH10387_AbstractEntities_Middle extends GH10387_AbstractEntities_Root
 {
     /** @ORM\Column(name="middle_class_field") */
     private $parentValue;
@@ -136,7 +136,7 @@ abstract class GH9145_AbstractEntities_Middle extends GH9145_AbstractEntities_Ro
 /**
  * @ORM\Entity
  */
-class GH9145_AbstractEntities_Leaf extends GH9145_AbstractEntities_Middle
+class GH10387_AbstractEntities_Leaf extends GH10387_AbstractEntities_Middle
 {
     /** @ORM\Column(name="leaf_class_field") */
     private $childValue;
