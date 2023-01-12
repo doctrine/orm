@@ -268,6 +268,10 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
                     throw MappingException::missingDiscriminatorColumn($class->name);
                 }
 
+                if (! in_array($class->name, $class->discriminatorMap, true)) {
+                    throw MappingException::mappedClassNotPartOfDiscriminatorMap($class->name, $class->rootEntityName);
+                }
+
                 foreach ($class->subClasses as $subClass) {
                     if ((new ReflectionClass($subClass))->name !== $subClass) {
                         throw MappingException::invalidClassInDiscriminatorMap($subClass, $class->name);
@@ -275,10 +279,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
                 }
             } else {
                 assert($parent instanceof ClassMetadataInfo); // https://github.com/doctrine/orm/issues/8746
-                if (
-                    ! $class->reflClass->isAbstract()
-                    && ! in_array($class->name, $class->discriminatorMap, true)
-                ) {
+                if (! in_array($class->name, $class->discriminatorMap, true)) {
                     throw MappingException::mappedClassNotPartOfDiscriminatorMap($class->name, $class->rootEntityName);
                 }
             }

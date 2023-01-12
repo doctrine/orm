@@ -762,8 +762,8 @@ class MappingException extends ORMException
     {
         return new self(
             "Entity '" . $className . "' has to be part of the discriminator map of '" . $rootClassName . "' " .
-            "to be properly mapped in the inheritance hierarchy. Alternatively you can make '" . $className . "' an abstract class " .
-            'to avoid this exception from occurring.'
+            'to be properly mapped in the inheritance hierarchy. The discriminator map needs to contain all ' .
+            'entity classes from the hierarchy, including abstract ones.'
         );
     }
 

@@ -131,17 +131,46 @@ class BasicInheritanceMappingTest extends OrmTestCase
     }
 
     /** @group DDC-1204 */
-    public function testUnmappedEntityInHierarchy(): void
+    public function testNonAbstractEntityNotInDiscriminatorMap(): void
     {
+        // HierarchyE is in the DM, but the (non-abstract) parent class HierarchyBEntity is not
         $this->expectException(MappingException::class);
         $this->expectExceptionMessage(
             'Entity \'Doctrine\Tests\ORM\Mapping\HierarchyBEntity\' has to be part of the discriminator map'
             . ' of \'Doctrine\Tests\ORM\Mapping\HierarchyBase\' to be properly mapped in the inheritance hierarchy.'
-            . ' Alternatively you can make \'Doctrine\Tests\ORM\Mapping\HierarchyBEntity\' an abstract class to'
-            . ' avoid this exception from occurring.'
+            . ' The discriminator map needs to contain all entity classes from the hierarchy, including abstract ones.'
         );
 
         $this->cmf->getMetadataFor(HierarchyE::class);
+    }
+
+    public function testAbstractEntityNotInDiscriminatorMap(): void
+    {
+        // Like testNonAbstractEntityNotInDiscriminatorMap(), but this time the parent class
+        // HierarchyF is abstract (and not in the DM as well)
+        $this->expectException(MappingException::class);
+        $this->expectExceptionMessage(
+            'Entity \'Doctrine\Tests\ORM\Mapping\HierarchyF\' has to be part of the discriminator map'
+            . ' of \'Doctrine\Tests\ORM\Mapping\HierarchyBase\' to be properly mapped in the inheritance hierarchy.'
+            . ' The discriminator map needs to contain all entity classes from the hierarchy, including abstract ones.'
+        );
+
+        $this->cmf->getMetadataFor(HierarchyG::class);
+    }
+
+    public function testAbstractRootEntityNotInDiscriminatorMap(): void
+    {
+        // Inheritance root entities go through a different path during runtime validation, so
+        // we need to check root classes separately. Even when the root class is abstract, it may
+        // not be omitted from the DM.
+        $this->expectException(MappingException::class);
+        $this->expectExceptionMessage(
+            'Entity \'Doctrine\Tests\ORM\Mapping\AbstractRootClass\' has to be part of the discriminator map'
+            . ' of \'Doctrine\Tests\ORM\Mapping\AbstractRootClass\' to be properly mapped in the inheritance hierarchy.'
+            . ' The discriminator map needs to contain all entity classes from the hierarchy, including abstract ones.'
+        );
+
+        $this->cmf->getMetadataFor(AbstractRootClass::class);
     }
 
     /**
@@ -339,9 +368,11 @@ class EntityIndexSubClass extends MappedSuperclassBaseIndex
  * @InheritanceType("SINGLE_TABLE")
  * @DiscriminatorColumn(name="type", type="string", length=20)
  * @DiscriminatorMap({
+ *     "base"   = "HierarchyBase",
  *     "c"   = "HierarchyC",
  *     "d"   = "HierarchyD",
- *     "e"   = "HierarchyE"
+ *     "e"   = "HierarchyE",
+ *     "g"   = "HierarchyG"
  * })
  */
 abstract class HierarchyBase
@@ -404,6 +435,51 @@ class HierarchyE extends HierarchyBEntity
      * @Column(type="string", length=255)
      */
     public $e;
+}
+
+/** @Entity */
+abstract class HierarchyF extends HierarchyBase
+{
+    /**
+     * @var string
+     * @Column(type="string", length=255)
+     */
+    public $f;
+}
+
+/** @Entity */
+class HierarchyG extends HierarchyF
+{
+    /**
+     * @var string
+     * @Column(type="string", length=255)
+     */
+    public $e;
+}
+
+/**
+ * @Entity
+ * @InheritanceType("SINGLE_TABLE")
+ * @DiscriminatorColumn(name="type", type="string", length=20)
+ * @DiscriminatorMap({
+ *     "child"   = "AbstractRootClassChild"
+ * })
+ */
+abstract class AbstractRootClass
+{
+    /**
+     * @Column(type="integer")
+     * @Id
+     * @GeneratedValue
+     *
+     * @var int
+     */
+    public $id;
+}
+
+/** @Entity */
+class AbstractRootClassChild extends AbstractRootClass
+{
 }
 
 /** @Entity */
