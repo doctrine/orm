@@ -24,43 +24,22 @@ use function sprintf;
  */
 class ORMInvalidArgumentException extends InvalidArgumentException
 {
-    /**
-     * @param object $entity
-     *
-     * @return ORMInvalidArgumentException
-     */
-    public static function scheduleInsertForManagedEntity($entity)
+    public static function scheduleInsertForManagedEntity(object $entity): self
     {
         return new self('A managed+dirty entity ' . self::objToStr($entity) . ' can not be scheduled for insertion.');
     }
 
-    /**
-     * @param object $entity
-     *
-     * @return ORMInvalidArgumentException
-     */
-    public static function scheduleInsertForRemovedEntity($entity)
+    public static function scheduleInsertForRemovedEntity(object $entity): self
     {
         return new self('Removed entity ' . self::objToStr($entity) . ' can not be scheduled for insertion.');
     }
 
-    /**
-     * @param object $entity
-     *
-     * @return ORMInvalidArgumentException
-     */
-    public static function scheduleInsertTwice($entity)
+    public static function scheduleInsertTwice(object $entity): self
     {
         return new self('Entity ' . self::objToStr($entity) . ' can not be scheduled for insertion twice.');
     }
 
-    /**
-     * @param string $className
-     * @param object $entity
-     *
-     * @return ORMInvalidArgumentException
-     */
-    public static function entityWithoutIdentity($className, $entity)
+    public static function entityWithoutIdentity(string $className, object $entity): self
     {
         return new self(
             "The given entity of type '" . $className . "' (" . self::objToStr($entity) . ') has no identity/no ' .
@@ -68,12 +47,7 @@ class ORMInvalidArgumentException extends InvalidArgumentException
         );
     }
 
-    /**
-     * @param object $entity
-     *
-     * @return ORMInvalidArgumentException
-     */
-    public static function readOnlyRequiresManagedEntity($entity)
+    public static function readOnlyRequiresManagedEntity(object $entity): self
     {
         return new self('Only managed entities can be marked or checked as read only. But ' . self::objToStr($entity) . ' is not');
     }
@@ -81,10 +55,8 @@ class ORMInvalidArgumentException extends InvalidArgumentException
     /**
      * @param array[][]|object[][] $newEntitiesWithAssociations non-empty an array
      *                                                              of [array $associationMapping, object $entity] pairs
-     *
-     * @return ORMInvalidArgumentException
      */
-    public static function newEntitiesFoundThroughRelationships($newEntitiesWithAssociations)
+    public static function newEntitiesFoundThroughRelationships(array $newEntitiesWithAssociations): self
     {
         $errorMessages = array_map(
             static function (array $newEntityWithAssociation): string {
@@ -106,96 +78,54 @@ class ORMInvalidArgumentException extends InvalidArgumentException
         );
     }
 
-    /**
-     * @param object $entry
-     * @psalm-param AssociationMapping $associationMapping
-     *
-     * @return ORMInvalidArgumentException
-     */
-    public static function newEntityFoundThroughRelationship(array $associationMapping, $entry)
+    /** @psalm-param AssociationMapping $associationMapping */
+    public static function newEntityFoundThroughRelationship(array $associationMapping, object $entry): self
     {
         return new self(self::newEntityFoundThroughRelationshipMessage($associationMapping, $entry));
     }
 
-    /**
-     * @param object $entry
-     * @psalm-param array<string, string> $assoc
-     *
-     * @return ORMInvalidArgumentException
-     */
-    public static function detachedEntityFoundThroughRelationship(array $assoc, $entry)
+    /** @psalm-param array<string, string> $assoc */
+    public static function detachedEntityFoundThroughRelationship(array $assoc, object $entry): self
     {
         return new self('A detached entity of type ' . $assoc['targetEntity'] . ' (' . self::objToStr($entry) . ') '
             . " was found through the relationship '" . $assoc['sourceEntity'] . '#' . $assoc['fieldName'] . "' "
             . 'during cascading a persist operation.');
     }
 
-    /**
-     * @param object $entity
-     *
-     * @return ORMInvalidArgumentException
-     */
-    public static function entityNotManaged($entity)
+    public static function entityNotManaged(object $entity): self
     {
         return new self('Entity ' . self::objToStr($entity) . ' is not managed. An entity is managed if its fetched ' .
             'from the database or registered as new through EntityManager#persist');
     }
 
-    /**
-     * @param object $entity
-     * @param string $operation
-     *
-     * @return ORMInvalidArgumentException
-     */
-    public static function entityHasNoIdentity($entity, $operation)
+    public static function entityHasNoIdentity(object $entity, string $operation): self
     {
         return new self('Entity has no identity, therefore ' . $operation . ' cannot be performed. ' . self::objToStr($entity));
     }
 
-    /**
-     * @param object $entity
-     * @param string $operation
-     *
-     * @return ORMInvalidArgumentException
-     */
-    public static function entityIsRemoved($entity, $operation)
+    public static function entityIsRemoved(object $entity, string $operation): self
     {
         return new self('Entity is removed, therefore ' . $operation . ' cannot be performed. ' . self::objToStr($entity));
     }
 
-    /**
-     * @param object $entity
-     * @param string $operation
-     *
-     * @return ORMInvalidArgumentException
-     */
-    public static function detachedEntityCannot($entity, $operation)
+    public static function detachedEntityCannot(object $entity, string $operation): self
     {
         return new self('Detached entity ' . self::objToStr($entity) . ' cannot be ' . $operation);
     }
 
-    /**
-     * @param string $context
-     * @param mixed  $given
-     * @param int    $parameterIndex
-     *
-     * @return ORMInvalidArgumentException
-     */
-    public static function invalidObject($context, $given, $parameterIndex = 1)
+    public static function invalidObject(string $context, mixed $given, int $parameterIndex = 1): self
     {
         return new self($context . ' expects parameter ' . $parameterIndex .
             ' to be an entity object, ' . gettype($given) . ' given.');
     }
 
-    /** @return ORMInvalidArgumentException */
-    public static function invalidCompositeIdentifier()
+    public static function invalidCompositeIdentifier(): self
     {
         return new self('Binding an entity with a composite primary key to a query is not supported. ' .
             'You should split the parameter into the explicit fields and bind them separately.');
     }
 
-    /** @return ORMInvalidArgumentException */
-    public static function invalidIdentifierBindingEntity(string $class)
+    public static function invalidIdentifierBindingEntity(string $class): self
     {
         return new self(sprintf(
             <<<'EXCEPTION'
@@ -207,13 +137,8 @@ EXCEPTION
         ));
     }
 
-    /**
-     * @param mixed[] $assoc
-     * @param mixed   $actualValue
-     *
-     * @return self
-     */
-    public static function invalidAssociation(ClassMetadata $targetClass, $assoc, $actualValue)
+    /** @param mixed[] $assoc */
+    public static function invalidAssociation(ClassMetadata $targetClass, array $assoc, mixed $actualValue): self
     {
         $expectedType = $targetClass->getName();
 
