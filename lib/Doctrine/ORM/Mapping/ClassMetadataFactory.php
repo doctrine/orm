@@ -392,7 +392,6 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
                 $mapping['sourceEntity'] = $subClass->name;
             }
 
-            //$subclassMapping = $mapping;
             if (! isset($mapping['inherited']) && ! $parentClass->isMappedSuperclass) {
                 $mapping['inherited'] = $parentClass->name;
             }
