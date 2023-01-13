@@ -4,6 +4,10 @@
 
 Use `getObjectManager()` instead.
 
+## BC BREAK: Removed `Doctrine\ORM\Mapping\ClassMetadataInfo` class
+
+Use `Doctrine\ORM\Mapping\ClassMetadata` instead.
+
 ## BC BREAK: Removed `Doctrine\ORM\Event\LifecycleEventArgs` class.
 
 Use one of the dedicated event classes instead:

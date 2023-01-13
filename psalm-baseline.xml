@@ -365,7 +365,7 @@
       <code>$parent-&gt;idGenerator</code>
     </RedundantCondition>
   </file>
-  <file src="lib/Doctrine/ORM/Mapping/ClassMetadataInfo.php">
+  <file src="lib/Doctrine/ORM/Mapping/ClassMetadata.php">
     <DeprecatedProperty occurrences="4">
       <code>$this-&gt;columnNames</code>
       <code>$this-&gt;columnNames</code>
