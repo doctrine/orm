@@ -25,6 +25,12 @@ appear in the middle of an otherwise mapped inheritance hierarchy
     For further support of inheritance, the single or
     joined table inheritance features have to be used.
 
+.. note::
+
+    You may be tempted to use traits to mix mapped fields or relationships
+    into your entity classes to circumvent some of the limitations of
+    mapped superclasses. Before doing that, please read the section on traits
+    in the :doc:`Limitations and Known Issues <reference/limitations-and-known-issues>` chapter.
 
 Example:
 
