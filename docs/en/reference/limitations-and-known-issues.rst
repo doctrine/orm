@@ -146,8 +146,8 @@ core components were designed.
 In fact, this documentation mentions traits only in the context of
 :doc:`overriding field association mappings in subclasses <tutorials/override-field-association-mappings-in-subclasses>`. Also, the
 tests in the ORM codebase (as of writing) cover traits only in two (!) places,
-namely the aforementioned override and in an edge-case for the deprecated
-"Entity Generator".
+namely the aforementioned override and in an edge-case for a tool that will be
+removed in Doctrine 3.0.
 
 Thus, you should at least be aware that when using traits in your entity and
 mapped superclasses, you will be in uncharted terrain.
