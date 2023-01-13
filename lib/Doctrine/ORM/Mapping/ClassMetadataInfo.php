@@ -656,7 +656,7 @@ class ClassMetadataInfo implements ClassMetadata
      * The name of the field in the entity the association is mapped to.
      *
      * - <b>sourceEntity</b> (string)
-     * The class name of the source entity. In the case of to-many-associations initially
+     * The class name of the source entity. In the case of to-many associations initially
      * present in mapped superclasses, the nearest <em>entity</em> subclasses will be
      * considered the respective source entities.
      *
