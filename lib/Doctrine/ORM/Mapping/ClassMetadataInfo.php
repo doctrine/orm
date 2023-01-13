@@ -1221,6 +1221,14 @@ class ClassMetadataInfo implements ClassMetadata
             ) {
                 throw MappingException::invalidTargetEntityClass($mapping['targetEntity'], $this->name, $mapping['fieldName']);
             }
+
+            // TBD: This might need an extra isset($mapping['declared']) check -
+            // when not set, this association is defined here in the mapped superclass.
+            // when it is set, we may be a mapped superclass but inherit the association from an entity class above.
+            // Is that legit?
+            if ($this->isMappedSuperclass && $mapping['type'] & self::TO_MANY && ! $mapping['isOwningSide']) {
+                throw MappingException::illegalToManyAssociationOnMappedSuperclass($this->name, $mapping['fieldName']);
+            }
         }
     }
 
