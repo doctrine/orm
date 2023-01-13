@@ -106,7 +106,7 @@ Transient Classes
 
 The term "transient class" appears in some places in the mapping drivers as well as the code dealing with metadata handling.
 
-A transient class is a class that is neither an entity nor a mapped superclass. From the ORMs point of view, these classes can be completely ignored, and no class metadata is loaded for them at all.
+A transient class is a class that is neither an entity nor a mapped superclass. From the ORM's point of view, these classes can be completely ignored, and no class metadata is loaded for them at all.
 
 Entity states
 ~~~~~~~~~~~~~
