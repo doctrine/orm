@@ -324,48 +324,6 @@
     </PossiblyNullArgument>
   </file>
   <file src="lib/Doctrine/ORM/Mapping/ClassMetadata.php">
-    <PropertyNotSetInConstructor occurrences="2">
-      <code>ClassMetadata</code>
-      <code>ClassMetadata</code>
-    </PropertyNotSetInConstructor>
-  </file>
-  <file src="lib/Doctrine/ORM/Mapping/ClassMetadataFactory.php">
-    <ArgumentTypeCoercion occurrences="2">
-      <code>$nonSuperclassParents</code>
-      <code>new $definition['class']()</code>
-    </ArgumentTypeCoercion>
-    <InvalidArrayOffset occurrences="1">
-      <code>$subClass-&gt;table[$indexType][$indexName]</code>
-    </InvalidArrayOffset>
-    <InvalidPropertyAssignmentValue occurrences="1">
-      <code>$subClass-&gt;table</code>
-    </InvalidPropertyAssignmentValue>
-    <PossiblyInvalidArrayAssignment occurrences="1">
-      <code>$subClass-&gt;table[$indexType][$indexName]</code>
-    </PossiblyInvalidArrayAssignment>
-    <PossiblyInvalidIterator occurrences="1">
-      <code>$parentClass-&gt;table[$indexType]</code>
-    </PossiblyInvalidIterator>
-    <PossiblyNullArgument occurrences="2">
-      <code>$this-&gt;em</code>
-      <code>$this-&gt;em</code>
-    </PossiblyNullArgument>
-    <PossiblyNullReference occurrences="8">
-      <code>getAllClassNames</code>
-      <code>getConfiguration</code>
-      <code>getConfiguration</code>
-      <code>getConfiguration</code>
-      <code>getConnection</code>
-      <code>hasListeners</code>
-      <code>hasListeners</code>
-      <code>loadMetadataForClass</code>
-    </PossiblyNullReference>
-    <RedundantCondition occurrences="2">
-      <code>$parent-&gt;generatorType</code>
-      <code>$parent-&gt;idGenerator</code>
-    </RedundantCondition>
-  </file>
-  <file src="lib/Doctrine/ORM/Mapping/ClassMetadata.php">
     <DeprecatedProperty occurrences="4">
       <code>$this-&gt;columnNames</code>
       <code>$this-&gt;columnNames</code>
@@ -479,6 +437,42 @@
       <code>! $this-&gt;table</code>
       <code>$this-&gt;table</code>
     </TypeDoesNotContainType>
+  </file>
+  <file src="lib/Doctrine/ORM/Mapping/ClassMetadataFactory.php">
+    <ArgumentTypeCoercion occurrences="2">
+      <code>$nonSuperclassParents</code>
+      <code>new $definition['class']()</code>
+    </ArgumentTypeCoercion>
+    <InvalidArrayOffset occurrences="1">
+      <code>$subClass-&gt;table[$indexType][$indexName]</code>
+    </InvalidArrayOffset>
+    <InvalidPropertyAssignmentValue occurrences="1">
+      <code>$subClass-&gt;table</code>
+    </InvalidPropertyAssignmentValue>
+    <PossiblyInvalidArrayAssignment occurrences="1">
+      <code>$subClass-&gt;table[$indexType][$indexName]</code>
+    </PossiblyInvalidArrayAssignment>
+    <PossiblyInvalidIterator occurrences="1">
+      <code>$parentClass-&gt;table[$indexType]</code>
+    </PossiblyInvalidIterator>
+    <PossiblyNullArgument occurrences="2">
+      <code>$this-&gt;em</code>
+      <code>$this-&gt;em</code>
+    </PossiblyNullArgument>
+    <PossiblyNullReference occurrences="8">
+      <code>getAllClassNames</code>
+      <code>getConfiguration</code>
+      <code>getConfiguration</code>
+      <code>getConfiguration</code>
+      <code>getConnection</code>
+      <code>hasListeners</code>
+      <code>hasListeners</code>
+      <code>loadMetadataForClass</code>
+    </PossiblyNullReference>
+    <RedundantCondition occurrences="2">
+      <code>$parent-&gt;generatorType</code>
+      <code>$parent-&gt;idGenerator</code>
+    </RedundantCondition>
   </file>
   <file src="lib/Doctrine/ORM/Mapping/DefaultEntityListenerResolver.php">
     <InvalidStringClass occurrences="1">
@@ -1346,10 +1340,9 @@
       <code>$this-&gt;conn-&gt;quote((string) $newValue)</code>
       <code>is_string($expression)</code>
     </DocblockTypeContradiction>
-    <InvalidArgument occurrences="3">
+    <InvalidArgument occurrences="2">
       <code>$assoc</code>
       <code>$join-&gt;conditionalExpression</code>
-      <code>$selectedClass['class']-&gt;name</code>
     </InvalidArgument>
     <PossiblyInvalidArgument occurrences="1">
       <code>$expr</code>
@@ -1555,9 +1548,6 @@
       <code>$selectStatement-&gt;whereClause-&gt;conditionalExpression instanceof ConditionalFactor</code>
       <code>$selectStatement-&gt;whereClause-&gt;conditionalExpression instanceof ConditionalPrimary</code>
     </DocblockTypeContradiction>
-    <MissingClosureReturnType occurrences="1">
-      <code>static function ($id) use ($connection, $type) {</code>
-    </MissingClosureReturnType>
     <PossiblyInvalidPropertyAssignmentValue occurrences="1">
       <code>$selectStatement-&gt;whereClause-&gt;conditionalExpression</code>
     </PossiblyInvalidPropertyAssignmentValue>

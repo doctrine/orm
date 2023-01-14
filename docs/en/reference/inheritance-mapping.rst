@@ -77,7 +77,7 @@ like this (this is for SQLite):
 
 .. code-block:: sql
 
-    CREATE TABLE EntitySubClass (mapped1 INTEGER NOT NULL, mapped2 TEXT NOT NULL, id INTEGER NOT NULL, name TEXT NOT NULL, related1_id INTEGER DEFAULT NULL, PRIMARY KEY(id))
+    CREATE TABLE Employee (mapped1 INTEGER NOT NULL, mapped2 TEXT NOT NULL, id INTEGER NOT NULL, name TEXT NOT NULL, toothbrush_id INTEGER DEFAULT NULL, PRIMARY KEY(id))
 
 As you can see from this DDL snippet, there is only a single table
 for the entity subclass. All the mappings from the mapped

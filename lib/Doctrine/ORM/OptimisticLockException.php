@@ -16,8 +16,8 @@ use Throwable;
 class OptimisticLockException extends Exception implements ORMException
 {
     /**
-     * @param string      $msg
-     * @param object|null $entity
+     * @param string             $msg
+     * @param object|string|null $entity
      */
     public function __construct($msg, private $entity, Throwable|null $previous = null)
     {
@@ -27,7 +27,7 @@ class OptimisticLockException extends Exception implements ORMException
     /**
      * Gets the entity that caused the exception.
      *
-     * @return object|null
+     * @return object|string|null
      */
     public function getEntity()
     {
@@ -35,7 +35,7 @@ class OptimisticLockException extends Exception implements ORMException
     }
 
     /**
-     * @param object $entity
+     * @param object|class-string $entity
      *
      * @return OptimisticLockException
      */
@@ -45,9 +45,9 @@ class OptimisticLockException extends Exception implements ORMException
     }
 
     /**
-     * @param object                $entity
-     * @param int|DateTimeInterface $expectedLockVersion
-     * @param int|DateTimeInterface $actualLockVersion
+     * @param object                       $entity
+     * @param int|string|DateTimeInterface $expectedLockVersion
+     * @param int|string|DateTimeInterface $actualLockVersion
      *
      * @return OptimisticLockException
      */
