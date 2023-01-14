@@ -41,7 +41,7 @@
     "require-dev": {
         "doctrine/annotations": "^1.13 || ^2",
         "doctrine/coding-standard": "^9.0.2 || ^11.0",
-        "phpbench/phpbench": "^0.16.10 || ^1.0 || dev-master",
+        "phpbench/phpbench": "^0.16.10 || ^1.0",
         "phpstan/phpstan": "~1.4.10 || 1.9.8",
         "phpunit/phpunit": "^7.5 || ^8.5 || ^9.5",
         "psr/log": "^1 || ^2 || ^3",
