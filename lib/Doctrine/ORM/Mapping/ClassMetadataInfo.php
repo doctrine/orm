@@ -90,7 +90,9 @@ use const PHP_VERSION_ID;
  *      requireSQLConversion?: bool,
  *      declared?: class-string,
  *      declaredField?: string,
- *      options?: array<string, mixed>
+ *      options?: array<string, mixed>,
+ *      version?: string,
+ *      default?: string|int,
  * }
  * @psalm-type JoinColumnData = array{
  *     name: string,

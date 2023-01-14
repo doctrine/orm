@@ -2694,9 +2694,6 @@
     <DeprecatedClass occurrences="1">
       <code>AbstractExporter</code>
     </DeprecatedClass>
-    <InvalidArrayOffset occurrences="1">
-      <code>$field['version']</code>
-    </InvalidArrayOffset>
     <NonInvariantDocblockPropertyType occurrences="1">
       <code>$_extension</code>
     </NonInvariantDocblockPropertyType>

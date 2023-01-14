@@ -576,11 +576,6 @@ parameters:
 			path: lib/Doctrine/ORM/Tools/Export/Driver/XmlExporter.php
 
 		-
-			message: "#^Offset 'version' on array\\{type\\: string, fieldName\\: string, columnName\\: string, length\\?\\: int, id\\?\\: bool, nullable\\?\\: bool, notInsertable\\?\\: bool, notUpdatable\\?\\: bool, \\.\\.\\.\\} in isset\\(\\) does not exist\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Tools/Export/Driver/XmlExporter.php
-
-		-
 			message: "#^Parameter \\#1 \\$policy of method Doctrine\\\\ORM\\\\Tools\\\\Export\\\\Driver\\\\AbstractExporter\\:\\:_getChangeTrackingPolicyString\\(\\) expects 1\\|2\\|3, int given\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Tools/Export/Driver/XmlExporter.php
