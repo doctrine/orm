@@ -136,18 +136,17 @@ ORM:
 Using Traits in Entity Classes
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-There is no real "official" statement whether or to which extent traits
-are supported in entity or mapped superclasses.
+The use of traits in entity or mapped superclasses, at least when they
+include mapping configuration or mapped fields, is currently not
+endorsed by the Doctrine project. The reasons for this are as follows.
 
 Traits were added in PHP 5.4 more than 10 years ago, but at the same time
 more than two years after the initial Doctrine 2 release and the time where
 core components were designed.
 
 In fact, this documentation mentions traits only in the context of
-:doc:`overriding field association mappings in subclasses <tutorials/override-field-association-mappings-in-subclasses>`. Also, the
-tests in the ORM codebase (as of writing) cover traits only in two (!) places,
-namely the aforementioned override and in an edge-case for a tool that will be
-removed in Doctrine 3.0.
+:doc:`overriding field association mappings in subclasses <tutorials/override-field-association-mappings-in-subclasses>`.
+Coverage of traits in test cases is practically nonexistent.
 
 Thus, you should at least be aware that when using traits in your entity and
 mapped superclasses, you will be in uncharted terrain.
@@ -166,9 +165,12 @@ rely on PHP reflection to inspect class properties including their docblocks.
 As long as the results are consistent with what a solution _without_ traits would
 have produced, this is probably fine.
 
-However, to mention known limitations, it is currently not possible to use "class" level
-`annotations <https://github.com/doctrine/orm/pull/1517>` or `attributes <https://github.com/doctrine/orm/issues/8868>` on traits, and attempts to improve parser support
-for traits as `here <https://github.com/doctrine/annotations/pull/102>` or `there <https://github.com/doctrine/annotations/pull/63>` have been abandoned.
+However, to mention known limitations, it is currently not possible to use "class"
+level `annotations <https://github.com/doctrine/orm/pull/1517>` or
+`attributes <https://github.com/doctrine/orm/issues/8868>` on traits, and attempts to
+improve parser support for traits as `here <https://github.com/doctrine/annotations/pull/102>`
+or `there <https://github.com/doctrine/annotations/pull/63>` have been abandoned
+due to complexity.
 
 XML mapping configuration probably needs to completely re-configure or otherwise
 copy-and-paste configuration for fields used from traits.
