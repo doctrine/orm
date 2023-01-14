@@ -2216,12 +2216,11 @@
     <ImplicitToStringCast occurrences="1">
       <code>$expr</code>
     </ImplicitToStringCast>
-    <InvalidArgument occurrences="5">
+    <InvalidArgument occurrences="4">
       <code>$assoc</code>
       <code>$condExpr</code>
       <code>$condTerm</code>
       <code>$factor</code>
-      <code>$selectedClass['class']-&gt;name</code>
     </InvalidArgument>
     <InvalidNullableReturnType occurrences="1">
       <code>string</code>
