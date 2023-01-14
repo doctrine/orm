@@ -310,10 +310,6 @@ parameters:
 			count: 2
 			path: lib/Doctrine/ORM/Query/SqlWalker.php
 
-		-
-			message: "#^Parameter \\#1 \\$entity of static method Doctrine\\\\ORM\\\\OptimisticLockException\\:\\:lockFailed\\(\\) expects object, class\\-string\\<object\\> given\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Query/SqlWalker.php
 
 		-
 			message: "#^Parameter \\#3 \\$condExpr of method Doctrine\\\\ORM\\\\Query\\\\SqlWalker\\:\\:walkJoinAssociationDeclaration\\(\\) expects Doctrine\\\\ORM\\\\Query\\\\AST\\\\ConditionalPrimary\\|null, Doctrine\\\\ORM\\\\Query\\\\AST\\\\ConditionalExpression\\|null given\\.$#"

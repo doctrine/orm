@@ -94,6 +94,25 @@ classes, and non-entity classes may extend entity classes.
     never calls entity constructors, thus you are free to use them as
     you wish and even have it require arguments of any type.
 
+Mapped Superclasses
+~~~~~~~~~~~~~~~~~~~
+
+A mapped superclass is an abstract or concrete class that provides
+persistent entity state and mapping information for its subclasses,
+but which is not itself an entity.
+
+Mapped superclasses are explained in greater detail in the chapter
+on :doc:`inheritance mapping <reference/inheritance-mapping>`.
+
+Transient Classes
+~~~~~~~~~~~~~~~~~
+
+The term "transient class" appears in some places in the mapping
+drivers as well as the code dealing with metadata handling.
+
+A transient class is a class that is neither an entity nor a mapped
+superclass. From the ORM's point of view, these classes can be
+completely ignored, and no class metadata is loaded for them at all.
 
 Entity states
 ~~~~~~~~~~~~~
