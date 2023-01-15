@@ -1582,9 +1582,9 @@ class ClassMetadataInfo implements ClassMetadata
     /**
      * Validates & completes the given field mapping based on typed property.
      *
-     * @param  array{fieldName: string, type?: mixed} $mapping The field mapping to validate & complete.
+     * @param  array{fieldName: string, type?: string} $mapping The field mapping to validate & complete.
      *
-     * @return array{fieldName: string, enumType?: string, type?: mixed} The updated mapping.
+     * @return array{fieldName: string, enumType?: class-string<BackedEnum>, type?: string} The updated mapping.
      */
     private function validateAndCompleteTypedFieldMapping(array $mapping): array
     {
