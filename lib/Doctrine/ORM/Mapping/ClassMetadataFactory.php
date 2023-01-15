@@ -285,6 +285,8 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
         } elseif ($class->isMappedSuperclass && $class->name === $class->rootEntityName && (count($class->discriminatorMap) || $class->discriminatorColumn)) {
             // second condition is necessary for mapped superclasses in the middle of an inheritance hierarchy
             throw MappingException::noInheritanceOnMappedSuperClass($class->name);
+        } else if ($class->name !== $class->rootEntityName && $class->isInheritanceTypeNone()) {
+            throw MappingException::inheritanceUsedButNotDeclared($class->name, $class->rootEntityName);
         }
     }
 

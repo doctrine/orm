@@ -767,6 +767,13 @@ class MappingException extends ORMException
         );
     }
 
+    public static function inheritanceUsedButNotDeclared(string $className, string $rootClassName): self
+    {
+        return new self(
+            "Entity '" . $className . "' inherits from '" . $rootClassName . "', but this root entity does not declare any inheritance mapping type."
+        );
+    }
+
     /**
      * @param string $className
      * @param string $methodName
