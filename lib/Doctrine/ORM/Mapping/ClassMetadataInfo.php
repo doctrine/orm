@@ -1630,7 +1630,7 @@ class ClassMetadataInfo implements ClassMetadata
      *     enumType?: class-string,
      * } $mapping The field mapping to validate & complete.
      *
-     * @return mixed[] The updated mapping.
+     * @return FieldMapping The updated mapping.
      *
      * @throws MappingException
      */
