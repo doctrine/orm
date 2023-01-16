@@ -45,8 +45,7 @@ in scenarios where data is loaded for read-only purposes.
 Read-Only Entities
 ------------------
 
-You can mark entities as read only (See metadata mapping
-references for details).
+You can mark entities as read only. For details, see :ref:`attrref_entity`
 
 This means that the entity marked as read only is never considered for updates.
 During flush on the EntityManager these entities are skipped even if properties
@@ -54,8 +53,6 @@ changed.
 
 Read-Only allows to persist new entities of a kind and remove existing ones,
 they are just not considered for updates.
-
-See :ref:`annref_entity`
 
 You can also explicitly mark individual entities read only directly on the
 UnitOfWork via a call to ``markReadOnly()``:
