@@ -626,7 +626,7 @@ parameters:
 			path: lib/Doctrine/ORM/Tools/SchemaTool.php
 
 		-
-			message: "#^Parameter \\#3 \\$changeSet of class Doctrine\\\\ORM\\\\Event\\\\PreUpdateEventArgs constructor is passed by reference, so it expects variables only$#"
+			message: "#^Parameter \\#3 \\$changeSet of class Doctrine\\\\ORM\\\\Event\\\\AbstractUpdateEventArgs constructor is passed by reference, so it expects variables only$#"
 			count: 1
 			path: lib/Doctrine/ORM/UnitOfWork.php
 
