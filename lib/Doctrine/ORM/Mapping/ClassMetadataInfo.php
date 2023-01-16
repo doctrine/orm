@@ -406,6 +406,22 @@ class ClassMetadataInfo implements ClassMetadata
     /**
      * READ-ONLY: The names of all embedded classes based on properties.
      *
+     * The value (definition) array may contain, among others, the following values:
+     *
+     * - <b>'inherited'</b> (string, optional)
+     * This is set when this embedded-class field is inherited by this class from another (inheritance) parent
+     * <em>entity</em> class. The value is the FQCN of the topmost entity class that contains
+     * mapping information for this field. (If there are transient classes in the
+     * class hierarchy, these are ignored, so the class property may in fact come
+     * from a class further up in the PHP class hierarchy.)
+     * Fields initially declared in mapped superclasses are
+     * <em>not</em> considered 'inherited' in the nearest entity subclasses.
+     *
+     * - <b>'declared'</b> (string, optional)
+     * This is set when the embedded-class field does not appear for the first time in this class, but is originally
+     * declared in another parent <em>entity or mapped superclass</em>. The value is the FQCN
+     * of the topmost non-transient class that contains mapping information for this field.
+     *
      * @psalm-var array<string, mixed[]>
      */
     public $embeddedClasses = [];
@@ -523,6 +539,20 @@ class ClassMetadataInfo implements ClassMetadata
      * - <b>'unique'</b> (string, optional, schema-only)
      * Whether a unique constraint should be generated for the column.
      *
+     * - <b>'inherited'</b> (string, optional)
+     * This is set when the field is inherited by this class from another (inheritance) parent
+     * <em>entity</em> class. The value is the FQCN of the topmost entity class that contains
+     * mapping information for this field. (If there are transient classes in the
+     * class hierarchy, these are ignored, so the class property may in fact come
+     * from a class further up in the PHP class hierarchy.)
+     * Fields initially declared in mapped superclasses are
+     * <em>not</em> considered 'inherited' in the nearest entity subclasses.
+     *
+     * - <b>'declared'</b> (string, optional)
+     * This is set when the field does not appear for the first time in this class, but is originally
+     * declared in another parent <em>entity or mapped superclass</em>. The value is the FQCN
+     * of the topmost non-transient class that contains mapping information for this field.
+     *
      * @var mixed[]
      * @psalm-var array<string, FieldMapping>
      */
@@ -625,6 +655,11 @@ class ClassMetadataInfo implements ClassMetadata
      * - <b>fieldName</b> (string)
      * The name of the field in the entity the association is mapped to.
      *
+     * - <b>sourceEntity</b> (string)
+     * The class name of the source entity. In the case of to-many associations initially
+     * present in mapped superclasses, the nearest <em>entity</em> subclasses will be
+     * considered the respective source entities.
+     *
      * - <b>targetEntity</b> (string)
      * The class name of the target entity. If it is fully-qualified it is used as is.
      * If it is a simple, unqualified class name the namespace is assumed to be the same
@@ -660,6 +695,20 @@ class ClassMetadataInfo implements ClassMetadata
      * Specification of a field on target-entity that is used to index the collection by.
      * This field HAS to be either the primary key or a unique column. Otherwise the collection
      * does not contain all the entities that are actually related.
+     *
+     * - <b>'inherited'</b> (string, optional)
+     * This is set when the association is inherited by this class from another (inheritance) parent
+     * <em>entity</em> class. The value is the FQCN of the topmost entity class that contains
+     * this association. (If there are transient classes in the
+     * class hierarchy, these are ignored, so the class property may in fact come
+     * from a class further up in the PHP class hierarchy.)
+     * To-many associations initially declared in mapped superclasses are
+     * <em>not</em> considered 'inherited' in the nearest entity subclasses.
+     *
+     * - <b>'declared'</b> (string, optional)
+     * This is set when the association does not appear in the current class for the first time, but
+     * is initially declared in another parent <em>entity or mapped superclass</em>. The value is the FQCN
+     * of the topmost non-transient class that contains association information for this relationship.
      *
      * A join table definition has the following structure:
      * <pre>

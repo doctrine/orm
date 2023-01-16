@@ -18,6 +18,7 @@ use Doctrine\ORM\UnitOfWork;
 use Doctrine\ORM\Utility\IdentifierFlattener;
 use Doctrine\Persistence\Mapping\ClassMetadata;
 use Doctrine\Persistence\Proxy;
+use ReflectionProperty;
 use Symfony\Component\VarExporter\ProxyHelper;
 use Symfony\Component\VarExporter\VarExporter;
 
@@ -313,17 +314,24 @@ EOPHP;
     {
         $skippedProperties = ['__isCloning' => true];
         $identifiers       = array_flip($class->getIdentifierFieldNames());
+        $filter            = ReflectionProperty::IS_PUBLIC | ReflectionProperty::IS_PROTECTED | ReflectionProperty::IS_PRIVATE;
+        $reflector         = $class->getReflectionClass();
 
-        foreach ($class->getReflectionClass()->getProperties() as $property) {
-            $name = $property->getName();
+        while ($reflector) {
+            foreach ($reflector->getProperties($filter) as $property) {
+                $name = $property->getName();
 
-            if ($property->isStatic() || (($class->hasField($name) || $class->hasAssociation($name)) && ! isset($identifiers[$name]))) {
-                continue;
+                if ($property->isStatic() || (($class->hasField($name) || $class->hasAssociation($name)) && ! isset($identifiers[$name]))) {
+                    continue;
+                }
+
+                $prefix = $property->isPrivate() ? "\0" . $property->getDeclaringClass()->getName() . "\0" : ($property->isProtected() ? "\0*\0" : '');
+
+                $skippedProperties[$prefix . $name] = true;
             }
 
-            $prefix = $property->isPrivate() ? "\0" . $property->getDeclaringClass()->getName() . "\0" : ($property->isProtected() ? "\0*\0" : '');
-
-            $skippedProperties[$prefix . $name] = true;
+            $filter    = ReflectionProperty::IS_PRIVATE;
+            $reflector = $reflector->getParentClass();
         }
 
         uksort($skippedProperties, 'strnatcmp');
