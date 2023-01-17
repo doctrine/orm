@@ -85,9 +85,12 @@ use function trim;
  *      originalClass?: class-string,
  *      originalField?: string,
  *      quoted?: bool,
+ *      requireSQLConversion?: bool,
  *      declared?: class-string,
  *      declaredField?: string,
- *      options?: array<string, mixed>
+ *      options?: array<string, mixed>,
+ *      version?: string,
+ *      default?: string|int,
  * }
  * @psalm-type JoinColumnData = array{
  *     name: string,
@@ -371,6 +374,22 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
     /**
      * READ-ONLY: The names of all embedded classes based on properties.
      *
+     * The value (definition) array may contain, among others, the following values:
+     *
+     * - <b>'inherited'</b> (string, optional)
+     * This is set when this embedded-class field is inherited by this class from another (inheritance) parent
+     * <em>entity</em> class. The value is the FQCN of the topmost entity class that contains
+     * mapping information for this field. (If there are transient classes in the
+     * class hierarchy, these are ignored, so the class property may in fact come
+     * from a class further up in the PHP class hierarchy.)
+     * Fields initially declared in mapped superclasses are
+     * <em>not</em> considered 'inherited' in the nearest entity subclasses.
+     *
+     * - <b>'declared'</b> (string, optional)
+     * This is set when the embedded-class field does not appear for the first time in this class, but is originally
+     * declared in another parent <em>entity or mapped superclass</em>. The value is the FQCN
+     * of the topmost non-transient class that contains mapping information for this field.
+     *
      * @psalm-var array<string, mixed[]>
      */
     public array $embeddedClasses = [];
@@ -441,6 +460,20 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
      *
      * - <b>'unique'</b> (string, optional, schema-only)
      * Whether a unique constraint should be generated for the column.
+     *
+     * - <b>'inherited'</b> (string, optional)
+     * This is set when the field is inherited by this class from another (inheritance) parent
+     * <em>entity</em> class. The value is the FQCN of the topmost entity class that contains
+     * mapping information for this field. (If there are transient classes in the
+     * class hierarchy, these are ignored, so the class property may in fact come
+     * from a class further up in the PHP class hierarchy.)
+     * Fields initially declared in mapped superclasses are
+     * <em>not</em> considered 'inherited' in the nearest entity subclasses.
+     *
+     * - <b>'declared'</b> (string, optional)
+     * This is set when the field does not appear for the first time in this class, but is originally
+     * declared in another parent <em>entity or mapped superclass</em>. The value is the FQCN
+     * of the topmost non-transient class that contains mapping information for this field.
      *
      * @var mixed[]
      * @psalm-var array<string, FieldMapping>
@@ -542,6 +575,11 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
      * - <b>fieldName</b> (string)
      * The name of the field in the entity the association is mapped to.
      *
+     * - <b>sourceEntity</b> (string)
+     * The class name of the source entity. In the case of to-many associations initially
+     * present in mapped superclasses, the nearest <em>entity</em> subclasses will be
+     * considered the respective source entities.
+     *
      * - <b>targetEntity</b> (string)
      * The class name of the target entity. If it is fully-qualified it is used as is.
      * If it is a simple, unqualified class name the namespace is assumed to be the same
@@ -577,6 +615,20 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
      * Specification of a field on target-entity that is used to index the collection by.
      * This field HAS to be either the primary key or a unique column. Otherwise the collection
      * does not contain all the entities that are actually related.
+     *
+     * - <b>'inherited'</b> (string, optional)
+     * This is set when the association is inherited by this class from another (inheritance) parent
+     * <em>entity</em> class. The value is the FQCN of the topmost entity class that contains
+     * this association. (If there are transient classes in the
+     * class hierarchy, these are ignored, so the class property may in fact come
+     * from a class further up in the PHP class hierarchy.)
+     * To-many associations initially declared in mapped superclasses are
+     * <em>not</em> considered 'inherited' in the nearest entity subclasses.
+     *
+     * - <b>'declared'</b> (string, optional)
+     * This is set when the association does not appear in the current class for the first time, but
+     * is initially declared in another parent <em>entity or mapped superclass</em>. The value is the FQCN
+     * of the topmost non-transient class that contains association information for this relationship.
      *
      * A join table definition has the following structure:
      * <pre>
@@ -1276,9 +1328,9 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
     /**
      * Validates & completes the given field mapping based on typed property.
      *
-     * @param  array{fieldName: string, type?: mixed} $mapping The field mapping to validate & complete.
+     * @param  array{fieldName: string, type?: string} $mapping The field mapping to validate & complete.
      *
-     * @return array{fieldName: string, enumType?: string, type?: mixed} The updated mapping.
+     * @return array{fieldName: string, enumType?: class-string<BackedEnum>, type?: string} The updated mapping.
      */
     private function validateAndCompleteTypedFieldMapping(array $mapping): array
     {
@@ -1322,7 +1374,7 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
      *     enumType?: class-string,
      * } $mapping The field mapping to validate & complete.
      *
-     * @return mixed[] The updated mapping.
+     * @return FieldMapping The updated mapping.
      *
      * @throws MappingException
      */

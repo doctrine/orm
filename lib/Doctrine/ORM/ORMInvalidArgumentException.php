@@ -19,6 +19,8 @@ use function sprintf;
 
 /**
  * Contains exception messages for all invalid lifecycle state exceptions inside UnitOfWork
+ *
+ * @psalm-import-type AssociationMapping from ClassMetadata
  */
 class ORMInvalidArgumentException extends InvalidArgumentException
 {
@@ -106,7 +108,7 @@ class ORMInvalidArgumentException extends InvalidArgumentException
 
     /**
      * @param object $entry
-     * @psalm-param array<string, string> $associationMapping
+     * @psalm-param AssociationMapping $associationMapping
      *
      * @return ORMInvalidArgumentException
      */
@@ -232,7 +234,7 @@ EXCEPTION
         return $obj instanceof Stringable ? (string) $obj : get_debug_type($obj) . '@' . spl_object_id($obj);
     }
 
-    /** @psalm-param array<string,string> $associationMapping */
+    /** @psalm-param AssociationMapping $associationMapping */
     private static function newEntityFoundThroughRelationshipMessage(array $associationMapping, object $entity): string
     {
         return 'A new entity was found through the relationship \''

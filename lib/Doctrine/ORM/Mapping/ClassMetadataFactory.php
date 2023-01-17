@@ -323,19 +323,29 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     }
 
     /**
+     * Puts the `inherited` and `declared` values into mapping information for fields, associations
+     * and embedded classes.
+     *
+     * @param mixed[] $mapping
+     */
+    private function addMappingInheritanceInformation(array &$mapping, ClassMetadata $parentClass): void
+    {
+        if (! isset($mapping['inherited']) && ! $parentClass->isMappedSuperclass) {
+            $mapping['inherited'] = $parentClass->name;
+        }
+
+        if (! isset($mapping['declared'])) {
+            $mapping['declared'] = $parentClass->name;
+        }
+    }
+
+    /**
      * Adds inherited fields to the subclass mapping.
      */
     private function addInheritedFields(ClassMetadata $subClass, ClassMetadata $parentClass): void
     {
         foreach ($parentClass->fieldMappings as $mapping) {
-            if (! isset($mapping['inherited']) && ! $parentClass->isMappedSuperclass) {
-                $mapping['inherited'] = $parentClass->name;
-            }
-
-            if (! isset($mapping['declared'])) {
-                $mapping['declared'] = $parentClass->name;
-            }
-
+            $this->addMappingInheritanceInformation($mapping, $parentClass);
             $subClass->addInheritedFieldMapping($mapping);
         }
 
@@ -360,15 +370,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
                 $mapping['sourceEntity'] = $subClass->name;
             }
 
-            //$subclassMapping = $mapping;
-            if (! isset($mapping['inherited']) && ! $parentClass->isMappedSuperclass) {
-                $mapping['inherited'] = $parentClass->name;
-            }
-
-            if (! isset($mapping['declared'])) {
-                $mapping['declared'] = $parentClass->name;
-            }
-
+            $this->addMappingInheritanceInformation($mapping, $parentClass);
             $subClass->addInheritedAssociationMapping($mapping);
         }
     }
@@ -376,14 +378,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     private function addInheritedEmbeddedClasses(ClassMetadata $subClass, ClassMetadata $parentClass): void
     {
         foreach ($parentClass->embeddedClasses as $field => $embeddedClass) {
-            if (! isset($embeddedClass['inherited']) && ! $parentClass->isMappedSuperclass) {
-                $embeddedClass['inherited'] = $parentClass->name;
-            }
-
-            if (! isset($embeddedClass['declared'])) {
-                $embeddedClass['declared'] = $parentClass->name;
-            }
-
+            $this->addMappingInheritanceInformation($embeddedClass, $parentClass);
             $subClass->embeddedClasses[$field] = $embeddedClass;
         }
     }
