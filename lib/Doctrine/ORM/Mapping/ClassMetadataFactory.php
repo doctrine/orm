@@ -47,7 +47,6 @@ use function substr;
  * @extends AbstractClassMetadataFactory<ClassMetadata>
  * @psalm-import-type AssociationMapping from ClassMetadata
  * @psalm-import-type EmbeddedClassMapping from ClassMetadata
- * @psalm-import-type FieldMapping from ClassMetadata
  */
 class ClassMetadataFactory extends AbstractClassMetadataFactory
 {
@@ -388,7 +387,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
      *
      * @param AssociationMapping|EmbeddedClassMapping|FieldMapping $mapping
      */
-    private function addMappingInheritanceInformation(array &$mapping, ClassMetadata $parentClass): void
+    private function addMappingInheritanceInformation(array|FieldMapping &$mapping, ClassMetadata $parentClass): void
     {
         if (! isset($mapping['inherited']) && ! $parentClass->isMappedSuperclass) {
             $mapping['inherited'] = $parentClass->name;
@@ -405,8 +404,9 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     private function addInheritedFields(ClassMetadata $subClass, ClassMetadata $parentClass): void
     {
         foreach ($parentClass->fieldMappings as $mapping) {
-            $this->addMappingInheritanceInformation($mapping, $parentClass);
-            $subClass->addInheritedFieldMapping($mapping);
+            $subClassMapping = clone $mapping;
+            $this->addMappingInheritanceInformation($subClassMapping, $parentClass);
+            $subClass->addInheritedFieldMapping($subClassMapping);
         }
 
         foreach ($parentClass->reflFields as $name => $field) {

@@ -8,6 +8,7 @@ use Doctrine\ORM\Mapping\Builder\ClassMetadataBuilder;
 use Doctrine\ORM\Mapping\Builder\EmbeddedBuilder;
 use Doctrine\ORM\Mapping\Builder\FieldBuilder;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\FieldMapping;
 use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\Persistence\Mapping\RuntimeReflectionService;
 use Doctrine\Tests\Models\CMS\CmsGroup;
@@ -212,7 +213,10 @@ class ClassMetadataBuilderTest extends OrmTestCase
     public function testAddField(): void
     {
         $this->assertIsFluent($this->builder->addField('name', 'string'));
-        self::assertEquals(['columnName' => 'name', 'fieldName' => 'name', 'type' => 'string'], $this->cm->fieldMappings['name']);
+        $mapping = $this->cm->getFieldMapping('name');
+        self::assertSame('name', $mapping['fieldName']);
+        self::assertSame('name', $mapping['columnName']);
+        self::assertSame('string', $mapping['type']);
     }
 
     public function testCreateField(): void
@@ -222,14 +226,17 @@ class ClassMetadataBuilderTest extends OrmTestCase
 
         self::assertFalse(isset($this->cm->fieldMappings['name']));
         $this->assertIsFluent($fieldBuilder->build());
-        self::assertEquals(['columnName' => 'name', 'fieldName' => 'name', 'type' => 'string'], $this->cm->fieldMappings['name']);
+        $mapping = $this->cm->getFieldMapping('name');
+        self::assertSame('name', $mapping['fieldName']);
+        self::assertSame('name', $mapping['columnName']);
+        self::assertSame('string', $mapping['type']);
     }
 
     public function testCreateVersionedField(): void
     {
         $this->builder->createField('name', 'integer')->columnName('username')->length(124)->nullable()->columnDefinition('foobar')->unique()->isVersionField()->build();
         self::assertEquals(
-            [
+            FieldMapping::fromMappingArray([
                 'columnDefinition' => 'foobar',
                 'columnName' => 'username',
                 'default' => 1,
@@ -238,7 +245,7 @@ class ClassMetadataBuilderTest extends OrmTestCase
                 'type' => 'integer',
                 'nullable' => true,
                 'unique' => true,
-            ],
+            ]),
             $this->cm->fieldMappings['name'],
         );
     }
@@ -248,17 +255,18 @@ class ClassMetadataBuilderTest extends OrmTestCase
         $this->builder->createField('id', 'integer')->makePrimaryKey()->generatedValue()->build();
 
         self::assertEquals(['id'], $this->cm->identifier);
-        self::assertEquals(['columnName' => 'id', 'fieldName' => 'id', 'id' => true, 'type' => 'integer'], $this->cm->fieldMappings['id']);
+        self::assertEquals(FieldMapping::fromMappingArray(
+            ['columnName' => 'id', 'fieldName' => 'id', 'id' => true, 'type' => 'integer'],
+        ), $this->cm->fieldMappings['id']);
     }
 
     public function testCreateUnsignedOptionField(): void
     {
         $this->builder->createField('state', 'integer')->option('unsigned', true)->build();
 
-        self::assertEquals(
+        self::assertEquals(FieldMapping::fromMappingArray(
             ['fieldName' => 'state', 'type' => 'integer', 'options' => ['unsigned' => true], 'columnName' => 'state'],
-            $this->cm->fieldMappings['state'],
-        );
+        ), $this->cm->fieldMappings['state']);
     }
 
     public function testAddLifecycleEvent(): void

@@ -331,6 +331,7 @@
     <InvalidArgument>
       <code>$mapping</code>
       <code>$mapping</code>
+      <code>$mapping</code>
       <code>$overrideMapping</code>
     </InvalidArgument>
     <InvalidNullableReturnType>
@@ -343,11 +344,9 @@
     </InvalidPropertyAssignmentValue>
     <InvalidReturnStatement>
       <code>$mapping</code>
-      <code>$mapping</code>
     </InvalidReturnStatement>
     <InvalidReturnType>
       <code>AssociationMapping</code>
-      <code>FieldMapping</code>
     </InvalidReturnType>
     <LessSpecificReturnStatement>
       <code>$cache</code>
@@ -388,9 +387,6 @@
       <code>setValue</code>
     </PossiblyNullReference>
     <PossiblyUndefinedArrayOffset>
-      <code><![CDATA[$mapping['fieldName']]]></code>
-      <code><![CDATA[$mapping['originalClass']]]></code>
-      <code><![CDATA[$mapping['originalField']]]></code>
       <code><![CDATA[$mapping['targetEntity']]]></code>
       <code><![CDATA[$table['name']]]></code>
       <code><![CDATA[$this->associationMappings[$assocName]['joinColumns']]]></code>
@@ -1579,8 +1575,6 @@
     <PossiblyUndefinedArrayOffset>
       <code><![CDATA[$assoc['joinColumns']]]></code>
       <code><![CDATA[$class->getAssociationMapping($fieldName)['joinColumns']]]></code>
-      <code><![CDATA[$fieldMapping['precision']]]></code>
-      <code><![CDATA[$fieldMapping['scale']]]></code>
       <code><![CDATA[$idMapping['joinColumns']]]></code>
       <code><![CDATA[$mapping['joinColumns']]]></code>
       <code><![CDATA[$mapping['joinTable']]]></code>
