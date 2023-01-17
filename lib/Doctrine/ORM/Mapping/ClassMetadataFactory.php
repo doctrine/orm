@@ -386,7 +386,6 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     /** @param class-string $className */
     private function peekIfIsMappedSuperclass(string $className): bool
     {
-        // TODO can we shortcut this for classes that have already been loaded? can that be the case at all?
         $reflService = $this->getReflectionService();
         $class       = $this->newClassMetadataInstance($className);
         $this->initializeReflection($class, $reflService);
