@@ -24,10 +24,44 @@ class OneToOneOrphanRemovalTest extends OrmFunctionalTestCase
     }
 
     /**
-     * User is the inverse side of the User <-> Address relationship
-     * By setting User::$address to "null"
+     * Unlink oneToOne mapped entity on the owning side making
+     * the inverse side become orphaned
      */
-    public function testInverseSideOrphanRemoval(): void
+    public function testOrphanRemovalWhenUnlinkingOwningSide(): void
+    {
+        $user           = new CmsUser();
+        $user->status   = 'dev';
+        $user->username = 'beberlei';
+        $user->name     = 'Benjamin Eberlei';
+
+        $email        = new CmsEmail();
+        $email->email = 'beberlei@domain.com';
+
+        $user->setEmail($email);
+
+        $this->_em->persist($user);
+        $this->_em->flush();
+
+        $userId = $user->getId();
+
+        $this->_em->clear();
+
+        $user = $this->_em->find(CmsUser::class, $userId);
+
+        $user->setEmail(null);
+
+        $this->_em->persist($user);
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $this->assertNoEntitiesExistInDB(CmsEmail::class, 'CmsEmail should be removed by orphanRemoval');
+    }
+
+    /**
+     * Unlink oneToOne mapped entity on the inverse side making
+     * the owning side become orphaned
+     */
+    public function testOrphanRemovalWhenUnlinkingInverseSide(): void
     {
         $user           = new CmsUser();
         $user->status   = 'dev';
@@ -59,7 +93,7 @@ class OneToOneOrphanRemovalTest extends OrmFunctionalTestCase
         $this->assertEntityNotExistsInDB(CmsAddress::class, $addressId, 'CmsAddress should be removed by orphanRemoval');
     }
 
-    public function testOwningSideOrphanRemoval(): void
+    public function testOrphanRemoval(): void
     {
         $user           = new CmsUser();
         $user->status   = 'dev';
@@ -92,36 +126,6 @@ class OneToOneOrphanRemovalTest extends OrmFunctionalTestCase
         $this->assertEquals(0, count($result), 'CmsUser should be removed by EntityManager');
 
         $this->assertNoEntitiesExistInDB(CmsEmail::class, 'CmsAddress should be removed by orphanRemoval');
-    }
-
-    public function testOrphanRemovalWhenUnlink(): void
-    {
-        $user           = new CmsUser();
-        $user->status   = 'dev';
-        $user->username = 'beberlei';
-        $user->name     = 'Benjamin Eberlei';
-
-        $email        = new CmsEmail();
-        $email->email = 'beberlei@domain.com';
-
-        $user->setEmail($email);
-
-        $this->_em->persist($user);
-        $this->_em->flush();
-
-        $userId = $user->getId();
-
-        $this->_em->clear();
-
-        $user = $this->_em->find(CmsUser::class, $userId);
-
-        $user->setEmail(null);
-
-        $this->_em->persist($user);
-        $this->_em->flush();
-        $this->_em->clear();
-
-        $this->assertNoEntitiesExistInDB(CmsEmail::class, 'CmsEmail should be removed by orphanRemoval');
     }
 
     private function assertEntityExistsInDB(string $modelClass, int $id, string $message): void
