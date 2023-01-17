@@ -23,7 +23,43 @@ class OneToOneOrphanRemovalTest extends OrmFunctionalTestCase
         parent::setUp();
     }
 
-    public function testOrphanRemoval(): void
+    /**
+     * User is the inverse side of the User <-> Address relationship
+     * By setting User::$address to "null"
+     */
+    public function testInverseSideOrphanRemoval(): void
+    {
+        $user           = new CmsUser();
+        $user->status   = 'dev';
+        $user->username = 'romanb';
+        $user->name     = 'Roman B.';
+
+        $address          = new CmsAddress();
+        $address->country = 'de';
+        $address->zip     = 1234;
+        $address->city    = 'Berlin';
+
+        $user->setAddress($address);
+
+        $this->_em->persist($user);
+        $this->_em->flush();
+
+        $userId = $user->getId();
+        $addressId = $address->getId();
+
+        $this->_em->clear();
+
+        $userReloaded = $this->_em->getRepository(CmsUser::class)->find($userId);
+        $this->assertInstanceOf(CmsUser::class, $userReloaded);
+        $this->assertEntityExistsInDB(CmsAddress::class, $addressId, 'CmsAddress should exist');
+
+        $userReloaded->setAddress(null);
+        $this->_em->flush();
+
+        $this->assertEntityNotExistsInDB(CmsAddress::class, $addressId, 'CmsAddress should be removed by orphanRemoval');
+    }
+
+    public function testOwningSideOrphanRemoval(): void
     {
         $user           = new CmsUser();
         $user->status   = 'dev';
@@ -55,10 +91,7 @@ class OneToOneOrphanRemovalTest extends OrmFunctionalTestCase
 
         $this->assertEquals(0, count($result), 'CmsUser should be removed by EntityManager');
 
-        $query  = $this->_em->createQuery('SELECT a FROM Doctrine\Tests\Models\CMS\CmsAddress a');
-        $result = $query->getResult();
-
-        $this->assertEquals(0, count($result), 'CmsAddress should be removed by orphanRemoval');
+        $this->assertNoEntitiesExistInDB(CmsEmail::class, 'CmsAddress should be removed by orphanRemoval');
     }
 
     public function testOrphanRemovalWhenUnlink(): void
@@ -88,9 +121,31 @@ class OneToOneOrphanRemovalTest extends OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $query  = $this->_em->createQuery('SELECT e FROM Doctrine\Tests\Models\CMS\CmsEmail e');
-        $result = $query->getResult();
+        $this->assertNoEntitiesExistInDB(CmsEmail::class, 'CmsEmail should be removed by orphanRemoval');
+    }
 
-        $this->assertEquals(0, count($result), 'CmsEmail should be removed by orphanRemoval');
+    private function assertEntityExistsInDB(string $modelClass, int $id, string $message): void
+    {
+        $this->assertCount(1, $this->getArrayResultByModelClassAndId($modelClass, $id), $message);
+    }
+
+    private function assertEntityNotExistsInDB(string $modelClass, int $id, string $message): void
+    {
+        $this->assertCount(0, $this->getArrayResultByModelClassAndId($modelClass, $id), $message);
+    }
+
+    private function getArrayResultByModelClassAndId(string $modelClass, int $id): array
+    {
+        $query = $this->_em->createQuery(sprintf('SELECT entity FROM %s entity WHERE entity.id = :id', $modelClass))
+            ->setParameter('id', $id);
+
+        return $query->getArrayResult();
+    }
+
+    private function assertNoEntitiesExistInDB(string $modelClass, string $message): void
+    {
+        $query  = $this->_em->createQuery(sprintf('SELECT entity FROM %s entity', $modelClass));
+        $result = $query->getResult();
+        $this->assertEquals(0, count($result), $message);
     }
 }
