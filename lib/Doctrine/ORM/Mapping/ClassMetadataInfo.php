@@ -397,7 +397,27 @@ class ClassMetadataInfo implements ClassMetadata
     public $parentClasses = [];
 
     /**
-     * READ-ONLY: The names of all subclasses (descendants).
+     * READ-ONLY: For classes in inheritance mapping hierarchies, this field contains the names of all
+     * <em>entity</em> subclasses of this class. These may also be abstract classes.
+     *
+     * This list is used, for example, to enumerate all necessary tables in JTI when querying for root
+     * or subclass entities, or to gather all fields comprised in an entity inheritance tree.
+     *
+     * For classes that do not use STI/JTI, this list is empty.
+     *
+     * Implementation note:
+     *
+     * In PHP, there is no general way to discover all subclasses of a given class at runtime. For that
+     * reason, the list of classes given in the discriminator map at the root entity is considered
+     * authoritative. The discriminator map must contain all <em>concrete</em> classes that can
+     * appear in the particular inheritance hierarchy tree. Since there can be no instances of abstract
+     * entity classes, users are not required to list such classes with a discriminator value.
+     *
+     * The possibly remaining "gaps" for abstract entity classes are filled after the class metadata for the
+     * root entity has been loaded.
+     *
+     * For subclasses of such root entities, the list can be reused/passed downwards, it only needs to
+     * be filtered accordingly (only keep remaining subclasses)
      *
      * @psalm-var list<class-string>
      */
@@ -3324,6 +3344,21 @@ class ClassMetadataInfo implements ClassMetadata
             throw MappingException::invalidClassInDiscriminatorMap($className, $this->name);
         }
 
+        $this->addSubClass($className);
+    }
+
+    /** @param array<class-string> $classes */
+    public function addSubClasses(array $classes): void
+    {
+        foreach ($classes as $className) {
+            $this->addSubClass($className);
+        }
+    }
+
+    public function addSubClass(string $className): void
+    {
+        // By ignoring classes that are not subclasses of the current class, we simplify inheriting
+        // the subclass list from a parent class at the beginning of \Doctrine\ORM\Mapping\ClassMetadataFactory::doLoadMetadata.
         if (is_subclass_of($className, $this->name) && ! in_array($className, $this->subClasses, true)) {
             $this->subClasses[] = $className;
         }
