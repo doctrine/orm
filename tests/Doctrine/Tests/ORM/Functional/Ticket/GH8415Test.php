@@ -25,12 +25,12 @@ class GH8415Test extends OrmFunctionalTestCase
 
     public function testAssociationIsBasedOnBaseClass(): void
     {
-        $target                   = new GH8415AssociationTarget();
-        $leaf                     = new GH8415LeafClass();
-        $leaf->baseField          = 'base';
-        $leaf->middleField        = 'middle';
-        $leaf->leafField          = 'leaf';
-        $leaf->target             = $target;
+        $target            = new GH8415AssociationTarget();
+        $leaf              = new GH8415LeafClass();
+        $leaf->baseField   = 'base';
+        $leaf->middleField = 'middle';
+        $leaf->leafField   = 'leaf';
+        $leaf->target      = $target;
 
         $this->_em->persist($target);
         $this->_em->persist($leaf);
