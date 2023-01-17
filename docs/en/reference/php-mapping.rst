@@ -194,7 +194,6 @@ Inheritance Getters
 -  ``isInheritanceTypeNone()``
 -  ``isInheritanceTypeJoined()``
 -  ``isInheritanceTypeSingleTable()``
--  ``isInheritanceTypeTablePerClass()``
 -  ``isInheritedField($fieldName)``
 -  ``isInheritedAssociation($fieldName)``
 
