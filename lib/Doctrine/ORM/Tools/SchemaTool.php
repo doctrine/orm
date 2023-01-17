@@ -15,6 +15,7 @@ use Doctrine\DBAL\Schema\Visitor\RemoveNamespacedAssets;
 use Doctrine\Deprecations\Deprecation;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\FieldMapping;
 use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\ORM\Mapping\QuoteStrategy;
 use Doctrine\ORM\Tools\Event\GenerateSchemaEventArgs;
@@ -47,7 +48,6 @@ use function strtolower;
  * @link    www.doctrine-project.org
  *
  * @psalm-import-type AssociationMapping from ClassMetadata
- * @psalm-import-type FieldMapping from ClassMetadata
  * @psalm-import-type JoinColumnData from ClassMetadata
  */
 class SchemaTool
@@ -455,7 +455,7 @@ class SchemaTool
      */
     private function gatherColumn(
         ClassMetadata $class,
-        array $mapping,
+        FieldMapping $mapping,
         Table $table,
     ): void {
         $columnName = $this->quoteStrategy->getColumnName($mapping['fieldName'], $class, $this->platform);
@@ -774,7 +774,7 @@ class SchemaTool
      *
      * @return mixed[]
      */
-    private function gatherColumnOptions(array $mapping): array
+    private function gatherColumnOptions(FieldMapping|array $mapping): array
     {
         $mappingOptions = $mapping['options'] ?? [];
 

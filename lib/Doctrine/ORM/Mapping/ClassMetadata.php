@@ -40,6 +40,7 @@ use function gettype;
 use function in_array;
 use function interface_exists;
 use function is_array;
+use function is_string;
 use function is_subclass_of;
 use function ltrim;
 use function method_exists;
@@ -66,32 +67,6 @@ use function trim;
  *
  * @template-covariant T of object
  * @template-implements PersistenceClassMetadata<T>
- * @psalm-type FieldMapping = array{
- *      type: string,
- *      fieldName: string,
- *      columnName: string,
- *      length?: int,
- *      id?: bool,
- *      nullable?: bool,
- *      notInsertable?: bool,
- *      notUpdatable?: bool,
- *      generated?: int,
- *      enumType?: class-string<BackedEnum>,
- *      columnDefinition?: string,
- *      precision?: int,
- *      scale?: int,
- *      unique?: bool,
- *      inherited?: class-string,
- *      originalClass?: class-string,
- *      originalField?: string,
- *      quoted?: bool,
- *      requireSQLConversion?: bool,
- *      declared?: class-string,
- *      declaredField?: string,
- *      options?: array<string, mixed>,
- *      version?: string,
- *      default?: string|int,
- * }
  * @psalm-type JoinColumnData = array{
  *     name: string,
  *     referencedColumnName: string,
@@ -441,65 +416,9 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
 
     /**
      * READ-ONLY: The field mappings of the class.
-     * Keys are field names and values are mapping definitions.
+     * Keys are field names and values are FieldMapping instances
      *
-     * The mapping definition array has the following values:
-     *
-     * - <b>fieldName</b> (string)
-     * The name of the field in the Entity.
-     *
-     * - <b>type</b> (string)
-     * The type name of the mapped field. Can be one of Doctrine's mapping types
-     * or a custom mapping type.
-     *
-     * - <b>columnName</b> (string, optional)
-     * The column name. Optional. Defaults to the field name.
-     *
-     * - <b>length</b> (integer, optional)
-     * The database length of the column. Optional. Default value taken from
-     * the type.
-     *
-     * - <b>id</b> (boolean, optional)
-     * Marks the field as the primary key of the entity. Multiple fields of an
-     * entity can have the id attribute, forming a composite key.
-     *
-     * - <b>nullable</b> (boolean, optional)
-     * Whether the column is nullable. Defaults to FALSE.
-     *
-     * - <b>'notInsertable'</b> (boolean, optional)
-     * Whether the column is not insertable. Optional. Is only set if value is TRUE.
-     *
-     * - <b>'notUpdatable'</b> (boolean, optional)
-     * Whether the column is updatable. Optional. Is only set if value is TRUE.
-     *
-     * - <b>columnDefinition</b> (string, optional, schema-only)
-     * The SQL fragment that is used when generating the DDL for the column.
-     *
-     * - <b>precision</b> (integer, optional, schema-only)
-     * The precision of a decimal column. Only valid if the column type is decimal.
-     *
-     * - <b>scale</b> (integer, optional, schema-only)
-     * The scale of a decimal column. Only valid if the column type is decimal.
-     *
-     * - <b>'unique'</b> (boolean, optional, schema-only)
-     * Whether a unique constraint should be generated for the column.
-     *
-     * - <b>'inherited'</b> (string, optional)
-     * This is set when the field is inherited by this class from another (inheritance) parent
-     * <em>entity</em> class. The value is the FQCN of the topmost entity class that contains
-     * mapping information for this field. (If there are transient classes in the
-     * class hierarchy, these are ignored, so the class property may in fact come
-     * from a class further up in the PHP class hierarchy.)
-     * Fields initially declared in mapped superclasses are
-     * <em>not</em> considered 'inherited' in the nearest entity subclasses.
-     *
-     * - <b>'declared'</b> (string, optional)
-     * This is set when the field does not appear for the first time in this class, but is originally
-     * declared in another parent <em>entity or mapped superclass</em>. The value is the FQCN
-     * of the topmost non-transient class that contains mapping information for this field.
-     *
-     * @var mixed[]
-     * @psalm-var array<string, FieldMapping>
+     * @var array<string, FieldMapping>
      */
     public array $fieldMappings = [];
 
@@ -1282,12 +1201,9 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
      * Gets the mapping of a (regular) field that holds some data but not a
      * reference to another object.
      *
-     * @return mixed[] The field mapping.
-     * @psalm-return FieldMapping
-     *
      * @throws MappingException
      */
-    public function getFieldMapping(string $fieldName): array
+    public function getFieldMapping(string $fieldName): FieldMapping
     {
         if (! isset($this->fieldMappings[$fieldName])) {
             throw MappingException::mappingNotFound($this->name, $fieldName);
@@ -1402,7 +1318,7 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
      *
      * @throws MappingException
      */
-    protected function validateAndCompleteFieldMapping(array $mapping): array
+    protected function validateAndCompleteFieldMapping(array $mapping): FieldMapping
     {
         // Check mandatory fields
         if (! isset($mapping['fieldName']) || ! $mapping['fieldName']) {
@@ -1422,6 +1338,8 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
         if (! isset($mapping['columnName'])) {
             $mapping['columnName'] = $this->namingStrategy->propertyToColumnName($mapping['fieldName'], $this->name);
         }
+
+        $mapping = FieldMapping::fromMappingArray($mapping);
 
         if ($mapping['columnName'][0] === '`') {
             $mapping['columnName'] = trim($mapping['columnName'], '`');
@@ -1534,6 +1452,7 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
                     );
                 }
 
+                assert(is_string($mapping['fieldName']));
                 $this->identifier[]              = $mapping['fieldName'];
                 $this->containsForeignIdentifier = true;
             }
@@ -2337,10 +2256,8 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
      * INTERNAL:
      * Adds a field mapping without completing/validating it.
      * This is mainly used to add inherited field mappings to derived classes.
-     *
-     * @psalm-param FieldMapping $fieldMapping
      */
-    public function addInheritedFieldMapping(array $fieldMapping): void
+    public function addInheritedFieldMapping(FieldMapping $fieldMapping): void
     {
         $this->fieldMappings[$fieldMapping['fieldName']] = $fieldMapping;
         $this->columnNames[$fieldMapping['fieldName']]   = $fieldMapping['columnName'];
@@ -2941,7 +2858,8 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
      */
     public function inlineEmbeddable(string $property, ClassMetadata $embeddable): void
     {
-        foreach ($embeddable->fieldMappings as $fieldMapping) {
+        foreach ($embeddable->fieldMappings as $originalFieldMapping) {
+            $fieldMapping                    = (array) $originalFieldMapping;
             $fieldMapping['originalClass'] ??= $embeddable->name;
             $fieldMapping['declaredField']   = isset($fieldMapping['declaredField'])
                 ? $property . '.' . $fieldMapping['declaredField']
