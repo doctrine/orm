@@ -27,7 +27,7 @@ class OneToOneOrphanRemovalTest extends OrmFunctionalTestCase
      * Unlink oneToOne mapped entity on the owning side making
      * the inverse side become orphaned
      */
-    public function testOrphanRemovalWhenUnlinkingOwningSide(): void
+    public function testOrphanRemovalWhenUnlinkingInverseSideEntity(): void
     {
         $user           = new CmsUser();
         $user->status   = 'dev';
@@ -61,7 +61,7 @@ class OneToOneOrphanRemovalTest extends OrmFunctionalTestCase
      * Unlink oneToOne mapped entity on the inverse side making
      * the owning side become orphaned
      */
-    public function testOrphanRemovalWhenUnlinkingInverseSide(): void
+    public function testOrphanRemovalWhenUnlinkingOwningSideEntity(): void
     {
         $user           = new CmsUser();
         $user->status   = 'dev';
