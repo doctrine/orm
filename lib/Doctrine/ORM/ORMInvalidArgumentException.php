@@ -6,6 +6,7 @@ namespace Doctrine\ORM;
 
 use Doctrine\Deprecations\Deprecation;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use InvalidArgumentException;
 
 use function array_map;
@@ -22,6 +23,8 @@ use function sprintf;
 
 /**
  * Contains exception messages for all invalid lifecycle state exceptions inside UnitOfWork
+ *
+ * @psalm-import-type AssociationMapping from ClassMetadataInfo
  */
 class ORMInvalidArgumentException extends InvalidArgumentException
 {
@@ -109,7 +112,7 @@ class ORMInvalidArgumentException extends InvalidArgumentException
 
     /**
      * @param object $entry
-     * @psalm-param array<string, string> $associationMapping
+     * @psalm-param AssociationMapping $associationMapping
      *
      * @return ORMInvalidArgumentException
      */
@@ -271,7 +274,7 @@ EXCEPTION
 
     /**
      * @param object $entity
-     * @psalm-param array<string,string> $associationMapping
+     * @psalm-param AssociationMapping $associationMapping
      */
     private static function newEntityFoundThroughRelationshipMessage(array $associationMapping, $entity): string
     {
