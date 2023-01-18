@@ -394,7 +394,8 @@ class ClassMetadataInfo implements ClassMetadata
     public $isEmbeddedClass = false;
 
     /**
-     * READ-ONLY: The names of the parent classes (ancestors).
+     * READ-ONLY: The names of the parent <em>entity</em> classes (ancestors), starting with the
+     * nearest one and ending with the root entity class.
      *
      * @psalm-var list<class-string>
      */
@@ -2543,7 +2544,8 @@ class ClassMetadataInfo implements ClassMetadata
     }
 
     /**
-     * Sets the parent class names.
+     * Sets the parent class names. Only <em>entity</em> classes may be given.
+     *
      * Assumes that the class names in the passed array are in the order:
      * directParent -> directParentParent -> directParentParentParent ... -> root.
      *
