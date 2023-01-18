@@ -1,5 +1,15 @@
 # Upgrade to 2.14
 
+## Deprecated stubs for "concrete table inheritance"
+
+This third way of mapping class inheritance was never implemented. Code stubs are
+now deprecated and will be removed in 3.0.
+
+* `\Doctrine\ORM\Mapping\ClassMetadataInfo::INHERITANCE_TYPE_TABLE_PER_CLASS` constant
+* `\Doctrine\ORM\Mapping\ClassMetadataInfo::isInheritanceTypeTablePerClass()` method
+* Using `TABLE_PER_CLASS` as the value for the `InheritanceType` attribute or annotation
+  or in XML configuration files.
+
 ## Deprecated `Doctrine\ORM\Persisters\Exception\UnrecognizedField::byName($field)` method.
 
 Use `Doctrine\ORM\Persisters\Exception\UnrecognizedField::byFullyQualifiedName($className, $field)` instead.

@@ -51,6 +51,10 @@
                 <file name="lib/Doctrine/ORM/Query/Parser.php"/>
                 <file name="lib/Doctrine/ORM/QueryBuilder.php"/>
                 <file name="lib/Doctrine/ORM/Tools/EntityGenerator.php"/>
+                <file name="lib/Doctrine/ORM/Mapping/ClassMetadataInfo.php" />
+                <file name="lib/Doctrine/ORM/Tools/EntityGenerator.php" />
+                <file name="lib/Doctrine/ORM/Tools/Export/Driver/AbstractExporter.php" />
+                <file name="lib/Doctrine/ORM/Tools/SchemaTool.php" />
             </errorLevel>
         </DeprecatedConstant>
         <DeprecatedInterface>
@@ -89,6 +93,7 @@
                 <referencedMethod name="Doctrine\ORM\ORMSetup::createDefaultAnnotationDriver"/>
                 <referencedMethod name="Doctrine\ORM\Query\SqlWalker::walkInExpression"/>
                 <referencedMethod name="Doctrine\ORM\Query\TreeWalkerAdapter::_getQueryComponents"/>
+                <referencedMethod name="Doctrine\ORM\Mapping\ClassMetadataInfo::isInheritanceTypeTablePerClass"/>
                 <file name="lib/Doctrine/ORM/Query/TreeWalkerChain.php"/>
             </errorLevel>
         </DeprecatedMethod>
