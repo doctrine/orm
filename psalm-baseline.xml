@@ -576,6 +576,13 @@
     </PossiblyNullReference>
   </file>
   <file src="lib/Doctrine/ORM/Mapping/ClassMetadataInfo.php">
+    <ArgumentTypeCoercion occurrences="5">
+      <code>$mapping</code>
+      <code>$mapping['fieldName']</code>
+      <code>$mapping['fieldName']</code>
+      <code>$name</code>
+      <code>$name</code>
+    </ArgumentTypeCoercion>
     <DeprecatedConstant occurrences="1">
       <code>self::GENERATOR_TYPE_UUID</code>
     </DeprecatedConstant>
