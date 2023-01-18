@@ -82,7 +82,7 @@ use const PHP_VERSION_ID;
  *      columnDefinition?: string,
  *      precision?: int,
  *      scale?: int,
- *      unique?: string,
+ *      unique?: bool,
  *      inherited?: class-string,
  *      originalClass?: class-string,
  *      originalField?: string,
@@ -556,7 +556,7 @@ class ClassMetadataInfo implements ClassMetadata
      * - <b>scale</b> (integer, optional, schema-only)
      * The scale of a decimal column. Only valid if the column type is decimal.
      *
-     * - <b>'unique'</b> (string, optional, schema-only)
+     * - <b>'unique'</b> (boolean, optional, schema-only)
      * Whether a unique constraint should be generated for the column.
      *
      * - <b>'inherited'</b> (string, optional)
