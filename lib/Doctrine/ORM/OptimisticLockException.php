@@ -15,56 +15,40 @@ use Throwable;
  */
 class OptimisticLockException extends Exception implements ORMException
 {
-    /**
-     * @param string             $msg
-     * @param object|string|null $entity
-     */
-    public function __construct($msg, private $entity, Throwable|null $previous = null)
-    {
+    public function __construct(
+        string $msg,
+        private object|string|null $entity,
+        Throwable|null $previous = null,
+    ) {
         parent::__construct($msg, 0, $previous);
     }
 
     /**
      * Gets the entity that caused the exception.
-     *
-     * @return object|string|null
      */
-    public function getEntity()
+    public function getEntity(): object|string|null
     {
         return $this->entity;
     }
 
-    /**
-     * @param object|class-string $entity
-     *
-     * @return OptimisticLockException
-     */
-    public static function lockFailed($entity)
+    /** @param object|class-string $entity */
+    public static function lockFailed(object|string $entity): self
     {
         return new self('The optimistic lock on an entity failed.', $entity);
     }
 
-    /**
-     * @param object                       $entity
-     * @param int|string|DateTimeInterface $expectedLockVersion
-     * @param int|string|DateTimeInterface $actualLockVersion
-     *
-     * @return OptimisticLockException
-     */
-    public static function lockFailedVersionMismatch($entity, $expectedLockVersion, $actualLockVersion)
-    {
+    public static function lockFailedVersionMismatch(
+        object $entity,
+        int|string|DateTimeInterface $expectedLockVersion,
+        int|string|DateTimeInterface $actualLockVersion,
+    ): self {
         $expectedLockVersion = $expectedLockVersion instanceof DateTimeInterface ? $expectedLockVersion->getTimestamp() : $expectedLockVersion;
         $actualLockVersion   = $actualLockVersion instanceof DateTimeInterface ? $actualLockVersion->getTimestamp() : $actualLockVersion;
 
         return new self('The optimistic lock failed, version ' . $expectedLockVersion . ' was expected, but is actually ' . $actualLockVersion, $entity);
     }
 
-    /**
-     * @param string $entityName
-     *
-     * @return OptimisticLockException
-     */
-    public static function notVersioned($entityName)
+    public static function notVersioned(string $entityName): self
     {
         return new self('Cannot obtain optimistic lock on unversioned entity ' . $entityName, null);
     }
