@@ -25,10 +25,10 @@ class GH8127Test extends OrmFunctionalTestCase
      */
     public function testLoadFieldsFromAllClassesInHierarchy(string $queryClass): void
     {
-        $entity          = new GH8127Leaf();
-        $entity->root    = 'root';
-        $entity->middle  = 'middle';
-        $entity->leaf    = 'leaf';
+        $entity         = new GH8127Leaf();
+        $entity->root   = 'root';
+        $entity->middle = 'middle';
+        $entity->leaf   = 'leaf';
 
         $this->_em->persist($entity);
         $this->_em->flush();
