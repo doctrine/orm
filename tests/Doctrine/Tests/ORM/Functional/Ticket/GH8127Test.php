@@ -16,7 +16,6 @@ class GH8127Test extends OrmFunctionalTestCase
         $this->createSchemaForModels(
             GH8127Root::class,
             GH8127Middle::class,
-            GH8127Middle2::class,
             GH8127Leaf::class
         );
     }
@@ -29,18 +28,16 @@ class GH8127Test extends OrmFunctionalTestCase
         $entity          = new GH8127Leaf();
         $entity->root    = 'root';
         $entity->middle  = 'middle';
-        $entity->middle2 = 'middle2';
         $entity->leaf    = 'leaf';
 
         $this->_em->persist($entity);
         $this->_em->flush();
         $this->_em->clear();
 
-        $loadedEntity = $this->_em->find(GH8127Root::class, $entity->id);
+        $loadedEntity = $this->_em->find($queryClass, $entity->id);
 
         self::assertSame('root', $loadedEntity->root);
         self::assertSame('middle', $loadedEntity->middle);
-        self::assertSame('middle2', $loadedEntity->middle2);
         self::assertSame('leaf', $loadedEntity->leaf);
     }
 
@@ -94,20 +91,7 @@ abstract class GH8127Middle extends GH8127Root
 /**
  * @ORM\Entity
  */
-abstract class GH8127Middle2 extends GH8127Middle
-{
-    /**
-     * @ORM\Column
-     *
-     * @var string
-     */
-    public $middle2;
-}
-
-/**
- * @ORM\Entity
- */
-class GH8127Leaf extends GH8127Middle2
+class GH8127Leaf extends GH8127Middle
 {
     /**
      * @ORM\Column
