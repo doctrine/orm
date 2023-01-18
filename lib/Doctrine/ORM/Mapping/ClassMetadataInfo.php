@@ -172,6 +172,8 @@ class ClassMetadataInfo implements ClassMetadata
     /**
      * TABLE_PER_CLASS means the class will be persisted according to the rules
      * of <tt>Concrete Table Inheritance</tt>.
+     *
+     * @deprecated
      */
     public const INHERITANCE_TYPE_TABLE_PER_CLASS = 4;
 
@@ -2377,11 +2379,19 @@ class ClassMetadataInfo implements ClassMetadata
     /**
      * Checks whether the mapped class uses the TABLE_PER_CLASS inheritance mapping strategy.
      *
+     * @deprecated
+     *
      * @return bool TRUE if the class participates in a TABLE_PER_CLASS inheritance mapping,
      * FALSE otherwise.
      */
     public function isInheritanceTypeTablePerClass()
     {
+        Deprecation::triggerIfCalledFromOutside(
+            'doctrine/orm',
+            'https://github.com/doctrine/orm/pull/10414/',
+            'Concrete table inheritance has never been implemented, and its stubs will be removed in Doctrine ORM 3.0 with no replacement'
+        );
+
         return $this->inheritanceType === self::INHERITANCE_TYPE_TABLE_PER_CLASS;
     }
 
@@ -2798,6 +2808,14 @@ class ClassMetadataInfo implements ClassMetadata
      */
     private function isInheritanceType(int $type): bool
     {
+        if ($type === self::INHERITANCE_TYPE_TABLE_PER_CLASS) {
+            Deprecation::trigger(
+                'doctrine/orm',
+                'https://github.com/doctrine/orm/pull/10414/',
+                'Concrete table inheritance has never been implemented, and its stubs will be removed in Doctrine ORM 3.0 with no replacement'
+            );
+        }
+
         return $type === self::INHERITANCE_TYPE_NONE ||
                 $type === self::INHERITANCE_TYPE_SINGLE_TABLE ||
                 $type === self::INHERITANCE_TYPE_JOINED ||
