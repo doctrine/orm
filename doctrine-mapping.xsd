@@ -206,7 +206,6 @@
     <xs:restriction base="xs:token">
       <xs:enumeration value="SINGLE_TABLE"/>
       <xs:enumeration value="JOINED"/>
-      <xs:enumeration value="TABLE_PER_CLASS"/>
     </xs:restriction>
   </xs:simpleType>
 

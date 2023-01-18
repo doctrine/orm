@@ -283,8 +283,6 @@ class SchemaTool
                         $table->setPrimaryKey($pkColumns);
                     }
                 }
-            } elseif ($class->isInheritanceTypeTablePerClass()) {
-                throw NotSupported::create();
             } else {
                 $this->gatherColumns($class, $table);
                 $this->gatherRelationsSql($class, $table, $schema, $addedFks, $blacklistedFks);

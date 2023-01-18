@@ -167,12 +167,6 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
      */
     public const INHERITANCE_TYPE_SINGLE_TABLE = 3;
 
-    /**
-     * TABLE_PER_CLASS means the class will be persisted according to the rules
-     * of <tt>Concrete Table Inheritance</tt>.
-     */
-    public const INHERITANCE_TYPE_TABLE_PER_CLASS = 4;
-
     /* The Id generator types. */
     /**
      * AUTO means the generator type will depend on what the used platform prefers.
@@ -2041,17 +2035,6 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
     }
 
     /**
-     * Checks whether the mapped class uses the TABLE_PER_CLASS inheritance mapping strategy.
-     *
-     * @return bool TRUE if the class participates in a TABLE_PER_CLASS inheritance mapping,
-     * FALSE otherwise.
-     */
-    public function isInheritanceTypeTablePerClass(): bool
-    {
-        return $this->inheritanceType === self::INHERITANCE_TYPE_TABLE_PER_CLASS;
-    }
-
-    /**
      * Checks whether the class uses an identity column for the Id generation.
      */
     public function isIdGeneratorIdentity(): bool
@@ -2361,8 +2344,7 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
     {
         return $type === self::INHERITANCE_TYPE_NONE ||
                 $type === self::INHERITANCE_TYPE_SINGLE_TABLE ||
-                $type === self::INHERITANCE_TYPE_JOINED ||
-                $type === self::INHERITANCE_TYPE_TABLE_PER_CLASS;
+                $type === self::INHERITANCE_TYPE_JOINED;
     }
 
     /**
