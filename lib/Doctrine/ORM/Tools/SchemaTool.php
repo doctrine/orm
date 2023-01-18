@@ -17,6 +17,7 @@ use Doctrine\DBAL\Schema\Visitor\RemoveNamespacedAssets;
 use Doctrine\Deprecations\Deprecation;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\ORM\Mapping\QuoteStrategy;
 use Doctrine\ORM\Tools\Event\GenerateSchemaEventArgs;
@@ -46,6 +47,8 @@ use function strtolower;
  * <tt>ClassMetadata</tt> class descriptors.
  *
  * @link    www.doctrine-project.org
+ *
+ * @psalm-import-type FieldMapping from ClassMetadataInfo
  */
 class SchemaTool
 {
@@ -468,7 +471,7 @@ class SchemaTool
      * Creates a column definition as required by the DBAL from an ORM field mapping definition.
      *
      * @param ClassMetadata $class The class that owns the field mapping.
-     * @psalm-param array<string, mixed> $mapping The field mapping.
+     * @psalm-param FieldMapping $mapping The field mapping.
      */
     private function gatherColumn(
         ClassMetadata $class,
