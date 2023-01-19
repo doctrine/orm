@@ -71,7 +71,8 @@ class GH7820Test extends OrmFunctionalTestCase
     {
         $query = $this->_em->getRepository(GH7820Line::class)
             ->createQueryBuilder('l')
-            ->orderBy('l.lineNumber', Criteria::ASC);
+            ->orderBy('l.lineNumber', Criteria::ASC)
+            ->setMaxResults(100);
 
         self::assertSame(
             self::SONG,
@@ -90,7 +91,8 @@ class GH7820Test extends OrmFunctionalTestCase
 
         $query = $this->_em->getRepository(GH7820Line::class)
             ->createQueryBuilder('l')
-            ->orderBy('l.lineNumber', Criteria::ASC);
+            ->orderBy('l.lineNumber', Criteria::ASC)
+            ->setMaxResults(100);
 
         self::assertSame(
             self::SONG,
@@ -102,7 +104,8 @@ class GH7820Test extends OrmFunctionalTestCase
 
         $query = $this->_em->getRepository(GH7820Line::class)
             ->createQueryBuilder('l')
-            ->orderBy('l.lineNumber', Criteria::ASC);
+            ->orderBy('l.lineNumber', Criteria::ASC)
+            ->setMaxResults(100);
 
         self::assertSame(
             self::SONG,
