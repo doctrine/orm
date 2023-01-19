@@ -114,7 +114,7 @@ On the root entity class, ``#[InheritanceType]``,
 mapping strategies that are explained in the following sections.
 
 ``#[DiscriminatorColumn]`` designates the so-called discriminator column.
-This is an extra column in the database that keeps information about which
+This is an extra column in the table that keeps information about which
 type from the hierarchy applies for a particular database row.
 
 ``#[DiscriminatorMap]`` declares the possible values for the discriminator
