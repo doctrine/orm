@@ -42,9 +42,7 @@ final class GH7366Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class GH7366Entity
 {
     /**

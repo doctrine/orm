@@ -27,17 +27,13 @@ class GenerateSchemaEventArgs extends EventArgs
         $this->schema = $schema;
     }
 
-    /**
-     * @return EntityManagerInterface
-     */
+    /** @return EntityManagerInterface */
     public function getEntityManager()
     {
         return $this->em;
     }
 
-    /**
-     * @return Schema
-     */
+    /** @return Schema */
     public function getSchema()
     {
         return $this->schema;

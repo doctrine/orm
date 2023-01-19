@@ -14,9 +14,7 @@ class OrderByClause extends Node
     /** @var OrderByItem[] */
     public $orderByItems = [];
 
-    /**
-     * @param OrderByItem[] $orderByItems
-     */
+    /** @param OrderByItem[] $orderByItems */
     public function __construct(array $orderByItems)
     {
         $this->orderByItems = $orderByItems;

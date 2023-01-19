@@ -173,9 +173,7 @@ class ClassMetadataFactoryTest extends OrmTestCase
         $actual = $cmf->getMetadataFor($cm1->name);
     }
 
-    /**
-     * @group DDC-1512
-     */
+    /** @group DDC-1512 */
     public function testIsTransient(): void
     {
         $cmf    = new ClassMetadataFactory();
@@ -199,9 +197,7 @@ class ClassMetadataFactoryTest extends OrmTestCase
         self::assertFalse($em->getMetadataFactory()->isTransient(CmsArticle::class));
     }
 
-    /**
-     * @group DDC-1512
-     */
+    /** @group DDC-1512 */
     public function testIsTransientEntityNamespace(): void
     {
         if (! class_exists(PersistentObject::class)) {
@@ -342,9 +338,7 @@ class ClassMetadataFactoryTest extends OrmTestCase
         return $cm1;
     }
 
-    /**
-     * @group DDC-1845
-     */
+    /** @group DDC-1845 */
     public function testQuoteMetadata(): void
     {
         $cmf    = new ClassMetadataFactory();
@@ -455,9 +449,7 @@ class ClassMetadataFactoryTest extends OrmTestCase
         self::assertSame($metadata, $cmf->getMetadataFor('Foo'));
     }
 
-    /**
-     * @group DDC-3427
-     */
+    /** @group DDC-3427 */
     public function testAcceptsEntityManagerInterfaceInstances(): void
     {
         $classMetadataFactory = new ClassMetadataFactory();
@@ -472,9 +464,7 @@ class ClassMetadataFactoryTest extends OrmTestCase
         self::assertSame($entityManager, $property->getValue($classMetadataFactory));
     }
 
-    /**
-     * @group DDC-3305
-     */
+    /** @group DDC-3305 */
     public function testRejectsEmbeddableWithoutValidClassName(): void
     {
         $metadata = $this->createValidClassMetadata();
@@ -497,9 +487,7 @@ class ClassMetadataFactoryTest extends OrmTestCase
         $cmf->getMetadataFor($metadata->name);
     }
 
-    /**
-     * @group DDC-4006
-     */
+    /** @group DDC-4006 */
     public function testInheritsIdGeneratorMappingFromEmbeddable(): void
     {
         $cmf    = new ClassMetadataFactory();
@@ -557,9 +545,7 @@ class ClassMetadataFactoryTestSubject extends ClassMetadataFactory
     /** @psalm-var list<class-string<object>> */
     private $requestedClasses = [];
 
-    /**
-     * @psalm-param class-string<object> $className
-     */
+    /** @psalm-param class-string<object> $className */
     protected function newClassMetadataInstance($className): ClassMetadata
     {
         $this->requestedClasses[] = $className;
@@ -573,17 +559,13 @@ class ClassMetadataFactoryTestSubject extends ClassMetadataFactory
         return $this->mockMetadata[$className];
     }
 
-    /**
-     * @psalm-param class-string<object> $className
-     */
+    /** @psalm-param class-string<object> $className */
     public function setMetadataForClass(string $className, ClassMetadata $metadata): void
     {
         $this->mockMetadata[$className] = $metadata;
     }
 
-    /**
-     * @return list<class-string<object>>
-     */
+    /** @return list<class-string<object>> */
     public function getRequestedClasses(): array
     {
         return $this->requestedClasses;

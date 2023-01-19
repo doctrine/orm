@@ -17,9 +17,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 
 use function assert;
 
-/**
- * @group GH-5887
- */
+/** @group GH-5887 */
 class GH5887Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -61,9 +59,7 @@ class GH5887Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class GH5887Cart
 {
     /**
@@ -107,9 +103,7 @@ class GH5887Cart
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class GH5887Customer
 {
     /**

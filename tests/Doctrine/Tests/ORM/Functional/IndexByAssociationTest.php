@@ -11,9 +11,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 
 use function assert;
 
-/**
- * @group DDC-250
- */
+/** @group DDC-250 */
 class IndexByAssociationTest extends OrmFunctionalTestCase
 {
     /** @var Market */
@@ -25,7 +23,9 @@ class IndexByAssociationTest extends OrmFunctionalTestCase
     protected function setUp(): void
     {
         $this->useModelSet('stockexchange');
+
         parent::setUp();
+
         $this->loadFixture();
     }
 

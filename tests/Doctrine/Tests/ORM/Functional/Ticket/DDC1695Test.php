@@ -12,9 +12,7 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\Table;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-/**
- * @group DDC-1695
- */
+/** @group DDC-1695 */
 class DDC1695Test extends OrmFunctionalTestCase
 {
     public function testIssue(): void

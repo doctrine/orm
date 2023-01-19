@@ -19,6 +19,7 @@ class SecondLevelCacheCompositePrimaryKeyWithAssociationsTest extends OrmFunctio
     {
         $this->enableSecondLevelCache();
         $this->useModelSet('geonames');
+
         parent::setUp();
 
         $this->cache = $this->_em->getCache();

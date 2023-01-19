@@ -114,9 +114,7 @@ class AttachEntityListenersListenerTest extends OrmTestCase
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class AttachEntityListenersListenerTestFooEntity
 {
     /**

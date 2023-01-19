@@ -10,9 +10,7 @@ use Doctrine\Tests\Models\DDC117\DDC117ArticleDetails;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use RuntimeException;
 
-/**
- * @group DDC-1685
- */
+/** @group DDC-1685 */
 class DDC1685Test extends OrmFunctionalTestCase
 {
     /** @var Paginator */
@@ -21,6 +19,7 @@ class DDC1685Test extends OrmFunctionalTestCase
     protected function setUp(): void
     {
         $this->useModelSet('ddc117');
+
         parent::setUp();
 
         $this->_em->createQuery('DELETE FROM Doctrine\Tests\Models\DDC117\DDC117ArticleDetails ad')->execute();

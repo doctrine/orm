@@ -18,6 +18,7 @@ class DDC1209Test extends OrmFunctionalTestCase
     protected function setUp(): void
     {
         parent::setUp();
+
         $this->createSchemaForModels(
             DDC1209One::class,
             DDC1209Two::class,
@@ -25,9 +26,7 @@ class DDC1209Test extends OrmFunctionalTestCase
         );
     }
 
-    /**
-     * @group DDC-1209
-     */
+    /** @group DDC-1209 */
     public function testIdentifierCanHaveCustomType(): void
     {
         $entity = new DDC1209Three();
@@ -38,9 +37,7 @@ class DDC1209Test extends OrmFunctionalTestCase
         self::assertSame($entity, $this->_em->find(DDC1209Three::class, $entity->date));
     }
 
-    /**
-     * @group DDC-1209
-     */
+    /** @group DDC-1209 */
     public function testCompositeIdentifierCanHaveCustomType(): void
     {
         $future1 = new DDC1209One();
@@ -68,9 +65,7 @@ class DDC1209Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC1209One
 {
     /**
@@ -87,9 +82,7 @@ class DDC1209One
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC1209Two
 {
     /**
@@ -130,9 +123,7 @@ class DDC1209Two
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC1209Three
 {
     /**

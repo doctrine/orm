@@ -30,6 +30,7 @@ class ClassTableInheritanceSecondTest extends OrmFunctionalTestCase
     protected function setUp(): void
     {
         parent::setUp();
+
         $this->createSchemaForModels(
             CTIParent::class,
             CTIChild::class,
@@ -213,9 +214,7 @@ class CTIRelated2
         $this->ctiChildren->add($child);
     }
 
-    /**
-     * @psalm-return Collection<int, CTIChild>
-     */
+    /** @psalm-return Collection<int, CTIChild> */
     public function getCTIChildren(): Collection
     {
         return $this->ctiChildren;

@@ -16,12 +16,11 @@ class DDC331Test extends OrmFunctionalTestCase
     protected function setUp(): void
     {
         $this->useModelSet('company');
+
         parent::setUp();
     }
 
-    /**
-     * @group DDC-331
-     */
+    /** @group DDC-331 */
     public function testSelectFieldOnRootEntity(): void
     {
         $q = $this->_em->createQuery('SELECT e.name FROM Doctrine\Tests\Models\Company\CompanyEmployee e');

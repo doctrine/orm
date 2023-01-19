@@ -95,9 +95,7 @@ class ECommerceCategory
         }
     }
 
-    /**
-     * @psalm-return Collection<int, ECommerceProduct>
-     */
+    /** @psalm-return Collection<int, ECommerceProduct> */
     public function getProducts(): Collection
     {
         return $this->products;
@@ -108,9 +106,7 @@ class ECommerceCategory
         $this->parent = $parent;
     }
 
-    /**
-     * @psalm-return Collection<int, ECommerceCategory>
-     */
+    /** @psalm-return Collection<int, ECommerceCategory> */
     public function getChildren(): Collection
     {
         return $this->children;

@@ -20,14 +20,13 @@ final class GH7067Test extends OrmFunctionalTestCase
     protected function setUp(): void
     {
         $this->enableSecondLevelCache();
+
         parent::setUp();
 
         $this->setUpEntitySchema([GH7067Entity::class]);
     }
 
-    /**
-     * @group GH-7067
-     */
+    /** @group GH-7067 */
     public function testSLCWithVersion(): void
     {
         $entity             = new GH7067Entity();

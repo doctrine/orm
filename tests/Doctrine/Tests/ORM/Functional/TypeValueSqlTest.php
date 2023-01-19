@@ -29,6 +29,7 @@ class TypeValueSqlTest extends OrmFunctionalTestCase
         }
 
         $this->useModelSet('customtype');
+
         parent::setUp();
     }
 
@@ -50,9 +51,7 @@ class TypeValueSqlTest extends OrmFunctionalTestCase
         self::assertEquals('FOO', $this->_em->getConnection()->fetchOne('select lowerCaseString from customtype_uppercases where id=' . $entity->id . ''), 'Database holds uppercase string');
     }
 
-    /**
-     * @group DDC-1642
-     */
+    /** @group DDC-1642 */
     public function testUpperCaseStringTypeWhenColumnNameIsDefined(): void
     {
         $entity                       = new CustomTypeUpperCase();

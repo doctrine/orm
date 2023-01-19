@@ -9,9 +9,7 @@ use Doctrine\Common\Collections\Criteria;
 use Doctrine\Tests\Models\Cache\Country;
 use Doctrine\Tests\Models\Cache\State;
 
-/**
- * @group DDC-2183
- */
+/** @group DDC-2183 */
 class SecondLevelCacheCriteriaTest extends SecondLevelCacheFunctionalTestCase
 {
     public function testMatchingPut(): void

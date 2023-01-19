@@ -268,7 +268,7 @@ Doctrine\DBAL\ParameterType::* or a DBAL Type name for conversion.
     use Doctrine\DBAL\Types\Types;
     
     // prevents attempt to load metadata for date time class, improving performance
-    $qb->setParameter('date', new \DateTimeImmutable(), Types::DATE_IMMUTABLE)
+    $qb->setParameter('date', new \DateTimeImmutable(), Types::DATETIME_IMMUTABLE)
 
 If you've got several parameters to bind to your query, you can
 also use setParameters() instead of setParameter() with the
@@ -433,6 +433,12 @@ complete list of supported helper methods available:
 
         // Example - $qb->expr()->isNotNull('u.id') => u.id IS NOT NULL
         public function isNotNull($x); // Returns string
+
+        // Example - $qb->expr()->isMemberOf('?1', 'u.groups') => ?1 MEMBER OF u.groups
+        public function isMemberOf($x, $y); // Returns Expr\Comparison instance
+
+        // Example - $qb->expr()->isInstanceOf('u', Employee::class) => u INSTANCE OF Employee
+        public function isInstanceOf($x, $y); // Returns Expr\Comparison instance
 
 
         /** Arithmetic objects **/

@@ -14,9 +14,7 @@ use Doctrine\ORM\Mapping\ManyToMany;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\OneToMany;
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC117Translation
 {
     /**

@@ -16,6 +16,7 @@ class DDC1458Test extends OrmFunctionalTestCase
     protected function setUp(): void
     {
         parent::setUp();
+
         $this->createSchemaForModels(
             TestEntity::class,
             TestAdditionalEntity::class
@@ -57,9 +58,7 @@ class DDC1458Test extends OrmFunctionalTestCase
 }
 
 
-/**
- * @Entity
- */
+/** @Entity */
 class TestEntity
 {
     /**
@@ -102,9 +101,7 @@ class TestEntity
         $this->additional = $additional;
     }
 }
-/**
- * @Entity
- */
+/** @Entity */
 class TestAdditionalEntity
 {
     /**

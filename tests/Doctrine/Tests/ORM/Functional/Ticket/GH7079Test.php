@@ -17,9 +17,7 @@ use Doctrine\ORM\Mapping\Table;
 use Doctrine\Persistence\Mapping\RuntimeReflectionService;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-/**
- * @group GH7079
- */
+/** @group GH7079 */
 final class GH7079Test extends OrmFunctionalTestCase
 {
     /** @var DefaultQuoteStrategy */

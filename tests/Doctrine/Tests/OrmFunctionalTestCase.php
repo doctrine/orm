@@ -340,9 +340,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
         ],
     ];
 
-    /**
-     * @param class-string ...$models
-     */
+    /** @param class-string ...$models */
     final protected function createSchemaForModels(string ...$models): void
     {
         try {
@@ -361,9 +359,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
         return $this->_schemaTool->getUpdateSchemaSql($this->getMetadataForModels($models));
     }
 
-    /**
-     * @param class-string ...$models
-     */
+    /** @param class-string ...$models */
     final protected function getSchemaForModels(string ...$models): Schema
     {
         return $this->_schemaTool->getSchemaFromMetadata($this->getMetadataForModels($models));
@@ -844,9 +840,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             : $this->_em->getConnection()->getSchemaManager();
     }
 
-    /**
-     * @throws Throwable
-     */
+    /** @throws Throwable */
     protected function onNotSuccessfulTest(Throwable $e): void
     {
         if ($e instanceof AssertionFailedError || $e instanceof Warning) {
@@ -907,7 +901,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
 
     final protected function isQueryLogAvailable(): bool
     {
-        return $this->_em->getConnection() instanceof DbalExtensions\Connection;
+        return $this->_em && $this->_em->getConnection() instanceof DbalExtensions\Connection;
     }
 
     final protected function getQueryLog(): QueryLog
@@ -929,9 +923,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
         self::assertThat($this->getQueryLog()->queries, new Count($expectedCount), $message);
     }
 
-    /**
-     * @psalm-return array{sql: string, params: array|null, types: array|null}
-     */
+    /** @psalm-return array{sql: string, params: array|null, types: array|null} */
     final protected function getLastLoggedQuery(int $index = 0): array
     {
         $queries   = $this->getQueryLog()->queries;

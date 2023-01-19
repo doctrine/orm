@@ -39,9 +39,7 @@ class CompanyOrganization
         return $this->id;
     }
 
-    /**
-     * @psalm-return Collection<int, CompanyEvent>
-     */
+    /** @psalm-return Collection<int, CompanyEvent> */
     public function getEvents(): Collection
     {
         return $this->events;

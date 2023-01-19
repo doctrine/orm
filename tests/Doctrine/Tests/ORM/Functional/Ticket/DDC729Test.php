@@ -151,9 +151,7 @@ class DDC729Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC729A
 {
     /**
@@ -176,9 +174,7 @@ class DDC729A
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC729B
 {
     /**

@@ -98,19 +98,20 @@ entity might look like this:
 
     <?php
 
-    /**
-     * @Entity
-     */
+    #[Entity]
     class InsecureEntity
     {
-        /** @Id @Column(type="integer") @GeneratedValue */
-        private $id;
-        /** @Column */
-        private $email;
-        /** @Column(type="boolean") */
-        private $isAdmin;
+        #[Id, Column, GeneratedValue]
+        private int|null $id = null;
 
-        public function fromArray(array $userInput)
+        #[Column]
+        private string $email;
+
+        #[Column]
+        private bool $isAdmin;
+
+        /** @param array<string, mixed> $userInput */
+        public function fromArray(array $userInput): void
         {
             foreach ($userInput as $key => $value) {
                 $this->$key = $value;
@@ -118,7 +119,7 @@ entity might look like this:
         }
     }
 
-Now the possiblity of mass-asignment exists on this entity and can
+Now the possiblity of mass-assignment exists on this entity and can
 be exploited by attackers to set the "isAdmin" flag to true on any
 object when you pass the whole request data to this method like:
 

@@ -6,11 +6,9 @@ namespace Doctrine\Tests\ORM\Tools\Console\Command\SchemaTool;
 
 use Doctrine\ORM\Tools\Console\Command\SchemaTool\UpdateCommand;
 
-class UpdateCommandTest extends AbstractCommandTest
+class UpdateCommandTest extends CommandTestCase
 {
-    /**
-     * @doesNotPerformAssertions
-     */
+    /** @doesNotPerformAssertions */
     public function testItPrintsTheSql(): void
     {
         $tester = $this->getCommandTester(UpdateCommand::class);

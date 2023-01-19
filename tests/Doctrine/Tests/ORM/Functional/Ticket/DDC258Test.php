@@ -19,6 +19,7 @@ class DDC258Test extends OrmFunctionalTestCase
     protected function setUp(): void
     {
         parent::setUp();
+
         $this->createSchemaForModels(
             DDC258Super::class,
             DDC258Class1::class,
@@ -27,9 +28,7 @@ class DDC258Test extends OrmFunctionalTestCase
         );
     }
 
-    /**
-     * @group DDC-258
-     */
+    /** @group DDC-258 */
     public function testIssue(): void
     {
         $c1              = new DDC258Class1();
@@ -97,9 +96,7 @@ abstract class DDC258Super
     public $id;
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC258Class1 extends DDC258Super
 {
     /**
@@ -115,9 +112,7 @@ class DDC258Class1 extends DDC258Super
     public $description;
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC258Class2 extends DDC258Super
 {
     /**

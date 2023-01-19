@@ -21,14 +21,13 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 
 use function get_class;
 
-/**
- * @group DDC-992
- */
+/** @group DDC-992 */
 class DDC992Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
     {
         parent::setUp();
+
         $this->createSchemaForModels(
             DDC992Role::class,
             DDC992Parent::class,
@@ -120,9 +119,7 @@ class DDC992Parent
     public $childs;
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC992Child extends DDC992Parent
 {
     public function childs(): Collection
@@ -131,9 +128,7 @@ class DDC992Child extends DDC992Parent
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC992Role
 {
     public function getRoleID(): int

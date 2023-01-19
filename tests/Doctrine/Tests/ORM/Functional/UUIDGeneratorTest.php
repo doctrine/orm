@@ -17,9 +17,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 use function method_exists;
 use function strlen;
 
-/**
- * @group DDC-451
- */
+/** @group DDC-451 */
 class UUIDGeneratorTest extends OrmFunctionalTestCase
 {
     use VerifyDeprecations;
@@ -63,9 +61,7 @@ class UUIDGeneratorTest extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class UUIDEntity
 {
     /**

@@ -10,14 +10,13 @@ use Doctrine\Tests\Models\ECommerce\ECommerceCategory;
 use Doctrine\Tests\Models\ECommerce\ECommerceProduct;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-/**
- * @group DDC-2074
- */
+/** @group DDC-2074 */
 class DDC2074Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
     {
         $this->useModelSet('ecommerce');
+
         parent::setUp();
     }
 

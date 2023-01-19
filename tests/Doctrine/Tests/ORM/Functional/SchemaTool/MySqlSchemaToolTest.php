@@ -22,6 +22,7 @@ class MySqlSchemaToolTest extends OrmFunctionalTestCase
     protected function setUp(): void
     {
         parent::setUp();
+
         if (! $this->_em->getConnection()->getDatabasePlatform() instanceof MySQLPlatform) {
             self::markTestSkipped('The ' . self::class . ' requires the use of mysql.');
         }
@@ -94,9 +95,7 @@ class MySqlSchemaToolTest extends OrmFunctionalTestCase
         self::assertEquals('CREATE TABLE boolean_model (id INT AUTO_INCREMENT NOT NULL, booleanField TINYINT(1) NOT NULL, PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8 ' . $collation . ' ENGINE = InnoDB', $sql[0]);
     }
 
-    /**
-     * @group DBAL-204
-     */
+    /** @group DBAL-204 */
     public function testGetCreateSchemaSql4(): void
     {
         $classes = [$this->_em->getClassMetadata(MysqlSchemaNamespacedEntity::class)];

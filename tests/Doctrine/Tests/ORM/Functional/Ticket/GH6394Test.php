@@ -45,9 +45,7 @@ class GH6394Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class A
 {
     /**
@@ -70,9 +68,7 @@ class A
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class B
 {
     /**

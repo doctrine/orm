@@ -17,9 +17,7 @@ use Doctrine\ORM\Mapping\ManyToMany;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\MappedSuperclass;
 
-/**
- * @MappedSuperclass
- */
+/** @MappedSuperclass */
 #[MappedSuperclass]
 class DDC964User
 {
@@ -29,7 +27,9 @@ class DDC964User
      * @GeneratedValue
      * @Column(type="integer", name="user_id", length=150)
      */
-    #[Id, GeneratedValue, Column(type: 'integer', name: 'user_id', length: 150)]
+    #[Id]
+    #[GeneratedValue]
+    #[Column(type: 'integer', name: 'user_id', length: 150)]
     protected $id;
 
     /**
@@ -89,9 +89,7 @@ class DDC964User
         $group->addUser($this);
     }
 
-    /**
-     * @psalm-return Collection<int, DDC964Group>
-     */
+    /** @psalm-return Collection<int, DDC964Group> */
     public function getGroups(): ArrayCollection
     {
         return $this->groups;

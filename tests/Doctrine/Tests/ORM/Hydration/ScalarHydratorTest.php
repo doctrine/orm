@@ -46,9 +46,7 @@ class ScalarHydratorTest extends HydrationTestCase
         self::assertEquals(2, $result[1]['u_id']);
     }
 
-    /**
-     * @group DDC-407
-     */
+    /** @group DDC-407 */
     public function testHydrateScalarResults(): void
     {
         $rsm = new ResultSetMapping();
@@ -70,9 +68,7 @@ class ScalarHydratorTest extends HydrationTestCase
         self::assertCount(1, $hydrator->hydrateAll($stmt, $rsm));
     }
 
-    /**
-     * @group DDC-644
-     */
+    /** @group DDC-644 */
     public function testSkipUnknownColumns(): void
     {
         $rsm = new ResultSetMapping();

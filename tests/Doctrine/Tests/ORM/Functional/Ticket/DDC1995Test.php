@@ -8,14 +8,13 @@ use Doctrine\Tests\Models\Company\CompanyEmployee;
 use Doctrine\Tests\Models\Company\CompanyPerson;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-/**
- * @group DDC-1995
- */
+/** @group DDC-1995 */
 class DDC1995Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
     {
         $this->useModelSet('company');
+
         parent::setUp();
     }
 

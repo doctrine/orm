@@ -13,9 +13,7 @@ use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\ManyToMany;
 
-/**
- * @Entity
- */
+/** @Entity */
 #[Entity]
 class DDC5934BaseContract
 {
@@ -25,7 +23,9 @@ class DDC5934BaseContract
      * @Column(name="id", type="integer")
      * @GeneratedValue()
      */
-    #[Id, Column, GeneratedValue]
+    #[Id]
+    #[Column]
+    #[GeneratedValue]
     public $id;
 
     /**

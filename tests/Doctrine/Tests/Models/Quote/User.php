@@ -76,9 +76,7 @@ class User
         $this->groups = new ArrayCollection();
     }
 
-    /**
-     * @psalm-return Collection<int, Phone>
-     */
+    /** @psalm-return Collection<int, Phone> */
     public function getPhones(): Collection
     {
         return $this->phones;
@@ -89,9 +87,7 @@ class User
         return $this->address;
     }
 
-    /**
-     * @psalm-return Collection<int, Group>
-     */
+    /** @psalm-return Collection<int, Group> */
     public function getGroups(): Collection
     {
         return $this->groups;

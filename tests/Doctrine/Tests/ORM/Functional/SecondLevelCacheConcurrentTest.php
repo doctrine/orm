@@ -18,9 +18,7 @@ use Psr\Cache\CacheItemPoolInterface;
 
 use function assert;
 
-/**
- * @group DDC-2183
- */
+/** @group DDC-2183 */
 class SecondLevelCacheConcurrentTest extends SecondLevelCacheFunctionalTestCase
 {
     /** @var CacheFactorySecondLevelCacheConcurrentTest */
@@ -32,6 +30,7 @@ class SecondLevelCacheConcurrentTest extends SecondLevelCacheFunctionalTestCase
     protected function setUp(): void
     {
         $this->enableSecondLevelCache();
+
         parent::setUp();
 
         $this->cacheFactory = new CacheFactorySecondLevelCacheConcurrentTest($this->getSharedSecondLevelCache());

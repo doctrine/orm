@@ -10,9 +10,7 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\OneToOne;
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC117ArticleDetails
 {
     /**

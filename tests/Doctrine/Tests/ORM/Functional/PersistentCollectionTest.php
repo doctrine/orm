@@ -21,6 +21,7 @@ class PersistentCollectionTest extends OrmFunctionalTestCase
         }
 
         parent::setUp();
+
         $this->createSchemaForModels(
             PersistentCollectionHolder::class,
             PersistentCollectionContent::class

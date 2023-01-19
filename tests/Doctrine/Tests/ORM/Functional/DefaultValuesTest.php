@@ -23,15 +23,14 @@ class DefaultValuesTest extends OrmFunctionalTestCase
     protected function setUp(): void
     {
         parent::setUp();
+
         $this->createSchemaForModels(
             DefaultValueUser::class,
             DefaultValueAddress::class
         );
     }
 
-    /**
-     * @group non-cacheable
-     */
+    /** @group non-cacheable */
     public function testSimpleDetachMerge(): void
     {
         $user       = new DefaultValueUser();
@@ -65,9 +64,7 @@ class DefaultValuesTest extends OrmFunctionalTestCase
         self::assertEquals('Poweruser', $a2->getUser()->type);
     }
 
-    /**
-     * @group DDC-1386
-     */
+    /** @group DDC-1386 */
     public function testGetPartialReferenceWithDefaultValueNotEvaluatedInFlush(): void
     {
         $user       = new DefaultValueUser();

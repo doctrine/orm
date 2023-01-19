@@ -17,9 +17,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 
 use function is_string;
 
-/**
- * @group DDC-2984
- */
+/** @group DDC-2984 */
 class DDC2984Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void

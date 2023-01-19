@@ -13,10 +13,11 @@ Database Schema
 How do I set the charset and collation for MySQL tables?
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-You can't set these values inside the annotations, yml or xml mapping files. To make a database
-work with the default charset and collation you should configure MySQL to use it as default charset,
-or create the database with charset and collation details. This way they get inherited to all newly
-created database tables and columns.
+You can't set these values with attributes, annotations or inside yml or
+xml mapping files. To make a database work with the default charset and
+collation you should configure MySQL to use it as default charset, or
+create the database with charset and collation details. This way they
+get inherited to all newly created database tables and columns.
 
 Entity Classes
 --------------
@@ -32,11 +33,12 @@ upon insert:
 
     class User
     {
-        const STATUS_DISABLED = 0;
-        const STATUS_ENABLED = 1;
+        private const STATUS_DISABLED = 0;
+        private const STATUS_ENABLED = 1;
 
-        private $algorithm = "sha1";
-        private $status = self:STATUS_DISABLED;
+        private string $algorithm = "sha1";
+        /** @var self::STATUS_* */
+        private int $status = self:STATUS_DISABLED;
     }
 
 .

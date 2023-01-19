@@ -10,9 +10,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
 
-/**
- * @group DDC-2183
- */
+/** @group DDC-2183 */
 class ClearCacheQueryRegionCommandTest extends OrmFunctionalTestCase
 {
     /** @var Application */
@@ -24,6 +22,7 @@ class ClearCacheQueryRegionCommandTest extends OrmFunctionalTestCase
     protected function setUp(): void
     {
         $this->enableSecondLevelCache();
+
         parent::setUp();
 
         $this->command = new QueryRegionCommand(new SingleManagerProvider($this->_em));

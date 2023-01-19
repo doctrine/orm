@@ -90,23 +90,17 @@ class User
      */
     public $groups;
 
-    /**
-     * @PrePersist
-     */
+    /** @PrePersist */
     public function doStuffOnPrePersist(): void
     {
     }
 
-    /**
-     * @PrePersist
-     */
+    /** @PrePersist */
     public function doOtherStuffOnPrePersistToo(): void
     {
     }
 
-    /**
-     * @PostPersist
-     */
+    /** @PostPersist */
     public function doStuffOnPostPersist(): void
     {
     }

@@ -19,12 +19,11 @@ class DDC3160Test extends OrmFunctionalTestCase
     protected function setUp(): void
     {
         $this->useModelSet('cms');
+
         parent::setUp();
     }
 
-    /**
-     * @group DDC-3160
-     */
+    /** @group DDC-3160 */
     public function testNoUpdateOnInsert(): void
     {
         $listener = new DDC3160OnFlushListener();

@@ -13,14 +13,13 @@ use function array_intersect_key;
 use function get_class;
 use function intval;
 
-/**
- * @group DDC-2790
- */
+/** @group DDC-2790 */
 class DDC2790Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
     {
         $this->useModelSet('cms');
+
         parent::setUp();
     }
 

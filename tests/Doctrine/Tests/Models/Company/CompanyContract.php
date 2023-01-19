@@ -81,7 +81,8 @@ use Doctrine\ORM\Mapping\Table;
  *      ),
  * })
  */
-#[ORM\Entity, ORM\Table(name: 'company_contracts')]
+#[ORM\Entity]
+#[ORM\Table(name: 'company_contracts')]
 #[ORM\InheritanceType('SINGLE_TABLE')]
 #[ORM\DiscriminatorColumn(name: 'discr', type: 'string')]
 #[ORM\DiscriminatorMap(['fix' => 'CompanyFixContract', 'flexible' => 'CompanyFlexContract', 'flexultra' => 'CompanyFlexUltraContract'])]
@@ -94,7 +95,9 @@ abstract class CompanyContract
      * @Column(type="integer")
      * @GeneratedValue
      */
-    #[ORM\Id, ORM\Column(type: 'integer'), ORM\GeneratedValue]
+    #[ORM\Id]
+    #[ORM\Column(type: 'integer')]
+    #[ORM\GeneratedValue]
     private $id;
 
     /**
@@ -149,9 +152,7 @@ abstract class CompanyContract
         $this->salesPerson = $salesPerson;
     }
 
-    /**
-     * @psalm-return Collection<int, CompanyEmployee>
-     */
+    /** @psalm-return Collection<int, CompanyEmployee> */
     public function getEngineers(): Collection
     {
         return $this->engineers;

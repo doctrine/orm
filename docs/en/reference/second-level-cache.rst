@@ -277,26 +277,44 @@ level cache region.
 
 .. configuration-block::
 
-    .. code-block:: php
+    .. code-block:: attribute
+
+        <?php
+        #[Entity]
+        #[Cache(usage: 'READ_ONLY', region: 'my_entity_region')]
+        class Country
+        {
+            #[Id]
+            #[GeneratedValue]
+            #[Column]
+            protected int|null $id = null;
+
+            #[Column(unique: true)]
+            protected string $name;
+
+            // other properties and methods
+        }
+
+    .. code-block:: annotation
 
         <?php
         /**
          * @Entity
-         * @Cache(usage="READ_ONLY", region="my_entity_region")
+         * @Cache("NONSTRICT_READ_WRITE")
          */
-        class Country
+        class State
         {
             /**
              * @Id
              * @GeneratedValue
              * @Column(type="integer")
              */
-            protected $id;
+            protected int|null $id = null;
 
             /**
              * @Column(unique=true)
              */
-            protected $name;
+            protected string $name;
 
             // other properties and methods
         }
@@ -340,7 +358,35 @@ It caches the primary keys of association and cache each element will be cached 
 
 .. configuration-block::
 
-    .. code-block:: php
+    .. code-block:: attribute
+
+        <?php
+        #[Entity]
+        #[Cache(usage: 'NONSTRICT_READ_WRITE')]
+        class State
+        {
+            #[Id]
+            #[GeneratedValue]
+            #[Column]
+            protected int|null $id = null;
+
+            #[Column(unique: true)]
+            protected string $name;
+
+            #[Cache(usage: 'NONSTRICT_READ_WRITE')]
+            #[ManyToOne(targetEntity: Country::class)]
+            #[JoinColumn(name: 'country_id', referencedColumnName: 'id')]
+            protected Country|null $country = null;
+
+            /** @var Collection<int, City> */
+            #[Cache(usage: 'NONSTRICT_READ_WRITE')]
+            #[OneToMany(targetEntity: City::class, mappedBy: 'state')]
+            protected Collection $cities;
+
+            // other properties and methods
+        }
+
+    .. code-block:: annotation
 
         <?php
         /**
@@ -354,25 +400,26 @@ It caches the primary keys of association and cache each element will be cached 
              * @GeneratedValue
              * @Column(type="integer")
              */
-            protected $id;
+            protected int|null $id = null;
 
             /**
              * @Column(unique=true)
              */
-            protected $name;
+            protected string $name;
 
             /**
              * @Cache("NONSTRICT_READ_WRITE")
              * @ManyToOne(targetEntity="Country")
              * @JoinColumn(name="country_id", referencedColumnName="id")
              */
-            protected $country;
+            protected Country|null $country;
 
             /**
              * @Cache("NONSTRICT_READ_WRITE")
              * @OneToMany(targetEntity="City", mappedBy="state")
+             * @var Collection<int, City>
              */
-            protected $cities;
+            protected Collection $cities;
 
             // other properties and methods
         }
@@ -673,23 +720,18 @@ For performance reasons the cache API does not extract from composite primary ke
 .. code-block:: php
 
     <?php
-    /**
-     * @Entity
-     */
+
+    #[Entity]
     class Reference
     {
-        /**
-         * @Id
-         * @ManyToOne(targetEntity="Article", inversedBy="references")
-         * @JoinColumn(name="source_id", referencedColumnName="article_id")
-         */
-        private $source;
+        #[Id]
+        #[ManyToOne(targetEntity: Article::class, inversedBy: 'references')]
+        #[JoinColumn(name: 'source_id', referencedColumnName: 'article_id')]
+        private Article|null $source = null;
 
-        /**
-         * @Id
-         * @ManyToOne(targetEntity="Article")
-         * @JoinColumn(name="target_id", referencedColumnName="article_id")
-         */
+        #[Id]
+        #[ManyToOne(targetEntity: Article::class, inversedBy: 'references')]
+        #[JoinColumn(name: 'target_id', referencedColumnName: 'article_id')]
         private $target;
     }
 

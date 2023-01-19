@@ -35,9 +35,7 @@ class OneToManyAssociationBuilder extends AssociationBuilder
         return $this;
     }
 
-    /**
-     * @return ClassMetadataBuilder
-     */
+    /** @return ClassMetadataBuilder */
     public function build()
     {
         $mapping = $this->mapping;

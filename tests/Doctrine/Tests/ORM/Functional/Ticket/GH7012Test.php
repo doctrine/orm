@@ -24,9 +24,7 @@ final class GH7012Test extends OrmFunctionalTestCase
         $this->setUpEntitySchema([GH7012UserData::class]);
     }
 
-    /**
-     * @group GH-7012
-     */
+    /** @group GH-7012 */
     public function testUpdateEntityWithIdentifierAssociationWithQuotedJoinColumn(): void
     {
         $user       = new QuotedUser();
@@ -60,7 +58,7 @@ class GH7012UserData
     /**
      * @var QuotedUser
      * @Id
-     * @OneToOne(targetEntity=Doctrine\Tests\Models\Quote\User::class)
+     * @OneToOne(targetEntity=QuotedUser::class)
      * @JoinColumn(name="`user-id`", referencedColumnName="`user-id`", onDelete="CASCADE")
      */
     public $user;

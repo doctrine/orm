@@ -32,9 +32,7 @@ class DDC522Test extends OrmFunctionalTestCase
         );
     }
 
-    /**
-     * @group DDC-522
-     */
+    /** @group DDC-522 */
     public function testJoinColumnWithSameNameAsAssociationField(): void
     {
         $cust           = new DDC522Customer();

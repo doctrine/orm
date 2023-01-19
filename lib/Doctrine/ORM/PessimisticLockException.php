@@ -8,9 +8,7 @@ use Doctrine\ORM\Exception\ORMException;
 
 class PessimisticLockException extends ORMException
 {
-    /**
-     * @return PessimisticLockException
-     */
+    /** @return PessimisticLockException */
     public static function lockFailed()
     {
         return new self('The pessimistic lock failed.');

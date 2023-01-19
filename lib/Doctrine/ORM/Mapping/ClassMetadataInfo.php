@@ -82,7 +82,7 @@ use const PHP_VERSION_ID;
  *      nullable?: bool,
  *      notInsertable?: bool,
  *      notUpdatable?: bool,
- *      generated?: string,
+ *      generated?: int,
  *      enumType?: class-string<BackedEnum>,
  *      columnDefinition?: string,
  *      precision?: int,
@@ -141,6 +141,13 @@ use const PHP_VERSION_ID;
  *     targetToSourceKeyColumns?: array<string, string>,
  *     type: int,
  *     unique?: bool,
+ * }
+ * @psalm-type DiscriminatorColumnMapping = array{
+ *     name: string,
+ *     fieldName: string,
+ *     type: string,
+ *     length?: int,
+ *     columnDefinition?: string|null,
  * }
  */
 class ClassMetadataInfo implements ClassMetadata
@@ -574,7 +581,8 @@ class ClassMetadataInfo implements ClassMetadata
      * READ-ONLY: The definition of the discriminator column used in JOINED and SINGLE_TABLE
      * inheritance mappings.
      *
-     * @psalm-var array<string, mixed>|null
+     * @var array<string, mixed>
+     * @psalm-var DiscriminatorColumnMapping|null
      */
     public $discriminatorColumn;
 
@@ -716,8 +724,8 @@ class ClassMetadataInfo implements ClassMetadata
      * )
      * </code>
      *
-     * @var array<string, mixed>
-     * @psalm-var array{sequenceName: string, allocationSize: string, initialValue: string, quoted?: mixed}
+     * @var array<string, mixed>|null
+     * @psalm-var array{sequenceName: string, allocationSize: string, initialValue: string, quoted?: mixed}|null
      * @todo Merge with tableGeneratorDefinition into generic generatorDefinition
      */
     public $sequenceGeneratorDefinition;
@@ -2323,9 +2331,7 @@ class ClassMetadataInfo implements ClassMetadata
         return $this->generatorType !== self::GENERATOR_TYPE_NONE;
     }
 
-    /**
-     * @return bool
-     */
+    /** @return bool */
     public function isInheritanceTypeNone()
     {
         return $this->inheritanceType === self::INHERITANCE_TYPE_NONE;
@@ -2378,6 +2384,8 @@ class ClassMetadataInfo implements ClassMetadata
      * Checks whether the class uses a sequence for id generation.
      *
      * @return bool TRUE if the class uses the SEQUENCE generator, FALSE otherwise.
+     *
+     * @psalm-assert-if-true !null $this->sequenceGeneratorDefinition
      */
     public function isIdGeneratorSequence()
     {
@@ -3215,7 +3223,7 @@ class ClassMetadataInfo implements ClassMetadata
      * @see getDiscriminatorColumn()
      *
      * @param mixed[]|null $columnDef
-     * @psalm-param array<string, mixed>|null $columnDef
+     * @psalm-param array{name: string|null, fieldName?: string, type?: string, length?: int, columnDefinition?: string|null}|null $columnDef
      *
      * @return void
      *
@@ -3250,6 +3258,7 @@ class ClassMetadataInfo implements ClassMetadata
 
     /**
      * @return array<string, mixed>
+     * @psalm-return DiscriminatorColumnMapping
      */
     final public function getDiscriminatorColumn(): array
     {
@@ -3845,9 +3854,7 @@ class ClassMetadataInfo implements ClassMetadata
         }
     }
 
-    /**
-     * @throws MappingException
-     */
+    /** @throws MappingException */
     private function assertFieldNotMapped(string $fieldName): void
     {
         if (
@@ -3899,9 +3906,7 @@ class ClassMetadataInfo implements ClassMetadata
         return $sequencePrefix;
     }
 
-    /**
-     * @psalm-param array<string, mixed> $mapping
-     */
+    /** @psalm-param array<string, mixed> $mapping */
     private function assertMappingOrderBy(array $mapping): void
     {
         if (isset($mapping['orderBy']) && ! is_array($mapping['orderBy'])) {
@@ -3909,9 +3914,7 @@ class ClassMetadataInfo implements ClassMetadata
         }
     }
 
-    /**
-     * @psalm-param class-string $class
-     */
+    /** @psalm-param class-string $class */
     private function getAccessibleProperty(ReflectionService $reflService, string $class, string $field): ?ReflectionProperty
     {
         $reflectionProperty = $reflService->getAccessibleProperty($class, $field);

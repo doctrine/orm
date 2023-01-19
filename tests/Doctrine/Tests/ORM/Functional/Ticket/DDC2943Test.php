@@ -9,15 +9,14 @@ use Doctrine\ORM\Tools\Pagination\Paginator;
 use Doctrine\Tests\Models\Cache\Country;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-/**
- * @group DDC-2943
- */
+/** @group DDC-2943 */
 class DDC2943Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
     {
         $this->enableSecondLevelCache();
         $this->useModelSet('cache');
+
         parent::setUp();
     }
 

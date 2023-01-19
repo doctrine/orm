@@ -21,6 +21,7 @@ class QueryDqlFunctionTest extends OrmFunctionalTestCase
     protected function setUp(): void
     {
         $this->useModelSet('company');
+
         parent::setUp();
 
         $this->generateFixture();
@@ -248,9 +249,7 @@ class QueryDqlFunctionTest extends OrmFunctionalTestCase
         self::assertEquals(1600000, $result[3]['op']);
     }
 
-    /**
-     * @group test
-     */
+    /** @group test */
     public function testOperatorDiv(): void
     {
         $result = $this->_em->createQuery('SELECT m, (m.salary/0.5) AS op FROM Doctrine\Tests\Models\Company\CompanyManager m ORDER BY m.salary ASC')
@@ -275,9 +274,7 @@ class QueryDqlFunctionTest extends OrmFunctionalTestCase
         self::assertEquals('Benjamin E.HR', $arg[3]['namedep']);
     }
 
-    /**
-     * @group DDC-1014
-     */
+    /** @group DDC-1014 */
     public function testDateDiff(): void
     {
         $query = $this->_em->createQuery("SELECT DATE_DIFF(CURRENT_TIMESTAMP(), DATE_ADD(CURRENT_TIMESTAMP(), 10, 'day')) AS diff FROM Doctrine\Tests\Models\Company\CompanyManager m");
@@ -382,9 +379,7 @@ class QueryDqlFunctionTest extends OrmFunctionalTestCase
         ];
     }
 
-    /**
-     * @group DDC-1213
-     */
+    /** @group DDC-1213 */
     public function testBitOrComparison(): void
     {
         $dql    = 'SELECT m, ' .
@@ -406,9 +401,7 @@ class QueryDqlFunctionTest extends OrmFunctionalTestCase
         self::assertEquals($result[3][0]['salary'] / 100000 | 2, $result[3]['salary_bit_or']);
     }
 
-    /**
-     * @group DDC-1213
-     */
+    /** @group DDC-1213 */
     public function testBitAndComparison(): void
     {
         $dql    = 'SELECT m, ' .

@@ -29,6 +29,7 @@ class ReferenceProxyTest extends OrmFunctionalTestCase
     {
         $this->useModelSet('ecommerce');
         $this->useModelSet('company');
+
         parent::setUp();
     }
 
@@ -64,9 +65,7 @@ class ReferenceProxyTest extends OrmFunctionalTestCase
         self::assertEquals('Doctrine Cookbook', $productProxy->getName());
     }
 
-    /**
-     * @group DDC-727
-     */
+    /** @group DDC-727 */
     public function testAccessMetatadaForProxy(): void
     {
         $id = $this->createProduct();
@@ -77,9 +76,7 @@ class ReferenceProxyTest extends OrmFunctionalTestCase
         self::assertEquals(ECommerceProduct::class, $class->name);
     }
 
-    /**
-     * @group DDC-1033
-     */
+    /** @group DDC-1033 */
     public function testReferenceFind(): void
     {
         $id = $this->createProduct();
@@ -91,9 +88,7 @@ class ReferenceProxyTest extends OrmFunctionalTestCase
         self::assertEquals('Doctrine Cookbook', $entity2->getName());
     }
 
-    /**
-     * @group DDC-1033
-     */
+    /** @group DDC-1033 */
     public function testCloneProxy(): void
     {
         $id = $this->createProduct();
@@ -116,9 +111,7 @@ class ReferenceProxyTest extends OrmFunctionalTestCase
         self::assertFalse($entity->isCloned);
     }
 
-    /**
-     * @group DDC-733
-     */
+    /** @group DDC-733 */
     public function testInitializeProxy(): void
     {
         $id = $this->createProduct();
@@ -131,9 +124,7 @@ class ReferenceProxyTest extends OrmFunctionalTestCase
         self::assertTrue($entity->__isInitialized__, 'Should be initialized after called UnitOfWork::initializeObject()');
     }
 
-    /**
-     * @group DDC-1163
-     */
+    /** @group DDC-1163 */
     public function testInitializeChangeAndFlushProxy(): void
     {
         $id = $this->createProduct();
@@ -149,9 +140,7 @@ class ReferenceProxyTest extends OrmFunctionalTestCase
         self::assertEquals('Doctrine 2 Cookbook', $entity->getName());
     }
 
-    /**
-     * @group DDC-1022
-     */
+    /** @group DDC-1022 */
     public function testWakeupCalledOnProxy(): void
     {
         $id = $this->createProduct();
@@ -178,9 +167,7 @@ class ReferenceProxyTest extends OrmFunctionalTestCase
         self::assertFalse($entity->__isInitialized__, "Getting the identifier doesn't initialize the proxy.");
     }
 
-    /**
-     * @group DDC-1625
-     */
+    /** @group DDC-1625 */
     public function testDoNotInitializeProxyOnGettingTheIdentifierDDC1625(): void
     {
         $id = $this->createAuction();
@@ -228,9 +215,7 @@ class ReferenceProxyTest extends OrmFunctionalTestCase
         self::assertTrue($entity->__isInitialized__, 'Getting something other than the identifier initializes the proxy.');
     }
 
-    /**
-     * @group DDC-1604
-     */
+    /** @group DDC-1604 */
     public function testCommonPersistenceProxy(): void
     {
         $id = $this->createProduct();

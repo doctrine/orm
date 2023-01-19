@@ -11,14 +11,13 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-/**
- * @group DDC-1548
- */
+/** @group DDC-1548 */
 class DDC1548Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
     {
         parent::setUp();
+
         $this->createSchemaForModels(
             DDC1548E1::class,
             DDC1548E2::class,
@@ -44,9 +43,7 @@ class DDC1548Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC1548E1
 {
     /**
@@ -57,9 +54,7 @@ class DDC1548E1
     public $rel;
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC1548E2
 {
     /**
@@ -70,9 +65,7 @@ class DDC1548E2
     public $rel;
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC1548Rel
 {
     /**

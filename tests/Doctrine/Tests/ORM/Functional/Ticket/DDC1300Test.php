@@ -14,14 +14,13 @@ use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-/**
- * @group DDC-1300
- */
+/** @group DDC-1300 */
 class DDC1300Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
     {
         parent::setUp();
+
         $this->createSchemaForModels(
             DDC1300Foo::class,
             DDC1300FooLocale::class
@@ -51,9 +50,7 @@ class DDC1300Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC1300Foo
 {
     /**
@@ -77,18 +74,14 @@ class DDC1300Foo
      */
     public $fooLocaleRefFoo = null;
 
-    /**
-     * @param mixed[]|null $options
-     */
+    /** @param mixed[]|null $options */
     public function __construct(?array $options = null)
     {
         $this->fooLocaleRefFoo = new ArrayCollection();
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC1300FooLocale
 {
     /**

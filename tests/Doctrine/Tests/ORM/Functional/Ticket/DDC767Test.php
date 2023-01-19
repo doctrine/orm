@@ -17,12 +17,11 @@ class DDC767Test extends OrmFunctionalTestCase
     protected function setUp(): void
     {
         $this->useModelSet('cms');
+
         parent::setUp();
     }
 
-    /**
-     * @group DDC-767
-     */
+    /** @group DDC-767 */
     public function testCollectionChangesInsideTransaction(): void
     {
         $user           = new CmsUser();

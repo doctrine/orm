@@ -21,6 +21,8 @@ use stdClass;
 use function array_keys;
 use function assert;
 use function method_exists;
+use function serialize;
+use function unserialize;
 
 /**
  * Tests the lazy-loading capabilities of the PersistentCollection and the initialization of collections.
@@ -105,9 +107,7 @@ class PersistentCollectionTest extends OrmTestCase
         self::assertTrue($this->collection->isInitialized());
     }
 
-    /**
-     * @group DDC-3382
-     */
+    /** @group DDC-3382 */
     public function testNonObjects(): void
     {
         self::assertEmpty($this->collection);
@@ -127,9 +127,7 @@ class PersistentCollectionTest extends OrmTestCase
         self::assertNull($this->collection->get(3));
     }
 
-    /**
-     * @group 6110
-     */
+    /** @group 6110 */
     public function testRemovingElementsAlsoRemovesKeys(): void
     {
         $dummy = new stdClass();
@@ -141,9 +139,7 @@ class PersistentCollectionTest extends OrmTestCase
         self::assertEquals([], array_keys($this->collection->toArray()));
     }
 
-    /**
-     * @group 6110
-     */
+    /** @group 6110 */
     public function testClearWillAlsoClearKeys(): void
     {
         $this->collection->add(new stdClass());
@@ -151,9 +147,7 @@ class PersistentCollectionTest extends OrmTestCase
         self::assertEquals([], array_keys($this->collection->toArray()));
     }
 
-    /**
-     * @group 6110
-     */
+    /** @group 6110 */
     public function testClearWillAlsoResetKeyPositions(): void
     {
         $dummy = new stdClass();
@@ -356,5 +350,14 @@ class PersistentCollectionTest extends OrmTestCase
 
         self::assertTrue($this->collection->isInitialized());
         self::assertEquals($expectedDirty, $this->collection->isDirty());
+    }
+
+    public function testItCanBeSerializedAndUnserializedBack(): void
+    {
+        $this->collection->add(new stdClass());
+        $collection = unserialize(serialize($this->collection));
+        $collection->add(new stdClass());
+        $collection[3] = new stdClass();
+        self::assertCount(3, $collection);
     }
 }

@@ -46,9 +46,7 @@ class AttributeDriver extends CompatibilityAnnotationDriver
      */
     protected $reader;
 
-    /**
-     * @param array<string> $paths
-     */
+    /** @param array<string> $paths */
     public function __construct(array $paths)
     {
         if (PHP_VERSION_ID < 80000) {
@@ -254,10 +252,10 @@ class AttributeDriver extends CompatibilityAnnotationDriver
 
                     $metadata->setDiscriminatorColumn(
                         [
-                            'name'             => $discrColumnAttribute->name,
-                            'type'             => $discrColumnAttribute->type ?: 'string',
-                            'length'           => $discrColumnAttribute->length ?: 255,
-                            'columnDefinition' => $discrColumnAttribute->columnDefinition,
+                            'name'             => isset($discrColumnAttribute->name) ? (string) $discrColumnAttribute->name : null,
+                            'type'             => isset($discrColumnAttribute->type) ? (string) $discrColumnAttribute->type : 'string',
+                            'length'           => isset($discrColumnAttribute->length) ? (int) $discrColumnAttribute->length : 255,
+                            'columnDefinition' => isset($discrColumnAttribute->columnDefinition) ? (string) $discrColumnAttribute->columnDefinition : null,
                         ]
                     );
                 } else {

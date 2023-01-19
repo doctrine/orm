@@ -27,6 +27,7 @@ class OrderedJoinedTableInheritanceCollectionTest extends OrmFunctionalTestCase
     protected function setUp(): void
     {
         parent::setUp();
+
         $this->createSchemaForModels(
             OJTICPet::class,
             OJTICCat::class,
@@ -129,16 +130,12 @@ abstract class OJTICPet
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class OJTICCat extends OJTICPet
 {
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class OJTICDog extends OJTICPet
 {
 }

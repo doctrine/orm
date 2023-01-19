@@ -1520,6 +1520,10 @@ class SqlWalker implements TreeWalker
                     $this->scalarResultAliasMap[$resultAlias][] = $columnAlias;
 
                     $this->rsm->addFieldResult($dqlAlias, $columnAlias, $fieldName, $class->name);
+
+                    if (! empty($mapping['enumType'])) {
+                        $this->rsm->addEnumResult($columnAlias, $mapping['enumType']);
+                    }
                 }
 
                 // Add any additional fields of subclasses (excluding inherited fields)
@@ -1634,9 +1638,7 @@ class SqlWalker implements TreeWalker
             . $this->walkSimpleSelectExpression($simpleSelectClause->simpleSelectExpression);
     }
 
-    /**
-     * @return string
-     */
+    /** @return string */
     public function walkParenthesisExpression(AST\ParenthesisExpression $parenthesisExpression)
     {
         return sprintf('(%s)', $parenthesisExpression->expression->dispatch($this));

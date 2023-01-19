@@ -54,13 +54,13 @@ use function strpos;
  * the static create() method. The quickest way to obtain a fully
  * configured EntityManager is:
  *
- *     use Doctrine\ORM\Tools\Setup;
+ *     use Doctrine\ORM\Tools\ORMSetup;
  *     use Doctrine\ORM\EntityManager;
  *
- *     $paths = array('/path/to/entity/mapping/files');
+ *     $paths = ['/path/to/entity/mapping/files'];
  *
- *     $config = Setup::createAnnotationMetadataConfiguration($paths);
- *     $dbParams = array('driver' => 'pdo_sqlite', 'memory' => true);
+ *     $config = ORMSetup::createAttributeMetadataConfiguration($paths);
+ *     $dbParams = ['driver' => 'pdo_sqlite', 'memory' => true];
  *     $entityManager = EntityManager::create($dbParams, $config);
  *
  * For more information see
@@ -767,6 +767,8 @@ class EntityManager implements EntityManagerInterface
 
     /**
      * {@inheritDoc}
+     *
+     * @psalm-return never
      */
     public function copy($entity, $deep = false)
     {

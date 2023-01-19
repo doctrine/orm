@@ -20,6 +20,7 @@ class CompositePrimaryKeyTest extends OrmFunctionalTestCase
     protected function setUp(): void
     {
         $this->useModelSet('navigation');
+
         parent::setUp();
     }
 
@@ -59,9 +60,7 @@ class CompositePrimaryKeyTest extends OrmFunctionalTestCase
         self::assertEquals('Brandenburger Tor', $poi->getName());
     }
 
-    /**
-     * @group DDC-1651
-     */
+    /** @group DDC-1651 */
     public function testSetParameterCompositeKeyObject(): void
     {
         $this->putGermanysBrandenburderTor();
@@ -168,9 +167,7 @@ class CompositePrimaryKeyTest extends OrmFunctionalTestCase
         $poi = $this->_em->getReference(NavPointOfInterest::class, ['lat' => 10, 'long' => 20, 'key1' => 100]);
     }
 
-    /**
-     * @group DDC-1939
-     */
+    /** @group DDC-1939 */
     public function testDeleteCompositePersistentCollection(): void
     {
         $this->putGermanysBrandenburderTor();

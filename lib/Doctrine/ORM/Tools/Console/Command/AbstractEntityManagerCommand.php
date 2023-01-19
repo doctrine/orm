@@ -7,8 +7,11 @@ namespace Doctrine\ORM\Tools\Console\Command;
 use Doctrine\Deprecations\Deprecation;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Tools\Console\EntityManagerProvider;
+use Doctrine\ORM\Tools\Console\Helper\EntityManagerHelper;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
+
+use function assert;
 
 abstract class AbstractEntityManagerCommand extends Command
 {
@@ -33,7 +36,10 @@ abstract class AbstractEntityManagerCommand extends Command
                 $this->getName()
             );
 
-            return $this->getHelper('em')->getEntityManager();
+            $helper = $this->getHelper('em');
+            assert($helper instanceof EntityManagerHelper);
+
+            return $helper->getEntityManager();
         }
 
         return $input->getOption('em') === null

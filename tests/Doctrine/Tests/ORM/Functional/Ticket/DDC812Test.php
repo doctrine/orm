@@ -15,12 +15,11 @@ class DDC812Test extends OrmFunctionalTestCase
     protected function setUp(): void
     {
         $this->useModelSet('cms');
+
         parent::setUp();
     }
 
-    /**
-     * @group DDC-812
-     */
+    /** @group DDC-812 */
     public function testFetchJoinInitializesPreviouslyUninitializedCollectionOfManagedEntity(): void
     {
         $article        = new CmsArticle();

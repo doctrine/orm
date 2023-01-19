@@ -15,9 +15,7 @@ use Doctrine\Tests\Models\DDC117\DDC117Article;
 use Doctrine\Tests\Models\DDC117\DDC117ArticleDetails;
 use Doctrine\Tests\OrmTestCase;
 
-/**
- * @group DDC-1845
- */
+/** @group DDC-1845 */
 class QuoteStrategyTest extends OrmTestCase
 {
     /** @var DefaultQuoteStrategy */
@@ -29,6 +27,7 @@ class QuoteStrategyTest extends OrmTestCase
     protected function setUp(): void
     {
         parent::setUp();
+
         $em             = $this->getTestEntityManager();
         $this->platform = $em->getConnection()->getDatabasePlatform();
         $this->strategy = new DefaultQuoteStrategy();

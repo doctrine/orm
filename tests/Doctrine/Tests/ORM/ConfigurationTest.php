@@ -49,6 +49,7 @@ class ConfigurationTest extends DoctrineTestCase
     protected function setUp(): void
     {
         parent::setUp();
+
         $this->configuration = new Configuration();
     }
 
@@ -420,9 +421,7 @@ class ConfigurationTest extends DoctrineTestCase
         self::assertSame($quoteStrategy, $this->configuration->getQuoteStrategy());
     }
 
-    /**
-     * @group DDC-1955
-     */
+    /** @group DDC-1955 */
     public function testSetGetEntityListenerResolver(): void
     {
         self::assertInstanceOf(EntityListenerResolver::class, $this->configuration->getEntityListenerResolver());
@@ -432,9 +431,7 @@ class ConfigurationTest extends DoctrineTestCase
         self::assertSame($resolver, $this->configuration->getEntityListenerResolver());
     }
 
-    /**
-     * @group DDC-2183
-     */
+    /** @group DDC-2183 */
     public function testSetGetSecondLevelCacheConfig(): void
     {
         $mockClass = $this->createMock(CacheConfiguration::class);

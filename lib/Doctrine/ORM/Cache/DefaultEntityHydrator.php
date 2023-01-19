@@ -38,9 +38,7 @@ class DefaultEntityHydrator implements EntityHydrator
     /** @var array<string,mixed> */
     private static $hints = [Query::HINT_CACHE_ENABLED => true];
 
-    /**
-     * @param EntityManagerInterface $em The entity manager.
-     */
+    /** @param EntityManagerInterface $em The entity manager. */
     public function __construct(EntityManagerInterface $em)
     {
         $this->em                  = $em;

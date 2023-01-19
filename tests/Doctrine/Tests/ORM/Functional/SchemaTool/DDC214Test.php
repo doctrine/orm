@@ -32,9 +32,7 @@ class DDC214Test extends OrmFunctionalTestCase
         }
     }
 
-    /**
-     * @group DDC-214
-     */
+    /** @group DDC-214 */
     public function testCmsAddressModel(): void
     {
         $this->assertCreatedSchemaNeedsNoUpdates(
@@ -47,9 +45,7 @@ class DDC214Test extends OrmFunctionalTestCase
         );
     }
 
-    /**
-     * @group DDC-214
-     */
+    /** @group DDC-214 */
     public function testCompanyModel(): void
     {
         $this->assertCreatedSchemaNeedsNoUpdates(
@@ -64,9 +60,7 @@ class DDC214Test extends OrmFunctionalTestCase
         );
     }
 
-    /**
-     * @param class-string ...$classes
-     */
+    /** @param class-string ...$classes */
     public function assertCreatedSchemaNeedsNoUpdates(string ...$classes): void
     {
         $this->createSchemaForModels(...$classes);

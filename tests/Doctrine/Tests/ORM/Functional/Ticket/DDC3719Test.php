@@ -14,12 +14,11 @@ class DDC3719Test extends OrmFunctionalTestCase
     protected function setUp(): void
     {
         $this->useModelSet('company');
+
         parent::setUp();
     }
 
-    /**
-     * @group DDC-3719
-     */
+    /** @group DDC-3719 */
     public function testCriteriaOnNotOwningSide(): void
     {
         $manager = new CompanyManager();

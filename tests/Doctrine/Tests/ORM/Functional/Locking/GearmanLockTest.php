@@ -13,9 +13,7 @@ use function class_exists;
 use function max;
 use function serialize;
 
-/**
- * @group locking_functional
- */
+/** @group locking_functional */
 class GearmanLockTest extends OrmFunctionalTestCase
 {
     /** @var GearmanClient */
@@ -34,7 +32,9 @@ class GearmanLockTest extends OrmFunctionalTestCase
         }
 
         $this->useModelSet('cms');
+
         parent::setUp();
+
         $this->tasks = [];
 
         $this->gearman = new GearmanClient();

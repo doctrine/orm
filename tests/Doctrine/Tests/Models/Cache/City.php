@@ -25,7 +25,9 @@ use Doctrine\ORM\Mapping\Table;
  * @Entity
  * @Table("cache_city")
  */
-#[ORM\Entity, ORM\Table(name: 'cache_city'), ORM\Cache]
+#[ORM\Entity]
+#[ORM\Table(name: 'cache_city')]
+#[ORM\Cache]
 class City
 {
     /**
@@ -34,7 +36,9 @@ class City
      * @GeneratedValue
      * @Column(type="integer")
      */
-    #[ORM\Id, ORM\GeneratedValue, ORM\Column(type: 'integer')]
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column(type: 'integer')]
     protected $id;
 
     /**
@@ -51,7 +55,7 @@ class City
      * @JoinColumn(name="state_id", referencedColumnName="id")
      */
     #[ORM\Cache]
-    #[ORM\ManyToOne(targetEntity: 'State', inversedBy: 'citities')]
+    #[ORM\ManyToOne(targetEntity: 'State', inversedBy: 'cities')]
     #[ORM\JoinColumn(name: 'state_id', referencedColumnName: 'id')]
     protected $state;
 
@@ -68,7 +72,8 @@ class City
      * @OrderBy({"name" = "ASC"})
      * @OneToMany(targetEntity="Attraction", mappedBy="city")
      */
-    #[ORM\Cache, ORM\OrderBy(['name' => 'ASC'])]
+    #[ORM\Cache]
+    #[ORM\OrderBy(['name' => 'ASC'])]
     #[ORM\OneToMany(targetEntity: 'Attraction', mappedBy: 'city')]
     public $attractions;
 
@@ -115,9 +120,7 @@ class City
         $this->travels[] = $travel;
     }
 
-    /**
-     * @psalm-return Collection<int, Travel>
-     */
+    /** @psalm-return Collection<int, Travel> */
     public function getTravels(): Collection
     {
         return $this->travels;
@@ -128,9 +131,7 @@ class City
         $this->attractions[] = $attraction;
     }
 
-    /**
-     * @psalm-return Collection<int, Attraction>
-     */
+    /** @psalm-return Collection<int, Attraction> */
     public function getAttractions(): Collection
     {
         return $this->attractions;

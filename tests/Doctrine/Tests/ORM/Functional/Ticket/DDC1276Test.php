@@ -10,14 +10,13 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 
 use function count;
 
-/**
- * @group DDC-1276
- */
+/** @group DDC-1276 */
 class DDC1276Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
     {
         $this->useModelSet('cms');
+
         parent::setUp();
     }
 

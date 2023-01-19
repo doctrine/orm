@@ -38,38 +38,36 @@ Example:
     use Doctrine\ORM\Mapping\MappedSuperclass;
     use Doctrine\ORM\Mapping\Entity;
 
-    /** @MappedSuperclass */
+    #[MappedSuperclass]
     class Person
     {
-        /** @Column(type="integer") */
-        protected $mapped1;
-        /** @Column(type="string") */
-        protected $mapped2;
-        /**
-         * @OneToOne(targetEntity="Toothbrush")
-         * @JoinColumn(name="toothbrush_id", referencedColumnName="id")
-         */
-        protected $toothbrush;
+        #[Column(type: 'integer')]
+        protected int $mapped1;
+        #[Column(type: 'string')]
+        protected string $mapped2;
+        #[OneToOne(targetEntity: Toothbrush::class)]
+        #[JoinColumn(name: 'toothbrush_id', referencedColumnName: 'id')]
+        protected Toothbrush|null $toothbrush = null;
 
         // ... more fields and methods
     }
-    
-    /** @Entity */
+
+    #[Entity]
     class Employee extends Person
     {
-        /** @Id @Column(type="integer") */
-        private $id;
-        /** @Column(type="string") */
-        private $name;
-    
+        #[Id, Column(type: 'integer')]
+        private int|null $id = null;
+        #[Column(type: 'string')]
+        private string $name;
+
         // ... more fields and methods
     }
 
-    /** @Entity */
+    #[Entity]
     class Toothbrush
     {
-        /** @Id @Column(type="integer") */
-        private $id;
+        #[Id, Column(type: 'integer')]
+        private int|null $id = null;
 
         // ... more fields and methods
     }
@@ -99,11 +97,31 @@ Example:
 
 .. configuration-block::
 
-    .. code-block:: php
-    
+    .. code-block:: attribute
+
         <?php
         namespace MyProject\Model;
-        
+
+        #[Entity]
+        #[InheritanceType('SINGLE_TABLE')]
+        #[DiscriminatorColumn(name: 'discr', type: 'string')]
+        #[DiscriminatorMap(['person' => Person::class, 'employee' => Employee::class])]
+        class Person
+        {
+            // ...
+        }
+
+        #[Entity]
+        class Employee extends Person
+        {
+            // ...
+        }
+
+    .. code-block:: annotation
+
+        <?php
+        namespace MyProject\Model;
+
         /**
          * @Entity
          * @InheritanceType("SINGLE_TABLE")
@@ -114,7 +132,7 @@ Example:
         {
             // ...
         }
-        
+
         /**
          * @Entity
          */
@@ -124,7 +142,7 @@ Example:
         }
 
     .. code-block:: yaml
-    
+
         MyProject\Model\Person:
           type: entity
           inheritanceType: SINGLE_TABLE
@@ -134,29 +152,30 @@ Example:
           discriminatorMap:
             person: Person
             employee: Employee
-                
+
         MyProject\Model\Employee:
           type: entity
-            
+
 Things to note:
 
 
--  The @InheritanceType and @DiscriminatorColumn must be specified 
-   on the topmost class that is part of the mapped entity hierarchy.
--  The @DiscriminatorMap specifies which values of the
+-  The ``#[InheritanceType]`` and ``#[DiscriminatorColumn]`` must be
+  specified on the topmost class that is part of the mapped entity
+  hierarchy.
+-  The ``#[DiscriminatorMap]`` specifies which values of the
    discriminator column identify a row as being of a certain type. In
    the case above a value of "person" identifies a row as being of
    type ``Person`` and "employee" identifies a row as being of type
    ``Employee``.
 -  All entity classes that is part of the mapped entity hierarchy
    (including the topmost class) should be specified in the
-   @DiscriminatorMap. In the case above Person class included.
+   ``#[DiscriminatorMap]``. In the case above Person class included.
 -  The names of the classes in the discriminator map do not need to
    be fully qualified if the classes are contained in the same
    namespace as the entity class on which the discriminator map is
    applied.
 -  If no discriminator map is provided, then the map is generated
-   automatically. The automatically generated discriminator map 
+   automatically. The automatically generated discriminator map
    contains the lowercase short name of each class as key.
 
 Design-time considerations
@@ -178,9 +197,9 @@ relationships involving types that employ this mapping strategy are
 very performing.
 
 There is a general performance consideration with Single Table
-Inheritance: If the target-entity of a many-to-one or one-to-one 
-association is an STI entity, it is preferable for performance reasons that it 
-be a leaf entity in the inheritance hierarchy, (ie. have no subclasses). 
+Inheritance: If the target-entity of a many-to-one or one-to-one
+association is an STI entity, it is preferable for performance reasons that it
+be a leaf entity in the inheritance hierarchy, (ie. have no subclasses).
 Otherwise Doctrine *CANNOT* create proxy instances
 of this entity and will *ALWAYS* load the entity eagerly.
 
@@ -212,19 +231,17 @@ Example:
 
     <?php
     namespace MyProject\Model;
-    
-    /**
-     * @Entity
-     * @InheritanceType("JOINED")
-     * @DiscriminatorColumn(name="discr", type="string")
-     * @DiscriminatorMap({"person" = "Person", "employee" = "Employee"})
-     */
+
+    #[Entity]
+    #[InheritanceType('JOINED')]
+    #[DiscriminatorColumn(name: 'discr', type: 'string')]
+    #[DiscriminatorMap(['person' => Person::class, 'employee' => Employee::class])]
     class Person
     {
         // ...
     }
-    
-    /** @Entity */
+
+    #[Entity]
     class Employee extends Person
     {
         // ...
@@ -233,10 +250,10 @@ Example:
 Things to note:
 
 
--  The @InheritanceType, @DiscriminatorColumn and @DiscriminatorMap
-   must be specified on the topmost class that is part of the mapped
-   entity hierarchy.
--  The @DiscriminatorMap specifies which values of the
+-  The ``#[InheritanceType]``, ``#[DiscriminatorColumn]`` and
+  ``#[DiscriminatorMap]`` must be specified on the topmost class that is
+  part of the mapped entity hierarchy.
+-  The ``#[DiscriminatorMap]`` specifies which values of the
    discriminator column identify a row as being of which type. In the
    case above a value of "person" identifies a row as being of type
    ``Person`` and "employee" identifies a row as being of type
@@ -246,7 +263,7 @@ Things to note:
    namespace as the entity class on which the discriminator map is
    applied.
 -  If no discriminator map is provided, then the map is generated
-   automatically. The automatically generated discriminator map 
+   automatically. The automatically generated discriminator map
    contains the lowercase short name of each class as key.
 
 .. note::
@@ -284,13 +301,13 @@ themselves on access of any subtype fields, so accessing fields of
 subtypes after such a query is not safe.
 
 There is a general performance consideration with Class Table
-Inheritance: If the target-entity of a many-to-one or one-to-one 
-association is a CTI entity, it is preferable for performance reasons that it 
-be a leaf entity in the inheritance hierarchy, (ie. have no subclasses). 
+Inheritance: If the target-entity of a many-to-one or one-to-one
+association is a CTI entity, it is preferable for performance reasons that it
+be a leaf entity in the inheritance hierarchy, (ie. have no subclasses).
 Otherwise Doctrine *CANNOT* create proxy instances
 of this entity and will *ALWAYS* load the entity eagerly.
 
-There is also another important performance consideration that it is *NOT POSSIBLE* 
+There is also another important performance consideration that it is *NOT POSSIBLE*
 to query for the base entity without any LEFT JOINs to the sub-types.
 
 SQL Schema considerations
@@ -330,7 +347,52 @@ Example:
 
 .. configuration-block::
 
-    .. code-block:: php
+    .. code-block:: attribute
+
+        <?php
+        // user mapping
+        namespace MyProject\Model;
+
+        #[MappedSuperclass]
+        class User
+        {
+            // other fields mapping
+
+            /** @var Collection<int, Group> */
+            #[JoinTable(name: 'users_groups')]
+            #[JoinColumn(name: 'user_id', referencedColumnName: 'id')]
+            #[InverseJoinColumn(name: 'group_id', referencedColumnName: 'id')]
+            #[ManyToMany(targetEntity: 'Group', inversedBy: 'users')]
+            protected Collection $groups;
+
+            #[ManyToOne(targetEntity: 'Address')]
+            #[JoinColumn(name: 'address_id', referencedColumnName: 'id')]
+            protected Address|null $address = null;
+        }
+
+        // admin mapping
+        namespace MyProject\Model;
+
+        #[Entity]
+        #[AssociationOverrides([
+            new AssociationOverride(
+                name: 'groups',
+                joinTable: new JoinTable(
+                    name: 'users_admingroups',
+                ),
+                joinColumns: [new JoinColumn(name: 'adminuser_id')],
+                inverseJoinColumns: [new JoinColumn(name: 'admingroup_id')]
+            ),
+            new AssociationOverride(
+                name: 'address',
+                joinColumns: [new JoinColumn(name: 'adminaddress_id', referencedColumnName: 'id')]
+            )
+        ])]
+        class Admin extends User
+        {
+        }
+
+    .. code-block:: annotation
 
         <?php
         // user mapping
@@ -348,14 +410,15 @@ Example:
              *  joinColumns={@JoinColumn(name="user_id", referencedColumnName="id")},
              *  inverseJoinColumns={@JoinColumn(name="group_id", referencedColumnName="id")}
              * )
+             * @var Collection<int, Group>
              */
-            protected $groups;
+            protected Collection $groups;
 
             /**
              * @ManyToOne(targetEntity="Address")
              * @JoinColumn(name="address_id", referencedColumnName="id")
              */
-            protected $address;
+            protected Address|null $address = null;
         }
 
         // admin mapping
@@ -490,7 +553,51 @@ Could be used by an entity that extends a mapped superclass to override a field 
 
 .. configuration-block::
 
-    .. code-block:: php
+    .. code-block:: attribute
+
+        <?php
+        // user mapping
+        namespace MyProject\Model;
+
+        #[MappedSuperclass]
+        class User
+        {
+            #[Id, GeneratedValue, Column(type: 'integer', name: 'user_id', length: 150)]
+            protected int|null $id = null;
+
+            #[Column(name: 'user_name', nullable: true, unique: false, length: 250)]
+            protected string $name;
+
+            // other fields mapping
+        }
+
+        // guest mapping
+        namespace MyProject\Model;
+        #[Entity]
+        #[AttributeOverrides([
+            new AttributeOverride(
+                name: 'id',
+                column: new Column(
+                    name: 'guest_id',
+                    type: 'integer',
+                    length: 140
+                )
+            ),
+            new AttributeOverride(
+                name: 'name',
+                column: new Column(
+                    name: 'guest_name',
+                    nullable: false,
+                    unique: true,
+                    length: 240
+                )
+            )
+        ])]
+        class Guest extends User
+        {
+        }
+
+    .. code-block:: annotation
 
         <?php
         // user mapping
@@ -501,10 +608,10 @@ Could be used by an entity that extends a mapped superclass to override a field 
         class User
         {
             /** @Id @GeneratedValue @Column(type="integer", name="user_id", length=150) */
-            protected $id;
+            protected int|null $id = null;
 
             /** @Column(name="user_name", nullable=true, unique=false, length=250) */
-            protected $name;
+            protected string $name;
 
             // other fields mapping
         }

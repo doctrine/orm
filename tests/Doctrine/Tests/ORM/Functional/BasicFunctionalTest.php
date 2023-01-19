@@ -27,6 +27,7 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
     protected function setUp(): void
     {
         $this->useModelSet('cms');
+
         parent::setUp();
     }
 
@@ -146,9 +147,7 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
         self::assertNotInstanceOf(Proxy::class, $user2->address);
     }
 
-    /**
-     * @group DDC-1230
-     */
+    /** @group DDC-1230 */
     public function testRemove(): void
     {
         $user           = new CmsUser();
@@ -337,9 +336,7 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
         self::assertEquals('developer', $user->status);
     }
 
-    /**
-     * @group DDC-833
-     */
+    /** @group DDC-833 */
     public function testRefreshResetsCollection(): void
     {
         $user           = new CmsUser();
@@ -369,9 +366,7 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
         self::assertCount(1, $user->phonenumbers);
     }
 
-    /**
-     * @group DDC-833
-     */
+    /** @group DDC-833 */
     public function testDqlRefreshResetsCollection(): void
     {
         $user           = new CmsUser();
@@ -405,9 +400,7 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
         self::assertCount(1, $user->phonenumbers);
     }
 
-    /**
-     * @group DDC-833
-     */
+    /** @group DDC-833 */
     public function testCreateEntityOfProxy(): void
     {
         $user           = new CmsUser();
@@ -962,9 +955,7 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
         $this->_em->merge($user);
     }
 
-    /**
-     * @group DDC-634
-     */
+    /** @group DDC-634 */
     public function testOneToOneMergeSetNull(): void
     {
         $user           = new CmsUser();
@@ -991,9 +982,7 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
         self::assertNull($this->_em->find(get_class($ph), $ph->phonenumber)->getUser());
     }
 
-    /**
-     * @group DDC-952
-     */
+    /** @group DDC-952 */
     public function testManyToOneFetchModeQuery(): void
     {
         $user           = new CmsUser();
@@ -1022,9 +1011,7 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
         $this->assertQueryCount(2);
     }
 
-    /**
-     * @group DDC-1278
-     */
+    /** @group DDC-1278 */
     public function testClearWithEntityName(): void
     {
         $user           = new CmsUser();
@@ -1102,9 +1089,7 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
         self::assertEquals('UserC', $userC->name, 'name has not changed because we did not flush it');
     }
 
-    /**
-     * @group DDC-720
-     */
+    /** @group DDC-720 */
     public function testFlushSingleManagedEntity(): void
     {
         $user           = new CmsUser();
@@ -1123,9 +1108,7 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
         self::assertEquals('administrator', $user->status);
     }
 
-    /**
-     * @group DDC-720
-     */
+    /** @group DDC-720 */
     public function testFlushSingleUnmanagedEntity(): void
     {
         $user           = new CmsUser();
@@ -1139,9 +1122,7 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
         $this->_em->flush($user);
     }
 
-    /**
-     * @group DDC-720
-     */
+    /** @group DDC-720 */
     public function testFlushSingleAndNewEntity(): void
     {
         $user           = new CmsUser();
@@ -1166,9 +1147,7 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
         self::assertTrue($otherUser->id > 0, 'other user has an id');
     }
 
-    /**
-     * @group DDC-720
-     */
+    /** @group DDC-720 */
     public function testFlushAndCascadePersist(): void
     {
         $user           = new CmsUser();
@@ -1193,9 +1172,7 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
         self::assertTrue($address->id > 0, 'other user has an id');
     }
 
-    /**
-     * @group DDC-720
-     */
+    /** @group DDC-720 */
     public function testFlushSingleAndNoCascade(): void
     {
         $user           = new CmsUser();
@@ -1242,9 +1219,7 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
         self::assertNull($this->_em->find(get_class($user), $userId));
     }
 
-    /**
-     * @group DDC-720
-     */
+    /** @group DDC-720 */
     public function testProxyIsIgnored(): void
     {
         $user           = new CmsUser();
@@ -1270,9 +1245,7 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
         self::assertTrue($otherUser->id > 0, 'other user has an id');
     }
 
-    /**
-     * @group DDC-720
-     */
+    /** @group DDC-720 */
     public function testFlushSingleSaveOnlySingle(): void
     {
         $user           = new CmsUser();
@@ -1299,9 +1272,7 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
         self::assertEquals('developer', $user2->status);
     }
 
-    /**
-     * @group DDC-1585
-     */
+    /** @group DDC-1585 */
     public function testWrongAssociationInstance(): void
     {
         $user           = new CmsUser();

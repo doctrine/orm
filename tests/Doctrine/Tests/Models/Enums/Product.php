@@ -13,7 +13,9 @@ use Doctrine\ORM\Mapping\Id;
 #[Entity]
 class Product
 {
-    #[Id, GeneratedValue, Column(type: 'integer')]
+    #[Id]
+    #[GeneratedValue]
+    #[Column(type: 'integer')]
     public int $id;
 
     #[Embedded(class: Quantity::class)]

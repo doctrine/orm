@@ -16,9 +16,7 @@ use function strtolower;
  */
 class DateSubFunction extends DateAddFunction
 {
-    /**
-     * @inheritdoc
-     */
+    /** @inheritdoc */
     public function getSql(SqlWalker $sqlWalker)
     {
         switch (strtolower($this->unit->value)) {

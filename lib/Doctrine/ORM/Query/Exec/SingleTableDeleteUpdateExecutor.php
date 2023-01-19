@@ -19,9 +19,7 @@ use Doctrine\ORM\Query\SqlWalker;
  */
 class SingleTableDeleteUpdateExecutor extends AbstractSqlExecutor
 {
-    /**
-     * @param SqlWalker $sqlWalker
-     */
+    /** @param SqlWalker $sqlWalker */
     public function __construct(AST\Node $AST, $sqlWalker)
     {
         if ($AST instanceof AST\UpdateStatement) {

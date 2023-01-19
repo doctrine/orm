@@ -35,7 +35,9 @@ class OneToOneSelfReferentialAssociationTest extends OrmFunctionalTestCase
     protected function setUp(): void
     {
         $this->useModelSet('ecommerce');
+
         parent::setUp();
+
         $this->customer = new ECommerceCustomer();
         $this->customer->setName('Anakin Skywalker');
         $this->mentor = new ECommerceCustomer();
@@ -80,9 +82,7 @@ class OneToOneSelfReferentialAssociationTest extends OrmFunctionalTestCase
         $this->assertLoadingOfAssociation($customer);
     }
 
-    /**
-     * @group mine
-     */
+    /** @group mine */
     public function testLazyLoadsAssociation(): void
     {
         $this->createFixture();
@@ -147,9 +147,7 @@ class OneToOneSelfReferentialAssociationTest extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class MultiSelfReference
 {
     /**

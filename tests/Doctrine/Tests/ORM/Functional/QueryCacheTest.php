@@ -42,9 +42,7 @@ class QueryCacheTest extends OrmFunctionalTestCase
         return [$query, $cache];
     }
 
-    /**
-     * @depends testQueryCacheDependsOnHints
-     */
+    /** @depends testQueryCacheDependsOnHints */
     public function testQueryCacheDependsOnFirstResult(array $previous): void
     {
         [$query, $cache] = $previous;
@@ -60,9 +58,7 @@ class QueryCacheTest extends OrmFunctionalTestCase
         self::assertCount($cacheCount + 1, $cache->getValues());
     }
 
-    /**
-     * @depends testQueryCacheDependsOnHints
-     */
+    /** @depends testQueryCacheDependsOnHints */
     public function testQueryCacheDependsOnMaxResults(array $previous): void
     {
         [$query, $cache] = $previous;
@@ -77,9 +73,7 @@ class QueryCacheTest extends OrmFunctionalTestCase
         self::assertCount($cacheCount + 1, $cache->getValues());
     }
 
-    /**
-     * @depends testQueryCacheDependsOnHints
-     */
+    /** @depends testQueryCacheDependsOnHints */
     public function testQueryCacheDependsOnHydrationMode(array $previous): void
     {
         [$query, $cache] = $previous;

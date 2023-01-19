@@ -11,9 +11,7 @@ use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 
-/**
- * @Entity()
- */
+/** @Entity() */
 #[ORM\Entity]
 class DDC1476EntityWithDefaultFieldType
 {
@@ -23,7 +21,9 @@ class DDC1476EntityWithDefaultFieldType
      * @Column()
      * @GeneratedValue("NONE")
      */
-    #[ORM\Id, ORM\Column, ORM\GeneratedValue(strategy: 'NONE')]
+    #[ORM\Id]
+    #[ORM\Column]
+    #[ORM\GeneratedValue(strategy: 'NONE')]
     protected $id;
 
     /**

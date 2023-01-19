@@ -37,7 +37,9 @@ class UpdateSqlGenerationTest extends OrmTestCase
     public function assertSqlGeneration($dqlToBeTested, $sqlToBeConfirmed): void
     {
         $query = $this->entityManager->createQuery($dqlToBeTested);
+
         parent::assertEquals($sqlToBeConfirmed, $query->getSql());
+
         $query->free();
     }
 
@@ -161,9 +163,7 @@ class UpdateSqlGenerationTest extends OrmTestCase
         );
     }
 
-    /**
-     * @group DDC-980
-     */
+    /** @group DDC-980 */
     public function testSubselectTableAliasReferencing(): void
     {
         $this->assertSqlGeneration(

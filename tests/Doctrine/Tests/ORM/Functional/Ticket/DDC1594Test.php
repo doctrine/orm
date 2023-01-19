@@ -9,14 +9,13 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 
 use function get_class;
 
-/**
- * @group DDC-1594
- */
+/** @group DDC-1594 */
 class DDC1594Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
     {
         $this->useModelSet('cms');
+
         parent::setUp();
     }
 

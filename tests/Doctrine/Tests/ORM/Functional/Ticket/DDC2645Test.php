@@ -11,9 +11,7 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-/**
- * @group DDC-2645
- */
+/** @group DDC-2645 */
 class DDC2645Test extends OrmFunctionalTestCase
 {
     public function testIssue(): void

@@ -551,7 +551,7 @@ class Parser
      * @param bool $resetPeek Reset peek after finding the closing parenthesis.
      *
      * @return mixed[]
-     * @psalm-return array{value: string, type: int|null|string, position: int}|null
+     * @psalm-return Token|null
      */
     private function peekBeyondClosingParenthesis(bool $resetPeek = true): ?array
     {
@@ -3549,9 +3549,7 @@ class Parser
         return $function;
     }
 
-    /**
-     * @return FunctionNode
-     */
+    /** @return FunctionNode */
     public function CustomFunctionsReturningNumerics()
     {
         // getCustomNumericFunction is case-insensitive
@@ -3590,9 +3588,7 @@ class Parser
         return $function;
     }
 
-    /**
-     * @return FunctionNode
-     */
+    /** @return FunctionNode */
     public function CustomFunctionsReturningDatetime()
     {
         // getCustomDatetimeFunction is case-insensitive
@@ -3632,9 +3628,7 @@ class Parser
         return $function;
     }
 
-    /**
-     * @return FunctionNode
-     */
+    /** @return FunctionNode */
     public function CustomFunctionsReturningStrings()
     {
         // getCustomStringFunction is case-insensitive

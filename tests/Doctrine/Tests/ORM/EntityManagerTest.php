@@ -43,12 +43,11 @@ class EntityManagerTest extends OrmTestCase
     protected function setUp(): void
     {
         parent::setUp();
+
         $this->entityManager = $this->getTestEntityManager();
     }
 
-    /**
-     * @group DDC-899
-     */
+    /** @group DDC-899 */
     public function testIsOpen(): void
     {
         self::assertTrue($this->entityManager->isOpen());
@@ -94,9 +93,7 @@ class EntityManagerTest extends OrmTestCase
         self::assertSame('SELECT foo', $query->getSql());
     }
 
-    /**
-     * @covers \Doctrine\ORM\EntityManager::createNamedNativeQuery
-     */
+    /** @covers \Doctrine\ORM\EntityManager::createNamedNativeQuery */
     public function testCreateNamedNativeQuery(): void
     {
         $rsm = new ResultSetMapping();
@@ -146,9 +143,7 @@ class EntityManagerTest extends OrmTestCase
         self::assertEquals('SELECT 1', $q->getDql());
     }
 
-    /**
-     * @covers Doctrine\ORM\EntityManager::createNamedQuery
-     */
+    /** @covers Doctrine\ORM\EntityManager::createNamedQuery */
     public function testCreateNamedQuery(): void
     {
         $this->entityManager->getConfiguration()->addNamedQuery('foo', 'SELECT 1');
@@ -158,9 +153,7 @@ class EntityManagerTest extends OrmTestCase
         self::assertEquals('SELECT 1', $query->getDql());
     }
 
-    /**
-     * @psalm-return list<array{string}>
-     */
+    /** @psalm-return list<array{string}> */
     public static function dataMethodsAffectedByNoObjectArguments(): array
     {
         return [
@@ -172,9 +165,7 @@ class EntityManagerTest extends OrmTestCase
         ];
     }
 
-    /**
-     * @dataProvider dataMethodsAffectedByNoObjectArguments
-     */
+    /** @dataProvider dataMethodsAffectedByNoObjectArguments */
     public function testThrowsExceptionOnNonObjectValues($methodName): void
     {
         $this->expectException(ORMInvalidArgumentException::class);
@@ -183,9 +174,7 @@ class EntityManagerTest extends OrmTestCase
         $this->entityManager->$methodName(null);
     }
 
-    /**
-     * @psalm-return list<array{string}>
-     */
+    /** @psalm-return list<array{string}> */
     public static function dataAffectedByErrorIfClosedException(): array
     {
         return [
@@ -197,9 +186,7 @@ class EntityManagerTest extends OrmTestCase
         ];
     }
 
-    /**
-     * @dataProvider dataAffectedByErrorIfClosedException
-     */
+    /** @dataProvider dataAffectedByErrorIfClosedException */
     public function testAffectedByErrorIfClosedException(string $methodName): void
     {
         $this->expectException(EntityManagerClosed::class);
@@ -240,9 +227,7 @@ class EntityManagerTest extends OrmTestCase
         $this->assertSame($expectedValue, $return);
     }
 
-    /**
-     * @group DDC-1125
-     */
+    /** @group DDC-1125 */
     public function testTransactionalAcceptsReturn(): void
     {
         $return = $this->entityManager->transactional(static function ($em) {
@@ -282,9 +267,7 @@ class EntityManagerTest extends OrmTestCase
         EntityManager::create(1, $config);
     }
 
-    /**
-     * @group #5796
-     */
+    /** @group #5796 */
     public function testTransactionalReThrowsThrowables(): void
     {
         try {
@@ -300,9 +283,7 @@ class EntityManagerTest extends OrmTestCase
         }
     }
 
-    /**
-     * @group #5796
-     */
+    /** @group #5796 */
     public function testWrapInTransactionReThrowsThrowables(): void
     {
         try {
@@ -318,9 +299,7 @@ class EntityManagerTest extends OrmTestCase
         }
     }
 
-    /**
-     * @group 6017
-     */
+    /** @group 6017 */
     public function testClearManagerWithObject(): void
     {
         $entity = new Country(456, 'United Kingdom');
@@ -330,9 +309,7 @@ class EntityManagerTest extends OrmTestCase
         $this->entityManager->clear($entity);
     }
 
-    /**
-     * @group 6017
-     */
+    /** @group 6017 */
     public function testClearManagerWithUnknownEntityName(): void
     {
         $this->expectException(MappingException::class);
@@ -340,9 +317,7 @@ class EntityManagerTest extends OrmTestCase
         $this->entityManager->clear(uniqid('nonExisting', true));
     }
 
-    /**
-     * @group 6017
-     */
+    /** @group 6017 */
     public function testClearManagerWithProxyClassName(): void
     {
         $proxy = $this->entityManager->getReference(Country::class, ['id' => random_int(457, 100000)]);
@@ -358,9 +333,7 @@ class EntityManagerTest extends OrmTestCase
         self::assertFalse($this->entityManager->contains($entity));
     }
 
-    /**
-     * @group 6017
-     */
+    /** @group 6017 */
     public function testClearManagerWithNullValue(): void
     {
         $entity = new Country(456, 'United Kingdom');

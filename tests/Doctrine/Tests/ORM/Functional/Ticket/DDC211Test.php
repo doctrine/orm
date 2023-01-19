@@ -21,6 +21,7 @@ class DDC211Test extends OrmFunctionalTestCase
     protected function setUp(): void
     {
         parent::setUp();
+
         $this->createSchemaForModels(DDC211User::class, DDC211Group::class);
     }
 
@@ -91,9 +92,7 @@ class DDC211User
         $this->name = $name;
     }
 
-    /**
-     * @psalm-return Collection<int, DDC211Group>
-     */
+    /** @psalm-return Collection<int, DDC211Group> */
     public function getGroups(): Collection
     {
         return $this->groups;
@@ -136,9 +135,7 @@ class DDC211Group
         $this->name = $name;
     }
 
-    /**
-     * @psalm-return Collection<int, DDC211User>
-     */
+    /** @psalm-return Collection<int, DDC211User> */
     public function getUsers(): Collection
     {
         return $this->users;

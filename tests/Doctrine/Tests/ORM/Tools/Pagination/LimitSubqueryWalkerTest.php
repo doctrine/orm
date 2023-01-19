@@ -7,9 +7,7 @@ namespace Doctrine\Tests\ORM\Tools\Pagination;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Tools\Pagination\LimitSubqueryWalker;
 
-/**
- * @group DDC-1613
- */
+/** @group DDC-1613 */
 class LimitSubqueryWalkerTest extends PaginationTestCase
 {
     public function testLimitSubquery(): void
@@ -96,9 +94,7 @@ class LimitSubqueryWalkerTest extends PaginationTestCase
         );
     }
 
-    /**
-     * @group DDC-2890
-     */
+    /** @group DDC-2890 */
     public function testLimitSubqueryWithSortOnAssociation(): void
     {
         $dql        = 'SELECT p FROM Doctrine\Tests\ORM\Tools\Pagination\MyBlogPost p ORDER BY p.author';

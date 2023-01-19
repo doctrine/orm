@@ -17,17 +17,13 @@ class ConditionalPrimary extends Node
     /** @var ConditionalExpression|null */
     public $conditionalExpression;
 
-    /**
-     * @return bool
-     */
+    /** @return bool */
     public function isSimpleConditionalExpression()
     {
         return (bool) $this->simpleConditionalExpression;
     }
 
-    /**
-     * @return bool
-     */
+    /** @return bool */
     public function isConditionalExpression()
     {
         return (bool) $this->conditionalExpression;

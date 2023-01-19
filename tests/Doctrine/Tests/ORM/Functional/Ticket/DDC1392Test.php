@@ -13,9 +13,7 @@ use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\UnitOfWork;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-/**
- * @group DDC-1392
- */
+/** @group DDC-1392 */
 class DDC1392Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -65,9 +63,7 @@ class DDC1392Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC1392Picture
 {
     /**
@@ -101,9 +97,7 @@ class DDC1392Picture
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC1392File
 {
     /**

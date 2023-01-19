@@ -11,14 +11,13 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 
 use function iterator_to_array;
 
-/**
- * @group DDC-1918
- */
+/** @group DDC-1918 */
 class DDC1918Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
     {
         $this->useModelSet('cms');
+
         parent::setUp();
     }
 

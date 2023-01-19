@@ -31,9 +31,7 @@ final class GH5562Test extends OrmFunctionalTestCase
         );
     }
 
-    /**
-     * @group GH-5562
-     */
+    /** @group GH-5562 */
     public function testCacheShouldBeUpdatedWhenAssociationChanges(): void
     {
         $manager  = new GH5562Manager();

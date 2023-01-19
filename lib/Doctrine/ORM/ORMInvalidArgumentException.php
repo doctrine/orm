@@ -188,18 +188,14 @@ class ORMInvalidArgumentException extends InvalidArgumentException
             ' to be an entity object, ' . gettype($given) . ' given.');
     }
 
-    /**
-     * @return ORMInvalidArgumentException
-     */
+    /** @return ORMInvalidArgumentException */
     public static function invalidCompositeIdentifier()
     {
         return new self('Binding an entity with a composite primary key to a query is not supported. ' .
             'You should split the parameter into the explicit fields and bind them separately.');
     }
 
-    /**
-     * @return ORMInvalidArgumentException
-     */
+    /** @return ORMInvalidArgumentException */
     public static function invalidIdentifierBindingEntity(/* string $class */)
     {
         if (func_num_args() === 0) {

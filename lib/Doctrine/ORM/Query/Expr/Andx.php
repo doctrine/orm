@@ -25,9 +25,7 @@ class Andx extends Composite
     /** @psalm-var list<string|Comparison|Func|Orx|self> */
     protected $parts = [];
 
-    /**
-     * @psalm-return list<string|Comparison|Func|Orx|self>
-     */
+    /** @psalm-return list<string|Comparison|Func|Orx|self> */
     public function getParts()
     {
         return $this->parts;

@@ -8,14 +8,13 @@ use Doctrine\ORM\Tools\Pagination\Paginator;
 use Doctrine\Tests\Models\CMS\CmsArticle;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-/**
- * @group GH7829
- */
+/** @group GH7829 */
 final class GH7829Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
     {
         $this->useModelSet('cms');
+
         parent::setUp();
 
         $article = new CmsArticle();

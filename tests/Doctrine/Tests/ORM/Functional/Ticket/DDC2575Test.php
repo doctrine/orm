@@ -12,9 +12,7 @@ use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-/**
- * @group DDC-2575
- */
+/** @group DDC-2575 */
 class DDC2575Test extends OrmFunctionalTestCase
 {
     /** @psalm-var list<DDC2575Root> */
@@ -97,9 +95,7 @@ class DDC2575Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC2575Root
 {
     /**
@@ -128,9 +124,7 @@ class DDC2575Root
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC2575A
 {
     /**
@@ -155,9 +149,7 @@ class DDC2575A
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC2575B
 {
     /**

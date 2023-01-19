@@ -22,6 +22,7 @@ class DDC493Test extends OrmFunctionalTestCase
     protected function setUp(): void
     {
         parent::setUp();
+
         $this->createSchemaForModels(
             DDC493Customer::class,
             DDC493Distributor::class,
@@ -62,16 +63,12 @@ class DDC493Customer
     public $contact;
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC493Distributor extends DDC493Customer
 {
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC493Contact
 {
     /**

@@ -95,9 +95,7 @@ class PaginatorTest extends OrmTestCase
         $this->createPaginatorWithExtraParametersWithoutOutputWalkers([[10]])->getIterator();
     }
 
-    /**
-     * @param int[][] $willReturnRows
-     */
+    /** @param int[][] $willReturnRows */
     private function createPaginatorWithExtraParametersWithoutOutputWalkers(array $willReturnRows): Paginator
     {
         $this->hydrator->method('hydrateAll')->willReturn($willReturnRows);

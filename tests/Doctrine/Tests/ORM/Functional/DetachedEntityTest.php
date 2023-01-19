@@ -26,6 +26,7 @@ class DetachedEntityTest extends OrmFunctionalTestCase
     protected function setUp(): void
     {
         $this->useModelSet('cms');
+
         parent::setUp();
     }
 
@@ -112,9 +113,7 @@ class DetachedEntityTest extends OrmFunctionalTestCase
         self::assertTrue($this->_em->contains($phonenumbers[0]), 'Failed to assert that first phonenumber in collection is contained inside EntityManager persistence context.');
     }
 
-    /**
-     * @group DDC-203
-     */
+    /** @group DDC-203 */
     public function testDetachedEntityThrowsExceptionOnFlush(): void
     {
         $ph              = new CmsPhonenumber();
@@ -163,9 +162,7 @@ class DetachedEntityTest extends OrmFunctionalTestCase
         self::assertFalse($managedAddress2->user->__isInitialized__);
     }
 
-    /**
-     * @group DDC-822
-     */
+    /** @group DDC-822 */
     public function testUseDetachedEntityAsQueryParameter(): void
     {
         $user           = new CmsUser();
@@ -188,9 +185,7 @@ class DetachedEntityTest extends OrmFunctionalTestCase
         self::assertEquals('gblanco', $newUser->username);
     }
 
-    /**
-     * @group DDC-920
-     */
+    /** @group DDC-920 */
     public function testDetachManagedUnpersistedEntity(): void
     {
         $user           = new CmsUser();
@@ -207,9 +202,7 @@ class DetachedEntityTest extends OrmFunctionalTestCase
         self::assertFalse($this->_em->getUnitOfWork()->isInIdentityMap($user));
     }
 
-    /**
-     * @group DDC-1340
-     */
+    /** @group DDC-1340 */
     public function testMergeArticleWrongVersion(): void
     {
         $article        = new CmsArticle();

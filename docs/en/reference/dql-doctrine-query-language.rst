@@ -672,18 +672,18 @@ The same restrictions apply for the reference of related entities.
 
     DQL DELETE statements are ported directly into an SQL DELETE statement.
     Therefore, some limitations apply:
-    
+
     - Lifecycle events for the affected entities are not executed.
-    - A cascading ``remove`` operation (as indicated e. g. by ``cascade={"remove"}`` 
-      or ``cascade={"all"}`` in the mapping configuration) is not being performed 
+    - A cascading ``remove`` operation (as indicated e. g. by ``cascade: ['remove']``
+      or ``cascade: ['all']`` in the mapping configuration) is not being performed
       for associated entities. You can rely on database level cascade operations by
       configuring each join column with the ``onDelete`` option.
     - Checks for the version column are bypassed if they are not explicitly added
       to the WHERE clause of the query.
-      
-    When you rely on one of these features, one option is to use the 
-    ``EntityManager#remove($entity)`` method. This, however, is costly performance-wise: 
-    It means collections and related entities are fetched into memory 
+
+    When you rely on one of these features, one option is to use the
+    ``EntityManager#remove($entity)`` method. This, however, is costly performance-wise:
+    It means collections and related entities are fetched into memory
     (even if they are marked as lazy). Pulling object graphs into memory on cascade
     can cause considerable performance overhead, especially when the cascaded collections
     are large. Make sure to weigh the benefits and downsides.
@@ -864,36 +864,26 @@ scenario it is a generic Person and Employee example:
     <?php
     namespace Entities;
 
-    /**
-     * @Entity
-     * @InheritanceType("SINGLE_TABLE")
-     * @DiscriminatorColumn(name="discr", type="string")
-     * @DiscriminatorMap({"person" = "Person", "employee" = "Employee"})
-     */
+    #[Entity]
+    #[InheritanceType('SINGLE_TABLE')]
+    #[DiscriminatorColumn(name: 'discr', type: 'string')]
+    #[DiscriminatorMap(['person' => 'Person', 'employee' => 'Employee'])]
     class Person
     {
-        /**
-         * @Id @Column(type="integer")
-         * @GeneratedValue
-         */
-        protected $id;
+        #[Id, Column(type: 'integer')]
+        #[GeneratedValue]
+        protected int|null $id = null;
 
-        /**
-         * @Column(type="string", length=50)
-         */
-        protected $name;
+        #[Column(type: 'string', length: 50)]
+        protected string $name;
 
         // ...
     }
 
-    /**
-     * @Entity
-     */
+    #[Entity]
     class Employee extends Person
     {
-        /**
-         * @Column(type="string", length=50)
-         */
+        #[Column(type: 'string', length: 50)]
         private $department;
 
         // ...
@@ -959,12 +949,11 @@ table, you just need to change the inheritance type from
 .. code-block:: php
 
     <?php
-    /**
-     * @Entity
-     * @InheritanceType("JOINED")
-     * @DiscriminatorColumn(name="discr", type="string")
-     * @DiscriminatorMap({"person" = "Person", "employee" = "Employee"})
-     */
+
+    #[Entity]
+    #[InheritanceType('JOINED')]
+    #[DiscriminatorColumn(name: 'discr', type: 'string')]
+    #[DiscriminatorMap(['person' => 'Person', 'employee' => 'Employee'])]
     class Person
     {
         // ...
@@ -1841,5 +1830,3 @@ Functions
             "LOWER" "(" StringPrimary ")" |
             "UPPER" "(" StringPrimary ")" |
             "IDENTITY" "(" SingleValuedAssociationPathExpression {"," string} ")"
-
-

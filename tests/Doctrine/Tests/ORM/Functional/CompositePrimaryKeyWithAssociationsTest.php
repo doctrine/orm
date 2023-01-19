@@ -14,6 +14,7 @@ class CompositePrimaryKeyWithAssociationsTest extends OrmFunctionalTestCase
     protected function setUp(): void
     {
         $this->useModelSet('geonames');
+
         parent::setUp();
 
         $it = new Country('IT', 'Italy');

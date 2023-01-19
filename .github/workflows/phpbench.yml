@@ -5,9 +5,21 @@ on:
   pull_request:
     branches:
       - "*.x"
+    paths:
+      - .github/workflows/phpbench.yml
+      - composer.*
+      - lib/**
+      - phpbench.json
+      - tests/**
   push:
     branches:
       - "*.x"
+    paths:
+      - .github/workflows/phpbench.yml
+      - composer.*
+      - lib/**
+      - phpbench.json
+      - tests/**
 
 env:
   fail-fast: true
@@ -15,7 +27,7 @@ env:
 jobs:
   phpbench:
     name: "PHPBench"
-    runs-on: "ubuntu-20.04"
+    runs-on: "ubuntu-22.04"
 
     strategy:
       matrix:
@@ -24,7 +36,7 @@ jobs:
 
     steps:
       - name: "Checkout"
-        uses: "actions/checkout@v2"
+        uses: "actions/checkout@v3"
         with:
           fetch-depth: 2
 
@@ -33,10 +45,10 @@ jobs:
         with:
           php-version: "${{ matrix.php-version }}"
           coverage: "pcov"
-          ini-values: "zend.assertions=1"
+          ini-values: "zend.assertions=1, apc.enable_cli=1"
 
       - name: "Cache dependencies installed with composer"
-        uses: "actions/cache@v2"
+        uses: "actions/cache@v3"
         with:
           path: "~/.composer/cache"
           key: "php-${{ matrix.php-version }}-composer-locked-${{ hashFiles('composer.lock') }}"

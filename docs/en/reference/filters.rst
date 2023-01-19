@@ -42,7 +42,7 @@ proper quoting of parameters.
 
     class MyLocaleFilter extends SQLFilter
     {
-        public function addFilterConstraint(ClassMetadata $targetEntity, $targetTableAlias)
+        public function addFilterConstraint(ClassMetadata $targetEntity, $targetTableAlias): string
         {
             // Check if the entity implements the LocalAware interface
             if (!$targetEntity->reflClass->implementsInterface('LocaleAware')) {

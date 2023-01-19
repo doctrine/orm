@@ -16,14 +16,13 @@ use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-/**
- * @group DDC-1335
- */
+/** @group DDC-1335 */
 class DDC1335Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
     {
         parent::setUp();
+
         $this->createSchemaForModels(DDC1335User::class, DDC1335Phone::class);
         try {
             $this->loadFixture();
@@ -154,9 +153,7 @@ class DDC1335Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC1335User
 {
     /**
@@ -197,9 +194,7 @@ class DDC1335User
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC1335Phone
 {
     /**

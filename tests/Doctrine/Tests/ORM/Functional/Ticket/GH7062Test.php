@@ -37,9 +37,7 @@ class GH7062Test extends OrmFunctionalTestCase
         );
     }
 
-    /**
-     * @group GH-7062
-     */
+    /** @group GH-7062 */
     public function testEntityWithAssociationKeyIdentityCanBeUpdated(): void
     {
         $this->createInitialRankingWithRelatedEntities();
@@ -115,9 +113,7 @@ class GH7062Ranking
      */
     public $positions;
 
-    /**
-     * @param GH7062Team[] $teams
-     */
+    /** @param GH7062Team[] $teams */
     public function __construct(GH7062Season $season, array $teams)
     {
         $this->season    = $season;

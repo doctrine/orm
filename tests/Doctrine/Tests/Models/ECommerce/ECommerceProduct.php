@@ -118,9 +118,7 @@ class ECommerceProduct
         $this->shipping = null;
     }
 
-    /**
-     * @psalm-return Collection<int, ECommerceFeature>
-     */
+    /** @psalm-return Collection<int, ECommerceFeature> */
     public function getFeatures(): Collection
     {
         return $this->features;
@@ -164,25 +162,19 @@ class ECommerceProduct
         }
     }
 
-    /**
-     * @psalm-param Collection<int, ECommerceCategory> $categories
-     */
+    /** @psalm-param Collection<int, ECommerceCategory> $categories */
     public function setCategories(Collection $categories): void
     {
         $this->categories = $categories;
     }
 
-    /**
-     * @psalm-return Collection<int, ECommerceCategory> $categories
-     */
+    /** @psalm-return Collection<int, ECommerceCategory> $categories */
     public function getCategories(): Collection
     {
         return $this->categories;
     }
 
-    /**
-     * @psalm-return Collection<int, ECommerceProduct> $categories
-     */
+    /** @psalm-return Collection<int, ECommerceProduct> $categories */
     public function getRelated(): Collection
     {
         return $this->related;

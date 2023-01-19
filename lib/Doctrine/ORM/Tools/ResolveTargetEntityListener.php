@@ -97,9 +97,7 @@ class ResolveTargetEntityListener implements EventSubscriber
         }
     }
 
-    /**
-     * @param mixed[] $mapping
-     */
+    /** @param mixed[] $mapping */
     private function remapAssociation(ClassMetadata $classMetadata, array $mapping): void
     {
         $newMapping              = $this->resolveTargetEntities[$mapping['targetEntity']];

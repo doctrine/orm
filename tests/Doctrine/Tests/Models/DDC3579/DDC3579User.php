@@ -12,9 +12,7 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\ManyToMany;
 use Doctrine\ORM\Mapping\MappedSuperclass;
 
-/**
- * @MappedSuperclass
- */
+/** @MappedSuperclass */
 #[MappedSuperclass]
 class DDC3579User
 {
@@ -24,7 +22,9 @@ class DDC3579User
      * @GeneratedValue
      * @Column(type="integer", name="user_id", length=150)
      */
-    #[Id, GeneratedValue, Column(type: 'integer', name: 'user_id', length: 150)]
+    #[Id]
+    #[GeneratedValue]
+    #[Column(type: 'integer', name: 'user_id', length: 150)]
     protected $id;
 
     /**

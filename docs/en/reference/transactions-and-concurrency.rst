@@ -189,14 +189,25 @@ example we'll use an integer.
 
 .. configuration-block::
 
-    .. code-block:: php
+    .. code-block:: attribute
+
+        <?php
+        class User
+        {
+            // ...
+            #[Version, Column(type: 'integer')]
+            private int $version;
+            // ...
+        }
+
+    .. code-block:: annotation
 
         <?php
         class User
         {
             // ...
             /** @Version @Column(type="integer") */
-            private $version;
+            private int $version;
             // ...
         }
 
@@ -222,14 +233,25 @@ timestamp or datetime):
 
 .. configuration-block::
 
-    .. code-block:: php
+    .. code-block:: attribute
+
+        <?php
+        class User
+        {
+            // ...
+            #[Version, Column(type: 'datetime')]
+            private DateTime $version;
+            // ...
+        }
+
+    .. code-block:: annotation
 
         <?php
         class User
         {
             // ...
             /** @Version @Column(type="datetime") */
-            private $version;
+            private DateTime $version;
             // ...
         }
 
@@ -279,15 +301,15 @@ either when calling ``EntityManager#find()``:
     <?php
     use Doctrine\DBAL\LockMode;
     use Doctrine\ORM\OptimisticLockException;
-    
+
     $theEntityId = 1;
     $expectedVersion = 184;
-    
+
     try {
         $entity = $em->find('User', $theEntityId, LockMode::OPTIMISTIC, $expectedVersion);
-    
+
         // do the work
-    
+
         $em->flush();
     } catch(OptimisticLockException $e) {
         echo "Sorry, but someone else has already changed this entity. Please apply the changes again!";
@@ -300,16 +322,16 @@ Or you can use ``EntityManager#lock()`` to find out:
     <?php
     use Doctrine\DBAL\LockMode;
     use Doctrine\ORM\OptimisticLockException;
-    
+
     $theEntityId = 1;
     $expectedVersion = 184;
-    
+
     $entity = $em->find('User', $theEntityId);
-    
+
     try {
         // assert version
         $em->lock($entity, LockMode::OPTIMISTIC, $expectedVersion);
-    
+
     } catch(OptimisticLockException $e) {
         echo "Sorry, but someone else has already changed this entity. Please apply the changes again!";
     }
@@ -348,7 +370,7 @@ See the example code, The form (GET Request):
 
     <?php
     $post = $em->find('BlogPost', 123456);
-    
+
     echo '<input type="hidden" name="id" value="' . $post->getId() . '" />';
     echo '<input type="hidden" name="version" value="' . $post->getCurrentVersion() . '" />';
 
@@ -359,7 +381,7 @@ And the change headline action (POST Request):
     <?php
     $postId = (int)$_GET['id'];
     $postVersion = (int)$_GET['version'];
-    
+
     $post = $em->find('BlogPost', $postId, \Doctrine\DBAL\LockMode::OPTIMISTIC, $postVersion);
 
 .. _transactions-and-concurrency_pessimistic-locking:
@@ -405,5 +427,3 @@ You can use pessimistic locks in three different scenarios:
    ``Query#setLockMode(\Doctrine\DBAL\LockMode::PESSIMISTIC_WRITE)``
    or
    ``Query#setLockMode(\Doctrine\DBAL\LockMode::PESSIMISTIC_READ)``
-
-

@@ -10,14 +10,13 @@ use Doctrine\Tests\Models\Taxi\PaidRide;
 use Doctrine\Tests\Models\Taxi\Ride;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-/**
- * @group DDC-1884
- */
+/** @group DDC-1884 */
 class DDC1884Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
     {
         $this->useModelSet('taxi');
+
         parent::setUp();
 
         [$bimmer, $crysler, $merc, $volvo] = $this->createCars(Car::class);

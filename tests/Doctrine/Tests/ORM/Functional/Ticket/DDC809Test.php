@@ -19,6 +19,7 @@ class DDC809Test extends OrmFunctionalTestCase
     protected function setUp(): void
     {
         parent::setUp();
+
         $this->createSchemaForModels(
             DDC809Variant::class,
             DDC809SpecificationValue::class
@@ -46,9 +47,7 @@ class DDC809Test extends OrmFunctionalTestCase
         $conn->insert('var_spec_value_test', ['variant_id' => 545209, 'specification_value_id' => 94607]);
     }
 
-    /**
-     * @group DDC-809
-     */
+    /** @group DDC-809 */
     public function testIssue(): void
     {
         $result = $this->_em->createQueryBuilder()
@@ -90,9 +89,7 @@ class DDC809Variant
      */
     protected $specificationValues;
 
-    /**
-     * @psalm-return Collection<int, DDC809SpecificationValue>
-     */
+    /** @psalm-return Collection<int, DDC809SpecificationValue> */
     public function getSpecificationValues(): Collection
     {
         return $this->specificationValues;

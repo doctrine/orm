@@ -17,6 +17,7 @@ class DDC633Test extends OrmFunctionalTestCase
     protected function setUp(): void
     {
         parent::setUp();
+
         $this->createSchemaForModels(
             DDC633Patient::class,
             DDC633Appointment::class
@@ -75,9 +76,7 @@ class DDC633Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC633Appointment
 {
     /**
@@ -95,9 +94,7 @@ class DDC633Appointment
     public $patient;
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC633Patient
 {
     /**

@@ -69,9 +69,7 @@ OR o.property2 = :value2)',
 }
 
 
-/**
- * @Entity
- */
+/** @Entity */
 class QueryBuilderParenthesisEntity
 {
     /**

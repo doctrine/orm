@@ -13,6 +13,7 @@ class JoinedTableCompositeKeyTest extends OrmFunctionalTestCase
     protected function setUp(): void
     {
         $this->useModelSet('compositekeyinheritance');
+
         parent::setUp();
     }
 
@@ -28,9 +29,7 @@ class JoinedTableCompositeKeyTest extends OrmFunctionalTestCase
         self::assertEquals($childEntity, $entity);
     }
 
-    /**
-     * @group non-cacheable
-     */
+    /** @group non-cacheable */
     public function testUpdateWithCompositeKey(): void
     {
         $childEntity = new JoinedChildClass();

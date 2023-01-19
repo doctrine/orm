@@ -9,14 +9,13 @@ use DateTimeZone;
 use Doctrine\Tests\Models\Generic\DateTimeModel;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-/**
- * @group DDC-657
- */
+/** @group DDC-657 */
 class DDC657Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
     {
         $this->useModelSet('generic');
+
         parent::setUp();
 
         $this->loadFixtures();

@@ -12,14 +12,13 @@ use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-/**
- * @group DDC-1250
- */
+/** @group DDC-1250 */
 class DDC1250Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
     {
         parent::setUp();
+
         $this->createSchemaForModels(DDC1250ClientHistory::class);
     }
 
@@ -44,9 +43,7 @@ class DDC1250Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC1250ClientHistory
 {
     /**

@@ -11,14 +11,13 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 use PHPUnit\Framework\Assert;
 use ReflectionProperty;
 
-/**
- * @group DDC-3123
- */
+/** @group DDC-3123 */
 class DDC3123Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
     {
         $this->useModelSet('cms');
+
         parent::setUp();
     }
 

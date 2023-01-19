@@ -12,9 +12,7 @@ use PhpBench\Benchmark\Metadata\Annotations\BeforeMethods;
 
 use function range;
 
-/**
- * @BeforeMethods({"init"})
- */
+/** @BeforeMethods({"init"}) */
 final class QueryBoundParameterProcessingBench
 {
     /** @var Query */

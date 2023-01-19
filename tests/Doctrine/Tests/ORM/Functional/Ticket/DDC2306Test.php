@@ -17,9 +17,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 
 use function assert;
 
-/**
- * @group DDC-2306
- */
+/** @group DDC-2306 */
 class DDC2306Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -96,9 +94,7 @@ class DDC2306Zone
     public $id;
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC2306User
 {
     /**

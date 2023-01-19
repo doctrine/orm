@@ -22,6 +22,7 @@ class DDC513Test extends OrmFunctionalTestCase
     protected function setUp(): void
     {
         parent::setUp();
+
         $this->createSchemaForModels(
             DDC513OfferItem::class,
             DDC513Item::class,
@@ -39,9 +40,7 @@ class DDC513Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC513OfferItem extends DDC513Item
 {
 }
@@ -70,9 +69,7 @@ class DDC513Item
     public $price;
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC513Price
 {
     /**

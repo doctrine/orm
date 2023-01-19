@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional;
 
+use Doctrine\ORM\AbstractQuery;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Driver\AttributeDriver;
 use Doctrine\ORM\Mapping\MappingException;
@@ -65,6 +66,58 @@ class EnumTest extends OrmFunctionalTestCase
         $this->assertEquals(Suit::Clubs, $fetchedCard->suit);
     }
 
+    public function testEnumHydrationObjectHydrator(): void
+    {
+        $this->setUpEntitySchema([Card::class]);
+
+        $card1       = new Card();
+        $card1->suit = Suit::Clubs;
+        $card2       = new Card();
+        $card2->suit = Suit::Hearts;
+
+        $this->_em->persist($card1);
+        $this->_em->persist($card2);
+        $this->_em->flush();
+
+        unset($card1, $card2);
+        $this->_em->clear();
+
+        /** @var list<Card> $foundCards */
+        $foundCards = $this->_em->createQueryBuilder()
+            ->select('c')
+            ->from(Card::class, 'c')
+            ->where('c.suit = :suit')
+            ->setParameter('suit', Suit::Clubs)
+            ->getQuery()
+            ->getResult();
+
+        self::assertNotEmpty($foundCards);
+        foreach ($foundCards as $card) {
+            self::assertSame(Suit::Clubs, $card->suit);
+        }
+    }
+
+    public function testEnumArrayHydrationObjectHydrator(): void
+    {
+        $this->setUpEntitySchema([Scale::class]);
+
+        $scale                 = new Scale();
+        $scale->supportedUnits = [Unit::Gram, Unit::Meter];
+
+        $this->_em->persist($scale);
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $result = $this->_em->createQueryBuilder()
+            ->from(Scale::class, 's')
+            ->select('s')
+            ->getQuery()
+            ->getResult();
+
+        self::assertInstanceOf(Scale::class, $result[0]);
+        self::assertEqualsCanonicalizing([Unit::Gram, Unit::Meter], $result[0]->supportedUnits);
+    }
+
     public function testEnumHydration(): void
     {
         $this->setUpEntitySchema([Card::class, CardWithNullable::class]);
@@ -81,6 +134,27 @@ class EnumTest extends OrmFunctionalTestCase
             ->select('c.id, c.suit')
             ->getQuery()
             ->getResult();
+
+        $this->assertInstanceOf(Suit::class, $result[0]['suit']);
+        $this->assertEquals(Suit::Clubs, $result[0]['suit']);
+    }
+
+    public function testEnumHydrationArrayHydrator(): void
+    {
+        $this->setUpEntitySchema([Card::class, CardWithNullable::class]);
+
+        $card       = new Card();
+        $card->suit = Suit::Clubs;
+
+        $this->_em->persist($card);
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $result = $this->_em->createQueryBuilder()
+            ->from(Card::class, 'c')
+            ->select('c')
+            ->getQuery()
+            ->getResult(AbstractQuery::HYDRATE_ARRAY);
 
         $this->assertInstanceOf(Suit::class, $result[0]['suit']);
         $this->assertEquals(Suit::Clubs, $result[0]['suit']);
@@ -186,6 +260,68 @@ class EnumTest extends OrmFunctionalTestCase
         self::assertEqualsCanonicalizing([Unit::Gram, Unit::Meter], $result[0]->supportedUnits);
     }
 
+    public function testEnumChangeSetsSimpleObjectHydrator(): void
+    {
+        $this->setUpEntitySchema([Card::class]);
+
+        $card       = new Card();
+        $card->suit = Suit::Clubs;
+
+        $this->_em->persist($card);
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $result = $this->_em->find(Card::class, $card->id);
+
+        $this->_em->getUnitOfWork()->computeChangeSets();
+
+        self::assertFalse($this->_em->getUnitOfWork()->isScheduledForUpdate($result));
+    }
+
+    public function testEnumChangeSetsObjectHydrator(): void
+    {
+        $this->setUpEntitySchema([Card::class]);
+
+        $card       = new Card();
+        $card->suit = Suit::Clubs;
+
+        $this->_em->persist($card);
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $result = $this->_em->createQueryBuilder()
+            ->from(Card::class, 'c')
+            ->select('c')
+            ->getQuery()
+            ->getResult();
+
+        $this->_em->getUnitOfWork()->computeChangeSets();
+
+        self::assertFalse($this->_em->getUnitOfWork()->isScheduledForUpdate($result[0]));
+    }
+
+    public function testEnumArrayChangeSets(): void
+    {
+        $this->setUpEntitySchema([Scale::class]);
+
+        $scale                 = new Scale();
+        $scale->supportedUnits = [Unit::Gram];
+
+        $this->_em->persist($scale);
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $result = $this->_em->createQueryBuilder()
+            ->from(Scale::class, 's')
+            ->select('s')
+            ->getQuery()
+            ->getResult();
+
+        $this->_em->getUnitOfWork()->computeChangeSets();
+
+        self::assertFalse($this->_em->getUnitOfWork()->isScheduledForUpdate($result[0]));
+    }
+
     public function testFindByEnum(): void
     {
         $this->setUpEntitySchema([Card::class]);
@@ -247,9 +383,7 @@ EXCEPTION
         $this->_em->find($cardClass, $card->id);
     }
 
-    /**
-     * @return array<string, array{class-string}>
-     */
+    /** @return array<string, array{class-string}> */
     public function provideCardClasses(): array
     {
         return [

@@ -17,9 +17,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 
 use function assert;
 
-/**
- * @group DDC-1509
- */
+/** @group DDC-1509 */
 class DDC1509Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -58,9 +56,7 @@ class DDC1509Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC1509Picture
 {
     /**
@@ -131,9 +127,7 @@ class DDC1509AbstractFile
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC1509File extends DDC1509AbstractFile
 {
 }

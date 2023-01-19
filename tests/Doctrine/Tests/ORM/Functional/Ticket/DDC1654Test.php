@@ -12,14 +12,13 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\ManyToMany;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-/**
- * @group DDC-1654
- */
+/** @group DDC-1654 */
 class DDC1654Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
     {
         parent::setUp();
+
         $this->setUpEntitySchema(
             [
                 DDC1654Post::class,
@@ -74,9 +73,7 @@ class DDC1654Test extends OrmFunctionalTestCase
         self::assertCount(0, $comments);
     }
 
-    /**
-     * @group DDC-3382
-     */
+    /** @group DDC-3382 */
     public function testManyToManyRemoveElementFromReAddToCollectionOrphanRemoval(): void
     {
         $post             = new DDC1654Post();
@@ -115,9 +112,7 @@ class DDC1654Test extends OrmFunctionalTestCase
         self::assertCount(0, $comments);
     }
 
-    /**
-     * @group DDC-3382
-     */
+    /** @group DDC-3382 */
     public function testManyToManyClearCollectionReAddOrphanRemoval(): void
     {
         $post             = new DDC1654Post();
@@ -139,9 +134,7 @@ class DDC1654Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC1654Post
 {
     /**
@@ -160,9 +153,7 @@ class DDC1654Post
     public $comments = [];
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC1654Comment
 {
     /**

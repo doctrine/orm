@@ -28,6 +28,7 @@ class GH8499Test extends OrmFunctionalTestCase
     protected function setUp(): void
     {
         parent::setUp();
+
         $this->conn = $this->_em->getConnection();
     }
 
@@ -36,9 +37,7 @@ class GH8499Test extends OrmFunctionalTestCase
         $this->createSchemaForModels(GH8499VersionableEntity::class);
     }
 
-    /**
-     * @group GH-8499
-     */
+    /** @group GH-8499 */
     public function testOptimisticTimestampSetsDefaultValue(): GH8499VersionableEntity
     {
         $this->createSchema();
@@ -95,9 +94,7 @@ class GH8499Test extends OrmFunctionalTestCase
         );
     }
 
-    /**
-     * @group GH-8499
-     */
+    /** @group GH-8499 */
     public function testOptimisticLockWithDateTimeForVersionThrowsException(): void
     {
         $this->createSchema();

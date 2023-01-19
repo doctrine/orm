@@ -115,9 +115,7 @@ class Status
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class ProfileStatus extends Status
 {
 }

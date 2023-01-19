@@ -71,9 +71,7 @@ final class AbstractQueryTest extends TestCase
         $this->expectNoDeprecationWithIdentifier('https://github.com/doctrine/dbal/pull/4620');
     }
 
-    /**
-     * @dataProvider provideSettersWithDeprecatedDefault
-     */
+    /** @dataProvider provideSettersWithDeprecatedDefault */
     public function testCallingSettersWithoutArgumentsIsDeprecated(string $setter): void
     {
         $entityManager = $this->createMock(EntityManagerInterface::class);
@@ -84,9 +82,7 @@ final class AbstractQueryTest extends TestCase
         $query->$setter();
     }
 
-    /**
-     * @return array<string, array{string}>
-     */
+    /** @return array<string, array{string}> */
     public function provideSettersWithDeprecatedDefault(): array
     {
         return [

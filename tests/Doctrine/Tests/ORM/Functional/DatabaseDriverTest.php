@@ -25,14 +25,13 @@ class DatabaseDriverTest extends DatabaseDriverTestCase
     protected function setUp(): void
     {
         $this->useModelSet('cms');
+
         parent::setUp();
 
         $this->schemaManager = $this->createSchemaManager();
     }
 
-    /**
-     * @group DDC-2059
-     */
+    /** @group DDC-2059 */
     public function testIssue2059(): void
     {
         if (! $this->_em->getConnection()->getDatabasePlatform()->supportsForeignKeyConstraints()) {

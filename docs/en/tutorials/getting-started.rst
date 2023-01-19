@@ -83,7 +83,6 @@ that directory with the following contents:
         "require": {
             "doctrine/orm": "^2.11.0",
             "doctrine/dbal": "^3.2",
-            "doctrine/annotations": "1.13.2",
             "symfony/yaml": "^5.4",
             "symfony/cache": "^5.4"
         },
@@ -142,15 +141,24 @@ step:
 
     require_once "vendor/autoload.php";
 
-    // Create a simple "default" Doctrine ORM configuration for Annotations
-    $isDevMode = true;
-    $proxyDir = null;
-    $cache = null;
-    $useSimpleAnnotationReader = false;
-    $config = ORMSetup::createAnnotationMetadataConfiguration(array(__DIR__."/src"), $isDevMode, $proxyDir, $cache, $useSimpleAnnotationReader);
-    // or if you prefer YAML or XML
-    // $config = ORMSetup::createXMLMetadataConfiguration(array(__DIR__."/config/xml"), $isDevMode);
-    // $config = ORMSetup::createYAMLMetadataConfiguration(array(__DIR__."/config/yaml"), $isDevMode);
+    // Create a simple "default" Doctrine ORM configuration for Attributes
+    $config = ORMSetup::createAttributeMetadataConfiguration(
+        paths: array(__DIR__."/src"),
+        isDevMode: true,
+    );
+    // or if you prefer annotation, YAML or XML
+    // $config = ORMSetup::createAnnotationMetadataConfiguration(
+    //    paths: array(__DIR__."/src"),
+    //    isDevMode: true,
+    // );
+    // $config = ORMSetup::createXMLMetadataConfiguration(
+    //    paths: array(__DIR__."/config/xml"),
+    //    isDevMode: true,
+    //);
+    // $config = ORMSetup::createYAMLMetadataConfiguration(
+    //    paths: array(__DIR__."/config/yaml"),
+    //    isDevMode: true,
+    // );
 
     // database configuration parameters
     $conn = array(
@@ -164,10 +172,6 @@ step:
 .. note::
     The YAML driver is deprecated and will be removed in version 3.0.
     It is strongly recommended to switch to one of the other mappings.
-
-.. note::
-    It is recommended not to use the SimpleAnnotationReader because its
-    usage will be removed for version 3.0.
 
 The ``require_once`` statement sets up the class autoloading for Doctrine and
 its dependencies using Composer's autoloader.
@@ -256,14 +260,8 @@ entity definition:
     // src/Product.php
     class Product
     {
-        /**
-         * @var int
-         */
-        private $id;
-        /**
-         * @var string
-         */
-        private $name;
+        private int|null $id = null;
+        private string $name;
     }
 
 When creating entity classes, all of the fields should be ``private``.
@@ -500,14 +498,35 @@ the ``Product`` entity to Doctrine using a metadata language. The metadata
 language describes how entities, their properties and references should be
 persisted and what constraints should be applied to them.
 
-Metadata for an Entity can be configured using DocBlock annotations directly
-in the Entity class itself, or in an external XML or YAML file. This Getting
-Started guide will demonstrate metadata mappings using all three methods,
-but you only need to choose one.
+Metadata for an Entity can be configured using attributes directly in
+the Entity class itself, or in an external XML or YAML file. This
+Getting Started guide will demonstrate metadata mappings using all three
+methods, but you only need to choose one.
 
 .. configuration-block::
 
-    .. code-block:: php
+    .. code-block:: attribute
+
+        <?php
+        // src/Product.php
+
+        use Doctrine\ORM\Mapping as ORM;
+
+        #[ORM\Entity]
+        #[ORM\Table(name: 'products')]
+        class Product
+        {
+            #[ORM\Id]
+            #[ORM\Column(type: 'integer')]
+            #[ORM\GeneratedValue]
+            private int|null $id = null;
+            #[ORM\Column(type: 'string')]
+            private string $name;
+
+            // .. (other code)
+        }
+
+    .. code-block:: annotation
 
         <?php
         // src/Product.php
@@ -525,11 +544,11 @@ but you only need to choose one.
              * @ORM\Column(type="integer")
              * @ORM\GeneratedValue
              */
-            private $id;
+            private int|null $id = null;
             /**
              * @ORM\Column(type="string")
              */
-            private $name;
+            private string $name;
 
             // .. (other code)
         }
@@ -708,49 +727,35 @@ classes. We'll store them in ``src/Bug.php`` and ``src/User.php``, respectively.
 
     use Doctrine\ORM\Mapping as ORM;
 
-    /**
-     * @ORM\Entity
-     * @ORM\Table(name="bugs")
-     */
+    #[ORM\Entity]
+    #[ORM\Table(name: 'bugs')]
     class Bug
     {
-        /**
-         * @ORM\Id
-         * @ORM\Column(type="integer")
-         * @ORM\GeneratedValue
-         * @var int
-         */
-        private $id;
+        #[ORM\Id]
+        #[ORM\Column(type: 'integer')]
+        #[ORM\GeneratedValue]
+        private int $id;
 
-        /**
-         * @ORM\Column(type="string")
-         * @var string
-         */
-        private $description;
+        #[ORM\Column(type: 'string')]
+        private string $description;
 
-        /**
-         * @ORM\Column(type="datetime")
-         * @var DateTime
-         */
-        private $created;
+        #[ORM\Column(type: 'datetime')]
+        private DateTime $created;
 
-        /**
-         * @ORM\Column(type="string")
-         * @var string
-         */
-        private $status;
+        #[ORM\Column(type: 'string')]
+        private string $status;
 
-        public function getId()
+        public function getId(): int|null
         {
             return $this->id;
         }
 
-        public function getDescription()
+        public function getDescription(): string
         {
             return $this->description;
         }
 
-        public function setDescription($description)
+        public function setDescription(string $description): void
         {
             $this->description = $description;
         }
@@ -760,17 +765,17 @@ classes. We'll store them in ``src/Bug.php`` and ``src/User.php``, respectively.
             $this->created = $created;
         }
 
-        public function getCreated()
+        public function getCreated(): DateTime
         {
             return $this->created;
         }
 
-        public function setStatus($status)
+        public function setStatus($status): void
         {
             $this->status = $status;
         }
 
-        public function getStatus()
+        public function getStatus():string
         {
             return $this->status;
         }
@@ -783,37 +788,31 @@ classes. We'll store them in ``src/Bug.php`` and ``src/User.php``, respectively.
 
     use Doctrine\ORM\Mapping as ORM;
 
-    /**
-     * @ORM\Entity
-     * @ORM\Table(name="users")
-     */
+    #[ORM\Entity]
+    #[ORM\Table(name: 'users')]
     class User
     {
-        /**
-         * @ORM\Id
-         * @ORM\GeneratedValue
-         * @ORM\Column(type="integer")
-         * @var int
-         */
-        private $id;
+        /** @var int */
+        #[ORM\Id]
+        #[ORM\GeneratedValue]
+        #[ORM\Column(type: 'integer')]
+        private int|null $id = null;
 
-        /**
-         * @ORM\Column(type="string")
-         * @var string
-         */
-        private $name;
+        /** @var string */
+        #[ORM\Column(type: 'string')]
+        private string $name;
 
-        public function getId()
+        public function getId(): int|null
         {
             return $this->id;
         }
 
-        public function getName()
+        public function getName(): string
         {
             return $this->name;
         }
 
-        public function setName($name)
+        public function setName(string $name): void
         {
             $this->name = $name;
         }
@@ -842,13 +841,16 @@ domain model to match the requirements:
 
     <?php
     // src/Bug.php
+
     use Doctrine\Common\Collections\ArrayCollection;
+    use Doctrine\Common\Collections\Collection;
 
     class Bug
     {
         // ... (previous code)
 
-        private $products;
+        /** @var Collection<int, Product> */
+        private Collection $products;
 
         public function __construct()
         {
@@ -866,8 +868,10 @@ domain model to match the requirements:
     {
         // ... (previous code)
 
-        private $reportedBugs;
-        private $assignedBugs;
+        /** @var Collection<int, Bug> */
+        private Collection $reportedBugs;
+        /** @var Collection<int, Bug> */
+        private Collection $assignedBugs;
 
         public function __construct()
         {
@@ -942,27 +946,27 @@ the bi-directional reference:
     {
         // ... (previous code)
 
-        private $engineer;
-        private $reporter;
+        private User $engineer;
+        private User $reporter;
 
-        public function setEngineer(User $engineer)
+        public function setEngineer(User $engineer): void
         {
             $engineer->assignedToBug($this);
             $this->engineer = $engineer;
         }
 
-        public function setReporter(User $reporter)
+        public function setReporter(User $reporter): void
         {
             $reporter->addReportedBug($this);
             $this->reporter = $reporter;
         }
 
-        public function getEngineer()
+        public function getEngineer(): User
         {
             return $this->engineer;
         }
 
-        public function getReporter()
+        public function getReporter(): User
         {
             return $this->reporter;
         }
@@ -976,15 +980,17 @@ the bi-directional reference:
     {
         // ... (previous code)
 
-        private $reportedBugs;
-        private $assignedBugs;
+        /** @var Collection<int, Bug> */
+        private Collection $reportedBugs;
+        /** @var Collection<int, Bug> */
+        private Collection $assignedBugs;
 
-        public function addReportedBug(Bug $bug)
+        public function addReportedBug(Bug $bug): void
         {
             $this->reportedBugs[] = $bug;
         }
 
-        public function assignedToBug(Bug $bug)
+        public function assignedToBug(Bug $bug): void
         {
             $this->assignedBugs[] = $bug;
         }
@@ -1028,14 +1034,16 @@ the database that points from Bugs to Products.
     {
         // ... (previous code)
 
-        private $products;
+        /** @var Collection<int, Product> */
+        private Collection $products;
 
-        public function assignToProduct(Product $product)
+        public function assignToProduct(Product $product): void
         {
             $this->products[] = $product;
         }
 
-        public function getProducts()
+        /** @return Collection<int, Product> */
+        public function getProducts(): Collection
         {
             return $this->products;
         }
@@ -1046,7 +1054,46 @@ Lets add metadata mappings for the ``Bug`` entity, as we did for
 the ``Product`` before:
 
 .. configuration-block::
-    .. code-block:: php
+    .. code-block:: attribute
+
+        <?php
+        // src/Bug.php
+
+        use DateTime;
+        use Doctrine\ORM\Mapping as ORM;
+
+        #[ORM\Entity]
+        #[ORM\Table(name: 'bugs')]
+        class Bug
+        {
+            #[ORM\Id]
+            #[ORM\Column(type: 'integer')]
+            #[ORM\GeneratedValue]
+            private int|null $id = null;
+
+            #[ORM\Column(type: 'string')]
+            private string $description;
+
+            #[ORM\Column(type: 'datetime')]
+            private DateTime $created;
+
+            #[ORM\Column(type: 'string')]
+            private string $status;
+
+            #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'assignedBugs')]
+            private User|null $engineer = null;
+
+            #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'reportedBugs')]
+            private User|null $reporter;
+
+            /** @var Collection<int, Product> */
+            #[ORM\ManyToMany(targetEntity: Product::class)]
+            private Collection $products;
+
+            // ... (other code)
+        }
+
+    .. code-block:: annotation
 
         <?php
         // src/Bug.php
@@ -1064,37 +1111,37 @@ the ``Product`` before:
              * @ORM\Column(type="integer")
              * @ORM\GeneratedValue
              */
-            private $id;
+            private int|null $id = null;
 
             /**
              * @ORM\Column(type="string")
              */
-            private $description;
+            private string $description;
 
             /**
              * @ORM\Column(type="datetime")
              */
-            private $created;
+            private DateTime $created;
 
             /**
              * @ORM\Column(type="string")
              */
-            private $status;
+            private string $status;
 
             /**
              * @ORM\ManyToOne(targetEntity="User", inversedBy="assignedBugs")
              */
-            private $engineer;
+            private User|null $engineer;
 
             /**
              * @ORM\ManyToOne(targetEntity="User", inversedBy="reportedBugs")
              */
-            private $reporter;
+            private User|null $reporter;
 
             /**
              * @ORM\ManyToMany(targetEntity="Product")
              */
-            private $products;
+            private Collection $products;
 
             // ... (other code)
         }
@@ -1183,7 +1230,37 @@ Finally, we'll add metadata mappings for the ``User`` entity.
 
 .. configuration-block::
 
-    .. code-block:: php
+    .. code-block:: attribute
+
+        <?php
+        // src/User.php
+
+        use Doctrine\ORM\Mapping as ORM;
+
+        #[ORM\Entity]
+        #[ORM\Table(name: 'users')]
+        class User
+        {
+            #[ORM\Id]
+            #[ORM\GeneratedValue]
+            #[ORM\Column(type: 'integer')]
+            private int|null $id = null;
+
+            #[ORM\Column(type: 'string')]
+            private string $name;
+
+            /** @var Collection<int, Bug> An ArrayCollection of Bug objects. */
+            #[ORM\OneToMany(targetEntity: Bug::class, mappedBy: 'reporter')]
+            private Collection $reportedBugs;
+
+            /** @var Collection<int,Bug> An ArrayCollection of Bug objects. */
+            #[ORM\OneToMany(targetEntity: Bug::class, mappedBy: 'engineer')]
+            private $assignedBugs;
+
+            // .. (other code)
+        }
+
+    .. code-block:: annotation
 
         <?php
         // src/User.php
@@ -1202,29 +1279,28 @@ Finally, we'll add metadata mappings for the ``User`` entity.
              * @ORM\Column(type="integer")
              * @var int
              */
-            private $id;
+            private int|null $id = null;
 
             /**
              * @ORM\Column(type="string")
              * @var string
              */
-            private $name;
+            private string $name;
 
             /**
              * @ORM\OneToMany(targetEntity="Bug", mappedBy="reporter")
-             * @var Bug[] An ArrayCollection of Bug objects.
+             * @var Collection<int, Bug> An ArrayCollection of Bug objects.
              */
-            private $reportedBugs;
+            private Collection $reportedBugs;
 
             /**
              * @ORM\OneToMany(targetEntity="Bug", mappedBy="engineer")
-             * @var Bug[] An ArrayCollection of Bug objects.
+             * @var Collection<int, Bug> An ArrayCollection of Bug objects.
              */
-            private $assignedBugs;
+            private Collection $assignedBugs;
 
             // .. (other code)
         }
-
     .. code-block:: xml
 
         <!-- config/xml/User.dcm.xml -->
@@ -1754,7 +1830,20 @@ we have to adjust the metadata slightly.
 
 .. configuration-block::
 
-    .. code-block:: php
+    .. code-block:: attribute
+
+        <?php
+
+        use Doctrine\ORM\Mapping as ORM;
+
+        #[ORM\Entity(repositoryClass: BugRepository::class)]
+        #[ORM\Table(name: 'bugs')]
+        class Bug
+        {
+            // ...
+        }
+
+    .. code-block:: annotation
 
         <?php
 
@@ -1763,7 +1852,7 @@ we have to adjust the metadata slightly.
         /**
          * @ORM\Entity(repositoryClass="BugRepository")
          * @ORM\Table(name="bugs")
-         **/
+         */
         class Bug
         {
             // ...

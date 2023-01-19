@@ -266,9 +266,7 @@ class QueryTest extends OrmFunctionalTestCase
         );
     }
 
-    /**
-     * @group DDC-1070
-     */
+    /** @group DDC-1070 */
     public function testIterateResultAsArrayAndParams(): void
     {
         $article1        = new CmsArticle();
@@ -570,9 +568,7 @@ class QueryTest extends OrmFunctionalTestCase
         }
     }
 
-    /**
-     * @group DDC-604
-     */
+    /** @group DDC-604 */
     public function testEntityParameters(): void
     {
         $article          = new CmsArticle();
@@ -600,9 +596,7 @@ class QueryTest extends OrmFunctionalTestCase
         self::assertFalse($result[0]->user->__isInitialized__);
     }
 
-    /**
-     * @group DDC-952
-     */
+    /** @group DDC-952 */
     public function testEnableFetchEagerMode(): void
     {
         for ($i = 0; $i < 10; $i++) {
@@ -631,9 +625,7 @@ class QueryTest extends OrmFunctionalTestCase
         }
     }
 
-    /**
-     * @group DDC-991
-     */
+    /** @group DDC-991 */
     public function testgetOneOrNullResult(): void
     {
         $user           = new CmsUser();
@@ -655,9 +647,7 @@ class QueryTest extends OrmFunctionalTestCase
         self::assertEquals('gblanco', $fetchedUsername);
     }
 
-    /**
-     * @group DDC-991
-     */
+    /** @group DDC-991 */
     public function testgetOneOrNullResultSeveralRows(): void
     {
         $user           = new CmsUser();
@@ -680,9 +670,7 @@ class QueryTest extends OrmFunctionalTestCase
         $fetchedUser = $query->getOneOrNullResult();
     }
 
-    /**
-     * @group DDC-991
-     */
+    /** @group DDC-991 */
     public function testgetOneOrNullResultNoRows(): void
     {
         $query = $this->_em->createQuery('select u from Doctrine\Tests\Models\CMS\CmsUser u');
@@ -692,9 +680,7 @@ class QueryTest extends OrmFunctionalTestCase
         self::assertNull($query->getOneOrNullResult(Query::HYDRATE_SCALAR));
     }
 
-    /**
-     * @group DBAL-171
-     */
+    /** @group DBAL-171 */
     public function testParameterOrder(): void
     {
         $user1           = new CmsUser();
@@ -837,9 +823,7 @@ class QueryTest extends OrmFunctionalTestCase
         self::assertInstanceOf(CmsUser::class, $users[0]);
     }
 
-    /**
-     * @group DDC-1651
-     */
+    /** @group DDC-1651 */
     public function testSetParameterBindingSingleIdentifierObject(): void
     {
         $userC           = new CmsUser();
@@ -860,9 +844,7 @@ class QueryTest extends OrmFunctionalTestCase
         $q->getResult();
     }
 
-    /**
-     * @group DDC-2319
-     */
+    /** @group DDC-2319 */
     public function testSetCollectionParameterBindingSingleIdentifierObject(): void
     {
         $u1           = new CmsUser();
@@ -910,9 +892,7 @@ class QueryTest extends OrmFunctionalTestCase
         self::assertEquals($u3->username, $resultUser3->username);
     }
 
-    /**
-     * @group DDC-1822
-     */
+    /** @group DDC-1822 */
     public function testUnexpectedResultException(): void
     {
         $dql          = 'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u';
