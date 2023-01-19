@@ -574,15 +574,20 @@ class SqlWalker
 
         switch ($pathExpr->type) {
             case AST\PathExpression::TYPE_STATE_FIELD:
-                $fieldName = $pathExpr->field;
-                $dqlAlias  = $pathExpr->identificationVariable;
-                $class     = $this->getMetadataForDqlAlias($dqlAlias);
+                $fieldName    = $pathExpr->field;
+                $dqlAlias     = $pathExpr->identificationVariable;
+                $class        = $this->getMetadataForDqlAlias($dqlAlias);
+                $fieldMapping = $class->getFieldMapping($fieldName);
 
                 if ($this->useSqlTableAliases) {
                     $sql .= $this->walkIdentificationVariable($dqlAlias, $fieldName) . '.';
                 }
 
                 $sql .= $this->quoteStrategy->getColumnName($fieldName, $class, $this->platform);
+
+                if (is_string($fieldMapping['type']) && Type::hasType($fieldMapping['type'])) {
+                    $sql = Type::getType($fieldMapping['type'])->convertToPHPValueSQL($sql, $this->platform);
+                }
                 break;
 
             case AST\PathExpression::TYPE_SINGLE_VALUED_ASSOCIATION:
@@ -1225,21 +1230,11 @@ class SqlWalker
                 $dqlAlias  = $expr->identificationVariable;
                 $class     = $this->getMetadataForDqlAlias($dqlAlias);
 
-                $resultAlias = $selectExpression->fieldIdentificationVariable ?: $fieldName;
-                $tableName   = $class->isInheritanceTypeJoined()
-                    ? $this->em->getUnitOfWork()->getEntityPersister($class->name)->getOwningTable($fieldName)
-                    : $class->getTableName();
+                $resultAlias  = $selectExpression->fieldIdentificationVariable ?: $fieldName;
+                $fieldMapping = $class->fieldMappings[$fieldName];
+                $columnAlias  = $this->getSQLColumnAlias($fieldMapping['columnName']);
 
-                $sqlTableAlias = $this->getSQLTableAlias($tableName, $dqlAlias);
-                $fieldMapping  = $class->fieldMappings[$fieldName];
-                $columnName    = $this->quoteStrategy->getColumnName($fieldName, $class, $this->platform);
-                $columnAlias   = $this->getSQLColumnAlias($fieldMapping['columnName']);
-                $col           = $sqlTableAlias . '.' . $columnName;
-
-                $type = Type::getType($fieldMapping['type']);
-                $col  = $type->convertToPHPValueSQL($col, $this->conn->getDatabasePlatform());
-
-                $sql .= $col . ' AS ' . $columnAlias;
+                $sql .= $expr->dispatch($this) . ' AS ' . $columnAlias;
 
                 $this->scalarResultAliasMap[$resultAlias] = $columnAlias;
 
@@ -1485,9 +1480,6 @@ class SqlWalker
                     $fieldMapping = $class->fieldMappings[$fieldName];
                     $fieldType    = $fieldMapping['type'];
                     $col          = trim($e->dispatch($this));
-
-                    $type = Type::getType($fieldType);
-                    $col  = $type->convertToPHPValueSQL($col, $this->platform);
 
                     $sqlSelectExpressions[] = $col . ' AS ' . $columnAlias;
 
