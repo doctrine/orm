@@ -131,6 +131,15 @@ If no discriminator map is provided, then the map is generated
 automatically. The automatically generated discriminator map contains the
 lowercase short name of each class as key.
 
+.. note::
+
+    Automatically generating the descriminator map is very expensive
+    computation-wise. The mapping driver has to provide all classes
+    for which mapping configuration exists, and those have to be
+    loaded and checked whether they are part of the current
+    inheritance hierarchy. The resulting map, however, can be kept
+    in the metadata cache.
+
 Single Table Inheritance
 ------------------------
 
