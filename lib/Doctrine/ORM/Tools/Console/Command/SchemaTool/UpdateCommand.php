@@ -34,11 +34,12 @@ class UpdateCommand extends AbstractCommand
              ->addOption('em', null, InputOption::VALUE_REQUIRED, 'Name of the entity manager to operate on')
              ->addOption('complete', null, InputOption::VALUE_NONE, 'If defined, all assets of the database which are not relevant to the current metadata will be dropped.')
              ->addOption('dump-sql', null, InputOption::VALUE_NONE, 'Dumps the generated SQL statements to the screen (does not execute them).')
+             ->addOption('check-sync', null, InputOption::VALUE_NONE, 'Checks if the database schema is in sync with the current mapping metadata.')
              ->addOption('force', 'f', InputOption::VALUE_NONE, 'Causes the generated SQL statements to be physically executed against your database.')
              ->setHelp(<<<'EOT'
-The <info>%command.name%</info> command generates the SQL needed to
-synchronize the database schema with the current mapping metadata of the
-default entity manager.
+The <info>%command.name%</info> command checks and generates the SQL needed to
+synchronize the database schema with the current mapping metadata of the default
+entity manager.
 
 For example, if you add metadata for a new column to an entity, this command
 would generate and output the SQL needed to add the new column to the database:
@@ -52,6 +53,15 @@ Alternatively, you can execute the generated queries:
 If both options are specified, the queries are output and then executed:
 
 <info>%command.name% --dump-sql --force</info>
+
+You can also just check if the database schema is in sync with the current mapping
+metadata:
+
+<info>%command.name% --check-sync</info>
+
+This option is useful if you need to perform this check in a routine (like in a CI
+environment), as it will return exit code <info>0</info> if there are no required
+updates, or <code>1</code> otherwise.
 
 Finally, be aware that if the <info>--complete</info> option is passed, this
 task will drop all database assets (e.g. tables, etc) that are *not* described
@@ -88,6 +98,17 @@ EOT
             $notificationUi->success('Nothing to update - your database is already in sync with the current entity metadata.');
 
             return 0;
+        }
+
+        $checkSync = $input->getOption('check-sync') === true;
+
+        if ($checkSync) {
+            $notificationUi->error(sprintf(
+                'The mapping metadata is not in sync with the current database schema, "%u" queries must be executed to perform the update.',
+                count($sqls)
+            ));
+
+            return 1;
         }
 
         $dumpSql = $input->getOption('dump-sql') === true;
