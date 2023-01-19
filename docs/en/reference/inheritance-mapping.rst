@@ -133,7 +133,7 @@ lowercase short name of each class as key.
 
 .. note::
 
-    Automatically generating the descriminator map is very expensive
+    Automatically generating the discriminator map is very expensive
     computation-wise. The mapping driver has to provide all classes
     for which mapping configuration exists, and those have to be
     loaded and checked whether they are part of the current
