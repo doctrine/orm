@@ -345,6 +345,11 @@ relationship defined in that mapped superclass or trait.
 
 It is not supported to use overrides in entity inheritance scenarios.
 
+.. note::
+
+    When using traits, make sure not to miss the warnings given in the
+    :doc:`Limitations and Known Issues<reference/limitations-and-known-issues>` chapter.
+
 
 Association Override
 ~~~~~~~~~~~~~~~~~~~~
