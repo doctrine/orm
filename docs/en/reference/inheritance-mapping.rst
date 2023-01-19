@@ -254,7 +254,7 @@ Class Table Inheritance
 
 `Class Table Inheritance <https://martinfowler.com/eaaCatalog/classTableInheritance.html>`_
 is an inheritance mapping strategy where each class in a hierarchy
-is mapped to several tables: Its own table and the tables of all
+is mapped to several tables: its own table and the tables of all
 parent classes. The table of a child class is linked to the table
 of a parent class through a foreign key constraint.
 
