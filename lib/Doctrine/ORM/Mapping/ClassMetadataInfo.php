@@ -2868,7 +2868,7 @@ class ClassMetadataInfo implements ClassMetadata
      * Adds a field mapping without completing/validating it.
      * This is mainly used to add inherited field mappings to derived classes.
      *
-     * @psalm-param array<string, mixed> $fieldMapping
+     * @psalm-param FieldMapping $fieldMapping
      *
      * @return void
      */

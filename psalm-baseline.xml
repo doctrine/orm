@@ -696,12 +696,11 @@
       <code>$table</code>
       <code>$tableGeneratorDefinition</code>
     </PropertyNotSetInConstructor>
-    <PropertyTypeCoercion occurrences="12">
+    <PropertyTypeCoercion occurrences="11">
       <code>$identifier</code>
       <code>$this-&gt;associationMappings</code>
       <code>$this-&gt;associationMappings</code>
       <code>$this-&gt;entityListeners</code>
-      <code>$this-&gt;fieldMappings</code>
       <code>$this-&gt;fullyQualifiedClassName($repositoryClassName)</code>
       <code>$this-&gt;table</code>
       <code>$this-&gt;table</code>
