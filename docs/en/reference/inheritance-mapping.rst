@@ -136,8 +136,8 @@ lowercase short name of each class as key.
     Automatically generating the discriminator map is very expensive
     computation-wise. The mapping driver has to provide all classes
     for which mapping configuration exists, and those have to be
-    loaded and checked whether they are part of the current
-    inheritance hierarchy. The resulting map, however, can be kept
+    loaded and checked against  the current inheritance hierarchy
+    to see if they are part of it. The resulting map, however, can be kept
     in the metadata cache.
 
 Single Table Inheritance
