@@ -477,7 +477,10 @@ class UnitOfWork implements PropertyChangedListener
 
         // Take new snapshots from visited collections
         foreach ($this->visitedCollections as $coll) {
-            $coll->takeSnapshot();
+            if ($coll instanceof PersistentCollection) {
+                $coll->takeSnapshot();
+                $coll->setDirty(false);
+            }
         }
 
         $this->dispatchPostFlushEvent();

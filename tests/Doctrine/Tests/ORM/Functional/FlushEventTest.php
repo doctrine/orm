@@ -93,12 +93,15 @@ class OnFlushListener
                 // Explicitly calculate the changeset since onFlush is raised
                 // after changeset calculation!
                 $uow->computeChangeSet($em->getClassMetadata(get_class($phone)), $phone);
+                // #9960 Also, calculate the changeset of the owning side
+                $uow->computeChangeSet($em->getClassMetadata(get_class($entity)), $entity);
 
                 // Take a snapshot because the UoW wont do this for us, because
                 // the UoW did not visit this collection.
                 // Alternatively we could provide an ->addVisitedCollection() method
                 // on the UoW.
-                $entity->getPhonenumbers()->takeSnapshot();
+                // #9960 by calculating the changeset of the owning side, this is not needed
+//                $entity->getPhonenumbers()->takeSnapshot();
             }
 
             /*foreach ($uow->getEntityChangeSet($entity) as $field => $change) {

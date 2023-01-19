@@ -211,7 +211,6 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
     public function takeSnapshot(): void
     {
         $this->snapshot = $this->unwrap()->toArray();
-        $this->isDirty  = false;
     }
 
     /**
@@ -681,6 +680,7 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
 
         $this->unwrap()->clear();
         $this->em->getUnitOfWork()->loadCollection($this);
+        $this->isDirty = false;
         $this->takeSnapshot();
 
         if ($newlyAddedDirtyObjects) {
