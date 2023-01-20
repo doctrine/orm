@@ -527,10 +527,9 @@
     </PropertyNotSetInConstructor>
   </file>
   <file src="lib/Doctrine/ORM/Mapping/ClassMetadataFactory.php">
-    <ArgumentTypeCoercion occurrences="4">
+    <ArgumentTypeCoercion occurrences="3">
       <code>$class</code>
       <code>$class</code>
-      <code>$nonSuperclassParents</code>
       <code>new $definition['class']()</code>
     </ArgumentTypeCoercion>
     <DeprecatedClass occurrences="1">
