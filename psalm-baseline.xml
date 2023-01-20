@@ -527,10 +527,9 @@
     </PropertyNotSetInConstructor>
   </file>
   <file src="lib/Doctrine/ORM/Mapping/ClassMetadataFactory.php">
-    <ArgumentTypeCoercion occurrences="4">
+    <ArgumentTypeCoercion occurrences="3">
       <code>$class</code>
       <code>$class</code>
-      <code>$nonSuperclassParents</code>
       <code>new $definition['class']()</code>
     </ArgumentTypeCoercion>
     <DeprecatedClass occurrences="1">
@@ -576,9 +575,6 @@
     </PossiblyNullReference>
   </file>
   <file src="lib/Doctrine/ORM/Mapping/ClassMetadataInfo.php">
-    <DeprecatedConstant occurrences="1">
-      <code>self::GENERATOR_TYPE_UUID</code>
-    </DeprecatedConstant>
     <DeprecatedMethod occurrences="2">
       <code>canEmulateSchemas</code>
       <code>canRequireSQLConversion</code>
@@ -2647,9 +2643,6 @@
     <DeprecatedClass occurrences="1">
       <code>ExportException::attemptOverwriteExistingFile($path)</code>
     </DeprecatedClass>
-    <DeprecatedConstant occurrences="1">
-      <code>ClassMetadataInfo::GENERATOR_TYPE_UUID</code>
-    </DeprecatedConstant>
     <InvalidNullableReturnType occurrences="1">
       <code>string</code>
     </InvalidNullableReturnType>
