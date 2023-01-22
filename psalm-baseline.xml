@@ -2576,10 +2576,6 @@
     </PossiblyUndefinedArrayOffset>
   </file>
   <file src="lib/Doctrine/ORM/Tools/DebugUnitOfWorkListener.php">
-    <PossiblyNullArgument occurrences="2">
-      <code>$entity</code>
-      <code>$entity</code>
-    </PossiblyNullArgument>
     <RedundantConditionGivenDocblockType occurrences="1">
       <code>$state === UnitOfWork::STATE_DETACHED</code>
     </RedundantConditionGivenDocblockType>
@@ -2865,9 +2861,6 @@
       <code>$collectionToUpdate</code>
       <code>$em-&gt;getMetadataFactory()</code>
     </InvalidArgument>
-    <InvalidNullableReturnType occurrences="1">
-      <code>object</code>
-    </InvalidNullableReturnType>
     <InvalidPropertyAssignmentValue occurrences="2">
       <code>$this-&gt;entityChangeSets</code>
       <code>$this-&gt;entityChangeSets</code>
@@ -2881,16 +2874,13 @@
       <code>$entityState</code>
       <code>$entityState</code>
     </NoValue>
-    <NullableReturnStatement occurrences="1">
-      <code>$this-&gt;identityMap[$rootClassName][$idHash]</code>
-    </NullableReturnStatement>
     <PossiblyInvalidArgument occurrences="1">
       <code>$value</code>
     </PossiblyInvalidArgument>
     <PossiblyInvalidArrayOffset occurrences="1">
       <code>$this-&gt;identityMap[$rootClassName]</code>
     </PossiblyInvalidArrayOffset>
-    <PossiblyNullArgument occurrences="13">
+    <PossiblyNullArgument occurrences="11">
       <code>$assoc</code>
       <code>$assoc</code>
       <code>$assoc</code>
@@ -2901,8 +2891,6 @@
       <code>$collection-&gt;getOwner()</code>
       <code>$collectionToDelete-&gt;getMapping()</code>
       <code>$collectionToUpdate-&gt;getMapping()</code>
-      <code>$entity</code>
-      <code>$entity</code>
       <code>$owner</code>
     </PossiblyNullArgument>
     <PossiblyNullArrayAccess occurrences="2">
