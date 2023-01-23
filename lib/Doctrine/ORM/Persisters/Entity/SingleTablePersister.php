@@ -97,7 +97,7 @@ class SingleTablePersister extends AbstractEntityInheritancePersister
         $columns = parent::getInsertColumnList();
 
         // Add discriminator column to the INSERT SQL
-        $columns[] = $this->class->getDiscriminatorColumn()['name'];
+        $columns[] = $this->class->getDiscriminatorColumn()->name;
 
         return $columns;
     }

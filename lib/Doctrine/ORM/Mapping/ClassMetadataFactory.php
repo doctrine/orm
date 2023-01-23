@@ -95,7 +95,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     ): void {
         if ($parent) {
             $class->setInheritanceType($parent->inheritanceType);
-            $class->setDiscriminatorColumn($parent->discriminatorColumn);
+            $class->setDiscriminatorColumn($parent->discriminatorColumn === null ? null : clone $parent->discriminatorColumn);
             $class->setIdGeneratorType($parent->generatorType);
             $this->addInheritedFields($class, $parent);
             $this->addInheritedRelations($class, $parent);

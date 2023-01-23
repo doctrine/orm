@@ -31,6 +31,7 @@ use function array_diff_key;
 use function array_filter;
 use function array_flip;
 use function array_intersect_key;
+use function assert;
 use function class_exists;
 use function count;
 use function current;
@@ -401,6 +402,7 @@ class SchemaTool
     private function addDiscriminatorColumnDefinition(ClassMetadata $class, Table $table): void
     {
         $discrColumn = $class->discriminatorColumn;
+        assert($discrColumn !== null);
 
         if (
             ! isset($discrColumn['type']) ||

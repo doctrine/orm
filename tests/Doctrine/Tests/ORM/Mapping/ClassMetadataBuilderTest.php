@@ -9,6 +9,7 @@ use Doctrine\ORM\Mapping\Builder\ClassMetadataBuilder;
 use Doctrine\ORM\Mapping\Builder\EmbeddedBuilder;
 use Doctrine\ORM\Mapping\Builder\FieldBuilder;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\DiscriminatorColumnMapping;
 use Doctrine\ORM\Mapping\FieldMapping;
 use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\Persistence\Mapping\RuntimeReflectionService;
@@ -184,7 +185,14 @@ class ClassMetadataBuilderTest extends OrmTestCase
     public function testSetDiscriminatorColumn(): void
     {
         $this->assertIsFluent($this->builder->setDiscriminatorColumn('discr', 'string', 124, null, null));
-        self::assertEquals(['fieldName' => 'discr', 'name' => 'discr', 'type' => 'string', 'length' => '124', 'columnDefinition' => null, 'enumType' => null], $this->cm->discriminatorColumn);
+        self::assertEquals(DiscriminatorColumnMapping::fromMappingArray([
+            'fieldName' => 'discr',
+            'name' => 'discr',
+            'type' => 'string',
+            'length' => 124,
+            'columnDefinition' => null,
+            'enumType' => null,
+        ]), $this->cm->discriminatorColumn);
     }
 
     public function testAddDiscriminatorMapClass(): void

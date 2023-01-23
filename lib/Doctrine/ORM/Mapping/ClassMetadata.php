@@ -67,14 +67,6 @@ use function trim;
  *
  * @template-covariant T of object
  * @template-implements PersistenceClassMetadata<T>
- * @psalm-type DiscriminatorColumnMapping = array{
- *     name: string,
- *     fieldName: string,
- *     type: string,
- *     length?: int,
- *     columnDefinition?: string|null,
- *     enumType?: class-string<BackedEnum>|null,
- * }
  * @psalm-type EmbeddedClassMapping = array{
  *    class: class-string,
  *    columnPrefix: string|null,
@@ -423,11 +415,8 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
     /**
      * READ-ONLY: The definition of the discriminator column used in JOINED and SINGLE_TABLE
      * inheritance mappings.
-     *
-     * @var array<string, mixed>
-     * @psalm-var DiscriminatorColumnMapping|null
      */
-    public array|null $discriminatorColumn = null;
+    public DiscriminatorColumnMapping|null $discriminatorColumn = null;
 
     /**
      * READ-ONLY: The primary table definition. The definition is an array with the
@@ -2347,13 +2336,19 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
      *
      * @see getDiscriminatorColumn()
      *
-     * @param mixed[]|null $columnDef
-     * @psalm-param array{name: string|null, fieldName?: string, type?: string, length?: int, columnDefinition?: string|null, enumType?: class-string<BackedEnum>|null}|null $columnDef
+     * @param DiscriminatorColumnMapping|mixed[]|null $columnDef
+     * @psalm-param DiscriminatorColumnMapping|array{name: string|null, fieldName?: string, type?: string, length?: int, columnDefinition?: string|null, enumType?: class-string<BackedEnum>|null}|null $columnDef
      *
      * @throws MappingException
      */
-    public function setDiscriminatorColumn(array|null $columnDef): void
+    public function setDiscriminatorColumn(DiscriminatorColumnMapping|array|null $columnDef): void
     {
+        if ($columnDef instanceof DiscriminatorColumnMapping) {
+            $this->discriminatorColumn = $columnDef;
+
+            return;
+        }
+
         if ($columnDef !== null) {
             if (! isset($columnDef['name'])) {
                 throw MappingException::nameIsMandatoryForDiscriminatorColumns($this->name);
@@ -2375,15 +2370,11 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
                 throw MappingException::invalidDiscriminatorColumnType($this->name, $columnDef['type']);
             }
 
-            $this->discriminatorColumn = $columnDef;
+            $this->discriminatorColumn = DiscriminatorColumnMapping::fromMappingArray($columnDef);
         }
     }
 
-    /**
-     * @return array<string, mixed>
-     * @psalm-return DiscriminatorColumnMapping
-     */
-    final public function getDiscriminatorColumn(): array
+    final public function getDiscriminatorColumn(): DiscriminatorColumnMapping
     {
         if ($this->discriminatorColumn === null) {
             throw new LogicException('The discriminator column was not set.');
