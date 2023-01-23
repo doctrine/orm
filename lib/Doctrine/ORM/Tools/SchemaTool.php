@@ -15,6 +15,7 @@ use Doctrine\DBAL\Schema\Visitor\RemoveNamespacedAssets;
 use Doctrine\Deprecations\Deprecation;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\DiscriminatorColumnMapping;
 use Doctrine\ORM\Mapping\FieldMapping;
 use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\ORM\Mapping\QuoteStrategy;
@@ -48,7 +49,6 @@ use function strtolower;
  * @link    www.doctrine-project.org
  *
  * @psalm-import-type AssociationMapping from ClassMetadata
- * @psalm-import-type DiscriminatorColumnMapping from ClassMetadata
  * @psalm-import-type JoinColumnData from ClassMetadata
  */
 class SchemaTool
@@ -406,6 +406,7 @@ class SchemaTool
     private function addDiscriminatorColumnDefinition(ClassMetadata $class, Table $table): void
     {
         $discrColumn = $class->discriminatorColumn;
+        assert($discrColumn !== null);
 
         if (
             ! isset($discrColumn['type']) ||
@@ -776,7 +777,7 @@ class SchemaTool
      *
      * @return mixed[]
      */
-    private function gatherColumnOptions(FieldMapping|array $mapping): array
+    private function gatherColumnOptions(FieldMapping|DiscriminatorColumnMapping|array $mapping): array
     {
         $mappingOptions = $mapping['options'] ?? [];
 

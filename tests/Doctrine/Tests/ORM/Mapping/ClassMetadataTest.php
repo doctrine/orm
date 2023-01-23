@@ -12,6 +12,7 @@ use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\DefaultNamingStrategy;
 use Doctrine\ORM\Mapping\DefaultTypedFieldMapper;
+use Doctrine\ORM\Mapping\DiscriminatorColumnMapping;
 use Doctrine\ORM\Mapping\MappedSuperclass;
 use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\ORM\Mapping\UnderscoreNamingStrategy;
@@ -102,7 +103,11 @@ class ClassMetadataTest extends OrmTestCase
         self::assertEquals([One::class, Two::class, Three::class], $cm->subClasses);
         self::assertEquals(['UserParent'], $cm->parentClasses);
         self::assertEquals(UserRepository::class, $cm->customRepositoryClassName);
-        self::assertEquals(['name' => 'disc', 'type' => 'integer', 'fieldName' => 'disc'], $cm->discriminatorColumn);
+        self::assertEquals(DiscriminatorColumnMapping::fromMappingArray([
+            'name' => 'disc',
+            'type' => 'integer',
+            'fieldName' => 'disc',
+        ]), $cm->discriminatorColumn);
         self::assertTrue($cm->associationMappings['phonenumbers']['type'] === ClassMetadata::ONE_TO_ONE);
         self::assertEquals(1, count($cm->associationMappings));
         $oneOneMapping = $cm->getAssociationMapping('phonenumbers');
