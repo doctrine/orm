@@ -545,16 +545,10 @@
     <InvalidArrayOffset occurrences="1">
       <code>$subClass-&gt;table[$indexType][$indexName]</code>
     </InvalidArrayOffset>
-    <InvalidPropertyAssignmentValue occurrences="1">
-      <code>$subClass-&gt;table</code>
-    </InvalidPropertyAssignmentValue>
     <MissingConstructor occurrences="2">
       <code>$driver</code>
       <code>$evm</code>
     </MissingConstructor>
-    <PossiblyInvalidArrayAssignment occurrences="1">
-      <code>$subClass-&gt;table[$indexType][$indexName]</code>
-    </PossiblyInvalidArrayAssignment>
     <PossiblyInvalidIterator occurrences="1">
       <code>$parentClass-&gt;table[$indexType]</code>
     </PossiblyInvalidIterator>
@@ -562,9 +556,6 @@
       <code>$this-&gt;em</code>
       <code>$this-&gt;em</code>
     </PossiblyNullArgument>
-    <PossiblyNullPropertyAssignmentValue occurrences="1">
-      <code>$this-&gt;em-&gt;getConfiguration()-&gt;getMetadataDriverImpl()</code>
-    </PossiblyNullPropertyAssignmentValue>
     <PossiblyNullReference occurrences="6">
       <code>getConfiguration</code>
       <code>getConfiguration</code>
@@ -699,19 +690,6 @@
       <code>$table</code>
       <code>$tableGeneratorDefinition</code>
     </PropertyNotSetInConstructor>
-    <PropertyTypeCoercion occurrences="11">
-      <code>$identifier</code>
-      <code>$this-&gt;associationMappings</code>
-      <code>$this-&gt;associationMappings</code>
-      <code>$this-&gt;entityListeners</code>
-      <code>$this-&gt;fullyQualifiedClassName($repositoryClassName)</code>
-      <code>$this-&gt;table</code>
-      <code>$this-&gt;table</code>
-      <code>$this-&gt;table</code>
-      <code>$this-&gt;table</code>
-      <code>$this-&gt;table</code>
-      <code>$this-&gt;table</code>
-    </PropertyTypeCoercion>
     <RedundantConditionGivenDocblockType occurrences="2">
       <code>$mapping !== false</code>
       <code>$mapping !== false</code>
