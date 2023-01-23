@@ -17,13 +17,9 @@ use Doctrine\ORM\Query\AST\SelectStatement;
 use Doctrine\ORM\Query\AST\SimpleArithmeticExpression;
 use Doctrine\ORM\Query\AST\WhereClause;
 use Doctrine\ORM\Query\TreeWalkerAdapter;
-use Doctrine\ORM\Utility\PersisterHelper;
 use RuntimeException;
 
-use function array_map;
-use function assert;
 use function count;
-use function is_array;
 use function reset;
 
 /**
@@ -80,15 +76,6 @@ class WhereInWalker extends TreeWalkerAdapter
                 $arithmeticExpression,
                 [new InputParameter(':' . self::PAGINATOR_ID_ALIAS)]
             );
-
-            $this->convertWhereInIdentifiersToDatabaseValue(
-                PersisterHelper::getTypeOfField(
-                    $identifierFieldName,
-                    $rootClass,
-                    $this->_getQuery()
-                        ->getEntityManager()
-                )[0]
-            );
         } else {
             $expression = new NullComparisonExpression($pathExpression);
         }
@@ -129,25 +116,5 @@ class WhereInWalker extends TreeWalkerAdapter
                 )
             );
         }
-    }
-
-    private function convertWhereInIdentifiersToDatabaseValue(string $type): void
-    {
-        $query                = $this->_getQuery();
-        $identifiersParameter = $query->getParameter(self::PAGINATOR_ID_ALIAS);
-
-        assert($identifiersParameter !== null);
-
-        $identifiers = $identifiersParameter->getValue();
-
-        assert(is_array($identifiers));
-
-        $connection = $this->_getQuery()
-            ->getEntityManager()
-            ->getConnection();
-
-        $query->setParameter(self::PAGINATOR_ID_ALIAS, array_map(static function ($id) use ($connection, $type) {
-            return $connection->convertToDatabaseValue($id, $type);
-        }, $identifiers));
     }
 }
