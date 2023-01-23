@@ -147,6 +147,14 @@ use const PHP_VERSION_ID;
  *     columnDefinition?: string|null,
  *     enumType?: class-string<BackedEnum>|null,
  * }
+ * @psalm-type EmbeddedClassMapping = array{
+ *    class: class-string,
+ *    columnPrefix: string|null,
+ *    declaredField: string|null,
+ *    originalField: string|null,
+ *    inherited?: class-string,
+ *    declared?: class-string,
+ * }
  */
 class ClassMetadataInfo implements ClassMetadata
 {
@@ -447,7 +455,7 @@ class ClassMetadataInfo implements ClassMetadata
      * declared in another parent <em>entity or mapped superclass</em>. The value is the FQCN
      * of the topmost non-transient class that contains mapping information for this field.
      *
-     * @psalm-var array<string, mixed[]>
+     * @psalm-var array<string, EmbeddedClassMapping>
      */
     public $embeddedClasses = [];
 
@@ -1171,6 +1179,7 @@ class ClassMetadataInfo implements ClassMetadata
 
         foreach ($this->embeddedClasses as $property => $embeddedClass) {
             if (isset($embeddedClass['declaredField'])) {
+                assert($embeddedClass['originalField'] !== null);
                 $childProperty = $this->getAccessibleProperty(
                     $reflService,
                     $this->embeddedClasses[$embeddedClass['declaredField']]['class'],
@@ -3883,8 +3892,16 @@ class ClassMetadataInfo implements ClassMetadata
             }
         }
 
+        if (! (isset($mapping['class']) && $mapping['class'])) {
+            throw MappingException::missingEmbeddedClass($mapping['fieldName']);
+        }
+
+        $fqcn = $this->fullyQualifiedClassName($mapping['class']);
+
+        assert($fqcn !== null);
+
         $this->embeddedClasses[$mapping['fieldName']] = [
-            'class' => $this->fullyQualifiedClassName($mapping['class']),
+            'class' => $fqcn,
             'columnPrefix' => $mapping['columnPrefix'] ?? null,
             'declaredField' => $mapping['declaredField'] ?? null,
             'originalField' => $mapping['originalField'] ?? null,
