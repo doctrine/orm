@@ -1313,11 +1313,6 @@
       <code>$AST instanceof AST\SelectStatement</code>
     </RedundantConditionGivenDocblockType>
   </file>
-  <file src="lib/Doctrine/ORM/Query/ParserResult.php">
-    <PropertyNotSetInConstructor occurrences="1">
-      <code>$_sqlExecutor</code>
-    </PropertyNotSetInConstructor>
-  </file>
   <file src="lib/Doctrine/ORM/Query/QueryExpressionVisitor.php">
     <InvalidReturnStatement occurrences="1">
       <code>new ArrayCollection($this-&gt;parameters)</code>
