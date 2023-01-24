@@ -540,6 +540,19 @@ class MappingException extends ORMException
     }
 
     /**
+     * @param class-string $rootEntityClass
+     * @param class-string $childEntityClass
+     */
+    //public static function missingInheritanceTypeDeclaration(string $rootEntityClass, string $childEntityClass): self
+    //{
+    //    return new self(sprintf(
+    //        "Entity class '%s' is a subclass of the root entity class '%s', but no inheritance mapping type was declared.",
+    //        $childEntityClass,
+    //        $rootEntityClass
+    //    ));
+    //}
+
+    /**
      * @param string $className
      *
      * @return MappingException

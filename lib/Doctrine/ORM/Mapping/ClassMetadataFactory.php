@@ -148,6 +148,18 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
         }
 
         if (! $class->isMappedSuperclass) {
+            if ($rootEntityFound && $class->isInheritanceTypeNone()) {
+                Deprecation::trigger(
+                    'doctrine/orm',
+                    'https://github.com/doctrine/orm/pull/10431',
+                    "Entity class '%s' is a subclass of the root entity class '%s', but no inheritance mapping type was declared. This is a misconfiguration and will be an error in Doctrine ORM 3.0.",
+                    $class->name,
+                    end($nonSuperclassParents)
+                );
+                // enable this in 3.0
+                // throw MappingException::missingInheritanceTypeDeclaration(end($nonSuperclassParents), $class->name);
+            }
+
             foreach ($class->embeddedClasses as $property => $embeddableClass) {
                 if (isset($embeddableClass['inherited'])) {
                     continue;
