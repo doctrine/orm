@@ -799,7 +799,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             $mappingDriver ?? ORMSetup::createDefaultAnnotationDriver([
                 realpath(__DIR__ . '/Models/Cache'),
                 realpath(__DIR__ . '/Models/GeoNames'),
-            ])
+            ], null, true)
         );
 
         $conn = $connection ?: static::$sharedConn;

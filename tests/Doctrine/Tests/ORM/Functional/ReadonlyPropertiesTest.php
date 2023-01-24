@@ -26,7 +26,8 @@ class ReadonlyPropertiesTest extends OrmFunctionalTestCase
         }
 
         $this->_em         = $this->getEntityManager(null, new AttributeDriver(
-            [dirname(__DIR__, 2) . '/Models/ReadonlyProperties']
+            [dirname(__DIR__, 2) . '/Models/ReadonlyProperties'],
+            true
         ));
         $this->_schemaTool = new SchemaTool($this->_em);
 
