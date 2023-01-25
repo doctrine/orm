@@ -82,7 +82,7 @@ use const PHP_VERSION_ID;
  *      columnDefinition?: string,
  *      precision?: int,
  *      scale?: int,
- *      unique?: string,
+ *      unique?: bool,
  *      inherited?: class-string,
  *      originalClass?: class-string,
  *      originalField?: string,
@@ -397,7 +397,27 @@ class ClassMetadataInfo implements ClassMetadata
     public $parentClasses = [];
 
     /**
-     * READ-ONLY: The names of all subclasses (descendants).
+     * READ-ONLY: For classes in inheritance mapping hierarchies, this field contains the names of all
+     * <em>entity</em> subclasses of this class. These may also be abstract classes.
+     *
+     * This list is used, for example, to enumerate all necessary tables in JTI when querying for root
+     * or subclass entities, or to gather all fields comprised in an entity inheritance tree.
+     *
+     * For classes that do not use STI/JTI, this list is empty.
+     *
+     * Implementation note:
+     *
+     * In PHP, there is no general way to discover all subclasses of a given class at runtime. For that
+     * reason, the list of classes given in the discriminator map at the root entity is considered
+     * authoritative. The discriminator map must contain all <em>concrete</em> classes that can
+     * appear in the particular inheritance hierarchy tree. Since there can be no instances of abstract
+     * entity classes, users are not required to list such classes with a discriminator value.
+     *
+     * The possibly remaining "gaps" for abstract entity classes are filled after the class metadata for the
+     * root entity has been loaded.
+     *
+     * For subclasses of such root entities, the list can be reused/passed downwards, it only needs to
+     * be filtered accordingly (only keep remaining subclasses)
      *
      * @psalm-var list<class-string>
      */
@@ -405,6 +425,22 @@ class ClassMetadataInfo implements ClassMetadata
 
     /**
      * READ-ONLY: The names of all embedded classes based on properties.
+     *
+     * The value (definition) array may contain, among others, the following values:
+     *
+     * - <b>'inherited'</b> (string, optional)
+     * This is set when this embedded-class field is inherited by this class from another (inheritance) parent
+     * <em>entity</em> class. The value is the FQCN of the topmost entity class that contains
+     * mapping information for this field. (If there are transient classes in the
+     * class hierarchy, these are ignored, so the class property may in fact come
+     * from a class further up in the PHP class hierarchy.)
+     * Fields initially declared in mapped superclasses are
+     * <em>not</em> considered 'inherited' in the nearest entity subclasses.
+     *
+     * - <b>'declared'</b> (string, optional)
+     * This is set when the embedded-class field does not appear for the first time in this class, but is originally
+     * declared in another parent <em>entity or mapped superclass</em>. The value is the FQCN
+     * of the topmost non-transient class that contains mapping information for this field.
      *
      * @psalm-var array<string, mixed[]>
      */
@@ -520,8 +556,22 @@ class ClassMetadataInfo implements ClassMetadata
      * - <b>scale</b> (integer, optional, schema-only)
      * The scale of a decimal column. Only valid if the column type is decimal.
      *
-     * - <b>'unique'</b> (string, optional, schema-only)
+     * - <b>'unique'</b> (boolean, optional, schema-only)
      * Whether a unique constraint should be generated for the column.
+     *
+     * - <b>'inherited'</b> (string, optional)
+     * This is set when the field is inherited by this class from another (inheritance) parent
+     * <em>entity</em> class. The value is the FQCN of the topmost entity class that contains
+     * mapping information for this field. (If there are transient classes in the
+     * class hierarchy, these are ignored, so the class property may in fact come
+     * from a class further up in the PHP class hierarchy.)
+     * Fields initially declared in mapped superclasses are
+     * <em>not</em> considered 'inherited' in the nearest entity subclasses.
+     *
+     * - <b>'declared'</b> (string, optional)
+     * This is set when the field does not appear for the first time in this class, but is originally
+     * declared in another parent <em>entity or mapped superclass</em>. The value is the FQCN
+     * of the topmost non-transient class that contains mapping information for this field.
      *
      * @var mixed[]
      * @psalm-var array<string, FieldMapping>
@@ -625,6 +675,11 @@ class ClassMetadataInfo implements ClassMetadata
      * - <b>fieldName</b> (string)
      * The name of the field in the entity the association is mapped to.
      *
+     * - <b>sourceEntity</b> (string)
+     * The class name of the source entity. In the case of to-many associations initially
+     * present in mapped superclasses, the nearest <em>entity</em> subclasses will be
+     * considered the respective source entities.
+     *
      * - <b>targetEntity</b> (string)
      * The class name of the target entity. If it is fully-qualified it is used as is.
      * If it is a simple, unqualified class name the namespace is assumed to be the same
@@ -660,6 +715,20 @@ class ClassMetadataInfo implements ClassMetadata
      * Specification of a field on target-entity that is used to index the collection by.
      * This field HAS to be either the primary key or a unique column. Otherwise the collection
      * does not contain all the entities that are actually related.
+     *
+     * - <b>'inherited'</b> (string, optional)
+     * This is set when the association is inherited by this class from another (inheritance) parent
+     * <em>entity</em> class. The value is the FQCN of the topmost entity class that contains
+     * this association. (If there are transient classes in the
+     * class hierarchy, these are ignored, so the class property may in fact come
+     * from a class further up in the PHP class hierarchy.)
+     * To-many associations initially declared in mapped superclasses are
+     * <em>not</em> considered 'inherited' in the nearest entity subclasses.
+     *
+     * - <b>'declared'</b> (string, optional)
+     * This is set when the association does not appear in the current class for the first time, but
+     * is initially declared in another parent <em>entity or mapped superclass</em>. The value is the FQCN
+     * of the topmost non-transient class that contains association information for this relationship.
      *
      * A join table definition has the following structure:
      * <pre>
@@ -3275,6 +3344,21 @@ class ClassMetadataInfo implements ClassMetadata
             throw MappingException::invalidClassInDiscriminatorMap($className, $this->name);
         }
 
+        $this->addSubClass($className);
+    }
+
+    /** @param array<class-string> $classes */
+    public function addSubClasses(array $classes): void
+    {
+        foreach ($classes as $className) {
+            $this->addSubClass($className);
+        }
+    }
+
+    public function addSubClass(string $className): void
+    {
+        // By ignoring classes that are not subclasses of the current class, we simplify inheriting
+        // the subclass list from a parent class at the beginning of \Doctrine\ORM\Mapping\ClassMetadataFactory::doLoadMetadata.
         if (is_subclass_of($className, $this->name) && ! in_array($className, $this->subClasses, true)) {
             $this->subClasses[] = $className;
         }
