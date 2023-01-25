@@ -45,6 +45,9 @@ use function substr;
  * to a relational database.
  *
  * @extends AbstractClassMetadataFactory<ClassMetadata>
+ * @psalm-import-type AssociationMapping from ClassMetadata
+ * @psalm-import-type EmbeddedClassMapping from ClassMetadata
+ * @psalm-import-type FieldMapping from ClassMetadata
  */
 class ClassMetadataFactory extends AbstractClassMetadataFactory
 {
@@ -103,6 +106,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
             $class->setVersioned($parent->isVersioned);
             $class->setVersionField($parent->versionField);
             $class->setDiscriminatorMap($parent->discriminatorMap);
+            $class->addSubClasses($parent->subClasses);
             $class->setLifecycleCallbacks($parent->lifecycleCallbacks);
             $class->setChangeTrackingPolicy($parent->changeTrackingPolicy);
 
@@ -135,10 +139,6 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
             foreach ($class->embeddedClasses as $property => $embeddableClass) {
                 if (isset($embeddableClass['inherited'])) {
                     continue;
-                }
-
-                if (! (isset($embeddableClass['class']) && $embeddableClass['class'])) {
-                    throw MappingException::missingEmbeddedClass($property);
                 }
 
                 if (isset($this->embeddablesActiveNesting[$embeddableClass['class']])) {
@@ -195,10 +195,15 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
             $this->addDefaultDiscriminatorMap($class);
         }
 
+        // During the following event, there may also be updates to the discriminator map as per GH-1257/GH-8402.
+        // So, we must not discover the missing subclasses before that.
+
         if ($this->evm->hasListeners(Events::loadClassMetadata)) {
             $eventArgs = new LoadClassMetadataEventArgs($class, $this->em);
             $this->evm->dispatchEvent(Events::loadClassMetadata, $eventArgs);
         }
+
+        $this->findAbstractEntityClassesNotListedInDiscriminatorMap($class);
 
         if ($class->changeTrackingPolicy === ClassMetadata::CHANGETRACKING_NOTIFY) {
             Deprecation::trigger(
@@ -306,6 +311,57 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
         $class->setDiscriminatorMap($map);
     }
 
+    private function findAbstractEntityClassesNotListedInDiscriminatorMap(ClassMetadata $rootEntityClass): void
+    {
+        // Only root classes in inheritance hierarchies need contain a discriminator map,
+        // so skip for other classes.
+        if (! $rootEntityClass->isRootEntity() || $rootEntityClass->isInheritanceTypeNone()) {
+            return;
+        }
+
+        $processedClasses = [$rootEntityClass->name => true];
+        foreach ($rootEntityClass->subClasses as $knownSubClass) {
+            $processedClasses[$knownSubClass] = true;
+        }
+
+        foreach ($rootEntityClass->discriminatorMap as $declaredClassName) {
+            // This fetches non-transient parent classes only
+            $parentClasses = $this->getParentClasses($declaredClassName);
+
+            foreach ($parentClasses as $parentClass) {
+                if (isset($processedClasses[$parentClass])) {
+                    continue;
+                }
+
+                $processedClasses[$parentClass] = true;
+
+                // All non-abstract entity classes must be listed in the discriminator map, and
+                // this will be validated/enforced at runtime (possibly at a later time, when the
+                // subclass is loaded, but anyways). Also, subclasses is about entity classes only.
+                // That means we can ignore non-abstract classes here. The (expensive) driver
+                // check for mapped superclasses need only be run for abstract candidate classes.
+                if (! (new ReflectionClass($parentClass))->isAbstract() || $this->peekIfIsMappedSuperclass($parentClass)) {
+                    continue;
+                }
+
+                // We have found a non-transient, non-mapped-superclass = an entity class (possibly abstract, but that does not matter)
+                $rootEntityClass->addSubClass($parentClass);
+            }
+        }
+    }
+
+    /** @param class-string $className */
+    private function peekIfIsMappedSuperclass(string $className): bool
+    {
+        $reflService = $this->getReflectionService();
+        $class       = $this->newClassMetadataInstance($className);
+        $this->initializeReflection($class, $reflService);
+
+        $this->getDriver()->loadMetadataForClass($className, $class);
+
+        return $class->isMappedSuperclass;
+    }
+
     /**
      * Gets the lower-case short name of a class.
      *
@@ -326,7 +382,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
      * Puts the `inherited` and `declared` values into mapping information for fields, associations
      * and embedded classes.
      *
-     * @param mixed[] $mapping
+     * @param AssociationMapping|EmbeddedClassMapping|FieldMapping $mapping
      */
     private function addMappingInheritanceInformation(array &$mapping, ClassMetadata $parentClass): void
     {
@@ -362,7 +418,14 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     private function addInheritedRelations(ClassMetadata $subClass, ClassMetadata $parentClass): void
     {
         foreach ($parentClass->associationMappings as $field => $mapping) {
-            if ($parentClass->isMappedSuperclass) {
+            $this->addMappingInheritanceInformation($mapping, $parentClass);
+            // When the class inheriting the relation ($subClass) is the first entity class since the
+            // relation has been defined in a mapped superclass (or in a chain
+            // of mapped superclasses) above, then declare this current entity class as the source of
+            // the relationship.
+            // According to the definitions given in https://github.com/doctrine/orm/pull/10396/,
+            // this is the case <=> ! isset($mapping['inherited']).
+            if (! isset($mapping['inherited'])) {
                 if ($mapping['type'] & ClassMetadata::TO_MANY && ! $mapping['isOwningSide']) {
                     throw MappingException::illegalToManyAssociationOnMappedSuperclass($parentClass->name, $field);
                 }
@@ -370,7 +433,6 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
                 $mapping['sourceEntity'] = $subClass->name;
             }
 
-            $this->addMappingInheritanceInformation($mapping, $parentClass);
             $subClass->addInheritedAssociationMapping($mapping);
         }
     }

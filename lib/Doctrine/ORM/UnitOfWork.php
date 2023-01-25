@@ -120,7 +120,7 @@ class UnitOfWork implements PropertyChangedListener
      * Since all classes in a hierarchy must share the same identifier set,
      * we always take the root class name of the hierarchy.
      *
-     * @psalm-var array<class-string, array<string, object|null>>
+     * @psalm-var array<class-string, array<string, object>>
      */
     private array $identityMap = [];
 
@@ -2526,7 +2526,7 @@ class UnitOfWork implements PropertyChangedListener
     /**
      * Gets the identity map of the UnitOfWork.
      *
-     * @psalm-return array<class-string, array<string, object|null>>
+     * @psalm-return array<class-string, array<string, object>>
      */
     public function getIdentityMap(): array
     {

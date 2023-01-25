@@ -136,7 +136,7 @@ class Paginator implements Countable, IteratorAggregate
             $whereInQuery->setFirstResult(0)->setMaxResults(null);
             $whereInQuery->setParameter(WhereInWalker::PAGINATOR_ID_ALIAS, $ids);
             $whereInQuery->setCacheable($this->query->isCacheable());
-            $whereInQuery->expireQueryCache();
+            $whereInQuery->useQueryCache(false);
 
             $result = $whereInQuery->getResult($this->query->getHydrationMode());
         } else {

@@ -14,7 +14,7 @@ use Symfony\Component\Console\Tester\CommandTester;
 abstract class CommandTestCase extends OrmFunctionalTestCase
 {
     /** @param class-string<AbstractCommand> $commandClass */
-    protected function getCommandTester(string $commandClass): CommandTester
+    protected function getCommandTester(string $commandClass, string|null $commandName = null): CommandTester
     {
         $entityManager = $this->getEntityManager(null, new AttributeDriver([
             __DIR__ . '/Models',
@@ -24,8 +24,14 @@ abstract class CommandTestCase extends OrmFunctionalTestCase
             self::markTestSkipped('We are testing the symfony/console integration');
         }
 
-        return new CommandTester(new $commandClass(
+        $command = new $commandClass(
             new SingleManagerProvider($entityManager),
-        ));
+        );
+
+        if ($commandName !== null) {
+            $command->setName($commandName);
+        }
+
+        return new CommandTester($command);
     }
 }

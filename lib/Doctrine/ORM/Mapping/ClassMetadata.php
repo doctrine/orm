@@ -80,7 +80,7 @@ use function trim;
  *      columnDefinition?: string,
  *      precision?: int,
  *      scale?: int,
- *      unique?: string,
+ *      unique?: bool,
  *      inherited?: class-string,
  *      originalClass?: class-string,
  *      originalField?: string,
@@ -144,6 +144,14 @@ use function trim;
  *     length?: int,
  *     columnDefinition?: string|null,
  *     enumType?: class-string<BackedEnum>|null,
+ * }
+ * @psalm-type EmbeddedClassMapping = array{
+ *    class: class-string,
+ *    columnPrefix: string|null,
+ *    declaredField: string|null,
+ *    originalField: string|null,
+ *    inherited?: class-string,
+ *    declared?: class-string,
  * }
  */
 class ClassMetadata implements PersistenceClassMetadata, Stringable
@@ -352,14 +360,35 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
     public bool $isEmbeddedClass = false;
 
     /**
-     * READ-ONLY: The names of the parent classes (ancestors).
+     * READ-ONLY: The names of the parent <em>entity</em> classes (ancestors), starting with the
+     * nearest one and ending with the root entity class.
      *
      * @psalm-var list<class-string>
      */
     public array $parentClasses = [];
 
     /**
-     * READ-ONLY: The names of all subclasses (descendants).
+     * READ-ONLY: For classes in inheritance mapping hierarchies, this field contains the names of all
+     * <em>entity</em> subclasses of this class. These may also be abstract classes.
+     *
+     * This list is used, for example, to enumerate all necessary tables in JTI when querying for root
+     * or subclass entities, or to gather all fields comprised in an entity inheritance tree.
+     *
+     * For classes that do not use STI/JTI, this list is empty.
+     *
+     * Implementation note:
+     *
+     * In PHP, there is no general way to discover all subclasses of a given class at runtime. For that
+     * reason, the list of classes given in the discriminator map at the root entity is considered
+     * authoritative. The discriminator map must contain all <em>concrete</em> classes that can
+     * appear in the particular inheritance hierarchy tree. Since there can be no instances of abstract
+     * entity classes, users are not required to list such classes with a discriminator value.
+     *
+     * The possibly remaining "gaps" for abstract entity classes are filled after the class metadata for the
+     * root entity has been loaded.
+     *
+     * For subclasses of such root entities, the list can be reused/passed downwards, it only needs to
+     * be filtered accordingly (only keep remaining subclasses)
      *
      * @psalm-var list<class-string>
      */
@@ -384,7 +413,7 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
      * declared in another parent <em>entity or mapped superclass</em>. The value is the FQCN
      * of the topmost non-transient class that contains mapping information for this field.
      *
-     * @psalm-var array<string, mixed[]>
+     * @psalm-var array<string, EmbeddedClassMapping>
      */
     public array $embeddedClasses = [];
 
@@ -452,7 +481,7 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
      * - <b>scale</b> (integer, optional, schema-only)
      * The scale of a decimal column. Only valid if the column type is decimal.
      *
-     * - <b>'unique'</b> (string, optional, schema-only)
+     * - <b>'unique'</b> (boolean, optional, schema-only)
      * Whether a unique constraint should be generated for the column.
      *
      * - <b>'inherited'</b> (string, optional)
@@ -990,6 +1019,7 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
 
         foreach ($this->embeddedClasses as $property => $embeddedClass) {
             if (isset($embeddedClass['declaredField'])) {
+                assert($embeddedClass['originalField'] !== null);
                 $childProperty = $this->getAccessibleProperty(
                     $reflService,
                     $this->embeddedClasses[$embeddedClass['declaredField']]['class'],
@@ -2111,7 +2141,8 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
     }
 
     /**
-     * Sets the parent class names.
+     * Sets the parent class names. Only <em>entity</em> classes may be given.
+     *
      * Assumes that the class names in the passed array are in the order:
      * directParent -> directParentParent -> directParentParentParent ... -> root.
      *
@@ -2389,7 +2420,7 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
      * Adds a field mapping without completing/validating it.
      * This is mainly used to add inherited field mappings to derived classes.
      *
-     * @psalm-param array<string, mixed> $fieldMapping
+     * @psalm-param FieldMapping $fieldMapping
      */
     public function addInheritedFieldMapping(array $fieldMapping): void
     {
@@ -2666,6 +2697,22 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
         if (! (class_exists($className) || interface_exists($className))) {
             throw MappingException::invalidClassInDiscriminatorMap($className, $this->name);
         }
+
+        $this->addSubClass($className);
+    }
+
+    /** @param array<class-string> $classes */
+    public function addSubClasses(array $classes): void
+    {
+        foreach ($classes as $className) {
+            $this->addSubClass($className);
+        }
+    }
+
+    public function addSubClass(string $className): void
+    {
+        // By ignoring classes that are not subclasses of the current class, we simplify inheriting
+        // the subclass list from a parent class at the beginning of \Doctrine\ORM\Mapping\ClassMetadataFactory::doLoadMetadata.
 
         if (is_subclass_of($className, $this->name) && ! in_array($className, $this->subClasses, true)) {
             $this->subClasses[] = $className;
@@ -2955,8 +3002,16 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
             }
         }
 
+        if (! (isset($mapping['class']) && $mapping['class'])) {
+            throw MappingException::missingEmbeddedClass($mapping['fieldName']);
+        }
+
+        $fqcn = $this->fullyQualifiedClassName($mapping['class']);
+
+        assert($fqcn !== null);
+
         $this->embeddedClasses[$mapping['fieldName']] = [
-            'class' => $this->fullyQualifiedClassName($mapping['class']),
+            'class' => $fqcn,
             'columnPrefix' => $mapping['columnPrefix'] ?? null,
             'declaredField' => $mapping['declaredField'] ?? null,
             'originalField' => $mapping['originalField'] ?? null,

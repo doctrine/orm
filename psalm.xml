@@ -23,6 +23,8 @@
                 <referencedClass name="Doctrine\DBAL\Tools\Console\Command\ReservedWordsCommand" />
                 <!-- Remove on 3.0.x -->
                 <referencedClass name="Doctrine\DBAL\Schema\Visitor\RemoveNamespacedAssets"/>
+                <!-- https://github.com/vimeo/psalm/issues/8617 -->
+                <referencedClass name="Doctrine\ORM\Mapping\Annotation"/>
             </errorLevel>
         </DeprecatedClass>
         <DeprecatedMethod>
@@ -53,6 +55,23 @@
                 <file name="lib/Doctrine/ORM/PersistentCollection.php"/>
             </errorLevel>
         </DocblockTypeContradiction>
+        <InvalidArgument>
+            <errorLevel type="suppress">
+                <referencedFunction name="Doctrine\ORM\Mapping\ClassMetadata::addInheritedAssociationMapping"/>
+            </errorLevel>
+        </InvalidArgument>
+        <InvalidArrayAccess>
+            <errorLevel type="suppress">
+                <!-- https://github.com/vimeo/psalm/issues/9160 -->
+                <file name="lib/Doctrine/ORM/Mapping/ClassMetadataFactory.php"/>
+            </errorLevel>
+        </InvalidArrayAccess>
+        <InvalidArrayAssignment>
+            <errorLevel type="suppress">
+                <!-- https://github.com/vimeo/psalm/issues/9160 -->
+                <file name="lib/Doctrine/ORM/Mapping/ClassMetadataFactory.php"/>
+            </errorLevel>
+        </InvalidArrayAssignment>
         <LessSpecificReturnStatement>
             <errorLevel type="suppress">
                 <!-- In DBAL 4, column precision is nullable. See https://github.com/doctrine/dbal/pull/3511 -->
@@ -71,6 +90,18 @@
                 <file name="lib/Doctrine/ORM/Internal/Hydration/AbstractHydrator.php"/>
             </errorLevel>
         </InvalidReturnType>
+        <InvalidParamDefault>
+            <errorLevel type="suppress">
+                <!-- Remove on 3.0.x -->
+                <file name="lib/Doctrine/ORM/Query/AST/InstanceOfExpression.php"/>
+            </errorLevel>
+        </InvalidParamDefault>
+        <InvalidPropertyAssignmentValue>
+            <errorLevel type="suppress">
+                <!-- https://github.com/vimeo/psalm/issues/9155 -->
+                <file name="lib/Doctrine/ORM/Mapping/ClassMetadataFactory.php"/>
+            </errorLevel>
+        </InvalidPropertyAssignmentValue>
         <MethodSignatureMismatch>
             <errorLevel type="suppress">
                 <!-- See https://github.com/vimeo/psalm/issues/7357 -->
@@ -85,11 +116,22 @@
                 <file name="lib/Doctrine/ORM/Mapping/ClassMetadata.php"/>
             </errorLevel>
         </MissingParamType>
+        <PossiblyInvalidArgument>
+            <errorLevel type="suppress">
+                <!-- https://github.com/vimeo/psalm/issues/9155 -->
+                <file name="lib/Doctrine/ORM/Mapping/ClassMetadataFactory.php"/>
+            </errorLevel>
+        </PossiblyInvalidArgument>
         <PropertyNotSetInConstructor>
             <errorLevel type="suppress">
                 <directory name="lib/Doctrine/ORM/Query/AST" />
             </errorLevel>
         </PropertyNotSetInConstructor>
+        <PropertyTypeCoercion>
+            <errorLevel type="suppress">
+                <file name="lib/Doctrine/ORM/Mapping/ClassMetadata.php"/>
+            </errorLevel>
+        </PropertyTypeCoercion>
         <RedundantCastGivenDocblockType>
             <errorLevel type="suppress">
                 <!-- Can be removed once the "getMaxResults" methods of those classes have native parameter types -->
@@ -97,6 +139,12 @@
                 <file name="lib/Doctrine/ORM/QueryBuilder.php"/>
             </errorLevel>
         </RedundantCastGivenDocblockType>
+        <ReferenceConstraintViolation>
+            <errorLevel type="suppress">
+                <!-- https://github.com/vimeo/psalm/issues/9155 -->
+                <file name="lib/Doctrine/ORM/Mapping/ClassMetadataFactory.php"/>
+            </errorLevel>
+        </ReferenceConstraintViolation>
         <TooManyArguments>
             <errorLevel type="suppress">
                 <!-- Symfony cache supports passing a key prefix to the clear method. -->

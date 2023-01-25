@@ -75,7 +75,10 @@ EOT);
         $saveMode = ! $input->getOption('complete');
 
         if ($saveMode) {
-            $notificationUi->warning('Not passing the "--complete" option to "orm:schema-tool:update" is deprecated and will not be supported when using doctrine/dbal 4');
+            $notificationUi->warning(sprintf(
+                'Not passing the "--complete" option to "%s" is deprecated and will not be supported when using doctrine/dbal 4',
+                $this->getName() ?? $this->name,
+            ));
         }
 
         $sqls = $schemaTool->getUpdateSchemaSql($metadatas, $saveMode);

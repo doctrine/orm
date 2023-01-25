@@ -417,29 +417,6 @@ class ClassMetadataFactoryTest extends OrmTestCase
         self::assertSame($entityManager, $property->getValue($classMetadataFactory));
     }
 
-    /** @group DDC-3305 */
-    public function testRejectsEmbeddableWithoutValidClassName(): void
-    {
-        $metadata = $this->createValidClassMetadata();
-
-        $metadata->mapEmbedded(
-            [
-                'fieldName'    => 'embedded',
-                'class'        => '',
-                'columnPrefix' => false,
-            ],
-        );
-
-        $cmf = $this->createTestFactory();
-
-        $cmf->setMetadataForClass($metadata->name, $metadata);
-
-        $this->expectException(MappingException::class);
-        $this->expectExceptionMessage('The embed mapping \'embedded\' misses the \'class\' attribute.');
-
-        $cmf->getMetadataFor($metadata->name);
-    }
-
     /** @group DDC-4006 */
     public function testInheritsIdGeneratorMappingFromEmbeddable(): void
     {

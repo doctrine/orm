@@ -26,4 +26,33 @@ class UpdateCommandTest extends CommandTestCase
 
         self::$sharedConn->executeStatement($tester->getDisplay());
     }
+
+    /** @dataProvider getCasesForWarningMessageFromCompleteOption */
+    public function testWarningMessageFromCompleteOption(string|null $name, string $expectedMessage): void
+    {
+        $tester = $this->getCommandTester(UpdateCommand::class, $name);
+        $tester->execute(
+            [],
+            ['capture_stderr_separately' => true],
+        );
+
+        self::assertStringContainsString($expectedMessage, $tester->getErrorOutput());
+    }
+
+    public function getCasesForWarningMessageFromCompleteOption(): iterable
+    {
+        if (! method_exists(SchemaDiff::class, 'toSaveSql')) {
+            self::markTestSkipped('This test requires DBAL 3');
+        }
+
+        yield 'default_name' => [
+            null,
+            '[WARNING] Not passing the "--complete" option to "orm:schema-tool:update" is deprecated',
+        ];
+
+        yield 'custom_name' => [
+            'doctrine:schema:update',
+            '[WARNING] Not passing the "--complete" option to "doctrine:schema:update" is deprecated',
+        ];
+    }
 }

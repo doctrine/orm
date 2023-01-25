@@ -412,20 +412,6 @@
       <code>$idGenerator</code>
       <code>$table</code>
     </PropertyNotSetInConstructor>
-    <PropertyTypeCoercion occurrences="12">
-      <code>$identifier</code>
-      <code>$this-&gt;associationMappings</code>
-      <code>$this-&gt;associationMappings</code>
-      <code>$this-&gt;entityListeners</code>
-      <code>$this-&gt;fieldMappings</code>
-      <code>$this-&gt;fullyQualifiedClassName($repositoryClassName)</code>
-      <code>$this-&gt;table</code>
-      <code>$this-&gt;table</code>
-      <code>$this-&gt;table</code>
-      <code>$this-&gt;table</code>
-      <code>$this-&gt;table</code>
-      <code>$this-&gt;table</code>
-    </PropertyTypeCoercion>
     <RedundantCondition occurrences="2">
       <code>$mapping !== false</code>
       <code>$mapping !== false</code>
@@ -439,19 +425,12 @@
     </TypeDoesNotContainType>
   </file>
   <file src="lib/Doctrine/ORM/Mapping/ClassMetadataFactory.php">
-    <ArgumentTypeCoercion occurrences="2">
-      <code>$nonSuperclassParents</code>
+    <ArgumentTypeCoercion occurrences="1">
       <code>new $definition['class']()</code>
     </ArgumentTypeCoercion>
     <InvalidArrayOffset occurrences="1">
       <code>$subClass-&gt;table[$indexType][$indexName]</code>
     </InvalidArrayOffset>
-    <InvalidPropertyAssignmentValue occurrences="1">
-      <code>$subClass-&gt;table</code>
-    </InvalidPropertyAssignmentValue>
-    <PossiblyInvalidArrayAssignment occurrences="1">
-      <code>$subClass-&gt;table[$indexType][$indexName]</code>
-    </PossiblyInvalidArrayAssignment>
     <PossiblyInvalidIterator occurrences="1">
       <code>$parentClass-&gt;table[$indexType]</code>
     </PossiblyInvalidIterator>
@@ -1499,9 +1478,6 @@
     </MissingTemplateParam>
   </file>
   <file src="lib/Doctrine/ORM/Tools/DebugUnitOfWorkListener.php">
-    <PossiblyNullArgument occurrences="1">
-      <code>$entity</code>
-    </PossiblyNullArgument>
     <RedundantConditionGivenDocblockType occurrences="1">
       <code>$state === UnitOfWork::STATE_DETACHED</code>
     </RedundantConditionGivenDocblockType>
@@ -1609,7 +1585,9 @@
     <PossiblyInvalidArrayOffset occurrences="1">
       <code>$this-&gt;identityMap[$rootClassName]</code>
     </PossiblyInvalidArrayOffset>
-    <PossiblyNullArgument occurrences="10">
+    <PossiblyNullArgument occurrences="9">
+      <code>$assoc</code>
+      <code>$assoc</code>
       <code>$assoc</code>
       <code>$assoc</code>
       <code>$assoc['targetEntity']</code>
@@ -1618,7 +1596,6 @@
       <code>$collection-&gt;getOwner()</code>
       <code>$collectionToDelete-&gt;getMapping()</code>
       <code>$collectionToUpdate-&gt;getMapping()</code>
-      <code>$entity</code>
       <code>$owner</code>
     </PossiblyNullArgument>
     <PossiblyNullArrayAccess occurrences="2">

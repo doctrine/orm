@@ -45,6 +45,8 @@ use function strtolower;
  * <tt>ClassMetadata</tt> class descriptors.
  *
  * @link    www.doctrine-project.org
+ *
+ * @psalm-import-type FieldMapping from ClassMetadata
  */
 class SchemaTool
 {
@@ -447,7 +449,7 @@ class SchemaTool
      * Creates a column definition as required by the DBAL from an ORM field mapping definition.
      *
      * @param ClassMetadata $class The class that owns the field mapping.
-     * @psalm-param array<string, mixed> $mapping The field mapping.
+     * @psalm-param FieldMapping $mapping The field mapping.
      */
     private function gatherColumn(
         ClassMetadata $class,
