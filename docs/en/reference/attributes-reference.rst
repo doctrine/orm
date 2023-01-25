@@ -570,7 +570,7 @@ Example with partial indexes:
     <?php
     use Doctrine\ORM\Mapping\Index;
 
-    #[Index(name: "search_idx", columns: {"category"},
+    #[Index(name: "search_idx", columns: ["category"],
         options: [
             "where": "((category IS NOT NULL))"
         ]
@@ -628,7 +628,7 @@ Examples:
     #[Entity]
     #[InheritanceType("SINGLE_TABLE")]
     #[DiscriminatorColumn(name: "discr", type: "string")]
-    #[DiscriminatorMap({"person" = "Person", "employee" = "Employee"})]
+    #[DiscriminatorMap(["person" => "Person", "employee" => "Employee"])]
     class Person
     {
         // ...
@@ -637,7 +637,7 @@ Examples:
     #[Entity]
     #[InheritanceType("JOINED")]
     #[DiscriminatorColumn(name: "discr", type: "string")]
-    #[DiscriminatorMap({"person" = "Person", "employee" = "Employee"})]
+    #[DiscriminatorMap(["person" => "Person", "employee" => "Employee"])]
     class Person
     {
         // ...

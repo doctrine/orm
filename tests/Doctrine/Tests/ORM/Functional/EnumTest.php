@@ -4,12 +4,16 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional;
 
+use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Driver\AttributeDriver;
 use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\ORM\Tools\SchemaTool;
 use Doctrine\Tests\Models\Enums\Card;
+use Doctrine\Tests\Models\Enums\Product;
+use Doctrine\Tests\Models\Enums\Quantity;
 use Doctrine\Tests\Models\Enums\Suit;
 use Doctrine\Tests\Models\Enums\TypedCard;
+use Doctrine\Tests\Models\Enums\Unit;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 use function dirname;
@@ -22,10 +26,10 @@ class EnumTest extends OrmFunctionalTestCase
 {
     public function setUp(): void
     {
+        parent::setUp();
+
         $this->_em         = $this->getEntityManager(null, new AttributeDriver([dirname(__DIR__, 2) . '/Models/Enums']));
         $this->_schemaTool = new SchemaTool($this->_em);
-
-        parent::setUp();
 
         if ($this->isSecondLevelCacheEnabled) {
             $this->markTestSkipped();
@@ -100,5 +104,35 @@ EXCEPTION
             Card::class => [Card::class],
             TypedCard::class => [TypedCard::class],
         ];
+    }
+
+    public function testItAllowsReadingAttributes(): void
+    {
+        $metadata = $this->_em->getClassMetadata(Card::class);
+        $property = $metadata->getReflectionProperty('suit');
+
+        $attributes = $property->getAttributes();
+
+        $this->assertCount(1, $attributes);
+        $this->assertEquals(Column::class, $attributes[0]->getName());
+    }
+
+    public function testEnumMappingWithEmbeddable(): void
+    {
+        $this->setUpEntitySchema([Product::class]);
+
+        $product                  = new Product();
+        $product->quantity        = new Quantity();
+        $product->quantity->value = 10;
+        $product->quantity->unit  = Unit::Gram;
+
+        $this->_em->persist($product);
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $fetchedProduct = $this->_em->find(Product::class, $product->id);
+
+        $this->assertInstanceOf(Unit::class, $fetchedProduct->quantity->unit);
+        $this->assertEquals(Unit::Gram, $fetchedProduct->quantity->unit);
     }
 }

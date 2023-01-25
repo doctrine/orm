@@ -15,23 +15,7 @@ class QueryBuilderParenthesisTest extends OrmFunctionalTestCase
     protected function setUp(): void
     {
         parent::setUp();
-        //$this->_em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
-        $this->_schemaTool->createSchema(
-            [
-                $this->_em->getClassMetadata(QueryBuilderParenthesisEntity::class),
-            ]
-        );
-    }
-
-    protected function tearDown(): void
-    {
-        parent::tearDown();
-
-        $this->_schemaTool->dropSchema(
-            [
-                $this->_em->getClassMetadata(QueryBuilderParenthesisEntity::class),
-            ]
-        );
+        $this->createSchemaForModels(QueryBuilderParenthesisEntity::class);
     }
 
     public function testParenthesisOnSingleLine(): void

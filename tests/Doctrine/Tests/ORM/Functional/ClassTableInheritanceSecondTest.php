@@ -30,23 +30,12 @@ class ClassTableInheritanceSecondTest extends OrmFunctionalTestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->_schemaTool->createSchema([
-            $this->_em->getClassMetadata(CTIParent::class),
-            $this->_em->getClassMetadata(CTIChild::class),
-            $this->_em->getClassMetadata(CTIRelated::class),
-            $this->_em->getClassMetadata(CTIRelated2::class),
-        ]);
-    }
-
-    protected function tearDown(): void
-    {
-        parent::tearDown();
-        $this->_schemaTool->dropSchema([
-            $this->_em->getClassMetadata(CTIParent::class),
-            $this->_em->getClassMetadata(CTIChild::class),
-            $this->_em->getClassMetadata(CTIRelated::class),
-            $this->_em->getClassMetadata(CTIRelated2::class),
-        ]);
+        $this->createSchemaForModels(
+            CTIParent::class,
+            CTIChild::class,
+            CTIRelated::class,
+            CTIRelated2::class
+        );
     }
 
     public function testOneToOneAssocToBaseTypeBidirectional(): void
@@ -76,7 +65,6 @@ class ClassTableInheritanceSecondTest extends OrmFunctionalTestCase
 
     public function testManyToManyToCTIHierarchy(): void
     {
-        //$this->_em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger());
         $mmrel = new CTIRelated2();
         $child = new CTIChild();
         $child->setData('child');

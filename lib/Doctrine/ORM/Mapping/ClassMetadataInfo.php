@@ -1056,9 +1056,19 @@ class ClassMetadataInfo implements ClassMetadata
 
         foreach ($this->fieldMappings as $field => $mapping) {
             if (isset($mapping['declaredField']) && isset($parentReflFields[$mapping['declaredField']])) {
+                $childProperty = $this->getAccessibleProperty($reflService, $mapping['originalClass'], $mapping['originalField']);
+                assert($childProperty !== null);
+
+                if (isset($mapping['enumType'])) {
+                    $childProperty = new ReflectionEnumProperty(
+                        $childProperty,
+                        $mapping['enumType']
+                    );
+                }
+
                 $this->reflFields[$field] = new ReflectionEmbeddedProperty(
                     $parentReflFields[$mapping['declaredField']],
-                    $this->getAccessibleProperty($reflService, $mapping['originalClass'], $mapping['originalField']),
+                    $childProperty,
                     $mapping['originalClass']
                 );
                 continue;
@@ -1517,7 +1527,7 @@ class ClassMetadataInfo implements ClassMetadata
                 ! isset($mapping['type'])
                 && ($type instanceof ReflectionNamedType)
             ) {
-                if (PHP_VERSION_ID >= 80100 && ! $type->isBuiltin() && enum_exists($type->getName(), false)) {
+                if (PHP_VERSION_ID >= 80100 && ! $type->isBuiltin() && enum_exists($type->getName())) {
                     $mapping['enumType'] = $type->getName();
 
                     $reflection = new ReflectionEnum($type->getName());

@@ -14,22 +14,16 @@ use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\ManyToMany;
 use Doctrine\Tests\OrmFunctionalTestCase;
-use Exception;
 
 class PersistentCollectionTest extends OrmFunctionalTestCase
 {
     protected function setUp(): void
     {
         parent::setUp();
-        try {
-            $this->_schemaTool->createSchema(
-                [
-                    $this->_em->getClassMetadata(PersistentCollectionHolder::class),
-                    $this->_em->getClassMetadata(PersistentCollectionContent::class),
-                ]
-            );
-        } catch (Exception $e) {
-        }
+        $this->createSchemaForModels(
+            PersistentCollectionHolder::class,
+            PersistentCollectionContent::class
+        );
 
         PersistentObject::setObjectManager($this->_em);
     }

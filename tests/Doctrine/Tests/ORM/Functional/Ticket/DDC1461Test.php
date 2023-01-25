@@ -12,7 +12,6 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\ORM\UnitOfWork;
 use Doctrine\Tests\OrmFunctionalTestCase;
-use Exception;
 
 use function get_class;
 
@@ -25,15 +24,10 @@ class DDC1461Test extends OrmFunctionalTestCase
     {
         parent::setUp();
 
-        try {
-            $this->_schemaTool->createSchema(
-                [
-                    $this->_em->getClassMetadata(DDC1461TwitterAccount::class),
-                    $this->_em->getClassMetadata(DDC1461User::class),
-                ]
-            );
-        } catch (Exception $e) {
-        }
+        $this->createSchemaForModels(
+            DDC1461TwitterAccount::class,
+            DDC1461User::class
+        );
     }
 
     public function testChangeDetectionDeferredExplicit(): void

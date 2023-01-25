@@ -18,18 +18,7 @@ class GH8663Test extends OrmFunctionalTestCase
     {
         parent::setUp();
 
-        $this->_schemaTool->createSchema([
-            $this->_em->getClassMetadata(GH8663VersionedEntity::class),
-        ]);
-    }
-
-    protected function tearDown(): void
-    {
-        $this->_schemaTool->dropSchema([
-            $this->_em->getClassMetadata(GH8663VersionedEntity::class),
-        ]);
-
-        parent::tearDown();
+        $this->createSchemaForModels(GH8663VersionedEntity::class);
     }
 
     public function testDeletedEntity(): void

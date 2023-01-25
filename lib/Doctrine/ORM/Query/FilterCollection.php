@@ -97,8 +97,7 @@ class FilterCollection
             // Keep the enabled filters sorted for the hash
             ksort($this->enabledFilters);
 
-            // Now the filter collection is dirty
-            $this->filtersState = self::FILTERS_STATE_DIRTY;
+            $this->setFiltersStateDirty();
         }
 
         return $this->enabledFilters[$name];
@@ -120,8 +119,7 @@ class FilterCollection
 
         unset($this->enabledFilters[$name]);
 
-        // Now the filter collection is dirty
-        $this->filtersState = self::FILTERS_STATE_DIRTY;
+        $this->setFiltersStateDirty();
 
         return $filter;
     }
@@ -193,6 +191,9 @@ class FilterCollection
         foreach ($this->enabledFilters as $name => $filter) {
             $filterHash .= $name . $filter;
         }
+
+        $this->filterHash   = $filterHash;
+        $this->filtersState = self::FILTERS_STATE_CLEAN;
 
         return $filterHash;
     }

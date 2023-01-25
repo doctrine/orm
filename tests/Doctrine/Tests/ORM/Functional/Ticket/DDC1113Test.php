@@ -13,7 +13,6 @@ use Doctrine\ORM\Mapping\InheritanceType;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\Tests\OrmFunctionalTestCase;
-use Exception;
 
 /**
  * @group DDC-1113
@@ -25,17 +24,12 @@ class DDC1113Test extends OrmFunctionalTestCase
     {
         parent::setUp();
 
-        try {
-            $this->_schemaTool->createSchema(
-                [
-                    $this->_em->getClassMetadata(DDC1113Engine::class),
-                    $this->_em->getClassMetadata(DDC1113Vehicle::class),
-                    $this->_em->getClassMetadata(DDC1113Car::class),
-                    $this->_em->getClassMetadata(DDC1113Bus::class),
-                ]
-            );
-        } catch (Exception $e) {
-        }
+        $this->createSchemaForModels(
+            DDC1113Engine::class,
+            DDC1113Vehicle::class,
+            DDC1113Car::class,
+            DDC1113Bus::class
+        );
     }
 
     public function testIssue(): void

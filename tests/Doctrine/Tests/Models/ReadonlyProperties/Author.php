@@ -13,7 +13,7 @@ use Doctrine\ORM\Mapping\Table;
 #[Entity, Table(name: 'author')]
 class Author
 {
-    #[Column, Id, GeneratedValue]
+    #[Column, Id, GeneratedValue(strategy: 'IDENTITY')]
     private readonly int $id;
 
     #[Column]

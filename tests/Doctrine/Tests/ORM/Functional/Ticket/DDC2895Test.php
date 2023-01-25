@@ -14,7 +14,6 @@ use Doctrine\ORM\Mapping\MappedSuperclass;
 use Doctrine\ORM\Mapping\PrePersist;
 use Doctrine\ORM\Mapping\PreUpdate;
 use Doctrine\Tests\OrmFunctionalTestCase;
-use Exception;
 
 use function assert;
 use function get_class;
@@ -24,14 +23,7 @@ class DDC2895Test extends OrmFunctionalTestCase
     protected function setUp(): void
     {
         parent::setUp();
-        try {
-            $this->_schemaTool->createSchema(
-                [
-                    $this->_em->getClassMetadata(DDC2895::class),
-                ]
-            );
-        } catch (Exception $e) {
-        }
+        $this->createSchemaForModels(DDC2895::class);
     }
 
     public function testPostLoadOneToManyInheritance(): void

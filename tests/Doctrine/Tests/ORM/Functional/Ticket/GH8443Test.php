@@ -27,13 +27,7 @@ final class GH8443Test extends OrmFunctionalTestCase
     {
         $this->useModelSet('company');
         parent::setUp();
-        $this->_schemaTool->createSchema([$this->_em->getClassMetadata(GH8443Foo::class)]);
-    }
-
-    protected function tearDown(): void
-    {
-        parent::tearDown();
-        $this->_schemaTool->dropSchema([$this->_em->getClassMetadata(GH8443Foo::class)]);
+        $this->createSchemaForModels(GH8443Foo::class);
     }
 
     /**

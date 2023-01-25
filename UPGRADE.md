@@ -289,8 +289,8 @@ If you would still like to perform batching operations over small `UnitOfWork`
 instances, it is suggested to follow these paths instead:
 
  * eagerly use `EntityManager#clear()` in conjunction with a specific second level
-   cache configuration (see http://docs.doctrine-project.org/projects/doctrine-orm/en/latest/reference/second-level-cache.html)
- * use an explicit change tracking policy (see http://docs.doctrine-project.org/projects/doctrine-orm/en/latest/reference/change-tracking-policies.html)
+   cache configuration (see http://docs.doctrine-project.org/projects/doctrine-orm/en/stable/reference/second-level-cache.html)
+ * use an explicit change tracking policy (see http://docs.doctrine-project.org/projects/doctrine-orm/en/stable/reference/change-tracking-policies.html)
 
 ## Deprecated `YAML` mapping drivers.
 

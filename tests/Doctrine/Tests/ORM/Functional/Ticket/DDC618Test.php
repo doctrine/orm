@@ -6,6 +6,7 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
@@ -14,7 +15,6 @@ use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Query;
 use Doctrine\Tests\OrmFunctionalTestCase;
-use Exception;
 
 /**
  * @group DDC-618
@@ -24,14 +24,9 @@ class DDC618Test extends OrmFunctionalTestCase
     protected function setUp(): void
     {
         parent::setUp();
-        try {
-            $this->_schemaTool->createSchema(
-                [
-                    $this->_em->getClassMetadata(DDC618Author::class),
-                    $this->_em->getClassMetadata(DDC618Book::class),
-                ]
-            );
+        $this->createSchemaForModels(DDC618Author::class, DDC618Book::class);
 
+        try {
             // Create author 10/Joe with two books 22/JoeA and 20/JoeB
             $author       = new DDC618Author();
             $author->id   = 10;
@@ -50,7 +45,7 @@ class DDC618Test extends OrmFunctionalTestCase
 
             $this->_em->flush();
             $this->_em->clear();
-        } catch (Exception $e) {
+        } catch (UniqueConstraintViolationException $e) {
         }
     }
 

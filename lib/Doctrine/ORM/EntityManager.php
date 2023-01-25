@@ -17,6 +17,7 @@ use Doctrine\ORM\Exception\InvalidHydrationMode;
 use Doctrine\ORM\Exception\MismatchedEventManager;
 use Doctrine\ORM\Exception\MissingIdentifierField;
 use Doctrine\ORM\Exception\MissingMappingDriverImplementation;
+use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\Exception\UnrecognizedIdentifierFields;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
@@ -59,7 +60,7 @@ use function sprintf;
  *     $entityManager = EntityManager::create($dbParams, $config);
  *
  * For more information see
- * {@link http://docs.doctrine-project.org/projects/doctrine-orm/en/latest/reference/configuration.html}
+ * {@link http://docs.doctrine-project.org/projects/doctrine-orm/en/stable/reference/configuration.html}
  *
  * You should never attempt to inherit from the EntityManager: Inheritance
  * is not a valid extension point for the EntityManager. Instead you
@@ -778,7 +779,7 @@ use function sprintf;
      * @return ObjectRepository|EntityRepository The repository class.
      * @psalm-return EntityRepository<T>
      *
-     * @template T
+     * @template T of object
      */
     public function getRepository($entityName)
     {

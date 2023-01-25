@@ -1,6 +1,11 @@
 parameters:
 	ignoreErrors:
 		-
+			message: "#^Method Doctrine\\\\ORM\\\\AbstractQuery\\:\\:processParameterValue\\(\\) should return array\\|bool\\|float\\|int\\|string but returns mixed\\.$#"
+			count: 1
+			path: lib/Doctrine/ORM/AbstractQuery.php
+
+		-
 			message: "#^Call to an undefined method Doctrine\\\\ORM\\\\Persisters\\\\Entity\\\\EntityPersister\\:\\:getCacheRegion\\(\\)\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Cache/DefaultEntityHydrator.php
@@ -131,36 +136,6 @@ parameters:
 			path: lib/Doctrine/ORM/EntityManager.php
 
 		-
-			message: "#^Method Doctrine\\\\ORM\\\\EntityManager\\:\\:find\\(\\) should return T\\|null but returns object\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/EntityManager.php
-
-		-
-			message: "#^Method Doctrine\\\\ORM\\\\EntityManager\\:\\:find\\(\\) should return T\\|null but returns object\\|null\\.$#"
-			count: 3
-			path: lib/Doctrine/ORM/EntityManager.php
-
-		-
-			message: "#^Method Doctrine\\\\ORM\\\\EntityManager\\:\\:getPartialReference\\(\\) should return T\\|null but returns object\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/EntityManager.php
-
-		-
-			message: "#^Method Doctrine\\\\ORM\\\\EntityManager\\:\\:getPartialReference\\(\\) should return T\\|null but returns object\\|null\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/EntityManager.php
-
-		-
-			message: "#^Method Doctrine\\\\ORM\\\\EntityManager\\:\\:getReference\\(\\) should return T\\|null but returns Doctrine\\\\Common\\\\Proxy\\\\Proxy\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/EntityManager.php
-
-		-
-			message: "#^Method Doctrine\\\\ORM\\\\EntityManager\\:\\:getReference\\(\\) should return T\\|null but returns object\\|null\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/EntityManager.php
-
-		-
 			message: "#^Result of && is always false\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/EntityManager.php
@@ -174,16 +149,6 @@ parameters:
 			message: "#^Template type T of method Doctrine\\\\ORM\\\\EntityManagerInterface\\:\\:getClassMetadata\\(\\) is not referenced in a parameter\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/EntityManagerInterface.php
-
-		-
-			message: "#^Method Doctrine\\\\ORM\\\\EntityRepository\\:\\:find\\(\\) should return T\\|null but returns object\\|null\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/EntityRepository.php
-
-		-
-			message: "#^Method Doctrine\\\\ORM\\\\EntityRepository\\:\\:findOneBy\\(\\) should return T\\|null but returns object\\|null\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/EntityRepository.php
 
 		-
 			message: "#^Method Doctrine\\\\Persistence\\\\ObjectManager\\:\\:find\\(\\) invoked with 4 parameters, 2 required\\.$#"
@@ -269,11 +234,6 @@ parameters:
 			message: "#^Offset 'schema' on array\\{name\\: string, schema\\: string, indexes\\: array, uniqueConstraints\\: array, options\\: array\\<string, mixed\\>, quoted\\?\\: bool\\} on left side of \\?\\? always exists and is not nullable\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Mapping/ClassMetadataInfo.php
-
-		-
-			message: "#^Array \\(array\\<class\\-string, object\\>\\) does not accept key string\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Mapping/DefaultEntityListenerResolver.php
 
 		-
 			message: "#^Call to an undefined method Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadata\\:\\:mapEmbedded\\(\\)\\.$#"
@@ -706,11 +666,6 @@ parameters:
 			path: lib/Doctrine/ORM/PersistentCollection.php
 
 		-
-			message: "#^Method Doctrine\\\\ORM\\\\PersistentCollection\\:\\:slice\\(\\) should return array\\<TKey of \\(int\\|string\\), T\\> but returns array\\.$#"
-			count: 2
-			path: lib/Doctrine/ORM/PersistentCollection.php
-
-		-
 			message: "#^Right side of && is always true\\.$#"
 			count: 2
 			path: lib/Doctrine/ORM/PersistentCollection.php
@@ -724,11 +679,6 @@ parameters:
 			message: "#^Method Doctrine\\\\ORM\\\\Persisters\\\\Collection\\\\OneToManyPersister\\:\\:delete\\(\\) should return int\\|null but empty return statement found\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Persisters/Collection/OneToManyPersister.php
-
-		-
-			message: "#^Array \\(array\\<class\\-string, string\\>\\) does not accept key string\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Persisters/Entity/BasicEntityPersister.php
 
 		-
 			message: "#^Parameter \\#3 \\$hints of method Doctrine\\\\ORM\\\\Internal\\\\Hydration\\\\AbstractHydrator\\:\\:hydrateAll\\(\\) expects array\\<string, string\\>, array\\<string, Doctrine\\\\ORM\\\\PersistentCollection\\|true\\> given\\.$#"
@@ -931,11 +881,6 @@ parameters:
 			path: lib/Doctrine/ORM/Query/Expr/Select.php
 
 		-
-			message: "#^Property Doctrine\\\\ORM\\\\Query\\\\FilterCollection\\:\\:\\$filterHash is never written, only read\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Query/FilterCollection.php
-
-		-
 			message: "#^Else branch is unreachable because ternary operator condition is always true\\.$#"
 			count: 3
 			path: lib/Doctrine/ORM/Query/Parser.php
@@ -946,12 +891,7 @@ parameters:
 			path: lib/Doctrine/ORM/Query/Parser.php
 
 		-
-			message: "#^Method Doctrine\\\\ORM\\\\Query\\\\Parser\\:\\:ArithmeticTerm\\(\\) should return Doctrine\\\\ORM\\\\Query\\\\AST\\\\ArithmeticTerm but returns Doctrine\\\\ORM\\\\Query\\\\AST\\\\ArithmeticFactor\\|string\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Query/Parser.php
-
-		-
-			message: "#^Method Doctrine\\\\ORM\\\\Query\\\\Parser\\:\\:SimpleArithmeticExpression\\(\\) should return Doctrine\\\\ORM\\\\Query\\\\AST\\\\SimpleArithmeticExpression but returns Doctrine\\\\ORM\\\\Query\\\\AST\\\\ArithmeticTerm\\|string\\.$#"
+			message: "#^Method Doctrine\\\\ORM\\\\Query\\\\Parser\\:\\:ArithmeticTerm\\(\\) should return Doctrine\\\\ORM\\\\Query\\\\AST\\\\ArithmeticTerm but returns Doctrine\\\\ORM\\\\Query\\\\AST\\\\ArithmeticFactor\\|int\\|string\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Query/Parser.php
 
@@ -999,11 +939,6 @@ parameters:
 			message: "#^Parameter \\#2 \\$class of static method Doctrine\\\\ORM\\\\Utility\\\\PersisterHelper\\:\\:getTypeOfColumn\\(\\) expects Doctrine\\\\ORM\\\\Mapping\\\\ClassMetadata, Doctrine\\\\ORM\\\\Mapping\\\\ClassMetadataInfo given\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Query/ResultSetMappingBuilder.php
-
-		-
-			message: "#^Array \\(array\\<string, array\\<int, string\\>\\|string\\>\\) does not accept key int\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Query/SqlWalker.php
 
 		-
 			message: "#^Call to function is_string\\(\\) with Doctrine\\\\ORM\\\\Query\\\\AST\\\\Node will always evaluate to false\\.$#"
@@ -1746,6 +1681,26 @@ parameters:
 			path: lib/Doctrine/ORM/Tools/Export/Driver/XmlExporter.php
 
 		-
+			message: "#^Offset 'indexes' on array\\{name\\: string, schema\\: string, indexes\\: array, uniqueConstraints\\: array, options\\: array\\<string, mixed\\>, quoted\\?\\: bool\\} in isset\\(\\) always exists and is not nullable\\.$#"
+			count: 1
+			path: lib/Doctrine/ORM/Tools/Export/Driver/YamlExporter.php
+
+		-
+			message: "#^Offset 'options' on array\\{name\\: string, schema\\: string, indexes\\: array, uniqueConstraints\\: array, options\\: array\\<string, mixed\\>, quoted\\?\\: bool\\} in isset\\(\\) always exists and is not nullable\\.$#"
+			count: 1
+			path: lib/Doctrine/ORM/Tools/Export/Driver/YamlExporter.php
+
+		-
+			message: "#^Offset 'schema' on array\\{name\\: string, schema\\: string, indexes\\: array, uniqueConstraints\\: array, options\\: array\\<string, mixed\\>, quoted\\?\\: bool\\} in isset\\(\\) always exists and is not nullable\\.$#"
+			count: 1
+			path: lib/Doctrine/ORM/Tools/Export/Driver/YamlExporter.php
+
+		-
+			message: "#^Offset 'uniqueConstraints' on array\\{name\\: string, schema\\: string, indexes\\: array, uniqueConstraints\\: array, options\\: array\\<string, mixed\\>, quoted\\?\\: bool\\} in isset\\(\\) always exists and is not nullable\\.$#"
+			count: 1
+			path: lib/Doctrine/ORM/Tools/Export/Driver/YamlExporter.php
+
+		-
 			message: "#^Property Doctrine\\\\ORM\\\\Mapping\\\\ClassMetadataInfo\\<object\\>\\:\\:\\$lifecycleCallbacks \\(array\\<string, array\\<int, string\\>\\>\\) in isset\\(\\) is not nullable\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Tools/Export/Driver/YamlExporter.php
@@ -1864,3 +1819,4 @@ parameters:
 			message: "#^Access to an undefined property Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadata\\:\\:\\$subClasses\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Utility/HierarchyDiscriminatorResolver.php
+

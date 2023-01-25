@@ -14,17 +14,11 @@ After working through this guide you should know:
 Mapping of associations will be covered in the next chapter on
 :doc:`Association Mapping <association-mapping>`.
 
-Guide Assumptions
------------------
-
-You should have already :doc:`installed and configure <configuration>`
-Doctrine.
-
 Creating Classes for the Database
 ---------------------------------
 
 Every PHP object that you want to save in the database using Doctrine
-is called an "Entity". The term "Entity" describes objects
+is called an *Entity*. The term "Entity" describes objects
 that have an identity over many independent requests. This identity is
 usually achieved by assigning a unique identifier to an entity.
 In this tutorial the following ``Message`` PHP class will serve as the
@@ -50,11 +44,11 @@ that describes your entity.
 Doctrine provides several different ways to specify object-relational
 mapping metadata:
 
--  :doc:`Docblock Annotations <annotations-reference>`
 -  :doc:`Attributes <attributes-reference>`
+-  :doc:`Docblock Annotations <annotations-reference>`
 -  :doc:`XML <xml-mapping>`
--  :doc:`YAML <yaml-mapping>`
 -  :doc:`PHP code <php-mapping>`
+-  :doc:`YAML <yaml-mapping>` (deprecated and will be removed in ``doctrine/orm`` 3.0.)
 
 This manual will usually show mapping metadata via docblock annotations, though
 many examples also show the equivalent configuration in YAML and XML.
@@ -62,8 +56,8 @@ many examples also show the equivalent configuration in YAML and XML.
 .. note::
 
     All metadata drivers perform equally. Once the metadata of a class has been
-    read from the source (annotations, xml or yaml) it is stored in an instance
-    of the ``Doctrine\ORM\Mapping\ClassMetadata`` class and these instances are
+    read from the source (attributes, annotations, XML, etc.) it is stored in an instance
+    of the ``Doctrine\ORM\Mapping\ClassMetadata`` class which are
     stored in the metadata cache.  If you're not using a metadata cache (not
     recommended!) then the XML driver is the fastest.
 
@@ -71,9 +65,22 @@ Marking our ``Message`` class as an entity for Doctrine is straightforward:
 
 .. configuration-block::
 
-    .. code-block:: php
+    .. code-block:: attribute
 
         <?php
+        use Doctrine\ORM\Mapping\Entity;
+
+        #[Entity]
+        class Message
+        {
+            // ...
+        }
+
+    .. code-block:: annotation
+
+        <?php
+        use Doctrine\ORM\Mapping\Entity;
+
         /** @Entity */
         class Message
         {
@@ -100,9 +107,25 @@ You can change this by configuring information about the table:
 
 .. configuration-block::
 
-    .. code-block:: php
+    .. code-block:: attribute
 
         <?php
+        use Doctrine\ORM\Mapping\Entity;
+        use Doctrine\ORM\Mapping\Table;
+
+        #[Entity]
+        #[Table(name: 'message')]
+        class Message
+        {
+            // ...
+        }
+
+    .. code-block:: annotation
+
+        <?php
+        use Doctrine\ORM\Mapping\Entity;
+        use Doctrine\ORM\Mapping\Table;
+
         /**
          * @Entity
          * @Table(name="message")
@@ -132,19 +155,38 @@ Now the class ``Message`` will be saved and fetched from the table ``message``.
 Property Mapping
 ----------------
 
-The next step after marking a PHP class as an entity is mapping its properties
-to columns in a table.
+The next step is mapping its properties to columns in the table.
 
-To configure a property use the ``@Column`` docblock annotation. The ``type``
+To configure a property use the ``Column`` docblock annotation. The ``type``
 attribute specifies the :ref:`Doctrine Mapping Type <reference-mapping-types>`
 to use for the field. If the type is not specified, ``string`` is used as the
 default.
 
 .. configuration-block::
 
-    .. code-block:: php
+    .. code-block:: attribute
 
         <?php
+        use Doctrine\ORM\Mapping\Column;
+        use Doctrine\DBAL\Types\Types;
+
+        #[Entity]
+        class Message
+        {
+            #[Column(type: Types::INTEGER)]
+            private $id;
+            #[Column(length: 140)]
+            private $text;
+            #[Column(name: 'posted_at', type: Types::DATETIME)]
+            private $postedAt;
+        }
+
+    .. code-block:: annotation
+
+        <?php
+        use Doctrine\ORM\Mapping\Entity;
+        use Doctrine\ORM\Mapping\Column;
+
         /** @Entity */
         class Message
         {
@@ -180,42 +222,34 @@ default.
               column: posted_at
 
 When we don't explicitly specify a column name via the ``name`` option, Doctrine
-assumes the field name is also the column name. This means that:
+assumes the field name is also the column name. So in this example:
 
 * the ``id`` property will map to the column ``id`` using the type ``integer``;
 * the ``text`` property will map to the column ``text`` with the default mapping type ``string``;
 * the ``postedAt`` property will map to the ``posted_at`` column with the ``datetime`` type.
 
-The Column annotation has some more attributes. Here is a complete
-list:
+Here is a complete list of ``Column``s attributes (all optional):
 
-- ``type``: (optional, defaults to 'string') The mapping type to
-  use for the column.
-- ``name``: (optional, defaults to field name) The name of the
-  column in the database.
-- ``length``: (optional, default 255) The length of the column in
-  the database. (Applies only if a string-valued column is used).
-- ``unique``: (optional, default FALSE) Whether the column is a
-  unique key.
-- ``nullable``: (optional, default FALSE) Whether the database
-  column is nullable.
-- ``insertable``: (optional, default TRUE) Whether the database
-  column should be inserted.
-- ``updatable``: (optional, default TRUE) Whether the database
-  column should be updated.
-- ``enumType``: (optional, requires PHP 8.1 and ORM 2.11) The PHP enum type
-  name to convert the database value into.
-- ``precision``: (optional, default 0) The precision for a decimal
-  (exact numeric) column (applies only for decimal column),
+- ``type`` (default: 'string'): The mapping type to use for the column.
+- ``name`` (default: name of property): The name of the column in the database.
+- ``length`` (default: 255): The length of the column in the database.
+  Applies only if a string-valued column is used.
+- ``unique`` (default: ``false``): Whether the column is a unique key.
+- ``nullable`` (default: ``false``): Whether the column is nullable.
+- ``insertable`` (default: ``true``): Whether the column should be inserted.
+- ``updatable`` (default: ``true``): Whether the column should be updated.
+- ``enumType`` (requires PHP 8.1 and ``doctrine/orm`` 2.11): The PHP enum class name to convert the database value into.
+- ``precision`` (default: 0): The precision for a decimal (exact numeric) column
+  (applies only for decimal column),
   which is the maximum number of digits that are stored for the values.
-- ``scale``: (optional, default 0) The scale for a decimal (exact
+- ``scale`` (default: 0): The scale for a decimal (exact
   numeric) column (applies only for decimal column), which represents
   the number of digits to the right of the decimal point and must
-  not be greater than *precision*.
-- ``columnDefinition``: (optional) Allows to define a custom
+  not be greater than ``precision``.
+- ``columnDefinition``: Allows to define a custom
   DDL snippet that is used to create the column. Warning: This normally
-  confuses the SchemaTool to always detect the column as changed.
-- ``options``: (optional) Key-value pairs of options that get passed
+  confuses the :doc:`SchemaTool <tools>` to always detect the column as changed.
+- ``options``: Key-value pairs of options that get passed
   to the underlying database platform when generating DDL statements.
 
 .. _reference-php-mapping-types:
@@ -223,21 +257,32 @@ list:
 PHP Types Mapping
 _________________
 
-Since version 2.9 Doctrine can determine usable defaults from property types
-on entity classes. When property type is nullable this has no effect on
-``nullable`` Column attribute at the moment for backwards compatibility
-reasons.
+.. versionadded:: 2.9
 
-Additionally, Doctrine will map PHP types to ``type`` attribute as follows:
+The column types can be inferred automatically from PHP's property types.
+However, when the property type is nullable this has no effect on the ``nullable`` Column attribute.
 
-- ``DateInterval``: ``dateinterval``
-- ``DateTime``: ``datetime``
-- ``DateTimeImmutable``: ``datetime_immutable``
-- ``array``: ``json``
-- ``bool``: ``boolean``
-- ``float``: ``float``
-- ``int``: ``integer``
-- ``string`` or any other type: ``string``
+These are the "automatic" mapping rules:
+
++-----------------------+-------------------------------+
+| PHP property type     | Doctrine column type          |
++=======================+===============================+
+| ``DateInterval``      | ``Types::DATEINTERVAL``       |
++-----------------------+-------------------------------+
+| ``DateTime``          | ``Types::DATETIME_MUTABLE``   |
++-----------------------+-------------------------------+
+| ``DateTimeImmutable`` | ``Types::DATETIME_IMMUTABLE`` |
++-----------------------+-------------------------------+
+| ``array``             | ``Types::JSON``               |
++-----------------------+-------------------------------+
+| ``bool``              | ``Types::BOOLEAN``            |
++-----------------------+-------------------------------+
+| ``float``             | ``Types::FLOAT``              |
++-----------------------+-------------------------------+
+| ``int``               | ``Types::INTEGER``            |
++-----------------------+-------------------------------+
+| Any other type        | ``Types::STRING``             |
++-----------------------+-------------------------------+
 
 As of version 2.11 Doctrine can also automatically map typed properties using a
 PHP 8.1 enum to set the right ``type`` and ``enumType``.

@@ -2809,7 +2809,7 @@ class Parser
     /**
      * SimpleArithmeticExpression ::= ArithmeticTerm {("+" | "-") ArithmeticTerm}*
      *
-     * @return SimpleArithmeticExpression
+     * @return SimpleArithmeticExpression|ArithmeticTerm
      */
     public function SimpleArithmeticExpression()
     {

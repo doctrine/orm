@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<files psalm-version="4.18.1@dda05fa913f4dc6eb3386f2f7ce5a45d37a71bcb">
+<files psalm-version="4.22.0@fc2c6ab4d5fa5d644d8617089f012f3bb84b8703">
   <file src="lib/Doctrine/ORM/AbstractQuery.php">
     <DeprecatedClass occurrences="1">
       <code>IterableResult</code>
@@ -703,8 +703,9 @@
     <DeprecatedConstant occurrences="1">
       <code>self::GENERATOR_TYPE_UUID</code>
     </DeprecatedConstant>
-    <DeprecatedMethod occurrences="1">
+    <DeprecatedMethod occurrences="2">
       <code>canEmulateSchemas</code>
+      <code>canRequireSQLConversion</code>
     </DeprecatedMethod>
     <DeprecatedProperty occurrences="4">
       <code>$this-&gt;columnNames</code>
@@ -762,7 +763,7 @@
       <code>$fieldName</code>
       <code>$fieldName</code>
     </ParamNameMismatch>
-    <PossiblyNullArgument occurrences="9">
+    <PossiblyNullArgument occurrences="8">
       <code>$class</code>
       <code>$className</code>
       <code>$entityResult['entityClass']</code>
@@ -771,7 +772,6 @@
       <code>$parentReflFields[$embeddedClass['declaredField']]</code>
       <code>$parentReflFields[$mapping['declaredField']]</code>
       <code>$queryMapping['resultClass']</code>
-      <code>$this-&gt;getAccessibleProperty($reflService, $mapping['originalClass'], $mapping['originalField'])</code>
     </PossiblyNullArgument>
     <PossiblyNullPropertyFetch occurrences="2">
       <code>$embeddable-&gt;reflClass-&gt;name</code>
@@ -861,11 +861,8 @@
     </MissingClosureParamType>
   </file>
   <file src="lib/Doctrine/ORM/Mapping/DiscriminatorColumn.php">
-    <PossiblyNullPropertyAssignmentValue occurrences="4">
+    <PossiblyNullPropertyAssignmentValue occurrences="1">
       <code>$columnDefinition</code>
-      <code>$length</code>
-      <code>$name</code>
-      <code>$type</code>
     </PossiblyNullPropertyAssignmentValue>
   </file>
   <file src="lib/Doctrine/ORM/Mapping/Driver/AnnotationDriver.php">
@@ -1244,11 +1241,10 @@
     </MissingConstructor>
   </file>
   <file src="lib/Doctrine/ORM/Mapping/OneToMany.php">
-    <PossiblyNullPropertyAssignmentValue occurrences="4">
+    <PossiblyNullPropertyAssignmentValue occurrences="3">
       <code>$cascade</code>
       <code>$indexBy</code>
       <code>$mappedBy</code>
-      <code>$targetEntity</code>
     </PossiblyNullPropertyAssignmentValue>
   </file>
   <file src="lib/Doctrine/ORM/Mapping/ReflectionEmbeddedProperty.php">
@@ -1463,6 +1459,14 @@
     <ImplementedReturnTypeMismatch occurrences="1">
       <code>int|null</code>
     </ImplementedReturnTypeMismatch>
+    <InvalidReturnStatement occurrences="2">
+      <code>$numDeleted</code>
+      <code>$this-&gt;conn-&gt;executeStatement($statement, $parameters)</code>
+    </InvalidReturnStatement>
+    <InvalidReturnType occurrences="2">
+      <code>int</code>
+      <code>int</code>
+    </InvalidReturnType>
     <PossiblyNullArgument occurrences="14">
       <code>$collection-&gt;getOwner()</code>
       <code>$collection-&gt;getOwner()</code>
@@ -1744,6 +1748,9 @@
     </ParamNameMismatch>
   </file>
   <file src="lib/Doctrine/ORM/Query/AST/Functions/AbsFunction.php">
+    <PossiblyInvalidPropertyAssignmentValue occurrences="1">
+      <code>$parser-&gt;SimpleArithmeticExpression()</code>
+    </PossiblyInvalidPropertyAssignmentValue>
     <PropertyNotSetInConstructor occurrences="1">
       <code>$simpleArithmeticExpression</code>
     </PropertyNotSetInConstructor>
@@ -1837,15 +1844,15 @@
     </ParamNameMismatch>
   </file>
   <file src="lib/Doctrine/ORM/Query/AST/Functions/IdentityFunction.php">
+    <PossiblyInvalidPropertyAssignmentValue occurrences="1">
+      <code>$parser-&gt;getLexer()-&gt;token['value']</code>
+    </PossiblyInvalidPropertyAssignmentValue>
     <PossiblyNullArrayAccess occurrences="1">
       <code>$parser-&gt;getLexer()-&gt;token['value']</code>
     </PossiblyNullArrayAccess>
     <PossiblyNullArrayOffset occurrences="1">
       <code>$class-&gt;associationMappings</code>
     </PossiblyNullArrayOffset>
-    <PossiblyNullPropertyAssignmentValue occurrences="1">
-      <code>$parser-&gt;getLexer()-&gt;token['value']</code>
-    </PossiblyNullPropertyAssignmentValue>
     <PropertyNotSetInConstructor occurrences="2">
       <code>$fieldMapping</code>
       <code>$pathExpression</code>
@@ -1866,6 +1873,9 @@
     <PossiblyInvalidArgument occurrences="1">
       <code>$this-&gt;simpleArithmeticExpression</code>
     </PossiblyInvalidArgument>
+    <PossiblyInvalidPropertyAssignmentValue occurrences="1">
+      <code>$parser-&gt;SimpleArithmeticExpression()</code>
+    </PossiblyInvalidPropertyAssignmentValue>
     <PropertyNotSetInConstructor occurrences="2">
       <code>$firstStringPrimary</code>
       <code>$secondStringPrimary</code>
@@ -1890,6 +1900,10 @@
     </PropertyNotSetInConstructor>
   </file>
   <file src="lib/Doctrine/ORM/Query/AST/Functions/ModFunction.php">
+    <PossiblyInvalidPropertyAssignmentValue occurrences="2">
+      <code>$parser-&gt;SimpleArithmeticExpression()</code>
+      <code>$parser-&gt;SimpleArithmeticExpression()</code>
+    </PossiblyInvalidPropertyAssignmentValue>
     <PropertyNotSetInConstructor occurrences="2">
       <code>$firstSimpleArithmeticExpression</code>
       <code>$secondSimpleArithmeticExpression</code>
@@ -1904,11 +1918,18 @@
     </PropertyNotSetInConstructor>
   </file>
   <file src="lib/Doctrine/ORM/Query/AST/Functions/SqrtFunction.php">
+    <PossiblyInvalidPropertyAssignmentValue occurrences="1">
+      <code>$parser-&gt;SimpleArithmeticExpression()</code>
+    </PossiblyInvalidPropertyAssignmentValue>
     <PropertyNotSetInConstructor occurrences="1">
       <code>$simpleArithmeticExpression</code>
     </PropertyNotSetInConstructor>
   </file>
   <file src="lib/Doctrine/ORM/Query/AST/Functions/SubstringFunction.php">
+    <PossiblyInvalidPropertyAssignmentValue occurrences="2">
+      <code>$parser-&gt;SimpleArithmeticExpression()</code>
+      <code>$parser-&gt;SimpleArithmeticExpression()</code>
+    </PossiblyInvalidPropertyAssignmentValue>
     <PropertyNotSetInConstructor occurrences="2">
       <code>$firstSimpleArithmeticExpression</code>
       <code>$stringPrimary</code>
@@ -1920,16 +1941,18 @@
     </PropertyNotSetInConstructor>
   </file>
   <file src="lib/Doctrine/ORM/Query/AST/Functions/TrimFunction.php">
-    <PossiblyNullArgument occurrences="1">
+    <PossiblyInvalidArgument occurrences="3">
       <code>$value</code>
-    </PossiblyNullArgument>
+      <code>$value</code>
+      <code>$value</code>
+    </PossiblyInvalidArgument>
+    <PossiblyInvalidPropertyAssignmentValue occurrences="1">
+      <code>$lexer-&gt;token['value']</code>
+    </PossiblyInvalidPropertyAssignmentValue>
     <PossiblyNullArrayAccess occurrences="2">
       <code>$lexer-&gt;lookahead['value']</code>
       <code>$lexer-&gt;token['value']</code>
     </PossiblyNullArrayAccess>
-    <PossiblyNullPropertyAssignmentValue occurrences="1">
-      <code>$lexer-&gt;token['value']</code>
-    </PossiblyNullPropertyAssignmentValue>
     <PropertyNotSetInConstructor occurrences="4">
       <code>$both</code>
       <code>$leading</code>
@@ -2184,6 +2207,12 @@
     </PossiblyNullPropertyAssignmentValue>
   </file>
   <file src="lib/Doctrine/ORM/Query/Exec/MultiTableDeleteExecutor.php">
+    <InvalidReturnStatement occurrences="1">
+      <code>$numDeleted</code>
+    </InvalidReturnStatement>
+    <InvalidReturnType occurrences="1">
+      <code>int</code>
+    </InvalidReturnType>
     <PossiblyInvalidIterator occurrences="1">
       <code>$this-&gt;_sqlStatements</code>
     </PossiblyInvalidIterator>
@@ -2196,6 +2225,12 @@
     </UninitializedProperty>
   </file>
   <file src="lib/Doctrine/ORM/Query/Exec/MultiTableUpdateExecutor.php">
+    <InvalidReturnStatement occurrences="1">
+      <code>$numUpdated</code>
+    </InvalidReturnStatement>
+    <InvalidReturnType occurrences="1">
+      <code>int</code>
+    </InvalidReturnType>
     <PossiblyInvalidIterator occurrences="1">
       <code>$this-&gt;_sqlStatements</code>
     </PossiblyInvalidIterator>
@@ -2212,6 +2247,12 @@
     </PropertyNotSetInConstructor>
   </file>
   <file src="lib/Doctrine/ORM/Query/Exec/SingleTableDeleteUpdateExecutor.php">
+    <InvalidReturnStatement occurrences="1">
+      <code>$conn-&gt;executeStatement($this-&gt;_sqlStatements, $params, $types)</code>
+    </InvalidReturnStatement>
+    <InvalidReturnType occurrences="1">
+      <code>int</code>
+    </InvalidReturnType>
     <PossiblyInvalidArgument occurrences="1">
       <code>$this-&gt;_sqlStatements</code>
     </PossiblyInvalidArgument>
@@ -2309,17 +2350,16 @@
     <InvalidArgument occurrences="1">
       <code>$lookaheadType</code>
     </InvalidArgument>
-    <InvalidNullableReturnType occurrences="6">
+    <InvalidNullableReturnType occurrences="1">
       <code>SelectStatement|UpdateStatement|DeleteStatement</code>
-      <code>string</code>
-      <code>string</code>
-      <code>string</code>
-      <code>string</code>
-      <code>string</code>
     </InvalidNullableReturnType>
-    <InvalidReturnStatement occurrences="11">
+    <InvalidReturnStatement occurrences="17">
+      <code>$aliasIdentVariable</code>
       <code>$factors[0]</code>
+      <code>$identVariable</code>
       <code>$primary</code>
+      <code>$resultVariable</code>
+      <code>$resultVariable</code>
       <code>$terms[0]</code>
       <code>$this-&gt;CollectionMemberExpression()</code>
       <code>$this-&gt;ComparisonExpression()</code>
@@ -2329,23 +2369,44 @@
       <code>$this-&gt;InstanceOfExpression()</code>
       <code>$this-&gt;LikeExpression()</code>
       <code>$this-&gt;NullComparisonExpression()</code>
+      <code>$this-&gt;lexer-&gt;token['value']</code>
+      <code>$this-&gt;lexer-&gt;token['value']</code>
     </InvalidReturnStatement>
-    <InvalidReturnType occurrences="4">
+    <InvalidReturnType occurrences="9">
       <code>AST\BetweenExpression|</code>
       <code>ArithmeticFactor</code>
       <code>ArithmeticTerm</code>
-      <code>SimpleArithmeticExpression</code>
+      <code>SimpleArithmeticExpression|ArithmeticTerm</code>
+      <code>string</code>
+      <code>string</code>
+      <code>string</code>
+      <code>string</code>
+      <code>string</code>
     </InvalidReturnType>
-    <InvalidScalarArgument occurrences="3">
+    <InvalidScalarArgument occurrences="13">
+      <code>$field</code>
+      <code>$field</code>
+      <code>$functionName</code>
+      <code>$functionName</code>
+      <code>$functionName</code>
       <code>$this-&gt;lexer-&gt;getLiteral($token)</code>
       <code>$this-&gt;lexer-&gt;getLiteral($token)</code>
       <code>$this-&gt;lexer-&gt;getLiteral($token)</code>
+      <code>$this-&gt;lexer-&gt;token['value']</code>
+      <code>$this-&gt;lexer-&gt;token['value']</code>
+      <code>$this-&gt;lexer-&gt;token['value']</code>
+      <code>$this-&gt;lexer-&gt;token['value']</code>
+      <code>$this-&gt;lexer-&gt;token['value']</code>
     </InvalidScalarArgument>
-    <LessSpecificReturnStatement occurrences="3">
+    <LessSpecificReturnStatement occurrences="4">
       <code>$function</code>
       <code>$function</code>
       <code>$function</code>
+      <code>$token</code>
     </LessSpecificReturnStatement>
+    <MoreSpecificReturnType occurrences="1">
+      <code>array{value: string, type: int|null|string, position: int}|null</code>
+    </MoreSpecificReturnType>
     <NullableReturnStatement occurrences="9">
       <code>$aliasIdentVariable</code>
       <code>$factors[0]</code>
@@ -2360,40 +2421,34 @@
     <PossiblyFalseArgument occurrences="1">
       <code>strrpos($fromClassName, '\\')</code>
     </PossiblyFalseArgument>
-    <PossiblyInvalidArgument occurrences="6">
+    <PossiblyInvalidArgument occurrences="14">
       <code>$AST</code>
       <code>$conditionalExpression</code>
       <code>$expr</code>
+      <code>$pathExp</code>
       <code>$stringExpr</code>
       <code>$this-&gt;ConditionalExpression()</code>
       <code>$this-&gt;ConditionalExpression()</code>
+      <code>$this-&gt;lexer-&gt;lookahead['value']</code>
+      <code>$this-&gt;lexer-&gt;lookahead['value']</code>
+      <code>$this-&gt;lexer-&gt;lookahead['value']</code>
+      <code>$this-&gt;lexer-&gt;lookahead['value']</code>
+      <code>$this-&gt;lexer-&gt;token['value']</code>
+      <code>$token['value']</code>
+      <code>$token['value']</code>
     </PossiblyInvalidArgument>
-    <PossiblyInvalidPropertyAssignmentValue occurrences="2">
+    <PossiblyInvalidPropertyAssignmentValue occurrences="4">
       <code>$this-&gt;ConditionalExpression()</code>
       <code>$this-&gt;ConditionalExpression()</code>
+      <code>$this-&gt;SimpleArithmeticExpression()</code>
+      <code>$value</code>
     </PossiblyInvalidPropertyAssignmentValue>
-    <PossiblyNullArgument occurrences="22">
+    <PossiblyNullArgument occurrences="6">
       <code>$aliasIdentVariable</code>
       <code>$dql</code>
-      <code>$field</code>
       <code>$fromClassName</code>
-      <code>$functionName</code>
-      <code>$functionName</code>
-      <code>$functionName</code>
       <code>$resultVariable</code>
-      <code>$this-&gt;lexer-&gt;lookahead['value']</code>
-      <code>$this-&gt;lexer-&gt;lookahead['value']</code>
-      <code>$this-&gt;lexer-&gt;lookahead['value']</code>
-      <code>$this-&gt;lexer-&gt;lookahead['value']</code>
-      <code>$this-&gt;lexer-&gt;token['value']</code>
-      <code>$this-&gt;lexer-&gt;token['value']</code>
-      <code>$this-&gt;lexer-&gt;token['value']</code>
-      <code>$this-&gt;lexer-&gt;token['value']</code>
-      <code>$this-&gt;lexer-&gt;token['value']</code>
-      <code>$this-&gt;lexer-&gt;token['value']</code>
       <code>$this-&gt;query-&gt;getDQL()</code>
-      <code>$token['value']</code>
-      <code>$token['value']</code>
       <code>$token['value']</code>
     </PossiblyNullArgument>
     <PossiblyNullArrayAccess occurrences="74">
@@ -2472,9 +2527,6 @@
       <code>$token['value']</code>
       <code>$token['value']</code>
     </PossiblyNullArrayAccess>
-    <PossiblyNullPropertyAssignmentValue occurrences="1">
-      <code>$value</code>
-    </PossiblyNullPropertyAssignmentValue>
     <PossiblyNullReference occurrences="1">
       <code>getNumberOfRequiredParameters</code>
     </PossiblyNullReference>
@@ -2507,9 +2559,9 @@
     </PropertyNotSetInConstructor>
   </file>
   <file src="lib/Doctrine/ORM/Query/QueryExpressionVisitor.php">
-    <RedundantCondition occurrences="1">
+    <RedundantConditionGivenDocblockType occurrences="1">
       <code>Comparison::EQ</code>
-    </RedundantCondition>
+    </RedundantConditionGivenDocblockType>
   </file>
   <file src="lib/Doctrine/ORM/Query/ResultSetMapping.php">
     <PropertyTypeCoercion occurrences="3">
@@ -3236,8 +3288,9 @@
     </RedundantConditionGivenDocblockType>
   </file>
   <file src="lib/Doctrine/ORM/Tools/Export/Driver/XmlExporter.php">
-    <ArgumentTypeCoercion occurrences="1">
+    <ArgumentTypeCoercion occurrences="2">
       <code>$metadata-&gt;changeTrackingPolicy</code>
+      <code>$simpleXml-&gt;asXML()</code>
     </ArgumentTypeCoercion>
     <DeprecatedClass occurrences="1">
       <code>AbstractExporter</code>
