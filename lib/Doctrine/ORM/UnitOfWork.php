@@ -2893,19 +2893,52 @@ class UnitOfWork implements PropertyChangedListener
 
                             break;
 
-                        case $targetClass->subClasses:
-                            // If it might be a subtype, it can not be lazy. There isn't even
-                            // a way to solve this with deferred eager loading, which means putting
-                            // an entity with subclasses at a *-to-one location is really bad! (performance-wise)
-                            $newValue = $this->getEntityPersister($assoc['targetEntity'])->loadOneToOneEntity($assoc, $entity, $associatedId);
-                            break;
-
                         default:
                             $normalizedAssociatedId = $this->normalizeIdentifier($targetClass, $associatedId);
 
                             switch (true) {
                                 // We are negating the condition here. Other cases will assume it is valid!
                                 case $hints['fetchMode'][$class->name][$field] !== ClassMetadata::FETCH_EAGER:
+                                    if ($targetClass->subClasses) {
+                                        if (! $targetClass->isInheritanceTypeNone()) {
+                                            $connection = $this->em->getConnection();
+
+                                            $discriminatorColumnName = $targetClass->discriminatorColumn['name'];
+                                            $selectClause            = $connection->quoteIdentifier($discriminatorColumnName);
+                                            $fromClause              = $connection->quoteIdentifier($this->em->getClassMetadata(
+                                                $targetClass->rootEntityName
+                                            )->getTableName());
+
+                                            $whereClauses = [];
+                                            $whereValues  = [];
+                                            foreach ($targetClass->getIdentifierColumnNames() as $pkName) {
+                                                $whereClauses[] = $connection->quoteIdentifier($pkName) . ' = ?';
+                                                $whereValues[]  = $associatedId[$targetClass->fieldNames[$pkName]];
+                                            }
+
+                                            $whereClause = implode(' AND ', $whereClauses);
+
+                                            $query = "SELECT {$selectClause} FROM {$fromClause} WHERE {$whereClause}";
+                                            $stmt  = $this->em->getConnection()->prepare($query);
+
+                                            $index = 1;
+                                            foreach ($whereValues as $whereValue) {
+                                                $stmt->bindValue($index, $whereValue);
+                                                $index++;
+                                            }
+
+                                            $result     = $stmt->executeQuery();
+                                            $fieldValue = $result->fetchFirstColumn()[0];
+
+                                            $targetSubClass = $targetClass->discriminatorMap[$fieldValue];
+                                            $newValue       = $this->em->getProxyFactory()->getProxy($targetSubClass, $associatedId);
+                                            break;
+                                        }
+
+                                        $newValue = $this->em->getProxyFactory()->getProxy($assoc['targetEntity'], $associatedId);
+                                        break;
+                                    }
+
                                     $newValue = $this->em->getProxyFactory()->getProxy($assoc['targetEntity'], $normalizedAssociatedId);
                                     break;
 
