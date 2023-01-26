@@ -549,6 +549,11 @@ Use `toIterable()` instead.
 
 # Upgrade to 2.15
 
+## Deprecated undeclared entity inheritance
+
+As soon as an entity class inherits from another entity class, inheritance has to 
+be declared by adding the appropriate configuration for the root entity.
+
 ## Deprecated stubs for "concrete table inheritance"
 
 This third way of mapping class inheritance was never implemented. Code stubs are

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Mapping;
 
+use Doctrine\Deprecations\PHPUnit\VerifyDeprecations;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Id\SequenceGenerator as IdSequenceGenerator;
 use Doctrine\ORM\Mapping\ClassMetadata;
@@ -29,6 +30,7 @@ use Doctrine\Tests\Models\DDC869\DDC869CreditCardPayment;
 use Doctrine\Tests\Models\DDC869\DDC869Payment;
 use Doctrine\Tests\Models\DDC869\DDC869PaymentRepository;
 use Doctrine\Tests\OrmTestCase;
+use Generator;
 
 use function assert;
 use function serialize;
@@ -36,6 +38,8 @@ use function unserialize;
 
 class BasicInheritanceMappingTest extends OrmTestCase
 {
+    use VerifyDeprecations;
+
     private ClassMetadataFactory $cmf;
 
     protected function setUp(): void
@@ -217,6 +221,40 @@ class BasicInheritanceMappingTest extends OrmTestCase
         self::assertArrayHasKey('IDX_MAPPED1_INDEX', $class->table['uniqueConstraints']);
         self::assertArrayHasKey('IDX_MAPPED2_INDEX', $class->table['indexes']);
     }
+
+    /** @dataProvider invalidHierarchyDeclarationClasses */
+    public function testUndeclaredHierarchyRejection(string $rootEntity, string $childClass): void
+    {
+        $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/pull/10431');
+
+        /* on 3.0, use this instead: */
+        // self::expectException(MappingException::class);
+        // self::expectExceptionMessage(\sprintf(
+        //     "Entity class '%s' is a subclass of the root entity class '%s', but no inheritance mapping type was declared.",
+        //     $childClass,
+        //     $rootEntity
+        // ));
+
+         $this->cmf->getMetadataFor($childClass);
+    }
+
+    public function invalidHierarchyDeclarationClasses(): Generator
+    {
+        yield 'concrete Entity root and child class, direct inheritance'
+            => [InvalidEntityRoot::class, InvalidEntityRootChild::class];
+
+        yield 'concrete Entity root and abstract child class, direct inheritance'
+            => [InvalidEntityRoot::class, InvalidEntityRootAbstractChild::class];
+
+        yield 'abstract Entity root and concrete child class, direct inheritance'
+            => [InvalidAbstractEntityRoot::class, InvalidAbstractEntityRootChild::class];
+
+        yield 'abstract Entity root and abstract child class, direct inheritance'
+            => [InvalidAbstractEntityRoot::class, InvalidAbstractEntityRootAbstractChild::class];
+
+        yield 'complex example (Entity Root -> Mapped Superclass -> transient class -> Entity)'
+            => [InvalidComplexRoot::class, InvalidComplexEntity::class];
+    }
 }
 
 class TransientBaseClass
@@ -378,5 +416,69 @@ class MediumSuperclassEntity extends MediumSuperclassBase
 
 #[Entity(repositoryClass: 'Doctrine\ORM\EntityRepository')]
 class SubclassWithRepository extends DDC869Payment
+{
+}
+
+/** This class misses the DiscriminatorMap declaration */
+#[Entity]
+class InvalidEntityRoot
+{
+    #[Column]
+    #[Id]
+    #[GeneratedValue]
+    public int|null $id = null;
+}
+
+#[Entity]
+class InvalidEntityRootChild extends InvalidEntityRoot
+{
+}
+
+#[Entity]
+abstract class InvalidEntityRootAbstractChild extends InvalidEntityRoot
+{
+}
+
+/** This class misses the DiscriminatorMap declaration */
+#[Entity]
+class InvalidAbstractEntityRoot
+{
+    #[Column]
+    #[Id]
+    #[GeneratedValue]
+    public int|null $id = null;
+}
+
+#[Entity]
+class InvalidAbstractEntityRootChild extends InvalidAbstractEntityRoot
+{
+}
+
+#[Entity]
+abstract class InvalidAbstractEntityRootAbstractChild extends InvalidAbstractEntityRoot
+{
+}
+
+/** This class misses the DiscriminatorMap declaration */
+#[Entity]
+class InvalidComplexRoot
+{
+    #[Column]
+    #[Id]
+    #[GeneratedValue]
+    public int|null $id = null;
+}
+
+#[MappedSuperclass]
+class InvalidComplexMappedSuperclass extends InvalidComplexRoot
+{
+}
+
+class InvalidComplexTransientClass extends InvalidComplexMappedSuperclass
+{
+}
+
+#[Entity]
+class InvalidComplexEntity extends InvalidComplexTransientClass
 {
 }

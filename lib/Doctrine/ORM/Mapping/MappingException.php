@@ -344,6 +344,19 @@ class MappingException extends Exception implements ORMException
         );
     }
 
+    /**
+     * @param class-string $rootEntityClass
+     * @param class-string $childEntityClass
+     */
+    public static function missingInheritanceTypeDeclaration(string $rootEntityClass, string $childEntityClass): self
+    {
+        return new self(sprintf(
+            "Entity class '%s' is a subclass of the root entity class '%s', but no inheritance mapping type was declared.",
+            $childEntityClass,
+            $rootEntityClass,
+        ));
+    }
+
     public static function missingDiscriminatorMap(string $className): self
     {
         return new self(sprintf(
