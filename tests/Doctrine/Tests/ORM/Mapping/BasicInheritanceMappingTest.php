@@ -34,6 +34,7 @@ use Generator;
 
 use function assert;
 use function serialize;
+use function sprintf;
 use function unserialize;
 
 class BasicInheritanceMappingTest extends OrmTestCase
@@ -225,7 +226,12 @@ class BasicInheritanceMappingTest extends OrmTestCase
     /** @dataProvider invalidHierarchyDeclarationClasses */
     public function testUndeclaredHierarchyRejection(string $rootEntity, string $childClass): void
     {
-        $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/pull/10431');
+        $this->expectException(MappingException::class);
+        $this->expectExceptionMessage(sprintf(
+            "Entity class '%s' is a subclass of the root entity class '%s', but no inheritance mapping type was declared.",
+            $childClass,
+            $rootEntity,
+        ));
 
         $this->cmf->getMetadataFor($childClass);
     }
