@@ -156,8 +156,6 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
                     $class->name,
                     end($nonSuperclassParents)
                 );
-                // enable this in 3.0
-                // throw MappingException::missingInheritanceTypeDeclaration(end($nonSuperclassParents), $class->name);
             }
 
             foreach ($class->embeddedClasses as $property => $embeddableClass) {
