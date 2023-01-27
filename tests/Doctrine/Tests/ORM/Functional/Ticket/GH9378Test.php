@@ -37,7 +37,7 @@ final class GH9378Test extends OrmFunctionalTestCase
         $this->_em->persist($entity);
         
         /*
-         * Wthout the fix in Doctrine\ORM\Persisters\Entity\JoinedSubclassPersister
+         * Without the fix in Doctrine\ORM\Persisters\Entity\JoinedSubclassPersister
          * the flush would cause a
          * 
          * "LengthException: Unexpected empty result for database query."
