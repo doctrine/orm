@@ -227,15 +227,7 @@ class BasicInheritanceMappingTest extends OrmTestCase
     {
         $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/pull/10431');
 
-        /* on 3.0, use this instead: */
-        // self::expectException(MappingException::class);
-        // self::expectExceptionMessage(\sprintf(
-        //     "Entity class '%s' is a subclass of the root entity class '%s', but no inheritance mapping type was declared.",
-        //     $childClass,
-        //     $rootEntity
-        // ));
-
-         $this->cmf->getMetadataFor($childClass);
+        $this->cmf->getMetadataFor($childClass);
     }
 
     public function invalidHierarchyDeclarationClasses(): Generator

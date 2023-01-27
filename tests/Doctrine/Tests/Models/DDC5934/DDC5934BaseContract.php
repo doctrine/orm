@@ -33,6 +33,8 @@ class DDC5934BaseContract
 
     public static function loadMetadata(ClassMetadata $metadata): void
     {
+        $metadata->isMappedSuperclass = true;
+
         $metadata->mapField([
             'id'         => true,
             'fieldName'  => 'id',
