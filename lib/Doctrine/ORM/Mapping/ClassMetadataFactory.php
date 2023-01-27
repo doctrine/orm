@@ -45,7 +45,6 @@ use function substr;
  * to a relational database.
  *
  * @extends AbstractClassMetadataFactory<ClassMetadata>
- * @psalm-import-type EmbeddedClassMapping from ClassMetadata
  */
 class ClassMetadataFactory extends AbstractClassMetadataFactory
 {
@@ -394,11 +393,9 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     /**
      * Puts the `inherited` and `declared` values into mapping information for fields, associations
      * and embedded classes.
-     *
-     * @param AssociationMapping|EmbeddedClassMapping|FieldMapping $mapping
      */
     private function addMappingInheritanceInformation(
-        array|FieldMapping|AssociationMapping &$mapping,
+        AssociationMapping|EmbeddedClassMapping|FieldMapping &$mapping,
         ClassMetadata $parentClass,
     ): void {
         if (! isset($mapping['inherited']) && ! $parentClass->isMappedSuperclass) {
@@ -453,8 +450,9 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     private function addInheritedEmbeddedClasses(ClassMetadata $subClass, ClassMetadata $parentClass): void
     {
         foreach ($parentClass->embeddedClasses as $field => $embeddedClass) {
-            $this->addMappingInheritanceInformation($embeddedClass, $parentClass);
-            $subClass->embeddedClasses[$field] = $embeddedClass;
+            $subClassMapping = clone $embeddedClass;
+            $this->addMappingInheritanceInformation($subClassMapping, $parentClass);
+            $subClass->embeddedClasses[$field] = $subClassMapping;
         }
     }
 

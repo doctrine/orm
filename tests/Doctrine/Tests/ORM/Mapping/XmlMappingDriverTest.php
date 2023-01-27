@@ -9,6 +9,7 @@ use Doctrine\ORM\Cache\Exception\CacheException;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\Mapping\Driver\XmlDriver;
+use Doctrine\ORM\Mapping\EmbeddedClassMapping;
 use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
 use Doctrine\Persistence\Mapping\MappingException as PersistenceMappingException;
@@ -136,12 +137,12 @@ class XmlMappingDriverTest extends MappingDriverTestCase
 
         self::assertEquals(
             [
-                'name' => [
+                'name' => EmbeddedClassMapping::fromMappingArray([
                     'class' => Name::class,
                     'columnPrefix' => 'nm_',
                     'declaredField' => null,
                     'originalField' => null,
-                ],
+                ]),
             ],
             $class->embeddedClasses,
         );
