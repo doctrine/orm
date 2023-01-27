@@ -53,6 +53,8 @@ class ClassMetadataBuilder
     /**
      * Adds and embedded class
      *
+     * @param class-string $class
+     *
      * @return $this
      */
     public function addEmbedded(string $fieldName, string $class, string|false|null $columnPrefix = null): static

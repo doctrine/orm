@@ -9,6 +9,7 @@ use Doctrine\ORM\Mapping\Builder\EmbeddedBuilder;
 use Doctrine\ORM\Mapping\Builder\FieldBuilder;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\DiscriminatorColumnMapping;
+use Doctrine\ORM\Mapping\EmbeddedClassMapping;
 use Doctrine\ORM\Mapping\FieldMapping;
 use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\Persistence\Mapping\RuntimeReflectionService;
@@ -51,12 +52,12 @@ class ClassMetadataBuilderTest extends OrmTestCase
 
         self::assertEquals(
             [
-                'name' => [
+                'name' => EmbeddedClassMapping::fromMappingArray([
                     'class' => Name::class,
                     'columnPrefix' => null,
                     'declaredField' => null,
                     'originalField' => null,
-                ],
+                ]),
             ],
             $this->cm->embeddedClasses,
         );
@@ -74,12 +75,12 @@ class ClassMetadataBuilderTest extends OrmTestCase
 
         self::assertEquals(
             [
-                'name' => [
+                'name' => EmbeddedClassMapping::fromMappingArray([
                     'class' => Name::class,
                     'columnPrefix' => 'nm_',
                     'declaredField' => null,
                     'originalField' => null,
-                ],
+                ]),
             ],
             $this->cm->embeddedClasses,
         );
@@ -94,12 +95,12 @@ class ClassMetadataBuilderTest extends OrmTestCase
 
         $this->assertIsFluent($embeddedBuilder->build());
         self::assertEquals(
-            [
+            EmbeddedClassMapping::fromMappingArray([
                 'class' => Name::class,
                 'columnPrefix' => null,
                 'declaredField' => null,
                 'originalField' => null,
-            ],
+            ]),
             $this->cm->embeddedClasses['name'],
         );
     }
@@ -113,12 +114,12 @@ class ClassMetadataBuilderTest extends OrmTestCase
         $this->assertIsFluent($embeddedBuilder->build());
 
         self::assertEquals(
-            [
+            EmbeddedClassMapping::fromMappingArray([
                 'class' => Name::class,
                 'columnPrefix' => 'nm_',
                 'declaredField' => null,
                 'originalField' => null,
-            ],
+            ]),
             $this->cm->embeddedClasses['name'],
         );
     }
