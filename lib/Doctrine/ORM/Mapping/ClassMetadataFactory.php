@@ -270,6 +270,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
 
         $class->validateIdentifier();
         $class->validateAssociations();
+        $this->validateAssociationTargets($class);
         $class->validateLifecycleCallbacks($this->getReflectionService());
 
         // verify inheritance
@@ -300,6 +301,16 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
         } elseif ($class->isMappedSuperclass && $class->name === $class->rootEntityName && (count($class->discriminatorMap) || $class->discriminatorColumn)) {
             // second condition is necessary for mapped superclasses in the middle of an inheritance hierarchy
             throw MappingException::noInheritanceOnMappedSuperClass($class->name);
+        }
+    }
+
+    private function validateAssociationTargets(ClassMetadata $class): void
+    {
+        foreach ($class->getAssociationMappings() as $mapping) {
+            $targetEntity = $mapping['targetEntity'];
+            if ($this->driver->isTransient($targetEntity) || $this->peekIfIsMappedSuperclass($targetEntity)) {
+                throw MappingException::associationTargetIsNotAnEntity($targetEntity, $class->name, $mapping['fieldName']);
+            }
         }
     }
 
@@ -468,10 +479,6 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
             // According to the definitions given in https://github.com/doctrine/orm/pull/10396/,
             // this is the case <=> ! isset($mapping['inherited']).
             if (! isset($mapping['inherited'])) {
-                if ($mapping['type'] & ClassMetadata::TO_MANY && ! $mapping['isOwningSide']) {
-                    throw MappingException::illegalToManyAssociationOnMappedSuperclass($parentClass->name, $field);
-                }
-
                 $mapping['sourceEntity'] = $subClass->name;
             }
 

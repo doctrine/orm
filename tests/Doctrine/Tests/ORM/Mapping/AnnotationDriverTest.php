@@ -175,11 +175,10 @@ class AnnotationDriverTest extends MappingDriverTestCase
 
         $this->expectException(MappingException::class);
         $this->expectExceptionMessage(
-            'It is illegal to put an inverse side one-to-many or many-to-many association on ' .
-            "mapped superclass 'Doctrine\Tests\ORM\Mapping\InvalidMappedSuperClass#users'"
+            'The target entity class Doctrine\Tests\ORM\Mapping\InvalidMappedSuperClass specified for Doctrine\Tests\ORM\Mapping\InvalidMappedSuperClass::$selfWhatever is not an entity class.'
         );
 
-        $factory->getMetadataFor(UsingInvalidMappedSuperClass::class);
+        $factory->getMetadataFor(InvalidMappedSuperClass::class);
     }
 
     /** @group DDC-1050 */
@@ -309,22 +308,10 @@ class ColumnWithoutType
 class InvalidMappedSuperClass
 {
     /**
-     * @psalm-var Collection<int, CmsUser>
-     * @ManyToMany(targetEntity="Doctrine\Tests\Models\CMS\CmsUser", mappedBy="invalid")
+     * @psalm-var Collection<int, self>
+     * @ManyToMany(targetEntity="InvalidMappedSuperClass", mappedBy="invalid")
      */
-    private $users;
-}
-
-/** @Entity */
-class UsingInvalidMappedSuperClass extends InvalidMappedSuperClass
-{
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
-    private $id;
+    private $selfWhatever;
 }
 
 /**

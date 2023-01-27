@@ -848,6 +848,15 @@ class MappingException extends ORMException
     }
 
     /**
+     * @param class-string $targetEntity
+     * @param class-string $sourceEntity
+     */
+    public static function associationTargetIsNotAnEntity(string $targetEntity, string $sourceEntity, string $associationName): self
+    {
+        return new self(sprintf('The target entity class %s specified for %s::$%s is not an entity class.', $targetEntity, $sourceEntity, $associationName));
+    }
+
+    /**
      * @param string[] $cascades
      * @param string   $className
      * @param string   $propertyName
