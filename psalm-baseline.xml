@@ -583,7 +583,6 @@
     </DeprecatedProperty>
     <DocblockTypeContradiction>
       <code>! $this-&gt;table</code>
-      <code>! class_exists($mapping['targetEntity'])</code>
       <code>$this-&gt;table</code>
     </DocblockTypeContradiction>
     <InvalidArgument>
