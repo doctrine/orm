@@ -17,7 +17,6 @@ use Doctrine\DBAL\Schema\Visitor\RemoveNamespacedAssets;
 use Doctrine\Deprecations\Deprecation;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
-use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\ORM\Mapping\QuoteStrategy;
 use Doctrine\ORM\Tools\Event\GenerateSchemaEventArgs;
@@ -48,7 +47,7 @@ use function strtolower;
  *
  * @link    www.doctrine-project.org
  *
- * @psalm-import-type FieldMapping from ClassMetadataInfo
+ * @psalm-import-type FieldMapping from ClassMetadata
  */
 class SchemaTool
 {

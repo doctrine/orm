@@ -47,9 +47,9 @@ use function substr;
  * to a relational database.
  *
  * @extends AbstractClassMetadataFactory<ClassMetadata>
- * @psalm-import-type AssociationMapping from ClassMetadataInfo
- * @psalm-import-type EmbeddedClassMapping from ClassMetadataInfo
- * @psalm-import-type FieldMapping from ClassMetadataInfo
+ * @psalm-import-type AssociationMapping from ClassMetadata
+ * @psalm-import-type EmbeddedClassMapping from ClassMetadata
+ * @psalm-import-type FieldMapping from ClassMetadata
  */
 class ClassMetadataFactory extends AbstractClassMetadataFactory
 {

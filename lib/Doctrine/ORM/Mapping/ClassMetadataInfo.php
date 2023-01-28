@@ -68,93 +68,11 @@ use const PHP_VERSION_ID;
  *
  * @template-covariant T of object
  * @template-implements ClassMetadata<T>
- * @psalm-type FieldMapping = array{
- *      type: string,
- *      fieldName: string,
- *      columnName: string,
- *      length?: int,
- *      id?: bool,
- *      nullable?: bool,
- *      notInsertable?: bool,
- *      notUpdatable?: bool,
- *      generated?: int,
- *      enumType?: class-string<BackedEnum>,
- *      columnDefinition?: string,
- *      precision?: int,
- *      scale?: int,
- *      unique?: bool,
- *      inherited?: class-string,
- *      originalClass?: class-string,
- *      originalField?: string,
- *      quoted?: bool,
- *      requireSQLConversion?: bool,
- *      declared?: class-string,
- *      declaredField?: string,
- *      options?: array<string, mixed>,
- *      version?: string,
- *      default?: string|int,
- * }
- * @psalm-type JoinColumnData = array{
- *     name: string,
- *     referencedColumnName: string,
- *     unique?: bool,
- *     quoted?: bool,
- *     fieldName?: string,
- *     onDelete?: string,
- *     columnDefinition?: string,
- *     nullable?: bool,
- * }
- * @psalm-type AssociationMapping = array{
- *     cache?: array,
- *     cascade: array<string>,
- *     declared?: class-string,
- *     fetch: mixed,
- *     fieldName: string,
- *     id?: bool,
- *     inherited?: class-string,
- *     indexBy?: string,
- *     inversedBy: string|null,
- *     isCascadeRemove: bool,
- *     isCascadePersist: bool,
- *     isCascadeRefresh: bool,
- *     isCascadeMerge: bool,
- *     isCascadeDetach: bool,
- *     isOnDeleteCascade?: bool,
- *     isOwningSide: bool,
- *     joinColumns?: array<JoinColumnData>,
- *     joinColumnFieldNames?: array<string, string>,
- *     joinTable?: array,
- *     joinTableColumns?: list<mixed>,
- *     mappedBy: string|null,
- *     orderBy?: array,
- *     originalClass?: class-string,
- *     originalField?: string,
- *     orphanRemoval?: bool,
- *     relationToSourceKeyColumns?: array,
- *     relationToTargetKeyColumns?: array,
- *     sourceEntity: class-string,
- *     sourceToTargetKeyColumns?: array<string, string>,
- *     targetEntity: class-string,
- *     targetToSourceKeyColumns?: array<string, string>,
- *     type: int,
- *     unique?: bool,
- * }
- * @psalm-type DiscriminatorColumnMapping = array{
- *     name: string,
- *     fieldName: string,
- *     type: string,
- *     length?: int,
- *     columnDefinition?: string|null,
- *     enumType?: class-string<BackedEnum>|null,
- * }
- * @psalm-type EmbeddedClassMapping = array{
- *    class: class-string,
- *    columnPrefix: string|null,
- *    declaredField: string|null,
- *    originalField: string|null,
- *    inherited?: class-string,
- *    declared?: class-string,
- * }
+ * @psalm-import-type AssociationMapping from \Doctrine\ORM\Mapping\ClassMetadata
+ * @psalm-import-type FieldMapping from \Doctrine\ORM\Mapping\ClassMetadata
+ * @psalm-import-type EmbeddedClassMapping from \Doctrine\ORM\Mapping\ClassMetadata
+ * @psalm-import-type JoinColumnData from \Doctrine\ORM\Mapping\ClassMetadata
+ * @psalm-import-type DiscriminatorColumnMapping from \Doctrine\ORM\Mapping\ClassMetadata
  */
 class ClassMetadataInfo implements ClassMetadata
 {
