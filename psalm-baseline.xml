@@ -392,8 +392,8 @@
   <file src="lib/Doctrine/ORM/Id/TableGenerator.php">
     <PossiblyFalseOperand>
       <code>$currentLevel</code>
-      <code>$this-&gt;_nextValue</code>
-      <code>$this-&gt;_nextValue</code>
+      <code>$this-&gt;nextValue</code>
+      <code>$this-&gt;nextValue</code>
     </PossiblyFalseOperand>
     <UndefinedMethod>
       <code>getTableHiLoCurrentValSql</code>
@@ -438,8 +438,8 @@
       <code>$baseElement</code>
     </ReferenceReusedFromConfusingScope>
     <UnsupportedReferenceUsage>
-      <code>$baseElement =&amp; $this-&gt;_resultPointers[$parent][key($first)]</code>
-      <code>$this-&gt;_resultPointers[$dqlAlias] =&amp; $coll[key($coll)]</code>
+      <code>$baseElement =&amp; $this-&gt;resultPointers[$parent][key($first)]</code>
+      <code>$this-&gt;resultPointers[$dqlAlias] =&amp; $coll[key($coll)]</code>
     </UnsupportedReferenceUsage>
   </file>
   <file src="lib/Doctrine/ORM/Internal/Hydration/IterableResult.php">
@@ -450,11 +450,11 @@
       <code>Iterator</code>
     </MissingTemplateParam>
     <PossiblyFalsePropertyAssignmentValue>
-      <code>$this-&gt;_hydrator-&gt;hydrateRow()</code>
+      <code>$this-&gt;hydrator-&gt;hydrateRow()</code>
       <code>$this-&gt;next()</code>
     </PossiblyFalsePropertyAssignmentValue>
     <RedundantConditionGivenDocblockType>
-      <code>$this-&gt;_current !== false</code>
+      <code>$this-&gt;current !== false</code>
     </RedundantConditionGivenDocblockType>
   </file>
   <file src="lib/Doctrine/ORM/Internal/Hydration/ObjectHydrator.php">
@@ -2195,7 +2195,7 @@
   </file>
   <file src="lib/Doctrine/ORM/Query/ParserResult.php">
     <PropertyNotSetInConstructor>
-      <code>$_sqlExecutor</code>
+      <code>$sqlExecutor</code>
     </PropertyNotSetInConstructor>
   </file>
   <file src="lib/Doctrine/ORM/Query/QueryExpressionVisitor.php">
