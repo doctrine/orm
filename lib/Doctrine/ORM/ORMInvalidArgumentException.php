@@ -82,8 +82,8 @@ class ORMInvalidArgumentException extends InvalidArgumentException
     }
 
     /**
-     * @param array[][]|object[][] $newEntitiesWithAssociations non-empty an array
-     *                                                              of [array $associationMapping, object $entity] pairs
+     * @psalm-param non-empty-list<array{AssociationMapping, object}> $newEntitiesWithAssociations non-empty an array
+     *                                                                of [array $associationMapping, object $entity] pairs
      *
      * @return ORMInvalidArgumentException
      */
@@ -122,7 +122,7 @@ class ORMInvalidArgumentException extends InvalidArgumentException
 
     /**
      * @param object $entry
-     * @psalm-param array<string, string> $assoc
+     * @psalm-param AssociationMapping $assoc
      *
      * @return ORMInvalidArgumentException
      */
@@ -222,8 +222,8 @@ EXCEPTION
     }
 
     /**
-     * @param mixed[] $assoc
-     * @param mixed   $actualValue
+     * @param AssociationMapping $assoc
+     * @param mixed              $actualValue
      *
      * @return self
      */
