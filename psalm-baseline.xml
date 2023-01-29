@@ -1147,11 +1147,6 @@
       <code>walkWhenClauseExpression</code>
     </UndefinedMethod>
   </file>
-  <file src="lib/Doctrine/ORM/Query/Exec/AbstractSqlExecutor.php">
-    <PossiblyNullPropertyAssignmentValue>
-      <code>null</code>
-    </PossiblyNullPropertyAssignmentValue>
-  </file>
   <file src="lib/Doctrine/ORM/Query/Exec/MultiTableDeleteExecutor.php">
     <InvalidReturnStatement>
       <code>$numDeleted</code>

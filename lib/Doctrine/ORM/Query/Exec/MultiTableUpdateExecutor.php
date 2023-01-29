@@ -13,7 +13,6 @@ use Doctrine\ORM\Query\ParameterTypeInferer;
 use Doctrine\ORM\Query\SqlWalker;
 use Doctrine\ORM\Utility\PersisterHelper;
 
-use function array_merge;
 use function array_reverse;
 use function array_slice;
 use function implode;
@@ -24,20 +23,13 @@ use function implode;
  */
 class MultiTableUpdateExecutor extends AbstractSqlExecutor
 {
-    /** @var string */
-    private $_createTempTableSql;
-
-    /** @var string */
-    private $_dropTempTableSql;
-
-    /** @var string */
-    private $_insertSql;
+    private readonly string $_createTempTableSql;
+    private readonly string $_dropTempTableSql;
+    private readonly string $_insertSql;
 
     /** @var mixed[] */
-    private $_sqlParameters = [];
-
-    /** @var int */
-    private $_numParametersInUpdateClause = 0;
+    private array $_sqlParameters             = [];
+    private int $_numParametersInUpdateClause = 0;
 
     /**
      * Initializes a new <tt>MultiTableUpdateExecutor</tt>.
@@ -48,7 +40,7 @@ class MultiTableUpdateExecutor extends AbstractSqlExecutor
      * @param UpdateStatement $AST       The root AST node of the DQL query.
      * @param SqlWalker       $sqlWalker The walker used for SQL generation from the AST.
      */
-    public function __construct(AST\Node $AST, $sqlWalker)
+    public function __construct(AST\Node $AST, SqlWalker $sqlWalker)
     {
         $em            = $sqlWalker->getEntityManager();
         $conn          = $em->getConnection();
@@ -72,19 +64,19 @@ class MultiTableUpdateExecutor extends AbstractSqlExecutor
         // 1. Create an INSERT INTO temptable ... SELECT identifiers WHERE $AST->getWhereClause()
         $sqlWalker->setSQLTableAlias($primaryClass->getTableName(), 't0', $updateClause->aliasIdentificationVariable);
 
-        $this->_insertSql = 'INSERT INTO ' . $tempTable . ' (' . $idColumnList . ')'
+        $insertSql = 'INSERT INTO ' . $tempTable . ' (' . $idColumnList . ')'
                 . ' SELECT t0.' . implode(', t0.', $idColumnNames);
 
         $rangeDecl  = new AST\RangeVariableDeclaration($primaryClass->name, $updateClause->aliasIdentificationVariable);
         $fromClause = new AST\FromClause([new AST\IdentificationVariableDeclaration($rangeDecl, null, [])]);
 
-        $this->_insertSql .= $sqlWalker->walkFromClause($fromClause);
+        $insertSql .= $sqlWalker->walkFromClause($fromClause);
 
         // 2. Create ID subselect statement used in UPDATE ... WHERE ... IN (subselect)
         $idSubselect = 'SELECT ' . $idColumnList . ' FROM ' . $tempTable;
 
         // 3. Create and store UPDATE statements
-        $classNames = array_merge($primaryClass->parentClasses, [$primaryClass->name], $primaryClass->subClasses);
+        $classNames = [...$primaryClass->parentClasses, ...[$primaryClass->name], ...$primaryClass->subClasses];
         $i          = -1;
 
         foreach (array_reverse($classNames) as $className) {
@@ -125,8 +117,10 @@ class MultiTableUpdateExecutor extends AbstractSqlExecutor
 
         // Append WHERE clause to insertSql, if there is one.
         if ($AST->whereClause) {
-            $this->_insertSql .= $sqlWalker->walkWhereClause($AST->whereClause);
+            $insertSql .= $sqlWalker->walkWhereClause($AST->whereClause);
         }
+
+        $this->_insertSql = $insertSql;
 
         // 4. Store DDL for temporary identifier table.
         $columnDefinitions = [];
@@ -147,10 +141,8 @@ class MultiTableUpdateExecutor extends AbstractSqlExecutor
 
     /**
      * {@inheritDoc}
-     *
-     * @return int
      */
-    public function execute(Connection $conn, array $params, array $types)
+    public function execute(Connection $conn, array $params, array $types): int
     {
         // Create temporary id table
         $conn->executeStatement($this->_createTempTableSql);
