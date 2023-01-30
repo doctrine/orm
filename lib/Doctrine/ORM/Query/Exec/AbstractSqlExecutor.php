@@ -19,33 +19,29 @@ use Doctrine\DBAL\Types\Type;
 abstract class AbstractSqlExecutor
 {
     /** @var list<string>|string */
-    protected $_sqlStatements;
+    protected array|string $_sqlStatements;
 
-    /** @var QueryCacheProfile */
-    protected $queryCacheProfile;
+    protected QueryCacheProfile|null $queryCacheProfile;
 
     /**
      * Gets the SQL statements that are executed by the executor.
      *
      * @return mixed[]|string  All the SQL update statements.
      */
-    public function getSqlStatements()
+    public function getSqlStatements(): array|string
     {
         return $this->_sqlStatements;
     }
 
-    /** @return void */
-    public function setQueryCacheProfile(QueryCacheProfile $qcp)
+    public function setQueryCacheProfile(QueryCacheProfile $qcp): void
     {
         $this->queryCacheProfile = $qcp;
     }
 
     /**
      * Do not use query cache
-     *
-     * @return void
      */
-    public function removeQueryCacheProfile()
+    public function removeQueryCacheProfile(): void
     {
         $this->queryCacheProfile = null;
     }
@@ -57,8 +53,6 @@ abstract class AbstractSqlExecutor
      * @psalm-param list<mixed>|array<string, mixed> $params The parameters.
      * @psalm-param array<int, int|string|Type|null>|
      *              array<string, int|string|Type|null> $types The parameter types.
-     *
-     * @return Result|int
      */
-    abstract public function execute(Connection $conn, array $params, array $types);
+    abstract public function execute(Connection $conn, array $params, array $types): Result|int;
 }

@@ -241,11 +241,6 @@ parameters:
 			path: lib/Doctrine/ORM/Query/AST/WhenClause.php
 
 		-
-			message: "#^Property Doctrine\\\\ORM\\\\Query\\\\Exec\\\\AbstractSqlExecutor\\:\\:\\$queryCacheProfile \\(Doctrine\\\\DBAL\\\\Cache\\\\QueryCacheProfile\\) does not accept null\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Query/Exec/AbstractSqlExecutor.php
-
-		-
 			message: "#^PHPDoc type array\\<string\\> of property Doctrine\\\\ORM\\\\Query\\\\Expr\\\\Andx\\:\\:\\$allowedClasses is not covariant with PHPDoc type array\\<int, class\\-string\\> of overridden property Doctrine\\\\ORM\\\\Query\\\\Expr\\\\Base\\:\\:\\$allowedClasses\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Query/Expr/Andx.php
