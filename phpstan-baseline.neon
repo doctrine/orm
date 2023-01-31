@@ -171,6 +171,11 @@ parameters:
 			path: lib/Doctrine/ORM/Mapping/ClassMetadataFactory.php
 
 		-
+			message: "#^Method Doctrine\\\\ORM\\\\Mapping\\\\ClassMetadataInfo\\:\\:_validateAndCompleteManyToManyMapping\\(\\) should return array\\{mappedBy\\: mixed, inversedBy\\: mixed, isOwningSide\\: bool, sourceEntity\\: class\\-string, targetEntity\\: string, fieldName\\: mixed, fetch\\: mixed, cascade\\: array\\<string\\>, \\.\\.\\.\\} but returns array\\{cache\\?\\: array, cascade\\: array\\<string\\>, declared\\?\\: class\\-string, fetch\\: mixed, fieldName\\: string, id\\?\\: bool, inherited\\?\\: class\\-string, indexBy\\?\\: string, \\.\\.\\.\\}\\.$#"
+			count: 1
+			path: lib/Doctrine/ORM/Mapping/ClassMetadataInfo.php
+
+		-
 			message: "#^Method Doctrine\\\\ORM\\\\Mapping\\\\ClassMetadataInfo\\:\\:fullyQualifiedClassName\\(\\) should return class\\-string\\|null but returns string\\|null\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Mapping/ClassMetadataInfo.php
@@ -229,11 +234,6 @@ parameters:
 			message: "#^Offset 'version' on \\*NEVER\\* in isset\\(\\) always exists and is always null\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Mapping/Driver/XmlDriver.php
-
-		-
-			message: "#^Offset 'usage' on array\\{usage\\: string, region\\?\\: string\\} in isset\\(\\) always exists and is not nullable\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Mapping/Driver/YamlDriver.php
 
 		-
 			message: "#^Call to function is_int\\(\\) with string will always evaluate to false\\.$#"
