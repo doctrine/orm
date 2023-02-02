@@ -634,6 +634,11 @@ class MappingException extends ORMException
         return new self("Duplicate definition of column '" . $columnName . "' on entity '" . $className . "' in a field or discriminator column mapping.");
     }
 
+    public static function columnAlreadyExists(string $table, string $columnName, string $className, string $field): self
+    {
+        return new self(sprintf('The column %s in table %s is already defined and cannot be reused for the %s#%s field. Define a separate column name for this field.', $columnName, $table, $className, $field));
+    }
+
     /**
      * @param string $className
      * @param string $field

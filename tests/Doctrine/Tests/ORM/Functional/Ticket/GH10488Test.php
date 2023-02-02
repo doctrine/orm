@@ -5,39 +5,27 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\ORM\Mapping as ORM;
-use Doctrine\Tests\OrmFunctionalTestCase;
+use Doctrine\ORM\Mapping\MappingException;
+use Doctrine\ORM\Tools\SchemaTool;
+use Doctrine\Tests\OrmTestCase;
 
-class GH10488Test extends OrmFunctionalTestCase
+class GH10488Test extends OrmTestCase
 {
-    protected function setUp(): void
+    public function testSchemaToolRejectsDuplicateColumn(): void
     {
-        parent::setUp();
+        $em         = $this->getTestEntityManager();
+        $schemaTool = new SchemaTool($em);
 
-        $this->createSchemaForModels(
-            GH10488Root::class,
-            GH10488A::class,
-            GH10488B::class
+        $this->expectException(MappingException::class);
+        $this->expectExceptionMessage(
+            'The column value in table root is already defined and cannot be reused for the Doctrine\Tests\ORM\Functional\Ticket\GH10488B#value field. Define a separate column name for this field.'
         );
-    }
 
-    public function testTwoSubclassesWithCollidingColumnDefinitions(): void
-    {
-        $entityA        = new GH10488A();
-        $entityA->value = 42;
-        $this->_em->persist($entityA);
-
-        $entityB        = new GH10488B();
-        $entityB->value = 'test';
-        $this->_em->persist($entityB);
-
-        $this->_em->flush();
-        $this->_em->clear();
-
-        $loadedEntityA = $this->_em->find(GH10488A::class, $entityA->id);
-        $loadedEntityB = $this->_em->find(GH10488B::class, $entityB->id);
-
-        self::assertSame($entityA->value, $loadedEntityA->value);
-        self::assertSame($entityB->value, $loadedEntityB->value);
+        $schemaTool->getSchemaFromMetadata([
+            $em->getClassMetadata(GH10488Root::class),
+            $em->getClassMetadata(GH10488A::class),
+            $em->getClassMetadata(GH10488B::class),
+        ]);
     }
 }
 
