@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Query;
 
+use Doctrine\Common\Persistence\PersistentObject;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\Lexer;
 use Doctrine\ORM\Query\Parser;
@@ -11,6 +12,8 @@ use Doctrine\ORM\Query\QueryException;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\OrmTestCase;
 use stdClass;
+
+use function class_exists;
 
 class ParserTest extends OrmTestCase
 {
@@ -53,6 +56,10 @@ class ParserTest extends OrmTestCase
      */
     public function testAbstractSchemaNameSupportsNamespaceAlias(): void
     {
+        if (! class_exists(PersistentObject::class)) {
+            self::markTestSkipped('This test requires doctrine/persistence 2');
+        }
+
         $parser = $this->createParser('CMS:CmsUser');
 
         $parser->getEntityManager()->getConfiguration()->addEntityNamespace('CMS', 'Doctrine\Tests\Models\CMS');
@@ -66,6 +73,10 @@ class ParserTest extends OrmTestCase
      */
     public function testAbstractSchemaNameSupportsNamespaceAliasWithRelativeClassname(): void
     {
+        if (! class_exists(PersistentObject::class)) {
+            self::markTestSkipped('This test requires doctrine/persistence 2');
+        }
+
         $parser = $this->createParser('Model:CMS\CmsUser');
 
         $parser->getEntityManager()->getConfiguration()->addEntityNamespace('Model', 'Doctrine\Tests\Models');
