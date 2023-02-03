@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional;
 
+use Doctrine\Common\Persistence\PersistentObject;
 use Doctrine\ORM\Query;
 use Doctrine\Tests\Models\CMS\CmsAddress;
 use Doctrine\Tests\Models\CMS\CmsAddressDTO;
@@ -13,6 +14,7 @@ use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\Models\CMS\CmsUserDTO;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
+use function class_exists;
 use function count;
 
 /** @group DDC-1574 */
@@ -208,6 +210,10 @@ class NewOperatorTest extends OrmFunctionalTestCase
 
     public function testShouldSupportFromEntityNamespaceAlias(): void
     {
+        if (! class_exists(PersistentObject::class)) {
+            self::markTestSkipped('This test requires doctrine/persistence 2');
+        }
+
         $dql = '
             SELECT
                 new CmsUserDTO(u.name, e.email, a.city)
@@ -235,6 +241,10 @@ class NewOperatorTest extends OrmFunctionalTestCase
 
     public function testShouldSupportValueObjectNamespaceAlias(): void
     {
+        if (! class_exists(PersistentObject::class)) {
+            self::markTestSkipped('This test requires doctrine/persistence 2');
+        }
+
         $dql = '
             SELECT
                 new cms:CmsUserDTO(u.name, e.email, a.city)

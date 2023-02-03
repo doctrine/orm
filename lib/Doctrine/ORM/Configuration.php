@@ -227,7 +227,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
                 $alias
             );
         } else {
-            NotSupported::createForPersistence3(sprintf(
+            throw NotSupported::createForPersistence3(sprintf(
                 'Using short namespace alias "%s" by calling %s',
                 $alias,
                 __METHOD__
