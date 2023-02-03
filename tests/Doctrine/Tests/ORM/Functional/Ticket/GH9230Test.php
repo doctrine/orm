@@ -37,7 +37,7 @@ class GH9230Test extends OrmFunctionalTestCase
     /**
      * This does not work before the fix in PR#9663, but is does work after the fix is applied
      */
-    public function failingValuesBeforeFix(): array
+    public static function failingValuesBeforeFix(): array
     {
         return [
             'string=""' => ['name', '', 'test name'],
@@ -66,7 +66,7 @@ class GH9230Test extends OrmFunctionalTestCase
     /**
      * This already works before the fix in PR#9663 is applied because none of these are falsy values in php
      */
-    public function succeedingValuesBeforeFix(): array
+    public static function succeedingValuesBeforeFix(): array
     {
         return [
             'string="test"' => ['name', 'test', 'test2'],

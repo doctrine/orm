@@ -34,7 +34,7 @@ class UpdateCommandTest extends CommandTestCase
         self::assertStringContainsString($expectedMessage, $tester->getErrorOutput());
     }
 
-    public function getCasesForWarningMessageFromCompleteOption(): iterable
+    public static function getCasesForWarningMessageFromCompleteOption(): iterable
     {
         yield 'default_name' => [
             null,
