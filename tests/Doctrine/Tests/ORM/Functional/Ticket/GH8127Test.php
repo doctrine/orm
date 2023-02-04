@@ -41,7 +41,7 @@ class GH8127Test extends OrmFunctionalTestCase
         self::assertSame('leaf', $loadedEntity->leaf);
     }
 
-    public function queryClasses(): array
+    public static function queryClasses(): array
     {
         return [
             'query via root entity' => [GH8127Root::class],

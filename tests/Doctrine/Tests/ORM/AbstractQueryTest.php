@@ -83,7 +83,7 @@ final class AbstractQueryTest extends TestCase
     }
 
     /** @return array<string, array{string}> */
-    public function provideSettersWithDeprecatedDefault(): array
+    public static function provideSettersWithDeprecatedDefault(): array
     {
         return [
             'setHydrationCacheProfile' => ['setHydrationCacheProfile'],

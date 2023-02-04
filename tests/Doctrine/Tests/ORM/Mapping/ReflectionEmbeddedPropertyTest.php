@@ -69,49 +69,47 @@ class ReflectionEmbeddedPropertyTest extends TestCase
     }
 
     /**
-     * Data provider
-     *
      * @return ReflectionProperty[][]|string[][]
      */
-    public function getTestedReflectionProperties(): array
+    public static function getTestedReflectionProperties(): array
     {
         return [
             [
-                $this->getReflectionProperty(BooleanModel::class, 'id'),
-                $this->getReflectionProperty(BooleanModel::class, 'id'),
+                self::getReflectionProperty(BooleanModel::class, 'id'),
+                self::getReflectionProperty(BooleanModel::class, 'id'),
                 BooleanModel::class,
             ],
             // reflection on embeddables that have properties defined in abstract ancestors:
             [
-                $this->getReflectionProperty(BooleanModel::class, 'id'),
-                $this->getReflectionProperty(AbstractEmbeddable::class, 'propertyInAbstractClass'),
+                self::getReflectionProperty(BooleanModel::class, 'id'),
+                self::getReflectionProperty(AbstractEmbeddable::class, 'propertyInAbstractClass'),
                 ConcreteEmbeddable::class,
             ],
             [
-                $this->getReflectionProperty(BooleanModel::class, 'id'),
-                $this->getReflectionProperty(ConcreteEmbeddable::class, 'propertyInConcreteClass'),
+                self::getReflectionProperty(BooleanModel::class, 'id'),
+                self::getReflectionProperty(ConcreteEmbeddable::class, 'propertyInConcreteClass'),
                 ConcreteEmbeddable::class,
             ],
             // reflection on classes extending internal PHP classes:
             [
-                $this->getReflectionProperty(ArrayObjectExtendingClass::class, 'publicProperty'),
-                $this->getReflectionProperty(ArrayObjectExtendingClass::class, 'privateProperty'),
+                self::getReflectionProperty(ArrayObjectExtendingClass::class, 'publicProperty'),
+                self::getReflectionProperty(ArrayObjectExtendingClass::class, 'privateProperty'),
                 ArrayObjectExtendingClass::class,
             ],
             [
-                $this->getReflectionProperty(ArrayObjectExtendingClass::class, 'publicProperty'),
-                $this->getReflectionProperty(ArrayObjectExtendingClass::class, 'protectedProperty'),
+                self::getReflectionProperty(ArrayObjectExtendingClass::class, 'publicProperty'),
+                self::getReflectionProperty(ArrayObjectExtendingClass::class, 'protectedProperty'),
                 ArrayObjectExtendingClass::class,
             ],
             [
-                $this->getReflectionProperty(ArrayObjectExtendingClass::class, 'publicProperty'),
-                $this->getReflectionProperty(ArrayObjectExtendingClass::class, 'publicProperty'),
+                self::getReflectionProperty(ArrayObjectExtendingClass::class, 'publicProperty'),
+                self::getReflectionProperty(ArrayObjectExtendingClass::class, 'publicProperty'),
                 ArrayObjectExtendingClass::class,
             ],
         ];
     }
 
-    private function getReflectionProperty(string $className, string $propertyName): ReflectionProperty
+    private static function getReflectionProperty(string $className, string $propertyName): ReflectionProperty
     {
         $reflectionProperty = new ReflectionProperty($className, $propertyName);
 

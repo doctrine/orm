@@ -33,7 +33,7 @@ class NewOperatorTest extends OrmFunctionalTestCase
     }
 
     /** @psalm-return list<array{int}> */
-    public function provideDataForHydrationMode(): array
+    public static function provideDataForHydrationMode(): array
     {
         return [
             [Query::HYDRATE_ARRAY],

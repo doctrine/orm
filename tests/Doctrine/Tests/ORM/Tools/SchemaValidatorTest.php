@@ -51,7 +51,7 @@ class SchemaValidatorTest extends OrmTestCase
         self::assertEmpty($this->validator->validateMapping());
     }
 
-    public function modelSetProvider(): array
+    public static function modelSetProvider(): array
     {
         return [
             'cms'        => [__DIR__ . '/../../Models/CMS'],

@@ -1019,7 +1019,7 @@ class EntityGeneratorTest extends OrmTestCase
      *     value: mixed
      * }>
      */
-    public function getEntityTypeAliasDataProvider(): array
+    public static function getEntityTypeAliasDataProvider(): array
     {
         return [
             [
@@ -1114,7 +1114,7 @@ class EntityGeneratorTest extends OrmTestCase
     }
 
     /** @psalm-return list<array{string, array{string}}> */
-    public function getParseTokensInEntityFileData(): array
+    public static function getParseTokensInEntityFileData(): array
     {
         return [
             [
@@ -1206,7 +1206,7 @@ class
         self::assertStringContainsString($expectedAnnotation, $docComment);
     }
 
-    public function columnOptionsProvider(): array
+    public static function columnOptionsProvider(): array
     {
         return [
             'string-default'   => [

@@ -77,7 +77,7 @@ class DDC2825Test extends OrmFunctionalTestCase
      *
      * @return string[][]
      */
-    public function getTestedClasses(): array
+    public static function getTestedClasses(): array
     {
         return [
             [ExplicitSchemaAndTable::class, 'explicit_schema', 'explicit_table'],
