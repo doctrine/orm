@@ -252,7 +252,7 @@ class QueryTest extends OrmTestCase
     }
 
     /** @psalm-return Generator<string, array{iterable}> */
-    public function provideProcessParameterValueIterable(): Generator
+    public static function provideProcessParameterValueIterable(): Generator
     {
         $baseArray = [
             0 => 'Paris',

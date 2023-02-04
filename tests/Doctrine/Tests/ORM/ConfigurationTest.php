@@ -8,6 +8,7 @@ use Doctrine\Common\Annotations\SimpleAnnotationReader;
 use Doctrine\Common\Cache\ArrayCache;
 use Doctrine\Common\Cache\Cache;
 use Doctrine\Common\Cache\Psr6\CacheAdapter;
+use Doctrine\Common\Persistence\PersistentObject;
 use Doctrine\Deprecations\PHPUnit\VerifyDeprecations;
 use Doctrine\ORM\Cache\CacheConfiguration;
 use Doctrine\ORM\Cache\Exception\MetadataCacheNotConfigured;
@@ -17,6 +18,7 @@ use Doctrine\ORM\Cache\Exception\QueryCacheUsesNonPersistentCache;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Exception\InvalidEntityRepository;
+use Doctrine\ORM\Exception\NotSupported;
 use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\Exception\ProxyClassesAlwaysRegenerating;
 use Doctrine\ORM\Mapping as AnnotationNamespace;
@@ -128,7 +130,11 @@ class ConfigurationTest extends DoctrineTestCase
 
     public function testSetGetEntityNamespace(): void
     {
-        $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/issues/8818');
+        if (class_exists(PersistentObject::class)) {
+            $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/issues/8818');
+        } else {
+            $this->expectException(NotSupported::class);
+        }
 
         $this->configuration->addEntityNamespace('TestNamespace', __NAMESPACE__);
         self::assertSame(__NAMESPACE__, $this->configuration->getEntityNamespace('TestNamespace'));

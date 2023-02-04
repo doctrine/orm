@@ -37,7 +37,7 @@ class AssignedGeneratorTest extends OrmTestCase
         $this->assignedGen->generateId($this->entityManager, $entity);
     }
 
-    public function entitiesWithoutId(): array
+    public static function entitiesWithoutId(): array
     {
         return [
             'single'    => [new AssignedSingleIdEntity()],

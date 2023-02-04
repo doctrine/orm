@@ -40,9 +40,9 @@ final class UniqueConstraint implements MappingAttribute
     public $options;
 
     /**
-     * @param array<string>       $columns
-     * @param array<string>       $fields
-     * @param array<string,mixed> $options
+     * @param array<string>|null       $columns
+     * @param array<string>|null       $fields
+     * @param array<string,mixed>|null $options
      */
     public function __construct(
         ?string $name = null,

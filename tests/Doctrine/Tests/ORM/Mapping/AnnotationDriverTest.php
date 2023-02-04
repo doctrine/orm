@@ -276,7 +276,7 @@ class AnnotationDriverTest extends MappingDriverTestCase
         self::assertSame($expectedLength, $metadata->discriminatorColumn['length']);
     }
 
-    public function provideDiscriminatorColumnTestcases(): Generator
+    public static function provideDiscriminatorColumnTestcases(): Generator
     {
         yield [DiscriminatorColumnWithNullLength::class, 255];
         yield [DiscriminatorColumnWithNoLength::class, 255];

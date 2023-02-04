@@ -591,11 +591,6 @@
       <code>$mapping</code>
       <code>$overrideMapping</code>
     </InvalidArgument>
-    <InvalidDocblock>
-      <code>protected function _validateAndCompleteAssociationMapping(array $mapping)</code>
-      <code>protected function _validateAndCompleteManyToManyMapping(array $mapping)</code>
-      <code>protected function _validateAndCompleteOneToOneMapping(array $mapping)</code>
-    </InvalidDocblock>
     <InvalidNullableReturnType>
       <code>ReflectionProperty</code>
       <code>ReflectionProperty</code>
@@ -609,10 +604,54 @@
     </InvalidPropertyAssignmentValue>
     <InvalidReturnStatement>
       <code>$mapping</code>
+      <code>$mapping</code>
+      <code>$mapping</code>
+      <code>$mapping</code>
       <code>$this-&gt;reflClass</code>
     </InvalidReturnStatement>
     <InvalidReturnType>
+      <code>AssociationMapping</code>
       <code>FieldMapping</code>
+      <code>array{
+     *                   mappedBy: mixed,
+     *                   inversedBy: mixed,
+     *                   isOwningSide: bool,
+     *                   sourceEntity: string,
+     *                   targetEntity: string,
+     *                   fieldName: mixed,
+     *                   fetch: int|mixed,
+     *                   cascade: array&lt;array-key,string&gt;,
+     *                   isCascadeRemove: bool,
+     *                   isCascadePersist: bool,
+     *                   isCascadeRefresh: bool,
+     *                   isCascadeMerge: bool,
+     *                   isCascadeDetach: bool,
+     *                   orphanRemoval: bool
+     *               }</code>
+      <code>array{
+     *      mappedBy: mixed|null,
+     *      inversedBy: mixed|null,
+     *      isOwningSide: bool,
+     *      sourceEntity: class-string,
+     *      targetEntity: string,
+     *      fieldName: mixed,
+     *      fetch: mixed,
+     *      cascade: array&lt;string&gt;,
+     *      isCascadeRemove: bool,
+     *      isCascadePersist: bool,
+     *      isCascadeRefresh: bool,
+     *      isCascadeMerge: bool,
+     *      isCascadeDetach: bool,
+     *      type: int,
+     *      originalField: string,
+     *      originalClass: class-string,
+     *      joinColumns?: array{0: array{name: string, referencedColumnName: string}}|mixed,
+     *      id?: mixed,
+     *      sourceToTargetKeyColumns?: array&lt;string, string&gt;,
+     *      joinColumnFieldNames?: array&lt;string, string&gt;,
+     *      targetToSourceKeyColumns?: array&lt;string, string&gt;,
+     *      orphanRemoval: bool
+     * }</code>
       <code>getReflectionClass</code>
     </InvalidReturnType>
     <LessSpecificReturnStatement>
@@ -620,18 +659,38 @@
       <code>$className</code>
       <code>$className</code>
       <code>$columnNames</code>
+      <code>$mapping</code>
       <code>$quotedColumnNames</code>
       <code>$this-&gt;namespace . '\\' . $className</code>
     </LessSpecificReturnStatement>
     <MethodSignatureMustProvideReturnType>
       <code>__toString</code>
     </MethodSignatureMustProvideReturnType>
-    <MissingReturnType>
-      <code>_validateAndCompleteAssociationMapping</code>
-      <code>_validateAndCompleteManyToManyMapping</code>
-      <code>_validateAndCompleteOneToOneMapping</code>
-    </MissingReturnType>
     <MoreSpecificReturnType>
+      <code>array{
+     *      mappedBy: mixed,
+     *      inversedBy: mixed,
+     *      isOwningSide: bool,
+     *      sourceEntity: class-string,
+     *      targetEntity: string,
+     *      fieldName: mixed,
+     *      fetch: mixed,
+     *      cascade: array&lt;string&gt;,
+     *      isCascadeRemove: bool,
+     *      isCascadePersist: bool,
+     *      isCascadeRefresh: bool,
+     *      isCascadeMerge: bool,
+     *      isCascadeDetach: bool,
+     *      type: int,
+     *      originalField: string,
+     *      originalClass: class-string,
+     *      joinTable?: array{inverseJoinColumns: mixed}|mixed,
+     *      joinTableColumns?: list&lt;mixed&gt;,
+     *      isOnDeleteCascade?: true,
+     *      relationToSourceKeyColumns?: array,
+     *      relationToTargetKeyColumns?: array,
+     *      orphanRemoval: bool
+     * }</code>
       <code>array{usage: int, region: string|null}</code>
       <code>class-string|null</code>
       <code>list&lt;string&gt;</code>
@@ -910,10 +969,6 @@
       <code>addNamedQuery</code>
     </DeprecatedMethod>
     <InvalidArgument>
-      <code>$this-&gt;cacheToArray($manyToManyElement-&gt;cache)</code>
-      <code>$this-&gt;cacheToArray($manyToOneElement-&gt;cache)</code>
-      <code>$this-&gt;cacheToArray($oneToManyElement-&gt;cache)</code>
-      <code>$this-&gt;cacheToArray($oneToOneElement-&gt;cache)</code>
       <code>[
                             'name' =&gt; isset($discrColumn['name']) ? (string) $discrColumn['name'] : null,
                             'type' =&gt; isset($discrColumn['type']) ? (string) $discrColumn['type'] : 'string',
@@ -1013,9 +1068,12 @@
                             'enumType' =&gt; isset($discrColumn['enumType']) ? (string) $discrColumn['enumType'] : null,
                         ]</code>
     </InvalidArgument>
-    <InvalidDocblock>
-      <code>private function cacheToArray(array $cacheMapping): array</code>
-    </InvalidDocblock>
+    <LessSpecificReturnStatement>
+      <code>[
+            'usage'  =&gt; $usage,
+            'region' =&gt; $region,
+        ]</code>
+    </LessSpecificReturnStatement>
     <MissingParamType>
       <code>$fileExtension</code>
       <code>$locator</code>
@@ -1023,6 +1081,9 @@
     <MoreSpecificImplementedParamType>
       <code>$metadata</code>
     </MoreSpecificImplementedParamType>
+    <MoreSpecificReturnType>
+      <code>array{usage: int|null, region: string|null}</code>
+    </MoreSpecificReturnType>
     <PossiblyUndefinedMethod>
       <code>$element</code>
       <code>$element</code>

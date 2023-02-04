@@ -44,7 +44,7 @@ class SqlWalkerTest extends OrmTestCase
      *
      * @private data provider
      */
-    public function getColumnNamesAndSqlAliases(): array
+    public static function getColumnNamesAndSqlAliases(): array
     {
         return [
             ['aaaaa', 'a0_'],

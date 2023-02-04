@@ -48,7 +48,7 @@ class QueryExpressionVisitorTest extends TestCase
      *                   2?: Parameter,
      *               }>
      */
-    public function comparisonData(): array
+    public static function comparisonData(): array
     {
         $cb = new CriteriaBuilder();
         $qb = new QueryBuilder();
