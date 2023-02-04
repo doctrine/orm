@@ -742,8 +742,17 @@ SQL,
         $this->_em->flush();
     }
 
-    /** @psalm-return list<array{bool, bool}> */
-    public function useOutputWalkers(): array
+    /** @psalm-return list<array{bool}> */
+    public static function useOutputWalkers(): array
+    {
+        return [
+            [true],
+            [false],
+        ];
+    }
+
+    /** @psalm-return list<array{bool}> */
+    public static function fetchJoinCollection(): array
     {
         return [
             [true],
@@ -752,16 +761,7 @@ SQL,
     }
 
     /** @psalm-return list<array{bool, bool}> */
-    public function fetchJoinCollection(): array
-    {
-        return [
-            [true],
-            [false],
-        ];
-    }
-
-    /** @psalm-return list<array{bool, bool}> */
-    public function useOutputWalkersAndFetchJoinCollection(): array
+    public static function useOutputWalkersAndFetchJoinCollection(): array
     {
         return [
             [true, false],

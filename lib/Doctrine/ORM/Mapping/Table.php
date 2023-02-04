@@ -10,9 +10,9 @@ use Attribute;
 final class Table implements MappingAttribute
 {
     /**
-     * @param array<Index>            $indexes
-     * @param array<UniqueConstraint> $uniqueConstraints
-     * @param array<string,mixed>     $options
+     * @param array<Index>|null            $indexes
+     * @param array<UniqueConstraint>|null $uniqueConstraints
+     * @param array<string,mixed>          $options
      */
     public function __construct(
         public readonly string|null $name = null,

@@ -345,7 +345,7 @@ class ValueObjectsTest extends OrmFunctionalTestCase
     }
 
     /** @psalm-return list<array{string, string}> */
-    public function getInfiniteEmbeddableNestingData(): array
+    public static function getInfiniteEmbeddableNestingData(): array
     {
         return [
             ['DDCInfiniteNestingEmbeddable', 'DDCInfiniteNestingEmbeddable'],

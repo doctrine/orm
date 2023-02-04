@@ -184,7 +184,7 @@ class LexerTest extends OrmTestCase
     }
 
     /** @psalm-return list<array{int, string}> */
-    public function provideTokens(): array
+    public static function provideTokens(): array
     {
         return [
             [TokenType::T_IDENTIFIER, 'u'], // one char

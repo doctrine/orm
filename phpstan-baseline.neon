@@ -126,9 +126,9 @@ parameters:
 			path: lib/Doctrine/ORM/EntityRepository.php
 
 		-
-			message: "#^If condition is always true\\.$#"
-			count: 2
-			path: lib/Doctrine/ORM/Mapping/ClassMetadataFactory.php
+			message: "#^Method Doctrine\\\\ORM\\\\Mapping\\\\ClassMetadata\\:\\:_validateAndCompleteManyToManyMapping\\(\\) should return array\\{mappedBy\\: mixed, inversedBy\\: mixed, isOwningSide\\: bool, sourceEntity\\: class\\-string, targetEntity\\: string, fieldName\\: mixed, fetch\\: mixed, cascade\\: array\\<string\\>, \\.\\.\\.\\} but returns array\\{cache\\?\\: array, cascade\\: array\\<string\\>, declared\\?\\: class\\-string, fetch\\: mixed, fieldName\\: string, id\\?\\: bool, inherited\\?\\: class\\-string, indexBy\\?\\: string, \\.\\.\\.\\}\\.$#"
+			count: 1
+			path: lib/Doctrine/ORM/Mapping/ClassMetadata.php
 
 		-
 			message: "#^Method Doctrine\\\\ORM\\\\Mapping\\\\ClassMetadata\\:\\:fullyQualifiedClassName\\(\\) should return class\\-string\\|null but returns string\\|null\\.$#"
@@ -139,6 +139,11 @@ parameters:
 			message: "#^Negated boolean expression is always false\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Mapping/ClassMetadata.php
+
+		-
+			message: "#^If condition is always true\\.$#"
+			count: 2
+			path: lib/Doctrine/ORM/Mapping/ClassMetadataFactory.php
 
 		-
 			message: "#^Expression on left side of \\?\\? is not nullable\\.$#"
@@ -299,7 +304,6 @@ parameters:
 			message: "#^Match arm is unreachable because previous comparison is always true\\.$#"
 			count: 2
 			path: lib/Doctrine/ORM/Query/SqlWalker.php
-
 
 		-
 			message: "#^Parameter \\#3 \\$condExpr of method Doctrine\\\\ORM\\\\Query\\\\SqlWalker\\:\\:walkJoinAssociationDeclaration\\(\\) expects Doctrine\\\\ORM\\\\Query\\\\AST\\\\ConditionalPrimary\\|null, Doctrine\\\\ORM\\\\Query\\\\AST\\\\ConditionalExpression\\|null given\\.$#"

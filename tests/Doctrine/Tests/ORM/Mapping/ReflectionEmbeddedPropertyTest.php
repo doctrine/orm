@@ -68,12 +68,8 @@ class ReflectionEmbeddedPropertyTest extends TestCase
         ));
     }
 
-    /**
-     * Data provider
-     *
-     * @return ReflectionProperty[][]|string[][]
-     */
-    public function getTestedReflectionProperties(): array
+    /** @return ReflectionProperty[][]|string[][] */
+    public static function getTestedReflectionProperties(): array
     {
         return [
             [

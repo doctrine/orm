@@ -23,13 +23,13 @@ use function implode;
  */
 class MultiTableUpdateExecutor extends AbstractSqlExecutor
 {
-    private readonly string $_createTempTableSql;
-    private readonly string $_dropTempTableSql;
-    private readonly string $_insertSql;
+    private readonly string $createTempTableSql;
+    private readonly string $dropTempTableSql;
+    private readonly string $insertSql;
 
     /** @var mixed[] */
-    private array $_sqlParameters             = [];
-    private int $_numParametersInUpdateClause = 0;
+    private array $sqlParameters             = [];
+    private int $numParametersInUpdateClause = 0;
 
     /**
      * Initializes a new <tt>MultiTableUpdateExecutor</tt>.
@@ -103,9 +103,9 @@ class MultiTableUpdateExecutor extends AbstractSqlExecutor
                     $updateSql .= $sqlWalker->walkUpdateItem($updateItem);
 
                     if ($newValue instanceof AST\InputParameter) {
-                        $this->_sqlParameters[$i][] = $newValue->name;
+                        $this->sqlParameters[$i][] = $newValue->name;
 
-                        ++$this->_numParametersInUpdateClause;
+                        ++$this->numParametersInUpdateClause;
                     }
                 }
             }
@@ -120,7 +120,7 @@ class MultiTableUpdateExecutor extends AbstractSqlExecutor
             $insertSql .= $sqlWalker->walkWhereClause($AST->whereClause);
         }
 
-        $this->_insertSql = $insertSql;
+        $this->insertSql = $insertSql;
 
         // 4. Store DDL for temporary identifier table.
         $columnDefinitions = [];
@@ -133,10 +133,10 @@ class MultiTableUpdateExecutor extends AbstractSqlExecutor
             ];
         }
 
-        $this->_createTempTableSql = $platform->getCreateTemporaryTableSnippetSQL() . ' ' . $tempTable . ' ('
+        $this->createTempTableSql = $platform->getCreateTemporaryTableSnippetSQL() . ' ' . $tempTable . ' ('
                 . $platform->getColumnDeclarationListSQL($columnDefinitions) . ', PRIMARY KEY(' . implode(',', $idColumnNames) . '))';
 
-        $this->_dropTempTableSql = $platform->getDropTemporaryTableSQL($tempTable);
+        $this->dropTempTableSql = $platform->getDropTemporaryTableSQL($tempTable);
     }
 
     /**
@@ -145,14 +145,14 @@ class MultiTableUpdateExecutor extends AbstractSqlExecutor
     public function execute(Connection $conn, array $params, array $types): int
     {
         // Create temporary id table
-        $conn->executeStatement($this->_createTempTableSql);
+        $conn->executeStatement($this->createTempTableSql);
 
         try {
             // Insert identifiers. Parameters from the update clause are cut off.
             $numUpdated = $conn->executeStatement(
-                $this->_insertSql,
-                array_slice($params, $this->_numParametersInUpdateClause),
-                array_slice($types, $this->_numParametersInUpdateClause),
+                $this->insertSql,
+                array_slice($params, $this->numParametersInUpdateClause),
+                array_slice($types, $this->numParametersInUpdateClause),
             );
 
             // Execute UPDATE statements
@@ -160,8 +160,8 @@ class MultiTableUpdateExecutor extends AbstractSqlExecutor
                 $paramValues = [];
                 $paramTypes  = [];
 
-                if (isset($this->_sqlParameters[$key])) {
-                    foreach ($this->_sqlParameters[$key] as $parameterKey => $parameterName) {
+                if (isset($this->sqlParameters[$key])) {
+                    foreach ($this->sqlParameters[$key] as $parameterKey => $parameterName) {
                         $paramValues[] = $params[$parameterKey];
                         $paramTypes[]  = $types[$parameterKey] ?? ParameterTypeInferer::inferType($params[$parameterKey]);
                     }
@@ -171,7 +171,7 @@ class MultiTableUpdateExecutor extends AbstractSqlExecutor
             }
         } finally {
             // Drop temporary table
-            $conn->executeStatement($this->_dropTempTableSql);
+            $conn->executeStatement($this->dropTempTableSql);
         }
 
         return $numUpdated;

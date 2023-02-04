@@ -364,7 +364,7 @@ class QueryDqlFunctionTest extends OrmFunctionalTestCase
         );
     }
 
-    public function dateAddSubProvider(): array
+    public static function dateAddSubProvider(): array
     {
         $secondsInDay = 86400;
 

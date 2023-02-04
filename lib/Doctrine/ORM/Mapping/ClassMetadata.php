@@ -1482,25 +1482,7 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
      * @psalm-param array<string, mixed> $mapping The mapping.
      *
      * @return mixed[] The updated mapping.
-     * @psalm-return array{
-     *                   mappedBy: mixed|null,
-     *                   inversedBy: mixed|null,
-     *                   isOwningSide: bool,
-     *                   sourceEntity: class-string,
-     *                   targetEntity: string,
-     *                   fieldName: mixed,
-     *                   fetch: mixed,
-     *                   cascade: array<array-key,string>,
-     *                   isCascadeRemove: bool,
-     *                   isCascadePersist: bool,
-     *                   isCascadeRefresh: bool,
-     *                   isCascadeMerge: bool,
-     *                   isCascadeDetach: bool,
-     *                   type: int,
-     *                   originalField: string,
-     *                   originalClass: class-string,
-     *                   ?orphanRemoval: bool
-     *               }
+     * @psalm-return AssociationMapping
      *
      * @throws MappingException If something is wrong with the mapping.
      */
@@ -1630,7 +1612,6 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
      * @psalm-param array<string, mixed> $mapping The mapping to validate & complete.
      *
      * @return mixed[] The validated & completed mapping.
-     * @psalm-return array{isOwningSide: mixed, orphanRemoval: bool, isCascadeRemove: bool}
      * @psalm-return array{
      *      mappedBy: mixed|null,
      *      inversedBy: mixed|null,
@@ -1784,7 +1765,6 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
     /**
      * Validates & completes a many-to-many association mapping.
      *
-     * @psalm-param array<string, mixed> $mapping The mapping to validate & complete.
      * @psalm-param array<string, mixed> $mapping The mapping to validate & complete.
      *
      * @return mixed[] The validated & completed mapping.

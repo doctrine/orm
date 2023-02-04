@@ -39,7 +39,7 @@ class UpdateCommandTest extends CommandTestCase
         self::assertStringContainsString($expectedMessage, $tester->getErrorOutput());
     }
 
-    public function getCasesForWarningMessageFromCompleteOption(): iterable
+    public static function getCasesForWarningMessageFromCompleteOption(): iterable
     {
         if (! method_exists(SchemaDiff::class, 'toSaveSql')) {
             self::markTestSkipped('This test requires DBAL 3');

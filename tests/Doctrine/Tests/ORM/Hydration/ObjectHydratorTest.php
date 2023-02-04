@@ -35,7 +35,7 @@ use function count;
 class ObjectHydratorTest extends HydrationTestCase
 {
     /** @psalm-return list<array{mixed}> */
-    public function provideDataForUserEntityResult(): array
+    public static function provideDataForUserEntityResult(): array
     {
         return [
             [0],
@@ -44,7 +44,7 @@ class ObjectHydratorTest extends HydrationTestCase
     }
 
     /** @psalm-return list<array{mixed, mixed}> */
-    public function provideDataForMultipleRootEntityResult(): array
+    public static function provideDataForMultipleRootEntityResult(): array
     {
         return [
             [0, 0],
@@ -55,7 +55,7 @@ class ObjectHydratorTest extends HydrationTestCase
     }
 
     /** @psalm-return list<array{mixed}> */
-    public function provideDataForProductEntityResult(): array
+    public static function provideDataForProductEntityResult(): array
     {
         return [
             [0],

@@ -288,7 +288,7 @@ class ExprTest extends OrmTestCase
         self::assertEquals(':groupId MEMBER OF u.groups', (string) $this->expr->isMemberOf(':groupId', 'u.groups'));
     }
 
-    public function provideIterableValue(): Generator
+    public static function provideIterableValue(): Generator
     {
         $gen = static function () {
             yield from [1, 2, 3];
@@ -298,7 +298,7 @@ class ExprTest extends OrmTestCase
         yield 'generator' => [$gen()];
     }
 
-    public function provideLiteralIterableValue(): Generator
+    public static function provideLiteralIterableValue(): Generator
     {
         $gen = static function () {
             yield from ['foo', 'bar'];

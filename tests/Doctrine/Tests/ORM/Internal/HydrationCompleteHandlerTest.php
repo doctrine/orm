@@ -145,7 +145,7 @@ class HydrationCompleteHandlerTest extends TestCase
     }
 
     /** @psalm-return list<array{int}> */
-    public function invocationFlagProvider(): array
+    public static function invocationFlagProvider(): array
     {
         return [
             [ListenersInvoker::INVOKE_LISTENERS],

@@ -19,7 +19,7 @@ use Generator;
 class ParameterTypeInfererTest extends OrmTestCase
 {
     /** @psalm-return Generator<string, array{mixed, (ParameterType::*|ArrayParameterType::*|string)}> */
-    public function providerParameterTypeInferer(): Generator
+    public static function providerParameterTypeInferer(): Generator
     {
         yield 'integer' => [1, Types::INTEGER];
         yield 'string' => ['bar', ParameterType::STRING];

@@ -28,7 +28,7 @@ class GH10387Test extends OrmTestCase
         self::assertNotNull($schema->getTable('root')->getColumn('leaf_class_field'));
     }
 
-    public function classHierachies(): Generator
+    public static function classHierachies(): Generator
     {
         yield 'hierarchy with Entity classes only' => [[GH10387EntitiesOnlyRoot::class, GH10387EntitiesOnlyMiddle::class, GH10387EntitiesOnlyLeaf::class]];
         yield 'MappedSuperclass in the middle of the hierarchy' => [[GH10387MappedSuperclassRoot::class, GH10387MappedSuperclassMiddle::class, GH10387MappedSuperclassLeaf::class]];

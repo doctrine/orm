@@ -20,19 +20,19 @@ class ParserResult
     /**
      * The SQL executor used for executing the SQL.
      */
-    private AbstractSqlExecutor|null $_sqlExecutor = null;
+    private AbstractSqlExecutor|null $sqlExecutor = null;
 
     /**
      * The ResultSetMapping that describes how to map the SQL result set.
      */
-    private ResultSetMapping $_resultSetMapping;
+    private ResultSetMapping $resultSetMapping;
 
     /**
      * The mappings of DQL parameter names/positions to SQL parameter positions.
      *
      * @psalm-var array<string|int, list<int>>
      */
-    private array $_parameterMappings = [];
+    private array $parameterMappings = [];
 
     /**
      * Initializes a new instance of the <tt>ParserResult</tt> class.
@@ -40,7 +40,7 @@ class ParserResult
      */
     public function __construct()
     {
-        $this->_resultSetMapping = new ResultSetMapping();
+        $this->resultSetMapping = new ResultSetMapping();
     }
 
     /**
@@ -50,7 +50,7 @@ class ParserResult
      */
     public function getResultSetMapping(): ResultSetMapping
     {
-        return $this->_resultSetMapping;
+        return $this->resultSetMapping;
     }
 
     /**
@@ -58,7 +58,7 @@ class ParserResult
      */
     public function setResultSetMapping(ResultSetMapping $rsm): void
     {
-        $this->_resultSetMapping = $rsm;
+        $this->resultSetMapping = $rsm;
     }
 
     /**
@@ -66,7 +66,7 @@ class ParserResult
      */
     public function setSqlExecutor(AbstractSqlExecutor $executor): void
     {
-        $this->_sqlExecutor = $executor;
+        $this->sqlExecutor = $executor;
     }
 
     /**
@@ -74,14 +74,14 @@ class ParserResult
      */
     public function getSqlExecutor(): AbstractSqlExecutor
     {
-        if ($this->_sqlExecutor === null) {
+        if ($this->sqlExecutor === null) {
             throw new LogicException(sprintf(
                 'Executor not set yet. Call %s::setSqlExecutor() first.',
                 self::class,
             ));
         }
 
-        return $this->_sqlExecutor;
+        return $this->sqlExecutor;
     }
 
     /**
@@ -90,7 +90,7 @@ class ParserResult
      */
     public function addParameterMapping(string|int $dqlPosition, int $sqlPosition): void
     {
-        $this->_parameterMappings[$dqlPosition][] = $sqlPosition;
+        $this->parameterMappings[$dqlPosition][] = $sqlPosition;
     }
 
     /**
@@ -100,7 +100,7 @@ class ParserResult
      */
     public function getParameterMappings(): array
     {
-        return $this->_parameterMappings;
+        return $this->parameterMappings;
     }
 
     /**
@@ -113,6 +113,6 @@ class ParserResult
      */
     public function getSqlParameterPositions(string|int $dqlPosition): array
     {
-        return $this->_parameterMappings[$dqlPosition];
+        return $this->parameterMappings[$dqlPosition];
     }
 }

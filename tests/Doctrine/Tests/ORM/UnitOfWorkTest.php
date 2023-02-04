@@ -348,7 +348,7 @@ class UnitOfWorkTest extends OrmTestCase
      *
      * @return mixed[][]
      */
-    public function invalidAssociationValuesDataProvider(): array
+    public static function invalidAssociationValuesDataProvider(): array
     {
         return [
             ['foo'],
@@ -370,7 +370,7 @@ class UnitOfWorkTest extends OrmTestCase
     }
 
     /** @psalm-return array<string, array{object, string}> */
-    public function entitiesWithValidIdentifiersProvider()
+    public static function entitiesWithValidIdentifiersProvider(): array
     {
         $emptyString = new EntityWithStringIdentifier();
 
@@ -428,7 +428,7 @@ class UnitOfWorkTest extends OrmTestCase
     }
 
     /** @psalm-return array<string, array{object, array<string, mixed>}> */
-    public function entitiesWithInvalidIdentifiersProvider(): array
+    public static function entitiesWithInvalidIdentifiersProvider(): array
     {
         $firstNullString = new EntityWithCompositeStringIdentifier();
 

@@ -200,7 +200,7 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
      * Generates a string of currently query
      *
      * @param string[]|Criteria $criteria
-     * @param string[]          $orderBy
+     * @param string[]|null     $orderBy
      */
     protected function getHash(
         string $query,

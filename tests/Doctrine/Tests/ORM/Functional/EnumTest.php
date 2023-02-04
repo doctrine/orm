@@ -382,7 +382,7 @@ EXCEPTION
     }
 
     /** @return array<string, array{class-string}> */
-    public function provideCardClasses(): array
+    public static function provideCardClasses(): array
     {
         return [
             Card::class => [Card::class],

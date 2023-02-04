@@ -2166,7 +2166,7 @@ class SelectSqlGenerationTest extends OrmTestCase
     }
 
     /** @psalm-return list<array{string}> */
-    public function mathematicOperatorsProvider(): array
+    public static function mathematicOperatorsProvider(): array
     {
         return [['+'], ['-'], ['*'], ['/']];
     }

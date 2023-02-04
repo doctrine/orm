@@ -76,7 +76,7 @@ class ParserTest extends OrmTestCase
     }
 
     /** @psalm-return list<array{int, string}> */
-    public function validMatches()
+    public static function validMatches(): array
     {
         /*
          * This only covers the special case handling in the Parser that some
@@ -97,7 +97,7 @@ class ParserTest extends OrmTestCase
     }
 
     /** @psalm-return list<array{int, string}> */
-    public function invalidMatches(): array
+    public static function invalidMatches(): array
     {
         return [
             [TokenType::T_DOT, 'ALL'], // ALL is a terminal string (reserved keyword) and also possibly an identifier

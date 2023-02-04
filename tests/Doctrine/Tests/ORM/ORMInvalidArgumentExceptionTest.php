@@ -7,16 +7,14 @@ namespace Doctrine\Tests\ORM;
 use Doctrine\ORM\ORMInvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 use stdClass;
-use Stringable;
 
 use function spl_object_id;
-use function uniqid;
 
 /** @covers \Doctrine\ORM\ORMInvalidArgumentException */
 class ORMInvalidArgumentExceptionTest extends TestCase
 {
     /** @psalm-return list<array{mixed, string}> */
-    public function invalidEntityNames(): array
+    public static function invalidEntityNames(): array
     {
         return [
             [null, 'Entity name must be a string, null given'],
@@ -36,29 +34,31 @@ class ORMInvalidArgumentExceptionTest extends TestCase
         self::assertSame($expectedMessage, $exception->getMessage());
     }
 
-    public function newEntitiesFoundThroughRelationshipsErrorMessages(): array
+    public static function newEntitiesFoundThroughRelationshipsErrorMessages(): array
     {
-        $stringEntity3 = uniqid('entity3', true);
-        $entity1       = new stdClass();
-        $entity2       = new stdClass();
-        $entity3       = $this->createMock(Stringable::class);
-        $association1  = [
+        $entity1      = new stdClass();
+        $entity2      = new stdClass();
+        $entity3      = new class {
+            public function __toString(): string
+            {
+                return 'ThisIsAStringRepresentationOfEntity3';
+            }
+        };
+        $association1 = [
             'sourceEntity' => 'foo1',
             'fieldName'    => 'bar1',
             'targetEntity' => 'baz1',
         ];
-        $association2  = [
+        $association2 = [
             'sourceEntity' => 'foo2',
             'fieldName'    => 'bar2',
             'targetEntity' => 'baz2',
         ];
-        $association3  = [
+        $association3 = [
             'sourceEntity' => 'foo3',
             'fieldName'    => 'bar3',
             'targetEntity' => 'baz3',
         ];
-
-        $entity3->method('__toString')->willReturn($stringEntity3);
 
         return [
             'one entity found' => [
@@ -108,7 +108,7 @@ class ORMInvalidArgumentExceptionTest extends TestCase
                     ],
                 ],
                 'A new entity was found through the relationship \'foo3#bar3\' that was not configured to cascade '
-                . 'persist operations for entity: ' . $stringEntity3
+                . 'persist operations for entity: ThisIsAStringRepresentationOfEntity3'
                 . '. To solve this issue: Either explicitly call EntityManager#persist() on this unknown entity '
                 . 'or configure cascade persist this association in the mapping for example '
                 . '@ManyToOne(..,cascade={"persist"}).',

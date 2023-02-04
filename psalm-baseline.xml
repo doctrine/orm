@@ -273,8 +273,8 @@
       <code>$baseElement</code>
     </ReferenceReusedFromConfusingScope>
     <UnsupportedReferenceUsage>
-      <code>$baseElement =&amp; $this-&gt;_resultPointers[$parent][key($first)]</code>
-      <code>$this-&gt;_resultPointers[$dqlAlias] =&amp; $coll[array_key_last($coll)]</code>
+      <code>$baseElement =&amp; $this-&gt;resultPointers[$parent][key($first)]</code>
+      <code>$this-&gt;resultPointers[$dqlAlias] =&amp; $coll[array_key_last($coll)]</code>
     </UnsupportedReferenceUsage>
   </file>
   <file src="lib/Doctrine/ORM/Internal/Hydration/ObjectHydrator.php">
@@ -335,11 +335,6 @@
       <code>$mapping</code>
       <code>$overrideMapping</code>
     </InvalidArgument>
-    <InvalidDocblock>
-      <code>protected function _validateAndCompleteAssociationMapping(array $mapping)</code>
-      <code>protected function _validateAndCompleteManyToManyMapping(array $mapping)</code>
-      <code>protected function _validateAndCompleteOneToOneMapping(array $mapping)</code>
-    </InvalidDocblock>
     <InvalidNullableReturnType>
       <code>getReflectionClass</code>
       <code>string</code>
@@ -351,23 +346,87 @@
     </InvalidPropertyAssignmentValue>
     <InvalidReturnStatement>
       <code>$mapping</code>
+      <code>$mapping</code>
+      <code>$mapping</code>
+      <code>$mapping</code>
     </InvalidReturnStatement>
     <InvalidReturnType>
+      <code>AssociationMapping</code>
       <code>FieldMapping</code>
+      <code>array{
+     *                   mappedBy: mixed,
+     *                   inversedBy: mixed,
+     *                   isOwningSide: bool,
+     *                   sourceEntity: string,
+     *                   targetEntity: string,
+     *                   fieldName: mixed,
+     *                   fetch: int|mixed,
+     *                   cascade: array&lt;array-key,string&gt;,
+     *                   isCascadeRemove: bool,
+     *                   isCascadePersist: bool,
+     *                   isCascadeRefresh: bool,
+     *                   isCascadeMerge: bool,
+     *                   isCascadeDetach: bool,
+     *                   orphanRemoval: bool
+     *               }</code>
+      <code>array{
+     *      mappedBy: mixed|null,
+     *      inversedBy: mixed|null,
+     *      isOwningSide: bool,
+     *      sourceEntity: class-string,
+     *      targetEntity: string,
+     *      fieldName: mixed,
+     *      fetch: mixed,
+     *      cascade: array&lt;string&gt;,
+     *      isCascadeRemove: bool,
+     *      isCascadePersist: bool,
+     *      isCascadeRefresh: bool,
+     *      isCascadeMerge: bool,
+     *      isCascadeDetach: bool,
+     *      type: int,
+     *      originalField: string,
+     *      originalClass: class-string,
+     *      joinColumns?: array{0: array{name: string, referencedColumnName: string}}|mixed,
+     *      id?: mixed,
+     *      sourceToTargetKeyColumns?: array&lt;string, string&gt;,
+     *      joinColumnFieldNames?: array&lt;string, string&gt;,
+     *      targetToSourceKeyColumns?: array&lt;string, string&gt;,
+     *      orphanRemoval: bool
+     * }</code>
     </InvalidReturnType>
     <LessSpecificReturnStatement>
       <code>$cache</code>
       <code>$className</code>
       <code>$className</code>
       <code>$columnNames</code>
+      <code>$mapping</code>
       <code>$this-&gt;namespace . '\\' . $className</code>
     </LessSpecificReturnStatement>
-    <MissingReturnType>
-      <code>_validateAndCompleteAssociationMapping</code>
-      <code>_validateAndCompleteManyToManyMapping</code>
-      <code>_validateAndCompleteOneToOneMapping</code>
-    </MissingReturnType>
     <MoreSpecificReturnType>
+      <code>array{
+     *      mappedBy: mixed,
+     *      inversedBy: mixed,
+     *      isOwningSide: bool,
+     *      sourceEntity: class-string,
+     *      targetEntity: string,
+     *      fieldName: mixed,
+     *      fetch: mixed,
+     *      cascade: array&lt;string&gt;,
+     *      isCascadeRemove: bool,
+     *      isCascadePersist: bool,
+     *      isCascadeRefresh: bool,
+     *      isCascadeMerge: bool,
+     *      isCascadeDetach: bool,
+     *      type: int,
+     *      originalField: string,
+     *      originalClass: class-string,
+     *      joinTable?: array{inverseJoinColumns: mixed}|mixed,
+     *      joinTableColumns?: list&lt;mixed&gt;,
+     *      isOnDeleteCascade?: true,
+     *      relationToSourceKeyColumns?: array,
+     *      relationToTargetKeyColumns?: array,
+     *      orphanRemoval: bool
+     * }</code>
       <code>array{usage: int, region: string|null}</code>
       <code>class-string|null</code>
       <code>list&lt;string&gt;</code>

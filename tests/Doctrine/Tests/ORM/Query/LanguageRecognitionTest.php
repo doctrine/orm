@@ -89,7 +89,7 @@ class LanguageRecognitionTest extends OrmTestCase
     }
 
     /** @psalm-return list<array{string}> */
-    public function invalidDQL(): array
+    public static function invalidDQL(): array
     {
         return [
 
