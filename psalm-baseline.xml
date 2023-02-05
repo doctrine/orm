@@ -227,11 +227,6 @@
       <code>list&lt;T&gt;</code>
     </MoreSpecificReturnType>
   </file>
-  <file src="lib/Doctrine/ORM/Event/OnClassMetadataNotFoundEventArgs.php">
-    <RedundantCastGivenDocblockType>
-      <code>(string) $className</code>
-    </RedundantCastGivenDocblockType>
-  </file>
   <file src="lib/Doctrine/ORM/Id/AssignedGenerator.php">
     <PossiblyNullArgument>
       <code>$entity</code>
