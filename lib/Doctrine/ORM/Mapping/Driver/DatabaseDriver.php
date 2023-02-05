@@ -25,7 +25,6 @@ use function array_merge;
 use function assert;
 use function count;
 use function current;
-use function get_class;
 use function in_array;
 use function preg_replace;
 use function sort;
@@ -52,56 +51,42 @@ class DatabaseDriver implements MappingDriver
      */
     private const OBJECT = 'object';
 
-    /** @var AbstractSchemaManager */
-    private $sm;
-
     /** @var array<string,Table>|null */
-    private $tables = null;
+    private array|null $tables = null;
 
     /** @var array<class-string, string> */
-    private $classToTableNames = [];
+    private array $classToTableNames = [];
 
     /** @psalm-var array<string, Table> */
-    private $manyToManyTables = [];
+    private array $manyToManyTables = [];
 
     /** @var mixed[] */
-    private $classNamesForTables = [];
+    private array $classNamesForTables = [];
 
     /** @var mixed[] */
-    private $fieldNamesForColumns = [];
+    private array $fieldNamesForColumns = [];
 
     /**
      * The namespace for the generated entities.
-     *
-     * @var string|null
      */
-    private $namespace;
+    private string|null $namespace = null;
 
-    /** @var Inflector */
-    private $inflector;
+    private Inflector $inflector;
 
-    public function __construct(AbstractSchemaManager $schemaManager)
+    public function __construct(private readonly AbstractSchemaManager $sm)
     {
-        $this->sm        = $schemaManager;
         $this->inflector = InflectorFactory::create()->build();
     }
 
     /**
      * Set the namespace for the generated entities.
-     *
-     * @param string $namespace
-     *
-     * @return void
      */
-    public function setNamespace($namespace)
+    public function setNamespace(string $namespace): void
     {
         $this->namespace = $namespace;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function isTransient($className)
+    public function isTransient(string $className): bool
     {
         return true;
     }
@@ -109,7 +94,7 @@ class DatabaseDriver implements MappingDriver
     /**
      * {@inheritDoc}
      */
-    public function getAllClassNames()
+    public function getAllClassNames(): array
     {
         $this->reverseEngineerMappingFromDatabase();
 
@@ -118,27 +103,16 @@ class DatabaseDriver implements MappingDriver
 
     /**
      * Sets class name for a table.
-     *
-     * @param string $tableName
-     * @param string $className
-     *
-     * @return void
      */
-    public function setClassNameForTable($tableName, $className)
+    public function setClassNameForTable(string $tableName, string $className): void
     {
         $this->classNamesForTables[$tableName] = $className;
     }
 
     /**
      * Sets field name for a column on a specific table.
-     *
-     * @param string $tableName
-     * @param string $columnName
-     * @param string $fieldName
-     *
-     * @return void
      */
-    public function setFieldNameForColumn($tableName, $columnName, $fieldName)
+    public function setFieldNameForColumn(string $tableName, string $columnName, string $fieldName): void
     {
         $this->fieldNamesForColumns[$tableName][$columnName] = $fieldName;
     }
@@ -150,10 +124,8 @@ class DatabaseDriver implements MappingDriver
      * @param Table[] $manyToManyTables
      * @psalm-param list<Table> $entityTables
      * @psalm-param list<Table> $manyToManyTables
-     *
-     * @return void
      */
-    public function setTables($entityTables, $manyToManyTables)
+    public function setTables(array $entityTables, array $manyToManyTables): void
     {
         $this->tables = $this->manyToManyTables = $this->classToTableNames = [];
 
@@ -182,14 +154,14 @@ class DatabaseDriver implements MappingDriver
      *
      * @template T of object
      */
-    public function loadMetadataForClass($className, PersistenceClassMetadata $metadata)
+    public function loadMetadataForClass(string $className, PersistenceClassMetadata $metadata): void
     {
         if (! $metadata instanceof ClassMetadata) {
             Deprecation::trigger(
                 'doctrine/orm',
                 'https://github.com/doctrine/orm/pull/249',
                 'Passing an instance of %s to %s is deprecated, please pass a ClassMetadata instance instead.',
-                get_class($metadata),
+                $metadata::class,
                 __METHOD__,
                 ClassMetadata::class,
             );
@@ -457,10 +429,8 @@ class DatabaseDriver implements MappingDriver
 
     /**
      * Build to one (one to one, many to one) association mapping from class metadata.
-     *
-     * @return void
      */
-    private function buildToOneAssociationMappings(ClassMetadata $metadata)
+    private function buildToOneAssociationMappings(ClassMetadata $metadata): void
     {
         assert($this->tables !== null);
 
