@@ -22,7 +22,7 @@ use function reset;
  * Returning the type instead of a "real" SQL statement is a slight hack. However, it has the
  * benefit that the DQL -> root entity id type resolution can be cached in the query cache.
  */
-class RootTypeWalker extends SqlWalker
+final class RootTypeWalker extends SqlWalker
 {
     public function walkSelectStatement(AST\SelectStatement $AST): string
     {
