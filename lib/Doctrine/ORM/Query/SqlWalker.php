@@ -11,6 +11,8 @@ use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\ManyToOneAssociationMapping;
+use Doctrine\ORM\Mapping\OneToOneAssociationMapping;
 use Doctrine\ORM\Mapping\QuoteStrategy;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\Query;
@@ -597,6 +599,7 @@ class SqlWalker
                 }
 
                 $assoc = $class->associationMappings[$fieldName];
+                assert($assoc instanceof OneToOneAssociationMapping || $assoc instanceof ManyToOneAssociationMapping);
 
                 if (! $assoc['isOwningSide']) {
                     throw QueryException::associationPathInverseSideNotSupported($pathExpr);
@@ -798,6 +801,7 @@ class SqlWalker
                 }
 
                 $association = $class->associationMappings[$fieldName];
+                assert($association instanceof OneToOneAssociationMapping || $association instanceof ManyToOneAssociationMapping);
 
                 if (! $association['isOwningSide']) {
                     throw QueryException::associationPathInverseSideNotSupported($pathExpression);

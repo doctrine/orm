@@ -15,6 +15,7 @@ use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Id\AbstractIdGenerator;
 use Doctrine\Persistence\Mapping\ClassMetadata as PersistenceClassMetadata;
 use Doctrine\Persistence\Mapping\ReflectionService;
+use Exception;
 use InvalidArgumentException;
 use LogicException;
 use ReflectionClass;
@@ -1334,7 +1335,26 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
             throw MappingException::missingTargetEntity($mapping['fieldName']);
         }
 
-        $mapping = AssociationMapping::fromMappingArray($mapping);
+        switch ($mapping['type']) {
+            case self::ONE_TO_ONE:
+                $mapping = OneToOneAssociationMapping::fromMappingArray($mapping);
+                break;
+
+            case self::MANY_TO_ONE:
+                $mapping = ManyToOneAssociationMapping::fromMappingArray($mapping);
+                break;
+
+            case self::ONE_TO_MANY:
+                $mapping = OneToManyAssociationMapping::fromMappingArray($mapping);
+                break;
+
+            case self::MANY_TO_MANY:
+                $mapping = ManyToManyAssociationMapping::fromMappingArray($mapping);
+                break;
+
+            default:
+                throw new Exception('woops');
+        }
 
         // Mandatory and optional attributes for either side
         if (! $mapping['mappedBy']) {
@@ -1392,6 +1412,7 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
     protected function _validateAndCompleteOneToOneMapping(array $mapping): AssociationMapping
     {
         $mapping = $this->_validateAndCompleteAssociationMapping($mapping);
+        assert($mapping instanceof OneToOneAssociationMapping || $mapping instanceof ManyToOneAssociationMapping);
 
         if (isset($mapping['joinColumns']) && $mapping['joinColumns']) {
             $mapping['isOwningSide'] = true;
@@ -1413,6 +1434,7 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
             assert($mapping->joinColumns !== null);
             foreach ($mapping->joinColumns as $joinColumn) {
                 if ($mapping['type'] === self::ONE_TO_ONE && ! $this->isInheritanceTypeSingleTable()) {
+                    assert($mapping instanceof OneToOneAssociationMapping);
                     if (count($mapping['joinColumns']) === 1) {
                         if (empty($mapping['id'])) {
                             $joinColumn['unique'] = true;
@@ -1482,6 +1504,7 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
     protected function _validateAndCompleteOneToManyMapping(array $mapping): AssociationMapping
     {
         $mapping = $this->_validateAndCompleteAssociationMapping($mapping);
+        assert($mapping instanceof OneToManyAssociationMapping);
 
         // OneToMany-side MUST be inverse (must have mappedBy)
         if (! isset($mapping['mappedBy'])) {
@@ -1508,6 +1531,7 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
     protected function _validateAndCompleteManyToManyMapping(array $mapping): AssociationMapping
     {
         $mapping = $this->_validateAndCompleteAssociationMapping($mapping);
+        assert($mapping instanceof ManyToManyAssociationMapping);
 
         if ($mapping['isOwningSide']) {
             // owning side MUST have a join table
@@ -1527,7 +1551,6 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
                 && (! (isset($mapping['joinTable']['joinColumns']) || isset($mapping['joinTable']['inverseJoinColumns'])));
 
             if (! isset($mapping['joinTable']['joinColumns'])) {
-                assert(isset($mapping->joinTable));
                 $mapping->joinTable->joinColumns = [
                     JoinColumnData::fromMappingArray([
                         'name' => $this->namingStrategy->joinKeyColumnName($mapping['sourceEntity'], $selfReferencingEntityWithoutJoinColumns ? 'source' : null),
@@ -1549,7 +1572,6 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
 
             $mapping['joinTableColumns'] = [];
 
-            assert($mapping->joinTable !== null);
             assert($mapping->joinTable['joinColumns'] !== null);
             foreach ($mapping->joinTable['joinColumns'] as $joinColumn) {
                 if (empty($joinColumn['name'])) {
@@ -1912,24 +1934,25 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
             $mapping['fetch'] = $overrideMapping['fetch'];
         }
 
-        $mapping['joinColumnFieldNames']       = null;
-        $mapping['joinTableColumns']           = null;
-        $mapping['sourceToTargetKeyColumns']   = null;
-        $mapping['relationToSourceKeyColumns'] = null;
-        $mapping['relationToTargetKeyColumns'] = null;
+        $mapping['joinColumnFieldNames'] = null;
+        $mapping['joinTableColumns']     = null;
 
         switch ($mapping['type']) {
             case self::ONE_TO_ONE:
-                $mapping = $this->_validateAndCompleteOneToOneMapping($mapping);
+                $mapping['sourceToTargetKeyColumns'] = null;
+                $mapping                             = $this->_validateAndCompleteOneToOneMapping($mapping);
                 break;
             case self::ONE_TO_MANY:
                 $mapping = $this->_validateAndCompleteOneToManyMapping($mapping);
                 break;
             case self::MANY_TO_ONE:
-                $mapping = $this->_validateAndCompleteOneToOneMapping($mapping);
+                $mapping['sourceToTargetKeyColumns'] = null;
+                $mapping                             = $this->_validateAndCompleteOneToOneMapping($mapping);
                 break;
             case self::MANY_TO_MANY:
-                $mapping = $this->_validateAndCompleteManyToManyMapping($mapping);
+                $mapping['relationToSourceKeyColumns'] = null;
+                $mapping['relationToTargetKeyColumns'] = null;
+                $mapping                               = $this->_validateAndCompleteManyToManyMapping($mapping);
                 break;
         }
 

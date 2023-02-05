@@ -11,6 +11,8 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Internal\SQLResultCasing;
 use Doctrine\ORM\Mapping\AssociationMapping;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\ManyToOneAssociationMapping;
+use Doctrine\ORM\Mapping\OneToOneAssociationMapping;
 use Doctrine\ORM\Utility\PersisterHelper;
 
 use function array_combine;
@@ -480,6 +482,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
             if (isset($this->class->associationMappings[$name])) {
                 $assoc = $this->class->associationMappings[$name];
                 if ($assoc->type & ClassMetadata::TO_ONE && $assoc['isOwningSide']) {
+                    assert($assoc instanceof OneToOneAssociationMapping || $assoc instanceof ManyToOneAssociationMapping);
                     assert($assoc->targetToSourceKeyColumns !== null);
                     foreach ($assoc->targetToSourceKeyColumns as $sourceCol) {
                         $columns[] = $sourceCol;

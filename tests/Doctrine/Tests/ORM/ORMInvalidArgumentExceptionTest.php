@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM;
 
 use Doctrine\ORM\Mapping\AssociationMapping;
+use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\ORMInvalidArgumentException;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -51,16 +52,19 @@ class ORMInvalidArgumentExceptionTest extends TestCase
             'sourceEntity' => 'foo1',
             'fieldName'    => 'bar1',
             'targetEntity' => 'baz1',
+            'type' => ClassMetadata::ONE_TO_MANY,
         ]);
         $association2 = AssociationMapping::fromMappingArray([
             'sourceEntity' => 'foo2',
             'fieldName'    => 'bar2',
             'targetEntity' => 'baz2',
+            'type' => ClassMetadata::ONE_TO_MANY,
         ]);
         $association3 = AssociationMapping::fromMappingArray([
             'sourceEntity' => 'foo3',
             'fieldName'    => 'bar3',
             'targetEntity' => 'baz3',
+            'type' => ClassMetadata::ONE_TO_MANY,
         ]);
 
         return [

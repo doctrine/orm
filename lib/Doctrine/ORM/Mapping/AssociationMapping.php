@@ -5,12 +5,14 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Mapping;
 
 use ArrayAccess;
+use Exception;
 
+use function assert;
 use function in_array;
 use function property_exists;
 
 /** @template-implements ArrayAccess<string, mixed> */
-final class AssociationMapping implements ArrayAccess
+class AssociationMapping implements ArrayAccess
 {
     /**
      * required for bidirectional associations
@@ -36,37 +38,11 @@ final class AssociationMapping implements ArrayAccess
     public array|null $cascade = null;
 
     /**
-     * one-to-many/many-to-many only
-     * A map of field names (of the target entity) to sorting directions
-     *
-     * @var array<string, 'asc'|'desc'>
-     */
-    public array|null $orderBy = null;
-
-    /**
      * The fetching strategy to use for the association, usually defaults to FETCH_LAZY.
      *
      * @var ClassMetadata::FETCH_EAGER|ClassMetadata::FETCH_LAZY
      */
     public int|null $fetch = null;
-
-    /**
-     * many-to-many only
-     * Specification of the join table and its join columns (foreign keys).
-     * Only valid for many-to-many mappings. Note that one-to-many associations
-     * can be mapped through a join table by simply mapping the association as
-     * many-to-many with a unique constraint on the join table.
-     */
-    public JoinTableMapping|null $joinTable = null;
-
-    /**
-     * to-many only
-     * Specification of a field on target-entity that is used to index the
-     * collection by. This field HAS to be either the primary key or a unique
-     * column. Otherwise the collection does not contain all the entities that
-     * are actually related.
-     */
-    public string|null $indexBy = null;
 
     /**
      * This is set when the association is inherited by this class from another
@@ -122,15 +98,6 @@ final class AssociationMapping implements ArrayAccess
 
     public bool|null $orphanRemoval = null;
 
-    public array|null $relationToSourceKeyColumns = null;
-    public array|null $relationToTargetKeyColumns = null;
-
-    /** @var array<string, string> */
-    public array|null $sourceToTargetKeyColumns = null;
-
-    /** @var array<string, string> */
-    public array|null $targetToSourceKeyColumns = null;
-
     public bool|null $unique = null;
 
     /**
@@ -150,7 +117,7 @@ final class AssociationMapping implements ArrayAccess
      *                                   be the same as the namespace of the
      *                                   source entity.
      */
-    public function __construct(
+    final public function __construct(
         public int $type,
         public string $fieldName,
         public string $sourceEntity,
@@ -169,7 +136,7 @@ final class AssociationMapping implements ArrayAccess
      */
     public static function fromMappingArray(array $mappingArray): self
     {
-        $mapping = new self(
+        $mapping = new static(
             $mappingArray['type'],
             $mappingArray['fieldName'],
             $mappingArray['sourceEntity'],
@@ -196,6 +163,7 @@ final class AssociationMapping implements ArrayAccess
             }
 
             if ($key === 'joinTable') {
+                assert($mapping instanceof ManyToManyAssociationMapping);
                 if ($value === [] || $value === null) {
                     continue;
                 }
@@ -207,6 +175,8 @@ final class AssociationMapping implements ArrayAccess
 
             if (property_exists($mapping, $key)) {
                 $mapping->$key = $value;
+            } else {
+                throw new Exception('Unknown property ' . $key . ' on class ' . static::class);
             }
         }
 
@@ -267,10 +237,6 @@ final class AssociationMapping implements ArrayAccess
             }
 
             $array['joinColumns'] = $joinColumns;
-        }
-
-        if ($array['joinTable'] !== null) {
-            $array['joinTable'] = $array['joinTable']->toArray();
         }
 
         return $array;
