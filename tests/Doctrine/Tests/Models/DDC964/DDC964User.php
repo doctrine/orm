@@ -134,7 +134,7 @@ class DDC964User
                 'fieldName'      => 'address',
                 'targetEntity'   => 'DDC964Address',
                 'cascade'        => ['persist','merge'],
-                'joinColumn'     => ['name' => 'address_id', 'referencedColumnMame' => 'id'],
+                'joinColumns'    => [['name' => 'address_id', 'referencedColumnMame' => 'id']],
             ]
         );
 
