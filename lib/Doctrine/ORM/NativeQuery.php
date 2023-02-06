@@ -60,7 +60,7 @@ final class NativeQuery extends AbstractQuery
             $this->sql,
             $parameters,
             $types,
-            $this->_queryCacheProfile,
+            $this->queryCacheProfile,
         );
     }
 }

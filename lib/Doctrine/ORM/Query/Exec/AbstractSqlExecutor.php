@@ -19,7 +19,7 @@ use Doctrine\DBAL\Types\Type;
 abstract class AbstractSqlExecutor
 {
     /** @var list<string>|string */
-    protected array|string $_sqlStatements;
+    protected array|string $sqlStatements;
 
     protected QueryCacheProfile|null $queryCacheProfile;
 
@@ -30,7 +30,7 @@ abstract class AbstractSqlExecutor
      */
     public function getSqlStatements(): array|string
     {
-        return $this->_sqlStatements;
+        return $this->sqlStatements;
     }
 
     public function setQueryCacheProfile(QueryCacheProfile $qcp): void

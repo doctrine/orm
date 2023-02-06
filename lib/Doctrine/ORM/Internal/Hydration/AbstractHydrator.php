@@ -34,54 +34,52 @@ abstract class AbstractHydrator
     /**
      * The ResultSetMapping.
      */
-    protected ResultSetMapping|null $_rsm = null;
+    protected ResultSetMapping|null $rsm = null;
 
     /**
      * The dbms Platform instance.
      */
-    protected AbstractPlatform $_platform;
+    protected AbstractPlatform $platform;
 
     /**
      * The UnitOfWork of the associated EntityManager.
      */
-    protected UnitOfWork $_uow;
+    protected UnitOfWork $uow;
 
     /**
      * Local ClassMetadata cache to avoid going to the EntityManager all the time.
      *
      * @var array<string, ClassMetadata<object>>
      */
-    protected array $_metadataCache = [];
+    protected array $metadataCache = [];
 
     /**
      * The cache used during row-by-row hydration.
      *
      * @var array<string, mixed[]|null>
      */
-    protected array $_cache = [];
+    protected array $cache = [];
 
     /**
      * The statement that provides the data to hydrate.
      */
-    protected Result|null $_stmt = null;
+    protected Result|null $stmt = null;
 
     /**
      * The query hints.
      *
      * @var array<string, mixed>
      */
-    protected array $_hints = [];
-
-    protected EntityManagerInterface $_em;
+    protected array $hints = [];
 
     /**
      * Initializes a new instance of a class derived from <tt>AbstractHydrator</tt>.
      */
     public function __construct(protected EntityManagerInterface $em)
     {
-        $this->_em       = $em;
-        $this->_platform = $em->getConnection()->getDatabasePlatform();
-        $this->_uow      = $em->getUnitOfWork();
+        $this->em       = $em;
+        $this->platform = $em->getConnection()->getDatabasePlatform();
+        $this->uow      = $em->getUnitOfWork();
     }
 
     /**
@@ -95,11 +93,11 @@ abstract class AbstractHydrator
      */
     final public function toIterable(Result $stmt, ResultSetMapping $resultSetMapping, array $hints = []): Generator
     {
-        $this->_stmt  = $stmt;
-        $this->_rsm   = $resultSetMapping;
-        $this->_hints = $hints;
+        $this->stmt  = $stmt;
+        $this->rsm   = $resultSetMapping;
+        $this->hints = $hints;
 
-        $evm = $this->_em->getEventManager();
+        $evm = $this->em->getEventManager();
 
         $evm->addEventListener([Events::onClear], $this);
 
@@ -133,20 +131,20 @@ abstract class AbstractHydrator
 
     final protected function statement(): Result
     {
-        if ($this->_stmt === null) {
+        if ($this->stmt === null) {
             throw new LogicException('Uninitialized _stmt property');
         }
 
-        return $this->_stmt;
+        return $this->stmt;
     }
 
     final protected function resultSetMapping(): ResultSetMapping
     {
-        if ($this->_rsm === null) {
+        if ($this->rsm === null) {
             throw new LogicException('Uninitialized _rsm property');
         }
 
-        return $this->_rsm;
+        return $this->rsm;
     }
 
     /**
@@ -156,11 +154,11 @@ abstract class AbstractHydrator
      */
     public function hydrateAll(Result $stmt, ResultSetMapping $resultSetMapping, array $hints = []): mixed
     {
-        $this->_stmt  = $stmt;
-        $this->_rsm   = $resultSetMapping;
-        $this->_hints = $hints;
+        $this->stmt  = $stmt;
+        $this->rsm   = $resultSetMapping;
+        $this->hints = $hints;
 
-        $this->_em->getEventManager()->addEventListener([Events::onClear], $this);
+        $this->em->getEventManager()->addEventListener([Events::onClear], $this);
         $this->prepare();
 
         try {
@@ -196,13 +194,13 @@ abstract class AbstractHydrator
     {
         $this->statement()->free();
 
-        $this->_stmt          = null;
-        $this->_rsm           = null;
-        $this->_cache         = [];
-        $this->_metadataCache = [];
+        $this->stmt          = null;
+        $this->rsm           = null;
+        $this->cache         = [];
+        $this->metadataCache = [];
 
         $this
-            ->_em
+            ->em
             ->getEventManager()
             ->removeEventListener([Events::onClear], $this);
     }
@@ -274,7 +272,7 @@ abstract class AbstractHydrator
                     $argIndex = $cacheKeyInfo['argIndex'];
                     $objIndex = $cacheKeyInfo['objIndex'];
                     $type     = $cacheKeyInfo['type'];
-                    $value    = $type->convertToPHPValue($value, $this->_platform);
+                    $value    = $type->convertToPHPValue($value, $this->platform);
 
                     if ($value !== null && isset($cacheKeyInfo['enumType'])) {
                         $value = $this->buildEnum($value, $cacheKeyInfo['enumType']);
@@ -286,7 +284,7 @@ abstract class AbstractHydrator
 
                 case isset($cacheKeyInfo['isScalar']):
                     $type  = $cacheKeyInfo['type'];
-                    $value = $type->convertToPHPValue($value, $this->_platform);
+                    $value = $type->convertToPHPValue($value, $this->platform);
 
                     if ($value !== null && isset($cacheKeyInfo['enumType'])) {
                         $value = $this->buildEnum($value, $cacheKeyInfo['enumType']);
@@ -318,7 +316,7 @@ abstract class AbstractHydrator
                     }
 
                     $rowData['data'][$dqlAlias][$fieldName] = $type
-                        ? $type->convertToPHPValue($value, $this->_platform)
+                        ? $type->convertToPHPValue($value, $this->platform)
                         : $value;
 
                     if ($rowData['data'][$dqlAlias][$fieldName] !== null && isset($cacheKeyInfo['enumType'])) {
@@ -367,7 +365,7 @@ abstract class AbstractHydrator
             // erroneous behavior exists since 2.0 and we're forced to keep compatibility.
             if (! isset($cacheKeyInfo['isScalar'])) {
                 $type  = $cacheKeyInfo['type'];
-                $value = $type ? $type->convertToPHPValue($value, $this->_platform) : $value;
+                $value = $type ? $type->convertToPHPValue($value, $this->platform) : $value;
 
                 $fieldName = $cacheKeyInfo['dqlAlias'] . '_' . $fieldName;
             }
@@ -388,89 +386,89 @@ abstract class AbstractHydrator
      */
     protected function hydrateColumnInfo(string $key): array|null
     {
-        if (isset($this->_cache[$key])) {
-            return $this->_cache[$key];
+        if (isset($this->cache[$key])) {
+            return $this->cache[$key];
         }
 
         switch (true) {
             // NOTE: Most of the times it's a field mapping, so keep it first!!!
-            case isset($this->_rsm->fieldMappings[$key]):
-                $classMetadata = $this->getClassMetadata($this->_rsm->declaringClasses[$key]);
-                $fieldName     = $this->_rsm->fieldMappings[$key];
+            case isset($this->rsm->fieldMappings[$key]):
+                $classMetadata = $this->getClassMetadata($this->rsm->declaringClasses[$key]);
+                $fieldName     = $this->rsm->fieldMappings[$key];
                 $fieldMapping  = $classMetadata->fieldMappings[$fieldName];
-                $ownerMap      = $this->_rsm->columnOwnerMap[$key];
+                $ownerMap      = $this->rsm->columnOwnerMap[$key];
                 $columnInfo    = [
                     'isIdentifier' => in_array($fieldName, $classMetadata->identifier, true),
                     'fieldName'    => $fieldName,
                     'type'         => Type::getType($fieldMapping['type']),
                     'dqlAlias'     => $ownerMap,
-                    'enumType'     => $this->_rsm->enumMappings[$key] ?? null,
+                    'enumType'     => $this->rsm->enumMappings[$key] ?? null,
                 ];
 
                 // the current discriminator value must be saved in order to disambiguate fields hydration,
                 // should there be field name collisions
-                if ($classMetadata->parentClasses && isset($this->_rsm->discriminatorColumns[$ownerMap])) {
-                    return $this->_cache[$key] = array_merge(
+                if ($classMetadata->parentClasses && isset($this->rsm->discriminatorColumns[$ownerMap])) {
+                    return $this->cache[$key] = array_merge(
                         $columnInfo,
                         [
-                            'discriminatorColumn' => $this->_rsm->discriminatorColumns[$ownerMap],
+                            'discriminatorColumn' => $this->rsm->discriminatorColumns[$ownerMap],
                             'discriminatorValue'  => $classMetadata->discriminatorValue,
                             'discriminatorValues' => $this->getDiscriminatorValues($classMetadata),
                         ],
                     );
                 }
 
-                return $this->_cache[$key] = $columnInfo;
+                return $this->cache[$key] = $columnInfo;
 
-            case isset($this->_rsm->newObjectMappings[$key]):
+            case isset($this->rsm->newObjectMappings[$key]):
                 // WARNING: A NEW object is also a scalar, so it must be declared before!
-                $mapping = $this->_rsm->newObjectMappings[$key];
+                $mapping = $this->rsm->newObjectMappings[$key];
 
-                return $this->_cache[$key] = [
+                return $this->cache[$key] = [
                     'isScalar'             => true,
                     'isNewObjectParameter' => true,
-                    'fieldName'            => $this->_rsm->scalarMappings[$key],
-                    'type'                 => Type::getType($this->_rsm->typeMappings[$key]),
+                    'fieldName'            => $this->rsm->scalarMappings[$key],
+                    'type'                 => Type::getType($this->rsm->typeMappings[$key]),
                     'argIndex'             => $mapping['argIndex'],
                     'objIndex'             => $mapping['objIndex'],
                     'class'                => new ReflectionClass($mapping['className']),
-                    'enumType'             => $this->_rsm->enumMappings[$key] ?? null,
+                    'enumType'             => $this->rsm->enumMappings[$key] ?? null,
                 ];
 
-            case isset($this->_rsm->scalarMappings[$key], $this->_hints[LimitSubqueryWalker::FORCE_DBAL_TYPE_CONVERSION]):
-                return $this->_cache[$key] = [
-                    'fieldName' => $this->_rsm->scalarMappings[$key],
-                    'type'      => Type::getType($this->_rsm->typeMappings[$key]),
+            case isset($this->rsm->scalarMappings[$key], $this->hints[LimitSubqueryWalker::FORCE_DBAL_TYPE_CONVERSION]):
+                return $this->cache[$key] = [
+                    'fieldName' => $this->rsm->scalarMappings[$key],
+                    'type'      => Type::getType($this->rsm->typeMappings[$key]),
                     'dqlAlias'  => '',
-                    'enumType'  => $this->_rsm->enumMappings[$key] ?? null,
+                    'enumType'  => $this->rsm->enumMappings[$key] ?? null,
                 ];
 
-            case isset($this->_rsm->scalarMappings[$key]):
-                return $this->_cache[$key] = [
+            case isset($this->rsm->scalarMappings[$key]):
+                return $this->cache[$key] = [
                     'isScalar'  => true,
-                    'fieldName' => $this->_rsm->scalarMappings[$key],
-                    'type'      => Type::getType($this->_rsm->typeMappings[$key]),
-                    'enumType'  => $this->_rsm->enumMappings[$key] ?? null,
+                    'fieldName' => $this->rsm->scalarMappings[$key],
+                    'type'      => Type::getType($this->rsm->typeMappings[$key]),
+                    'enumType'  => $this->rsm->enumMappings[$key] ?? null,
                 ];
 
-            case isset($this->_rsm->metaMappings[$key]):
+            case isset($this->rsm->metaMappings[$key]):
                 // Meta column (has meaning in relational schema only, i.e. foreign keys or discriminator columns).
-                $fieldName = $this->_rsm->metaMappings[$key];
-                $dqlAlias  = $this->_rsm->columnOwnerMap[$key];
-                $type      = isset($this->_rsm->typeMappings[$key])
-                    ? Type::getType($this->_rsm->typeMappings[$key])
+                $fieldName = $this->rsm->metaMappings[$key];
+                $dqlAlias  = $this->rsm->columnOwnerMap[$key];
+                $type      = isset($this->rsm->typeMappings[$key])
+                    ? Type::getType($this->rsm->typeMappings[$key])
                     : null;
 
                 // Cache metadata fetch
-                $this->getClassMetadata($this->_rsm->aliasMap[$dqlAlias]);
+                $this->getClassMetadata($this->rsm->aliasMap[$dqlAlias]);
 
-                return $this->_cache[$key] = [
-                    'isIdentifier' => isset($this->_rsm->isIdentifierColumn[$dqlAlias][$key]),
+                return $this->cache[$key] = [
+                    'isIdentifier' => isset($this->rsm->isIdentifierColumn[$dqlAlias][$key]),
                     'isMetaColumn' => true,
                     'fieldName'    => $fieldName,
                     'type'         => $type,
                     'dqlAlias'     => $dqlAlias,
-                    'enumType'     => $this->_rsm->enumMappings[$key] ?? null,
+                    'enumType'     => $this->rsm->enumMappings[$key] ?? null,
                 ];
         }
 
@@ -500,11 +498,11 @@ abstract class AbstractHydrator
      */
     protected function getClassMetadata(string $className): ClassMetadata
     {
-        if (! isset($this->_metadataCache[$className])) {
-            $this->_metadataCache[$className] = $this->_em->getClassMetadata($className);
+        if (! isset($this->metadataCache[$className])) {
+            $this->metadataCache[$className] = $this->em->getClassMetadata($className);
         }
 
-        return $this->_metadataCache[$className];
+        return $this->metadataCache[$className];
     }
 
     /**
@@ -533,7 +531,7 @@ abstract class AbstractHydrator
             ];
         }
 
-        $this->_em->getUnitOfWork()->registerManaged($entity, $id, $data);
+        $this->em->getUnitOfWork()->registerManaged($entity, $id, $data);
     }
 
     /**

@@ -203,18 +203,6 @@
     </rule>
 
     <rule ref="Squiz.NamingConventions.ValidVariableName.PublicHasUnderscore">
-        <exclude-pattern>lib/Doctrine/ORM/AbstractQuery.php</exclude-pattern>
-        <exclude-pattern>lib/Doctrine/ORM/Configuration.php</exclude-pattern>
-        <exclude-pattern>lib/Doctrine/ORM/EntityRepository.php</exclude-pattern>
-        <exclude-pattern>lib/Doctrine/ORM/Internal/Hydration/AbstractHydrator.php</exclude-pattern>
-        <exclude-pattern>lib/Doctrine/ORM/Query/Exec/AbstractSqlExecutor.php</exclude-pattern>
-        <exclude-pattern>lib/Doctrine/ORM/Query/Exec/AbstractSqlExecutor.php</exclude-pattern>
-        <exclude-pattern>lib/Doctrine/ORM/Query/Printer.php</exclude-pattern>
-        <exclude-pattern>lib/Doctrine/ORM/Tools/EntityRepositoryGenerator.php</exclude-pattern>
-        <exclude-pattern>lib/Doctrine/ORM/Tools/Console/Helper/EntityManagerHelper.php</exclude-pattern>
-        <exclude-pattern>lib/Doctrine/ORM/Tools/Export/Driver/AbstractExporter.php</exclude-pattern>
-        <exclude-pattern>lib/Doctrine/ORM/Tools/Export/Driver/PhpExporter.php</exclude-pattern>
-        <exclude-pattern>lib/Doctrine/ORM/Tools/Export/Driver/XmlExporter.php</exclude-pattern>
         <!-- the impact of changing this would be too big -->
         <exclude-pattern>tests/Doctrine/Tests/OrmFunctionalTestCase.php</exclude-pattern>
     </rule>

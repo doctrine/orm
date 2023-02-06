@@ -111,7 +111,7 @@ class MultiTableUpdateExecutor extends AbstractSqlExecutor
             }
 
             if ($affected) {
-                $this->_sqlStatements[$i] = $updateSql . ' WHERE (' . $idColumnList . ') IN (' . $idSubselect . ')';
+                $this->sqlStatements[$i] = $updateSql . ' WHERE (' . $idColumnList . ') IN (' . $idSubselect . ')';
             }
         }
 
@@ -156,7 +156,7 @@ class MultiTableUpdateExecutor extends AbstractSqlExecutor
             );
 
             // Execute UPDATE statements
-            foreach ($this->_sqlStatements as $key => $statement) {
+            foreach ($this->sqlStatements as $key => $statement) {
                 $paramValues = [];
                 $paramTypes  = [];
 
