@@ -44,8 +44,8 @@ class SimpleObjectHydrator extends AbstractHydrator
     {
         parent::cleanup();
 
-        $this->_uow->triggerEagerLoads();
-        $this->_uow->hydrationComplete();
+        $this->uow->triggerEagerLoads();
+        $this->uow->hydrationComplete();
     }
 
     /**
@@ -59,7 +59,7 @@ class SimpleObjectHydrator extends AbstractHydrator
             $this->hydrateRowData($row, $result);
         }
 
-        $this->_em->getUnitOfWork()->triggerEagerLoads();
+        $this->em->getUnitOfWork()->triggerEagerLoads();
 
         return $result;
     }
@@ -77,7 +77,7 @@ class SimpleObjectHydrator extends AbstractHydrator
         // We need to find the correct entity class name if we have inheritance in resultset
         if ($this->class->inheritanceType !== ClassMetadata::INHERITANCE_TYPE_NONE) {
             $discrColumn     = $this->class->getDiscriminatorColumn();
-            $discrColumnName = $this->getSQLResultCasing($this->_platform, $discrColumn['name']);
+            $discrColumnName = $this->getSQLResultCasing($this->platform, $discrColumn['name']);
 
             // Find mapped discriminator column from the result set.
             $metaMappingDiscrColumnName = array_search($discrColumnName, $this->resultSetMapping()->metaMappings, true);
@@ -134,7 +134,7 @@ class SimpleObjectHydrator extends AbstractHydrator
             // Convert field to a valid PHP value
             if (isset($cacheKeyInfo['type'])) {
                 $type  = $cacheKeyInfo['type'];
-                $value = $type->convertToPHPValue($value, $this->_platform);
+                $value = $type->convertToPHPValue($value, $this->platform);
             }
 
             if ($value !== null && isset($cacheKeyInfo['enumType'])) {
@@ -160,17 +160,17 @@ class SimpleObjectHydrator extends AbstractHydrator
             }
         }
 
-        if (isset($this->_hints[Query::HINT_REFRESH_ENTITY])) {
-            $this->registerManaged($this->class, $this->_hints[Query::HINT_REFRESH_ENTITY], $data);
+        if (isset($this->hints[Query::HINT_REFRESH_ENTITY])) {
+            $this->registerManaged($this->class, $this->hints[Query::HINT_REFRESH_ENTITY], $data);
         }
 
-        $uow    = $this->_em->getUnitOfWork();
-        $entity = $uow->createEntity($entityName, $data, $this->_hints);
+        $uow    = $this->em->getUnitOfWork();
+        $entity = $uow->createEntity($entityName, $data, $this->hints);
 
         $result[] = $entity;
 
-        if (isset($this->_hints[Query::HINT_INTERNAL_ITERATION]) && $this->_hints[Query::HINT_INTERNAL_ITERATION]) {
-            $this->_uow->hydrationComplete();
+        if (isset($this->hints[Query::HINT_INTERNAL_ITERATION]) && $this->hints[Query::HINT_INTERNAL_ITERATION]) {
+            $this->uow->hydrationComplete();
         }
     }
 }

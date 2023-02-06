@@ -42,14 +42,14 @@ use function trait_exists;
 class Configuration extends \Doctrine\DBAL\Configuration
 {
     /** @var mixed[] */
-    protected array $_attributes = [];
+    protected array $attributes = [];
 
     /**
      * Sets the directory where Doctrine generates any necessary proxy class files.
      */
     public function setProxyDir(string $dir): void
     {
-        $this->_attributes['proxyDir'] = $dir;
+        $this->attributes['proxyDir'] = $dir;
     }
 
     /**
@@ -57,7 +57,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
      */
     public function getProxyDir(): string|null
     {
-        return $this->_attributes['proxyDir'] ?? null;
+        return $this->attributes['proxyDir'] ?? null;
     }
 
     /**
@@ -68,7 +68,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
      */
     public function getAutoGenerateProxyClasses(): int
     {
-        return $this->_attributes['autoGenerateProxyClasses'] ?? ProxyFactory::AUTOGENERATE_ALWAYS;
+        return $this->attributes['autoGenerateProxyClasses'] ?? ProxyFactory::AUTOGENERATE_ALWAYS;
     }
 
     /**
@@ -80,7 +80,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
      */
     public function setAutoGenerateProxyClasses(bool|int $autoGenerate): void
     {
-        $this->_attributes['autoGenerateProxyClasses'] = (int) $autoGenerate;
+        $this->attributes['autoGenerateProxyClasses'] = (int) $autoGenerate;
     }
 
     /**
@@ -88,7 +88,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
      */
     public function getProxyNamespace(): string|null
     {
-        return $this->_attributes['proxyNamespace'] ?? null;
+        return $this->attributes['proxyNamespace'] ?? null;
     }
 
     /**
@@ -96,7 +96,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
      */
     public function setProxyNamespace(string $ns): void
     {
-        $this->_attributes['proxyNamespace'] = $ns;
+        $this->attributes['proxyNamespace'] = $ns;
     }
 
     /**
@@ -107,7 +107,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
      */
     public function setMetadataDriverImpl(MappingDriver $driverImpl): void
     {
-        $this->_attributes['metadataDriverImpl'] = $driverImpl;
+        $this->attributes['metadataDriverImpl'] = $driverImpl;
     }
 
     /**
@@ -117,7 +117,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
      */
     public function setEntityNamespaces(array $entityNamespaces): void
     {
-        $this->_attributes['entityNamespaces'] = $entityNamespaces;
+        $this->attributes['entityNamespaces'] = $entityNamespaces;
     }
 
     /**
@@ -127,7 +127,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
      */
     public function getEntityNamespaces(): array
     {
-        return $this->_attributes['entityNamespaces'];
+        return $this->attributes['entityNamespaces'];
     }
 
     /**
@@ -135,7 +135,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
      */
     public function getMetadataDriverImpl(): MappingDriver|null
     {
-        return $this->_attributes['metadataDriverImpl'] ?? null;
+        return $this->attributes['metadataDriverImpl'] ?? null;
     }
 
     /**
@@ -143,7 +143,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
      */
     public function getQueryCache(): CacheItemPoolInterface|null
     {
-        return $this->_attributes['queryCache'] ?? null;
+        return $this->attributes['queryCache'] ?? null;
     }
 
     /**
@@ -151,27 +151,27 @@ class Configuration extends \Doctrine\DBAL\Configuration
      */
     public function setQueryCache(CacheItemPoolInterface $cache): void
     {
-        $this->_attributes['queryCache'] = $cache;
+        $this->attributes['queryCache'] = $cache;
     }
 
     public function getHydrationCache(): CacheItemPoolInterface|null
     {
-        return $this->_attributes['hydrationCache'] ?? null;
+        return $this->attributes['hydrationCache'] ?? null;
     }
 
     public function setHydrationCache(CacheItemPoolInterface $cache): void
     {
-        $this->_attributes['hydrationCache'] = $cache;
+        $this->attributes['hydrationCache'] = $cache;
     }
 
     public function getMetadataCache(): CacheItemPoolInterface|null
     {
-        return $this->_attributes['metadataCache'] ?? null;
+        return $this->attributes['metadataCache'] ?? null;
     }
 
     public function setMetadataCache(CacheItemPoolInterface $cache): void
     {
-        $this->_attributes['metadataCache'] = $cache;
+        $this->attributes['metadataCache'] = $cache;
     }
 
     /**
@@ -186,7 +186,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
      */
     public function addCustomStringFunction(string $name, string|callable $className): void
     {
-        $this->_attributes['customStringFunctions'][strtolower($name)] = $className;
+        $this->attributes['customStringFunctions'][strtolower($name)] = $className;
     }
 
     /**
@@ -198,7 +198,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
     {
         $name = strtolower($name);
 
-        return $this->_attributes['customStringFunctions'][$name] ?? null;
+        return $this->attributes['customStringFunctions'][$name] ?? null;
     }
 
     /**
@@ -231,7 +231,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
      */
     public function addCustomNumericFunction(string $name, string|callable $className): void
     {
-        $this->_attributes['customNumericFunctions'][strtolower($name)] = $className;
+        $this->attributes['customNumericFunctions'][strtolower($name)] = $className;
     }
 
     /**
@@ -243,7 +243,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
     {
         $name = strtolower($name);
 
-        return $this->_attributes['customNumericFunctions'][$name] ?? null;
+        return $this->attributes['customNumericFunctions'][$name] ?? null;
     }
 
     /**
@@ -276,7 +276,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
      */
     public function addCustomDatetimeFunction(string $name, string|callable $className): void
     {
-        $this->_attributes['customDatetimeFunctions'][strtolower($name)] = $className;
+        $this->attributes['customDatetimeFunctions'][strtolower($name)] = $className;
     }
 
     /**
@@ -288,7 +288,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
     {
         $name = strtolower($name);
 
-        return $this->_attributes['customDatetimeFunctions'][$name] ?? null;
+        return $this->attributes['customDatetimeFunctions'][$name] ?? null;
     }
 
     /**
@@ -314,7 +314,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
      */
     public function setTypedFieldMapper(TypedFieldMapper|null $typedFieldMapper): void
     {
-        $this->_attributes['typedFieldMapper'] = $typedFieldMapper;
+        $this->attributes['typedFieldMapper'] = $typedFieldMapper;
     }
 
     /**
@@ -322,7 +322,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
      */
     public function getTypedFieldMapper(): TypedFieldMapper|null
     {
-        return $this->_attributes['typedFieldMapper'] ?? null;
+        return $this->attributes['typedFieldMapper'] ?? null;
     }
 
     /**
@@ -332,7 +332,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
      */
     public function setCustomHydrationModes(array $modes): void
     {
-        $this->_attributes['customHydrationModes'] = [];
+        $this->attributes['customHydrationModes'] = [];
 
         foreach ($modes as $modeName => $hydrator) {
             $this->addCustomHydrationMode($modeName, $hydrator);
@@ -346,7 +346,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
      */
     public function getCustomHydrationMode(string $modeName): string|null
     {
-        return $this->_attributes['customHydrationModes'][$modeName] ?? null;
+        return $this->attributes['customHydrationModes'][$modeName] ?? null;
     }
 
     /**
@@ -356,7 +356,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
      */
     public function addCustomHydrationMode(string $modeName, string $hydrator): void
     {
-        $this->_attributes['customHydrationModes'][$modeName] = $hydrator;
+        $this->attributes['customHydrationModes'][$modeName] = $hydrator;
     }
 
     /**
@@ -366,17 +366,17 @@ class Configuration extends \Doctrine\DBAL\Configuration
      */
     public function setClassMetadataFactoryName(string $cmfName): void
     {
-        $this->_attributes['classMetadataFactoryName'] = $cmfName;
+        $this->attributes['classMetadataFactoryName'] = $cmfName;
     }
 
     /** @psalm-return class-string */
     public function getClassMetadataFactoryName(): string
     {
-        if (! isset($this->_attributes['classMetadataFactoryName'])) {
-            $this->_attributes['classMetadataFactoryName'] = ClassMetadataFactory::class;
+        if (! isset($this->attributes['classMetadataFactoryName'])) {
+            $this->attributes['classMetadataFactoryName'] = ClassMetadataFactory::class;
         }
 
-        return $this->_attributes['classMetadataFactoryName'];
+        return $this->attributes['classMetadataFactoryName'];
     }
 
     /**
@@ -387,7 +387,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
      */
     public function addFilter(string $name, string $className): void
     {
-        $this->_attributes['filters'][$name] = $className;
+        $this->attributes['filters'][$name] = $className;
     }
 
     /**
@@ -399,7 +399,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
      */
     public function getFilterClassName(string $name): string|null
     {
-        return $this->_attributes['filters'][$name] ?? null;
+        return $this->attributes['filters'][$name] ?? null;
     }
 
     /**
@@ -415,7 +415,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
             throw InvalidEntityRepository::fromClassName($className);
         }
 
-        $this->_attributes['defaultRepositoryClassName'] = $className;
+        $this->attributes['defaultRepositoryClassName'] = $className;
     }
 
     /**
@@ -425,7 +425,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
      */
     public function getDefaultRepositoryClassName(): string
     {
-        return $this->_attributes['defaultRepositoryClassName'] ?? EntityRepository::class;
+        return $this->attributes['defaultRepositoryClassName'] ?? EntityRepository::class;
     }
 
     /**
@@ -433,7 +433,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
      */
     public function setNamingStrategy(NamingStrategy $namingStrategy): void
     {
-        $this->_attributes['namingStrategy'] = $namingStrategy;
+        $this->attributes['namingStrategy'] = $namingStrategy;
     }
 
     /**
@@ -441,11 +441,11 @@ class Configuration extends \Doctrine\DBAL\Configuration
      */
     public function getNamingStrategy(): NamingStrategy
     {
-        if (! isset($this->_attributes['namingStrategy'])) {
-            $this->_attributes['namingStrategy'] = new DefaultNamingStrategy();
+        if (! isset($this->attributes['namingStrategy'])) {
+            $this->attributes['namingStrategy'] = new DefaultNamingStrategy();
         }
 
-        return $this->_attributes['namingStrategy'];
+        return $this->attributes['namingStrategy'];
     }
 
     /**
@@ -453,7 +453,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
      */
     public function setQuoteStrategy(QuoteStrategy $quoteStrategy): void
     {
-        $this->_attributes['quoteStrategy'] = $quoteStrategy;
+        $this->attributes['quoteStrategy'] = $quoteStrategy;
     }
 
     /**
@@ -461,11 +461,11 @@ class Configuration extends \Doctrine\DBAL\Configuration
      */
     public function getQuoteStrategy(): QuoteStrategy
     {
-        if (! isset($this->_attributes['quoteStrategy'])) {
-            $this->_attributes['quoteStrategy'] = new DefaultQuoteStrategy();
+        if (! isset($this->attributes['quoteStrategy'])) {
+            $this->attributes['quoteStrategy'] = new DefaultQuoteStrategy();
         }
 
-        return $this->_attributes['quoteStrategy'];
+        return $this->attributes['quoteStrategy'];
     }
 
     /**
@@ -473,7 +473,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
      */
     public function setEntityListenerResolver(EntityListenerResolver $resolver): void
     {
-        $this->_attributes['entityListenerResolver'] = $resolver;
+        $this->attributes['entityListenerResolver'] = $resolver;
     }
 
     /**
@@ -481,11 +481,11 @@ class Configuration extends \Doctrine\DBAL\Configuration
      */
     public function getEntityListenerResolver(): EntityListenerResolver
     {
-        if (! isset($this->_attributes['entityListenerResolver'])) {
-            $this->_attributes['entityListenerResolver'] = new DefaultEntityListenerResolver();
+        if (! isset($this->attributes['entityListenerResolver'])) {
+            $this->attributes['entityListenerResolver'] = new DefaultEntityListenerResolver();
         }
 
-        return $this->_attributes['entityListenerResolver'];
+        return $this->attributes['entityListenerResolver'];
     }
 
     /**
@@ -493,7 +493,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
      */
     public function setRepositoryFactory(RepositoryFactory $repositoryFactory): void
     {
-        $this->_attributes['repositoryFactory'] = $repositoryFactory;
+        $this->attributes['repositoryFactory'] = $repositoryFactory;
     }
 
     /**
@@ -501,31 +501,31 @@ class Configuration extends \Doctrine\DBAL\Configuration
      */
     public function getRepositoryFactory(): RepositoryFactory
     {
-        return $this->_attributes['repositoryFactory'] ?? new DefaultRepositoryFactory();
+        return $this->attributes['repositoryFactory'] ?? new DefaultRepositoryFactory();
     }
 
     public function isSecondLevelCacheEnabled(): bool
     {
-        return $this->_attributes['isSecondLevelCacheEnabled'] ?? false;
+        return $this->attributes['isSecondLevelCacheEnabled'] ?? false;
     }
 
     public function setSecondLevelCacheEnabled(bool $flag = true): void
     {
-        $this->_attributes['isSecondLevelCacheEnabled'] = $flag;
+        $this->attributes['isSecondLevelCacheEnabled'] = $flag;
     }
 
     public function setSecondLevelCacheConfiguration(CacheConfiguration $cacheConfig): void
     {
-        $this->_attributes['secondLevelCacheConfiguration'] = $cacheConfig;
+        $this->attributes['secondLevelCacheConfiguration'] = $cacheConfig;
     }
 
     public function getSecondLevelCacheConfiguration(): CacheConfiguration|null
     {
-        if (! isset($this->_attributes['secondLevelCacheConfiguration']) && $this->isSecondLevelCacheEnabled()) {
-            $this->_attributes['secondLevelCacheConfiguration'] = new CacheConfiguration();
+        if (! isset($this->attributes['secondLevelCacheConfiguration']) && $this->isSecondLevelCacheEnabled()) {
+            $this->attributes['secondLevelCacheConfiguration'] = new CacheConfiguration();
         }
 
-        return $this->_attributes['secondLevelCacheConfiguration'] ?? null;
+        return $this->attributes['secondLevelCacheConfiguration'] ?? null;
     }
 
     /**
@@ -535,7 +535,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
      */
     public function getDefaultQueryHints(): array
     {
-        return $this->_attributes['defaultQueryHints'] ?? [];
+        return $this->attributes['defaultQueryHints'] ?? [];
     }
 
     /**
@@ -545,7 +545,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
      */
     public function setDefaultQueryHints(array $defaultQueryHints): void
     {
-        $this->_attributes['defaultQueryHints'] = $defaultQueryHints;
+        $this->attributes['defaultQueryHints'] = $defaultQueryHints;
     }
 
     /**
@@ -555,7 +555,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
      */
     public function getDefaultQueryHint(string $name): mixed
     {
-        return $this->_attributes['defaultQueryHints'][$name] ?? false;
+        return $this->attributes['defaultQueryHints'][$name] ?? false;
     }
 
     /**
@@ -563,7 +563,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
      */
     public function setDefaultQueryHint(string $name, mixed $value): void
     {
-        $this->_attributes['defaultQueryHints'][$name] = $value;
+        $this->attributes['defaultQueryHints'][$name] = $value;
     }
 
     /**
@@ -573,7 +573,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
      */
     public function getSchemaIgnoreClasses(): array
     {
-        return $this->_attributes['schemaIgnoreClasses'] ?? [];
+        return $this->attributes['schemaIgnoreClasses'] ?? [];
     }
 
     /**
@@ -583,12 +583,12 @@ class Configuration extends \Doctrine\DBAL\Configuration
      */
     public function setSchemaIgnoreClasses(array $schemaIgnoreClasses): void
     {
-        $this->_attributes['schemaIgnoreClasses'] = $schemaIgnoreClasses;
+        $this->attributes['schemaIgnoreClasses'] = $schemaIgnoreClasses;
     }
 
     public function isLazyGhostObjectEnabled(): bool
     {
-        return $this->_attributes['isLazyGhostObjectEnabled'] ?? false;
+        return $this->attributes['isLazyGhostObjectEnabled'] ?? false;
     }
 
     public function setLazyGhostObjectEnabled(bool $flag): void
@@ -607,6 +607,6 @@ class Configuration extends \Doctrine\DBAL\Configuration
             );
         }
 
-        $this->_attributes['isLazyGhostObjectEnabled'] = $flag;
+        $this->attributes['isLazyGhostObjectEnabled'] = $flag;
     }
 }

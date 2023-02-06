@@ -187,11 +187,11 @@ final class Query extends AbstractQuery
     protected function getResultSetMapping(): ResultSetMapping
     {
         // parse query or load from cache
-        if ($this->_resultSetMapping === null) {
-            $this->_resultSetMapping = $this->parse()->getResultSetMapping();
+        if ($this->resultSetMapping === null) {
+            $this->resultSetMapping = $this->parse()->getResultSetMapping();
         }
 
-        return $this->_resultSetMapping;
+        return $this->resultSetMapping;
     }
 
     /**
@@ -252,14 +252,14 @@ final class Query extends AbstractQuery
     {
         $executor = $this->parse()->getSqlExecutor();
 
-        if ($this->_queryCacheProfile) {
-            $executor->setQueryCacheProfile($this->_queryCacheProfile);
+        if ($this->queryCacheProfile) {
+            $executor->setQueryCacheProfile($this->queryCacheProfile);
         } else {
             $executor->removeQueryCacheProfile();
         }
 
-        if ($this->_resultSetMapping === null) {
-            $this->_resultSetMapping = $this->parserResult->getResultSetMapping();
+        if ($this->resultSetMapping === null) {
+            $this->resultSetMapping = $this->parserResult->getResultSetMapping();
         }
 
         // Prepare parameters
@@ -276,7 +276,7 @@ final class Query extends AbstractQuery
         }
 
         // evict all cache for the entity region
-        if ($this->hasCache && isset($this->_hints[self::HINT_CACHE_EVICT]) && $this->_hints[self::HINT_CACHE_EVICT]) {
+        if ($this->hasCache && isset($this->hints[self::HINT_CACHE_EVICT]) && $this->hints[self::HINT_CACHE_EVICT]) {
             $this->evictEntityCacheRegion();
         }
 
@@ -303,18 +303,18 @@ final class Query extends AbstractQuery
         array $types,
         array $connectionParams,
     ): void {
-        if ($this->_queryCacheProfile === null || ! $this->getExpireResultCache()) {
+        if ($this->queryCacheProfile === null || ! $this->getExpireResultCache()) {
             return;
         }
 
-        $cache = $this->_queryCacheProfile->getResultCache();
+        $cache = $this->queryCacheProfile->getResultCache();
 
         assert($cache !== null);
 
         $statements = (array) $executor->getSqlStatements(); // Type casted since it can either be a string or an array
 
         foreach ($statements as $statement) {
-            $cacheKeys = $this->_queryCacheProfile->generateCacheKeys($statement, $sqlParams, $types, $connectionParams);
+            $cacheKeys = $this->queryCacheProfile->generateCacheKeys($statement, $sqlParams, $types, $connectionParams);
             $cache->deleteItem(reset($cacheKeys));
         }
     }
@@ -684,14 +684,14 @@ final class Query extends AbstractQuery
      */
     protected function getQueryCacheId(): string
     {
-        ksort($this->_hints);
+        ksort($this->hints);
 
         return md5(
-            $this->getDQL() . serialize($this->_hints) .
+            $this->getDQL() . serialize($this->hints) .
             '&platform=' . get_debug_type($this->getEntityManager()->getConnection()->getDatabasePlatform()) .
             ($this->em->hasFilters() ? $this->em->getFilters()->getHash() : '') .
             '&firstResult=' . $this->firstResult . '&maxResult=' . $this->maxResults .
-            '&hydrationMode=' . $this->_hydrationMode . '&types=' . serialize($this->parsedTypes) . 'DOCTRINE_QUERY_CACHE_SALT',
+            '&hydrationMode=' . $this->hydrationMode . '&types=' . serialize($this->parsedTypes) . 'DOCTRINE_QUERY_CACHE_SALT',
         );
     }
 

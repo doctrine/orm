@@ -1209,14 +1209,14 @@
       <code>int</code>
     </InvalidReturnType>
     <PossiblyInvalidIterator>
-      <code>$this-&gt;_sqlStatements</code>
+      <code>$this-&gt;sqlStatements</code>
     </PossiblyInvalidIterator>
     <PropertyNotSetInConstructor>
       <code>MultiTableDeleteExecutor</code>
       <code>MultiTableDeleteExecutor</code>
     </PropertyNotSetInConstructor>
     <UninitializedProperty>
-      <code>$this-&gt;_sqlStatements</code>
+      <code>$this-&gt;sqlStatements</code>
     </UninitializedProperty>
   </file>
   <file src="lib/Doctrine/ORM/Query/Exec/MultiTableUpdateExecutor.php">
@@ -1227,22 +1227,22 @@
       <code>int</code>
     </InvalidReturnType>
     <PossiblyInvalidIterator>
-      <code>$this-&gt;_sqlStatements</code>
+      <code>$this-&gt;sqlStatements</code>
     </PossiblyInvalidIterator>
     <PropertyNotSetInConstructor>
       <code>MultiTableUpdateExecutor</code>
       <code>MultiTableUpdateExecutor</code>
     </PropertyNotSetInConstructor>
     <PropertyTypeCoercion>
-      <code>$this-&gt;_sqlStatements</code>
+      <code>$this-&gt;sqlStatements</code>
     </PropertyTypeCoercion>
     <UninitializedProperty>
-      <code>$this-&gt;_sqlStatements</code>
+      <code>$this-&gt;sqlStatements</code>
     </UninitializedProperty>
   </file>
   <file src="lib/Doctrine/ORM/Query/Exec/SingleSelectExecutor.php">
     <PossiblyInvalidArgument>
-      <code>$this-&gt;_sqlStatements</code>
+      <code>$this-&gt;sqlStatements</code>
     </PossiblyInvalidArgument>
     <PropertyNotSetInConstructor>
       <code>SingleSelectExecutor</code>
@@ -1250,13 +1250,13 @@
   </file>
   <file src="lib/Doctrine/ORM/Query/Exec/SingleTableDeleteUpdateExecutor.php">
     <InvalidReturnStatement>
-      <code>$conn-&gt;executeStatement($this-&gt;_sqlStatements, $params, $types)</code>
+      <code>$conn-&gt;executeStatement($this-&gt;sqlStatements, $params, $types)</code>
     </InvalidReturnStatement>
     <InvalidReturnType>
       <code>int</code>
     </InvalidReturnType>
     <PossiblyInvalidArgument>
-      <code>$this-&gt;_sqlStatements</code>
+      <code>$this-&gt;sqlStatements</code>
     </PossiblyInvalidArgument>
     <PropertyNotSetInConstructor>
       <code>SingleTableDeleteUpdateExecutor</code>
