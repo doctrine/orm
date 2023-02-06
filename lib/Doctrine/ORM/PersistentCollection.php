@@ -70,11 +70,6 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
     private string|null $backRefFieldName = null;
 
     /**
-     * The class descriptor of the collection's entity type.
-     */
-    private ClassMetadata|null $typeClass = null;
-
-    /**
      * Whether the collection is dirty and needs to be synchronized with the database
      * when the UnitOfWork that manages its persistent state commits.
      */
@@ -83,18 +78,17 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
     /**
      * Creates a new persistent collection.
      *
-     * @param EntityManagerInterface $em    The EntityManager the collection will be associated with.
-     * @param ClassMetadata          $class The class descriptor of the entity type of this collection.
+     * @param EntityManagerInterface $em        The EntityManager the collection will be associated with.
+     * @param ClassMetadata          $typeClass The class descriptor of the entity type of this collection.
      * @psalm-param Collection<TKey, T>&Selectable<TKey, T> $collection The collection elements.
      */
     public function __construct(
         EntityManagerInterface $em,
-        ClassMetadata $class,
+        private readonly ClassMetadata|null $typeClass,
         Collection $collection,
     ) {
         $this->collection  = $collection;
         $this->em          = $em;
-        $this->typeClass   = $class;
         $this->initialized = true;
     }
 
@@ -523,6 +517,11 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
         return ['collection', 'initialized'];
     }
 
+    public function __wakeup(): void
+    {
+        $this->em = null;
+    }
+
     /**
      * Extracts a slice of $length elements starting at position $offset from the Collection.
      *
@@ -614,7 +613,7 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
      *
      * @return Collection<TKey, T>&Selectable<TKey, T>
      */
-    public function unwrap(): Collection&Selectable
+    public function unwrap(): Selectable&Collection
     {
         assert($this->collection instanceof Collection);
         assert($this->collection instanceof Selectable);

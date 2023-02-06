@@ -627,7 +627,7 @@ class SqlWalker
     public function walkSelectClause(AST\SelectClause $selectClause): string
     {
         $sql                  = 'SELECT ' . ($selectClause->isDistinct ? 'DISTINCT ' : '');
-        $sqlSelectExpressions = array_filter(array_map([$this, 'walkSelectExpression'], $selectClause->selectExpressions));
+        $sqlSelectExpressions = array_filter(array_map($this->walkSelectExpression(...), $selectClause->selectExpressions));
 
         if ($this->query->getHint(Query::HINT_INTERNAL_ITERATION) === true && $selectClause->isDistinct) {
             $this->query->setHint(self::HINT_DISTINCT, true);
@@ -1043,7 +1043,7 @@ class SqlWalker
      */
     public function walkOrderByClause(AST\OrderByClause $orderByClause): string
     {
-        $orderByItems = array_map([$this, 'walkOrderByItem'], $orderByClause->orderByItems);
+        $orderByItems = array_map($this->walkOrderByItem(...), $orderByClause->orderByItems);
 
         $collectionOrderByItems = $this->generateOrderedCollectionOrderByItems();
         if ($collectionOrderByItems !== '') {
@@ -1677,7 +1677,7 @@ class SqlWalker
         $this->setSQLTableAlias($tableName, $tableName, $updateClause->aliasIdentificationVariable);
         $this->rootAliases[] = $updateClause->aliasIdentificationVariable;
 
-        return $sql . ' SET ' . implode(', ', array_map([$this, 'walkUpdateItem'], $updateClause->updateItems));
+        return $sql . ' SET ' . implode(', ', array_map($this->walkUpdateItem(...), $updateClause->updateItems));
     }
 
     /**
@@ -1756,7 +1756,7 @@ class SqlWalker
             return $this->walkConditionalTerm($condExpr);
         }
 
-        return implode(' OR ', array_map([$this, 'walkConditionalTerm'], $condExpr->conditionalTerms));
+        return implode(' OR ', array_map($this->walkConditionalTerm(...), $condExpr->conditionalTerms));
     }
 
     /**
@@ -1771,7 +1771,7 @@ class SqlWalker
             return $this->walkConditionalFactor($condTerm);
         }
 
-        return implode(' AND ', array_map([$this, 'walkConditionalFactor'], $condTerm->conditionalFactors));
+        return implode(' AND ', array_map($this->walkConditionalFactor(...), $condTerm->conditionalFactors));
     }
 
     /**
@@ -1953,7 +1953,7 @@ class SqlWalker
     {
         return $this->walkArithmeticExpression($inExpr->expression)
             . ($inExpr->not ? ' NOT' : '') . ' IN ('
-            . implode(', ', array_map([$this, 'walkInParameter'], $inExpr->literals))
+            . implode(', ', array_map($this->walkInParameter(...), $inExpr->literals))
             . ')';
     }
 
@@ -2134,7 +2134,7 @@ class SqlWalker
             return $this->walkArithmeticTerm($simpleArithmeticExpr);
         }
 
-        return implode(' ', array_map([$this, 'walkArithmeticTerm'], $simpleArithmeticExpr->arithmeticTerms));
+        return implode(' ', array_map($this->walkArithmeticTerm(...), $simpleArithmeticExpr->arithmeticTerms));
     }
 
     /**
@@ -2154,7 +2154,7 @@ class SqlWalker
             return $this->walkArithmeticFactor($term);
         }
 
-        return implode(' ', array_map([$this, 'walkArithmeticFactor'], $term->arithmeticFactors));
+        return implode(' ', array_map($this->walkArithmeticFactor(...), $term->arithmeticFactors));
     }
 
     /**
