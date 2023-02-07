@@ -13,8 +13,7 @@ use Doctrine\ORM\Query\SqlWalker;
  */
 class ArithmeticExpression extends Node
 {
-    /** @var SimpleArithmeticExpression|null */
-    public $simpleArithmeticExpression;
+    public Node|string|null $simpleArithmeticExpression = null;
 
     /** @var Subselect|null */
     public $subselect;

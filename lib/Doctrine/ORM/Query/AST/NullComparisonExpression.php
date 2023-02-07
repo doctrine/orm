@@ -13,9 +13,8 @@ use Doctrine\ORM\Query\SqlWalker;
  */
 class NullComparisonExpression extends Node
 {
-    /** @param Node $expression */
     public function __construct(
-        public $expression,
+        public Node|string $expression,
         public bool $not = false,
     ) {
     }

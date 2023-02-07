@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Query\AST\Functions;
 
-use Doctrine\ORM\Query\AST\SimpleArithmeticExpression;
+use Doctrine\ORM\Query\AST\Node;
 use Doctrine\ORM\Query\Parser;
 use Doctrine\ORM\Query\SqlWalker;
 use Doctrine\ORM\Query\TokenType;
@@ -18,8 +18,7 @@ use function sprintf;
  */
 class SqrtFunction extends FunctionNode
 {
-    /** @var SimpleArithmeticExpression */
-    public $simpleArithmeticExpression;
+    public Node|string $simpleArithmeticExpression;
 
     public function getSql(SqlWalker $sqlWalker): string
     {

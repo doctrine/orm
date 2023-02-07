@@ -8,13 +8,10 @@ use Doctrine\ORM\Query\SqlWalker;
 
 class AggregateExpression extends Node
 {
-    /**
-     * @param PathExpression|SimpleArithmeticExpression $pathExpression
-     * @param bool                                      $isDistinct     Some aggregate expressions support distinct, eg COUNT.
-     */
+    /** @param bool $isDistinct Some aggregate expressions support distinct, eg COUNT. */
     public function __construct(
         public string $functionName,
-        public $pathExpression,
+        public Node|string $pathExpression,
         public bool $isDistinct,
     ) {
     }

@@ -1943,6 +1943,8 @@ class SqlWalker
             return $this->walkInputParameter($expression) . $comparison;
         }
 
+        assert(! is_string($expression));
+
         return $expression->dispatch($this) . $comparison;
     }
 

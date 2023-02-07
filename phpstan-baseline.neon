@@ -256,44 +256,14 @@ parameters:
 			path: lib/Doctrine/ORM/Query/Expr/Select.php
 
 		-
-			message: "#^Method Doctrine\\\\ORM\\\\Query\\\\Parser\\:\\:ArithmeticFactor\\(\\) should return Doctrine\\\\ORM\\\\Query\\\\AST\\\\ArithmeticFactor but returns Doctrine\\\\ORM\\\\Query\\\\AST\\\\Node\\|string\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Query/Parser.php
-
-		-
-			message: "#^Method Doctrine\\\\ORM\\\\Query\\\\Parser\\:\\:ArithmeticTerm\\(\\) should return Doctrine\\\\ORM\\\\Query\\\\AST\\\\ArithmeticTerm but returns Doctrine\\\\ORM\\\\Query\\\\AST\\\\ArithmeticFactor\\|string\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Query/Parser.php
-
-		-
-			message: """
-				#^PHPDoc tag @return has invalid value \\(AST\\\\BetweenExpression\\|
-				        AST\\\\CollectionMemberExpression\\|
-				        AST\\\\ComparisonExpression\\|
-				        AST\\\\EmptyCollectionComparisonExpression\\|
-				        AST\\\\ExistsExpression\\|
-				        AST\\\\InExpression\\|
-				        AST\\\\InstanceOfExpression\\|
-				        AST\\\\LikeExpression\\|
-				        AST\\\\NullComparisonExpression\\)\\: Unexpected token "\\\\n     \\* ", expected type at offset 344$#
-			"""
-			count: 1
-			path: lib/Doctrine/ORM/Query/Parser.php
-
-		-
 			message: "#^Parameter \\#2 \\$stringPattern of class Doctrine\\\\ORM\\\\Query\\\\AST\\\\LikeExpression constructor expects Doctrine\\\\ORM\\\\Query\\\\AST\\\\Functions\\\\FunctionNode\\|Doctrine\\\\ORM\\\\Query\\\\AST\\\\InputParameter\\|Doctrine\\\\ORM\\\\Query\\\\AST\\\\Literal\\|Doctrine\\\\ORM\\\\Query\\\\AST\\\\PathExpression, Doctrine\\\\ORM\\\\Query\\\\AST\\\\Node given\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Query/Parser.php
 
 		-
 			message: "#^Unreachable statement \\- code above always terminates\\.$#"
-			count: 3
+			count: 2
 			path: lib/Doctrine/ORM/Query/Parser.php
-
-		-
-			message: "#^Call to function is_string\\(\\) with Doctrine\\\\ORM\\\\Query\\\\AST\\\\Node will always evaluate to false\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Query/SqlWalker.php
 
 		-
 			message: "#^Match arm is unreachable because previous comparison is always true\\.$#"
@@ -302,11 +272,6 @@ parameters:
 
 		-
 			message: "#^Parameter \\#3 \\$condExpr of method Doctrine\\\\ORM\\\\Query\\\\SqlWalker\\:\\:walkJoinAssociationDeclaration\\(\\) expects Doctrine\\\\ORM\\\\Query\\\\AST\\\\ConditionalPrimary\\|null, Doctrine\\\\ORM\\\\Query\\\\AST\\\\ConditionalExpression\\|null given\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Query/SqlWalker.php
-
-		-
-			message: "#^Result of && is always false\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Query/SqlWalker.php
 
