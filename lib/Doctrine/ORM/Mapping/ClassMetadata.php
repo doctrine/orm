@@ -766,7 +766,7 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
 
     private InstantiatorInterface|null $instantiator = null;
 
-    private TypedFieldMapper $typedFieldMapper;
+    private readonly TypedFieldMapper $typedFieldMapper;
 
     /**
      * Initializes a new ClassMetadata instance that will hold the object-relational mapping
@@ -1162,7 +1162,7 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
      *
      * Can return null when using static reflection, in violation of the LSP
      */
-    public function getReflectionClass()
+    public function getReflectionClass(): ReflectionClass|null
     {
         return $this->reflClass;
     }
@@ -1486,7 +1486,7 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
      *
      * @throws MappingException If something is wrong with the mapping.
      */
-    protected function _validateAndCompleteAssociationMapping(array $mapping)
+    protected function _validateAndCompleteAssociationMapping(array $mapping): array
     {
         if (! isset($mapping['mappedBy'])) {
             $mapping['mappedBy'] = null;
@@ -1640,7 +1640,7 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
      * @throws RuntimeException
      * @throws MappingException
      */
-    protected function _validateAndCompleteOneToOneMapping(array $mapping)
+    protected function _validateAndCompleteOneToOneMapping(array $mapping): array
     {
         $mapping = $this->_validateAndCompleteAssociationMapping($mapping);
 
@@ -1745,7 +1745,7 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
      * @throws MappingException
      * @throws InvalidArgumentException
      */
-    protected function _validateAndCompleteOneToManyMapping(array $mapping)
+    protected function _validateAndCompleteOneToManyMapping(array $mapping): array
     {
         $mapping = $this->_validateAndCompleteAssociationMapping($mapping);
 
@@ -1795,7 +1795,7 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
      *
      * @throws InvalidArgumentException
      */
-    protected function _validateAndCompleteManyToManyMapping(array $mapping)
+    protected function _validateAndCompleteManyToManyMapping(array $mapping): array
     {
         $mapping = $this->_validateAndCompleteAssociationMapping($mapping);
 
@@ -1970,7 +1970,7 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
             return array_keys($this->fieldNames);
         }
 
-        return array_values(array_map([$this, 'getColumnName'], $fieldNames));
+        return array_values(array_map($this->getColumnName(...), $fieldNames));
     }
 
     /**

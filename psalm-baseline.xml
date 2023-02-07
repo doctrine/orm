@@ -331,7 +331,7 @@
       <code>$overrideMapping</code>
     </InvalidArgument>
     <InvalidNullableReturnType>
-      <code>getReflectionClass</code>
+      <code>ReflectionClass|null</code>
       <code>string</code>
     </InvalidNullableReturnType>
     <InvalidPropertyAssignmentValue>
