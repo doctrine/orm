@@ -1099,11 +1099,6 @@
       <code>$parserResult</code>
     </PropertyNotSetInConstructor>
   </file>
-  <file src="lib/Doctrine/ORM/Query/AST/Functions/AbsFunction.php">
-    <PossiblyInvalidPropertyAssignmentValue>
-      <code>$parser-&gt;SimpleArithmeticExpression()</code>
-    </PossiblyInvalidPropertyAssignmentValue>
-  </file>
   <file src="lib/Doctrine/ORM/Query/AST/Functions/BitAndFunction.php">
     <PossiblyInvalidPropertyAssignmentValue>
       <code>$parser-&gt;ArithmeticPrimary()</code>
@@ -1150,15 +1145,6 @@
     <PossiblyInvalidArgument>
       <code>$this-&gt;simpleArithmeticExpression</code>
     </PossiblyInvalidArgument>
-    <PossiblyInvalidPropertyAssignmentValue>
-      <code>$parser-&gt;SimpleArithmeticExpression()</code>
-    </PossiblyInvalidPropertyAssignmentValue>
-  </file>
-  <file src="lib/Doctrine/ORM/Query/AST/Functions/ModFunction.php">
-    <PossiblyInvalidPropertyAssignmentValue>
-      <code>$parser-&gt;SimpleArithmeticExpression()</code>
-      <code>$parser-&gt;SimpleArithmeticExpression()</code>
-    </PossiblyInvalidPropertyAssignmentValue>
   </file>
   <file src="lib/Doctrine/ORM/Query/AST/Functions/SizeFunction.php">
     <PossiblyNullArrayOffset>
@@ -1169,17 +1155,6 @@
       <code>$owningAssoc['joinTable']</code>
       <code>$owningAssoc['targetToSourceKeyColumns']</code>
     </PossiblyUndefinedArrayOffset>
-  </file>
-  <file src="lib/Doctrine/ORM/Query/AST/Functions/SqrtFunction.php">
-    <PossiblyInvalidPropertyAssignmentValue>
-      <code>$parser-&gt;SimpleArithmeticExpression()</code>
-    </PossiblyInvalidPropertyAssignmentValue>
-  </file>
-  <file src="lib/Doctrine/ORM/Query/AST/Functions/SubstringFunction.php">
-    <PossiblyInvalidPropertyAssignmentValue>
-      <code>$parser-&gt;SimpleArithmeticExpression()</code>
-      <code>$parser-&gt;SimpleArithmeticExpression()</code>
-    </PossiblyInvalidPropertyAssignmentValue>
   </file>
   <file src="lib/Doctrine/ORM/Query/AST/JoinClassPathExpression.php">
     <UndefinedMethod>
@@ -1328,25 +1303,6 @@
     <InvalidPropertyAssignmentValue>
       <code>$this-&gt;queryComponents</code>
     </InvalidPropertyAssignmentValue>
-    <InvalidReturnStatement>
-      <code>$factors[0]</code>
-      <code>$primary</code>
-      <code>$terms[0]</code>
-      <code>$this-&gt;CollectionMemberExpression()</code>
-      <code>$this-&gt;ComparisonExpression()</code>
-      <code>$this-&gt;EmptyCollectionComparisonExpression()</code>
-      <code>$this-&gt;ExistsExpression()</code>
-      <code>$this-&gt;InExpression()</code>
-      <code>$this-&gt;InstanceOfExpression()</code>
-      <code>$this-&gt;LikeExpression()</code>
-      <code>$this-&gt;NullComparisonExpression()</code>
-    </InvalidReturnStatement>
-    <InvalidReturnType>
-      <code>AST\ArithmeticFactor</code>
-      <code>AST\ArithmeticTerm</code>
-      <code>AST\BetweenExpression|</code>
-      <code>AST\SimpleArithmeticExpression|AST\ArithmeticTerm</code>
-    </InvalidReturnType>
     <InvalidStringClass>
       <code>new $functionClass($functionName)</code>
       <code>new $functionClass($functionName)</code>
@@ -1367,7 +1323,6 @@
       <code>$AST</code>
       <code>$conditionalExpression</code>
       <code>$expr</code>
-      <code>$pathExp</code>
       <code>$this-&gt;ConditionalExpression()</code>
       <code>$this-&gt;ConditionalExpression()</code>
       <code>$this-&gt;lexer-&gt;getLiteral($token)</code>
@@ -1377,7 +1332,6 @@
     <PossiblyInvalidPropertyAssignmentValue>
       <code>$this-&gt;ConditionalExpression()</code>
       <code>$this-&gt;ConditionalExpression()</code>
-      <code>$this-&gt;SimpleArithmeticExpression()</code>
     </PossiblyInvalidPropertyAssignmentValue>
     <PossiblyNullArgument>
       <code>$dql</code>
@@ -1391,15 +1345,9 @@
       <code>$token-&gt;value</code>
       <code>$token-&gt;value</code>
     </PossiblyNullPropertyFetch>
-    <PossiblyUndefinedVariable>
-      <code>$args</code>
-    </PossiblyUndefinedVariable>
     <RedundantCondition>
       <code>$token-&gt;value === TokenType::T_IDENTIFIER-&gt;value</code>
     </RedundantCondition>
-    <RedundantConditionGivenDocblockType>
-      <code>$AST instanceof AST\SelectStatement</code>
-    </RedundantConditionGivenDocblockType>
   </file>
   <file src="lib/Doctrine/ORM/Query/QueryExpressionVisitor.php">
     <InvalidReturnStatement>
@@ -1421,7 +1369,6 @@
   <file src="lib/Doctrine/ORM/Query/SqlWalker.php">
     <DocblockTypeContradiction>
       <code>$this-&gt;conn-&gt;quote((string) $newValue)</code>
-      <code>is_string($expression)</code>
     </DocblockTypeContradiction>
     <InvalidArgument>
       <code>$assoc</code>

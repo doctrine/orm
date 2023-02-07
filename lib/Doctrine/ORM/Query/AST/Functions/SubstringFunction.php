@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Query\AST\Functions;
 
 use Doctrine\ORM\Query\AST\Node;
-use Doctrine\ORM\Query\AST\SimpleArithmeticExpression;
 use Doctrine\ORM\Query\Parser;
 use Doctrine\ORM\Query\SqlWalker;
 use Doctrine\ORM\Query\TokenType;
@@ -19,11 +18,8 @@ class SubstringFunction extends FunctionNode
 {
     public Node $stringPrimary;
 
-    /** @var SimpleArithmeticExpression */
-    public $firstSimpleArithmeticExpression;
-
-    /** @var SimpleArithmeticExpression|null */
-    public $secondSimpleArithmeticExpression = null;
+    public Node|string $firstSimpleArithmeticExpression;
+    public Node|string|null $secondSimpleArithmeticExpression = null;
 
     public function getSql(SqlWalker $sqlWalker): string
     {

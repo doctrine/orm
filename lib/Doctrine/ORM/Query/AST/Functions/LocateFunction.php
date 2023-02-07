@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Query\AST\Functions;
 
 use Doctrine\ORM\Query\AST\Node;
-use Doctrine\ORM\Query\AST\SimpleArithmeticExpression;
 use Doctrine\ORM\Query\Parser;
 use Doctrine\ORM\Query\SqlWalker;
 use Doctrine\ORM\Query\TokenType;
@@ -17,11 +16,10 @@ use Doctrine\ORM\Query\TokenType;
  */
 class LocateFunction extends FunctionNode
 {
-    public Node $firstStringPrimary;
-    public Node $secondStringPrimary;
+    public Node|string $firstStringPrimary;
+    public Node|string $secondStringPrimary;
 
-    /** @var SimpleArithmeticExpression|bool */
-    public $simpleArithmeticExpression = false;
+    public Node|string|bool $simpleArithmeticExpression = false;
 
     public function getSql(SqlWalker $sqlWalker): string
     {
