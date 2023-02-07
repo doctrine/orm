@@ -253,7 +253,13 @@ class SchemaValidator
             }
         }
 
-        if (! $class->isInheritanceTypeNone() && ! $class->isRootEntity() && ! $class->isMappedSuperclass && array_search($class->name, $class->discriminatorMap, true) === false) {
+        if (
+            ! $class->isInheritanceTypeNone()
+            && ! $class->isRootEntity()
+            && ($class->reflClass !== null && ! $class->reflClass->isAbstract())
+            && ! $class->isMappedSuperclass
+            && array_search($class->name, $class->discriminatorMap, true) === false
+        ) {
             $ce[] = "Entity class '" . $class->name . "' is part of inheritance hierarchy, but is " .
                 "not mapped in the root entity '" . $class->rootEntityName . "' discriminator map. " .
                 'All subclasses must be listed in the discriminator map.';

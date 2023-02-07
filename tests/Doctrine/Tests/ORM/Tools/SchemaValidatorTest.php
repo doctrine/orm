@@ -221,6 +221,14 @@ class SchemaValidatorTest extends OrmTestCase
 
         $this->assertEquals([], $ce);
     }
+
+    public function testAbstractChildClassNotPresentInDiscriminator(): void
+    {
+        $class1 = $this->em->getClassMetadata(Issue9095AbstractChild::class);
+        $ce     = $this->validator->validateClass($class1);
+
+        self::assertEmpty($ce);
+    }
 }
 
 /** @MappedSuperclass */
@@ -642,4 +650,29 @@ class EmbeddableWithAssociation
      * @OneToOne(targetEntity="Doctrine\Tests\Models\ECommerce\ECommerceCart")
      */
     private $cart;
+}
+
+/**
+ * @Entity
+ * @InheritanceType("SINGLE_TABLE")
+ * @DiscriminatorMap({"child" = Issue9095Child::class})
+ */
+abstract class Issue9095Parent
+{
+    /**
+     * @var mixed
+     * @Id
+     * @Column
+     */
+    protected $key;
+}
+
+/** @Entity */
+abstract class Issue9095AbstractChild extends Issue9095Parent
+{
+}
+
+/** @Entity */
+class Issue9095Child extends Issue9095AbstractChild
+{
 }
