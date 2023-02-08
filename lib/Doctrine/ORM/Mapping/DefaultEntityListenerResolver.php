@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Mapping;
 
-use function get_class;
 use function trim;
 
 /**
@@ -29,7 +28,7 @@ class DefaultEntityListenerResolver implements EntityListenerResolver
 
     public function register(object $object): void
     {
-        $this->instances[get_class($object)] = $object;
+        $this->instances[$object::class] = $object;
     }
 
     public function resolve(string $className): object

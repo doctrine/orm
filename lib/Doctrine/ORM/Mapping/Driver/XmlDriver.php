@@ -11,6 +11,7 @@ use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\Persistence\Mapping\ClassMetadata as PersistenceClassMetadata;
 use Doctrine\Persistence\Mapping\Driver\FileDriver;
+use Doctrine\Persistence\Mapping\Driver\FileLocator;
 use DOMDocument;
 use InvalidArgumentException;
 use LogicException;
@@ -41,14 +42,14 @@ class XmlDriver extends FileDriver
 {
     public const DEFAULT_FILE_EXTENSION = '.dcm.xml';
 
-    /** @var bool */
-    private $isXsdValidationEnabled;
-
     /**
      * {@inheritDoc}
      */
-    public function __construct($locator, $fileExtension = self::DEFAULT_FILE_EXTENSION, bool $isXsdValidationEnabled = false)
-    {
+    public function __construct(
+        string|array|FileLocator $locator,
+        string $fileExtension = self::DEFAULT_FILE_EXTENSION,
+        private readonly bool $isXsdValidationEnabled = false,
+    ) {
         if (! extension_loaded('simplexml')) {
             throw new LogicException(sprintf(
                 'The XML metadata driver cannot be enabled because the SimpleXML PHP extension is missing.'
@@ -73,8 +74,6 @@ class XmlDriver extends FileDriver
             ));
         }
 
-        $this->isXsdValidationEnabled = $isXsdValidationEnabled;
-
         parent::__construct($locator, $fileExtension);
     }
 
@@ -86,7 +85,7 @@ class XmlDriver extends FileDriver
      *
      * @template T of object
      */
-    public function loadMetadataForClass($className, PersistenceClassMetadata $metadata)
+    public function loadMetadataForClass($className, PersistenceClassMetadata $metadata): void
     {
         $xmlRoot = $this->getElement($className);
         assert($xmlRoot instanceof SimpleXMLElement);
@@ -962,12 +961,7 @@ class XmlDriver extends FileDriver
         }
     }
 
-    /**
-     * @param mixed $element
-     *
-     * @return bool
-     */
-    protected function evaluateBoolean($element)
+    protected function evaluateBoolean(mixed $element): bool
     {
         $flag = (string) $element;
 

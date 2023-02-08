@@ -22,7 +22,7 @@ class PathExpression extends Node
     final public const TYPE_STATE_FIELD                   = 8;
 
     /** @psalm-var self::TYPE_*|null */
-    public int|null $type;
+    public int|null $type = null;
 
     /** @psalm-param int-mask-of<self::TYPE_*> $expectedType */
     public function __construct(

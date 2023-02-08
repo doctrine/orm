@@ -55,7 +55,6 @@ use function array_diff_key;
 use function array_filter;
 use function array_key_exists;
 use function array_map;
-use function array_merge;
 use function array_pop;
 use function array_sum;
 use function array_values;
@@ -983,7 +982,7 @@ class UnitOfWork implements PropertyChangedListener
 
         if ($changeSet) {
             if (isset($this->entityChangeSets[$oid])) {
-                $this->entityChangeSets[$oid] = array_merge($this->entityChangeSets[$oid], $changeSet);
+                $this->entityChangeSets[$oid] = [...$this->entityChangeSets[$oid], ...$changeSet];
             } elseif (! isset($this->entityInsertions[$oid])) {
                 $this->entityChangeSets[$oid] = $changeSet;
                 $this->entityUpdates[$oid]    = $entity;
@@ -2891,7 +2890,7 @@ class UnitOfWork implements PropertyChangedListener
             return;
         }
 
-        foreach (array_merge($this->persisters, $this->collectionPersisters) as $persister) {
+        foreach ([...$this->persisters, ...$this->collectionPersisters] as $persister) {
             if ($persister instanceof CachedPersister) {
                 $callback($persister);
             }

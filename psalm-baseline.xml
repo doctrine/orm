@@ -659,10 +659,6 @@
             'region' =&gt; $region,
         ]</code>
     </LessSpecificReturnStatement>
-    <MissingParamType>
-      <code>$fileExtension</code>
-      <code>$locator</code>
-    </MissingParamType>
     <MoreSpecificImplementedParamType>
       <code>$metadata</code>
     </MoreSpecificImplementedParamType>
@@ -1188,7 +1184,6 @@
     </PossiblyInvalidIterator>
     <PropertyNotSetInConstructor>
       <code>MultiTableDeleteExecutor</code>
-      <code>MultiTableDeleteExecutor</code>
     </PropertyNotSetInConstructor>
     <UninitializedProperty>
       <code>$this-&gt;sqlStatements</code>
@@ -1206,7 +1201,6 @@
     </PossiblyInvalidIterator>
     <PropertyNotSetInConstructor>
       <code>MultiTableUpdateExecutor</code>
-      <code>MultiTableUpdateExecutor</code>
     </PropertyNotSetInConstructor>
     <PropertyTypeCoercion>
       <code>$this-&gt;sqlStatements</code>
@@ -1219,9 +1213,6 @@
     <PossiblyInvalidArgument>
       <code>$this-&gt;sqlStatements</code>
     </PossiblyInvalidArgument>
-    <PropertyNotSetInConstructor>
-      <code>SingleSelectExecutor</code>
-    </PropertyNotSetInConstructor>
   </file>
   <file src="lib/Doctrine/ORM/Query/Exec/SingleTableDeleteUpdateExecutor.php">
     <InvalidReturnStatement>
@@ -1234,7 +1225,6 @@
       <code>$this-&gt;sqlStatements</code>
     </PossiblyInvalidArgument>
     <PropertyNotSetInConstructor>
-      <code>SingleTableDeleteUpdateExecutor</code>
       <code>SingleTableDeleteUpdateExecutor</code>
     </PropertyNotSetInConstructor>
   </file>
