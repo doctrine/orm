@@ -2959,9 +2959,6 @@
       <code>$AST-&gt;whereClause-&gt;conditionalExpression instanceof ConditionalFactor</code>
       <code>$AST-&gt;whereClause-&gt;conditionalExpression instanceof ConditionalPrimary</code>
     </DocblockTypeContradiction>
-    <MissingClosureReturnType>
-      <code>static function ($id) use ($connection, $type) {</code>
-    </MissingClosureReturnType>
     <PossiblyInvalidPropertyAssignmentValue>
       <code>$AST-&gt;whereClause-&gt;conditionalExpression</code>
     </PossiblyInvalidPropertyAssignmentValue>

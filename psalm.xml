@@ -231,5 +231,10 @@
                 <referencedMethod name="Doctrine\DBAL\Platforms\AbstractPlatform::getGuidExpression"/>
             </errorLevel>
         </UndefinedMethod>
+        <MissingClosureReturnType>
+            <errorLevel type="suppress">
+                <file name="lib/Doctrine/ORM/Tools/Pagination/Paginator.php"/>
+            </errorLevel>
+        </MissingClosureReturnType>
     </issueHandlers>
 </psalm>
