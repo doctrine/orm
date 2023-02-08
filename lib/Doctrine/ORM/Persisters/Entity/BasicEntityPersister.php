@@ -271,6 +271,10 @@ class BasicEntityPersister implements EntityPersister
                 $paramIndex = 1;
 
                 foreach ($insertData[$tableName] as $column => $value) {
+                    if ($value instanceof BackedEnum) {
+                        $value = $value->value;
+                    }
+
                     $stmt->bindValue($paramIndex++, $value, $this->columnTypes[$column]);
                 }
             }

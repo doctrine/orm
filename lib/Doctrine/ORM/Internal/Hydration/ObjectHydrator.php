@@ -14,6 +14,7 @@ use Doctrine\Persistence\Proxy;
 
 use function array_fill_keys;
 use function array_keys;
+use function array_map;
 use function count;
 use function is_array;
 use function key;
@@ -284,13 +285,17 @@ class ObjectHydrator extends AbstractHydrator
         $class = $this->_metadataCache[$className];
 
         if ($class->isIdentifierComposite) {
-            $idHash = '';
-
-            foreach ($class->identifier as $fieldName) {
-                $idHash .= ' ' . (isset($class->associationMappings[$fieldName])
-                    ? $data[$class->associationMappings[$fieldName]['joinColumns'][0]['name']]
-                    : $data[$fieldName]);
-            }
+            $idHash = UnitOfWork::getIdHashByIdentifier(
+                array_map(
+                    /** @return mixed */
+                    static function (string $fieldName) use ($data, $class) {
+                        return isset($class->associationMappings[$fieldName])
+                            ? $data[$class->associationMappings[$fieldName]['joinColumns'][0]['name']]
+                            : $data[$fieldName];
+                    },
+                    $class->identifier
+                )
+            );
 
             return $this->_uow->tryGetByIdHash(ltrim($idHash), $class->rootEntityName);
         } elseif (isset($class->associationMappings[$class->identifier[0]])) {
