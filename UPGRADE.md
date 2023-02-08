@@ -1,5 +1,10 @@
 # Upgrade to 3.0
 
+## BC BREAK: Undeclared entity inheritance now throws a `MappingException`
+
+As soon as an entity class inherits from another entity class, inheritance has to
+be declared by adding the appropriate configuration for the root entity.
+
 ## Removed `getEntityManager()` in `Doctrine\ORM\Event\OnClearEventArgs` and `Doctrine\ORM\Event\*FlushEventArgs`
 
 Use `getObjectManager()` instead.
