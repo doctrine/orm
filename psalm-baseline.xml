@@ -2197,6 +2197,12 @@
       <code>$this-&gt;parameters</code>
     </PropertyTypeCoercion>
   </file>
+  <file src="lib/Doctrine/ORM/Query/ParameterTypeInferer.php">
+    <DeprecatedConstant>
+      <code>Connection::PARAM_INT_ARRAY</code>
+      <code>Connection::PARAM_STR_ARRAY</code>
+    </DeprecatedConstant>
+  </file>
   <file src="lib/Doctrine/ORM/Query/Parser.php">
     <ArgumentTypeCoercion>
       <code>$stringPattern</code>
@@ -2612,6 +2618,9 @@
     </NoInterfaceProperties>
   </file>
   <file src="lib/Doctrine/ORM/Tools/Console/Command/EnsureProductionSettingsCommand.php">
+    <InvalidDocblock>
+      <code>connect</code>
+    </InvalidDocblock>
     <MissingReturnType>
       <code>configure</code>
     </MissingReturnType>
