@@ -21,7 +21,7 @@ abstract class AbstractSqlExecutor
     /** @var list<string>|string */
     protected array|string $sqlStatements;
 
-    protected QueryCacheProfile|null $queryCacheProfile;
+    protected QueryCacheProfile|null $queryCacheProfile = null;
 
     /**
      * Gets the SQL statements that are executed by the executor.

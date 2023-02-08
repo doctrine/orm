@@ -17,7 +17,7 @@ class OptimisticLockException extends Exception implements ORMException
 {
     public function __construct(
         string $msg,
-        private object|string|null $entity,
+        private readonly object|string|null $entity,
         Throwable|null $previous = null,
     ) {
         parent::__construct($msg, 0, $previous);
