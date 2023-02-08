@@ -667,6 +667,27 @@ SQL
         self::assertCount(9, $paginator->getIterator());
     }
 
+    public function testDifferentResultLengthsDoNotRequireExtraQueryCacheEntries(): void
+    {
+        $dql   = 'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id >= :id';
+        $query = $this->_em->createQuery($dql);
+        $query->setMaxResults(10);
+
+        $query->setParameter('id', 1);
+        $paginator = new Paginator($query);
+        $paginator->getIterator(); // exercise the Paginator
+
+        $initialCount = count(self::$queryCache->getValues());
+
+        $query->setParameter('id', 2);
+        $paginator = new Paginator($query);
+        $paginator->getIterator(); // exercise the Paginator again, with a smaller result set
+
+        $newCount = count(self::$queryCache->getValues());
+
+        self::assertSame($initialCount, $newCount);
+    }
+
     public function populate(): void
     {
         $groups = [];
