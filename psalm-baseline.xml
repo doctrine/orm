@@ -2175,6 +2175,12 @@
       <code>$this-&gt;parameters</code>
     </PropertyTypeCoercion>
   </file>
+  <file src="lib/Doctrine/ORM/Query/ParameterTypeInferer.php">
+    <DeprecatedConstant>
+      <code>Connection::PARAM_INT_ARRAY</code>
+      <code>Connection::PARAM_STR_ARRAY</code>
+    </DeprecatedConstant>
+  </file>
   <file src="lib/Doctrine/ORM/Query/Parser.php">
     <ArgumentTypeCoercion>
       <code>$stringPattern</code>
@@ -2585,6 +2591,9 @@
     </NoInterfaceProperties>
   </file>
   <file src="lib/Doctrine/ORM/Tools/Console/Command/EnsureProductionSettingsCommand.php">
+    <InvalidDocblock>
+      <code>connect</code>
+    </InvalidDocblock>
     <MissingReturnType>
       <code>configure</code>
     </MissingReturnType>
@@ -2921,9 +2930,6 @@
       <code>$AST-&gt;whereClause-&gt;conditionalExpression instanceof ConditionalFactor</code>
       <code>$AST-&gt;whereClause-&gt;conditionalExpression instanceof ConditionalPrimary</code>
     </DocblockTypeContradiction>
-    <MissingClosureReturnType>
-      <code>static function ($id) use ($connection, $type) {</code>
-    </MissingClosureReturnType>
     <PossiblyInvalidPropertyAssignmentValue>
       <code>$AST-&gt;whereClause-&gt;conditionalExpression</code>
     </PossiblyInvalidPropertyAssignmentValue>
