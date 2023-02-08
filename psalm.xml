@@ -55,6 +55,8 @@
                 <file name="lib/Doctrine/ORM/Tools/EntityGenerator.php" />
                 <file name="lib/Doctrine/ORM/Tools/Export/Driver/AbstractExporter.php" />
                 <file name="lib/Doctrine/ORM/Tools/SchemaTool.php" />
+                <!-- Constants deprecated in DBAL 3.6, but the replacement is not available before that -->
+                <file name="lib/Doctrine/ORM/Query/ParameterTypeInferer.php" />
             </errorLevel>
         </DeprecatedConstant>
         <DeprecatedInterface>
@@ -273,5 +275,10 @@
                 <referencedMethod name="Doctrine\DBAL\Platforms\AbstractPlatform::getGuidExpression"/>
             </errorLevel>
         </UndefinedMethod>
+        <InvalidDocblock>
+            <errorLevel type="suppress">
+                <file name="lib/Doctrine/ORM/Tools/Console/Command/EnsureProductionSettingsCommand.php" />
+            </errorLevel>
+        </InvalidDocblock>
     </issueHandlers>
 </psalm>
