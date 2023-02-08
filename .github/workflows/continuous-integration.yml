@@ -112,13 +112,18 @@ jobs:
           - "3@dev"
         postgres-version:
           - "15"
+        extension:
+          - pdo_pgsql
+          - pgsql
         include:
-        - php-version: "8.2"
-          dbal-version: "4@dev"
-          postgres-version: "14"
-        - php-version: "8.2"
-          dbal-version: "default"
-          postgres-version: "9.6"
+          - php-version: "8.2"
+            dbal-version: "4@dev"
+            postgres-version: "14"
+            extension: pdo_pgsql
+          - php-version: "8.2"
+            dbal-version: "default"
+            postgres-version: "9.6"
+            extension: pdo_pgsql
 
     services:
       postgres:
@@ -142,6 +147,7 @@ jobs:
         uses: "shivammathur/setup-php@v2"
         with:
           php-version: "${{ matrix.php-version }}"
+          extensions: "pgsql pdo_pgsql"
           coverage: "pcov"
           ini-values: "zend.assertions=1, apc.enable_cli=1"
 

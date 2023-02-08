@@ -160,16 +160,10 @@ class ClassMetadataFactoryTest extends OrmTestCase
         $driver = $this->createMock(MappingDriver::class);
         $driver->expects(self::exactly(2))
             ->method('isTransient')
-            ->withConsecutive(
-                [CmsUser::class],
-                [CmsArticle::class],
-            )
-            ->willReturnMap(
-                [
-                    [CmsUser::class, true],
-                    [CmsArticle::class, false],
-                ],
-            );
+            ->willReturnMap([
+                [CmsUser::class, true],
+                [CmsArticle::class, false],
+            ]);
 
         $em = $this->createEntityManager($driver);
 

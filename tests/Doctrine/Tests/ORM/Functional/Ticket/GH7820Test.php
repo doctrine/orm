@@ -17,6 +17,7 @@ use PHPUnit\Framework\Assert;
 use Psr\Cache\CacheItemInterface;
 use Stringable;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
+use Symfony\Component\Cache\CacheItem;
 
 use function array_map;
 use function is_string;
@@ -110,6 +111,35 @@ class GH7820Test extends OrmFunctionalTestCase
         $this->fetchSongLinesWithPaginator();
 
         // Make sure we can query again without overwriting the cache
+        $this->fetchSongLinesWithPaginator();
+    }
+
+    public function testPaginatorQueriesWillBeCached(): void
+    {
+        $cache = new class extends ArrayAdapter {
+            /** @var bool */
+            private $failOnCacheMiss = false;
+
+            public function failOnCacheMiss(): void
+            {
+                $this->failOnCacheMiss = true;
+            }
+
+            public function getItem($key): CacheItem
+            {
+                $item = parent::getItem($key);
+                Assert::assertTrue(! $this->failOnCacheMiss || $item->isHit(), 'cache was missed');
+
+                return $item;
+            }
+        };
+        $this->_em->getConfiguration()->setQueryCache($cache);
+
+        // Prime the cache
+        $this->fetchSongLinesWithPaginator();
+
+        $cache->failOnCacheMiss();
+
         $this->fetchSongLinesWithPaginator();
     }
 
