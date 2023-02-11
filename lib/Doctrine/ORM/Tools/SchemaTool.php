@@ -97,7 +97,7 @@ class SchemaTool
 
         foreach ($createSchemaSql as $sql) {
             try {
-                $conn->executeQuery($sql);
+                $conn->executeStatement($sql);
             } catch (Throwable $e) {
                 throw ToolsException::schemaToolFailure($sql, $e);
             }
@@ -831,7 +831,7 @@ class SchemaTool
 
         foreach ($dropSchemaSql as $sql) {
             try {
-                $conn->executeQuery($sql);
+                $conn->executeStatement($sql);
             } catch (Throwable $e) {
                 // ignored
             }
@@ -849,7 +849,7 @@ class SchemaTool
         $conn          = $this->em->getConnection();
 
         foreach ($dropSchemaSql as $sql) {
-            $conn->executeQuery($sql);
+            $conn->executeStatement($sql);
         }
     }
 
@@ -939,7 +939,7 @@ class SchemaTool
         $conn            = $this->em->getConnection();
 
         foreach ($updateSchemaSql as $sql) {
-            $conn->executeQuery($sql);
+            $conn->executeStatement($sql);
         }
     }
 
