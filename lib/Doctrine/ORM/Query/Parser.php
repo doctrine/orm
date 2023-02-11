@@ -9,6 +9,7 @@ use Doctrine\Deprecations\Deprecation;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\AssociationMapping;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\ToOneAssociationMapping;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\AST\Functions;
 use LogicException;
@@ -626,7 +627,7 @@ final class Parser
                 if (
                     isset($class->associationMappings[$field]) &&
                     $class->associationMappings[$field]['isOwningSide'] &&
-                    $class->associationMappings[$field]['type'] & ClassMetadata::TO_ONE
+                    $class->associationMappings[$field] instanceof ToOneAssociationMapping
                 ) {
                     continue;
                 }
@@ -718,7 +719,7 @@ final class Parser
             if (isset($class->associationMappings[$field])) {
                 $assoc = $class->associationMappings[$field];
 
-                $fieldType = $assoc['type'] & ClassMetadata::TO_ONE
+                $fieldType = $assoc instanceof ToOneAssociationMapping
                     ? AST\PathExpression::TYPE_SINGLE_VALUED_ASSOCIATION
                     : AST\PathExpression::TYPE_COLLECTION_VALUED_ASSOCIATION;
             }

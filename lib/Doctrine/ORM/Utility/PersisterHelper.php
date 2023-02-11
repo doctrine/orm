@@ -6,6 +6,7 @@ namespace Doctrine\ORM\Utility;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\ManyToManyAssociationMapping;
 use Doctrine\ORM\Query\QueryException;
 use RuntimeException;
 
@@ -40,7 +41,7 @@ class PersisterHelper
             return self::getTypeOfField($assoc['mappedBy'], $em->getClassMetadata($assoc['targetEntity']), $em);
         }
 
-        if ($assoc['type'] & ClassMetadata::MANY_TO_MANY) {
+        if ($assoc instanceof ManyToManyAssociationMapping) {
             $joinData = $assoc['joinTable'];
         } else {
             $joinData = $assoc;

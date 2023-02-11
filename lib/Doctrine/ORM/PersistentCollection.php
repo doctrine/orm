@@ -11,6 +11,7 @@ use Doctrine\Common\Collections\Criteria;
 use Doctrine\Common\Collections\Selectable;
 use Doctrine\ORM\Mapping\AssociationMapping;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\ToManyAssociationMapping;
 use RuntimeException;
 
 use function array_combine;
@@ -314,7 +315,7 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
 
         if (
             $this->association !== null &&
-            $this->association['type'] & ClassMetadata::TO_MANY &&
+            $this->association instanceof ToManyAssociationMapping &&
             $this->owner &&
             $this->association['orphanRemoval']
         ) {
@@ -336,7 +337,7 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
 
         if (
             $this->association !== null &&
-            $this->association['type'] & ClassMetadata::TO_MANY &&
+            $this->association instanceof ToManyAssociationMapping &&
             $this->owner &&
             $this->association['orphanRemoval']
         ) {
@@ -475,7 +476,7 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
         $uow = $this->getUnitOfWork();
 
         if (
-            $this->association['type'] & ClassMetadata::TO_MANY &&
+            $this->association instanceof ToManyAssociationMapping &&
             $this->association['orphanRemoval'] &&
             $this->owner
         ) {

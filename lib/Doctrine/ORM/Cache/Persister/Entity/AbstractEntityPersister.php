@@ -21,6 +21,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\AssociationMapping;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
+use Doctrine\ORM\Mapping\ToOneAssociationMapping;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\Persisters\Entity\EntityPersister;
 use Doctrine\ORM\Query\ResultSetMapping;
@@ -170,7 +171,7 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
             foreach ($this->class->associationMappings as $name => $assoc) {
                 if (
                     isset($assoc['cache']) &&
-                    ($assoc['type'] & ClassMetadata::TO_ONE) &&
+                    ($assoc instanceof ToOneAssociationMapping) &&
                     ($assoc['fetch'] === ClassMetadata::FETCH_EAGER || ! $assoc['isOwningSide'])
                 ) {
                     $associations[] = $name;

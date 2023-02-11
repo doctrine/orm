@@ -33,6 +33,9 @@ use Doctrine\ORM\Internal\HydrationCompleteHandler;
 use Doctrine\ORM\Mapping\AssociationMapping;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\MappingException;
+use Doctrine\ORM\Mapping\OneToOneAssociationMapping;
+use Doctrine\ORM\Mapping\ToManyAssociationMapping;
+use Doctrine\ORM\Mapping\ToOneAssociationMapping;
 use Doctrine\ORM\Persisters\Collection\CollectionPersister;
 use Doctrine\ORM\Persisters\Collection\ManyToManyPersister;
 use Doctrine\ORM\Persisters\Collection\OneToManyPersister;
@@ -612,7 +615,7 @@ class UnitOfWork implements PropertyChangedListener
 
                 $assoc = $class->associationMappings[$propName];
 
-                if ($assoc['isOwningSide'] && $assoc['type'] & ClassMetadata::TO_ONE) {
+                if ($assoc['isOwningSide'] && $assoc instanceof ToOneAssociationMapping) {
                     $changeSet[$propName] = [null, $actualValue];
                 }
             }
@@ -699,7 +702,7 @@ class UnitOfWork implements PropertyChangedListener
                     continue;
                 }
 
-                if ($assoc['type'] & ClassMetadata::TO_ONE) {
+                if ($assoc instanceof ToOneAssociationMapping) {
                     if ($assoc['isOwningSide']) {
                         $changeSet[$propName] = [$orgValue, $actualValue];
                     }
@@ -806,7 +809,7 @@ class UnitOfWork implements PropertyChangedListener
         // Look through the entities, and in any of their associations,
         // for transient (new) entities, recursively. ("Persistence by reachability")
         // Unwrap. Uninitialized collections will simply be empty.
-        $unwrappedValue = $assoc['type'] & ClassMetadata::TO_ONE ? [$value] : $value->unwrap();
+        $unwrappedValue = $assoc instanceof ToOneAssociationMapping ? [$value] : $value->unwrap();
         $targetClass    = $this->em->getClassMetadata($assoc['targetEntity']);
 
         foreach ($unwrappedValue as $key => $entry) {
@@ -847,7 +850,7 @@ class UnitOfWork implements PropertyChangedListener
                 case self::STATE_REMOVED:
                     // Consume the $value as array (it's either an array or an ArrayAccess)
                     // and remove the element from Collection.
-                    if ($assoc['type'] & ClassMetadata::TO_MANY) {
+                    if ($assoc instanceof ToManyAssociationMapping) {
                         unset($value[$key]);
                     }
 
@@ -1184,7 +1187,7 @@ class UnitOfWork implements PropertyChangedListener
         // Calculate dependencies for new nodes
         while ($class = array_pop($newNodes)) {
             foreach ($class->associationMappings as $assoc) {
-                if (! ($assoc['isOwningSide'] && $assoc['type'] & ClassMetadata::TO_ONE)) {
+                if (! ($assoc['isOwningSide'] && $assoc instanceof ToOneAssociationMapping)) {
                     continue;
                 }
 
@@ -1956,7 +1959,7 @@ class UnitOfWork implements PropertyChangedListener
 
                 case $relatedEntities instanceof Collection:
                 case is_array($relatedEntities):
-                    if (($assoc['type'] & ClassMetadata::TO_MANY) <= 0) {
+                    if (($assoc instanceof ToManyAssociationMapping) <= 0) {
                         throw ORMInvalidArgumentException::invalidAssociation(
                             $this->em->getClassMetadata($assoc['targetEntity']),
                             $assoc,
@@ -2284,7 +2287,7 @@ class UnitOfWork implements PropertyChangedListener
             $targetClass = $this->em->getClassMetadata($assoc['targetEntity']);
 
             switch (true) {
-                case $assoc['type'] & ClassMetadata::TO_ONE:
+                case $assoc instanceof ToOneAssociationMapping:
                     if (! $assoc['isOwningSide']) {
                         // use the given entity association
                         if (isset($data[$field]) && is_object($data[$field]) && isset($this->entityStates[spl_object_id($data[$field])])) {
@@ -2427,7 +2430,7 @@ class UnitOfWork implements PropertyChangedListener
                     $this->originalEntityData[$oid][$field] = $newValue;
                     $class->reflFields[$field]->setValue($entity, $newValue);
 
-                    if ($assoc['inversedBy'] && $assoc['type'] & ClassMetadata::ONE_TO_ONE && $newValue !== null) {
+                    if ($assoc['inversedBy'] && $assoc instanceof OneToOneAssociationMapping && $newValue !== null) {
                         $inverseAssoc = $targetClass->associationMappings[$assoc['inversedBy']];
                         $targetClass->reflFields[$inverseAssoc['fieldName']]->setValue($newValue, $entity);
                     }

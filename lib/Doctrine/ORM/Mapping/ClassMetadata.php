@@ -1368,7 +1368,7 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
             $mapping['isOwningSide'] = false;
         }
 
-        if (isset($mapping['id']) && $mapping['id'] === true && $mapping['type'] & self::TO_MANY) {
+        if (isset($mapping['id']) && $mapping['id'] === true && $mapping instanceof ToManyAssociationMapping) {
             throw MappingException::illegalToManyIdentifierAssociation($this->name, $mapping['fieldName']);
         }
 
@@ -2446,13 +2446,13 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
     public function isSingleValuedAssociation(string $fieldName): bool
     {
         return isset($this->associationMappings[$fieldName])
-            && ($this->associationMappings[$fieldName]['type'] & self::TO_ONE);
+            && ($this->associationMappings[$fieldName] instanceof ToOneAssociationMapping);
     }
 
     public function isCollectionValuedAssociation(string $fieldName): bool
     {
         return isset($this->associationMappings[$fieldName])
-            && ! ($this->associationMappings[$fieldName]['type'] & self::TO_ONE);
+            && ! ($this->associationMappings[$fieldName] instanceof ToOneAssociationMapping);
     }
 
     /**

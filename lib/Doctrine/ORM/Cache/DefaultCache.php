@@ -9,6 +9,7 @@ use Doctrine\ORM\Cache;
 use Doctrine\ORM\Cache\Persister\CachedPersister;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\ToManyAssociationMapping;
 use Doctrine\ORM\ORMInvalidArgumentException;
 use Doctrine\ORM\UnitOfWork;
 
@@ -157,7 +158,7 @@ class DefaultCache implements Cache
 
         foreach ($metadatas as $metadata) {
             foreach ($metadata->associationMappings as $association) {
-                if (! $association['type'] & ClassMetadata::TO_MANY) {
+                if (! $association instanceof ToManyAssociationMapping) {
                     continue;
                 }
 

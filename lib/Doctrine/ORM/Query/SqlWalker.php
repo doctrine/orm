@@ -14,6 +14,7 @@ use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ManyToOneAssociationMapping;
 use Doctrine\ORM\Mapping\OneToOneAssociationMapping;
 use Doctrine\ORM\Mapping\QuoteStrategy;
+use Doctrine\ORM\Mapping\ToOneAssociationMapping;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Utility\HierarchyDiscriminatorResolver;
@@ -684,7 +685,7 @@ class SqlWalker
             // Add foreign key columns of class and also parent classes
             foreach ($class->associationMappings as $assoc) {
                 if (
-                    ! ($assoc['isOwningSide'] && $assoc['type'] & ClassMetadata::TO_ONE)
+                    ! ($assoc['isOwningSide'] && $assoc instanceof ToOneAssociationMapping)
                     || ( ! $addMetaColumns && ! isset($assoc['id']))
                 ) {
                     continue;
@@ -723,7 +724,7 @@ class SqlWalker
                         continue;
                     }
 
-                    if ($assoc['isOwningSide'] && $assoc['type'] & ClassMetadata::TO_ONE) {
+                    if ($assoc['isOwningSide'] && $assoc instanceof ToOneAssociationMapping) {
                         $targetClass = $this->em->getClassMetadata($assoc['targetEntity']);
 
                         foreach ($assoc['joinColumns'] as $joinColumn) {
@@ -911,7 +912,7 @@ class SqlWalker
         // be the owning side and previously we ensured that $assoc is always the owning side of the associations.
         // The owning side is necessary at this point because only it contains the JoinColumn information.
         switch (true) {
-            case $assoc['type'] & ClassMetadata::TO_ONE:
+            case $assoc instanceof ToOneAssociationMapping:
                 $conditions = [];
 
                 foreach ($assoc['joinColumns'] as $joinColumn) {
@@ -1645,7 +1646,7 @@ class SqlWalker
         }
 
         foreach ($this->getMetadataForDqlAlias($groupByItem)->associationMappings as $mapping) {
-            if ($mapping['isOwningSide'] && $mapping['type'] & ClassMetadata::TO_ONE) {
+            if ($mapping['isOwningSide'] && $mapping instanceof ToOneAssociationMapping) {
                 $item       = new AST\PathExpression(AST\PathExpression::TYPE_SINGLE_VALUED_ASSOCIATION, $groupByItem, $mapping['fieldName']);
                 $item->type = AST\PathExpression::TYPE_SINGLE_VALUED_ASSOCIATION;
 

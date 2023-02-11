@@ -8,6 +8,7 @@ use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\Internal\SQLResultCasing;
 use Doctrine\ORM\Mapping\AssociationMapping;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\ToOneAssociationMapping;
 use Doctrine\ORM\Utility\PersisterHelper;
 
 use function array_flip;
@@ -67,7 +68,7 @@ class SingleTablePersister extends AbstractEntityInheritancePersister
 
             // Foreign key columns
             foreach ($subClass->associationMappings as $assoc) {
-                if (! $assoc['isOwningSide'] || ! ($assoc['type'] & ClassMetadata::TO_ONE) || isset($assoc['inherited'])) {
+                if (! $assoc['isOwningSide'] || ! ($assoc instanceof ToOneAssociationMapping) || isset($assoc['inherited'])) {
                     continue;
                 }
 

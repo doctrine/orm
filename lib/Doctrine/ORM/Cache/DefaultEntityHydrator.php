@@ -7,6 +7,7 @@ namespace Doctrine\ORM\Cache;
 use Doctrine\Common\Util\ClassUtils;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\ToOneAssociationMapping;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\UnitOfWork;
 use Doctrine\ORM\Utility\IdentifierFlattener;
@@ -57,7 +58,7 @@ class DefaultEntityHydrator implements EntityHydrator
                 continue;
             }
 
-            if (! ($assoc['type'] & ClassMetadata::TO_ONE)) {
+            if (! ($assoc instanceof ToOneAssociationMapping)) {
                 unset($data[$name]);
 
                 continue;

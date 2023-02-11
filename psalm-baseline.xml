@@ -26,9 +26,6 @@
     </PossiblyNullReference>
   </file>
   <file src="lib/Doctrine/ORM/Cache/DefaultCache.php">
-    <InvalidOperand>
-      <code><![CDATA[! $association['type']]]></code>
-    </InvalidOperand>
     <PossiblyNullPropertyAssignmentValue>
       <code><![CDATA[$em->getConfiguration()
             ->getSecondLevelCacheConfiguration()

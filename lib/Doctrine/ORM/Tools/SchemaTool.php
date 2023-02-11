@@ -20,6 +20,7 @@ use Doctrine\ORM\Mapping\FieldMapping;
 use Doctrine\ORM\Mapping\JoinColumnData;
 use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\ORM\Mapping\QuoteStrategy;
+use Doctrine\ORM\Mapping\ToOneAssociationMapping;
 use Doctrine\ORM\Tools\Event\GenerateSchemaEventArgs;
 use Doctrine\ORM\Tools\Event\GenerateSchemaTableEventArgs;
 use Doctrine\ORM\Tools\Exception\MissingColumnException;
@@ -539,7 +540,7 @@ class SchemaTool
 
             $foreignClass = $this->em->getClassMetadata($mapping['targetEntity']);
 
-            if ($mapping['type'] & ClassMetadata::TO_ONE && $mapping['isOwningSide']) {
+            if ($mapping instanceof ToOneAssociationMapping && $mapping['isOwningSide']) {
                 $primaryKeyColumns = []; // PK is unnecessary for this relation-type
 
                 $this->gatherRelationJoinColumns(

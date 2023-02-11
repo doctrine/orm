@@ -8,6 +8,7 @@ use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Internal\SQLResultCasing;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\ToOneAssociationMapping;
 use Doctrine\ORM\Utility\PersisterHelper;
 use InvalidArgumentException;
 use Stringable;
@@ -136,7 +137,7 @@ class ResultSetMappingBuilder extends ResultSetMapping implements Stringable
         }
 
         foreach ($classMetadata->associationMappings as $associationMapping) {
-            if ($associationMapping['isOwningSide'] && $associationMapping['type'] & ClassMetadata::TO_ONE) {
+            if ($associationMapping['isOwningSide'] && $associationMapping instanceof ToOneAssociationMapping) {
                 $targetClass  = $this->em->getClassMetadata($associationMapping['targetEntity']);
                 $isIdentifier = isset($associationMapping['id']) && $associationMapping['id'] === true;
 
@@ -216,7 +217,7 @@ class ResultSetMappingBuilder extends ResultSetMapping implements Stringable
         }
 
         foreach ($class->associationMappings as $associationMapping) {
-            if ($associationMapping['isOwningSide'] && $associationMapping['type'] & ClassMetadata::TO_ONE) {
+            if ($associationMapping['isOwningSide'] && $associationMapping instanceof ToOneAssociationMapping) {
                 foreach ($associationMapping['joinColumns'] as $joinColumn) {
                     $columnName               = $joinColumn['name'];
                     $columnAlias[$columnName] = $this->getColumnAlias($columnName, $mode, $customRenameColumns);

@@ -19,8 +19,11 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\AssociationMapping;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\ManyToManyAssociationMapping;
 use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\ORM\Mapping\QuoteStrategy;
+use Doctrine\ORM\Mapping\ToManyAssociationMapping;
+use Doctrine\ORM\Mapping\ToOneAssociationMapping;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\Persisters\Exception\CantUseInOperatorOnCompositeKeys;
@@ -625,7 +628,7 @@ class BasicEntityPersister implements EntityPersister
             $assoc = $this->class->associationMappings[$field];
 
             // Only owning side of x-1 associations can have a FK column.
-            if (! $assoc['isOwningSide'] || ! ($assoc['type'] & ClassMetadata::TO_ONE)) {
+            if (! $assoc['isOwningSide'] || ! ($assoc instanceof ToOneAssociationMapping)) {
                 continue;
             }
 
@@ -1186,14 +1189,14 @@ class BasicEntityPersister implements EntityPersister
                 $columnList[] = $assocColumnSQL;
             }
 
-            $isAssocToOneInverseSide = $assoc['type'] & ClassMetadata::TO_ONE && ! $assoc['isOwningSide'];
-            $isAssocFromOneEager     = $assoc['type'] !== ClassMetadata::MANY_TO_MANY && $assoc['fetch'] === ClassMetadata::FETCH_EAGER;
+            $isAssocToOneInverseSide = $assoc instanceof ToOneAssociationMapping && ! $assoc['isOwningSide'];
+            $isAssocFromOneEager     = ! $assoc instanceof ManyToManyAssociationMapping && $assoc['fetch'] === ClassMetadata::FETCH_EAGER;
 
             if (! ($isAssocFromOneEager || $isAssocToOneInverseSide)) {
                 continue;
             }
 
-            if ((($assoc['type'] & ClassMetadata::TO_MANY) > 0) && $this->currentPersisterContext->handlesLimits) {
+            if ((($assoc instanceof ToManyAssociationMapping) > 0) && $this->currentPersisterContext->handlesLimits) {
                 continue;
             }
 
@@ -1282,7 +1285,7 @@ class BasicEntityPersister implements EntityPersister
         ClassMetadata $class,
         string $alias = 'r',
     ): string {
-        if (! ($assoc['isOwningSide'] && $assoc['type'] & ClassMetadata::TO_ONE)) {
+        if (! ($assoc['isOwningSide'] && $assoc instanceof ToOneAssociationMapping)) {
             return '';
         }
 
@@ -1399,7 +1402,7 @@ class BasicEntityPersister implements EntityPersister
             if (isset($this->class->associationMappings[$name])) {
                 $assoc = $this->class->associationMappings[$name];
 
-                if ($assoc['isOwningSide'] && $assoc['type'] & ClassMetadata::TO_ONE) {
+                if ($assoc['isOwningSide'] && $assoc instanceof ToOneAssociationMapping) {
                     foreach ($assoc['joinColumns'] as $joinColumn) {
                         $columns[] = $this->quoteStrategy->getJoinColumnName($joinColumn, $this->class, $this->platform);
                     }
