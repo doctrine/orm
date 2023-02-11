@@ -626,8 +626,7 @@ final class Parser
 
                 if (
                     isset($class->associationMappings[$field]) &&
-                    $class->associationMappings[$field]['isOwningSide'] &&
-                    $class->associationMappings[$field] instanceof ToOneAssociationMapping
+                    $class->associationMappings[$field]->isToOneOwningSide()
                 ) {
                     continue;
                 }

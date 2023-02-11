@@ -11,7 +11,6 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Internal\SQLResultCasing;
 use Doctrine\ORM\Mapping\AssociationMapping;
 use Doctrine\ORM\Mapping\ClassMetadata;
-use Doctrine\ORM\Mapping\ToOneAssociationMapping;
 use Doctrine\ORM\Utility\PersisterHelper;
 
 use function array_combine;
@@ -388,7 +387,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
 
         // Add foreign key columns
         foreach ($this->class->associationMappings as $mapping) {
-            if (! $mapping['isOwningSide'] || ! ($mapping instanceof ToOneAssociationMapping)) {
+            if (! $mapping->isToOneOwningSide()) {
                 continue;
             }
 
@@ -431,11 +430,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
 
             // Add join columns (foreign keys)
             foreach ($subClass->associationMappings as $mapping) {
-                if (
-                    ! $mapping['isOwningSide']
-                        || ! ($mapping instanceof ToOneAssociationMapping)
-                        || isset($mapping['inherited'])
-                ) {
+                if (! $mapping->isToOneOwningSide() || isset($mapping['inherited'])) {
                     continue;
                 }
 
@@ -480,7 +475,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
 
             if (isset($this->class->associationMappings[$name])) {
                 $assoc = $this->class->associationMappings[$name];
-                if ($assoc instanceof ToOneAssociationMapping && $assoc['isOwningSide']) {
+                if ($assoc->isToOneOwningSide()) {
                     assert($assoc->targetToSourceKeyColumns !== null);
                     foreach ($assoc->targetToSourceKeyColumns as $sourceCol) {
                         $columns[] = $sourceCol;

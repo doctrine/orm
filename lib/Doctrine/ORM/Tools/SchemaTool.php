@@ -18,9 +18,10 @@ use Doctrine\ORM\Mapping\AssociationMapping;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\FieldMapping;
 use Doctrine\ORM\Mapping\JoinColumnData;
+use Doctrine\ORM\Mapping\ManyToManyOwningSideMapping;
 use Doctrine\ORM\Mapping\MappingException;
+use Doctrine\ORM\Mapping\OneToManyAssociationMapping;
 use Doctrine\ORM\Mapping\QuoteStrategy;
-use Doctrine\ORM\Mapping\ToOneAssociationMapping;
 use Doctrine\ORM\Tools\Event\GenerateSchemaEventArgs;
 use Doctrine\ORM\Tools\Event\GenerateSchemaTableEventArgs;
 use Doctrine\ORM\Tools\Exception\MissingColumnException;
@@ -540,7 +541,7 @@ class SchemaTool
 
             $foreignClass = $this->em->getClassMetadata($mapping['targetEntity']);
 
-            if ($mapping instanceof ToOneAssociationMapping && $mapping['isOwningSide']) {
+            if ($mapping->isToOneOwningSide()) {
                 $primaryKeyColumns = []; // PK is unnecessary for this relation-type
 
                 $this->gatherRelationJoinColumns(
@@ -552,10 +553,10 @@ class SchemaTool
                     $addedFks,
                     $blacklistedFks,
                 );
-            } elseif ($mapping['type'] === ClassMetadata::ONE_TO_MANY && $mapping['isOwningSide']) {
+            } elseif ($mapping instanceof OneToManyAssociationMapping && $mapping->isOwningSide()) {
                 //... create join table, one-many through join table supported later
                 throw NotSupported::create();
-            } elseif ($mapping['type'] === ClassMetadata::MANY_TO_MANY && $mapping['isOwningSide']) {
+            } elseif ($mapping instanceof ManyToManyOwningSideMapping) {
                 // create join table
                 $joinTable = $mapping['joinTable'];
 

@@ -1335,9 +1335,27 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
             throw MappingException::missingTargetEntity($mapping['fieldName']);
         }
 
+        // Mandatory and optional attributes for either side
+        if (! $mapping['mappedBy']) {
+            if (isset($mapping['joinTable'])) {
+                if (isset($mapping['joinTable']['name']) && $mapping['joinTable']['name'][0] === '`') {
+                    $mapping['joinTable']['name']   = trim($mapping['joinTable']['name'], '`');
+                    $mapping['joinTable']['quoted'] = true;
+                }
+            }
+        } else {
+            $mapping['isOwningSide'] = false;
+        }
+
         switch ($mapping['type']) {
             case self::ONE_TO_ONE:
-                $mapping = OneToOneAssociationMapping::fromMappingArray($mapping);
+                if (isset($mapping['joinColumns']) && $mapping['joinColumns']) {
+                    $mapping['isOwningSide'] = true;
+                }
+
+                $mapping = $mapping['isOwningSide'] ?
+                    OneToOneOwningSideMapping::fromMappingArray($mapping) :
+                    OneToOneAssociationMapping::fromMappingArray($mapping);
                 break;
 
             case self::MANY_TO_ONE:
@@ -1349,23 +1367,17 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
                 break;
 
             case self::MANY_TO_MANY:
-                $mapping = ManyToManyAssociationMapping::fromMappingArray($mapping);
+                if (isset($mapping['joinColumns'])) {
+                    unset($mapping['joinColumns']);
+                }
+
+                $mapping = $mapping['isOwningSide'] ?
+                    ManyToManyOwningSideMapping::fromMappingArray($mapping) :
+                    ManyToManyAssociationMapping::fromMappingArray($mapping);
                 break;
 
             default:
                 throw new Exception('woops');
-        }
-
-        // Mandatory and optional attributes for either side
-        if (! $mapping['mappedBy']) {
-            if (isset($mapping->joinTable)) {
-                if (isset($mapping['joinTable']['name']) && $mapping['joinTable']['name'][0] === '`') {
-                    $mapping->joinTable['name']   = trim($mapping['joinTable']['name'], '`');
-                    $mapping->joinTable['quoted'] = true;
-                }
-            }
-        } else {
-            $mapping['isOwningSide'] = false;
         }
 
         if (isset($mapping['id']) && $mapping['id'] === true && $mapping instanceof ToManyAssociationMapping) {
@@ -1413,10 +1425,6 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
     {
         $mapping = $this->_validateAndCompleteAssociationMapping($mapping);
         assert($mapping instanceof OneToOneAssociationMapping || $mapping instanceof ManyToOneAssociationMapping);
-
-        if (isset($mapping['joinColumns']) && $mapping['joinColumns']) {
-            $mapping['isOwningSide'] = true;
-        }
 
         if ($mapping['isOwningSide']) {
             if (empty($mapping['joinColumns'])) {
@@ -1533,7 +1541,7 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
         $mapping = $this->_validateAndCompleteAssociationMapping($mapping);
         assert($mapping instanceof ManyToManyAssociationMapping);
 
-        if ($mapping['isOwningSide']) {
+        if ($mapping instanceof ManyToManyOwningSideMapping) {
             // owning side MUST have a join table
             if (! isset($mapping['joinTable']['name'])) {
                 if (! isset($mapping->joinTable)) {

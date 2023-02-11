@@ -602,7 +602,7 @@ class SqlWalker
                 $assoc = $class->associationMappings[$fieldName];
                 assert($assoc instanceof OneToOneAssociationMapping || $assoc instanceof ManyToOneAssociationMapping);
 
-                if (! $assoc['isOwningSide']) {
+                if (! $assoc->isOwningSide()) {
                     throw QueryException::associationPathInverseSideNotSupported($pathExpr);
                 }
 
@@ -685,7 +685,7 @@ class SqlWalker
             // Add foreign key columns of class and also parent classes
             foreach ($class->associationMappings as $assoc) {
                 if (
-                    ! ($assoc['isOwningSide'] && $assoc instanceof ToOneAssociationMapping)
+                    ! $assoc->isToOneOwningSide()
                     || ( ! $addMetaColumns && ! isset($assoc['id']))
                 ) {
                     continue;
@@ -724,7 +724,7 @@ class SqlWalker
                         continue;
                     }
 
-                    if ($assoc['isOwningSide'] && $assoc instanceof ToOneAssociationMapping) {
+                    if ($assoc->isToOneOwningSide()) {
                         $targetClass = $this->em->getClassMetadata($assoc['targetEntity']);
 
                         foreach ($assoc['joinColumns'] as $joinColumn) {
@@ -804,7 +804,7 @@ class SqlWalker
                 $association = $class->associationMappings[$fieldName];
                 assert($association instanceof OneToOneAssociationMapping || $association instanceof ManyToOneAssociationMapping);
 
-                if (! $association['isOwningSide']) {
+                if (! $association->isOwningSide()) {
                     throw QueryException::associationPathInverseSideNotSupported($pathExpression);
                 }
 
@@ -1646,7 +1646,7 @@ class SqlWalker
         }
 
         foreach ($this->getMetadataForDqlAlias($groupByItem)->associationMappings as $mapping) {
-            if ($mapping['isOwningSide'] && $mapping instanceof ToOneAssociationMapping) {
+            if ($mapping->isToOneOwningSide()) {
                 $item       = new AST\PathExpression(AST\PathExpression::TYPE_SINGLE_VALUED_ASSOCIATION, $groupByItem, $mapping['fieldName']);
                 $item->type = AST\PathExpression::TYPE_SINGLE_VALUED_ASSOCIATION;
 

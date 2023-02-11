@@ -11,6 +11,7 @@ use Doctrine\Common\Collections\Criteria;
 use Doctrine\Common\Collections\Selectable;
 use Doctrine\ORM\Mapping\AssociationMapping;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\ManyToManyOwningSideMapping;
 use Doctrine\ORM\Mapping\ToManyAssociationMapping;
 use RuntimeException;
 
@@ -264,8 +265,7 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
 
         if (
             $this->association !== null &&
-            $this->association['isOwningSide'] &&
-            $this->association['type'] === ClassMetadata::MANY_TO_MANY &&
+            $this->association instanceof ManyToManyOwningSideMapping &&
             $this->owner &&
             $this->em !== null &&
             $this->em->getClassMetadata($this->owner::class)->isChangeTrackingNotify()
@@ -493,7 +493,7 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
 
         $this->initialized = true; // direct call, {@link initialize()} is too expensive
 
-        if ($this->association['isOwningSide'] && $this->owner) {
+        if ($this->association->isOwningSide() && $this->owner) {
             $this->changed();
 
             $uow->scheduleCollectionDeletion($this);

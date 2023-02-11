@@ -628,7 +628,7 @@ class BasicEntityPersister implements EntityPersister
             $assoc = $this->class->associationMappings[$field];
 
             // Only owning side of x-1 associations can have a FK column.
-            if (! $assoc['isOwningSide'] || ! ($assoc instanceof ToOneAssociationMapping)) {
+            if (! $assoc->isToOneOwningSide()) {
                 continue;
             }
 
@@ -1285,7 +1285,7 @@ class BasicEntityPersister implements EntityPersister
         ClassMetadata $class,
         string $alias = 'r',
     ): string {
-        if (! ($assoc['isOwningSide'] && $assoc instanceof ToOneAssociationMapping)) {
+        if (! $assoc->isToOneOwningSide()) {
             return '';
         }
 
@@ -1402,7 +1402,7 @@ class BasicEntityPersister implements EntityPersister
             if (isset($this->class->associationMappings[$name])) {
                 $assoc = $this->class->associationMappings[$name];
 
-                if ($assoc['isOwningSide'] && $assoc instanceof ToOneAssociationMapping) {
+                if ($assoc->isToOneOwningSide()) {
                     foreach ($assoc['joinColumns'] as $joinColumn) {
                         $columns[] = $this->quoteStrategy->getJoinColumnName($joinColumn, $this->class, $this->platform);
                     }

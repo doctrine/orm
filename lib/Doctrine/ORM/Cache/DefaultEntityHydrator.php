@@ -7,6 +7,7 @@ namespace Doctrine\ORM\Cache;
 use Doctrine\Common\Util\ClassUtils;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\OneToOneAssociationMapping;
 use Doctrine\ORM\Mapping\ToOneAssociationMapping;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\UnitOfWork;
@@ -66,7 +67,7 @@ class DefaultEntityHydrator implements EntityHydrator
 
             if (! isset($assoc['cache'])) {
                 $targetClassMetadata = $this->em->getClassMetadata($assoc['targetEntity']);
-                $owningAssociation   = ! $assoc['isOwningSide']
+                $owningAssociation   = ! $assoc->isOwningSide()
                     ? $targetClassMetadata->associationMappings[$assoc['mappedBy']]
                     : $assoc;
                 $associationIds      = $this->identifierFlattener->flattenIdentifier(
@@ -142,7 +143,7 @@ class DefaultEntityHydrator implements EntityHydrator
 
             $assocClass  = $data[$name]->class;
             $assocId     = $data[$name]->identifier;
-            $isEagerLoad = ($assoc['fetch'] === ClassMetadata::FETCH_EAGER || ($assoc['type'] === ClassMetadata::ONE_TO_ONE && ! $assoc['isOwningSide']));
+            $isEagerLoad = ($assoc['fetch'] === ClassMetadata::FETCH_EAGER || ($assoc instanceof OneToOneAssociationMapping && ! $assoc->isOwningSide()));
 
             if (! $isEagerLoad) {
                 $data[$name] = $this->em->getReference($assocClass, $assocId);

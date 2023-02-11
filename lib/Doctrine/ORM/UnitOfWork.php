@@ -615,7 +615,7 @@ class UnitOfWork implements PropertyChangedListener
 
                 $assoc = $class->associationMappings[$propName];
 
-                if ($assoc['isOwningSide'] && $assoc instanceof ToOneAssociationMapping) {
+                if ($assoc->isToOneOwningSide()) {
                     $changeSet[$propName] = [null, $actualValue];
                 }
             }
@@ -732,8 +732,7 @@ class UnitOfWork implements PropertyChangedListener
 
             if (
                 ! isset($this->entityChangeSets[$oid]) &&
-                $assoc['isOwningSide'] &&
-                $assoc['type'] === ClassMetadata::MANY_TO_MANY &&
+                $assoc->isManyToManyOwningSide() &&
                 $val instanceof PersistentCollection &&
                 $val->isDirty()
             ) {
@@ -1187,7 +1186,7 @@ class UnitOfWork implements PropertyChangedListener
         // Calculate dependencies for new nodes
         while ($class = array_pop($newNodes)) {
             foreach ($class->associationMappings as $assoc) {
-                if (! ($assoc['isOwningSide'] && $assoc instanceof ToOneAssociationMapping)) {
+                if (! $assoc->isToOneOwningSide()) {
                     continue;
                 }
 

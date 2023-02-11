@@ -156,7 +156,7 @@ class SchemaValidator
                 }
             }
 
-            if ($assoc['isOwningSide']) {
+            if ($assoc->isOwningSide()) {
                 if ($assoc['type'] === ClassMetadata::MANY_TO_MANY) {
                     $identifierColumns = $class->getIdentifierColumnNames();
                     foreach ($assoc['joinTable']['joinColumns'] as $joinColumn) {

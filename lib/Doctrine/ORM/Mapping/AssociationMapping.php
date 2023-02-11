@@ -79,8 +79,6 @@ class AssociationMapping implements ArrayAccess
 
     public bool|null $isOnDeleteCascade = null;
 
-    public bool $isOwningSide = true;
-
     /** @var array<string, string> */
     public array|null $joinColumnFieldNames = null;
 
@@ -115,7 +113,7 @@ class AssociationMapping implements ArrayAccess
      *                                   source entity.
      */
     final public function __construct(
-        public int $type,
+        public readonly int $type,
         public string $fieldName,
         public string $sourceEntity,
         public string $targetEntity,
@@ -133,6 +131,7 @@ class AssociationMapping implements ArrayAccess
      */
     public static function fromMappingArray(array $mappingArray): self
     {
+        unset($mappingArray['isOwningSide']);
         $mapping = new static(
             $mappingArray['type'],
             $mappingArray['fieldName'],
@@ -144,26 +143,14 @@ class AssociationMapping implements ArrayAccess
                 continue;
             }
 
-            if ($key === 'joinColumns') {
-                if ($value === null) {
-                    continue;
-                }
-
-                $joinColumns = [];
-                foreach ($value as $column) {
-                    $joinColumns[] = JoinColumnData::fromMappingArray($column);
-                }
-
-                $mapping->joinColumns = $joinColumns;
-
-                continue;
-            }
-
             if ($key === 'joinTable') {
                 assert($mapping instanceof ManyToManyAssociationMapping);
+
                 if ($value === [] || $value === null) {
                     continue;
                 }
+
+                assert($mapping instanceof ManyToManyOwningSideMapping);
 
                 $mapping->joinTable = JoinTableMapping::fromMappingArray($value);
 
@@ -190,7 +177,32 @@ class AssociationMapping implements ArrayAccess
 
     public function offsetGet($offset): mixed
     {
+        if ($offset === 'isOwningSide') {
+            return $this->isOwningSide();
+        }
+
         return $this->$offset;
+    }
+
+    /** @psalm-assert AssociationOwningSideMapping $this */
+    public function isOwningSide(): bool
+    {
+        return $this instanceof AssociationOwningSideMapping;
+    }
+
+    /**
+     * @psalm-assert-if-true ToOneAssociationMapping $this
+     * @psalm-assert-if-true AssociationOwningSideMapping $this
+     */
+    public function isToOneOwningSide(): bool
+    {
+        return $this instanceof ToOneAssociationMapping && $this->isOwningSide();
+    }
+
+    /** @psalm-assert-if-true ManyToManyOwningSideMapping $this */
+    public function isManyToManyOwningSide(): bool
+    {
+        return $this instanceof ManyToManyOwningSideMapping;
     }
 
     /**
@@ -198,15 +210,6 @@ class AssociationMapping implements ArrayAccess
      */
     public function offsetSet($offset, $value): void
     {
-        if ($offset === 'joinColumns') {
-            $joinColumns = [];
-            foreach ($value as $column) {
-                $joinColumns[] = JoinColumnData::fromMappingArray($column);
-            }
-
-            $value = $joinColumns;
-        }
-
         if ($offset === 'joinTable') {
             $value = JoinTableMapping::fromMappingArray($value);
         }

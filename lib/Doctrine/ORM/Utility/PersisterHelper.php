@@ -37,7 +37,7 @@ class PersisterHelper
 
         $assoc = $class->associationMappings[$fieldName];
 
-        if (! $assoc['isOwningSide']) {
+        if (! $assoc->isOwningSide()) {
             return self::getTypeOfField($assoc['mappedBy'], $em->getClassMetadata($assoc['targetEntity']), $em);
         }
 

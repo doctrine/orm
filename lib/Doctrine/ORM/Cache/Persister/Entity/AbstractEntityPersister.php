@@ -172,7 +172,7 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
                 if (
                     isset($assoc['cache']) &&
                     ($assoc instanceof ToOneAssociationMapping) &&
-                    ($assoc['fetch'] === ClassMetadata::FETCH_EAGER || ! $assoc['isOwningSide'])
+                    ($assoc['fetch'] === ClassMetadata::FETCH_EAGER || ! $assoc->isOwningSide())
                 ) {
                     $associations[] = $name;
                 }

@@ -64,7 +64,7 @@ class SizeFunction extends FunctionNode
         } else { // many-to-many
             $targetClass = $entityManager->getClassMetadata($assoc['targetEntity']);
 
-            $owningAssoc = $assoc['isOwningSide'] ? $assoc : $targetClass->associationMappings[$assoc['mappedBy']];
+            $owningAssoc = $assoc->isOwningSide() ? $assoc : $targetClass->associationMappings[$assoc['mappedBy']];
             $joinTable   = $owningAssoc['joinTable'];
 
             // SQL table aliases
@@ -74,7 +74,7 @@ class SizeFunction extends FunctionNode
             // join to target table
             $sql .= $quoteStrategy->getJoinTableName($owningAssoc, $targetClass, $platform) . ' ' . $joinTableAlias . ' WHERE ';
 
-            $joinColumns = $assoc['isOwningSide']
+            $joinColumns = $assoc->isOwningSide()
                 ? $joinTable['joinColumns']
                 : $joinTable['inverseJoinColumns'];
 
