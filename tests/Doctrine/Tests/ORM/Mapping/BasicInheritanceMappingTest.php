@@ -25,6 +25,7 @@ use Doctrine\ORM\Mapping\SequenceGenerator;
 use Doctrine\ORM\Mapping\Table;
 use Doctrine\ORM\Mapping\UniqueConstraint;
 use Doctrine\Persistence\Mapping\RuntimeReflectionService;
+use Doctrine\Tests\Models\Company\CompanyFixContract;
 use Doctrine\Tests\Models\DDC869\DDC869ChequePayment;
 use Doctrine\Tests\Models\DDC869\DDC869CreditCardPayment;
 use Doctrine\Tests\Models\DDC869\DDC869Payment;
@@ -249,6 +250,16 @@ class BasicInheritanceMappingTest extends OrmTestCase
 
         yield 'complex example (Entity Root -> Mapped Superclass -> transient class -> Entity)'
             => [InvalidComplexRoot::class, InvalidComplexEntity::class];
+    }
+
+    /** @group DDC-964 */
+    public function testInvalidOverrideFieldInheritedFromEntity(): void
+    {
+        $cm = $this->cmf->getMetadataFor(CompanyFixContract::class);
+
+        $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/pull/10470');
+
+        $cm->setAttributeOverride('completed', ['name' => 'other_column_name']);
     }
 }
 

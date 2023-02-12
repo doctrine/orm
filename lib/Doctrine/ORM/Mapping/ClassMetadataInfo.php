@@ -2591,10 +2591,17 @@ class ClassMetadataInfo implements ClassMetadata
 
         $mapping = $this->fieldMappings[$fieldName];
 
-        //if (isset($mapping['inherited'])) {
-            // TODO: Enable this exception in 2.8
+        if (isset($mapping['inherited'])) {
+            Deprecation::trigger(
+                'doctrine/orm',
+                'https://github.com/doctrine/orm/pull/10470',
+                'Overrides are only allowed for fields or associations declared in mapped superclasses or traits. This is not the case for %s::%s, which was inherited from %s. This is a misconfiguration and will be an error in Doctrine ORM 3.0.',
+                $this->name,
+                $fieldName,
+                $mapping['inherited']
+            );
             //throw MappingException::illegalOverrideOfInheritedProperty($this->name, $fieldName);
-        //}
+        }
 
         if (isset($mapping['id'])) {
             $overrideMapping['id'] = $mapping['id'];
