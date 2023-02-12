@@ -551,8 +551,7 @@ class MappingException extends Exception implements ORMException
     {
         return new self(
             sprintf(
-                'Override for %s::%s is only allowed for attributes/associations ' .
-                'declared on a mapped superclass or a trait.',
+                'Overrides are only allowed for fields or associations declared in mapped superclasses or traits, which is not the case for %s::%s.',
                 $className,
                 $propertyName,
             ),

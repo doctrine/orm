@@ -554,6 +554,12 @@ Use `toIterable()` instead.
 
 # Upgrade to 2.15
 
+## Deprecated overriding fields or associations not declared in mapped superclasses
+
+As stated in the documentation, fields and associations may only be overridden when being inherited
+from mapped superclasses. Overriding them for parent entity classes now triggers a deprecation notice
+and will be an error in 3.0.
+
 ## Deprecated undeclared entity inheritance
 
 As soon as an entity class inherits from another entity class, inheritance has to 
