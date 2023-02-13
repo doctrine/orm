@@ -1,5 +1,10 @@
 # Upgrade to 3.0
 
+## BC BREAK: Overriding fields or associations declared in other than mapped superclasses
+
+As stated in the documentation, fields and associations may only be overridden when being inherited
+from mapped superclasses. Overriding them for parent entity classes now throws a `MappingException`.
+
 ## BC BREAK: Undeclared entity inheritance now throws a `MappingException`
 
 As soon as an entity class inherits from another entity class, inheritance has to
