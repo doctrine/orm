@@ -260,7 +260,8 @@ class BasicInheritanceMappingTest extends OrmTestCase
     {
         $cm = $this->cmf->getMetadataFor(CompanyFixContract::class);
 
-        $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/pull/10470');
+        $this->expectException(MappingException::class);
+        $this->expectExceptionMessageMatches('/Overrides are only allowed for fields or associations declared in mapped superclasses or traits./');
 
         $cm->setAttributeOverride('completed', ['name' => 'other_column_name']);
     }

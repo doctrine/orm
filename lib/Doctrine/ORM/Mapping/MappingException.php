@@ -547,13 +547,14 @@ class MappingException extends Exception implements ORMException
         );
     }
 
-    public static function illegalOverrideOfInheritedProperty(string $className, string $propertyName): self
+    public static function illegalOverrideOfInheritedProperty(string $className, string $propertyName, string $inheritFromClass): self
     {
         return new self(
             sprintf(
-                'Overrides are only allowed for fields or associations declared in mapped superclasses or traits, which is not the case for %s::%s.',
+                'Overrides are only allowed for fields or associations declared in mapped superclasses or traits. This is not the case for %s::%s, which was inherited from %s.',
                 $className,
                 $propertyName,
+                $inheritFromClass,
             ),
         );
     }
