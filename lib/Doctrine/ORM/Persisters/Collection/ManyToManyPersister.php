@@ -24,6 +24,8 @@ use function sprintf;
 
 /**
  * Persister for many-to-many collections.
+ *
+ * @psalm-import-type AssociationMapping from ClassMetadata
  */
 class ManyToManyPersister extends AbstractCollectionPersister
 {
@@ -275,7 +277,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
      * JOIN.
      *
      * @param mixed[] $mapping Array containing mapping information.
-     * @psalm-param array<string, mixed> $mapping
+     * @psalm-param AssociationMapping $mapping
      *
      * @return string[] ordered tuple:
      *                   - JOIN condition to add to the SQL
@@ -328,7 +330,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
      * Generate ON condition
      *
      * @param mixed[] $mapping
-     * @psalm-param array<string, mixed> $mapping
+     * @psalm-param AssociationMapping $mapping
      *
      * @return string[]
      * @psalm-return list<string>

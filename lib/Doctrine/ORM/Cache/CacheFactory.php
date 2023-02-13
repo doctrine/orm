@@ -14,6 +14,8 @@ use Doctrine\ORM\Persisters\Entity\EntityPersister;
 
 /**
  * Contract for building second level cache regions components.
+ *
+ * @psalm-import-type AssociationMapping from ClassMetadata
  */
 interface CacheFactory
 {
@@ -25,7 +27,7 @@ interface CacheFactory
     /**
      * Build a collection persister for the given relation mapping.
      *
-     * @param mixed[] $mapping The association mapping.
+     * @param AssociationMapping $mapping The association mapping.
      */
     public function buildCachedCollectionPersister(EntityManagerInterface $em, CollectionPersister $persister, array $mapping): CachedCollectionPersister;
 

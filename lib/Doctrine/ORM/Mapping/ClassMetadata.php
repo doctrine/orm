@@ -1612,30 +1612,7 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
      * @psalm-param array<string, mixed> $mapping The mapping to validate & complete.
      *
      * @return mixed[] The validated & completed mapping.
-     * @psalm-return array{
-     *      mappedBy: mixed|null,
-     *      inversedBy: mixed|null,
-     *      isOwningSide: bool,
-     *      sourceEntity: class-string,
-     *      targetEntity: string,
-     *      fieldName: mixed,
-     *      fetch: mixed,
-     *      cascade: array<string>,
-     *      isCascadeRemove: bool,
-     *      isCascadePersist: bool,
-     *      isCascadeRefresh: bool,
-     *      isCascadeMerge: bool,
-     *      isCascadeDetach: bool,
-     *      type: int,
-     *      originalField: string,
-     *      originalClass: class-string,
-     *      joinColumns?: array{0: array{name: string, referencedColumnName: string}}|mixed,
-     *      id?: mixed,
-     *      sourceToTargetKeyColumns?: array<string, string>,
-     *      joinColumnFieldNames?: array<string, string>,
-     *      targetToSourceKeyColumns?: array<string, string>,
-     *      orphanRemoval: bool
-     * }
+     * @psalm-return AssociationMapping
      *
      * @throws RuntimeException
      * @throws MappingException
@@ -1725,22 +1702,7 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
      * @psalm-param array<string, mixed> $mapping The mapping to validate and complete.
      *
      * @return mixed[] The validated and completed mapping.
-     * @psalm-return array{
-     *                   mappedBy: mixed,
-     *                   inversedBy: mixed,
-     *                   isOwningSide: bool,
-     *                   sourceEntity: string,
-     *                   targetEntity: string,
-     *                   fieldName: mixed,
-     *                   fetch: int|mixed,
-     *                   cascade: array<array-key,string>,
-     *                   isCascadeRemove: bool,
-     *                   isCascadePersist: bool,
-     *                   isCascadeRefresh: bool,
-     *                   isCascadeMerge: bool,
-     *                   isCascadeDetach: bool,
-     *                   orphanRemoval: bool
-     *               }
+     * @psalm-return AssociationMapping
      *
      * @throws MappingException
      * @throws InvalidArgumentException
@@ -1768,30 +1730,7 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
      * @psalm-param array<string, mixed> $mapping The mapping to validate & complete.
      *
      * @return mixed[] The validated & completed mapping.
-     * @psalm-return array{
-     *      mappedBy: mixed,
-     *      inversedBy: mixed,
-     *      isOwningSide: bool,
-     *      sourceEntity: class-string,
-     *      targetEntity: string,
-     *      fieldName: mixed,
-     *      fetch: mixed,
-     *      cascade: array<string>,
-     *      isCascadeRemove: bool,
-     *      isCascadePersist: bool,
-     *      isCascadeRefresh: bool,
-     *      isCascadeMerge: bool,
-     *      isCascadeDetach: bool,
-     *      type: int,
-     *      originalField: string,
-     *      originalClass: class-string,
-     *      joinTable?: array{inverseJoinColumns: mixed}|mixed,
-     *      joinTableColumns?: list<mixed>,
-     *      isOnDeleteCascade?: true,
-     *      relationToSourceKeyColumns?: array,
-     *      relationToTargetKeyColumns?: array,
-     *      orphanRemoval: bool
-     * }
+     * @psalm-return AssociationMapping
      *
      * @throws InvalidArgumentException
      */

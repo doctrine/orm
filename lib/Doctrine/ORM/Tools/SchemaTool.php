@@ -46,7 +46,9 @@ use function strtolower;
  *
  * @link    www.doctrine-project.org
  *
+ * @psalm-import-type AssociationMapping from ClassMetadata
  * @psalm-import-type FieldMapping from ClassMetadata
+ * @psalm-import-type JoinColumnData from ClassMetadata
  */
 class SchemaTool
 {
@@ -637,8 +639,8 @@ class SchemaTool
     /**
      * Gathers columns and fk constraints that are required for one part of relationship.
      *
-     * @psalm-param array<string, mixed>             $joinColumns
-     * @psalm-param array<string, mixed>             $mapping
+     * @psalm-param array<string, JoinColumnData>    $joinColumns
+     * @psalm-param AssociationMapping               $mapping
      * @psalm-param list<string>                     $primaryKeyColumns
      * @psalm-param array<string, array{
      *                  foreignTableName: string,
@@ -768,7 +770,7 @@ class SchemaTool
     }
 
     /**
-     * @param mixed[] $mapping
+     * @psalm-param JoinColumnData|FieldMapping $mapping
      *
      * @return mixed[]
      */

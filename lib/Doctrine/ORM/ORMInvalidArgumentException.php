@@ -53,8 +53,8 @@ class ORMInvalidArgumentException extends InvalidArgumentException
     }
 
     /**
-     * @param array[][]|object[][] $newEntitiesWithAssociations non-empty an array
-     *                                                              of [array $associationMapping, object $entity] pairs
+     * @psalm-param non-empty-list<array{AssociationMapping, object}> $newEntitiesWithAssociations non-empty an array
+     *                                                                of [array $associationMapping, object $entity] pairs
      */
     public static function newEntitiesFoundThroughRelationships(array $newEntitiesWithAssociations): self
     {
@@ -84,7 +84,7 @@ class ORMInvalidArgumentException extends InvalidArgumentException
         return new self(self::newEntityFoundThroughRelationshipMessage($associationMapping, $entry));
     }
 
-    /** @psalm-param array<string, string> $assoc */
+    /** @psalm-param AssociationMapping $assoc */
     public static function detachedEntityFoundThroughRelationship(array $assoc, object $entry): self
     {
         return new self('A detached entity of type ' . $assoc['targetEntity'] . ' (' . self::objToStr($entry) . ') '
@@ -137,7 +137,7 @@ EXCEPTION
         ));
     }
 
-    /** @param mixed[] $assoc */
+    /** @param AssociationMapping $assoc */
     public static function invalidAssociation(ClassMetadata $targetClass, array $assoc, mixed $actualValue): self
     {
         $expectedType = $targetClass->getName();

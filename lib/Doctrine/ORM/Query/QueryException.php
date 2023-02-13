@@ -5,11 +5,13 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Query;
 
 use Doctrine\ORM\Exception\ORMException;
+use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Query\AST\PathExpression;
 use Exception;
 use Stringable;
 use Throwable;
 
+/** @psalm-import-type AssociationMapping from ClassMetadata */
 class QueryException extends Exception implements ORMException
 {
     public static function dqlError(string $dql): self
@@ -81,7 +83,7 @@ class QueryException extends Exception implements ORMException
 
     /**
      * @param string[] $assoc
-     * @psalm-param array<string, string> $assoc
+     * @psalm-param AssociationMapping $assoc
      */
     public static function iterateWithFetchJoinCollectionNotAllowed(array $assoc): self
     {
@@ -123,7 +125,7 @@ class QueryException extends Exception implements ORMException
 
     /**
      * @param string[] $assoc
-     * @psalm-param array<string, string> $assoc
+     * @psalm-param AssociationMapping $assoc
      */
     public static function iterateWithFetchJoinNotAllowed(array $assoc): self
     {

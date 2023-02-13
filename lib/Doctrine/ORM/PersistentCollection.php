@@ -34,6 +34,7 @@ use function spl_object_id;
  * @psalm-template T
  * @template-extends AbstractLazyCollection<TKey,T>
  * @template-implements Selectable<TKey,T>
+ * @psalm-import-type AssociationMapping from ClassMetadata
  */
 final class PersistentCollection extends AbstractLazyCollection implements Selectable
 {
@@ -54,7 +55,7 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
      * The association mapping the collection belongs to.
      * This is currently either a OneToManyMapping or a ManyToManyMapping.
      *
-     * @psalm-var array<string, mixed>|null
+     * @psalm-var AssociationMapping|null
      */
     private array|null $association = null;
 
@@ -97,7 +98,7 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
      * Sets the collection's owning entity together with the AssociationMapping that
      * describes the association between the owner and the elements of the collection.
      *
-     * @psalm-param array<string, mixed> $assoc
+     * @psalm-param AssociationMapping $assoc
      */
     public function setOwner(object $entity, array $assoc): void
     {
@@ -247,7 +248,7 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
     /**
      * INTERNAL: Gets the association mapping of the collection.
      *
-     * @psalm-return array<string, mixed>|null
+     * @psalm-return AssociationMapping|null
      */
     public function getMapping(): array|null
     {

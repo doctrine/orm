@@ -30,6 +30,8 @@ use function reset;
 
 /**
  * Default query cache implementation.
+ *
+ * @psalm-import-type AssociationMapping from ClassMetadata
  */
 class DefaultQueryCache implements QueryCache
 {
@@ -296,7 +298,7 @@ class DefaultQueryCache implements QueryCache
     }
 
     /**
-     * @param array<string,mixed> $assoc
+     * @param AssociationMapping $assoc
      *
      * @return mixed[]|null
      * @psalm-return array{targetEntity: class-string, type: mixed, list?: array[], identifier?: array}|null

@@ -89,6 +89,8 @@ use function trim;
  *
  * Subclasses can be created to provide custom persisting and querying strategies,
  * i.e. spanning multiple tables.
+ *
+ * @psalm-import-type AssociationMapping from ClassMetadata
  */
 class BasicEntityPersister implements EntityPersister
 {
@@ -1285,7 +1287,7 @@ class BasicEntityPersister implements EntityPersister
     /**
      * Gets the SQL join fragment used when selecting entities from an association.
      *
-     * @param mixed[] $assoc
+     * @param AssociationMapping $assoc
      */
     protected function getSelectColumnAssociationSQL(
         string $field,
@@ -1319,7 +1321,7 @@ class BasicEntityPersister implements EntityPersister
      * Gets the SQL join fragment used when selecting entities from a
      * many-to-many association.
      *
-     * @psalm-param array<string, mixed> $manyToMany
+     * @psalm-param AssociationMapping $manyToMany
      */
     protected function getSelectManyToManyJoinSQL(array $manyToMany): string
     {
@@ -1610,7 +1612,7 @@ class BasicEntityPersister implements EntityPersister
     /**
      * Builds the left-hand-side of a where condition statement.
      *
-     * @psalm-param array<string, mixed>|null $assoc
+     * @psalm-param AssociationMapping|null $assoc
      *
      * @return string[]
      * @psalm-return list<string>
@@ -1684,7 +1686,7 @@ class BasicEntityPersister implements EntityPersister
      * or alter the criteria by which entities are selected.
      *
      * @psalm-param array<string, mixed> $criteria
-     * @psalm-param array<string, mixed>|null $assoc
+     * @psalm-param AssociationMapping|null $assoc
      */
     protected function getSelectConditionSQL(array $criteria, array|null $assoc = null): string
     {
@@ -1729,7 +1731,7 @@ class BasicEntityPersister implements EntityPersister
     /**
      * Builds criteria and execute SQL statement to fetch the one to many entities from.
      *
-     * @psalm-param array<string, mixed> $assoc
+     * @psalm-param AssociationMapping $assoc
      */
     private function getOneToManyStatement(
         array $assoc,

@@ -34,11 +34,12 @@ use function substr;
  * An LL(*) recursive-descent parser for the context-free grammar of the Doctrine Query Language.
  * Parses a DQL query, reports any errors in it, and generates an AST.
  *
+ * @psalm-import-type AssociationMapping from ClassMetadata
  * @psalm-type DqlToken = Token<TokenType, string>
  * @psalm-type QueryComponent = array{
  *                 metadata?: ClassMetadata<object>,
  *                 parent?: string|null,
- *                 relation?: mixed[]|null,
+ *                 relation?: AssociationMapping|null,
  *                 map?: string|null,
  *                 resultVariable?: AST\Node|string,
  *                 nestingLevel: int,
