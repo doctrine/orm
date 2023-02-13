@@ -213,7 +213,7 @@ class UnitOfWork implements PropertyChangedListener
      * Keys are OIDs, payload is a two-item array describing the association
      * and the entity.
      *
-     * @var object[][]|array[][] indexed by respective object spl_object_id()
+     * @var array<int, array{AssociationMapping, object}> indexed by respective object spl_object_id()
      */
     private $nonCascadedNewDetectedEntities = [];
 
@@ -257,7 +257,7 @@ class UnitOfWork implements PropertyChangedListener
     /**
      * The collection persister instances used to persist collections.
      *
-     * @psalm-var array<string, CollectionPersister>
+     * @psalm-var array<array-key, CollectionPersister>
      */
     private $collectionPersisters = [];
 
@@ -905,7 +905,7 @@ class UnitOfWork implements PropertyChangedListener
      * Computes the changes of an association.
      *
      * @param mixed $value The value of the association.
-     * @psalm-param array<string, mixed> $assoc The association mapping.
+     * @psalm-param AssociationMapping $assoc The association mapping.
      *
      * @throws ORMInvalidArgumentException
      * @throws ORMException
@@ -3246,7 +3246,7 @@ class UnitOfWork implements PropertyChangedListener
     /**
      * Gets a collection persister for a collection-valued association.
      *
-     * @psalm-param array<string, mixed> $association
+     * @psalm-param AssociationMapping $association
      *
      * @return CollectionPersister
      */

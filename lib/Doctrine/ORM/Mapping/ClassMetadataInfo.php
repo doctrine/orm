@@ -1855,30 +1855,7 @@ class ClassMetadataInfo implements ClassMetadata
      * @psalm-param array<string, mixed> $mapping The mapping to validate & complete.
      *
      * @return mixed[] The validated & completed mapping.
-     * @psalm-return array{
-     *      mappedBy: mixed|null,
-     *      inversedBy: mixed|null,
-     *      isOwningSide: bool,
-     *      sourceEntity: class-string,
-     *      targetEntity: string,
-     *      fieldName: mixed,
-     *      fetch: mixed,
-     *      cascade: array<string>,
-     *      isCascadeRemove: bool,
-     *      isCascadePersist: bool,
-     *      isCascadeRefresh: bool,
-     *      isCascadeMerge: bool,
-     *      isCascadeDetach: bool,
-     *      type: int,
-     *      originalField: string,
-     *      originalClass: class-string,
-     *      joinColumns?: array{0: array{name: string, referencedColumnName: string}}|mixed,
-     *      id?: mixed,
-     *      sourceToTargetKeyColumns?: array<string, string>,
-     *      joinColumnFieldNames?: array<string, string>,
-     *      targetToSourceKeyColumns?: array<string, string>,
-     *      orphanRemoval: bool
-     * }
+     * @psalm-return AssociationMapping
      *
      * @throws RuntimeException
      * @throws MappingException
@@ -1968,22 +1945,7 @@ class ClassMetadataInfo implements ClassMetadata
      * @psalm-param array<string, mixed> $mapping The mapping to validate and complete.
      *
      * @return mixed[] The validated and completed mapping.
-     * @psalm-return array{
-     *                   mappedBy: mixed,
-     *                   inversedBy: mixed,
-     *                   isOwningSide: bool,
-     *                   sourceEntity: string,
-     *                   targetEntity: string,
-     *                   fieldName: mixed,
-     *                   fetch: int|mixed,
-     *                   cascade: array<array-key,string>,
-     *                   isCascadeRemove: bool,
-     *                   isCascadePersist: bool,
-     *                   isCascadeRefresh: bool,
-     *                   isCascadeMerge: bool,
-     *                   isCascadeDetach: bool,
-     *                   orphanRemoval: bool
-     *               }
+     * @psalm-return AssociationMapping
      *
      * @throws MappingException
      * @throws InvalidArgumentException
@@ -2011,30 +1973,7 @@ class ClassMetadataInfo implements ClassMetadata
      * @psalm-param array<string, mixed> $mapping The mapping to validate & complete.
      *
      * @return mixed[] The validated & completed mapping.
-     * @psalm-return array{
-     *      mappedBy: mixed,
-     *      inversedBy: mixed,
-     *      isOwningSide: bool,
-     *      sourceEntity: class-string,
-     *      targetEntity: string,
-     *      fieldName: mixed,
-     *      fetch: mixed,
-     *      cascade: array<string>,
-     *      isCascadeRemove: bool,
-     *      isCascadePersist: bool,
-     *      isCascadeRefresh: bool,
-     *      isCascadeMerge: bool,
-     *      isCascadeDetach: bool,
-     *      type: int,
-     *      originalField: string,
-     *      originalClass: class-string,
-     *      joinTable?: array{inverseJoinColumns: mixed}|mixed,
-     *      joinTableColumns?: list<mixed>,
-     *      isOnDeleteCascade?: true,
-     *      relationToSourceKeyColumns?: array,
-     *      relationToTargetKeyColumns?: array,
-     *      orphanRemoval: bool
-     * }
+     * @psalm-return AssociationMapping
      *
      * @throws InvalidArgumentException
      */
@@ -3040,7 +2979,7 @@ class ClassMetadataInfo implements ClassMetadata
     /**
      * Stores the association mapping.
      *
-     * @psalm-param array<string, mixed> $assocMapping
+     * @psalm-param AssociationMapping $assocMapping
      *
      * @return void
      *
@@ -3192,7 +3131,7 @@ class ClassMetadataInfo implements ClassMetadata
      * @see getDiscriminatorColumn()
      *
      * @param mixed[]|null $columnDef
-     * @psalm-param array{name: string|null, fieldName?: string, type?: string, length?: int, columnDefinition?: string|null, enumType?: class-string<BackedEnum>|null}|null $columnDef
+     * @psalm-param DiscriminatorColumnMapping|array{name: string|null, fieldName?: string, type?: string, length?: int, columnDefinition?: string|null, enumType?: class-string<BackedEnum>|null}|null $columnDef
      *
      * @return void
      *
@@ -3898,7 +3837,7 @@ class ClassMetadataInfo implements ClassMetadata
         return $sequencePrefix;
     }
 
-    /** @psalm-param array<string, mixed> $mapping */
+    /** @psalm-param AssociationMapping $mapping */
     private function assertMappingOrderBy(array $mapping): void
     {
         if (isset($mapping['orderBy']) && ! is_array($mapping['orderBy'])) {

@@ -495,6 +495,11 @@
       <code>$class</code>
     </PropertyNotSetInConstructor>
   </file>
+  <file src="lib/Doctrine/ORM/Mapping/AnsiQuoteStrategy.php">
+    <PossiblyUndefinedArrayOffset>
+      <code>$association['joinTable']</code>
+    </PossiblyUndefinedArrayOffset>
+  </file>
   <file src="lib/Doctrine/ORM/Mapping/Builder/ClassMetadataBuilder.php">
     <ArgumentTypeCoercion>
       <code>$repositoryClassName</code>
@@ -585,6 +590,7 @@
       <code>! $this-&gt;table</code>
       <code>! class_exists($mapping['targetEntity'])</code>
       <code>$this-&gt;table</code>
+      <code>isset($mapping['orderBy']) &amp;&amp; ! is_array($mapping['orderBy'])</code>
     </DocblockTypeContradiction>
     <InvalidArgument>
       <code>$mapping</code>
@@ -605,53 +611,11 @@
     <InvalidReturnStatement>
       <code>$mapping</code>
       <code>$mapping</code>
-      <code>$mapping</code>
-      <code>$mapping</code>
       <code>$this-&gt;reflClass</code>
     </InvalidReturnStatement>
     <InvalidReturnType>
       <code>AssociationMapping</code>
       <code>FieldMapping</code>
-      <code>array{
-     *                   mappedBy: mixed,
-     *                   inversedBy: mixed,
-     *                   isOwningSide: bool,
-     *                   sourceEntity: string,
-     *                   targetEntity: string,
-     *                   fieldName: mixed,
-     *                   fetch: int|mixed,
-     *                   cascade: array&lt;array-key,string&gt;,
-     *                   isCascadeRemove: bool,
-     *                   isCascadePersist: bool,
-     *                   isCascadeRefresh: bool,
-     *                   isCascadeMerge: bool,
-     *                   isCascadeDetach: bool,
-     *                   orphanRemoval: bool
-     *               }</code>
-      <code>array{
-     *      mappedBy: mixed|null,
-     *      inversedBy: mixed|null,
-     *      isOwningSide: bool,
-     *      sourceEntity: class-string,
-     *      targetEntity: string,
-     *      fieldName: mixed,
-     *      fetch: mixed,
-     *      cascade: array&lt;string&gt;,
-     *      isCascadeRemove: bool,
-     *      isCascadePersist: bool,
-     *      isCascadeRefresh: bool,
-     *      isCascadeMerge: bool,
-     *      isCascadeDetach: bool,
-     *      type: int,
-     *      originalField: string,
-     *      originalClass: class-string,
-     *      joinColumns?: array{0: array{name: string, referencedColumnName: string}}|mixed,
-     *      id?: mixed,
-     *      sourceToTargetKeyColumns?: array&lt;string, string&gt;,
-     *      joinColumnFieldNames?: array&lt;string, string&gt;,
-     *      targetToSourceKeyColumns?: array&lt;string, string&gt;,
-     *      orphanRemoval: bool
-     * }</code>
       <code>getReflectionClass</code>
     </InvalidReturnType>
     <LessSpecificReturnStatement>
@@ -659,7 +623,6 @@
       <code>$className</code>
       <code>$className</code>
       <code>$columnNames</code>
-      <code>$mapping</code>
       <code>$quotedColumnNames</code>
       <code>$this-&gt;namespace . '\\' . $className</code>
     </LessSpecificReturnStatement>
@@ -667,30 +630,6 @@
       <code>__toString</code>
     </MethodSignatureMustProvideReturnType>
     <MoreSpecificReturnType>
-      <code>array{
-     *      mappedBy: mixed,
-     *      inversedBy: mixed,
-     *      isOwningSide: bool,
-     *      sourceEntity: class-string,
-     *      targetEntity: string,
-     *      fieldName: mixed,
-     *      fetch: mixed,
-     *      cascade: array&lt;string&gt;,
-     *      isCascadeRemove: bool,
-     *      isCascadePersist: bool,
-     *      isCascadeRefresh: bool,
-     *      isCascadeMerge: bool,
-     *      isCascadeDetach: bool,
-     *      type: int,
-     *      originalField: string,
-     *      originalClass: class-string,
-     *      joinTable?: array{inverseJoinColumns: mixed}|mixed,
-     *      joinTableColumns?: list&lt;mixed&gt;,
-     *      isOnDeleteCascade?: true,
-     *      relationToSourceKeyColumns?: array,
-     *      relationToTargetKeyColumns?: array,
-     *      orphanRemoval: bool
-     * }</code>
       <code>array{usage: int, region: string|null}</code>
       <code>class-string|null</code>
       <code>list&lt;string&gt;</code>
@@ -795,6 +734,7 @@
       <code>getIdentifierColumnNames</code>
     </MoreSpecificReturnType>
     <PossiblyUndefinedArrayOffset>
+      <code>$association['joinTable']</code>
       <code>$class-&gt;associationMappings[$fieldName]['joinColumns']</code>
     </PossiblyUndefinedArrayOffset>
   </file>
@@ -1219,11 +1159,6 @@
       <code>$sql</code>
     </PropertyNotSetInConstructor>
   </file>
-  <file src="lib/Doctrine/ORM/ORMInvalidArgumentException.php">
-    <PossiblyInvalidArgument>
-      <code>$entity</code>
-    </PossiblyInvalidArgument>
-  </file>
   <file src="lib/Doctrine/ORM/PersistentCollection.php">
     <ImplementedReturnTypeMismatch>
       <code>Collection&lt;TKey, T&gt;</code>
@@ -1274,11 +1209,22 @@
       <code>setValue</code>
       <code>setValue</code>
     </PossiblyNullReference>
+    <PossiblyUndefinedArrayOffset>
+      <code>$this-&gt;association['orphanRemoval']</code>
+      <code>$this-&gt;association['orphanRemoval']</code>
+      <code>$this-&gt;association['orphanRemoval']</code>
+    </PossiblyUndefinedArrayOffset>
     <UndefinedMethod>
       <code>[$this-&gt;unwrap(), 'add']</code>
     </UndefinedMethod>
   </file>
   <file src="lib/Doctrine/ORM/Persisters/Collection/ManyToManyPersister.php">
+    <ArgumentTypeCoercion>
+      <code>$mapping</code>
+    </ArgumentTypeCoercion>
+    <InvalidArrayOffset>
+      <code>[$mappedKey =&gt; $collection-&gt;getOwner(), $mapping['indexBy'] =&gt; $index]</code>
+    </InvalidArrayOffset>
     <PossiblyNullArgument>
       <code>$association</code>
       <code>$collection-&gt;getOwner()</code>
@@ -1290,9 +1236,11 @@
       <code>$collection-&gt;getOwner()</code>
       <code>$collection-&gt;getOwner()</code>
       <code>$collection-&gt;getOwner()</code>
+      <code>$column</code>
       <code>$filterMapping</code>
       <code>$filterMapping</code>
       <code>$indexBy</code>
+      <code>$mapping</code>
       <code>$mapping</code>
       <code>$mapping</code>
       <code>$mapping</code>
@@ -1324,14 +1272,24 @@
       <code>$mapping['targetEntity']</code>
       <code>$mapping['targetEntity']</code>
       <code>$owner</code>
+      <code>$targetColumn</code>
     </PossiblyNullArgument>
     <PossiblyNullArrayAccess>
+      <code>$association['joinTable']</code>
+      <code>$association['joinTable']</code>
+      <code>$association['joinTable']['inverseJoinColumns']</code>
+      <code>$association['joinTable']['joinColumns']</code>
+      <code>$mapping[$sourceRelationMode]</code>
+      <code>$mapping[$targetRelationMode]</code>
+      <code>$mapping[$targetRelationMode][$joinTableColumn]</code>
       <code>$mapping['indexBy']</code>
       <code>$mapping['isOwningSide']</code>
       <code>$mapping['isOwningSide']</code>
       <code>$mapping['isOwningSide']</code>
       <code>$mapping['isOwningSide']</code>
       <code>$mapping['isOwningSide']</code>
+      <code>$mapping['isOwningSide']</code>
+      <code>$mapping['joinTable']</code>
       <code>$mapping['joinTable']</code>
       <code>$mapping['joinTable']</code>
       <code>$mapping['joinTable']</code>
@@ -1339,16 +1297,22 @@
       <code>$mapping['joinTable']['inverseJoinColumns']</code>
       <code>$mapping['joinTable']['inverseJoinColumns']</code>
       <code>$mapping['joinTable']['inverseJoinColumns']</code>
+      <code>$mapping['joinTable']['joinColumns']</code>
       <code>$mapping['joinTable']['joinColumns']</code>
       <code>$mapping['joinTable']['joinColumns']</code>
       <code>$mapping['joinTable']['joinColumns']</code>
       <code>$mapping['joinTableColumns']</code>
+      <code>$mapping['joinTableColumns']</code>
+      <code>$mapping['joinTableColumns']</code>
+      <code>$mapping['joinTableColumns']</code>
+      <code>$mapping['mappedBy']</code>
       <code>$mapping['mappedBy']</code>
       <code>$mapping['mappedBy']</code>
       <code>$mapping['mappedBy']</code>
       <code>$mapping['relationToSourceKeyColumns']</code>
       <code>$mapping['relationToSourceKeyColumns']</code>
       <code>$mapping['relationToSourceKeyColumns']</code>
+      <code>$mapping['relationToSourceKeyColumns'][$joinTableColumn]</code>
       <code>$mapping['relationToSourceKeyColumns'][$joinTableColumn]</code>
       <code>$mapping['relationToTargetKeyColumns']</code>
       <code>$mapping['relationToTargetKeyColumns'][$joinTableColumn]</code>
@@ -1373,14 +1337,21 @@
       <code>$associationSourceClass-&gt;associationMappings</code>
       <code>$sourceClass-&gt;associationMappings</code>
       <code>$targetClass-&gt;associationMappings</code>
+      <code>$targetClass-&gt;associationMappings</code>
+      <code>$targetClass-&gt;associationMappings</code>
     </PossiblyNullArrayOffset>
     <PossiblyNullIterator>
       <code>$joinColumns</code>
+      <code>$joinColumns</code>
+      <code>$mapping[$sourceRelationMode]</code>
       <code>$mapping['joinTable']['inverseJoinColumns']</code>
       <code>$mapping['joinTable']['inverseJoinColumns']</code>
       <code>$mapping['joinTable']['joinColumns']</code>
       <code>$mapping['joinTable']['joinColumns']</code>
       <code>$mapping['joinTable']['joinColumns']</code>
+      <code>$mapping['joinTable']['joinColumns']</code>
+      <code>$mapping['joinTableColumns']</code>
+      <code>$mapping['joinTableColumns']</code>
       <code>$mapping['joinTableColumns']</code>
       <code>$mapping['relationToSourceKeyColumns']</code>
     </PossiblyNullIterator>
@@ -1395,16 +1366,33 @@
       <code>$association['joinTable']</code>
       <code>$mapping[$sourceRelationMode]</code>
       <code>$mapping[$targetRelationMode]</code>
+      <code>$mapping['indexBy']</code>
+      <code>$mapping['joinTable']</code>
+      <code>$mapping['joinTable']</code>
+      <code>$mapping['joinTable']</code>
+      <code>$mapping['joinTable']</code>
+      <code>$mapping['joinTable']</code>
       <code>$mapping['joinTable']</code>
       <code>$mapping['joinTableColumns']</code>
       <code>$mapping['joinTableColumns']</code>
+      <code>$mapping['joinTableColumns']</code>
+      <code>$mapping['joinTableColumns']</code>
       <code>$mapping['relationToSourceKeyColumns']</code>
+      <code>$mapping['relationToSourceKeyColumns']</code>
+      <code>$mapping['relationToSourceKeyColumns']</code>
+      <code>$mapping['relationToTargetKeyColumns']</code>
     </PossiblyUndefinedArrayOffset>
   </file>
   <file src="lib/Doctrine/ORM/Persisters/Collection/OneToManyPersister.php">
     <ImplementedReturnTypeMismatch>
       <code>int|null</code>
     </ImplementedReturnTypeMismatch>
+    <InvalidArrayOffset>
+      <code>[
+                $mapping['mappedBy'] =&gt; $collection-&gt;getOwner(),
+                $mapping['indexBy']  =&gt; $index,
+            ]</code>
+    </InvalidArrayOffset>
     <InvalidReturnStatement>
       <code>$numDeleted</code>
       <code>$this-&gt;conn-&gt;executeStatement($statement, $parameters)</code>
@@ -1418,6 +1406,7 @@
       <code>$collection-&gt;getOwner()</code>
       <code>$collection-&gt;getOwner()</code>
       <code>$mapping</code>
+      <code>$mapping['mappedBy']</code>
       <code>$mapping['mappedBy']</code>
       <code>$mapping['mappedBy']</code>
       <code>$mapping['sourceEntity']</code>
@@ -1448,14 +1437,20 @@
       <code>$targetClass-&gt;associationMappings</code>
     </PossiblyNullArrayOffset>
     <PossiblyUndefinedArrayOffset>
+      <code>$mapping['orphanRemoval']</code>
       <code>$targetClass-&gt;associationMappings[$mapping['mappedBy']]['joinColumns']</code>
     </PossiblyUndefinedArrayOffset>
   </file>
   <file src="lib/Doctrine/ORM/Persisters/Entity/BasicEntityPersister.php">
+    <ArgumentTypeCoercion>
+      <code>$assoc</code>
+      <code>$association</code>
+    </ArgumentTypeCoercion>
     <DocblockTypeContradiction>
       <code>$value === null</code>
     </DocblockTypeContradiction>
     <InvalidArgument>
+      <code>$assoc</code>
       <code>$em-&gt;getMetadataFactory()</code>
       <code>$hints</code>
       <code>$hints</code>
@@ -1487,16 +1482,27 @@
     </NullableReturnStatement>
     <PossiblyNullArgument>
       <code>$assoc['mappedBy']</code>
+      <code>$assoc['mappedBy']</code>
+      <code>$assoc['mappedBy']</code>
       <code>$association</code>
       <code>$type</code>
     </PossiblyNullArgument>
     <PossiblyNullArrayAccess>
       <code>$assoc['isOwningSide']</code>
+      <code>$association['joinTable']</code>
+      <code>$association['joinTable']</code>
+      <code>$association['joinTable']['inverseJoinColumns']</code>
+      <code>$association['joinTable']['joinColumns']</code>
     </PossiblyNullArrayAccess>
     <PossiblyNullArrayOffset>
       <code>$class-&gt;associationMappings</code>
       <code>$class-&gt;associationMappings</code>
+      <code>$targetEntity-&gt;associationMappings</code>
+      <code>$this-&gt;class-&gt;associationMappings</code>
     </PossiblyNullArrayOffset>
+    <PossiblyNullIterator>
+      <code>$joinColumns</code>
+    </PossiblyNullIterator>
     <PossiblyNullReference>
       <code>getValue</code>
       <code>getValue</code>
@@ -1507,7 +1513,7 @@
       <code>setValue</code>
     </PossiblyNullReference>
     <PossiblyUndefinedArrayOffset>
-      <code>$assoc['inversedBy']</code>
+      <code>$assoc['joinColumns']</code>
       <code>$assoc['joinColumns']</code>
       <code>$assoc['joinColumns']</code>
       <code>$assoc['relationToTargetKeyColumns']</code>
@@ -1515,6 +1521,10 @@
       <code>$association['joinColumns']</code>
       <code>$association['joinColumns']</code>
       <code>$association['joinColumns']</code>
+      <code>$association['joinTable']</code>
+      <code>$association['joinTable']</code>
+      <code>$association['joinTable']</code>
+      <code>$association['joinTable']</code>
       <code>$association['joinTable']</code>
       <code>$association['joinTable']</code>
       <code>$association['joinTable']</code>
@@ -2352,7 +2362,6 @@
       <code>$expr</code>
     </ImplicitToStringCast>
     <InvalidArgument>
-      <code>$assoc</code>
       <code>$condExpr</code>
       <code>$condTerm</code>
       <code>$factor</code>
@@ -2380,6 +2389,7 @@
     <PossiblyNullArrayOffset>
       <code>$targetClass-&gt;associationMappings</code>
       <code>$targetClass-&gt;associationMappings</code>
+      <code>$targetClass-&gt;associationMappings</code>
       <code>$this-&gt;scalarResultAliasMap</code>
       <code>$this-&gt;scalarResultAliasMap</code>
     </PossiblyNullArrayOffset>
@@ -2393,8 +2403,6 @@
       <code>$assoc['joinTable']</code>
       <code>$assoc['sourceToTargetKeyColumns']</code>
       <code>$assoc['targetToSourceKeyColumns']</code>
-      <code>$assoc['type']</code>
-      <code>$assoc['type']</code>
       <code>$association['sourceToTargetKeyColumns']</code>
       <code>$association['targetToSourceKeyColumns']</code>
       <code>$owningAssoc['joinTable']</code>
@@ -3089,6 +3097,9 @@
       <code>unwrap</code>
       <code>unwrap</code>
     </PossiblyUndefinedMethod>
+    <PropertyTypeCoercion>
+      <code>$this-&gt;nonCascadedNewDetectedEntities</code>
+    </PropertyTypeCoercion>
     <RedundantCondition>
       <code>$i &gt;= 0 &amp;&amp; $this-&gt;entityDeletions</code>
       <code>$this-&gt;entityDeletions</code>

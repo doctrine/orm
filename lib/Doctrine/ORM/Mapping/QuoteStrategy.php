@@ -8,6 +8,9 @@ use Doctrine\DBAL\Platforms\AbstractPlatform;
 
 /**
  * A set of rules for determining the column, alias and table quotes.
+ *
+ * @psalm-import-type AssociationMapping from ClassMetadata
+ * @psalm-import-type JoinColumnData from ClassMetadata
  */
 interface QuoteStrategy
 {
@@ -39,7 +42,7 @@ interface QuoteStrategy
     /**
      * Gets the (possibly quoted) name of the join table.
      *
-     * @param mixed[] $association
+     * @param AssociationMapping $association
      *
      * @return string
      */
@@ -48,7 +51,7 @@ interface QuoteStrategy
     /**
      * Gets the (possibly quoted) join column name.
      *
-     * @param mixed[] $joinColumn
+     * @param JoinColumnData $joinColumn
      *
      * @return string
      */
@@ -57,7 +60,7 @@ interface QuoteStrategy
     /**
      * Gets the (possibly quoted) join column name.
      *
-     * @param mixed[] $joinColumn
+     * @param JoinColumnData $joinColumn
      *
      * @return string
      */

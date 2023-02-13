@@ -19,6 +19,8 @@ use function ltrim;
  *
  * Mechanism to overwrite interfaces or classes specified as association
  * targets.
+ *
+ * @psalm-import-type AssociationMapping from ClassMetadata
  */
 class ResolveTargetEntityListener implements EventSubscriber
 {
@@ -97,7 +99,7 @@ class ResolveTargetEntityListener implements EventSubscriber
         }
     }
 
-    /** @param mixed[] $mapping */
+    /** @param AssociationMapping $mapping */
     private function remapAssociation(ClassMetadata $classMetadata, array $mapping): void
     {
         $newMapping              = $this->resolveTargetEntities[$mapping['targetEntity']];

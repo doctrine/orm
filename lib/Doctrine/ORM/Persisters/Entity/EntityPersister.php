@@ -14,6 +14,8 @@ use Doctrine\ORM\Query\ResultSetMapping;
 /**
  * Entity persister interface
  * Define the behavior that should be implemented by all entity persisters.
+ *
+ * @psalm-import-type AssociationMapping from ClassMetadata
  */
 interface EntityPersister
 {
@@ -48,11 +50,11 @@ interface EntityPersister
      * Gets the SELECT SQL to select one or more entities by a set of field criteria.
      *
      * @param mixed[]|Criteria $criteria
-     * @param mixed[]|null     $assoc
      * @param int|null         $lockMode
      * @param int|null         $limit
      * @param int|null         $offset
      * @param mixed[]|null     $orderBy
+     * @psalm-param AssociationMapping|null $assoc
      * @psalm-param LockMode::*|null $lockMode
      *
      * @return string
@@ -87,11 +89,10 @@ interface EntityPersister
     /**
      * Gets the SQL WHERE condition for matching a field with a given value.
      *
-     * @param string       $field
-     * @param mixed        $value
-     * @param mixed[]|null $assoc
-     * @param string|null  $comparison
-     * @psalm-param array<string, mixed>|null  $assoc
+     * @param string                  $field
+     * @param mixed                   $value
+     * @param AssociationMapping|null $assoc
+     * @param string|null             $comparison
      *
      * @return string
      */
@@ -171,19 +172,18 @@ interface EntityPersister
     /**
      * Loads an entity by a list of field criteria.
      *
-     * @param mixed[]       $criteria The criteria by which to load the entity.
-     * @param object|null   $entity   The entity to load the data into. If not specified,
-     *                                a new entity is created.
-     * @param mixed[]|null  $assoc    The association that connects the entity
-     *                                to load to another entity, if any.
-     * @param mixed[]       $hints    Hints for entity creation.
-     * @param int|null      $lockMode One of the \Doctrine\DBAL\LockMode::* constants
-     *                                or NULL if no specific lock mode should be used
-     *                                for loading the entity.
-     * @param int|null      $limit    Limit number of results.
-     * @param string[]|null $orderBy  Criteria to order by.
+     * @param mixed[]                 $criteria The criteria by which to load the entity.
+     * @param object|null             $entity   The entity to load the data into. If not specified,
+     *                                          a new entity is created.
+     * @param AssociationMapping|null $assoc    The association that connects the entity
+     *                               to load to another entity, if any.
+     * @param mixed[]                 $hints    Hints for entity creation.
+     * @param int|null                $lockMode One of the \Doctrine\DBAL\LockMode::* constants
+     *                                          or NULL if no specific lock mode should be used
+     *                                          for loading the entity.
+     * @param int|null                $limit    Limit number of results.
+     * @param string[]|null           $orderBy  Criteria to order by.
      * @psalm-param array<string, mixed>       $criteria
-     * @psalm-param array<string, mixed>|null  $assoc
      * @psalm-param array<string, mixed>       $hints
      * @psalm-param LockMode::*|null           $lockMode
      * @psalm-param array<string, string>|null $orderBy
@@ -222,7 +222,7 @@ interface EntityPersister
      * @psalm-param array<string, mixed> $identifier The identifier of the entity to load. Must be provided if
      *                                               the association to load represents the owning side, otherwise
      *                                               the identifier is derived from the $sourceEntity.
-     * @psalm-param array<string, mixed> $assoc        The association to load.
+     * @psalm-param AssociationMapping $assoc        The association to load.
      *
      * @return object The loaded and managed entity instance or NULL if the entity can not be found.
      *
@@ -269,7 +269,7 @@ interface EntityPersister
      * @param object   $sourceEntity
      * @param int|null $offset
      * @param int|null $limit
-     * @psalm-param array<string, mixed> $assoc
+     * @psalm-param AssociationMapping $assoc
      *
      * @return mixed[]
      */
@@ -280,7 +280,7 @@ interface EntityPersister
      *
      * @param object               $sourceEntity The entity that owns the collection.
      * @param PersistentCollection $collection   The collection to fill.
-     * @psalm-param array<string, mixed> $assoc The association mapping of the association being loaded.
+     * @psalm-param AssociationMapping $assoc The association mapping of the association being loaded.
      *
      * @return mixed[]
      */
@@ -291,7 +291,7 @@ interface EntityPersister
      *
      * @param object               $sourceEntity
      * @param PersistentCollection $collection   The collection to load/fill.
-     * @psalm-param array<string, mixed> $assoc
+     * @psalm-param AssociationMapping $assoc
      *
      * @return mixed
      */
@@ -314,7 +314,7 @@ interface EntityPersister
      * @param object   $sourceEntity
      * @param int|null $offset
      * @param int|null $limit
-     * @psalm-param array<string, mixed> $assoc
+     * @psalm-param AssociationMapping $assoc
      *
      * @return mixed[]
      */
