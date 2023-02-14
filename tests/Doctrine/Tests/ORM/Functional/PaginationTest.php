@@ -674,18 +674,19 @@ SQL
         $query->setMaxResults(10);
 
         $query->setParameter('id', 1);
-        $paginator = new Paginator($query);
-        $paginator->getIterator(); // exercise the Paginator
+        $paginator     = new Paginator($query);
+        $initialResult = iterator_to_array($paginator->getIterator()); // exercise the Paginator
+        self::assertCount(9, $initialResult);
 
-        $initialCount = count(self::$queryCache->getValues());
+        $initialQueryCount = count(self::$queryCache->getValues());
 
-        $query->setParameter('id', 2);
+        $query->setParameter('id', $initialResult[1]->id); // skip the first result element
         $paginator = new Paginator($query);
-        $paginator->getIterator(); // exercise the Paginator again, with a smaller result set
+        self::assertCount(8, $paginator->getIterator()); // exercise the Paginator again, with a smaller result set
 
         $newCount = count(self::$queryCache->getValues());
 
-        self::assertSame($initialCount, $newCount);
+        self::assertSame($initialQueryCount, $newCount);
     }
 
     public function populate(): void
