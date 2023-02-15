@@ -1215,12 +1215,10 @@ class ClassMetadataInfo implements ClassMetadata
     public function validateAssociations()
     {
         foreach ($this->associationMappings as $mapping) {
-            if (
-                ! class_exists($mapping['targetEntity'])
-                && ! interface_exists($mapping['targetEntity'])
-                && ! trait_exists($mapping['targetEntity'])
-            ) {
-                throw MappingException::invalidTargetEntityClass($mapping['targetEntity'], $this->name, $mapping['fieldName']);
+            /** @var string */
+            $targetEntity = $mapping['targetEntity'];
+            if (! class_exists($targetEntity)) {
+                throw MappingException::invalidTargetEntityClass($targetEntity, $this->name, $mapping['fieldName']);
             }
         }
     }
