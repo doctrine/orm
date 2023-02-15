@@ -104,7 +104,7 @@ class AnsiQuoteStrategyTest extends OrmTestCase
                 'fieldName'     => 'article',
                 'targetEntity'  => DDC117Article::class,
                 'joinColumns'    => [
-                    ['name' => 'article'],
+                    ['name' => 'article', 'referencedColumnName' => 'id'],
                 ],
             ],
         );
@@ -123,7 +123,7 @@ class AnsiQuoteStrategyTest extends OrmTestCase
                 'fieldName'     => 'article',
                 'targetEntity'  => DDC117Article::class,
                 'joinColumns'    => [
-                    ['name' => 'article'],
+                    ['name' => 'article', 'referencedColumnName' => 'id'],
                 ],
             ],
         );

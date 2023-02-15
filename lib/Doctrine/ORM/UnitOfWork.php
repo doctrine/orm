@@ -30,6 +30,7 @@ use Doctrine\ORM\Exception\UnexpectedAssociationValue;
 use Doctrine\ORM\Id\AssignedGenerator;
 use Doctrine\ORM\Internal\CommitOrderCalculator;
 use Doctrine\ORM\Internal\HydrationCompleteHandler;
+use Doctrine\ORM\Mapping\AssociationMapping;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\ORM\Persisters\Collection\CollectionPersister;
@@ -76,8 +77,6 @@ use function sprintf;
  * in the correct order.
  *
  * Internal note: This class contains highly performance-sensitive code.
- *
- * @psalm-import-type AssociationMapping from ClassMetadata
  */
 class UnitOfWork implements PropertyChangedListener
 {
@@ -613,7 +612,7 @@ class UnitOfWork implements PropertyChangedListener
 
                 $assoc = $class->associationMappings[$propName];
 
-                if ($assoc['isOwningSide'] && $assoc['type'] & ClassMetadata::TO_ONE) {
+                if ($assoc->isToOneOwningSide()) {
                     $changeSet[$propName] = [null, $actualValue];
                 }
             }
@@ -700,7 +699,7 @@ class UnitOfWork implements PropertyChangedListener
                     continue;
                 }
 
-                if ($assoc['type'] & ClassMetadata::TO_ONE) {
+                if ($assoc->isToOne()) {
                     if ($assoc['isOwningSide']) {
                         $changeSet[$propName] = [$orgValue, $actualValue];
                     }
@@ -730,8 +729,7 @@ class UnitOfWork implements PropertyChangedListener
 
             if (
                 ! isset($this->entityChangeSets[$oid]) &&
-                $assoc['isOwningSide'] &&
-                $assoc['type'] === ClassMetadata::MANY_TO_MANY &&
+                $assoc->isManyToManyOwningSide() &&
                 $val instanceof PersistentCollection &&
                 $val->isDirty()
             ) {
@@ -787,12 +785,11 @@ class UnitOfWork implements PropertyChangedListener
      * Computes the changes of an association.
      *
      * @param mixed $value The value of the association.
-     * @psalm-param AssociationMapping $assoc The association mapping.
      *
      * @throws ORMInvalidArgumentException
      * @throws ORMException
      */
-    private function computeAssociationChanges(array $assoc, mixed $value): void
+    private function computeAssociationChanges(AssociationMapping $assoc, mixed $value): void
     {
         if ($value instanceof Proxy && ! $value->__isInitialized()) {
             return;
@@ -808,7 +805,7 @@ class UnitOfWork implements PropertyChangedListener
         // Look through the entities, and in any of their associations,
         // for transient (new) entities, recursively. ("Persistence by reachability")
         // Unwrap. Uninitialized collections will simply be empty.
-        $unwrappedValue = $assoc['type'] & ClassMetadata::TO_ONE ? [$value] : $value->unwrap();
+        $unwrappedValue = $assoc->isToOne() ? [$value] : $value->unwrap();
         $targetClass    = $this->em->getClassMetadata($assoc['targetEntity']);
 
         foreach ($unwrappedValue as $key => $entry) {
@@ -849,7 +846,7 @@ class UnitOfWork implements PropertyChangedListener
                 case self::STATE_REMOVED:
                     // Consume the $value as array (it's either an array or an ArrayAccess)
                     // and remove the element from Collection.
-                    if ($assoc['type'] & ClassMetadata::TO_MANY) {
+                    if ($assoc->isToMany()) {
                         unset($value[$key]);
                     }
 
@@ -1186,7 +1183,7 @@ class UnitOfWork implements PropertyChangedListener
         // Calculate dependencies for new nodes
         while ($class = array_pop($newNodes)) {
             foreach ($class->associationMappings as $assoc) {
-                if (! ($assoc['isOwningSide'] && $assoc['type'] & ClassMetadata::TO_ONE)) {
+                if (! $assoc->isToOneOwningSide()) {
                     continue;
                 }
 
@@ -1198,7 +1195,7 @@ class UnitOfWork implements PropertyChangedListener
                     $newNodes[] = $targetClass;
                 }
 
-                $joinColumns = reset($assoc['joinColumns']);
+                $joinColumns = reset($assoc->joinColumns);
 
                 $calc->addDependency($targetClass->name, $class->name, (int) empty($joinColumns['nullable']));
 
@@ -1856,7 +1853,7 @@ class UnitOfWork implements PropertyChangedListener
 
         $associationMappings = array_filter(
             $class->associationMappings,
-            static fn (array $assoc) => $assoc['isCascadeRefresh']
+            static fn (AssociationMapping $assoc): bool => $assoc['isCascadeRefresh']
         );
 
         foreach ($associationMappings as $assoc) {
@@ -1897,7 +1894,7 @@ class UnitOfWork implements PropertyChangedListener
 
         $associationMappings = array_filter(
             $class->associationMappings,
-            static fn (array $assoc) => $assoc['isCascadeDetach']
+            static fn (AssociationMapping $assoc): bool => $assoc['isCascadeDetach']
         );
 
         foreach ($associationMappings as $assoc) {
@@ -1943,7 +1940,7 @@ class UnitOfWork implements PropertyChangedListener
 
         $associationMappings = array_filter(
             $class->associationMappings,
-            static fn (array $assoc) => $assoc['isCascadePersist']
+            static fn (AssociationMapping $assoc): bool => $assoc['isCascadePersist']
         );
 
         foreach ($associationMappings as $assoc) {
@@ -1957,7 +1954,7 @@ class UnitOfWork implements PropertyChangedListener
 
                 case $relatedEntities instanceof Collection:
                 case is_array($relatedEntities):
-                    if (($assoc['type'] & ClassMetadata::TO_MANY) <= 0) {
+                    if ($assoc->isToMany() <= 0) {
                         throw ORMInvalidArgumentException::invalidAssociation(
                             $this->em->getClassMetadata($assoc['targetEntity']),
                             $assoc,
@@ -2000,7 +1997,7 @@ class UnitOfWork implements PropertyChangedListener
 
         $associationMappings = array_filter(
             $class->associationMappings,
-            static fn (array $assoc) => $assoc['isCascadeRemove']
+            static fn (AssociationMapping $assoc): bool => $assoc['isCascadeRemove']
         );
 
         $entitiesToCascade = [];
@@ -2285,7 +2282,7 @@ class UnitOfWork implements PropertyChangedListener
             $targetClass = $this->em->getClassMetadata($assoc['targetEntity']);
 
             switch (true) {
-                case $assoc['type'] & ClassMetadata::TO_ONE:
+                case $assoc->isToOne():
                     if (! $assoc['isOwningSide']) {
                         // use the given entity association
                         if (isset($data[$field]) && is_object($data[$field]) && isset($this->entityStates[spl_object_id($data[$field])])) {
@@ -2428,7 +2425,7 @@ class UnitOfWork implements PropertyChangedListener
                     $this->originalEntityData[$oid][$field] = $newValue;
                     $class->reflFields[$field]->setValue($entity, $newValue);
 
-                    if ($assoc['inversedBy'] && $assoc['type'] & ClassMetadata::ONE_TO_ONE && $newValue !== null) {
+                    if ($assoc['inversedBy'] && $assoc->isOneToOne() && $newValue !== null) {
                         $inverseAssoc = $targetClass->associationMappings[$assoc['inversedBy']];
                         $targetClass->reflFields[$inverseAssoc['fieldName']]->setValue($newValue, $entity);
                     }
@@ -2680,12 +2677,8 @@ class UnitOfWork implements PropertyChangedListener
         return $this->persisters[$entityName];
     }
 
-    /**
-     * Gets a collection persister for a collection-valued association.
-     *
-     * @psalm-param AssociationMapping $association
-     */
-    public function getCollectionPersister(array $association): CollectionPersister
+    /** Gets a collection persister for a collection-valued association. */
+    public function getCollectionPersister(AssociationMapping $association): CollectionPersister
     {
         $role = isset($association['cache'])
             ? $association['sourceEntity'] . '::' . $association['fieldName']

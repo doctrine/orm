@@ -157,7 +157,7 @@ class DefaultCache implements Cache
 
         foreach ($metadatas as $metadata) {
             foreach ($metadata->associationMappings as $association) {
-                if (! $association['type'] & ClassMetadata::TO_MANY) {
+                if (! $association->isToMany()) {
                     continue;
                 }
 

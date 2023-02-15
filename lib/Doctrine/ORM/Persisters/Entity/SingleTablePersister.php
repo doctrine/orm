@@ -6,6 +6,7 @@ namespace Doctrine\ORM\Persisters\Entity;
 
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\Internal\SQLResultCasing;
+use Doctrine\ORM\Mapping\AssociationMapping;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Utility\PersisterHelper;
 
@@ -66,7 +67,7 @@ class SingleTablePersister extends AbstractEntityInheritancePersister
 
             // Foreign key columns
             foreach ($subClass->associationMappings as $assoc) {
-                if (! $assoc['isOwningSide'] || ! ($assoc['type'] & ClassMetadata::TO_ONE) || isset($assoc['inherited'])) {
+                if (! $assoc->isToOneOwningSide() || isset($assoc['inherited'])) {
                     continue;
                 }
 
@@ -109,7 +110,7 @@ class SingleTablePersister extends AbstractEntityInheritancePersister
     /**
      * {@inheritdoc}
      */
-    protected function getSelectConditionSQL(array $criteria, array|null $assoc = null): string
+    protected function getSelectConditionSQL(array $criteria, AssociationMapping|null $assoc = null): string
     {
         $conditionSql = parent::getSelectConditionSQL($criteria, $assoc);
 

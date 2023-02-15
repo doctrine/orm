@@ -57,7 +57,7 @@ class DefaultEntityHydrator implements EntityHydrator
                 continue;
             }
 
-            if (! ($assoc['type'] & ClassMetadata::TO_ONE)) {
+            if (! $assoc->isToOne()) {
                 unset($data[$name]);
 
                 continue;
@@ -65,7 +65,7 @@ class DefaultEntityHydrator implements EntityHydrator
 
             if (! isset($assoc['cache'])) {
                 $targetClassMetadata = $this->em->getClassMetadata($assoc['targetEntity']);
-                $owningAssociation   = ! $assoc['isOwningSide']
+                $owningAssociation   = ! $assoc->isOwningSide()
                     ? $targetClassMetadata->associationMappings[$assoc['mappedBy']]
                     : $assoc;
                 $associationIds      = $this->identifierFlattener->flattenIdentifier(
@@ -141,7 +141,7 @@ class DefaultEntityHydrator implements EntityHydrator
 
             $assocClass  = $data[$name]->class;
             $assocId     = $data[$name]->identifier;
-            $isEagerLoad = ($assoc['fetch'] === ClassMetadata::FETCH_EAGER || ($assoc['type'] === ClassMetadata::ONE_TO_ONE && ! $assoc['isOwningSide']));
+            $isEagerLoad = ($assoc['fetch'] === ClassMetadata::FETCH_EAGER || ($assoc->isOneToOne() && ! $assoc->isOwningSide()));
 
             if (! $isEagerLoad) {
                 $data[$name] = $this->em->getReference($assocClass, $assocId);

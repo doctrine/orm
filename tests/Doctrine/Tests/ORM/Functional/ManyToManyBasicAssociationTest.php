@@ -6,6 +6,7 @@ namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Criteria;
+use Doctrine\ORM\Mapping\AssociationMapping;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\UnitOfWork;
 use Doctrine\Tests\Models\CMS\CmsGroup;
@@ -265,7 +266,7 @@ class ManyToManyBasicAssociationTest extends OrmFunctionalTestCase
                              ->setParameter(1, $user->getId())
                              ->getSingleResult();
         self::assertCount(0, $newUser->groups);
-        self::assertIsArray($newUser->groups->getMapping());
+        self::assertInstanceOf(AssociationMapping::class, $newUser->groups->getMapping());
 
         $newUser->addGroup($group);
 

@@ -94,7 +94,7 @@ class ObjectHydrator extends AbstractHydrator
                 $class        = $this->getClassMetadata($className);
                 $inverseAssoc = $class->associationMappings[$assoc['inversedBy']];
 
-                if (! ($inverseAssoc['type'] & ClassMetadata::TO_ONE)) {
+                if (! $inverseAssoc->isToOne()) {
                     continue;
                 }
 
@@ -364,7 +364,7 @@ class ObjectHydrator extends AbstractHydrator
                 $oid = spl_object_id($parentObject);
 
                 // Check the type of the relation (many or single-valued)
-                if (! ($relation['type'] & ClassMetadata::TO_ONE)) {
+                if (! $relation->isToOne()) {
                     // PATH A: Collection-valued association
                     $reflFieldValue = $reflField->getValue($parentObject);
 
@@ -435,7 +435,7 @@ class ObjectHydrator extends AbstractHydrator
                                 // If there is an inverse mapping on the target class its bidirectional
                                 if ($relation['inversedBy']) {
                                     $inverseAssoc = $targetClass->associationMappings[$relation['inversedBy']];
-                                    if ($inverseAssoc['type'] & ClassMetadata::TO_ONE) {
+                                    if ($inverseAssoc->isToOne()) {
                                         $targetClass->reflFields[$inverseAssoc['fieldName']]->setValue($element, $parentObject);
                                         $this->uow->setOriginalEntityProperty(spl_object_id($element), $inverseAssoc['fieldName'], $parentObject);
                                     }

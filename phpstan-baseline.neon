@@ -131,11 +131,6 @@ parameters:
 			path: lib/Doctrine/ORM/Mapping/ClassMetadata.php
 
 		-
-			message: "#^Negated boolean expression is always false\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Mapping/ClassMetadata.php
-
-		-
 			message: "#^If condition is always true\\.$#"
 			count: 2
 			path: lib/Doctrine/ORM/Mapping/ClassMetadataFactory.php

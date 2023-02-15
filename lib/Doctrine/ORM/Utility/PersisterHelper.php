@@ -36,11 +36,11 @@ class PersisterHelper
 
         $assoc = $class->associationMappings[$fieldName];
 
-        if (! $assoc['isOwningSide']) {
+        if (! $assoc->isOwningSide()) {
             return self::getTypeOfField($assoc['mappedBy'], $em->getClassMetadata($assoc['targetEntity']), $em);
         }
 
-        if ($assoc['type'] & ClassMetadata::MANY_TO_MANY) {
+        if ($assoc->isManyToMany()) {
             $joinData = $assoc['joinTable'];
         } else {
             $joinData = $assoc;
@@ -69,7 +69,7 @@ class PersisterHelper
 
         // iterate over to-one association mappings
         foreach ($class->associationMappings as $assoc) {
-            if (! isset($assoc['joinColumns'])) {
+            if (! $assoc->isToOne()) {
                 continue;
             }
 
@@ -85,7 +85,7 @@ class PersisterHelper
 
         // iterate over to-many association mappings
         foreach ($class->associationMappings as $assoc) {
-            if (! (isset($assoc['joinTable']) && isset($assoc['joinTable']['joinColumns']))) {
+            if (! $assoc->isToMany()) {
                 continue;
             }
 
