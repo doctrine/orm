@@ -18,6 +18,7 @@ use Doctrine\ORM\Cache\Region;
 use Doctrine\ORM\Cache\TimestampCacheKey;
 use Doctrine\ORM\Cache\TimestampRegion;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Mapping\AssociationMapping;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\PersistentCollection;
@@ -86,7 +87,7 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
 
     public function getSelectSQL(
         array|Criteria $criteria,
-        array|null $assoc = null,
+        AssociationMapping|null $assoc = null,
         LockMode|int|null $lockMode = null,
         int|null $limit = null,
         int|null $offset = null,
@@ -113,7 +114,7 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
     public function getSelectConditionStatementSQL(
         string $field,
         mixed $value,
-        array|null $assoc = null,
+        AssociationMapping|null $assoc = null,
         string|null $comparison = null,
     ): string {
         return $this->persister->getSelectConditionStatementSQL($field, $value, $assoc, $comparison);
@@ -241,7 +242,7 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
      * {@inheritdoc}
      */
     public function getManyToManyCollection(
-        array $assoc,
+        AssociationMapping $assoc,
         object $sourceEntity,
         int|null $offset = null,
         int|null $limit = null,
@@ -253,7 +254,7 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
      * {@inheritdoc}
      */
     public function getOneToManyCollection(
-        array $assoc,
+        AssociationMapping $assoc,
         object $sourceEntity,
         int|null $offset = null,
         int|null $limit = null,
@@ -282,7 +283,7 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
     public function load(
         array $criteria,
         object|null $entity = null,
-        array|null $assoc = null,
+        AssociationMapping|null $assoc = null,
         array $hints = [],
         LockMode|int|null $lockMode = null,
         int|null $limit = null,
@@ -455,7 +456,7 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
      * {@inheritdoc}
      */
     public function loadManyToManyCollection(
-        array $assoc,
+        AssociationMapping $assoc,
         object $sourceEntity,
         PersistentCollection $collection,
     ): array {
@@ -485,11 +486,8 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
         return $list;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function loadOneToManyCollection(
-        array $assoc,
+        AssociationMapping $assoc,
         object $sourceEntity,
         PersistentCollection $collection,
     ): mixed {
@@ -522,7 +520,7 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
     /**
      * {@inheritdoc}
      */
-    public function loadOneToOneEntity(array $assoc, object $sourceEntity, array $identifier = []): object|null
+    public function loadOneToOneEntity(AssociationMapping $assoc, object $sourceEntity, array $identifier = []): object|null
     {
         return $this->persister->loadOneToOneEntity($assoc, $sourceEntity, $identifier);
     }
@@ -543,11 +541,8 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
         $this->persister->refresh($id, $entity, $lockMode);
     }
 
-    /**
-     * @param array<string, mixed> $association
-     * @param array<string, mixed> $ownerId
-     */
-    protected function buildCollectionCacheKey(array $association, array $ownerId): CollectionCacheKey
+    /** @param array<string, mixed> $ownerId */
+    protected function buildCollectionCacheKey(AssociationMapping $association, array $ownerId): CollectionCacheKey
     {
         $metadata = $this->metadataFactory->getMetadataFor($association['sourceEntity']);
         assert($metadata instanceof ClassMetadata);

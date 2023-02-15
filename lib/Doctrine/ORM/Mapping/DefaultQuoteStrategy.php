@@ -55,21 +55,15 @@ class DefaultQuoteStrategy implements QuoteStrategy
             : $definition['sequenceName'];
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getJoinColumnName(array $joinColumn, ClassMetadata $class, AbstractPlatform $platform): string
+    public function getJoinColumnName(JoinColumnData $joinColumn, ClassMetadata $class, AbstractPlatform $platform): string
     {
         return isset($joinColumn['quoted'])
             ? $platform->quoteIdentifier($joinColumn['name'])
             : $joinColumn['name'];
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getReferencedJoinColumnName(
-        array $joinColumn,
+        JoinColumnData $joinColumn,
         ClassMetadata $class,
         AbstractPlatform $platform,
     ): string {
@@ -78,11 +72,11 @@ class DefaultQuoteStrategy implements QuoteStrategy
             : $joinColumn['referencedColumnName'];
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getJoinTableName(array $association, ClassMetadata $class, AbstractPlatform $platform): string
-    {
+    public function getJoinTableName(
+        AssociationMapping $association,
+        ClassMetadata $class,
+        AbstractPlatform $platform,
+    ): string {
         $schema = '';
 
         if (isset($association['joinTable']['schema'])) {
@@ -115,7 +109,7 @@ class DefaultQuoteStrategy implements QuoteStrategy
             // Association defined as Id field
             $joinColumns            = $class->associationMappings[$fieldName]['joinColumns'];
             $assocQuotedColumnNames = array_map(
-                static fn (array $joinColumn) => isset($joinColumn['quoted'])
+                static fn (JoinColumnData $joinColumn) => isset($joinColumn['quoted'])
                     ? $platform->quoteIdentifier($joinColumn['name'])
                     : $joinColumn['name'],
                 $joinColumns,

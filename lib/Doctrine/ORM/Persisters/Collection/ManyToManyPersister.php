@@ -8,6 +8,7 @@ use BadMethodCallException;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\DBAL\Exception as DBALException;
 use Doctrine\DBAL\LockMode;
+use Doctrine\ORM\Mapping\AssociationMapping;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\Persisters\SqlValueVisitor;
@@ -24,8 +25,6 @@ use function sprintf;
 
 /**
  * Persister for many-to-many collections.
- *
- * @psalm-import-type AssociationMapping from ClassMetadata
  */
 class ManyToManyPersister extends AbstractCollectionPersister
 {
@@ -276,15 +275,14 @@ class ManyToManyPersister extends AbstractCollectionPersister
      * have to join in the actual entities table leading to additional
      * JOIN.
      *
-     * @param mixed[] $mapping Array containing mapping information.
-     * @psalm-param AssociationMapping $mapping
+     * @param AssociationMapping $mapping Array containing mapping information.
      *
      * @return string[] ordered tuple:
      *                   - JOIN condition to add to the SQL
      *                   - WHERE condition to add to the SQL
      * @psalm-return array{0: string, 1: string}
      */
-    public function getFilterSql(array $mapping): array
+    public function getFilterSql(AssociationMapping $mapping): array
     {
         $targetClass = $this->em->getClassMetadata($mapping['targetEntity']);
         $rootClass   = $this->em->getClassMetadata($targetClass->rootEntityName);
@@ -329,13 +327,10 @@ class ManyToManyPersister extends AbstractCollectionPersister
     /**
      * Generate ON condition
      *
-     * @param mixed[] $mapping
-     * @psalm-param AssociationMapping $mapping
-     *
      * @return string[]
      * @psalm-return list<string>
      */
-    protected function getOnConditionSQL(array $mapping): array
+    protected function getOnConditionSQL(AssociationMapping $mapping): array
     {
         $targetClass = $this->em->getClassMetadata($mapping['targetEntity']);
         $association = ! $mapping['isOwningSide']

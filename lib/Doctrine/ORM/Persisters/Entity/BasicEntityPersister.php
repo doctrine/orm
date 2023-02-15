@@ -17,6 +17,7 @@ use Doctrine\DBAL\Result;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Mapping\AssociationMapping;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\ORM\Mapping\QuoteStrategy;
@@ -89,8 +90,6 @@ use function trim;
  *
  * Subclasses can be created to provide custom persisting and querying strategies,
  * i.e. spanning multiple tables.
- *
- * @psalm-import-type AssociationMapping from ClassMetadata
  */
 class BasicEntityPersister implements EntityPersister
 {
@@ -697,7 +696,7 @@ class BasicEntityPersister implements EntityPersister
     public function load(
         array $criteria,
         object|null $entity = null,
-        array|null $assoc = null,
+        AssociationMapping|null $assoc = null,
         array $hints = [],
         LockMode|int|null $lockMode = null,
         int|null $limit = null,
@@ -731,7 +730,7 @@ class BasicEntityPersister implements EntityPersister
     /**
      * {@inheritdoc}
      */
-    public function loadOneToOneEntity(array $assoc, object $sourceEntity, array $identifier = []): object|null
+    public function loadOneToOneEntity(AssociationMapping $assoc, object $sourceEntity, array $identifier = []): object|null
     {
         $foundEntity = $this->em->getUnitOfWork()->tryGetById($identifier, $assoc['targetEntity']);
         if ($foundEntity !== false) {
@@ -885,7 +884,7 @@ class BasicEntityPersister implements EntityPersister
      * {@inheritdoc}
      */
     public function getManyToManyCollection(
-        array $assoc,
+        AssociationMapping $assoc,
         object $sourceEntity,
         int|null $offset = null,
         int|null $limit = null,
@@ -900,11 +899,9 @@ class BasicEntityPersister implements EntityPersister
     /**
      * Loads an array of entities from a given DBAL statement.
      *
-     * @param mixed[] $assoc
-     *
      * @return mixed[]
      */
-    private function loadArrayFromResult(array $assoc, Result $stmt): array
+    private function loadArrayFromResult(AssociationMapping $assoc, Result $stmt): array
     {
         $rsm   = $this->currentPersisterContext->rsm;
         $hints = [UnitOfWork::HINT_DEFEREAGERLOAD => true];
@@ -920,12 +917,10 @@ class BasicEntityPersister implements EntityPersister
     /**
      * Hydrates a collection from a given DBAL statement.
      *
-     * @param mixed[] $assoc
-     *
      * @return mixed[]
      */
     private function loadCollectionFromStatement(
-        array $assoc,
+        AssociationMapping $assoc,
         Result $stmt,
         PersistentCollection $coll,
     ): array {
@@ -946,20 +941,16 @@ class BasicEntityPersister implements EntityPersister
     /**
      * {@inheritdoc}
      */
-    public function loadManyToManyCollection(array $assoc, object $sourceEntity, PersistentCollection $collection): array
+    public function loadManyToManyCollection(AssociationMapping $assoc, object $sourceEntity, PersistentCollection $collection): array
     {
         $stmt = $this->getManyToManyStatement($assoc, $sourceEntity);
 
         return $this->loadCollectionFromStatement($assoc, $stmt, $collection);
     }
 
-    /**
-     * @psalm-param array<string, mixed> $assoc
-     *
-     * @throws MappingException
-     */
+    /** @throws MappingException */
     private function getManyToManyStatement(
-        array $assoc,
+        AssociationMapping $assoc,
         object $sourceEntity,
         int|null $offset = null,
         int|null $limit = null,
@@ -1028,7 +1019,7 @@ class BasicEntityPersister implements EntityPersister
 
     public function getSelectSQL(
         array|Criteria $criteria,
-        array|null $assoc = null,
+        AssociationMapping|null $assoc = null,
         LockMode|int|null $lockMode = null,
         int|null $limit = null,
         int|null $offset = null,
@@ -1284,14 +1275,10 @@ class BasicEntityPersister implements EntityPersister
         return $this->currentPersisterContext->selectColumnListSql;
     }
 
-    /**
-     * Gets the SQL join fragment used when selecting entities from an association.
-     *
-     * @param AssociationMapping $assoc
-     */
+    /** Gets the SQL join fragment used when selecting entities from an association. */
     protected function getSelectColumnAssociationSQL(
         string $field,
-        array $assoc,
+        AssociationMapping $assoc,
         ClassMetadata $class,
         string $alias = 'r',
     ): string {
@@ -1320,10 +1307,8 @@ class BasicEntityPersister implements EntityPersister
     /**
      * Gets the SQL join fragment used when selecting entities from a
      * many-to-many association.
-     *
-     * @psalm-param AssociationMapping $manyToMany
      */
-    protected function getSelectManyToManyJoinSQL(array $manyToMany): string
+    protected function getSelectManyToManyJoinSQL(AssociationMapping $manyToMany): string
     {
         $conditions       = [];
         $association      = $manyToMany;
@@ -1542,7 +1527,7 @@ class BasicEntityPersister implements EntityPersister
     public function getSelectConditionStatementSQL(
         string $field,
         mixed $value,
-        array|null $assoc = null,
+        AssociationMapping|null $assoc = null,
         string|null $comparison = null,
     ): string {
         $selectedColumns = [];
@@ -1612,8 +1597,6 @@ class BasicEntityPersister implements EntityPersister
     /**
      * Builds the left-hand-side of a where condition statement.
      *
-     * @psalm-param AssociationMapping|null $assoc
-     *
      * @return string[]
      * @psalm-return list<string>
      *
@@ -1622,7 +1605,7 @@ class BasicEntityPersister implements EntityPersister
      */
     private function getSelectConditionStatementColumnSQL(
         string $field,
-        array|null $assoc = null,
+        AssociationMapping|null $assoc = null,
     ): array {
         if (isset($this->class->fieldMappings[$field])) {
             $className = $this->class->fieldMappings[$field]['inherited'] ?? $this->class->name;
@@ -1642,7 +1625,8 @@ class BasicEntityPersister implements EntityPersister
                 }
 
                 $joinTableName = $this->quoteStrategy->getJoinTableName($association, $class, $this->platform);
-                $joinColumns   = $assoc['isOwningSide']
+                assert($assoc !== null);
+                $joinColumns = $assoc['isOwningSide']
                     ? $association['joinTable']['joinColumns']
                     : $association['joinTable']['inverseJoinColumns'];
 
@@ -1686,9 +1670,8 @@ class BasicEntityPersister implements EntityPersister
      * or alter the criteria by which entities are selected.
      *
      * @psalm-param array<string, mixed> $criteria
-     * @psalm-param AssociationMapping|null $assoc
      */
-    protected function getSelectConditionSQL(array $criteria, array|null $assoc = null): string
+    protected function getSelectConditionSQL(array $criteria, AssociationMapping|null $assoc = null): string
     {
         $conditions = [];
 
@@ -1703,7 +1686,7 @@ class BasicEntityPersister implements EntityPersister
      * {@inheritdoc}
      */
     public function getOneToManyCollection(
-        array $assoc,
+        AssociationMapping $assoc,
         object $sourceEntity,
         int|null $offset = null,
         int|null $limit = null,
@@ -1715,11 +1698,8 @@ class BasicEntityPersister implements EntityPersister
         return $this->loadArrayFromResult($assoc, $stmt);
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function loadOneToManyCollection(
-        array $assoc,
+        AssociationMapping $assoc,
         object $sourceEntity,
         PersistentCollection $collection,
     ): mixed {
@@ -1728,13 +1708,9 @@ class BasicEntityPersister implements EntityPersister
         return $this->loadCollectionFromStatement($assoc, $stmt, $collection);
     }
 
-    /**
-     * Builds criteria and execute SQL statement to fetch the one to many entities from.
-     *
-     * @psalm-param AssociationMapping $assoc
-     */
+    /** Builds criteria and execute SQL statement to fetch the one to many entities from. */
     private function getOneToManyStatement(
-        array $assoc,
+        AssociationMapping $assoc,
         object $sourceEntity,
         int|null $offset = null,
         int|null $limit = null,

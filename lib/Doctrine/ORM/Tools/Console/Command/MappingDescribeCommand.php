@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Tools\Console\Command;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Mapping\AssociationMapping;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\FieldMapping;
 use Doctrine\Persistence\Mapping\MappingException;
@@ -41,8 +42,6 @@ use const JSON_UNESCAPED_UNICODE;
  * Show information about mapped entities.
  *
  * @link    www.doctrine-project.org
- *
- * @psalm-import-type AssociationMapping from ClassMetadata
  */
 final class MappingDescribeCommand extends AbstractEntityManagerCommand
 {

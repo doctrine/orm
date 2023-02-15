@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Mapping;
 
+use Doctrine\ORM\Mapping\AssociationMapping;
 use Doctrine\ORM\Mapping\Builder\ClassMetadataBuilder;
 use Doctrine\ORM\Mapping\Builder\EmbeddedBuilder;
 use Doctrine\ORM\Mapping\Builder\FieldBuilder;
@@ -288,7 +289,7 @@ class ClassMetadataBuilderTest extends OrmTestCase
 
         self::assertEquals(
             [
-                'groups' => [
+                'groups' => AssociationMapping::fromMappingArray([
                     'fieldName' => 'groups',
                     'targetEntity' => CmsGroup::class,
                     'cascade' => [
@@ -327,7 +328,7 @@ class ClassMetadataBuilderTest extends OrmTestCase
                     'targetToSourceKeyColumns' =>
                     ['id' => 'group_id'],
                     'orphanRemoval' => false,
-                ],
+                ]),
             ],
             $this->cm->associationMappings,
         );
@@ -348,7 +349,7 @@ class ClassMetadataBuilderTest extends OrmTestCase
 
         self::assertEquals(
             [
-                'groups' => [
+                'groups' => AssociationMapping::fromMappingArray([
                     'fieldName' => 'groups',
                     'targetEntity' => CmsGroup::class,
                     'cascade' => [
@@ -388,7 +389,7 @@ class ClassMetadataBuilderTest extends OrmTestCase
                         ['id' => 'group_id'],
                     'orphanRemoval' => false,
                     'id' => true,
-                ],
+                ]),
             ],
             $this->cm->associationMappings,
         );
@@ -406,7 +407,7 @@ class ClassMetadataBuilderTest extends OrmTestCase
 
         self::assertEquals(
             [
-                'groups' => [
+                'groups' => AssociationMapping::fromMappingArray([
                     'fieldName' => 'groups',
                     'targetEntity' => CmsGroup::class,
                     'cascade' => [
@@ -445,7 +446,7 @@ class ClassMetadataBuilderTest extends OrmTestCase
                     'targetToSourceKeyColumns' =>
                     ['id' => 'group_id'],
                     'orphanRemoval' => false,
-                ],
+                ]),
             ],
             $this->cm->associationMappings,
         );
@@ -466,7 +467,7 @@ class ClassMetadataBuilderTest extends OrmTestCase
 
         self::assertEquals(
             [
-                'groups' => [
+                'groups' => AssociationMapping::fromMappingArray([
                     'fieldName' => 'groups',
                     'targetEntity' => CmsGroup::class,
                     'cascade' => [
@@ -506,7 +507,7 @@ class ClassMetadataBuilderTest extends OrmTestCase
                     'targetToSourceKeyColumns' =>
                         ['id' => 'group_id'],
                     'orphanRemoval' => false,
-                ],
+                ]),
             ],
             $this->cm->associationMappings,
         );
@@ -540,7 +541,7 @@ class ClassMetadataBuilderTest extends OrmTestCase
         self::assertEquals(
             [
                 'groups' =>
-                [
+                AssociationMapping::fromMappingArray([
                     'fieldName' => 'groups',
                     'targetEntity' => CmsGroup::class,
                     'cascade' =>
@@ -601,7 +602,7 @@ class ClassMetadataBuilderTest extends OrmTestCase
                     'relationToTargetKeyColumns' =>
                     ['user_id' => 'id'],
                     'orphanRemoval' => false,
-                ],
+                ]),
             ],
             $this->cm->associationMappings,
         );
@@ -634,27 +635,25 @@ class ClassMetadataBuilderTest extends OrmTestCase
         self::assertEquals(
             [
                 'groups' =>
-                [
+                AssociationMapping::fromMappingArray([
                     'fieldName' => 'groups',
                     'targetEntity' => CmsGroup::class,
                     'mappedBy' => 'test',
-                    'orderBy' =>
-                [0 => 'test'],
+                    'orderBy' => [0 => 'test'],
                     'indexBy' => 'test',
                     'type' => 4,
                     'inversedBy' => null,
                     'isOwningSide' => false,
                     'sourceEntity' => CmsUser::class,
                     'fetch' => 2,
-                    'cascade' =>
-                [],
+                    'cascade' => [],
                     'isCascadeRemove' => false,
                     'isCascadePersist' => false,
                     'isCascadeRefresh' => false,
                     'isCascadeMerge' => false,
                     'isCascadeDetach' => false,
                     'orphanRemoval' => false,
-                ],
+                ]),
             ],
             $this->cm->associationMappings,
         );
@@ -684,7 +683,7 @@ class ClassMetadataBuilderTest extends OrmTestCase
 
         self::assertEquals(
             [
-                'groups' => [
+                'groups' => AssociationMapping::fromMappingArray([
                     'fieldName' => 'groups',
                     'targetEntity' => CmsGroup::class,
                     'cascade' => [],
@@ -717,7 +716,7 @@ class ClassMetadataBuilderTest extends OrmTestCase
                     'targetToSourceKeyColumns' =>
                     ['id' => 'group_id'],
                     'orphanRemoval' => true,
-                ],
+                ]),
             ],
             $this->cm->associationMappings,
         );
@@ -736,7 +735,7 @@ class ClassMetadataBuilderTest extends OrmTestCase
         self::assertEquals(
             [
                 'groups' =>
-                [
+                AssociationMapping::fromMappingArray([
                     'fieldName' => 'groups',
                     'targetEntity' => CmsGroup::class,
                     'mappedBy' => 'test',
@@ -752,7 +751,7 @@ class ClassMetadataBuilderTest extends OrmTestCase
                     'isCascadeMerge' => false,
                     'isCascadeDetach' => false,
                     'orphanRemoval' => true,
-                ],
+                ]),
             ],
             $this->cm->associationMappings,
         );
@@ -779,7 +778,7 @@ class ClassMetadataBuilderTest extends OrmTestCase
 
         self::assertEquals(
             [
-                'groups' => [
+                'groups' => AssociationMapping::fromMappingArray([
                     'fieldName' => 'groups',
                     'targetEntity' => CmsGroup::class,
                     'cascade' => [],
@@ -822,7 +821,7 @@ class ClassMetadataBuilderTest extends OrmTestCase
                     ],
                     'relationToTargetKeyColumns' => ['cmsgroup_id' => 'id'],
                     'orphanRemoval' => true,
-                ],
+                ]),
             ],
             $this->cm->associationMappings,
         );

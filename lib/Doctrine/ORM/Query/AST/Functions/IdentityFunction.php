@@ -36,7 +36,9 @@ class IdentityFunction extends FunctionNode
         $assocField    = $this->pathExpression->field;
         $assoc         = $sqlWalker->getMetadataForDqlAlias($dqlAlias)->associationMappings[$assocField];
         $targetEntity  = $entityManager->getClassMetadata($assoc['targetEntity']);
-        $joinColumn    = reset($assoc['joinColumns']);
+
+        assert($assoc->joinColumns !== null);
+        $joinColumn = reset($assoc->joinColumns);
 
         if ($this->fieldMapping !== null) {
             if (! isset($targetEntity->fieldMappings[$this->fieldMapping])) {

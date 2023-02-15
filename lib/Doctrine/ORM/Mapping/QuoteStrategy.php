@@ -8,9 +8,6 @@ use Doctrine\DBAL\Platforms\AbstractPlatform;
 
 /**
  * A set of rules for determining the column, alias and table quotes.
- *
- * @psalm-import-type AssociationMapping from ClassMetadata
- * @psalm-import-type JoinColumnData from ClassMetadata
  */
 interface QuoteStrategy
 {
@@ -31,27 +28,19 @@ interface QuoteStrategy
      */
     public function getSequenceName(array $definition, ClassMetadata $class, AbstractPlatform $platform): string;
 
-    /**
-     * Gets the (possibly quoted) name of the join table.
-     *
-     * @param AssociationMapping $association
-     */
-    public function getJoinTableName(array $association, ClassMetadata $class, AbstractPlatform $platform): string;
+    /** Gets the (possibly quoted) name of the join table. */
+    public function getJoinTableName(AssociationMapping $association, ClassMetadata $class, AbstractPlatform $platform): string;
 
     /**
      * Gets the (possibly quoted) join column name.
-     *
-     * @param JoinColumnData $joinColumn
      */
-    public function getJoinColumnName(array $joinColumn, ClassMetadata $class, AbstractPlatform $platform): string;
+    public function getJoinColumnName(JoinColumnData $joinColumn, ClassMetadata $class, AbstractPlatform $platform): string;
 
     /**
      * Gets the (possibly quoted) join column name.
-     *
-     * @param JoinColumnData $joinColumn
      */
     public function getReferencedJoinColumnName(
-        array $joinColumn,
+        JoinColumnData $joinColumn,
         ClassMetadata $class,
         AbstractPlatform $platform,
     ): string;

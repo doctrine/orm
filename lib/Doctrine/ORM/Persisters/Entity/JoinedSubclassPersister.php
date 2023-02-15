@@ -9,10 +9,12 @@ use Doctrine\DBAL\LockMode;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Internal\SQLResultCasing;
+use Doctrine\ORM\Mapping\AssociationMapping;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Utility\PersisterHelper;
 
 use function array_combine;
+use function assert;
 use function implode;
 
 /**
@@ -236,8 +238,14 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
         return (bool) $this->conn->delete($rootTable, $id, $rootTypes);
     }
 
-    public function getSelectSQL(array|Criteria $criteria, array|null $assoc = null, LockMode|int|null $lockMode = null, int|null $limit = null, int|null $offset = null, array|null $orderBy = null): string
-    {
+    public function getSelectSQL(
+        array|Criteria $criteria,
+        AssociationMapping|null $assoc = null,
+        LockMode|int|null $lockMode = null,
+        int|null $limit = null,
+        int|null $offset = null,
+        array|null $orderBy = null,
+    ): string {
         $this->switchPersisterContext($offset, $limit);
 
         $baseTableAlias = $this->getSQLTableAlias($this->class->name);
@@ -471,8 +479,9 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
 
             if (isset($this->class->associationMappings[$name])) {
                 $assoc = $this->class->associationMappings[$name];
-                if ($assoc['type'] & ClassMetadata::TO_ONE && $assoc['isOwningSide']) {
-                    foreach ($assoc['targetToSourceKeyColumns'] as $sourceCol) {
+                if ($assoc->type & ClassMetadata::TO_ONE && $assoc['isOwningSide']) {
+                    assert($assoc->targetToSourceKeyColumns !== null);
+                    foreach ($assoc->targetToSourceKeyColumns as $sourceCol) {
                         $columns[] = $sourceCol;
                     }
                 }

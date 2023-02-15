@@ -45,7 +45,6 @@ use function substr;
  * to a relational database.
  *
  * @extends AbstractClassMetadataFactory<ClassMetadata>
- * @psalm-import-type AssociationMapping from ClassMetadata
  * @psalm-import-type EmbeddedClassMapping from ClassMetadata
  */
 class ClassMetadataFactory extends AbstractClassMetadataFactory
@@ -398,8 +397,10 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
      *
      * @param AssociationMapping|EmbeddedClassMapping|FieldMapping $mapping
      */
-    private function addMappingInheritanceInformation(array|FieldMapping &$mapping, ClassMetadata $parentClass): void
-    {
+    private function addMappingInheritanceInformation(
+        array|FieldMapping|AssociationMapping &$mapping,
+        ClassMetadata $parentClass,
+    ): void {
         if (! isset($mapping['inherited']) && ! $parentClass->isMappedSuperclass) {
             $mapping['inherited'] = $parentClass->name;
         }
@@ -433,18 +434,19 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     private function addInheritedRelations(ClassMetadata $subClass, ClassMetadata $parentClass): void
     {
         foreach ($parentClass->associationMappings as $field => $mapping) {
-            $this->addMappingInheritanceInformation($mapping, $parentClass);
+            $subClassMapping = clone $mapping;
+            $this->addMappingInheritanceInformation($subClassMapping, $parentClass);
             // When the class inheriting the relation ($subClass) is the first entity class since the
             // relation has been defined in a mapped superclass (or in a chain
             // of mapped superclasses) above, then declare this current entity class as the source of
             // the relationship.
             // According to the definitions given in https://github.com/doctrine/orm/pull/10396/,
             // this is the case <=> ! isset($mapping['inherited']).
-            if (! isset($mapping['inherited'])) {
-                $mapping['sourceEntity'] = $subClass->name;
+            if (! isset($subClassMapping['inherited'])) {
+                $subClassMapping['sourceEntity'] = $subClass->name;
             }
 
-            $subClass->addInheritedAssociationMapping($mapping);
+            $subClass->addInheritedAssociationMapping($subClassMapping);
         }
     }
 

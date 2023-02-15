@@ -8,6 +8,7 @@ use Doctrine\Common\EventSubscriber;
 use Doctrine\ORM\Event\LoadClassMetadataEventArgs;
 use Doctrine\ORM\Event\OnClassMetadataNotFoundEventArgs;
 use Doctrine\ORM\Events;
+use Doctrine\ORM\Mapping\AssociationMapping;
 use Doctrine\ORM\Mapping\ClassMetadata;
 
 use function array_key_exists;
@@ -19,8 +20,6 @@ use function ltrim;
  *
  * Mechanism to overwrite interfaces or classes specified as association
  * targets.
- *
- * @psalm-import-type AssociationMapping from ClassMetadata
  */
 class ResolveTargetEntityListener implements EventSubscriber
 {
@@ -89,11 +88,13 @@ class ResolveTargetEntityListener implements EventSubscriber
         }
     }
 
-    /** @param AssociationMapping $mapping */
-    private function remapAssociation(ClassMetadata $classMetadata, array $mapping): void
+    private function remapAssociation(ClassMetadata $classMetadata, AssociationMapping $mapping): void
     {
         $newMapping              = $this->resolveTargetEntities[$mapping['targetEntity']];
-        $newMapping              = array_replace_recursive($mapping, $newMapping);
+        $newMapping              = array_replace_recursive(
+            $mapping->toArray(),
+            $newMapping,
+        );
         $newMapping['fieldName'] = $mapping['fieldName'];
 
         unset($classMetadata->associationMappings[$mapping['fieldName']]);

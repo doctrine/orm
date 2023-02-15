@@ -30,6 +30,7 @@ use Doctrine\ORM\Exception\UnexpectedAssociationValue;
 use Doctrine\ORM\Id\AssignedGenerator;
 use Doctrine\ORM\Internal\CommitOrderCalculator;
 use Doctrine\ORM\Internal\HydrationCompleteHandler;
+use Doctrine\ORM\Mapping\AssociationMapping;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\ORM\Persisters\Collection\CollectionPersister;
@@ -76,8 +77,6 @@ use function sprintf;
  * in the correct order.
  *
  * Internal note: This class contains highly performance-sensitive code.
- *
- * @psalm-import-type AssociationMapping from ClassMetadata
  */
 class UnitOfWork implements PropertyChangedListener
 {
@@ -787,12 +786,11 @@ class UnitOfWork implements PropertyChangedListener
      * Computes the changes of an association.
      *
      * @param mixed $value The value of the association.
-     * @psalm-param AssociationMapping $assoc The association mapping.
      *
      * @throws ORMInvalidArgumentException
      * @throws ORMException
      */
-    private function computeAssociationChanges(array $assoc, mixed $value): void
+    private function computeAssociationChanges(AssociationMapping $assoc, mixed $value): void
     {
         if ($value instanceof Proxy && ! $value->__isInitialized()) {
             return;
@@ -1198,7 +1196,8 @@ class UnitOfWork implements PropertyChangedListener
                     $newNodes[] = $targetClass;
                 }
 
-                $joinColumns = reset($assoc['joinColumns']);
+                assert($assoc->joinColumns !== null);
+                $joinColumns = reset($assoc->joinColumns);
 
                 $calc->addDependency($targetClass->name, $class->name, (int) empty($joinColumns['nullable']));
 
@@ -1856,7 +1855,7 @@ class UnitOfWork implements PropertyChangedListener
 
         $associationMappings = array_filter(
             $class->associationMappings,
-            static fn (array $assoc) => $assoc['isCascadeRefresh']
+            static fn (AssociationMapping $assoc): bool => $assoc['isCascadeRefresh']
         );
 
         foreach ($associationMappings as $assoc) {
@@ -1897,7 +1896,7 @@ class UnitOfWork implements PropertyChangedListener
 
         $associationMappings = array_filter(
             $class->associationMappings,
-            static fn (array $assoc) => $assoc['isCascadeDetach']
+            static fn (AssociationMapping $assoc): bool => $assoc['isCascadeDetach']
         );
 
         foreach ($associationMappings as $assoc) {
@@ -1943,7 +1942,7 @@ class UnitOfWork implements PropertyChangedListener
 
         $associationMappings = array_filter(
             $class->associationMappings,
-            static fn (array $assoc) => $assoc['isCascadePersist']
+            static fn (AssociationMapping $assoc): bool => $assoc['isCascadePersist']
         );
 
         foreach ($associationMappings as $assoc) {
@@ -2000,7 +1999,7 @@ class UnitOfWork implements PropertyChangedListener
 
         $associationMappings = array_filter(
             $class->associationMappings,
-            static fn (array $assoc) => $assoc['isCascadeRemove']
+            static fn (AssociationMapping $assoc): bool => $assoc['isCascadeRemove']
         );
 
         $entitiesToCascade = [];
@@ -2680,12 +2679,8 @@ class UnitOfWork implements PropertyChangedListener
         return $this->persisters[$entityName];
     }
 
-    /**
-     * Gets a collection persister for a collection-valued association.
-     *
-     * @psalm-param AssociationMapping $association
-     */
-    public function getCollectionPersister(array $association): CollectionPersister
+    /** Gets a collection persister for a collection-valued association. */
+    public function getCollectionPersister(AssociationMapping $association): CollectionPersister
     {
         $role = isset($association['cache'])
             ? $association['sourceEntity'] . '::' . $association['fieldName']

@@ -13,6 +13,7 @@ use Doctrine\ORM\Cache\Logging\CacheLogger;
 use Doctrine\ORM\Cache\Persister\Entity\CachedEntityPersister;
 use Doctrine\ORM\Cache\Region;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Mapping\AssociationMapping;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\PersistentCollection;
@@ -23,7 +24,6 @@ use function array_values;
 use function assert;
 use function count;
 
-/** @psalm-import-type AssociationMapping from ClassMetadata */
 abstract class AbstractCollectionPersister implements CachedCollectionPersister
 {
     protected UnitOfWork $uow;
@@ -38,12 +38,11 @@ abstract class AbstractCollectionPersister implements CachedCollectionPersister
     protected CollectionHydrator $hydrator;
     protected CacheLogger|null $cacheLogger;
 
-    /** @param AssociationMapping $association The association mapping. */
     public function __construct(
         protected CollectionPersister $persister,
         protected Region $region,
         EntityManagerInterface $em,
-        protected array $association,
+        protected AssociationMapping $association,
     ) {
         $configuration = $em->getConfiguration();
         $cacheConfig   = $configuration->getSecondLevelCacheConfiguration();

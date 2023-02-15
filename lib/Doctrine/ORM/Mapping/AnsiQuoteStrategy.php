@@ -36,30 +36,24 @@ class AnsiQuoteStrategy implements QuoteStrategy
         return $definition['sequenceName'];
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getJoinColumnName(array $joinColumn, ClassMetadata $class, AbstractPlatform $platform): string
+    public function getJoinColumnName(JoinColumnData $joinColumn, ClassMetadata $class, AbstractPlatform $platform): string
     {
         return $joinColumn['name'];
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getReferencedJoinColumnName(
-        array $joinColumn,
+        JoinColumnData $joinColumn,
         ClassMetadata $class,
         AbstractPlatform $platform,
     ): string {
         return $joinColumn['referencedColumnName'];
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getJoinTableName(array $association, ClassMetadata $class, AbstractPlatform $platform): string
-    {
+    public function getJoinTableName(
+        AssociationMapping $association,
+        ClassMetadata $class,
+        AbstractPlatform $platform,
+    ): string {
         return $association['joinTable']['name'];
     }
 

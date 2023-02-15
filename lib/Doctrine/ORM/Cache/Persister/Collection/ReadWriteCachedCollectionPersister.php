@@ -7,18 +7,20 @@ namespace Doctrine\ORM\Cache\Persister\Collection;
 use Doctrine\ORM\Cache\CollectionCacheKey;
 use Doctrine\ORM\Cache\ConcurrentRegion;
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\AssociationMapping;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\Persisters\Collection\CollectionPersister;
 
 use function spl_object_id;
 
-/** @psalm-import-type AssociationMapping from ClassMetadata */
 class ReadWriteCachedCollectionPersister extends AbstractCollectionPersister
 {
-    /** @param AssociationMapping $association The association mapping. */
-    public function __construct(CollectionPersister $persister, ConcurrentRegion $region, EntityManagerInterface $em, array $association)
-    {
+    public function __construct(
+        CollectionPersister $persister,
+        ConcurrentRegion $region,
+        EntityManagerInterface $em,
+        AssociationMapping $association,
+    ) {
         parent::__construct($persister, $region, $em, $association);
     }
 

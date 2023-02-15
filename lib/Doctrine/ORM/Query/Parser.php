@@ -7,6 +7,7 @@ namespace Doctrine\ORM\Query;
 use Doctrine\Common\Lexer\Token;
 use Doctrine\Deprecations\Deprecation;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Mapping\AssociationMapping;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\AST\Functions;
@@ -34,7 +35,6 @@ use function substr;
  * An LL(*) recursive-descent parser for the context-free grammar of the Doctrine Query Language.
  * Parses a DQL query, reports any errors in it, and generates an AST.
  *
- * @psalm-import-type AssociationMapping from ClassMetadata
  * @psalm-type DqlToken = Token<TokenType, string>
  * @psalm-type QueryComponent = array{
  *                 metadata?: ClassMetadata<object>,

@@ -611,7 +611,8 @@ class SqlWalker
                     $sql .= $this->getSQLTableAlias($class->getTableName(), $dqlAlias) . '.';
                 }
 
-                $sql .= reset($assoc['targetToSourceKeyColumns']);
+                assert($assoc->targetToSourceKeyColumns !== null);
+                $sql .= reset($assoc->targetToSourceKeyColumns);
                 break;
 
             default:
@@ -806,7 +807,8 @@ class SqlWalker
                     throw QueryException::associationPathCompositeKeyNotSupported();
                 }
 
-                $field = reset($association['targetToSourceKeyColumns']);
+                assert($association->targetToSourceKeyColumns !== null);
+                $field = reset($association->targetToSourceKeyColumns);
                 break;
 
             default:

@@ -11,6 +11,7 @@ use Doctrine\ORM\Cache\Exception\NonCacheableEntity;
 use Doctrine\ORM\Cache\Logging\CacheLogger;
 use Doctrine\ORM\Cache\Persister\Entity\CachedEntityPersister;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Mapping\AssociationMapping;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\Query;
@@ -30,8 +31,6 @@ use function reset;
 
 /**
  * Default query cache implementation.
- *
- * @psalm-import-type AssociationMapping from ClassMetadata
  */
 class DefaultQueryCache implements QueryCache
 {
@@ -298,12 +297,10 @@ class DefaultQueryCache implements QueryCache
     }
 
     /**
-     * @param AssociationMapping $assoc
-     *
      * @return mixed[]|null
      * @psalm-return array{targetEntity: class-string, type: mixed, list?: array[], identifier?: array}|null
      */
-    private function storeAssociationCache(QueryCacheKey $key, array $assoc, mixed $assocValue): array|null
+    private function storeAssociationCache(QueryCacheKey $key, AssociationMapping $assoc, mixed $assocValue): array|null
     {
         $assocPersister = $this->uow->getEntityPersister($assoc['targetEntity']);
         $assocMetadata  = $assocPersister->getClassMetadata();

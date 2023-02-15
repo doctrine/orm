@@ -8,6 +8,7 @@ use Doctrine\Common\Collections\Criteria;
 use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\LockMode;
 use Doctrine\DBAL\ParameterType;
+use Doctrine\ORM\Mapping\AssociationMapping;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\ORM\PersistentCollection;
@@ -16,8 +17,6 @@ use Doctrine\ORM\Query\ResultSetMapping;
 /**
  * Entity persister interface
  * Define the behavior that should be implemented by all entity persisters.
- *
- * @psalm-import-type AssociationMapping from ClassMetadata
  */
 interface EntityPersister
 {
@@ -47,14 +46,13 @@ interface EntityPersister
      * Gets the SELECT SQL to select one or more entities by a set of field criteria.
      *
      * @param mixed[]|Criteria $criteria
-     * @param mixed[]|null     $assoc
      * @param mixed[]|null     $orderBy
      * @psalm-param AssociationMapping|null $assoc
      * @psalm-param LockMode::*|null $lockMode
      */
     public function getSelectSQL(
         array|Criteria $criteria,
-        array|null $assoc = null,
+        AssociationMapping|null $assoc = null,
         LockMode|int|null $lockMode = null,
         int|null $limit = null,
         int|null $offset = null,
@@ -84,15 +82,11 @@ interface EntityPersister
      */
     public function expandCriteriaParameters(Criteria $criteria): array;
 
-    /**
-     * Gets the SQL WHERE condition for matching a field with a given value.
-     *
-     * @psalm-param AssociationMapping|null  $assoc
-     */
+    /** Gets the SQL WHERE condition for matching a field with a given value. */
     public function getSelectConditionStatementSQL(
         string $field,
         mixed $value,
-        array|null $assoc = null,
+        AssociationMapping|null $assoc = null,
         string|null $comparison = null,
     ): string;
 
@@ -158,7 +152,7 @@ interface EntityPersister
      * @param object|null             $entity   The entity to load the data into. If not specified,
      *                                          a new entity is created.
      * @param AssociationMapping|null $assoc    The association that connects the entity
-     *                               to load to another entity, if any.
+     *                                          to load to another entity, if any.
      * @param mixed[]                 $hints    Hints for entity creation.
      * @param LockMode|int|null       $lockMode One of the \Doctrine\DBAL\LockMode::* constants
      *                                          or NULL if no specific lock mode should be used
@@ -177,7 +171,7 @@ interface EntityPersister
     public function load(
         array $criteria,
         object|null $entity = null,
-        array|null $assoc = null,
+        AssociationMapping|null $assoc = null,
         array $hints = [],
         LockMode|int|null $lockMode = null,
         int|null $limit = null,
@@ -200,17 +194,17 @@ interface EntityPersister
      * Loads an entity of this persister's mapped class as part of a single-valued
      * association from another entity.
      *
-     * @param object $sourceEntity The entity that owns the association (not necessarily the "owning side").
+     * @param AssociationMapping $assoc        The association to load.
+     * @param object             $sourceEntity The entity that owns the association (not necessarily the "owning side").
      * @psalm-param array<string, mixed> $identifier The identifier of the entity to load. Must be provided if
      *                                               the association to load represents the owning side, otherwise
      *                                               the identifier is derived from the $sourceEntity.
-     * @psalm-param AssociationMapping $assoc        The association to load.
      *
      * @return object|null The loaded and managed entity instance or NULL if the entity can not be found.
      *
      * @throws MappingException
      */
-    public function loadOneToOneEntity(array $assoc, object $sourceEntity, array $identifier = []): object|null;
+    public function loadOneToOneEntity(AssociationMapping $assoc, object $sourceEntity, array $identifier = []): object|null;
 
     /**
      * Refreshes a managed entity.
@@ -250,12 +244,10 @@ interface EntityPersister
     /**
      * Gets (sliced or full) elements of the given collection.
      *
-     * @psalm-param AssociationMapping $assoc
-     *
      * @return mixed[]
      */
     public function getManyToManyCollection(
-        array $assoc,
+        AssociationMapping $assoc,
         object $sourceEntity,
         int|null $offset = null,
         int|null $limit = null,
@@ -264,14 +256,14 @@ interface EntityPersister
     /**
      * Loads a collection of entities of a many-to-many association.
      *
+     * @param AssociationMapping   $assoc        The association mapping of the association being loaded.
      * @param object               $sourceEntity The entity that owns the collection.
      * @param PersistentCollection $collection   The collection to fill.
-     * @psalm-param AssociationMapping $assoc The association mapping of the association being loaded.
      *
      * @return mixed[]
      */
     public function loadManyToManyCollection(
-        array $assoc,
+        AssociationMapping $assoc,
         object $sourceEntity,
         PersistentCollection $collection,
     ): array;
@@ -280,10 +272,9 @@ interface EntityPersister
      * Loads a collection of entities in a one-to-many association.
      *
      * @param PersistentCollection $collection The collection to load/fill.
-     * @psalm-param AssociationMapping $assoc
      */
     public function loadOneToManyCollection(
-        array $assoc,
+        AssociationMapping $assoc,
         object $sourceEntity,
         PersistentCollection $collection,
     ): mixed;
@@ -299,12 +290,10 @@ interface EntityPersister
     /**
      * Returns an array with (sliced or full list) of elements in the specified collection.
      *
-     * @psalm-param AssociationMapping $assoc
-     *
      * @return mixed[]
      */
     public function getOneToManyCollection(
-        array $assoc,
+        AssociationMapping $assoc,
         object $sourceEntity,
         int|null $offset = null,
         int|null $limit = null,

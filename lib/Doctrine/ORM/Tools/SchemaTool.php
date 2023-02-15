@@ -14,8 +14,10 @@ use Doctrine\DBAL\Schema\Table;
 use Doctrine\DBAL\Schema\Visitor\RemoveNamespacedAssets;
 use Doctrine\Deprecations\Deprecation;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Mapping\AssociationMapping;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\FieldMapping;
+use Doctrine\ORM\Mapping\JoinColumnData;
 use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\ORM\Mapping\QuoteStrategy;
 use Doctrine\ORM\Tools\Event\GenerateSchemaEventArgs;
@@ -29,14 +31,12 @@ use function array_diff_key;
 use function array_filter;
 use function array_flip;
 use function array_intersect_key;
-use function assert;
 use function class_exists;
 use function count;
 use function current;
 use function func_num_args;
 use function implode;
 use function in_array;
-use function is_array;
 use function is_numeric;
 use function method_exists;
 use function strtolower;
@@ -46,9 +46,6 @@ use function strtolower;
  * <tt>ClassMetadata</tt> class descriptors.
  *
  * @link    www.doctrine-project.org
- *
- * @psalm-import-type AssociationMapping from ClassMetadata
- * @psalm-import-type JoinColumnData from ClassMetadata
  */
 class SchemaTool
 {
@@ -299,7 +296,6 @@ class SchemaTool
                     $pkColumns[] = $this->quoteStrategy->getColumnName($identifierField, $class, $this->platform);
                 } elseif (isset($class->associationMappings[$identifierField])) {
                     $assoc = $class->associationMappings[$identifierField];
-                    assert(is_array($assoc));
 
                     foreach ($assoc['joinColumns'] as $joinColumn) {
                         $pkColumns[] = $this->quoteStrategy->getJoinColumnName($joinColumn, $class, $this->platform);
@@ -639,8 +635,7 @@ class SchemaTool
     /**
      * Gathers columns and fk constraints that are required for one part of relationship.
      *
-     * @psalm-param array<string, JoinColumnData>    $joinColumns
-     * @psalm-param AssociationMapping               $mapping
+     * @psalm-param array<string, JoinColumnData>             $joinColumns
      * @psalm-param list<string>                     $primaryKeyColumns
      * @psalm-param array<string, array{
      *                  foreignTableName: string,
@@ -654,7 +649,7 @@ class SchemaTool
         array $joinColumns,
         Table $theJoinTable,
         ClassMetadata $class,
-        array $mapping,
+        AssociationMapping $mapping,
         array &$primaryKeyColumns,
         array &$addedFks,
         array &$blacklistedFks,
@@ -770,11 +765,11 @@ class SchemaTool
     }
 
     /**
-     * @psalm-param JoinColumnData|FieldMapping $mapping
+     * @param JoinColumnData|FieldMapping|mixed[] $mapping
      *
      * @return mixed[]
      */
-    private function gatherColumnOptions(FieldMapping|array $mapping): array
+    private function gatherColumnOptions(JoinColumnData|FieldMapping|array $mapping): array
     {
         $mappingOptions = $mapping['options'] ?? [];
 
