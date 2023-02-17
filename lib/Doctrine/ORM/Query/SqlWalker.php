@@ -14,7 +14,6 @@ use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ManyToOneAssociationMapping;
 use Doctrine\ORM\Mapping\OneToOneAssociationMapping;
 use Doctrine\ORM\Mapping\QuoteStrategy;
-use Doctrine\ORM\Mapping\ToOneAssociationMapping;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Utility\HierarchyDiscriminatorResolver;
@@ -912,7 +911,7 @@ class SqlWalker
         // be the owning side and previously we ensured that $assoc is always the owning side of the associations.
         // The owning side is necessary at this point because only it contains the JoinColumn information.
         switch (true) {
-            case $assoc instanceof ToOneAssociationMapping:
+            case $assoc->isToOne():
                 $conditions = [];
 
                 foreach ($assoc['joinColumns'] as $joinColumn) {

@@ -35,7 +35,6 @@ use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\ORM\Mapping\OneToOneAssociationMapping;
 use Doctrine\ORM\Mapping\ToManyAssociationMapping;
-use Doctrine\ORM\Mapping\ToOneAssociationMapping;
 use Doctrine\ORM\Persisters\Collection\CollectionPersister;
 use Doctrine\ORM\Persisters\Collection\ManyToManyPersister;
 use Doctrine\ORM\Persisters\Collection\OneToManyPersister;
@@ -702,7 +701,7 @@ class UnitOfWork implements PropertyChangedListener
                     continue;
                 }
 
-                if ($assoc instanceof ToOneAssociationMapping) {
+                if ($assoc->isToOne()) {
                     if ($assoc['isOwningSide']) {
                         $changeSet[$propName] = [$orgValue, $actualValue];
                     }
@@ -808,7 +807,7 @@ class UnitOfWork implements PropertyChangedListener
         // Look through the entities, and in any of their associations,
         // for transient (new) entities, recursively. ("Persistence by reachability")
         // Unwrap. Uninitialized collections will simply be empty.
-        $unwrappedValue = $assoc instanceof ToOneAssociationMapping ? [$value] : $value->unwrap();
+        $unwrappedValue = $assoc->isToOne() ? [$value] : $value->unwrap();
         $targetClass    = $this->em->getClassMetadata($assoc['targetEntity']);
 
         foreach ($unwrappedValue as $key => $entry) {
@@ -2286,7 +2285,7 @@ class UnitOfWork implements PropertyChangedListener
             $targetClass = $this->em->getClassMetadata($assoc['targetEntity']);
 
             switch (true) {
-                case $assoc instanceof ToOneAssociationMapping:
+                case $assoc->isToOne():
                     if (! $assoc['isOwningSide']) {
                         // use the given entity association
                         if (isset($data[$field]) && is_object($data[$field]) && isset($this->entityStates[spl_object_id($data[$field])])) {

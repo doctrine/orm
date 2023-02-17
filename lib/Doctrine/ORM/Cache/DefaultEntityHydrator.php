@@ -8,7 +8,6 @@ use Doctrine\Common\Util\ClassUtils;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\OneToOneAssociationMapping;
-use Doctrine\ORM\Mapping\ToOneAssociationMapping;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\UnitOfWork;
 use Doctrine\ORM\Utility\IdentifierFlattener;
@@ -59,7 +58,7 @@ class DefaultEntityHydrator implements EntityHydrator
                 continue;
             }
 
-            if (! ($assoc instanceof ToOneAssociationMapping)) {
+            if (! $assoc->isToOne()) {
                 unset($data[$name]);
 
                 continue;

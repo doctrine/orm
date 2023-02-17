@@ -23,7 +23,6 @@ use Doctrine\ORM\Mapping\ManyToManyAssociationMapping;
 use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\ORM\Mapping\QuoteStrategy;
 use Doctrine\ORM\Mapping\ToManyAssociationMapping;
-use Doctrine\ORM\Mapping\ToOneAssociationMapping;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\Persisters\Exception\CantUseInOperatorOnCompositeKeys;
@@ -1189,7 +1188,7 @@ class BasicEntityPersister implements EntityPersister
                 $columnList[] = $assocColumnSQL;
             }
 
-            $isAssocToOneInverseSide = $assoc instanceof ToOneAssociationMapping && ! $assoc['isOwningSide'];
+            $isAssocToOneInverseSide = $assoc->isToOne() && ! $assoc['isOwningSide'];
             $isAssocFromOneEager     = ! $assoc instanceof ManyToManyAssociationMapping && $assoc['fetch'] === ClassMetadata::FETCH_EAGER;
 
             if (! ($isAssocFromOneEager || $isAssocToOneInverseSide)) {

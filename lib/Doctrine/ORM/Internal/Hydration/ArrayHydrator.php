@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Internal\Hydration;
 
-use Doctrine\ORM\Mapping\ToOneAssociationMapping;
-
 use function array_key_last;
 use function count;
 use function is_array;
@@ -103,7 +101,7 @@ class ArrayHydrator extends AbstractHydrator
                 $relation      = $parentClass->associationMappings[$relationAlias];
 
                 // Check the type of the relation (many or single-valued)
-                if (! ($relation instanceof ToOneAssociationMapping)) {
+                if (! $relation->isToOne()) {
                     $oneToOne = false;
 
                     if (! isset($baseElement[$relationAlias])) {

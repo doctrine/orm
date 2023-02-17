@@ -7,7 +7,6 @@ namespace Doctrine\ORM\Tools;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
-use Doctrine\ORM\Mapping\ToOneAssociationMapping;
 
 use function array_diff;
 use function array_key_exists;
@@ -189,7 +188,7 @@ class SchemaValidator
                                 "however '" . implode(', ', array_diff($class->getIdentifierColumnNames(), array_values($assoc['relationToSourceKeyColumns']))) .
                                 "' are missing.";
                     }
-                } elseif ($assoc instanceof ToOneAssociationMapping) {
+                } elseif ($assoc->isToOne()) {
                     $identifierColumns = $targetMetadata->getIdentifierColumnNames();
                     foreach ($assoc['joinColumns'] as $joinColumn) {
                         if (! in_array($joinColumn['referencedColumnName'], $identifierColumns, true)) {

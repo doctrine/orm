@@ -2454,13 +2454,13 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
     public function isSingleValuedAssociation(string $fieldName): bool
     {
         return isset($this->associationMappings[$fieldName])
-            && ($this->associationMappings[$fieldName] instanceof ToOneAssociationMapping);
+            && ($this->associationMappings[$fieldName]->isToOne());
     }
 
     public function isCollectionValuedAssociation(string $fieldName): bool
     {
         return isset($this->associationMappings[$fieldName])
-            && ! ($this->associationMappings[$fieldName] instanceof ToOneAssociationMapping);
+            && ! $this->associationMappings[$fieldName]->isToOne();
     }
 
     /**

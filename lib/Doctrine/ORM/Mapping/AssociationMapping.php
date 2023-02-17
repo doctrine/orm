@@ -190,13 +190,19 @@ class AssociationMapping implements ArrayAccess
         return $this instanceof AssociationOwningSideMapping;
     }
 
+    /** @psalm-assert ToOneAssociationMapping $this */
+    public function isToOne(): bool
+    {
+        return $this instanceof ToOneAssociationMapping;
+    }
+
     /**
      * @psalm-assert-if-true ToOneAssociationMapping $this
      * @psalm-assert-if-true AssociationOwningSideMapping $this
      */
     public function isToOneOwningSide(): bool
     {
-        return $this instanceof ToOneAssociationMapping && $this->isOwningSide();
+        return $this->isToOne() && $this->isOwningSide();
     }
 
     /** @psalm-assert-if-true ManyToManyOwningSideMapping $this */
