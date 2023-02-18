@@ -4,7 +4,12 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Mapping;
 
+use RuntimeException;
+
+use function array_flip;
 use function assert;
+use function count;
+use function trim;
 
 abstract class ToOneAssociationMapping extends AssociationMapping
 {
@@ -39,6 +44,98 @@ abstract class ToOneAssociationMapping extends AssociationMapping
         }
 
         return $instance;
+    }
+
+    /**
+     * @param mixed[]      $mappingArray
+     * @param class-string $name
+     * @psalm-param array{
+     *     fieldName: string,
+     *     sourceEntity: class-string,
+     *     targetEntity: class-string,
+     *     joinColumns?: mixed[]|null,
+     *     isOwningSide: bool, ...} $mappingArray
+     */
+    public static function fromMappingArrayAndName(
+        array $mappingArray,
+        NamingStrategy $namingStrategy,
+        string $name,
+        array|null $table,
+        bool $isInheritanceTypeSingleTable,
+    ): OneToOneAssociationMapping|ManyToOneAssociationMapping {
+        $mapping = static::fromMappingArray($mappingArray);
+
+        if ($mapping->isOwningSide()) {
+            assert($mapping instanceof OneToOneOwningSideMapping || $mapping instanceof ManyToOneAssociationMapping);
+            if (empty($mapping->joinColumns)) {
+                // Apply default join column
+                $mapping->joinColumns = [
+                    JoinColumnData::fromMappingArray([
+                        'name' => $namingStrategy->joinColumnName($mapping['fieldName'], $name),
+                        'referencedColumnName' => $namingStrategy->referenceColumnName(),
+                    ]),
+                ];
+            }
+
+            $uniqueConstraintColumns = [];
+
+            foreach ($mapping->joinColumns as $joinColumn) {
+                if ($mapping['type'] === ClassMetadata::ONE_TO_ONE && ! $isInheritanceTypeSingleTable) {
+                    assert($mapping instanceof OneToOneAssociationMapping);
+                    if (count($mapping['joinColumns']) === 1) {
+                        if (empty($mapping['id'])) {
+                            $joinColumn['unique'] = true;
+                        }
+                    } else {
+                        $uniqueConstraintColumns[] = $joinColumn['name'];
+                    }
+                }
+
+                if (empty($joinColumn['name'])) {
+                    $joinColumn['name'] = $namingStrategy->joinColumnName($mapping['fieldName'], $name);
+                }
+
+                if (empty($joinColumn['referencedColumnName'])) {
+                    $joinColumn['referencedColumnName'] = $namingStrategy->referenceColumnName();
+                }
+
+                if ($joinColumn['name'][0] === '`') {
+                    $joinColumn['name']   = trim($joinColumn['name'], '`');
+                    $joinColumn['quoted'] = true;
+                }
+
+                if ($joinColumn['referencedColumnName'][0] === '`') {
+                    $joinColumn['referencedColumnName'] = trim($joinColumn['referencedColumnName'], '`');
+                    $joinColumn['quoted']               = true;
+                }
+
+                $mapping->sourceToTargetKeyColumns[$joinColumn['name']] = $joinColumn['referencedColumnName'];
+                $mapping->joinColumnFieldNames[$joinColumn['name']]     = $joinColumn['fieldName'] ?? $joinColumn['name'];
+            }
+
+            if ($uniqueConstraintColumns) {
+                if (! $table) {
+                    throw new RuntimeException('ClassMetadata::setTable() has to be called before defining a one to one relationship.');
+                }
+
+                $table['uniqueConstraints'][$mapping['fieldName'] . '_uniq'] = ['columns' => $uniqueConstraintColumns];
+            }
+
+            $mapping['targetToSourceKeyColumns'] = array_flip($mapping['sourceToTargetKeyColumns']);
+        }
+
+        $mapping['orphanRemoval']   = isset($mapping['orphanRemoval']) && $mapping['orphanRemoval'];
+        $mapping['isCascadeRemove'] = $mapping['orphanRemoval'] || $mapping['isCascadeRemove'];
+
+        if ($mapping['orphanRemoval']) {
+            unset($mapping['unique']);
+        }
+
+        if (isset($mapping['id']) && $mapping['id'] === true && ! $mapping['isOwningSide']) {
+            throw MappingException::illegalInverseIdentifierAssociation($name, $mapping['fieldName']);
+        }
+
+        return $mapping;
     }
 
     /**

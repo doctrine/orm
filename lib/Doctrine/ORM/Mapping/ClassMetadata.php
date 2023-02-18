@@ -15,17 +15,14 @@ use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Id\AbstractIdGenerator;
 use Doctrine\Persistence\Mapping\ClassMetadata as PersistenceClassMetadata;
 use Doctrine\Persistence\Mapping\ReflectionService;
-use Exception;
 use InvalidArgumentException;
 use LogicException;
 use ReflectionClass;
 use ReflectionNamedType;
 use ReflectionProperty;
-use RuntimeException;
 use Stringable;
 
 use function array_diff;
-use function array_flip;
 use function array_intersect;
 use function array_keys;
 use function array_map;
@@ -37,10 +34,8 @@ use function class_exists;
 use function count;
 use function enum_exists;
 use function explode;
-use function gettype;
 use function in_array;
 use function interface_exists;
-use function is_array;
 use function is_string;
 use function is_subclass_of;
 use function ltrim;
@@ -1347,40 +1342,7 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
             $mapping['isOwningSide'] = false;
         }
 
-        switch ($mapping['type']) {
-            case self::ONE_TO_ONE:
-                if (isset($mapping['joinColumns']) && $mapping['joinColumns']) {
-                    $mapping['isOwningSide'] = true;
-                }
-
-                $mapping = $mapping['isOwningSide'] ?
-                    OneToOneOwningSideMapping::fromMappingArray($mapping) :
-                    OneToOneAssociationMapping::fromMappingArray($mapping);
-                break;
-
-            case self::MANY_TO_ONE:
-                $mapping = ManyToOneAssociationMapping::fromMappingArray($mapping);
-                break;
-
-            case self::ONE_TO_MANY:
-                $mapping = OneToManyAssociationMapping::fromMappingArray($mapping);
-                break;
-
-            case self::MANY_TO_MANY:
-                if (isset($mapping['joinColumns'])) {
-                    unset($mapping['joinColumns']);
-                }
-
-                $mapping = $mapping['isOwningSide'] ?
-                    ManyToManyOwningSideMapping::fromMappingArray($mapping) :
-                    ManyToManyAssociationMapping::fromMappingArray($mapping);
-                break;
-
-            default:
-                throw new Exception('woops');
-        }
-
-        if (isset($mapping['id']) && $mapping['id'] === true && $mapping instanceof ToManyAssociationMapping) {
+        if (isset($mapping['id']) && $mapping['id'] === true && $mapping['type'] & self::TO_MANY) {
             throw MappingException::illegalToManyIdentifierAssociation($this->name, $mapping['fieldName']);
         }
 
@@ -1410,237 +1372,56 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
         $mapping['isCascadeMerge']   = in_array('merge', $cascades, true);
         $mapping['isCascadeDetach']  = in_array('detach', $cascades, true);
 
-        return $mapping;
-    }
-
-    /**
-     * Validates & completes a one-to-one association mapping.
-     *
-     * @psalm-param array<string, mixed> $mapping The mapping to validate & complete.
-     *
-     * @throws RuntimeException
-     * @throws MappingException
-     */
-    protected function _validateAndCompleteOneToOneMapping(array $mapping): AssociationMapping
-    {
-        $mapping = $this->_validateAndCompleteAssociationMapping($mapping);
-        assert($mapping instanceof OneToOneAssociationMapping || $mapping instanceof ManyToOneAssociationMapping);
-
-        if ($mapping['isOwningSide']) {
-            if (empty($mapping['joinColumns'])) {
-                // Apply default join column
-                $mapping['joinColumns'] = [
-                    [
-                        'name' => $this->namingStrategy->joinColumnName($mapping['fieldName'], $this->name),
-                        'referencedColumnName' => $this->namingStrategy->referenceColumnName(),
-                    ],
-                ];
-            }
-
-            $uniqueConstraintColumns = [];
-
-            assert($mapping->joinColumns !== null);
-            foreach ($mapping->joinColumns as $joinColumn) {
-                if ($mapping['type'] === self::ONE_TO_ONE && ! $this->isInheritanceTypeSingleTable()) {
-                    assert($mapping instanceof OneToOneAssociationMapping);
-                    if (count($mapping['joinColumns']) === 1) {
-                        if (empty($mapping['id'])) {
-                            $joinColumn['unique'] = true;
-                        }
-                    } else {
-                        $uniqueConstraintColumns[] = $joinColumn['name'];
-                    }
+        switch ($mapping['type']) {
+            case self::ONE_TO_ONE:
+                if (isset($mapping['joinColumns']) && $mapping['joinColumns']) {
+                    $mapping['isOwningSide'] = true;
                 }
 
-                if (empty($joinColumn['name'])) {
-                    $joinColumn['name'] = $this->namingStrategy->joinColumnName($mapping['fieldName'], $this->name);
-                }
+                return $mapping['isOwningSide'] ?
+                    OneToOneOwningSideMapping::fromMappingArrayAndName(
+                        $mapping,
+                        $this->namingStrategy,
+                        $this->name,
+                        $this->table ?? null,
+                        $this->isInheritanceTypeSingleTable(),
+                    ) :
+                    OneToOneAssociationMapping::fromMappingArrayAndName(
+                        $mapping,
+                        $this->namingStrategy,
+                        $this->name,
+                        $this->table,
+                        $this->isInheritanceTypeSingleTable(),
+                    );
 
-                if (empty($joinColumn['referencedColumnName'])) {
-                    $joinColumn['referencedColumnName'] = $this->namingStrategy->referenceColumnName();
-                }
-
-                if ($joinColumn['name'][0] === '`') {
-                    $joinColumn['name']   = trim($joinColumn['name'], '`');
-                    $joinColumn['quoted'] = true;
-                }
-
-                if ($joinColumn['referencedColumnName'][0] === '`') {
-                    $joinColumn['referencedColumnName'] = trim($joinColumn['referencedColumnName'], '`');
-                    $joinColumn['quoted']               = true;
-                }
-
-                $mapping->sourceToTargetKeyColumns[$joinColumn['name']] = $joinColumn['referencedColumnName'];
-                $mapping->joinColumnFieldNames[$joinColumn['name']]     = $joinColumn['fieldName'] ?? $joinColumn['name'];
-            }
-
-            if ($uniqueConstraintColumns) {
-                if (! $this->table) {
-                    throw new RuntimeException('ClassMetadata::setTable() has to be called before defining a one to one relationship.');
-                }
-
-                $this->table['uniqueConstraints'][$mapping['fieldName'] . '_uniq'] = ['columns' => $uniqueConstraintColumns];
-            }
-
-            $mapping['targetToSourceKeyColumns'] = array_flip($mapping['sourceToTargetKeyColumns']);
-        }
-
-        $mapping['orphanRemoval']   = isset($mapping['orphanRemoval']) && $mapping['orphanRemoval'];
-        $mapping['isCascadeRemove'] = $mapping['orphanRemoval'] || $mapping['isCascadeRemove'];
-
-        if ($mapping['orphanRemoval']) {
-            unset($mapping['unique']);
-        }
-
-        if (isset($mapping['id']) && $mapping['id'] === true && ! $mapping['isOwningSide']) {
-            throw MappingException::illegalInverseIdentifierAssociation($this->name, $mapping['fieldName']);
-        }
-
-        return $mapping;
-    }
-
-    /**
-     * Validates & completes a one-to-many association mapping.
-     *
-     * @psalm-param array<string, mixed> $mapping The mapping to validate and complete.
-     *
-     * @return AssociationMapping The validated and completed mapping.
-     *
-     * @throws MappingException
-     * @throws InvalidArgumentException
-     */
-    protected function _validateAndCompleteOneToManyMapping(array $mapping): AssociationMapping
-    {
-        $mapping = $this->_validateAndCompleteAssociationMapping($mapping);
-        assert($mapping instanceof OneToManyAssociationMapping);
-
-        // OneToMany-side MUST be inverse (must have mappedBy)
-        if (! isset($mapping['mappedBy'])) {
-            throw MappingException::oneToManyRequiresMappedBy($this->name, $mapping['fieldName']);
-        }
-
-        $mapping['orphanRemoval']   = isset($mapping['orphanRemoval']) && $mapping['orphanRemoval'];
-        $mapping['isCascadeRemove'] = $mapping['orphanRemoval'] || $mapping['isCascadeRemove'];
-
-        $this->assertMappingOrderBy($mapping);
-
-        return $mapping;
-    }
-
-    /**
-     * Validates & completes a many-to-many association mapping.
-     *
-     * @psalm-param array<string, mixed> $mapping The mapping to validate & complete.
-     *
-     * @return AssociationMapping The validated & completed mapping.
-     *
-     * @throws InvalidArgumentException
-     */
-    protected function _validateAndCompleteManyToManyMapping(array $mapping): AssociationMapping
-    {
-        $mapping = $this->_validateAndCompleteAssociationMapping($mapping);
-        assert($mapping instanceof ManyToManyAssociationMapping);
-
-        if ($mapping instanceof ManyToManyOwningSideMapping) {
-            // owning side MUST have a join table
-            if (! isset($mapping['joinTable']['name'])) {
-                if (! isset($mapping->joinTable)) {
-                    $mapping->joinTable = new JoinTableMapping();
-                }
-
-                $mapping->joinTable['name'] = $this->namingStrategy->joinTableName(
-                    $mapping['sourceEntity'],
-                    $mapping['targetEntity'],
-                    $mapping['fieldName'],
+            case self::MANY_TO_ONE:
+                return ManyToOneAssociationMapping::fromMappingArrayAndName(
+                    $mapping,
+                    $this->namingStrategy,
+                    $this->name,
+                    $this->table,
+                    $this->isInheritanceTypeSingleTable(),
                 );
-            }
 
-            $selfReferencingEntityWithoutJoinColumns = $mapping['sourceEntity'] === $mapping['targetEntity']
-                && (! (isset($mapping['joinTable']['joinColumns']) || isset($mapping['joinTable']['inverseJoinColumns'])));
+            case self::ONE_TO_MANY:
+                return OneToManyAssociationMapping::fromMappingArrayAndName($mapping, $this->name);
 
-            if (! isset($mapping['joinTable']['joinColumns'])) {
-                $mapping->joinTable->joinColumns = [
-                    JoinColumnData::fromMappingArray([
-                        'name' => $this->namingStrategy->joinKeyColumnName($mapping['sourceEntity'], $selfReferencingEntityWithoutJoinColumns ? 'source' : null),
-                        'referencedColumnName' => $this->namingStrategy->referenceColumnName(),
-                        'onDelete' => 'CASCADE',
-                    ]),
-                ];
-            }
-
-            if (! isset($mapping['joinTable']['inverseJoinColumns'])) {
-                $mapping->joinTable->inverseJoinColumns = [
-                    JoinColumnData::fromMappingArray([
-                        'name' => $this->namingStrategy->joinKeyColumnName($mapping['targetEntity'], $selfReferencingEntityWithoutJoinColumns ? 'target' : null),
-                        'referencedColumnName' => $this->namingStrategy->referenceColumnName(),
-                        'onDelete' => 'CASCADE',
-                    ]),
-                ];
-            }
-
-            $mapping['joinTableColumns'] = [];
-
-            assert($mapping->joinTable['joinColumns'] !== null);
-            foreach ($mapping->joinTable['joinColumns'] as $joinColumn) {
-                if (empty($joinColumn['name'])) {
-                    $joinColumn['name'] = $this->namingStrategy->joinKeyColumnName($mapping['sourceEntity'], $joinColumn['referencedColumnName']);
+            case self::MANY_TO_MANY:
+                if (isset($mapping['joinColumns'])) {
+                    unset($mapping['joinColumns']);
                 }
 
-                if (empty($joinColumn['referencedColumnName'])) {
-                    $joinColumn['referencedColumnName'] = $this->namingStrategy->referenceColumnName();
-                }
+                return $mapping['isOwningSide'] ?
+                    ManyToManyOwningSideMapping::fromMappingArrayAndNamingStrategy($mapping, $this->namingStrategy) :
+                    ManyToManyAssociationMapping::fromMappingArray($mapping);
 
-                if ($joinColumn['name'][0] === '`') {
-                    $joinColumn['name']   = trim($joinColumn['name'], '`');
-                    $joinColumn['quoted'] = true;
-                }
-
-                if ($joinColumn['referencedColumnName'][0] === '`') {
-                    $joinColumn['referencedColumnName'] = trim($joinColumn['referencedColumnName'], '`');
-                    $joinColumn['quoted']               = true;
-                }
-
-                if (isset($joinColumn['onDelete']) && strtolower($joinColumn['onDelete']) === 'cascade') {
-                    $mapping['isOnDeleteCascade'] = true;
-                }
-
-                $mapping->relationToSourceKeyColumns[$joinColumn['name']] = $joinColumn['referencedColumnName'];
-                $mapping->joinTableColumns[]                              = $joinColumn['name'];
-            }
-
-            foreach ($mapping->joinTable['inverseJoinColumns'] as $inverseJoinColumn) {
-                if (empty($inverseJoinColumn['name'])) {
-                    $inverseJoinColumn['name'] = $this->namingStrategy->joinKeyColumnName($mapping['targetEntity'], $inverseJoinColumn['referencedColumnName']);
-                }
-
-                if (empty($inverseJoinColumn['referencedColumnName'])) {
-                    $inverseJoinColumn['referencedColumnName'] = $this->namingStrategy->referenceColumnName();
-                }
-
-                if ($inverseJoinColumn['name'][0] === '`') {
-                    $inverseJoinColumn['name']   = trim($inverseJoinColumn['name'], '`');
-                    $inverseJoinColumn['quoted'] = true;
-                }
-
-                if ($inverseJoinColumn['referencedColumnName'][0] === '`') {
-                    $inverseJoinColumn['referencedColumnName'] = trim($inverseJoinColumn['referencedColumnName'], '`');
-                    $inverseJoinColumn['quoted']               = true;
-                }
-
-                if (isset($inverseJoinColumn['onDelete']) && strtolower($inverseJoinColumn['onDelete']) === 'cascade') {
-                    $mapping['isOnDeleteCascade'] = true;
-                }
-
-                $mapping->relationToTargetKeyColumns[$inverseJoinColumn['name']] = $inverseJoinColumn['referencedColumnName'];
-                $mapping->joinTableColumns[]                                     = $inverseJoinColumn['name'];
-            }
+            default:
+                throw MappingException::invalidAssociationType(
+                    $this->name,
+                    $mapping['fieldName'],
+                    $mapping['type'],
+                );
         }
-
-        $mapping['orphanRemoval'] = isset($mapping['orphanRemoval']) && $mapping['orphanRemoval'];
-
-        $this->assertMappingOrderBy($mapping);
-
-        return $mapping;
     }
 
     /**
@@ -1947,24 +1728,16 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
 
         switch ($mapping['type']) {
             case self::ONE_TO_ONE:
-                $mapping['sourceToTargetKeyColumns'] = null;
-                $mapping                             = $this->_validateAndCompleteOneToOneMapping($mapping);
-                break;
-            case self::ONE_TO_MANY:
-                $mapping = $this->_validateAndCompleteOneToManyMapping($mapping);
-                break;
             case self::MANY_TO_ONE:
                 $mapping['sourceToTargetKeyColumns'] = null;
-                $mapping                             = $this->_validateAndCompleteOneToOneMapping($mapping);
                 break;
             case self::MANY_TO_MANY:
                 $mapping['relationToSourceKeyColumns'] = null;
                 $mapping['relationToTargetKeyColumns'] = null;
-                $mapping                               = $this->_validateAndCompleteManyToManyMapping($mapping);
                 break;
         }
 
-        $this->associationMappings[$fieldName] = $mapping;
+        $this->associationMappings[$fieldName] = $this->_validateAndCompleteAssociationMapping($mapping);
     }
 
     /**
@@ -2165,7 +1938,7 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
     {
         $mapping['type'] = self::ONE_TO_ONE;
 
-        $mapping = $this->_validateAndCompleteOneToOneMapping($mapping);
+        $mapping = $this->_validateAndCompleteAssociationMapping($mapping);
 
         $this->_storeAssociationMapping($mapping);
     }
@@ -2179,7 +1952,7 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
     {
         $mapping['type'] = self::ONE_TO_MANY;
 
-        $mapping = $this->_validateAndCompleteOneToManyMapping($mapping);
+        $mapping = $this->_validateAndCompleteAssociationMapping($mapping);
 
         $this->_storeAssociationMapping($mapping);
     }
@@ -2193,8 +1966,7 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
     {
         $mapping['type'] = self::MANY_TO_ONE;
 
-        // A many-to-one mapping is essentially a one-one backreference
-        $mapping = $this->_validateAndCompleteOneToOneMapping($mapping);
+        $mapping = $this->_validateAndCompleteAssociationMapping($mapping);
 
         $this->_storeAssociationMapping($mapping);
     }
@@ -2208,7 +1980,7 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
     {
         $mapping['type'] = self::MANY_TO_MANY;
 
-        $mapping = $this->_validateAndCompleteManyToManyMapping($mapping);
+        $mapping = $this->_validateAndCompleteAssociationMapping($mapping);
 
         $this->_storeAssociationMapping($mapping);
     }
@@ -2819,13 +2591,6 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
         }
 
         return $sequencePrefix;
-    }
-
-    private function assertMappingOrderBy(AssociationMapping $mapping): void
-    {
-        if (isset($mapping['orderBy']) && ! is_array($mapping['orderBy'])) {
-            throw new InvalidArgumentException("'orderBy' is expected to be an array, not " . gettype($mapping['orderBy']));
-        }
     }
 
     /** @psalm-param class-string $class */
