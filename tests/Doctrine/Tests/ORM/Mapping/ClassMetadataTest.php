@@ -7,7 +7,6 @@ namespace Doctrine\Tests\ORM\Mapping;
 use ArrayObject;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Events;
-use Doctrine\ORM\Mapping\AssociationMapping;
 use Doctrine\ORM\Mapping\ChainTypedFieldMapper;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\Column;
@@ -15,6 +14,7 @@ use Doctrine\ORM\Mapping\DefaultNamingStrategy;
 use Doctrine\ORM\Mapping\DefaultTypedFieldMapper;
 use Doctrine\ORM\Mapping\DiscriminatorColumnMapping;
 use Doctrine\ORM\Mapping\JoinTableMapping;
+use Doctrine\ORM\Mapping\ManyToOneAssociationMapping;
 use Doctrine\ORM\Mapping\MappedSuperclass;
 use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\ORM\Mapping\UnderscoreNamingStrategy;
@@ -356,16 +356,14 @@ class ClassMetadataTest extends OrmTestCase
         $cm = new ClassMetadata(CmsUser::class);
         $cm->initializeReflection(new RuntimeReflectionService());
 
-        $a1 = AssociationMapping::fromMappingArray([
+        $a1 = ManyToOneAssociationMapping::fromMappingArray([
             'fieldName' => 'foo',
-            'type' => ClassMetadata::MANY_TO_ONE,
             'sourceEntity' => stdClass::class,
             'targetEntity' => stdClass::class,
             'mappedBy' => 'foo',
         ]);
-        $a2 = AssociationMapping::fromMappingArray([
+        $a2 = ManyToOneAssociationMapping::fromMappingArray([
             'fieldName' => 'foo',
-            'type' => ClassMetadata::MANY_TO_ONE,
             'sourceEntity' => stdClass::class,
             'targetEntity' => stdClass::class,
             'mappedBy' => 'foo',

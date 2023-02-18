@@ -6,7 +6,7 @@ namespace Doctrine\Tests\ORM\Persisters;
 
 use Doctrine\Common\Collections\Expr\Comparison;
 use Doctrine\ORM\Mapping\AssociationMapping;
-use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\ManyToOneAssociationMapping;
 use Doctrine\ORM\Persisters\Entity\BasicEntityPersister;
 use Doctrine\ORM\Persisters\Exception\CantUseInOperatorOnCompositeKeys;
 use Doctrine\Tests\Mocks\EntityManagerMock;
@@ -25,8 +25,7 @@ class BasicEntityPersisterCompositeTypeSqlTest extends OrmTestCase
 
         $this->entityManager      = $this->getTestEntityManager();
         $this->persister          = new BasicEntityPersister($this->entityManager, $this->entityManager->getClassMetadata(Admin1AlternateName::class));
-        $this->associationMapping = new AssociationMapping(
-            type: ClassMetadata::MANY_TO_ONE,
+        $this->associationMapping = new ManyToOneAssociationMapping(
             fieldName: 'admin1',
             sourceEntity: WhoCares::class,
             targetEntity: Admin1AlternateName::class,

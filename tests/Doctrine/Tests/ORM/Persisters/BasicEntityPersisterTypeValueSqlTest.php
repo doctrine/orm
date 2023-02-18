@@ -10,8 +10,7 @@ use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Driver;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Type as DBALType;
-use Doctrine\ORM\Mapping\AssociationMapping;
-use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\OneToManyAssociationMapping;
 use Doctrine\ORM\Persisters\Entity\BasicEntityPersister;
 use Doctrine\Tests\DbalTypes\NegativeToPositiveType;
 use Doctrine\Tests\DbalTypes\UpperCaseStringType;
@@ -121,21 +120,21 @@ class BasicEntityPersisterTypeValueSqlTest extends OrmTestCase
     #[Group('DDC-2073')]
     public function testSelectConditionStatementIsNull(): void
     {
-        $associationMapping = new AssociationMapping(ClassMetadata::ONE_TO_MANY, 'foo', 'bar', 'baz');
+        $associationMapping = new OneToManyAssociationMapping('foo', 'bar', 'baz');
         $statement          = $this->persister->getSelectConditionStatementSQL('test', null, $associationMapping, Comparison::IS);
         self::assertEquals('test IS NULL', $statement);
     }
 
     public function testSelectConditionStatementEqNull(): void
     {
-        $associationMapping = new AssociationMapping(ClassMetadata::ONE_TO_MANY, 'foo', 'bar', 'baz');
+        $associationMapping = new OneToManyAssociationMapping('foo', 'bar', 'baz');
         $statement          = $this->persister->getSelectConditionStatementSQL('test', null, $associationMapping, Comparison::EQ);
         self::assertEquals('test IS NULL', $statement);
     }
 
     public function testSelectConditionStatementNeqNull(): void
     {
-        $associationMapping = new AssociationMapping(ClassMetadata::ONE_TO_MANY, 'foo', 'bar', 'baz');
+        $associationMapping = new OneToManyAssociationMapping('foo', 'bar', 'baz');
         $statement          = $this->persister->getSelectConditionStatementSQL(
             'test',
             null,

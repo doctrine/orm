@@ -16,7 +16,7 @@ class ToOneAssociationMapping extends AssociationMapping
     public array|null $joinColumns = null;
 
     /** @psalm-param array{joinColumns?: mixed[], ...} $mapping */
-    public static function fromMappingArray(array $mapping): self
+    public static function fromMappingArray(array $mapping): static
     {
         $joinColumns = $mapping['joinColumns'] ?? [];
 

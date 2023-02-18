@@ -12,7 +12,7 @@ use function in_array;
 use function property_exists;
 
 /** @template-implements ArrayAccess<string, mixed> */
-class AssociationMapping implements ArrayAccess
+abstract class AssociationMapping implements ArrayAccess
 {
     /**
      * required for bidirectional associations
@@ -113,7 +113,6 @@ class AssociationMapping implements ArrayAccess
      *                                   source entity.
      */
     final public function __construct(
-        public readonly int $type,
         public string $fieldName,
         public string $sourceEntity,
         public string $targetEntity,
@@ -125,15 +124,13 @@ class AssociationMapping implements ArrayAccess
      *     fieldName: string,
      *     sourceEntity: class-string,
      *     targetEntity: class-string,
-     *     type: int,
      *     joinColumns?: mixed[]|null,
      *     joinTable?: mixed[]|null, ...} $mappingArray
      */
-    public static function fromMappingArray(array $mappingArray): self
+    public static function fromMappingArray(array $mappingArray): static
     {
         unset($mappingArray['isOwningSide']);
         $mapping = new static(
-            $mappingArray['type'],
             $mappingArray['fieldName'],
             $mappingArray['sourceEntity'],
             $mappingArray['targetEntity'],
@@ -181,6 +178,10 @@ class AssociationMapping implements ArrayAccess
             return $this->isOwningSide();
         }
 
+        if ($offset === 'type') {
+            return $this->type();
+        }
+
         return $this->$offset;
     }
 
@@ -211,6 +212,17 @@ class AssociationMapping implements ArrayAccess
         return $this instanceof ManyToManyOwningSideMapping;
     }
 
+    public function type(): int
+    {
+        return match (true) {
+            $this instanceof OneToOneAssociationMapping => ClassMetadata::ONE_TO_ONE,
+            $this instanceof OneToManyAssociationMapping => ClassMetadata::ONE_TO_MANY,
+            $this instanceof ManyToOneAssociationMapping => ClassMetadata::MANY_TO_ONE,
+            $this instanceof ManyToManyAssociationMapping => ClassMetadata::MANY_TO_MANY,
+            default => throw new Exception('Cannot determine type for ' . $this::class),
+        };
+    }
+
     /**
      * {@inheritDoc}
      */
@@ -234,6 +246,11 @@ class AssociationMapping implements ArrayAccess
     /** @return mixed[] */
     public function toArray(): array
     {
-        return (array) $this;
+        $array = (array) $this;
+
+        $array['isOwningSide'] = $this->isOwningSide();
+        $array['type']         = $this->type();
+
+        return $array;
     }
 }
