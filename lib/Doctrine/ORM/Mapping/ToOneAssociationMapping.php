@@ -14,7 +14,10 @@ abstract class ToOneAssociationMapping extends AssociationMapping
     /** @var array<string, string> */
     public array|null $targetToSourceKeyColumns = null;
 
-    /** @psalm-param array{joinColumns?: mixed[], ...} $mapping */
+    /**
+     * @param array<string, mixed> $mapping
+     * @psalm-param array{joinColumns?: mixed[], ...} $mapping
+     */
     public static function fromMappingArray(array $mapping): static
     {
         $joinColumns = $mapping['joinColumns'] ?? [];

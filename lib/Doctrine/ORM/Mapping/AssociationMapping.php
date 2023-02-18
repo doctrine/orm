@@ -125,7 +125,8 @@ abstract class AssociationMapping implements ArrayAccess
      *     sourceEntity: class-string,
      *     targetEntity: class-string,
      *     joinColumns?: mixed[]|null,
-     *     joinTable?: mixed[]|null, ...} $mappingArray
+     *     joinTable?: mixed[]|null,
+     *     isOwningSide: bool, ...} $mappingArray
      */
     public static function fromMappingArray(array $mappingArray): static
     {

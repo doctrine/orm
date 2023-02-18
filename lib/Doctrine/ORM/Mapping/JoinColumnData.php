@@ -26,7 +26,10 @@ final class JoinColumnData implements ArrayAccess
     {
     }
 
-    /** @psalm-param array{name: string, referencedColumnName: string, ...} $mappingArray */
+    /**
+     * @param array<string, mixed> $mappingArray
+     * @psalm-param array{name: string, referencedColumnName: string, ...} $mappingArray
+     */
     public static function fromMappingArray(array $mappingArray): self
     {
         $mapping = new self();
