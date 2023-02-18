@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Mapping;
 
-class ToManyAssociationMapping extends AssociationMapping
+abstract class ToManyAssociationMapping extends AssociationMapping
 {
     /**
      * Specification of a field on target-entity that is used to index the
