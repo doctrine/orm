@@ -9,4 +9,6 @@ namespace Doctrine\ORM\Mapping;
  */
 final class ManyToOneAssociationMapping extends ToOneAssociationMapping implements AssociationOwningSideMapping
 {
+    /** @var list<JoinColumnData> */
+    public array $joinColumns = [];
 }

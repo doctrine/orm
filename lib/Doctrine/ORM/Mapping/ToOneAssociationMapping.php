@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Mapping;
 
+use function assert;
+
 abstract class ToOneAssociationMapping extends AssociationMapping
 {
     /** @var array<string, string> */
@@ -11,9 +13,6 @@ abstract class ToOneAssociationMapping extends AssociationMapping
 
     /** @var array<string, string> */
     public array|null $targetToSourceKeyColumns = null;
-
-    /** @var list<JoinColumnData>|null */
-    public array|null $joinColumns = null;
 
     /** @psalm-param array{joinColumns?: mixed[], ...} $mapping */
     public static function fromMappingArray(array $mapping): static
@@ -27,6 +26,7 @@ abstract class ToOneAssociationMapping extends AssociationMapping
         $instance = parent::fromMappingArray($mapping);
 
         foreach ($joinColumns as $column) {
+            assert($mapping['isOwningSide']);
             $instance->joinColumns[] = JoinColumnData::fromMappingArray($column);
         }
 
@@ -39,6 +39,7 @@ abstract class ToOneAssociationMapping extends AssociationMapping
     public function offsetSet($offset, $value): void
     {
         if ($offset === 'joinColumns') {
+            assert($this->isOwningSide());
             $joinColumns = [];
             foreach ($value as $column) {
                 $joinColumns[] = JoinColumnData::fromMappingArray($column);
