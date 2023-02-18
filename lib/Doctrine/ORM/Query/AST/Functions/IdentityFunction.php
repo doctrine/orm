@@ -37,7 +37,7 @@ class IdentityFunction extends FunctionNode
         $assoc         = $sqlWalker->getMetadataForDqlAlias($dqlAlias)->associationMappings[$assocField];
         $targetEntity  = $entityManager->getClassMetadata($assoc['targetEntity']);
 
-        assert($assoc->joinColumns !== null);
+        assert($assoc->isToOneOwningSide());
         $joinColumn = reset($assoc->joinColumns);
 
         if ($this->fieldMapping !== null) {

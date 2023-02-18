@@ -1197,7 +1197,6 @@ class UnitOfWork implements PropertyChangedListener
                     $newNodes[] = $targetClass;
                 }
 
-                assert($assoc->joinColumns !== null);
                 $joinColumns = reset($assoc->joinColumns);
 
                 $calc->addDependency($targetClass->name, $class->name, (int) empty($joinColumns['nullable']));

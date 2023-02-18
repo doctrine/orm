@@ -128,7 +128,7 @@ abstract class AssociationMapping implements ArrayAccess
      *     joinTable?: mixed[]|null,
      *     isOwningSide: bool, ...} $mappingArray
      */
-    public static function fromMappingArray(array $mappingArray): static
+    public static function fromMappingArray(array $mappingArray): OneToOneAssociationMapping|ManyToOneAssociationMapping|OneToManyAssociationMapping|ManyToManyAssociationMapping
     {
         unset($mappingArray['isOwningSide']);
         $mapping = new static(
@@ -186,22 +186,19 @@ abstract class AssociationMapping implements ArrayAccess
         return $this->$offset;
     }
 
-    /** @psalm-assert AssociationOwningSideMapping $this */
+    /** @psalm-assert-if-true AssociationOwningSideMapping $this */
     public function isOwningSide(): bool
     {
         return $this instanceof AssociationOwningSideMapping;
     }
 
-    /** @psalm-assert ToOneAssociationMapping $this */
+    /** @psalm-assert-if-true ToOneAssociationMapping $this */
     public function isToOne(): bool
     {
         return $this instanceof ToOneAssociationMapping;
     }
 
-    /**
-     * @psalm-assert-if-true ToOneAssociationMapping $this
-     * @psalm-assert-if-true AssociationOwningSideMapping $this
-     */
+    /** @psalm-assert-if-true OneToOneOwningSideMapping|ManyToOneAssociationMapping $this */
     public function isToOneOwningSide(): bool
     {
         return $this->isToOne() && $this->isOwningSide();

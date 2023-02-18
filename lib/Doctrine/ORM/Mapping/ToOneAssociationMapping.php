@@ -15,21 +15,26 @@ abstract class ToOneAssociationMapping extends AssociationMapping
     public array|null $targetToSourceKeyColumns = null;
 
     /**
-     * @param array<string, mixed> $mapping
-     * @psalm-param array{joinColumns?: mixed[], ...} $mapping
+     * @param array<string, mixed> $mappingArray
+     * @psalm-param array{
+     *     fieldName: string,
+     *     sourceEntity: class-string,
+     *     targetEntity: class-string,
+     *     joinColumns?: mixed[]|null,
+     *     isOwningSide: bool, ...} $mappingArray
      */
-    public static function fromMappingArray(array $mapping): static
+    public static function fromMappingArray(array $mappingArray): OneToOneAssociationMapping|ManyToOneAssociationMapping
     {
-        $joinColumns = $mapping['joinColumns'] ?? [];
+        $joinColumns = $mappingArray['joinColumns'] ?? [];
 
-        if (isset($mapping['joinColumns'])) {
-            unset($mapping['joinColumns']);
+        if (isset($mappingArray['joinColumns'])) {
+            unset($mappingArray['joinColumns']);
         }
 
-        $instance = parent::fromMappingArray($mapping);
+        $instance = parent::fromMappingArray($mappingArray);
 
         foreach ($joinColumns as $column) {
-            assert($mapping['isOwningSide']);
+            assert($instance->isToOneOwningSide());
             $instance->joinColumns[] = JoinColumnData::fromMappingArray($column);
         }
 
@@ -42,7 +47,7 @@ abstract class ToOneAssociationMapping extends AssociationMapping
     public function offsetSet($offset, $value): void
     {
         if ($offset === 'joinColumns') {
-            assert($this->isOwningSide());
+            assert($this->isToOneOwningSide());
             $joinColumns = [];
             foreach ($value as $column) {
                 $joinColumns[] = JoinColumnData::fromMappingArray($column);
