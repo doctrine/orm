@@ -1209,6 +1209,27 @@ class QueryBuilder
     }
 
     /**
+     * Adds restriction defined by the callback to the query results if a condition is true.
+     * Otherwise it apply the default if defined.
+     *
+     * @param bool                    $condition
+     * @param callable(QueryBuilder): $this|null $callback
+     * @param callable(QueryBuilder): $this|null $default
+     *
+     * @return $this
+     */
+    public function when($condition, $callback, $default = null)
+    {
+        if ($condition) {
+            return $callback($this) ?? $this;
+        } elseif ($default) {
+            return $default($this) ?? $this;
+        }
+
+        return $this;
+    }
+
+    /**
      * Specifies a grouping over the results of the query.
      * Replaces any previously specified groupings, if any.
      *

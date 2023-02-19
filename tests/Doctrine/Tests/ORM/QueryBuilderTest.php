@@ -379,6 +379,51 @@ class QueryBuilderTest extends OrmTestCase
         $this->assertValidQueryBuilder($qb, 'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id = :uid OR u.id NOT IN(1, 2, 3)');
     }
 
+    public function testWhenWithValidCondition(): void
+    {
+        $qb = $this->entityManager->createQueryBuilder()
+            ->select('u')
+            ->from(CmsUser::class, 'u');
+
+        $qb->when(true, static function (QueryBuilder $qb): QueryBuilder {
+            return $qb->andWhere('u.id = :uid');
+        });
+
+        $this->assertValidQueryBuilder($qb, 'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id = :uid');
+    }
+
+    public function testWhenWithIvalidCondition(): void
+    {
+        $qb = $this->entityManager->createQueryBuilder()
+            ->select('u')
+            ->from(CmsUser::class, 'u');
+
+        $qb->when(false, static function (QueryBuilder $qb): QueryBuilder {
+            return $qb->andWhere('u.id = :uid');
+        });
+
+        $this->assertValidQueryBuilder($qb, 'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u');
+    }
+
+    public function testWhenWithCallback(): void
+    {
+        $qb = $this->entityManager->createQueryBuilder()
+            ->select('u')
+            ->from(CmsUser::class, 'u');
+
+        $qb->when(
+            false,
+            static function (QueryBuilder $qb): QueryBuilder {
+                return $qb->andWhere('u.id = :uid');
+            },
+            static function (QueryBuilder $qb): QueryBuilder {
+                return $qb->andWhere('u.id != :uid');
+            }
+        );
+
+        $this->assertValidQueryBuilder($qb, 'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id != :uid');
+    }
+
     public function testGroupBy(): void
     {
         $qb = $this->entityManager->createQueryBuilder()
