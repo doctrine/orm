@@ -95,6 +95,9 @@ class QueryExpressionVisitor extends ExpressionVisitor
             case CompositeExpression::TYPE_OR:
                 return new Expr\Orx($expressionList);
 
+            case CompositeExpression::TYPE_NOT:
+                return new Expr\Func('NOT', $expressionList);
+
             default:
                 throw new RuntimeException('Unknown composite ' . $expr->getType());
         }
