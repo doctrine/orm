@@ -335,6 +335,15 @@ class ExprTest extends OrmTestCase
         self::assertEquals('(1 = 1 AND 1 < 5) OR 1 = 1', (string) $orExpr);
     }
 
+    public function testAndxNotxExpr(): void
+    {
+        $andExpr = $this->expr->andX();
+        $andExpr->add($this->expr->eq(1, 1));
+        $andExpr->add($this->expr->not($this->expr->lt(1, 5)));
+
+        self::assertEquals('1 = 1 AND NOT(1 < 5)', (string) $andExpr);
+    }
+
     public function testOrxExpr(): void
     {
         $orExpr = $this->expr->orX();

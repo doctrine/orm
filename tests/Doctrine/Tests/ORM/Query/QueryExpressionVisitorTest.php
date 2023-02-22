@@ -6,6 +6,7 @@ namespace Doctrine\Tests\ORM\Query;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Expr\Comparison as CriteriaComparison;
+use Doctrine\Common\Collections\Expr\CompositeExpression;
 use Doctrine\Common\Collections\Expr\Value;
 use Doctrine\Common\Collections\ExpressionBuilder as CriteriaBuilder;
 use Doctrine\ORM\Query\Expr as QueryBuilder;
@@ -107,6 +108,20 @@ class QueryExpressionVisitorTest extends TestCase
 
         self::assertInstanceOf(QueryBuilder\Orx::class, $expr);
         self::assertCount(2, $expr->getParts());
+    }
+
+    public function testWalkNotCompositeExpression(): void
+    {
+        $cb = new CriteriaBuilder();
+        $expr = $this->visitor->walkCompositeExpression(
+            $cb->not(
+                $cb->eq('foo', 1)
+            )
+        );
+
+        self::assertInstanceOf(QueryBuilder\Func::class, $expr);
+        self::assertEquals(CompositeExpression::TYPE_NOT, $expr->getName());
+        self::assertCount(1, $expr->getArguments());
     }
 
     public function testWalkValue(): void
