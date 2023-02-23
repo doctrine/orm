@@ -30,15 +30,36 @@ class FilterCollectionTest extends OrmTestCase
 
         self::assertCount(0, $filterCollection->getEnabledFilters());
 
-        $filterCollection->enable('testFilter');
+        $filter1 = $filterCollection->enable('testFilter');
 
         $enabledFilters = $filterCollection->getEnabledFilters();
 
         self::assertCount(1, $enabledFilters);
         self::assertContainsOnly(MyFilter::class, $enabledFilters);
 
-        $filterCollection->disable('testFilter');
+        $filter2 = $filterCollection->disable('testFilter');
         self::assertCount(0, $filterCollection->getEnabledFilters());
+        self::assertSame($filter1, $filter2);
+
+        $filter3 = $filterCollection->enable('testFilter');
+        self::assertNotSame($filter1, $filter3);
+    }
+
+    public function testRestore(): void
+    {
+        $filterCollection = $this->em->getFilters();
+
+        self::assertCount(0, $filterCollection->getEnabledFilters());
+
+        $filter1 = $filterCollection->enable('testFilter');
+        $filterCollection->disable('testFilter');
+
+        $filter3 = $filterCollection->restore('testFilter');
+        self::assertSame($filter1, $filter3);
+
+        $enabledFilters = $filterCollection->getEnabledFilters();
+        self::assertCount(1, $enabledFilters);
+        self::assertContainsOnly(MyFilter::class, $enabledFilters);
     }
 
     public function testHasFilter(): void
@@ -49,7 +70,6 @@ class FilterCollectionTest extends OrmTestCase
         self::assertFalse($filterCollection->has('fakeFilter'));
     }
 
-    /** @depends testEnable */
     public function testIsEnabled(): void
     {
         $filterCollection = $this->em->getFilters();
@@ -59,6 +79,21 @@ class FilterCollectionTest extends OrmTestCase
         $filterCollection->enable('testFilter');
 
         self::assertTrue($filterCollection->isEnabled('testFilter'));
+    }
+
+    public function testIsDisabled(): void
+    {
+        $filterCollection = $this->em->getFilters();
+
+        self::assertFalse($filterCollection->isDisabled('testFilter'));
+
+        $filterCollection->enable('testFilter');
+
+        self::assertFalse($filterCollection->isDisabled('testFilter'));
+
+        $filterCollection->disable('testFilter');
+
+        self::assertTrue($filterCollection->isDisabled('testFilter'));
     }
 
     public function testGetFilterInvalidArgument(): void

@@ -92,3 +92,10 @@ object.
     want to refresh or reload an object after having modified a filter or the
     FilterCollection, then you should clear the EntityManager and re-fetch your
     entities, having the new rules for filtering applied.
+
+.. warning::
+    If you enable a previously disabled filter, doctrine will create a new
+    one without keeping any of the previously parameter set with
+    ``SQLFilter#setParameter()`` or ``SQLFilter#getParameterList()``. If you
+    want to restore the previously disabled filter instead, you must use the
+    ``FilterCollection#restore($name)`` method.

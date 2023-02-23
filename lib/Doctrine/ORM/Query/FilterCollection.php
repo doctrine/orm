@@ -52,6 +52,14 @@ class FilterCollection
     private $enabledFilters = [];
 
     /**
+     * Instances of previously enabled filters.
+     *
+     * @var SQLFilter[]
+     * @psalm-var array<string, SQLFilter>
+     */
+    private $disabledFilters = [];
+
+    /**
      * The filter hash from the last time the query was parsed.
      *
      * @var string
@@ -128,11 +136,42 @@ class FilterCollection
         // Get the filter to return it
         $filter = $this->getFilter($name);
 
+        $this->disabledFilters[$name] = $filter;
         unset($this->enabledFilters[$name]);
 
         $this->setFiltersStateDirty();
 
         return $filter;
+    }
+
+    /**
+     * Restore a disabled filter from the collection.
+     *
+     * @param string $name Name of the filter.
+     *
+     * @return SQLFilter The restored filter.
+     *
+     * @throws InvalidArgumentException If the filter does not exist.
+     */
+    public function restore(string $name): SQLFilter
+    {
+        if (! $this->has($name)) {
+            throw new InvalidArgumentException("Filter '" . $name . "' does not exist.");
+        }
+
+        if (! $this->isDisabled($name)) {
+            throw new InvalidArgumentException("Filter '" . $name . "' was never enabled before.");
+        }
+
+        $this->enabledFilters[$name] = $this->disabledFilters[$name];
+        unset($this->disabledFilters[$name]);
+
+        // Keep the enabled filters sorted for the hash
+        ksort($this->enabledFilters);
+
+        $this->setFiltersStateDirty();
+
+        return $this->enabledFilters[$name];
     }
 
     /**
@@ -175,6 +214,18 @@ class FilterCollection
     public function isEnabled($name)
     {
         return isset($this->enabledFilters[$name]);
+    }
+
+    /**
+     * Checks if a filter is disabled.
+     *
+     * @param string $name Name of the filter.
+     *
+     * @return bool True if the filter is disabled, false otherwise.
+     */
+    public function isDisabled($name)
+    {
+        return isset($this->disabledFilters[$name]);
     }
 
     /**
