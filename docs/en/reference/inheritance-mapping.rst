@@ -39,7 +39,7 @@ have to be used.
     to replace references to a mapped superclass with an entity class at runtime.
     As long as there is only one entity subclass inheriting from the mapped
     superclass and all references to the mapped superclass are resolved to that
-    entity class at runtime, the mapped superclass _can_ use One-To-Many associations
+    entity class at runtime, the mapped superclass *can* use One-To-Many associations
     and be named as the ``targetEntity`` on the owning sides.
 
 .. note::
