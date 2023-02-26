@@ -52,7 +52,7 @@ class FilterCollectionTest extends OrmTestCase
         self::assertCount(0, $filterCollection->getEnabledFilters());
 
         $filter1 = $filterCollection->enable('testFilter');
-        $filterCollection->disable('testFilter');
+        $filterCollection->suspend('testFilter');
 
         $filter3 = $filterCollection->restore('testFilter');
         self::assertSame($filter1, $filter3);
@@ -60,6 +60,14 @@ class FilterCollectionTest extends OrmTestCase
         $enabledFilters = $filterCollection->getEnabledFilters();
         self::assertCount(1, $enabledFilters);
         self::assertContainsOnly(MyFilter::class, $enabledFilters);
+    }
+
+    public function testRestoreFailure(): void
+    {
+        $filterCollection = $this->em->getFilters();
+
+        $this->expectException(InvalidArgumentException::class);
+        $filterCollection->suspend('testFilter');
     }
 
     public function testHasFilter(): void
@@ -81,19 +89,27 @@ class FilterCollectionTest extends OrmTestCase
         self::assertTrue($filterCollection->isEnabled('testFilter'));
     }
 
-    public function testIsDisabled(): void
+    public function testIsSuspended(): void
     {
         $filterCollection = $this->em->getFilters();
 
-        self::assertFalse($filterCollection->isDisabled('testFilter'));
+        self::assertFalse($filterCollection->isSuspended('testFilter'));
 
         $filterCollection->enable('testFilter');
 
-        self::assertFalse($filterCollection->isDisabled('testFilter'));
+        self::assertFalse($filterCollection->isSuspended('testFilter'));
+
+        $filterCollection->suspend('testFilter');
+
+        self::assertTrue($filterCollection->isSuspended('testFilter'));
+
+        $filterCollection->restore('testFilter');
+
+        self::assertFalse($filterCollection->isSuspended('testFilter'));
 
         $filterCollection->disable('testFilter');
 
-        self::assertTrue($filterCollection->isDisabled('testFilter'));
+        self::assertFalse($filterCollection->isSuspended('testFilter'));
     }
 
     public function testGetFilterInvalidArgument(): void

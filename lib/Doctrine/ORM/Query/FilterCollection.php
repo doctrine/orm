@@ -52,12 +52,12 @@ class FilterCollection
     private $enabledFilters = [];
 
     /**
-     * Instances of previously enabled filters.
+     * Instances of suspended filters.
      *
      * @var SQLFilter[]
      * @psalm-var array<string, SQLFilter>
      */
-    private $disabledFilters = [];
+    private $suspendedFilters = [];
 
     /**
      * The filter hash from the last time the query was parsed.
@@ -92,6 +92,17 @@ class FilterCollection
     }
 
     /**
+     * Gets all the suspended filters.
+     *
+     * @return SQLFilter[] The suspended filters.
+     * @psalm-return array<string, SQLFilter>
+     */
+    public function getSuspendedFilters(): array
+    {
+        return $this->suspendedFilters;
+    }
+
+    /**
      * Enables a filter from the collection.
      *
      * @param string $name Name of the filter.
@@ -112,6 +123,9 @@ class FilterCollection
             assert($filterClass !== null);
 
             $this->enabledFilters[$name] = new $filterClass($this->em);
+
+            // In case a suspended filter with the same name was forgotten
+            unset($this->suspendedFilters[$name]);
 
             // Keep the enabled filters sorted for the hash
             ksort($this->enabledFilters);
@@ -136,7 +150,28 @@ class FilterCollection
         // Get the filter to return it
         $filter = $this->getFilter($name);
 
-        $this->disabledFilters[$name] = $filter;
+        unset($this->enabledFilters[$name]);
+
+        $this->setFiltersStateDirty();
+
+        return $filter;
+    }
+
+    /**
+     * Suspend a filter.
+     *
+     * @param string $name Name of the filter.
+     *
+     * @return SQLFilter The suspended filter.
+     *
+     * @throws InvalidArgumentException If the filter does not exist.
+     */
+    public function suspend(string $name): SQLFilter
+    {
+        // Get the filter to return it
+        $filter = $this->getFilter($name);
+
+        $this->suspendedFilters[$name] = $filter;
         unset($this->enabledFilters[$name]);
 
         $this->setFiltersStateDirty();
@@ -155,16 +190,12 @@ class FilterCollection
      */
     public function restore(string $name): SQLFilter
     {
-        if (! $this->has($name)) {
-            throw new InvalidArgumentException("Filter '" . $name . "' does not exist.");
+        if (! $this->isSuspended($name)) {
+            throw new InvalidArgumentException("Filter '" . $name . "' is not suspended.");
         }
 
-        if (! $this->isDisabled($name)) {
-            throw new InvalidArgumentException("Filter '" . $name . "' was never enabled before.");
-        }
-
-        $this->enabledFilters[$name] = $this->disabledFilters[$name];
-        unset($this->disabledFilters[$name]);
+        $this->enabledFilters[$name] = $this->suspendedFilters[$name];
+        unset($this->suspendedFilters[$name]);
 
         // Keep the enabled filters sorted for the hash
         ksort($this->enabledFilters);
@@ -217,15 +248,15 @@ class FilterCollection
     }
 
     /**
-     * Checks if a filter is disabled.
+     * Checks if a filter is suspended.
      *
      * @param string $name Name of the filter.
      *
-     * @return bool True if the filter is disabled, false otherwise.
+     * @return bool True if the filter is suspended, false otherwise.
      */
-    public function isDisabled($name)
+    public function isSuspended(string $name): bool
     {
-        return isset($this->disabledFilters[$name]);
+        return isset($this->suspendedFilters[$name]);
     }
 
     /**
