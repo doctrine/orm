@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<files psalm-version="5.6.0@e784128902dfe01d489c4123d69918a9f3c1eac5">
+<files psalm-version="5.7.7@e028ba46ba0d7f9a78bc3201c251e137383e145f">
   <file src="lib/Doctrine/ORM/AbstractQuery.php">
     <DeprecatedClass>
       <code>IterableResult</code>
@@ -11,7 +11,7 @@
       <code>in_array($fetchMode, [Mapping\ClassMetadata::FETCH_EAGER, Mapping\ClassMetadata::FETCH_LAZY], true)</code>
     </DocblockTypeContradiction>
     <FalsableReturnStatement>
-      <code>! $filteredParameters-&gt;isEmpty() ? $filteredParameters-&gt;first() : null</code>
+      <code><![CDATA[! $filteredParameters->isEmpty() ? $filteredParameters->first() : null]]></code>
     </FalsableReturnStatement>
     <InvalidFalsableReturnType>
       <code>Parameter|null</code>
@@ -25,8 +25,8 @@
       <code>$data</code>
     </MissingClosureParamType>
     <NullableReturnStatement>
-      <code>$this-&gt;_em-&gt;getConfiguration()-&gt;getResultCacheImpl()</code>
-      <code>$this-&gt;_queryCacheProfile-&gt;getResultCacheDriver()</code>
+      <code><![CDATA[$this->_em->getConfiguration()->getResultCacheImpl()]]></code>
+      <code><![CDATA[$this->_queryCacheProfile->getResultCacheDriver()]]></code>
     </NullableReturnStatement>
     <PossiblyInvalidArgument>
       <code>$stmt</code>
@@ -56,12 +56,12 @@
   </file>
   <file src="lib/Doctrine/ORM/Cache/DefaultCache.php">
     <InvalidOperand>
-      <code>! $association['type']</code>
+      <code><![CDATA[! $association['type']]]></code>
     </InvalidOperand>
     <PossiblyNullPropertyAssignmentValue>
-      <code>$em-&gt;getConfiguration()
-            -&gt;getSecondLevelCacheConfiguration()
-            -&gt;getCacheFactory()</code>
+      <code><![CDATA[$em->getConfiguration()
+            ->getSecondLevelCacheConfiguration()
+            ->getCacheFactory()]]></code>
     </PossiblyNullPropertyAssignmentValue>
     <PossiblyNullReference>
       <code>getCacheFactory</code>
@@ -72,7 +72,7 @@
       <code>string</code>
     </InvalidNullableReturnType>
     <NullableReturnStatement>
-      <code>$this-&gt;fileLockRegionDirectory</code>
+      <code><![CDATA[$this->fileLockRegionDirectory]]></code>
     </NullableReturnStatement>
     <RedundantCastGivenDocblockType>
       <code>(string) $fileLockRegionDirectory</code>
@@ -80,15 +80,15 @@
   </file>
   <file src="lib/Doctrine/ORM/Cache/DefaultEntityHydrator.php">
     <InvalidArgument>
-      <code>$em-&gt;getMetadataFactory()</code>
+      <code><![CDATA[$em->getMetadataFactory()]]></code>
     </InvalidArgument>
     <PossiblyNullArrayOffset>
-      <code>$targetClassMetadata-&gt;associationMappings</code>
+      <code><![CDATA[$targetClassMetadata->associationMappings]]></code>
     </PossiblyNullArrayOffset>
     <PossiblyUndefinedArrayOffset>
-      <code>$assoc['joinColumnFieldNames']</code>
-      <code>$assoc['targetToSourceKeyColumns']</code>
-      <code>$owningAssociation['targetToSourceKeyColumns']</code>
+      <code><![CDATA[$assoc['joinColumnFieldNames']]]></code>
+      <code><![CDATA[$assoc['targetToSourceKeyColumns']]]></code>
+      <code><![CDATA[$owningAssociation['targetToSourceKeyColumns']]]></code>
     </PossiblyUndefinedArrayOffset>
     <UndefinedInterfaceMethod>
       <code>getCacheRegion</code>
@@ -96,17 +96,17 @@
   </file>
   <file src="lib/Doctrine/ORM/Cache/DefaultQueryCache.php">
     <ArgumentTypeCoercion>
-      <code>$assocKeys-&gt;identifiers[$assocIndex]</code>
-      <code>$assocKeys-&gt;identifiers[$assocIndex]</code>
-      <code>$cacheKeys-&gt;identifiers[$index]</code>
-      <code>$cacheKeys-&gt;identifiers[$index]</code>
+      <code><![CDATA[$assocKeys->identifiers[$assocIndex]]]></code>
+      <code><![CDATA[$assocKeys->identifiers[$assocIndex]]]></code>
+      <code><![CDATA[$cacheKeys->identifiers[$index]]]></code>
+      <code><![CDATA[$cacheKeys->identifiers[$index]]]></code>
     </ArgumentTypeCoercion>
     <MissingClosureParamType>
       <code>$id</code>
     </MissingClosureParamType>
     <NoInterfaceProperties>
-      <code>$assocEntry-&gt;class</code>
-      <code>$assocEntry-&gt;class</code>
+      <code><![CDATA[$assocEntry->class]]></code>
+      <code><![CDATA[$assocEntry->class]]></code>
     </NoInterfaceProperties>
     <PossiblyNullReference>
       <code>getCacheLogger</code>
@@ -128,11 +128,11 @@
       <code>$entityKey</code>
     </ArgumentTypeCoercion>
     <NoInterfaceProperties>
-      <code>$entry-&gt;identifiers</code>
+      <code><![CDATA[$entry->identifiers]]></code>
     </NoInterfaceProperties>
     <PossiblyNullArgument>
-      <code>$collection-&gt;getOwner()</code>
-      <code>$collection-&gt;getOwner()</code>
+      <code><![CDATA[$collection->getOwner()]]></code>
+      <code><![CDATA[$collection->getOwner()]]></code>
     </PossiblyNullArgument>
     <PossiblyNullReference>
       <code>buildCollectionHydrator</code>
@@ -141,19 +141,19 @@
   </file>
   <file src="lib/Doctrine/ORM/Cache/Persister/Collection/NonStrictReadWriteCachedCollectionPersister.php">
     <PossiblyNullArgument>
-      <code>$collection-&gt;getOwner()</code>
-      <code>$collection-&gt;getOwner()</code>
+      <code><![CDATA[$collection->getOwner()]]></code>
+      <code><![CDATA[$collection->getOwner()]]></code>
     </PossiblyNullArgument>
   </file>
   <file src="lib/Doctrine/ORM/Cache/Persister/Collection/ReadOnlyCachedCollectionPersister.php">
     <PossiblyNullArgument>
-      <code>$collection-&gt;getOwner()</code>
+      <code><![CDATA[$collection->getOwner()]]></code>
     </PossiblyNullArgument>
   </file>
   <file src="lib/Doctrine/ORM/Cache/Persister/Collection/ReadWriteCachedCollectionPersister.php">
     <PossiblyNullArgument>
-      <code>$collection-&gt;getOwner()</code>
-      <code>$collection-&gt;getOwner()</code>
+      <code><![CDATA[$collection->getOwner()]]></code>
+      <code><![CDATA[$collection->getOwner()]]></code>
     </PossiblyNullArgument>
     <UndefinedInterfaceMethod>
       <code>lock</code>
@@ -168,14 +168,14 @@
       <code>loadAll</code>
     </MissingReturnType>
     <NoInterfaceProperties>
-      <code>$cacheEntry-&gt;class</code>
+      <code><![CDATA[$cacheEntry->class]]></code>
     </NoInterfaceProperties>
     <PossiblyNullArgument>
-      <code>$collection-&gt;getOwner()</code>
-      <code>$collection-&gt;getOwner()</code>
+      <code><![CDATA[$collection->getOwner()]]></code>
+      <code><![CDATA[$collection->getOwner()]]></code>
     </PossiblyNullArgument>
     <PossiblyNullPropertyAssignmentValue>
-      <code>$em-&gt;getCache()</code>
+      <code><![CDATA[$em->getCache()]]></code>
     </PossiblyNullPropertyAssignmentValue>
     <PossiblyNullReference>
       <code>getCacheFactory</code>
@@ -207,7 +207,7 @@
   </file>
   <file src="lib/Doctrine/ORM/Cache/Region/DefaultRegion.php">
     <LessSpecificReturnStatement>
-      <code>$this-&gt;cache</code>
+      <code><![CDATA[$this->cache]]></code>
     </LessSpecificReturnStatement>
     <MoreSpecificReturnType>
       <code>CacheProvider</code>
@@ -235,7 +235,7 @@
   </file>
   <file src="lib/Doctrine/ORM/Cache/TimestampQueryCacheValidator.php">
     <NoInterfaceProperties>
-      <code>$timestamp-&gt;time</code>
+      <code><![CDATA[$timestamp->time]]></code>
     </NoInterfaceProperties>
   </file>
   <file src="lib/Doctrine/ORM/Configuration.php">
@@ -258,7 +258,7 @@
       <code>transactional</code>
     </DeprecatedMethod>
     <InvalidReturnStatement>
-      <code>$this-&gt;wrapped-&gt;getClassMetadata($className)</code>
+      <code><![CDATA[$this->wrapped->getClassMetadata($className)]]></code>
     </InvalidReturnStatement>
     <InvalidReturnType>
       <code>getClassMetadata</code>
@@ -290,7 +290,7 @@
       <code>merge</code>
     </DeprecatedMethod>
     <DocblockTypeContradiction>
-      <code>$entityName !== null &amp;&amp; ! is_string($entityName)</code>
+      <code><![CDATA[$entityName !== null && ! is_string($entityName)]]></code>
       <code>is_object($entity)</code>
       <code>is_object($entity)</code>
       <code>is_object($entity)</code>
@@ -305,11 +305,11 @@
       <code>$entity</code>
       <code>$entity</code>
       <code>$entity</code>
-      <code>$entity instanceof $class-&gt;name ? $entity : null</code>
-      <code>$entity instanceof $class-&gt;name ? $entity : null</code>
-      <code>$persister-&gt;load($sortedId, null, null, [], $lockMode)</code>
-      <code>$persister-&gt;loadById($sortedId)</code>
-      <code>$this-&gt;metadataFactory-&gt;getMetadataFor($className)</code>
+      <code><![CDATA[$entity instanceof $class->name ? $entity : null]]></code>
+      <code><![CDATA[$entity instanceof $class->name ? $entity : null]]></code>
+      <code><![CDATA[$persister->load($sortedId, null, null, [], $lockMode)]]></code>
+      <code><![CDATA[$persister->loadById($sortedId)]]></code>
+      <code><![CDATA[$this->metadataFactory->getMetadataFor($className)]]></code>
     </InvalidReturnStatement>
     <InvalidReturnType>
       <code>?T</code>
@@ -328,8 +328,8 @@
       <code>$entityName</code>
     </ParamNameMismatch>
     <PossiblyNullArgument>
-      <code>$config-&gt;getProxyDir()</code>
-      <code>$config-&gt;getProxyNamespace()</code>
+      <code><![CDATA[$config->getProxyDir()]]></code>
+      <code><![CDATA[$config->getProxyNamespace()]]></code>
     </PossiblyNullArgument>
     <PossiblyNullReference>
       <code>createCache</code>
@@ -346,7 +346,7 @@
       <code>is_object($connection)</code>
     </RedundantCondition>
     <TypeDoesNotContainType>
-      <code>': "' . $connection . '"'</code>
+      <code><![CDATA[': "' . $connection . '"']]></code>
     </TypeDoesNotContainType>
     <UnsafeInstantiation>
       <code>new $class($this)</code>
@@ -357,12 +357,12 @@
       <code>addNamedNativeQueryMapping</code>
     </DeprecatedMethod>
     <InvalidReturnStatement>
-      <code>$persister-&gt;load($criteria, null, null, [], null, 1, $orderBy)</code>
+      <code><![CDATA[$persister->load($criteria, null, null, [], null, 1, $orderBy)]]></code>
       <code>new LazyCriteriaCollection($persister, $criteria)</code>
     </InvalidReturnStatement>
     <InvalidReturnType>
       <code>?T</code>
-      <code>AbstractLazyCollection&lt;int, T&gt;&amp;Selectable&lt;int, T&gt;</code>
+      <code><![CDATA[AbstractLazyCollection<int, T>&Selectable<int, T>]]></code>
     </InvalidReturnType>
     <TooManyArguments>
       <code>find</code>
@@ -392,8 +392,8 @@
   <file src="lib/Doctrine/ORM/Id/TableGenerator.php">
     <PossiblyFalseOperand>
       <code>$currentLevel</code>
-      <code>$this-&gt;_nextValue</code>
-      <code>$this-&gt;_nextValue</code>
+      <code><![CDATA[$this->_nextValue]]></code>
+      <code><![CDATA[$this->_nextValue]]></code>
     </PossiblyFalseOperand>
     <UndefinedMethod>
       <code>getTableHiLoCurrentValSql</code>
@@ -402,8 +402,8 @@
   </file>
   <file src="lib/Doctrine/ORM/Internal/CommitOrderCalculator.php">
     <RedundantCondition>
-      <code>$vertex-&gt;state !== VertexState::VISITED</code>
-      <code>$vertex-&gt;state !== VertexState::VISITED</code>
+      <code><![CDATA[$vertex->state !== VertexState::VISITED]]></code>
+      <code><![CDATA[$vertex->state !== VertexState::VISITED]]></code>
     </RedundantCondition>
   </file>
   <file src="lib/Doctrine/ORM/Internal/Hydration/AbstractHydrator.php">
@@ -412,8 +412,8 @@
       <code>new IterableResult($this)</code>
     </DeprecatedClass>
     <PossiblyUndefinedArrayOffset>
-      <code>$class-&gt;associationMappings[$fieldName]['joinColumns']</code>
-      <code>$class-&gt;associationMappings[$fieldName]['joinColumns']</code>
+      <code><![CDATA[$class->associationMappings[$fieldName]['joinColumns']]]></code>
+      <code><![CDATA[$class->associationMappings[$fieldName]['joinColumns']]]></code>
     </PossiblyUndefinedArrayOffset>
     <ReferenceConstraintViolation>
       <code>return $rowData;</code>
@@ -429,7 +429,7 @@
       <code>$result[$resultKey]</code>
     </PossiblyNullArrayAssignment>
     <PossiblyUndefinedArrayOffset>
-      <code>$newObject['args']</code>
+      <code><![CDATA[$newObject['args']]]></code>
     </PossiblyUndefinedArrayOffset>
     <ReferenceConstraintViolation>
       <code>$result</code>
@@ -438,8 +438,8 @@
       <code>$baseElement</code>
     </ReferenceReusedFromConfusingScope>
     <UnsupportedReferenceUsage>
-      <code>$baseElement =&amp; $this-&gt;_resultPointers[$parent][key($first)]</code>
-      <code>$this-&gt;_resultPointers[$dqlAlias] =&amp; $coll[key($coll)]</code>
+      <code><![CDATA[$baseElement =& $this->_resultPointers[$parent][key($first)]]]></code>
+      <code><![CDATA[$this->_resultPointers[$dqlAlias] =& $coll[key($coll)]]]></code>
     </UnsupportedReferenceUsage>
   </file>
   <file src="lib/Doctrine/ORM/Internal/Hydration/IterableResult.php">
@@ -450,11 +450,11 @@
       <code>Iterator</code>
     </MissingTemplateParam>
     <PossiblyFalsePropertyAssignmentValue>
-      <code>$this-&gt;_hydrator-&gt;hydrateRow()</code>
-      <code>$this-&gt;next()</code>
+      <code><![CDATA[$this->_hydrator->hydrateRow()]]></code>
+      <code><![CDATA[$this->next()]]></code>
     </PossiblyFalsePropertyAssignmentValue>
     <RedundantConditionGivenDocblockType>
-      <code>$this-&gt;_current !== false</code>
+      <code><![CDATA[$this->_current !== false]]></code>
     </RedundantConditionGivenDocblockType>
   </file>
   <file src="lib/Doctrine/ORM/Internal/Hydration/ObjectHydrator.php">
@@ -471,10 +471,10 @@
       <code>$parentObject</code>
     </PossiblyInvalidArgument>
     <PossiblyNullArgument>
-      <code>$relation['mappedBy']</code>
+      <code><![CDATA[$relation['mappedBy']]]></code>
     </PossiblyNullArgument>
     <PossiblyNullArrayOffset>
-      <code>$targetClass-&gt;reflFields</code>
+      <code><![CDATA[$targetClass->reflFields]]></code>
     </PossiblyNullArrayOffset>
     <PossiblyNullReference>
       <code>getValue</code>
@@ -485,9 +485,9 @@
       <code>setValue</code>
     </PossiblyNullReference>
     <PossiblyUndefinedArrayOffset>
-      <code>$class-&gt;associationMappings[$class-&gt;identifier[0]]['joinColumns']</code>
-      <code>$class-&gt;associationMappings[$fieldName]['joinColumns']</code>
-      <code>$newObject['args']</code>
+      <code><![CDATA[$class->associationMappings[$class->identifier[0]]['joinColumns']]]></code>
+      <code><![CDATA[$class->associationMappings[$fieldName]['joinColumns']]]></code>
+      <code><![CDATA[$newObject['args']]]></code>
     </PossiblyUndefinedArrayOffset>
   </file>
   <file src="lib/Doctrine/ORM/Internal/Hydration/SimpleObjectHydrator.php">
@@ -532,7 +532,7 @@
     <ArgumentTypeCoercion>
       <code>$class</code>
       <code>$class</code>
-      <code>new $definition['class']()</code>
+      <code><![CDATA[new $definition['class']()]]></code>
     </ArgumentTypeCoercion>
     <DeprecatedClass>
       <code>new UuidGenerator()</code>
@@ -545,27 +545,27 @@
       <code>addNamedQuery</code>
     </DeprecatedMethod>
     <InvalidArrayOffset>
-      <code>$subClass-&gt;table[$indexType][$indexName]</code>
+      <code><![CDATA[$subClass->table[$indexType][$indexName]]]></code>
     </InvalidArrayOffset>
     <InvalidPropertyAssignmentValue>
-      <code>$subClass-&gt;table</code>
+      <code><![CDATA[$subClass->table]]></code>
     </InvalidPropertyAssignmentValue>
     <MissingConstructor>
       <code>$driver</code>
       <code>$evm</code>
     </MissingConstructor>
     <PossiblyInvalidArrayAssignment>
-      <code>$subClass-&gt;table[$indexType][$indexName]</code>
+      <code><![CDATA[$subClass->table[$indexType][$indexName]]]></code>
     </PossiblyInvalidArrayAssignment>
     <PossiblyInvalidIterator>
-      <code>$parentClass-&gt;table[$indexType]</code>
+      <code><![CDATA[$parentClass->table[$indexType]]]></code>
     </PossiblyInvalidIterator>
     <PossiblyNullArgument>
-      <code>$this-&gt;em</code>
-      <code>$this-&gt;em</code>
+      <code><![CDATA[$this->em]]></code>
+      <code><![CDATA[$this->em]]></code>
     </PossiblyNullArgument>
     <PossiblyNullPropertyAssignmentValue>
-      <code>$this-&gt;em-&gt;getConfiguration()-&gt;getMetadataDriverImpl()</code>
+      <code><![CDATA[$this->em->getConfiguration()->getMetadataDriverImpl()]]></code>
     </PossiblyNullPropertyAssignmentValue>
     <PossiblyNullReference>
       <code>getConfiguration</code>
@@ -588,15 +588,17 @@
       <code>canRequireSQLConversion</code>
     </DeprecatedMethod>
     <DeprecatedProperty>
-      <code>$this-&gt;columnNames</code>
-      <code>$this-&gt;columnNames</code>
-      <code>$this-&gt;columnNames</code>
-      <code>$this-&gt;columnNames</code>
+      <code><![CDATA[$this->columnNames]]></code>
+      <code><![CDATA[$this->columnNames]]></code>
+      <code><![CDATA[$this->columnNames]]></code>
+      <code><![CDATA[$this->columnNames]]></code>
     </DeprecatedProperty>
     <DocblockTypeContradiction>
-      <code>! $this-&gt;table</code>
-      <code>! class_exists($mapping['targetEntity'])</code>
-      <code>$this-&gt;table</code>
+      <code><![CDATA[! $mapping['isOwningSide']]]></code>
+      <code><![CDATA[! $this->table]]></code>
+      <code><![CDATA[! class_exists($mapping['targetEntity'])]]></code>
+      <code><![CDATA[$this->table]]></code>
+      <code><![CDATA[isset($mapping['id']) && $mapping['id'] === true && ! $mapping['isOwningSide']]]></code>
     </DocblockTypeContradiction>
     <InvalidArgument>
       <code>$mapping</code>
@@ -610,19 +612,18 @@
     </InvalidNullableReturnType>
     <InvalidPropertyAssignmentValue>
       <code>$definition</code>
-      <code>$this-&gt;identifier</code>
-      <code>$this-&gt;sqlResultSetMappings</code>
-      <code>$this-&gt;subClasses</code>
+      <code><![CDATA[$this->identifier]]></code>
+      <code><![CDATA[$this->sqlResultSetMappings]]></code>
+      <code><![CDATA[$this->subClasses]]></code>
     </InvalidPropertyAssignmentValue>
     <InvalidReturnStatement>
       <code>$mapping</code>
       <code>$mapping</code>
-      <code>$mapping</code>
-      <code>$this-&gt;reflClass</code>
+      <code><![CDATA[$this->reflClass]]></code>
     </InvalidReturnStatement>
     <InvalidReturnType>
       <code>AssociationMapping</code>
-      <code>array{
+      <code><![CDATA[array{
      *                   mappedBy: mixed,
      *                   inversedBy: mixed,
      *                   isOwningSide: bool,
@@ -630,15 +631,55 @@
      *                   targetEntity: string,
      *                   fieldName: mixed,
      *                   fetch: int|mixed,
-     *                   cascade: array&lt;array-key,string&gt;,
+     *                   cascade: array<array-key,string>,
      *                   isCascadeRemove: bool,
      *                   isCascadePersist: bool,
      *                   isCascadeRefresh: bool,
      *                   isCascadeMerge: bool,
      *                   isCascadeDetach: bool,
      *                   orphanRemoval: bool
-     *               }</code>
-      <code>array{
+     *               }]]></code>
+      <code>getReflectionClass</code>
+    </InvalidReturnType>
+    <LessSpecificReturnStatement>
+      <code>$cache</code>
+      <code>$className</code>
+      <code>$className</code>
+      <code>$columnNames</code>
+      <code>$mapping</code>
+      <code>$mapping</code>
+      <code>$quotedColumnNames</code>
+      <code><![CDATA[$this->namespace . '\\' . $className]]></code>
+    </LessSpecificReturnStatement>
+    <MethodSignatureMustProvideReturnType>
+      <code>__toString</code>
+    </MethodSignatureMustProvideReturnType>
+    <MoreSpecificReturnType>
+      <code><![CDATA[array{
+     *      mappedBy: mixed,
+     *      inversedBy: mixed,
+     *      isOwningSide: bool,
+     *      sourceEntity: class-string,
+     *      targetEntity: string,
+     *      fieldName: mixed,
+     *      fetch: mixed,
+     *      cascade: array<string>,
+     *      isCascadeRemove: bool,
+     *      isCascadePersist: bool,
+     *      isCascadeRefresh: bool,
+     *      isCascadeMerge: bool,
+     *      isCascadeDetach: bool,
+     *      type: int,
+     *      originalField: string,
+     *      originalClass: class-string,
+     *      joinTable?: array{inverseJoinColumns: mixed}|mixed,
+     *      joinTableColumns?: list<mixed>,
+     *      isOnDeleteCascade?: true,
+     *      relationToSourceKeyColumns?: array,
+     *      relationToTargetKeyColumns?: array,
+     *      orphanRemoval: bool
+     * }]]></code>
+      <code><![CDATA[array{
      *      mappedBy: mixed|null,
      *      inversedBy: mixed|null,
      *      isOwningSide: bool,
@@ -646,7 +687,7 @@
      *      targetEntity: string,
      *      fieldName: mixed,
      *      fetch: mixed,
-     *      cascade: array&lt;string&gt;,
+     *      cascade: array<string>,
      *      isCascadeRemove: bool,
      *      isCascadePersist: bool,
      *      isCascadeRefresh: bool,
@@ -657,60 +698,21 @@
      *      originalClass: class-string,
      *      joinColumns?: array{0: array{name: string, referencedColumnName: string}}|mixed,
      *      id?: mixed,
-     *      sourceToTargetKeyColumns?: array&lt;string, string&gt;,
-     *      joinColumnFieldNames?: array&lt;string, string&gt;,
-     *      targetToSourceKeyColumns?: array&lt;string, string&gt;,
+     *      sourceToTargetKeyColumns?: array<string, string>,
+     *      joinColumnFieldNames?: array<string, string>,
+     *      targetToSourceKeyColumns?: array<string, string>,
      *      orphanRemoval: bool
-     * }</code>
-      <code>getReflectionClass</code>
-    </InvalidReturnType>
-    <LessSpecificReturnStatement>
-      <code>$cache</code>
-      <code>$className</code>
-      <code>$className</code>
-      <code>$columnNames</code>
-      <code>$mapping</code>
-      <code>$quotedColumnNames</code>
-      <code>$this-&gt;namespace . '\\' . $className</code>
-    </LessSpecificReturnStatement>
-    <MethodSignatureMustProvideReturnType>
-      <code>__toString</code>
-    </MethodSignatureMustProvideReturnType>
-    <MoreSpecificReturnType>
-      <code>array{
-     *      mappedBy: mixed,
-     *      inversedBy: mixed,
-     *      isOwningSide: bool,
-     *      sourceEntity: class-string,
-     *      targetEntity: string,
-     *      fieldName: mixed,
-     *      fetch: mixed,
-     *      cascade: array&lt;string&gt;,
-     *      isCascadeRemove: bool,
-     *      isCascadePersist: bool,
-     *      isCascadeRefresh: bool,
-     *      isCascadeMerge: bool,
-     *      isCascadeDetach: bool,
-     *      type: int,
-     *      originalField: string,
-     *      originalClass: class-string,
-     *      joinTable?: array{inverseJoinColumns: mixed}|mixed,
-     *      joinTableColumns?: list&lt;mixed&gt;,
-     *      isOnDeleteCascade?: true,
-     *      relationToSourceKeyColumns?: array,
-     *      relationToTargetKeyColumns?: array,
-     *      orphanRemoval: bool
-     * }</code>
+     * }]]></code>
       <code>array{usage: int, region: string|null}</code>
       <code>class-string|null</code>
-      <code>list&lt;string&gt;</code>
-      <code>list&lt;string&gt;</code>
+      <code><![CDATA[list<string>]]></code>
+      <code><![CDATA[list<string>]]></code>
     </MoreSpecificReturnType>
     <NullableReturnStatement>
-      <code>$this-&gt;associationMappings[$fieldName]['mappedBy']</code>
-      <code>$this-&gt;reflClass</code>
-      <code>$this-&gt;reflFields[$name]</code>
-      <code>$this-&gt;reflFields[$this-&gt;identifier[0]]</code>
+      <code><![CDATA[$this->associationMappings[$fieldName]['mappedBy']]]></code>
+      <code><![CDATA[$this->reflClass]]></code>
+      <code><![CDATA[$this->reflFields[$name]]]></code>
+      <code><![CDATA[$this->reflFields[$this->identifier[0]]]]></code>
     </NullableReturnStatement>
     <ParamNameMismatch>
       <code>$entity</code>
@@ -720,16 +722,16 @@
     <PossiblyNullArgument>
       <code>$class</code>
       <code>$className</code>
-      <code>$entityResult['entityClass']</code>
-      <code>$mapping['targetEntity']</code>
-      <code>$mapping['targetEntity']</code>
-      <code>$parentReflFields[$embeddedClass['declaredField']]</code>
-      <code>$parentReflFields[$mapping['declaredField']]</code>
-      <code>$queryMapping['resultClass']</code>
+      <code><![CDATA[$entityResult['entityClass']]]></code>
+      <code><![CDATA[$mapping['targetEntity']]]></code>
+      <code><![CDATA[$mapping['targetEntity']]]></code>
+      <code><![CDATA[$parentReflFields[$embeddedClass['declaredField']]]]></code>
+      <code><![CDATA[$parentReflFields[$mapping['declaredField']]]]></code>
+      <code><![CDATA[$queryMapping['resultClass']]]></code>
     </PossiblyNullArgument>
     <PossiblyNullPropertyFetch>
-      <code>$embeddable-&gt;reflClass-&gt;name</code>
-      <code>$this-&gt;reflClass-&gt;name</code>
+      <code><![CDATA[$embeddable->reflClass->name]]></code>
+      <code><![CDATA[$this->reflClass->name]]></code>
     </PossiblyNullPropertyFetch>
     <PossiblyNullReference>
       <code>getProperty</code>
@@ -743,16 +745,16 @@
       <code>setValue</code>
     </PossiblyNullReference>
     <PossiblyUndefinedArrayOffset>
-      <code>$mapping['fieldName']</code>
-      <code>$mapping['originalClass']</code>
-      <code>$mapping['originalField']</code>
-      <code>$mapping['targetEntity']</code>
-      <code>$table['name']</code>
-      <code>$this-&gt;associationMappings[$assocName]['joinColumns']</code>
-      <code>$this-&gt;associationMappings[$fieldName]['joinColumns']</code>
-      <code>$this-&gt;associationMappings[$fieldName]['joinColumns']</code>
-      <code>$this-&gt;associationMappings[$idProperty]['joinColumns']</code>
-      <code>$this-&gt;associationMappings[$idProperty]['joinColumns']</code>
+      <code><![CDATA[$mapping['fieldName']]]></code>
+      <code><![CDATA[$mapping['originalClass']]]></code>
+      <code><![CDATA[$mapping['originalField']]]></code>
+      <code><![CDATA[$mapping['targetEntity']]]></code>
+      <code><![CDATA[$table['name']]]></code>
+      <code><![CDATA[$this->associationMappings[$assocName]['joinColumns']]]></code>
+      <code><![CDATA[$this->associationMappings[$fieldName]['joinColumns']]]></code>
+      <code><![CDATA[$this->associationMappings[$fieldName]['joinColumns']]]></code>
+      <code><![CDATA[$this->associationMappings[$idProperty]['joinColumns']]]></code>
+      <code><![CDATA[$this->associationMappings[$idProperty]['joinColumns']]]></code>
     </PossiblyUndefinedArrayOffset>
     <PropertyNotSetInConstructor>
       <code>$idGenerator</code>
@@ -762,21 +764,22 @@
     </PropertyNotSetInConstructor>
     <PropertyTypeCoercion>
       <code>$identifier</code>
-      <code>$this-&gt;associationMappings</code>
-      <code>$this-&gt;associationMappings</code>
-      <code>$this-&gt;entityListeners</code>
-      <code>$this-&gt;fieldMappings</code>
-      <code>$this-&gt;fullyQualifiedClassName($repositoryClassName)</code>
-      <code>$this-&gt;table</code>
-      <code>$this-&gt;table</code>
-      <code>$this-&gt;table</code>
-      <code>$this-&gt;table</code>
-      <code>$this-&gt;table</code>
-      <code>$this-&gt;table</code>
+      <code><![CDATA[$this->associationMappings]]></code>
+      <code><![CDATA[$this->associationMappings]]></code>
+      <code><![CDATA[$this->entityListeners]]></code>
+      <code><![CDATA[$this->fieldMappings]]></code>
+      <code><![CDATA[$this->fullyQualifiedClassName($repositoryClassName)]]></code>
+      <code><![CDATA[$this->table]]></code>
+      <code><![CDATA[$this->table]]></code>
+      <code><![CDATA[$this->table]]></code>
+      <code><![CDATA[$this->table]]></code>
+      <code><![CDATA[$this->table]]></code>
+      <code><![CDATA[$this->table]]></code>
     </PropertyTypeCoercion>
     <RedundantConditionGivenDocblockType>
       <code>$mapping !== false</code>
       <code>$mapping !== false</code>
+      <code><![CDATA[$mapping['isOwningSide']]]></code>
     </RedundantConditionGivenDocblockType>
     <RedundantFunctionCall>
       <code>array_values</code>
@@ -799,12 +802,12 @@
       <code>new $className()</code>
     </InvalidStringClass>
     <PropertyTypeCoercion>
-      <code>$this-&gt;instances</code>
+      <code><![CDATA[$this->instances]]></code>
     </PropertyTypeCoercion>
   </file>
   <file src="lib/Doctrine/ORM/Mapping/DefaultNamingStrategy.php">
     <PossiblyFalseOperand>
-      <code>strrpos($className, '\\')</code>
+      <code><![CDATA[strrpos($className, '\\')]]></code>
     </PossiblyFalseOperand>
   </file>
   <file src="lib/Doctrine/ORM/Mapping/DefaultQuoteStrategy.php">
@@ -819,7 +822,7 @@
       <code>getIdentifierColumnNames</code>
     </MoreSpecificReturnType>
     <PossiblyUndefinedArrayOffset>
-      <code>$class-&gt;associationMappings[$fieldName]['joinColumns']</code>
+      <code><![CDATA[$class->associationMappings[$fieldName]['joinColumns']]]></code>
     </PossiblyUndefinedArrayOffset>
   </file>
   <file src="lib/Doctrine/ORM/Mapping/DefaultTypedFieldMapper.php">
@@ -833,11 +836,11 @@
       <code>addNamedQuery</code>
     </DeprecatedMethod>
     <InvalidArgument>
-      <code>[
-                            'sequenceName' =&gt; $seqGeneratorAnnot-&gt;sequenceName,
-                            'allocationSize' =&gt; $seqGeneratorAnnot-&gt;allocationSize,
-                            'initialValue' =&gt; $seqGeneratorAnnot-&gt;initialValue,
-                        ]</code>
+      <code><![CDATA[[
+                            'sequenceName' => $seqGeneratorAnnot->sequenceName,
+                            'allocationSize' => $seqGeneratorAnnot->allocationSize,
+                            'initialValue' => $seqGeneratorAnnot->initialValue,
+                        ]]]></code>
     </InvalidArgument>
     <LessSpecificReturnStatement>
       <code>$mapping</code>
@@ -867,14 +870,14 @@
       <code>$listenerClassName</code>
     </PossiblyNullArgument>
     <PossiblyUndefinedArrayOffset>
-      <code>$primaryTable['indexes']</code>
-      <code>$primaryTable['uniqueConstraints']</code>
+      <code><![CDATA[$primaryTable['indexes']]]></code>
+      <code><![CDATA[$primaryTable['uniqueConstraints']]]></code>
     </PossiblyUndefinedArrayOffset>
     <RedundantCondition>
-      <code>$metadata-&gt;getReflectionClass()</code>
+      <code><![CDATA[$metadata->getReflectionClass()]]></code>
     </RedundantCondition>
     <TypeDoesNotContainNull>
-      <code>new ReflectionClass($metadata-&gt;name)</code>
+      <code><![CDATA[new ReflectionClass($metadata->name)]]></code>
     </TypeDoesNotContainNull>
     <UndefinedInterfaceMethod>
       <code>mapEmbedded</code>
@@ -886,18 +889,18 @@
   </file>
   <file src="lib/Doctrine/ORM/Mapping/Driver/AttributeDriver.php">
     <InvalidArgument>
-      <code>[
-                            'name'             =&gt; isset($discrColumnAttribute-&gt;name) ? (string) $discrColumnAttribute-&gt;name : null,
-                            'type'             =&gt; isset($discrColumnAttribute-&gt;type) ? (string) $discrColumnAttribute-&gt;type : 'string',
-                            'length'           =&gt; isset($discrColumnAttribute-&gt;length) ? (int) $discrColumnAttribute-&gt;length : 255,
-                            'columnDefinition' =&gt; isset($discrColumnAttribute-&gt;columnDefinition) ? (string) $discrColumnAttribute-&gt;columnDefinition : null,
-                            'enumType'         =&gt; isset($discrColumnAttribute-&gt;enumType) ? (string) $discrColumnAttribute-&gt;enumType : null,
-                        ]</code>
-      <code>[
-                            'sequenceName' =&gt; $seqGeneratorAttribute-&gt;sequenceName,
-                            'allocationSize' =&gt; $seqGeneratorAttribute-&gt;allocationSize,
-                            'initialValue' =&gt; $seqGeneratorAttribute-&gt;initialValue,
-                        ]</code>
+      <code><![CDATA[[
+                            'name'             => isset($discrColumnAttribute->name) ? (string) $discrColumnAttribute->name : null,
+                            'type'             => isset($discrColumnAttribute->type) ? (string) $discrColumnAttribute->type : 'string',
+                            'length'           => isset($discrColumnAttribute->length) ? (int) $discrColumnAttribute->length : 255,
+                            'columnDefinition' => isset($discrColumnAttribute->columnDefinition) ? (string) $discrColumnAttribute->columnDefinition : null,
+                            'enumType'         => isset($discrColumnAttribute->enumType) ? (string) $discrColumnAttribute->enumType : null,
+                        ]]]></code>
+      <code><![CDATA[[
+                            'sequenceName' => $seqGeneratorAttribute->sequenceName,
+                            'allocationSize' => $seqGeneratorAttribute->allocationSize,
+                            'initialValue' => $seqGeneratorAttribute->initialValue,
+                        ]]]></code>
     </InvalidArgument>
     <LessSpecificReturnStatement>
       <code>$mapping</code>
@@ -924,7 +927,7 @@
       <code>$listenerClassName</code>
     </PossiblyNullArgument>
     <RedundantCondition>
-      <code>$metadata-&gt;getReflectionClass()</code>
+      <code><![CDATA[$metadata->getReflectionClass()]]></code>
     </RedundantCondition>
     <RedundantConditionGivenDocblockType>
       <code>assert($cacheAttribute instanceof Mapping\Cache)</code>
@@ -933,7 +936,7 @@
       <code>assert($property instanceof ReflectionProperty)</code>
     </RedundantConditionGivenDocblockType>
     <TypeDoesNotContainNull>
-      <code>new ReflectionClass($metadata-&gt;name)</code>
+      <code><![CDATA[new ReflectionClass($metadata->name)]]></code>
     </TypeDoesNotContainNull>
   </file>
   <file src="lib/Doctrine/ORM/Mapping/Driver/DatabaseDriver.php">
@@ -941,8 +944,8 @@
       <code>$metadata instanceof ClassMetadata</code>
     </DocblockTypeContradiction>
     <LessSpecificReturnStatement>
-      <code>$this-&gt;namespace . $this-&gt;classNamesForTables[$tableName]</code>
-      <code>$this-&gt;namespace . $this-&gt;inflector-&gt;classify(strtolower($tableName))</code>
+      <code><![CDATA[$this->namespace . $this->classNamesForTables[$tableName]]]></code>
+      <code><![CDATA[$this->namespace . $this->inflector->classify(strtolower($tableName))]]></code>
     </LessSpecificReturnStatement>
     <MoreSpecificImplementedParamType>
       <code>$metadata</code>
@@ -951,8 +954,8 @@
       <code>class-string</code>
     </MoreSpecificReturnType>
     <PossiblyNullArrayAccess>
-      <code>$this-&gt;tables[$tableName]</code>
-      <code>$this-&gt;tables[$tableName]</code>
+      <code><![CDATA[$this->tables[$tableName]]]></code>
+      <code><![CDATA[$this->tables[$tableName]]]></code>
     </PossiblyNullArrayAccess>
     <PossiblyNullReference>
       <code>getColumns</code>
@@ -979,24 +982,24 @@
   </file>
   <file src="lib/Doctrine/ORM/Mapping/Driver/XmlDriver.php">
     <ArgumentTypeCoercion>
-      <code>(string) $xmlRoot['repository-class']</code>
-      <code>isset($xmlRoot['repository-class']) ? (string) $xmlRoot['repository-class'] : null</code>
+      <code><![CDATA[(string) $xmlRoot['repository-class']]]></code>
+      <code><![CDATA[isset($xmlRoot['repository-class']) ? (string) $xmlRoot['repository-class'] : null]]></code>
     </ArgumentTypeCoercion>
     <DeprecatedMethod>
       <code>addNamedNativeQuery</code>
       <code>addNamedQuery</code>
     </DeprecatedMethod>
     <InvalidArgument>
-      <code>[
-                            'name' =&gt; isset($discrColumn['name']) ? (string) $discrColumn['name'] : null,
-                            'type' =&gt; isset($discrColumn['type']) ? (string) $discrColumn['type'] : 'string',
-                            'length' =&gt; isset($discrColumn['length']) ? (int) $discrColumn['length'] : 255,
-                            'columnDefinition' =&gt; isset($discrColumn['column-definition']) ? (string) $discrColumn['column-definition'] : null,
-                            'enumType' =&gt; isset($discrColumn['enum-type']) ? (string) $discrColumn['enum-type'] : null,
-                        ]</code>
+      <code><![CDATA[[
+                            'name' => isset($discrColumn['name']) ? (string) $discrColumn['name'] : null,
+                            'type' => isset($discrColumn['type']) ? (string) $discrColumn['type'] : 'string',
+                            'length' => isset($discrColumn['length']) ? (int) $discrColumn['length'] : 255,
+                            'columnDefinition' => isset($discrColumn['column-definition']) ? (string) $discrColumn['column-definition'] : null,
+                            'enumType' => isset($discrColumn['enum-type']) ? (string) $discrColumn['enum-type'] : null,
+                        ]]]></code>
     </InvalidArgument>
     <InvalidPropertyAssignmentValue>
-      <code>$metadata-&gt;table</code>
+      <code><![CDATA[$metadata->table]]></code>
     </InvalidPropertyAssignmentValue>
     <InvalidReturnStatement>
       <code>$mapping</code>
@@ -1020,10 +1023,10 @@
       *               }</code>
     </InvalidReturnType>
     <LessSpecificReturnStatement>
-      <code>[
-            'usage'  =&gt; $usage,
-            'region' =&gt; $region,
-        ]</code>
+      <code><![CDATA[[
+            'usage'  => $usage,
+            'region' => $region,
+        ]]]></code>
     </LessSpecificReturnStatement>
     <MissingParamType>
       <code>$fileExtension</code>
@@ -1036,40 +1039,40 @@
       <code>array{usage: int|null, region?: string}</code>
     </MoreSpecificReturnType>
     <NoInterfaceProperties>
-      <code>$indexXml-&gt;options</code>
-      <code>$uniqueXml-&gt;options</code>
-      <code>$xmlRoot-&gt;{'discriminator-column'}</code>
-      <code>$xmlRoot-&gt;{'discriminator-map'}</code>
+      <code><![CDATA[$indexXml->options]]></code>
+      <code><![CDATA[$uniqueXml->options]]></code>
+      <code><![CDATA[$xmlRoot->{'discriminator-column'}]]></code>
+      <code><![CDATA[$xmlRoot->{'discriminator-map'}]]></code>
     </NoInterfaceProperties>
     <PossiblyInvalidPropertyFetch>
-      <code>$indexXml-&gt;options</code>
-      <code>$uniqueXml-&gt;options</code>
-      <code>$xmlRoot-&gt;{'discriminator-column'}</code>
-      <code>$xmlRoot-&gt;{'discriminator-map'}</code>
+      <code><![CDATA[$indexXml->options]]></code>
+      <code><![CDATA[$uniqueXml->options]]></code>
+      <code><![CDATA[$xmlRoot->{'discriminator-column'}]]></code>
+      <code><![CDATA[$xmlRoot->{'discriminator-map'}]]></code>
     </PossiblyInvalidPropertyFetch>
     <RedundantCondition>
-      <code>isset($xmlRoot-&gt;cache)</code>
-      <code>isset($xmlRoot-&gt;embedded)</code>
-      <code>isset($xmlRoot-&gt;field)</code>
-      <code>isset($xmlRoot-&gt;indexes)</code>
-      <code>isset($xmlRoot-&gt;options)</code>
-      <code>isset($xmlRoot-&gt;{'association-overrides'})</code>
-      <code>isset($xmlRoot-&gt;{'attribute-overrides'})</code>
-      <code>isset($xmlRoot-&gt;{'entity-listeners'})</code>
-      <code>isset($xmlRoot-&gt;{'lifecycle-callbacks'})</code>
-      <code>isset($xmlRoot-&gt;{'many-to-many'})</code>
-      <code>isset($xmlRoot-&gt;{'many-to-one'})</code>
-      <code>isset($xmlRoot-&gt;{'named-native-queries'})</code>
-      <code>isset($xmlRoot-&gt;{'named-queries'})</code>
-      <code>isset($xmlRoot-&gt;{'one-to-many'})</code>
-      <code>isset($xmlRoot-&gt;{'one-to-one'})</code>
-      <code>isset($xmlRoot-&gt;{'sql-result-set-mappings'})</code>
-      <code>isset($xmlRoot-&gt;{'unique-constraints'})</code>
+      <code><![CDATA[isset($xmlRoot->cache)]]></code>
+      <code><![CDATA[isset($xmlRoot->embedded)]]></code>
+      <code><![CDATA[isset($xmlRoot->field)]]></code>
+      <code><![CDATA[isset($xmlRoot->indexes)]]></code>
+      <code><![CDATA[isset($xmlRoot->options)]]></code>
+      <code><![CDATA[isset($xmlRoot->{'association-overrides'})]]></code>
+      <code><![CDATA[isset($xmlRoot->{'attribute-overrides'})]]></code>
+      <code><![CDATA[isset($xmlRoot->{'entity-listeners'})]]></code>
+      <code><![CDATA[isset($xmlRoot->{'lifecycle-callbacks'})]]></code>
+      <code><![CDATA[isset($xmlRoot->{'many-to-many'})]]></code>
+      <code><![CDATA[isset($xmlRoot->{'many-to-one'})]]></code>
+      <code><![CDATA[isset($xmlRoot->{'named-native-queries'})]]></code>
+      <code><![CDATA[isset($xmlRoot->{'named-queries'})]]></code>
+      <code><![CDATA[isset($xmlRoot->{'one-to-many'})]]></code>
+      <code><![CDATA[isset($xmlRoot->{'one-to-one'})]]></code>
+      <code><![CDATA[isset($xmlRoot->{'sql-result-set-mappings'})]]></code>
+      <code><![CDATA[isset($xmlRoot->{'unique-constraints'})]]></code>
     </RedundantCondition>
     <TypeDoesNotContainType>
-      <code>$xmlRoot-&gt;getName() === 'embeddable'</code>
-      <code>$xmlRoot-&gt;getName() === 'entity'</code>
-      <code>$xmlRoot-&gt;getName() === 'mapped-superclass'</code>
+      <code><![CDATA[$xmlRoot->getName() === 'embeddable']]></code>
+      <code><![CDATA[$xmlRoot->getName() === 'entity']]></code>
+      <code><![CDATA[$xmlRoot->getName() === 'mapped-superclass']]></code>
     </TypeDoesNotContainType>
   </file>
   <file src="lib/Doctrine/ORM/Mapping/Driver/YamlDriver.php">
@@ -1078,19 +1081,19 @@
       <code>addNamedQuery</code>
     </DeprecatedMethod>
     <InvalidArgument>
-      <code>[
-                            'name' =&gt; isset($discrColumn['name']) ? (string) $discrColumn['name'] : null,
-                            'type' =&gt; isset($discrColumn['type']) ? (string) $discrColumn['type'] : 'string',
-                            'length' =&gt; isset($discrColumn['length']) ? (int) $discrColumn['length'] : 255,
-                            'columnDefinition' =&gt; isset($discrColumn['columnDefinition']) ? (string) $discrColumn['columnDefinition'] : null,
-                            'enumType' =&gt; isset($discrColumn['enumType']) ? (string) $discrColumn['enumType'] : null,
-                        ]</code>
+      <code><![CDATA[[
+                            'name' => isset($discrColumn['name']) ? (string) $discrColumn['name'] : null,
+                            'type' => isset($discrColumn['type']) ? (string) $discrColumn['type'] : 'string',
+                            'length' => isset($discrColumn['length']) ? (int) $discrColumn['length'] : 255,
+                            'columnDefinition' => isset($discrColumn['columnDefinition']) ? (string) $discrColumn['columnDefinition'] : null,
+                            'enumType' => isset($discrColumn['enumType']) ? (string) $discrColumn['enumType'] : null,
+                        ]]]></code>
     </InvalidArgument>
     <LessSpecificReturnStatement>
-      <code>[
-            'usage'  =&gt; $usage,
-            'region' =&gt; $region,
-        ]</code>
+      <code><![CDATA[[
+            'usage'  => $usage,
+            'region' => $region,
+        ]]]></code>
     </LessSpecificReturnStatement>
     <MissingParamType>
       <code>$fileExtension</code>
@@ -1123,7 +1126,7 @@
       <code>$element</code>
     </PossiblyUndefinedMethod>
     <PropertyTypeCoercion>
-      <code>$metadata-&gt;table</code>
+      <code><![CDATA[$metadata->table]]></code>
     </PropertyTypeCoercion>
     <UndefinedInterfaceMethod>
       <code>$element</code>
@@ -1199,7 +1202,7 @@
   </file>
   <file src="lib/Doctrine/ORM/Mapping/ReflectionEmbeddedProperty.php">
     <ArgumentTypeCoercion>
-      <code>$this-&gt;embeddedClass</code>
+      <code><![CDATA[$this->embeddedClass]]></code>
     </ArgumentTypeCoercion>
     <MissingParamType>
       <code>$object</code>
@@ -1233,7 +1236,7 @@
   </file>
   <file src="lib/Doctrine/ORM/Mapping/UnderscoreNamingStrategy.php">
     <PossiblyFalseOperand>
-      <code>strrpos($className, '\\')</code>
+      <code><![CDATA[strrpos($className, '\\')]]></code>
     </PossiblyFalseOperand>
   </file>
   <file src="lib/Doctrine/ORM/NativeQuery.php">
@@ -1248,21 +1251,21 @@
   </file>
   <file src="lib/Doctrine/ORM/PersistentCollection.php">
     <ImplementedReturnTypeMismatch>
-      <code>Collection&lt;TKey, T&gt;</code>
+      <code><![CDATA[Collection<TKey, T>]]></code>
       <code>object|null</code>
       <code>object|null</code>
     </ImplementedReturnTypeMismatch>
     <InvalidReturnStatement>
-      <code>$this-&gt;association['fetch'] === ClassMetadata::FETCH_EXTRA_LAZY
+      <code><![CDATA[$this->association['fetch'] === ClassMetadata::FETCH_EXTRA_LAZY
             ? new LazyCriteriaCollection($persister, $criteria)
-            : new ArrayCollection($persister-&gt;loadCriteria($criteria))</code>
-      <code>$this-&gt;em-&gt;find($this-&gt;typeClass-&gt;name, $key)</code>
+            : new ArrayCollection($persister->loadCriteria($criteria))]]></code>
+      <code><![CDATA[$this->em->find($this->typeClass->name, $key)]]></code>
     </InvalidReturnStatement>
     <InvalidReturnType>
-      <code>Collection&lt;TKey, T&gt;</code>
+      <code><![CDATA[Collection<TKey, T>]]></code>
     </InvalidReturnType>
     <LessSpecificReturnStatement>
-      <code>$this-&gt;unwrap()-&gt;matching($criteria)</code>
+      <code><![CDATA[$this->unwrap()->matching($criteria)]]></code>
     </LessSpecificReturnStatement>
     <MissingParamType>
       <code>$offset</code>
@@ -1272,46 +1275,46 @@
       <code>$value</code>
     </ParamNameMismatch>
     <PossiblyNullArgument>
-      <code>$this-&gt;association</code>
-      <code>$this-&gt;association</code>
-      <code>$this-&gt;association</code>
-      <code>$this-&gt;association['targetEntity']</code>
-      <code>$this-&gt;backRefFieldName</code>
+      <code><![CDATA[$this->association]]></code>
+      <code><![CDATA[$this->association]]></code>
+      <code><![CDATA[$this->association]]></code>
+      <code><![CDATA[$this->association['targetEntity']]]></code>
+      <code><![CDATA[$this->backRefFieldName]]></code>
     </PossiblyNullArgument>
     <PossiblyNullArrayAccess>
-      <code>$this-&gt;association['fetch']</code>
-      <code>$this-&gt;association['fetch']</code>
-      <code>$this-&gt;association['fetch']</code>
-      <code>$this-&gt;association['fetch']</code>
-      <code>$this-&gt;association['fetch']</code>
-      <code>$this-&gt;association['isOwningSide']</code>
-      <code>$this-&gt;association['orphanRemoval']</code>
-      <code>$this-&gt;association['targetEntity']</code>
-      <code>$this-&gt;association['type']</code>
-      <code>$this-&gt;association['type']</code>
-      <code>$this-&gt;association['type']</code>
-      <code>$this-&gt;association['type']</code>
+      <code><![CDATA[$this->association['fetch']]]></code>
+      <code><![CDATA[$this->association['fetch']]]></code>
+      <code><![CDATA[$this->association['fetch']]]></code>
+      <code><![CDATA[$this->association['fetch']]]></code>
+      <code><![CDATA[$this->association['fetch']]]></code>
+      <code><![CDATA[$this->association['isOwningSide']]]></code>
+      <code><![CDATA[$this->association['orphanRemoval']]]></code>
+      <code><![CDATA[$this->association['targetEntity']]]></code>
+      <code><![CDATA[$this->association['type']]]></code>
+      <code><![CDATA[$this->association['type']]]></code>
+      <code><![CDATA[$this->association['type']]]></code>
+      <code><![CDATA[$this->association['type']]]></code>
     </PossiblyNullArrayAccess>
     <PossiblyNullReference>
       <code>setValue</code>
       <code>setValue</code>
     </PossiblyNullReference>
     <UndefinedMethod>
-      <code>[$this-&gt;unwrap(), 'add']</code>
+      <code><![CDATA[[$this->unwrap(), 'add']]]></code>
     </UndefinedMethod>
   </file>
   <file src="lib/Doctrine/ORM/Persisters/Collection/ManyToManyPersister.php">
     <PossiblyNullArgument>
       <code>$association</code>
-      <code>$collection-&gt;getOwner()</code>
-      <code>$collection-&gt;getOwner()</code>
-      <code>$collection-&gt;getOwner()</code>
-      <code>$collection-&gt;getOwner()</code>
-      <code>$collection-&gt;getOwner()</code>
-      <code>$collection-&gt;getOwner()</code>
-      <code>$collection-&gt;getOwner()</code>
-      <code>$collection-&gt;getOwner()</code>
-      <code>$collection-&gt;getOwner()</code>
+      <code><![CDATA[$collection->getOwner()]]></code>
+      <code><![CDATA[$collection->getOwner()]]></code>
+      <code><![CDATA[$collection->getOwner()]]></code>
+      <code><![CDATA[$collection->getOwner()]]></code>
+      <code><![CDATA[$collection->getOwner()]]></code>
+      <code><![CDATA[$collection->getOwner()]]></code>
+      <code><![CDATA[$collection->getOwner()]]></code>
+      <code><![CDATA[$collection->getOwner()]]></code>
+      <code><![CDATA[$collection->getOwner()]]></code>
       <code>$filterMapping</code>
       <code>$filterMapping</code>
       <code>$indexBy</code>
@@ -1323,104 +1326,104 @@
       <code>$mapping</code>
       <code>$mapping</code>
       <code>$mapping</code>
-      <code>$mapping['joinTableColumns']</code>
-      <code>$mapping['relationToSourceKeyColumns']</code>
-      <code>$mapping['relationToSourceKeyColumns'][$joinTableColumn]</code>
-      <code>$mapping['relationToTargetKeyColumns'][$joinTableColumn]</code>
-      <code>$mapping['sourceEntity']</code>
-      <code>$mapping['sourceEntity']</code>
-      <code>$mapping['sourceEntity']</code>
-      <code>$mapping['sourceEntity']</code>
-      <code>$mapping['sourceEntity']</code>
-      <code>$mapping['sourceEntity']</code>
-      <code>$mapping['sourceEntity']</code>
-      <code>$mapping['sourceEntity']</code>
-      <code>$mapping['sourceEntity']</code>
-      <code>$mapping['targetEntity']</code>
-      <code>$mapping['targetEntity']</code>
-      <code>$mapping['targetEntity']</code>
-      <code>$mapping['targetEntity']</code>
-      <code>$mapping['targetEntity']</code>
-      <code>$mapping['targetEntity']</code>
-      <code>$mapping['targetEntity']</code>
-      <code>$mapping['targetEntity']</code>
-      <code>$mapping['targetEntity']</code>
+      <code><![CDATA[$mapping['joinTableColumns']]]></code>
+      <code><![CDATA[$mapping['relationToSourceKeyColumns']]]></code>
+      <code><![CDATA[$mapping['relationToSourceKeyColumns'][$joinTableColumn]]]></code>
+      <code><![CDATA[$mapping['relationToTargetKeyColumns'][$joinTableColumn]]]></code>
+      <code><![CDATA[$mapping['sourceEntity']]]></code>
+      <code><![CDATA[$mapping['sourceEntity']]]></code>
+      <code><![CDATA[$mapping['sourceEntity']]]></code>
+      <code><![CDATA[$mapping['sourceEntity']]]></code>
+      <code><![CDATA[$mapping['sourceEntity']]]></code>
+      <code><![CDATA[$mapping['sourceEntity']]]></code>
+      <code><![CDATA[$mapping['sourceEntity']]]></code>
+      <code><![CDATA[$mapping['sourceEntity']]]></code>
+      <code><![CDATA[$mapping['sourceEntity']]]></code>
+      <code><![CDATA[$mapping['targetEntity']]]></code>
+      <code><![CDATA[$mapping['targetEntity']]]></code>
+      <code><![CDATA[$mapping['targetEntity']]]></code>
+      <code><![CDATA[$mapping['targetEntity']]]></code>
+      <code><![CDATA[$mapping['targetEntity']]]></code>
+      <code><![CDATA[$mapping['targetEntity']]]></code>
+      <code><![CDATA[$mapping['targetEntity']]]></code>
+      <code><![CDATA[$mapping['targetEntity']]]></code>
+      <code><![CDATA[$mapping['targetEntity']]]></code>
       <code>$owner</code>
     </PossiblyNullArgument>
     <PossiblyNullArrayAccess>
-      <code>$mapping['indexBy']</code>
-      <code>$mapping['isOwningSide']</code>
-      <code>$mapping['isOwningSide']</code>
-      <code>$mapping['isOwningSide']</code>
-      <code>$mapping['isOwningSide']</code>
-      <code>$mapping['isOwningSide']</code>
-      <code>$mapping['joinTable']</code>
-      <code>$mapping['joinTable']</code>
-      <code>$mapping['joinTable']</code>
-      <code>$mapping['joinTable']</code>
-      <code>$mapping['joinTable']['inverseJoinColumns']</code>
-      <code>$mapping['joinTable']['inverseJoinColumns']</code>
-      <code>$mapping['joinTable']['inverseJoinColumns']</code>
-      <code>$mapping['joinTable']['joinColumns']</code>
-      <code>$mapping['joinTable']['joinColumns']</code>
-      <code>$mapping['joinTable']['joinColumns']</code>
-      <code>$mapping['joinTableColumns']</code>
-      <code>$mapping['mappedBy']</code>
-      <code>$mapping['mappedBy']</code>
-      <code>$mapping['mappedBy']</code>
-      <code>$mapping['relationToSourceKeyColumns']</code>
-      <code>$mapping['relationToSourceKeyColumns']</code>
-      <code>$mapping['relationToSourceKeyColumns']</code>
-      <code>$mapping['relationToSourceKeyColumns'][$joinTableColumn]</code>
-      <code>$mapping['relationToTargetKeyColumns']</code>
-      <code>$mapping['relationToTargetKeyColumns'][$joinTableColumn]</code>
-      <code>$mapping['sourceEntity']</code>
-      <code>$mapping['sourceEntity']</code>
-      <code>$mapping['sourceEntity']</code>
-      <code>$mapping['sourceEntity']</code>
-      <code>$mapping['sourceEntity']</code>
-      <code>$mapping['sourceEntity']</code>
-      <code>$mapping['sourceEntity']</code>
-      <code>$mapping['sourceEntity']</code>
-      <code>$mapping['targetEntity']</code>
-      <code>$mapping['targetEntity']</code>
-      <code>$mapping['targetEntity']</code>
-      <code>$mapping['targetEntity']</code>
-      <code>$mapping['targetEntity']</code>
-      <code>$mapping['targetEntity']</code>
-      <code>$mapping['targetEntity']</code>
-      <code>$mapping['targetEntity']</code>
+      <code><![CDATA[$mapping['indexBy']]]></code>
+      <code><![CDATA[$mapping['isOwningSide']]]></code>
+      <code><![CDATA[$mapping['isOwningSide']]]></code>
+      <code><![CDATA[$mapping['isOwningSide']]]></code>
+      <code><![CDATA[$mapping['isOwningSide']]]></code>
+      <code><![CDATA[$mapping['isOwningSide']]]></code>
+      <code><![CDATA[$mapping['joinTable']]]></code>
+      <code><![CDATA[$mapping['joinTable']]]></code>
+      <code><![CDATA[$mapping['joinTable']]]></code>
+      <code><![CDATA[$mapping['joinTable']]]></code>
+      <code><![CDATA[$mapping['joinTable']['inverseJoinColumns']]]></code>
+      <code><![CDATA[$mapping['joinTable']['inverseJoinColumns']]]></code>
+      <code><![CDATA[$mapping['joinTable']['inverseJoinColumns']]]></code>
+      <code><![CDATA[$mapping['joinTable']['joinColumns']]]></code>
+      <code><![CDATA[$mapping['joinTable']['joinColumns']]]></code>
+      <code><![CDATA[$mapping['joinTable']['joinColumns']]]></code>
+      <code><![CDATA[$mapping['joinTableColumns']]]></code>
+      <code><![CDATA[$mapping['mappedBy']]]></code>
+      <code><![CDATA[$mapping['mappedBy']]]></code>
+      <code><![CDATA[$mapping['mappedBy']]]></code>
+      <code><![CDATA[$mapping['relationToSourceKeyColumns']]]></code>
+      <code><![CDATA[$mapping['relationToSourceKeyColumns']]]></code>
+      <code><![CDATA[$mapping['relationToSourceKeyColumns']]]></code>
+      <code><![CDATA[$mapping['relationToSourceKeyColumns'][$joinTableColumn]]]></code>
+      <code><![CDATA[$mapping['relationToTargetKeyColumns']]]></code>
+      <code><![CDATA[$mapping['relationToTargetKeyColumns'][$joinTableColumn]]]></code>
+      <code><![CDATA[$mapping['sourceEntity']]]></code>
+      <code><![CDATA[$mapping['sourceEntity']]]></code>
+      <code><![CDATA[$mapping['sourceEntity']]]></code>
+      <code><![CDATA[$mapping['sourceEntity']]]></code>
+      <code><![CDATA[$mapping['sourceEntity']]]></code>
+      <code><![CDATA[$mapping['sourceEntity']]]></code>
+      <code><![CDATA[$mapping['sourceEntity']]]></code>
+      <code><![CDATA[$mapping['sourceEntity']]]></code>
+      <code><![CDATA[$mapping['targetEntity']]]></code>
+      <code><![CDATA[$mapping['targetEntity']]]></code>
+      <code><![CDATA[$mapping['targetEntity']]]></code>
+      <code><![CDATA[$mapping['targetEntity']]]></code>
+      <code><![CDATA[$mapping['targetEntity']]]></code>
+      <code><![CDATA[$mapping['targetEntity']]]></code>
+      <code><![CDATA[$mapping['targetEntity']]]></code>
+      <code><![CDATA[$mapping['targetEntity']]]></code>
     </PossiblyNullArrayAccess>
     <PossiblyNullArrayOffset>
-      <code>$associationSourceClass-&gt;associationMappings</code>
-      <code>$sourceClass-&gt;associationMappings</code>
-      <code>$targetClass-&gt;associationMappings</code>
+      <code><![CDATA[$associationSourceClass->associationMappings]]></code>
+      <code><![CDATA[$sourceClass->associationMappings]]></code>
+      <code><![CDATA[$targetClass->associationMappings]]></code>
     </PossiblyNullArrayOffset>
     <PossiblyNullIterator>
       <code>$joinColumns</code>
-      <code>$mapping['joinTable']['inverseJoinColumns']</code>
-      <code>$mapping['joinTable']['inverseJoinColumns']</code>
-      <code>$mapping['joinTable']['joinColumns']</code>
-      <code>$mapping['joinTable']['joinColumns']</code>
-      <code>$mapping['joinTable']['joinColumns']</code>
-      <code>$mapping['joinTableColumns']</code>
-      <code>$mapping['relationToSourceKeyColumns']</code>
+      <code><![CDATA[$mapping['joinTable']['inverseJoinColumns']]]></code>
+      <code><![CDATA[$mapping['joinTable']['inverseJoinColumns']]]></code>
+      <code><![CDATA[$mapping['joinTable']['joinColumns']]]></code>
+      <code><![CDATA[$mapping['joinTable']['joinColumns']]]></code>
+      <code><![CDATA[$mapping['joinTable']['joinColumns']]]></code>
+      <code><![CDATA[$mapping['joinTableColumns']]]></code>
+      <code><![CDATA[$mapping['relationToSourceKeyColumns']]]></code>
     </PossiblyNullIterator>
     <PossiblyNullReference>
       <code>getFieldForColumn</code>
       <code>getFieldForColumn</code>
     </PossiblyNullReference>
     <PossiblyUndefinedArrayOffset>
-      <code>$association['joinTable']</code>
-      <code>$association['joinTable']</code>
-      <code>$association['joinTable']</code>
-      <code>$association['joinTable']</code>
+      <code><![CDATA[$association['joinTable']]]></code>
+      <code><![CDATA[$association['joinTable']]]></code>
+      <code><![CDATA[$association['joinTable']]]></code>
+      <code><![CDATA[$association['joinTable']]]></code>
       <code>$mapping[$sourceRelationMode]</code>
       <code>$mapping[$targetRelationMode]</code>
-      <code>$mapping['joinTable']</code>
-      <code>$mapping['joinTableColumns']</code>
-      <code>$mapping['joinTableColumns']</code>
-      <code>$mapping['relationToSourceKeyColumns']</code>
+      <code><![CDATA[$mapping['joinTable']]]></code>
+      <code><![CDATA[$mapping['joinTableColumns']]]></code>
+      <code><![CDATA[$mapping['joinTableColumns']]]></code>
+      <code><![CDATA[$mapping['relationToSourceKeyColumns']]]></code>
     </PossiblyUndefinedArrayOffset>
   </file>
   <file src="lib/Doctrine/ORM/Persisters/Collection/OneToManyPersister.php">
@@ -1429,48 +1432,48 @@
     </ImplementedReturnTypeMismatch>
     <InvalidReturnStatement>
       <code>$numDeleted</code>
-      <code>$this-&gt;conn-&gt;executeStatement($statement, $parameters)</code>
+      <code><![CDATA[$this->conn->executeStatement($statement, $parameters)]]></code>
     </InvalidReturnStatement>
     <InvalidReturnType>
       <code>int</code>
       <code>int</code>
     </InvalidReturnType>
     <PossiblyNullArgument>
-      <code>$collection-&gt;getOwner()</code>
-      <code>$collection-&gt;getOwner()</code>
-      <code>$collection-&gt;getOwner()</code>
+      <code><![CDATA[$collection->getOwner()]]></code>
+      <code><![CDATA[$collection->getOwner()]]></code>
+      <code><![CDATA[$collection->getOwner()]]></code>
       <code>$mapping</code>
-      <code>$mapping['mappedBy']</code>
-      <code>$mapping['mappedBy']</code>
-      <code>$mapping['sourceEntity']</code>
-      <code>$mapping['sourceEntity']</code>
-      <code>$mapping['targetEntity']</code>
-      <code>$mapping['targetEntity']</code>
-      <code>$mapping['targetEntity']</code>
-      <code>$mapping['targetEntity']</code>
-      <code>$mapping['targetEntity']</code>
-      <code>$mapping['targetEntity']</code>
+      <code><![CDATA[$mapping['mappedBy']]]></code>
+      <code><![CDATA[$mapping['mappedBy']]]></code>
+      <code><![CDATA[$mapping['sourceEntity']]]></code>
+      <code><![CDATA[$mapping['sourceEntity']]]></code>
+      <code><![CDATA[$mapping['targetEntity']]]></code>
+      <code><![CDATA[$mapping['targetEntity']]]></code>
+      <code><![CDATA[$mapping['targetEntity']]]></code>
+      <code><![CDATA[$mapping['targetEntity']]]></code>
+      <code><![CDATA[$mapping['targetEntity']]]></code>
+      <code><![CDATA[$mapping['targetEntity']]]></code>
     </PossiblyNullArgument>
     <PossiblyNullArrayAccess>
-      <code>$mapping['mappedBy']</code>
-      <code>$mapping['mappedBy']</code>
-      <code>$mapping['mappedBy']</code>
-      <code>$mapping['mappedBy']</code>
-      <code>$mapping['orphanRemoval']</code>
-      <code>$mapping['sourceEntity']</code>
-      <code>$mapping['sourceEntity']</code>
-      <code>$mapping['targetEntity']</code>
-      <code>$mapping['targetEntity']</code>
-      <code>$mapping['targetEntity']</code>
-      <code>$mapping['targetEntity']</code>
-      <code>$mapping['targetEntity']</code>
-      <code>$mapping['targetEntity']</code>
+      <code><![CDATA[$mapping['mappedBy']]]></code>
+      <code><![CDATA[$mapping['mappedBy']]]></code>
+      <code><![CDATA[$mapping['mappedBy']]]></code>
+      <code><![CDATA[$mapping['mappedBy']]]></code>
+      <code><![CDATA[$mapping['orphanRemoval']]]></code>
+      <code><![CDATA[$mapping['sourceEntity']]]></code>
+      <code><![CDATA[$mapping['sourceEntity']]]></code>
+      <code><![CDATA[$mapping['targetEntity']]]></code>
+      <code><![CDATA[$mapping['targetEntity']]]></code>
+      <code><![CDATA[$mapping['targetEntity']]]></code>
+      <code><![CDATA[$mapping['targetEntity']]]></code>
+      <code><![CDATA[$mapping['targetEntity']]]></code>
+      <code><![CDATA[$mapping['targetEntity']]]></code>
     </PossiblyNullArrayAccess>
     <PossiblyNullArrayOffset>
-      <code>$targetClass-&gt;associationMappings</code>
+      <code><![CDATA[$targetClass->associationMappings]]></code>
     </PossiblyNullArrayOffset>
     <PossiblyUndefinedArrayOffset>
-      <code>$targetClass-&gt;associationMappings[$mapping['mappedBy']]['joinColumns']</code>
+      <code><![CDATA[$targetClass->associationMappings[$mapping['mappedBy']]['joinColumns']]]></code>
     </PossiblyUndefinedArrayOffset>
   </file>
   <file src="lib/Doctrine/ORM/Persisters/Entity/BasicEntityPersister.php">
@@ -1478,12 +1481,12 @@
       <code>$value === null</code>
     </DocblockTypeContradiction>
     <InvalidArgument>
-      <code>$em-&gt;getMetadataFactory()</code>
+      <code><![CDATA[$em->getMetadataFactory()]]></code>
       <code>$hints</code>
       <code>$hints</code>
-      <code>[Query::HINT_REFRESH =&gt; true]</code>
-      <code>[UnitOfWork::HINT_DEFEREAGERLOAD =&gt; true]</code>
-      <code>[UnitOfWork::HINT_DEFEREAGERLOAD =&gt; true]</code>
+      <code><![CDATA[[Query::HINT_REFRESH => true]]]></code>
+      <code><![CDATA[[UnitOfWork::HINT_DEFEREAGERLOAD => true]]]></code>
+      <code><![CDATA[[UnitOfWork::HINT_DEFEREAGERLOAD => true]]]></code>
     </InvalidArgument>
     <InvalidNullableReturnType>
       <code>loadOneToOneEntity</code>
@@ -1501,23 +1504,23 @@
       <code>executeInserts</code>
       <code>expandCriteriaParameters</code>
       <code>expandParameters</code>
-      <code>list&lt;mixed&gt;</code>
+      <code><![CDATA[list<mixed>]]></code>
     </MoreSpecificReturnType>
     <NullableReturnStatement>
       <code>$targetEntity</code>
       <code>$targetEntity</code>
     </NullableReturnStatement>
     <PossiblyNullArgument>
-      <code>$assoc['mappedBy']</code>
+      <code><![CDATA[$assoc['mappedBy']]]></code>
       <code>$association</code>
       <code>$type</code>
     </PossiblyNullArgument>
     <PossiblyNullArrayAccess>
-      <code>$assoc['isOwningSide']</code>
+      <code><![CDATA[$assoc['isOwningSide']]]></code>
     </PossiblyNullArrayAccess>
     <PossiblyNullArrayOffset>
-      <code>$class-&gt;associationMappings</code>
-      <code>$class-&gt;associationMappings</code>
+      <code><![CDATA[$class->associationMappings]]></code>
+      <code><![CDATA[$class->associationMappings]]></code>
     </PossiblyNullArrayOffset>
     <PossiblyNullReference>
       <code>getValue</code>
@@ -1529,25 +1532,25 @@
       <code>setValue</code>
     </PossiblyNullReference>
     <PossiblyUndefinedArrayOffset>
-      <code>$assoc['inversedBy']</code>
-      <code>$assoc['joinColumns']</code>
-      <code>$assoc['joinColumns']</code>
-      <code>$assoc['relationToTargetKeyColumns']</code>
-      <code>$assoc['sourceToTargetKeyColumns']</code>
-      <code>$association['joinColumns']</code>
-      <code>$association['joinColumns']</code>
-      <code>$association['joinColumns']</code>
-      <code>$association['joinTable']</code>
-      <code>$association['joinTable']</code>
-      <code>$association['joinTable']</code>
-      <code>$association['joinTable']</code>
-      <code>$owningAssoc['targetToSourceKeyColumns']</code>
-      <code>$owningAssoc['targetToSourceKeyColumns']</code>
-      <code>$this-&gt;class-&gt;associationMappings[$fieldName]['joinColumns']</code>
-      <code>$this-&gt;class-&gt;associationMappings[$idField]['joinColumns']</code>
+      <code><![CDATA[$assoc['inversedBy']]]></code>
+      <code><![CDATA[$assoc['joinColumns']]]></code>
+      <code><![CDATA[$assoc['joinColumns']]]></code>
+      <code><![CDATA[$assoc['relationToTargetKeyColumns']]]></code>
+      <code><![CDATA[$assoc['sourceToTargetKeyColumns']]]></code>
+      <code><![CDATA[$association['joinColumns']]]></code>
+      <code><![CDATA[$association['joinColumns']]]></code>
+      <code><![CDATA[$association['joinColumns']]]></code>
+      <code><![CDATA[$association['joinTable']]]></code>
+      <code><![CDATA[$association['joinTable']]]></code>
+      <code><![CDATA[$association['joinTable']]]></code>
+      <code><![CDATA[$association['joinTable']]]></code>
+      <code><![CDATA[$owningAssoc['targetToSourceKeyColumns']]]></code>
+      <code><![CDATA[$owningAssoc['targetToSourceKeyColumns']]]></code>
+      <code><![CDATA[$this->class->associationMappings[$fieldName]['joinColumns']]]></code>
+      <code><![CDATA[$this->class->associationMappings[$idField]['joinColumns']]]></code>
     </PossiblyUndefinedArrayOffset>
     <PropertyTypeCoercion>
-      <code>$this-&gt;currentPersisterContext-&gt;sqlTableAliases</code>
+      <code><![CDATA[$this->currentPersisterContext->sqlTableAliases]]></code>
     </PropertyTypeCoercion>
   </file>
   <file src="lib/Doctrine/ORM/Persisters/Entity/CachedPersisterContext.php">
@@ -1574,14 +1577,14 @@
       <code>executeInserts</code>
     </MoreSpecificReturnType>
     <PossiblyUndefinedArrayOffset>
-      <code>$assoc['targetToSourceKeyColumns']</code>
-      <code>$mapping['joinColumns']</code>
-      <code>$mapping['joinColumns']</code>
+      <code><![CDATA[$assoc['targetToSourceKeyColumns']]]></code>
+      <code><![CDATA[$mapping['joinColumns']]]></code>
+      <code><![CDATA[$mapping['joinColumns']]]></code>
     </PossiblyUndefinedArrayOffset>
   </file>
   <file src="lib/Doctrine/ORM/Persisters/Entity/SingleTablePersister.php">
     <PossiblyUndefinedArrayOffset>
-      <code>$assoc['joinColumns']</code>
+      <code><![CDATA[$assoc['joinColumns']]]></code>
     </PossiblyUndefinedArrayOffset>
     <PossiblyUndefinedVariable>
       <code>$columnList</code>
@@ -1599,18 +1602,18 @@
       <code>$classMetadata</code>
     </ArgumentTypeCoercion>
     <InvalidArgument>
-      <code>$classMetadata-&gt;getReflectionProperties()</code>
-      <code>$em-&gt;getMetadataFactory()</code>
-      <code>$em-&gt;getMetadataFactory()</code>
+      <code><![CDATA[$classMetadata->getReflectionProperties()]]></code>
+      <code><![CDATA[$em->getMetadataFactory()]]></code>
+      <code><![CDATA[$em->getMetadataFactory()]]></code>
     </InvalidArgument>
     <NoInterfaceProperties>
-      <code>$metadata-&gt;isEmbeddedClass</code>
-      <code>$metadata-&gt;isMappedSuperclass</code>
-      <code>$proxy-&gt;__isCloning</code>
+      <code><![CDATA[$metadata->isEmbeddedClass]]></code>
+      <code><![CDATA[$metadata->isMappedSuperclass]]></code>
+      <code><![CDATA[$proxy->__isCloning]]></code>
     </NoInterfaceProperties>
     <PossiblyNullPropertyFetch>
-      <code>$property-&gt;name</code>
-      <code>$property-&gt;name</code>
+      <code><![CDATA[$property->name]]></code>
+      <code><![CDATA[$property->name]]></code>
     </PossiblyNullPropertyFetch>
     <PossiblyNullReference>
       <code>setAccessible</code>
@@ -1631,13 +1634,13 @@
       <code>$sqlParams</code>
     </InvalidArgument>
     <LessSpecificReturnStatement>
-      <code>$this-&gt;parse()-&gt;getSqlExecutor()-&gt;getSqlStatements()</code>
+      <code><![CDATA[$this->parse()->getSqlExecutor()->getSqlStatements()]]></code>
     </LessSpecificReturnStatement>
     <MoreSpecificReturnType>
-      <code>list&lt;string&gt;|string</code>
+      <code><![CDATA[list<string>|string]]></code>
     </MoreSpecificReturnType>
     <PossiblyNullArgument>
-      <code>$this-&gt;getDQL()</code>
+      <code><![CDATA[$this->getDQL()]]></code>
     </PossiblyNullArgument>
     <PossiblyNullReference>
       <code>evictEntityRegion</code>
@@ -1718,34 +1721,34 @@
   </file>
   <file src="lib/Doctrine/ORM/Query/AST/Functions/AbsFunction.php">
     <PossiblyInvalidPropertyAssignmentValue>
-      <code>$parser-&gt;SimpleArithmeticExpression()</code>
+      <code><![CDATA[$parser->SimpleArithmeticExpression()]]></code>
     </PossiblyInvalidPropertyAssignmentValue>
   </file>
   <file src="lib/Doctrine/ORM/Query/AST/Functions/BitAndFunction.php">
     <PossiblyInvalidPropertyAssignmentValue>
-      <code>$parser-&gt;ArithmeticPrimary()</code>
-      <code>$parser-&gt;ArithmeticPrimary()</code>
+      <code><![CDATA[$parser->ArithmeticPrimary()]]></code>
+      <code><![CDATA[$parser->ArithmeticPrimary()]]></code>
     </PossiblyInvalidPropertyAssignmentValue>
   </file>
   <file src="lib/Doctrine/ORM/Query/AST/Functions/BitOrFunction.php">
     <PossiblyInvalidPropertyAssignmentValue>
-      <code>$parser-&gt;ArithmeticPrimary()</code>
-      <code>$parser-&gt;ArithmeticPrimary()</code>
+      <code><![CDATA[$parser->ArithmeticPrimary()]]></code>
+      <code><![CDATA[$parser->ArithmeticPrimary()]]></code>
     </PossiblyInvalidPropertyAssignmentValue>
   </file>
   <file src="lib/Doctrine/ORM/Query/AST/Functions/DateAddFunction.php">
     <ArgumentTypeCoercion>
-      <code>$this-&gt;intervalExpression-&gt;dispatch($sqlWalker)</code>
-      <code>$this-&gt;intervalExpression-&gt;dispatch($sqlWalker)</code>
-      <code>$this-&gt;intervalExpression-&gt;dispatch($sqlWalker)</code>
-      <code>$this-&gt;intervalExpression-&gt;dispatch($sqlWalker)</code>
-      <code>$this-&gt;intervalExpression-&gt;dispatch($sqlWalker)</code>
-      <code>$this-&gt;intervalExpression-&gt;dispatch($sqlWalker)</code>
-      <code>$this-&gt;intervalExpression-&gt;dispatch($sqlWalker)</code>
+      <code><![CDATA[$this->intervalExpression->dispatch($sqlWalker)]]></code>
+      <code><![CDATA[$this->intervalExpression->dispatch($sqlWalker)]]></code>
+      <code><![CDATA[$this->intervalExpression->dispatch($sqlWalker)]]></code>
+      <code><![CDATA[$this->intervalExpression->dispatch($sqlWalker)]]></code>
+      <code><![CDATA[$this->intervalExpression->dispatch($sqlWalker)]]></code>
+      <code><![CDATA[$this->intervalExpression->dispatch($sqlWalker)]]></code>
+      <code><![CDATA[$this->intervalExpression->dispatch($sqlWalker)]]></code>
     </ArgumentTypeCoercion>
     <PossiblyInvalidPropertyAssignmentValue>
-      <code>$parser-&gt;ArithmeticPrimary()</code>
-      <code>$parser-&gt;ArithmeticPrimary()</code>
+      <code><![CDATA[$parser->ArithmeticPrimary()]]></code>
+      <code><![CDATA[$parser->ArithmeticPrimary()]]></code>
     </PossiblyInvalidPropertyAssignmentValue>
     <PossiblyNullPropertyAssignmentValue>
       <code>null</code>
@@ -1753,27 +1756,27 @@
       <code>null</code>
     </PossiblyNullPropertyAssignmentValue>
     <UndefinedPropertyFetch>
-      <code>$this-&gt;unit-&gt;value</code>
+      <code><![CDATA[$this->unit->value]]></code>
     </UndefinedPropertyFetch>
   </file>
   <file src="lib/Doctrine/ORM/Query/AST/Functions/DateDiffFunction.php">
     <PossiblyInvalidPropertyAssignmentValue>
-      <code>$parser-&gt;ArithmeticPrimary()</code>
-      <code>$parser-&gt;ArithmeticPrimary()</code>
+      <code><![CDATA[$parser->ArithmeticPrimary()]]></code>
+      <code><![CDATA[$parser->ArithmeticPrimary()]]></code>
     </PossiblyInvalidPropertyAssignmentValue>
   </file>
   <file src="lib/Doctrine/ORM/Query/AST/Functions/DateSubFunction.php">
     <ArgumentTypeCoercion>
-      <code>$this-&gt;intervalExpression-&gt;dispatch($sqlWalker)</code>
-      <code>$this-&gt;intervalExpression-&gt;dispatch($sqlWalker)</code>
-      <code>$this-&gt;intervalExpression-&gt;dispatch($sqlWalker)</code>
-      <code>$this-&gt;intervalExpression-&gt;dispatch($sqlWalker)</code>
-      <code>$this-&gt;intervalExpression-&gt;dispatch($sqlWalker)</code>
-      <code>$this-&gt;intervalExpression-&gt;dispatch($sqlWalker)</code>
-      <code>$this-&gt;intervalExpression-&gt;dispatch($sqlWalker)</code>
+      <code><![CDATA[$this->intervalExpression->dispatch($sqlWalker)]]></code>
+      <code><![CDATA[$this->intervalExpression->dispatch($sqlWalker)]]></code>
+      <code><![CDATA[$this->intervalExpression->dispatch($sqlWalker)]]></code>
+      <code><![CDATA[$this->intervalExpression->dispatch($sqlWalker)]]></code>
+      <code><![CDATA[$this->intervalExpression->dispatch($sqlWalker)]]></code>
+      <code><![CDATA[$this->intervalExpression->dispatch($sqlWalker)]]></code>
+      <code><![CDATA[$this->intervalExpression->dispatch($sqlWalker)]]></code>
     </ArgumentTypeCoercion>
     <UndefinedPropertyFetch>
-      <code>$this-&gt;unit-&gt;value</code>
+      <code><![CDATA[$this->unit->value]]></code>
     </UndefinedPropertyFetch>
   </file>
   <file src="lib/Doctrine/ORM/Query/AST/Functions/FunctionNode.php">
@@ -1783,57 +1786,57 @@
   </file>
   <file src="lib/Doctrine/ORM/Query/AST/Functions/IdentityFunction.php">
     <PossiblyUndefinedArrayOffset>
-      <code>$assoc['joinColumns']</code>
+      <code><![CDATA[$assoc['joinColumns']]]></code>
     </PossiblyUndefinedArrayOffset>
   </file>
   <file src="lib/Doctrine/ORM/Query/AST/Functions/LengthFunction.php">
     <ArgumentTypeCoercion>
-      <code>$this-&gt;stringPrimary</code>
+      <code><![CDATA[$this->stringPrimary]]></code>
     </ArgumentTypeCoercion>
   </file>
   <file src="lib/Doctrine/ORM/Query/AST/Functions/LocateFunction.php">
     <PossiblyInvalidArgument>
-      <code>$this-&gt;simpleArithmeticExpression</code>
+      <code><![CDATA[$this->simpleArithmeticExpression]]></code>
     </PossiblyInvalidArgument>
     <PossiblyInvalidPropertyAssignmentValue>
-      <code>$parser-&gt;SimpleArithmeticExpression()</code>
+      <code><![CDATA[$parser->SimpleArithmeticExpression()]]></code>
     </PossiblyInvalidPropertyAssignmentValue>
   </file>
   <file src="lib/Doctrine/ORM/Query/AST/Functions/LowerFunction.php">
     <ArgumentTypeCoercion>
-      <code>$this-&gt;stringPrimary</code>
+      <code><![CDATA[$this->stringPrimary]]></code>
     </ArgumentTypeCoercion>
   </file>
   <file src="lib/Doctrine/ORM/Query/AST/Functions/ModFunction.php">
     <PossiblyInvalidPropertyAssignmentValue>
-      <code>$parser-&gt;SimpleArithmeticExpression()</code>
-      <code>$parser-&gt;SimpleArithmeticExpression()</code>
+      <code><![CDATA[$parser->SimpleArithmeticExpression()]]></code>
+      <code><![CDATA[$parser->SimpleArithmeticExpression()]]></code>
     </PossiblyInvalidPropertyAssignmentValue>
   </file>
   <file src="lib/Doctrine/ORM/Query/AST/Functions/SizeFunction.php">
     <PossiblyNullArrayOffset>
-      <code>$targetClass-&gt;associationMappings</code>
-      <code>$targetClass-&gt;associationMappings</code>
+      <code><![CDATA[$targetClass->associationMappings]]></code>
+      <code><![CDATA[$targetClass->associationMappings]]></code>
     </PossiblyNullArrayOffset>
     <PossiblyUndefinedArrayOffset>
-      <code>$owningAssoc['joinTable']</code>
-      <code>$owningAssoc['targetToSourceKeyColumns']</code>
+      <code><![CDATA[$owningAssoc['joinTable']]]></code>
+      <code><![CDATA[$owningAssoc['targetToSourceKeyColumns']]]></code>
     </PossiblyUndefinedArrayOffset>
   </file>
   <file src="lib/Doctrine/ORM/Query/AST/Functions/SqrtFunction.php">
     <PossiblyInvalidPropertyAssignmentValue>
-      <code>$parser-&gt;SimpleArithmeticExpression()</code>
+      <code><![CDATA[$parser->SimpleArithmeticExpression()]]></code>
     </PossiblyInvalidPropertyAssignmentValue>
   </file>
   <file src="lib/Doctrine/ORM/Query/AST/Functions/SubstringFunction.php">
     <PossiblyInvalidPropertyAssignmentValue>
-      <code>$parser-&gt;SimpleArithmeticExpression()</code>
-      <code>$parser-&gt;SimpleArithmeticExpression()</code>
+      <code><![CDATA[$parser->SimpleArithmeticExpression()]]></code>
+      <code><![CDATA[$parser->SimpleArithmeticExpression()]]></code>
     </PossiblyInvalidPropertyAssignmentValue>
   </file>
   <file src="lib/Doctrine/ORM/Query/AST/Functions/UpperFunction.php">
     <ArgumentTypeCoercion>
-      <code>$this-&gt;stringPrimary</code>
+      <code><![CDATA[$this->stringPrimary]]></code>
     </ArgumentTypeCoercion>
   </file>
   <file src="lib/Doctrine/ORM/Query/AST/GeneralCaseExpression.php">
@@ -1863,13 +1866,13 @@
   </file>
   <file src="lib/Doctrine/ORM/Query/AST/IndexBy.php">
     <DeprecatedProperty>
-      <code>$this-&gt;simpleStateFieldPathExpression</code>
+      <code><![CDATA[$this->simpleStateFieldPathExpression]]></code>
     </DeprecatedProperty>
     <InvalidNullableReturnType>
       <code>dispatch</code>
     </InvalidNullableReturnType>
     <NullableReturnStatement>
-      <code>$sqlWalker-&gt;walkIndexBy($this)</code>
+      <code><![CDATA[$sqlWalker->walkIndexBy($this)]]></code>
     </NullableReturnStatement>
     <ParamNameMismatch>
       <code>$sqlWalker</code>
@@ -2041,14 +2044,14 @@
       <code>int</code>
     </InvalidReturnType>
     <PossiblyInvalidIterator>
-      <code>$this-&gt;_sqlStatements</code>
+      <code><![CDATA[$this->_sqlStatements]]></code>
     </PossiblyInvalidIterator>
     <PropertyNotSetInConstructor>
       <code>MultiTableDeleteExecutor</code>
       <code>MultiTableDeleteExecutor</code>
     </PropertyNotSetInConstructor>
     <UninitializedProperty>
-      <code>$this-&gt;_sqlStatements</code>
+      <code><![CDATA[$this->_sqlStatements]]></code>
     </UninitializedProperty>
   </file>
   <file src="lib/Doctrine/ORM/Query/Exec/MultiTableUpdateExecutor.php">
@@ -2059,22 +2062,22 @@
       <code>int</code>
     </InvalidReturnType>
     <PossiblyInvalidIterator>
-      <code>$this-&gt;_sqlStatements</code>
+      <code><![CDATA[$this->_sqlStatements]]></code>
     </PossiblyInvalidIterator>
     <PropertyNotSetInConstructor>
       <code>MultiTableUpdateExecutor</code>
       <code>MultiTableUpdateExecutor</code>
     </PropertyNotSetInConstructor>
     <PropertyTypeCoercion>
-      <code>$this-&gt;_sqlStatements</code>
+      <code><![CDATA[$this->_sqlStatements]]></code>
     </PropertyTypeCoercion>
     <UninitializedProperty>
-      <code>$this-&gt;_sqlStatements</code>
+      <code><![CDATA[$this->_sqlStatements]]></code>
     </UninitializedProperty>
   </file>
   <file src="lib/Doctrine/ORM/Query/Exec/SingleSelectExecutor.php">
     <PossiblyInvalidArgument>
-      <code>$this-&gt;_sqlStatements</code>
+      <code><![CDATA[$this->_sqlStatements]]></code>
     </PossiblyInvalidArgument>
     <PropertyNotSetInConstructor>
       <code>SingleSelectExecutor</code>
@@ -2082,13 +2085,13 @@
   </file>
   <file src="lib/Doctrine/ORM/Query/Exec/SingleTableDeleteUpdateExecutor.php">
     <InvalidReturnStatement>
-      <code>$conn-&gt;executeStatement($this-&gt;_sqlStatements, $params, $types)</code>
+      <code><![CDATA[$conn->executeStatement($this->_sqlStatements, $params, $types)]]></code>
     </InvalidReturnStatement>
     <InvalidReturnType>
       <code>int</code>
     </InvalidReturnType>
     <PossiblyInvalidArgument>
-      <code>$this-&gt;_sqlStatements</code>
+      <code><![CDATA[$this->_sqlStatements]]></code>
     </PossiblyInvalidArgument>
     <PropertyNotSetInConstructor>
       <code>SingleTableDeleteUpdateExecutor</code>
@@ -2108,7 +2111,7 @@
   </file>
   <file src="lib/Doctrine/ORM/Query/Expr/Base.php">
     <InvalidPropertyAssignmentValue>
-      <code>$this-&gt;parts</code>
+      <code><![CDATA[$this->parts]]></code>
     </InvalidPropertyAssignmentValue>
     <MethodSignatureMustProvideReturnType>
       <code>__toString</code>
@@ -2134,13 +2137,13 @@
   </file>
   <file src="lib/Doctrine/ORM/Query/Expr/Func.php">
     <LessSpecificReturnStatement>
-      <code>$this-&gt;arguments</code>
+      <code><![CDATA[$this->arguments]]></code>
     </LessSpecificReturnStatement>
     <MethodSignatureMustProvideReturnType>
       <code>__toString</code>
     </MethodSignatureMustProvideReturnType>
     <MoreSpecificReturnType>
-      <code>list&lt;mixed&gt;</code>
+      <code><![CDATA[list<mixed>]]></code>
     </MoreSpecificReturnType>
   </file>
   <file src="lib/Doctrine/ORM/Query/Expr/GroupBy.php">
@@ -2153,7 +2156,7 @@
       <code>__toString</code>
     </MethodSignatureMustProvideReturnType>
     <PossiblyNullArgument>
-      <code>$this-&gt;conditionType</code>
+      <code><![CDATA[$this->conditionType]]></code>
     </PossiblyNullArgument>
   </file>
   <file src="lib/Doctrine/ORM/Query/Expr/Literal.php">
@@ -2194,7 +2197,7 @@
       <code>static function ($value) use ($connection, $param) {</code>
     </MissingClosureReturnType>
     <PropertyTypeCoercion>
-      <code>$this-&gt;parameters</code>
+      <code><![CDATA[$this->parameters]]></code>
     </PropertyTypeCoercion>
   </file>
   <file src="lib/Doctrine/ORM/Query/ParameterTypeInferer.php">
@@ -2211,20 +2214,20 @@
       <code>AST\SelectStatement|AST\UpdateStatement|AST\DeleteStatement</code>
     </InvalidNullableReturnType>
     <InvalidPropertyAssignmentValue>
-      <code>$this-&gt;queryComponents</code>
+      <code><![CDATA[$this->queryComponents]]></code>
     </InvalidPropertyAssignmentValue>
     <InvalidReturnStatement>
       <code>$factors[0]</code>
       <code>$primary</code>
       <code>$terms[0]</code>
-      <code>$this-&gt;CollectionMemberExpression()</code>
-      <code>$this-&gt;ComparisonExpression()</code>
-      <code>$this-&gt;EmptyCollectionComparisonExpression()</code>
-      <code>$this-&gt;ExistsExpression()</code>
-      <code>$this-&gt;InExpression()</code>
-      <code>$this-&gt;InstanceOfExpression()</code>
-      <code>$this-&gt;LikeExpression()</code>
-      <code>$this-&gt;NullComparisonExpression()</code>
+      <code><![CDATA[$this->CollectionMemberExpression()]]></code>
+      <code><![CDATA[$this->ComparisonExpression()]]></code>
+      <code><![CDATA[$this->EmptyCollectionComparisonExpression()]]></code>
+      <code><![CDATA[$this->ExistsExpression()]]></code>
+      <code><![CDATA[$this->InExpression()]]></code>
+      <code><![CDATA[$this->InstanceOfExpression()]]></code>
+      <code><![CDATA[$this->LikeExpression()]]></code>
+      <code><![CDATA[$this->NullComparisonExpression()]]></code>
     </InvalidReturnStatement>
     <InvalidReturnType>
       <code>AST\ArithmeticFactor</code>
@@ -2246,41 +2249,41 @@
       <code>$statement</code>
     </NullableReturnStatement>
     <PossiblyFalseArgument>
-      <code>strrpos($fromClassName, '\\')</code>
+      <code><![CDATA[strrpos($fromClassName, '\\')]]></code>
     </PossiblyFalseArgument>
     <PossiblyInvalidArgument>
       <code>$AST</code>
       <code>$conditionalExpression</code>
       <code>$expr</code>
       <code>$pathExp</code>
-      <code>$this-&gt;ConditionalExpression()</code>
-      <code>$this-&gt;ConditionalExpression()</code>
-      <code>$this-&gt;lexer-&gt;getLiteral($token)</code>
-      <code>$this-&gt;lexer-&gt;getLiteral($token)</code>
-      <code>$this-&gt;lexer-&gt;getLiteral($token)</code>
+      <code><![CDATA[$this->ConditionalExpression()]]></code>
+      <code><![CDATA[$this->ConditionalExpression()]]></code>
+      <code><![CDATA[$this->lexer->getLiteral($token)]]></code>
+      <code><![CDATA[$this->lexer->getLiteral($token)]]></code>
+      <code><![CDATA[$this->lexer->getLiteral($token)]]></code>
     </PossiblyInvalidArgument>
     <PossiblyInvalidPropertyAssignmentValue>
-      <code>$this-&gt;ConditionalExpression()</code>
-      <code>$this-&gt;ConditionalExpression()</code>
-      <code>$this-&gt;SimpleArithmeticExpression()</code>
+      <code><![CDATA[$this->ConditionalExpression()]]></code>
+      <code><![CDATA[$this->ConditionalExpression()]]></code>
+      <code><![CDATA[$this->SimpleArithmeticExpression()]]></code>
     </PossiblyInvalidPropertyAssignmentValue>
     <PossiblyNullArgument>
       <code>$dql</code>
-      <code>$this-&gt;query-&gt;getDQL()</code>
+      <code><![CDATA[$this->query->getDQL()]]></code>
     </PossiblyNullArgument>
     <PossiblyNullArrayAccess>
-      <code>$this-&gt;lexer-&gt;glimpse()['type']</code>
-      <code>$token['value']</code>
+      <code><![CDATA[$this->lexer->glimpse()['type']]]></code>
+      <code><![CDATA[$token['value']]]></code>
     </PossiblyNullArrayAccess>
     <PossiblyNullReference>
-      <code>$this-&gt;lexer-&gt;glimpse()</code>
+      <code><![CDATA[$this->lexer->glimpse()]]></code>
       <code>$token</code>
     </PossiblyNullReference>
     <PossiblyUndefinedVariable>
       <code>$args</code>
     </PossiblyUndefinedVariable>
     <RedundantCondition>
-      <code>$this-&gt;lexer-&gt;lookahead !== null</code>
+      <code><![CDATA[$this->lexer->lookahead !== null]]></code>
     </RedundantCondition>
     <RedundantConditionGivenDocblockType>
       <code>$AST instanceof AST\SelectStatement</code>
@@ -2294,10 +2297,10 @@
   </file>
   <file src="lib/Doctrine/ORM/Query/QueryExpressionVisitor.php">
     <InvalidReturnStatement>
-      <code>new ArrayCollection($this-&gt;parameters)</code>
+      <code><![CDATA[new ArrayCollection($this->parameters)]]></code>
     </InvalidReturnStatement>
     <InvalidReturnType>
-      <code>ArrayCollection&lt;int, mixed&gt;</code>
+      <code><![CDATA[ArrayCollection<int, mixed>]]></code>
     </InvalidReturnType>
     <RedundantConditionGivenDocblockType>
       <code>Comparison::EQ</code>
@@ -2317,14 +2320,14 @@
       <code>__toString</code>
     </MethodSignatureMustProvideReturnType>
     <PossiblyUndefinedArrayOffset>
-      <code>$associationMapping['joinColumns']</code>
-      <code>$associationMapping['joinColumns']</code>
-      <code>$associationMapping['joinColumns']</code>
+      <code><![CDATA[$associationMapping['joinColumns']]]></code>
+      <code><![CDATA[$associationMapping['joinColumns']]]></code>
+      <code><![CDATA[$associationMapping['joinColumns']]]></code>
     </PossiblyUndefinedArrayOffset>
   </file>
   <file src="lib/Doctrine/ORM/Query/SqlWalker.php">
     <DocblockTypeContradiction>
-      <code>''</code>
+      <code><![CDATA['']]></code>
       <code>is_string($expression)</code>
     </DocblockTypeContradiction>
     <ImplementedReturnTypeMismatch>
@@ -2391,45 +2394,45 @@
       <code>$query</code>
     </MoreSpecificImplementedParamType>
     <PossiblyInvalidArgument>
-      <code>$aggExpression-&gt;pathExpression</code>
-      <code>$whereClause-&gt;conditionalExpression</code>
+      <code><![CDATA[$aggExpression->pathExpression]]></code>
+      <code><![CDATA[$whereClause->conditionalExpression]]></code>
     </PossiblyInvalidArgument>
     <PossiblyNullArgument>
-      <code>$AST-&gt;whereClause</code>
-      <code>$AST-&gt;whereClause</code>
-      <code>$AST-&gt;whereClause</code>
-      <code>$arithmeticExpr-&gt;simpleArithmeticExpression</code>
-      <code>$arithmeticExpr-&gt;subselect</code>
+      <code><![CDATA[$AST->whereClause]]></code>
+      <code><![CDATA[$AST->whereClause]]></code>
+      <code><![CDATA[$AST->whereClause]]></code>
+      <code><![CDATA[$arithmeticExpr->simpleArithmeticExpression]]></code>
+      <code><![CDATA[$arithmeticExpr->subselect]]></code>
       <code>$condExpr</code>
-      <code>$identificationVariableDecl-&gt;rangeVariableDeclaration</code>
-      <code>$subselect-&gt;whereClause</code>
+      <code><![CDATA[$identificationVariableDecl->rangeVariableDeclaration]]></code>
+      <code><![CDATA[$subselect->whereClause]]></code>
     </PossiblyNullArgument>
     <PossiblyNullArrayOffset>
-      <code>$targetClass-&gt;associationMappings</code>
-      <code>$targetClass-&gt;associationMappings</code>
-      <code>$this-&gt;scalarResultAliasMap</code>
-      <code>$this-&gt;scalarResultAliasMap</code>
+      <code><![CDATA[$targetClass->associationMappings]]></code>
+      <code><![CDATA[$targetClass->associationMappings]]></code>
+      <code><![CDATA[$this->scalarResultAliasMap]]></code>
+      <code><![CDATA[$this->scalarResultAliasMap]]></code>
     </PossiblyNullArrayOffset>
     <PossiblyNullReference>
       <code>dispatch</code>
     </PossiblyNullReference>
     <PossiblyUndefinedArrayOffset>
-      <code>$assoc['joinColumns']</code>
-      <code>$assoc['joinColumns']</code>
-      <code>$assoc['joinColumns']</code>
-      <code>$assoc['joinTable']</code>
-      <code>$assoc['sourceToTargetKeyColumns']</code>
-      <code>$assoc['targetToSourceKeyColumns']</code>
-      <code>$assoc['type']</code>
-      <code>$assoc['type']</code>
-      <code>$association['sourceToTargetKeyColumns']</code>
-      <code>$association['targetToSourceKeyColumns']</code>
-      <code>$owningAssoc['joinTable']</code>
-      <code>$owningAssoc['targetToSourceKeyColumns']</code>
+      <code><![CDATA[$assoc['joinColumns']]]></code>
+      <code><![CDATA[$assoc['joinColumns']]]></code>
+      <code><![CDATA[$assoc['joinColumns']]]></code>
+      <code><![CDATA[$assoc['joinTable']]]></code>
+      <code><![CDATA[$assoc['sourceToTargetKeyColumns']]]></code>
+      <code><![CDATA[$assoc['targetToSourceKeyColumns']]]></code>
+      <code><![CDATA[$assoc['type']]]></code>
+      <code><![CDATA[$assoc['type']]]></code>
+      <code><![CDATA[$association['sourceToTargetKeyColumns']]]></code>
+      <code><![CDATA[$association['targetToSourceKeyColumns']]]></code>
+      <code><![CDATA[$owningAssoc['joinTable']]]></code>
+      <code><![CDATA[$owningAssoc['targetToSourceKeyColumns']]]></code>
     </PossiblyUndefinedArrayOffset>
     <RedundantConditionGivenDocblockType>
       <code>$whereClause !== null</code>
-      <code>($factor-&gt;not ? 'NOT ' : '') . $this-&gt;walkConditionalPrimary($factor-&gt;conditionalPrimary)</code>
+      <code><![CDATA[($factor->not ? 'NOT ' : '') . $this->walkConditionalPrimary($factor->conditionalPrimary)]]></code>
     </RedundantConditionGivenDocblockType>
   </file>
   <file src="lib/Doctrine/ORM/Query/TreeWalkerAdapter.php">
@@ -2460,14 +2463,14 @@
     </ImplementedParamTypeMismatch>
     <ImplementedReturnTypeMismatch>
       <code>TreeWalker|null</code>
-      <code>class-string&lt;TreeWalker&gt;|false</code>
+      <code><![CDATA[class-string<TreeWalker>|false]]></code>
     </ImplementedReturnTypeMismatch>
     <PossiblyNullArrayOffset>
-      <code>$this-&gt;walkers</code>
+      <code><![CDATA[$this->walkers]]></code>
     </PossiblyNullArrayOffset>
     <PropertyTypeCoercion>
-      <code>$this-&gt;walkers</code>
-      <code>$this-&gt;walkers</code>
+      <code><![CDATA[$this->walkers]]></code>
+      <code><![CDATA[$this->walkers]]></code>
     </PropertyTypeCoercion>
   </file>
   <file src="lib/Doctrine/ORM/QueryBuilder.php">
@@ -2476,15 +2479,15 @@
       <code>$args</code>
       <code>$args</code>
       <code>$args</code>
-      <code>[$rootAlias =&gt; $join]</code>
-      <code>[$rootAlias =&gt; $join]</code>
+      <code><![CDATA[[$rootAlias => $join]]]></code>
+      <code><![CDATA[[$rootAlias => $join]]]></code>
     </ArgumentTypeCoercion>
     <DeprecatedMethod>
       <code>getRootAlias</code>
       <code>getRootAlias</code>
     </DeprecatedMethod>
     <FalsableReturnStatement>
-      <code>! $filteredParameters-&gt;isEmpty() ? $filteredParameters-&gt;first() : null</code>
+      <code><![CDATA[! $filteredParameters->isEmpty() ? $filteredParameters->first() : null]]></code>
     </FalsableReturnStatement>
     <InvalidFalsableReturnType>
       <code>Parameter|null</code>
@@ -2500,8 +2503,8 @@
       <code>__toString</code>
     </MethodSignatureMustProvideReturnType>
     <MoreSpecificReturnType>
-      <code>list&lt;string&gt;</code>
-      <code>list&lt;string&gt;</code>
+      <code><![CDATA[list<string>]]></code>
+      <code><![CDATA[list<string>]]></code>
     </MoreSpecificReturnType>
     <PossiblyFalseArgument>
       <code>$spacePos</code>
@@ -2524,8 +2527,8 @@
   </file>
   <file src="lib/Doctrine/ORM/Repository/DefaultRepositoryFactory.php">
     <InvalidReturnStatement>
-      <code>$this-&gt;repositoryList[$repositoryHash]</code>
-      <code>$this-&gt;repositoryList[$repositoryHash] = $this-&gt;createRepository($entityManager, $entityName)</code>
+      <code><![CDATA[$this->repositoryList[$repositoryHash]]]></code>
+      <code><![CDATA[$this->repositoryList[$repositoryHash] = $this->createRepository($entityManager, $entityName)]]></code>
     </InvalidReturnStatement>
     <InvalidReturnType>
       <code>ObjectRepository</code>
@@ -2614,7 +2617,7 @@
       <code>configure</code>
     </MissingReturnType>
     <NoInterfaceProperties>
-      <code>$class-&gt;name</code>
+      <code><![CDATA[$class->name]]></code>
     </NoInterfaceProperties>
   </file>
   <file src="lib/Doctrine/ORM/Tools/Console/Command/EnsureProductionSettingsCommand.php">
@@ -2637,7 +2640,7 @@
       <code>configure</code>
     </MissingReturnType>
     <NoInterfaceProperties>
-      <code>$metadata-&gt;name</code>
+      <code><![CDATA[$metadata->name]]></code>
     </NoInterfaceProperties>
   </file>
   <file src="lib/Doctrine/ORM/Tools/Console/Command/GenerateProxiesCommand.php">
@@ -2645,10 +2648,10 @@
       <code>configure</code>
     </MissingReturnType>
     <NoInterfaceProperties>
-      <code>$metadata-&gt;name</code>
+      <code><![CDATA[$metadata->name]]></code>
     </NoInterfaceProperties>
     <PossiblyNullArgument>
-      <code>$em-&gt;getConfiguration()-&gt;getProxyDir()</code>
+      <code><![CDATA[$em->getConfiguration()->getProxyDir()]]></code>
     </PossiblyNullArgument>
   </file>
   <file src="lib/Doctrine/ORM/Tools/Console/Command/GenerateRepositoriesCommand.php">
@@ -2659,7 +2662,7 @@
       <code>configure</code>
     </MissingReturnType>
     <NoInterfaceProperties>
-      <code>$metadata-&gt;customRepositoryClassName</code>
+      <code><![CDATA[$metadata->customRepositoryClassName]]></code>
     </NoInterfaceProperties>
   </file>
   <file src="lib/Doctrine/ORM/Tools/Console/Command/InfoCommand.php">
@@ -2672,7 +2675,7 @@
   </file>
   <file src="lib/Doctrine/ORM/Tools/Console/Command/MappingDescribeCommand.php">
     <ArgumentTypeCoercion>
-      <code>$metadata-&gt;entityListeners</code>
+      <code><![CDATA[$metadata->entityListeners]]></code>
     </ArgumentTypeCoercion>
     <PossiblyNullReference>
       <code>getAllClassNames</code>
@@ -2680,7 +2683,7 @@
   </file>
   <file src="lib/Doctrine/ORM/Tools/Console/Command/RunDqlCommand.php">
     <DeprecatedClass>
-      <code>Debug::dump($resultSet, (int) $input-&gt;getOption('depth'), true, false)</code>
+      <code><![CDATA[Debug::dump($resultSet, (int) $input->getOption('depth'), true, false)]]></code>
     </DeprecatedClass>
     <MissingReturnType>
       <code>configure</code>
@@ -2691,7 +2694,7 @@
       <code>int</code>
     </InvalidNullableReturnType>
     <NullableReturnStatement>
-      <code>$this-&gt;executeSchemaCommand($input, $output, new SchemaTool($em), $metadatas, $ui)</code>
+      <code><![CDATA[$this->executeSchemaCommand($input, $output, new SchemaTool($em), $metadatas, $ui)]]></code>
     </NullableReturnStatement>
   </file>
   <file src="lib/Doctrine/ORM/Tools/Console/Command/SchemaTool/CreateCommand.php">
@@ -2713,8 +2716,8 @@
       <code>configure</code>
     </MissingReturnType>
     <PossiblyNullArgument>
-      <code>$this-&gt;getName()</code>
-      <code>$this-&gt;getName()</code>
+      <code><![CDATA[$this->getName()]]></code>
+      <code><![CDATA[$this->getName()]]></code>
     </PossiblyNullArgument>
   </file>
   <file src="lib/Doctrine/ORM/Tools/Console/Command/SchemaTool/UpdateCommand.php">
@@ -2725,8 +2728,8 @@
       <code>configure</code>
     </MissingReturnType>
     <PossiblyNullArgument>
-      <code>$this-&gt;getName()</code>
-      <code>$this-&gt;getName()</code>
+      <code><![CDATA[$this->getName()]]></code>
+      <code><![CDATA[$this->getName()]]></code>
     </PossiblyNullArgument>
   </file>
   <file src="lib/Doctrine/ORM/Tools/Console/Command/ValidateSchemaCommand.php">
@@ -2744,7 +2747,7 @@
   </file>
   <file src="lib/Doctrine/ORM/Tools/ConvertDoctrine1Schema.php">
     <PossiblyUndefinedArrayOffset>
-      <code>$column['type']</code>
+      <code><![CDATA[$column['type']]]></code>
     </PossiblyUndefinedArrayOffset>
   </file>
   <file src="lib/Doctrine/ORM/Tools/DebugUnitOfWorkListener.php">
@@ -2758,17 +2761,17 @@
   </file>
   <file src="lib/Doctrine/ORM/Tools/EntityGenerator.php">
     <ArgumentTypeCoercion>
-      <code>$this-&gt;getClassToExtend()</code>
-      <code>$this-&gt;getClassToExtend() ?: $metadata-&gt;name</code>
-      <code>$this-&gt;getClassToExtend() ?: $metadata-&gt;name</code>
-      <code>array_map('strlen', $paramTypes)</code>
+      <code><![CDATA[$this->getClassToExtend()]]></code>
+      <code><![CDATA[$this->getClassToExtend() ?: $metadata->name]]></code>
+      <code><![CDATA[$this->getClassToExtend() ?: $metadata->name]]></code>
+      <code><![CDATA[array_map('strlen', $paramTypes)]]></code>
     </ArgumentTypeCoercion>
     <InvalidArrayOffset>
       <code>$tokens[$i - 1]</code>
     </InvalidArrayOffset>
     <PossiblyFalseArgument>
       <code>$last</code>
-      <code>strrpos($metadata-&gt;name, '\\')</code>
+      <code><![CDATA[strrpos($metadata->name, '\\')]]></code>
     </PossiblyFalseArgument>
     <PossiblyNullArgument>
       <code>$variableType</code>
@@ -2780,7 +2783,7 @@
       <code>(bool) $embeddablesImmutable</code>
     </RedundantCastGivenDocblockType>
     <RedundantConditionGivenDocblockType>
-      <code>isset($metadata-&gt;lifecycleCallbacks)</code>
+      <code><![CDATA[isset($metadata->lifecycleCallbacks)]]></code>
     </RedundantConditionGivenDocblockType>
   </file>
   <file src="lib/Doctrine/ORM/Tools/EntityRepositoryGenerator.php">
@@ -2790,7 +2793,7 @@
       <code>$fullClassName</code>
     </ArgumentTypeCoercion>
     <PossiblyFalseOperand>
-      <code>strrpos($fullClassName, '\\')</code>
+      <code><![CDATA[strrpos($fullClassName, '\\')]]></code>
     </PossiblyFalseOperand>
     <PropertyTypeCoercion>
       <code>$repositoryName</code>
@@ -2827,7 +2830,7 @@
       <code>string</code>
     </InvalidNullableReturnType>
     <PossiblyNullArgument>
-      <code>$this-&gt;_outputDir</code>
+      <code><![CDATA[$this->_outputDir]]></code>
     </PossiblyNullArgument>
   </file>
   <file src="lib/Doctrine/ORM/Tools/Export/Driver/AnnotationExporter.php">
@@ -2842,7 +2845,7 @@
   </file>
   <file src="lib/Doctrine/ORM/Tools/Export/Driver/PhpExporter.php">
     <ArgumentTypeCoercion>
-      <code>$metadata-&gt;changeTrackingPolicy</code>
+      <code><![CDATA[$metadata->changeTrackingPolicy]]></code>
     </ArgumentTypeCoercion>
     <DeprecatedClass>
       <code>AbstractExporter</code>
@@ -2851,50 +2854,50 @@
       <code>$_extension</code>
     </NonInvariantDocblockPropertyType>
     <PossiblyUndefinedArrayOffset>
-      <code>$associationMapping['joinColumns']</code>
-      <code>$associationMapping['orphanRemoval']</code>
+      <code><![CDATA[$associationMapping['joinColumns']]]></code>
+      <code><![CDATA[$associationMapping['orphanRemoval']]]></code>
     </PossiblyUndefinedArrayOffset>
     <RedundantConditionGivenDocblockType>
-      <code>$metadata-&gt;table</code>
+      <code><![CDATA[$metadata->table]]></code>
     </RedundantConditionGivenDocblockType>
   </file>
   <file src="lib/Doctrine/ORM/Tools/Export/Driver/XmlExporter.php">
     <ArgumentTypeCoercion>
-      <code>$metadata-&gt;changeTrackingPolicy</code>
-      <code>$simpleXml-&gt;asXML()</code>
+      <code><![CDATA[$metadata->changeTrackingPolicy]]></code>
+      <code><![CDATA[$simpleXml->asXML()]]></code>
     </ArgumentTypeCoercion>
     <DeprecatedClass>
       <code>AbstractExporter</code>
     </DeprecatedClass>
     <InvalidArrayOffset>
-      <code>$field['version']</code>
+      <code><![CDATA[$field['version']]]></code>
     </InvalidArrayOffset>
     <NonInvariantDocblockPropertyType>
       <code>$_extension</code>
     </NonInvariantDocblockPropertyType>
     <PossiblyFalseArgument>
-      <code>$simpleXml-&gt;asXML()</code>
+      <code><![CDATA[$simpleXml->asXML()]]></code>
     </PossiblyFalseArgument>
     <PossiblyNullReference>
       <code>addAttribute</code>
     </PossiblyNullReference>
     <RedundantCondition>
-      <code>$field['associationKey']</code>
-      <code>isset($field['associationKey']) &amp;&amp; $field['associationKey']</code>
+      <code><![CDATA[$field['associationKey']]]></code>
+      <code><![CDATA[isset($field['associationKey']) && $field['associationKey']]]></code>
     </RedundantCondition>
     <RedundantConditionGivenDocblockType>
-      <code>isset($metadata-&gt;lifecycleCallbacks)</code>
+      <code><![CDATA[isset($metadata->lifecycleCallbacks)]]></code>
     </RedundantConditionGivenDocblockType>
   </file>
   <file src="lib/Doctrine/ORM/Tools/Export/Driver/YamlExporter.php">
     <ArgumentTypeCoercion>
-      <code>$metadata-&gt;changeTrackingPolicy</code>
+      <code><![CDATA[$metadata->changeTrackingPolicy]]></code>
     </ArgumentTypeCoercion>
     <DeprecatedClass>
       <code>AbstractExporter</code>
     </DeprecatedClass>
     <DocblockTypeContradiction>
-      <code>['name' =&gt; null]</code>
+      <code><![CDATA[['name' => null]]]></code>
     </DocblockTypeContradiction>
     <InvalidArgument>
       <code>$array</code>
@@ -2903,19 +2906,19 @@
       <code>$array</code>
     </LessSpecificReturnStatement>
     <MoreSpecificReturnType>
-      <code>array&lt;string, mixed&gt;&amp;array{entityListeners: array&lt;class-string, array&lt;string, array{string}&gt;&gt;}</code>
+      <code><![CDATA[array<string, mixed>&array{entityListeners: array<class-string, array<string, array{string}>>}]]></code>
     </MoreSpecificReturnType>
     <NonInvariantDocblockPropertyType>
       <code>$_extension</code>
     </NonInvariantDocblockPropertyType>
     <PossiblyUndefinedArrayOffset>
-      <code>$associationMapping['joinColumns']</code>
-      <code>$associationMapping['orphanRemoval']</code>
-      <code>$associationMapping['orphanRemoval']</code>
+      <code><![CDATA[$associationMapping['joinColumns']]]></code>
+      <code><![CDATA[$associationMapping['orphanRemoval']]]></code>
+      <code><![CDATA[$associationMapping['orphanRemoval']]]></code>
     </PossiblyUndefinedArrayOffset>
     <RedundantConditionGivenDocblockType>
-      <code>$metadata-&gt;table</code>
-      <code>isset($metadata-&gt;lifecycleCallbacks)</code>
+      <code><![CDATA[$metadata->table]]></code>
+      <code><![CDATA[isset($metadata->lifecycleCallbacks)]]></code>
     </RedundantConditionGivenDocblockType>
   </file>
   <file src="lib/Doctrine/ORM/Tools/Pagination/CountOutputWalker.php">
@@ -2923,7 +2926,7 @@
       <code>$query</code>
     </MoreSpecificImplementedParamType>
     <PossiblyUndefinedArrayOffset>
-      <code>$rootClass-&gt;associationMappings[$property]['joinColumns']</code>
+      <code><![CDATA[$rootClass->associationMappings[$property]['joinColumns']]]></code>
     </PossiblyUndefinedArrayOffset>
   </file>
   <file src="lib/Doctrine/ORM/Tools/Pagination/LimitSubqueryOutputWalker.php">
@@ -2931,21 +2934,21 @@
       <code>$query</code>
     </MoreSpecificImplementedParamType>
     <PossiblyFalseArgument>
-      <code>strrpos($orderByItemString, ' ')</code>
+      <code><![CDATA[strrpos($orderByItemString, ' ')]]></code>
     </PossiblyFalseArgument>
     <PossiblyNullIterator>
-      <code>$orderByClause-&gt;orderByItems</code>
+      <code><![CDATA[$orderByClause->orderByItems]]></code>
     </PossiblyNullIterator>
     <PossiblyNullPropertyAssignmentValue>
-      <code>$AST-&gt;orderByClause</code>
-      <code>$query-&gt;getFirstResult()</code>
-      <code>$query-&gt;getMaxResults()</code>
+      <code><![CDATA[$AST->orderByClause]]></code>
+      <code><![CDATA[$query->getFirstResult()]]></code>
+      <code><![CDATA[$query->getMaxResults()]]></code>
     </PossiblyNullPropertyAssignmentValue>
     <PossiblyNullPropertyFetch>
-      <code>$orderByClause-&gt;orderByItems</code>
+      <code><![CDATA[$orderByClause->orderByItems]]></code>
     </PossiblyNullPropertyFetch>
     <PossiblyUndefinedArrayOffset>
-      <code>$rootClass-&gt;associationMappings[$property]['joinColumns']</code>
+      <code><![CDATA[$rootClass->associationMappings[$property]['joinColumns']]]></code>
     </PossiblyUndefinedArrayOffset>
   </file>
   <file src="lib/Doctrine/ORM/Tools/Pagination/Paginator.php">
@@ -2963,17 +2966,17 @@
   </file>
   <file src="lib/Doctrine/ORM/Tools/Pagination/WhereInWalker.php">
     <DocblockTypeContradiction>
-      <code>$AST-&gt;whereClause-&gt;conditionalExpression instanceof ConditionalExpression
-                || $AST-&gt;whereClause-&gt;conditionalExpression instanceof ConditionalFactor</code>
-      <code>$AST-&gt;whereClause-&gt;conditionalExpression instanceof ConditionalFactor</code>
-      <code>$AST-&gt;whereClause-&gt;conditionalExpression instanceof ConditionalPrimary</code>
+      <code><![CDATA[$AST->whereClause->conditionalExpression instanceof ConditionalExpression
+                || $AST->whereClause->conditionalExpression instanceof ConditionalFactor]]></code>
+      <code><![CDATA[$AST->whereClause->conditionalExpression instanceof ConditionalFactor]]></code>
+      <code><![CDATA[$AST->whereClause->conditionalExpression instanceof ConditionalPrimary]]></code>
     </DocblockTypeContradiction>
     <PossiblyInvalidPropertyAssignmentValue>
-      <code>$AST-&gt;whereClause-&gt;conditionalExpression</code>
+      <code><![CDATA[$AST->whereClause->conditionalExpression]]></code>
     </PossiblyInvalidPropertyAssignmentValue>
     <RedundantConditionGivenDocblockType>
-      <code>$AST-&gt;whereClause-&gt;conditionalExpression instanceof ConditionalExpression
-                || $AST-&gt;whereClause-&gt;conditionalExpression instanceof ConditionalFactor</code>
+      <code><![CDATA[$AST->whereClause->conditionalExpression instanceof ConditionalExpression
+                || $AST->whereClause->conditionalExpression instanceof ConditionalFactor]]></code>
     </RedundantConditionGivenDocblockType>
   </file>
   <file src="lib/Doctrine/ORM/Tools/SchemaTool.php">
@@ -2990,13 +2993,13 @@
       <code>$referencedFieldName</code>
     </PossiblyNullArgument>
     <PossiblyUndefinedArrayOffset>
-      <code>$assoc['joinColumns']</code>
-      <code>$class-&gt;getAssociationMapping($fieldName)['joinColumns']</code>
-      <code>$fieldMapping['precision']</code>
-      <code>$fieldMapping['scale']</code>
-      <code>$idMapping['joinColumns']</code>
-      <code>$mapping['joinColumns']</code>
-      <code>$mapping['joinTable']</code>
+      <code><![CDATA[$assoc['joinColumns']]]></code>
+      <code><![CDATA[$class->getAssociationMapping($fieldName)['joinColumns']]]></code>
+      <code><![CDATA[$fieldMapping['precision']]]></code>
+      <code><![CDATA[$fieldMapping['scale']]]></code>
+      <code><![CDATA[$idMapping['joinColumns']]]></code>
+      <code><![CDATA[$mapping['joinColumns']]]></code>
+      <code><![CDATA[$mapping['joinTable']]]></code>
     </PossiblyUndefinedArrayOffset>
     <RedundantCondition>
       <code>is_numeric($indexName)</code>
@@ -3011,14 +3014,14 @@
   </file>
   <file src="lib/Doctrine/ORM/Tools/SchemaValidator.php">
     <PossiblyUndefinedArrayOffset>
-      <code>$assoc['joinColumns']</code>
-      <code>$assoc['joinTable']</code>
-      <code>$assoc['relationToSourceKeyColumns']</code>
-      <code>$assoc['relationToTargetKeyColumns']</code>
+      <code><![CDATA[$assoc['joinColumns']]]></code>
+      <code><![CDATA[$assoc['joinTable']]]></code>
+      <code><![CDATA[$assoc['relationToSourceKeyColumns']]]></code>
+      <code><![CDATA[$assoc['relationToTargetKeyColumns']]]></code>
     </PossiblyUndefinedArrayOffset>
     <RedundantConditionGivenDocblockType>
-      <code>$assoc['orderBy'] !== null</code>
-      <code>isset($assoc['orderBy']) &amp;&amp; $assoc['orderBy'] !== null</code>
+      <code><![CDATA[$assoc['orderBy'] !== null]]></code>
+      <code><![CDATA[isset($assoc['orderBy']) && $assoc['orderBy'] !== null]]></code>
     </RedundantConditionGivenDocblockType>
   </file>
   <file src="lib/Doctrine/ORM/Tools/Setup.php">
@@ -3026,12 +3029,12 @@
       <code>$paths</code>
     </ArgumentTypeCoercion>
     <DeprecatedClass>
-      <code>new ClassLoader('Doctrine', $directory)</code>
-      <code>new ClassLoader('Symfony\Component', $directory . '/Doctrine')</code>
+      <code><![CDATA[new ClassLoader('Doctrine', $directory)]]></code>
+      <code><![CDATA[new ClassLoader('Symfony\Component', $directory . '/Doctrine')]]></code>
     </DeprecatedClass>
     <UnresolvableInclude>
-      <code>require_once $directory . '/Doctrine/Common/ClassLoader.php'</code>
-      <code>require_once dirname($directory) . '/src/ClassLoader.php'</code>
+      <code><![CDATA[require_once $directory . '/Doctrine/Common/ClassLoader.php']]></code>
+      <code><![CDATA[require_once dirname($directory) . '/src/ClassLoader.php']]></code>
     </UnresolvableInclude>
   </file>
   <file src="lib/Doctrine/ORM/UnitOfWork.php">
@@ -3042,14 +3045,14 @@
     <InvalidArgument>
       <code>$collectionToDelete</code>
       <code>$collectionToUpdate</code>
-      <code>$em-&gt;getMetadataFactory()</code>
+      <code><![CDATA[$em->getMetadataFactory()]]></code>
     </InvalidArgument>
     <InvalidNullableReturnType>
       <code>object</code>
     </InvalidNullableReturnType>
     <InvalidPropertyAssignmentValue>
-      <code>$this-&gt;entityChangeSets</code>
-      <code>$this-&gt;entityChangeSets</code>
+      <code><![CDATA[$this->entityChangeSets]]></code>
+      <code><![CDATA[$this->entityChangeSets]]></code>
     </InvalidPropertyAssignmentValue>
     <MissingParamType>
       <code>$managedCopy</code>
@@ -3061,36 +3064,36 @@
       <code>$entityState</code>
     </NoValue>
     <NullableReturnStatement>
-      <code>$this-&gt;identityMap[$rootClassName][$idHash]</code>
+      <code><![CDATA[$this->identityMap[$rootClassName][$idHash]]]></code>
     </NullableReturnStatement>
     <PossiblyInvalidArgument>
       <code>$value</code>
     </PossiblyInvalidArgument>
     <PossiblyInvalidArrayOffset>
-      <code>$this-&gt;identityMap[$rootClassName]</code>
+      <code><![CDATA[$this->identityMap[$rootClassName]]]></code>
     </PossiblyInvalidArrayOffset>
     <PossiblyNullArgument>
       <code>$assoc</code>
       <code>$assoc</code>
       <code>$assoc</code>
       <code>$assoc</code>
-      <code>$assoc['targetEntity']</code>
-      <code>$class-&gt;getTypeOfField($class-&gt;getSingleIdentifierFieldName())</code>
-      <code>$collection-&gt;getOwner()</code>
-      <code>$collection-&gt;getOwner()</code>
-      <code>$collectionToDelete-&gt;getMapping()</code>
-      <code>$collectionToUpdate-&gt;getMapping()</code>
+      <code><![CDATA[$assoc['targetEntity']]]></code>
+      <code><![CDATA[$class->getTypeOfField($class->getSingleIdentifierFieldName())]]></code>
+      <code><![CDATA[$collection->getOwner()]]></code>
+      <code><![CDATA[$collection->getOwner()]]></code>
+      <code><![CDATA[$collectionToDelete->getMapping()]]></code>
+      <code><![CDATA[$collectionToUpdate->getMapping()]]></code>
       <code>$entity</code>
       <code>$entity</code>
       <code>$owner</code>
     </PossiblyNullArgument>
     <PossiblyNullArrayAccess>
-      <code>$assoc['targetEntity']</code>
-      <code>$assoc['type']</code>
+      <code><![CDATA[$assoc['targetEntity']]]></code>
+      <code><![CDATA[$assoc['type']]]></code>
     </PossiblyNullArrayAccess>
     <PossiblyNullArrayOffset>
-      <code>$class-&gt;reflFields</code>
-      <code>$targetClass-&gt;reflFields</code>
+      <code><![CDATA[$class->reflFields]]></code>
+      <code><![CDATA[$targetClass->reflFields]]></code>
     </PossiblyNullArrayOffset>
     <PossiblyNullReference>
       <code>buildCachedCollectionPersister</code>
@@ -3126,9 +3129,9 @@
       <code>setValue</code>
     </PossiblyNullReference>
     <PossiblyUndefinedArrayOffset>
-      <code>$assoc['joinColumns']</code>
-      <code>$assoc['orphanRemoval']</code>
-      <code>$assoc['targetToSourceKeyColumns']</code>
+      <code><![CDATA[$assoc['joinColumns']]]></code>
+      <code><![CDATA[$assoc['orphanRemoval']]]></code>
+      <code><![CDATA[$assoc['targetToSourceKeyColumns']]]></code>
     </PossiblyUndefinedArrayOffset>
     <PossiblyUndefinedMethod>
       <code>unwrap</code>
@@ -3136,8 +3139,8 @@
       <code>unwrap</code>
     </PossiblyUndefinedMethod>
     <RedundantCondition>
-      <code>$i &gt;= 0 &amp;&amp; $this-&gt;entityDeletions</code>
-      <code>$this-&gt;entityDeletions</code>
+      <code><![CDATA[$i >= 0 && $this->entityDeletions]]></code>
+      <code><![CDATA[$this->entityDeletions]]></code>
     </RedundantCondition>
     <RedundantConditionGivenDocblockType>
       <code>is_array($entity)</code>
@@ -3148,21 +3151,21 @@
   </file>
   <file src="lib/Doctrine/ORM/Utility/HierarchyDiscriminatorResolver.php">
     <NoInterfaceProperties>
-      <code>$rootClassMetadata-&gt;name</code>
-      <code>$rootClassMetadata-&gt;subClasses</code>
+      <code><![CDATA[$rootClassMetadata->name]]></code>
+      <code><![CDATA[$rootClassMetadata->subClasses]]></code>
     </NoInterfaceProperties>
   </file>
   <file src="lib/Doctrine/ORM/Utility/IdentifierFlattener.php">
     <PossiblyUndefinedArrayOffset>
-      <code>$class-&gt;associationMappings[$field]['joinColumns']</code>
+      <code><![CDATA[$class->associationMappings[$field]['joinColumns']]]></code>
     </PossiblyUndefinedArrayOffset>
   </file>
   <file src="lib/Doctrine/ORM/Utility/PersisterHelper.php">
     <PossiblyNullArgument>
-      <code>$assoc['mappedBy']</code>
+      <code><![CDATA[$assoc['mappedBy']]]></code>
     </PossiblyNullArgument>
     <PossiblyUndefinedArrayOffset>
-      <code>$assoc['joinTable']</code>
+      <code><![CDATA[$assoc['joinTable']]]></code>
     </PossiblyUndefinedArrayOffset>
   </file>
 </files>
