@@ -43,23 +43,33 @@ class FilterCollectionTest extends OrmTestCase
 
         $filter3 = $filterCollection->enable('testFilter');
         self::assertNotSame($filter1, $filter3);
+
+        $filter4 = $filterCollection->suspend('testFilter');
+        self::assertSame($filter3, $filter4);
+
+        $filter5 = $filterCollection->enable('testFilter');
+        self::assertNotSame($filter4, $filter5);
+
+        self::assertCount(1, $enabledFilters);
+        self::assertContainsOnly(MyFilter::class, $enabledFilters);
     }
 
-    public function testRestore(): void
+    public function testSuspend(): void
     {
         $filterCollection = $this->em->getFilters();
 
         self::assertCount(0, $filterCollection->getEnabledFilters());
 
         $filter1 = $filterCollection->enable('testFilter');
-        $filterCollection->suspend('testFilter');
+        self::assertCount(1, $filterCollection->getEnabledFilters());
+
+        $filter2 = $filterCollection->suspend('testFilter');
+        self::assertSame($filter1, $filter2);
+        self::assertCount(0, $filterCollection->getEnabledFilters());
 
         $filter3 = $filterCollection->restore('testFilter');
         self::assertSame($filter1, $filter3);
-
-        $enabledFilters = $filterCollection->getEnabledFilters();
-        self::assertCount(1, $enabledFilters);
-        self::assertContainsOnly(MyFilter::class, $enabledFilters);
+        self::assertCount(1, $filterCollection->getEnabledFilters());
     }
 
     public function testRestoreFailure(): void
@@ -87,6 +97,16 @@ class FilterCollectionTest extends OrmTestCase
         $filterCollection->enable('testFilter');
 
         self::assertTrue($filterCollection->isEnabled('testFilter'));
+
+        $filterCollection->suspend('testFilter');
+
+        self::assertFalse($filterCollection->isEnabled('testFilter'));
+
+        $filterCollection->restore('testFilter');
+
+        self::assertTrue($filterCollection->isEnabled('testFilter'));
+
+        self::assertFalse($filterCollection->isEnabled('wrongFilter'));
     }
 
     public function testIsSuspended(): void
@@ -110,6 +130,8 @@ class FilterCollectionTest extends OrmTestCase
         $filterCollection->disable('testFilter');
 
         self::assertFalse($filterCollection->isSuspended('testFilter'));
+
+        self::assertFalse($filterCollection->isSuspended('wrongFilter'));
     }
 
     public function testGetFilterInvalidArgument(): void
@@ -125,6 +147,11 @@ class FilterCollectionTest extends OrmTestCase
         $filterCollection->enable('testFilter');
 
         self::assertInstanceOf(MyFilter::class, $filterCollection->getFilter('testFilter'));
+
+        $filterCollection->suspend('testFilter');
+
+        $this->expectException(InvalidArgumentException::class);
+        $filterCollection->getFilter('testFilter');
     }
 
     public function testHashing(): void
@@ -149,6 +176,18 @@ class FilterCollectionTest extends OrmTestCase
         self::assertNotSame($oldHash, $hash);
         self::assertTrue($filterCollection->isClean());
         self::assertSame($hash, $filterCollection->getHash());
+
+        $filterCollection->suspend('testFilter');
+
+        self::assertFalse($filterCollection->isClean());
+        self::assertSame($oldHash, $filterCollection->getHash());
+        self::assertTrue($filterCollection->isClean());
+
+        $filterCollection->restore('testFilter');
+
+        self::assertFalse($filterCollection->isClean());
+        self::assertSame($hash, $filterCollection->getHash());
+        self::assertTrue($filterCollection->isClean());
 
         $filterCollection->disable('testFilter');
 
