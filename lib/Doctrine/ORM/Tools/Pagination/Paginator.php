@@ -22,7 +22,6 @@ use function array_key_exists;
 use function array_map;
 use function array_sum;
 use function assert;
-use function count;
 use function is_string;
 
 /**
@@ -160,7 +159,7 @@ class Paginator implements Countable, IteratorAggregate
             $ids          = array_map('current', $foundIdRows);
 
             $this->appendTreeWalker($whereInQuery, WhereInWalker::class);
-            $whereInQuery->setHint(WhereInWalker::HINT_PAGINATOR_ID_COUNT, count($ids));
+            $whereInQuery->setHint(WhereInWalker::HINT_PAGINATOR_HAS_IDS, true);
             $whereInQuery->setFirstResult(0)->setMaxResults(null);
             $whereInQuery->setCacheable($this->query->isCacheable());
 

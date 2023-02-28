@@ -182,6 +182,11 @@ parameters:
 
 		-
 			message: "#^Negated boolean expression is always false\\.$#"
+			count: 2
+			path: lib/Doctrine/ORM/Mapping/ClassMetadataInfo.php
+
+		-
+			message: "#^Result of && is always false\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Mapping/ClassMetadataInfo.php
 
@@ -371,6 +376,11 @@ parameters:
 			path: lib/Doctrine/ORM/Query/Expr/Select.php
 
 		-
+			message: "#^Comparison operation \"\\<\" between null and 102 is always true\\.$#"
+			count: 1
+			path: lib/Doctrine/ORM/Query/Parser.php
+
+		-
 			message: "#^Method Doctrine\\\\ORM\\\\Query\\\\Parser\\:\\:ArithmeticFactor\\(\\) should return Doctrine\\\\ORM\\\\Query\\\\AST\\\\ArithmeticFactor but returns Doctrine\\\\ORM\\\\Query\\\\AST\\\\Node\\|string\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Query/Parser.php
@@ -401,8 +411,13 @@ parameters:
 			path: lib/Doctrine/ORM/Query/Parser.php
 
 		-
+			message: "#^Result of && is always true\\.$#"
+			count: 1
+			path: lib/Doctrine/ORM/Query/Parser.php
+
+		-
 			message: "#^Unreachable statement \\- code above always terminates\\.$#"
-			count: 3
+			count: 4
 			path: lib/Doctrine/ORM/Query/Parser.php
 
 		-
@@ -597,11 +612,6 @@ parameters:
 
 		-
 			message: "#^Instanceof between Doctrine\\\\ORM\\\\Query\\\\AST\\\\ConditionalExpression and Doctrine\\\\ORM\\\\Query\\\\AST\\\\ConditionalPrimary will always evaluate to false\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Tools/Pagination/WhereInWalker.php
-
-		-
-			message: "#^Result of \\|\\| is always true\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Tools/Pagination/WhereInWalker.php
 
