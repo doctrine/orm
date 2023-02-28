@@ -15,5 +15,6 @@ vendor/
 /tests/Doctrine/Performance/history.db
 /.phpcs-cache
 composer.lock
+.phpunit.cache
 .phpunit.result.cache
 /*.phpunit.xml

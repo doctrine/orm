@@ -19,7 +19,7 @@ class WhereInWalkerTest extends PaginationTestCase
     {
         $query = $this->entityManager->createQuery($dql);
         $query->setHint(Query::HINT_CUSTOM_TREE_WALKERS, [WhereInWalker::class]);
-        $query->setHint(WhereInWalker::HINT_PAGINATOR_ID_COUNT, 10);
+        $query->setHint(WhereInWalker::HINT_PAGINATOR_HAS_IDS, true);
 
         $result = (new Parser($query))->parse();
 
@@ -27,7 +27,7 @@ class WhereInWalkerTest extends PaginationTestCase
         self::assertEquals([0], $result->getSqlParameterPositions(WhereInWalker::PAGINATOR_ID_ALIAS));
     }
 
-    public function exampleQueries(): Generator
+    public static function exampleQueries(): Generator
     {
         yield 'no WHERE condition' => [
             'SELECT u, g FROM Doctrine\Tests\ORM\Tools\Pagination\User u JOIN u.groups g',

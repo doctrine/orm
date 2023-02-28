@@ -74,7 +74,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
      *
      * @var CacheItemPoolInterface|null
      */
-    private static $queryCache = null;
+    protected static $queryCache = null;
 
     /**
      * Shared connection when a TestCase is run alone (outside of its functional suite).
