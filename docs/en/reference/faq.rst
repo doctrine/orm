@@ -38,7 +38,7 @@ upon insert:
 
         private string $algorithm = "sha1";
         /** @var self::STATUS_* */
-        private int $status = self:STATUS_DISABLED;
+        private int $status = self::STATUS_DISABLED;
     }
 
 .

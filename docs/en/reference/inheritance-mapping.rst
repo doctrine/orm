@@ -32,6 +32,19 @@ need not have an ``#[Id]`` property.
     For further support of inheritance, the single or
     joined table inheritance features have to be used.
 
+.. warning::
+
+    At least when using attributes or annotations to specify your mapping,
+    it _seems_ as if you could inherit from a base class that is neither
+    an entity nor a mapped superclass, but has properties with mapping configuration
+    on them that would also be used in the inheriting class.
+
+    This, however, is due to how the corresponding mapping
+    drivers work and what the PHP reflection API reports for inherited fields.
+
+    Such a configuration is explicitly not supported. To give just one example,
+    it will break for ``private`` properties.
+
 .. note::
 
     You may be tempted to use traits to mix mapped fields or relationships

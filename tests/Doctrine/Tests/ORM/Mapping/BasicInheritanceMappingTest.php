@@ -237,7 +237,7 @@ class BasicInheritanceMappingTest extends OrmTestCase
         $this->cmf->getMetadataFor($childClass);
     }
 
-    public function invalidHierarchyDeclarationClasses(): Generator
+    public static function invalidHierarchyDeclarationClasses(): Generator
     {
         yield 'concrete Entity root and child class, direct inheritance'
             => [InvalidEntityRoot::class, InvalidEntityRootChild::class];

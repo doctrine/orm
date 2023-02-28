@@ -296,11 +296,6 @@ parameters:
 			path: lib/Doctrine/ORM/Tools/Pagination/WhereInWalker.php
 
 		-
-			message: "#^Result of \\|\\| is always true\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Tools/Pagination/WhereInWalker.php
-
-		-
 			message: "#^Else branch is unreachable because ternary operator condition is always true\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Tools/SchemaTool.php

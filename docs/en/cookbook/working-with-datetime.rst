@@ -21,7 +21,7 @@ these comparisons are always made **BY REFERENCE**. That means the following cha
     #[Entity]
     class Article
     {
-        #[Column(type='datetime')]
+        #[Column(type: 'datetime')]
         private DateTime $updated;
 
         public function setUpdated(): void

@@ -28,15 +28,15 @@ use function reset;
  * The parameter namespace (dpid) is defined by
  * the PAGINATOR_ID_ALIAS
  *
- * The total number of parameters is retrieved from
- * the HINT_PAGINATOR_ID_COUNT query hint.
+ * The HINT_PAGINATOR_HAS_IDS query hint indicates whether there are
+ * any ids in the parameter at all.
  */
 class WhereInWalker extends TreeWalkerAdapter
 {
     /**
      * ID Count hint name.
      */
-    public const HINT_PAGINATOR_ID_COUNT = 'doctrine.id.count';
+    public const HINT_PAGINATOR_HAS_IDS = 'doctrine.paginator_has_ids';
 
     /**
      * Primary key alias for query.
@@ -65,9 +65,9 @@ class WhereInWalker extends TreeWalkerAdapter
         $pathExpression       = new PathExpression(PathExpression::TYPE_STATE_FIELD | PathExpression::TYPE_SINGLE_VALUED_ASSOCIATION, $rootAlias, $identifierFieldName);
         $pathExpression->type = $pathType;
 
-        $count = $this->_getQuery()->getHint(self::HINT_PAGINATOR_ID_COUNT);
+        $hasIds = $this->_getQuery()->getHint(self::HINT_PAGINATOR_HAS_IDS);
 
-        if ($count > 0) {
+        if ($hasIds) {
             $arithmeticExpression                             = new ArithmeticExpression();
             $arithmeticExpression->simpleArithmeticExpression = new SimpleArithmeticExpression(
                 [$pathExpression],

@@ -916,6 +916,16 @@ Is essentially the same as following:
         #[JoinColumn(name: 'shipment_id', referencedColumnName: 'id', nullable: false)]
         private Shipment $shipment;
 
+    .. code-block:: annotation
+
+        <?php
+        /**
+         * One Product has One Shipment.
+         * @OneToOne(targetEntity="Shipment")
+         * @JoinColumn(name="shipment_id", referencedColumnName="id", nullable=false)
+         */
+        private Shipment $shipment;
+
     .. code-block:: xml
 
         <doctrine-mapping>

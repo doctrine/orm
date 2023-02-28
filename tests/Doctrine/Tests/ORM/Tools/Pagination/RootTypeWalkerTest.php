@@ -32,8 +32,8 @@ class RootTypeWalkerTest extends PaginationTestCase
         self::assertSame($expectedType, $query->getSQL());
     }
 
-    /** @return iterable<array{string, string}> */
-    public function exampleQueries(): Generator
+    /** @return Generator<string, array{string, string}> */
+    public static function exampleQueries(): Generator
     {
         yield 'Entity with #Id column of special type' => [
             'SELECT e.id4 FROM ' . AuxiliaryEntity::class . ' e',
