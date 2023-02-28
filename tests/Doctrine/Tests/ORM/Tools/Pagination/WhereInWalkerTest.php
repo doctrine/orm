@@ -27,7 +27,7 @@ class WhereInWalkerTest extends PaginationTestCase
         self::assertEquals([0], $result->getSqlParameterPositions(WhereInWalker::PAGINATOR_ID_ALIAS));
     }
 
-    public function exampleQueries(): Generator
+    public static function exampleQueries(): Generator
     {
         yield 'no WHERE condition' => [
             'SELECT u, g FROM Doctrine\Tests\ORM\Tools\Pagination\User u JOIN u.groups g',
