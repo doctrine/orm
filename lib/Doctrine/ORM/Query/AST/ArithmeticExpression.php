@@ -15,8 +15,7 @@ class ArithmeticExpression extends Node
 {
     public Node|string|null $simpleArithmeticExpression = null;
 
-    /** @var Subselect|null */
-    public $subselect;
+    public Subselect|null $subselect = null;
 
     public function isSimpleArithmeticExpression(): bool
     {

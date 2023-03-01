@@ -13,11 +13,9 @@ use Doctrine\ORM\Query\SqlWalker;
  */
 class UpdateStatement extends Node
 {
-    /** @var WhereClause|null */
-    public $whereClause;
+    public WhereClause|null $whereClause = null;
 
-    /** @param UpdateClause $updateClause */
-    public function __construct(public $updateClause)
+    public function __construct(public UpdateClause $updateClause)
     {
     }
 

@@ -775,7 +775,7 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
      * @param string $name The name of the entity class the new instance is used for.
      * @psalm-param class-string<T> $name
      */
-    public function __construct(public $name, NamingStrategy|null $namingStrategy = null, TypedFieldMapper|null $typedFieldMapper = null)
+    public function __construct(public string $name, NamingStrategy|null $namingStrategy = null, TypedFieldMapper|null $typedFieldMapper = null)
     {
         $this->rootEntityName   = $name;
         $this->namingStrategy   = $namingStrategy ?? new DefaultNamingStrategy();
@@ -822,11 +822,9 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
      * For composite identifiers, the identifier values are returned as an array
      * with the same order as the field order in {@link identifier}.
      *
-     * @param object $entity
-     *
      * @return array<string, mixed>
      */
-    public function getIdentifierValues($entity): array
+    public function getIdentifierValues(object $entity): array
     {
         if ($this->isIdentifierComposite) {
             $id = [];
@@ -907,7 +905,7 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
      *
      * @return string[] The names of all the fields that should be serialized.
      */
-    public function __sleep()
+    public function __sleep(): array
     {
         // This metadata is always serialized/cached.
         $serialized = [

@@ -21,32 +21,26 @@ class CachedPersisterContext
     /**
      * The SELECT column list SQL fragment used for querying entities by this persister.
      * This SQL fragment is only generated once per request, if at all.
-     *
-     * @var string|null
      */
-    public $selectColumnListSql;
+    public string|null $selectColumnListSql = null;
 
     /**
      * The JOIN SQL fragment used to eagerly load all many-to-one and one-to-one
      * associations configured as FETCH_EAGER, as well as all inverse one-to-one associations.
-     *
-     * @var string
      */
-    public $selectJoinSql;
+    public string $selectJoinSql;
 
     /**
      * Counter for creating unique SQL table and column aliases.
-     *
-     * @var int
      */
-    public $sqlAliasCounter = 0;
+    public int $sqlAliasCounter = 0;
 
     /**
      * Map from class names (FQCN) to the corresponding generated SQL table aliases.
      *
      * @var array<class-string, string>
      */
-    public $sqlTableAliases = [];
+    public array $sqlTableAliases = [];
 
     public function __construct(
         /**

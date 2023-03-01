@@ -16,8 +16,7 @@ class SimpleSelectExpression extends Node
 {
     public string|null $fieldIdentificationVariable = null;
 
-    /** @param Node|string $expression */
-    public function __construct(public $expression)
+    public function __construct(public Node|string $expression)
     {
     }
 

@@ -13,14 +13,10 @@ use Doctrine\ORM\Query\SqlWalker;
  */
 class IdentificationVariableDeclaration extends Node
 {
-    /**
-     * @param RangeVariableDeclaration|null $rangeVariableDeclaration
-     * @param IndexBy|null                  $indexBy
-     * @param mixed[]                       $joins
-     */
+    /** @param mixed[] $joins */
     public function __construct(
-        public $rangeVariableDeclaration = null,
-        public $indexBy = null,
+        public RangeVariableDeclaration|null $rangeVariableDeclaration = null,
+        public IndexBy|null $indexBy = null,
         public array $joins = [],
     ) {
     }

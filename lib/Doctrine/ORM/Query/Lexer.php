@@ -56,8 +56,7 @@ class Lexer extends AbstractLexer
         return ['\s+', '--.*', '(.)'];
     }
 
-    /** @param string $value */
-    protected function getType(&$value): TokenType
+    protected function getType(string &$value): TokenType
     {
         $type = TokenType::T_NONE;
 

@@ -2039,14 +2039,13 @@ class UnitOfWork implements PropertyChangedListener
     /**
      * Acquire a lock on the given entity.
      *
-     * @param int|DateTimeInterface|null $lockVersion
      * @psalm-param LockMode::* $lockMode
      *
      * @throws ORMInvalidArgumentException
      * @throws TransactionRequiredException
      * @throws OptimisticLockException
      */
-    public function lock(object $entity, LockMode|int $lockMode, $lockVersion = null): void
+    public function lock(object $entity, LockMode|int $lockMode, int|DateTimeInterface|null $lockVersion = null): void
     {
         if ($this->getEntityState($entity, self::STATE_DETACHED) !== self::STATE_MANAGED) {
             throw ORMInvalidArgumentException::entityNotManaged($entity);
@@ -2866,7 +2865,7 @@ class UnitOfWork implements PropertyChangedListener
      */
     private function afterTransactionComplete(): void
     {
-        $this->performCallbackOnCachedPersister(static function (CachedPersister $persister) {
+        $this->performCallbackOnCachedPersister(static function (CachedPersister $persister): void {
             $persister->afterTransactionComplete();
         });
     }
@@ -2876,7 +2875,7 @@ class UnitOfWork implements PropertyChangedListener
      */
     private function afterTransactionRolledBack(): void
     {
-        $this->performCallbackOnCachedPersister(static function (CachedPersister $persister) {
+        $this->performCallbackOnCachedPersister(static function (CachedPersister $persister): void {
             $persister->afterTransactionRolledBack();
         });
     }

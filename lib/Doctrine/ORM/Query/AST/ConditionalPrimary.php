@@ -13,11 +13,9 @@ use Doctrine\ORM\Query\SqlWalker;
  */
 class ConditionalPrimary extends Node
 {
-    /** @var Node|null */
-    public $simpleConditionalExpression;
+    public Node|null $simpleConditionalExpression = null;
 
-    /** @var ConditionalExpression|null */
-    public $conditionalExpression;
+    public ConditionalExpression|null $conditionalExpression = null;
 
     public function isSimpleConditionalExpression(): bool
     {

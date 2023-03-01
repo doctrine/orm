@@ -1434,10 +1434,8 @@ final class Parser
      * NewValue ::= SimpleArithmeticExpression | "NULL"
      *
      * SimpleArithmeticExpression covers all *Primary grammar rules and also SimpleEntityExpression
-     *
-     * @return AST\ArithmeticExpression|AST\InputParameter|null
      */
-    public function NewValue()
+    public function NewValue(): AST\ArithmeticExpression|AST\InputParameter|null
     {
         if ($this->lexer->isNextToken(TokenType::T_NULL)) {
             $this->match(TokenType::T_NULL);
@@ -1771,10 +1769,8 @@ final class Parser
 
     /**
      * NewObjectArg ::= ScalarExpression | "(" Subselect ")"
-     *
-     * @return mixed
      */
-    public function NewObjectArg()
+    public function NewObjectArg(): mixed
     {
         assert($this->lexer->lookahead !== null);
         $token = $this->lexer->lookahead;
@@ -1814,7 +1810,7 @@ final class Parser
      *
      * @return mixed One of the possible expressions or subexpressions.
      */
-    public function ScalarExpression()
+    public function ScalarExpression(): mixed
     {
         assert($this->lexer->token !== null);
         assert($this->lexer->lookahead !== null);
@@ -1893,7 +1889,7 @@ final class Parser
      *
      * @return mixed One of the possible expressions or subexpressions.
      */
-    public function CaseExpression()
+    public function CaseExpression(): mixed
     {
         assert($this->lexer->lookahead !== null);
         $lookahead = $this->lexer->lookahead->type;
@@ -2511,10 +2507,8 @@ final class Parser
 
     /**
      * Literal ::= string | char | integer | float | boolean
-     *
-     * @return AST\Literal
      */
-    public function Literal()
+    public function Literal(): AST\Literal
     {
         assert($this->lexer->lookahead !== null);
         assert($this->lexer->token !== null);
@@ -2755,10 +2749,8 @@ final class Parser
 
     /**
      * StringPrimary ::= StateFieldPathExpression | string | InputParameter | FunctionsReturningStrings | AggregateExpression | CaseExpression
-     *
-     * @return AST\Node
      */
-    public function StringPrimary()
+    public function StringPrimary(): AST\Node
     {
         assert($this->lexer->lookahead !== null);
         $lookaheadType = $this->lexer->lookahead->type;
@@ -3165,10 +3157,8 @@ final class Parser
 
     /**
      * ComparisonOperator ::= "=" | "<" | "<=" | "<>" | ">" | ">=" | "!="
-     *
-     * @return string
      */
-    public function ComparisonOperator()
+    public function ComparisonOperator(): string
     {
         assert($this->lexer->lookahead !== null);
         switch ($this->lexer->lookahead->value) {
@@ -3215,10 +3205,8 @@ final class Parser
 
     /**
      * FunctionDeclaration ::= FunctionsReturningStrings | FunctionsReturningNumerics | FunctionsReturningDatetime
-     *
-     * @return Functions\FunctionNode
      */
-    public function FunctionDeclaration()
+    public function FunctionDeclaration(): Functions\FunctionNode
     {
         assert($this->lexer->lookahead !== null);
         $token    = $this->lexer->lookahead;

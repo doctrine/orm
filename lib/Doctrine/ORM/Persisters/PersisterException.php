@@ -11,8 +11,7 @@ use function sprintf;
 
 class PersisterException extends Exception implements ORMException
 {
-    /** @return PersisterException */
-    public static function matchingAssocationFieldRequiresObject(string $class, string $associationName)
+    public static function matchingAssocationFieldRequiresObject(string $class, string $associationName): PersisterException
     {
         return new self(sprintf(
             'Cannot match on %s::%s with a non-object value. Matching objects by id is ' .
