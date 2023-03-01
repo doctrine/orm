@@ -17,8 +17,7 @@ class QuantifiedExpression extends Node
 {
     public string $type;
 
-    /** @param Subselect $subselect */
-    public function __construct(public $subselect)
+    public function __construct(public Subselect $subselect)
     {
     }
 

@@ -19,8 +19,7 @@ use function assert;
  */
 class SizeFunction extends FunctionNode
 {
-    /** @var PathExpression */
-    public $collectionPathExpression;
+    public PathExpression $collectionPathExpression;
 
     /**
      * @inheritdoc

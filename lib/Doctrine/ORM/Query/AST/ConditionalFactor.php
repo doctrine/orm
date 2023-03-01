@@ -13,9 +13,8 @@ use Doctrine\ORM\Query\SqlWalker;
  */
 class ConditionalFactor extends Node
 {
-    /** @param ConditionalPrimary $conditionalPrimary */
     public function __construct(
-        public $conditionalPrimary,
+        public ConditionalPrimary $conditionalPrimary,
         public bool $not = false,
     ) {
     }

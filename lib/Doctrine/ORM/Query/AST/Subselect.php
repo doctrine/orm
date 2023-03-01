@@ -13,23 +13,15 @@ use Doctrine\ORM\Query\SqlWalker;
  */
 class Subselect extends Node
 {
-    /** @var WhereClause|null */
-    public $whereClause;
+    public WhereClause|null $whereClause = null;
 
-    /** @var GroupByClause|null */
-    public $groupByClause;
+    public GroupByClause|null $groupByClause = null;
 
-    /** @var HavingClause|null */
-    public $havingClause;
+    public HavingClause|null $havingClause = null;
 
-    /** @var OrderByClause|null */
-    public $orderByClause;
+    public OrderByClause|null $orderByClause = null;
 
-    /**
-     * @param SimpleSelectClause  $simpleSelectClause
-     * @param SubselectFromClause $subselectFromClause
-     */
-    public function __construct(public $simpleSelectClause, public $subselectFromClause)
+    public function __construct(public SimpleSelectClause $simpleSelectClause, public SubselectFromClause $subselectFromClause)
     {
     }
 

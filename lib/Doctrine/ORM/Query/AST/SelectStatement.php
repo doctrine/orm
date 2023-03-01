@@ -13,23 +13,15 @@ use Doctrine\ORM\Query\SqlWalker;
  */
 class SelectStatement extends Node
 {
-    /** @var WhereClause|null */
-    public $whereClause;
+    public WhereClause|null $whereClause = null;
 
-    /** @var GroupByClause|null */
-    public $groupByClause;
+    public GroupByClause|null $groupByClause = null;
 
-    /** @var HavingClause|null */
-    public $havingClause;
+    public HavingClause|null $havingClause = null;
 
-    /** @var OrderByClause|null */
-    public $orderByClause;
+    public OrderByClause|null $orderByClause = null;
 
-    /**
-     * @param SelectClause $selectClause
-     * @param FromClause   $fromClause
-     */
-    public function __construct(public $selectClause, public $fromClause)
+    public function __construct(public SelectClause $selectClause, public FromClause $fromClause)
     {
     }
 

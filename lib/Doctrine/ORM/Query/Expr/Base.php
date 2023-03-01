@@ -42,7 +42,7 @@ abstract class Base implements Stringable
      *
      * @return $this
      */
-    public function addMultiple($args = []): static
+    public function addMultiple(array|string|object $args = []): static
     {
         foreach ((array) $args as $arg) {
             $this->add($arg);

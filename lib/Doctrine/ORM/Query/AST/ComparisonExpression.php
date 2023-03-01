@@ -18,14 +18,10 @@ use Doctrine\ORM\Query\SqlWalker;
  */
 class ComparisonExpression extends Node
 {
-    /**
-     * @param Node|string $leftExpression
-     * @param Node|string $rightExpression
-     */
     public function __construct(
-        public $leftExpression,
+        public Node|string $leftExpression,
         public string $operator,
-        public $rightExpression,
+        public Node|string $rightExpression,
     ) {
     }
 

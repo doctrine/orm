@@ -480,7 +480,7 @@ class Expr
      * @param int      $from Initial offset to start cropping string. May accept negative values.
      * @param int|null $len  Length of crop. May accept negative values.
      */
-    public function substring(mixed $x, int $from, $len = null): Expr\Func
+    public function substring(mixed $x, int $from, int|null $len = null): Expr\Func
     {
         $args = [$x, $from];
         if ($len !== null) {
