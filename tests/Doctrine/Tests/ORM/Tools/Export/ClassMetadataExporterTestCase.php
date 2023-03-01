@@ -15,6 +15,7 @@ use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\Mapping\Driver\AnnotationDriver;
 use Doctrine\ORM\Mapping\Driver\XmlDriver;
 use Doctrine\ORM\Mapping\Driver\YamlDriver;
+use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Tools\DisconnectedClassMetadataFactory;
 use Doctrine\ORM\Tools\EntityGenerator;
 use Doctrine\ORM\Tools\Export\ClassMetadataExporter;
@@ -25,8 +26,9 @@ use Doctrine\Tests\OrmTestCase;
 use Doctrine\Tests\TestUtil;
 use Symfony\Component\Yaml\Parser;
 
+use function array_filter;
+use function array_values;
 use function count;
-use function current;
 use function file_get_contents;
 use function glob;
 use function is_array;
@@ -106,7 +108,9 @@ abstract class ClassMetadataExporterTestCase extends OrmTestCase
         $metadataDriver = $this->createMetadataDriver($type, __DIR__ . '/' . $type);
         $em             = $this->createEntityManager($metadataDriver);
         $cmf            = $this->createClassMetadataFactory($em, $type);
-        $metadata       = $cmf->getAllMetadata();
+        $metadata       = array_values(array_filter($cmf->getAllMetadata(), static function (ClassMetadata $class): bool {
+            return $class->name === User::class;
+        }));
 
         $metadata[0]->name = ExportedUser::class;
 
@@ -142,15 +146,15 @@ abstract class ClassMetadataExporterTestCase extends OrmTestCase
         $metadataDriver = $this->createMetadataDriver($type, __DIR__ . '/export/' . $type);
         $em             = $this->createEntityManager($metadataDriver);
         $cmf            = $this->createClassMetadataFactory($em, $type);
-        $metadata       = $cmf->getAllMetadata();
+        $metadatas      = $cmf->getAllMetadata();
 
-        self::assertCount(1, $metadata);
+        foreach ($metadatas as $metadata) {
+            if ($metadata->name === ExportedUser::class) {
+                return $metadata;
+            }
+        }
 
-        $class = current($metadata);
-
-        self::assertEquals(ExportedUser::class, $class->name);
-
-        return $class;
+        $this->fail('Expected metadata not found');
     }
 
     /** @depends testExportedMetadataCanBeReadBackIn */
@@ -388,12 +392,11 @@ abstract class ClassMetadataExporterTestCase extends OrmTestCase
     }
 }
 
-class Address
-{
-}
+/** @Entity */
 class Phonenumber
 {
 }
+/** @Entity */
 class Group
 {
 }
