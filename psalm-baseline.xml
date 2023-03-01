@@ -1054,11 +1054,6 @@
       <code><![CDATA[$assoc['joinColumns']]]></code>
     </PossiblyUndefinedArrayOffset>
   </file>
-  <file src="lib/Doctrine/ORM/Proxy/Proxy.php">
-    <MissingTemplateParam>
-      <code>BaseProxy</code>
-    </MissingTemplateParam>
-  </file>
   <file src="lib/Doctrine/ORM/Proxy/ProxyFactory.php">
     <ArgumentTypeCoercion>
       <code>$classMetadata</code>

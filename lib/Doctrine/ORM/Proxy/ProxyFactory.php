@@ -13,7 +13,6 @@ use Doctrine\Common\Util\ClassUtils;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityNotFoundException;
 use Doctrine\ORM\Persisters\Entity\EntityPersister;
-use Doctrine\ORM\Proxy\Proxy as LegacyProxy;
 use Doctrine\ORM\UnitOfWork;
 use Doctrine\ORM\Utility\IdentifierFlattener;
 use Doctrine\Persistence\Mapping\ClassMetadata;
@@ -113,7 +112,7 @@ EOPHP;
             $proxyGenerator->setPlaceholder('serializeImpl', $this->generateSerializeImpl(...));
             $proxyGenerator->setProxyClassTemplate(self::PROXY_CLASS_TEMPLATE);
         } else {
-            $proxyGenerator->setPlaceholder('baseProxyInterface', LegacyProxy::class);
+            $proxyGenerator->setPlaceholder('baseProxyInterface', CommonProxy::class);
         }
 
         parent::__construct($proxyGenerator, $em->getMetadataFactory(), $autoGenerate);
