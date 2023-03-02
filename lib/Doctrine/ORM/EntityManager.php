@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ORM;
 
 use BackedEnum;
+use DateTimeInterface;
 use Doctrine\Common\EventManager;
 use Doctrine\Common\Util\ClassUtils;
 use Doctrine\DBAL\Connection;
@@ -23,7 +24,6 @@ use Doctrine\ORM\Query\Expr;
 use Doctrine\ORM\Query\FilterCollection;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\ORM\Repository\RepositoryFactory;
-use Doctrine\Persistence\ObjectRepository;
 use Throwable;
 
 use function array_keys;
@@ -366,10 +366,7 @@ class EntityManager implements EntityManagerInterface
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function getReference(string $entityName, $id): object|null
+    public function getReference(string $entityName, mixed $id): object|null
     {
         $class = $this->metadataFactory->getMetadataFor(ltrim($entityName, '\\'));
 
@@ -410,10 +407,7 @@ class EntityManager implements EntityManagerInterface
         return $entity;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function getPartialReference(string $entityName, $identifier): object|null
+    public function getPartialReference(string $entityName, mixed $identifier): object|null
     {
         $class = $this->metadataFactory->getMetadataFor(ltrim($entityName, '\\'));
 
@@ -510,10 +504,7 @@ class EntityManager implements EntityManagerInterface
         $this->unitOfWork->detach($object);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function lock(object $entity, LockMode|int $lockMode, $lockVersion = null): void
+    public function lock(object $entity, LockMode|int $lockMode, DateTimeInterface|int|null $lockVersion = null): void
     {
         $this->unitOfWork->lock($entity, $lockMode, $lockVersion);
     }
@@ -523,7 +514,6 @@ class EntityManager implements EntityManagerInterface
      *
      * @psalm-param class-string<T> $className
      *
-     * @return ObjectRepository|EntityRepository The repository class.
      * @psalm-return EntityRepository<T>
      *
      * @template T of object
@@ -579,34 +569,15 @@ class EntityManager implements EntityManagerInterface
 
     public function newHydrator(string|int $hydrationMode): AbstractHydrator
     {
-        switch ($hydrationMode) {
-            case Query::HYDRATE_OBJECT:
-                return new Internal\Hydration\ObjectHydrator($this);
-
-            case Query::HYDRATE_ARRAY:
-                return new Internal\Hydration\ArrayHydrator($this);
-
-            case Query::HYDRATE_SCALAR:
-                return new Internal\Hydration\ScalarHydrator($this);
-
-            case Query::HYDRATE_SINGLE_SCALAR:
-                return new Internal\Hydration\SingleScalarHydrator($this);
-
-            case Query::HYDRATE_SIMPLEOBJECT:
-                return new Internal\Hydration\SimpleObjectHydrator($this);
-
-            case Query::HYDRATE_SCALAR_COLUMN:
-                return new Internal\Hydration\ScalarColumnHydrator($this);
-
-            default:
-                $class = $this->config->getCustomHydrationMode($hydrationMode);
-
-                if ($class !== null) {
-                    return new $class($this);
-                }
-        }
-
-        throw InvalidHydrationMode::fromMode((string) $hydrationMode);
+        return match ($hydrationMode) {
+            Query::HYDRATE_OBJECT => new Internal\Hydration\ObjectHydrator($this),
+            Query::HYDRATE_ARRAY => new Internal\Hydration\ArrayHydrator($this),
+            Query::HYDRATE_SCALAR => new Internal\Hydration\ScalarHydrator($this),
+            Query::HYDRATE_SINGLE_SCALAR => new Internal\Hydration\SingleScalarHydrator($this),
+            Query::HYDRATE_SIMPLEOBJECT => new Internal\Hydration\SimpleObjectHydrator($this),
+            Query::HYDRATE_SCALAR_COLUMN => new Internal\Hydration\ScalarColumnHydrator($this),
+            default => $this->createCustomHydrator((string) $hydrationMode),
+        };
     }
 
     public function getProxyFactory(): ProxyFactory
@@ -665,5 +636,16 @@ class EntityManager implements EntityManagerInterface
         }
 
         $this->metadataFactory->setCache($metadataCache);
+    }
+
+    private function createCustomHydrator(string $hydrationMode): AbstractHydrator
+    {
+        $class = $this->config->getCustomHydrationMode($hydrationMode);
+
+        if ($class !== null) {
+            return new $class($this);
+        }
+
+        throw InvalidHydrationMode::fromMode($hydrationMode);
     }
 }

@@ -27,10 +27,8 @@ class LockTest extends OrmFunctionalTestCase
     /**
      * @group DDC-178
      * @group locking
-     * @testWith [false]
-     *           [true]
      */
-    public function testLockVersionedEntity(bool $useStringVersion): void
+    public function testLockVersionedEntity(): void
     {
         $article        = new CmsArticle();
         $article->text  = 'my article';
@@ -39,15 +37,7 @@ class LockTest extends OrmFunctionalTestCase
         $this->_em->persist($article);
         $this->_em->flush();
 
-        $lockVersion = $article->version;
-        if ($useStringVersion) {
-            // NOTE: Officially, the lock method (and callers) do not accept a string argument. Calling code should
-            // cast the version to (int) as per the docs. However, this is not currently enforced. This may change in
-            // a future release.
-            $lockVersion = (string) $lockVersion;
-        }
-
-        $this->_em->lock($article, LockMode::OPTIMISTIC, $lockVersion);
+        $this->_em->lock($article, LockMode::OPTIMISTIC, $article->version);
 
         $this->addToAssertionCount(1);
     }
@@ -55,10 +45,8 @@ class LockTest extends OrmFunctionalTestCase
     /**
      * @group DDC-178
      * @group locking
-     * @testWith [false]
-     *           [true]
      */
-    public function testLockVersionedEntityMismatchThrowsException(bool $useStringVersion): void
+    public function testLockVersionedEntityMismatchThrowsException(): void
     {
         $article        = new CmsArticle();
         $article->text  = 'my article';
@@ -68,12 +56,7 @@ class LockTest extends OrmFunctionalTestCase
         $this->_em->flush();
 
         $this->expectException(OptimisticLockException::class);
-        $lockVersion = $article->version + 1;
-        if ($useStringVersion) {
-            $lockVersion = (string) $lockVersion;
-        }
-
-        $this->_em->lock($article, LockMode::OPTIMISTIC, $lockVersion);
+        $this->_em->lock($article, LockMode::OPTIMISTIC, $article->version + 1);
     }
 
     /**

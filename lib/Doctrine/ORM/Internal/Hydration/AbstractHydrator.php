@@ -28,6 +28,8 @@ use function is_array;
 /**
  * Base class for all hydrators. A hydrator is a class that provides some form
  * of transformation of an SQL result set into another structure.
+ *
+ * @psalm-consistent-constructor
  */
 abstract class AbstractHydrator
 {
@@ -77,7 +79,6 @@ abstract class AbstractHydrator
      */
     public function __construct(protected EntityManagerInterface $em)
     {
-        $this->em       = $em;
         $this->platform = $em->getConnection()->getDatabasePlatform();
         $this->uow      = $em->getUnitOfWork();
     }

@@ -161,7 +161,7 @@ interface EntityManagerInterface extends ObjectManager
      *
      * @template T of object
      */
-    public function getReference(string $entityName, $id): object|null;
+    public function getReference(string $entityName, mixed $id): object|null;
 
     /**
      * Gets a partial reference to the entity identified by the given type and identifier
@@ -186,7 +186,7 @@ interface EntityManagerInterface extends ObjectManager
      *
      * @template T of object
      */
-    public function getPartialReference(string $entityName, $identifier): object|null;
+    public function getPartialReference(string $entityName, mixed $identifier): object|null;
 
     /**
      * Closes the EntityManager. All entities that are currently managed
@@ -198,13 +198,12 @@ interface EntityManagerInterface extends ObjectManager
     /**
      * Acquire a lock on the given entity.
      *
-     * @param int|DateTimeInterface|null $lockVersion
      * @psalm-param LockMode::* $lockMode
      *
      * @throws OptimisticLockException
      * @throws PessimisticLockException
      */
-    public function lock(object $entity, LockMode|int $lockMode, $lockVersion = null): void;
+    public function lock(object $entity, LockMode|int $lockMode, DateTimeInterface|int|null $lockVersion = null): void;
 
     /**
      * Gets the EventManager used by the EntityManager.

@@ -204,12 +204,9 @@
     <PropertyTypeCoercion>
       <code>new $metadataFactoryClassName()</code>
     </PropertyTypeCoercion>
-    <RedundantCast>
+    <RedundantCastGivenDocblockType>
       <code>(string) $hydrationMode</code>
-    </RedundantCast>
-    <UnsafeInstantiation>
-      <code>new $class($this)</code>
-    </UnsafeInstantiation>
+    </RedundantCastGivenDocblockType>
   </file>
   <file src="lib/Doctrine/ORM/EntityRepository.php">
     <InvalidReturnStatement>
