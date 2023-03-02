@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Performance\Mock;
 
+use DateTimeInterface;
 use Doctrine\Common\EventManager;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\LockMode;
@@ -109,18 +110,12 @@ class NonProxyLoadingEntityManager implements EntityManagerInterface
         return $this->realEntityManager->createQueryBuilder();
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function getReference(string $entityName, $id): object|null
+    public function getReference(string $entityName, mixed $id): object|null
     {
         return $this->realEntityManager->getReference($entityName, $id);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function getPartialReference(string $entityName, $identifier): object|null
+    public function getPartialReference(string $entityName, mixed $identifier): object|null
     {
         return $this->realEntityManager->getPartialReference($entityName, $identifier);
     }
@@ -130,10 +125,7 @@ class NonProxyLoadingEntityManager implements EntityManagerInterface
         $this->realEntityManager->close();
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function lock(object $entity, LockMode|int $lockMode, $lockVersion = null): void
+    public function lock(object $entity, LockMode|int $lockMode, DateTimeInterface|int|null $lockVersion = null): void
     {
         $this->realEntityManager->lock($entity, $lockMode, $lockVersion);
     }

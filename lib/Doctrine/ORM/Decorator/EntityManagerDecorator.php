@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Decorator;
 
+use DateTimeInterface;
 use Doctrine\Common\EventManager;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\LockMode;
@@ -96,18 +97,12 @@ abstract class EntityManagerDecorator extends ObjectManagerDecorator implements 
         return $this->wrapped->createQueryBuilder();
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getReference(string $entityName, $id): object|null
+    public function getReference(string $entityName, mixed $id): object|null
     {
         return $this->wrapped->getReference($entityName, $id);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getPartialReference(string $entityName, $identifier): object|null
+    public function getPartialReference(string $entityName, mixed $identifier): object|null
     {
         return $this->wrapped->getPartialReference($entityName, $identifier);
     }
@@ -117,10 +112,7 @@ abstract class EntityManagerDecorator extends ObjectManagerDecorator implements 
         $this->wrapped->close();
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function lock(object $entity, LockMode|int $lockMode, $lockVersion = null): void
+    public function lock(object $entity, LockMode|int $lockMode, DateTimeInterface|int|null $lockVersion = null): void
     {
         $this->wrapped->lock($entity, $lockMode, $lockVersion);
     }
