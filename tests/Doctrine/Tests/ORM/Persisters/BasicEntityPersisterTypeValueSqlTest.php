@@ -20,6 +20,8 @@ use Doctrine\Tests\Models\Generic\NonAlphaColumnsEntity;
 use Doctrine\Tests\OrmTestCase;
 use ReflectionMethod;
 
+use function array_slice;
+
 class BasicEntityPersisterTypeValueSqlTest extends OrmTestCase
 {
     protected BasicEntityPersister $persister;
@@ -190,21 +192,28 @@ class BasicEntityPersisterTypeValueSqlTest extends OrmTestCase
         $entityManager->getUnitOfWork()->registerManaged($parent, ['id' => 1], []);
         $entityManager->getUnitOfWork()->registerManaged($friend, ['id' => 2], []);
 
-        $connection->expects($this->atLeast(2))
-            ->method('delete')
-            ->withConsecutive(
-                [
-                    'customtype_parent_friends',
-                    ['friend_customtypeparent_id' => 1],
-                    ['integer'],
-                ],
-                [
-                    'customtype_parent_friends',
-                    ['customtypeparent_id' => 1],
-                    ['integer'],
-                ],
-            );
+        $deleteCalls = [];
+
+        $connection->method('delete')
+            ->willReturnCallback(static function (...$args) use (&$deleteCalls): int {
+                $deleteCalls[] = $args;
+
+                return 1;
+            });
 
         $persister->delete($parent);
+
+        self::assertSame([
+            [
+                'customtype_parent_friends',
+                ['friend_customtypeparent_id' => 1],
+                ['integer'],
+            ],
+            [
+                'customtype_parent_friends',
+                ['customtypeparent_id' => 1],
+                ['integer'],
+            ],
+        ], array_slice($deleteCalls, 0, 2));
     }
 }

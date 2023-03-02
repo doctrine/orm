@@ -170,7 +170,6 @@ use Doctrine\Tests\Models\VersionedManyToOne\Category;
 use Exception;
 use PHPUnit\Framework\AssertionFailedError;
 use PHPUnit\Framework\Constraint\Count;
-use PHPUnit\Framework\Warning;
 use Psr\Cache\CacheItemPoolInterface;
 use RuntimeException;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
@@ -980,9 +979,9 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
     }
 
     /** @throws Throwable */
-    protected function onNotSuccessfulTest(Throwable $e): void
+    protected function onNotSuccessfulTest(Throwable $e): never
     {
-        if ($e instanceof AssertionFailedError || $e instanceof Warning) {
+        if ($e instanceof AssertionFailedError) {
             throw $e;
         }
 
