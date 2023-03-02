@@ -18,6 +18,7 @@ use Doctrine\ORM\Id\BigIntegerIdentityGenerator;
 use Doctrine\ORM\Id\IdentityGenerator;
 use Doctrine\ORM\Id\SequenceGenerator;
 use Doctrine\ORM\Id\UuidGenerator;
+use Doctrine\ORM\Internal\OverrideDisregardingClassMetadata;
 use Doctrine\ORM\Mapping\Exception\CannotGenerateIds;
 use Doctrine\ORM\Mapping\Exception\InvalidCustomGenerator;
 use Doctrine\ORM\Mapping\Exception\UnknownGeneratorType;
@@ -386,8 +387,14 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     /** @param class-string $className */
     private function peekIfIsMappedSuperclass(string $className): bool
     {
+        assert($this->em !== null);
+
+        $class       = new OverrideDisregardingClassMetadata(
+            $className,
+            $this->em->getConfiguration()->getNamingStrategy(),
+            $this->em->getConfiguration()->getTypedFieldMapper()
+        );
         $reflService = $this->getReflectionService();
-        $class       = $this->newClassMetadataInstance($className);
         $this->initializeReflection($class, $reflService);
 
         $this->driver->loadMetadataForClass($className, $class);

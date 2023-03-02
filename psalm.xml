@@ -164,6 +164,7 @@
             </errorLevel>
             <errorLevel type="suppress">
                 <directory name="lib/Doctrine/ORM/Query/AST" />
+                <file name="lib/Doctrine/ORM/Internal/OverrideDisregardingClassMetadata.php" />
             </errorLevel>
         </PropertyNotSetInConstructor>
         <RedundantCastGivenDocblockType>
