@@ -27,9 +27,7 @@ use function sprintf;
  */
 class GenerateRepositoriesCommand extends AbstractEntityManagerCommand
 {
-    /**
-     * {@inheritdoc}
-     */
+    /** @return void */
     protected function configure()
     {
         $this->setName('orm:generate-repositories')

@@ -24,9 +24,7 @@ class UpdateCommand extends AbstractCommand
     /** @var string */
     protected $name = 'orm:schema-tool:update';
 
-    /**
-     * {@inheritdoc}
-     */
+    /** @return void */
     protected function configure()
     {
         $this->setName($this->name)
