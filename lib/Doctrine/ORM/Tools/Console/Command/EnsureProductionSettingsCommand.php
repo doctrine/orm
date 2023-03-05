@@ -19,9 +19,7 @@ use Throwable;
  */
 class EnsureProductionSettingsCommand extends AbstractEntityManagerCommand
 {
-    /**
-     * {@inheritdoc}
-     */
+    /** @return void */
     protected function configure()
     {
         $this->setName('orm:ensure-production-settings')

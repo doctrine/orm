@@ -18,9 +18,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
  */
 class MetadataCommand extends AbstractEntityManagerCommand
 {
-    /**
-     * {@inheritdoc}
-     */
+    /** @return void */
     protected function configure()
     {
         $this->setName('orm:clear-cache:metadata')

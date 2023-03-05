@@ -20,9 +20,7 @@ use function sprintf;
  */
 class CollectionRegionCommand extends AbstractEntityManagerCommand
 {
-    /**
-     * {@inheritdoc}
-     */
+    /** @return void */
     protected function configure()
     {
         $this->setName('orm:clear-cache:region:collection')

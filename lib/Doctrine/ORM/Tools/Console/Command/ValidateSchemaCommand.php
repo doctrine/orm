@@ -20,9 +20,7 @@ use function sprintf;
  */
 class ValidateSchemaCommand extends AbstractEntityManagerCommand
 {
-    /**
-     * {@inheritdoc}
-     */
+    /** @return void */
     protected function configure()
     {
         $this->setName('orm:validate-schema')

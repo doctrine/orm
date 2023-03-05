@@ -2524,43 +2524,19 @@
     </UnsafeInstantiation>
   </file>
   <file src="lib/Doctrine/ORM/Tools/Console/Command/ClearCache/CollectionRegionCommand.php">
-    <MissingReturnType>
-      <code>configure</code>
-    </MissingReturnType>
     <PossiblyNullReference>
       <code>evictAll</code>
     </PossiblyNullReference>
   </file>
   <file src="lib/Doctrine/ORM/Tools/Console/Command/ClearCache/EntityRegionCommand.php">
-    <MissingReturnType>
-      <code>configure</code>
-    </MissingReturnType>
     <PossiblyNullReference>
       <code>evictAll</code>
     </PossiblyNullReference>
-  </file>
-  <file src="lib/Doctrine/ORM/Tools/Console/Command/ClearCache/MetadataCommand.php">
-    <MissingReturnType>
-      <code>configure</code>
-    </MissingReturnType>
   </file>
   <file src="lib/Doctrine/ORM/Tools/Console/Command/ClearCache/QueryCommand.php">
     <DeprecatedMethod>
       <code>getQueryCacheImpl</code>
     </DeprecatedMethod>
-    <MissingReturnType>
-      <code>configure</code>
-    </MissingReturnType>
-  </file>
-  <file src="lib/Doctrine/ORM/Tools/Console/Command/ClearCache/QueryRegionCommand.php">
-    <MissingReturnType>
-      <code>configure</code>
-    </MissingReturnType>
-  </file>
-  <file src="lib/Doctrine/ORM/Tools/Console/Command/ClearCache/ResultCommand.php">
-    <MissingReturnType>
-      <code>configure</code>
-    </MissingReturnType>
   </file>
   <file src="lib/Doctrine/ORM/Tools/Console/Command/ConvertDoctrine1SchemaCommand.php">
     <ArgumentTypeCoercion>
@@ -2582,9 +2558,6 @@
     <InvalidArgument>
       <code>$metadata</code>
     </InvalidArgument>
-    <MissingReturnType>
-      <code>configure</code>
-    </MissingReturnType>
   </file>
   <file src="lib/Doctrine/ORM/Tools/Console/Command/ConvertMappingCommand.php">
     <ArgumentTypeCoercion>
@@ -2596,9 +2569,6 @@
       <code>new DisconnectedClassMetadataFactory()</code>
       <code>new EntityGenerator()</code>
     </DeprecatedClass>
-    <MissingReturnType>
-      <code>configure</code>
-    </MissingReturnType>
     <NoInterfaceProperties>
       <code><![CDATA[$class->name]]></code>
     </NoInterfaceProperties>
@@ -2607,9 +2577,6 @@
     <InvalidDocblock>
       <code>connect</code>
     </InvalidDocblock>
-    <MissingReturnType>
-      <code>configure</code>
-    </MissingReturnType>
   </file>
   <file src="lib/Doctrine/ORM/Tools/Console/Command/GenerateEntitiesCommand.php">
     <ArgumentTypeCoercion>
@@ -2619,17 +2586,11 @@
       <code>new DisconnectedClassMetadataFactory()</code>
       <code>new EntityGenerator()</code>
     </DeprecatedClass>
-    <MissingReturnType>
-      <code>configure</code>
-    </MissingReturnType>
     <NoInterfaceProperties>
       <code><![CDATA[$metadata->name]]></code>
     </NoInterfaceProperties>
   </file>
   <file src="lib/Doctrine/ORM/Tools/Console/Command/GenerateProxiesCommand.php">
-    <MissingReturnType>
-      <code>configure</code>
-    </MissingReturnType>
     <NoInterfaceProperties>
       <code><![CDATA[$metadata->name]]></code>
     </NoInterfaceProperties>
@@ -2641,17 +2602,11 @@
     <DeprecatedClass>
       <code>new EntityRepositoryGenerator()</code>
     </DeprecatedClass>
-    <MissingReturnType>
-      <code>configure</code>
-    </MissingReturnType>
     <NoInterfaceProperties>
       <code><![CDATA[$metadata->customRepositoryClassName]]></code>
     </NoInterfaceProperties>
   </file>
   <file src="lib/Doctrine/ORM/Tools/Console/Command/InfoCommand.php">
-    <MissingReturnType>
-      <code>configure</code>
-    </MissingReturnType>
     <PossiblyNullReference>
       <code>getAllClassNames</code>
     </PossiblyNullReference>
@@ -2668,9 +2623,6 @@
     <DeprecatedClass>
       <code><![CDATA[Debug::dump($resultSet, (int) $input->getOption('depth'), true, false)]]></code>
     </DeprecatedClass>
-    <MissingReturnType>
-      <code>configure</code>
-    </MissingReturnType>
   </file>
   <file src="lib/Doctrine/ORM/Tools/Console/Command/SchemaTool/AbstractCommand.php">
     <InvalidNullableReturnType>
@@ -2685,9 +2637,6 @@
       <code>$metadatas</code>
       <code>$metadatas</code>
     </ArgumentTypeCoercion>
-    <MissingReturnType>
-      <code>configure</code>
-    </MissingReturnType>
   </file>
   <file src="lib/Doctrine/ORM/Tools/Console/Command/SchemaTool/DropCommand.php">
     <ArgumentTypeCoercion>
@@ -2695,9 +2644,6 @@
       <code>$metadatas</code>
       <code>$metadatas</code>
     </ArgumentTypeCoercion>
-    <MissingReturnType>
-      <code>configure</code>
-    </MissingReturnType>
     <PossiblyNullArgument>
       <code><![CDATA[$this->getName()]]></code>
       <code><![CDATA[$this->getName()]]></code>
@@ -2707,18 +2653,10 @@
     <ArgumentTypeCoercion>
       <code>$metadatas</code>
     </ArgumentTypeCoercion>
-    <MissingReturnType>
-      <code>configure</code>
-    </MissingReturnType>
     <PossiblyNullArgument>
       <code><![CDATA[$this->getName()]]></code>
       <code><![CDATA[$this->getName()]]></code>
     </PossiblyNullArgument>
-  </file>
-  <file src="lib/Doctrine/ORM/Tools/Console/Command/ValidateSchemaCommand.php">
-    <MissingReturnType>
-      <code>configure</code>
-    </MissingReturnType>
   </file>
   <file src="lib/Doctrine/ORM/Tools/Console/MetadataFilter.php">
     <InvalidArgument>
