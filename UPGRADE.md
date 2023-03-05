@@ -1,5 +1,9 @@
 # Upgrade to 3.0
 
+## BC BREAK: Removed `Doctrine\ORM\Proxy\Proxy` interface.
+
+Use `Doctrine\Persistence\Proxy` instead to check whether proxies are initialized.
+
 ## BC BREAK: Overriding fields or associations declared in other than mapped superclasses
 
 As stated in the documentation, fields and associations may only be overridden when being inherited
