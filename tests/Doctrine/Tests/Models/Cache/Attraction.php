@@ -7,6 +7,7 @@ namespace Doctrine\Tests\Models\Cache;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping\Cache;
+use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\DiscriminatorMap;
 use Doctrine\ORM\Mapping\Entity;
@@ -88,5 +89,9 @@ abstract class Attraction
         if (! $this->infos->contains($info)) {
             $this->infos->add($info);
         }
+    }
+
+    public static function loadMetadata(ClassMetadata $metadata): void
+    {
     }
 }

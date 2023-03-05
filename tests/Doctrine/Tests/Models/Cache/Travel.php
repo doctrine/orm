@@ -8,6 +8,7 @@ use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping\Cache;
+use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
@@ -86,5 +87,9 @@ class Travel
     public function getCreatedAt(): DateTime
     {
         return $this->createdAt;
+    }
+
+    public static function loadMetadata(ClassMetadata $metadata): void
+    {
     }
 }

@@ -6,6 +6,7 @@ namespace Doctrine\Tests\Models\DDC3579;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
@@ -18,7 +19,6 @@ class DDC3579Group
     #[Id]
     #[GeneratedValue]
     #[Column(type: 'integer')]
-    #[GeneratedValue]
     private int $id;
 
     /** @psalm-var Collection<int, DDC3579Admin> */
@@ -51,5 +51,9 @@ class DDC3579Group
     public function getAdmins(): Collection
     {
         return $this->admins;
+    }
+
+    public static function loadMetadata(ClassMetadata $metadata): void
+    {
     }
 }

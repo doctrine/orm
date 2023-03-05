@@ -440,6 +440,7 @@
       <code>getConnection</code>
       <code>hasListeners</code>
       <code>hasListeners</code>
+      <code>isTransient</code>
       <code>loadMetadataForClass</code>
     </PossiblyNullReference>
     <RedundantCondition>
