@@ -12,11 +12,13 @@ use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Query;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Depends;
+use PHPUnit\Framework\Attributes\Group;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
 
 use function sprintf;
 
-/** @group DDC-2224 */
+#[Group('DDC-2224')]
 class DDC2224Test extends OrmFunctionalTestCase
 {
     public static function setUpBeforeClass(): void
@@ -36,7 +38,7 @@ class DDC2224Test extends OrmFunctionalTestCase
         return $query;
     }
 
-    /** @depends testIssue */
+    #[Depends('testIssue')]
     public function testCacheMissWhenTypeChanges(Query $query): void
     {
         $query->setParameter('field', 'test', 'string');

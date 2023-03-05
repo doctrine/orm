@@ -8,10 +8,11 @@ use Doctrine\Common\Lexer\Token;
 use Doctrine\ORM\Query\Lexer;
 use Doctrine\ORM\Query\TokenType;
 use Doctrine\Tests\OrmTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 class LexerTest extends OrmTestCase
 {
-    /** @dataProvider provideTokens */
+    #[DataProvider('provideTokens')]
     public function testScannerRecognizesTokens($type, $value): void
     {
         $lexer = new Lexer($value);

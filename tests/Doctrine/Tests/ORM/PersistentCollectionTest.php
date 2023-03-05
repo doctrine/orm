@@ -15,6 +15,7 @@ use Doctrine\Tests\Mocks\EntityManagerMock;
 use Doctrine\Tests\Models\ECommerce\ECommerceCart;
 use Doctrine\Tests\Models\ECommerce\ECommerceProduct;
 use Doctrine\Tests\OrmTestCase;
+use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\MockObject\MockObject;
 use stdClass;
 
@@ -105,7 +106,7 @@ class PersistentCollectionTest extends OrmTestCase
         self::assertTrue($this->collection->isInitialized());
     }
 
-    /** @group DDC-3382 */
+    #[Group('DDC-3382')]
     public function testNonObjects(): void
     {
         self::assertEmpty($this->collection);
@@ -125,7 +126,7 @@ class PersistentCollectionTest extends OrmTestCase
         self::assertNull($this->collection->get(3));
     }
 
-    /** @group 6110 */
+    #[Group('6110')]
     public function testRemovingElementsAlsoRemovesKeys(): void
     {
         $dummy = new stdClass();
@@ -137,7 +138,7 @@ class PersistentCollectionTest extends OrmTestCase
         self::assertEquals([], array_keys($this->collection->toArray()));
     }
 
-    /** @group 6110 */
+    #[Group('6110')]
     public function testClearWillAlsoClearKeys(): void
     {
         $this->collection->add(new stdClass());
@@ -145,7 +146,7 @@ class PersistentCollectionTest extends OrmTestCase
         self::assertEquals([], array_keys($this->collection->toArray()));
     }
 
-    /** @group 6110 */
+    #[Group('6110')]
     public function testClearWillAlsoResetKeyPositions(): void
     {
         $dummy = new stdClass();
@@ -157,11 +158,9 @@ class PersistentCollectionTest extends OrmTestCase
         self::assertEquals([0], array_keys($this->collection->toArray()));
     }
 
-    /**
-     * @group 6613
-     * @group 6614
-     * @group 6616
-     */
+    #[Group('6613')]
+    #[Group('6614')]
+    #[Group('6616')]
     public function testWillKeepNewItemsInDirtyCollectionAfterInitialization(): void
     {
         $unitOfWork = $this->createMock(UnitOfWork::class);
@@ -192,11 +191,9 @@ class PersistentCollectionTest extends OrmTestCase
         self::assertTrue($this->collection->isDirty());
     }
 
-    /**
-     * @group 6613
-     * @group 6614
-     * @group 6616
-     */
+    #[Group('6613')]
+    #[Group('6614')]
+    #[Group('6616')]
     public function testWillDeDuplicateNewItemsThatWerePreviouslyPersistedInDirtyCollectionAfterInitialization(): void
     {
         $unitOfWork = $this->createMock(UnitOfWork::class);
@@ -236,11 +233,9 @@ class PersistentCollectionTest extends OrmTestCase
         self::assertTrue($this->collection->isDirty());
     }
 
-    /**
-     * @group 6613
-     * @group 6614
-     * @group 6616
-     */
+    #[Group('6613')]
+    #[Group('6614')]
+    #[Group('6616')]
     public function testWillNotMarkCollectionAsDirtyAfterInitializationIfNoElementsWereAdded(): void
     {
         $unitOfWork = $this->createMock(UnitOfWork::class);

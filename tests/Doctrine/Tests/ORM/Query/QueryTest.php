@@ -29,6 +29,9 @@ use Doctrine\Tests\Models\Enums\UserStatus;
 use Doctrine\Tests\Models\Generic\DateTimeModel;
 use Doctrine\Tests\OrmTestCase;
 use Generator;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\RequiresPhp;
 use Psr\Cache\CacheItemInterface;
 use Psr\Cache\CacheItemPoolInterface;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
@@ -139,7 +142,7 @@ class QueryTest extends OrmTestCase
         $q->setFirstResult(null);
     }
 
-    /** @group DDC-968 */
+    #[Group('DDC-968')]
     public function testHints(): void
     {
         $q = $this->entityManager->createQuery('select a from Doctrine\Tests\Models\CMS\CmsArticle a');
@@ -186,7 +189,7 @@ class QueryTest extends OrmTestCase
         self::assertTrue(true);
     }
 
-    /** @group DDC-1697 */
+    #[Group('DDC-1697')]
     public function testCollectionParameters(): void
     {
         $cities = [
@@ -225,7 +228,7 @@ class QueryTest extends OrmTestCase
         yield 'array_of_enum' => [array_map([City::class, 'from'], $baseArray)];
     }
 
-    /** @dataProvider provideProcessParameterValueIterable */
+    #[DataProvider('provideProcessParameterValueIterable')]
     public function testProcessParameterValueIterable(iterable $cities): void
     {
         $query = $this->entityManager->createQuery('SELECT a FROM Doctrine\Tests\Models\CMS\CmsAddress a WHERE a.city IN (:cities)');
@@ -248,7 +251,7 @@ class QueryTest extends OrmTestCase
         self::assertEquals(1, $query->processParameterValue($group));
     }
 
-    /** @group DDC-2224 */
+    #[Group('DDC-2224')]
     public function testProcessParameterValueClassMetadata(): void
     {
         $query = $this->entityManager->createQuery('SELECT a FROM Doctrine\Tests\Models\CMS\CmsAddress a WHERE a.city IN (:cities)');
@@ -290,7 +293,7 @@ class QueryTest extends OrmTestCase
         self::assertNull($query->processParameterValue(null));
     }
 
-    /** @requires PHP 8.1 */
+    #[RequiresPhp('8.1')]
     public function testProcessParameterValueBackedEnum(): void
     {
         $query = $this->entityManager->createQuery('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.status = :status');
@@ -299,7 +302,7 @@ class QueryTest extends OrmTestCase
         self::assertSame([2], $query->processParameterValue([AccessLevel::User]));
     }
 
-    /** @requires PHP 8.1 */
+    #[RequiresPhp('8.1')]
     public function testProcessParameterValueBackedEnumArray(): void
     {
         $query = $this->entityManager->createQuery('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.status IN (:status)');
@@ -326,7 +329,7 @@ class QueryTest extends OrmTestCase
         self::assertSame($config->getDefaultQueryHints(), $q2->getHints());
     }
 
-    /** @group DDC-3714 */
+    #[Group('DDC-3714')]
     public function testResultCacheCaching(): void
     {
         $entityManager = $this->createTestEntityManagerWithConnection(
@@ -356,7 +359,7 @@ class QueryTest extends OrmTestCase
         self::assertCount(0, $res);
     }
 
-    /** @group DDC-3741 */
+    #[Group('DDC-3741')]
     public function testSetHydrationCacheProfileNull(): void
     {
         $query = $this->entityManager->createQuery();
@@ -364,7 +367,7 @@ class QueryTest extends OrmTestCase
         self::assertNull($query->getHydrationCacheProfile());
     }
 
-    /** @group 2947 */
+    #[Group('2947')]
     public function testResultCacheEviction(): void
     {
         $entityManager = $this->createTestEntityManagerWithConnection(
@@ -400,7 +403,7 @@ class QueryTest extends OrmTestCase
         self::assertCount(2, $query->expireResultCache(false)->getResult());
     }
 
-    /** @group #6162 */
+    #[Group('#6162')]
     public function testSelectJoinSubquery(): void
     {
         $query = $this->entityManager->createQuery('select u from Doctrine\Tests\Models\CMS\CmsUser u JOIN (SELECT )');
@@ -410,7 +413,7 @@ class QueryTest extends OrmTestCase
         $query->getSQL();
     }
 
-    /** @group #6162 */
+    #[Group('#6162')]
     public function testSelectFromSubquery(): void
     {
         $query = $this->entityManager->createQuery('select u from (select Doctrine\Tests\Models\CMS\CmsUser c) as u');
@@ -420,7 +423,7 @@ class QueryTest extends OrmTestCase
         $query->getSQL();
     }
 
-    /** @group 6699 */
+    #[Group('6699')]
     public function testGetParameterTypeJuggling(): void
     {
         $query = $this->entityManager->createQuery('select u from ' . CmsUser::class . ' u where u.id = ?0');
@@ -432,7 +435,7 @@ class QueryTest extends OrmTestCase
         self::assertSame(0, $query->getParameter('0')->getValue());
     }
 
-    /** @group 6699 */
+    #[Group('6699')]
     public function testSetParameterWithNameZeroIsNotOverridden(): void
     {
         $query = $this->entityManager->createQuery('select u from ' . CmsUser::class . ' u where u.id != ?0 and u.username = :name');
@@ -445,7 +448,7 @@ class QueryTest extends OrmTestCase
         self::assertSame('Doctrine', $query->getParameter('name')->getValue());
     }
 
-    /** @group 6699 */
+    #[Group('6699')]
     public function testSetParameterWithNameZeroDoesNotOverrideAnotherParameter(): void
     {
         $query = $this->entityManager->createQuery('select u from ' . CmsUser::class . ' u where u.id != ?0 and u.username = :name');
@@ -458,7 +461,7 @@ class QueryTest extends OrmTestCase
         self::assertSame('Doctrine', $query->getParameter('name')->getValue());
     }
 
-    /** @group 6699 */
+    #[Group('6699')]
     public function testSetParameterWithTypeJugglingWorks(): void
     {
         $query = $this->entityManager->createQuery('select u from ' . CmsUser::class . ' u where u.id != ?0 and u.username = :name');
@@ -474,7 +477,7 @@ class QueryTest extends OrmTestCase
         self::assertSame('Doctrine', $query->getParameter('name')->getValue());
     }
 
-    /** @group 6748 */
+    #[Group('6748')]
     public function testResultCacheProfileCanBeRemovedViaSetter(): void
     {
         $this->entityManager->getConfiguration()->setResultCache(new ArrayAdapter());
@@ -486,7 +489,7 @@ class QueryTest extends OrmTestCase
         self::assertNull($query->getQueryCacheProfile());
     }
 
-    /** @group 7527 */
+    #[Group('7527')]
     public function testValuesAreNotBeingResolvedForSpecifiedParameterTypes(): void
     {
         $unitOfWork = $this->createMock(UnitOfWork::class);
@@ -504,7 +507,7 @@ class QueryTest extends OrmTestCase
         self::assertEmpty($query->getResult());
     }
 
-    /** @group 7982 */
+    #[Group('7982')]
     public function testNonExistentExecutor(): void
     {
         $this->expectException(QueryException::class);
@@ -513,7 +516,7 @@ class QueryTest extends OrmTestCase
         $this->entityManager->createQuery('0')->execute();
     }
 
-    /** @group 8106 */
+    #[Group('8106')]
     public function testGetParameterColonNormalize(): void
     {
         $query = $this->entityManager->createQuery('select u from ' . CmsUser::class . ' u where u.name = :name');

@@ -16,8 +16,9 @@ use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use Exception;
+use PHPUnit\Framework\Attributes\Group;
 
-/** @group DDC-1430 */
+#[Group('DDC-1430')]
 class DDC1430Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void

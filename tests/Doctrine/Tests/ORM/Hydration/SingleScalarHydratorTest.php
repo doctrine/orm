@@ -9,6 +9,7 @@ use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Generator;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 class SingleScalarHydratorTest extends HydrationTestCase
 {
@@ -47,11 +48,8 @@ class SingleScalarHydratorTest extends HydrationTestCase
         ];
     }
 
-    /**
-     * @param list<array<string, mixed>> $resultSet
-     *
-     * @dataProvider validResultSetProvider
-     */
+    /** @param list<array<string, mixed>> $resultSet */
+    #[DataProvider('validResultSetProvider')]
     public function testHydrateSingleScalarFromFieldMappingWithValidResultSet(array $resultSet, mixed $expectedResult): void
     {
         $rsm = new ResultSetMapping();
@@ -66,11 +64,8 @@ class SingleScalarHydratorTest extends HydrationTestCase
         $this->assertEquals($expectedResult, $result);
     }
 
-    /**
-     * @param list<array<string, mixed>> $resultSet
-     *
-     * @dataProvider validResultSetProvider
-     */
+    /** @param list<array<string, mixed>> $resultSet */
+    #[DataProvider('validResultSetProvider')]
     public function testHydrateSingleScalarFromScalarMappingWithValidResultSet(array $resultSet, mixed $expectedResult): void
     {
         $rsm = new ResultSetMapping();
@@ -135,11 +130,8 @@ class SingleScalarHydratorTest extends HydrationTestCase
         ];
     }
 
-    /**
-     * @param list<array<string, mixed>> $resultSet
-     *
-     * @dataProvider invalidResultSetProvider
-     */
+    /** @param list<array<string, mixed>> $resultSet */
+    #[DataProvider('invalidResultSetProvider')]
     public function testHydrateSingleScalarFromFieldMappingWithInvalidResultSet(array $resultSet): void
     {
         $rsm = new ResultSetMapping();
@@ -154,11 +146,8 @@ class SingleScalarHydratorTest extends HydrationTestCase
         $hydrator->hydrateAll($stmt, $rsm);
     }
 
-    /**
-     * @param list<array<string, mixed>> $resultSet
-     *
-     * @dataProvider invalidResultSetProvider
-     */
+    /** @param list<array<string, mixed>> $resultSet */
+    #[DataProvider('invalidResultSetProvider')]
     public function testHydrateSingleScalarFromScalarMappingWithInvalidResultSet(array $resultSet): void
     {
         $rsm = new ResultSetMapping();

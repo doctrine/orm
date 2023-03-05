@@ -14,6 +14,7 @@ use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
 final class GH6531Test extends OrmFunctionalTestCase
 {
@@ -34,7 +35,7 @@ final class GH6531Test extends OrmFunctionalTestCase
         );
     }
 
-    /** @group GH-6531 */
+    #[Group('GH-6531')]
     public function testSimpleDerivedIdentity(): void
     {
         $user          = new GH6531User();
@@ -49,7 +50,7 @@ final class GH6531Test extends OrmFunctionalTestCase
         self::assertSame($address, $this->_em->find(GH6531Address::class, $user));
     }
 
-    /** @group GH-6531 */
+    #[Group('GH-6531')]
     public function testDynamicAttributes(): void
     {
         $article = new GH6531Article();
@@ -64,7 +65,7 @@ final class GH6531Test extends OrmFunctionalTestCase
         );
     }
 
-    /** @group GH-6531 */
+    #[Group('GH-6531')]
     public function testJoinTableWithMetadata(): void
     {
         $product = new GH6531Product();

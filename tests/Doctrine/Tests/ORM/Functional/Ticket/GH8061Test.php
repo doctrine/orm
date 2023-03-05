@@ -11,10 +11,11 @@ use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\Tests\OrmTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
 use function sprintf;
 
-/** @group GH8061 */
+#[Group('GH8061')]
 final class GH8061Test extends OrmTestCase
 {
     public static function setUpBeforeClass(): void

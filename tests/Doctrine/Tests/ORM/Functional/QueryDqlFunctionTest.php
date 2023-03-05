@@ -9,6 +9,8 @@ use Doctrine\DBAL\Platforms\SQLitePlatform;
 use Doctrine\ORM\AbstractQuery;
 use Doctrine\Tests\Models\Company\CompanyManager;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Group;
 
 use function round;
 use function sprintf;
@@ -249,7 +251,7 @@ class QueryDqlFunctionTest extends OrmFunctionalTestCase
         self::assertEquals(1_600_000, $result[3]['op']);
     }
 
-    /** @group test */
+    #[Group('test')]
     public function testOperatorDiv(): void
     {
         $result = $this->_em->createQuery('SELECT m, (m.salary/0.5) AS op FROM Doctrine\Tests\Models\Company\CompanyManager m ORDER BY m.salary ASC')
@@ -274,7 +276,7 @@ class QueryDqlFunctionTest extends OrmFunctionalTestCase
         self::assertEquals('Benjamin E.HR', $arg[3]['namedep']);
     }
 
-    /** @group DDC-1014 */
+    #[Group('DDC-1014')]
     public function testDateDiff(): void
     {
         $query = $this->_em->createQuery("SELECT DATE_DIFF(CURRENT_TIMESTAMP(), DATE_ADD(CURRENT_TIMESTAMP(), 10, 'day')) AS diff FROM Doctrine\Tests\Models\Company\CompanyManager m");
@@ -288,11 +290,9 @@ class QueryDqlFunctionTest extends OrmFunctionalTestCase
         self::assertEqualsWithDelta(10, $arg[0]['diff'], 1, 'Should be roughly 10 (or 9)');
     }
 
-    /**
-     * @group DDC-1014
-     * @group DDC-2938
-     * @dataProvider dateAddSubProvider
-     */
+    #[DataProvider('dateAddSubProvider')]
+    #[Group('DDC-1014')]
+    #[Group('DDC-2938')]
     public function testDateAdd(string $unit, int $amount, int $delta = 0): void
     {
         $query = sprintf(
@@ -326,11 +326,9 @@ class QueryDqlFunctionTest extends OrmFunctionalTestCase
         );
     }
 
-    /**
-     * @group DDC-1014
-     * @group DDC-2938
-     * @dataProvider dateAddSubProvider
-     */
+    #[DataProvider('dateAddSubProvider')]
+    #[Group('DDC-1014')]
+    #[Group('DDC-2938')]
     public function testDateSub(string $unit, int $amount, int $delta = 0): void
     {
         $query = sprintf(
@@ -379,7 +377,7 @@ class QueryDqlFunctionTest extends OrmFunctionalTestCase
         ];
     }
 
-    /** @group DDC-1213 */
+    #[Group('DDC-1213')]
     public function testBitOrComparison(): void
     {
         $dql    = 'SELECT m, ' .
@@ -401,7 +399,7 @@ class QueryDqlFunctionTest extends OrmFunctionalTestCase
         self::assertEquals($result[3][0]['salary'] / 100000 | 2, $result[3]['salary_bit_or']);
     }
 
-    /** @group DDC-1213 */
+    #[Group('DDC-1213')]
     public function testBitAndComparison(): void
     {
         $dql    = 'SELECT m, ' .

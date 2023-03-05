@@ -13,8 +13,9 @@ use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
-/** @group DDC-1300 */
+#[Group('DDC-1300')]
 class DDC1300Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void

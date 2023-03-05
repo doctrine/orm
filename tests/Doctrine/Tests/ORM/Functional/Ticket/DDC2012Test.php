@@ -15,6 +15,7 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\InheritanceType;
 use Doctrine\ORM\Mapping\Table;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
 use function explode;
 use function implode;
@@ -22,10 +23,8 @@ use function is_array;
 use function sprintf;
 use function strtolower;
 
-/**
- * @group DDC-2012
- * @group non-cacheable
- */
+#[Group('DDC-2012')]
+#[Group('non-cacheable')]
 class DDC2012Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void

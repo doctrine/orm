@@ -12,6 +12,7 @@ use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
 class DDC1181Test extends OrmFunctionalTestCase
 {
@@ -26,7 +27,7 @@ class DDC1181Test extends OrmFunctionalTestCase
         );
     }
 
-    /** @group DDC-1181 */
+    #[Group('DDC-1181')]
     public function testIssue(): void
     {
         $hotel = new DDC1181Hotel();

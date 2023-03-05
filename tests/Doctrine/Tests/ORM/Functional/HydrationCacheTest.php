@@ -7,9 +7,10 @@ namespace Doctrine\Tests\ORM\Functional;
 use Doctrine\DBAL\Cache\QueryCacheProfile;
 use Doctrine\Tests\Models\Cms\CmsUser;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
 
-/** @group DDC-1766 */
+#[Group('DDC-1766')]
 class HydrationCacheTest extends OrmFunctionalTestCase
 {
     protected function setUp(): void

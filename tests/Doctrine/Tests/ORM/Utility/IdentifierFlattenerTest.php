@@ -10,12 +10,13 @@ use Doctrine\Tests\Models\Cache\Flight;
 use Doctrine\Tests\Models\VersionedOneToOne\FirstRelatedEntity;
 use Doctrine\Tests\Models\VersionedOneToOne\SecondRelatedEntity;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Group;
 
 /**
  * Test the IdentifierFlattener utility class
- *
- * @covers \Doctrine\ORM\Utility\IdentifierFlattener
  */
+#[CoversClass(IdentifierFlattener::class)]
 class IdentifierFlattenerTest extends OrmFunctionalTestCase
 {
     /**
@@ -40,7 +41,7 @@ class IdentifierFlattenerTest extends OrmFunctionalTestCase
         );
     }
 
-    /** @group utilities */
+    #[Group('utilities')]
     public function testFlattenIdentifierWithOneToOneId(): void
     {
         $secondRelatedEntity       = new SecondRelatedEntity();
@@ -82,7 +83,7 @@ class IdentifierFlattenerTest extends OrmFunctionalTestCase
         self::assertEquals($id['secondEntity']->id, $flatIds['secondEntity']);
     }
 
-    /** @group utilities */
+    #[Group('utilities')]
     public function testFlattenIdentifierWithMutlipleIds(): void
     {
         $leeds  = new City('Leeds');

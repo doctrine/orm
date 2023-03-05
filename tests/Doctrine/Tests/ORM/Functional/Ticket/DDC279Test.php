@@ -14,6 +14,7 @@ use Doctrine\ORM\Mapping\InheritanceType;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
 class DDC279Test extends OrmFunctionalTestCase
 {
@@ -29,7 +30,7 @@ class DDC279Test extends OrmFunctionalTestCase
         );
     }
 
-    /** @group DDC-279 */
+    #[Group('DDC-279')]
     public function testDDC279(): void
     {
         $x = new DDC279EntityX();

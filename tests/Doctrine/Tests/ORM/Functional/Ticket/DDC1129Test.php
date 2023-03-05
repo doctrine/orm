@@ -6,8 +6,9 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Tests\Models\CMS\CmsArticle;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
-/** @group DDC-1129 */
+#[Group('DDC-1129')]
 class DDC1129Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void

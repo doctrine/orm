@@ -9,6 +9,8 @@ use Doctrine\ORM\Mapping as MappingNamespace;
 use Doctrine\ORM\Mapping\Driver\AttributeDriver;
 use Doctrine\ORM\Mapping\Driver\XmlDriver;
 use Doctrine\ORM\ORMSetup;
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\RequiresPhpExtension;
 use PHPUnit\Framework\TestCase;
 use ReflectionProperty;
 use Symfony\Component\Cache\Adapter\AbstractAdapter;
@@ -37,7 +39,7 @@ class ORMSetupTest extends TestCase
         self::assertInstanceOf(XmlDriver::class, $config->getMetadataDriverImpl());
     }
 
-    /** @requires extension apcu */
+    #[RequiresPhpExtension('apcu')]
     public function testCacheNamespaceShouldBeGeneratedForApcu(): void
     {
         $config = ORMSetup::createConfiguration(false, '/foo');
@@ -49,14 +51,14 @@ class ORMSetupTest extends TestCase
         self::assertSame('dc2_1effb2475fcfba4f9e8b8a1dbc8f3caf:', $namespaceProperty->getValue($cache));
     }
 
-    /** @group DDC-1350 */
+    #[Group('DDC-1350')]
     public function testConfigureProxyDir(): void
     {
         $config = ORMSetup::createAttributeMetadataConfiguration([], true, '/foo');
         self::assertEquals('/foo', $config->getProxyDir());
     }
 
-    /** @group DDC-1350 */
+    #[Group('DDC-1350')]
     public function testConfigureCache(): void
     {
         $cache  = new ArrayAdapter();
@@ -67,7 +69,7 @@ class ORMSetupTest extends TestCase
         self::assertSame($cache, $config->getMetadataCache());
     }
 
-    /** @group DDC-3190 */
+    #[Group('DDC-3190')]
     public function testConfigureCacheCustomInstance(): void
     {
         $cache  = new ArrayAdapter();

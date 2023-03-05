@@ -28,10 +28,11 @@ use Doctrine\Tests\Models\Cache\State;
 use Doctrine\Tests\OrmTestCase;
 use InvalidArgumentException;
 use LogicException;
+use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\MockObject\MockObject;
 use Psr\Cache\CacheItemPoolInterface;
 
-/** @group DDC-2183 */
+#[Group('DDC-2183')]
 class DefaultCacheFactoryTest extends OrmTestCase
 {
     private CacheFactory&MockObject $factory;

@@ -14,6 +14,7 @@ use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\Persistence\Proxy;
 use Doctrine\Tests\Models\ECommerce\ECommerceCustomer;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
 /**
  * Tests a self referential one-to-one association mapping (without inheritance).
@@ -78,7 +79,7 @@ class OneToOneSelfReferentialAssociationTest extends OrmFunctionalTestCase
         $this->assertLoadingOfAssociation($customer);
     }
 
-    /** @group mine */
+    #[Group('mine')]
     public function testLazyLoadsAssociation(): void
     {
         $this->createFixture();

@@ -12,11 +12,12 @@ use Doctrine\ORM\Events;
 use Doctrine\Tests\Models\Cache\Country;
 use Doctrine\Tests\Models\Cache\State;
 use Exception;
+use PHPUnit\Framework\Attributes\Group;
 use RuntimeException;
 
 use function uniqid;
 
-/** @group DDC-2183 */
+#[Group('DDC-2183')]
 class SecondLevelCacheTest extends SecondLevelCacheFunctionalTestCase
 {
     public function testPutOnPersist(): void

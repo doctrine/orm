@@ -18,6 +18,7 @@ use Doctrine\Tests\Models\CustomType\CustomTypeChild;
 use Doctrine\Tests\Models\CustomType\CustomTypeParent;
 use Doctrine\Tests\Models\Generic\NonAlphaColumnsEntity;
 use Doctrine\Tests\OrmTestCase;
+use PHPUnit\Framework\Attributes\Group;
 use ReflectionMethod;
 
 use function array_slice;
@@ -106,7 +107,7 @@ class BasicEntityPersisterTypeValueSqlTest extends OrmTestCase
         self::assertEquals('t0.customInteger = ABS(?) AND t0.child_id = ?', $sql);
     }
 
-    /** @group DDC-1719 */
+    #[Group('DDC-1719')]
     public function testStripNonAlphanumericCharactersFromSelectColumnListSQL(): void
     {
         $persister = new BasicEntityPersister($this->entityManager, $this->entityManager->getClassMetadata(NonAlphaColumnsEntity::class));
@@ -115,7 +116,7 @@ class BasicEntityPersisterTypeValueSqlTest extends OrmTestCase
         self::assertEquals('t0."simple-entity-id" AS simpleentityid_1, t0."simple-entity-value" AS simpleentityvalue_2', $method->invoke($persister));
     }
 
-    /** @group DDC-2073 */
+    #[Group('DDC-2073')]
     public function testSelectConditionStatementIsNull(): void
     {
         $statement = $this->persister->getSelectConditionStatementSQL('test', null, [], Comparison::IS);
@@ -134,7 +135,7 @@ class BasicEntityPersisterTypeValueSqlTest extends OrmTestCase
         self::assertEquals('test IS NOT NULL', $statement);
     }
 
-    /** @group DDC-3056 */
+    #[Group('DDC-3056')]
     public function testSelectConditionStatementWithMultipleValuesContainingNull(): void
     {
         self::assertEquals(

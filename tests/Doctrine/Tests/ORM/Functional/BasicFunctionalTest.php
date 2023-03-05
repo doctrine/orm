@@ -19,6 +19,7 @@ use Doctrine\Tests\Models\CMS\CmsPhonenumber;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use InvalidArgumentException;
+use PHPUnit\Framework\Attributes\Group;
 
 class BasicFunctionalTest extends OrmFunctionalTestCase
 {
@@ -145,7 +146,7 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
         self::assertNotInstanceOf(Proxy::class, $user2->address);
     }
 
-    /** @group DDC-1230 */
+    #[Group('DDC-1230')]
     public function testRemove(): void
     {
         $user           = new CmsUser();
@@ -334,7 +335,7 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
         self::assertEquals('developer', $user->status);
     }
 
-    /** @group DDC-833 */
+    #[Group('DDC-833')]
     public function testRefreshResetsCollection(): void
     {
         $user           = new CmsUser();
@@ -364,7 +365,7 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
         self::assertCount(1, $user->phonenumbers);
     }
 
-    /** @group DDC-833 */
+    #[Group('DDC-833')]
     public function testDqlRefreshResetsCollection(): void
     {
         $user           = new CmsUser();
@@ -398,7 +399,7 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
         self::assertCount(1, $user->phonenumbers);
     }
 
-    /** @group DDC-833 */
+    #[Group('DDC-833')]
     public function testCreateEntityOfProxy(): void
     {
         $user           = new CmsUser();
@@ -738,10 +739,8 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
         self::assertNotEquals(1, $this->_em->getConnection()->fetchOne('select 1 from cms_addresses where user_id = ' . $user->id));
     }
 
-    /**
-     * @group DDC-600
-     * @group DDC-455
-     */
+    #[Group('DDC-600')]
+    #[Group('DDC-455')]
     public function testNewAssociatedEntityDuringFlushThrowsException(): void
     {
         $user           = new CmsUser();
@@ -763,10 +762,8 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
         $this->_em->flush();
     }
 
-    /**
-     * @group DDC-600
-     * @group DDC-455
-     */
+    #[Group('DDC-600')]
+    #[Group('DDC-455')]
     public function testNewAssociatedEntityDuringFlushThrowsException2(): void
     {
         $user           = new CmsUser();
@@ -796,10 +793,8 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
         $this->_em->flush();
     }
 
-    /**
-     * @group DDC-600
-     * @group DDC-455
-     */
+    #[Group('DDC-600')]
+    #[Group('DDC-455')]
     public function testNewAssociatedEntityDuringFlushThrowsException3(): void
     {
         $art        = new CmsArticle();
@@ -890,7 +885,7 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
         self::assertEquals('Benjamin E.', $this->_em->find($user::class, $userId)->name);
     }
 
-    /** @group DDC-952 */
+    #[Group('DDC-952')]
     public function testManyToOneFetchModeQuery(): void
     {
         $user           = new CmsUser();
@@ -919,7 +914,7 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
         $this->assertQueryCount(2);
     }
 
-    /** @group DDC-720 */
+    #[Group('DDC-720')]
     public function testFlushSingleManagedEntity(): void
     {
         $user           = new CmsUser();
@@ -938,7 +933,7 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
         self::assertEquals('administrator', $user->status);
     }
 
-    /** @group DDC-720 */
+    #[Group('DDC-720')]
     public function testFlushAndCascadePersist(): void
     {
         $user           = new CmsUser();
@@ -963,7 +958,7 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
         self::assertTrue($address->id > 0, 'other user has an id');
     }
 
-    /** @group DDC-720 */
+    #[Group('DDC-720')]
     public function testFlushSingleAndNoCascade(): void
     {
         $user           = new CmsUser();
@@ -986,11 +981,9 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
         $this->_em->flush();
     }
 
-    /**
-     * @group DDC-720
-     * @group DDC-1612
-     * @group DDC-2267
-     */
+    #[Group('DDC-720')]
+    #[Group('DDC-1612')]
+    #[Group('DDC-2267')]
     public function testFlushSingleNewEntityThenRemove(): void
     {
         $user           = new CmsUser();
@@ -1010,7 +1003,7 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
         self::assertNull($this->_em->find($user::class, $userId));
     }
 
-    /** @group DDC-1585 */
+    #[Group('DDC-1585')]
     public function testWrongAssociationInstance(): void
     {
         $user           = new CmsUser();

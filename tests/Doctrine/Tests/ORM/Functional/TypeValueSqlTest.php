@@ -11,6 +11,7 @@ use Doctrine\Tests\Models\CustomType\CustomTypeChild;
 use Doctrine\Tests\Models\CustomType\CustomTypeParent;
 use Doctrine\Tests\Models\CustomType\CustomTypeUpperCase;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
 class TypeValueSqlTest extends OrmFunctionalTestCase
 {
@@ -51,7 +52,7 @@ class TypeValueSqlTest extends OrmFunctionalTestCase
         self::assertEquals('FOO', $this->_em->getConnection()->fetchOne('select lowerCaseString from customtype_uppercases where id=' . $entity->id . ''), 'Database holds uppercase string');
     }
 
-    /** @group DDC-1642 */
+    #[Group('DDC-1642')]
     public function testUpperCaseStringTypeWhenColumnNameIsDefined(): void
     {
         $entity                       = new CustomTypeUpperCase();

@@ -11,6 +11,7 @@ use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
 class DDC425Test extends OrmFunctionalTestCase
 {
@@ -21,7 +22,7 @@ class DDC425Test extends OrmFunctionalTestCase
         $this->createSchemaForModels(DDC425Entity::class);
     }
 
-    /** @group DDC-425 */
+    #[Group('DDC-425')]
     public function testIssue(): void
     {
         $num = $this->_em->createQuery('DELETE ' . __NAMESPACE__ . '\DDC425Entity e WHERE e.someDatetimeField > ?1')

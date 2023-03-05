@@ -8,8 +8,9 @@ use DateTime;
 use DateTimeZone;
 use Doctrine\Tests\Models\Generic\DateTimeModel;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
-/** @group DDC-657 */
+#[Group('DDC-657')]
 class DDC657Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void

@@ -16,8 +16,9 @@ use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\Persistence\Proxy;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
-/** @group DDC-952 */
+#[Group('DDC-952')]
 class OneToOneEagerLoadingTest extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -33,7 +34,7 @@ class OneToOneEagerLoadingTest extends OrmFunctionalTestCase
         );
     }
 
-    /** @group non-cacheable */
+    #[Group('non-cacheable')]
     public function testEagerLoadOneToOneOwningSide(): void
     {
         $train  = new Train(new TrainOwner('Alexander'));
@@ -56,7 +57,7 @@ class OneToOneEagerLoadingTest extends OrmFunctionalTestCase
         $this->assertQueryCount(1);
     }
 
-    /** @group non-cacheable */
+    #[Group('non-cacheable')]
     public function testEagerLoadOneToOneNullOwningSide(): void
     {
         $train = new Train(new TrainOwner('Alexander'));
@@ -74,7 +75,7 @@ class OneToOneEagerLoadingTest extends OrmFunctionalTestCase
         $this->assertQueryCount(1);
     }
 
-    /** @group non-cacheable */
+    #[Group('non-cacheable')]
     public function testEagerLoadOneToOneInverseSide(): void
     {
         $owner = new TrainOwner('Alexander');
@@ -93,7 +94,7 @@ class OneToOneEagerLoadingTest extends OrmFunctionalTestCase
         $this->assertQueryCount(1);
     }
 
-    /** @group non-cacheable */
+    #[Group('non-cacheable')]
     public function testEagerLoadOneToOneNullInverseSide(): void
     {
         $driver = new TrainDriver('Dagny Taggert');
@@ -128,7 +129,7 @@ class OneToOneEagerLoadingTest extends OrmFunctionalTestCase
         self::assertNotNull($waggon->train);
     }
 
-    /** @group non-cacheable */
+    #[Group('non-cacheable')]
     public function testEagerLoadWithNullableColumnsGeneratesLeftJoinOnBothSides(): void
     {
         $train  = new Train(new TrainOwner('Alexander'));
@@ -151,7 +152,7 @@ class OneToOneEagerLoadingTest extends OrmFunctionalTestCase
         self::assertSame($driverId, $driver->id);
     }
 
-    /** @group non-cacheable */
+    #[Group('non-cacheable')]
     public function testEagerLoadWithNonNullableColumnsGeneratesInnerJoinOnOwningSide(): void
     {
         $waggon = new Waggon();
@@ -179,7 +180,7 @@ class OneToOneEagerLoadingTest extends OrmFunctionalTestCase
         );
     }
 
-    /** @group non-cacheable */
+    #[Group('non-cacheable')]
     public function testEagerLoadWithNonNullableColumnsGeneratesLeftJoinOnNonOwningSide(): void
     {
         $owner = new TrainOwner('Alexander');
@@ -191,7 +192,7 @@ class OneToOneEagerLoadingTest extends OrmFunctionalTestCase
         self::assertNotNull($owner, 'An owner without a train should be able to exist.');
     }
 
-    /** @group DDC-1946 */
+    #[Group('DDC-1946')]
     public function testEagerLoadingDoesNotBreakRefresh(): void
     {
         $train = new Train(new TrainOwner('Johannes'));

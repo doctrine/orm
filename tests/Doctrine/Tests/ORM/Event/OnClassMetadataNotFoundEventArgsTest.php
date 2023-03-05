@@ -7,15 +7,15 @@ namespace Doctrine\Tests\ORM;
 use Doctrine\ORM\Event\OnClassMetadataNotFoundEventArgs;
 use Doctrine\Persistence\Mapping\ClassMetadata;
 use Doctrine\Persistence\ObjectManager;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 
 use function assert;
 
 /**
  * Tests for {@see \Doctrine\ORM\Event\OnClassMetadataNotFoundEventArgs}
- *
- * @covers \Doctrine\ORM\Event\OnClassMetadataNotFoundEventArgs
  */
+#[CoversClass(OnClassMetadataNotFoundEventArgs::class)]
 class OnClassMetadataNotFoundEventArgsTest extends TestCase
 {
     public function testEventArgsMutability(): void

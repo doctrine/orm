@@ -62,6 +62,8 @@ use Doctrine\Tests\Models\TypedProperties\UserTypedWithCustomTypedField;
 use Doctrine\Tests\Models\Upsertable\Insertable;
 use Doctrine\Tests\Models\Upsertable\Updatable;
 use Doctrine\Tests\OrmTestCase;
+use PHPUnit\Framework\Attributes\Depends;
+use PHPUnit\Framework\Attributes\RequiresPhp;
 use stdClass;
 
 use function assert;
@@ -111,7 +113,7 @@ abstract class MappingDriverTestCase extends OrmTestCase
         return $class;
     }
 
-    /** @depends testEntityTableNameAndInheritance */
+    #[Depends('testEntityTableNameAndInheritance')]
     public function testEntityIndexes(ClassMetadata $class): ClassMetadata
     {
         self::assertArrayHasKey('indexes', $class->table, 'ClassMetadata should have indexes key in table property.');
@@ -149,7 +151,7 @@ abstract class MappingDriverTestCase extends OrmTestCase
         );
     }
 
-    /** @depends testEntityTableNameAndInheritance */
+    #[Depends('testEntityTableNameAndInheritance')]
     public function testEntityUniqueConstraints(ClassMetadata $class): ClassMetadata
     {
         self::assertArrayHasKey(
@@ -175,7 +177,7 @@ abstract class MappingDriverTestCase extends OrmTestCase
         $this->createClassMetadata(UserIncorrectUniqueConstraint::class);
     }
 
-    /** @depends testEntityTableNameAndInheritance */
+    #[Depends('testEntityTableNameAndInheritance')]
     public function testEntityOptions(ClassMetadata $class): ClassMetadata
     {
         self::assertArrayHasKey('options', $class->table, 'ClassMetadata should have options key in table property.');
@@ -191,7 +193,7 @@ abstract class MappingDriverTestCase extends OrmTestCase
         return $class;
     }
 
-    /** @depends testEntityOptions */
+    #[Depends('testEntityOptions')]
     public function testEntitySequence(ClassMetadata $class): void
     {
         self::assertIsArray($class->sequenceGeneratorDefinition, 'No Sequence Definition set on this driver.');
@@ -221,7 +223,7 @@ abstract class MappingDriverTestCase extends OrmTestCase
         );
     }
 
-    /** @depends testEntityTableNameAndInheritance */
+    #[Depends('testEntityTableNameAndInheritance')]
     public function testFieldMappings(ClassMetadata $class): ClassMetadata
     {
         self::assertEquals(4, count($class->fieldMappings));
@@ -233,7 +235,7 @@ abstract class MappingDriverTestCase extends OrmTestCase
         return $class;
     }
 
-    /** @depends testFieldMappings */
+    #[Depends('testFieldMappings')]
     public function testVersionedField(ClassMetadata $class): void
     {
         self::assertTrue($class->isVersioned);
@@ -242,7 +244,7 @@ abstract class MappingDriverTestCase extends OrmTestCase
         self::assertFalse(isset($class->fieldMappings['version']['version']));
     }
 
-    /** @depends testEntityTableNameAndInheritance */
+    #[Depends('testEntityTableNameAndInheritance')]
     public function testFieldMappingsColumnNames(ClassMetadata $class): ClassMetadata
     {
         self::assertEquals('id', $class->fieldMappings['id']['columnName']);
@@ -252,7 +254,7 @@ abstract class MappingDriverTestCase extends OrmTestCase
         return $class;
     }
 
-    /** @depends testEntityTableNameAndInheritance */
+    #[Depends('testEntityTableNameAndInheritance')]
     public function testStringFieldMappings(ClassMetadata $class): ClassMetadata
     {
         self::assertEquals('string', $class->fieldMappings['name']['type']);
@@ -281,7 +283,7 @@ abstract class MappingDriverTestCase extends OrmTestCase
         self::assertEquals(Contact::class, $class->embeddedClasses['contact']['class']);
     }
 
-    /** @group GH10313 */
+    #[\PHPUnit\Framework\Attributes\Group('GH10313')]
     public function testCustomFieldTypeFromReflection(): void
     {
         $class = $this->createClassMetadata(
@@ -299,7 +301,7 @@ abstract class MappingDriverTestCase extends OrmTestCase
         self::assertEquals(CustomIntType::class, $class->getTypeOfField('customIntTypedField'));
     }
 
-    /** @depends testEntityTableNameAndInheritance */
+    #[Depends('testEntityTableNameAndInheritance')]
     public function testFieldOptions(ClassMetadata $class): ClassMetadata
     {
         $expected = ['foo' => 'bar', 'baz' => ['key' => 'val'], 'fixed' => false];
@@ -308,7 +310,7 @@ abstract class MappingDriverTestCase extends OrmTestCase
         return $class;
     }
 
-    /** @depends testEntityTableNameAndInheritance */
+    #[Depends('testEntityTableNameAndInheritance')]
     public function testIdFieldOptions(ClassMetadata $class): ClassMetadata
     {
         self::assertEquals(['foo' => 'bar', 'unsigned' => false], $class->fieldMappings['id']['options']);
@@ -316,7 +318,7 @@ abstract class MappingDriverTestCase extends OrmTestCase
         return $class;
     }
 
-    /** @depends testFieldMappings */
+    #[Depends('testFieldMappings')]
     public function testIdentifier(ClassMetadata $class): ClassMetadata
     {
         self::assertEquals(['id'], $class->identifier);
@@ -326,7 +328,7 @@ abstract class MappingDriverTestCase extends OrmTestCase
         return $class;
     }
 
-    /** @group #6129 */
+    #[\PHPUnit\Framework\Attributes\Group('#6129')]
     public function testBooleanValuesForOptionIsSetCorrectly(): ClassMetadata
     {
         $class = $this->createClassMetadata(User::class);
@@ -340,7 +342,7 @@ abstract class MappingDriverTestCase extends OrmTestCase
         return $class;
     }
 
-    /** @depends testIdentifier */
+    #[Depends('testIdentifier')]
     public function testAssociations(ClassMetadata $class): ClassMetadata
     {
         self::assertEquals(3, count($class->associationMappings));
@@ -348,7 +350,7 @@ abstract class MappingDriverTestCase extends OrmTestCase
         return $class;
     }
 
-    /** @depends testAssociations */
+    #[Depends('testAssociations')]
     public function testOwningOneToOneAssociation(ClassMetadata $class): ClassMetadata
     {
         self::assertTrue(isset($class->associationMappings['address']));
@@ -364,7 +366,7 @@ abstract class MappingDriverTestCase extends OrmTestCase
         return $class;
     }
 
-    /** @depends testOwningOneToOneAssociation */
+    #[Depends('testOwningOneToOneAssociation')]
     public function testInverseOneToManyAssociation(ClassMetadata $class): ClassMetadata
     {
         self::assertTrue(isset($class->associationMappings['phonenumbers']));
@@ -382,7 +384,7 @@ abstract class MappingDriverTestCase extends OrmTestCase
         return $class;
     }
 
-    /** @depends testInverseOneToManyAssociation */
+    #[Depends('testInverseOneToManyAssociation')]
     public function testManyToManyAssociationWithCascadeAll(ClassMetadata $class): ClassMetadata
     {
         self::assertTrue(isset($class->associationMappings['groups']));
@@ -399,7 +401,7 @@ abstract class MappingDriverTestCase extends OrmTestCase
         return $class;
     }
 
-    /** @depends testManyToManyAssociationWithCascadeAll */
+    #[Depends('testManyToManyAssociationWithCascadeAll')]
     public function testLifecycleCallbacks(ClassMetadata $class): ClassMetadata
     {
         self::assertCount(2, $class->lifecycleCallbacks);
@@ -409,7 +411,7 @@ abstract class MappingDriverTestCase extends OrmTestCase
         return $class;
     }
 
-    /** @depends testManyToManyAssociationWithCascadeAll */
+    #[Depends('testManyToManyAssociationWithCascadeAll')]
     public function testLifecycleCallbacksSupportMultipleMethodNames(ClassMetadata $class): ClassMetadata
     {
         self::assertCount(2, $class->lifecycleCallbacks['prePersist']);
@@ -418,7 +420,7 @@ abstract class MappingDriverTestCase extends OrmTestCase
         return $class;
     }
 
-    /** @depends testLifecycleCallbacksSupportMultipleMethodNames */
+    #[Depends('testLifecycleCallbacksSupportMultipleMethodNames')]
     public function testJoinColumnUniqueAndNullable(ClassMetadata $class): ClassMetadata
     {
         // Non-Nullability of Join Column
@@ -428,7 +430,7 @@ abstract class MappingDriverTestCase extends OrmTestCase
         return $class;
     }
 
-    /** @depends testJoinColumnUniqueAndNullable */
+    #[Depends('testJoinColumnUniqueAndNullable')]
     public function testColumnDefinition(ClassMetadata $class): ClassMetadata
     {
         self::assertEquals('CHAR(32) NOT NULL', $class->fieldMappings['email']['columnDefinition']);
@@ -437,7 +439,7 @@ abstract class MappingDriverTestCase extends OrmTestCase
         return $class;
     }
 
-    /** @depends testColumnDefinition */
+    #[Depends('testColumnDefinition')]
     public function testJoinColumnOnDelete(ClassMetadata $class): ClassMetadata
     {
         self::assertEquals('CASCADE', $class->associationMappings['address']['joinColumns'][0]['onDelete']);
@@ -445,7 +447,7 @@ abstract class MappingDriverTestCase extends OrmTestCase
         return $class;
     }
 
-    /** @group DDC-514 */
+    #[\PHPUnit\Framework\Attributes\Group('DDC-514')]
     public function testDiscriminatorColumnDefaults(): void
     {
         if (str_contains(static::class, 'PHPMappingDriver')) {
@@ -460,7 +462,7 @@ abstract class MappingDriverTestCase extends OrmTestCase
         );
     }
 
-    /** @group DDC-869 */
+    #[\PHPUnit\Framework\Attributes\Group('DDC-869')]
     public function testMappedSuperclassWithRepository(): void
     {
         $em      = $this->getTestEntityManager();
@@ -485,7 +487,7 @@ abstract class MappingDriverTestCase extends OrmTestCase
         self::assertTrue($em->getRepository(DDC869ChequePayment::class)->isTrue());
     }
 
-    /** @group DDC-1476 */
+    #[\PHPUnit\Framework\Attributes\Group('DDC-1476')]
     public function testDefaultFieldType(): void
     {
         $factory = $this->createClassMetadataFactory();
@@ -515,7 +517,7 @@ abstract class MappingDriverTestCase extends OrmTestCase
         self::assertEquals(ClassMetadata::GENERATOR_TYPE_NONE, $class->generatorType);
     }
 
-    /** @group DDC-1170 */
+    #[\PHPUnit\Framework\Attributes\Group('DDC-1170')]
     public function testIdentifierColumnDefinition(): void
     {
         $class = $this->createClassMetadata(DDC1170Entity::class);
@@ -530,7 +532,7 @@ abstract class MappingDriverTestCase extends OrmTestCase
         self::assertEquals('varchar(255) not null', strtolower($class->fieldMappings['value']['columnDefinition']));
     }
 
-    /** @group DDC-559 */
+    #[\PHPUnit\Framework\Attributes\Group('DDC-559')]
     public function testNamingStrategy(): void
     {
         $em      = $this->getTestEntityManager();
@@ -547,10 +549,8 @@ abstract class MappingDriverTestCase extends OrmTestCase
         self::assertEquals('DDC1476_ENTITY_WITH_DEFAULT_FIELD_TYPE', $class->table['name']);
     }
 
-    /**
-     * @group DDC-807
-     * @group DDC-553
-     */
+    #[\PHPUnit\Framework\Attributes\Group('DDC-807')]
+    #[\PHPUnit\Framework\Attributes\Group('DDC-553')]
     public function testDiscriminatorColumnDefinition(): void
     {
         $class = $this->createClassMetadata(DDC807Entity::class);
@@ -562,7 +562,7 @@ abstract class MappingDriverTestCase extends OrmTestCase
         self::assertEquals('dtype', $class->discriminatorColumn['name']);
     }
 
-    /** @group GH10288 */
+    #[\PHPUnit\Framework\Attributes\Group('GH10288')]
     public function testDiscriminatorColumnEnumTypeDefinition(): void
     {
         $class = $this->createClassMetadata(GH10288EnumTypePerson::class);
@@ -574,7 +574,7 @@ abstract class MappingDriverTestCase extends OrmTestCase
         self::assertEquals('discr', $class->discriminatorColumn['name']);
     }
 
-    /** @group DDC-889 */
+    #[\PHPUnit\Framework\Attributes\Group('DDC-889')]
     public function testInvalidEntityOrMappedSuperClassShouldMentionParentClasses(): void
     {
         $this->expectException(MappingException::class);
@@ -583,7 +583,7 @@ abstract class MappingDriverTestCase extends OrmTestCase
         $this->createClassMetadata(DDC889Class::class);
     }
 
-    /** @group DDC-889 */
+    #[\PHPUnit\Framework\Attributes\Group('DDC-889')]
     public function testIdentifierRequiredShouldMentionParentClasses(): void
     {
         $factory = $this->createClassMetadataFactory();
@@ -594,10 +594,34 @@ abstract class MappingDriverTestCase extends OrmTestCase
         $factory->getMetadataFor(DDC889Entity::class);
     }
 
-    /**
-     * @requires PHP 8.1
-     * @group DDC-964
-     */
+    #[\PHPUnit\Framework\Attributes\Group('DDC-3579')]
+    #[RequiresPhp('8.1')]
+    public function testInversedByOverrideMapping(): void
+    {
+        $factory       = $this->createClassMetadataFactory();
+        $adminMetadata = $factory->getMetadataFor(DDC3579Admin::class);
+
+        // assert groups association mappings
+        self::assertArrayHasKey('groups', $adminMetadata->associationMappings);
+        $adminGroups = $adminMetadata->associationMappings['groups'];
+
+        // assert override
+        self::assertEquals('admins', $adminGroups['inversedBy']);
+    }
+
+    #[\PHPUnit\Framework\Attributes\Group('DDC-5934')]
+    #[RequiresPhp('8.1')]
+    public function testFetchOverrideMapping(): void
+    {
+        // check override metadata
+        $contractMetadata = $this->createClassMetadataFactory()->getMetadataFor(DDC5934Contract::class);
+
+        self::assertArrayHasKey('members', $contractMetadata->associationMappings);
+        self::assertSame(ClassMetadata::FETCH_EXTRA_LAZY, $contractMetadata->associationMappings['members']['fetch']);
+    }
+
+    #[\PHPUnit\Framework\Attributes\Group('DDC-964')]
+    #[RequiresPhp('8.1')]
     public function testAssociationOverridesMapping(): void
     {
         $factory       = $this->createClassMetadataFactory();
@@ -624,7 +648,7 @@ abstract class MappingDriverTestCase extends OrmTestCase
         self::assertEquals($guestGroups['isCascadeMerge'], $adminGroups['isCascadeMerge']);
         self::assertEquals($guestGroups['isCascadeDetach'], $adminGroups['isCascadeDetach']);
 
-         // assert not override attributes
+        // assert not override attributes
         self::assertEquals('ddc964_users_groups', $guestGroups['joinTable']['name']);
         self::assertEquals('user_id', $guestGroups['joinTable']['joinColumns'][0]['name']);
         self::assertEquals('group_id', $guestGroups['joinTable']['inverseJoinColumns'][0]['name']);
@@ -673,40 +697,8 @@ abstract class MappingDriverTestCase extends OrmTestCase
         self::assertEquals(['id' => 'adminaddress_id'], $adminAddress['targetToSourceKeyColumns']);
     }
 
-    /**
-     * @requires PHP 8.1
-     * @group DDC-3579
-     */
-    public function testInversedByOverrideMapping(): void
-    {
-        $factory       = $this->createClassMetadataFactory();
-        $adminMetadata = $factory->getMetadataFor(DDC3579Admin::class);
-
-        // assert groups association mappings
-        self::assertArrayHasKey('groups', $adminMetadata->associationMappings);
-        $adminGroups = $adminMetadata->associationMappings['groups'];
-
-        // assert override
-        self::assertEquals('admins', $adminGroups['inversedBy']);
-    }
-
-    /**
-     * @requires PHP 8.1
-     * @group DDC-5934
-     */
-    public function testFetchOverrideMapping(): void
-    {
-        // check override metadata
-        $contractMetadata = $this->createClassMetadataFactory()->getMetadataFor(DDC5934Contract::class);
-
-        self::assertArrayHasKey('members', $contractMetadata->associationMappings);
-        self::assertSame(ClassMetadata::FETCH_EXTRA_LAZY, $contractMetadata->associationMappings['members']['fetch']);
-    }
-
-    /**
-     * @requires PHP 8.1
-     * @group DDC-964
-     */
+    #[\PHPUnit\Framework\Attributes\Group('DDC-964')]
+    #[RequiresPhp('8.1')]
     public function testAttributeOverridesMapping(): void
     {
         $factory       = $this->createClassMetadataFactory();
@@ -740,7 +732,7 @@ abstract class MappingDriverTestCase extends OrmTestCase
         self::assertTrue($guestMetadata->fieldMappings['name']['unique']);
     }
 
-    /** @group DDC-1955 */
+    #[\PHPUnit\Framework\Attributes\Group('DDC-1955')]
     public function testEntityListeners(): void
     {
         $em         = $this->getTestEntityManager();
@@ -769,7 +761,7 @@ abstract class MappingDriverTestCase extends OrmTestCase
         self::assertEquals($flexClass->entityListeners, $superClass->entityListeners);
     }
 
-    /** @group DDC-1955 */
+    #[\PHPUnit\Framework\Attributes\Group('DDC-1955')]
     public function testEntityListenersOverride(): void
     {
         $em         = $this->getTestEntityManager();
@@ -800,7 +792,7 @@ abstract class MappingDriverTestCase extends OrmTestCase
         self::assertEquals('prePersistHandler2', $prePersist['method']);
     }
 
-    /** @group DDC-1955 */
+    #[\PHPUnit\Framework\Attributes\Group('DDC-1955')]
     public function testEntityListenersNamingConvention(): void
     {
         $em       = $this->getTestEntityManager();
@@ -853,7 +845,7 @@ abstract class MappingDriverTestCase extends OrmTestCase
         self::assertEquals(Events::preFlush, $preFlush['method']);
     }
 
-    /** @group DDC-2183 */
+    #[\PHPUnit\Framework\Attributes\Group('DDC-2183')]
     public function testSecondLevelCacheMapping(): void
     {
         $em      = $this->getTestEntityManager();
@@ -879,10 +871,8 @@ abstract class MappingDriverTestCase extends OrmTestCase
         self::assertEquals('doctrine_tests_models_cache_city__attractions', $class->associationMappings['attractions']['cache']['region']);
     }
 
-    /**
-     * @group DDC-2825
-     * @group 881
-     */
+    #[\PHPUnit\Framework\Attributes\Group('DDC-2825')]
+    #[\PHPUnit\Framework\Attributes\Group('881')]
     public function testSchemaDefinitionViaExplicitTableSchemaAttributeProperty(): void
     {
         $metadata = $this->createClassMetadataFactory()->getMetadataFor(ExplicitSchemaAndTable::class);
@@ -892,10 +882,8 @@ abstract class MappingDriverTestCase extends OrmTestCase
         self::assertSame('explicit_table', $metadata->getTableName());
     }
 
-    /**
-     * @group DDC-2825
-     * @group 881
-     */
+    #[\PHPUnit\Framework\Attributes\Group('DDC-2825')]
+    #[\PHPUnit\Framework\Attributes\Group('881')]
     public function testSchemaDefinitionViaSchemaDefinedInTableNameInTableAttributeProperty(): void
     {
         $metadata = $this->createClassMetadataFactory()->getMetadataFor(SchemaAndTableInTableName::class);
@@ -905,10 +893,8 @@ abstract class MappingDriverTestCase extends OrmTestCase
         self::assertSame('implicit_table', $metadata->getTableName());
     }
 
-    /**
-     * @group DDC-514
-     * @group DDC-1015
-     */
+    #[\PHPUnit\Framework\Attributes\Group('DDC-514')]
+    #[\PHPUnit\Framework\Attributes\Group('DDC-1015')]
     public function testDiscriminatorColumnDefaultLength(): void
     {
         if (str_contains(static::class, 'PHPMappingDriver')) {
@@ -921,10 +907,8 @@ abstract class MappingDriverTestCase extends OrmTestCase
         self::assertEquals(255, $class->discriminatorColumn['length']);
     }
 
-    /**
-     * @group DDC-514
-     * @group DDC-1015
-     */
+    #[\PHPUnit\Framework\Attributes\Group('DDC-514')]
+    #[\PHPUnit\Framework\Attributes\Group('DDC-1015')]
     public function testDiscriminatorColumnDefaultType(): void
     {
         if (str_contains(static::class, 'PHPMappingDriver')) {
@@ -937,10 +921,8 @@ abstract class MappingDriverTestCase extends OrmTestCase
         self::assertEquals('string', $class->discriminatorColumn['type']);
     }
 
-    /**
-     * @group DDC-514
-     * @group DDC-1015
-     */
+    #[\PHPUnit\Framework\Attributes\Group('DDC-514')]
+    #[\PHPUnit\Framework\Attributes\Group('DDC-1015')]
     public function testDiscriminatorColumnDefaultName(): void
     {
         if (str_contains(static::class, 'PHPMappingDriver')) {
@@ -984,7 +966,7 @@ abstract class MappingDriverTestCase extends OrmTestCase
         self::assertArrayNotHasKey('notUpdatable', $metadata->getFieldMapping('updatableContent'));
     }
 
-    /** @requires PHP 8.1 */
+    #[RequiresPhp('8.1')]
     public function testEnumType(): void
     {
         $metadata = $this->createClassMetadata(Card::class);

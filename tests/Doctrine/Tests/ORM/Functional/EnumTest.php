@@ -22,12 +22,14 @@ use Doctrine\Tests\Models\Enums\Suit;
 use Doctrine\Tests\Models\Enums\TypedCard;
 use Doctrine\Tests\Models\Enums\Unit;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\RequiresPhp;
 
 use function dirname;
 use function sprintf;
 use function uniqid;
 
-/** @requires PHP 8.1 */
+#[RequiresPhp('8.1')]
 class EnumTest extends OrmFunctionalTestCase
 {
     public function setUp(): void
@@ -42,11 +44,8 @@ class EnumTest extends OrmFunctionalTestCase
         }
     }
 
-    /**
-     * @param class-string $cardClass
-     *
-     * @dataProvider provideCardClasses
-     */
+    /** @param class-string $cardClass */
+    #[DataProvider('provideCardClasses')]
     public function testEnumMapping(string $cardClass): void
     {
         $this->setUpEntitySchema([$cardClass]);
@@ -344,11 +343,8 @@ class EnumTest extends OrmFunctionalTestCase
         }
     }
 
-    /**
-     * @param class-string $cardClass
-     *
-     * @dataProvider provideCardClasses
-     */
+    /** @param class-string $cardClass */
+    #[DataProvider('provideCardClasses')]
     public function testEnumWithNonMatchingDatabaseValueThrowsException(string $cardClass): void
     {
         $this->setUpEntitySchema([$cardClass]);

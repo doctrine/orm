@@ -11,10 +11,11 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
 use function array_keys;
 
-/** @group GH-7661 */
+#[Group('GH-7661')]
 class GH7661Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void

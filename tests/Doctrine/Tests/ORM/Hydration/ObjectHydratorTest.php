@@ -29,6 +29,8 @@ use Doctrine\Tests\Models\Forum\ForumBoard;
 use Doctrine\Tests\Models\Forum\ForumCategory;
 use Doctrine\Tests\Models\Hydration\EntityWithArrayDefaultArrayValueM2M;
 use Doctrine\Tests\Models\Hydration\SimpleEntity;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Group;
 
 use function count;
 use function property_exists;
@@ -387,9 +389,8 @@ class ObjectHydratorTest extends HydrationTestCase
      *   FROM User u
      *   JOIN u.phonenumbers p
      *  GROUP BY u.id
-     *
-     * @dataProvider provideDataForUserEntityResult
      */
+    #[DataProvider('provideDataForUserEntityResult')]
     public function testMixedQueryNormalJoin($userEntityKey): void
     {
         $rsm = new ResultSetMapping();
@@ -436,9 +437,8 @@ class ObjectHydratorTest extends HydrationTestCase
      * SELECT PARTIAL u.{id, status}, PARTIAL p.{phonenumber}, UPPER(u.name) nameUpper
      *   FROM Doctrine\Tests\Models\CMS\CmsUser u
      *   JOIN u.phonenumbers p
-     *
-     * @dataProvider provideDataForUserEntityResult
      */
+    #[DataProvider('provideDataForUserEntityResult')]
     public function testMixedQueryFetchJoin($userEntityKey): void
     {
         $rsm = new ResultSetMapping();
@@ -514,9 +514,8 @@ class ObjectHydratorTest extends HydrationTestCase
      *        INDEX BY u.id
      *   JOIN u.phonenumbers p
      *        INDEX BY p.phonenumber
-     *
-     * @dataProvider provideDataForUserEntityResult
      */
+    #[DataProvider('provideDataForUserEntityResult')]
     public function testMixedQueryFetchJoinCustomIndex($userEntityKey): void
     {
         $rsm = new ResultSetMapping();
@@ -592,9 +591,8 @@ class ObjectHydratorTest extends HydrationTestCase
      *   FROM User u
      *   JOIN u.phonenumbers p
      *   JOIN u.articles a
-     *
-     * @dataProvider provideDataForUserEntityResult
      */
+    #[DataProvider('provideDataForUserEntityResult')]
     public function testMixedQueryMultipleFetchJoin($userEntityKey): void
     {
         $rsm = new ResultSetMapping();
@@ -702,9 +700,8 @@ class ObjectHydratorTest extends HydrationTestCase
      *   JOIN u.phonenumbers p
      *   JOIN u.articles a
      *   LEFT JOIN a.comments c
-     *
-     * @dataProvider provideDataForUserEntityResult
      */
+    #[DataProvider('provideDataForUserEntityResult')]
     public function testMixedQueryMultipleDeepMixedFetchJoin($userEntityKey): void
     {
         $rsm = new ResultSetMapping();
@@ -938,9 +935,8 @@ class ObjectHydratorTest extends HydrationTestCase
     /**
      * SELECT PARTIAL u.{id,name}
      *   FROM Doctrine\Tests\Models\CMS\CmsUser u
-     *
-     * @group DDC-644
      */
+    #[Group('DDC-644')]
     public function testSkipUnknownColumns(): void
     {
         $rsm = new ResultSetMapping();
@@ -968,9 +964,8 @@ class ObjectHydratorTest extends HydrationTestCase
     /**
      * SELECT u.id, u.name
      *   FROM Doctrine\Tests\Models\CMS\CmsUser u
-     *
-     * @dataProvider provideDataForUserEntityResult
      */
+    #[DataProvider('provideDataForUserEntityResult')]
     public function testScalarQueryWithoutResultVariables($userEntityKey): void
     {
         $rsm = new ResultSetMapping();
@@ -1390,9 +1385,8 @@ class ObjectHydratorTest extends HydrationTestCase
      *
      * SELECT PARTIAL u.{id, status}, PARTIAL g.{id, name}, PARTIAL p.{phonenumber}
      *   FROM Doctrine\Tests\Models\CMS\CmsUser u
-     *
-     * @group DDC-809
      */
+    #[Group('DDC-809')]
     public function testManyToManyHydration(): void
     {
         $rsm = new ResultSetMapping();
@@ -1513,9 +1507,8 @@ class ObjectHydratorTest extends HydrationTestCase
      *
      * SELECT PARTIAL u.{id, status} As user, PARTIAL g.{id, name}, PARTIAL p.{phonenumber}
      *   FROM Doctrine\Tests\Models\CMS\CmsUser u
-     *
-     * @group DDC-809
      */
+    #[Group('DDC-809')]
     public function testManyToManyHydrationWithAliasedUserEntity(): void
     {
         $rsm = new ResultSetMapping();
@@ -1637,10 +1630,9 @@ class ObjectHydratorTest extends HydrationTestCase
     /**
      * SELECT PARTIAL u.{id, status}, UPPER(u.name) as nameUpper
      *   FROM Doctrine\Tests\Models\CMS\CmsUser u
-     *
-     * @group DDC-1358
-     * @dataProvider provideDataForUserEntityResult
      */
+    #[DataProvider('provideDataForUserEntityResult')]
+    #[Group('DDC-1358')]
     public function testMissingIdForRootEntity($userEntityKey): void
     {
         $rsm = new ResultSetMapping();
@@ -1696,10 +1688,9 @@ class ObjectHydratorTest extends HydrationTestCase
      * SELECT PARTIAL u.{id, status}, PARTIAL p.{phonenumber}, UPPER(u.name) AS nameUpper
      *   FROM Doctrine\Tests\Models\CMS\CmsUser u
      *   LEFT JOIN u.phonenumbers u
-     *
-     * @group DDC-1358
-     * @dataProvider provideDataForUserEntityResult
      */
+    #[DataProvider('provideDataForUserEntityResult')]
+    #[Group('DDC-1358')]
     public function testMissingIdForCollectionValuedChildEntity($userEntityKey): void
     {
         $rsm = new ResultSetMapping();
@@ -1758,10 +1749,9 @@ class ObjectHydratorTest extends HydrationTestCase
      * SELECT PARTIAL u.{id, status}, PARTIAL a.{id, city}, UPPER(u.name) AS nameUpper
      *   FROM Doctrine\Tests\Models\CMS\CmsUser u
      *   JOIN u.address a
-     *
-     * @group DDC-1358
-     * @dataProvider provideDataForUserEntityResult
      */
+    #[DataProvider('provideDataForUserEntityResult')]
+    #[Group('DDC-1358')]
     public function testMissingIdForSingleValuedChildEntity($userEntityKey): void
     {
         $rsm = new ResultSetMapping();
@@ -1812,10 +1802,9 @@ class ObjectHydratorTest extends HydrationTestCase
      * SELECT PARTIAL u.{id, status}, UPPER(u.name) AS nameUpper
      *   FROM Doctrine\Tests\Models\CMS\CmsUser u
      *        INDEX BY u.id
-     *
-     * @group DDC-1385
-     * @dataProvider provideDataForUserEntityResult
      */
+    #[DataProvider('provideDataForUserEntityResult')]
+    #[Group('DDC-1385')]
     public function testIndexByAndMixedResult($userEntityKey): void
     {
         $rsm = new ResultSetMapping();
@@ -1856,10 +1845,9 @@ class ObjectHydratorTest extends HydrationTestCase
     /**
      * SELECT UPPER(u.name) AS nameUpper
      *   FROM Doctrine\Tests\Models\CMS\CmsUser u
-     *
-     * @group DDC-1385
-     * @dataProvider provideDataForUserEntityResult
      */
+    #[DataProvider('provideDataForUserEntityResult')]
+    #[Group('DDC-1385')]
     public function testIndexByScalarsOnly($userEntityKey): void
     {
         $rsm = new ResultSetMapping();
@@ -1887,7 +1875,7 @@ class ObjectHydratorTest extends HydrationTestCase
         );
     }
 
-    /** @group DDC-1470 */
+    #[Group('DDC-1470')]
     public function testMissingMetaMappingException(): void
     {
         $this->expectException(HydrationException::class);
@@ -1911,7 +1899,7 @@ class ObjectHydratorTest extends HydrationTestCase
         $hydrator->hydrateAll($stmt, $rsm);
     }
 
-    /** @group DDC-1470 */
+    #[Group('DDC-1470')]
     public function testMissingDiscriminatorColumnException(): void
     {
         $this->expectException(HydrationException::class);
@@ -1942,7 +1930,7 @@ class ObjectHydratorTest extends HydrationTestCase
         $hydrator->hydrateAll($stmt, $rsm);
     }
 
-    /** @group DDC-3076 */
+    #[Group('DDC-3076')]
     public function testInvalidDiscriminatorValueException(): void
     {
         $this->expectException(HydrationException::class);

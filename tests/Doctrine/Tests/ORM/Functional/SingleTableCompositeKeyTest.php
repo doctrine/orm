@@ -7,6 +7,7 @@ namespace Doctrine\Tests\ORM\Functional;
 use Doctrine\Tests\Models\CompositeKeyInheritance\SingleChildClass;
 use Doctrine\Tests\Models\CompositeKeyInheritance\SingleRootClass;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
 class SingleTableCompositeKeyTest extends OrmFunctionalTestCase
 {
@@ -29,7 +30,7 @@ class SingleTableCompositeKeyTest extends OrmFunctionalTestCase
         self::assertEquals($childEntity, $entity);
     }
 
-    /** @group non-cacheable */
+    #[Group('non-cacheable')]
     public function testUpdateWithCompositeKey(): void
     {
         $childEntity = new SingleChildClass();

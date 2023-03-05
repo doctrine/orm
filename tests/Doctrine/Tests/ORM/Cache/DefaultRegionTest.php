@@ -8,13 +8,13 @@ use Doctrine\ORM\Cache\CollectionCacheEntry;
 use Doctrine\ORM\Cache\Region\DefaultRegion;
 use Doctrine\Tests\Mocks\CacheEntryMock;
 use Doctrine\Tests\Mocks\CacheKeyMock;
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\Test;
 
 use function array_map;
 
-/**
- * @extends RegionTestCase<DefaultRegion>
- * @group DDC-2183
- */
+/** @extends RegionTestCase<DefaultRegion> */
+#[Group('DDC-2183')]
 class DefaultRegionTest extends RegionTestCase
 {
     protected function createRegion(): DefaultRegion
@@ -94,10 +94,8 @@ class DefaultRegionTest extends RegionTestCase
         ], $actual);
     }
 
-    /**
-     * @test
-     * @group GH7266
-     */
+    #[Test]
+    #[Group('GH7266')]
     public function corruptedDataDoesNotLeakIntoApplicationWhenGettingSingleEntry(): void
     {
         $key1 = new CacheKeyMock('key.1');
@@ -111,10 +109,8 @@ class DefaultRegionTest extends RegionTestCase
         self::assertNull($this->region->get($key1));
     }
 
-    /**
-     * @test
-     * @group GH7266
-     */
+    #[Test]
+    #[Group('GH7266')]
     public function corruptedDataDoesNotLeakIntoApplicationWhenGettingMultipleEntries(): void
     {
         $key1 = new CacheKeyMock('key.1');

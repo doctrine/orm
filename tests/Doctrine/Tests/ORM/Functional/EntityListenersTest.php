@@ -10,8 +10,9 @@ use Doctrine\Persistence\Event\LifecycleEventArgs;
 use Doctrine\Tests\Models\Company\CompanyContractListener;
 use Doctrine\Tests\Models\Company\CompanyFixContract;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
-/** @group DDC-1955 */
+#[Group('DDC-1955')]
 class EntityListenersTest extends OrmFunctionalTestCase
 {
     private CompanyContractListener $listener;

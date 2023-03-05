@@ -8,6 +8,7 @@ use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Doctrine\Tests\Models\CMS\CmsPhonenumber;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
 /**
  * Description of DetachedEntityTest
@@ -21,7 +22,7 @@ class DetachedEntityTest extends OrmFunctionalTestCase
         parent::setUp();
     }
 
-    /** @group DDC-203 */
+    #[Group('DDC-203')]
     public function testDetachedEntityThrowsExceptionOnFlush(): void
     {
         $ph              = new CmsPhonenumber();
@@ -38,7 +39,7 @@ class DetachedEntityTest extends OrmFunctionalTestCase
         $this->_em->flush();
     }
 
-    /** @group DDC-822 */
+    #[Group('DDC-822')]
     public function testUseDetachedEntityAsQueryParameter(): void
     {
         $user           = new CmsUser();
@@ -61,7 +62,7 @@ class DetachedEntityTest extends OrmFunctionalTestCase
         self::assertEquals('gblanco', $newUser->username);
     }
 
-    /** @group DDC-920 */
+    #[Group('DDC-920')]
     public function testDetachManagedUnpersistedEntity(): void
     {
         $user           = new CmsUser();

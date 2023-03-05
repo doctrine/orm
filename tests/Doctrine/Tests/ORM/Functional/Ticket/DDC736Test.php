@@ -12,6 +12,7 @@ use Doctrine\Persistence\Proxy;
 use Doctrine\Tests\Models\ECommerce\ECommerceCart;
 use Doctrine\Tests\Models\ECommerce\ECommerceCustomer;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
 use function assert;
 
@@ -24,7 +25,7 @@ class DDC736Test extends OrmFunctionalTestCase
         parent::setUp();
     }
 
-    /** @group DDC-736 */
+    #[Group('DDC-736')]
     public function testReorderEntityFetchJoinForHydration(): void
     {
         $cust = new ECommerceCustomer();
@@ -51,11 +52,9 @@ class DDC736Test extends OrmFunctionalTestCase
         self::assertEquals(['name' => 'roman', 'payment' => 'cash'], $result);
     }
 
-    /**
-     * @group DDC-736
-     * @group DDC-925
-     * @group DDC-915
-     */
+    #[Group('DDC-736')]
+    #[Group('DDC-925')]
+    #[Group('DDC-915')]
     public function testDqlTreeWalkerReordering(): void
     {
         $cust = new ECommerceCustomer();

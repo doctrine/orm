@@ -12,6 +12,8 @@ use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\Test;
 
 use function assert;
 
@@ -34,10 +36,8 @@ final class GH7735Test extends OrmFunctionalTestCase
         $this->_em->clear();
     }
 
-    /**
-     * @test
-     * @group GH7735
-     */
+    #[Test]
+    #[Group('GH7735')]
     public function findByReturnsCachedEntity(): void
     {
         $this->_em->getCache()->evictEntityRegion(GH7735Power::class);

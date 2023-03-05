@@ -21,6 +21,7 @@ use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\Models\Generic\BooleanModel;
 use Doctrine\Tests\Models\Generic\DecimalModel;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
 use function class_exists;
 
@@ -100,7 +101,7 @@ class MySqlSchemaToolTest extends OrmFunctionalTestCase
         self::assertEquals('CREATE TABLE boolean_model (id INT AUTO_INCREMENT NOT NULL, booleanField TINYINT(1) NOT NULL, PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB', $sql[0]);
     }
 
-    /** @group DBAL-204 */
+    #[Group('DBAL-204')]
     public function testGetCreateSchemaSql4(): void
     {
         if (! class_exists(Visitor::class)) {

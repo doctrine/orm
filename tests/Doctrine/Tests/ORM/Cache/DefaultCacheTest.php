@@ -17,12 +17,13 @@ use Doctrine\Tests\Models\Cache\Country;
 use Doctrine\Tests\Models\Cache\State;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\OrmTestCase;
+use PHPUnit\Framework\Attributes\Group;
 use ReflectionMethod;
 use ReflectionProperty;
 
 use function array_merge;
 
-/** @group DDC-2183 */
+#[Group('DDC-2183')]
 class DefaultCacheTest extends OrmTestCase
 {
     private DefaultCache $cache;

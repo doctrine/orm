@@ -11,9 +11,11 @@ use Doctrine\ORM\Mapping\TypedFieldMapper;
 use Doctrine\Tests\Models\TypedProperties\UserTyped;
 use Doctrine\Tests\ORM\Mapping\TypedFieldMapper\CustomIntAsStringTypedFieldMapper;
 use Doctrine\Tests\OrmTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Group;
 use ReflectionClass;
 
-/** @group GH10313 */
+#[Group('GH10313')]
 class TypedFieldMapperTest extends OrmTestCase
 {
     private static function defaultTypedFieldMapper(): DefaultTypedFieldMapper
@@ -69,9 +71,8 @@ class TypedFieldMapperTest extends OrmTestCase
     /**
      * @param array{fieldName: string, enumType?: string, type?: mixed} $mapping
      * @param array{fieldName: string, enumType?: string, type?: mixed} $finalMapping
-     *
-     * @dataProvider dataFieldToMappedField
      */
+    #[DataProvider('dataFieldToMappedField')]
     public function testValidateAndComplete(
         TypedFieldMapper $typedFieldMapper,
         ReflectionClass $reflectionClass,

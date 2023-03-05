@@ -14,11 +14,12 @@ use Doctrine\Tests\Mocks\ConcurrentRegionMock;
 use Doctrine\Tests\Mocks\TimestampRegionMock;
 use Doctrine\Tests\Models\Cache\Country;
 use Doctrine\Tests\Models\Cache\State;
+use PHPUnit\Framework\Attributes\Group;
 use Psr\Cache\CacheItemPoolInterface;
 
 use function assert;
 
-/** @group DDC-2183 */
+#[Group('DDC-2183')]
 class SecondLevelCacheConcurrentTest extends SecondLevelCacheFunctionalTestCase
 {
     private CacheFactorySecondLevelCacheConcurrentTest $cacheFactory;

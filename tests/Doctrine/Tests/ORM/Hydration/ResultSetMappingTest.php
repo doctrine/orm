@@ -11,6 +11,7 @@ use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\Models\Legacy\LegacyUser;
 use Doctrine\Tests\Models\Legacy\LegacyUserReference;
 use Doctrine\Tests\OrmTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
 /**
  * Description of ResultSetMappingTest
@@ -63,10 +64,9 @@ class ResultSetMappingTest extends OrmTestCase
     }
 
     /**
-     * @group DDC-1057
-     *
      * Fluent interface test, not a real result set mapping
      */
+    #[Group('DDC-1057')]
     public function testFluentInterface(): void
     {
         $rms = $this->_rsm;
@@ -91,7 +91,7 @@ class ResultSetMappingTest extends OrmTestCase
         self::assertTrue($rms->isMixedResult());
     }
 
-    /** @group DDC-117 */
+    #[Group('DDC-117')]
     public function testIndexByMetadataColumn(): void
     {
         $this->_rsm->addEntityResult(LegacyUser::class, 'u');

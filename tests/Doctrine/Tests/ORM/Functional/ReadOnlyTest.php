@@ -10,12 +10,12 @@ use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Query;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
 /**
  * Functional Query tests.
- *
- * @group DDC-692
  */
+#[Group('DDC-692')]
 class ReadOnlyTest extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -42,7 +42,7 @@ class ReadOnlyTest extends OrmFunctionalTestCase
         self::assertEquals(1234, $dbReadOnly->numericValue);
     }
 
-    /** @group DDC-1659 */
+    #[Group('DDC-1659')]
     public function testClearReadOnly(): void
     {
         $readOnly = new ReadOnlyEntity('Test1', 1234);
@@ -55,7 +55,7 @@ class ReadOnlyTest extends OrmFunctionalTestCase
         self::assertFalse($this->_em->getUnitOfWork()->isReadOnly($readOnly));
     }
 
-    /** @group DDC-1659 */
+    #[Group('DDC-1659')]
     public function testClearEntitiesReadOnly(): void
     {
         $readOnly = new ReadOnlyEntity('Test1', 1234);

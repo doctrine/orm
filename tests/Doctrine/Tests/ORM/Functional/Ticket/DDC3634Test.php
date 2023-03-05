@@ -19,10 +19,11 @@ use Doctrine\ORM\Mapping\InheritanceType;
 use Doctrine\ORM\Tools\SchemaTool;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use Doctrine\Tests\TestUtil;
+use PHPUnit\Framework\Attributes\Group;
 
 use const PHP_INT_MAX;
 
-/** @group DDC-3634 */
+#[Group('DDC-3634')]
 class DDC3634Test extends OrmFunctionalTestCase
 {
     private LastInsertIdMocker $idMocker;

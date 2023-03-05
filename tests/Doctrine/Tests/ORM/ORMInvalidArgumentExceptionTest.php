@@ -5,12 +5,14 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM;
 
 use Doctrine\ORM\ORMInvalidArgumentException;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use stdClass;
 
 use function spl_object_id;
 
-/** @covers \Doctrine\ORM\ORMInvalidArgumentException */
+#[CoversClass(ORMInvalidArgumentException::class)]
 class ORMInvalidArgumentExceptionTest extends TestCase
 {
     /** @psalm-return list<array{mixed, string}> */
@@ -25,7 +27,7 @@ class ORMInvalidArgumentExceptionTest extends TestCase
         ];
     }
 
-    /** @dataProvider newEntitiesFoundThroughRelationshipsErrorMessages */
+    #[DataProvider('newEntitiesFoundThroughRelationshipsErrorMessages')]
     public function testNewEntitiesFoundThroughRelationships(array $newEntities, string $expectedMessage): void
     {
         $exception = ORMInvalidArgumentException::newEntitiesFoundThroughRelationships($newEntities);

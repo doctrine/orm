@@ -13,10 +13,12 @@ use Doctrine\Tests\Models\CMS\CmsPhonenumber;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\Models\CMS\CmsUserDTO;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Group;
 
 use function count;
 
-/** @group DDC-1574 */
+#[Group('DDC-1574')]
 class NewOperatorTest extends OrmFunctionalTestCase
 {
     /** @var list<CmsUser> */
@@ -101,7 +103,7 @@ class NewOperatorTest extends OrmFunctionalTestCase
         $this->fixtures = [$u1, $u2, $u3];
     }
 
-    /** @dataProvider provideDataForHydrationMode */
+    #[DataProvider('provideDataForHydrationMode')]
     public function testShouldSupportsBasicUsage($hydrationMode): void
     {
         $dql = '
@@ -142,7 +144,7 @@ class NewOperatorTest extends OrmFunctionalTestCase
         self::assertEquals($this->fixtures[2]->address->city, $result[2]->address);
     }
 
-    /** @dataProvider provideDataForHydrationMode */
+    #[DataProvider('provideDataForHydrationMode')]
     public function testShouldIgnoreAliasesForSingleObject($hydrationMode): void
     {
         $dql = '

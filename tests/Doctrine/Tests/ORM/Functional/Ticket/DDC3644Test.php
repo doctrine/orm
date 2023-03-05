@@ -17,6 +17,7 @@ use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
 /**
  * Functional tests for orphan removal with one to many association.
@@ -37,7 +38,7 @@ class DDC3644Test extends OrmFunctionalTestCase
         );
     }
 
-    /** @group DDC-3644 */
+    #[Group('DDC-3644')]
     public function testIssueWithRegularEntity(): void
     {
         // Define initial dataset
@@ -87,7 +88,7 @@ class DDC3644Test extends OrmFunctionalTestCase
         self::assertCount(1, $addresses);
     }
 
-    /** @group DDC-3644 */
+    #[Group('DDC-3644')]
     public function testIssueWithJoinedEntity(): void
     {
         // Define initial dataset

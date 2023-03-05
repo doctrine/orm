@@ -17,6 +17,7 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\InheritanceType;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use InvalidArgumentException;
+use PHPUnit\Framework\Attributes\Group;
 use Stringable;
 
 use function in_array;
@@ -40,9 +41,8 @@ class GH6141Test extends OrmFunctionalTestCase
      * The intent of this test is to ensure that the ORM is capable
      * of using objects as discriminators (which makes things a bit
      * more dynamic as you can see on the mapping of `GH6141Person`)
-     *
-     * @group GH-6141
      */
+    #[Group('GH-6141')]
     public function testEnumDiscriminatorsShouldBeConvertedToString(): void
     {
         $boss     = new GH6141Boss('John');

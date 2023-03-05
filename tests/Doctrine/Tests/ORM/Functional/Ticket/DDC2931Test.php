@@ -11,8 +11,9 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\ORM\Query;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
-/** @group DDC-2931 */
+#[Group('DDC-2931')]
 class DDC2931Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void

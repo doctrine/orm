@@ -16,6 +16,7 @@ use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\JoinTable;
 use Doctrine\ORM\Mapping\ManyToMany;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
 use function assert;
 
@@ -54,7 +55,7 @@ final class GH7761Test extends OrmFunctionalTestCase
         self::assertCount(1, $entity->children);
     }
 
-    /** @group GH-7862 */
+    #[Group('GH-7862')]
     public function testCollectionClearDoesClearIfPersisted(): void
     {
         $entity = $this->_em->find(GH7761Entity::class, 1);

@@ -14,6 +14,7 @@ use Doctrine\Tests\Models\Generic\DateTimeModel;
 use Doctrine\Tests\Models\Generic\DecimalModel;
 use Doctrine\Tests\Models\Generic\SerializationModel;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 use stdClass;
 
 use function class_exists;
@@ -44,7 +45,7 @@ class TypeTest extends OrmFunctionalTestCase
         self::assertSame('0.1515', $decimal->highScale);
     }
 
-    /** @group DDC-1394 */
+    #[Group('DDC-1394')]
     public function testBoolean(): void
     {
         $bool               = new BooleanModel();

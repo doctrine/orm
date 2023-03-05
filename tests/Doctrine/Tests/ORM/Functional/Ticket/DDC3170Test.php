@@ -13,8 +13,9 @@ use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\InheritanceType;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
-/** @group DDC-2306 */
+#[Group('DDC-2306')]
 class DDC3170Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void

@@ -16,6 +16,7 @@ use Doctrine\ORM\Mapping\InheritanceType;
 use Doctrine\ORM\Mapping\Table;
 use Doctrine\ORM\Mapping\Version;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
 class DDC832Test extends OrmFunctionalTestCase
 {
@@ -49,7 +50,7 @@ class DDC832Test extends OrmFunctionalTestCase
         }
     }
 
-    /** @group DDC-832 */
+    #[Group('DDC-832')]
     public function testQuotedTableBasicUpdate(): void
     {
         $like = new DDC832Like('test');
@@ -63,7 +64,7 @@ class DDC832Test extends OrmFunctionalTestCase
         self::assertEquals($like, $this->_em->find(DDC832Like::class, $like->id));
     }
 
-    /** @group DDC-832 */
+    #[Group('DDC-832')]
     public function testQuotedTableBasicRemove(): void
     {
         $like = new DDC832Like('test');
@@ -79,7 +80,7 @@ class DDC832Test extends OrmFunctionalTestCase
         self::assertNull($this->_em->find(DDC832Like::class, $idToBeRemoved));
     }
 
-    /** @group DDC-832 */
+    #[Group('DDC-832')]
     public function testQuotedTableJoinedUpdate(): void
     {
         $index = new DDC832JoinedIndex('test');
@@ -93,7 +94,7 @@ class DDC832Test extends OrmFunctionalTestCase
         self::assertEquals($index, $this->_em->find(DDC832JoinedIndex::class, $index->id));
     }
 
-    /** @group DDC-832 */
+    #[Group('DDC-832')]
     public function testQuotedTableJoinedRemove(): void
     {
         $index = new DDC832JoinedIndex('test');
@@ -109,7 +110,7 @@ class DDC832Test extends OrmFunctionalTestCase
         self::assertNull($this->_em->find(DDC832JoinedIndex::class, $idToBeRemoved));
     }
 
-    /** @group DDC-832 */
+    #[Group('DDC-832')]
     public function testQuotedTableJoinedChildUpdate(): void
     {
         $index = new DDC832JoinedTreeIndex('test', 1, 2);
@@ -123,7 +124,7 @@ class DDC832Test extends OrmFunctionalTestCase
         self::assertEquals($index, $this->_em->find(DDC832JoinedTreeIndex::class, $index->id));
     }
 
-    /** @group DDC-832 */
+    #[Group('DDC-832')]
     public function testQuotedTableJoinedChildRemove(): void
     {
         $index = new DDC832JoinedTreeIndex('test', 1, 2);

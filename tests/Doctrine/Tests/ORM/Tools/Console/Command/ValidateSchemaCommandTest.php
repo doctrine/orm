@@ -9,6 +9,7 @@ use Doctrine\DBAL\Schema\SchemaDiff;
 use Doctrine\ORM\Tools\Console\Command\ValidateSchemaCommand;
 use Doctrine\ORM\Tools\Console\EntityManagerProvider\SingleManagerProvider;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Tester\CommandTester;
@@ -17,9 +18,8 @@ use function method_exists;
 
 /**
  * Tests for {@see \Doctrine\ORM\Tools\Console\Command\ValidateSchemaCommand}
- *
- * @covers \Doctrine\ORM\Tools\Console\Command\ValidateSchemaCommand
  */
+#[CoversClass(ValidateSchemaCommand::class)]
 class ValidateSchemaCommandTest extends OrmFunctionalTestCase
 {
     private ValidateSchemaCommand $command;

@@ -17,10 +17,11 @@ use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\ORM\UnitOfWork;
 use Doctrine\Tests\Mocks\EntityManagerMock;
 use Doctrine\Tests\OrmTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
 use function method_exists;
 
-/** @group GH7869 */
+#[Group('GH7869')]
 class GH7869Test extends OrmTestCase
 {
     public function testDQLDeferredEagerLoad(): void

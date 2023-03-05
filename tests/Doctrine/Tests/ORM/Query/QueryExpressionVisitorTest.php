@@ -11,6 +11,7 @@ use Doctrine\Common\Collections\ExpressionBuilder as CriteriaBuilder;
 use Doctrine\ORM\Query\Expr as QueryBuilder;
 use Doctrine\ORM\Query\Parameter;
 use Doctrine\ORM\Query\QueryExpressionVisitor;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -25,7 +26,7 @@ class QueryExpressionVisitorTest extends TestCase
         $this->visitor = new QueryExpressionVisitor(['o', 'p']);
     }
 
-    /** @dataProvider comparisonData */
+    #[DataProvider('comparisonData')]
     public function testWalkComparison(CriteriaComparison $criteriaExpr, QueryBuilder\Comparison|QueryBuilder\Func|string $queryExpr, Parameter|null $parameter = null): void
     {
         self::assertEquals($queryExpr, $this->visitor->walkComparison($criteriaExpr));

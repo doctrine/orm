@@ -16,6 +16,7 @@ use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\ORMInvalidArgumentException;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
 use function sprintf;
 
@@ -39,9 +40,8 @@ final class GH6029Test extends OrmFunctionalTestCase
     /**
      * Verifies that when wrong entity is persisted via relationship field, the error message does not correctly state
      * the expected class name.
-     *
-     * @group GH-6029
      */
+    #[Group('GH-6029')]
     public function testManyToManyAssociation(): void
     {
         $user = new GH6029User();
@@ -64,9 +64,8 @@ final class GH6029Test extends OrmFunctionalTestCase
     /**
      * Verifies that when wrong entity is persisted via relationship field, the error message does not correctly state
      * the expected class name.
-     *
-     * @group GH-6029
      */
+    #[Group('GH-6029')]
     public function testOneToManyAssociation(): void
     {
         $product = new GH6029Product();

@@ -16,13 +16,14 @@ use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
 use function in_array;
 use function json_decode;
 
 use const JSON_THROW_ON_ERROR;
 
-/** @group DDC-2602 */
+#[Group('DDC-2602')]
 class DDC2602Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void

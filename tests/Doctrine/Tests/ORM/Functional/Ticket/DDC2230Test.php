@@ -14,10 +14,11 @@ use Doctrine\Persistence\NotifyPropertyChanged;
 use Doctrine\Persistence\PropertyChangedListener;
 use Doctrine\Persistence\Proxy;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
 use function assert;
 
-/** @group DDC-2230 */
+#[Group('DDC-2230')]
 class DDC2230Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void

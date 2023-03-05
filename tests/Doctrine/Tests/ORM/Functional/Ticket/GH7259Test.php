@@ -11,6 +11,7 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
 final class GH7259Test extends OrmFunctionalTestCase
 {
@@ -21,7 +22,7 @@ final class GH7259Test extends OrmFunctionalTestCase
         $this->setUpEntitySchema([GH7259Space::class, GH7259File::class, GH7259FileVersion::class, GH7259Feed::class]);
     }
 
-    /** @group GH-7259 */
+    #[Group('GH-7259')]
     public function testPersistFileBeforeVersion(): void
     {
         $space = new GH7259Space();
@@ -46,7 +47,7 @@ final class GH7259Test extends OrmFunctionalTestCase
         self::assertNotNull($fileVersion->id);
     }
 
-    /** @group GH-7259 */
+    #[Group('GH-7259')]
     public function testPersistFileAfterVersion(): void
     {
         $space = new GH7259Space();

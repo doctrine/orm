@@ -9,10 +9,11 @@ use Doctrine\ORM\Id\AbstractIdGenerator;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\Persistence\Mapping\Driver\StaticPHPDriver;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
 use function md5;
 
-/** @group DDC-2415 */
+#[Group('DDC-2415')]
 class DDC2415Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void

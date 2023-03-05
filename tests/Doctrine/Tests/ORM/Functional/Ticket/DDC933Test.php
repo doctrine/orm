@@ -13,6 +13,7 @@ use Doctrine\Persistence\Mapping\MappingException;
 use Doctrine\Tests\Models\Company\CompanyManager;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use Doctrine\Tests\TestUtil;
+use PHPUnit\Framework\Attributes\Group;
 
 use function assert;
 
@@ -25,7 +26,7 @@ class DDC933Test extends OrmFunctionalTestCase
         parent::setUp();
     }
 
-    /** @group DDC-933 */
+    #[Group('DDC-933')]
     public function testLockCTIClass(): void
     {
         if ($this->_em->getConnection()->getDatabasePlatform() instanceof SQLitePlatform) {

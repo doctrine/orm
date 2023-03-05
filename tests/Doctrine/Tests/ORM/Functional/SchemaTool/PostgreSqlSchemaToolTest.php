@@ -14,6 +14,7 @@ use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\Table;
 use Doctrine\Tests\Models\CMS\CmsAddress;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
 use function array_filter;
 use function implode;
@@ -38,7 +39,7 @@ class PostgreSqlSchemaToolTest extends OrmFunctionalTestCase
         self::assertEquals(1, $address->sequenceGeneratorDefinition['allocationSize']);
     }
 
-    /** @group DDC-1657 */
+    #[Group('DDC-1657')]
     public function testUpdateSchemaWithPostgreSQLSchema(): void
     {
         $sql = $this->getUpdateSchemaSqlForModels(

@@ -13,10 +13,11 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\InheritanceType;
 use Doctrine\ORM\Mapping\Table;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
 use function assert;
 
-/** @group GH7505 */
+#[Group('GH7505')]
 final class GH7505Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void

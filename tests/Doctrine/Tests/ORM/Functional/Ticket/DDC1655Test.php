@@ -16,14 +16,13 @@ use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\PostLoad;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
 use function get_debug_type;
 
-/**
- * @group DDC-1655
- * @group DDC-1640
- * @group DDC-1556
- */
+#[Group('DDC-1655')]
+#[Group('DDC-1640')]
+#[Group('DDC-1556')]
 class DDC1655Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void

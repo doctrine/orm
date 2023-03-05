@@ -18,6 +18,8 @@ use Doctrine\ORM\Mapping\Table;
 use Doctrine\ORM\Mapping\Version;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Depends;
+use PHPUnit\Framework\Attributes\DoesNotPerformAssertions;
 
 use function date;
 use function strtotime;
@@ -59,7 +61,7 @@ class OptimisticTest extends OrmFunctionalTestCase
         return $test;
     }
 
-    /** @depends testJoinedChildInsertSetsInitialVersionValue */
+    #[Depends('testJoinedChildInsertSetsInitialVersionValue')]
     public function testJoinedChildFailureThrowsException(OptimisticJoinedChild $child): void
     {
         $q = $this->_em->createQuery('SELECT t FROM Doctrine\Tests\ORM\Functional\Locking\OptimisticJoinedChild t WHERE t.id = :id');
@@ -98,7 +100,7 @@ class OptimisticTest extends OrmFunctionalTestCase
         return $test;
     }
 
-    /** @depends testJoinedParentInsertSetsInitialVersionValue */
+    #[Depends('testJoinedParentInsertSetsInitialVersionValue')]
     public function testJoinedParentFailureThrowsException(OptimisticJoinedParent $parent): void
     {
         $q = $this->_em->createQuery('SELECT t FROM Doctrine\Tests\ORM\Functional\Locking\OptimisticJoinedParent t WHERE t.id = :id');
@@ -156,7 +158,7 @@ class OptimisticTest extends OrmFunctionalTestCase
         return $test;
     }
 
-    /** @depends testStandardInsertSetsInitialVersionValue */
+    #[Depends('testStandardInsertSetsInitialVersionValue')]
     public function testStandardFailureThrowsException(OptimisticStandard $entity): void
     {
         $q = $this->_em->createQuery('SELECT t FROM Doctrine\Tests\ORM\Functional\Locking\OptimisticStandard t WHERE t.id = :id');
@@ -180,6 +182,7 @@ class OptimisticTest extends OrmFunctionalTestCase
         }
     }
 
+    #[DoesNotPerformAssertions]
     public function testLockWorksWithProxy(): void
     {
         $this->createSchema();
@@ -193,8 +196,6 @@ class OptimisticTest extends OrmFunctionalTestCase
         $proxy = $this->_em->getReference(OptimisticStandard::class, $test->id);
 
         $this->_em->lock($proxy, LockMode::OPTIMISTIC, 1);
-
-        $this->addToAssertionCount(1);
     }
 
     public function testOptimisticTimestampSetsDefaultValue(): OptimisticTimestamp
@@ -214,7 +215,7 @@ class OptimisticTest extends OrmFunctionalTestCase
         return $test;
     }
 
-    /** @depends testOptimisticTimestampSetsDefaultValue */
+    #[Depends('testOptimisticTimestampSetsDefaultValue')]
     public function testOptimisticTimestampFailureThrowsException(OptimisticTimestamp $entity): void
     {
         $q = $this->_em->createQuery('SELECT t FROM Doctrine\Tests\ORM\Functional\Locking\OptimisticTimestamp t WHERE t.id = :id');
@@ -244,7 +245,7 @@ class OptimisticTest extends OrmFunctionalTestCase
         self::assertSame($test, $caughtException->getEntity());
     }
 
-    /** @depends testOptimisticTimestampSetsDefaultValue */
+    #[Depends('testOptimisticTimestampSetsDefaultValue')]
     public function testOptimisticTimestampLockFailureThrowsException(OptimisticTimestamp $entity): void
     {
         $q = $this->_em->createQuery('SELECT t FROM Doctrine\Tests\ORM\Functional\Locking\OptimisticTimestamp t WHERE t.id = :id');

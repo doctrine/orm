@@ -11,6 +11,8 @@ use Doctrine\Tests\DbalTypes\CustomIdObjectType;
 use Doctrine\Tests\DbalTypes\NegativeToPositiveType;
 use Doctrine\Tests\DbalTypes\UpperCaseStringType;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Group;
 
 use function array_keys;
 use function constant;
@@ -18,9 +20,8 @@ use function implode;
 
 /**
  * Test the validity of all modelsets
- *
- * @group DDC-1601
  */
+#[Group('DDC-1601')]
 class SchemaValidatorTest extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -57,7 +58,7 @@ class SchemaValidatorTest extends OrmFunctionalTestCase
         return $modelSets;
     }
 
-    /** @dataProvider dataValidateModelSets */
+    #[DataProvider('dataValidateModelSets')]
     public function testValidateModelSets(string $modelSet): void
     {
         $validator = new SchemaValidator($this->_em);

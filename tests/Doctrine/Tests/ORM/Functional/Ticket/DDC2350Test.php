@@ -12,11 +12,10 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
-/**
- * @group DDC-2350
- * @group non-cacheable
- */
+#[Group('DDC-2350')]
+#[Group('non-cacheable')]
 class DDC2350Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void

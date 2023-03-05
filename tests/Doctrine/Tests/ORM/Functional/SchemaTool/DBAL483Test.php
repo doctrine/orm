@@ -9,13 +9,14 @@ use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
 use function array_filter;
 use function str_contains;
 
 class DBAL483Test extends OrmFunctionalTestCase
 {
-    /** @group DBAL-483 */
+    #[Group('DBAL-483')]
     public function testDefaultValueIsComparedCorrectly(): void
     {
         $class = DBAL483Default::class;

@@ -9,9 +9,10 @@ use Doctrine\ORM\UnitOfWork;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use PHPUnit\Framework\Assert;
+use PHPUnit\Framework\Attributes\Group;
 use ReflectionProperty;
 
-/** @group DDC-3123 */
+#[Group('DDC-3123')]
 class DDC3123Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void

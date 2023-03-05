@@ -15,8 +15,9 @@ use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\Tests\Mocks\CompatibilityType;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
-/** @group GH9335 */
+#[Group('GH9335')]
 final class GH9335Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void

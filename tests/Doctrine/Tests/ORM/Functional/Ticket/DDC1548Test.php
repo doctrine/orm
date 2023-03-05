@@ -10,8 +10,9 @@ use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
-/** @group DDC-1548 */
+#[Group('DDC-1548')]
 class DDC1548Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void

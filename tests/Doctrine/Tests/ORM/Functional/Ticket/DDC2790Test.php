@@ -8,11 +8,12 @@ use Doctrine\ORM\Event\OnFlushEventArgs;
 use Doctrine\ORM\Events;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
 use function array_intersect_key;
 use function intval;
 
-/** @group DDC-2790 */
+#[Group('DDC-2790')]
 class DDC2790Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void

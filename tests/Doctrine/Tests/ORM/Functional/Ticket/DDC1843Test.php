@@ -6,11 +6,10 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Tests\Models\Quote\Group;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group as TestGroup;
 
-/**
- * @group DDC-1845
- * @group DDC-1843
- */
+#[TestGroup('DDC-1845')]
+#[TestGroup('DDC-1843')]
 class DDC1843Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void

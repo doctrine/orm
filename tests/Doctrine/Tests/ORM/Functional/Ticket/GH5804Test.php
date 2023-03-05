@@ -15,8 +15,9 @@ use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\Version;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
-/** @group GH-5804 */
+#[Group('GH-5804')]
 final class GH5804Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void

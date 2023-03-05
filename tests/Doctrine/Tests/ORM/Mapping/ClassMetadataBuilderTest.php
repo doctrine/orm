@@ -14,8 +14,9 @@ use Doctrine\Tests\Models\CMS\CmsGroup;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\Models\ValueObjects\Name;
 use Doctrine\Tests\OrmTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
-/** @group DDC-659 */
+#[Group('DDC-659')]
 class ClassMetadataBuilderTest extends OrmTestCase
 {
     private ClassMetadata $cm;

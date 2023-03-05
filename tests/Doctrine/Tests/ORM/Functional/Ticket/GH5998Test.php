@@ -7,8 +7,9 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 use Doctrine\DBAL\LockMode;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
-/** @group GH-5998 */
+#[Group('GH-5998')]
 class GH5998Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void

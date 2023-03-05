@@ -9,6 +9,7 @@ use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\DoesNotPerformAssertions;
 
 class DDC588Test extends OrmFunctionalTestCase
 {
@@ -19,6 +20,7 @@ class DDC588Test extends OrmFunctionalTestCase
         $this->createSchemaForModels(DDC588Site::class);
     }
 
+    #[DoesNotPerformAssertions]
     public function testIssue(): void
     {
         $site = new DDC588Site('Foo');
@@ -27,8 +29,6 @@ class DDC588Test extends OrmFunctionalTestCase
         $this->_em->flush();
         // Following should not result in exception
         $this->_em->refresh($site);
-
-        $this->addToAssertionCount(1);
     }
 }
 

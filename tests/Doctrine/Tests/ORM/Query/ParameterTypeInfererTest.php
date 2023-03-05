@@ -15,6 +15,7 @@ use Doctrine\Tests\Models\Enums\AccessLevel;
 use Doctrine\Tests\Models\Enums\UserStatus;
 use Doctrine\Tests\OrmTestCase;
 use Generator;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 class ParameterTypeInfererTest extends OrmTestCase
 {
@@ -38,7 +39,7 @@ class ParameterTypeInfererTest extends OrmTestCase
         yield 'array_of_string_backed_enum' => [[UserStatus::Active], ArrayParameterType::STRING];
     }
 
-    /** @dataProvider providerParameterTypeInferer */
+    #[DataProvider('providerParameterTypeInferer')]
     public function testParameterTypeInferer(mixed $value, ParameterType|ArrayParameterType|int|string $expected): void
     {
         self::assertEquals($expected, ParameterTypeInferer::inferType($value));

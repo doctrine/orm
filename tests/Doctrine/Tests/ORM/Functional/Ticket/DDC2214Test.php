@@ -11,6 +11,7 @@ use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
 use function assert;
 
@@ -18,9 +19,8 @@ use function assert;
  * Verifies that the type of parameters being bound to an SQL query is the same
  * of the identifier of the entities used as parameters in the DQL query, even
  * if the bound objects are proxies.
- *
- * @group DDC-2214
  */
+#[Group('DDC-2214')]
 class DDC2214Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void

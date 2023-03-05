@@ -8,14 +8,16 @@ use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Embeddable;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Group;
 
 use function serialize;
 use function unserialize;
 
-/** @group DDC-3103 */
+#[CoversClass(ClassMetadata::class)]
+#[Group('DDC-3103')]
 class DDC3103Test extends OrmFunctionalTestCase
 {
-    /** @covers \Doctrine\ORM\Mapping\ClassMetadata::__sleep */
     public function testIssue(): void
     {
         $classMetadata = new ClassMetadata(DDC3103ArticleId::class);

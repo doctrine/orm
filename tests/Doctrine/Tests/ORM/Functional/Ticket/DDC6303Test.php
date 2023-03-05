@@ -16,12 +16,13 @@ use Doctrine\ORM\Mapping\Table;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\Persistence\Mapping\MappingException;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
 use function array_keys;
 use function array_walk;
 use function count;
 
-/** @group #6303 */
+#[Group('#6303')]
 class DDC6303Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void

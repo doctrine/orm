@@ -12,6 +12,7 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\InheritanceType;
 use Doctrine\ORM\Mapping\Version;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
 class DDC960Test extends OrmFunctionalTestCase
 {
@@ -22,7 +23,7 @@ class DDC960Test extends OrmFunctionalTestCase
         $this->createSchemaForModels(DDC960Root::class, DDC960Child::class);
     }
 
-    /** @group DDC-960 */
+    #[Group('DDC-960')]
     public function testUpdateRootVersion(): void
     {
         $child = new DDC960Child('Test');

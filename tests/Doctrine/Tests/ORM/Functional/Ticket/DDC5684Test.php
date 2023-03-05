@@ -12,15 +12,18 @@ use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\Table;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 use Stringable;
 
 /**
  * This test verifies that custom post-insert identifiers respect type conversion semantics.
  * The generated identifier must be converted via DBAL types before populating the entity
  * identifier field.
- *
- * @group 5935 5684 6020 6152
  */
+#[Group('5935')]
+#[Group('5684')]
+#[Group('6020')]
+#[Group('6152')]
 class DDC5684Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void

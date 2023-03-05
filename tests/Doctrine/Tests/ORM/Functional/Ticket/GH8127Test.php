@@ -6,6 +6,7 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 class GH8127Test extends OrmFunctionalTestCase
 {
@@ -20,7 +21,7 @@ class GH8127Test extends OrmFunctionalTestCase
         );
     }
 
-    /** @dataProvider queryClasses */
+    #[DataProvider('queryClasses')]
     public function testLoadFieldsFromAllClassesInHierarchy(string $queryClass): void
     {
         $entity         = new GH8127Leaf();

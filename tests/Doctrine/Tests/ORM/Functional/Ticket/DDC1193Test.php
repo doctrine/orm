@@ -10,6 +10,7 @@ use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
 class DDC1193Test extends OrmFunctionalTestCase
 {
@@ -24,7 +25,7 @@ class DDC1193Test extends OrmFunctionalTestCase
         );
     }
 
-    /** @group DDC-1193 */
+    #[Group('DDC-1193')]
     public function testIssue(): void
     {
         $company = new DDC1193Company();

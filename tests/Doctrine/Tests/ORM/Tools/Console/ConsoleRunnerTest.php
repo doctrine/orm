@@ -9,14 +9,14 @@ use DBALConsole\Command\ReservedWordsCommand;
 use Doctrine\ORM\Tools\Console\ConsoleRunner;
 use Doctrine\ORM\Tools\Console\EntityManagerProvider;
 use Doctrine\Tests\DoctrineTestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Group;
 use Symfony\Component\Console\Command\Command;
 
 use function class_exists;
 
-/**
- * @group DDC-3186
- * @covers \Doctrine\ORM\Tools\Console\ConsoleRunner
- */
+#[CoversClass(ConsoleRunner::class)]
+#[Group('DDC-3186')]
 final class ConsoleRunnerTest extends DoctrineTestCase
 {
     public function testCreateApplicationShouldReturnAnApplicationWithTheCorrectCommands(): void

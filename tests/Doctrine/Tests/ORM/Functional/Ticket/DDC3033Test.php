@@ -21,8 +21,9 @@ use Doctrine\ORM\Mapping\PostUpdate;
 use Doctrine\ORM\Mapping\PreUpdate;
 use Doctrine\ORM\Mapping\Table;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
-/** @group DDC-3033 */
+#[Group('DDC-3033')]
 class DDC3033Test extends OrmFunctionalTestCase
 {
     public function testIssue(): void

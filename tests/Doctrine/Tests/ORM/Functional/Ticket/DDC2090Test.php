@@ -9,11 +9,10 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Query\Parameter;
 use Doctrine\Tests\Models\Company\CompanyEmployee;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
-/**
- * @group DDC-2090
- * @group non-cacheable
- */
+#[Group('DDC-2090')]
+#[Group('non-cacheable')]
 class DDC2090Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void

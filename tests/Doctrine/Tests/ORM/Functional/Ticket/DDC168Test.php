@@ -7,6 +7,7 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\Tests\Models\Company\CompanyEmployee;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
 use function ksort;
 
@@ -35,7 +36,7 @@ class DDC168Test extends OrmFunctionalTestCase
         parent::tearDown();
     }
 
-    /** @group DDC-168 */
+    #[Group('DDC-168')]
     public function testJoinedSubclassPersisterRequiresSpecificOrderOfMetadataReflFieldsArray(): void
     {
         $spouse = new CompanyEmployee();

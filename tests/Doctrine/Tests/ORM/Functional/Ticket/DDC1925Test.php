@@ -16,13 +16,12 @@ use Doctrine\ORM\Mapping\JoinTable;
 use Doctrine\ORM\Mapping\ManyToMany;
 use Doctrine\ORM\Mapping\Table;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
 use function assert;
 
-/**
- * @group DDC-1925
- * @group DDC-1210
- */
+#[Group('DDC-1925')]
+#[Group('DDC-1210')]
 class DDC1925Test extends OrmFunctionalTestCase
 {
     public function testIssue(): void

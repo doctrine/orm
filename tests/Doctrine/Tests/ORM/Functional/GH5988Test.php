@@ -15,14 +15,14 @@ use Doctrine\ORM\Mapping\InheritanceType;
 use Doctrine\ORM\Mapping\Table;
 use Doctrine\Tests\DbalTypes\CustomIdObject;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
 use function str_replace;
 
 /**
  * Functional tests for the Class Table Inheritance mapping strategy with custom id object types.
- *
- * @group GH5988
  */
+#[Group('GH5988')]
 final class GH5988Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void

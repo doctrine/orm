@@ -34,6 +34,7 @@ use Doctrine\ORM\Mapping\PreUpdate;
 use Doctrine\ORM\Mapping\Table;
 use Doctrine\ORM\Query;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
 use function count;
 use function current;
@@ -119,7 +120,7 @@ class LifecycleCallbackTest extends OrmFunctionalTestCase
         self::assertEquals('Hello World', $user2->getValue());
     }
 
-    /** @group DDC-194 */
+    #[Group('DDC-194')]
     public function testGetReferenceWithPostLoadEventIsDelayedUntilProxyTrigger(): void
     {
         $entity        = new LifecycleCallbackTestEntity();
@@ -137,7 +138,7 @@ class LifecycleCallbackTest extends OrmFunctionalTestCase
         self::assertTrue($reference->postLoadCallbackInvoked);
     }
 
-    /** @group DDC-958 */
+    #[Group('DDC-958')]
     public function testPostLoadTriggeredOnRefresh(): void
     {
         $entity        = new LifecycleCallbackTestEntity();
@@ -156,7 +157,7 @@ class LifecycleCallbackTest extends OrmFunctionalTestCase
         self::assertTrue($reference->postLoadCallbackInvoked, 'postLoad should be invoked when refresh() is called.');
     }
 
-    /** @group DDC-113 */
+    #[Group('DDC-113')]
     public function testCascadedEntitiesCallsPrePersist(): void
     {
         $e1 = new LifecycleCallbackTestEntity();
@@ -177,10 +178,8 @@ class LifecycleCallbackTest extends OrmFunctionalTestCase
         self::assertTrue($e2->prePersistCallbackInvoked);
     }
 
-    /**
-     * @group DDC-54
-     * @group DDC-3005
-     */
+    #[Group('DDC-54')]
+    #[Group('DDC-3005')]
     public function testCascadedEntitiesLoadedInPostLoad(): void
     {
         $e1 = new LifecycleCallbackTestEntity();
@@ -219,10 +218,8 @@ DQL;
         self::assertEquals(current($entities)->cascader->postLoadEntitiesCount, 2);
     }
 
-    /**
-     * @group DDC-54
-     * @group DDC-3005
-     */
+    #[Group('DDC-54')]
+    #[Group('DDC-3005')]
     public function testCascadedEntitiesNotLoadedInPostLoadDuringIteration(): void
     {
         $e1 = new LifecycleCallbackTestEntity();
@@ -262,10 +259,8 @@ DQL;
         }
     }
 
-    /**
-     * @group DDC-54
-     * @group DDC-3005
-     */
+    #[Group('DDC-54')]
+    #[Group('DDC-3005')]
     public function testCascadedEntitiesNotLoadedInPostLoadDuringIterationWithSimpleObjectHydrator(): void
     {
         $this->_em->persist(new LifecycleCallbackTestEntity());
@@ -361,7 +356,7 @@ DQL;
         self::assertEquals('Bob', $bob->getName());
     }
 
-    /** @group DDC-1955 */
+    #[Group('DDC-1955')]
     public function testLifecycleCallbackEventArgs(): void
     {
         $e = new LifecycleCallbackEventArgEntity();

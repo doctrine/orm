@@ -7,10 +7,11 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 use Doctrine\Tests\Models\DDC3346\DDC3346Article;
 use Doctrine\Tests\Models\DDC3346\DDC3346Author;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
 use function assert;
 
-/** @group DDC-3346 */
+#[Group('DDC-3346')]
 class DDC3346Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void

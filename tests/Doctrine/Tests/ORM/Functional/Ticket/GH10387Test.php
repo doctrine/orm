@@ -8,13 +8,15 @@ use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Tools\SchemaTool;
 use Doctrine\Tests\OrmTestCase;
 use Generator;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Group;
 
 use function array_map;
 
-/** @group GH-10387 */
+#[Group('GH-10387')]
 class GH10387Test extends OrmTestCase
 {
-    /** @dataProvider classHierachies */
+    #[DataProvider('classHierachies')]
     public function testSchemaToolCreatesColumnForFieldInTheMiddleClass(array $classes): void
     {
         $em         = $this->getTestEntityManager();

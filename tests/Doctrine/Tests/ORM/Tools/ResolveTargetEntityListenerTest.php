@@ -19,6 +19,8 @@ use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\ORM\Tools\ResolveTargetEntityListener;
 use Doctrine\Tests\OrmTestCase;
+use PHPUnit\Framework\Attributes\CoversNothing;
+use PHPUnit\Framework\Attributes\Group;
 
 class ResolveTargetEntityListenerTest extends OrmTestCase
 {
@@ -36,7 +38,7 @@ class ResolveTargetEntityListenerTest extends OrmTestCase
         $this->listener = new ResolveTargetEntityListener();
     }
 
-    /** @group DDC-1544 */
+    #[Group('DDC-1544')]
     public function testResolveTargetEntityListenerCanResolveTargetEntity(): void
     {
         $evm = $this->em->getEventManager();
@@ -55,11 +57,9 @@ class ResolveTargetEntityListenerTest extends OrmTestCase
         self::assertSame($cm, $this->factory->getMetadataFor(ResolveTarget::class));
     }
 
-    /**
-     * @group DDC-3385
-     * @group 1181
-     * @group 385
-     */
+    #[Group('DDC-3385')]
+    #[Group('1181')]
+    #[Group('385')]
     public function testResolveTargetEntityListenerCanRetrieveTargetEntityByInterfaceName(): void
     {
         $this->listener->addResolveTargetEntity(ResolveTarget::class, ResolveTargetEntity::class, []);
@@ -71,7 +71,7 @@ class ResolveTargetEntityListenerTest extends OrmTestCase
         self::assertSame($this->factory->getMetadataFor(ResolveTargetEntity::class), $cm);
     }
 
-    /** @group DDC-2109 */
+    #[Group('DDC-2109')]
     public function testAssertTableColumnsAreNotAddedInManyToMany(): void
     {
         $evm = $this->em->getEventManager();
@@ -86,11 +86,9 @@ class ResolveTargetEntityListenerTest extends OrmTestCase
         self::assertEquals(['resolvetargetentity_id', 'target_id'], $meta['joinTableColumns']);
     }
 
-    /**
-     * @group 1572
-     * @group functional
-     * @coversNothing
-     */
+    #[CoversNothing]
+    #[Group('1572')]
+    #[Group('functional')]
     public function testDoesResolveTargetEntitiesInDQLAlsoWithInterfaces(): void
     {
         $evm = $this->em->getEventManager();

@@ -14,11 +14,12 @@ use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\Table;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 use Stringable;
 
 use function is_string;
 
-/** @group DDC-2984 */
+#[Group('DDC-2984')]
 class DDC2984Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void

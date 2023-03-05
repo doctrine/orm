@@ -9,6 +9,7 @@ use Doctrine\ORM\Query\Filter\SQLFilter;
 use Doctrine\Tests\Mocks\EntityManagerMock;
 use Doctrine\Tests\OrmTestCase;
 use InvalidArgumentException;
+use PHPUnit\Framework\Attributes\Depends;
 
 /**
  * Test case for FilterCollection
@@ -48,7 +49,7 @@ class FilterCollectionTest extends OrmTestCase
         self::assertFalse($filterCollection->has('fakeFilter'));
     }
 
-    /** @depends testEnable */
+    #[Depends('testEnable')]
     public function testIsEnabled(): void
     {
         $filterCollection = $this->em->getFilters();

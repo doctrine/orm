@@ -8,15 +8,16 @@ use Doctrine\Tests\Models\ValueConversionType as Entity;
 use Doctrine\Tests\Models\ValueConversionType\InversedOneToManyEntity;
 use Doctrine\Tests\Models\ValueConversionType\OwningManyToOneEntity;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Depends;
+use PHPUnit\Framework\Attributes\Group;
 
 /**
  * The entities all use a custom type that converst the value as identifier(s).
  * {@see \Doctrine\Tests\DbalTypes\Rot13Type}
  *
  * Test that OneToMany associations work correctly.
- *
- * @group DDC-3380
  */
+#[Group('DDC-3380')]
 class OneToManyTest extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -60,7 +61,7 @@ class OneToManyTest extends OrmFunctionalTestCase
         self::assertEquals('nop', $conn->fetchOne('SELECT associated_id FROM vct_owning_manytoone LIMIT 1'));
     }
 
-    /** @depends testThatTheValueOfIdentifiersAreConvertedInTheDatabase */
+    #[Depends('testThatTheValueOfIdentifiersAreConvertedInTheDatabase')]
     public function testThatEntitiesAreFetchedFromTheDatabase(): void
     {
         $inversed = $this->_em->find(
@@ -77,7 +78,7 @@ class OneToManyTest extends OrmFunctionalTestCase
         self::assertInstanceOf(OwningManyToOneEntity::class, $owning);
     }
 
-    /** @depends testThatEntitiesAreFetchedFromTheDatabase */
+    #[Depends('testThatEntitiesAreFetchedFromTheDatabase')]
     public function testThatTheValueOfIdentifiersAreConvertedBackAfterBeingFetchedFromTheDatabase(): void
     {
         $inversed = $this->_em->find(
@@ -94,7 +95,7 @@ class OneToManyTest extends OrmFunctionalTestCase
         self::assertEquals('def', $owning->id2);
     }
 
-    /** @depends testThatEntitiesAreFetchedFromTheDatabase */
+    #[Depends('testThatEntitiesAreFetchedFromTheDatabase')]
     public function testThatTheProxyFromOwningToInversedIsLoaded(): void
     {
         $owning = $this->_em->find(
@@ -107,7 +108,7 @@ class OneToManyTest extends OrmFunctionalTestCase
         self::assertEquals('some value to be loaded', $inversedProxy->someProperty);
     }
 
-    /** @depends testThatEntitiesAreFetchedFromTheDatabase */
+    #[Depends('testThatEntitiesAreFetchedFromTheDatabase')]
     public function testThatTheCollectionFromInversedToOwningIsLoaded(): void
     {
         $inversed = $this->_em->find(

@@ -9,8 +9,9 @@ use Doctrine\ORM\PersistentCollection;
 use Doctrine\Tests\Models\ECommerce\ECommerceCategory;
 use Doctrine\Tests\Models\ECommerce\ECommerceProduct;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
-/** @group DDC-2074 */
+#[Group('DDC-2074')]
 class DDC2074Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void

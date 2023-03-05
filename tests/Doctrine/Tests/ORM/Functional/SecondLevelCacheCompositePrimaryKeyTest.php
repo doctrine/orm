@@ -7,8 +7,9 @@ namespace Doctrine\Tests\ORM\Functional;
 use DateTime;
 use Doctrine\Tests\Models\Cache\City;
 use Doctrine\Tests\Models\Cache\Flight;
+use PHPUnit\Framework\Attributes\Group;
 
-/** @group DDC-2183 */
+#[Group('DDC-2183')]
 class SecondLevelCacheCompositePrimaryKeyTest extends SecondLevelCacheFunctionalTestCase
 {
     public function testPutAndLoadCompositPrimaryKeyEntities(): void

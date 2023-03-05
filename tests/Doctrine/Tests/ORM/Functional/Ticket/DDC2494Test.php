@@ -17,11 +17,10 @@ use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\Table;
 use Doctrine\Persistence\Proxy;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
-/**
- * @group DDC-2494
- * @group non-cacheable
- */
+#[Group('DDC-2494')]
+#[Group('non-cacheable')]
 class DDC2494Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void

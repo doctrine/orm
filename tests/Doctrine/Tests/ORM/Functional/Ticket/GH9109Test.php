@@ -13,8 +13,9 @@ use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\ManyToMany;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
-/** @group GH-9109 */
+#[Group('GH-9109')]
 class GH9109Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void

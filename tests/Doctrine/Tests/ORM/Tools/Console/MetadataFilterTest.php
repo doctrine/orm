@@ -10,14 +10,14 @@ use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Tools\Console\MetadataFilter;
 use Doctrine\Tests\OrmTestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
 
 use function count;
 
 /**
  * Tests for {@see \Doctrine\ORM\Tools\Console\MetadataFilter}
- *
- * @covers \Doctrine\ORM\Tools\Console\MetadataFilter
  */
+#[CoversClass(MetadataFilter::class)]
 class MetadataFilterTest extends OrmTestCase
 {
     private ClassMetadataFactory $cmf;

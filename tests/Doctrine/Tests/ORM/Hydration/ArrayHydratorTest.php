@@ -12,6 +12,8 @@ use Doctrine\Tests\Models\CMS\CmsPhonenumber;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\Models\Forum\ForumBoard;
 use Doctrine\Tests\Models\Forum\ForumCategory;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Group;
 
 class ArrayHydratorTest extends HydrationTestCase
 {
@@ -67,9 +69,8 @@ class ArrayHydratorTest extends HydrationTestCase
     /**
      * SELECT PARTIAL scalars.{id, name}, UPPER(scalars.name) AS nameUpper
      *   FROM Doctrine\Tests\Models\CMS\CmsUser scalars
-     *
-     * @dataProvider provideDataForUserEntityResult
      */
+    #[DataProvider('provideDataForUserEntityResult')]
     public function testSimpleEntityWithScalarQuery(int|string $userEntityKey): void
     {
         $alias = $userEntityKey ?: 'u';
@@ -375,9 +376,8 @@ class ArrayHydratorTest extends HydrationTestCase
      *   FROM Doctrine\Tests\Models\CMS\CmsUser u
      *   JOIN u.phonenumbers p
      *  GROUP BY u.status, u.id
-     *
-     * @dataProvider provideDataForUserEntityResult
      */
+    #[DataProvider('provideDataForUserEntityResult')]
     public function testMixedQueryNormalJoin(int|string $userEntityKey): void
     {
         $rsm = new ResultSetMapping();
@@ -424,9 +424,8 @@ class ArrayHydratorTest extends HydrationTestCase
      * SELECT PARTIAL u.{id, status}, PARTIAL p.{phonenumber}, UPPER(u.name) AS nameUpper
      *   FROM Doctrine\Tests\Models\CMS\CmsUser u
      *   JOIN u.phonenumbers p
-     *
-     * @dataProvider provideDataForUserEntityResult
      */
+    #[DataProvider('provideDataForUserEntityResult')]
     public function testMixedQueryFetchJoin(int|string $userEntityKey): void
     {
         $rsm = new ResultSetMapping();
@@ -495,9 +494,8 @@ class ArrayHydratorTest extends HydrationTestCase
      *        INDEX BY u.id
      *   JOIN u.phonenumbers p
      *        INDEX BY p.phonenumber
-     *
-     * @dataProvider provideDataForUserEntityResult
      */
+    #[DataProvider('provideDataForUserEntityResult')]
     public function testMixedQueryFetchJoinCustomIndex(int|string $userEntityKey): void
     {
         $rsm = new ResultSetMapping();
@@ -925,9 +923,8 @@ class ArrayHydratorTest extends HydrationTestCase
      *   FROM Doctrine\Tests\Models\CMS\CmsUser u
      *   LEFT JOIN u.articles a
      *   LEFT JOIN a.comments c
-     *
-     * @dataProvider provideDataForUserEntityResult
      */
+    #[DataProvider('provideDataForUserEntityResult')]
     public function testChainedJoinWithScalars(int|string $entityKey): void
     {
         $rsm = new ResultSetMapping();
@@ -1083,9 +1080,8 @@ class ArrayHydratorTest extends HydrationTestCase
     /**
      * SELECT PARTIAL u.{id, name}
      *   FROM Doctrine\Tests\Models\CMS\CmsUser u
-     *
-     * @group DDC-644
      */
+    #[Group('DDC-644')]
     public function testSkipUnknownColumns(): void
     {
         $rsm = new ResultSetMapping();
@@ -1116,10 +1112,9 @@ class ArrayHydratorTest extends HydrationTestCase
     /**
      * SELECT PARTIAL u.{id, status}, UPPER(u.name) AS nameUpper
      *   FROM Doctrine\Tests\Models\CMS\CmsUser u
-     *
-     * @group DDC-1358
-     * @dataProvider provideDataForUserEntityResult
      */
+    #[DataProvider('provideDataForUserEntityResult')]
+    #[Group('DDC-1358')]
     public function testMissingIdForRootEntity(int|string $userEntityKey): void
     {
         $rsm = new ResultSetMapping();
@@ -1175,10 +1170,9 @@ class ArrayHydratorTest extends HydrationTestCase
      * SELECT PARTIAL u.{id, status}, UPPER(u.name) AS nameUpper
      *   FROM Doctrine\Tests\Models\CMS\CmsUser u
      *        INDEX BY u.id
-     *
-     * @group DDC-1385
-     * @dataProvider provideDataForUserEntityResult
      */
+    #[DataProvider('provideDataForUserEntityResult')]
+    #[Group('DDC-1385')]
     public function testIndexByAndMixedResult(int|string $userEntityKey): void
     {
         $rsm = new ResultSetMapping();

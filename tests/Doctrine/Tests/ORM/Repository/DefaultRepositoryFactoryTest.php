@@ -11,14 +11,14 @@ use Doctrine\ORM\Repository\DefaultRepositoryFactory;
 use Doctrine\Tests\Models\DDC753\DDC753DefaultRepository;
 use Doctrine\Tests\Models\DDC753\DDC753EntityWithDefaultCustomRepository;
 use Doctrine\Tests\Models\DDC869\DDC869PaymentRepository;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 /**
  * Tests for {@see \Doctrine\ORM\Repository\DefaultRepositoryFactory}
- *
- * @covers \Doctrine\ORM\Repository\DefaultRepositoryFactory
  */
+#[CoversClass(DefaultRepositoryFactory::class)]
 class DefaultRepositoryFactoryTest extends TestCase
 {
     private EntityManagerInterface&MockObject $entityManager;

@@ -16,13 +16,12 @@ use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\Table;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
 use function array_search;
 
-/**
- * @group DDC-2494
- * @group non-cacheable
- */
+#[Group('DDC-2494')]
+#[Group('non-cacheable')]
 class DDC3192Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void

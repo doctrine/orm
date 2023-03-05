@@ -17,6 +17,7 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\InheritanceType;
 use Doctrine\Tests\Models\GH10288\GH10288People;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
 /**
  * This test makes sure that Discriminator columns can use both custom types using PHP enums as well as
@@ -88,7 +89,7 @@ class GH10288Test extends OrmFunctionalTestCase
         self::assertEquals($boss, $bossFetched);
     }
 
-    /** @group GH10288 */
+    #[Group('GH10288')]
     public function testEnumDiscriminatorWithEnumType(): void
     {
         $boss     = new GH10288BossWithEnumType('John');
@@ -97,7 +98,7 @@ class GH10288Test extends OrmFunctionalTestCase
         $this->performEnumDiscriminatorTest($boss, $employee, GH10288PersonWithEnumType::class);
     }
 
-    /** @group GH10288 */
+    #[Group('GH10288')]
     public function testEnumDiscriminatorWithCustomEnumType(): void
     {
         $boss     = new GH10288BossCustomEnumType('John');

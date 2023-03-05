@@ -9,8 +9,10 @@ use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Group;
 
-/** @group GH-9230 */
+#[Group('GH-9230')]
 class GH9230Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -81,10 +83,8 @@ class GH9230Test extends OrmFunctionalTestCase
         ];
     }
 
-    /**
-     * @dataProvider failingValuesBeforeFix
-     * @dataProvider succeedingValuesBeforeFix
-     */
+    #[DataProvider('failingValuesBeforeFix')]
+    #[DataProvider('succeedingValuesBeforeFix')]
     public function testIssue(string $property, $falsyValue, $truthyValue): void
     {
         $counter1            = new GH9230Entity();

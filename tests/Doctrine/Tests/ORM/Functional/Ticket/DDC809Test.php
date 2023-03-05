@@ -14,6 +14,7 @@ use Doctrine\ORM\Mapping\JoinTable;
 use Doctrine\ORM\Mapping\ManyToMany;
 use Doctrine\ORM\Mapping\Table;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
 class DDC809Test extends OrmFunctionalTestCase
 {
@@ -48,7 +49,7 @@ class DDC809Test extends OrmFunctionalTestCase
         $conn->insert('var_spec_value_test', ['variant_id' => 545209, 'specification_value_id' => 94607]);
     }
 
-    /** @group DDC-809 */
+    #[Group('DDC-809')]
     public function testIssue(): void
     {
         $result = $this->_em->createQueryBuilder()

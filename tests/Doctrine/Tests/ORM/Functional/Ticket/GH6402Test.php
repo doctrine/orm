@@ -9,8 +9,9 @@ use Doctrine\Tests\Models\Quote\City;
 use Doctrine\Tests\Models\Quote\FullAddress;
 use Doctrine\Tests\Models\Quote\User;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
-/** @group GH-6402 */
+#[Group('GH-6402')]
 class GH6402Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void

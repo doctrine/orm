@@ -8,6 +8,7 @@ use Doctrine\DBAL\Types\Type as DBALType;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Tests\DbalTypes\NegativeToPositiveType;
 use Doctrine\Tests\OrmTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
 /**
  * Test case for testing the saving and referencing of query identifiers.
@@ -162,7 +163,7 @@ class UpdateSqlGenerationTest extends OrmTestCase
         );
     }
 
-    /** @group DDC-980 */
+    #[Group('DDC-980')]
     public function testSubselectTableAliasReferencing(): void
     {
         $this->assertSqlGeneration(
