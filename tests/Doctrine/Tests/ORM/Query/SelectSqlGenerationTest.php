@@ -251,16 +251,16 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    /* NOT (YET?) SUPPORTED.
-       Can be supported if SimpleSelectExpression supports SingleValuedPathExpression instead of StateFieldPathExpression.
-
-    public function testSingleAssociationPathExpressionInSubselect()
+    public function testSingleAssociationPathExpressionInSubselect(): void
     {
+        // Can be supported if SimpleSelectExpression supports SingleValuedPathExpression instead of StateFieldPathExpression.
+        self::markTestSkipped('Not yet supported.');
+
         $this->assertSqlGeneration(
             'SELECT (SELECT p.user FROM Doctrine\Tests\Models\CMS\CmsPhonenumber p WHERE p.user = u) user_id FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id = ?1',
             'SELECT (SELECT c0_.user_id FROM cms_phonenumbers c0_ WHERE c0_.user_id = c1_.id) AS sclr_0 FROM cms_users c1_ WHERE c1_.id = ?'
         );
-    }*/
+    }
 
     /** @group DDC-1077 */
     public function testConstantValueInSelect(): void
