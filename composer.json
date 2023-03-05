@@ -39,7 +39,7 @@
         "doctrine/coding-standard": "^11.0",
         "phpbench/phpbench": "^1.0",
         "phpstan/phpstan": "1.10.3",
-        "phpunit/phpunit": "^9.6",
+        "phpunit/phpunit": "^10.0.14",
         "psr/log": "^1 || ^2 || ^3",
         "squizlabs/php_codesniffer": "3.7.2",
         "symfony/cache": "^5.4 || ^6.0",

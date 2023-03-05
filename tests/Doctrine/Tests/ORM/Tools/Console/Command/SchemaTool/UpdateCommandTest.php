@@ -30,6 +30,10 @@ class UpdateCommandTest extends CommandTestCase
     /** @dataProvider getCasesForWarningMessageFromCompleteOption */
     public function testWarningMessageFromCompleteOption(string|null $name, string $expectedMessage): void
     {
+        if (! method_exists(SchemaDiff::class, 'toSaveSql')) {
+            self::markTestSkipped('This test requires DBAL 3');
+        }
+
         $tester = $this->getCommandTester(UpdateCommand::class, $name);
         $tester->execute(
             [],
@@ -41,10 +45,6 @@ class UpdateCommandTest extends CommandTestCase
 
     public static function getCasesForWarningMessageFromCompleteOption(): iterable
     {
-        if (! method_exists(SchemaDiff::class, 'toSaveSql')) {
-            self::markTestSkipped('This test requires DBAL 3');
-        }
-
         yield 'default_name' => [
             null,
             '[WARNING] Not passing the "--complete" option to "orm:schema-tool:update" is deprecated',
