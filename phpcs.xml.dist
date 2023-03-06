@@ -116,6 +116,36 @@
         <exclude-pattern>lib/Doctrine/ORM/Cache/DefaultQueryCache.php</exclude-pattern>
     </rule>
 
+    <rule ref="SlevomatCodingStandard.Commenting.ForbiddenAnnotations">
+        <properties>
+            <property name="forbiddenAnnotations" type="array">
+                <!--
+                    From Doctrine Coding Standard:
+                    Forbid useless annotations - Git and LICENCE file provide more accurate information
+                -->
+                <element value="@api"/>
+                <element value="@author"/>
+                <element value="@category"/>
+                <element value="@copyright"/>
+                <element value="@created"/>
+                <element value="@license"/>
+                <element value="@package"/>
+                <element value="@since"/>
+                <element value="@subpackage"/>
+                <element value="@version"/>
+
+                <!-- Additionally forbid oldschool PHPUnit annotations to force the usage of attributes -->
+                <element value="@covers"/>
+                <element value="@depends"/>
+                <element value="@dataProvider"/>
+                <element value="@group"/>
+                <element value="@requires"/>
+                <element value="@test"/>
+                <element value="@testWith"/>
+            </property>
+        </properties>
+    </rule>
+
     <rule ref="SlevomatCodingStandard.Classes.SuperfluousInterfaceNaming">
         <exclude-pattern>lib/Doctrine/ORM/EntityManagerInterface.php</exclude-pattern>
     </rule>
