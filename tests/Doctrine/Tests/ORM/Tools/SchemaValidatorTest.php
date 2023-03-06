@@ -27,6 +27,8 @@ use Doctrine\ORM\Mapping\Table;
 use Doctrine\ORM\Tools\SchemaValidator;
 use Doctrine\Tests\Models\ECommerce\ECommerceCart;
 use Doctrine\Tests\OrmTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Group;
 
 class SchemaValidatorTest extends OrmTestCase
 {
@@ -40,7 +42,7 @@ class SchemaValidatorTest extends OrmTestCase
         $this->validator = new SchemaValidator($this->em);
     }
 
-    /** @dataProvider modelSetProvider */
+    #[DataProvider('modelSetProvider')]
     public function testCmsModelSet(string $path): void
     {
         $this->em->getConfiguration()
@@ -62,7 +64,7 @@ class SchemaValidatorTest extends OrmTestCase
         ];
     }
 
-    /** @group DDC-1439 */
+    #[Group('DDC-1439')]
     public function testInvalidManyToManyJoinColumnSchema(): void
     {
         $class1 = $this->em->getClassMetadata(InvalidEntity1::class);
@@ -79,7 +81,7 @@ class SchemaValidatorTest extends OrmTestCase
         );
     }
 
-    /** @group DDC-1439 */
+    #[Group('DDC-1439')]
     public function testInvalidToOneJoinColumnSchema(): void
     {
         $class1 = $this->em->getClassMetadata(InvalidEntity1::class);
@@ -96,7 +98,7 @@ class SchemaValidatorTest extends OrmTestCase
         );
     }
 
-    /** @group DDC-1587 */
+    #[Group('DDC-1587')]
     public function testValidOneToOneAsIdentifierSchema(): void
     {
         $class1 = $this->em->getClassMetadata(DDC1587ValidEntity2::class);
@@ -107,7 +109,7 @@ class SchemaValidatorTest extends OrmTestCase
         self::assertEquals([], $ce);
     }
 
-    /** @group DDC-1649 */
+    #[Group('DDC-1649')]
     public function testInvalidTripleAssociationAsKeyMapping(): void
     {
         $classThree = $this->em->getClassMetadata(DDC1649Three::class);
@@ -122,7 +124,7 @@ class SchemaValidatorTest extends OrmTestCase
         );
     }
 
-    /** @group DDC-3274 */
+    #[Group('DDC-3274')]
     public function testInvalidBiDirectionalRelationMappingMissingInversedByAttribute(): void
     {
         $class = $this->em->getClassMetadata(DDC3274One::class);
@@ -138,7 +140,7 @@ class SchemaValidatorTest extends OrmTestCase
         );
     }
 
-    /** @group 9536 */
+    #[Group('9536')]
     public function testInvalidBiDirectionalRelationMappingMissingMappedByAttribute(): void
     {
         $class = $this->em->getClassMetadata(Issue9536Owner::class);
@@ -155,7 +157,7 @@ class SchemaValidatorTest extends OrmTestCase
         );
     }
 
-    /** @group DDC-3322 */
+    #[Group('DDC-3322')]
     public function testInvalidOrderByInvalidField(): void
     {
         $class = $this->em->getClassMetadata(DDC3322One::class);
@@ -170,7 +172,7 @@ class SchemaValidatorTest extends OrmTestCase
         );
     }
 
-    /** @group DDC-3322 */
+    #[Group('DDC-3322')]
     public function testInvalidOrderByCollectionValuedAssociation(): void
     {
         $class = $this->em->getClassMetadata(DDC3322Two::class);
@@ -185,7 +187,7 @@ class SchemaValidatorTest extends OrmTestCase
         );
     }
 
-    /** @group DDC-3322 */
+    #[Group('DDC-3322')]
     public function testInvalidOrderByAssociationInverseSide(): void
     {
         $class = $this->em->getClassMetadata(DDC3322Three::class);
@@ -200,7 +202,7 @@ class SchemaValidatorTest extends OrmTestCase
         );
     }
 
-    /** @group 8052 */
+    #[Group('8052')]
     public function testInvalidAssociationInsideEmbeddable(): void
     {
         $class = $this->em->getClassMetadata(EmbeddableWithAssociation::class);
@@ -212,7 +214,7 @@ class SchemaValidatorTest extends OrmTestCase
         );
     }
 
-    /** @group 8771 */
+    #[Group('8771')]
     public function testMappedSuperclassNotPresentInDiscriminator(): void
     {
         $class1 = $this->em->getClassMetadata(MappedSuperclassEntity::class);

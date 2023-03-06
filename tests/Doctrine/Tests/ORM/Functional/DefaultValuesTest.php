@@ -12,6 +12,7 @@ use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\ORM\Mapping\Table;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
 /**
  * Tests basic operations on entities with default values.
@@ -28,7 +29,7 @@ class DefaultValuesTest extends OrmFunctionalTestCase
         );
     }
 
-    /** @group non-cacheable */
+    #[Group('non-cacheable')]
     public function testSimpleDetachMerge(): void
     {
         $user       = new DefaultValueUser();
@@ -62,7 +63,7 @@ class DefaultValuesTest extends OrmFunctionalTestCase
         self::assertEquals('Poweruser', $a2->getUser()->type);
     }
 
-    /** @group DDC-1386 */
+    #[Group('DDC-1386')]
     public function testGetPartialReferenceWithDefaultValueNotEvaluatedInFlush(): void
     {
         $user       = new DefaultValueUser();

@@ -8,8 +8,9 @@ use Doctrine\Tests\ORM\Functional\Ticket\DDC2084\MyEntity1;
 use Doctrine\Tests\ORM\Functional\Ticket\DDC2084\MyEntity2;
 use Doctrine\ORM\ORMInvalidArgumentException;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
-/** @group DDC-2084 */
+#[Group('DDC-2084')]
 class DDC2084Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void

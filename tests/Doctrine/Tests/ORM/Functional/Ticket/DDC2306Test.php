@@ -14,10 +14,11 @@ use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\Persistence\Proxy;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
 use function assert;
 
-/** @group DDC-2306 */
+#[Group('DDC-2306')]
 class DDC2306Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void

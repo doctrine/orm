@@ -13,13 +13,13 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\InheritanceType;
 use Doctrine\ORM\Mapping\MappedSuperclass;
 use Doctrine\Tests\OrmTestCase;
+use PHPUnit\Framework\Attributes\DoesNotPerformAssertions;
+use PHPUnit\Framework\Attributes\Group;
 
 final class GH8914Test extends OrmTestCase
 {
-    /**
-     * @group GH-8914
-     * @doesNotPerformAssertions
-     */
+    #[DoesNotPerformAssertions]
+    #[Group('GH-8914')]
     public function testDiscriminatorMapWithSeveralLevelsIsSupported(): void
     {
         $entityManager = $this->getTestEntityManager();

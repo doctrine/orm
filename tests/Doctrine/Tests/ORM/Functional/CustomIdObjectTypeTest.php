@@ -10,6 +10,7 @@ use Doctrine\Tests\DbalTypes\CustomIdObjectType;
 use Doctrine\Tests\Models\CustomType\CustomIdObjectTypeChild;
 use Doctrine\Tests\Models\CustomType\CustomIdObjectTypeParent;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
 class CustomIdObjectTypeTest extends OrmFunctionalTestCase
 {
@@ -38,10 +39,8 @@ class CustomIdObjectTypeTest extends OrmFunctionalTestCase
         self::assertSame($parent, $result);
     }
 
-    /**
-     * @group DDC-3622
-     * @group 1336
-     */
+    #[Group('DDC-3622')]
+    #[Group('1336')]
     public function testFetchJoinCustomIdObject(): void
     {
         $parent = new CustomIdObjectTypeParent(new CustomIdObject('foo'));
@@ -64,10 +63,8 @@ class CustomIdObjectTypeTest extends OrmFunctionalTestCase
         self::assertSame($parent, $result[0]);
     }
 
-    /**
-     * @group DDC-3622
-     * @group 1336
-     */
+    #[Group('DDC-3622')]
+    #[Group('1336')]
     public function testFetchJoinWhereCustomIdObject(): void
     {
         $parent = new CustomIdObjectTypeParent(new CustomIdObject('foo'));

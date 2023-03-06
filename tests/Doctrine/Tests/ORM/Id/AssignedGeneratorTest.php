@@ -11,6 +11,7 @@ use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\Tests\OrmTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 /**
  * AssignedGeneratorTest
@@ -27,7 +28,7 @@ class AssignedGeneratorTest extends OrmTestCase
         $this->assignedGen   = new AssignedGenerator();
     }
 
-    /** @dataProvider entitiesWithoutId */
+    #[DataProvider('entitiesWithoutId')]
     public function testThrowsExceptionIfIdNotAssigned($entity): void
     {
         $this->expectException(ORMException::class);

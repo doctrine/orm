@@ -27,6 +27,7 @@ use Doctrine\Tests\Models\Company\CompanyOrganization;
 use Doctrine\Tests\Models\Company\CompanyPerson;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use InvalidArgumentException;
+use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\MockObject\MockObject;
 use ReflectionMethod;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
@@ -38,9 +39,8 @@ use function serialize;
 
 /**
  * Tests SQLFilter functionality.
- *
- * @group non-cacheable
  */
+#[Group('non-cacheable')]
 class SQLFilterTest extends OrmFunctionalTestCase
 {
     private int $userId;
@@ -178,7 +178,7 @@ class SQLFilterTest extends OrmFunctionalTestCase
         self::assertTrue($exceptionThrown);
     }
 
-    /** @group DDC-2203 */
+    #[Group('DDC-2203')]
     public function testEntityManagerIsFilterEnabled(): void
     {
         $em = $this->getEntityManager();
@@ -257,10 +257,8 @@ class SQLFilterTest extends OrmFunctionalTestCase
         self::assertEquals("'en'", $filter->getParameter('locale'));
     }
 
-    /**
-     * @group DDC-3161
-     * @group 1054
-     */
+    #[Group('DDC-3161')]
+    #[Group('1054')]
     public function testSQLFilterGetConnection(): void
     {
         // Setup mock connection

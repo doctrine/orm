@@ -8,12 +8,13 @@ use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\ParserResult;
 use Doctrine\ORM\Query\SqlWalker;
 use Doctrine\Tests\OrmTestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 /**
  * Tests for {@see \Doctrine\ORM\Query\SqlWalker}
- *
- * @covers \Doctrine\ORM\Query\SqlWalker
  */
+#[CoversClass(SqlWalker::class)]
 class SqlWalkerTest extends OrmTestCase
 {
     private SqlWalker $sqlWalker;
@@ -23,13 +24,13 @@ class SqlWalkerTest extends OrmTestCase
         $this->sqlWalker = new SqlWalker(new Query($this->getTestEntityManager()), new ParserResult(), []);
     }
 
-    /** @dataProvider getColumnNamesAndSqlAliases */
+    #[DataProvider('getColumnNamesAndSqlAliases')]
     public function testGetSQLTableAlias($tableName, $expectedAlias): void
     {
         self::assertSame($expectedAlias, $this->sqlWalker->getSQLTableAlias($tableName));
     }
 
-    /** @dataProvider getColumnNamesAndSqlAliases */
+    #[DataProvider('getColumnNamesAndSqlAliases')]
     public function testGetSQLTableAliasIsSameForMultipleCalls($tableName): void
     {
         self::assertSame(

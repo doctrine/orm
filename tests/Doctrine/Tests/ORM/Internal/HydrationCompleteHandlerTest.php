@@ -10,6 +10,8 @@ use Doctrine\ORM\Events;
 use Doctrine\ORM\Internal\HydrationCompleteHandler;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\Persistence\Event\LifecycleEventArgs;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use stdClass;
@@ -19,9 +21,8 @@ use function in_array;
 
 /**
  * Tests for {@see \Doctrine\ORM\Internal\HydrationCompleteHandler}
- *
- * @covers \Doctrine\ORM\Internal\HydrationCompleteHandler
  */
+#[CoversClass(HydrationCompleteHandler::class)]
 class HydrationCompleteHandlerTest extends TestCase
 {
     private ListenersInvoker&MockObject $listenersInvoker;
@@ -35,7 +36,7 @@ class HydrationCompleteHandlerTest extends TestCase
         $this->handler          = new HydrationCompleteHandler($this->listenersInvoker, $this->entityManager);
     }
 
-    /** @dataProvider invocationFlagProvider */
+    #[DataProvider('invocationFlagProvider')]
     public function testDefersPostLoadOfEntity(int $listenersFlag): void
     {
         $metadata = $this->createMock(ClassMetadata::class);
@@ -67,7 +68,7 @@ class HydrationCompleteHandlerTest extends TestCase
         $this->handler->hydrationComplete();
     }
 
-    /** @dataProvider invocationFlagProvider */
+    #[DataProvider('invocationFlagProvider')]
     public function testDefersPostLoadOfEntityOnlyOnce(int $listenersFlag): void
     {
         $metadata = $this->createMock(ClassMetadata::class);
@@ -89,7 +90,7 @@ class HydrationCompleteHandlerTest extends TestCase
         $this->handler->hydrationComplete();
     }
 
-    /** @dataProvider invocationFlagProvider */
+    #[DataProvider('invocationFlagProvider')]
     public function testDefersMultiplePostLoadOfEntity(int $listenersFlag): void
     {
         $metadata1     = $this->createMock(ClassMetadata::class);

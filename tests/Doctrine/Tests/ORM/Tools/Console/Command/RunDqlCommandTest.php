@@ -8,6 +8,7 @@ use Doctrine\ORM\Tools\Console\Command\RunDqlCommand;
 use Doctrine\ORM\Tools\Console\EntityManagerProvider\SingleManagerProvider;
 use Doctrine\Tests\Models\Generic\DateTimeModel;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
 
@@ -15,9 +16,8 @@ use function trim;
 
 /**
  * Tests for {@see \Doctrine\ORM\Tools\Console\Command\RunDqlCommand}
- *
- * @covers \Doctrine\ORM\Tools\Console\Command\RunDqlCommand
  */
+#[CoversClass(RunDqlCommand::class)]
 class RunDqlCommandTest extends OrmFunctionalTestCase
 {
     private Application $application;

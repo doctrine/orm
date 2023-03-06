@@ -11,9 +11,10 @@ use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 use Stringable;
 
-/** @group DDC-1998 */
+#[Group('DDC-1998')]
 class DDC1998Test extends OrmFunctionalTestCase
 {
     public function testSqlConversionAsIdentifier(): void

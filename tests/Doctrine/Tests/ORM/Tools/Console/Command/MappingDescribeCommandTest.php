@@ -9,14 +9,14 @@ use Doctrine\ORM\Tools\Console\EntityManagerProvider\SingleManagerProvider;
 use Doctrine\Tests\Models\Cache\AttractionInfo;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use InvalidArgumentException;
+use PHPUnit\Framework\Attributes\CoversClass;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
 
 /**
  * Tests for {@see \Doctrine\ORM\Tools\Console\Command\MappingDescribeCommand}
- *
- * @covers \Doctrine\ORM\Tools\Console\Command\MappingDescribeCommand
  */
+#[CoversClass(MappingDescribeCommand::class)]
 class MappingDescribeCommandTest extends OrmFunctionalTestCase
 {
     private Application $application;

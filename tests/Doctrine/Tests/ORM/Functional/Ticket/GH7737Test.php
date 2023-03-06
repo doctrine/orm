@@ -14,8 +14,10 @@ use Doctrine\ORM\Mapping\InverseJoinColumn;
 use Doctrine\ORM\Mapping\JoinTable;
 use Doctrine\ORM\Mapping\ManyToMany;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\Test;
 
-/** @group GH7737 */
+#[Group('GH7737')]
 class GH7737Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -35,7 +37,7 @@ class GH7737Test extends OrmFunctionalTestCase
         $this->_em->clear();
     }
 
-    /** @test */
+    #[Test]
     public function memberOfCriteriaShouldBeCompatibleWithQueryBuilder(): void
     {
         $query = $this->_em->createQueryBuilder()

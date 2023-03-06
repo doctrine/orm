@@ -7,6 +7,7 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 use Doctrine\Tests\Models\CMS\CmsArticle;
 use Doctrine\Tests\Models\CMS\CmsComment;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
 class DDC812Test extends OrmFunctionalTestCase
 {
@@ -17,7 +18,7 @@ class DDC812Test extends OrmFunctionalTestCase
         parent::setUp();
     }
 
-    /** @group DDC-812 */
+    #[Group('DDC-812')]
     public function testFetchJoinInitializesPreviouslyUninitializedCollectionOfManagedEntity(): void
     {
         $article        = new CmsArticle();

@@ -14,11 +14,12 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 use Stringable;
 
 use function assert;
 
-/** @group GH-5887 */
+#[Group('GH-5887')]
 class GH5887Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void

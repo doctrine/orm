@@ -10,10 +10,11 @@ use Doctrine\Tests\Models\Cache\Bar;
 use Doctrine\Tests\Models\Cache\Beach;
 use Doctrine\Tests\Models\Cache\City;
 use Doctrine\Tests\Models\Cache\Restaurant;
+use PHPUnit\Framework\Attributes\Group;
 
 use function count;
 
-/** @group DDC-2183 */
+#[Group('DDC-2183')]
 class SecondLevelCacheSingleTableInheritanceTest extends SecondLevelCacheFunctionalTestCase
 {
     public function testUseSameRegion(): void

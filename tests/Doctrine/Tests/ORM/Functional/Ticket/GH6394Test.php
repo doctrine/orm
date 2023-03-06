@@ -11,6 +11,7 @@ use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\Version;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
 class GH6394Test extends OrmFunctionalTestCase
 {
@@ -24,9 +25,8 @@ class GH6394Test extends OrmFunctionalTestCase
     /**
      * Test the the version of an entity can be fetched, when the id field and
      * the id column are different.
-     *
-     * @group 6393
      */
+    #[Group('6393')]
     public function testFetchVersionValueForDifferentIdFieldAndColumn(): void
     {
         $a = new A(1);

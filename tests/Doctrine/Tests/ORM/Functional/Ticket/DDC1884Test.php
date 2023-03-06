@@ -9,8 +9,9 @@ use Doctrine\Tests\Models\Taxi\Driver;
 use Doctrine\Tests\Models\Taxi\PaidRide;
 use Doctrine\Tests\Models\Taxi\Ride;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
-/** @group DDC-1884 */
+#[Group('DDC-1884')]
 class DDC1884Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void

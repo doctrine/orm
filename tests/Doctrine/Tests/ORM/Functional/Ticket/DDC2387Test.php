@@ -7,10 +7,11 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 use Doctrine\DBAL\Schema\Table;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\Tests\ORM\Functional\DatabaseDriverTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
 class DDC2387Test extends DatabaseDriverTestCase
 {
-    /** @group DDC-2387 */
+    #[Group('DDC-2387')]
     public function testCompositeAssociationKeyDetection(): void
     {
         $product = new Table('ddc2387_product');

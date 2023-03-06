@@ -32,6 +32,8 @@ use Doctrine\Tests\Models\DDC869\DDC869Payment;
 use Doctrine\Tests\Models\DDC869\DDC869PaymentRepository;
 use Doctrine\Tests\OrmTestCase;
 use Generator;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Group;
 
 use function assert;
 use function serialize;
@@ -87,7 +89,7 @@ class BasicInheritanceMappingTest extends OrmTestCase
         self::assertArrayHasKey('mappedRelated1', $class->associationMappings);
     }
 
-    /** @group DDC-869 */
+    #[Group('DDC-869')]
     public function testGetMetadataForSubclassWithMappedSuperclassWithRepository(): void
     {
         $class = $this->cmf->getMetadataFor(DDC869CreditCardPayment::class);
@@ -112,7 +114,7 @@ class BasicInheritanceMappingTest extends OrmTestCase
         self::assertEquals($class->customRepositoryClassName, EntityRepository::class);
     }
 
-    /** @group DDC-388 */
+    #[Group('DDC-388')]
     public function testSerializationWithPrivateFieldsFromMappedSuperclass(): void
     {
         $class = $this->cmf->getMetadataFor(EntitySubClass2::class);
@@ -125,7 +127,7 @@ class BasicInheritanceMappingTest extends OrmTestCase
         self::assertArrayHasKey('mappedRelated1', $class2->reflFields);
     }
 
-    /** @group DDC-1203 */
+    #[Group('DDC-1203')]
     public function testUnmappedSuperclassInHierarchy(): void
     {
         $class = $this->cmf->getMetadataFor(HierarchyD::class);
@@ -135,7 +137,7 @@ class BasicInheritanceMappingTest extends OrmTestCase
         self::assertArrayHasKey('d', $class->fieldMappings);
     }
 
-    /** @group DDC-1204 */
+    #[Group('DDC-1204')]
     public function testUnmappedEntityInHierarchy(): void
     {
         $this->expectException(MappingException::class);
@@ -149,10 +151,8 @@ class BasicInheritanceMappingTest extends OrmTestCase
         $this->cmf->getMetadataFor(HierarchyE::class);
     }
 
-    /**
-     * @group DDC-1204
-     * @group DDC-1203
-     */
+    #[Group('DDC-1204')]
+    #[Group('DDC-1203')]
     public function testMappedSuperclassWithId(): void
     {
         $class = $this->cmf->getMetadataFor(SuperclassEntity::class);
@@ -160,10 +160,8 @@ class BasicInheritanceMappingTest extends OrmTestCase
         self::assertArrayHasKey('id', $class->fieldMappings);
     }
 
-    /**
-     * @group DDC-1156
-     * @group DDC-1218
-     */
+    #[Group('DDC-1156')]
+    #[Group('DDC-1218')]
     public function testGeneratedValueFromMappedSuperclass(): void
     {
         $class = $this->cmf->getMetadataFor(SuperclassEntity::class);
@@ -176,10 +174,8 @@ class BasicInheritanceMappingTest extends OrmTestCase
         );
     }
 
-    /**
-     * @group DDC-1156
-     * @group DDC-1218
-     */
+    #[Group('DDC-1156')]
+    #[Group('DDC-1218')]
     public function testSequenceDefinitionInHierarchyWithSandwichMappedSuperclass(): void
     {
         $class = $this->cmf->getMetadataFor(HierarchyD::class);
@@ -192,10 +188,8 @@ class BasicInheritanceMappingTest extends OrmTestCase
         );
     }
 
-    /**
-     * @group DDC-1156
-     * @group DDC-1218
-     */
+    #[Group('DDC-1156')]
+    #[Group('DDC-1218')]
     public function testMultipleMappedSuperclasses(): void
     {
         $class = $this->cmf->getMetadataFor(MediumSuperclassEntity::class);
@@ -210,9 +204,8 @@ class BasicInheritanceMappingTest extends OrmTestCase
 
     /**
      * Ensure indexes are inherited from the mapped superclass.
-     *
-     * @group DDC-3418
      */
+    #[Group('DDC-3418')]
     public function testMappedSuperclassIndex(): void
     {
         $class = $this->cmf->getMetadataFor(EntityIndexSubClass::class);
@@ -224,7 +217,7 @@ class BasicInheritanceMappingTest extends OrmTestCase
         self::assertArrayHasKey('IDX_MAPPED2_INDEX', $class->table['indexes']);
     }
 
-    /** @dataProvider invalidHierarchyDeclarationClasses */
+    #[DataProvider('invalidHierarchyDeclarationClasses')]
     public function testUndeclaredHierarchyRejection(string $rootEntity, string $childClass): void
     {
         $this->expectException(MappingException::class);
@@ -255,7 +248,7 @@ class BasicInheritanceMappingTest extends OrmTestCase
             => [InvalidComplexRoot::class, InvalidComplexEntity::class];
     }
 
-    /** @group DDC-964 */
+    #[Group('DDC-964')]
     public function testInvalidOverrideFieldInheritedFromEntity(): void
     {
         $cm = $this->cmf->getMetadataFor(CompanyFixContract::class);

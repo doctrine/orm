@@ -8,6 +8,7 @@ use Doctrine\Tests\Models\ValueConversionType as Entity;
 use Doctrine\Tests\Models\ValueConversionType\InversedOneToManyExtraLazyEntity;
 use Doctrine\Tests\Models\ValueConversionType\OwningManyToOneExtraLazyEntity;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
 /**
  * The entities all use a custom type that converst the value as identifier(s).
@@ -15,9 +16,8 @@ use Doctrine\Tests\OrmFunctionalTestCase;
  *
  * Test that OneToMany associations work correctly, focusing on EXTRA_LAZY
  * functionality.
- *
- * @group DDC-3380
  */
+#[Group('DDC-3380')]
 class OneToManyExtraLazyTest extends OrmFunctionalTestCase
 {
     protected function setUp(): void

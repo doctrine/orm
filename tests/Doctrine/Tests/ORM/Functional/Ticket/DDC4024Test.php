@@ -6,8 +6,9 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\Tests\DoctrineTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
-/** @group DDC4024 */
+#[Group('DDC4024')]
 final class DDC4024Test extends DoctrineTestCase
 {
     public function testConstructorShouldUseProvidedMessage(): void

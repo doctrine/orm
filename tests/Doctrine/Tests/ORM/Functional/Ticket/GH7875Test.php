@@ -11,6 +11,8 @@ use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\Table;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\After;
+use PHPUnit\Framework\Attributes\Group;
 
 use function array_filter;
 use function current;
@@ -18,10 +20,10 @@ use function sprintf;
 use function str_contains;
 use function str_starts_with;
 
-/** @group GH7875 */
+#[Group('GH7875')]
 final class GH7875Test extends OrmFunctionalTestCase
 {
-    /** @after */
+    #[After]
     public function cleanUpSchema(): void
     {
         $connection = $this->_em->getConnection();

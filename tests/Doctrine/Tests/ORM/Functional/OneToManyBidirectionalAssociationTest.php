@@ -10,6 +10,7 @@ use Doctrine\Persistence\Proxy;
 use Doctrine\Tests\Models\ECommerce\ECommerceFeature;
 use Doctrine\Tests\Models\ECommerce\ECommerceProduct;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
 /**
  * Tests a bidirectional one-to-one association mapping (without inheritance).
@@ -157,7 +158,7 @@ class OneToManyBidirectionalAssociationTest extends OrmFunctionalTestCase
         self::assertCount(0, $features);
     }
 
-    /** @group DDC-1637 */
+    #[Group('DDC-1637')]
     public function testMatching(): void
     {
         $this->createFixture();
@@ -178,7 +179,7 @@ class OneToManyBidirectionalAssociationTest extends OrmFunctionalTestCase
         self::assertCount(2, $results);
     }
 
-    /** @group DDC-2340 */
+    #[Group('DDC-2340')]
     public function testMatchingOnDirtyCollection(): void
     {
         $this->createFixture();

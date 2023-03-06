@@ -16,11 +16,12 @@ use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\Table;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
 use function array_unique;
 use function count;
 
-/** @group GH-5762 */
+#[Group('GH-5762')]
 class GH5762Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void

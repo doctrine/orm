@@ -11,6 +11,7 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\Persistence\Proxy;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
 class DDC633Test extends OrmFunctionalTestCase
 {
@@ -24,11 +25,9 @@ class DDC633Test extends OrmFunctionalTestCase
         );
     }
 
-    /**
-     * @group DDC-633
-     * @group DDC-952
-     * @group DDC-914
-     */
+    #[Group('DDC-633')]
+    #[Group('DDC-952')]
+    #[Group('DDC-914')]
     public function testOneToOneEager(): void
     {
         $app              = new DDC633Appointment();
@@ -48,10 +47,8 @@ class DDC633Test extends OrmFunctionalTestCase
         self::assertTrue($this->_em->contains($eagerAppointment->patient));
     }
 
-    /**
-     * @group DDC-633
-     * @group DDC-952
-     */
+    #[Group('DDC-633')]
+    #[Group('DDC-952')]
     public function testDQLDeferredEagerLoad(): void
     {
         for ($i = 0; $i < 10; $i++) {

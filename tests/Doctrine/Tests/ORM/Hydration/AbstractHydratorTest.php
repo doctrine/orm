@@ -14,11 +14,13 @@ use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\Internal\Hydration\AbstractHydrator;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\MockObject\MockObject;
 
 use function iterator_to_array;
 
-/** @covers \Doctrine\ORM\Internal\Hydration\AbstractHydrator */
+#[CoversClass(AbstractHydrator::class)]
 class AbstractHydratorTest extends OrmFunctionalTestCase
 {
     private EventManager&MockObject $mockEventManager;
@@ -56,12 +58,11 @@ class AbstractHydratorTest extends OrmFunctionalTestCase
     }
 
     /**
-     * @group DDC-3146
-     * @group #1515
-     *
      * Verify that the number of added events to the event listener from the abstract hydrator class is equal to the
      * number of removed events
      */
+    #[Group('DDC-3146')]
+    #[Group('#1515')]
     public function testOnClearEventListenerIsDetachedOnCleanup(): void
     {
         $eventListenerHasBeenRegistered = false;
@@ -88,7 +89,7 @@ class AbstractHydratorTest extends OrmFunctionalTestCase
         iterator_to_array($this->hydrator->toIterable($this->mockResult, $this->mockResultMapping));
     }
 
-    /** @group #6623 */
+    #[Group('#6623')]
     public function testHydrateAllRegistersAndClearsAllAttachedListeners(): void
     {
         $eventListenerHasBeenRegistered = false;
@@ -115,7 +116,7 @@ class AbstractHydratorTest extends OrmFunctionalTestCase
         $this->hydrator->hydrateAll($this->mockResult, $this->mockResultMapping);
     }
 
-    /** @group #8482 */
+    #[Group('#8482')]
     public function testHydrateAllClearsAllAttachedListenersEvenOnError(): void
     {
         $eventListenerHasBeenRegistered = false;

@@ -7,6 +7,7 @@ namespace Doctrine\Tests\ORM\Functional\SchemaTool;
 use Doctrine\DBAL\Platforms\SQLitePlatform;
 use Doctrine\Tests\Models;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
 use function array_filter;
 use function implode;
@@ -30,7 +31,7 @@ class DDC214Test extends OrmFunctionalTestCase
         }
     }
 
-    /** @group DDC-214 */
+    #[Group('DDC-214')]
     public function testCmsAddressModel(): void
     {
         $this->assertCreatedSchemaNeedsNoUpdates(
@@ -43,7 +44,7 @@ class DDC214Test extends OrmFunctionalTestCase
         );
     }
 
-    /** @group DDC-214 */
+    #[Group('DDC-214')]
     public function testCompanyModel(): void
     {
         $this->assertCreatedSchemaNeedsNoUpdates(

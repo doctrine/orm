@@ -12,11 +12,12 @@ use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\Table;
 use Doctrine\Tests\OrmTestCase;
+use PHPUnit\Framework\Attributes\Group;
 use ReflectionProperty;
 
 class ClassMetadataLoadEventTest extends OrmTestCase
 {
-    /** @group DDC-1610 */
+    #[Group('DDC-1610')]
     public function testEvent(): void
     {
         $em              = $this->getTestEntityManager();

@@ -8,8 +8,9 @@ use Doctrine\ORM\Mapping\DefaultEntityListenerResolver;
 use Doctrine\Tests\Models\Company\CompanyContractListener;
 use Doctrine\Tests\Models\Company\CompanyFlexUltraContractListener;
 use Doctrine\Tests\OrmTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
-/** @group DDC-1955 */
+#[Group('DDC-1955')]
 class EntityListenerResolverTest extends OrmTestCase
 {
     private DefaultEntityListenerResolver $resolver;

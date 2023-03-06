@@ -11,8 +11,9 @@ use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
-/** @group DDC-2575 */
+#[Group('DDC-2575')]
 class DDC2575Test extends OrmFunctionalTestCase
 {
     /** @psalm-var list<DDC2575Root> */

@@ -24,6 +24,8 @@ use Doctrine\Tests\Models\GH7141\GH7141Article;
 use Doctrine\Tests\Models\GH7316\GH7316Article;
 use Doctrine\Tests\Models\ValueObjects\Name;
 use Doctrine\Tests\Models\ValueObjects\Person;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Group;
 
 use function substr_count;
 
@@ -93,11 +95,9 @@ class XmlMappingDriverTest extends MappingDriverTestCase
         self::assertTrue($class->isEmbeddedClass);
     }
 
-    /**
-     * @group DDC-3293
-     * @group DDC-3477
-     * @group 1238
-     */
+    #[Group('DDC-3293')]
+    #[Group('DDC-3477')]
+    #[Group('1238')]
     public function testEmbeddedMappingsWithUseColumnPrefix(): void
     {
         $factory = new ClassMetadataFactory();
@@ -113,11 +113,9 @@ class XmlMappingDriverTest extends MappingDriverTestCase
         );
     }
 
-    /**
-     * @group DDC-3293
-     * @group DDC-3477
-     * @group 1238
-     */
+    #[Group('DDC-3293')]
+    #[Group('DDC-3477')]
+    #[Group('1238')]
     public function testEmbeddedMappingsWithFalseUseColumnPrefix(): void
     {
         $factory = new ClassMetadataFactory();
@@ -149,7 +147,7 @@ class XmlMappingDriverTest extends MappingDriverTestCase
         );
     }
 
-    /** @group DDC-1468 */
+    #[Group('DDC-1468')]
     public function testItMentionsFilenameAndEntityNameOnInvalidMapping(): void
     {
         $this->expectException(PersistenceMappingException::class);
@@ -157,10 +155,8 @@ class XmlMappingDriverTest extends MappingDriverTestCase
         $this->createClassMetadata(BooleanModel::class);
     }
 
-    /**
-     * @dataProvider dataValidSchema
-     * @group DDC-2429
-     */
+    #[Group('DDC-2429')]
+    #[DataProvider('dataValidSchema')]
     public function testValidateXmlSchema(
         string $class,
         string $tableName,
@@ -203,9 +199,8 @@ class XmlMappingDriverTest extends MappingDriverTestCase
     /**
      * @param class-string                 $class
      * @param non-empty-array<string, int> $expectedExceptionOccurrences
-     *
-     * @dataProvider dataInvalidSchema
      */
+    #[DataProvider('dataInvalidSchema')]
     public function testValidateIncorrectXmlSchema(string $class, array $expectedExceptionOccurrences): void
     {
         try {
@@ -242,7 +237,7 @@ class XmlMappingDriverTest extends MappingDriverTestCase
         ];
     }
 
-    /** @group GH-7141 */
+    #[Group('GH-7141')]
     public function testOneToManyDefaultOrderByAsc(): void
     {
         $driver = $this->loadDriver();
@@ -271,7 +266,7 @@ class XmlMappingDriverTest extends MappingDriverTestCase
         );
     }
 
-    /** @group DDC-889 */
+    #[Group('DDC-889')]
     public function testInvalidEntityOrMappedSuperClassShouldMentionParentClasses(): void
     {
         $this->expectException(MappingException::class);

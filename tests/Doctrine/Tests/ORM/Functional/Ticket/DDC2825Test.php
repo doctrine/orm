@@ -8,14 +8,15 @@ use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Tests\Models\DDC2825\ExplicitSchemaAndTable;
 use Doctrine\Tests\Models\DDC2825\SchemaAndTableInTableName;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Group;
 
 use function sprintf;
 
 /**
  * This class makes tests on the correct use of a database schema when entities are stored
- *
- * @group DDC-2825
  */
+#[Group('DDC-2825')]
 class DDC2825Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -29,7 +30,7 @@ class DDC2825Test extends OrmFunctionalTestCase
         }
     }
 
-    /** @dataProvider getTestedClasses */
+    #[DataProvider('getTestedClasses')]
     public function testClassSchemaMappingsValidity(string $className, string $expectedSchemaName, string $expectedTableName): void
     {
         $classMetadata   = $this->_em->getClassMetadata($className);
@@ -55,7 +56,7 @@ class DDC2825Test extends OrmFunctionalTestCase
         );
     }
 
-    /** @dataProvider getTestedClasses */
+    #[DataProvider('getTestedClasses')]
     public function testPersistenceOfEntityWithSchemaMapping(string $className): void
     {
         $this->createSchemaForModels($className);

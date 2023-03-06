@@ -13,6 +13,7 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\InheritanceType;
 use Doctrine\ORM\Mapping\Table;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
 class DDC258Test extends OrmFunctionalTestCase
 {
@@ -28,7 +29,7 @@ class DDC258Test extends OrmFunctionalTestCase
         );
     }
 
-    /** @group DDC-258 */
+    #[Group('DDC-258')]
     public function testIssue(): void
     {
         $c1              = new DDC258Class1();

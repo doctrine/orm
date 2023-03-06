@@ -8,6 +8,7 @@ use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\ORM\Mapping\DefaultQuoteStrategy;
 use Doctrine\Tests\Models\NonPublicSchemaJoins\User as NonPublicSchemaUser;
 use Doctrine\Tests\OrmTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
 use function assert;
 
@@ -16,10 +17,8 @@ use function assert;
  */
 class DefaultQuoteStrategyTest extends OrmTestCase
 {
-    /**
-     * @group DDC-3590
-     * @group 1316
-     */
+    #[Group('DDC-3590')]
+    #[Group('DDC-1316')]
     public function testGetJoinTableName(): void
     {
         $em       = $this->getTestEntityManager();

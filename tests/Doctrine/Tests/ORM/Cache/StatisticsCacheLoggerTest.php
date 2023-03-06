@@ -10,8 +10,9 @@ use Doctrine\ORM\Cache\Logging\StatisticsCacheLogger;
 use Doctrine\ORM\Cache\QueryCacheKey;
 use Doctrine\Tests\DoctrineTestCase;
 use Doctrine\Tests\Models\Cache\State;
+use PHPUnit\Framework\Attributes\Group;
 
-/** @group DDC-2183 */
+#[Group('DDC-2183')]
 class StatisticsCacheLoggerTest extends DoctrineTestCase
 {
     private StatisticsCacheLogger $logger;

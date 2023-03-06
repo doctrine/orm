@@ -16,8 +16,9 @@ use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Query;
 use Doctrine\Persistence\Proxy;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
-/** @group DDC-371 */
+#[Group('DDC-371')]
 class DDC371Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void

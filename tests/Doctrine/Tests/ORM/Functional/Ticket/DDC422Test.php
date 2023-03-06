@@ -19,6 +19,7 @@ use Doctrine\ORM\Mapping\JoinTable;
 use Doctrine\ORM\Mapping\ManyToMany;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
 class DDC422Test extends OrmFunctionalTestCase
 {
@@ -33,7 +34,7 @@ class DDC422Test extends OrmFunctionalTestCase
         );
     }
 
-    /** @group DDC-422 */
+    #[Group('DDC-422')]
     public function testIssue(): void
     {
         $customer = new DDC422Customer();

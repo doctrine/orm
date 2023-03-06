@@ -5,13 +5,13 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM;
 
 use Doctrine\ORM\EntityNotFoundException;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 
 /**
  * Tests for {@see \Doctrine\ORM\EntityNotFoundException}
- *
- * @covers \Doctrine\ORM\EntityNotFoundException
  */
+#[CoversClass(EntityNotFoundException::class)]
 class EntityNotFoundExceptionTest extends TestCase
 {
     public function testFromClassNameAndIdentifier(): void

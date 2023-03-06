@@ -19,6 +19,7 @@ use Doctrine\Tests\Models\CMS\CmsGroup;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\OrmTestCase;
 use InvalidArgumentException;
+use PHPUnit\Framework\Attributes\Group;
 
 use function array_filter;
 
@@ -487,7 +488,7 @@ class QueryBuilderTest extends OrmTestCase
         self::assertNotNull($qb->getParameter('field_1'));
     }
 
-    /** @group DDC-2844 */
+    #[Group('DDC-2844')]
     public function testAddCriteriaWhereWithMultipleParametersWithSameField(): void
     {
         $qb = $this->entityManager->createQueryBuilder();
@@ -504,7 +505,7 @@ class QueryBuilderTest extends OrmTestCase
         self::assertSame('value2', $qb->getParameter('field_1')->getValue());
     }
 
-    /** @group DDC-2844 */
+    #[Group('DDC-2844')]
     public function testAddCriteriaWhereWithMultipleParametersWithDifferentFields(): void
     {
         $qb = $this->entityManager->createQueryBuilder();
@@ -521,7 +522,7 @@ class QueryBuilderTest extends OrmTestCase
         self::assertSame('value2', $qb->getParameter('field2')->getValue());
     }
 
-    /** @group DDC-2844 */
+    #[Group('DDC-2844')]
     public function testAddCriteriaWhereWithMultipleParametersWithSubpathsAndDifferentProperties(): void
     {
         $qb = $this->entityManager->createQueryBuilder();
@@ -538,7 +539,7 @@ class QueryBuilderTest extends OrmTestCase
         self::assertSame('value2', $qb->getParameter('field2')->getValue());
     }
 
-    /** @group DDC-2844 */
+    #[Group('DDC-2844')]
     public function testAddCriteriaWhereWithMultipleParametersWithSubpathsAndSameProperty(): void
     {
         $qb = $this->entityManager->createQueryBuilder();
@@ -570,7 +571,7 @@ class QueryBuilderTest extends OrmTestCase
         self::assertEquals('u.field DESC', (string) $orderBy[0]);
     }
 
-    /** @group DDC-3108 */
+    #[Group('DDC-3108')]
     public function testAddCriteriaOrderOnJoinAlias(): void
     {
         $qb = $this->entityManager->createQueryBuilder();
@@ -876,7 +877,7 @@ class QueryBuilderTest extends OrmTestCase
         self::assertCount(0, $qb->getDQLPart('orderBy'));
     }
 
-    /** @group DDC-867 */
+    #[Group('DDC-867')]
     public function testDeepClone(): void
     {
         $qb = $this->entityManager->createQueryBuilder()
@@ -894,7 +895,7 @@ class QueryBuilderTest extends OrmTestCase
         self::assertEquals(2, $expr->count(), 'Modifying the second query should affect the first one.');
     }
 
-    /** @group DDC-3108 */
+    #[Group('DDC-3108')]
     public function testAddCriteriaWhereWithJoinAlias(): void
     {
         $qb = $this->entityManager->createQueryBuilder();
@@ -912,7 +913,7 @@ class QueryBuilderTest extends OrmTestCase
         self::assertSame('value2', $qb->getParameter('alias2_field')->getValue());
     }
 
-    /** @group DDC-3108 */
+    #[Group('DDC-3108')]
     public function testAddCriteriaWhereWithDefaultAndJoinAlias(): void
     {
         $qb = $this->entityManager->createQueryBuilder();
@@ -930,7 +931,7 @@ class QueryBuilderTest extends OrmTestCase
         self::assertSame('value2', $qb->getParameter('alias2_field')->getValue());
     }
 
-    /** @group DDC-3108 */
+    #[Group('DDC-3108')]
     public function testAddCriteriaWhereOnJoinAliasWithDuplicateFields(): void
     {
         $qb = $this->entityManager->createQueryBuilder();
@@ -950,7 +951,7 @@ class QueryBuilderTest extends OrmTestCase
         self::assertSame('value3', $qb->getParameter('alias2_field_2')->getValue());
     }
 
-    /** @group DDC-1933 */
+    #[Group('DDC-1933')]
     public function testParametersAreCloned(): void
     {
         $originalQb = new QueryBuilder($this->entityManager);
@@ -1013,7 +1014,7 @@ class QueryBuilderTest extends OrmTestCase
         self::assertEquals('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u INNER JOIN u.groups g', $qb->getDQL());
     }
 
-    /** @group DDC-1211 */
+    #[Group('DDC-1211')]
     public function testEmptyStringLiteral(): void
     {
         $expr = $this->entityManager->getExpressionBuilder();
@@ -1025,7 +1026,7 @@ class QueryBuilderTest extends OrmTestCase
         self::assertEquals("SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.username = ''", $qb->getDQL());
     }
 
-    /** @group DDC-1211 */
+    #[Group('DDC-1211')]
     public function testEmptyNumericLiteral(): void
     {
         $expr = $this->entityManager->getExpressionBuilder();
@@ -1037,7 +1038,7 @@ class QueryBuilderTest extends OrmTestCase
         self::assertEquals('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.username = 0', $qb->getDQL());
     }
 
-    /** @group DDC-1227 */
+    #[Group('DDC-1227')]
     public function testAddFromString(): void
     {
         $qb = $this->entityManager->createQueryBuilder()
@@ -1047,7 +1048,7 @@ class QueryBuilderTest extends OrmTestCase
         self::assertEquals('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u', $qb->getDQL());
     }
 
-    /** @group DDC-1619 */
+    #[Group('DDC-1619')]
     public function testAddDistinct(): void
     {
         $qb = $this->entityManager->createQueryBuilder()
@@ -1058,7 +1059,7 @@ class QueryBuilderTest extends OrmTestCase
         self::assertEquals('SELECT DISTINCT u FROM Doctrine\Tests\Models\CMS\CmsUser u', $qb->getDQL());
     }
 
-    /** @group DDC-2192 */
+    #[Group('DDC-2192')]
     public function testWhereAppend(): void
     {
         $this->expectException(InvalidArgumentException::class);
@@ -1108,7 +1109,7 @@ class QueryBuilderTest extends OrmTestCase
         self::assertEquals(Cache::MODE_REFRESH, $query->getCacheMode());
     }
 
-    /** @group DDC-2253 */
+    #[Group('DDC-2253')]
     public function testRebuildsFromParts(): void
     {
         $qb = $this->entityManager->createQueryBuilder()
@@ -1151,7 +1152,7 @@ class QueryBuilderTest extends OrmTestCase
         self::assertEquals(['u', 'g'], $aliases);
     }
 
-    /** @group 6699 */
+    #[Group('6699')]
     public function testGetParameterTypeJuggling(): void
     {
         $builder = $this->entityManager->createQueryBuilder()
@@ -1166,7 +1167,7 @@ class QueryBuilderTest extends OrmTestCase
         self::assertSame(0, $builder->getParameter('0')->getValue());
     }
 
-    /** @group 6699 */
+    #[Group('6699')]
     public function testSetParameterWithNameZeroIsNotOverridden(): void
     {
         $builder = $this->entityManager->createQueryBuilder()
@@ -1183,7 +1184,7 @@ class QueryBuilderTest extends OrmTestCase
         self::assertSame('Doctrine', $builder->getParameter('name')->getValue());
     }
 
-    /** @group 6699 */
+    #[Group('6699')]
     public function testSetParameterWithNameZeroDoesNotOverrideAnotherParameter(): void
     {
         $builder = $this->entityManager->createQueryBuilder()
@@ -1200,7 +1201,7 @@ class QueryBuilderTest extends OrmTestCase
         self::assertSame('Doctrine', $builder->getParameter('name')->getValue());
     }
 
-    /** @group 6699 */
+    #[Group('6699')]
     public function testSetParameterWithTypeJugglingWorks(): void
     {
         $builder = $this->entityManager->createQueryBuilder()

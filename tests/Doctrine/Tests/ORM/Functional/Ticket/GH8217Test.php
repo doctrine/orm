@@ -14,6 +14,7 @@ use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
 final class GH8217Test extends OrmFunctionalTestCase
 {
@@ -29,7 +30,7 @@ final class GH8217Test extends OrmFunctionalTestCase
         );
     }
 
-    /** @group GH-8217 */
+    #[Group('GH-8217')]
     public function testNoQueriesAfterSecondFlush(): void
     {
         $collection = new GH8217Collection();

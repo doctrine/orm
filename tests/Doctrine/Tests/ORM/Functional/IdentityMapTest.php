@@ -9,6 +9,7 @@ use Doctrine\Tests\Models\CMS\CmsAddress;
 use Doctrine\Tests\Models\CMS\CmsPhonenumber;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
 /**
  * IdentityMapTest
@@ -206,7 +207,7 @@ class IdentityMapTest extends OrmFunctionalTestCase
         self::assertCount(4, $user3->getPhonenumbers());
     }
 
-    /** @group non-cacheable */
+    #[Group('non-cacheable')]
     public function testCollectionValuedAssociationIdentityMapBehaviorWithRefresh(): void
     {
         $user           = new CmsUser();

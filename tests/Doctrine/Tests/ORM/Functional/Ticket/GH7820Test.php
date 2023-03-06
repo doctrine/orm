@@ -14,6 +14,7 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use PHPUnit\Framework\Assert;
+use PHPUnit\Framework\Attributes\Group;
 use Psr\Cache\CacheItemInterface;
 use Stringable;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
@@ -24,8 +25,6 @@ use function is_string;
 use function iterator_to_array;
 
 /**
- * @group GH7820
- *
  * When using a {@see \Doctrine\ORM\Tools\Pagination\Paginator} to iterate over a query
  * that has entities with a custom DBAL type used in the identifier, then `$id->__toString()`
  * is used implicitly by {@see \PDOStatement::bindValue()}, instead of being converted by the
@@ -37,10 +36,10 @@ use function iterator_to_array;
  *
  * If `#__toString()` and the DBAL type conversions are asymmetric, then the paginator will fail
  * to find records.
- *
  * Tricky situation, but this very much affects `ramsey/uuid-doctrine` and anyone relying on (for
  * example) the {@see \Ramsey\Uuid\Doctrine\UuidBinaryType} type.
  */
+#[Group('GH7820')]
 class GH7820Test extends OrmFunctionalTestCase
 {
     private const SONG = [
@@ -79,7 +78,7 @@ class GH7820Test extends OrmFunctionalTestCase
         self::assertSame(self::SONG, $lines);
     }
 
-    /** @group GH7837 */
+    #[Group('GH7837')]
     public function testWillFindSongsInPaginatorEvenWithCachedQueryParsing(): void
     {
         // Enable the query cache

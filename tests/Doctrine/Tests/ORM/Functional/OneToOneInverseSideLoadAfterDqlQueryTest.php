@@ -7,6 +7,7 @@ namespace Doctrine\Tests\ORM\Functional;
 use Doctrine\Tests\Models\OneToOneInverseSideLoad\InverseSide;
 use Doctrine\Tests\Models\OneToOneInverseSideLoad\OwningSide;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
 use function assert;
 
@@ -19,7 +20,7 @@ class OneToOneInverseSideLoadAfterDqlQueryTest extends OrmFunctionalTestCase
         $this->createSchemaForModels(OwningSide::class, InverseSide::class);
     }
 
-    /** @group GH-6759 */
+    #[Group('GH-6759')]
     public function testInverseSideOneToOneLoadedAfterDqlQuery(): void
     {
         $owner   = new OwningSide();

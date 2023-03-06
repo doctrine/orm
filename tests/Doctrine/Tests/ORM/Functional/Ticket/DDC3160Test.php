@@ -8,6 +8,7 @@ use Doctrine\ORM\Event\OnFlushEventArgs;
 use Doctrine\ORM\Events;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
 /**
  * FlushEventTest
@@ -21,7 +22,7 @@ class DDC3160Test extends OrmFunctionalTestCase
         parent::setUp();
     }
 
-    /** @group DDC-3160 */
+    #[Group('DDC-3160')]
     public function testNoUpdateOnInsert(): void
     {
         $listener = new DDC3160OnFlushListener();

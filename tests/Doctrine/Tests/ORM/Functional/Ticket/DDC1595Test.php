@@ -18,12 +18,11 @@ use Doctrine\ORM\Mapping\JoinTable;
 use Doctrine\ORM\Mapping\ManyToMany;
 use Doctrine\ORM\Mapping\Table;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
-/**
- * @group DDC-1595
- * @group DDC-1596
- * @group non-cacheable
- */
+#[Group('DDC-1595')]
+#[Group('DDC-1596')]
+#[Group('non-cacheable')]
 class DDC1595Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void

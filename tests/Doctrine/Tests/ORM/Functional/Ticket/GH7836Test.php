@@ -14,10 +14,11 @@ use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\OrderBy;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
 use function assert;
 
-/** @group GH7836 */
+#[Group('GH7836')]
 class GH7836Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void

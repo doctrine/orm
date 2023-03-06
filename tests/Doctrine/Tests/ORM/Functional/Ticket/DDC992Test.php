@@ -19,8 +19,9 @@ use Doctrine\ORM\Mapping\ManyToMany;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
-/** @group DDC-992 */
+#[Group('DDC-992')]
 class DDC992Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void

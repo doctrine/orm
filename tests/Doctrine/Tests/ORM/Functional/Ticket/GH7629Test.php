@@ -10,6 +10,7 @@ use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
 class GH7629Test extends OrmFunctionalTestCase
 {
@@ -36,7 +37,7 @@ class GH7629Test extends OrmFunctionalTestCase
         self::assertFalse($this->_em->getUnitOfWork()->isScheduledForDirtyCheck($entity));
     }
 
-    /** @group GH-8231 */
+    #[Group('GH-8231')]
     public function testPersistAfterRemoveSchedulesForSynchronization(): void
     {
         $entity = $this->_em->find(GH7629Entity::class, 1);

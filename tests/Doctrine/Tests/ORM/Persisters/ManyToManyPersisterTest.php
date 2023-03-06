@@ -12,14 +12,14 @@ use Doctrine\Tests\Models\ManyToManyPersister\ChildClass;
 use Doctrine\Tests\Models\ManyToManyPersister\OtherParentClass;
 use Doctrine\Tests\Models\ManyToManyPersister\ParentClass;
 use Doctrine\Tests\OrmTestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Group;
 
-/** @covers \Doctrine\ORM\Persisters\Collection\ManyToManyPersister */
+#[CoversClass(ManyToManyPersister::class)]
 final class ManyToManyPersisterTest extends OrmTestCase
 {
-    /**
-     * @group GH-6991
-     * @group ManyToManyPersister
-     */
+    #[Group('GH-6991')]
+    #[Group('ManyToManyPersister')]
     public function testDeleteManyToManyCollection(): void
     {
         $driver = $this->createMock(Driver::class);

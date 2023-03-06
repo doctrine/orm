@@ -13,6 +13,7 @@ use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\ORM\UnitOfWork;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
 class GH9027Test extends OrmFunctionalTestCase
 {
@@ -23,7 +24,7 @@ class GH9027Test extends OrmFunctionalTestCase
         $this->createSchemaForModels(GH9027Cart::class, GH9027Customer::class);
     }
 
-    /** @group GH-9027 */
+    #[Group('GH-9027')]
     public function testUnitOfWorkHandlesNullRelations(): void
     {
         $uow   = new UnitOfWork($this->_em);

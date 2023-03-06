@@ -16,8 +16,9 @@ use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\ORM\Mapping\Table;
 use Doctrine\Persistence\Mapping\RuntimeReflectionService;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
-/** @group GH7079 */
+#[Group('GH7079')]
 final class GH7079Test extends OrmFunctionalTestCase
 {
     private DefaultQuoteStrategy $strategy;

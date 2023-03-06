@@ -8,8 +8,9 @@ use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\Tests\Models\Cache\City;
 use Doctrine\Tests\Models\Cache\State;
 use Doctrine\Tests\Models\Cache\Travel;
+use PHPUnit\Framework\Attributes\Group;
 
-/** @group DDC-2183 */
+#[Group('DDC-2183')]
 class SecondLevelCacheExtraLazyCollectionTest extends SecondLevelCacheFunctionalTestCase
 {
     protected function setUp(): void

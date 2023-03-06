@@ -9,6 +9,8 @@ use Doctrine\Tests\Models\ValueConversionType\AuxiliaryEntity;
 use Doctrine\Tests\Models\ValueConversionType\InversedOneToManyCompositeIdForeignKeyEntity;
 use Doctrine\Tests\Models\ValueConversionType\OwningManyToOneCompositeIdForeignKeyEntity;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Depends;
+use PHPUnit\Framework\Attributes\Group;
 
 /**
  * The entities all use a custom type that converst the value as identifier(s).
@@ -16,9 +18,8 @@ use Doctrine\Tests\OrmFunctionalTestCase;
  *
  * Test that OneToMany associations with composite id of which one is a
  * association itself work correctly.
- *
- * @group DDC-3380
  */
+#[Group('DDC-3380')]
 class OneToManyCompositeIdForeignKeyTest extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -72,7 +73,7 @@ class OneToManyCompositeIdForeignKeyTest extends OrmFunctionalTestCase
         self::assertEquals('nop', $conn->fetchOne('SELECT associated_foreign_id FROM vct_owning_manytoone_compositeid_foreignkey LIMIT 1'));
     }
 
-    /** @depends testThatTheValueOfIdentifiersAreConvertedInTheDatabase */
+    #[Depends('testThatTheValueOfIdentifiersAreConvertedInTheDatabase')]
     public function testThatEntitiesAreFetchedFromTheDatabase(): void
     {
         $auxiliary = $this->_em->find(
@@ -95,7 +96,7 @@ class OneToManyCompositeIdForeignKeyTest extends OrmFunctionalTestCase
         self::assertInstanceOf(OwningManyToOneCompositeIdForeignKeyEntity::class, $owning);
     }
 
-    /** @depends testThatEntitiesAreFetchedFromTheDatabase */
+    #[Depends('testThatEntitiesAreFetchedFromTheDatabase')]
     public function testThatTheValueOfIdentifiersAreConvertedBackAfterBeingFetchedFromTheDatabase(): void
     {
         $auxiliary = $this->_em->find(
@@ -119,7 +120,7 @@ class OneToManyCompositeIdForeignKeyTest extends OrmFunctionalTestCase
         self::assertEquals('ghi', $owning->id2);
     }
 
-    /** @depends testThatTheValueOfIdentifiersAreConvertedBackAfterBeingFetchedFromTheDatabase */
+    #[Depends('testThatTheValueOfIdentifiersAreConvertedBackAfterBeingFetchedFromTheDatabase')]
     public function testThatInversedEntityIsFetchedFromTheDatabaseUsingAuxiliaryEntityAsId(): void
     {
         $auxiliary = $this->_em->find(
@@ -135,7 +136,7 @@ class OneToManyCompositeIdForeignKeyTest extends OrmFunctionalTestCase
         self::assertInstanceOf(InversedOneToManyCompositeIdForeignKeyEntity::class, $inversed);
     }
 
-    /** @depends testThatEntitiesAreFetchedFromTheDatabase */
+    #[Depends('testThatEntitiesAreFetchedFromTheDatabase')]
     public function testThatTheProxyFromOwningToInversedIsLoaded(): void
     {
         $owning = $this->_em->find(
@@ -150,7 +151,7 @@ class OneToManyCompositeIdForeignKeyTest extends OrmFunctionalTestCase
         self::assertEquals('some value to be loaded', $inversedProxy->someProperty);
     }
 
-    /** @depends testThatEntitiesAreFetchedFromTheDatabase */
+    #[Depends('testThatEntitiesAreFetchedFromTheDatabase')]
     public function testThatTheCollectionFromInversedToOwningIsLoaded(): void
     {
         $inversed = $this->_em->find(

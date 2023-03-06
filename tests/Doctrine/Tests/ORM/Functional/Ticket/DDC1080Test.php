@@ -16,8 +16,9 @@ use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\OrderBy;
 use Doctrine\ORM\Mapping\Table;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
-/** @group DDC-1080 */
+#[Group('DDC-1080')]
 class DDC1080Test extends OrmFunctionalTestCase
 {
     public function testHydration(): void

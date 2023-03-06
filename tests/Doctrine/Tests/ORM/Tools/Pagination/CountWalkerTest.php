@@ -6,9 +6,10 @@ namespace Doctrine\Tests\ORM\Tools\Pagination;
 
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Tools\Pagination\CountWalker;
+use PHPUnit\Framework\Attributes\Group;
 use RuntimeException;
 
-/** @group DDC-1613 */
+#[Group('DDC-1613')]
 class CountWalkerTest extends PaginationTestCase
 {
     public function testCountQuery(): void

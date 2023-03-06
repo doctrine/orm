@@ -16,6 +16,7 @@ use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\Table;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
 /**
  * Functional tests for cascade remove with class table inheritance.
@@ -36,7 +37,7 @@ class DDC2775Test extends OrmFunctionalTestCase
         );
     }
 
-    /** @group DDC-2775 */
+    #[Group('DDC-2775')]
     public function testIssueCascadeRemove(): void
     {
         $role = new AdminRole();

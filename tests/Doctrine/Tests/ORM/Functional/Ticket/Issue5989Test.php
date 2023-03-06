@@ -8,8 +8,9 @@ use Doctrine\Tests\Models\Issue5989\Issue5989Employee;
 use Doctrine\Tests\Models\Issue5989\Issue5989Manager;
 use Doctrine\Tests\Models\Issue5989\Issue5989Person;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
-/** @group issue-5989 */
+#[Group('issue-5989')]
 class Issue5989Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void

@@ -16,8 +16,9 @@ use Doctrine\ORM\Mapping\InheritanceType;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
-/** @group DDC-2346 */
+#[Group('DDC-2346')]
 class DDC2346Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void

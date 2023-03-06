@@ -40,6 +40,8 @@ use Doctrine\Tests\Models\Forum\ForumAvatar;
 use Doctrine\Tests\Models\Forum\ForumUser;
 use Doctrine\Tests\Models\NullDefault\NullDefaultColumn;
 use Doctrine\Tests\OrmTestCase;
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\RequiresPhp;
 
 use function count;
 use function current;
@@ -85,7 +87,7 @@ class SchemaToolTest extends OrmTestCase
         }
     }
 
-    /** @group DDC-200 */
+    #[Group('DDC-200')]
     public function testPassColumnDefinitionToJoinColumn(): void
     {
         $customColumnDef = 'MEDIUMINT(6) UNSIGNED NOT NULL';
@@ -107,7 +109,7 @@ class SchemaToolTest extends OrmTestCase
         self::assertEquals($customColumnDef, $table->getColumn('avatar_id')->getColumnDefinition());
     }
 
-    /** @group 6830 */
+    #[Group('6830')]
     public function testPassColumnOptionsToJoinColumn(): void
     {
         $em       = $this->getTestEntityManager();
@@ -143,7 +145,7 @@ class SchemaToolTest extends OrmTestCase
         );
     }
 
-    /** @group DDC-283 */
+    #[Group('DDC-283')]
     public function testPostGenerateEvents(): void
     {
         $listener = new GenerateSchemaEventListener();
@@ -182,7 +184,7 @@ class SchemaToolTest extends OrmTestCase
             ->getPlatformOptions());
     }
 
-    /** @requires PHP 8.1 */
+    #[RequiresPhp('8.1')]
     public function testEnumTypeAddedToCustomSchemaOptions(): void
     {
         $em         = $this->getTestEntityManager();
@@ -197,7 +199,7 @@ class SchemaToolTest extends OrmTestCase
         self::assertSame(Suit::class, $platformOptions['enumType']);
     }
 
-    /** @group DDC-3671 */
+    #[Group('DDC-3671')]
     public function testSchemaHasProperIndexesFromUniqueConstraintAttribute(): void
     {
         $em         = $this->getTestEntityManager();
@@ -345,7 +347,7 @@ class SchemaToolTest extends OrmTestCase
         $schemaTool->getSchemaFromMetadata([$class]);
     }
 
-    /** @group schema-configuration */
+    #[Group('schema-configuration')]
     public function testConfigurationSchemaIgnoredEntity(): void
     {
         $em         = $this->getTestEntityManager();

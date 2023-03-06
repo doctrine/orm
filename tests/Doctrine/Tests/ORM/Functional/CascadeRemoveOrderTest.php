@@ -14,8 +14,9 @@ use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
-/** @group CascadeRemoveOrderTest */
+#[Group('CascadeRemoveOrderTest')]
 class CascadeRemoveOrderTest extends OrmFunctionalTestCase
 {
     protected function setUp(): void

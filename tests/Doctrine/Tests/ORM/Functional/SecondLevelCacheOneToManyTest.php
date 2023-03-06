@@ -11,10 +11,11 @@ use Doctrine\Tests\Models\Cache\State;
 use Doctrine\Tests\Models\Cache\Token;
 use Doctrine\Tests\Models\Cache\Travel;
 use Doctrine\Tests\Models\Cache\Traveler;
+use PHPUnit\Framework\Attributes\Group;
 
 use function sprintf;
 
-/** @group DDC-2183 */
+#[Group('DDC-2183')]
 class SecondLevelCacheOneToManyTest extends SecondLevelCacheFunctionalTestCase
 {
     public function testShouldPutCollectionInverseSideOnPersist(): void

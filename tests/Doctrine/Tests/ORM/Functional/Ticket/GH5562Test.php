@@ -13,6 +13,7 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\InheritanceType;
 use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
 use function mt_getrandmax;
 use function random_int;
@@ -32,7 +33,7 @@ final class GH5562Test extends OrmFunctionalTestCase
         );
     }
 
-    /** @group GH-5562 */
+    #[Group('GH-5562')]
     public function testCacheShouldBeUpdatedWhenAssociationChanges(): void
     {
         $manager  = new GH5562Manager();

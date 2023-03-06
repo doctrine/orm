@@ -8,6 +8,7 @@ use Doctrine\Tests\Models\OneToOneSingleTableInheritance\Cat;
 use Doctrine\Tests\Models\OneToOneSingleTableInheritance\LitterBox;
 use Doctrine\Tests\Models\OneToOneSingleTableInheritance\Pet;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
 use function assert;
 
@@ -26,10 +27,9 @@ class OneToOneSingleTableInheritanceTest extends OrmFunctionalTestCase
 
     /**
      * Tests a unidirectional one-to-one association mapping from an inheritance child class
-     *
-     * @group DDC-3517
-     * @group #1265
      */
+    #[Group('DDC-3517')]
+    #[Group('#1265')]
     public function testFindFromOneToOneOwningSideJoinedTableInheritance(): void
     {
         $cat            = new Cat();

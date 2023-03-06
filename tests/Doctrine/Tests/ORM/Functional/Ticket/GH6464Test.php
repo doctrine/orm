@@ -12,8 +12,9 @@ use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\InheritanceType;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
-/** @group GH-6464 */
+#[Group('GH-6464')]
 class GH6464Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void

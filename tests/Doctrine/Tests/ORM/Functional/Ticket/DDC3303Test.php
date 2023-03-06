@@ -13,6 +13,7 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\MappedSuperclass;
 use Doctrine\ORM\Mapping\Table;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
 class DDC3303Test extends OrmFunctionalTestCase
 {
@@ -24,12 +25,11 @@ class DDC3303Test extends OrmFunctionalTestCase
     }
 
     /**
-     * @group GH-4097
-     * @group GH-4277
-     * @group GH-5867
-     *
      * When using an embedded field in an inheritance, private properties should also be inherited.
      */
+    #[Group('GH-4097')]
+    #[Group('GH-4277')]
+    #[Group('GH-5867')]
     public function testEmbeddedObjectsAreAlsoInherited(): void
     {
         $employee = new DDC3303Employee(

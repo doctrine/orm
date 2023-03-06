@@ -21,6 +21,8 @@ use Doctrine\Tests\Models\Company\CompanyEmployee;
 use Doctrine\Tests\OrmTestCase;
 use Generator;
 use InvalidArgumentException;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Group;
 
 /**
  * Test case for the DQL Expr class used for generating DQL snippets through
@@ -195,10 +197,8 @@ class ExprTest extends OrmTestCase
         self::assertEquals('MOD(10, 1)', (string) $this->expr->mod(10, 1));
     }
 
-    /**
-     * @group regression
-     * @group DDC-612
-     */
+    #[Group('regression')]
+    #[Group('DDC-612')]
     public function testSubstringExprAcceptsTwoArguments(): void
     {
         self::assertEquals('SUBSTRING(a.title, 5)', (string) $this->expr->substring('a.title', 5));
@@ -239,10 +239,8 @@ class ExprTest extends OrmTestCase
         self::assertEquals(5, (string) $this->expr->literal(5));
     }
 
-    /**
-     * @group regression
-     * @group DDC-610
-     */
+    #[Group('regression')]
+    #[Group('DDC-610')]
     public function testLiteralExprProperlyQuotesStrings(): void
     {
         self::assertEquals("'00010001'", (string) $this->expr->literal('00010001'));
@@ -308,25 +306,25 @@ class ExprTest extends OrmTestCase
         yield 'generator' => [$gen()];
     }
 
-    /** @dataProvider provideIterableValue */
+    #[DataProvider('provideIterableValue')]
     public function testInExpr(iterable $value): void
     {
         self::assertEquals('u.id IN(1, 2, 3)', (string) $this->expr->in('u.id', $value));
     }
 
-    /** @dataProvider provideLiteralIterableValue */
+    #[DataProvider('provideLiteralIterableValue')]
     public function testInLiteralExpr(iterable $value): void
     {
         self::assertEquals("u.type IN('foo', 'bar')", (string) $this->expr->in('u.type', $value));
     }
 
-    /** @dataProvider provideIterableValue */
+    #[DataProvider('provideIterableValue')]
     public function testNotInExpr(iterable $value): void
     {
         self::assertEquals('u.id NOT IN(1, 2, 3)', (string) $this->expr->notIn('u.id', $value));
     }
 
-    /** @dataProvider provideLiteralIterableValue */
+    #[DataProvider('provideLiteralIterableValue')]
     public function testNotInLiteralExpr(iterable $value): void
     {
         self::assertEquals("u.type NOT IN('foo', 'bar')", (string) $this->expr->notIn('u.type', $value));
@@ -381,14 +379,14 @@ class ExprTest extends OrmTestCase
         $orExpr->add($this->expr->quot(5, 2));
     }
 
-    /** @group DDC-1683 */
+    #[Group('DDC-1683')]
     public function testBooleanLiteral(): void
     {
         self::assertEquals('true', $this->expr->literal(true));
         self::assertEquals('false', $this->expr->literal(false));
     }
 
-    /** @group DDC-1686 */
+    #[Group('DDC-1686')]
     public function testExpressionGetter(): void
     {
         // Andx

@@ -12,6 +12,7 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 use Stringable;
 
 class DDC1209Test extends OrmFunctionalTestCase
@@ -27,7 +28,7 @@ class DDC1209Test extends OrmFunctionalTestCase
         );
     }
 
-    /** @group DDC-1209 */
+    #[Group('DDC-1209')]
     public function testIdentifierCanHaveCustomType(): void
     {
         $entity = new DDC1209Three();
@@ -38,7 +39,7 @@ class DDC1209Test extends OrmFunctionalTestCase
         self::assertSame($entity, $this->_em->find(DDC1209Three::class, $entity->date));
     }
 
-    /** @group DDC-1209 */
+    #[Group('DDC-1209')]
     public function testCompositeIdentifierCanHaveCustomType(): void
     {
         $future1 = new DDC1209One();

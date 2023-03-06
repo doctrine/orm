@@ -13,10 +13,11 @@ use Doctrine\ORM\Cache\Region;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Persisters\Collection\CollectionPersister;
 use Doctrine\Tests\Models\Cache\State;
+use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\MockObject\MockObject;
 use ReflectionProperty;
 
-/** @group DDC-2183 */
+#[Group('DDC-2183')]
 class ReadWriteCachedCollectionPersisterTest extends CollectionPersisterTestCase
 {
     protected function createPersister(EntityManagerInterface $em, CollectionPersister $persister, Region $region, array $mapping): AbstractCollectionPersister

@@ -12,6 +12,7 @@ use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\Persistence\Proxy;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
 /**
  * Tests that join columns (foreign keys) can be named the same as the association
@@ -30,7 +31,7 @@ class DDC522Test extends OrmFunctionalTestCase
         );
     }
 
-    /** @group DDC-522 */
+    #[Group('DDC-522')]
     public function testJoinColumnWithSameNameAsAssociationField(): void
     {
         $cust           = new DDC522Customer();
@@ -66,10 +67,8 @@ class DDC522Test extends OrmFunctionalTestCase
         self::assertFalse($fkt2->cart->__isInitialized());
     }
 
-    /**
-     * @group DDC-522
-     * @group DDC-762
-     */
+    #[Group('DDC-522')]
+    #[Group('DDC-762')]
     public function testJoinColumnWithNullSameNameAssociationField(): void
     {
         $fkCust       = new DDC522ForeignKeyTest();

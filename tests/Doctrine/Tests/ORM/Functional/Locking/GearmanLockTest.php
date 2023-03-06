@@ -8,12 +8,13 @@ use Doctrine\DBAL\LockMode;
 use Doctrine\Tests\Models\CMS\CmsArticle;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use GearmanClient;
+use PHPUnit\Framework\Attributes\Group;
 
 use function class_exists;
 use function max;
 use function serialize;
 
-/** @group locking_functional */
+#[Group('locking_functional')]
 class GearmanLockTest extends OrmFunctionalTestCase
 {
     private GearmanClient|null $gearman = null;

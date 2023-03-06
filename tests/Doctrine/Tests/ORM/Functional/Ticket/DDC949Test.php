@@ -6,6 +6,7 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Tests\Models\Generic\BooleanModel;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
 class DDC949Test extends OrmFunctionalTestCase
 {
@@ -16,7 +17,7 @@ class DDC949Test extends OrmFunctionalTestCase
         parent::setUp();
     }
 
-    /** @group DDC-949 */
+    #[Group('DDC-949')]
     public function testBooleanThroughRepository(): void
     {
         $true               = new BooleanModel();

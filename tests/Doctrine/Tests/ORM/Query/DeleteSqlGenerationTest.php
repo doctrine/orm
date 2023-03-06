@@ -6,6 +6,7 @@ namespace Doctrine\Tests\ORM\Query;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Tests\OrmTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
 /**
  * Test case for testing the saving and referencing of query identifiers.
@@ -34,7 +35,7 @@ class DeleteSqlGenerationTest extends OrmTestCase
         $query->free();
     }
 
-    /** @group 6939 */
+    #[Group('6939')]
     public function testSupportsDeleteWithoutWhereAndAlias(): void
     {
         $this->assertSqlGeneration(
@@ -261,7 +262,7 @@ class DeleteSqlGenerationTest extends OrmTestCase
         );
     }
 
-    /** @group DDC-980 */
+    #[Group('DDC-980')]
     public function testSubselectTableAliasReferencing(): void
     {
         $this->assertSqlGeneration(

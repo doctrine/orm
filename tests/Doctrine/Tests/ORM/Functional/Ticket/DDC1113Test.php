@@ -13,11 +13,10 @@ use Doctrine\ORM\Mapping\InheritanceType;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
-/**
- * @group DDC-1113
- * @group DDC-1306
- */
+#[Group('DDC-1113')]
+#[Group('DDC-1306')]
 class DDC1113Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void

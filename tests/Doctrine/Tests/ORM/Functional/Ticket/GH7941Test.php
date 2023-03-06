@@ -11,11 +11,13 @@ use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\Table;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\Test;
 
 use function ltrim;
 use function strlen;
 
-/** @group GH7941 */
+#[Group('GH7941')]
 final class GH7941Test extends OrmFunctionalTestCase
 {
     private const PRODUCTS = [
@@ -41,7 +43,7 @@ final class GH7941Test extends OrmFunctionalTestCase
         $this->_em->clear();
     }
 
-    /** @test */
+    #[Test]
     public function typesShouldBeConvertedForDQLFunctions(): void
     {
         $query = $this->_em->createQuery(

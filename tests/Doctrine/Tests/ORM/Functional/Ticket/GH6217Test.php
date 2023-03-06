@@ -11,10 +11,11 @@ use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
 use function uniqid;
 
-/** @group #6217 */
+#[Group('#6217')]
 final class GH6217Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void

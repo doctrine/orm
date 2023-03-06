@@ -13,9 +13,10 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Persisters\Entity\EntityPersister;
 use Doctrine\Tests\Models\Cache\Country;
+use PHPUnit\Framework\Attributes\Group;
 use ReflectionProperty;
 
-/** @group DDC-2183 */
+#[Group('DDC-2183')]
 class NonStrictReadWriteCachedEntityPersisterTest extends EntityPersisterTestCase
 {
     protected function createPersister(EntityManagerInterface $em, EntityPersister $persister, Region $region, ClassMetadata $metadata): AbstractEntityPersister

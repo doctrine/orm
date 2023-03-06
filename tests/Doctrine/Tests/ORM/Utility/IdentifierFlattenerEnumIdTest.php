@@ -4,18 +4,21 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Utility;
 
+use Doctrine\ORM\Utility\IdentifierFlattener;
 use Doctrine\Tests\Models\Enums\Suit;
 use Doctrine\Tests\Models\Enums\TypedCardEnumCompositeId;
 use Doctrine\Tests\Models\Enums\TypedCardEnumId;
 use Doctrine\Tests\Models\Enums\Unit;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\RequiresPhp;
 
 /**
  * Test the IdentifierFlattener utility class
- *
- * @requires PHP 8.1
- * @covers \Doctrine\ORM\Utility\IdentifierFlattener
  */
+#[CoversClass(IdentifierFlattener::class)]
+#[RequiresPhp('8.1')]
 class IdentifierFlattenerEnumIdTest extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -28,7 +31,7 @@ class IdentifierFlattenerEnumIdTest extends OrmFunctionalTestCase
         );
     }
 
-    /** @group utilities */
+    #[Group('utilities')]
     public function testFlattenIdentifierWithEnumId(): void
     {
         $typedCardEnumIdEntity       = new TypedCardEnumId();
@@ -55,7 +58,7 @@ class IdentifierFlattenerEnumIdTest extends OrmFunctionalTestCase
         self::assertEquals(Suit::Clubs, $findTypedCardEnumIdEntity->suit);
     }
 
-    /** @group utilities */
+    #[Group('utilities')]
     public function testFlattenIdentifierWithCompositeEnumId(): void
     {
         $typedCardEnumCompositeIdEntity       = new TypedCardEnumCompositeId();

@@ -10,6 +10,7 @@ use Doctrine\DBAL\Platforms\SQLServerPlatform;
 use Doctrine\DBAL\Schema\AbstractSchemaManager;
 use Doctrine\DBAL\Schema\Table;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use PHPUnit\Framework\Attributes\Group;
 
 use function array_change_key_case;
 use function count;
@@ -31,7 +32,7 @@ class DatabaseDriverTest extends DatabaseDriverTestCase
         $this->schemaManager = $this->createSchemaManager();
     }
 
-    /** @group DDC-2059 */
+    #[Group('DDC-2059')]
     public function testIssue2059(): void
     {
         $user = new Table('ddc2059_user');

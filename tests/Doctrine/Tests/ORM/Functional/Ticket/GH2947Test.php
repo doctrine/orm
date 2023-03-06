@@ -11,10 +11,11 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\Table;
 use Doctrine\ORM\Query;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 use Stringable;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
 
-/** @group GH-2947 */
+#[Group('GH-2947')]
 class GH2947Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void

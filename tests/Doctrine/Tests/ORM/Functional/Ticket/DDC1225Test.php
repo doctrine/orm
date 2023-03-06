@@ -12,10 +12,11 @@ use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\Table;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
 use function strtolower;
 
-/** @group DDC-1225 */
+#[Group('DDC-1225')]
 class DDC1225Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void

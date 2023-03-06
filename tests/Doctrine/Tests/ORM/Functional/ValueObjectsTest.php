@@ -21,12 +21,14 @@ use Doctrine\ORM\Mapping\ReflectionEmbeddedProperty;
 use Doctrine\ORM\Query\QueryException;
 use Doctrine\Persistence\Reflection\RuntimeReflectionProperty;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Group;
 use ReflectionProperty;
 
 use function class_exists;
 use function sprintf;
 
-/** @group DDC-93 */
+#[Group('DDC-93')]
 class ValueObjectsTest extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -159,7 +161,7 @@ class ValueObjectsTest extends OrmFunctionalTestCase
         }
     }
 
-    /** @group dql */
+    #[Group('dql')]
     public function testDqlOnEmbeddedObjectsField(): void
     {
         if ($this->isSecondLevelCacheEnabled) {
@@ -327,7 +329,7 @@ class ValueObjectsTest extends OrmFunctionalTestCase
         self::assertTrue($isFieldMapped);
     }
 
-    /** @dataProvider getInfiniteEmbeddableNestingData */
+    #[DataProvider('getInfiniteEmbeddableNestingData')]
     public function testThrowsExceptionOnInfiniteEmbeddableNesting(
         string $embeddableClassName,
         string $declaredEmbeddableClassName,

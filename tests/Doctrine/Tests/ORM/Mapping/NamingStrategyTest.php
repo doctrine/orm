@@ -9,11 +9,13 @@ use Doctrine\ORM\Mapping\NamingStrategy;
 use Doctrine\ORM\Mapping\UnderscoreNamingStrategy;
 use Doctrine\Tests\ORM\Mapping\NamingStrategy\JoinColumnClassNamingStrategy;
 use Doctrine\Tests\OrmTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Group;
 
 use const CASE_LOWER;
 use const CASE_UPPER;
 
-/** @group DDC-559 */
+#[Group('DDC-559')]
 class NamingStrategyTest extends OrmTestCase
 {
     private static function defaultNaming(): DefaultNamingStrategy
@@ -57,7 +59,7 @@ class NamingStrategyTest extends OrmTestCase
         ];
     }
 
-    /** @dataProvider dataClassToTableName */
+    #[DataProvider('dataClassToTableName')]
     public function testClassToTableName(NamingStrategy $strategy, string $expected, string $className): void
     {
         self::assertSame($expected, $strategy->classToTableName($className));
@@ -90,7 +92,7 @@ class NamingStrategyTest extends OrmTestCase
         ];
     }
 
-    /** @dataProvider dataPropertyToColumnName */
+    #[DataProvider('dataPropertyToColumnName')]
     public function testPropertyToColumnName(
         NamingStrategy $strategy,
         string $expected,
@@ -117,7 +119,7 @@ class NamingStrategyTest extends OrmTestCase
         ];
     }
 
-    /** @dataProvider dataReferenceColumnName */
+    #[DataProvider('dataReferenceColumnName')]
     public function testReferenceColumnName(NamingStrategy $strategy, string $expected): void
     {
         self::assertSame($expected, $strategy->referenceColumnName());
@@ -151,7 +153,7 @@ class NamingStrategyTest extends OrmTestCase
         ];
     }
 
-    /** @dataProvider dataJoinColumnName */
+    #[DataProvider('dataJoinColumnName')]
     public function testJoinColumnName(
         UnderscoreNamingStrategy|DefaultNamingStrategy $strategy,
         string $expected,
@@ -186,7 +188,7 @@ class NamingStrategyTest extends OrmTestCase
         ];
     }
 
-    /** @dataProvider dataJoinTableName */
+    #[DataProvider('dataJoinTableName')]
     public function testJoinTableName(
         NamingStrategy $strategy,
         string $expected,
@@ -221,7 +223,7 @@ class NamingStrategyTest extends OrmTestCase
         ];
     }
 
-    /** @dataProvider dataJoinKeyColumnName */
+    #[DataProvider('dataJoinKeyColumnName')]
     public function testJoinKeyColumnName(
         NamingStrategy $strategy,
         string $expected,

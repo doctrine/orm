@@ -19,6 +19,8 @@ use Doctrine\Tests\Mocks\EntityManagerMock;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\OrmTestCase;
 use Generator;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Group;
 use stdClass;
 use TypeError;
 
@@ -33,7 +35,7 @@ class EntityManagerTest extends OrmTestCase
         $this->entityManager = $this->getTestEntityManager();
     }
 
-    /** @group DDC-899 */
+    #[Group('DDC-899')]
     public function testIsOpen(): void
     {
         self::assertTrue($this->entityManager->isOpen());
@@ -129,7 +131,7 @@ class EntityManagerTest extends OrmTestCase
         ];
     }
 
-    /** @dataProvider dataAffectedByErrorIfClosedException */
+    #[DataProvider('dataAffectedByErrorIfClosedException')]
     public function testAffectedByErrorIfClosedException(string $methodName): void
     {
         $this->expectException(EntityManagerClosed::class);
@@ -152,10 +154,8 @@ class EntityManagerTest extends OrmTestCase
         yield ['foo'];
     }
 
-    /**
-     * @dataProvider dataToBeReturnedByWrapInTransaction
-     * @group DDC-1125
-     */
+    #[DataProvider('dataToBeReturnedByWrapInTransaction')]
+    #[Group('DDC-1125')]
     public function testWrapInTransactionAcceptsReturn(mixed $expectedValue): void
     {
         $return = $this->entityManager->wrapInTransaction(
@@ -165,7 +165,7 @@ class EntityManagerTest extends OrmTestCase
         $this->assertSame($expectedValue, $return);
     }
 
-    /** @group #5796 */
+    #[Group('#5796')]
     public function testWrapInTransactionReThrowsThrowables(): void
     {
         try {

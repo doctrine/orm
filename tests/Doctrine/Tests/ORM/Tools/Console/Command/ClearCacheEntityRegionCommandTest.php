@@ -8,13 +8,14 @@ use Doctrine\ORM\Tools\Console\Command\ClearCache\EntityRegionCommand;
 use Doctrine\ORM\Tools\Console\EntityManagerProvider\SingleManagerProvider;
 use Doctrine\Tests\Models\Cache\Country;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
 
 use function preg_replace;
 use function trim;
 
-/** @group DDC-2183 */
+#[Group('DDC-2183')]
 class ClearCacheEntityRegionCommandTest extends OrmFunctionalTestCase
 {
     private Application $application;

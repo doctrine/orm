@@ -11,6 +11,7 @@ use Doctrine\Tests\DbalTypes\Rot13Type;
 use Doctrine\Tests\Models\ValueConversionType\AuxiliaryEntity;
 use Doctrine\Tests\Models\ValueConversionType\OwningManyToOneIdForeignKeyEntity;
 use Generator;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 class RootTypeWalkerTest extends PaginationTestCase
 {
@@ -23,7 +24,7 @@ class RootTypeWalkerTest extends PaginationTestCase
         }
     }
 
-    /** @dataProvider exampleQueries */
+    #[DataProvider('exampleQueries')]
     public function testResolveTypeMapping(string $dqlQuery, string $expectedType): void
     {
         $query = $this->entityManager->createQuery($dqlQuery);

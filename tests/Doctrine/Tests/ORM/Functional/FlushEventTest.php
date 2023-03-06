@@ -9,6 +9,7 @@ use Doctrine\ORM\Events;
 use Doctrine\Tests\Models\CMS\CmsPhonenumber;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
 /**
  * FlushEventTest
@@ -49,7 +50,7 @@ class FlushEventTest extends OrmFunctionalTestCase
         //$this->_em->flush();
     }
 
-    /** @group DDC-2173 */
+    #[Group('DDC-2173')]
     public function testPreAndOnFlushCalledAlways(): void
     {
         $listener = new OnFlushCalledListener();

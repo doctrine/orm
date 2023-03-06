@@ -6,6 +6,7 @@ namespace Doctrine\Tests\ORM\Mapping\Symfony;
 
 use Doctrine\Persistence\Mapping\Driver\FileDriver;
 use Doctrine\Persistence\Mapping\MappingException;
+use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\TestCase;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
@@ -16,7 +17,7 @@ use function sys_get_temp_dir;
 use function touch;
 use function unlink;
 
-/** @group DDC-1418 */
+#[Group('DDC-1418')]
 abstract class DriverTestCase extends TestCase
 {
     private string $dir;

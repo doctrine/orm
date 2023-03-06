@@ -15,9 +15,10 @@ use Doctrine\ORM\Persisters\Collection\CollectionPersister;
 use Doctrine\Tests\Mocks\EntityManagerMock;
 use Doctrine\Tests\Models\Cache\State;
 use Doctrine\Tests\OrmTestCase;
+use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\MockObject\MockObject;
 
-/** @group DDC-2183 */
+#[Group('DDC-2183')]
 abstract class CollectionPersisterTestCase extends OrmTestCase
 {
     protected Region&MockObject $region;

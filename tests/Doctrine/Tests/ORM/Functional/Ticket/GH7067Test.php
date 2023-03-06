@@ -12,6 +12,7 @@ use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\Version;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
 use function assert;
 
@@ -26,7 +27,7 @@ final class GH7067Test extends OrmFunctionalTestCase
         $this->setUpEntitySchema([GH7067Entity::class]);
     }
 
-    /** @group GH-7067 */
+    #[Group('GH-7067')]
     public function testSLCWithVersion(): void
     {
         $entity             = new GH7067Entity();

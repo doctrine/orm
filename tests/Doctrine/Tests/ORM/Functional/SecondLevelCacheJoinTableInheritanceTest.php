@@ -9,10 +9,11 @@ use Doctrine\Tests\Models\Cache\Attraction;
 use Doctrine\Tests\Models\Cache\AttractionContactInfo;
 use Doctrine\Tests\Models\Cache\AttractionInfo;
 use Doctrine\Tests\Models\Cache\AttractionLocationInfo;
+use PHPUnit\Framework\Attributes\Group;
 
 use function count;
 
-/** @group DDC-2183 */
+#[Group('DDC-2183')]
 class SecondLevelCacheJoinTableInheritanceTest extends SecondLevelCacheFunctionalTestCase
 {
     public function testUseSameRegion(): void

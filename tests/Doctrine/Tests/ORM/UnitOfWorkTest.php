@@ -33,6 +33,8 @@ use Doctrine\Tests\Models\CMS\CmsPhonenumber;
 use Doctrine\Tests\Models\Forum\ForumAvatar;
 use Doctrine\Tests\Models\Forum\ForumUser;
 use Doctrine\Tests\OrmTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\MockObject\MockObject;
 use stdClass;
 
@@ -276,10 +278,8 @@ class UnitOfWorkTest extends OrmTestCase
         self::assertEmpty($this->_unitOfWork->getScheduledEntityUpdates());
     }
 
-    /**
-     * @group DDC-3490
-     * @dataProvider invalidAssociationValuesDataProvider
-     */
+    #[DataProvider('invalidAssociationValuesDataProvider')]
+    #[Group('DDC-3490')]
     public function testRejectsPersistenceOfObjectsWithInvalidAssociationValue(mixed $invalidValue): void
     {
         $this->_unitOfWork->setEntityPersister(
@@ -299,10 +299,8 @@ class UnitOfWorkTest extends OrmTestCase
         $this->_unitOfWork->persist($user);
     }
 
-    /**
-     * @group DDC-3490
-     * @dataProvider invalidAssociationValuesDataProvider
-     */
+    #[DataProvider('invalidAssociationValuesDataProvider')]
+    #[Group('DDC-3490')]
     public function testRejectsChangeSetComputationForObjectsWithInvalidAssociationValue(mixed $invalidValue): void
     {
         $metadata = $this->_emMock->getClassMetadata(ForumUser::class);
@@ -324,10 +322,8 @@ class UnitOfWorkTest extends OrmTestCase
         $this->_unitOfWork->computeChangeSet($metadata, $user);
     }
 
-    /**
-     * @group DDC-3619
-     * @group 1338
-     */
+    #[Group('DDC-3619')]
+    #[Group('1338')]
     public function testRemovedAndRePersistedEntitiesAreInTheIdentityMapAndAreNotGarbageCollected(): void
     {
         $entity     = new ForumUser();
@@ -360,7 +356,7 @@ class UnitOfWorkTest extends OrmTestCase
         ];
     }
 
-    /** @dataProvider entitiesWithValidIdentifiersProvider */
+    #[DataProvider('entitiesWithValidIdentifiersProvider')]
     public function testAddToIdentityMapValidIdentifiers(object $entity, string $idHash): void
     {
         $this->_unitOfWork->persist($entity);
@@ -415,11 +411,8 @@ class UnitOfWorkTest extends OrmTestCase
         $this->_unitOfWork->registerManaged(new EntityWithBooleanIdentifier(), [], []);
     }
 
-    /**
-     * @param array<string, mixed> $identifier
-     *
-     * @dataProvider entitiesWithInvalidIdentifiersProvider
-     */
+    /** @param array<string, mixed> $identifier */
+    #[DataProvider('entitiesWithInvalidIdentifiersProvider')]
     public function testAddToIdentityMapInvalidIdentifiers(object $entity, array $identifier): void
     {
         $this->expectException(ORMInvalidArgumentException::class);
@@ -449,10 +442,9 @@ class UnitOfWorkTest extends OrmTestCase
     /**
      * Unlike next test, this one demonstrates that the problem does
      * not necessarily reproduce if all the pieces are being flushed together.
-     *
-     * @group DDC-2922
-     * @group #1521
      */
+    #[Group('DDC-2922')]
+    #[Group('#1521')]
     public function testNewAssociatedEntityPersistenceOfNewEntitiesThroughCascadedAssociationsFirst(): void
     {
         $persister1 = new EntityPersisterMock($this->_emMock, $this->_emMock->getClassMetadata(CascadePersistedEntity::class));
@@ -486,10 +478,9 @@ class UnitOfWorkTest extends OrmTestCase
     /**
      * This test exhibits the bug describe in the ticket, where an object that
      * ought to be reachable causes errors.
-     *
-     * @group DDC-2922
-     * @group #1521
      */
+    #[Group('DDC-2922')]
+    #[Group('#1521')]
     public function testNewAssociatedEntityPersistenceOfNewEntitiesThroughNonCascadedAssociationsFirst(): void
     {
         $persister1 = new EntityPersisterMock($this->_emMock, $this->_emMock->getClassMetadata(CascadePersistedEntity::class));
@@ -537,10 +528,9 @@ class UnitOfWorkTest extends OrmTestCase
     /**
      * This test exhibits the bug describe in the ticket, where an object that
      * ought to be reachable causes errors.
-     *
-     * @group DDC-2922
-     * @group #1521
      */
+    #[Group('DDC-2922')]
+    #[Group('#1521')]
     public function testPreviousDetectedIllegalNewNonCascadedEntitiesAreCleanedUpOnSubsequentCommits(): void
     {
         $persister1 = new EntityPersisterMock($this->_emMock, $this->_emMock->getClassMetadata(CascadePersistedEntity::class));
@@ -574,7 +564,7 @@ class UnitOfWorkTest extends OrmTestCase
         self::assertCount(0, $persister2->getInserts());
     }
 
-    /** @group #7946 Throw OptimisticLockException when connection::commit() returns false. */
+    #[Group('#7946')] // Throw OptimisticLockException when connection::commit() returns false.
     public function testCommitThrowOptimisticLockExceptionWhenConnectionCommitFails(): void
     {
         $platform = $this->getMockBuilder(AbstractPlatform::class)

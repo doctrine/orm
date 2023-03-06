@@ -18,9 +18,10 @@ use Doctrine\Tests\Models\Cache\Attraction;
 use Doctrine\Tests\Models\Cache\City;
 use Doctrine\Tests\Models\Cache\Country;
 use Doctrine\Tests\Models\Cache\State;
+use PHPUnit\Framework\Attributes\Group;
 use ReflectionMethod;
 
-/** @group DDC-2183 */
+#[Group('DDC-2183')]
 class SecondLevelCacheQueryCacheTest extends SecondLevelCacheFunctionalTestCase
 {
     public function testBasicQueryCache(): void
@@ -288,7 +289,7 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheFunctionalTestCase
         self::assertEquals(1, $this->secondLevelCacheLogger->getRegionMissCount($this->getDefaultQueryRegionName()));
     }
 
-    /** @group 5854 */
+    #[Group('5854')]
     public function testMultipleNestedDQLAliases(): void
     {
         $this->loadFixturesCountries();

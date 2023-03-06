@@ -20,6 +20,7 @@ use Doctrine\Tests\Models\Company\CompanyEmployee;
 use Doctrine\Tests\Models\Company\CompanyPerson;
 use Doctrine\Tests\Models\ECommerce\ECommerceFeature;
 use Doctrine\Tests\OrmTestCase;
+use PHPUnit\Framework\Attributes\Group;
 use ReflectionProperty;
 use stdClass;
 
@@ -93,7 +94,7 @@ class ProxyFactoryTest extends OrmTestCase
         );
     }
 
-    /** @group 6625 */
+    #[Group('6625')]
     public function testSkipEmbeddableClassesOnGeneration(): void
     {
         $cm                  = new ClassMetadata(stdClass::class);
@@ -106,7 +107,7 @@ class ProxyFactoryTest extends OrmTestCase
         );
     }
 
-    /** @group DDC-1771 */
+    #[Group('DDC-1771')]
     public function testSkipAbstractClassesOnGeneration(): void
     {
         $cm = new ClassMetadata(AbstractClass::class);
@@ -118,7 +119,7 @@ class ProxyFactoryTest extends OrmTestCase
         self::assertEquals(0, $num, 'No proxies generated.');
     }
 
-    /** @group DDC-2432 */
+    #[Group('DDC-2432')]
     public function testFailedProxyLoadingDoesNotMarkTheProxyAsInitialized(): void
     {
         $persister = $this->getMockBuilder(BasicEntityPersister::class)
@@ -144,7 +145,7 @@ class ProxyFactoryTest extends OrmTestCase
         self::assertFalse($proxy->__isInitialized());
     }
 
-    /** @group DDC-2432 */
+    #[Group('DDC-2432')]
     public function testFailedProxyCloningDoesNotMarkTheProxyAsInitialized(): void
     {
         $persister = $this->getMockBuilder(BasicEntityPersister::class)

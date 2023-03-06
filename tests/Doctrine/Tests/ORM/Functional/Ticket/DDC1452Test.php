@@ -16,8 +16,9 @@ use Doctrine\Persistence\Proxy;
 use Doctrine\Tests\Models\CMS\CmsAddress;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
-/** @group DDC-1452 */
+#[Group('DDC-1452')]
 class DDC1452Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void

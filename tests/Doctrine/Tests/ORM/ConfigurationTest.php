@@ -18,6 +18,7 @@ use Doctrine\ORM\Proxy\ProxyFactory;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
 use Doctrine\Tests\DoctrineTestCase;
 use Doctrine\Tests\Models\DDC753\DDC753CustomRepository;
+use PHPUnit\Framework\Attributes\Group;
 use Psr\Cache\CacheItemPoolInterface;
 
 /**
@@ -186,7 +187,7 @@ class ConfigurationTest extends DoctrineTestCase
         self::assertSame($quoteStrategy, $this->configuration->getQuoteStrategy());
     }
 
-    /** @group DDC-1955 */
+    #[Group('DDC-1955')]
     public function testSetGetEntityListenerResolver(): void
     {
         self::assertInstanceOf(EntityListenerResolver::class, $this->configuration->getEntityListenerResolver());
@@ -196,7 +197,7 @@ class ConfigurationTest extends DoctrineTestCase
         self::assertSame($resolver, $this->configuration->getEntityListenerResolver());
     }
 
-    /** @group DDC-2183 */
+    #[Group('DDC-2183')]
     public function testSetGetSecondLevelCacheConfig(): void
     {
         $mockClass = $this->createMock(CacheConfiguration::class);
@@ -206,7 +207,7 @@ class ConfigurationTest extends DoctrineTestCase
         self::assertEquals($mockClass, $this->configuration->getSecondLevelCacheConfiguration());
     }
 
-    /** @group GH10313 */
+    #[Group('GH10313')]
     public function testSetGetTypedFieldMapper(): void
     {
         self::assertEmpty($this->configuration->getTypedFieldMapper());

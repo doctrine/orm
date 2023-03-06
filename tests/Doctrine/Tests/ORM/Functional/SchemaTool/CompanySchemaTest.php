@@ -6,6 +6,8 @@ namespace Doctrine\Tests\ORM\Functional\SchemaTool;
 
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Depends;
+use PHPUnit\Framework\Attributes\Group;
 
 /**
  * Functional tests for the Class Table Inheritance mapping strategy.
@@ -19,7 +21,7 @@ class CompanySchemaTest extends OrmFunctionalTestCase
         parent::setUp();
     }
 
-    /** @group DDC-966 */
+    #[Group('DDC-966')]
     public function testGeneratedSchema(): Schema
     {
         $schema = $this->createSchemaManager()->introspectSchema();
@@ -29,10 +31,8 @@ class CompanySchemaTest extends OrmFunctionalTestCase
         return $schema;
     }
 
-    /**
-     * @group DDC-966
-     * @depends testGeneratedSchema
-     */
+    #[Depends('testGeneratedSchema')]
+    #[Group('DDC-966')]
     public function testSingleTableInheritance(Schema $schema): void
     {
         $table = $schema->getTable('company_contracts');

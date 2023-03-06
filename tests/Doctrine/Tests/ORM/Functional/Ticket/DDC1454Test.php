@@ -12,11 +12,12 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\InheritanceType;
 use Doctrine\ORM\UnitOfWork;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
 use function mt_getrandmax;
 use function random_int;
 
-/** @group DDC-1454 */
+#[Group('DDC-1454')]
 class DDC1454Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void

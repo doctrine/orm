@@ -8,6 +8,7 @@ use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\Exec\AbstractSqlExecutor;
 use Doctrine\ORM\Query\ParserResult;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Depends;
 use Psr\Cache\CacheItemInterface;
 use Psr\Cache\CacheItemPoolInterface;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
@@ -42,7 +43,7 @@ class QueryCacheTest extends OrmFunctionalTestCase
         return [$query, $cache];
     }
 
-    /** @depends testQueryCacheDependsOnHints */
+    #[Depends('testQueryCacheDependsOnHints')]
     public function testQueryCacheDependsOnFirstResult(array $previous): void
     {
         [$query, $cache] = $previous;
@@ -58,7 +59,7 @@ class QueryCacheTest extends OrmFunctionalTestCase
         self::assertCount($cacheCount + 1, $cache->getValues());
     }
 
-    /** @depends testQueryCacheDependsOnHints */
+    #[Depends('testQueryCacheDependsOnHints')]
     public function testQueryCacheDependsOnMaxResults(array $previous): void
     {
         [$query, $cache] = $previous;
@@ -73,7 +74,7 @@ class QueryCacheTest extends OrmFunctionalTestCase
         self::assertCount($cacheCount + 1, $cache->getValues());
     }
 
-    /** @depends testQueryCacheDependsOnHints */
+    #[Depends('testQueryCacheDependsOnHints')]
     public function testQueryCacheDependsOnHydrationMode(array $previous): void
     {
         [$query, $cache] = $previous;

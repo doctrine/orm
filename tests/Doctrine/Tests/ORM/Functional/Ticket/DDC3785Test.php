@@ -19,6 +19,7 @@ use Doctrine\ORM\Mapping\JoinTable;
 use Doctrine\ORM\Mapping\ManyToMany;
 use Doctrine\ORM\Mapping\Table;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 use Stringable;
 
 class DDC3785Test extends OrmFunctionalTestCase
@@ -36,7 +37,7 @@ class DDC3785Test extends OrmFunctionalTestCase
         );
     }
 
-    /** @group DDC-3785 */
+    #[Group('DDC-3785')]
     public function testOwningValueObjectIdIsCorrectlyTransformedWhenRemovingOrphanedChildEntities(): void
     {
         $id = new DDC3785AssetId('919609ba-57d9-4a13-be1d-d202521e858a');

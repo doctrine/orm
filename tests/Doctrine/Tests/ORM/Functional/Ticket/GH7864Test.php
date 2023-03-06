@@ -13,10 +13,11 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
 use function array_values;
 
-/** @group gh7864 */
+#[Group('gh7864')]
 class GH7864Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void

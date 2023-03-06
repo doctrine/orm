@@ -13,11 +13,10 @@ use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\Models\DDC117\DDC117Article;
 use Doctrine\Tests\Models\DDC117\DDC117ArticleDetails;
 use Doctrine\Tests\OrmTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
-/**
- * @group DDC-1845
- * @group DDC-2459
- */
+#[Group('DDC-1845')]
+#[Group('DDC-2459')]
 class AnsiQuoteStrategyTest extends OrmTestCase
 {
     private AnsiQuoteStrategy $strategy;

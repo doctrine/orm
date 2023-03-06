@@ -16,6 +16,7 @@ use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\Persistence\Proxy;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
 class DDC881Test extends OrmFunctionalTestCase
 {
@@ -30,10 +31,8 @@ class DDC881Test extends OrmFunctionalTestCase
         );
     }
 
-    /**
-     * @group DDC-117
-     * @group DDC-881
-     */
+    #[Group('DDC-117')]
+    #[Group('DDC-881')]
     public function testIssue(): void
     {
         /* Create two test users: albert and alfons */

@@ -10,6 +10,7 @@ use Doctrine\ORM\Cache\Region\DefaultRegion;
 use Doctrine\ORM\Cache\Region\FileLockRegion;
 use Doctrine\Tests\Mocks\CacheEntryMock;
 use Doctrine\Tests\Mocks\CacheKeyMock;
+use PHPUnit\Framework\Attributes\Group;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 use ReflectionMethod;
@@ -21,10 +22,8 @@ use function sys_get_temp_dir;
 use function uniqid;
 use function unlink;
 
-/**
- * @extends RegionTestCase<FileLockRegion>
- * @group DDC-2183
- */
+/** @extends RegionTestCase<FileLockRegion> */
+#[Group('DDC-2183')]
 class FileLockRegionTest extends RegionTestCase
 {
     protected string $directory;

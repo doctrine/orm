@@ -16,10 +16,11 @@ use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\Persistence\Proxy;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
 use function assert;
 
-/** @group DDC-1163 */
+#[Group('DDC-1163')]
 class DDC1163Test extends OrmFunctionalTestCase
 {
     private int|null $productId = null;

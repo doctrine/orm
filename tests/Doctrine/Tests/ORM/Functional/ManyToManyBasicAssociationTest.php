@@ -12,6 +12,7 @@ use Doctrine\Tests\Models\CMS\CmsGroup;
 use Doctrine\Tests\Models\CMS\CmsTag;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
 use function assert;
 
@@ -208,7 +209,7 @@ class ManyToManyBasicAssociationTest extends OrmFunctionalTestCase
         self::assertCount(3, $freshUser->getGroups());
     }
 
-    /** @group DDC-130 */
+    #[Group('DDC-130')]
     public function testRemoveUserWithManyGroups(): void
     {
         $user   = $this->addCmsUserGblancoWithGroups(2);
@@ -221,7 +222,7 @@ class ManyToManyBasicAssociationTest extends OrmFunctionalTestCase
         self::assertNull($newUser);
     }
 
-    /** @group DDC-130 */
+    #[Group('DDC-130')]
     public function testRemoveGroupWithUser(): void
     {
         $user = $this->addCmsUserGblancoWithGroups(2);
@@ -249,7 +250,7 @@ class ManyToManyBasicAssociationTest extends OrmFunctionalTestCase
         self::assertCount(0, $newUser->getGroups());
     }
 
-    /** @group DDC-839 */
+    #[Group('DDC-839')]
     public function testWorkWithDqlHydratedEmptyCollection(): void
     {
         $user        = $this->addCmsUserGblancoWithGroups(0);
@@ -296,7 +297,7 @@ class ManyToManyBasicAssociationTest extends OrmFunctionalTestCase
         return $user;
     }
 
-    /** @group DDC-978 */
+    #[Group('DDC-978')]
     public function testClearAndResetCollection(): void
     {
         $user         = $this->addCmsUserGblancoWithGroups(2);
@@ -330,7 +331,7 @@ class ManyToManyBasicAssociationTest extends OrmFunctionalTestCase
         self::assertEquals('Developers_New2', $user->groups[1]->name);
     }
 
-    /** @group DDC-733 */
+    #[Group('DDC-733')]
     public function testInitializePersistentCollection(): void
     {
         $user = $this->addCmsUserGblancoWithGroups(2);
@@ -343,10 +344,8 @@ class ManyToManyBasicAssociationTest extends OrmFunctionalTestCase
         self::assertTrue($user->groups->isInitialized(), 'Collection should be initialized after calling UnitOfWork::initializeObject()');
     }
 
-    /**
-     * @group DDC-1189
-     * @group DDC-956
-     */
+    #[Group('DDC-1189')]
+    #[Group('DDC-956')]
     public function testClearBeforeLazyLoad(): void
     {
         $user = $this->addCmsUserGblancoWithGroups(4);
@@ -363,7 +362,7 @@ class ManyToManyBasicAssociationTest extends OrmFunctionalTestCase
         self::assertCount(0, $user->groups);
     }
 
-    /** @group DDC-3952 */
+    #[Group('DDC-3952')]
     public function testManyToManyOrderByIsNotIgnored(): void
     {
         $user = $this->addCmsUserGblancoWithGroups(1);
@@ -400,7 +399,7 @@ class ManyToManyBasicAssociationTest extends OrmFunctionalTestCase
         );
     }
 
-    /** @group DDC-3952 */
+    #[Group('DDC-3952')]
     public function testManyToManyOrderByHonorsFieldNameColumnNameAliases(): void
     {
         $user           = new CmsUser();

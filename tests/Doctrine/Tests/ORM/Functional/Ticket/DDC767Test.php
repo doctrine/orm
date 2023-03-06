@@ -8,6 +8,7 @@ use Doctrine\Tests\Models\CMS\CmsGroup;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use Exception;
+use PHPUnit\Framework\Attributes\Group;
 
 use function assert;
 
@@ -20,7 +21,7 @@ class DDC767Test extends OrmFunctionalTestCase
         parent::setUp();
     }
 
-    /** @group DDC-767 */
+    #[Group('DDC-767')]
     public function testCollectionChangesInsideTransaction(): void
     {
         $user           = new CmsUser();

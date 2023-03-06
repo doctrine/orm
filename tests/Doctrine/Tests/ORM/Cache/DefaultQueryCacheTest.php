@@ -26,12 +26,13 @@ use Doctrine\Tests\Models\Cache\Restaurant;
 use Doctrine\Tests\Models\Cache\State;
 use Doctrine\Tests\Models\Generic\BooleanModel;
 use Doctrine\Tests\OrmTestCase;
+use PHPUnit\Framework\Attributes\Group;
 use ReflectionMethod;
 
 use function microtime;
 use function sprintf;
 
-/** @group DDC-2183 */
+#[Group('DDC-2183')]
 class DefaultQueryCacheTest extends OrmTestCase
 {
     private DefaultQueryCache $queryCache;

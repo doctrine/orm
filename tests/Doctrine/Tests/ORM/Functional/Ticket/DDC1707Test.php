@@ -14,8 +14,9 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\InheritanceType;
 use Doctrine\ORM\Mapping\PostLoad;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
-/** @group DDC-1707 */
+#[Group('DDC-1707')]
 class DDC1707Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void

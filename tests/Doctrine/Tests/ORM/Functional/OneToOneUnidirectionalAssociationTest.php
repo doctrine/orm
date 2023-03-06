@@ -9,6 +9,7 @@ use Doctrine\ORM\Query;
 use Doctrine\Tests\Models\ECommerce\ECommerceProduct;
 use Doctrine\Tests\Models\ECommerce\ECommerceShipping;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
 /**
  * Tests a unidirectional one-to-one association mapping (without inheritance).
@@ -114,7 +115,7 @@ class OneToOneUnidirectionalAssociationTest extends OrmFunctionalTestCase
         self::assertEquals($value, $foreignKey);
     }
 
-    /** @group DDC-762 */
+    #[Group('DDC-762')]
     public function testNullForeignKey(): void
     {
         $product = new ECommerceProduct();

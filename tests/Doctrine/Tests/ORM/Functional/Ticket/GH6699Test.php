@@ -6,8 +6,9 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
-/** @group GH-6699 */
+#[Group('GH-6699')]
 final class GH6699Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void

@@ -14,6 +14,7 @@ use Doctrine\ORM\Query\Parser;
 use Doctrine\ORM\Query\SqlWalker;
 use Doctrine\ORM\Query\TokenType;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
 final class GH7286Test extends OrmFunctionalTestCase
 {
@@ -54,7 +55,7 @@ final class GH7286Test extends OrmFunctionalTestCase
         );
     }
 
-    /** @group DDC-1091 */
+    #[Group('DDC-1091')]
     public function testAggregateFunctionInCustomFunction(): void
     {
         $this->_em->getConfiguration()->addCustomStringFunction('CC', GH7286CustomConcat::class);

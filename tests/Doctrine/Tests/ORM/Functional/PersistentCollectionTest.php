@@ -9,6 +9,7 @@ use Doctrine\Common\Persistence\PersistentObject;
 use Doctrine\Tests\Models\PersistentObject\PersistentCollectionContent;
 use Doctrine\Tests\Models\PersistentObject\PersistentCollectionHolder;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
 use function class_exists;
 
@@ -78,10 +79,8 @@ class PersistentCollectionTest extends OrmFunctionalTestCase
         self::assertFalse($collection->isInitialized());
     }
 
-    /**
-     * @group #1206
-     * @group DDC-3430
-     */
+    #[Group('#1206')]
+    #[Group('DDC-3430')]
     public function testMatchingDoesNotModifyTheGivenCriteria(): void
     {
         $collectionHolder = new PersistentCollectionHolder();

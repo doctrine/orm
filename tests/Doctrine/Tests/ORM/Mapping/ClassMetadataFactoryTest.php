@@ -153,7 +153,7 @@ class ClassMetadataFactoryTest extends OrmTestCase
         $actual = $cmf->getMetadataFor($cm1->name);
     }
 
-    /** @group DDC-1512 */
+    #[\PHPUnit\Framework\Attributes\Group('DDC-1512')]
     public function testIsTransient(): void
     {
         $cmf    = new ClassMetadataFactory();
@@ -286,7 +286,7 @@ class ClassMetadataFactoryTest extends OrmTestCase
         return $cm1;
     }
 
-    /** @group DDC-1845 */
+    #[\PHPUnit\Framework\Attributes\Group('DDC-1845')]
     public function testQuoteMetadata(): void
     {
         $cmf    = new ClassMetadataFactory();
@@ -356,11 +356,9 @@ class ClassMetadataFactoryTest extends OrmTestCase
         self::assertEquals('group-id', $groups['joinTable']['inverseJoinColumns'][0]['referencedColumnName']);
     }
 
-    /**
-     * @group DDC-3385
-     * @group 1181
-     * @group 385
-     */
+    #[\PHPUnit\Framework\Attributes\Group('DDC-3385')]
+    #[\PHPUnit\Framework\Attributes\Group('1181')]
+    #[\PHPUnit\Framework\Attributes\Group('385')]
     public function testFallbackLoadingCausesEventTriggeringThatCanModifyFetchedMetadata(): void
     {
         $metadata = $this->createMock(ClassMetadata::class);
@@ -397,7 +395,7 @@ class ClassMetadataFactoryTest extends OrmTestCase
         self::assertSame($metadata, $cmf->getMetadataFor('Foo'));
     }
 
-    /** @group DDC-3427 */
+    #[\PHPUnit\Framework\Attributes\Group('DDC-3427')]
     public function testAcceptsEntityManagerInterfaceInstances(): void
     {
         $classMetadataFactory = new ClassMetadataFactory();
@@ -411,7 +409,7 @@ class ClassMetadataFactoryTest extends OrmTestCase
         self::assertSame($entityManager, $property->getValue($classMetadataFactory));
     }
 
-    /** @group DDC-4006 */
+    #[\PHPUnit\Framework\Attributes\Group('DDC-4006')]
     public function testInheritsIdGeneratorMappingFromEmbeddable(): void
     {
         $cmf    = new ClassMetadataFactory();

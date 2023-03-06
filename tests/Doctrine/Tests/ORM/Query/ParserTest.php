@@ -10,14 +10,14 @@ use Doctrine\ORM\Query\QueryException;
 use Doctrine\ORM\Query\TokenType;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\OrmTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\DoesNotPerformAssertions;
+use PHPUnit\Framework\Attributes\Group;
 use stdClass;
 
 class ParserTest extends OrmTestCase
 {
-    /**
-     * @covers \Doctrine\ORM\Query\Parser::AbstractSchemaName
-     * @group DDC-3715
-     */
+    #[Group('DDC-3715')]
     public function testAbstractSchemaNameSupportsFQCN(): void
     {
         $parser = $this->createParser(CmsUser::class);
@@ -25,10 +25,7 @@ class ParserTest extends OrmTestCase
         self::assertEquals(CmsUser::class, $parser->AbstractSchemaName());
     }
 
-    /**
-     * @covers Doctrine\ORM\Query\Parser::AbstractSchemaName
-     * @group DDC-3715
-     */
+    #[Group('DDC-3715')]
     public function testAbstractSchemaNameSupportsClassnamesWithLeadingBackslash(): void
     {
         $parser = $this->createParser('\\' . CmsUser::class);
@@ -36,10 +33,7 @@ class ParserTest extends OrmTestCase
         self::assertEquals('\\' . CmsUser::class, $parser->AbstractSchemaName());
     }
 
-    /**
-     * @covers \Doctrine\ORM\Query\Parser::AbstractSchemaName
-     * @group DDC-3715
-     */
+    #[Group('DDC-3715')]
     public function testAbstractSchemaNameSupportsIdentifier(): void
     {
         $parser = $this->createParser(stdClass::class);
@@ -47,25 +41,18 @@ class ParserTest extends OrmTestCase
         self::assertEquals(stdClass::class, $parser->AbstractSchemaName());
     }
 
-    /**
-     * @dataProvider validMatches
-     * @covers Doctrine\ORM\Query\Parser::match
-     * @group DDC-3701
-     */
+    #[DataProvider('validMatches')]
+    #[Group('DDC-3701')]
+    #[DoesNotPerformAssertions]
     public function testMatch(TokenType $expectedToken, string $inputString): void
     {
         $parser = $this->createParser($inputString);
 
         $parser->match($expectedToken); // throws exception if not matched
-
-        $this->addToAssertionCount(1);
     }
 
-    /**
-     * @dataProvider invalidMatches
-     * @covers Doctrine\ORM\Query\Parser::match
-     * @group DDC-3701
-     */
+    #[DataProvider('invalidMatches')]
+    #[Group('DDC-3701')]
     public function testMatchFailure(TokenType $expectedToken, string $inputString): void
     {
         $this->expectException(QueryException::class);
@@ -115,9 +102,8 @@ class ParserTest extends OrmTestCase
      * PHP 7.4 would fail with Notice: Trying to access array offset on value of type null.
      *
      * @see https://github.com/doctrine/orm/pull/7934
-     *
-     * @group GH7934
      */
+    #[Group('GH7934')]
     public function testNullLookahead(): void
     {
         $query = new Query($this->getTestEntityManager());

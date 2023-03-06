@@ -29,6 +29,8 @@ use Doctrine\Tests\Models\Company\CompanyEmployee;
 use Doctrine\Tests\Models\Company\CompanyPerson;
 use Doctrine\Tests\OrmTestCase;
 use Exception;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Group;
 
 use function class_exists;
 use function sprintf;
@@ -109,7 +111,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         self::fail($sql);
     }
 
-    /** @group DDC-3697 */
+    #[Group('DDC-3697')]
     public function testJoinWithRangeVariablePutsConditionIntoSqlWhereClause(): void
     {
         $this->assertSqlGeneration(
@@ -119,7 +121,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    /** @group DDC-3697 */
+    #[Group('DDC-3697')]
     public function testJoinWithRangeVariableAndInheritancePutsConditionIntoSqlWhereClause(): void
     {
         /*
@@ -259,7 +261,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    /** @group DDC-1077 */
+    #[Group('DDC-1077')]
     public function testConstantValueInSelect(): void
     {
         $this->assertSqlGeneration(
@@ -324,7 +326,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    /** @group DDC-3276 */
+    #[Group('DDC-3276')]
     public function testSupportsAggregateCountFunctionWithSimpleArithmetic(): void
     {
         $this->entityManager = $this->createTestEntityManagerWithPlatform(new MySQLPlatform());
@@ -420,7 +422,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    /** @group DDC-135 */
+    #[Group('DDC-135')]
     public function testSupportsJoinAndWithClauseRestriction(): void
     {
         $this->assertSqlGeneration(
@@ -433,10 +435,8 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    /**
-     * @group DDC-135
-     * @group DDC-177
-     */
+    #[Group('DDC-135')]
+    #[Group('DDC-177')]
     public function testJoinOnClauseNotYetSupportedThrowsException(): void
     {
         $this->expectException(QueryException::class);
@@ -462,7 +462,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    /** @group DDC-2668 */
+    #[Group('DDC-2668')]
     public function testSupportsTrimLeadingZeroString(): void
     {
         $this->assertSqlGeneration(
@@ -480,7 +480,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    /** @group DDC-1802 */
+    #[Group('DDC-1802')]
     public function testSupportsNotBetweenForSizeFunction(): void
     {
         $this->assertSqlGeneration(
@@ -516,7 +516,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    /** @group DDC-1194 */
+    #[Group('DDC-1194')]
     public function testSupportsInstanceOfExpressionsInWherePartPrefixedSlash(): void
     {
         $this->assertSqlGeneration(
@@ -525,7 +525,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    /** @group DDC-1194 */
+    #[Group('DDC-1194')]
     public function testSupportsInstanceOfExpressionsInWherePartWithUnrelatedClass(): void
     {
         $this->assertInvalidSqlGeneration(
@@ -585,7 +585,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    /** @group DDC-1802 */
+    #[Group('DDC-1802')]
     public function testSupportsNotInExpressionForModFunction(): void
     {
         $this->assertSqlGeneration(
@@ -657,7 +657,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    /** @group DDC-593 */
+    #[Group('DDC-593')]
     public function testSubqueriesInComparisonExpression(): void
     {
         $this->assertSqlGeneration(
@@ -966,10 +966,8 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    /**
-     * @group DDC-339
-     * @group DDC-1572
-     */
+    #[Group('DDC-339')]
+    #[Group('DDC-1572')]
     public function testStringFunctionLikeExpression(): void
     {
         $this->assertSqlGeneration(
@@ -1000,7 +998,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    /** @group DDC-1802 */
+    #[Group('DDC-1802')]
     public function testStringFunctionNotLikeExpression(): void
     {
         $this->assertSqlGeneration(
@@ -1018,7 +1016,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    /** @group DDC-338 */
+    #[Group('DDC-338')]
     public function testOrderedCollectionFetchJoined(): void
     {
         $this->assertSqlGeneration(
@@ -1036,10 +1034,8 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    /**
-     * @group locking
-     * @group DDC-178
-     */
+    #[Group('locking')]
+    #[Group('DDC-178')]
     public function testPessimisticWriteLockQueryHint(): void
     {
         if ($this->entityManager->getConnection()->getDatabasePlatform() instanceof SQLitePlatform) {
@@ -1054,10 +1050,8 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    /**
-     * @group locking
-     * @group DDC-178
-     */
+    #[Group('locking')]
+    #[Group('DDC-178')]
     public function testPessimisticReadLockQueryHintPostgreSql(): void
     {
         $this->entityManager = $this->createTestEntityManagerWithPlatform(new PostgreSQLPlatform());
@@ -1070,10 +1064,8 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    /**
-     * @group DDC-1693
-     * @group locking
-     */
+    #[Group('DDC-1693')]
+    #[Group('locking')]
     public function testLockModeNoneQueryHint(): void
     {
         $this->assertSqlGeneration(
@@ -1084,7 +1076,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    /** @group DDC-430 */
+    #[Group('DDC-430')]
     public function testSupportSelectWithMoreThan10InputParameters(): void
     {
         $this->assertSqlGeneration(
@@ -1093,10 +1085,8 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    /**
-     * @group locking
-     * @group DDC-178
-     */
+    #[Group('locking')]
+    #[Group('DDC-178')]
     public function testPessimisticReadLockQueryHintMySql(): void
     {
         $this->entityManager = $this->createTestEntityManagerWithPlatform(new MySQLPlatform());
@@ -1109,10 +1099,8 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    /**
-     * @group locking
-     * @group DDC-178
-     */
+    #[Group('locking')]
+    #[Group('DDC-178')]
     public function testPessimisticReadLockQueryHintOracle(): void
     {
         $this->entityManager = $this->createTestEntityManagerWithPlatform(new OraclePlatform());
@@ -1125,7 +1113,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    /** @group DDC-431 */
+    #[Group('DDC-431')]
     public function testSupportToCustomDQLFunctions(): void
     {
         $config = $this->entityManager->getConfiguration();
@@ -1139,7 +1127,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         $config->setCustomNumericFunctions([]);
     }
 
-    /** @group DDC-826 */
+    #[Group('DDC-826')]
     public function testMappedSuperclassAssociationJoin(): void
     {
         $this->assertSqlGeneration(
@@ -1148,7 +1136,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    /** @group DDC-1053 */
+    #[Group('DDC-1053')]
     public function testGroupBy(): void
     {
         $this->assertSqlGeneration(
@@ -1157,7 +1145,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    /** @group DDC-1053 */
+    #[Group('DDC-1053')]
     public function testGroupByIdentificationVariable(): void
     {
         $this->assertSqlGeneration(
@@ -1232,7 +1220,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    /** @group DDC-1298 */
+    #[Group('DDC-1298')]
     public function testSelectForeignKeyPKWithoutFields(): void
     {
         $this->assertSqlGeneration(
@@ -1305,7 +1293,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    /** @group DDC-1696 */
+    #[Group('DDC-1696')]
     public function testSimpleCaseWithStringPrimary(): void
     {
         $this->assertSqlGeneration(
@@ -1314,7 +1302,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    /** @group DDC-2205 */
+    #[Group('DDC-2205')]
     public function testCaseNegativeValuesInThenExpression(): void
     {
         $this->assertSqlGeneration(
@@ -1366,7 +1354,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    /** @group DDC-2519 */
+    #[Group('DDC-2519')]
     public function testPartialWithAssociationIdentifier(): void
     {
         $this->assertSqlGeneration(
@@ -1380,7 +1368,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    /** @group DDC-1339 */
+    #[Group('DDC-1339')]
     public function testIdentityFunctionInSelectClause(): void
     {
         $this->assertSqlGeneration(
@@ -1404,7 +1392,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    /** @group DDC-1339 */
+    #[Group('DDC-1339')]
     public function testIdentityFunctionDoesNotAcceptStateField(): void
     {
         $this->assertInvalidSqlGeneration(
@@ -1413,7 +1401,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    /** @group DDC-1389 */
+    #[Group('DDC-1389')]
     public function testInheritanceTypeJoinInRootClassWithDisabledForcePartialLoad(): void
     {
         $this->assertSqlGeneration(
@@ -1423,7 +1411,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    /** @group DDC-1389 */
+    #[Group('DDC-1389')]
     public function testInheritanceTypeJoinInRootClassWithEnabledForcePartialLoad(): void
     {
         $this->assertSqlGeneration(
@@ -1433,7 +1421,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    /** @group DDC-1389 */
+    #[Group('DDC-1389')]
     public function testInheritanceTypeJoinInChildClassWithDisabledForcePartialLoad(): void
     {
         $this->assertSqlGeneration(
@@ -1443,7 +1431,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    /** @group DDC-1389 */
+    #[Group('DDC-1389')]
     public function testInheritanceTypeJoinInChildClassWithEnabledForcePartialLoad(): void
     {
         $this->assertSqlGeneration(
@@ -1453,7 +1441,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    /** @group DDC-1389 */
+    #[Group('DDC-1389')]
     public function testInheritanceTypeJoinInLeafClassWithDisabledForcePartialLoad(): void
     {
         $this->assertSqlGeneration(
@@ -1463,7 +1451,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    /** @group DDC-1389 */
+    #[Group('DDC-1389')]
     public function testInheritanceTypeJoinInLeafClassWithEnabledForcePartialLoad(): void
     {
         $this->assertSqlGeneration(
@@ -1473,7 +1461,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    /** @group DDC-1389 */
+    #[Group('DDC-1389')]
     public function testInheritanceTypeSingleTableInRootClassWithDisabledForcePartialLoad(): void
     {
         $this->assertSqlGeneration(
@@ -1483,7 +1471,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    /** @group DDC-1389 */
+    #[Group('DDC-1389')]
     public function testInheritanceTypeSingleTableInRootClassWithEnabledForcePartialLoad(): void
     {
         $this->assertSqlGeneration(
@@ -1493,7 +1481,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    /** @group DDC-1389 */
+    #[Group('DDC-1389')]
     public function testInheritanceTypeSingleTableInChildClassWithDisabledForcePartialLoad(): void
     {
         $this->assertSqlGeneration(
@@ -1503,7 +1491,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    /** @group DDC-1389 */
+    #[Group('DDC-1389')]
     public function testInheritanceTypeSingleTableInChildClassWithEnabledForcePartialLoad(): void
     {
         $this->assertSqlGeneration(
@@ -1513,7 +1501,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    /** @group DDC-1389 */
+    #[Group('DDC-1389')]
     public function testInheritanceTypeSingleTableInLeafClassWithDisabledForcePartialLoad(): void
     {
         $this->assertSqlGeneration(
@@ -1523,7 +1511,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    /** @group DDC-1389 */
+    #[Group('DDC-1389')]
     public function testInheritanceTypeSingleTableInLeafClassWithEnabledForcePartialLoad(): void
     {
         $this->assertSqlGeneration(
@@ -1533,7 +1521,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    /** @group DDC-1161 */
+    #[Group('DDC-1161')]
     public function testSelfReferenceWithOneToOneDoesNotDuplicateAlias(): void
     {
         $this->assertSqlGeneration(
@@ -1543,7 +1531,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    /** @group DDC-1384 */
+    #[Group('DDC-1384')]
     public function testAliasDoesNotExceedPlatformDefinedLength(): void
     {
         $this->assertSqlGeneration(
@@ -1552,10 +1540,8 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    /**
-     * @group DDC-331
-     * @group DDC-1384
-     */
+    #[Group('DDC-331')]
+    #[Group('DDC-1384')]
     public function testIssue331(): void
     {
         $this->assertSqlGeneration(
@@ -1564,7 +1550,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    /** @group DDC-1435 */
+    #[Group('DDC-1435')]
     public function testForeignKeyAsPrimaryKeySubselect(): void
     {
         $this->assertSqlGeneration(
@@ -1573,7 +1559,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    /** @group DDC-1474 */
+    #[Group('DDC-1474')]
     public function testSelectWithArithmeticExpressionBeforeField(): void
     {
         $this->assertSqlGeneration(
@@ -1587,7 +1573,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-     /** @group DDC-1430 */
+     #[Group('DDC-1430')]
     public function testGroupByAllFieldsWhenObjectHasForeignKeys(): void
     {
         $this->assertSqlGeneration(
@@ -1601,7 +1587,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    /** @group DDC-1236 */
+    #[Group('DDC-1236')]
     public function testGroupBySupportsResultVariable(): void
     {
         $this->assertSqlGeneration(
@@ -1610,7 +1596,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    /** @group DDC-1236 */
+    #[Group('DDC-1236')]
     public function testGroupBySupportsIdentificationVariable(): void
     {
         $this->assertSqlGeneration(
@@ -1619,7 +1605,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    /** @group DDC-1213 */
+    #[Group('DDC-1213')]
     public function testSupportsBitComparison(): void
     {
         $this->assertSqlGeneration(
@@ -1640,7 +1626,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    /** @group DDC-1539 */
+    #[Group('DDC-1539')]
     public function testParenthesesOnTheLeftHandOfComparison(): void
     {
         $this->assertSqlGeneration(
@@ -1665,7 +1651,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    /** @group DDC-1557 */
+    #[Group('DDC-1557')]
     public function testSupportsSubSqlFunction(): void
     {
         $this->assertSqlGeneration(
@@ -1694,7 +1680,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    /** @group DDC-1574 */
+    #[Group('DDC-1574')]
     public function testSupportsNewOperator(): void
     {
         $this->assertSqlGeneration(
@@ -1728,7 +1714,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    /** @group DDC-2234 */
+    #[Group('DDC-2234')]
     public function testWhereFunctionIsNullComparisonExpression(): void
     {
         $this->assertSqlGeneration(
@@ -1823,7 +1809,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    /** @group DDC-1529 */
+    #[Group('DDC-1529')]
     public function testMultipleFromAndInheritanceCondition(): void
     {
         $this->assertSqlGeneration(
@@ -1832,7 +1818,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    /** @group DDC-775 */
+    #[Group('DDC-775')]
     public function testOrderByClauseSupportsSimpleArithmeticExpression(): void
     {
         $this->assertSqlGeneration(
@@ -1857,7 +1843,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    /** @group DDC-1719 */
+    #[Group('DDC-1719')]
     public function testStripNonAlphanumericCharactersFromAlias(): void
     {
         $this->assertSqlGeneration(
@@ -1876,7 +1862,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    /** @group DDC-2435 */
+    #[Group('DDC-2435')]
     public function testColumnNameWithNumbersAndNonAlphanumericCharacters(): void
     {
         $this->assertSqlGeneration(
@@ -1895,7 +1881,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    /** @group DDC-1845 */
+    #[Group('DDC-1845')]
     public function testQuotedTableDeclaration(): void
     {
         $this->assertSqlGeneration(
@@ -1904,7 +1890,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-   /** @group DDC-1845 */
+    #[Group('DDC-1845')]
     public function testQuotedWalkJoinVariableDeclaration(): void
     {
         $this->assertSqlGeneration(
@@ -1938,7 +1924,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-   /** @group DDC-2208 */
+    #[Group('DDC-2208')]
     public function testCaseThenParameterArithmeticExpression(): void
     {
         $this->assertSqlGeneration(
@@ -1957,7 +1943,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    /** @group DDC-2268 */
+    #[Group('DDC-2268')]
     public function testCaseThenFunction(): void
     {
         $this->assertSqlGeneration(
@@ -1976,7 +1962,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    /** @group DDC-2268 */
+    #[Group('DDC-2268')]
     public function testSupportsMoreThanTwoParametersInConcatFunction(): void
     {
         $this->entityManager = $this->createTestEntityManagerWithPlatform(new MySQLPlatform());
@@ -1991,7 +1977,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-     /** @group DDC-2188 */
+     #[Group('DDC-2188')]
     public function testArithmeticPriority(): void
     {
         $this->assertSqlGeneration(
@@ -2010,7 +1996,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    /** @group DDC-2475 */
+    #[Group('DDC-2475')]
     public function testOrderByClauseShouldReplaceOrderByRelationMapping(): void
     {
         $this->assertSqlGeneration(
@@ -2024,7 +2010,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    /** @group DDC-1858 */
+    #[Group('DDC-1858')]
     public function testHavingSupportIsNullExpression(): void
     {
         $this->assertSqlGeneration(
@@ -2038,7 +2024,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    /** @group DDC-2506 */
+    #[Group('DDC-2506')]
     public function testClassTableInheritanceJoinWithConditionAppliesToBaseTable(): void
     {
         $this->assertSqlGeneration(
@@ -2048,7 +2034,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    /** @group DDC-2235 */
+    #[Group('DDC-2235')]
     public function testSingleTableInheritanceLeftJoinWithCondition(): void
     {
         // Regression test for the bug
@@ -2058,7 +2044,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    /** @group DDC-2235 */
+    #[Group('DDC-2235')]
     public function testSingleTableInheritanceLeftJoinWithConditionAndWhere(): void
     {
         // Ensure other WHERE predicates are passed through to the main WHERE clause
@@ -2068,7 +2054,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    /** @group DDC-2235 */
+    #[Group('DDC-2235')]
     public function testSingleTableInheritanceInnerJoinWithCondition(): void
     {
         // Test inner joins too
@@ -2078,7 +2064,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    /** @group DDC-2235 */
+    #[Group('DDC-2235')]
     public function testSingleTableInheritanceLeftJoinNonAssociationWithConditionAndWhere(): void
     {
         // Test that the discriminator IN() predicate is still added into
@@ -2089,7 +2075,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    /** @group DDC-2235 */
+    #[Group('DDC-2235')]
     public function testSingleTableInheritanceJoinCreatesOnCondition(): void
     {
         // Test that the discriminator IN() predicate is still added
@@ -2101,7 +2087,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    /** @group DDC-2235 */
+    #[Group('DDC-2235')]
     public function testSingleTableInheritanceCreatesOnConditionAndWhere(): void
     {
         // Test that when joining onto an entity using single table inheritance via
@@ -2115,7 +2101,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    /** @group DDC-1858 */
+    #[Group('DDC-1858')]
     public function testHavingSupportResultVariableInExpression(): void
     {
         $this->assertSqlGeneration(
@@ -2124,7 +2110,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    /** @group DDC-1858 */
+    #[Group('DDC-1858')]
     public function testHavingSupportResultVariableLikeExpression(): void
     {
         $this->assertSqlGeneration(
@@ -2133,7 +2119,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    /** @group DDC-3085 */
+    #[Group('DDC-3085')]
     public function testHavingSupportResultVariableNullComparisonExpression(): void
     {
         $this->assertSqlGeneration(
@@ -2142,7 +2128,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    /** @group DDC-1858 */
+    #[Group('DDC-1858')]
     public function testHavingSupportResultVariableInAggregateFunction(): void
     {
         $this->assertSqlGeneration(
@@ -2153,10 +2139,9 @@ class SelectSqlGenerationTest extends OrmTestCase
 
     /**
      * GitHub issue #4764: https://github.com/doctrine/orm/issues/4764
-     *
-     * @group DDC-3907
-     * @dataProvider mathematicOperatorsProvider
      */
+    #[DataProvider('mathematicOperatorsProvider')]
+    #[Group('DDC-3907')]
     public function testHavingRegressionUsingVariableWithMathOperatorsExpression($operator): void
     {
         $this->assertSqlGeneration(

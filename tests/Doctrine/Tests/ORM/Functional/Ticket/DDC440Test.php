@@ -16,6 +16,7 @@ use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\ORM\Mapping\OrderBy;
 use Doctrine\ORM\Mapping\Table;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
 class DDC440Test extends OrmFunctionalTestCase
 {
@@ -26,7 +27,7 @@ class DDC440Test extends OrmFunctionalTestCase
         $this->createSchemaForModels(DDC440Phone::class, DDC440Client::class);
     }
 
-    /** @group DDC-440 */
+    #[Group('DDC-440')]
     public function testOriginalEntityDataEmptyWhenProxyLoadedFromTwoAssociations(): void
     {
         /* The key of the problem is that the first phone is fetched via two association, mainPhone and phones.

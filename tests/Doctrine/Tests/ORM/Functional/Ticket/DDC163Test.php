@@ -6,6 +6,7 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Tests\Models\Company\CompanyPerson;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
 class DDC163Test extends OrmFunctionalTestCase
 {
@@ -16,7 +17,7 @@ class DDC163Test extends OrmFunctionalTestCase
         parent::setUp();
     }
 
-    /** @group DDC-163 */
+    #[Group('DDC-163')]
     public function testQueryWithOrConditionUsingTwoRelationOnSameEntity(): void
     {
         $p1 = new CompanyPerson();

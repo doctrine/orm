@@ -13,8 +13,9 @@ use Doctrine\ORM\Mapping\Table;
 use Doctrine\ORM\Query\ResultSetMappingBuilder;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use Exception;
+use PHPUnit\Framework\Attributes\Group;
 
-/** @group DDC-2660 */
+#[Group('DDC-2660')]
 class DDC2660Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void

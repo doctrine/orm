@@ -10,11 +10,10 @@ use Doctrine\Tests\Models\Legacy\LegacyCar;
 use Doctrine\Tests\Models\Legacy\LegacyUser;
 use Doctrine\Tests\Models\Legacy\LegacyUserReference;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
-/**
- * @group non-cacheable
- * @group DDC-1301
- */
+#[Group('non-cacheable')]
+#[Group('DDC-1301')]
 class DDC1301Test extends OrmFunctionalTestCase
 {
     private int|null $userId = null;

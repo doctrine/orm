@@ -20,13 +20,14 @@ use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\Table;
 use Doctrine\Tests\ORM\Functional\Ticket\Doctrine\Common\Collections\Collection;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
 use function assert;
 use function reset;
 
 class DDC2138Test extends OrmFunctionalTestCase
 {
-    /** @group DDC-2138 */
+    #[Group('DDC-2138')]
     public function testForeignKeyOnSTIWithMultipleMapping(): void
     {
         $em     = $this->_em;

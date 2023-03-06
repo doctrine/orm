@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
 use function strtolower;
 
@@ -20,7 +21,7 @@ class DDC331Test extends OrmFunctionalTestCase
         parent::setUp();
     }
 
-    /** @group DDC-331 */
+    #[Group('DDC-331')]
     public function testSelectFieldOnRootEntity(): void
     {
         $q = $this->_em->createQuery('SELECT e.name FROM Doctrine\Tests\Models\Company\CompanyEmployee e');

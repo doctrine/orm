@@ -18,9 +18,10 @@ use Doctrine\ORM\Query\ResultSetMappingBuilder;
 use Doctrine\Tests\Mocks\EntityManagerMock;
 use Doctrine\Tests\Models\Cache\Country;
 use Doctrine\Tests\OrmTestCase;
+use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\MockObject\MockObject;
 
-/** @group DDC-2183 */
+#[Group('DDC-2183')]
 abstract class EntityPersisterTestCase extends OrmTestCase
 {
     protected Region&MockObject $region;

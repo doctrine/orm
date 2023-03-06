@@ -12,8 +12,9 @@ use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\Table;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
-/** @group DDC-192 */
+#[Group('DDC-192')]
 class DDC192Test extends OrmFunctionalTestCase
 {
     public function testSchemaCreation(): void

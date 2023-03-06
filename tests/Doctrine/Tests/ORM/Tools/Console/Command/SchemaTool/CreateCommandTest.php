@@ -5,10 +5,11 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Tools\Console\Command\SchemaTool;
 
 use Doctrine\ORM\Tools\Console\Command\SchemaTool\CreateCommand;
+use PHPUnit\Framework\Attributes\DoesNotPerformAssertions;
 
 class CreateCommandTest extends CommandTestCase
 {
-    /** @doesNotPerformAssertions */
+    #[DoesNotPerformAssertions]
     public function testItPrintsTheSql(): void
     {
         $tester = $this->getCommandTester(CreateCommand::class);

@@ -10,23 +10,23 @@ use Doctrine\Tests\Models\Generic\BooleanModel;
 use Doctrine\Tests\Models\Reflection\AbstractEmbeddable;
 use Doctrine\Tests\Models\Reflection\ArrayObjectExtendingClass;
 use Doctrine\Tests\Models\Reflection\ConcreteEmbeddable;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use ReflectionProperty;
 
 /**
  * Tests for {@see \Doctrine\ORM\Mapping\ReflectionEmbeddedProperty}
- *
- * @covers \Doctrine\ORM\Mapping\ReflectionEmbeddedProperty
  */
+#[CoversClass(ReflectionEmbeddedProperty::class)]
 class ReflectionEmbeddedPropertyTest extends TestCase
 {
     /**
      * @param ReflectionProperty $parentProperty  property of the embeddable/entity where to write the embeddable to
      * @param ReflectionProperty $childProperty   property of the embeddable class where to write values to
      * @param string             $embeddableClass name of the embeddable class to be instantiated
-     *
-     * @dataProvider getTestedReflectionProperties
      */
+    #[DataProvider('getTestedReflectionProperties')]
     public function testCanSetAndGetEmbeddedProperty(
         ReflectionProperty $parentProperty,
         ReflectionProperty $childProperty,
@@ -51,9 +51,8 @@ class ReflectionEmbeddedPropertyTest extends TestCase
      * @param ReflectionProperty $parentProperty  property of the embeddable/entity where to write the embeddable to
      * @param ReflectionProperty $childProperty   property of the embeddable class where to write values to
      * @param string             $embeddableClass name of the embeddable class to be instantiated
-     *
-     * @dataProvider getTestedReflectionProperties
      */
+    #[DataProvider('getTestedReflectionProperties')]
     public function testWillSkipReadingPropertiesFromNullEmbeddable(
         ReflectionProperty $parentProperty,
         ReflectionProperty $childProperty,

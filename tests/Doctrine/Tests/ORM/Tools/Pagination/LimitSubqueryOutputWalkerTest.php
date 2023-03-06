@@ -9,6 +9,7 @@ use Doctrine\DBAL\Platforms\OraclePlatform;
 use Doctrine\DBAL\Platforms\PostgreSQLPlatform;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Tools\Pagination\LimitSubqueryOutputWalker;
+use PHPUnit\Framework\Attributes\Group;
 
 final class LimitSubqueryOutputWalkerTest extends PaginationTestCase
 {
@@ -180,7 +181,7 @@ final class LimitSubqueryOutputWalkerTest extends PaginationTestCase
         );
     }
 
-    /** @group DDC-3336 */
+    #[Group('DDC-3336')]
     public function testCountQueryWithArithmeticOrderByCondition(): void
     {
         $entityManager = $this->createTestEntityManagerWithPlatform(new MySQLPlatform());
@@ -261,7 +262,7 @@ final class LimitSubqueryOutputWalkerTest extends PaginationTestCase
         );
     }
 
-    /** @group DDC-3434 */
+    #[Group('DDC-3434')]
     public function testLimitSubqueryWithHiddenSelectionInOrderBy(): void
     {
         $query = $this->entityManager->createQuery(

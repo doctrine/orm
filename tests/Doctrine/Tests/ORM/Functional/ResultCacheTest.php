@@ -12,6 +12,8 @@ use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\Tests\Models\CMS\CmsArticle;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Depends;
+use PHPUnit\Framework\Attributes\Group;
 use Psr\Cache\CacheItemPoolInterface;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
 
@@ -83,7 +85,7 @@ class ResultCacheTest extends OrmFunctionalTestCase
         self::assertCacheHasItem('testing_result_cache_id', $cache);
     }
 
-    /** @group DDC-1026 */
+    #[Group('DDC-1026')]
     public function testUseResultCacheParams(): void
     {
         $cache = new ArrayAdapter();
@@ -151,7 +153,7 @@ class ResultCacheTest extends OrmFunctionalTestCase
         $this->resetCache();
     }
 
-    /** @group DDC-1026 */
+    #[Group('DDC-1026')]
     public function testEnableResultCacheParams(): void
     {
         $cache = new ArrayAdapter();
@@ -215,7 +217,7 @@ class ResultCacheTest extends OrmFunctionalTestCase
         return [$query, $cache];
     }
 
-    /** @depends testNativeQueryResultCaching */
+    #[Depends('testNativeQueryResultCaching')]
     public function testResultCacheNotDependsOnQueryHints(array $previous): void
     {
         [$query, $cache] = $previous;
@@ -230,7 +232,7 @@ class ResultCacheTest extends OrmFunctionalTestCase
         self::assertCount($cacheCount, $cache->getValues());
     }
 
-    /** @depends testNativeQueryResultCaching */
+    #[Depends('testNativeQueryResultCaching')]
     public function testResultCacheDependsOnParameters(array $previous): void
     {
         [$query, $cache] = $previous;
@@ -245,7 +247,7 @@ class ResultCacheTest extends OrmFunctionalTestCase
         self::assertCount($cacheCount + 1, $cache->getValues());
     }
 
-    /** @depends testNativeQueryResultCaching */
+    #[Depends('testNativeQueryResultCaching')]
     public function testResultCacheNotDependsOnHydrationMode(array $previous): void
     {
         [$query, $cache] = $previous;
@@ -260,7 +262,7 @@ class ResultCacheTest extends OrmFunctionalTestCase
         self::assertCount($cacheCount, $cache->getValues());
     }
 
-    /** @group DDC-909 */
+    #[Group('DDC-909')]
     public function testResultCacheWithObjectParameter(): void
     {
         $user1           = new CmsUser();

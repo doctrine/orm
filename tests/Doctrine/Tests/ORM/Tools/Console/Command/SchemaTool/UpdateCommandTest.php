@@ -6,12 +6,14 @@ namespace Doctrine\Tests\ORM\Tools\Console\Command\SchemaTool;
 
 use Doctrine\DBAL\Schema\SchemaDiff;
 use Doctrine\ORM\Tools\Console\Command\SchemaTool\UpdateCommand;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\DoesNotPerformAssertions;
 
 use function method_exists;
 
 class UpdateCommandTest extends CommandTestCase
 {
-    /** @doesNotPerformAssertions */
+    #[DoesNotPerformAssertions]
     public function testItPrintsTheSql(): void
     {
         if (! method_exists(SchemaDiff::class, 'toSaveSql')) {
@@ -27,7 +29,7 @@ class UpdateCommandTest extends CommandTestCase
         self::$sharedConn->executeStatement($tester->getDisplay());
     }
 
-    /** @dataProvider getCasesForWarningMessageFromCompleteOption */
+    #[DataProvider('getCasesForWarningMessageFromCompleteOption')]
     public function testWarningMessageFromCompleteOption(string|null $name, string $expectedMessage): void
     {
         if (! method_exists(SchemaDiff::class, 'toSaveSql')) {
