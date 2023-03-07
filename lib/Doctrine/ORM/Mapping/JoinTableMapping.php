@@ -12,6 +12,8 @@ use function in_array;
 /** @template-implements ArrayAccess<string, mixed> */
 final class JoinTableMapping implements ArrayAccess
 {
+    use ArrayAccessImplementation;
+
     public bool|null $quoted = null;
 
     /** @var list<JoinColumnData> */
@@ -53,19 +55,6 @@ final class JoinTableMapping implements ArrayAccess
     /**
      * {@inheritDoc}
      */
-    public function offsetExists($offset): bool
-    {
-        return isset($this->$offset);
-    }
-
-    public function offsetGet($offset): mixed
-    {
-        return $this->$offset;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     public function offsetSet($offset, $value): void
     {
         if (in_array($offset, ['joinColumns', 'inverseJoinColumns'], true)) {
@@ -78,14 +67,6 @@ final class JoinTableMapping implements ArrayAccess
         }
 
         $this->$offset = $value;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function offsetUnset($offset): void
-    {
-        $this->$offset = null;
     }
 
     /** @return mixed[] */

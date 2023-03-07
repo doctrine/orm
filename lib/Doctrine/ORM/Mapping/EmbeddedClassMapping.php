@@ -11,6 +11,8 @@ use function property_exists;
 /** @template-implements ArrayAccess<string, mixed> */
 final class EmbeddedClassMapping implements ArrayAccess
 {
+    use ArrayAccessImplementation;
+
     public string|bool|null $columnPrefix = null;
     public string|null $declaredField     = null;
     public string|null $originalField     = null;
@@ -60,34 +62,5 @@ final class EmbeddedClassMapping implements ArrayAccess
         }
 
         return $mapping;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function offsetExists($offset): bool
-    {
-        return isset($this->$offset);
-    }
-
-    public function offsetGet($offset): mixed
-    {
-        return $this->$offset;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function offsetSet($offset, $value): void
-    {
-        $this->$offset = $value;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function offsetUnset($offset): void
-    {
-        $this->$offset = null;
     }
 }

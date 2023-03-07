@@ -13,6 +13,8 @@ use function property_exists;
 /** @template-implements ArrayAccess<string, mixed> */
 final class FieldMapping implements ArrayAccess
 {
+    use ArrayAccessImplementation;
+
     /** @var int|null The database length of the column. Optional. Default value taken from the type. */
     public int|null $length = null;
     /**
@@ -100,34 +102,5 @@ final class FieldMapping implements ArrayAccess
         }
 
         return $mapping;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function offsetExists($offset): bool
-    {
-        return isset($this->$offset);
-    }
-
-    public function offsetGet($offset): mixed
-    {
-        return $this->$offset;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function offsetSet($offset, $value): void
-    {
-        $this->$offset = $value;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function offsetUnset($offset): void
-    {
-        $this->$offset = null;
     }
 }

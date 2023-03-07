@@ -14,6 +14,8 @@ use function property_exists;
 /** @template-implements ArrayAccess<string, mixed> */
 abstract class AssociationMapping implements ArrayAccess
 {
+    use ArrayAccessImplementation;
+
     /**
      * required for bidirectional associations
      * The name of the field that completes the bidirectional association on
@@ -164,27 +166,6 @@ abstract class AssociationMapping implements ArrayAccess
         return $mapping;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function offsetExists($offset): bool
-    {
-        return isset($this->$offset);
-    }
-
-    public function offsetGet($offset): mixed
-    {
-        if ($offset === 'isOwningSide') {
-            return $this->isOwningSide();
-        }
-
-        if ($offset === 'type') {
-            return $this->type();
-        }
-
-        return $this->$offset;
-    }
-
     /** @psalm-assert-if-true AssociationOwningSideMapping $this */
     public function isOwningSide(): bool
     {
@@ -220,6 +201,15 @@ abstract class AssociationMapping implements ArrayAccess
         };
     }
 
+    public function offsetGet($offset): mixed
+    {
+        return match ($offset) {
+            'isOwningSide' => $this->isOwningSide(),
+            'type' => $this->type(),
+            default => $this->$offset,
+        };
+    }
+
     /**
      * {@inheritDoc}
      */
@@ -230,14 +220,6 @@ abstract class AssociationMapping implements ArrayAccess
         }
 
         $this->$offset = $value;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function offsetUnset($offset): void
-    {
-        $this->$offset = null;
     }
 
     /** @return mixed[] */
