@@ -23,7 +23,7 @@ especially what the strategies presented here provide help with.
 .. code-block:: php
 
     <?php
-    $em->getConnection()->getConfiguration()->setSQLLogger(null);
+    $em->getConnection()->getConfiguration()->setMiddlewares([]);
 
 Bulk Inserts
 ------------
