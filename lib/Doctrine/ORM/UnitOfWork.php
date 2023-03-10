@@ -29,7 +29,6 @@ use Doctrine\ORM\Id\AssignedGenerator;
 use Doctrine\ORM\Internal\CommitOrderCalculator;
 use Doctrine\ORM\Internal\HydrationCompleteHandler;
 use Doctrine\ORM\Mapping\ClassMetadata;
-use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\ORM\Mapping\Reflection\ReflectionPropertiesGetter;
 use Doctrine\ORM\Persisters\Collection\CollectionPersister;
@@ -75,6 +74,7 @@ use function method_exists;
 use function reset;
 use function spl_object_id;
 use function sprintf;
+use function strtolower;
 
 /**
  * The UnitOfWork is responsible for tracking changes to objects during an
@@ -2905,9 +2905,9 @@ class UnitOfWork implements PropertyChangedListener
 
                                             $discriminatorColumnName = $targetClass->discriminatorColumn['name'];
                                             $selectClause            = $connection->quoteIdentifier($discriminatorColumnName);
-                                            $fromClause              = $connection->quoteIdentifier($this->em->getClassMetadata(
+                                            $fromClause              = $this->em->getClassMetadata(
                                                 $targetClass->rootEntityName
-                                            )->getTableName());
+                                            )->getTableName();
 
                                             $whereClauses = [];
                                             $whereValues  = [];

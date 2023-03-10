@@ -1238,14 +1238,31 @@ class BasicEntityPersister implements EntityPersister
 
             if ($assocColumnSQL) {
                 $columnList[] = $assocColumnSQL;
+
+                $assocMetadata = $this->em->getClassMetadata($assoc['targetEntity']);
+
+                //Check if association class has subclasses
+                if ($assocMetadata->subClasses) {
+                    //Get the discriminator column value of the association class
+                    $discColumnName = $assocMetadata->discriminatorColumn["name"];
+                    $resultColumnName = $this->getSQLColumnAlias($discColumnName);
+
+                    $sqlTableAlias = $this->getSQLTableAlias($this->class->name, 'r');
+                    $discColumnSQL = sprintf('%s.%s AS %s', $sqlTableAlias, $discColumnName, $resultColumnName);
+
+                    //Add the discriminator column value to the $columnList[]
+                    $columnList[] .= $discColumnSQL;
+
+                    //Add a JOIN statement to the JOIN clause for joining the targetEntity and association class
+                }
             }
 
             $isAssocToOneInverseSide = $assoc['type'] & ClassMetadata::TO_ONE && ! $assoc['isOwningSide'];
             $isAssocFromOneEager     = $assoc['type'] !== ClassMetadata::MANY_TO_MANY && $assoc['fetch'] === ClassMetadata::FETCH_EAGER;
 
-            if (! ($isAssocFromOneEager || $isAssocToOneInverseSide)) {
-                continue;
-            }
+//            if (! ($isAssocFromOneEager || $isAssocToOneInverseSide)) {
+//                continue;
+//            }
 
             if ((($assoc['type'] & ClassMetadata::TO_MANY) > 0) && $this->currentPersisterContext->handlesLimits) {
                 continue;
@@ -1253,9 +1270,9 @@ class BasicEntityPersister implements EntityPersister
 
             $eagerEntity = $this->em->getClassMetadata($assoc['targetEntity']);
 
-            if ($eagerEntity->inheritanceType !== ClassMetadata::INHERITANCE_TYPE_NONE) {
-                continue; // now this is why you shouldn't use inheritance
-            }
+//            if ($eagerEntity->inheritanceType !== ClassMetadata::INHERITANCE_TYPE_NONE) {
+//                continue; // now this is why you shouldn't use inheritance
+//            }
 
             $assocAlias = 'e' . ($eagerAliasCounter++);
             $this->currentPersisterContext->rsm->addJoinedEntityResult($assoc['targetEntity'], $assocAlias, 'r', $assocField);
@@ -1329,6 +1346,14 @@ class BasicEntityPersister implements EntityPersister
         return $this->currentPersisterContext->selectColumnListSql;
     }
 
+    protected function getDiscriminatorColumnName($assoc, $class)
+    {
+        //1 Get metadata from target Entity
+        //2 Get discriminator column from metadata
+        $discriminatorColumnName = $class->discriminatorColumn['name'];
+        //3 Add extra line to join
+    }
+
     /**
      * Gets the SQL join fragment used when selecting entities from an association.
      *
@@ -1339,6 +1364,39 @@ class BasicEntityPersister implements EntityPersister
      * @return string
      */
     protected function getSelectColumnAssociationSQL($field, $assoc, ClassMetadata $class, $alias = 'r')
+    {
+        if (! ($assoc['isOwningSide'] && $assoc['type'] & ClassMetadata::TO_ONE)) {
+            return '';
+        }
+
+        $columnList    = [];
+        $targetClass   = $this->em->getClassMetadata($assoc['targetEntity']);
+        $isIdentifier  = isset($assoc['id']) && $assoc['id'] === true;
+        $sqlTableAlias = $this->getSQLTableAlias($class->name, ($alias === 'r' ? '' : $alias));
+
+        foreach ($assoc['joinColumns'] as $joinColumn) {
+            $quotedColumn     = $this->quoteStrategy->getJoinColumnName($joinColumn, $this->class, $this->platform);
+            $resultColumnName = $this->getSQLColumnAlias($joinColumn['name']);
+            $type             = PersisterHelper::getTypeOfColumn($joinColumn['referencedColumnName'], $targetClass, $this->em);
+
+            $this->currentPersisterContext->rsm->addMetaResult($alias, $resultColumnName, $joinColumn['name'], $isIdentifier, $type);
+
+            $columnList[] = sprintf('%s.%s AS %s', $sqlTableAlias, $quotedColumn, $resultColumnName);
+        }
+
+        return implode(', ', $columnList);
+    }
+
+    /**
+     * Gets the SQL join fragment used when selecting entities from an association.
+     *
+     * @param string  $field
+     * @param mixed[] $assoc
+     * @param string  $alias
+     *
+     * @return string
+     */
+    protected function getDiscriminatorColumnAssociationSQL($field, $assoc, ClassMetadata $class, $alias = 'r')
     {
         if (! ($assoc['isOwningSide'] && $assoc['type'] & ClassMetadata::TO_ONE)) {
             return '';
