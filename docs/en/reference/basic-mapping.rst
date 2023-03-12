@@ -423,36 +423,31 @@ the field that serves as the identifier with the ``#[Id]`` attribute.
             # fields here
 
 In most cases using the automatic generator strategy (``#[GeneratedValue]``) is
-what you want. It defaults to the identifier generation mechanism your current
-database vendor prefers: AUTO_INCREMENT with MySQL, sequences with PostgreSQL
-and Oracle and so on.
+what you want.
 
 .. _identifier-generation-strategies:
 
 Identifier Generation Strategies
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The previous example showed how to use the default identifier
-generation strategy without knowing the underlying database with
-the AUTO-detection strategy. It is also possible to specify the
-identifier generation strategy more explicitly, which allows you to
-make use of some additional features.
-
 Here is the list of possible generation strategies:
 
 -  ``AUTO`` (default): Tells Doctrine to pick the strategy that is
-   preferred by the used database platform. The preferred strategies
-   are IDENTITY for MySQL, SQLite, MsSQL and SQL Anywhere and SEQUENCE
-   for Oracle and PostgreSQL. This strategy provides full portability.
+   preferred by the used database platform:
+   - MySQL, SQLite, MsSQL, SQL Anywhere: ``IDENTITY``
+   - Oracle, PostgreSQL: ``SEQUENCE``
+   This strategy provides full portability.
 -  ``SEQUENCE``: Tells Doctrine to use a database sequence for ID
    generation. This strategy does currently not provide full
-   portability. Sequences are supported by Oracle, PostgreSql and
+   portability. Sequences are supported by Oracle, PostgreSQL and
    SQL Anywhere.
 -  ``IDENTITY``: Tells Doctrine to use special identity columns in
    the database that generate a value on insertion of a row. This
    strategy does currently not provide full portability and is
-   supported by the following platforms: MySQL/SQLite/SQL Anywhere
-   (AUTO\_INCREMENT), MSSQL (IDENTITY) and PostgreSQL (SERIAL).
+   supported by the following platforms:
+   - MySQL, SQLite, SQL Anywhere: ``AUTO_INCREMENT``
+   - MsSQL: ``IDENTITY``
+   - PostgreSQL: ``SERIAL``
 -  ``UUID`` (deprecated): Tells Doctrine to use the built-in Universally
    Unique Identifier generator. This strategy provides full portability.
 -  ``NONE``: Tells Doctrine that the identifiers are assigned (and
