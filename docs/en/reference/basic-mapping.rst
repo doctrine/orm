@@ -575,7 +575,7 @@ needs to be done explicitly using ticks in the definition.
 
     <?php
 
-    #[Column(name: '`number`', type: 'integer')]
+    #[Column(name: '`number`')]
     private $number;
 
 Doctrine will then quote this column name in all SQL statements
