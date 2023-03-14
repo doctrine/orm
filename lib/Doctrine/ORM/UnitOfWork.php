@@ -2901,37 +2901,10 @@ class UnitOfWork implements PropertyChangedListener
                                 case $hints['fetchMode'][$class->name][$field] !== ClassMetadata::FETCH_EAGER:
                                     if ($targetClass->subClasses) {
                                         if (! $targetClass->isInheritanceTypeNone() && isset($targetClass->discriminatorColumn)) {
-                                            $connection = $this->em->getConnection();
+                                            // Attention! This function executes an extra query on the database.
+                                            $targetSubClass = $this->getTargetSubClass($targetClass, $associatedId);
 
-                                            $discriminatorColumnName = $targetClass->discriminatorColumn['name'];
-                                            $selectClause            = $connection->quoteIdentifier($discriminatorColumnName);
-                                            $fromClause              = $connection->quoteIdentifier($this->em->getClassMetadata(
-                                                $targetClass->rootEntityName
-                                            )->getTableName());
-
-                                            $whereClauses = [];
-                                            $whereValues  = [];
-                                            foreach ($targetClass->getIdentifierColumnNames() as $pkName) {
-                                                $whereClauses[] = $connection->quoteIdentifier($pkName) . ' = ?';
-                                                $whereValues[]  = $associatedId[$targetClass->fieldNames[$pkName]];
-                                            }
-
-                                            $whereClause = implode(' AND ', $whereClauses);
-
-                                            $query = 'SELECT ' . $selectClause . ' FROM ' . $fromClause . ' WHERE ' . $whereClause;
-                                            $stmt  = $this->em->getConnection()->prepare($query);
-
-                                            $index = 1;
-                                            foreach ($whereValues as $whereValue) {
-                                                $stmt->bindValue($index, $whereValue);
-                                                $index++;
-                                            }
-
-                                            $result     = $stmt->executeQuery();
-                                            $fieldValue = $result->fetchFirstColumn()[0];
-
-                                            $targetSubClass = $targetClass->discriminatorMap[$fieldValue];
-                                            $newValue       = $this->em->getProxyFactory()->getProxy($targetSubClass, $associatedId);
+                                            $newValue = $this->em->getProxyFactory()->getProxy($targetSubClass, $associatedId);
                                             break;
                                         }
 
@@ -3785,5 +3758,48 @@ class UnitOfWork implements PropertyChangedListener
         }
 
         return $normalizedAssociatedId;
+    }
+
+    /**
+     * This function will get the type of $targetClass by executing a
+     * query on the database to get the Discriminator Column value.
+     *
+     * @param $targetClass
+     * @param $associatedId
+     *
+     * @throws \Doctrine\DBAL\Exception
+     */
+    private function getTargetSubClass($targetClass, $associatedId): string
+    {
+        $connection = $this->em->getConnection();
+
+        $discriminatorColumnName = $targetClass->discriminatorColumn['name'];
+        $selectClause            = $connection->quoteIdentifier($discriminatorColumnName);
+        $fromClause              = $this->em->getClassMetadata(
+            $targetClass->rootEntityName
+        )->getTableName();
+
+        $whereClauses = [];
+        $whereValues  = [];
+        foreach ($targetClass->getIdentifierColumnNames() as $pkName) {
+            $whereClauses[] = $connection->quoteIdentifier($pkName) . ' = ?';
+            $whereValues[]  = $associatedId[$targetClass->fieldNames[$pkName]];
+        }
+
+        $whereClause = implode(' AND ', $whereClauses);
+
+        $query = 'SELECT ' . $selectClause . ' FROM ' . $fromClause . ' WHERE ' . $whereClause;
+        $stmt  = $this->em->getConnection()->prepare($query);
+
+        $index = 1;
+        foreach ($whereValues as $whereValue) {
+            $stmt->bindValue($index, $whereValue);
+            $index++;
+        }
+
+        $result     = $stmt->executeQuery();
+        $fieldValue = $result->fetchFirstColumn()[0];
+
+        return $targetClass->discriminatorMap[$fieldValue];
     }
 }
