@@ -46,7 +46,7 @@ class EntityManagerDecoratorTest extends TestCase
     }
 
     /** @psalm-return Generator<string, mixed[]> */
-    public function getMethodParameters(): Generator
+    public static function getMethodParameters(): Generator
     {
         $class = new ReflectionClass(EntityManagerInterface::class);
 
@@ -55,12 +55,12 @@ class EntityManagerDecoratorTest extends TestCase
                 continue;
             }
 
-            yield $method->getName() => $this->getParameters($method);
+            yield $method->getName() => self::getParameters($method);
         }
     }
 
     /** @return mixed[] */
-    private function getParameters(ReflectionMethod $method): array
+    private static function getParameters(ReflectionMethod $method): array
     {
         /** Special case EntityManager::createNativeQuery() */
         if ($method->getName() === 'createNativeQuery') {

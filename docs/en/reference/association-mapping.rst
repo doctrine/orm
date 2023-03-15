@@ -1386,6 +1386,14 @@ Is essentially the same as following:
 
 .. configuration-block::
 
+    .. code-block:: attribute
+
+        <?php
+        /** One Product has One Shipment. */
+        #[OneToOne(targetEntity: Shipment::class)]
+        #[JoinColumn(name: 'shipment_id', referencedColumnName: 'id', nullable: false)]
+        private Shipment $shipment;
+
     .. code-block:: annotation
 
         <?php
@@ -1394,14 +1402,6 @@ Is essentially the same as following:
          * @OneToOne(targetEntity="Shipment")
          * @JoinColumn(name="shipment_id", referencedColumnName="id", nullable=false)
          */
-        private Shipment $shipment;
-
-    .. code-block:: attribute
-
-        <?php
-        /** One Product has One Shipment. */
-        #[OneToOne(targetEntity: Shipment::class)]
-        #[JoinColumn(name: 'shipment_id', referencedColumnName: 'id', nullable: false)]
         private Shipment $shipment;
 
     .. code-block:: xml

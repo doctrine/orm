@@ -6,6 +6,7 @@ namespace Doctrine\Tests\ORM\Tools\Pagination;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Driver;
+use Doctrine\DBAL\Result;
 use Doctrine\ORM\Decorator\EntityManagerDecorator;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Internal\Hydration\AbstractHydrator;
@@ -64,17 +65,24 @@ class PaginatorTest extends OrmTestCase
         $query->setMaxResults(1);
         $paginator = (new Paginator($query, true))->setUseOutputWalkers(false);
 
+        $receivedParams = [];
+        $resultMock     = $this->createMock(Result::class);
         $this->connection
-            ->expects(self::exactly(3))
             ->method('executeQuery')
-            ->withConsecutive(
-                [self::anything(), [$paramInWhere]],
-                [self::anything(), [$paramInWhere]],
-                [self::anything(), [$paramInSubSelect, $paramInWhere, $returnedIds]]
-            );
+            ->willReturnCallback(static function (string $sql, array $params) use (&$receivedParams, $resultMock): Result {
+                $receivedParams[] = $params;
+
+                return $resultMock;
+            });
 
         $paginator->count();
         $paginator->getIterator();
+
+        self::assertSame([
+            [$paramInWhere],
+            [$paramInWhere],
+            [$paramInSubSelect, $paramInWhere, $returnedIds],
+        ], $receivedParams);
     }
 
     public function testPaginatorNotCaringAboutExtraParametersWithoutOutputWalkers(): void

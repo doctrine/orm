@@ -29,13 +29,14 @@ use Doctrine\Tests\Models\Hydration\SimpleEntity;
 use Doctrine\Tests\PHPUnitCompatibility\MockBuilderCompatibilityTools;
 
 use function count;
+use function property_exists;
 
 class ObjectHydratorTest extends HydrationTestCase
 {
     use MockBuilderCompatibilityTools;
 
     /** @psalm-return list<array{mixed}> */
-    public function provideDataForUserEntityResult(): array
+    public static function provideDataForUserEntityResult(): array
     {
         return [
             [0],
@@ -44,7 +45,7 @@ class ObjectHydratorTest extends HydrationTestCase
     }
 
     /** @psalm-return list<array{mixed, mixed}> */
-    public function provideDataForMultipleRootEntityResult(): array
+    public static function provideDataForMultipleRootEntityResult(): array
     {
         return [
             [0, 0],
@@ -55,7 +56,7 @@ class ObjectHydratorTest extends HydrationTestCase
     }
 
     /** @psalm-return list<array{mixed}> */
-    public function provideDataForProductEntityResult(): array
+    public static function provideDataForProductEntityResult(): array
     {
         return [
             [0],
@@ -927,10 +928,10 @@ class ObjectHydratorTest extends HydrationTestCase
         self::assertEquals(1, $result[0]->getId());
         self::assertEquals(2, $result[1]->getId());
 
-        self::assertObjectHasAttribute('boards', $result[0]);
+        self::assertTrue(property_exists($result[0], 'boards'));
         self::assertEquals(3, count($result[0]->boards));
 
-        self::assertObjectHasAttribute('boards', $result[1]);
+        self::assertTrue(property_exists($result[1], 'boards'));
         self::assertEquals(1, count($result[1]->boards));
     }
 

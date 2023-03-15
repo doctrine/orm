@@ -198,7 +198,7 @@ class EntityManagerTest extends OrmTestCase
     }
 
     /** @return Generator<array{mixed}> */
-    public function dataToBeReturnedByWrapInTransaction(): Generator
+    public static function dataToBeReturnedByWrapInTransaction(): Generator
     {
         yield [[]];
         yield [[1]];

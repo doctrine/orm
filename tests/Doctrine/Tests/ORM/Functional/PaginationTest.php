@@ -667,6 +667,28 @@ SQL
         self::assertCount(9, $paginator->getIterator());
     }
 
+    public function testDifferentResultLengthsDoNotRequireExtraQueryCacheEntries(): void
+    {
+        $dql   = 'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id >= :id';
+        $query = $this->_em->createQuery($dql);
+        $query->setMaxResults(10);
+
+        $query->setParameter('id', 1);
+        $paginator     = new Paginator($query);
+        $initialResult = iterator_to_array($paginator->getIterator()); // exercise the Paginator
+        self::assertCount(9, $initialResult);
+
+        $initialQueryCount = count(self::$queryCache->getValues());
+
+        $query->setParameter('id', $initialResult[1]->id); // skip the first result element
+        $paginator = new Paginator($query);
+        self::assertCount(8, $paginator->getIterator()); // exercise the Paginator again, with a smaller result set
+
+        $newCount = count(self::$queryCache->getValues());
+
+        self::assertSame($initialQueryCount, $newCount);
+    }
+
     public function populate(): void
     {
         $groups = [];
@@ -736,8 +758,17 @@ SQL
         $this->_em->flush();
     }
 
-    /** @psalm-return list<array{bool, bool}> */
-    public function useOutputWalkers(): array
+    /** @psalm-return list<array{bool}> */
+    public static function useOutputWalkers(): array
+    {
+        return [
+            [true],
+            [false],
+        ];
+    }
+
+    /** @psalm-return list<array{bool}> */
+    public static function fetchJoinCollection(): array
     {
         return [
             [true],
@@ -746,16 +777,7 @@ SQL
     }
 
     /** @psalm-return list<array{bool, bool}> */
-    public function fetchJoinCollection(): array
-    {
-        return [
-            [true],
-            [false],
-        ];
-    }
-
-    /** @psalm-return list<array{bool, bool}> */
-    public function useOutputWalkersAndFetchJoinCollection(): array
+    public static function useOutputWalkersAndFetchJoinCollection(): array
     {
         return [
             [true, false],

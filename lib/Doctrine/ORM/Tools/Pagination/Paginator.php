@@ -21,7 +21,8 @@ use Traversable;
 use function array_key_exists;
 use function array_map;
 use function array_sum;
-use function count;
+use function assert;
+use function is_string;
 
 /**
  * The paginator can handle various complex scenarios with DQL.
@@ -158,11 +159,12 @@ class Paginator implements Countable, IteratorAggregate
             $ids          = array_map('current', $foundIdRows);
 
             $this->appendTreeWalker($whereInQuery, WhereInWalker::class);
-            $whereInQuery->setHint(WhereInWalker::HINT_PAGINATOR_ID_COUNT, count($ids));
+            $whereInQuery->setHint(WhereInWalker::HINT_PAGINATOR_HAS_IDS, true);
             $whereInQuery->setFirstResult(0)->setMaxResults(null);
-            $whereInQuery->setParameter(WhereInWalker::PAGINATOR_ID_ALIAS, $ids);
             $whereInQuery->setCacheable($this->query->isCacheable());
-            $whereInQuery->expireQueryCache();
+
+            $databaseIds = $this->convertWhereInIdentifiersToDatabaseValues($ids);
+            $whereInQuery->setParameter(WhereInWalker::PAGINATOR_ID_ALIAS, $databaseIds);
 
             $result = $whereInQuery->getResult($this->query->getHydrationMode());
         } else {
@@ -264,5 +266,24 @@ class Paginator implements Countable, IteratorAggregate
         }
 
         $query->setParameters($parameters);
+    }
+
+    /**
+     * @param mixed[] $identifiers
+     *
+     * @return mixed[]
+     */
+    private function convertWhereInIdentifiersToDatabaseValues(array $identifiers): array
+    {
+        $query = $this->cloneQuery($this->query);
+        $query->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, RootTypeWalker::class);
+
+        $connection = $this->query->getEntityManager()->getConnection();
+        $type       = $query->getSQL();
+        assert(is_string($type));
+
+        return array_map(static function ($id) use ($connection, $type) {
+            return $connection->convertToDatabaseValue($id, $type);
+        }, $identifiers);
     }
 }

@@ -17,13 +17,9 @@ use Doctrine\ORM\Query\AST\SelectStatement;
 use Doctrine\ORM\Query\AST\SimpleArithmeticExpression;
 use Doctrine\ORM\Query\AST\WhereClause;
 use Doctrine\ORM\Query\TreeWalkerAdapter;
-use Doctrine\ORM\Utility\PersisterHelper;
 use RuntimeException;
 
-use function array_map;
-use function assert;
 use function count;
-use function is_array;
 use function reset;
 
 /**
@@ -32,15 +28,15 @@ use function reset;
  * The parameter namespace (dpid) is defined by
  * the PAGINATOR_ID_ALIAS
  *
- * The total number of parameters is retrieved from
- * the HINT_PAGINATOR_ID_COUNT query hint.
+ * The HINT_PAGINATOR_HAS_IDS query hint indicates whether there are
+ * any ids in the parameter at all.
  */
 class WhereInWalker extends TreeWalkerAdapter
 {
     /**
      * ID Count hint name.
      */
-    public const HINT_PAGINATOR_ID_COUNT = 'doctrine.id.count';
+    public const HINT_PAGINATOR_HAS_IDS = 'doctrine.paginator_has_ids';
 
     /**
      * Primary key alias for query.
@@ -69,9 +65,9 @@ class WhereInWalker extends TreeWalkerAdapter
         $pathExpression       = new PathExpression(PathExpression::TYPE_STATE_FIELD | PathExpression::TYPE_SINGLE_VALUED_ASSOCIATION, $rootAlias, $identifierFieldName);
         $pathExpression->type = $pathType;
 
-        $count = $this->_getQuery()->getHint(self::HINT_PAGINATOR_ID_COUNT);
+        $hasIds = $this->_getQuery()->getHint(self::HINT_PAGINATOR_HAS_IDS);
 
-        if ($count > 0) {
+        if ($hasIds) {
             $arithmeticExpression                             = new ArithmeticExpression();
             $arithmeticExpression->simpleArithmeticExpression = new SimpleArithmeticExpression(
                 [$pathExpression]
@@ -79,15 +75,6 @@ class WhereInWalker extends TreeWalkerAdapter
             $expression                                       = new InListExpression(
                 $arithmeticExpression,
                 [new InputParameter(':' . self::PAGINATOR_ID_ALIAS)]
-            );
-
-            $this->convertWhereInIdentifiersToDatabaseValue(
-                PersisterHelper::getTypeOfField(
-                    $identifierFieldName,
-                    $rootClass,
-                    $this->_getQuery()
-                        ->getEntityManager()
-                )[0]
             );
         } else {
             $expression = new NullComparisonExpression($pathExpression);
@@ -129,25 +116,5 @@ class WhereInWalker extends TreeWalkerAdapter
                 )
             );
         }
-    }
-
-    private function convertWhereInIdentifiersToDatabaseValue(string $type): void
-    {
-        $query                = $this->_getQuery();
-        $identifiersParameter = $query->getParameter(self::PAGINATOR_ID_ALIAS);
-
-        assert($identifiersParameter !== null);
-
-        $identifiers = $identifiersParameter->getValue();
-
-        assert(is_array($identifiers));
-
-        $connection = $this->_getQuery()
-            ->getEntityManager()
-            ->getConnection();
-
-        $query->setParameter(self::PAGINATOR_ID_ALIAS, array_map(static function ($id) use ($connection, $type) {
-            return $connection->convertToDatabaseValue($id, $type);
-        }, $identifiers));
     }
 }

@@ -3,6 +3,8 @@
     errorLevel="2"
     phpVersion="8.2"
     resolveFromConfigFile="true"
+    findUnusedBaselineEntry="true"
+    findUnusedCode="false"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xmlns="https://getpsalm.org/schema/config"
     xsi:schemaLocation="https://getpsalm.org/schema/config vendor/vimeo/psalm/config.xsd"
@@ -40,8 +42,6 @@
                 <referencedClass name="Doctrine\ORM\Tools\Console\Command\GenerateRepositoriesCommand"/>
                 <referencedClass name="Doctrine\ORM\Tools\Console\Helper\EntityManagerHelper"/>
                 <referencedClass name="Doctrine\ORM\Tools\Console\EntityManagerProvider\HelperSetManagerProvider"/>
-                <!-- https://github.com/vimeo/psalm/issues/8617 -->
-                <referencedClass name="Doctrine\ORM\Mapping\Annotation"/>
             </errorLevel>
         </DeprecatedClass>
         <DeprecatedConstant>
@@ -128,12 +128,6 @@
                 <file name="lib/Doctrine/ORM/Query/AST/InstanceOfExpression.php"/>
             </errorLevel>
         </InvalidParamDefault>
-        <InvalidReturnType>
-            <errorLevel type="suppress">
-                <!-- https://github.com/vimeo/psalm/issues/8819 -->
-                <file name="lib/Doctrine/ORM/Internal/Hydration/AbstractHydrator.php"/>
-            </errorLevel>
-        </InvalidReturnType>
         <MethodSignatureMismatch>
             <errorLevel type="suppress">
                 <!-- See https://github.com/vimeo/psalm/issues/7357 -->
@@ -237,11 +231,10 @@
                 <referencedMethod name="Doctrine\DBAL\Platforms\AbstractPlatform::getGuidExpression"/>
             </errorLevel>
         </UndefinedMethod>
-        <ArgumentTypeCoercion>
+        <MissingClosureReturnType>
             <errorLevel type="suppress">
-                <!-- See https://github.com/JetBrains/phpstorm-stubs/pull/1383 -->
-                <file name="lib/Doctrine/ORM/Mapping/ClassMetadataInfo.php"/>
+                <file name="lib/Doctrine/ORM/Tools/Pagination/Paginator.php"/>
             </errorLevel>
-        </ArgumentTypeCoercion>
+        </MissingClosureReturnType>
     </issueHandlers>
 </psalm>

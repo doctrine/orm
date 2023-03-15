@@ -88,7 +88,7 @@ class LanguageRecognitionTest extends OrmTestCase
     }
 
     /** @psalm-return list<array{string}> */
-    public function invalidDQL(): array
+    public static function invalidDQL(): array
     {
         return [
 
@@ -573,12 +573,11 @@ class LanguageRecognitionTest extends OrmTestCase
         $this->assertValidDQL('SELECT g FROM ' . __NAMESPACE__ . '\DQLKeywordsModelGroup g WHERE g.from=0');
     }
 
-    /* The exception is currently thrown in the SQLWalker, not earlier.
-    public function testInverseSideSingleValuedAssociationPathNotAllowed()
+    public function testInverseSideSingleValuedAssociationPathNotAllowed(): void
     {
+        self::markTestSkipped('The exception is currently thrown in the SQLWalker, not earlier.');
         $this->assertInvalidDQL('SELECT u.id FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.address = ?1');
     }
-    */
 
     /** @group DDC-617 */
     public function testSelectOnlyNonRootEntityAlias(): void

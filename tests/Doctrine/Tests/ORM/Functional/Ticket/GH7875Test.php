@@ -75,7 +75,7 @@ final class GH7875Test extends OrmFunctionalTestCase
     }
 
     /** @return array<array<string|callable|null>> */
-    public function provideUpdateSchemaSqlWithSchemaAssetFilter(): array
+    public static function provideUpdateSchemaSqlWithSchemaAssetFilter(): array
     {
         return [
             ['/^(?!my_enti)/', null],

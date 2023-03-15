@@ -13,6 +13,10 @@ use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Assert;
+use Psr\Cache\CacheItemInterface;
+use Symfony\Component\Cache\Adapter\ArrayAdapter;
+use Symfony\Component\Cache\CacheItem;
 
 use function array_map;
 use function is_string;
@@ -69,48 +73,85 @@ class GH7820Test extends OrmFunctionalTestCase
 
     public function testWillFindSongsInPaginator(): void
     {
-        $query = $this->_em->getRepository(GH7820Line::class)
-            ->createQueryBuilder('l')
-            ->orderBy('l.lineNumber', Criteria::ASC);
+        $lines = $this->fetchSongLinesWithPaginator();
 
-        self::assertSame(
-            self::SONG,
-            array_map(static function (GH7820Line $line): string {
-                return $line->toString();
-            }, iterator_to_array(new Paginator($query)))
-        );
+        self::assertSame(self::SONG, $lines);
     }
 
     /** @group GH7837 */
     public function testWillFindSongsInPaginatorEvenWithCachedQueryParsing(): void
     {
+        // Enable the query cache
         $this->_em->getConfiguration()
             ->getQueryCache()
             ->clear();
 
+        // Fetch song lines with the paginator, also priming the query cache
+        $lines = $this->fetchSongLinesWithPaginator();
+        self::assertSame(self::SONG, $lines, 'Expected to return expected data before query cache is populated with DQL -> SQL translation. Were SQL parameters translated?');
+
+        // Fetch song lines again
+        $lines = $this->fetchSongLinesWithPaginator();
+        self::assertSame(self::SONG, $lines, 'Expected to return expected data even when DQL -> SQL translation is present in cache. Were SQL parameters translated again?');
+    }
+
+    public function testPaginatorDoesNotForceCacheToUpdateEntries(): void
+    {
+        $this->_em->getConfiguration()->setQueryCache(new class extends ArrayAdapter {
+            public function save(CacheItemInterface $item): bool
+            {
+                Assert::assertFalse($this->hasItem($item->getKey()), 'The cache should not have to overwrite the entry');
+
+                return parent::save($item);
+            }
+        });
+
+        // "Prime" the cache (in fact, that should not even happen)
+        $this->fetchSongLinesWithPaginator();
+
+        // Make sure we can query again without overwriting the cache
+        $this->fetchSongLinesWithPaginator();
+    }
+
+    public function testPaginatorQueriesWillBeCached(): void
+    {
+        $cache = new class extends ArrayAdapter {
+            /** @var bool */
+            private $failOnCacheMiss = false;
+
+            public function failOnCacheMiss(): void
+            {
+                $this->failOnCacheMiss = true;
+            }
+
+            public function getItem($key): CacheItem
+            {
+                $item = parent::getItem($key);
+                Assert::assertTrue(! $this->failOnCacheMiss || $item->isHit(), 'cache was missed');
+
+                return $item;
+            }
+        };
+        $this->_em->getConfiguration()->setQueryCache($cache);
+
+        // Prime the cache
+        $this->fetchSongLinesWithPaginator();
+
+        $cache->failOnCacheMiss();
+
+        $this->fetchSongLinesWithPaginator();
+    }
+
+    private function fetchSongLinesWithPaginator(): array
+    {
         $query = $this->_em->getRepository(GH7820Line::class)
             ->createQueryBuilder('l')
-            ->orderBy('l.lineNumber', Criteria::ASC);
+            ->orderBy('l.lineNumber', Criteria::ASC)
+            ->setMaxResults(100);
 
-        self::assertSame(
-            self::SONG,
-            array_map(static function (GH7820Line $line): string {
-                return $line->toString();
-            }, iterator_to_array(new Paginator($query))),
-            'Expected to return expected data before query cache is populated with DQL -> SQL translation. Were SQL parameters translated?'
-        );
-
-        $query = $this->_em->getRepository(GH7820Line::class)
-            ->createQueryBuilder('l')
-            ->orderBy('l.lineNumber', Criteria::ASC);
-
-        self::assertSame(
-            self::SONG,
-            array_map(static function (GH7820Line $line): string {
-                return $line->toString();
-            }, iterator_to_array(new Paginator($query))),
-            'Expected to return expected data even when DQL -> SQL translation is present in cache. Were SQL parameters translated again?'
-        );
+        return array_map(static function (GH7820Line $line): string {
+            return $line->toString();
+        }, iterator_to_array(new Paginator($query)));
     }
 }
 

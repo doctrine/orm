@@ -1,6 +1,9 @@
 Inheritance Mapping
 ===================
 
+This chapter explains the available options for mapping class
+hierarchies.
+
 Mapped Superclasses
 -------------------
 
@@ -14,6 +17,10 @@ Mapped superclasses, just as regular, non-mapped classes, can
 appear in the middle of an otherwise mapped inheritance hierarchy
 (through Single Table Inheritance or Class Table Inheritance).
 
+No database table will be created for a mapped superclass itself,
+only for entity classes inheriting from it. Also, a mapped superclass
+need not have an ``#[Id]`` property.
+
 .. note::
 
     A mapped superclass cannot be an entity, it is not query-able and
@@ -24,6 +31,19 @@ appear in the middle of an otherwise mapped inheritance hierarchy
     mapped superclass is only used in exactly one entity at the moment.
     For further support of inheritance, the single or
     joined table inheritance features have to be used.
+
+.. warning::
+
+    At least when using attributes or annotations to specify your mapping,
+    it _seems_ as if you could inherit from a base class that is neither
+    an entity nor a mapped superclass, but has properties with mapping configuration
+    on them that would also be used in the inheriting class.
+
+    This, however, is due to how the corresponding mapping
+    drivers work and what the PHP reflection API reports for inherited fields.
+
+    Such a configuration is explicitly not supported. To give just one example,
+    it will break for ``private`` properties.
 
 .. note::
 
@@ -90,14 +110,69 @@ for the entity subclass. All the mappings from the mapped
 superclass were inherited to the subclass as if they had been
 defined on that class directly.
 
+Entity Inheritance
+------------------
+
+As soon as one entity class inherits from another entity class, either
+directly, with a mapped superclass or other unmapped (also called
+"transient") classes in between, these entities form an inheritance
+hierarchy. The topmost entity class in this hierarchy is called the
+root entity, and the hierarchy includes all entities that are
+descendants of this root entity.
+
+On the root entity class, ``#[InheritanceType]``,
+``#[DiscriminatorColumn]`` and ``#[DiscriminatorMap]`` must be specified.
+
+``#[InheritanceType]`` specifies one of the two available inheritance
+mapping strategies that are explained in the following sections.
+
+``#[DiscriminatorColumn]`` designates the so-called discriminator column.
+This is an extra column in the table that keeps information about which
+type from the hierarchy applies for a particular database row.
+
+``#[DiscriminatorMap]`` declares the possible values for the discriminator
+column and maps them to class names in the hierarchy. This discriminator map
+has to declare all non-abstract entity classes that exist in that particular
+inheritance hierarchy. That includes the root as well as any intermediate
+entity classes, given they are not abstract.
+
+The names of the classes in the discriminator map do not need to be fully
+qualified if the classes are contained in the same namespace as the entity
+class on which the discriminator map is applied.
+
+If no discriminator map is provided, then the map is generated
+automatically. The automatically generated discriminator map contains the
+lowercase short name of each class as key.
+
+.. note::
+
+    Automatically generating the discriminator map is very expensive
+    computation-wise. The mapping driver has to provide all classes
+    for which mapping configuration exists, and those have to be
+    loaded and checked against  the current inheritance hierarchy
+    to see if they are part of it. The resulting map, however, can be kept
+    in the metadata cache.
+
+Performance impact on to-one associations
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+There is a general performance consideration when using entity inheritance:
+If the target-entity of a many-to-one or one-to-one association is part of
+an inheritance hierarchy, it is preferable for performance reasons that it
+be a leaf entity (ie. have no subclasses).
+
+Otherwise, the ORM is currently unable to tell beforehand which entity class
+will have to be used, and so no appropriate proxy instance can be created.
+That means the referred-to entities will *always* be loaded eagerly, which
+might even propagate to relationships of these entities (in the case of
+self-referencing associations).
+
 Single Table Inheritance
 ------------------------
 
 `Single Table Inheritance <https://martinfowler.com/eaaCatalog/singleTableInheritance.html>`_
-is an inheritance mapping strategy where all classes of a hierarchy
-are mapped to a single database table. In order to distinguish
-which row represents which type in the hierarchy a so-called
-discriminator column is used.
+is an inheritance mapping strategy where all classes of a hierarchy are
+mapped to a single database table.
 
 Example:
 
@@ -162,27 +237,9 @@ Example:
         MyProject\Model\Employee:
           type: entity
 
-Things to note:
-
-
--  The ``#[InheritanceType]`` and ``#[DiscriminatorColumn]`` must be
-  specified on the topmost class that is part of the mapped entity
-  hierarchy.
--  The ``#[DiscriminatorMap]`` specifies which values of the
-   discriminator column identify a row as being of a certain type. In
-   the case above a value of "person" identifies a row as being of
-   type ``Person`` and "employee" identifies a row as being of type
-   ``Employee``.
--  All entity classes that is part of the mapped entity hierarchy
-   (including the topmost class) should be specified in the
-   ``#[DiscriminatorMap]``. In the case above Person class included.
--  The names of the classes in the discriminator map do not need to
-   be fully qualified if the classes are contained in the same
-   namespace as the entity class on which the discriminator map is
-   applied.
--  If no discriminator map is provided, then the map is generated
-   automatically. The automatically generated discriminator map
-   contains the lowercase short name of each class as key.
+In this example, the ``#[DiscriminatorMap]`` specifies that in the
+discriminator column, a value of "person" identifies a row as being of type
+``Person`` and employee" identifies a row as being of type ``Employee``.
 
 Design-time considerations
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -198,16 +255,9 @@ Performance impact
 
 This strategy is very efficient for querying across all types in
 the hierarchy or for specific types. No table joins are required,
-only a WHERE clause listing the type identifiers. In particular,
+only a ``WHERE`` clause listing the type identifiers. In particular,
 relationships involving types that employ this mapping strategy are
 very performing.
-
-There is a general performance consideration with Single Table
-Inheritance: If the target-entity of a many-to-one or one-to-one
-association is an STI entity, it is preferable for performance reasons that it
-be a leaf entity in the inheritance hierarchy, (ie. have no subclasses).
-Otherwise Doctrine *CANNOT* create proxy instances
-of this entity and will *ALWAYS* load the entity eagerly.
 
 SQL Schema considerations
 ~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -216,7 +266,7 @@ For Single-Table-Inheritance to work in scenarios where you are
 using either a legacy database schema or a self-written database
 schema you have to make sure that all columns that are not in the
 root entity but in any of the different sub-entities has to allow
-null values. Columns that have NOT NULL constraints have to be on
+null values. Columns that have ``NOT NULL`` constraints have to be on
 the root entity of the single-table inheritance hierarchy.
 
 Class Table Inheritance
@@ -226,10 +276,11 @@ Class Table Inheritance
 is an inheritance mapping strategy where each class in a hierarchy
 is mapped to several tables: its own table and the tables of all
 parent classes. The table of a child class is linked to the table
-of a parent class through a foreign key constraint. Doctrine ORM
-implements this strategy through the use of a discriminator column
-in the topmost table of the hierarchy because this is the easiest
-way to achieve polymorphic queries with Class Table Inheritance.
+of a parent class through a foreign key constraint.
+
+The discriminator column is placed in the topmost table of the hierarchy,
+because this is the easiest way to achieve polymorphic queries with Class
+Table Inheritance.
 
 Example:
 
@@ -253,24 +304,9 @@ Example:
         // ...
     }
 
-Things to note:
-
-
--  The ``#[InheritanceType]``, ``#[DiscriminatorColumn]`` and
-  ``#[DiscriminatorMap]`` must be specified on the topmost class that is
-  part of the mapped entity hierarchy.
--  The ``#[DiscriminatorMap]`` specifies which values of the
-   discriminator column identify a row as being of which type. In the
-   case above a value of "person" identifies a row as being of type
-   ``Person`` and "employee" identifies a row as being of type
-   ``Employee``.
--  The names of the classes in the discriminator map do not need to
-   be fully qualified if the classes are contained in the same
-   namespace as the entity class on which the discriminator map is
-   applied.
--  If no discriminator map is provided, then the map is generated
-   automatically. The automatically generated discriminator map
-   contains the lowercase short name of each class as key.
+As before, the ``#[DiscriminatorMap]`` specifies that in the
+discriminator column, a value of "person" identifies a row as being of type
+``Person`` and "employee" identifies a row as being of type ``Employee``.
 
 .. note::
 
@@ -301,20 +337,13 @@ perform just about any query which can have a negative impact on
 performance, especially with large tables and/or large hierarchies.
 When partial objects are allowed, either globally or on the
 specific query, then querying for any type will not cause the
-tables of subtypes to be OUTER JOINed which can increase
+tables of subtypes to be ``OUTER JOIN``ed which can increase
 performance but the resulting partial objects will not fully load
 themselves on access of any subtype fields, so accessing fields of
 subtypes after such a query is not safe.
 
-There is a general performance consideration with Class Table
-Inheritance: If the target-entity of a many-to-one or one-to-one
-association is a CTI entity, it is preferable for performance reasons that it
-be a leaf entity in the inheritance hierarchy, (ie. have no subclasses).
-Otherwise Doctrine *CANNOT* create proxy instances
-of this entity and will *ALWAYS* load the entity eagerly.
-
-There is also another important performance consideration that it is *NOT POSSIBLE*
-to query for the base entity without any LEFT JOINs to the sub-types.
+There is also another important performance consideration that it is *not possible*
+to query for the base entity without any ``LEFT JOIN``s to the sub-types.
 
 SQL Schema considerations
 ~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -332,14 +361,16 @@ column and cascading on delete.
 Overrides
 ---------
 
-Used to override a mapping for an entity field or relationship.  Can only be
-applied to an entity that extends a mapped superclass or uses a trait to
-override a relationship or field mapping defined by the mapped superclass or
-trait.
+Overrides can only be applied to entities that extend a mapped superclass or
+use traits. They are used to override a mapping for an entity field or
+relationship defined in that mapped superclass or trait.
 
-It is not possible to override attributes or associations in entity to entity
-inheritance scenarios, because this can cause unforseen edge case behavior and
-increases complexity in ORM internal classes.
+It is not supported to use overrides in entity inheritance scenarios.
+
+.. note::
+
+    When using traits, make sure not to miss the warnings given in the
+    :doc:`Limitations and Known Issues<reference/limitations-and-known-issues>` chapter.
 
 
 Association Override
@@ -544,10 +575,11 @@ Example:
 
 Things to note:
 
--  The "association override" specifies the overrides base on the property name.
--  This feature is available for all kind of associations. (OneToOne, OneToMany, ManyToOne, ManyToMany)
--  The association type *CANNOT* be changed.
--  The override could redefine the joinTables or joinColumns depending on the association type.
+-  The "association override" specifies the overrides based on the property
+ name.
+-  This feature is available for all kind of associations (OneToOne, OneToMany, ManyToOne, ManyToMany).
+-  The association type *cannot* be changed.
+-  The override could redefine the ``joinTables`` or ``joinColumns`` depending on the association type.
 -  The override could redefine ``inversedBy`` to reference more than one extended entity.
 -  The override could redefine fetch to modify the fetch strategy of the extended entity.
 
@@ -720,8 +752,8 @@ Could be used by an entity that extends a mapped superclass to override a field 
 
 Things to note:
 
--  The "attribute override" specifies the overrides base on the property name.
--  The column type *CANNOT* be changed. If the column type is not equal you get a ``MappingException``
+-  The "attribute override" specifies the overrides based on the property name.
+-  The column type *cannot* be changed. If the column type is not equal, you get a ``MappingException``.
 -  The override can redefine all the attributes except the type.
 
 Query the Type
