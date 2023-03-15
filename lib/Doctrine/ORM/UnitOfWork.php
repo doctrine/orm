@@ -3764,42 +3764,44 @@ class UnitOfWork implements PropertyChangedListener
      * This function will get the type of $targetClass by executing a
      * query on the database to get the Discriminator Column value.
      *
-     * @param $targetClass
-     * @param $associatedId
+     * @param ClassMetadata $targetClass
+     * @param array $associatedId
      *
      * @throws \Doctrine\DBAL\Exception
      */
-    private function getTargetSubClass($targetClass, $associatedId): string
+    private function getTargetSubClass(ClassMetadata $targetClass, array $associatedId): string
     {
         $connection = $this->em->getConnection();
 
         $discriminatorColumnName = $targetClass->discriminatorColumn['name'];
-        $selectClause            = $connection->quoteIdentifier($discriminatorColumnName);
-        $fromClause              = $this->em->getClassMetadata(
-            $targetClass->rootEntityName
-        )->getTableName();
+        if ($discriminatorColumnName) {
+            $selectClause = $connection->quoteIdentifier($discriminatorColumnName);
+            $fromClause   = $this->em->getClassMetadata($targetClass->rootEntityName)->getTableName();
 
-        $whereClauses = [];
-        $whereValues  = [];
-        foreach ($targetClass->getIdentifierColumnNames() as $pkName) {
-            $whereClauses[] = $connection->quoteIdentifier($pkName) . ' = ?';
-            $whereValues[]  = $associatedId[$targetClass->fieldNames[$pkName]];
+            $whereClauses = [];
+            $whereValues  = [];
+            foreach ($targetClass->getIdentifierColumnNames() as $pkName) {
+                $whereClauses[] = $connection->quoteIdentifier($pkName) . ' = ?';
+                $whereValues[]  = $associatedId[$targetClass->fieldNames[$pkName]];
+            }
+
+            $whereClause = implode(' AND ', $whereClauses);
+
+            $query = 'SELECT ' . $selectClause . ' FROM ' . $fromClause . ' WHERE ' . $whereClause;
+            $stmt  = $this->em->getConnection()->prepare($query);
+
+            $index = 1;
+            foreach ($whereValues as $whereValue) {
+                $stmt->bindValue($index, $whereValue);
+                $index++;
+            }
+
+            $result     = $stmt->executeQuery();
+            $fieldValue = $result->fetchFirstColumn()[0];
+
+            return $targetClass->discriminatorMap[$fieldValue];
         }
 
-        $whereClause = implode(' AND ', $whereClauses);
-
-        $query = 'SELECT ' . $selectClause . ' FROM ' . $fromClause . ' WHERE ' . $whereClause;
-        $stmt  = $this->em->getConnection()->prepare($query);
-
-        $index = 1;
-        foreach ($whereValues as $whereValue) {
-            $stmt->bindValue($index, $whereValue);
-            $index++;
-        }
-
-        $result     = $stmt->executeQuery();
-        $fieldValue = $result->fetchFirstColumn()[0];
-
-        return $targetClass->discriminatorMap[$fieldValue];
+        return $targetClass->getName();
     }
 }
