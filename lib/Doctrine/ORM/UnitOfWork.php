@@ -3764,8 +3764,7 @@ class UnitOfWork implements PropertyChangedListener
      * This function will get the type of $targetClass by executing a
      * query on the database to get the Discriminator Column value.
      *
-     * @param ClassMetadata $targetClass
-     * @param array $associatedId
+     * @param array<string, int> $associatedId
      *
      * @throws \Doctrine\DBAL\Exception
      */
@@ -3773,10 +3772,10 @@ class UnitOfWork implements PropertyChangedListener
     {
         $connection = $this->em->getConnection();
 
-        $discriminatorColumnName = $targetClass->discriminatorColumn['name'];
-        if ($discriminatorColumnName) {
-            $selectClause = $connection->quoteIdentifier($discriminatorColumnName);
-            $fromClause   = $this->em->getClassMetadata($targetClass->rootEntityName)->getTableName();
+        if (isset($targetClass->discriminatorColumn['name'])) {
+            $discriminatorColumnName = $targetClass->discriminatorColumn['name'];
+            $selectClause            = $connection->quoteIdentifier($discriminatorColumnName);
+            $fromClause              = $this->em->getClassMetadata($targetClass->rootEntityName)->getTableName();
 
             $whereClauses = [];
             $whereValues  = [];
