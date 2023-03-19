@@ -163,6 +163,20 @@ lowercase short name of each class as key.
     to see if they are part of it. The resulting map, however, can be kept
     in the metadata cache.
 
+Performance impact on to-one associations
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+There is a general performance consideration when using entity inheritance:
+If the target-entity of a many-to-one or one-to-one association is part of
+an inheritance hierarchy, it is preferable for performance reasons that it
+be a leaf entity (ie. have no subclasses).
+
+Otherwise, the ORM is currently unable to tell beforehand which entity class
+will have to be used, and so no appropriate proxy instance can be created.
+That means the referred-to entities will *always* be loaded eagerly, which
+might even propagate to relationships of these entities (in the case of
+self-referencing associations).
+
 Single Table Inheritance
 ------------------------
 
@@ -255,13 +269,6 @@ only a ``WHERE`` clause listing the type identifiers. In particular,
 relationships involving types that employ this mapping strategy are
 very performing.
 
-There is a general performance consideration with Single Table
-Inheritance: If the target-entity of a many-to-one or one-to-one
-association is an STI entity, it is preferable for performance reasons that it
-be a leaf entity in the inheritance hierarchy, (ie. have no subclasses).
-Otherwise Doctrine *cannot* create proxy instances
-of this entity and will *always* load the entity eagerly.
-
 SQL Schema considerations
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -344,13 +351,6 @@ tables of subtypes to be ``OUTER JOIN``ed which can increase
 performance but the resulting partial objects will not fully load
 themselves on access of any subtype fields, so accessing fields of
 subtypes after such a query is not safe.
-
-There is a general performance consideration with Class Table
-Inheritance: If the target-entity of a many-to-one or one-to-one
-association is a CTI entity, it is preferable for performance reasons that it
-be a leaf entity in the inheritance hierarchy, ie. have no subclasses.
-Otherwise Doctrine *cannot* create proxy instances
-of this entity and will *always* load the entity eagerly.
 
 There is also another important performance consideration that it is *not possible*
 to query for the base entity without any ``LEFT JOIN``s to the sub-types.

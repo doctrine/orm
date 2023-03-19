@@ -19,11 +19,13 @@ especially what the strategies presented here provide help with.
 .. note::
 
     Having an SQL logger enabled when processing batches can have a serious impact on performance and resource usage.
-    To avoid that you should disable it in the DBAL configuration:
+    To avoid that you should remove the corresponding middleware.
+    To remove all middlewares, you can use this line:
 .. code-block:: php
 
     <?php
-    $em->getConnection()->getConfiguration()->setSQLLogger(null);
+    $em->getConnection()->getConfiguration()->setMiddlewares([]); // DBAL 3
+    $em->getConnection()->getConfiguration()->setSQLLogger(null); // DBAL 2
 
 Bulk Inserts
 ------------
