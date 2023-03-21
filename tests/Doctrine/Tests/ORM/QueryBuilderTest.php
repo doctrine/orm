@@ -230,7 +230,7 @@ class QueryBuilderTest extends OrmTestCase
             ->from(CmsUser::class, 'u')
             ->automaticLeftJoin();
 
-        // Vérifiez que la requête générée est correcte
+
         $this->assertValidQueryBuilder($qb, 'SELECT u, phonenumbers, articles, address, email, groups, tags FROM Doctrine\Tests\Models\CMS\CmsUser u LEFT JOIN u.phonenumbers phonenumbers LEFT JOIN u.articles articles LEFT JOIN u.address address LEFT JOIN u.email email LEFT JOIN u.groups groups LEFT JOIN u.tags tags');
 
     }
