@@ -223,6 +223,18 @@ class QueryBuilderTest extends OrmTestCase
         $this->assertValidQueryBuilder($qb, 'SELECT u, a FROM Doctrine\Tests\Models\CMS\CmsUser u LEFT JOIN u.articles a');
     }
 
+    public function testAutomaticLeftJoin(): void
+    {
+        $qb = $this->entityManager->createQueryBuilder()
+            ->select('u')
+            ->from(CmsUser::class, 'u')
+            ->automaticLeftJoin();
+
+        // Vérifiez que la requête générée est correcte
+        $this->assertValidQueryBuilder($qb, 'SELECT u, phonenumbers, articles, address, email, groups, tags FROM Doctrine\Tests\Models\CMS\CmsUser u LEFT JOIN u.phonenumbers phonenumbers LEFT JOIN u.articles articles LEFT JOIN u.address address LEFT JOIN u.email email LEFT JOIN u.groups groups LEFT JOIN u.tags tags');
+
+    }
+
     public function testLeftJoinWithIndexBy(): void
     {
         $qb = $this->entityManager->createQueryBuilder()
@@ -1280,4 +1292,8 @@ class QueryBuilderTest extends OrmTestCase
 
         $this->assertValidQueryBuilder($qb, 'DELETE Doctrine\Tests\Models\CMS\CmsUser u ');
     }
+
+
+
+
 }

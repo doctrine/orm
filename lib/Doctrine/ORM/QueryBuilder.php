@@ -1087,6 +1087,41 @@ class QueryBuilder
         return $this->add('join', [$rootAlias => $join], true);
     }
 
+
+    /**
+     * Creates and adds multiple left join base on entity's relations.
+     *
+     * The entities in the joined association will be fetched as part of the query
+     * result, and placed in the select expressions.
+     *
+     * IMPORTANT: The join's alias remain the same as the entity fields.
+     *
+     * @return $this
+     */
+    public function automaticLeftJoin(): QueryBuilder
+    {
+        foreach ($this->getAssociateTable() as $fieldAlias => $value) {
+
+            $join = $this->getRootAliases()[0].'.'. $fieldAlias;
+
+            $this->leftJoin($join, $fieldAlias)->addSelect($fieldAlias);
+        }
+        return $this;
+    }
+
+    /**
+     * @return array Return associated entity Metadata
+     */
+    public function getAssociateTable(): array
+    {
+        return $this->_em->getClassMetadata($this->getRootEntities()[0])->getAssociationMappings();
+    }
+
+
+
+
+
+
     /**
      * Sets a new value for a field in a bulk update query.
      *
