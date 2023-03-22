@@ -165,10 +165,6 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
                 $id = $this->em->getUnitOfWork()->getEntityIdentifier($entity);
             }
 
-            if ($this->class->requiresFetchAfterChange) {
-                $this->assignDefaultVersionAndUpsertableValues($entity, $id);
-            }
-
             // Execute inserts on subtables.
             // The order doesn't matter because all child tables link to the root table via FK.
             foreach ($subTableStmts as $tableName => $stmt) {
@@ -188,6 +184,10 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
                 }
 
                 $stmt->executeStatement();
+            }
+
+            if ($this->class->requiresFetchAfterChange) {
+                $this->assignDefaultVersionAndUpsertableValues($entity, $id);
             }
         }
 
@@ -510,6 +510,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
                     || isset($this->class->associationMappings[$name]['inherited'])
                     || ($this->class->isVersioned && $this->class->versionField === $name)
                     || isset($this->class->embeddedClasses[$name])
+                    || isset($this->class->fieldMappings[$name]['notInsertable'])
             ) {
                 continue;
             }
