@@ -364,12 +364,6 @@
     <RedundantFunctionCall>
       <code>array_values</code>
     </RedundantFunctionCall>
-    <TypeDoesNotContainType>
-      <code><![CDATA[! $mapping['isOwningSide']]]></code>
-      <code><![CDATA[! $this->table]]></code>
-      <code><![CDATA[$this->table]]></code>
-      <code><![CDATA[isset($mapping['id']) && $mapping['id'] === true && ! $mapping['isOwningSide']]]></code>
-    </TypeDoesNotContainType>
   </file>
   <file src="lib/Doctrine/ORM/Mapping/ClassMetadataFactory.php">
     <ArgumentTypeCoercion>
