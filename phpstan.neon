@@ -19,3 +19,20 @@ parameters:
         -
             message: '~^Method Doctrine\\ORM\\Persisters\\Entity\\BasicEntityPersister\:\:getArrayBindingType\(\) never returns .* so it can be removed from the return type\.$~'
             path: lib/Doctrine/ORM/Persisters/Entity/BasicEntityPersister.php
+
+        # https://github.com/phpstan/phpstan/issues/8904
+        -
+            message: "#^Access to an undefined property Doctrine\\\\ORM\\\\Mapping\\\\ToOneAssociationMapping\\:\\:\\$joinColumns\\.$#"
+            path: lib/Doctrine/ORM/Mapping/ToOneAssociationMapping.php
+
+        -
+            message: "#^Method Doctrine\\\\ORM\\\\Mapping\\\\ToOneAssociationMapping\\:\\:fromMappingArrayAndName\\(\\) should return Doctrine\\\\ORM\\\\Mapping\\\\ManyToOneAssociationMapping\\|Doctrine\\\\ORM\\\\Mapping\\\\OneToOneAssociationMapping but returns Doctrine\\\\ORM\\\\Mapping\\\\ToOneAssociationMapping\\.$#"
+            path: lib/Doctrine/ORM/Mapping/ToOneAssociationMapping.php
+
+        -
+            message: "#^Property Doctrine\\\\ORM\\\\Mapping\\\\ClassMetadata\\<T of object\\>\\:\\:\\$associationMappings \\(array\\<string, Doctrine\\\\ORM\\\\Mapping\\\\ManyToManyAssociationMapping\\|Doctrine\\\\ORM\\\\Mapping\\\\ManyToOneAssociationMapping\\|Doctrine\\\\ORM\\\\Mapping\\\\OneToManyAssociationMapping\\|Doctrine\\\\ORM\\\\Mapping\\\\OneToOneAssociationMapping\\>\\) does not accept array\\<int\\|string, Doctrine\\\\ORM\\\\Mapping\\\\AssociationMapping\\>\\.$#"
+            path: lib/Doctrine/ORM/Mapping/ClassMetadata.php
+
+        -
+            message: "#^Property Doctrine\\\\ORM\\\\Mapping\\\\ClassMetadata\\<T of object\\>\\:\\:\\$associationMappings \\(array\\<string, Doctrine\\\\ORM\\\\Mapping\\\\ManyToManyAssociationMapping\\|Doctrine\\\\ORM\\\\Mapping\\\\ManyToOneAssociationMapping\\|Doctrine\\\\ORM\\\\Mapping\\\\OneToManyAssociationMapping\\|Doctrine\\\\ORM\\\\Mapping\\\\OneToOneAssociationMapping\\>\\) does not accept array\\<string, Doctrine\\\\ORM\\\\Mapping\\\\AssociationMapping\\>\\.$#"
+            path: lib/Doctrine/ORM/Mapping/ClassMetadata.php

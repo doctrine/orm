@@ -280,6 +280,14 @@
       <code><![CDATA[$newObject['args']]]></code>
     </PossiblyUndefinedArrayOffset>
   </file>
+  <file src="lib/Doctrine/ORM/Mapping/AssociationMapping.php">
+    <LessSpecificReturnStatement>
+      <code>$mapping</code>
+    </LessSpecificReturnStatement>
+    <MoreSpecificReturnType>
+      <code>static</code>
+    </MoreSpecificReturnType>
+  </file>
   <file src="lib/Doctrine/ORM/Mapping/Builder/ClassMetadataBuilder.php">
     <ArgumentTypeCoercion>
       <code>$repositoryClassName</code>
@@ -349,6 +357,7 @@
       <code>setValue</code>
     </PossiblyNullReference>
     <PossiblyUndefinedArrayOffset>
+      <code><![CDATA[$mapping['isOwningSide']]]></code>
       <code><![CDATA[$mapping['targetEntity']]]></code>
       <code><![CDATA[$table['name']]]></code>
     </PossiblyUndefinedArrayOffset>
@@ -364,9 +373,23 @@
     <RedundantFunctionCall>
       <code>array_values</code>
     </RedundantFunctionCall>
+    <RedundantPropertyInitializationCheck>
+      <code><![CDATA[$this->table]]></code>
+      <code>null</code>
+    </RedundantPropertyInitializationCheck>
+    <TypeDoesNotContainType>
+      <code><![CDATA[OneToOneAssociationMapping::fromMappingArrayAndName(
+                        $mapping,
+                        $this->namingStrategy,
+                        $this->name,
+                        $this->table,
+                        $this->isInheritanceTypeSingleTable(),
+                    )]]></code>
+    </TypeDoesNotContainType>
   </file>
   <file src="lib/Doctrine/ORM/Mapping/ClassMetadataFactory.php">
     <ArgumentTypeCoercion>
+      <code>$targetEntity</code>
       <code><![CDATA[new $definition['class']()]]></code>
     </ArgumentTypeCoercion>
     <InvalidArrayOffset>
@@ -583,6 +606,33 @@
       <code><![CDATA[$xmlRoot->getName() === 'mapped-superclass']]></code>
     </TypeDoesNotContainType>
   </file>
+  <file src="lib/Doctrine/ORM/Mapping/ManyToManyAssociationMapping.php">
+    <ArgumentTypeCoercion>
+      <code>$mappingArray</code>
+    </ArgumentTypeCoercion>
+    <LessSpecificReturnStatement>
+      <code>$mapping</code>
+    </LessSpecificReturnStatement>
+    <MoreSpecificReturnType>
+      <code>static</code>
+    </MoreSpecificReturnType>
+    <UndefinedMethod>
+      <code>assertMappingOrderBy</code>
+    </UndefinedMethod>
+  </file>
+  <file src="lib/Doctrine/ORM/Mapping/ManyToManyOwningSideMapping.php">
+    <PropertyNotSetInConstructor>
+      <code>$joinTable</code>
+    </PropertyNotSetInConstructor>
+    <TypeDoesNotContainType>
+      <code><![CDATA[isset($mapping->joinTable)]]></code>
+    </TypeDoesNotContainType>
+  </file>
+  <file src="lib/Doctrine/ORM/Mapping/OneToManyAssociationMapping.php">
+    <ArgumentTypeCoercion>
+      <code>$mappingArray</code>
+    </ArgumentTypeCoercion>
+  </file>
   <file src="lib/Doctrine/ORM/Mapping/ReflectionEmbeddedProperty.php">
     <MethodSignatureMismatch>
       <code>$object</code>
@@ -606,6 +656,16 @@
       <code>ReflectionReadonlyProperty</code>
       <code>ReflectionReadonlyProperty</code>
     </PropertyNotSetInConstructor>
+  </file>
+  <file src="lib/Doctrine/ORM/Mapping/ToOneAssociationMapping.php">
+    <LessSpecificReturnStatement>
+      <code>$instance</code>
+      <code>$mapping</code>
+    </LessSpecificReturnStatement>
+    <MoreSpecificReturnType>
+      <code>OneToOneAssociationMapping|ManyToOneAssociationMapping</code>
+      <code>static</code>
+    </MoreSpecificReturnType>
   </file>
   <file src="lib/Doctrine/ORM/Mapping/UnderscoreNamingStrategy.php">
     <PossiblyFalseOperand>
