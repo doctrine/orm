@@ -5,6 +5,7 @@ on:
   pull_request:
     branches:
       - "*.x"
+      - entity-level-commit-order
     paths:
       - .github/workflows/phpbench.yml
       - composer.*

@@ -4,6 +4,7 @@ on:
   pull_request:
     branches:
       - "*.x"
+      - entity-level-commit-order
     paths:
       - .github/workflows/static-analysis.yml
       - composer.*
