@@ -405,8 +405,6 @@ the above example with ``allocationSize=100`` Doctrine ORM would only
 need to access the sequence once to generate the identifiers for
 100 new entities.
 
-*The default allocationSize for a @SequenceGenerator is currently 10.*
-
 .. caution::
 
     The allocationSize is detected by SchemaTool and
