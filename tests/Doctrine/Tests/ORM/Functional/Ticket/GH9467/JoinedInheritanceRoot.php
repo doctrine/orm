@@ -19,6 +19,7 @@ use Doctrine\ORM\Mapping\Table;
  * @InheritanceType("JOINED")
  * @DiscriminatorColumn(name="discr", type="string")
  * @DiscriminatorMap({
+ *      "child" = "JoinedInheritanceChild",
  *      "writable" = "JoinedInheritanceWritableColumn",
  *      "nonWritable" = "JoinedInheritanceNonWritableColumn",
  *      "nonInsertable" = "JoinedInheritanceNonInsertableColumn",
@@ -29,7 +30,7 @@ use Doctrine\ORM\Mapping\Table;
 #[Table(name: 'joined_inheritance_root')]
 #[InheritanceType('JOINED')]
 #[DiscriminatorColumn(name: 'discr', type: 'string')]
-#[DiscriminatorMap(['writable' => JoinedInheritanceWritableColumn::class, 'nonWritable' => JoinedInheritanceNonWritableColumn::class, 'nonInsertable' => JoinedInheritanceNonInsertableColumn::class, 'nonUpdatable' => JoinedInheritanceNonUpdatableColumn::class])]
+#[DiscriminatorMap(['child' => JoinedInheritanceChild::class, 'writable' => JoinedInheritanceWritableColumn::class, 'nonWritable' => JoinedInheritanceNonWritableColumn::class, 'nonInsertable' => JoinedInheritanceNonInsertableColumn::class, 'nonUpdatable' => JoinedInheritanceNonUpdatableColumn::class])]
 class JoinedInheritanceRoot
 {
     /**
@@ -49,4 +50,32 @@ class JoinedInheritanceRoot
      */
     #[Column(type: 'string')]
     public $rootField = '';
+
+    /**
+     * @var string
+     * @Column(type="string", insertable=true, updatable=true, options={"default": "dbDefault"}, generated="ALWAYS")
+     */
+    #[Column(type: 'string', insertable: true, updatable: true, options: ['default' => 'dbDefault'], generated: 'ALWAYS')]
+    public $rootWritableContent = '';
+
+    /**
+     * @var string
+     * @Column(type="string", insertable=false, updatable=false, options={"default": "dbDefault"}, generated="ALWAYS")
+     */
+    #[Column(type: 'string', insertable: false, updatable: false, options: ['default' => 'dbDefault'], generated: 'ALWAYS')]
+    public $rootNonWritableContent;
+
+    /**
+     * @var string
+     * @Column(type="string", insertable=false, updatable=true, options={"default": "dbDefault"}, generated="ALWAYS")
+     */
+    #[Column(type: 'string', insertable: false, updatable: true, options: ['default' => 'dbDefault'], generated: 'ALWAYS')]
+    public $rootNonInsertableContent;
+
+    /**
+     * @var string
+     * @Column(type="string", insertable=true, updatable=false, options={"default": "dbDefault"}, generated="ALWAYS")
+     */
+    #[Column(type: 'string', insertable: true, updatable: false, options: ['default' => 'dbDefault'], generated: 'ALWAYS')]
+    public $rootNonUpdatableContent = '';
 }

@@ -11,8 +11,11 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Internal\SQLResultCasing;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Utility\PersisterHelper;
+use LengthException;
 
 use function array_combine;
+use function array_keys;
+use function array_values;
 use function implode;
 
 /**
@@ -551,6 +554,60 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
 
             $this->class->setFieldValue($entity, $field, $value);
         }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    protected function fetchVersionAndNotUpsertableValues($versionedClass, array $id)
+    {
+        $columnNames = [];
+        foreach ($this->class->fieldMappings as $key => $column) {
+            $class = null;
+            if ($this->class->isVersioned && $key === $versionedClass->versionField) {
+                $class = $versionedClass;
+            } elseif (isset($column['generated'])) {
+                $class = isset($column['inherited'])
+                    ? $this->em->getClassMetadata($column['inherited'])
+                    : $this->class;
+            } else {
+                continue;
+            }
+
+            $columnNames[$key] = $this->getSelectColumnSQL($key, $class);
+        }
+
+        $tableName      = $this->quoteStrategy->getTableName($versionedClass, $this->platform);
+        $baseTableAlias = $this->getSQLTableAlias($this->class->name);
+        $joinSql        = $this->getJoinSql($baseTableAlias);
+        $identifier     = $this->quoteStrategy->getIdentifierColumnNames($versionedClass, $this->platform);
+        foreach ($identifier as $i => $idValue) {
+            $identifier[$i] = $baseTableAlias . '.' . $idValue;
+        }
+
+        $sql = 'SELECT ' . implode(', ', $columnNames)
+            . ' FROM ' . $tableName . ' ' . $baseTableAlias
+            . $joinSql
+            . ' WHERE ' . implode(' = ? AND ', $identifier) . ' = ?';
+
+        $flatId = $this->identifierFlattener->flattenIdentifier($versionedClass, $id);
+        $values = $this->conn->fetchNumeric(
+            $sql,
+            array_values($flatId),
+            $this->extractIdentifierTypes($id, $versionedClass)
+        );
+
+        if ($values === false) {
+            throw new LengthException('Unexpected empty result for database query.');
+        }
+
+        $values = array_combine(array_keys($columnNames), $values);
+
+        if (! $values) {
+            throw new LengthException('Unexpected number of database columns.');
+        }
+
+        return $values;
     }
 
     private function getJoinSql(string $baseTableAlias): string

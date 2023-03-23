@@ -14,11 +14,72 @@ class GH9467Test extends OrmFunctionalTestCase
 
         $this->createSchemaForModels(
             JoinedInheritanceRoot::class,
+            JoinedInheritanceChild::class,
             JoinedInheritanceWritableColumn::class,
             JoinedInheritanceNonWritableColumn::class,
             JoinedInheritanceNonInsertableColumn::class,
             JoinedInheritanceNonUpdatableColumn::class
         );
+    }
+
+    public function testRootColumnsInsert(): int
+    {
+        $entity                           = new JoinedInheritanceChild();
+        $entity->rootWritableContent      = 'foo';
+        $entity->rootNonWritableContent   = 'foo';
+        $entity->rootNonInsertableContent = 'foo';
+        $entity->rootNonUpdatableContent  = 'foo';
+
+        $this->_em->persist($entity);
+        $this->_em->flush();
+
+        // check INSERT query cause set database values into non-insertable entity properties
+        self::assertEquals('foo', $entity->rootWritableContent);
+        self::assertEquals('dbDefault', $entity->rootNonWritableContent);
+        self::assertEquals('dbDefault', $entity->rootNonInsertableContent);
+        self::assertEquals('foo', $entity->rootNonUpdatableContent);
+
+        // check other process get same state
+        $this->_em->clear();
+        $entity = $this->_em->find(JoinedInheritanceChild::class, $entity->id);
+        self::assertInstanceOf(JoinedInheritanceChild::class, $entity);
+        self::assertEquals('foo', $entity->rootWritableContent);
+        self::assertEquals('dbDefault', $entity->rootNonWritableContent);
+        self::assertEquals('dbDefault', $entity->rootNonInsertableContent);
+        self::assertEquals('foo', $entity->rootNonUpdatableContent);
+
+        return $entity->id;
+    }
+
+    /** @depends testRootColumnsInsert */
+    public function testRootColumnsUpdate(int $entityId): void
+    {
+        $entity = $this->_em->find(JoinedInheritanceChild::class, $entityId);
+        self::assertInstanceOf(JoinedInheritanceChild::class, $entity);
+
+        // update exist entity
+        $entity->rootWritableContent      = 'bar';
+        $entity->rootNonInsertableContent = 'bar';
+        $entity->rootNonWritableContent   = 'bar';
+        $entity->rootNonUpdatableContent  = 'bar';
+
+        $this->_em->persist($entity);
+        $this->_em->flush();
+
+        // check UPDATE query cause set database values into non-insertable entity properties
+        self::assertEquals('bar', $entity->rootWritableContent);
+        self::assertEquals('dbDefault', $entity->rootNonWritableContent);
+        self::assertEquals('bar', $entity->rootNonInsertableContent);
+        self::assertEquals('foo', $entity->rootNonUpdatableContent);
+
+        // check other process get same state
+        $this->_em->clear();
+        $entity = $this->_em->find(JoinedInheritanceChild::class, $entity->id);
+        self::assertInstanceOf(JoinedInheritanceChild::class, $entity);
+        self::assertEquals('bar', $entity->rootWritableContent);
+        self::assertEquals('dbDefault', $entity->rootNonWritableContent);
+        self::assertEquals('bar', $entity->rootNonInsertableContent);
+        self::assertEquals('foo', $entity->rootNonUpdatableContent);
     }
 
     public function testChildWritableColumnInsert(): int
