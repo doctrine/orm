@@ -28,7 +28,7 @@ abstract class ToOneAssociationMapping extends AssociationMapping
      *     joinColumns?: mixed[]|null,
      *     isOwningSide: bool, ...} $mappingArray
      */
-    public static function fromMappingArray(array $mappingArray): OneToOneAssociationMapping|ManyToOneAssociationMapping
+    public static function fromMappingArray(array $mappingArray): static
     {
         $joinColumns = $mappingArray['joinColumns'] ?? [];
 

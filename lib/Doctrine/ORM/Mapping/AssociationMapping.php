@@ -129,7 +129,7 @@ abstract class AssociationMapping implements ArrayAccess
      *     joinTable?: mixed[]|null,
      *     isOwningSide: bool, ...} $mappingArray
      */
-    public static function fromMappingArray(array $mappingArray): OneToOneAssociationMapping|ManyToOneAssociationMapping|OneToManyAssociationMapping|ManyToManyAssociationMapping
+    public static function fromMappingArray(array $mappingArray): static
     {
         unset($mappingArray['isOwningSide']);
         $mapping = new static(

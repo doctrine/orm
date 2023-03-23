@@ -7,7 +7,7 @@ namespace Doctrine\ORM\Mapping;
 final class OneToManyAssociationMapping extends ToManyAssociationMapping
 {
     /** @param mixed[] $mappingArray */
-    public static function fromMappingArrayAndName(array $mappingArray, string $name): self
+    public static function fromMappingArrayAndName(array $mappingArray, string $name): static
     {
         $mapping = parent::fromMappingArray($mappingArray);
 
