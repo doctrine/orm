@@ -165,30 +165,30 @@ abstract class AssociationMapping implements ArrayAccess
     }
 
     /** @psalm-assert-if-true AssociationOwningSideMapping $this */
-    public function isOwningSide(): bool
+    final public function isOwningSide(): bool
     {
         return $this instanceof AssociationOwningSideMapping;
     }
 
     /** @psalm-assert-if-true ToOneAssociationMapping $this */
-    public function isToOne(): bool
+    final public function isToOne(): bool
     {
         return $this instanceof ToOneAssociationMapping;
     }
 
     /** @psalm-assert-if-true OneToOneOwningSideMapping|ManyToOneAssociationMapping $this */
-    public function isToOneOwningSide(): bool
+    final public function isToOneOwningSide(): bool
     {
         return $this->isToOne() && $this->isOwningSide();
     }
 
     /** @psalm-assert-if-true ManyToManyOwningSideMapping $this */
-    public function isManyToManyOwningSide(): bool
+    final public function isManyToManyOwningSide(): bool
     {
         return $this instanceof ManyToManyOwningSideMapping;
     }
 
-    public function type(): int
+    final public function type(): int
     {
         return match (true) {
             $this instanceof OneToOneAssociationMapping => ClassMetadata::ONE_TO_ONE,
@@ -199,7 +199,7 @@ abstract class AssociationMapping implements ArrayAccess
         };
     }
 
-    public function offsetGet($offset): mixed
+    final public function offsetGet($offset): mixed
     {
         return match ($offset) {
             'isOwningSide' => $this->isOwningSide(),
