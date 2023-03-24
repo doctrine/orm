@@ -16,7 +16,6 @@ final class OneToManyAssociationMapping extends ToManyAssociationMapping
             throw MappingException::oneToManyRequiresMappedBy($name, $mapping['fieldName']);
         }
 
-        $mapping['orphanRemoval']   = isset($mapping['orphanRemoval']) && $mapping['orphanRemoval'];
         $mapping['isCascadeRemove'] = $mapping['orphanRemoval'] || $mapping['isCascadeRemove'];
 
         $mapping->assertMappingOrderBy();

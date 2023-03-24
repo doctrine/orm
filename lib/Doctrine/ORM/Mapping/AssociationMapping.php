@@ -92,7 +92,7 @@ abstract class AssociationMapping implements ArrayAccess
     /** @var string */
     public string|null $originalField = null;
 
-    public bool|null $orphanRemoval = null;
+    public bool $orphanRemoval = false;
 
     public bool|null $unique = null;
 

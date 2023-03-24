@@ -14,8 +14,6 @@ class ManyToManyAssociationMapping extends ToManyAssociationMapping
     {
         $mapping = parent::fromMappingArray($mappingArray);
 
-        $mapping['orphanRemoval'] = isset($mapping['orphanRemoval']) && $mapping['orphanRemoval'];
-
         $mapping->assertMappingOrderBy();
 
         return $mapping;
