@@ -55,7 +55,7 @@ class DefaultQuoteStrategy implements QuoteStrategy
             : $definition['sequenceName'];
     }
 
-    public function getJoinColumnName(JoinColumnData $joinColumn, ClassMetadata $class, AbstractPlatform $platform): string
+    public function getJoinColumnName(JoinColumnMapping $joinColumn, ClassMetadata $class, AbstractPlatform $platform): string
     {
         return isset($joinColumn['quoted'])
             ? $platform->quoteIdentifier($joinColumn['name'])
@@ -63,7 +63,7 @@ class DefaultQuoteStrategy implements QuoteStrategy
     }
 
     public function getReferencedJoinColumnName(
-        JoinColumnData $joinColumn,
+        JoinColumnMapping $joinColumn,
         ClassMetadata $class,
         AbstractPlatform $platform,
     ): string {
@@ -109,7 +109,7 @@ class DefaultQuoteStrategy implements QuoteStrategy
             // Association defined as Id field
             $joinColumns            = $class->associationMappings[$fieldName]['joinColumns'];
             $assocQuotedColumnNames = array_map(
-                static fn (JoinColumnData $joinColumn) => isset($joinColumn['quoted'])
+                static fn (JoinColumnMapping $joinColumn) => isset($joinColumn['quoted'])
                     ? $platform->quoteIdentifier($joinColumn['name'])
                     : $joinColumn['name'],
                 $joinColumns,

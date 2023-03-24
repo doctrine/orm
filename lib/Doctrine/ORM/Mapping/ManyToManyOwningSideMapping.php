@@ -51,7 +51,7 @@ final class ManyToManyOwningSideMapping extends ManyToManyAssociationMapping imp
 
         if (! isset($mapping['joinTable']['joinColumns'])) {
             $mapping->joinTable->joinColumns = [
-                JoinColumnData::fromMappingArray([
+                JoinColumnMapping::fromMappingArray([
                     'name' => $namingStrategy->joinKeyColumnName($mapping['sourceEntity'], $selfReferencingEntityWithoutJoinColumns ? 'source' : null),
                     'referencedColumnName' => $namingStrategy->referenceColumnName(),
                     'onDelete' => 'CASCADE',
@@ -61,7 +61,7 @@ final class ManyToManyOwningSideMapping extends ManyToManyAssociationMapping imp
 
         if (! isset($mapping['joinTable']['inverseJoinColumns'])) {
             $mapping->joinTable->inverseJoinColumns = [
-                JoinColumnData::fromMappingArray([
+                JoinColumnMapping::fromMappingArray([
                     'name' => $namingStrategy->joinKeyColumnName($mapping['targetEntity'], $selfReferencingEntityWithoutJoinColumns ? 'target' : null),
                     'referencedColumnName' => $namingStrategy->referenceColumnName(),
                     'onDelete' => 'CASCADE',

@@ -9,7 +9,7 @@ use ArrayAccess;
 use function property_exists;
 
 /** @template-implements ArrayAccess<string, mixed> */
-final class JoinColumnData implements ArrayAccess
+final class JoinColumnMapping implements ArrayAccess
 {
     use ArrayAccessImplementation;
 

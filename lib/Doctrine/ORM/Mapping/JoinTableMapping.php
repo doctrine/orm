@@ -16,10 +16,10 @@ final class JoinTableMapping implements ArrayAccess
 
     public bool|null $quoted = null;
 
-    /** @var list<JoinColumnData> */
+    /** @var list<JoinColumnMapping> */
     public array|null $joinColumns = null;
 
-    /** @var list<JoinColumnData> */
+    /** @var list<JoinColumnMapping> */
     public array|null $inverseJoinColumns = null;
 
     public string|null $schema = null;
@@ -39,13 +39,13 @@ final class JoinTableMapping implements ArrayAccess
 
         if (isset($mappingArray['joinColumns'])) {
             foreach ($mappingArray['joinColumns'] as $column) {
-                $mapping->joinColumns[] = JoinColumnData::fromMappingArray($column);
+                $mapping->joinColumns[] = JoinColumnMapping::fromMappingArray($column);
             }
         }
 
         if (isset($mappingArray['inverseJoinColumns'])) {
             foreach ($mappingArray['inverseJoinColumns'] as $column) {
-                $mapping->inverseJoinColumns[] = JoinColumnData::fromMappingArray($column);
+                $mapping->inverseJoinColumns[] = JoinColumnMapping::fromMappingArray($column);
             }
         }
 
@@ -60,7 +60,7 @@ final class JoinTableMapping implements ArrayAccess
         if (in_array($offset, ['joinColumns', 'inverseJoinColumns'], true)) {
             $joinColumns = [];
             foreach ($value as $column) {
-                $joinColumns[] = JoinColumnData::fromMappingArray($column);
+                $joinColumns[] = JoinColumnMapping::fromMappingArray($column);
             }
 
             $value = $joinColumns;
@@ -75,11 +75,11 @@ final class JoinTableMapping implements ArrayAccess
         $array = (array) $this;
 
         if (isset($array['joinColumns'])) {
-            $array['joinColumns'] = array_map(static fn (JoinColumnData $column): array => (array) $column, $array['joinColumns']);
+            $array['joinColumns'] = array_map(static fn (JoinColumnMapping $column): array => (array) $column, $array['joinColumns']);
         }
 
         if (isset($array['inverseJoinColumns'])) {
-            $array['inverseJoinColumns'] = array_map(static fn (JoinColumnData $column): array => (array) $column, $array['inverseJoinColumns']);
+            $array['inverseJoinColumns'] = array_map(static fn (JoinColumnMapping $column): array => (array) $column, $array['inverseJoinColumns']);
         }
 
         return $array;

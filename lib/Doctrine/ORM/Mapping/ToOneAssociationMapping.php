@@ -40,7 +40,7 @@ abstract class ToOneAssociationMapping extends AssociationMapping
 
         foreach ($joinColumns as $column) {
             assert($instance->isToOneOwningSide());
-            $instance->joinColumns[] = JoinColumnData::fromMappingArray($column);
+            $instance->joinColumns[] = JoinColumnMapping::fromMappingArray($column);
         }
 
         return $instance;
@@ -70,7 +70,7 @@ abstract class ToOneAssociationMapping extends AssociationMapping
             if (empty($mapping->joinColumns)) {
                 // Apply default join column
                 $mapping->joinColumns = [
-                    JoinColumnData::fromMappingArray([
+                    JoinColumnMapping::fromMappingArray([
                         'name' => $namingStrategy->joinColumnName($mapping['fieldName'], $name),
                         'referencedColumnName' => $namingStrategy->referenceColumnName(),
                     ]),
@@ -147,7 +147,7 @@ abstract class ToOneAssociationMapping extends AssociationMapping
             assert($this->isToOneOwningSide());
             $joinColumns = [];
             foreach ($value as $column) {
-                $joinColumns[] = JoinColumnData::fromMappingArray($column);
+                $joinColumns[] = JoinColumnMapping::fromMappingArray($column);
             }
 
             $this->joinColumns = $joinColumns;

@@ -1523,7 +1523,7 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
 
             // Association defined as Id field
             $joinColumns      = $this->associationMappings[$idProperty]['joinColumns'];
-            $assocColumnNames = array_map(static fn (JoinColumnData $joinColumn): string => $joinColumn['name'], $joinColumns);
+            $assocColumnNames = array_map(static fn (JoinColumnMapping $joinColumn): string => $joinColumn['name'], $joinColumns);
 
             $columnNames = array_merge($columnNames, $assocColumnNames);
         }

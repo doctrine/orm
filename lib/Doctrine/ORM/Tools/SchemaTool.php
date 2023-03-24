@@ -17,7 +17,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\AssociationMapping;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\FieldMapping;
-use Doctrine\ORM\Mapping\JoinColumnData;
+use Doctrine\ORM\Mapping\JoinColumnMapping;
 use Doctrine\ORM\Mapping\ManyToManyOwningSideMapping;
 use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\ORM\Mapping\OneToManyAssociationMapping;
@@ -639,7 +639,7 @@ class SchemaTool
     /**
      * Gathers columns and fk constraints that are required for one part of relationship.
      *
-     * @psalm-param array<string, JoinColumnData>             $joinColumns
+     * @psalm-param array<string, JoinColumnMapping>             $joinColumns
      * @psalm-param list<string>                     $primaryKeyColumns
      * @psalm-param array<string, array{
      *                  foreignTableName: string,
@@ -769,11 +769,11 @@ class SchemaTool
     }
 
     /**
-     * @param JoinColumnData|FieldMapping|mixed[] $mapping
+     * @param JoinColumnMapping|FieldMapping|mixed[] $mapping
      *
      * @return mixed[]
      */
-    private function gatherColumnOptions(JoinColumnData|FieldMapping|array $mapping): array
+    private function gatherColumnOptions(JoinColumnMapping|FieldMapping|array $mapping): array
     {
         $mappingOptions = $mapping['options'] ?? [];
 
