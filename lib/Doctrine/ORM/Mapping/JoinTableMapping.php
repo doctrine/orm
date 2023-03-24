@@ -16,10 +16,10 @@ final class JoinTableMapping implements ArrayAccess
 
     public bool|null $quoted = null;
 
-    /** @var list<JoinColumnMapping> */
+    /** @var list<JoinColumnMapping>|null */
     public array|null $joinColumns = null;
 
-    /** @var list<JoinColumnMapping> */
+    /** @var list<JoinColumnMapping>|null */
     public array|null $inverseJoinColumns = null;
 
     public string|null $schema = null;
