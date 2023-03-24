@@ -19,7 +19,6 @@ use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\HasLifecycleCallbacks;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\InheritanceType;
-use Doctrine\ORM\Mapping\ManyToMany;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\MappedSuperclass;
 use Doctrine\ORM\Mapping\MappingException;
@@ -163,24 +162,6 @@ class AnnotationDriverTest extends MappingDriverTestCase
         self::assertEquals(Directory::class, $classDirectory->associationMappings['parentDirectory']['sourceEntity']);
     }
 
-    /** @group DDC-945 */
-    public function testInvalidMappedSuperClassWithManyToManyAssociation(): void
-    {
-        $annotationDriver = $this->loadDriver();
-
-        $em = $this->getTestEntityManager();
-        $em->getConfiguration()->setMetadataDriverImpl($annotationDriver);
-        $factory = new ClassMetadataFactory();
-        $factory->setEntityManager($em);
-
-        $this->expectException(MappingException::class);
-        $this->expectExceptionMessage(
-            'The target entity class Doctrine\Tests\ORM\Mapping\InvalidMappedSuperClass specified for Doctrine\Tests\ORM\Mapping\InvalidMappedSuperClass::$selfWhatever is not an entity class.'
-        );
-
-        $factory->getMetadataFor(InvalidMappedSuperClass::class);
-    }
-
     /** @group DDC-1050 */
     public function testInvalidMappedSuperClassWithInheritanceInformation(): void
     {
@@ -302,16 +283,6 @@ class ColumnWithoutType
      * @Column
      */
     public $id;
-}
-
-/** @MappedSuperclass */
-class InvalidMappedSuperClass
-{
-    /**
-     * @psalm-var Collection<int, self>
-     * @ManyToMany(targetEntity="InvalidMappedSuperClass", mappedBy="invalid")
-     */
-    private $selfWhatever;
 }
 
 /**

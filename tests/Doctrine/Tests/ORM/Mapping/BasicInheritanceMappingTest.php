@@ -315,7 +315,6 @@ class MappedSuperclassBase
     private $transient;
 }
 
-/** @Entity */
 class MappedSuperclassRelated1
 {
 }
