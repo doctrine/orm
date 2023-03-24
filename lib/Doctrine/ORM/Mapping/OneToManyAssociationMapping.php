@@ -12,13 +12,11 @@ final class OneToManyAssociationMapping extends ToManyAssociationMapping
         $mapping = parent::fromMappingArray($mappingArray);
 
         // OneToMany-side MUST be inverse (must have mappedBy)
-        if (! isset($mapping['mappedBy'])) {
-            throw MappingException::oneToManyRequiresMappedBy($name, $mapping['fieldName']);
+        if (! isset($mapping->mappedBy)) {
+            throw MappingException::oneToManyRequiresMappedBy($name, $mapping->fieldName);
         }
 
-        $mapping['isCascadeRemove'] = $mapping['orphanRemoval'] || $mapping['isCascadeRemove'];
-
-        $mapping->assertMappingOrderBy();
+        $mapping->isCascadeRemove = $mapping->orphanRemoval || $mapping->isCascadeRemove;
 
         return $mapping;
     }

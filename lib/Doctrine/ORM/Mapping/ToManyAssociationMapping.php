@@ -4,11 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Mapping;
 
-use InvalidArgumentException;
-
-use function gettype;
-use function is_array;
-
 abstract class ToManyAssociationMapping extends AssociationMapping
 {
     /**
@@ -22,14 +17,7 @@ abstract class ToManyAssociationMapping extends AssociationMapping
     /**
      * A map of field names (of the target entity) to sorting directions
      *
-     * @var array<string, 'asc'|'desc'>
+     * @var array<string, 'asc'|'desc'>|null
      */
     public array|null $orderBy = null;
-
-    final protected function assertMappingOrderBy(): void
-    {
-        if (isset($this['orderBy']) && ! is_array($this['orderBy'])) {
-            throw new InvalidArgumentException("'orderBy' is expected to be an array, not " . gettype($this['orderBy']));
-        }
-    }
 }

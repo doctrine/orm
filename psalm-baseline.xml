@@ -606,21 +606,10 @@
       <code><![CDATA[$xmlRoot->getName() === 'mapped-superclass']]></code>
     </TypeDoesNotContainType>
   </file>
-  <file src="lib/Doctrine/ORM/Mapping/ManyToManyAssociationMapping.php">
+  <file src="lib/Doctrine/ORM/Mapping/ManyToManyOwningSideMapping.php">
     <ArgumentTypeCoercion>
       <code>$mappingArray</code>
     </ArgumentTypeCoercion>
-    <LessSpecificReturnStatement>
-      <code>$mapping</code>
-    </LessSpecificReturnStatement>
-    <MoreSpecificReturnType>
-      <code>static</code>
-    </MoreSpecificReturnType>
-    <UndefinedMethod>
-      <code>assertMappingOrderBy</code>
-    </UndefinedMethod>
-  </file>
-  <file src="lib/Doctrine/ORM/Mapping/ManyToManyOwningSideMapping.php">
     <PropertyNotSetInConstructor>
       <code>$joinTable</code>
     </PropertyNotSetInConstructor>
