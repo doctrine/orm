@@ -35,10 +35,7 @@ final class ManyToManyOwningSideMapping extends ManyToManyAssociationMapping imp
 
         // owning side MUST have a join table
         if (! isset($mapping['joinTable']['name'])) {
-            if (! isset($mapping->joinTable)) {
-                $mapping->joinTable = new JoinTableMapping();
-            }
-
+            $mapping->joinTable       ??= new JoinTableMapping();
             $mapping->joinTable['name'] = $namingStrategy->joinTableName(
                 $mapping['sourceEntity'],
                 $mapping['targetEntity'],

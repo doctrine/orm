@@ -624,8 +624,11 @@
     <PropertyNotSetInConstructor>
       <code>$joinTable</code>
     </PropertyNotSetInConstructor>
+    <RedundantCondition>
+      <code><![CDATA[$mapping->joinTable]]></code>
+    </RedundantCondition>
     <TypeDoesNotContainType>
-      <code><![CDATA[isset($mapping->joinTable)]]></code>
+      <code>new JoinTableMapping()</code>
     </TypeDoesNotContainType>
   </file>
   <file src="lib/Doctrine/ORM/Mapping/OneToManyAssociationMapping.php">
