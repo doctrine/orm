@@ -24,10 +24,6 @@ final class JoinColumnMapping implements ArrayAccess
     /** @var array<string, mixed> */
     public array|null $options = null;
 
-    public function __construct()
-    {
-    }
-
     /**
      * @param array<string, mixed> $mappingArray
      * @psalm-param array{name: string, referencedColumnName: string, ...} $mappingArray
