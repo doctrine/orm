@@ -8,7 +8,6 @@ use ArrayAccess;
 use Exception;
 
 use function assert;
-use function in_array;
 use function property_exists;
 
 /** @template-implements ArrayAccess<string, mixed> */
@@ -115,9 +114,9 @@ abstract class AssociationMapping implements ArrayAccess
      *                                   source entity.
      */
     final public function __construct(
-        public string $fieldName,
+        public readonly string $fieldName,
         public string $sourceEntity,
-        public string $targetEntity,
+        public readonly string $targetEntity,
     ) {
     }
 
@@ -127,21 +126,20 @@ abstract class AssociationMapping implements ArrayAccess
      *     sourceEntity: class-string,
      *     targetEntity: class-string,
      *     joinTable?: mixed[]|null,
+     *     type?: int,
      *     isOwningSide: bool, ...} $mappingArray
      */
     public static function fromMappingArray(array $mappingArray): static
     {
-        unset($mappingArray['isOwningSide']);
+        unset($mappingArray['isOwningSide'], $mappingArray['type']);
         $mapping = new static(
             $mappingArray['fieldName'],
             $mappingArray['sourceEntity'],
             $mappingArray['targetEntity'],
         );
-        foreach ($mappingArray as $key => $value) {
-            if (in_array($key, ['type', 'fieldName', 'sourceEntity', 'targetEntity'])) {
-                continue;
-            }
+        unset($mappingArray['fieldName'], $mappingArray['sourceEntity'], $mappingArray['targetEntity']);
 
+        foreach ($mappingArray as $key => $value) {
             if ($key === 'joinTable') {
                 assert($mapping instanceof ManyToManyAssociationMapping);
 

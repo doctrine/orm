@@ -20,6 +20,10 @@ parameters:
             message: '~^Method Doctrine\\ORM\\Persisters\\Entity\\BasicEntityPersister\:\:getArrayBindingType\(\) never returns .* so it can be removed from the return type\.$~'
             path: lib/Doctrine/ORM/Persisters/Entity/BasicEntityPersister.php
 
+        -
+            message: '~^Unreachable statement \- code above always terminates\.$~'
+            path: lib/Doctrine/ORM/Mapping/AssociationMapping.php
+
         # https://github.com/phpstan/phpstan/issues/8904
         -
             message: "#^Access to an undefined property Doctrine\\\\ORM\\\\Mapping\\\\ToOneAssociationMapping\\:\\:\\$joinColumns\\.$#"
