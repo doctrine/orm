@@ -8,13 +8,12 @@ use ArrayAccess;
 use Exception;
 
 use function assert;
+use function in_array;
 use function property_exists;
 
 /** @template-implements ArrayAccess<string, mixed> */
 abstract class AssociationMapping implements ArrayAccess
 {
-    use ArrayAccessImplementation;
-
     /**
      * required for bidirectional associations
      * The name of the field that completes the bidirectional association on
@@ -199,6 +198,12 @@ abstract class AssociationMapping implements ArrayAccess
         };
     }
 
+    /** @param string $offset */
+    public function offsetExists(mixed $offset): bool
+    {
+        return isset($this->$offset) || in_array($offset, ['isOwningSide', 'type'], true);
+    }
+
     final public function offsetGet($offset): mixed
     {
         return match ($offset) {
@@ -218,6 +223,16 @@ abstract class AssociationMapping implements ArrayAccess
         }
 
         $this->$offset = $value;
+    }
+
+    /** @param string $offset */
+    public function offsetUnset(mixed $offset): void
+    {
+        if (in_array($offset, ['isOwningSide', 'type'], true)) {
+            throw new Exception('Cannot unset ' . $offset);
+        }
+
+        $this->$offset = null;
     }
 
     /** @return mixed[] */
