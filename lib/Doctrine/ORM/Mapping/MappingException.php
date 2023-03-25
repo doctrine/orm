@@ -6,7 +6,7 @@ namespace Doctrine\ORM\Mapping;
 
 use BackedEnum;
 use Doctrine\ORM\Exception\ORMException;
-use Exception;
+use Doctrine\Persistence\Mapping\MappingException as PersistenceMappingException;
 use LibXMLError;
 use ReflectionException;
 use ValueError;
@@ -24,7 +24,7 @@ use const PHP_EOL;
 /**
  * A MappingException indicates that something is wrong with the mapping setup.
  */
-class MappingException extends Exception implements ORMException
+class MappingException extends PersistenceMappingException implements ORMException
 {
     /** @param class-string $entityName */
     public static function identifierRequired(string $entityName): self
