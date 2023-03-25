@@ -70,7 +70,7 @@ class PersisterHelper
 
         // iterate over to-one association mappings
         foreach ($class->associationMappings as $assoc) {
-            if (! isset($assoc['joinColumns'])) {
+            if ($assoc['joinColumns'] === []) {
                 continue;
             }
 
@@ -86,7 +86,7 @@ class PersisterHelper
 
         // iterate over to-many association mappings
         foreach ($class->associationMappings as $assoc) {
-            if (! (isset($assoc['joinTable']) && isset($assoc['joinTable']['joinColumns']))) {
+            if (! (isset($assoc['joinTable']) && $assoc['joinTable']['joinColumns'] !== [])) {
                 continue;
             }
 

@@ -162,7 +162,7 @@ abstract class ToOneAssociationMapping extends AssociationMapping
     {
         $array = parent::toArray();
 
-        if ($array['joinColumns'] !== null) {
+        if ($array['joinColumns'] !== []) {
             $joinColumns = [];
             foreach ($array['joinColumns'] as $column) {
                 $joinColumns[] = (array) $column;

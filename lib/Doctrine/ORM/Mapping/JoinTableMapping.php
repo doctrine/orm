@@ -16,11 +16,11 @@ final class JoinTableMapping implements ArrayAccess
 
     public bool|null $quoted = null;
 
-    /** @var list<JoinColumnMapping>|null */
-    public array|null $joinColumns = null;
+    /** @var list<JoinColumnMapping> */
+    public array $joinColumns = [];
 
-    /** @var list<JoinColumnMapping>|null */
-    public array|null $inverseJoinColumns = null;
+    /** @var list<JoinColumnMapping> */
+    public array $inverseJoinColumns = [];
 
     public string|null $schema = null;
 
@@ -74,13 +74,9 @@ final class JoinTableMapping implements ArrayAccess
     {
         $array = (array) $this;
 
-        if (isset($array['joinColumns'])) {
-            $array['joinColumns'] = array_map(static fn (JoinColumnMapping $column): array => (array) $column, $array['joinColumns']);
-        }
-
-        if (isset($array['inverseJoinColumns'])) {
-            $array['inverseJoinColumns'] = array_map(static fn (JoinColumnMapping $column): array => (array) $column, $array['inverseJoinColumns']);
-        }
+        $toArray                     = static fn (JoinColumnMapping $column): array => (array) $column;
+        $array['joinColumns']        = array_map($toArray, $array['joinColumns']);
+        $array['inverseJoinColumns'] = array_map($toArray, $array['inverseJoinColumns']);
 
         return $array;
     }

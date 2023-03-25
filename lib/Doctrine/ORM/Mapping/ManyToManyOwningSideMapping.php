@@ -43,9 +43,10 @@ final class ManyToManyOwningSideMapping extends ManyToManyAssociationMapping imp
         }
 
         $selfReferencingEntityWithoutJoinColumns = $mapping->sourceEntity === $mapping->targetEntity
-            && (! (isset($mapping->joinTable->joinColumns) || isset($mapping->joinTable->inverseJoinColumns)));
+            && $mapping->joinTable->joinColumns === []
+            && $mapping->joinTable->inverseJoinColumns === [];
 
-        if (! isset($mapping->joinTable->joinColumns)) {
+        if ($mapping->joinTable->joinColumns === []) {
             $mapping->joinTable->joinColumns = [
                 JoinColumnMapping::fromMappingArray([
                     'name' => $namingStrategy->joinKeyColumnName($mapping->sourceEntity, $selfReferencingEntityWithoutJoinColumns ? 'source' : null),
@@ -55,7 +56,7 @@ final class ManyToManyOwningSideMapping extends ManyToManyAssociationMapping imp
             ];
         }
 
-        if (! isset($mapping->joinTable->inverseJoinColumns)) {
+        if ($mapping->joinTable->inverseJoinColumns === []) {
             $mapping->joinTable->inverseJoinColumns = [
                 JoinColumnMapping::fromMappingArray([
                     'name' => $namingStrategy->joinKeyColumnName($mapping->targetEntity, $selfReferencingEntityWithoutJoinColumns ? 'target' : null),
