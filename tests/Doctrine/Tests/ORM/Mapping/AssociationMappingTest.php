@@ -30,11 +30,6 @@ final class AssociationMappingTest extends TestCase
         $mapping->declared             = self::class;
         $mapping->cache                = ['usage' => ClassMetadata::CACHE_USAGE_READ_ONLY];
         $mapping->id                   = true;
-        $mapping->isCascadeRemove      = true;
-        $mapping->isCascadePersist     = true;
-        $mapping->isCascadeRefresh     = true;
-        $mapping->isCascadeMerge       = true;
-        $mapping->isCascadeDetach      = true;
         $mapping->isOnDeleteCascade    = true;
         $mapping->joinColumnFieldNames = ['foo' => 'bar'];
         $mapping->joinTableColumns     = ['foo', 'bar'];
@@ -54,11 +49,6 @@ final class AssociationMappingTest extends TestCase
         self::assertSame($resurrectedMapping->declared, self::class);
         self::assertSame($resurrectedMapping->cache, ['usage' => ClassMetadata::CACHE_USAGE_READ_ONLY]);
         self::assertSame($resurrectedMapping->id, true);
-        self::assertSame($resurrectedMapping->isCascadeRemove, true);
-        self::assertSame($resurrectedMapping->isCascadePersist, true);
-        self::assertSame($resurrectedMapping->isCascadeRefresh, true);
-        self::assertSame($resurrectedMapping->isCascadeMerge, true);
-        self::assertSame($resurrectedMapping->isCascadeDetach, true);
         self::assertSame($resurrectedMapping->isOnDeleteCascade, true);
         self::assertSame($resurrectedMapping->joinColumnFieldNames, ['foo' => 'bar']);
         self::assertSame($resurrectedMapping->joinTableColumns, ['foo', 'bar']);

@@ -43,6 +43,14 @@ abstract class ToOneAssociationMapping extends AssociationMapping
             $instance->joinColumns[] = JoinColumnMapping::fromMappingArray($column);
         }
 
+        if ($instance->orphanRemoval) {
+            if (! $instance->isCascadeRemove()) {
+                $instance->cascade[] = 'remove';
+            }
+
+            $instance->unique = null;
+        }
+
         return $instance;
     }
 
@@ -122,12 +130,6 @@ abstract class ToOneAssociationMapping extends AssociationMapping
             }
 
             $mapping->targetToSourceKeyColumns = array_flip($mapping->sourceToTargetKeyColumns);
-        }
-
-        $mapping->isCascadeRemove = $mapping->orphanRemoval || $mapping->isCascadeRemove;
-
-        if ($mapping->orphanRemoval) {
-            $mapping->unique = null;
         }
 
         if (isset($mapping->id) && $mapping->id === true && ! $mapping->isOwningSide()) {

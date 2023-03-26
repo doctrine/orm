@@ -8,6 +8,7 @@ use ArrayAccess;
 use Exception;
 
 use function assert;
+use function count;
 use function in_array;
 use function property_exists;
 
@@ -35,7 +36,7 @@ abstract class AssociationMapping implements ArrayAccess
      *
      * @var list<'persist'|'remove'|'detach'|'merge'|'refresh'|'all'>
      */
-    public array|null $cascade = null;
+    public array $cascade = [];
 
     /**
      * The fetching strategy to use for the association, usually defaults to FETCH_LAZY.
@@ -70,12 +71,6 @@ abstract class AssociationMapping implements ArrayAccess
     public array|null $cache = null;
 
     public bool|null $id = null;
-
-    public bool $isCascadeRemove  = false;
-    public bool $isCascadePersist = false;
-    public bool $isCascadeRefresh = false;
-    public bool $isCascadeMerge   = false;
-    public bool $isCascadeDetach  = false;
 
     public bool|null $isOnDeleteCascade = null;
 
@@ -209,6 +204,11 @@ abstract class AssociationMapping implements ArrayAccess
         return match ($offset) {
             'isOwningSide' => $this->isOwningSide(),
             'type' => $this->type(),
+            'isCascadeRemove' => $this->isCascadeRemove(),
+            'isCascadePersist' => $this->isCascadePersist(),
+            'isCascadeRefresh' => $this->isCascadeRefresh(),
+            'isCascadeDetach' => $this->isCascadeDetach(),
+            'isCascadeMerge' => $this->isCascadeMerge(),
             default => $this->$offset,
         };
     }
@@ -235,6 +235,31 @@ abstract class AssociationMapping implements ArrayAccess
         $this->$offset = null;
     }
 
+    final public function isCascadeRemove(): bool
+    {
+        return in_array('remove', $this->cascade, true);
+    }
+
+    final public function isCascadePersist(): bool
+    {
+        return in_array('persist', $this->cascade, true);
+    }
+
+    final public function isCascadeRefresh(): bool
+    {
+        return in_array('refresh', $this->cascade, true);
+    }
+
+    final public function isCascadeMerge(): bool
+    {
+        return in_array('merge', $this->cascade, true);
+    }
+
+    final public function isCascadeDetach(): bool
+    {
+        return in_array('detach', $this->cascade, true);
+    }
+
     /** @return mixed[] */
     public function toArray(): array
     {
@@ -251,11 +276,14 @@ abstract class AssociationMapping implements ArrayAccess
     {
         $serialized = ['fieldName', 'sourceEntity', 'targetEntity'];
 
+        if (count($this->cascade) > 0) {
+            $serialized[] = 'cascade';
+        }
+
         foreach (
             [
                 'mappedBy',
                 'inversedBy',
-                'cascade',
                 'fetch',
                 'inherited',
                 'declared',
@@ -271,19 +299,7 @@ abstract class AssociationMapping implements ArrayAccess
             }
         }
 
-        foreach (
-            [
-                'id',
-                'isCascadeRemove',
-                'isCascadePersist',
-                'isCascadeRefresh',
-                'isCascadeMerge',
-                'isCascadeDetach',
-                'isOnDeleteCascade',
-                'orphanRemoval',
-                'unique',
-            ] as $boolProperty
-        ) {
+        foreach (['id', 'orphanRemoval', 'isOnDeleteCascade', 'unique'] as $boolProperty) {
             if ($this->$boolProperty) {
                 $serialized[] = $boolProperty;
             }

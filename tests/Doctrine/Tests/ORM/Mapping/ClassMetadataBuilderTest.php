@@ -328,11 +328,6 @@ class ClassMetadataBuilderTest extends OrmTestCase
                     'inversedBy' => null,
                     'isOwningSide' => true,
                     'sourceEntity' => CmsUser::class,
-                    'isCascadeRemove' => true,
-                    'isCascadePersist' => true,
-                    'isCascadeRefresh' => true,
-                    'isCascadeMerge' => true,
-                    'isCascadeDetach' => true,
                     'sourceToTargetKeyColumns' =>
                     ['group_id' => 'id'],
                     'joinColumnFieldNames' =>
@@ -388,11 +383,6 @@ class ClassMetadataBuilderTest extends OrmTestCase
                     'inversedBy' => null,
                     'isOwningSide' => true,
                     'sourceEntity' => CmsUser::class,
-                    'isCascadeRemove' => true,
-                    'isCascadePersist' => true,
-                    'isCascadeRefresh' => true,
-                    'isCascadeMerge' => true,
-                    'isCascadeDetach' => true,
                     'sourceToTargetKeyColumns' =>
                         ['group_id' => 'id'],
                     'joinColumnFieldNames' =>
@@ -446,11 +436,6 @@ class ClassMetadataBuilderTest extends OrmTestCase
                     'inversedBy' => null,
                     'isOwningSide' => true,
                     'sourceEntity' => CmsUser::class,
-                    'isCascadeRemove' => true,
-                    'isCascadePersist' => true,
-                    'isCascadeRefresh' => true,
-                    'isCascadeMerge' => true,
-                    'isCascadeDetach' => true,
                     'sourceToTargetKeyColumns' =>
                     ['group_id' => 'id'],
                     'joinColumnFieldNames' =>
@@ -507,11 +492,6 @@ class ClassMetadataBuilderTest extends OrmTestCase
                     'inversedBy' => null,
                     'isOwningSide' => true,
                     'sourceEntity' => CmsUser::class,
-                    'isCascadeRemove' => true,
-                    'isCascadePersist' => true,
-                    'isCascadeRefresh' => true,
-                    'isCascadeMerge' => true,
-                    'isCascadeDetach' => true,
                     'sourceToTargetKeyColumns' =>
                         ['group_id' => 'id'],
                     'joinColumnFieldNames' =>
@@ -597,13 +577,8 @@ class ClassMetadataBuilderTest extends OrmTestCase
                     'mappedBy' => null,
                     'inversedBy' => null,
                     'isOwningSide' => true,
-                    'sourceEntity' => CmsUser::class,
-                    'isCascadeRemove' => true,
-                    'isCascadePersist' => true,
-                    'isCascadeRefresh' => true,
-                    'isCascadeMerge' => true,
-                    'isCascadeDetach' => true,
                     'isOnDeleteCascade' => true,
+                    'sourceEntity' => CmsUser::class,
                     'relationToSourceKeyColumns' =>
                     ['group_id' => 'id'],
                     'joinTableColumns' =>
@@ -659,11 +634,6 @@ class ClassMetadataBuilderTest extends OrmTestCase
                     'sourceEntity' => CmsUser::class,
                     'fetch' => 2,
                     'cascade' => [],
-                    'isCascadeRemove' => false,
-                    'isCascadePersist' => false,
-                    'isCascadeRefresh' => false,
-                    'isCascadeMerge' => false,
-                    'isCascadeDetach' => false,
                     'orphanRemoval' => false,
                 ]),
             ],
@@ -716,11 +686,6 @@ class ClassMetadataBuilderTest extends OrmTestCase
                     'inversedBy' => null,
                     'isOwningSide' => true,
                     'sourceEntity' => CmsUser::class,
-                    'isCascadeRemove' => true,
-                    'isCascadePersist' => false,
-                    'isCascadeRefresh' => false,
-                    'isCascadeMerge' => false,
-                    'isCascadeDetach' => false,
                     'sourceToTargetKeyColumns' =>
                     ['group_id' => 'id'],
                     'joinColumnFieldNames' =>
@@ -757,11 +722,6 @@ class ClassMetadataBuilderTest extends OrmTestCase
                     'sourceEntity' => CmsUser::class,
                     'fetch' => 2,
                     'cascade' => [],
-                    'isCascadeRemove' => true,
-                    'isCascadePersist' => false,
-                    'isCascadeRefresh' => false,
-                    'isCascadeMerge' => false,
-                    'isCascadeDetach' => false,
                     'orphanRemoval' => true,
                 ]),
             ],
@@ -820,11 +780,6 @@ class ClassMetadataBuilderTest extends OrmTestCase
                     'inversedBy' => null,
                     'isOwningSide' => true,
                     'sourceEntity' => CmsUser::class,
-                    'isCascadeRemove' => false,
-                    'isCascadePersist' => false,
-                    'isCascadeRefresh' => false,
-                    'isCascadeMerge' => false,
-                    'isCascadeDetach' => false,
                     'isOnDeleteCascade' => true,
                     'relationToSourceKeyColumns' => ['group_id' => 'id'],
                     'joinTableColumns' => [

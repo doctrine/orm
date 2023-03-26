@@ -1365,12 +1365,7 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
             );
         }
 
-        $mapping['cascade']          = $cascades;
-        $mapping['isCascadeRemove']  = in_array('remove', $cascades, true);
-        $mapping['isCascadePersist'] = in_array('persist', $cascades, true);
-        $mapping['isCascadeRefresh'] = in_array('refresh', $cascades, true);
-        $mapping['isCascadeMerge']   = in_array('merge', $cascades, true);
-        $mapping['isCascadeDetach']  = in_array('detach', $cascades, true);
+        $mapping['cascade'] = $cascades;
 
         switch ($mapping['type']) {
             case self::ONE_TO_ONE:
