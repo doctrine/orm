@@ -80,4 +80,24 @@ final class JoinTableMapping implements ArrayAccess
 
         return $array;
     }
+
+    /** @return list<string> */
+    public function __sleep(): array
+    {
+        $serialized = [];
+
+        foreach (['joinColumns', 'inverseJoinColumns', 'name', 'schema'] as $stringOrArrayKey) {
+            if ($this->$stringOrArrayKey !== null) {
+                $serialized[] = $stringOrArrayKey;
+            }
+        }
+
+        foreach (['quoted'] as $boolKey) {
+            if ($this->$boolKey) {
+                $serialized[] = $boolKey;
+            }
+        }
+
+        return $serialized;
+    }
 }

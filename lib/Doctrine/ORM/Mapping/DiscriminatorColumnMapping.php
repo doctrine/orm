@@ -62,4 +62,18 @@ final class DiscriminatorColumnMapping implements ArrayAccess
 
         return $mapping;
     }
+
+    /** @return list<string> */
+    public function __sleep(): array
+    {
+        $serialized = ['type', 'fieldName', 'name'];
+
+        foreach (['length', 'columnDefinition', 'enumType'] as $stringOrArrayKey) {
+            if ($this->$stringOrArrayKey !== null) {
+                $serialized[] = $stringOrArrayKey;
+            }
+        }
+
+        return $serialized;
+    }
 }

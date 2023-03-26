@@ -173,4 +173,20 @@ abstract class ToOneAssociationMapping extends AssociationMapping
 
         return $array;
     }
+
+    /** @return list<string> */
+    public function __sleep(): array
+    {
+        $serialized = parent::__sleep();
+
+        if ($this->sourceToTargetKeyColumns !== null) {
+            $serialized[] = 'sourceToTargetKeyColumns';
+        }
+
+        if ($this->targetToSourceKeyColumns !== null) {
+            $serialized[] = 'targetToSourceKeyColumns';
+        }
+
+        return $serialized;
+    }
 }

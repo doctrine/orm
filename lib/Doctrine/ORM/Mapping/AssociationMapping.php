@@ -245,4 +245,50 @@ abstract class AssociationMapping implements ArrayAccess
 
         return $array;
     }
+
+    /** @return list<string> */
+    public function __sleep(): array
+    {
+        $serialized = ['fieldName', 'sourceEntity', 'targetEntity'];
+
+        foreach (
+            [
+                'mappedBy',
+                'inversedBy',
+                'cascade',
+                'fetch',
+                'inherited',
+                'declared',
+                'cache',
+                'joinColumnFieldNames',
+                'joinTableColumns',
+                'originalClass',
+                'originalField',
+            ] as $stringOrArrayProperty
+        ) {
+            if ($this->$stringOrArrayProperty !== null) {
+                $serialized[] = $stringOrArrayProperty;
+            }
+        }
+
+        foreach (
+            [
+                'id',
+                'isCascadeRemove',
+                'isCascadePersist',
+                'isCascadeRefresh',
+                'isCascadeMerge',
+                'isCascadeDetach',
+                'isOnDeleteCascade',
+                'orphanRemoval',
+                'unique',
+            ] as $boolProperty
+        ) {
+            if ($this->$boolProperty) {
+                $serialized[] = $boolProperty;
+            }
+        }
+
+        return $serialized;
+    }
 }

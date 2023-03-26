@@ -63,4 +63,22 @@ final class EmbeddedClassMapping implements ArrayAccess
 
         return $mapping;
     }
+
+    /** @return list<string> */
+    public function __sleep(): array
+    {
+        $serialized = ['class'];
+
+        if ($this->columnPrefix) {
+            $serialized[] = 'columnPrefix';
+        }
+
+        foreach (['declaredField', 'originalField', 'inherited', 'declared'] as $property) {
+            if ($this->$property !== null) {
+                $serialized[] = $property;
+            }
+        }
+
+        return $serialized;
+    }
 }

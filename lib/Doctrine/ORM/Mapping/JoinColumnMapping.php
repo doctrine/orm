@@ -39,4 +39,24 @@ final class JoinColumnMapping implements ArrayAccess
 
         return $mapping;
     }
+
+    /** @return list<string> */
+    public function __sleep(): array
+    {
+        $serialized = [];
+
+        foreach (['name', 'fieldName', 'onDelete', 'columnDefinition', 'referencedColumnName', 'options'] as $stringOrArrayKey) {
+            if ($this->$stringOrArrayKey !== null) {
+                $serialized[] = $stringOrArrayKey;
+            }
+        }
+
+        foreach (['unique', 'quoted', 'nullable'] as $boolKey) {
+            if ($this->$boolKey !== null) {
+                $serialized[] = $boolKey;
+            }
+        }
+
+        return $serialized;
+    }
 }

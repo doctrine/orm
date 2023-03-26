@@ -124,4 +124,13 @@ final class ManyToManyOwningSideMapping extends ManyToManyAssociationMapping imp
 
         return $mapping;
     }
+
+    /** @return list<string> */
+    public function __sleep(): array
+    {
+        $serialized   = parent::__sleep();
+        $serialized[] = 'joinTable';
+
+        return $serialized;
+    }
 }

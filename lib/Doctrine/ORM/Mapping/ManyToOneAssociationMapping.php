@@ -11,4 +11,14 @@ final class ManyToOneAssociationMapping extends ToOneAssociationMapping implemen
 {
     /** @var list<JoinColumnMapping> */
     public array $joinColumns = [];
+
+    /** @return list<string> */
+    public function __sleep(): array
+    {
+        $serialized = parent::__sleep();
+
+        $serialized[] = 'joinColumns';
+
+        return $serialized;
+    }
 }

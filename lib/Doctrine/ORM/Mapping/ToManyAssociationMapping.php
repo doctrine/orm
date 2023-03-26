@@ -20,4 +20,18 @@ abstract class ToManyAssociationMapping extends AssociationMapping
      * @var array<string, 'asc'|'desc'>|null
      */
     public array|null $orderBy = null;
+
+    /** @return list<string> */
+    public function __sleep(): array
+    {
+        $serialized = parent::__sleep();
+
+        foreach (['indexBy', 'orderBy'] as $stringOrArrayKey) {
+            if ($this->$stringOrArrayKey !== null) {
+                $serialized[] = $stringOrArrayKey;
+            }
+        }
+
+        return $serialized;
+    }
 }

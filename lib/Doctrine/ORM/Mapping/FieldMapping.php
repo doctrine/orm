@@ -103,4 +103,40 @@ final class FieldMapping implements ArrayAccess
 
         return $mapping;
     }
+
+    /** @return list<string> */
+    public function __sleep(): array
+    {
+        $serialized = ['type', 'fieldName', 'columnName'];
+
+        foreach (['nullable', 'notInsertable', 'notUpdatable', 'id', 'unique', 'version', 'quoted'] as $boolKey) {
+            if ($this->$boolKey) {
+                $serialized[] = $boolKey;
+            }
+        }
+
+        foreach (
+            [
+                'length',
+                'columnDefinition',
+                'generated',
+                'enumType',
+                'precision',
+                'scale',
+                'inherited',
+                'originalClass',
+                'originalField',
+                'declared',
+                'declaredField',
+                'options',
+                'default',
+            ] as $key
+        ) {
+            if ($this->$key !== null) {
+                $serialized[] = $key;
+            }
+        }
+
+        return $serialized;
+    }
 }
