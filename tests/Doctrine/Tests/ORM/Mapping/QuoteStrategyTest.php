@@ -147,7 +147,7 @@ class QuoteStrategyTest extends OrmTestCase
                 'fieldName'     => 'article',
                 'targetEntity'  => DDC117Article::class,
                 'joinColumns'    => [
-                    ['name' => '`article`'],
+                    ['name' => '`article`', 'referencedColumnName' => 'article'],
                 ],
             ],
         );
@@ -165,7 +165,7 @@ class QuoteStrategyTest extends OrmTestCase
                 'fieldName'     => 'article',
                 'targetEntity'  => DDC117Article::class,
                 'joinColumns'    => [
-                    ['name' => '`article`'],
+                    ['name' => '`article`', 'referencedColumnName' => 'article'],
                 ],
             ],
         );
@@ -184,7 +184,7 @@ class QuoteStrategyTest extends OrmTestCase
                 'fieldName'     => 'article',
                 'targetEntity'  => DDC117Article::class,
                 'joinColumns'    => [
-                    ['name' => '`article`'],
+                    ['name' => '`article`', 'referencedColumnName' => 'id'],
                 ],
             ],
         );

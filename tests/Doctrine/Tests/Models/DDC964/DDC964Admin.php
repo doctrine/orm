@@ -35,10 +35,10 @@ class DDC964Admin extends DDC964User
                 'joinTable' => [
                     'name'      => 'ddc964_users_admingroups',
                     'joinColumns' => [
-                        ['name' => 'adminuser_id'],
+                        ['name' => 'adminuser_id', 'referencedColumnName' => 'id'],
                     ],
                     'inverseJoinColumns' => [
-                        ['name' => 'admingroup_id'],
+                        ['name' => 'admingroup_id', 'referencedColumnName' => 'id'],
                     ],
                 ],
             ],

@@ -15,7 +15,7 @@ final class JoinColumnMappingTest extends TestCase
 {
     public function testItSurvivesSerialization(): void
     {
-        $mapping = new JoinColumnMapping();
+        $mapping = new JoinColumnMapping('id');
 
         $mapping->name                 = 'foo';
         $mapping->unique               = true;

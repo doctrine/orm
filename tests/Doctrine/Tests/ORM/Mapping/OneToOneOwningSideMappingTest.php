@@ -22,7 +22,7 @@ final class OneToOneOwningSideMappingTest extends TestCase
             targetEntity: self::class,
         );
 
-        $mapping->joinColumns = [new JoinColumnMapping()];
+        $mapping->joinColumns = [new JoinColumnMapping('id')];
 
         $resurrectedMapping = unserialize(serialize($mapping));
         assert($resurrectedMapping instanceof OneToOneOwningSideMapping);

@@ -22,7 +22,7 @@ final class ManyToOneAssociationMappingTest extends TestCase
             targetEntity: self::class,
         );
 
-        $mapping->joinColumns = [new JoinColumnMapping()];
+        $mapping->joinColumns = [new JoinColumnMapping('id')];
 
         $resurrectedMapping = unserialize(serialize($mapping));
         assert($resurrectedMapping instanceof ManyToOneAssociationMapping);

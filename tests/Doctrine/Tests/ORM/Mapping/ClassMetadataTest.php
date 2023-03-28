@@ -143,7 +143,7 @@ class ClassMetadataTest extends OrmTestCase
         $cm = new ClassMetadata(UserTyped::class);
         $cm->initializeReflection(new RuntimeReflectionService());
 
-        $cm->mapOneToOne(['fieldName' => 'email', 'joinColumns' => [[]]]);
+        $cm->mapOneToOne(['fieldName' => 'email', 'joinColumns' => [['name' => 'email_id', 'referencedColumnName' => 'id']]]);
         self::assertEquals(CmsEmail::class, $cm->getAssociationMapping('email')['targetEntity']);
 
         $cm->mapManyToOne(['fieldName' => 'mainEmail']);

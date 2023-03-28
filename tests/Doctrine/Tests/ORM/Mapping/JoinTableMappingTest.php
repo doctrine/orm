@@ -19,8 +19,8 @@ final class JoinTableMappingTest extends TestCase
         $mapping = new JoinTableMapping();
 
         $mapping->quoted             = true;
-        $mapping->joinColumns        = [new JoinColumnMapping()];
-        $mapping->inverseJoinColumns = [new JoinColumnMapping()];
+        $mapping->joinColumns        = [new JoinColumnMapping('id')];
+        $mapping->inverseJoinColumns = [new JoinColumnMapping('id')];
         $mapping->schema             = 'foo';
         $mapping->name               = 'bar';
 
