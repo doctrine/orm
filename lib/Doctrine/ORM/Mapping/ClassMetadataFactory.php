@@ -395,7 +395,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
      * and embedded classes.
      */
     private function addMappingInheritanceInformation(
-        AssociationMapping|EmbeddedClassMapping|FieldMapping &$mapping,
+        AssociationMapping|EmbeddedClassMapping|FieldMapping $mapping,
         ClassMetadata $parentClass,
     ): void {
         if (! isset($mapping['inherited']) && ! $parentClass->isMappedSuperclass) {
