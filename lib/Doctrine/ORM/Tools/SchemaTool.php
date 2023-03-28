@@ -768,12 +768,8 @@ class SchemaTool
         }
     }
 
-    /**
-     * @param JoinColumnMapping|FieldMapping|mixed[] $mapping
-     *
-     * @return mixed[]
-     */
-    private function gatherColumnOptions(JoinColumnMapping|FieldMapping|array $mapping): array
+    /** @return mixed[] */
+    private function gatherColumnOptions(JoinColumnMapping|FieldMapping $mapping): array
     {
         $mappingOptions = $mapping['options'] ?? [];
 
