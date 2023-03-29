@@ -812,14 +812,10 @@
     </UndefinedInterfaceMethod>
   </file>
   <file src="lib/Doctrine/ORM/Mapping/Driver/AttributeDriver.php">
+    <ArgumentTypeCoercion>
+      <code>$columnDef</code>
+    </ArgumentTypeCoercion>
     <InvalidArgument>
-      <code><![CDATA[[
-                            'name'             => isset($discrColumnAttribute->name) ? (string) $discrColumnAttribute->name : null,
-                            'type'             => isset($discrColumnAttribute->type) ? (string) $discrColumnAttribute->type : 'string',
-                            'length'           => isset($discrColumnAttribute->length) ? (int) $discrColumnAttribute->length : 255,
-                            'columnDefinition' => isset($discrColumnAttribute->columnDefinition) ? (string) $discrColumnAttribute->columnDefinition : null,
-                            'enumType'         => isset($discrColumnAttribute->enumType) ? (string) $discrColumnAttribute->enumType : null,
-                        ]]]></code>
       <code><![CDATA[[
                             'sequenceName' => $seqGeneratorAttribute->sequenceName,
                             'allocationSize' => $seqGeneratorAttribute->allocationSize,
@@ -914,13 +910,7 @@
       <code>addNamedQuery</code>
     </DeprecatedMethod>
     <InvalidArgument>
-      <code><![CDATA[[
-                            'name' => isset($discrColumn['name']) ? (string) $discrColumn['name'] : null,
-                            'type' => isset($discrColumn['type']) ? (string) $discrColumn['type'] : 'string',
-                            'length' => isset($discrColumn['length']) ? (int) $discrColumn['length'] : 255,
-                            'columnDefinition' => isset($discrColumn['column-definition']) ? (string) $discrColumn['column-definition'] : null,
-                            'enumType' => isset($discrColumn['enum-type']) ? (string) $discrColumn['enum-type'] : null,
-                        ]]]></code>
+      <code>$columnDef</code>
     </InvalidArgument>
     <InvalidPropertyAssignmentValue>
       <code><![CDATA[$metadata->table]]></code>

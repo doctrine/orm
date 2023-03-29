@@ -3131,7 +3131,7 @@ class ClassMetadataInfo implements ClassMetadata
      * @see getDiscriminatorColumn()
      *
      * @param mixed[]|null $columnDef
-     * @psalm-param array{name: string|null, fieldName?: string, type?: string, length?: int, columnDefinition?: string|null, enumType?: class-string<BackedEnum>|null}|null $columnDef
+     * @psalm-param array{name: string|null, fieldName?: string, type?: string, length?: int, columnDefinition?: string|null, enumType?: class-string<BackedEnum>|null, options?: array<string, mixed>}|null $columnDef
      *
      * @return void
      *
