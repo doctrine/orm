@@ -183,7 +183,7 @@ class ClassMetadataBuilderTest extends OrmTestCase
     public function testSetDiscriminatorColumn(): void
     {
         $this->assertIsFluent($this->builder->setDiscriminatorColumn('discr', 'string', '124', null, null));
-        self::assertEquals(['fieldName' => 'discr', 'name' => 'discr', 'type' => 'string', 'length' => '124', 'columnDefinition' => null, 'enumType' => null], $this->cm->discriminatorColumn);
+        self::assertEquals(['fieldName' => 'discr', 'name' => 'discr', 'type' => 'string', 'length' => '124', 'columnDefinition' => null, 'enumType' => null, 'options' => []], $this->cm->discriminatorColumn);
     }
 
     public function testAddDiscriminatorMapClass(): void

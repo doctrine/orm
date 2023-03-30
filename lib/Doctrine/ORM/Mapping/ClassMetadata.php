@@ -90,6 +90,7 @@ use BackedEnum;
  *     length?: int,
  *     columnDefinition?: string|null,
  *     enumType?: class-string<BackedEnum>|null,
+ *     options?: array<string, mixed>,
  * }
  * @psalm-type EmbeddedClassMapping = array{
  *    class: class-string,
