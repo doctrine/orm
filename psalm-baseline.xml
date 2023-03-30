@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<files psalm-version="5.8.0@9cf4f60a333f779ad3bc704a555920e81d4fdcda">
+<files psalm-version="5.9.0@8b9ad1eb9e8b7d3101f949291da2b9f7767cd163">
   <file src="lib/Doctrine/ORM/AbstractQuery.php">
     <DeprecatedClass>
       <code>IterableResult</code>
@@ -612,7 +612,6 @@
     </InvalidNullableReturnType>
     <InvalidPropertyAssignmentValue>
       <code>$definition</code>
-      <code><![CDATA[$this->identifier]]></code>
       <code><![CDATA[$this->sqlResultSetMappings]]></code>
       <code><![CDATA[$this->subClasses]]></code>
     </InvalidPropertyAssignmentValue>
@@ -769,6 +768,7 @@
       <code><![CDATA[$this->entityListeners]]></code>
       <code><![CDATA[$this->fieldMappings]]></code>
       <code><![CDATA[$this->fullyQualifiedClassName($repositoryClassName)]]></code>
+      <code><![CDATA[$this->identifier]]></code>
       <code><![CDATA[$this->table]]></code>
       <code><![CDATA[$this->table]]></code>
       <code><![CDATA[$this->table]]></code>
@@ -2110,12 +2110,12 @@
     </NonInvariantDocblockPropertyType>
   </file>
   <file src="lib/Doctrine/ORM/Query/Expr/Base.php">
-    <InvalidPropertyAssignmentValue>
-      <code><![CDATA[$this->parts]]></code>
-    </InvalidPropertyAssignmentValue>
     <MethodSignatureMustProvideReturnType>
       <code>__toString</code>
     </MethodSignatureMustProvideReturnType>
+    <PropertyTypeCoercion>
+      <code><![CDATA[$this->parts]]></code>
+    </PropertyTypeCoercion>
   </file>
   <file src="lib/Doctrine/ORM/Query/Expr/Comparison.php">
     <MethodSignatureMustProvideReturnType>
@@ -2558,6 +2558,7 @@
   <file src="lib/Doctrine/ORM/Tools/Console/Command/ConvertDoctrine1SchemaCommand.php">
     <ArgumentTypeCoercion>
       <code>$fromPaths</code>
+      <code>$metadata</code>
     </ArgumentTypeCoercion>
     <DeprecatedClass>
       <code>ClassMetadataExporter</code>
@@ -2572,9 +2573,6 @@
       <code>private $entityGenerator = null;</code>
       <code>private $metadataExporter = null;</code>
     </DeprecatedClass>
-    <InvalidArgument>
-      <code>$metadata</code>
-    </InvalidArgument>
   </file>
   <file src="lib/Doctrine/ORM/Tools/Console/Command/ConvertMappingCommand.php">
     <ArgumentTypeCoercion>
