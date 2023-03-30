@@ -153,7 +153,7 @@ step:
     $connection = DriverManager::getConnection([
         'driver' => 'pdo_sqlite',
         'path' => __DIR__ . '/db.sqlite',
-    ], $config)
+    ], $config);
 
     // obtaining the entity manager
     $entityManager = new EntityManager($connection, $config);

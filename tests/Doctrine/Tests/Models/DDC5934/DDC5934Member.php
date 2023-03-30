@@ -6,7 +6,6 @@ namespace Doctrine\Tests\Models\DDC5934;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
-use Doctrine\ORM\Mapping\ClassMetadata;
 
 #[ORM\Entity]
 class DDC5934Member
@@ -18,9 +17,5 @@ class DDC5934Member
     public function __construct()
     {
         $this->contracts = new ArrayCollection();
-    }
-
-    public static function loadMetadata(ClassMetadata $metadata): void
-    {
     }
 }

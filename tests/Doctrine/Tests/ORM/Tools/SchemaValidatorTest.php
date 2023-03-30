@@ -230,6 +230,17 @@ class SchemaValidatorTest extends OrmTestCase
 
         self::assertEmpty($ce);
     }
+
+    public function testInvalidAssociationTowardsMappedSuperclass(): void
+    {
+        $classThree = $this->em->getClassMetadata(InvalidMappedSuperClass::class);
+        $ce         = $this->validator->validateClass($classThree);
+
+        self::assertEquals(
+            ["The target entity 'Doctrine\Tests\ORM\Tools\InvalidMappedSuperClass' specified on Doctrine\Tests\ORM\Tools\InvalidMappedSuperClass#selfWhatever is a mapped superclass. This is not possible since there is no table that a foreign key could refer to."],
+            $ce,
+        );
+    }
 }
 
 #[MappedSuperclass]
@@ -541,4 +552,12 @@ abstract class Issue9095AbstractChild extends Issue9095Parent
 #[Entity]
 class Issue9095Child extends Issue9095AbstractChild
 {
+}
+
+#[MappedSuperclass]
+class InvalidMappedSuperClass
+{
+    /** @psalm-var Collection<int, self> */
+    #[ManyToMany(targetEntity: 'InvalidMappedSuperClass', mappedBy: 'invalid')]
+    private $selfWhatever;
 }

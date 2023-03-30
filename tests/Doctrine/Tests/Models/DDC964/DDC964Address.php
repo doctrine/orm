@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\Models\DDC964;
 
-use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
@@ -73,9 +72,5 @@ class DDC964Address
     public function setStreet(string $street): void
     {
         $this->street = $street;
-    }
-
-    public static function loadMetadata(ClassMetadata $metadata): void
-    {
     }
 }

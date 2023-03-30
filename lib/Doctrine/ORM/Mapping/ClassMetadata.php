@@ -144,6 +144,7 @@ use function trim;
  *     length?: int,
  *     columnDefinition?: string|null,
  *     enumType?: class-string<BackedEnum>|null,
+ *     options?: array<string, mixed>,
  * }
  * @psalm-type EmbeddedClassMapping = array{
  *    class: class-string,
@@ -2537,7 +2538,7 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
      * @see getDiscriminatorColumn()
      *
      * @param mixed[]|null $columnDef
-     * @psalm-param array{name: string|null, fieldName?: string, type?: string, length?: int, columnDefinition?: string|null, enumType?: class-string<BackedEnum>|null}|null $columnDef
+     * @psalm-param array{name: string|null, fieldName?: string, type?: string, length?: int, columnDefinition?: string|null, enumType?: class-string<BackedEnum>|null, options?: array<string, mixed>}|null $columnDef
      *
      * @throws MappingException
      */

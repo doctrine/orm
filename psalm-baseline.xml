@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<files psalm-version="5.8.0@9cf4f60a333f779ad3bc704a555920e81d4fdcda">
+<files psalm-version="5.9.0@8b9ad1eb9e8b7d3101f949291da2b9f7767cd163">
   <file src="lib/Doctrine/ORM/AbstractQuery.php">
     <FalsableReturnStatement>
       <code><![CDATA[! $filteredParameters->isEmpty() ? $filteredParameters->first() : null]]></code>
@@ -339,7 +339,6 @@
     </InvalidNullableReturnType>
     <InvalidPropertyAssignmentValue>
       <code>$definition</code>
-      <code><![CDATA[$this->identifier]]></code>
       <code><![CDATA[$this->subClasses]]></code>
     </InvalidPropertyAssignmentValue>
     <InvalidReturnStatement>
@@ -440,7 +439,6 @@
       <code>getConnection</code>
       <code>hasListeners</code>
       <code>hasListeners</code>
-      <code>isTransient</code>
       <code>loadMetadataForClass</code>
     </PossiblyNullReference>
     <RedundantCondition>
@@ -558,17 +556,11 @@
       <code><![CDATA[isset($xmlRoot['repository-class']) ? (string) $xmlRoot['repository-class'] : null]]></code>
     </ArgumentTypeCoercion>
     <InvalidArgument>
+      <code>$columnDef</code>
       <code><![CDATA[$this->cacheToArray($manyToManyElement->cache)]]></code>
       <code><![CDATA[$this->cacheToArray($manyToOneElement->cache)]]></code>
       <code><![CDATA[$this->cacheToArray($oneToManyElement->cache)]]></code>
       <code><![CDATA[$this->cacheToArray($oneToOneElement->cache)]]></code>
-      <code><![CDATA[[
-                            'name' => isset($discrColumn['name']) ? (string) $discrColumn['name'] : null,
-                            'type' => isset($discrColumn['type']) ? (string) $discrColumn['type'] : 'string',
-                            'length' => isset($discrColumn['length']) ? (int) $discrColumn['length'] : 255,
-                            'columnDefinition' => isset($discrColumn['column-definition']) ? (string) $discrColumn['column-definition'] : null,
-                            'enumType' => isset($discrColumn['enum-type']) ? (string) $discrColumn['enum-type'] : null,
-                        ]]]></code>
     </InvalidArgument>
     <InvalidPropertyAssignmentValue>
       <code><![CDATA[$metadata->table]]></code>
@@ -1240,9 +1232,9 @@
     </NonInvariantDocblockPropertyType>
   </file>
   <file src="lib/Doctrine/ORM/Query/Expr/Base.php">
-    <InvalidPropertyAssignmentValue>
+    <PropertyTypeCoercion>
       <code><![CDATA[$this->parts]]></code>
-    </InvalidPropertyAssignmentValue>
+    </PropertyTypeCoercion>
   </file>
   <file src="lib/Doctrine/ORM/Query/Expr/Func.php">
     <LessSpecificReturnStatement>

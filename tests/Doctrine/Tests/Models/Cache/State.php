@@ -7,7 +7,6 @@ namespace Doctrine\Tests\Models\Cache;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping\Cache;
-use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
@@ -89,9 +88,5 @@ class State
     public function addCity(City $city): void
     {
         $this->cities[] = $city;
-    }
-
-    public static function loadMetadata(ClassMetadata $metadata): void
-    {
     }
 }

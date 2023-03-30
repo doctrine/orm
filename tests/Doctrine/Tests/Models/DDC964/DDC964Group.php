@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Doctrine\Tests\Models\DDC964;
 
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
@@ -50,9 +49,5 @@ class DDC964Group
     public function getUsers(): ArrayCollection
     {
         return $this->users;
-    }
-
-    public static function loadMetadata(ClassMetadata $metadata): void
-    {
     }
 }
