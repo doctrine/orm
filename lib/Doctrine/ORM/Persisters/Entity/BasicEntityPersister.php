@@ -183,7 +183,7 @@ class BasicEntityPersister implements EntityPersister
      *
      * @var IdentifierFlattener
      */
-    final protected $identifierFlattener;
+    protected $identifierFlattener;
 
     /** @var CachedPersisterContext */
     protected $currentPersisterContext;
