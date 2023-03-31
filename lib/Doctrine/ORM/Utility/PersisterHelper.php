@@ -27,7 +27,7 @@ class PersisterHelper
     public static function getTypeOfField(string $fieldName, ClassMetadata $class, EntityManagerInterface $em): array
     {
         if (isset($class->fieldMappings[$fieldName])) {
-            return [$class->fieldMappings[$fieldName]['type']];
+            return [$class->fieldMappings[$fieldName]->type];
         }
 
         if (! isset($class->associationMappings[$fieldName])) {

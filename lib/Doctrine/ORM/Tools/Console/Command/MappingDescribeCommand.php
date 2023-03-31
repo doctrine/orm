@@ -6,6 +6,7 @@ namespace Doctrine\ORM\Tools\Console\Command;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\FieldMapping;
 use Doctrine\Persistence\Mapping\MappingException;
 use InvalidArgumentException;
 use Symfony\Component\Console\Input\InputArgument;
@@ -42,7 +43,6 @@ use const JSON_UNESCAPED_UNICODE;
  * @link    www.doctrine-project.org
  *
  * @psalm-import-type AssociationMapping from ClassMetadata
- * @psalm-import-type FieldMapping from ClassMetadata
  */
 final class MappingDescribeCommand extends AbstractEntityManagerCommand
 {
@@ -257,7 +257,7 @@ EOT);
         foreach ($propertyMappings as $propertyName => $mapping) {
             $output[] = $this->formatField(sprintf('  %s', $propertyName), '');
 
-            foreach ($mapping as $field => $value) {
+            foreach ((array) $mapping as $field => $value) {
                 $output[] = $this->formatField(sprintf('    %s', $field), $this->formatValue($value));
             }
         }

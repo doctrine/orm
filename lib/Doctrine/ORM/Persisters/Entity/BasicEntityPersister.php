@@ -1847,7 +1847,7 @@ class BasicEntityPersister implements EntityPersister
 
         switch (true) {
             case isset($class->fieldMappings[$field]):
-                $types = array_merge($types, [$class->fieldMappings[$field]['type']]);
+                $types = array_merge($types, [$class->fieldMappings[$field]->type]);
                 break;
 
             case isset($class->associationMappings[$field]):
