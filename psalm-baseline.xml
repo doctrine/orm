@@ -1160,7 +1160,7 @@
       <code>object|null</code>
     </ImplementedReturnTypeMismatch>
     <InvalidReturnStatement>
-      <code><![CDATA[$this->association['fetch'] === ClassMetadata::FETCH_EXTRA_LAZY
+      <code><![CDATA[$association['fetch'] === ClassMetadata::FETCH_EXTRA_LAZY
             ? new LazyCriteriaCollection($persister, $criteria)
             : new ArrayCollection($persister->loadCriteria($criteria))]]></code>
       <code><![CDATA[$this->em->find($this->typeClass->name, $key)]]></code>
@@ -1179,48 +1179,27 @@
       <code>$value</code>
     </ParamNameMismatch>
     <PossiblyNullArgument>
-      <code><![CDATA[$this->association]]></code>
-      <code><![CDATA[$this->association]]></code>
-      <code><![CDATA[$this->association]]></code>
-      <code><![CDATA[$this->association['targetEntity']]]></code>
       <code><![CDATA[$this->backRefFieldName]]></code>
     </PossiblyNullArgument>
-    <PossiblyNullArrayAccess>
-      <code><![CDATA[$this->association['fetch']]]></code>
-      <code><![CDATA[$this->association['fetch']]]></code>
-      <code><![CDATA[$this->association['fetch']]]></code>
-      <code><![CDATA[$this->association['fetch']]]></code>
-      <code><![CDATA[$this->association['fetch']]]></code>
-      <code><![CDATA[$this->association['isOwningSide']]]></code>
-      <code><![CDATA[$this->association['orphanRemoval']]]></code>
-      <code><![CDATA[$this->association['targetEntity']]]></code>
-      <code><![CDATA[$this->association['type']]]></code>
-      <code><![CDATA[$this->association['type']]]></code>
-      <code><![CDATA[$this->association['type']]]></code>
-      <code><![CDATA[$this->association['type']]]></code>
-    </PossiblyNullArrayAccess>
     <PossiblyNullReference>
       <code>setValue</code>
       <code>setValue</code>
     </PossiblyNullReference>
     <PossiblyUndefinedArrayOffset>
-      <code><![CDATA[$this->association['orphanRemoval']]]></code>
-      <code><![CDATA[$this->association['orphanRemoval']]]></code>
-      <code><![CDATA[$this->association['orphanRemoval']]]></code>
+      <code><![CDATA[$association['orphanRemoval']]]></code>
+      <code><![CDATA[$this->getMapping()['indexBy']]]></code>
+      <code><![CDATA[$this->getMapping()['orphanRemoval']]]></code>
+      <code><![CDATA[$this->getMapping()['orphanRemoval']]]></code>
     </PossiblyUndefinedArrayOffset>
     <UndefinedMethod>
       <code><![CDATA[[$this->unwrap(), 'add']]]></code>
     </UndefinedMethod>
   </file>
   <file src="lib/Doctrine/ORM/Persisters/Collection/ManyToManyPersister.php">
-    <ArgumentTypeCoercion>
-      <code>$mapping</code>
-    </ArgumentTypeCoercion>
     <InvalidArrayOffset>
       <code><![CDATA[[$mappedKey => $collection->getOwner(), $mapping['indexBy'] => $index]]]></code>
     </InvalidArrayOffset>
     <PossiblyNullArgument>
-      <code>$association</code>
       <code><![CDATA[$collection->getOwner()]]></code>
       <code><![CDATA[$collection->getOwner()]]></code>
       <code><![CDATA[$collection->getOwner()]]></code>
@@ -1230,103 +1209,8 @@
       <code><![CDATA[$collection->getOwner()]]></code>
       <code><![CDATA[$collection->getOwner()]]></code>
       <code><![CDATA[$collection->getOwner()]]></code>
-      <code>$column</code>
-      <code>$filterMapping</code>
-      <code>$filterMapping</code>
-      <code>$indexBy</code>
-      <code>$mapping</code>
-      <code>$mapping</code>
-      <code>$mapping</code>
-      <code>$mapping</code>
-      <code>$mapping</code>
-      <code>$mapping</code>
-      <code>$mapping</code>
-      <code>$mapping</code>
-      <code>$mapping</code>
-      <code><![CDATA[$mapping['joinTableColumns']]]></code>
-      <code><![CDATA[$mapping['relationToSourceKeyColumns']]]></code>
-      <code><![CDATA[$mapping['relationToSourceKeyColumns'][$joinTableColumn]]]></code>
-      <code><![CDATA[$mapping['relationToTargetKeyColumns'][$joinTableColumn]]]></code>
-      <code><![CDATA[$mapping['sourceEntity']]]></code>
-      <code><![CDATA[$mapping['sourceEntity']]]></code>
-      <code><![CDATA[$mapping['sourceEntity']]]></code>
-      <code><![CDATA[$mapping['sourceEntity']]]></code>
-      <code><![CDATA[$mapping['sourceEntity']]]></code>
-      <code><![CDATA[$mapping['sourceEntity']]]></code>
-      <code><![CDATA[$mapping['sourceEntity']]]></code>
-      <code><![CDATA[$mapping['sourceEntity']]]></code>
-      <code><![CDATA[$mapping['sourceEntity']]]></code>
-      <code><![CDATA[$mapping['targetEntity']]]></code>
-      <code><![CDATA[$mapping['targetEntity']]]></code>
-      <code><![CDATA[$mapping['targetEntity']]]></code>
-      <code><![CDATA[$mapping['targetEntity']]]></code>
-      <code><![CDATA[$mapping['targetEntity']]]></code>
-      <code><![CDATA[$mapping['targetEntity']]]></code>
-      <code><![CDATA[$mapping['targetEntity']]]></code>
-      <code><![CDATA[$mapping['targetEntity']]]></code>
-      <code><![CDATA[$mapping['targetEntity']]]></code>
       <code>$owner</code>
-      <code>$targetColumn</code>
     </PossiblyNullArgument>
-    <PossiblyNullArrayAccess>
-      <code><![CDATA[$association['joinTable']]]></code>
-      <code><![CDATA[$association['joinTable']]]></code>
-      <code><![CDATA[$association['joinTable']['inverseJoinColumns']]]></code>
-      <code><![CDATA[$association['joinTable']['joinColumns']]]></code>
-      <code>$mapping[$sourceRelationMode]</code>
-      <code>$mapping[$targetRelationMode]</code>
-      <code>$mapping[$targetRelationMode][$joinTableColumn]</code>
-      <code><![CDATA[$mapping['indexBy']]]></code>
-      <code><![CDATA[$mapping['isOwningSide']]]></code>
-      <code><![CDATA[$mapping['isOwningSide']]]></code>
-      <code><![CDATA[$mapping['isOwningSide']]]></code>
-      <code><![CDATA[$mapping['isOwningSide']]]></code>
-      <code><![CDATA[$mapping['isOwningSide']]]></code>
-      <code><![CDATA[$mapping['isOwningSide']]]></code>
-      <code><![CDATA[$mapping['joinTable']]]></code>
-      <code><![CDATA[$mapping['joinTable']]]></code>
-      <code><![CDATA[$mapping['joinTable']]]></code>
-      <code><![CDATA[$mapping['joinTable']]]></code>
-      <code><![CDATA[$mapping['joinTable']]]></code>
-      <code><![CDATA[$mapping['joinTable']['inverseJoinColumns']]]></code>
-      <code><![CDATA[$mapping['joinTable']['inverseJoinColumns']]]></code>
-      <code><![CDATA[$mapping['joinTable']['inverseJoinColumns']]]></code>
-      <code><![CDATA[$mapping['joinTable']['joinColumns']]]></code>
-      <code><![CDATA[$mapping['joinTable']['joinColumns']]]></code>
-      <code><![CDATA[$mapping['joinTable']['joinColumns']]]></code>
-      <code><![CDATA[$mapping['joinTable']['joinColumns']]]></code>
-      <code><![CDATA[$mapping['joinTableColumns']]]></code>
-      <code><![CDATA[$mapping['joinTableColumns']]]></code>
-      <code><![CDATA[$mapping['joinTableColumns']]]></code>
-      <code><![CDATA[$mapping['joinTableColumns']]]></code>
-      <code><![CDATA[$mapping['mappedBy']]]></code>
-      <code><![CDATA[$mapping['mappedBy']]]></code>
-      <code><![CDATA[$mapping['mappedBy']]]></code>
-      <code><![CDATA[$mapping['mappedBy']]]></code>
-      <code><![CDATA[$mapping['relationToSourceKeyColumns']]]></code>
-      <code><![CDATA[$mapping['relationToSourceKeyColumns']]]></code>
-      <code><![CDATA[$mapping['relationToSourceKeyColumns']]]></code>
-      <code><![CDATA[$mapping['relationToSourceKeyColumns'][$joinTableColumn]]]></code>
-      <code><![CDATA[$mapping['relationToSourceKeyColumns'][$joinTableColumn]]]></code>
-      <code><![CDATA[$mapping['relationToTargetKeyColumns']]]></code>
-      <code><![CDATA[$mapping['relationToTargetKeyColumns'][$joinTableColumn]]]></code>
-      <code><![CDATA[$mapping['sourceEntity']]]></code>
-      <code><![CDATA[$mapping['sourceEntity']]]></code>
-      <code><![CDATA[$mapping['sourceEntity']]]></code>
-      <code><![CDATA[$mapping['sourceEntity']]]></code>
-      <code><![CDATA[$mapping['sourceEntity']]]></code>
-      <code><![CDATA[$mapping['sourceEntity']]]></code>
-      <code><![CDATA[$mapping['sourceEntity']]]></code>
-      <code><![CDATA[$mapping['sourceEntity']]]></code>
-      <code><![CDATA[$mapping['targetEntity']]]></code>
-      <code><![CDATA[$mapping['targetEntity']]]></code>
-      <code><![CDATA[$mapping['targetEntity']]]></code>
-      <code><![CDATA[$mapping['targetEntity']]]></code>
-      <code><![CDATA[$mapping['targetEntity']]]></code>
-      <code><![CDATA[$mapping['targetEntity']]]></code>
-      <code><![CDATA[$mapping['targetEntity']]]></code>
-      <code><![CDATA[$mapping['targetEntity']]]></code>
-    </PossiblyNullArrayAccess>
     <PossiblyNullArrayOffset>
       <code><![CDATA[$associationSourceClass->associationMappings]]></code>
       <code><![CDATA[$sourceClass->associationMappings]]></code>
@@ -1334,21 +1218,6 @@
       <code><![CDATA[$targetClass->associationMappings]]></code>
       <code><![CDATA[$targetClass->associationMappings]]></code>
     </PossiblyNullArrayOffset>
-    <PossiblyNullIterator>
-      <code>$joinColumns</code>
-      <code>$joinColumns</code>
-      <code>$mapping[$sourceRelationMode]</code>
-      <code><![CDATA[$mapping['joinTable']['inverseJoinColumns']]]></code>
-      <code><![CDATA[$mapping['joinTable']['inverseJoinColumns']]]></code>
-      <code><![CDATA[$mapping['joinTable']['joinColumns']]]></code>
-      <code><![CDATA[$mapping['joinTable']['joinColumns']]]></code>
-      <code><![CDATA[$mapping['joinTable']['joinColumns']]]></code>
-      <code><![CDATA[$mapping['joinTable']['joinColumns']]]></code>
-      <code><![CDATA[$mapping['joinTableColumns']]]></code>
-      <code><![CDATA[$mapping['joinTableColumns']]]></code>
-      <code><![CDATA[$mapping['joinTableColumns']]]></code>
-      <code><![CDATA[$mapping['relationToSourceKeyColumns']]]></code>
-    </PossiblyNullIterator>
     <PossiblyNullReference>
       <code>getFieldForColumn</code>
       <code>getFieldForColumn</code>
@@ -1399,34 +1268,10 @@
       <code><![CDATA[$collection->getOwner()]]></code>
       <code><![CDATA[$collection->getOwner()]]></code>
       <code><![CDATA[$collection->getOwner()]]></code>
-      <code>$mapping</code>
       <code><![CDATA[$mapping['mappedBy']]]></code>
       <code><![CDATA[$mapping['mappedBy']]]></code>
       <code><![CDATA[$mapping['mappedBy']]]></code>
-      <code><![CDATA[$mapping['sourceEntity']]]></code>
-      <code><![CDATA[$mapping['sourceEntity']]]></code>
-      <code><![CDATA[$mapping['targetEntity']]]></code>
-      <code><![CDATA[$mapping['targetEntity']]]></code>
-      <code><![CDATA[$mapping['targetEntity']]]></code>
-      <code><![CDATA[$mapping['targetEntity']]]></code>
-      <code><![CDATA[$mapping['targetEntity']]]></code>
-      <code><![CDATA[$mapping['targetEntity']]]></code>
     </PossiblyNullArgument>
-    <PossiblyNullArrayAccess>
-      <code><![CDATA[$mapping['mappedBy']]]></code>
-      <code><![CDATA[$mapping['mappedBy']]]></code>
-      <code><![CDATA[$mapping['mappedBy']]]></code>
-      <code><![CDATA[$mapping['mappedBy']]]></code>
-      <code><![CDATA[$mapping['orphanRemoval']]]></code>
-      <code><![CDATA[$mapping['sourceEntity']]]></code>
-      <code><![CDATA[$mapping['sourceEntity']]]></code>
-      <code><![CDATA[$mapping['targetEntity']]]></code>
-      <code><![CDATA[$mapping['targetEntity']]]></code>
-      <code><![CDATA[$mapping['targetEntity']]]></code>
-      <code><![CDATA[$mapping['targetEntity']]]></code>
-      <code><![CDATA[$mapping['targetEntity']]]></code>
-      <code><![CDATA[$mapping['targetEntity']]]></code>
-    </PossiblyNullArrayAccess>
     <PossiblyNullArrayOffset>
       <code><![CDATA[$targetClass->associationMappings]]></code>
     </PossiblyNullArrayOffset>
@@ -2966,20 +2811,11 @@
     <PossiblyNullArgument>
       <code>$assoc</code>
       <code>$assoc</code>
-      <code>$assoc</code>
-      <code>$assoc</code>
-      <code><![CDATA[$assoc['targetEntity']]]></code>
       <code><![CDATA[$class->getTypeOfField($class->getSingleIdentifierFieldName())]]></code>
       <code><![CDATA[$collection->getOwner()]]></code>
       <code><![CDATA[$collection->getOwner()]]></code>
-      <code><![CDATA[$collectionToDelete->getMapping()]]></code>
-      <code><![CDATA[$collectionToUpdate->getMapping()]]></code>
       <code>$owner</code>
     </PossiblyNullArgument>
-    <PossiblyNullArrayAccess>
-      <code><![CDATA[$assoc['targetEntity']]]></code>
-      <code><![CDATA[$assoc['type']]]></code>
-    </PossiblyNullArrayAccess>
     <PossiblyNullArrayOffset>
       <code><![CDATA[$class->reflFields]]></code>
       <code><![CDATA[$targetClass->reflFields]]></code>
