@@ -1566,6 +1566,10 @@
     <ArgumentTypeCoercion>
       <code>$classes</code>
     </ArgumentTypeCoercion>
+    <InvalidArrayOffset>
+      <code><![CDATA[$mapping['enumType']]]></code>
+      <code><![CDATA[$mapping['options']]]></code>
+    </InvalidArrayOffset>
     <MissingClosureParamType>
       <code>$asset</code>
     </MissingClosureParamType>

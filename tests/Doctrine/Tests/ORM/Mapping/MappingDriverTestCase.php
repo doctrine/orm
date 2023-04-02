@@ -14,6 +14,7 @@ use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\DefaultNamingStrategy;
 use Doctrine\ORM\Mapping\DefaultTypedFieldMapper;
 use Doctrine\ORM\Mapping\DiscriminatorColumn;
+use Doctrine\ORM\Mapping\DiscriminatorColumnMapping;
 use Doctrine\ORM\Mapping\DiscriminatorMap;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
@@ -457,7 +458,14 @@ abstract class MappingDriverTestCase extends OrmTestCase
         $class = $this->createClassMetadata(Animal::class);
 
         self::assertEquals(
-            ['name' => 'discr', 'type' => 'string', 'length' => 32, 'fieldName' => 'discr', 'columnDefinition' => null, 'enumType' => null],
+            DiscriminatorColumnMapping::fromMappingArray([
+                'name' => 'discr',
+                'type' => 'string',
+                'length' => 32,
+                'fieldName' => 'discr',
+                'columnDefinition' => null,
+                'enumType' => null,
+            ]),
             $class->discriminatorColumn,
         );
     }
