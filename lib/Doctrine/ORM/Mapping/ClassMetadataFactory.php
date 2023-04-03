@@ -46,7 +46,6 @@ use function substr;
  *
  * @extends AbstractClassMetadataFactory<ClassMetadata>
  * @psalm-import-type AssociationMapping from ClassMetadata
- * @psalm-import-type EmbeddedClassMapping from ClassMetadata
  */
 class ClassMetadataFactory extends AbstractClassMetadataFactory
 {
@@ -384,11 +383,11 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     /**
      * Puts the `inherited` and `declared` values into mapping information for fields, associations
      * and embedded classes.
-     *
-     * @param AssociationMapping|EmbeddedClassMapping|FieldMapping $mapping
      */
-    private function addMappingInheritanceInformation(array|FieldMapping &$mapping, ClassMetadata $parentClass): void
-    {
+    private function addMappingInheritanceInformation(
+        array|EmbeddedClassMapping|FieldMapping &$mapping,
+        ClassMetadata $parentClass,
+    ): void {
         if (! isset($mapping['inherited']) && ! $parentClass->isMappedSuperclass) {
             $mapping['inherited'] = $parentClass->name;
         }
@@ -440,8 +439,9 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     private function addInheritedEmbeddedClasses(ClassMetadata $subClass, ClassMetadata $parentClass): void
     {
         foreach ($parentClass->embeddedClasses as $field => $embeddedClass) {
-            $this->addMappingInheritanceInformation($embeddedClass, $parentClass);
-            $subClass->embeddedClasses[$field] = $embeddedClass;
+            $subClassMapping = clone $embeddedClass;
+            $this->addMappingInheritanceInformation($subClassMapping, $parentClass);
+            $subClass->embeddedClasses[$field] = $subClassMapping;
         }
     }
 
@@ -462,17 +462,17 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
                 continue;
             }
 
-            $embeddableMetadata = $this->getMetadataFor($embeddableClass['class']);
+            $embeddableMetadata = $this->getMetadataFor($embeddableClass->class);
 
             $parentClass->mapEmbedded(
                 [
                     'fieldName' => $prefix . '.' . $property,
                     'class' => $embeddableMetadata->name,
-                    'columnPrefix' => $embeddableClass['columnPrefix'],
-                    'declaredField' => $embeddableClass['declaredField']
-                            ? $prefix . '.' . $embeddableClass['declaredField']
+                    'columnPrefix' => $embeddableClass->columnPrefix,
+                    'declaredField' => $embeddableClass->declaredField
+                            ? $prefix . '.' . $embeddableClass->declaredField
                             : $prefix,
-                    'originalField' => $embeddableClass['originalField'] ?: $property,
+                    'originalField' => $embeddableClass->originalField ?: $property,
                 ],
             );
         }

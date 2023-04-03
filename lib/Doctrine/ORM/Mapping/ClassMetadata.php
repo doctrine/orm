@@ -112,14 +112,6 @@ use function trim;
  *     type: int,
  *     unique?: bool,
  * }
- * @psalm-type EmbeddedClassMapping = array{
- *    class: class-string,
- *    columnPrefix: string|null,
- *    declaredField: string|null,
- *    originalField: string|null,
- *    inherited?: class-string,
- *    declared?: class-string,
- * }
  */
 class ClassMetadata implements PersistenceClassMetadata, Stringable
 {
@@ -363,22 +355,6 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
 
     /**
      * READ-ONLY: The names of all embedded classes based on properties.
-     *
-     * The value (definition) array may contain, among others, the following values:
-     *
-     * - <b>'inherited'</b> (string, optional)
-     * This is set when this embedded-class field is inherited by this class from another (inheritance) parent
-     * <em>entity</em> class. The value is the FQCN of the topmost entity class that contains
-     * mapping information for this field. (If there are transient classes in the
-     * class hierarchy, these are ignored, so the class property may in fact come
-     * from a class further up in the PHP class hierarchy.)
-     * Fields initially declared in mapped superclasses are
-     * <em>not</em> considered 'inherited' in the nearest entity subclasses.
-     *
-     * - <b>'declared'</b> (string, optional)
-     * This is set when the embedded-class field does not appear for the first time in this class, but is originally
-     * declared in another parent <em>entity or mapped superclass</em>. The value is the FQCN
-     * of the topmost non-transient class that contains mapping information for this field.
      *
      * @psalm-var array<string, EmbeddedClassMapping>
      */
@@ -2822,7 +2798,13 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
     /**
      * Map Embedded Class
      *
-     * @psalm-param array<string, mixed> $mapping
+     * @psalm-param array{
+     *     fieldName: string,
+     *     class?: class-string,
+     *     declaredField?: string,
+     *     columnPrefix?: string|false|null,
+     *     originalField?: string
+     * } $mapping
      *
      * @throws MappingException
      */
@@ -2845,12 +2827,12 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
 
         assert($fqcn !== null);
 
-        $this->embeddedClasses[$mapping['fieldName']] = [
+        $this->embeddedClasses[$mapping['fieldName']] = EmbeddedClassMapping::fromMappingArray([
             'class' => $fqcn,
             'columnPrefix' => $mapping['columnPrefix'] ?? null,
             'declaredField' => $mapping['declaredField'] ?? null,
             'originalField' => $mapping['originalField'] ?? null,
-        ];
+        ]);
     }
 
     /**

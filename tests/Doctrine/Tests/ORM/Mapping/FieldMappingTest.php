@@ -46,25 +46,25 @@ final class FieldMappingTest extends TestCase
         $resurrectedMapping = unserialize(serialize($mapping));
         assert($resurrectedMapping instanceof FieldMapping);
 
-        self::assertSame($resurrectedMapping->length, 255);
+        self::assertSame(255, $resurrectedMapping->length);
         self::assertTrue($resurrectedMapping->id);
         self::assertTrue($resurrectedMapping->nullable);
         self::assertTrue($resurrectedMapping->notInsertable);
         self::assertTrue($resurrectedMapping->notUpdatable);
-        self::assertSame($resurrectedMapping->columnDefinition, 'VARCHAR(255)');
-        self::assertSame($resurrectedMapping->generated, ClassMetadata::GENERATOR_TYPE_AUTO);
-        self::assertSame($resurrectedMapping->enumType, 'MyEnum');
-        self::assertSame($resurrectedMapping->precision, 10);
-        self::assertSame($resurrectedMapping->scale, 2);
+        self::assertSame('VARCHAR(255)', $resurrectedMapping->columnDefinition);
+        self::assertSame(ClassMetadata::GENERATOR_TYPE_AUTO, $resurrectedMapping->generated);
+        self::assertSame('MyEnum', $resurrectedMapping->enumType);
+        self::assertSame(10, $resurrectedMapping->precision);
+        self::assertSame(2, $resurrectedMapping->scale);
         self::assertTrue($resurrectedMapping->unique);
-        self::assertSame($resurrectedMapping->inherited, self::class);
-        self::assertSame($resurrectedMapping->originalClass, self::class);
-        self::assertSame($resurrectedMapping->originalField, 'id');
+        self::assertSame(self::class, $resurrectedMapping->inherited);
+        self::assertSame(self::class, $resurrectedMapping->originalClass);
+        self::assertSame('id', $resurrectedMapping->originalField);
         self::assertTrue($resurrectedMapping->quoted);
-        self::assertSame($resurrectedMapping->declared, self::class);
-        self::assertSame($resurrectedMapping->declaredField, 'id');
-        self::assertSame($resurrectedMapping->options, ['foo' => 'bar']);
+        self::assertSame(self::class, $resurrectedMapping->declared);
+        self::assertSame('id', $resurrectedMapping->declaredField);
+        self::assertSame(['foo' => 'bar'], $resurrectedMapping->options);
         self::assertTrue($resurrectedMapping->version);
-        self::assertSame($resurrectedMapping->default, 'foo');
+        self::assertSame('foo', $resurrectedMapping->default);
     }
 }

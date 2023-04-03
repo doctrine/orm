@@ -480,6 +480,7 @@
   </file>
   <file src="lib/Doctrine/ORM/Mapping/Driver/AttributeDriver.php">
     <InvalidArgument>
+      <code>$mapping</code>
       <code><![CDATA[[
                             'sequenceName' => $seqGeneratorAttribute->sequenceName,
                             'allocationSize' => $seqGeneratorAttribute->allocationSize,
@@ -553,6 +554,7 @@
     </ArgumentTypeCoercion>
     <InvalidArgument>
       <code>$columnDef</code>
+      <code>$mapping</code>
       <code><![CDATA[$this->cacheToArray($manyToManyElement->cache)]]></code>
       <code><![CDATA[$this->cacheToArray($manyToOneElement->cache)]]></code>
       <code><![CDATA[$this->cacheToArray($oneToManyElement->cache)]]></code>
