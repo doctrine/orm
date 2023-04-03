@@ -29,9 +29,9 @@ final class DiscriminatorColumnMappingTest extends TestCase
         $resurrectedMapping = unserialize(serialize($mapping));
         assert($resurrectedMapping instanceof DiscriminatorColumnMapping);
 
-        self::assertSame($resurrectedMapping->length, 255);
-        self::assertSame($resurrectedMapping->columnDefinition, 'VARCHAR(255)');
-        self::assertSame($resurrectedMapping->enumType, 'MyEnum');
-        self::assertSame($resurrectedMapping->options, ['foo' => 'bar']);
+        self::assertSame(255, $resurrectedMapping->length);
+        self::assertSame('VARCHAR(255)', $resurrectedMapping->columnDefinition);
+        self::assertSame('MyEnum', $resurrectedMapping->enumType);
+        self::assertSame(['foo' => 'bar'], $resurrectedMapping->options);
     }
 }
