@@ -22,9 +22,9 @@ class DefaultQuoteStrategy implements QuoteStrategy
 
     public function getColumnName(string $fieldName, ClassMetadata $class, AbstractPlatform $platform): string
     {
-        return isset($class->fieldMappings[$fieldName]['quoted'])
-            ? $platform->quoteIdentifier($class->fieldMappings[$fieldName]['columnName'])
-            : $class->fieldMappings[$fieldName]['columnName'];
+        return isset($class->fieldMappings[$fieldName]->quoted)
+            ? $platform->quoteIdentifier($class->fieldMappings[$fieldName]->columnName)
+            : $class->fieldMappings[$fieldName]->columnName;
     }
 
     /**

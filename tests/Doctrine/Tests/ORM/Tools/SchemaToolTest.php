@@ -95,9 +95,9 @@ class SchemaToolTest extends OrmTestCase
         $em         = $this->getTestEntityManager();
         $schemaTool = new SchemaTool($em);
 
-        $avatar                                          = $em->getClassMetadata(ForumAvatar::class);
-        $avatar->fieldMappings['id']['columnDefinition'] = $customColumnDef;
-        $user                                            = $em->getClassMetadata(ForumUser::class);
+        $avatar                                        = $em->getClassMetadata(ForumAvatar::class);
+        $avatar->fieldMappings['id']->columnDefinition = $customColumnDef;
+        $user                                          = $em->getClassMetadata(ForumUser::class);
 
         $classes = [$avatar, $user];
 

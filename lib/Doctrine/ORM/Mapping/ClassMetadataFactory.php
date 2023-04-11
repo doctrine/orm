@@ -387,12 +387,12 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
         AssociationMapping|EmbeddedClassMapping|FieldMapping $mapping,
         ClassMetadata $parentClass,
     ): void {
-        if (! isset($mapping['inherited']) && ! $parentClass->isMappedSuperclass) {
-            $mapping['inherited'] = $parentClass->name;
+        if (! isset($mapping->inherited) && ! $parentClass->isMappedSuperclass) {
+            $mapping->inherited = $parentClass->name;
         }
 
-        if (! isset($mapping['declared'])) {
-            $mapping['declared'] = $parentClass->name;
+        if (! isset($mapping->declared)) {
+            $mapping->declared = $parentClass->name;
         }
     }
 
@@ -519,7 +519,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
                 $sequenceName = null;
                 $fieldName    = $class->identifier ? $class->getSingleIdentifierFieldName() : null;
 
-                $generator = $fieldName && $class->fieldMappings[$fieldName]['type'] === 'bigint'
+                $generator = $fieldName && $class->fieldMappings[$fieldName]->type === 'bigint'
                     ? new BigIntegerIdentityGenerator()
                     : new IdentityGenerator();
 
@@ -534,7 +534,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
                 if (! $definition) {
                     $fieldName    = $class->getSingleIdentifierFieldName();
                     $sequenceName = $class->getSequenceName($this->getTargetPlatform());
-                    $quoted       = isset($class->fieldMappings[$fieldName]['quoted']) || isset($class->table['quoted']);
+                    $quoted       = isset($class->fieldMappings[$fieldName]->quoted) || isset($class->table['quoted']);
 
                     $definition = [
                         'sequenceName'      => $this->truncateSequenceName($sequenceName),

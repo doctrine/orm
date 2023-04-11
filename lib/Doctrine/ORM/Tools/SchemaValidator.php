@@ -69,8 +69,8 @@ class SchemaValidator
         $cmf = $this->em->getMetadataFactory();
 
         foreach ($class->fieldMappings as $fieldName => $mapping) {
-            if (! Type::hasType($mapping['type'])) {
-                $ce[] = "The field '" . $class->name . '#' . $fieldName . "' uses a non-existent type '" . $mapping['type'] . "'.";
+            if (! Type::hasType($mapping->type)) {
+                $ce[] = "The field '" . $class->name . '#' . $fieldName . "' uses a non-existent type '" . $mapping->type . "'.";
             }
         }
 

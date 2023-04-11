@@ -57,8 +57,8 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
      */
     private function getVersionedClassMetadata(): ClassMetadata
     {
-        if (isset($this->class->fieldMappings[$this->class->versionField]['inherited'])) {
-            $definingClassName = $this->class->fieldMappings[$this->class->versionField]['inherited'];
+        if (isset($this->class->fieldMappings[$this->class->versionField]->inherited)) {
+            $definingClassName = $this->class->fieldMappings[$this->class->versionField]->inherited;
 
             return $this->em->getClassMetadata($definingClassName);
         }
@@ -78,8 +78,8 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
         $cm = match (true) {
             isset($this->class->associationMappings[$fieldName]['inherited'])
                 => $this->em->getClassMetadata($this->class->associationMappings[$fieldName]['inherited']),
-            isset($this->class->fieldMappings[$fieldName]['inherited'])
-                => $this->em->getClassMetadata($this->class->fieldMappings[$fieldName]['inherited']),
+            isset($this->class->fieldMappings[$fieldName]->inherited)
+                => $this->em->getClassMetadata($this->class->fieldMappings[$fieldName]->inherited),
             default => $this->class,
         };
 
@@ -378,8 +378,8 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
 
         // Add regular columns
         foreach ($this->class->fieldMappings as $fieldName => $mapping) {
-            $class = isset($mapping['inherited'])
-                ? $this->em->getClassMetadata($mapping['inherited'])
+            $class = isset($mapping->inherited)
+                ? $this->em->getClassMetadata($mapping->inherited)
                 : $this->class;
 
             $columnList[] = $this->getSelectColumnSQL($fieldName, $class);
@@ -421,7 +421,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
 
             // Add subclass columns
             foreach ($subClass->fieldMappings as $fieldName => $mapping) {
-                if (isset($mapping['inherited'])) {
+                if (isset($mapping->inherited)) {
                     continue;
                 }
 
@@ -464,8 +464,8 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
 
         foreach ($this->class->reflFields as $name => $field) {
             if (
-                isset($this->class->fieldMappings[$name]['inherited'])
-                    && ! isset($this->class->fieldMappings[$name]['id'])
+                isset($this->class->fieldMappings[$name]->inherited)
+                    && ! isset($this->class->fieldMappings[$name]->id)
                     || isset($this->class->associationMappings[$name]['inherited'])
                     || ($this->class->isVersioned && $this->class->versionField === $name)
                     || isset($this->class->embeddedClasses[$name])
@@ -486,7 +486,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
                     ! $this->class->isIdGeneratorIdentity() || $this->class->identifier[0] !== $name
             ) {
                 $columns[]                = $this->quoteStrategy->getColumnName($name, $this->class, $this->platform);
-                $this->columnTypes[$name] = $this->class->fieldMappings[$name]['type'];
+                $this->columnTypes[$name] = $this->class->fieldMappings[$name]->type;
             }
         }
 
@@ -506,7 +506,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
         $values = $this->fetchVersionAndNotUpsertableValues($this->getVersionedClassMetadata(), $id);
 
         foreach ($values as $field => $value) {
-            $value = Type::getType($this->class->fieldMappings[$field]['type'])->convertToPHPValue($value, $this->platform);
+            $value = Type::getType($this->class->fieldMappings[$field]->type)->convertToPHPValue($value, $this->platform);
 
             $this->class->setFieldValue($entity, $field, $value);
         }

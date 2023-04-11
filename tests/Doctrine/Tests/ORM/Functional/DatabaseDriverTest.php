@@ -66,16 +66,16 @@ class DatabaseDriverTest extends DatabaseDriverTestCase
         $metadata = $metadatas['DbdriverFoo'];
 
         self::assertArrayHasKey('id', $metadata->fieldMappings);
-        self::assertEquals('id', $metadata->fieldMappings['id']['fieldName']);
-        self::assertEquals('id', strtolower($metadata->fieldMappings['id']['columnName']));
-        self::assertEquals('integer', (string) $metadata->fieldMappings['id']['type']);
+        self::assertEquals('id', $metadata->fieldMappings['id']->fieldName);
+        self::assertEquals('id', strtolower($metadata->fieldMappings['id']->columnName));
+        self::assertEquals('integer', (string) $metadata->fieldMappings['id']->type);
 
         self::assertArrayHasKey('bar', $metadata->fieldMappings);
-        self::assertEquals('bar', $metadata->fieldMappings['bar']['fieldName']);
-        self::assertEquals('bar', strtolower($metadata->fieldMappings['bar']['columnName']));
-        self::assertEquals('string', (string) $metadata->fieldMappings['bar']['type']);
-        self::assertEquals(200, $metadata->fieldMappings['bar']['length']);
-        self::assertTrue($metadata->fieldMappings['bar']['nullable']);
+        self::assertEquals('bar', $metadata->fieldMappings['bar']->fieldName);
+        self::assertEquals('bar', strtolower($metadata->fieldMappings['bar']->columnName));
+        self::assertEquals('string', (string) $metadata->fieldMappings['bar']->type);
+        self::assertEquals(200, $metadata->fieldMappings['bar']->length);
+        self::assertTrue($metadata->fieldMappings['bar']->nullable);
     }
 
     public function testLoadMetadataWithForeignKeyFromDatabase(): void
@@ -172,24 +172,24 @@ class DatabaseDriverTest extends DatabaseDriverTestCase
         $metadata = $metadatas['DbdriverFoo'];
 
         self::assertArrayHasKey('id', $metadata->fieldMappings);
-        self::assertEquals('id', $metadata->fieldMappings['id']['fieldName']);
-        self::assertEquals('id', strtolower($metadata->fieldMappings['id']['columnName']));
-        self::assertEquals('integer', (string) $metadata->fieldMappings['id']['type']);
+        self::assertEquals('id', $metadata->fieldMappings['id']->fieldName);
+        self::assertEquals('id', strtolower($metadata->fieldMappings['id']->columnName));
+        self::assertEquals('integer', (string) $metadata->fieldMappings['id']->type);
 
         if (self::supportsUnsignedInteger($this->_em->getConnection()->getDatabasePlatform())) {
             self::assertArrayHasKey('columnUnsigned', $metadata->fieldMappings);
-            self::assertTrue($metadata->fieldMappings['columnUnsigned']['options']['unsigned']);
+            self::assertTrue($metadata->fieldMappings['columnUnsigned']->options['unsigned']);
         }
 
         self::assertArrayHasKey('columnComment', $metadata->fieldMappings);
-        self::assertEquals('test_comment', $metadata->fieldMappings['columnComment']['options']['comment']);
+        self::assertEquals('test_comment', $metadata->fieldMappings['columnComment']->options['comment']);
 
         self::assertArrayHasKey('columnDefault', $metadata->fieldMappings);
-        self::assertEquals('test_default', $metadata->fieldMappings['columnDefault']['options']['default']);
+        self::assertEquals('test_default', $metadata->fieldMappings['columnDefault']->options['default']);
 
         self::assertArrayHasKey('columnDecimal', $metadata->fieldMappings);
-        self::assertEquals(4, $metadata->fieldMappings['columnDecimal']['precision']);
-        self::assertEquals(3, $metadata->fieldMappings['columnDecimal']['scale']);
+        self::assertEquals(4, $metadata->fieldMappings['columnDecimal']->precision);
+        self::assertEquals(3, $metadata->fieldMappings['columnDecimal']->scale);
 
         self::assertNotEmpty($metadata->table['indexes']['index1']['columns']);
         self::assertEquals(

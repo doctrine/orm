@@ -556,9 +556,9 @@ class SqlWalker
 
         if (
             $fieldName !== null && $class->isInheritanceTypeJoined() &&
-            isset($class->fieldMappings[$fieldName]['inherited'])
+            isset($class->fieldMappings[$fieldName]->inherited)
         ) {
-            $class = $this->em->getClassMetadata($class->fieldMappings[$fieldName]['inherited']);
+            $class = $this->em->getClassMetadata($class->fieldMappings[$fieldName]->inherited);
         }
 
         return $this->getSQLTableAlias($class->getTableName(), $identificationVariable);
@@ -1237,10 +1237,10 @@ class SqlWalker
                 $sqlTableAlias = $this->getSQLTableAlias($tableName, $dqlAlias);
                 $fieldMapping  = $class->fieldMappings[$fieldName];
                 $columnName    = $this->quoteStrategy->getColumnName($fieldName, $class, $this->platform);
-                $columnAlias   = $this->getSQLColumnAlias($fieldMapping['columnName']);
+                $columnAlias   = $this->getSQLColumnAlias($fieldMapping->columnName);
                 $col           = $sqlTableAlias . '.' . $columnName;
 
-                $type = Type::getType($fieldMapping['type']);
+                $type = Type::getType($fieldMapping->type);
                 $col  = $type->convertToPHPValueSQL($col, $this->conn->getDatabasePlatform());
 
                 $sql .= $col . ' AS ' . $columnAlias;
@@ -1248,11 +1248,11 @@ class SqlWalker
                 $this->scalarResultAliasMap[$resultAlias] = $columnAlias;
 
                 if (! $hidden) {
-                    $this->rsm->addScalarResult($columnAlias, $resultAlias, $fieldMapping['type']);
+                    $this->rsm->addScalarResult($columnAlias, $resultAlias, $fieldMapping->type);
                     $this->scalarFields[$dqlAlias][$fieldName] = $columnAlias;
 
-                    if (! empty($fieldMapping['enumType'])) {
-                        $this->rsm->addEnumResult($columnAlias, $fieldMapping['enumType']);
+                    if (! empty($fieldMapping->enumType)) {
+                        $this->rsm->addEnumResult($columnAlias, $fieldMapping->enumType);
                     }
                 }
 
@@ -1342,17 +1342,17 @@ class SqlWalker
                         continue;
                     }
 
-                    $tableName = isset($mapping['inherited'])
-                        ? $this->em->getClassMetadata($mapping['inherited'])->getTableName()
+                    $tableName = isset($mapping->inherited)
+                        ? $this->em->getClassMetadata($mapping->inherited)->getTableName()
                         : $class->getTableName();
 
                     $sqlTableAlias    = $this->getSQLTableAlias($tableName, $dqlAlias);
-                    $columnAlias      = $this->getSQLColumnAlias($mapping['columnName']);
+                    $columnAlias      = $this->getSQLColumnAlias($mapping->columnName);
                     $quotedColumnName = $this->quoteStrategy->getColumnName($fieldName, $class, $this->platform);
 
                     $col = $sqlTableAlias . '.' . $quotedColumnName;
 
-                    $type = Type::getType($mapping['type']);
+                    $type = Type::getType($mapping->type);
                     $col  = $type->convertToPHPValueSQL($col, $this->platform);
 
                     $sqlParts[] = $col . ' AS ' . $columnAlias;
@@ -1361,8 +1361,8 @@ class SqlWalker
 
                     $this->rsm->addFieldResult($dqlAlias, $columnAlias, $fieldName, $class->name);
 
-                    if (! empty($mapping['enumType'])) {
-                        $this->rsm->addEnumResult($columnAlias, $mapping['enumType']);
+                    if (! empty($mapping->enumType)) {
+                        $this->rsm->addEnumResult($columnAlias, $mapping->enumType);
                     }
                 }
 
@@ -1376,16 +1376,16 @@ class SqlWalker
                         $sqlTableAlias = $this->getSQLTableAlias($subClass->getTableName(), $dqlAlias);
 
                         foreach ($subClass->fieldMappings as $fieldName => $mapping) {
-                            if (isset($mapping['inherited']) || ($partialFieldSet && ! in_array($fieldName, $partialFieldSet, true))) {
+                            if (isset($mapping->inherited) || ($partialFieldSet && ! in_array($fieldName, $partialFieldSet, true))) {
                                 continue;
                             }
 
-                            $columnAlias      = $this->getSQLColumnAlias($mapping['columnName']);
+                            $columnAlias      = $this->getSQLColumnAlias($mapping->columnName);
                             $quotedColumnName = $this->quoteStrategy->getColumnName($fieldName, $subClass, $this->platform);
 
                             $col = $sqlTableAlias . '.' . $quotedColumnName;
 
-                            $type = Type::getType($mapping['type']);
+                            $type = Type::getType($mapping->type);
                             $col  = $type->convertToPHPValueSQL($col, $this->platform);
 
                             $sqlParts[] = $col . ' AS ' . $columnAlias;
@@ -1487,7 +1487,7 @@ class SqlWalker
                     $class        = $this->getMetadataForDqlAlias($dqlAlias);
                     $fieldName    = $e->field;
                     $fieldMapping = $class->fieldMappings[$fieldName];
-                    $fieldType    = $fieldMapping['type'];
+                    $fieldType    = $fieldMapping->type;
                     $col          = trim($e->dispatch($this));
 
                     $type = Type::getType($fieldType);
@@ -1495,8 +1495,8 @@ class SqlWalker
 
                     $sqlSelectExpressions[] = $col . ' AS ' . $columnAlias;
 
-                    if (! empty($fieldMapping['enumType'])) {
-                        $this->rsm->addEnumResult($columnAlias, $fieldMapping['enumType']);
+                    if (! empty($fieldMapping->enumType)) {
+                        $this->rsm->addEnumResult($columnAlias, $fieldMapping->enumType);
                     }
 
                     break;

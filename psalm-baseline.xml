@@ -334,7 +334,6 @@
       <code><![CDATA[$mapping['targetEntity']]]></code>
       <code><![CDATA[$mapping['targetEntity']]]></code>
       <code><![CDATA[$parentReflFields[$embeddedClass['declaredField']]]]></code>
-      <code><![CDATA[$parentReflFields[$mapping['declaredField']]]]></code>
     </PossiblyNullArgument>
     <PossiblyNullReference>
       <code>getProperty</code>

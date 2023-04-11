@@ -359,8 +359,8 @@ class EnumTest extends OrmFunctionalTestCase
         $metadata = $this->_em->getClassMetadata($cardClass);
         $this->_em->getConnection()->update(
             $metadata->table['name'],
-            [$metadata->fieldMappings['suit']['columnName'] => 'invalid'],
-            [$metadata->fieldMappings['id']['columnName'] => $card->id],
+            [$metadata->fieldMappings['suit']->columnName => 'invalid'],
+            [$metadata->fieldMappings['id']->columnName => $card->id],
         );
 
         $this->expectException(MappingException::class);

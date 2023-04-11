@@ -401,7 +401,7 @@ abstract class AbstractHydrator
                 $columnInfo    = [
                     'isIdentifier' => in_array($fieldName, $classMetadata->identifier, true),
                     'fieldName'    => $fieldName,
-                    'type'         => Type::getType($fieldMapping['type']),
+                    'type'         => Type::getType($fieldMapping->type),
                     'dqlAlias'     => $ownerMap,
                     'enumType'     => $this->rsm->enumMappings[$key] ?? null,
                 ];

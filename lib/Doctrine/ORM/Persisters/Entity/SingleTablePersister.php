@@ -58,7 +58,7 @@ class SingleTablePersister extends AbstractEntityInheritancePersister
 
             // Regular columns
             foreach ($subClass->fieldMappings as $fieldName => $mapping) {
-                if (isset($mapping['inherited'])) {
+                if (isset($mapping->inherited)) {
                     continue;
                 }
 
