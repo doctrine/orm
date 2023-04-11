@@ -77,7 +77,7 @@ class SimpleObjectHydrator extends AbstractHydrator
         // We need to find the correct entity class name if we have inheritance in resultset
         if ($this->class->inheritanceType !== ClassMetadata::INHERITANCE_TYPE_NONE) {
             $discrColumn     = $this->class->getDiscriminatorColumn();
-            $discrColumnName = $this->getSQLResultCasing($this->platform, $discrColumn['name']);
+            $discrColumnName = $this->getSQLResultCasing($this->platform, $discrColumn->name);
 
             // Find mapped discriminator column from the result set.
             $metaMappingDiscrColumnName = array_search($discrColumnName, $this->resultSetMapping()->metaMappings, true);

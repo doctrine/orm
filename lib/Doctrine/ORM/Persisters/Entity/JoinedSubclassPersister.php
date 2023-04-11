@@ -367,8 +367,8 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
 
         $columnList       = [];
         $discrColumn      = $this->class->getDiscriminatorColumn();
-        $discrColumnName  = $discrColumn['name'];
-        $discrColumnType  = $discrColumn['type'];
+        $discrColumnName  = $discrColumn->name;
+        $discrColumnType  = $discrColumn->type;
         $baseTableAlias   = $this->getSQLTableAlias($this->class->name);
         $resultColumnName = $this->getSQLResultCasing($this->platform, $discrColumnName);
 

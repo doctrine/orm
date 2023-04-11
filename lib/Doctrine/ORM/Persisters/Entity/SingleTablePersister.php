@@ -42,8 +42,8 @@ class SingleTablePersister extends AbstractEntityInheritancePersister
 
         // Append discriminator column
         $discrColumn     = $this->class->getDiscriminatorColumn();
-        $discrColumnName = $discrColumn['name'];
-        $discrColumnType = $discrColumn['type'];
+        $discrColumnName = $discrColumn->name;
+        $discrColumnType = $discrColumn->type;
 
         $columnList[] = $tableAlias . '.' . $discrColumnName;
 
@@ -146,7 +146,7 @@ class SingleTablePersister extends AbstractEntityInheritancePersister
             $values[] = $this->conn->quote((string) $discrValues[$subclassName]);
         }
 
-        $discColumnName = $this->class->getDiscriminatorColumn()['name'];
+        $discColumnName = $this->class->getDiscriminatorColumn()->name;
 
         $values     = implode(', ', $values);
         $tableAlias = $this->getSQLTableAlias($this->class->name);
