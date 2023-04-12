@@ -6,6 +6,7 @@ namespace Doctrine\ORM\Persisters\Collection;
 
 use BadMethodCallException;
 use Doctrine\Common\Collections\Criteria;
+use Doctrine\Common\Collections\Expr\Comparison;
 use Doctrine\DBAL\Exception as DBALException;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\PersistentCollection;
@@ -246,10 +247,15 @@ class ManyToManyPersister extends AbstractCollectionPersister
         foreach ($parameters as $parameter) {
             [$name, $value, $operator] = $parameter;
 
-            $field          = $this->quoteStrategy->getColumnName($name, $targetClass, $this->platform);
-            $whereClauses[] = sprintf('te.%s %s ?', $field, $operator);
-            $params[]       = $value;
-            $paramTypes[]   = PersisterHelper::getTypeOfField($name, $targetClass, $this->em)[0];
+            $field = $this->quoteStrategy->getColumnName($name, $targetClass, $this->platform);
+
+            if ($value === null && ($operator === Comparison::EQ || $operator === Comparison::NEQ)) {
+                $whereClauses[] = sprintf('te.%s %s NULL', $field, $operator === Comparison::EQ ? 'IS' : 'IS NOT');
+            } else {
+                $whereClauses[] = sprintf('te.%s %s ?', $field, $operator);
+                $params[]       = $value;
+                $paramTypes[]   = PersisterHelper::getTypeOfField($name, $targetClass, $this->em)[0];
+            }
         }
 
         $tableName = $this->quoteStrategy->getTableName($targetClass, $this->platform);

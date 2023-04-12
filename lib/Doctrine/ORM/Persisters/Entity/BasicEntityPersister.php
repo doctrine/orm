@@ -890,15 +890,17 @@ class BasicEntityPersister implements EntityPersister
 
         $valueVisitor->dispatch($expression);
 
-        [$params, $types] = $valueVisitor->getParamsAndTypes();
-
-        foreach ($params as $param) {
-            $sqlParams = array_merge($sqlParams, $this->getValues($param));
-        }
+        [, $types] = $valueVisitor->getParamsAndTypes();
 
         foreach ($types as $type) {
-            [$field, $value] = $type;
-            $sqlTypes        = array_merge($sqlTypes, $this->getTypes($field, $value, $this->class));
+            [$field, $value, $operator] = $type;
+
+            if ($value === null && ($operator === Comparison::EQ || $operator === Comparison::NEQ)) {
+                continue;
+            }
+
+            $sqlParams = array_merge($sqlParams, $this->getValues($value));
+            $sqlTypes  = array_merge($sqlTypes, $this->getTypes($field, $value, $this->class));
         }
 
         return [$sqlParams, $sqlTypes];
