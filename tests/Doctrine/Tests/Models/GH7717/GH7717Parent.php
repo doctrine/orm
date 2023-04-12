@@ -22,6 +22,8 @@ class GH7717Parent
 
     /**
      * @ORM\ManyToMany(targetEntity="GH7717Child", cascade={"persist"})
+     *
+     * @var Selectable<int, GH7717Child>
      */
     public Selectable $children;
 }
