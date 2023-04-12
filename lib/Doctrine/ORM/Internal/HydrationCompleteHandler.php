@@ -51,7 +51,7 @@ final class HydrationCompleteHandler
     }
 
     /**
-     * This method should me called after any hydration cycle completed.
+     * This method should be called after any hydration cycle completed.
      *
      * Method fires all deferred invocations of postLoad events
      */
