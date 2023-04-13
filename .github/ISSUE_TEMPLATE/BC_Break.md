@@ -4,7 +4,7 @@ about: Have you encountered an issue during upgrade? 💣
 ---
 
 <!--
-Before reporting a BC break, please consult the upgrading document to make sure it's not an expected change: https://github.com/doctrine/orm/blob/2.9.x/UPGRADE.md
+Before reporting a BC break, please consult the upgrading document to make sure it's not an expected change: https://github.com/doctrine/orm/blob/2.14.x/UPGRADE.md
 -->
 
 ### BC Break Report
