@@ -127,7 +127,7 @@ class DefaultCacheFactoryTest extends OrmTestCase
         $persister = new OneToManyPersister($em);
         $region    = new ConcurrentRegionMock(new DefaultRegion('regionName', $this->getSharedSecondLevelCache()));
 
-        $mapping['cache']['usage'] = ClassMetadata::CACHE_USAGE_READ_ONLY;
+        $mapping->cache['usage'] = ClassMetadata::CACHE_USAGE_READ_ONLY;
 
         $this->factory->expects(self::once())
             ->method('getRegion')
@@ -148,7 +148,7 @@ class DefaultCacheFactoryTest extends OrmTestCase
         $persister = new OneToManyPersister($em);
         $region    = new ConcurrentRegionMock(new DefaultRegion('regionName', $this->getSharedSecondLevelCache()));
 
-        $mapping['cache']['usage'] = ClassMetadata::CACHE_USAGE_READ_WRITE;
+        $mapping->cache['usage'] = ClassMetadata::CACHE_USAGE_READ_WRITE;
 
         $this->factory->expects(self::once())
             ->method('getRegion')
@@ -169,7 +169,7 @@ class DefaultCacheFactoryTest extends OrmTestCase
         $persister = new OneToManyPersister($em);
         $region    = new ConcurrentRegionMock(new DefaultRegion('regionName', $this->getSharedSecondLevelCache()));
 
-        $mapping['cache']['usage'] = ClassMetadata::CACHE_USAGE_NONSTRICT_READ_WRITE;
+        $mapping->cache['usage'] = ClassMetadata::CACHE_USAGE_NONSTRICT_READ_WRITE;
 
         $this->factory->expects(self::once())
             ->method('getRegion')
@@ -241,7 +241,7 @@ class DefaultCacheFactoryTest extends OrmTestCase
         $mapping   = $metadata->associationMappings['cities'];
         $persister = new OneToManyPersister($em);
 
-        $mapping['cache']['usage'] = -1;
+        $mapping->cache['usage'] = -1;
 
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Unrecognized access strategy type [-1]');

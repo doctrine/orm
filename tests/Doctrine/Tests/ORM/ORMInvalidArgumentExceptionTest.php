@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM;
 
+use Doctrine\ORM\Mapping\OneToManyAssociationMapping;
 use Doctrine\ORM\ORMInvalidArgumentException;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -46,21 +47,21 @@ class ORMInvalidArgumentExceptionTest extends TestCase
                 return 'ThisIsAStringRepresentationOfEntity3';
             }
         };
-        $association1 = [
+        $association1 = OneToManyAssociationMapping::fromMappingArray([
             'sourceEntity' => 'foo1',
             'fieldName'    => 'bar1',
             'targetEntity' => 'baz1',
-        ];
-        $association2 = [
+        ]);
+        $association2 = OneToManyAssociationMapping::fromMappingArray([
             'sourceEntity' => 'foo2',
             'fieldName'    => 'bar2',
             'targetEntity' => 'baz2',
-        ];
-        $association3 = [
+        ]);
+        $association3 = OneToManyAssociationMapping::fromMappingArray([
             'sourceEntity' => 'foo3',
             'fieldName'    => 'bar3',
             'targetEntity' => 'baz3',
-        ];
+        ]);
 
         return [
             'one entity found' => [

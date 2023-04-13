@@ -161,7 +161,7 @@ class SchemaValidator
                 }
             }
 
-            if ($assoc['isOwningSide']) {
+            if ($assoc->isOwningSide()) {
                 if ($assoc['type'] === ClassMetadata::MANY_TO_MANY) {
                     $identifierColumns = $class->getIdentifierColumnNames();
                     foreach ($assoc['joinTable']['joinColumns'] as $joinColumn) {
@@ -194,7 +194,7 @@ class SchemaValidator
                                 "however '" . implode(', ', array_diff($class->getIdentifierColumnNames(), array_values($assoc['relationToSourceKeyColumns']))) .
                                 "' are missing.";
                     }
-                } elseif ($assoc['type'] & ClassMetadata::TO_ONE) {
+                } elseif ($assoc->isToOne()) {
                     $identifierColumns = $targetMetadata->getIdentifierColumnNames();
                     foreach ($assoc['joinColumns'] as $joinColumn) {
                         if (! in_array($joinColumn['referencedColumnName'], $identifierColumns, true)) {

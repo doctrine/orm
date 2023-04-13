@@ -13,6 +13,8 @@ use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\DefaultNamingStrategy;
 use Doctrine\ORM\Mapping\DefaultTypedFieldMapper;
 use Doctrine\ORM\Mapping\DiscriminatorColumnMapping;
+use Doctrine\ORM\Mapping\JoinTableMapping;
+use Doctrine\ORM\Mapping\ManyToOneAssociationMapping;
 use Doctrine\ORM\Mapping\MappedSuperclass;
 use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\ORM\Mapping\UnderscoreNamingStrategy;
@@ -141,7 +143,7 @@ class ClassMetadataTest extends OrmTestCase
         $cm = new ClassMetadata(UserTyped::class);
         $cm->initializeReflection(new RuntimeReflectionService());
 
-        $cm->mapOneToOne(['fieldName' => 'email', 'joinColumns' => [[]]]);
+        $cm->mapOneToOne(['fieldName' => 'email', 'joinColumns' => [['name' => 'email_id', 'referencedColumnName' => 'id']]]);
         self::assertEquals(CmsEmail::class, $cm->getAssociationMapping('email')['targetEntity']);
 
         $cm->mapManyToOne(['fieldName' => 'mainEmail']);
@@ -264,11 +266,11 @@ class ClassMetadataTest extends OrmTestCase
 
         $assoc = $cm->associationMappings['groups'];
         self::assertEquals(
-            [
+            JoinTableMapping::fromMappingArray([
                 'name' => 'cmsuser_cmsgroup',
                 'joinColumns' => [['name' => 'cmsuser_id', 'referencedColumnName' => 'id', 'onDelete' => 'CASCADE']],
                 'inverseJoinColumns' => [['name' => 'cmsgroup_id', 'referencedColumnName' => 'id', 'onDelete' => 'CASCADE']],
-            ],
+            ]),
             $assoc['joinTable'],
         );
         self::assertTrue($assoc['isOnDeleteCascade']);
@@ -354,8 +356,18 @@ class ClassMetadataTest extends OrmTestCase
         $cm = new ClassMetadata(CmsUser::class);
         $cm->initializeReflection(new RuntimeReflectionService());
 
-        $a1 = ['fieldName' => 'foo', 'sourceEntity' => stdClass::class, 'targetEntity' => stdClass::class, 'mappedBy' => 'foo'];
-        $a2 = ['fieldName' => 'foo', 'sourceEntity' => stdClass::class, 'targetEntity' => stdClass::class, 'mappedBy' => 'foo'];
+        $a1 = ManyToOneAssociationMapping::fromMappingArray([
+            'fieldName' => 'foo',
+            'sourceEntity' => stdClass::class,
+            'targetEntity' => stdClass::class,
+            'mappedBy' => 'foo',
+        ]);
+        $a2 = ManyToOneAssociationMapping::fromMappingArray([
+            'fieldName' => 'foo',
+            'sourceEntity' => stdClass::class,
+            'targetEntity' => stdClass::class,
+            'mappedBy' => 'foo',
+        ]);
 
         $cm->addInheritedAssociationMapping($a1);
         $this->expectException(MappingException::class);
@@ -858,11 +870,11 @@ class ClassMetadataTest extends OrmTestCase
         );
 
         self::assertEquals(
-            [
+            JoinTableMapping::fromMappingArray([
                 'name' => 'customtypeparent_customtypeparent',
                 'joinColumns' => [['name' => 'customtypeparent_source', 'referencedColumnName' => 'id', 'onDelete' => 'CASCADE']],
                 'inverseJoinColumns' => [['name' => 'customtypeparent_target', 'referencedColumnName' => 'id', 'onDelete' => 'CASCADE']],
-            ],
+            ]),
             $cm->associationMappings['friendsWithMe']['joinTable'],
         );
         self::assertEquals(['customtypeparent_source', 'customtypeparent_target'], $cm->associationMappings['friendsWithMe']['joinTableColumns']);

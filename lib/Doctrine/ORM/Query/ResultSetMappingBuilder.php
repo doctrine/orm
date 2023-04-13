@@ -136,7 +136,7 @@ class ResultSetMappingBuilder extends ResultSetMapping implements Stringable
         }
 
         foreach ($classMetadata->associationMappings as $associationMapping) {
-            if ($associationMapping['isOwningSide'] && $associationMapping['type'] & ClassMetadata::TO_ONE) {
+            if ($associationMapping->isToOneOwningSide()) {
                 $targetClass  = $this->em->getClassMetadata($associationMapping['targetEntity']);
                 $isIdentifier = isset($associationMapping['id']) && $associationMapping['id'] === true;
 
@@ -216,7 +216,7 @@ class ResultSetMappingBuilder extends ResultSetMapping implements Stringable
         }
 
         foreach ($class->associationMappings as $associationMapping) {
-            if ($associationMapping['isOwningSide'] && $associationMapping['type'] & ClassMetadata::TO_ONE) {
+            if ($associationMapping->isToOneOwningSide()) {
                 foreach ($associationMapping['joinColumns'] as $joinColumn) {
                     $columnName               = $joinColumn['name'];
                     $columnAlias[$columnName] = $this->getColumnAlias($columnName, $mode, $customRenameColumns);

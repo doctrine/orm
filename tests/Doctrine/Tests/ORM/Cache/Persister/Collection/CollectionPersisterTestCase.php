@@ -10,6 +10,7 @@ use Doctrine\ORM\Cache\Persister\Collection\AbstractCollectionPersister;
 use Doctrine\ORM\Cache\Persister\Collection\CachedCollectionPersister;
 use Doctrine\ORM\Cache\Region;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Mapping\AssociationMapping;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\Persisters\Collection\CollectionPersister;
 use Doctrine\Tests\Mocks\EntityManagerMock;
@@ -25,7 +26,12 @@ abstract class CollectionPersisterTestCase extends OrmTestCase
     protected CollectionPersister&MockObject $collectionPersister;
     protected EntityManagerMock $em;
 
-    abstract protected function createPersister(EntityManagerInterface $em, CollectionPersister $persister, Region $region, array $mapping): AbstractCollectionPersister;
+    abstract protected function createPersister(
+        EntityManagerInterface $em,
+        CollectionPersister $persister,
+        Region $region,
+        AssociationMapping $mapping,
+    ): AbstractCollectionPersister;
 
     protected function setUp(): void
     {

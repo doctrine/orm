@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM;
 
+use Doctrine\ORM\Mapping\AssociationMapping;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use InvalidArgumentException;
 use Stringable;
@@ -19,8 +20,6 @@ use function sprintf;
 
 /**
  * Contains exception messages for all invalid lifecycle state exceptions inside UnitOfWork
- *
- * @psalm-import-type AssociationMapping from ClassMetadata
  */
 class ORMInvalidArgumentException extends InvalidArgumentException
 {
@@ -52,10 +51,7 @@ class ORMInvalidArgumentException extends InvalidArgumentException
         return new self('Only managed entities can be marked or checked as read only. But ' . self::objToStr($entity) . ' is not');
     }
 
-    /**
-     * @psalm-param non-empty-list<array{AssociationMapping, object}> $newEntitiesWithAssociations non-empty an array
-     *                                                                of [array $associationMapping, object $entity] pairs
-     */
+    /** @param non-empty-list<array{AssociationMapping, object}> $newEntitiesWithAssociations */
     public static function newEntitiesFoundThroughRelationships(array $newEntitiesWithAssociations): self
     {
         $errorMessages = array_map(
@@ -78,14 +74,12 @@ class ORMInvalidArgumentException extends InvalidArgumentException
         );
     }
 
-    /** @psalm-param AssociationMapping $associationMapping */
-    public static function newEntityFoundThroughRelationship(array $associationMapping, object $entry): self
+    public static function newEntityFoundThroughRelationship(AssociationMapping $associationMapping, object $entry): self
     {
         return new self(self::newEntityFoundThroughRelationshipMessage($associationMapping, $entry));
     }
 
-    /** @psalm-param AssociationMapping $assoc */
-    public static function detachedEntityFoundThroughRelationship(array $assoc, object $entry): self
+    public static function detachedEntityFoundThroughRelationship(AssociationMapping $assoc, object $entry): self
     {
         return new self('A detached entity of type ' . $assoc['targetEntity'] . ' (' . self::objToStr($entry) . ') '
             . " was found through the relationship '" . $assoc['sourceEntity'] . '#' . $assoc['fieldName'] . "' "
@@ -137,8 +131,7 @@ EXCEPTION
         ));
     }
 
-    /** @param AssociationMapping $assoc */
-    public static function invalidAssociation(ClassMetadata $targetClass, array $assoc, mixed $actualValue): self
+    public static function invalidAssociation(ClassMetadata $targetClass, AssociationMapping $assoc, mixed $actualValue): self
     {
         $expectedType = $targetClass->getName();
 
@@ -159,8 +152,7 @@ EXCEPTION
         return $obj instanceof Stringable ? (string) $obj : get_debug_type($obj) . '@' . spl_object_id($obj);
     }
 
-    /** @psalm-param AssociationMapping $associationMapping */
-    private static function newEntityFoundThroughRelationshipMessage(array $associationMapping, object $entity): string
+    private static function newEntityFoundThroughRelationshipMessage(AssociationMapping $associationMapping, object $entity): string
     {
         return 'A new entity was found through the relationship \''
             . $associationMapping['sourceEntity'] . '#' . $associationMapping['fieldName'] . '\' that was not'

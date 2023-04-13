@@ -8,14 +8,13 @@ use Doctrine\ORM\Cache;
 use Doctrine\ORM\Cache\Persister\Collection\CachedCollectionPersister;
 use Doctrine\ORM\Cache\Persister\Entity\CachedEntityPersister;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Mapping\AssociationMapping;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Persisters\Collection\CollectionPersister;
 use Doctrine\ORM\Persisters\Entity\EntityPersister;
 
 /**
  * Contract for building second level cache regions components.
- *
- * @psalm-import-type AssociationMapping from ClassMetadata
  */
 interface CacheFactory
 {
@@ -24,12 +23,12 @@ interface CacheFactory
      */
     public function buildCachedEntityPersister(EntityManagerInterface $em, EntityPersister $persister, ClassMetadata $metadata): CachedEntityPersister;
 
-    /**
-     * Build a collection persister for the given relation mapping.
-     *
-     * @param AssociationMapping $mapping The association mapping.
-     */
-    public function buildCachedCollectionPersister(EntityManagerInterface $em, CollectionPersister $persister, array $mapping): CachedCollectionPersister;
+    /** Build a collection persister for the given relation mapping. */
+    public function buildCachedCollectionPersister(
+        EntityManagerInterface $em,
+        CollectionPersister $persister,
+        AssociationMapping $mapping,
+    ): CachedCollectionPersister;
 
     /**
      * Build a query cache based on the given region name
@@ -43,10 +42,8 @@ interface CacheFactory
 
     /**
      * Build a collection hydrator
-     *
-     * @param mixed[] $mapping The association mapping.
      */
-    public function buildCollectionHydrator(EntityManagerInterface $em, array $mapping): CollectionHydrator;
+    public function buildCollectionHydrator(EntityManagerInterface $em, AssociationMapping $mapping): CollectionHydrator;
 
     /**
      * Build a cache region

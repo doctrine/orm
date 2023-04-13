@@ -6,7 +6,6 @@ namespace Doctrine\ORM\Tools;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Event\OnFlushEventArgs;
-use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\UnitOfWork;
 use Doctrine\Persistence\Proxy;
@@ -71,7 +70,7 @@ class DebugUnitOfWorkListener
                     fwrite($fh, '   ' . $field . ' ');
                     $value = $cm->getFieldValue($entity, $field);
 
-                    if ($assoc['type'] & ClassMetadata::TO_ONE) {
+                    if ($assoc->isToOne()) {
                         if ($value === null) {
                             fwrite($fh, " NULL\n");
                         } else {

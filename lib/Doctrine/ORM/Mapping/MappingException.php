@@ -44,6 +44,16 @@ class MappingException extends PersistenceMappingException implements ORMExcepti
         ));
     }
 
+    public static function invalidAssociationType(string $entityName, string $fieldName, int $type): self
+    {
+        return new self(sprintf(
+            'The association "%s#%s" must be of type "ClassMetadata::ONE_TO_MANY", "ClassMetadata::MANY_TO_MANY" or "ClassMetadata::MANY_TO_ONE", "%d" given.',
+            $entityName,
+            $fieldName,
+            $type,
+        ));
+    }
+
     public static function invalidInheritanceType(string $entityName, int $type): self
     {
         return new self(sprintf("The inheritance type '%s' specified for '%s' does not exist.", $type, $entityName));

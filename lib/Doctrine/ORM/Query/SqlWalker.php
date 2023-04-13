@@ -597,8 +597,9 @@ class SqlWalker
                 }
 
                 $assoc = $class->associationMappings[$fieldName];
+                assert($assoc->isToOne());
 
-                if (! $assoc['isOwningSide']) {
+                if (! $assoc->isOwningSide()) {
                     throw QueryException::associationPathInverseSideNotSupported($pathExpr);
                 }
 
@@ -611,7 +612,8 @@ class SqlWalker
                     $sql .= $this->getSQLTableAlias($class->getTableName(), $dqlAlias) . '.';
                 }
 
-                $sql .= reset($assoc['targetToSourceKeyColumns']);
+                assert($assoc->targetToSourceKeyColumns !== null);
+                $sql .= reset($assoc->targetToSourceKeyColumns);
                 break;
 
             default:
@@ -680,7 +682,7 @@ class SqlWalker
             // Add foreign key columns of class and also parent classes
             foreach ($class->associationMappings as $assoc) {
                 if (
-                    ! ($assoc['isOwningSide'] && $assoc['type'] & ClassMetadata::TO_ONE)
+                    ! $assoc->isToOneOwningSide()
                     || ( ! $addMetaColumns && ! isset($assoc['id']))
                 ) {
                     continue;
@@ -719,7 +721,7 @@ class SqlWalker
                         continue;
                     }
 
-                    if ($assoc['isOwningSide'] && $assoc['type'] & ClassMetadata::TO_ONE) {
+                    if ($assoc->isToOneOwningSide()) {
                         $targetClass = $this->em->getClassMetadata($assoc['targetEntity']);
 
                         foreach ($assoc['joinColumns'] as $joinColumn) {
@@ -797,8 +799,9 @@ class SqlWalker
                 }
 
                 $association = $class->associationMappings[$fieldName];
+                assert($association->isToOne());
 
-                if (! $association['isOwningSide']) {
+                if (! $association->isOwningSide()) {
                     throw QueryException::associationPathInverseSideNotSupported($pathExpression);
                 }
 
@@ -806,7 +809,8 @@ class SqlWalker
                     throw QueryException::associationPathCompositeKeyNotSupported();
                 }
 
-                $field = reset($association['targetToSourceKeyColumns']);
+                assert($association->targetToSourceKeyColumns !== null);
+                $field = reset($association->targetToSourceKeyColumns);
                 break;
 
             default:
@@ -905,7 +909,7 @@ class SqlWalker
         // be the owning side and previously we ensured that $assoc is always the owning side of the associations.
         // The owning side is necessary at this point because only it contains the JoinColumn information.
         switch (true) {
-            case $assoc['type'] & ClassMetadata::TO_ONE:
+            case $assoc->isToOne():
                 $conditions = [];
 
                 foreach ($assoc['joinColumns'] as $joinColumn) {
@@ -1639,7 +1643,7 @@ class SqlWalker
         }
 
         foreach ($this->getMetadataForDqlAlias($groupByItem)->associationMappings as $mapping) {
-            if ($mapping['isOwningSide'] && $mapping['type'] & ClassMetadata::TO_ONE) {
+            if ($mapping->isToOneOwningSide()) {
                 $item       = new AST\PathExpression(AST\PathExpression::TYPE_SINGLE_VALUED_ASSOCIATION, $groupByItem, $mapping['fieldName']);
                 $item->type = AST\PathExpression::TYPE_SINGLE_VALUED_ASSOCIATION;
 

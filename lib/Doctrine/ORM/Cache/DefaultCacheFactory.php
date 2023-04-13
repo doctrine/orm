@@ -17,6 +17,7 @@ use Doctrine\ORM\Cache\Region\DefaultRegion;
 use Doctrine\ORM\Cache\Region\FileLockRegion;
 use Doctrine\ORM\Cache\Region\UpdateTimestampCache;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Mapping\AssociationMapping;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Persisters\Collection\CollectionPersister;
 use Doctrine\ORM\Persisters\Entity\EntityPersister;
@@ -87,12 +88,11 @@ class DefaultCacheFactory implements CacheFactory
         throw new InvalidArgumentException(sprintf('Unrecognized access strategy type [%s]', $usage));
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function buildCachedCollectionPersister(EntityManagerInterface $em, CollectionPersister $persister, array $mapping): CachedCollectionPersister
-    {
-        assert(isset($mapping['cache']));
+    public function buildCachedCollectionPersister(
+        EntityManagerInterface $em,
+        CollectionPersister $persister,
+        AssociationMapping $mapping,
+    ): CachedCollectionPersister {
         $usage  = $mapping['cache']['usage'];
         $region = $this->getRegion($mapping['cache']);
 
@@ -128,10 +128,7 @@ class DefaultCacheFactory implements CacheFactory
         );
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function buildCollectionHydrator(EntityManagerInterface $em, array $mapping): CollectionHydrator
+    public function buildCollectionHydrator(EntityManagerInterface $em, AssociationMapping $mapping): CollectionHydrator
     {
         return new DefaultCollectionHydrator($em);
     }

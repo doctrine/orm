@@ -11,6 +11,7 @@ use Doctrine\ORM\Cache\Persister\Collection\AbstractCollectionPersister;
 use Doctrine\ORM\Cache\Persister\Collection\ReadWriteCachedCollectionPersister;
 use Doctrine\ORM\Cache\Region;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Mapping\AssociationMapping;
 use Doctrine\ORM\Persisters\Collection\CollectionPersister;
 use Doctrine\Tests\Models\Cache\State;
 use PHPUnit\Framework\Attributes\Group;
@@ -20,8 +21,12 @@ use ReflectionProperty;
 #[Group('DDC-2183')]
 class ReadWriteCachedCollectionPersisterTest extends CollectionPersisterTestCase
 {
-    protected function createPersister(EntityManagerInterface $em, CollectionPersister $persister, Region $region, array $mapping): AbstractCollectionPersister
-    {
+    protected function createPersister(
+        EntityManagerInterface $em,
+        CollectionPersister $persister,
+        Region $region,
+        AssociationMapping $mapping,
+    ): AbstractCollectionPersister {
         return new ReadWriteCachedCollectionPersister($persister, $region, $em, $mapping);
     }
 

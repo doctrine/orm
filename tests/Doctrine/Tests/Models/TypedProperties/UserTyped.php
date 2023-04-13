@@ -109,7 +109,7 @@ class UserTyped
                 'joinColumns' =>
                     [
                         0 =>
-                            [],
+                            ['referencedColumnName' => 'id'],
                     ],
                 'orphanRemoval' => true,
             ],
