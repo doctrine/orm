@@ -47,6 +47,7 @@ use BackedEnum;
  *     onDelete?: string,
  *     columnDefinition?: string,
  *     nullable?: bool,
+ *     options?: array<string, mixed>,
  * }
  * @psalm-type AssociationMapping = array{
  *     cache?: array,

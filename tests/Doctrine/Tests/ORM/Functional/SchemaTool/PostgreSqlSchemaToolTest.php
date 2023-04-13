@@ -16,6 +16,7 @@ use Doctrine\Tests\Models;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 use function array_filter;
+use function array_values;
 use function implode;
 use function str_starts_with;
 
@@ -50,6 +51,20 @@ class PostgreSqlSchemaToolTest extends OrmFunctionalTestCase
         });
 
         self::assertCount(0, $sql, implode("\n", $sql));
+    }
+
+    public function testSetDeferrableForeignKey(): void
+    {
+        $schema = $this->getSchemaForModels(
+            EntityWithSelfReferencingAssociation::class
+        );
+
+        $table = $schema->getTable('postgres.entitywithselfreferencingassociation');
+        $fks   = array_values($table->getForeignKeys());
+
+        self::assertCount(1, $fks);
+
+        self::assertTrue($fks[0]->getOption('deferrable'));
     }
 }
 
@@ -118,4 +133,27 @@ class DDC1657Avatar
      * @Column(name="pk", type="integer", nullable=false)
      */
     private $pk;
+}
+
+/**
+ * @Entity
+ */
+class EntityWithSelfReferencingAssociation
+{
+    /**
+     * Identifier
+     *
+     * @var int
+     * @Id
+     * @GeneratedValue(strategy="IDENTITY")
+     * @Column(type="integer", nullable=false)
+     */
+    private $id;
+
+    /**
+     * @var EntityWithSelfReferencingAssociation
+     * @ManyToOne(targetEntity="EntityWithSelfReferencingAssociation")
+     * @JoinColumn(options={"deferrable": true})
+     */
+    private $parent;
 }
