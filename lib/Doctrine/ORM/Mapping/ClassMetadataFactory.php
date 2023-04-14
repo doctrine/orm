@@ -138,17 +138,17 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
             }
 
             foreach ($class->embeddedClasses as $property => $embeddableClass) {
-                if (isset($embeddableClass['inherited'])) {
+                if (isset($embeddableClass->inherited)) {
                     continue;
                 }
 
-                if (isset($this->embeddablesActiveNesting[$embeddableClass['class']])) {
+                if (isset($this->embeddablesActiveNesting[$embeddableClass->class])) {
                     throw MappingException::infiniteEmbeddableNesting($class->name, $property);
                 }
 
                 $this->embeddablesActiveNesting[$class->name] = true;
 
-                $embeddableMetadata = $this->getMetadataFor($embeddableClass['class']);
+                $embeddableMetadata = $this->getMetadataFor($embeddableClass->class);
 
                 if ($embeddableMetadata->isEmbeddedClass) {
                     $this->addNestedEmbeddedClasses($embeddableMetadata, $class, $property);
@@ -458,7 +458,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
         string $prefix,
     ): void {
         foreach ($subClass->embeddedClasses as $property => $embeddableClass) {
-            if (isset($embeddableClass['inherited'])) {
+            if (isset($embeddableClass->inherited)) {
                 continue;
             }
 

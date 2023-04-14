@@ -150,7 +150,7 @@ class ClassMetadataTest extends OrmTestCase
         self::assertEquals(CmsEmail::class, $cm->getAssociationMapping('mainEmail')['targetEntity']);
 
         $cm->mapEmbedded(['fieldName' => 'contact']);
-        self::assertEquals(Contact::class, $cm->embeddedClasses['contact']['class']);
+        self::assertEquals(Contact::class, $cm->embeddedClasses['contact']->class);
     }
 
     public function testFieldTypeFromReflection(): void

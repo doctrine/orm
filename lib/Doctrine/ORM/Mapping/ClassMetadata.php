@@ -794,18 +794,18 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
         $parentReflFields = [];
 
         foreach ($this->embeddedClasses as $property => $embeddedClass) {
-            if (isset($embeddedClass['declaredField'])) {
-                assert($embeddedClass['originalField'] !== null);
+            if (isset($embeddedClass->declaredField)) {
+                assert($embeddedClass->originalField !== null);
                 $childProperty = $this->getAccessibleProperty(
                     $reflService,
-                    $this->embeddedClasses[$embeddedClass['declaredField']]['class'],
-                    $embeddedClass['originalField'],
+                    $this->embeddedClasses[$embeddedClass->declaredField]->class,
+                    $embeddedClass->originalField,
                 );
                 assert($childProperty !== null);
                 $parentReflFields[$property] = new ReflectionEmbeddedProperty(
-                    $parentReflFields[$embeddedClass['declaredField']],
+                    $parentReflFields[$embeddedClass->declaredField],
                     $childProperty,
-                    $this->embeddedClasses[$embeddedClass['declaredField']]['class'],
+                    $this->embeddedClasses[$embeddedClass->declaredField]->class,
                 );
 
                 continue;
@@ -813,7 +813,7 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
 
             $fieldRefl = $this->getAccessibleProperty(
                 $reflService,
-                $embeddedClass['declared'] ?? $this->name,
+                $embeddedClass->declared ?? $this->name,
                 $property,
             );
 
@@ -1808,7 +1808,7 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
 
     public function isInheritedEmbeddedClass(string $fieldName): bool
     {
-        return isset($this->embeddedClasses[$fieldName]['inherited']);
+        return isset($this->embeddedClasses[$fieldName]->inherited);
     }
 
     /**
@@ -2544,9 +2544,9 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
             $fieldMapping['originalField'] ??= $fieldMapping['fieldName'];
             $fieldMapping['fieldName']       = $property . '.' . $fieldMapping['fieldName'];
 
-            if (! empty($this->embeddedClasses[$property]['columnPrefix'])) {
-                $fieldMapping['columnName'] = $this->embeddedClasses[$property]['columnPrefix'] . $fieldMapping['columnName'];
-            } elseif ($this->embeddedClasses[$property]['columnPrefix'] !== false) {
+            if (! empty($this->embeddedClasses[$property]->columnPrefix)) {
+                $fieldMapping['columnName'] = $this->embeddedClasses[$property]->columnPrefix . $fieldMapping['columnName'];
+            } elseif ($this->embeddedClasses[$property]->columnPrefix !== false) {
                 assert($this->reflClass !== null);
                 assert($embeddable->reflClass !== null);
                 $fieldMapping['columnName'] = $this->namingStrategy

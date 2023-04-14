@@ -281,7 +281,7 @@ abstract class MappingDriverTestCase extends OrmTestCase
 
         self::assertEquals(CmsEmail::class, $class->getAssociationMapping('email')['targetEntity']);
         self::assertEquals(CmsEmail::class, $class->getAssociationMapping('mainEmail')['targetEntity']);
-        self::assertEquals(Contact::class, $class->embeddedClasses['contact']['class']);
+        self::assertEquals(Contact::class, $class->embeddedClasses['contact']->class);
     }
 
     #[\PHPUnit\Framework\Attributes\Group('GH10313')]

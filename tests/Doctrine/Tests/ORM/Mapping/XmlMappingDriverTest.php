@@ -110,7 +110,7 @@ class XmlMappingDriverTest extends MappingDriverTestCase
         self::assertEquals(
             '__prefix__',
             $factory->getMetadataFor(DDC3293UserPrefixed::class)
-                ->embeddedClasses['address']['columnPrefix'],
+                ->embeddedClasses['address']->columnPrefix,
         );
     }
 
@@ -127,7 +127,7 @@ class XmlMappingDriverTest extends MappingDriverTestCase
 
         self::assertFalse(
             $factory->getMetadataFor(DDC3293User::class)
-                ->embeddedClasses['address']['columnPrefix'],
+                ->embeddedClasses['address']->columnPrefix,
         );
     }
 
