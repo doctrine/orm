@@ -46,7 +46,6 @@ use Doctrine\Tests\ORM\Mapping\TypedFieldMapper\CustomIntAsStringTypedFieldMappe
 use Doctrine\Tests\OrmTestCase;
 use DoctrineGlobalArticle;
 use PHPUnit\Framework\Attributes\Group as TestGroup;
-use PHPUnit\Framework\Attributes\RequiresPhp;
 use ReflectionClass;
 use stdClass;
 
@@ -797,7 +796,6 @@ class ClassMetadataTest extends OrmTestCase
         $cm->mapManyToOne(['fieldName' => 'address', 'targetEntity' => 'UnknownClass', 'cascade' => ['invalid']]);
     }
 
-    #[RequiresPhp('8.1')]
     #[TestGroup('DDC-964')]
     public function testInvalidPropertyAssociationOverrideNameException(): void
     {
@@ -810,7 +808,6 @@ class ClassMetadataTest extends OrmTestCase
         $cm->setAssociationOverride('invalidPropertyName', []);
     }
 
-    #[RequiresPhp('8.1')]
     #[TestGroup('DDC-964')]
     public function testInvalidPropertyAttributeOverrideNameException(): void
     {
@@ -823,7 +820,6 @@ class ClassMetadataTest extends OrmTestCase
         $cm->setAttributeOverride('invalidPropertyName', []);
     }
 
-    #[RequiresPhp('8.1')]
     #[TestGroup('DDC-964')]
     public function testInvalidOverrideAttributeFieldTypeException(): void
     {

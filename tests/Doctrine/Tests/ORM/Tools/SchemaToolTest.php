@@ -41,7 +41,6 @@ use Doctrine\Tests\Models\Forum\ForumUser;
 use Doctrine\Tests\Models\NullDefault\NullDefaultColumn;
 use Doctrine\Tests\OrmTestCase;
 use PHPUnit\Framework\Attributes\Group;
-use PHPUnit\Framework\Attributes\RequiresPhp;
 
 use function count;
 use function current;
@@ -184,7 +183,6 @@ class SchemaToolTest extends OrmTestCase
             ->getPlatformOptions());
     }
 
-    #[RequiresPhp('8.1')]
     public function testEnumTypeAddedToCustomSchemaOptions(): void
     {
         $em         = $this->getTestEntityManager();

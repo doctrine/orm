@@ -23,13 +23,11 @@ use Doctrine\Tests\Models\Enums\TypedCard;
 use Doctrine\Tests\Models\Enums\Unit;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\Attributes\RequiresPhp;
 
 use function dirname;
 use function sprintf;
 use function uniqid;
 
-#[RequiresPhp('8.1')]
 class EnumTest extends OrmFunctionalTestCase
 {
     public function setUp(): void

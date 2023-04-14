@@ -12,13 +12,11 @@ use Doctrine\Tests\Models\Enums\Unit;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Group;
-use PHPUnit\Framework\Attributes\RequiresPhp;
 
 /**
  * Test the IdentifierFlattener utility class
  */
 #[CoversClass(IdentifierFlattener::class)]
-#[RequiresPhp('8.1')]
 class IdentifierFlattenerEnumIdTest extends OrmFunctionalTestCase
 {
     protected function setUp(): void

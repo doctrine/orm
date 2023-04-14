@@ -31,7 +31,6 @@ use Doctrine\Tests\OrmTestCase;
 use Generator;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Group;
-use PHPUnit\Framework\Attributes\RequiresPhp;
 use Psr\Cache\CacheItemInterface;
 use Psr\Cache\CacheItemPoolInterface;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
@@ -293,7 +292,6 @@ class QueryTest extends OrmTestCase
         self::assertNull($query->processParameterValue(null));
     }
 
-    #[RequiresPhp('8.1')]
     public function testProcessParameterValueBackedEnum(): void
     {
         $query = $this->entityManager->createQuery('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.status = :status');
@@ -302,7 +300,6 @@ class QueryTest extends OrmTestCase
         self::assertSame([2], $query->processParameterValue([AccessLevel::User]));
     }
 
-    #[RequiresPhp('8.1')]
     public function testProcessParameterValueBackedEnumArray(): void
     {
         $query = $this->entityManager->createQuery('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.status IN (:status)');

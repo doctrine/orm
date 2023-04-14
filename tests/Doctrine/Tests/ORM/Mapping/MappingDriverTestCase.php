@@ -64,7 +64,6 @@ use Doctrine\Tests\Models\Upsertable\Insertable;
 use Doctrine\Tests\Models\Upsertable\Updatable;
 use Doctrine\Tests\OrmTestCase;
 use PHPUnit\Framework\Attributes\Depends;
-use PHPUnit\Framework\Attributes\RequiresPhp;
 use stdClass;
 
 use function assert;
@@ -591,7 +590,6 @@ abstract class MappingDriverTestCase extends OrmTestCase
     }
 
     #[\PHPUnit\Framework\Attributes\Group('DDC-3579')]
-    #[RequiresPhp('8.1')]
     public function testInversedByOverrideMapping(): void
     {
         $factory       = $this->createClassMetadataFactory();
@@ -606,7 +604,6 @@ abstract class MappingDriverTestCase extends OrmTestCase
     }
 
     #[\PHPUnit\Framework\Attributes\Group('DDC-5934')]
-    #[RequiresPhp('8.1')]
     public function testFetchOverrideMapping(): void
     {
         // check override metadata
@@ -617,7 +614,6 @@ abstract class MappingDriverTestCase extends OrmTestCase
     }
 
     #[\PHPUnit\Framework\Attributes\Group('DDC-964')]
-    #[RequiresPhp('8.1')]
     public function testAssociationOverridesMapping(): void
     {
         $factory       = $this->createClassMetadataFactory();
@@ -694,7 +690,6 @@ abstract class MappingDriverTestCase extends OrmTestCase
     }
 
     #[\PHPUnit\Framework\Attributes\Group('DDC-964')]
-    #[RequiresPhp('8.1')]
     public function testAttributeOverridesMapping(): void
     {
         $factory       = $this->createClassMetadataFactory();
@@ -958,7 +953,6 @@ abstract class MappingDriverTestCase extends OrmTestCase
         self::assertNull($metadata->getFieldMapping('updatableContent')->notUpdatable);
     }
 
-    #[RequiresPhp('8.1')]
     public function testEnumType(): void
     {
         $metadata = $this->createClassMetadata(Card::class);
