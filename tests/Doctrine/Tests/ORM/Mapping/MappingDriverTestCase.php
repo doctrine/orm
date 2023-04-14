@@ -551,11 +551,8 @@ abstract class MappingDriverTestCase extends OrmTestCase
     {
         $class = $this->createClassMetadata(DDC807Entity::class);
 
-        self::assertArrayHasKey('columnDefinition', $class->discriminatorColumn);
-        self::assertArrayHasKey('name', $class->discriminatorColumn);
-
-        self::assertEquals("ENUM('ONE','TWO')", $class->discriminatorColumn['columnDefinition']);
-        self::assertEquals('dtype', $class->discriminatorColumn['name']);
+        self::assertEquals("ENUM('ONE','TWO')", $class->discriminatorColumn->columnDefinition);
+        self::assertEquals('dtype', $class->discriminatorColumn->name);
     }
 
     #[\PHPUnit\Framework\Attributes\Group('GH10288')]
@@ -563,11 +560,8 @@ abstract class MappingDriverTestCase extends OrmTestCase
     {
         $class = $this->createClassMetadata(GH10288EnumTypePerson::class);
 
-        self::assertArrayHasKey('enumType', $class->discriminatorColumn);
-        self::assertArrayHasKey('name', $class->discriminatorColumn);
-
-        self::assertEquals(GH10288People::class, $class->discriminatorColumn['enumType']);
-        self::assertEquals('discr', $class->discriminatorColumn['name']);
+        self::assertEquals(GH10288People::class, $class->discriminatorColumn->enumType);
+        self::assertEquals('discr', $class->discriminatorColumn->name);
     }
 
     #[\PHPUnit\Framework\Attributes\Group('DDC-889')]
@@ -898,9 +892,9 @@ abstract class MappingDriverTestCase extends OrmTestCase
         }
 
         $class = $this->createClassMetadata(SingleTableEntityNoDiscriminatorColumnMapping::class);
-        self::assertEquals(255, $class->discriminatorColumn['length']);
+        self::assertEquals(255, $class->discriminatorColumn->length);
         $class = $this->createClassMetadata(SingleTableEntityIncompleteDiscriminatorColumnMapping::class);
-        self::assertEquals(255, $class->discriminatorColumn['length']);
+        self::assertEquals(255, $class->discriminatorColumn->length);
     }
 
     #[\PHPUnit\Framework\Attributes\Group('DDC-514')]
@@ -912,9 +906,9 @@ abstract class MappingDriverTestCase extends OrmTestCase
         }
 
         $class = $this->createClassMetadata(SingleTableEntityNoDiscriminatorColumnMapping::class);
-        self::assertEquals('string', $class->discriminatorColumn['type']);
+        self::assertEquals('string', $class->discriminatorColumn->type);
         $class = $this->createClassMetadata(SingleTableEntityIncompleteDiscriminatorColumnMapping::class);
-        self::assertEquals('string', $class->discriminatorColumn['type']);
+        self::assertEquals('string', $class->discriminatorColumn->type);
     }
 
     #[\PHPUnit\Framework\Attributes\Group('DDC-514')]
@@ -926,9 +920,9 @@ abstract class MappingDriverTestCase extends OrmTestCase
         }
 
         $class = $this->createClassMetadata(SingleTableEntityNoDiscriminatorColumnMapping::class);
-        self::assertEquals('dtype', $class->discriminatorColumn['name']);
+        self::assertEquals('dtype', $class->discriminatorColumn->name);
         $class = $this->createClassMetadata(SingleTableEntityIncompleteDiscriminatorColumnMapping::class);
-        self::assertEquals('dtype', $class->discriminatorColumn['name']);
+        self::assertEquals('dtype', $class->discriminatorColumn->name);
     }
 
     public function testReservedWordInTableColumn(): void

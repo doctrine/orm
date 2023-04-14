@@ -406,25 +406,22 @@ class SchemaTool
         $discrColumn = $class->discriminatorColumn;
         assert($discrColumn !== null);
 
-        if (
-            ! isset($discrColumn['type']) ||
-            (strtolower($discrColumn['type']) === 'string' && ! isset($discrColumn['length']))
-        ) {
-            $discrColumn['type']   = 'string';
-            $discrColumn['length'] = 255;
+        if (strtolower($discrColumn->type) === 'string' && ! isset($discrColumn->length)) {
+            $discrColumn->type   = 'string';
+            $discrColumn->length = 255;
         }
 
         $options = [
-            'length'    => $discrColumn['length'] ?? null,
+            'length'    => $discrColumn->length ?? null,
             'notnull'   => true,
         ];
 
-        if (isset($discrColumn['columnDefinition'])) {
-            $options['columnDefinition'] = $discrColumn['columnDefinition'];
+        if (isset($discrColumn->columnDefinition)) {
+            $options['columnDefinition'] = $discrColumn->columnDefinition;
         }
 
         $options = $this->gatherColumnOptions($discrColumn) + $options;
-        $table->addColumn($discrColumn['name'], $discrColumn['type'], $options);
+        $table->addColumn($discrColumn->name, $discrColumn->type, $options);
     }
 
     /**

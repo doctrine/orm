@@ -1204,7 +1204,7 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
 
         $this->columnNames[$mapping->fieldName] = $mapping->columnName;
 
-        if (isset($this->fieldNames[$mapping->columnName]) || ($this->discriminatorColumn && $this->discriminatorColumn['name'] === $mapping->columnName)) {
+        if (isset($this->fieldNames[$mapping->columnName]) || ($this->discriminatorColumn && $this->discriminatorColumn->name === $mapping->columnName)) {
             throw MappingException::duplicateColumnName($this->name, $mapping->columnName);
         }
 

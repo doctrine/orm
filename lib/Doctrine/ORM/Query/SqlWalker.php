@@ -399,7 +399,7 @@ class SqlWalker
                 ? $this->getSQLTableAlias($class->getTableName(), $dqlAlias) . '.'
                 : '';
 
-            $sqlParts[] = $sqlTableAlias . $class->getDiscriminatorColumn()['name'] . ' IN (' . implode(', ', $values) . ')';
+            $sqlParts[] = $sqlTableAlias . $class->getDiscriminatorColumn()->name . ' IN (' . implode(', ', $values) . ')';
         }
 
         $sql = implode(' AND ', $sqlParts);
@@ -663,14 +663,14 @@ class SqlWalker
                 $rootClass   = $this->em->getClassMetadata($class->rootEntityName);
                 $tblAlias    = $this->getSQLTableAlias($rootClass->getTableName(), $dqlAlias);
                 $discrColumn = $rootClass->getDiscriminatorColumn();
-                $columnAlias = $this->getSQLColumnAlias($discrColumn['name']);
+                $columnAlias = $this->getSQLColumnAlias($discrColumn->name);
 
-                $sqlSelectExpressions[] = $tblAlias . '.' . $discrColumn['name'] . ' AS ' . $columnAlias;
+                $sqlSelectExpressions[] = $tblAlias . '.' . $discrColumn->name . ' AS ' . $columnAlias;
 
                 $this->rsm->setDiscriminatorColumn($dqlAlias, $columnAlias);
-                $this->rsm->addMetaResult($dqlAlias, $columnAlias, $discrColumn['fieldName'], false, $discrColumn['type']);
-                if (! empty($discrColumn['enumType'])) {
-                    $this->rsm->addEnumResult($columnAlias, $discrColumn['enumType']);
+                $this->rsm->addMetaResult($dqlAlias, $columnAlias, $discrColumn->fieldName, false, $discrColumn->type);
+                if (! empty($discrColumn->enumType)) {
+                    $this->rsm->addEnumResult($columnAlias, $discrColumn->enumType);
                 }
             }
 
@@ -1994,7 +1994,7 @@ class SqlWalker
             $sql .= $this->getSQLTableAlias($discrClass->getTableName(), $dqlAlias) . '.';
         }
 
-        $sql .= $class->getDiscriminatorColumn()['name'] . ($instanceOfExpr->not ? ' NOT IN ' : ' IN ');
+        $sql .= $class->getDiscriminatorColumn()->name . ($instanceOfExpr->not ? ' NOT IN ' : ' IN ');
         $sql .= $this->getChildDiscriminatorsFromClassMetadata($discrClass, $instanceOfExpr);
 
         return $sql;
