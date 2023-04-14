@@ -11,11 +11,9 @@ use Doctrine\Tests\Models\ReadonlyProperties\Book;
 use Doctrine\Tests\Models\ReadonlyProperties\SimpleBook;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use Doctrine\Tests\TestUtil;
-use PHPUnit\Framework\Attributes\RequiresPhp;
 
 use function dirname;
 
-#[RequiresPhp('8.1')]
 class ReadonlyPropertiesTest extends OrmFunctionalTestCase
 {
     protected function setUp(): void

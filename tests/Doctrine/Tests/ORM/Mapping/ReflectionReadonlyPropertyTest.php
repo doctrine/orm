@@ -9,11 +9,9 @@ use Doctrine\Tests\Models\CMS\CmsTag;
 use Doctrine\Tests\Models\ReadonlyProperties\Author;
 use InvalidArgumentException;
 use LogicException;
-use PHPUnit\Framework\Attributes\RequiresPhp;
 use PHPUnit\Framework\TestCase;
 use ReflectionProperty;
 
-#[RequiresPhp('8.1')]
 class ReflectionReadonlyPropertyTest extends TestCase
 {
     public function testSecondWriteWithSameValue(): void

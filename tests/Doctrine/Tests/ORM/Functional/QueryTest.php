@@ -21,7 +21,6 @@ use Doctrine\Tests\Models\Enums\AccessLevel;
 use Doctrine\Tests\Models\Enums\UserStatus;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use PHPUnit\Framework\Attributes\Group;
-use PHPUnit\Framework\Attributes\RequiresPhp;
 
 use function count;
 use function iterator_to_array;
@@ -168,7 +167,6 @@ class QueryTest extends OrmFunctionalTestCase
                   ->getSingleResult();
     }
 
-    #[RequiresPhp('8.1')]
     public function testUseStringEnumCaseAsParameter(): void
     {
         $user           = new CmsUser();
@@ -196,7 +194,6 @@ class QueryTest extends OrmFunctionalTestCase
         self::assertSame('jane', $result[0]->username);
     }
 
-    #[RequiresPhp('8.1')]
     public function testUseIntegerEnumCaseAsParameter(): void
     {
         $user           = new CmsUser();
