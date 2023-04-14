@@ -302,7 +302,7 @@
       <xs:any minOccurs="0" maxOccurs="unbounded" namespace="##other"/>
     </xs:choice>
     <xs:attribute name="name" type="xs:NMTOKEN" use="required" />
-    <xs:attribute name="type" type="xs:NMTOKEN" default="string" />
+    <xs:attribute name="type" type="orm:type" default="string" />
     <xs:attribute name="column" type="orm:columntoken" />
     <xs:attribute name="length" type="xs:NMTOKEN" />
     <xs:attribute name="unique" type="xs:boolean" default="false" />
@@ -414,7 +414,7 @@
       <xs:any minOccurs="0" maxOccurs="unbounded" namespace="##other"/>
     </xs:choice>
     <xs:attribute name="name" type="xs:NMTOKEN" use="required" />
-    <xs:attribute name="type" type="xs:NMTOKEN" />
+    <xs:attribute name="type" type="orm:type" />
     <xs:attribute name="column" type="orm:columntoken" />
     <xs:attribute name="length" type="xs:NMTOKEN" />
     <xs:attribute name="association-key" type="xs:boolean" default="false" />
@@ -442,6 +442,13 @@
   <xs:simpleType name="fqcn" id="fqcn">
     <xs:restriction base="xs:token">
       <xs:pattern value="[a-zA-Z_u01-uff][a-zA-Z0-9_u01-uff]+" id="fqcn.pattern">
+      </xs:pattern>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="type" id="type">
+    <xs:restriction base="xs:token">
+      <xs:pattern value="([a-zA-Z_u01-uff][a-zA-Z0-9_u01-uff]+)|(\c+)" id="type.class.pattern">
       </xs:pattern>
     </xs:restriction>
   </xs:simpleType>
@@ -630,7 +637,7 @@
       <xs:element name="options" type="orm:options" minOccurs="0" />
       <xs:any minOccurs="0" maxOccurs="unbounded" namespace="##other"/>
     </xs:choice>
-    <xs:attribute name="type" type="xs:NMTOKEN" default="string" />
+    <xs:attribute name="type" type="orm:type" default="string" />
     <xs:attribute name="column" type="orm:columntoken" />
     <xs:attribute name="length" type="xs:NMTOKEN" />
     <xs:attribute name="unique" type="xs:boolean" default="false" />
