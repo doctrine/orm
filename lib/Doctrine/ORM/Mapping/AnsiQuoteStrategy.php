@@ -20,7 +20,7 @@ class AnsiQuoteStrategy implements QuoteStrategy
         ClassMetadata $class,
         AbstractPlatform $platform,
     ): string {
-        return $class->fieldMappings[$fieldName]['columnName'];
+        return $class->fieldMappings[$fieldName]->columnName;
     }
 
     public function getTableName(ClassMetadata $class, AbstractPlatform $platform): string

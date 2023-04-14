@@ -242,15 +242,15 @@ abstract class MappingDriverTestCase extends OrmTestCase
         self::assertTrue($class->isVersioned);
         self::assertEquals('version', $class->versionField);
 
-        self::assertFalse(isset($class->fieldMappings['version']['version']));
+        self::assertFalse(isset($class->fieldMappings['version']->version));
     }
 
     #[Depends('testEntityTableNameAndInheritance')]
     public function testFieldMappingsColumnNames(ClassMetadata $class): ClassMetadata
     {
-        self::assertEquals('id', $class->fieldMappings['id']['columnName']);
-        self::assertEquals('name', $class->fieldMappings['name']['columnName']);
-        self::assertEquals('user_email', $class->fieldMappings['email']['columnName']);
+        self::assertEquals('id', $class->fieldMappings['id']->columnName);
+        self::assertEquals('name', $class->fieldMappings['name']->columnName);
+        self::assertEquals('user_email', $class->fieldMappings['email']->columnName);
 
         return $class;
     }
@@ -258,10 +258,10 @@ abstract class MappingDriverTestCase extends OrmTestCase
     #[Depends('testEntityTableNameAndInheritance')]
     public function testStringFieldMappings(ClassMetadata $class): ClassMetadata
     {
-        self::assertEquals('string', $class->fieldMappings['name']['type']);
-        self::assertEquals(50, $class->fieldMappings['name']['length']);
-        self::assertTrue($class->fieldMappings['name']['nullable']);
-        self::assertTrue($class->fieldMappings['name']['unique']);
+        self::assertEquals('string', $class->fieldMappings['name']->type);
+        self::assertEquals(50, $class->fieldMappings['name']->length);
+        self::assertTrue($class->fieldMappings['name']->nullable);
+        self::assertTrue($class->fieldMappings['name']->unique);
 
         return $class;
     }
@@ -306,7 +306,7 @@ abstract class MappingDriverTestCase extends OrmTestCase
     public function testFieldOptions(ClassMetadata $class): ClassMetadata
     {
         $expected = ['foo' => 'bar', 'baz' => ['key' => 'val'], 'fixed' => false];
-        self::assertEquals($expected, $class->fieldMappings['name']['options']);
+        self::assertEquals($expected, $class->fieldMappings['name']->options);
 
         return $class;
     }
@@ -314,7 +314,7 @@ abstract class MappingDriverTestCase extends OrmTestCase
     #[Depends('testEntityTableNameAndInheritance')]
     public function testIdFieldOptions(ClassMetadata $class): ClassMetadata
     {
-        self::assertEquals(['foo' => 'bar', 'unsigned' => false], $class->fieldMappings['id']['options']);
+        self::assertEquals(['foo' => 'bar', 'unsigned' => false], $class->fieldMappings['id']->options);
 
         return $class;
     }
@@ -323,7 +323,7 @@ abstract class MappingDriverTestCase extends OrmTestCase
     public function testIdentifier(ClassMetadata $class): ClassMetadata
     {
         self::assertEquals(['id'], $class->identifier);
-        self::assertEquals('integer', $class->fieldMappings['id']['type']);
+        self::assertEquals('integer', $class->fieldMappings['id']->type);
         self::assertEquals(ClassMetadata::GENERATOR_TYPE_AUTO, $class->generatorType, 'ID-Generator is not ClassMetadata::GENERATOR_TYPE_AUTO');
 
         return $class;
@@ -334,11 +334,11 @@ abstract class MappingDriverTestCase extends OrmTestCase
     {
         $class = $this->createClassMetadata(User::class);
 
-        self::assertIsBool($class->fieldMappings['id']['options']['unsigned']);
-        self::assertFalse($class->fieldMappings['id']['options']['unsigned']);
+        self::assertIsBool($class->fieldMappings['id']->options['unsigned']);
+        self::assertFalse($class->fieldMappings['id']->options['unsigned']);
 
-        self::assertIsBool($class->fieldMappings['name']['options']['fixed']);
-        self::assertFalse($class->fieldMappings['name']['options']['fixed']);
+        self::assertIsBool($class->fieldMappings['name']->options['fixed']);
+        self::assertFalse($class->fieldMappings['name']->options['fixed']);
 
         return $class;
     }
@@ -434,7 +434,7 @@ abstract class MappingDriverTestCase extends OrmTestCase
     #[Depends('testJoinColumnUniqueAndNullable')]
     public function testColumnDefinition(ClassMetadata $class): ClassMetadata
     {
-        self::assertEquals('CHAR(32) NOT NULL', $class->fieldMappings['email']['columnDefinition']);
+        self::assertEquals('CHAR(32) NOT NULL', $class->fieldMappings['email']->columnDefinition);
         self::assertEquals('INT NULL', $class->associationMappings['groups']['joinTable']['inverseJoinColumns'][0]['columnDefinition']);
 
         return $class;
@@ -504,23 +504,14 @@ abstract class MappingDriverTestCase extends OrmTestCase
         self::assertArrayHasKey('id', $class->fieldMappings);
         self::assertArrayHasKey('name', $class->fieldMappings);
 
-        self::assertArrayHasKey('type', $class->fieldMappings['id']);
-        self::assertArrayHasKey('type', $class->fieldMappings['name']);
+        self::assertEquals('string', $class->fieldMappings['id']->type);
+        self::assertEquals('string', $class->fieldMappings['name']->type);
 
-        self::assertEquals('string', $class->fieldMappings['id']['type']);
-        self::assertEquals('string', $class->fieldMappings['name']['type']);
+        self::assertEquals('id', $class->fieldMappings['id']->fieldName);
+        self::assertEquals('name', $class->fieldMappings['name']->fieldName);
 
-        self::assertArrayHasKey('fieldName', $class->fieldMappings['id']);
-        self::assertArrayHasKey('fieldName', $class->fieldMappings['name']);
-
-        self::assertEquals('id', $class->fieldMappings['id']['fieldName']);
-        self::assertEquals('name', $class->fieldMappings['name']['fieldName']);
-
-        self::assertArrayHasKey('columnName', $class->fieldMappings['id']);
-        self::assertArrayHasKey('columnName', $class->fieldMappings['name']);
-
-        self::assertEquals('id', $class->fieldMappings['id']['columnName']);
-        self::assertEquals('name', $class->fieldMappings['name']['columnName']);
+        self::assertEquals('id', $class->fieldMappings['id']->columnName);
+        self::assertEquals('name', $class->fieldMappings['name']->columnName);
 
         self::assertEquals(ClassMetadata::GENERATOR_TYPE_NONE, $class->generatorType);
     }
@@ -533,11 +524,8 @@ abstract class MappingDriverTestCase extends OrmTestCase
         self::assertArrayHasKey('id', $class->fieldMappings);
         self::assertArrayHasKey('value', $class->fieldMappings);
 
-        self::assertArrayHasKey('columnDefinition', $class->fieldMappings['id']);
-        self::assertArrayHasKey('columnDefinition', $class->fieldMappings['value']);
-
-        self::assertEquals('int unsigned not null', strtolower($class->fieldMappings['id']['columnDefinition']));
-        self::assertEquals('varchar(255) not null', strtolower($class->fieldMappings['value']['columnDefinition']));
+        self::assertEquals('int unsigned not null', strtolower($class->fieldMappings['id']->columnDefinition));
+        self::assertEquals('varchar(255) not null', strtolower($class->fieldMappings['value']->columnDefinition));
     }
 
     #[\PHPUnit\Framework\Attributes\Group('DDC-559')]
@@ -713,31 +701,31 @@ abstract class MappingDriverTestCase extends OrmTestCase
         $guestMetadata = $factory->getMetadataFor(DDC964Guest::class);
         $adminMetadata = $factory->getMetadataFor(DDC964Admin::class);
 
-        self::assertTrue($adminMetadata->fieldMappings['id']['id']);
-        self::assertEquals('id', $adminMetadata->fieldMappings['id']['fieldName']);
-        self::assertEquals('user_id', $adminMetadata->fieldMappings['id']['columnName']);
+        self::assertTrue($adminMetadata->fieldMappings['id']->id);
+        self::assertEquals('id', $adminMetadata->fieldMappings['id']->fieldName);
+        self::assertEquals('user_id', $adminMetadata->fieldMappings['id']->columnName);
         self::assertEquals(['user_id' => 'id', 'user_name' => 'name'], $adminMetadata->fieldNames);
         self::assertEquals(['id' => 'user_id', 'name' => 'user_name'], $adminMetadata->columnNames);
-        self::assertEquals(150, $adminMetadata->fieldMappings['id']['length']);
+        self::assertEquals(150, $adminMetadata->fieldMappings['id']->length);
 
-        self::assertEquals('name', $adminMetadata->fieldMappings['name']['fieldName']);
-        self::assertEquals('user_name', $adminMetadata->fieldMappings['name']['columnName']);
-        self::assertEquals(250, $adminMetadata->fieldMappings['name']['length']);
-        self::assertTrue($adminMetadata->fieldMappings['name']['nullable']);
-        self::assertFalse($adminMetadata->fieldMappings['name']['unique']);
+        self::assertEquals('name', $adminMetadata->fieldMappings['name']->fieldName);
+        self::assertEquals('user_name', $adminMetadata->fieldMappings['name']->columnName);
+        self::assertEquals(250, $adminMetadata->fieldMappings['name']->length);
+        self::assertTrue($adminMetadata->fieldMappings['name']->nullable);
+        self::assertFalse($adminMetadata->fieldMappings['name']->unique);
 
-        self::assertTrue($guestMetadata->fieldMappings['id']['id']);
-        self::assertEquals('guest_id', $guestMetadata->fieldMappings['id']['columnName']);
-        self::assertEquals('id', $guestMetadata->fieldMappings['id']['fieldName']);
+        self::assertTrue($guestMetadata->fieldMappings['id']->id);
+        self::assertEquals('guest_id', $guestMetadata->fieldMappings['id']->columnName);
+        self::assertEquals('id', $guestMetadata->fieldMappings['id']->fieldName);
         self::assertEquals(['guest_id' => 'id', 'guest_name' => 'name'], $guestMetadata->fieldNames);
         self::assertEquals(['id' => 'guest_id', 'name' => 'guest_name'], $guestMetadata->columnNames);
-        self::assertEquals(140, $guestMetadata->fieldMappings['id']['length']);
+        self::assertEquals(140, $guestMetadata->fieldMappings['id']->length);
 
-        self::assertEquals('name', $guestMetadata->fieldMappings['name']['fieldName']);
-        self::assertEquals('guest_name', $guestMetadata->fieldMappings['name']['columnName']);
-        self::assertEquals(240, $guestMetadata->fieldMappings['name']['length']);
-        self::assertFalse($guestMetadata->fieldMappings['name']['nullable']);
-        self::assertTrue($guestMetadata->fieldMappings['name']['unique']);
+        self::assertEquals('name', $guestMetadata->fieldMappings['name']->fieldName);
+        self::assertEquals('guest_name', $guestMetadata->fieldMappings['name']->columnName);
+        self::assertEquals(240, $guestMetadata->fieldMappings['name']->length);
+        self::assertFalse($guestMetadata->fieldMappings['name']->nullable);
+        self::assertTrue($guestMetadata->fieldMappings['name']->unique);
     }
 
     #[\PHPUnit\Framework\Attributes\Group('DDC-1955')]
@@ -947,7 +935,7 @@ abstract class MappingDriverTestCase extends OrmTestCase
     {
         $metadata = $this->createClassMetadata(ReservedWordInTableColumn::class);
 
-        self::assertSame('count', $metadata->getFieldMapping('count')['columnName']);
+        self::assertSame('count', $metadata->getFieldMapping('count')->columnName);
     }
 
     public function testInsertableColumn(): void
@@ -956,10 +944,8 @@ abstract class MappingDriverTestCase extends OrmTestCase
 
         $mapping = $metadata->getFieldMapping('nonInsertableContent');
 
-        self::assertArrayHasKey('notInsertable', $mapping);
-        self::assertArrayHasKey('generated', $mapping);
-        self::assertSame(ClassMetadata::GENERATED_INSERT, $mapping['generated']);
-        self::assertArrayNotHasKey('notInsertable', $metadata->getFieldMapping('insertableContent'));
+        self::assertSame(ClassMetadata::GENERATED_INSERT, $mapping->generated);
+        self::assertNull($metadata->getFieldMapping('insertableContent')->notInsertable);
     }
 
     public function testUpdatableColumn(): void
@@ -968,10 +954,8 @@ abstract class MappingDriverTestCase extends OrmTestCase
 
         $mapping = $metadata->getFieldMapping('nonUpdatableContent');
 
-        self::assertArrayHasKey('notUpdatable', $mapping);
-        self::assertArrayHasKey('generated', $mapping);
-        self::assertSame(ClassMetadata::GENERATED_ALWAYS, $mapping['generated']);
-        self::assertArrayNotHasKey('notUpdatable', $metadata->getFieldMapping('updatableContent'));
+        self::assertSame(ClassMetadata::GENERATED_ALWAYS, $mapping->generated);
+        self::assertNull($metadata->getFieldMapping('updatableContent')->notUpdatable);
     }
 
     #[RequiresPhp('8.1')]
@@ -979,7 +963,7 @@ abstract class MappingDriverTestCase extends OrmTestCase
     {
         $metadata = $this->createClassMetadata(Card::class);
 
-        self::assertEquals(Suit::class, $metadata->fieldMappings['suit']['enumType']);
+        self::assertEquals(Suit::class, $metadata->fieldMappings['suit']->enumType);
     }
 }
 

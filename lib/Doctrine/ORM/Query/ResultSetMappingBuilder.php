@@ -251,9 +251,9 @@ class ResultSetMappingBuilder extends ResultSetMapping implements Stringable
                 $class             = $this->em->getClassMetadata($this->declaringClasses[$columnName]);
                 $fieldName         = $this->fieldMappings[$columnName];
                 $classFieldMapping = $class->fieldMappings[$fieldName];
-                $columnSql         = $tableAlias . '.' . $classFieldMapping['columnName'];
+                $columnSql         = $tableAlias . '.' . $classFieldMapping->columnName;
 
-                $type      = Type::getType($classFieldMapping['type']);
+                $type      = Type::getType($classFieldMapping->type);
                 $columnSql = $type->convertToPHPValueSQL($columnSql, $this->em->getConnection()->getDatabasePlatform());
 
                 $sql .= $columnSql;

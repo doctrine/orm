@@ -82,8 +82,8 @@ class BasicInheritanceMappingTest extends OrmTestCase
         self::assertArrayHasKey('id', $class->fieldMappings);
         self::assertArrayHasKey('name', $class->fieldMappings);
 
-        self::assertArrayNotHasKey('inherited', $class->fieldMappings['mapped1']);
-        self::assertArrayNotHasKey('inherited', $class->fieldMappings['mapped2']);
+        self::assertNull($class->fieldMappings['mapped1']->inherited);
+        self::assertNull($class->fieldMappings['mapped2']->inherited);
         self::assertArrayNotHasKey('transient', $class->fieldMappings);
 
         self::assertArrayHasKey('mappedRelated1', $class->associationMappings);

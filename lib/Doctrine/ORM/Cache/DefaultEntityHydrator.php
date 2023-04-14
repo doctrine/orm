@@ -46,7 +46,7 @@ class DefaultEntityHydrator implements EntityHydrator
             }
 
             foreach ($metadata->fieldMappings as $name => $fieldMapping) {
-                if (isset($fieldMapping['generated'])) {
+                if (isset($fieldMapping->generated)) {
                     $data[$name] = $metadata->getFieldValue($entity, $name);
                 }
             }
@@ -79,7 +79,7 @@ class DefaultEntityHydrator implements EntityHydrator
                     if (isset($targetClassMetadata->fieldMappings[$fieldName])) {
                         $fieldMapping = $targetClassMetadata->fieldMappings[$fieldName];
 
-                        $data[$owningAssociation['targetToSourceKeyColumns'][$fieldMapping['columnName']]] = $fieldValue;
+                        $data[$owningAssociation['targetToSourceKeyColumns'][$fieldMapping->columnName]] = $fieldValue;
 
                         continue;
                     }

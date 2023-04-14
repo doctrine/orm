@@ -228,9 +228,9 @@ class ClassMetadataBuilderTest extends OrmTestCase
     {
         $this->assertIsFluent($this->builder->addField('name', 'string'));
         $mapping = $this->cm->getFieldMapping('name');
-        self::assertSame('name', $mapping['fieldName']);
-        self::assertSame('name', $mapping['columnName']);
-        self::assertSame('string', $mapping['type']);
+        self::assertSame('name', $mapping->fieldName);
+        self::assertSame('name', $mapping->columnName);
+        self::assertSame('string', $mapping->type);
     }
 
     public function testCreateField(): void
@@ -241,9 +241,9 @@ class ClassMetadataBuilderTest extends OrmTestCase
         self::assertFalse(isset($this->cm->fieldMappings['name']));
         $this->assertIsFluent($fieldBuilder->build());
         $mapping = $this->cm->getFieldMapping('name');
-        self::assertSame('name', $mapping['fieldName']);
-        self::assertSame('name', $mapping['columnName']);
-        self::assertSame('string', $mapping['type']);
+        self::assertSame('name', $mapping->fieldName);
+        self::assertSame('name', $mapping->columnName);
+        self::assertSame('string', $mapping->type);
     }
 
     public function testCreateVersionedField(): void

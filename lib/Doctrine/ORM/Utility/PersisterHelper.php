@@ -63,7 +63,7 @@ class PersisterHelper
             $fieldName = $class->fieldNames[$columnName];
 
             if (isset($class->fieldMappings[$fieldName])) {
-                return $class->fieldMappings[$fieldName]['type'];
+                return $class->fieldMappings[$fieldName]->type;
             }
         }
 

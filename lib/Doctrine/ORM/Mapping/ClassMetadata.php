@@ -822,33 +822,35 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
         }
 
         foreach ($this->fieldMappings as $field => $mapping) {
-            if (isset($mapping['declaredField']) && isset($parentReflFields[$mapping['declaredField']])) {
-                $childProperty = $this->getAccessibleProperty($reflService, $mapping['originalClass'], $mapping['originalField']);
+            if (isset($mapping->declaredField) && isset($parentReflFields[$mapping->declaredField])) {
+                assert($mapping->originalField !== null);
+                assert($mapping->originalClass !== null);
+                $childProperty = $this->getAccessibleProperty($reflService, $mapping->originalClass, $mapping->originalField);
                 assert($childProperty !== null);
 
-                if (isset($mapping['enumType'])) {
+                if (isset($mapping->enumType)) {
                     $childProperty = new ReflectionEnumProperty(
                         $childProperty,
-                        $mapping['enumType'],
+                        $mapping->enumType,
                     );
                 }
 
                 $this->reflFields[$field] = new ReflectionEmbeddedProperty(
-                    $parentReflFields[$mapping['declaredField']],
+                    $parentReflFields[$mapping->declaredField],
                     $childProperty,
-                    $mapping['originalClass'],
+                    $mapping->originalClass,
                 );
                 continue;
             }
 
-            $this->reflFields[$field] = isset($mapping['declared'])
-                ? $this->getAccessibleProperty($reflService, $mapping['declared'], $field)
+            $this->reflFields[$field] = isset($mapping->declared)
+                ? $this->getAccessibleProperty($reflService, $mapping->declared, $field)
                 : $this->getAccessibleProperty($reflService, $this->name, $field);
 
-            if (isset($mapping['enumType']) && $this->reflFields[$field] !== null) {
+            if (isset($mapping->enumType) && $this->reflFields[$field] !== null) {
                 $this->reflFields[$field] = new ReflectionEnumProperty(
                     $this->reflFields[$field],
-                    $mapping['enumType'],
+                    $mapping->enumType,
                 );
             }
         }
@@ -1034,14 +1036,14 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
     {
         $mapping = $this->getFieldMapping($fieldName);
 
-        return $mapping !== false && isset($mapping['unique']) && $mapping['unique'];
+        return $mapping !== false && isset($mapping->unique) && $mapping->unique;
     }
 
     public function isNullable(string $fieldName): bool
     {
         $mapping = $this->getFieldMapping($fieldName);
 
-        return $mapping !== false && isset($mapping['nullable']) && $mapping['nullable'];
+        return $mapping !== false && isset($mapping->nullable) && $mapping->nullable;
     }
 
     /**
@@ -1195,27 +1197,27 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
 
         $mapping = FieldMapping::fromMappingArray($mapping);
 
-        if ($mapping['columnName'][0] === '`') {
-            $mapping['columnName'] = trim($mapping['columnName'], '`');
-            $mapping['quoted']     = true;
+        if ($mapping->columnName[0] === '`') {
+            $mapping->columnName = trim($mapping->columnName, '`');
+            $mapping->quoted     = true;
         }
 
-        $this->columnNames[$mapping['fieldName']] = $mapping['columnName'];
+        $this->columnNames[$mapping->fieldName] = $mapping->columnName;
 
-        if (isset($this->fieldNames[$mapping['columnName']]) || ($this->discriminatorColumn && $this->discriminatorColumn['name'] === $mapping['columnName'])) {
-            throw MappingException::duplicateColumnName($this->name, $mapping['columnName']);
+        if (isset($this->fieldNames[$mapping->columnName]) || ($this->discriminatorColumn && $this->discriminatorColumn['name'] === $mapping->columnName)) {
+            throw MappingException::duplicateColumnName($this->name, $mapping->columnName);
         }
 
-        $this->fieldNames[$mapping['columnName']] = $mapping['fieldName'];
+        $this->fieldNames[$mapping->columnName] = $mapping->fieldName;
 
         // Complete id mapping
-        if (isset($mapping['id']) && $mapping['id'] === true) {
-            if ($this->versionField === $mapping['fieldName']) {
-                throw MappingException::cannotVersionIdField($this->name, $mapping['fieldName']);
+        if (isset($mapping->id) && $mapping->id === true) {
+            if ($this->versionField === $mapping->fieldName) {
+                throw MappingException::cannotVersionIdField($this->name, $mapping->fieldName);
             }
 
-            if (! in_array($mapping['fieldName'], $this->identifier, true)) {
-                $this->identifier[] = $mapping['fieldName'];
+            if (! in_array($mapping->fieldName, $this->identifier, true)) {
+                $this->identifier[] = $mapping->fieldName;
             }
 
             // Check for composite key
@@ -1224,22 +1226,22 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
             }
         }
 
-        if (isset($mapping['generated'])) {
-            if (! in_array($mapping['generated'], [self::GENERATED_NEVER, self::GENERATED_INSERT, self::GENERATED_ALWAYS])) {
-                throw MappingException::invalidGeneratedMode($mapping['generated']);
+        if (isset($mapping->generated)) {
+            if (! in_array($mapping->generated, [self::GENERATED_NEVER, self::GENERATED_INSERT, self::GENERATED_ALWAYS])) {
+                throw MappingException::invalidGeneratedMode($mapping->generated);
             }
 
-            if ($mapping['generated'] === self::GENERATED_NEVER) {
-                unset($mapping['generated']);
+            if ($mapping->generated === self::GENERATED_NEVER) {
+                unset($mapping->generated);
             }
         }
 
-        if (isset($mapping['enumType'])) {
-            if (! enum_exists($mapping['enumType'])) {
-                throw MappingException::nonEnumTypeMapped($this->name, $mapping['fieldName'], $mapping['enumType']);
+        if (isset($mapping->enumType)) {
+            if (! enum_exists($mapping->enumType)) {
+                throw MappingException::nonEnumTypeMapped($this->name, $mapping->fieldName, $mapping->enumType);
             }
 
-            if (! empty($mapping['id'])) {
+            if (! empty($mapping->id)) {
                 $this->containsEnumIdentifier = true;
             }
         }
@@ -1512,7 +1514,7 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
 
         foreach ($this->identifier as $idProperty) {
             if (isset($this->fieldMappings[$idProperty])) {
-                $columnNames[] = $this->fieldMappings[$idProperty]['columnName'];
+                $columnNames[] = $this->fieldMappings[$idProperty]->columnName;
 
                 continue;
             }
@@ -1607,7 +1609,7 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
     public function getTypeOfField(string $fieldName): string|null
     {
         return isset($this->fieldMappings[$fieldName])
-            ? $this->fieldMappings[$fieldName]['type']
+            ? $this->fieldMappings[$fieldName]->type
             : null;
     }
 
@@ -1751,29 +1753,29 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
 
         $mapping = $this->fieldMappings[$fieldName];
 
-        if (isset($mapping['inherited'])) {
-            throw MappingException::illegalOverrideOfInheritedProperty($this->name, $fieldName, $mapping['inherited']);
+        if (isset($mapping->inherited)) {
+            throw MappingException::illegalOverrideOfInheritedProperty($this->name, $fieldName, $mapping->inherited);
         }
 
-        if (isset($mapping['id'])) {
-            $overrideMapping['id'] = $mapping['id'];
+        if (isset($mapping->id)) {
+            $overrideMapping['id'] = $mapping->id;
         }
 
         if (! isset($overrideMapping['type'])) {
-            $overrideMapping['type'] = $mapping['type'];
+            $overrideMapping['type'] = $mapping->type;
         }
 
         if (! isset($overrideMapping['fieldName'])) {
-            $overrideMapping['fieldName'] = $mapping['fieldName'];
+            $overrideMapping['fieldName'] = $mapping->fieldName;
         }
 
-        if ($overrideMapping['type'] !== $mapping['type']) {
+        if ($overrideMapping['type'] !== $mapping->type) {
             throw MappingException::invalidOverrideFieldType($this->name, $fieldName);
         }
 
         unset($this->fieldMappings[$fieldName]);
-        unset($this->fieldNames[$mapping['columnName']]);
-        unset($this->columnNames[$mapping['fieldName']]);
+        unset($this->fieldNames[$mapping->columnName]);
+        unset($this->columnNames[$mapping->fieldName]);
 
         $overrideMapping = $this->validateAndCompleteFieldMapping($overrideMapping);
 
@@ -1785,7 +1787,7 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
      */
     public function isInheritedField(string $fieldName): bool
     {
-        return isset($this->fieldMappings[$fieldName]['inherited']);
+        return isset($this->fieldMappings[$fieldName]->inherited);
     }
 
     /**
@@ -1888,13 +1890,13 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
     public function mapField(array $mapping): void
     {
         $mapping = $this->validateAndCompleteFieldMapping($mapping);
-        $this->assertFieldNotMapped($mapping['fieldName']);
+        $this->assertFieldNotMapped($mapping->fieldName);
 
-        if (isset($mapping['generated'])) {
+        if (isset($mapping->generated)) {
             $this->requiresFetchAfterChange = true;
         }
 
-        $this->fieldMappings[$mapping['fieldName']] = $mapping;
+        $this->fieldMappings[$mapping->fieldName] = $mapping;
     }
 
     /**
@@ -1920,9 +1922,9 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
      */
     public function addInheritedFieldMapping(FieldMapping $fieldMapping): void
     {
-        $this->fieldMappings[$fieldMapping['fieldName']] = $fieldMapping;
-        $this->columnNames[$fieldMapping['fieldName']]   = $fieldMapping['columnName'];
-        $this->fieldNames[$fieldMapping['columnName']]   = $fieldMapping['fieldName'];
+        $this->fieldMappings[$fieldMapping->fieldName] = $fieldMapping;
+        $this->columnNames[$fieldMapping->fieldName]   = $fieldMapping->columnName;
+        $this->fieldNames[$fieldMapping->columnName]   = $fieldMapping->fieldName;
     }
 
     /**

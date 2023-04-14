@@ -49,7 +49,7 @@ class LimitSubqueryWalker extends TreeWalkerAdapter
 
         $this->_getQuery()->setHint(
             self::IDENTIFIER_TYPE,
-            Type::getType($rootClass->fieldMappings[$identifier]['type']),
+            Type::getType($rootClass->fieldMappings[$identifier]->type),
         );
 
         $this->_getQuery()->setHint(self::FORCE_DBAL_TYPE_CONVERSION, true);

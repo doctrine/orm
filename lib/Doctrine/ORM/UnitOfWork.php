@@ -635,7 +635,7 @@ class UnitOfWork implements PropertyChangedListener
 
                 $orgValue = $originalData[$propName];
 
-                if (! empty($class->fieldMappings[$propName]['enumType'])) {
+                if (! empty($class->fieldMappings[$propName]->enumType)) {
                     if (is_array($orgValue)) {
                         foreach ($orgValue as $id => $val) {
                             if ($val instanceof BackedEnum) {

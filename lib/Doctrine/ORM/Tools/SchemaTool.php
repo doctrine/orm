@@ -212,7 +212,7 @@ class SchemaTool
             } elseif ($class->isInheritanceTypeJoined()) {
                 // Add all non-inherited fields as columns
                 foreach ($class->fieldMappings as $fieldName => $mapping) {
-                    if (! isset($mapping['inherited'])) {
+                    if (! isset($mapping->inherited)) {
                         $this->gatherColumn($class, $mapping, $table);
                     }
                 }
@@ -228,7 +228,7 @@ class SchemaTool
                     $inheritedKeyColumns = [];
 
                     foreach ($class->identifier as $identifierField) {
-                        if (isset($class->fieldMappings[$identifierField]['inherited'])) {
+                        if (isset($class->fieldMappings[$identifierField]->inherited)) {
                             $idMapping = $class->fieldMappings[$identifierField];
                             $this->gatherColumn($class, $idMapping, $table);
                             $columnName = $this->quoteStrategy->getColumnName(
@@ -436,14 +436,14 @@ class SchemaTool
         $pkColumns = [];
 
         foreach ($class->fieldMappings as $mapping) {
-            if ($class->isInheritanceTypeSingleTable() && isset($mapping['inherited'])) {
+            if ($class->isInheritanceTypeSingleTable() && isset($mapping->inherited)) {
                 continue;
             }
 
             $this->gatherColumn($class, $mapping, $table);
 
-            if ($class->isIdentifier($mapping['fieldName'])) {
-                $pkColumns[] = $this->quoteStrategy->getColumnName($mapping['fieldName'], $class, $this->platform);
+            if ($class->isIdentifier($mapping->fieldName)) {
+                $pkColumns[] = $this->quoteStrategy->getColumnName($mapping->fieldName, $class, $this->platform);
             }
         }
     }
@@ -459,43 +459,43 @@ class SchemaTool
         FieldMapping $mapping,
         Table $table,
     ): void {
-        $columnName = $this->quoteStrategy->getColumnName($mapping['fieldName'], $class, $this->platform);
-        $columnType = $mapping['type'];
+        $columnName = $this->quoteStrategy->getColumnName($mapping->fieldName, $class, $this->platform);
+        $columnType = $mapping->type;
 
         $options            = [];
-        $options['length']  = $mapping['length'] ?? null;
-        $options['notnull'] = isset($mapping['nullable']) ? ! $mapping['nullable'] : true;
+        $options['length']  = $mapping->length ?? null;
+        $options['notnull'] = isset($mapping->nullable) ? ! $mapping->nullable : true;
         if ($class->isInheritanceTypeSingleTable() && $class->parentClasses) {
             $options['notnull'] = false;
         }
 
         $options['platformOptions']            = [];
-        $options['platformOptions']['version'] = $class->isVersioned && $class->versionField === $mapping['fieldName'];
+        $options['platformOptions']['version'] = $class->isVersioned && $class->versionField === $mapping->fieldName;
 
         if (strtolower($columnType) === 'string' && $options['length'] === null) {
             $options['length'] = 255;
         }
 
-        if (isset($mapping['precision'])) {
-            $options['precision'] = $mapping['precision'];
+        if (isset($mapping->precision)) {
+            $options['precision'] = $mapping->precision;
         }
 
-        if (isset($mapping['scale'])) {
-            $options['scale'] = $mapping['scale'];
+        if (isset($mapping->scale)) {
+            $options['scale'] = $mapping->scale;
         }
 
-        if (isset($mapping['default'])) {
-            $options['default'] = $mapping['default'];
+        if (isset($mapping->default)) {
+            $options['default'] = $mapping->default;
         }
 
-        if (isset($mapping['columnDefinition'])) {
-            $options['columnDefinition'] = $mapping['columnDefinition'];
+        if (isset($mapping->columnDefinition)) {
+            $options['columnDefinition'] = $mapping->columnDefinition;
         }
 
         // the 'default' option can be overwritten here
         $options = $this->gatherColumnOptions($mapping) + $options;
 
-        if ($class->isIdGeneratorIdentity() && $class->getIdentifierFieldNames() === [$mapping['fieldName']]) {
+        if ($class->isIdGeneratorIdentity() && $class->getIdentifierFieldNames() === [$mapping->fieldName]) {
             $options['autoincrement'] = true;
         }
 
@@ -510,7 +510,7 @@ class SchemaTool
             $table->addColumn($columnName, $columnType, $options);
         }
 
-        $isUnique = $mapping['unique'] ?? false;
+        $isUnique = $mapping->unique ?? false;
         if ($isUnique) {
             $table->addUniqueIndex([$columnName]);
         }
@@ -698,8 +698,8 @@ class SchemaTool
 
                 if (isset($joinColumn['columnDefinition'])) {
                     $columnOptions['columnDefinition'] = $joinColumn['columnDefinition'];
-                } elseif (isset($fieldMapping['columnDefinition'])) {
-                    $columnOptions['columnDefinition'] = $fieldMapping['columnDefinition'];
+                } elseif (isset($fieldMapping->columnDefinition)) {
+                    $columnOptions['columnDefinition'] = $fieldMapping->columnDefinition;
                 }
 
                 if (isset($joinColumn['nullable'])) {
@@ -708,18 +708,18 @@ class SchemaTool
 
                 $columnOptions += $this->gatherColumnOptions($fieldMapping);
 
-                if (isset($fieldMapping['length'])) {
-                    $columnOptions['length'] = $fieldMapping['length'];
+                if (isset($fieldMapping->length)) {
+                    $columnOptions['length'] = $fieldMapping->length;
                 }
 
-                if ($fieldMapping['type'] === 'decimal') {
-                    $columnOptions['scale']     = $fieldMapping['scale'];
-                    $columnOptions['precision'] = $fieldMapping['precision'];
+                if ($fieldMapping->type === 'decimal') {
+                    $columnOptions['scale']     = $fieldMapping->scale;
+                    $columnOptions['precision'] = $fieldMapping->precision;
                 }
 
                 $columnOptions = $this->gatherColumnOptions($joinColumn) + $columnOptions;
 
-                $theJoinTable->addColumn($quotedColumnName, $fieldMapping['type'], $columnOptions);
+                $theJoinTable->addColumn($quotedColumnName, $fieldMapping->type, $columnOptions);
             }
 
             if (isset($joinColumn['unique']) && $joinColumn['unique'] === true) {
@@ -769,10 +769,10 @@ class SchemaTool
     /** @return mixed[] */
     private function gatherColumnOptions(JoinColumnMapping|FieldMapping|DiscriminatorColumnMapping $mapping): array
     {
-        $mappingOptions = $mapping['options'] ?? [];
+        $mappingOptions = $mapping->options ?? [];
 
-        if (isset($mapping['enumType'])) {
-            $mappingOptions['enumType'] = $mapping['enumType'];
+        if (isset($mapping->enumType)) {
+            $mappingOptions['enumType'] = $mapping->enumType;
         }
 
         if (($mappingOptions['default'] ?? null) instanceof BackedEnum) {
