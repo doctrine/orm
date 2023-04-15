@@ -307,7 +307,7 @@ class DefaultQueryCache implements QueryCache
         $assocRegion    = $assocPersister->getCacheRegion();
 
         // Handle *-to-one associations
-        if ($assoc['type'] & ClassMetadata::TO_ONE) {
+        if ($assoc->isToOne()) {
             $assocIdentifier = $this->uow->getEntityIdentifier($assocValue);
             $entityKey       = new EntityCacheKey($assocMetadata->rootEntityName, $assocIdentifier);
 
@@ -395,7 +395,7 @@ class DefaultQueryCache implements QueryCache
         }
 
         // Handle *-to-one associations
-        if ($assoc['type'] & ClassMetadata::TO_ONE) {
+        if ($assoc->isToOne()) {
             return $this->getAssociationPathValue($value, $path);
         }
 

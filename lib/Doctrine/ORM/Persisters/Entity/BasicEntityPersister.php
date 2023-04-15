@@ -1030,7 +1030,7 @@ class BasicEntityPersister implements EntityPersister
         $joinSql    = '';
         $orderBySql = '';
 
-        if ($assoc !== null && $assoc['type'] === ClassMetadata::MANY_TO_MANY) {
+        if ($assoc !== null && $assoc->isManyToMany()) {
             $joinSql = $this->getSelectManyToManyJoinSQL($assoc);
         }
 
@@ -1619,7 +1619,7 @@ class BasicEntityPersister implements EntityPersister
             $columns = [];
             $class   = $this->class;
 
-            if ($association['type'] === ClassMetadata::MANY_TO_MANY) {
+            if ($association->isManyToMany()) {
                 if (! $association['isOwningSide']) {
                     $association = $assoc;
                 }
@@ -1835,7 +1835,7 @@ class BasicEntityPersister implements EntityPersister
                     $class = $this->em->getClassMetadata($assoc['targetEntity']);
                 }
 
-                $columns = $assoc['type'] === ClassMetadata::MANY_TO_MANY
+                $columns = $assoc->isManyToMany()
                     ? $assoc['relationToTargetKeyColumns']
                     : $assoc['sourceToTargetKeyColumns'];
 

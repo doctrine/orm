@@ -125,7 +125,7 @@ class SchemaValidator
                 }
             }
 
-            if ($assoc['inversedBy']) {
+            if ($assoc->inversedBy) {
                 if ($targetMetadata->hasField($assoc['inversedBy'])) {
                     $ce[] = 'The association ' . $class->name . '#' . $fieldName . ' refers to the inverse side ' .
                             'field ' . $assoc['targetEntity'] . '#' . $assoc['inversedBy'] . ' which is not defined as association.';
@@ -146,15 +146,15 @@ class SchemaValidator
                 }
 
                 // Verify inverse side/owning side match each other
-                if (array_key_exists($assoc['inversedBy'], $targetMetadata->associationMappings)) {
-                    $targetAssoc = $targetMetadata->associationMappings[$assoc['inversedBy']];
-                    if ($assoc['type'] === ClassMetadata::ONE_TO_ONE && $targetAssoc['type'] !== ClassMetadata::ONE_TO_ONE) {
+                if (array_key_exists($assoc->inversedBy, $targetMetadata->associationMappings)) {
+                    $targetAssoc = $targetMetadata->associationMappings[$assoc->inversedBy];
+                    if ($assoc->isOneToOne() && ! $targetAssoc->isOneToOne()) {
                         $ce[] = 'If association ' . $class->name . '#' . $fieldName . ' is one-to-one, then the inversed ' .
-                                'side ' . $targetMetadata->name . '#' . $assoc['inversedBy'] . ' has to be one-to-one as well.';
-                    } elseif ($assoc['type'] === ClassMetadata::MANY_TO_ONE && $targetAssoc['type'] !== ClassMetadata::ONE_TO_MANY) {
+                                'side ' . $targetMetadata->name . '#' . $assoc->inversedBy . ' has to be one-to-one as well.';
+                    } elseif ($assoc->isManyToOne() && ! $targetAssoc->isOneToMany()) {
                         $ce[] = 'If association ' . $class->name . '#' . $fieldName . ' is many-to-one, then the inversed ' .
-                                'side ' . $targetMetadata->name . '#' . $assoc['inversedBy'] . ' has to be one-to-many.';
-                    } elseif ($assoc['type'] === ClassMetadata::MANY_TO_MANY && $targetAssoc['type'] !== ClassMetadata::MANY_TO_MANY) {
+                                'side ' . $targetMetadata->name . '#' . $assoc->inversedBy . ' has to be one-to-many.';
+                    } elseif ($assoc->isManyToMany() && ! $targetAssoc->isManyToMany()) {
                         $ce[] = 'If association ' . $class->name . '#' . $fieldName . ' is many-to-many, then the inversed ' .
                                 'side ' . $targetMetadata->name . '#' . $assoc['inversedBy'] . ' has to be many-to-many as well.';
                     }
@@ -162,7 +162,7 @@ class SchemaValidator
             }
 
             if ($assoc->isOwningSide()) {
-                if ($assoc['type'] === ClassMetadata::MANY_TO_MANY) {
+                if ($assoc->isManyToMany()) {
                     $identifierColumns = $class->getIdentifierColumnNames();
                     foreach ($assoc['joinTable']['joinColumns'] as $joinColumn) {
                         if (! in_array($joinColumn['referencedColumnName'], $identifierColumns, true)) {
