@@ -139,7 +139,7 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
 
         // If _backRefFieldName is set and its a one-to-many association,
         // we need to set the back reference.
-        if ($this->backRefFieldName && $this->association['type'] === ClassMetadata::ONE_TO_MANY) {
+        if ($this->backRefFieldName && $this->association->isOneToMany()) {
             assert($this->typeClass !== null);
             // Set back reference to owner
             $this->typeClass->reflFields[$this->backRefFieldName]->setValue(
@@ -165,7 +165,7 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
 
         // If _backRefFieldName is set, then the association is bidirectional
         // and we need to set the back reference.
-        if ($this->backRefFieldName && $this->association !== null && $this->association['type'] === ClassMetadata::ONE_TO_MANY) {
+        if ($this->backRefFieldName && $this->association !== null && $this->association->isOneToMany()) {
             assert($this->typeClass !== null);
             // Set back reference to owner
             $this->typeClass->reflFields[$this->backRefFieldName]->setValue(
@@ -587,7 +587,7 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
         }
 
         assert($this->association !== null);
-        if ($this->association['type'] === ClassMetadata::MANY_TO_MANY) {
+        if ($this->association->isManyToMany()) {
             $persister = $this->getUnitOfWork()->getCollectionPersister($this->association);
 
             return new ArrayCollection($persister->loadCriteria($this, $criteria));

@@ -898,7 +898,7 @@ class SqlWalker
         $assoc = ! $relation['isOwningSide'] ? $targetClass->associationMappings[$relation['mappedBy']] : $relation;
 
         if ($this->query->getHint(Query::HINT_INTERNAL_ITERATION) === true && (! $this->query->getHint(self::HINT_DISTINCT) || isset($this->selectedClasses[$joinedDqlAlias]))) {
-            if ($relation['type'] === ClassMetadata::ONE_TO_MANY || $relation['type'] === ClassMetadata::MANY_TO_MANY) {
+            if ($relation->isToMany()) {
                 throw QueryException::iterateWithFetchJoinNotAllowed($assoc);
             }
         }
@@ -945,7 +945,7 @@ class SqlWalker
                 ];
                 break;
 
-            case $assoc['type'] === ClassMetadata::MANY_TO_MANY:
+            case $assoc->isManyToMany():
                 // Join relation table
                 $joinTable      = $assoc['joinTable'];
                 $joinTableAlias = $this->getSQLTableAlias($joinTable['name'], $joinedDqlAlias);
@@ -1856,8 +1856,8 @@ class SqlWalker
 
         $assoc = $class->associationMappings[$fieldName];
 
-        if ($assoc['type'] === ClassMetadata::ONE_TO_MANY) {
-            $targetClass      = $this->em->getClassMetadata($assoc['targetEntity']);
+        if ($assoc->isOneToMany()) {
+            $targetClass      = $this->em->getClassMetadata($assoc->targetEntity);
             $targetTableAlias = $this->getSQLTableAlias($targetClass->getTableName());
             $sourceTableAlias = $this->getSQLTableAlias($class->getTableName(), $dqlAlias);
 
@@ -1882,7 +1882,8 @@ class SqlWalker
 
             $sql .= implode(' AND ', $sqlParts);
         } else { // many-to-many
-            $targetClass = $this->em->getClassMetadata($assoc['targetEntity']);
+            assert($assoc->isManyToMany());
+            $targetClass = $this->em->getClassMetadata($assoc->targetEntity);
 
             $owningAssoc = $assoc['isOwningSide'] ? $assoc : $targetClass->associationMappings[$assoc['mappedBy']];
             $joinTable   = $owningAssoc['joinTable'];

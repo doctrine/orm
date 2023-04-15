@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Query\AST\Functions;
 
-use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Query\AST\PathExpression;
 use Doctrine\ORM\Query\Parser;
 use Doctrine\ORM\Query\SqlWalker;
@@ -39,8 +38,8 @@ class SizeFunction extends FunctionNode
         $assoc = $class->associationMappings[$assocField];
         $sql   = 'SELECT COUNT(*) FROM ';
 
-        if ($assoc['type'] === ClassMetadata::ONE_TO_MANY) {
-            $targetClass      = $entityManager->getClassMetadata($assoc['targetEntity']);
+        if ($assoc->isOneToMany()) {
+            $targetClass      = $entityManager->getClassMetadata($assoc->targetEntity);
             $targetTableAlias = $sqlWalker->getSQLTableAlias($targetClass->getTableName());
             $sourceTableAlias = $sqlWalker->getSQLTableAlias($class->getTableName(), $dqlAlias);
 
@@ -62,7 +61,8 @@ class SizeFunction extends FunctionNode
                       . $sourceTableAlias . '.' . $quoteStrategy->getColumnName($class->fieldNames[$targetColumn], $class, $platform);
             }
         } else { // many-to-many
-            $targetClass = $entityManager->getClassMetadata($assoc['targetEntity']);
+            assert($assoc->isManyToMany());
+            $targetClass = $entityManager->getClassMetadata($assoc->targetEntity);
 
             $owningAssoc = $assoc->isOwningSide() ? $assoc : $targetClass->associationMappings[$assoc['mappedBy']];
             $joinTable   = $owningAssoc['joinTable'];

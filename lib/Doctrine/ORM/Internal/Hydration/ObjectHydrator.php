@@ -78,7 +78,7 @@ class ObjectHydrator extends AbstractHydrator
 
             $this->hints['fetched'][$parent][$assoc['fieldName']] = true;
 
-            if ($assoc['type'] === ClassMetadata::MANY_TO_MANY) {
+            if ($assoc->isManyToMany()) {
                 continue;
             }
 

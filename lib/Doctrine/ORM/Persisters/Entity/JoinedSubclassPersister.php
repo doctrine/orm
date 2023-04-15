@@ -251,7 +251,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
         $baseTableAlias = $this->getSQLTableAlias($this->class->name);
         $joinSql        = $this->getJoinSql($baseTableAlias);
 
-        if ($assoc !== null && $assoc['type'] === ClassMetadata::MANY_TO_MANY) {
+        if ($assoc !== null && $assoc->isManyToMany()) {
             $joinSql .= $this->getSelectManyToManyJoinSQL($assoc);
         }
 

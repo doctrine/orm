@@ -197,6 +197,18 @@ abstract class AssociationMapping implements ArrayAccess
         return $this instanceof OneToOneAssociationMapping;
     }
 
+    /** @psalm-assert-if-true OneToManyAssociationMapping $this */
+    final public function isOneToMany(): bool
+    {
+        return $this instanceof OneToManyAssociationMapping;
+    }
+
+    /** @psalm-assert-if-true ManyToOneAssociationMapping $this */
+    final public function isManyToOne(): bool
+    {
+        return $this instanceof ManyToOneAssociationMapping;
+    }
+
     /** @psalm-assert-if-true ManyToManyAssociationMapping $this */
     final public function isManyToMany(): bool
     {
