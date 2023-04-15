@@ -69,7 +69,7 @@ class PersisterHelper
 
         // iterate over to-one association mappings
         foreach ($class->associationMappings as $assoc) {
-            if (! $assoc->isToOne()) {
+            if (! $assoc->isToOneOwningSide()) {
                 continue;
             }
 
@@ -85,7 +85,7 @@ class PersisterHelper
 
         // iterate over to-many association mappings
         foreach ($class->associationMappings as $assoc) {
-            if (! $assoc->isToMany()) {
+            if (! $assoc->isManyToManyOwningSide()) {
                 continue;
             }
 
