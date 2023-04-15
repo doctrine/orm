@@ -1193,7 +1193,7 @@ class BasicEntityPersister implements EntityPersister
                 continue;
             }
 
-            if (($assoc->isToMany() > 0) && $this->currentPersisterContext->handlesLimits) {
+            if ($assoc->isToMany() && $this->currentPersisterContext->handlesLimits) {
                 continue;
             }
 
