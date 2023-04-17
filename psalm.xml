@@ -124,6 +124,12 @@
                 <file name="lib/Doctrine/ORM/Mapping/ClassMetadataFactory.php"/>
             </errorLevel>
         </PossiblyInvalidArgument>
+        <PossiblyNullArrayOffset>
+            <errorLevel type="suppress">
+                <!-- https://github.com/vimeo/psalm/issues/7878 -->
+                <file name="lib/Doctrine/ORM/Persisters/Collection/ManyToManyPersister.php"/>
+            </errorLevel>
+        </PossiblyNullArrayOffset>
         <PropertyNotSetInConstructor>
             <errorLevel type="suppress">
                 <directory name="lib/Doctrine/ORM/Query/AST" />

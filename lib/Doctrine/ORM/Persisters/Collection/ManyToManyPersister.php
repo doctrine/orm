@@ -643,7 +643,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
         $filterMapping = $collection->getMapping();
         $mapping       = $filterMapping;
 
-        if (! $mapping['isOwningSide']) {
+        if (! $mapping->isOwningSide()) {
             $sourceClass = $this->em->getClassMetadata($mapping['targetEntity']);
             $targetClass = $this->em->getClassMetadata($mapping['sourceEntity']);
             $sourceId    = $this->uow->getEntityIdentifier($element);

@@ -158,7 +158,10 @@ abstract class AssociationMapping implements ArrayAccess
         return $mapping;
     }
 
-    /** @psalm-assert-if-true AssociationOwningSideMapping $this */
+    /**
+     * @psalm-assert-if-true AssociationOwningSideMapping $this
+     * @psalm-assert-if-false string $this->mappedBy
+     */
     final public function isOwningSide(): bool
     {
         return $this instanceof AssociationOwningSideMapping;
