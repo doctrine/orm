@@ -30,6 +30,10 @@ parameters:
             path: lib/Doctrine/ORM/Mapping/ToOneAssociationMapping.php
 
         -
+            message: "#^Access to an undefined property Doctrine\\\\ORM\\\\Mapping\\\\AssociationMapping\\:\\:\\$joinTableColumns\\.$#"
+            path: lib/Doctrine/ORM/Persisters/Collection/ManyToManyPersister.php
+
+        -
             message: "#^Method Doctrine\\\\ORM\\\\Mapping\\\\ToOneAssociationMapping\\:\\:fromMappingArrayAndName\\(\\) should return Doctrine\\\\ORM\\\\Mapping\\\\ManyToOneAssociationMapping\\|Doctrine\\\\ORM\\\\Mapping\\\\OneToOneAssociationMapping but returns static\\(Doctrine\\\\ORM\\\\Mapping\\\\ToOneAssociationMapping\\)\\.$#"
             path: lib/Doctrine/ORM/Mapping/ToOneAssociationMapping.php
 

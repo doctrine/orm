@@ -17,6 +17,7 @@ use Doctrine\ORM\Utility\PersisterHelper;
 
 use function array_fill;
 use function array_pop;
+use function assert;
 use function count;
 use function implode;
 use function in_array;
@@ -501,9 +502,10 @@ class ManyToManyPersister extends AbstractCollectionPersister
         PersistentCollection $collection,
         object $element,
     ): array {
-        $params      = [];
-        $mapping     = $collection->getMapping();
-        $isComposite = count($mapping['joinTableColumns']) > 2;
+        $params  = [];
+        $mapping = $collection->getMapping();
+        assert($mapping->isManyToManyOwningSide());
+        $isComposite = count($mapping->joinTableColumns) > 2;
 
         $identifier1 = $this->uow->getEntityIdentifier($collection->getOwner());
         $identifier2 = $this->uow->getEntityIdentifier($element);
@@ -514,7 +516,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
             $class2 = $collection->getTypeClass();
         }
 
-        foreach ($mapping['joinTableColumns'] as $joinTableColumn) {
+        foreach ($mapping->joinTableColumns as $joinTableColumn) {
             $isRelationToSource = isset($mapping['relationToSourceKeyColumns'][$joinTableColumn]);
 
             if (! $isComposite) {
@@ -593,7 +595,8 @@ class ManyToManyPersister extends AbstractCollectionPersister
             $types[]        = PersisterHelper::getTypeOfColumn($columnName, $targetClass, $this->em);
         }
 
-        foreach ($mapping['joinTableColumns'] as $joinTableColumn) {
+        assert($mapping->isManyToManyOwningSide());
+        foreach ($mapping->joinTableColumns as $joinTableColumn) {
             if (isset($mapping[$sourceRelationMode][$joinTableColumn])) {
                 $column         = $mapping[$sourceRelationMode][$joinTableColumn];
                 $whereClauses[] = 't.' . $joinTableColumn . ' = ?';
@@ -659,7 +662,8 @@ class ManyToManyPersister extends AbstractCollectionPersister
         $params          = [];
         $types           = [];
 
-        foreach ($mapping['joinTableColumns'] as $joinTableColumn) {
+        assert($mapping->isManyToManyOwningSide());
+        foreach ($mapping->joinTableColumns as $joinTableColumn) {
             $whereClauses[] = ($addFilters ? 't.' : '') . $joinTableColumn . ' = ?';
 
             if (isset($mapping['relationToTargetKeyColumns'][$joinTableColumn])) {

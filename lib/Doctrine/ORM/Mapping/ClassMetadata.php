@@ -1722,7 +1722,6 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
         }
 
         $mapping['joinColumnFieldNames'] = null;
-        $mapping['joinTableColumns']     = null;
 
         switch ($mapping['type']) {
             case self::ONE_TO_ONE:
