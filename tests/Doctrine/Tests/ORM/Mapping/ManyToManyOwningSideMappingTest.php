@@ -22,14 +22,18 @@ final class ManyToManyOwningSideMappingTest extends TestCase
             targetEntity: self::class,
         );
 
-        $mapping->joinTable        = new JoinTableMapping();
-        $mapping->joinTable->name  = 'bar';
-        $mapping->joinTableColumns = ['foo', 'bar'];
+        $mapping->joinTable                  = new JoinTableMapping();
+        $mapping->joinTable->name            = 'bar';
+        $mapping->joinTableColumns           = ['foo', 'bar'];
+        $mapping->relationToSourceKeyColumns = ['foo' => 'bar'];
+        $mapping->relationToTargetKeyColumns = ['bar' => 'baz'];
 
         $resurrectedMapping = unserialize(serialize($mapping));
         assert($resurrectedMapping instanceof ManyToManyOwningSideMapping);
 
         self::assertSame($resurrectedMapping->joinTable->name, 'bar');
         self::assertSame(['foo', 'bar'], $resurrectedMapping->joinTableColumns);
+        self::assertSame(['foo' => 'bar'], $resurrectedMapping->relationToSourceKeyColumns);
+        self::assertSame(['bar' => 'baz'], $resurrectedMapping->relationToTargetKeyColumns);
     }
 }
