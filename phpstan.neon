@@ -30,7 +30,7 @@ parameters:
             path: lib/Doctrine/ORM/Mapping/ToOneAssociationMapping.php
 
         -
-            message: "#^Access to an undefined property Doctrine\\\\ORM\\\\Mapping\\\\AssociationMapping\\:\\:\\$joinTableColumns\\.$#"
+            message: "#^Access to an undefined property .*Mapping\\:\\:\\$(joinTableColumns|relationTo(Target|Source)KeyColumns|joinTable|indexBy)\\.$#"
             path: lib/Doctrine/ORM/Persisters/Collection/ManyToManyPersister.php
 
         -
