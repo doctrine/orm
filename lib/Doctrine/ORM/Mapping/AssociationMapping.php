@@ -81,9 +81,6 @@ abstract class AssociationMapping implements ArrayAccess
     /** @var array<string, string>|null */
     public array|null $joinColumnFieldNames = null;
 
-    /** @var list<mixed>|null */
-    public array|null $joinTableColumns = null;
-
     /** @var class-string|null */
     public string|null $originalClass = null;
 
@@ -336,7 +333,6 @@ abstract class AssociationMapping implements ArrayAccess
                 'declared',
                 'cache',
                 'joinColumnFieldNames',
-                'joinTableColumns',
                 'originalClass',
                 'originalField',
             ] as $stringOrArrayProperty

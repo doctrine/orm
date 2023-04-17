@@ -17,6 +17,9 @@ final class ManyToManyOwningSideMapping extends ManyToManyAssociationMapping imp
      */
     public JoinTableMapping $joinTable;
 
+    /** @var list<mixed> */
+    public array $joinTableColumns = [];
+
     /** @return array<string, mixed> */
     public function toArray(): array
     {
@@ -130,6 +133,7 @@ final class ManyToManyOwningSideMapping extends ManyToManyAssociationMapping imp
     {
         $serialized   = parent::__sleep();
         $serialized[] = 'joinTable';
+        $serialized[] = 'joinTableColumns';
 
         return $serialized;
     }

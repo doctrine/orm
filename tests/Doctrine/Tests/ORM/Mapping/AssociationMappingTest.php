@@ -33,7 +33,6 @@ final class AssociationMappingTest extends TestCase
         $mapping->id                   = true;
         $mapping->isOnDeleteCascade    = true;
         $mapping->joinColumnFieldNames = ['foo' => 'bar'];
-        $mapping->joinTableColumns     = ['foo', 'bar'];
         $mapping->originalClass        = self::class;
         $mapping->originalField        = 'foo';
         $mapping->orphanRemoval        = true;
@@ -52,7 +51,6 @@ final class AssociationMappingTest extends TestCase
         self::assertTrue($resurrectedMapping->id);
         self::assertTrue($resurrectedMapping->isOnDeleteCascade);
         self::assertSame(['foo' => 'bar'], $resurrectedMapping->joinColumnFieldNames);
-        self::assertSame(['foo', 'bar'], $resurrectedMapping->joinTableColumns);
         self::assertSame(self::class, $resurrectedMapping->originalClass);
         self::assertSame('foo', $resurrectedMapping->originalField);
         self::assertTrue($resurrectedMapping->orphanRemoval);
