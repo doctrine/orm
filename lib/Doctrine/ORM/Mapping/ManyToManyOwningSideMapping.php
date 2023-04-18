@@ -20,6 +20,11 @@ final class ManyToManyOwningSideMapping extends ManyToManyAssociationMapping imp
     /** @var list<mixed> */
     public array $joinTableColumns = [];
 
+    /** @var array<string, string> */
+    public array $relationToSourceKeyColumns = [];
+    /** @var array<string, string> */
+    public array $relationToTargetKeyColumns = [];
+
     /** @return array<string, mixed> */
     public function toArray(): array
     {
@@ -134,6 +139,12 @@ final class ManyToManyOwningSideMapping extends ManyToManyAssociationMapping imp
         $serialized   = parent::__sleep();
         $serialized[] = 'joinTable';
         $serialized[] = 'joinTableColumns';
+
+        foreach (['relationToSourceKeyColumns', 'relationToTargetKeyColumns'] as $arrayKey) {
+            if ($this->$arrayKey !== null) {
+                $serialized[] = $arrayKey;
+            }
+        }
 
         return $serialized;
     }

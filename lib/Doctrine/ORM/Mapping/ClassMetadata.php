@@ -1729,8 +1729,8 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
                 $mapping['sourceToTargetKeyColumns'] = null;
                 break;
             case self::MANY_TO_MANY:
-                $mapping['relationToSourceKeyColumns'] = null;
-                $mapping['relationToTargetKeyColumns'] = null;
+                $mapping['relationToSourceKeyColumns'] = [];
+                $mapping['relationToTargetKeyColumns'] = [];
                 break;
         }
 
