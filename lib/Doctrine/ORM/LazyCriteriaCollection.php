@@ -99,7 +99,6 @@ class LazyCriteriaCollection extends AbstractLazyCollection implements Selectabl
     public function matching(Criteria $criteria)
     {
         if ($this->isInitialized()) {
-            $this->initialize();
             assert($this->collection instanceof Selectable);
 
             return $this->collection->matching($criteria);
