@@ -11,6 +11,8 @@ use Doctrine\Common\Collections\Selectable;
 use Doctrine\ORM\Persisters\Entity\EntityPersister;
 use ReturnTypeWillChange;
 
+use function array_filter;
+use function array_merge;
 use function assert;
 
 /**
@@ -96,10 +98,20 @@ class LazyCriteriaCollection extends AbstractLazyCollection implements Selectabl
      */
     public function matching(Criteria $criteria)
     {
-        $this->initialize();
-        assert($this->collection instanceof Selectable);
+        if ($this->isInitialized()) {
+            $this->initialize();
+            assert($this->collection instanceof Selectable);
 
-        return $this->collection->matching($criteria);
+            return $this->collection->matching($criteria);
+        }
+
+        $this->criteria = Criteria::create()
+            ->andWhere(Criteria::expr()->andX(...array_filter([$this->criteria->getWhereExpression(), $criteria->getWhereExpression()])))
+            ->orderBy(array_merge($this->criteria->getOrderings(), $criteria->getOrderings()))
+            ->setFirstResult($criteria->getFirstResult() ?? $this->criteria->getFirstResult())
+            ->setMaxResults($criteria->getMaxResults() ?? $this->criteria->getFirstResult());
+
+        return $this;
     }
 
     /**
