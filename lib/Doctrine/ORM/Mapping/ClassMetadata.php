@@ -438,7 +438,7 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
      * )
      * </pre>
      *
-     * @psalm-var array<string, OneToOneAssociationMapping|ManyToOneAssociationMapping|OneToManyAssociationMapping|ManyToManyAssociationMapping>
+     * @psalm-var array<string, AssociationMapping>
      */
     public array $associationMappings = [];
 

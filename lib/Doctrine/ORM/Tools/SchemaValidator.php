@@ -162,7 +162,7 @@ class SchemaValidator
             }
 
             if ($assoc->isOwningSide()) {
-                if ($assoc->isManyToMany()) {
+                if ($assoc->isManyToManyOwningSide()) {
                     $identifierColumns = $class->getIdentifierColumnNames();
                     foreach ($assoc['joinTable']['joinColumns'] as $joinColumn) {
                         if (! in_array($joinColumn['referencedColumnName'], $identifierColumns, true)) {
@@ -194,7 +194,7 @@ class SchemaValidator
                                 "however '" . implode(', ', array_diff($class->getIdentifierColumnNames(), array_values($assoc['relationToSourceKeyColumns']))) .
                                 "' are missing.";
                     }
-                } elseif ($assoc->isToOne()) {
+                } elseif ($assoc->isToOneOwningSide()) {
                     $identifierColumns = $targetMetadata->getIdentifierColumnNames();
                     foreach ($assoc['joinColumns'] as $joinColumn) {
                         if (! in_array($joinColumn['referencedColumnName'], $identifierColumns, true)) {
