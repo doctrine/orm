@@ -13,12 +13,6 @@ use function trim;
 
 abstract class ToOneAssociationMapping extends AssociationMapping
 {
-    /** @var array<string, string>|null */
-    public array|null $sourceToTargetKeyColumns = null;
-
-    /** @var array<string, string>|null */
-    public array|null $targetToSourceKeyColumns = null;
-
     /**
      * @param array<string, mixed> $mappingArray
      * @psalm-param array{
@@ -170,21 +164,5 @@ abstract class ToOneAssociationMapping extends AssociationMapping
         }
 
         return $array;
-    }
-
-    /** @return list<string> */
-    public function __sleep(): array
-    {
-        $serialized = parent::__sleep();
-
-        if ($this->sourceToTargetKeyColumns !== null) {
-            $serialized[] = 'sourceToTargetKeyColumns';
-        }
-
-        if ($this->targetToSourceKeyColumns !== null) {
-            $serialized[] = 'targetToSourceKeyColumns';
-        }
-
-        return $serialized;
     }
 }

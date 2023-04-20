@@ -1726,7 +1726,7 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
         switch ($mapping['type']) {
             case self::ONE_TO_ONE:
             case self::MANY_TO_ONE:
-                $mapping['sourceToTargetKeyColumns'] = null;
+                $mapping['sourceToTargetKeyColumns'] = [];
                 break;
             case self::MANY_TO_MANY:
                 $mapping['relationToSourceKeyColumns'] = [];

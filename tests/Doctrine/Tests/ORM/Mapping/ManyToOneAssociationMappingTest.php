@@ -22,11 +22,15 @@ final class ManyToOneAssociationMappingTest extends TestCase
             targetEntity: self::class,
         );
 
-        $mapping->joinColumns = [new JoinColumnMapping('id')];
+        $mapping->joinColumns              = [new JoinColumnMapping('id')];
+        $mapping->sourceToTargetKeyColumns = ['foo' => 'bar'];
+        $mapping->targetToSourceKeyColumns = ['bar' => 'foo'];
 
         $resurrectedMapping = unserialize(serialize($mapping));
         assert($resurrectedMapping instanceof ManyToOneAssociationMapping);
 
         self::assertCount(1, $resurrectedMapping->joinColumns);
+        self::assertSame(['foo' => 'bar'], $resurrectedMapping->sourceToTargetKeyColumns);
+        self::assertSame(['bar' => 'foo'], $resurrectedMapping->targetToSourceKeyColumns);
     }
 }
