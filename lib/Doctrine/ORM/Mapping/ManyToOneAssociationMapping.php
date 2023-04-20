@@ -9,6 +9,12 @@ namespace Doctrine\ORM\Mapping;
  */
 final class ManyToOneAssociationMapping extends ToOneAssociationMapping implements AssociationOwningSideMapping
 {
+    /** @var array<string, string> */
+    public array $sourceToTargetKeyColumns = [];
+
+    /** @var array<string, string> */
+    public array $targetToSourceKeyColumns = [];
+
     /** @var list<JoinColumnMapping> */
     public array $joinColumns = [];
 
@@ -18,6 +24,8 @@ final class ManyToOneAssociationMapping extends ToOneAssociationMapping implemen
         $serialized = parent::__sleep();
 
         $serialized[] = 'joinColumns';
+        $serialized[] = 'sourceToTargetKeyColumns';
+        $serialized[] = 'targetToSourceKeyColumns';
 
         return $serialized;
     }

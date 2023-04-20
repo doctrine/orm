@@ -14,7 +14,6 @@ use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Utility\PersisterHelper;
 
 use function array_combine;
-use function assert;
 use function implode;
 
 /**
@@ -476,7 +475,6 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
             if (isset($this->class->associationMappings[$name])) {
                 $assoc = $this->class->associationMappings[$name];
                 if ($assoc->isToOneOwningSide()) {
-                    assert($assoc->targetToSourceKeyColumns !== null);
                     foreach ($assoc->targetToSourceKeyColumns as $sourceCol) {
                         $columns[] = $sourceCol;
                     }

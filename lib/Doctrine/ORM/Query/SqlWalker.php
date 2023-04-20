@@ -597,11 +597,12 @@ class SqlWalker
                 }
 
                 $assoc = $class->associationMappings[$fieldName];
-                assert($assoc->isToOne());
 
                 if (! $assoc->isOwningSide()) {
                     throw QueryException::associationPathInverseSideNotSupported($pathExpr);
                 }
+
+                assert($assoc->isToOneOwningSide());
 
                 // COMPOSITE KEYS NOT (YET?) SUPPORTED
                 if (count($assoc['sourceToTargetKeyColumns']) > 1) {
@@ -612,7 +613,6 @@ class SqlWalker
                     $sql .= $this->getSQLTableAlias($class->getTableName(), $dqlAlias) . '.';
                 }
 
-                assert($assoc->targetToSourceKeyColumns !== null);
                 $sql .= reset($assoc->targetToSourceKeyColumns);
                 break;
 
@@ -799,17 +799,17 @@ class SqlWalker
                 }
 
                 $association = $class->associationMappings[$fieldName];
-                assert($association->isToOne());
 
                 if (! $association->isOwningSide()) {
                     throw QueryException::associationPathInverseSideNotSupported($pathExpression);
                 }
 
-                if (count($association['sourceToTargetKeyColumns']) > 1) {
+                assert($association->isToOneOwningSide());
+
+                if (count($association->sourceToTargetKeyColumns) > 1) {
                     throw QueryException::associationPathCompositeKeyNotSupported();
                 }
 
-                assert($association->targetToSourceKeyColumns !== null);
                 $field = reset($association->targetToSourceKeyColumns);
                 break;
 
