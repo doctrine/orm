@@ -576,7 +576,7 @@ Example with partial indexes:
 
     #[Index(name: "search_idx", columns: ["category"],
         options: [
-            "where": "((category IS NOT NULL))"
+            "where" => "((category IS NOT NULL))"
         ]
     )]
     class ECommerceProduct
