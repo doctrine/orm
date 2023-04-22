@@ -11,6 +11,7 @@ use Doctrine\DBAL\Exception as DBALException;
 use Doctrine\DBAL\LockMode;
 use Doctrine\ORM\Mapping\AssociationMapping;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\InverseSideMapping;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\Persisters\SqlValueVisitor;
 use Doctrine\ORM\Query;
@@ -223,6 +224,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
         $paramTypes    = [];
 
         if (! $mapping->isOwningSide()) {
+            assert($mapping instanceof InverseSideMapping);
             $associationSourceClass = $targetClass;
             $mapping                = $targetClass->associationMappings[$mapping->mappedBy];
             $sourceRelationMode     = 'relationToTargetKeyColumns';
@@ -572,14 +574,14 @@ class ManyToManyPersister extends AbstractCollectionPersister
     ): array {
         $filterMapping = $collection->getMapping();
         $mapping       = $filterMapping;
-        assert($mapping->isManyToMany());
-        $indexBy = $mapping->indexBy;
-        assert($indexBy !== null);
+        assert(isset($mapping->indexBy));
+        $indexBy     = $mapping->indexBy;
         $id          = $this->uow->getEntityIdentifier($collection->getOwner());
         $sourceClass = $this->em->getClassMetadata($mapping->sourceEntity);
         $targetClass = $this->em->getClassMetadata($mapping->targetEntity);
 
         if (! $mapping->isOwningSide()) {
+            assert($mapping instanceof InverseSideMapping);
             $associationSourceClass = $this->em->getClassMetadata($mapping->targetEntity);
             $mapping                = $associationSourceClass->associationMappings[$mapping->mappedBy];
             assert($mapping->isManyToManyOwningSide());

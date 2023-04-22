@@ -102,7 +102,7 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
     {
         $this->owner            = $entity;
         $this->association      = $assoc;
-        $this->backRefFieldName = $assoc['inversedBy'] ?: $assoc['mappedBy'];
+        $this->backRefFieldName = $assoc->isOwningSide() ? $assoc->inversedBy : $assoc->mappedBy;
     }
 
     /**

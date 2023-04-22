@@ -283,6 +283,14 @@
       <code><![CDATA[$newObject['args']]]></code>
     </PossiblyUndefinedArrayOffset>
   </file>
+  <file src="lib/Doctrine/ORM/Mapping/AssociationMapping.php">
+    <LessSpecificReturnStatement>
+      <code>$mapping</code>
+    </LessSpecificReturnStatement>
+    <MoreSpecificReturnType>
+      <code>static</code>
+    </MoreSpecificReturnType>
+  </file>
   <file src="lib/Doctrine/ORM/Mapping/Builder/ClassMetadataBuilder.php">
     <ArgumentTypeCoercion>
       <code>$repositoryClassName</code>
@@ -301,6 +309,7 @@
       <code><![CDATA[$this->columnNames]]></code>
     </DeprecatedProperty>
     <InvalidArgument>
+      <code>$mapping</code>
       <code>$mapping</code>
       <code>$mapping</code>
       <code>$mapping</code>
@@ -570,6 +579,11 @@
       <code><![CDATA[$xmlRoot->getName() === 'mapped-superclass']]></code>
     </TypeDoesNotContainType>
   </file>
+  <file src="lib/Doctrine/ORM/Mapping/ManyToManyInverseSideMapping.php">
+    <PropertyNotSetInConstructor>
+      <code>ManyToManyInverseSideMapping</code>
+    </PropertyNotSetInConstructor>
+  </file>
   <file src="lib/Doctrine/ORM/Mapping/ManyToManyOwningSideMapping.php">
     <PropertyNotSetInConstructor>
       <code>$joinTable</code>
@@ -580,6 +594,19 @@
     <TypeDoesNotContainType>
       <code>new JoinTableMapping()</code>
     </TypeDoesNotContainType>
+  </file>
+  <file src="lib/Doctrine/ORM/Mapping/OneToManyAssociationMapping.php">
+    <PropertyNotSetInConstructor>
+      <code>OneToManyAssociationMapping</code>
+    </PropertyNotSetInConstructor>
+    <TypeDoesNotContainType>
+      <code><![CDATA[isset($mapping->mappedBy)]]></code>
+    </TypeDoesNotContainType>
+  </file>
+  <file src="lib/Doctrine/ORM/Mapping/OneToOneInverseSideMapping.php">
+    <PropertyNotSetInConstructor>
+      <code>OneToOneInverseSideMapping</code>
+    </PropertyNotSetInConstructor>
   </file>
   <file src="lib/Doctrine/ORM/Mapping/ReflectionEmbeddedProperty.php">
     <MethodSignatureMismatch>
@@ -605,13 +632,21 @@
       <code>ReflectionReadonlyProperty</code>
     </PropertyNotSetInConstructor>
   </file>
-  <file src="lib/Doctrine/ORM/Mapping/ToOneAssociationMapping.php">
+  <file src="lib/Doctrine/ORM/Mapping/ToOneInverseSideMapping.php">
+    <LessSpecificReturnStatement>
+      <code>$mapping</code>
+    </LessSpecificReturnStatement>
+    <MoreSpecificReturnType>
+      <code>static</code>
+    </MoreSpecificReturnType>
+  </file>
+  <file src="lib/Doctrine/ORM/Mapping/ToOneOwningSideMapping.php">
     <LessSpecificReturnStatement>
       <code>$instance</code>
       <code>$mapping</code>
     </LessSpecificReturnStatement>
     <MoreSpecificReturnType>
-      <code>OneToOneAssociationMapping|ManyToOneAssociationMapping</code>
+      <code>static</code>
       <code>static</code>
     </MoreSpecificReturnType>
   </file>

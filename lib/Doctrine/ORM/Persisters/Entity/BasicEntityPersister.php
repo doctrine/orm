@@ -19,6 +19,7 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\AssociationMapping;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\InverseSideMapping;
 use Doctrine\ORM\Mapping\JoinColumnMapping;
 use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\ORM\Mapping\OneToManyAssociationMapping;
@@ -512,7 +513,7 @@ class BasicEntityPersister implements EntityPersister
             $keys            = [];
 
             if (! $mapping->isOwningSide()) {
-                assert(isset($mapping->mappedBy));
+                assert($mapping instanceof InverseSideMapping);
                 $class       = $this->em->getClassMetadata($mapping->targetEntity);
                 $association = $class->associationMappings[$mapping->mappedBy];
             }
@@ -1746,9 +1747,8 @@ class BasicEntityPersister implements EntityPersister
     ): Result {
         $this->switchPersisterContext($offset, $limit);
 
-        $criteria   = [];
-        $parameters = [];
-        assert(isset($assoc->mappedBy));
+        $criteria    = [];
+        $parameters  = [];
         $owningAssoc = $this->class->associationMappings[$assoc->mappedBy];
         $sourceClass = $this->em->getClassMetadata($assoc->sourceEntity);
         $tableAlias  = $this->getSQLTableAlias($owningAssoc->inherited ?? $this->class->name);

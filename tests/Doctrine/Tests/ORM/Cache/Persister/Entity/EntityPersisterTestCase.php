@@ -12,7 +12,7 @@ use Doctrine\ORM\Cache\Persister\Entity\CachedEntityPersister;
 use Doctrine\ORM\Cache\Region;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
-use Doctrine\ORM\Mapping\OneToOneAssociationMapping;
+use Doctrine\ORM\Mapping\OneToOneInverseSideMapping;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\Persisters\Entity\EntityPersister;
 use Doctrine\ORM\Query\ResultSetMappingBuilder;
@@ -90,7 +90,7 @@ abstract class EntityPersisterTestCase extends OrmTestCase
     {
         $persister = $this->createPersisterDefault();
 
-        $associationMapping = new OneToOneAssociationMapping('foo', 'bar', 'baz');
+        $associationMapping = new OneToOneInverseSideMapping('foo', 'bar', 'baz');
 
         $this->entityPersister->expects(self::once())
             ->method('getSelectSQL')
@@ -154,7 +154,7 @@ abstract class EntityPersisterTestCase extends OrmTestCase
     {
         $persister = $this->createPersisterDefault();
 
-        $associationMapping = new OneToOneAssociationMapping('foo', 'bar', 'baz');
+        $associationMapping = new OneToOneInverseSideMapping('foo', 'bar', 'baz');
 
         $this->entityPersister->expects(self::once())
             ->method('getSelectConditionStatementSQL')
@@ -225,7 +225,7 @@ abstract class EntityPersisterTestCase extends OrmTestCase
         $persister = $this->createPersisterDefault();
         $entity    = new Country('Foo');
 
-        $associationMapping = new OneToOneAssociationMapping('foo', 'bar', 'baz');
+        $associationMapping = new OneToOneInverseSideMapping('foo', 'bar', 'baz');
 
         $this->entityPersister->expects(self::once())
             ->method('load')
@@ -285,7 +285,7 @@ abstract class EntityPersisterTestCase extends OrmTestCase
         $entity    = new Country('Foo');
         $owner     = (object) [];
 
-        $associationMapping = new OneToOneAssociationMapping('foo', 'bar', 'baz');
+        $associationMapping = new OneToOneInverseSideMapping('foo', 'bar', 'baz');
 
         $this->entityPersister->expects(self::once())
             ->method('loadOneToOneEntity')
@@ -336,7 +336,7 @@ abstract class EntityPersisterTestCase extends OrmTestCase
         $entity    = new Country('Foo');
         $owner     = (object) [];
 
-        $associationMapping = new OneToOneAssociationMapping('foo', 'bar', 'baz');
+        $associationMapping = new OneToOneInverseSideMapping('foo', 'bar', 'baz');
 
         $this->entityPersister->expects(self::once())
             ->method('getManyToManyCollection')
@@ -352,7 +352,7 @@ abstract class EntityPersisterTestCase extends OrmTestCase
         $entity    = new Country('Foo');
         $owner     = (object) [];
 
-        $associationMapping = new OneToOneAssociationMapping('foo', 'bar', 'baz');
+        $associationMapping = new OneToOneInverseSideMapping('foo', 'bar', 'baz');
 
         $this->entityPersister->expects(self::once())
             ->method('getOneToManyCollection')
@@ -365,7 +365,7 @@ abstract class EntityPersisterTestCase extends OrmTestCase
     public function testInvokeLoadManyToManyCollection(): void
     {
         $mapping   = $this->em->getClassMetadata(Country::class);
-        $assoc     = new OneToOneAssociationMapping('foo', 'bar', 'baz');
+        $assoc     = new OneToOneInverseSideMapping('foo', 'bar', 'baz');
         $coll      = new PersistentCollection($this->em, $mapping, new ArrayCollection());
         $persister = $this->createPersisterDefault();
         $entity    = new Country('Foo');
@@ -382,7 +382,7 @@ abstract class EntityPersisterTestCase extends OrmTestCase
     public function testInvokeLoadOneToManyCollection(): void
     {
         $mapping   = $this->em->getClassMetadata(Country::class);
-        $assoc     = new OneToOneAssociationMapping('foo', 'bar', 'baz');
+        $assoc     = new OneToOneInverseSideMapping('foo', 'bar', 'baz');
         $coll      = new PersistentCollection($this->em, $mapping, new ArrayCollection());
         $persister = $this->createPersisterDefault();
         $entity    = new Country('Foo');

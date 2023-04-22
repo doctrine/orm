@@ -624,7 +624,6 @@ abstract class MappingDriverTestCase extends OrmTestCase
         // assert not override attributes
         self::assertEquals($guestGroups['fieldName'], $adminGroups['fieldName']);
         self::assertEquals($guestGroups['type'], $adminGroups['type']);
-        self::assertEquals($guestGroups['mappedBy'], $adminGroups['mappedBy']);
         self::assertEquals($guestGroups['inversedBy'], $adminGroups['inversedBy']);
         self::assertEquals($guestGroups['isOwningSide'], $adminGroups['isOwningSide']);
         self::assertEquals($guestGroups['fetch'], $adminGroups['fetch']);
@@ -661,7 +660,6 @@ abstract class MappingDriverTestCase extends OrmTestCase
         // assert not override attributes
         self::assertEquals($guestAddress['fieldName'], $adminAddress['fieldName']);
         self::assertEquals($guestAddress['type'], $adminAddress['type']);
-        self::assertEquals($guestAddress['mappedBy'], $adminAddress['mappedBy']);
         self::assertEquals($guestAddress['inversedBy'], $adminAddress['inversedBy']);
         self::assertEquals($guestAddress['isOwningSide'], $adminAddress['isOwningSide']);
         self::assertEquals($guestAddress['fetch'], $adminAddress['fetch']);

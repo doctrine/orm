@@ -23,8 +23,6 @@ final class AssociationMappingTest extends TestCase
             targetEntity: self::class,
         );
 
-        $mapping->mappedBy             = 'foo';
-        $mapping->inversedBy           = 'bar';
         $mapping->cascade              = ['persist'];
         $mapping->fetch                = ClassMetadata::FETCH_EAGER;
         $mapping->inherited            = self::class;
@@ -41,8 +39,6 @@ final class AssociationMappingTest extends TestCase
         $resurrectedMapping = unserialize(serialize($mapping));
         assert($resurrectedMapping instanceof AssociationMapping);
 
-        self::assertSame('foo', $resurrectedMapping->mappedBy);
-        self::assertSame('bar', $resurrectedMapping->inversedBy);
         self::assertSame(['persist'], $resurrectedMapping->cascade);
         self::assertSame(ClassMetadata::FETCH_EAGER, $resurrectedMapping->fetch);
         self::assertSame(self::class, $resurrectedMapping->inherited);

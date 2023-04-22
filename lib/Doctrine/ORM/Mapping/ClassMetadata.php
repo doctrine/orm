@@ -1392,13 +1392,7 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
                         $this->table ?? null,
                         $this->isInheritanceTypeSingleTable(),
                     ) :
-                    OneToOneAssociationMapping::fromMappingArrayAndName(
-                        $mapping,
-                        $this->namingStrategy,
-                        $this->name,
-                        $this->table,
-                        $this->isInheritanceTypeSingleTable(),
-                    );
+                    OneToOneInverseSideMapping::fromMappingArrayAndName($mapping, $this->name);
 
             case self::MANY_TO_ONE:
                 return ManyToOneAssociationMapping::fromMappingArrayAndName(
@@ -1419,7 +1413,7 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
 
                 return $mapping['isOwningSide'] ?
                     ManyToManyOwningSideMapping::fromMappingArrayAndNamingStrategy($mapping, $this->namingStrategy) :
-                    ManyToManyAssociationMapping::fromMappingArray($mapping);
+                    ManyToManyInverseSideMapping::fromMappingArray($mapping);
 
             default:
                 throw MappingException::invalidAssociationType(

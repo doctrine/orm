@@ -202,6 +202,13 @@
                 <referencedMethod name="Doctrine\DBAL\Schema\SchemaDiff::toSaveSql"/>
             </errorLevel>
         </UndefinedMethod>
+        <UndefinedPropertyFetch>
+            <errorLevel type="suppress">
+                <!-- https://github.com/vimeo/psalm/issues/7878 -->
+                <file name="lib/Doctrine/ORM/Persisters/Collection/ManyToManyPersister.php"/>
+                <file name="lib/Doctrine/ORM/PersistentCollection.php"/>
+            </errorLevel>
+        </UndefinedPropertyFetch>
         <UnhandledMatchCondition>
             <errorLevel type="suppress">
                 <!-- We can be certain that those values are not matched. -->
