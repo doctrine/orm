@@ -14,9 +14,9 @@ use Doctrine\ORM\Mapping\DefaultNamingStrategy;
 use Doctrine\ORM\Mapping\DefaultTypedFieldMapper;
 use Doctrine\ORM\Mapping\DiscriminatorColumnMapping;
 use Doctrine\ORM\Mapping\JoinTableMapping;
-use Doctrine\ORM\Mapping\ManyToOneAssociationMapping;
 use Doctrine\ORM\Mapping\MappedSuperclass;
 use Doctrine\ORM\Mapping\MappingException;
+use Doctrine\ORM\Mapping\OneToManyAssociationMapping;
 use Doctrine\ORM\Mapping\UnderscoreNamingStrategy;
 use Doctrine\Persistence\Mapping\RuntimeReflectionService;
 use Doctrine\Persistence\Mapping\StaticReflectionService;
@@ -355,13 +355,13 @@ class ClassMetadataTest extends OrmTestCase
         $cm = new ClassMetadata(CmsUser::class);
         $cm->initializeReflection(new RuntimeReflectionService());
 
-        $a1 = ManyToOneAssociationMapping::fromMappingArray([
+        $a1 = OneToManyAssociationMapping::fromMappingArray([
             'fieldName' => 'foo',
             'sourceEntity' => stdClass::class,
             'targetEntity' => stdClass::class,
             'mappedBy' => 'foo',
         ]);
-        $a2 = ManyToOneAssociationMapping::fromMappingArray([
+        $a2 = OneToManyAssociationMapping::fromMappingArray([
             'fieldName' => 'foo',
             'sourceEntity' => stdClass::class,
             'targetEntity' => stdClass::class,
