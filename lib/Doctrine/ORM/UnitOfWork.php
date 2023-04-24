@@ -57,10 +57,10 @@ use function array_key_exists;
 use function array_map;
 use function array_merge;
 use function array_pop;
+use function array_reverse;
 use function array_sum;
 use function array_values;
 use function assert;
-use function count;
 use function current;
 use function func_get_arg;
 use function func_num_args;
@@ -426,32 +426,37 @@ class UnitOfWork implements PropertyChangedListener
             }
 
             if ($this->entityInsertions) {
-                foreach ($commitOrder as $class) {
-                    $this->executeInserts($class);
-                }
+                // Perform entity insertions first, so that all new entities have their rows in the database
+                // and can be referred to by foreign keys. The commit order only needs to take new entities
+                // into account (new entities referring to other new entities), since all other types (entities
+                // with updates or scheduled deletions) are currently not a problem, since they are already
+                // in the database.
+                $this->executeInserts($this->computeInsertExecutionOrder($commitOrder));
             }
 
             if ($this->entityUpdates) {
-                foreach ($commitOrder as $class) {
-                    $this->executeUpdates($class);
-                }
+                // Updates do not need to follow a particular order
+                $this->executeUpdates();
             }
 
             // Extra updates that were requested by persisters.
+            // This may include foreign keys that could not be set when an entity was inserted,
+            // which may happen in the case of circular foreign key relationships.
             if ($this->extraUpdates) {
                 $this->executeExtraUpdates();
             }
 
             // Collection updates (deleteRows, updateRows, insertRows)
+            // No particular order is necessary, since all entities themselves are already
+            // in the database
             foreach ($this->collectionUpdates as $collectionToUpdate) {
                 $this->getCollectionPersister($collectionToUpdate->getMapping())->update($collectionToUpdate);
             }
 
-            // Entity deletions come last and need to be in reverse commit order
+            // Entity deletions come last. Their order only needs to take care of other deletions
+            // (first delete entities depending upon others, before deleting depended-upon entities).
             if ($this->entityDeletions) {
-                for ($count = count($commitOrder), $i = $count - 1; $i >= 0 && $this->entityDeletions; --$i) {
-                    $this->executeDeletions($commitOrder[$i]);
-                }
+                $this->executeDeletions($this->computeDeleteExecutionOrder($commitOrder));
             }
 
             // Commit failed silently
@@ -1114,64 +1119,52 @@ class UnitOfWork implements PropertyChangedListener
     }
 
     /**
-     * Executes all entity insertions for entities of the specified type.
+     * Executes entity insertions in the given order
+     *
+     * @param list<object> $entities
      */
-    private function executeInserts(ClassMetadata $class): void
+    private function executeInserts(array $entities): void
     {
-        $entities  = [];
-        $className = $class->name;
-        $persister = $this->getEntityPersister($className);
-        $invoke    = $this->listenersInvoker->getSubscribedSystems($class, Events::postPersist);
-
-        $insertionsForClass = [];
-
-        foreach ($this->entityInsertions as $oid => $entity) {
-            if ($this->em->getClassMetadata(get_class($entity))->name !== $className) {
-                continue;
-            }
-
-            $insertionsForClass[$oid] = $entity;
+        foreach ($entities as $entity) {
+            $oid       = spl_object_id($entity);
+            $class     = $this->em->getClassMetadata(get_class($entity));
+            $persister = $this->getEntityPersister($class->name);
+            $invoke    = $this->listenersInvoker->getSubscribedSystems($class, Events::postPersist);
 
             $persister->addInsert($entity);
 
             unset($this->entityInsertions[$oid]);
 
-            if ($invoke !== ListenersInvoker::INVOKE_NONE) {
-                $entities[] = $entity;
-            }
-        }
+            $postInsertIds = $persister->executeInserts();
 
-        $postInsertIds = $persister->executeInserts();
+            if ($postInsertIds) {
+                // Persister returned post-insert IDs
+                foreach ($postInsertIds as $postInsertId) {
+                    $idField = $class->getSingleIdentifierFieldName();
+                    $idValue = $this->convertSingleFieldIdentifierToPHPValue($class, $postInsertId['generatedId']);
 
-        if ($postInsertIds) {
-            // Persister returned post-insert IDs
-            foreach ($postInsertIds as $postInsertId) {
-                $idField = $class->getSingleIdentifierFieldName();
-                $idValue = $this->convertSingleFieldIdentifierToPHPValue($class, $postInsertId['generatedId']);
+                    $entity = $postInsertId['entity'];
+                    $oid    = spl_object_id($entity);
 
-                $entity = $postInsertId['entity'];
-                $oid    = spl_object_id($entity);
+                    $class->reflFields[$idField]->setValue($entity, $idValue);
 
-                $class->reflFields[$idField]->setValue($entity, $idValue);
+                    $this->entityIdentifiers[$oid]            = [$idField => $idValue];
+                    $this->entityStates[$oid]                 = self::STATE_MANAGED;
+                    $this->originalEntityData[$oid][$idField] = $idValue;
 
-                $this->entityIdentifiers[$oid]            = [$idField => $idValue];
-                $this->entityStates[$oid]                 = self::STATE_MANAGED;
-                $this->originalEntityData[$oid][$idField] = $idValue;
-
-                $this->addToIdentityMap($entity);
-            }
-        } else {
-            foreach ($insertionsForClass as $oid => $entity) {
+                    $this->addToIdentityMap($entity);
+                }
+            } else {
                 if (! isset($this->entityIdentifiers[$oid])) {
                     //entity was not added to identity map because some identifiers are foreign keys to new entities.
                     //add it now
                     $this->addToEntityIdentifiersAndEntityMap($class, $oid, $entity);
                 }
             }
-        }
 
-        foreach ($entities as $entity) {
-            $this->listenersInvoker->invoke($class, Events::postPersist, $entity, new PostPersistEventArgs($entity, $this->em), $invoke);
+            if ($invoke !== ListenersInvoker::INVOKE_NONE) {
+                $this->listenersInvoker->invoke($class, Events::postPersist, $entity, new PostPersistEventArgs($entity, $this->em), $invoke);
+            }
         }
     }
 
@@ -1209,19 +1202,15 @@ class UnitOfWork implements PropertyChangedListener
     }
 
     /**
-     * Executes all entity updates for entities of the specified type.
+     * Executes all entity updates
      */
-    private function executeUpdates(ClassMetadata $class): void
+    private function executeUpdates(): void
     {
-        $className        = $class->name;
-        $persister        = $this->getEntityPersister($className);
-        $preUpdateInvoke  = $this->listenersInvoker->getSubscribedSystems($class, Events::preUpdate);
-        $postUpdateInvoke = $this->listenersInvoker->getSubscribedSystems($class, Events::postUpdate);
-
         foreach ($this->entityUpdates as $oid => $entity) {
-            if ($this->em->getClassMetadata(get_class($entity))->name !== $className) {
-                continue;
-            }
+            $class            = $this->em->getClassMetadata(get_class($entity));
+            $persister        = $this->getEntityPersister($class->name);
+            $preUpdateInvoke  = $this->listenersInvoker->getSubscribedSystems($class, Events::preUpdate);
+            $postUpdateInvoke = $this->listenersInvoker->getSubscribedSystems($class, Events::postUpdate);
 
             if ($preUpdateInvoke !== ListenersInvoker::INVOKE_NONE) {
                 $this->listenersInvoker->invoke($class, Events::preUpdate, $entity, new PreUpdateEventArgs($entity, $this->em, $this->getEntityChangeSet($entity)), $preUpdateInvoke);
@@ -1242,18 +1231,17 @@ class UnitOfWork implements PropertyChangedListener
     }
 
     /**
-     * Executes all entity deletions for entities of the specified type.
+     * Executes all entity deletions
+     *
+     * @param list<object> $entities
      */
-    private function executeDeletions(ClassMetadata $class): void
+    private function executeDeletions(array $entities): void
     {
-        $className = $class->name;
-        $persister = $this->getEntityPersister($className);
-        $invoke    = $this->listenersInvoker->getSubscribedSystems($class, Events::postRemove);
-
-        foreach ($this->entityDeletions as $oid => $entity) {
-            if ($this->em->getClassMetadata(get_class($entity))->name !== $className) {
-                continue;
-            }
+        foreach ($entities as $entity) {
+            $oid       = spl_object_id($entity);
+            $class     = $this->em->getClassMetadata(get_class($entity));
+            $persister = $this->getEntityPersister($class->name);
+            $invoke    = $this->listenersInvoker->getSubscribedSystems($class, Events::postRemove);
 
             $persister->delete($entity);
 
@@ -1275,6 +1263,50 @@ class UnitOfWork implements PropertyChangedListener
                 $this->listenersInvoker->invoke($class, Events::postRemove, $entity, new PostRemoveEventArgs($entity, $this->em), $invoke);
             }
         }
+    }
+
+    /**
+     * @param list<ClassMetadata> $commitOrder
+     *
+     * @return list<object>
+     */
+    private function computeInsertExecutionOrder(array $commitOrder): array
+    {
+        $result = [];
+        foreach ($commitOrder as $class) {
+            $className = $class->name;
+            foreach ($this->entityInsertions as $entity) {
+                if ($this->em->getClassMetadata(get_class($entity))->name !== $className) {
+                    continue;
+                }
+
+                $result[] = $entity;
+            }
+        }
+
+        return $result;
+    }
+
+    /**
+     * @param list<ClassMetadata> $commitOrder
+     *
+     * @return list<object>
+     */
+    private function computeDeleteExecutionOrder(array $commitOrder): array
+    {
+        $result = [];
+        foreach (array_reverse($commitOrder) as $class) {
+            $className = $class->name;
+            foreach ($this->entityDeletions as $entity) {
+                if ($this->em->getClassMetadata(get_class($entity))->name !== $className) {
+                    continue;
+                }
+
+                $result[] = $entity;
+            }
+        }
+
+        return $result;
     }
 
     /**
@@ -1343,7 +1375,13 @@ class UnitOfWork implements PropertyChangedListener
             }
         }
 
-        return $calc->sort();
+        // Remove duplicate class entries
+        $result = [];
+        foreach ($calc->sort() as $classMetadata) {
+            $result[$classMetadata->name] = $classMetadata;
+        }
+
+        return array_values($result);
     }
 
     /**
