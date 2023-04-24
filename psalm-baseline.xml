@@ -591,9 +591,6 @@
     </TypeDoesNotContainType>
   </file>
   <file src="lib/Doctrine/ORM/Mapping/ManyToManyOwningSideMapping.php">
-    <ArgumentTypeCoercion>
-      <code>$mappingArray</code>
-    </ArgumentTypeCoercion>
     <PropertyNotSetInConstructor>
       <code>$joinTable</code>
     </PropertyNotSetInConstructor>
@@ -603,11 +600,6 @@
     <TypeDoesNotContainType>
       <code>new JoinTableMapping()</code>
     </TypeDoesNotContainType>
-  </file>
-  <file src="lib/Doctrine/ORM/Mapping/OneToManyAssociationMapping.php">
-    <ArgumentTypeCoercion>
-      <code>$mappingArray</code>
-    </ArgumentTypeCoercion>
   </file>
   <file src="lib/Doctrine/ORM/Mapping/ReflectionEmbeddedProperty.php">
     <MethodSignatureMismatch>

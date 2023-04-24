@@ -35,7 +35,16 @@ final class ManyToManyOwningSideMapping extends ManyToManyAssociationMapping imp
         return $array;
     }
 
-    /** @param mixed[] $mappingArray */
+    /**
+     * @param mixed[] $mappingArray
+     * @psalm-param array{
+     *     fieldName: string,
+     *     sourceEntity: class-string,
+     *     targetEntity: class-string,
+     *     joinTable?: mixed[]|null,
+     *     type?: int,
+     *     isOwningSide: bool, ...} $mappingArray
+     */
     public static function fromMappingArrayAndNamingStrategy(array $mappingArray, NamingStrategy $namingStrategy): self
     {
         $mapping = parent::fromMappingArray($mappingArray);
