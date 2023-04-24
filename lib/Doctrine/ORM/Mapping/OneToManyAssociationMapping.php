@@ -6,7 +6,16 @@ namespace Doctrine\ORM\Mapping;
 
 final class OneToManyAssociationMapping extends ToManyAssociationMapping
 {
-    /** @param mixed[] $mappingArray */
+    /**
+     * @param mixed[] $mappingArray
+     * @psalm-param array{
+     *     fieldName: string,
+     *     sourceEntity: class-string,
+     *     targetEntity: class-string,
+     *     joinTable?: mixed[]|null,
+     *     type?: int,
+     *     isOwningSide: bool, ...} $mappingArray
+     */
     public static function fromMappingArray(array $mappingArray): static
     {
         $mapping = parent::fromMappingArray($mappingArray);
@@ -18,7 +27,16 @@ final class OneToManyAssociationMapping extends ToManyAssociationMapping
         return $mapping;
     }
 
-    /** @param mixed[] $mappingArray */
+    /**
+     * @param mixed[] $mappingArray
+     * @psalm-param array{
+     *     fieldName: string,
+     *     sourceEntity: class-string,
+     *     targetEntity: class-string,
+     *     joinTable?: mixed[]|null,
+     *     type?: int,
+     *     isOwningSide: bool, ...} $mappingArray
+     */
     public static function fromMappingArrayAndName(array $mappingArray, string $name): static
     {
         $mapping = self::fromMappingArray($mappingArray);

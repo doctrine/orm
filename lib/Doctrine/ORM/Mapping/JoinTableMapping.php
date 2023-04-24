@@ -26,7 +26,16 @@ final class JoinTableMapping implements ArrayAccess
 
     public string|null $name = null;
 
-    /** @param array{name?: string, quoted?: bool, joinColumns?: mixed[], inverseJoinColumns?: mixed[], schema?: string} $mappingArray */
+    /**
+     * @param mixed[] $mappingArray
+     * @psalm-param array{
+     *    name?: string,
+     *    quoted?: bool,
+     *    joinColumns?: mixed[],
+     *    inverseJoinColumns?: mixed[],
+     *    schema?: string
+     * } $mappingArray
+     */
     public static function fromMappingArray(array $mappingArray): self
     {
         $mapping = new self();
