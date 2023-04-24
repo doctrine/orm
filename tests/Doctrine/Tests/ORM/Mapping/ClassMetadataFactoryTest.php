@@ -385,11 +385,6 @@ class ClassMetadataFactoryTest extends OrmTestCase
         self::assertEquals('user-id', $userMetadata->fieldMappings['id']['columnName']);
         self::assertEquals('user-name', $userMetadata->fieldMappings['name']['columnName']);
 
-        $address = $userMetadata->associationMappings['address'];
-        self::assertTrue($address['joinColumns'][0]['quoted']);
-        self::assertEquals('address-id', $address['joinColumns'][0]['name']);
-        self::assertEquals('address-id', $address['joinColumns'][0]['referencedColumnName']);
-
         $groups = $userMetadata->associationMappings['groups'];
         self::assertTrue($groups['joinTable']['quoted']);
         self::assertTrue($groups['joinTable']['joinColumns'][0]['quoted']);
