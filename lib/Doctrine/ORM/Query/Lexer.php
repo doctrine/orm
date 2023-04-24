@@ -122,7 +122,7 @@ class Lexer extends AbstractLexer
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     protected function getCatchablePatterns()
     {
@@ -136,7 +136,7 @@ class Lexer extends AbstractLexer
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     protected function getNonCatchablePatterns()
     {
@@ -144,7 +144,7 @@ class Lexer extends AbstractLexer
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     protected function getType(&$value)
     {

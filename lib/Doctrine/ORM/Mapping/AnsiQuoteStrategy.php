@@ -16,7 +16,7 @@ class AnsiQuoteStrategy implements QuoteStrategy
     use SQLResultCasing;
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function getColumnName($fieldName, ClassMetadata $class, AbstractPlatform $platform)
     {
@@ -24,7 +24,7 @@ class AnsiQuoteStrategy implements QuoteStrategy
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function getTableName(ClassMetadata $class, AbstractPlatform $platform)
     {
@@ -32,7 +32,7 @@ class AnsiQuoteStrategy implements QuoteStrategy
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function getSequenceName(array $definition, ClassMetadata $class, AbstractPlatform $platform)
     {
@@ -40,7 +40,7 @@ class AnsiQuoteStrategy implements QuoteStrategy
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function getJoinColumnName(array $joinColumn, ClassMetadata $class, AbstractPlatform $platform)
     {
@@ -48,7 +48,7 @@ class AnsiQuoteStrategy implements QuoteStrategy
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function getReferencedJoinColumnName(array $joinColumn, ClassMetadata $class, AbstractPlatform $platform)
     {
@@ -56,7 +56,7 @@ class AnsiQuoteStrategy implements QuoteStrategy
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function getJoinTableName(array $association, ClassMetadata $class, AbstractPlatform $platform)
     {
@@ -64,7 +64,7 @@ class AnsiQuoteStrategy implements QuoteStrategy
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function getIdentifierColumnNames(ClassMetadata $class, AbstractPlatform $platform)
     {
@@ -72,7 +72,7 @@ class AnsiQuoteStrategy implements QuoteStrategy
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function getColumnAlias($columnName, $counter, AbstractPlatform $platform, ?ClassMetadata $class = null)
     {

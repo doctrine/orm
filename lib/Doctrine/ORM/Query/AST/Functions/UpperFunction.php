@@ -21,7 +21,7 @@ class UpperFunction extends FunctionNode
     /** @var Node */
     public $stringPrimary;
 
-    /** @inheritdoc */
+    /** @inheritDoc */
     public function getSql(SqlWalker $sqlWalker)
     {
         return sprintf(
@@ -30,7 +30,7 @@ class UpperFunction extends FunctionNode
         );
     }
 
-    /** @inheritdoc */
+    /** @inheritDoc */
     public function parse(Parser $parser)
     {
         $parser->match(Lexer::T_IDENTIFIER);

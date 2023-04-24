@@ -163,7 +163,7 @@ class DDC3785AssetId
 class DDC3785AssetIdType extends Type
 {
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function getSQLDeclaration(array $fieldDeclaration, AbstractPlatform $platform)
     {
@@ -171,7 +171,7 @@ class DDC3785AssetIdType extends Type
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function convertToDatabaseValue($value, AbstractPlatform $platform)
     {
@@ -179,7 +179,7 @@ class DDC3785AssetIdType extends Type
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function convertToPHPValue($value, AbstractPlatform $platform)
     {
@@ -187,7 +187,7 @@ class DDC3785AssetIdType extends Type
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function getName()
     {

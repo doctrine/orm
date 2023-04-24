@@ -11,7 +11,7 @@ class CustomIntType extends IntegerType
     public const NAME = 'custom_int_type';
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function getName()
     {

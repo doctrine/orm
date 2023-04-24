@@ -25,7 +25,7 @@ class ResultMock implements Result
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function fetchNumeric()
     {
@@ -33,7 +33,7 @@ class ResultMock implements Result
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function fetchAssociative()
     {
@@ -41,7 +41,7 @@ class ResultMock implements Result
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function fetchOne()
     {
@@ -49,7 +49,7 @@ class ResultMock implements Result
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function fetchAllAssociative(): array
     {
@@ -57,7 +57,7 @@ class ResultMock implements Result
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function fetchAllAssociativeIndexed(): array
     {
@@ -65,7 +65,7 @@ class ResultMock implements Result
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function fetchAllKeyValue(): array
     {
@@ -73,7 +73,7 @@ class ResultMock implements Result
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function fetchAllNumeric(): array
     {
@@ -81,7 +81,7 @@ class ResultMock implements Result
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function fetchFirstColumn(): array
     {

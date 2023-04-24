@@ -47,7 +47,7 @@ class DefaultEntityHydrator implements EntityHydrator
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function buildCacheEntry(ClassMetadata $metadata, EntityCacheKey $key, $entity)
     {
@@ -140,7 +140,7 @@ class DefaultEntityHydrator implements EntityHydrator
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function loadCacheEntry(ClassMetadata $metadata, EntityCacheKey $key, EntityCacheEntry $entry, $entity = null)
     {

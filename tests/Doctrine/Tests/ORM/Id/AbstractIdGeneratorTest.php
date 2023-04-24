@@ -25,7 +25,7 @@ class AbstractIdGeneratorTest extends TestCase
             public $receivedEntity;
 
             /**
-             * {@inheritdoc}
+             * {@inheritDoc}
              */
             public function generate(EntityManager $em, $entity): string
             {

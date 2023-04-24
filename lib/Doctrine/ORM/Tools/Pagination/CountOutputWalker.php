@@ -63,7 +63,7 @@ class CountOutputWalker extends SqlWalker
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function walkSelectStatement(SelectStatement $AST)
     {

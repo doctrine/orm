@@ -32,7 +32,7 @@ class ValidateSchemaCommand extends AbstractEntityManagerCommand
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      *
      * @return int
      */

@@ -52,7 +52,7 @@ class ObjectHydrator extends AbstractHydrator
     private $existingCollections = [];
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     protected function prepare()
     {
@@ -108,7 +108,7 @@ class ObjectHydrator extends AbstractHydrator
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     protected function cleanup()
     {
@@ -139,7 +139,7 @@ class ObjectHydrator extends AbstractHydrator
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     protected function hydrateAllData()
     {

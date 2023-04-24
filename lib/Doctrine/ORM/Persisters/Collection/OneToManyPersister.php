@@ -24,7 +24,7 @@ use function is_string;
 class OneToManyPersister extends AbstractCollectionPersister
 {
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      *
      * @return int|null
      */
@@ -50,7 +50,7 @@ class OneToManyPersister extends AbstractCollectionPersister
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function update(PersistentCollection $collection)
     {
@@ -61,7 +61,7 @@ class OneToManyPersister extends AbstractCollectionPersister
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function get(PersistentCollection $collection, $index)
     {
@@ -87,7 +87,7 @@ class OneToManyPersister extends AbstractCollectionPersister
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function count(PersistentCollection $collection)
     {
@@ -103,7 +103,7 @@ class OneToManyPersister extends AbstractCollectionPersister
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function slice(PersistentCollection $collection, $offset, $length = null)
     {
@@ -114,7 +114,7 @@ class OneToManyPersister extends AbstractCollectionPersister
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function containsKey(PersistentCollection $collection, $key)
     {
@@ -138,7 +138,7 @@ class OneToManyPersister extends AbstractCollectionPersister
     }
 
      /**
-      * {@inheritdoc}
+      * {@inheritDoc}
       */
     public function contains(PersistentCollection $collection, $element)
     {
@@ -158,7 +158,7 @@ class OneToManyPersister extends AbstractCollectionPersister
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function loadCriteria(PersistentCollection $collection, Criteria $criteria)
     {

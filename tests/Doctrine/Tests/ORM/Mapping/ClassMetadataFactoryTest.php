@@ -587,7 +587,7 @@ class TestEntity1
 class CustomIdGenerator extends AbstractIdGenerator
 {
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function generateId(EntityManagerInterface $em, $entity): string
     {

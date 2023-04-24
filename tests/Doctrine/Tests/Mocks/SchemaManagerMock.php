@@ -13,7 +13,7 @@ use Exception;
 class SchemaManagerMock extends AbstractSchemaManager
 {
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     protected function _getPortableTableColumnDefinition($tableColumn)
     {

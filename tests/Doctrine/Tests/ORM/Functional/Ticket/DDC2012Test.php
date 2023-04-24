@@ -126,7 +126,7 @@ class DDC2012TsVectorType extends Type
     public static $calls = [];
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function getSQLDeclaration(array $fieldDeclaration, AbstractPlatform $platform)
     {
@@ -138,7 +138,7 @@ class DDC2012TsVectorType extends Type
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function convertToDatabaseValue($value, AbstractPlatform $platform)
     {
@@ -155,7 +155,7 @@ class DDC2012TsVectorType extends Type
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function convertToPHPValue($value, AbstractPlatform $platform)
     {
@@ -168,7 +168,7 @@ class DDC2012TsVectorType extends Type
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function convertToDatabaseValueSQL($sqlExpr, AbstractPlatform $platform)
     {
@@ -184,7 +184,7 @@ class DDC2012TsVectorType extends Type
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function canRequireSQLConversion()
     {
@@ -192,7 +192,7 @@ class DDC2012TsVectorType extends Type
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function getName()
     {

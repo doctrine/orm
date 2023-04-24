@@ -237,7 +237,7 @@ final class GH7820LineTextType extends StringType
         return parent::convertToDatabaseValue($value->getText(), $platform);
     }
 
-    /** {@inheritdoc} */
+    /** {@inheritDoc} */
     public function getName(): string
     {
         return self::class;

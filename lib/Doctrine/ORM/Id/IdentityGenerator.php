@@ -49,7 +49,7 @@ class IdentityGenerator extends AbstractIdGenerator
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function isPostInsertGenerator()
     {
