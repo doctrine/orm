@@ -6,6 +6,7 @@ namespace Doctrine\ORM;
 
 use Doctrine\Common\Collections\AbstractLazyCollection;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\Common\Collections\Selectable;
 use Doctrine\ORM\Persisters\Entity\EntityPersister;
@@ -110,7 +111,10 @@ class LazyCriteriaCollection extends AbstractLazyCollection implements Selectabl
             ->setFirstResult($criteria->getFirstResult() ?? $this->criteria->getFirstResult())
             ->setMaxResults($criteria->getMaxResults() ?? $this->criteria->getFirstResult());
 
-        return new self($this->entityPersister, $criteria);
+        /** @var Collection<TKey, TValue>&Selectable<TKey, TValue> $collection */
+        $collection = new self($this->entityPersister, $criteria);
+
+        return $collection;
     }
 
     /**
