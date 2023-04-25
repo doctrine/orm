@@ -42,7 +42,7 @@ class ConnectionMock extends Connection
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function getDatabasePlatform()
     {
@@ -50,14 +50,14 @@ class ConnectionMock extends Connection
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function insert($tableName, array $data, array $types = [])
     {
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function executeUpdate($query, array $params = [], array $types = []): int
     {
@@ -65,7 +65,7 @@ class ConnectionMock extends Connection
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function executeStatement($sql, array $params = [], array $types = []): int
     {
@@ -75,7 +75,7 @@ class ConnectionMock extends Connection
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function delete($table, array $criteria, array $types = [])
     {
@@ -83,7 +83,7 @@ class ConnectionMock extends Connection
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function fetchColumn($statement, array $params = [], $colunm = 0, array $types = [])
     {
@@ -96,7 +96,7 @@ class ConnectionMock extends Connection
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function quote($input, $type = null)
     {

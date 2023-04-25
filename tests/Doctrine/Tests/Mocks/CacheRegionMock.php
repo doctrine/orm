@@ -88,7 +88,7 @@ class CacheRegionMock implements Region
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function getMultiple(CollectionCacheEntry $collection): ?array
     {

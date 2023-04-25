@@ -21,7 +21,7 @@ class CoalesceExpression extends Node
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function dispatch($sqlWalker)
     {

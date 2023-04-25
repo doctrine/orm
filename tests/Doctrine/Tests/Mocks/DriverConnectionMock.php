@@ -23,7 +23,7 @@ class DriverConnectionMock implements Connection
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function prepare($prepareString): Statement
     {
@@ -36,56 +36,56 @@ class DriverConnectionMock implements Connection
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function quote($input, $type = ParameterType::STRING)
     {
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function exec($statement): int
     {
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function lastInsertId($name = null)
     {
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function beginTransaction()
     {
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function commit()
     {
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function rollBack()
     {
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function errorCode()
     {
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function errorInfo()
     {

@@ -26,7 +26,7 @@ class AnnotationExporter extends AbstractExporter
     private $_entityGenerator;
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function exportClassMetadata(ClassMetadataInfo $metadata)
     {

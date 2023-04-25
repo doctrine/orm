@@ -40,7 +40,7 @@ class GenerateRepositoriesCommand extends AbstractEntityManagerCommand
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      *
      * @return int
      */

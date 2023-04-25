@@ -210,7 +210,7 @@ final class Query extends AbstractQuery
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      *
      * @return ResultSetMapping
      */
@@ -279,7 +279,7 @@ final class Query extends AbstractQuery
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     protected function _doExecute()
     {
@@ -743,7 +743,7 @@ final class Query extends AbstractQuery
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function setHint($name, $value): self
     {
@@ -753,7 +753,7 @@ final class Query extends AbstractQuery
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function setHydrationMode($hydrationMode): self
     {

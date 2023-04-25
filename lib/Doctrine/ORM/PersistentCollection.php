@@ -333,7 +333,7 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function remove($key)
     {
@@ -362,7 +362,7 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function removeElement($element): bool
     {
@@ -387,7 +387,7 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function containsKey($key): bool
     {
@@ -404,7 +404,7 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      *
      * @template TMaybeContained
      */
@@ -420,7 +420,7 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function get($key)
     {
@@ -453,7 +453,7 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function set($key, $value): void
     {
@@ -467,7 +467,7 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function add($value): bool
     {
@@ -485,7 +485,7 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
     /* ArrayAccess implementation */
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function offsetExists($offset): bool
     {
@@ -493,7 +493,7 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     #[ReturnTypeWillChange]
     public function offsetGet($offset)
@@ -502,7 +502,7 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function offsetSet($offset, $value): void
     {
@@ -516,7 +516,7 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      *
      * @return object|null
      */

@@ -17,35 +17,35 @@ use Traversable;
 class StatementMock implements IteratorAggregate, Statement
 {
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function bindValue($param, $value, $type = null)
     {
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function bindParam($column, &$variable, $type = null, $length = null)
     {
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function errorCode()
     {
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function errorInfo()
     {
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function execute($params = null): Result
     {
@@ -58,28 +58,28 @@ class StatementMock implements IteratorAggregate, Statement
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function closeCursor()
     {
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function columnCount()
     {
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function setFetchMode($fetchStyle, $arg2 = null, $arg3 = null)
     {
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function fetch($fetchMode = null, $cursorOrientation = PDO::FETCH_ORI_NEXT, $cursorOffset = 0)
     {
@@ -87,14 +87,14 @@ class StatementMock implements IteratorAggregate, Statement
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function fetchAll($fetchMode = null, $fetchArgument = null, $ctorArgs = null)
     {
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function fetchColumn($columnIndex = 0)
     {

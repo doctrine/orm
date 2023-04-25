@@ -1354,7 +1354,7 @@ class DDC2700MappedSuperClass
 class MyNamespacedNamingStrategy extends DefaultNamingStrategy
 {
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function classToTableName($className)
     {
@@ -1369,7 +1369,7 @@ class MyNamespacedNamingStrategy extends DefaultNamingStrategy
 class MyPrefixNamingStrategy extends DefaultNamingStrategy
 {
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function propertyToColumnName($propertyName, $className = null)
     {

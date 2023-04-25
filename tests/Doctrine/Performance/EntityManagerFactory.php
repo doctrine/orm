@@ -64,7 +64,7 @@ final class EntityManagerFactory
         // A connection that doesn't really do anything
         $connection = new class ([], new Driver(), null, new EventManager()) extends Connection
         {
-            /** {@inheritdoc} */
+            /** {@inheritDoc} */
             public function executeQuery(string $sql, array $params = [], $types = [], ?QueryCacheProfile $qcp = null): Result
             {
                 return new Result(new DriverResultMock(), $this);

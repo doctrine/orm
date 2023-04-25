@@ -23,7 +23,7 @@ class SingleTablePersister extends AbstractEntityInheritancePersister
     use SQLResultCasing;
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     protected function getDiscriminatorColumnTableName()
     {
@@ -31,7 +31,7 @@ class SingleTablePersister extends AbstractEntityInheritancePersister
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     protected function getSelectColumnsSQL()
     {
@@ -94,7 +94,7 @@ class SingleTablePersister extends AbstractEntityInheritancePersister
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     protected function getInsertColumnList()
     {
@@ -107,7 +107,7 @@ class SingleTablePersister extends AbstractEntityInheritancePersister
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     protected function getSQLTableAlias($className, $assocName = '')
     {
@@ -115,7 +115,7 @@ class SingleTablePersister extends AbstractEntityInheritancePersister
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     protected function getSelectConditionSQL(array $criteria, $assoc = null)
     {
@@ -129,7 +129,7 @@ class SingleTablePersister extends AbstractEntityInheritancePersister
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     protected function getSelectConditionCriteriaSQL(Criteria $criteria)
     {
@@ -166,7 +166,7 @@ class SingleTablePersister extends AbstractEntityInheritancePersister
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     protected function generateFilterConditionSQL(ClassMetadata $targetEntity, $targetTableAlias)
     {

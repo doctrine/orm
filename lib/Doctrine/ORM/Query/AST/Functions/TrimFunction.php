@@ -36,7 +36,7 @@ class TrimFunction extends FunctionNode
     public $stringPrimary;
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function getSql(SqlWalker $sqlWalker)
     {
@@ -56,7 +56,7 @@ class TrimFunction extends FunctionNode
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function parse(Parser $parser)
     {

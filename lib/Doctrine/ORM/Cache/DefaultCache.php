@@ -48,7 +48,7 @@ class DefaultCache implements Cache
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function getEntityCacheRegion($className)
     {
@@ -63,7 +63,7 @@ class DefaultCache implements Cache
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function getCollectionCacheRegion($className, $association)
     {
@@ -78,7 +78,7 @@ class DefaultCache implements Cache
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function containsEntity($className, $identifier)
     {
@@ -93,7 +93,7 @@ class DefaultCache implements Cache
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function evictEntity($className, $identifier)
     {
@@ -108,7 +108,7 @@ class DefaultCache implements Cache
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function evictEntityRegion($className)
     {
@@ -123,7 +123,7 @@ class DefaultCache implements Cache
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function evictEntityRegions()
     {
@@ -141,7 +141,7 @@ class DefaultCache implements Cache
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function containsCollection($className, $association, $ownerIdentifier)
     {
@@ -156,7 +156,7 @@ class DefaultCache implements Cache
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function evictCollection($className, $association, $ownerIdentifier)
     {
@@ -171,7 +171,7 @@ class DefaultCache implements Cache
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function evictCollectionRegion($className, $association)
     {
@@ -186,7 +186,7 @@ class DefaultCache implements Cache
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function evictCollectionRegions()
     {
@@ -210,7 +210,7 @@ class DefaultCache implements Cache
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function containsQuery($regionName)
     {
@@ -218,7 +218,7 @@ class DefaultCache implements Cache
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function evictQueryRegion($regionName = null)
     {
@@ -234,7 +234,7 @@ class DefaultCache implements Cache
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function evictQueryRegions()
     {
@@ -246,7 +246,7 @@ class DefaultCache implements Cache
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function getQueryCache($regionName = null)
     {

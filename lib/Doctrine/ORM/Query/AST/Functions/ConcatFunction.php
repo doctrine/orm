@@ -25,7 +25,7 @@ class ConcatFunction extends FunctionNode
     /** @psalm-var list<Node> */
     public $concatExpressions = [];
 
-    /** @inheritdoc */
+    /** @inheritDoc */
     public function getSql(SqlWalker $sqlWalker)
     {
         $platform = $sqlWalker->getConnection()->getDatabasePlatform();
@@ -39,7 +39,7 @@ class ConcatFunction extends FunctionNode
         return $platform->getConcatExpression(...$args);
     }
 
-    /** @inheritdoc */
+    /** @inheritDoc */
     public function parse(Parser $parser)
     {
         $parser->match(Lexer::T_IDENTIFIER);

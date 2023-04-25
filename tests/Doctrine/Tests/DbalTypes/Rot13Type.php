@@ -16,7 +16,7 @@ use function str_rot13;
 class Rot13Type extends Type
 {
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      *
      * @param string|null      $value
      * @param AbstractPlatform $platform
@@ -33,7 +33,7 @@ class Rot13Type extends Type
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      *
      * @param string|null      $value
      * @param AbstractPlatform $platform
@@ -50,7 +50,7 @@ class Rot13Type extends Type
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      *
      * @param array            $fieldDeclaration
      * @param AbstractPlatform $platform
@@ -67,7 +67,7 @@ class Rot13Type extends Type
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      *
      * @param AbstractPlatform $platform
      *
@@ -79,7 +79,7 @@ class Rot13Type extends Type
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      *
      * @return string
      */

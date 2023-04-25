@@ -22,7 +22,7 @@ class BitOrFunction extends FunctionNode
     /** @var Node */
     public $secondArithmetic;
 
-    /** @inheritdoc */
+    /** @inheritDoc */
     public function getSql(SqlWalker $sqlWalker)
     {
         $platform = $sqlWalker->getConnection()->getDatabasePlatform();
@@ -33,7 +33,7 @@ class BitOrFunction extends FunctionNode
         );
     }
 
-    /** @inheritdoc */
+    /** @inheritDoc */
     public function parse(Parser $parser)
     {
         $parser->match(Lexer::T_IDENTIFIER);

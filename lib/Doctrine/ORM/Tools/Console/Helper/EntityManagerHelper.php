@@ -45,7 +45,7 @@ class EntityManagerHelper extends Helper
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      *
      * @return string
      */

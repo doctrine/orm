@@ -22,7 +22,7 @@ class LengthFunction extends FunctionNode implements TypedExpression
     /** @var Node */
     public $stringPrimary;
 
-    /** @inheritdoc */
+    /** @inheritDoc */
     public function getSql(SqlWalker $sqlWalker)
     {
         return $sqlWalker->getConnection()->getDatabasePlatform()->getLengthExpression(
@@ -30,7 +30,7 @@ class LengthFunction extends FunctionNode implements TypedExpression
         );
     }
 
-    /** @inheritdoc */
+    /** @inheritDoc */
     public function parse(Parser $parser)
     {
         $parser->match(Lexer::T_IDENTIFIER);
