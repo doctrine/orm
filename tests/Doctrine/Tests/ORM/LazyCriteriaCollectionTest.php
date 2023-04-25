@@ -90,7 +90,7 @@ class LazyCriteriaCollectionTest extends TestCase
         self::assertInstanceOf(LazyCriteriaCollection::class, $filtered);
         self::assertEquals([$foo, $bar, $baz], $filtered->toArray());
 
-        self::assertEquals([$foo], $this->lazyCriteriaCollection->matching($criteria)->toArray());
+        self::assertEquals([$foo], $filtered->matching($criteria)->toArray());
     }
 
     public function testMatchingWillNotInitializeCollection(): void

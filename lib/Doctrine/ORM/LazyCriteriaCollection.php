@@ -104,13 +104,13 @@ class LazyCriteriaCollection extends AbstractLazyCollection implements Selectabl
             return $this->collection->matching($criteria);
         }
 
-        $this->criteria = Criteria::create()
+        $criteria = Criteria::create()
             ->andWhere(Criteria::expr()->andX(...array_filter([$this->criteria->getWhereExpression(), $criteria->getWhereExpression()])))
             ->orderBy(array_merge($this->criteria->getOrderings(), $criteria->getOrderings()))
             ->setFirstResult($criteria->getFirstResult() ?? $this->criteria->getFirstResult())
             ->setMaxResults($criteria->getMaxResults() ?? $this->criteria->getFirstResult());
 
-        return $this;
+        return new static($this->entityPersister, $criteria);
     }
 
     /**
