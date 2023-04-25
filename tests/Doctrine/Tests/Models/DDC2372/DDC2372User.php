@@ -5,15 +5,21 @@ declare(strict_types=1);
 namespace Doctrine\Tests\Models\DDC2372;
 
 use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\DiscriminatorColumn;
+use Doctrine\ORM\Mapping\DiscriminatorMap;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\InheritanceType;
 use Doctrine\ORM\Mapping\Table;
 use Doctrine\Tests\Models\DDC2372\Traits\DDC2372AddressAndAccessors;
 
 /**
  * @Entity
  * @Table(name="users")
+ * @InheritanceType("SINGLE_TABLE")
+ * @DiscriminatorColumn("type")
+ * @DiscriminatorMap({"user"="DDC2372User", "admin"="DDC2372Admin"})
  */
 class DDC2372User
 {

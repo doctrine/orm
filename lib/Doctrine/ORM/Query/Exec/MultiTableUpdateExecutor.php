@@ -25,19 +25,19 @@ use function implode;
 class MultiTableUpdateExecutor extends AbstractSqlExecutor
 {
     /** @var string */
-    private $_createTempTableSql;
+    private $createTempTableSql;
 
     /** @var string */
-    private $_dropTempTableSql;
+    private $dropTempTableSql;
 
     /** @var string */
-    private $_insertSql;
+    private $insertSql;
 
     /** @var mixed[] */
-    private $_sqlParameters = [];
+    private $sqlParameters = [];
 
     /** @var int */
-    private $_numParametersInUpdateClause = 0;
+    private $numParametersInUpdateClause = 0;
 
     /**
      * Initializes a new <tt>MultiTableUpdateExecutor</tt>.
@@ -72,13 +72,13 @@ class MultiTableUpdateExecutor extends AbstractSqlExecutor
         // 1. Create an INSERT INTO temptable ... SELECT identifiers WHERE $AST->getWhereClause()
         $sqlWalker->setSQLTableAlias($primaryClass->getTableName(), 't0', $updateClause->aliasIdentificationVariable);
 
-        $this->_insertSql = 'INSERT INTO ' . $tempTable . ' (' . $idColumnList . ')'
+        $this->insertSql = 'INSERT INTO ' . $tempTable . ' (' . $idColumnList . ')'
                 . ' SELECT t0.' . implode(', t0.', $idColumnNames);
 
         $rangeDecl  = new AST\RangeVariableDeclaration($primaryClass->name, $updateClause->aliasIdentificationVariable);
         $fromClause = new AST\FromClause([new AST\IdentificationVariableDeclaration($rangeDecl, null, [])]);
 
-        $this->_insertSql .= $sqlWalker->walkFromClause($fromClause);
+        $this->insertSql .= $sqlWalker->walkFromClause($fromClause);
 
         // 2. Create ID subselect statement used in UPDATE ... WHERE ... IN (subselect)
         $idSubselect = 'SELECT ' . $idColumnList . ' FROM ' . $tempTable;
@@ -111,9 +111,9 @@ class MultiTableUpdateExecutor extends AbstractSqlExecutor
                     $updateSql .= $sqlWalker->walkUpdateItem($updateItem);
 
                     if ($newValue instanceof AST\InputParameter) {
-                        $this->_sqlParameters[$i][] = $newValue->name;
+                        $this->sqlParameters[$i][] = $newValue->name;
 
-                        ++$this->_numParametersInUpdateClause;
+                        ++$this->numParametersInUpdateClause;
                     }
                 }
             }
@@ -125,7 +125,7 @@ class MultiTableUpdateExecutor extends AbstractSqlExecutor
 
         // Append WHERE clause to insertSql, if there is one.
         if ($AST->whereClause) {
-            $this->_insertSql .= $sqlWalker->walkWhereClause($AST->whereClause);
+            $this->insertSql .= $sqlWalker->walkWhereClause($AST->whereClause);
         }
 
         // 4. Store DDL for temporary identifier table.
@@ -138,10 +138,10 @@ class MultiTableUpdateExecutor extends AbstractSqlExecutor
             ];
         }
 
-        $this->_createTempTableSql = $platform->getCreateTemporaryTableSnippetSQL() . ' ' . $tempTable . ' ('
+        $this->createTempTableSql = $platform->getCreateTemporaryTableSnippetSQL() . ' ' . $tempTable . ' ('
                 . $platform->getColumnDeclarationListSQL($columnDefinitions) . ', PRIMARY KEY(' . implode(',', $idColumnNames) . '))';
 
-        $this->_dropTempTableSql = $platform->getDropTemporaryTableSQL($tempTable);
+        $this->dropTempTableSql = $platform->getDropTemporaryTableSQL($tempTable);
     }
 
     /**
@@ -152,14 +152,14 @@ class MultiTableUpdateExecutor extends AbstractSqlExecutor
     public function execute(Connection $conn, array $params, array $types)
     {
         // Create temporary id table
-        $conn->executeStatement($this->_createTempTableSql);
+        $conn->executeStatement($this->createTempTableSql);
 
         try {
             // Insert identifiers. Parameters from the update clause are cut off.
             $numUpdated = $conn->executeStatement(
-                $this->_insertSql,
-                array_slice($params, $this->_numParametersInUpdateClause),
-                array_slice($types, $this->_numParametersInUpdateClause)
+                $this->insertSql,
+                array_slice($params, $this->numParametersInUpdateClause),
+                array_slice($types, $this->numParametersInUpdateClause)
             );
 
             // Execute UPDATE statements
@@ -167,8 +167,8 @@ class MultiTableUpdateExecutor extends AbstractSqlExecutor
                 $paramValues = [];
                 $paramTypes  = [];
 
-                if (isset($this->_sqlParameters[$key])) {
-                    foreach ($this->_sqlParameters[$key] as $parameterKey => $parameterName) {
+                if (isset($this->sqlParameters[$key])) {
+                    foreach ($this->sqlParameters[$key] as $parameterKey => $parameterName) {
                         $paramValues[] = $params[$parameterKey];
                         $paramTypes[]  = $types[$parameterKey] ?? ParameterTypeInferer::inferType($params[$parameterKey]);
                     }
@@ -178,7 +178,7 @@ class MultiTableUpdateExecutor extends AbstractSqlExecutor
             }
         } finally {
             // Drop temporary table
-            $conn->executeStatement($this->_dropTempTableSql);
+            $conn->executeStatement($this->dropTempTableSql);
         }
 
         return $numUpdated;

@@ -51,6 +51,10 @@
                 <file name="lib/Doctrine/ORM/Query/Parser.php"/>
                 <file name="lib/Doctrine/ORM/QueryBuilder.php"/>
                 <file name="lib/Doctrine/ORM/Tools/EntityGenerator.php"/>
+                <file name="lib/Doctrine/ORM/Mapping/ClassMetadataInfo.php" />
+                <file name="lib/Doctrine/ORM/Tools/EntityGenerator.php" />
+                <file name="lib/Doctrine/ORM/Tools/Export/Driver/AbstractExporter.php" />
+                <file name="lib/Doctrine/ORM/Tools/SchemaTool.php" />
             </errorLevel>
         </DeprecatedConstant>
         <DeprecatedInterface>
@@ -89,6 +93,7 @@
                 <referencedMethod name="Doctrine\ORM\ORMSetup::createDefaultAnnotationDriver"/>
                 <referencedMethod name="Doctrine\ORM\Query\SqlWalker::walkInExpression"/>
                 <referencedMethod name="Doctrine\ORM\Query\TreeWalkerAdapter::_getQueryComponents"/>
+                <referencedMethod name="Doctrine\ORM\Mapping\ClassMetadataInfo::isInheritanceTypeTablePerClass"/>
                 <file name="lib/Doctrine/ORM/Query/TreeWalkerChain.php"/>
             </errorLevel>
         </DeprecatedMethod>
@@ -114,8 +119,22 @@
             <errorLevel type="suppress">
                 <!-- Argument type changes in DBAL 3.2 -->
                 <referencedFunction name="Doctrine\DBAL\Cache\QueryCacheProfile::__construct"/>
+                <!-- https://github.com/vimeo/psalm/issues/9155 -->
+                <referencedFunction name="Doctrine\ORM\Mapping\ClassMetadata::addInheritedAssociationMapping"/>
             </errorLevel>
         </InvalidArgument>
+        <InvalidArrayAccess>
+            <errorLevel type="suppress">
+                <!-- https://github.com/vimeo/psalm/issues/9160 -->
+                <file name="lib/Doctrine/ORM/Mapping/ClassMetadataFactory.php"/>
+            </errorLevel>
+        </InvalidArrayAccess>
+        <InvalidArrayAssignment>
+            <errorLevel type="suppress">
+                <!-- https://github.com/vimeo/psalm/issues/9160 -->
+                <file name="lib/Doctrine/ORM/Mapping/ClassMetadataFactory.php"/>
+            </errorLevel>
+        </InvalidArrayAssignment>
         <InvalidClass>
             <errorLevel type="suppress">
                 <!-- Class name changes in DBAL 3. -->
@@ -128,6 +147,12 @@
                 <file name="lib/Doctrine/ORM/Query/AST/InstanceOfExpression.php"/>
             </errorLevel>
         </InvalidParamDefault>
+        <InvalidPropertyAssignmentValue>
+            <errorLevel type="suppress">
+                <!-- https://github.com/vimeo/psalm/issues/9155 -->
+                <file name="lib/Doctrine/ORM/Mapping/ClassMetadataFactory.php"/>
+            </errorLevel>
+        </InvalidPropertyAssignmentValue>
         <MethodSignatureMismatch>
             <errorLevel type="suppress">
                 <!-- See https://github.com/vimeo/psalm/issues/7357 -->
@@ -157,6 +182,12 @@
                 <file name="lib/Doctrine/ORM/Query/AST/InSubselectExpression.php"/>
             </errorLevel>
         </NonInvariantDocblockPropertyType>
+        <PossiblyInvalidArgument>
+            <errorLevel type="suppress">
+                <!-- https://github.com/vimeo/psalm/issues/9155 -->
+                <file name="lib/Doctrine/ORM/Mapping/ClassMetadataFactory.php"/>
+            </errorLevel>
+        </PossiblyInvalidArgument>
         <PropertyNotSetInConstructor>
             <errorLevel type="suppress">
                 <!-- Remove on 3.0.x -->
@@ -166,6 +197,11 @@
                 <directory name="lib/Doctrine/ORM/Query/AST" />
             </errorLevel>
         </PropertyNotSetInConstructor>
+        <PropertyTypeCoercion>
+            <errorLevel type="suppress">
+                <file name="lib/Doctrine/ORM/Mapping/ClassMetadataInfo.php"/>
+            </errorLevel>
+        </PropertyTypeCoercion>
         <RedundantCastGivenDocblockType>
             <errorLevel type="suppress">
                 <!-- Can be removed once the "getMaxResults" methods of those classes have native parameter types -->
@@ -179,6 +215,12 @@
                 <file name="lib/Doctrine/ORM/Mapping/ClassMetadataFactory.php"/>
             </errorLevel>
         </RedundantCondition>
+        <ReferenceConstraintViolation>
+            <errorLevel type="suppress">
+                <!-- https://github.com/vimeo/psalm/issues/9155 -->
+                <file name="lib/Doctrine/ORM/Mapping/ClassMetadataFactory.php"/>
+            </errorLevel>
+        </ReferenceConstraintViolation>
         <TooManyArguments>
             <errorLevel type="suppress">
                 <!-- Symfony cache supports passing a key prefix to the clear method. -->

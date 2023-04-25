@@ -46,6 +46,11 @@ use function strtolower;
  * <tt>ClassMetadata</tt> class descriptors.
  *
  * @link    www.doctrine-project.org
+ *
+ * @psalm-import-type AssociationMapping from ClassMetadata
+ * @psalm-import-type DiscriminatorColumnMapping from ClassMetadata
+ * @psalm-import-type FieldMapping from ClassMetadata
+ * @psalm-import-type JoinColumnData from ClassMetadata
  */
 class SchemaTool
 {
@@ -440,6 +445,7 @@ class SchemaTool
             $options['columnDefinition'] = $discrColumn['columnDefinition'];
         }
 
+        $options = $this->gatherColumnOptions($discrColumn) + $options;
         $table->addColumn($discrColumn['name'], $discrColumn['type'], $options);
     }
 
@@ -468,7 +474,7 @@ class SchemaTool
      * Creates a column definition as required by the DBAL from an ORM field mapping definition.
      *
      * @param ClassMetadata $class The class that owns the field mapping.
-     * @psalm-param array<string, mixed> $mapping The field mapping.
+     * @psalm-param FieldMapping $mapping The field mapping.
      */
     private function gatherColumn(
         ClassMetadata $class,
@@ -657,8 +663,8 @@ class SchemaTool
     /**
      * Gathers columns and fk constraints that are required for one part of relationship.
      *
-     * @psalm-param array<string, mixed>             $joinColumns
-     * @psalm-param array<string, mixed>             $mapping
+     * @psalm-param array<string, JoinColumnData>    $joinColumns
+     * @psalm-param AssociationMapping               $mapping
      * @psalm-param list<string>                     $primaryKeyColumns
      * @psalm-param array<string, array{
      *                  foreignTableName: string,
@@ -788,7 +794,7 @@ class SchemaTool
     }
 
     /**
-     * @param mixed[] $mapping
+     * @psalm-param JoinColumnData|FieldMapping|DiscriminatorColumnMapping $mapping
      *
      * @return mixed[]
      */

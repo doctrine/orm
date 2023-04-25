@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 use Doctrine\ORM\Mapping\ClassMetadata;
 
+$metadata->isMappedSuperclass = true;
+
 $metadata->mapField([
     'id'         => true,
     'fieldName'  => 'id',

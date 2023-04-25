@@ -8,13 +8,13 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\Column;
-use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\ManyToMany;
+use Doctrine\ORM\Mapping\MappedSuperclass;
 
-/** @Entity */
-#[Entity]
+/** @MappedSuperclass */
+#[MappedSuperclass]
 class DDC5934BaseContract
 {
     /**
@@ -42,6 +42,8 @@ class DDC5934BaseContract
 
     public static function loadMetadata(ClassMetadata $metadata): void
     {
+        $metadata->isMappedSuperclass = true;
+
         $metadata->mapField([
             'id'         => true,
             'fieldName'  => 'id',

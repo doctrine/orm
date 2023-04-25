@@ -36,7 +36,7 @@ class AbstractManyToManyAssociationTestCase extends OrmFunctionalTestCase
 
     protected function countForeignKeys($firstId, $secondId): int
     {
-        return count($this->_em->getConnection()->executeQuery(sprintf(
+        return count($this->_em->getConnection()->fetchAllAssociative(sprintf(
             <<<'SQL'
             SELECT %s
               FROM %s
@@ -48,7 +48,7 @@ SQL
             $this->table,
             $this->firstField,
             $this->secondField
-        ), [$firstId, $secondId])->fetchAll());
+        ), [$firstId, $secondId]));
     }
 
     public function assertCollectionEquals(Collection $first, Collection $second): bool

@@ -13,6 +13,8 @@ use Doctrine\ORM\Query\Parameter;
 use Doctrine\ORM\Query\QueryExpressionVisitor;
 use PHPUnit\Framework\TestCase;
 
+use function method_exists;
+
 /**
  * Test for QueryExpressionVisitor
  */
@@ -107,6 +109,28 @@ class QueryExpressionVisitorTest extends TestCase
 
         self::assertInstanceOf(QueryBuilder\Orx::class, $expr);
         self::assertCount(2, $expr->getParts());
+    }
+
+    public function testWalkNotCompositeExpression(): void
+    {
+        if (! method_exists(CriteriaBuilder::class, 'not')) {
+            self::markTestSkipped('doctrine/collections in version ^2.1 is required for this test to run.');
+        }
+
+        $qb = new QueryBuilder();
+        $cb = new CriteriaBuilder();
+
+        $expr = $this->visitor->walkCompositeExpression(
+            $cb->not(
+                $cb->eq('foo', 1)
+            )
+        );
+
+        self::assertInstanceOf(QueryBuilder\Func::class, $expr);
+        self::assertEquals('NOT', $expr->getName());
+        self::assertCount(1, $expr->getArguments());
+        self::assertEquals($qb->eq('o.foo', ':foo'), $expr->getArguments()[0]);
+        self::assertEquals(new ArrayCollection([new Parameter('foo', 1)]), $this->visitor->getParameters());
     }
 
     public function testWalkValue(): void

@@ -33,7 +33,7 @@ class MappingException extends ORMException
     }
 
     /**
-     * @param string $entityName
+     * @param class-string $entityName
      *
      * @return MappingException
      */
@@ -346,7 +346,7 @@ class MappingException extends ORMException
     }
 
     /**
-     * @param string $className
+     * @param class-string $className
      *
      * @return MappingException
      */
@@ -908,8 +908,7 @@ class MappingException extends ORMException
     {
         return new self(
             sprintf(
-                'Override for %s::%s is only allowed for attributes/associations ' .
-                'declared on a mapped superclass or a trait.',
+                'Overrides are only allowed for fields or associations declared in mapped superclasses or traits, which is not the case for %s::%s.',
                 $className,
                 $propertyName
             )
