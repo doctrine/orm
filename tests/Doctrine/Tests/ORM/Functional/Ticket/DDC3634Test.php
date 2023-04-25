@@ -126,7 +126,7 @@ final class LastInsertIdMockConnection extends AbstractConnectionMiddleware
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function lastInsertId($name = null): int|string
     {

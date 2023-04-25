@@ -118,7 +118,7 @@ class DDC3192CurrencyCode extends Type
     private static array $map = ['BYR' => 974];
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function getSQLDeclaration(array $column, AbstractPlatform $platform): string
     {
@@ -126,7 +126,7 @@ class DDC3192CurrencyCode extends Type
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function convertToDatabaseValue($value, AbstractPlatform $platform): int
     {
@@ -134,7 +134,7 @@ class DDC3192CurrencyCode extends Type
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function convertToPHPValue($value, AbstractPlatform $platform): mixed
     {

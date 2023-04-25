@@ -37,7 +37,6 @@ class User
     public $phones;
 
     /** @var Address */
-    #[JoinColumn(name: '`address-id`', referencedColumnName: '`address-id`')]
     #[OneToOne(targetEntity: 'Address', mappedBy: 'user', cascade: ['persist'], fetch: 'EAGER')]
     public $address;
 

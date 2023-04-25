@@ -2731,7 +2731,7 @@ class UnitOfWork implements PropertyChangedListener
     /**
      * Notifies this UnitOfWork of a property change in an entity.
      *
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function propertyChanged(object $sender, string $propertyName, mixed $oldValue, mixed $newValue): void
     {

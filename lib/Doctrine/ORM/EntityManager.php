@@ -268,7 +268,7 @@ class EntityManager implements EntityManagerInterface
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function find($className, mixed $id, LockMode|int|null $lockMode = null, int|null $lockVersion = null): object|null
     {

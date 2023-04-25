@@ -138,7 +138,7 @@ class DDC3785AssetId implements Stringable
 class DDC3785AssetIdType extends Type
 {
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function getSQLDeclaration(array $column, AbstractPlatform $platform): string
     {
@@ -146,7 +146,7 @@ class DDC3785AssetIdType extends Type
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function convertToDatabaseValue($value, AbstractPlatform $platform): string
     {
@@ -154,7 +154,7 @@ class DDC3785AssetIdType extends Type
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function convertToPHPValue($value, AbstractPlatform $platform): DDC3785AssetId
     {

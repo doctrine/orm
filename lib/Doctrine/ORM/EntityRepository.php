@@ -99,7 +99,7 @@ class EntityRepository implements ObjectRepository, Selectable
     /**
      * Finds entities by a set of criteria.
      *
-     * {@inheritdoc}
+     * {@inheritDoc}
      *
      * @psalm-return list<T>
      */

@@ -17,7 +17,7 @@ class UpperCaseStringType extends StringType
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function convertToDatabaseValueSQL($sqlExpr, AbstractPlatform $platform): string
     {
@@ -25,7 +25,7 @@ class UpperCaseStringType extends StringType
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function convertToPHPValueSQL($sqlExpr, $platform): string
     {

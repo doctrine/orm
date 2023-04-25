@@ -112,7 +112,7 @@ class DDC2012TsVectorType extends Type
     public static $calls = [];
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function getSQLDeclaration(array $column, AbstractPlatform $platform): string
     {
@@ -120,7 +120,7 @@ class DDC2012TsVectorType extends Type
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function convertToDatabaseValue($value, AbstractPlatform $platform): mixed
     {
@@ -137,7 +137,7 @@ class DDC2012TsVectorType extends Type
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      *
      * @return list<string>
      */
@@ -152,7 +152,7 @@ class DDC2012TsVectorType extends Type
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function convertToDatabaseValueSQL($sqlExpr, AbstractPlatform $platform): string
     {

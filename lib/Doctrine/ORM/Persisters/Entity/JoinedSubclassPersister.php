@@ -92,7 +92,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function executeInserts(): array
     {
@@ -452,7 +452,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     protected function getInsertColumnList(): array
     {
@@ -497,7 +497,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     protected function assignDefaultVersionAndUpsertableValues(object $entity, array $id): void
     {

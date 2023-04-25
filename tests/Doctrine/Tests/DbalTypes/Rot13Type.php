@@ -15,7 +15,7 @@ use function str_rot13;
 class Rot13Type extends Type
 {
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      *
      * @param string|null $value
      */
@@ -29,7 +29,7 @@ class Rot13Type extends Type
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      *
      * @param string|null $value
      */
@@ -43,7 +43,7 @@ class Rot13Type extends Type
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function getSQLDeclaration(array $column, AbstractPlatform $platform): string
     {

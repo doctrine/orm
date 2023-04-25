@@ -151,7 +151,7 @@ abstract class AbstractCollectionPersister implements CachedCollectionPersister
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function slice(PersistentCollection $collection, int $offset, int|null $length = null): array
     {

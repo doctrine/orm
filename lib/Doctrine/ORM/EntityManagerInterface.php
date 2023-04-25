@@ -20,7 +20,7 @@ use Doctrine\Persistence\ObjectManager;
 interface EntityManagerInterface extends ObjectManager
 {
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      *
      * @psalm-param class-string<T> $className
      *

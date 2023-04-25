@@ -25,7 +25,7 @@ class TreeWalkerChain implements TreeWalker
     private array $walkers = [];
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function __construct(
         private readonly AbstractQuery $query,

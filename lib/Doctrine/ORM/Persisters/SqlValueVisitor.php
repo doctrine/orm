@@ -27,18 +27,10 @@ class SqlValueVisitor extends ExpressionVisitor
      */
     public function walkComparison(Comparison $comparison)
     {
-        $value    = $this->getValueFromComparison($comparison);
-        $field    = $comparison->getField();
-        $operator = $comparison->getOperator();
-
-        if (($operator === Comparison::EQ || $operator === Comparison::IS) && $value === null) {
-            return null;
-        } elseif ($operator === Comparison::NEQ && $value === null) {
-            return null;
-        }
+        $value = $this->getValueFromComparison($comparison);
 
         $this->values[] = $value;
-        $this->types[]  = [$field, $value, $operator];
+        $this->types[]  = [$comparison->getField(), $value, $comparison->getOperator()];
 
         return null;
     }

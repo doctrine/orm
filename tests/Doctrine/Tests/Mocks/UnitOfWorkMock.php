@@ -24,7 +24,7 @@ class UnitOfWorkMock extends UnitOfWork
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function & getEntityChangeSet(object $entity): array
     {
@@ -51,7 +51,7 @@ class UnitOfWorkMock extends UnitOfWork
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function setOriginalEntityData(object $entity, array $originalData): void
     {

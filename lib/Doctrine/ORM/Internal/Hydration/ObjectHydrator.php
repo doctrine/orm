@@ -132,7 +132,7 @@ class ObjectHydrator extends AbstractHydrator
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     protected function hydrateAllData(): array
     {

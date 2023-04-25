@@ -49,7 +49,7 @@ class DDC2224Test extends OrmFunctionalTestCase
 class DDC2224Type extends Type
 {
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function getSQLDeclaration(array $column, AbstractPlatform $platform): string
     {
@@ -62,7 +62,7 @@ class DDC2224Type extends Type
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function convertToDatabaseValueSQL($sqlExpr, AbstractPlatform $platform): string
     {

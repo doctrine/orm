@@ -43,7 +43,7 @@ final class DefaultTypedFieldMapper implements TypedFieldMapper
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function validateAndComplete(array $mapping, ReflectionProperty $field): array
     {

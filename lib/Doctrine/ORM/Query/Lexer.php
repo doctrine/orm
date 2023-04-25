@@ -35,7 +35,7 @@ class Lexer extends AbstractLexer
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     protected function getCatchablePatterns(): array
     {
@@ -49,7 +49,7 @@ class Lexer extends AbstractLexer
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     protected function getNonCatchablePatterns(): array
     {

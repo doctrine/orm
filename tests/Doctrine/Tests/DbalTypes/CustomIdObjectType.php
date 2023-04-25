@@ -12,7 +12,7 @@ class CustomIdObjectType extends Type
     public const NAME = 'CustomIdObject';
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function convertToDatabaseValue($value, AbstractPlatform $platform): string
     {
@@ -20,7 +20,7 @@ class CustomIdObjectType extends Type
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function convertToPHPValue($value, AbstractPlatform $platform): CustomIdObject
     {
@@ -28,7 +28,7 @@ class CustomIdObjectType extends Type
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function getSQLDeclaration(array $column, AbstractPlatform $platform): string
     {

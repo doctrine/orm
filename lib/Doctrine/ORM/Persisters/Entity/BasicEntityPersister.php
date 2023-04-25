@@ -208,7 +208,7 @@ class BasicEntityPersister implements EntityPersister
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function getInserts(): array
     {
@@ -216,7 +216,7 @@ class BasicEntityPersister implements EntityPersister
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function executeInserts(): array
     {
@@ -691,7 +691,7 @@ class BasicEntityPersister implements EntityPersister
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function load(
         array $criteria,
@@ -720,7 +720,7 @@ class BasicEntityPersister implements EntityPersister
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function loadById(array $identifier, object|null $entity = null): object|null
     {
@@ -728,7 +728,7 @@ class BasicEntityPersister implements EntityPersister
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function loadOneToOneEntity(AssociationMapping $assoc, object $sourceEntity, array $identifier = []): object|null
     {
@@ -788,7 +788,7 @@ class BasicEntityPersister implements EntityPersister
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function refresh(array $id, object $entity, LockMode|int|null $lockMode = null): void
     {
@@ -812,7 +812,7 @@ class BasicEntityPersister implements EntityPersister
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function loadCriteria(Criteria $criteria): array
     {
@@ -830,7 +830,7 @@ class BasicEntityPersister implements EntityPersister
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function expandCriteriaParameters(Criteria $criteria): array
     {
@@ -846,22 +846,24 @@ class BasicEntityPersister implements EntityPersister
 
         $valueVisitor->dispatch($expression);
 
-        [$params, $types] = $valueVisitor->getParamsAndTypes();
-
-        foreach ($params as $param) {
-            $sqlParams = array_merge($sqlParams, $this->getValues($param));
-        }
+        [, $types] = $valueVisitor->getParamsAndTypes();
 
         foreach ($types as $type) {
-            [$field, $value] = $type;
-            $sqlTypes        = [...$sqlTypes, ...$this->getTypes($field, $value, $this->class)];
+            [$field, $value, $operator] = $type;
+
+            if ($value === null && ($operator === Comparison::EQ || $operator === Comparison::NEQ)) {
+                continue;
+            }
+
+            $sqlParams = [...$sqlParams, ...$this->getValues($value)];
+            $sqlTypes  = [...$sqlTypes, ...$this->getTypes($field, $value, $this->class)];
         }
 
         return [$sqlParams, $sqlTypes];
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function loadAll(
         array $criteria = [],
@@ -881,7 +883,7 @@ class BasicEntityPersister implements EntityPersister
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function getManyToManyCollection(
         AssociationMapping $assoc,
@@ -939,7 +941,7 @@ class BasicEntityPersister implements EntityPersister
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function loadManyToManyCollection(AssociationMapping $assoc, object $sourceEntity, PersistentCollection $collection): array
     {
@@ -1469,7 +1471,7 @@ class BasicEntityPersister implements EntityPersister
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function lock(array $criteria, LockMode|int $lockMode): void
     {
@@ -1683,7 +1685,7 @@ class BasicEntityPersister implements EntityPersister
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function getOneToManyCollection(
         AssociationMapping $assoc,
@@ -1761,7 +1763,7 @@ class BasicEntityPersister implements EntityPersister
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function expandParameters(array $criteria): array
     {

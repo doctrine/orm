@@ -7,6 +7,7 @@ namespace Doctrine\Tests;
 use Doctrine\Common\EventSubscriber;
 use Doctrine\DBAL\Configuration as DbalConfiguration;
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Driver\AbstractSQLiteDriver\Middleware\EnableForeignKeys;
 use Doctrine\DBAL\DriverManager;
 use Doctrine\DBAL\Exception\DatabaseObjectNotFoundException;
 use Doctrine\DBAL\Platforms\SQLitePlatform;
@@ -16,10 +17,12 @@ use Symfony\Component\VarExporter\LazyGhostTrait;
 use UnexpectedValueException;
 
 use function assert;
+use function class_exists;
 use function explode;
 use function fwrite;
 use function get_debug_type;
 use function getenv;
+use function in_array;
 use function sprintf;
 use function str_starts_with;
 use function strlen;
@@ -62,7 +65,17 @@ class TestUtil
             self::$initialized = true;
         }
 
-        $connection = DriverManager::getConnection(self::getTestConnectionParameters(), $config);
+        $connectionParameters = self::getTestConnectionParameters();
+
+        if (in_array($connectionParameters['driver'], ['pdo_sqlite', 'sqlite3'], true) && class_exists(EnableForeignKeys::class)) {
+            if ($config === null) {
+                $config = new DbalConfiguration();
+            }
+
+            $config->setMiddlewares([...$config->getMiddlewares(), new EnableForeignKeys()]);
+        }
+
+        $connection = DriverManager::getConnection($connectionParameters, $config);
         assert($connection instanceof DbalExtensions\Connection);
 
         self::addDbEventSubscribers($connection);
@@ -199,6 +212,7 @@ class TestUtil
                 'port',
                 'server',
                 'memory',
+                'path',
                 'ssl_key',
                 'ssl_cert',
                 'ssl_ca',

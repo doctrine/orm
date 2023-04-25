@@ -17,7 +17,7 @@ use function sprintf;
 abstract class AbstractEntityInheritancePersister extends BasicEntityPersister
 {
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     protected function prepareInsertData(object $entity): array
     {

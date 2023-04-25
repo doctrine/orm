@@ -21,7 +21,7 @@ use function sprintf;
 abstract class TreeWalkerAdapter implements TreeWalker
 {
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function __construct(
         private readonly AbstractQuery $query,
@@ -31,7 +31,7 @@ abstract class TreeWalkerAdapter implements TreeWalker
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function getQueryComponents(): array
     {

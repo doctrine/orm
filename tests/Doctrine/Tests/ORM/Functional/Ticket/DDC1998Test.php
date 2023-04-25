@@ -65,7 +65,7 @@ class DDC1998Type extends StringType
     public const NAME = 'ddc1998';
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function convertToDatabaseValue($value, AbstractPlatform $platform): string
     {

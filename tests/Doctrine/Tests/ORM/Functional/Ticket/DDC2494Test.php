@@ -148,7 +148,7 @@ class DDC2494TinyIntType extends Type
     public static $calls = [];
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function getSQLDeclaration(array $column, AbstractPlatform $platform): string
     {
@@ -156,7 +156,7 @@ class DDC2494TinyIntType extends Type
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function convertToDatabaseValue($value, AbstractPlatform $platform): string
     {
@@ -172,7 +172,7 @@ class DDC2494TinyIntType extends Type
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function convertToPHPValue($value, AbstractPlatform $platform): int
     {

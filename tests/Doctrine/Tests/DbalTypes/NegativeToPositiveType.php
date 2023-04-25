@@ -17,7 +17,7 @@ class NegativeToPositiveType extends Type
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function getSQLDeclaration(array $column, AbstractPlatform $platform): string
     {
@@ -25,7 +25,7 @@ class NegativeToPositiveType extends Type
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function convertToDatabaseValueSQL($sqlExpr, AbstractPlatform $platform): string
     {
@@ -33,7 +33,7 @@ class NegativeToPositiveType extends Type
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function convertToPHPValueSQL($sqlExpr, $platform): string
     {

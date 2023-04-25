@@ -78,7 +78,7 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function getInserts(): array
     {
@@ -218,7 +218,7 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function expandParameters(array $criteria): array
     {
@@ -226,7 +226,7 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function expandCriteriaParameters(Criteria $criteria): array
     {
@@ -239,7 +239,7 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function getManyToManyCollection(
         AssociationMapping $assoc,
@@ -251,7 +251,7 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function getOneToManyCollection(
         AssociationMapping $assoc,
@@ -268,7 +268,7 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function executeInserts(): array
     {
@@ -278,7 +278,7 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function load(
         array $criteria,
@@ -325,7 +325,7 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function loadAll(
         array $criteria = [],
@@ -361,7 +361,7 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function loadById(array $identifier, object|null $entity = null): object|null
     {
@@ -418,7 +418,7 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function loadCriteria(Criteria $criteria): array
     {
@@ -453,7 +453,7 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function loadManyToManyCollection(
         AssociationMapping $assoc,
@@ -518,7 +518,7 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function loadOneToOneEntity(AssociationMapping $assoc, object $sourceEntity, array $identifier = []): object|null
     {
@@ -526,7 +526,7 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function lock(array $criteria, LockMode|int $lockMode): void
     {
@@ -534,7 +534,7 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function refresh(array $id, object $entity, LockMode|int|null $lockMode = null): void
     {

@@ -88,7 +88,7 @@ class OneToManyPersister extends AbstractCollectionPersister
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function slice(PersistentCollection $collection, int $offset, int|null $length = null): array
     {
@@ -137,7 +137,7 @@ class OneToManyPersister extends AbstractCollectionPersister
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function loadCriteria(PersistentCollection $collection, Criteria $criteria): array
     {

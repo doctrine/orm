@@ -139,7 +139,7 @@ class DefaultCacheFactory implements CacheFactory
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function getRegion(array $cache): Region
     {

@@ -1698,12 +1698,16 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
 
         $mapping = $this->associationMappings[$fieldName]->toArray();
 
-        //if (isset($mapping['inherited']) && (count($overrideMapping) !== 1 || ! isset($overrideMapping['fetch']))) {
-            // TODO: Deprecate overriding the fetch mode via association override for 3.0,
-            // users should do this with a listener and a custom attribute/annotation
-            // TODO: Enable this exception in 2.8
-            //throw MappingException::illegalOverrideOfInheritedProperty($this->name, $fieldName);
-        //}
+        if (isset($mapping['inherited'])) {
+            Deprecation::trigger(
+                'doctrine/orm',
+                'https://github.com/doctrine/orm/pull/10470',
+                'Overrides are only allowed for fields or associations declared in mapped superclasses or traits. This is not the case for %s::%s, which was inherited from %s. This is a misconfiguration and will be an error in Doctrine ORM 3.0.',
+                $this->name,
+                $fieldName,
+                $mapping['inherited'],
+            );
+        }
 
         if (isset($overrideMapping['joinColumns'])) {
             $mapping['joinColumns'] = $overrideMapping['joinColumns'];

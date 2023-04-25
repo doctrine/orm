@@ -53,7 +53,7 @@ class DefaultQueryCache implements QueryCache
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function get(QueryCacheKey $key, ResultSetMapping $rsm, array $hints = []): array|null
     {
@@ -196,7 +196,7 @@ class DefaultQueryCache implements QueryCache
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function put(QueryCacheKey $key, ResultSetMapping $rsm, mixed $result, array $hints = []): bool
     {

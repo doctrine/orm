@@ -160,7 +160,7 @@ class GH5887CustomIdObjectType extends StringType
     public const NAME = 'GH5887CustomIdObject';
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function convertToDatabaseValue($value, AbstractPlatform $platform): mixed
     {
@@ -168,7 +168,7 @@ class GH5887CustomIdObjectType extends StringType
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function convertToPHPValue($value, AbstractPlatform $platform): GH5887CustomIdObject
     {

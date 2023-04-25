@@ -76,7 +76,7 @@ class LimitSubqueryOutputWalker extends SqlWalker
      * because Doctrine\ORM\Query\SqlWalker keeps everything private without
      * accessors.
      *
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function __construct(
         Query $query,

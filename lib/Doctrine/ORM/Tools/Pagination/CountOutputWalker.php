@@ -42,7 +42,7 @@ class CountOutputWalker extends SqlWalker
     private readonly ResultSetMapping $rsm;
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function __construct(Query $query, ParserResult $parserResult, array $queryComponents)
     {

@@ -90,7 +90,7 @@ class SingleTablePersister extends AbstractEntityInheritancePersister
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     protected function getInsertColumnList(): array
     {
@@ -108,7 +108,7 @@ class SingleTablePersister extends AbstractEntityInheritancePersister
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     protected function getSelectConditionSQL(array $criteria, AssociationMapping|null $assoc = null): string
     {

@@ -29,7 +29,7 @@ class AnsiQuoteStrategy implements QuoteStrategy
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function getSequenceName(array $definition, ClassMetadata $class, AbstractPlatform $platform): string
     {
@@ -58,7 +58,7 @@ class AnsiQuoteStrategy implements QuoteStrategy
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function getIdentifierColumnNames(ClassMetadata $class, AbstractPlatform $platform): array
     {

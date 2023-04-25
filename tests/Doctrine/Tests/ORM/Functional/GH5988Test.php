@@ -58,7 +58,7 @@ final class GH5988Test extends OrmFunctionalTestCase
 class GH5988CustomIdObjectHashType extends DBALType
 {
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function convertToDatabaseValue($value, AbstractPlatform $platform): string
     {
@@ -66,7 +66,7 @@ class GH5988CustomIdObjectHashType extends DBALType
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function convertToPHPValue($value, AbstractPlatform $platform): CustomIdObject
     {
@@ -74,7 +74,7 @@ class GH5988CustomIdObjectHashType extends DBALType
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function getSQLDeclaration(array $column, AbstractPlatform $platform): string
     {

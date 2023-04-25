@@ -114,12 +114,12 @@ the ``FileDriver`` implementation for you to extend from:
     class MyMetadataDriver extends FileDriver
     {
         /**
-         * {@inheritdoc}
+         * {@inheritDoc}
          */
         protected $_fileExtension = '.dcm.ext';
 
         /**
-         * {@inheritdoc}
+         * {@inheritDoc}
          */
         public function loadMetadataForClass($className, ClassMetadata $metadata)
         {
@@ -129,7 +129,7 @@ the ``FileDriver`` implementation for you to extend from:
         }
 
         /**
-         * {@inheritdoc}
+         * {@inheritDoc}
          */
         protected function _loadMappingFile($file)
         {

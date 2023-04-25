@@ -82,7 +82,7 @@ class GH6141PeopleType extends StringType
     public const NAME = 'gh6141people';
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function convertToDatabaseValue($value, AbstractPlatform $platform): string
     {
@@ -94,7 +94,7 @@ class GH6141PeopleType extends StringType
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function convertToPHPValue($value, AbstractPlatform $platform): GH6141People
     {
