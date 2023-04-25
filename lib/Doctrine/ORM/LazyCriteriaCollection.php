@@ -110,7 +110,7 @@ class LazyCriteriaCollection extends AbstractLazyCollection implements Selectabl
             ->setFirstResult($criteria->getFirstResult() ?? $this->criteria->getFirstResult())
             ->setMaxResults($criteria->getMaxResults() ?? $this->criteria->getFirstResult());
 
-        return new static($this->entityPersister, $criteria);
+        return new self($this->entityPersister, $criteria);
     }
 
     /**
