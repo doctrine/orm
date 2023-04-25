@@ -331,7 +331,6 @@ class DDC1587ValidEntity1
     /**
      * @var Identifier
      * @OneToOne(targetEntity="DDC1587ValidEntity2", cascade={"all"}, mappedBy="agent")
-     * @JoinColumn(name="pk", referencedColumnName="pk_agent")
      */
     private $identifier;
 }
