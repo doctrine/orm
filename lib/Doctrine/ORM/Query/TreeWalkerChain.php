@@ -53,7 +53,7 @@ class TreeWalkerChain implements TreeWalker
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      *
      * @return void
      */
@@ -69,7 +69,7 @@ class TreeWalkerChain implements TreeWalker
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function __construct($query, $parserResult, array $queryComponents)
     {
@@ -101,7 +101,7 @@ class TreeWalkerChain implements TreeWalker
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      *
      * @deprecated This method will be removed in 3.0.
      */
@@ -120,7 +120,7 @@ class TreeWalkerChain implements TreeWalker
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      *
      * @deprecated This method will be removed in 3.0.
      */
@@ -139,7 +139,7 @@ class TreeWalkerChain implements TreeWalker
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      *
      * @deprecated This method will be removed in 3.0.
      */
@@ -158,7 +158,7 @@ class TreeWalkerChain implements TreeWalker
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      *
      * @deprecated This method will be removed in 3.0.
      */
@@ -177,7 +177,7 @@ class TreeWalkerChain implements TreeWalker
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      *
      * @deprecated This method will be removed in 3.0.
      */
@@ -196,7 +196,7 @@ class TreeWalkerChain implements TreeWalker
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      *
      * @deprecated This method will be removed in 3.0.
      */
@@ -215,7 +215,7 @@ class TreeWalkerChain implements TreeWalker
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      *
      * @deprecated This method will be removed in 3.0.
      */
@@ -234,7 +234,7 @@ class TreeWalkerChain implements TreeWalker
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      *
      * @deprecated This method will be removed in 3.0.
      */
@@ -253,7 +253,7 @@ class TreeWalkerChain implements TreeWalker
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      *
      * @deprecated This method will be removed in 3.0.
      */
@@ -272,7 +272,7 @@ class TreeWalkerChain implements TreeWalker
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      *
      * @deprecated This method will be removed in 3.0.
      */
@@ -291,7 +291,7 @@ class TreeWalkerChain implements TreeWalker
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      *
      * @deprecated This method will be removed in 3.0.
      */
@@ -310,7 +310,7 @@ class TreeWalkerChain implements TreeWalker
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      *
      * @deprecated This method will be removed in 3.0.
      */
@@ -329,7 +329,7 @@ class TreeWalkerChain implements TreeWalker
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      *
      * @deprecated This method will be removed in 3.0.
      */
@@ -348,7 +348,7 @@ class TreeWalkerChain implements TreeWalker
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      *
      * @deprecated This method will be removed in 3.0.
      */
@@ -367,7 +367,7 @@ class TreeWalkerChain implements TreeWalker
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      *
      * @deprecated This method will be removed in 3.0.
      */
@@ -386,7 +386,7 @@ class TreeWalkerChain implements TreeWalker
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      *
      * @deprecated This method will be removed in 3.0.
      */
@@ -419,7 +419,7 @@ class TreeWalkerChain implements TreeWalker
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      *
      * @deprecated This method will be removed in 3.0.
      */
@@ -438,7 +438,7 @@ class TreeWalkerChain implements TreeWalker
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      *
      * @deprecated This method will be removed in 3.0.
      */
@@ -457,7 +457,7 @@ class TreeWalkerChain implements TreeWalker
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      *
      * @deprecated This method will be removed in 3.0.
      */
@@ -476,7 +476,7 @@ class TreeWalkerChain implements TreeWalker
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      *
      * @deprecated This method will be removed in 3.0.
      */
@@ -495,7 +495,7 @@ class TreeWalkerChain implements TreeWalker
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      *
      * @deprecated This method will be removed in 3.0.
      */
@@ -514,7 +514,7 @@ class TreeWalkerChain implements TreeWalker
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      *
      * @deprecated This method will be removed in 3.0.
      */
@@ -533,7 +533,7 @@ class TreeWalkerChain implements TreeWalker
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      *
      * @deprecated This method will be removed in 3.0.
      */
@@ -552,7 +552,7 @@ class TreeWalkerChain implements TreeWalker
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      *
      * @deprecated This method will be removed in 3.0.
      */
@@ -571,7 +571,7 @@ class TreeWalkerChain implements TreeWalker
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      *
      * @deprecated This method will be removed in 3.0.
      */
@@ -590,7 +590,7 @@ class TreeWalkerChain implements TreeWalker
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      *
      * @deprecated This method will be removed in 3.0.
      */
@@ -609,7 +609,7 @@ class TreeWalkerChain implements TreeWalker
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      *
      * @deprecated This method will be removed in 3.0.
      */
@@ -628,7 +628,7 @@ class TreeWalkerChain implements TreeWalker
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      *
      * @deprecated This method will be removed in 3.0.
      */
@@ -647,7 +647,7 @@ class TreeWalkerChain implements TreeWalker
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      *
      * @deprecated This method will be removed in 3.0.
      */
@@ -666,7 +666,7 @@ class TreeWalkerChain implements TreeWalker
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      *
      * @deprecated This method will be removed in 3.0.
      */
@@ -685,7 +685,7 @@ class TreeWalkerChain implements TreeWalker
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      *
      * @deprecated This method will be removed in 3.0.
      */
@@ -704,7 +704,7 @@ class TreeWalkerChain implements TreeWalker
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      *
      * @deprecated This method will be removed in 3.0.
      */
@@ -723,7 +723,7 @@ class TreeWalkerChain implements TreeWalker
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      *
      * @deprecated This method will be removed in 3.0.
      */
@@ -742,7 +742,7 @@ class TreeWalkerChain implements TreeWalker
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      *
      * @deprecated This method will be removed in 3.0.
      */
@@ -761,7 +761,7 @@ class TreeWalkerChain implements TreeWalker
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      *
      * @deprecated This method will be removed in 3.0.
      */
@@ -780,7 +780,7 @@ class TreeWalkerChain implements TreeWalker
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      *
      * @deprecated This method will be removed in 3.0.
      */
@@ -799,7 +799,7 @@ class TreeWalkerChain implements TreeWalker
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      *
      * @deprecated This method will be removed in 3.0.
      */
@@ -818,7 +818,7 @@ class TreeWalkerChain implements TreeWalker
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      *
      * @deprecated This method will be removed in 3.0.
      */
@@ -837,7 +837,7 @@ class TreeWalkerChain implements TreeWalker
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      *
      * @deprecated This method will be removed in 3.0.
      */
@@ -856,7 +856,7 @@ class TreeWalkerChain implements TreeWalker
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      *
      * @deprecated This method will be removed in 3.0.
      */
@@ -875,7 +875,7 @@ class TreeWalkerChain implements TreeWalker
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      *
      * @deprecated This method will be removed in 3.0.
      */
@@ -894,7 +894,7 @@ class TreeWalkerChain implements TreeWalker
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      *
      * @deprecated This method will be removed in 3.0.
      */
@@ -913,7 +913,7 @@ class TreeWalkerChain implements TreeWalker
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      *
      * @deprecated This method will be removed in 3.0.
      */
@@ -932,7 +932,7 @@ class TreeWalkerChain implements TreeWalker
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      *
      * @deprecated This method will be removed in 3.0.
      */

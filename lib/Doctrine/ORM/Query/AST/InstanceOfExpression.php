@@ -46,7 +46,7 @@ class InstanceOfExpression extends Node
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function dispatch($sqlWalker)
     {

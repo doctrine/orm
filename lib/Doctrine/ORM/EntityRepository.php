@@ -297,7 +297,7 @@ class EntityRepository implements ObjectRepository, Selectable
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function getClassName()
     {

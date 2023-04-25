@@ -17,7 +17,7 @@ use function sprintf;
 abstract class AbstractEntityInheritancePersister extends BasicEntityPersister
 {
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     protected function prepareInsertData($entity)
     {
@@ -39,7 +39,7 @@ abstract class AbstractEntityInheritancePersister extends BasicEntityPersister
     abstract protected function getDiscriminatorColumnTableName();
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     protected function getSelectColumnSQL($field, ClassMetadata $class, $alias = 'r')
     {

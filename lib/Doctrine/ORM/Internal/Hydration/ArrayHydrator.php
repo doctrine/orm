@@ -37,7 +37,7 @@ class ArrayHydrator extends AbstractHydrator
     private $resultCounter = 0;
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     protected function prepare()
     {
@@ -51,7 +51,7 @@ class ArrayHydrator extends AbstractHydrator
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     protected function hydrateAllData()
     {
@@ -65,7 +65,7 @@ class ArrayHydrator extends AbstractHydrator
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     protected function hydrateRowData(array $row, array &$result)
     {

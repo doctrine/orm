@@ -106,7 +106,7 @@ class DefaultCacheFactory implements CacheFactory
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function buildCachedEntityPersister(EntityManagerInterface $em, EntityPersister $persister, ClassMetadata $metadata)
     {
@@ -134,7 +134,7 @@ class DefaultCacheFactory implements CacheFactory
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function buildCachedCollectionPersister(EntityManagerInterface $em, CollectionPersister $persister, array $mapping)
     {
@@ -162,7 +162,7 @@ class DefaultCacheFactory implements CacheFactory
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function buildQueryCache(EntityManagerInterface $em, $regionName = null)
     {
@@ -178,7 +178,7 @@ class DefaultCacheFactory implements CacheFactory
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function buildCollectionHydrator(EntityManagerInterface $em, array $mapping)
     {
@@ -186,7 +186,7 @@ class DefaultCacheFactory implements CacheFactory
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function buildEntityHydrator(EntityManagerInterface $em, ClassMetadata $metadata)
     {
@@ -194,7 +194,7 @@ class DefaultCacheFactory implements CacheFactory
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function getRegion(array $cache)
     {
@@ -225,7 +225,7 @@ class DefaultCacheFactory implements CacheFactory
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function getTimestampRegion()
     {
@@ -240,7 +240,7 @@ class DefaultCacheFactory implements CacheFactory
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function createCache(EntityManagerInterface $entityManager)
     {

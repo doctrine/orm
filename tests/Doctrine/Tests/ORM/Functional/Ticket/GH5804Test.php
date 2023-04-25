@@ -50,7 +50,7 @@ final class GH5804Test extends OrmFunctionalTestCase
 final class GH5804Generator extends AbstractIdGenerator
 {
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function generateId(EntityManagerInterface $em, $entity)
     {
@@ -63,7 +63,7 @@ final class GH5804Type extends Type
     public const NAME = 'GH5804Type';
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function getName()
     {
@@ -71,7 +71,7 @@ final class GH5804Type extends Type
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function getSQLDeclaration(array $fieldDeclaration, AbstractPlatform $platform)
     {
@@ -83,7 +83,7 @@ final class GH5804Type extends Type
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function convertToDatabaseValue($value, AbstractPlatform $platform)
     {

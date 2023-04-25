@@ -155,7 +155,7 @@ class LimitSubqueryOutputWalker extends SqlWalker
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function walkSelectStatement(SelectStatement $AST)
     {
@@ -548,7 +548,7 @@ class LimitSubqueryOutputWalker extends SqlWalker
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function walkPathExpression($pathExpr)
     {
@@ -560,7 +560,7 @@ class LimitSubqueryOutputWalker extends SqlWalker
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function walkSubSelect($subselect)
     {

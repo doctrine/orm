@@ -32,7 +32,7 @@ class DriverResultMock implements Result, ResultStatement
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function fetchNumeric()
     {
@@ -42,7 +42,7 @@ class DriverResultMock implements Result, ResultStatement
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function fetchAssociative()
     {
@@ -53,7 +53,7 @@ class DriverResultMock implements Result, ResultStatement
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function fetchOne()
     {
@@ -113,7 +113,7 @@ class DriverResultMock implements Result, ResultStatement
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function fetch($fetchMode = null, $cursorOrientation = PDO::FETCH_ORI_NEXT, $cursorOffset = 0)
     {
@@ -121,7 +121,7 @@ class DriverResultMock implements Result, ResultStatement
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function fetchAll($fetchMode = null, $fetchArgument = null, $ctorArgs = null): array
     {
@@ -129,7 +129,7 @@ class DriverResultMock implements Result, ResultStatement
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function fetchColumn($columnIndex = 0)
     {

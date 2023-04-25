@@ -24,7 +24,7 @@ class DriverMock implements Driver
     private $_schemaManagerMock;
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function connect(array $params, $username = null, $password = null, array $driverOptions = [])
     {
@@ -32,7 +32,7 @@ class DriverMock implements Driver
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function getDatabasePlatform()
     {
@@ -66,7 +66,7 @@ class DriverMock implements Driver
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function getName()
     {
@@ -74,7 +74,7 @@ class DriverMock implements Driver
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function getDatabase(Connection $conn)
     {

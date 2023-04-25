@@ -68,7 +68,7 @@ class DefaultQueryCache implements QueryCache
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function get(QueryCacheKey $key, ResultSetMapping $rsm, array $hints = [])
     {
@@ -227,7 +227,7 @@ class DefaultQueryCache implements QueryCache
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function put(QueryCacheKey $key, ResultSetMapping $rsm, $result, array $hints = [])
     {
@@ -450,7 +450,7 @@ class DefaultQueryCache implements QueryCache
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function clear()
     {
@@ -458,7 +458,7 @@ class DefaultQueryCache implements QueryCache
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function getRegion()
     {

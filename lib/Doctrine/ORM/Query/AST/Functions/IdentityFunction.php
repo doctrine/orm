@@ -28,7 +28,7 @@ class IdentityFunction extends FunctionNode
     public $fieldMapping;
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function getSql(SqlWalker $sqlWalker)
     {
@@ -73,7 +73,7 @@ class IdentityFunction extends FunctionNode
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function parse(Parser $parser)
     {

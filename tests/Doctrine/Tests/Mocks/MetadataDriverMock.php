@@ -13,14 +13,14 @@ use Doctrine\Persistence\Mapping\Driver\MappingDriver;
 class MetadataDriverMock implements MappingDriver
 {
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function loadMetadataForClass($className, ClassMetadata $metadata)
     {
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function isTransient($className)
     {
@@ -28,7 +28,7 @@ class MetadataDriverMock implements MappingDriver
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function getAllClassNames()
     {

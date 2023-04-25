@@ -19,7 +19,7 @@ class AbsFunction extends FunctionNode
     /** @var SimpleArithmeticExpression */
     public $simpleArithmeticExpression;
 
-    /** @inheritdoc */
+    /** @inheritDoc */
     public function getSql(SqlWalker $sqlWalker)
     {
         return 'ABS(' . $sqlWalker->walkSimpleArithmeticExpression(
@@ -27,7 +27,7 @@ class AbsFunction extends FunctionNode
         ) . ')';
     }
 
-    /** @inheritdoc */
+    /** @inheritDoc */
     public function parse(Parser $parser)
     {
         $parser->match(Lexer::T_IDENTIFIER);
