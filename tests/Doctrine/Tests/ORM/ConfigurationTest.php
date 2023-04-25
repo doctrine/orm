@@ -485,7 +485,7 @@ class ConfigurationTestAnnotationReaderChecker
 class DeprecatedRepository implements ObjectRepository
 {
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function find($id)
     {
@@ -503,7 +503,7 @@ class DeprecatedRepository implements ObjectRepository
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function findOneBy(array $criteria)
     {

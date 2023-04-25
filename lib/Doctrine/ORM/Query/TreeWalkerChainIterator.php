@@ -83,7 +83,7 @@ class TreeWalkerChainIterator implements Iterator, ArrayAccess
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      *
      * @return bool
      */
@@ -126,7 +126,7 @@ class TreeWalkerChainIterator implements Iterator, ArrayAccess
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      *
      * @param string $value
      * @psalm-param array-key|null $offset

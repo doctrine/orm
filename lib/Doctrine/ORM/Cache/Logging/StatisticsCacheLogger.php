@@ -25,7 +25,7 @@ class StatisticsCacheLogger implements CacheLogger
     private $cachePutCountMap = [];
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function collectionCacheMiss($regionName, CollectionCacheKey $key)
     {
@@ -34,7 +34,7 @@ class StatisticsCacheLogger implements CacheLogger
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function collectionCacheHit($regionName, CollectionCacheKey $key)
     {
@@ -43,7 +43,7 @@ class StatisticsCacheLogger implements CacheLogger
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function collectionCachePut($regionName, CollectionCacheKey $key)
     {
@@ -52,7 +52,7 @@ class StatisticsCacheLogger implements CacheLogger
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function entityCacheMiss($regionName, EntityCacheKey $key)
     {
@@ -61,7 +61,7 @@ class StatisticsCacheLogger implements CacheLogger
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function entityCacheHit($regionName, EntityCacheKey $key)
     {
@@ -70,7 +70,7 @@ class StatisticsCacheLogger implements CacheLogger
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function entityCachePut($regionName, EntityCacheKey $key)
     {
@@ -79,7 +79,7 @@ class StatisticsCacheLogger implements CacheLogger
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function queryCacheHit($regionName, QueryCacheKey $key)
     {
@@ -88,7 +88,7 @@ class StatisticsCacheLogger implements CacheLogger
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function queryCacheMiss($regionName, QueryCacheKey $key)
     {
@@ -97,7 +97,7 @@ class StatisticsCacheLogger implements CacheLogger
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function queryCachePut($regionName, QueryCacheKey $key)
     {

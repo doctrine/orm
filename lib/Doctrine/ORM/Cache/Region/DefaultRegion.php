@@ -91,7 +91,7 @@ class DefaultRegion implements Region
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function getName()
     {
@@ -109,7 +109,7 @@ class DefaultRegion implements Region
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function contains(CacheKey $key)
     {
@@ -117,7 +117,7 @@ class DefaultRegion implements Region
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function get(CacheKey $key)
     {
@@ -132,7 +132,7 @@ class DefaultRegion implements Region
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function getMultiple(CollectionCacheEntry $collection)
     {
@@ -164,7 +164,7 @@ class DefaultRegion implements Region
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      *
      * @return bool
      */
@@ -182,7 +182,7 @@ class DefaultRegion implements Region
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      *
      * @return bool
      */
@@ -192,7 +192,7 @@ class DefaultRegion implements Region
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      *
      * @return bool
      */

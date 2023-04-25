@@ -29,7 +29,7 @@ use function sprintf;
 class ManyToManyPersister extends AbstractCollectionPersister
 {
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function delete(PersistentCollection $collection)
     {
@@ -50,7 +50,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function update(PersistentCollection $collection)
     {
@@ -81,7 +81,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function get(PersistentCollection $collection, $index)
     {
@@ -100,7 +100,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function count(PersistentCollection $collection)
     {
@@ -170,7 +170,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function containsKey(PersistentCollection $collection, $key)
     {

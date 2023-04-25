@@ -43,7 +43,7 @@ EOT
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     protected function executeSchemaCommand(InputInterface $input, OutputInterface $output, SchemaTool $schemaTool, array $metadatas, SymfonyStyle $ui)
     {

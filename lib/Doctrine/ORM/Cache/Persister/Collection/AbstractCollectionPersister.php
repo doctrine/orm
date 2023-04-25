@@ -85,7 +85,7 @@ abstract class AbstractCollectionPersister implements CachedCollectionPersister
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function getCacheRegion()
     {
@@ -93,7 +93,7 @@ abstract class AbstractCollectionPersister implements CachedCollectionPersister
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function getSourceEntityMetadata()
     {
@@ -101,7 +101,7 @@ abstract class AbstractCollectionPersister implements CachedCollectionPersister
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function getTargetEntityMetadata()
     {
@@ -109,7 +109,7 @@ abstract class AbstractCollectionPersister implements CachedCollectionPersister
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function loadCollectionCache(PersistentCollection $collection, CollectionCacheKey $key)
     {
@@ -123,7 +123,7 @@ abstract class AbstractCollectionPersister implements CachedCollectionPersister
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function storeCollectionCache(CollectionCacheKey $key, $elements)
     {
@@ -167,7 +167,7 @@ abstract class AbstractCollectionPersister implements CachedCollectionPersister
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function contains(PersistentCollection $collection, $element)
     {
@@ -175,7 +175,7 @@ abstract class AbstractCollectionPersister implements CachedCollectionPersister
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function containsKey(PersistentCollection $collection, $key)
     {
@@ -183,7 +183,7 @@ abstract class AbstractCollectionPersister implements CachedCollectionPersister
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function count(PersistentCollection $collection)
     {
@@ -199,7 +199,7 @@ abstract class AbstractCollectionPersister implements CachedCollectionPersister
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function get(PersistentCollection $collection, $index)
     {
@@ -207,7 +207,7 @@ abstract class AbstractCollectionPersister implements CachedCollectionPersister
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function slice(PersistentCollection $collection, $offset, $length = null)
     {

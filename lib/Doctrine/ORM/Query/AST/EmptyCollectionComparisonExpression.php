@@ -25,7 +25,7 @@ class EmptyCollectionComparisonExpression extends Node
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function dispatch($sqlWalker)
     {

@@ -114,7 +114,7 @@ class ConcurrentRegionMock implements ConcurrentRegion
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function getMultiple(CollectionCacheEntry $collection): ?array
     {

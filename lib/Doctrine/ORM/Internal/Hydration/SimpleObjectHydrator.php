@@ -28,7 +28,7 @@ class SimpleObjectHydrator extends AbstractHydrator
     private $class;
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     protected function prepare()
     {
@@ -44,7 +44,7 @@ class SimpleObjectHydrator extends AbstractHydrator
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     protected function cleanup()
     {
@@ -55,7 +55,7 @@ class SimpleObjectHydrator extends AbstractHydrator
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     protected function hydrateAllData()
     {
@@ -71,7 +71,7 @@ class SimpleObjectHydrator extends AbstractHydrator
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     protected function hydrateRowData(array $row, array &$result)
     {

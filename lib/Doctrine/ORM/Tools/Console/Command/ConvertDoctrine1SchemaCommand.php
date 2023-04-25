@@ -88,7 +88,7 @@ class ConvertDoctrine1SchemaCommand extends Command
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      *
      * @return int
      */
