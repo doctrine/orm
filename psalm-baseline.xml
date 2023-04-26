@@ -348,6 +348,7 @@
     </PossiblyNullReference>
     <PossiblyUndefinedArrayOffset>
       <code><![CDATA[$mapping['isOwningSide']]]></code>
+      <code><![CDATA[$mapping['isOwningSide']]]></code>
       <code><![CDATA[$mapping['targetEntity']]]></code>
       <code><![CDATA[$table['name']]]></code>
     </PossiblyUndefinedArrayOffset>

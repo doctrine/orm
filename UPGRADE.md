@@ -563,6 +563,13 @@ Use `toIterable()` instead.
 
 # Upgrade to 2.15
 
+## Deprecated configuring `JoinColumn` on the inverse side of one-to-one associations
+
+For one-to-one associations, the side using the `mappedBy` attribute is the inverse side.
+The owning side is the entity with the table containing the foreign key. Using `JoinColumn`
+configuration on the _inverse_ side now triggers a deprecation notice and will be an error
+in 3.0.
+
 ## Deprecated overriding fields or associations not declared in mapped superclasses
 
 As stated in the documentation, fields and associations may only be overridden when being inherited
