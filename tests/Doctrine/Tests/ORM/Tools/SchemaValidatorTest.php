@@ -45,8 +45,8 @@ class SchemaValidatorTest extends OrmTestCase
     public function testCmsModelSet(string $path): void
     {
         $this->em->getConfiguration()
-                 ->getMetadataDriverImpl()
-                 ->addPaths([$path]);
+            ->getMetadataDriverImpl()
+            ->addPaths([$path]);
 
         self::assertEmpty($this->validator->validateMapping());
     }
@@ -54,12 +54,12 @@ class SchemaValidatorTest extends OrmTestCase
     public static function modelSetProvider(): array
     {
         return [
-            'cms'        => [__DIR__ . '/../../Models/CMS'],
-            'company'    => [__DIR__ . '/../../Models/Company'],
-            'ecommerce'  => [__DIR__ . '/../../Models/ECommerce'],
-            'forum'      => [__DIR__ . '/../../Models/Forum'],
+            'cms' => [__DIR__ . '/../../Models/CMS'],
+            'company' => [__DIR__ . '/../../Models/Company'],
+            'ecommerce' => [__DIR__ . '/../../Models/ECommerce'],
+            'forum' => [__DIR__ . '/../../Models/Forum'],
             'navigation' => [__DIR__ . '/../../Models/Navigation'],
-            'routing'    => [__DIR__ . '/../../Models/Routing'],
+            'routing' => [__DIR__ . '/../../Models/Routing'],
         ];
     }
 
@@ -228,6 +228,31 @@ class SchemaValidatorTest extends OrmTestCase
         $ce     = $this->validator->validateClass($class1);
 
         self::assertEmpty($ce);
+    }
+
+    public function testMetadataFieldTypeNotCoherentWithEntityPropertyType(): void
+    {
+        $class = $this->em->getClassMetadata(InvalidEntity3::class);
+        $ce    = $this->validator->validateClass($class);
+
+        self::assertEquals(
+            ["The field 'Doctrine\Tests\ORM\Tools\InvalidEntity3#property' has the property type 'int' that differs from the metadata field type 'bool'."],
+            $ce
+        );
+    }
+
+    public function testMetadataFieldTypeNotCoherentWithEntityPropertyTypeWithInheritance(): void
+    {
+        $class = $this->em->getClassMetadata(InvalidChildEntity::class);
+        $ce    = $this->validator->validateClass($class);
+
+        self::assertEquals(
+            [
+                "The field 'Doctrine\Tests\ORM\Tools\InvalidChildEntity#property' has the property type 'int' that differs from the metadata field type 'bool'.",
+                "The field 'Doctrine\Tests\ORM\Tools\InvalidChildEntity#anotherProperty' has the property type 'string' that differs from the metadata field type 'bool'.",
+            ],
+            $ce
+        );
     }
 }
 
@@ -674,4 +699,32 @@ abstract class Issue9095AbstractChild extends Issue9095Parent
 /** @Entity */
 class Issue9095Child extends Issue9095AbstractChild
 {
+}
+
+/** @Entity */
+class InvalidEntity3
+{
+    /**
+     * @var int
+     * @Id
+     * @Column
+     */
+    protected $key;
+
+    /**
+     * @Column(type="boolean")
+     */
+    protected int $property;
+}
+
+/** @Entity */
+class InvalidChildEntity extends InvalidEntity3
+{
+    /** @Column(type="string") */
+    protected int $property;
+
+    /**
+     * @Column(type="boolean")
+     */
+    private string $anotherProperty;
 }

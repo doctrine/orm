@@ -9,9 +9,14 @@ use Doctrine\Deprecations\Deprecation;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
+use Doctrine\ORM\Mapping\DefaultTypedFieldMapper;
+use ReflectionNamedType;
 
 use function array_diff;
+use function array_filter;
 use function array_key_exists;
+use function array_map;
+use function array_push;
 use function array_search;
 use function array_values;
 use function class_exists;
@@ -20,11 +25,14 @@ use function count;
 use function get_class;
 use function implode;
 use function in_array;
+use function sprintf;
 
 /**
  * Performs strict validation of the mapping schema
  *
  * @link        www.doctrine-project.com
+ *
+ * @psalm-import-type FieldMapping from ClassMetadataInfo
  */
 class SchemaValidator
 {
@@ -91,6 +99,8 @@ class SchemaValidator
                 $ce[] = "The field '" . $class->name . '#' . $fieldName . "' uses a non-existent type '" . $mapping['type'] . "'.";
             }
         }
+
+        array_push($ce, ...$this->validatePropertiesTypes($class));
 
         if ($class->isEmbeddedClass && count($class->associationMappings) > 0) {
             $ce[] = "Embeddable '" . $class->name . "' does not support associations";
@@ -297,5 +307,48 @@ class SchemaValidator
         $allMetadata = $this->em->getMetadataFactory()->getAllMetadata();
 
         return $schemaTool->getUpdateSchemaSql($allMetadata, true);
+    }
+
+    /** @return list<string> containing the found issues */
+    private function validatePropertiesTypes(ClassMetadataInfo $class): array
+    {
+        return array_values(
+            array_filter(
+                array_map(
+                    /** @param FieldMapping $fieldMapping */
+                    static function (array $fieldMapping) use ($class): string|null {
+                        $fieldName    = $fieldMapping['fieldName'];
+                        $propertyType = $class->reflFields[$fieldName]?->getType();
+
+                        // If the field type is not a built-in type, we cannot check it
+                        if (! Type::hasType($fieldMapping['type'])) {
+                            return null;
+                        }
+
+                        // If the property type is not a named type, we cannot check it
+                        if (! ($propertyType instanceof ReflectionNamedType)) {
+                            return null;
+                        }
+
+                        $metadataFieldType = (new DefaultTypedFieldMapper())->getBuiltInType(get_class(Type::getType($fieldMapping['type'])));
+
+                        // If the property type is the same as the metadata field type, we are ok
+                        if ($metadataFieldType === $propertyType->getName()) {
+                            return null;
+                        }
+
+                        return sprintf(
+                            "The field '%s#%s' has the property type '%s' that differs from the metadata field type '%s'.",
+                            $class->name,
+                            $fieldName,
+                            $propertyType->getName(),
+                            $metadataFieldType,
+                        );
+                    },
+                    $class->fieldMappings,
+                ),
+                static fn (?string $issue) => $issue !== null,
+            )
+        );
     }
 }
