@@ -122,7 +122,7 @@ final class Query extends AbstractQuery
      * @var int
      * @psalm-var self::STATE_*
      */
-    private $_state = self::STATE_DIRTY;
+    private $state = self::STATE_DIRTY;
 
     /**
      * A snapshot of the parameter types the query was parsed with.
@@ -239,11 +239,11 @@ final class Query extends AbstractQuery
         }
 
         // Return previous parser result if the query and the filter collection are both clean
-        if ($this->_state === self::STATE_CLEAN && $this->parsedTypes === $types && $this->_em->isFiltersStateClean()) {
+        if ($this->state === self::STATE_CLEAN && $this->parsedTypes === $types && $this->_em->isFiltersStateClean()) {
             return $this->parserResult;
         }
 
-        $this->_state      = self::STATE_CLEAN;
+        $this->state       = self::STATE_CLEAN;
         $this->parsedTypes = $types;
 
         $queryCache = $this->queryCache ?? $this->_em->getConfiguration()->getQueryCache();
@@ -586,8 +586,8 @@ final class Query extends AbstractQuery
     {
         parent::free();
 
-        $this->dql    = null;
-        $this->_state = self::STATE_CLEAN;
+        $this->dql   = null;
+        $this->state = self::STATE_CLEAN;
     }
 
     /**
@@ -608,8 +608,8 @@ final class Query extends AbstractQuery
             return $this;
         }
 
-        $this->dql    = $dqlQuery;
-        $this->_state = self::STATE_DIRTY;
+        $this->dql   = $dqlQuery;
+        $this->state = self::STATE_DIRTY;
 
         return $this;
     }
@@ -635,7 +635,7 @@ final class Query extends AbstractQuery
      */
     public function getState(): int
     {
-        return $this->_state;
+        return $this->state;
     }
 
     /**
@@ -670,18 +670,18 @@ final class Query extends AbstractQuery
         }
 
         $this->firstResult = $firstResult;
-        $this->_state      = self::STATE_DIRTY;
+        $this->state       = self::STATE_DIRTY;
 
         return $this;
     }
 
     /**
      * Gets the position of the first result the query object was set to retrieve (the "offset").
-     * Returns NULL if {@link setFirstResult} was not applied to this query.
+     * Returns 0 if {@link setFirstResult} was not applied to this query.
      *
-     * @return int|null The position of the first result.
+     * @return int The position of the first result.
      */
-    public function getFirstResult(): ?int
+    public function getFirstResult(): int
     {
         return $this->firstResult;
     }
@@ -700,7 +700,7 @@ final class Query extends AbstractQuery
         }
 
         $this->maxResults = $maxResults;
-        $this->_state     = self::STATE_DIRTY;
+        $this->state      = self::STATE_DIRTY;
 
         return $this;
     }
@@ -747,7 +747,7 @@ final class Query extends AbstractQuery
      */
     public function setHint($name, $value): self
     {
-        $this->_state = self::STATE_DIRTY;
+        $this->state = self::STATE_DIRTY;
 
         return parent::setHint($name, $value);
     }
@@ -757,7 +757,7 @@ final class Query extends AbstractQuery
      */
     public function setHydrationMode($hydrationMode): self
     {
-        $this->_state = self::STATE_DIRTY;
+        $this->state = self::STATE_DIRTY;
 
         return parent::setHydrationMode($hydrationMode);
     }
@@ -831,6 +831,6 @@ final class Query extends AbstractQuery
     {
         parent::__clone();
 
-        $this->_state = self::STATE_DIRTY;
+        $this->state = self::STATE_DIRTY;
     }
 }

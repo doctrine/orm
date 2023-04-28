@@ -15,22 +15,32 @@ is common to multiple entity classes.
 
 Mapped superclasses, just as regular, non-mapped classes, can
 appear in the middle of an otherwise mapped inheritance hierarchy
-(through Single Table Inheritance or Class Table Inheritance).
+(through Single Table Inheritance or Class Table Inheritance). They
+are not query-able, and need not have an ``#[Id]`` property.
 
 No database table will be created for a mapped superclass itself,
-only for entity classes inheriting from it. Also, a mapped superclass
-need not have an ``#[Id]`` property.
+only for entity classes inheriting from it. That  implies that a
+mapped superclass cannot be the ``targetEntity`` in associations.
+
+In other words, a mapped superclass can use unidirectional One-To-One
+and Many-To-One associations where it is the owning side.
+Many-To-Many associations are only possible if the mapped
+superclass is only used in exactly one entity at the moment. For further
+support of inheritance, the single or joined table inheritance features
+have to be used.
 
 .. note::
 
-    A mapped superclass cannot be an entity, it is not query-able and
-    persistent relationships defined by a mapped superclass must be
-    unidirectional (with an owning side only). This means that One-To-Many
-    associations are not possible on a mapped superclass at all.
-    Furthermore Many-To-Many associations are only possible if the
-    mapped superclass is only used in exactly one entity at the moment.
-    For further support of inheritance, the single or
-    joined table inheritance features have to be used.
+    One-To-Many associations are not generally possible on a mapped
+    superclass, since they require the "many" side to hold the foreign
+    key.
+
+    It is, however, possible to use the :doc:```ResolveTargetEntityListener`` <cookbook/resolve-target-entity-listener>`
+    to replace references to a mapped superclass with an entity class at runtime.
+    As long as there is only one entity subclass inheriting from the mapped
+    superclass and all references to the mapped superclass are resolved to that
+    entity class at runtime, the mapped superclass *can* use One-To-Many associations
+    and be named as the ``targetEntity`` on the owning sides.
 
 .. warning::
 

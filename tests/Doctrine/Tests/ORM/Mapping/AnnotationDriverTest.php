@@ -19,7 +19,6 @@ use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\HasLifecycleCallbacks;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\InheritanceType;
-use Doctrine\ORM\Mapping\ManyToMany;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\MappedSuperclass;
 use Doctrine\ORM\Mapping\MappingException;
@@ -163,25 +162,6 @@ class AnnotationDriverTest extends MappingDriverTestCase
         self::assertEquals(Directory::class, $classDirectory->associationMappings['parentDirectory']['sourceEntity']);
     }
 
-    /** @group DDC-945 */
-    public function testInvalidMappedSuperClassWithManyToManyAssociation(): void
-    {
-        $annotationDriver = $this->loadDriver();
-
-        $em = $this->getTestEntityManager();
-        $em->getConfiguration()->setMetadataDriverImpl($annotationDriver);
-        $factory = new ClassMetadataFactory();
-        $factory->setEntityManager($em);
-
-        $this->expectException(MappingException::class);
-        $this->expectExceptionMessage(
-            'It is illegal to put an inverse side one-to-many or many-to-many association on ' .
-            "mapped superclass 'Doctrine\Tests\ORM\Mapping\InvalidMappedSuperClass#users'"
-        );
-
-        $factory->getMetadataFor(UsingInvalidMappedSuperClass::class);
-    }
-
     /** @group DDC-1050 */
     public function testInvalidMappedSuperClassWithInheritanceInformation(): void
     {
@@ -303,28 +283,6 @@ class ColumnWithoutType
      * @Column
      */
     public $id;
-}
-
-/** @MappedSuperclass */
-class InvalidMappedSuperClass
-{
-    /**
-     * @psalm-var Collection<int, CmsUser>
-     * @ManyToMany(targetEntity="Doctrine\Tests\Models\CMS\CmsUser", mappedBy="invalid")
-     */
-    private $users;
-}
-
-/** @Entity */
-class UsingInvalidMappedSuperClass extends InvalidMappedSuperClass
-{
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
-    private $id;
 }
 
 /**

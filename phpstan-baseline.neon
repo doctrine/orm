@@ -171,11 +171,6 @@ parameters:
 			path: lib/Doctrine/ORM/Mapping/ClassMetadataFactory.php
 
 		-
-			message: "#^Method Doctrine\\\\ORM\\\\Mapping\\\\ClassMetadataInfo\\:\\:_validateAndCompleteManyToManyMapping\\(\\) should return array\\{mappedBy\\: mixed, inversedBy\\: mixed, isOwningSide\\: bool, sourceEntity\\: class\\-string, targetEntity\\: string, fieldName\\: mixed, fetch\\: mixed, cascade\\: array\\<string\\>, \\.\\.\\.\\} but returns array\\{cache\\?\\: array, cascade\\: array\\<string\\>, declared\\?\\: class\\-string, fetch\\: mixed, fieldName\\: string, id\\?\\: bool, inherited\\?\\: class\\-string, indexBy\\?\\: string, \\.\\.\\.\\}\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Mapping/ClassMetadataInfo.php
-
-		-
 			message: "#^Method Doctrine\\\\ORM\\\\Mapping\\\\ClassMetadataInfo\\:\\:fullyQualifiedClassName\\(\\) should return class\\-string\\|null but returns string\\|null\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Mapping/ClassMetadataInfo.php
@@ -187,6 +182,11 @@ parameters:
 
 		-
 			message: "#^Negated boolean expression is always false\\.$#"
+			count: 2
+			path: lib/Doctrine/ORM/Mapping/ClassMetadataInfo.php
+
+		-
+			message: "#^Result of && is always false\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Mapping/ClassMetadataInfo.php
 
@@ -376,7 +376,17 @@ parameters:
 			path: lib/Doctrine/ORM/Query/Expr/Select.php
 
 		-
+			message: "#^Comparison operation \"\\<\" between null and 102 is always true\\.$#"
+			count: 1
+			path: lib/Doctrine/ORM/Query/Parser.php
+
+		-
 			message: "#^Method Doctrine\\\\ORM\\\\Query\\\\Parser\\:\\:ArithmeticFactor\\(\\) should return Doctrine\\\\ORM\\\\Query\\\\AST\\\\ArithmeticFactor but returns Doctrine\\\\ORM\\\\Query\\\\AST\\\\Node\\|string\\.$#"
+			count: 1
+			path: lib/Doctrine/ORM/Query/Parser.php
+
+		-
+			message: "#^Method Doctrine\\\\ORM\\\\Query\\\\Parser\\:\\:ArithmeticTerm\\(\\) should return Doctrine\\\\ORM\\\\Query\\\\AST\\\\ArithmeticTerm but returns Doctrine\\\\ORM\\\\Query\\\\AST\\\\ArithmeticFactor\\|string\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Query/Parser.php
 
@@ -401,8 +411,13 @@ parameters:
 			path: lib/Doctrine/ORM/Query/Parser.php
 
 		-
+			message: "#^Result of && is always true\\.$#"
+			count: 1
+			path: lib/Doctrine/ORM/Query/Parser.php
+
+		-
 			message: "#^Unreachable statement \\- code above always terminates\\.$#"
-			count: 3
+			count: 4
 			path: lib/Doctrine/ORM/Query/Parser.php
 
 		-
@@ -562,11 +577,6 @@ parameters:
 
 		-
 			message: "#^Offset 'name' on array\\{name\\: string, schema\\?\\: string, indexes\\?\\: array, uniqueConstraints\\?\\: array, options\\?\\: array\\<string, mixed\\>, quoted\\?\\: bool\\} in isset\\(\\) always exists and is not nullable\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Tools/Export/Driver/XmlExporter.php
-
-		-
-			message: "#^Offset 'version' on array\\{type\\: string, fieldName\\: string, columnName\\: string, length\\?\\: int, id\\?\\: bool, nullable\\?\\: bool, notInsertable\\?\\: bool, notUpdatable\\?\\: bool, \\.\\.\\.\\} in isset\\(\\) does not exist\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Tools/Export/Driver/XmlExporter.php
 

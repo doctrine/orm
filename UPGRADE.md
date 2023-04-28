@@ -1,3 +1,33 @@
+# Upgrade to 2.15
+
+## Deprecated configuring `JoinColumn` on the inverse side of one-to-one associations
+
+For one-to-one associations, the side using the `mappedBy` attribute is the inverse side.
+The owning side is the entity with the table containing the foreign key. Using `JoinColumn`
+configuration on the _inverse_ side now triggers a deprecation notice and will be an error
+in 3.0.
+
+## Deprecated overriding fields or associations not declared in mapped superclasses
+
+As stated in the documentation, fields and associations may only be overridden when being inherited
+from mapped superclasses. Overriding them for parent entity classes now triggers a deprecation notice
+and will be an error in 3.0.
+
+## Deprecated undeclared entity inheritance
+
+As soon as an entity class inherits from another entity class, inheritance has to 
+be declared by adding the appropriate configuration for the root entity.
+
+## Deprecated stubs for "concrete table inheritance"
+
+This third way of mapping class inheritance was never implemented. Code stubs are
+now deprecated and will be removed in 3.0.
+
+* `\Doctrine\ORM\Mapping\ClassMetadataInfo::INHERITANCE_TYPE_TABLE_PER_CLASS` constant
+* `\Doctrine\ORM\Mapping\ClassMetadataInfo::isInheritanceTypeTablePerClass()` method
+* Using `TABLE_PER_CLASS` as the value for the `InheritanceType` attribute or annotation
+  or in XML configuration files.
+
 # Upgrade to 2.14
 
 ## Deprecated `Doctrine\ORM\Persisters\Exception\UnrecognizedField::byName($field)` method.

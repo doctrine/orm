@@ -167,7 +167,7 @@ The API of the ClassMetadataBuilder has the following methods with a fluent inte
 -   ``addNamedQuery($name, $dqlQuery)``
 -   ``setJoinedTableInheritance()``
 -   ``setSingleTableInheritance()``
--   ``setDiscriminatorColumn($name, $type = 'string', $length = 255, $columnDefinition = null, $enumType = null)``
+-   ``setDiscriminatorColumn($name, $type = 'string', $length = 255, $columnDefinition = null, $enumType = null, $options = [])``
 -   ``addDiscriminatorMapClass($name, $class)``
 -   ``setChangeTrackingPolicyDeferredExplicit()``
 -   ``setChangeTrackingPolicyNotify()``

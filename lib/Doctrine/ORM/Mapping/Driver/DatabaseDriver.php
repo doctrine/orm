@@ -61,7 +61,7 @@ class DatabaseDriver implements MappingDriver
     private const JSON_ARRAY = 'json_array';
 
     /** @var AbstractSchemaManager */
-    private $_sm;
+    private $sm;
 
     /** @var array<string,Table>|null */
     private $tables = null;
@@ -90,7 +90,7 @@ class DatabaseDriver implements MappingDriver
 
     public function __construct(AbstractSchemaManager $schemaManager)
     {
-        $this->_sm       = $schemaManager;
+        $this->sm        = $schemaManager;
         $this->inflector = InflectorFactory::create()->build();
     }
 
@@ -294,7 +294,7 @@ class DatabaseDriver implements MappingDriver
 
         $this->tables = $this->manyToManyTables = $this->classToTableNames = [];
 
-        foreach ($this->_sm->listTables() as $table) {
+        foreach ($this->sm->listTables() as $table) {
             $tableName   = $table->getName();
             $foreignKeys = $table->getForeignKeys();
 

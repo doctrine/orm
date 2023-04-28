@@ -5,10 +5,12 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Query;
 
 use Doctrine\ORM\Exception\ORMException;
+use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Query\AST\PathExpression;
 use Exception;
 use Stringable;
 
+/** @psalm-import-type AssociationMapping from ClassMetadata */
 class QueryException extends ORMException
 {
     /**
@@ -142,7 +144,7 @@ class QueryException extends ORMException
 
     /**
      * @param string[] $assoc
-     * @psalm-param array<string, string> $assoc
+     * @psalm-param AssociationMapping $assoc
      *
      * @return QueryException
      */
@@ -190,7 +192,7 @@ class QueryException extends ORMException
 
     /**
      * @param string[] $assoc
-     * @psalm-param array<string, string> $assoc
+     * @psalm-param AssociationMapping $assoc
      *
      * @return QueryException
      */

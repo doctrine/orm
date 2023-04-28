@@ -12,6 +12,7 @@ use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Persisters\Entity\BasicEntityPersister;
 use RuntimeException;
 
+use function defined;
 use function implode;
 use function in_array;
 use function is_object;
@@ -81,6 +82,11 @@ class SqlExpressionVisitor extends ExpressionVisitor
                 return '(' . implode(' OR ', $expressionList) . ')';
 
             default:
+                // Multiversion support for `doctrine/collections` before and after v2.1.0
+                if (defined(CompositeExpression::class . '::TYPE_NOT') && $expr->getType() === CompositeExpression::TYPE_NOT) {
+                    return 'NOT (' . $expressionList[0] . ')';
+                }
+
                 throw new RuntimeException('Unknown composite ' . $expr->getType());
         }
     }
