@@ -4,12 +4,23 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Tools;
 
+use Doctrine\DBAL\Types\AsciiStringType;
+use Doctrine\DBAL\Types\BigIntType;
+use Doctrine\DBAL\Types\BooleanType;
+use Doctrine\DBAL\Types\DecimalType;
+use Doctrine\DBAL\Types\FloatType;
+use Doctrine\DBAL\Types\GuidType;
+use Doctrine\DBAL\Types\IntegerType;
+use Doctrine\DBAL\Types\JsonType;
+use Doctrine\DBAL\Types\SimpleArrayType;
+use Doctrine\DBAL\Types\SmallIntType;
+use Doctrine\DBAL\Types\StringType;
+use Doctrine\DBAL\Types\TextType;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\Deprecations\Deprecation;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
-use Doctrine\ORM\Mapping\DefaultTypedFieldMapper;
 use ReflectionNamedType;
 
 use function array_diff;
@@ -19,6 +30,7 @@ use function array_map;
 use function array_push;
 use function array_search;
 use function array_values;
+use function assert;
 use function class_exists;
 use function class_parents;
 use function count;
@@ -27,17 +39,37 @@ use function implode;
 use function in_array;
 use function sprintf;
 
+use const PHP_VERSION_ID;
+
 /**
  * Performs strict validation of the mapping schema
  *
  * @link        www.doctrine-project.com
  *
- * @psalm-import-type FieldMapping from ClassMetadataInfo
+ * @psalm-import-type FieldMapping from ClassMetadata
  */
 class SchemaValidator
 {
     /** @var EntityManagerInterface */
     private $em;
+
+    /**
+     * It maps built-in Doctrine types to PHP types
+     */
+    private const BUILTIN_TYPES_MAP = [
+        AsciiStringType::class => 'string',
+        BigIntType::class => 'string',
+        BooleanType::class => 'bool',
+        DecimalType::class => 'string',
+        FloatType::class => 'float',
+        GuidType::class => 'string',
+        IntegerType::class => 'int',
+        JsonType::class => 'array',
+        SimpleArrayType::class => 'array',
+        SmallIntType::class => 'int',
+        StringType::class => 'string',
+        TextType::class => 'string',
+    ];
 
     public function __construct(EntityManagerInterface $em)
     {
@@ -316,15 +348,21 @@ class SchemaValidator
     }
 
     /** @return list<string> containing the found issues */
-    private function validatePropertiesTypes(ClassMetadataInfo $class): array
+    private function validatePropertiesTypes(ClassMetadataInfo $class)
     {
+        // PHP 7.4 introduces the ability to type properties, so we can't validate them in previous versions
+        if (PHP_VERSION_ID < 70400) {
+            return [];
+        }
+
         return array_values(
             array_filter(
                 array_map(
                     /** @param FieldMapping $fieldMapping */
-                    static function (array $fieldMapping) use ($class): string|null {
-                        $fieldName    = $fieldMapping['fieldName'];
-                        $propertyType = $class->reflFields[$fieldName]?->getType();
+                    function (array $fieldMapping) use ($class): string|null {
+                        $fieldName = $fieldMapping['fieldName'];
+                        assert(isset($class->reflFields[$fieldName]));
+                        $propertyType = $class->reflFields[$fieldName]->getType();
 
                         // If the field type is not a built-in type, we cannot check it
                         if (! Type::hasType($fieldMapping['type'])) {
@@ -336,10 +374,17 @@ class SchemaValidator
                             return null;
                         }
 
-                        $metadataFieldType = (new DefaultTypedFieldMapper())->getBuiltInType(get_class(Type::getType($fieldMapping['type'])));
+                        $metadataFieldType = $this->findBuiltInType(Type::getType($fieldMapping['type']));
+
+                        //If the metadata field type is not a mapped built-in type, we cannot check it
+                        if ($metadataFieldType === null) {
+                            return null;
+                        }
+
+                        $propertyType = $propertyType->getName();
 
                         // If the property type is the same as the metadata field type, we are ok
-                        if ($metadataFieldType === $propertyType->getName()) {
+                        if ($propertyType === $metadataFieldType) {
                             return null;
                         }
 
@@ -347,14 +392,26 @@ class SchemaValidator
                             "The field '%s#%s' has the property type '%s' that differs from the metadata field type '%s'.",
                             $class->name,
                             $fieldName,
-                            $propertyType->getName(),
-                            $metadataFieldType,
+                            $propertyType,
+                            $metadataFieldType
                         );
                     },
-                    $class->fieldMappings,
-                ),
-                static fn (?string $issue) => $issue !== null,
+                    $class->fieldMappings
+                )
             )
         );
+    }
+
+    /**
+     * The exact DBAL type must be used (no subclasses), since consumers of doctrine/orm may have their own
+     * customization around field types.
+     *
+     * @return string|null
+     */
+    private function findBuiltInType(Type $type)
+    {
+        $typeName = get_class($type);
+
+        return self::BUILTIN_TYPES_MAP[$typeName] ?? null;
     }
 }
