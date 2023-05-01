@@ -17,7 +17,7 @@ use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Query\AST\DeleteStatement;
 use Doctrine\ORM\Query\AST\SelectStatement;
 use Doctrine\ORM\Query\AST\UpdateStatement;
-use Doctrine\ORM\Query\Exec\AbstractSqlExecutor;
+use Doctrine\ORM\Query\Exec\AbstractSQLExecutor;
 use Doctrine\ORM\Query\Parameter;
 use Doctrine\ORM\Query\ParameterTypeInferer;
 use Doctrine\ORM\Query\Parser;
@@ -331,7 +331,7 @@ final class Query extends AbstractQuery
      * @param array<string,mixed> $connectionParams
      */
     private function evictResultSetCache(
-        AbstractSqlExecutor $executor,
+        AbstractSQLExecutor $executor,
         array $sqlParams,
         array $types,
         array $connectionParams

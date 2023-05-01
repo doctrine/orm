@@ -545,7 +545,7 @@ interface TreeWalker
      *
      * @param AST\DeleteStatement|AST\UpdateStatement|AST\SelectStatement $AST
      *
-     * @return Exec\AbstractSqlExecutor
+     * @return Exec\AbstractSQLExecutor
      */
     public function getExecutor($AST);
 }

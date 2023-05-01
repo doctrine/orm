@@ -23,7 +23,7 @@ use function implode;
  *
  * @link        http://www.doctrine-project.org
  */
-class MultiTableDeleteExecutor extends AbstractSqlExecutor
+class MultiTableDeleteExecutor extends AbstractSQLExecutor
 {
     /** @var string */
     private $_createTempTableSql;

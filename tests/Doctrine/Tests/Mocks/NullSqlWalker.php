@@ -6,7 +6,7 @@ namespace Doctrine\Tests\Mocks;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\ORM\Query\AST;
-use Doctrine\ORM\Query\Exec\AbstractSqlExecutor;
+use Doctrine\ORM\Query\Exec\AbstractSQLExecutor;
 use Doctrine\ORM\Query\SqlWalker;
 
 /**
@@ -29,9 +29,9 @@ class NullSqlWalker extends SqlWalker
         return '';
     }
 
-    public function getExecutor($AST): AbstractSqlExecutor
+    public function getExecutor($AST): AbstractSQLExecutor
     {
-        return new class extends AbstractSqlExecutor {
+        return new class extends AbstractSQLExecutor {
             public function execute(Connection $conn, array $params, array $types): int
             {
                 return 0;

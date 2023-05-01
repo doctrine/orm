@@ -277,7 +277,7 @@ class SqlWalker implements TreeWalker
      *
      * @param AST\DeleteStatement|AST\UpdateStatement|AST\SelectStatement $AST
      *
-     * @return Exec\AbstractSqlExecutor
+     * @return Exec\AbstractSQLExecutor
      *
      * @not-deprecated
      */

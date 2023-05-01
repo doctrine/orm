@@ -17,7 +17,7 @@ use Doctrine\ORM\Query\SqlWalker;
  *
  * @todo This is exactly the same as SingleSelectExecutor. Unify in SingleStatementExecutor.
  */
-class SingleTableDeleteUpdateExecutor extends AbstractSqlExecutor
+class SingleTableDeleteUpdateExecutor extends AbstractSQLExecutor
 {
     /** @param SqlWalker $sqlWalker */
     public function __construct(AST\Node $AST, $sqlWalker)

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\ORM\Query;
-use Doctrine\ORM\Query\Exec\AbstractSqlExecutor;
+use Doctrine\ORM\Query\Exec\AbstractSQLExecutor;
 use Doctrine\ORM\Query\ParserResult;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use Psr\Cache\CacheItemInterface;
@@ -121,7 +121,7 @@ class QueryCacheTest extends OrmFunctionalTestCase
 
         $query = $this->_em->createQuery('select ux from Doctrine\Tests\Models\CMS\CmsUser ux');
 
-        $sqlExecMock = $this->getMockBuilder(AbstractSqlExecutor::class)
+        $sqlExecMock = $this->getMockBuilder(AbstractSQLExecutor::class)
                             ->getMockForAbstractClass();
 
         $sqlExecMock->expects(self::once())

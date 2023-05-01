@@ -356,9 +356,9 @@ parameters:
 			path: lib/Doctrine/ORM/Query/AST/WhenClause.php
 
 		-
-			message: "#^Property Doctrine\\\\ORM\\\\Query\\\\Exec\\\\AbstractSqlExecutor\\:\\:\\$queryCacheProfile \\(Doctrine\\\\DBAL\\\\Cache\\\\QueryCacheProfile\\) does not accept null\\.$#"
+			message: "#^Property Doctrine\\\\ORM\\\\Query\\\\Exec\\\\AbstractSQLExecutor\\:\\:\\$queryCacheProfile \\(Doctrine\\\\DBAL\\\\Cache\\\\QueryCacheProfile\\) does not accept null\\.$#"
 			count: 1
-			path: lib/Doctrine/ORM/Query/Exec/AbstractSqlExecutor.php
+			path: lib/Doctrine/ORM/Query/Exec/AbstractSQLExecutor.php
 
 		-
 			message: "#^PHPDoc type array\\<string\\> of property Doctrine\\\\ORM\\\\Query\\\\Expr\\\\Andx\\:\\:\\$allowedClasses is not covariant with PHPDoc type array\\<int, class\\-string\\> of overridden property Doctrine\\\\ORM\\\\Query\\\\Expr\\\\Base\\:\\:\\$allowedClasses\\.$#"
@@ -441,12 +441,12 @@ parameters:
 			path: lib/Doctrine/ORM/Query/SqlWalker.php
 
 		-
-			message: "#^Method Doctrine\\\\ORM\\\\Query\\\\TreeWalkerAdapter\\:\\:getExecutor\\(\\) should return Doctrine\\\\ORM\\\\Query\\\\Exec\\\\AbstractSqlExecutor but returns null\\.$#"
+			message: "#^Method Doctrine\\\\ORM\\\\Query\\\\TreeWalkerAdapter\\:\\:getExecutor\\(\\) should return Doctrine\\\\ORM\\\\Query\\\\Exec\\\\AbstractSQLExecutor but returns null\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Query/TreeWalkerAdapter.php
 
 		-
-			message: "#^Method Doctrine\\\\ORM\\\\Query\\\\TreeWalkerChain\\:\\:getExecutor\\(\\) should return Doctrine\\\\ORM\\\\Query\\\\Exec\\\\AbstractSqlExecutor but returns null\\.$#"
+			message: "#^Method Doctrine\\\\ORM\\\\Query\\\\TreeWalkerChain\\:\\:getExecutor\\(\\) should return Doctrine\\\\ORM\\\\Query\\\\Exec\\\\AbstractSQLExecutor but returns null\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Query/TreeWalkerChain.php
 

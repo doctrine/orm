@@ -2031,7 +2031,7 @@
       <code>$sqlWalker</code>
     </ParamNameMismatch>
   </file>
-  <file src="lib/Doctrine/ORM/Query/Exec/AbstractSqlExecutor.php">
+  <file src="lib/Doctrine/ORM/Query/Exec/AbstractSQLExecutor.php">
     <PossiblyNullPropertyAssignmentValue>
       <code>null</code>
     </PossiblyNullPropertyAssignmentValue>

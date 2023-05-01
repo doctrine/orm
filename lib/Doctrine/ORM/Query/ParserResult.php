@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Query;
 
-use Doctrine\ORM\Query\Exec\AbstractSqlExecutor;
+use Doctrine\ORM\Query\Exec\AbstractSQLExecutor;
 
 /**
  * Encapsulates the resulting components from a DQL query parsing process that
@@ -17,7 +17,7 @@ class ParserResult
     /**
      * The SQL executor used for executing the SQL.
      *
-     * @var AbstractSqlExecutor
+     * @var AbstractSQLExecutor
      */
     private $_sqlExecutor;
 
@@ -67,7 +67,7 @@ class ParserResult
     /**
      * Sets the SQL executor that should be used for this ParserResult.
      *
-     * @param AbstractSqlExecutor $executor
+     * @param AbstractSQLExecutor $executor
      *
      * @return void
      */
@@ -79,7 +79,7 @@ class ParserResult
     /**
      * Gets the SQL executor used by this ParserResult.
      *
-     * @return AbstractSqlExecutor
+     * @return AbstractSQLExecutor
      */
     public function getSqlExecutor()
     {

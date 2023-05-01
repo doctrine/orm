@@ -13,10 +13,8 @@ use Doctrine\DBAL\Types\Type;
  * Base class for SQL statement executors.
  *
  * @link        http://www.doctrine-project.org
- *
- * @todo Rename: AbstractSQLExecutor
  */
-abstract class AbstractSqlExecutor
+abstract class AbstractSQLExecutor
 {
     /** @var list<string>|string */
     protected $_sqlStatements;

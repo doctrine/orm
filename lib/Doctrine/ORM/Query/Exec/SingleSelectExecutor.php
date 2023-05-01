@@ -14,7 +14,7 @@ use Doctrine\ORM\Query\SqlWalker;
  *
  * @link        www.doctrine-project.org
  */
-class SingleSelectExecutor extends AbstractSqlExecutor
+class SingleSelectExecutor extends AbstractSQLExecutor
 {
     public function __construct(SelectStatement $AST, SqlWalker $sqlWalker)
     {

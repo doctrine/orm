@@ -228,8 +228,8 @@
         <exclude-pattern>lib/Doctrine/ORM/Configuration.php</exclude-pattern>
         <exclude-pattern>lib/Doctrine/ORM/EntityRepository.php</exclude-pattern>
         <exclude-pattern>lib/Doctrine/ORM/Internal/Hydration/AbstractHydrator.php</exclude-pattern>
-        <exclude-pattern>lib/Doctrine/ORM/Query/Exec/AbstractSqlExecutor.php</exclude-pattern>
-        <exclude-pattern>lib/Doctrine/ORM/Query/Exec/AbstractSqlExecutor.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/Query/Exec/AbstractSQLExecutor.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/Query/Exec/AbstractSQLExecutor.php</exclude-pattern>
         <exclude-pattern>lib/Doctrine/ORM/Query/Printer.php</exclude-pattern>
         <exclude-pattern>lib/Doctrine/ORM/Tools/EntityRepositoryGenerator.php</exclude-pattern>
         <exclude-pattern>lib/Doctrine/ORM/Tools/Console/Helper/EntityManagerHelper.php</exclude-pattern>

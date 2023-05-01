@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Query;
 
-use Doctrine\ORM\Query\Exec\AbstractSqlExecutor;
+use Doctrine\ORM\Query\Exec\AbstractSQLExecutor;
 use Doctrine\ORM\Query\ParserResult;
 use Doctrine\ORM\Query\ResultSetMapping;
 use PHPUnit\Framework\TestCase;
@@ -28,7 +28,7 @@ class ParserResultTest extends TestCase
     {
         self::assertNull($this->parserResult->getSqlExecutor());
 
-        $executor = $this->getMockForAbstractClass(AbstractSqlExecutor::class);
+        $executor = $this->getMockForAbstractClass(AbstractSQLExecutor::class);
         $this->parserResult->setSqlExecutor($executor);
         self::assertSame($executor, $this->parserResult->getSqlExecutor());
     }

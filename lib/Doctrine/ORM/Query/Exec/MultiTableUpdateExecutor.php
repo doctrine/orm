@@ -22,7 +22,7 @@ use function implode;
  * Executes the SQL statements for bulk DQL UPDATE statements on classes in
  * Class Table Inheritance (JOINED).
  */
-class MultiTableUpdateExecutor extends AbstractSqlExecutor
+class MultiTableUpdateExecutor extends AbstractSQLExecutor
 {
     /** @var string */
     private $_createTempTableSql;
