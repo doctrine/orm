@@ -331,6 +331,23 @@ class ClassMetadataTest extends OrmTestCase
         $cm->setVersionMapping($field);
     }
 
+    public function testItThrowsOnJoinColumnForInverseOneToOne(): void
+    {
+        $cm = new ClassMetadata(CmsUser::class);
+        $cm->initializeReflection(new RuntimeReflectionService());
+
+        $this->expectException(MappingException::class);
+        $this->expectExceptionMessage(
+            'Doctrine\Tests\Models\CMS\CmsUser#address is a OneToOne inverse side, which does not allow join columns.',
+        );
+        $cm->mapOneToOne([
+            'fieldName' => 'address',
+            'targetEntity' => CmsAddress::class,
+            'mappedBy' => 'user',
+            'joinColumns' => ['non', 'empty', 'list'],
+        ]);
+    }
+
     public function testGetSingleIdentifierFieldNameMultipleIdentifierEntityThrowsException(): void
     {
         $cm = new ClassMetadata(CmsUser::class);
