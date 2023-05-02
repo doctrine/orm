@@ -30,17 +30,15 @@ parameters:
             path: lib/Doctrine/ORM/Mapping/ToOneAssociationMapping.php
 
         -
-            message: "#^Access to an undefined property .*Mapping\\:\\:\\$(joinTableColumns|relationTo(Target|Source)KeyColumns|joinTable|indexBy)\\.$#"
-            path: lib/Doctrine/ORM/Persisters/Collection/ManyToManyPersister.php
+            message: "#^Access to an undefined property .*Mapping\\:\\:\\$(joinColumns|joinTableColumns|(relation|source|target)To(Target|Source)KeyColumns|joinTable|indexBy)\\.$#"
+            paths:
+                - lib/Doctrine/ORM/Persisters/Collection/ManyToManyPersister.php
+                - lib/Doctrine/ORM/Persisters/Entity/BasicEntityPersister.php
+                - lib/Doctrine/ORM/Persisters/Entity/JoinedSubclassPersister.php
+                - lib/Doctrine/ORM/Query/AST/Functions/IdentityFunction.php
+                - lib/Doctrine/ORM/Query/SqlWalker.php
+                - lib/Doctrine/ORM/UnitOfWork.php
 
         -
             message: "#^Method Doctrine\\\\ORM\\\\Mapping\\\\ToOneAssociationMapping\\:\\:fromMappingArrayAndName\\(\\) should return Doctrine\\\\ORM\\\\Mapping\\\\ManyToOneAssociationMapping\\|Doctrine\\\\ORM\\\\Mapping\\\\OneToOneAssociationMapping but returns static\\(Doctrine\\\\ORM\\\\Mapping\\\\ToOneAssociationMapping\\)\\.$#"
             path: lib/Doctrine/ORM/Mapping/ToOneAssociationMapping.php
-
-        -
-            message: "#^Property Doctrine\\\\ORM\\\\Mapping\\\\ClassMetadata\\<T of object\\>\\:\\:\\$associationMappings \\(array\\<string, Doctrine\\\\ORM\\\\Mapping\\\\ManyToManyAssociationMapping\\|Doctrine\\\\ORM\\\\Mapping\\\\ManyToOneAssociationMapping\\|Doctrine\\\\ORM\\\\Mapping\\\\OneToManyAssociationMapping\\|Doctrine\\\\ORM\\\\Mapping\\\\OneToOneAssociationMapping\\>\\) does not accept array\\<int\\|string, Doctrine\\\\ORM\\\\Mapping\\\\AssociationMapping\\>\\.$#"
-            path: lib/Doctrine/ORM/Mapping/ClassMetadata.php
-
-        -
-            message: "#^Property Doctrine\\\\ORM\\\\Mapping\\\\ClassMetadata\\<T of object\\>\\:\\:\\$associationMappings \\(array\\<string, Doctrine\\\\ORM\\\\Mapping\\\\ManyToManyAssociationMapping\\|Doctrine\\\\ORM\\\\Mapping\\\\ManyToOneAssociationMapping\\|Doctrine\\\\ORM\\\\Mapping\\\\OneToManyAssociationMapping\\|Doctrine\\\\ORM\\\\Mapping\\\\OneToOneAssociationMapping\\>\\) does not accept array\\<string, Doctrine\\\\ORM\\\\Mapping\\\\AssociationMapping\\>\\.$#"
-            path: lib/Doctrine/ORM/Mapping/ClassMetadata.php

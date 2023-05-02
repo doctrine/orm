@@ -179,6 +179,12 @@ abstract class AssociationMapping implements ArrayAccess
         return $this instanceof ToManyAssociationMapping;
     }
 
+    /** @psalm-assert-if-true OneToOneOwningSideMapping $this */
+    final public function isOneToOneOwningSide(): bool
+    {
+        return $this->isOneToOne() && $this->isOwningSide();
+    }
+
     /** @psalm-assert-if-true OneToOneOwningSideMapping|ManyToOneAssociationMapping $this */
     final public function isToOneOwningSide(): bool
     {

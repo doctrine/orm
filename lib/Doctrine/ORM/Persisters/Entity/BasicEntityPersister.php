@@ -19,7 +19,9 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\AssociationMapping;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\JoinColumnMapping;
 use Doctrine\ORM\Mapping\MappingException;
+use Doctrine\ORM\Mapping\OneToManyAssociationMapping;
 use Doctrine\ORM\Mapping\QuoteStrategy;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\PersistentCollection;
@@ -434,14 +436,16 @@ class BasicEntityPersister implements EntityPersister
                 continue;
             }
 
+            assert($this->class->associationMappings[$idField]->isToOneOwningSide());
+
             $params[] = $identifier[$idField];
             $where[]  = $this->quoteStrategy->getJoinColumnName(
-                $this->class->associationMappings[$idField]['joinColumns'][0],
+                $this->class->associationMappings[$idField]->joinColumns[0],
                 $this->class,
                 $this->platform,
             );
 
-            $targetMapping = $this->em->getClassMetadata($this->class->associationMappings[$idField]['targetEntity']);
+            $targetMapping = $this->em->getClassMetadata($this->class->associationMappings[$idField]->targetEntity);
             $targetType    = PersisterHelper::getTypeOfField($targetMapping->identifier[0], $targetMapping, $this->em);
 
             if ($targetType === []) {
@@ -494,32 +498,35 @@ class BasicEntityPersister implements EntityPersister
     protected function deleteJoinTableRecords(array $identifier, array $types): void
     {
         foreach ($this->class->associationMappings as $mapping) {
-            if ($mapping['type'] !== ClassMetadata::MANY_TO_MANY) {
+            if (! $mapping->isManyToMany()) {
                 continue;
             }
 
             // @Todo this only covers scenarios with no inheritance or of the same level. Is there something
             // like self-referential relationship between different levels of an inheritance hierarchy? I hope not!
-            $selfReferential = ($mapping['targetEntity'] === $mapping['sourceEntity']);
+            $selfReferential = ($mapping->targetEntity === $mapping->sourceEntity);
             $class           = $this->class;
             $association     = $mapping;
             $otherColumns    = [];
             $otherKeys       = [];
             $keys            = [];
 
-            if (! $mapping['isOwningSide']) {
-                $class       = $this->em->getClassMetadata($mapping['targetEntity']);
-                $association = $class->associationMappings[$mapping['mappedBy']];
+            if (! $mapping->isOwningSide()) {
+                assert(isset($mapping->mappedBy));
+                $class       = $this->em->getClassMetadata($mapping->targetEntity);
+                $association = $class->associationMappings[$mapping->mappedBy];
             }
 
-            $joinColumns = $mapping['isOwningSide']
-                ? $association['joinTable']['joinColumns']
-                : $association['joinTable']['inverseJoinColumns'];
+            assert($association->isManyToManyOwningSide());
+
+            $joinColumns = $mapping->isOwningSide()
+                ? $association->joinTable['joinColumns']
+                : $association->joinTable['inverseJoinColumns'];
 
             if ($selfReferential) {
-                $otherColumns = ! $mapping['isOwningSide']
-                    ? $association['joinTable']['joinColumns']
-                    : $association['joinTable']['inverseJoinColumns'];
+                $otherColumns = ! $mapping->isOwningSide()
+                    ? $association->joinTable['joinColumns']
+                    : $association->joinTable['inverseJoinColumns'];
             }
 
             foreach ($joinColumns as $joinColumn) {
@@ -530,7 +537,7 @@ class BasicEntityPersister implements EntityPersister
                 $otherKeys[] = $this->quoteStrategy->getJoinColumnName($joinColumn, $class, $this->platform);
             }
 
-            if (isset($mapping['isOnDeleteCascade'])) {
+            if (isset($mapping->isOnDeleteCascade)) {
                 continue;
             }
 
@@ -648,10 +655,10 @@ class BasicEntityPersister implements EntityPersister
                 $newValId = $uow->getEntityIdentifier($newVal);
             }
 
-            $targetClass = $this->em->getClassMetadata($assoc['targetEntity']);
+            $targetClass = $this->em->getClassMetadata($assoc->targetEntity);
             $owningTable = $this->getOwningTable($field);
 
-            foreach ($assoc['joinColumns'] as $joinColumn) {
+            foreach ($assoc->joinColumns as $joinColumn) {
                 $sourceColumn = $joinColumn['name'];
                 $targetColumn = $joinColumn['referencedColumnName'];
                 $quotedColumn = $this->quoteStrategy->getJoinColumnName($joinColumn, $this->class, $this->platform);
@@ -732,41 +739,43 @@ class BasicEntityPersister implements EntityPersister
      */
     public function loadOneToOneEntity(AssociationMapping $assoc, object $sourceEntity, array $identifier = []): object|null
     {
-        $foundEntity = $this->em->getUnitOfWork()->tryGetById($identifier, $assoc['targetEntity']);
+        $foundEntity = $this->em->getUnitOfWork()->tryGetById($identifier, $assoc->targetEntity);
         if ($foundEntity !== false) {
             return $foundEntity;
         }
 
-        $targetClass = $this->em->getClassMetadata($assoc['targetEntity']);
+        $targetClass = $this->em->getClassMetadata($assoc->targetEntity);
 
-        if ($assoc['isOwningSide']) {
-            $isInverseSingleValued = $assoc['inversedBy'] && ! $targetClass->isCollectionValuedAssociation($assoc['inversedBy']);
+        if ($assoc->isOwningSide()) {
+            $isInverseSingleValued = $assoc->inversedBy && ! $targetClass->isCollectionValuedAssociation($assoc->inversedBy);
 
             // Mark inverse side as fetched in the hints, otherwise the UoW would
             // try to load it in a separate query (remember: to-one inverse sides can not be lazy).
             $hints = [];
 
             if ($isInverseSingleValued) {
-                $hints['fetched']['r'][$assoc['inversedBy']] = true;
+                $hints['fetched']['r'][$assoc->inversedBy] = true;
             }
 
             $targetEntity = $this->load($identifier, null, $assoc, $hints);
 
             // Complete bidirectional association, if necessary
             if ($targetEntity !== null && $isInverseSingleValued) {
-                $targetClass->reflFields[$assoc['inversedBy']]->setValue($targetEntity, $sourceEntity);
+                $targetClass->reflFields[$assoc->inversedBy]->setValue($targetEntity, $sourceEntity);
             }
 
             return $targetEntity;
         }
 
-        $sourceClass = $this->em->getClassMetadata($assoc['sourceEntity']);
-        $owningAssoc = $targetClass->getAssociationMapping($assoc['mappedBy']);
+        assert(isset($assoc->mappedBy));
+        $sourceClass = $this->em->getClassMetadata($assoc->sourceEntity);
+        $owningAssoc = $targetClass->getAssociationMapping($assoc->mappedBy);
+        assert($owningAssoc->isOneToOneOwningSide());
 
         $computedIdentifier = [];
 
         // TRICKY: since the association is specular source and target are flipped
-        foreach ($owningAssoc['targetToSourceKeyColumns'] as $sourceKeyColumn => $targetKeyColumn) {
+        foreach ($owningAssoc->targetToSourceKeyColumns as $sourceKeyColumn => $targetKeyColumn) {
             if (! isset($sourceClass->fieldNames[$sourceKeyColumn])) {
                 throw MappingException::joinColumnMustPointToMappedField(
                     $sourceClass->name,
@@ -781,7 +790,7 @@ class BasicEntityPersister implements EntityPersister
         $targetEntity = $this->load($computedIdentifier, null, $assoc);
 
         if ($targetEntity !== null) {
-            $targetClass->setFieldValue($targetEntity, $assoc['mappedBy'], $sourceEntity);
+            $targetClass->setFieldValue($targetEntity, $assoc->mappedBy, $sourceEntity);
         }
 
         return $targetEntity;
@@ -908,9 +917,9 @@ class BasicEntityPersister implements EntityPersister
         $rsm   = $this->currentPersisterContext->rsm;
         $hints = [UnitOfWork::HINT_DEFEREAGERLOAD => true];
 
-        if (isset($assoc['indexBy'])) {
+        if (isset($assoc->indexBy)) {
             $rsm = clone $this->currentPersisterContext->rsm; // this is necessary because the "default rsm" should be changed.
-            $rsm->addIndexBy('r', $assoc['indexBy']);
+            $rsm->addIndexBy('r', $assoc->indexBy);
         }
 
         return $this->em->newHydrator(Query::HYDRATE_OBJECT)->hydrateAll($stmt, $rsm, $hints);
@@ -932,9 +941,9 @@ class BasicEntityPersister implements EntityPersister
             'collection' => $coll,
         ];
 
-        if (isset($assoc['indexBy'])) {
+        if (isset($assoc->indexBy)) {
             $rsm = clone $this->currentPersisterContext->rsm; // this is necessary because the "default rsm" should be changed.
-            $rsm->addIndexBy('r', $assoc['indexBy']);
+            $rsm->addIndexBy('r', $assoc->indexBy);
         }
 
         return $this->em->newHydrator(Query::HYDRATE_OBJECT)->hydrateAll($stmt, $rsm, $hints);
@@ -959,20 +968,23 @@ class BasicEntityPersister implements EntityPersister
     ): Result {
         $this->switchPersisterContext($offset, $limit);
 
-        $sourceClass = $this->em->getClassMetadata($assoc['sourceEntity']);
+        $sourceClass = $this->em->getClassMetadata($assoc->sourceEntity);
         $class       = $sourceClass;
         $association = $assoc;
         $criteria    = [];
         $parameters  = [];
 
-        if (! $assoc['isOwningSide']) {
-            $class       = $this->em->getClassMetadata($assoc['targetEntity']);
-            $association = $class->associationMappings[$assoc['mappedBy']];
+        if (! $assoc->isOwningSide()) {
+            assert(isset($assoc->mappedBy));
+            $class       = $this->em->getClassMetadata($assoc->targetEntity);
+            $association = $class->associationMappings[$assoc->mappedBy];
         }
 
-        $joinColumns = $assoc['isOwningSide']
-            ? $association['joinTable']['joinColumns']
-            : $association['joinTable']['inverseJoinColumns'];
+        assert($association->isManyToManyOwningSide());
+
+        $joinColumns = $assoc->isOwningSide()
+            ? $association->joinTable['joinColumns']
+            : $association->joinTable['inverseJoinColumns'];
 
         $quotedJoinTable = $this->quoteStrategy->getJoinTableName($association, $class, $this->platform);
 
@@ -987,7 +999,7 @@ class BasicEntityPersister implements EntityPersister
 
                     if (isset($sourceClass->associationMappings[$field])) {
                         $value = $this->em->getUnitOfWork()->getEntityIdentifier($value);
-                        $value = $value[$this->em->getClassMetadata($sourceClass->associationMappings[$field]['targetEntity'])->identifier[0]];
+                        $value = $value[$this->em->getClassMetadata($sourceClass->associationMappings[$field]->targetEntity)->identifier[0]];
                     }
 
                     break;
@@ -1036,8 +1048,8 @@ class BasicEntityPersister implements EntityPersister
             $joinSql = $this->getSelectManyToManyJoinSQL($assoc);
         }
 
-        if (isset($assoc['orderBy'])) {
-            $orderBy = $assoc['orderBy'];
+        if ($assoc !== null && isset($assoc->orderBy)) {
+            $orderBy = $assoc->orderBy;
         }
 
         if ($orderBy) {
@@ -1133,15 +1145,18 @@ class BasicEntityPersister implements EntityPersister
             }
 
             if (isset($this->class->associationMappings[$fieldName])) {
-                if (! $this->class->associationMappings[$fieldName]['isOwningSide']) {
+                $association = $this->class->associationMappings[$fieldName];
+                if (! $association->isOwningSide()) {
                     throw InvalidFindByCall::fromInverseSideUsage($this->class->name, $fieldName);
                 }
 
-                $tableAlias = isset($this->class->associationMappings[$fieldName]['inherited'])
-                    ? $this->getSQLTableAlias($this->class->associationMappings[$fieldName]['inherited'])
+                assert($association->isToOneOwningSide());
+
+                $tableAlias = isset($association->inherited)
+                    ? $this->getSQLTableAlias($association->inherited)
                     : $baseTableAlias;
 
-                foreach ($this->class->associationMappings[$fieldName]['joinColumns'] as $joinColumn) {
+                foreach ($association->joinColumns as $joinColumn) {
                     $columnName    = $this->quoteStrategy->getJoinColumnName($joinColumn, $this->class, $this->platform);
                     $orderByList[] = $tableAlias . '.' . $columnName . ' ' . $orientation;
                 }
@@ -1188,8 +1203,8 @@ class BasicEntityPersister implements EntityPersister
                 $columnList[] = $assocColumnSQL;
             }
 
-            $isAssocToOneInverseSide = $assoc->isToOne() && ! $assoc['isOwningSide'];
-            $isAssocFromOneEager     = ! $assoc->isManyToMany() && $assoc['fetch'] === ClassMetadata::FETCH_EAGER;
+            $isAssocToOneInverseSide = $assoc->isToOne() && ! $assoc->isOwningSide();
+            $isAssocFromOneEager     = ! $assoc->isManyToMany() && $assoc->fetch === ClassMetadata::FETCH_EAGER;
 
             if (! ($isAssocFromOneEager || $isAssocToOneInverseSide)) {
                 continue;
@@ -1199,14 +1214,14 @@ class BasicEntityPersister implements EntityPersister
                 continue;
             }
 
-            $eagerEntity = $this->em->getClassMetadata($assoc['targetEntity']);
+            $eagerEntity = $this->em->getClassMetadata($assoc->targetEntity);
 
             if ($eagerEntity->inheritanceType !== ClassMetadata::INHERITANCE_TYPE_NONE) {
                 continue; // now this is why you shouldn't use inheritance
             }
 
             $assocAlias = 'e' . ($eagerAliasCounter++);
-            $this->currentPersisterContext->rsm->addJoinedEntityResult($assoc['targetEntity'], $assocAlias, 'r', $assocField);
+            $this->currentPersisterContext->rsm->addJoinedEntityResult($assoc->targetEntity, $assocAlias, 'r', $assocField);
 
             foreach ($eagerEntity->fieldNames as $field) {
                 $columnList[] = $this->getSelectColumnSQL($field, $eagerEntity, $assocAlias);
@@ -1228,26 +1243,29 @@ class BasicEntityPersister implements EntityPersister
             $association   = $assoc;
             $joinCondition = [];
 
-            if (isset($assoc['indexBy'])) {
-                $this->currentPersisterContext->rsm->addIndexBy($assocAlias, $assoc['indexBy']);
+            if (isset($assoc->indexBy)) {
+                $this->currentPersisterContext->rsm->addIndexBy($assocAlias, $assoc->indexBy);
             }
 
-            if (! $assoc['isOwningSide']) {
-                $eagerEntity = $this->em->getClassMetadata($assoc['targetEntity']);
-                $association = $eagerEntity->getAssociationMapping($assoc['mappedBy']);
+            if (! $assoc->isOwningSide()) {
+                assert(isset($assoc->mappedBy));
+                $eagerEntity = $this->em->getClassMetadata($assoc->targetEntity);
+                $association = $eagerEntity->getAssociationMapping($assoc->mappedBy);
             }
+
+            assert($association->isToOneOwningSide());
 
             $joinTableAlias = $this->getSQLTableAlias($eagerEntity->name, $assocAlias);
             $joinTableName  = $this->quoteStrategy->getTableName($eagerEntity, $this->platform);
 
-            if ($assoc['isOwningSide']) {
-                $tableAlias                                    = $this->getSQLTableAlias($association['targetEntity'], $assocAlias);
-                $this->currentPersisterContext->selectJoinSql .= ' ' . $this->getJoinSQLForJoinColumns($association['joinColumns']);
+            if ($assoc->isOwningSide()) {
+                $tableAlias                                    = $this->getSQLTableAlias($association->targetEntity, $assocAlias);
+                $this->currentPersisterContext->selectJoinSql .= ' ' . $this->getJoinSQLForJoinColumns($association->joinColumns);
 
-                foreach ($association['joinColumns'] as $joinColumn) {
+                foreach ($association->joinColumns as $joinColumn) {
                     $sourceCol       = $this->quoteStrategy->getJoinColumnName($joinColumn, $this->class, $this->platform);
                     $targetCol       = $this->quoteStrategy->getReferencedJoinColumnName($joinColumn, $this->class, $this->platform);
-                    $joinCondition[] = $this->getSQLTableAlias($association['sourceEntity'])
+                    $joinCondition[] = $this->getSQLTableAlias($association->sourceEntity)
                                         . '.' . $sourceCol . ' = ' . $tableAlias . '.' . $targetCol;
                 }
 
@@ -1259,12 +1277,12 @@ class BasicEntityPersister implements EntityPersister
             } else {
                 $this->currentPersisterContext->selectJoinSql .= ' LEFT JOIN';
 
-                foreach ($association['joinColumns'] as $joinColumn) {
+                foreach ($association->joinColumns as $joinColumn) {
                     $sourceCol = $this->quoteStrategy->getJoinColumnName($joinColumn, $this->class, $this->platform);
                     $targetCol = $this->quoteStrategy->getReferencedJoinColumnName($joinColumn, $this->class, $this->platform);
 
-                    $joinCondition[] = $this->getSQLTableAlias($association['sourceEntity'], $assocAlias) . '.' . $sourceCol . ' = '
-                        . $this->getSQLTableAlias($association['targetEntity']) . '.' . $targetCol;
+                    $joinCondition[] = $this->getSQLTableAlias($association->sourceEntity, $assocAlias) . '.' . $sourceCol . ' = '
+                        . $this->getSQLTableAlias($association->targetEntity) . '.' . $targetCol;
                 }
             }
 
@@ -1289,11 +1307,11 @@ class BasicEntityPersister implements EntityPersister
         }
 
         $columnList    = [];
-        $targetClass   = $this->em->getClassMetadata($assoc['targetEntity']);
-        $isIdentifier  = isset($assoc['id']) && $assoc['id'] === true;
+        $targetClass   = $this->em->getClassMetadata($assoc->targetEntity);
+        $isIdentifier  = isset($assoc->id) && $assoc->id === true;
         $sqlTableAlias = $this->getSQLTableAlias($class->name, ($alias === 'r' ? '' : $alias));
 
-        foreach ($assoc['joinColumns'] as $joinColumn) {
+        foreach ($assoc->joinColumns as $joinColumn) {
             $quotedColumn     = $this->quoteStrategy->getJoinColumnName($joinColumn, $this->class, $this->platform);
             $resultColumnName = $this->getSQLColumnAlias($joinColumn['name']);
             $type             = PersisterHelper::getTypeOfColumn($joinColumn['referencedColumnName'], $targetClass, $this->em);
@@ -1316,15 +1334,18 @@ class BasicEntityPersister implements EntityPersister
         $association      = $manyToMany;
         $sourceTableAlias = $this->getSQLTableAlias($this->class->name);
 
-        if (! $manyToMany['isOwningSide']) {
-            $targetEntity = $this->em->getClassMetadata($manyToMany['targetEntity']);
-            $association  = $targetEntity->associationMappings[$manyToMany['mappedBy']];
+        if (! $manyToMany->isOwningSide()) {
+            assert(isset($manyToMany->mappedBy));
+            $targetEntity = $this->em->getClassMetadata($manyToMany->targetEntity);
+            $association  = $targetEntity->associationMappings[$manyToMany->mappedBy];
         }
 
+        assert($association->isManyToManyOwningSide());
+
         $joinTableName = $this->quoteStrategy->getJoinTableName($association, $this->class, $this->platform);
-        $joinColumns   = $manyToMany['isOwningSide']
-            ? $association['joinTable']['inverseJoinColumns']
-            : $association['joinTable']['joinColumns'];
+        $joinColumns   = $manyToMany->isOwningSide()
+            ? $association->joinTable['inverseJoinColumns']
+            : $association->joinTable['joinColumns'];
 
         foreach ($joinColumns as $joinColumn) {
             $quotedSourceColumn = $this->quoteStrategy->getJoinColumnName($joinColumn, $this->class, $this->platform);
@@ -1402,7 +1423,7 @@ class BasicEntityPersister implements EntityPersister
                 $assoc = $this->class->associationMappings[$name];
 
                 if ($assoc->isToOneOwningSide()) {
-                    foreach ($assoc['joinColumns'] as $joinColumn) {
+                    foreach ($assoc->joinColumns as $joinColumn) {
                         $columns[] = $this->quoteStrategy->getJoinColumnName($joinColumn, $this->class, $this->platform);
                     }
                 }
@@ -1622,30 +1643,34 @@ class BasicEntityPersister implements EntityPersister
             $class   = $this->class;
 
             if ($association->isManyToMany()) {
-                if (! $association['isOwningSide']) {
+                assert($assoc !== null);
+                if (! $association->isOwningSide()) {
                     $association = $assoc;
                 }
 
+                assert($association->isManyToManyOwningSide());
+
                 $joinTableName = $this->quoteStrategy->getJoinTableName($association, $class, $this->platform);
-                assert($assoc !== null);
-                $joinColumns = $assoc['isOwningSide']
-                    ? $association['joinTable']['joinColumns']
-                    : $association['joinTable']['inverseJoinColumns'];
+                $joinColumns   = $assoc->isOwningSide()
+                    ? $association->joinTable['joinColumns']
+                    : $association->joinTable['inverseJoinColumns'];
 
                 foreach ($joinColumns as $joinColumn) {
                     $columns[] = $joinTableName . '.' . $this->quoteStrategy->getJoinColumnName($joinColumn, $class, $this->platform);
                 }
             } else {
-                if (! $association['isOwningSide']) {
+                if (! $association->isOwningSide()) {
                     throw InvalidFindByCall::fromInverseSideUsage(
                         $this->class->name,
                         $field,
                     );
                 }
 
-                $className = $association['inherited'] ?? $this->class->name;
+                assert($association->isToOneOwningSide());
 
-                foreach ($association['joinColumns'] as $joinColumn) {
+                $className = $association->inherited ?? $this->class->name;
+
+                foreach ($association->joinColumns as $joinColumn) {
                     $columns[] = $this->getSQLTableAlias($className) . '.' . $this->quoteStrategy->getJoinColumnName($joinColumn, $this->class, $this->platform);
                 }
             }
@@ -1693,6 +1718,7 @@ class BasicEntityPersister implements EntityPersister
         int|null $offset = null,
         int|null $limit = null,
     ): array {
+        assert($assoc instanceof OneToManyAssociationMapping);
         $this->switchPersisterContext($offset, $limit);
 
         $stmt = $this->getOneToManyStatement($assoc, $sourceEntity, $offset, $limit);
@@ -1705,6 +1731,7 @@ class BasicEntityPersister implements EntityPersister
         object $sourceEntity,
         PersistentCollection $collection,
     ): mixed {
+        assert($assoc instanceof OneToManyAssociationMapping);
         $stmt = $this->getOneToManyStatement($assoc, $sourceEntity);
 
         return $this->loadCollectionFromStatement($assoc, $stmt, $collection);
@@ -1712,27 +1739,29 @@ class BasicEntityPersister implements EntityPersister
 
     /** Builds criteria and execute SQL statement to fetch the one to many entities from. */
     private function getOneToManyStatement(
-        AssociationMapping $assoc,
+        OneToManyAssociationMapping $assoc,
         object $sourceEntity,
         int|null $offset = null,
         int|null $limit = null,
     ): Result {
         $this->switchPersisterContext($offset, $limit);
 
-        $criteria    = [];
-        $parameters  = [];
-        $owningAssoc = $this->class->associationMappings[$assoc['mappedBy']];
-        $sourceClass = $this->em->getClassMetadata($assoc['sourceEntity']);
-        $tableAlias  = $this->getSQLTableAlias($owningAssoc['inherited'] ?? $this->class->name);
+        $criteria   = [];
+        $parameters = [];
+        assert(isset($assoc->mappedBy));
+        $owningAssoc = $this->class->associationMappings[$assoc->mappedBy];
+        $sourceClass = $this->em->getClassMetadata($assoc->sourceEntity);
+        $tableAlias  = $this->getSQLTableAlias($owningAssoc->inherited ?? $this->class->name);
+        assert($owningAssoc->isManyToOne());
 
-        foreach ($owningAssoc['targetToSourceKeyColumns'] as $sourceKeyColumn => $targetKeyColumn) {
+        foreach ($owningAssoc->targetToSourceKeyColumns as $sourceKeyColumn => $targetKeyColumn) {
             if ($sourceClass->containsForeignIdentifier) {
                 $field = $sourceClass->getFieldForColumn($sourceKeyColumn);
                 $value = $sourceClass->reflFields[$field]->getValue($sourceEntity);
 
                 if (isset($sourceClass->associationMappings[$field])) {
                     $value = $this->em->getUnitOfWork()->getEntityIdentifier($value);
-                    $value = $value[$this->em->getClassMetadata($sourceClass->associationMappings[$field]['targetEntity'])->identifier[0]];
+                    $value = $value[$this->em->getClassMetadata($sourceClass->associationMappings[$field]->targetEntity)->identifier[0]];
                 }
 
                 $criteria[$tableAlias . '.' . $targetKeyColumn] = $value;
@@ -1830,16 +1859,22 @@ class BasicEntityPersister implements EntityPersister
 
             case isset($class->associationMappings[$field]):
                 $assoc = $class->associationMappings[$field];
-                $class = $this->em->getClassMetadata($assoc['targetEntity']);
+                $class = $this->em->getClassMetadata($assoc->targetEntity);
 
-                if (! $assoc['isOwningSide']) {
-                    $assoc = $class->associationMappings[$assoc['mappedBy']];
-                    $class = $this->em->getClassMetadata($assoc['targetEntity']);
+                if (! $assoc->isOwningSide()) {
+                    assert(isset($assoc->mappedBy));
+                    $assoc = $class->associationMappings[$assoc->mappedBy];
+                    $class = $this->em->getClassMetadata($assoc->targetEntity);
                 }
 
-                $columns = $assoc->isManyToMany()
-                    ? $assoc['relationToTargetKeyColumns']
-                    : $assoc['sourceToTargetKeyColumns'];
+                assert($assoc->isOwningSide());
+
+                if ($assoc->isManyToManyOwningSide()) {
+                    $columns = $assoc->relationToTargetKeyColumns;
+                } else {
+                    assert($assoc->isToOneOwningSide() || $assoc->isManyToOne());
+                    $columns = $assoc->sourceToTargetKeyColumns;
+                }
 
                 foreach ($columns as $column) {
                     $types[] = PersisterHelper::getTypeOfColumn($column, $class, $this->em);
@@ -1964,8 +1999,7 @@ class BasicEntityPersister implements EntityPersister
     /**
      * Generates the appropriate join SQL for the given join column.
      *
-     * @param array[] $joinColumns The join columns definition of an association.
-     * @psalm-param array<array<string, mixed>> $joinColumns
+     * @param list<JoinColumnMapping> $joinColumns The join columns definition of an association.
      *
      * @return string LEFT JOIN if one of the columns is nullable, INNER JOIN otherwise.
      */

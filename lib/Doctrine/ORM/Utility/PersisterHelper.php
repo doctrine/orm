@@ -40,7 +40,7 @@ class PersisterHelper
             return self::getTypeOfField($assoc['mappedBy'], $em->getClassMetadata($assoc['targetEntity']), $em);
         }
 
-        if ($assoc->isManyToMany()) {
+        if ($assoc->isManyToManyOwningSide()) {
             $joinData = $assoc['joinTable'];
         } else {
             $joinData = $assoc;

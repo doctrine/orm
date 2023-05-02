@@ -730,9 +730,7 @@
       <code>array</code>
       <code><![CDATA[list<mixed>]]></code>
     </MoreSpecificReturnType>
-    <PossiblyNullArgument>
-      <code>$association</code>
-    </PossiblyNullArgument>
+    <PossiblyNullArgument/>
     <PossiblyNullReference>
       <code>getValue</code>
       <code>getValue</code>
