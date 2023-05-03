@@ -230,6 +230,15 @@ class MappingException extends PersistenceMappingException implements ORMExcepti
         ));
     }
 
+    public static function joinColumnNotAllowedOnOneToOneInverseSide(string $className, string $fieldName): self
+    {
+        return new self(sprintf(
+            '%s#%s is a OneToOne inverse side, which does not allow join columns.',
+            $className,
+            $fieldName,
+        ));
+    }
+
     /** @param class-string $className */
     public static function classIsNotAValidEntityOrMappedSuperClass(string $className): self
     {

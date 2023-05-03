@@ -349,6 +349,7 @@
     <PossiblyUndefinedArrayOffset>
       <code><![CDATA[$mapping['isOwningSide']]]></code>
       <code><![CDATA[$mapping['isOwningSide']]]></code>
+      <code><![CDATA[$mapping['isOwningSide']]]></code>
       <code><![CDATA[$mapping['targetEntity']]]></code>
       <code><![CDATA[$table['name']]]></code>
     </PossiblyUndefinedArrayOffset>
@@ -359,7 +360,6 @@
     <RedundantCondition>
       <code>$mapping !== false</code>
       <code>$mapping !== false</code>
-      <code><![CDATA[$mapping['isOwningSide']]]></code>
     </RedundantCondition>
     <RedundantFunctionCall>
       <code>array_values</code>
@@ -368,15 +368,6 @@
       <code><![CDATA[$this->table]]></code>
       <code>null</code>
     </RedundantPropertyInitializationCheck>
-    <TypeDoesNotContainType>
-      <code><![CDATA[OneToOneAssociationMapping::fromMappingArrayAndName(
-                        $mapping,
-                        $this->namingStrategy,
-                        $this->name,
-                        $this->table,
-                        $this->isInheritanceTypeSingleTable(),
-                    )]]></code>
-    </TypeDoesNotContainType>
   </file>
   <file src="lib/Doctrine/ORM/Mapping/ClassMetadataFactory.php">
     <ArgumentTypeCoercion>
@@ -730,7 +721,6 @@
       <code>array</code>
       <code><![CDATA[list<mixed>]]></code>
     </MoreSpecificReturnType>
-    <PossiblyNullArgument/>
     <PossiblyNullReference>
       <code>getValue</code>
       <code>getValue</code>

@@ -1373,15 +1373,10 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
         switch ($mapping['type']) {
             case self::ONE_TO_ONE:
                 if (isset($mapping['joinColumns']) && $mapping['joinColumns'] && ! $mapping['isOwningSide']) {
-                    Deprecation::trigger(
-                        'doctrine/orm',
-                        'https://github.com/doctrine/orm/pull/10654',
-                        'JoinColumn configuration is not allowed on the inverse side of one-to-one associations, and will throw a MappingException in Doctrine ORM 3.0',
+                    throw MappingException::joinColumnNotAllowedOnOneToOneInverseSide(
+                        $this->name,
+                        $mapping['fieldName'],
                     );
-                }
-
-                if (isset($mapping['joinColumns']) && $mapping['joinColumns']) {
-                    $mapping['isOwningSide'] = true;
                 }
 
                 return $mapping['isOwningSide'] ?
