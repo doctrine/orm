@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<files psalm-version="5.10.0@a5effd2d2dddd1a7ea7a0f6a051ce63ff979e356">
+<files psalm-version="5.11.0@c9b192ab8400fdaf04b2b13d110575adc879aa90">
   <file src="lib/Doctrine/ORM/AbstractQuery.php">
     <DeprecatedClass>
       <code>IterableResult</code>
@@ -2578,43 +2578,6 @@
     <PossiblyFalseArgument>
       <code><![CDATA[$simpleXml->asXML()]]></code>
     </PossiblyFalseArgument>
-    <PossiblyNullArgument>
-      <code>$entityListenersXml</code>
-      <code>$optionsXml</code>
-    </PossiblyNullArgument>
-    <PossiblyNullReference>
-      <code>addAttribute</code>
-      <code>addAttribute</code>
-      <code>addAttribute</code>
-      <code>addAttribute</code>
-      <code>addAttribute</code>
-      <code>addAttribute</code>
-      <code>addAttribute</code>
-      <code>addAttribute</code>
-      <code>addAttribute</code>
-      <code>addAttribute</code>
-      <code>addAttribute</code>
-      <code>addAttribute</code>
-      <code>addAttribute</code>
-      <code>addAttribute</code>
-      <code>addAttribute</code>
-      <code>addAttribute</code>
-      <code>addAttribute</code>
-      <code>addAttribute</code>
-      <code>addAttribute</code>
-      <code>addAttribute</code>
-      <code>addAttribute</code>
-      <code>addChild</code>
-      <code>addChild</code>
-      <code>addChild</code>
-      <code>addChild</code>
-      <code>addChild</code>
-      <code>addChild</code>
-      <code>addChild</code>
-      <code>addChild</code>
-      <code>addChild</code>
-      <code>addChild</code>
-    </PossiblyNullReference>
     <RedundantCondition>
       <code><![CDATA[$field['associationKey']]]></code>
       <code><![CDATA[isset($field['associationKey']) && $field['associationKey']]]></code>

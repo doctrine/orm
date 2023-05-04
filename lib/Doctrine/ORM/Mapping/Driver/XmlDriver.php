@@ -989,6 +989,7 @@ class XmlDriver extends FileDriver
         $result = [];
         // Note: we do not use `simplexml_load_file()` because of https://bugs.php.net/bug.php?id=62577
         $xmlElement = simplexml_load_string(file_get_contents($file));
+        assert($xmlElement !== false);
 
         if (isset($xmlElement->entity)) {
             foreach ($xmlElement->entity as $entityElement) {
