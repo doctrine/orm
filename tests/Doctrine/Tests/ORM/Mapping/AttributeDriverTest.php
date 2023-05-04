@@ -5,11 +5,13 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Mapping;
 
 use Attribute;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Driver\AttributeDriver;
 use Doctrine\ORM\Mapping\MappingAttribute;
 use Doctrine\Persistence\Mapping\Driver\AnnotationDriver as PersistenceAnnotationDriver;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
+use Doctrine\Tests\ORM\Mapping\Fixtures\AttributeEntityWithNestedJoinColumns;
 use stdClass;
 
 use function class_exists;
@@ -123,6 +125,44 @@ class AttributeDriverTest extends MappingDriverTestCase
 
         self::assertTrue(is_subclass_of(AttributeDriver::class, PersistenceAnnotationDriver::class));
     }
+
+    /**
+     * @requires PHP 8.1
+     */
+    public function testManyToManyAssociationWithNestedJoinColumns(): void
+    {
+        $factory = $this->createClassMetadataFactory();
+
+        $metadata = $factory->getMetadataFor(AttributeEntityWithNestedJoinColumns::class);
+
+        self::assertEquals(
+            [
+                [
+                    'name' => 'assoz_id',
+                    'referencedColumnName' => 'assoz_id',
+                    'unique' => false,
+                    'nullable' => true,
+                    'onDelete' => null,
+                    'columnDefinition' => null,
+                ],
+            ],
+            $metadata->associationMappings['assoc']['joinTable']['joinColumns']
+        );
+
+        self::assertEquals(
+            [
+                [
+                    'name' => 'inverse_assoz_id',
+                    'referencedColumnName' => 'inverse_assoz_id',
+                    'unique' => false,
+                    'nullable' => true,
+                    'onDelete' => null,
+                    'columnDefinition' => null,
+                ],
+            ],
+            $metadata->associationMappings['assoc']['joinTable']['inverseJoinColumns']
+        );
+    }
 }
 
 #[ORM\Entity]
@@ -136,7 +176,7 @@ class AttributeEntityWithoutOriginalParents
     #[ORM\GeneratedValue]
     public $id;
 
-    /** @var AttributeEntityWithoutOriginalParents[] */
+    /** @var Collection<AttributeEntityWithoutOriginalParents> */
     #[ORM\ManyToMany(targetEntity: self::class)]
     #[ORM\JoinColumn(name: 'assoz_id', referencedColumnName: 'assoz_id')]
     #[ORM\InverseJoinColumn(name: 'assoz_id', referencedColumnName: 'assoz_id')]

@@ -437,6 +437,14 @@ class AttributeDriver extends CompatibilityAnnotationDriver
                     if ($joinTableAttribute->options) {
                         $joinTable['options'] = $joinTableAttribute->options;
                     }
+
+                    foreach ($joinTableAttribute->joinColumns as $joinColumn) {
+                        $joinTable['joinColumns'][] = $this->joinColumnToArray($joinColumn);
+                    }
+
+                    foreach ($joinTableAttribute->inverseJoinColumns as $joinColumn) {
+                        $joinTable['inverseJoinColumns'][] = $this->joinColumnToArray($joinColumn);
+                    }
                 }
 
                 foreach ($this->reader->getPropertyAttributeCollection($property, Mapping\JoinColumn::class) as $joinColumn) {
