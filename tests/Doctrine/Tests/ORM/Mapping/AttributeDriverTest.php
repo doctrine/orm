@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Mapping;
 
 use Attribute;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Driver\AttributeDriver;
 use Doctrine\ORM\Mapping\MappingAttribute;
@@ -136,7 +137,7 @@ class AttributeEntityWithoutOriginalParents
     #[ORM\GeneratedValue]
     public $id;
 
-    /** @var AttributeEntityWithoutOriginalParents[] */
+    /** @var Collection<AttributeEntityWithoutOriginalParents> */
     #[ORM\ManyToMany(targetEntity: self::class)]
     #[ORM\JoinColumn(name: 'assoz_id', referencedColumnName: 'assoz_id')]
     #[ORM\InverseJoinColumn(name: 'assoz_id', referencedColumnName: 'assoz_id')]
