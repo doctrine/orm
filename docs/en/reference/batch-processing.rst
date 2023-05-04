@@ -86,7 +86,7 @@ with the batching strategy that was already used for bulk inserts:
 
     <?php
     $batchSize = 20;
-    $i = 1;
+    $i = 0;
     $q = $em->createQuery('select u from MyProject\Model\User u');
     foreach ($q->toIterable() as $user) {
         $user->increaseCredit();
@@ -145,7 +145,7 @@ The following example shows how to do this:
 
     <?php
     $batchSize = 20;
-    $i = 1;
+    $i = 0;
     $q = $em->createQuery('select u from MyProject\Model\User u');
     foreach($q->toIterable() as $row) {
         $em->remove($row);
