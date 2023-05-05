@@ -1101,7 +1101,8 @@ context.
 Required parameters:
 
 -  **name**: Name of the Index
--  **columns**: Array of columns.
+-  **fields**: Array of fields (the names of the properties, used in the entity class).
+-  **columns**: Array of columns (the names of the columns, used in the schema).
 
 Optional parameters:
 
