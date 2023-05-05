@@ -3043,10 +3043,6 @@
     <PropertyTypeCoercion>
       <code><![CDATA[$this->nonCascadedNewDetectedEntities]]></code>
     </PropertyTypeCoercion>
-    <RedundantCondition>
-      <code><![CDATA[$i >= 0 && $this->entityDeletions]]></code>
-      <code><![CDATA[$this->entityDeletions]]></code>
-    </RedundantCondition>
     <RedundantConditionGivenDocblockType>
       <code>is_array($entity)</code>
     </RedundantConditionGivenDocblockType>
