@@ -18,6 +18,9 @@
             <file name="lib/Doctrine/ORM/Mapping/Driver/AttributeReader.php" />
         </ignoreFiles>
     </projectFiles>
+    <enableExtensions>
+        <extension name="simplexml" />
+    </enableExtensions>
     <issueHandlers>
         <DeprecatedClass>
             <errorLevel type="suppress">
