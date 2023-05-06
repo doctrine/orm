@@ -15,14 +15,11 @@ use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\InheritanceType;
-use Doctrine\Tests\Models\GH10288\GH10288People;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * This test makes sure that Discriminator columns can use both custom types using PHP enums as well as
  * enumType definition of enums.
- *
- * @requires PHP 8.1
  */
 class GH10288Test extends OrmFunctionalTestCase
 {
@@ -112,6 +109,12 @@ class GH10288Test extends OrmFunctionalTestCase
 
         $this->performEnumDiscriminatorTest($boss, $employee, GH10288PersonCustomEnumType::class);
     }
+}
+
+enum GH10288People: string
+{
+    case BOSS     = 'boss';
+    case EMPLOYEE = 'employee';
 }
 
 class GH10288PeopleType extends StringType

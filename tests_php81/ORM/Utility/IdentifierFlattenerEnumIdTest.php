@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Doctrine\Tests\ORM\Utility;
+namespace Doctrine\Tests_PHP81\ORM\Utility;
 
 use Doctrine\Tests\Models\Enums\Suit;
 use Doctrine\Tests\Models\Enums\TypedCardEnumCompositeId;
@@ -13,7 +13,6 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 /**
  * Test the IdentifierFlattener utility class
  *
- * @requires PHP 8.1
  * @covers \Doctrine\ORM\Utility\IdentifierFlattener
  */
 class IdentifierFlattenerEnumIdTest extends OrmFunctionalTestCase

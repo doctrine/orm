@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Doctrine\Tests\ORM\Mapping;
+namespace Doctrine\Tests_PHP81\ORM\Mapping;
 
 use Doctrine\ORM\Mapping\ReflectionReadonlyProperty;
 use Doctrine\Tests\Models\CMS\CmsTag;
@@ -12,9 +12,6 @@ use LogicException;
 use PHPUnit\Framework\TestCase;
 use ReflectionProperty;
 
-/**
- * @requires PHP 8.1
- */
 class ReflectionReadonlyPropertyTest extends TestCase
 {
     public function testSecondWriteWithSameValue(): void

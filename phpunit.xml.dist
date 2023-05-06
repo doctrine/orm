@@ -22,6 +22,7 @@
     <testsuites>
         <testsuite name="Doctrine ORM Test Suite">
             <directory>./tests/Doctrine/Tests/ORM</directory>
+            <directory phpVersion="8.1" phpVersionOperator=">=">./tests_php81</directory>
         </testsuite>
     </testsuites>
 

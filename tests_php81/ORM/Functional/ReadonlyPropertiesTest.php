@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Doctrine\Tests\ORM\Functional;
+namespace Doctrine\Tests_PHP81\ORM\Functional;
 
 use Doctrine\ORM\Mapping\Driver\AttributeDriver;
 use Doctrine\ORM\Tools\SchemaTool;
@@ -14,9 +14,6 @@ use Doctrine\Tests\TestUtil;
 
 use function dirname;
 
-/**
- * @requires PHP 8.1
- */
 class ReadonlyPropertiesTest extends OrmFunctionalTestCase
 {
     protected function setUp(): void

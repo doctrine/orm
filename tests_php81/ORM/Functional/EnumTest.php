@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Doctrine\Tests\ORM\Functional;
+namespace Doctrine\Tests_PHP81\ORM\Functional;
 
 use Doctrine\ORM\AbstractQuery;
 use Doctrine\ORM\Mapping\Column;
@@ -27,9 +27,6 @@ use function dirname;
 use function sprintf;
 use function uniqid;
 
-/**
- * @requires PHP 8.1
- */
 class EnumTest extends OrmFunctionalTestCase
 {
     public function setUp(): void
