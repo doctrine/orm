@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Mapping;
 
+use Doctrine\ORM\Mapping\AssociationMapping;
 use Doctrine\ORM\Mapping\ToManyAssociationMapping;
+use Doctrine\ORM\Mapping\ToManyAssociationMappingImplementation;
 use PHPUnit\Framework\TestCase;
 
 use function assert;
@@ -32,6 +34,7 @@ final class ToManyAssociationMappingTest extends TestCase
     }
 }
 
-class MyToManyAssociationMapping extends ToManyAssociationMapping
+class MyToManyAssociationMapping extends AssociationMapping implements ToManyAssociationMapping
 {
+    use ToManyAssociationMappingImplementation;
 }

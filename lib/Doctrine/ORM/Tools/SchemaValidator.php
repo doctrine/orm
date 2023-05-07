@@ -95,16 +95,12 @@ class SchemaValidator
                 return $ce;
             }
 
-            if ($assoc['mappedBy'] && $assoc['inversedBy']) {
-                $ce[] = 'The association ' . $class . '#' . $fieldName . ' cannot be defined as both inverse and owning.';
-            }
-
             if (isset($assoc['id']) && $targetMetadata->containsForeignIdentifier) {
                 $ce[] = "Cannot map association '" . $class->name . '#' . $fieldName . ' as identifier, because ' .
                         "the target entity '" . $targetMetadata->name . "' also maps an association as identifier.";
             }
 
-            if ($assoc['mappedBy']) {
+            if (! $assoc->isOwningSide()) {
                 if ($targetMetadata->hasField($assoc['mappedBy'])) {
                     $ce[] = 'The association ' . $class->name . '#' . $fieldName . ' refers to the owning side ' .
                             'field ' . $assoc['targetEntity'] . '#' . $assoc['mappedBy'] . ' which is not defined as association, but as field.';
@@ -125,7 +121,7 @@ class SchemaValidator
                 }
             }
 
-            if ($assoc->inversedBy) {
+            if ($assoc->isOwningSide() && $assoc->inversedBy) {
                 if ($targetMetadata->hasField($assoc['inversedBy'])) {
                     $ce[] = 'The association ' . $class->name . '#' . $fieldName . ' refers to the inverse side ' .
                             'field ' . $assoc['targetEntity'] . '#' . $assoc['inversedBy'] . ' which is not defined as association.';
@@ -134,7 +130,7 @@ class SchemaValidator
                 if (! $targetMetadata->hasAssociation($assoc['inversedBy'])) {
                     $ce[] = 'The association ' . $class->name . '#' . $fieldName . ' refers to the inverse side ' .
                             'field ' . $assoc['targetEntity'] . '#' . $assoc['inversedBy'] . ' which does not exist.';
-                } elseif ($targetMetadata->associationMappings[$assoc['inversedBy']]['mappedBy'] === null) {
+                } elseif ($targetMetadata->associationMappings[$assoc['inversedBy']]->isOwningSide()) {
                     $ce[] = 'The field ' . $class->name . '#' . $fieldName . ' is on the owning side of a ' .
                             'bi-directional relationship, but the specified inversedBy association on the target-entity ' .
                             $assoc['targetEntity'] . '#' . $assoc['inversedBy'] . ' does not contain the required ' .

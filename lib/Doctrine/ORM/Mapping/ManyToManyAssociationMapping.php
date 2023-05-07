@@ -4,6 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Mapping;
 
-class ManyToManyAssociationMapping extends ToManyAssociationMapping
+interface ManyToManyAssociationMapping extends ToManyAssociationMapping
 {
 }

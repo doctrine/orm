@@ -83,7 +83,7 @@ class ObjectHydrator extends AbstractHydrator
             }
 
             // Mark any non-collection opposite sides as fetched, too.
-            if ($assoc['mappedBy']) {
+            if (! $assoc->isOwningSide()) {
                 $this->hints['fetched'][$dqlAlias][$assoc['mappedBy']] = true;
 
                 continue;
@@ -439,7 +439,7 @@ class ObjectHydrator extends AbstractHydrator
                                         $targetClass->reflFields[$inverseAssoc['fieldName']]->setValue($element, $parentObject);
                                         $this->uow->setOriginalEntityProperty(spl_object_id($element), $inverseAssoc['fieldName'], $parentObject);
                                     }
-                                } elseif ($parentClass === $targetClass && $relation['mappedBy']) {
+                                } elseif ($parentClass === $targetClass && ! $relation->isOwningSide()) {
                                     // Special case: bi-directional self-referencing one-one on the same class
                                     $targetClass->reflFields[$relationField]->setValue($element, $parentObject);
                                 }

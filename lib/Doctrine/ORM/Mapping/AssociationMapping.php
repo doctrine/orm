@@ -18,22 +18,6 @@ use function sprintf;
 abstract class AssociationMapping implements ArrayAccess
 {
     /**
-     * required for bidirectional associations
-     * The name of the field that completes the bidirectional association on
-     * the owning side. This key must be specified on the inverse side of a
-     * bidirectional association.
-     */
-    public string|null $mappedBy = null;
-
-    /**
-     * required for bidirectional associations
-     * The name of the field that completes the bidirectional association on
-     * the inverse side. This key must be specified on the owning side of a
-     * bidirectional association.
-     */
-    public string|null $inversedBy = null;
-
-    /**
      * The names of persistence operations to cascade on the association.
      *
      * @var list<'persist'|'remove'|'detach'|'merge'|'refresh'|'all'>
@@ -159,12 +143,12 @@ abstract class AssociationMapping implements ArrayAccess
     }
 
     /**
-     * @psalm-assert-if-true AssociationOwningSideMapping $this
-     * @psalm-assert-if-false string $this->mappedBy
+     * @psalm-assert-if-true OwningSideMapping $this
+     * @psalm-assert-if-false InverseSideMapping $this
      */
     final public function isOwningSide(): bool
     {
-        return $this instanceof AssociationOwningSideMapping;
+        return $this instanceof OwningSideMapping;
     }
 
     /** @psalm-assert-if-true ToOneAssociationMapping $this */
@@ -335,8 +319,6 @@ abstract class AssociationMapping implements ArrayAccess
 
         foreach (
             [
-                'mappedBy',
-                'inversedBy',
                 'fetch',
                 'inherited',
                 'declared',

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Mapping;
 
-final class OneToManyAssociationMapping extends ToManyAssociationMapping
+final class OneToManyAssociationMapping extends ToManyInverseSideMapping
 {
     /**
      * @param mixed[] $mappingArray

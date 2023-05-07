@@ -7,7 +7,7 @@ namespace Doctrine\ORM\Mapping;
 use function strtolower;
 use function trim;
 
-final class ManyToManyOwningSideMapping extends ManyToManyAssociationMapping implements AssociationOwningSideMapping
+final class ManyToManyOwningSideMapping extends ToManyOwningSideMapping implements ManyToManyAssociationMapping
 {
     /**
      * Specification of the join table and its join columns (foreign keys).

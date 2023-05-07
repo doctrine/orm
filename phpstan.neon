@@ -26,19 +26,13 @@ parameters:
 
         # https://github.com/phpstan/phpstan/issues/8904
         -
-            message: "#^Access to an undefined property Doctrine\\\\ORM\\\\Mapping\\\\ToOneAssociationMapping\\:\\:\\$joinColumns\\.$#"
-            path: lib/Doctrine/ORM/Mapping/ToOneAssociationMapping.php
-
-        -
-            message: "#^Access to an undefined property .*Mapping\\:\\:\\$(joinColumns|joinTableColumns|(relation|source|target)To(Target|Source)KeyColumns|joinTable|indexBy)\\.$#"
+            message: "#^Access to an undefined property .*Mapping\\:\\:\\$(inversedBy|mappedBy|joinColumns|joinTableColumns|(relation|source|target)To(Target|Source)KeyColumns|joinTable|indexBy)\\.$#"
             paths:
                 - lib/Doctrine/ORM/Persisters/Collection/ManyToManyPersister.php
                 - lib/Doctrine/ORM/Persisters/Entity/BasicEntityPersister.php
                 - lib/Doctrine/ORM/Persisters/Entity/JoinedSubclassPersister.php
+                - lib/Doctrine/ORM/PersistentCollection.php
                 - lib/Doctrine/ORM/Query/AST/Functions/IdentityFunction.php
                 - lib/Doctrine/ORM/Query/SqlWalker.php
+                - lib/Doctrine/ORM/Tools/SchemaValidator.php
                 - lib/Doctrine/ORM/UnitOfWork.php
-
-        -
-            message: "#^Method Doctrine\\\\ORM\\\\Mapping\\\\ToOneAssociationMapping\\:\\:fromMappingArrayAndName\\(\\) should return Doctrine\\\\ORM\\\\Mapping\\\\ManyToOneAssociationMapping\\|Doctrine\\\\ORM\\\\Mapping\\\\OneToOneAssociationMapping but returns static\\(Doctrine\\\\ORM\\\\Mapping\\\\ToOneAssociationMapping\\)\\.$#"
-            path: lib/Doctrine/ORM/Mapping/ToOneAssociationMapping.php
