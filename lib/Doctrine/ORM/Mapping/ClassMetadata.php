@@ -24,6 +24,7 @@ use Stringable;
 
 use function array_diff;
 use function array_intersect;
+use function array_key_exists;
 use function array_keys;
 use function array_map;
 use function array_merge;
@@ -1259,12 +1260,16 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
      */
     protected function _validateAndCompleteAssociationMapping(array $mapping): AssociationMapping
     {
-        if (! isset($mapping['mappedBy'])) {
-            $mapping['mappedBy'] = null;
+        if (array_key_exists('mappedBy', $mapping) && $mapping['mappedBy'] === null) {
+            unset($mapping['mappedBy']);
         }
 
-        if (! isset($mapping['inversedBy'])) {
-            $mapping['inversedBy'] = null;
+        if (array_key_exists('inversedBy', $mapping) && $mapping['inversedBy'] === null) {
+            unset($mapping['inversedBy']);
+        }
+
+        if (array_key_exists('joinColumns', $mapping) && in_array($mapping['joinColumns'], [null, []], true)) {
+            unset($mapping['joinColumns']);
         }
 
         $mapping['isOwningSide'] = true; // assume owning side until we hit mappedBy
@@ -1334,7 +1339,7 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
         }
 
         // Mandatory and optional attributes for either side
-        if (! $mapping['mappedBy']) {
+        if (! isset($mapping['mappedBy'])) {
             if (isset($mapping['joinTable'])) {
                 if (isset($mapping['joinTable']['name']) && $mapping['joinTable']['name'][0] === '`') {
                     $mapping['joinTable']['name']   = trim($mapping['joinTable']['name'], '`');
