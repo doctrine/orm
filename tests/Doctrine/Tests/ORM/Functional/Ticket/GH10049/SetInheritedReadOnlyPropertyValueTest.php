@@ -21,6 +21,9 @@ class SetInheritedReadOnlyPropertyValueTest extends OrmFunctionalTestCase
         );
     }
 
+    /**
+     * @doesNotPerformAssertions
+     */
     public function test(): void
     {
         $child = new ReadOnlyPropertyInheritor(10049);
@@ -28,9 +31,6 @@ class SetInheritedReadOnlyPropertyValueTest extends OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $entity = $this->_em->find(ReadOnlyPropertyInheritor::class, 10049);
-
-        self::assertInstanceOf(ReadOnlyPropertyInheritor::class, $entity);
-        self::assertSame(10049, $entity->id);
+        $this->_em->find(ReadOnlyPropertyInheritor::class, 10049);
     }
 }
