@@ -61,6 +61,22 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
         $this->em = $em;
     }
 
+    final public function getOwningSide(AssociationMapping $maybeOwningSide): OwningSideMapping
+    {
+        if ($maybeOwningSide instanceof OwningSideMapping) {
+            return $maybeOwningSide;
+        }
+
+        assert($maybeOwningSide instanceof InverseSideMapping);
+
+        $owningSide = $this->getMetadataFor($maybeOwningSide->targetEntity)
+            ->associationMappings[$maybeOwningSide->mappedBy];
+
+        assert($owningSide instanceof OwningSideMapping);
+
+        return $owningSide;
+    }
+
     protected function initialize(): void
     {
         $this->driver      = $this->em->getConfiguration()->getMetadataDriverImpl();

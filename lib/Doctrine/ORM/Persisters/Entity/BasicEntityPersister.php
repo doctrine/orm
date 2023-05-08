@@ -514,9 +514,10 @@ class BasicEntityPersister implements EntityPersister
 
             if (! $mapping->isOwningSide()) {
                 assert($mapping instanceof InverseSideMapping);
-                $class       = $this->em->getClassMetadata($mapping->targetEntity);
-                $association = $class->associationMappings[$mapping->mappedBy];
+                $class = $this->em->getClassMetadata($mapping->targetEntity);
             }
+
+            $association = $this->em->getMetadataFactory()->getOwningSide($association);
 
             assert($association->isManyToManyOwningSide());
 
@@ -977,9 +978,10 @@ class BasicEntityPersister implements EntityPersister
 
         if (! $assoc->isOwningSide()) {
             assert(isset($assoc->mappedBy));
-            $class       = $this->em->getClassMetadata($assoc->targetEntity);
-            $association = $class->associationMappings[$assoc->mappedBy];
+            $class = $this->em->getClassMetadata($assoc->targetEntity);
         }
+
+        $association = $this->em->getMetadataFactory()->getOwningSide($assoc);
 
         assert($association->isManyToManyOwningSide());
 
@@ -1335,12 +1337,7 @@ class BasicEntityPersister implements EntityPersister
         $association      = $manyToMany;
         $sourceTableAlias = $this->getSQLTableAlias($this->class->name);
 
-        if (! $manyToMany->isOwningSide()) {
-            assert(isset($manyToMany->mappedBy));
-            $targetEntity = $this->em->getClassMetadata($manyToMany->targetEntity);
-            $association  = $targetEntity->associationMappings[$manyToMany->mappedBy];
-        }
-
+        $association = $this->em->getMetadataFactory()->getOwningSide($manyToMany);
         assert($association->isManyToManyOwningSide());
 
         $joinTableName = $this->quoteStrategy->getJoinTableName($association, $this->class, $this->platform);
@@ -1858,16 +1855,8 @@ class BasicEntityPersister implements EntityPersister
                 break;
 
             case isset($class->associationMappings[$field]):
-                $assoc = $class->associationMappings[$field];
+                $assoc = $this->em->getMetadataFactory()->getOwningSide($class->associationMappings[$field]);
                 $class = $this->em->getClassMetadata($assoc->targetEntity);
-
-                if (! $assoc->isOwningSide()) {
-                    assert(isset($assoc->mappedBy));
-                    $assoc = $class->associationMappings[$assoc->mappedBy];
-                    $class = $this->em->getClassMetadata($assoc->targetEntity);
-                }
-
-                assert($assoc->isOwningSide());
 
                 if ($assoc->isManyToManyOwningSide()) {
                     $columns = $assoc->relationToTargetKeyColumns;

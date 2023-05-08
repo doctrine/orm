@@ -65,9 +65,7 @@ class DefaultEntityHydrator implements EntityHydrator
 
             if (! isset($assoc['cache'])) {
                 $targetClassMetadata = $this->em->getClassMetadata($assoc['targetEntity']);
-                $owningAssociation   = ! $assoc->isOwningSide()
-                    ? $targetClassMetadata->associationMappings[$assoc['mappedBy']]
-                    : $assoc;
+                $owningAssociation   = $this->em->getMetadataFactory()->getOwningSide($assoc);
                 $associationIds      = $this->identifierFlattener->flattenIdentifier(
                     $targetClassMetadata,
                     $targetClassMetadata->getIdentifierValues($data[$name]),
