@@ -164,7 +164,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
      *
      * @return AnnotationDriver
      */
-    public function newDefaultAnnotationDriver($paths = [], $useSimpleAnnotationReader = true)
+    public function newDefaultAnnotationDriver($paths = [], $useSimpleAnnotationReader = true, bool $reportFieldsWhereDeclared = false)
     {
         Deprecation::trigger(
             'doctrine/orm',
@@ -203,7 +203,8 @@ class Configuration extends \Doctrine\DBAL\Configuration
 
         return new AnnotationDriver(
             $reader,
-            (array) $paths
+            (array) $paths,
+            $reportFieldsWhereDeclared
         );
     }
 

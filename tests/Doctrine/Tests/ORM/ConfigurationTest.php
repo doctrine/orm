@@ -101,7 +101,7 @@ class ConfigurationTest extends DoctrineTestCase
         $paths           = [__DIR__];
         $reflectionClass = new ReflectionClass(ConfigurationTestAnnotationReaderChecker::class);
 
-        $annotationDriver = $this->configuration->newDefaultAnnotationDriver($paths, false);
+        $annotationDriver = $this->configuration->newDefaultAnnotationDriver($paths, false, true);
         $reader           = $annotationDriver->getReader();
         $annotation       = $reader->getMethodAnnotation(
             $reflectionClass->getMethod('namespacedAnnotationMethod'),

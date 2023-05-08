@@ -63,7 +63,8 @@ final class ORMSetup
      */
     public static function createDefaultAnnotationDriver(
         array $paths = [],
-        ?CacheItemPoolInterface $cache = null
+        ?CacheItemPoolInterface $cache = null,
+        bool $reportFieldsWhereDeclared = false
     ): AnnotationDriver {
         Deprecation::trigger(
             'doctrine/orm',
@@ -89,7 +90,7 @@ final class ORMSetup
             $reader = new PsrCachedReader($reader, $cache);
         }
 
-        return new AnnotationDriver($reader, $paths);
+        return new AnnotationDriver($reader, $paths, $reportFieldsWhereDeclared);
     }
 
     /**
