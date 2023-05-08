@@ -2351,6 +2351,7 @@ class UnitOfWork implements PropertyChangedListener
 
                     $associatedId = [];
 
+                    assert($assoc->isToOneOwningSide());
                     // TODO: Is this even computed right in all cases of composite keys?
                     foreach ($assoc->targetToSourceKeyColumns as $targetColumn => $srcColumn) {
                         $joinColumnValue = $data[$srcColumn] ?? null;

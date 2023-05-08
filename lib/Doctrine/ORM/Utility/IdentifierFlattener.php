@@ -61,6 +61,7 @@ final class IdentifierFlattener
 
                 $flatId[$field] = implode(' ', $associatedId);
             } elseif (isset($class->associationMappings[$field])) {
+                assert($class->associationMappings[$field]->isToOneOwningSide());
                 $associatedId = [];
 
                 foreach ($class->associationMappings[$field]->joinColumns as $joinColumn) {
