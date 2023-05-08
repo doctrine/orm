@@ -918,9 +918,9 @@ class BasicEntityPersister implements EntityPersister
         $rsm   = $this->currentPersisterContext->rsm;
         $hints = [UnitOfWork::HINT_DEFEREAGERLOAD => true];
 
-        if (isset($assoc->indexBy)) {
+        if ($assoc->isIndexed()) {
             $rsm = clone $this->currentPersisterContext->rsm; // this is necessary because the "default rsm" should be changed.
-            $rsm->addIndexBy('r', $assoc->indexBy);
+            $rsm->addIndexBy('r', $assoc->indexBy());
         }
 
         return $this->em->newHydrator(Query::HYDRATE_OBJECT)->hydrateAll($stmt, $rsm, $hints);
@@ -942,9 +942,9 @@ class BasicEntityPersister implements EntityPersister
             'collection' => $coll,
         ];
 
-        if (isset($assoc->indexBy)) {
+        if ($assoc->isIndexed()) {
             $rsm = clone $this->currentPersisterContext->rsm; // this is necessary because the "default rsm" should be changed.
-            $rsm->addIndexBy('r', $assoc->indexBy);
+            $rsm->addIndexBy('r', $assoc->indexBy());
         }
 
         return $this->em->newHydrator(Query::HYDRATE_OBJECT)->hydrateAll($stmt, $rsm, $hints);
@@ -1049,8 +1049,8 @@ class BasicEntityPersister implements EntityPersister
             $joinSql = $this->getSelectManyToManyJoinSQL($assoc);
         }
 
-        if ($assoc !== null && isset($assoc->orderBy)) {
-            $orderBy = $assoc->orderBy;
+        if ($assoc !== null && $assoc->isOrdered()) {
+            $orderBy = $assoc->orderBy();
         }
 
         if ($orderBy) {
@@ -1244,8 +1244,8 @@ class BasicEntityPersister implements EntityPersister
             $association   = $assoc;
             $joinCondition = [];
 
-            if (isset($assoc->indexBy)) {
-                $this->currentPersisterContext->rsm->addIndexBy($assocAlias, $assoc->indexBy);
+            if ($assoc->isIndexed()) {
+                $this->currentPersisterContext->rsm->addIndexBy($assocAlias, $assoc->indexBy());
             }
 
             if (! $assoc->isOwningSide()) {

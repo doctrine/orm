@@ -214,8 +214,8 @@ class SchemaValidator
                 }
             }
 
-            if (isset($assoc['orderBy']) && $assoc['orderBy'] !== null) {
-                foreach ($assoc['orderBy'] as $orderField => $orientation) {
+            if ($assoc->isOrdered()) {
+                foreach ($assoc->orderBy() as $orderField => $orientation) {
                     if (! $targetMetadata->hasField($orderField) && ! $targetMetadata->hasAssociation($orderField)) {
                         $ce[] = 'The association ' . $class->name . '#' . $fieldName . ' is ordered by a foreign field ' .
                                 $orderField . ' that is not a field on the target entity ' . $targetMetadata->name . '.';

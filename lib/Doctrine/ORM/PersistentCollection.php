@@ -12,6 +12,7 @@ use Doctrine\Common\Collections\Selectable;
 use Doctrine\ORM\Mapping\AssociationMapping;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ManyToManyOwningSideMapping;
+use Doctrine\ORM\Mapping\ToManyAssociationMapping;
 use RuntimeException;
 use UnexpectedValueException;
 
@@ -56,6 +57,8 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
     /**
      * The association mapping the collection belongs to.
      * This is currently either a OneToManyMapping or a ManyToManyMapping.
+     *
+     * @var (AssociationMapping&ToManyAssociationMapping)|null
      */
     private AssociationMapping|null $association = null;
 
@@ -98,7 +101,7 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
      * Sets the collection's owning entity together with the AssociationMapping that
      * describes the association between the owner and the elements of the collection.
      */
-    public function setOwner(object $entity, AssociationMapping $assoc): void
+    public function setOwner(object $entity, AssociationMapping&ToManyAssociationMapping $assoc): void
     {
         $this->owner            = $entity;
         $this->association      = $assoc;
@@ -245,7 +248,7 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
     }
 
     /** INTERNAL: Gets the association mapping of the collection. */
-    public function getMapping(): AssociationMapping
+    public function getMapping(): AssociationMapping&ToManyAssociationMapping
     {
         if ($this->association === null) {
             throw new UnexpectedValueException('The underlying association mapping is null although it should not be');
@@ -600,7 +603,7 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
 
         $criteria = clone $criteria;
         $criteria->where($expression);
-        $criteria->orderBy($criteria->getOrderings() ?: $association['orderBy'] ?? []);
+        $criteria->orderBy($criteria->getOrderings() ?: $association->orderBy());
 
         $persister = $this->getUnitOfWork()->getEntityPersister($association['targetEntity']);
 

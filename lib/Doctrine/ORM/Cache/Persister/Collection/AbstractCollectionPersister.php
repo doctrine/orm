@@ -92,7 +92,7 @@ abstract class AbstractCollectionPersister implements CachedCollectionPersister
         $targetHydrator = $targetPersister->getEntityHydrator();
 
         // Only preserve ordering if association configured it
-        if (! (isset($associationMapping['indexBy']) && $associationMapping['indexBy'])) {
+        if (! $associationMapping->isIndexed()) {
             // Elements may be an array or a Collection
             $elements = array_values($elements instanceof Collection ? $elements->getValues() : $elements);
         }

@@ -83,7 +83,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
     {
         $mapping = $collection->getMapping();
 
-        if (! isset($mapping->indexBy)) {
+        if (! $mapping->isIndexed()) {
             throw new BadMethodCallException('Selecting a collection by index is only supported on indexed collections.');
         }
 
@@ -95,7 +95,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
         assert($mappedKey !== null);
 
         return $persister->load(
-            [$mappedKey => $collection->getOwner(), $mapping->indexBy => $index],
+            [$mappedKey => $collection->getOwner(), $mapping->indexBy() => $index],
             null,
             $mapping,
             [],
@@ -177,7 +177,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
     {
         $mapping = $collection->getMapping();
 
-        if (! isset($mapping->indexBy)) {
+        if (! $mapping->isIndexed()) {
             throw new BadMethodCallException('Selecting a collection by index is only supported on indexed collections.');
         }
 
@@ -574,11 +574,10 @@ class ManyToManyPersister extends AbstractCollectionPersister
     ): array {
         $filterMapping = $collection->getMapping();
         $mapping       = $filterMapping;
-        assert(isset($mapping->indexBy));
-        $indexBy     = $mapping->indexBy;
-        $id          = $this->uow->getEntityIdentifier($collection->getOwner());
-        $sourceClass = $this->em->getClassMetadata($mapping->sourceEntity);
-        $targetClass = $this->em->getClassMetadata($mapping->targetEntity);
+        $indexBy       = $mapping->indexBy();
+        $id            = $this->uow->getEntityIdentifier($collection->getOwner());
+        $sourceClass   = $this->em->getClassMetadata($mapping->sourceEntity);
+        $targetClass   = $this->em->getClassMetadata($mapping->targetEntity);
 
         if (! $mapping->isOwningSide()) {
             assert($mapping instanceof InverseSideMapping);

@@ -126,6 +126,11 @@ parameters:
 			path: lib/Doctrine/ORM/EntityRepository.php
 
 		-
+			message: "#^Parameter \\#2 \\$assoc of method Doctrine\\\\ORM\\\\PersistentCollection\\<\\(int\\|string\\),mixed\\>\\:\\:setOwner\\(\\) expects Doctrine\\\\ORM\\\\Mapping\\\\AssociationMapping&Doctrine\\\\ORM\\\\Mapping\\\\ToManyAssociationMapping, Doctrine\\\\ORM\\\\Mapping\\\\AssociationMapping given\\.$#"
+			count: 1
+			path: lib/Doctrine/ORM/Internal/Hydration/ObjectHydrator.php
+
+		-
 			message: "#^Method Doctrine\\\\ORM\\\\Mapping\\\\ClassMetadata\\:\\:fullyQualifiedClassName\\(\\) should return class\\-string\\|null but returns string\\|null\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Mapping/ClassMetadata.php
@@ -299,6 +304,16 @@ parameters:
 			message: "#^Negated boolean expression is always false\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Tools/SchemaTool.php
+
+		-
+			message: "#^Parameter \\#2 \\$assoc of method Doctrine\\\\ORM\\\\PersistentCollection\\<\\(int\\|string\\),mixed\\>\\:\\:setOwner\\(\\) expects Doctrine\\\\ORM\\\\Mapping\\\\AssociationMapping&Doctrine\\\\ORM\\\\Mapping\\\\ToManyAssociationMapping, Doctrine\\\\ORM\\\\Mapping\\\\AssociationMapping given\\.$#"
+			count: 4
+			path: lib/Doctrine/ORM/UnitOfWork.php
+
+		-
+			message: "#^Parameter \\#2 \\$assoc of method Doctrine\\\\ORM\\\\PersistentCollection\\<\\*NEVER\\*,\\*NEVER\\*\\>\\:\\:setOwner\\(\\) expects Doctrine\\\\ORM\\\\Mapping\\\\AssociationMapping&Doctrine\\\\ORM\\\\Mapping\\\\ToManyAssociationMapping, Doctrine\\\\ORM\\\\Mapping\\\\AssociationMapping given\\.$#"
+			count: 1
+			path: lib/Doctrine/ORM/UnitOfWork.php
 
 		-
 			message: "#^Parameter \\#3 \\$changeSet of class Doctrine\\\\ORM\\\\Event\\\\PreUpdateEventArgs constructor is passed by reference, so it expects variables only$#"

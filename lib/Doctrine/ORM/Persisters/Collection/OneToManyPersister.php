@@ -54,8 +54,9 @@ class OneToManyPersister extends AbstractCollectionPersister
     public function get(PersistentCollection $collection, mixed $index): object|null
     {
         $mapping = $collection->getMapping();
+        assert($mapping->isOneToMany());
 
-        if (! isset($mapping['indexBy'])) {
+        if (! $mapping->isIndexed()) {
             throw new BadMethodCallException('Selecting a collection by index is only supported on indexed collections.');
         }
 
@@ -63,8 +64,8 @@ class OneToManyPersister extends AbstractCollectionPersister
 
         return $persister->load(
             [
-                $mapping['mappedBy'] => $collection->getOwner(),
-                $mapping['indexBy']  => $index,
+                $mapping->mappedBy  => $collection->getOwner(),
+                $mapping->indexBy() => $index,
             ],
             null,
             $mapping,
@@ -102,7 +103,7 @@ class OneToManyPersister extends AbstractCollectionPersister
     {
         $mapping = $collection->getMapping();
 
-        if (! isset($mapping['indexBy'])) {
+        if (! $mapping->isIndexed()) {
             throw new BadMethodCallException('Selecting a collection by index is only supported on indexed collections.');
         }
 
@@ -113,8 +114,8 @@ class OneToManyPersister extends AbstractCollectionPersister
         // 'mappedBy' field.
         $criteria = new Criteria();
 
-        $criteria->andWhere(Criteria::expr()->eq($mapping['mappedBy'], $collection->getOwner()));
-        $criteria->andWhere(Criteria::expr()->eq($mapping['indexBy'], $key));
+        $criteria->andWhere(Criteria::expr()->eq($mapping->mappedBy, $collection->getOwner()));
+        $criteria->andWhere(Criteria::expr()->eq($mapping->indexBy(), $key));
 
         return (bool) $persister->count($criteria);
     }

@@ -396,7 +396,7 @@ abstract class MappingDriverTestCase extends OrmTestCase
         self::assertTrue($class->associationMappings['groups']['isCascadeDetach']);
         self::assertTrue($class->associationMappings['groups']['isCascadeMerge']);
 
-        self::assertFalse(isset($class->associationMappings['groups']['orderBy']));
+        self::assertFalse($class->associationMappings['groups']->isOrdered());
 
         return $class;
     }
@@ -1128,7 +1128,7 @@ class User
                         ],
                     ],
                 ],
-                'orderBy' => null,
+                'orderBy' => [],
             ],
         );
         $metadata->table['uniqueConstraints'] = [

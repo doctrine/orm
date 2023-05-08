@@ -1027,8 +1027,8 @@ class SqlWalker
         if ($indexBy) {
             // For Many-To-One or One-To-One associations this obviously makes no sense, but is ignored silently.
             $this->walkIndexBy($indexBy);
-        } elseif (isset($relation['indexBy'])) {
-            $this->rsm->addIndexBy($joinedDqlAlias, $relation['indexBy']);
+        } elseif ($relation->isIndexed()) {
+            $this->rsm->addIndexBy($joinedDqlAlias, $relation->indexBy());
         }
 
         return $sql;

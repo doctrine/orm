@@ -575,6 +575,7 @@ class UnitOfWork implements PropertyChangedListener
                 }
 
                 $assoc = $class->associationMappings[$name];
+                assert($assoc->isToMany());
 
                 // Inject PersistentCollection
                 $value = new PersistentCollection(
@@ -671,6 +672,7 @@ class UnitOfWork implements PropertyChangedListener
                 // created one. This can only mean it was cloned and replaced
                 // on another entity.
                 if ($actualValue instanceof PersistentCollection) {
+                    assert($assoc->isToMany());
                     $owner = $actualValue->getOwner();
                     if ($owner === null) { // cloned
                         $actualValue->setOwner($entity, $assoc);
@@ -2433,6 +2435,7 @@ class UnitOfWork implements PropertyChangedListener
                     break;
 
                 default:
+                    assert($assoc->isToMany());
                     // Ignore if its a cached collection
                     if (isset($hints[Query::HINT_CACHE_ENABLED]) && $class->getFieldValue($entity, $field) instanceof PersistentCollection) {
                         break;
