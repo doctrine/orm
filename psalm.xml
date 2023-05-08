@@ -208,6 +208,7 @@
                 <file name="lib/Doctrine/ORM/Persisters/Collection/ManyToManyPersister.php"/>
                 <file name="lib/Doctrine/ORM/PersistentCollection.php"/>
                 <file name="lib/Doctrine/ORM/Utility/PersisterHelper.php"/>
+                <file name="lib/Doctrine/ORM/Tools/SchemaValidator.php"/>
             </errorLevel>
         </UndefinedPropertyFetch>
         <UnhandledMatchCondition>
