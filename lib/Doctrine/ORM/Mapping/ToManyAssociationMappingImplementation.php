@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Mapping;
 
+use LogicException;
+
+use function sprintf;
+
 /** @internal */
 trait ToManyAssociationMappingImplementation
 {
@@ -18,19 +22,46 @@ trait ToManyAssociationMappingImplementation
     /**
      * A map of field names (of the target entity) to sorting directions
      *
-     * @var array<string, 'asc'|'desc'>|null
+     * @var array<string, 'asc'|'desc'>
      */
-    public array|null $orderBy = null;
+    public array $orderBy = [];
+
+    /** @return array<string, 'asc'|'desc'> */
+    final public function orderBy(): array
+    {
+        return $this->orderBy;
+    }
+
+    /** @psalm-assert-if-true !null $this->indexBy */
+    final public function isIndexed(): bool
+    {
+        return $this->indexBy !== null;
+    }
+
+    final public function indexBy(): string
+    {
+        if (! $this->isIndexed()) {
+            throw new LogicException(sprintf(
+                'This mapping is not indexed. Use %s::isIndexed() to check that before calling %s.',
+                self::class,
+                __METHOD__,
+            ));
+        }
+
+        return $this->indexBy;
+    }
 
     /** @return list<string> */
     public function __sleep(): array
     {
         $serialized = parent::__sleep();
 
-        foreach (['indexBy', 'orderBy'] as $stringOrArrayKey) {
-            if ($this->$stringOrArrayKey !== null) {
-                $serialized[] = $stringOrArrayKey;
-            }
+        if ($this->indexBy !== null) {
+            $serialized[] = 'indexBy';
+        }
+
+        if ($this->orderBy !== []) {
+            $serialized[] = 'orderBy';
         }
 
         return $serialized;

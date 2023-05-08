@@ -14,6 +14,7 @@ use Doctrine\Persistence\Proxy;
 
 use function array_fill_keys;
 use function array_keys;
+use function assert;
 use function count;
 use function is_array;
 use function key;
@@ -177,6 +178,7 @@ class ObjectHydrator extends AbstractHydrator
         }
 
         if (! $value instanceof PersistentCollection) {
+            assert($relation->isToMany());
             $value = new PersistentCollection(
                 $this->em,
                 $this->metadataCache[$relation['targetEntity']],

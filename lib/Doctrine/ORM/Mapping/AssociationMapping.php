@@ -205,6 +205,18 @@ abstract class AssociationMapping implements ArrayAccess
         return $this instanceof ManyToManyAssociationMapping;
     }
 
+    /** @psalm-assert-if-true ToManyAssociationMapping $this */
+    final public function isOrdered(): bool
+    {
+        return $this->isToMany() && $this->orderBy() !== [];
+    }
+
+    /** @psalm-assert-if-true ToManyAssociationMapping $this */
+    public function isIndexed(): bool
+    {
+        return false;
+    }
+
     final public function type(): int
     {
         return match (true) {
