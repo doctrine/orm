@@ -1266,20 +1266,51 @@ class UnitOfWork implements PropertyChangedListener
     /** @return list<object> */
     private function computeInsertExecutionOrder(): array
     {
-        $commitOrder = $this->getCommitOrder();
-        $result      = [];
-        foreach ($commitOrder as $class) {
-            $className = $class->name;
-            foreach ($this->entityInsertions as $entity) {
-                if ($this->em->getClassMetadata(get_class($entity))->name !== $className) {
+        $sort = new TopologicalSort();
+
+        // First make sure we have all the nodes
+        foreach ($this->entityInsertions as $entity) {
+            $sort->addNode($entity);
+        }
+
+        // Now add edges
+        foreach ($this->entityInsertions as $entity) {
+            $class = $this->em->getClassMetadata(get_class($entity));
+
+            foreach ($class->associationMappings as $assoc) {
+                // We only need to consider the owning sides of to-one associations,
+                // since many-to-many associations are persisted at a later step and
+                // have no insertion order problems (all entities already in the database
+                // at that time).
+                if (! ($assoc['isOwningSide'] && $assoc['type'] & ClassMetadata::TO_ONE)) {
                     continue;
                 }
 
-                $result[] = $entity;
+                $targetEntity = $class->getFieldValue($entity, $assoc['fieldName']);
+
+                // If there is no entity that we need to refer to, or it is already in the
+                // database (i. e. does not have to be inserted), no need to consider it.
+                if ($targetEntity === null || ! $sort->hasNode($targetEntity)) {
+                    continue;
+                }
+
+                // According to https://www.doctrine-project.org/projects/doctrine-orm/en/2.14/reference/annotations-reference.html#annref_joincolumn,
+                // the default for "nullable" is true. Unfortunately, it seems this default is not applied at the metadata driver, factory or other
+                // level, but in fact we may have an undefined 'nullable' key here, so we must assume that default here as well.
+                //
+                // Same in \Doctrine\ORM\Tools\EntityGenerator::isAssociationIsNullable or \Doctrine\ORM\Persisters\Entity\BasicEntityPersister::getJoinSQLForJoinColumns,
+                // to give two examples.
+                assert(isset($assoc['joinColumns']));
+                $joinColumns = reset($assoc['joinColumns']);
+                $isNullable  = ! isset($joinColumns['nullable']) || $joinColumns['nullable'];
+
+                // Add dependency. The dependency direction implies that "$targetEntity has to go before $entity",
+                // so we can work through the topo sort result from left to right (with all edges pointing right).
+                $sort->addEdge($targetEntity, $entity, $isNullable);
             }
         }
 
-        return $result;
+        return $sort->sort();
     }
 
     /** @return list<object> */

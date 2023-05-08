@@ -421,6 +421,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             $conn->executeStatement('DELETE FROM ecommerce_products_categories');
             $conn->executeStatement('DELETE FROM ecommerce_products_related');
             $conn->executeStatement('DELETE FROM ecommerce_carts');
+            $conn->executeStatement('DELETE FROM ecommerce_customers WHERE mentor_id IS NOT NULL');
             $conn->executeStatement('DELETE FROM ecommerce_customers');
             $conn->executeStatement('DELETE FROM ecommerce_features');
             $conn->executeStatement('DELETE FROM ecommerce_products');
