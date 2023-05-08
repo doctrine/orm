@@ -169,9 +169,9 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
 
             foreach ($this->class->associationMappings as $name => $assoc) {
                 if (
-                    isset($assoc['cache']) &&
+                    isset($assoc->cache) &&
                     ($assoc->isToOne()) &&
-                    ($assoc['fetch'] === ClassMetadata::FETCH_EAGER || ! $assoc->isOwningSide())
+                    ($assoc->fetch === ClassMetadata::FETCH_EAGER || ! $assoc->isOwningSide())
                 ) {
                     $associations[] = $name;
                 }
@@ -189,9 +189,9 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
             }
 
             $assocId        = $this->uow->getEntityIdentifier($assocEntity);
-            $assocMetadata  = $this->metadataFactory->getMetadataFor($assoc['targetEntity']);
+            $assocMetadata  = $this->metadataFactory->getMetadataFor($assoc->targetEntity);
             $assocKey       = new EntityCacheKey($assocMetadata->rootEntityName, $assocId);
-            $assocPersister = $this->uow->getEntityPersister($assoc['targetEntity']);
+            $assocPersister = $this->uow->getEntityPersister($assoc->targetEntity);
 
             $assocPersister->storeEntityCache($assocEntity, $assocKey);
         }
@@ -544,9 +544,9 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
     /** @param array<string, mixed> $ownerId */
     protected function buildCollectionCacheKey(AssociationMapping $association, array $ownerId): CollectionCacheKey
     {
-        $metadata = $this->metadataFactory->getMetadataFor($association['sourceEntity']);
+        $metadata = $this->metadataFactory->getMetadataFor($association->sourceEntity);
         assert($metadata instanceof ClassMetadata);
 
-        return new CollectionCacheKey($metadata->rootEntityName, $association['fieldName'], $ownerId);
+        return new CollectionCacheKey($metadata->rootEntityName, $association->fieldName, $ownerId);
     }
 }

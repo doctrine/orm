@@ -84,7 +84,7 @@ class QueryException extends Exception implements ORMException
     {
         return new self(
             'Invalid query operation: Not allowed to iterate over fetch join collections ' .
-            'in class ' . $assoc['sourceEntity'] . ' association ' . $assoc['fieldName'],
+            'in class ' . $assoc->sourceEntity . ' association ' . $assoc->fieldName,
         );
     }
 
@@ -121,8 +121,8 @@ class QueryException extends Exception implements ORMException
     public static function iterateWithFetchJoinNotAllowed(AssociationMapping $assoc): self
     {
         return new self(
-            'Iterate with fetch join in class ' . $assoc['sourceEntity'] .
-            ' using association ' . $assoc['fieldName'] . ' not allowed.',
+            'Iterate with fetch join in class ' . $assoc->sourceEntity .
+            ' using association ' . $assoc->fieldName . ' not allowed.',
         );
     }
 

@@ -67,13 +67,13 @@ class SingleTablePersister extends AbstractEntityInheritancePersister
 
             // Foreign key columns
             foreach ($subClass->associationMappings as $assoc) {
-                if (! $assoc->isToOneOwningSide() || isset($assoc['inherited'])) {
+                if (! $assoc->isToOneOwningSide() || isset($assoc->inherited)) {
                     continue;
                 }
 
-                $targetClass = $this->em->getClassMetadata($assoc['targetEntity']);
+                $targetClass = $this->em->getClassMetadata($assoc->targetEntity);
 
-                foreach ($assoc['joinColumns'] as $joinColumn) {
+                foreach ($assoc->joinColumns as $joinColumn) {
                     $columnList[] = $this->getSelectJoinColumnSQL(
                         $tableAlias,
                         $joinColumn['name'],

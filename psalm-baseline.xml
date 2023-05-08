@@ -668,11 +668,7 @@
     <ImplementedReturnTypeMismatch>
       <code><![CDATA[Collection<TKey, T>]]></code>
     </ImplementedReturnTypeMismatch>
-    <InvalidReturnStatement>
-      <code><![CDATA[$association['fetch'] === ClassMetadata::FETCH_EXTRA_LAZY
-            ? new LazyCriteriaCollection($persister, $criteria)
-            : new ArrayCollection($persister->loadCriteria($criteria))]]></code>
-    </InvalidReturnStatement>
+    <InvalidReturnStatement/>
     <InvalidReturnType>
       <code><![CDATA[Collection<TKey, T>]]></code>
     </InvalidReturnType>

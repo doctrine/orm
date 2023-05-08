@@ -45,11 +45,11 @@ class SizeFunction extends FunctionNode
 
             $sql .= $quoteStrategy->getTableName($targetClass, $platform) . ' ' . $targetTableAlias . ' WHERE ';
 
-            $owningAssoc = $targetClass->associationMappings[$assoc['mappedBy']];
+            $owningAssoc = $targetClass->associationMappings[$assoc->mappedBy];
 
             $first = true;
 
-            foreach ($owningAssoc['targetToSourceKeyColumns'] as $targetColumn => $sourceColumn) {
+            foreach ($owningAssoc->targetToSourceKeyColumns as $targetColumn => $sourceColumn) {
                 if ($first) {
                     $first = false;
                 } else {
@@ -63,7 +63,7 @@ class SizeFunction extends FunctionNode
         } else { // many-to-many
             assert($assoc->isManyToMany());
             $owningAssoc = $entityManager->getMetadataFactory()->getOwningSide($assoc);
-            $joinTable   = $owningAssoc['joinTable'];
+            $joinTable   = $owningAssoc->joinTable;
 
             // SQL table aliases
             $joinTableAlias   = $sqlWalker->getSQLTableAlias($joinTable['name']);

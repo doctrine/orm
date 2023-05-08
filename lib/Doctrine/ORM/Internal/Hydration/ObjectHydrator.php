@@ -78,7 +78,7 @@ class ObjectHydrator extends AbstractHydrator
             $sourceClass     = $this->getClassMetadata($sourceClassName);
             $assoc           = $sourceClass->associationMappings[$this->resultSetMapping()->relationMap[$dqlAlias]];
 
-            $this->hints['fetched'][$parent][$assoc['fieldName']] = true;
+            $this->hints['fetched'][$parent][$assoc->fieldName] = true;
 
             if ($assoc->isManyToMany()) {
                 continue;
@@ -86,21 +86,21 @@ class ObjectHydrator extends AbstractHydrator
 
             // Mark any non-collection opposite sides as fetched, too.
             if (! $assoc->isOwningSide()) {
-                $this->hints['fetched'][$dqlAlias][$assoc['mappedBy']] = true;
+                $this->hints['fetched'][$dqlAlias][$assoc->mappedBy] = true;
 
                 continue;
             }
 
             // handle fetch-joined owning side bi-directional one-to-one associations
-            if ($assoc['inversedBy']) {
+            if ($assoc->inversedBy) {
                 $class        = $this->getClassMetadata($className);
-                $inverseAssoc = $class->associationMappings[$assoc['inversedBy']];
+                $inverseAssoc = $class->associationMappings[$assoc->inversedBy];
 
                 if (! $inverseAssoc->isToOne()) {
                     continue;
                 }
 
-                $this->hints['fetched'][$dqlAlias][$inverseAssoc['fieldName']] = true;
+                $this->hints['fetched'][$dqlAlias][$inverseAssoc->fieldName] = true;
             }
         }
     }
@@ -182,7 +182,7 @@ class ObjectHydrator extends AbstractHydrator
             assert($relation->isToMany());
             $value = new PersistentCollection(
                 $this->em,
-                $this->metadataCache[$relation['targetEntity']],
+                $this->metadataCache[$relation->targetEntity],
                 $value,
             );
             $value->setOwner($entity, $relation);
@@ -280,7 +280,7 @@ class ObjectHydrator extends AbstractHydrator
                     /** @return mixed */
                     static function (string $fieldName) use ($data, $class) {
                         return isset($class->associationMappings[$fieldName])
-                            ? $data[$class->associationMappings[$fieldName]['joinColumns'][0]['name']]
+                            ? $data[$class->associationMappings[$fieldName]->joinColumns[0]['name']]
                             : $data[$fieldName];
                     },
                     $class->identifier,
@@ -289,7 +289,7 @@ class ObjectHydrator extends AbstractHydrator
 
             return $this->uow->tryGetByIdHash(ltrim($idHash), $class->rootEntityName);
         } elseif (isset($class->associationMappings[$class->identifier[0]])) {
-            return $this->uow->tryGetByIdHash($data[$class->associationMappings[$class->identifier[0]]['joinColumns'][0]['name']], $class->rootEntityName);
+            return $this->uow->tryGetByIdHash($data[$class->associationMappings[$class->identifier[0]]->joinColumns[0]['name']], $class->rootEntityName);
         }
 
         return $this->uow->tryGetByIdHash($data[$class->identifier[0]], $class->rootEntityName);
@@ -435,22 +435,22 @@ class ObjectHydrator extends AbstractHydrator
                             $element = $this->getEntity($data, $dqlAlias);
                             $reflField->setValue($parentObject, $element);
                             $this->uow->setOriginalEntityProperty($oid, $relationField, $element);
-                            $targetClass = $this->metadataCache[$relation['targetEntity']];
+                            $targetClass = $this->metadataCache[$relation->targetEntity];
 
-                            if ($relation['isOwningSide']) {
+                            if ($relation->isOwningSide()) {
                                 // TODO: Just check hints['fetched'] here?
                                 // If there is an inverse mapping on the target class its bidirectional
-                                if ($relation['inversedBy']) {
-                                    $inverseAssoc = $targetClass->associationMappings[$relation['inversedBy']];
+                                if ($relation->inversedBy) {
+                                    $inverseAssoc = $targetClass->associationMappings[$relation->inversedBy];
                                     if ($inverseAssoc->isToOne()) {
-                                        $targetClass->reflFields[$inverseAssoc['fieldName']]->setValue($element, $parentObject);
-                                        $this->uow->setOriginalEntityProperty(spl_object_id($element), $inverseAssoc['fieldName'], $parentObject);
+                                        $targetClass->reflFields[$inverseAssoc->fieldName]->setValue($element, $parentObject);
+                                        $this->uow->setOriginalEntityProperty(spl_object_id($element), $inverseAssoc->fieldName, $parentObject);
                                     }
                                 }
                             } else {
                                 // For sure bidirectional, as there is no inverse side in unidirectional mappings
-                                $targetClass->reflFields[$relation['mappedBy']]->setValue($element, $parentObject);
-                                $this->uow->setOriginalEntityProperty(spl_object_id($element), $relation['mappedBy'], $parentObject);
+                                $targetClass->reflFields[$relation->mappedBy]->setValue($element, $parentObject);
+                                $this->uow->setOriginalEntityProperty(spl_object_id($element), $relation->mappedBy, $parentObject);
                             }
 
                             // Update result pointer

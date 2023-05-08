@@ -75,7 +75,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
         }
 
         $cm = match (true) {
-            isset($this->class->associationMappings[$fieldName]['inherited'])
+            isset($this->class->associationMappings[$fieldName]->inherited)
                 => $this->em->getClassMetadata($this->class->associationMappings[$fieldName]['inherited']),
             isset($this->class->fieldMappings[$fieldName]->inherited)
                 => $this->em->getClassMetadata($this->class->fieldMappings[$fieldName]->inherited),
@@ -390,13 +390,13 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
                 continue;
             }
 
-            $tableAlias = isset($mapping['inherited'])
-                ? $this->getSQLTableAlias($mapping['inherited'])
+            $tableAlias = isset($mapping->inherited)
+                ? $this->getSQLTableAlias($mapping->inherited)
                 : $baseTableAlias;
 
-            $targetClass = $this->em->getClassMetadata($mapping['targetEntity']);
+            $targetClass = $this->em->getClassMetadata($mapping->targetEntity);
 
-            foreach ($mapping['joinColumns'] as $joinColumn) {
+            foreach ($mapping->joinColumns as $joinColumn) {
                 $columnList[] = $this->getSelectJoinColumnSQL(
                     $tableAlias,
                     $joinColumn['name'],
@@ -429,13 +429,13 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
 
             // Add join columns (foreign keys)
             foreach ($subClass->associationMappings as $mapping) {
-                if (! $mapping->isToOneOwningSide() || isset($mapping['inherited'])) {
+                if (! $mapping->isToOneOwningSide() || isset($mapping->inherited)) {
                     continue;
                 }
 
-                $targetClass = $this->em->getClassMetadata($mapping['targetEntity']);
+                $targetClass = $this->em->getClassMetadata($mapping->targetEntity);
 
-                foreach ($mapping['joinColumns'] as $joinColumn) {
+                foreach ($mapping->joinColumns as $joinColumn) {
                     $columnList[] = $this->getSelectJoinColumnSQL(
                         $tableAlias,
                         $joinColumn['name'],
@@ -465,7 +465,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
             if (
                 isset($this->class->fieldMappings[$name]->inherited)
                     && ! isset($this->class->fieldMappings[$name]->id)
-                    || isset($this->class->associationMappings[$name]['inherited'])
+                    || isset($this->class->associationMappings[$name]->inherited)
                     || ($this->class->isVersioned && $this->class->versionField === $name)
                     || isset($this->class->embeddedClasses[$name])
             ) {

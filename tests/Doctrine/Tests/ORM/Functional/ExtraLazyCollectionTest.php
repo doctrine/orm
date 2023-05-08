@@ -63,11 +63,11 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
         $class->associationMappings['phonenumbers']['indexBy'] = 'phonenumber';
 
         foreach (['phonenumbers', 'articles', 'users'] as $field) {
-            if (isset($class->associationMappings[$field]['cache'])) {
+            if (isset($class->associationMappings[$field]->cache)) {
                 $this->previousCacheConfig[$field] = $class->associationMappings[$field]['cache'];
             }
 
-            unset($class->associationMappings[$field]['cache']);
+            unset($class->associationMappings[$field]->cache);
         }
 
         $class                                          = $this->_em->getClassMetadata(CmsGroup::class);
@@ -93,14 +93,14 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
             }
         }
 
-        unset($class->associationMappings['groups']['indexBy']);
-        unset($class->associationMappings['articles']['indexBy']);
-        unset($class->associationMappings['phonenumbers']['indexBy']);
+        unset($class->associationMappings['groups']->indexBy);
+        unset($class->associationMappings['articles']->indexBy);
+        unset($class->associationMappings['phonenumbers']->indexBy);
 
         $class                                        = $this->_em->getClassMetadata(CmsGroup::class);
         $class->associationMappings['users']['fetch'] = ClassMetadata::FETCH_LAZY;
 
-        unset($class->associationMappings['users']['indexBy']);
+        unset($class->associationMappings['users']->indexBy);
     }
 
     #[Group('DDC-546')]

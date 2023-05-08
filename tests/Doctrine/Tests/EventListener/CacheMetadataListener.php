@@ -65,11 +65,11 @@ class CacheMetadataListener
         // only enable association-caching when the target has already been
         // given caching settings
         foreach ($metadata->associationMappings as $mapping) {
-            $targetMeta = $em->getClassMetadata($mapping['targetEntity']);
+            $targetMeta = $em->getClassMetadata($mapping->targetEntity);
             $this->enableCaching($targetMeta, $em);
 
             if ($this->isVisited($targetMeta)) {
-                $metadata->enableAssociationCache($mapping['fieldName'], $cache);
+                $metadata->enableAssociationCache($mapping->fieldName, $cache);
             }
         }
     }

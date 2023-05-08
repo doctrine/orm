@@ -90,7 +90,7 @@ class XmlMappingDriverTest extends MappingDriverTestCase
         self::assertArrayHasKey('article', $class->associationMappings);
 
         self::assertArrayHasKey('id', $class->associationMappings['article']);
-        self::assertTrue($class->associationMappings['article']['id']);
+        self::assertTrue($class->associationMappings['article']->id);
     }
 
     public function testEmbeddableMapping(): void

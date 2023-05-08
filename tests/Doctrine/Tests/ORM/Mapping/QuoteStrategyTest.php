@@ -170,7 +170,7 @@ class QuoteStrategyTest extends OrmTestCase
             ],
         );
 
-        $joinColumn = $cm->associationMappings['article']['joinColumns'][0];
+        $joinColumn = $cm->associationMappings['article']->joinColumns[0];
         self::assertEquals('"article"', $this->strategy->getJoinColumnName($joinColumn, $cm, $this->platform));
     }
 
@@ -189,7 +189,7 @@ class QuoteStrategyTest extends OrmTestCase
             ],
         );
 
-        $joinColumn = $cm->associationMappings['article']['joinColumns'][0];
+        $joinColumn = $cm->associationMappings['article']->joinColumns[0];
         self::assertEquals('"id"', $this->strategy->getReferencedJoinColumnName($joinColumn, $cm, $this->platform));
     }
 }

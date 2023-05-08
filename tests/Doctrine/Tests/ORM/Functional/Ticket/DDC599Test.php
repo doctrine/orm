@@ -78,7 +78,7 @@ class DDC599Test extends OrmFunctionalTestCase
         $class = $this->_em->getClassMetadata(DDC599Subitem::class);
 
         self::assertArrayHasKey('children', $class->associationMappings);
-        self::assertTrue($class->associationMappings['children']['isCascadeRemove']);
+        self::assertTrue($class->associationMappings['children']->isCascadeRemove());
     }
 }
 

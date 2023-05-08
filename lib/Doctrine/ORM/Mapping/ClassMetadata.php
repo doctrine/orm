@@ -857,8 +857,8 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
         }
 
         foreach ($this->associationMappings as $field => $mapping) {
-            $this->reflFields[$field] = isset($mapping['declared'])
-                ? $this->getAccessibleProperty($reflService, $mapping['declared'], $field)
+            $this->reflFields[$field] = isset($mapping->declared)
+                ? $this->getAccessibleProperty($reflService, $mapping->declared, $field)
                 : $this->getAccessibleProperty($reflService, $this->name, $field);
         }
     }
@@ -911,11 +911,11 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
     {
         foreach ($this->associationMappings as $mapping) {
             if (
-                ! class_exists($mapping['targetEntity'])
-                && ! interface_exists($mapping['targetEntity'])
-                && ! trait_exists($mapping['targetEntity'])
+                ! class_exists($mapping->targetEntity)
+                && ! interface_exists($mapping->targetEntity)
+                && ! trait_exists($mapping->targetEntity)
             ) {
-                throw MappingException::invalidTargetEntityClass($mapping['targetEntity'], $this->name, $mapping['fieldName']);
+                throw MappingException::invalidTargetEntityClass($mapping->targetEntity, $this->name, $mapping->fieldName);
             }
         }
     }
@@ -1524,7 +1524,7 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
             }
 
             // Association defined as Id field
-            $joinColumns      = $this->associationMappings[$idProperty]['joinColumns'];
+            $joinColumns      = $this->associationMappings[$idProperty]->joinColumns;
             $assocColumnNames = array_map(static fn (JoinColumnMapping $joinColumn): string => $joinColumn['name'], $joinColumns);
 
             $columnNames = array_merge($columnNames, $assocColumnNames);
@@ -1809,7 +1809,7 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
      */
     public function isInheritedAssociation(string $fieldName): bool
     {
-        return isset($this->associationMappings[$fieldName]['inherited']);
+        return isset($this->associationMappings[$fieldName]->inherited);
     }
 
     public function isInheritedEmbeddedClass(string $fieldName): bool
@@ -1916,11 +1916,11 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
      */
     public function addInheritedAssociationMapping(AssociationMapping $mapping/*, $owningClassName = null*/): void
     {
-        if (isset($this->associationMappings[$mapping['fieldName']])) {
-            throw MappingException::duplicateAssociationMapping($this->name, $mapping['fieldName']);
+        if (isset($this->associationMappings[$mapping->fieldName])) {
+            throw MappingException::duplicateAssociationMapping($this->name, $mapping->fieldName);
         }
 
-        $this->associationMappings[$mapping['fieldName']] = $mapping;
+        $this->associationMappings[$mapping->fieldName] = $mapping;
     }
 
     /**
@@ -2000,7 +2000,7 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
      */
     protected function _storeAssociationMapping(AssociationMapping $assocMapping): void
     {
-        $sourceFieldName = $assocMapping['fieldName'];
+        $sourceFieldName = $assocMapping->fieldName;
 
         $this->assertFieldNotMapped($sourceFieldName);
 
@@ -2258,7 +2258,7 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
     public function isAssociationWithSingleJoinColumn(string $fieldName): bool
     {
         return isset($this->associationMappings[$fieldName])
-            && isset($this->associationMappings[$fieldName]['joinColumns'][0])
+            && isset($this->associationMappings[$fieldName]->joinColumns[0])
             && ! isset($this->associationMappings[$fieldName]['joinColumns'][1]);
     }
 
@@ -2273,7 +2273,7 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
             throw MappingException::noSingleAssociationJoinColumnFound($this->name, $fieldName);
         }
 
-        return $this->associationMappings[$fieldName]['joinColumns'][0]['name'];
+        return $this->associationMappings[$fieldName]->joinColumns[0]['name'];
     }
 
     /**
@@ -2287,7 +2287,7 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
             throw MappingException::noSingleAssociationJoinColumnFound($this->name, $fieldName);
         }
 
-        return $this->associationMappings[$fieldName]['joinColumns'][0]['referencedColumnName'];
+        return $this->associationMappings[$fieldName]->joinColumns[0]['referencedColumnName'];
     }
 
     /**
@@ -2306,7 +2306,7 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
         foreach ($this->associationMappings as $assocName => $mapping) {
             if (
                 $this->isAssociationWithSingleJoinColumn($assocName) &&
-                $this->associationMappings[$assocName]['joinColumns'][0]['name'] === $columnName
+                $this->associationMappings[$assocName]->joinColumns[0]['name'] === $columnName
             ) {
                 return $assocName;
             }
@@ -2454,7 +2454,7 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
      */
     public function getAssociationTargetClass(string $assocName): string
     {
-        return $this->associationMappings[$assocName]['targetEntity']
+        return $this->associationMappings[$assocName]->targetEntity
             ?? throw new InvalidArgumentException("Association name expected, '" . $assocName . "' is not an association.");
     }
 
@@ -2466,12 +2466,12 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
     public function isAssociationInverseSide(string $assocName): bool
     {
         return isset($this->associationMappings[$assocName])
-            && ! $this->associationMappings[$assocName]['isOwningSide'];
+            && ! $this->associationMappings[$assocName]->isOwningSide();
     }
 
     public function getAssociationMappedByTargetField(string $assocName): string
     {
-        return $this->associationMappings[$assocName]['mappedBy'];
+        return $this->associationMappings[$assocName]->mappedBy;
     }
 
     /**

@@ -81,8 +81,8 @@ class ORMInvalidArgumentException extends InvalidArgumentException
 
     public static function detachedEntityFoundThroughRelationship(AssociationMapping $assoc, object $entry): self
     {
-        return new self('A detached entity of type ' . $assoc['targetEntity'] . ' (' . self::objToStr($entry) . ') '
-            . " was found through the relationship '" . $assoc['sourceEntity'] . '#' . $assoc['fieldName'] . "' "
+        return new self('A detached entity of type ' . $assoc->targetEntity . ' (' . self::objToStr($entry) . ') '
+            . " was found through the relationship '" . $assoc->sourceEntity . '#' . $assoc->fieldName . "' "
             . 'during cascading a persist operation.');
     }
 
@@ -138,8 +138,8 @@ EXCEPTION
         return new self(sprintf(
             'Expected value of type "%s" for association field "%s#$%s", got "%s" instead.',
             $expectedType,
-            $assoc['sourceEntity'],
-            $assoc['fieldName'],
+            $assoc->sourceEntity,
+            $assoc->fieldName,
             get_debug_type($actualValue),
         ));
     }
@@ -155,7 +155,7 @@ EXCEPTION
     private static function newEntityFoundThroughRelationshipMessage(AssociationMapping $associationMapping, object $entity): string
     {
         return 'A new entity was found through the relationship \''
-            . $associationMapping['sourceEntity'] . '#' . $associationMapping['fieldName'] . '\' that was not'
+            . $associationMapping->sourceEntity . '#' . $associationMapping->fieldName . '\' that was not'
             . ' configured to cascade persist operations for entity: ' . self::objToStr($entity) . '.'
             . ' To solve this issue: Either explicitly call EntityManager#persist()'
             . ' on this unknown entity or configure cascade persist'
@@ -163,7 +163,7 @@ EXCEPTION
             . ($entity instanceof Stringable
                 ? ''
                 : ' If you cannot find out which entity causes the problem implement \''
-                . $associationMapping['targetEntity'] . '#__toString()\' to get a clue.'
+                . $associationMapping->targetEntity . '#__toString()\' to get a clue.'
             );
     }
 }

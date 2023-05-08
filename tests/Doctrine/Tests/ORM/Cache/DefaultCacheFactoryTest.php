@@ -131,7 +131,7 @@ class DefaultCacheFactoryTest extends OrmTestCase
 
         $this->factory->expects(self::once())
             ->method('getRegion')
-            ->with(self::equalTo($mapping['cache']))
+            ->with(self::equalTo($mapping->cache))
             ->will(self::returnValue($region));
 
         $cachedPersister = $this->factory->buildCachedCollectionPersister($em, $persister, $mapping);
@@ -152,7 +152,7 @@ class DefaultCacheFactoryTest extends OrmTestCase
 
         $this->factory->expects(self::once())
             ->method('getRegion')
-            ->with(self::equalTo($mapping['cache']))
+            ->with(self::equalTo($mapping->cache))
             ->will(self::returnValue($region));
 
         $cachedPersister = $this->factory->buildCachedCollectionPersister($em, $persister, $mapping);
@@ -173,7 +173,7 @@ class DefaultCacheFactoryTest extends OrmTestCase
 
         $this->factory->expects(self::once())
             ->method('getRegion')
-            ->with(self::equalTo($mapping['cache']))
+            ->with(self::equalTo($mapping->cache))
             ->will(self::returnValue($region));
 
         $cachedPersister = $this->factory->buildCachedCollectionPersister($em, $persister, $mapping);

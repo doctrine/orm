@@ -458,8 +458,8 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
             // the relationship.
             // According to the definitions given in https://github.com/doctrine/orm/pull/10396/,
             // this is the case <=> ! isset($mapping['inherited']).
-            if (! isset($subClassMapping['inherited'])) {
-                $subClassMapping['sourceEntity'] = $subClass->name;
+            if (! isset($subClassMapping->inherited)) {
+                $subClassMapping->sourceEntity = $subClass->name;
             }
 
             $subClass->addInheritedAssociationMapping($subClassMapping);
