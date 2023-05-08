@@ -207,6 +207,7 @@
                 <!-- https://github.com/vimeo/psalm/issues/7878 -->
                 <file name="lib/Doctrine/ORM/Persisters/Collection/ManyToManyPersister.php"/>
                 <file name="lib/Doctrine/ORM/PersistentCollection.php"/>
+                <file name="lib/Doctrine/ORM/Utility/PersisterHelper.php"/>
             </errorLevel>
         </UndefinedPropertyFetch>
         <UnhandledMatchCondition>
