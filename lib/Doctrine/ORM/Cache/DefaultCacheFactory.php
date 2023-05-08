@@ -93,6 +93,7 @@ class DefaultCacheFactory implements CacheFactory
         CollectionPersister $persister,
         AssociationMapping $mapping,
     ): CachedCollectionPersister {
+        assert(isset($mapping->cache));
         $usage  = $mapping->cache['usage'];
         $region = $this->getRegion($mapping->cache);
 

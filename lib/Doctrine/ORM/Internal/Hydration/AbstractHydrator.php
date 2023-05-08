@@ -519,14 +519,14 @@ abstract class AbstractHydrator
             $id = [];
 
             foreach ($class->identifier as $fieldName) {
-                $id[$fieldName] = isset($class->associationMappings[$fieldName])
+                $id[$fieldName] = isset($class->associationMappings[$fieldName]) && $class->associationMappings[$fieldName]->isToOneOwningSide()
                     ? $data[$class->associationMappings[$fieldName]->joinColumns[0]['name']]
                     : $data[$fieldName];
             }
         } else {
             $fieldName = $class->identifier[0];
             $id        = [
-                $fieldName => isset($class->associationMappings[$fieldName])
+                $fieldName => isset($class->associationMappings[$fieldName]) && $class->associationMappings[$fieldName]->isToOneOwningSide()
                     ? $data[$class->associationMappings[$fieldName]->joinColumns[0]['name']]
                     : $data[$fieldName],
             ];

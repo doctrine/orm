@@ -75,6 +75,7 @@ class DefaultEntityHydrator implements EntityHydrator
 
                 foreach ($associationIds as $fieldName => $fieldValue) {
                     if (isset($targetClassMetadata->fieldMappings[$fieldName])) {
+                        assert($owningAssociation->isToOneOwningSide());
                         $fieldMapping = $targetClassMetadata->fieldMappings[$fieldName];
 
                         $data[$owningAssociation->targetToSourceKeyColumns[$fieldMapping->columnName]] = $fieldValue;

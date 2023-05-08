@@ -154,7 +154,9 @@ class SchemaTool
                 if ($class->hasField($fieldName)) {
                     $columns[] = $this->quoteStrategy->getColumnName($fieldName, $class, $this->platform);
                 } elseif ($class->hasAssociation($fieldName)) {
-                    foreach ($class->getAssociationMapping($fieldName)->joinColumns as $joinColumn) {
+                    $assoc = $class->getAssociationMapping($fieldName);
+                    assert($assoc->isToOneOwningSide());
+                    foreach ($assoc->joinColumns as $joinColumn) {
                         $columns[] = $this->quoteStrategy->getJoinColumnName($joinColumn, $class, $this->platform);
                     }
                 }
@@ -247,6 +249,7 @@ class SchemaTool
 
                         if (isset($class->associationMappings[$identifierField]->inherited)) {
                             $idMapping = $class->associationMappings[$identifierField];
+                            assert($idMapping->isToOneOwningSide());
 
                             $targetEntity = current(
                                 array_filter(
@@ -299,6 +302,7 @@ class SchemaTool
                     $pkColumns[] = $this->quoteStrategy->getColumnName($identifierField, $class, $this->platform);
                 } elseif (isset($class->associationMappings[$identifierField])) {
                     $assoc = $class->associationMappings[$identifierField];
+                    assert($assoc->isToOneOwningSide());
 
                     foreach ($assoc->joinColumns as $joinColumn) {
                         $pkColumns[] = $this->quoteStrategy->getJoinColumnName($joinColumn, $class, $this->platform);

@@ -324,12 +324,10 @@
     <LessSpecificReturnStatement>
       <code>$className</code>
       <code>$className</code>
-      <code>$columnNames</code>
       <code><![CDATA[$this->namespace . '\\' . $className]]></code>
     </LessSpecificReturnStatement>
     <MoreSpecificReturnType>
       <code>class-string|null</code>
-      <code><![CDATA[list<string>]]></code>
     </MoreSpecificReturnType>
     <NullableReturnStatement>
       <code><![CDATA[$this->reflClass]]></code>
@@ -424,14 +422,6 @@
     <PossiblyFalseOperand>
       <code><![CDATA[strrpos($className, '\\')]]></code>
     </PossiblyFalseOperand>
-  </file>
-  <file src="lib/Doctrine/ORM/Mapping/DefaultQuoteStrategy.php">
-    <LessSpecificReturnStatement>
-      <code>$quotedColumnNames</code>
-    </LessSpecificReturnStatement>
-    <MoreSpecificReturnType>
-      <code>array</code>
-    </MoreSpecificReturnType>
   </file>
   <file src="lib/Doctrine/ORM/Mapping/DefaultTypedFieldMapper.php">
     <LessSpecificReturnStatement>
@@ -720,7 +710,6 @@
       <code><![CDATA[$collection->getOwner()]]></code>
       <code><![CDATA[$collection->getOwner()]]></code>
     </PossiblyNullArgument>
-    <UndefinedPropertyFetch/>
   </file>
   <file src="lib/Doctrine/ORM/Persisters/Entity/BasicEntityPersister.php">
     <DocblockTypeContradiction>
