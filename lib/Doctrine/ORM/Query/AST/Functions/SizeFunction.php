@@ -61,9 +61,7 @@ class SizeFunction extends FunctionNode
                       . $sourceTableAlias . '.' . $quoteStrategy->getColumnName($class->fieldNames[$targetColumn], $class, $platform);
             }
         } else { // many-to-many
-            $targetClass = $entityManager->getClassMetadata($assoc->targetEntity);
-
-            $owningAssoc = $assoc->isOwningSide() ? $assoc : $targetClass->associationMappings[$assoc['mappedBy']];
+            $owningAssoc = $entityManager->getMetadataFactory()->getOwningSide($assoc);
             $joinTable   = $owningAssoc['joinTable'];
 
             // SQL table aliases
@@ -71,7 +69,8 @@ class SizeFunction extends FunctionNode
             $sourceTableAlias = $sqlWalker->getSQLTableAlias($class->getTableName(), $dqlAlias);
 
             // join to target table
-            $sql .= $quoteStrategy->getJoinTableName($owningAssoc, $targetClass, $platform) . ' ' . $joinTableAlias . ' WHERE ';
+            $targetClass = $entityManager->getClassMetadata($assoc->targetEntity);
+            $sql        .= $quoteStrategy->getJoinTableName($owningAssoc, $targetClass, $platform) . ' ' . $joinTableAlias . ' WHERE ';
 
             $joinColumns = $assoc->isOwningSide()
                 ? $joinTable['joinColumns']

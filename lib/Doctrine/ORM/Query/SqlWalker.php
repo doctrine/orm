@@ -895,7 +895,7 @@ class SqlWalker
         $sourceTableAlias = $this->getSQLTableAlias($sourceClass->getTableName(), $associationPathExpression->identificationVariable);
 
         // Ensure we got the owning side, since it has all mapping info
-        $assoc = ! $relation['isOwningSide'] ? $targetClass->associationMappings[$relation['mappedBy']] : $relation;
+        $assoc = $this->em->getMetadataFactory()->getOwningSide($relation);
 
         if ($this->query->getHint(Query::HINT_INTERNAL_ITERATION) === true && (! $this->query->getHint(self::HINT_DISTINCT) || isset($this->selectedClasses[$joinedDqlAlias]))) {
             if ($relation->isToMany()) {
@@ -1885,7 +1885,7 @@ class SqlWalker
             assert($assoc->isManyToMany());
             $targetClass = $this->em->getClassMetadata($assoc->targetEntity);
 
-            $owningAssoc = $assoc['isOwningSide'] ? $assoc : $targetClass->associationMappings[$assoc['mappedBy']];
+            $owningAssoc = $this->em->getMetadataFactory()->getOwningSide($assoc);
             $joinTable   = $owningAssoc['joinTable'];
 
             // SQL table aliases
