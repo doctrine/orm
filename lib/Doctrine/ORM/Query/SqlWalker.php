@@ -1882,11 +1882,11 @@ class SqlWalker
 
             $sql .= implode(' AND ', $sqlParts);
         } else { // many-to-many
-            assert($assoc->isManyToMany());
             $targetClass = $this->em->getClassMetadata($assoc->targetEntity);
 
             $owningAssoc = $this->em->getMetadataFactory()->getOwningSide($assoc);
-            $joinTable   = $owningAssoc->joinTable;
+            assert($owningAssoc->isManyToManyOwningSide());
+            $joinTable = $owningAssoc->joinTable;
 
             // SQL table aliases
             $joinTableAlias   = $this->getSQLTableAlias($joinTable['name']);
