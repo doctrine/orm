@@ -46,6 +46,7 @@ class SizeFunction extends FunctionNode
             $sql .= $quoteStrategy->getTableName($targetClass, $platform) . ' ' . $targetTableAlias . ' WHERE ';
 
             $owningAssoc = $targetClass->associationMappings[$assoc->mappedBy];
+            assert($owningAssoc->isManyToOne());
 
             $first = true;
 

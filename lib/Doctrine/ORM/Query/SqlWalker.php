@@ -910,6 +910,7 @@ class SqlWalker
         // The owning side is necessary at this point because only it contains the JoinColumn information.
         switch (true) {
             case $assoc->isToOne():
+                assert($assoc->isToOneOwningSide());
                 $conditions = [];
 
                 foreach ($assoc->joinColumns as $joinColumn) {
@@ -1864,7 +1865,8 @@ class SqlWalker
             $sql .= $this->quoteStrategy->getTableName($targetClass, $this->platform) . ' ' . $targetTableAlias . ' WHERE ';
 
             $owningAssoc = $targetClass->associationMappings[$assoc->mappedBy];
-            $sqlParts    = [];
+            assert($owningAssoc->isManyToOne());
+            $sqlParts = [];
 
             foreach ($owningAssoc->targetToSourceKeyColumns as $targetColumn => $sourceColumn) {
                 $targetColumn = $this->quoteStrategy->getColumnName($class->fieldNames[$targetColumn], $class, $this->platform);
