@@ -12,6 +12,7 @@ use Doctrine\DBAL\LockMode;
 use Doctrine\ORM\Mapping\AssociationMapping;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\InverseSideMapping;
+use Doctrine\ORM\Mapping\ManyToManyAssociationMapping;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\Persisters\SqlValueVisitor;
 use Doctrine\ORM\Query;
@@ -33,7 +34,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
 {
     public function delete(PersistentCollection $collection): void
     {
-        $mapping = $collection->getMapping();
+        $mapping = $this->getMapping($collection);
 
         if (! $mapping->isOwningSide()) {
             return; // ignore inverse side
@@ -53,7 +54,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
 
     public function update(PersistentCollection $collection): void
     {
-        $mapping = $collection->getMapping();
+        $mapping = $this->getMapping($collection);
 
         if (! $mapping->isOwningSide()) {
             return; // ignore inverse side
@@ -81,7 +82,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
 
     public function get(PersistentCollection $collection, mixed $index): object|null
     {
-        $mapping = $collection->getMapping();
+        $mapping = $this->getMapping($collection);
 
         if (! $mapping->isIndexed()) {
             throw new BadMethodCallException('Selecting a collection by index is only supported on indexed collections.');
@@ -109,7 +110,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
         $conditions  = [];
         $params      = [];
         $types       = [];
-        $mapping     = $collection->getMapping();
+        $mapping     = $this->getMapping($collection);
         $id          = $this->uow->getEntityIdentifier($collection->getOwner());
         $sourceClass = $this->em->getClassMetadata($mapping->sourceEntity);
         $association = $this->em->getMetadataFactory()->getOwningSide($mapping);
@@ -162,7 +163,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
      */
     public function slice(PersistentCollection $collection, int $offset, int|null $length = null): array
     {
-        $mapping   = $collection->getMapping();
+        $mapping   = $this->getMapping($collection);
         $persister = $this->uow->getEntityPersister($mapping['targetEntity']);
 
         return $persister->getManyToManyCollection($mapping, $collection->getOwner(), $offset, $length);
@@ -170,7 +171,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
 
     public function containsKey(PersistentCollection $collection, mixed $key): bool
     {
-        $mapping = $collection->getMapping();
+        $mapping = $this->getMapping($collection);
 
         if (! $mapping->isIndexed()) {
             throw new BadMethodCallException('Selecting a collection by index is only supported on indexed collections.');
@@ -209,7 +210,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
      */
     public function loadCriteria(PersistentCollection $collection, Criteria $criteria): array
     {
-        $mapping       = $collection->getMapping();
+        $mapping       = $this->getMapping($collection);
         $owner         = $collection->getOwner();
         $ownerMetadata = $this->em->getClassMetadata($owner::class);
         $id            = $this->uow->getEntityIdentifier($owner);
@@ -364,7 +365,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
     protected function getDeleteSQL(PersistentCollection $collection): string
     {
         $columns = [];
-        $mapping = $collection->getMapping();
+        $mapping = $this->getMapping($collection);
         assert($mapping->isManyToManyOwningSide());
         $class     = $this->em->getClassMetadata($collection->getOwner()::class);
         $joinTable = $this->quoteStrategy->getJoinTableName($mapping, $class, $this->platform);
@@ -384,7 +385,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
      */
     protected function getDeleteSQLParameters(PersistentCollection $collection): array
     {
-        $mapping = $collection->getMapping();
+        $mapping = $this->getMapping($collection);
         assert($mapping->isManyToManyOwningSide());
         $identifier = $this->uow->getEntityIdentifier($collection->getOwner());
 
@@ -415,7 +416,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
      */
     protected function getDeleteRowSQL(PersistentCollection $collection): array
     {
-        $mapping = $collection->getMapping();
+        $mapping = $this->getMapping($collection);
         assert($mapping->isManyToManyOwningSide());
         $class       = $this->em->getClassMetadata($mapping->sourceEntity);
         $targetClass = $this->em->getClassMetadata($mapping->targetEntity);
@@ -464,7 +465,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
     {
         $columns = [];
         $types   = [];
-        $mapping = $collection->getMapping();
+        $mapping = $this->getMapping($collection);
         assert($mapping->isManyToManyOwningSide());
         $class       = $this->em->getClassMetadata($mapping->sourceEntity);
         $targetClass = $this->em->getClassMetadata($mapping->targetEntity);
@@ -514,7 +515,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
         object $element,
     ): array {
         $params  = [];
-        $mapping = $collection->getMapping();
+        $mapping = $this->getMapping($collection);
         assert($mapping->isManyToManyOwningSide());
         $isComposite = count($mapping->joinTableColumns) > 2;
 
@@ -563,7 +564,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
         string $key,
         bool $addFilters,
     ): array {
-        $filterMapping = $collection->getMapping();
+        $filterMapping = $this->getMapping($collection);
         $mapping       = $filterMapping;
         $indexBy       = $mapping->indexBy();
         $id            = $this->uow->getEntityIdentifier($collection->getOwner());
@@ -653,7 +654,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
         object $element,
         bool $addFilters,
     ): array {
-        $filterMapping = $collection->getMapping();
+        $filterMapping = $this->getMapping($collection);
         $mapping       = $filterMapping;
 
         if (! $mapping->isOwningSide()) {
@@ -756,5 +757,14 @@ class ManyToManyPersister extends AbstractCollectionPersister
         $offset = $criteria->getFirstResult();
 
         return $this->platform->modifyLimitQuery('', $limit, $offset ?? 0);
+    }
+
+    private function getMapping(PersistentCollection $collection): AssociationMapping&ManyToManyAssociationMapping
+    {
+        $mapping = $collection->getMapping();
+
+        assert($mapping instanceof ManyToManyAssociationMapping);
+
+        return $mapping;
     }
 }

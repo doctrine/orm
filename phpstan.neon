@@ -28,7 +28,6 @@ parameters:
         -
             message: "#^Access to an undefined property .*Mapping\\:\\:\\$(inversedBy|mappedBy|joinColumns|joinTableColumns|(relation|source|target)To(Target|Source)KeyColumns|joinTable|indexBy)\\.$#"
             paths:
-                - lib/Doctrine/ORM/Persisters/Collection/OneToManyPersister.php
                 - lib/Doctrine/ORM/Persisters/Collection/ManyToManyPersister.php
                 - lib/Doctrine/ORM/Persisters/Entity/BasicEntityPersister.php
                 - lib/Doctrine/ORM/Persisters/Entity/JoinedSubclassPersister.php
@@ -51,3 +50,7 @@ parameters:
             paths:
                 - lib/Doctrine/ORM/Persisters/Entity/BasicEntityPersister.php
                 - lib/Doctrine/ORM/Persisters/Entity/JoinedSubclassPersister.php
+
+        -
+            message: '#^.*OneToManyPersister::getMapping\(\) should return.*#'
+            path: lib/Doctrine/ORM/Persisters/Collection/OneToManyPersister.php

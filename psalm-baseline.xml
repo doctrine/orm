@@ -725,9 +725,7 @@
       <code><![CDATA[$collection->getOwner()]]></code>
       <code><![CDATA[$collection->getOwner()]]></code>
     </PossiblyNullArgument>
-    <UndefinedPropertyFetch>
-      <code><![CDATA[$mapping->mappedBy]]></code>
-    </UndefinedPropertyFetch>
+    <UndefinedPropertyFetch/>
   </file>
   <file src="lib/Doctrine/ORM/Persisters/Entity/BasicEntityPersister.php">
     <DocblockTypeContradiction>
