@@ -132,7 +132,10 @@ class SchemaValidator
             }
         }
 
-        array_push($ce, ...$this->validatePropertiesTypes($class));
+        // PHP 7.4 introduces the ability to type properties, so we can't validate them in previous versions
+        if (PHP_VERSION_ID >= 70400) {
+            array_push($ce, ...$this->validatePropertiesTypes($class));
+        }
 
         if ($class->isEmbeddedClass && count($class->associationMappings) > 0) {
             $ce[] = "Embeddable '" . $class->name . "' does not support associations";
@@ -350,16 +353,15 @@ class SchemaValidator
     /** @return list<string> containing the found issues */
     private function validatePropertiesTypes(ClassMetadataInfo $class)
     {
-        // PHP 7.4 introduces the ability to type properties, so we can't validate them in previous versions
-        if (PHP_VERSION_ID < 70400) {
-            return [];
-        }
-
         return array_values(
             array_filter(
                 array_map(
-                    /** @param FieldMapping $fieldMapping */
-                    function (array $fieldMapping) use ($class): string|null {
+                    /**
+                     * @param FieldMapping $fieldMapping
+                     *
+                     * @return string|null
+                     */
+                    function (array $fieldMapping) use ($class) {
                         $fieldName = $fieldMapping['fieldName'];
                         assert(isset($class->reflFields[$fieldName]));
                         $propertyType = $class->reflFields[$fieldName]->getType();
