@@ -114,8 +114,6 @@ class ManyToManyPersister extends AbstractCollectionPersister
         $sourceClass = $this->em->getClassMetadata($mapping->sourceEntity);
         $association = $this->em->getMetadataFactory()->getOwningSide($mapping);
 
-        assert($association->isManyToManyOwningSide());
-
         $joinTableName = $this->quoteStrategy->getJoinTableName($association, $sourceClass, $this->platform);
         $joinColumns   = ! $mapping->isOwningSide()
             ? $association->joinTable['inverseJoinColumns']
@@ -346,9 +344,6 @@ class ManyToManyPersister extends AbstractCollectionPersister
     protected function getOnConditionSQL(AssociationMapping $mapping): array
     {
         $association = $this->em->getMetadataFactory()->getOwningSide($mapping);
-
-        assert($association->isManyToManyOwningSide());
-
         $joinColumns = $mapping->isOwningSide()
             ? $association->joinTable['inverseJoinColumns']
             : $association->joinTable['joinColumns'];
@@ -680,7 +675,6 @@ class ManyToManyPersister extends AbstractCollectionPersister
         $params          = [];
         $types           = [];
 
-        assert($mapping->isManyToManyOwningSide());
         foreach ($mapping->joinTableColumns as $joinTableColumn) {
             $whereClauses[] = ($addFilters ? 't.' : '') . $joinTableColumn . ' = ?';
 

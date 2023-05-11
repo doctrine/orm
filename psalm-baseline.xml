@@ -407,6 +407,11 @@
       <code><![CDATA[$parent->generatorType]]></code>
       <code><![CDATA[$parent->idGenerator]]></code>
     </RedundantCondition>
+    <RedundantConditionGivenDocblockType>
+      <code>assert($owningSide instanceof ManyToManyOwningSideMapping ||
+            $owningSide instanceof OneToOneOwningSideMapping ||
+            $owningSide instanceof ManyToOneAssociationMapping)</code>
+    </RedundantConditionGivenDocblockType>
   </file>
   <file src="lib/Doctrine/ORM/Mapping/DefaultEntityListenerResolver.php">
     <InvalidStringClass>
