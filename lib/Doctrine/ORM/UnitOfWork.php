@@ -916,13 +916,6 @@ class UnitOfWork implements PropertyChangedListener
             return;
         }
 
-        if ($value instanceof PersistentCollection && $value->isDirty()) {
-            $coid = spl_object_id($value);
-
-            $this->collectionUpdates[$coid]  = $value;
-            $this->visitedCollections[$coid] = $value;
-        }
-
         // Look through the entities, and in any of their associations,
         // for transient (new) entities, recursively. ("Persistence by reachability")
         // Unwrap. Uninitialized collections will simply be empty.
@@ -982,6 +975,13 @@ class UnitOfWork implements PropertyChangedListener
                     // MANAGED associated entities are already taken into account
                     // during changeset calculation anyway, since they are in the identity map.
             }
+        }
+
+        if ($value instanceof PersistentCollection && $value->isDirty()) {
+            $coid = spl_object_id($value);
+
+            $this->collectionUpdates[$coid]  = $value;
+            $this->visitedCollections[$coid] = $value;
         }
     }
 
