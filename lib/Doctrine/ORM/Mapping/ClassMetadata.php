@@ -62,9 +62,9 @@ use function trim;
  *    get the whole class name, namespace inclusive, prepended to every property in
  *    the serialized representation).
  *
+ * @psalm-type ConcreteAssociationMapping = OneToOneOwningSideMapping|OneToOneInverseSideMapping|ManyToOneAssociationMapping|OneToManyAssociationMapping|ManyToManyOwningSideMapping|ManyToManyInverseSideMapping
  * @template-covariant T of object
  * @template-implements PersistenceClassMetadata<T>
- * }
  */
 class ClassMetadata implements PersistenceClassMetadata, Stringable
 {
@@ -439,7 +439,7 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
      * )
      * </pre>
      *
-     * @psalm-var array<string, AssociationMapping>
+     * @psalm-var array<string, ConcreteAssociationMapping>
      */
     public array $associationMappings = [];
 
@@ -1256,6 +1256,8 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
      *
      * @psalm-param array<string, mixed> $mapping The mapping.
      *
+     * @return ConcreteAssociationMapping
+     *
      * @throws MappingException If something is wrong with the mapping.
      */
     protected function _validateAndCompleteAssociationMapping(array $mapping): AssociationMapping
@@ -1909,6 +1911,8 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
      * Adds an association mapping without completing/validating it.
      * This is mainly used to add inherited association mappings to derived classes.
      *
+     * @param ConcreteAssociationMapping $mapping
+     *
      * @throws MappingException
      */
     public function addInheritedAssociationMapping(AssociationMapping $mapping/*, $owningClassName = null*/): void
@@ -1990,6 +1994,8 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
 
     /**
      * Stores the association mapping.
+     *
+     * @param ConcreteAssociationMapping $assocMapping
      *
      * @throws MappingException
      */
