@@ -9,7 +9,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 /**
  * @requires PHP 8.1
  */
-class SetInheritedReadOnlyPropertyValueTest extends OrmFunctionalTestCase
+class GH10049Test extends OrmFunctionalTestCase
 {
     public function setUp(): void
     {
@@ -24,7 +24,7 @@ class SetInheritedReadOnlyPropertyValueTest extends OrmFunctionalTestCase
     /**
      * @doesNotPerformAssertions
      */
-    public function test(): void
+    public function testInheritedReadOnlyPropertyValueCanBeSet(): void
     {
         $child = new ReadOnlyPropertyInheritor(10049);
         $this->_em->persist($child);
