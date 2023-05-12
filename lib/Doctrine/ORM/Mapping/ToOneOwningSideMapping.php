@@ -22,6 +22,9 @@ abstract class ToOneOwningSideMapping extends OwningSideMapping implements ToOne
     /** @var list<JoinColumnMapping> */
     public array $joinColumns = [];
 
+    /** @var array<string, string> */
+    public array $joinColumnFieldNames = [];
+
     /**
      * @param array<string, mixed> $mappingArray
      * @psalm-param array{
@@ -169,6 +172,7 @@ abstract class ToOneOwningSideMapping extends OwningSideMapping implements ToOne
         return [
             ...parent::__sleep(),
             'joinColumns',
+            'joinColumnFieldNames',
             'sourceToTargetKeyColumns',
             'targetToSourceKeyColumns',
         ];

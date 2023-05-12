@@ -23,6 +23,7 @@ final class OneToOneOwningSideMappingTest extends TestCase
         );
 
         $mapping->joinColumns              = [new JoinColumnMapping('id')];
+        $mapping->joinColumnFieldNames     = ['foo' => 'bar'];
         $mapping->sourceToTargetKeyColumns = ['foo' => 'bar'];
         $mapping->targetToSourceKeyColumns = ['bar' => 'foo'];
 
@@ -30,6 +31,7 @@ final class OneToOneOwningSideMappingTest extends TestCase
         assert($resurrectedMapping instanceof OneToOneOwningSideMapping);
 
         self::assertCount(1, $resurrectedMapping->joinColumns);
+        self::assertSame(['foo' => 'bar'], $resurrectedMapping->joinColumnFieldNames);
         self::assertSame(['foo' => 'bar'], $resurrectedMapping->sourceToTargetKeyColumns);
         self::assertSame(['bar' => 'foo'], $resurrectedMapping->targetToSourceKeyColumns);
     }
