@@ -85,6 +85,7 @@ class DefaultEntityHydrator implements EntityHydrator
 
                     $targetAssoc = $targetClassMetadata->associationMappings[$fieldName];
 
+                    assert($assoc->isToOneOwningSide());
                     foreach ($assoc->targetToSourceKeyColumns as $referencedColumn => $localColumn) {
                         if (isset($targetAssoc->sourceToTargetKeyColumns[$referencedColumn])) {
                             $data[$localColumn] = $fieldValue;
@@ -111,6 +112,7 @@ class DefaultEntityHydrator implements EntityHydrator
             // @TODO - fix it !
             // handle UnitOfWork#createEntity hash generation
             if (! is_array($targetId)) {
+                assert($assoc->isToOneOwningSide());
                 $data[reset($assoc->joinColumnFieldNames)] = $targetId;
 
                 $targetEntity = $this->em->getClassMetadata($assoc->targetEntity);
