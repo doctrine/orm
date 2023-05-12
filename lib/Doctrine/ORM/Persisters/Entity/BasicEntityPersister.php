@@ -21,6 +21,7 @@ use Doctrine\ORM\Mapping\AssociationMapping;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\InverseSideMapping;
 use Doctrine\ORM\Mapping\JoinColumnMapping;
+use Doctrine\ORM\Mapping\ManyToManyAssociationMapping;
 use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\ORM\Mapping\OneToManyAssociationMapping;
 use Doctrine\ORM\Mapping\QuoteStrategy;
@@ -518,9 +519,6 @@ class BasicEntityPersister implements EntityPersister
             }
 
             $association = $this->em->getMetadataFactory()->getOwningSide($association);
-
-            assert($association->isManyToManyOwningSide());
-
             $joinColumns = $mapping->isOwningSide()
                 ? $association->joinTable['joinColumns']
                 : $association->joinTable['inverseJoinColumns'];
@@ -902,6 +900,7 @@ class BasicEntityPersister implements EntityPersister
         int|null $offset = null,
         int|null $limit = null,
     ): array {
+        assert($assoc->isManyToMany());
         $this->switchPersisterContext($offset, $limit);
 
         $stmt = $this->getManyToManyStatement($assoc, $sourceEntity, $offset, $limit);
@@ -956,6 +955,7 @@ class BasicEntityPersister implements EntityPersister
      */
     public function loadManyToManyCollection(AssociationMapping $assoc, object $sourceEntity, PersistentCollection $collection): array
     {
+        assert($assoc->isManyToMany());
         $stmt = $this->getManyToManyStatement($assoc, $sourceEntity);
 
         return $this->loadCollectionFromStatement($assoc, $stmt, $collection);
@@ -963,7 +963,7 @@ class BasicEntityPersister implements EntityPersister
 
     /** @throws MappingException */
     private function getManyToManyStatement(
-        AssociationMapping $assoc,
+        AssociationMapping&ManyToManyAssociationMapping $assoc,
         object $sourceEntity,
         int|null $offset = null,
         int|null $limit = null,
@@ -977,14 +977,10 @@ class BasicEntityPersister implements EntityPersister
         $parameters  = [];
 
         if (! $assoc->isOwningSide()) {
-            assert(isset($assoc->mappedBy));
             $class = $this->em->getClassMetadata($assoc->targetEntity);
         }
 
         $association = $this->em->getMetadataFactory()->getOwningSide($assoc);
-
-        assert($association->isManyToManyOwningSide());
-
         $joinColumns = $assoc->isOwningSide()
             ? $association->joinTable['joinColumns']
             : $association->joinTable['inverseJoinColumns'];
@@ -1331,15 +1327,13 @@ class BasicEntityPersister implements EntityPersister
      * Gets the SQL join fragment used when selecting entities from a
      * many-to-many association.
      */
-    protected function getSelectManyToManyJoinSQL(AssociationMapping $manyToMany): string
+    protected function getSelectManyToManyJoinSQL(AssociationMapping&ManyToManyAssociationMapping $manyToMany): string
     {
         $conditions       = [];
         $association      = $manyToMany;
         $sourceTableAlias = $this->getSQLTableAlias($this->class->name);
 
-        $association = $this->em->getMetadataFactory()->getOwningSide($manyToMany);
-        assert($association->isManyToManyOwningSide());
-
+        $association   = $this->em->getMetadataFactory()->getOwningSide($manyToMany);
         $joinTableName = $this->quoteStrategy->getJoinTableName($association, $this->class, $this->platform);
         $joinColumns   = $manyToMany->isOwningSide()
             ? $association->joinTable['inverseJoinColumns']
@@ -1861,7 +1855,7 @@ class BasicEntityPersister implements EntityPersister
                 if ($assoc->isManyToManyOwningSide()) {
                     $columns = $assoc->relationToTargetKeyColumns;
                 } else {
-                    assert($assoc->isToOneOwningSide() || $assoc->isManyToOne());
+                    assert($assoc->isToOneOwningSide());
                     $columns = $assoc->sourceToTargetKeyColumns;
                 }
 

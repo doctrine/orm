@@ -61,9 +61,24 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
         $this->em = $em;
     }
 
+    /**
+     * @param A $maybeOwningSide
+     *
+     * @return (A is ManyToManyAssociationMapping ? ManyToManyOwningSideMapping : (
+     *     A is OneToOneAssociationMapping ? OneToOneOwningSideMapping : (
+     *     A is OneToManyAssociationMapping ? ManyToOneAssociationMapping : (
+     *     A is ManyToOneAssociationMapping ? ManyToOneAssociationMapping : OwningSideMapping
+     * ))))
+     *
+     * @template A of AssociationMapping
+     */
     final public function getOwningSide(AssociationMapping $maybeOwningSide): OwningSideMapping
     {
         if ($maybeOwningSide instanceof OwningSideMapping) {
+            assert($maybeOwningSide instanceof ManyToManyOwningSideMapping ||
+                $maybeOwningSide instanceof OneToOneOwningSideMapping ||
+                $maybeOwningSide instanceof ManyToOneAssociationMapping);
+
             return $maybeOwningSide;
         }
 
@@ -72,7 +87,9 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
         $owningSide = $this->getMetadataFor($maybeOwningSide->targetEntity)
             ->associationMappings[$maybeOwningSide->mappedBy];
 
-        assert($owningSide instanceof OwningSideMapping);
+        assert($owningSide instanceof ManyToManyOwningSideMapping ||
+            $owningSide instanceof OneToOneOwningSideMapping ||
+            $owningSide instanceof ManyToOneAssociationMapping);
 
         return $owningSide;
     }

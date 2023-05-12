@@ -45,3 +45,9 @@ parameters:
                 - lib/Doctrine/ORM/Persisters/Entity/JoinedSubclassPersister.php
                 - lib/Doctrine/ORM/Query/SqlWalker.php
                 - lib/Doctrine/ORM/Tools/SchemaValidator.php
+
+        -
+            message: '#^.*Doctrine\\ORM\\Mapping\\AssociationMapping&Doctrine\\ORM\\Mapping\\ManyToManyAssociationMapping, Doctrine\\ORM\\Mapping\\AssociationMapping given\.#'
+            paths:
+                - lib/Doctrine/ORM/Persisters/Entity/BasicEntityPersister.php
+                - lib/Doctrine/ORM/Persisters/Entity/JoinedSubclassPersister.php
