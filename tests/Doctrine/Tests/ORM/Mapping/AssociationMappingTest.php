@@ -23,18 +23,17 @@ final class AssociationMappingTest extends TestCase
             targetEntity: self::class,
         );
 
-        $mapping->cascade              = ['persist'];
-        $mapping->fetch                = ClassMetadata::FETCH_EAGER;
-        $mapping->inherited            = self::class;
-        $mapping->declared             = self::class;
-        $mapping->cache                = ['usage' => ClassMetadata::CACHE_USAGE_READ_ONLY];
-        $mapping->id                   = true;
-        $mapping->isOnDeleteCascade    = true;
-        $mapping->joinColumnFieldNames = ['foo' => 'bar'];
-        $mapping->originalClass        = self::class;
-        $mapping->originalField        = 'foo';
-        $mapping->orphanRemoval        = true;
-        $mapping->unique               = true;
+        $mapping->cascade           = ['persist'];
+        $mapping->fetch             = ClassMetadata::FETCH_EAGER;
+        $mapping->inherited         = self::class;
+        $mapping->declared          = self::class;
+        $mapping->cache             = ['usage' => ClassMetadata::CACHE_USAGE_READ_ONLY];
+        $mapping->id                = true;
+        $mapping->isOnDeleteCascade = true;
+        $mapping->originalClass     = self::class;
+        $mapping->originalField     = 'foo';
+        $mapping->orphanRemoval     = true;
+        $mapping->unique            = true;
 
         $resurrectedMapping = unserialize(serialize($mapping));
         assert($resurrectedMapping instanceof AssociationMapping);
@@ -46,7 +45,6 @@ final class AssociationMappingTest extends TestCase
         self::assertSame(['usage' => ClassMetadata::CACHE_USAGE_READ_ONLY], $resurrectedMapping->cache);
         self::assertTrue($resurrectedMapping->id);
         self::assertTrue($resurrectedMapping->isOnDeleteCascade);
-        self::assertSame(['foo' => 'bar'], $resurrectedMapping->joinColumnFieldNames);
         self::assertSame(self::class, $resurrectedMapping->originalClass);
         self::assertSame('foo', $resurrectedMapping->originalField);
         self::assertTrue($resurrectedMapping->orphanRemoval);

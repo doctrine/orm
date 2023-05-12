@@ -62,9 +62,6 @@ abstract class AssociationMapping implements ArrayAccess
 
     public bool|null $isOnDeleteCascade = null;
 
-    /** @var array<string, string>|null */
-    public array|null $joinColumnFieldNames = null;
-
     /** @var class-string|null */
     public string|null $originalClass = null;
 
@@ -335,7 +332,6 @@ abstract class AssociationMapping implements ArrayAccess
                 'inherited',
                 'declared',
                 'cache',
-                'joinColumnFieldNames',
                 'originalClass',
                 'originalField',
             ] as $stringOrArrayProperty

@@ -1727,11 +1727,10 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
             $mapping['fetch'] = $overrideMapping['fetch'];
         }
 
-        $mapping['joinColumnFieldNames'] = null;
-
         switch ($mapping['type']) {
             case self::ONE_TO_ONE:
             case self::MANY_TO_ONE:
+                $mapping['joinColumnFieldNames']     = [];
                 $mapping['sourceToTargetKeyColumns'] = [];
                 break;
             case self::MANY_TO_MANY:
