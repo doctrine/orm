@@ -155,7 +155,7 @@ class OneToManyPersister extends AbstractCollectionPersister
         $columns     = [];
         $parameters  = [];
 
-        foreach ($targetClass->associationMappings[$mapping->mappedBy]->joinColumns as $joinColumn) {
+        foreach ($this->em->getMetadataFactory()->getOwningSide($mapping)->joinColumns as $joinColumn) {
             $columns[]    = $this->quoteStrategy->getJoinColumnName($joinColumn, $targetClass, $this->platform);
             $parameters[] = $identifier[$sourceClass->getFieldForColumn($joinColumn['referencedColumnName'])];
         }
