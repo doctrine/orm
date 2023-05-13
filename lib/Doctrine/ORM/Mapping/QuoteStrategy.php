@@ -29,7 +29,11 @@ interface QuoteStrategy
     public function getSequenceName(array $definition, ClassMetadata $class, AbstractPlatform $platform): string;
 
     /** Gets the (possibly quoted) name of the join table. */
-    public function getJoinTableName(AssociationMapping $association, ClassMetadata $class, AbstractPlatform $platform): string;
+    public function getJoinTableName(
+        ManyToManyOwningSideMapping $association,
+        ClassMetadata $class,
+        AbstractPlatform $platform,
+    ): string;
 
     /**
      * Gets the (possibly quoted) join column name.
