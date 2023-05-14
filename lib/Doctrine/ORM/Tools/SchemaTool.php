@@ -634,7 +634,7 @@ class SchemaTool
     /**
      * Gathers columns and fk constraints that are required for one part of relationship.
      *
-     * @psalm-param array<string, JoinColumnMapping>             $joinColumns
+     * @psalm-param list<JoinColumnMapping>          $joinColumns
      * @psalm-param list<string>                     $primaryKeyColumns
      * @psalm-param array<string, array{
      *                  foreignTableName: string,
