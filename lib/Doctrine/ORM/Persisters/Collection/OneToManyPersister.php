@@ -77,7 +77,7 @@ class OneToManyPersister extends AbstractCollectionPersister
 
     public function count(PersistentCollection $collection): int
     {
-        $mapping   = $collection->getMapping();
+        $mapping   = $this->getMapping($collection);
         $persister = $this->uow->getEntityPersister($mapping['targetEntity']);
 
         // only works with single id identifier entities. Will throw an
@@ -93,7 +93,7 @@ class OneToManyPersister extends AbstractCollectionPersister
      */
     public function slice(PersistentCollection $collection, int $offset, int|null $length = null): array
     {
-        $mapping   = $collection->getMapping();
+        $mapping   = $this->getMapping($collection);
         $persister = $this->uow->getEntityPersister($mapping['targetEntity']);
 
         return $persister->getOneToManyCollection($mapping, $collection->getOwner(), $offset, $length);
@@ -126,7 +126,7 @@ class OneToManyPersister extends AbstractCollectionPersister
             return false;
         }
 
-        $mapping   = $collection->getMapping();
+        $mapping   = $this->getMapping($collection);
         $persister = $this->uow->getEntityPersister($mapping['targetEntity']);
 
         // only works with single id identifier entities. Will throw an
@@ -176,7 +176,7 @@ class OneToManyPersister extends AbstractCollectionPersister
      */
     private function deleteJoinedEntityCollection(PersistentCollection $collection): int
     {
-        $mapping     = $collection->getMapping();
+        $mapping     = $this->getMapping($collection);
         $sourceClass = $this->em->getClassMetadata($mapping['sourceEntity']);
         $targetClass = $this->em->getClassMetadata($mapping['targetEntity']);
         $rootClass   = $this->em->getClassMetadata($targetClass->rootEntityName);
