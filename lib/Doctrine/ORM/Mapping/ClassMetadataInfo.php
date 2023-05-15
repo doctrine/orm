@@ -3862,7 +3862,14 @@ class ClassMetadataInfo implements ClassMetadata
     {
         $reflectionProperty = $reflService->getAccessibleProperty($class, $field);
         if ($reflectionProperty !== null && PHP_VERSION_ID >= 80100 && $reflectionProperty->isReadOnly()) {
-            $reflectionProperty = new ReflectionReadonlyProperty($reflectionProperty);
+            $declaringClass = $reflectionProperty->getDeclaringClass()->name;
+            if ($declaringClass !== $class) {
+                $reflectionProperty = $reflService->getAccessibleProperty($declaringClass, $field);
+            }
+
+            if ($reflectionProperty !== null) {
+                $reflectionProperty = new ReflectionReadonlyProperty($reflectionProperty);
+            }
         }
 
         return $reflectionProperty;

@@ -22,5 +22,5 @@ In this workflow you would modify the database schema first and then
 regenerate the PHP code to use with this schema. You need a flexible
 code-generator for this task.
 
-We spinned off a subproject, Doctrine CodeGenerator, that will fill this gap and
+We spun off a subproject, Doctrine CodeGenerator, that will fill this gap and
 allow you to do *Database First* development.

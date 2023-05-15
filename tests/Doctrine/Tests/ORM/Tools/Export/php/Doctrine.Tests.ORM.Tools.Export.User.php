@@ -5,8 +5,12 @@ declare(strict_types=1);
 use Doctrine\ORM\Events;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\Tests\ORM\Tools\Export;
+use Doctrine\Tests\ORM\Tools\Export\Address;
 use Doctrine\Tests\ORM\Tools\Export\AddressListener;
+use Doctrine\Tests\ORM\Tools\Export\Cart;
+use Doctrine\Tests\ORM\Tools\Export\Group;
 use Doctrine\Tests\ORM\Tools\Export\GroupListener;
+use Doctrine\Tests\ORM\Tools\Export\Phonenumber;
 use Doctrine\Tests\ORM\Tools\Export\UserListener;
 
 $metadata->setInheritanceType(ClassMetadata::INHERITANCE_TYPE_NONE);
@@ -57,13 +61,13 @@ $metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_AUTO);
 $metadata->mapManyToOne(
     [
         'fieldName' => 'mainGroup',
-        'targetEntity' => Export\Group::class,
+        'targetEntity' => Group::class,
     ]
 );
 $metadata->mapOneToOne(
     [
         'fieldName' => 'address',
-        'targetEntity' => Export\Address::class,
+        'targetEntity' => Address::class,
         'inversedBy' => 'user',
         'cascade' =>
         [0 => 'persist'],
@@ -84,7 +88,7 @@ $metadata->mapOneToOne(
 $metadata->mapOneToOne(
     [
         'fieldName' => 'cart',
-        'targetEntity' => Export\Cart::class,
+        'targetEntity' => Cart::class,
         'mappedBy' => 'user',
         'cascade' =>
         [0 => 'persist'],
@@ -96,7 +100,7 @@ $metadata->mapOneToOne(
 $metadata->mapOneToMany(
     [
         'fieldName' => 'phonenumbers',
-        'targetEntity' => Export\Phonenumber::class,
+        'targetEntity' => Phonenumber::class,
         'cascade' =>
         [
             1 => 'persist',

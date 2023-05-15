@@ -916,13 +916,6 @@ class UnitOfWork implements PropertyChangedListener
             return;
         }
 
-        if ($value instanceof PersistentCollection && $value->isDirty()) {
-            $coid = spl_object_id($value);
-
-            $this->collectionUpdates[$coid]  = $value;
-            $this->visitedCollections[$coid] = $value;
-        }
-
         // Look through the entities, and in any of their associations,
         // for transient (new) entities, recursively. ("Persistence by reachability")
         // Unwrap. Uninitialized collections will simply be empty.
@@ -982,6 +975,13 @@ class UnitOfWork implements PropertyChangedListener
                     // MANAGED associated entities are already taken into account
                     // during changeset calculation anyway, since they are in the identity map.
             }
+        }
+
+        if ($value instanceof PersistentCollection && $value->isDirty()) {
+            $coid = spl_object_id($value);
+
+            $this->collectionUpdates[$coid]  = $value;
+            $this->visitedCollections[$coid] = $value;
         }
     }
 
@@ -1565,14 +1565,8 @@ class UnitOfWork implements PropertyChangedListener
     public function addToIdentityMap($entity)
     {
         $classMetadata = $this->em->getClassMetadata(get_class($entity));
-        $identifier    = $this->entityIdentifiers[spl_object_id($entity)];
-
-        if (empty($identifier) || in_array(null, $identifier, true)) {
-            throw ORMInvalidArgumentException::entityWithoutIdentity($classMetadata->name, $entity);
-        }
-
-        $idHash    = implode(' ', $identifier);
-        $className = $classMetadata->rootEntityName;
+        $idHash        = $this->getIdHashByEntity($entity);
+        $className     = $classMetadata->rootEntityName;
 
         if (isset($this->identityMap[$className][$idHash])) {
             return false;
@@ -1581,6 +1575,50 @@ class UnitOfWork implements PropertyChangedListener
         $this->identityMap[$className][$idHash] = $entity;
 
         return true;
+    }
+
+    /**
+     * Gets the id hash of an entity by its identifier.
+     *
+     * @param array<string|int, mixed> $identifier The identifier of an entity
+     *
+     * @return string The entity id hash.
+     */
+    final public static function getIdHashByIdentifier(array $identifier): string
+    {
+        return implode(
+            ' ',
+            array_map(
+                static function ($value) {
+                    if ($value instanceof BackedEnum) {
+                        return $value->value;
+                    }
+
+                    return $value;
+                },
+                $identifier
+            )
+        );
+    }
+
+    /**
+     * Gets the id hash of an entity.
+     *
+     * @param object $entity The entity managed by Unit Of Work
+     *
+     * @return string The entity id hash.
+     */
+    public function getIdHashByEntity($entity): string
+    {
+        $identifier = $this->entityIdentifiers[spl_object_id($entity)];
+
+        if (empty($identifier) || in_array(null, $identifier, true)) {
+            $classMetadata = $this->em->getClassMetadata(get_class($entity));
+
+            throw ORMInvalidArgumentException::entityWithoutIdentity($classMetadata->name, $entity);
+        }
+
+        return self::getIdHashByIdentifier($identifier);
     }
 
     /**
@@ -1685,7 +1723,7 @@ class UnitOfWork implements PropertyChangedListener
     {
         $oid           = spl_object_id($entity);
         $classMetadata = $this->em->getClassMetadata(get_class($entity));
-        $idHash        = implode(' ', $this->entityIdentifiers[$oid]);
+        $idHash        = self::getIdHashByIdentifier($this->entityIdentifiers[$oid]);
 
         if ($idHash === '') {
             throw ORMInvalidArgumentException::entityHasNoIdentity($entity, 'remove from identity map');
@@ -1755,7 +1793,7 @@ class UnitOfWork implements PropertyChangedListener
         }
 
         $classMetadata = $this->em->getClassMetadata(get_class($entity));
-        $idHash        = implode(' ', $this->entityIdentifiers[$oid]);
+        $idHash        = self::getIdHashByIdentifier($this->entityIdentifiers[$oid]);
 
         return isset($this->identityMap[$classMetadata->rootEntityName][$idHash]);
     }
@@ -2712,7 +2750,7 @@ class UnitOfWork implements PropertyChangedListener
         $class = $this->em->getClassMetadata($className);
 
         $id     = $this->identifierFlattener->flattenIdentifier($class, $data);
-        $idHash = implode(' ', $id);
+        $idHash = self::getIdHashByIdentifier($id);
 
         if (isset($this->identityMap[$class->rootEntityName][$idHash])) {
             $entity = $this->identityMap[$class->rootEntityName][$idHash];
@@ -2871,7 +2909,7 @@ class UnitOfWork implements PropertyChangedListener
                     // Check identity map first
                     // FIXME: Can break easily with composite keys if join column values are in
                     //        wrong order. The correct order is the one in ClassMetadata#identifier.
-                    $relatedIdHash = implode(' ', $associatedId);
+                    $relatedIdHash = self::getIdHashByIdentifier($associatedId);
 
                     switch (true) {
                         case isset($this->identityMap[$targetClass->rootEntityName][$relatedIdHash]):
@@ -3156,7 +3194,7 @@ class UnitOfWork implements PropertyChangedListener
      */
     public function tryGetById($id, $rootClassName)
     {
-        $idHash = implode(' ', (array) $id);
+        $idHash = self::getIdHashByIdentifier((array) $id);
 
         return $this->identityMap[$rootClassName][$idHash] ?? false;
     }
@@ -3538,7 +3576,7 @@ class UnitOfWork implements PropertyChangedListener
         $id1 = $this->entityIdentifiers[$oid1] ?? $this->identifierFlattener->flattenIdentifier($class, $class->getIdentifierValues($entity1));
         $id2 = $this->entityIdentifiers[$oid2] ?? $this->identifierFlattener->flattenIdentifier($class, $class->getIdentifierValues($entity2));
 
-        return $id1 === $id2 || implode(' ', $id1) === implode(' ', $id2);
+        return $id1 === $id2 || self::getIdHashByIdentifier($id1) === self::getIdHashByIdentifier($id2);
     }
 
     /** @throws ORMInvalidArgumentException */
