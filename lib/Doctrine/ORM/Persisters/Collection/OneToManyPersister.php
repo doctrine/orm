@@ -8,6 +8,7 @@ use BadMethodCallException;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\DBAL\Exception as DBALException;
 use Doctrine\DBAL\Types\Type;
+use Doctrine\ORM\Mapping\OneToManyAssociationMapping;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\Utility\PersisterHelper;
 
@@ -27,7 +28,7 @@ class OneToManyPersister extends AbstractCollectionPersister
         // The only valid case here is when you have weak entities. In this
         // scenario, you have @OneToMany with orphanRemoval=true, and replacing
         // the entire collection with a new would trigger this operation.
-        $mapping = $collection->getMapping();
+        $mapping = $this->getMapping($collection);
 
         if (! $mapping['orphanRemoval']) {
             // Handling non-orphan removal should never happen, as @OneToMany
@@ -53,8 +54,7 @@ class OneToManyPersister extends AbstractCollectionPersister
 
     public function get(PersistentCollection $collection, mixed $index): object|null
     {
-        $mapping = $collection->getMapping();
-        assert($mapping->isOneToMany());
+        $mapping = $this->getMapping($collection);
 
         if (! $mapping->isIndexed()) {
             throw new BadMethodCallException('Selecting a collection by index is only supported on indexed collections.');
@@ -101,7 +101,7 @@ class OneToManyPersister extends AbstractCollectionPersister
 
     public function containsKey(PersistentCollection $collection, mixed $key): bool
     {
-        $mapping = $collection->getMapping();
+        $mapping = $this->getMapping($collection);
 
         if (! $mapping->isIndexed()) {
             throw new BadMethodCallException('Selecting a collection by index is only supported on indexed collections.');
@@ -148,7 +148,7 @@ class OneToManyPersister extends AbstractCollectionPersister
     /** @throws DBALException */
     private function deleteEntityCollection(PersistentCollection $collection): int
     {
-        $mapping     = $collection->getMapping();
+        $mapping     = $this->getMapping($collection);
         $identifier  = $this->uow->getEntityIdentifier($collection->getOwner());
         $sourceClass = $this->em->getClassMetadata($mapping['sourceEntity']);
         $targetClass = $this->em->getClassMetadata($mapping['targetEntity']);
@@ -229,5 +229,14 @@ class OneToManyPersister extends AbstractCollectionPersister
         $this->conn->executeStatement($statement);
 
         return $numDeleted;
+    }
+
+    private function getMapping(PersistentCollection $collection): OneToManyAssociationMapping
+    {
+        $mapping = $collection->getMapping();
+
+        assert($mapping->isOneToMany());
+
+        return $mapping;
     }
 }
