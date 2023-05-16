@@ -48,3 +48,9 @@ parameters:
         -
             message: '#^.*OneToManyPersister::getMapping\(\) should return.*#'
             path: lib/Doctrine/ORM/Persisters/Collection/OneToManyPersister.php
+
+        -
+            message: '#^.*QuoteStrategy::getJoinTableName\(\) expects.*$#'
+            paths:
+                - lib/Doctrine/ORM/Persisters/Entity/BasicEntityPersister.php
+                - lib/Doctrine/ORM/Persisters/Collection/ManyToManyPersister.php

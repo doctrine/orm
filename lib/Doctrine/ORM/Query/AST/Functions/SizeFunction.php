@@ -61,6 +61,7 @@ class SizeFunction extends FunctionNode
                       . $sourceTableAlias . '.' . $quoteStrategy->getColumnName($class->fieldNames[$targetColumn], $class, $platform);
             }
         } else { // many-to-many
+            assert($assoc->isManyToMany());
             $owningAssoc = $entityManager->getMetadataFactory()->getOwningSide($assoc);
             $joinTable   = $owningAssoc['joinTable'];
 

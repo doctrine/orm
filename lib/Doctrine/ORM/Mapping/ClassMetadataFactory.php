@@ -67,7 +67,8 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
      * @return (A is ManyToManyAssociationMapping ? ManyToManyOwningSideMapping : (
      *     A is OneToOneAssociationMapping ? OneToOneOwningSideMapping : (
      *     A is OneToManyAssociationMapping ? ManyToOneAssociationMapping : (
-     *     A is ManyToOneAssociationMapping ? ManyToOneAssociationMapping : OwningSideMapping
+     *     A is ManyToOneAssociationMapping ? ManyToOneAssociationMapping :
+     *     ManyToManyOwningSideMapping|OneToOneOwningSideMapping|ManyToOneAssociationMapping
      * ))))
      *
      * @template A of AssociationMapping

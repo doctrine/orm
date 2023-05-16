@@ -50,7 +50,7 @@ class AnsiQuoteStrategy implements QuoteStrategy
     }
 
     public function getJoinTableName(
-        AssociationMapping $association,
+        ManyToManyOwningSideMapping $association,
         ClassMetadata $class,
         AbstractPlatform $platform,
     ): string {
