@@ -14,6 +14,7 @@ use Doctrine\Persistence\Proxy;
 
 use function array_fill_keys;
 use function array_keys;
+use function array_map;
 use function assert;
 use function count;
 use function is_array;
@@ -274,13 +275,17 @@ class ObjectHydrator extends AbstractHydrator
         $class = $this->metadataCache[$className];
 
         if ($class->isIdentifierComposite) {
-            $idHash = '';
-
-            foreach ($class->identifier as $fieldName) {
-                $idHash .= ' ' . (isset($class->associationMappings[$fieldName])
-                    ? $data[$class->associationMappings[$fieldName]['joinColumns'][0]['name']]
-                    : $data[$fieldName]);
-            }
+            $idHash = UnitOfWork::getIdHashByIdentifier(
+                array_map(
+                    /** @return mixed */
+                    static function (string $fieldName) use ($data, $class) {
+                        return isset($class->associationMappings[$fieldName])
+                            ? $data[$class->associationMappings[$fieldName]['joinColumns'][0]['name']]
+                            : $data[$fieldName];
+                    },
+                    $class->identifier,
+                ),
+            );
 
             return $this->uow->tryGetByIdHash(ltrim($idHash), $class->rootEntityName);
         } elseif (isset($class->associationMappings[$class->identifier[0]])) {
@@ -441,9 +446,6 @@ class ObjectHydrator extends AbstractHydrator
                                         $targetClass->reflFields[$inverseAssoc['fieldName']]->setValue($element, $parentObject);
                                         $this->uow->setOriginalEntityProperty(spl_object_id($element), $inverseAssoc['fieldName'], $parentObject);
                                     }
-                                } elseif ($parentClass === $targetClass && ! $relation->isOwningSide()) {
-                                    // Special case: bi-directional self-referencing one-one on the same class
-                                    $targetClass->reflFields[$relationField]->setValue($element, $parentObject);
                                 }
                             } else {
                                 // For sure bidirectional, as there is no inverse side in unidirectional mappings

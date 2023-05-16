@@ -936,7 +936,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             $mappingDriver ?? new AttributeDriver([
                 realpath(__DIR__ . '/Models/Cache'),
                 realpath(__DIR__ . '/Models/GeoNames'),
-            ]),
+            ], true),
         );
 
         $conn = $connection ?: static::$sharedConn;

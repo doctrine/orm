@@ -132,7 +132,7 @@ parameters:
 
 		-
 			message: "#^If condition is always true\\.$#"
-			count: 2
+			count: 1
 			path: lib/Doctrine/ORM/Mapping/ClassMetadataFactory.php
 
 		-

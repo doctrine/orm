@@ -27,7 +27,7 @@ class ManyToManyEventTest extends OrmFunctionalTestCase
         $evm->addEventListener(Events::postUpdate, $this->listener);
     }
 
-    public function testListenerShouldBeNotifiedOnlyWhenUpdating(): void
+    public function testListenerShouldBeNotifiedWhenNewCollectionEntryAdded(): void
     {
         $user = $this->createNewValidUser();
         $this->_em->persist($user);
@@ -38,6 +38,23 @@ class ManyToManyEventTest extends OrmFunctionalTestCase
         $group->name = 'admins';
         $user->addGroup($group);
         $this->_em->persist($user);
+        $this->_em->flush();
+
+        self::assertTrue($this->listener->wasNotified);
+    }
+
+    public function testListenerShouldBeNotifiedWhenNewCollectionEntryRemoved(): void
+    {
+        $user        = $this->createNewValidUser();
+        $group       = new CmsGroup();
+        $group->name = 'admins';
+        $user->addGroup($group);
+
+        $this->_em->persist($user);
+        $this->_em->flush();
+        self::assertFalse($this->listener->wasNotified);
+
+        $this->_em->remove($group);
         $this->_em->flush();
 
         self::assertTrue($this->listener->wasNotified);

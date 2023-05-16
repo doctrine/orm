@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Mapping\Driver;
 
+use Doctrine\Deprecations\Deprecation;
 use Doctrine\ORM\Events;
 use Doctrine\ORM\Mapping;
 use Doctrine\ORM\Mapping\Builder\EntityListenerBuilder;
@@ -24,6 +25,7 @@ use function defined;
 class AttributeDriver implements MappingDriver
 {
     use ColocatedMappingDriver;
+    use ReflectionBasedDriver;
 
     private const ENTITY_ATTRIBUTE_CLASSES = [
         Mapping\Entity::class => 1,
@@ -33,10 +35,21 @@ class AttributeDriver implements MappingDriver
     private readonly AttributeReader $reader;
 
     /** @param array<string> $paths */
-    public function __construct(array $paths)
+    public function __construct(array $paths, bool $reportFieldsWhereDeclared = false)
     {
         $this->reader = new AttributeReader();
         $this->addPaths($paths);
+
+        if (! $reportFieldsWhereDeclared) {
+            Deprecation::trigger(
+                'doctrine/orm',
+                'https://github.com/doctrine/orm/pull/10455',
+                'In ORM 3.0, the AttributeDriver will report fields for the classes where they are declared. This may uncover invalid mapping configurations. To opt into the new mode today, set the "reportFieldsWhereDeclared" constructor parameter to true.',
+                self::class,
+            );
+        }
+
+        $this->reportFieldsWhereDeclared = $reportFieldsWhereDeclared;
     }
 
     public function isTransient(string $className): bool
@@ -241,15 +254,8 @@ class AttributeDriver implements MappingDriver
 
         foreach ($reflectionClass->getProperties() as $property) {
             assert($property instanceof ReflectionProperty);
-            if (
-                $metadata->isMappedSuperclass && ! $property->isPrivate()
-                ||
-                $metadata->isInheritedField($property->name)
-                ||
-                $metadata->isInheritedAssociation($property->name)
-                ||
-                $metadata->isInheritedEmbeddedClass($property->name)
-            ) {
+
+            if ($this->isRepeatedPropertyDeclaration($property, $metadata)) {
                 continue;
             }
 

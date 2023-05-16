@@ -277,7 +277,6 @@
       <code>getValue</code>
       <code>setValue</code>
       <code>setValue</code>
-      <code>setValue</code>
     </PossiblyNullReference>
     <PossiblyUndefinedArrayOffset>
       <code><![CDATA[$newObject['args']]]></code>

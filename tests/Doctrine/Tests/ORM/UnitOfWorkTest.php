@@ -29,7 +29,9 @@ use Doctrine\Persistence\PropertyChangedListener;
 use Doctrine\Tests\Mocks\EntityManagerMock;
 use Doctrine\Tests\Mocks\EntityPersisterMock;
 use Doctrine\Tests\Mocks\UnitOfWorkMock;
+use Doctrine\Tests\Models\CMS\CmsGroup;
 use Doctrine\Tests\Models\CMS\CmsPhonenumber;
+use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\Models\Forum\ForumAvatar;
 use Doctrine\Tests\Models\Forum\ForumUser;
 use Doctrine\Tests\OrmTestCase;
@@ -609,6 +611,62 @@ class UnitOfWorkTest extends OrmTestCase
     {
         $this->expectException(EntityNotFoundException::class);
         $this->_unitOfWork->getEntityIdentifier(new stdClass());
+    }
+
+    public function testRemovedEntityIsRemovedFromManyToManyCollection(): void
+    {
+        $group       = new CmsGroup();
+        $group->name = 'test';
+        $this->_unitOfWork->persist($group);
+
+        $user       = new CmsUser();
+        $user->name = 'test';
+        $user->groups->add($group);
+        $this->_unitOfWork->persist($user);
+
+        $this->_unitOfWork->commit();
+
+        self::assertFalse($user->groups->isDirty());
+
+        $this->_unitOfWork->remove($group);
+        $this->_unitOfWork->commit();
+
+        // Test that the removed entity has been removed from the many to many collection
+        self::assertEmpty(
+            $user->groups,
+            'the removed entity should have been removed from the many to many collection',
+        );
+
+        // Collection is clean, snapshot has been updated
+        self::assertFalse($user->groups->isDirty());
+        self::assertEmpty($user->groups->getSnapshot());
+    }
+
+    public function testRemovedEntityIsRemovedFromOneToManyCollection(): void
+    {
+        $user       = new CmsUser();
+        $user->name = 'test';
+
+        $phonenumber              = new CmsPhonenumber();
+        $phonenumber->phonenumber = '0800-123456';
+
+        $user->addPhonenumber($phonenumber);
+
+        $this->_unitOfWork->persist($user);
+        $this->_unitOfWork->persist($phonenumber);
+        $this->_unitOfWork->commit();
+
+        self::assertFalse($user->phonenumbers->isDirty());
+
+        $this->_unitOfWork->remove($phonenumber);
+        $this->_unitOfWork->commit();
+
+        // Test that the removed entity has been removed from the one to many collection
+        self::assertEmpty($user->phonenumbers);
+
+        // Collection is clean, snapshot has been updated
+        self::assertFalse($user->phonenumbers->isDirty());
+        self::assertEmpty($user->phonenumbers->getSnapshot());
     }
 }
 

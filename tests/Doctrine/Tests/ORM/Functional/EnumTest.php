@@ -34,7 +34,7 @@ class EnumTest extends OrmFunctionalTestCase
     {
         parent::setUp();
 
-        $this->_em         = $this->getEntityManager(null, new AttributeDriver([dirname(__DIR__, 2) . '/Models/Enums']));
+        $this->_em         = $this->getEntityManager(null, new AttributeDriver([dirname(__DIR__, 2) . '/Models/Enums'], true));
         $this->_schemaTool = new SchemaTool($this->_em);
 
         if ($this->isSecondLevelCacheEnabled) {

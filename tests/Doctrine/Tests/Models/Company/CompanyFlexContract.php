@@ -8,8 +8,6 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\Column;
-use Doctrine\ORM\Mapping\GeneratedValue;
-use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\InverseJoinColumn;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\JoinTable;
@@ -18,12 +16,6 @@ use Doctrine\ORM\Mapping\ManyToMany;
 #[ORM\Entity]
 class CompanyFlexContract extends CompanyContract
 {
-    /** @var int */
-    #[Id]
-    #[GeneratedValue]
-    #[Column(type: 'integer')]
-    public $id;
-
     #[Column(type: 'integer')]
     private int $hoursWorked = 0;
 

@@ -17,6 +17,12 @@ use function sprintf;
  */
 class ParserResult
 {
+    private const LEGACY_PROPERTY_MAPPING = [
+        'sqlExecutor' => '_sqlExecutor',
+        'resultSetMapping' => '_resultSetMapping',
+        'parameterMappings' => '_parameterMappings',
+    ];
+
     /**
      * The SQL executor used for executing the SQL.
      */
@@ -114,5 +120,21 @@ class ParserResult
     public function getSqlParameterPositions(string|int $dqlPosition): array
     {
         return $this->parameterMappings[$dqlPosition];
+    }
+
+    public function __wakeup(): void
+    {
+        $this->__unserialize((array) $this);
+    }
+
+    /** @param array<string, mixed> $data */
+    public function __unserialize(array $data): void
+    {
+        foreach (self::LEGACY_PROPERTY_MAPPING as $property => $legacyProperty) {
+            $this->$property = $data[sprintf("\0%s\0%s", self::class, $legacyProperty)]
+                ?? $data[sprintf("\0%s\0%s", self::class, $property)]
+                ?? $this->$property
+                ?? null;
+        }
     }
 }

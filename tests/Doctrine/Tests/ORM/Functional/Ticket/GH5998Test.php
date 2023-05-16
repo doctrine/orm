@@ -47,6 +47,7 @@ class GH5998Test extends OrmFunctionalTestCase
         $this->_em->persist($child->rel);
         $this->_em->flush();
         $this->_em->clear();
+        $id = $child->id;
 
         // Test find by rel
         $child = $this->_em->getRepository($className)->findOneBy(['rel' => $child->rel]);
@@ -54,7 +55,7 @@ class GH5998Test extends OrmFunctionalTestCase
         $this->_em->clear();
 
         // Test query by id with fetch join
-        $child = $this->_em->createQuery('SELECT t, r FROM ' . $className . ' t JOIN t.rel r WHERE t.id = 1')->getOneOrNullResult();
+        $child = $this->_em->createQuery('SELECT t, r FROM ' . $className . ' t JOIN t.rel r WHERE t.id = ?0')->setParameter(0, $id)->getOneOrNullResult();
         self::assertNotNull($child);
 
         // Test lock and update
@@ -64,14 +65,15 @@ class GH5998Test extends OrmFunctionalTestCase
             $child->status    = 0;
         });
         $this->_em->clear();
-        $child = $this->_em->getRepository($className)->find(1);
+        $child = $this->_em->getRepository($className)->find($id);
+        self::assertNotNull($child);
         self::assertEquals($child->firstName, 'Bob');
         self::assertEquals($child->status, 0);
 
         // Test delete
         $this->_em->remove($child);
         $this->_em->flush();
-        $child = $this->_em->getRepository($className)->find(1);
+        $child = $this->_em->getRepository($className)->find($id);
         self::assertNull($child);
     }
 }
