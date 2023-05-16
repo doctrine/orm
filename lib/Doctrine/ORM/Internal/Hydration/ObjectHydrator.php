@@ -458,9 +458,6 @@ class ObjectHydrator extends AbstractHydrator
                                         $targetClass->reflFields[$inverseAssoc['fieldName']]->setValue($element, $parentObject);
                                         $this->_uow->setOriginalEntityProperty(spl_object_id($element), $inverseAssoc['fieldName'], $parentObject);
                                     }
-                                } elseif ($parentClass === $targetClass && $relation['mappedBy']) {
-                                    // Special case: bi-directional self-referencing one-one on the same class
-                                    $targetClass->reflFields[$relationField]->setValue($element, $parentObject);
                                 }
                             } else {
                                 // For sure bidirectional, as there is no inverse side in unidirectional mappings

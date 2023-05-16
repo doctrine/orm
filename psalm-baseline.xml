@@ -485,7 +485,6 @@
       <code>getValue</code>
       <code>setValue</code>
       <code>setValue</code>
-      <code>setValue</code>
     </PossiblyNullReference>
     <PossiblyUndefinedArrayOffset>
       <code><![CDATA[$class->associationMappings[$class->identifier[0]]['joinColumns']]]></code>
