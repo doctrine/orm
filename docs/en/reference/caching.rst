@@ -142,7 +142,7 @@ Using Cache Drivers
 -------------------
 
 In this section we'll describe how you can fully utilize the API of
-the cache drivers to save data to a cache, check if some cached data 
+the cache drivers to save data to a cache, check if some cached data
 exists, fetch the cached data and delete the cached data. We'll use the
 ``ArrayCache`` implementation as our example here.
 
