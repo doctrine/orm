@@ -1322,7 +1322,8 @@ class UnitOfWork implements PropertyChangedListener
 
                 $joinColumns = reset($assoc['joinColumns']);
 
-                $calc->addDependency($targetClass->name, $class->name, (int) empty($joinColumns['nullable']));
+                $weight = (int) empty($joinColumns['nullable']);
+                $calc->addDependency($targetClass->name, $class->name, $weight);
 
                 // If the target class has mapped subclasses, these share the same dependency.
                 if (! $targetClass->subClasses) {
@@ -1338,7 +1339,7 @@ class UnitOfWork implements PropertyChangedListener
                         $newNodes[] = $targetSubClass;
                     }
 
-                    $calc->addDependency($targetSubClass->name, $class->name, 1);
+                    $calc->addDependency($targetSubClass->name, $class->name, $weight);
                 }
             }
         }
