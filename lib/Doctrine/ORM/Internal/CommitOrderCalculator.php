@@ -143,9 +143,11 @@ class CommitOrderCalculator
                             }
                         }
 
-                        $adjacentVertex->state = VertexState::VISITED;
+                        if ($adjacentVertex->state !== VertexState::VISITED) {
+                            $adjacentVertex->state = VertexState::VISITED;
 
-                        $this->sortedNodeList[] = $adjacentVertex->value;
+                            $this->sortedNodeList[] = $adjacentVertex->value;
+                        }
                     }
 
                     break;
