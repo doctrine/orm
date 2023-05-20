@@ -1260,13 +1260,10 @@ class UnitOfWork implements PropertyChangedListener
             unset(
                 $this->entityDeletions[$oid],
                 $this->entityIdentifiers[$oid],
-                $this->originalEntityData[$oid],
-                $this->entityStates[$oid]
+                $this->originalEntityData[$oid]
             );
 
-            // Entity with this $oid after deletion treated as NEW, even if the $oid
-            // is obtained by a new entity because the old one went out of scope.
-            //$this->entityStates[$oid] = self::STATE_NEW;
+            $this->entityStates[$oid] = self::STATE_REMOVED;
             if (! $class->isIdentifierNatural()) {
                 $class->reflFields[$class->identifier[0]]->setValue($entity, null);
             }
