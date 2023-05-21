@@ -112,14 +112,12 @@ class CommitOrderCalculatorTest extends OrmTestCase
         $class3 = new ClassMetadata(NodeClass3::class);
         $class4 = new ClassMetadata(NodeClass4::class);
         $class5 = new ClassMetadata(NodeClass5::class);
-        $class6 = new ClassMetadata(NodeClass6::class);
 
         $this->_calc->addNode($class1->name, $class1);
         $this->_calc->addNode($class2->name, $class2);
         $this->_calc->addNode($class3->name, $class3);
         $this->_calc->addNode($class4->name, $class4);
         $this->_calc->addNode($class5->name, $class5);
-        $this->_calc->addNode($class6->name, $class6);
 
         $this->_calc->addDependency($class1->name, $class5->name, 1);
         $this->_calc->addDependency($class1->name, $class4->name, 1);
@@ -129,24 +127,22 @@ class CommitOrderCalculatorTest extends OrmTestCase
         $this->_calc->addDependency($class3->name, $class5->name, 0);
         $this->_calc->addDependency($class3->name, $class4->name, 0);
         $this->_calc->addDependency($class3->name, $class3->name, 1);
-        $this->_calc->addDependency($class3->name, $class6->name, 1);
         $this->_calc->addDependency($class3->name, $class2->name, 0);
         $this->_calc->addDependency($class4->name, $class3->name, 1);
         $this->_calc->addDependency($class4->name, $class1->name, 0);
         $this->_calc->addDependency($class5->name, $class3->name, 1);
         $this->_calc->addDependency($class5->name, $class1->name, 0);
-        $this->_calc->addDependency($class6->name, $class3->name, 0);
 
         $sorted = $this->_calc->sort();
 
         // There are multiple valid orderings for this constellation
         $correctOrders = [
-            [$class1, $class2, $class4, $class5, $class3, $class6],
-            [$class1, $class2, $class5, $class4, $class3, $class6],
-            [$class1, $class4, $class2, $class5, $class3, $class6],
-            [$class1, $class4, $class5, $class2, $class3, $class6],
-            [$class1, $class5, $class2, $class4, $class3, $class6],
-            [$class1, $class5, $class4, $class2, $class3, $class6],
+            [$class1, $class2, $class4, $class5, $class3],
+            [$class1, $class2, $class5, $class4, $class3],
+            [$class1, $class4, $class2, $class5, $class3],
+            [$class1, $class4, $class5, $class2, $class3],
+            [$class1, $class5, $class2, $class4, $class3],
+            [$class1, $class5, $class4, $class2, $class3],
         ];
 
         // We want to perform a strict comparison of the array
@@ -167,8 +163,5 @@ class NodeClass4
 {
 }
 class NodeClass5
-{
-}
-class NodeClass6
 {
 }
