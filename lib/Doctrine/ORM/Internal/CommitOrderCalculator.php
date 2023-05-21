@@ -143,11 +143,7 @@ class CommitOrderCalculator
                             }
                         }
 
-                        if ($adjacentVertex->state !== VertexState::VISITED) {
-                            $adjacentVertex->state = VertexState::VISITED;
-
-                            $this->sortedNodeList[] = $adjacentVertex->value;
-                        }
+                        $this->addVertexToSortedList($adjacentVertex);
                     }
 
                     break;
@@ -157,6 +153,11 @@ class CommitOrderCalculator
             }
         }
 
+        $this->addVertexToSortedList($vertex);
+    }
+
+    private function addVertexToSortedList(Vertex $vertex): void
+    {
         if ($vertex->state !== VertexState::VISITED) {
             $vertex->state = VertexState::VISITED;
 
