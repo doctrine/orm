@@ -76,7 +76,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
 
         $cm = match (true) {
             isset($this->class->associationMappings[$fieldName]->inherited)
-                => $this->em->getClassMetadata($this->class->associationMappings[$fieldName]['inherited']),
+                => $this->em->getClassMetadata($this->class->associationMappings[$fieldName]->inherited),
             isset($this->class->fieldMappings[$fieldName]->inherited)
                 => $this->em->getClassMetadata($this->class->fieldMappings[$fieldName]->inherited),
             default => $this->class,

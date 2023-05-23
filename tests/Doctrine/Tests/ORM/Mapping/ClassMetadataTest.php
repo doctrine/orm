@@ -109,12 +109,12 @@ class ClassMetadataTest extends OrmTestCase
             'type' => 'integer',
             'fieldName' => 'disc',
         ]), $cm->discriminatorColumn);
-        self::assertTrue($cm->associationMappings['phonenumbers']['type'] === ClassMetadata::ONE_TO_ONE);
+        self::assertTrue($cm->associationMappings['phonenumbers']->isOneToOne());
         self::assertEquals(1, count($cm->associationMappings));
         $oneOneMapping = $cm->getAssociationMapping('phonenumbers');
-        self::assertTrue($oneOneMapping['fetch'] === ClassMetadata::FETCH_LAZY);
-        self::assertEquals('phonenumbers', $oneOneMapping['fieldName']);
-        self::assertEquals(CmsAddress::class, $oneOneMapping['targetEntity']);
+        self::assertTrue($oneOneMapping->fetch === ClassMetadata::FETCH_LAZY);
+        self::assertEquals('phonenumbers', $oneOneMapping->fieldName);
+        self::assertEquals(CmsAddress::class, $oneOneMapping->targetEntity);
         self::assertTrue($cm->isReadOnly);
         self::assertTrue($cm->requiresFetchAfterChange);
     }
@@ -289,7 +289,7 @@ class ClassMetadataTest extends OrmTestCase
         $assoc = $cm->associationMappings['groups'];
         $assoc = unserialize(serialize($assoc));
 
-        self::assertTrue($assoc['isOnDeleteCascade']);
+        self::assertTrue($assoc->isOnDeleteCascade);
     }
 
     #[TestGroup('DDC-115')]

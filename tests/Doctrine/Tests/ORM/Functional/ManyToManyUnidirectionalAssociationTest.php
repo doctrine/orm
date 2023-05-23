@@ -89,8 +89,8 @@ class ManyToManyUnidirectionalAssociationTest extends AbstractManyToManyAssociat
     public function testLazyLoadsCollection(): void
     {
         $this->createFixture();
-        $metadata                                           = $this->_em->getClassMetadata(ECommerceCart::class);
-        $metadata->associationMappings['products']['fetch'] = ClassMetadata::FETCH_LAZY;
+        $metadata                                         = $this->_em->getClassMetadata(ECommerceCart::class);
+        $metadata->associationMappings['products']->fetch = ClassMetadata::FETCH_LAZY;
 
         $query      = $this->_em->createQuery('SELECT c FROM Doctrine\Tests\Models\ECommerce\ECommerceCart c');
         $result     = $query->getResult();

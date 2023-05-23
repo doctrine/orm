@@ -963,7 +963,7 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
     /** @psalm-param array{usage?: int, region?: string} $cache */
     public function enableAssociationCache(string $fieldName, array $cache): void
     {
-        $this->associationMappings[$fieldName]['cache'] = $this->getAssociationCacheDefaults($fieldName, $cache);
+        $this->associationMappings[$fieldName]->cache = $this->getAssociationCacheDefaults($fieldName, $cache);
     }
 
     /**

@@ -347,7 +347,7 @@ class SqlWalker
             assert(isset($qComp['metadata']));
             $persister = $this->em->getUnitOfWork()->getEntityPersister($qComp['metadata']->name);
 
-            foreach ($qComp['relation']['orderBy'] as $fieldName => $orientation) {
+            foreach ($qComp['relation']->orderBy as $fieldName => $orientation) {
                 $columnName = $this->quoteStrategy->getColumnName($fieldName, $qComp['metadata'], $this->platform);
                 $tableName  = $qComp['metadata']->isInheritanceTypeJoined()
                     ? $persister->getOwningTable($fieldName)
@@ -593,7 +593,7 @@ class SqlWalker
                 $class     = $this->getMetadataForDqlAlias($dqlAlias);
 
                 if (isset($class->associationMappings[$fieldName]->inherited)) {
-                    $class = $this->em->getClassMetadata($class->associationMappings[$fieldName]['inherited']);
+                    $class = $this->em->getClassMetadata($class->associationMappings[$fieldName]->inherited);
                 }
 
                 $assoc = $class->associationMappings[$fieldName];

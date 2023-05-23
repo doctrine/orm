@@ -24,10 +24,10 @@ class DDC1301Test extends OrmFunctionalTestCase
 
         parent::setUp();
 
-        $class                                             = $this->_em->getClassMetadata(LegacyUser::class);
-        $class->associationMappings['articles']['fetch']   = ClassMetadata::FETCH_EXTRA_LAZY;
-        $class->associationMappings['references']['fetch'] = ClassMetadata::FETCH_EXTRA_LAZY;
-        $class->associationMappings['cars']['fetch']       = ClassMetadata::FETCH_EXTRA_LAZY;
+        $class                                           = $this->_em->getClassMetadata(LegacyUser::class);
+        $class->associationMappings['articles']->fetch   = ClassMetadata::FETCH_EXTRA_LAZY;
+        $class->associationMappings['references']->fetch = ClassMetadata::FETCH_EXTRA_LAZY;
+        $class->associationMappings['cars']->fetch       = ClassMetadata::FETCH_EXTRA_LAZY;
 
         $this->loadFixture();
     }
@@ -36,10 +36,10 @@ class DDC1301Test extends OrmFunctionalTestCase
     {
         parent::tearDown();
 
-        $class                                             = $this->_em->getClassMetadata(LegacyUser::class);
-        $class->associationMappings['articles']['fetch']   = ClassMetadata::FETCH_LAZY;
-        $class->associationMappings['references']['fetch'] = ClassMetadata::FETCH_LAZY;
-        $class->associationMappings['cars']['fetch']       = ClassMetadata::FETCH_LAZY;
+        $class                                           = $this->_em->getClassMetadata(LegacyUser::class);
+        $class->associationMappings['articles']->fetch   = ClassMetadata::FETCH_LAZY;
+        $class->associationMappings['references']->fetch = ClassMetadata::FETCH_LAZY;
+        $class->associationMappings['cars']->fetch       = ClassMetadata::FETCH_LAZY;
     }
 
     public function testCountNotInitializesLegacyCollection(): void

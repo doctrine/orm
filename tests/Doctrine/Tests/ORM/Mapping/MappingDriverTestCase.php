@@ -840,14 +840,14 @@ abstract class MappingDriverTestCase extends OrmTestCase
         self::assertEquals('doctrine_tests_models_cache_city', $class->cache['region']);
 
         self::assertArrayHasKey('state', $class->associationMappings);
-        self::assertArrayHasKey('cache', $class->associationMappings['state']);
+        self::assertNotNull($class->associationMappings['state']->cache);
         self::assertArrayHasKey('usage', $class->associationMappings['state']->cache);
         self::assertArrayHasKey('region', $class->associationMappings['state']->cache);
         self::assertEquals(ClassMetadata::CACHE_USAGE_READ_ONLY, $class->associationMappings['state']->cache['usage']);
         self::assertEquals('doctrine_tests_models_cache_city__state', $class->associationMappings['state']->cache['region']);
 
         self::assertArrayHasKey('attractions', $class->associationMappings);
-        self::assertArrayHasKey('cache', $class->associationMappings['attractions']);
+        self::assertNotNull($class->associationMappings['attractions']->cache);
         self::assertArrayHasKey('usage', $class->associationMappings['attractions']->cache);
         self::assertArrayHasKey('region', $class->associationMappings['attractions']->cache);
         self::assertEquals(ClassMetadata::CACHE_USAGE_READ_ONLY, $class->associationMappings['attractions']->cache['usage']);

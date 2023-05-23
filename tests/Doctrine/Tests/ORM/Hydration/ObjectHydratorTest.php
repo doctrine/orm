@@ -1038,8 +1038,8 @@ class ObjectHydratorTest extends HydrationTestCase
         $this->entityManager->setProxyFactory($proxyFactory);
 
         // configuring lazy loading
-        $metadata                                           = $this->entityManager->getClassMetadata(ECommerceProduct::class);
-        $metadata->associationMappings['shipping']['fetch'] = ClassMetadata::FETCH_LAZY;
+        $metadata                                         = $this->entityManager->getClassMetadata(ECommerceProduct::class);
+        $metadata->associationMappings['shipping']->fetch = ClassMetadata::FETCH_LAZY;
 
         $stmt     = $this->createResultMock($resultSet);
         $hydrator = new ObjectHydrator($this->entityManager);
@@ -1087,8 +1087,8 @@ class ObjectHydratorTest extends HydrationTestCase
         $this->entityManager->setProxyFactory($proxyFactory);
 
         // configuring lazy loading
-        $metadata                                           = $this->entityManager->getClassMetadata(ECommerceProduct::class);
-        $metadata->associationMappings['shipping']['fetch'] = ClassMetadata::FETCH_LAZY;
+        $metadata                                         = $this->entityManager->getClassMetadata(ECommerceProduct::class);
+        $metadata->associationMappings['shipping']->fetch = ClassMetadata::FETCH_LAZY;
 
         $stmt     = $this->createResultMock($resultSet);
         $hydrator = new ObjectHydrator($this->entityManager);
