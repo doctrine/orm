@@ -38,7 +38,8 @@ final class JoinTableMapping implements ArrayAccess
      *    quoted?: bool,
      *    joinColumns?: mixed[],
      *    inverseJoinColumns?: mixed[],
-     *    schema?: string
+     *    schema?: string,
+     *    options?: array<string, mixed>
      * } $mappingArray
      */
     public static function fromMappingArray(array $mappingArray): self
@@ -47,7 +48,7 @@ final class JoinTableMapping implements ArrayAccess
 
         foreach (['quoted', 'schema', 'options'] as $key) {
             if (isset($mappingArray[$key])) {
-                $mapping[$key] = $mappingArray[$key];
+                $mapping->$key = $mappingArray[$key];
             }
         }
 

@@ -58,9 +58,9 @@ class DefaultQuoteStrategy implements QuoteStrategy
 
     public function getJoinColumnName(JoinColumnMapping $joinColumn, ClassMetadata $class, AbstractPlatform $platform): string
     {
-        return isset($joinColumn['quoted'])
-            ? $platform->quoteIdentifier($joinColumn['name'])
-            : $joinColumn['name'];
+        return isset($joinColumn->quoted)
+            ? $platform->quoteIdentifier($joinColumn->name)
+            : $joinColumn->name;
     }
 
     public function getReferencedJoinColumnName(
@@ -68,9 +68,9 @@ class DefaultQuoteStrategy implements QuoteStrategy
         ClassMetadata $class,
         AbstractPlatform $platform,
     ): string {
-        return isset($joinColumn['quoted'])
-            ? $platform->quoteIdentifier($joinColumn['referencedColumnName'])
-            : $joinColumn['referencedColumnName'];
+        return isset($joinColumn->quoted)
+            ? $platform->quoteIdentifier($joinColumn->referencedColumnName)
+            : $joinColumn->referencedColumnName;
     }
 
     public function getJoinTableName(
@@ -80,13 +80,13 @@ class DefaultQuoteStrategy implements QuoteStrategy
     ): string {
         $schema = '';
 
-        if (isset($association->joinTable['schema'])) {
-            $schema = $association->joinTable['schema'] . '.';
+        if (isset($association->joinTable->schema)) {
+            $schema = $association->joinTable->schema . '.';
         }
 
-        $tableName = $association->joinTable['name'];
+        $tableName = $association->joinTable->name;
 
-        if (isset($association->joinTable['quoted'])) {
+        if (isset($association->joinTable->quoted)) {
             $tableName = $platform->quoteIdentifier($tableName);
         }
 
@@ -112,9 +112,9 @@ class DefaultQuoteStrategy implements QuoteStrategy
             assert($assoc->isToOneOwningSide());
             $joinColumns            = $assoc->joinColumns;
             $assocQuotedColumnNames = array_map(
-                static fn (JoinColumnMapping $joinColumn) => isset($joinColumn['quoted'])
-                    ? $platform->quoteIdentifier($joinColumn['name'])
-                    : $joinColumn['name'],
+                static fn (JoinColumnMapping $joinColumn) => isset($joinColumn->quoted)
+                    ? $platform->quoteIdentifier($joinColumn->name)
+                    : $joinColumn->name,
                 $joinColumns,
             );
 

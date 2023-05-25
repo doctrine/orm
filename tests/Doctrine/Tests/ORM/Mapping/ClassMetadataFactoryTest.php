@@ -304,9 +304,9 @@ class ClassMetadataFactoryTest extends OrmTestCase
         self::assertEquals('phone-number', $phoneMetadata->fieldMappings['number']->columnName);
 
         $user = $phoneMetadata->associationMappings['user'];
-        self::assertTrue($user->joinColumns[0]['quoted']);
-        self::assertEquals('user-id', $user->joinColumns[0]['name']);
-        self::assertEquals('user-id', $user->joinColumns[0]['referencedColumnName']);
+        self::assertTrue($user->joinColumns[0]->quoted);
+        self::assertEquals('user-id', $user->joinColumns[0]->name);
+        self::assertEquals('user-id', $user->joinColumns[0]->referencedColumnName);
 
         // User Group Metadata
         self::assertTrue($groupMetadata->fieldMappings['id']->quoted);
@@ -316,9 +316,9 @@ class ClassMetadataFactoryTest extends OrmTestCase
         self::assertEquals('user-name', $userMetadata->fieldMappings['name']->columnName);
 
         $user = $groupMetadata->associationMappings['parent'];
-        self::assertTrue($user->joinColumns[0]['quoted']);
-        self::assertEquals('parent-id', $user->joinColumns[0]['name']);
-        self::assertEquals('group-id', $user->joinColumns[0]['referencedColumnName']);
+        self::assertTrue($user->joinColumns[0]->quoted);
+        self::assertEquals('parent-id', $user->joinColumns[0]->name);
+        self::assertEquals('group-id', $user->joinColumns[0]->referencedColumnName);
 
         // Address Class Metadata
         self::assertTrue($addressMetadata->fieldMappings['id']->quoted);
@@ -328,9 +328,9 @@ class ClassMetadataFactoryTest extends OrmTestCase
         self::assertEquals('address-zip', $addressMetadata->fieldMappings['zip']->columnName);
 
         $user = $addressMetadata->associationMappings['user'];
-        self::assertTrue($user->joinColumns[0]['quoted']);
-        self::assertEquals('user-id', $user->joinColumns[0]['name']);
-        self::assertEquals('user-id', $user->joinColumns[0]['referencedColumnName']);
+        self::assertTrue($user->joinColumns[0]->quoted);
+        self::assertEquals('user-id', $user->joinColumns[0]->name);
+        self::assertEquals('user-id', $user->joinColumns[0]->referencedColumnName);
 
         // User Class Metadata
         self::assertTrue($userMetadata->fieldMappings['id']->quoted);
@@ -340,15 +340,15 @@ class ClassMetadataFactoryTest extends OrmTestCase
         self::assertEquals('user-name', $userMetadata->fieldMappings['name']->columnName);
 
         $groups = $userMetadata->associationMappings['groups'];
-        self::assertTrue($groups->joinTable['quoted']);
-        self::assertTrue($groups->joinTable['joinColumns'][0]['quoted']);
-        self::assertEquals('quote-users-groups', $groups->joinTable['name']);
-        self::assertEquals('user-id', $groups->joinTable['joinColumns'][0]['name']);
-        self::assertEquals('user-id', $groups->joinTable['joinColumns'][0]['referencedColumnName']);
+        self::assertTrue($groups->joinTable->quoted);
+        self::assertTrue($groups->joinTable->joinColumns[0]->quoted);
+        self::assertEquals('quote-users-groups', $groups->joinTable->name);
+        self::assertEquals('user-id', $groups->joinTable->joinColumns[0]->name);
+        self::assertEquals('user-id', $groups->joinTable->joinColumns[0]->referencedColumnName);
 
-        self::assertTrue($groups->joinTable['inverseJoinColumns'][0]['quoted']);
-        self::assertEquals('group-id', $groups->joinTable['inverseJoinColumns'][0]['name']);
-        self::assertEquals('group-id', $groups->joinTable['inverseJoinColumns'][0]['referencedColumnName']);
+        self::assertTrue($groups->joinTable->inverseJoinColumns[0]->quoted);
+        self::assertEquals('group-id', $groups->joinTable->inverseJoinColumns[0]->name);
+        self::assertEquals('group-id', $groups->joinTable->inverseJoinColumns[0]->referencedColumnName);
     }
 
     #[\PHPUnit\Framework\Attributes\Group('DDC-3385')]

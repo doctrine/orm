@@ -49,7 +49,7 @@ class IdentityFunction extends FunctionNode
             $joinColumn = null;
 
             foreach ($assoc->joinColumns as $mapping) {
-                if ($mapping['referencedColumnName'] === $field->columnName) {
+                if ($mapping->referencedColumnName === $field->columnName) {
                     $joinColumn = $mapping;
 
                     break;

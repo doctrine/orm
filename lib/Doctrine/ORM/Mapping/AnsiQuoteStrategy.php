@@ -38,7 +38,7 @@ class AnsiQuoteStrategy implements QuoteStrategy
 
     public function getJoinColumnName(JoinColumnMapping $joinColumn, ClassMetadata $class, AbstractPlatform $platform): string
     {
-        return $joinColumn['name'];
+        return $joinColumn->name;
     }
 
     public function getReferencedJoinColumnName(
@@ -46,7 +46,7 @@ class AnsiQuoteStrategy implements QuoteStrategy
         ClassMetadata $class,
         AbstractPlatform $platform,
     ): string {
-        return $joinColumn['referencedColumnName'];
+        return $joinColumn->referencedColumnName;
     }
 
     public function getJoinTableName(
@@ -54,7 +54,7 @@ class AnsiQuoteStrategy implements QuoteStrategy
         ClassMetadata $class,
         AbstractPlatform $platform,
     ): string {
-        return $association->joinTable['name'];
+        return $association->joinTable->name;
     }
 
     /**

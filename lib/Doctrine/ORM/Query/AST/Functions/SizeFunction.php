@@ -67,7 +67,7 @@ class SizeFunction extends FunctionNode
             $joinTable   = $owningAssoc->joinTable;
 
             // SQL table aliases
-            $joinTableAlias   = $sqlWalker->getSQLTableAlias($joinTable['name']);
+            $joinTableAlias   = $sqlWalker->getSQLTableAlias($joinTable->name);
             $sourceTableAlias = $sqlWalker->getSQLTableAlias($class->getTableName(), $dqlAlias);
 
             // join to target table
@@ -75,8 +75,8 @@ class SizeFunction extends FunctionNode
             $sql        .= $quoteStrategy->getJoinTableName($owningAssoc, $targetClass, $platform) . ' ' . $joinTableAlias . ' WHERE ';
 
             $joinColumns = $assoc->isOwningSide()
-                ? $joinTable['joinColumns']
-                : $joinTable['inverseJoinColumns'];
+                ? $joinTable->joinColumns
+                : $joinTable->inverseJoinColumns;
 
             $first = true;
 
@@ -88,12 +88,12 @@ class SizeFunction extends FunctionNode
                 }
 
                 $sourceColumnName = $quoteStrategy->getColumnName(
-                    $class->fieldNames[$joinColumn['referencedColumnName']],
+                    $class->fieldNames[$joinColumn->referencedColumnName],
                     $class,
                     $platform,
                 );
 
-                $sql .= $joinTableAlias . '.' . $joinColumn['name']
+                $sql .= $joinTableAlias . '.' . $joinColumn->name
                       . ' = '
                       . $sourceTableAlias . '.' . $sourceColumnName;
             }

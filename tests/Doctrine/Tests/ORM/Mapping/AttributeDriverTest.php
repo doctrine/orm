@@ -70,7 +70,7 @@ class AttributeDriverTest extends MappingDriverTestCase
                     'columnDefinition' => null,
                 ]),
             ],
-            $metadata->associationMappings['assoc']->joinTable['joinColumns'],
+            $metadata->associationMappings['assoc']->joinTable->joinColumns,
         );
 
         self::assertEquals(
@@ -84,7 +84,7 @@ class AttributeDriverTest extends MappingDriverTestCase
                     'columnDefinition' => null,
                 ]),
             ],
-            $metadata->associationMappings['assoc']->joinTable['inverseJoinColumns'],
+            $metadata->associationMappings['assoc']->joinTable->inverseJoinColumns,
         );
     }
 }
