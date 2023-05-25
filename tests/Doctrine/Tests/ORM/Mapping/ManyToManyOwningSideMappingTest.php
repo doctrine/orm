@@ -22,8 +22,7 @@ final class ManyToManyOwningSideMappingTest extends TestCase
             targetEntity: self::class,
         );
 
-        $mapping->joinTable                  = new JoinTableMapping();
-        $mapping->joinTable->name            = 'bar';
+        $mapping->joinTable                  = new JoinTableMapping('bar');
         $mapping->joinTableColumns           = ['foo', 'bar'];
         $mapping->relationToSourceKeyColumns = ['foo' => 'bar'];
         $mapping->relationToTargetKeyColumns = ['bar' => 'baz'];

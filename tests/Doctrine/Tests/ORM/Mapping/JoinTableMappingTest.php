@@ -16,13 +16,12 @@ final class JoinTableMappingTest extends TestCase
 {
     public function testItSurvivesSerialization(): void
     {
-        $mapping = new JoinTableMapping();
+        $mapping = new JoinTableMapping('bar');
 
         $mapping->quoted             = true;
         $mapping->joinColumns        = [new JoinColumnMapping('id')];
         $mapping->inverseJoinColumns = [new JoinColumnMapping('id')];
         $mapping->schema             = 'foo';
-        $mapping->name               = 'bar';
         $mapping->options            = ['foo' => 'bar'];
 
         $resurrectedMapping = unserialize(serialize($mapping));

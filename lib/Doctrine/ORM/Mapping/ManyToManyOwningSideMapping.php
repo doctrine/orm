@@ -47,17 +47,16 @@ final class ManyToManyOwningSideMapping extends ToManyOwningSideMapping implemen
      */
     public static function fromMappingArrayAndNamingStrategy(array $mappingArray, NamingStrategy $namingStrategy): self
     {
-        $mapping = parent::fromMappingArray($mappingArray);
-
         // owning side MUST have a join table
-        if (! isset($mapping->joinTable->name)) {
-            $mapping->joinTable     ??= new JoinTableMapping();
-            $mapping->joinTable->name = $namingStrategy->joinTableName(
-                $mapping->sourceEntity,
-                $mapping->targetEntity,
-                $mapping->fieldName,
+        if (! isset($mappingArray['joinTable']['name'])) {
+            $mappingArray['joinTable']['name'] = $namingStrategy->joinTableName(
+                $mappingArray['sourceEntity'],
+                $mappingArray['targetEntity'],
+                $mappingArray['fieldName'],
             );
         }
+
+        $mapping = parent::fromMappingArray($mappingArray);
 
         $selfReferencingEntityWithoutJoinColumns = $mapping->sourceEntity === $mapping->targetEntity
             && $mapping->joinTable->joinColumns === []
