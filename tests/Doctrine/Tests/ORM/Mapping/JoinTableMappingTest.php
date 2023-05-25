@@ -23,6 +23,7 @@ final class JoinTableMappingTest extends TestCase
         $mapping->inverseJoinColumns = [new JoinColumnMapping('id')];
         $mapping->schema             = 'foo';
         $mapping->name               = 'bar';
+        $mapping->options            = ['foo' => 'bar'];
 
         $resurrectedMapping = unserialize(serialize($mapping));
         assert($resurrectedMapping instanceof JoinTableMapping);
@@ -32,5 +33,6 @@ final class JoinTableMappingTest extends TestCase
         self::assertCount(1, $resurrectedMapping->inverseJoinColumns);
         self::assertSame('foo', $resurrectedMapping->schema);
         self::assertSame('bar', $resurrectedMapping->name);
+        self::assertSame(['foo' => 'bar'], $resurrectedMapping->options);
     }
 }

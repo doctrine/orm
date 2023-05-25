@@ -22,6 +22,9 @@ final class JoinTableMapping implements ArrayAccess
     /** @var list<JoinColumnMapping> */
     public array $inverseJoinColumns = [];
 
+    /** @var array<string, mixed> */
+    public array $options = [];
+
     public string|null $schema = null;
 
     public string|null $name = null;
@@ -40,7 +43,7 @@ final class JoinTableMapping implements ArrayAccess
     {
         $mapping = new self();
 
-        foreach (['name', 'quoted', 'schema'] as $key) {
+        foreach (['name', 'quoted', 'schema', 'options'] as $key) {
             if (isset($mappingArray[$key])) {
                 $mapping[$key] = $mappingArray[$key];
             }
@@ -92,7 +95,7 @@ final class JoinTableMapping implements ArrayAccess
     {
         $serialized = [];
 
-        foreach (['joinColumns', 'inverseJoinColumns', 'name', 'schema'] as $stringOrArrayKey) {
+        foreach (['joinColumns', 'inverseJoinColumns', 'name', 'schema', 'options'] as $stringOrArrayKey) {
             if ($this->$stringOrArrayKey !== null) {
                 $serialized[] = $stringOrArrayKey;
             }

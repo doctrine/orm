@@ -563,10 +563,8 @@ class SchemaTool
                     $this->quoteStrategy->getJoinTableName($mapping, $foreignClass, $this->platform),
                 );
 
-                if (isset($joinTable['options'])) {
-                    foreach ($joinTable['options'] as $key => $val) {
-                        $theJoinTable->addOption($key, $val);
-                    }
+                foreach ($joinTable->options as $key => $val) {
+                    $theJoinTable->addOption($key, $val);
                 }
 
                 $primaryKeyColumns = [];
