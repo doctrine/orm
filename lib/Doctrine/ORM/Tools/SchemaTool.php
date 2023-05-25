@@ -154,7 +154,9 @@ class SchemaTool
                 if ($class->hasField($fieldName)) {
                     $columns[] = $this->quoteStrategy->getColumnName($fieldName, $class, $this->platform);
                 } elseif ($class->hasAssociation($fieldName)) {
-                    foreach ($class->getAssociationMapping($fieldName)['joinColumns'] as $joinColumn) {
+                    $assoc = $class->getAssociationMapping($fieldName);
+                    assert($assoc->isToOneOwningSide());
+                    foreach ($assoc->joinColumns as $joinColumn) {
                         $columns[] = $this->quoteStrategy->getJoinColumnName($joinColumn, $class, $this->platform);
                     }
                 }
@@ -245,17 +247,18 @@ class SchemaTool
                             continue;
                         }
 
-                        if (isset($class->associationMappings[$identifierField]['inherited'])) {
+                        if (isset($class->associationMappings[$identifierField]->inherited)) {
                             $idMapping = $class->associationMappings[$identifierField];
+                            assert($idMapping->isToOneOwningSide());
 
                             $targetEntity = current(
                                 array_filter(
                                     $classes,
-                                    static fn (ClassMetadata $class): bool => $class->name === $idMapping['targetEntity']
+                                    static fn (ClassMetadata $class): bool => $class->name === $idMapping->targetEntity,
                                 ),
                             );
 
-                            foreach ($idMapping['joinColumns'] as $joinColumn) {
+                            foreach ($idMapping->joinColumns as $joinColumn) {
                                 if (isset($targetEntity->fieldMappings[$joinColumn['referencedColumnName']])) {
                                     $columnName = $this->quoteStrategy->getJoinColumnName(
                                         $joinColumn,
@@ -299,8 +302,9 @@ class SchemaTool
                     $pkColumns[] = $this->quoteStrategy->getColumnName($identifierField, $class, $this->platform);
                 } elseif (isset($class->associationMappings[$identifierField])) {
                     $assoc = $class->associationMappings[$identifierField];
+                    assert($assoc->isToOneOwningSide());
 
-                    foreach ($assoc['joinColumns'] as $joinColumn) {
+                    foreach ($assoc->joinColumns as $joinColumn) {
                         $pkColumns[] = $this->quoteStrategy->getJoinColumnName($joinColumn, $class, $this->platform);
                     }
                 }
@@ -533,17 +537,17 @@ class SchemaTool
         array &$blacklistedFks,
     ): void {
         foreach ($class->associationMappings as $id => $mapping) {
-            if (isset($mapping['inherited']) && ! in_array($id, $class->identifier, true)) {
+            if (isset($mapping->inherited) && ! in_array($id, $class->identifier, true)) {
                 continue;
             }
 
-            $foreignClass = $this->em->getClassMetadata($mapping['targetEntity']);
+            $foreignClass = $this->em->getClassMetadata($mapping->targetEntity);
 
             if ($mapping->isToOneOwningSide()) {
                 $primaryKeyColumns = []; // PK is unnecessary for this relation-type
 
                 $this->gatherRelationJoinColumns(
-                    $mapping['joinColumns'],
+                    $mapping->joinColumns,
                     $table,
                     $foreignClass,
                     $mapping,
@@ -553,7 +557,7 @@ class SchemaTool
                 );
             } elseif ($mapping instanceof ManyToManyOwningSideMapping) {
                 // create join table
-                $joinTable = $mapping['joinTable'];
+                $joinTable = $mapping->joinTable;
 
                 $theJoinTable = $schema->createTable(
                     $this->quoteStrategy->getJoinTableName($mapping, $foreignClass, $this->platform),
@@ -621,7 +625,7 @@ class SchemaTool
                     && $class->getSingleAssociationJoinColumnName($fieldName) === $referencedColumnName
                 ) {
                     return $this->getDefiningClass(
-                        $this->em->getClassMetadata($class->associationMappings[$fieldName]['targetEntity']),
+                        $this->em->getClassMetadata($class->associationMappings[$fieldName]->targetEntity),
                         $class->getSingleAssociationReferencedJoinColumnName($fieldName),
                     );
                 }
@@ -668,8 +672,8 @@ class SchemaTool
             if (! $definingClass) {
                 throw MissingColumnException::fromColumnSourceAndTarget(
                     $joinColumn['referencedColumnName'],
-                    $mapping['sourceEntity'],
-                    $mapping['targetEntity'],
+                    $mapping->sourceEntity,
+                    $mapping->targetEntity,
                 );
             }
 

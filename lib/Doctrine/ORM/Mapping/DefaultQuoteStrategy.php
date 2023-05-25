@@ -9,6 +9,7 @@ use Doctrine\ORM\Internal\SQLResultCasing;
 
 use function array_map;
 use function array_merge;
+use function assert;
 use function is_numeric;
 use function preg_replace;
 use function substr;
@@ -79,13 +80,13 @@ class DefaultQuoteStrategy implements QuoteStrategy
     ): string {
         $schema = '';
 
-        if (isset($association['joinTable']['schema'])) {
-            $schema = $association['joinTable']['schema'] . '.';
+        if (isset($association->joinTable['schema'])) {
+            $schema = $association->joinTable['schema'] . '.';
         }
 
-        $tableName = $association['joinTable']['name'];
+        $tableName = $association->joinTable['name'];
 
-        if (isset($association['joinTable']['quoted'])) {
+        if (isset($association->joinTable['quoted'])) {
             $tableName = $platform->quoteIdentifier($tableName);
         }
 
@@ -107,7 +108,9 @@ class DefaultQuoteStrategy implements QuoteStrategy
             }
 
             // Association defined as Id field
-            $joinColumns            = $class->associationMappings[$fieldName]['joinColumns'];
+            $assoc = $class->associationMappings[$fieldName];
+            assert($assoc->isToOneOwningSide());
+            $joinColumns            = $assoc->joinColumns;
             $assocQuotedColumnNames = array_map(
                 static fn (JoinColumnMapping $joinColumn) => isset($joinColumn['quoted'])
                     ? $platform->quoteIdentifier($joinColumn['name'])

@@ -1653,7 +1653,7 @@ final class Parser
         $field                  = $joinAssociationPathExpression->associationField;
 
         $class       = $this->getMetadataForDqlAlias($identificationVariable);
-        $targetClass = $this->em->getClassMetadata($class->associationMappings[$field]['targetEntity']);
+        $targetClass = $this->em->getClassMetadata($class->associationMappings[$field]->targetEntity);
 
         // Building queryComponent
         $joinQueryComponent = [

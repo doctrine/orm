@@ -35,20 +35,20 @@ trait ReflectionBasedDriver
         $declaringClass = $property->getDeclaringClass()->getName();
 
         if (
-            isset($metadata->fieldMappings[$property->name]['declared'])
-            && $metadata->fieldMappings[$property->name]['declared'] === $declaringClass
+            isset($metadata->fieldMappings[$property->name]->declared)
+            && $metadata->fieldMappings[$property->name]->declared === $declaringClass
         ) {
             return true;
         }
 
         if (
-            isset($metadata->associationMappings[$property->name]['declared'])
-            && $metadata->associationMappings[$property->name]['declared'] === $declaringClass
+            isset($metadata->associationMappings[$property->name]->declared)
+            && $metadata->associationMappings[$property->name]->declared === $declaringClass
         ) {
             return true;
         }
 
-        return isset($metadata->embeddedClasses[$property->name]['declared'])
-            && $metadata->embeddedClasses[$property->name]['declared'] === $declaringClass;
+        return isset($metadata->embeddedClasses[$property->name]->declared)
+            && $metadata->embeddedClasses[$property->name]->declared === $declaringClass;
     }
 }

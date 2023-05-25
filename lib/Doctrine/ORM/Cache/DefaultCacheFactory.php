@@ -93,8 +93,9 @@ class DefaultCacheFactory implements CacheFactory
         CollectionPersister $persister,
         AssociationMapping $mapping,
     ): CachedCollectionPersister {
-        $usage  = $mapping['cache']['usage'];
-        $region = $this->getRegion($mapping['cache']);
+        assert(isset($mapping->cache));
+        $usage  = $mapping->cache['usage'];
+        $region = $this->getRegion($mapping->cache);
 
         if ($usage === ClassMetadata::CACHE_USAGE_READ_ONLY) {
             return new ReadOnlyCachedCollectionPersister($persister, $region, $em, $mapping);

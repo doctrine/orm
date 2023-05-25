@@ -109,7 +109,7 @@ class AnsiQuoteStrategyTest extends OrmTestCase
             ],
         );
 
-        $joinColumn = $class->associationMappings['article']['joinColumns'][0];
+        $joinColumn = $class->associationMappings['article']->joinColumns[0];
         self::assertEquals('article', $this->strategy->getJoinColumnName($joinColumn, $class, $this->platform));
     }
 
@@ -128,7 +128,7 @@ class AnsiQuoteStrategyTest extends OrmTestCase
             ],
         );
 
-        $joinColumn = $cm->associationMappings['article']['joinColumns'][0];
+        $joinColumn = $cm->associationMappings['article']->joinColumns[0];
         self::assertEquals('id', $this->strategy->getReferencedJoinColumnName($joinColumn, $cm, $this->platform));
     }
 

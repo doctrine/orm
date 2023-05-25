@@ -69,9 +69,9 @@ class SQLFilterTest extends OrmFunctionalTestCase
     {
         parent::tearDown();
 
-        $class                                           = $this->_em->getClassMetadata(CmsUser::class);
-        $class->associationMappings['groups']['fetch']   = ClassMetadata::FETCH_LAZY;
-        $class->associationMappings['articles']['fetch'] = ClassMetadata::FETCH_LAZY;
+        $class                                         = $this->_em->getClassMetadata(CmsUser::class);
+        $class->associationMappings['groups']->fetch   = ClassMetadata::FETCH_LAZY;
+        $class->associationMappings['articles']->fetch = ClassMetadata::FETCH_LAZY;
     }
 
     public function testConfigureFilter(): void
@@ -553,9 +553,9 @@ class SQLFilterTest extends OrmFunctionalTestCase
 
     private function loadLazyFixtureData(): void
     {
-        $class                                           = $this->_em->getClassMetadata(CmsUser::class);
-        $class->associationMappings['articles']['fetch'] = ClassMetadata::FETCH_EXTRA_LAZY;
-        $class->associationMappings['groups']['fetch']   = ClassMetadata::FETCH_EXTRA_LAZY;
+        $class                                         = $this->_em->getClassMetadata(CmsUser::class);
+        $class->associationMappings['articles']->fetch = ClassMetadata::FETCH_EXTRA_LAZY;
+        $class->associationMappings['groups']->fetch   = ClassMetadata::FETCH_EXTRA_LAZY;
         $this->loadFixtureData();
     }
 

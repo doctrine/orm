@@ -47,9 +47,9 @@ final class IdentifierFlattener
         $flatId = [];
 
         foreach ($class->identifier as $field) {
-            if (isset($class->associationMappings[$field]) && isset($id[$field]) && is_a($id[$field], $class->associationMappings[$field]['targetEntity'])) {
+            if (isset($class->associationMappings[$field]) && isset($id[$field]) && is_a($id[$field], $class->associationMappings[$field]->targetEntity)) {
                 $targetClassMetadata = $this->metadataFactory->getMetadataFor(
-                    $class->associationMappings[$field]['targetEntity'],
+                    $class->associationMappings[$field]->targetEntity,
                 );
                 assert($targetClassMetadata instanceof ClassMetadata);
 
@@ -61,9 +61,10 @@ final class IdentifierFlattener
 
                 $flatId[$field] = implode(' ', $associatedId);
             } elseif (isset($class->associationMappings[$field])) {
+                assert($class->associationMappings[$field]->isToOneOwningSide());
                 $associatedId = [];
 
-                foreach ($class->associationMappings[$field]['joinColumns'] as $joinColumn) {
+                foreach ($class->associationMappings[$field]->joinColumns as $joinColumn) {
                     $associatedId[] = $id[$joinColumn['name']];
                 }
 

@@ -581,7 +581,7 @@ class UnitOfWork implements PropertyChangedListener
                 // Inject PersistentCollection
                 $value = new PersistentCollection(
                     $this->em,
-                    $this->em->getClassMetadata($assoc['targetEntity']),
+                    $this->em->getClassMetadata($assoc->targetEntity),
                     $value,
                 );
                 $value->setOwner($entity, $assoc);
@@ -703,11 +703,11 @@ class UnitOfWork implements PropertyChangedListener
                 }
 
                 if ($assoc->isToOne()) {
-                    if ($assoc['isOwningSide']) {
+                    if ($assoc->isOwningSide()) {
                         $changeSet[$propName] = [$orgValue, $actualValue];
                     }
 
-                    if ($orgValue !== null && $assoc['orphanRemoval']) {
+                    if ($orgValue !== null && $assoc->orphanRemoval) {
                         assert(is_object($orgValue));
                         $this->scheduleOrphanRemoval($orgValue);
                     }
@@ -802,7 +802,7 @@ class UnitOfWork implements PropertyChangedListener
         // for transient (new) entities, recursively. ("Persistence by reachability")
         // Unwrap. Uninitialized collections will simply be empty.
         $unwrappedValue = $assoc->isToOne() ? [$value] : $value->unwrap();
-        $targetClass    = $this->em->getClassMetadata($assoc['targetEntity']);
+        $targetClass    = $this->em->getClassMetadata($assoc->targetEntity);
 
         foreach ($unwrappedValue as $key => $entry) {
             if (! ($entry instanceof $targetClass->name)) {
@@ -811,18 +811,18 @@ class UnitOfWork implements PropertyChangedListener
 
             $state = $this->getEntityState($entry, self::STATE_NEW);
 
-            if (! ($entry instanceof $assoc['targetEntity'])) {
+            if (! ($entry instanceof $assoc->targetEntity)) {
                 throw UnexpectedAssociationValue::create(
-                    $assoc['sourceEntity'],
-                    $assoc['fieldName'],
+                    $assoc->sourceEntity,
+                    $assoc->fieldName,
                     get_debug_type($entry),
-                    $assoc['targetEntity'],
+                    $assoc->targetEntity,
                 );
             }
 
             switch ($state) {
                 case self::STATE_NEW:
-                    if (! $assoc['isCascadePersist']) {
+                    if (! $assoc->isCascadePersist()) {
                         /*
                          * For now just record the details, because this may
                          * not be an issue if we later discover another pathway
@@ -1190,7 +1190,7 @@ class UnitOfWork implements PropertyChangedListener
                     continue;
                 }
 
-                $targetClass = $this->em->getClassMetadata($assoc['targetEntity']);
+                $targetClass = $this->em->getClassMetadata($assoc->targetEntity);
 
                 if (! $calc->hasNode($targetClass->name)) {
                     $calc->addNode($targetClass->name, $targetClass);
@@ -1894,11 +1894,11 @@ class UnitOfWork implements PropertyChangedListener
 
         $associationMappings = array_filter(
             $class->associationMappings,
-            static fn (AssociationMapping $assoc): bool => $assoc['isCascadeRefresh']
+            static fn (AssociationMapping $assoc): bool => $assoc->isCascadeRefresh()
         );
 
         foreach ($associationMappings as $assoc) {
-            $relatedEntities = $class->reflFields[$assoc['fieldName']]->getValue($entity);
+            $relatedEntities = $class->reflFields[$assoc->fieldName]->getValue($entity);
 
             switch (true) {
                 case $relatedEntities instanceof PersistentCollection:
@@ -1935,11 +1935,11 @@ class UnitOfWork implements PropertyChangedListener
 
         $associationMappings = array_filter(
             $class->associationMappings,
-            static fn (AssociationMapping $assoc): bool => $assoc['isCascadeDetach']
+            static fn (AssociationMapping $assoc): bool => $assoc->isCascadeDetach()
         );
 
         foreach ($associationMappings as $assoc) {
-            $relatedEntities = $class->reflFields[$assoc['fieldName']]->getValue($entity);
+            $relatedEntities = $class->reflFields[$assoc->fieldName]->getValue($entity);
 
             switch (true) {
                 case $relatedEntities instanceof PersistentCollection:
@@ -1981,11 +1981,11 @@ class UnitOfWork implements PropertyChangedListener
 
         $associationMappings = array_filter(
             $class->associationMappings,
-            static fn (AssociationMapping $assoc): bool => $assoc['isCascadePersist']
+            static fn (AssociationMapping $assoc): bool => $assoc->isCascadePersist()
         );
 
         foreach ($associationMappings as $assoc) {
-            $relatedEntities = $class->reflFields[$assoc['fieldName']]->getValue($entity);
+            $relatedEntities = $class->reflFields[$assoc->fieldName]->getValue($entity);
 
             switch (true) {
                 case $relatedEntities instanceof PersistentCollection:
@@ -1997,7 +1997,7 @@ class UnitOfWork implements PropertyChangedListener
                 case is_array($relatedEntities):
                     if ($assoc->isToMany() <= 0) {
                         throw ORMInvalidArgumentException::invalidAssociation(
-                            $this->em->getClassMetadata($assoc['targetEntity']),
+                            $this->em->getClassMetadata($assoc->targetEntity),
                             $assoc,
                             $relatedEntities,
                         );
@@ -2010,9 +2010,9 @@ class UnitOfWork implements PropertyChangedListener
                     break;
 
                 case $relatedEntities !== null:
-                    if (! $relatedEntities instanceof $assoc['targetEntity']) {
+                    if (! $relatedEntities instanceof $assoc->targetEntity) {
                         throw ORMInvalidArgumentException::invalidAssociation(
-                            $this->em->getClassMetadata($assoc['targetEntity']),
+                            $this->em->getClassMetadata($assoc->targetEntity),
                             $assoc,
                             $relatedEntities,
                         );
@@ -2038,7 +2038,7 @@ class UnitOfWork implements PropertyChangedListener
 
         $associationMappings = array_filter(
             $class->associationMappings,
-            static fn (AssociationMapping $assoc): bool => $assoc['isCascadeRemove']
+            static fn (AssociationMapping $assoc): bool => $assoc->isCascadeRemove()
         );
 
         $entitiesToCascade = [];
@@ -2048,7 +2048,7 @@ class UnitOfWork implements PropertyChangedListener
                 $entity->__load();
             }
 
-            $relatedEntities = $class->reflFields[$assoc['fieldName']]->getValue($entity);
+            $relatedEntities = $class->reflFields[$assoc->fieldName]->getValue($entity);
 
             switch (true) {
                 case $relatedEntities instanceof Collection:
@@ -2320,23 +2320,23 @@ class UnitOfWork implements PropertyChangedListener
                 continue;
             }
 
-            $targetClass = $this->em->getClassMetadata($assoc['targetEntity']);
+            $targetClass = $this->em->getClassMetadata($assoc->targetEntity);
 
             switch (true) {
                 case $assoc->isToOne():
-                    if (! $assoc['isOwningSide']) {
+                    if (! $assoc->isOwningSide()) {
                         // use the given entity association
                         if (isset($data[$field]) && is_object($data[$field]) && isset($this->entityStates[spl_object_id($data[$field])])) {
                             $this->originalEntityData[$oid][$field] = $data[$field];
 
                             $class->reflFields[$field]->setValue($entity, $data[$field]);
-                            $targetClass->reflFields[$assoc['mappedBy']]->setValue($data[$field], $entity);
+                            $targetClass->reflFields[$assoc->mappedBy]->setValue($data[$field], $entity);
 
                             continue 2;
                         }
 
                         // Inverse side of x-to-one can never be lazy
-                        $class->reflFields[$field]->setValue($entity, $this->getEntityPersister($assoc['targetEntity'])->loadOneToOneEntity($assoc, $entity));
+                        $class->reflFields[$field]->setValue($entity, $this->getEntityPersister($assoc->targetEntity)->loadOneToOneEntity($assoc, $entity));
 
                         continue 2;
                     }
@@ -2351,8 +2351,9 @@ class UnitOfWork implements PropertyChangedListener
 
                     $associatedId = [];
 
+                    assert($assoc->isToOneOwningSide());
                     // TODO: Is this even computed right in all cases of composite keys?
-                    foreach ($assoc['targetToSourceKeyColumns'] as $targetColumn => $srcColumn) {
+                    foreach ($assoc->targetToSourceKeyColumns as $targetColumn => $srcColumn) {
                         $joinColumnValue = $data[$srcColumn] ?? null;
 
                         if ($joinColumnValue !== null) {
@@ -2384,7 +2385,7 @@ class UnitOfWork implements PropertyChangedListener
                     }
 
                     if (! isset($hints['fetchMode'][$class->name][$field])) {
-                        $hints['fetchMode'][$class->name][$field] = $assoc['fetch'];
+                        $hints['fetchMode'][$class->name][$field] = $assoc->fetch;
                     }
 
                     // Foreign key is set
@@ -2416,7 +2417,7 @@ class UnitOfWork implements PropertyChangedListener
                             // If it might be a subtype, it can not be lazy. There isn't even
                             // a way to solve this with deferred eager loading, which means putting
                             // an entity with subclasses at a *-to-one location is really bad! (performance-wise)
-                            $newValue = $this->getEntityPersister($assoc['targetEntity'])->loadOneToOneEntity($assoc, $entity, $associatedId);
+                            $newValue = $this->getEntityPersister($assoc->targetEntity)->loadOneToOneEntity($assoc, $entity, $associatedId);
                             break;
 
                         default:
@@ -2425,7 +2426,7 @@ class UnitOfWork implements PropertyChangedListener
                             switch (true) {
                                 // We are negating the condition here. Other cases will assume it is valid!
                                 case $hints['fetchMode'][$class->name][$field] !== ClassMetadata::FETCH_EAGER:
-                                    $newValue = $this->em->getProxyFactory()->getProxy($assoc['targetEntity'], $normalizedAssociatedId);
+                                    $newValue = $this->em->getProxyFactory()->getProxy($assoc->targetEntity, $normalizedAssociatedId);
                                     break;
 
                                 // Deferred eager load only works for single identifier classes
@@ -2433,12 +2434,12 @@ class UnitOfWork implements PropertyChangedListener
                                     // TODO: Is there a faster approach?
                                     $this->eagerLoadingEntities[$targetClass->rootEntityName][$relatedIdHash] = current($normalizedAssociatedId);
 
-                                    $newValue = $this->em->getProxyFactory()->getProxy($assoc['targetEntity'], $normalizedAssociatedId);
+                                    $newValue = $this->em->getProxyFactory()->getProxy($assoc->targetEntity, $normalizedAssociatedId);
                                     break;
 
                                 default:
                                     // TODO: This is very imperformant, ignore it?
-                                    $newValue = $this->em->find($assoc['targetEntity'], $normalizedAssociatedId);
+                                    $newValue = $this->em->find($assoc->targetEntity, $normalizedAssociatedId);
                                     break;
                             }
 
@@ -2466,9 +2467,9 @@ class UnitOfWork implements PropertyChangedListener
                     $this->originalEntityData[$oid][$field] = $newValue;
                     $class->reflFields[$field]->setValue($entity, $newValue);
 
-                    if ($assoc['inversedBy'] && $assoc->isOneToOne() && $newValue !== null) {
-                        $inverseAssoc = $targetClass->associationMappings[$assoc['inversedBy']];
-                        $targetClass->reflFields[$inverseAssoc['fieldName']]->setValue($newValue, $entity);
+                    if ($assoc->inversedBy && $assoc->isOneToOne() && $newValue !== null) {
+                        $inverseAssoc = $targetClass->associationMappings[$assoc->inversedBy];
+                        $targetClass->reflFields[$inverseAssoc->fieldName]->setValue($newValue, $entity);
                     }
 
                     break;
@@ -2498,7 +2499,7 @@ class UnitOfWork implements PropertyChangedListener
                     $reflField = $class->reflFields[$field];
                     $reflField->setValue($entity, $pColl);
 
-                    if ($assoc['fetch'] === ClassMetadata::FETCH_EAGER) {
+                    if ($assoc->fetch === ClassMetadata::FETCH_EAGER) {
                         $this->loadCollection($pColl);
                         $pColl->takeSnapshot();
                     }
@@ -2545,9 +2546,9 @@ class UnitOfWork implements PropertyChangedListener
     public function loadCollection(PersistentCollection $collection): void
     {
         $assoc     = $collection->getMapping();
-        $persister = $this->getEntityPersister($assoc['targetEntity']);
+        $persister = $this->getEntityPersister($assoc->targetEntity);
 
-        switch ($assoc['type']) {
+        switch ($assoc->type()) {
             case ClassMetadata::ONE_TO_MANY:
                 $persister->loadOneToManyCollection($assoc, $collection->getOwner(), $collection);
                 break;
@@ -2722,19 +2723,19 @@ class UnitOfWork implements PropertyChangedListener
     /** Gets a collection persister for a collection-valued association. */
     public function getCollectionPersister(AssociationMapping $association): CollectionPersister
     {
-        $role = isset($association['cache'])
-            ? $association['sourceEntity'] . '::' . $association['fieldName']
-            : $association['type'];
+        $role = isset($association->cache)
+            ? $association->sourceEntity . '::' . $association->fieldName
+            : $association->type();
 
         if (isset($this->collectionPersisters[$role])) {
             return $this->collectionPersisters[$role];
         }
 
-        $persister = $association['type'] === ClassMetadata::ONE_TO_MANY
+        $persister = $association->type() === ClassMetadata::ONE_TO_MANY
             ? new OneToManyPersister($this->em)
             : new ManyToManyPersister($this->em);
 
-        if ($this->hasCache && isset($association['cache'])) {
+        if ($this->hasCache && isset($association->cache)) {
             $persister = $this->em->getConfiguration()
                 ->getSecondLevelCacheConfiguration()
                 ->getCacheFactory()

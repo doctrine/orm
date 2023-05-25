@@ -30,14 +30,14 @@ class OneToManyPersister extends AbstractCollectionPersister
         // the entire collection with a new would trigger this operation.
         $mapping = $this->getMapping($collection);
 
-        if (! $mapping['orphanRemoval']) {
+        if (! $mapping->orphanRemoval) {
             // Handling non-orphan removal should never happen, as @OneToMany
             // can only be inverse side. For owning side one to many, it is
             // required to have a join table, which would classify as a ManyToManyPersister.
             return;
         }
 
-        $targetClass = $this->em->getClassMetadata($mapping['targetEntity']);
+        $targetClass = $this->em->getClassMetadata($mapping->targetEntity);
 
         $targetClass->isInheritanceTypeJoined()
             ? $this->deleteJoinedEntityCollection($collection)
@@ -60,7 +60,7 @@ class OneToManyPersister extends AbstractCollectionPersister
             throw new BadMethodCallException('Selecting a collection by index is only supported on indexed collections.');
         }
 
-        $persister = $this->uow->getEntityPersister($mapping['targetEntity']);
+        $persister = $this->uow->getEntityPersister($mapping->targetEntity);
 
         return $persister->load(
             [
@@ -78,12 +78,12 @@ class OneToManyPersister extends AbstractCollectionPersister
     public function count(PersistentCollection $collection): int
     {
         $mapping   = $this->getMapping($collection);
-        $persister = $this->uow->getEntityPersister($mapping['targetEntity']);
+        $persister = $this->uow->getEntityPersister($mapping->targetEntity);
 
         // only works with single id identifier entities. Will throw an
         // exception in Entity Persisters if that is not the case for the
         // 'mappedBy' field.
-        $criteria = new Criteria(Criteria::expr()->eq($mapping['mappedBy'], $collection->getOwner()));
+        $criteria = new Criteria(Criteria::expr()->eq($mapping->mappedBy, $collection->getOwner()));
 
         return $persister->count($criteria);
     }
@@ -94,7 +94,7 @@ class OneToManyPersister extends AbstractCollectionPersister
     public function slice(PersistentCollection $collection, int $offset, int|null $length = null): array
     {
         $mapping   = $this->getMapping($collection);
-        $persister = $this->uow->getEntityPersister($mapping['targetEntity']);
+        $persister = $this->uow->getEntityPersister($mapping->targetEntity);
 
         return $persister->getOneToManyCollection($mapping, $collection->getOwner(), $offset, $length);
     }
@@ -107,7 +107,7 @@ class OneToManyPersister extends AbstractCollectionPersister
             throw new BadMethodCallException('Selecting a collection by index is only supported on indexed collections.');
         }
 
-        $persister = $this->uow->getEntityPersister($mapping['targetEntity']);
+        $persister = $this->uow->getEntityPersister($mapping->targetEntity);
 
         // only works with single id identifier entities. Will throw an
         // exception in Entity Persisters if that is not the case for the
@@ -127,12 +127,12 @@ class OneToManyPersister extends AbstractCollectionPersister
         }
 
         $mapping   = $this->getMapping($collection);
-        $persister = $this->uow->getEntityPersister($mapping['targetEntity']);
+        $persister = $this->uow->getEntityPersister($mapping->targetEntity);
 
         // only works with single id identifier entities. Will throw an
         // exception in Entity Persisters if that is not the case for the
         // 'mappedBy' field.
-        $criteria = new Criteria(Criteria::expr()->eq($mapping['mappedBy'], $collection->getOwner()));
+        $criteria = new Criteria(Criteria::expr()->eq($mapping->mappedBy, $collection->getOwner()));
 
         return $persister->exists($element, $criteria);
     }
@@ -150,12 +150,12 @@ class OneToManyPersister extends AbstractCollectionPersister
     {
         $mapping     = $this->getMapping($collection);
         $identifier  = $this->uow->getEntityIdentifier($collection->getOwner());
-        $sourceClass = $this->em->getClassMetadata($mapping['sourceEntity']);
-        $targetClass = $this->em->getClassMetadata($mapping['targetEntity']);
+        $sourceClass = $this->em->getClassMetadata($mapping->sourceEntity);
+        $targetClass = $this->em->getClassMetadata($mapping->targetEntity);
         $columns     = [];
         $parameters  = [];
 
-        foreach ($targetClass->associationMappings[$mapping['mappedBy']]['joinColumns'] as $joinColumn) {
+        foreach ($this->em->getMetadataFactory()->getOwningSide($mapping)->joinColumns as $joinColumn) {
             $columns[]    = $this->quoteStrategy->getJoinColumnName($joinColumn, $targetClass, $this->platform);
             $parameters[] = $identifier[$sourceClass->getFieldForColumn($joinColumn['referencedColumnName'])];
         }
@@ -177,8 +177,8 @@ class OneToManyPersister extends AbstractCollectionPersister
     private function deleteJoinedEntityCollection(PersistentCollection $collection): int
     {
         $mapping     = $this->getMapping($collection);
-        $sourceClass = $this->em->getClassMetadata($mapping['sourceEntity']);
-        $targetClass = $this->em->getClassMetadata($mapping['targetEntity']);
+        $sourceClass = $this->em->getClassMetadata($mapping->sourceEntity);
+        $targetClass = $this->em->getClassMetadata($mapping->targetEntity);
         $rootClass   = $this->em->getClassMetadata($targetClass->rootEntityName);
 
         // 1) Build temporary table DDL
@@ -203,7 +203,7 @@ class OneToManyPersister extends AbstractCollectionPersister
         // 2) Build insert table records into temporary table
         $query = $this->em->createQuery(
             ' SELECT t0.' . implode(', t0.', $rootClass->getIdentifierFieldNames())
-            . ' FROM ' . $targetClass->name . ' t0 WHERE t0.' . $mapping['mappedBy'] . ' = :owner',
+            . ' FROM ' . $targetClass->name . ' t0 WHERE t0.' . $mapping->mappedBy . ' = :owner',
         )->setParameter('owner', $collection->getOwner());
 
         $sql = $query->getSQL();

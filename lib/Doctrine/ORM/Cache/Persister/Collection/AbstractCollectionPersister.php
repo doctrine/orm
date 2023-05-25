@@ -53,8 +53,8 @@ abstract class AbstractCollectionPersister implements CachedCollectionPersister
         $this->metadataFactory = $em->getMetadataFactory();
         $this->cacheLogger     = $cacheConfig->getCacheLogger();
         $this->hydrator        = $cacheFactory->buildCollectionHydrator($em, $association);
-        $this->sourceEntity    = $em->getClassMetadata($association['sourceEntity']);
-        $this->targetEntity    = $em->getClassMetadata($association['targetEntity']);
+        $this->sourceEntity    = $em->getClassMetadata($association->sourceEntity);
+        $this->targetEntity    = $em->getClassMetadata($association->targetEntity);
     }
 
     public function getCacheRegion(): Region
@@ -135,7 +135,7 @@ abstract class AbstractCollectionPersister implements CachedCollectionPersister
     public function count(PersistentCollection $collection): int
     {
         $ownerId = $this->uow->getEntityIdentifier($collection->getOwner());
-        $key     = new CollectionCacheKey($this->sourceEntity->rootEntityName, $this->association['fieldName'], $ownerId);
+        $key     = new CollectionCacheKey($this->sourceEntity->rootEntityName, $this->association->fieldName, $ownerId);
         $entry   = $this->region->get($key);
 
         if ($entry !== null) {

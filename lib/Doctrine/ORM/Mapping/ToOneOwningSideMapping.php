@@ -81,7 +81,7 @@ abstract class ToOneOwningSideMapping extends OwningSideMapping implements ToOne
             // Apply default join column
             $mapping->joinColumns = [
                 JoinColumnMapping::fromMappingArray([
-                    'name' => $namingStrategy->joinColumnName($mapping['fieldName'], $name),
+                    'name' => $namingStrategy->joinColumnName($mapping->fieldName, $name),
                     'referencedColumnName' => $namingStrategy->referenceColumnName(),
                 ]),
             ];

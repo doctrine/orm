@@ -49,10 +49,10 @@ class ResolveTargetEntityListenerTest extends OrmTestCase
         $cm   = $this->factory->getMetadataFor(ResolveTargetEntity::class);
         $meta = $cm->associationMappings;
 
-        self::assertSame(TargetEntity::class, $meta['manyToMany']['targetEntity']);
-        self::assertSame(ResolveTargetEntity::class, $meta['manyToOne']['targetEntity']);
-        self::assertSame(ResolveTargetEntity::class, $meta['oneToMany']['targetEntity']);
-        self::assertSame(TargetEntity::class, $meta['oneToOne']['targetEntity']);
+        self::assertSame(TargetEntity::class, $meta['manyToMany']->targetEntity);
+        self::assertSame(ResolveTargetEntity::class, $meta['manyToOne']->targetEntity);
+        self::assertSame(ResolveTargetEntity::class, $meta['oneToMany']->targetEntity);
+        self::assertSame(TargetEntity::class, $meta['oneToOne']->targetEntity);
 
         self::assertSame($cm, $this->factory->getMetadataFor(ResolveTarget::class));
     }
@@ -82,8 +82,8 @@ class ResolveTargetEntityListenerTest extends OrmTestCase
         $cm   = $this->factory->getMetadataFor(ResolveTargetEntity::class);
         $meta = $cm->associationMappings['manyToMany'];
 
-        self::assertSame(TargetEntity::class, $meta['targetEntity']);
-        self::assertEquals(['resolvetargetentity_id', 'target_id'], $meta['joinTableColumns']);
+        self::assertSame(TargetEntity::class, $meta->targetEntity);
+        self::assertEquals(['resolvetargetentity_id', 'target_id'], $meta->joinTableColumns);
     }
 
     #[CoversNothing]

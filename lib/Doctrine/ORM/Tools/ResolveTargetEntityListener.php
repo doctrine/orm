@@ -70,7 +70,7 @@ class ResolveTargetEntityListener implements EventSubscriber
         $cm = $args->getClassMetadata();
 
         foreach ($cm->associationMappings as $mapping) {
-            if (isset($this->resolveTargetEntities[$mapping['targetEntity']])) {
+            if (isset($this->resolveTargetEntities[$mapping->targetEntity])) {
                 $this->remapAssociation($cm, $mapping);
             }
         }
@@ -90,16 +90,16 @@ class ResolveTargetEntityListener implements EventSubscriber
 
     private function remapAssociation(ClassMetadata $classMetadata, AssociationMapping $mapping): void
     {
-        $newMapping              = $this->resolveTargetEntities[$mapping['targetEntity']];
+        $newMapping              = $this->resolveTargetEntities[$mapping->targetEntity];
         $newMapping              = array_replace_recursive(
             $mapping->toArray(),
             $newMapping,
         );
-        $newMapping['fieldName'] = $mapping['fieldName'];
+        $newMapping['fieldName'] = $mapping->fieldName;
 
-        unset($classMetadata->associationMappings[$mapping['fieldName']]);
+        unset($classMetadata->associationMappings[$mapping->fieldName]);
 
-        switch ($mapping['type']) {
+        switch ($mapping->type()) {
             case ClassMetadata::MANY_TO_MANY:
                 $classMetadata->mapManyToMany($newMapping);
                 break;

@@ -54,7 +54,7 @@ class AnsiQuoteStrategy implements QuoteStrategy
         ClassMetadata $class,
         AbstractPlatform $platform,
     ): string {
-        return $association['joinTable']['name'];
+        return $association->joinTable['name'];
     }
 
     /**

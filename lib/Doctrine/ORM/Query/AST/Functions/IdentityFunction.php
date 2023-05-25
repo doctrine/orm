@@ -35,7 +35,7 @@ class IdentityFunction extends FunctionNode
         $dqlAlias      = $this->pathExpression->identificationVariable;
         $assocField    = $this->pathExpression->field;
         $assoc         = $sqlWalker->getMetadataForDqlAlias($dqlAlias)->associationMappings[$assocField];
-        $targetEntity  = $entityManager->getClassMetadata($assoc['targetEntity']);
+        $targetEntity  = $entityManager->getClassMetadata($assoc->targetEntity);
 
         assert($assoc->isToOneOwningSide());
         $joinColumn = reset($assoc->joinColumns);
@@ -48,7 +48,7 @@ class IdentityFunction extends FunctionNode
             $field      = $targetEntity->fieldMappings[$this->fieldMapping];
             $joinColumn = null;
 
-            foreach ($assoc['joinColumns'] as $mapping) {
+            foreach ($assoc->joinColumns as $mapping) {
                 if ($mapping['referencedColumnName'] === $field->columnName) {
                     $joinColumn = $mapping;
 
@@ -62,7 +62,7 @@ class IdentityFunction extends FunctionNode
         }
 
         // The table with the relation may be a subclass, so get the table name from the association definition
-        $tableName = $entityManager->getClassMetadata($assoc['sourceEntity'])->getTableName();
+        $tableName = $entityManager->getClassMetadata($assoc->sourceEntity)->getTableName();
 
         $tableAlias = $sqlWalker->getSQLTableAlias($tableName, $dqlAlias);
         $columnName = $quoteStrategy->getJoinColumnName($joinColumn, $targetEntity, $platform);

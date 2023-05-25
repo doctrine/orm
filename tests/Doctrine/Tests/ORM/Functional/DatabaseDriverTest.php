@@ -9,7 +9,6 @@ use Doctrine\DBAL\Platforms\PostgreSQLPlatform;
 use Doctrine\DBAL\Platforms\SQLServerPlatform;
 use Doctrine\DBAL\Schema\AbstractSchemaManager;
 use Doctrine\DBAL\Schema\Table;
-use Doctrine\ORM\Mapping\ClassMetadata;
 use PHPUnit\Framework\Attributes\Group;
 
 use function array_change_key_case;
@@ -105,7 +104,7 @@ class DatabaseDriverTest extends DatabaseDriverTestCase
         $bazMetadata->associationMappings = array_change_key_case($bazMetadata->associationMappings, CASE_LOWER);
 
         self::assertArrayHasKey('bar', $bazMetadata->associationMappings);
-        self::assertEquals(ClassMetadata::MANY_TO_ONE, $bazMetadata->associationMappings['bar']['type']);
+        self::assertTrue($bazMetadata->associationMappings['bar']->isManyToOne());
     }
 
     public function testDetectManyToManyTables(): void

@@ -89,7 +89,7 @@ class MultiTableUpdateExecutor extends AbstractSqlExecutor
 
                 if (
                     (isset($class->fieldMappings[$field]) && ! isset($class->fieldMappings[$field]->inherited)) ||
-                    (isset($class->associationMappings[$field]) && ! isset($class->associationMappings[$field]['inherited']))
+                    (isset($class->associationMappings[$field]) && ! isset($class->associationMappings[$field]->inherited))
                 ) {
                     $newValue = $updateItem->newValue;
 

@@ -15,7 +15,7 @@ class ReadOnlyCachedCollectionPersister extends NonStrictReadWriteCachedCollecti
         if ($collection->isDirty() && $collection->getSnapshot()) {
             throw CannotUpdateReadOnlyCollection::fromEntityAndField(
                 ClassUtils::getClass($collection->getOwner()),
-                $this->association['fieldName'],
+                $this->association->fieldName,
             );
         }
 

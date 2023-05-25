@@ -89,8 +89,7 @@ class XmlMappingDriverTest extends MappingDriverTestCase
         self::assertEquals(['language', 'article'], $class->identifier);
         self::assertArrayHasKey('article', $class->associationMappings);
 
-        self::assertArrayHasKey('id', $class->associationMappings['article']);
-        self::assertTrue($class->associationMappings['article']['id']);
+        self::assertTrue($class->associationMappings['article']->id);
     }
 
     public function testEmbeddableMapping(): void
@@ -257,7 +256,7 @@ class XmlMappingDriverTest extends MappingDriverTestCase
 
         self::assertEquals(
             Criteria::ASC,
-            $class->getMetadataValue('associationMappings')['tags']['orderBy']['position'],
+            $class->getMetadataValue('associationMappings')['tags']->orderBy['position'],
         );
     }
 
@@ -271,7 +270,7 @@ class XmlMappingDriverTest extends MappingDriverTestCase
 
         self::assertEquals(
             Criteria::ASC,
-            $class->getMetadataValue('associationMappings')['tags']['orderBy']['position'],
+            $class->getMetadataValue('associationMappings')['tags']->orderBy['position'],
         );
     }
 

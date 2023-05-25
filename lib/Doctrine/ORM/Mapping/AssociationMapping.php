@@ -27,7 +27,7 @@ abstract class AssociationMapping implements ArrayAccess
     /**
      * The fetching strategy to use for the association, usually defaults to FETCH_LAZY.
      *
-     * @var ClassMetadata::FETCH_EAGER|ClassMetadata::FETCH_LAZY
+     * @var ClassMetadata::FETCH_*
      */
     public int|null $fetch = null;
 

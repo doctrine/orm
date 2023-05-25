@@ -322,7 +322,7 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
             $this->association !== null &&
             $this->association->isToMany() &&
             $this->owner &&
-            $this->getMapping()['orphanRemoval']
+            $this->getMapping()->orphanRemoval
         ) {
             $this->getUnitOfWork()->scheduleOrphanRemoval($removed);
         }
@@ -344,7 +344,7 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
             $this->association !== null &&
             $this->association->isToMany() &&
             $this->owner &&
-            $this->getMapping()['orphanRemoval']
+            $this->getMapping()->orphanRemoval
         ) {
             $this->getUnitOfWork()->scheduleOrphanRemoval($element);
         }
@@ -355,8 +355,8 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
     public function containsKey(mixed $key): bool
     {
         if (
-            ! $this->initialized && $this->getMapping()['fetch'] === ClassMetadata::FETCH_EXTRA_LAZY
-            && isset($this->getMapping()['indexBy'])
+            ! $this->initialized && $this->getMapping()->fetch === ClassMetadata::FETCH_EXTRA_LAZY
+            && isset($this->getMapping()->indexBy)
         ) {
             $persister = $this->getUnitOfWork()->getCollectionPersister($this->getMapping());
 
@@ -373,7 +373,7 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
      */
     public function contains(mixed $element): bool
     {
-        if (! $this->initialized && $this->getMapping()['fetch'] === ClassMetadata::FETCH_EXTRA_LAZY) {
+        if (! $this->initialized && $this->getMapping()->fetch === ClassMetadata::FETCH_EXTRA_LAZY) {
             $persister = $this->getUnitOfWork()->getCollectionPersister($this->getMapping());
 
             return $this->unwrap()->contains($element) || $persister->contains($this, $element);
@@ -386,12 +386,12 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
     {
         if (
             ! $this->initialized
-            && $this->getMapping()['fetch'] === ClassMetadata::FETCH_EXTRA_LAZY
-            && isset($this->getMapping()['indexBy'])
+            && $this->getMapping()->fetch === ClassMetadata::FETCH_EXTRA_LAZY
+            && isset($this->getMapping()->indexBy)
         ) {
             assert($this->em !== null);
             assert($this->typeClass !== null);
-            if (! $this->typeClass->isIdentifierComposite && $this->typeClass->isIdentifier($this->getMapping()['indexBy'])) {
+            if (! $this->typeClass->isIdentifierComposite && $this->typeClass->isIdentifier($this->getMapping()->indexBy)) {
                 return $this->em->find($this->typeClass->name, $key);
             }
 
@@ -403,7 +403,7 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
 
     public function count(): int
     {
-        if (! $this->initialized && $this->association !== null && $this->getMapping()['fetch'] === ClassMetadata::FETCH_EXTRA_LAZY) {
+        if (! $this->initialized && $this->association !== null && $this->getMapping()->fetch === ClassMetadata::FETCH_EXTRA_LAZY) {
             $persister = $this->getUnitOfWork()->getCollectionPersister($this->association);
 
             return $persister->count($this) + ($this->isDirty ? $this->unwrap()->count() : 0);
@@ -480,7 +480,7 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
 
         if (
             $association->isToMany() &&
-            $association['orphanRemoval'] &&
+            $association->orphanRemoval &&
             $this->owner
         ) {
             // we need to initialize here, as orphan removal acts like implicit cascadeRemove,
@@ -537,7 +537,7 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
      */
     public function slice(int $offset, int|null $length = null): array
     {
-        if (! $this->initialized && ! $this->isDirty && $this->getMapping()['fetch'] === ClassMetadata::FETCH_EXTRA_LAZY) {
+        if (! $this->initialized && ! $this->isDirty && $this->getMapping()->fetch === ClassMetadata::FETCH_EXTRA_LAZY) {
             $persister = $this->getUnitOfWork()->getCollectionPersister($this->getMapping());
 
             return $persister->slice($this, $offset, $length);
@@ -605,9 +605,9 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
         $criteria->where($expression);
         $criteria->orderBy($criteria->getOrderings() ?: $association->orderBy());
 
-        $persister = $this->getUnitOfWork()->getEntityPersister($association['targetEntity']);
+        $persister = $this->getUnitOfWork()->getEntityPersister($association->targetEntity);
 
-        return $association['fetch'] === ClassMetadata::FETCH_EXTRA_LAZY
+        return $association->fetch === ClassMetadata::FETCH_EXTRA_LAZY
             ? new LazyCriteriaCollection($persister, $criteria)
             : new ArrayCollection($persister->loadCriteria($criteria));
     }

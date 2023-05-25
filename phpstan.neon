@@ -31,6 +31,8 @@ parameters:
                 - lib/Doctrine/ORM/Persisters/Collection/ManyToManyPersister.php
                 - lib/Doctrine/ORM/Persisters/Entity/BasicEntityPersister.php
                 - lib/Doctrine/ORM/PersistentCollection.php
+                - lib/Doctrine/ORM/Tools/SchemaTool.php
+
         -
             message: "#^Call to an undefined method .*Mapping\\:\\:(order|index)By\\(\\)\\.#"
             paths:
@@ -40,7 +42,7 @@ parameters:
                 - lib/Doctrine/ORM/Query/SqlWalker.php
 
         -
-            message: '#^.*Doctrine\\ORM\\Mapping\\AssociationMapping&Doctrine\\ORM\\Mapping\\ManyToManyAssociationMapping, Doctrine\\ORM\\Mapping\\AssociationMapping given\.#'
+            message: '#^.*Doctrine\\ORM\\Mapping\\(Association|OwningSide)Mapping given\.#'
             paths:
                 - lib/Doctrine/ORM/Persisters/Entity/BasicEntityPersister.php
                 - lib/Doctrine/ORM/Persisters/Entity/JoinedSubclassPersister.php
@@ -52,5 +54,4 @@ parameters:
         -
             message: '#^.*QuoteStrategy::getJoinTableName\(\) expects.*$#'
             paths:
-                - lib/Doctrine/ORM/Persisters/Entity/BasicEntityPersister.php
                 - lib/Doctrine/ORM/Persisters/Collection/ManyToManyPersister.php

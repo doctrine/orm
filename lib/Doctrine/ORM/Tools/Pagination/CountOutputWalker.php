@@ -16,6 +16,7 @@ use RuntimeException;
 
 use function array_diff;
 use function array_keys;
+use function assert;
 use function count;
 use function implode;
 use function reset;
@@ -95,7 +96,9 @@ class CountOutputWalker extends SqlWalker
             }
 
             if (isset($rootClass->associationMappings[$property])) {
-                $joinColumn = $rootClass->associationMappings[$property]['joinColumns'][0]['name'];
+                $association = $rootClass->associationMappings[$property];
+                assert($association->isToOneOwningSide());
+                $joinColumn = $association->joinColumns[0]['name'];
 
                 foreach (array_keys($this->rsm->metaMappings, $joinColumn, true) as $alias) {
                     if ($this->rsm->columnOwnerMap[$alias] === $rootAlias) {

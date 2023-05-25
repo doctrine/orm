@@ -137,10 +137,10 @@ class ResultSetMappingBuilder extends ResultSetMapping implements Stringable
 
         foreach ($classMetadata->associationMappings as $associationMapping) {
             if ($associationMapping->isToOneOwningSide()) {
-                $targetClass  = $this->em->getClassMetadata($associationMapping['targetEntity']);
-                $isIdentifier = isset($associationMapping['id']) && $associationMapping['id'] === true;
+                $targetClass  = $this->em->getClassMetadata($associationMapping->targetEntity);
+                $isIdentifier = isset($associationMapping->id) && $associationMapping->id === true;
 
-                foreach ($associationMapping['joinColumns'] as $joinColumn) {
+                foreach ($associationMapping->joinColumns as $joinColumn) {
                     $columnName  = $joinColumn['name'];
                     $columnAlias = $this->getSQLResultCasing($platform, $columnAliasMap[$columnName]);
                     $columnType  = PersisterHelper::getTypeOfColumn($joinColumn['referencedColumnName'], $targetClass, $this->em);
@@ -217,7 +217,7 @@ class ResultSetMappingBuilder extends ResultSetMapping implements Stringable
 
         foreach ($class->associationMappings as $associationMapping) {
             if ($associationMapping->isToOneOwningSide()) {
-                foreach ($associationMapping['joinColumns'] as $joinColumn) {
+                foreach ($associationMapping->joinColumns as $joinColumn) {
                     $columnName               = $joinColumn['name'];
                     $columnAlias[$columnName] = $this->getColumnAlias($columnName, $mode, $customRenameColumns);
                 }
