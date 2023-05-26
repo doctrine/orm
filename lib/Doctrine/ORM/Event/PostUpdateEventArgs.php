@@ -4,6 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Event;
 
-final class PostUpdateEventArgs extends LifecycleEventArgs
+final class PostUpdateEventArgs extends AbstractUpdateEventArgs
 {
 }

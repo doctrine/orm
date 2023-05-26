@@ -1224,8 +1224,10 @@ class UnitOfWork implements PropertyChangedListener
                 continue;
             }
 
+            $entityChangeSet = $this->getEntityChangeSet($entity);
+
             if ($preUpdateInvoke !== ListenersInvoker::INVOKE_NONE) {
-                $this->listenersInvoker->invoke($class, Events::preUpdate, $entity, new PreUpdateEventArgs($entity, $this->em, $this->getEntityChangeSet($entity)), $preUpdateInvoke);
+                $this->listenersInvoker->invoke($class, Events::preUpdate, $entity, new PreUpdateEventArgs($entity, $this->em, $entityChangeSet), $preUpdateInvoke);
 
                 $this->recomputeSingleEntityChangeSet($class, $entity);
             }
@@ -1237,7 +1239,7 @@ class UnitOfWork implements PropertyChangedListener
             unset($this->entityUpdates[$oid]);
 
             if ($postUpdateInvoke !== ListenersInvoker::INVOKE_NONE) {
-                $this->listenersInvoker->invoke($class, Events::postUpdate, $entity, new PostUpdateEventArgs($entity, $this->em), $postUpdateInvoke);
+                $this->listenersInvoker->invoke($class, Events::postUpdate, $entity, new PostUpdateEventArgs($entity, $this->em, $entityChangeSet), $postUpdateInvoke);
             }
         }
     }
