@@ -22,7 +22,7 @@ final class OneToOneOwningSideMappingTest extends TestCase
             targetEntity: self::class,
         );
 
-        $mapping->joinColumns              = [new JoinColumnMapping('id')];
+        $mapping->joinColumns              = [new JoinColumnMapping('foo_id', 'id')];
         $mapping->joinColumnFieldNames     = ['foo' => 'bar'];
         $mapping->sourceToTargetKeyColumns = ['foo' => 'bar'];
         $mapping->targetToSourceKeyColumns = ['bar' => 'foo'];

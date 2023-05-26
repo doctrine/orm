@@ -13,7 +13,6 @@ final class JoinColumnMapping implements ArrayAccess
 {
     use ArrayAccessImplementation;
 
-    public string|null $name             = null;
     public bool|null $unique             = null;
     public bool|null $quoted             = null;
     public string|null $fieldName        = null;
@@ -25,6 +24,7 @@ final class JoinColumnMapping implements ArrayAccess
     public array|null $options = null;
 
     public function __construct(
+        public string $name,
         public string $referencedColumnName,
     ) {
     }
@@ -35,7 +35,7 @@ final class JoinColumnMapping implements ArrayAccess
      */
     public static function fromMappingArray(array $mappingArray): self
     {
-        $mapping = new self($mappingArray['referencedColumnName']);
+        $mapping = new self($mappingArray['name'], $mappingArray['referencedColumnName']);
         foreach ($mappingArray as $key => $value) {
             if (property_exists($mapping, $key) && $value !== null) {
                 $mapping->$key = $value;

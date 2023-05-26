@@ -74,6 +74,14 @@ abstract class ToOneOwningSideMapping extends OwningSideMapping implements ToOne
         array|null $table,
         bool $isInheritanceTypeSingleTable,
     ): static {
+        if (isset($mappingArray['joinColumns'])) {
+            foreach ($mappingArray['joinColumns'] as $index => $joinColumn) {
+                if (empty($joinColumn['name'])) {
+                    $mappingArray['joinColumns'][$index]['name'] = $namingStrategy->joinColumnName($mappingArray['fieldName'], $name);
+                }
+            }
+        }
+
         $mapping = static::fromMappingArray($mappingArray);
 
         assert($mapping->isToOneOwningSide());
@@ -98,10 +106,6 @@ abstract class ToOneOwningSideMapping extends OwningSideMapping implements ToOne
                 } else {
                     $uniqueConstraintColumns[] = $joinColumn->name;
                 }
-            }
-
-            if (empty($joinColumn->name)) {
-                $joinColumn->name = $namingStrategy->joinColumnName($mapping->fieldName, $name);
             }
 
             if (empty($joinColumn->referencedColumnName)) {
