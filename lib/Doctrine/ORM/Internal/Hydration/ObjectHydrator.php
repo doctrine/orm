@@ -280,7 +280,7 @@ class ObjectHydrator extends AbstractHydrator
                     /** @return mixed */
                     static function (string $fieldName) use ($data, $class) {
                         return isset($class->associationMappings[$fieldName]) && assert($class->associationMappings[$fieldName]->isToOneOwningSide())
-                            ? $data[$class->associationMappings[$fieldName]->joinColumns[0]['name']]
+                            ? $data[$class->associationMappings[$fieldName]->joinColumns[0]->name]
                             : $data[$fieldName];
                     },
                     $class->identifier,
@@ -292,7 +292,7 @@ class ObjectHydrator extends AbstractHydrator
             $association = $class->associationMappings[$class->identifier[0]];
             assert($association->isToOneOwningSide());
 
-            return $this->uow->tryGetByIdHash($data[$association->joinColumns[0]['name']], $class->rootEntityName);
+            return $this->uow->tryGetByIdHash($data[$association->joinColumns[0]->name], $class->rootEntityName);
         }
 
         return $this->uow->tryGetByIdHash($data[$class->identifier[0]], $class->rootEntityName);

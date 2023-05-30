@@ -1526,7 +1526,7 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
             // Association defined as Id field
             assert($this->associationMappings[$idProperty]->isToOneOwningSide());
             $joinColumns      = $this->associationMappings[$idProperty]->joinColumns;
-            $assocColumnNames = array_map(static fn (JoinColumnMapping $joinColumn): string => $joinColumn['name'], $joinColumns);
+            $assocColumnNames = array_map(static fn (JoinColumnMapping $joinColumn): string => $joinColumn->name, $joinColumns);
 
             $columnNames = array_merge($columnNames, $assocColumnNames);
         }
@@ -2278,7 +2278,7 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
 
         assert($assoc->isToOneOwningSide());
 
-        return $assoc->joinColumns[0]['name'];
+        return $assoc->joinColumns[0]->name;
     }
 
     /**
@@ -2296,7 +2296,7 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
 
         assert($assoc->isToOneOwningSide());
 
-        return $assoc->joinColumns[0]['referencedColumnName'];
+        return $assoc->joinColumns[0]->referencedColumnName;
     }
 
     /**
@@ -2316,7 +2316,7 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
             if (
                 $this->isAssociationWithSingleJoinColumn($assocName) &&
                 assert($this->associationMappings[$assocName]->isToOneOwningSide()) &&
-                $this->associationMappings[$assocName]->joinColumns[0]['name'] === $columnName
+                $this->associationMappings[$assocName]->joinColumns[0]->name === $columnName
             ) {
                 return $assocName;
             }

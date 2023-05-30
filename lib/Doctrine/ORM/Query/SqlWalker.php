@@ -694,9 +694,9 @@ class SqlWalker
                 $sqlTableAlias = $this->getSQLTableAlias($owningClass->getTableName(), $dqlAlias);
 
                 foreach ($assoc->joinColumns as $joinColumn) {
-                    $columnName  = $joinColumn['name'];
+                    $columnName  = $joinColumn->name;
                     $columnAlias = $this->getSQLColumnAlias($columnName);
-                    $columnType  = PersisterHelper::getTypeOfColumn($joinColumn['referencedColumnName'], $targetClass, $this->em);
+                    $columnType  = PersisterHelper::getTypeOfColumn($joinColumn->referencedColumnName, $targetClass, $this->em);
 
                     $quotedColumnName       = $this->quoteStrategy->getJoinColumnName($joinColumn, $class, $this->platform);
                     $sqlSelectExpressions[] = $sqlTableAlias . '.' . $quotedColumnName . ' AS ' . $columnAlias;
@@ -725,9 +725,9 @@ class SqlWalker
                         $targetClass = $this->em->getClassMetadata($assoc->targetEntity);
 
                         foreach ($assoc->joinColumns as $joinColumn) {
-                            $columnName  = $joinColumn['name'];
+                            $columnName  = $joinColumn->name;
                             $columnAlias = $this->getSQLColumnAlias($columnName);
-                            $columnType  = PersisterHelper::getTypeOfColumn($joinColumn['referencedColumnName'], $targetClass, $this->em);
+                            $columnType  = PersisterHelper::getTypeOfColumn($joinColumn->referencedColumnName, $targetClass, $this->em);
 
                             $quotedColumnName       = $this->quoteStrategy->getJoinColumnName($joinColumn, $subClass, $this->platform);
                             $sqlSelectExpressions[] = $sqlTableAlias . '.' . $quotedColumnName . ' AS ' . $columnAlias;
@@ -949,13 +949,13 @@ class SqlWalker
             case $assoc->isManyToMany():
                 // Join relation table
                 $joinTable      = $assoc->joinTable;
-                $joinTableAlias = $this->getSQLTableAlias($joinTable['name'], $joinedDqlAlias);
+                $joinTableAlias = $this->getSQLTableAlias($joinTable->name, $joinedDqlAlias);
                 $joinTableName  = $this->quoteStrategy->getJoinTableName($assoc, $sourceClass, $this->platform);
 
                 $conditions      = [];
                 $relationColumns = $relation->isOwningSide()
-                    ? $assoc->joinTable['joinColumns']
-                    : $assoc->joinTable['inverseJoinColumns'];
+                    ? $assoc->joinTable->joinColumns
+                    : $assoc->joinTable->inverseJoinColumns;
 
                 foreach ($relationColumns as $joinColumn) {
                     $quotedSourceColumn = $this->quoteStrategy->getJoinColumnName($joinColumn, $targetClass, $this->platform);
@@ -971,8 +971,8 @@ class SqlWalker
 
                 $conditions      = [];
                 $relationColumns = $relation->isOwningSide()
-                    ? $assoc->joinTable['inverseJoinColumns']
-                    : $assoc->joinTable['joinColumns'];
+                    ? $assoc->joinTable->inverseJoinColumns
+                    : $assoc->joinTable->joinColumns;
 
                 foreach ($relationColumns as $joinColumn) {
                     $quotedSourceColumn = $this->quoteStrategy->getJoinColumnName($joinColumn, $targetClass, $this->platform);
@@ -1891,28 +1891,28 @@ class SqlWalker
             $joinTable = $owningAssoc->joinTable;
 
             // SQL table aliases
-            $joinTableAlias   = $this->getSQLTableAlias($joinTable['name']);
+            $joinTableAlias   = $this->getSQLTableAlias($joinTable->name);
             $sourceTableAlias = $this->getSQLTableAlias($class->getTableName(), $dqlAlias);
 
             $sql .= $this->quoteStrategy->getJoinTableName($owningAssoc, $targetClass, $this->platform) . ' ' . $joinTableAlias . ' WHERE ';
 
-            $joinColumns = $assoc->isOwningSide() ? $joinTable['joinColumns'] : $joinTable['inverseJoinColumns'];
+            $joinColumns = $assoc->isOwningSide() ? $joinTable->joinColumns : $joinTable->inverseJoinColumns;
             $sqlParts    = [];
 
             foreach ($joinColumns as $joinColumn) {
-                $targetColumn = $this->quoteStrategy->getColumnName($class->fieldNames[$joinColumn['referencedColumnName']], $class, $this->platform);
+                $targetColumn = $this->quoteStrategy->getColumnName($class->fieldNames[$joinColumn->referencedColumnName], $class, $this->platform);
 
-                $sqlParts[] = $joinTableAlias . '.' . $joinColumn['name'] . ' = ' . $sourceTableAlias . '.' . $targetColumn;
+                $sqlParts[] = $joinTableAlias . '.' . $joinColumn->name . ' = ' . $sourceTableAlias . '.' . $targetColumn;
             }
 
-            $joinColumns = $assoc->isOwningSide() ? $joinTable['inverseJoinColumns'] : $joinTable['joinColumns'];
+            $joinColumns = $assoc->isOwningSide() ? $joinTable->inverseJoinColumns : $joinTable->joinColumns;
 
             foreach ($joinColumns as $joinColumn) {
                 if (isset($dqlParamKey)) {
                     $this->parserResult->addParameterMapping($dqlParamKey, $this->sqlParamIndex++);
                 }
 
-                $sqlParts[] = $joinTableAlias . '.' . $joinColumn['name'] . ' IN (' . $entitySql . ')';
+                $sqlParts[] = $joinTableAlias . '.' . $joinColumn->name . ' IN (' . $entitySql . ')';
             }
 
             $sql .= implode(' AND ', $sqlParts);

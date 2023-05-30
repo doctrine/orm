@@ -522,13 +522,13 @@ class BasicEntityPersister implements EntityPersister
 
             $association = $this->em->getMetadataFactory()->getOwningSide($association);
             $joinColumns = $mapping->isOwningSide()
-                ? $association->joinTable['joinColumns']
-                : $association->joinTable['inverseJoinColumns'];
+                ? $association->joinTable->joinColumns
+                : $association->joinTable->inverseJoinColumns;
 
             if ($selfReferential) {
                 $otherColumns = ! $mapping->isOwningSide()
-                    ? $association->joinTable['joinColumns']
-                    : $association->joinTable['inverseJoinColumns'];
+                    ? $association->joinTable->joinColumns
+                    : $association->joinTable->inverseJoinColumns;
             }
 
             foreach ($joinColumns as $joinColumn) {
@@ -661,8 +661,8 @@ class BasicEntityPersister implements EntityPersister
             $owningTable = $this->getOwningTable($field);
 
             foreach ($assoc->joinColumns as $joinColumn) {
-                $sourceColumn = $joinColumn['name'];
-                $targetColumn = $joinColumn['referencedColumnName'];
+                $sourceColumn = $joinColumn->name;
+                $targetColumn = $joinColumn->referencedColumnName;
                 $quotedColumn = $this->quoteStrategy->getJoinColumnName($joinColumn, $this->class, $this->platform);
 
                 $this->quotedColumns[$sourceColumn]  = $quotedColumn;
@@ -984,13 +984,13 @@ class BasicEntityPersister implements EntityPersister
 
         $association = $this->em->getMetadataFactory()->getOwningSide($assoc);
         $joinColumns = $assoc->isOwningSide()
-            ? $association->joinTable['joinColumns']
-            : $association->joinTable['inverseJoinColumns'];
+            ? $association->joinTable->joinColumns
+            : $association->joinTable->inverseJoinColumns;
 
         $quotedJoinTable = $this->quoteStrategy->getJoinTableName($association, $class, $this->platform);
 
         foreach ($joinColumns as $joinColumn) {
-            $sourceKeyColumn = $joinColumn['referencedColumnName'];
+            $sourceKeyColumn = $joinColumn->referencedColumnName;
             $quotedKeyColumn = $this->quoteStrategy->getJoinColumnName($joinColumn, $class, $this->platform);
 
             switch (true) {
@@ -1314,10 +1314,10 @@ class BasicEntityPersister implements EntityPersister
 
         foreach ($assoc->joinColumns as $joinColumn) {
             $quotedColumn     = $this->quoteStrategy->getJoinColumnName($joinColumn, $this->class, $this->platform);
-            $resultColumnName = $this->getSQLColumnAlias($joinColumn['name']);
-            $type             = PersisterHelper::getTypeOfColumn($joinColumn['referencedColumnName'], $targetClass, $this->em);
+            $resultColumnName = $this->getSQLColumnAlias($joinColumn->name);
+            $type             = PersisterHelper::getTypeOfColumn($joinColumn->referencedColumnName, $targetClass, $this->em);
 
-            $this->currentPersisterContext->rsm->addMetaResult($alias, $resultColumnName, $joinColumn['name'], $isIdentifier, $type);
+            $this->currentPersisterContext->rsm->addMetaResult($alias, $resultColumnName, $joinColumn->name, $isIdentifier, $type);
 
             $columnList[] = sprintf('%s.%s AS %s', $sqlTableAlias, $quotedColumn, $resultColumnName);
         }
@@ -1338,8 +1338,8 @@ class BasicEntityPersister implements EntityPersister
         $association   = $this->em->getMetadataFactory()->getOwningSide($manyToMany);
         $joinTableName = $this->quoteStrategy->getJoinTableName($association, $this->class, $this->platform);
         $joinColumns   = $manyToMany->isOwningSide()
-            ? $association->joinTable['inverseJoinColumns']
-            : $association->joinTable['joinColumns'];
+            ? $association->joinTable->inverseJoinColumns
+            : $association->joinTable->joinColumns;
 
         foreach ($joinColumns as $joinColumn) {
             $quotedSourceColumn = $this->quoteStrategy->getJoinColumnName($joinColumn, $this->class, $this->platform);
@@ -1646,8 +1646,8 @@ class BasicEntityPersister implements EntityPersister
 
                 $joinTableName = $this->quoteStrategy->getJoinTableName($association, $class, $this->platform);
                 $joinColumns   = $assoc->isOwningSide()
-                    ? $association->joinTable['joinColumns']
-                    : $association->joinTable['inverseJoinColumns'];
+                    ? $association->joinTable->joinColumns
+                    : $association->joinTable->inverseJoinColumns;
 
                 foreach ($joinColumns as $joinColumn) {
                     $columns[] = $joinTableName . '.' . $this->quoteStrategy->getJoinColumnName($joinColumn, $class, $this->platform);
@@ -1992,7 +1992,7 @@ class BasicEntityPersister implements EntityPersister
     {
         // if one of the join columns is nullable, return left join
         foreach ($joinColumns as $joinColumn) {
-            if (! isset($joinColumn['nullable']) || $joinColumn['nullable']) {
+            if (! isset($joinColumn->nullable) || $joinColumn->nullable) {
                 return 'LEFT JOIN';
             }
         }

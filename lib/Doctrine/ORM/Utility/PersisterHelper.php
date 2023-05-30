@@ -50,7 +50,7 @@ class PersisterHelper
         $targetClass = $em->getClassMetadata($assoc->targetEntity);
 
         foreach ($joinData->joinColumns as $joinColumn) {
-            $types[] = self::getTypeOfColumn($joinColumn['referencedColumnName'], $targetClass, $em);
+            $types[] = self::getTypeOfColumn($joinColumn->referencedColumnName, $targetClass, $em);
         }
 
         return $types;
@@ -74,8 +74,8 @@ class PersisterHelper
             }
 
             foreach ($assoc->joinColumns as $joinColumn) {
-                if ($joinColumn['name'] === $columnName) {
-                    $targetColumnName = $joinColumn['referencedColumnName'];
+                if ($joinColumn->name === $columnName) {
+                    $targetColumnName = $joinColumn->referencedColumnName;
                     $targetClass      = $em->getClassMetadata($assoc->targetEntity);
 
                     return self::getTypeOfColumn($targetColumnName, $targetClass, $em);
@@ -89,9 +89,9 @@ class PersisterHelper
                 continue;
             }
 
-            foreach ($assoc->joinTable['joinColumns'] as $joinColumn) {
-                if ($joinColumn['name'] === $columnName) {
-                    $targetColumnName = $joinColumn['referencedColumnName'];
+            foreach ($assoc->joinTable->joinColumns as $joinColumn) {
+                if ($joinColumn->name === $columnName) {
+                    $targetColumnName = $joinColumn->referencedColumnName;
                     $targetClass      = $em->getClassMetadata($assoc->targetEntity);
 
                     return self::getTypeOfColumn($targetColumnName, $targetClass, $em);

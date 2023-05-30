@@ -259,7 +259,7 @@ class SchemaTool
                             );
 
                             foreach ($idMapping->joinColumns as $joinColumn) {
-                                if (isset($targetEntity->fieldMappings[$joinColumn['referencedColumnName']])) {
+                                if (isset($targetEntity->fieldMappings[$joinColumn->referencedColumnName])) {
                                     $columnName = $this->quoteStrategy->getJoinColumnName(
                                         $joinColumn,
                                         $class,
@@ -571,7 +571,7 @@ class SchemaTool
 
                 // Build first FK constraint (relation table => source table)
                 $this->gatherRelationJoinColumns(
-                    $joinTable['joinColumns'],
+                    $joinTable->joinColumns,
                     $theJoinTable,
                     $class,
                     $mapping,
@@ -582,7 +582,7 @@ class SchemaTool
 
                 // Build second FK constraint (relation table => target table)
                 $this->gatherRelationJoinColumns(
-                    $joinTable['inverseJoinColumns'],
+                    $joinTable->inverseJoinColumns,
                     $theJoinTable,
                     $foreignClass,
                     $mapping,
@@ -664,12 +664,12 @@ class SchemaTool
         foreach ($joinColumns as $joinColumn) {
             [$definingClass, $referencedFieldName] = $this->getDefiningClass(
                 $class,
-                $joinColumn['referencedColumnName'],
+                $joinColumn->referencedColumnName,
             );
 
             if (! $definingClass) {
                 throw MissingColumnException::fromColumnSourceAndTarget(
-                    $joinColumn['referencedColumnName'],
+                    $joinColumn->referencedColumnName,
                     $mapping->sourceEntity,
                     $mapping->targetEntity,
                 );
@@ -695,14 +695,14 @@ class SchemaTool
 
                 $columnOptions = ['notnull' => false];
 
-                if (isset($joinColumn['columnDefinition'])) {
-                    $columnOptions['columnDefinition'] = $joinColumn['columnDefinition'];
+                if (isset($joinColumn->columnDefinition)) {
+                    $columnOptions['columnDefinition'] = $joinColumn->columnDefinition;
                 } elseif (isset($fieldMapping->columnDefinition)) {
                     $columnOptions['columnDefinition'] = $fieldMapping->columnDefinition;
                 }
 
-                if (isset($joinColumn['nullable'])) {
-                    $columnOptions['notnull'] = ! $joinColumn['nullable'];
+                if (isset($joinColumn->nullable)) {
+                    $columnOptions['notnull'] = ! $joinColumn->nullable;
                 }
 
                 $columnOptions += $this->gatherColumnOptions($fieldMapping);
@@ -721,12 +721,12 @@ class SchemaTool
                 $theJoinTable->addColumn($quotedColumnName, $fieldMapping->type, $columnOptions);
             }
 
-            if (isset($joinColumn['unique']) && $joinColumn['unique'] === true) {
+            if (isset($joinColumn->unique) && $joinColumn->unique === true) {
                 $uniqueConstraints[] = ['columns' => [$quotedColumnName]];
             }
 
-            if (isset($joinColumn['onDelete'])) {
-                $fkOptions['onDelete'] = $joinColumn['onDelete'];
+            if (isset($joinColumn->onDelete)) {
+                $fkOptions['onDelete'] = $joinColumn->onDelete;
             }
         }
 

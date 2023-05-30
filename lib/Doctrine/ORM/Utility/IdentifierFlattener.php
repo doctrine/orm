@@ -65,7 +65,7 @@ final class IdentifierFlattener
                 $associatedId = [];
 
                 foreach ($class->associationMappings[$field]->joinColumns as $joinColumn) {
-                    $associatedId[] = $id[$joinColumn['name']];
+                    $associatedId[] = $id[$joinColumn->name];
                 }
 
                 $flatId[$field] = implode(' ', $associatedId);

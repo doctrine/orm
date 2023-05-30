@@ -160,32 +160,32 @@ class SchemaValidator
             if ($assoc->isOwningSide()) {
                 if ($assoc->isManyToManyOwningSide()) {
                     $identifierColumns = $class->getIdentifierColumnNames();
-                    foreach ($assoc->joinTable['joinColumns'] as $joinColumn) {
-                        if (! in_array($joinColumn['referencedColumnName'], $identifierColumns, true)) {
-                            $ce[] = "The referenced column name '" . $joinColumn['referencedColumnName'] . "' " .
+                    foreach ($assoc->joinTable->joinColumns as $joinColumn) {
+                        if (! in_array($joinColumn->referencedColumnName, $identifierColumns, true)) {
+                            $ce[] = "The referenced column name '" . $joinColumn->referencedColumnName . "' " .
                                 "has to be a primary key column on the target entity class '" . $class->name . "'.";
                             break;
                         }
                     }
 
                     $identifierColumns = $targetMetadata->getIdentifierColumnNames();
-                    foreach ($assoc->joinTable['inverseJoinColumns'] as $inverseJoinColumn) {
-                        if (! in_array($inverseJoinColumn['referencedColumnName'], $identifierColumns, true)) {
-                            $ce[] = "The referenced column name '" . $inverseJoinColumn['referencedColumnName'] . "' " .
+                    foreach ($assoc->joinTable->inverseJoinColumns as $inverseJoinColumn) {
+                        if (! in_array($inverseJoinColumn->referencedColumnName, $identifierColumns, true)) {
+                            $ce[] = "The referenced column name '" . $inverseJoinColumn->referencedColumnName . "' " .
                                 "has to be a primary key column on the target entity class '" . $targetMetadata->name . "'.";
                             break;
                         }
                     }
 
-                    if (count($targetMetadata->getIdentifierColumnNames()) !== count($assoc->joinTable['inverseJoinColumns'])) {
-                        $ce[] = "The inverse join columns of the many-to-many table '" . $assoc->joinTable['name'] . "' " .
+                    if (count($targetMetadata->getIdentifierColumnNames()) !== count($assoc->joinTable->inverseJoinColumns)) {
+                        $ce[] = "The inverse join columns of the many-to-many table '" . $assoc->joinTable->name . "' " .
                                 "have to contain to ALL identifier columns of the target entity '" . $targetMetadata->name . "', " .
                                 "however '" . implode(', ', array_diff($targetMetadata->getIdentifierColumnNames(), array_values($assoc->relationToTargetKeyColumns))) .
                                 "' are missing.";
                     }
 
-                    if (count($class->getIdentifierColumnNames()) !== count($assoc->joinTable['joinColumns'])) {
-                        $ce[] = "The join columns of the many-to-many table '" . $assoc->joinTable['name'] . "' " .
+                    if (count($class->getIdentifierColumnNames()) !== count($assoc->joinTable->joinColumns)) {
+                        $ce[] = "The join columns of the many-to-many table '" . $assoc->joinTable->name . "' " .
                                 "have to contain to ALL identifier columns of the source entity '" . $class->name . "', " .
                                 "however '" . implode(', ', array_diff($class->getIdentifierColumnNames(), array_values($assoc->relationToSourceKeyColumns))) .
                                 "' are missing.";
@@ -193,8 +193,8 @@ class SchemaValidator
                 } elseif ($assoc->isToOneOwningSide()) {
                     $identifierColumns = $targetMetadata->getIdentifierColumnNames();
                     foreach ($assoc->joinColumns as $joinColumn) {
-                        if (! in_array($joinColumn['referencedColumnName'], $identifierColumns, true)) {
-                            $ce[] = "The referenced column name '" . $joinColumn['referencedColumnName'] . "' " .
+                        if (! in_array($joinColumn->referencedColumnName, $identifierColumns, true)) {
+                            $ce[] = "The referenced column name '" . $joinColumn->referencedColumnName . "' " .
                                     "has to be a primary key column on the target entity class '" . $targetMetadata->name . "'.";
                         }
                     }
@@ -203,7 +203,7 @@ class SchemaValidator
                         $ids = [];
 
                         foreach ($assoc->joinColumns as $joinColumn) {
-                            $ids[] = $joinColumn['name'];
+                            $ids[] = $joinColumn->name;
                         }
 
                         $ce[] = "The join columns of the association '" . $assoc->fieldName . "' " .

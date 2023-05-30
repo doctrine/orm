@@ -424,8 +424,8 @@ abstract class MappingDriverTestCase extends OrmTestCase
     public function testJoinColumnUniqueAndNullable(ClassMetadata $class): ClassMetadata
     {
         // Non-Nullability of Join Column
-        self::assertFalse($class->associationMappings['groups']->joinTable['joinColumns'][0]['nullable']);
-        self::assertFalse($class->associationMappings['groups']->joinTable['joinColumns'][0]['unique']);
+        self::assertFalse($class->associationMappings['groups']->joinTable->joinColumns[0]->nullable);
+        self::assertFalse($class->associationMappings['groups']->joinTable->joinColumns[0]->unique);
 
         return $class;
     }
@@ -434,7 +434,7 @@ abstract class MappingDriverTestCase extends OrmTestCase
     public function testColumnDefinition(ClassMetadata $class): ClassMetadata
     {
         self::assertEquals('CHAR(32) NOT NULL', $class->fieldMappings['email']->columnDefinition);
-        self::assertEquals('INT NULL', $class->associationMappings['groups']->joinTable['inverseJoinColumns'][0]['columnDefinition']);
+        self::assertEquals('INT NULL', $class->associationMappings['groups']->joinTable->inverseJoinColumns[0]->columnDefinition);
 
         return $class;
     }
@@ -442,7 +442,7 @@ abstract class MappingDriverTestCase extends OrmTestCase
     #[Depends('testColumnDefinition')]
     public function testJoinColumnOnDelete(ClassMetadata $class): ClassMetadata
     {
-        self::assertEquals('CASCADE', $class->associationMappings['address']->joinColumns[0]['onDelete']);
+        self::assertEquals('CASCADE', $class->associationMappings['address']->joinColumns[0]->onDelete);
 
         return $class;
     }
@@ -634,17 +634,17 @@ abstract class MappingDriverTestCase extends OrmTestCase
         self::assertEquals($guestGroups->isCascadeDetach(), $adminGroups->isCascadeDetach());
 
         // assert not override attributes
-        self::assertEquals('ddc964_users_groups', $guestGroups->joinTable['name']);
-        self::assertEquals('user_id', $guestGroups->joinTable['joinColumns'][0]['name']);
-        self::assertEquals('group_id', $guestGroups->joinTable['inverseJoinColumns'][0]['name']);
+        self::assertEquals('ddc964_users_groups', $guestGroups->joinTable->name);
+        self::assertEquals('user_id', $guestGroups->joinTable->joinColumns[0]->name);
+        self::assertEquals('group_id', $guestGroups->joinTable->inverseJoinColumns[0]->name);
 
         self::assertEquals(['user_id' => 'id'], $guestGroups->relationToSourceKeyColumns);
         self::assertEquals(['group_id' => 'id'], $guestGroups->relationToTargetKeyColumns);
         self::assertEquals(['user_id', 'group_id'], $guestGroups->joinTableColumns);
 
-        self::assertEquals('ddc964_users_admingroups', $adminGroups->joinTable['name']);
-        self::assertEquals('adminuser_id', $adminGroups->joinTable['joinColumns'][0]['name']);
-        self::assertEquals('admingroup_id', $adminGroups->joinTable['inverseJoinColumns'][0]['name']);
+        self::assertEquals('ddc964_users_admingroups', $adminGroups->joinTable->name);
+        self::assertEquals('adminuser_id', $adminGroups->joinTable->joinColumns[0]->name);
+        self::assertEquals('admingroup_id', $adminGroups->joinTable->inverseJoinColumns[0]->name);
 
         self::assertEquals(['adminuser_id' => 'id'], $adminGroups->relationToSourceKeyColumns);
         self::assertEquals(['admingroup_id' => 'id'], $adminGroups->relationToTargetKeyColumns);
@@ -670,12 +670,12 @@ abstract class MappingDriverTestCase extends OrmTestCase
         self::assertEquals($guestAddress->isCascadeDetach(), $adminAddress->isCascadeDetach());
 
         // assert override
-        self::assertEquals('address_id', $guestAddress->joinColumns[0]['name']);
+        self::assertEquals('address_id', $guestAddress->joinColumns[0]->name);
         self::assertEquals(['address_id' => 'id'], $guestAddress->sourceToTargetKeyColumns);
         self::assertEquals(['address_id' => 'address_id'], $guestAddress->joinColumnFieldNames);
         self::assertEquals(['id' => 'address_id'], $guestAddress->targetToSourceKeyColumns);
 
-        self::assertEquals('adminaddress_id', $adminAddress->joinColumns[0]['name']);
+        self::assertEquals('adminaddress_id', $adminAddress->joinColumns[0]->name);
         self::assertEquals(['adminaddress_id' => 'id'], $adminAddress->sourceToTargetKeyColumns);
         self::assertEquals(['adminaddress_id' => 'adminaddress_id'], $adminAddress->joinColumnFieldNames);
         self::assertEquals(['id' => 'adminaddress_id'], $adminAddress->targetToSourceKeyColumns);

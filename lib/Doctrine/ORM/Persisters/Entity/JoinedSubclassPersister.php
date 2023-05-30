@@ -399,9 +399,9 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
             foreach ($mapping->joinColumns as $joinColumn) {
                 $columnList[] = $this->getSelectJoinColumnSQL(
                     $tableAlias,
-                    $joinColumn['name'],
+                    $joinColumn->name,
                     $this->quoteStrategy->getJoinColumnName($joinColumn, $this->class, $this->platform),
-                    PersisterHelper::getTypeOfColumn($joinColumn['referencedColumnName'], $targetClass, $this->em),
+                    PersisterHelper::getTypeOfColumn($joinColumn->referencedColumnName, $targetClass, $this->em),
                 );
             }
         }
@@ -438,9 +438,9 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
                 foreach ($mapping->joinColumns as $joinColumn) {
                     $columnList[] = $this->getSelectJoinColumnSQL(
                         $tableAlias,
-                        $joinColumn['name'],
+                        $joinColumn->name,
                         $this->quoteStrategy->getJoinColumnName($joinColumn, $subClass, $this->platform),
-                        PersisterHelper::getTypeOfColumn($joinColumn['referencedColumnName'], $targetClass, $this->em),
+                        PersisterHelper::getTypeOfColumn($joinColumn->referencedColumnName, $targetClass, $this->em),
                     );
                 }
             }
