@@ -28,6 +28,7 @@ use Doctrine\ORM\Exception\UnexpectedAssociationValue;
 use Doctrine\ORM\Id\AssignedGenerator;
 use Doctrine\ORM\Internal\CommitOrderCalculator;
 use Doctrine\ORM\Internal\HydrationCompleteHandler;
+use Doctrine\ORM\Internal\TopologicalSort;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\ORM\Mapping\Reflection\ReflectionPropertiesGetter;
@@ -57,7 +58,6 @@ use function array_key_exists;
 use function array_map;
 use function array_merge;
 use function array_pop;
-use function array_reverse;
 use function array_sum;
 use function array_values;
 use function assert;
@@ -74,6 +74,7 @@ use function method_exists;
 use function reset;
 use function spl_object_id;
 use function sprintf;
+use function strtolower;
 
 /**
  * The UnitOfWork is responsible for tracking changes to objects during an
@@ -408,9 +409,6 @@ class UnitOfWork implements PropertyChangedListener
 
         $this->dispatchOnFlushEvent();
 
-        // Now we need a commit order to maintain referential integrity
-        $commitOrder = $this->getCommitOrder();
-
         $conn = $this->em->getConnection();
         $conn->beginTransaction();
 
@@ -431,7 +429,7 @@ class UnitOfWork implements PropertyChangedListener
                 // into account (new entities referring to other new entities), since all other types (entities
                 // with updates or scheduled deletions) are currently not a problem, since they are already
                 // in the database.
-                $this->executeInserts($this->computeInsertExecutionOrder($commitOrder));
+                $this->executeInserts($this->computeInsertExecutionOrder());
             }
 
             if ($this->entityUpdates) {
@@ -456,7 +454,7 @@ class UnitOfWork implements PropertyChangedListener
             // Entity deletions come last. Their order only needs to take care of other deletions
             // (first delete entities depending upon others, before deleting depended-upon entities).
             if ($this->entityDeletions) {
-                $this->executeDeletions($this->computeDeleteExecutionOrder($commitOrder));
+                $this->executeDeletions($this->computeDeleteExecutionOrder());
             }
 
             // Commit failed silently
@@ -1265,14 +1263,11 @@ class UnitOfWork implements PropertyChangedListener
         }
     }
 
-    /**
-     * @param list<ClassMetadata> $commitOrder
-     *
-     * @return list<object>
-     */
-    private function computeInsertExecutionOrder(array $commitOrder): array
+    /** @return list<object> */
+    private function computeInsertExecutionOrder(): array
     {
-        $result = [];
+        $commitOrder = $this->getCommitOrder();
+        $result      = [];
         foreach ($commitOrder as $class) {
             $className = $class->name;
             foreach ($this->entityInsertions as $entity) {
@@ -1287,26 +1282,58 @@ class UnitOfWork implements PropertyChangedListener
         return $result;
     }
 
-    /**
-     * @param list<ClassMetadata> $commitOrder
-     *
-     * @return list<object>
-     */
-    private function computeDeleteExecutionOrder(array $commitOrder): array
+    /** @return list<object> */
+    private function computeDeleteExecutionOrder(): array
     {
-        $result = [];
-        foreach (array_reverse($commitOrder) as $class) {
-            $className = $class->name;
-            foreach ($this->entityDeletions as $entity) {
-                if ($this->em->getClassMetadata(get_class($entity))->name !== $className) {
+        $sort = new TopologicalSort();
+
+        // First make sure we have all the nodes
+        foreach ($this->entityDeletions as $entity) {
+            $sort->addNode($entity);
+        }
+
+        // Now add edges
+        foreach ($this->entityDeletions as $entity) {
+            $class = $this->em->getClassMetadata(get_class($entity));
+
+            foreach ($class->associationMappings as $assoc) {
+                // We only need to consider the owning sides of to-one associations,
+                // since many-to-many associations can always be (and have already been)
+                // deleted in a preceding step.
+                if (! ($assoc['isOwningSide'] && $assoc['type'] & ClassMetadata::TO_ONE)) {
                     continue;
                 }
 
-                $result[] = $entity;
+                // For associations that implement a database-level cascade/set null operation,
+                // we do not have to follow a particular order: If the referred-to entity is
+                // deleted first, the DBMS will either delete the current $entity right away
+                // (CASCADE) or temporarily set the foreign key to NULL (SET NULL).
+                // Either way, we can skip it in the computation.
+                assert(isset($assoc['joinColumns']));
+                $joinColumns = reset($assoc['joinColumns']);
+                if (isset($joinColumns['onDelete'])) {
+                    $onDeleteOption = strtolower($joinColumns['onDelete']);
+                    if ($onDeleteOption === 'cascade' || $onDeleteOption === 'set null') {
+                        continue;
+                    }
+                }
+
+                $targetEntity = $class->getFieldValue($entity, $assoc['fieldName']);
+
+                // If the association does not refer to another entity or that entity
+                // is not to be deleted, there is no ordering problem and we can
+                // skip this particular association.
+                if ($targetEntity === null || ! $sort->hasNode($targetEntity)) {
+                    continue;
+                }
+
+                // Add dependency. The dependency direction implies that "$entity has to be removed before $targetEntity",
+                // so we can work through the topo sort result from left to right (with all edges pointing right).
+                $sort->addEdge($entity, $targetEntity, false);
             }
         }
 
-        return $result;
+        return $sort->sort();
     }
 
     /**
