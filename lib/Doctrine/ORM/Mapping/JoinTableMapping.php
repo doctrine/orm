@@ -27,12 +27,14 @@ final class JoinTableMapping implements ArrayAccess
 
     public string|null $schema = null;
 
-    public string|null $name = null;
+    public function __construct(public string $name)
+    {
+    }
 
     /**
      * @param mixed[] $mappingArray
      * @psalm-param array{
-     *    name?: string,
+     *    name: string,
      *    quoted?: bool,
      *    joinColumns?: mixed[],
      *    inverseJoinColumns?: mixed[],
@@ -41,9 +43,9 @@ final class JoinTableMapping implements ArrayAccess
      */
     public static function fromMappingArray(array $mappingArray): self
     {
-        $mapping = new self();
+        $mapping = new self($mappingArray['name']);
 
-        foreach (['name', 'quoted', 'schema', 'options'] as $key) {
+        foreach (['quoted', 'schema', 'options'] as $key) {
             if (isset($mappingArray[$key])) {
                 $mapping[$key] = $mappingArray[$key];
             }
