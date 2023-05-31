@@ -3031,7 +3031,6 @@
       <code>setValue</code>
     </PossiblyNullReference>
     <PossiblyUndefinedArrayOffset>
-      <code><![CDATA[$assoc['joinColumns']]]></code>
       <code><![CDATA[$assoc['orphanRemoval']]]></code>
       <code><![CDATA[$assoc['targetToSourceKeyColumns']]]></code>
     </PossiblyUndefinedArrayOffset>

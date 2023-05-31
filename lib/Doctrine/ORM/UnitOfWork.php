@@ -57,7 +57,6 @@ use function array_filter;
 use function array_key_exists;
 use function array_map;
 use function array_merge;
-use function array_pop;
 use function array_sum;
 use function array_values;
 use function assert;
@@ -1365,81 +1364,6 @@ class UnitOfWork implements PropertyChangedListener
         }
 
         return $sort->sort();
-    }
-
-    /**
-     * Gets the commit order.
-     *
-     * @return list<ClassMetadata>
-     */
-    private function getCommitOrder(): array
-    {
-        $calc = $this->getCommitOrderCalculator();
-
-        // See if there are any new classes in the changeset, that are not in the
-        // commit order graph yet (don't have a node).
-        // We have to inspect changeSet to be able to correctly build dependencies.
-        // It is not possible to use IdentityMap here because post inserted ids
-        // are not yet available.
-        $newNodes = [];
-
-        foreach (array_merge($this->entityInsertions, $this->entityUpdates, $this->entityDeletions) as $entity) {
-            $class = $this->em->getClassMetadata(get_class($entity));
-
-            if ($calc->hasNode($class->name)) {
-                continue;
-            }
-
-            $calc->addNode($class->name, $class);
-
-            $newNodes[] = $class;
-        }
-
-        // Calculate dependencies for new nodes
-        while ($class = array_pop($newNodes)) {
-            foreach ($class->associationMappings as $assoc) {
-                if (! ($assoc['isOwningSide'] && $assoc['type'] & ClassMetadata::TO_ONE)) {
-                    continue;
-                }
-
-                $targetClass = $this->em->getClassMetadata($assoc['targetEntity']);
-
-                if (! $calc->hasNode($targetClass->name)) {
-                    $calc->addNode($targetClass->name, $targetClass);
-
-                    $newNodes[] = $targetClass;
-                }
-
-                $joinColumns = reset($assoc['joinColumns']);
-
-                $calc->addDependency($targetClass->name, $class->name, (int) empty($joinColumns['nullable']));
-
-                // If the target class has mapped subclasses, these share the same dependency.
-                if (! $targetClass->subClasses) {
-                    continue;
-                }
-
-                foreach ($targetClass->subClasses as $subClassName) {
-                    $targetSubClass = $this->em->getClassMetadata($subClassName);
-
-                    if (! $calc->hasNode($subClassName)) {
-                        $calc->addNode($targetSubClass->name, $targetSubClass);
-
-                        $newNodes[] = $targetSubClass;
-                    }
-
-                    $calc->addDependency($targetSubClass->name, $class->name, 1);
-                }
-            }
-        }
-
-        // Remove duplicate class entries
-        $result = [];
-        foreach ($calc->sort() as $classMetadata) {
-            $result[$classMetadata->name] = $classMetadata;
-        }
-
-        return array_values($result);
     }
 
     /**
