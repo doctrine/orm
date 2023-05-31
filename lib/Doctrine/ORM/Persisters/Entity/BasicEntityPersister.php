@@ -725,29 +725,29 @@ class BasicEntityPersister implements EntityPersister
      */
     private function isExtraUpdateRequired($entity, $newVal): bool
     {
+        // The association is left empty
         if ($newVal === null) {
             return false;
         }
 
-        $oid = spl_object_id($newVal);
         $uow = $this->em->getUnitOfWork();
-        if (! (isset($this->queuedInserts[$oid]) || $uow->isScheduledForInsert($newVal))) {
+        $oid = spl_object_id($newVal);
+
+        // The value is not scheduled for insert so an extra update is not required
+        if (! isset($this->queuedInserts[$oid]) && ! $uow->isScheduledForInsert($newVal)) {
             return false;
         }
 
+        // The entity is not self-referencing
         if ($newVal !== $entity) {
             return true;
         }
 
-        $identifiers = $this->class->getIdentifier();
-        // Only single-column identifiers are supported
+        // An extra update is useless for application-generated single-column identifiers
+        $identifiers     = $this->class->getIdentifier();
         $entityChangeSet = $uow->getEntityChangeSet($entity);
-        if (count($identifiers) === 1 && isset($entityChangeSet[$identifiers[0]])) {
-            // Extra update is required if the current entity does not have yet a value for its identifier
-            return $entityChangeSet[$identifiers[0]][1] === null;
-        }
 
-        return true;
+        return ! isset($entityChangeSet[$identifiers[0]]) || $entityChangeSet[$identifiers[0]][1] === null;
     }
 
     /**

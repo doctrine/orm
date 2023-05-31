@@ -35,13 +35,7 @@ class GH7877Test extends OrmFunctionalTestCase
         }
 
         $this->_em->flush();
-        if ($this->isQueryLogAvailable()) {
-            if ($this->getQueryLog()->queries[0]['sql'] === '"START TRANSACTION"') {
-                self::assertQueryCount(3);
-            } else {
-                self::assertQueryCount(1);
-            }
-        }
+        $this->checkQueryCount(false);
 
         $this->_em->clear();
 
@@ -49,7 +43,7 @@ class GH7877Test extends OrmFunctionalTestCase
         $this->assertSame($entityId, $child->parent->id);
     }
 
-    public function textExtraUpdateWithDatabaseGeneratedId(): void
+    public function testExtraUpdateWithDatabaseGeneratedId(): void
     {
         $entity         = new GH7877DatabaseGenerated();
         $entity->parent = $entity;
@@ -60,19 +54,26 @@ class GH7877Test extends OrmFunctionalTestCase
         }
 
         $this->_em->flush();
-        if ($this->isQueryLogAvailable()) {
-            if ($this->getQueryLog()->queries[0]['sql'] === '"START TRANSACTION"') {
-                self::assertQueryCount(4);
-            } else {
-                self::assertQueryCount(2);
-            }
-        }
+        $this->checkQueryCount(
+            $this->_em->getClassMetadata(GH7877DatabaseGenerated::class)->idGenerator->isPostInsertGenerator()
+        );
 
         $entityId = $entity->id;
         $this->_em->clear();
 
         $child = $this->_em->find(GH7877DatabaseGenerated::class, $entityId);
         $this->assertSame($entityId, $child->parent->id);
+    }
+
+    private function checkQueryCount(bool $extra): void
+    {
+        if ($this->isQueryLogAvailable()) {
+            if ($this->getQueryLog()->queries[0]['sql'] === '"START TRANSACTION"') {
+                self::assertQueryCount($extra ? 4 : 3);
+            } else {
+                self::assertQueryCount($extra ? 2 : 1);
+            }
+        }
     }
 }
 
