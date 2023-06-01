@@ -680,12 +680,18 @@ class BasicEntityPersister implements EntityPersister
                 continue;
             }
 
-            if ($this->isExtraUpdateRequired($entity, $newVal)) {
-                // The associated entity $newVal is not yet persisted, so we must
-                // set $newVal = null, in order to insert a null value and schedule an
-                // extra update on the UnitOfWork.
-                $uow->scheduleExtraUpdate($entity, [$field => [null, $newVal]]);
-                $newVal = null;
+            $oid = spl_object_id($newVal);
+
+            if (isset($this->queuedInserts[$oid]) || $uow->isScheduledForInsert($newVal)) {
+                // Optimization: Self-referencing entities with application-provided IDs
+                // do not need extra updates
+                if (! ($newVal === $entity && $this->class->getIdentifierValues($newVal))) {
+                    // The associated entity $newVal is not yet persisted, so we must
+                    // set $newVal = null, in order to insert a null value and schedule an
+                    // extra update on the UnitOfWork.
+                    $uow->scheduleExtraUpdate($entity, [$field => [null, $newVal]]);
+                    $newVal = null;
+                }
             }
 
             $newValId = null;
@@ -711,43 +717,6 @@ class BasicEntityPersister implements EntityPersister
         }
 
         return $result;
-    }
-
-    /**
-     * Decides if an extra update is required for the entity being persisted
-     * This is only required if the associated entity is different from the current one,
-     * and if the current entity relies on the database to generate its id
-     *
-     * @param object      $entity
-     * @param object|null $newVal
-     *
-     * @return bool Returns true is an extra update is required
-     */
-    private function isExtraUpdateRequired($entity, $newVal): bool
-    {
-        // The association is left empty
-        if ($newVal === null) {
-            return false;
-        }
-
-        $uow = $this->em->getUnitOfWork();
-        $oid = spl_object_id($newVal);
-
-        // The value is not scheduled for insert so an extra update is not required
-        if (! isset($this->queuedInserts[$oid]) && ! $uow->isScheduledForInsert($newVal)) {
-            return false;
-        }
-
-        // The entity is not self-referencing
-        if ($newVal !== $entity) {
-            return true;
-        }
-
-        // An extra update is useless for application-generated single-column identifiers
-        $identifiers     = $this->class->getIdentifier();
-        $entityChangeSet = $uow->getEntityChangeSet($entity);
-
-        return ! isset($entityChangeSet[$identifiers[0]]) || $entityChangeSet[$identifiers[0]][1] === null;
     }
 
     /**
