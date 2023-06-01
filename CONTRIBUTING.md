@@ -40,6 +40,11 @@ cd orm
 composer install
 ```
 
+You will also need to enable the PHP extension that provides the SQLite driver
+for PDO: `pdo_sqlite`. How to do so depends on your system, but checking that it
+is enabled can universally be done with `php -m`: that command should list the
+extension.
+
 To run the testsuite against another database, copy the ``phpunit.xml.dist``
 to for example ``mysql.phpunit.xml`` and edit the parameters. You can
 take a look at the ``ci/github/phpunit`` directory for some examples. Then run:
