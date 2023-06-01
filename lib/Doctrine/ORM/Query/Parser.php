@@ -582,7 +582,7 @@ class Parser
         assert($this->lexer->lookahead !== null);
 
         return in_array(
-            $this->lexer->lookahead['type'],
+            $this->lexer->lookahead->type,
             [Lexer::T_ALL, Lexer::T_ANY, Lexer::T_SOME],
             true
         );
@@ -978,7 +978,7 @@ class Parser
             $this->match(Lexer::T_IDENTIFIER);
             assert($this->lexer->token !== null);
 
-            return $this->lexer->token['value'];
+            return $this->lexer->token->value;
         }
 
         $this->match(Lexer::T_ALIASED_NAME);
@@ -989,10 +989,10 @@ class Parser
             'doctrine/orm',
             'https://github.com/doctrine/orm/issues/8818',
             'Short namespace aliases such as "%s" are deprecated and will be removed in Doctrine ORM 3.0.',
-            $this->lexer->token['value']
+            $this->lexer->token->value
         );
 
-        [$namespaceAlias, $simpleClassName] = explode(':', $this->lexer->token['value']);
+        [$namespaceAlias, $simpleClassName] = explode(':', $this->lexer->token->value);
 
         return $this->em->getConfiguration()->getEntityNamespace($namespaceAlias) . '\\' . $simpleClassName;
     }
