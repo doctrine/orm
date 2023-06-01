@@ -582,7 +582,7 @@ class Parser
         assert($this->lexer->lookahead !== null);
 
         return in_array(
-            $this->lexer->lookahead['type'],
+            $this->lexer->lookahead->type,
             [Lexer::T_ALL, Lexer::T_ANY, Lexer::T_SOME],
             true
         );
