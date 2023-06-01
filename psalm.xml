@@ -40,11 +40,6 @@
                 <referencedMethod name="Doctrine\DBAL\Schema\SchemaDiff::toSaveSql"/>
             </errorLevel>
         </DeprecatedMethod>
-        <DeprecatedProperty>
-            <errorLevel type="suppress">
-                <referencedProperty name="Doctrine\ORM\Mapping\Driver\AttributeDriver::$entityAnnotationClasses"/>
-            </errorLevel>
-        </DeprecatedProperty>
         <DocblockTypeContradiction>
             <errorLevel type="suppress">
                 <!-- We're catching invalid input here. -->
