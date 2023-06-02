@@ -95,7 +95,7 @@ class GH7006PCT
      * @ORM\OneToMany(targetEntity="GH7006PCTFee", mappedBy="pct", cascade={"persist", "remove"})
      * @ORM\OrderBy({"id" = "ASC"})
      *
-     * @var GH7006PCTFee[]
+     * @var Collection<int, GH7006PCTFee>
      */
     public $fees;
 
