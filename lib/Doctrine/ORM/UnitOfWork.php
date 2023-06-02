@@ -57,7 +57,6 @@ use function array_filter;
 use function array_key_exists;
 use function array_map;
 use function array_merge;
-use function array_pop;
 use function array_sum;
 use function array_values;
 use function assert;
@@ -1266,20 +1265,51 @@ class UnitOfWork implements PropertyChangedListener
     /** @return list<object> */
     private function computeInsertExecutionOrder(): array
     {
-        $commitOrder = $this->getCommitOrder();
-        $result      = [];
-        foreach ($commitOrder as $class) {
-            $className = $class->name;
-            foreach ($this->entityInsertions as $entity) {
-                if ($this->em->getClassMetadata(get_class($entity))->name !== $className) {
+        $sort = new TopologicalSort();
+
+        // First make sure we have all the nodes
+        foreach ($this->entityInsertions as $entity) {
+            $sort->addNode($entity);
+        }
+
+        // Now add edges
+        foreach ($this->entityInsertions as $entity) {
+            $class = $this->em->getClassMetadata(get_class($entity));
+
+            foreach ($class->associationMappings as $assoc) {
+                // We only need to consider the owning sides of to-one associations,
+                // since many-to-many associations are persisted at a later step and
+                // have no insertion order problems (all entities already in the database
+                // at that time).
+                if (! ($assoc['isOwningSide'] && $assoc['type'] & ClassMetadata::TO_ONE)) {
                     continue;
                 }
 
-                $result[] = $entity;
+                $targetEntity = $class->getFieldValue($entity, $assoc['fieldName']);
+
+                // If there is no entity that we need to refer to, or it is already in the
+                // database (i. e. does not have to be inserted), no need to consider it.
+                if ($targetEntity === null || ! $sort->hasNode($targetEntity)) {
+                    continue;
+                }
+
+                // According to https://www.doctrine-project.org/projects/doctrine-orm/en/2.14/reference/annotations-reference.html#annref_joincolumn,
+                // the default for "nullable" is true. Unfortunately, it seems this default is not applied at the metadata driver, factory or other
+                // level, but in fact we may have an undefined 'nullable' key here, so we must assume that default here as well.
+                //
+                // Same in \Doctrine\ORM\Tools\EntityGenerator::isAssociationIsNullable or \Doctrine\ORM\Persisters\Entity\BasicEntityPersister::getJoinSQLForJoinColumns,
+                // to give two examples.
+                assert(isset($assoc['joinColumns']));
+                $joinColumns = reset($assoc['joinColumns']);
+                $isNullable  = ! isset($joinColumns['nullable']) || $joinColumns['nullable'];
+
+                // Add dependency. The dependency direction implies that "$targetEntity has to go before $entity",
+                // so we can work through the topo sort result from left to right (with all edges pointing right).
+                $sort->addEdge($targetEntity, $entity, $isNullable);
             }
         }
 
-        return $result;
+        return $sort->sort();
     }
 
     /** @return list<object> */
@@ -1334,81 +1364,6 @@ class UnitOfWork implements PropertyChangedListener
         }
 
         return $sort->sort();
-    }
-
-    /**
-     * Gets the commit order.
-     *
-     * @return list<ClassMetadata>
-     */
-    private function getCommitOrder(): array
-    {
-        $calc = $this->getCommitOrderCalculator();
-
-        // See if there are any new classes in the changeset, that are not in the
-        // commit order graph yet (don't have a node).
-        // We have to inspect changeSet to be able to correctly build dependencies.
-        // It is not possible to use IdentityMap here because post inserted ids
-        // are not yet available.
-        $newNodes = [];
-
-        foreach (array_merge($this->entityInsertions, $this->entityUpdates, $this->entityDeletions) as $entity) {
-            $class = $this->em->getClassMetadata(get_class($entity));
-
-            if ($calc->hasNode($class->name)) {
-                continue;
-            }
-
-            $calc->addNode($class->name, $class);
-
-            $newNodes[] = $class;
-        }
-
-        // Calculate dependencies for new nodes
-        while ($class = array_pop($newNodes)) {
-            foreach ($class->associationMappings as $assoc) {
-                if (! ($assoc['isOwningSide'] && $assoc['type'] & ClassMetadata::TO_ONE)) {
-                    continue;
-                }
-
-                $targetClass = $this->em->getClassMetadata($assoc['targetEntity']);
-
-                if (! $calc->hasNode($targetClass->name)) {
-                    $calc->addNode($targetClass->name, $targetClass);
-
-                    $newNodes[] = $targetClass;
-                }
-
-                $joinColumns = reset($assoc['joinColumns']);
-
-                $calc->addDependency($targetClass->name, $class->name, (int) empty($joinColumns['nullable']));
-
-                // If the target class has mapped subclasses, these share the same dependency.
-                if (! $targetClass->subClasses) {
-                    continue;
-                }
-
-                foreach ($targetClass->subClasses as $subClassName) {
-                    $targetSubClass = $this->em->getClassMetadata($subClassName);
-
-                    if (! $calc->hasNode($subClassName)) {
-                        $calc->addNode($targetSubClass->name, $targetSubClass);
-
-                        $newNodes[] = $targetSubClass;
-                    }
-
-                    $calc->addDependency($targetSubClass->name, $class->name, 1);
-                }
-            }
-        }
-
-        // Remove duplicate class entries
-        $result = [];
-        foreach ($calc->sort() as $classMetadata) {
-            $result[$classMetadata->name] = $classMetadata;
-        }
-
-        return array_values($result);
     }
 
     /**
