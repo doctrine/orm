@@ -226,6 +226,11 @@ parameters:
 			path: lib/Doctrine/ORM/Mapping/Driver/AttributeDriver.php
 
 		-
+			message: "#^Parameter \\#4 \\.\\.\\.\\$args of static method Doctrine\\\\Deprecations\\\\Deprecation\\:\\:trigger\\(\\) expects float\\|int\\|string, false given\\.$#"
+			count: 1
+			path: lib/Doctrine/ORM/Mapping/Driver/DatabaseDriver.php
+
+		-
 			message: "#^Empty array passed to foreach\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Mapping/Driver/XmlDriver.php
