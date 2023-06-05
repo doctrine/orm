@@ -101,6 +101,9 @@ class ManyToManyBasicAssociationTest extends OrmFunctionalTestCase
         //$user->getGroups()->remove(0);
 
         $this->_em->flush();
+
+        self::assertFalse($user->getGroups()->isDirty());
+
         $this->_em->clear();
 
         // Reload same user
@@ -232,8 +235,14 @@ class ManyToManyBasicAssociationTest extends OrmFunctionalTestCase
         }
 
         $this->_em->flush();
+
+        // Changes to in-memory collection have been made and flushed
+        self::assertCount(0, $user->getGroups());
+        self::assertFalse($user->getGroups()->isDirty());
+
         $this->_em->clear();
 
+        // Changes have been made to the database
         $newUser = $this->_em->find(get_class($user), $user->getId());
         self::assertCount(0, $newUser->getGroups());
     }
