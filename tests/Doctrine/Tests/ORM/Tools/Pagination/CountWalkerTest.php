@@ -19,7 +19,7 @@ class CountWalkerTest extends PaginationTestCase
         );
         $query->setHint(Query::HINT_CUSTOM_TREE_WALKERS, [CountWalker::class]);
         $query->setHint(CountWalker::HINT_DISTINCT, true);
-        $query->setFirstResult(null)->setMaxResults(null);
+        $query->setFirstResult(0)->setMaxResults(null);
 
         self::assertEquals(
             'SELECT count(DISTINCT b0_.id) AS sclr_0 FROM BlogPost b0_ INNER JOIN Category c1_ ON b0_.category_id = c1_.id INNER JOIN Author a2_ ON b0_.author_id = a2_.id',
@@ -34,7 +34,7 @@ class CountWalkerTest extends PaginationTestCase
         );
         $query->setHint(Query::HINT_CUSTOM_TREE_WALKERS, [CountWalker::class]);
         $query->setHint(CountWalker::HINT_DISTINCT, true);
-        $query->setFirstResult(null)->setMaxResults(null);
+        $query->setFirstResult(0)->setMaxResults(null);
 
         self::assertEquals(
             'SELECT count(DISTINCT a0_.id) AS sclr_0 FROM Author a0_',
@@ -49,7 +49,7 @@ class CountWalkerTest extends PaginationTestCase
         );
         $query->setHint(Query::HINT_CUSTOM_TREE_WALKERS, [CountWalker::class]);
         $query->setHint(CountWalker::HINT_DISTINCT, true);
-        $query->setFirstResult(null)->setMaxResults(null);
+        $query->setFirstResult(0)->setMaxResults(null);
 
         self::assertEquals(
             'SELECT count(DISTINCT b0_.id) AS sclr_0 FROM BlogPost b0_ GROUP BY b0_.id',
@@ -64,7 +64,7 @@ class CountWalkerTest extends PaginationTestCase
         );
         $query->setHint(Query::HINT_CUSTOM_TREE_WALKERS, [CountWalker::class]);
         $query->setHint(CountWalker::HINT_DISTINCT, true);
-        $query->setFirstResult(null)->setMaxResults(null);
+        $query->setFirstResult(0)->setMaxResults(null);
 
         self::assertEquals(
             'SELECT count(DISTINCT b0_.id) AS sclr_0 FROM BlogPost b0_ INNER JOIN Category c1_ ON b0_.category_id = c1_.id INNER JOIN Author a2_ ON b0_.author_id = a2_.id',
@@ -79,7 +79,7 @@ class CountWalkerTest extends PaginationTestCase
         );
         $query->setHint(Query::HINT_CUSTOM_TREE_WALKERS, [CountWalker::class]);
         $query->setHint(CountWalker::HINT_DISTINCT, true);
-        $query->setFirstResult(null)->setMaxResults(null);
+        $query->setFirstResult(0)->setMaxResults(null);
 
         self::assertEquals(
             'SELECT count(DISTINCT b0_.id) AS sclr_0 FROM BlogPost b0_ INNER JOIN Category c1_ ON b0_.category_id = c1_.id INNER JOIN Author a2_ ON b0_.author_id = a2_.id',
@@ -93,7 +93,7 @@ class CountWalkerTest extends PaginationTestCase
             'SELECT g, COUNT(u.id) AS userCount FROM Doctrine\Tests\Models\CMS\CmsGroup g LEFT JOIN g.users u GROUP BY g.id HAVING userCount > 0',
         );
         $query->setHint(Query::HINT_CUSTOM_TREE_WALKERS, [CountWalker::class]);
-        $query->setFirstResult(null)->setMaxResults(null);
+        $query->setFirstResult(0)->setMaxResults(null);
 
         $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('Cannot count query that uses a HAVING clause. Use the output walkers for pagination');
@@ -111,7 +111,7 @@ class CountWalkerTest extends PaginationTestCase
         );
         $query->setHint(Query::HINT_CUSTOM_TREE_WALKERS, [CountWalker::class]);
         $query->setHint(CountWalker::HINT_DISTINCT, true);
-        $query->setFirstResult(null)->setMaxResults(null);
+        $query->setFirstResult(0)->setMaxResults(null);
 
         self::assertEquals(
             'SELECT count(DISTINCT b0_.id) AS sclr_0 FROM BlogPost b0_ LEFT JOIN Category c1_ ON (b0_.category_id = c1_.id)',

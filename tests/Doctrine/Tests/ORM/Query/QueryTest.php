@@ -127,20 +127,6 @@ class QueryTest extends OrmTestCase
         self::assertSame($q2, $q);
     }
 
-    public function testSettingNullDqlIsDeprecated(): void
-    {
-        $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/pull/9784');
-        $q = $this->entityManager->createQuery();
-        $q->setDQL(null);
-    }
-
-    public function testSettingNullFirstResultIsDeprecated(): void
-    {
-        $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/pull/9809');
-        $q = $this->entityManager->createQuery();
-        $q->setFirstResult(null);
-    }
-
     #[Group('DDC-968')]
     public function testHints(): void
     {

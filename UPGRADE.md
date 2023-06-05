@@ -1,5 +1,13 @@
 # Upgrade to 3.0
 
+## BC BREAK: `Query::setDQL()` and `Query::setFirstResult()` no longer accept `null`
+
+The `$dqlQuery` argument of `Doctrine\ORM\Query::setDQL()` must always be a
+string.
+
+The `$firstResult` argument of `Doctrine\ORM\Query::setFirstResult()` must
+always be an integer.
+
 ## BC BREAK: `orm:schema-tool:update` option `--complete` is now a no-op
 
 `orm:schema-tool:update` now behaves as if `--complete` was provided,

@@ -7,7 +7,6 @@ namespace Doctrine\ORM;
 use Doctrine\DBAL\LockMode;
 use Doctrine\DBAL\Result;
 use Doctrine\DBAL\Types\Type;
-use Doctrine\Deprecations\Deprecation;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Query\AST\DeleteStatement;
 use Doctrine\ORM\Query\AST\SelectStatement;
@@ -28,7 +27,6 @@ use function assert;
 use function count;
 use function get_debug_type;
 use function in_array;
-use function is_int;
 use function ksort;
 use function md5;
 use function reset;
@@ -502,19 +500,8 @@ final class Query extends AbstractQuery
     /**
      * Sets a DQL query string.
      */
-    public function setDQL(string|null $dqlQuery): self
+    public function setDQL(string $dqlQuery): self
     {
-        if ($dqlQuery === null) {
-            Deprecation::trigger(
-                'doctrine/orm',
-                'https://github.com/doctrine/orm/pull/9784',
-                'Calling %s with null is deprecated and will result in a TypeError in Doctrine 3.0',
-                __METHOD__,
-            );
-
-            return $this;
-        }
-
         $this->dql   = $dqlQuery;
         $this->state = self::STATE_DIRTY;
 
@@ -558,24 +545,12 @@ final class Query extends AbstractQuery
     /**
      * Sets the position of the first result to retrieve (the "offset").
      *
-     * @param int|null $firstResult The first result to return.
+     * @param int $firstResult The first result to return.
      *
      * @return $this
      */
-    public function setFirstResult(int|null $firstResult): self
+    public function setFirstResult(int $firstResult): self
     {
-        if (! is_int($firstResult)) {
-            Deprecation::trigger(
-                'doctrine/orm',
-                'https://github.com/doctrine/orm/pull/9809',
-                'Calling %s with %s is deprecated and will result in a TypeError in Doctrine 3.0. Pass an integer.',
-                __METHOD__,
-                get_debug_type($firstResult),
-            );
-
-            $firstResult = (int) $firstResult;
-        }
-
         $this->firstResult = $firstResult;
         $this->state       = self::STATE_DIRTY;
 
