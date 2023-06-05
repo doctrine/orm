@@ -243,10 +243,10 @@ class ManyToManyBasicAssociationTest extends OrmFunctionalTestCase
     {
         $user = $this->addCmsUserGblancoWithGroups(5);
 
-        $anotherUser = new CmsUser();
+        $anotherUser           = new CmsUser();
         $anotherUser->username = 'joe_doe';
-        $anotherUser->name = 'Joe Doe';
-        $anotherUser->status = 'QA Engineer';
+        $anotherUser->name     = 'Joe Doe';
+        $anotherUser->status   = 'QA Engineer';
 
         foreach ($user->getGroups() as $group) {
             $anotherUser->addGroup($group);

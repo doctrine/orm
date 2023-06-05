@@ -24,6 +24,7 @@ use Doctrine\ORM\Event\PrePersistEventArgs;
 use Doctrine\ORM\Event\PreRemoveEventArgs;
 use Doctrine\ORM\Event\PreUpdateEventArgs;
 use Doctrine\ORM\Exception\ORMException;
+use Doctrine\ORM\Exception\UnexpectedAssociationValue;
 use Doctrine\ORM\Id\AssignedGenerator;
 use Doctrine\ORM\Internal\CommitOrderCalculator;
 use Doctrine\ORM\Internal\HydrationCompleteHandler;
@@ -955,6 +956,15 @@ class UnitOfWork implements PropertyChangedListener
 
             $state = $this->getEntityState($entry, self::STATE_NEW);
 
+            if (! ($entry instanceof $assoc['targetEntity'])) {
+                throw UnexpectedAssociationValue::create(
+                    $assoc['sourceEntity'],
+                    $assoc['fieldName'],
+                    get_debug_type($entry),
+                    $assoc['targetEntity']
+                );
+            }
+
             switch ($state) {
                 case self::STATE_NEW:
                     if (! $assoc['isCascadePersist']) {
@@ -990,6 +1000,15 @@ class UnitOfWork implements PropertyChangedListener
 
                     $this->pendingCollectionElementRemovals[$coid][$key] = true;
                     break;
+
+                case self::STATE_DETACHED:
+                    // Can actually not happen right now as we assume STATE_NEW,
+                    // so the exception will be raised from the DBAL layer (constraint violation).
+                    throw ORMInvalidArgumentException::detachedEntityFoundThroughRelationship($assoc, $entry);
+
+                default:
+                    // MANAGED associated entities are already taken into account
+                    // during changeset calculation anyway, since they are in the identity map.
             }
         }
     }
