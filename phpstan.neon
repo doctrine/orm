@@ -55,3 +55,8 @@ parameters:
             message: '#^.*QuoteStrategy::getJoinTableName\(\) expects.*$#'
             paths:
                 - lib/Doctrine/ORM/Persisters/Collection/ManyToManyPersister.php
+
+        # To be removed in 4.0
+        -
+            message: '#Negated boolean expression is always false\.#'
+            path: lib/Doctrine/ORM/Mapping/Driver/AttributeDriver.php

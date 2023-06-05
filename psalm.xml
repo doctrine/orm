@@ -48,6 +48,8 @@
                 <file name="lib/Doctrine/ORM/Tools/Pagination/LimitSubqueryOutputWalker.php"/>
                 <!-- https://github.com/vimeo/psalm/issues/8520 -->
                 <file name="lib/Doctrine/ORM/PersistentCollection.php"/>
+                <!-- Remove on 4.0.x -->
+                <file name="lib/Doctrine/ORM/Mapping/Driver/AttributeDriver.php"/>
             </errorLevel>
         </DocblockTypeContradiction>
         <InvalidArgument>
