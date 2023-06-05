@@ -35,7 +35,7 @@ have to be used.
     superclass, since they require the "many" side to hold the foreign
     key.
 
-    It is, however, possible to use the :doc:```ResolveTargetEntityListener`` <cookbook/resolve-target-entity-listener>`
+    It is, however, possible to use the :doc:`ResolveTargetEntityListener <cookbook/resolve-target-entity-listener>`
     to replace references to a mapped superclass with an entity class at runtime.
     As long as there is only one entity subclass inheriting from the mapped
     superclass and all references to the mapped superclass are resolved to that

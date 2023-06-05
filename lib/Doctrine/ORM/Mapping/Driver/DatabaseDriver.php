@@ -160,7 +160,7 @@ class DatabaseDriver implements MappingDriver
             Deprecation::trigger(
                 'doctrine/orm',
                 'https://github.com/doctrine/orm/pull/249',
-                'Passing an instance of %s to %s is deprecated, please pass a ClassMetadata instance instead.',
+                'Passing an instance of %s to %s is deprecated, please pass a %s instance instead.',
                 $metadata::class,
                 __METHOD__,
                 ClassMetadata::class,

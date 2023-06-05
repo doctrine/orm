@@ -540,13 +540,13 @@ has meaning in the ``SchemaTool`` schema generation context.
 
 Required parameters:
 
--  **name**: Name of the Index
 -  **fields**: Array of fields. Exactly one of **fields, columns** is required.
 -  **columns**: Array of columns. Exactly one of **fields, columns** is required.
 
 
 Optional parameters:
 
+-  **name**: Name of the Index. If not provided, a generated name will be assigned.
 -  **options**: Array of platform specific options:
 
    -  ``where``: SQL WHERE condition to be used for partial indexes. It will
@@ -1100,12 +1100,12 @@ context.
 
 Required parameters:
 
--  **name**: Name of the Index
 -  **fields**: Array of fields (the names of the properties, used in the entity class).
 -  **columns**: Array of columns (the names of the columns, used in the schema).
 
 Optional parameters:
 
+-  **name**: Name of the Index. If not provided, a generated name will be assigned.
 -  **options**: Array of platform specific options:
 
    -  ``where``: SQL WHERE condition to be used for partial indexes. It will

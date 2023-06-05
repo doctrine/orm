@@ -420,13 +420,35 @@ class QueryTest extends OrmFunctionalTestCase
     public function testGetSingleScalarResultThrowsExceptionOnNoResult(): void
     {
         $this->expectException(NoResultException::class);
-        $this->_em->createQuery('select a from Doctrine\Tests\Models\CMS\CmsArticle a')
+        $this->_em->createQuery('select a.id from Doctrine\Tests\Models\CMS\CmsArticle a')
              ->getSingleScalarResult();
+    }
+
+    public function testGetSingleScalarResultThrowsExceptionOnSingleRowWithMultipleColumns(): void
+    {
+        $user           = new CmsUser();
+        $user->name     = 'Javier';
+        $user->username = 'phansys';
+        $user->status   = 'developer';
+
+        $this->_em->persist($user);
+
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $this->expectException(NonUniqueResultException::class);
+        $this->expectExceptionMessage(
+            'The query returned a row containing multiple columns. Change the query or use a different result function'
+            . ' like getScalarResult().',
+        );
+
+        $this->_em->createQuery('select u from Doctrine\Tests\Models\CMS\CmsUser u')
+            ->setMaxResults(1)
+            ->getSingleScalarResult();
     }
 
     public function testGetSingleScalarResultThrowsExceptionOnNonUniqueResult(): void
     {
-        $this->expectException(NonUniqueResultException::class);
         $user           = new CmsUser();
         $user->name     = 'Guilherme';
         $user->username = 'gblanco';
@@ -449,7 +471,12 @@ class QueryTest extends OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $this->_em->createQuery('select a from Doctrine\Tests\Models\CMS\CmsArticle a')
+        $this->expectException(NonUniqueResultException::class);
+        $this->expectExceptionMessage(
+            'The query returned multiple rows. Change the query or use a different result function like getScalarResult().',
+        );
+
+        $this->_em->createQuery('select a.id from Doctrine\Tests\Models\CMS\CmsArticle a')
              ->getSingleScalarResult();
     }
 

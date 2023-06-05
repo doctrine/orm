@@ -35,7 +35,6 @@
         <DeprecatedMethod>
             <errorLevel type="suppress">
                 <!-- Remove on 3.0.x -->
-                <referencedMethod name="Doctrine\Common\Lexer\Token::offsetGet"/>
                 <!-- Compatibility with DBAL 3 -->
                 <referencedMethod name="Doctrine\DBAL\Connection::getEventManager"/>
                 <referencedMethod name="Doctrine\DBAL\Schema\Schema::visit"/>

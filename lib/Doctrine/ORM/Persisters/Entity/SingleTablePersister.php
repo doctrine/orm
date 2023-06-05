@@ -11,7 +11,11 @@ use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Utility\PersisterHelper;
 
 use function array_flip;
+use function array_intersect;
+use function array_map;
+use function array_unshift;
 use function implode;
+use function strval;
 
 /**
  * Persister for entities that participate in a hierarchy mapped with the
@@ -134,16 +138,13 @@ class SingleTablePersister extends AbstractEntityInheritancePersister
 
     protected function getSelectConditionDiscriminatorValueSQL(): string
     {
-        $values = [];
+        $values = array_map([$this->conn, 'quote'], array_map(
+            strval(...),
+            array_flip(array_intersect($this->class->discriminatorMap, $this->class->subClasses)),
+        ));
 
         if ($this->class->discriminatorValue !== null) { // discriminators can be 0
-            $values[] = $this->conn->quote((string) $this->class->discriminatorValue);
-        }
-
-        $discrValues = array_flip($this->class->discriminatorMap);
-
-        foreach ($this->class->subClasses as $subclassName) {
-            $values[] = $this->conn->quote((string) $discrValues[$subclassName]);
+            array_unshift($values, $this->conn->quote((string) $this->class->discriminatorValue));
         }
 
         $discColumnName = $this->class->getDiscriminatorColumn()->name;

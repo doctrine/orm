@@ -790,6 +790,8 @@ abstract class AbstractQuery
      *
      * Alias for getSingleResult(HYDRATE_SINGLE_SCALAR).
      *
+     * @return bool|float|int|string The scalar result.
+     *
      * @throws NoResultException        If the query returned no result.
      * @throws NonUniqueResultException If the query result is not unique.
      */
