@@ -28,6 +28,8 @@ use function get_class;
 use function is_array;
 use function is_numeric;
 
+use const PHP_VERSION_ID;
+
 /**
  * The AnnotationDriver reads the mapping metadata from docblock annotations.
  */
@@ -62,11 +64,14 @@ class AnnotationDriver extends CompatibilityAnnotationDriver
      */
     public function __construct($reader, $paths = null)
     {
-        Deprecation::trigger(
-            'doctrine/orm',
-            'https://github.com/doctrine/orm/issues/10098',
-            'The annotation mapping driver is deprecated and will be removed in Doctrine ORM 3.0, please migrate to the attribute or XML driver.'
-        );
+        if (PHP_VERSION_ID >= 80000) {
+            Deprecation::trigger(
+                'doctrine/orm',
+                'https://github.com/doctrine/orm/issues/10098',
+                'The annotation mapping driver is deprecated and will be removed in Doctrine ORM 3.0, please migrate to the attribute or XML driver.'
+            );
+        }
+
         $this->reader = $reader;
 
         $this->addPaths((array) $paths);
