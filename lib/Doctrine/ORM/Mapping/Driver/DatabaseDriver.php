@@ -10,7 +10,6 @@ use Doctrine\DBAL\Schema\SchemaException;
 use Doctrine\DBAL\Schema\Table;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\DBAL\Types\Types;
-use Doctrine\Deprecations\Deprecation;
 use Doctrine\Inflector\Inflector;
 use Doctrine\Inflector\InflectorFactory;
 use Doctrine\ORM\Mapping\ClassMetadata;
@@ -18,6 +17,7 @@ use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\Persistence\Mapping\ClassMetadata as PersistenceClassMetadata;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
 use InvalidArgumentException;
+use TypeError;
 
 use function array_diff;
 use function array_keys;
@@ -25,9 +25,11 @@ use function array_merge;
 use function assert;
 use function count;
 use function current;
+use function get_debug_type;
 use function in_array;
 use function preg_replace;
 use function sort;
+use function sprintf;
 use function strtolower;
 
 /**
@@ -157,14 +159,12 @@ class DatabaseDriver implements MappingDriver
     public function loadMetadataForClass(string $className, PersistenceClassMetadata $metadata): void
     {
         if (! $metadata instanceof ClassMetadata) {
-            Deprecation::trigger(
-                'doctrine/orm',
-                'https://github.com/doctrine/orm/pull/249',
-                'Passing an instance of %s to %s is deprecated, please pass a %s instance instead.',
-                $metadata::class,
+            throw new TypeError(sprintf(
+                'Argument #2 passed to %s() must be an instance of %s, %s given.',
                 __METHOD__,
                 ClassMetadata::class,
-            );
+                get_debug_type($metadata),
+            ));
         }
 
         $this->reverseEngineerMappingFromDatabase();
