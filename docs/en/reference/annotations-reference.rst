@@ -545,12 +545,12 @@ has meaning in the SchemaTool schema generation context.
 Required attributes:
 
 
--  **name**: Name of the Index
 -  **fields**: Array of fields. Exactly one of **fields**, **columns** is required.
 -  **columns**: Array of columns. Exactly one of **fields**, **columns** is required.
 
 Optional attributes:
 
+-  **name**: Name of the Index. If not provided, a generated name will be assigned.
 -  **options**: Array of platform specific options:
 
    -  ``where``: SQL WHERE condition to be used for partial indexes. It will
@@ -1316,12 +1316,12 @@ context.
 Required attributes:
 
 
--  **name**: Name of the Index
 -  **fields**: Array of fields. Exactly one of **fields**, **columns** is required.
 -  **columns**: Array of columns. Exactly one of **fields**, **columns** is required.
 
 Optional attributes:
 
+-  **name**: Name of the Index. If not provided, a generated name will be assigned.
 -  **options**: Array of platform specific options:
 
    -  ``where``: SQL WHERE condition to be used for partial indexes. It will
