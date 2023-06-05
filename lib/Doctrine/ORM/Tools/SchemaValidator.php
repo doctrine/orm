@@ -278,6 +278,6 @@ class SchemaValidator
 
         $allMetadata = $this->em->getMetadataFactory()->getAllMetadata();
 
-        return $schemaTool->getUpdateSchemaSql($allMetadata, true);
+        return $schemaTool->getUpdateSchemaSql($allMetadata);
     }
 }

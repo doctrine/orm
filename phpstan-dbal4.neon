@@ -22,9 +22,3 @@ parameters:
         -
             message: '~Strict comparison using \=\=\= between callable\(\)\: mixed and null will always evaluate to false\.~'
             path: lib/Doctrine/ORM/Tools/SchemaTool.php
-
-        # FIXME
-        -
-            message: "#^Call to an undefined method Doctrine\\\\DBAL\\\\Schema\\\\SchemaDiff\\:\\:toSaveSql\\(\\)\\.$#"
-            count: 1
-            path: lib/Doctrine/ORM/Tools/SchemaTool.php

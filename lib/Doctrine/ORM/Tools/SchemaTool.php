@@ -12,7 +12,6 @@ use Doctrine\DBAL\Schema\Index;
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\DBAL\Schema\Table;
 use Doctrine\DBAL\Schema\Visitor\RemoveNamespacedAssets;
-use Doctrine\Deprecations\Deprecation;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\AssociationMapping;
 use Doctrine\ORM\Mapping\ClassMetadata;
@@ -37,7 +36,6 @@ use function assert;
 use function class_exists;
 use function count;
 use function current;
-use function func_num_args;
 use function implode;
 use function in_array;
 use function is_numeric;
@@ -885,24 +883,12 @@ class SchemaTool
      * instances to the current database schema that is inspected.
      *
      * @param mixed[] $classes
-     * @param bool    $saveMode If TRUE, only performs a partial update
-     *                           without dropping assets which are scheduled for deletion.
      */
-    public function updateSchema(array $classes, bool $saveMode = false): void
+    public function updateSchema(array $classes): void
     {
-        if (func_num_args() > 1) {
-            Deprecation::triggerIfCalledFromOutside(
-                'doctrine/orm',
-                'https://github.com/doctrine/orm/pull/10153',
-                'Passing $saveMode to %s() is deprecated and will not be possible in Doctrine ORM 3.0.',
-                __METHOD__,
-            );
-        }
+        $conn = $this->em->getConnection();
 
-        $updateSchemaSql = $this->getUpdateSchemaSql($classes, $saveMode);
-        $conn            = $this->em->getConnection();
-
-        foreach ($updateSchemaSql as $sql) {
+        foreach ($this->getUpdateSchemaSql($classes) as $sql) {
             $conn->executeStatement($sql);
         }
     }
@@ -911,31 +897,16 @@ class SchemaTool
      * Gets the sequence of SQL statements that need to be performed in order
      * to bring the given class mappings in-synch with the relational schema.
      *
-     * @param bool                $saveMode If TRUE, only generates SQL for a partial update
-     *                                      that does not include SQL for dropping assets which are scheduled for deletion.
-     * @param list<ClassMetadata> $classes  The classes to consider.
+     * @param list<ClassMetadata> $classes The classes to consider.
      *
      * @return list<string> The sequence of SQL statements.
      */
-    public function getUpdateSchemaSql(array $classes, bool $saveMode = false): array
+    public function getUpdateSchemaSql(array $classes): array
     {
-        if (func_num_args() > 1) {
-            Deprecation::triggerIfCalledFromOutside(
-                'doctrine/orm',
-                'https://github.com/doctrine/orm/pull/10153',
-                'Passing $saveMode to %s() is deprecated and will not be possible in Doctrine ORM 3.0.',
-                __METHOD__,
-            );
-        }
-
         $toSchema   = $this->getSchemaFromMetadata($classes);
         $fromSchema = $this->createSchemaForComparison($toSchema);
         $comparator = $this->schemaManager->createComparator();
         $schemaDiff = $comparator->compareSchemas($fromSchema, $toSchema);
-
-        if ($saveMode) {
-            return $schemaDiff->toSaveSql($this->platform);
-        }
 
         return $this->platform->getAlterSchemaSQL($schemaDiff);
     }

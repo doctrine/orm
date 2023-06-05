@@ -28,8 +28,6 @@
                 <referencedClass name="Doctrine\DBAL\Tools\Console\Command\ReservedWordsCommand" />
                 <!-- Remove on 3.0.x -->
                 <referencedClass name="Doctrine\DBAL\Schema\Visitor\RemoveNamespacedAssets"/>
-                <!-- https://github.com/vimeo/psalm/issues/8617 -->
-                <referencedClass name="Doctrine\ORM\Mapping\Annotation"/>
             </errorLevel>
         </DeprecatedClass>
         <DeprecatedMethod>
@@ -38,15 +36,8 @@
                 <!-- Compatibility with DBAL 3 -->
                 <referencedMethod name="Doctrine\DBAL\Connection::getEventManager"/>
                 <referencedMethod name="Doctrine\DBAL\Schema\Schema::visit"/>
-                <!-- Remove on 3.0.x -->
-                <referencedMethod name="Doctrine\DBAL\Schema\SchemaDiff::toSaveSql"/>
             </errorLevel>
         </DeprecatedMethod>
-        <DeprecatedProperty>
-            <errorLevel type="suppress">
-                <referencedProperty name="Doctrine\ORM\Mapping\Driver\AttributeDriver::$entityAnnotationClasses"/>
-            </errorLevel>
-        </DeprecatedProperty>
         <DocblockTypeContradiction>
             <errorLevel type="suppress">
                 <!-- We're catching invalid input here. -->
