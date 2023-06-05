@@ -1,5 +1,10 @@
 # Upgrade to 3.0
 
+## BC BREAK: `orm:schema-tool:update` option `--complete` is now a no-op
+
+`orm:schema-tool:update` now behaves as if `--complete` was provided,
+regardless of whether it is provided or not.
+
 ## BC BREAK: Removed `Doctrine\ORM\Proxy\Proxy` interface.
 
 Use `Doctrine\Persistence\Proxy` instead to check whether proxies are initialized.
