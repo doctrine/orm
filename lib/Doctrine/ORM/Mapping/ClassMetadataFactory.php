@@ -7,6 +7,9 @@ namespace Doctrine\ORM\Mapping;
 use Doctrine\Common\EventManager;
 use Doctrine\DBAL\Platforms;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
+use Doctrine\DBAL\Platforms\MySQLPlatform;
+use Doctrine\DBAL\Platforms\SqlitePlatform;
+use Doctrine\DBAL\Platforms\SQLServerPlatform;
 use Doctrine\Deprecations\Deprecation;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Event\LoadClassMetadataEventArgs;
@@ -621,9 +624,11 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
             case ClassMetadata::GENERATOR_TYPE_IDENTITY:
                 $sequenceName = null;
                 $fieldName    = $class->identifier ? $class->getSingleIdentifierFieldName() : null;
+                $platform     = $this->getTargetPlatform();
 
                 // Platforms that do not have native IDENTITY support need a sequence to emulate this behaviour.
-                if ($this->getTargetPlatform()->usesSequenceEmulatedIdentityColumns()) {
+                /** @psalm-suppress UndefinedClass, InvalidClass */
+                if (! $platform instanceof MySQLPlatform && ! $platform instanceof SqlitePlatform && ! $platform instanceof SQLServerPlatform && $platform->usesSequenceEmulatedIdentityColumns()) {
                     Deprecation::trigger(
                         'doctrine/orm',
                         'https://github.com/doctrine/orm/issues/8850',
