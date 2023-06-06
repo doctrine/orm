@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Mapping\Driver;
 
 use Doctrine\Common\Collections\Criteria;
-use Doctrine\Deprecations\Deprecation;
 use Doctrine\ORM\Mapping\Builder\EntityListenerBuilder;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\MappingException;
@@ -44,11 +43,13 @@ class XmlDriver extends FileDriver
 
     /**
      * {@inheritDoc}
+     *
+     * @param true $isXsdValidationEnabled no-op, will be removed in 4.0
      */
     public function __construct(
         string|array|FileLocator $locator,
         string $fileExtension = self::DEFAULT_FILE_EXTENSION,
-        private readonly bool $isXsdValidationEnabled = false,
+        bool $isXsdValidationEnabled = true,
     ) {
         if (! extension_loaded('simplexml')) {
             throw new LogicException(sprintf(
@@ -58,17 +59,13 @@ class XmlDriver extends FileDriver
         }
 
         if (! $isXsdValidationEnabled) {
-            Deprecation::trigger(
-                'doctrine/orm',
-                'https://github.com/doctrine/orm/pull/6728',
-                sprintf(
-                    'Using XML mapping driver with XSD validation disabled is deprecated'
-                    . ' and will not be supported in Doctrine ORM 3.0.',
-                ),
-            );
+            throw new InvalidArgumentException(sprintf(
+                'The $isXsdValidationEnabled argument is no longer supported, make sure to omit it when calling %s.',
+                __METHOD__,
+            ));
         }
 
-        if ($isXsdValidationEnabled && ! extension_loaded('dom')) {
+        if (! extension_loaded('dom')) {
             throw new LogicException(sprintf(
                 'XSD validation cannot be enabled because the DOM extension is missing.',
             ));
@@ -947,10 +944,6 @@ class XmlDriver extends FileDriver
 
     private function validateMapping(string $file): void
     {
-        if (! $this->isXsdValidationEnabled) {
-            return;
-        }
-
         $backedUpErrorSetting = libxml_use_internal_errors(true);
 
         try {

@@ -59,4 +59,8 @@ parameters:
         # To be removed in 4.0
         -
             message: '#Negated boolean expression is always false\.#'
-            path: lib/Doctrine/ORM/Mapping/Driver/AttributeDriver.php
+            paths:
+                - lib/Doctrine/ORM/Mapping/Driver/AttributeDriver.php
+                - lib/Doctrine/ORM/Mapping/Driver/SimplifiedXmlDriver.php
+                - lib/Doctrine/ORM/Mapping/Driver/XmlDriver.php
+                - lib/Doctrine/ORM/ORMSetup.php

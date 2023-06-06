@@ -9,6 +9,7 @@ use Doctrine\ORM\Mapping as MappingNamespace;
 use Doctrine\ORM\Mapping\Driver\AttributeDriver;
 use Doctrine\ORM\Mapping\Driver\XmlDriver;
 use Doctrine\ORM\ORMSetup;
+use InvalidArgumentException;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\RequiresPhpExtension;
 use PHPUnit\Framework\TestCase;
@@ -37,6 +38,13 @@ class ORMSetupTest extends TestCase
 
         self::assertInstanceOf(Configuration::class, $config);
         self::assertInstanceOf(XmlDriver::class, $config->getMetadataDriverImpl());
+    }
+
+    public function testDisablingXmlValidationIsNotPossible(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+
+        ORMSetup::createXMLMetadataConfiguration(paths: [], isXsdValidationEnabled: false);
     }
 
     #[RequiresPhpExtension('apcu')]

@@ -1,5 +1,16 @@
 # Upgrade to 3.0
 
+## BC BREAK: `Mapping\Driver\XmlDriver::__construct()` third argument is now a no-op
+
+The third argument to
+`Doctrine\ORM\Mapping\Driver\XmlDriver::__construct()` was introduced to
+let users opt-in to XML validation, that is now always enabled, regardless of
+the value of that argument.
+
+As a consequence, the same goes for
+`Doctrine\ORM\Mapping\Driver\SimplifiedXmlDriver`, and for
+`Doctrine\ORM\ORMSetup::createXMLMetadataConfiguration()`.
+
 ## BC BREAK: `Mapping\Driver\AttributeDriver::__construct()` second argument is now a no-op
 
 The second argument to

@@ -50,6 +50,8 @@
                 <file name="lib/Doctrine/ORM/PersistentCollection.php"/>
                 <!-- Remove on 4.0.x -->
                 <file name="lib/Doctrine/ORM/Mapping/Driver/AttributeDriver.php"/>
+                <file name="lib/Doctrine/ORM/Mapping/Driver/XmlDriver.php"/>
+                <file name="lib/Doctrine/ORM/ORMSetup.php"/>
             </errorLevel>
         </DocblockTypeContradiction>
         <InvalidArgument>
