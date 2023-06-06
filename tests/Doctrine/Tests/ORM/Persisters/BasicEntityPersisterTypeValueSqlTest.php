@@ -149,6 +149,11 @@ class BasicEntityPersisterTypeValueSqlTest extends OrmTestCase
         $criteria  = new Criteria(Criteria::expr()->eq('value', 'bar'));
         $statement = $persister->getCountSQL($criteria);
         self::assertEquals('SELECT COUNT(*) FROM "not-a-simple-entity" t0 WHERE t0."simple-entity-value" = ?', $statement);
+
+        // Using a criteria object w/ Limit
+        $criteria  = new Criteria(Criteria::expr()->eq('value', 'bar'), null, null, 5000);
+        $statement = $persister->getCountSQL($criteria);
+        self::assertEquals('SELECT COUNT(*) FROM "not-a-simple-entity" t0 WHERE t0."simple-entity-value" = ? LIMIT 5000', $statement);
     }
 
     public function testCountEntities(): void
