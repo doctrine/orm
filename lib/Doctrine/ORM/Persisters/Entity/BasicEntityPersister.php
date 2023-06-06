@@ -538,7 +538,7 @@ class BasicEntityPersister implements EntityPersister
     protected function deleteJoinTableRecords(array $identifier, array $types): void
     {
         foreach ($this->class->associationMappings as $mapping) {
-            if ($mapping['type'] !== ClassMetadata::MANY_TO_MANY) {
+            if ($mapping['type'] !== ClassMetadata::MANY_TO_MANY || isset($mapping['isOnDeleteCascade'])) {
                 continue;
             }
 
@@ -572,10 +572,6 @@ class BasicEntityPersister implements EntityPersister
 
             foreach ($otherColumns as $joinColumn) {
                 $otherKeys[] = $this->quoteStrategy->getJoinColumnName($joinColumn, $class, $this->platform);
-            }
-
-            if (isset($mapping['isOnDeleteCascade'])) {
-                continue;
             }
 
             $joinTableName = $this->quoteStrategy->getJoinTableName($association, $this->class, $this->platform);
