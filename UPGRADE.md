@@ -1,5 +1,25 @@
 # Upgrade to 3.0
 
+## BC BREAK: `Mapping\Driver\AttributeDriver::__construct()` second argument is now a no-op
+
+The second argument to
+`Doctrine\ORM\Mapping\Driver\AttributeDriver::__construct()` was introduced to
+let users opt-in to a new behavior, that is now always enforced, regardless of
+the value of that argument.
+
+## BC BREAK: `Query::setDQL()` and `Query::setFirstResult()` no longer accept `null`
+
+The `$dqlQuery` argument of `Doctrine\ORM\Query::setDQL()` must always be a
+string.
+
+The `$firstResult` argument of `Doctrine\ORM\Query::setFirstResult()` must
+always be an integer.
+
+## BC BREAK: `orm:schema-tool:update` option `--complete` is now a no-op
+
+`orm:schema-tool:update` now behaves as if `--complete` was provided,
+regardless of whether it is provided or not.
+
 ## BC BREAK: Removed `Doctrine\ORM\Proxy\Proxy` interface.
 
 Use `Doctrine\Persistence\Proxy` instead to check whether proxies are initialized.

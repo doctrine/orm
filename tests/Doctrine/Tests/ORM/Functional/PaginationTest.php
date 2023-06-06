@@ -634,7 +634,7 @@ class PaginationTest extends OrmFunctionalTestCase
         );
         $query->setParameter('vipMaxId', 10);
         $query->setParameter('id', 100);
-        $query->setFirstResult(null)->setMaxResults(null);
+        $query->setFirstResult(0)->setMaxResults(null);
 
         $paginator = new Paginator($query);
 
