@@ -1236,14 +1236,6 @@
                 $mapping['indexBy']  => $index,
             ]]]></code>
     </InvalidArrayOffset>
-    <InvalidReturnStatement>
-      <code>$numDeleted</code>
-      <code><![CDATA[$this->conn->executeStatement($statement, $parameters)]]></code>
-    </InvalidReturnStatement>
-    <InvalidReturnType>
-      <code>int</code>
-      <code>int</code>
-    </InvalidReturnType>
     <PossiblyNullArgument>
       <code><![CDATA[$collection->getOwner()]]></code>
       <code><![CDATA[$collection->getOwner()]]></code>

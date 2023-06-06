@@ -16,6 +16,7 @@ use function array_reverse;
 use function array_values;
 use function assert;
 use function implode;
+use function is_int;
 use function is_string;
 
 /**
@@ -183,7 +184,11 @@ class OneToManyPersister extends AbstractCollectionPersister
         $statement = 'DELETE FROM ' . $this->quoteStrategy->getTableName($targetClass, $this->platform)
             . ' WHERE ' . implode(' = ? AND ', $columns) . ' = ?';
 
-        return $this->conn->executeStatement($statement, $parameters);
+        $numAffected = $this->conn->executeStatement($statement, $parameters);
+
+        assert(is_int($numAffected));
+
+        return $numAffected;
     }
 
     /**
@@ -246,6 +251,8 @@ class OneToManyPersister extends AbstractCollectionPersister
         $statement = $this->platform->getDropTemporaryTableSQL($tempTable);
 
         $this->conn->executeStatement($statement);
+
+        assert(is_int($numDeleted));
 
         return $numDeleted;
     }
