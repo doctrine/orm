@@ -1150,9 +1150,15 @@ class BasicEntityPersister implements EntityPersister
                 : $filterSql;
         }
 
-        return 'SELECT COUNT(*) '
-            . 'FROM ' . $tableName . ' ' . $tableAlias
-            . (empty($conditionSql) ? '' : ' WHERE ' . $conditionSql);
+        $sql =  'SELECT COUNT(*) '
+        . 'FROM ' . $tableName . ' ' . $tableAlias
+        . (empty($conditionSql) ? '' : ' WHERE ' . $conditionSql);
+
+        if ($criteria instanceof Criteria && $criteria->getMaxResults() !== null) {
+            $sql .= ' LIMIT ' . $criteria->getMaxResults();
+        }
+
+        return $sql;
     }
 
     /**
