@@ -1220,7 +1220,7 @@ class BasicEntityPersister implements EntityPersister
      */
     protected function getSelectColumnsSQL()
     {
-        if ($this->currentPersisterContext->selectColumnListSql !== null) {
+        if ($this->currentPersisterContext->selectColumnListSql !== null && $this->currentPersisterContext->hash === $this->em->getFilters()->getHash()) {
             return $this->currentPersisterContext->selectColumnListSql;
         }
 
@@ -1327,6 +1327,7 @@ class BasicEntityPersister implements EntityPersister
         }
 
         $this->currentPersisterContext->selectColumnListSql = implode(', ', $columnList);
+        $this->currentPersisterContext->hash = $this->em->getFilters()->getHash();
 
         return $this->currentPersisterContext->selectColumnListSql;
     }
