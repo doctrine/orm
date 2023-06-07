@@ -311,7 +311,6 @@ Example:
         Entity,
         ChangeTrackingPolicy("DEFERRED_IMPLICIT"),
         ChangeTrackingPolicy("DEFERRED_EXPLICIT"),
-        ChangeTrackingPolicy("NOTIFY")
     ]
     class User {}
 

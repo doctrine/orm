@@ -41,7 +41,6 @@ use Doctrine\ORM\Persisters\Entity\EntityPersister;
 use Doctrine\ORM\Persisters\Entity\JoinedSubclassPersister;
 use Doctrine\ORM\Persisters\Entity\SingleTablePersister;
 use Doctrine\ORM\Utility\IdentifierFlattener;
-use Doctrine\Persistence\NotifyPropertyChanged;
 use Doctrine\Persistence\PropertyChangedListener;
 use Doctrine\Persistence\Proxy;
 use Exception;
@@ -623,11 +622,8 @@ class UnitOfWork implements PropertyChangedListener
         } else {
             // Entity is "fully" MANAGED: it was already fully persisted before
             // and we have a copy of the original data
-            $originalData           = $this->originalEntityData[$oid];
-            $isChangeTrackingNotify = $class->isChangeTrackingNotify();
-            $changeSet              = $isChangeTrackingNotify && isset($this->entityChangeSets[$oid])
-                ? $this->entityChangeSets[$oid]
-                : [];
+            $originalData = $this->originalEntityData[$oid];
+            $changeSet    = [];
 
             foreach ($actualData as $propName => $actualValue) {
                 // skip field, its a partially omitted one!
@@ -658,10 +654,6 @@ class UnitOfWork implements PropertyChangedListener
 
                 // if regular field
                 if (! isset($class->associationMappings[$propName])) {
-                    if ($isChangeTrackingNotify) {
-                        continue;
-                    }
-
                     $changeSet[$propName] = [$orgValue, $actualValue];
 
                     continue;
@@ -942,11 +934,6 @@ class UnitOfWork implements PropertyChangedListener
 
         if (! isset($this->entityStates[$oid]) || $this->entityStates[$oid] !== self::STATE_MANAGED) {
             throw ORMInvalidArgumentException::entityNotManaged($entity);
-        }
-
-        // skip if change tracking is "NOTIFY"
-        if ($class->isChangeTrackingNotify()) {
-            return;
         }
 
         if (! $class->isInheritanceTypeNone()) {
@@ -1255,10 +1242,6 @@ class UnitOfWork implements PropertyChangedListener
 
         if (isset($this->entityIdentifiers[$oid])) {
             $this->addToIdentityMap($entity);
-        }
-
-        if ($entity instanceof NotifyPropertyChanged) {
-            $entity->addPropertyChangedListener($this);
         }
     }
 
@@ -2285,10 +2268,6 @@ class UnitOfWork implements PropertyChangedListener
             }
         }
 
-        if ($entity instanceof NotifyPropertyChanged) {
-            $entity->addPropertyChangedListener($this);
-        }
-
         foreach ($data as $field => $value) {
             if (isset($class->fieldMappings[$field])) {
                 $class->reflFields[$field]->setValue($entity, $value);
@@ -2451,13 +2430,6 @@ class UnitOfWork implements PropertyChangedListener
                             $newValueOid                                                     = spl_object_id($newValue);
                             $this->entityIdentifiers[$newValueOid]                           = $associatedId;
                             $this->identityMap[$targetClass->rootEntityName][$relatedIdHash] = $newValue;
-
-                            if (
-                                $newValue instanceof NotifyPropertyChanged &&
-                                ( ! $newValue instanceof Proxy || $newValue->__isInitialized())
-                            ) {
-                                $newValue->addPropertyChangedListener($this);
-                            }
 
                             $this->entityStates[$newValueOid] = self::STATE_MANAGED;
                             // make sure that when an proxy is then finally loaded, $this->originalEntityData is set also!
@@ -2763,10 +2735,6 @@ class UnitOfWork implements PropertyChangedListener
         $this->originalEntityData[$oid] = $data;
 
         $this->addToIdentityMap($entity);
-
-        if ($entity instanceof NotifyPropertyChanged && ( ! $entity instanceof Proxy || $entity->__isInitialized())) {
-            $entity->addPropertyChangedListener($this);
-        }
     }
 
     /* PropertyChangedListener implementation */

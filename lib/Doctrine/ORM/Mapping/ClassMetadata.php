@@ -137,13 +137,6 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
     public const CHANGETRACKING_DEFERRED_EXPLICIT = 2;
 
     /**
-     * NOTIFY means that Doctrine relies on the entities sending out notifications
-     * when their properties change. Such entity classes must implement
-     * the <tt>NotifyPropertyChanged</tt> interface.
-     */
-    public const CHANGETRACKING_NOTIFY = 3;
-
-    /**
      * Specifies that an association is to be fetched when it is first accessed.
      */
     public const FETCH_LAZY = 2;
@@ -1007,14 +1000,6 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
     public function isChangeTrackingDeferredImplicit(): bool
     {
         return $this->changeTrackingPolicy === self::CHANGETRACKING_DEFERRED_IMPLICIT;
-    }
-
-    /**
-     * Whether the change tracking policy of this class is "notify".
-     */
-    public function isChangeTrackingNotify(): bool
-    {
-        return $this->changeTrackingPolicy === self::CHANGETRACKING_NOTIFY;
     }
 
     /**

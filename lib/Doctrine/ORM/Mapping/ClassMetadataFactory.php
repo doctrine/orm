@@ -7,7 +7,6 @@ namespace Doctrine\ORM\Mapping;
 use Doctrine\Common\EventManager;
 use Doctrine\DBAL\Platforms;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
-use Doctrine\Deprecations\Deprecation;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Event\LoadClassMetadataEventArgs;
 use Doctrine\ORM\Event\OnClassMetadataNotFoundEventArgs;
@@ -235,15 +234,6 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
         }
 
         $this->findAbstractEntityClassesNotListedInDiscriminatorMap($class);
-
-        if ($class->changeTrackingPolicy === ClassMetadata::CHANGETRACKING_NOTIFY) {
-            Deprecation::trigger(
-                'doctrine/orm',
-                'https://github.com/doctrine/orm/issues/8383',
-                'NOTIFY Change Tracking policy used in "%s" is deprecated, use deferred explicit instead.',
-                $class->name,
-            );
-        }
 
         $this->validateRuntimeMetadata($class, $parent);
     }

@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM;
 
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\EventManager;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Driver;
@@ -19,13 +18,10 @@ use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\ManyToOne;
-use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\Version;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMInvalidArgumentException;
 use Doctrine\ORM\UnitOfWork;
-use Doctrine\Persistence\NotifyPropertyChanged;
-use Doctrine\Persistence\PropertyChangedListener;
 use Doctrine\Tests\Mocks\EntityManagerMock;
 use Doctrine\Tests\Mocks\EntityPersisterMock;
 use Doctrine\Tests\Mocks\UnitOfWorkMock;
@@ -174,49 +170,6 @@ class UnitOfWorkTest extends OrmTestCase
         self::assertCount(1, $avatarPersister->getInserts());
         self::assertCount(0, $avatarPersister->getUpdates());
         self::assertCount(0, $avatarPersister->getDeletes());
-    }
-
-    public function testChangeTrackingNotify(): void
-    {
-        $persister = new EntityPersisterMock($this->_emMock, $this->_emMock->getClassMetadata(NotifyChangedEntity::class));
-        $this->_unitOfWork->setEntityPersister(NotifyChangedEntity::class, $persister);
-        $itemPersister = new EntityPersisterMock($this->_emMock, $this->_emMock->getClassMetadata(NotifyChangedRelatedItem::class));
-        $this->_unitOfWork->setEntityPersister(NotifyChangedRelatedItem::class, $itemPersister);
-
-        $entity = new NotifyChangedEntity();
-        $entity->setData('thedata');
-        $this->_unitOfWork->persist($entity);
-
-        $this->_unitOfWork->commit();
-        self::assertCount(1, $persister->getInserts());
-        $persister->reset();
-
-        self::assertTrue($this->_unitOfWork->isInIdentityMap($entity));
-
-        $entity->setData('newdata');
-        $entity->setTransient('newtransientvalue');
-
-        self::assertTrue($this->_unitOfWork->isScheduledForDirtyCheck($entity));
-
-        self::assertEquals(['data' => ['thedata', 'newdata']], $this->_unitOfWork->getEntityChangeSet($entity));
-
-        $item = new NotifyChangedRelatedItem();
-        $entity->getItems()->add($item);
-        $item->setOwner($entity);
-        $this->_unitOfWork->persist($item);
-
-        $this->_unitOfWork->commit();
-        self::assertCount(1, $itemPersister->getInserts());
-        $persister->reset();
-        $itemPersister->reset();
-
-        $entity->getItems()->removeElement($item);
-        $item->setOwner(null);
-        self::assertTrue($entity->getItems()->isDirty());
-        $this->_unitOfWork->commit();
-        $updates = $itemPersister->getUpdates();
-        self::assertCount(1, $updates);
-        self::assertSame($updates[0], $item);
     }
 
     public function testGetEntityStateOnVersionedEntityWithAssignedIdentifier(): void
@@ -670,103 +623,6 @@ class UnitOfWorkTest extends OrmTestCase
     }
 }
 
-#[Entity]
-class NotifyChangedEntity implements NotifyPropertyChanged
-{
-    /** @psalm-var list<PropertyChangedListener> */
-    private array $_listeners = [];
-
-    #[Id]
-    #[Column(type: 'integer')]
-    #[GeneratedValue]
-    private int $id;
-
-    /** @var string */
-    #[Column(type: 'string', length: 255)]
-    private $data;
-
-    private mixed $transient = null; // not persisted
-    /** @psalm-var Collection<int, NotifyChangedRelatedItem> */
-    #[OneToMany(targetEntity: 'NotifyChangedRelatedItem', mappedBy: 'owner')]
-    private $items;
-
-    public function __construct()
-    {
-        $this->items = new ArrayCollection();
-    }
-
-    public function getId(): int
-    {
-        return $this->id;
-    }
-
-    public function getItems(): Collection
-    {
-        return $this->items;
-    }
-
-    public function setTransient($value): void
-    {
-        if ($value !== $this->transient) {
-            $this->onPropertyChanged('transient', $this->transient, $value);
-            $this->transient = $value;
-        }
-    }
-
-    public function getData(): mixed
-    {
-        return $this->data;
-    }
-
-    public function setData(mixed $data): void
-    {
-        if ($data !== $this->data) {
-            $this->onPropertyChanged('data', $this->data, $data);
-            $this->data = $data;
-        }
-    }
-
-    public function addPropertyChangedListener(PropertyChangedListener $listener): void
-    {
-        $this->_listeners[] = $listener;
-    }
-
-    protected function onPropertyChanged(mixed $propName, mixed $oldValue, mixed $newValue): void
-    {
-        if ($this->_listeners) {
-            foreach ($this->_listeners as $listener) {
-                $listener->propertyChanged($this, $propName, $oldValue, $newValue);
-            }
-        }
-    }
-}
-
-#[Entity]
-class NotifyChangedRelatedItem
-{
-    #[Id]
-    #[Column(type: 'integer')]
-    #[GeneratedValue]
-    private int $id;
-
-    #[ManyToOne(targetEntity: 'NotifyChangedEntity', inversedBy: 'items')]
-    private NotifyChangedEntity|null $owner = null;
-
-    public function getId(): int
-    {
-        return $this->id;
-    }
-
-    public function getOwner(): NotifyChangedEntity|null
-    {
-        return $this->owner;
-    }
-
-    public function setOwner(NotifyChangedEntity|null $owner): void
-    {
-        $this->owner = $owner;
-    }
-}
 
 #[Entity]
 class VersionedAssignedIdentifierEntity

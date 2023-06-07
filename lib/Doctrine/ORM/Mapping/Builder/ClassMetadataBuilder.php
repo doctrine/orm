@@ -221,18 +221,6 @@ class ClassMetadataBuilder
     }
 
     /**
-     * Sets notify change tracking policy.
-     *
-     * @return $this
-     */
-    public function setChangeTrackingPolicyNotify(): static
-    {
-        $this->cm->setChangeTrackingPolicy(ClassMetadata::CHANGETRACKING_NOTIFY);
-
-        return $this;
-    }
-
-    /**
      * Adds lifecycle event.
      *
      * @return $this
