@@ -29,6 +29,7 @@ use Doctrine\Tests\Models\Project\ProjectInvalidMapping;
 use Doctrine\Tests\Models\Project\ProjectName;
 use Doctrine\Tests\Models\ValueObjects\Name;
 use Doctrine\Tests\Models\ValueObjects\Person;
+use InvalidArgumentException;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Group;
 
@@ -298,6 +299,17 @@ class XmlMappingDriverTest extends MappingDriverTestCase
 
         self::assertEquals(ProjectId::class, $id['type']);
         self::assertEquals(ProjectName::class, $name['type']);
+    }
+
+    public function testDisablingXmlValidationIsNotPossible(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+
+        new XmlDriver(
+            __DIR__ . DIRECTORY_SEPARATOR . 'xml',
+            XmlDriver::DEFAULT_FILE_EXTENSION,
+            false,
+        );
     }
 }
 

@@ -6,6 +6,7 @@ namespace Doctrine\ORM;
 
 use Doctrine\ORM\Mapping\Driver\AttributeDriver;
 use Doctrine\ORM\Mapping\Driver\XmlDriver;
+use InvalidArgumentException;
 use Psr\Cache\CacheItemPoolInterface;
 use Redis;
 use RuntimeException;
@@ -18,6 +19,7 @@ use function apcu_enabled;
 use function class_exists;
 use function extension_loaded;
 use function md5;
+use function sprintf;
 use function sys_get_temp_dir;
 
 final class ORMSetup
@@ -43,14 +45,22 @@ final class ORMSetup
      * Creates a configuration with an XML metadata driver.
      *
      * @param string[] $paths
+     * @param true     $isXsdValidationEnabled
      */
     public static function createXMLMetadataConfiguration(
         array $paths,
         bool $isDevMode = false,
         string|null $proxyDir = null,
         CacheItemPoolInterface|null $cache = null,
-        bool $isXsdValidationEnabled = false,
+        bool $isXsdValidationEnabled = true,
     ): Configuration {
+        if (! $isXsdValidationEnabled) {
+            throw new InvalidArgumentException(sprintf(
+                'The $isXsdValidationEnabled argument is no longer supported, make sure to omit it when calling %s.',
+                __METHOD__,
+            ));
+        }
+
         $config = self::createConfiguration($isDevMode, $proxyDir, $cache);
         $config->setMetadataDriverImpl(new XmlDriver($paths, XmlDriver::DEFAULT_FILE_EXTENSION, $isXsdValidationEnabled));
 
