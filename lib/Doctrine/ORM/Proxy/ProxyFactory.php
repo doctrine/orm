@@ -21,6 +21,7 @@ use Doctrine\Persistence\Proxy;
 use ReflectionProperty;
 use Symfony\Component\VarExporter\ProxyHelper;
 use Symfony\Component\VarExporter\VarExporter;
+use Throwable;
 
 use function array_flip;
 use function str_replace;
@@ -204,7 +205,17 @@ EOPHP;
 
             $identifier = $classMetadata->getIdentifierValues($proxy);
 
-            if ($entityPersister->loadById($identifier, $proxy) === null) {
+            try {
+                $entity = $entityPersister->loadById($identifier, $proxy);
+            } catch (Throwable $exception) {
+                $proxy->__setInitializer($initializer);
+                $proxy->__setCloner($cloner);
+                $proxy->__setInitialized(false);
+
+                throw $exception;
+            }
+
+            if ($entity === null) {
                 $proxy->__setInitializer($initializer);
                 $proxy->__setCloner($cloner);
                 $proxy->__setInitialized(false);
