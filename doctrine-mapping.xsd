@@ -198,7 +198,6 @@
     <xs:restriction base="xs:token">
       <xs:enumeration value="DEFERRED_IMPLICIT"/>
       <xs:enumeration value="DEFERRED_EXPLICIT"/>
-      <xs:enumeration value="NOTIFY"/>
     </xs:restriction>
   </xs:simpleType>
 

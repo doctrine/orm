@@ -218,12 +218,6 @@ class ClassMetadataBuilderTest extends OrmTestCase
         self::assertEquals(ClassMetadata::CHANGETRACKING_DEFERRED_EXPLICIT, $this->cm->changeTrackingPolicy);
     }
 
-    public function testChangeTrackingPolicyNotify(): void
-    {
-        $this->assertIsFluent($this->builder->setChangeTrackingPolicyNotify());
-        self::assertEquals(ClassMetadata::CHANGETRACKING_NOTIFY, $this->cm->changeTrackingPolicy);
-    }
-
     public function testAddField(): void
     {
         $this->assertIsFluent($this->builder->addField('name', 'string'));

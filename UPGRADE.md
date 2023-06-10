@@ -1,5 +1,9 @@
 # Upgrade to 3.0
 
+## BC BREAK: The `NOTIFY` change tracking policy is removed
+
+You should use `DEFERRED_EXPLICIT` instead.
+
 ## BC BREAK: `Mapping\Driver\XmlDriver::__construct()` third argument is now a no-op
 
 The third argument to

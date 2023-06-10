@@ -70,7 +70,6 @@
       cookbook/dql-custom-walkers
       cookbook/dql-user-defined-functions
       cookbook/implementing-arrayaccess-for-domain-objects
-      cookbook/implementing-the-notify-changetracking-policy
       cookbook/resolve-target-entity-listener
       cookbook/sql-table-prefixes
       cookbook/strategy-cookbook-introduction

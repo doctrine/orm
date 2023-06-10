@@ -11,7 +11,6 @@ use Doctrine\Common\Collections\Criteria;
 use Doctrine\Common\Collections\Selectable;
 use Doctrine\ORM\Mapping\AssociationMapping;
 use Doctrine\ORM\Mapping\ClassMetadata;
-use Doctrine\ORM\Mapping\ManyToManyOwningSideMapping;
 use Doctrine\ORM\Mapping\ToManyAssociationMapping;
 use RuntimeException;
 use UnexpectedValueException;
@@ -267,16 +266,6 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
         }
 
         $this->isDirty = true;
-
-        if (
-            $this->association !== null &&
-            $this->association instanceof ManyToManyOwningSideMapping &&
-            $this->owner &&
-            $this->em !== null &&
-            $this->em->getClassMetadata($this->owner::class)->isChangeTrackingNotify()
-        ) {
-            $this->getUnitOfWork()->scheduleForDirtyCheck($this->owner);
-        }
     }
 
     /**

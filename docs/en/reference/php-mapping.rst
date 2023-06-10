@@ -92,7 +92,6 @@ The API of the ClassMetadataBuilder has the following methods with a fluent inte
 -   ``setDiscriminatorColumn($name, $type = 'string', $length = 255, $columnDefinition = null, $enumType = null, $options = [])``
 -   ``addDiscriminatorMapClass($name, $class)``
 -   ``setChangeTrackingPolicyDeferredExplicit()``
--   ``setChangeTrackingPolicyNotify()``
 -   ``addLifecycleEvent($methodName, $event)``
 -   ``addManyToOne($name, $targetEntity, $inversedBy = null)``
 -   ``addInverseOneToOne($name, $targetEntity, $mappedBy)``
@@ -203,7 +202,6 @@ Change Tracking Getters
 
 -  ``isChangeTrackingDeferredExplicit()``
 -  ``isChangeTrackingDeferredImplicit()``
--  ``isChangeTrackingNotify()``
 
 Field & Association Getters
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
