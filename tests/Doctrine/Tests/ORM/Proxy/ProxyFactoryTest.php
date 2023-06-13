@@ -21,6 +21,7 @@ use Doctrine\Tests\Models\Company\CompanyPerson;
 use Doctrine\Tests\Models\ECommerce\ECommerceFeature;
 use Doctrine\Tests\OrmTestCase;
 use Doctrine\Tests\PHPUnitCompatibility\MockBuilderCompatibilityTools;
+use Exception;
 use ReflectionProperty;
 use stdClass;
 
@@ -143,6 +144,33 @@ class ProxyFactoryTest extends OrmTestCase
         }
 
         self::assertFalse($proxy->__isInitialized());
+    }
+
+    public function testExceptionOnProxyLoadingDoesNotMarkTheProxyAsInitialized(): void
+    {
+        $persister = $this
+            ->getMockBuilderWithOnlyMethods(BasicEntityPersister::class, ['load', 'getClassMetadata'])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $this->uowMock->setEntityPersister(ECommerceFeature::class, $persister);
+
+        $proxy = $this->proxyFactory->getProxy(ECommerceFeature::class, ['id' => 42]);
+        assert($proxy instanceof Proxy);
+
+        $exception = new Exception('Literally any kind of connection exception');
+
+        $persister
+            ->expects(self::atLeastOnce())
+            ->method('load')
+            ->will(self::throwException($exception));
+
+        try {
+            $proxy->getDescription();
+            self::fail('An exception was expected to be raised');
+        } catch (Exception $exception) {
+        }
+
+        self::assertFalse($proxy->__isInitialized(), 'The proxy should not be initialized');
     }
 
     /** @group DDC-2432 */
