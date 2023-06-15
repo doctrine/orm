@@ -39,7 +39,13 @@ Beware that the complete database is dropped by this command, even tables that a
 by the ORM, you can use a DBAL functionality to filter the tables and sequences down
 on a global level:
 
-    $config->setFilterSchemaAssetsExpression($regexp);
+    $config->setSchemaAssetsFilter(function (string|AbstractAsset $assetName) use ($regexp): bool {
+        if ($assetName instanceof AbstractAsset) {
+            $assetName = $assetName->getName();
+        }
+
+        return (bool) preg_match($regexp, $assetName);
+    });
 EOT
              );
     }
