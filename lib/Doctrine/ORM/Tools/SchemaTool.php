@@ -193,6 +193,9 @@ class SchemaTool
         $processedClasses     = [];
         $eventManager         = $this->em->getEventManager();
         $metadataSchemaConfig = $this->schemaManager->createSchemaConfig();
+        $allTableNames        = array_map(function ($class) {
+            return $class->getTableName();
+        }, $classes);
 
         $schema = new Schema([], [], $metadataSchemaConfig);
 
@@ -208,7 +211,7 @@ class SchemaTool
 
             if ($class->isInheritanceTypeSingleTable()) {
                 $this->gatherColumns($class, $table);
-                $this->gatherRelationsSql($class, $table, $schema, $addedFks, $blacklistedFks);
+                $this->gatherRelationsSql($class, $table, $schema, $allTableNames, $addedFks, $blacklistedFks);
 
                 // Add the discriminator column
                 $this->addDiscriminatorColumnDefinition($class, $table);
@@ -222,7 +225,7 @@ class SchemaTool
                 foreach ($class->subClasses as $subClassName) {
                     $subClass = $this->em->getClassMetadata($subClassName);
                     $this->gatherColumns($subClass, $table);
-                    $this->gatherRelationsSql($subClass, $table, $schema, $addedFks, $blacklistedFks);
+                    $this->gatherRelationsSql($subClass, $table, $schema, $allTableNames, $addedFks, $blacklistedFks);
                     $processedClasses[$subClassName] = true;
                 }
             } elseif ($class->isInheritanceTypeJoined()) {
@@ -233,7 +236,7 @@ class SchemaTool
                     }
                 }
 
-                $this->gatherRelationsSql($class, $table, $schema, $addedFks, $blacklistedFks);
+                $this->gatherRelationsSql($class, $table, $schema, $allTableNames, $addedFks, $blacklistedFks);
 
                 // Add the discriminator column only to the root table
                 if ($class->name === $class->rootEntityName) {
@@ -309,7 +312,7 @@ class SchemaTool
                 throw NotSupported::create();
             } else {
                 $this->gatherColumns($class, $table);
-                $this->gatherRelationsSql($class, $table, $schema, $addedFks, $blacklistedFks);
+                $this->gatherRelationsSql($class, $table, $schema, $allTableNames, $addedFks, $blacklistedFks);
             }
 
             $pkColumns = [];
@@ -549,6 +552,7 @@ class SchemaTool
         ClassMetadata $class,
         Table $table,
         Schema $schema,
+        array $allTableNames,
         array &$addedFks,
         array &$blacklistedFks
     ): void {
@@ -577,42 +581,43 @@ class SchemaTool
             } elseif ($mapping['type'] === ClassMetadata::MANY_TO_MANY && $mapping['isOwningSide']) {
                 // create join table
                 $joinTable = $mapping['joinTable'];
+                if (!$schema->hasTable($joinTable['name']) && !in_array($joinTable['name'], $allTableNames)) {
+                    $theJoinTable = $schema->createTable(
+                        $this->quoteStrategy->getJoinTableName($mapping, $foreignClass, $this->platform)
+                    );
 
-                $theJoinTable = $schema->createTable(
-                    $this->quoteStrategy->getJoinTableName($mapping, $foreignClass, $this->platform)
-                );
-
-                if (isset($joinTable['options'])) {
-                    foreach ($joinTable['options'] as $key => $val) {
-                        $theJoinTable->addOption($key, $val);
+                    if (isset($joinTable['options'])) {
+                        foreach ($joinTable['options'] as $key => $val) {
+                            $theJoinTable->addOption($key, $val);
+                        }
                     }
+
+                    $primaryKeyColumns = [];
+
+                    // Build first FK constraint (relation table => source table)
+                    $this->gatherRelationJoinColumns(
+                        $joinTable['joinColumns'],
+                        $theJoinTable,
+                        $class,
+                        $mapping,
+                        $primaryKeyColumns,
+                        $addedFks,
+                        $blacklistedFks
+                    );
+
+                    // Build second FK constraint (relation table => target table)
+                    $this->gatherRelationJoinColumns(
+                        $joinTable['inverseJoinColumns'],
+                        $theJoinTable,
+                        $foreignClass,
+                        $mapping,
+                        $primaryKeyColumns,
+                        $addedFks,
+                        $blacklistedFks
+                    );
+
+                    $theJoinTable->setPrimaryKey($primaryKeyColumns);
                 }
-
-                $primaryKeyColumns = [];
-
-                // Build first FK constraint (relation table => source table)
-                $this->gatherRelationJoinColumns(
-                    $joinTable['joinColumns'],
-                    $theJoinTable,
-                    $class,
-                    $mapping,
-                    $primaryKeyColumns,
-                    $addedFks,
-                    $blacklistedFks
-                );
-
-                // Build second FK constraint (relation table => target table)
-                $this->gatherRelationJoinColumns(
-                    $joinTable['inverseJoinColumns'],
-                    $theJoinTable,
-                    $foreignClass,
-                    $mapping,
-                    $primaryKeyColumns,
-                    $addedFks,
-                    $blacklistedFks
-                );
-
-                $theJoinTable->setPrimaryKey($primaryKeyColumns);
             }
         }
     }
