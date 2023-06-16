@@ -78,13 +78,15 @@ class SingleTablePersister extends AbstractEntityInheritancePersister
                     continue;
                 }
 
-                $targetClass = $this->em->getClassMetadata($assoc['targetEntity']);
+                $targetClass  = $this->em->getClassMetadata($assoc['targetEntity']);
+                $isIdentifier = isset($assoc['id']) && $assoc['id'] === true;
 
                 foreach ($assoc['joinColumns'] as $joinColumn) {
                     $columnList[] = $this->getSelectJoinColumnSQL(
                         $tableAlias,
                         $joinColumn['name'],
                         $this->quoteStrategy->getJoinColumnName($joinColumn, $subClass, $this->platform),
+                        $isIdentifier,
                         PersisterHelper::getTypeOfColumn($joinColumn['referencedColumnName'], $targetClass, $this->em)
                     );
                 }
