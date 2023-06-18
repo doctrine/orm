@@ -32,7 +32,6 @@ use Exception;
 
 use function class_exists;
 use function get_class;
-use function sprintf;
 
 // DBAL 2 compatibility
 class_exists('Doctrine\DBAL\Platforms\MySqlPlatform');
@@ -74,8 +73,7 @@ class SelectSqlGenerationTest extends OrmTestCase
 
         parent::assertEquals(
             $sqlToBeConfirmed,
-            $sqlGenerated,
-            sprintf('"%s" is not equal to "%s"', $sqlGenerated, $sqlToBeConfirmed)
+            $sqlGenerated
         );
 
         $query->free();
