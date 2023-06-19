@@ -16,8 +16,6 @@ metadata:
 -  **Attributes** (AttributeDriver)
 -  **PHP Code in files or static functions** (PhpDriver)
 
-They will be removed in 3.0, make sure to avoid them.
-
 Something important to note about the above drivers is they are all
 an intermediate step to the same end result. The mapping
 information is populated to ``Doctrine\ORM\Mapping\ClassMetadata``
