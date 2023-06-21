@@ -1689,10 +1689,7 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
         $mapping = $this->associationMappings[$fieldName]->toArray();
 
         if (isset($mapping['inherited'])) {
-            Deprecation::trigger(
-                'doctrine/orm',
-                'https://github.com/doctrine/orm/pull/10470',
-                'Overrides are only allowed for fields or associations declared in mapped superclasses or traits. This is not the case for %s::%s, which was inherited from %s. This is a misconfiguration and will be an error in Doctrine ORM 3.0.',
+            throw MappingException::illegalOverrideOfInheritedProperty(
                 $this->name,
                 $fieldName,
                 $mapping['inherited'],

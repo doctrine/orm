@@ -263,7 +263,8 @@ class BasicInheritanceMappingTest extends OrmTestCase
     {
         $cm = $this->cmf->getMetadataFor(CompanyFixContract::class);
 
-        $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/pull/10470');
+        $this->expectException(MappingException::class);
+        $this->expectExceptionMessage('Overrides are only allowed for fields or associations declared in mapped superclasses or traits. This is not the case for Doctrine\Tests\Models\Company\CompanyFixContract::salesPerson, which was inherited from Doctrine\Tests\Models\Company\CompanyContract.');
 
         $cm->setAssociationOverride('salesPerson', ['inversedBy' => 'other_inversed_by_name']);
     }
