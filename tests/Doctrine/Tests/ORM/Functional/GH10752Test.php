@@ -11,7 +11,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
- * @Group GH10752
+ * @group GH10752
  */
 class GH10752Test extends OrmFunctionalTestCase
 {
@@ -31,8 +31,8 @@ class GH10752Test extends OrmFunctionalTestCase
             self::markTestSkipped('Platform does not support foreign keys.');
         }
 
-        $order     = $this->createOrder();
-        $promotion = $this->createPromotion();
+        $order     = new GH10752Order();
+        $promotion = new GH10752Promotion();
 
         $order->addPromotion($promotion);
 
@@ -52,8 +52,8 @@ class GH10752Test extends OrmFunctionalTestCase
             self::markTestSkipped('Platform does not support foreign keys.');
         }
 
-        $order     = $this->createOrder();
-        $promotion = $this->createPromotion();
+        $order     = new GH10752Order();
+        $promotion = new GH10752Promotion();
 
         $order->addPromotion($promotion);
 
@@ -63,21 +63,11 @@ class GH10752Test extends OrmFunctionalTestCase
 
         $this->_em->clear();
 
-        $promotion = $this->_em->find(GH10752Promotion::class, $promotion->getId());
+        $promotion = $this->_em->find(GH10752Promotion::class, $promotion->id);
         $this->_em->remove($promotion);
 
         $this->expectException(ForeignKeyConstraintViolationException::class);
         $this->_em->flush();
-    }
-
-    private function createOrder(): GH10752Order
-    {
-        return new GH10752Order();
-    }
-
-    private function createPromotion(): GH10752Promotion
-    {
-        return new GH10752Promotion();
     }
 }
 
@@ -111,27 +101,10 @@ class GH10752Order
         $this->promotions = new ArrayCollection();
     }
 
-    public function getId(): ?int
-    {
-        return $this->id;
-    }
-
-    public function getPromotions(): Collection
-    {
-        return $this->promotions;
-    }
-
     public function addPromotion(GH10752Promotion $promotion): void
     {
         if (! $this->promotions->contains($promotion)) {
             $this->promotions->add($promotion);
-        }
-    }
-
-    public function removePromotion(GH10752Promotion $promotion): void
-    {
-        if ($this->promotions->contains($promotion)) {
-            $this->promotions->removeElement($promotion);
         }
     }
 }
@@ -148,10 +121,5 @@ class GH10752Promotion
      *
      * @var int
      */
-    private $id = null;
-
-    public function getId(): ?int
-    {
-        return $this->id;
-    }
+    public $id = null;
 }
