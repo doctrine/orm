@@ -55,7 +55,7 @@ class GH7869Test extends OrmTestCase
         $uow->clear();
         $uow->triggerEagerLoads();
 
-        self::assertSame(2, $em->getClassMetadataCalls);
+        self::assertSame(4, $em->getClassMetadataCalls);
     }
 }
 

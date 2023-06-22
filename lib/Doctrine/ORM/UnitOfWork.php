@@ -1591,6 +1591,30 @@ class UnitOfWork implements PropertyChangedListener
         $className     = $classMetadata->rootEntityName;
 
         if (isset($this->identityMap[$className][$idHash])) {
+            if ($this->identityMap[$className][$idHash] !== $entity) {
+                throw new RuntimeException(sprintf(
+                    <<<'EXCEPTION'
+While adding an entity of class %s with an ID hash of "%s" to the identity map,
+another object of class %s was already present for the same ID. This exception
+is a safeguard against an internal inconsistency - IDs should uniquely map to
+entity object instances. This problem may occur if:
+
+- you use application-provided IDs and reuse ID values;
+- database-provided IDs are reassigned after truncating the database without 
+  clearing the EntityManager;
+- you might have been using EntityManager#getReference() to create a reference 
+  for a nonexistent ID that was subsequently (by the RDBMS) assigned to another 
+  entity. 
+
+Otherwise, it might be an ORM-internal inconsistency, please report it. 
+EXCEPTION
+                    ,
+                    get_class($entity),
+                    $idHash,
+                    get_class($this->identityMap[$className][$idHash])
+                ));
+            }
+
             return false;
         }
 
@@ -2811,23 +2835,18 @@ class UnitOfWork implements PropertyChangedListener
             }
 
             $this->originalEntityData[$oid] = $data;
+
+            if ($entity instanceof NotifyPropertyChanged) {
+                $entity->addPropertyChangedListener($this);
+            }
         } else {
             $entity = $this->newInstance($class);
             $oid    = spl_object_id($entity);
-
-            $this->entityIdentifiers[$oid]  = $id;
-            $this->entityStates[$oid]       = self::STATE_MANAGED;
-            $this->originalEntityData[$oid] = $data;
-
-            $this->identityMap[$class->rootEntityName][$idHash] = $entity;
+            $this->registerManaged($entity, $id, $data);
 
             if (isset($hints[Query::HINT_READ_ONLY])) {
                 $this->readOnlyObjects[$oid] = true;
             }
-        }
-
-        if ($entity instanceof NotifyPropertyChanged) {
-            $entity->addPropertyChangedListener($this);
         }
 
         foreach ($data as $field => $value) {
@@ -2987,20 +3006,7 @@ class UnitOfWork implements PropertyChangedListener
                                 break;
                             }
 
-                            // PERF: Inlined & optimized code from UnitOfWork#registerManaged()
-                            $newValueOid                                                     = spl_object_id($newValue);
-                            $this->entityIdentifiers[$newValueOid]                           = $associatedId;
-                            $this->identityMap[$targetClass->rootEntityName][$relatedIdHash] = $newValue;
-
-                            if (
-                                $newValue instanceof NotifyPropertyChanged &&
-                                ( ! $newValue instanceof Proxy || $newValue->__isInitialized())
-                            ) {
-                                $newValue->addPropertyChangedListener($this);
-                            }
-
-                            $this->entityStates[$newValueOid] = self::STATE_MANAGED;
-                            // make sure that when an proxy is then finally loaded, $this->originalEntityData is set also!
+                            $this->registerManaged($newValue, $associatedId, []);
                             break;
                     }
 
