@@ -56,7 +56,5 @@ class AttachEntityListenersListener
                 $metadata->addEntityListener($listener['event'], $listener['class'], $listener['method']);
             }
         }
-
-        unset($this->entityListeners[$metadata->name]);
     }
 }
