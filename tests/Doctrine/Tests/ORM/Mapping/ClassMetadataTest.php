@@ -1014,6 +1014,20 @@ class ClassMetadataTest extends OrmTestCase
             'columnPrefix' => false,
         ]);
     }
+
+    public function testItAddingLifecycleCallbackOnEmbeddedClassIsIllegal(): void
+    {
+        $metadata                  = new ClassMetadata(self::class);
+        $metadata->isEmbeddedClass = true;
+
+        $this->expectException(MappingException::class);
+        $this->expectExceptionMessage(<<<'EXCEPTION'
+            Context: Attempt to register lifecycle callback "foo" on embedded class "Doctrine\Tests\ORM\Mapping\ClassMetadataTest".
+            Problem: Registering lifecycle callbacks on embedded classes is not allowed.
+            EXCEPTION);
+
+        $metadata->addLifecycleCallback('foo', 'bar');
+    }
 }
 
 #[MappedSuperclass]

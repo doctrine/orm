@@ -498,6 +498,19 @@ class MappingException extends PersistenceMappingException implements ORMExcepti
         return new self("Entity '" . $className . "' has no method '" . $methodName . "' to be registered as lifecycle callback.");
     }
 
+    /** @param class-string $className */
+    public static function illegalLifecycleCallbackOnEmbeddedClass(string $event, string $className): self
+    {
+        return new self(sprintf(
+            <<<'EXCEPTION'
+            Context: Attempt to register lifecycle callback "%s" on embedded class "%s".
+            Problem: Registering lifecycle callbacks on embedded classes is not allowed.
+            EXCEPTION,
+            $event,
+            $className,
+        ));
+    }
+
     public static function entityListenerClassNotFound(string $listenerName, string $className): self
     {
         return new self(sprintf('Entity Listener "%s" declared on "%s" not found.', $listenerName, $className));

@@ -1,5 +1,10 @@
 # Upgrade to 3.0
 
+## BC BREAK: Lifecycle callback mapping on embedded classes is now explicitly forbidden
+
+Lifecycle callback mapping on embedded classes produced no effect, and is now
+explicitly forbidden to point out mistakes.
+
 ## BC BREAK: The `NOTIFY` change tracking policy is removed
 
 You should use `DEFERRED_EXPLICIT` instead.

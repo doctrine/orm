@@ -2041,13 +2041,7 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
     public function addLifecycleCallback(string $callback, string $event): void
     {
         if ($this->isEmbeddedClass) {
-            Deprecation::trigger(
-                'doctrine/orm',
-                'https://github.com/doctrine/orm/pull/8381',
-                'Registering lifecycle callback %s on Embedded class %s is not doing anything and will throw exception in 3.0',
-                $event,
-                $this->name,
-            );
+            throw MappingException::illegalLifecycleCallbackOnEmbeddedClass($callback, $this->name);
         }
 
         if (isset($this->lifecycleCallbacks[$event]) && in_array($callback, $this->lifecycleCallbacks[$event], true)) {
