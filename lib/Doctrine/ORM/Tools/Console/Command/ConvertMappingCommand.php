@@ -75,12 +75,12 @@ in Doctrine 2 and can be used as runtime mapping for the ORM.
 by the ORM, you can use a DBAL functionality to filter the tables and sequences down
 on a global level:
 
-    $config->setSchemaAssetsFilter(function (string|AbstractAsset $assetName) use ($regexp): bool {
+    $config->setSchemaAssetsFilter(function (string|AbstractAsset $assetName): bool {
         if ($assetName instanceof AbstractAsset) {
             $assetName = $assetName->getName();
         }
 
-        return (bool) preg_match($regexp, $assetName);
+        return str_starts_with($assetName, 'audit_');
     });
 EOT
              );
