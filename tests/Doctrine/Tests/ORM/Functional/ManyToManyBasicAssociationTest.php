@@ -101,6 +101,9 @@ class ManyToManyBasicAssociationTest extends OrmFunctionalTestCase
         //$user->getGroups()->remove(0);
 
         $this->_em->flush();
+
+        self::assertFalse($user->getGroups()->isDirty());
+
         $this->_em->clear();
 
         // Reload same user
@@ -141,7 +144,12 @@ class ManyToManyBasicAssociationTest extends OrmFunctionalTestCase
 
         $user->groups->clear();
 
+        $this->getQueryLog()->reset()->enable();
         $this->_em->flush();
+
+        // Deletions of entire collections happen in a single query
+        $this->removeTransactionCommandsFromQueryLog();
+        self::assertQueryCount(1);
 
         // Check that the links in the association table have been deleted
         $this->assertGblancoGroupCountIs(0);
@@ -212,11 +220,19 @@ class ManyToManyBasicAssociationTest extends OrmFunctionalTestCase
     /** @group DDC-130 */
     public function testRemoveUserWithManyGroups(): void
     {
-        $user   = $this->addCmsUserGblancoWithGroups(2);
+        $user   = $this->addCmsUserGblancoWithGroups(10);
         $userId = $user->getId();
 
         $this->_em->remove($user);
+
+        $this->getQueryLog()->reset()->enable();
+
         $this->_em->flush();
+
+        // This takes three queries: One to delete all user -> group join table rows for the user,
+        // one to delete all user -> tags join table rows for the user, and a final one to delete the user itself.
+        $this->removeTransactionCommandsFromQueryLog();
+        self::assertQueryCount(3);
 
         $newUser = $this->_em->find(get_class($user), $userId);
         self::assertNull($newUser);
@@ -225,15 +241,40 @@ class ManyToManyBasicAssociationTest extends OrmFunctionalTestCase
     /** @group DDC-130 */
     public function testRemoveGroupWithUser(): void
     {
-        $user = $this->addCmsUserGblancoWithGroups(2);
+        $user = $this->addCmsUserGblancoWithGroups(5);
+
+        $anotherUser           = new CmsUser();
+        $anotherUser->username = 'joe_doe';
+        $anotherUser->name     = 'Joe Doe';
+        $anotherUser->status   = 'QA Engineer';
+
+        foreach ($user->getGroups() as $group) {
+            $anotherUser->addGroup($group);
+        }
+
+        $this->_em->persist($anotherUser);
+        $this->_em->flush();
 
         foreach ($user->getGroups() as $group) {
             $this->_em->remove($group);
         }
 
+        $this->getQueryLog()->reset()->enable();
         $this->_em->flush();
+
+        // This takes 5 * 2 queries – for each group to be removed, one to remove all join table rows
+        // for the CmsGroup -> CmsUser inverse side association (for both users at once),
+        // and one for the group itself.
+        $this->removeTransactionCommandsFromQueryLog();
+        self::assertQueryCount(10);
+
+        // Changes to in-memory collection have been made and flushed
+        self::assertCount(0, $user->getGroups());
+        self::assertFalse($user->getGroups()->isDirty());
+
         $this->_em->clear();
 
+        // Changes have been made to the database
         $newUser = $this->_em->find(get_class($user), $user->getId());
         self::assertCount(0, $newUser->getGroups());
     }
@@ -243,7 +284,13 @@ class ManyToManyBasicAssociationTest extends OrmFunctionalTestCase
         $user         = $this->addCmsUserGblancoWithGroups(2);
         $user->groups = null;
 
+        $this->getQueryLog()->reset()->enable();
         $this->_em->flush();
+
+        // It takes one query to remove all join table rows for the user at once
+        $this->removeTransactionCommandsFromQueryLog();
+        self::assertQueryCount(1);
+
         $this->_em->clear();
 
         $newUser = $this->_em->find(get_class($user), $user->getId());
@@ -527,5 +574,16 @@ class ManyToManyBasicAssociationTest extends OrmFunctionalTestCase
         self::assertEquals('Developers_0', $firstGroup->name);
 
         self::assertFalse($user->groups->isInitialized(), 'Post-condition: matching does not initialize collection');
+    }
+
+    private function removeTransactionCommandsFromQueryLog(): void
+    {
+        $log = $this->getQueryLog();
+
+        foreach ($log->queries as $key => $entry) {
+            if ($entry['sql'] === '"START TRANSACTION"' || $entry['sql'] === '"COMMIT"') {
+                unset($log->queries[$key]);
+            }
+        }
     }
 }
