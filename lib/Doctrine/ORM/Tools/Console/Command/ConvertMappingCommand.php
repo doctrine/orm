@@ -80,7 +80,7 @@ on a global level:
             $assetName = $assetName->getName();
         }
 
-        return str_starts_with($assetName, 'audit_');
+        return !str_starts_with($assetName, 'audit_');
     });
 EOT
              );
