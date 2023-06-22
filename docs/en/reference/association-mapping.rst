@@ -881,6 +881,15 @@ Generated MySQL Schema:
     replaced by one-to-many/many-to-one associations between the 3
     participating classes.
 
+.. note::
+
+    For many-to-many associations, the ORM takes care of managing rows
+    in the join table connecting both sides. Due to the way it deals
+    with entity removals, database-level constraints may not work the
+    way one might intuitively assume. Thus, be sure not to miss the section
+    on :ref:`join table management <remove_object_many_to_many_join_tables>`.
+
+
 Many-To-Many, Bidirectional
 ---------------------------
 
@@ -1018,6 +1027,15 @@ one is bidirectional.
 
 The MySQL schema is exactly the same as for the Many-To-Many
 uni-directional case above.
+
+.. note::
+
+    For many-to-many associations, the ORM takes care of managing rows
+    in the join table connecting both sides. Due to the way it deals
+    with entity removals, database-level constraints may not work the
+    way one might intuitively assume. Thus, be sure not to miss the section
+    on :ref:`join table management <remove_object_many_to_many_join_tables>`.
+
 
 Owning and Inverse Side on a ManyToMany Association
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

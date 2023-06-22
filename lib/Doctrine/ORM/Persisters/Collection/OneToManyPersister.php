@@ -16,6 +16,7 @@ use function array_reverse;
 use function array_values;
 use function assert;
 use function implode;
+use function is_int;
 use function is_string;
 
 /**
@@ -174,16 +175,22 @@ class OneToManyPersister extends AbstractCollectionPersister
         $targetClass = $this->em->getClassMetadata($mapping['targetEntity']);
         $columns     = [];
         $parameters  = [];
+        $types       = [];
 
         foreach ($targetClass->associationMappings[$mapping['mappedBy']]['joinColumns'] as $joinColumn) {
             $columns[]    = $this->quoteStrategy->getJoinColumnName($joinColumn, $targetClass, $this->platform);
             $parameters[] = $identifier[$sourceClass->getFieldForColumn($joinColumn['referencedColumnName'])];
+            $types[]      = PersisterHelper::getTypeOfColumn($joinColumn['referencedColumnName'], $sourceClass, $this->em);
         }
 
         $statement = 'DELETE FROM ' . $this->quoteStrategy->getTableName($targetClass, $this->platform)
             . ' WHERE ' . implode(' = ? AND ', $columns) . ' = ?';
 
-        return $this->conn->executeStatement($statement, $parameters);
+        $numAffected = $this->conn->executeStatement($statement, $parameters, $types);
+
+        assert(is_int($numAffected));
+
+        return $numAffected;
     }
 
     /**
@@ -246,6 +253,8 @@ class OneToManyPersister extends AbstractCollectionPersister
         $statement = $this->platform->getDropTemporaryTableSQL($tempTable);
 
         $this->conn->executeStatement($statement);
+
+        assert(is_int($numDeleted));
 
         return $numDeleted;
     }
