@@ -166,7 +166,7 @@ step:
     $connection = DriverManager::getConnection([
         'driver' => 'pdo_sqlite',
         'path' => __DIR__ . '/db.sqlite',
-    ], $config)
+    ], $config);
 
     // obtaining the entity manager
     $entityManager = new EntityManager($connection, $config);
@@ -322,7 +322,7 @@ data in your storage, and later in your application when the data is loaded agai
 .. note::
 
     This method, although very common, is inappropriate for Domain Driven
-    Design (`DDD <https://en.wikipedia.org/wiki/Domain-driven_design>`)
+    Design (`DDD <https://en.wikipedia.org/wiki/Domain-driven_design>`_)
     where methods should represent real business operations and not simple
     property change, And business invariants should be maintained both in the
     application state (entities in this case) and in the database, with no
@@ -449,7 +449,7 @@ entity.
 
 .. note::
 
-    A `DTO <https://en.wikipedia.org/wiki/Data_transfer_object>` is an object
+    A `DTO <https://en.wikipedia.org/wiki/Data_transfer_object>`_ is an object
     that only carries data without any logic. Its only goal is to be transferred
     from one service to another.
     A ``DTO`` often represents data sent by a client and that has to be validated,

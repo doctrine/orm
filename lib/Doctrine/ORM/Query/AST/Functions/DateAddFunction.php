@@ -28,7 +28,7 @@ class DateAddFunction extends FunctionNode
     /** @var Node */
     public $unit = null;
 
-    /** @inheritdoc */
+    /** @inheritDoc */
     public function getSql(SqlWalker $sqlWalker)
     {
         switch (strtolower($this->unit->value)) {
@@ -81,7 +81,7 @@ class DateAddFunction extends FunctionNode
         }
     }
 
-    /** @inheritdoc */
+    /** @inheritDoc */
     public function parse(Parser $parser)
     {
         $parser->match(Lexer::T_IDENTIFIER);

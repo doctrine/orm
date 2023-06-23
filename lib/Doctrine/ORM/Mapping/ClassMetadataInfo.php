@@ -1864,6 +1864,14 @@ class ClassMetadataInfo implements ClassMetadata
     {
         $mapping = $this->_validateAndCompleteAssociationMapping($mapping);
 
+        if (isset($mapping['joinColumns']) && $mapping['joinColumns'] && ! $mapping['isOwningSide']) {
+            Deprecation::trigger(
+                'doctrine/orm',
+                'https://github.com/doctrine/orm/pull/10654',
+                'JoinColumn configuration is not allowed on the inverse side of one-to-one associations, and will throw a MappingException in Doctrine ORM 3.0'
+            );
+        }
+
         if (isset($mapping['joinColumns']) && $mapping['joinColumns']) {
             $mapping['isOwningSide'] = true;
         }
@@ -2465,12 +2473,16 @@ class ClassMetadataInfo implements ClassMetadata
 
         $mapping = $this->associationMappings[$fieldName];
 
-        //if (isset($mapping['inherited']) && (count($overrideMapping) !== 1 || ! isset($overrideMapping['fetch']))) {
-            // TODO: Deprecate overriding the fetch mode via association override for 3.0,
-            // users should do this with a listener and a custom attribute/annotation
-            // TODO: Enable this exception in 2.8
-            //throw MappingException::illegalOverrideOfInheritedProperty($this->name, $fieldName);
-        //}
+        if (isset($mapping['inherited'])) {
+            Deprecation::trigger(
+                'doctrine/orm',
+                'https://github.com/doctrine/orm/pull/10470',
+                'Overrides are only allowed for fields or associations declared in mapped superclasses or traits. This is not the case for %s::%s, which was inherited from %s. This is a misconfiguration and will be an error in Doctrine ORM 3.0.',
+                $this->name,
+                $fieldName,
+                $mapping['inherited']
+            );
+        }
 
         if (isset($overrideMapping['joinColumns'])) {
             $mapping['joinColumns'] = $overrideMapping['joinColumns'];
@@ -3131,7 +3143,7 @@ class ClassMetadataInfo implements ClassMetadata
      * @see getDiscriminatorColumn()
      *
      * @param mixed[]|null $columnDef
-     * @psalm-param DiscriminatorColumnMapping|array{name: string|null, fieldName?: string, type?: string, length?: int, columnDefinition?: string|null, enumType?: class-string<BackedEnum>|null}|null $columnDef
+     * @psalm-param array{name: string|null, fieldName?: string, type?: string, length?: int, columnDefinition?: string|null, enumType?: class-string<BackedEnum>|null, options?: array<string, mixed>}|null $columnDef
      *
      * @return void
      *
@@ -3850,7 +3862,14 @@ class ClassMetadataInfo implements ClassMetadata
     {
         $reflectionProperty = $reflService->getAccessibleProperty($class, $field);
         if ($reflectionProperty !== null && PHP_VERSION_ID >= 80100 && $reflectionProperty->isReadOnly()) {
-            $reflectionProperty = new ReflectionReadonlyProperty($reflectionProperty);
+            $declaringClass = $reflectionProperty->getDeclaringClass()->name;
+            if ($declaringClass !== $class) {
+                $reflectionProperty = $reflService->getAccessibleProperty($declaringClass, $field);
+            }
+
+            if ($reflectionProperty !== null) {
+                $reflectionProperty = new ReflectionReadonlyProperty($reflectionProperty);
+            }
         }
 
         return $reflectionProperty;

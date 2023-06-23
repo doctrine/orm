@@ -368,6 +368,7 @@ Optional parameters:
 -  **length**: By default this is 255.
 -  **columnDefinition**: By default this is null the definition according to the type will be used. This option allows to override it.
 -  **enumType**: By default this is `null`. Allows to map discriminatorColumn value to PHP enum
+-  **options**: See "options" attribute on :ref:`#[Column] <attrref_column>`.
 
 .. _attrref_discriminatormap:
 
@@ -539,13 +540,13 @@ has meaning in the ``SchemaTool`` schema generation context.
 
 Required parameters:
 
--  **name**: Name of the Index
 -  **fields**: Array of fields. Exactly one of **fields, columns** is required.
 -  **columns**: Array of columns. Exactly one of **fields, columns** is required.
 
 
 Optional parameters:
 
+-  **name**: Name of the Index. If not provided, a generated name will be assigned.
 -  **options**: Array of platform specific options:
 
    -  ``where``: SQL WHERE condition to be used for partial indexes. It will
@@ -575,7 +576,7 @@ Example with partial indexes:
 
     #[Index(name: "search_idx", columns: ["category"],
         options: [
-            "where": "((category IS NOT NULL))"
+            "where" => "((category IS NOT NULL))"
         ]
     )]
     class ECommerceProduct
@@ -1103,11 +1104,12 @@ context.
 
 Required parameters:
 
--  **name**: Name of the Index
--  **columns**: Array of columns.
+-  **fields**: Array of fields (the names of the properties, used in the entity class).
+-  **columns**: Array of columns (the names of the columns, used in the schema).
 
 Optional parameters:
 
+-  **name**: Name of the Index. If not provided, a generated name will be assigned.
 -  **options**: Array of platform specific options:
 
    -  ``where``: SQL WHERE condition to be used for partial indexes. It will

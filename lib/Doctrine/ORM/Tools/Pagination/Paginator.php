@@ -106,7 +106,7 @@ class Paginator implements Countable, IteratorAggregate
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      *
      * @return int
      */
@@ -125,7 +125,7 @@ class Paginator implements Countable, IteratorAggregate
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      *
      * @return Traversable
      * @psalm-return Traversable<array-key, T>

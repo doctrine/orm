@@ -37,13 +37,19 @@ Beware that the complete database is dropped by this command, even tables that a
 by the ORM, you can use a DBAL functionality to filter the tables and sequences down
 on a global level:
 
-    $config->setFilterSchemaAssetsExpression($regexp);
+    $config->setSchemaAssetsFilter(function (string|AbstractAsset $assetName): bool {
+        if ($assetName instanceof AbstractAsset) {
+            $assetName = $assetName->getName();
+        }
+
+        return !str_starts_with($assetName, 'audit_');
+    });
 EOT
              );
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     protected function executeSchemaCommand(InputInterface $input, OutputInterface $output, SchemaTool $schemaTool, array $metadatas, SymfonyStyle $ui)
     {

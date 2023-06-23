@@ -33,7 +33,7 @@ class JoinAssociationDeclaration extends Node
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function dispatch($sqlWalker)
     {

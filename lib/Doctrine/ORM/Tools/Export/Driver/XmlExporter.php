@@ -28,7 +28,7 @@ class XmlExporter extends AbstractExporter
     protected $_extension = '.dcm.xml';
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function exportClassMetadata(ClassMetadataInfo $metadata)
     {

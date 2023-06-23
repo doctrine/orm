@@ -226,6 +226,11 @@ parameters:
 			path: lib/Doctrine/ORM/Mapping/Driver/AttributeDriver.php
 
 		-
+			message: "#^Parameter \\#4 \\.\\.\\.\\$args of static method Doctrine\\\\Deprecations\\\\Deprecation\\:\\:trigger\\(\\) expects float\\|int\\|string, false given\\.$#"
+			count: 1
+			path: lib/Doctrine/ORM/Mapping/Driver/DatabaseDriver.php
+
+		-
 			message: "#^Empty array passed to foreach\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Mapping/Driver/XmlDriver.php
@@ -387,21 +392,6 @@ parameters:
 
 		-
 			message: "#^Method Doctrine\\\\ORM\\\\Query\\\\Parser\\:\\:ArithmeticTerm\\(\\) should return Doctrine\\\\ORM\\\\Query\\\\AST\\\\ArithmeticTerm but returns Doctrine\\\\ORM\\\\Query\\\\AST\\\\ArithmeticFactor\\|string\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Query/Parser.php
-
-		-
-			message: """
-				#^PHPDoc tag @return has invalid value \\(AST\\\\BetweenExpression\\|
-				        AST\\\\CollectionMemberExpression\\|
-				        AST\\\\ComparisonExpression\\|
-				        AST\\\\EmptyCollectionComparisonExpression\\|
-				        AST\\\\ExistsExpression\\|
-				        AST\\\\InExpression\\|
-				        AST\\\\InstanceOfExpression\\|
-				        AST\\\\LikeExpression\\|
-				        AST\\\\NullComparisonExpression\\)\\: Unexpected token "\\\\n     \\* ", expected type at offset 344$#
-			"""
 			count: 1
 			path: lib/Doctrine/ORM/Query/Parser.php
 

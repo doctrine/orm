@@ -47,7 +47,7 @@ abstract class TreeWalkerAdapter implements TreeWalker
     private $queryComponents;
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function __construct($query, $parserResult, array $queryComponents)
     {
@@ -57,7 +57,7 @@ abstract class TreeWalkerAdapter implements TreeWalker
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function getQueryComponents()
     {
@@ -141,7 +141,7 @@ abstract class TreeWalkerAdapter implements TreeWalker
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      *
      * @deprecated This method will be removed in 3.0.
      */
@@ -156,7 +156,7 @@ abstract class TreeWalkerAdapter implements TreeWalker
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      *
      * @deprecated This method will be removed in 3.0.
      */
@@ -171,7 +171,7 @@ abstract class TreeWalkerAdapter implements TreeWalker
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      *
      * @deprecated This method will be removed in 3.0.
      */
@@ -186,7 +186,7 @@ abstract class TreeWalkerAdapter implements TreeWalker
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      *
      * @deprecated This method will be removed in 3.0.
      */
@@ -201,7 +201,7 @@ abstract class TreeWalkerAdapter implements TreeWalker
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      *
      * @deprecated This method will be removed in 3.0.
      */
@@ -216,7 +216,7 @@ abstract class TreeWalkerAdapter implements TreeWalker
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      *
      * @deprecated This method will be removed in 3.0.
      */
@@ -231,7 +231,7 @@ abstract class TreeWalkerAdapter implements TreeWalker
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      *
      * @deprecated This method will be removed in 3.0.
      */
@@ -246,7 +246,7 @@ abstract class TreeWalkerAdapter implements TreeWalker
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      *
      * @deprecated This method will be removed in 3.0.
      */
@@ -261,7 +261,7 @@ abstract class TreeWalkerAdapter implements TreeWalker
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      *
      * @deprecated This method will be removed in 3.0.
      */
@@ -276,7 +276,7 @@ abstract class TreeWalkerAdapter implements TreeWalker
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      *
      * @deprecated This method will be removed in 3.0.
      */
@@ -291,7 +291,7 @@ abstract class TreeWalkerAdapter implements TreeWalker
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      *
      * @deprecated This method will be removed in 3.0.
      */
@@ -306,7 +306,7 @@ abstract class TreeWalkerAdapter implements TreeWalker
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      *
      * @deprecated This method will be removed in 3.0.
      */
@@ -321,7 +321,7 @@ abstract class TreeWalkerAdapter implements TreeWalker
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      *
      * @deprecated This method will be removed in 3.0.
      */
@@ -336,7 +336,7 @@ abstract class TreeWalkerAdapter implements TreeWalker
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      *
      * @deprecated This method will be removed in 3.0.
      */
@@ -345,7 +345,7 @@ abstract class TreeWalkerAdapter implements TreeWalker
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      *
      * @deprecated This method will be removed in 3.0.
      */
@@ -360,7 +360,7 @@ abstract class TreeWalkerAdapter implements TreeWalker
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      *
      * @deprecated This method will be removed in 3.0.
      */
@@ -383,7 +383,7 @@ abstract class TreeWalkerAdapter implements TreeWalker
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      *
      * @deprecated This method will be removed in 3.0.
      */
@@ -398,7 +398,7 @@ abstract class TreeWalkerAdapter implements TreeWalker
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      *
      * @deprecated This method will be removed in 3.0.
      */
@@ -413,7 +413,7 @@ abstract class TreeWalkerAdapter implements TreeWalker
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      *
      * @deprecated This method will be removed in 3.0.
      */
@@ -428,7 +428,7 @@ abstract class TreeWalkerAdapter implements TreeWalker
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      *
      * @deprecated This method will be removed in 3.0.
      */
@@ -443,7 +443,7 @@ abstract class TreeWalkerAdapter implements TreeWalker
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      *
      * @deprecated This method will be removed in 3.0.
      */
@@ -458,7 +458,7 @@ abstract class TreeWalkerAdapter implements TreeWalker
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      *
      * @deprecated This method will be removed in 3.0.
      */
@@ -473,7 +473,7 @@ abstract class TreeWalkerAdapter implements TreeWalker
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      *
      * @deprecated This method will be removed in 3.0.
      */
@@ -488,7 +488,7 @@ abstract class TreeWalkerAdapter implements TreeWalker
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      *
      * @deprecated This method will be removed in 3.0.
      */
@@ -503,7 +503,7 @@ abstract class TreeWalkerAdapter implements TreeWalker
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      *
      * @deprecated This method will be removed in 3.0.
      */
@@ -518,7 +518,7 @@ abstract class TreeWalkerAdapter implements TreeWalker
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      *
      * @deprecated This method will be removed in 3.0.
      */
@@ -533,7 +533,7 @@ abstract class TreeWalkerAdapter implements TreeWalker
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      *
      * @deprecated This method will be removed in 3.0.
      */
@@ -548,7 +548,7 @@ abstract class TreeWalkerAdapter implements TreeWalker
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      *
      * @deprecated This method will be removed in 3.0.
      */
@@ -563,7 +563,7 @@ abstract class TreeWalkerAdapter implements TreeWalker
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      *
      * @deprecated This method will be removed in 3.0.
      */
@@ -578,7 +578,7 @@ abstract class TreeWalkerAdapter implements TreeWalker
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      *
      * @deprecated This method will be removed in 3.0.
      */
@@ -593,7 +593,7 @@ abstract class TreeWalkerAdapter implements TreeWalker
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      *
      * @deprecated This method will be removed in 3.0.
      */
@@ -608,7 +608,7 @@ abstract class TreeWalkerAdapter implements TreeWalker
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      *
      * @deprecated This method will be removed in 3.0.
      */
@@ -623,7 +623,7 @@ abstract class TreeWalkerAdapter implements TreeWalker
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      *
      * @deprecated This method will be removed in 3.0.
      */
@@ -638,7 +638,7 @@ abstract class TreeWalkerAdapter implements TreeWalker
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      *
      * @deprecated This method will be removed in 3.0.
      */
@@ -653,7 +653,7 @@ abstract class TreeWalkerAdapter implements TreeWalker
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      *
      * @deprecated This method will be removed in 3.0.
      */
@@ -668,7 +668,7 @@ abstract class TreeWalkerAdapter implements TreeWalker
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      *
      * @deprecated This method will be removed in 3.0.
      */
@@ -683,7 +683,7 @@ abstract class TreeWalkerAdapter implements TreeWalker
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      *
      * @deprecated This method will be removed in 3.0.
      */
@@ -698,7 +698,7 @@ abstract class TreeWalkerAdapter implements TreeWalker
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      *
      * @deprecated This method will be removed in 3.0.
      */
@@ -713,7 +713,7 @@ abstract class TreeWalkerAdapter implements TreeWalker
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      *
      * @deprecated This method will be removed in 3.0.
      */
@@ -728,7 +728,7 @@ abstract class TreeWalkerAdapter implements TreeWalker
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      *
      * @deprecated This method will be removed in 3.0.
      */
@@ -743,7 +743,7 @@ abstract class TreeWalkerAdapter implements TreeWalker
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      *
      * @deprecated This method will be removed in 3.0.
      */
@@ -758,7 +758,7 @@ abstract class TreeWalkerAdapter implements TreeWalker
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      *
      * @deprecated This method will be removed in 3.0.
      */
@@ -773,7 +773,7 @@ abstract class TreeWalkerAdapter implements TreeWalker
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      *
      * @deprecated This method will be removed in 3.0.
      */
@@ -788,7 +788,7 @@ abstract class TreeWalkerAdapter implements TreeWalker
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      *
      * @deprecated This method will be removed in 3.0.
      */

@@ -18,6 +18,9 @@
             <file name="lib/Doctrine/ORM/Mapping/Driver/AttributeReader.php" />
         </ignoreFiles>
     </projectFiles>
+    <enableExtensions>
+        <extension name="simplexml" />
+    </enableExtensions>
     <issueHandlers>
         <DeprecatedClass>
             <errorLevel type="suppress">
@@ -79,7 +82,6 @@
                 <referencedMethod name="Doctrine\DBAL\Platforms\AbstractPlatform::getGuidExpression"/>
                 <referencedMethod name="Doctrine\DBAL\Platforms\AbstractPlatform::supportsForeignKeyConstraints"/>
                 <!-- Remove on 3.0.x -->
-                <referencedMethod name="Doctrine\Common\Lexer\Token::offsetGet"/>
                 <referencedMethod name="Doctrine\DBAL\Connection::getEventManager"/>
                 <referencedMethod name="Doctrine\DBAL\Schema\Schema::visit"/>
                 <referencedMethod name="Doctrine\DBAL\Schema\SchemaDiff::toSaveSql"/>

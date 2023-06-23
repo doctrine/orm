@@ -60,7 +60,7 @@ class EntityPersisterMock extends BasicEntityPersister
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function update($entity): void
     {
@@ -68,7 +68,7 @@ class EntityPersisterMock extends BasicEntityPersister
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function exists($entity, ?Criteria $extraConditions = null): bool
     {
@@ -78,7 +78,7 @@ class EntityPersisterMock extends BasicEntityPersister
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function delete($entity): bool
     {

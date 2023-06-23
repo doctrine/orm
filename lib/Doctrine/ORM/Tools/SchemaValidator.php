@@ -105,11 +105,17 @@ class SchemaValidator
                 return $ce;
             }
 
+            $targetMetadata = $cmf->getMetadataFor($assoc['targetEntity']);
+
+            if ($targetMetadata->isMappedSuperclass) {
+                $ce[] = "The target entity '" . $assoc['targetEntity'] . "' specified on " . $class->name . '#' . $fieldName . ' is a mapped superclass. This is not possible since there is no table that a foreign key could refer to.';
+
+                return $ce;
+            }
+
             if ($assoc['mappedBy'] && $assoc['inversedBy']) {
                 $ce[] = 'The association ' . $class . '#' . $fieldName . ' cannot be defined as both inverse and owning.';
             }
-
-            $targetMetadata = $cmf->getMetadataFor($assoc['targetEntity']);
 
             if (isset($assoc['id']) && $targetMetadata->containsForeignIdentifier) {
                 $ce[] = "Cannot map association '" . $class->name . '#' . $fieldName . ' as identifier, because ' .

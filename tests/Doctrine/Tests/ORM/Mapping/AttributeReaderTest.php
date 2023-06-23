@@ -5,13 +5,21 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Mapping;
 
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\DiscriminatorColumn;
+use Doctrine\ORM\Mapping\DiscriminatorMap;
 use Doctrine\ORM\Mapping\Driver\AttributeReader;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\InheritanceType;
 use Doctrine\ORM\Mapping\InverseJoinColumn;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\JoinTable;
 use Doctrine\ORM\Mapping\ManyToMany;
 use LogicException;
 use PHPUnit\Framework\TestCase;
+use ReflectionClass;
 use ReflectionProperty;
 
 /**
@@ -72,6 +80,19 @@ class AttributeReaderTest extends TestCase
             'collation' => 'utf8mb4_bin',
         ], $inverseJoinColumns[0]->options);
     }
+
+    public function testDiscriminatedColumnOptions(): void
+    {
+        $reader = new AttributeReader();
+        $class  = new ReflectionClass(TestPerson::class);
+
+        $attributes = $reader->getClassAttributes($class);
+        self::assertArrayHasKey(DiscriminatorColumn::class, $attributes);
+        self::assertSame([
+            'charset' => 'ascii',
+            'collation' => 'ascii_general_ci',
+        ], $attributes[DiscriminatorColumn::class]->options);
+    }
 }
 
 #[ORM\Entity]
@@ -100,4 +121,23 @@ class TestTag
     #[ORM\Column(type: 'integer')]
     #[ORM\GeneratedValue]
     public $id;
+}
+
+
+#[Entity]
+#[InheritanceType('SINGLE_TABLE')]
+#[DiscriminatorColumn(name: 'discr', options: ['charset' => 'ascii', 'collation' => 'ascii_general_ci'])]
+#[DiscriminatorMap(['person' => TestPerson::class, 'employee' => TestEmployee::class])]
+class TestPerson
+{
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
+    public $id;
+}
+
+#[Entity]
+class TestEmployee extends TestPerson
+{
 }

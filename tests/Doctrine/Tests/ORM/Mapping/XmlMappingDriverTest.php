@@ -22,6 +22,10 @@ use Doctrine\Tests\Models\DDC889\DDC889SuperClass;
 use Doctrine\Tests\Models\Generic\BooleanModel;
 use Doctrine\Tests\Models\GH7141\GH7141Article;
 use Doctrine\Tests\Models\GH7316\GH7316Article;
+use Doctrine\Tests\Models\Project\Project;
+use Doctrine\Tests\Models\Project\ProjectId;
+use Doctrine\Tests\Models\Project\ProjectInvalidMapping;
+use Doctrine\Tests\Models\Project\ProjectName;
 use Doctrine\Tests\Models\ValueObjects\Name;
 use Doctrine\Tests\Models\ValueObjects\Person;
 
@@ -239,6 +243,10 @@ class XmlMappingDriverTest extends MappingDriverTestCase
                 UserMissingAttributes::class,
                 ['The attribute \'name\' is required but missing' => 1],
             ],
+            [
+                ProjectInvalidMapping::class,
+                ['attribute \'type\': [facet \'pattern\'] The value' => 2],
+            ],
         ];
     }
 
@@ -278,6 +286,23 @@ class XmlMappingDriverTest extends MappingDriverTestCase
         $this->expectExceptionMessage('libxml error: Element \'{http://doctrine-project.org/schemas/orm/doctrine-mapping}class\': This element is not expected.');
 
         $this->createClassMetadata(DDC889Class::class);
+    }
+
+    public function testClassNameInFieldOrId(): void
+    {
+        $class = new ClassMetadata(Project::class);
+        $class->initializeReflection(new RuntimeReflectionService());
+
+        $driver = $this->loadDriver();
+        $driver->loadMetadataForClass(Project::class, $class);
+
+        /** @var array{type: string} $id */
+        $id = $class->getFieldMapping('id');
+        /** @var array{type: string} $name */
+        $name = $class->getFieldMapping('name');
+
+        self::assertEquals(ProjectId::class, $id['type']);
+        self::assertEquals(ProjectName::class, $name['type']);
     }
 }
 

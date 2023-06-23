@@ -14,7 +14,7 @@ use function strtolower;
 class JoinColumnClassNamingStrategy extends DefaultNamingStrategy
 {
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function joinColumnName($propertyName, $className = null)
     {

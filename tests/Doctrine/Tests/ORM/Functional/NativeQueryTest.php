@@ -19,6 +19,7 @@ use Doctrine\Tests\Models\CMS\CmsAddress;
 use Doctrine\Tests\Models\CMS\CmsEmail;
 use Doctrine\Tests\Models\CMS\CmsPhonenumber;
 use Doctrine\Tests\Models\CMS\CmsUser;
+use Doctrine\Tests\Models\CMS\CmsUserDTO;
 use Doctrine\Tests\Models\Company\CompanyContract;
 use Doctrine\Tests\Models\Company\CompanyEmployee;
 use Doctrine\Tests\Models\Company\CompanyFixContract;
@@ -153,6 +154,77 @@ class NativeQueryTest extends OrmFunctionalTestCase
         $phones = $users[0]->getPhonenumbers();
         self::assertEquals(424242, $phones[0]->phonenumber);
         self::assertSame($phones[0]->getUser(), $users[0]);
+    }
+
+    public function testMappingAsDto(): void
+    {
+        $user           = new CmsUser();
+        $user->name     = 'Roman';
+        $user->username = 'romanb';
+        $user->status   = 'dev';
+
+        $phone              = new CmsPhonenumber();
+        $phone->phonenumber = 424242;
+
+        $user->addPhonenumber($phone);
+
+        $email        = new CmsEmail();
+        $email->email = 'fabio.bat.silva@gmail.com';
+
+        $user->setEmail($email);
+
+        $addr          = new CmsAddress();
+        $addr->country = 'germany';
+        $addr->zip     = 10827;
+        $addr->city    = 'Berlin';
+
+        $user->setAddress($addr);
+
+        $this->_em->persist($user);
+        $this->_em->flush();
+
+        $this->_em->clear();
+
+        $rsm = new ResultSetMapping();
+        $rsm->addScalarResult('name', 1, 'string');
+        $rsm->addScalarResult('email', 2, 'string');
+        $rsm->addScalarResult('city', 3, 'string');
+        $rsm->newObjectMappings['name']  = [
+            'className' => CmsUserDTO::class,
+            'objIndex'  => 0,
+            'argIndex'  => 0,
+        ];
+        $rsm->newObjectMappings['email'] = [
+            'className' => CmsUserDTO::class,
+            'objIndex'  => 0,
+            'argIndex'  => 1,
+        ];
+        $rsm->newObjectMappings['city']  = [
+            'className' => CmsUserDTO::class,
+            'objIndex'  => 0,
+            'argIndex'  => 2,
+        ];
+        $query                           = $this->_em->createNativeQuery(
+            <<<'SQL'
+    SELECT u.name, e.email, a.city
+      FROM cms_users u
+INNER JOIN cms_phonenumbers p ON u.id = p.user_id
+INNER JOIN cms_emails e ON e.id = u.email_id
+INNER JOIN cms_addresses a ON u.id = a.user_id
+     WHERE username = ?
+SQL
+            ,
+            $rsm
+        );
+        $query->setParameter(1, 'romanb');
+
+        $users = $query->getResult();
+        self::assertCount(1, $users);
+        $user = $users[0];
+        self::assertInstanceOf(CmsUserDTO::class, $user);
+        self::assertEquals('Roman', $user->name);
+        self::assertEquals('fabio.bat.silva@gmail.com', $user->email);
+        self::assertEquals('Berlin', $user->address);
     }
 
     public function testJoinedOneToOneNativeQuery(): void

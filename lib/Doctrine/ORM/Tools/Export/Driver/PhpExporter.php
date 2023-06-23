@@ -30,7 +30,7 @@ class PhpExporter extends AbstractExporter
     protected $_extension = '.php';
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function exportClassMetadata(ClassMetadataInfo $metadata)
     {

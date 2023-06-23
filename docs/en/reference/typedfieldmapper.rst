@@ -153,7 +153,7 @@ You need to create a class which implements ``Doctrine\ORM\Mapping\TypedFieldMap
     final class CustomEnumTypedFieldMapper implements TypedFieldMapper
     {
         /**
-         * {@inheritdoc}
+         * {@inheritDoc}
          */
         public function validateAndComplete(array $mapping, ReflectionProperty $field): array
         {

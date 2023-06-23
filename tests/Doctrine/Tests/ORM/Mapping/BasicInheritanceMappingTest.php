@@ -261,6 +261,16 @@ class BasicInheritanceMappingTest extends OrmTestCase
 
         $cm->setAttributeOverride('completed', ['name' => 'other_column_name']);
     }
+
+    /** @group DDC-964 */
+    public function testInvalidOverrideAssociationInheritedFromEntity(): void
+    {
+        $cm = $this->cmf->getMetadataFor(CompanyFixContract::class);
+
+        $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/pull/10470');
+
+        $cm->setAssociationOverride('salesPerson', ['inversedBy' => 'other_inversed_by_name']);
+    }
 }
 
 class TransientBaseClass
@@ -315,7 +325,6 @@ class MappedSuperclassBase
     private $transient;
 }
 
-/** @Entity */
 class MappedSuperclassRelated1
 {
 }
