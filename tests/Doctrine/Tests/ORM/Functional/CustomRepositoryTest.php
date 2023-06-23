@@ -103,7 +103,7 @@ class MinimalRepository implements ObjectRepository
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function find($id)
     {
@@ -111,7 +111,7 @@ class MinimalRepository implements ObjectRepository
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function findAll(): array
     {
@@ -119,7 +119,7 @@ class MinimalRepository implements ObjectRepository
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function findBy(array $criteria, ?array $orderBy = null, $limit = null, $offset = null): array
     {
@@ -129,7 +129,7 @@ class MinimalRepository implements ObjectRepository
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function findOneBy(array $criteria)
     {

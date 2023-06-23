@@ -219,7 +219,7 @@ class BasicEntityPersister implements EntityPersister
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function getClassMetadata()
     {
@@ -227,7 +227,7 @@ class BasicEntityPersister implements EntityPersister
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function getResultSetMapping()
     {
@@ -235,7 +235,7 @@ class BasicEntityPersister implements EntityPersister
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function addInsert($entity)
     {
@@ -243,7 +243,7 @@ class BasicEntityPersister implements EntityPersister
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function getInserts()
     {
@@ -251,7 +251,7 @@ class BasicEntityPersister implements EntityPersister
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function executeInserts()
     {
@@ -388,7 +388,7 @@ class BasicEntityPersister implements EntityPersister
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function update($entity)
     {
@@ -538,7 +538,7 @@ class BasicEntityPersister implements EntityPersister
     protected function deleteJoinTableRecords(array $identifier, array $types): void
     {
         foreach ($this->class->associationMappings as $mapping) {
-            if ($mapping['type'] !== ClassMetadata::MANY_TO_MANY) {
+            if ($mapping['type'] !== ClassMetadata::MANY_TO_MANY || isset($mapping['isOnDeleteCascade'])) {
                 continue;
             }
 
@@ -574,10 +574,6 @@ class BasicEntityPersister implements EntityPersister
                 $otherKeys[] = $this->quoteStrategy->getJoinColumnName($joinColumn, $class, $this->platform);
             }
 
-            if (isset($mapping['isOnDeleteCascade'])) {
-                continue;
-            }
-
             $joinTableName = $this->quoteStrategy->getJoinTableName($association, $this->class, $this->platform);
 
             $this->conn->delete($joinTableName, array_combine($keys, $identifier), $types);
@@ -589,7 +585,7 @@ class BasicEntityPersister implements EntityPersister
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function delete($entity)
     {
@@ -733,7 +729,7 @@ class BasicEntityPersister implements EntityPersister
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function getOwningTable($fieldName)
     {
@@ -741,7 +737,7 @@ class BasicEntityPersister implements EntityPersister
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function load(array $criteria, $entity = null, $assoc = null, array $hints = [], $lockMode = null, $limit = null, ?array $orderBy = null)
     {
@@ -763,7 +759,7 @@ class BasicEntityPersister implements EntityPersister
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function loadById(array $identifier, $entity = null)
     {
@@ -771,7 +767,7 @@ class BasicEntityPersister implements EntityPersister
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function loadOneToOneEntity(array $assoc, $sourceEntity, array $identifier = [])
     {
@@ -831,7 +827,7 @@ class BasicEntityPersister implements EntityPersister
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function refresh(array $id, $entity, $lockMode = null)
     {
@@ -858,7 +854,7 @@ class BasicEntityPersister implements EntityPersister
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function loadCriteria(Criteria $criteria)
     {
@@ -876,7 +872,7 @@ class BasicEntityPersister implements EntityPersister
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function expandCriteriaParameters(Criteria $criteria)
     {
@@ -892,22 +888,24 @@ class BasicEntityPersister implements EntityPersister
 
         $valueVisitor->dispatch($expression);
 
-        [$params, $types] = $valueVisitor->getParamsAndTypes();
-
-        foreach ($params as $param) {
-            $sqlParams = array_merge($sqlParams, $this->getValues($param));
-        }
+        [, $types] = $valueVisitor->getParamsAndTypes();
 
         foreach ($types as $type) {
-            [$field, $value] = $type;
-            $sqlTypes        = array_merge($sqlTypes, $this->getTypes($field, $value, $this->class));
+            [$field, $value, $operator] = $type;
+
+            if ($value === null && ($operator === Comparison::EQ || $operator === Comparison::NEQ)) {
+                continue;
+            }
+
+            $sqlParams = array_merge($sqlParams, $this->getValues($value));
+            $sqlTypes  = array_merge($sqlTypes, $this->getTypes($field, $value, $this->class));
         }
 
         return [$sqlParams, $sqlTypes];
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function loadAll(array $criteria = [], ?array $orderBy = null, $limit = null, $offset = null)
     {
@@ -923,7 +921,7 @@ class BasicEntityPersister implements EntityPersister
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function getManyToManyCollection(array $assoc, $sourceEntity, $offset = null, $limit = null)
     {
@@ -981,7 +979,7 @@ class BasicEntityPersister implements EntityPersister
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function loadManyToManyCollection(array $assoc, $sourceEntity, PersistentCollection $collection)
     {
@@ -1067,7 +1065,7 @@ class BasicEntityPersister implements EntityPersister
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function getSelectSQL($criteria, $assoc = null, $lockMode = null, $limit = null, $offset = null, ?array $orderBy = null)
     {
@@ -1398,7 +1396,7 @@ class BasicEntityPersister implements EntityPersister
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function getInsertSQL()
     {
@@ -1548,7 +1546,7 @@ class BasicEntityPersister implements EntityPersister
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function lock(array $criteria, $lockMode)
     {
@@ -1625,7 +1623,7 @@ class BasicEntityPersister implements EntityPersister
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function getSelectConditionStatementSQL($field, $value, $assoc = null, $comparison = null)
     {
@@ -1787,7 +1785,7 @@ class BasicEntityPersister implements EntityPersister
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function getOneToManyCollection(array $assoc, $sourceEntity, $offset = null, $limit = null)
     {
@@ -1799,7 +1797,7 @@ class BasicEntityPersister implements EntityPersister
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function loadOneToManyCollection(array $assoc, $sourceEntity, PersistentCollection $collection)
     {
@@ -1866,7 +1864,7 @@ class BasicEntityPersister implements EntityPersister
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function expandParameters($criteria)
     {
@@ -2029,7 +2027,7 @@ class BasicEntityPersister implements EntityPersister
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function exists($entity, ?Criteria $extraConditions = null)
     {

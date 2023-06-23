@@ -286,16 +286,52 @@ as follows:
 After an entity has been removed, its in-memory state is the same as
 before the removal, except for generated identifiers.
 
-Removing an entity will also automatically delete any existing
-records in many-to-many join tables that link this entity. The
-action taken depends on the value of the ``@joinColumn`` mapping
-attribute "onDelete". Either Doctrine issues a dedicated ``DELETE``
-statement for records of each join table or it depends on the
-foreign key semantics of onDelete="CASCADE".
+During the ``EntityManager#flush()`` operation, the removed entity
+will also be removed from all collections in entities currently
+loaded into memory.
+
+.. _remove_object_many_to_many_join_tables:
+
+Join-table management when removing from many-to-many collections
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Regarding existing rows in many-to-many join tables that refer to
+an entity being removed, the following applies.
+
+When the entity being removed does not declare the many-to-many association
+itself (that is, the many-to-many association is unidirectional and
+the entity is on the inverse side), the ORM has no reasonable way to
+detect associations targeting the entity's class. Thus, no ORM-level handling
+of join-table rows is attempted and database-level constraints apply.
+In case of database-level ``ON DELETE RESTRICT`` constraints, the
+``EntityManager#flush()`` operation may abort and a ``ConstraintViolationException``
+may be thrown. No in-memory collections will be modified in this case.
+With ``ON DELETE CASCADE``, the RDBMS will take care of removing rows
+from join tables.
+
+When the entity being removed is part of bi-directional many-to-many
+association, either as the owning or inverse side, the ORM will
+delete rows from join tables before removing the entity itself. That means
+database-level ``ON DELETE RESTRICT`` constraints on join tables are not
+effective, since the join table rows are removed first. Removal of join table
+rows happens through specialized methods in entity and collection persister
+classes and take one query per entity and join table. In case the association
+uses a ``@JoinColumn`` configuration with ``onDelete="CASCADE"``, instead
+of using a dedicated ``DELETE`` query the database-level operation will be
+relied upon.
+
+.. note::
+
+    In case you rely on database-level ``ON DELETE RESTRICT`` constraints,
+    be aware that by making many-to-many associations bidirectional the
+    assumed protection may be lost.
+
+
+Performance of different deletion strategies
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Deleting an object with all its associated objects can be achieved
 in multiple ways with very different performance impacts.
-
 
 1. If an association is marked as ``CASCADE=REMOVE`` Doctrine ORM
    will fetch this association. If its a Single association it will

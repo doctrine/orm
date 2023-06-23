@@ -23,7 +23,7 @@ class ReadWriteCachedCollectionPersister extends AbstractCollectionPersister
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function afterTransactionComplete()
     {
@@ -43,7 +43,7 @@ class ReadWriteCachedCollectionPersister extends AbstractCollectionPersister
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function afterTransactionRolledBack()
     {
@@ -63,7 +63,7 @@ class ReadWriteCachedCollectionPersister extends AbstractCollectionPersister
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function delete(PersistentCollection $collection)
     {
@@ -84,7 +84,7 @@ class ReadWriteCachedCollectionPersister extends AbstractCollectionPersister
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function update(PersistentCollection $collection)
     {

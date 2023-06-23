@@ -30,7 +30,7 @@ class EnsureProductionSettingsCommand extends AbstractEntityManagerCommand
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      *
      * @return int
      */

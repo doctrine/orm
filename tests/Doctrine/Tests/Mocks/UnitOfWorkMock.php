@@ -21,7 +21,7 @@ class UnitOfWorkMock extends UnitOfWork
     private $_persisterMock;
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function getEntityPersister($entityName)
     {
@@ -29,7 +29,7 @@ class UnitOfWorkMock extends UnitOfWork
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function & getEntityChangeSet($entity)
     {
@@ -56,7 +56,7 @@ class UnitOfWorkMock extends UnitOfWork
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function setOriginalEntityData($entity, array $originalData)
     {

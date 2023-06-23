@@ -137,7 +137,7 @@ class DDC2579Type extends StringType
     public const NAME = 'ddc2579';
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function convertToDatabaseValue($value, AbstractPlatform $platform)
     {
@@ -153,7 +153,7 @@ class DDC2579Type extends StringType
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function getName()
     {

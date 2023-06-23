@@ -64,7 +64,7 @@ class EntityManagerMock extends EntityManager
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public static function create($connection, Configuration $config, ?EventManager $eventManager = null): self
     {

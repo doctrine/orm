@@ -82,7 +82,8 @@ class GH7180A
 {
     /**
      * @GeneratedValue()
-     * @Id @Column(type="integer")
+     * @Id
+     * @Column(type="integer")
      * @var int
      */
     public $id;
@@ -123,7 +124,8 @@ class GH7180C
 {
     /**
      * @GeneratedValue()
-     * @Id @Column(type="integer")
+     * @Id
+     * @Column(type="integer")
      * @var int
      */
     public $id;
@@ -143,7 +145,8 @@ class GH7180D
 {
     /**
      * @GeneratedValue()
-     * @Id @Column(type="integer")
+     * @Id
+     * @Column(type="integer")
      * @var int
      */
     public $id;
@@ -163,7 +166,8 @@ class GH7180E
 {
     /**
      * @GeneratedValue()
-     * @Id @Column(type="integer")
+     * @Id
+     * @Column(type="integer")
      * @var int
      */
     public $id;
@@ -183,7 +187,8 @@ class GH7180F
 {
     /**
      * @GeneratedValue()
-     * @Id @Column(type="integer")
+     * @Id
+     * @Column(type="integer")
      * @var int
      */
     public $id;
@@ -203,7 +208,8 @@ class GH7180G
 {
     /**
      * @GeneratedValue()
-     * @Id @Column(type="integer")
+     * @Id
+     * @Column(type="integer")
      * @var int
      */
     public $id;

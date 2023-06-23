@@ -220,10 +220,11 @@ class ClassMetadataBuilder
      * @param string $type
      * @param int    $length
      * @psalm-param class-string<BackedEnum>|null $enumType
+     * @psalm-param array<string, mixed> $options
      *
      * @return $this
      */
-    public function setDiscriminatorColumn($name, $type = 'string', $length = 255, ?string $columnDefinition = null, ?string $enumType = null)
+    public function setDiscriminatorColumn($name, $type = 'string', $length = 255, ?string $columnDefinition = null, ?string $enumType = null, array $options = [])
     {
         $this->cm->setDiscriminatorColumn(
             [
@@ -232,6 +233,7 @@ class ClassMetadataBuilder
                 'length' => $length,
                 'columnDefinition' => $columnDefinition,
                 'enumType' => $enumType,
+                'options' => $options,
             ]
         );
 

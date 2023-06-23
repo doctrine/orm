@@ -12,6 +12,7 @@ use Doctrine\DBAL\Schema\AbstractSchemaManager;
 use Doctrine\DBAL\Schema\Comparator;
 use Doctrine\DBAL\Schema\Index;
 use Doctrine\DBAL\Schema\Schema;
+use Doctrine\DBAL\Schema\Sequence;
 use Doctrine\DBAL\Schema\Table;
 use Doctrine\DBAL\Schema\Visitor\RemoveNamespacedAssets;
 use Doctrine\Deprecations\Deprecation;
@@ -48,6 +49,7 @@ use function strtolower;
  * @link    www.doctrine-project.org
  *
  * @psalm-import-type AssociationMapping from ClassMetadata
+ * @psalm-import-type DiscriminatorColumnMapping from ClassMetadata
  * @psalm-import-type FieldMapping from ClassMetadata
  * @psalm-import-type JoinColumnData from ClassMetadata
  */
@@ -405,8 +407,14 @@ class SchemaTool
             }
         }
 
-        if (! $this->platform->supportsSchemas() && ! $this->platform->canEmulateSchemas()) {
-            $schema->visit(new RemoveNamespacedAssets());
+        if (! $this->platform->supportsSchemas()) {
+            $filter = /** @param Sequence|Table $asset */ static function ($asset) use ($schema): bool {
+                return ! $asset->isInDefaultNamespace($schema->getName());
+            };
+
+            if (array_filter($schema->getSequences() + $schema->getTables(), $filter) && ! $this->platform->canEmulateSchemas()) {
+                $schema->visit(new RemoveNamespacedAssets());
+            }
         }
 
         if ($eventManager->hasListeners(ToolEvents::postGenerateSchema)) {
@@ -444,6 +452,7 @@ class SchemaTool
             $options['columnDefinition'] = $discrColumn['columnDefinition'];
         }
 
+        $options = $this->gatherColumnOptions($discrColumn) + $options;
         $table->addColumn($discrColumn['name'], $discrColumn['type'], $options);
     }
 
@@ -792,7 +801,7 @@ class SchemaTool
     }
 
     /**
-     * @psalm-param JoinColumnData|FieldMapping $mapping
+     * @psalm-param JoinColumnData|FieldMapping|DiscriminatorColumnMapping $mapping
      *
      * @return mixed[]
      */
