@@ -15,6 +15,8 @@ use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\Mapping\Driver\AnnotationDriver;
 use Doctrine\ORM\Mapping\Driver\XmlDriver;
 use Doctrine\ORM\Mapping\Driver\YamlDriver;
+use Doctrine\ORM\Mapping\PostPersist;
+use Doctrine\ORM\Mapping\PrePersist;
 use Doctrine\ORM\Tools\DisconnectedClassMetadataFactory;
 use Doctrine\ORM\Tools\EntityGenerator;
 use Doctrine\ORM\Tools\Export\ClassMetadataExporter;
@@ -399,26 +401,26 @@ class Group
 }
 class UserListener
 {
-    /** @\Doctrine\ORM\Mapping\PrePersist */
+    /** @PrePersist */
     public function customPrePersist(): void
     {
     }
 
-    /** @\Doctrine\ORM\Mapping\PostPersist */
+    /** @PostPersist */
     public function customPostPersist(): void
     {
     }
 }
 class GroupListener
 {
-    /** @\Doctrine\ORM\Mapping\PrePersist */
+    /** @PrePersist */
     public function prePersist(): void
     {
     }
 }
 class AddressListener
 {
-    /** @\Doctrine\ORM\Mapping\PostPersist */
+    /** @PostPersist */
     public function customPostPersist(): void
     {
     }
