@@ -208,9 +208,9 @@ class Configuration extends \Doctrine\DBAL\Configuration
     }
 
     /**
-     * @deprecated No replacement planned.
-     *
      * Adds a namespace under a certain alias.
+     *
+     * @deprecated No replacement planned.
      *
      * @param string $alias
      * @param string $namespace
