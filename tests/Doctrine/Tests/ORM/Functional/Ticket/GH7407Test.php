@@ -76,6 +76,7 @@ class GH7407Test extends OrmFunctionalTestCase
         ], $identityMap, 'The identity map contains exactly two objects, the article and the user.');
     }
 
+    /** @return mixed */
     private function grabProperty(string $name, UnitOfWork $uow)
     {
         $reflection = new ReflectionClass($uow);
