@@ -396,21 +396,6 @@ parameters:
 			path: lib/Doctrine/ORM/Query/Parser.php
 
 		-
-			message: """
-				#^PHPDoc tag @return has invalid value \\(AST\\\\BetweenExpression\\|
-				        AST\\\\CollectionMemberExpression\\|
-				        AST\\\\ComparisonExpression\\|
-				        AST\\\\EmptyCollectionComparisonExpression\\|
-				        AST\\\\ExistsExpression\\|
-				        AST\\\\InExpression\\|
-				        AST\\\\InstanceOfExpression\\|
-				        AST\\\\LikeExpression\\|
-				        AST\\\\NullComparisonExpression\\)\\: Unexpected token "\\\\n     \\* ", expected type at offset 344$#
-			"""
-			count: 1
-			path: lib/Doctrine/ORM/Query/Parser.php
-
-		-
 			message: "#^Parameter \\#2 \\$stringPattern of class Doctrine\\\\ORM\\\\Query\\\\AST\\\\LikeExpression constructor expects Doctrine\\\\ORM\\\\Query\\\\AST\\\\Functions\\\\FunctionNode\\|Doctrine\\\\ORM\\\\Query\\\\AST\\\\InputParameter\\|Doctrine\\\\ORM\\\\Query\\\\AST\\\\Literal\\|Doctrine\\\\ORM\\\\Query\\\\AST\\\\PathExpression, Doctrine\\\\ORM\\\\Query\\\\AST\\\\Node given\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Query/Parser.php

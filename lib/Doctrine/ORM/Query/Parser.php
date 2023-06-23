@@ -2566,7 +2566,8 @@ class Parser
      *      EmptyCollectionComparisonExpression | CollectionMemberExpression |
      *      InstanceOfExpression
      *
-     * @return AST\BetweenExpression|
+     * @return AST\Node
+     * @psalm-return AST\BetweenExpression|
      *         AST\CollectionMemberExpression|
      *         AST\ComparisonExpression|
      *         AST\EmptyCollectionComparisonExpression|

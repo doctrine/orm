@@ -313,7 +313,6 @@ class ObjectHydrator extends AbstractHydrator
      * that belongs to a particular component/class. Afterwards, all these chunks
      * are processed, one after the other. For each chunk of class data only one of the
      * following code paths is executed:
-     *
      * Path A: The data chunk belongs to a joined/associated object and the association
      *         is collection-valued.
      * Path B: The data chunk belongs to a joined/associated object and the association
