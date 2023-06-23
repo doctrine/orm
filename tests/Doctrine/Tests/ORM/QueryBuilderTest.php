@@ -1087,6 +1087,18 @@ class QueryBuilderTest extends OrmTestCase
         self::assertEquals('SELECT DISTINCT u FROM Doctrine\Tests\Models\CMS\CmsUser u', $qb->getDQL());
     }
 
+    public function testDistinctUpdatesState(): void
+    {
+        $qb = $this->entityManager->createQueryBuilder()
+            ->select('u')
+            ->from(CmsUser::class, 'u');
+
+        $qb->getDQL();
+        $qb->distinct();
+
+        self::assertEquals('SELECT DISTINCT u FROM Doctrine\Tests\Models\CMS\CmsUser u', $qb->getDQL());
+    }
+
     /** @group DDC-2192 */
     public function testWhereAppend(): void
     {

@@ -809,7 +809,12 @@ class QueryBuilder
      */
     public function distinct($flag = true)
     {
-        $this->dqlParts['distinct'] = (bool) $flag;
+        $flag = (bool) $flag;
+
+        if ($this->dqlParts['distinct'] !== $flag) {
+            $this->dqlParts['distinct'] = $flag;
+            $this->state                = self::STATE_DIRTY;
+        }
 
         return $this;
     }
