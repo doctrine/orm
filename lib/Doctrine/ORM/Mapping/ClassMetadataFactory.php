@@ -538,6 +538,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
             case ClassMetadata::GENERATOR_TYPE_IDENTITY:
                 $sequenceName = null;
                 $fieldName    = $class->identifier ? $class->getSingleIdentifierFieldName() : null;
+                $platform     = $this->getTargetPlatform();
 
                 $generator = $fieldName && $class->fieldMappings[$fieldName]->type === 'bigint'
                     ? new BigIntegerIdentityGenerator()

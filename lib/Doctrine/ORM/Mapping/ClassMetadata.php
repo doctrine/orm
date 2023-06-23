@@ -7,7 +7,6 @@ namespace Doctrine\ORM\Mapping;
 use BackedEnum;
 use BadMethodCallException;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
-use Doctrine\Deprecations\Deprecation;
 use Doctrine\Instantiator\Instantiator;
 use Doctrine\Instantiator\InstantiatorInterface;
 use Doctrine\ORM\Cache\Exception\NonCacheableEntityAssociation;

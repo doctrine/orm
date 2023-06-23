@@ -250,6 +250,40 @@ The first parameter is the name of the column in the SQL result set
 and the second parameter is the result alias under which the value
 of the column will be placed in the transformed Doctrine result.
 
+Special case: DTOs
+...................
+
+You can also use ``ResultSetMapping`` to map the results of a native SQL
+query to a DTO (Data Transfer Object). This is done by adding scalar
+results for each argument of the DTO's constructor, then filling the
+``newObjectMappings`` property of the ``ResultSetMapping`` with
+information about where to map each scalar result:
+
+.. code-block:: php
+
+   <?php
+
+    $rsm = new ResultSetMapping();
+    $rsm->addScalarResult('name', 1, 'string');
+    $rsm->addScalarResult('email', 2, 'string');
+    $rsm->addScalarResult('city', 3, 'string');
+    $rsm->newObjectMappings['name']  = [
+        'className' => CmsUserDTO::class,
+        'objIndex'  => 0, // a result can contain many DTOs, this is the index of the DTO to map to
+        'argIndex'  => 0, // each scalar result can be mapped to a different argument of the DTO constructor
+    ];
+    $rsm->newObjectMappings['email'] = [
+        'className' => CmsUserDTO::class,
+        'objIndex'  => 0,
+        'argIndex'  => 1,
+    ];
+    $rsm->newObjectMappings['city']  = [
+        'className' => CmsUserDTO::class,
+        'objIndex'  => 0,
+        'argIndex'  => 2,
+    ];
+
+
 Meta results
 ~~~~~~~~~~~~
 

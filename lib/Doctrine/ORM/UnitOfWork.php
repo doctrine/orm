@@ -233,6 +233,17 @@ class UnitOfWork implements PropertyChangedListener
     private array $visitedCollections = [];
 
     /**
+     * List of collections visited during the changeset calculation that contain to-be-removed
+     * entities and need to have keys removed post commit.
+     *
+     * Indexed by Collection object ID, which also serves as the key in self::$visitedCollections;
+     * values are the key names that need to be removed.
+     *
+     * @psalm-var array<int, array<array-key, true>>
+     */
+    private array $pendingCollectionElementRemovals = [];
+
+    /**
      * The entity persister instances used to persist entity instances.
      *
      * @psalm-var array<string, EntityPersister>
@@ -433,8 +444,15 @@ class UnitOfWork implements PropertyChangedListener
 
         $this->afterTransactionComplete();
 
-        // Take new snapshots from visited collections
-        foreach ($this->visitedCollections as $coll) {
+        // Unset removed entities from collections, and take new snapshots from
+        // all visited collections.
+        foreach ($this->visitedCollections as $coid => $coll) {
+            if (isset($this->pendingCollectionElementRemovals[$coid])) {
+                foreach ($this->pendingCollectionElementRemovals[$coid] as $key => $valueIgnored) {
+                    unset($coll[$key]);
+                }
+            }
+
             $coll->takeSnapshot();
         }
 
@@ -445,17 +463,18 @@ class UnitOfWork implements PropertyChangedListener
 
     private function postCommitCleanup(): void
     {
-        $this->entityInsertions               =
-        $this->entityUpdates                  =
-        $this->entityDeletions                =
-        $this->extraUpdates                   =
-        $this->collectionUpdates              =
-        $this->nonCascadedNewDetectedEntities =
-        $this->collectionDeletions            =
-        $this->visitedCollections             =
-        $this->orphanRemovals                 =
-        $this->entityChangeSets               =
-        $this->scheduledForSynchronization    = [];
+        $this->entityInsertions                 =
+        $this->entityUpdates                    =
+        $this->entityDeletions                  =
+        $this->extraUpdates                     =
+        $this->collectionUpdates                =
+        $this->nonCascadedNewDetectedEntities   =
+        $this->collectionDeletions              =
+        $this->pendingCollectionElementRemovals =
+        $this->visitedCollections               =
+        $this->orphanRemovals                   =
+        $this->entityChangeSets                 =
+        $this->scheduledForSynchronization      = [];
     }
 
     /**
@@ -790,6 +809,14 @@ class UnitOfWork implements PropertyChangedListener
             return;
         }
 
+        // If this collection is dirty, schedule it for updates
+        if ($value instanceof PersistentCollection && $value->isDirty()) {
+            $coid = spl_object_id($value);
+
+            $this->collectionUpdates[$coid]  = $value;
+            $this->visitedCollections[$coid] = $value;
+        }
+
         // Look through the entities, and in any of their associations,
         // for transient (new) entities, recursively. ("Persistence by reachability")
         // Unwrap. Uninitialized collections will simply be empty.
@@ -834,10 +861,18 @@ class UnitOfWork implements PropertyChangedListener
                 case self::STATE_REMOVED:
                     // Consume the $value as array (it's either an array or an ArrayAccess)
                     // and remove the element from Collection.
-                    if ($assoc->isToMany()) {
-                        unset($value[$key]);
+                    if (! $assoc->isToMany()) {
+                        break;
                     }
 
+                    $coid                            = spl_object_id($value);
+                    $this->visitedCollections[$coid] = $value;
+
+                    if (! isset($this->pendingCollectionElementRemovals[$coid])) {
+                        $this->pendingCollectionElementRemovals[$coid] = [];
+                    }
+
+                    $this->pendingCollectionElementRemovals[$coid][$key] = true;
                     break;
 
                 case self::STATE_DETACHED:
@@ -849,13 +884,6 @@ class UnitOfWork implements PropertyChangedListener
                     // MANAGED associated entities are already taken into account
                     // during changeset calculation anyway, since they are in the identity map.
             }
-        }
-
-        if ($value instanceof PersistentCollection && $value->isDirty()) {
-            $coid = spl_object_id($value);
-
-            $this->collectionUpdates[$coid]  = $value;
-            $this->visitedCollections[$coid] = $value;
         }
     }
 
@@ -2131,23 +2159,24 @@ class UnitOfWork implements PropertyChangedListener
      */
     public function clear(): void
     {
-        $this->identityMap                    =
-        $this->entityIdentifiers              =
-        $this->originalEntityData             =
-        $this->entityChangeSets               =
-        $this->entityStates                   =
-        $this->scheduledForSynchronization    =
-        $this->entityInsertions               =
-        $this->entityUpdates                  =
-        $this->entityDeletions                =
-        $this->nonCascadedNewDetectedEntities =
-        $this->collectionDeletions            =
-        $this->collectionUpdates              =
-        $this->extraUpdates                   =
-        $this->readOnlyObjects                =
-        $this->visitedCollections             =
-        $this->eagerLoadingEntities           =
-        $this->orphanRemovals                 = [];
+        $this->identityMap                      =
+        $this->entityIdentifiers                =
+        $this->originalEntityData               =
+        $this->entityChangeSets                 =
+        $this->entityStates                     =
+        $this->scheduledForSynchronization      =
+        $this->entityInsertions                 =
+        $this->entityUpdates                    =
+        $this->entityDeletions                  =
+        $this->nonCascadedNewDetectedEntities   =
+        $this->collectionDeletions              =
+        $this->collectionUpdates                =
+        $this->extraUpdates                     =
+        $this->readOnlyObjects                  =
+        $this->pendingCollectionElementRemovals =
+        $this->visitedCollections               =
+        $this->eagerLoadingEntities             =
+        $this->orphanRemovals                   = [];
 
         if ($this->evm->hasListeners(Events::onClear)) {
             $this->evm->dispatchEvent(Events::onClear, new OnClearEventArgs($this->em));

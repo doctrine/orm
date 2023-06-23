@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<files psalm-version="5.11.0@c9b192ab8400fdaf04b2b13d110575adc879aa90">
+<files psalm-version="5.12.0@f90118cdeacd0088e7215e64c0c99ceca819e176">
   <file src="lib/Doctrine/ORM/AbstractQuery.php">
     <FalsableReturnStatement>
       <code><![CDATA[! $filteredParameters->isEmpty() ? $filteredParameters->first() : null]]></code>
@@ -144,6 +144,11 @@
       <code>lock</code>
     </UndefinedInterfaceMethod>
   </file>
+  <file src="lib/Doctrine/ORM/Cache/Region/FileLockRegion.php">
+    <ArgumentTypeCoercion>
+      <code><![CDATA[sprintf('%s/*.%s', $this->directory, self::LOCK_EXTENSION)]]></code>
+    </ArgumentTypeCoercion>
+  </file>
   <file src="lib/Doctrine/ORM/Cache/TimestampQueryCacheValidator.php">
     <NoInterfaceProperties>
       <code><![CDATA[$timestamp->time]]></code>
@@ -250,6 +255,9 @@
     <ReferenceReusedFromConfusingScope>
       <code>$baseElement</code>
     </ReferenceReusedFromConfusingScope>
+    <UnsupportedPropertyReferenceUsage>
+      <code><![CDATA[$baseElement =& $this->resultPointers[$parent]]]></code>
+    </UnsupportedPropertyReferenceUsage>
     <UnsupportedReferenceUsage>
       <code><![CDATA[$baseElement =& $this->resultPointers[$parent][key($first)]]]></code>
       <code><![CDATA[$this->resultPointers[$dqlAlias] =& $coll[array_key_last($coll)]]]></code>
@@ -695,14 +703,6 @@
     </PossiblyNullReference>
   </file>
   <file src="lib/Doctrine/ORM/Persisters/Collection/OneToManyPersister.php">
-    <InvalidReturnStatement>
-      <code>$numDeleted</code>
-      <code><![CDATA[$this->conn->executeStatement($statement, $parameters)]]></code>
-    </InvalidReturnStatement>
-    <InvalidReturnType>
-      <code>int</code>
-      <code>int</code>
-    </InvalidReturnType>
     <PossiblyNullArgument>
       <code><![CDATA[$collection->getOwner()]]></code>
       <code><![CDATA[$collection->getOwner()]]></code>
@@ -876,6 +876,9 @@
     </UninitializedProperty>
   </file>
   <file src="lib/Doctrine/ORM/Query/Exec/MultiTableUpdateExecutor.php">
+    <InvalidArgument>
+      <code>$paramTypes</code>
+    </InvalidArgument>
     <InvalidReturnStatement>
       <code>$numUpdated</code>
     </InvalidReturnStatement>
