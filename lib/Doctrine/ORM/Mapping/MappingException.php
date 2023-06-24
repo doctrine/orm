@@ -553,7 +553,7 @@ class MappingException extends PersistenceMappingException implements ORMExcepti
         $cascades = implode(', ', array_map(static fn (string $e): string => "'" . $e . "'", $cascades));
 
         return new self(sprintf(
-            "You have specified invalid cascade options for %s::$%s: %s; available options: 'remove', 'persist', 'refresh', 'merge', and 'detach'",
+            "You have specified invalid cascade options for %s::$%s: %s; available options: 'remove', 'persist', 'refresh', and 'detach'",
             $className,
             $propertyName,
             $cascades,

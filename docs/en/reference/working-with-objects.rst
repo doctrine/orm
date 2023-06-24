@@ -372,77 +372,6 @@ automatically without invoking the ``detach`` method:
 The ``detach`` operation is usually not as frequently needed and
 used as ``persist`` and ``remove``.
 
-Merging entities
-----------------
-
-Merging entities refers to the merging of (usually detached)
-entities into the context of an EntityManager so that they become
-managed again. To merge the state of an entity into an
-EntityManager use the ``EntityManager#merge($entity)`` method. The
-state of the passed entity will be merged into a managed copy of
-this entity and this copy will subsequently be returned.
-
-Example:
-
-.. code-block:: php
-
-    <?php
-    $detachedEntity = unserialize($serializedEntity); // some detached entity
-    $entity = $em->merge($detachedEntity);
-    // $entity now refers to the fully managed copy returned by the merge operation.
-    // The EntityManager $em now manages the persistence of $entity as usual.
-
-
-The semantics of the merge operation, applied to an entity X, are
-as follows:
-
-
--  If X is a detached entity, the state of X is copied onto a
-   pre-existing managed entity instance X' of the same identity.
--  If X is a new entity instance, a new managed copy X' will be
-   created and the state of X is copied onto this managed instance.
--  If X is a removed entity instance, an InvalidArgumentException
-   will be thrown.
--  If X is a managed entity, it is ignored by the merge operation,
-   however, the merge operation is cascaded to entities referenced by
-   relationships from X if these relationships have been mapped with
-   the cascade element value MERGE or ALL (see ":ref:`transitive-persistence`").
--  For all entities Y referenced by relationships from X having the
-   cascade element value MERGE or ALL, Y is merged recursively as Y'.
-   For all such Y referenced by X, X' is set to reference Y'. (Note
-   that if X is managed then X is the same object as X'.)
--  If X is an entity merged to X', with a reference to another
-   entity Y, where cascade=MERGE or cascade=ALL is not specified, then
-   navigation of the same association from X' yields a reference to a
-   managed object Y' with the same persistent identity as Y.
-
-The ``merge`` operation will throw an ``OptimisticLockException``
-if the entity being merged uses optimistic locking through a
-version field and the versions of the entity being merged and the
-managed copy don't match. This usually means that the entity has
-been modified while being detached.
-
-The ``merge`` operation is usually not as frequently needed and
-used as ``persist`` and ``remove``. The most common scenario for
-the ``merge`` operation is to reattach entities to an EntityManager
-that come from some cache (and are therefore detached) and you want
-to modify and persist such an entity.
-
-.. warning::
-
-    If you need to perform multiple merges of entities that share certain subparts
-    of their object-graphs and cascade merge, then you have to call ``EntityManager#clear()`` between the
-    successive calls to ``EntityManager#merge()``. Otherwise you might end up with
-    multiple copies of the "same" object in the database, however with different ids.
-
-.. note::
-
-    If you load some detached entities from a cache and you do
-    not need to persist or delete them or otherwise make use of them
-    without the need for persistence services there is no need to use
-    ``merge``. I.e. you can simply pass detached objects from a cache
-    directly to the view.
-
 
 Synchronization with the Database
 ---------------------------------
@@ -553,7 +482,7 @@ during development.
 .. note::
 
     Do not invoke ``flush`` after every change to an entity
-    or every single invocation of persist/remove/merge/... This is an
+    or every single invocation of persist/remove/... This is an
     anti-pattern and unnecessarily reduces the performance of your
     application. Instead, form units of work that operate on your
     objects and call ``flush`` when you are done. While serving a

@@ -808,7 +808,7 @@ class ClassMetadataTest extends OrmTestCase
         $cm->initializeReflection(new RuntimeReflectionService());
 
         $this->expectException(MappingException::class);
-        $this->expectExceptionMessage('You have specified invalid cascade options for ' . CmsUser::class . "::\$address: 'invalid'; available options: 'remove', 'persist', 'refresh', 'merge', and 'detach'");
+        $this->expectExceptionMessage('You have specified invalid cascade options for ' . CmsUser::class . "::\$address: 'invalid'; available options: 'remove', 'persist', 'refresh', and 'detach'");
 
         $cm->mapManyToOne(['fieldName' => 'address', 'targetEntity' => 'UnknownClass', 'cascade' => ['invalid']]);
     }

@@ -21,7 +21,7 @@ class CmsPhonenumber
     public $phonenumber;
 
     /** @var CmsUser */
-    #[ManyToOne(targetEntity: 'CmsUser', inversedBy: 'phonenumbers', cascade: ['merge'])]
+    #[ManyToOne(targetEntity: 'CmsUser', inversedBy: 'phonenumbers', cascade: [])]
     #[JoinColumn(name: 'user_id', referencedColumnName: 'id')]
     public $user;
 

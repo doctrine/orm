@@ -20,7 +20,7 @@ abstract class AssociationMapping implements ArrayAccess
     /**
      * The names of persistence operations to cascade on the association.
      *
-     * @var list<'persist'|'remove'|'detach'|'merge'|'refresh'|'all'>
+     * @var list<'persist'|'remove'|'detach'|'refresh'|'all'>
      */
     public array $cascade = [];
 
@@ -240,7 +240,6 @@ abstract class AssociationMapping implements ArrayAccess
             'isCascadePersist' => $this->isCascadePersist(),
             'isCascadeRefresh' => $this->isCascadeRefresh(),
             'isCascadeDetach' => $this->isCascadeDetach(),
-            'isCascadeMerge' => $this->isCascadeMerge(),
             default => property_exists($this, $offset) ? $this->$offset : throw new OutOfRangeException(sprintf(
                 'Unknown property "%s" on class %s',
                 $offset,
@@ -294,11 +293,6 @@ abstract class AssociationMapping implements ArrayAccess
     final public function isCascadeRefresh(): bool
     {
         return in_array('refresh', $this->cascade, true);
-    }
-
-    final public function isCascadeMerge(): bool
-    {
-        return in_array('merge', $this->cascade, true);
     }
 
     final public function isCascadeDetach(): bool

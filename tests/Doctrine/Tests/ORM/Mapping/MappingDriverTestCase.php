@@ -361,7 +361,6 @@ abstract class MappingDriverTestCase extends OrmTestCase
         self::assertFalse($class->associationMappings['address']->isCascadePersist());
         self::assertFalse($class->associationMappings['address']->isCascadeRefresh());
         self::assertFalse($class->associationMappings['address']->isCascadeDetach());
-        self::assertFalse($class->associationMappings['address']->isCascadeMerge());
 
         return $class;
     }
@@ -375,7 +374,6 @@ abstract class MappingDriverTestCase extends OrmTestCase
         self::assertTrue($class->associationMappings['phonenumbers']->isCascadeRemove());
         self::assertFalse($class->associationMappings['phonenumbers']->isCascadeRefresh());
         self::assertFalse($class->associationMappings['phonenumbers']->isCascadeDetach());
-        self::assertFalse($class->associationMappings['phonenumbers']->isCascadeMerge());
         self::assertTrue($class->associationMappings['phonenumbers']->orphanRemoval);
 
         // Test Order By
@@ -394,7 +392,6 @@ abstract class MappingDriverTestCase extends OrmTestCase
         self::assertTrue($class->associationMappings['groups']->isCascadePersist());
         self::assertTrue($class->associationMappings['groups']->isCascadeRefresh());
         self::assertTrue($class->associationMappings['groups']->isCascadeDetach());
-        self::assertTrue($class->associationMappings['groups']->isCascadeMerge());
 
         self::assertFalse($class->associationMappings['groups']->isOrdered());
 
@@ -630,7 +627,6 @@ abstract class MappingDriverTestCase extends OrmTestCase
         self::assertEquals($guestGroups->isCascadeRemove(), $adminGroups->isCascadeRemove());
         self::assertEquals($guestGroups->isCascadePersist(), $adminGroups->isCascadePersist());
         self::assertEquals($guestGroups->isCascadeRefresh(), $adminGroups->isCascadeRefresh());
-        self::assertEquals($guestGroups->isCascadeMerge(), $adminGroups->isCascadeMerge());
         self::assertEquals($guestGroups->isCascadeDetach(), $adminGroups->isCascadeDetach());
 
         // assert not override attributes
@@ -666,7 +662,6 @@ abstract class MappingDriverTestCase extends OrmTestCase
         self::assertEquals($guestAddress->isCascadeRemove(), $adminAddress->isCascadeRemove());
         self::assertEquals($guestAddress->isCascadePersist(), $adminAddress->isCascadePersist());
         self::assertEquals($guestAddress->isCascadeRefresh(), $adminAddress->isCascadeRefresh());
-        self::assertEquals($guestAddress->isCascadeMerge(), $adminAddress->isCascadeMerge());
         self::assertEquals($guestAddress->isCascadeDetach(), $adminAddress->isCascadeDetach());
 
         // assert override
@@ -1101,8 +1096,7 @@ class User
                     0 => 'remove',
                     1 => 'persist',
                     2 => 'refresh',
-                    3 => 'merge',
-                    4 => 'detach',
+                    3 => 'detach',
                 ],
                 'mappedBy' => null,
                 'joinTable' =>

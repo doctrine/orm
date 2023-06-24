@@ -27,7 +27,7 @@ class Article
     public $name;
 
     /** @var Category */
-    #[ManyToOne(targetEntity: 'Category', cascade: ['merge', 'persist'])]
+    #[ManyToOne(targetEntity: 'Category', cascade: ['persist'])]
     public $category;
 
     /**

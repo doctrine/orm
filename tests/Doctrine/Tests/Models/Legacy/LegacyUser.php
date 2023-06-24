@@ -47,7 +47,7 @@ class LegacyUser
     #[JoinTable(name: 'legacy_users_cars')]
     #[JoinColumn(name: 'iUserId', referencedColumnName: 'iUserId')]
     #[InverseJoinColumn(name: 'iCarId', referencedColumnName: 'iCarId')]
-    #[ManyToMany(targetEntity: 'LegacyCar', inversedBy: 'users', cascade: ['persist', 'merge'])]
+    #[ManyToMany(targetEntity: 'LegacyCar', inversedBy: 'users', cascade: ['persist'])]
     public $cars;
 
     public function __construct()
