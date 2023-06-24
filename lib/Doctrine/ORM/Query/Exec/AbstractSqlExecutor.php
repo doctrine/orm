@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Query\Exec;
 
+use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\Cache\QueryCacheProfile;
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\ParameterType;
 use Doctrine\DBAL\Result;
 use Doctrine\DBAL\Types\Type;
 
@@ -15,6 +17,8 @@ use Doctrine\DBAL\Types\Type;
  * @link        http://www.doctrine-project.org
  *
  * @todo Rename: AbstractSQLExecutor
+ * @psalm-type WrapperParameterType = string|Type|ParameterType::*|ArrayParameterType::*
+ * @psalm-type WrapperParameterTypeArray = array<int<0, max>, WrapperParameterType>|array<string, WrapperParameterType>
  */
 abstract class AbstractSqlExecutor
 {
@@ -53,9 +57,9 @@ abstract class AbstractSqlExecutor
     /**
      * Executes all sql statements.
      *
-     * @param Connection                                                           $conn   The database connection that is used to execute the queries.
-     * @param list<mixed>|array<string, mixed>                                     $params The parameters.
-     * @param array<int, int|string|Type|null>|array<string, int|string|Type|null> $types  The parameter types.
+     * @param Connection                       $conn   The database connection that is used to execute the queries.
+     * @param list<mixed>|array<string, mixed> $params The parameters.
+     * @psalm-param WrapperParameterTypeArray  $types  The parameter types.
      *
      * @return Result|int
      */
