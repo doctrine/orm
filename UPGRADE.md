@@ -1,5 +1,11 @@
 # Upgrade to 2.16
 
+## Deprecated returning post insert IDs from `EntityPersister::executeInserts()`
+
+Persisters implementing `\Doctrine\ORM\Persisters\Entity\EntityPersister` should no longer
+return an array of post insert IDs from their `::executeInserts()` method. Make the
+persister call `Doctrine\ORM\UnitOfWork::assignPostInsertId()` instead.
+
 ## Changing the way how reflection-based mapping drivers report fields, deprecated the "old" mode
 
 In ORM 3.0, a change will be made regarding how the `AttributeDriver` reports field mappings.

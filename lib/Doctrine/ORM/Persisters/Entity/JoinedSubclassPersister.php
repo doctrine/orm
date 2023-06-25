@@ -109,10 +109,10 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
     public function executeInserts()
     {
         if (! $this->queuedInserts) {
-            return [];
+            return;
         }
 
-        $postInsertIds  = [];
+        $uow            = $this->em->getUnitOfWork();
         $idGenerator    = $this->class->idGenerator;
         $isPostInsertId = $idGenerator->isPostInsertGenerator();
         $rootClass      = $this->class->name !== $this->class->rootEntityName
@@ -157,12 +157,10 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
             $rootTableStmt->executeStatement();
 
             if ($isPostInsertId) {
-                $generatedId     = $idGenerator->generateId($this->em, $entity);
-                $id              = [$this->class->identifier[0] => $generatedId];
-                $postInsertIds[] = [
-                    'generatedId' => $generatedId,
-                    'entity' => $entity,
-                ];
+                $generatedId = $idGenerator->generateId($this->em, $entity);
+                $id          = [$this->class->identifier[0] => $generatedId];
+
+                $uow->assignPostInsertId($entity, $generatedId);
             } else {
                 $id = $this->em->getUnitOfWork()->getEntityIdentifier($entity);
             }
@@ -194,8 +192,6 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
         }
 
         $this->queuedInserts = [];
-
-        return $postInsertIds;
     }
 
     /**

@@ -1171,30 +1171,24 @@ class UnitOfWork implements PropertyChangedListener
 
         $postInsertIds = $persister->executeInserts();
 
-        if ($postInsertIds) {
+        if (is_array($postInsertIds)) {
+            Deprecation::trigger(
+                'doctrine/orm',
+                'https://github.com/doctrine/orm/pull/10743/',
+                'Returning post insert IDs from \Doctrine\ORM\Persisters\Entity\EntityPersister::executeInserts() is deprecated and will not be supported in Doctrine ORM 3.0. Make the persister call Doctrine\ORM\UnitOfWork::assignPostInsertId() instead.'
+            );
+
             // Persister returned post-insert IDs
             foreach ($postInsertIds as $postInsertId) {
-                $idField = $class->getSingleIdentifierFieldName();
-                $idValue = $this->convertSingleFieldIdentifierToPHPValue($class, $postInsertId['generatedId']);
-
-                $entity = $postInsertId['entity'];
-                $oid    = spl_object_id($entity);
-
-                $class->reflFields[$idField]->setValue($entity, $idValue);
-
-                $this->entityIdentifiers[$oid]            = [$idField => $idValue];
-                $this->entityStates[$oid]                 = self::STATE_MANAGED;
-                $this->originalEntityData[$oid][$idField] = $idValue;
-
-                $this->addToIdentityMap($entity);
+                $this->assignPostInsertId($postInsertId['entity'], $postInsertId['generatedId']);
             }
-        } else {
-            foreach ($insertionsForClass as $oid => $entity) {
-                if (! isset($this->entityIdentifiers[$oid])) {
-                    //entity was not added to identity map because some identifiers are foreign keys to new entities.
-                    //add it now
-                    $this->addToEntityIdentifiersAndEntityMap($class, $oid, $entity);
-                }
+        }
+
+        foreach ($insertionsForClass as $oid => $entity) {
+            if (! isset($this->entityIdentifiers[$oid])) {
+                //entity was not added to identity map because some identifiers are foreign keys to new entities.
+                //add it now
+                $this->addToEntityIdentifiersAndEntityMap($class, $oid, $entity);
             }
         }
 
@@ -3818,5 +3812,31 @@ class UnitOfWork implements PropertyChangedListener
         }
 
         return $normalizedAssociatedId;
+    }
+
+    /**
+     * Assign a post-insert generated ID to an entity
+     *
+     * This is used by EntityPersisters after they inserted entities into the database.
+     * It will place the assigned ID values in the entity's fields and start tracking
+     * the entity in the identity map.
+     *
+     * @param object $entity
+     * @param mixed  $generatedId
+     */
+    final public function assignPostInsertId($entity, $generatedId): void
+    {
+        $class   = $this->em->getClassMetadata(get_class($entity));
+        $idField = $class->getSingleIdentifierFieldName();
+        $idValue = $this->convertSingleFieldIdentifierToPHPValue($class, $generatedId);
+        $oid     = spl_object_id($entity);
+
+        $class->reflFields[$idField]->setValue($entity, $idValue);
+
+        $this->entityIdentifiers[$oid]            = [$idField => $idValue];
+        $this->entityStates[$oid]                 = self::STATE_MANAGED;
+        $this->originalEntityData[$oid][$idField] = $idValue;
+
+        $this->addToIdentityMap($entity);
     }
 }
