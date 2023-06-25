@@ -3669,14 +3669,18 @@ class UnitOfWork implements PropertyChangedListener
                                 $targetClass = $this->em->getClassMetadata($assoc2['targetEntity']);
                                 $relatedId   = $targetClass->getIdentifierValues($other);
 
-                                if ($targetClass->subClasses) {
-                                    $other = $this->em->find($targetClass->name, $relatedId);
-                                } else {
-                                    $other = $this->em->getProxyFactory()->getProxy(
-                                        $assoc2['targetEntity'],
-                                        $relatedId
-                                    );
-                                    $this->registerManaged($other, $relatedId, []);
+                                $other = $this->tryGetById($relatedId, $targetClass->name);
+
+                                if (! $other) {
+                                    if ($targetClass->subClasses) {
+                                        $other = $this->em->find($targetClass->name, $relatedId);
+                                    } else {
+                                        $other = $this->em->getProxyFactory()->getProxy(
+                                            $assoc2['targetEntity'],
+                                            $relatedId
+                                        );
+                                        $this->registerManaged($other, $relatedId, []);
+                                    }
                                 }
                             }
 
