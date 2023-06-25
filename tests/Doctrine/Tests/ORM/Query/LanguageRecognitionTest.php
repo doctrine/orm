@@ -42,7 +42,6 @@ class LanguageRecognitionTest extends OrmTestCase
     public function parseDql(string $dql, array $hints = []): ParserResult
     {
         $query = $this->entityManager->createQuery($dql);
-        $query->setHint(Query::HINT_FORCE_PARTIAL_LOAD, true);
         $query->setDQL($dql);
 
         foreach ($hints as $key => $value) {
