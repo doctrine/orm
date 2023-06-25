@@ -311,10 +311,12 @@ Reference Proxies
 
 The method ``EntityManager#getReference($entityName, $identifier)``
 lets you obtain a reference to an entity for which the identifier
-is known, without loading that entity from the database. This is
-useful, for example, as a performance enhancement, when you want to
-establish an association to an entity for which you have the
-identifier. You could simply do this:
+is known, without necessarily loading that entity from the database.
+This is useful, for example, as a performance enhancement, when you
+want to establish an association to an entity for which you have the
+identifier.
+
+Consider the following example:
 
 .. code-block:: php
 
@@ -324,14 +326,32 @@ identifier. You could simply do this:
     $item = $em->getReference('MyProject\Model\Item', $itemId);
     $cart->addItem($item);
 
-Here, we added an Item to a Cart without loading the Item from the
-database. If you access any state that isn't yet available in the
-Item instance, the proxying mechanism would fully initialize the
-object's state transparently from the database. Here
-$item is actually an instance of the proxy class that was generated
-for the Item class but your code does not need to care. In fact it
-**should not care**. Proxy objects should be transparent to your
+Whether the object being returned from ``EntityManager#getReference()``
+is a proxy or a direct instance of the entity class may depend on different
+factors, including whether the entity has already been loaded into memory
+or entity inheritance being used. But, your code does not need to care
+and in fact it **should not care**. Proxy objects should be transparent to your
 code.
+
+When using the ``EntityManager#getReference()`` method, you need to be aware
+of a few peculiarities.
+
+At the best case, the ORM can avoid querying the database at all. But, that
+also means that this method will not throw an exception when an invalid value
+for the ``$identifier`` parameter is passed. ``$identifier`` values are
+not checked and there is no guarantee that the requested entity instance even
+exists – the method will still return a proxy object.
+
+Its only when the proxy has to be fully initialized or associations cannot
+be written to the database that invalid ``$identifier`` values may lead to
+exceptions.
+
+The ``EntityManager#getReference()`` is mostly useful when you only
+need a reference to some entity to make an association, like in the example
+above. In that case, it can save you from loading data from the database
+that you don't need. But remember – as soon as you read any property values
+besides those making up the ID, a database request will be made to initialize
+all fields.
 
 Association proxies
 ~~~~~~~~~~~~~~~~~~~
