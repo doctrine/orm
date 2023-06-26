@@ -64,9 +64,9 @@ class AttachEntityListenersListenerTest extends OrmTestCase
         $metadata2 = $factory2->getMetadataFor(AttachEntityListenersListenerTestFooEntity::class);
 
         self::assertArrayHasKey('postLoad', $metadata2->entityListeners);
-        self::assertEquals(AttachEntityListenersListenerTestListener::class, $metadata2->entityListeners['postLoad'][0]['class']);
         self::assertCount(1, $metadata2->entityListeners['postLoad']);
         self::assertEquals('postLoadHandler', $metadata2->entityListeners['postLoad'][0]['method']);
+        self::assertEquals(AttachEntityListenersListenerTestListener::class, $metadata2->entityListeners['postLoad'][0]['class']);
     }
 
     public function testAttachToExistingEntityListeners(): void
