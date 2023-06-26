@@ -1,29 +1,26 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Mapping as ORM;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * @group DDC-2988
  */
-class DDC2988Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC2988Test extends OrmFunctionalTestCase
 {
-    protected $groups;
-
-    protected function setUp()
+    public function testManyToManyFindBy(): void
     {
-        parent::setUp();
-        try {
-            $this->_schemaTool->createSchema([
-                $this->_em->getClassMetadata(DDC2988User::class),
-                $this->_em->getClassMetadata(DDC2988Group::class),
-            ]);
-        } catch (\Exception $e) {
-            return;
-        }
+        $this->_schemaTool->createSchema([
+            $this->_em->getClassMetadata(DDC2988User::class),
+            $this->_em->getClassMetadata(DDC2988Group::class),
+        ]);
 
-        $group    = new DDC2988Group();
+        $group = new DDC2988Group();
         $this->_em->persist($group);
 
         $user           = new DDC2988User();
@@ -32,41 +29,55 @@ class DDC2988Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $this->_em->flush();
         $this->_em->clear();
-    }
 
-
-    public function testManyToManyFindBy()
-    {
         $userRepository  = $this->_em->getRepository(DDC2988User::class);
         $groupRepository = $this->_em->getRepository(DDC2988Group::class);
         $groups          = $groupRepository->findAll();
-        $result          = $userRepository->findBy(array('groups' => $groups));
+
+        $userRepository->findBy(['groups' => $groups]);
     }
 }
 
-/** @Entity */
+/**
+ * @ORM\Entity
+ */
 class DDC2988User
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /**
+     * @ORM\Id
+     * @ORM\Column(type="integer")
+     * @ORM\GeneratedValue
+     *
+     * @var int
+     */
     public $id;
 
-    /** @ManyToMany(targetEntity="DDC2988Group")
-     * @JoinTable(name="users_to_groups",
-     *      joinColumns={@JoinColumn(name="user_id", referencedColumnName="id")},
-     *      inverseJoinColumns={@JoinColumn(name="group_id", referencedColumnName="id")}
+    /**
+     * @ORM\ManyToMany(targetEntity="DDC2988Group")
+     * @ORM\JoinTable(name="users_to_groups",
+     *      joinColumns={@ORM\JoinColumn(name="user_id", referencedColumnName="id")},
+     *      inverseJoinColumns={@ORM\JoinColumn(name="group_id", referencedColumnName="id")}
      * )
      */
     public $groups;
 
-    public function __contruct()
+    public function __construct()
     {
         $this->groups = new ArrayCollection();
     }
 }
 
-/** @Entity */
+/**
+ * @ORM\Entity
+ */
 class DDC2988Group
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /**
+     * @ORM\Id
+     * @ORM\Column(type="integer")
+     * @ORM\GeneratedValue
+     *
+     * @var int
+     */
     public $id;
 }
