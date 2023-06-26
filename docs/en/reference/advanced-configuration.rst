@@ -329,7 +329,7 @@ Consider the following example:
 Whether the object being returned from ``EntityManager#getReference()``
 is a proxy or a direct instance of the entity class may depend on different
 factors, including whether the entity has already been loaded into memory
-or entity inheritance being used. But, your code does not need to care
+or entity inheritance being used. But your code does not need to care
 and in fact it **should not care**. Proxy objects should be transparent to your
 code.
 
