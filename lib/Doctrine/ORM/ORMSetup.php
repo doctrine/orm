@@ -24,7 +24,6 @@ use function apcu_enabled;
 use function class_exists;
 use function extension_loaded;
 use function md5;
-use function sprintf;
 use function sys_get_temp_dir;
 
 final class ORMSetup
@@ -72,11 +71,11 @@ final class ORMSetup
             __METHOD__
         );
         if (! class_exists(AnnotationReader::class)) {
-            throw new LogicException(sprintf(
+            throw new LogicException(
                 'The annotation metadata driver cannot be enabled because the "doctrine/annotations" library'
                 . ' is not installed. Please run "composer require doctrine/annotations" or choose a different'
                 . ' metadata driver.'
-            ));
+            );
         }
 
         $reader = new AnnotationReader();
