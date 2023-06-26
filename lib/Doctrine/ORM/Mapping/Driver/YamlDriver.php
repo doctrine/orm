@@ -48,11 +48,11 @@ class YamlDriver extends FileDriver
         );
 
         if (! class_exists(Yaml::class)) {
-            throw new LogicException(sprintf(
+            throw new LogicException(
                 'The YAML metadata driver cannot be enabled because the "symfony/yaml" library'
                 . ' is not installed. Please run "composer require symfony/yaml" or choose a different'
                 . ' metadata driver.'
-            ));
+            );
         }
 
         parent::__construct($locator, $fileExtension);
