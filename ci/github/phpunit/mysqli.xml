@@ -27,11 +27,11 @@
         </testsuite>
     </testsuites>
 
-    <coverage>
+    <source>
         <include>
             <directory suffix=".php">../../../lib/Doctrine</directory>
         </include>
-    </coverage>
+    </source>
 
     <groups>
         <exclude>
