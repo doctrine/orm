@@ -2008,19 +2008,10 @@
       <code>$factors[0]</code>
       <code>$primary</code>
       <code>$terms[0]</code>
-      <code><![CDATA[$this->CollectionMemberExpression()]]></code>
-      <code><![CDATA[$this->ComparisonExpression()]]></code>
-      <code><![CDATA[$this->EmptyCollectionComparisonExpression()]]></code>
-      <code><![CDATA[$this->ExistsExpression()]]></code>
-      <code><![CDATA[$this->InExpression()]]></code>
-      <code><![CDATA[$this->InstanceOfExpression()]]></code>
-      <code><![CDATA[$this->LikeExpression()]]></code>
-      <code><![CDATA[$this->NullComparisonExpression()]]></code>
     </InvalidReturnStatement>
     <InvalidReturnType>
       <code>AST\ArithmeticFactor</code>
       <code>AST\ArithmeticTerm</code>
-      <code>AST\BetweenExpression|</code>
       <code>AST\SimpleArithmeticExpression|AST\ArithmeticTerm</code>
     </InvalidReturnType>
     <InvalidStringClass>
