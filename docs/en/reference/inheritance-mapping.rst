@@ -410,7 +410,6 @@ Example:
                 <many-to-many field="groups" target-entity="Group" inversed-by="users">
                     <cascade>
                         <cascade-persist/>
-                        <cascade-merge/>
                         <cascade-detach/>
                     </cascade>
                     <join-table name="users_groups">
@@ -522,7 +521,6 @@ Could be used by an entity that extends a mapped superclass to override a field 
                 <many-to-one field="address" target-entity="Address">
                     <cascade>
                         <cascade-persist/>
-                        <cascade-merge/>
                     </cascade>
                     <join-column name="address_id" referenced-column-name="id"/>
                 </many-to-one>

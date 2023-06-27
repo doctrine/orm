@@ -42,7 +42,7 @@ class CmsUser
     public $name;
 
     /** @psalm-var Collection<int, CmsPhonenumber> */
-    #[OneToMany(targetEntity: 'CmsPhonenumber', mappedBy: 'user', cascade: ['persist', 'merge'], orphanRemoval: true)]
+    #[OneToMany(targetEntity: 'CmsPhonenumber', mappedBy: 'user', cascade: ['persist'], orphanRemoval: true)]
     public $phonenumbers;
 
     /** @psalm-var Collection<int, CmsArticle> */
@@ -62,7 +62,7 @@ class CmsUser
     #[JoinTable(name: 'cms_users_groups')]
     #[JoinColumn(name: 'user_id', referencedColumnName: 'id')]
     #[InverseJoinColumn(name: 'group_id', referencedColumnName: 'id')]
-    #[ManyToMany(targetEntity: 'CmsGroup', inversedBy: 'users', cascade: ['persist', 'merge', 'detach'])]
+    #[ManyToMany(targetEntity: 'CmsGroup', inversedBy: 'users', cascade: ['persist', 'detach'])]
     public $groups;
 
     /** @var Collection<int, CmsTag> */

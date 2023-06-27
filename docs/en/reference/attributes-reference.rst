@@ -926,7 +926,7 @@ Example:
     #[OneToMany(
         targetEntity: "Phonenumber",
         mappedBy: "user",
-        cascade: ["persist", "remove", "merge"],
+        cascade: ["persist", "remove"],
         orphanRemoval: true)
     ]
     public $phonenumbers;

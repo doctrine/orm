@@ -22,7 +22,7 @@ class CompositeToOneKeyState
 
     /** @var Country */
     #[Id]
-    #[ManyToOne(targetEntity: 'Country', cascade: ['MERGE'])]
+    #[ManyToOne(targetEntity: 'Country', cascade: [])]
     #[JoinColumn(referencedColumnName: 'country')]
     public $country;
 }

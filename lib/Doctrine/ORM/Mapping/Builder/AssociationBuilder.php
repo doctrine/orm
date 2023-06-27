@@ -61,14 +61,6 @@ class AssociationBuilder
     }
 
     /** @return $this */
-    public function cascadeMerge(): static
-    {
-        $this->mapping['cascade'][] = 'merge';
-
-        return $this;
-    }
-
-    /** @return $this */
     public function cascadeDetach(): static
     {
         $this->mapping['cascade'][] = 'detach';

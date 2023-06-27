@@ -173,7 +173,7 @@ class DDC2602User
     public $name;
 
     /** @var DDC2602Biography */
-    #[OneToOne(targetEntity: 'DDC2602Biography', inversedBy: 'user', cascade: ['persist', 'merge', 'refresh', 'remove'])]
+    #[OneToOne(targetEntity: 'DDC2602Biography', inversedBy: 'user', cascade: ['persist', 'refresh', 'remove'])]
     #[JoinColumn(nullable: false)]
     public $biography;
 }
@@ -188,7 +188,7 @@ class DDC2602Biography
     public $id;
 
     /** @var DDC2602User */
-    #[OneToOne(targetEntity: 'DDC2602User', mappedBy: 'biography', cascade: ['persist', 'merge', 'refresh'])]
+    #[OneToOne(targetEntity: 'DDC2602User', mappedBy: 'biography', cascade: ['persist', 'refresh'])]
     public $user;
 
     /** @var string */
@@ -217,7 +217,7 @@ class DDC2602BiographyField
     public $label;
 
     /** @var ArrayCollection */
-    #[OneToMany(targetEntity: 'DDC2602BiographyFieldChoice', mappedBy: 'field', cascade: ['persist', 'merge', 'refresh'])]
+    #[OneToMany(targetEntity: 'DDC2602BiographyFieldChoice', mappedBy: 'field', cascade: ['persist', 'refresh'])]
     public $choiceList;
 
     public function __construct()

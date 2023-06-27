@@ -21,7 +21,7 @@ trait DDC1872ExampleTrait
     protected $foo;
 
     /** @var DDC1872Bar */
-    #[OneToOne(targetEntity: 'DDC1872Bar', cascade: ['persist', 'merge'])]
+    #[OneToOne(targetEntity: 'DDC1872Bar', cascade: ['persist'])]
     #[JoinColumn(name: 'example_trait_bar_id', referencedColumnName: 'id')]
     protected $bar;
 }

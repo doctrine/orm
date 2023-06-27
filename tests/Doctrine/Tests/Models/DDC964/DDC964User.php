@@ -27,14 +27,14 @@ class DDC964User
     protected $id;
 
     /** @psalm-var Collection<int, DDC964Group> */
-    #[ManyToMany(targetEntity: DDC964Group::class, inversedBy: 'users', cascade: ['persist', 'merge', 'detach'])]
+    #[ManyToMany(targetEntity: DDC964Group::class, inversedBy: 'users', cascade: ['persist', 'detach'])]
     #[JoinTable(name: 'ddc964_users_groups')]
     #[JoinColumn(name: 'user_id', referencedColumnName: 'id')]
     #[InverseJoinColumn(name: 'group_id', referencedColumnName: 'id')]
     protected $groups;
 
     /** @var DDC964Address */
-    #[ManyToOne(targetEntity: DDC964Address::class, cascade: ['persist', 'merge'])]
+    #[ManyToOne(targetEntity: DDC964Address::class, cascade: ['persist'])]
     #[JoinColumn(name: 'address_id', referencedColumnName: 'id')]
     protected $address;
 
@@ -110,7 +110,7 @@ class DDC964User
             [
                 'fieldName'      => 'address',
                 'targetEntity'   => 'DDC964Address',
-                'cascade'        => ['persist','merge'],
+                'cascade'        => ['persist'],
                 'joinColumns'    => [['name' => 'address_id', 'referencedColumnName' => 'id']],
             ],
         );
@@ -120,7 +120,7 @@ class DDC964User
                 'fieldName'      => 'groups',
                 'targetEntity'   => 'DDC964Group',
                 'inversedBy'     => 'users',
-                'cascade'        => ['persist','merge','detach'],
+                'cascade'        => ['persist','detach'],
                 'joinTable'      => [
                     'name'          => 'ddc964_users_groups',
                     'joinColumns'   => [

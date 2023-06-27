@@ -1348,7 +1348,7 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
         // Cascades
         $cascades = isset($mapping['cascade']) ? array_map('strtolower', $mapping['cascade']) : [];
 
-        $allCascades = ['remove', 'persist', 'refresh', 'merge', 'detach'];
+        $allCascades = ['remove', 'persist', 'refresh', 'detach'];
         if (in_array('all', $cascades, true)) {
             $cascades = $allCascades;
         } elseif (count($cascades) !== count(array_intersect($cascades, $allCascades))) {
