@@ -20,21 +20,30 @@ class DDC2988Test extends OrmFunctionalTestCase
             $this->_em->getClassMetadata(DDC2988Group::class),
         ]);
 
-        $group = new DDC2988Group();
-        $this->_em->persist($group);
+        $group1 = new DDC2988Group();
+        $this->_em->persist($group1);
 
-        $user           = new DDC2988User();
-        $user->groups[] = $group;
-        $this->_em->persist($user);
+        $group2 = new DDC2988Group();
+        $this->_em->persist($group2);
+
+        $user1           = new DDC2988User();
+        $user1->groups[] = $group1;
+        $this->_em->persist($user1);
+
+        $user2           = new DDC2988User();
+        $user2->groups[] = $group1;
+        $this->_em->persist($user2);
 
         $this->_em->flush();
         $this->_em->clear();
 
-        $userRepository  = $this->_em->getRepository(DDC2988User::class);
         $groupRepository = $this->_em->getRepository(DDC2988Group::class);
         $groups          = $groupRepository->findAll();
 
-        $userRepository->findBy(['groups' => $groups]);
+        $userRepository  = $this->_em->getRepository(DDC2988User::class);
+        $result = $userRepository->findBy(['groups' => $groups]);
+
+        self::assertCount(2, $result);
     }
 }
 
