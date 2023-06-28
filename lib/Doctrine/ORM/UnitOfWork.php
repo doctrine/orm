@@ -439,7 +439,7 @@ class UnitOfWork implements PropertyChangedListener
                 // into account (new entities referring to other new entities), since all other types (entities
                 // with updates or scheduled deletions) are currently not a problem, since they are already
                 // in the database.
-                $this->executeInserts($this->computeInsertExecutionOrder());
+                $this->executeInserts();
             }
 
             if ($this->entityUpdates) {
@@ -464,7 +464,7 @@ class UnitOfWork implements PropertyChangedListener
             // Entity deletions come last. Their order only needs to take care of other deletions
             // (first delete entities depending upon others, before deleting depended-upon entities).
             if ($this->entityDeletions) {
-                $this->executeDeletions($this->computeDeleteExecutionOrder());
+                $this->executeDeletions();
             }
 
             // Commit failed silently
@@ -1144,12 +1144,12 @@ class UnitOfWork implements PropertyChangedListener
     }
 
     /**
-     * Executes entity insertions in the given order
-     *
-     * @param list<object> $entities
+     * Executes entity insertions
      */
-    private function executeInserts(array $entities): void
+    private function executeInserts(): void
     {
+        $entities = $this->computeInsertExecutionOrder();
+
         foreach ($entities as $entity) {
             $oid       = spl_object_id($entity);
             $class     = $this->em->getClassMetadata(get_class($entity));
@@ -1251,11 +1251,11 @@ class UnitOfWork implements PropertyChangedListener
 
     /**
      * Executes all entity deletions
-     *
-     * @param list<object> $entities
      */
-    private function executeDeletions(array $entities): void
+    private function executeDeletions(): void
     {
+        $entities = $this->computeDeleteExecutionOrder();
+
         foreach ($entities as $entity) {
             $oid       = spl_object_id($entity);
             $class     = $this->em->getClassMetadata(get_class($entity));
