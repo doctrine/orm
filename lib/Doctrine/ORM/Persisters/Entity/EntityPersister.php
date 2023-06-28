@@ -109,17 +109,15 @@ interface EntityPersister
     public function addInsert($entity);
 
     /**
-     * Executes all queued entity insertions and returns any generated post-insert
-     * identifiers that were created as a result of the insertions.
+     * Executes all queued entity insertions.
      *
      * If no inserts are queued, invoking this method is a NOOP.
      *
-     * @psalm-return list<array{
+     * @psalm-return void|list<array{
      *                   generatedId: int,
      *                   entity: object
-     *               }> An array of any generated post-insert IDs. This will be
-     *                  an empty array if the entity class does not use the
-     *                  IDENTITY generation strategy.
+     *               }> Returning an array of generated post-insert IDs is deprecated, implementations
+     *                  should call UnitOfWork::assignPostInsertId() and return void.
      */
     public function executeInserts();
 

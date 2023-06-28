@@ -34,6 +34,7 @@ use function is_numeric;
 class AnnotationDriver extends CompatibilityAnnotationDriver
 {
     use ColocatedMappingDriver;
+    use ReflectionBasedDriver;
 
     /**
      * The annotation reader.
@@ -60,7 +61,7 @@ class AnnotationDriver extends CompatibilityAnnotationDriver
      * @param Reader               $reader The AnnotationReader to use
      * @param string|string[]|null $paths  One or multiple paths where mapping classes can be found.
      */
-    public function __construct($reader, $paths = null)
+    public function __construct($reader, $paths = null, bool $reportFieldsWhereDeclared = false)
     {
         Deprecation::trigger(
             'doctrine/orm',
@@ -70,6 +71,17 @@ class AnnotationDriver extends CompatibilityAnnotationDriver
         $this->reader = $reader;
 
         $this->addPaths((array) $paths);
+
+        if (! $reportFieldsWhereDeclared) {
+            Deprecation::trigger(
+                'doctrine/orm',
+                'https://github.com/doctrine/orm/pull/10455',
+                'In ORM 3.0, the AttributeDriver will report fields for the classes where they are declared. This may uncover invalid mapping configurations. To opt into the new mode also with the AnnotationDriver today, set the "reportFieldsWhereDeclared" constructor parameter to true.',
+                self::class
+            );
+        }
+
+        $this->reportFieldsWhereDeclared = $reportFieldsWhereDeclared;
     }
 
     /**
@@ -348,15 +360,7 @@ class AnnotationDriver extends CompatibilityAnnotationDriver
 
         // Evaluate annotations on properties/fields
         foreach ($class->getProperties() as $property) {
-            if (
-                $metadata->isMappedSuperclass && ! $property->isPrivate()
-                ||
-                $metadata->isInheritedField($property->name)
-                ||
-                $metadata->isInheritedAssociation($property->name)
-                ||
-                $metadata->isInheritedEmbeddedClass($property->name)
-            ) {
+            if ($this->isRepeatedPropertyDeclaration($property, $metadata)) {
                 continue;
             }
 

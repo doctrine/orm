@@ -81,7 +81,7 @@ abstract class OrmTestCase extends DoctrineTestCase
         $config->setQueryCache(self::getSharedQueryCache());
         $config->setMetadataDriverImpl(ORMSetup::createDefaultAnnotationDriver([
             realpath(__DIR__ . '/Models/Cache'),
-        ]));
+        ], null, true));
 
         if ($this->isSecondLevelCacheEnabled) {
             $cacheConfig = new CacheConfiguration();

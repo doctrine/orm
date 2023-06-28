@@ -113,7 +113,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
         if ($parent) {
             $class->setInheritanceType($parent->inheritanceType);
             $class->setDiscriminatorColumn($parent->discriminatorColumn);
-            $class->setIdGeneratorType($parent->generatorType);
+            $this->inheritIdGeneratorMapping($class, $parent);
             $this->addInheritedFields($class, $parent);
             $this->addInheritedRelations($class, $parent);
             $this->addInheritedEmbeddedClasses($class, $parent);
@@ -141,12 +141,8 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
             throw MappingException::reflectionFailure($class->getName(), $e);
         }
 
-        // If this class has a parent the id generator strategy is inherited.
-        // However this is only true if the hierarchy of parents contains the root entity,
-        // if it consists of mapped superclasses these don't necessarily include the id field.
-        if ($parent && $rootEntityFound) {
-            $this->inheritIdGeneratorMapping($class, $parent);
-        } else {
+        // Complete id generator mapping when the generator was declared/added in this class
+        if ($class->identifier && (! $parent || ! $parent->identifier)) {
             $this->completeIdGeneratorMapping($class);
         }
 

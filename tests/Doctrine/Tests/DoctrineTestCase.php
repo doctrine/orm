@@ -21,6 +21,7 @@ abstract class DoctrineTestCase extends TestCase
         'assertMatchesRegularExpression' => 'assertRegExp', // can be removed when PHPUnit 9 is minimum
         'assertDoesNotMatchRegularExpression' => 'assertNotRegExp', // can be removed when PHPUnit 9 is minimum
         'assertFileDoesNotExist' => 'assertFileNotExists', // can be removed PHPUnit 9 is minimum
+        'expectExceptionMessageMatches' => 'expectExceptionMessageRegExp', // can be removed when PHPUnit 8 is minimum
     ];
 
     /**
