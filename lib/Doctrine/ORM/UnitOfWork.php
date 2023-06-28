@@ -1124,6 +1124,20 @@ class UnitOfWork implements PropertyChangedListener
         foreach ($actualData as $propName => $actualValue) {
             $orgValue = $originalData[$propName] ?? null;
 
+            if (isset($class->fieldMappings[$propName]['enumType'])) {
+                if (is_array($orgValue)) {
+                    foreach ($orgValue as $id => $val) {
+                        if ($val instanceof BackedEnum) {
+                            $orgValue[$id] = $val->value;
+                        }
+                    }
+                } else {
+                    if ($orgValue instanceof BackedEnum) {
+                        $orgValue = $orgValue->value;
+                    }
+                }
+            }
+
             if ($orgValue !== $actualValue) {
                 $changeSet[$propName] = [$orgValue, $actualValue];
             }
