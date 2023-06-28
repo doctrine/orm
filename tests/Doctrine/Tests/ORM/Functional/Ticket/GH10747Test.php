@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Doctrine\Tests\ORM\Functional;
+namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -93,7 +93,7 @@ class GH10747Article
 {
     /**
      * @Id
-     * @Column(type="Doctrine\Tests\ORM\Functional\GH10747CustomIdObjectHashType")
+     * @Column(type="Doctrine\Tests\ORM\Functional\Ticket\GH10747CustomIdObjectHashType")
      * @var CustomIdObject
      */
     public $id;
