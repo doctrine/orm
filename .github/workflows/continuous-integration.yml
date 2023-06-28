@@ -4,7 +4,6 @@ on:
   pull_request:
     branches:
       - "*.x"
-      - entity-level-commit-order
     paths:
       - .github/workflows/continuous-integration.yml
       - ci/**
