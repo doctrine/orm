@@ -578,8 +578,6 @@ of DQL. It takes 3 parameters: ``$dqlPartName``, ``$dqlPart`` and
    not (no effect on the ``where`` and ``having`` DQL query parts,
    which always override all previously defined items)
 
--
-
 .. code-block:: php
 
     <?php
