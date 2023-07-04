@@ -45,7 +45,7 @@ have to be used.
 .. warning::
 
     At least when using attributes or annotations to specify your mapping,
-    it _seems_ as if you could inherit from a base class that is neither
+    it *seems* as if you could inherit from a base class that is neither
     an entity nor a mapped superclass, but has properties with mapping configuration
     on them that would also be used in the inheriting class.
 

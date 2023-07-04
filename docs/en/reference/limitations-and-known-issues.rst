@@ -162,7 +162,7 @@ that, some precedence and conflict resolution rules apply.
 
 When it comes to loading mapping configuration, the annotation and attribute drivers
 rely on PHP reflection to inspect class properties including their docblocks.
-As long as the results are consistent with what a solution _without_ traits would
+As long as the results are consistent with what a solution *without* traits would
 have produced, this is probably fine.
 
 However, to mention known limitations, it is currently not possible to use "class"
