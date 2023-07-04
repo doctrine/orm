@@ -145,7 +145,7 @@ more than two years after the initial Doctrine 2 release and the time where
 core components were designed.
 
 In fact, this documentation mentions traits only in the context of
-:doc:`overriding field association mappings in subclasses <tutorials/override-field-association-mappings-in-subclasses>`.
+:doc:`overriding field association mappings in subclasses </tutorials/override-field-association-mappings-in-subclasses>`.
 Coverage of traits in test cases is practically nonexistent.
 
 Thus, you should at least be aware that when using traits in your entity and

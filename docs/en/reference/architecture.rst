@@ -102,7 +102,7 @@ persistent entity state and mapping information for its subclasses,
 but which is not itself an entity.
 
 Mapped superclasses are explained in greater detail in the chapter
-on :doc:`inheritance mapping <reference/inheritance-mapping>`.
+on :doc:`inheritance mapping </reference/inheritance-mapping>`.
 
 Transient Classes
 ~~~~~~~~~~~~~~~~~
