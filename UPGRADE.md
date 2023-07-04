@@ -1,5 +1,12 @@
 # Upgrade to 2.16
 
+## Deprecated `\Doctrine\ORM\Internal\CommitOrderCalculator` and related classes
+
+With changes made to the commit order computation, the internal classes
+`\Doctrine\ORM\Internal\CommitOrderCalculator`, `\Doctrine\ORM\Internal\CommitOrder\Edge`,
+`\Doctrine\ORM\Internal\CommitOrder\Vertex` and `\Doctrine\ORM\Internal\CommitOrder\VertexState`
+have been deprecated and will be removed in ORM 3.0.
+
 ## Deprecated returning post insert IDs from `EntityPersister::executeInserts()`
 
 Persisters implementing `\Doctrine\ORM\Persisters\Entity\EntityPersister` should no longer

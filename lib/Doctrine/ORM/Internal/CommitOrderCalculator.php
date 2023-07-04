@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Internal;
 
+use Doctrine\Deprecations\Deprecation;
 use Doctrine\ORM\Internal\CommitOrder\Edge;
 use Doctrine\ORM\Internal\CommitOrder\Vertex;
 use Doctrine\ORM\Internal\CommitOrder\VertexState;
@@ -44,6 +45,16 @@ class CommitOrderCalculator
      * @psalm-var list<ClassMetadata>
      */
     private $sortedNodeList = [];
+
+    public function __construct()
+    {
+        Deprecation::triggerIfCalledFromOutside(
+            'doctrine/orm',
+            'https://github.com/doctrine/orm/pull/10547',
+            'The %s class is deprecated and will be removed in ORM 3.0',
+            self::class
+        );
+    }
 
     /**
      * Checks for node (vertex) existence in graph.
