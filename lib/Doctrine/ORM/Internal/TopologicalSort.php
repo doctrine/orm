@@ -53,7 +53,7 @@ final class TopologicalSort
     /**
      * Builds up the result during the DFS.
      *
-     * @psalm-var list<object>
+     * @var list<object>
      */
     private $sortResult = [];
 
@@ -95,9 +95,9 @@ final class TopologicalSort
      * Returns a topological sort of all nodes. When we have an edge A->B between two nodes
      * A and B, then A will be listed before B in the result.
      *
-     * @psalm-return list<object>
+     * @return list<object>
      */
-    public function sort()
+    public function sort(): array
     {
         /*
          * When possible, keep objects in the result in the same order in which they were added as nodes.
