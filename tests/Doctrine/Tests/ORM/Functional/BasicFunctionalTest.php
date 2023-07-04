@@ -19,6 +19,7 @@ use Doctrine\Tests\Models\CMS\CmsPhonenumber;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use InvalidArgumentException;
+use RuntimeException;
 
 use function get_class;
 
@@ -1289,6 +1290,35 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
 
         $this->_em->persist($user);
 
+        $this->_em->flush();
+    }
+
+    public function testItThrowsWhenReferenceUsesIdAssignedByDatabase(): void
+    {
+        $user           = new CmsUser();
+        $user->name     = 'test';
+        $user->username = 'test';
+        $this->_em->persist($user);
+        $this->_em->flush();
+
+        // Obtain a reference object for the next ID. This is a user error - references
+        // should be fetched only for existing IDs
+        $ref = $this->_em->getReference(CmsUser::class, $user->id + 1);
+
+        $user2           = new CmsUser();
+        $user2->name     = 'test2';
+        $user2->username = 'test2';
+
+        // Now the database will assign an ID to the $user2 entity, but that place
+        // in the identity map is already taken by user error.
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessageMatches('/another object .* was already present for the same ID/');
+
+        // depending on ID generation strategy, the ID may be asssigned already here
+        // and the entity be put in the identity map
+        $this->_em->persist($user2);
+
+        // post insert IDs will be assigned during flush
         $this->_em->flush();
     }
 }

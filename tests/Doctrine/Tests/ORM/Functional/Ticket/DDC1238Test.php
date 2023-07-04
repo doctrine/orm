@@ -56,7 +56,7 @@ class DDC1238Test extends OrmFunctionalTestCase
 
         $user2 = $this->_em->getReference(DDC1238User::class, $userId);
 
-        $user->__load();
+        //$user->__load();
 
         self::assertIsInt($user->getId(), 'Even if a proxy is detached, it should still have an identifier');
 

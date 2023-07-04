@@ -95,7 +95,7 @@ class ProxiesLikeEntitiesTest extends OrmFunctionalTestCase
      */
     public function testProxyAsDqlParameterPersist(): void
     {
-        $proxy     = $this->_em->getProxyFactory()->getProxy(CmsUser::class, ['id' => $this->user->getId()]);
+        $proxy     = $this->_em->getReference(CmsUser::class, ['id' => $this->user->getId()]);
         $proxy->id = $this->user->getId();
         $result    = $this
             ->_em
