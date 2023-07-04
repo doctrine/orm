@@ -1336,8 +1336,8 @@ There are situations when a query you want to execute returns a
 very large result-set that needs to be processed. All the
 previously described hydration modes completely load a result-set
 into memory which might not be feasible with large result sets. See
-the `Batch Processing <batch-processing.html>`_ section on details how
-to iterate large result sets.
+the :doc:`Batch Processing <reference/batch-processing>` section on
+details how to iterate large result sets.
 
 Functions
 ~~~~~~~~~
