@@ -376,7 +376,7 @@ class XmlDriver extends FileDriver
                 continue;
             }
 
-            $mapping = $this->columnToArray($idElement);
+            $mapping       = $this->columnToArray($idElement);
             $mapping['id'] = true;
 
             $metadata->mapField($mapping);
