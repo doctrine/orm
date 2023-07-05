@@ -102,8 +102,7 @@ Install Doctrine using the Composer Dependency Management tool, by calling:
 This will install the packages Doctrine Common, Doctrine DBAL, Doctrine ORM,
 into the ``vendor`` directory.
 
-Add the following directories:
-::
+Add the following directories::
 
     doctrine2-tutorial
     |-- config

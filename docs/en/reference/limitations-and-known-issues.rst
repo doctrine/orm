@@ -145,7 +145,7 @@ more than two years after the initial Doctrine 2 release and the time where
 core components were designed.
 
 In fact, this documentation mentions traits only in the context of
-:doc:`overriding field association mappings in subclasses <tutorials/override-field-association-mappings-in-subclasses>`.
+:doc:`overriding field association mappings in subclasses </tutorials/override-field-association-mappings-in-subclasses>`.
 Coverage of traits in test cases is practically nonexistent.
 
 Thus, you should at least be aware that when using traits in your entity and
@@ -162,7 +162,7 @@ that, some precedence and conflict resolution rules apply.
 
 When it comes to loading mapping configuration, the annotation and attribute drivers
 rely on PHP reflection to inspect class properties including their docblocks.
-As long as the results are consistent with what a solution _without_ traits would
+As long as the results are consistent with what a solution *without* traits would
 have produced, this is probably fine.
 
 However, to mention known limitations, it is currently not possible to use "class"
