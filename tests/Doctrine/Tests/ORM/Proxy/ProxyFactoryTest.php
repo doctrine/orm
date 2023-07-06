@@ -240,6 +240,18 @@ class ProxyFactoryTest extends OrmTestCase
         self::assertSame(1000, $cloned->getSalary(), 'Expect properties on the CompanyEmployee class to be cloned');
         self::assertSame('Bob', $cloned->getName(), 'Expect properties on the CompanyPerson class to be cloned');
     }
+
+    public function testProxyWithoutIdentifierThrowWhenLoaded(): void
+    {
+        $proxy = $this->proxyFactory->getProxy(ECommerceFeature::class, ['id' => 'toBeRemoved']);
+        $id    = new ReflectionProperty(ECommerceFeature::class, 'id');
+        $id->setAccessible(true);
+        $id->setValue($proxy, null);
+
+        $this->expectException(EntityNotFoundException::class);
+
+        $proxy->__load();
+    }
 }
 
 abstract class AbstractClass

@@ -215,6 +215,9 @@ EOPHP;
             }
 
             $identifier = $classMetadata->getIdentifierValues($proxy);
+            if ($identifier === []) {
+                throw EntityNotFoundException::noIdentifierFound($classMetadata->getName());
+            }
 
             try {
                 $entity = $entityPersister->loadById($identifier, $proxy);
@@ -250,7 +253,11 @@ EOPHP;
     {
         return function (Proxy $proxy, Proxy $original) use ($entityPersister, $classMetadata): void {
             $identifier = $classMetadata->getIdentifierValues($original);
-            $entity     = $entityPersister->loadById($identifier, $original);
+            if ($identifier === []) {
+                throw EntityNotFoundException::noIdentifierFound($classMetadata->getName());
+            }
+
+            $entity = $entityPersister->loadById($identifier, $original);
 
             if ($entity === null) {
                 throw EntityNotFoundException::fromClassNameAndIdentifier(
