@@ -1392,6 +1392,11 @@
       <code>$classMetadata</code>
       <code>$classMetadata</code>
     </ArgumentTypeCoercion>
+    <DirectConstructorCall>
+      <code><![CDATA[$proxy->__construct(static function (Proxy $object) use ($initializer, $proxy): void {
+            $initializer($object, $proxy);
+        })]]></code>
+    </DirectConstructorCall>
     <InvalidArgument>
       <code><![CDATA[$classMetadata->getReflectionProperties()]]></code>
       <code><![CDATA[$em->getMetadataFactory()]]></code>
@@ -1400,7 +1405,6 @@
     <NoInterfaceProperties>
       <code><![CDATA[$metadata->isEmbeddedClass]]></code>
       <code><![CDATA[$metadata->isMappedSuperclass]]></code>
-      <code><![CDATA[$proxy->__isCloning]]></code>
     </NoInterfaceProperties>
     <PossiblyNullPropertyFetch>
       <code><![CDATA[$property->name]]></code>
@@ -1411,6 +1415,7 @@
       <code>setAccessible</code>
     </PossiblyNullReference>
     <UndefinedInterfaceMethod>
+      <code>__construct</code>
       <code>__wakeup</code>
     </UndefinedInterfaceMethod>
   </file>
