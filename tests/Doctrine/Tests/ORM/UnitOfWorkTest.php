@@ -13,6 +13,7 @@ use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\Deprecations\PHPUnit\VerifyDeprecations;
 use Doctrine\ORM\EntityNotFoundException;
 use Doctrine\ORM\Events;
+use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
@@ -923,6 +924,35 @@ class UnitOfWorkTest extends OrmTestCase
         self::assertFalse($user->phonenumbers->isDirty());
         self::assertEmpty($user->phonenumbers->getSnapshot());
     }
+
+    public function testLifecycleCallbackCalledOnAssociatedEntityWithInheritanceCascadePersist(): void
+    {
+        /*
+         * 1. We have entity with inheritance
+         * 2. We have lifecycle callback on child entity, not on parent
+         * 3. We have main entity with association to entity with inheritance with cascade persist
+         * 4. We call persist on main entity, when association value is null, than we set association value
+         *    and only that call commit
+         */
+
+        $childWithLifecycleCallback = new EntityInheritedChildWithLifecycleCallback();
+        $childWithParentLifecycleCallback = new EntityInheritedChildWithParentLifecycleCallback();
+
+        self::assertFalse($childWithLifecycleCallback->wasPrepersitCall);
+        self::assertFalse($childWithParentLifecycleCallback->wasPrepersitCall);
+
+        $mainEntity = new EntityWithCascadeInheritanceAssociation();
+
+        $this->_unitOfWork->persist($mainEntity);
+
+        $mainEntity->entityWithChildLifecycleEvent = $childWithLifecycleCallback;
+        $mainEntity->entityWithParentLifecycleEvent = $childWithParentLifecycleCallback;
+
+        $this->_unitOfWork->commit();
+
+        self::assertTrue($childWithLifecycleCallback->wasPrepersitCall);
+        self::assertTrue($childWithParentLifecycleCallback->wasPrepersitCall);
+    }
 }
 
 /** @Entity */
@@ -1182,6 +1212,122 @@ class EntityWithNonCascadingAssociation
      * @ManyToOne(targetEntity=CascadePersistedEntity::class)
      */
     public $nonCascaded;
+
+    public function __construct()
+    {
+        $this->id = uniqid(self::class, true);
+    }
+}
+
+/**
+ * @Entity
+ * @ORM\InheritanceType("JOINED")
+ * @ORM\DiscriminatorColumn(name="discr", length="5")
+ * @ORM\DiscriminatorMap({
+ *     "child" = EntityInheritedChildWithLifecycleCallback::class,
+ * })
+ */
+abstract class EntityParentWithInheritance
+{
+    /**
+     * @var string
+     * @Id
+     * @Column(type="string", length=255)
+     * @GeneratedValue(strategy="NONE")
+     */
+    private $id;
+
+    public function __construct()
+    {
+        $this->id = uniqid(self::class, true);
+    }
+}
+
+/**
+ * @Entity
+ * @ORM\InheritanceType("JOINED")
+ * @ORM\DiscriminatorColumn(name="discr", length="5")
+ * @ORM\DiscriminatorMap({
+ *     "child" = EntityInheritedChildWithParentLifecycleCallback::class,
+ * })
+ * @ORM\HasLifecycleCallbacks()
+ */
+abstract class EntityParentWithInheritanceWithLifecycleCallback
+{
+    /**
+     * @var string
+     * @Id
+     * @Column(type="string", length=255)
+     * @GeneratedValue(strategy="NONE")
+     */
+    private $id;
+
+    /** @var bool */
+    public $wasPrepersitCall = false;
+
+    public function __construct()
+    {
+        $this->id = uniqid(self::class, true);
+    }
+
+    /** @ORM\PrePersist() */
+    public function prePersist(): void
+    {
+        $this->wasPrepersitCall = true;
+    }
+}
+
+/**
+ * @Entity
+ * @ORM\HasLifecycleCallbacks()
+ */
+class EntityInheritedChildWithLifecycleCallback extends EntityParentWithInheritance
+{
+    /** @var bool */
+    public $wasPrepersitCall = false;
+
+    /** @ORM\PrePersist() */
+    public function prePersist(): void
+    {
+        $this->wasPrepersitCall = true;
+    }
+}
+
+/** @Entity */
+class EntityInheritedChildWithParentLifecycleCallback extends EntityParentWithInheritanceWithLifecycleCallback
+{
+    /** @var bool */
+    public $wasPrepersitCall = false;
+
+    /** @ORM\PrePersist() */
+    public function prePersist(): void
+    {
+        $this->wasPrepersitCall = true;
+    }
+}
+
+/** @Entity */
+class EntityWithCascadeInheritanceAssociation
+{
+    /**
+     * @var string
+     * @Id
+     * @Column(type="string", length=255)
+     * @GeneratedValue(strategy="NONE")
+     */
+    private $id;
+
+    /**
+     * @var EntityParentWithInheritance|null
+     * @ManyToOne(targetEntity=EntityParentWithInheritance::class, cascade={"persist"})
+     */
+    public $entityWithChildLifecycleEvent;
+
+    /**
+     * @var EntityParentWithInheritanceWithLifecycleCallback|null
+     * @ManyToOne(targetEntity=EntityParentWithInheritanceWithLifecycleCallback::class, cascade={"persist"})
+     */
+    public $entityWithParentLifecycleEvent;
 
     public function __construct()
     {
