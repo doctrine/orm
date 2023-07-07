@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<files psalm-version="5.12.0@f90118cdeacd0088e7215e64c0c99ceca819e176">
+<files psalm-version="5.13.0@a0a9c27630bcf8301ee78cb06741d2907d8c9fef">
   <file src="lib/Doctrine/ORM/AbstractQuery.php">
     <DeprecatedClass>
       <code>IterableResult</code>
@@ -212,11 +212,6 @@
     <MoreSpecificReturnType>
       <code>CacheProvider</code>
     </MoreSpecificReturnType>
-  </file>
-  <file src="lib/Doctrine/ORM/Cache/Region/FileLockRegion.php">
-    <ArgumentTypeCoercion>
-      <code><![CDATA[sprintf('%s/*.%s', $this->directory, self::LOCK_EXTENSION)]]></code>
-    </ArgumentTypeCoercion>
   </file>
   <file src="lib/Doctrine/ORM/Cache/RegionsConfiguration.php">
     <RedundantCastGivenDocblockType>
@@ -1396,6 +1391,11 @@
       <code>$classMetadata</code>
       <code>$classMetadata</code>
     </ArgumentTypeCoercion>
+    <DirectConstructorCall>
+      <code><![CDATA[$proxy->__construct(static function (Proxy $object) use ($initializer, $proxy): void {
+            $initializer($object, $proxy);
+        })]]></code>
+    </DirectConstructorCall>
     <InvalidArgument>
       <code><![CDATA[$classMetadata->getReflectionProperties()]]></code>
       <code><![CDATA[$em->getMetadataFactory()]]></code>
@@ -1404,7 +1404,6 @@
     <NoInterfaceProperties>
       <code><![CDATA[$metadata->isEmbeddedClass]]></code>
       <code><![CDATA[$metadata->isMappedSuperclass]]></code>
-      <code><![CDATA[$proxy->__isCloning]]></code>
     </NoInterfaceProperties>
     <PossiblyNullPropertyFetch>
       <code><![CDATA[$property->name]]></code>
@@ -1415,6 +1414,7 @@
       <code>setAccessible</code>
     </PossiblyNullReference>
     <UndefinedInterfaceMethod>
+      <code>__construct</code>
       <code>__wakeup</code>
     </UndefinedInterfaceMethod>
   </file>
@@ -2012,19 +2012,10 @@
       <code>$factors[0]</code>
       <code>$primary</code>
       <code>$terms[0]</code>
-      <code><![CDATA[$this->CollectionMemberExpression()]]></code>
-      <code><![CDATA[$this->ComparisonExpression()]]></code>
-      <code><![CDATA[$this->EmptyCollectionComparisonExpression()]]></code>
-      <code><![CDATA[$this->ExistsExpression()]]></code>
-      <code><![CDATA[$this->InExpression()]]></code>
-      <code><![CDATA[$this->InstanceOfExpression()]]></code>
-      <code><![CDATA[$this->LikeExpression()]]></code>
-      <code><![CDATA[$this->NullComparisonExpression()]]></code>
     </InvalidReturnStatement>
     <InvalidReturnType>
       <code>AST\ArithmeticFactor</code>
       <code>AST\ArithmeticTerm</code>
-      <code>AST\BetweenExpression|</code>
       <code>AST\SimpleArithmeticExpression|AST\ArithmeticTerm</code>
     </InvalidReturnType>
     <InvalidStringClass>
@@ -2455,9 +2446,6 @@
     </MissingTemplateParam>
   </file>
   <file src="lib/Doctrine/ORM/Tools/ConvertDoctrine1Schema.php">
-    <ArgumentTypeCoercion>
-      <code><![CDATA[$path . '/*.yml']]></code>
-    </ArgumentTypeCoercion>
     <PossiblyUndefinedArrayOffset>
       <code><![CDATA[$column['type']]]></code>
     </PossiblyUndefinedArrayOffset>

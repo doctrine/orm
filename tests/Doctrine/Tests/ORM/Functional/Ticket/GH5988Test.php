@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Doctrine\Tests\ORM\Functional;
+namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Type as DBALType;
@@ -106,7 +106,7 @@ abstract class GH5988CustomIdObjectTypeParent
 {
     /**
      * @Id
-     * @Column(type="Doctrine\Tests\ORM\Functional\GH5988CustomIdObjectHashType", length=255)
+     * @Column(type="Doctrine\Tests\ORM\Functional\Ticket\GH5988CustomIdObjectHashType", length=255)
      * @var CustomIdObject
      */
     public $id;
