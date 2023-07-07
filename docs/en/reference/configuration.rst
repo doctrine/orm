@@ -104,7 +104,7 @@ Inside the ``ORMSetup`` methods several assumptions are made:
     In order to have ``ORMSetup`` configure the cache automatically, the library ``symfony/cache``
     has to be installed as a dependency.
 
-If you want to configure Doctrine in more detail, take a look at the :doc:`Advanced Configuration <reference/advanced-configuration>` section.
+If you want to configure Doctrine in more detail, take a look at the :doc:`Advanced Configuration </reference/advanced-configuration>` section.
 
 .. note::
 

@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Proxy;
 
 use Doctrine\Common\EventManager;
-use Doctrine\Common\Proxy\Proxy as CommonProxy;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\ORM\EntityNotFoundException;
@@ -227,21 +226,12 @@ class ProxyFactoryTest extends OrmTestCase
             ->expects(self::atLeastOnce())
             ->method('loadById');
 
-        if ($proxy instanceof CommonProxy) {
-            $loadByIdMock->willReturn($companyEmployee);
+        $loadByIdMock->willReturn($companyEmployee);
 
-            $persister
-                ->expects(self::atLeastOnce())
-                ->method('getClassMetadata')
-                ->willReturn($classMetaData);
-        } else {
-            $loadByIdMock->willReturnCallback(static function (array $id, CompanyEmployee $companyEmployee) {
-                $companyEmployee->setSalary(1000); // A property on the CompanyEmployee
-                $companyEmployee->setName('Bob'); // A property on the parent class, CompanyPerson
-
-                return $companyEmployee;
-            });
-        }
+        $persister
+            ->expects(self::atLeastOnce())
+            ->method('getClassMetadata')
+            ->willReturn($classMetaData);
 
         $cloned = clone $proxy;
         assert($cloned instanceof CompanyEmployee);

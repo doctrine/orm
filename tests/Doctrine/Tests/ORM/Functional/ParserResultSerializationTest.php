@@ -13,6 +13,7 @@ use Generator;
 use ReflectionMethod;
 
 use function file_get_contents;
+use function rtrim;
 use function serialize;
 use function unserialize;
 
@@ -56,8 +57,8 @@ class ParserResultSerializationTest extends OrmFunctionalTestCase
     /** @return Generator<string, array{string}> */
     public static function provideSerializedSingleSelectResults(): Generator
     {
-        yield '2.14.3' => [file_get_contents(__DIR__ . '/ParserResults/single_select_2_14_3.txt')];
-        yield '2.15.0' => [file_get_contents(__DIR__ . '/ParserResults/single_select_2_15_0.txt')];
+        yield '2.14.3' => [rtrim(file_get_contents(__DIR__ . '/ParserResults/single_select_2_14_3.txt'), "\n")];
+        yield '2.15.0' => [rtrim(file_get_contents(__DIR__ . '/ParserResults/single_select_2_15_0.txt'), "\n")];
     }
 
     private static function parseQuery(Query $query): ParserResult

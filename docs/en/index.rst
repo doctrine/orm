@@ -34,32 +34,32 @@ Mapping Objects onto a Database
 -------------------------------
 
 * **Mapping**:
-  :doc:`Objects <reference/basic-mapping>` |
-  :doc:`Associations <reference/association-mapping>` |
+  :doc:`Objects <reference/basic-mapping>` \|
+  :doc:`Associations <reference/association-mapping>` \|
   :doc:`Inheritance <reference/inheritance-mapping>`
 
 * **Drivers**:
-  :doc:`Docblock Annotations <reference/annotations-reference>` |
-  :doc:`Attributes <reference/attributes-reference>` |
-  :doc:`XML <reference/xml-mapping>` |
-  :doc:`YAML <reference/yaml-mapping>` |
+  :doc:`Docblock Annotations <reference/annotations-reference>` \|
+  :doc:`Attributes <reference/attributes-reference>` \|
+  :doc:`XML <reference/xml-mapping>` \|
+  :doc:`YAML <reference/yaml-mapping>` \|
   :doc:`PHP <reference/php-mapping>`
 
 Working with Objects
 --------------------
 
 * **Basic Reference**:
-  :doc:`Entities <reference/working-with-objects>` |
-  :doc:`Associations <reference/working-with-associations>` |
+  :doc:`Entities <reference/working-with-objects>` \|
+  :doc:`Associations <reference/working-with-associations>` \|
   :doc:`Events <reference/events>`
 
 * **Query Reference**:
-  :doc:`DQL <reference/dql-doctrine-query-language>` |
-  :doc:`QueryBuilder <reference/query-builder>` |
+  :doc:`DQL <reference/dql-doctrine-query-language>` \|
+  :doc:`QueryBuilder <reference/query-builder>` \|
   :doc:`Native SQL <reference/native-sql>`
 
 * **Internals**:
-  :doc:`Internals explained <reference/unitofwork>` |
+  :doc:`Internals explained <reference/unitofwork>` \|
   :doc:`Associations <reference/unitofwork-associations>`
 
 Advanced Topics
@@ -102,20 +102,20 @@ Cookbook
 --------
 
 * **Patterns**:
-  :doc:`Aggregate Fields <cookbook/aggregate-fields>` |
-  :doc:`Decorator Pattern <cookbook/decorator-pattern>` |
+  :doc:`Aggregate Fields <cookbook/aggregate-fields>` \|
+  :doc:`Decorator Pattern <cookbook/decorator-pattern>` \|
   :doc:`Strategy Pattern <cookbook/strategy-cookbook-introduction>`
 
 * **DQL Extension Points**:
-  :doc:`DQL Custom Walkers <cookbook/dql-custom-walkers>` |
+  :doc:`DQL Custom Walkers <cookbook/dql-custom-walkers>` \|
   :doc:`DQL User-Defined-Functions <cookbook/dql-user-defined-functions>`
 
 * **Implementation**:
-  :doc:`Array Access <cookbook/implementing-arrayaccess-for-domain-objects>` |
-  :doc:`Notify ChangeTracking Example <cookbook/implementing-the-notify-changetracking-policy>` |
-  :doc:`Working with DateTime <cookbook/working-with-datetime>` |
-  :doc:`Validation <cookbook/validation-of-entities>` |
-  :doc:`Entities in the Session <cookbook/entities-in-session>` |
+  :doc:`Array Access <cookbook/implementing-arrayaccess-for-domain-objects>` \|
+  :doc:`Notify ChangeTracking Example <cookbook/implementing-the-notify-changetracking-policy>` \|
+  :doc:`Working with DateTime <cookbook/working-with-datetime>` \|
+  :doc:`Validation <cookbook/validation-of-entities>` \|
+  :doc:`Entities in the Session <cookbook/entities-in-session>` \|
   :doc:`Keeping your Modules independent <cookbook/resolve-target-entity-listener>`
 
 * **Hidden Gems**

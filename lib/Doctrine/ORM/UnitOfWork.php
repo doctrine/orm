@@ -1124,6 +1124,20 @@ class UnitOfWork implements PropertyChangedListener
         foreach ($actualData as $propName => $actualValue) {
             $orgValue = $originalData[$propName] ?? null;
 
+            if (isset($class->fieldMappings[$propName]['enumType'])) {
+                if (is_array($orgValue)) {
+                    foreach ($orgValue as $id => $val) {
+                        if ($val instanceof BackedEnum) {
+                            $orgValue[$id] = $val->value;
+                        }
+                    }
+                } else {
+                    if ($orgValue instanceof BackedEnum) {
+                        $orgValue = $orgValue->value;
+                    }
+                }
+            }
+
             if ($orgValue !== $actualValue) {
                 $changeSet[$propName] = [$orgValue, $actualValue];
             }
@@ -3669,14 +3683,18 @@ EXCEPTION
                                 $targetClass = $this->em->getClassMetadata($assoc2['targetEntity']);
                                 $relatedId   = $targetClass->getIdentifierValues($other);
 
-                                if ($targetClass->subClasses) {
-                                    $other = $this->em->find($targetClass->name, $relatedId);
-                                } else {
-                                    $other = $this->em->getProxyFactory()->getProxy(
-                                        $assoc2['targetEntity'],
-                                        $relatedId
-                                    );
-                                    $this->registerManaged($other, $relatedId, []);
+                                $other = $this->tryGetById($relatedId, $targetClass->name);
+
+                                if (! $other) {
+                                    if ($targetClass->subClasses) {
+                                        $other = $this->em->find($targetClass->name, $relatedId);
+                                    } else {
+                                        $other = $this->em->getProxyFactory()->getProxy(
+                                            $assoc2['targetEntity'],
+                                            $relatedId
+                                        );
+                                        $this->registerManaged($other, $relatedId, []);
+                                    }
                                 }
                             }
 
