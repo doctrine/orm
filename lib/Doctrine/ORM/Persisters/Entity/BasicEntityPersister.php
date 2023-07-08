@@ -266,7 +266,7 @@ class BasicEntityPersister implements EntityPersister
         $stmt      = $this->conn->prepare($this->getInsertSQL());
         $tableName = $this->class->getTableName();
 
-        foreach ($this->queuedInserts as $entity) {
+        foreach ($this->queuedInserts as $key => $entity) {
             $insertData = $this->prepareInsertData($entity);
 
             if (isset($insertData[$tableName])) {
@@ -291,9 +291,16 @@ class BasicEntityPersister implements EntityPersister
             if ($this->class->requiresFetchAfterChange) {
                 $this->assignDefaultVersionAndUpsertableValues($entity, $id);
             }
-        }
 
-        $this->queuedInserts = [];
+            // Unset this queued insert, so that the prepareUpdateData() method knows right away
+            // (for the next entity already) that the current entity has been written to the database
+            // and no extra updates need to be scheduled to refer to it.
+            //
+            // In \Doctrine\ORM\UnitOfWork::executeInserts(), the UoW already removed entities
+            // from its own list (\Doctrine\ORM\UnitOfWork::$entityInsertions) right after they
+            // were given to our addInsert() method.
+            unset($this->queuedInserts[$key]);
+        }
     }
 
     /**
@@ -671,10 +678,30 @@ class BasicEntityPersister implements EntityPersister
             if ($newVal !== null) {
                 $oid = spl_object_id($newVal);
 
-                if (isset($this->queuedInserts[$oid]) || $uow->isScheduledForInsert($newVal)) {
-                    // The associated entity $newVal is not yet persisted, so we must
-                    // set $newVal = null, in order to insert a null value and schedule an
-                    // extra update on the UnitOfWork.
+                // If the associated entity $newVal is not yet persisted and/or does not yet have
+                // an ID assigned, we must set $newVal = null. This will insert a null value and
+                // schedule an extra update on the UnitOfWork.
+                //
+                // This gives us extra time to a) possibly obtain a database-generated identifier
+                // value for $newVal, and b) insert $newVal into the database before the foreign
+                // key reference is being made.
+                //
+                // When looking at $this->queuedInserts and $uow->isScheduledForInsert, be aware
+                // of the implementation details that our own executeInserts() method will remove
+                // entities from the former as soon as the insert statement has been executed and
+                // a post-insert ID has been assigned (if necessary), and that the UnitOfWork has
+                // already removed entities from its own list at the time they were passed to our
+                // addInsert() method.
+                //
+                // Then, there is one extra exception we can make: An entity that references back to itself
+                // _and_ uses an application-provided ID (the "NONE" generator strategy) also does not
+                // need the extra update, although it is still in the list of insertions itself.
+                // This looks like a minor optimization at first, but is the capstone for being able to
+                // use non-NULLable, self-referencing associations in applications that provide IDs (like UUIDs).
+                if (
+                    (isset($this->queuedInserts[$oid]) || $uow->isScheduledForInsert($newVal))
+                    && ! ($newVal === $entity && $this->class->isIdentifierNatural())
+                ) {
                     $uow->scheduleExtraUpdate($entity, [$field => [null, $newVal]]);
 
                     $newVal = null;
