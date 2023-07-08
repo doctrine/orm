@@ -6,7 +6,10 @@ namespace Doctrine\ORM\Internal\CommitOrder;
 
 use Doctrine\Deprecations\Deprecation;
 
-/** @internal */
+/**
+ * @internal
+ * @deprecated
+ */
 final class Edge
 {
     /**

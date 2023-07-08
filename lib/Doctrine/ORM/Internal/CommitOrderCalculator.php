@@ -18,6 +18,8 @@ use function array_reverse;
  * using a depth-first searching (DFS) to traverse the graph built in memory.
  * This algorithm have a linear running time based on nodes (V) and dependency
  * between the nodes (E), resulting in a computational complexity of O(V + E).
+ *
+ * @deprecated
  */
 class CommitOrderCalculator
 {

@@ -7,7 +7,10 @@ namespace Doctrine\ORM\Internal\CommitOrder;
 use Doctrine\Deprecations\Deprecation;
 use Doctrine\ORM\Mapping\ClassMetadata;
 
-/** @internal */
+/**
+ * @internal
+ * @deprecated
+ */
 final class Vertex
 {
     /**
