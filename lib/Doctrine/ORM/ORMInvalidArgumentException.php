@@ -145,6 +145,18 @@ EXCEPTION
     }
 
     /**
+     * Used when a given entityName hasn't the good type
+     *
+     * @param mixed $entityName The given entity (which shouldn't be a string)
+     *
+     * @return self
+     */
+    public static function invalidEntityName($entityName)
+    {
+        return new self(sprintf('Entity name must be a string, %s given', get_debug_type($entityName)));
+    }
+
+    /**
      * Helper method to show an object as string.
      */
     private static function objToStr(object $obj): string

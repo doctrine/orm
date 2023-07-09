@@ -11,6 +11,7 @@ use Doctrine\DBAL\Driver;
 use Doctrine\DBAL\Driver\Statement;
 use Doctrine\DBAL\Exception;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
+use Doctrine\Deprecations\PHPUnit\VerifyDeprecations;
 use Doctrine\ORM\EntityNotFoundException;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\Column;
@@ -30,6 +31,8 @@ use Doctrine\Tests\Models\CMS\CmsPhonenumber;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\Models\Forum\ForumAvatar;
 use Doctrine\Tests\Models\Forum\ForumUser;
+use Doctrine\Tests\Models\GeoNames\City;
+use Doctrine\Tests\Models\GeoNames\Country;
 use Doctrine\Tests\OrmTestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Group;
@@ -44,6 +47,8 @@ use function uniqid;
  */
 class UnitOfWorkTest extends OrmTestCase
 {
+    use VerifyDeprecations;
+
     /**
      * SUT
      */
@@ -292,6 +297,26 @@ class UnitOfWorkTest extends OrmTestCase
 
         $this->_unitOfWork->persist($entity);
         self::assertTrue($this->_unitOfWork->isInIdentityMap($entity));
+    }
+
+    #[Group('5849')]
+    #[Group('5850')]
+    public function testPersistedEntityAndClearManager(): void
+    {
+        $entity1 = new City(123, 'London');
+        $entity2 = new Country('456', 'United Kingdom');
+
+        $this->_unitOfWork->persist($entity1);
+        self::assertTrue($this->_unitOfWork->isInIdentityMap($entity1));
+
+        $this->_unitOfWork->persist($entity2);
+        self::assertTrue($this->_unitOfWork->isInIdentityMap($entity2));
+
+        $this->_unitOfWork->clear(Country::class);
+        self::assertTrue($this->_unitOfWork->isInIdentityMap($entity1));
+        self::assertFalse($this->_unitOfWork->isInIdentityMap($entity2));
+        self::assertTrue($this->_unitOfWork->isScheduledForInsert($entity1));
+        self::assertFalse($this->_unitOfWork->isScheduledForInsert($entity2));
     }
 
     /**

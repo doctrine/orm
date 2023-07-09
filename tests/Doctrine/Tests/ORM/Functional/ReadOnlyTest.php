@@ -12,6 +12,8 @@ use Doctrine\ORM\Query;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use PHPUnit\Framework\Attributes\Group;
 
+use function get_class;
+
 /**
  * Functional Query tests.
  */
@@ -63,7 +65,7 @@ class ReadOnlyTest extends OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->getUnitOfWork()->markReadOnly($readOnly);
 
-        $this->_em->clear();
+        $this->_em->clear(get_class($readOnly));
 
         self::assertFalse($this->_em->getUnitOfWork()->isReadOnly($readOnly));
     }

@@ -166,11 +166,21 @@
     <InvalidReturnType>
       <code>ClassMetadata</code>
     </InvalidReturnType>
+    <MissingParamType>
+      <code>$entity</code>
+    </MissingParamType>
+    <TooManyArguments>
+      <code>flush</code>
+    </TooManyArguments>
   </file>
   <file src="lib/Doctrine/ORM/EntityManager.php">
     <ArgumentTypeCoercion>
       <code>$className</code>
+      <code>$entityName</code>
     </ArgumentTypeCoercion>
+    <DocblockTypeContradiction>
+      <code><![CDATA[$entityName !== null && ! is_string($entityName)]]></code>
+    </DocblockTypeContradiction>
     <InvalidReturnStatement>
       <code>$entity</code>
       <code>$entity</code>

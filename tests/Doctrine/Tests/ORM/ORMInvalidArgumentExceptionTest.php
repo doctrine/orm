@@ -16,7 +16,15 @@ use function spl_object_id;
 #[CoversClass(ORMInvalidArgumentException::class)]
 class ORMInvalidArgumentExceptionTest extends TestCase
 {
-    /** @psalm-return list<array{mixed, string}> */
+    #[DataProvider('invalidEntityNames')]
+    public function testInvalidEntityName(mixed $value, string $expectedMessage): void
+    {
+        $exception = ORMInvalidArgumentException::invalidEntityName($value);
+
+        self::assertInstanceOf(ORMInvalidArgumentException::class, $exception);
+        self::assertSame($expectedMessage, $exception->getMessage());
+    }
+
     public static function invalidEntityNames(): array
     {
         return [

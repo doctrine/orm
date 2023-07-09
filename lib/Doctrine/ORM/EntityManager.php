@@ -24,11 +24,13 @@ use Doctrine\ORM\Query\Expr;
 use Doctrine\ORM\Query\FilterCollection;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\ORM\Repository\RepositoryFactory;
+use Doctrine\Persistence\Mapping\MappingException;
 use Throwable;
 
 use function array_keys;
 use function is_array;
 use function is_object;
+use function is_string;
 use function ltrim;
 use function method_exists;
 
@@ -257,14 +259,17 @@ class EntityManager implements EntityManagerInterface
      * If an entity is explicitly passed to this method only this entity and
      * the cascade-persist semantics + scheduled inserts/removals are synchronized.
      *
+     * @param object|mixed[]|null $entity
+     *
      * @throws OptimisticLockException If a version check on an entity that
      * makes use of optimistic locking fails.
      * @throws ORMException
      */
-    public function flush(): void
+    public function flush($entity = null): void
     {
         $this->errorIfClosed();
-        $this->unitOfWork->commit();
+
+        $this->unitOfWork->commit($entity);
     }
 
     /**
@@ -435,10 +440,24 @@ class EntityManager implements EntityManagerInterface
     /**
      * Clears the EntityManager. All entities that are currently managed
      * by this EntityManager become detached.
+     *
+     * @param string|null $entityName if given, only entities of this type will get detached
+     *
+     * @throws ORMInvalidArgumentException If a non-null non-string value is given.
+     * @throws MappingException            If a $entityName is given, but that entity is not
+     *                                     found in the mappings.
      */
-    public function clear(): void
+    public function clear($entityName = null): void
     {
-        $this->unitOfWork->clear();
+        if ($entityName !== null && ! is_string($entityName)) {
+            throw ORMInvalidArgumentException::invalidEntityName($entityName);
+        }
+
+        $this->unitOfWork->clear(
+            $entityName === null
+                ? null
+                : $this->metadataFactory->getMetadataFor($entityName)->getName(),
+        );
     }
 
     public function close(): void

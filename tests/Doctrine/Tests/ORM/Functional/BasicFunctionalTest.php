@@ -21,6 +21,8 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 use InvalidArgumentException;
 use PHPUnit\Framework\Attributes\Group;
 
+use function get_class;
+
 class BasicFunctionalTest extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -529,9 +531,10 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
         $this->_em->persist($address);
 
         $this->_em->flush();
-        $userId = $user->getId();
-        $this->_em->clear();
-        $user = $this->_em->find(CmsUser::class, $userId);
+        $this->_em->clear(CmsAddress::class);
+
+        self::assertFalse($this->_em->contains($address));
+        self::assertTrue($this->_em->contains($user));
 
         // Assume we only got the identifier of the address and now want to attach
         // that address to the user without actually loading it, using getReference().
@@ -914,6 +917,84 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
         $this->assertQueryCount(2);
     }
 
+    #[Group('DDC-1278')]
+    public function testClearWithEntityName(): void
+    {
+        $user           = new CmsUser();
+        $user->name     = 'Dominik';
+        $user->username = 'domnikl';
+        $user->status   = 'developer';
+
+        $address          = new CmsAddress();
+        $address->city    = 'Springfield';
+        $address->zip     = '12354';
+        $address->country = 'Germany';
+        $address->street  = 'Foo Street';
+        $address->user    = $user;
+        $user->address    = $address;
+
+        $article1        = new CmsArticle();
+        $article1->topic = 'Foo';
+        $article1->text  = 'Foo Text';
+
+        $article2        = new CmsArticle();
+        $article2->topic = 'Bar';
+        $article2->text  = 'Bar Text';
+
+        $user->addArticle($article1);
+        $user->addArticle($article2);
+
+        $this->_em->persist($article1);
+        $this->_em->persist($article2);
+        $this->_em->persist($address);
+        $this->_em->persist($user);
+        $this->_em->flush();
+
+        $unitOfWork = $this->_em->getUnitOfWork();
+
+        $this->_em->clear(CmsUser::class);
+
+        self::assertEquals(UnitOfWork::STATE_DETACHED, $unitOfWork->getEntityState($user));
+        self::assertEquals(UnitOfWork::STATE_DETACHED, $unitOfWork->getEntityState($article1));
+        self::assertEquals(UnitOfWork::STATE_DETACHED, $unitOfWork->getEntityState($article2));
+        self::assertEquals(UnitOfWork::STATE_MANAGED, $unitOfWork->getEntityState($address));
+
+        $this->_em->clear();
+
+        self::assertEquals(UnitOfWork::STATE_DETACHED, $unitOfWork->getEntityState($address));
+    }
+
+    public function testFlushManyExplicitEntities(): void
+    {
+        $userA           = new CmsUser();
+        $userA->username = 'UserA';
+        $userA->name     = 'UserA';
+
+        $userB           = new CmsUser();
+        $userB->username = 'UserB';
+        $userB->name     = 'UserB';
+
+        $userC           = new CmsUser();
+        $userC->username = 'UserC';
+        $userC->name     = 'UserC';
+
+        $this->_em->persist($userA);
+        $this->_em->persist($userB);
+        $this->_em->persist($userC);
+
+        $this->_em->flush([$userA, $userB, $userB]);
+
+        $userC->name = 'changed name';
+
+        $this->_em->flush([$userA, $userB]);
+        $this->_em->refresh($userC);
+
+        self::assertTrue($userA->id > 0, 'user a has an id');
+        self::assertTrue($userB->id > 0, 'user b has an id');
+        self::assertTrue($userC->id > 0, 'user c has an id');
+        self::assertEquals('UserC', $userC->name, 'name has not changed because we did not flush it');
+    }
+
     #[Group('DDC-720')]
     public function testFlushSingleManagedEntity(): void
     {
@@ -926,11 +1007,50 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
         $this->_em->flush();
 
         $user->status = 'administrator';
-        $this->_em->flush();
+        $this->_em->flush($user);
         $this->_em->clear();
 
         $user = $this->_em->find($user::class, $user->id);
         self::assertEquals('administrator', $user->status);
+    }
+
+    #[Group('DDC-720')]
+    public function testFlushSingleUnmanagedEntity(): void
+    {
+        $user           = new CmsUser();
+        $user->name     = 'Dominik';
+        $user->username = 'domnikl';
+        $user->status   = 'developer';
+
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Entity has to be managed or scheduled for removal for single computation');
+
+        $this->_em->flush($user);
+    }
+
+    #[Group('DDC-720')]
+    public function testFlushSingleAndNewEntity(): void
+    {
+        $user           = new CmsUser();
+        $user->name     = 'Dominik';
+        $user->username = 'domnikl';
+        $user->status   = 'developer';
+
+        $this->_em->persist($user);
+        $this->_em->flush();
+
+        $otherUser           = new CmsUser();
+        $otherUser->name     = 'Dominik2';
+        $otherUser->username = 'domnikl2';
+        $otherUser->status   = 'developer';
+
+        $user->status = 'administrator';
+
+        $this->_em->persist($otherUser);
+        $this->_em->flush($user);
+
+        self::assertTrue($this->_em->contains($otherUser), 'Other user is contained in EntityManager');
+        self::assertTrue($otherUser->id > 0, 'other user has an id');
     }
 
     #[Group('DDC-720')]
@@ -952,7 +1072,7 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
         $address->user    = $user;
         $user->address    = $address;
 
-        $this->_em->flush();
+        $this->_em->flush($user);
 
         self::assertTrue($this->_em->contains($address), 'Other user is contained in EntityManager');
         self::assertTrue($address->id > 0, 'other user has an id');
@@ -978,7 +1098,7 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage("A new entity was found through the relationship 'Doctrine\Tests\Models\CMS\CmsUser#articles'");
 
-        $this->_em->flush();
+        $this->_em->flush($user);
     }
 
     #[Group('DDC-720')]
@@ -992,15 +1112,68 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
         $user->status   = 'developer';
 
         $this->_em->persist($user);
-        $this->_em->flush();
+        $this->_em->flush($user);
 
         $userId = $user->id;
 
         $this->_em->remove($user);
-        $this->_em->flush();
+        $this->_em->flush($user);
         $this->_em->clear();
 
         self::assertNull($this->_em->find($user::class, $userId));
+    }
+
+    #[Group('DDC-720')]
+    public function testProxyIsIgnored(): void
+    {
+        $user           = new CmsUser();
+        $user->name     = 'Dominik';
+        $user->username = 'domnikl';
+        $user->status   = 'developer';
+
+        $this->_em->persist($user);
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $user = $this->_em->getReference(get_class($user), $user->id);
+
+        $otherUser           = new CmsUser();
+        $otherUser->name     = 'Dominik2';
+        $otherUser->username = 'domnikl2';
+        $otherUser->status   = 'developer';
+
+        $this->_em->persist($otherUser);
+        $this->_em->flush($user);
+
+        self::assertTrue($this->_em->contains($otherUser), 'Other user is contained in EntityManager');
+        self::assertTrue($otherUser->id > 0, 'other user has an id');
+    }
+
+    #[Group('DDC-720')]
+    public function testFlushSingleSaveOnlySingle(): void
+    {
+        $user           = new CmsUser();
+        $user->name     = 'Dominik';
+        $user->username = 'domnikl';
+        $user->status   = 'developer';
+        $this->_em->persist($user);
+
+        $user2           = new CmsUser();
+        $user2->name     = 'Dominik';
+        $user2->username = 'domnikl2';
+        $user2->status   = 'developer';
+        $this->_em->persist($user2);
+
+        $this->_em->flush();
+
+        $user->status  = 'admin';
+        $user2->status = 'admin';
+
+        $this->_em->flush($user);
+        $this->_em->clear();
+
+        $user2 = $this->_em->find(get_class($user2), $user2->id);
+        self::assertEquals('developer', $user2->status);
     }
 
     #[Group('DDC-1585')]

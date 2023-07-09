@@ -32,7 +32,7 @@ class DDC2106Test extends OrmFunctionalTestCase
         $entity = new DDC2106Entity();
         $this->_em->persist($entity);
         $this->_em->flush();
-        $this->_em->clear();
+        $this->_em->clear(DDC2106Entity::class);
         $entity = $this->_em->getRepository(DDC2106Entity::class)->findOneBy([]);
 
         // ... and a managed entity without id

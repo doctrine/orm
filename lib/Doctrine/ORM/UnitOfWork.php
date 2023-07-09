@@ -15,7 +15,6 @@ use Doctrine\DBAL\LockMode;
 use Doctrine\Deprecations\Deprecation;
 use Doctrine\ORM\Cache\Persister\CachedPersister;
 use Doctrine\ORM\Event\ListenersInvoker;
-use Doctrine\ORM\Event\OnClearEventArgs;
 use Doctrine\ORM\Event\OnFlushEventArgs;
 use Doctrine\ORM\Event\PostFlushEventArgs;
 use Doctrine\ORM\Event\PostPersistEventArgs;
@@ -328,9 +327,11 @@ class UnitOfWork implements PropertyChangedListener
      * 4) All collection updates
      * 5) All entity deletions
      *
+     * @param object|mixed[]|null $entity
+     *
      * @throws Exception
      */
-    public function commit(): void
+    public function commit(object|array|null $entity = null): void
     {
         $connection = $this->em->getConnection();
 
@@ -344,7 +345,15 @@ class UnitOfWork implements PropertyChangedListener
         }
 
         // Compute changes done since last commit.
-        $this->computeChangeSets();
+        if ($entity === null) {
+            $this->computeChangeSets();
+        } elseif (is_object($entity)) {
+            $this->computeSingleEntityChangeSet($entity);
+        } else {
+            foreach ($entity as $object) {
+                $this->computeSingleEntityChangeSet($object);
+            }
+        }
 
         if (
             ! ($this->entityInsertions ||
@@ -357,7 +366,7 @@ class UnitOfWork implements PropertyChangedListener
             $this->dispatchOnFlushEvent();
             $this->dispatchPostFlushEvent();
 
-            $this->postCommitCleanup();
+            $this->postCommitCleanup($entity);
 
             return; // Nothing to do.
         }
@@ -428,7 +437,9 @@ class UnitOfWork implements PropertyChangedListener
             }
 
             if ($commitFailed) {
-                throw new OptimisticLockException('Commit failed', null, $e ?? null);
+                $object = is_object($entity) ? $entity : null;
+
+                throw new OptimisticLockException('Commit failed', $object, $e ?? null);
             }
         } catch (Throwable $e) {
             $this->em->close();
@@ -458,10 +469,11 @@ class UnitOfWork implements PropertyChangedListener
 
         $this->dispatchPostFlushEvent();
 
-        $this->postCommitCleanup();
+        $this->postCommitCleanup($entity);
     }
 
-    private function postCommitCleanup(): void
+    /** @param object|object[]|null $entity */
+    private function postCommitCleanup(object|array|null $entity): void
     {
         $this->entityInsertions                 =
         $this->entityUpdates                    =
@@ -472,9 +484,25 @@ class UnitOfWork implements PropertyChangedListener
         $this->collectionDeletions              =
         $this->pendingCollectionElementRemovals =
         $this->visitedCollections               =
-        $this->orphanRemovals                   =
-        $this->entityChangeSets                 =
-        $this->scheduledForSynchronization      = [];
+        $this->orphanRemovals                   = [];
+
+        if ($entity === null) {
+            $this->entityChangeSets = $this->scheduledForSynchronization = [];
+
+            return;
+        }
+
+        $entities = is_object($entity)
+            ? [$entity]
+            : $entity;
+
+        foreach ($entities as $object) {
+            $oid = spl_object_id($object);
+
+            $this->clearEntityChangeSet($oid);
+
+            unset($this->scheduledForSynchronization[$this->em->getClassMetadata(get_class($object))->rootEntityName][$oid]);
+        }
     }
 
     /**
@@ -485,6 +513,50 @@ class UnitOfWork implements PropertyChangedListener
         foreach ($this->entityInsertions as $entity) {
             $class = $this->em->getClassMetadata($entity::class);
 
+            $this->computeChangeSet($class, $entity);
+        }
+    }
+
+    /**
+     * Only flushes the given entity according to a ruleset that keeps the UoW consistent.
+     *
+     * 1. All entities scheduled for insertion, (orphan) removals and changes in collections are processed as well!
+     * 2. Read Only entities are skipped.
+     * 3. Proxies are skipped.
+     * 4. Only if entity is properly managed.
+     *
+     * @throws InvalidArgumentException
+     */
+    private function computeSingleEntityChangeSet(object $entity): void
+    {
+        $state = $this->getEntityState($entity);
+
+        if ($state !== self::STATE_MANAGED && $state !== self::STATE_REMOVED) {
+            throw new InvalidArgumentException('Entity has to be managed or scheduled for removal for single computation ' . self::objToStr($entity));
+        }
+
+        $class = $this->em->getClassMetadata(get_class($entity));
+
+        if ($state === self::STATE_MANAGED && $class->isChangeTrackingDeferredImplicit()) {
+            $this->persist($entity);
+        }
+
+        // Compute changes for INSERTed entities first. This must always happen even in this case.
+        $this->computeScheduleInsertsChangeSets();
+
+        if ($class->isReadOnly) {
+            return;
+        }
+
+        // Ignore uninitialized proxy objects
+        if ($entity instanceof Proxy && ! $entity->__isInitialized()) {
+            return;
+        }
+
+        // Only MANAGED entities that are NOT SCHEDULED FOR INSERTION OR DELETION are processed here.
+        $oid = spl_object_id($entity);
+
+        if (! isset($this->entityInsertions[$oid]) && ! isset($this->entityDeletions[$oid]) && isset($this->entityStates[$oid])) {
             $this->computeChangeSet($class, $entity);
         }
     }
@@ -2156,30 +2228,38 @@ class UnitOfWork implements PropertyChangedListener
 
     /**
      * Clears the UnitOfWork.
+     *
+     * @param string|null $entityName if given, only entities of this type will get detached.
+     *
+     * @throws ORMInvalidArgumentException if an invalid entity name is given.
      */
-    public function clear(): void
+    public function clear(string|null $entityName = null): void
     {
-        $this->identityMap                      =
-        $this->entityIdentifiers                =
-        $this->originalEntityData               =
-        $this->entityChangeSets                 =
-        $this->entityStates                     =
-        $this->scheduledForSynchronization      =
-        $this->entityInsertions                 =
-        $this->entityUpdates                    =
-        $this->entityDeletions                  =
-        $this->nonCascadedNewDetectedEntities   =
-        $this->collectionDeletions              =
-        $this->collectionUpdates                =
-        $this->extraUpdates                     =
-        $this->readOnlyObjects                  =
-        $this->pendingCollectionElementRemovals =
-        $this->visitedCollections               =
-        $this->eagerLoadingEntities             =
-        $this->orphanRemovals                   = [];
+        if ($entityName === null) {
+            $this->identityMap                    =
+            $this->entityIdentifiers              =
+            $this->originalEntityData             =
+            $this->entityChangeSets               =
+            $this->entityStates                   =
+            $this->scheduledForSynchronization    =
+            $this->entityInsertions               =
+            $this->entityUpdates                  =
+            $this->entityDeletions                =
+            $this->nonCascadedNewDetectedEntities =
+            $this->collectionDeletions            =
+            $this->collectionUpdates              =
+            $this->extraUpdates                   =
+            $this->readOnlyObjects                =
+            $this->visitedCollections             =
+            $this->eagerLoadingEntities           =
+            $this->orphanRemovals                 = [];
+        } else {
+            $this->clearIdentityMapForEntityName($entityName);
+            $this->clearEntityInsertionsForEntityName($entityName);
+        }
 
         if ($this->evm->hasListeners(Events::onClear)) {
-            $this->evm->dispatchEvent(Events::onClear, new OnClearEventArgs($this->em));
+            $this->evm->dispatchEvent(Events::onClear, new Event\OnClearEventArgs($this->em, $entityName));
         }
     }
 
@@ -2766,6 +2846,15 @@ class UnitOfWork implements PropertyChangedListener
         $this->addToIdentityMap($entity);
     }
 
+    /**
+     * INTERNAL:
+     * Clears the property changeset of the entity with the given OID.
+     */
+    public function clearEntityChangeSet(int $oid): void
+    {
+        unset($this->entityChangeSets[$oid]);
+    }
+
     /* PropertyChangedListener implementation */
 
     /**
@@ -2990,6 +3079,29 @@ class UnitOfWork implements PropertyChangedListener
     public function hydrationComplete(): void
     {
         $this->hydrationCompleteHandler->hydrationComplete();
+    }
+
+    private function clearIdentityMapForEntityName(string $entityName): void
+    {
+        if (! isset($this->identityMap[$entityName])) {
+            return;
+        }
+
+        $visited = [];
+
+        foreach ($this->identityMap[$entityName] as $entity) {
+            $this->doDetach($entity, $visited, false);
+        }
+    }
+
+    private function clearEntityInsertionsForEntityName(string $entityName): void
+    {
+        foreach ($this->entityInsertions as $hash => $entity) {
+            // note: performance optimization - `instanceof` is much faster than a function call
+            if ($entity instanceof $entityName && get_class($entity) === $entityName) {
+                unset($this->entityInsertions[$hash]);
+            }
+        }
     }
 
     /** @throws MappingException if the entity has more than a single identifier. */

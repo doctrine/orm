@@ -71,6 +71,14 @@ class EntityRepository implements ObjectRepository, Selectable
     }
 
     /**
+     * Clears the repository, causing all managed entities to become detached.
+     */
+    public function clear(): void
+    {
+        $this->em->clear($this->class->rootEntityName);
+    }
+
+    /**
      * Finds an entity by its primary key / identifier.
      *
      * @param LockMode|int|null $lockMode One of the \Doctrine\DBAL\LockMode::* constants
