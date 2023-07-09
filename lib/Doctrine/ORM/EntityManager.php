@@ -389,15 +389,6 @@ class EntityManager implements EntityManagerInterface
      */
     public function flush($entity = null)
     {
-        if ($entity !== null) {
-            Deprecation::trigger(
-                'doctrine/orm',
-                'https://github.com/doctrine/orm/issues/8459',
-                'Calling %s() with any arguments to flush specific entities is deprecated and will not be supported in Doctrine ORM 3.0.',
-                __METHOD__
-            );
-        }
-
         $this->errorIfClosed();
 
         $this->unitOfWork->commit($entity);
@@ -610,15 +601,6 @@ class EntityManager implements EntityManagerInterface
     {
         if ($entityName !== null && ! is_string($entityName)) {
             throw ORMInvalidArgumentException::invalidEntityName($entityName);
-        }
-
-        if ($entityName !== null) {
-            Deprecation::trigger(
-                'doctrine/orm',
-                'https://github.com/doctrine/orm/issues/8460',
-                'Calling %s() with any arguments to clear specific entities is deprecated and will not be supported in Doctrine ORM 3.0.',
-                __METHOD__
-            );
         }
 
         $this->unitOfWork->clear(

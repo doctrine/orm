@@ -361,24 +361,4 @@ class EntityManagerTest extends OrmTestCase
 
         self::assertFalse($this->entityManager->contains($entity));
     }
-
-    public function testDeprecatedClearWithArguments(): void
-    {
-        $entity = new Country(456, 'United Kingdom');
-        $this->entityManager->persist($entity);
-
-        $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/issues/8460');
-
-        $this->entityManager->clear(Country::class);
-    }
-
-    public function testDeprecatedFlushWithArguments(): void
-    {
-        $entity = new Country(456, 'United Kingdom');
-        $this->entityManager->persist($entity);
-
-        $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/issues/8459');
-
-        $this->entityManager->flush($entity);
-    }
 }

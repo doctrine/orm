@@ -1093,13 +1093,11 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
         }
     }
 
-    public function testDeprecatedClear(): void
+    public function testItThrowsWhenUsingClearAndPersistence3(): void
     {
         $repository = $this->_em->getRepository(CmsAddress::class);
 
-        if (class_exists(PersistentObject::class)) {
-            $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/issues/8460');
-        } else {
+        if (! class_exists(PersistentObject::class)) {
             $this->expectException(NotSupported::class);
             $this->expectExceptionMessage(CmsAddress::class);
         }

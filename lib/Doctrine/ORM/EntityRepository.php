@@ -162,13 +162,6 @@ class EntityRepository implements ObjectRepository, Selectable
      */
     public function clear()
     {
-        Deprecation::trigger(
-            'doctrine/orm',
-            'https://github.com/doctrine/orm/issues/8460',
-            'Calling %s() is deprecated and will not be supported in Doctrine ORM 3.0.',
-            __METHOD__
-        );
-
         if (! class_exists(PersistentObject::class)) {
             throw NotSupported::createForPersistence3(sprintf(
                 'Partial clearing of entities for class %s',
