@@ -85,9 +85,9 @@ switch to extra lazy as shown in these examples:
     .. code-block:: xml
 
         <?xml version="1.0" encoding="UTF-8"?>
-        <doctrine-mapping xmlns="https://doctrine-project.org/schemas/orm/doctrine-mapping"
+        <doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
               xmlns:xsi="https://www.w3.org/2001/XMLSchema-instance"
-              xsi:schemaLocation="https://doctrine-project.org/schemas/orm/doctrine-mapping
+              xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
                                   https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
 
             <entity name="Doctrine\Tests\Models\CMS\CmsGroup">
