@@ -12,7 +12,6 @@ use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\OneToMany;
-use Doctrine\Persistence\Proxy;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 use function assert;
@@ -63,16 +62,15 @@ class DDC2306Test extends OrmFunctionalTestCase
         $address = $this->_em->find(DDC2306Address::class, $address->id);
         assert($address instanceof DDC2306Address);
         $user = $address->users->first()->user;
-        assert($user instanceof DDC2306User || $user instanceof Proxy);
 
-        self::assertInstanceOf(Proxy::class, $user);
+        $this->assertTrue($this->isUninitializedObject($user));
         self::assertInstanceOf(DDC2306User::class, $user);
 
         $userId = $user->id;
 
         self::assertNotNull($userId);
 
-        $user->__load();
+        $this->_em->getUnitOfWork()->initializeObject($user);
 
         self::assertEquals(
             $userId,

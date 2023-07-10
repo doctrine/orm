@@ -11,7 +11,6 @@ use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\ORMSetup;
 use Doctrine\ORM\Tools\SchemaTool;
-use Doctrine\Persistence\Proxy;
 use Doctrine\Tests\DbalExtensions\Connection;
 use Doctrine\Tests\DbalExtensions\QueryLog;
 use Doctrine\Tests\Models\Generic\DateTimeModel;
@@ -48,8 +47,8 @@ class MergeProxiesTest extends OrmFunctionalTestCase
 
         self::assertSame($managed, $this->_em->merge($detachedUninitialized));
 
-        self::assertFalse($managed->__isInitialized());
-        self::assertFalse($detachedUninitialized->__isInitialized());
+        self::assertTrue($this->isUninitializedObject($managed));
+        self::assertTrue($this->isUninitializedObject($detachedUninitialized));
     }
 
     /**
@@ -71,8 +70,8 @@ class MergeProxiesTest extends OrmFunctionalTestCase
             $this->_em->merge(unserialize(serialize($this->_em->merge($detachedUninitialized))))
         );
 
-        self::assertFalse($managed->__isInitialized());
-        self::assertFalse($detachedUninitialized->__isInitialized());
+        self::assertTrue($this->isUninitializedObject($managed));
+        self::assertTrue($this->isUninitializedObject($detachedUninitialized));
     }
 
     /**
@@ -87,7 +86,7 @@ class MergeProxiesTest extends OrmFunctionalTestCase
 
         self::assertSame($managed, $this->_em->merge($managed));
 
-        self::assertFalse($managed->__isInitialized());
+        self::assertTrue($this->isUninitializedObject($managed));
     }
 
     /**
@@ -109,13 +108,12 @@ class MergeProxiesTest extends OrmFunctionalTestCase
 
         $managed = $this->_em->getReference(DateTimeModel::class, $date->id);
 
-        self::assertInstanceOf(Proxy::class, $managed);
-        self::assertFalse($managed->__isInitialized());
+        self::assertTrue($this->isUninitializedObject($managed));
 
         $date->date = $dateTime = new DateTime();
 
         self::assertSame($managed, $this->_em->merge($date));
-        self::assertTrue($managed->__isInitialized());
+        self::assertFalse($this->isUninitializedObject($managed));
         self::assertSame($dateTime, $managed->date, 'Data was merged into the proxy after initialization');
     }
 
@@ -150,8 +148,8 @@ class MergeProxiesTest extends OrmFunctionalTestCase
         self::assertNotSame($proxy1, $merged2);
         self::assertSame($proxy2, $merged2);
 
-        self::assertFalse($proxy1->__isInitialized());
-        self::assertFalse($proxy2->__isInitialized());
+        self::assertTrue($this->isUninitializedObject($proxy1));
+        self::assertTrue($this->isUninitializedObject($proxy2));
 
         $proxy1->__load();
 
@@ -207,9 +205,8 @@ class MergeProxiesTest extends OrmFunctionalTestCase
         $unManagedProxy = $em1->getReference(DateTimeModel::class, $file1->id);
         $mergedInstance = $em2->merge($unManagedProxy);
 
-        self::assertNotInstanceOf(Proxy::class, $mergedInstance);
-        self::assertNotSame($unManagedProxy, $mergedInstance);
-        self::assertFalse($unManagedProxy->__isInitialized());
+        self::assertFalse($this->isUninitializedObject($mergedInstance));
+        self::assertTrue($this->isUninitializedObject($unManagedProxy));
 
         self::assertCount(
             0,

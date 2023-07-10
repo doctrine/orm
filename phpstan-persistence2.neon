@@ -34,10 +34,5 @@ parameters:
             count: 1
             path: lib/Doctrine/ORM/Tools/Console/Command/ClearCache/ResultCommand.php
 
-        -
-            message: '/^Call to an undefined method Doctrine\\Persistence\\Proxy::__setInitialized\(\)\.$/'
-            count: 1
-            path: lib/Doctrine/ORM/UnitOfWork.php
-
         # Symfony cache supports passing a key prefix to the clear method.
         - '/^Method Psr\\Cache\\CacheItemPoolInterface\:\:clear\(\) invoked with 1 parameter, 0 required\.$/'

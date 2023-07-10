@@ -12,7 +12,6 @@ use Doctrine\ORM\Mapping\Table;
 use Doctrine\Persistence\Mapping\ClassMetadata;
 use Doctrine\Persistence\ObjectManager;
 use Doctrine\Persistence\ObjectManagerAware;
-use Doctrine\Persistence\Proxy;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 use function get_class;
@@ -43,12 +42,11 @@ class DDC2231Test extends OrmFunctionalTestCase
 
         $y1ref = $this->_em->getReference(get_class($y1), $y1->id);
 
-        self::assertInstanceOf(Proxy::class, $y1ref);
-        self::assertFalse($y1ref->__isInitialized());
+        self::assertTrue($this->isUninitializedObject($y1ref));
 
         $id = $y1ref->doSomething();
 
-        self::assertTrue($y1ref->__isInitialized());
+        self::assertFalse($this->isUninitializedObject($y1ref));
         self::assertEquals($this->_em, $y1ref->om);
     }
 }

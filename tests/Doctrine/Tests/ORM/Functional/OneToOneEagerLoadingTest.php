@@ -14,7 +14,6 @@ use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\OneToOne;
-use Doctrine\Persistence\Proxy;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 use function get_class;
@@ -52,7 +51,7 @@ class OneToOneEagerLoadingTest extends OrmFunctionalTestCase
         $this->getQueryLog()->reset()->enable();
 
         $train = $this->_em->find(get_class($train), $train->id);
-        self::assertNotInstanceOf(Proxy::class, $train->driver);
+        self::assertFalse($this->isUninitializedObject($train->driver));
         self::assertEquals('Benjamin', $train->driver->name);
 
         $this->assertQueryCount(1);
@@ -70,7 +69,6 @@ class OneToOneEagerLoadingTest extends OrmFunctionalTestCase
         $this->getQueryLog()->reset()->enable();
 
         $train = $this->_em->find(get_class($train), $train->id);
-        self::assertNotInstanceOf(Proxy::class, $train->driver);
         self::assertNull($train->driver);
 
         $this->assertQueryCount(1);
@@ -88,9 +86,9 @@ class OneToOneEagerLoadingTest extends OrmFunctionalTestCase
 
         $this->getQueryLog()->reset()->enable();
 
-        $driver = $this->_em->find(get_class($owner), $owner->id);
-        self::assertNotInstanceOf(Proxy::class, $owner->train);
-        self::assertNotNull($owner->train);
+        $this->_em->find(get_class($owner), $owner->id);
+        self::assertFalse($this->isUninitializedObject($owner->train));
+        self::assertInstanceOf(Train::class, $owner->train);
 
         $this->assertQueryCount(1);
     }
@@ -109,7 +107,6 @@ class OneToOneEagerLoadingTest extends OrmFunctionalTestCase
         $this->getQueryLog()->reset()->enable();
 
         $driver = $this->_em->find(get_class($driver), $driver->id);
-        self::assertNotInstanceOf(Proxy::class, $driver->train);
         self::assertNull($driver->train);
 
         $this->assertQueryCount(1);
@@ -126,8 +123,8 @@ class OneToOneEagerLoadingTest extends OrmFunctionalTestCase
         $this->_em->clear();
 
         $waggon = $this->_em->find(get_class($waggon), $waggon->id);
-        self::assertNotInstanceOf(Proxy::class, $waggon->train);
-        self::assertNotNull($waggon->train);
+        self::assertFalse($this->isUninitializedObject($waggon->train));
+        self::assertInstanceOf(Train::class, $waggon->train);
     }
 
     /** @group non-cacheable */

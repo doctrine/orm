@@ -7,7 +7,6 @@ namespace Doctrine\Tests\ORM\Functional;
 use DateTime;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\PersistentCollection;
-use Doctrine\Persistence\Proxy;
 use Doctrine\Tests\IterableTester;
 use Doctrine\Tests\Models\Company\CompanyAuction;
 use Doctrine\Tests\Models\Company\CompanyEmployee;
@@ -300,7 +299,7 @@ class ClassTableInheritanceTest extends OrmFunctionalTestCase
         $mainEvent = $result[0]->getMainEvent();
         // mainEvent should have been loaded because it can't be lazy
         self::assertInstanceOf(CompanyAuction::class, $mainEvent);
-        self::assertNotInstanceOf(Proxy::class, $mainEvent);
+        self::assertFalse($this->isUninitializedObject($mainEvent));
 
         $this->_em->clear();
 
@@ -432,13 +431,13 @@ class ClassTableInheritanceTest extends OrmFunctionalTestCase
         $this->_em->clear();
 
         $ref = $this->_em->getReference(CompanyPerson::class, $manager->getId());
-        self::assertNotInstanceOf(Proxy::class, $ref, 'Cannot Request a proxy from a class that has subclasses.');
+        self::assertFalse($this->isUninitializedObject($ref), 'Cannot Request a proxy from a class that has subclasses.');
         self::assertInstanceOf(CompanyPerson::class, $ref);
         self::assertInstanceOf(CompanyEmployee::class, $ref, 'Direct fetch of the reference has to load the child class Employee directly.');
         $this->_em->clear();
 
         $ref = $this->_em->getReference(CompanyManager::class, $manager->getId());
-        self::assertInstanceOf(Proxy::class, $ref, 'A proxy can be generated only if no subclasses exists for the requested reference.');
+        self::assertTrue($this->isUninitializedObject($ref), 'A proxy can be generated only if no subclasses exists for the requested reference.');
     }
 
     /** @group DDC-992 */

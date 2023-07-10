@@ -6,7 +6,6 @@ namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Doctrine\ORM\OptimisticLockException;
-use Doctrine\Persistence\Proxy;
 use Doctrine\Tests\Models\CMS\CmsAddress;
 use Doctrine\Tests\Models\CMS\CmsArticle;
 use Doctrine\Tests\Models\CMS\CmsPhonenumber;
@@ -150,16 +149,13 @@ class DetachedEntityTest extends OrmFunctionalTestCase
         $this->_em->clear();
 
         $address2 = $this->_em->find(get_class($address), $address->id);
-        self::assertInstanceOf(Proxy::class, $address2->user);
-        self::assertFalse($address2->user->__isInitialized());
+        self::assertTrue($this->isUninitializedObject($address2->user));
         $detachedAddress2 = unserialize(serialize($address2));
-        self::assertInstanceOf(Proxy::class, $detachedAddress2->user);
-        self::assertFalse($detachedAddress2->user->__isInitialized());
+        self::assertTrue($this->isUninitializedObject($detachedAddress2->user));
 
         $managedAddress2 = $this->_em->merge($detachedAddress2);
-        self::assertInstanceOf(Proxy::class, $managedAddress2->user);
         self::assertFalse($managedAddress2->user === $detachedAddress2->user);
-        self::assertFalse($managedAddress2->user->__isInitialized());
+        self::assertTrue($this->isUninitializedObject($managedAddress2->user));
     }
 
     /** @group DDC-822 */

@@ -59,7 +59,7 @@ class ProxiesLikeEntitiesTest extends OrmFunctionalTestCase
     {
         // Considering case (a)
         $proxy = $this->_em->getProxyFactory()->getProxy(CmsUser::class, ['id' => 123]);
-        $proxy->__setInitialized(true);
+
         $proxy->id       = null;
         $proxy->username = 'ocra';
         $proxy->name     = 'Marco';
@@ -84,7 +84,7 @@ class ProxiesLikeEntitiesTest extends OrmFunctionalTestCase
 
         $this->_em->persist($uninitializedProxy);
         $this->_em->flush();
-        self::assertFalse($uninitializedProxy->__isInitialized(), 'Proxy didn\'t get initialized during flush operations');
+        self::assertTrue($this->isUninitializedObject($uninitializedProxy), 'Proxy didn\'t get initialized during flush operations');
         self::assertEquals($userId, $uninitializedProxy->getId());
         $this->_em->remove($uninitializedProxy);
         $this->_em->flush();

@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\ORM\Mapping\ClassMetadata;
-use Doctrine\Persistence\Proxy;
 use Doctrine\Tests\Models\ECommerce\ECommerceCart;
 use Doctrine\Tests\Models\ECommerce\ECommerceCustomer;
 use Doctrine\Tests\OrmFunctionalTestCase;
@@ -100,7 +99,7 @@ class OneToOneBidirectionalAssociationTest extends OrmFunctionalTestCase
 
         self::assertNull($customer->getMentor());
         self::assertInstanceOf(ECommerceCart::class, $customer->getCart());
-        self::assertNotInstanceOf(Proxy::class, $customer->getCart());
+        self::assertFalse($this->isUninitializedObject($customer->getCart()));
         self::assertEquals('paypal', $customer->getCart()->getPayment());
     }
 
