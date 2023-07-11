@@ -31,8 +31,6 @@ use function uksort;
 
 /**
  * This factory is used to create proxy objects for entities at runtime.
- *
- * @psalm-type AutogenerateMode = ProxyFactory::AUTOGENERATE_NEVER|ProxyFactory::AUTOGENERATE_ALWAYS|ProxyFactory::AUTOGENERATE_FILE_NOT_EXISTS|ProxyFactory::AUTOGENERATE_EVAL|ProxyFactory::AUTOGENERATE_FILE_NOT_EXISTS_OR_CHANGED
  */
 class ProxyFactory extends AbstractProxyFactory
 {
@@ -93,12 +91,10 @@ EOPHP;
      * Initializes a new instance of the <tt>ProxyFactory</tt> class that is
      * connected to the given <tt>EntityManager</tt>.
      *
-     * @param EntityManagerInterface $em           The EntityManager the new factory works for.
-     * @param string                 $proxyDir     The directory to use for the proxy classes. It must exist.
-     * @param string                 $proxyNs      The namespace to use for the proxy classes.
-     * @param bool|int               $autoGenerate The strategy for automatically generating proxy classes. Possible
-     *                                             values are constants of {@see ProxyFactory::AUTOGENERATE_*}.
-     * @psalm-param bool|AutogenerateMode $autoGenerate
+     * @param EntityManagerInterface    $em           The EntityManager the new factory works for.
+     * @param string                    $proxyDir     The directory to use for the proxy classes. It must exist.
+     * @param string                    $proxyNs      The namespace to use for the proxy classes.
+     * @param bool|self::AUTOGENERATE_* $autoGenerate The strategy for automatically generating proxy classes.
      */
     public function __construct(EntityManagerInterface $em, $proxyDir, $proxyNs, $autoGenerate = self::AUTOGENERATE_NEVER)
     {
