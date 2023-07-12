@@ -557,10 +557,10 @@ methods, but you only need to choose one.
     .. code-block:: xml
 
         <!-- config/xml/Product.dcm.xml -->
-        <doctrine-mapping xmlns="https://doctrine-project.org/schemas/orm/doctrine-mapping"
-              xmlns:xsi="https://www.w3.org/2001/XMLSchema-instance"
-              xsi:schemaLocation="https://doctrine-project.org/schemas/orm/doctrine-mapping
-                                  https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+        <doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+                          xmlns:xsi="https://www.w3.org/2001/XMLSchema-instance"
+                          xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
+                                              https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
 
               <entity name="Product" table="products">
                   <id name="id" type="integer">
@@ -1138,10 +1138,10 @@ the ``Product`` before:
     .. code-block:: xml
 
         <!-- config/xml/Bug.dcm.xml -->
-        <doctrine-mapping xmlns="https://doctrine-project.org/schemas/orm/doctrine-mapping"
-              xmlns:xsi="https://www.w3.org/2001/XMLSchema-instance"
-              xsi:schemaLocation="https://doctrine-project.org/schemas/orm/doctrine-mapping
-                                  https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+        <doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+                          xmlns:xsi="https://www.w3.org/2001/XMLSchema-instance"
+                          xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
+                                              https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
 
             <entity name="Bug" table="bugs">
                 <id name="id" type="integer">
@@ -1293,10 +1293,10 @@ Finally, we'll add metadata mappings for the ``User`` entity.
     .. code-block:: xml
 
         <!-- config/xml/User.dcm.xml -->
-        <doctrine-mapping xmlns="https://doctrine-project.org/schemas/orm/doctrine-mapping"
-              xmlns:xsi="https://www.w3.org/2001/XMLSchema-instance"
-              xsi:schemaLocation="https://doctrine-project.org/schemas/orm/doctrine-mapping
-                                  https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+        <doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+                          xmlns:xsi="https://www.w3.org/2001/XMLSchema-instance"
+                          xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
+                                              https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
 
              <entity name="User" table="users">
                  <id name="id" type="integer">
@@ -1818,9 +1818,9 @@ we have to adjust the metadata slightly.
 
     .. code-block:: xml
 
-        <doctrine-mapping xmlns="https://doctrine-project.org/schemas/orm/doctrine-mapping"
+        <doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
               xmlns:xsi="https://www.w3.org/2001/XMLSchema-instance"
-              xsi:schemaLocation="https://doctrine-project.org/schemas/orm/doctrine-mapping
+              xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
                                   https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
 
               <entity name="Bug" table="bugs" repository-class="BugRepository">
