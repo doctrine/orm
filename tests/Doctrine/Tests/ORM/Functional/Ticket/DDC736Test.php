@@ -8,7 +8,6 @@ use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\AST;
 use Doctrine\ORM\Query\AST\SelectExpression;
 use Doctrine\ORM\Query\TreeWalkerAdapter;
-use Doctrine\Persistence\Proxy;
 use Doctrine\Tests\Models\ECommerce\ECommerceCart;
 use Doctrine\Tests\Models\ECommerce\ECommerceCustomer;
 use Doctrine\Tests\OrmFunctionalTestCase;
@@ -46,7 +45,7 @@ class DDC736Test extends OrmFunctionalTestCase
         unset($result[0]);
 
         self::assertInstanceOf(ECommerceCart::class, $cart2);
-        self::assertNotInstanceOf(Proxy::class, $cart2->getCustomer());
+        self::assertFalse($this->isUninitializedObject($cart2->getCustomer()));
         self::assertInstanceOf(ECommerceCustomer::class, $cart2->getCustomer());
         self::assertEquals(['name' => 'roman', 'payment' => 'cash'], $result);
     }
@@ -77,7 +76,7 @@ class DDC736Test extends OrmFunctionalTestCase
 
         $cart2 = $result[0][0];
         assert($cart2 instanceof ECommerceCart);
-        self::assertInstanceOf(Proxy::class, $cart2->getCustomer());
+        self::assertTrue($this->isUninitializedObject($cart2->getCustomer()));
     }
 }
 

@@ -12,7 +12,6 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\Persistence\NotifyPropertyChanged;
 use Doctrine\Persistence\PropertyChangedListener;
-use Doctrine\Persistence\Proxy;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 use function count;
@@ -57,9 +56,10 @@ class DDC1690Test extends OrmFunctionalTestCase
         $child  = $this->_em->find(DDC1690Child::class, $childId);
 
         self::assertEquals(1, count($parent->listeners));
-        self::assertInstanceOf(Proxy::class, $child, 'Verifying that $child is a proxy before using proxy API');
         self::assertCount(0, $child->listeners);
-        $child->__load();
+
+        $this->_em->getUnitOfWork()->initializeObject($child);
+
         self::assertCount(1, $child->listeners);
         unset($parent, $child);
 

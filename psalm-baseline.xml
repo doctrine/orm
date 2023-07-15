@@ -1380,11 +1380,6 @@
       <code>$columnList</code>
     </PossiblyUndefinedVariable>
   </file>
-  <file src="lib/Doctrine/ORM/Proxy/Proxy.php">
-    <MissingTemplateParam>
-      <code>BaseProxy</code>
-    </MissingTemplateParam>
-  </file>
   <file src="lib/Doctrine/ORM/Proxy/ProxyFactory.php">
     <ArgumentTypeCoercion>
       <code>$classMetadata</code>
@@ -1392,7 +1387,7 @@
       <code>$classMetadata</code>
     </ArgumentTypeCoercion>
     <DirectConstructorCall>
-      <code><![CDATA[$proxy->__construct(static function (Proxy $object) use ($initializer, $proxy): void {
+      <code><![CDATA[$proxy->__construct(static function (InternalProxy $object) use ($initializer, $proxy): void {
             $initializer($object, $proxy);
         })]]></code>
     </DirectConstructorCall>

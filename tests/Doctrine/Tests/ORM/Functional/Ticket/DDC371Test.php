@@ -14,7 +14,6 @@ use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Query;
-use Doctrine\Persistence\Proxy;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 /** @group DDC-371 */
@@ -51,7 +50,7 @@ class DDC371Test extends OrmFunctionalTestCase
                 ->getResult();
 
         self::assertCount(1, $children);
-        self::assertNotInstanceOf(Proxy::class, $children[0]->parent);
+        self::assertFalse($this->isUninitializedObject($children[0]->parent));
         self::assertFalse($children[0]->parent->children->isInitialized());
         self::assertEquals(0, $children[0]->parent->children->unwrap()->count());
     }

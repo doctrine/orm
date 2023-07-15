@@ -954,6 +954,14 @@ class EntityManager implements EntityManagerInterface
     }
 
     /**
+     * {@inheritDoc}
+     */
+    public function isUninitializedObject($obj): bool
+    {
+        return $this->unitOfWork->isUninitializedObject($obj);
+    }
+
+    /**
      * Factory method to create EntityManager instances.
      *
      * @deprecated Use {@see DriverManager::getConnection()} to bootstrap the connection and call the constructor.

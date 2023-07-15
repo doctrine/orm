@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-use Doctrine\Persistence\Proxy;
 use Doctrine\Tests\Models\Legacy\LegacyUser;
 use Doctrine\Tests\Models\Legacy\LegacyUserReference;
 use Doctrine\Tests\OrmFunctionalTestCase;
@@ -36,15 +35,10 @@ class DDC2519Test extends OrmFunctionalTestCase
         self::assertInstanceOf(LegacyUser::class, $result[1]->source());
         self::assertInstanceOf(LegacyUser::class, $result[1]->target());
 
-        self::assertInstanceOf(Proxy::class, $result[0]->source());
-        self::assertInstanceOf(Proxy::class, $result[0]->target());
-        self::assertInstanceOf(Proxy::class, $result[1]->source());
-        self::assertInstanceOf(Proxy::class, $result[1]->target());
-
-        self::assertFalse($result[0]->target()->__isInitialized());
-        self::assertFalse($result[0]->source()->__isInitialized());
-        self::assertFalse($result[1]->target()->__isInitialized());
-        self::assertFalse($result[1]->source()->__isInitialized());
+        self::assertTrue($this->isUninitializedObject($result[0]->target()));
+        self::assertTrue($this->isUninitializedObject($result[0]->source()));
+        self::assertTrue($this->isUninitializedObject($result[1]->target()));
+        self::assertTrue($this->isUninitializedObject($result[1]->source()));
 
         self::assertNotNull($result[0]->source()->getId());
         self::assertNotNull($result[0]->target()->getId());

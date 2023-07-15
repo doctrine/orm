@@ -8,9 +8,9 @@ use Doctrine\ORM\EntityNotFoundException;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\ORMInvalidArgumentException;
 use Doctrine\ORM\PersistentCollection;
+use Doctrine\ORM\Proxy\InternalProxy;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\UnitOfWork;
-use Doctrine\Persistence\Proxy;
 use Doctrine\Tests\IterableTester;
 use Doctrine\Tests\Models\CMS\CmsAddress;
 use Doctrine\Tests\Models\CMS\CmsArticle;
@@ -146,7 +146,7 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
 
         // Address has been eager-loaded because it cant be lazy
         self::assertInstanceOf(CmsAddress::class, $user2->address);
-        self::assertNotInstanceOf(Proxy::class, $user2->address);
+        self::assertFalse($this->isUninitializedObject($user2->address));
     }
 
     /** @group DDC-1230 */
@@ -530,8 +530,7 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
         // Assume we only got the identifier of the user and now want to attach
         // the article to the user without actually loading it, using getReference().
         $userRef = $this->_em->getReference(CmsUser::class, $user->getId());
-        self::assertInstanceOf(Proxy::class, $userRef);
-        self::assertFalse($userRef->__isInitialized());
+        self::assertTrue($this->isUninitializedObject($userRef));
 
         $article        = new CmsArticle();
         $article->topic = 'topic';
@@ -566,8 +565,7 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
         // Assume we only got the identifier of the user and now want to attach
         // the article to the user without actually loading it, using getReference().
         $groupRef = $this->_em->getReference(CmsGroup::class, $group->id);
-        self::assertInstanceOf(Proxy::class, $groupRef);
-        self::assertFalse($groupRef->__isInitialized());
+        self::assertTrue($this->isUninitializedObject($groupRef));
 
         $user           = new CmsUser();
         $user->name     = 'Guilherme';
@@ -745,9 +743,8 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
                 ->setParameter('user', $userRef)
                 ->getSingleResult();
 
-        self::assertInstanceOf(Proxy::class, $address2->getUser());
         self::assertTrue($userRef === $address2->getUser());
-        self::assertFalse($userRef->__isInitialized());
+        self::assertTrue($this->isUninitializedObject($userRef));
         self::assertEquals('Germany', $address2->country);
         self::assertEquals('Berlin', $address2->city);
         self::assertEquals('12345', $address2->zip);
@@ -1044,8 +1041,8 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
                              ->setParameter(1, $article->id)
                              ->setFetchMode(CmsArticle::class, 'user', ClassMetadata::FETCH_EAGER)
                              ->getSingleResult();
-        self::assertInstanceOf(Proxy::class, $article->user, 'It IS a proxy, ...');
-        self::assertTrue($article->user->__isInitialized(), '...but its initialized!');
+        self::assertInstanceOf(InternalProxy::class, $article->user, 'It IS a proxy, ...');
+        self::assertFalse($this->isUninitializedObject($article->user), '...but its initialized!');
         $this->assertQueryCount(2);
     }
 

@@ -9,7 +9,6 @@ use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\OneToOne;
-use Doctrine\Persistence\Proxy;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 class DDC633Test extends OrmFunctionalTestCase
@@ -44,7 +43,7 @@ class DDC633Test extends OrmFunctionalTestCase
         $eagerAppointment = $this->_em->find(DDC633Appointment::class, $app->id);
 
         // Eager loading of one to one leads to fetch-join
-        self::assertNotInstanceOf(Proxy::class, $eagerAppointment->patient);
+        self::assertFalse($this->isUninitializedObject($eagerAppointment->patient));
         self::assertTrue($this->_em->contains($eagerAppointment->patient));
     }
 
@@ -70,8 +69,7 @@ class DDC633Test extends OrmFunctionalTestCase
         $appointments = $this->_em->createQuery('SELECT a FROM ' . __NAMESPACE__ . '\DDC633Appointment a')->getResult();
 
         foreach ($appointments as $eagerAppointment) {
-            self::assertInstanceOf(Proxy::class, $eagerAppointment->patient);
-            self::assertTrue($eagerAppointment->patient->__isInitialized(), 'Proxy should already be initialized due to eager loading!');
+            self::assertFalse($this->isUninitializedObject($eagerAppointment->patient), 'Proxy should already be initialized due to eager loading!');
         }
     }
 }

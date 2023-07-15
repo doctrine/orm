@@ -9,7 +9,6 @@ use Doctrine\ORM\Event\OnFlushEventArgs;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\UnitOfWork;
-use Doctrine\Persistence\Proxy;
 use ReflectionObject;
 
 use function count;
@@ -87,7 +86,7 @@ class DebugUnitOfWorkListener
                         if ($value === null) {
                             fwrite($fh, " NULL\n");
                         } else {
-                            if ($value instanceof Proxy && ! $value->__isInitialized()) {
+                            if ($uow->isUninitializedObject($value)) {
                                 fwrite($fh, '[PROXY] ');
                             }
 

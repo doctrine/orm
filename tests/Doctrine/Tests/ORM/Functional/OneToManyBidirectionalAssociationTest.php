@@ -6,7 +6,6 @@ namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\Criteria;
-use Doctrine\Persistence\Proxy;
 use Doctrine\Tests\Models\ECommerce\ECommerceFeature;
 use Doctrine\Tests\Models\ECommerce\ECommerceProduct;
 use Doctrine\Tests\OrmFunctionalTestCase;
@@ -90,12 +89,12 @@ class OneToManyBidirectionalAssociationTest extends OrmFunctionalTestCase
         $features = $product->getFeatures();
 
         self::assertInstanceOf(ECommerceFeature::class, $features[0]);
-        self::assertNotInstanceOf(Proxy::class, $features[0]->getProduct());
+        self::assertFalse($this->isUninitializedObject($features[0]->getProduct()));
         self::assertSame($product, $features[0]->getProduct());
         self::assertEquals('Model writing tutorial', $features[0]->getDescription());
         self::assertInstanceOf(ECommerceFeature::class, $features[1]);
         self::assertSame($product, $features[1]->getProduct());
-        self::assertNotInstanceOf(Proxy::class, $features[1]->getProduct());
+        self::assertFalse($this->isUninitializedObject($features[1]->getProduct()));
         self::assertEquals('Annotations examples', $features[1]->getDescription());
     }
 
@@ -126,11 +125,10 @@ class OneToManyBidirectionalAssociationTest extends OrmFunctionalTestCase
         $features = $query->getResult();
 
         $product = $features[0]->getProduct();
-        self::assertInstanceOf(Proxy::class, $product);
         self::assertInstanceOf(ECommerceProduct::class, $product);
-        self::assertFalse($product->__isInitialized());
+        self::assertTrue($this->isUninitializedObject($product));
         self::assertSame('Doctrine Cookbook', $product->getName());
-        self::assertTrue($product->__isInitialized());
+        self::assertFalse($this->isUninitializedObject($product));
     }
 
     public function testLazyLoadsObjectsOnTheInverseSide2(): void
@@ -141,7 +139,7 @@ class OneToManyBidirectionalAssociationTest extends OrmFunctionalTestCase
         $features = $query->getResult();
 
         $product = $features[0]->getProduct();
-        self::assertNotInstanceOf(Proxy::class, $product);
+        self::assertFalse($this->isUninitializedObject($product));
         self::assertInstanceOf(ECommerceProduct::class, $product);
         self::assertSame('Doctrine Cookbook', $product->getName());
 

@@ -13,7 +13,6 @@ use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\Parameter;
 use Doctrine\ORM\Query\QueryException;
 use Doctrine\ORM\UnexpectedResultException;
-use Doctrine\Persistence\Proxy;
 use Doctrine\Tests\IterableTester;
 use Doctrine\Tests\Models\CMS\CmsArticle;
 use Doctrine\Tests\Models\CMS\CmsPhonenumber;
@@ -624,8 +623,7 @@ class QueryTest extends OrmFunctionalTestCase
         self::assertEquals(1, count($result));
         self::assertInstanceOf(CmsArticle::class, $result[0]);
         self::assertEquals('dr. dolittle', $result[0]->topic);
-        self::assertInstanceOf(Proxy::class, $result[0]->user);
-        self::assertFalse($result[0]->user->__isInitialized());
+        self::assertTrue($this->isUninitializedObject($result[0]->user));
     }
 
     /** @group DDC-952 */
@@ -653,7 +651,7 @@ class QueryTest extends OrmFunctionalTestCase
 
         self::assertCount(10, $articles);
         foreach ($articles as $article) {
-            self::assertNotInstanceOf(Proxy::class, $article);
+            self::assertFalse($this->isUninitializedObject($article));
         }
     }
 

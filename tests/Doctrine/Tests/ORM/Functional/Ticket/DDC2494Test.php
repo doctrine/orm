@@ -15,7 +15,6 @@ use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\Table;
-use Doctrine\Persistence\Proxy;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
@@ -61,21 +60,20 @@ class DDC2494Test extends OrmFunctionalTestCase
 
         $this->getQueryLog()->reset()->enable();
 
-        self::assertInstanceOf(Proxy::class, $item->getCurrency());
-        self::assertFalse($item->getCurrency()->__isInitialized());
+        self::assertTrue($this->isUninitializedObject($item->getCurrency()));
 
         self::assertArrayHasKey('convertToPHPValue', DDC2494TinyIntType::$calls);
         self::assertCount(1, DDC2494TinyIntType::$calls['convertToPHPValue']);
 
         self::assertIsInt($item->getCurrency()->getId());
         self::assertCount(1, DDC2494TinyIntType::$calls['convertToPHPValue']);
-        self::assertFalse($item->getCurrency()->__isInitialized());
+        self::assertTrue($this->isUninitializedObject($item->getCurrency()));
 
         $this->assertQueryCount(0);
 
         self::assertIsInt($item->getCurrency()->getTemp());
         self::assertCount(3, DDC2494TinyIntType::$calls['convertToPHPValue']);
-        self::assertTrue($item->getCurrency()->__isInitialized());
+        self::assertFalse($this->isUninitializedObject($item->getCurrency()));
 
         $this->assertQueryCount(1);
     }

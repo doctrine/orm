@@ -10,7 +10,6 @@ use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\OneToOne;
-use Doctrine\Persistence\Proxy;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 use function get_class;
@@ -52,7 +51,7 @@ class DDC522Test extends OrmFunctionalTestCase
 
         self::assertInstanceOf(DDC522Cart::class, $r[0]);
         self::assertInstanceOf(DDC522Customer::class, $r[0]->customer);
-        self::assertNotInstanceOf(Proxy::class, $r[0]->customer);
+        self::assertFalse($this->isUninitializedObject($r[0]->customer));
         self::assertEquals('name', $r[0]->customer->name);
 
         $fkt         = new DDC522ForeignKeyTest();
@@ -64,8 +63,7 @@ class DDC522Test extends OrmFunctionalTestCase
 
         $fkt2 = $this->_em->find(get_class($fkt), $fkt->id);
         self::assertEquals($fkt->cart->id, $fkt2->cartId);
-        self::assertInstanceOf(Proxy::class, $fkt2->cart);
-        self::assertFalse($fkt2->cart->__isInitialized());
+        self::assertTrue($this->isUninitializedObject($fkt2->cart));
     }
 
     /**

@@ -12,7 +12,6 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\Persistence\NotifyPropertyChanged;
 use Doctrine\Persistence\PropertyChangedListener;
-use Doctrine\Persistence\Proxy;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 use function assert;
@@ -47,10 +46,8 @@ class DDC2230Test extends OrmFunctionalTestCase
         $mergedUser = $this->_em->merge($user);
 
         $address = $mergedUser->address;
-        assert($address instanceof Proxy);
 
-        self::assertInstanceOf(Proxy::class, $address);
-        self::assertFalse($address->__isInitialized());
+        self::assertTrue($this->isUninitializedObject($address));
     }
 
     public function testNotifyTrackingCalledOnProxyInitialization(): void
@@ -62,12 +59,12 @@ class DDC2230Test extends OrmFunctionalTestCase
         $this->_em->clear();
 
         $addressProxy = $this->_em->getReference(DDC2230Address::class, $insertedAddress->id);
-        assert($addressProxy instanceof Proxy || $addressProxy instanceof DDC2230Address);
+        assert($addressProxy instanceof DDC2230Address);
 
-        self::assertFalse($addressProxy->__isInitialized());
+        self::assertTrue($this->isUninitializedObject($addressProxy));
         self::assertNull($addressProxy->listener);
 
-        $addressProxy->__load();
+        $this->_em->getUnitOfWork()->initializeObject($addressProxy);
 
         self::assertSame($this->_em->getUnitOfWork(), $addressProxy->listener);
     }

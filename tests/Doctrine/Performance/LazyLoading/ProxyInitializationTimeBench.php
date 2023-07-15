@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Doctrine\Performance\LazyLoading;
 
+use Doctrine\ORM\Proxy\InternalProxy as Proxy;
 use Doctrine\Performance\EntityManagerFactory;
 use Doctrine\Performance\Mock\NonProxyLoadingEntityManager;
-use Doctrine\Persistence\Proxy;
 use Doctrine\Tests\Models\CMS\CmsEmployee;
 use Doctrine\Tests\Models\CMS\CmsUser;
 

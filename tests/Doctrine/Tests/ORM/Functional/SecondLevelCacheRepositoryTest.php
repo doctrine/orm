@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional;
 
-use Doctrine\Persistence\Proxy;
+use Doctrine\ORM\Proxy\InternalProxy;
 use Doctrine\Tests\Models\Cache\Country;
 use Doctrine\Tests\Models\Cache\State;
 
@@ -197,8 +197,8 @@ class SecondLevelCacheRepositoryTest extends SecondLevelCacheFunctionalTestCase
         self::assertInstanceOf(State::class, $entities[1]);
         self::assertInstanceOf(Country::class, $entities[0]->getCountry());
         self::assertInstanceOf(Country::class, $entities[0]->getCountry());
-        self::assertInstanceOf(Proxy::class, $entities[0]->getCountry());
-        self::assertInstanceOf(Proxy::class, $entities[1]->getCountry());
+        self::assertInstanceOf(InternalProxy::class, $entities[0]->getCountry());
+        self::assertInstanceOf(InternalProxy::class, $entities[1]->getCountry());
 
         // load from cache
         $this->getQueryLog()->reset()->enable();
@@ -211,8 +211,8 @@ class SecondLevelCacheRepositoryTest extends SecondLevelCacheFunctionalTestCase
         self::assertInstanceOf(State::class, $entities[1]);
         self::assertInstanceOf(Country::class, $entities[0]->getCountry());
         self::assertInstanceOf(Country::class, $entities[1]->getCountry());
-        self::assertInstanceOf(Proxy::class, $entities[0]->getCountry());
-        self::assertInstanceOf(Proxy::class, $entities[1]->getCountry());
+        self::assertInstanceOf(InternalProxy::class, $entities[0]->getCountry());
+        self::assertInstanceOf(InternalProxy::class, $entities[1]->getCountry());
 
         // invalidate cache
         $this->_em->persist(new State('foo', $this->_em->find(Country::class, $this->countries[0]->getId())));
@@ -230,8 +230,8 @@ class SecondLevelCacheRepositoryTest extends SecondLevelCacheFunctionalTestCase
         self::assertInstanceOf(State::class, $entities[1]);
         self::assertInstanceOf(Country::class, $entities[0]->getCountry());
         self::assertInstanceOf(Country::class, $entities[1]->getCountry());
-        self::assertInstanceOf(Proxy::class, $entities[0]->getCountry());
-        self::assertInstanceOf(Proxy::class, $entities[1]->getCountry());
+        self::assertInstanceOf(InternalProxy::class, $entities[0]->getCountry());
+        self::assertInstanceOf(InternalProxy::class, $entities[1]->getCountry());
 
         // load from cache
         $this->getQueryLog()->reset()->enable();
@@ -244,7 +244,7 @@ class SecondLevelCacheRepositoryTest extends SecondLevelCacheFunctionalTestCase
         self::assertInstanceOf(State::class, $entities[1]);
         self::assertInstanceOf(Country::class, $entities[0]->getCountry());
         self::assertInstanceOf(Country::class, $entities[1]->getCountry());
-        self::assertInstanceOf(Proxy::class, $entities[0]->getCountry());
-        self::assertInstanceOf(Proxy::class, $entities[1]->getCountry());
+        self::assertInstanceOf(InternalProxy::class, $entities[0]->getCountry());
+        self::assertInstanceOf(InternalProxy::class, $entities[1]->getCountry());
     }
 }

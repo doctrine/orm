@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-use Doctrine\Persistence\Proxy;
+use Doctrine\ORM\Proxy\InternalProxy;
 use Doctrine\Tests\Models\CMS\CmsGroup;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
@@ -37,8 +37,7 @@ class DDC1734Test extends OrmFunctionalTestCase
 
         $proxy = $this->getProxy($group);
 
-        self::assertInstanceOf(Proxy::class, $proxy);
-        self::assertFalse($proxy->__isInitialized());
+        self::assertTrue($this->isUninitializedObject($proxy));
 
         $this->_em->detach($proxy);
         $this->_em->clear();
@@ -67,8 +66,7 @@ class DDC1734Test extends OrmFunctionalTestCase
 
         $proxy = $this->getProxy($group);
 
-        self::assertInstanceOf(Proxy::class, $proxy);
-        self::assertFalse($proxy->__isInitialized());
+        self::assertTrue($this->isUninitializedObject($proxy));
 
         $this->_em->detach($proxy);
         $serializedProxy = serialize($proxy);
@@ -79,7 +77,7 @@ class DDC1734Test extends OrmFunctionalTestCase
     }
 
     /** @param object $object */
-    private function getProxy($object): Proxy
+    private function getProxy($object): InternalProxy
     {
         $metadataFactory = $this->_em->getMetadataFactory();
         $className       = get_class($object);

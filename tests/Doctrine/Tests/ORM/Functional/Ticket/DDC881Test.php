@@ -15,7 +15,6 @@ use Doctrine\ORM\Mapping\JoinColumns;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\PersistentCollection;
-use Doctrine\Persistence\Proxy;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 class DDC881Test extends OrmFunctionalTestCase
@@ -90,8 +89,8 @@ class DDC881Test extends OrmFunctionalTestCase
         $calls = $this->_em->createQuery($dql)->getResult();
 
         self::assertCount(2, $calls);
-        self::assertNotInstanceOf(Proxy::class, $calls[0]->getPhoneNumber());
-        self::assertNotInstanceOf(Proxy::class, $calls[1]->getPhoneNumber());
+        self::assertFalse($this->isUninitializedObject($calls[0]->getPhoneNumber()));
+        self::assertFalse($this->isUninitializedObject($calls[1]->getPhoneNumber()));
 
         $dql     = 'SELECT p, c FROM ' . DDC881PhoneNumber::class . ' p JOIN p.calls c';
         $numbers = $this->_em->createQuery($dql)->getResult();

@@ -7,7 +7,6 @@ namespace Doctrine\Tests\ORM\Functional;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Persisters\MatchingAssociationFieldRequiresObject;
-use Doctrine\Persistence\Proxy;
 use Doctrine\Tests\Models\Company\CompanyContract;
 use Doctrine\Tests\Models\Company\CompanyEmployee;
 use Doctrine\Tests\Models\Company\CompanyFixContract;
@@ -397,13 +396,14 @@ class SingleTableInheritanceTest extends OrmFunctionalTestCase
         $this->loadFullFixture();
 
         $ref = $this->_em->getReference(CompanyContract::class, $this->fix->getId());
-        self::assertNotInstanceOf(Proxy::class, $ref, 'Cannot Request a proxy from a class that has subclasses.');
+        self::assertFalse($this->isUninitializedObject($ref), 'Cannot Request a proxy from a class that has subclasses.');
         self::assertInstanceOf(CompanyContract::class, $ref);
         self::assertInstanceOf(CompanyFixContract::class, $ref, 'Direct fetch of the reference has to load the child class Employee directly.');
         $this->_em->clear();
 
         $ref = $this->_em->getReference(CompanyFixContract::class, $this->fix->getId());
-        self::assertInstanceOf(Proxy::class, $ref, 'A proxy can be generated only if no subclasses exists for the requested reference.');
+
+        self::assertTrue($this->isUninitializedObject($ref), 'A proxy can be generated only if no subclasses exists for the requested reference.');
     }
 
     /** @group DDC-952 */
@@ -417,6 +417,6 @@ class SingleTableInheritanceTest extends OrmFunctionalTestCase
                               ->setParameter(1, $this->fix->getId())
                               ->getSingleResult();
 
-        self::assertNotInstanceOf(Proxy::class, $contract->getSalesPerson());
+        self::assertFalse($this->isUninitializedObject($contract->getSalesPerson()));
     }
 }
