@@ -23,12 +23,12 @@ use function sleep;
 class IdentifierFlattenerDateTimeImmutableIdTest extends OrmFunctionalTestCase
 {
     /**
-     * @var EntityRepository 
+     * @var EntityRepository
      */
     private $articleRepository;
 
     /**
-     * @var EntityRepository 
+     * @var EntityRepository
      */
     private $articleAuditRepository;
 
