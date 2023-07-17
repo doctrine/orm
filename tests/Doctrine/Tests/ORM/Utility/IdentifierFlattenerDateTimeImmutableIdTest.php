@@ -46,7 +46,7 @@ class IdentifierFlattenerDateTimeImmutableIdTest extends OrmFunctionalTestCase
         sleep(1);
         $article->changeTitle('Newest title');
 
-        $this->storeEntity($article);
+        $this->storeEntities($article);
 
         $persistedAudit = $this->articleRepository->find($article->getId())->getAudit();
         $firstChange    = $persistedAudit->first();
@@ -66,7 +66,7 @@ class IdentifierFlattenerDateTimeImmutableIdTest extends OrmFunctionalTestCase
             $article
         );
 
-        $this->storeEntity($article, $fakeAudit);
+        $this->storeEntities($article, $fakeAudit);
 
         $persistedAudit = $this->articleAuditRepository->find([
             'article' => $article,
@@ -75,7 +75,7 @@ class IdentifierFlattenerDateTimeImmutableIdTest extends OrmFunctionalTestCase
         self::assertNotNull($persistedAudit);
     }
 
-    private function storeEntity(object ...$entities): void
+    private function storeEntities(object ...$entities): void
     {
         foreach ($entities as $entity) {
             $this->_em->persist($entity);
