@@ -60,7 +60,9 @@ class EntityCacheKey extends CacheKey
     private function serializeIdentifier(array $identifier): string
     {
         return implode(' ', array_map(
-            static fn ($id) => is_scalar($id) ? $id : md5(serialize($id)),
+            static function ($id) {
+                return is_scalar($id) ? $id : md5(serialize($id));
+            },
             $identifier
         ));
     }
