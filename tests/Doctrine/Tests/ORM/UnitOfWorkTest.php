@@ -935,7 +935,7 @@ class UnitOfWorkTest extends OrmTestCase
          *    and only that call commit
          */
 
-        $childWithLifecycleCallback = new EntityInheritedChildWithLifecycleCallback();
+        $childWithLifecycleCallback       = new EntityInheritedChildWithLifecycleCallback();
         $childWithParentLifecycleCallback = new EntityInheritedChildWithParentLifecycleCallback();
 
         self::assertFalse($childWithLifecycleCallback->wasPrepersitCall);
@@ -945,7 +945,7 @@ class UnitOfWorkTest extends OrmTestCase
 
         $this->_unitOfWork->persist($mainEntity);
 
-        $mainEntity->entityWithChildLifecycleEvent = $childWithLifecycleCallback;
+        $mainEntity->entityWithChildLifecycleEvent  = $childWithLifecycleCallback;
         $mainEntity->entityWithParentLifecycleEvent = $childWithParentLifecycleCallback;
 
         $this->_unitOfWork->commit();
@@ -1220,12 +1220,13 @@ class EntityWithNonCascadingAssociation
 }
 
 /**
- * @Entity
  * @ORM\InheritanceType("JOINED")
  * @ORM\DiscriminatorColumn(name="discr", length="5")
  * @ORM\DiscriminatorMap({
  *     "child" = EntityInheritedChildWithLifecycleCallback::class,
  * })
+ *
+ * @Entity
  */
 abstract class EntityParentWithInheritance
 {
@@ -1244,13 +1245,14 @@ abstract class EntityParentWithInheritance
 }
 
 /**
- * @Entity
  * @ORM\InheritanceType("JOINED")
  * @ORM\DiscriminatorColumn(name="discr", length="5")
  * @ORM\DiscriminatorMap({
  *     "child" = EntityInheritedChildWithParentLifecycleCallback::class,
  * })
  * @ORM\HasLifecycleCallbacks()
+ *
+ * @Entity
  */
 abstract class EntityParentWithInheritanceWithLifecycleCallback
 {
@@ -1278,8 +1280,9 @@ abstract class EntityParentWithInheritanceWithLifecycleCallback
 }
 
 /**
- * @Entity
  * @ORM\HasLifecycleCallbacks()
+ *
+ * @Entity
  */
 class EntityInheritedChildWithLifecycleCallback extends EntityParentWithInheritance
 {

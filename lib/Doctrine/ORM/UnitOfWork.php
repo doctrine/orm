@@ -1022,7 +1022,7 @@ class UnitOfWork implements PropertyChangedListener
      */
     private function persistNew(ClassMetadata $class, $entity): void
     {
-        $oid    = spl_object_id($entity);
+        $oid = spl_object_id($entity);
 
         if (! $class->isInheritanceTypeNone()) {
             $class = $this->em->getClassMetadata(get_class($entity));
