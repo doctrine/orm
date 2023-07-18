@@ -1343,8 +1343,7 @@ means the join details have already been defined on the owning
 side. Therefore we only have to specify the property on the Bug
 class that holds the owning sides.
 
-Update your database schema by running:
-::
+Update your database schema by running::
 
     $ php bin/doctrine orm:schema-tool:update --force
 
