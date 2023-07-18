@@ -2710,6 +2710,14 @@ class UnitOfWork implements PropertyChangedListener
      */
     public function createEntity($className, array $data, &$hints = [])
     {
+        $extra = $data['extra'] ?? null;
+
+        if (count($data) === 2) {
+            if (array_key_exists('data', $data) && array_key_exists('extra', $data)) {
+                $data = $data['data'];
+            }
+        }
+
         $class = $this->em->getClassMetadata($className);
 
         $id     = $this->identifierFlattener->flattenIdentifier($class, $data);
@@ -2893,19 +2901,34 @@ class UnitOfWork implements PropertyChangedListener
 
                             break;
 
-                        case $targetClass->subClasses:
-                            // If it might be a subtype, it can not be lazy. There isn't even
-                            // a way to solve this with deferred eager loading, which means putting
-                            // an entity with subclasses at a *-to-one location is really bad! (performance-wise)
-                            $newValue = $this->getEntityPersister($assoc['targetEntity'])->loadOneToOneEntity($assoc, $entity, $associatedId);
-                            break;
-
                         default:
                             $normalizedAssociatedId = $this->normalizeIdentifier($targetClass, $associatedId);
 
                             switch (true) {
                                 // We are negating the condition here. Other cases will assume it is valid!
                                 case $hints['fetchMode'][$class->name][$field] !== ClassMetadata::FETCH_EAGER:
+                                    if ($targetClass->subClasses) {
+                                        if (! $targetClass->isInheritanceTypeNone() && isset($targetClass->discriminatorColumn)) {
+                                            foreach ($assoc['joinColumns'] as $joinColumn) {
+                                                $key = $joinColumn['name'];
+                                                if (isset($extra) && array_key_exists($key, $extra)) {
+                                                    $subTypeValue = $extra[$key][$targetClass->discriminatorColumn['name']];
+                                                }
+                                            }
+
+                                            if (! isset($subTypeValue)) {
+                                                $newValue = $this->getEntityPersister($assoc['targetEntity'])->loadOneToOneEntity($assoc, $entity, $associatedId);
+                                                break;
+                                            }
+
+                                            $targetSubClass = $targetClass->discriminatorMap[$subTypeValue];
+
+                                            $normalizedSubAssociatedId = $this->normalizeIdentifier($this->em->getClassMetadata($targetSubClass), $associatedId);
+                                            $newValue                  = $this->em->getProxyFactory()->getProxy($targetSubClass, $normalizedSubAssociatedId);
+                                            break;
+                                        }
+                                    }
+
                                     $newValue = $this->em->getProxyFactory()->getProxy($assoc['targetEntity'], $normalizedAssociatedId);
                                     break;
 
@@ -3752,5 +3775,49 @@ class UnitOfWork implements PropertyChangedListener
         }
 
         return $normalizedAssociatedId;
+    }
+
+    /**
+     * This function will get the type of $targetClass by executing a
+     * query on the database to get the Discriminator Column value.
+     *
+     * @param array<string, int> $associatedId
+     *
+     * @throws \Doctrine\DBAL\Exception
+     */
+    private function getTargetSubClass(ClassMetadata $targetClass, array $associatedId): string
+    {
+        $connection = $this->em->getConnection();
+
+        if (isset($targetClass->discriminatorColumn['name'])) {
+            $discriminatorColumnName = $targetClass->discriminatorColumn['name'];
+            $selectClause            = $connection->quoteIdentifier($discriminatorColumnName);
+            $fromClause              = $this->em->getClassMetadata($targetClass->rootEntityName)->getTableName();
+
+            $whereClauses = [];
+            $whereValues  = [];
+            foreach ($targetClass->getIdentifierColumnNames() as $pkName) {
+                $whereClauses[] = $connection->quoteIdentifier($pkName) . ' = ?';
+                $whereValues[]  = $associatedId[$targetClass->fieldNames[$pkName]];
+            }
+
+            $whereClause = implode(' AND ', $whereClauses);
+
+            $query = 'SELECT ' . $selectClause . ' FROM ' . $fromClause . ' WHERE ' . $whereClause;
+            $stmt  = $this->em->getConnection()->prepare($query);
+
+            $index = 1;
+            foreach ($whereValues as $whereValue) {
+                $stmt->bindValue($index, $whereValue);
+                $index++;
+            }
+
+            $result     = $stmt->executeQuery();
+            $fieldValue = $result->fetchFirstColumn()[0];
+
+            return $targetClass->discriminatorMap[$fieldValue];
+        }
+
+        return $targetClass->getName();
     }
 }

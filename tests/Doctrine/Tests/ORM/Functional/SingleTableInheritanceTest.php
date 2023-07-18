@@ -417,6 +417,7 @@ class SingleTableInheritanceTest extends OrmFunctionalTestCase
                               ->setParameter(1, $this->fix->getId())
                               ->getSingleResult();
 
-        self::assertNotInstanceOf(Proxy::class, $contract->getSalesPerson());
+        self::assertInstanceOf(Proxy::class, $contract->getSalesPerson());
+        self::assertTrue($contract->getSalesPerson()->__isInitialized());
     }
 }
