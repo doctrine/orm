@@ -14,7 +14,7 @@ sure you follow them.
 ## Coding Standard
 
 This project follows [`doctrine/coding-standard`][coding standard homepage].
-You may fix some issues with `vendor/bin/phpcbf`.
+You may be able to fix some issues with `vendor/bin/phpcbf`.
 
 [coding standard homepage]: https://github.com/doctrine/coding-standard
 

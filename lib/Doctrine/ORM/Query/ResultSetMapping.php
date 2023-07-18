@@ -170,6 +170,13 @@ class ResultSetMapping
     public $discriminatorParameters = [];
 
     /**
+     * Maps discriminator column names in the result set to the association column names they belong to
+     *
+     * @psalm-var array<string, string>
+     */
+    public $associationDiscriminatorMapping = [];
+
+    /**
      * Adds an entity result to this ResultSetMapping.
      *
      * @param string      $class       The class name of the entity.
@@ -591,6 +598,31 @@ class ResultSetMapping
         if ($isIdentifierColumn) {
             $this->isIdentifierColumn[$alias][$columnName] = true;
         }
+
+        if ($type) {
+            $this->typeMappings[$columnName] = $type;
+        }
+
+        return $this;
+    }
+
+    /**
+     * Adds an association discriminator value column to the result set.
+     * A mapping is made between the discriminator column and the associated column it belongs to.
+     *
+     * @param string      $alias            The result alias with which the meta result should be placed in the result structure.
+     * @param string      $columnName       The name of the column in the SQL result set.
+     * @param string      $fieldName        The name of the field on the declaring class.
+     * @param string      $associationField The column name of the association $columnName belongs to.
+     * @param string|null $type             The column type.
+     *
+     * @return $this
+     */
+    public function addAssociationDiscriminatorColumn($alias, $columnName, $fieldName, $associationField, $type = null)
+    {
+        $this->columnOwnerMap[$columnName]                  = $alias;
+        $this->metaMappings[$columnName]                    = $fieldName;
+        $this->associationDiscriminatorMapping[$columnName] = $associationField;
 
         if ($type) {
             $this->typeMappings[$columnName] = $type;

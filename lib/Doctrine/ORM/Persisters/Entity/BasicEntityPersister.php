@@ -17,6 +17,7 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\Deprecations\Deprecation;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\ORM\Mapping\QuoteStrategy;
 use Doctrine\ORM\OptimisticLockException;
@@ -1359,6 +1360,39 @@ class BasicEntityPersister implements EntityPersister
             $this->currentPersisterContext->rsm->addMetaResult($alias, $resultColumnName, $joinColumn['name'], $isIdentifier, $type);
 
             $columnList[] = sprintf('%s.%s AS %s', $sqlTableAlias, $quotedColumn, $resultColumnName);
+
+            if (isset($targetClass->discriminatorColumn['name'])) {
+                if ($assoc['type'] !== ClassMetadata::MANY_TO_MANY && $assoc['fetch'] === ClassMetadata::FETCH_EAGER) {
+                    continue;
+                }
+
+                $discriminatorColumnName = $targetClass->discriminatorColumn['name'];
+
+                $sqlJoinedTableAlias    = $this->getSQLTableAlias($targetClass->name, $sqlTableAlias . '.' . $field);
+                $resultJoinedColumnName = $this->getSQLColumnAlias($discriminatorColumnName);
+
+                $this->currentPersisterContext->rsm->addEntityResult($targetClass->name, $sqlJoinedTableAlias);
+
+                $columnList[] = sprintf('%s.%s AS %s', $sqlJoinedTableAlias, $discriminatorColumnName, $resultJoinedColumnName);
+
+                $this->currentPersisterContext->rsm->addAssociationDiscriminatorColumn($sqlJoinedTableAlias, $resultJoinedColumnName, $discriminatorColumnName, $resultColumnName, $targetClass->discriminatorColumn['type']);
+
+                if ($targetClass->inheritanceType === ClassMetadataInfo::INHERITANCE_TYPE_JOINED) {
+                    $joinTableName = $this->quoteStrategy->getTableName($this->em->getClassMetadata($targetClass->rootEntityName), $this->platform);
+                } else {
+                    $joinTableName = $this->quoteStrategy->getTableName($targetClass, $this->platform);
+                }
+
+                $this->currentPersisterContext->selectJoinSql .= ' LEFT JOIN';
+                $this->currentPersisterContext->selectJoinSql .= ' ' . $joinTableName . ' ' . $sqlJoinedTableAlias . ' ON ';
+
+                $sourceCol = $this->quoteStrategy->getJoinColumnName($joinColumn, $this->class, $this->platform);
+                $targetCol = $this->quoteStrategy->getReferencedJoinColumnName($joinColumn, $this->class, $this->platform);
+
+                $joinCondition[] = $sqlTableAlias . '.' . $sourceCol . ' = ' . $sqlJoinedTableAlias . '.' . $targetCol;
+
+                $this->currentPersisterContext->selectJoinSql .= implode(' AND ', $joinCondition);
+            }
         }
 
         return implode(', ', $columnList);

@@ -11,7 +11,6 @@ use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\InheritanceType;
-use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\Persistence\Proxy;
 use Doctrine\Tests\OrmFunctionalTestCase;
@@ -32,19 +31,19 @@ class GH10466Test extends OrmFunctionalTestCase
 
     public function testIssue(): void
     {
-        $item1         = new GH10466Item();
-        $item2         = new GH10466Item();
-        $item2->parent = $item1;
+        $item1              = new GH10466Item();
+        $item2              = new GH10466SubItem();
+        $item1->association = $item2;
         $this->_em->persist($item1);
         $this->_em->persist($item2);
         $this->_em->flush();
         $this->_em->clear();
 
-        $item3 = $this->_em->find(GH10466Item::class, $item2->id);
-        self::assertInstanceOf(GH10466Item::class, $item3->parent);
+        $item3 = $this->_em->find(GH10466Item::class, $item1->id);
+        self::assertInstanceOf(GH10466Item::class, $item3->association);
 
         if (! getenv('ENABLE_SECOND_LEVEL_CACHE')) {
-            self::assertInstanceOf(Proxy::class, $item3->parent);
+            self::assertInstanceOf(Proxy::class, $item3->association);
         }
     }
 }
@@ -68,9 +67,8 @@ class GH10466Item
     /**
      * @var GH10466Item
      * @ManyToOne(targetEntity="GH10466Item", inversedBy="children")
-     * @JoinColumn(name="parentId", referencedColumnName="id")
      */
-    public $parent;
+    public $association;
 
     public function __construct()
     {

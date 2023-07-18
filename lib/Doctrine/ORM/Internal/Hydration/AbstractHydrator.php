@@ -397,6 +397,7 @@ abstract class AbstractHydrator
      *                                             component alias.
      * @psalm-return array{
      *                   data: array<array-key, array>,
+     *                   extra: array<array-key, array>,
      *                   newObjects?: array<array-key, array{
      *                       class: mixed,
      *                       args?: array
@@ -441,6 +442,17 @@ abstract class AbstractHydrator
 
                     $rowData['scalars'][$fieldName] = $value;
 
+                    break;
+
+                case isset($cacheKeyInfo['isDiscriminatorColumn']):
+                    $associatedField = $cacheKeyInfo['associatedField'];
+                    $fieldName       = $cacheKeyInfo['fieldName'];
+                    $dqlAlias        = $cacheKeyInfo['dqlAlias'];
+                    $type            = $cacheKeyInfo['type'];
+
+                    $rowData['extra'][$dqlAlias][$associatedField][$fieldName] = $type
+                        ? $type->convertToPHPValue($value, $this->_platform)
+                        : $value;
                     break;
 
                 //case (isset($cacheKeyInfo['isMetaColumn'])):
@@ -607,6 +619,21 @@ abstract class AbstractHydrator
                 $type      = isset($this->_rsm->typeMappings[$key])
                     ? Type::getType($this->_rsm->typeMappings[$key])
                     : null;
+
+                if (isset($this->_rsm->associationDiscriminatorMapping[$key])) {
+                    $associatedField = $this->_rsm->metaMappings[$this->_rsm->associationDiscriminatorMapping[$key]];
+                    $alias           = $this->_rsm->columnOwnerMap[$this->_rsm->associationDiscriminatorMapping[$key]];
+
+                    return $this->_cache[$key] = [
+                        'isIdentifier' => false,
+                        'isDiscriminatorColumn' => true,
+                        'associatedField' => $associatedField,
+                        'fieldName'    => $fieldName,
+                        'type'         => $type,
+                        'dqlAlias'     => $alias,
+                        'enumType'     => $this->_rsm->enumMappings[$key] ?? null,
+                    ];
+                }
 
                 // Cache metadata fetch
                 $this->getClassMetadata($this->_rsm->aliasMap[$dqlAlias]);

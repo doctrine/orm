@@ -298,6 +298,18 @@ class ClassTableInheritanceTest extends OrmFunctionalTestCase
         self::assertInstanceOf(CompanyOrganization::class, $result[0]);
 
         $mainEvent = $result[0]->getMainEvent();
+        // mainEvent should have been loaded because it can't be lazy when using the createQuery function
+        self::assertInstanceOf(CompanyAuction::class, $mainEvent);
+        self::assertNotInstanceOf(Proxy::class, $mainEvent);
+
+        $this->_em->clear();
+
+        $org = $this->_em->find(CompanyOrganization::class, $org->getId());
+
+        self::assertInstanceOf(CompanyOrganization::class, $org);
+
+        $mainEvent = $org->getMainEvent();
+        // mainEvent does not have to be loaded because it can be lazy when using the find function
         self::assertInstanceOf(CompanyAuction::class, $mainEvent);
         self::assertInstanceOf(Proxy::class, $mainEvent);
 
