@@ -969,7 +969,7 @@ public function __construct(<params>)
     {
         $refl = new ReflectionClass($this->getClassToExtend());
 
-        return '\\' . $refl->getName();
+        return '\\' . $refl->name;
     }
 
     /** @return string */

@@ -1176,7 +1176,7 @@ class ClassMetadataInfo implements ClassMetadata
         $this->namespace = $reflService->getClassNamespace($this->name);
 
         if ($this->reflClass) {
-            $this->name = $this->rootEntityName = $this->reflClass->getName();
+            $this->name = $this->rootEntityName = $this->reflClass->name;
         }
 
         $this->table['name'] = $this->namingStrategy->classToTableName($this->name);
@@ -3866,7 +3866,7 @@ class ClassMetadataInfo implements ClassMetadata
     {
         $reflectionProperty = $reflService->getAccessibleProperty($class, $field);
         if ($reflectionProperty !== null && PHP_VERSION_ID >= 80100 && $reflectionProperty->isReadOnly()) {
-            $declaringClass = $reflectionProperty->getDeclaringClass()->name;
+            $declaringClass = $reflectionProperty->class;
             if ($declaringClass !== $class) {
                 $reflectionProperty = $reflService->getAccessibleProperty($declaringClass, $field);
             }

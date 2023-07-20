@@ -335,13 +335,13 @@ EOPHP;
 
         while ($reflector) {
             foreach ($reflector->getProperties($filter) as $property) {
-                $name = $property->getName();
+                $name = $property->name;
 
                 if ($property->isStatic() || (($class->hasField($name) || $class->hasAssociation($name)) && ! isset($identifiers[$name]))) {
                     continue;
                 }
 
-                $prefix = $property->isPrivate() ? "\0" . $property->getDeclaringClass()->getName() . "\0" : ($property->isProtected() ? "\0*\0" : '');
+                $prefix = $property->isPrivate() ? "\0" . $property->class . "\0" : ($property->isProtected() ? "\0*\0" : '');
 
                 $skippedProperties[$prefix . $name] = true;
             }
@@ -376,7 +376,7 @@ EOPHP;
         return $code . '$data = [];
 
         foreach (parent::__sleep() as $name) {
-            $value = $properties[$k = $name] ?? $properties[$k = "\0*\0$name"] ?? $properties[$k = "\0' . $reflector->getName() . '\0$name"] ?? $k = null;
+            $value = $properties[$k = $name] ?? $properties[$k = "\0*\0$name"] ?? $properties[$k = "\0' . $reflector->name . '\0$name"] ?? $k = null;
 
             if (null === $k) {
                 trigger_error(sprintf(\'serialize(): "%s" returned as member variable from __sleep() but does not exist\', $name), \E_USER_NOTICE);

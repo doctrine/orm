@@ -365,7 +365,7 @@ class AnnotationDriver extends CompatibilityAnnotationDriver
             }
 
             $mapping              = [];
-            $mapping['fieldName'] = $property->getName();
+            $mapping['fieldName'] = $property->name;
 
             // Evaluate @Cache annotation
             $cacheAnnot = $this->reader->getPropertyAnnotation($property, Mapping\Cache::class);
@@ -398,7 +398,7 @@ class AnnotationDriver extends CompatibilityAnnotationDriver
             // @Column, @OneToOne, @OneToMany, @ManyToOne, @ManyToMany
             $columnAnnot = $this->reader->getPropertyAnnotation($property, Mapping\Column::class);
             if ($columnAnnot) {
-                $mapping = $this->columnToArray($property->getName(), $columnAnnot);
+                $mapping = $this->columnToArray($property->name, $columnAnnot);
 
                 $idAnnot = $this->reader->getPropertyAnnotation($property, Mapping\Id::class);
                 if ($idAnnot) {
