@@ -73,7 +73,7 @@ final class ReflectionPropertiesGetter
 
             $parentClass = $currentClass->getParentClass();
             if ($parentClass) {
-                $parentClassName = $parentClass->getName();
+                $parentClassName = $parentClass->name;
             }
         }
 
@@ -111,14 +111,14 @@ final class ReflectionPropertiesGetter
     private function getAccessibleProperty(ReflectionProperty $property): ?ReflectionProperty
     {
         return $this->reflectionService->getAccessibleProperty(
-            $property->getDeclaringClass()->getName(),
-            $property->getName()
+            $property->class,
+            $property->name
         );
     }
 
     private function getLogicalName(ReflectionProperty $property): string
     {
-        $propertyName = $property->getName();
+        $propertyName = $property->name;
 
         if ($property->isPublic()) {
             return $propertyName;
@@ -128,6 +128,6 @@ final class ReflectionPropertiesGetter
             return "\0*\0" . $propertyName;
         }
 
-        return "\0" . $property->getDeclaringClass()->getName() . "\0" . $propertyName;
+        return "\0" . $property->class . "\0" . $propertyName;
     }
 }
