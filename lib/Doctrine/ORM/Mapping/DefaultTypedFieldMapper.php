@@ -22,7 +22,7 @@ use const PHP_VERSION_ID;
 /** @psalm-type ScalarName = 'array'|'bool'|'float'|'int'|'string' */
 final class DefaultTypedFieldMapper implements TypedFieldMapper
 {
-    /** @var array<class-string|ScalarName, class-string<Type>|string> $typedFieldMappings */
+    /** @var array<class-string|ScalarName, class-string<Type>> $typedFieldMappings */
     private $typedFieldMappings;
 
     private const DEFAULT_TYPED_FIELD_MAPPINGS = [
@@ -36,7 +36,7 @@ final class DefaultTypedFieldMapper implements TypedFieldMapper
         'string' => Types::STRING,
     ];
 
-    /** @param array<class-string|ScalarName, class-string<Type>|string> $typedFieldMappings */
+    /** @param array<class-string|ScalarName, class-string<Type>> $typedFieldMappings */
     public function __construct(array $typedFieldMappings = [])
     {
         $this->typedFieldMappings = array_merge(self::DEFAULT_TYPED_FIELD_MAPPINGS, $typedFieldMappings);
