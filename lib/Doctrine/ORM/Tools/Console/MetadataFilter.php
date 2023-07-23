@@ -25,7 +25,7 @@ use function sprintf;
 class MetadataFilter extends FilterIterator implements Countable
 {
     /** @var mixed[] */
-    private $filter = [];
+    private $filter;
 
     /**
      * Filter Metadatas by one or more filter options.
