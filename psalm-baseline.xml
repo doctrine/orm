@@ -257,12 +257,6 @@
       <code>transactional</code>
       <code>transactional</code>
     </DeprecatedMethod>
-    <InvalidReturnStatement>
-      <code><![CDATA[$this->wrapped->getClassMetadata($className)]]></code>
-    </InvalidReturnStatement>
-    <InvalidReturnType>
-      <code>getClassMetadata</code>
-    </InvalidReturnType>
     <MissingParamType>
       <code>$entity</code>
       <code>$lockMode</code>
@@ -281,7 +275,6 @@
   </file>
   <file src="lib/Doctrine/ORM/EntityManager.php">
     <ArgumentTypeCoercion>
-      <code>$className</code>
       <code>$connection</code>
       <code>$entityName</code>
     </ArgumentTypeCoercion>
@@ -1151,9 +1144,6 @@
     <InvalidReturnType>
       <code><![CDATA[Collection<TKey, T>]]></code>
     </InvalidReturnType>
-    <LessSpecificReturnStatement>
-      <code><![CDATA[$this->unwrap()->matching($criteria)]]></code>
-    </LessSpecificReturnStatement>
     <MissingParamType>
       <code>$offset</code>
     </MissingParamType>
