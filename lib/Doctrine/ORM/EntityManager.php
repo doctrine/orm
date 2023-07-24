@@ -207,13 +207,6 @@ class EntityManager implements EntityManagerInterface
     /**
      * Returns the ORM metadata descriptor for a class.
      *
-     * The class name must be the fully-qualified class name without a leading backslash
-     * (as it is returned by get_class($obj)) or an aliased class name.
-     *
-     * Examples:
-     * MyProject\Domain\User
-     * sales:PriceRequest
-     *
      * Internal note: Performance-sensitive method.
      *
      * {@inheritDoc}
