@@ -821,8 +821,10 @@ class SchemaTool
             return [];
         }
 
-        $options                        = array_intersect_key($mappingOptions, array_flip(self::KNOWN_COLUMN_OPTIONS));
-        $options['customSchemaOptions'] = array_diff_key($mappingOptions, $options);
+        $options = array_intersect_key($mappingOptions, array_flip(self::KNOWN_COLUMN_OPTIONS));
+        if ($customSchemaOptions = array_diff_key($mappingOptions, $options)) {
+            $options['customSchemaOptions'] = $customSchemaOptions;
+        }
 
         return $options;
     }
