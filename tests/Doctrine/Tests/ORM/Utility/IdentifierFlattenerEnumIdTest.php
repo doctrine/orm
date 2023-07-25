@@ -60,13 +60,13 @@ class IdentifierFlattenerEnumIdTest extends OrmFunctionalTestCase
     public function testEnumReference(): void
     {
         $typedCardEnumIdEntity       = new TypedCardEnumId();
-        $typedCardEnumIdEntity->suit = Suit::Clubs;
+        $typedCardEnumIdEntity->suit = Suit::Diamonds;
 
         $this->_em->persist($typedCardEnumIdEntity);
         $this->_em->flush();
         $this->_em->clear();
 
-        $proxy = $this->_em->getReference(TypedCardEnumId::class, Suit::Clubs);
+        $proxy = $this->_em->getReference(TypedCardEnumId::class, Suit::Diamonds);
 
         $referenceToTypedCardEnumId            = new ReferenceToTypedCardEnumId();
         $referenceToTypedCardEnumId->typedCard = $proxy;
