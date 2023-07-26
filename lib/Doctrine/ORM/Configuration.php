@@ -333,7 +333,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
      */
     public function getQueryCacheImpl()
     {
-        Deprecation::triggerIfCalledFromOutside(
+        Deprecation::trigger(
             'doctrine/orm',
             'https://github.com/doctrine/orm/pull/9002',
             'Method %s() is deprecated and will be removed in Doctrine ORM 3.0. Use getQueryCache() instead.',
