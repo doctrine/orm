@@ -17,6 +17,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
+use function assert;
 use function get_debug_type;
 use function sprintf;
 
@@ -63,32 +64,46 @@ EOT
     {
         $ui = (new SymfonyStyle($input, $output))->getErrorStyle();
 
-        $em          = $this->getEntityManager($input);
-        $cache       = $em->getConfiguration()->getQueryCache();
-        $cacheDriver = $em->getConfiguration()->getQueryCacheImpl();
+        $em    = $this->getEntityManager($input);
+        $cache = $em->getConfiguration()->getQueryCache();
 
-        if (! $cacheDriver) {
-            throw new InvalidArgumentException('No Query cache driver is configured on given EntityManager.');
-        }
-
-        if ($cacheDriver instanceof ApcCache || $cache instanceof ApcuAdapter) {
+        if ($cache instanceof ApcuAdapter) {
             throw new LogicException('Cannot clear APCu Cache from Console, it\'s shared in the Webserver memory and not accessible from the CLI.');
         }
 
-        if ($cacheDriver instanceof XcacheCache) {
-            throw new LogicException('Cannot clear XCache Cache from Console, it\'s shared in the Webserver memory and not accessible from the CLI.');
-        }
+        $cacheDriver = null;
+        if (! $cache) {
+            $cacheDriver = $em->getConfiguration()->getQueryCacheImpl();
 
-        if (! ($cacheDriver instanceof ClearableCache)) {
-            throw new LogicException(sprintf(
-                'Can only clear cache when ClearableCache interface is implemented, %s does not implement.',
-                get_debug_type($cacheDriver)
-            ));
+            if (! $cacheDriver) {
+                throw new InvalidArgumentException('No Query cache driver is configured on given EntityManager.');
+            }
+
+            if ($cacheDriver instanceof ApcCache) {
+                throw new LogicException('Cannot clear APCu Cache from Console, it\'s shared in the Webserver memory and not accessible from the CLI.');
+            }
+
+            if ($cacheDriver instanceof XcacheCache) {
+                throw new LogicException('Cannot clear XCache Cache from Console, it\'s shared in the Webserver memory and not accessible from the CLI.');
+            }
+
+            if (! ($cacheDriver instanceof ClearableCache)) {
+                throw new LogicException(sprintf(
+                    'Can only clear cache when ClearableCache interface is implemented, %s does not implement.',
+                    get_debug_type($cacheDriver)
+                ));
+            }
         }
 
         $ui->comment('Clearing <info>all</info> Query cache entries');
 
-        $result  = $cache ? $cache->clear() : $cacheDriver->deleteAll();
+        if ($cache) {
+            $result = $cache->clear();
+        } else {
+            assert($cacheDriver !== null);
+            $result = $cacheDriver->deleteAll();
+        }
+
         $message = $result ? 'Successfully deleted cache entries.' : 'No cache entries were deleted.';
 
         if ($input->getOption('flush') === true && ! $cache) {
