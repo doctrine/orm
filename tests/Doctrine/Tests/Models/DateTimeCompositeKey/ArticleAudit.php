@@ -21,6 +21,7 @@ class ArticleAudit
     #[Column]
     private DateTimeImmutable $issuedAt;
 
+    #[Id]
     #[Column]
     private string $changedKey;
 

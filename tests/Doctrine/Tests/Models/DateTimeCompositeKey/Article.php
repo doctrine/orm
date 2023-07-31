@@ -23,20 +23,30 @@ class Article
     #[Column]
     private string $title;
 
+    #[Column]
+    private string $content;
+
     /** @var Collection<int, ArticleAudit> */
     #[OneToMany(targetEntity: ArticleAudit::class, mappedBy: 'article', cascade: ['ALL'])]
     private Collection $audit;
 
-    public function __construct(string $title)
+    public function __construct(string $title, string $content)
     {
-        $this->title = $title;
-        $this->audit = new ArrayCollection();
+        $this->title   = $title;
+        $this->content = $content;
+        $this->audit   = new ArrayCollection();
     }
 
     public function changeTitle(string $newTitle): void
     {
         $this->title = $newTitle;
         $this->updateAudit('title');
+    }
+
+    public function changeContent(string $newContent): void
+    {
+        $this->content = $newContent;
+        $this->updateAudit('content');
     }
 
     public function getId(): ?int
@@ -55,6 +65,11 @@ class Article
     public function getTitle(): string
     {
         return $this->title;
+    }
+
+    public function getContent(): string
+    {
+        return $this->content;
     }
 
     private function updateAudit(string $changedKey): void

@@ -12,7 +12,6 @@ use Doctrine\Tests\Models\DateTimeCompositeKey\ArticleAudit;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 use function dirname;
-use function sleep;
 
 /**
  * Test the IdentifierFlattener utility class
@@ -48,10 +47,9 @@ class IdentifierFlattenerDateTimeImmutableIdTest extends OrmFunctionalTestCase
     /** @group utilities */
     public function testFlattenIdentifierWithDateTimeId(): void
     {
-        $article = new Article('Some title');
+        $article = new Article('Some title', 'Lorem ipsum');
         $article->changeTitle('New title');
-        sleep(1);
-        $article->changeTitle('Newest title');
+        $article->changeContent('Lorem ipsum dolor sit amet');
 
         $this->storeEntities($article);
 
@@ -60,13 +58,13 @@ class IdentifierFlattenerDateTimeImmutableIdTest extends OrmFunctionalTestCase
         $class          = $this->_em->getClassMetadata(ArticleAudit::class);
         $id             = $class->getIdentifierValues($firstChange);
         self::assertCount(2, $persistedAudit);
-        self::assertCount(2, $id);
+        self::assertCount(3, $id);
     }
 
     /** @group utilities */
     public function testFindEntityWithCompositeId(): void
     {
-        $article       = new Article('Some title');
+        $article       = new Article('Some title', 'Lorem ipsum');
         $fakeAudit     = new ArticleAudit(
             $timestamp = new DateTimeImmutable('2022-03-02'),
             'title',
@@ -78,6 +76,7 @@ class IdentifierFlattenerDateTimeImmutableIdTest extends OrmFunctionalTestCase
         $persistedAudit = $this->articleAuditRepository->find([
             'article' => $article,
             'issuedAt' => $timestamp,
+            'changedKey' => 'title',
         ]);
         self::assertNotNull($persistedAudit);
     }
