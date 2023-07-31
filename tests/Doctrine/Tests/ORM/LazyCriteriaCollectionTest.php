@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM;
 
-use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\LazyCriteriaCollection;
 use Doctrine\ORM\Persisters\Entity\EntityPersister;
@@ -80,7 +79,6 @@ class LazyCriteriaCollectionTest extends TestCase
             ->persister
             ->expects(self::once())
             ->method('loadCriteria')
-            ->with($this->criteria)
             ->will(self::returnValue([$foo, $bar, $baz]));
 
         $criteria = new Criteria();
@@ -89,10 +87,19 @@ class LazyCriteriaCollectionTest extends TestCase
 
         $filtered = $this->lazyCriteriaCollection->matching($criteria);
 
-        self::assertInstanceOf(Collection::class, $filtered);
-        self::assertEquals([$foo], $filtered->toArray());
+        self::assertInstanceOf(LazyCriteriaCollection::class, $filtered);
+        self::assertEquals([$foo, $bar, $baz], $filtered->toArray());
 
-        self::assertEquals([$foo], $this->lazyCriteriaCollection->matching($criteria)->toArray());
+        self::assertEquals([$foo], $filtered->matching($criteria)->toArray());
+    }
+
+    public function testMatchingWillNotInitializeCollection(): void
+    {
+        $this->persister->expects(self::never())->method('loadCriteria');
+
+        $this->lazyCriteriaCollection->matching(Criteria::create());
+
+        self::assertFalse($this->lazyCriteriaCollection->isInitialized());
     }
 
     public function testIsEmptyUsesCountWhenNotInitialized(): void
