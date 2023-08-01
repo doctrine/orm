@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Utility;
 
+use Doctrine\Tests\Models\Enums\ReferenceToTypedCardEnumId;
 use Doctrine\Tests\Models\Enums\Suit;
 use Doctrine\Tests\Models\Enums\TypedCardEnumCompositeId;
 use Doctrine\Tests\Models\Enums\TypedCardEnumId;
@@ -24,7 +25,8 @@ class IdentifierFlattenerEnumIdTest extends OrmFunctionalTestCase
 
         $this->createSchemaForModels(
             TypedCardEnumId::class,
-            TypedCardEnumCompositeId::class
+            TypedCardEnumCompositeId::class,
+            ReferenceToTypedCardEnumId::class
         );
     }
 
@@ -53,6 +55,23 @@ class IdentifierFlattenerEnumIdTest extends OrmFunctionalTestCase
         self::assertCount(1, $id, 'We should have 1 identifier');
 
         self::assertEquals(Suit::Clubs, $findTypedCardEnumIdEntity->suit);
+    }
+
+    public function testEnumReference(): void
+    {
+        $typedCardEnumIdEntity       = new TypedCardEnumId();
+        $typedCardEnumIdEntity->suit = Suit::Diamonds;
+
+        $this->_em->persist($typedCardEnumIdEntity);
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $proxy = $this->_em->getReference(TypedCardEnumId::class, Suit::Diamonds);
+
+        $referenceToTypedCardEnumId            = new ReferenceToTypedCardEnumId();
+        $referenceToTypedCardEnumId->typedCard = $proxy;
+        $this->_em->persist($referenceToTypedCardEnumId);
+        $this->_em->flush();
     }
 
     /** @group utilities */
