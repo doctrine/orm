@@ -23,6 +23,7 @@ use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\Persisters\Entity\EntityPersister;
 use Doctrine\ORM\UnitOfWork;
 
+use function array_merge;
 use function assert;
 use function serialize;
 use function sha1;
@@ -314,7 +315,13 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
      */
     public function executeInserts()
     {
-        $this->queuedCache['insert'] = $this->persister->getInserts();
+        // The commit order/foreign key relationships may make it necessary that multiple calls to executeInsert()
+        // are performed, so collect all the new entities.
+        $newInserts = $this->persister->getInserts();
+
+        if ($newInserts) {
+            $this->queuedCache['insert'] = array_merge($this->queuedCache['insert'] ?? [], $newInserts);
+        }
 
         return $this->persister->executeInserts();
     }

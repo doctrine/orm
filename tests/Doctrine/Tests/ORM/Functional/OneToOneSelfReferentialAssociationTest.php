@@ -73,9 +73,11 @@ class OneToOneSelfReferentialAssociationTest extends OrmFunctionalTestCase
 
     public function testEagerLoadsAssociation(): void
     {
-        $this->createFixture();
+        $customerId = $this->createFixture();
 
-        $query    = $this->_em->createQuery('select c, m from Doctrine\Tests\Models\ECommerce\ECommerceCustomer c left join c.mentor m order by c.id asc');
+        $query = $this->_em->createQuery('select c, m from Doctrine\Tests\Models\ECommerce\ECommerceCustomer c left join c.mentor m where c.id = :id');
+        $query->setParameter('id', $customerId);
+
         $result   = $query->getResult();
         $customer = $result[0];
         $this->assertLoadingOfAssociation($customer);

@@ -707,8 +707,8 @@ not directly mapped by Doctrine.
    ``UPDATE`` statement.
 -  The ``postPersist`` event occurs for an entity after
    the entity has been made persistent. It will be invoked after the
-   database insert operations. Generated primary key values are
-   available in the postPersist event.
+   database insert operation for that entity. A generated primary key value for
+   the entity will be available in the postPersist event.
 -  The ``postRemove`` event occurs for an entity after the
    entity has been deleted. It will be invoked after the database
    delete operations. It is not called for a DQL ``DELETE`` statement.

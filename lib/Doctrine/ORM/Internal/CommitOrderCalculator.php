@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Internal;
 
+use Doctrine\Deprecations\Deprecation;
 use Doctrine\ORM\Internal\CommitOrder\Edge;
 use Doctrine\ORM\Internal\CommitOrder\Vertex;
 use Doctrine\ORM\Internal\CommitOrder\VertexState;
@@ -17,6 +18,8 @@ use function array_reverse;
  * using a depth-first searching (DFS) to traverse the graph built in memory.
  * This algorithm have a linear running time based on nodes (V) and dependency
  * between the nodes (E), resulting in a computational complexity of O(V + E).
+ *
+ * @deprecated
  */
 class CommitOrderCalculator
 {
@@ -44,6 +47,16 @@ class CommitOrderCalculator
      * @psalm-var list<ClassMetadata>
      */
     private $sortedNodeList = [];
+
+    public function __construct()
+    {
+        Deprecation::triggerIfCalledFromOutside(
+            'doctrine/orm',
+            'https://github.com/doctrine/orm/pull/10547',
+            'The %s class is deprecated and will be removed in ORM 3.0',
+            self::class
+        );
+    }
 
     /**
      * Checks for node (vertex) existence in graph.

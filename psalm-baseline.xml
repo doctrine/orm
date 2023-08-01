@@ -2793,7 +2793,6 @@
       <code>setValue</code>
     </PossiblyNullReference>
     <PossiblyUndefinedArrayOffset>
-      <code><![CDATA[$assoc['joinColumns']]]></code>
       <code><![CDATA[$assoc['orphanRemoval']]]></code>
       <code><![CDATA[$assoc['targetToSourceKeyColumns']]]></code>
     </PossiblyUndefinedArrayOffset>
@@ -2802,10 +2801,6 @@
       <code>unwrap</code>
       <code>unwrap</code>
     </PossiblyUndefinedMethod>
-    <RedundantCondition>
-      <code><![CDATA[$i >= 0 && $this->entityDeletions]]></code>
-      <code><![CDATA[$this->entityDeletions]]></code>
-    </RedundantCondition>
     <RedundantConditionGivenDocblockType>
       <code>is_array($entity)</code>
     </RedundantConditionGivenDocblockType>
