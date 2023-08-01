@@ -335,7 +335,8 @@ interface EntityManagerInterface extends ObjectManager
     /**
      * {@inheritDoc}
      *
-     * @psalm-param string|class-string<T> $className
+     * @param string $className
+     * @psalm-param class-string<T> $className
      *
      * @return Mapping\ClassMetadata
      * @psalm-return Mapping\ClassMetadata<T>
