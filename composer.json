@@ -34,7 +34,7 @@
         "doctrine/lexer": "^2",
         "doctrine/persistence": "^2.4 || ^3",
         "psr/cache": "^1 || ^2 || ^3",
-        "symfony/console": "^4.2 || ^5.0 || ^6.0 || ^7.0",
+        "symfony/console": "^4.2 || ^5.0 || ^6.0",
         "symfony/polyfill-php72": "^1.23",
         "symfony/polyfill-php80": "^1.16"
     },
