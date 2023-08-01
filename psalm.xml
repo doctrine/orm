@@ -45,6 +45,10 @@
                 <referencedClass name="Doctrine\ORM\Tools\Console\Command\GenerateRepositoriesCommand"/>
                 <referencedClass name="Doctrine\ORM\Tools\Console\Helper\EntityManagerHelper"/>
                 <referencedClass name="Doctrine\ORM\Tools\Console\EntityManagerProvider\HelperSetManagerProvider"/>
+                <referencedClass name="Doctrine\ORM\Internal\CommitOrder\Edge"/>
+                <referencedClass name="Doctrine\ORM\Internal\CommitOrder\Vertex"/>
+                <referencedClass name="Doctrine\ORM\Internal\CommitOrder\VertexState"/>
+                <referencedClass name="Doctrine\ORM\Internal\CommitOrderCalculator"/>
             </errorLevel>
         </DeprecatedClass>
         <DeprecatedConstant>
