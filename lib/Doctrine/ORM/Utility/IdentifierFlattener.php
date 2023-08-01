@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Utility;
 
 use BackedEnum;
+use DateTime;
 use DateTimeImmutable;
-use DateTimeInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\UnitOfWork;
 use Doctrine\Persistence\Mapping\ClassMetadataFactory;
@@ -82,7 +82,7 @@ final class IdentifierFlattener
                 if ($id[$field] instanceof BackedEnum) {
                     $flatId[$field] = $id[$field]->value;
                 } elseif ($id[$field] instanceof DateTimeImmutable) {
-                    $flatId[$field] = $id[$field]->format(DateTimeInterface::ATOM);
+                    $flatId[$field] = $id[$field]->format(DateTime::ATOM);
                 } else {
                     $flatId[$field] = $id[$field];
                 }
