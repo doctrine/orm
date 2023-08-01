@@ -14,12 +14,12 @@ General Considerations
 Every entity with a composite key cannot use an id generator other than "NONE". That means
 the ID fields have to have their values set before you call ``EntityManager#persist($entity)``.
 
-Primitive Types only
-~~~~~~~~~~~~~~~~~~~~
+Allowed Types
+~~~~~~~~~~~~~
 
 You can have composite keys as long as they only consist of the primitive types
-``integer`` and ``string``. Suppose you want to create a database of cars and use the model-name
-and year of production as primary keys:
+``integer`` and ``string`` or object of ``DateTimeImmutable``. Suppose you want to create a database of cars and use
+the model-name and year of production as primary keys:
 
 .. configuration-block::
 

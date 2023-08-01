@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Doctrine\ORM;
 
 use BackedEnum;
+use DateTime;
+use DateTimeImmutable;
 use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -1636,6 +1638,10 @@ class UnitOfWork implements PropertyChangedListener
                         return $value->value;
                     }
 
+                    if ($value instanceof DateTimeImmutable) {
+                        return $value->format(DateTime::ATOM);
+                    }
+
                     return $value;
                 },
                 $identifier
@@ -2919,6 +2925,10 @@ class UnitOfWork implements PropertyChangedListener
                         if ($joinColumnValue !== null) {
                             if ($joinColumnValue instanceof BackedEnum) {
                                 $joinColumnValue = $joinColumnValue->value;
+                            }
+
+                            if ($joinColumnValue instanceof DateTimeImmutable) {
+                                $joinColumnValue = $joinColumnValue->format(DateTime::ATOM);
                             }
 
                             if ($targetClass->containsForeignIdentifier) {
