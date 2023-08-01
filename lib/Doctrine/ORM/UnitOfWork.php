@@ -1315,6 +1315,14 @@ class UnitOfWork implements PropertyChangedListener
                     continue;
                 }
 
+                // An entity that references back to itself _and_ uses an application-provided ID
+                // (the "NONE" generator strategy) can be exempted from commit order computation.
+                // See https://github.com/doctrine/orm/pull/10735/ for more details on this edge case.
+                // A non-NULLable self-reference would be a cycle in the graph.
+                if ($targetEntity === $entity && $class->isIdentifierNatural()) {
+                    continue;
+                }
+
                 // According to https://www.doctrine-project.org/projects/doctrine-orm/en/2.14/reference/annotations-reference.html#annref_joincolumn,
                 // the default for "nullable" is true. Unfortunately, it seems this default is not applied at the metadata driver, factory or other
                 // level, but in fact we may have an undefined 'nullable' key here, so we must assume that default here as well.
