@@ -1,5 +1,17 @@
 # Upgrade to 2.16
 
+## Potential changes to the order in which `INSERT`s are executed
+
+In https://github.com/doctrine/orm/pull/10547, the commit order computation was improved
+to fix a series of bugs where a correct (working) commit order was previously not found.
+Also, the new computation may get away with fewer queries being executed: By inserting
+referred-to entities first and using their ID values for foreign key fields in subsequent
+`INSERT` statements, additional `UPDATE` statements that were previously necessary can be
+avoided.
+
+When using database-provided, auto-incrementing IDs, this may lead to IDs being assigned
+to entities in a different order than it was previously the case.
+
 ## Deprecated `\Doctrine\ORM\Internal\CommitOrderCalculator` and related classes
 
 With changes made to the commit order computation, the internal classes
