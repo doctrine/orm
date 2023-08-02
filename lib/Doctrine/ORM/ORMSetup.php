@@ -101,10 +101,11 @@ final class ORMSetup
         array $paths,
         bool $isDevMode = false,
         ?string $proxyDir = null,
-        ?CacheItemPoolInterface $cache = null
+        ?CacheItemPoolInterface $cache = null,
+        bool $reportFieldsWhereDeclared = false
     ): Configuration {
         $config = self::createConfiguration($isDevMode, $proxyDir, $cache);
-        $config->setMetadataDriverImpl(new AttributeDriver($paths));
+        $config->setMetadataDriverImpl(new AttributeDriver($paths, $reportFieldsWhereDeclared));
 
         return $config;
     }
