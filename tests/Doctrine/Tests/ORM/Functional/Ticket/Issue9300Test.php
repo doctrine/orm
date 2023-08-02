@@ -10,18 +10,19 @@ use Doctrine\Tests\Models\Issue9300\Issue9300Parent;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
- * @group 9300
+ * @group GH-9300
  */
 class Issue9300Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
     {
         $this->useModelSet('issue9300');
+
         parent::setUp();
     }
 
     /**
-     * @group #9300
+     * @group GH-9300
      */
     public function testPersistedCollectionIsPresentInOriginalDataAfterFlush(): void
     {
@@ -45,7 +46,7 @@ class Issue9300Test extends OrmFunctionalTestCase
     }
 
     /**
-     * @group #9300
+     * @group GH-9300
      */
     public function testPersistingCollectionAfterFlushWorksAsExpected(): void
     {

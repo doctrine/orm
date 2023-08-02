@@ -26,7 +26,7 @@ class Issue9300Child
     public $id;
 
     /**
-     * @var Collection|Issue9300Parent
+     * @var Collection<int, Issue9300Parent>
      * @ManyToMany(targetEntity="Issue9300Parent")
      */
     public $parents;
