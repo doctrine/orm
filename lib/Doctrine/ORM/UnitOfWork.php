@@ -402,9 +402,8 @@ class UnitOfWork implements PropertyChangedListener
                 $this->orphanRemovals)
         ) {
             $this->dispatchOnFlushEvent();
-            $this->dispatchPostFlushEvent();
-
             $this->postCommitCleanup($entity);
+            $this->dispatchPostFlushEvent();
 
             return; // Nothing to do.
         }
@@ -499,9 +498,9 @@ class UnitOfWork implements PropertyChangedListener
             $coll->takeSnapshot();
         }
 
-        $this->dispatchPostFlushEvent();
-
         $this->postCommitCleanup($entity);
+
+        $this->dispatchPostFlushEvent();
     }
 
     /** @param object|object[]|null $entity */
