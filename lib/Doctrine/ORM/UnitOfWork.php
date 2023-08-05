@@ -3048,6 +3048,7 @@ EXCEPTION
                                 // We are negating the condition here. Other cases will assume it is valid!
                                 case $hints['fetchMode'][$class->name][$field] !== ClassMetadata::FETCH_EAGER:
                                     $newValue = $this->em->getProxyFactory()->getProxy($assoc['targetEntity'], $normalizedAssociatedId);
+                                    $this->registerManaged($newValue, $associatedId, []);
                                     break;
 
                                 // Deferred eager load only works for single identifier classes
@@ -3056,6 +3057,7 @@ EXCEPTION
                                     $this->eagerLoadingEntities[$targetClass->rootEntityName][$relatedIdHash] = current($normalizedAssociatedId);
 
                                     $newValue = $this->em->getProxyFactory()->getProxy($assoc['targetEntity'], $normalizedAssociatedId);
+                                    $this->registerManaged($newValue, $associatedId, []);
                                     break;
 
                                 default:
@@ -3063,13 +3065,6 @@ EXCEPTION
                                     $newValue = $this->em->find($assoc['targetEntity'], $normalizedAssociatedId);
                                     break;
                             }
-
-                            if ($newValue === null) {
-                                break;
-                            }
-
-                            $this->registerManaged($newValue, $associatedId, []);
-                            break;
                     }
 
                     $this->originalEntityData[$oid][$field] = $newValue;
