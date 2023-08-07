@@ -1386,32 +1386,59 @@
       <code>$classMetadata</code>
       <code>$classMetadata</code>
     </ArgumentTypeCoercion>
-    <DirectConstructorCall>
-      <code><![CDATA[$proxy->__construct(static function (InternalProxy $object) use ($initializer, $proxy): void {
-            $initializer($object, $proxy);
-        })]]></code>
-    </DirectConstructorCall>
+    <DeprecatedMethod>
+      <code>createCloner</code>
+      <code>createInitializer</code>
+    </DeprecatedMethod>
     <InvalidArgument>
       <code><![CDATA[$classMetadata->getReflectionProperties()]]></code>
       <code><![CDATA[$em->getMetadataFactory()]]></code>
       <code><![CDATA[$em->getMetadataFactory()]]></code>
     </InvalidArgument>
+    <InvalidNullableReturnType>
+      <code>Closure</code>
+    </InvalidNullableReturnType>
+    <InvalidPropertyAssignmentValue>
+      <code><![CDATA[$this->proxyFactories]]></code>
+    </InvalidPropertyAssignmentValue>
     <NoInterfaceProperties>
       <code><![CDATA[$metadata->isEmbeddedClass]]></code>
       <code><![CDATA[$metadata->isMappedSuperclass]]></code>
     </NoInterfaceProperties>
+    <NullableReturnStatement>
+      <code><![CDATA[$this->proxyFactories[$className] = $proxyFactory]]></code>
+    </NullableReturnStatement>
+    <PossiblyFalseArgument>
+      <code>$i</code>
+    </PossiblyFalseArgument>
+    <PossiblyFalseOperand>
+      <code>$i</code>
+    </PossiblyFalseOperand>
     <PossiblyNullPropertyFetch>
       <code><![CDATA[$property->name]]></code>
       <code><![CDATA[$property->name]]></code>
     </PossiblyNullPropertyFetch>
     <PossiblyNullReference>
+      <code>getValue</code>
       <code>setAccessible</code>
-      <code>setAccessible</code>
+      <code>setValue</code>
+      <code>setValue</code>
     </PossiblyNullReference>
+    <TypeDoesNotContainType>
+      <code><![CDATA[$autoGenerate < 0]]></code>
+      <code><![CDATA[$autoGenerate > 4]]></code>
+    </TypeDoesNotContainType>
     <UndefinedInterfaceMethod>
-      <code>__construct</code>
       <code>__wakeup</code>
     </UndefinedInterfaceMethod>
+    <UndefinedMethod>
+      <code><![CDATA[self::createLazyGhost(static function (InternalProxy $object) use ($initializer, &$proxy): void {
+                $initializer($object, $proxy);
+            }, $skippedProperties)]]></code>
+    </UndefinedMethod>
+    <UnresolvableInclude>
+      <code>require $fileName</code>
+    </UnresolvableInclude>
   </file>
   <file src="lib/Doctrine/ORM/Query.php">
     <DeprecatedClass>
