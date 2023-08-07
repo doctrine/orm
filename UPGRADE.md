@@ -1,3 +1,10 @@
+# Upgrade to 2.17
+
+## Deprecate not-enabling lazy-ghosts
+
+Not enabling lazy ghost objects is deprecated. In ORM 3.0, they will be always enabled.
+Ensure `Doctrine\ORM\Configuration::setLazyGhostObjectEnabled(true)` is called to enable them.
+
 # Upgrade to 2.16
 
 ## Deprecated accepting duplicate IDs in the identity map
