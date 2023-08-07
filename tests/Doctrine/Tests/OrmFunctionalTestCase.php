@@ -338,6 +338,10 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             Models\Issue5989\Issue5989Employee::class,
             Models\Issue5989\Issue5989Manager::class,
         ],
+        'issue9300' => [
+            Models\Issue9300\Issue9300Child::class,
+            Models\Issue9300\Issue9300Parent::class,
+        ],
     ];
 
     /** @param class-string ...$models */
