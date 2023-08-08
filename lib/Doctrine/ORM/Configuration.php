@@ -36,8 +36,6 @@ use function trait_exists;
  * It combines all configuration options from DBAL & ORM.
  *
  * Internal note: When adding a new configuration option just write a getter/setter pair.
- *
- * @psalm-import-type AutogenerateMode from ProxyFactory
  */
 class Configuration extends \Doctrine\DBAL\Configuration
 {
@@ -63,8 +61,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
     /**
      * Gets the strategy for automatically generating proxy classes.
      *
-     * @return int Possible values are constants of Doctrine\ORM\Proxy\ProxyFactory.
-     * @psalm-return AutogenerateMode
+     * @return ProxyFactory::AUTOGENERATE_*
      */
     public function getAutoGenerateProxyClasses(): int
     {
@@ -74,9 +71,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
     /**
      * Sets the strategy for automatically generating proxy classes.
      *
-     * @param bool|int $autoGenerate Possible values are constants of Doctrine\ORM\Proxy\ProxyFactory.
-     * @psalm-param bool|AutogenerateMode $autoGenerate
-     * True is converted to AUTOGENERATE_ALWAYS, false to AUTOGENERATE_NEVER.
+     * @param bool|ProxyFactory::AUTOGENERATE_* $autoGenerate True is converted to AUTOGENERATE_ALWAYS, false to AUTOGENERATE_NEVER.
      */
     public function setAutoGenerateProxyClasses(bool|int $autoGenerate): void
     {

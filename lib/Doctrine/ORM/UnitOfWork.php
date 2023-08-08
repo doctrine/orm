@@ -990,6 +990,20 @@ class UnitOfWork implements PropertyChangedListener
         foreach ($actualData as $propName => $actualValue) {
             $orgValue = $originalData[$propName] ?? null;
 
+            if (isset($class->fieldMappings[$propName]['enumType'])) {
+                if (is_array($orgValue)) {
+                    foreach ($orgValue as $id => $val) {
+                        if ($val instanceof BackedEnum) {
+                            $orgValue[$id] = $val->value;
+                        }
+                    }
+                } else {
+                    if ($orgValue instanceof BackedEnum) {
+                        $orgValue = $orgValue->value;
+                    }
+                }
+            }
+
             if ($orgValue !== $actualValue) {
                 $changeSet[$propName] = [$orgValue, $actualValue];
             }
@@ -1037,30 +1051,24 @@ class UnitOfWork implements PropertyChangedListener
 
         $postInsertIds = $persister->executeInserts();
 
-        if ($postInsertIds) {
+        if (is_array($postInsertIds)) {
+            Deprecation::trigger(
+                'doctrine/orm',
+                'https://github.com/doctrine/orm/pull/10743/',
+                'Returning post insert IDs from \Doctrine\ORM\Persisters\Entity\EntityPersister::executeInserts() is deprecated and will not be supported in Doctrine ORM 3.0. Make the persister call Doctrine\ORM\UnitOfWork::assignPostInsertId() instead.',
+            );
+
             // Persister returned post-insert IDs
             foreach ($postInsertIds as $postInsertId) {
-                $idField = $class->getSingleIdentifierFieldName();
-                $idValue = $this->convertSingleFieldIdentifierToPHPValue($class, $postInsertId['generatedId']);
-
-                $entity = $postInsertId['entity'];
-                $oid    = spl_object_id($entity);
-
-                $class->reflFields[$idField]->setValue($entity, $idValue);
-
-                $this->entityIdentifiers[$oid]            = [$idField => $idValue];
-                $this->entityStates[$oid]                 = self::STATE_MANAGED;
-                $this->originalEntityData[$oid][$idField] = $idValue;
-
-                $this->addToIdentityMap($entity);
+                $this->assignPostInsertId($postInsertId['entity'], $postInsertId['generatedId']);
             }
-        } else {
-            foreach ($insertionsForClass as $oid => $entity) {
-                if (! isset($this->entityIdentifiers[$oid])) {
-                    //entity was not added to identity map because some identifiers are foreign keys to new entities.
-                    //add it now
-                    $this->addToEntityIdentifiersAndEntityMap($class, $oid, $entity);
-                }
+        }
+
+        foreach ($insertionsForClass as $oid => $entity) {
+            if (! isset($this->entityIdentifiers[$oid])) {
+                //entity was not added to identity map because some identifiers are foreign keys to new entities.
+                //add it now
+                $this->addToEntityIdentifiersAndEntityMap($class, $oid, $entity);
             }
         }
 
@@ -1421,6 +1429,30 @@ class UnitOfWork implements PropertyChangedListener
         $className     = $classMetadata->rootEntityName;
 
         if (isset($this->identityMap[$className][$idHash])) {
+            if ($this->identityMap[$className][$idHash] !== $entity) {
+                throw new RuntimeException(sprintf(
+                    <<<'EXCEPTION'
+While adding an entity of class %s with an ID hash of "%s" to the identity map,
+another object of class %s was already present for the same ID. This exception
+is a safeguard against an internal inconsistency - IDs should uniquely map to
+entity object instances. This problem may occur if:
+
+- you use application-provided IDs and reuse ID values;
+- database-provided IDs are reassigned after truncating the database without
+  clearing the EntityManager;
+- you might have been using EntityManager#getReference() to create a reference
+  for a nonexistent ID that was subsequently (by the RDBMS) assigned to another
+  entity.
+
+Otherwise, it might be an ORM-internal inconsistency, please report it.
+EXCEPTION
+                    ,
+                    get_class($entity),
+                    $idHash,
+                    get_class($this->identityMap[$className][$idHash]),
+                ));
+            }
+
             return false;
         }
 
@@ -2285,12 +2317,7 @@ class UnitOfWork implements PropertyChangedListener
         } else {
             $entity = $class->newInstance();
             $oid    = spl_object_id($entity);
-
-            $this->entityIdentifiers[$oid]  = $id;
-            $this->entityStates[$oid]       = self::STATE_MANAGED;
-            $this->originalEntityData[$oid] = $data;
-
-            $this->identityMap[$class->rootEntityName][$idHash] = $entity;
+            $this->registerManaged($entity, $id, $data);
 
             if (isset($hints[Query::HINT_READ_ONLY])) {
                 $this->readOnlyObjects[$oid] = true;
@@ -2455,13 +2482,7 @@ class UnitOfWork implements PropertyChangedListener
                                 break;
                             }
 
-                            // PERF: Inlined & optimized code from UnitOfWork#registerManaged()
-                            $newValueOid                                                     = spl_object_id($newValue);
-                            $this->entityIdentifiers[$newValueOid]                           = $associatedId;
-                            $this->identityMap[$targetClass->rootEntityName][$relatedIdHash] = $newValue;
-
-                            $this->entityStates[$newValueOid] = self::STATE_MANAGED;
-                            // make sure that when an proxy is then finally loaded, $this->originalEntityData is set also!
+                            $this->registerManaged($newValue, $associatedId, []);
                             break;
                     }
 
@@ -3037,5 +3058,31 @@ class UnitOfWork implements PropertyChangedListener
         }
 
         return $normalizedAssociatedId;
+    }
+
+    /**
+     * Assign a post-insert generated ID to an entity
+     *
+     * This is used by EntityPersisters after they inserted entities into the database.
+     * It will place the assigned ID values in the entity's fields and start tracking
+     * the entity in the identity map.
+     *
+     * @param object $entity
+     * @param mixed  $generatedId
+     */
+    final public function assignPostInsertId($entity, $generatedId): void
+    {
+        $class   = $this->em->getClassMetadata(get_class($entity));
+        $idField = $class->getSingleIdentifierFieldName();
+        $idValue = $this->convertSingleFieldIdentifierToPHPValue($class, $generatedId);
+        $oid     = spl_object_id($entity);
+
+        $class->reflFields[$idField]->setValue($entity, $idValue);
+
+        $this->entityIdentifiers[$oid]            = [$idField => $idValue];
+        $this->entityStates[$oid]                 = self::STATE_MANAGED;
+        $this->originalEntityData[$oid][$idField] = $idValue;
+
+        $this->addToIdentityMap($entity);
     }
 }

@@ -1915,6 +1915,10 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
         $this->fieldMappings[$fieldMapping->fieldName] = $fieldMapping;
         $this->columnNames[$fieldMapping->fieldName]   = $fieldMapping->columnName;
         $this->fieldNames[$fieldMapping->columnName]   = $fieldMapping->fieldName;
+
+        if (isset($fieldMapping->generated)) {
+            $this->requiresFetchAfterChange = true;
+        }
     }
 
     /**

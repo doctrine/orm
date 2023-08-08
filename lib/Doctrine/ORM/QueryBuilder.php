@@ -634,7 +634,10 @@ class QueryBuilder implements Stringable
      */
     public function distinct(bool $flag = true): static
     {
-        $this->dqlParts['distinct'] = $flag;
+        if ($this->dqlParts['distinct'] !== $flag) {
+            $this->dqlParts['distinct'] = $flag;
+            $this->dql                  = null;
+        }
 
         return $this;
     }

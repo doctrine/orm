@@ -17,9 +17,9 @@ setup for the latest code in trunk.
 
 .. code-block:: xml
 
-    <doctrine-mapping xmlns="https://doctrine-project.org/schemas/orm/doctrine-mapping"
+    <doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
           xmlns:xsi="https://www.w3.org/2001/XMLSchema-instance"
-          xsi:schemaLocation="https://doctrine-project.org/schemas/orm/doctrine-mapping
+          xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
                               https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
 
         ...
@@ -103,9 +103,9 @@ of several common elements:
 
     // Doctrine.Tests.ORM.Mapping.User.dcm.xml
     <?xml version="1.0" encoding="UTF-8"?>
-    <doctrine-mapping xmlns="https://doctrine-project.org/schemas/orm/doctrine-mapping"
+    <doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
           xmlns:xsi="https://www.w3.org/2001/XMLSchema-instance"
-          xsi:schemaLocation="https://doctrine-project.org/schemas/orm/doctrine-mapping
+          xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
                               https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
 
         <entity name="Doctrine\Tests\ORM\Mapping\User" table="cms_users">
@@ -769,9 +769,9 @@ entity relationship. You can define this in XML with the "association-key" attri
 
 .. code-block:: xml
 
-    <doctrine-mapping xmlns="https://doctrine-project.org/schemas/orm/doctrine-mapping"
+    <doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
           xmlns:xsi="https://www.w3.org/2001/XMLSchema-instance"
-          xsi:schemaLocation="https://doctrine-project.org/schemas/orm/doctrine-mapping
+          xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
                               https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
 
          <entity name="Application\Model\ArticleAttribute">

@@ -18,7 +18,6 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\InheritanceType;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\OneToMany;
-use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use PHPUnit\Framework\Attributes\Group;
@@ -81,7 +80,7 @@ final class GH6362Test extends OrmFunctionalTestCase
 
         $stmt     = new Result(new ArrayResult($resultSet), $this->createMock(Connection::class));
         $hydrator = new ObjectHydrator($this->_em);
-        $result   = $hydrator->hydrateAll($stmt, $rsm, [Query::HINT_FORCE_PARTIAL_LOAD => true]);
+        $result   = $hydrator->hydrateAll($stmt, $rsm);
 
         self::assertInstanceOf(GH6362Start::class, $result[0]['base']);
         self::assertInstanceOf(GH6362Child::class, $result[1][0]);

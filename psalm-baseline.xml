@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<files psalm-version="5.12.0@f90118cdeacd0088e7215e64c0c99ceca819e176">
+<files psalm-version="5.13.0@a0a9c27630bcf8301ee78cb06741d2907d8c9fef">
   <file src="lib/Doctrine/ORM/AbstractQuery.php">
     <FalsableReturnStatement>
       <code><![CDATA[! $filteredParameters->isEmpty() ? $filteredParameters->first() : null]]></code>
@@ -143,11 +143,6 @@
       <code>lock</code>
       <code>lock</code>
     </UndefinedInterfaceMethod>
-  </file>
-  <file src="lib/Doctrine/ORM/Cache/Region/FileLockRegion.php">
-    <ArgumentTypeCoercion>
-      <code><![CDATA[sprintf('%s/*.%s', $this->directory, self::LOCK_EXTENSION)]]></code>
-    </ArgumentTypeCoercion>
   </file>
   <file src="lib/Doctrine/ORM/Cache/TimestampQueryCacheValidator.php">
     <NoInterfaceProperties>
@@ -664,6 +659,7 @@
       <code><![CDATA[$association->fetch === ClassMetadata::FETCH_EXTRA_LAZY
             ? new LazyCriteriaCollection($persister, $criteria)
             : new ArrayCollection($persister->loadCriteria($criteria))]]></code>
+      <code><![CDATA[$this->em->find($this->typeClass->name, $key)]]></code>
     </InvalidReturnStatement>
     <InvalidReturnType>
       <code><![CDATA[Collection<TKey, T>]]></code>
@@ -754,13 +750,17 @@
       <code>$classMetadata</code>
       <code>$classMetadata</code>
     </ArgumentTypeCoercion>
+    <DirectConstructorCall>
+      <code><![CDATA[$proxy->__construct(static function (Proxy $object) use ($initializer, $proxy): void {
+            $initializer($object, $proxy);
+        })]]></code>
+    </DirectConstructorCall>
     <InvalidArgument>
       <code><![CDATA[$classMetadata->getReflectionProperties()]]></code>
     </InvalidArgument>
     <NoInterfaceProperties>
       <code><![CDATA[$metadata->isEmbeddedClass]]></code>
       <code><![CDATA[$metadata->isMappedSuperclass]]></code>
-      <code><![CDATA[$proxy->__isCloning]]></code>
     </NoInterfaceProperties>
     <PossiblyNullArgument>
       <code><![CDATA[$property->name]]></code>
@@ -773,6 +773,7 @@
       <code>setValue</code>
     </PossiblyNullReference>
     <UndefinedInterfaceMethod>
+      <code>__construct</code>
       <code>__wakeup</code>
     </UndefinedInterfaceMethod>
   </file>
@@ -1033,6 +1034,7 @@
   <file src="lib/Doctrine/ORM/Query/SqlWalker.php">
     <DocblockTypeContradiction>
       <code><![CDATA[$this->conn->quote((string) $newValue)]]></code>
+      <code>throw QueryException::invalidLiteral($literal)</code>
     </DocblockTypeContradiction>
     <InvalidArgument>
       <code><![CDATA[$join->conditionalExpression]]></code>

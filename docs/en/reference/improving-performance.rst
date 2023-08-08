@@ -91,7 +91,7 @@ Apply Best Practices
 A lot of the points mentioned in the Best Practices chapter will
 also positively affect the performance of Doctrine.
 
-See :doc:`Best Practices <reference/best-practices>`
+See :doc:`Best Practices </reference/best-practices>`
 
 Change Tracking policies
 ------------------------

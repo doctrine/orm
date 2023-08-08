@@ -34,6 +34,7 @@ use Doctrine\Tests\OrmTestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\MockObject\MockObject;
+use RuntimeException;
 use stdClass;
 
 use function random_int;
@@ -74,6 +75,8 @@ class UnitOfWorkTest extends OrmTestCase
         $driverConnection = $this->createMock(Driver\Connection::class);
         $driverConnection->method('prepare')
             ->willReturn($driverStatement);
+        $driverConnection->method('lastInsertId')
+            ->willReturnOnConsecutiveCalls(1, 2, 3, 4, 5, 6);
 
         $driver = $this->createMock(Driver::class);
         $driver->method('getDatabasePlatform')
@@ -620,6 +623,25 @@ class UnitOfWorkTest extends OrmTestCase
         // Collection is clean, snapshot has been updated
         self::assertFalse($user->phonenumbers->isDirty());
         self::assertEmpty($user->phonenumbers->getSnapshot());
+    }
+
+    public function testItThrowsWhenApplicationProvidedIdsCollide(): void
+    {
+        // We're using application-provided IDs and assign the same ID twice
+        // Note this is about colliding IDs in the identity map in memory.
+        // Duplicate database-level IDs would be spotted when the EM is flushed.
+
+        $phone1              = new CmsPhonenumber();
+        $phone1->phonenumber = '1234';
+        $this->_unitOfWork->persist($phone1);
+
+        $phone2              = new CmsPhonenumber();
+        $phone2->phonenumber = '1234';
+
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessageMatches('/another object .* was already present for the same ID/');
+
+        $this->_unitOfWork->persist($phone2);
     }
 }
 

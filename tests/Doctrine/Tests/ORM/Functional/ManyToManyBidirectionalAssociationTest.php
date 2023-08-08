@@ -105,8 +105,7 @@ class ManyToManyBidirectionalAssociationTest extends AbstractManyToManyAssociati
     /** @psalm-return list<ECommerceProduct> */
     protected function findProducts(): array
     {
-        $query = $this->_em->createQuery('SELECT p, c FROM Doctrine\Tests\Models\ECommerce\ECommerceProduct p LEFT JOIN p.categories c ORDER BY p.id, c.id');
-        //$query->setHint(Query::HINT_FORCE_PARTIAL_LOAD, true);
+        $query  = $this->_em->createQuery('SELECT p, c FROM Doctrine\Tests\Models\ECommerce\ECommerceProduct p LEFT JOIN p.categories c ORDER BY p.id, c.id');
         $result = $query->getResult();
         self::assertCount(2, $result);
         $cats1 = $result[0]->getCategories();
@@ -122,8 +121,7 @@ class ManyToManyBidirectionalAssociationTest extends AbstractManyToManyAssociati
     /** @psalm-return list<ECommerceCategory> */
     protected function findCategories(): array
     {
-        $query = $this->_em->createQuery('SELECT c, p FROM Doctrine\Tests\Models\ECommerce\ECommerceCategory c LEFT JOIN c.products p ORDER BY c.id, p.id');
-        //$query->setHint(Query::HINT_FORCE_PARTIAL_LOAD, true);
+        $query  = $this->_em->createQuery('SELECT c, p FROM Doctrine\Tests\Models\ECommerce\ECommerceCategory c LEFT JOIN c.products p ORDER BY c.id, p.id');
         $result = $query->getResult();
         self::assertCount(2, $result);
         self::assertInstanceOf(ECommerceCategory::class, $result[0]);
