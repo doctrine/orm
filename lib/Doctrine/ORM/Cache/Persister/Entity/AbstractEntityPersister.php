@@ -270,7 +270,7 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
     /**
      * {@inheritDoc}
      */
-    public function executeInserts(): array
+    public function executeInserts()
     {
         $this->queuedCache['insert'] = $this->persister->getInserts();
 

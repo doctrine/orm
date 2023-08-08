@@ -15,11 +15,13 @@ use Doctrine\Tests\IterableTester;
 use Doctrine\Tests\Models\CMS\CmsAddress;
 use Doctrine\Tests\Models\CMS\CmsArticle;
 use Doctrine\Tests\Models\CMS\CmsComment;
+use Doctrine\Tests\Models\CMS\CmsGroup;
 use Doctrine\Tests\Models\CMS\CmsPhonenumber;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use InvalidArgumentException;
 use PHPUnit\Framework\Attributes\Group;
+use RuntimeException;
 
 class BasicFunctionalTest extends OrmFunctionalTestCase
 {
@@ -514,7 +516,7 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
         self::assertEquals(4, $gblanco2->getPhonenumbers()->count());
     }
 
-    public function testSetSetAssociationWithGetReference(): void
+    public function testSetToOneAssociationWithGetReference(): void
     {
         $user           = new CmsUser();
         $user->name     = 'Guilherme';
@@ -542,13 +544,68 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
+        // Assume we only got the identifier of the user and now want to attach
+        // the article to the user without actually loading it, using getReference().
+        $userRef = $this->_em->getReference(CmsUser::class, $user->getId());
+        self::assertInstanceOf(Proxy::class, $userRef);
+        self::assertFalse($userRef->__isInitialized());
+
+        $article        = new CmsArticle();
+        $article->topic = 'topic';
+        $article->text  = 'text';
+        $article->setAuthor($userRef);
+
+        $this->_em->persist($article);
+        $this->_em->flush();
+
+        self::assertFalse($userRef->__isInitialized());
+
+        $this->_em->clear();
+
         // Check with a fresh load that the association is indeed there
-        $query   = $this->_em->createQuery("select u, a from Doctrine\Tests\Models\CMS\CmsUser u join u.address a where u.username='gblanco'");
+        $query   = $this->_em->createQuery("select u, a from Doctrine\Tests\Models\CMS\CmsUser u join u.articles a where u.username='gblanco'");
         $gblanco = $query->getSingleResult();
 
         self::assertInstanceOf(CmsUser::class, $gblanco);
-        self::assertInstanceOf(CmsAddress::class, $gblanco->getAddress());
-        self::assertEquals('Berlin', $gblanco->getAddress()->getCity());
+        self::assertInstanceOf(CmsArticle::class, $gblanco->articles[0]);
+        self::assertSame($article->id, $gblanco->articles[0]->id);
+        self::assertSame('text', $gblanco->articles[0]->text);
+    }
+
+    public function testAddToToManyAssociationWithGetReference(): void
+    {
+        $group       = new CmsGroup();
+        $group->name = 'admins';
+        $this->_em->persist($group);
+        $this->_em->flush();
+        $this->_em->clear();
+
+        // Assume we only got the identifier of the user and now want to attach
+        // the article to the user without actually loading it, using getReference().
+        $groupRef = $this->_em->getReference(CmsGroup::class, $group->id);
+        self::assertInstanceOf(Proxy::class, $groupRef);
+        self::assertFalse($groupRef->__isInitialized());
+
+        $user           = new CmsUser();
+        $user->name     = 'Guilherme';
+        $user->username = 'gblanco';
+        $user->groups->add($groupRef);
+
+        $this->_em->persist($user);
+        $this->_em->flush();
+
+        self::assertFalse($groupRef->__isInitialized());
+
+        $this->_em->clear();
+
+        // Check with a fresh load that the association is indeed there
+        $query   = $this->_em->createQuery("select u, a from Doctrine\Tests\Models\CMS\CmsUser u join u.groups a where u.username='gblanco'");
+        $gblanco = $query->getSingleResult();
+
+        self::assertInstanceOf(CmsUser::class, $gblanco);
+        self::assertInstanceOf(CmsGroup::class, $gblanco->groups[0]);
+        self::assertSame($group->id, $gblanco->groups[0]->id);
+        self::assertSame('admins', $gblanco->groups[0]->name);
     }
 
     public function testOneToManyCascadeRemove(): void
@@ -1020,6 +1077,35 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
 
         $this->_em->persist($user);
 
+        $this->_em->flush();
+    }
+
+    public function testItThrowsWhenReferenceUsesIdAssignedByDatabase(): void
+    {
+        $user           = new CmsUser();
+        $user->name     = 'test';
+        $user->username = 'test';
+        $this->_em->persist($user);
+        $this->_em->flush();
+
+        // Obtain a reference object for the next ID. This is a user error - references
+        // should be fetched only for existing IDs
+        $ref = $this->_em->getReference(CmsUser::class, $user->id + 1);
+
+        $user2           = new CmsUser();
+        $user2->name     = 'test2';
+        $user2->username = 'test2';
+
+        // Now the database will assign an ID to the $user2 entity, but that place
+        // in the identity map is already taken by user error.
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessageMatches('/another object .* was already present for the same ID/');
+
+        // depending on ID generation strategy, the ID may be asssigned already here
+        // and the entity be put in the identity map
+        $this->_em->persist($user2);
+
+        // post insert IDs will be assigned during flush
         $this->_em->flush();
     }
 }

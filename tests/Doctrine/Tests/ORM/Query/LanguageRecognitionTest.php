@@ -10,7 +10,6 @@ use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\OneToOne;
-use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\AST\Functions\ConcatFunction;
 use Doctrine\ORM\Query\Parser;
 use Doctrine\ORM\Query\ParserResult;
@@ -45,7 +44,6 @@ class LanguageRecognitionTest extends OrmTestCase
     public function parseDql(string $dql, array $hints = []): ParserResult
     {
         $query = $this->entityManager->createQuery($dql);
-        $query->setHint(Query::HINT_FORCE_PARTIAL_LOAD, true);
         $query->setDQL($dql);
 
         foreach ($hints as $key => $value) {

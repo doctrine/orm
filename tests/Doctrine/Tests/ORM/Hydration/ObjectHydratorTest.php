@@ -12,7 +12,6 @@ use Doctrine\ORM\Internal\Hydration\ObjectHydrator;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\Proxy\ProxyFactory;
-use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\Tests\Models\CMS\CmsAddress;
 use Doctrine\Tests\Models\CMS\CmsArticle;
@@ -67,7 +66,7 @@ class ObjectHydratorTest extends HydrationTestCase
     }
 
     /**
-     * SELECT PARTIAL u.{id,name}
+     * SELECT u
      *   FROM Doctrine\Tests\Models\CMS\CmsUser u
      */
     public function testSimpleEntityQuery(): void
@@ -91,7 +90,7 @@ class ObjectHydratorTest extends HydrationTestCase
 
         $stmt     = $this->createResultMock($resultSet);
         $hydrator = new ObjectHydrator($this->entityManager);
-        $result   = $hydrator->hydrateAll($stmt, $rsm, [Query::HINT_FORCE_PARTIAL_LOAD => true]);
+        $result   = $hydrator->hydrateAll($stmt, $rsm);
 
         self::assertEquals(2, count($result));
 
@@ -106,7 +105,7 @@ class ObjectHydratorTest extends HydrationTestCase
     }
 
     /**
-     * SELECT PARTIAL u.{id,name} AS user
+     * SELECT u AS user
      *   FROM Doctrine\Tests\Models\CMS\CmsUser u
      */
     public function testSimpleEntityQueryWithAliasedUserEntity(): void
@@ -130,7 +129,7 @@ class ObjectHydratorTest extends HydrationTestCase
 
         $stmt     = $this->createResultMock($resultSet);
         $hydrator = new ObjectHydrator($this->entityManager);
-        $result   = $hydrator->hydrateAll($stmt, $rsm, [Query::HINT_FORCE_PARTIAL_LOAD => true]);
+        $result   = $hydrator->hydrateAll($stmt, $rsm);
 
         self::assertEquals(2, count($result));
 
@@ -148,7 +147,7 @@ class ObjectHydratorTest extends HydrationTestCase
     }
 
     /**
-     * SELECT PARTIAL u.{id, name}, PARTIAL a.{id, topic}
+     * SELECT u, a
      *   FROM Doctrine\Tests\Models\CMS\CmsUser u, Doctrine\Tests\Models\CMS\CmsArticle a
      */
     public function testSimpleMultipleRootEntityQuery(): void
@@ -179,7 +178,7 @@ class ObjectHydratorTest extends HydrationTestCase
 
         $stmt     = $this->createResultMock($resultSet);
         $hydrator = new ObjectHydrator($this->entityManager);
-        $result   = $hydrator->hydrateAll($stmt, $rsm, [Query::HINT_FORCE_PARTIAL_LOAD => true]);
+        $result   = $hydrator->hydrateAll($stmt, $rsm);
 
         self::assertEquals(4, count($result));
 
@@ -202,7 +201,7 @@ class ObjectHydratorTest extends HydrationTestCase
     }
 
     /**
-     * SELECT PARTIAL u.{id, name} AS user, PARTIAL a.{id, topic}
+     * SELECT u AS user, a
      *   FROM Doctrine\Tests\Models\CMS\CmsUser u, Doctrine\Tests\Models\CMS\CmsArticle a
      */
     public function testSimpleMultipleRootEntityQueryWithAliasedUserEntity(): void
@@ -233,7 +232,7 @@ class ObjectHydratorTest extends HydrationTestCase
 
         $stmt     = $this->createResultMock($resultSet);
         $hydrator = new ObjectHydrator($this->entityManager);
-        $result   = $hydrator->hydrateAll($stmt, $rsm, [Query::HINT_FORCE_PARTIAL_LOAD => true]);
+        $result   = $hydrator->hydrateAll($stmt, $rsm);
 
         self::assertEquals(4, count($result));
 
@@ -263,7 +262,7 @@ class ObjectHydratorTest extends HydrationTestCase
     }
 
     /**
-     * SELECT PARTIAL u.{id, name}, PARTIAL a.{id, topic} AS article
+     * SELECT u, a AS article
      *   FROM Doctrine\Tests\Models\CMS\CmsUser u, Doctrine\Tests\Models\CMS\CmsArticle a
      */
     public function testSimpleMultipleRootEntityQueryWithAliasedArticleEntity(): void
@@ -294,7 +293,7 @@ class ObjectHydratorTest extends HydrationTestCase
 
         $stmt     = $this->createResultMock($resultSet);
         $hydrator = new ObjectHydrator($this->entityManager);
-        $result   = $hydrator->hydrateAll($stmt, $rsm, [Query::HINT_FORCE_PARTIAL_LOAD => true]);
+        $result   = $hydrator->hydrateAll($stmt, $rsm);
 
         self::assertEquals(4, count($result));
 
@@ -324,7 +323,7 @@ class ObjectHydratorTest extends HydrationTestCase
     }
 
     /**
-     * SELECT PARTIAL u.{id, name} AS user, PARTIAL a.{id, topic} AS article
+     * SELECT u AS user, a AS article
      *   FROM Doctrine\Tests\Models\CMS\CmsUser u, Doctrine\Tests\Models\CMS\CmsArticle a
      */
     public function testSimpleMultipleRootEntityQueryWithAliasedEntities(): void
@@ -355,7 +354,7 @@ class ObjectHydratorTest extends HydrationTestCase
 
         $stmt     = $this->createResultMock($resultSet);
         $hydrator = new ObjectHydrator($this->entityManager);
-        $result   = $hydrator->hydrateAll($stmt, $rsm, [Query::HINT_FORCE_PARTIAL_LOAD => true]);
+        $result   = $hydrator->hydrateAll($stmt, $rsm);
 
         self::assertEquals(4, count($result));
 
@@ -385,7 +384,7 @@ class ObjectHydratorTest extends HydrationTestCase
     }
 
     /**
-     * SELECT PARTIAL u.{id, status}, COUNT(p.phonenumber) numPhones
+     * SELECT u, COUNT(p.phonenumber) numPhones
      *   FROM User u
      *   JOIN u.phonenumbers p
      *  GROUP BY u.id
@@ -416,7 +415,7 @@ class ObjectHydratorTest extends HydrationTestCase
 
         $stmt     = $this->createResultMock($resultSet);
         $hydrator = new ObjectHydrator($this->entityManager);
-        $result   = $hydrator->hydrateAll($stmt, $rsm, [Query::HINT_FORCE_PARTIAL_LOAD => true]);
+        $result   = $hydrator->hydrateAll($stmt, $rsm);
 
         self::assertEquals(2, count($result));
 
@@ -434,7 +433,7 @@ class ObjectHydratorTest extends HydrationTestCase
     }
 
     /**
-     * SELECT PARTIAL u.{id, status}, PARTIAL p.{phonenumber}, UPPER(u.name) nameUpper
+     * SELECT u, p, UPPER(u.name) nameUpper
      *   FROM Doctrine\Tests\Models\CMS\CmsUser u
      *   JOIN u.phonenumbers p
      */
@@ -479,7 +478,7 @@ class ObjectHydratorTest extends HydrationTestCase
 
         $stmt     = $this->createResultMock($resultSet);
         $hydrator = new ObjectHydrator($this->entityManager);
-        $result   = $hydrator->hydrateAll($stmt, $rsm, [Query::HINT_FORCE_PARTIAL_LOAD => true]);
+        $result   = $hydrator->hydrateAll($stmt, $rsm);
 
         self::assertEquals(2, count($result));
 
@@ -558,7 +557,7 @@ class ObjectHydratorTest extends HydrationTestCase
 
         $stmt     = $this->createResultMock($resultSet);
         $hydrator = new ObjectHydrator($this->entityManager);
-        $result   = $hydrator->hydrateAll($stmt, $rsm, [Query::HINT_FORCE_PARTIAL_LOAD => true]);
+        $result   = $hydrator->hydrateAll($stmt, $rsm);
 
         self::assertEquals(2, count($result));
 
@@ -671,7 +670,7 @@ class ObjectHydratorTest extends HydrationTestCase
 
         $stmt     = $this->createResultMock($resultSet);
         $hydrator = new ObjectHydrator($this->entityManager);
-        $result   = $hydrator->hydrateAll($stmt, $rsm, [Query::HINT_FORCE_PARTIAL_LOAD => true]);
+        $result   = $hydrator->hydrateAll($stmt, $rsm);
 
         self::assertEquals(2, count($result));
 
@@ -800,7 +799,7 @@ class ObjectHydratorTest extends HydrationTestCase
 
         $stmt     = $this->createResultMock($resultSet);
         $hydrator = new ObjectHydrator($this->entityManager);
-        $result   = $hydrator->hydrateAll($stmt, $rsm, [Query::HINT_FORCE_PARTIAL_LOAD => true]);
+        $result   = $hydrator->hydrateAll($stmt, $rsm);
 
         self::assertEquals(2, count($result));
 
@@ -913,7 +912,7 @@ class ObjectHydratorTest extends HydrationTestCase
 
         $stmt     = $this->createResultMock($resultSet);
         $hydrator = new ObjectHydrator($this->entityManager);
-        $result   = $hydrator->hydrateAll($stmt, $rsm, [Query::HINT_FORCE_PARTIAL_LOAD => true]);
+        $result   = $hydrator->hydrateAll($stmt, $rsm);
 
         self::assertEquals(2, count($result));
 
@@ -933,7 +932,7 @@ class ObjectHydratorTest extends HydrationTestCase
     }
 
     /**
-     * SELECT PARTIAL u.{id,name}
+     * SELECT u
      *   FROM Doctrine\Tests\Models\CMS\CmsUser u
      */
     #[Group('DDC-644')]
@@ -955,7 +954,7 @@ class ObjectHydratorTest extends HydrationTestCase
 
         $stmt     = $this->createResultMock($resultSet);
         $hydrator = new ObjectHydrator($this->entityManager);
-        $result   = $hydrator->hydrateAll($stmt, $rsm, [Query::HINT_FORCE_PARTIAL_LOAD => true]);
+        $result   = $hydrator->hydrateAll($stmt, $rsm);
 
         self::assertEquals(1, count($result));
         self::assertInstanceOf(CmsUser::class, $result[0]);
@@ -987,7 +986,7 @@ class ObjectHydratorTest extends HydrationTestCase
 
         $stmt     = $this->createResultMock($resultSet);
         $hydrator = new ObjectHydrator($this->entityManager);
-        $result   = $hydrator->hydrateAll($stmt, $rsm, [Query::HINT_FORCE_PARTIAL_LOAD => true]);
+        $result   = $hydrator->hydrateAll($stmt, $rsm);
 
         self::assertEquals(2, count($result));
 
@@ -1101,7 +1100,7 @@ class ObjectHydratorTest extends HydrationTestCase
     }
 
     /**
-     * SELECT PARTIAL u.{id, status}, PARTIAL a.{id, topic}, PARTIAL c.{id, topic}
+     * SELECT u, a, c
      *   FROM Doctrine\Tests\Models\CMS\CmsUser u
      *   LEFT JOIN u.articles a
      *   LEFT JOIN a.comments c
@@ -1152,7 +1151,7 @@ class ObjectHydratorTest extends HydrationTestCase
 
         $stmt     = $this->createResultMock($resultSet);
         $hydrator = new ObjectHydrator($this->entityManager);
-        $result   = $hydrator->hydrateAll($stmt, $rsm, [Query::HINT_FORCE_PARTIAL_LOAD => true]);
+        $result   = $hydrator->hydrateAll($stmt, $rsm);
 
         self::assertEquals(2, count($result));
 
@@ -1164,7 +1163,7 @@ class ObjectHydratorTest extends HydrationTestCase
     }
 
     /**
-     * SELECT PARTIAL u.{id, status} AS user, PARTIAL a.{id, topic}, PARTIAL c.{id, topic}
+     * SELECT u AS user, a, c
      *   FROM Doctrine\Tests\Models\CMS\CmsUser u
      *   LEFT JOIN u.articles a
      *   LEFT JOIN a.comments c
@@ -1215,7 +1214,7 @@ class ObjectHydratorTest extends HydrationTestCase
 
         $stmt     = $this->createResultMock($resultSet);
         $hydrator = new ObjectHydrator($this->entityManager);
-        $result   = $hydrator->hydrateAll($stmt, $rsm, [Query::HINT_FORCE_PARTIAL_LOAD => true]);
+        $result   = $hydrator->hydrateAll($stmt, $rsm);
 
         self::assertEquals(2, count($result));
 
@@ -1230,7 +1229,7 @@ class ObjectHydratorTest extends HydrationTestCase
     }
 
     /**
-     * SELECT PARTIAL u.{id, name}
+     * SELECT u
      *   FROM Doctrine\Tests\Models\CMS\CmsUser u
      */
     public function testResultIteration(): void
@@ -1257,7 +1256,6 @@ class ObjectHydratorTest extends HydrationTestCase
         $iterableResult = $hydrator->toIterable(
             $this->createResultMock($resultSet),
             $rsm,
-            [Query::HINT_FORCE_PARTIAL_LOAD => true],
         );
         $rowNum         = 0;
 
@@ -1280,7 +1278,6 @@ class ObjectHydratorTest extends HydrationTestCase
         $iterableResult = $hydrator->toIterable(
             $this->createResultMock($resultSet),
             $rsm,
-            [Query::HINT_FORCE_PARTIAL_LOAD => true],
         );
         $rowNum         = 0;
 
@@ -1304,7 +1301,7 @@ class ObjectHydratorTest extends HydrationTestCase
     }
 
     /**
-     * SELECT PARTIAL u.{id, name}
+     * SELECT u
      *   FROM Doctrine\Tests\Models\CMS\CmsUser u
      */
     public function testResultIterationWithAliasedUserEntity(): void
@@ -1331,7 +1328,6 @@ class ObjectHydratorTest extends HydrationTestCase
         $iterableResult = $hydrator->toIterable(
             new Result(new ArrayResult($resultSet), $this->createMock(Connection::class)),
             $rsm,
-            [Query::HINT_FORCE_PARTIAL_LOAD => true],
         );
 
         foreach ($iterableResult as $row) {
@@ -1356,7 +1352,6 @@ class ObjectHydratorTest extends HydrationTestCase
         $iterableResult = $hydrator->toIterable(
             $this->createResultMock($resultSet),
             $rsm,
-            [Query::HINT_FORCE_PARTIAL_LOAD => true],
         );
 
         foreach ($iterableResult as $row) {
@@ -1383,7 +1378,7 @@ class ObjectHydratorTest extends HydrationTestCase
     /**
      * Checks if multiple joined multiple-valued collections is hydrated correctly.
      *
-     * SELECT PARTIAL u.{id, status}, PARTIAL g.{id, name}, PARTIAL p.{phonenumber}
+     * SELECT u, g, p
      *   FROM Doctrine\Tests\Models\CMS\CmsUser u
      */
     #[Group('DDC-809')]
@@ -1489,7 +1484,7 @@ class ObjectHydratorTest extends HydrationTestCase
 
         $stmt     = $this->createResultMock($resultSet);
         $hydrator = new ObjectHydrator($this->entityManager);
-        $result   = $hydrator->hydrateAll($stmt, $rsm, [Query::HINT_FORCE_PARTIAL_LOAD => true]);
+        $result   = $hydrator->hydrateAll($stmt, $rsm);
 
         self::assertEquals(2, count($result));
 
@@ -1505,7 +1500,7 @@ class ObjectHydratorTest extends HydrationTestCase
     /**
      * Checks if multiple joined multiple-valued collections is hydrated correctly.
      *
-     * SELECT PARTIAL u.{id, status} As user, PARTIAL g.{id, name}, PARTIAL p.{phonenumber}
+     * SELECT u As user, g, p
      *   FROM Doctrine\Tests\Models\CMS\CmsUser u
      */
     #[Group('DDC-809')]
@@ -1611,7 +1606,7 @@ class ObjectHydratorTest extends HydrationTestCase
 
         $stmt     = $this->createResultMock($resultSet);
         $hydrator = new ObjectHydrator($this->entityManager);
-        $result   = $hydrator->hydrateAll($stmt, $rsm, [Query::HINT_FORCE_PARTIAL_LOAD => true]);
+        $result   = $hydrator->hydrateAll($stmt, $rsm);
 
         self::assertEquals(2, count($result));
 
@@ -1628,7 +1623,7 @@ class ObjectHydratorTest extends HydrationTestCase
     }
 
     /**
-     * SELECT PARTIAL u.{id, status}, UPPER(u.name) as nameUpper
+     * SELECT u, UPPER(u.name) as nameUpper
      *   FROM Doctrine\Tests\Models\CMS\CmsUser u
      */
     #[DataProvider('provideDataForUserEntityResult')]
@@ -1668,7 +1663,7 @@ class ObjectHydratorTest extends HydrationTestCase
 
         $stmt     = $this->createResultMock($resultSet);
         $hydrator = new ObjectHydrator($this->entityManager);
-        $result   = $hydrator->hydrateAll($stmt, $rsm, [Query::HINT_FORCE_PARTIAL_LOAD => true]);
+        $result   = $hydrator->hydrateAll($stmt, $rsm);
 
         self::assertEquals(4, count($result), 'Should hydrate four results.');
 
@@ -1685,7 +1680,7 @@ class ObjectHydratorTest extends HydrationTestCase
     }
 
     /**
-     * SELECT PARTIAL u.{id, status}, PARTIAL p.{phonenumber}, UPPER(u.name) AS nameUpper
+     * SELECT u, p, UPPER(u.name) AS nameUpper
      *   FROM Doctrine\Tests\Models\CMS\CmsUser u
      *   LEFT JOIN u.phonenumbers u
      */
@@ -1737,7 +1732,7 @@ class ObjectHydratorTest extends HydrationTestCase
 
         $stmt     = $this->createResultMock($resultSet);
         $hydrator = new ObjectHydrator($this->entityManager);
-        $result   = $hydrator->hydrateAll($stmt, $rsm, [Query::HINT_FORCE_PARTIAL_LOAD => true]);
+        $result   = $hydrator->hydrateAll($stmt, $rsm);
 
         self::assertEquals(2, count($result));
 
@@ -1746,7 +1741,7 @@ class ObjectHydratorTest extends HydrationTestCase
     }
 
     /**
-     * SELECT PARTIAL u.{id, status}, PARTIAL a.{id, city}, UPPER(u.name) AS nameUpper
+     * SELECT u, a, UPPER(u.name) AS nameUpper
      *   FROM Doctrine\Tests\Models\CMS\CmsUser u
      *   JOIN u.address a
      */
@@ -1790,7 +1785,7 @@ class ObjectHydratorTest extends HydrationTestCase
 
         $stmt     = $this->createResultMock($resultSet);
         $hydrator = new ObjectHydrator($this->entityManager);
-        $result   = $hydrator->hydrateAll($stmt, $rsm, [Query::HINT_FORCE_PARTIAL_LOAD => true]);
+        $result   = $hydrator->hydrateAll($stmt, $rsm);
 
         self::assertEquals(2, count($result));
 
@@ -1799,7 +1794,7 @@ class ObjectHydratorTest extends HydrationTestCase
     }
 
     /**
-     * SELECT PARTIAL u.{id, status}, UPPER(u.name) AS nameUpper
+     * SELECT u, UPPER(u.name) AS nameUpper
      *   FROM Doctrine\Tests\Models\CMS\CmsUser u
      *        INDEX BY u.id
      */
@@ -1831,7 +1826,7 @@ class ObjectHydratorTest extends HydrationTestCase
 
         $stmt     = $this->createResultMock($resultSet);
         $hydrator = new ObjectHydrator($this->entityManager);
-        $result   = $hydrator->hydrateAll($stmt, $rsm, [Query::HINT_FORCE_PARTIAL_LOAD => true]);
+        $result   = $hydrator->hydrateAll($stmt, $rsm);
 
         self::assertEquals(2, count($result));
 
@@ -1864,7 +1859,7 @@ class ObjectHydratorTest extends HydrationTestCase
 
         $stmt     = $this->createResultMock($resultSet);
         $hydrator = new ObjectHydrator($this->entityManager);
-        $result   = $hydrator->hydrateAll($stmt, $rsm, [Query::HINT_FORCE_PARTIAL_LOAD => true]);
+        $result   = $hydrator->hydrateAll($stmt, $rsm);
 
         self::assertEquals(
             [

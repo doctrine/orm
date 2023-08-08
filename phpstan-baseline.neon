@@ -181,7 +181,7 @@ parameters:
 			path: lib/Doctrine/ORM/Proxy/ProxyFactory.php
 
 		-
-			message: "#^Access to an undefined property Doctrine\\\\Persistence\\\\Proxy\\:\\:\\$__isCloning\\.$#"
+			message: "#^Call to an undefined method Doctrine\\\\Common\\\\Proxy\\\\Proxy\\:\\:__construct\\(\\)\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Proxy/ProxyFactory.php
 

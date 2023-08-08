@@ -255,6 +255,78 @@ class EnumTest extends OrmFunctionalTestCase
         self::assertEqualsCanonicalizing([Unit::Gram, Unit::Meter], $result[0]->supportedUnits);
     }
 
+    public function testEnumSingleEntityChangeSetsSimpleObjectHydrator(): void
+    {
+        $this->setUpEntitySchema([Card::class]);
+
+        $card       = new Card();
+        $card->suit = Suit::Clubs;
+
+        $this->_em->persist($card);
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $result = $this->_em->find(Card::class, $card->id);
+
+        $this->_em->getUnitOfWork()->recomputeSingleEntityChangeSet(
+            $this->_em->getClassMetadata(Card::class),
+            $result,
+        );
+
+        self::assertFalse($this->_em->getUnitOfWork()->isScheduledForUpdate($result));
+
+        $result->suit = Suit::Hearts;
+
+        $this->_em->getUnitOfWork()->recomputeSingleEntityChangeSet(
+            $this->_em->getClassMetadata(Card::class),
+            $result,
+        );
+
+        self::assertTrue($this->_em->getUnitOfWork()->isScheduledForUpdate($result));
+    }
+
+    public function testEnumSingleEntityChangeSetsObjectHydrator(): void
+    {
+        $this->setUpEntitySchema([Card::class]);
+
+        $card       = new Card();
+        $card->suit = Suit::Clubs;
+
+        $this->_em->persist($card);
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $result = $this->_em->find(Card::class, $card->id);
+
+        $this->_em->getUnitOfWork()->recomputeSingleEntityChangeSet(
+            $this->_em->getClassMetadata(Card::class),
+            $result,
+        );
+
+        self::assertFalse($this->_em->getUnitOfWork()->isScheduledForUpdate($result));
+    }
+
+    public function testEnumArraySingleEntityChangeSets(): void
+    {
+        $this->setUpEntitySchema([Scale::class]);
+
+        $scale                 = new Scale();
+        $scale->supportedUnits = [Unit::Gram];
+
+        $this->_em->persist($scale);
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $result = $this->_em->find(Scale::class, $scale->id);
+
+        $this->_em->getUnitOfWork()->recomputeSingleEntityChangeSet(
+            $this->_em->getClassMetadata(Scale::class),
+            $result,
+        );
+
+        self::assertFalse($this->_em->getUnitOfWork()->isScheduledForUpdate($result));
+    }
+
     public function testEnumChangeSetsSimpleObjectHydrator(): void
     {
         $this->setUpEntitySchema([Card::class]);
