@@ -13,6 +13,7 @@ use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\Deprecations\PHPUnit\VerifyDeprecations;
 use Doctrine\ORM\EntityNotFoundException;
 use Doctrine\ORM\Events;
+use Doctrine\ORM\Exception\EntityIdentityCollisionException;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
@@ -41,7 +42,6 @@ use Doctrine\Tests\Models\GeoNames\Country;
 use Doctrine\Tests\OrmTestCase;
 use Doctrine\Tests\PHPUnitCompatibility\MockBuilderCompatibilityTools;
 use PHPUnit\Framework\MockObject\MockObject;
-use RuntimeException;
 use stdClass;
 
 use function assert;
@@ -960,7 +960,7 @@ class UnitOfWorkTest extends OrmTestCase
         $phone2              = new CmsPhonenumber();
         $phone2->phonenumber = '1234';
 
-        $this->expectException(RuntimeException::class);
+        $this->expectException(EntityIdentityCollisionException::class);
         $this->expectExceptionMessageMatches('/another object .* was already present for the same ID/');
 
         $this->_unitOfWork->persist($phone2);

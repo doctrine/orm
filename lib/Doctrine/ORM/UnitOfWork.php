@@ -23,6 +23,7 @@ use Doctrine\ORM\Event\PreFlushEventArgs;
 use Doctrine\ORM\Event\PrePersistEventArgs;
 use Doctrine\ORM\Event\PreRemoveEventArgs;
 use Doctrine\ORM\Event\PreUpdateEventArgs;
+use Doctrine\ORM\Exception\EntityIdentityCollisionException;
 use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\Exception\UnexpectedAssociationValue;
 use Doctrine\ORM\Id\AssignedGenerator;
@@ -1624,6 +1625,7 @@ class UnitOfWork implements PropertyChangedListener
      * the entity in question is already managed.
      *
      * @throws ORMInvalidArgumentException
+     * @throws EntityIdentityCollisionException
      *
      * @ignore
      */
@@ -1636,34 +1638,13 @@ class UnitOfWork implements PropertyChangedListener
         if (isset($this->identityMap[$className][$idHash])) {
             if ($this->identityMap[$className][$idHash] !== $entity) {
                 if ($this->em->getConfiguration()->isRejectIdCollisionInIdentityMapEnabled()) {
-                    throw new RuntimeException(
-                        sprintf(
-                            <<<'EXCEPTION'
-While adding an entity of class %s with an ID hash of "%s" to the identity map,
-another object of class %s was already present for the same ID. This exception
-is a safeguard against an internal inconsistency - IDs should uniquely map to
-entity object instances. This problem may occur if:
+                    throw EntityIdentityCollisionException::create($this->identityMap[$className][$idHash], $entity, $idHash);
+                }
 
-- you use application-provided IDs and reuse ID values;
-- database-provided IDs are reassigned after truncating the database without 
-  clearing the EntityManager;
-- you might have been using EntityManager#getReference() to create a reference 
-  for a nonexistent ID that was subsequently (by the RDBMS) assigned to another 
-  entity. 
-
-Otherwise, it might be an ORM-internal inconsistency, please report it. 
-EXCEPTION
-                            ,
-                            get_class($entity),
-                            $idHash,
-                            get_class($this->identityMap[$className][$idHash])
-                        )
-                    );
-                } else {
-                    Deprecation::trigger(
-                        'doctrine/orm',
-                        'https://github.com/doctrine/orm/pull/10785',
-                        <<<'EXCEPTION'
+                Deprecation::trigger(
+                    'doctrine/orm',
+                    'https://github.com/doctrine/orm/pull/10785',
+                    <<<'EXCEPTION'
 While adding an entity of class %s with an ID hash of "%s" to the identity map,
 another object of class %s was already present for the same ID. This will trigger
 an exception in ORM 3.0.
@@ -1683,12 +1664,11 @@ To opt-in to the new exception, call
 \Doctrine\ORM\Configuration::setRejectIdCollisionInIdentityMap on the entity
 manager's configuration.
 EXCEPTION
-                        ,
-                        get_class($entity),
-                        $idHash,
-                        get_class($this->identityMap[$className][$idHash])
-                    );
-                }
+                    ,
+                    get_class($entity),
+                    $idHash,
+                    get_class($this->identityMap[$className][$idHash])
+                );
             }
 
             return false;
@@ -3048,6 +3028,7 @@ EXCEPTION
                                 // We are negating the condition here. Other cases will assume it is valid!
                                 case $hints['fetchMode'][$class->name][$field] !== ClassMetadata::FETCH_EAGER:
                                     $newValue = $this->em->getProxyFactory()->getProxy($assoc['targetEntity'], $normalizedAssociatedId);
+                                    $this->registerManaged($newValue, $associatedId, []);
                                     break;
 
                                 // Deferred eager load only works for single identifier classes
@@ -3056,6 +3037,7 @@ EXCEPTION
                                     $this->eagerLoadingEntities[$targetClass->rootEntityName][$relatedIdHash] = current($normalizedAssociatedId);
 
                                     $newValue = $this->em->getProxyFactory()->getProxy($assoc['targetEntity'], $normalizedAssociatedId);
+                                    $this->registerManaged($newValue, $associatedId, []);
                                     break;
 
                                 default:
@@ -3063,13 +3045,6 @@ EXCEPTION
                                     $newValue = $this->em->find($assoc['targetEntity'], $normalizedAssociatedId);
                                     break;
                             }
-
-                            if ($newValue === null) {
-                                break;
-                            }
-
-                            $this->registerManaged($newValue, $associatedId, []);
-                            break;
                     }
 
                     $this->originalEntityData[$oid][$field] = $newValue;

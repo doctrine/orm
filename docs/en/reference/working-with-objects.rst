@@ -192,6 +192,11 @@ be properly synchronized with the database when
     database in the most efficient way and a single, short transaction,
     taking care of maintaining referential integrity.
 
+.. note::
+
+    Do not make any assumptions in your code about the number of queries
+    it takes to flush changes, about the ordering of ``INSERT``, ``UPDATE``
+    and ``DELETE`` queries or the order in which entities will be processed.
 
 Example:
 
