@@ -18,8 +18,7 @@ before. There are some prerequisites for the tutorial that have to be
 installed:
 
 - PHP (latest stable version)
-- Composer Package Manager (`Install Composer
-  <https://getcomposer.org/doc/00-intro.md>`_)
+- Composer Package Manager (`Install Composer <https://getcomposer.org/doc/00-intro.md>`_)
 
 The code of this tutorial is `available on Github <https://github.com/doctrine/doctrine2-orm-tutorial>`_.
 
