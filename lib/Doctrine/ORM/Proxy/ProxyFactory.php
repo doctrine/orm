@@ -432,8 +432,8 @@ EOPHP;
     {
         $baseDirectory = $baseDirectory ?: $this->proxyDir;
 
-        return rtrim($baseDirectory, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . InternalProxy::MARKER
-            . str_replace('\\', '', $className) . '.php';
+        return rtrim($baseDirectory, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . InternalProxy::MARKER . DIRECTORY_SEPARATOR
+            . str_replace('\\', DIRECTORY_SEPARATOR, $className) . '.php';
     }
 
     private function getProxyFactory(string $className): Closure
