@@ -30,7 +30,10 @@ class UnderscoreNamingStrategy implements NamingStrategy
     /** @var int */
     private $case;
 
-    /** @var string */
+    /**
+     * @var string
+     * @psalm-var non-empty-string
+     */
     private $pattern;
 
     /**
