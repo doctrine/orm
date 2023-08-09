@@ -48,6 +48,7 @@ use Doctrine\Persistence\ObjectManagerAware;
 use Doctrine\Persistence\PropertyChangedListener;
 use Exception;
 use InvalidArgumentException;
+use LogicException;
 use RuntimeException;
 use Throwable;
 use UnexpectedValueException;
@@ -329,6 +330,13 @@ class UnitOfWork implements PropertyChangedListener
     private $reflectionPropertiesGetter;
 
     /**
+     * Set to `true` while the UnitOfWork has entered the `commit()` method
+     *
+     * @var bool
+     */
+    private $pendingCommit = false;
+
+    /**
      * Initializes a new UnitOfWork instance, bound to the given EntityManager.
      */
     public function __construct(EntityManagerInterface $em)
@@ -363,146 +371,156 @@ class UnitOfWork implements PropertyChangedListener
      */
     public function commit($entity = null)
     {
-        if ($entity !== null) {
-            Deprecation::triggerIfCalledFromOutside(
-                'doctrine/orm',
-                'https://github.com/doctrine/orm/issues/8459',
-                'Calling %s() with any arguments to commit specific entities is deprecated and will not be supported in Doctrine ORM 3.0.',
-                __METHOD__
-            );
+        if ($this->pendingCommit) {
+            throw new LogicException('The UnitOfWork is currently in the commit phase. You must not call UnitOfWork::commit() or EntityManager::flush() at this time, since commit phases cannot safely be nested.');
         }
 
-        $connection = $this->em->getConnection();
+        $this->pendingCommit = true;
 
-        if ($connection instanceof PrimaryReadReplicaConnection) {
-            $connection->ensureConnectedToPrimary();
-        }
-
-        // Raise preFlush
-        if ($this->evm->hasListeners(Events::preFlush)) {
-            $this->evm->dispatchEvent(Events::preFlush, new PreFlushEventArgs($this->em));
-        }
-
-        // Compute changes done since last commit.
-        if ($entity === null) {
-            $this->computeChangeSets();
-        } elseif (is_object($entity)) {
-            $this->computeSingleEntityChangeSet($entity);
-        } elseif (is_array($entity)) {
-            foreach ($entity as $object) {
-                $this->computeSingleEntityChangeSet($object);
+        try {
+            if ($entity !== null) {
+                Deprecation::triggerIfCalledFromOutside(
+                    'doctrine/orm',
+                    'https://github.com/doctrine/orm/issues/8459',
+                    'Calling %s() with any arguments to commit specific entities is deprecated and will not be supported in Doctrine ORM 3.0.',
+                    __METHOD__
+                );
             }
-        }
 
-        if (
-            ! ($this->entityInsertions ||
-                $this->entityDeletions ||
-                $this->entityUpdates ||
-                $this->collectionUpdates ||
-                $this->collectionDeletions ||
-                $this->orphanRemovals)
-        ) {
+            $connection = $this->em->getConnection();
+
+            if ($connection instanceof PrimaryReadReplicaConnection) {
+                $connection->ensureConnectedToPrimary();
+            }
+
+            // Raise preFlush
+            if ($this->evm->hasListeners(Events::preFlush)) {
+                $this->evm->dispatchEvent(Events::preFlush, new PreFlushEventArgs($this->em));
+            }
+
+            // Compute changes done since last commit.
+            if ($entity === null) {
+                $this->computeChangeSets();
+            } elseif (is_object($entity)) {
+                $this->computeSingleEntityChangeSet($entity);
+            } elseif (is_array($entity)) {
+                foreach ($entity as $object) {
+                    $this->computeSingleEntityChangeSet($object);
+                }
+            }
+
+            if (
+                ! ($this->entityInsertions
+                    || $this->entityDeletions
+                    || $this->entityUpdates
+                    || $this->collectionUpdates
+                    || $this->collectionDeletions
+                    || $this->orphanRemovals)
+            ) {
+                $this->dispatchOnFlushEvent();
+                $this->dispatchPostFlushEvent();
+
+                $this->postCommitCleanup($entity);
+
+                return; // Nothing to do.
+            }
+
+            $this->assertThatThereAreNoUnintentionallyNonPersistedAssociations();
+
+            if ($this->orphanRemovals) {
+                foreach ($this->orphanRemovals as $orphan) {
+                    $this->remove($orphan);
+                }
+            }
+
             $this->dispatchOnFlushEvent();
+
+            $conn = $this->em->getConnection();
+            $conn->beginTransaction();
+
+            try {
+                // Collection deletions (deletions of complete collections)
+                foreach ($this->collectionDeletions as $collectionToDelete) {
+                    // Deferred explicit tracked collections can be removed only when owning relation was persisted
+                    $owner = $collectionToDelete->getOwner();
+
+                    if ($this->em->getClassMetadata(get_class($owner))->isChangeTrackingDeferredImplicit() || $this->isScheduledForDirtyCheck($owner)) {
+                        $this->getCollectionPersister($collectionToDelete->getMapping())->delete($collectionToDelete);
+                    }
+                }
+
+                if ($this->entityInsertions) {
+                    // Perform entity insertions first, so that all new entities have their rows in the database
+                    // and can be referred to by foreign keys. The commit order only needs to take new entities
+                    // into account (new entities referring to other new entities), since all other types (entities
+                    // with updates or scheduled deletions) are currently not a problem, since they are already
+                    // in the database.
+                    $this->executeInserts();
+                }
+
+                if ($this->entityUpdates) {
+                    // Updates do not need to follow a particular order
+                    $this->executeUpdates();
+                }
+
+                // Extra updates that were requested by persisters.
+                // This may include foreign keys that could not be set when an entity was inserted,
+                // which may happen in the case of circular foreign key relationships.
+                if ($this->extraUpdates) {
+                    $this->executeExtraUpdates();
+                }
+
+                // Collection updates (deleteRows, updateRows, insertRows)
+                // No particular order is necessary, since all entities themselves are already
+                // in the database
+                foreach ($this->collectionUpdates as $collectionToUpdate) {
+                    $this->getCollectionPersister($collectionToUpdate->getMapping())->update($collectionToUpdate);
+                }
+
+                // Entity deletions come last. Their order only needs to take care of other deletions
+                // (first delete entities depending upon others, before deleting depended-upon entities).
+                if ($this->entityDeletions) {
+                    $this->executeDeletions();
+                }
+
+                // Commit failed silently
+                if ($conn->commit() === false) {
+                    $object = is_object($entity) ? $entity : null;
+
+                    throw new OptimisticLockException('Commit failed', $object);
+                }
+            } catch (Throwable $e) {
+                $this->em->close();
+
+                if ($conn->isTransactionActive()) {
+                    $conn->rollBack();
+                }
+
+                $this->afterTransactionRolledBack();
+
+                throw $e;
+            }
+
+            $this->afterTransactionComplete();
+
+            // Unset removed entities from collections, and take new snapshots from
+            // all visited collections.
+            foreach ($this->visitedCollections as $coid => $coll) {
+                if (isset($this->pendingCollectionElementRemovals[$coid])) {
+                    foreach ($this->pendingCollectionElementRemovals[$coid] as $key => $valueIgnored) {
+                        unset($coll[$key]);
+                    }
+                }
+
+                $coll->takeSnapshot();
+            }
+
             $this->dispatchPostFlushEvent();
 
             $this->postCommitCleanup($entity);
-
-            return; // Nothing to do.
+        } finally {
+            $this->pendingCommit = false;
         }
-
-        $this->assertThatThereAreNoUnintentionallyNonPersistedAssociations();
-
-        if ($this->orphanRemovals) {
-            foreach ($this->orphanRemovals as $orphan) {
-                $this->remove($orphan);
-            }
-        }
-
-        $this->dispatchOnFlushEvent();
-
-        $conn = $this->em->getConnection();
-        $conn->beginTransaction();
-
-        try {
-            // Collection deletions (deletions of complete collections)
-            foreach ($this->collectionDeletions as $collectionToDelete) {
-                // Deferred explicit tracked collections can be removed only when owning relation was persisted
-                $owner = $collectionToDelete->getOwner();
-
-                if ($this->em->getClassMetadata(get_class($owner))->isChangeTrackingDeferredImplicit() || $this->isScheduledForDirtyCheck($owner)) {
-                    $this->getCollectionPersister($collectionToDelete->getMapping())->delete($collectionToDelete);
-                }
-            }
-
-            if ($this->entityInsertions) {
-                // Perform entity insertions first, so that all new entities have their rows in the database
-                // and can be referred to by foreign keys. The commit order only needs to take new entities
-                // into account (new entities referring to other new entities), since all other types (entities
-                // with updates or scheduled deletions) are currently not a problem, since they are already
-                // in the database.
-                $this->executeInserts();
-            }
-
-            if ($this->entityUpdates) {
-                // Updates do not need to follow a particular order
-                $this->executeUpdates();
-            }
-
-            // Extra updates that were requested by persisters.
-            // This may include foreign keys that could not be set when an entity was inserted,
-            // which may happen in the case of circular foreign key relationships.
-            if ($this->extraUpdates) {
-                $this->executeExtraUpdates();
-            }
-
-            // Collection updates (deleteRows, updateRows, insertRows)
-            // No particular order is necessary, since all entities themselves are already
-            // in the database
-            foreach ($this->collectionUpdates as $collectionToUpdate) {
-                $this->getCollectionPersister($collectionToUpdate->getMapping())->update($collectionToUpdate);
-            }
-
-            // Entity deletions come last. Their order only needs to take care of other deletions
-            // (first delete entities depending upon others, before deleting depended-upon entities).
-            if ($this->entityDeletions) {
-                $this->executeDeletions();
-            }
-
-            // Commit failed silently
-            if ($conn->commit() === false) {
-                $object = is_object($entity) ? $entity : null;
-
-                throw new OptimisticLockException('Commit failed', $object);
-            }
-        } catch (Throwable $e) {
-            $this->em->close();
-
-            if ($conn->isTransactionActive()) {
-                $conn->rollBack();
-            }
-
-            $this->afterTransactionRolledBack();
-
-            throw $e;
-        }
-
-        $this->afterTransactionComplete();
-
-        // Unset removed entities from collections, and take new snapshots from
-        // all visited collections.
-        foreach ($this->visitedCollections as $coid => $coll) {
-            if (isset($this->pendingCollectionElementRemovals[$coid])) {
-                foreach ($this->pendingCollectionElementRemovals[$coid] as $key => $valueIgnored) {
-                    unset($coll[$key]);
-                }
-            }
-
-            $coll->takeSnapshot();
-        }
-
-        $this->dispatchPostFlushEvent();
-
-        $this->postCommitCleanup($entity);
     }
 
     /** @param object|object[]|null $entity */
