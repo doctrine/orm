@@ -944,7 +944,10 @@ class XmlDriver extends FileDriver
     private function getCascadeMappings(SimpleXMLElement $cascadeElement): array
     {
         $cascades = [];
-        foreach ($cascadeElement->children() as $action) {
+        $children = $cascadeElement->children();
+        assert($children !== null);
+
+        foreach ($children as $action) {
             // According to the JPA specifications, XML uses "cascade-persist"
             // instead of "persist". Here, both variations
             // are supported because YAML, Annotation and Attribute use "persist"

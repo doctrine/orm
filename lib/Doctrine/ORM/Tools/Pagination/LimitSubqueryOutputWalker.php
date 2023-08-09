@@ -404,7 +404,7 @@ class LimitSubqueryOutputWalker extends SqlWalker
 
     /**
      * @return string[][]
-     * @psalm-return array{0: list<string>, 1: list<string>}
+     * @psalm-return array{0: list<non-empty-string>, 1: list<string>}
      */
     private function generateSqlAliasReplacements(): array
     {
