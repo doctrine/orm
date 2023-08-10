@@ -1167,7 +1167,26 @@ class UnitOfWork implements PropertyChangedListener
         $entities = $this->computeInsertExecutionOrder();
 
         foreach ($entities as $entity) {
-            $oid       = spl_object_id($entity);
+            $oid = spl_object_id($entity);
+
+            // Mitigation for GH-10869:
+            // Users may use postPersist and similar listeners to make entity updates and call
+            // EM::flush() -> UoW::commit() again, while a transaction is currently running.
+            // This "somehow" worked pre 2.16, although it was never officially endorsed and/or
+            // is disputed (and there is no guarantee that the UoW will be able to deal with this,
+            // does not lose updates etc.).
+            // https://github.com/doctrine/orm/pull/10900 is a discussion about deprecating this
+            // kind of reentrance and disallowing it in 3.0.
+            //
+            // However, to ease the pain somewhat for users in 2.16, this condition covers that
+            // a reentrant call into UoW::commit() may have processed pending insertions that we
+            // had in our computed insertion order. So, after the second (inner) commit() returned
+            // and the outer one continues, deal with the situation that entities are no longer in
+            // the set of pending insertions.
+            if (! isset($this->entityInsertions[$oid])) {
+                continue;
+            }
+
             $class     = $this->em->getClassMetadata(get_class($entity));
             $persister = $this->getEntityPersister($class->name);
             $invoke    = $this->listenersInvoker->getSubscribedSystems($class, Events::postPersist);
