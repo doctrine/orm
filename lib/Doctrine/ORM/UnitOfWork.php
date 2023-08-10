@@ -1164,13 +1164,13 @@ class UnitOfWork implements PropertyChangedListener
      */
     private function executeInserts(): void
     {
-        $entities = $this->computeInsertExecutionOrder();
+        $entities         = $this->computeInsertExecutionOrder();
+        $eventsToDispatch = [];
 
         foreach ($entities as $entity) {
             $oid       = spl_object_id($entity);
             $class     = $this->em->getClassMetadata(get_class($entity));
             $persister = $this->getEntityPersister($class->name);
-            $invoke    = $this->listenersInvoker->getSubscribedSystems($class, Events::postPersist);
 
             $persister->addInsert($entity);
 
@@ -1197,9 +1197,23 @@ class UnitOfWork implements PropertyChangedListener
                 $this->addToEntityIdentifiersAndEntityMap($class, $oid, $entity);
             }
 
+            $invoke = $this->listenersInvoker->getSubscribedSystems($class, Events::postPersist);
+
             if ($invoke !== ListenersInvoker::INVOKE_NONE) {
-                $this->listenersInvoker->invoke($class, Events::postPersist, $entity, new PostPersistEventArgs($entity, $this->em), $invoke);
+                $eventsToDispatch[] = ['class' => $class, 'entity' => $entity, 'invoke' => $invoke];
             }
+        }
+
+        // Defer dispatching `postPersist` events to until all entities have been inserted and post-insert
+        // IDs have been assigned.
+        foreach ($eventsToDispatch as $event) {
+            $this->listenersInvoker->invoke(
+                $event['class'],
+                Events::postPersist,
+                $event['entity'],
+                new PostPersistEventArgs($event['entity'], $this->em),
+                $event['invoke']
+            );
         }
     }
 
@@ -1270,7 +1284,8 @@ class UnitOfWork implements PropertyChangedListener
      */
     private function executeDeletions(): void
     {
-        $entities = $this->computeDeleteExecutionOrder();
+        $entities         = $this->computeDeleteExecutionOrder();
+        $eventsToDispatch = [];
 
         foreach ($entities as $entity) {
             $oid       = spl_object_id($entity);
@@ -1295,8 +1310,19 @@ class UnitOfWork implements PropertyChangedListener
             }
 
             if ($invoke !== ListenersInvoker::INVOKE_NONE) {
-                $this->listenersInvoker->invoke($class, Events::postRemove, $entity, new PostRemoveEventArgs($entity, $this->em), $invoke);
+                $eventsToDispatch[] = ['class' => $class, 'entity' => $entity, 'invoke' => $invoke];
             }
+        }
+
+        // Defer dispatching `postRemove` events to until all entities have been removed.
+        foreach ($eventsToDispatch as $event) {
+            $this->listenersInvoker->invoke(
+                $event['class'],
+                Events::postRemove,
+                $event['entity'],
+                new PostRemoveEventArgs($event['entity'], $this->em),
+                $event['invoke']
+            );
         }
     }
 
