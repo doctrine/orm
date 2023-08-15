@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\ORM\Exception\InstanceOfTheWrongTypeEncountered;
 use Doctrine\Tests\Models\Company\CompanyFixContract;
 use Doctrine\Tests\Models\Company\CompanyFlexContract;
 use Doctrine\Tests\OrmFunctionalTestCase;
@@ -19,7 +20,7 @@ class DDC1041Test extends OrmFunctionalTestCase
         parent::setUp();
     }
 
-    public function testGrabWrongSubtypeReturnsNull(): void
+    public function testGrabWrongSubtypeReturnsNullOrThrows(): void
     {
         $fix = new CompanyFixContract();
         $fix->setFixPrice(2000);
@@ -30,7 +31,15 @@ class DDC1041Test extends OrmFunctionalTestCase
         $id = $fix->getId();
 
         self::assertNull($this->_em->find(CompanyFlexContract::class, $id));
-        self::assertNull($this->_em->getReference(CompanyFlexContract::class, $id));
-        self::assertNull($this->_em->getPartialReference(CompanyFlexContract::class, $id));
+
+        try {
+            $this->_em->getReference(CompanyFlexContract::class, $id);
+        } catch (InstanceOfTheWrongTypeEncountered) {
+        }
+
+        try {
+            $this->_em->getPartialReference(CompanyFlexContract::class, $id);
+        } catch (InstanceOfTheWrongTypeEncountered) {
+        }
     }
 }

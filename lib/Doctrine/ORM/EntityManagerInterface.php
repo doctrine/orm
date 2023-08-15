@@ -155,7 +155,7 @@ interface EntityManagerInterface extends ObjectManager
      * @param mixed  $id         The entity identifier.
      * @psalm-param class-string<T> $entityName
      *
-     * @psalm-return T|null
+     * @psalm-return T
      *
      * @throws ORMException
      *
@@ -182,7 +182,7 @@ interface EntityManagerInterface extends ObjectManager
      * @param mixed  $identifier The entity identifier.
      * @psalm-param class-string<T> $entityName
      *
-     * @psalm-return T|null
+     * @psalm-return T
      *
      * @template T of object
      */
