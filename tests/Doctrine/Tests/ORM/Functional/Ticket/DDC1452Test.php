@@ -12,7 +12,6 @@ use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\OneToMany;
-use Doctrine\Persistence\Proxy;
 use Doctrine\Tests\Models\CMS\CmsAddress;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\OrmFunctionalTestCase;
@@ -55,7 +54,7 @@ class DDC1452Test extends OrmFunctionalTestCase
         $results = $this->_em->createQuery($dql)->setMaxResults(1)->getResult();
 
         self::assertSame($results[0], $results[0]->entitiesB[0]->entityAFrom);
-        self::assertNotInstanceOf(Proxy::class, $results[0]->entitiesB[0]->entityATo);
+        self::assertFalse($this->isUninitializedObject($results[0]->entitiesB[0]->entityATo));
         self::assertInstanceOf(Collection::class, $results[0]->entitiesB[0]->entityATo->getEntitiesB());
     }
 
@@ -83,12 +82,12 @@ class DDC1452Test extends OrmFunctionalTestCase
         $data = $this->_em->createQuery($dql)->getResult();
         $this->_em->clear();
 
-        self::assertNotInstanceOf(Proxy::class, $data[0]->user);
+        self::assertFalse($this->isUninitializedObject($data[0]->user));
 
         $dql  = 'SELECT u, a FROM Doctrine\Tests\Models\CMS\CmsUser u INNER JOIN u.address a';
         $data = $this->_em->createQuery($dql)->getResult();
 
-        self::assertNotInstanceOf(Proxy::class, $data[0]->address);
+        self::assertFalse($this->isUninitializedObject($data[0]->address));
     }
 }
 

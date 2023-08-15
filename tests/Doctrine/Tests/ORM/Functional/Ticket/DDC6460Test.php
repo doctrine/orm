@@ -12,7 +12,6 @@ use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\ManyToOne;
-use Doctrine\Persistence\Proxy;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use PHPUnit\Framework\Attributes\Group;
 
@@ -62,11 +61,10 @@ class DDC6460Test extends OrmFunctionalTestCase
 
         $secondEntityWithLazyParameter = $this->_em->getRepository(DDC6460ParentEntity::class)->findOneById(1);
 
-        self::assertInstanceOf(Proxy::class, $secondEntityWithLazyParameter->lazyLoaded);
         self::assertInstanceOf(DDC6460Entity::class, $secondEntityWithLazyParameter->lazyLoaded);
-        self::assertFalse($secondEntityWithLazyParameter->lazyLoaded->__isInitialized());
+        self::assertTrue($this->isUninitializedObject($secondEntityWithLazyParameter->lazyLoaded));
         self::assertEquals($secondEntityWithLazyParameter->lazyLoaded->embedded, $entity->embedded);
-        self::assertTrue($secondEntityWithLazyParameter->lazyLoaded->__isInitialized());
+        self::assertFalse($this->isUninitializedObject($secondEntityWithLazyParameter->lazyLoaded));
     }
 }
 

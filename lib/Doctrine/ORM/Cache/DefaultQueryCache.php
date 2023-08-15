@@ -18,7 +18,6 @@ use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\ORM\Query\SqlWalker;
 use Doctrine\ORM\UnitOfWork;
-use Doctrine\Persistence\Proxy;
 
 use function array_map;
 use function array_shift;
@@ -311,7 +310,7 @@ class DefaultQueryCache implements QueryCache
             $assocIdentifier = $this->uow->getEntityIdentifier($assocValue);
             $entityKey       = new EntityCacheKey($assocMetadata->rootEntityName, $assocIdentifier);
 
-            if (! $assocValue instanceof Proxy && ($key->cacheMode & Cache::MODE_REFRESH) || ! $assocRegion->contains($entityKey)) {
+            if (! $this->uow->isUninitializedObject($assocValue) && ($key->cacheMode & Cache::MODE_REFRESH) || ! $assocRegion->contains($entityKey)) {
                 // Entity put fail
                 if (! $assocPersister->storeEntityCache($assocValue, $entityKey)) {
                     return null;

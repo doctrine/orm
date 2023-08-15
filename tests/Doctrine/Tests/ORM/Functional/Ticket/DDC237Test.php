@@ -11,7 +11,6 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\ORM\Mapping\Table;
-use Doctrine\Persistence\Proxy;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 class DDC237Test extends OrmFunctionalTestCase
@@ -48,16 +47,14 @@ class DDC237Test extends OrmFunctionalTestCase
         $this->_em->clear();
 
         $x2 = $this->_em->find($x::class, $x->id); // proxy injected for Y
-        self::assertInstanceOf(Proxy::class, $x2->y);
-        self::assertFalse($x2->y->__isInitialized());
+        self::assertTrue($this->isUninitializedObject($x2->y));
 
         // proxy for Y is in identity map
 
         $z2 = $this->_em->createQuery('select z,y from ' . $z::class . ' z join z.y y where z.id = ?1')
                 ->setParameter(1, $z->id)
                 ->getSingleResult();
-        self::assertInstanceOf(Proxy::class, $z2->y);
-        self::assertTrue($z2->y->__isInitialized());
+        self::assertFalse($this->isUninitializedObject($z2->y));
         self::assertEquals('Y', $z2->y->data);
         self::assertEquals($y->id, $z2->y->id);
 
@@ -67,7 +64,6 @@ class DDC237Test extends OrmFunctionalTestCase
         self::assertNotSame($x, $x2);
         self::assertNotSame($z, $z2);
         self::assertSame($z2->y, $x2->y);
-        self::assertInstanceOf(Proxy::class, $z2->y);
     }
 }
 

@@ -14,7 +14,6 @@ use Doctrine\ORM\Mapping\InheritanceType;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\OneToOne;
-use Doctrine\Persistence\Proxy;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use PHPUnit\Framework\Attributes\Group;
 
@@ -89,7 +88,7 @@ class DDC1163Test extends OrmFunctionalTestCase
         assert($specialProduct instanceof DDC1163SpecialProduct);
 
         self::assertInstanceOf(DDC1163SpecialProduct::class, $specialProduct);
-        self::assertInstanceOf(Proxy::class, $specialProduct);
+        self::assertTrue($this->isUninitializedObject($specialProduct));
 
         $specialProduct->setSubclassProperty('foobar');
 
