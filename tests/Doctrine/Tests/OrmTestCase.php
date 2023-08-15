@@ -17,6 +17,7 @@ use Doctrine\ORM\Cache\Logging\StatisticsCacheLogger;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\Mapping\Driver\AttributeDriver;
 use Doctrine\Tests\Mocks\EntityManagerMock;
+use PHPUnit\Framework\TestCase;
 use Psr\Cache\CacheItemPoolInterface;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
 
@@ -27,7 +28,7 @@ use function sprintf;
 /**
  * Base testcase class for all ORM testcases.
  */
-abstract class OrmTestCase extends DoctrineTestCase
+abstract class OrmTestCase extends TestCase
 {
     /**
      * The metadata cache that is shared between all ORM tests (except functional tests).
