@@ -8,16 +8,16 @@ use Composer\InstalledVersions;
 use DBALConsole\Command\ReservedWordsCommand;
 use Doctrine\ORM\Tools\Console\ConsoleRunner;
 use Doctrine\ORM\Tools\Console\EntityManagerProvider;
-use Doctrine\Tests\DoctrineTestCase;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Command\Command;
 
 use function class_exists;
 
 #[CoversClass(ConsoleRunner::class)]
 #[Group('DDC-3186')]
-final class ConsoleRunnerTest extends DoctrineTestCase
+final class ConsoleRunnerTest extends TestCase
 {
     public function testCreateApplicationShouldReturnAnApplicationWithTheCorrectCommands(): void
     {

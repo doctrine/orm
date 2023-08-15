@@ -7,11 +7,11 @@ namespace Doctrine\Tests\ORM\Cache;
 use Doctrine\ORM\Cache\CacheKey;
 use Doctrine\ORM\Cache\CollectionCacheKey;
 use Doctrine\ORM\Cache\EntityCacheKey;
-use Doctrine\Tests\DoctrineTestCase;
 use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\TestCase;
 
 #[Group('DDC-2183')]
-class CacheKeyTest extends DoctrineTestCase
+class CacheKeyTest extends TestCase
 {
     public function testEntityCacheKeyIdentifierCollision(): void
     {

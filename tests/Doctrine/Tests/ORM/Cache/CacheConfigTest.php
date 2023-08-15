@@ -10,13 +10,13 @@ use Doctrine\ORM\Cache\Logging\CacheLogger;
 use Doctrine\ORM\Cache\QueryCacheValidator;
 use Doctrine\ORM\Cache\TimestampQueryCacheValidator;
 use Doctrine\ORM\Cache\TimestampRegion;
-use Doctrine\Tests\DoctrineTestCase;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\TestCase;
 
 #[CoversClass(CacheConfiguration::class)]
 #[Group('DDC-2183')]
-class CacheConfigTest extends DoctrineTestCase
+class CacheConfigTest extends TestCase
 {
     private CacheConfiguration $config;
 

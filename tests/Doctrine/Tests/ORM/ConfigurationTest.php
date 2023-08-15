@@ -16,15 +16,15 @@ use Doctrine\ORM\Mapping\NamingStrategy;
 use Doctrine\ORM\Mapping\QuoteStrategy;
 use Doctrine\ORM\Proxy\ProxyFactory;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
-use Doctrine\Tests\DoctrineTestCase;
 use Doctrine\Tests\Models\DDC753\DDC753CustomRepository;
 use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\TestCase;
 use Psr\Cache\CacheItemPoolInterface;
 
 /**
  * Tests for the Configuration object
  */
-class ConfigurationTest extends DoctrineTestCase
+class ConfigurationTest extends TestCase
 {
     use VerifyDeprecations;
 
