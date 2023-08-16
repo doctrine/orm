@@ -1167,6 +1167,10 @@ class UnitOfWork implements PropertyChangedListener
         $entities = $this->computeInsertExecutionOrder();
 
         foreach ($entities as $entity) {
+            if (! in_array($entity, $this->entityInsertions, true)) {
+                continue;
+            }
+
             $oid       = spl_object_id($entity);
             $class     = $this->em->getClassMetadata(get_class($entity));
             $persister = $this->getEntityPersister($class->name);
