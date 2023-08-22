@@ -215,7 +215,10 @@ specific to a particular entity class's lifecycle.
         <?php
         use Doctrine\DBAL\Types\Types;
         use Doctrine\ORM\Event\PrePersistEventArgs;
-        use Doctrine\ORM\Mapping\{Entity, HasLifecycleCallbacks, PrePersist, PreUpdate};
+        use Doctrine\ORM\Mapping\Entity;
+        use Doctrine\ORM\Mapping\HasLifecycleCallbacks;
+        use Doctrine\ORM\Mapping\PrePersist;
+        use Doctrine\ORM\Mapping\PreUpdate;
 
         #[Entity]
         #[HasLifecycleCallbacks]
