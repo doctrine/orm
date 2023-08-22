@@ -58,6 +58,7 @@ First Attributes:
 .. code-block:: php
 
     <?php
+    use Doctrine\ORM\Mapping\{Entity, HasLifecycleCallbacks, PrePersist, PreUpdate};
 
     #[Entity]
     #[HasLifecycleCallbacks]
