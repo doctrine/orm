@@ -2642,21 +2642,6 @@
       <code>$orderByClause</code>
     </PropertyNotSetInConstructor>
   </file>
-  <file src="lib/Doctrine/ORM/Tools/Pagination/WhereInWalker.php">
-    <DocblockTypeContradiction>
-      <code><![CDATA[$AST->whereClause->conditionalExpression instanceof ConditionalExpression
-                || $AST->whereClause->conditionalExpression instanceof ConditionalFactor]]></code>
-      <code><![CDATA[$AST->whereClause->conditionalExpression instanceof ConditionalFactor]]></code>
-      <code><![CDATA[$AST->whereClause->conditionalExpression instanceof ConditionalPrimary]]></code>
-    </DocblockTypeContradiction>
-    <PossiblyInvalidPropertyAssignmentValue>
-      <code><![CDATA[$AST->whereClause->conditionalExpression]]></code>
-    </PossiblyInvalidPropertyAssignmentValue>
-    <RedundantConditionGivenDocblockType>
-      <code><![CDATA[$AST->whereClause->conditionalExpression instanceof ConditionalExpression
-                || $AST->whereClause->conditionalExpression instanceof ConditionalFactor]]></code>
-    </RedundantConditionGivenDocblockType>
-  </file>
   <file src="lib/Doctrine/ORM/Tools/SchemaTool.php">
     <ArgumentTypeCoercion>
       <code>$classes</code>

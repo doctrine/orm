@@ -6,7 +6,6 @@ namespace Doctrine\ORM\Tools\Pagination;
 
 use Doctrine\ORM\Query\AST\ArithmeticExpression;
 use Doctrine\ORM\Query\AST\ConditionalExpression;
-use Doctrine\ORM\Query\AST\ConditionalFactor;
 use Doctrine\ORM\Query\AST\ConditionalPrimary;
 use Doctrine\ORM\Query\AST\ConditionalTerm;
 use Doctrine\ORM\Query\AST\InListExpression;
@@ -18,7 +17,6 @@ use Doctrine\ORM\Query\AST\SimpleArithmeticExpression;
 use Doctrine\ORM\Query\AST\WhereClause;
 use Doctrine\ORM\Query\TreeWalkerAdapter;
 use RuntimeException;
-
 use function count;
 use function reset;
 
@@ -82,39 +80,35 @@ class WhereInWalker extends TreeWalkerAdapter
 
         $conditionalPrimary                              = new ConditionalPrimary();
         $conditionalPrimary->simpleConditionalExpression = $expression;
-        if ($AST->whereClause) {
-            if ($AST->whereClause->conditionalExpression instanceof ConditionalTerm) {
-                $AST->whereClause->conditionalExpression->conditionalFactors[] = $conditionalPrimary;
-            } elseif ($AST->whereClause->conditionalExpression instanceof ConditionalPrimary) {
-                $AST->whereClause->conditionalExpression = new ConditionalExpression(
-                    [
-                        new ConditionalTerm(
-                            [
-                                $AST->whereClause->conditionalExpression,
-                                $conditionalPrimary,
-                            ]
-                        ),
-                    ]
-                );
-            } elseif (
-                $AST->whereClause->conditionalExpression instanceof ConditionalExpression
-                || $AST->whereClause->conditionalExpression instanceof ConditionalFactor
-            ) {
-                $tmpPrimary                              = new ConditionalPrimary();
-                $tmpPrimary->conditionalExpression       = $AST->whereClause->conditionalExpression;
-                $AST->whereClause->conditionalExpression = new ConditionalTerm(
-                    [
-                        $tmpPrimary,
-                        $conditionalPrimary,
-                    ]
-                );
+        $AST->whereClause = new WhereClause(
+            new ConditionalExpression(
+                [new ConditionalTerm([$conditionalPrimary])]
+            )
+        );
+
+        if ($this->onlyFromIsUsedInSelect($AST)) {
+            foreach ($AST->fromClause->identificationVariableDeclarations as $f) {
+                $f->joins = [];
             }
-        } else {
-            $AST->whereClause = new WhereClause(
-                new ConditionalExpression(
-                    [new ConditionalTerm([$conditionalPrimary])]
-                )
-            );
         }
+    }
+
+    /**
+     * @return bool
+     */
+    private function onlyFromIsUsedInSelect(SelectStatement $AST)
+    {
+        $fromAliases = [];
+        foreach ($AST->fromClause->identificationVariableDeclarations as $f) {
+            $fromAliases[] = $f->rangeVariableDeclaration->aliasIdentificationVariable;
+        }
+
+        foreach ($AST->selectClause->selectExpressions as $s) {
+            if (!in_array($s->expression, $fromAliases)) {
+                return false;
+            }
+        }
+
+        return true;
     }
 }
