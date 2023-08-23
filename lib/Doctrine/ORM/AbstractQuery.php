@@ -1012,6 +1012,7 @@ abstract class AbstractQuery
      *
      * @return bool|float|int|string|null The scalar result.
      *
+     * @throws NoResultException        If the query returned no result.
      * @throws NonUniqueResultException If the query result is not unique.
      */
     public function getSingleScalarResult()

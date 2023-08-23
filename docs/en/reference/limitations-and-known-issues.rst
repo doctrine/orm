@@ -167,7 +167,7 @@ have produced, this is probably fine.
 
 However, to mention known limitations, it is currently not possible to use "class"
 level `annotations <https://github.com/doctrine/orm/pull/1517>`_ or
-`attributes <https://github.com/doctrine/orm/issues/8868>` on traits, and attempts to
+`attributes <https://github.com/doctrine/orm/issues/8868>`_ on traits, and attempts to
 improve parser support for traits as `here <https://github.com/doctrine/annotations/pull/102>`_
 or `there <https://github.com/doctrine/annotations/pull/63>`_ have been abandoned
 due to complexity.
