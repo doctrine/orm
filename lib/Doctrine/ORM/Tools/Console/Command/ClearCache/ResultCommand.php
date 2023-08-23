@@ -10,6 +10,7 @@ use Doctrine\Common\Cache\FlushableCache;
 use Doctrine\Common\Cache\XcacheCache;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\Tools\Console\Command\AbstractEntityManagerCommand;
+use Doctrine\ORM\Tools\Console\CommandCompatibility;
 use InvalidArgumentException;
 use LogicException;
 use Symfony\Component\Cache\Adapter\ApcuAdapter;
@@ -29,6 +30,8 @@ use function sprintf;
  */
 class ResultCommand extends AbstractEntityManagerCommand
 {
+    use CommandCompatibility;
+
     /** @return void */
     protected function configure()
     {
@@ -56,12 +59,7 @@ EOT
              );
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * @return int
-     */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    private function doExecute(InputInterface $input, OutputInterface $output): int
     {
         $ui = (new SymfonyStyle($input, $output))->getErrorStyle();
 

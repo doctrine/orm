@@ -121,6 +121,12 @@
                 <file name="lib/Doctrine/ORM/PersistentCollection.php"/>
             </errorLevel>
         </DocblockTypeContradiction>
+        <DuplicateClass>
+            <errorLevel type="suppress">
+                <file name="lib/Doctrine/ORM/Tools/Console/CommandCompatibility.php"/>
+                <file name="lib/Doctrine/ORM/Tools/Console/Helper/EntityManagerHelper.php"/>
+            </errorLevel>
+        </DuplicateClass>
         <InvalidArgument>
             <errorLevel type="suppress">
                 <!-- Argument type changes in DBAL 3.2 -->

@@ -6,6 +6,7 @@ namespace Doctrine\ORM\Tools\Console\Command;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\ORM\Mapping\Driver\DatabaseDriver;
+use Doctrine\ORM\Tools\Console\CommandCompatibility;
 use Doctrine\ORM\Tools\Console\MetadataFilter;
 use Doctrine\ORM\Tools\DisconnectedClassMetadataFactory;
 use Doctrine\ORM\Tools\EntityGenerator;
@@ -37,6 +38,8 @@ use function strtolower;
  */
 class ConvertMappingCommand extends AbstractEntityManagerCommand
 {
+    use CommandCompatibility;
+
     /** @return void */
     protected function configure()
     {
@@ -84,12 +87,7 @@ EOT
              );
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * @return int
-     */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    private function doExecute(InputInterface $input, OutputInterface $output): int
     {
         $ui = new SymfonyStyle($input, $output);
         $ui->getErrorStyle()->warning('Command ' . $this->getName() . ' is deprecated and will be removed in Doctrine ORM 3.0.');

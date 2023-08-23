@@ -6,7 +6,34 @@ namespace Doctrine\ORM\Tools\Console\Helper;
 
 use Doctrine\Deprecations\Deprecation;
 use Doctrine\ORM\EntityManagerInterface;
+use ReflectionMethod;
 use Symfony\Component\Console\Helper\Helper;
+use Symfony\Component\Console\Helper\HelperInterface;
+
+if ((new ReflectionMethod(HelperInterface::class, 'getName'))->hasReturnType()) {
+    /** @internal */
+    trait EntityManagerHelperCompatibility
+    {
+        public function getName(): string
+        {
+            return 'entityManager';
+        }
+    }
+} else {
+    /** @internal */
+    trait EntityManagerHelperCompatibility
+    {
+        /**
+         * {@inheritDoc}
+         *
+         * @return string
+         */
+        public function getName()
+        {
+            return 'entityManager';
+        }
+    }
+}
 
 /**
  * Doctrine CLI Connection Helper.
@@ -15,6 +42,8 @@ use Symfony\Component\Console\Helper\Helper;
  */
 class EntityManagerHelper extends Helper
 {
+    use EntityManagerHelperCompatibility;
+
     /**
      * Doctrine ORM EntityManagerInterface.
      *
@@ -42,15 +71,5 @@ class EntityManagerHelper extends Helper
     public function getEntityManager()
     {
         return $this->_em;
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * @return string
-     */
-    public function getName()
-    {
-        return 'entityManager';
     }
 }
