@@ -137,7 +137,7 @@ optimize the performance of the Flush Operation:
 .. note::
 
     Flush only a single entity with ``$entityManager->flush($entity)`` is deprecated and will be removed in ORM 3.0.
-    (`Details <https://github.com/doctrine/orm/issues/8459>`_)
+    (\ `Details <https://github.com/doctrine/orm/issues/8459>`_)
 
 Query Internals
 ---------------

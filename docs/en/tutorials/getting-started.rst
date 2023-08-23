@@ -18,7 +18,7 @@ before. There are some prerequisites for the tutorial that have to be
 installed:
 
 - PHP (latest stable version)
-- Composer Package Manager (`Install Composer
+- Composer Package Manager (\ `Install Composer
   <https://getcomposer.org/doc/00-intro.md>`_)
 
 The code of this tutorial is `available on Github <https://github.com/doctrine/doctrine2-orm-tutorial>`_.
@@ -321,7 +321,7 @@ data in your storage, and later in your application when the data is loaded agai
 .. note::
 
     This method, although very common, is inappropriate for Domain Driven
-    Design (`DDD <https://en.wikipedia.org/wiki/Domain-driven_design>`_)
+    Design (\ `DDD <https://en.wikipedia.org/wiki/Domain-driven_design>`_)
     where methods should represent real business operations and not simple
     property change, And business invariants should be maintained both in the
     application state (entities in this case) and in the database, with no
