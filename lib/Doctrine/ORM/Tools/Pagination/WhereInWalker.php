@@ -17,7 +17,9 @@ use Doctrine\ORM\Query\AST\SimpleArithmeticExpression;
 use Doctrine\ORM\Query\AST\WhereClause;
 use Doctrine\ORM\Query\TreeWalkerAdapter;
 use RuntimeException;
+
 use function count;
+use function in_array;
 use function reset;
 
 /**
@@ -80,6 +82,7 @@ class WhereInWalker extends TreeWalkerAdapter
 
         $conditionalPrimary                              = new ConditionalPrimary();
         $conditionalPrimary->simpleConditionalExpression = $expression;
+
         $AST->whereClause = new WhereClause(
             new ConditionalExpression(
                 [new ConditionalTerm([$conditionalPrimary])]
@@ -93,9 +96,7 @@ class WhereInWalker extends TreeWalkerAdapter
         }
     }
 
-    /**
-     * @return bool
-     */
+    /** @return bool */
     private function onlyFromIsUsedInSelect(SelectStatement $AST)
     {
         $fromAliases = [];
@@ -104,7 +105,7 @@ class WhereInWalker extends TreeWalkerAdapter
         }
 
         foreach ($AST->selectClause->selectExpressions as $s) {
-            if (!in_array($s->expression, $fromAliases)) {
+            if (! in_array($s->expression, $fromAliases, true)) {
                 return false;
             }
         }
