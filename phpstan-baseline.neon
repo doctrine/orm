@@ -596,16 +596,6 @@ parameters:
 			path: lib/Doctrine/ORM/Tools/Export/Driver/YamlExporter.php
 
 		-
-			message: "#^Instanceof between \\*NEVER\\* and Doctrine\\\\ORM\\\\Query\\\\AST\\\\ConditionalFactor will always evaluate to false\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Tools/Pagination/WhereInWalker.php
-
-		-
-			message: "#^Instanceof between Doctrine\\\\ORM\\\\Query\\\\AST\\\\ConditionalExpression and Doctrine\\\\ORM\\\\Query\\\\AST\\\\ConditionalPrimary will always evaluate to false\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Tools/Pagination/WhereInWalker.php
-
-		-
 			message: "#^Else branch is unreachable because ternary operator condition is always true\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Tools/SchemaTool.php
