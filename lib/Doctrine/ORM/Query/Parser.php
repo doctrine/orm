@@ -1844,11 +1844,13 @@ class Parser
      */
     public function PartialObjectExpression()
     {
-        Deprecation::trigger(
-            'doctrine/orm',
-            'https://github.com/doctrine/orm/issues/8471',
-            'PARTIAL syntax in DQL is deprecated.'
-        );
+        if ($this->query === AbstractQuery::HYDRATE_OBJECT || $this->query === AbstractQuery::HYDRATE_SIMPLEOBJECT) {
+            Deprecation::trigger(
+                'doctrine/orm',
+                'https://github.com/doctrine/orm/issues/8471',
+                'PARTIAL syntax for object hydration (mode HYDRATE_OBJECT or HYDRATE_SIMPLEOBJECT) in DQL is deprecated.'
+            );
+        }
 
         $this->match(Lexer::T_PARTIAL);
 
