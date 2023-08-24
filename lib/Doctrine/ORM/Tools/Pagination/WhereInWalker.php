@@ -12,14 +12,17 @@ use Doctrine\ORM\Query\AST\InListExpression;
 use Doctrine\ORM\Query\AST\InputParameter;
 use Doctrine\ORM\Query\AST\NullComparisonExpression;
 use Doctrine\ORM\Query\AST\PathExpression;
+use Doctrine\ORM\Query\AST\SelectExpression;
 use Doctrine\ORM\Query\AST\SelectStatement;
 use Doctrine\ORM\Query\AST\SimpleArithmeticExpression;
+use Doctrine\ORM\Query\AST\Subselect;
 use Doctrine\ORM\Query\AST\WhereClause;
 use Doctrine\ORM\Query\TreeWalkerAdapter;
 use RuntimeException;
 
 use function count;
 use function in_array;
+use function is_string;
 use function reset;
 
 /**
@@ -82,34 +85,110 @@ class WhereInWalker extends TreeWalkerAdapter
 
         $conditionalPrimary                              = new ConditionalPrimary();
         $conditionalPrimary->simpleConditionalExpression = $expression;
+        if ($this->hasSubselect($AST) && $AST->whereClause) {
+            if ($AST->whereClause->conditionalExpression instanceof ConditionalTerm) {
+                $AST->whereClause->conditionalExpression->conditionalFactors[] = $conditionalPrimary;
+            } elseif ($AST->whereClause->conditionalExpression instanceof ConditionalPrimary) {
+                $AST->whereClause->conditionalExpression = new ConditionalExpression(
+                    [
+                        new ConditionalTerm(
+                            [
+                                $AST->whereClause->conditionalExpression,
+                                $conditionalPrimary,
+                            ]
+                        ),
+                    ]
+                );
+            } else {
+                $tmpPrimary                              = new ConditionalPrimary();
+                $tmpPrimary->conditionalExpression       = $AST->whereClause->conditionalExpression;
+                $AST->whereClause->conditionalExpression = new ConditionalTerm(
+                    [
+                        $tmpPrimary,
+                        $conditionalPrimary,
+                    ]
+                );
+            }
+        } else {
+            $AST->whereClause = new WhereClause(
+                new ConditionalExpression(
+                    [new ConditionalTerm([$conditionalPrimary])]
+                )
+            );
+        }
 
-        $AST->whereClause = new WhereClause(
-            new ConditionalExpression(
-                [new ConditionalTerm([$conditionalPrimary])]
-            )
-        );
-
-        if ($this->onlyFromIsUsedInSelect($AST)) {
+        if ($this->clausesAreUsingOnlyFromIdnetifications($AST)) {
             foreach ($AST->fromClause->identificationVariableDeclarations as $f) {
                 $f->joins = [];
             }
         }
     }
 
-    /** @return bool */
-    private function onlyFromIsUsedInSelect(SelectStatement $AST)
+    private function clausesAreUsingOnlyFromIdnetifications(SelectStatement $AST): bool
     {
         $fromAliases = [];
         foreach ($AST->fromClause->identificationVariableDeclarations as $f) {
             $fromAliases[] = $f->rangeVariableDeclaration->aliasIdentificationVariable;
         }
 
-        foreach ($AST->selectClause->selectExpressions as $s) {
-            if (! in_array($s->expression, $fromAliases, true)) {
+        foreach ($AST->selectClause->selectExpressions as $selectExpression) {
+            if (! $this->isExpressionExistsInFromClause($selectExpression->expression, $fromAliases)) {
                 return false;
             }
         }
 
+        if ($AST->groupByClause !== null) {
+            foreach ($AST->groupByClause->groupByItems as $groupByItem) {
+                if (! $this->isExpressionExistsInFromClause($groupByItem->expression, $fromAliases)) {
+                    return false;
+                }
+            }
+        }
+
+        if ($AST->havingClause !== null) {
+            return false;
+        }
+
+        if ($AST->orderByClause !== null) {
+            foreach ($AST->orderByClause->orderByItems as $orderByItem) {
+                if (! $this->isExpressionExistsInFromClause($orderByItem->expression, $fromAliases)) {
+                    return false;
+                }
+            }
+        }
+
         return true;
+    }
+
+    /**
+     * @param mixed    $expression
+     * @param string[] $fromAliases
+     */
+    private function isExpressionExistsInFromClause($expression, array $fromAliases): bool
+    {
+        $expressionIdentification = null;
+
+        if ($expression instanceof PathExpression) {
+            $expressionIdentification = $expression->identificationVariable;
+        } elseif (is_string($expression)) {
+            $expressionIdentification = $expression;
+        }
+
+        if ($expressionIdentification === null) {
+            return false;
+        }
+
+        return in_array($expression, $fromAliases, true);
+    }
+
+    private function hasSubselect(SelectStatement $AST): bool
+    {
+        foreach ($AST->selectClause->selectExpressions as $selectExpression) {
+            if ($selectExpression instanceof SelectExpression && $selectExpression->expression instanceof Subselect) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }
