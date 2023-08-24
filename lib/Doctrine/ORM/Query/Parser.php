@@ -6,6 +6,7 @@ namespace Doctrine\ORM\Query;
 
 use Doctrine\Common\Lexer\Token;
 use Doctrine\Deprecations\Deprecation;
+use Doctrine\ORM\AbstractQuery;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Query;
