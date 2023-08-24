@@ -6,6 +6,7 @@ namespace Doctrine\ORM\Tools\Console\Command\ClearCache;
 
 use Doctrine\ORM\Cache;
 use Doctrine\ORM\Tools\Console\Command\AbstractEntityManagerCommand;
+use Doctrine\ORM\Tools\Console\CommandCompatibility;
 use InvalidArgumentException;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -20,6 +21,8 @@ use function sprintf;
  */
 class EntityRegionCommand extends AbstractEntityManagerCommand
 {
+    use CommandCompatibility;
+
     /** @return void */
     protected function configure()
     {
@@ -57,12 +60,7 @@ EOT
              );
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * @return int
-     */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    private function doExecute(InputInterface $input, OutputInterface $output): int
     {
         $ui = (new SymfonyStyle($input, $output))->getErrorStyle();
 
