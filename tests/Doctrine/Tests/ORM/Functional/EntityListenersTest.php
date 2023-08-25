@@ -4,12 +4,18 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional;
 
+use Doctrine\ORM\Event\PostPersistEventArgs;
+use Doctrine\ORM\Event\PostRemoveEventArgs;
 use Doctrine\ORM\Event\PreFlushEventArgs;
 use Doctrine\ORM\Event\PreUpdateEventArgs;
+use Doctrine\ORM\Events;
+use Doctrine\ORM\UnitOfWork;
 use Doctrine\Persistence\Event\LifecycleEventArgs;
 use Doctrine\Tests\Models\Company\CompanyContractListener;
 use Doctrine\Tests\Models\Company\CompanyFixContract;
+use Doctrine\Tests\Models\Company\CompanyPerson;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Assert;
 
 /** @group DDC-1955 */
 class EntityListenersTest extends OrmFunctionalTestCase
@@ -96,6 +102,45 @@ class EntityListenersTest extends OrmFunctionalTestCase
         self::assertInstanceOf(LifecycleEventArgs::class, $this->listener->postPersistCalls[0][1]);
     }
 
+    public function testPostPersistCalledAfterAllInsertsHaveBeenPerformedAndIdsHaveBeenAssigned(): void
+    {
+        $object1 = new CompanyFixContract();
+        $object1->setFixPrice(2000);
+
+        $object2 = new CompanyPerson();
+        $object2->setName('J. Doe');
+
+        $this->_em->persist($object1);
+        $this->_em->persist($object2);
+
+        $listener = new class ([$object1, $object2]) {
+            /** @var array<object> */
+            private $trackedObjects;
+
+            /** @var int */
+            public $invocationCount = 0;
+
+            public function __construct(array $trackedObjects)
+            {
+                $this->trackedObjects = $trackedObjects;
+            }
+
+            public function postPersist(PostPersistEventArgs $args): void
+            {
+                foreach ($this->trackedObjects as $object) {
+                    Assert::assertNotNull($object->getId());
+                }
+
+                ++$this->invocationCount;
+            }
+        };
+
+        $this->_em->getEventManager()->addEventListener(Events::postPersist, $listener);
+        $this->_em->flush();
+
+        self::assertSame(2, $listener->invocationCount);
+    }
+
     public function testPreUpdateListeners(): void
     {
         $fix = new CompanyFixContract();
@@ -174,5 +219,51 @@ class EntityListenersTest extends OrmFunctionalTestCase
         self::assertSame($fix, $this->listener->postRemoveCalls[0][0]);
         self::assertInstanceOf(CompanyFixContract::class, $this->listener->postRemoveCalls[0][0]);
         self::assertInstanceOf(LifecycleEventArgs::class, $this->listener->postRemoveCalls[0][1]);
+    }
+
+    public function testPostRemoveCalledAfterAllRemovalsHaveBeenPerformed(): void
+    {
+        $object1 = new CompanyFixContract();
+        $object1->setFixPrice(2000);
+
+        $object2 = new CompanyPerson();
+        $object2->setName('J. Doe');
+
+        $this->_em->persist($object1);
+        $this->_em->persist($object2);
+        $this->_em->flush();
+
+        $listener = new class ($this->_em->getUnitOfWork(), [$object1, $object2]) {
+            /** @var UnitOfWork */
+            private $uow;
+
+            /** @var array<object> */
+            private $trackedObjects;
+
+            /** @var int */
+            public $invocationCount = 0;
+
+            public function __construct(UnitOfWork $uow, array $trackedObjects)
+            {
+                $this->uow            = $uow;
+                $this->trackedObjects = $trackedObjects;
+            }
+
+            public function postRemove(PostRemoveEventArgs $args): void
+            {
+                foreach ($this->trackedObjects as $object) {
+                    Assert::assertFalse($this->uow->isInIdentityMap($object));
+                }
+
+                ++$this->invocationCount;
+            }
+        };
+
+        $this->_em->getEventManager()->addEventListener(Events::postRemove, $listener);
+        $this->_em->remove($object1);
+        $this->_em->remove($object2);
+        $this->_em->flush();
+
+        self::assertSame(2, $listener->invocationCount);
     }
 }
