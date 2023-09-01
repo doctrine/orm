@@ -3058,7 +3058,9 @@ EXCEPTION
                                     break;
 
                                 // Deferred eager load only works for single identifier classes
-                                case isset($hints[self::HINT_DEFEREAGERLOAD]) && ! $targetClass->isIdentifierComposite:
+                                case isset($hints[self::HINT_DEFEREAGERLOAD]) &&
+                                    $hints[self::HINT_DEFEREAGERLOAD] &&
+                                    ! $targetClass->isIdentifierComposite:
                                     // TODO: Is there a faster approach?
                                     $this->eagerLoadingEntities[$targetClass->rootEntityName][$relatedIdHash] = current($normalizedAssociatedId);
 
