@@ -26,6 +26,7 @@ class GH10927Test extends OrmFunctionalTestCase
                 'This test is special to platforms emulating IDENTITY key generation strategy through sequences.'
             );
         }
+
         $child = new GH10927Child();
 
         $this->_em->persist($child);
