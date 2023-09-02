@@ -33,10 +33,7 @@ jobs:
         run: "rm composer.json"
 
       - name: "Require phpdocumentor/guides-cli"
-        run: "composer require --dev phpdocumentor/guides-cli dev-main@dev --no-update"
-
-      - name: "Configure minimum stability"
-        run: "composer config minimum-stability dev"
+        run: "composer require --dev phpdocumentor/guides-cli --no-update"
 
       - name: "Install dependencies with Composer"
         uses: "ramsey/composer-install@v2"
