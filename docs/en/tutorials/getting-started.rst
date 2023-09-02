@@ -735,7 +735,7 @@ classes. We'll store them in ``src/Bug.php`` and ``src/User.php``, respectively.
         #[ORM\Id]
         #[ORM\Column(type: 'integer')]
         #[ORM\GeneratedValue]
-        private int $id;
+        private int|null $id;
 
         #[ORM\Column(type: 'string')]
         private string $description;
