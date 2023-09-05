@@ -211,7 +211,7 @@ Now look at the following test-code for our entities:
     {
         public function testAddEntry()
         {
-            $account = new Account("123456", $maxCredit = 200);
+            $account = new Account("123456", maxCredit: 200);
             $this->assertEquals(0, $account->getBalance());
     
             $account->addEntry(500);
@@ -223,7 +223,7 @@ Now look at the following test-code for our entities:
     
         public function testExceedMaxLimit()
         {
-            $account = new Account("123456", $maxCredit = 200);
+            $account = new Account("123456", maxCredit: 200);
     
             $this->expectException(Exception::class);
             $account->addEntry(-1000);

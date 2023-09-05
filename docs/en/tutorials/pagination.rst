@@ -15,7 +15,7 @@ has a very simple API and implements the SPL interfaces ``Countable`` and
                            ->setFirstResult(0)
                            ->setMaxResults(100);
 
-    $paginator = new Paginator($query, $fetchJoinCollection = true);
+    $paginator = new Paginator($query, fetchJoinCollection: true);
 
     $c = count($paginator);
     foreach ($paginator as $post) {
@@ -36,10 +36,10 @@ correct result:
 
 This behavior is only necessary if you actually fetch join a to-many
 collection. You can disable this behavior by setting the
-``$fetchJoinCollection`` flag to ``false``; in that case only 2 instead of the 3 queries
+``fetchJoinCollection`` argument to ``false``; in that case only 2 instead of the 3 queries
 described are executed. We hope to automate the detection for this in
 the future.
 
 .. note::
 
-    ``$fetchJoinCollection`` flag set to ``true`` might affect results if you use aggregations in your query.
+    ``fetchJoinCollection`` argument set to ``true`` might affect results if you use aggregations in your query.
