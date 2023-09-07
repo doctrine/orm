@@ -1165,7 +1165,7 @@ class QueryBuilder
      *
      * @return $this
      */
-    public function andWhere()
+    public function andWhere($where)
     {
         $args  = func_get_args();
         $where = $this->getDQLPart('where');
