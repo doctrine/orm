@@ -95,6 +95,8 @@ class ORMSetupTest extends TestCase
 
     /**
      * @requires extension apcu
+     * @requires setting apc.enable_cli 1
+     * @requires setting apc.enabled 1
      */
     public function testCacheNamespaceShouldBeGeneratedForApcu(): void
     {
