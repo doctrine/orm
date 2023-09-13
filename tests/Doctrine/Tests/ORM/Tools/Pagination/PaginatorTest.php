@@ -18,7 +18,6 @@ use Doctrine\Tests\PHPUnitCompatibility\MockBuilderCompatibilityTools;
 use Generator;
 use PHPUnit\Framework\MockObject\MockObject;
 
-use function call_user_func;
 use function preg_replace;
 
 class PaginatorTest extends OrmTestCase
@@ -136,8 +135,8 @@ class PaginatorTest extends OrmTestCase
         $query->setMaxResults(1);
         $paginator = (new Paginator($query, true))->setUseOutputWalkers(false);
 
-        $queryIndex   = 0;
-        $resultMock   = $this->createMock(Result::class);
+        $queryIndex = 0;
+        $resultMock = $this->createMock(Result::class);
         $this->connection
             ->expects($this->exactly(2))
             ->method('executeQuery')
