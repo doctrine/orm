@@ -138,13 +138,12 @@ class PaginatorTest extends OrmTestCase
 
         $queryIndex   = 0;
         $resultMock   = $this->createMock(Result::class);
-        $assertEquals = [$this, 'assertEquals'];
         $this->connection
             ->expects($this->exactly(2))
             ->method('executeQuery')
-            ->willReturnCallback(static function (string $actualSql) use ($expectedQueries, $resultMock, $assertEquals, &$queryIndex): Result {
+            ->willReturnCallback(static function (string $actualSql) use ($expectedQueries, $resultMock, &$queryIndex): Result {
                 $expectedSql = preg_replace('!\s+!', ' ', $expectedQueries[$queryIndex]);
-                call_user_func($assertEquals, $expectedSql, $actualSql);
+                self::assertEquals($expectedSql, $actualSql);
 
                 $queryIndex++;
 
