@@ -116,6 +116,25 @@ class ParserResultSerializationTest extends OrmFunctionalTestCase
         yield '2.17.0' => [rtrim(file_get_contents(__DIR__ . '/ParserResults/single_select_2_17_0.txt'), "\n")];
     }
 
+    public function testSymfony44ProvidedData(): void
+    {
+        $sqlExecutor      = $this->createMock(SingleSelectExecutor::class);
+        $resultSetMapping = $this->createMock(ResultSetMapping::class);
+
+        $parserResult = new ParserResult();
+        $parserResult->setSqlExecutor($sqlExecutor);
+        $parserResult->setResultSetMapping($resultSetMapping);
+        $parserResult->addParameterMapping('name', 0);
+
+        $exported     = VarExporter::export($parserResult);
+        $unserialized = eval('return ' . $exported . ';');
+
+        $this->assertInstanceOf(ParserResult::class, $unserialized);
+        $this->assertInstanceOf(ResultSetMapping::class, $unserialized->getResultSetMapping());
+        $this->assertEquals(['name' => [0]], $unserialized->getParameterMappings());
+        $this->assertInstanceOf(SingleSelectExecutor::class, $unserialized->getSqlExecutor());
+    }
+
     private static function parseQuery(Query $query): ParserResult
     {
         $r = new ReflectionMethod($query, 'parse');
