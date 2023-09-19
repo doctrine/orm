@@ -457,13 +457,12 @@ prePersist
 
 There are two ways for the ``prePersist`` event to be triggered:
 
-- One is obviously when you call ``EntityManager::persist()``. The
-event is also called for all :ref:`cascaded associations<transitive-persistence>`.
-- The other is inside the
-``flush()`` method when changes to associations are computed and
-this association is marked as :ref:`cascade: persist<transitive-persistence>`. Any new entity found
-during this operation is also persisted and ``prePersist`` called
-on it. This is called :ref:`persistence by reachability<persistence-by-reachability>`.
+- One is when you call ``EntityManager::persist()``. The
+  event is also called for all :ref:`cascaded associations<transitive-persistence>`.
+- The other is inside the ``flush()`` method when changes to associations are computed and
+  this association is marked as :ref:`cascade: persist<transitive-persistence>`. Any new entity found
+  during this operation is also persisted and ``prePersist`` called
+  on it. This is called :ref:`persistence by reachability<persistence-by-reachability>`.
 
 In both cases you get passed a ``PrePersistEventArgs`` instance
 which has access to the entity and the entity manager.
