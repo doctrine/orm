@@ -342,6 +342,11 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             Models\Issue9300\Issue9300Child::class,
             Models\Issue9300\Issue9300Parent::class,
         ],
+        'rating' => [
+            Models\Rating\Business::class,
+            Models\Rating\Review::class,
+            Models\Rating\User::class,
+        ],
     ];
 
     /** @param class-string ...$models */
@@ -669,6 +674,13 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             $conn->executeStatement('DELETE FROM issue5989_persons');
             $conn->executeStatement('DELETE FROM issue5989_employees');
             $conn->executeStatement('DELETE FROM issue5989_managers');
+        }
+
+        if (isset($this->_usedModelSets['rating'])) {
+            $conn->executeStatement('DELETE FROM ratings_businesses_reviews');
+            $conn->executeStatement('DELETE FROM ratings_review');
+            $conn->executeStatement('DELETE FROM ratings_business');
+            $conn->executeStatement('DELETE FROM ratings_user');
         }
 
         $this->_em->clear();
