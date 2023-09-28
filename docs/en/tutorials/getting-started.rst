@@ -484,7 +484,7 @@ persisted and what constraints should be applied to them.
 
 Metadata for an Entity can be configured using attributes directly in
 the Entity class itself, or in an external XML file. This
-Getting Started guide will demonstrate metadata mappings using all three
+Getting Started guide will demonstrate metadata mappings using both
 methods, but you only need to choose one.
 
 .. configuration-block::
