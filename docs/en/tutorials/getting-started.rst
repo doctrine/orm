@@ -1199,21 +1199,21 @@ which translates the YYYY-mm-dd HH:mm:ss database format
 into a PHP DateTime instance and back.
 
 After the field definitions, the two qualified references to the
-user entity are defined. They are created by the ``many-to-one``
-tag. The class name of the related entity has to be specified with
-the ``target-entity`` attribute, which is enough information for
-the database mapper to access the foreign-table. Since
+user entity are defined. They are created by the ``ManyToOne``
+attribute. The class name of the related entity has to be specified with
+the ``targetEntity`` parameter, which is enough information for
+the database mapper to access the foreign table. Since
 ``reporter`` and ``engineer`` are on the owning side of a
-bi-directional relation, we also have to specify the ``inversed-by``
-attribute. They have to point to the field names on the inverse
-side of the relationship. We will see in the next example that the ``inversed-by``
-attribute has a counterpart ``mapped-by`` which makes that
+bi-directional relation, we also have to specify the ``inversedBy``
+parameter. They have to point to the field names on the inverse
+side of the relationship. We will see in the next example that the ``inversedBy``
+parameter has a counterpart ``mappedBy`` which makes that
 the inverse side.
 
 The last definition is for the ``Bug#products`` collection. It
 holds all products where the specific bug occurs. Again
-you have to define the ``target-entity`` and ``field`` attributes
-on the ``many-to-many`` tag.
+you have to define the ``targetEntity`` and ``field`` parameters
+on the ``ManyToMany`` attribute.
 
 Finally, we'll add metadata mappings for the ``User`` entity.
 
@@ -1336,7 +1336,7 @@ Finally, we'll add metadata mappings for the ``User`` entity.
               targetEntity: Bug
               mappedBy: engineer
 
-Here are some new things to mention about the ``one-to-many`` tags.
+Here are some new things to mention about the ``OneToMany`` attribute.
 Remember that we discussed about the inverse and owning side. Now
 both reportedBugs and assignedBugs are inverse relations, which
 means the join details have already been defined on the owning
