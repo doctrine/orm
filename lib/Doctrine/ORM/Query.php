@@ -33,7 +33,6 @@ use function assert;
 use function count;
 use function get_debug_type;
 use function in_array;
-use function is_int;
 use function ksort;
 use function md5;
 use function method_exists;
@@ -144,20 +143,6 @@ final class Query extends AbstractQuery
      * @var ParserResult
      */
     private $parserResult;
-
-    /**
-     * The first result to return (the "offset").
-     *
-     * @var int
-     */
-    private $firstResult = 0;
-
-    /**
-     * The maximum number of results to return (the "limit").
-     *
-     * @var int|null
-     */
-    private $maxResults = null;
 
     /**
      * The cache driver used for caching queries.
@@ -655,35 +640,13 @@ final class Query extends AbstractQuery
      *
      * @return $this
      */
-    public function setFirstResult($firstResult): self
+    public function setFirstResult($firstResult): AbstractQuery
     {
-        if (! is_int($firstResult)) {
-            Deprecation::trigger(
-                'doctrine/orm',
-                'https://github.com/doctrine/orm/pull/9809',
-                'Calling %s with %s is deprecated and will result in a TypeError in Doctrine 3.0. Pass an integer.',
-                __METHOD__,
-                get_debug_type($firstResult)
-            );
+        parent::setFirstResult($firstResult);
 
-            $firstResult = (int) $firstResult;
-        }
-
-        $this->firstResult = $firstResult;
-        $this->state       = self::STATE_DIRTY;
+        $this->state = self::STATE_DIRTY;
 
         return $this;
-    }
-
-    /**
-     * Gets the position of the first result the query object was set to retrieve (the "offset").
-     * Returns 0 if {@link setFirstResult} was not applied to this query.
-     *
-     * @return int The position of the first result.
-     */
-    public function getFirstResult(): int
-    {
-        return $this->firstResult;
     }
 
     /**
@@ -693,27 +656,13 @@ final class Query extends AbstractQuery
      *
      * @return $this
      */
-    public function setMaxResults($maxResults): self
+    public function setMaxResults($maxResults): AbstractQuery
     {
-        if ($maxResults !== null) {
-            $maxResults = (int) $maxResults;
-        }
+        parent::setMaxResults($maxResults);
 
-        $this->maxResults = $maxResults;
-        $this->state      = self::STATE_DIRTY;
+        $this->state = self::STATE_DIRTY;
 
         return $this;
-    }
-
-    /**
-     * Gets the maximum number of results the query object was set to retrieve (the "limit").
-     * Returns NULL if {@link setMaxResults} was not applied to this query.
-     *
-     * @return int|null Maximum number of results.
-     */
-    public function getMaxResults(): ?int
-    {
-        return $this->maxResults;
     }
 
     /**
@@ -814,14 +763,14 @@ final class Query extends AbstractQuery
             $this->getDQL() . serialize($this->_hints) .
             '&platform=' . get_debug_type($this->getEntityManager()->getConnection()->getDatabasePlatform()) .
             ($this->_em->hasFilters() ? $this->_em->getFilters()->getHash() : '') .
-            '&firstResult=' . $this->firstResult . '&maxResult=' . $this->maxResults .
+            '&firstResult=' . $this->getFirstResult() . '&maxResult=' . $this->getMaxResults() .
             '&hydrationMode=' . $this->_hydrationMode . '&types=' . serialize($this->parsedTypes) . 'DOCTRINE_QUERY_CACHE_SALT'
         );
     }
 
     protected function getHash(): string
     {
-        return sha1(parent::getHash() . '-' . $this->firstResult . '-' . $this->maxResults);
+        return sha1(parent::getHash() . '-' . $this->getFirstResult() . '-' . $this->getMaxResults());
     }
 
     /**

@@ -40,6 +40,7 @@
       <code>(bool) $cacheable</code>
       <code>(int) $cacheMode</code>
       <code>(int) $lifetime</code>
+      <code>(int) $maxResults</code>
       <code>(string) $cacheRegion</code>
     </RedundantCastGivenDocblockType>
   </file>

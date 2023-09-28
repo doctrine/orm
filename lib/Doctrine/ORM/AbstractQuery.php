@@ -33,8 +33,10 @@ use function array_shift;
 use function assert;
 use function count;
 use function func_num_args;
+use function get_debug_type;
 use function in_array;
 use function is_array;
+use function is_int;
 use function is_numeric;
 use function is_object;
 use function is_scalar;
@@ -166,6 +168,20 @@ abstract class AbstractQuery
 
     /** @var int */
     protected $lifetime = 0;
+
+    /**
+     * The first result to return (the "offset").
+     *
+     * @var int
+     */
+    private $firstResult = 0;
+
+    /**
+     * The maximum number of results to return (the "limit").
+     *
+     * @var int|null
+     */
+    private $maxResults = null;
 
     /**
      * Initializes a new instance of a class derived from <tt>AbstractQuery</tt>.
@@ -1370,6 +1386,72 @@ abstract class AbstractQuery
     public function getResultCacheId()
     {
         return $this->_queryCacheProfile ? $this->_queryCacheProfile->getCacheKey() : null;
+    }
+
+    /**
+     * Sets the position of the first result to retrieve (the "offset").
+     *
+     * @param int|null $firstResult The first result to return.
+     *
+     * @return $this
+     */
+    public function setFirstResult($firstResult): self
+    {
+        if (! is_int($firstResult)) {
+            Deprecation::trigger(
+                'doctrine/orm',
+                'https://github.com/doctrine/orm/pull/9809',
+                'Calling %s with %s is deprecated and will result in a TypeError in Doctrine 3.0. Pass an integer.',
+                __METHOD__,
+                get_debug_type($firstResult)
+            );
+
+            $firstResult = (int) $firstResult;
+        }
+
+        $this->firstResult = $firstResult;
+
+        return $this;
+    }
+
+    /**
+     * Gets the position of the first result the query object was set to retrieve (the "offset").
+     * Returns 0 if {@link setFirstResult} was not applied to this query.
+     *
+     * @return int The position of the first result.
+     */
+    public function getFirstResult(): int
+    {
+        return $this->firstResult;
+    }
+
+    /**
+     * Sets the maximum number of results to retrieve (the "limit").
+     *
+     * @param int|null $maxResults
+     *
+     * @return $this
+     */
+    public function setMaxResults($maxResults): self
+    {
+        if ($maxResults !== null) {
+            $maxResults = (int) $maxResults;
+        }
+
+        $this->maxResults = $maxResults;
+
+        return $this;
+    }
+
+    /**
+     * Gets the maximum number of results the query object was set to retrieve (the "limit").
+     * Returns NULL if {@link setMaxResults} was not applied to this query.
+     *
+     * @return int|null Maximum number of results.
+     */
+    public function getMaxResults(): ?int
+    {
+        return $this->maxResults;
     }
 
     /**
