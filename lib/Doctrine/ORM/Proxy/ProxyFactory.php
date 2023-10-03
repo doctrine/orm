@@ -99,7 +99,7 @@ EOPHP;
             $proxyGenerator->setPlaceholder('serializeImpl', $this->generateSerializeImpl(...));
             $proxyGenerator->setProxyClassTemplate(self::PROXY_CLASS_TEMPLATE);
         } else {
-            $proxyGenerator->setPlaceholder('baseProxyInterface', CommonProxy::class);
+            $proxyGenerator->setPlaceholder('baseProxyInterface', CommonProxy::class . ', \\' . InternalProxy::class);
         }
 
         parent::__construct($proxyGenerator, $em->getMetadataFactory(), $autoGenerate);
