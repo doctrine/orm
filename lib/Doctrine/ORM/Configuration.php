@@ -604,4 +604,14 @@ class Configuration extends \Doctrine\DBAL\Configuration
 
         $this->attributes['isLazyGhostObjectEnabled'] = $flag;
     }
+
+    public function setRejectIdCollisionInIdentityMap(bool $flag): void
+    {
+        $this->attributes['rejectIdCollisionInIdentityMap'] = $flag;
+    }
+
+    public function isRejectIdCollisionInIdentityMapEnabled(): bool
+    {
+        return $this->attributes['rejectIdCollisionInIdentityMap'] ?? false;
+    }
 }

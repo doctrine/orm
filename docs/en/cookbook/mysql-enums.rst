@@ -43,13 +43,13 @@ entities:
 .. code-block:: php
 
     <?php
-    /** @Entity */
+    #[Entity]
     class Article
     {
         const STATUS_VISIBLE = 'visible';
         const STATUS_INVISIBLE = 'invisible';
 
-        /** @Column(type="string") */
+        #[Column(type: "string")]
         private $status;
 
         public function setStatus($status)
@@ -67,10 +67,10 @@ the **columnDefinition** attribute.
 .. code-block:: php
 
     <?php
-    /** @Entity */
+    #[Entity]
     class Article
     {
-        /** @Column(type="string", columnDefinition="ENUM('visible', 'invisible')") */
+        #[Column(type: "string", columnDefinition: "ENUM('visible', 'invisible')")]
         private $status;
     }
 
@@ -131,10 +131,10 @@ Then in your entity you can just use this type:
 .. code-block:: php
 
     <?php
-    /** @Entity */
+    #[Entity]
     class Article
     {
-        /** @Column(type="enumvisibility") */
+        #[Column(type: "enumvisibility")]
         private $status;
     }
 
@@ -196,4 +196,3 @@ With this base class you can define an enum as easily as:
         protected $name = 'enumvisibility';
         protected $values = array('visible', 'invisible');
     }
-

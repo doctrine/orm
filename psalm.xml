@@ -28,6 +28,10 @@
                 <referencedClass name="Doctrine\DBAL\Tools\Console\Command\ReservedWordsCommand" />
                 <!-- Remove on 3.0.x -->
                 <referencedClass name="Doctrine\DBAL\Schema\Visitor\RemoveNamespacedAssets"/>
+                <referencedClass name="Doctrine\ORM\Internal\CommitOrder\Edge"/>
+                <referencedClass name="Doctrine\ORM\Internal\CommitOrder\Vertex"/>
+                <referencedClass name="Doctrine\ORM\Internal\CommitOrder\VertexState"/>
+                <referencedClass name="Doctrine\ORM\Internal\CommitOrderCalculator"/>
             </errorLevel>
         </DeprecatedClass>
         <DeprecatedMethod>

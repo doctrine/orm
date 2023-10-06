@@ -19,8 +19,8 @@ final class ReflectionEnumProperty extends ReflectionProperty
         private readonly string $enumType,
     ) {
         parent::__construct(
-            $originalReflectionProperty->getDeclaringClass()->getName(),
-            $originalReflectionProperty->getName(),
+            $originalReflectionProperty->class,
+            $originalReflectionProperty->name,
         );
     }
 
@@ -76,7 +76,7 @@ final class ReflectionEnumProperty extends ReflectionProperty
         } catch (ValueError $e) {
             throw MappingException::invalidEnumValue(
                 $object::class,
-                $this->originalReflectionProperty->getName(),
+                $this->originalReflectionProperty->name,
                 (string) $value,
                 $enumType,
                 $e,

@@ -12,6 +12,7 @@ use Doctrine\ORM\ORMSetup;
 use InvalidArgumentException;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\RequiresPhpExtension;
+use PHPUnit\Framework\Attributes\RequiresSetting;
 use PHPUnit\Framework\TestCase;
 use ReflectionProperty;
 use Symfony\Component\Cache\Adapter\AbstractAdapter;
@@ -48,6 +49,8 @@ class ORMSetupTest extends TestCase
     }
 
     #[RequiresPhpExtension('apcu')]
+    #[RequiresSetting('apc.enable_cli', '1')]
+    #[RequiresSetting('apc.enabled', '1')]
     public function testCacheNamespaceShouldBeGeneratedForApcu(): void
     {
         $config = ORMSetup::createConfiguration(false, '/foo');

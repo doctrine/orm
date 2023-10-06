@@ -18,11 +18,13 @@ use Doctrine\ORM\Mapping\Table;
 #[Cache]
 class Admin1AlternateName
 {
+    #[Id]
+    #[Column(type: 'string', length: 25)]
+    #[GeneratedValue(strategy: 'NONE')]
+    public string $id;
+
     public function __construct(
-        #[Id]
-        #[Column(type: 'string', length: 25)]
-        #[GeneratedValue(strategy: 'NONE')]
-        public int $id,
+        int $id,
         #[Column(type: 'string', length: 255)]
         public string $name,
         #[JoinColumn(name: 'admin1', referencedColumnName: 'id')]
@@ -31,5 +33,6 @@ class Admin1AlternateName
         #[Cache]
         public Admin1 $admin1,
     ) {
+        $this->id = (string) $id;
     }
 }

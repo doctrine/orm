@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<files psalm-version="5.13.0@a0a9c27630bcf8301ee78cb06741d2907d8c9fef">
+<files psalm-version="5.15.0@5c774aca4746caf3d239d9c8cadb9f882ca29352">
   <file src="lib/Doctrine/ORM/AbstractQuery.php">
     <FalsableReturnStatement>
       <code><![CDATA[! $filteredParameters->isEmpty() ? $filteredParameters->first() : null]]></code>
@@ -523,13 +523,12 @@
       <code><![CDATA[$metadata->table]]></code>
     </InvalidPropertyAssignmentValue>
     <InvalidPropertyFetch>
-      <code><![CDATA[$indexXml->options]]></code>
-      <code><![CDATA[$uniqueXml->options]]></code>
       <code><![CDATA[$xmlRoot->{'discriminator-column'}]]></code>
       <code><![CDATA[$xmlRoot->{'discriminator-map'}]]></code>
     </InvalidPropertyFetch>
     <InvalidReturnStatement>
       <code>$mapping</code>
+      <code>$result</code>
       <code><![CDATA[[
             'usage'  => $usage,
             'region' => $region,
@@ -553,23 +552,15 @@
       *                   options?: array
       *               }</code>
       <code>array{usage: int|null, region?: string}</code>
+      <code>loadMappingFile</code>
     </InvalidReturnType>
     <MoreSpecificImplementedParamType>
       <code>$metadata</code>
     </MoreSpecificImplementedParamType>
     <NoInterfaceProperties>
-      <code><![CDATA[$indexXml->options]]></code>
-      <code><![CDATA[$uniqueXml->options]]></code>
       <code><![CDATA[$xmlRoot->{'discriminator-column'}]]></code>
       <code><![CDATA[$xmlRoot->{'discriminator-map'}]]></code>
     </NoInterfaceProperties>
-    <PossiblyNullArgument>
-      <code><![CDATA[$joinColumnElement['options']->children()]]></code>
-      <code><![CDATA[$option->children()]]></code>
-    </PossiblyNullArgument>
-    <PossiblyNullIterator>
-      <code><![CDATA[$cascadeElement->children()]]></code>
-    </PossiblyNullIterator>
     <TypeDoesNotContainType>
       <code><![CDATA[$xmlRoot->getName() === 'embeddable']]></code>
       <code><![CDATA[$xmlRoot->getName() === 'entity']]></code>
@@ -750,14 +741,19 @@
       <code>$classMetadata</code>
       <code>$classMetadata</code>
     </ArgumentTypeCoercion>
-    <DirectConstructorCall>
-      <code><![CDATA[$proxy->__construct(static function (InternalProxy $object) use ($initializer, $proxy): void {
-            $initializer($object, $proxy);
-        })]]></code>
-    </DirectConstructorCall>
+    <DeprecatedMethod>
+      <code>createCloner</code>
+      <code>createInitializer</code>
+    </DeprecatedMethod>
     <InvalidArgument>
       <code><![CDATA[$classMetadata->getReflectionProperties()]]></code>
     </InvalidArgument>
+    <InvalidNullableReturnType>
+      <code>Closure</code>
+    </InvalidNullableReturnType>
+    <InvalidPropertyAssignmentValue>
+      <code><![CDATA[$this->proxyFactories]]></code>
+    </InvalidPropertyAssignmentValue>
     <NoInterfaceProperties>
       <code><![CDATA[$metadata->isEmbeddedClass]]></code>
       <code><![CDATA[$metadata->isMappedSuperclass]]></code>
@@ -765,6 +761,15 @@
     <PossiblyNullArgument>
       <code><![CDATA[$property->name]]></code>
     </PossiblyNullArgument>
+    <NullableReturnStatement>
+      <code><![CDATA[$this->proxyFactories[$className] = $proxyFactory]]></code>
+    </NullableReturnStatement>
+    <PossiblyFalseArgument>
+      <code>$i</code>
+    </PossiblyFalseArgument>
+    <PossiblyFalseOperand>
+      <code>$i</code>
+    </PossiblyFalseOperand>
     <PossiblyNullPropertyFetch>
       <code><![CDATA[$property->name]]></code>
     </PossiblyNullPropertyFetch>
@@ -772,10 +777,21 @@
       <code>getValue</code>
       <code>setValue</code>
     </PossiblyNullReference>
+    <TypeDoesNotContainType>
+      <code><![CDATA[$autoGenerate < 0]]></code>
+      <code><![CDATA[$autoGenerate > 4]]></code>
+    </TypeDoesNotContainType>
     <UndefinedInterfaceMethod>
-      <code>__construct</code>
       <code>__wakeup</code>
     </UndefinedInterfaceMethod>
+    <UndefinedMethod>
+      <code><![CDATA[self::createLazyGhost(static function (InternalProxy $object) use ($initializer, &$proxy): void {
+                $initializer($object, $proxy);
+            }, $skippedProperties)]]></code>
+    </UndefinedMethod>
+    <UnresolvableInclude>
+      <code>require $fileName</code>
+    </UnresolvableInclude>
   </file>
   <file src="lib/Doctrine/ORM/Query.php">
     <InvalidArgument>
@@ -1292,10 +1308,6 @@
       <code>unwrap</code>
       <code>unwrap</code>
     </PossiblyUndefinedMethod>
-    <RedundantCondition>
-      <code><![CDATA[$i >= 0 && $this->entityDeletions]]></code>
-      <code><![CDATA[$this->entityDeletions]]></code>
-    </RedundantCondition>
     <ReferenceConstraintViolation>
       <code>$visited</code>
     </ReferenceConstraintViolation>

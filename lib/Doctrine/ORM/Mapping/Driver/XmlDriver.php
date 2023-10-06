@@ -170,7 +170,7 @@ class XmlDriver extends FileDriver
         // Evaluate <indexes...>
         if (isset($xmlRoot->indexes)) {
             $metadata->table['indexes'] = [];
-            foreach ($xmlRoot->indexes->index as $indexXml) {
+            foreach ($xmlRoot->indexes->index ?? [] as $indexXml) {
                 $index = [];
 
                 if (isset($indexXml['columns']) && ! empty($indexXml['columns'])) {
@@ -213,7 +213,7 @@ class XmlDriver extends FileDriver
         // Evaluate <unique-constraints..>
         if (isset($xmlRoot->{'unique-constraints'})) {
             $metadata->table['uniqueConstraints'] = [];
-            foreach ($xmlRoot->{'unique-constraints'}->{'unique-constraint'} as $uniqueXml) {
+            foreach ($xmlRoot->{'unique-constraints'}->{'unique-constraint'} ?? [] as $uniqueXml) {
                 $unique = [];
 
                 if (isset($uniqueXml['columns']) && ! empty($uniqueXml['columns'])) {
@@ -300,7 +300,7 @@ class XmlDriver extends FileDriver
 
         // Evaluate <id ...> mappings
         $associationIds = [];
-        foreach ($xmlRoot->id as $idElement) {
+        foreach ($xmlRoot->id ?? [] as $idElement) {
             if (isset($idElement['association-key']) && $this->evaluateBoolean($idElement['association-key'])) {
                 $associationIds[(string) $idElement['name']] = true;
                 continue;
@@ -369,7 +369,7 @@ class XmlDriver extends FileDriver
                     if (isset($oneToOneElement->{'join-column'})) {
                         $joinColumns[] = $this->joinColumnToArray($oneToOneElement->{'join-column'});
                     } elseif (isset($oneToOneElement->{'join-columns'})) {
-                        foreach ($oneToOneElement->{'join-columns'}->{'join-column'} as $joinColumnElement) {
+                        foreach ($oneToOneElement->{'join-columns'}->{'join-column'} ?? [] as $joinColumnElement) {
                             $joinColumns[] = $this->joinColumnToArray($joinColumnElement);
                         }
                     }
@@ -420,7 +420,7 @@ class XmlDriver extends FileDriver
 
                 if (isset($oneToManyElement->{'order-by'})) {
                     $orderBy = [];
-                    foreach ($oneToManyElement->{'order-by'}->{'order-by-field'} as $orderByField) {
+                    foreach ($oneToManyElement->{'order-by'}->{'order-by-field'} ?? [] as $orderByField) {
                         $orderBy[(string) $orderByField['name']] = isset($orderByField['direction'])
                             ? (string) $orderByField['direction']
                             : Criteria::ASC;
@@ -472,7 +472,7 @@ class XmlDriver extends FileDriver
                 if (isset($manyToOneElement->{'join-column'})) {
                     $joinColumns[] = $this->joinColumnToArray($manyToOneElement->{'join-column'});
                 } elseif (isset($manyToOneElement->{'join-columns'})) {
-                    foreach ($manyToOneElement->{'join-columns'}->{'join-column'} as $joinColumnElement) {
+                    foreach ($manyToOneElement->{'join-columns'}->{'join-column'} ?? [] as $joinColumnElement) {
                         $joinColumns[] = $this->joinColumnToArray($joinColumnElement);
                     }
                 }
@@ -531,11 +531,11 @@ class XmlDriver extends FileDriver
                         $joinTable['options'] = $this->parseOptions($joinTableElement->options->children());
                     }
 
-                    foreach ($joinTableElement->{'join-columns'}->{'join-column'} as $joinColumnElement) {
+                    foreach ($joinTableElement->{'join-columns'}->{'join-column'} ?? [] as $joinColumnElement) {
                         $joinTable['joinColumns'][] = $this->joinColumnToArray($joinColumnElement);
                     }
 
-                    foreach ($joinTableElement->{'inverse-join-columns'}->{'join-column'} as $joinColumnElement) {
+                    foreach ($joinTableElement->{'inverse-join-columns'}->{'join-column'} ?? [] as $joinColumnElement) {
                         $joinTable['inverseJoinColumns'][] = $this->joinColumnToArray($joinColumnElement);
                     }
 
@@ -548,7 +548,7 @@ class XmlDriver extends FileDriver
 
                 if (isset($manyToManyElement->{'order-by'})) {
                     $orderBy = [];
-                    foreach ($manyToManyElement->{'order-by'}->{'order-by-field'} as $orderByField) {
+                    foreach ($manyToManyElement->{'order-by'}->{'order-by-field'} ?? [] as $orderByField) {
                         $orderBy[(string) $orderByField['name']] = isset($orderByField['direction'])
                             ? (string) $orderByField['direction']
                             : Criteria::ASC;
@@ -574,9 +574,9 @@ class XmlDriver extends FileDriver
 
         // Evaluate association-overrides
         if (isset($xmlRoot->{'attribute-overrides'})) {
-            foreach ($xmlRoot->{'attribute-overrides'}->{'attribute-override'} as $overrideElement) {
+            foreach ($xmlRoot->{'attribute-overrides'}->{'attribute-override'} ?? [] as $overrideElement) {
                 $fieldName = (string) $overrideElement['name'];
-                foreach ($overrideElement->field as $field) {
+                foreach ($overrideElement->field ?? [] as $field) {
                     $mapping              = $this->columnToArray($field);
                     $mapping['fieldName'] = $fieldName;
                     $metadata->setAttributeOverride($fieldName, $mapping);
@@ -586,14 +586,14 @@ class XmlDriver extends FileDriver
 
         // Evaluate association-overrides
         if (isset($xmlRoot->{'association-overrides'})) {
-            foreach ($xmlRoot->{'association-overrides'}->{'association-override'} as $overrideElement) {
+            foreach ($xmlRoot->{'association-overrides'}->{'association-override'} ?? [] as $overrideElement) {
                 $fieldName = (string) $overrideElement['name'];
                 $override  = [];
 
                 // Check for join-columns
                 if (isset($overrideElement->{'join-columns'})) {
                     $joinColumns = [];
-                    foreach ($overrideElement->{'join-columns'}->{'join-column'} as $joinColumnElement) {
+                    foreach ($overrideElement->{'join-columns'}->{'join-column'} ?? [] as $joinColumnElement) {
                         $joinColumns[] = $this->joinColumnToArray($joinColumnElement);
                     }
 
@@ -615,13 +615,13 @@ class XmlDriver extends FileDriver
                     }
 
                     if (isset($joinTableElement->{'join-columns'})) {
-                        foreach ($joinTableElement->{'join-columns'}->{'join-column'} as $joinColumnElement) {
+                        foreach ($joinTableElement->{'join-columns'}->{'join-column'} ?? [] as $joinColumnElement) {
                             $joinTable['joinColumns'][] = $this->joinColumnToArray($joinColumnElement);
                         }
                     }
 
                     if (isset($joinTableElement->{'inverse-join-columns'})) {
-                        foreach ($joinTableElement->{'inverse-join-columns'}->{'join-column'} as $joinColumnElement) {
+                        foreach ($joinTableElement->{'inverse-join-columns'}->{'join-column'} ?? [] as $joinColumnElement) {
                             $joinTable['inverseJoinColumns'][] = $this->joinColumnToArray($joinColumnElement);
                         }
                     }
@@ -645,14 +645,14 @@ class XmlDriver extends FileDriver
 
         // Evaluate <lifecycle-callbacks...>
         if (isset($xmlRoot->{'lifecycle-callbacks'})) {
-            foreach ($xmlRoot->{'lifecycle-callbacks'}->{'lifecycle-callback'} as $lifecycleCallback) {
+            foreach ($xmlRoot->{'lifecycle-callbacks'}->{'lifecycle-callback'} ?? [] as $lifecycleCallback) {
                 $metadata->addLifecycleCallback((string) $lifecycleCallback['method'], constant('Doctrine\ORM\Events::' . (string) $lifecycleCallback['type']));
             }
         }
 
         // Evaluate entity listener
         if (isset($xmlRoot->{'entity-listeners'})) {
-            foreach ($xmlRoot->{'entity-listeners'}->{'entity-listener'} as $listenerElement) {
+            foreach ($xmlRoot->{'entity-listeners'}->{'entity-listener'} ?? [] as $listenerElement) {
                 $className = (string) $listenerElement['class'];
                 // Evaluate the listener using naming convention.
                 if ($listenerElement->count() === 0) {
@@ -674,16 +674,14 @@ class XmlDriver extends FileDriver
     /**
      * Parses (nested) option elements.
      *
-     * @param SimpleXMLElement $options The XML element.
-     *
      * @return mixed[] The options array.
      * @psalm-return array<int|string, array<int|string, mixed|string>|bool|string>
      */
-    private function parseOptions(SimpleXMLElement $options): array
+    private function parseOptions(SimpleXMLElement|null $options): array
     {
         $array = [];
 
-        foreach ($options as $option) {
+        foreach ($options ?? [] as $option) {
             if ($option->count()) {
                 $value = $this->parseOptions($option->children());
             } else {
@@ -746,7 +744,7 @@ class XmlDriver extends FileDriver
         }
 
         if (isset($joinColumnElement['options'])) {
-            $joinColumn['options'] = $this->parseOptions($joinColumnElement['options']->children());
+            $joinColumn['options'] = $this->parseOptions($joinColumnElement['options'] ? $joinColumnElement['options']->children() : null);
         }
 
         return $joinColumn;
@@ -874,7 +872,10 @@ class XmlDriver extends FileDriver
     private function getCascadeMappings(SimpleXMLElement $cascadeElement): array
     {
         $cascades = [];
-        foreach ($cascadeElement->children() as $action) {
+        $children = $cascadeElement->children();
+        assert($children !== null);
+
+        foreach ($children as $action) {
             // According to the JPA specifications, XML uses "cascade-persist"
             // instead of "persist". Here, both variations
             // are supported because Attribute uses "persist"
@@ -899,19 +900,19 @@ class XmlDriver extends FileDriver
 
         if (isset($xmlElement->entity)) {
             foreach ($xmlElement->entity as $entityElement) {
-                /** @psalm-var class-string */
+                /** @psalm-var class-string $entityName */
                 $entityName          = (string) $entityElement['name'];
                 $result[$entityName] = $entityElement;
             }
         } elseif (isset($xmlElement->{'mapped-superclass'})) {
             foreach ($xmlElement->{'mapped-superclass'} as $mappedSuperClass) {
-                /** @psalm-var class-string */
+                /** @psalm-var class-string $className */
                 $className          = (string) $mappedSuperClass['name'];
                 $result[$className] = $mappedSuperClass;
             }
         } elseif (isset($xmlElement->embeddable)) {
             foreach ($xmlElement->embeddable as $embeddableElement) {
-                /** @psalm-var class-string */
+                /** @psalm-var class-string $embeddableName */
                 $embeddableName          = (string) $embeddableElement['name'];
                 $result[$embeddableName] = $embeddableElement;
             }

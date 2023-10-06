@@ -33,10 +33,7 @@ jobs:
         run: "rm composer.json"
 
       - name: "Require phpdocumentor/guides-cli"
-        run: "composer require --dev phpdocumentor/guides-cli dev-main@dev --no-update"
-
-      - name: "Configure minimum stability"
-        run: "composer config minimum-stability dev"
+        run: "composer require --dev phpdocumentor/guides-cli --no-update"
 
       - name: "Install dependencies with Composer"
         uses: "ramsey/composer-install@v2"
@@ -48,4 +45,4 @@ jobs:
           printf '%s\n%s\n\n%s\n' "Dummy title" "===========" "$(cat docs/en/sidebar.rst)" > docs/en/sidebar.rst
 
       - name: "Run guides-cli"
-        run: "vendor/bin/guides -vvv --no-progress docs/en /tmp/test 2>&1 | ( ! grep WARNING )"
+        run: "vendor/bin/guides -vvv --no-progress docs/en 2>&1 | grep -v 'Unknown directive' | ( ! grep WARNING )"

@@ -11,7 +11,9 @@ use Doctrine\DBAL\Driver;
 use Doctrine\DBAL\Driver\Statement;
 use Doctrine\DBAL\Exception;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
+use Doctrine\Deprecations\PHPUnit\VerifyDeprecations;
 use Doctrine\ORM\EntityNotFoundException;
+use Doctrine\ORM\Exception\EntityIdentityCollisionException;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
@@ -34,7 +36,6 @@ use Doctrine\Tests\OrmTestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\MockObject\MockObject;
-use RuntimeException;
 use stdClass;
 
 use function random_int;
@@ -45,6 +46,8 @@ use function uniqid;
  */
 class UnitOfWorkTest extends OrmTestCase
 {
+    use VerifyDeprecations;
+
     /**
      * SUT
      */
@@ -625,7 +628,7 @@ class UnitOfWorkTest extends OrmTestCase
         self::assertEmpty($user->phonenumbers->getSnapshot());
     }
 
-    public function testItThrowsWhenApplicationProvidedIdsCollide(): void
+    public function testItTriggersADeprecationNoticeWhenApplicationProvidedIdsCollide(): void
     {
         // We're using application-provided IDs and assign the same ID twice
         // Note this is about colliding IDs in the identity map in memory.
@@ -638,7 +641,27 @@ class UnitOfWorkTest extends OrmTestCase
         $phone2              = new CmsPhonenumber();
         $phone2->phonenumber = '1234';
 
-        $this->expectException(RuntimeException::class);
+        $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/pull/10785');
+
+        $this->_unitOfWork->persist($phone2);
+    }
+
+    public function testItThrowsWhenApplicationProvidedIdsCollide(): void
+    {
+        $this->_emMock->getConfiguration()->setRejectIdCollisionInIdentityMap(true);
+
+        // We're using application-provided IDs and assign the same ID twice
+        // Note this is about colliding IDs in the identity map in memory.
+        // Duplicate database-level IDs would be spotted when the EM is flushed.
+
+        $phone1              = new CmsPhonenumber();
+        $phone1->phonenumber = '1234';
+        $this->_unitOfWork->persist($phone1);
+
+        $phone2              = new CmsPhonenumber();
+        $phone2->phonenumber = '1234';
+
+        $this->expectException(EntityIdentityCollisionException::class);
         $this->expectExceptionMessageMatches('/another object .* was already present for the same ID/');
 
         $this->_unitOfWork->persist($phone2);

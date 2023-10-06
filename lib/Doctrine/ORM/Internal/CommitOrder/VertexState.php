@@ -4,7 +4,10 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Internal\CommitOrder;
 
-/** @internal */
+/**
+ * @internal
+ * @deprecated
+ */
 enum VertexState
 {
     case NotVisited;

@@ -93,3 +93,34 @@ object.
     want to refresh or reload an object after having modified a filter or the
     FilterCollection, then you should clear the EntityManager and re-fetch your
     entities, having the new rules for filtering applied.
+
+
+Suspending/Restoring Filters
+----------------------------
+When a filter is disabled, the instance is fully deleted and all the filter
+parameters previously set are lost. Then, if you enable it again, a new filter
+is created without the previous filter parameters. If you want to keep a filter
+(in order to use it later) but temporary disable it, you'll need to use the
+``FilterCollection#suspend($name)`` and ``FilterCollection#restore($name)``
+methods instead.
+
+.. code-block:: php
+
+    <?php
+    $filter = $em->getFilters()->enable("locale");
+    $filter->setParameter('locale', 'en');
+
+    // Temporary suspend the filter
+    $filter = $em->getFilters()->suspend("locale");
+
+    // Do things
+
+    // Then restore it, the locale parameter will still be set
+    $filter = $em->getFilters()->restore("locale");
+
+.. warning::
+    If you enable a previously disabled filter, doctrine will create a new
+    one without keeping any of the previously parameter set with
+    ``SQLFilter#setParameter()`` or ``SQLFilter#getParameterList()``. If you
+    want to restore the previously disabled filter instead, you must use the
+    ``FilterCollection#restore($name)`` method.

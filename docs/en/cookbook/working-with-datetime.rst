@@ -162,15 +162,13 @@ requiring timezoned datetimes:
     <?php
     namespace Shipping;
 
-    /**
-     * @Entity
-     */
+     #[Entity]
     class Event
     {
-        /** @Column(type="datetime") */
+        #[Column(type: 'datetime')]
         private $created;
 
-        /** @Column(type="string") */
+        #[Column(type: 'string')]
         private $timezone;
 
         /**

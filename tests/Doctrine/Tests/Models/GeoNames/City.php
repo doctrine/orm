@@ -18,6 +18,11 @@ use Doctrine\ORM\Mapping\Table;
 #[Cache]
 class City
 {
+    #[Id]
+    #[Column(type: 'string', length: 25)]
+    #[GeneratedValue(strategy: 'NONE')]
+    public string $id;
+
     /** @var Country */
     #[ManyToOne(targetEntity: 'Country')]
     #[JoinColumn(name: 'country', referencedColumnName: 'id')]
@@ -32,12 +37,10 @@ class City
     public $admin1;
 
     public function __construct(
-        #[Id]
-        #[Column(type: 'string', length: 25)]
-        #[GeneratedValue(strategy: 'NONE')]
-        public int $id,
+        int $id,
         #[Column(type: 'string', length: 255)]
         public string $name,
     ) {
+        $this->id = (string) $id;
     }
 }

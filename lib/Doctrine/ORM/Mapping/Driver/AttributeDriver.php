@@ -260,7 +260,7 @@ class AttributeDriver implements MappingDriver
             }
 
             $mapping              = [];
-            $mapping['fieldName'] = $property->getName();
+            $mapping['fieldName'] = $property->name;
 
             // Evaluate #[Cache] attribute
             $cacheAttribute = $this->reader->getPropertyAttribute($property, Mapping\Cache::class);
@@ -295,7 +295,7 @@ class AttributeDriver implements MappingDriver
             $embeddedAttribute   = $this->reader->getPropertyAttribute($property, Mapping\Embedded::class);
 
             if ($columnAttribute !== null) {
-                $mapping = $this->columnToArray($property->getName(), $columnAttribute);
+                $mapping = $this->columnToArray($property->name, $columnAttribute);
 
                 if ($this->reader->getPropertyAttribute($property, Mapping\Id::class)) {
                     $mapping['id'] = true;

@@ -24,38 +24,6 @@ parameters:
             message: '~^Unreachable statement \- code above always terminates\.$~'
             path: lib/Doctrine/ORM/Mapping/AssociationMapping.php
 
-        # https://github.com/phpstan/phpstan/issues/8904
-        -
-            message: "#^Access to an undefined property .*Mapping\\:\\:\\$(inversedBy|mappedBy|joinColumns|joinTableColumns|(relation|source|target)To(Target|Source)KeyColumns|joinTable|indexBy)\\.$#"
-            paths:
-                - lib/Doctrine/ORM/Persisters/Collection/ManyToManyPersister.php
-                - lib/Doctrine/ORM/Persisters/Entity/BasicEntityPersister.php
-                - lib/Doctrine/ORM/PersistentCollection.php
-                - lib/Doctrine/ORM/Tools/SchemaTool.php
-
-        -
-            message: "#^Call to an undefined method .*Mapping\\:\\:(order|index)By\\(\\)\\.#"
-            paths:
-                - lib/Doctrine/ORM/Mapping/AssociationMapping.php
-                - lib/Doctrine/ORM/Persisters/Entity/BasicEntityPersister.php
-                - lib/Doctrine/ORM/Persisters/Entity/JoinedSubclassPersister.php
-                - lib/Doctrine/ORM/Query/SqlWalker.php
-
-        -
-            message: '#^.*Doctrine\\ORM\\Mapping\\(Association|OwningSide)Mapping given\.#'
-            paths:
-                - lib/Doctrine/ORM/Persisters/Entity/BasicEntityPersister.php
-                - lib/Doctrine/ORM/Persisters/Entity/JoinedSubclassPersister.php
-
-        -
-            message: '#^.*OneToManyPersister::getMapping\(\) should return.*#'
-            path: lib/Doctrine/ORM/Persisters/Collection/OneToManyPersister.php
-
-        -
-            message: '#^.*QuoteStrategy::getJoinTableName\(\) expects.*$#'
-            paths:
-                - lib/Doctrine/ORM/Persisters/Collection/ManyToManyPersister.php
-
         # To be removed in 4.0
         -
             message: '#Negated boolean expression is always false\.#'

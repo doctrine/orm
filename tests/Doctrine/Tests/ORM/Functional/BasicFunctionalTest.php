@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Exception\EntityIdentityCollisionException;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\ORMInvalidArgumentException;
 use Doctrine\ORM\PersistentCollection;
@@ -21,7 +22,6 @@ use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use InvalidArgumentException;
 use PHPUnit\Framework\Attributes\Group;
-use RuntimeException;
 
 class BasicFunctionalTest extends OrmFunctionalTestCase
 {
@@ -1079,6 +1079,8 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
 
     public function testItThrowsWhenReferenceUsesIdAssignedByDatabase(): void
     {
+        $this->_em->getConfiguration()->setRejectIdCollisionInIdentityMap(true);
+
         $user           = new CmsUser();
         $user->name     = 'test';
         $user->username = 'test';
@@ -1095,7 +1097,7 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
 
         // Now the database will assign an ID to the $user2 entity, but that place
         // in the identity map is already taken by user error.
-        $this->expectException(RuntimeException::class);
+        $this->expectException(EntityIdentityCollisionException::class);
         $this->expectExceptionMessageMatches('/another object .* was already present for the same ID/');
 
         // depending on ID generation strategy, the ID may be asssigned already here

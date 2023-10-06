@@ -25,11 +25,13 @@ use Doctrine\ORM\Event\PreFlushEventArgs;
 use Doctrine\ORM\Event\PrePersistEventArgs;
 use Doctrine\ORM\Event\PreRemoveEventArgs;
 use Doctrine\ORM\Event\PreUpdateEventArgs;
+use Doctrine\ORM\Exception\EntityIdentityCollisionException;
 use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\Exception\UnexpectedAssociationValue;
 use Doctrine\ORM\Id\AssignedGenerator;
 use Doctrine\ORM\Internal\CommitOrderCalculator;
 use Doctrine\ORM\Internal\HydrationCompleteHandler;
+use Doctrine\ORM\Internal\TopologicalSort;
 use Doctrine\ORM\Mapping\AssociationMapping;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\MappingException;
@@ -55,11 +57,9 @@ use function array_diff_key;
 use function array_filter;
 use function array_key_exists;
 use function array_map;
-use function array_pop;
 use function array_sum;
 use function array_values;
 use function assert;
-use function count;
 use function current;
 use function get_class;
 use function get_debug_type;
@@ -70,6 +70,7 @@ use function is_object;
 use function reset;
 use function spl_object_id;
 use function sprintf;
+use function strtolower;
 
 /**
  * The UnitOfWork is responsible for tracking changes to objects during an
@@ -372,9 +373,6 @@ class UnitOfWork implements PropertyChangedListener
 
         $this->dispatchOnFlushEvent();
 
-        // Now we need a commit order to maintain referential integrity
-        $commitOrder = $this->getCommitOrder();
-
         $conn = $this->em->getConnection();
         $conn->beginTransaction();
 
@@ -390,32 +388,37 @@ class UnitOfWork implements PropertyChangedListener
             }
 
             if ($this->entityInsertions) {
-                foreach ($commitOrder as $class) {
-                    $this->executeInserts($class);
-                }
+                // Perform entity insertions first, so that all new entities have their rows in the database
+                // and can be referred to by foreign keys. The commit order only needs to take new entities
+                // into account (new entities referring to other new entities), since all other types (entities
+                // with updates or scheduled deletions) are currently not a problem, since they are already
+                // in the database.
+                $this->executeInserts();
             }
 
             if ($this->entityUpdates) {
-                foreach ($commitOrder as $class) {
-                    $this->executeUpdates($class);
-                }
+                // Updates do not need to follow a particular order
+                $this->executeUpdates();
             }
 
             // Extra updates that were requested by persisters.
+            // This may include foreign keys that could not be set when an entity was inserted,
+            // which may happen in the case of circular foreign key relationships.
             if ($this->extraUpdates) {
                 $this->executeExtraUpdates();
             }
 
             // Collection updates (deleteRows, updateRows, insertRows)
+            // No particular order is necessary, since all entities themselves are already
+            // in the database
             foreach ($this->collectionUpdates as $collectionToUpdate) {
                 $this->getCollectionPersister($collectionToUpdate->getMapping())->update($collectionToUpdate);
             }
 
-            // Entity deletions come last and need to be in reverse commit order
+            // Entity deletions come last. Their order only needs to take care of other deletions
+            // (first delete entities depending upon others, before deleting depended-upon entities).
             if ($this->entityDeletions) {
-                for ($count = count($commitOrder), $i = $count - 1; $i >= 0 && $this->entityDeletions; --$i) {
-                    $this->executeDeletions($commitOrder[$i]);
-                }
+                $this->executeDeletions();
             }
 
             $commitFailed = false;
@@ -582,6 +585,7 @@ class UnitOfWork implements PropertyChangedListener
             if ($class->isCollectionValuedAssociation($name) && $value !== null) {
                 if ($value instanceof PersistentCollection) {
                     if ($value->getOwner() === $entity) {
+                        $actualData[$name] = $value;
                         continue;
                     }
 
@@ -1022,58 +1026,60 @@ class UnitOfWork implements PropertyChangedListener
     }
 
     /**
-     * Executes all entity insertions for entities of the specified type.
+     * Executes entity insertions
      */
-    private function executeInserts(ClassMetadata $class): void
+    private function executeInserts(): void
     {
-        $entities  = [];
-        $className = $class->name;
-        $persister = $this->getEntityPersister($className);
-        $invoke    = $this->listenersInvoker->getSubscribedSystems($class, Events::postPersist);
+        $entities         = $this->computeInsertExecutionOrder();
+        $eventsToDispatch = [];
 
-        $insertionsForClass = [];
-
-        foreach ($this->entityInsertions as $oid => $entity) {
-            if ($this->em->getClassMetadata($entity::class)->name !== $className) {
-                continue;
-            }
-
-            $insertionsForClass[$oid] = $entity;
+        foreach ($entities as $entity) {
+            $oid       = spl_object_id($entity);
+            $class     = $this->em->getClassMetadata(get_class($entity));
+            $persister = $this->getEntityPersister($class->name);
 
             $persister->addInsert($entity);
 
             unset($this->entityInsertions[$oid]);
 
-            if ($invoke !== ListenersInvoker::INVOKE_NONE) {
-                $entities[] = $entity;
+            $postInsertIds = $persister->executeInserts();
+
+            if (is_array($postInsertIds)) {
+                Deprecation::trigger(
+                    'doctrine/orm',
+                    'https://github.com/doctrine/orm/pull/10743/',
+                    'Returning post insert IDs from \Doctrine\ORM\Persisters\Entity\EntityPersister::executeInserts() is deprecated and will not be supported in Doctrine ORM 3.0. Make the persister call Doctrine\ORM\UnitOfWork::assignPostInsertId() instead.',
+                );
+
+                // Persister returned post-insert IDs
+                foreach ($postInsertIds as $postInsertId) {
+                    $this->assignPostInsertId($postInsertId['entity'], $postInsertId['generatedId']);
+                }
             }
-        }
 
-        $postInsertIds = $persister->executeInserts();
-
-        if (is_array($postInsertIds)) {
-            Deprecation::trigger(
-                'doctrine/orm',
-                'https://github.com/doctrine/orm/pull/10743/',
-                'Returning post insert IDs from \Doctrine\ORM\Persisters\Entity\EntityPersister::executeInserts() is deprecated and will not be supported in Doctrine ORM 3.0. Make the persister call Doctrine\ORM\UnitOfWork::assignPostInsertId() instead.',
-            );
-
-            // Persister returned post-insert IDs
-            foreach ($postInsertIds as $postInsertId) {
-                $this->assignPostInsertId($postInsertId['entity'], $postInsertId['generatedId']);
-            }
-        }
-
-        foreach ($insertionsForClass as $oid => $entity) {
             if (! isset($this->entityIdentifiers[$oid])) {
                 //entity was not added to identity map because some identifiers are foreign keys to new entities.
                 //add it now
                 $this->addToEntityIdentifiersAndEntityMap($class, $oid, $entity);
             }
+
+            $invoke = $this->listenersInvoker->getSubscribedSystems($class, Events::postPersist);
+
+            if ($invoke !== ListenersInvoker::INVOKE_NONE) {
+                $eventsToDispatch[] = ['class' => $class, 'entity' => $entity, 'invoke' => $invoke];
+            }
         }
 
-        foreach ($entities as $entity) {
-            $this->listenersInvoker->invoke($class, Events::postPersist, $entity, new PostPersistEventArgs($entity, $this->em), $invoke);
+        // Defer dispatching `postPersist` events to until all entities have been inserted and post-insert
+        // IDs have been assigned.
+        foreach ($eventsToDispatch as $event) {
+            $this->listenersInvoker->invoke(
+                $event['class'],
+                Events::postPersist,
+                $event['entity'],
+                new PostPersistEventArgs($event['entity'], $this->em),
+                $event['invoke'],
+            );
         }
     }
 
@@ -1110,19 +1116,15 @@ class UnitOfWork implements PropertyChangedListener
     }
 
     /**
-     * Executes all entity updates for entities of the specified type.
+     * Executes all entity updates
      */
-    private function executeUpdates(ClassMetadata $class): void
+    private function executeUpdates(): void
     {
-        $className        = $class->name;
-        $persister        = $this->getEntityPersister($className);
-        $preUpdateInvoke  = $this->listenersInvoker->getSubscribedSystems($class, Events::preUpdate);
-        $postUpdateInvoke = $this->listenersInvoker->getSubscribedSystems($class, Events::postUpdate);
-
         foreach ($this->entityUpdates as $oid => $entity) {
-            if ($this->em->getClassMetadata($entity::class)->name !== $className) {
-                continue;
-            }
+            $class            = $this->em->getClassMetadata(get_class($entity));
+            $persister        = $this->getEntityPersister($class->name);
+            $preUpdateInvoke  = $this->listenersInvoker->getSubscribedSystems($class, Events::preUpdate);
+            $postUpdateInvoke = $this->listenersInvoker->getSubscribedSystems($class, Events::postUpdate);
 
             if ($preUpdateInvoke !== ListenersInvoker::INVOKE_NONE) {
                 $this->listenersInvoker->invoke($class, Events::preUpdate, $entity, new PreUpdateEventArgs($entity, $this->em, $this->getEntityChangeSet($entity)), $preUpdateInvoke);
@@ -1143,18 +1145,18 @@ class UnitOfWork implements PropertyChangedListener
     }
 
     /**
-     * Executes all entity deletions for entities of the specified type.
+     * Executes all entity deletions
      */
-    private function executeDeletions(ClassMetadata $class): void
+    private function executeDeletions(): void
     {
-        $className = $class->name;
-        $persister = $this->getEntityPersister($className);
-        $invoke    = $this->listenersInvoker->getSubscribedSystems($class, Events::postRemove);
+        $entities         = $this->computeDeleteExecutionOrder();
+        $eventsToDispatch = [];
 
-        foreach ($this->entityDeletions as $oid => $entity) {
-            if ($this->em->getClassMetadata($entity::class)->name !== $className) {
-                continue;
-            }
+        foreach ($entities as $entity) {
+            $oid       = spl_object_id($entity);
+            $class     = $this->em->getClassMetadata(get_class($entity));
+            $persister = $this->getEntityPersister($class->name);
+            $invoke    = $this->listenersInvoker->getSubscribedSystems($class, Events::postRemove);
 
             $persister->delete($entity);
 
@@ -1173,78 +1175,130 @@ class UnitOfWork implements PropertyChangedListener
             }
 
             if ($invoke !== ListenersInvoker::INVOKE_NONE) {
-                $this->listenersInvoker->invoke($class, Events::postRemove, $entity, new PostRemoveEventArgs($entity, $this->em), $invoke);
+                $eventsToDispatch[] = ['class' => $class, 'entity' => $entity, 'invoke' => $invoke];
             }
+        }
+
+        // Defer dispatching `postRemove` events to until all entities have been removed.
+        foreach ($eventsToDispatch as $event) {
+            $this->listenersInvoker->invoke(
+                $event['class'],
+                Events::postRemove,
+                $event['entity'],
+                new PostRemoveEventArgs($event['entity'], $this->em),
+                $event['invoke'],
+            );
         }
     }
 
-    /**
-     * Gets the commit order.
-     *
-     * @return list<ClassMetadata>
-     */
-    private function getCommitOrder(): array
+    /** @return list<object> */
+    private function computeInsertExecutionOrder(): array
     {
-        $calc = $this->getCommitOrderCalculator();
+        $sort = new TopologicalSort();
 
-        // See if there are any new classes in the changeset, that are not in the
-        // commit order graph yet (don't have a node).
-        // We have to inspect changeSet to be able to correctly build dependencies.
-        // It is not possible to use IdentityMap here because post inserted ids
-        // are not yet available.
-        $newNodes = [];
-
-        foreach ([...$this->entityInsertions, ...$this->entityUpdates, ...$this->entityDeletions] as $entity) {
-            $class = $this->em->getClassMetadata($entity::class);
-
-            if ($calc->hasNode($class->name)) {
-                continue;
-            }
-
-            $calc->addNode($class->name, $class);
-
-            $newNodes[] = $class;
+        // First make sure we have all the nodes
+        foreach ($this->entityInsertions as $entity) {
+            $sort->addNode($entity);
         }
 
-        // Calculate dependencies for new nodes
-        while ($class = array_pop($newNodes)) {
+        // Now add edges
+        foreach ($this->entityInsertions as $entity) {
+            $class = $this->em->getClassMetadata(get_class($entity));
+
             foreach ($class->associationMappings as $assoc) {
+                // We only need to consider the owning sides of to-one associations,
+                // since many-to-many associations are persisted at a later step and
+                // have no insertion order problems (all entities already in the database
+                // at that time).
                 if (! $assoc->isToOneOwningSide()) {
                     continue;
                 }
 
-                $targetClass = $this->em->getClassMetadata($assoc->targetEntity);
+                $targetEntity = $class->getFieldValue($entity, $assoc->fieldName);
 
-                if (! $calc->hasNode($targetClass->name)) {
-                    $calc->addNode($targetClass->name, $targetClass);
-
-                    $newNodes[] = $targetClass;
-                }
-
-                $joinColumns = reset($assoc->joinColumns);
-
-                $calc->addDependency($targetClass->name, $class->name, (int) empty($joinColumns->nullable));
-
-                // If the target class has mapped subclasses, these share the same dependency.
-                if (! $targetClass->subClasses) {
+                // If there is no entity that we need to refer to, or it is already in the
+                // database (i. e. does not have to be inserted), no need to consider it.
+                if ($targetEntity === null || ! $sort->hasNode($targetEntity)) {
                     continue;
                 }
 
-                foreach ($targetClass->subClasses as $subClassName) {
-                    $targetSubClass = $this->em->getClassMetadata($subClassName);
-
-                    if (! $calc->hasNode($subClassName)) {
-                        $calc->addNode($targetSubClass->name, $targetSubClass);
-
-                        $newNodes[] = $targetSubClass;
-                    }
-
-                    $calc->addDependency($targetSubClass->name, $class->name, 1);
+                // An entity that references back to itself _and_ uses an application-provided ID
+                // (the "NONE" generator strategy) can be exempted from commit order computation.
+                // See https://github.com/doctrine/orm/pull/10735/ for more details on this edge case.
+                // A non-NULLable self-reference would be a cycle in the graph.
+                if ($targetEntity === $entity && $class->isIdentifierNatural()) {
+                    continue;
                 }
+
+                // According to https://www.doctrine-project.org/projects/doctrine-orm/en/2.14/reference/annotations-reference.html#annref_joincolumn,
+                // the default for "nullable" is true. Unfortunately, it seems this default is not applied at the metadata driver, factory or other
+                // level, but in fact we may have an undefined 'nullable' key here, so we must assume that default here as well.
+                //
+                // Same in \Doctrine\ORM\Tools\EntityGenerator::isAssociationIsNullable or \Doctrine\ORM\Persisters\Entity\BasicEntityPersister::getJoinSQLForJoinColumns,
+                // to give two examples.
+                $joinColumns = reset($assoc->joinColumns);
+                $isNullable  = ! isset($joinColumns->nullable) || $joinColumns->nullable;
+
+                // Add dependency. The dependency direction implies that "$targetEntity has to go before $entity",
+                // so we can work through the topo sort result from left to right (with all edges pointing right).
+                $sort->addEdge($targetEntity, $entity, $isNullable);
             }
         }
 
-        return $calc->sort();
+        return $sort->sort();
+    }
+
+    /** @return list<object> */
+    private function computeDeleteExecutionOrder(): array
+    {
+        $sort = new TopologicalSort();
+
+        // First make sure we have all the nodes
+        foreach ($this->entityDeletions as $entity) {
+            $sort->addNode($entity);
+        }
+
+        // Now add edges
+        foreach ($this->entityDeletions as $entity) {
+            $class = $this->em->getClassMetadata(get_class($entity));
+
+            foreach ($class->associationMappings as $assoc) {
+                // We only need to consider the owning sides of to-one associations,
+                // since many-to-many associations can always be (and have already been)
+                // deleted in a preceding step.
+                if (! $assoc->isToOneOwningSide()) {
+                    continue;
+                }
+
+                // For associations that implement a database-level cascade/set null operation,
+                // we do not have to follow a particular order: If the referred-to entity is
+                // deleted first, the DBMS will either delete the current $entity right away
+                // (CASCADE) or temporarily set the foreign key to NULL (SET NULL).
+                // Either way, we can skip it in the computation.
+                $joinColumns = reset($assoc->joinColumns);
+                if (isset($joinColumns->onDelete)) {
+                    $onDeleteOption = strtolower($joinColumns->onDelete);
+                    if ($onDeleteOption === 'cascade' || $onDeleteOption === 'set null') {
+                        continue;
+                    }
+                }
+
+                $targetEntity = $class->getFieldValue($entity, $assoc->fieldName);
+
+                // If the association does not refer to another entity or that entity
+                // is not to be deleted, there is no ordering problem and we can
+                // skip this particular association.
+                if ($targetEntity === null || ! $sort->hasNode($targetEntity)) {
+                    continue;
+                }
+
+                // Add dependency. The dependency direction implies that "$entity has to be removed before $targetEntity",
+                // so we can work through the topo sort result from left to right (with all edges pointing right).
+                $sort->addEdge($entity, $targetEntity, false);
+            }
+        }
+
+        return $sort->sort();
     }
 
     /**
@@ -1419,6 +1473,7 @@ class UnitOfWork implements PropertyChangedListener
      * the entity in question is already managed.
      *
      * @throws ORMInvalidArgumentException
+     * @throws EntityIdentityCollisionException
      *
      * @ignore
      */
@@ -1430,27 +1485,38 @@ class UnitOfWork implements PropertyChangedListener
 
         if (isset($this->identityMap[$className][$idHash])) {
             if ($this->identityMap[$className][$idHash] !== $entity) {
-                throw new RuntimeException(sprintf(
+                if ($this->em->getConfiguration()->isRejectIdCollisionInIdentityMapEnabled()) {
+                    throw EntityIdentityCollisionException::create($this->identityMap[$className][$idHash], $entity, $idHash);
+                }
+
+                Deprecation::trigger(
+                    'doctrine/orm',
+                    'https://github.com/doctrine/orm/pull/10785',
                     <<<'EXCEPTION'
 While adding an entity of class %s with an ID hash of "%s" to the identity map,
-another object of class %s was already present for the same ID. This exception
-is a safeguard against an internal inconsistency - IDs should uniquely map to
-entity object instances. This problem may occur if:
+another object of class %s was already present for the same ID. This will trigger
+an exception in ORM 3.0.
+
+IDs should uniquely map to entity object instances. This problem may occur if:
 
 - you use application-provided IDs and reuse ID values;
 - database-provided IDs are reassigned after truncating the database without
-  clearing the EntityManager;
+clearing the EntityManager;
 - you might have been using EntityManager#getReference() to create a reference
-  for a nonexistent ID that was subsequently (by the RDBMS) assigned to another
-  entity.
+for a nonexistent ID that was subsequently (by the RDBMS) assigned to another
+entity.
 
 Otherwise, it might be an ORM-internal inconsistency, please report it.
+
+To opt-in to the new exception, call
+\Doctrine\ORM\Configuration::setRejectIdCollisionInIdentityMap on the entity
+manager's configuration.
 EXCEPTION
                     ,
                     get_class($entity),
                     $idHash,
                     get_class($this->identityMap[$className][$idHash]),
-                ));
+                );
             }
 
             return false;
@@ -2458,14 +2524,18 @@ EXCEPTION
                                 // We are negating the condition here. Other cases will assume it is valid!
                                 case $hints['fetchMode'][$class->name][$field] !== ClassMetadata::FETCH_EAGER:
                                     $newValue = $this->em->getProxyFactory()->getProxy($assoc->targetEntity, $normalizedAssociatedId);
+                                    $this->registerManaged($newValue, $associatedId, []);
                                     break;
 
                                 // Deferred eager load only works for single identifier classes
-                                case isset($hints[self::HINT_DEFEREAGERLOAD]) && ! $targetClass->isIdentifierComposite:
+                                case isset($hints[self::HINT_DEFEREAGERLOAD]) &&
+                                    $hints[self::HINT_DEFEREAGERLOAD] &&
+                                    ! $targetClass->isIdentifierComposite:
                                     // TODO: Is there a faster approach?
                                     $this->eagerLoadingEntities[$targetClass->rootEntityName][$relatedIdHash] = current($normalizedAssociatedId);
 
                                     $newValue = $this->em->getProxyFactory()->getProxy($assoc->targetEntity, $normalizedAssociatedId);
+                                    $this->registerManaged($newValue, $associatedId, []);
                                     break;
 
                                 default:
@@ -2473,13 +2543,6 @@ EXCEPTION
                                     $newValue = $this->em->find($assoc->targetEntity, $normalizedAssociatedId);
                                     break;
                             }
-
-                            if ($newValue === null) {
-                                break;
-                            }
-
-                            $this->registerManaged($newValue, $associatedId, []);
-                            break;
                     }
 
                     $this->originalEntityData[$oid][$field] = $newValue;

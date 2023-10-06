@@ -30,7 +30,7 @@ final class ReflectionEmbeddedProperty extends ReflectionProperty
         private readonly ReflectionProperty $childProperty,
         private readonly string $embeddedClass,
     ) {
-        parent::__construct($childProperty->getDeclaringClass()->getName(), $childProperty->getName());
+        parent::__construct($childProperty->class, $childProperty->name);
     }
 
     public function getValue(object|null $object = null): mixed

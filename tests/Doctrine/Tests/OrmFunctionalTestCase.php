@@ -475,6 +475,10 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             Issue5989Employee::class,
             Issue5989Manager::class,
         ],
+        'issue9300' => [
+            Models\Issue9300\Issue9300Child::class,
+            Models\Issue9300\Issue9300Parent::class,
+        ],
     ];
 
     /** @param class-string ...$models */
@@ -558,6 +562,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             $conn->executeStatement('DELETE FROM ecommerce_products_categories');
             $conn->executeStatement('DELETE FROM ecommerce_products_related');
             $conn->executeStatement('DELETE FROM ecommerce_carts');
+            $conn->executeStatement('DELETE FROM ecommerce_customers WHERE mentor_id IS NOT NULL');
             $conn->executeStatement('DELETE FROM ecommerce_customers');
             $conn->executeStatement('DELETE FROM ecommerce_features');
             $conn->executeStatement('DELETE FROM ecommerce_products');
