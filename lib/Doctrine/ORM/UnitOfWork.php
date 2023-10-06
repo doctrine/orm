@@ -40,9 +40,9 @@ use Doctrine\ORM\Persisters\Entity\BasicEntityPersister;
 use Doctrine\ORM\Persisters\Entity\EntityPersister;
 use Doctrine\ORM\Persisters\Entity\JoinedSubclassPersister;
 use Doctrine\ORM\Persisters\Entity\SingleTablePersister;
+use Doctrine\ORM\Proxy\InternalProxy;
 use Doctrine\ORM\Utility\IdentifierFlattener;
 use Doctrine\Persistence\PropertyChangedListener;
-use Doctrine\Persistence\Proxy;
 use Exception;
 use InvalidArgumentException;
 use RuntimeException;
@@ -781,7 +781,7 @@ class UnitOfWork implements PropertyChangedListener
 
             foreach ($entitiesToProcess as $entity) {
                 // Ignore uninitialized proxy objects
-                if ($entity instanceof Proxy && ! $entity->__isInitialized()) {
+                if ($this->isUninitializedObject($entity)) {
                     continue;
                 }
 
@@ -805,7 +805,7 @@ class UnitOfWork implements PropertyChangedListener
      */
     private function computeAssociationChanges(AssociationMapping $assoc, mixed $value): void
     {
-        if ($value instanceof Proxy && ! $value->__isInitialized()) {
+        if ($this->isUninitializedObject($value)) {
             return;
         }
 
@@ -2015,7 +2015,7 @@ EXCEPTION
      */
     private function cascadePersist(object $entity, array &$visited): void
     {
-        if ($entity instanceof Proxy && ! $entity->__isInitialized()) {
+        if ($this->isUninitializedObject($entity)) {
             // nothing to do - proxy is not initialized, therefore we don't do anything with it
             return;
         }
@@ -2084,13 +2084,13 @@ EXCEPTION
             static fn (AssociationMapping $assoc): bool => $assoc->isCascadeRemove()
         );
 
+        if ($associationMappings) {
+            $this->initializeObject($entity);
+        }
+
         $entitiesToCascade = [];
 
         foreach ($associationMappings as $assoc) {
-            if ($entity instanceof Proxy && ! $entity->__isInitialized()) {
-                $entity->__load();
-            }
-
             $relatedEntities = $class->reflFields[$assoc->fieldName]->getValue($entity);
 
             switch (true) {
@@ -2144,9 +2144,7 @@ EXCEPTION
                     return;
                 }
 
-                if ($entity instanceof Proxy && ! $entity->__isInitialized()) {
-                    $entity->__load();
-                }
+                $this->initializeObject($entity);
 
                 assert($class->versionField !== null);
                 $entityVersion = $class->reflFields[$class->versionField]->getValue($entity);
@@ -2293,7 +2291,6 @@ EXCEPTION
                 $unmanagedProxy = $hints[Query::HINT_REFRESH_ENTITY];
                 if (
                     $unmanagedProxy !== $entity
-                    && $unmanagedProxy instanceof Proxy
                     && $this->isIdentifierEquals($unmanagedProxy, $entity)
                 ) {
                     // We will hydrate the given un-managed proxy anyway:
@@ -2302,7 +2299,7 @@ EXCEPTION
                 }
             }
 
-            if ($entity instanceof Proxy && ! $entity->__isInitialized()) {
+            if ($this->isUninitializedObject($entity)) {
                 $entity->__setInitialized(true);
             } else {
                 if (
@@ -2440,8 +2437,7 @@ EXCEPTION
                                 $hints['fetchMode'][$class->name][$field] === ClassMetadata::FETCH_EAGER &&
                                 isset($hints[self::HINT_DEFEREAGERLOAD]) &&
                                 ! $targetClass->isIdentifierComposite &&
-                                $newValue instanceof Proxy &&
-                                $newValue->__isInitialized() === false
+                                $this->isUninitializedObject($newValue)
                             ) {
                                 $this->eagerLoadingEntities[$targetClass->rootEntityName][$relatedIdHash] = current($associatedId);
                             }
@@ -2868,7 +2864,7 @@ EXCEPTION
      */
     public function initializeObject(object $obj): void
     {
-        if ($obj instanceof Proxy) {
+        if ($obj instanceof InternalProxy) {
             $obj->__load();
 
             return;
@@ -2877,6 +2873,18 @@ EXCEPTION
         if ($obj instanceof PersistentCollection) {
             $obj->initialize();
         }
+    }
+
+    /**
+     * Tests if a value is an uninitialized entity.
+     *
+     * @param mixed $obj
+     *
+     * @psalm-assert-if-true InternalProxy $obj
+     */
+    public function isUninitializedObject($obj): bool
+    {
+        return $obj instanceof InternalProxy && ! $obj->__isInitialized();
     }
 
     /**

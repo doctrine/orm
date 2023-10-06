@@ -751,7 +751,7 @@
       <code>$classMetadata</code>
     </ArgumentTypeCoercion>
     <DirectConstructorCall>
-      <code><![CDATA[$proxy->__construct(static function (Proxy $object) use ($initializer, $proxy): void {
+      <code><![CDATA[$proxy->__construct(static function (InternalProxy $object) use ($initializer, $proxy): void {
             $initializer($object, $proxy);
         })]]></code>
     </DirectConstructorCall>

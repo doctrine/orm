@@ -37,8 +37,8 @@ will still end up with the same reference:
     public function testIdentityMapReference(): void
     {
         $objectA = $this->entityManager->getReference('EntityName', 1);
-        // check for proxyinterface
-        $this->assertInstanceOf('Doctrine\Persistence\Proxy', $objectA);
+        // check entity is not initialized
+        $this->assertTrue($this->entityManager->isUninitializedObject($objectA));
 
         $objectB = $this->entityManager->find('EntityName', 1);
 

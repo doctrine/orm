@@ -11,7 +11,6 @@ use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\OneToOne;
-use Doctrine\Persistence\Proxy;
 use Doctrine\Tests\Models\ECommerce\ECommerceCustomer;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use PHPUnit\Framework\Attributes\Group;
@@ -66,7 +65,7 @@ class OneToOneSelfReferentialAssociationTest extends OrmFunctionalTestCase
         $id = $this->createFixture();
 
         $customer = $this->_em->find(ECommerceCustomer::class, $id);
-        self::assertNotInstanceOf(Proxy::class, $customer->getMentor());
+        self::assertFalse($this->isUninitializedObject($customer->getMentor()));
     }
 
     public function testEagerLoadsAssociation(): void

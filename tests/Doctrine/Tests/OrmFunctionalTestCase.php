@@ -1104,4 +1104,9 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
         $this->dropTableIfExists($tableName);
         $schemaManager->createTable($table);
     }
+
+    final protected function isUninitializedObject(object $entity): bool
+    {
+        return $this->_em->getUnitOfWork()->isUninitializedObject($entity);
+    }
 }

@@ -583,6 +583,14 @@ class EntityManager implements EntityManagerInterface
         $this->unitOfWork->initializeObject($obj);
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    public function isUninitializedObject($obj): bool
+    {
+        return $this->unitOfWork->isUninitializedObject($obj);
+    }
+
     public function getFilters(): FilterCollection
     {
         return $this->filterCollection ??= new FilterCollection($this);

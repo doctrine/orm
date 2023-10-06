@@ -16,7 +16,6 @@ use Doctrine\ORM\Persisters\Entity\EntityPersister;
 use Doctrine\ORM\UnitOfWork;
 use Doctrine\ORM\Utility\IdentifierFlattener;
 use Doctrine\Persistence\Mapping\ClassMetadata;
-use Doctrine\Persistence\Proxy;
 use ReflectionProperty;
 use Symfony\Component\VarExporter\ProxyHelper;
 use Symfony\Component\VarExporter\VarExporter;
@@ -94,13 +93,13 @@ EOPHP;
         $proxyGenerator = new ProxyGenerator($proxyDir, $proxyNs);
 
         if ($em->getConfiguration()->isLazyGhostObjectEnabled()) {
-            $proxyGenerator->setPlaceholder('baseProxyInterface', Proxy::class);
+            $proxyGenerator->setPlaceholder('baseProxyInterface', InternalProxy::class);
             $proxyGenerator->setPlaceholder('useLazyGhostTrait', $this->generateUseLazyGhostTrait(...));
             $proxyGenerator->setPlaceholder('skippedProperties', $this->generateSkippedProperties(...));
             $proxyGenerator->setPlaceholder('serializeImpl', $this->generateSerializeImpl(...));
             $proxyGenerator->setProxyClassTemplate(self::PROXY_CLASS_TEMPLATE);
         } else {
-            $proxyGenerator->setPlaceholder('baseProxyInterface', CommonProxy::class);
+            $proxyGenerator->setPlaceholder('baseProxyInterface', CommonProxy::class . ', \\' . InternalProxy::class);
         }
 
         parent::__construct($proxyGenerator, $em->getMetadataFactory(), $autoGenerate);
@@ -122,7 +121,7 @@ EOPHP;
 
         $initializer = $this->definitions[$className]->initializer;
 
-        $proxy->__construct(static function (Proxy $object) use ($initializer, $proxy): void {
+        $proxy->__construct(static function (InternalProxy $object) use ($initializer, $proxy): void {
             $initializer($object, $proxy);
         });
 
@@ -226,13 +225,13 @@ EOPHP;
     /**
      * Creates a closure capable of initializing a proxy
      *
-     * @return Closure(Proxy, Proxy):void
+     * @return Closure(InternalProxy, InternalProxy):void
      *
      * @throws EntityNotFoundException
      */
     private function createLazyInitializer(ClassMetadata $classMetadata, EntityPersister $entityPersister): Closure
     {
-        return function (Proxy $proxy, Proxy $original) use ($entityPersister, $classMetadata): void {
+        return function (InternalProxy $proxy, InternalProxy $original) use ($entityPersister, $classMetadata): void {
             $identifier = $classMetadata->getIdentifierValues($original);
             $entity     = $entityPersister->loadById($identifier, $original);
 

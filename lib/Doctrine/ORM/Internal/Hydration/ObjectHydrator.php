@@ -10,7 +10,6 @@ use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\UnitOfWork;
-use Doctrine\Persistence\Proxy;
 
 use function array_fill_keys;
 use function array_keys;
@@ -430,7 +429,7 @@ class ObjectHydrator extends AbstractHydrator
                     // PATH B: Single-valued association
                     $reflFieldValue = $reflField->getValue($parentObject);
 
-                    if (! $reflFieldValue || isset($this->hints[Query::HINT_REFRESH]) || ($reflFieldValue instanceof Proxy && ! $reflFieldValue->__isInitialized())) {
+                    if (! $reflFieldValue || isset($this->hints[Query::HINT_REFRESH]) || $this->uow->isUninitializedObject($reflFieldValue)) {
                         // we only need to take action if this value is null,
                         // we refresh the entity or its an uninitialized proxy.
                         if (isset($nonemptyComponents[$dqlAlias])) {
