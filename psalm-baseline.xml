@@ -400,12 +400,6 @@
       <code>getTableHiLoUpdateNextValSql</code>
     </UndefinedMethod>
   </file>
-  <file src="lib/Doctrine/ORM/Internal/CommitOrderCalculator.php">
-    <RedundantCondition>
-      <code><![CDATA[$vertex->state !== VertexState::VISITED]]></code>
-      <code><![CDATA[$vertex->state !== VertexState::VISITED]]></code>
-    </RedundantCondition>
-  </file>
   <file src="lib/Doctrine/ORM/Internal/Hydration/AbstractHydrator.php">
     <DeprecatedClass>
       <code>IterableResult</code>
