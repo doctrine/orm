@@ -1079,8 +1079,6 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
 
     public function testItThrowsWhenReferenceUsesIdAssignedByDatabase(): void
     {
-        $this->_em->getConfiguration()->setRejectIdCollisionInIdentityMap(true);
-
         $user           = new CmsUser();
         $user->name     = 'test';
         $user->username = 'test';
