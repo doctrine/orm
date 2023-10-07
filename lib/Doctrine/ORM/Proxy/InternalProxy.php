@@ -11,9 +11,8 @@ use Doctrine\Persistence\Proxy;
  *
  * @template T of object
  * @template-extends Proxy<T>
- *
- * @method void __setInitialized(bool $initialized)
  */
 interface InternalProxy extends Proxy
 {
+    public function __setInitialized(bool $initialized): void;
 }
