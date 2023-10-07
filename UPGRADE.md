@@ -1,5 +1,13 @@
 # Upgrade to 3.0
 
+## BC BREAK: `Doctrine\ORM\Proxy\ProxyFactory` no longer extends abstract factory from `doctrine/common`
+
+It is no longer possible to call methods, constants or properties inherited
+from that class on a `ProxyFactory` instance.
+
+`Doctrine\ORM\Proxy\ProxyFactory::createProxyDefinition()` and
+`Doctrine\ORM\Proxy\ProxyFactory::resetUninitializedProxy()` are removed as well.
+
 ## BC BREAK: lazy ghosts are enabled unconditionally
 
 `Doctrine\ORM\Configuration::setLazyGhostObjectEnabled()` and
