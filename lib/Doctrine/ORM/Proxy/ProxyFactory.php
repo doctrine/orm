@@ -8,8 +8,6 @@ use Closure;
 use Doctrine\Common\Proxy\AbstractProxyFactory;
 use Doctrine\Common\Proxy\Proxy as CommonProxy;
 use Doctrine\Common\Proxy\ProxyDefinition;
-use Doctrine\Common\Proxy\ProxyGenerator;
-use Doctrine\Deprecations\Deprecation;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityNotFoundException;
 use Doctrine\ORM\ORMInvalidArgumentException;
@@ -51,7 +49,6 @@ use function substr;
 use function ucfirst;
 
 use const DIRECTORY_SEPARATOR;
-use const PHP_VERSION_ID;
 
 /**
  * This factory is used to create proxy objects for entities at runtime.
@@ -137,9 +134,6 @@ EOPHP;
     /** @var array<class-string, Closure> */
     private $proxyFactories = [];
 
-    /** @var bool */
-    private $isLazyGhostObjectEnabled = true;
-
     /**
      * Initializes a new instance of the <tt>ProxyFactory</tt> class that is
      * connected to the given <tt>EntityManager</tt>.
@@ -155,23 +149,6 @@ EOPHP;
         private readonly string $proxyNs,
         bool|int $autoGenerate = self::AUTOGENERATE_NEVER,
     ) {
-        if (! $em->getConfiguration()->isLazyGhostObjectEnabled()) {
-            if (PHP_VERSION_ID >= 80100) {
-                Deprecation::trigger(
-                    'doctrine/orm',
-                    'https://github.com/doctrine/orm/pull/10837/',
-                    'Not enabling lazy ghost objects is deprecated and will not be supported in Doctrine ORM 3.0. Ensure Doctrine\ORM\Configuration::setLazyGhostObjectEnabled(true) is called to enable them.',
-                );
-            }
-
-            $this->isLazyGhostObjectEnabled = false;
-
-            $proxyGenerator = new ProxyGenerator($proxyDir, $proxyNs);
-            $proxyGenerator->setPlaceholder('baseProxyInterface', CommonProxy::class . ', \\' . InternalProxy::class);
-
-            parent::__construct($proxyGenerator, $em->getMetadataFactory(), $autoGenerate);
-        }
-
         if (! $proxyDir) {
             throw ORMInvalidArgumentException::proxyDirectoryRequired();
         }
@@ -195,10 +172,6 @@ EOPHP;
      */
     public function getProxy($className, array $identifier)
     {
-        if (! $this->isLazyGhostObjectEnabled) {
-            return parent::getProxy($className, $identifier);
-        }
-
         $proxyFactory = $this->proxyFactories[$className] ?? $this->getProxyFactory($className);
 
         return $proxyFactory($identifier);
@@ -216,10 +189,6 @@ EOPHP;
      */
     public function generateProxyClasses(array $classes, $proxyDir = null)
     {
-        if (! $this->isLazyGhostObjectEnabled) {
-            return parent::generateProxyClasses($classes, $proxyDir);
-        }
-
         $generated = 0;
 
         foreach ($classes as $class) {

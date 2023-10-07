@@ -1,5 +1,11 @@
 # Upgrade to 3.0
 
+## BC BREAK: lazy ghosts are enabled unconditionally
+
+`Doctrine\ORM\Configuration::setLazyGhostObjectEnabled()` and
+`Doctrine\ORM\Configuration::isLazyGhostObjectEnabled()` are now no-ops and
+will be deprecated in 3.1.0
+
 ## BC BREAK: collisions in identity map are unconditionally rejected
 
 `Doctrine\ORM\Configuration::setRejectIdCollisionInIdentityMap()` and
