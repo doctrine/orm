@@ -605,13 +605,24 @@ class Configuration extends \Doctrine\DBAL\Configuration
         $this->attributes['isLazyGhostObjectEnabled'] = $flag;
     }
 
+    /** To be deprecated in 3.1.0 */
     public function setRejectIdCollisionInIdentityMap(bool $flag): void
     {
-        $this->attributes['rejectIdCollisionInIdentityMap'] = $flag;
+        if (! $flag) {
+            throw new LogicException(<<<'EXCEPTION'
+                Rejecting ID collisions in the identity map cannot be disabled anymore.
+                Please remove the call to setRejectIdCollisionInIdentityMap(false).
+                EXCEPTION);
+        }
     }
 
+    /**
+     * To be deprecated in 3.1.0
+     *
+     * @return true
+     */
     public function isRejectIdCollisionInIdentityMapEnabled(): bool
     {
-        return $this->attributes['rejectIdCollisionInIdentityMap'] ?? false;
+        return true;
     }
 }

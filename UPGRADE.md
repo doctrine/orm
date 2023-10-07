@@ -1,5 +1,11 @@
 # Upgrade to 3.0
 
+## BC BREAK: collisions in identity map are unconditionally rejected
+
+`Doctrine\ORM\Configuration::setRejectIdCollisionInIdentityMap()` and
+`Doctrine\ORM\Configuration::isRejectIdCollisionInIdentityMapEnabled()` are now
+no-ops and will be deprecated in 3.1.0.
+
 ## BC BREAK: Lifecycle callback mapping on embedded classes is now explicitly forbidden
 
 Lifecycle callback mapping on embedded classes produced no effect, and is now

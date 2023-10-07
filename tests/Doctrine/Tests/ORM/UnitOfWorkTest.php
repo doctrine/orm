@@ -628,28 +628,8 @@ class UnitOfWorkTest extends OrmTestCase
         self::assertEmpty($user->phonenumbers->getSnapshot());
     }
 
-    public function testItTriggersADeprecationNoticeWhenApplicationProvidedIdsCollide(): void
-    {
-        // We're using application-provided IDs and assign the same ID twice
-        // Note this is about colliding IDs in the identity map in memory.
-        // Duplicate database-level IDs would be spotted when the EM is flushed.
-
-        $phone1              = new CmsPhonenumber();
-        $phone1->phonenumber = '1234';
-        $this->_unitOfWork->persist($phone1);
-
-        $phone2              = new CmsPhonenumber();
-        $phone2->phonenumber = '1234';
-
-        $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/pull/10785');
-
-        $this->_unitOfWork->persist($phone2);
-    }
-
     public function testItThrowsWhenApplicationProvidedIdsCollide(): void
     {
-        $this->_emMock->getConfiguration()->setRejectIdCollisionInIdentityMap(true);
-
         // We're using application-provided IDs and assign the same ID twice
         // Note this is about colliding IDs in the identity map in memory.
         // Duplicate database-level IDs would be spotted when the EM is flushed.
