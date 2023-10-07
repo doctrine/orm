@@ -218,12 +218,6 @@
       <code>$entity</code>
     </PossiblyNullArgument>
   </file>
-  <file src="lib/Doctrine/ORM/Internal/CommitOrderCalculator.php">
-    <RedundantCondition>
-      <code><![CDATA[$vertex->state !== VertexState::Visited]]></code>
-      <code><![CDATA[$vertex->state !== VertexState::Visited]]></code>
-    </RedundantCondition>
-  </file>
   <file src="lib/Doctrine/ORM/Internal/Hydration/AbstractHydrator.php">
     <ReferenceConstraintViolation>
       <code>return $rowData;</code>
