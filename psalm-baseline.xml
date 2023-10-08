@@ -738,16 +738,7 @@
   <file src="lib/Doctrine/ORM/Proxy/ProxyFactory.php">
     <ArgumentTypeCoercion>
       <code>$classMetadata</code>
-      <code>$classMetadata</code>
-      <code>$classMetadata</code>
     </ArgumentTypeCoercion>
-    <DeprecatedMethod>
-      <code>createCloner</code>
-      <code>createInitializer</code>
-    </DeprecatedMethod>
-    <InvalidArgument>
-      <code><![CDATA[$classMetadata->getReflectionProperties()]]></code>
-    </InvalidArgument>
     <InvalidNullableReturnType>
       <code>Closure</code>
     </InvalidNullableReturnType>
@@ -758,9 +749,6 @@
       <code><![CDATA[$metadata->isEmbeddedClass]]></code>
       <code><![CDATA[$metadata->isMappedSuperclass]]></code>
     </NoInterfaceProperties>
-    <PossiblyNullArgument>
-      <code><![CDATA[$property->name]]></code>
-    </PossiblyNullArgument>
     <NullableReturnStatement>
       <code><![CDATA[$this->proxyFactories[$className] = $proxyFactory]]></code>
     </NullableReturnStatement>
@@ -770,20 +758,10 @@
     <PossiblyFalseOperand>
       <code>$i</code>
     </PossiblyFalseOperand>
-    <PossiblyNullPropertyFetch>
-      <code><![CDATA[$property->name]]></code>
-    </PossiblyNullPropertyFetch>
-    <PossiblyNullReference>
-      <code>getValue</code>
-      <code>setValue</code>
-    </PossiblyNullReference>
     <TypeDoesNotContainType>
       <code><![CDATA[$autoGenerate < 0]]></code>
       <code><![CDATA[$autoGenerate > 4]]></code>
     </TypeDoesNotContainType>
-    <UndefinedInterfaceMethod>
-      <code>__wakeup</code>
-    </UndefinedInterfaceMethod>
     <UndefinedMethod>
       <code><![CDATA[self::createLazyGhost(static function (InternalProxy $object) use ($initializer, &$proxy): void {
                 $initializer($object, $proxy);

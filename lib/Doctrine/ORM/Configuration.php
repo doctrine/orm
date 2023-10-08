@@ -21,15 +21,12 @@ use Doctrine\ORM\Query\Filter\SQLFilter;
 use Doctrine\ORM\Repository\DefaultRepositoryFactory;
 use Doctrine\ORM\Repository\RepositoryFactory;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
-use Doctrine\Persistence\Reflection\RuntimeReflectionProperty;
 use LogicException;
 use Psr\Cache\CacheItemPoolInterface;
-use Symfony\Component\VarExporter\LazyGhostTrait;
 
 use function class_exists;
 use function is_a;
 use function strtolower;
-use function trait_exists;
 
 /**
  * Configuration container for all configuration options of Doctrine.
@@ -581,28 +578,25 @@ class Configuration extends \Doctrine\DBAL\Configuration
         $this->attributes['schemaIgnoreClasses'] = $schemaIgnoreClasses;
     }
 
+    /**
+     * To be deprecated in 3.1.0
+     *
+     * @return true
+     */
     public function isLazyGhostObjectEnabled(): bool
     {
-        return $this->attributes['isLazyGhostObjectEnabled'] ?? false;
+        return true;
     }
 
+    /** To be deprecated in 3.1.0 */
     public function setLazyGhostObjectEnabled(bool $flag): void
     {
-        if ($flag && ! trait_exists(LazyGhostTrait::class)) {
-            throw new LogicException(
-                'Lazy ghost objects cannot be enabled because the "symfony/var-exporter" library'
-                . ' version 6.2 or higher is not installed. Please run "composer require symfony/var-exporter:^6.2".',
-            );
+        if (! $flag) {
+            throw new LogicException(<<<'EXCEPTION'
+            The lazy ghost object feature cannot be disabled anymore.
+            Please remove the call to setLazyGhostObjectEnabled(false).
+            EXCEPTION);
         }
-
-        if ($flag && ! class_exists(RuntimeReflectionProperty::class)) {
-            throw new LogicException(
-                'Lazy ghost objects cannot be enabled because the "doctrine/persistence" library'
-                . ' version 3.1 or higher is not installed. Please run "composer update doctrine/persistence".',
-            );
-        }
-
-        $this->attributes['isLazyGhostObjectEnabled'] = $flag;
     }
 
     /** To be deprecated in 3.1.0 */
