@@ -41,6 +41,8 @@ jobs:
           - "pdo_sqlite"
         proxy:
           - "common"
+        deps:
+          - "highest"
         include:
           - php-version: "8.2"
             dbal-version: "3@dev"
@@ -54,6 +56,10 @@ jobs:
           - php-version: "8.1"
             dbal-version: "default"
             proxy: "lazy-ghost"
+            extension: "pdo_sqlite"
+          - php-version: "8.1"
+            dbal-version: "default"
+            deps: "lowest"
             extension: "pdo_sqlite"
 
     steps:
@@ -78,6 +84,7 @@ jobs:
         uses: "ramsey/composer-install@v2"
         with:
           composer-options: "--ignore-platform-req=php+"
+          dependency-versions: "${{ matrix.deps }}"
 
       - name: "Run PHPUnit"
         run: "vendor/bin/phpunit -c ci/github/phpunit/${{ matrix.extension }}.xml --coverage-clover=coverage-no-cache.xml"
@@ -313,7 +320,6 @@ jobs:
         with:
           name: "${{ github.job }}-${{ matrix.mysql-version }}-${{ matrix.extension }}-${{ matrix.php-version }}-${{ matrix.dbal-version }}-coverage"
           path: "coverage*.xml"
-
 
   upload_coverage:
     name: "Upload coverage to Codecov"

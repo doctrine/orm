@@ -514,11 +514,14 @@ class QueryTest extends OrmTestCase
 
     public function testGetQueryCacheDriverWithDefaults(): void
     {
-        $cache = $this->createMock(CacheItemPoolInterface::class);
+        $cache         = $this->createMock(CacheItemPoolInterface::class);
+        $cacheItemMock = $this->createMock(CacheItemInterface::class);
+        $cacheItemMock->method('set')->willReturnSelf();
+        $cacheItemMock->method('expiresAfter')->willReturnSelf();
         $cache
             ->expects(self::atLeastOnce())
             ->method('getItem')
-            ->willReturn($this->createMock(CacheItemInterface::class));
+            ->willReturn($cacheItemMock);
 
         $this->entityManager->getConfiguration()->setQueryCache($cache);
         $this->entityManager
@@ -528,11 +531,14 @@ class QueryTest extends OrmTestCase
 
     public function testGetQueryCacheDriverWithCacheExplicitlySet(): void
     {
-        $cache = $this->createMock(CacheItemPoolInterface::class);
+        $cache         = $this->createMock(CacheItemPoolInterface::class);
+        $cacheItemMock = $this->createMock(CacheItemInterface::class);
+        $cacheItemMock->method('set')->willReturnSelf();
+        $cacheItemMock->method('expiresAfter')->willReturnSelf();
         $cache
             ->expects(self::atLeastOnce())
             ->method('getItem')
-            ->willReturn($this->createMock(CacheItemInterface::class));
+            ->willReturn($cacheItemMock);
 
         $this->entityManager
             ->createQuery('select u from ' . CmsUser::class . ' u')
