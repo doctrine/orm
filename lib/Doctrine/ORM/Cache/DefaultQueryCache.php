@@ -16,7 +16,6 @@ use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\ResultSetMapping;
-use Doctrine\ORM\Query\SqlWalker;
 use Doctrine\ORM\UnitOfWork;
 
 use function array_map;
@@ -209,10 +208,6 @@ class DefaultQueryCache implements QueryCache
 
         if (! $rsm->isSelect) {
             throw FeatureNotImplemented::nonSelectStatements();
-        }
-
-        if (($hints[SqlWalker::HINT_PARTIAL] ?? false) === true || ($hints[Query::HINT_FORCE_PARTIAL_LOAD] ?? false) === true) {
-            throw FeatureNotImplemented::partialEntities();
         }
 
         if (! ($key->cacheMode & Cache::MODE_PUT)) {
