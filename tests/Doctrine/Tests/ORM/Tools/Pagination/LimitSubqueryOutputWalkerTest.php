@@ -229,7 +229,7 @@ final class LimitSubqueryOutputWalkerTest extends PaginationTestCase
         );
     }
 
-    public function testCountQueryWithComplexScalarOrderByItem(): void
+    public function testCountQueryWithComplexScalarOrderByItemWithoutJoin(): void
     {
         $query = $this->entityManager->createQuery(
             'SELECT a FROM Doctrine\Tests\ORM\Tools\Pagination\Avatar a ORDER BY a.imageHeight * a.imageWidth DESC'
@@ -244,7 +244,7 @@ final class LimitSubqueryOutputWalkerTest extends PaginationTestCase
         );
     }
 
-    public function testCountQueryWithComplexScalarOrderByItemJoined(): void
+    public function testCountQueryWithComplexScalarOrderByItemJoinedWithoutPartial(): void
     {
         $query = $this->entityManager->createQuery(
             'SELECT u FROM Doctrine\Tests\ORM\Tools\Pagination\User u JOIN u.avatar a ORDER BY a.imageHeight * a.imageWidth DESC'
