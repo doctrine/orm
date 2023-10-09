@@ -100,14 +100,8 @@ interface EntityPersister
      * Executes all queued entity insertions.
      *
      * If no inserts are queued, invoking this method is a NOOP.
-     *
-     * @psalm-return void|list<array{
-     *                   generatedId: int,
-     *                   entity: object
-     *               }> Returning an array of generated post-insert IDs is deprecated, implementations
-     *                  should call UnitOfWork::assignPostInsertId() and return void.
      */
-    public function executeInserts();
+    public function executeInserts(): void;
 
     /**
      * Updates a managed entity. The entity is updated according to its current changeset

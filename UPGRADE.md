@@ -1,5 +1,11 @@
 # Upgrade to 3.0
 
+## BC BREAK: `Doctrine\ORM\Persister\Entity\EntityPersister::executeInserts()` return type changed to `void`
+
+Implementors should adapt to the new signature, and should call
+`UnitOfWork::assignPostInsertId()` for each entry in the previously returned
+array.
+
 ## BC BREAK: `Doctrine\ORM\Proxy\ProxyFactory` no longer extends abstract factory from `doctrine/common`
 
 It is no longer possible to call methods, constants or properties inherited

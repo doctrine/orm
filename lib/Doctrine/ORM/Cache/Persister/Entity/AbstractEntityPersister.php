@@ -268,10 +268,7 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
         return $this->persister->getOwningTable($fieldName);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function executeInserts()
+    public function executeInserts(): void
     {
         // The commit order/foreign key relationships may make it necessary that multiple calls to executeInsert()
         // are performed, so collect all the new entities.
@@ -281,7 +278,7 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
             $this->queuedCache['insert'] = array_merge($this->queuedCache['insert'] ?? [], $newInserts);
         }
 
-        return $this->persister->executeInserts();
+        $this->persister->executeInserts();
     }
 
     /**

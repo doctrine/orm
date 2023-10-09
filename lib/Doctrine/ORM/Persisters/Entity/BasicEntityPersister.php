@@ -218,10 +218,7 @@ class BasicEntityPersister implements EntityPersister
         return $this->queuedInserts;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function executeInserts()
+    public function executeInserts(): void
     {
         if (! $this->queuedInserts) {
             return;

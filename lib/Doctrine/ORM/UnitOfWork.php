@@ -1042,20 +1042,7 @@ class UnitOfWork implements PropertyChangedListener
 
             unset($this->entityInsertions[$oid]);
 
-            $postInsertIds = $persister->executeInserts();
-
-            if (is_array($postInsertIds)) {
-                Deprecation::trigger(
-                    'doctrine/orm',
-                    'https://github.com/doctrine/orm/pull/10743/',
-                    'Returning post insert IDs from \Doctrine\ORM\Persisters\Entity\EntityPersister::executeInserts() is deprecated and will not be supported in Doctrine ORM 3.0. Make the persister call Doctrine\ORM\UnitOfWork::assignPostInsertId() instead.',
-                );
-
-                // Persister returned post-insert IDs
-                foreach ($postInsertIds as $postInsertId) {
-                    $this->assignPostInsertId($postInsertId['entity'], $postInsertId['generatedId']);
-                }
-            }
+            $persister->executeInserts();
 
             if (! isset($this->entityIdentifiers[$oid])) {
                 //entity was not added to identity map because some identifiers are foreign keys to new entities.
