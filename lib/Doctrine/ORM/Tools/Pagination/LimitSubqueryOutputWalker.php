@@ -373,7 +373,7 @@ class LimitSubqueryOutputWalker extends SqlWalker
         string $innerSql
     ): string {
         [$searchPatterns, $replacements] = $this->generateSqlAliasReplacements();
-        $orderByItems = [];
+        $orderByItems                    = [];
 
         foreach ($orderByClause->orderByItems as $orderByItem) {
             // Walk order by item to get string representation of it and
