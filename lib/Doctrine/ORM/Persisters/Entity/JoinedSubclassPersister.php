@@ -94,10 +94,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
         return $tableName;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function executeInserts()
+    public function executeInserts(): void
     {
         if (! $this->queuedInserts) {
             return;

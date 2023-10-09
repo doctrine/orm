@@ -173,10 +173,9 @@ abstract class EntityPersisterTestCase extends OrmTestCase
         $persister = $this->createPersisterDefault();
 
         $this->entityPersister->expects(self::once())
-            ->method('executeInserts')
-            ->willReturn(['id' => 1]);
+            ->method('executeInserts');
 
-        self::assertSame(['id' => 1], $persister->executeInserts());
+        $persister->executeInserts();
     }
 
     public function testInvokeUpdate(): void

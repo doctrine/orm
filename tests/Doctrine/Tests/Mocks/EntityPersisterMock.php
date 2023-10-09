@@ -38,10 +38,11 @@ class EntityPersisterMock extends BasicEntityPersister
         ];
     }
 
-    /** @psalm-return list<array{generatedId: int, entity: object}> */
-    public function executeInserts(): array
+    public function executeInserts(): void
     {
-        return $this->postInsertIds;
+        foreach ($this->postInsertIds as $item) {
+            $this->em->getUnitOfWork()->assignPostInsertId($item['entity'], $item['generatedId']);
+        }
     }
 
     public function setMockIdGeneratorType(int $genType): void
