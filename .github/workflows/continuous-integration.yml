@@ -39,6 +39,7 @@ jobs:
           - "8.0"
           - "8.1"
           - "8.2"
+          - "8.3"
         dbal-version:
           - "default"
         extension:
@@ -111,6 +112,7 @@ jobs:
       matrix:
         php-version:
           - "8.2"
+          - "8.3"
         dbal-version:
           - "default"
           - "3@dev"
@@ -183,6 +185,7 @@ jobs:
       matrix:
         php-version:
           - "8.2"
+          - "8.3"
         dbal-version:
           - "default"
           - "3@dev"
@@ -252,6 +255,7 @@ jobs:
       matrix:
         php-version:
           - "8.2"
+          - "8.3"
         dbal-version:
           - "default"
           - "3@dev"
