@@ -1752,7 +1752,7 @@ class Parser
                 Deprecation::trigger(
                     'doctrine/orm',
                     'https://github.com/doctrine/orm/issues/10978',
-                    'WITH join conditions are deprecated for joins on associations. Use either a sub-select with another occurance of this table or use Collection::matching(Criteria) in follow-up code.',
+                    'WITH join conditions are deprecated for joins on associations. Use either a sub-select with another occurance of this table or use Collection::matching(Criteria) in follow-up code.'
                 );
             }
 
