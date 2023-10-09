@@ -36,8 +36,8 @@ jobs:
           config: phpstan-dbal4.neon
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+      - name: "Checkout code"
+        uses: "actions/checkout@v4"
 
       - name: Install PHP
         uses: shivammathur/setup-php@v2
@@ -68,8 +68,8 @@ jobs:
         - 4@dev
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+      - name: "Checkout code"
+        uses: "actions/checkout@v4"
 
       - name: Install PHP
         uses: shivammathur/setup-php@v2

@@ -43,3 +43,18 @@ the future.
 .. note::
 
     ``fetchJoinCollection`` argument set to ``true`` might affect results if you use aggregations in your query.
+
+By using the ``Paginator::HINT_ENABLE_DISTINCT`` you can instruct doctrine that the query to be executed
+will not produce "duplicate" rows (only to-one relations are joined), thus the SQL limit will work as expected.
+In this way the `DISTINCT` keyword will be omitted and can bring important performance improvements.
+
+.. code-block:: php
+
+    <?php
+    use Doctrine\ORM\Tools\Pagination\Paginator;
+
+    $dql = "SELECT u, p FROM User u JOIN u.mainPicture p";
+    $query = $entityManager->createQuery($dql)
+                           ->setHint(Paginator::HINT_ENABLE_DISTINCT, false)
+                           ->setFirstResult(0)
+                           ->setMaxResults(100);
