@@ -28,10 +28,17 @@
                 <referencedClass name="Doctrine\DBAL\Tools\Console\Command\ReservedWordsCommand" />
                 <!-- Remove on 3.0.x -->
                 <referencedClass name="Doctrine\DBAL\Schema\Visitor\RemoveNamespacedAssets"/>
-                <referencedClass name="Doctrine\ORM\Internal\CommitOrder\Edge"/>
-                <referencedClass name="Doctrine\ORM\Internal\CommitOrder\Vertex"/>
-                <referencedClass name="Doctrine\ORM\Internal\CommitOrder\VertexState"/>
-                <referencedClass name="Doctrine\ORM\Internal\CommitOrderCalculator"/>
+                <referencedClass name="Doctrine\ORM\Event\LifecycleEventArgs"/>
+                <referencedClass name="Doctrine\ORM\Exception\UnknownEntityNamespace"/>
+                <referencedClass name="Doctrine\ORM\Mapping\Driver\YamlDriver"/>
+                <referencedClass name="Doctrine\ORM\Query\AST\InExpression"/>
+                <referencedClass name="Doctrine\ORM\Tools\Console\Command\ConvertDoctrine1SchemaCommand"/>
+                <referencedClass name="Doctrine\ORM\Tools\Console\Command\ConvertMappingCommand"/>
+                <referencedClass name="Doctrine\ORM\Tools\Console\Command\EnsureProductionSettingsCommand"/>
+                <referencedClass name="Doctrine\ORM\Tools\Console\Command\GenerateEntitiesCommand"/>
+                <referencedClass name="Doctrine\ORM\Tools\Console\Command\GenerateRepositoriesCommand"/>
+                <referencedClass name="Doctrine\ORM\Tools\Console\Helper\EntityManagerHelper"/>
+                <referencedClass name="Doctrine\ORM\Tools\Console\EntityManagerProvider\HelperSetManagerProvider"/>
             </errorLevel>
         </DeprecatedClass>
         <DeprecatedMethod>

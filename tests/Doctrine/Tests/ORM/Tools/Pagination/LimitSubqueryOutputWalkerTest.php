@@ -198,7 +198,7 @@ final class LimitSubqueryOutputWalkerTest extends PaginationTestCase
         );
     }
 
-    public function testCountQueryWithComplexScalarOrderByItem(): void
+    public function testCountQueryWithComplexScalarOrderByItemWithoutJoin(): void
     {
         $entityManager = $this->createTestEntityManagerWithPlatform(new MySQLPlatform());
 
@@ -214,7 +214,7 @@ final class LimitSubqueryOutputWalkerTest extends PaginationTestCase
         );
     }
 
-    public function testCountQueryWithComplexScalarOrderByItemJoined(): void
+    public function testCountQueryWithComplexScalarOrderByItemJoinedWithoutPartial(): void
     {
         $entityManager = $this->createTestEntityManagerWithPlatform(new MySQLPlatform());
 
@@ -225,7 +225,7 @@ final class LimitSubqueryOutputWalkerTest extends PaginationTestCase
         $query->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, LimitSubqueryOutputWalker::class);
 
         self::assertSame(
-            'SELECT DISTINCT id_0 FROM (SELECT DISTINCT id_0, imageHeight_1 * imageWidth_2 FROM (SELECT u0_.id AS id_0, a1_.imageHeight AS imageHeight_1, a1_.imageWidth AS imageWidth_2, a1_.user_id AS user_id_3 FROM User u0_ INNER JOIN Avatar a1_ ON u0_.id = a1_.user_id) dctrn_result_inner ORDER BY imageHeight_1 * imageWidth_2 DESC) dctrn_result',
+            'SELECT DISTINCT id_0 FROM (SELECT DISTINCT id_0, imageHeight_3 * imageWidth_4 FROM (SELECT u0_.id AS id_0, a1_.id AS id_1, a1_.image AS image_2, a1_.imageHeight AS imageHeight_3, a1_.imageWidth AS imageWidth_4, a1_.imageAltDesc AS imageAltDesc_5, a1_.user_id AS user_id_6 FROM User u0_ INNER JOIN Avatar a1_ ON u0_.id = a1_.user_id) dctrn_result_inner ORDER BY imageHeight_3 * imageWidth_4 DESC) dctrn_result',
             $query->getSQL(),
         );
     }
@@ -241,7 +241,7 @@ final class LimitSubqueryOutputWalkerTest extends PaginationTestCase
         $query->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, LimitSubqueryOutputWalker::class);
 
         self::assertSame(
-            'SELECT DISTINCT id_0 FROM (SELECT DISTINCT id_0, imageHeight_3 * imageWidth_4 FROM (SELECT u0_.id AS id_0, a1_.id AS id_1, a1_.imageAltDesc AS imageAltDesc_2, a1_.imageHeight AS imageHeight_3, a1_.imageWidth AS imageWidth_4, a1_.user_id AS user_id_5 FROM User u0_ INNER JOIN Avatar a1_ ON u0_.id = a1_.user_id) dctrn_result_inner ORDER BY imageHeight_3 * imageWidth_4 DESC) dctrn_result',
+            'SELECT DISTINCT id_0 FROM (SELECT DISTINCT id_0, imageHeight_5 * imageWidth_6 FROM (SELECT u0_.id AS id_0, a1_.id AS id_1, a1_.imageAltDesc AS imageAltDesc_2, a1_.id AS id_3, a1_.image AS image_4, a1_.imageHeight AS imageHeight_5, a1_.imageWidth AS imageWidth_6, a1_.imageAltDesc AS imageAltDesc_7, a1_.user_id AS user_id_8 FROM User u0_ INNER JOIN Avatar a1_ ON u0_.id = a1_.user_id) dctrn_result_inner ORDER BY imageHeight_5 * imageWidth_6 DESC) dctrn_result',
             $query->getSQL(),
         );
     }
@@ -302,7 +302,7 @@ final class LimitSubqueryOutputWalkerTest extends PaginationTestCase
         $query->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, LimitSubqueryOutputWalker::class);
 
         self::assertSame(
-            'SELECT DISTINCT id_0 FROM (SELECT DISTINCT id_0, name_1 FROM (SELECT b0_.id AS id_0, a1_.name AS name_1, b0_.author_id AS author_id_2, b0_.category_id AS category_id_3 FROM BlogPost b0_ INNER JOIN Author a1_ ON b0_.author_id = a1_.id) dctrn_result_inner ORDER BY name_1 ASC) dctrn_result',
+            'SELECT DISTINCT id_0 FROM (SELECT DISTINCT id_0, name_2 FROM (SELECT b0_.id AS id_0, a1_.id AS id_1, a1_.name AS name_2, b0_.author_id AS author_id_3, b0_.category_id AS category_id_4 FROM BlogPost b0_ INNER JOIN Author a1_ ON b0_.author_id = a1_.id) dctrn_result_inner ORDER BY name_2 ASC) dctrn_result',
             $query->getSQL(),
         );
     }

@@ -29,7 +29,6 @@ use Doctrine\ORM\Exception\EntityIdentityCollisionException;
 use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\Exception\UnexpectedAssociationValue;
 use Doctrine\ORM\Id\AssignedGenerator;
-use Doctrine\ORM\Internal\CommitOrderCalculator;
 use Doctrine\ORM\Internal\HydrationCompleteHandler;
 use Doctrine\ORM\Internal\TopologicalSort;
 use Doctrine\ORM\Mapping\AssociationMapping;
@@ -2209,14 +2208,6 @@ class UnitOfWork implements PropertyChangedListener
             default:
                 // Do nothing
         }
-    }
-
-    /**
-     * Gets the CommitOrderCalculator used by the UnitOfWork to order commits.
-     */
-    public function getCommitOrderCalculator(): CommitOrderCalculator
-    {
-        return new CommitOrderCalculator();
     }
 
     /**
