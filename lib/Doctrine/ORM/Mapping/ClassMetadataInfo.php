@@ -198,7 +198,7 @@ class ClassMetadataInfo implements ClassMetadata
      * Specifies that all entities of a collection valued association are fetched using a single or more
      * additional WHERE IN queries.
      */
-    const FETCH_SUBSELECT = 5;
+    public const FETCH_SUBSELECT = 5;
 
     /**
      * Identifies a one-to-one association.

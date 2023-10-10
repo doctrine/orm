@@ -3115,7 +3115,7 @@ EXCEPTION
                     if ($assoc['fetch'] === ClassMetadata::FETCH_EAGER) {
                         $this->loadCollection($pColl);
                         $pColl->takeSnapshot();
-                    } elseif ($assoc['fetch'] == ClassMetadata::FETCH_SUBSELECT) {
+                    } elseif ($assoc['fetch'] === ClassMetadata::FETCH_SUBSELECT) {
                         $this->scheduleCollectionForBatchLoading($pColl, $class);
                     }
 
@@ -3153,10 +3153,10 @@ EXCEPTION
             );
         }
 
-        $subselectLoadingEntities = $this->subselectLoadingEntities; // avoid recursion
+        $subselectLoadingEntities       = $this->subselectLoadingEntities; // avoid recursion
         $this->subselectLoadingEntities = [];
 
-        foreach($subselectLoadingEntities as $group) {
+        foreach ($subselectLoadingEntities as $group) {
             $this->subselectLoadCollection($group['items'], $group['mapping']);
         }
     }
@@ -3165,9 +3165,9 @@ EXCEPTION
      * Load all data into the given collections, according to the specified mapping
      *
      * @param PersistentCollection[] $collections
-     * @param array $mapping
+     * @param array                  $mapping
      */
-    private function subselectLoadCollection(array $collections, array $mapping) : void
+    private function subselectLoadCollection(array $collections, array $mapping): void
     {
         $targetEntity = $mapping['targetEntity'];
         $class        = $this->em->getClassMetadata($mapping['sourceEntity']);
@@ -3181,9 +3181,7 @@ EXCEPTION
             $entities[]     = $collection->getOwner();
         }
 
-        $found = $this->em->getRepository($targetEntity)->findBy([
-            $mappedBy => $entities
-        ]);
+        $found = $this->em->getRepository($targetEntity)->findBy([$mappedBy => $entities]);
 
         $targetClass    = $this->em->getClassMetadata($targetEntity);
         $targetProperty = $targetClass->getReflectionProperty($mappedBy);
@@ -3233,7 +3231,7 @@ EXCEPTION
     /**
      * Schedule this collection for batch loading at the end of the UnitOfWork
      */
-    private function scheduleCollectionForBatchLoading(PersistentCollection $collection, ClassMetadata $sourceClass) : void
+    private function scheduleCollectionForBatchLoading(PersistentCollection $collection, ClassMetadata $sourceClass): void
     {
         $mapping = $collection->getMapping();
         $name    = $mapping['sourceEntity'] . '#' . $mapping['fieldName'];
@@ -3245,7 +3243,7 @@ EXCEPTION
             ];
         }
 
-        $id = $this->identifierFlattener->flattenIdentifier(
+        $id     = $this->identifierFlattener->flattenIdentifier(
             $sourceClass,
             $sourceClass->getIdentifierValues($collection->getOwner())
         );
