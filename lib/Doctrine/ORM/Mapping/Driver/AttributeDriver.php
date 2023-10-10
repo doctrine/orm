@@ -512,10 +512,6 @@ class AttributeDriver extends CompatibilityAnnotationDriver
 
                 $metadata->mapManyToMany($mapping);
             } elseif ($embeddedAttribute !== null) {
-                if ($metadata->isEmbeddedClass) {
-                    throw MappingException::invalidAttributeOnEmbeddable($metadata->name, Mapping\Embedded::class);
-                }
-
                 $mapping['class']        = $embeddedAttribute->class;
                 $mapping['columnPrefix'] = $embeddedAttribute->columnPrefix;
 

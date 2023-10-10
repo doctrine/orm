@@ -201,18 +201,6 @@ class SchemaValidatorTest extends OrmTestCase
         );
     }
 
-    /** @group 8052 */
-    public function testInvalidAssociationInsideEmbeddable(): void
-    {
-        $class = $this->em->getClassMetadata(EmbeddableWithAssociation::class);
-        $ce    = $this->validator->validateClass($class);
-
-        self::assertEquals(
-            ["Embeddable 'Doctrine\Tests\ORM\Tools\EmbeddableWithAssociation' does not support associations"],
-            $ce
-        );
-    }
-
     /** @group 8771 */
     public function testMappedSuperclassNotPresentInDiscriminator(): void
     {
