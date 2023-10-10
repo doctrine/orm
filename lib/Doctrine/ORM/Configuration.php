@@ -1127,4 +1127,14 @@ class Configuration extends \Doctrine\DBAL\Configuration
     {
         return $this->_attributes['rejectIdCollisionInIdentityMap'] ?? false;
     }
+
+    public function setFetchModeSubselectBatchSize(int $batchSize = 100): void
+    {
+        $this->_attributes['fetchModeSubselectBatchSize'] = $batchSize;
+    }
+
+    public function getFetchModeSubselectBatchSize(): int
+    {
+        return $this->_attributes['fetchModeSubselectBatchSize'] ?? 100;
+    }
 }

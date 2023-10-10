@@ -52,6 +52,7 @@ use RuntimeException;
 use Throwable;
 use UnexpectedValueException;
 
+use function array_chunk;
 use function array_combine;
 use function array_diff_key;
 use function array_filter;
@@ -3173,29 +3174,31 @@ EXCEPTION
         $class        = $this->em->getClassMetadata($mapping['sourceEntity']);
         $mappedBy     = $mapping['mappedBy'];
 
-        $entities = [];
-        $index    = [];
+        $batches = array_chunk($collections, $this->em->getConfiguration()->getFetchModeSubselectBatchSize(), true);
 
-        foreach ($collections as $idHash => $collection) {
-            $index[$idHash] = $collection;
-            $entities[]     = $collection->getOwner();
+        foreach ($batches as $collectionBatch) {
+            $entities = [];
+
+            foreach ($collectionBatch as $collection) {
+                $entities[] = $collection->getOwner();
+            }
+
+            $found = $this->em->getRepository($targetEntity)->findBy([$mappedBy => $entities]);
+
+            $targetClass    = $this->em->getClassMetadata($targetEntity);
+            $targetProperty = $targetClass->getReflectionProperty($mappedBy);
+
+            foreach ($found as $targetValue) {
+                $sourceEntity = $targetProperty->getValue($targetValue);
+
+                $id     = $this->identifierFlattener->flattenIdentifier($class, $class->getIdentifierValues($sourceEntity));
+                $idHash = implode(' ', $id);
+
+                $collectionBatch[$idHash]->add($targetValue);
+            }
         }
 
-        $found = $this->em->getRepository($targetEntity)->findBy([$mappedBy => $entities]);
-
-        $targetClass    = $this->em->getClassMetadata($targetEntity);
-        $targetProperty = $targetClass->getReflectionProperty($mappedBy);
-
-        foreach ($found as $targetValue) {
-            $sourceEntity = $targetProperty->getValue($targetValue);
-
-            $id     = $this->identifierFlattener->flattenIdentifier($class, $class->getIdentifierValues($sourceEntity));
-            $idHash = implode(' ', $id);
-
-            $index[$idHash]->add($targetValue);
-        }
-
-        foreach ($index as $association) {
+        foreach ($collections as $association) {
             $association->setInitialized(true);
             $association->takeSnapshot();
         }
