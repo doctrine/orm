@@ -87,12 +87,18 @@ class ConnectionMock extends Connection
      */
     public function fetchColumn($statement, array $params = [], $colunm = 0, array $types = [])
     {
-        throw new BadMethodCallException('Call to deprecated method.');
+        throw new BadMethodCallException(sprintf(
+            'Call to deprecated method %s().',
+            __METHOD__
+        ));
     }
 
     public function query(?string $sql = null): Result
     {
-        throw new BadMethodCallException('Call to deprecated method.');
+        throw new BadMethodCallException(sprintf(
+            'Call to deprecated method %s().',
+            __METHOD__
+        ));
     }
 
     /**
