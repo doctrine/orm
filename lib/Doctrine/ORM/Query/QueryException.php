@@ -204,6 +204,14 @@ class QueryException extends ORMException
         );
     }
 
+    public static function subselectFetchJoinWithNotAllowed($assoc): QueryException
+    {
+        return new self(
+            'Associations with fetch-mode subselects may not be using WITH conditions in
+             "' . $assoc['sourceEntity'] . '#' . $assoc['fieldName'] . '".'
+        );
+    }
+
     public static function iterateWithMixedResultNotAllowed(): QueryException
     {
         return new self('Iterating a query with mixed results (using scalars) is not supported.');

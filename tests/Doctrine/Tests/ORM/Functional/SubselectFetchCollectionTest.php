@@ -3,7 +3,9 @@
 namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Query\QueryException;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use Doctrine\ORM\Mapping as ORM;
 
 class SubselectFetchCollectionTest extends OrmFunctionalTestCase
 {
@@ -20,7 +22,7 @@ class SubselectFetchCollectionTest extends OrmFunctionalTestCase
         }
     }
 
-    public function testSubselectFetchMode()
+    public function testSubselectFetchMode(): void
     {
         $owner = $this->createOwnerWithChildren(2);
         $owner2 = $this->createOwnerWithChildren(3);
@@ -31,9 +33,9 @@ class SubselectFetchCollectionTest extends OrmFunctionalTestCase
 
         $owner = $this->_em->find(SubselectFetchOwner::class, $owner->id);
 
-        $afterQueryCount = $this->getCurrentQueryCount();
+        $afterQueryCount = count($this->getQueryLog()->queries);
         $this->assertCount(2, $owner->children);
-        $anotherQueryCount = $this->getCurrentQueryCount();
+        $anotherQueryCount = count($this->getQueryLog()->queries);
 
         $this->assertEquals($anotherQueryCount, $afterQueryCount);
 
@@ -41,9 +43,9 @@ class SubselectFetchCollectionTest extends OrmFunctionalTestCase
 
         $this->_em->clear();
 
-        $beforeQueryCount = $this->getCurrentQueryCount();
+        $beforeQueryCount = count($this->getQueryLog()->queries);
         $owners = $this->_em->getRepository(SubselectFetchOwner::class)->findAll();
-        $anotherQueryCount = $this->getCurrentQueryCount();
+        $anotherQueryCount = count($this->getQueryLog()->queries);
 
         // the findAll() + 1 subselect loading both collections of the two returned $owners
         $this->assertEquals($beforeQueryCount + 2, $anotherQueryCount);
@@ -52,7 +54,16 @@ class SubselectFetchCollectionTest extends OrmFunctionalTestCase
         $this->assertCount(3, $owners[1]->children);
 
         // both collections are already initialized and count'ing them does not make a difference in total query count
-        $this->assertEquals($anotherQueryCount, $this->getCurrentQueryCount());
+        $this->assertEquals($anotherQueryCount, count($this->getQueryLog()->queries));
+    }
+
+    public function testSubselectFetchJoinWithNotAllowed(): void
+    {
+        $this->expectException(QueryException::class);
+        $this->expectExceptionMessage('Associations with fetch-mode subselects may not be using WITH conditions');
+
+        $query = $this->_em->createQuery('SELECT o, c FROM ' . SubselectFetchOwner::class . ' o JOIN o.children c WITH c.id = 1');
+        $query->getResult();
     }
 
     /**
@@ -78,17 +89,17 @@ class SubselectFetchCollectionTest extends OrmFunctionalTestCase
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class SubselectFetchOwner
 {
-    /** @Id @Column(type="integer") @GeneratedValue() */
+    /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue() */
     public $id;
 
     /**
      * @var ArrayCollection
      *
-     * @OneToMany(targetEntity="SubselectFetchChild", mappedBy="owner", fetch="SUBSELECT")
+     * @ORM\OneToMany(targetEntity="SubselectFetchChild", mappedBy="owner", fetch="SUBSELECT")
      */
     public $children;
 
@@ -99,15 +110,15 @@ class SubselectFetchOwner
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class SubselectFetchChild
 {
-    /** @Id @Column(type="integer") @GeneratedValue() */
+    /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue() */
     public $id;
 
     /**
-     * @ManyToOne(targetEntity="SubselectFetchOwner", inversedBy="children")
+     * @ORM\ManyToOne(targetEntity="SubselectFetchOwner", inversedBy="children")
      *
      * @var SubselectFetchOwner
      */
