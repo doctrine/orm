@@ -742,6 +742,15 @@ class MappingException extends ORMException
         ));
     }
 
+    public static function illegalFetchSubselectAssociation(string $className, string $field): MappingException
+    {
+        return new self(sprintf(
+            'Cannot use fetch-mode SUBSELECT for a to-one association on entity "%s#%s".',
+            $className,
+            $field
+        ));
+    }
+
     /**
      * @param string $className
      *

@@ -1831,6 +1831,10 @@ class ClassMetadataInfo implements ClassMetadata
             $mapping['fetch'] = self::FETCH_LAZY;
         }
 
+        if ($mapping['fetch'] === self::FETCH_SUBSELECT && $mapping['type'] & self::TO_ONE) {
+            throw MappingException::illegalFetchSubselectAssociation($this->name, $mapping['fieldName']);
+        }
+
         // Cascades
         $cascades = isset($mapping['cascade']) ? array_map('strtolower', $mapping['cascade']) : [];
 
