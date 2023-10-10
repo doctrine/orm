@@ -2953,6 +2953,10 @@ EXCEPTION
                 continue;
             }
 
+            if (! isset($hints['fetchMode'][$class->name][$field])) {
+                $hints['fetchMode'][$class->name][$field] = $assoc['fetch'];
+            }
+
             $targetClass = $this->em->getClassMetadata($assoc['targetEntity']);
 
             switch (true) {
@@ -3014,10 +3018,6 @@ EXCEPTION
                         $this->originalEntityData[$oid][$field] = null;
 
                         break;
-                    }
-
-                    if (! isset($hints['fetchMode'][$class->name][$field])) {
-                        $hints['fetchMode'][$class->name][$field] = $assoc['fetch'];
                     }
 
                     // Foreign key is set
@@ -3113,11 +3113,14 @@ EXCEPTION
                     $reflField = $class->reflFields[$field];
                     $reflField->setValue($entity, $pColl);
 
-                    if ($assoc['fetch'] === ClassMetadata::FETCH_EAGER) {
-                        $this->loadCollection($pColl);
-                        $pColl->takeSnapshot();
-                    } elseif ($assoc['fetch'] === ClassMetadata::FETCH_SUBSELECT) {
-                        $this->scheduleCollectionForBatchLoading($pColl, $class);
+                    switch ($hints['fetchMode'][$class->name][$field]) {
+                        case ClassMetadata::FETCH_EAGER:
+                            $this->loadCollection($pColl);
+                            $pColl->takeSnapshot();
+                            break;
+                        case ClassMetadata::FETCH_SUBSELECT:
+                            $this->scheduleCollectionForBatchLoading($pColl, $class);
+                            break;
                     }
 
                     $this->originalEntityData[$oid][$field] = $pColl;
