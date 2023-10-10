@@ -3183,7 +3183,7 @@ EXCEPTION
                 $entities[] = $collection->getOwner();
             }
 
-            $found = $this->em->getRepository($targetEntity)->findBy([$mappedBy => $entities]);
+            $found = $this->getEntityPersister($targetEntity)->loadAll([$mappedBy => $entities]);
 
             $targetClass    = $this->em->getClassMetadata($targetEntity);
             $targetProperty = $targetClass->getReflectionProperty($mappedBy);
