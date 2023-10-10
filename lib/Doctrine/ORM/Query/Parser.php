@@ -1748,14 +1748,6 @@ class Parser
 
         // Check for ad-hoc Join conditions
         if ($adhocConditions) {
-            if ($joinDeclaration instanceof AST\JoinAssociationDeclaration) {
-                Deprecation::trigger(
-                    'doctrine/orm',
-                    'https://github.com/doctrine/orm/issues/10978',
-                    'WITH join conditions are deprecated for joins on associations. Use either a sub-select with another occurance of this table or use Collection::matching(Criteria) in follow-up code.'
-                );
-            }
-
             $this->match(Lexer::T_WITH);
 
             $join->conditionalExpression = $this->ConditionalExpression();

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Query;
 
-use Doctrine\Deprecations\PHPUnit\VerifyDeprecations;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
@@ -19,8 +18,6 @@ use Doctrine\Tests\OrmTestCase;
 
 class LanguageRecognitionTest extends OrmTestCase
 {
-    use VerifyDeprecations;
-
     /** @var EntityManagerInterface */
     private $entityManager;
 
@@ -268,8 +265,6 @@ class LanguageRecognitionTest extends OrmTestCase
 
     public function testJoinClassPathUsingWITH(): void
     {
-        $this->expectNoDeprecationWithIdentifier('https://github.com/doctrine/orm/issues/10978');
-
         $this->assertValidDQL('SELECT u.name FROM Doctrine\Tests\Models\CMS\CmsUser u JOIN Doctrine\Tests\Models\CMS\CmsArticle a WITH a.user = u.id');
     }
 
@@ -473,13 +468,6 @@ class LanguageRecognitionTest extends OrmTestCase
     public function testAllExpressionWithCorrelatedSubquery(): void
     {
         $this->assertValidDQL('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id > ALL (SELECT u2.id FROM Doctrine\Tests\Models\CMS\CmsUser u2 WHERE u2.name = u.name)');
-    }
-
-    public function testCustomJoinsAndWithKeywordSupported(): void
-    {
-        $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/issues/10978');
-
-        $this->assertValidDQL('SELECT u, p FROM Doctrine\Tests\Models\CMS\CmsUser u INNER JOIN u.phonenumbers p WITH p.phonenumber = 123 WHERE u.id = 1');
     }
 
     public function testAnyExpressionWithCorrelatedSubquery(): void

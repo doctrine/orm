@@ -602,4 +602,18 @@ class QueryTest extends OrmTestCase
 
         self::assertSame($cache, CacheAdapter::wrap($query->getQueryCacheDriver()));
     }
+
+    public function testCustomJoinsAndWithKeywordDeprecated(): void
+    {
+        $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/issues/10978');
+
+        $this->entityManager->createQuery('SELECT u, p FROM Doctrine\Tests\Models\CMS\CmsUser u INNER JOIN u.phonenumbers p WITH p.phonenumber = 123 WHERE u.id = 1')->getResult();
+    }
+
+    public function testNoFetchJoinsAndWithKeywordSupported(): void
+    {
+        $this->expectNoDeprecationWithIdentifier('https://github.com/doctrine/orm/issues/10978');
+
+        $this->entityManager->createQuery('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u INNER JOIN u.phonenumbers p WITH p.phonenumber = 123 WHERE u.id = 1')->getResult();
+    }
 }
