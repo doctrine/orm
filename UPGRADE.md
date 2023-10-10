@@ -1,5 +1,9 @@
 # Upgrade to 2.17
 
+## Deprecate `EntityManagerInterface::getPartialReference()`
+
+This method does not have a replacement and will be removed in 3.0.
+
 ## Deprecate not-enabling lazy-ghosts
 
 Not enabling lazy ghost objects is deprecated. In ORM 3.0, they will be always enabled.
