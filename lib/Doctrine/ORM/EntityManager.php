@@ -10,6 +10,7 @@ use Doctrine\Common\EventManager;
 use Doctrine\Common\Util\ClassUtils;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\LockMode;
+use Doctrine\Deprecations\Deprecation;
 use Doctrine\ORM\Exception\EntityManagerClosed;
 use Doctrine\ORM\Exception\InvalidHydrationMode;
 use Doctrine\ORM\Exception\MissingIdentifierField;
@@ -402,6 +403,12 @@ class EntityManager implements EntityManagerInterface
 
     public function getPartialReference(string $entityName, mixed $identifier): object|null
     {
+        Deprecation::trigger(
+            'doctrine/orm',
+            'https://github.com/doctrine/orm/pull/10987',
+            'Method %s is deprecated and will be removed in 3.0.',
+            __METHOD__,
+        );
         $class = $this->metadataFactory->getMetadataFor(ltrim($entityName, '\\'));
 
         $entity = $this->unitOfWork->tryGetById($identifier, $class->rootEntityName);

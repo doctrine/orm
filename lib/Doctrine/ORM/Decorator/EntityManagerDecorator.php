@@ -8,6 +8,7 @@ use DateTimeInterface;
 use Doctrine\Common\EventManager;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\LockMode;
+use Doctrine\Deprecations\Deprecation;
 use Doctrine\ORM\Cache;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityManagerInterface;
@@ -104,6 +105,13 @@ abstract class EntityManagerDecorator extends ObjectManagerDecorator implements 
 
     public function getPartialReference(string $entityName, mixed $identifier): object|null
     {
+        Deprecation::trigger(
+            'doctrine/orm',
+            'https://github.com/doctrine/orm/pull/10987',
+            'Method %s is deprecated and will be removed in 3.0.',
+            __METHOD__,
+        );
+
         return $this->wrapped->getPartialReference($entityName, $identifier);
     }
 

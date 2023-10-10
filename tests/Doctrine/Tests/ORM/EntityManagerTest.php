@@ -6,6 +6,7 @@ namespace Doctrine\Tests\ORM;
 
 use Doctrine\Common\EventManager;
 use Doctrine\DBAL\Connection;
+use Doctrine\Deprecations\PHPUnit\VerifyDeprecations;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Exception\EntityManagerClosed;
@@ -26,6 +27,8 @@ use TypeError;
 
 class EntityManagerTest extends OrmTestCase
 {
+    use VerifyDeprecations;
+
     private EntityManagerMock $entityManager;
 
     protected function setUp(): void
@@ -107,6 +110,7 @@ class EntityManagerTest extends OrmTestCase
 
     public function testGetPartialReference(): void
     {
+        $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/pull/10987');
         $user = $this->entityManager->getPartialReference(CmsUser::class, 42);
         self::assertTrue($this->entityManager->contains($user));
         self::assertEquals(42, $user->id);
