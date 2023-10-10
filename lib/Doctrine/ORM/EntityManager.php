@@ -400,37 +400,6 @@ class EntityManager implements EntityManagerInterface
         return $entity;
     }
 
-    public function getPartialReference(string $entityName, mixed $identifier): object|null
-    {
-        Deprecation::trigger(
-            'doctrine/orm',
-            'https://github.com/doctrine/orm/pull/10987',
-            'Method %s is deprecated and will be removed in 3.0.',
-            __METHOD__,
-        );
-        $class = $this->metadataFactory->getMetadataFor(ltrim($entityName, '\\'));
-
-        $entity = $this->unitOfWork->tryGetById($identifier, $class->rootEntityName);
-
-        // Check identity map first, if its already in there just return it.
-        if ($entity !== false) {
-            return $entity instanceof $class->name ? $entity : null;
-        }
-
-        if (! is_array($identifier)) {
-            $identifier = [$class->identifier[0] => $identifier];
-        }
-
-        $entity = $class->newInstance();
-
-        $class->setIdentifierValues($entity, $identifier);
-
-        $this->unitOfWork->registerManaged($entity, $identifier, []);
-        $this->unitOfWork->markReadOnly($entity);
-
-        return $entity;
-    }
-
     /**
      * Clears the EntityManager. All entities that are currently managed
      * by this EntityManager become detached.

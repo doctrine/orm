@@ -170,8 +170,6 @@
       <code>$entity</code>
       <code>$entity</code>
       <code>$entity</code>
-      <code>$entity</code>
-      <code><![CDATA[$entity instanceof $class->name ? $entity : null]]></code>
       <code><![CDATA[$entity instanceof $class->name ? $entity : null]]></code>
       <code><![CDATA[$persister->load($sortedId, null, null, [], $lockMode)]]></code>
       <code><![CDATA[$persister->loadById($sortedId)]]></code>

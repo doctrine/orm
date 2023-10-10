@@ -916,29 +916,6 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
         self::assertEquals(1, $this->_em->getConnection()->fetchOne('select count(*) from cms_addresses'));
     }
 
-    public function testGetPartialReferenceToUpdateObjectWithoutLoadingIt(): void
-    {
-        $user           = new CmsUser();
-        $user->username = 'beberlei';
-        $user->name     = 'Benjamin E.';
-        $user->status   = 'active';
-        $this->_em->persist($user);
-        $this->_em->flush();
-        $userId = $user->id;
-        $this->_em->clear();
-
-        $user = $this->_em->getPartialReference(CmsUser::class, $userId);
-        self::assertTrue($this->_em->contains($user));
-        self::assertNull($user->getName());
-        self::assertEquals($userId, $user->id);
-
-        $user->name = 'Stephan';
-        $this->_em->flush();
-        $this->_em->clear();
-
-        self::assertEquals('Benjamin E.', $this->_em->find($user::class, $userId)->name);
-    }
-
     #[Group('DDC-952')]
     public function testManyToOneFetchModeQuery(): void
     {
