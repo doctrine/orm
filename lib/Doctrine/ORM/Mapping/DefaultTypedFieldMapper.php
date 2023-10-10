@@ -62,6 +62,10 @@ final class DefaultTypedFieldMapper implements TypedFieldMapper
                 assert($type instanceof ReflectionNamedType);
             }
 
+            if (! isset($mapping['nullable'])) {
+                $mapping['nullable'] = $type->allowsNull();
+            }
+
             if (isset($this->typedFieldMappings[$type->getName()])) {
                 $mapping['type'] = $this->typedFieldMappings[$type->getName()];
             }

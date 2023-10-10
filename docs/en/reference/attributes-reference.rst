@@ -175,8 +175,9 @@ Optional parameters:
 -  **unique**: Boolean value to determine if the value of the column
    should be unique across all rows of the underlying entities table.
 
--  **nullable**: Determines if NULL values allowed for this column.
-    If not specified, default value is ``false``.
+-  **nullable**: Determines if NULL values allowed for this column.  If not
+   specified, default value is ``false``.  When using typed properties on entity
+   class defaults to true when property is nullable.
 
 -  **insertable**: Boolean value to determine if the column should be
    included when inserting a new row into the underlying entities table.
