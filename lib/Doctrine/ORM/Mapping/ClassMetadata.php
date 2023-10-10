@@ -1111,7 +1111,7 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
      *
      * @param  array{fieldName: string, type?: string} $mapping The field mapping to validate & complete.
      *
-     * @return array{fieldName: string, enumType?: class-string<BackedEnum>, type?: string} The updated mapping.
+     * @return array{fieldName: string, nullable?: bool, enumType?: class-string<BackedEnum>, type?: string} The updated mapping.
      */
     private function validateAndCompleteTypedFieldMapping(array $mapping): array
     {
