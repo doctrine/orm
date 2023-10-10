@@ -50,21 +50,21 @@ class TypedFieldMapperTest extends OrmTestCase
 
         return [
             // DefaultTypedFieldMapper
-            [self::defaultTypedFieldMapper(), $reflectionClass, ['fieldName' => 'id'], ['fieldName' => 'id', 'type' => Types::INTEGER]],
-            [self::defaultTypedFieldMapper(), $reflectionClass, ['fieldName' => 'username'], ['fieldName' => 'username', 'type' => Types::STRING]],
-            [self::defaultTypedFieldMapper(), $reflectionClass, ['fieldName' => 'dateInterval'], ['fieldName' => 'dateInterval', 'type' => Types::DATEINTERVAL]],
-            [self::defaultTypedFieldMapper(), $reflectionClass, ['fieldName' => 'dateTime'], ['fieldName' => 'dateTime', 'type' => Types::DATETIME_MUTABLE]],
-            [self::defaultTypedFieldMapper(), $reflectionClass, ['fieldName' => 'dateTimeImmutable'], ['fieldName' => 'dateTimeImmutable', 'type' => Types::DATETIME_IMMUTABLE]],
-            [self::defaultTypedFieldMapper(), $reflectionClass, ['fieldName' => 'array'], ['fieldName' => 'array', 'type' => Types::JSON]],
-            [self::defaultTypedFieldMapper(), $reflectionClass, ['fieldName' => 'boolean'], ['fieldName' => 'boolean', 'type' => Types::BOOLEAN]],
-            [self::defaultTypedFieldMapper(), $reflectionClass, ['fieldName' => 'float'], ['fieldName' => 'float', 'type' => Types::FLOAT]],
+            [self::defaultTypedFieldMapper(), $reflectionClass, ['fieldName' => 'id'], ['fieldName' => 'id', 'type' => Types::INTEGER, 'nullable' => false]],
+            [self::defaultTypedFieldMapper(), $reflectionClass, ['fieldName' => 'username'], ['fieldName' => 'username', 'type' => Types::STRING, 'nullable' => false]],
+            [self::defaultTypedFieldMapper(), $reflectionClass, ['fieldName' => 'dateInterval'], ['fieldName' => 'dateInterval', 'type' => Types::DATEINTERVAL, 'nullable' => false]],
+            [self::defaultTypedFieldMapper(), $reflectionClass, ['fieldName' => 'dateTime'], ['fieldName' => 'dateTime', 'type' => Types::DATETIME_MUTABLE, 'nullable' => false]],
+            [self::defaultTypedFieldMapper(), $reflectionClass, ['fieldName' => 'dateTimeImmutable'], ['fieldName' => 'dateTimeImmutable', 'type' => Types::DATETIME_IMMUTABLE, 'nullable' => false]],
+            [self::defaultTypedFieldMapper(), $reflectionClass, ['fieldName' => 'array'], ['fieldName' => 'array', 'type' => Types::JSON, 'nullable' => false]],
+            [self::defaultTypedFieldMapper(), $reflectionClass, ['fieldName' => 'boolean'], ['fieldName' => 'boolean', 'type' => Types::BOOLEAN, 'nullable' => false]],
+            [self::defaultTypedFieldMapper(), $reflectionClass, ['fieldName' => 'float'], ['fieldName' => 'float', 'type' => Types::FLOAT, 'nullable' => false]],
 
             // CustomIntAsStringTypedFieldMapper
             [self::customTypedFieldMapper(), $reflectionClass, ['fieldName' => 'id'], ['fieldName' => 'id', 'type' => Types::STRING]],
 
             // ChainTypedFieldMapper
             [self::chainTypedFieldMapper(), $reflectionClass, ['fieldName' => 'id'], ['fieldName' => 'id', 'type' => Types::STRING]],
-            [self::chainTypedFieldMapper(), $reflectionClass, ['fieldName' => 'username'], ['fieldName' => 'username', 'type' => Types::STRING]],
+            [self::chainTypedFieldMapper(), $reflectionClass, ['fieldName' => 'username'], ['fieldName' => 'username', 'type' => Types::STRING, 'nullable' => false]],
         ];
     }
 
@@ -79,6 +79,6 @@ class TypedFieldMapperTest extends OrmTestCase
         array $mapping,
         array $finalMapping,
     ): void {
-        self::assertSame($finalMapping, $typedFieldMapper->validateAndComplete($mapping, $reflectionClass->getProperty($mapping['fieldName'])));
+        self::assertEquals($finalMapping, $typedFieldMapper->validateAndComplete($mapping, $reflectionClass->getProperty($mapping['fieldName'])));
     }
 }
