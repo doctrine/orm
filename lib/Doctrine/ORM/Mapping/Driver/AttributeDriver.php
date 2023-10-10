@@ -173,6 +173,10 @@ class AttributeDriver extends CompatibilityAnnotationDriver
         }
 
         if (isset($classAttributes[Mapping\Index::class])) {
+            if ($metadata->isEmbeddedClass) {
+                throw MappingException::invalidAttributeOnEmbeddable($metadata->name, Mapping\Index::class);
+            }
+
             foreach ($classAttributes[Mapping\Index::class] as $idx => $indexAnnot) {
                 $index = [];
 
@@ -214,6 +218,10 @@ class AttributeDriver extends CompatibilityAnnotationDriver
         }
 
         if (isset($classAttributes[Mapping\UniqueConstraint::class])) {
+            if ($metadata->isEmbeddedClass) {
+                throw MappingException::invalidAttributeOnEmbeddable($metadata->name, Mapping\UniqueConstraint::class);
+            }
+
             foreach ($classAttributes[Mapping\UniqueConstraint::class] as $idx => $uniqueConstraintAnnot) {
                 $uniqueConstraint = [];
 
@@ -254,6 +262,10 @@ class AttributeDriver extends CompatibilityAnnotationDriver
 
         // Evaluate #[Cache] attribute
         if (isset($classAttributes[Mapping\Cache::class])) {
+            if ($metadata->isEmbeddedClass) {
+                throw MappingException::invalidAttributeOnEmbeddable($metadata->name, Mapping\Cache::class);
+            }
+
             $cacheAttribute = $classAttributes[Mapping\Cache::class];
             $cacheMap       = [
                 'region' => $cacheAttribute->region,
@@ -265,6 +277,10 @@ class AttributeDriver extends CompatibilityAnnotationDriver
 
         // Evaluate InheritanceType attribute
         if (isset($classAttributes[Mapping\InheritanceType::class])) {
+            if ($metadata->isEmbeddedClass) {
+                throw MappingException::invalidAttributeOnEmbeddable($metadata->name, Mapping\InheritanceType::class);
+            }
+
             $inheritanceTypeAttribute = $classAttributes[Mapping\InheritanceType::class];
 
             $metadata->setInheritanceType(
@@ -303,6 +319,10 @@ class AttributeDriver extends CompatibilityAnnotationDriver
 
         // Evaluate DoctrineChangeTrackingPolicy attribute
         if (isset($classAttributes[Mapping\ChangeTrackingPolicy::class])) {
+            if ($metadata->isEmbeddedClass) {
+                throw MappingException::invalidAttributeOnEmbeddable($metadata->name, Mapping\ChangeTrackingPolicy::class);
+            }
+
             $changeTrackingAttribute = $classAttributes[Mapping\ChangeTrackingPolicy::class];
             $metadata->setChangeTrackingPolicy(constant('Doctrine\ORM\Mapping\ClassMetadata::CHANGETRACKING_' . $changeTrackingAttribute->value));
         }
@@ -388,6 +408,10 @@ class AttributeDriver extends CompatibilityAnnotationDriver
                     );
                 }
             } elseif ($oneToOneAttribute !== null) {
+                if ($metadata->isEmbeddedClass) {
+                    throw MappingException::invalidAttributeOnEmbeddable($metadata->name, Mapping\OneToOne::class);
+                }
+
                 if ($this->reader->getPropertyAttribute($property, Mapping\Id::class)) {
                     $mapping['id'] = true;
                 }
@@ -401,6 +425,10 @@ class AttributeDriver extends CompatibilityAnnotationDriver
                 $mapping['fetch']         = $this->getFetchMode($className, $oneToOneAttribute->fetch);
                 $metadata->mapOneToOne($mapping);
             } elseif ($oneToManyAttribute !== null) {
+                if ($metadata->isEmbeddedClass) {
+                    throw MappingException::invalidAttributeOnEmbeddable($metadata->name, Mapping\OneToMany::class);
+                }
+
                 $mapping['mappedBy']      = $oneToManyAttribute->mappedBy;
                 $mapping['targetEntity']  = $oneToManyAttribute->targetEntity;
                 $mapping['cascade']       = $oneToManyAttribute->cascade;
@@ -416,6 +444,10 @@ class AttributeDriver extends CompatibilityAnnotationDriver
 
                 $metadata->mapOneToMany($mapping);
             } elseif ($manyToOneAttribute !== null) {
+                if ($metadata->isEmbeddedClass) {
+                    throw MappingException::invalidAttributeOnEmbeddable($metadata->name, Mapping\OneToMany::class);
+                }
+
                 $idAttribute = $this->reader->getPropertyAttribute($property, Mapping\Id::class);
 
                 if ($idAttribute !== null) {
@@ -429,6 +461,10 @@ class AttributeDriver extends CompatibilityAnnotationDriver
                 $mapping['fetch']        = $this->getFetchMode($className, $manyToOneAttribute->fetch);
                 $metadata->mapManyToOne($mapping);
             } elseif ($manyToManyAttribute !== null) {
+                if ($metadata->isEmbeddedClass) {
+                    throw MappingException::invalidAttributeOnEmbeddable($metadata->name, Mapping\ManyToMany::class);
+                }
+
                 $joinTable          = [];
                 $joinTableAttribute = $this->reader->getPropertyAttribute($property, Mapping\JoinTable::class);
 
@@ -476,6 +512,10 @@ class AttributeDriver extends CompatibilityAnnotationDriver
 
                 $metadata->mapManyToMany($mapping);
             } elseif ($embeddedAttribute !== null) {
+                if ($metadata->isEmbeddedClass) {
+                    throw MappingException::invalidAttributeOnEmbeddable($metadata->name, Mapping\Embedded::class);
+                }
+
                 $mapping['class']        = $embeddedAttribute->class;
                 $mapping['columnPrefix'] = $embeddedAttribute->columnPrefix;
 
@@ -485,6 +525,10 @@ class AttributeDriver extends CompatibilityAnnotationDriver
 
         // Evaluate AssociationOverrides attribute
         if (isset($classAttributes[Mapping\AssociationOverrides::class])) {
+            if ($metadata->isEmbeddedClass) {
+                throw MappingException::invalidAttributeOnEmbeddable($metadata->name, Mapping\AssociationOverride::class);
+            }
+
             $associationOverride = $classAttributes[Mapping\AssociationOverrides::class];
 
             foreach ($associationOverride->overrides as $associationOverride) {
@@ -543,6 +587,10 @@ class AttributeDriver extends CompatibilityAnnotationDriver
 
         // Evaluate AttributeOverrides attribute
         if (isset($classAttributes[Mapping\AttributeOverrides::class])) {
+            if ($metadata->isEmbeddedClass) {
+                throw MappingException::invalidAttributeOnEmbeddable($metadata->name, Mapping\AttributeOverrides::class);
+            }
+
             $attributeOverridesAnnot = $classAttributes[Mapping\AttributeOverrides::class];
 
             foreach ($attributeOverridesAnnot->overrides as $attributeOverride) {
@@ -554,6 +602,10 @@ class AttributeDriver extends CompatibilityAnnotationDriver
 
         // Evaluate EntityListeners attribute
         if (isset($classAttributes[Mapping\EntityListeners::class])) {
+            if ($metadata->isEmbeddedClass) {
+                throw MappingException::invalidAttributeOnEmbeddable($metadata->name, Mapping\EntityListeners::class);
+            }
+
             $entityListenersAttribute = $classAttributes[Mapping\EntityListeners::class];
 
             foreach ($entityListenersAttribute->value as $item) {
@@ -586,6 +638,10 @@ class AttributeDriver extends CompatibilityAnnotationDriver
 
         // Evaluate #[HasLifecycleCallbacks] attribute
         if (isset($classAttributes[Mapping\HasLifecycleCallbacks::class])) {
+            if ($metadata->isEmbeddedClass) {
+                throw MappingException::invalidAttributeOnEmbeddable($metadata->name, Mapping\HasLifecycleCallbacks::class);
+            }
+
             foreach ($reflectionClass->getMethods(ReflectionMethod::IS_PUBLIC) as $method) {
                 assert($method instanceof ReflectionMethod);
                 foreach ($this->getMethodCallbacks($method) as $value) {

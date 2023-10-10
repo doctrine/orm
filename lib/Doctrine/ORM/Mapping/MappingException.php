@@ -1003,4 +1003,13 @@ EXCEPTION
 
         return new self(implode(PHP_EOL, array_map($formatter, $errors)));
     }
+
+    public static function invalidAttributeOnEmbeddable(string $entityName, string $attributeName): self
+    {
+        return new self(sprintf(
+            'Attribute "%s" on embeddable "%s" is not allowed.',
+            $attributeName,
+            $entityName
+        ));
+    }
 }
