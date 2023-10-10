@@ -571,6 +571,12 @@ class EntityManager implements EntityManagerInterface
      */
     public function getPartialReference($entityName, $identifier)
     {
+        Deprecation::trigger(
+            'doctrine/orm',
+            'https://github.com/doctrine/orm/pull/10987',
+            'Method %s is deprecated and will be removed in 3.0.',
+            __METHOD__
+        );
         $class = $this->metadataFactory->getMetadataFor(ltrim($entityName, '\\'));
 
         $entity = $this->unitOfWork->tryGetById($identifier, $class->rootEntityName);
