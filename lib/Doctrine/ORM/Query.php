@@ -44,8 +44,10 @@ use function stripos;
 
 /**
  * A Query object represents a DQL query.
+ *
+ * @final
  */
-final class Query extends AbstractQuery
+class Query extends AbstractQuery
 {
     /**
      * A query object is in CLEAN state when it has NO unparsed/unprocessed DQL parts.
