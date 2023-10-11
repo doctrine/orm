@@ -16,9 +16,9 @@ final class Index implements MappingAttribute
      * @param array<string,mixed>|null $options
      */
     public function __construct(
+        public readonly string|null $name = null,
         public readonly array|null $columns = null,
         public readonly array|null $fields = null,
-        public readonly string|null $name = null,
         public readonly array|null $flags = null,
         public readonly array|null $options = null,
     ) {

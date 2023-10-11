@@ -15,9 +15,9 @@ final class OneToOne implements MappingAttribute
      * @psalm-param 'LAZY'|'EAGER'|'EXTRA_LAZY' $fetch
      */
     public function __construct(
+        public readonly string|null $targetEntity = null,
         public readonly string|null $mappedBy = null,
         public readonly string|null $inversedBy = null,
-        public readonly string|null $targetEntity = null,
         public readonly array|null $cascade = null,
         public readonly string $fetch = 'LAZY',
         public readonly bool $orphanRemoval = false,

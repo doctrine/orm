@@ -1,5 +1,10 @@
 # Upgrade to 3.0
 
+## Minor BC BREAK: Changed order of arguments passed to `OneToOne`, `ManyToOne` and `Index` mapping PHP attributes
+
+To keep PHP mapping attributes consistent, order of arguments passed to above attributes has been changed
+so `$targetEntity` is a first argument now. This change affects only non-named arguments usage.
+
 ## BC BREAK: AUTO keyword for identity generation defaults to IDENTITY for PostgreSQL now
 
 When using the AUTO strategy to let Doctrine determine the identity generation mecehanism for
