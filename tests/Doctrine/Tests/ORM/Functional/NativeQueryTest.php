@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\DBAL\ArrayParameterType;
+use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Type as DBALType;
 use Doctrine\Deprecations\PHPUnit\VerifyDeprecations;
@@ -30,6 +32,8 @@ use Doctrine\Tests\Models\DDC3899\DDC3899FixContract;
 use Doctrine\Tests\Models\DDC3899\DDC3899User;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use InvalidArgumentException;
+
+use function class_exists;
 
 class NativeQueryTest extends OrmFunctionalTestCase
 {
@@ -73,6 +77,43 @@ class NativeQueryTest extends OrmFunctionalTestCase
         self::assertCount(1, $users);
         self::assertInstanceOf(CmsUser::class, $users[0]);
         self::assertEquals('Roman', $users[0]->name);
+    }
+
+    public function testNativeQueryWithArrayParameter(): void
+    {
+        $user           = new CmsUser();
+        $user->name     = 'William Shatner';
+        $user->username = 'wshatner';
+        $user->status   = 'dev';
+        $this->_em->persist($user);
+        $user           = new CmsUser();
+        $user->name     = 'Leonard Nimoy';
+        $user->username = 'lnimoy';
+        $user->status   = 'dev';
+        $this->_em->persist($user);
+        $user           = new CmsUser();
+        $user->name     = 'DeForest Kelly';
+        $user->username = 'dkelly';
+        $user->status   = 'dev';
+        $this->_em->persist($user);
+        $this->_em->flush();
+
+        $this->_em->clear();
+
+        $rsm = new ResultSetMapping();
+        $rsm->addEntityResult(CmsUser::class, 'u');
+        $rsm->addFieldResult('u', $this->getSQLResultCasing($this->platform, 'id'), 'id');
+        $rsm->addFieldResult('u', $this->getSQLResultCasing($this->platform, 'name'), 'name');
+
+        $query = $this->_em->createNativeQuery('SELECT id, name FROM cms_users WHERE username IN (?) ORDER BY username', $rsm);
+        $query->setParameter(1, ['wshatner', 'lnimoy'], class_exists(ArrayParameterType::class) ? ArrayParameterType::STRING : Connection::PARAM_STR_ARRAY);
+
+        $users = $query->getResult();
+
+        self::assertCount(2, $users);
+        self::assertInstanceOf(CmsUser::class, $users[0]);
+        self::assertEquals('Leonard Nimoy', $users[0]->name);
+        self::assertEquals('William Shatner', $users[1]->name);
     }
 
     public function testBasicNativeQueryWithMetaResult(): void
