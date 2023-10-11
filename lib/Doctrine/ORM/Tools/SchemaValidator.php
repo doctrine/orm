@@ -119,12 +119,6 @@ class SchemaValidator
             array_push($ce, ...$this->validatePropertiesTypes($class));
         }
 
-        if ($class->isEmbeddedClass && count($class->associationMappings) > 0) {
-            $ce[] = "Embeddable '" . $class->name . "' does not support associations";
-
-            return $ce;
-        }
-
         foreach ($class->associationMappings as $fieldName => $assoc) {
             if (! class_exists($assoc->targetEntity) || $cmf->isTransient($assoc->targetEntity)) {
                 $ce[] = "The target entity '" . $assoc->targetEntity . "' specified on " . $class->name . '#' . $fieldName . ' is unknown or not an entity.';

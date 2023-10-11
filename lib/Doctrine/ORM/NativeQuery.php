@@ -14,8 +14,10 @@ use function ksort;
 
 /**
  * Represents a native SQL query.
+ *
+ * @final
  */
-final class NativeQuery extends AbstractQuery
+class NativeQuery extends AbstractQuery
 {
     private string $sql;
 

@@ -102,11 +102,6 @@ abstract class EntityManagerDecorator extends ObjectManagerDecorator implements 
         return $this->wrapped->getReference($entityName, $id);
     }
 
-    public function getPartialReference(string $entityName, mixed $identifier): object|null
-    {
-        return $this->wrapped->getPartialReference($entityName, $identifier);
-    }
-
     public function close(): void
     {
         $this->wrapped->close();

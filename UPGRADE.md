@@ -5,6 +5,38 @@
 To keep PHP mapping attributes consistent, order of arguments passed to above attributes has been changed
 so `$targetEntity` is a first argument now. This change affects only non-named arguments usage.
 
+## BC BREAK: AUTO keyword for identity generation defaults to IDENTITY for PostgreSQL now
+
+When using the AUTO strategy to let Doctrine determine the identity generation mecehanism for
+an entity, PostgreSQL now uses IDENTITY instead of SEQUENCE. When upgrading from ORM 2.x
+and preference is on keeping the SEQUENCE based identity generation, then configure the ORM
+this way:
+
+```php
+use Doctrine\DBAL\Platforms\PostgreSQLPlatform;
+use Doctrine\ORM\Configuration;
+use Doctrine\ORM\Mapping\ClassMetadata;
+
+assert($configuration instanceof Configuration);
+$configuration->setIdentityGenerationPreferences([
+    PostgreSQLPlatform::CLASS => ClassMetadata::GENERATOR_TYPE_SEQUENCE,
+]);
+```
+
+## BC BREAK: Throw exceptions when using illegal attributes on Embeddable
+
+There are only a few attributes allowed on an embeddable such as `#[Column]` or
+`#[Embedded]`. Previously all others that target entity classes where ignored,
+now they throw an exception.
+
+## BC BREAK: Partial objects are removed
+
+- The `PARTIAL` keyword in DQL no longer exists.
+- `Doctrine\ORM\Query\AST\PartialObjectExpression`is removed.
+- `Doctrine\ORM\Query\SqlWalker::HINT_PARTIAL` and
+  `Doctrine\ORM\Query::HINT_FORCE_PARTIAL_LOAD` are removed.
+- `Doctrine\ORM\EntityManager*::getPartialReference()` is removed.
+
 ## BC BREAK: `Doctrine\ORM\Persister\Entity\EntityPersister::executeInserts()` return type changed to `void`
 
 Implementors should adapt to the new signature, and should call
@@ -633,6 +665,38 @@ following classes and methods:
 Use `toIterable()` instead.
 
 # Upgrade to 2.17
+
+## Deprecated: reliance on the non-optimal defaults that come with the `AUTO` identifier generation strategy
+
+When the `AUTO` identifier generation strategy was introduced, the best
+strategy at the time was selected for each database platform.
+A lot of time has passed since then, and support for better strategies has been
+added.
+
+Because of that, it is now deprecated to rely on the historical defaults when
+they differ from what we recommend now.
+
+Instead, you should pick a strategy for each database platform you use, and it
+will be used when using `AUTO`. As of now, only PostgreSQL is affected by this.
+It is recommended that PostgreSQL user configure their new applications to use
+`IDENTITY`:
+
+```php
+use Doctrine\DBAL\Platforms\PostgreSQLPlatform;
+use Doctrine\ORM\Configuration;
+
+assert($configuration instanceof Configuration);
+$configuration->setIdentityGenerationPreferences([
+    PostgreSQLPlatform::CLASS => ClassMetadata::GENERATOR_TYPE_IDENTITY,
+]);
+```
+
+If migrating an existing application is too costly, the deprecation can be
+addressed by configuring `SEQUENCE` as the default strategy.
+
+## Deprecate `EntityManagerInterface::getPartialReference()`
+
+This method does not have a replacement and will be removed in 3.0.
 
 ## Deprecate not-enabling lazy-ghosts
 

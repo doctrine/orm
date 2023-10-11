@@ -16,7 +16,6 @@ use Doctrine\ORM\Id\AssignedGenerator;
 use Doctrine\ORM\Id\BigIntegerIdentityGenerator;
 use Doctrine\ORM\Id\IdentityGenerator;
 use Doctrine\ORM\Id\SequenceGenerator;
-use Doctrine\ORM\Mapping\Exception\CannotGenerateIds;
 use Doctrine\ORM\Mapping\Exception\InvalidCustomGenerator;
 use Doctrine\ORM\Mapping\Exception\UnknownGeneratorType;
 use Doctrine\Persistence\Mapping\AbstractClassMetadataFactory;
@@ -32,6 +31,7 @@ use function count;
 use function end;
 use function explode;
 use function in_array;
+use function is_a;
 use function is_subclass_of;
 use function str_contains;
 use function strlen;
@@ -54,6 +54,10 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
 
     /** @var mixed[] */
     private array $embeddablesActiveNesting = [];
+
+    private const NON_IDENTITY_DEFAULT_STRATEGY = [
+        Platforms\OraclePlatform::class => ClassMetadata::GENERATOR_TYPE_SEQUENCE,
+    ];
 
     public function setEntityManager(EntityManagerInterface $em): void
     {
@@ -599,25 +603,23 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
         }
     }
 
-    /** @psalm-return ClassMetadata::GENERATOR_TYPE_SEQUENCE|ClassMetadata::GENERATOR_TYPE_IDENTITY */
+    /** @psalm-return ClassMetadata::GENERATOR_TYPE_* */
     private function determineIdGeneratorStrategy(AbstractPlatform $platform): int
     {
-        if (
-            $platform instanceof Platforms\OraclePlatform
-            || $platform instanceof Platforms\PostgreSQLPlatform
-        ) {
-            return ClassMetadata::GENERATOR_TYPE_SEQUENCE;
+        assert($this->em !== null);
+        foreach ($this->em->getConfiguration()->getIdentityGenerationPreferences() as $platformFamily => $strategy) {
+            if (is_a($platform, $platformFamily)) {
+                return $strategy;
+            }
         }
 
-        if ($platform->supportsIdentityColumns()) {
-            return ClassMetadata::GENERATOR_TYPE_IDENTITY;
+        foreach (self::NON_IDENTITY_DEFAULT_STRATEGY as $platformFamily => $strategy) {
+            if (is_a($platform, $platformFamily)) {
+                return $strategy;
+            }
         }
 
-        if ($platform->supportsSequences()) {
-            return ClassMetadata::GENERATOR_TYPE_SEQUENCE;
-        }
-
-        throw CannotGenerateIds::withPlatform($platform);
+        return ClassMetadata::GENERATOR_TYPE_IDENTITY;
     }
 
     private function truncateSequenceName(string $schemaElementName): string

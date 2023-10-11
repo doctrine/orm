@@ -115,11 +115,6 @@ class NonProxyLoadingEntityManager implements EntityManagerInterface
         return $this->realEntityManager->getReference($entityName, $id);
     }
 
-    public function getPartialReference(string $entityName, mixed $identifier): object|null
-    {
-        return $this->realEntityManager->getPartialReference($entityName, $identifier);
-    }
-
     public function close(): void
     {
         $this->realEntityManager->close();

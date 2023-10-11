@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM;
 
+use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\ORM\Cache\CacheConfiguration;
 use Doctrine\ORM\Exception\InvalidEntityRepository;
 use Doctrine\ORM\Internal\Hydration\AbstractHydrator;
+use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\Mapping\DefaultEntityListenerResolver;
 use Doctrine\ORM\Mapping\DefaultNamingStrategy;
@@ -38,6 +40,21 @@ class Configuration extends \Doctrine\DBAL\Configuration
 {
     /** @var mixed[] */
     protected array $attributes = [];
+
+    /** @psalm-var array<class-string<AbstractPlatform>, ClassMetadata::GENERATOR_TYPE_*> */
+    private $identityGenerationPreferences = [];
+
+    /** @psalm-param array<class-string<AbstractPlatform>, ClassMetadata::GENERATOR_TYPE_*> $value */
+    public function setIdentityGenerationPreferences(array $value): void
+    {
+        $this->identityGenerationPreferences = $value;
+    }
+
+    /** @psalm-return array<class-string<AbstractPlatform>, ClassMetadata::GENERATOR_TYPE_*> $value */
+    public function getIdentityGenerationPreferences(): array
+    {
+        return $this->identityGenerationPreferences;
+    }
 
     /**
      * Sets the directory where Doctrine generates any necessary proxy class files.

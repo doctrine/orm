@@ -8,6 +8,7 @@ use Doctrine\Common\EventManager;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Driver;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
+use Doctrine\DBAL\Platforms\OraclePlatform;
 use Doctrine\Deprecations\PHPUnit\VerifyDeprecations;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityManagerInterface;
@@ -21,7 +22,6 @@ use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\DiscriminatorColumn;
 use Doctrine\ORM\Mapping\DiscriminatorMap;
 use Doctrine\ORM\Mapping\Entity;
-use Doctrine\ORM\Mapping\Exception\CannotGenerateIds;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\InheritanceType;
@@ -97,25 +97,6 @@ class ClassMetadataFactoryTest extends OrmTestCase
         self::assertTrue($cmMap1->hasField('name'));
     }
 
-    public function testItThrowsWhenUsingAutoWithIncompatiblePlatform(): void
-    {
-        $cm1 = $this->createValidClassMetadata();
-        $cm1->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_AUTO);
-
-        $driver = $this->createMock(Driver::class);
-        $driver->method('getDatabasePlatform')
-            ->willReturn($this->createMock(AbstractPlatform::class));
-
-        $connection    = new Connection([], $driver);
-        $entityManager = $this->createEntityManager(new MetadataDriverMock(), $connection);
-        $cmf           = new ClassMetadataFactoryTestSubject();
-        $cmf->setEntityManager($entityManager);
-        $cmf->setMetadataForClass($cm1->name, $cm1);
-        $this->expectException(CannotGenerateIds::class);
-
-        $actual = $cmf->getMetadataFor($cm1->name);
-    }
-
     public function testGetMetadataForReturnsLoadedCustomIdGenerator(): void
     {
         $cm1 = $this->createValidClassMetadata();
@@ -128,6 +109,34 @@ class ClassMetadataFactoryTest extends OrmTestCase
 
         self::assertEquals(ClassMetadata::GENERATOR_TYPE_CUSTOM, $actual->generatorType);
         self::assertInstanceOf(CustomIdGenerator::class, $actual->idGenerator);
+    }
+
+    /** @param array<class-string<AbstractPlatform>, ClassMetadata::GENERATOR_TYPE_*> $preferences */
+    private function setUpCmfForPlatform(AbstractPlatform $platform, array $preferences = []): ClassMetadataFactoryTestSubject
+    {
+        $cmf    = new ClassMetadataFactoryTestSubject();
+        $driver = $this->createMock(Driver::class);
+        $driver->method('getDatabasePlatform')
+            ->willReturn($platform);
+        $entityManager = $this->createEntityManager(
+            new MetadataDriverMock(),
+            new Connection([], $driver),
+        );
+        $cmf->setEntityManager($entityManager);
+        $entityManager->getConfiguration()->setIdentityGenerationPreferences($preferences);
+
+        return $cmf;
+    }
+
+    public function testRelyingOnLegacyIdGenerationDefaultsIsOKIfItResultsInTheCurrentlyRecommendedStrategyBeingUsed(): void
+    {
+        $cm = $this->createValidClassMetadata();
+        $cm->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_AUTO);
+        $cmf = $this->setUpCmfForPlatform(new OraclePlatform());
+        $cmf->setMetadataForClass($cm->name, $cm);
+
+        $this->expectNoDeprecationWithIdentifier('https://github.com/doctrine/orm/issues/8893');
+        $cmf->getMetadataFor($cm->name);
     }
 
     public function testGetMetadataForThrowsExceptionOnUnknownCustomGeneratorClass(): void

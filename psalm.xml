@@ -30,6 +30,7 @@
                 <referencedClass name="Doctrine\DBAL\Schema\Visitor\RemoveNamespacedAssets"/>
                 <referencedClass name="Doctrine\ORM\Event\LifecycleEventArgs"/>
                 <referencedClass name="Doctrine\ORM\Exception\UnknownEntityNamespace"/>
+                <referencedClass name="Doctrine\ORM\Mapping\Driver\AnnotationDriver"/>
                 <referencedClass name="Doctrine\ORM\Mapping\Driver\YamlDriver"/>
                 <referencedClass name="Doctrine\ORM\Query\AST\InExpression"/>
                 <referencedClass name="Doctrine\ORM\Tools\Console\Command\ConvertDoctrine1SchemaCommand"/>
@@ -47,6 +48,7 @@
                 <!-- Compatibility with DBAL 3 -->
                 <referencedMethod name="Doctrine\DBAL\Connection::getEventManager"/>
                 <referencedMethod name="Doctrine\DBAL\Schema\Schema::visit"/>
+                <file name="lib/Doctrine/ORM/Query/TreeWalkerChain.php"/>
             </errorLevel>
         </DeprecatedMethod>
         <DocblockTypeContradiction>

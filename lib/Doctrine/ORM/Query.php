@@ -36,8 +36,10 @@ use function stripos;
 
 /**
  * A Query object represents a DQL query.
+ *
+ * @final
  */
-final class Query extends AbstractQuery
+class Query extends AbstractQuery
 {
     /**
      * A query object is in CLEAN state when it has NO unparsed/unprocessed DQL parts.
@@ -67,14 +69,6 @@ final class Query extends AbstractQuery
      * Internal hint: is set to the proxy entity that is currently triggered for loading
      */
     public const HINT_REFRESH_ENTITY = 'doctrine.refresh.entity';
-
-    /**
-     * The forcePartialLoad query hint forces a particular query to return
-     * partial objects.
-     *
-     * @todo Rename: HINT_OPTIMIZE
-     */
-    public const HINT_FORCE_PARTIAL_LOAD = 'doctrine.forcePartialLoad';
 
     /**
      * The includeMetaColumns query hint causes meta columns like foreign keys and
