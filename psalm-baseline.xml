@@ -737,6 +737,20 @@
       <code>string</code>
     </MoreSpecificReturnType>
   </file>
+  <file src="lib/Doctrine/ORM/Proxy/Autoloader.php">
+    <ArgumentTypeCoercion>
+      <code>$autoloader</code>
+    </ArgumentTypeCoercion>
+    <LessSpecificReturnStatement>
+      <code>$autoloader</code>
+    </LessSpecificReturnStatement>
+    <MoreSpecificReturnType>
+      <code>Closure(string): void</code>
+    </MoreSpecificReturnType>
+    <UnresolvableInclude>
+      <code>require $file</code>
+    </UnresolvableInclude>
+  </file>
   <file src="lib/Doctrine/ORM/Proxy/ProxyFactory.php">
     <ArgumentTypeCoercion>
       <code>$classMetadata</code>
