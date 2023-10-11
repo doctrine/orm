@@ -675,7 +675,7 @@ EXCEPTION
         return new self(sprintf(
             'Attribute "%s" on embeddable "%s" is not allowed.',
             $attributeName,
-            $entityName
+            $entityName,
         ));
     }
 }
