@@ -1,5 +1,13 @@
 # Upgrade to 3.0
 
+## BC BREAK: Partial objects are removed
+
+- The `PARTIAL` keyword in DQL no longer exists.
+- `Doctrine\ORM\Query\AST\PartialObjectExpression`is removed.
+- `Doctrine\ORM\Query\SqlWalker::HINT_PARTIAL` and
+  `Doctrine\ORM\Query::HINT_FORCE_PARTIAL_LOAD` are removed.
+- `Doctrine\ORM\EntityManager*::getPartialReference()` is removed.
+
 ## BC BREAK: `Doctrine\ORM\Persister\Entity\EntityPersister::executeInserts()` return type changed to `void`
 
 Implementors should adapt to the new signature, and should call

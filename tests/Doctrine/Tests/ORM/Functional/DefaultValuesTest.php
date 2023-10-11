@@ -62,28 +62,6 @@ class DefaultValuesTest extends OrmFunctionalTestCase
         self::assertEquals($userId, $a2->getUser()->getId());
         self::assertEquals('Poweruser', $a2->getUser()->type);
     }
-
-    #[Group('DDC-1386')]
-    public function testGetPartialReferenceWithDefaultValueNotEvaluatedInFlush(): void
-    {
-        $user       = new DefaultValueUser();
-        $user->name = 'romanb';
-        $user->type = 'Normaluser';
-
-        $this->_em->persist($user);
-        $this->_em->flush();
-        $this->_em->clear();
-
-        $user = $this->_em->getPartialReference(DefaultValueUser::class, $user->id);
-        self::assertTrue($this->_em->getUnitOfWork()->isReadOnly($user));
-
-        $this->_em->flush();
-        $this->_em->clear();
-
-        $user = $this->_em->find(DefaultValueUser::class, $user->id);
-
-        self::assertEquals('Normaluser', $user->type);
-    }
 }
 
 
