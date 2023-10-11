@@ -14,30 +14,22 @@ use Doctrine\ORM\Mapping\InheritanceType;
 use Doctrine\ORM\Mapping\Table;
 use Doctrine\Tests\Models\DDC2372\Traits\DDC2372AddressAndAccessors;
 
-/**
- * @Entity
- * @Table(name="users")
- * @InheritanceType("SINGLE_TABLE")
- * @DiscriminatorColumn("type")
- * @DiscriminatorMap({"user"="DDC2372User", "admin"="DDC2372Admin"})
- */
+#[Table(name: 'users')]
+#[Entity]
+#[InheritanceType('SINGLE_TABLE')]
+#[DiscriminatorColumn('type')]
+#[DiscriminatorMap(['user' => 'DDC2372User', 'admin' => 'DDC2372Admin'])]
 class DDC2372User
 {
     use DDC2372AddressAndAccessors;
 
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
-     */
-    private $id;
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue(strategy: 'AUTO')]
+    private int $id;
 
-    /**
-     * @var string
-     * @Column(type="string", length=50)
-     */
-    private $name;
+    #[Column(type: 'string', length: 50)]
+    private string|null $name = null;
 
     public function getId(): int
     {

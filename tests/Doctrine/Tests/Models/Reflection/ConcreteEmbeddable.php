@@ -9,6 +9,5 @@ namespace Doctrine\Tests\Models\Reflection;
  */
 class ConcreteEmbeddable extends AbstractEmbeddable
 {
-    /** @var string */
-    private $propertyInConcreteClass;
+    private string $propertyInConcreteClass;
 }

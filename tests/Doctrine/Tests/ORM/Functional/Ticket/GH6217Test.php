@@ -11,10 +11,11 @@ use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
 use function uniqid;
 
-/** @group #6217 */
+#[Group('#6217')]
 final class GH6217Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -25,7 +26,7 @@ final class GH6217Test extends OrmFunctionalTestCase
 
         $this->createSchemaForModels(
             GH6217AssociatedEntity::class,
-            GH6217FetchedEntity::class
+            GH6217FetchedEntity::class,
         );
     }
 
@@ -58,18 +59,14 @@ final class GH6217Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- * @Cache(usage="NONSTRICT_READ_WRITE")
- */
+#[Entity]
+#[Cache(usage: 'NONSTRICT_READ_WRITE')]
 class GH6217AssociatedEntity
 {
-    /**
-     * @var string
-     * @Id
-     * @Column(type="string", length=255)
-     * @GeneratedValue(strategy="NONE")
-     */
+    /** @var string */
+    #[Id]
+    #[Column(type: 'string', length: 255)]
+    #[GeneratedValue(strategy: 'NONE')]
     public $id;
 
     public function __construct()
@@ -78,31 +75,19 @@ class GH6217AssociatedEntity
     }
 }
 
-/**
- * @Entity
- * @Cache(usage="NONSTRICT_READ_WRITE")
- */
+#[Entity]
+#[Cache(usage: 'NONSTRICT_READ_WRITE')]
 class GH6217FetchedEntity
 {
-    /**
-     * @var GH6217AssociatedEntity
-     * @Id
-     * @Cache("NONSTRICT_READ_WRITE")
-     * @ManyToOne(targetEntity=GH6217AssociatedEntity::class)
-     */
-    public $lazy;
-
-    /**
-     * @var GH6217AssociatedEntity
-     * @Id
-     * @Cache("NONSTRICT_READ_WRITE")
-     * @ManyToOne(targetEntity=GH6217AssociatedEntity::class, fetch="EAGER")
-     */
-    public $eager;
-
-    public function __construct(GH6217AssociatedEntity $lazy, GH6217AssociatedEntity $eager)
-    {
-        $this->lazy  = $lazy;
-        $this->eager = $eager;
+    public function __construct(
+        #[Id]
+        #[Cache('NONSTRICT_READ_WRITE')]
+        #[ManyToOne(targetEntity: GH6217AssociatedEntity::class)]
+        public GH6217AssociatedEntity $lazy,
+        #[Id]
+        #[Cache('NONSTRICT_READ_WRITE')]
+        #[ManyToOne(targetEntity: GH6217AssociatedEntity::class, fetch: 'EAGER')]
+        public GH6217AssociatedEntity $eager,
+    ) {
     }
 }

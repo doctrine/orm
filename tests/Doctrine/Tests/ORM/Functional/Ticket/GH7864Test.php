@@ -13,10 +13,11 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
 use function array_values;
 
-/** @group gh7864 */
+#[Group('gh7864')]
 class GH7864Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -27,7 +28,7 @@ class GH7864Test extends OrmFunctionalTestCase
             [
                 GH7864User::class,
                 GH7864Tweet::class,
-            ]
+            ],
         );
     }
 
@@ -55,35 +56,27 @@ class GH7864Test extends OrmFunctionalTestCase
 
         $user->tweets->removeElement($tweet);
 
-        $tweets = $user->tweets->map(static function (GH7864Tweet $tweet) {
-            return $tweet->content;
-        });
+        $tweets = $user->tweets->map(static fn (GH7864Tweet $tweet) => $tweet->content);
 
         self::assertEquals(['Goodbye, and thanks for all the fish'], array_values($tweets->toArray()));
     }
 }
 
-/** @Entity */
+#[Entity]
 class GH7864User
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     public $id;
 
-    /**
-     * @var string
-     * @Column(type="string", length=255)
-     */
+    /** @var string */
+    #[Column(type: 'string', length: 255)]
     public $name;
 
-    /**
-     * @var Collection<int, GH7864Tweet>
-     * @OneToMany(targetEntity="GH7864Tweet", mappedBy="user", fetch="EXTRA_LAZY")
-     */
+    /** @var Collection<int, GH7864Tweet> */
+    #[OneToMany(targetEntity: 'GH7864Tweet', mappedBy: 'user', fetch: 'EXTRA_LAZY')]
     public $tweets;
 
     public function __construct()
@@ -98,26 +91,20 @@ class GH7864User
     }
 }
 
-/** @Entity */
+#[Entity]
 class GH7864Tweet
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     public $id;
 
-    /**
-     * @var string
-     * @Column(type="string", length=255)
-     */
+    /** @var string */
+    #[Column(type: 'string', length: 255)]
     public $content;
 
-    /**
-     * @var GH7864User
-     * @ManyToOne(targetEntity="GH7864User", inversedBy="tweets")
-     */
+    /** @var GH7864User */
+    #[ManyToOne(targetEntity: 'GH7864User', inversedBy: 'tweets')]
     public $user;
 }

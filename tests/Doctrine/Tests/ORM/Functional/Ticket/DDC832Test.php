@@ -16,6 +16,7 @@ use Doctrine\ORM\Mapping\InheritanceType;
 use Doctrine\ORM\Mapping\Table;
 use Doctrine\ORM\Mapping\Version;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
 class DDC832Test extends OrmFunctionalTestCase
 {
@@ -30,7 +31,7 @@ class DDC832Test extends OrmFunctionalTestCase
         $this->createSchemaForModels(
             DDC832JoinedIndex::class,
             DDC832JoinedTreeIndex::class,
-            DDC832Like::class
+            DDC832Like::class,
         );
     }
 
@@ -49,7 +50,7 @@ class DDC832Test extends OrmFunctionalTestCase
         }
     }
 
-    /** @group DDC-832 */
+    #[Group('DDC-832')]
     public function testQuotedTableBasicUpdate(): void
     {
         $like = new DDC832Like('test');
@@ -63,7 +64,7 @@ class DDC832Test extends OrmFunctionalTestCase
         self::assertEquals($like, $this->_em->find(DDC832Like::class, $like->id));
     }
 
-    /** @group DDC-832 */
+    #[Group('DDC-832')]
     public function testQuotedTableBasicRemove(): void
     {
         $like = new DDC832Like('test');
@@ -79,7 +80,7 @@ class DDC832Test extends OrmFunctionalTestCase
         self::assertNull($this->_em->find(DDC832Like::class, $idToBeRemoved));
     }
 
-    /** @group DDC-832 */
+    #[Group('DDC-832')]
     public function testQuotedTableJoinedUpdate(): void
     {
         $index = new DDC832JoinedIndex('test');
@@ -93,7 +94,7 @@ class DDC832Test extends OrmFunctionalTestCase
         self::assertEquals($index, $this->_em->find(DDC832JoinedIndex::class, $index->id));
     }
 
-    /** @group DDC-832 */
+    #[Group('DDC-832')]
     public function testQuotedTableJoinedRemove(): void
     {
         $index = new DDC832JoinedIndex('test');
@@ -109,7 +110,7 @@ class DDC832Test extends OrmFunctionalTestCase
         self::assertNull($this->_em->find(DDC832JoinedIndex::class, $idToBeRemoved));
     }
 
-    /** @group DDC-832 */
+    #[Group('DDC-832')]
     public function testQuotedTableJoinedChildUpdate(): void
     {
         $index = new DDC832JoinedTreeIndex('test', 1, 2);
@@ -123,7 +124,7 @@ class DDC832Test extends OrmFunctionalTestCase
         self::assertEquals($index, $this->_em->find(DDC832JoinedTreeIndex::class, $index->id));
     }
 
-    /** @group DDC-832 */
+    #[Group('DDC-832')]
     public function testQuotedTableJoinedChildRemove(): void
     {
         $index = new DDC832JoinedTreeIndex('test', 1, 2);
@@ -140,97 +141,64 @@ class DDC832Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- * @Table(name="`LIKE`")
- */
+#[Table(name: '`LIKE`')]
+#[Entity]
 class DDC832Like
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     public $id;
 
-    /**
-     * @var string
-     * @Column(type="string", length=255)
-     */
-    public $word;
-
-    /**
-     * @var int
-     * @Version
-     * @Column(type="integer")
-     */
+    /** @var int */
+    #[Version]
+    #[Column(type: 'integer')]
     public $version;
 
-    public function __construct(string $word)
-    {
-        $this->word = $word;
+    public function __construct(
+        #[Column(type: 'string', length: 255)]
+        public string $word,
+    ) {
     }
 }
 
-/**
- * @Entity
- * @Table(name="`INDEX`")
- * @InheritanceType("JOINED")
- * @DiscriminatorColumn(name="discr", type="string")
- * @DiscriminatorMap({"like" = "DDC832JoinedIndex", "fuzzy" = "DDC832JoinedTreeIndex"})
- */
+#[Table(name: '`INDEX`')]
+#[Entity]
+#[InheritanceType('JOINED')]
+#[DiscriminatorColumn(name: 'discr', type: 'string')]
+#[DiscriminatorMap(['like' => 'DDC832JoinedIndex', 'fuzzy' => 'DDC832JoinedTreeIndex'])]
 class DDC832JoinedIndex
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     public $id;
 
-    /**
-     * @var string
-     * @Column(type="string", length=255)
-     */
-    public $name;
-
-    /**
-     * @var int
-     * @Version
-     * @Column(type="integer")
-     */
+    /** @var int */
+    #[Version]
+    #[Column(type: 'integer')]
     public $version;
 
-    public function __construct(string $name)
-    {
-        $this->name = $name;
+    public function __construct(
+        #[Column(type: 'string', length: 255)]
+        public string $name,
+    ) {
     }
 }
 
-/**
- * @Entity
- * @Table(name="`TREE_INDEX`")
- */
+#[Table(name: '`TREE_INDEX`')]
+#[Entity]
 class DDC832JoinedTreeIndex extends DDC832JoinedIndex
 {
-    /**
-     * @var int
-     * @Column(type="integer")
-     */
-    public $lft;
-
-    /**
-     * @var int
-     * @Column(type="integer")
-     */
-    public $rgt;
-
-    public function __construct(string $name, int $lft, int $rgt)
-    {
+    public function __construct(
+        string $name,
+        #[Column(type: 'integer')]
+        public int $lft,
+        #[Column(type: 'integer')]
+        public int $rgt,
+    ) {
         $this->name = $name;
-        $this->lft  = $lft;
-        $this->rgt  = $rgt;
     }
 }

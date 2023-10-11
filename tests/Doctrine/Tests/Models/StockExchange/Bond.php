@@ -15,36 +15,25 @@ use Doctrine\ORM\Mapping\Table;
 /**
  * Bonds have many stocks. This uses a many to many association and fails to model how many of a
  * particular stock a bond has. But i Need a many-to-many association, so please bear with my modelling skills ;)
- *
- * @Entity
- * @Table(name="exchange_bonds")
  */
+#[Table(name: 'exchange_bonds')]
+#[Entity]
 class Bond
 {
-    /**
-     * @Id
-     * @GeneratedValue
-     * @Column(type="integer")
-     * @var int
-     */
-    private $id;
+    #[Id]
+    #[GeneratedValue]
+    #[Column(type: 'integer')]
+    private int $id;
 
-    /**
-     * @Column(type="string", length=255)
-     * @var string
-     */
-    private $name;
-
-    /**
-     * @ManyToMany(targetEntity="Stock", indexBy="symbol")
-     * @JoinTable(name="exchange_bonds_stocks")
-     * @var Stock[]
-     */
+    /** @var Stock[] */
+    #[JoinTable(name: 'exchange_bonds_stocks')]
+    #[ManyToMany(targetEntity: 'Stock', indexBy: 'symbol')]
     public $stocks;
 
-    public function __construct(string $name)
-    {
-        $this->name = $name;
+    public function __construct(
+        #[Column(type: 'string', length: 255)]
+        private string $name,
+    ) {
     }
 
     public function getId(): int

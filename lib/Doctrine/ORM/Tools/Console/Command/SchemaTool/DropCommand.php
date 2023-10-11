@@ -20,8 +20,7 @@ use function sprintf;
  */
 class DropCommand extends AbstractCommand
 {
-    /** @return void */
-    protected function configure()
+    protected function configure(): void
     {
         $this->setName('orm:schema-tool:drop')
              ->setDescription('Drop the complete database schema of EntityManager Storage Connection or generate the corresponding SQL output')
@@ -44,14 +43,13 @@ on a global level:
 
         return !str_starts_with($assetName, 'audit_');
     });
-EOT
-             );
+EOT);
     }
 
     /**
      * {@inheritDoc}
      */
-    protected function executeSchemaCommand(InputInterface $input, OutputInterface $output, SchemaTool $schemaTool, array $metadatas, SymfonyStyle $ui)
+    protected function executeSchemaCommand(InputInterface $input, OutputInterface $output, SchemaTool $schemaTool, array $metadatas, SymfonyStyle $ui): int
     {
         $isFullDatabaseDrop = $input->getOption('full-database');
         $dumpSql            = $input->getOption('dump-sql') === true;
@@ -110,7 +108,7 @@ EOT
                 '',
                 sprintf('    <info>%s --force</info> to execute the command', $this->getName()),
                 sprintf('    <info>%s --dump-sql</info> to dump the SQL statements to the screen', $this->getName()),
-            ]
+            ],
         );
 
         return 1;

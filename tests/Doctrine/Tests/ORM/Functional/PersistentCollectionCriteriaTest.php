@@ -89,7 +89,7 @@ class PersistentCollectionCriteriaTest extends OrmFunctionalTestCase
 
         // Make sure it works with constraints
         $tweets = $user->tweets->matching(new Criteria(
-            Criteria::expr()->eq('content', 'Foo')
+            Criteria::expr()->eq('content', 'Foo'),
         ));
 
         self::assertInstanceOf(LazyCriteriaCollection::class, $tweets);

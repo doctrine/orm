@@ -7,12 +7,11 @@ namespace Doctrine\Tests\DbalExtensions;
 final class QueryLog
 {
     /** @var list<array{sql: string, params: array|null, types: array|null}> */
-    public $queries = [];
+    public array $queries = [];
 
-    /** @var bool */
-    private $enabled = false;
+    private bool $enabled = false;
 
-    public function logQuery(string $sql, ?array $params = null, ?array $types = null): void
+    public function logQuery(string $sql, array|null $params = null, array|null $types = null): void
     {
         if (! $this->enabled) {
             return;

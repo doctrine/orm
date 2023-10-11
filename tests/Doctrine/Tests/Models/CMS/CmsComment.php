@@ -11,38 +11,29 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\Table;
+use Stringable;
 
-/**
- * @Entity
- * @Table(name="cms_comments")
- */
-class CmsComment
+#[Table(name: 'cms_comments')]
+#[Entity]
+class CmsComment implements Stringable
 {
-    /**
-     * @var int
-     * @Column(type="integer")
-     * @Id
-     * @GeneratedValue(strategy="AUTO")
-     */
+    /** @var int */
+    #[Column(type: 'integer')]
+    #[Id]
+    #[GeneratedValue(strategy: 'AUTO')]
     public $id;
 
-    /**
-     * @var string
-     * @Column(type="string", length=255)
-     */
+    /** @var string */
+    #[Column(type: 'string', length: 255)]
     public $topic;
 
-    /**
-     * @var string
-     * @Column(type="string", length=255)
-     */
+    /** @var string */
+    #[Column(type: 'string', length: 255)]
     public $text;
 
-    /**
-     * @var CmsArticle
-     * @ManyToOne(targetEntity="CmsArticle", inversedBy="comments")
-     * @JoinColumn(name="article_id", referencedColumnName="id")
-     */
+    /** @var CmsArticle */
+    #[ManyToOne(targetEntity: 'CmsArticle', inversedBy: 'comments')]
+    #[JoinColumn(name: 'article_id', referencedColumnName: 'id')]
     public $article;
 
     public function setArticle(CmsArticle $article): void

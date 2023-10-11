@@ -7,9 +7,9 @@ namespace Doctrine\Tests\ORM\Hydration;
 use Doctrine\ORM\Internal\Hydration\SingleScalarHydrator;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\Query\ResultSetMapping;
-use Doctrine\Tests\Mocks\ArrayResultFactory;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Generator;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 class SingleScalarHydratorTest extends HydrationTestCase
 {
@@ -48,39 +48,31 @@ class SingleScalarHydratorTest extends HydrationTestCase
         ];
     }
 
-    /**
-     * @param list<array<string, mixed>> $resultSet
-     * @param mixed                      $expectedResult
-     *
-     * @dataProvider validResultSetProvider
-     */
-    public function testHydrateSingleScalarFromFieldMappingWithValidResultSet(array $resultSet, $expectedResult): void
+    /** @param list<array<string, mixed>> $resultSet */
+    #[DataProvider('validResultSetProvider')]
+    public function testHydrateSingleScalarFromFieldMappingWithValidResultSet(array $resultSet, mixed $expectedResult): void
     {
         $rsm = new ResultSetMapping();
         $rsm->addEntityResult(CmsUser::class, 'u');
         $rsm->addFieldResult('u', 'u__id', 'id');
         $rsm->addFieldResult('u', 'u__name', 'name');
 
-        $stmt     = ArrayResultFactory::createFromArray($resultSet);
+        $stmt     = $this->createResultMock($resultSet);
         $hydrator = new SingleScalarHydrator($this->entityManager);
 
         $result = $hydrator->hydrateAll($stmt, $rsm);
         $this->assertEquals($expectedResult, $result);
     }
 
-    /**
-     * @param list<array<string, mixed>> $resultSet
-     * @param mixed                      $expectedResult
-     *
-     * @dataProvider validResultSetProvider
-     */
-    public function testHydrateSingleScalarFromScalarMappingWithValidResultSet(array $resultSet, $expectedResult): void
+    /** @param list<array<string, mixed>> $resultSet */
+    #[DataProvider('validResultSetProvider')]
+    public function testHydrateSingleScalarFromScalarMappingWithValidResultSet(array $resultSet, mixed $expectedResult): void
     {
         $rsm = new ResultSetMapping();
         $rsm->addScalarResult('u__id', 'id', 'string');
         $rsm->addScalarResult('u__name', 'name', 'string');
 
-        $stmt     = ArrayResultFactory::createFromArray($resultSet);
+        $stmt     = $this->createResultMock($resultSet);
         $hydrator = new SingleScalarHydrator($this->entityManager);
 
         $result = $hydrator->hydrateAll($stmt, $rsm);
@@ -138,11 +130,8 @@ class SingleScalarHydratorTest extends HydrationTestCase
         ];
     }
 
-    /**
-     * @param list<array<string, mixed>> $resultSet
-     *
-     * @dataProvider invalidResultSetProvider
-     */
+    /** @param list<array<string, mixed>> $resultSet */
+    #[DataProvider('invalidResultSetProvider')]
     public function testHydrateSingleScalarFromFieldMappingWithInvalidResultSet(array $resultSet): void
     {
         $rsm = new ResultSetMapping();
@@ -150,25 +139,22 @@ class SingleScalarHydratorTest extends HydrationTestCase
         $rsm->addFieldResult('u', 'u__id', 'id');
         $rsm->addFieldResult('u', 'u__name', 'name');
 
-        $stmt     = ArrayResultFactory::createFromArray($resultSet);
+        $stmt     = $this->createResultMock($resultSet);
         $hydrator = new SingleScalarHydrator($this->entityManager);
 
         $this->expectException(NonUniqueResultException::class);
         $hydrator->hydrateAll($stmt, $rsm);
     }
 
-    /**
-     * @param list<array<string, mixed>> $resultSet
-     *
-     * @dataProvider invalidResultSetProvider
-     */
+    /** @param list<array<string, mixed>> $resultSet */
+    #[DataProvider('invalidResultSetProvider')]
     public function testHydrateSingleScalarFromScalarMappingWithInvalidResultSet(array $resultSet): void
     {
         $rsm = new ResultSetMapping();
         $rsm->addScalarResult('u__id', 'id', 'string');
         $rsm->addScalarResult('u__name', 'name', 'string');
 
-        $stmt     = ArrayResultFactory::createFromArray($resultSet);
+        $stmt     = $this->createResultMock($resultSet);
         $hydrator = new SingleScalarHydrator($this->entityManager);
 
         $this->expectException(NonUniqueResultException::class);

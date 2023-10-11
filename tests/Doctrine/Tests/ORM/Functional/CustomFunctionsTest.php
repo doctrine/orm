@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional;
 
-use Doctrine\ORM\Query;
+use Doctrine\ORM\Query\AST\AggregateExpression;
 use Doctrine\ORM\Query\AST\Functions\FunctionNode;
 use Doctrine\ORM\Query\AST\PathExpression;
-use Doctrine\ORM\Query\Lexer;
 use Doctrine\ORM\Query\Parser;
 use Doctrine\ORM\Query\SqlWalker;
+use Doctrine\ORM\Query\TokenType;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
@@ -33,12 +33,8 @@ class CustomFunctionsTest extends OrmFunctionalTestCase
         $this->_em->flush();
 
         // Instead of defining the function with the class name, we use a callback
-        $this->_em->getConfiguration()->addCustomStringFunction('FOO', static function ($funcName) {
-            return new NoOp($funcName);
-        });
-        $this->_em->getConfiguration()->addCustomNumericFunction('BAR', static function ($funcName) {
-            return new NoOp($funcName);
-        });
+        $this->_em->getConfiguration()->addCustomStringFunction('FOO', static fn ($funcName) => new NoOp($funcName));
+        $this->_em->getConfiguration()->addCustomNumericFunction('BAR', static fn ($funcName) => new NoOp($funcName));
 
         $query = $this->_em->createQuery('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u'
             . ' WHERE FOO(u.name) = \'Bob\''
@@ -75,10 +71,10 @@ class NoOp extends FunctionNode
 
     public function parse(Parser $parser): void
     {
-        $parser->match(Lexer::T_IDENTIFIER);
-        $parser->match(Lexer::T_OPEN_PARENTHESIS);
+        $parser->match(TokenType::T_IDENTIFIER);
+        $parser->match(TokenType::T_OPEN_PARENTHESIS);
         $this->field = $parser->ArithmeticPrimary();
-        $parser->match(Lexer::T_CLOSE_PARENTHESIS);
+        $parser->match(TokenType::T_CLOSE_PARENTHESIS);
     }
 
     public function getSql(SqlWalker $sqlWalker): string
@@ -89,8 +85,7 @@ class NoOp extends FunctionNode
 
 class CustomCount extends FunctionNode
 {
-    /** @var Query\AST\AggregateExpression */
-    private $aggregateExpression;
+    private AggregateExpression|null $aggregateExpression = null;
 
     public function parse(Parser $parser): void
     {

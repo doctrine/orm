@@ -9,20 +9,16 @@ use function uniqid;
 
 class Lock
 {
-    /** @var string */
-    public $value;
+    public int $time;
 
-    /** @var int */
-    public $time;
-
-    public function __construct(string $value, ?int $time = null)
-    {
-        $this->value = $value;
-        $this->time  = $time ?: time();
+    public function __construct(
+        public string $value,
+        int|null $time = null,
+    ) {
+        $this->time = $time ?? time();
     }
 
-    /** @return Lock */
-    public static function createLockRead()
+    public static function createLockRead(): Lock
     {
         return new self(uniqid((string) time(), true));
     }

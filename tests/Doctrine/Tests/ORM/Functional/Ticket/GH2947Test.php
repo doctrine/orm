@@ -11,9 +11,11 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\Table;
 use Doctrine\ORM\Query;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
+use Stringable;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
 
-/** @group GH-2947 */
+#[Group('GH-2947')]
 class GH2947Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -53,7 +55,7 @@ class GH2947Test extends OrmFunctionalTestCase
                          ->select('car')
                          ->from(GH2947Car::class, 'car')
                          ->getQuery()
-                         ->useResultCache(true, 3600, 'foo-cache-id');
+                         ->enableResultCache(3600, 'foo-cache-id');
     }
 
     private function createData(): void
@@ -76,23 +78,16 @@ class GH2947Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- * @Table(name="GH2947_car")
- */
-class GH2947Car
+#[Table(name: 'GH2947_car')]
+#[Entity]
+class GH2947Car implements Stringable
 {
-    /**
-     * @var string
-     * @Id
-     * @Column(type="string", length=25)
-     * @GeneratedValue(strategy="NONE")
-     */
-    public $brand;
-
-    public function __construct(string $brand)
-    {
-        $this->brand = $brand;
+    public function __construct(
+        #[Id]
+        #[Column(type: 'string', length: 25)]
+        #[GeneratedValue(strategy: 'NONE')]
+        public string $brand,
+    ) {
     }
 
     public function __toString(): string

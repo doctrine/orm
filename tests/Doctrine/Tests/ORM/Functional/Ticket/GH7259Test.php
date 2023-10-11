@@ -11,6 +11,7 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
 final class GH7259Test extends OrmFunctionalTestCase
 {
@@ -21,7 +22,7 @@ final class GH7259Test extends OrmFunctionalTestCase
         $this->setUpEntitySchema([GH7259Space::class, GH7259File::class, GH7259FileVersion::class, GH7259Feed::class]);
     }
 
-    /** @group GH-7259 */
+    #[Group('GH-7259')]
     public function testPersistFileBeforeVersion(): void
     {
         $space = new GH7259Space();
@@ -46,7 +47,7 @@ final class GH7259Test extends OrmFunctionalTestCase
         self::assertNotNull($fileVersion->id);
     }
 
-    /** @group GH-7259 */
+    #[Group('GH-7259')]
     public function testPersistFileAfterVersion(): void
     {
         $space = new GH7259Space();
@@ -75,78 +76,62 @@ final class GH7259Test extends OrmFunctionalTestCase
     }
 }
 
-/** @Entity() */
+#[Entity]
 class GH7259File
 {
-    /**
-     * @Id
-     * @GeneratedValue
-     * @Column(type="integer")
-     * @var int
-     */
+    /** @var int */
+    #[Id]
+    #[GeneratedValue]
+    #[Column(type: 'integer')]
     public $id;
 
-    /**
-     * @ManyToOne(targetEntity=GH7259Space::class)
-     * @JoinColumn(nullable=false)
-     * @var GH7259Space|null
-     */
+    /** @var GH7259Space|null */
+    #[ManyToOne(targetEntity: GH7259Space::class)]
+    #[JoinColumn(nullable: false)]
     public $space;
 }
 
-/** @Entity() */
+#[Entity]
 class GH7259FileVersion
 {
-    /**
-     * @Id
-     * @GeneratedValue
-     * @Column(type="integer")
-     * @var int
-     */
+    /** @var int */
+    #[Id]
+    #[GeneratedValue]
+    #[Column(type: 'integer')]
     public $id;
 
-    /**
-     * @ManyToOne(targetEntity=GH7259File::class)
-     * @JoinColumn(nullable=false)
-     * @var GH7259File|null
-     */
+    /** @var GH7259File|null */
+    #[ManyToOne(targetEntity: GH7259File::class)]
+    #[JoinColumn(nullable: false)]
     public $file;
 }
 
-/** @Entity() */
+#[Entity]
 class GH7259Space
 {
-    /**
-     * @Id
-     * @GeneratedValue
-     * @Column(type="integer")
-     * @var int
-     */
+    /** @var int */
+    #[Id]
+    #[GeneratedValue]
+    #[Column(type: 'integer')]
     public $id;
 
-    /**
-     * @ManyToOne(targetEntity=GH7259File::class)
-     * @JoinColumn(nullable=true)
-     * @var GH7259File|null
-     */
+    /** @var GH7259File|null */
+    #[ManyToOne(targetEntity: GH7259File::class)]
+    #[JoinColumn(nullable: true)]
     public $ruleFile;
 }
 
-/** @Entity() */
+#[Entity]
 class GH7259Feed
 {
-    /**
-     * @Id
-     * @GeneratedValue
-     * @Column(type="integer")
-     * @var int
-     */
+    /** @var int */
+    #[Id]
+    #[GeneratedValue]
+    #[Column(type: 'integer')]
     public $id;
 
-    /**
-     * @ManyToOne(targetEntity=GH7259Space::class)
-     * @JoinColumn(nullable=false)
-     * @var GH7259Space|null
-     */
+    /** @var GH7259Space|null */
+    #[ManyToOne(targetEntity: GH7259Space::class)]
+    #[JoinColumn(nullable: false)]
     public $space;
 }

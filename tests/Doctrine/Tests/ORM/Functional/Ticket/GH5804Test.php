@@ -15,10 +15,9 @@ use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\Version;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
-use function method_exists;
-
-/** @group GH-5804 */
+#[Group('GH-5804')]
 final class GH5804Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -49,10 +48,7 @@ final class GH5804Test extends OrmFunctionalTestCase
 
 final class GH5804Generator extends AbstractIdGenerator
 {
-    /**
-     * {@inheritDoc}
-     */
-    public function generateId(EntityManagerInterface $em, $entity)
+    public function generateId(EntityManagerInterface $em, object|null $entity): string
     {
         return 'test5804';
     }
@@ -62,10 +58,7 @@ final class GH5804Type extends Type
 {
     public const NAME = 'GH5804Type';
 
-    /**
-     * {@inheritDoc}
-     */
-    public function getName()
+    public function getName(): string
     {
         return self::NAME;
     }
@@ -73,19 +66,15 @@ final class GH5804Type extends Type
     /**
      * {@inheritDoc}
      */
-    public function getSQLDeclaration(array $fieldDeclaration, AbstractPlatform $platform)
+    public function getSQLDeclaration(array $column, AbstractPlatform $platform): string
     {
-        if (method_exists($platform, 'getStringTypeDeclarationSQL')) {
-            return $platform->getStringTypeDeclarationSQL($fieldDeclaration);
-        }
-
-        return $platform->getVarcharTypeDeclarationSQL($fieldDeclaration);
+        return $platform->getStringTypeDeclarationSQL($column);
     }
 
     /**
      * {@inheritDoc}
      */
-    public function convertToDatabaseValue($value, AbstractPlatform $platform)
+    public function convertToDatabaseValue($value, AbstractPlatform $platform): string|null
     {
         if (empty($value)) {
             return null;
@@ -95,28 +84,22 @@ final class GH5804Type extends Type
     }
 }
 
-/** @Entity */
+#[Entity]
 class GH5804Article
 {
-    /**
-     * @var string
-     * @Id
-     * @Column(type="GH5804Type", length=255)
-     * @GeneratedValue(strategy="CUSTOM")
-     * @CustomIdGenerator(class=GH5804Generator::class)
-     */
+    /** @var string */
+    #[Id]
+    #[Column(type: 'GH5804Type', length: 255)]
+    #[GeneratedValue(strategy: 'CUSTOM')]
+    #[CustomIdGenerator(class: GH5804Generator::class)]
     public $id;
 
-    /**
-     * @var int
-     * @Version
-     * @Column(type="integer")
-     */
+    /** @var int */
+    #[Version]
+    #[Column(type: 'integer')]
     public $version;
 
-    /**
-     * @var string
-     * @Column(type="text")
-     */
+    /** @var string */
+    #[Column(type: 'text')]
     public $text;
 }

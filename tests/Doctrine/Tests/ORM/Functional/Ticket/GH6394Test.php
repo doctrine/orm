@@ -11,6 +11,7 @@ use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\Version;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
 class GH6394Test extends OrmFunctionalTestCase
 {
@@ -24,9 +25,8 @@ class GH6394Test extends OrmFunctionalTestCase
     /**
      * Test the the version of an entity can be fetched, when the id field and
      * the id column are different.
-     *
-     * @group 6393
      */
+    #[Group('6393')]
     public function testFetchVersionValueForDifferentIdFieldAndColumn(): void
     {
         $a = new A(1);
@@ -45,56 +45,37 @@ class GH6394Test extends OrmFunctionalTestCase
     }
 }
 
-/** @Entity */
+#[Entity]
 class A
 {
-    /**
-     * @Id
-     * @Column(type="integer")
-     * @var int
-     */
-    public $id;
-
-    /**
-     * @Version
-     * @Column(type="integer")
-     * @var int
-     */
+    /** @var int */
+    #[Version]
+    #[Column(type: 'integer')]
     public $version;
 
-    public function __construct(int $id)
-    {
-        $this->id = $id;
+    public function __construct(
+        #[Id]
+        #[Column(type: 'integer')]
+        public int $id,
+    ) {
     }
 }
 
-/** @Entity */
+#[Entity]
 class B
 {
-    /**
-     * @Id
-     * @ManyToOne(targetEntity="A")
-     * @JoinColumn(name="aid", referencedColumnName="id")
-     * @var A
-     */
-    public $a;
-
-    /**
-     * @Column(type="string", length=255)
-     * @var string
-     */
-    public $something;
-
-    /**
-     * @Version
-     * @Column(type="integer")
-     * @var int
-     */
+    /** @var int */
+    #[Version]
+    #[Column(type: 'integer')]
     public $version;
 
-    public function __construct(A $a, string $something)
-    {
-        $this->a         = $a;
-        $this->something = $something;
+    public function __construct(
+        #[Id]
+        #[ManyToOne(targetEntity: 'A')]
+        #[JoinColumn(name: 'aid', referencedColumnName: 'id')]
+        public A $a,
+        #[Column(type: 'string', length: 255)]
+        public string $something,
+    ) {
     }
 }

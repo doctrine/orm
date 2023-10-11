@@ -10,57 +10,39 @@ use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\InverseJoinColumn;
 use Doctrine\ORM\Mapping\JoinColumn;
-use Doctrine\ORM\Mapping\JoinColumns;
 use Doctrine\ORM\Mapping\JoinTable;
 use Doctrine\ORM\Mapping\ManyToMany;
 use Doctrine\ORM\Mapping\ManyToOne;
 
-/** @Entity */
+#[Entity]
 class DDC117Editor
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     public $id;
 
-    /**
-     * @var string|null
-     * @Column(type="string", length=255)
-     */
-    public $name;
-
-    /**
-     * @psalm-var Collection<int, DDC117Translation>
-     * @ManyToMany(targetEntity="DDC117Translation", inversedBy="reviewedByEditors")
-     * @JoinTable(
-     *   inverseJoinColumns={
-     *     @JoinColumn(name="article_id", referencedColumnName="article_id"),
-     *     @JoinColumn(name="language", referencedColumnName="language")
-     *   },
-     *   joinColumns={
-     *     @JoinColumn(name="editor_id", referencedColumnName="id")
-     *   }
-     * )
-     */
+    /** @psalm-var Collection<int, DDC117Translation> */
+    #[JoinTable]
+    #[JoinColumn(name: 'editor_id', referencedColumnName: 'id')]
+    #[InverseJoinColumn(name: 'article_id', referencedColumnName: 'article_id')]
+    #[InverseJoinColumn(name: 'language', referencedColumnName: 'language')]
+    #[ManyToMany(targetEntity: 'DDC117Translation', inversedBy: 'reviewedByEditors')]
     public $reviewingTranslations;
 
-    /**
-     * @var DDC117Translation
-     * @ManyToOne(targetEntity="DDC117Translation", inversedBy="lastTranslatedBy")
-     * @JoinColumns({
-     *   @JoinColumn(name="lt_article_id", referencedColumnName="article_id"),
-     *   @JoinColumn(name="lt_language", referencedColumnName="language")
-     * })
-     */
+    /** @var DDC117Translation */
+    #[JoinColumn(name: 'lt_article_id', referencedColumnName: 'article_id')]
+    #[JoinColumn(name: 'lt_language', referencedColumnName: 'language')]
+    #[ManyToOne(targetEntity: 'DDC117Translation', inversedBy: 'lastTranslatedBy')]
     public $lastTranslation;
 
-    public function __construct(?string $name = '')
-    {
-        $this->name                  = $name;
+    public function __construct(
+        #[Column(type: 'string', length: 255)]
+        public string|null $name = '',
+    ) {
         $this->reviewingTranslations = new ArrayCollection();
     }
 

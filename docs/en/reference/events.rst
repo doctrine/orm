@@ -247,40 +247,6 @@ specific to a particular entity class's lifecycle.
                 $this->value = 'changed from preUpdate callback!';
             }
         }
-    .. code-block:: annotation
-
-        <?php
-        use Doctrine\ORM\Event\PrePersistEventArgs;
-
-        /**
-         * @Entity
-         * @HasLifecycleCallbacks
-         */
-        class User
-        {
-            // ...
-
-            /** @Column(type="string", length=255) */
-            public $value;
-
-            /** @PrePersist */
-            public function doStuffOnPrePersist(PrePersistEventArgs $eventArgs)
-            {
-                $this->createdAt = date('Y-m-d H:i:s');
-            }
-
-            /** @PrePersist */
-            public function doOtherStuffOnPrePersist()
-            {
-                $this->value = 'changed from prePersist callback!';
-            }
-
-            /** @PreUpdate */
-            public function doStuffOnPreUpdate(PreUpdateEventArgs $eventArgs)
-            {
-                $this->value = 'changed from preUpdate callback!';
-            }
-        }
     .. code-block:: xml
 
         <?xml version="1.0" encoding="UTF-8"?>
@@ -298,17 +264,6 @@ specific to a particular entity class's lifecycle.
                 </lifecycle-callbacks>
             </entity>
         </doctrine-mapping>
-    .. code-block:: yaml
-
-        User:
-          type: entity
-          fields:
-            # ...
-            value:
-              type: string(255)
-          lifecycleCallbacks:
-            prePersist: [ doStuffOnPrePersist, doOtherStuffOnPrePersist ]
-            preUpdate: [ doStuffOnPreUpdate ]
 
 Lifecycle Callbacks Event Argument
 ----------------------------------
@@ -791,16 +746,6 @@ An entity listener is a lifecycle listener class used for an entity.
         {
             // ....
         }
-    .. code-block:: annotation
-
-        <?php
-        namespace MyProject\Entity;
-
-        /** @Entity @EntityListeners({"UserListener"}) */
-        class User
-        {
-            // ....
-        }
     .. code-block:: xml
 
         <doctrine-mapping>
@@ -811,13 +756,6 @@ An entity listener is a lifecycle listener class used for an entity.
                 <!-- .... -->
             </entity>
         </doctrine-mapping>
-    .. code-block:: yaml
-
-        MyProject\Entity\User:
-          type: entity
-          entityListeners:
-            UserListener:
-          # ....
 
 .. _reference-entity-listeners:
 
@@ -890,45 +828,6 @@ you need to map the listener method using the event type mapping:
             public function postLoadHandler(User $user, PostLoadEventArgs $event): void { // ... }
         }
 
-    .. code-block:: annotation
-
-        <?php
-        use Doctrine\ORM\Event\PostLoadEventArgs;
-        use Doctrine\ORM\Event\PostPersistEventArgs;
-        use Doctrine\ORM\Event\PostRemoveEventArgs;
-        use Doctrine\ORM\Event\PostUpdateEventArgs;
-        use Doctrine\ORM\Event\PreFlushEventArgs;
-        use Doctrine\ORM\Event\PrePersistEventArgs;
-        use Doctrine\ORM\Event\PreRemoveEventArgs;
-        use Doctrine\ORM\Event\PreUpdateEventArgs;
-
-        class UserListener
-        {
-            /** @PrePersist */
-            public function prePersistHandler(User $user, PrePersistEventArgs $event): void { // ... }
-
-            /** @PostPersist */
-            public function postPersistHandler(User $user, PostPersistEventArgs $event): void { // ... }
-
-            /** @PreUpdate */
-            public function preUpdateHandler(User $user, PreUpdateEventArgs $event): void { // ... }
-
-            /** @PostUpdate */
-            public function postUpdateHandler(User $user, PostUpdateEventArgs $event): void { // ... }
-
-            /** @PostRemove */
-            public function postRemoveHandler(User $user, PostRemoveEventArgs $event): void { // ... }
-
-            /** @PreRemove */
-            public function preRemoveHandler(User $user, PreRemoveEventArgs $event): void { // ... }
-
-            /** @PreFlush */
-            public function preFlushHandler(User $user, PreFlushEventArgs $event): void { // ... }
-
-            /** @PostLoad */
-            public function postLoadHandler(User $user, PostLoadEventArgs $event): void { // ... }
-        }
-
     .. code-block:: xml
 
         <doctrine-mapping>
@@ -951,24 +850,6 @@ you need to map the listener method using the event type mapping:
                 <!-- .... -->
             </entity>
         </doctrine-mapping>
-    .. code-block:: yaml
-
-        MyProject\Entity\User:
-          type: entity
-          entityListeners:
-            UserListener:
-              preFlush: [preFlushHandler]
-              postLoad: [postLoadHandler]
-
-              postPersist: [postPersistHandler]
-              prePersist: [prePersistHandler]
-
-              postUpdate: [postUpdateHandler]
-              preUpdate: [preUpdateHandler]
-
-              postRemove: [postRemoveHandler]
-              preRemove: [preRemoveHandler]
-          # ....
 
 .. note::
 
@@ -991,7 +872,8 @@ Specifying an entity listener instance :
 
     // User.php
 
-    /** @Entity @EntityListeners({"UserListener"}) */
+    #[Entity]
+    #[EntityListeners(["UserListener"])
     class User
     {
         // ....
@@ -1049,7 +931,7 @@ Load ClassMetadata Event
 
 ``loadClassMetadata`` - The ``loadClassMetadata`` event occurs after the
 mapping metadata for a class has been loaded from a mapping source
-(attributes/annotations/xml/yaml) in to a ``Doctrine\ORM\Mapping\ClassMetadata`` instance.
+(attributes/xml) in to a ``Doctrine\ORM\Mapping\ClassMetadata`` instance.
 You can hook in to this process and manipulate the instance.
 This event is not a lifecycle callback.
 

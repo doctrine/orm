@@ -10,13 +10,13 @@ use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\JoinColumn;
-use Doctrine\ORM\Mapping\JoinColumns;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\ORM\Mapping\OrderBy;
 use Doctrine\ORM\Mapping\Table;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
 class DDC440Test extends OrmFunctionalTestCase
 {
@@ -27,7 +27,7 @@ class DDC440Test extends OrmFunctionalTestCase
         $this->createSchemaForModels(DDC440Phone::class, DDC440Client::class);
     }
 
-    /** @group DDC-440 */
+    #[Group('DDC-440')]
     public function testOriginalEntityDataEmptyWhenProxyLoadedFromTwoAssociations(): void
     {
         /* The key of the problem is that the first phone is fetched via two association, mainPhone and phones.
@@ -81,33 +81,23 @@ class DDC440Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- * @Table(name="phone")
- */
+#[Table(name: 'phone')]
+#[Entity]
 class DDC440Phone
 {
-    /**
-     * @var int
-     * @Column(name="id", type="integer")
-     * @Id
-     * @GeneratedValue(strategy="AUTO")
-     */
+    /** @var int */
+    #[Column(name: 'id', type: 'integer')]
+    #[Id]
+    #[GeneratedValue(strategy: 'AUTO')]
     protected $id;
 
-    /**
-     * @var DDC440Client
-     * @ManyToOne(targetEntity="DDC440Client",inversedBy="phones")
-     * @JoinColumns({
-     *   @JoinColumn(name="client_id", referencedColumnName="id")
-     * })
-     */
+    /** @var DDC440Client */
+    #[JoinColumn(name: 'client_id', referencedColumnName: 'id')]
+    #[ManyToOne(targetEntity: 'DDC440Client', inversedBy: 'phones')]
     protected $client;
 
-    /**
-     * @var string
-     * @Column(name="phonenumber", type="string", length=255)
-     */
+    /** @var string */
+    #[Column(name: 'phonenumber', type: 'string', length: 255)]
     protected $number;
 
     public function setNumber(string $value): void
@@ -144,40 +134,28 @@ class DDC440Phone
     }
 }
 
-/**
- * @Entity
- * @Table(name="client")
- */
+#[Table(name: 'client')]
+#[Entity]
 class DDC440Client
 {
-    /**
-     * @var int
-     * @Column(name="id", type="integer")
-     * @Id
-     * @GeneratedValue(strategy="AUTO")
-     */
+    /** @var int */
+    #[Column(name: 'id', type: 'integer')]
+    #[Id]
+    #[GeneratedValue(strategy: 'AUTO')]
     protected $id;
 
-    /**
-     * @var DDC440Phone
-     * @OneToOne(targetEntity="DDC440Phone", fetch="EAGER")
-     * @JoinColumns({
-     *   @JoinColumn(name="main_phone_id", referencedColumnName="id",onDelete="SET NULL")
-     * })
-     */
+    /** @var DDC440Phone */
+    #[JoinColumn(name: 'main_phone_id', referencedColumnName: 'id', onDelete: 'SET NULL')]
+    #[OneToOne(targetEntity: 'DDC440Phone', fetch: 'EAGER')]
     protected $mainPhone;
 
-    /**
-     * @psalm-var Collection<int, DDC440Phone>
-     * @OneToMany(targetEntity="DDC440Phone", mappedBy="client", cascade={"persist", "remove"}, fetch="EAGER", indexBy="id")
-     * @OrderBy({"number"="ASC"})
-     */
+    /** @psalm-var Collection<int, DDC440Phone> */
+    #[OneToMany(targetEntity: 'DDC440Phone', mappedBy: 'client', cascade: ['persist', 'remove'], fetch: 'EAGER', indexBy: 'id')]
+    #[OrderBy(['number' => 'ASC'])]
     protected $phones;
 
-    /**
-     * @var string
-     * @Column(name="name", type="string", length=255)
-     */
+    /** @var string */
+    #[Column(name: 'name', type: 'string', length: 255)]
     protected $name;
 
     public function __construct()

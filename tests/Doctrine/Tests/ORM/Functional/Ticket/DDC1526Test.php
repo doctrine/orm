@@ -12,8 +12,9 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
-/** @group DDC-1526 */
+#[Group('DDC-1526')]
 class DDC1526Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -52,25 +53,19 @@ class DDC1526Test extends OrmFunctionalTestCase
     }
 }
 
-/** @Entity */
+#[Entity]
 class DDC1526Menu
 {
-    /**
-     * @var int
-     * @Column(type="integer")
-     * @Id
-     * @GeneratedValue
-     */
+    /** @var int */
+    #[Column(type: 'integer')]
+    #[Id]
+    #[GeneratedValue]
     public $id;
-    /**
-     * @var DDC1526Menu
-     * @ManyToOne(targetEntity="DDC1526Menu", inversedBy="children")
-     */
+    /** @var DDC1526Menu */
+    #[ManyToOne(targetEntity: 'DDC1526Menu', inversedBy: 'children')]
     public $parent;
 
-    /**
-     * @psalm-var Collection<int, DDC1526Menu>
-     * @OneToMany(targetEntity="DDC1526Menu", mappedBy="parent")
-     */
+    /** @psalm-var Collection<int, DDC1526Menu> */
+    #[OneToMany(targetEntity: 'DDC1526Menu', mappedBy: 'parent')]
     public $children;
 }

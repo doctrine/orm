@@ -10,28 +10,18 @@ use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\Table;
 
-/**
- * @Entity
- * @Table(name="navigation_users")
- */
+#[Table(name: 'navigation_users')]
+#[Entity]
 class NavUser
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
-    private $id;
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
+    private int $id;
 
-    /**
-     * @var string
-     * @Column(type="string", length=255)
-     */
-    private $name;
-
-    public function __construct(string $name)
-    {
-        $this->name = $name;
+    public function __construct(
+        #[Column(type: 'string', length: 255)]
+        private string $name,
+    ) {
     }
 }

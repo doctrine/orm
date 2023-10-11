@@ -16,10 +16,9 @@ use function str_replace;
 final class UnitOfWorkComputeChangesBench
 {
     /** @var CmsUser[] */
-    private $users;
+    private array|null $users = null;
 
-    /** @var UnitOfWork */
-    private $unitOfWork;
+    private UnitOfWork|null $unitOfWork = null;
 
     public function init(): void
     {
@@ -43,7 +42,7 @@ final class UnitOfWorkComputeChangesBench
                     'name'     => $user->name,
                     'address'  => $user->address,
                     'email'    => $user->email,
-                ]
+                ],
             );
         }
 

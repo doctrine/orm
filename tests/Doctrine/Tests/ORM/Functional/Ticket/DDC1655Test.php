@@ -16,15 +16,13 @@ use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\PostLoad;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
-use function get_class;
 use function get_debug_type;
 
-/**
- * @group DDC-1655
- * @group DDC-1640
- * @group DDC-1556
- */
+#[Group('DDC-1655')]
+#[Group('DDC-1640')]
+#[Group('DDC-1556')]
 class DDC1655Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -34,7 +32,7 @@ class DDC1655Test extends OrmFunctionalTestCase
         $this->createSchemaForModels(
             DDC1655Foo::class,
             DDC1655Bar::class,
-            DDC1655Baz::class
+            DDC1655Baz::class,
         );
     }
 
@@ -58,7 +56,7 @@ class DDC1655Test extends OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $baz = $this->_em->find(get_class($baz), $baz->id);
+        $baz = $this->_em->find($baz::class, $baz->id);
         foreach ($baz->foos as $foo) {
             self::assertEquals(1, $foo->loaded, 'should have loaded callback counter incremented for ' . get_debug_type($foo));
         }
@@ -76,11 +74,11 @@ class DDC1655Test extends OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $bar = $this->_em->find(get_class($bar), $bar->id);
+        $bar = $this->_em->find($bar::class, $bar->id);
         self::assertEquals(1, $bar->loaded);
         self::assertEquals(1, $bar->subLoaded);
 
-        $bar = $this->_em->find(get_class($bar), $bar->id);
+        $bar = $this->_em->find($bar::class, $bar->id);
         self::assertEquals(1, $bar->loaded);
         self::assertEquals(1, $bar->subLoaded);
 
@@ -97,71 +95,56 @@ class DDC1655Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- * @InheritanceType("SINGLE_TABLE")
- * @DiscriminatorMap({
- *    "foo" = "DDC1655Foo",
- *    "bar" = "DDC1655Bar"
- * })
- * @HasLifecycleCallbacks
- */
+#[Entity]
+#[InheritanceType('SINGLE_TABLE')]
+#[DiscriminatorMap(['foo' => 'DDC1655Foo', 'bar' => 'DDC1655Bar'])]
+#[HasLifecycleCallbacks]
 class DDC1655Foo
 {
-    /**
-     * @var int
-     * @Id
-     * @GeneratedValue
-     * @Column(type="integer")
-     */
+    /** @var int */
+    #[Id]
+    #[GeneratedValue]
+    #[Column(type: 'integer')]
     public $id;
 
     /** @var int */
     public $loaded = 0;
 
-    /**
-     * @var DDC1655Baz
-     * @ManyToOne(targetEntity="DDC1655Baz", inversedBy="foos")
-     */
+    /** @var DDC1655Baz */
+    #[ManyToOne(targetEntity: 'DDC1655Baz', inversedBy: 'foos')]
     public $baz;
 
-    /** @PostLoad */
+    #[PostLoad]
     public function postLoad(): void
     {
         $this->loaded++;
     }
 }
 
-/**
- * @Entity
- * @HasLifecycleCallbacks
- */
+#[Entity]
+#[HasLifecycleCallbacks]
 class DDC1655Bar extends DDC1655Foo
 {
     /** @var int */
     public $subLoaded;
 
-    /** @PostLoad */
+    #[PostLoad]
     public function postSubLoaded(): void
     {
         $this->subLoaded++;
     }
 }
 
-/** @Entity */
+#[Entity]
 class DDC1655Baz
 {
-    /**
-     * @var int
-     * @Id
-     * @GeneratedValue
-     * @Column(type="integer")
-     */
+    /** @var int */
+    #[Id]
+    #[GeneratedValue]
+    #[Column(type: 'integer')]
     public $id;
 
-    /**
-     * @psalm-var Collection<int, DDC1655Foo>
-     * @OneToMany(targetEntity="DDC1655Foo", mappedBy="baz")
-     */
+    /** @psalm-var Collection<int, DDC1655Foo> */
+    #[OneToMany(targetEntity: 'DDC1655Foo', mappedBy: 'baz')]
     public $foos = [];
 }

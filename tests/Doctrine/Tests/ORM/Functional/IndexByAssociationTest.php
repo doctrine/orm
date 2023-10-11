@@ -8,17 +8,16 @@ use Doctrine\Tests\Models\StockExchange\Bond;
 use Doctrine\Tests\Models\StockExchange\Market;
 use Doctrine\Tests\Models\StockExchange\Stock;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
 use function assert;
 
-/** @group DDC-250 */
+#[Group('DDC-250')]
 class IndexByAssociationTest extends OrmFunctionalTestCase
 {
-    /** @var Market */
-    private $market;
+    private Market|null $market = null;
 
-    /** @var Bond */
-    private $bond;
+    private Bond|null $bond = null;
 
     protected function setUp(): void
     {

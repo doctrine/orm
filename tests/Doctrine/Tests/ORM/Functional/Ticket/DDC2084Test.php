@@ -4,9 +4,13 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\Tests\ORM\Functional\Ticket\DDC2084\MyEntity1;
+use Doctrine\Tests\ORM\Functional\Ticket\DDC2084\MyEntity2;
+use Doctrine\ORM\ORMInvalidArgumentException;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
-/** @group DDC-2084 */
+#[Group('DDC-2084')]
 class DDC2084Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -15,14 +19,14 @@ class DDC2084Test extends OrmFunctionalTestCase
 
         $this->createSchemaForModels(
             __NAMESPACE__ . '\DDC2084\MyEntity1',
-            __NAMESPACE__ . '\DDC2084\MyEntity2'
+            __NAMESPACE__ . '\DDC2084\MyEntity2',
         );
     }
 
-    public function loadFixture(): DDC2084\MyEntity1
+    public function loadFixture(): MyEntity1
     {
-        $e2 = new DDC2084\MyEntity2('Foo');
-        $e1 = new DDC2084\MyEntity1($e2);
+        $e2 = new MyEntity2('Foo');
+        $e1 = new MyEntity1($e2);
 
         $this->_em->persist($e2);
         $this->_em->flush();
@@ -48,14 +52,14 @@ class DDC2084Test extends OrmFunctionalTestCase
 
     public function testInvalidIdentifierBindingEntityException(): void
     {
-        $this->expectException('Doctrine\ORM\ORMInvalidArgumentException');
+        $this->expectException(ORMInvalidArgumentException::class);
         $this->expectExceptionMessage(
             <<<'EXCEPTION'
 Binding entities to query parameters only allowed for entities that have an identifier.
 Class "Doctrine\Tests\ORM\Functional\Ticket\DDC2084\MyEntity2" does not have an identifier.
-EXCEPTION
+EXCEPTION,
         );
-        $this->_em->find(__NAMESPACE__ . '\DDC2084\MyEntity1', new DDC2084\MyEntity2('Foo'));
+        $this->_em->find(__NAMESPACE__ . '\DDC2084\MyEntity1', new MyEntity2('Foo'));
     }
 }
 
@@ -69,23 +73,16 @@ use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\ORM\Mapping\Table;
 
-/**
- * @Entity
- * @Table(name="DDC2084_ENTITY1")
- */
+#[Table(name: 'DDC2084_ENTITY1')]
+#[Entity]
 class MyEntity1
 {
-    /**
-     * @var MyEntity2
-     * @Id
-     * @OneToOne(targetEntity="MyEntity2")
-     * @JoinColumn(name="entity2_id", referencedColumnName="id", nullable=false)
-     */
-    private $entity2;
-
-    public function __construct(MyEntity2 $myEntity2)
-    {
-        $this->entity2 = $myEntity2;
+    public function __construct(
+        #[Id]
+        #[OneToOne(targetEntity: 'MyEntity2')]
+        #[JoinColumn(name: 'entity2_id', referencedColumnName: 'id', nullable: false)]
+        private MyEntity2 $entity2,
+    ) {
     }
 
     public function setMyEntity2(MyEntity2 $myEntity2): void
@@ -99,29 +96,19 @@ class MyEntity1
     }
 }
 
-/**
- * @Entity
- * @Table(name="DDC2084_ENTITY2")
- */
+#[Table(name: 'DDC2084_ENTITY2')]
+#[Entity]
 class MyEntity2
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
-     */
-    private $id;
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue(strategy: 'AUTO')]
+    private int $id;
 
-    /**
-     * @var string
-     * @Column
-     */
-    private $value;
-
-    public function __construct(string $value)
-    {
-        $this->value = $value;
+    public function __construct(
+        #[Column]
+        private string $value,
+    ) {
     }
 
     public function getId(): int

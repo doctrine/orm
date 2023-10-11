@@ -6,7 +6,6 @@ namespace Doctrine\ORM\Tools\Console\Command\ClearCache;
 
 use Doctrine\ORM\Cache;
 use Doctrine\ORM\Tools\Console\Command\AbstractEntityManagerCommand;
-use Doctrine\ORM\Tools\Console\CommandCompatibility;
 use InvalidArgumentException;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -21,10 +20,7 @@ use function sprintf;
  */
 class EntityRegionCommand extends AbstractEntityManagerCommand
 {
-    use CommandCompatibility;
-
-    /** @return void */
-    protected function configure()
+    protected function configure(): void
     {
         $this->setName('orm:clear-cache:region:entity')
              ->setDescription('Clear a second-level cache entity region')
@@ -56,11 +52,10 @@ Alternatively, if you want to flush the configured cache provider for an entity 
 
 Finally, be aware that if <info>--flush</info> option is passed,
 not all cache providers are able to flush entries, because of a limitation of its execution nature.
-EOT
-             );
+EOT);
     }
 
-    private function doExecute(InputInterface $input, OutputInterface $output): int
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $ui = (new SymfonyStyle($input, $output))->getErrorStyle();
 
@@ -99,8 +94,8 @@ EOT
                 sprintf(
                     'Clearing second-level cache entry for entity <info>"%s"</info> identified by <info>"%s"</info>',
                     $entityClass,
-                    $entityId
-                )
+                    $entityId,
+                ),
             );
             $cache->evictEntity($entityClass, $entityId);
 

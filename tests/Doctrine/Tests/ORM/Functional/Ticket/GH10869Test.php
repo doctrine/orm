@@ -53,24 +53,16 @@ class GH10869Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @ORM\Entity
- */
+#[ORM\Entity]
 class GH10869Entity
 {
-    /**
-     * @ORM\Id
-     * @ORM\GeneratedValue
-     * @ORM\Column(type="integer")
-     *
-     * @var ?int
-     */
+    /** @var ?int */
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column(type: 'integer')]
     public $id;
 
-    /**
-     * @ORM\Column(type="text", nullable=true)
-     *
-     * @var ?string
-     */
+    /** @var ?string */
+    #[ORM\Column(type: 'text', nullable: true)]
     public $field;
 }

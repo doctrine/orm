@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Query\AST;
 
+use Doctrine\ORM\Query\SqlWalker;
+
 /**
  * RangeVariableDeclaration ::= AbstractSchemaName ["AS"] AliasIdentificationVariable
  *
@@ -11,31 +13,14 @@ namespace Doctrine\ORM\Query\AST;
  */
 class RangeVariableDeclaration extends Node
 {
-    /** @var string */
-    public $abstractSchemaName;
-
-    /** @var string */
-    public $aliasIdentificationVariable;
-
-    /** @var bool */
-    public $isRoot;
-
-    /**
-     * @param string $abstractSchemaName
-     * @param string $aliasIdentificationVar
-     * @param bool   $isRoot
-     */
-    public function __construct($abstractSchemaName, $aliasIdentificationVar, $isRoot = true)
-    {
-        $this->abstractSchemaName          = $abstractSchemaName;
-        $this->aliasIdentificationVariable = $aliasIdentificationVar;
-        $this->isRoot                      = $isRoot;
+    public function __construct(
+        public string $abstractSchemaName,
+        public string $aliasIdentificationVariable,
+        public bool $isRoot = true,
+    ) {
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function dispatch($walker)
+    public function dispatch(SqlWalker $walker): string
     {
         return $walker->walkRangeVariableDeclaration($this);
     }

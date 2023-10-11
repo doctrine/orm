@@ -9,63 +9,43 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\InverseJoinColumn;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\JoinTable;
 use Doctrine\ORM\Mapping\ManyToMany;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\Table;
 
-/**
- * @Entity
- * @Table(name="navigation_pois")
- */
+#[Table(name: 'navigation_pois')]
+#[Entity]
 class NavPointOfInterest
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer", name="nav_long")
-     */
-    private $long;
+    #[Id]
+    #[Column(type: 'integer', name: 'nav_long')]
+    private int $long;
 
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer", name="nav_lat")
-     */
-    private $lat;
+    #[Id]
+    #[Column(type: 'integer', name: 'nav_lat')]
+    private int $lat;
 
-    /**
-     * @var string
-     * @Column(type="string", length=255)
-     */
-    private $name;
-
-    /**
-     * @var NavCountry
-     * @ManyToOne(targetEntity="NavCountry", inversedBy="pois")
-     */
-    private $country;
-
-    /**
-     * @psalm-var Collection<int, NavUser>
-     * @ManyToMany(targetEntity="NavUser", cascade={"persist"})
-     * @JoinTable(name="navigation_pois_visitors",
-     *      inverseJoinColumns={@JoinColumn(name="user_id", referencedColumnName="id")},
-     *      joinColumns={
-     *          @JoinColumn(name="poi_long", referencedColumnName="nav_long"),
-     *          @JoinColumn(name="poi_lat", referencedColumnName="nav_lat")
-     *      }
-     * )
-     */
+    /** @psalm-var Collection<int, NavUser> */
+    #[JoinTable(name: 'navigation_pois_visitors')]
+    #[JoinColumn(name: 'poi_long', referencedColumnName: 'nav_long')]
+    #[JoinColumn(name: 'poi_lat', referencedColumnName: 'nav_lat')]
+    #[InverseJoinColumn(name: 'user_id', referencedColumnName: 'id')]
+    #[ManyToMany(targetEntity: 'NavUser', cascade: ['persist'])]
     private $visitors;
 
-    public function __construct(int $lat, int $long, string $name, NavCountry $country)
-    {
+    public function __construct(
+        int $lat,
+        int $long,
+        #[Column(type: 'string', length: 255)]
+        private string $name,
+        #[ManyToOne(targetEntity: 'NavCountry', inversedBy: 'pois')]
+        private NavCountry $country,
+    ) {
         $this->lat      = $lat;
         $this->long     = $long;
-        $this->name     = $name;
-        $this->country  = $country;
         $this->visitors = new ArrayCollection();
     }
 

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional\Ticket\GH9467;
 
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Depends;
 
 class GH9467Test extends OrmFunctionalTestCase
 {
@@ -18,7 +19,7 @@ class GH9467Test extends OrmFunctionalTestCase
             JoinedInheritanceWritableColumn::class,
             JoinedInheritanceNonWritableColumn::class,
             JoinedInheritanceNonInsertableColumn::class,
-            JoinedInheritanceNonUpdatableColumn::class
+            JoinedInheritanceNonUpdatableColumn::class,
         );
     }
 
@@ -51,7 +52,7 @@ class GH9467Test extends OrmFunctionalTestCase
         return $entity->id;
     }
 
-    /** @depends testRootColumnsInsert */
+    #[Depends('testRootColumnsInsert')]
     public function testRootColumnsUpdate(int $entityId): void
     {
         $entity = $this->_em->find(JoinedInheritanceChild::class, $entityId);
@@ -102,7 +103,7 @@ class GH9467Test extends OrmFunctionalTestCase
         return $entity->id;
     }
 
-    /** @depends testChildWritableColumnInsert */
+    #[Depends('testChildWritableColumnInsert')]
     public function testChildWritableColumnUpdate(int $entityId): void
     {
         $entity = $this->_em->find(JoinedInheritanceWritableColumn::class, $entityId);
@@ -144,7 +145,7 @@ class GH9467Test extends OrmFunctionalTestCase
         return $entity->id;
     }
 
-    /** @depends testChildNonWritableColumnInsert */
+    #[Depends('testChildNonWritableColumnInsert')]
     public function testChildNonWritableColumnUpdate(int $entityId): void
     {
         $entity = $this->_em->find(JoinedInheritanceNonWritableColumn::class, $entityId);
@@ -190,7 +191,7 @@ class GH9467Test extends OrmFunctionalTestCase
         return $entity->id;
     }
 
-    /** @depends testChildNonInsertableColumnInsert */
+    #[Depends('testChildNonInsertableColumnInsert')]
     public function testChildNonInsertableColumnUpdate(int $entityId): void
     {
         $entity = $this->_em->find(JoinedInheritanceNonInsertableColumn::class, $entityId);
@@ -232,7 +233,7 @@ class GH9467Test extends OrmFunctionalTestCase
         return $entity->id;
     }
 
-    /** @depends testChildNonUpdatableColumnInsert */
+    #[Depends('testChildNonUpdatableColumnInsert')]
     public function testChildNonUpdatableColumnUpdate(int $entityId): void
     {
         $entity = $this->_em->find(JoinedInheritanceNonUpdatableColumn::class, $entityId);

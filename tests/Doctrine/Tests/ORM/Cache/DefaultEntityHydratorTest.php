@@ -10,20 +10,18 @@ use Doctrine\ORM\Cache\DefaultEntityHydrator;
 use Doctrine\ORM\Cache\EntityCacheEntry;
 use Doctrine\ORM\Cache\EntityCacheKey;
 use Doctrine\ORM\Cache\EntityHydrator;
-use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\UnitOfWork;
+use Doctrine\Tests\Mocks\EntityManagerMock;
 use Doctrine\Tests\Models\Cache\Country;
 use Doctrine\Tests\Models\Cache\State;
 use Doctrine\Tests\OrmTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
-/** @group DDC-2183 */
+#[Group('DDC-2183')]
 class DefaultEntityHydratorTest extends OrmTestCase
 {
-    /** @var EntityHydrator */
-    private $structure;
-
-    /** @var EntityManagerInterface */
-    private $em;
+    private DefaultEntityHydrator $structure;
+    private EntityManagerMock $em;
 
     protected function setUp(): void
     {
@@ -35,7 +33,7 @@ class DefaultEntityHydratorTest extends OrmTestCase
 
     public function testImplementsEntityEntryStructure(): void
     {
-        self::assertInstanceOf('\Doctrine\ORM\Cache\EntityHydrator', $this->structure);
+        self::assertInstanceOf(EntityHydrator::class, $this->structure);
     }
 
     public function testCreateEntity(): void
@@ -91,7 +89,7 @@ class DefaultEntityHydratorTest extends OrmTestCase
                 'id'   => 1,
                 'name' => 'Foo',
             ],
-            $cache->data
+            $cache->data,
         );
     }
 
@@ -125,7 +123,7 @@ class DefaultEntityHydratorTest extends OrmTestCase
                 'name'      => 'Bar',
                 'country'   => new AssociationCacheEntry(Country::class, ['id' => 11]),
             ],
-            $cache->data
+            $cache->data,
         );
     }
 
@@ -156,7 +154,7 @@ class DefaultEntityHydratorTest extends OrmTestCase
                 'name'      => 'Bar',
                 'country'   => new AssociationCacheEntry(Country::class, ['id' => 11]),
             ],
-            $cache->data
+            $cache->data,
         );
     }
 
@@ -188,7 +186,7 @@ class DefaultEntityHydratorTest extends OrmTestCase
                 'name'      => 'Bar',
                 'country'   => new AssociationCacheEntry(Country::class, ['id' => 11]),
             ],
-            $cache->data
+            $cache->data,
         );
     }
 }

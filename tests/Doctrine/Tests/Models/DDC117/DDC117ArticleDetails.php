@@ -10,26 +10,20 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\OneToOne;
 
-/** @Entity */
+#[Entity]
 class DDC117ArticleDetails
 {
-    /**
-     * @var DDC117Article
-     * @Id
-     * @OneToOne(targetEntity="DDC117Article", inversedBy="details")
-     * @JoinColumn(name="article_id", referencedColumnName="article_id")
-     */
-    private $article;
+    #[Column(type: 'text')]
+    private string $text;
 
-    /**
-     * @var string
-     * @Column(type="text")
-     */
-    private $text;
-
-    public function __construct(DDC117Article $article, string $text)
-    {
-        $this->article = $article;
+    public function __construct(
+        /** @var DDC117Article */
+        #[Id]
+        #[OneToOne(targetEntity: 'DDC117Article', inversedBy: 'details')]
+        #[JoinColumn(name: 'article_id', referencedColumnName: 'article_id')]
+        private $article,
+        string $text,
+    ) {
         $article->setDetails($this);
 
         $this->update($text);

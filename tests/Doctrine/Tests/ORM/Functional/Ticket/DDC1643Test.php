@@ -7,17 +7,14 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 use Doctrine\Tests\Models\CMS\CmsGroup;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
-use function get_class;
-
-/** @group DDC-1643 */
+#[Group('DDC-1643')]
 class DDC1643Test extends OrmFunctionalTestCase
 {
-    /** @var CmsUser */
-    private $user1;
+    private CmsUser|null $user1;
 
-    /** @var CmsUser */
-    private $user2;
+    private CmsUser|null $user2;
 
     protected function setUp(): void
     {
@@ -47,8 +44,8 @@ class DDC1643Test extends OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $this->user1 = $this->_em->find(get_class($user1), $user1->id);
-        $this->user2 = $this->_em->find(get_class($user1), $user2->id);
+        $this->user1 = $this->_em->find($user1::class, $user1->id);
+        $this->user2 = $this->_em->find($user1::class, $user2->id);
     }
 
     public function testClonePersistentCollectionAndReuse(): void
@@ -60,7 +57,7 @@ class DDC1643Test extends OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $user1 = $this->_em->find(get_class($user1), $user1->id);
+        $user1 = $this->_em->find($user1::class, $user1->id);
 
         self::assertCount(2, $user1->groups);
     }
@@ -75,8 +72,8 @@ class DDC1643Test extends OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $user1 = $this->_em->find(get_class($user1), $user1->id);
-        $user2 = $this->_em->find(get_class($user1), $user2->id);
+        $user1 = $this->_em->find($user1::class, $user1->id);
+        $user2 = $this->_em->find($user1::class, $user2->id);
 
         self::assertCount(2, $user1->groups);
         self::assertCount(2, $user2->groups);
@@ -96,8 +93,8 @@ class DDC1643Test extends OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $user1 = $this->_em->find(get_class($user1), $user1->id);
-        $user2 = $this->_em->find(get_class($user1), $user2->id);
+        $user1 = $this->_em->find($user1::class, $user1->id);
+        $user2 = $this->_em->find($user1::class, $user2->id);
 
         self::assertCount(3, $user2->groups);
         self::assertCount(2, $user1->groups);
@@ -119,8 +116,8 @@ class DDC1643Test extends OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $user1 = $this->_em->find(get_class($user1), $user1->id);
-        $user2 = $this->_em->find(get_class($user1), $user2->id);
+        $user1 = $this->_em->find($user1::class, $user1->id);
+        $user2 = $this->_em->find($user1::class, $user2->id);
 
         self::assertCount(3, $user2->groups);
         self::assertCount(3, $user1->groups);

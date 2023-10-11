@@ -8,8 +8,9 @@ use Doctrine\ORM\Cache;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Doctrine\Tests\Models\Cache\Country;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
-/** @group DDC-2943 */
+#[Group('DDC-2943')]
 class DDC2943Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void

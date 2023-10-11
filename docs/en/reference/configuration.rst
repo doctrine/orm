@@ -60,11 +60,6 @@ access point to ORM functionality provided by Doctrine.
     $connection = DriverManager::getConnection($dbParams, $config);
     $entityManager = new EntityManager($connection, $config);
 
-.. note::
-
-    The ``ORMSetup`` class has been introduced with ORM 2.12. It's predecessor ``Setup`` is deprecated and will
-    be removed in version 3.0.
-
 Or if you prefer XML:
 
 .. code-block:: php
@@ -74,23 +69,6 @@ Or if you prefer XML:
     $config = ORMSetup::createXMLMetadataConfiguration($paths, $isDevMode);
     $connection = DriverManager::getConnection($dbParams, $config);
     $entityManager = new EntityManager($connection, $config);
-
-Or if you prefer YAML:
-
-.. code-block:: php
-
-    <?php
-    $paths = ['/path/to/yml-mappings'];
-    $config = ORMSetup::createYAMLMetadataConfiguration($paths, $isDevMode);
-    $connection = DriverManager::getConnection($dbParams, $config);
-    $entityManager = new EntityManager($connection, $config);
-
-.. note::
-    If you want to use yml mapping you should add yaml dependency to your `composer.json`:
-
-    ::
-
-        "symfony/yaml": "*"
 
 Inside the ``ORMSetup`` methods several assumptions are made:
 

@@ -7,6 +7,7 @@ namespace Doctrine\Tests\ORM\Query;
 use Doctrine\ORM\Query\Exec\AbstractSqlExecutor;
 use Doctrine\ORM\Query\ParserResult;
 use Doctrine\ORM\Query\ResultSetMapping;
+use LogicException;
 use PHPUnit\Framework\TestCase;
 
 class ParserResultTest extends TestCase
@@ -24,10 +25,18 @@ class ParserResultTest extends TestCase
         self::assertInstanceOf(ResultSetMapping::class, $this->parserResult->getResultSetMapping());
     }
 
+    public function testItThrowsWhenAttemptingToAccessTheExecutorBeforeItIsSet(): void
+    {
+        $this->expectException(LogicException::class);
+        $this->expectExceptionMessage(
+            'Executor not set yet. Call Doctrine\ORM\Query\ParserResult::setSqlExecutor() first.',
+        );
+
+        $this->parserResult->getSqlExecutor();
+    }
+
     public function testSetGetSqlExecutor(): void
     {
-        self::assertNull($this->parserResult->getSqlExecutor());
-
         $executor = $this->getMockForAbstractClass(AbstractSqlExecutor::class);
         $this->parserResult->setSqlExecutor($executor);
         self::assertSame($executor, $this->parserResult->getSqlExecutor());

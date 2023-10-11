@@ -11,31 +11,20 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\ManyToOne;
 
-/**
- * @Entity
- */
+#[Entity]
 class GH10334Product
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(name="product_id", type="integer")
-     * @GeneratedValue()
-     */
-    protected $id;
+    #[Id]
+    #[Column(name: 'product_id', type: 'integer')]
+    #[GeneratedValue]
+    protected int $id;
 
-    /**
-     * @var string
-     * @Column(name="name", type="string")
-     */
-    private $name;
+    #[Column(name: 'name', type: 'string')]
+    private string $name;
 
-    /**
-     * @var GH10334ProductType $productType
-     * @ManyToOne(targetEntity="GH10334ProductType", inversedBy="products")
-     * @JoinColumn(name="product_type_id", referencedColumnName="id", nullable = false)
-     */
-    private $productType;
+    #[ManyToOne(targetEntity: 'GH10334ProductType', inversedBy: 'products')]
+    #[JoinColumn(name: 'product_type_id', referencedColumnName: 'id', nullable: false)]
+    private GH10334ProductType $productType;
 
     public function __construct(string $name, GH10334ProductType $productType)
     {

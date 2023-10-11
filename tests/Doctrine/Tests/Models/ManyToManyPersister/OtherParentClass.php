@@ -9,21 +9,14 @@ use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\Table;
 
-/**
- * @Entity
- * @Table(name="manytomanypersister_other_parent")
- */
+#[Table(name: 'manytomanypersister_other_parent')]
+#[Entity]
 class OtherParentClass
 {
-    /**
-     * @Id
-     * @Column(name="id", type="integer")
-     * @var int
-     */
-    public $id;
-
-    public function __construct(int $id)
-    {
-        $this->id = $id;
+    public function __construct(
+        #[Id]
+        #[Column(name: 'id', type: 'integer')]
+        public int $id,
+    ) {
     }
 }

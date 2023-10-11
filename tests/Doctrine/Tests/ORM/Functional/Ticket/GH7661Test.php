@@ -11,10 +11,11 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
 use function array_keys;
 
-/** @group GH-7661 */
+#[Group('GH-7661')]
 class GH7661Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -51,59 +52,43 @@ class GH7661Test extends OrmFunctionalTestCase
     }
 }
 
-/** @Entity */
+#[Entity]
 class GH7661User
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     public $id;
 }
 
-/** @Entity */
+#[Entity]
 class GH7661Event
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     public $id;
-    /**
-     * @var GH7661Participant[]
-     * @OneToMany(targetEntity=GH7661Participant::class, mappedBy="event", indexBy="user_id")
-     */
+    /** @var GH7661Participant[] */
+    #[OneToMany(targetEntity: GH7661Participant::class, mappedBy: 'event', indexBy: 'user_id')]
     public $participants;
 }
 
-/** @Entity */
+#[Entity]
 class GH7661Participant
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     public $id;
-    /**
-     * @var GH7661User
-     * @ManyToOne(targetEntity=GH7661User::class)
-     */
-    public $user;
-    /**
-     * @var GH7661Event
-     * @ManyToOne(targetEntity=GH7661Event::class)
-     */
-    public $event;
 
-    public function __construct(GH7661User $user, GH7661Event $event)
-    {
-        $this->user  = $user;
-        $this->event = $event;
+    public function __construct(
+        #[ManyToOne(targetEntity: GH7661User::class)]
+        public GH7661User $user,
+        #[ManyToOne(targetEntity: GH7661Event::class)]
+        public GH7661Event $event,
+    ) {
     }
 }

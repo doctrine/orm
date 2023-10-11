@@ -11,97 +11,43 @@ use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\DiscriminatorColumn;
 use Doctrine\ORM\Mapping\DiscriminatorMap;
 use Doctrine\ORM\Mapping\Entity;
-use Doctrine\ORM\Mapping\EntityResult;
-use Doctrine\ORM\Mapping\FieldResult;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\InheritanceType;
+use Doctrine\ORM\Mapping\InverseJoinColumn;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\JoinTable;
 use Doctrine\ORM\Mapping\ManyToMany;
-use Doctrine\ORM\Mapping\NamedNativeQueries;
-use Doctrine\ORM\Mapping\NamedNativeQuery;
 use Doctrine\ORM\Mapping\OneToOne;
-use Doctrine\ORM\Mapping\SqlResultSetMapping;
-use Doctrine\ORM\Mapping\SqlResultSetMappings;
 use Doctrine\ORM\Mapping\Table;
 
 /**
  * Description of CompanyPerson
- *
- * @Entity
- * @Table(name="company_persons")
- * @InheritanceType("JOINED")
- * @DiscriminatorColumn(name="discr", type="string", length=255)
- * @DiscriminatorMap({
- *      "person"    = "CompanyPerson",
- *      "manager"   = "CompanyManager",
- *      "employee"  = "CompanyEmployee"
- * })
- * @NamedNativeQueries({
- *      @NamedNativeQuery(
- *          name           = "fetchAllWithResultClass",
- *          resultClass    = "__CLASS__",
- *          query          = "SELECT id, name, discr FROM company_persons ORDER BY name"
- *      ),
- *      @NamedNativeQuery(
- *          name            = "fetchAllWithSqlResultSetMapping",
- *          resultSetMapping= "mappingFetchAll",
- *          query           = "SELECT id, name, discr AS discriminator FROM company_persons ORDER BY name"
- *      )
- * })
- * @SqlResultSetMappings({
- *      @SqlResultSetMapping(
- *          name    = "mappingFetchAll",
- *          entities= {
- *              @EntityResult(
- *                  entityClass         = "__CLASS__",
- *                  discriminatorColumn = "discriminator",
- *                  fields              = {
- *                      @FieldResult("id"),
- *                      @FieldResult("name"),
- *                  }
- *              )
- *          }
- *      )
- * })
  */
+#[Table(name: 'company_persons')]
+#[Entity]
+#[InheritanceType('JOINED')]
+#[DiscriminatorColumn(name: 'discr', type: 'string', length: 255)]
+#[DiscriminatorMap(['person' => 'CompanyPerson', 'manager' => 'CompanyManager', 'employee' => 'CompanyEmployee'])]
 class CompanyPerson
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
-    private $id;
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
+    private int $id;
 
-    /**
-     * @var string
-     * @Column
-     */
-    private $name;
+    #[Column]
+    private string|null $name = null;
 
-    /**
-     * @var CompanyPerson|null
-     * @OneToOne(targetEntity="CompanyPerson")
-     * @JoinColumn(name="spouse_id", referencedColumnName="id", onDelete="CASCADE")
-     */
-    private $spouse;
+    #[OneToOne(targetEntity: 'CompanyPerson')]
+    #[JoinColumn(name: 'spouse_id', referencedColumnName: 'id', onDelete: 'CASCADE')]
+    private CompanyPerson|null $spouse = null;
 
-    /**
-     * @psalm-var Collection<int, CompanyPerson>
-     * @ManyToMany(targetEntity="CompanyPerson")
-     * @JoinTable(
-     *     name="company_persons_friends",
-     *     joinColumns={
-     *         @JoinColumn(name="person_id", referencedColumnName="id", onDelete="CASCADE")
-     *     },
-     *     inverseJoinColumns={
-     *         @JoinColumn(name="friend_id", referencedColumnName="id", onDelete="CASCADE")
-     *     }
-     * )
-     */
+    /** @psalm-var Collection<int, CompanyPerson> */
+    #[JoinTable(name: 'company_persons_friends')]
+    #[JoinColumn(name: 'person_id', referencedColumnName: 'id', onDelete: 'CASCADE')]
+    #[InverseJoinColumn(name: 'friend_id', referencedColumnName: 'id', onDelete: 'CASCADE')]
+    #[ManyToMany(targetEntity: 'CompanyPerson')]
     private $friends;
 
     public function __construct()
@@ -124,7 +70,7 @@ class CompanyPerson
         $this->name = $name;
     }
 
-    public function getSpouse(): ?CompanyPerson
+    public function getSpouse(): CompanyPerson|null
     {
         return $this->spouse;
     }
@@ -154,46 +100,7 @@ class CompanyPerson
     public static function loadMetadata(ClassMetadata $metadata): void
     {
         $metadata->setPrimaryTable(
-            ['name' => 'company_person']
-        );
-
-        $metadata->addNamedNativeQuery(
-            [
-                'name'              => 'fetchAllWithResultClass',
-                'query'             => 'SELECT id, name, discr FROM company_persons ORDER BY name',
-                'resultClass'       => self::class,
-            ]
-        );
-
-        $metadata->addNamedNativeQuery(
-            [
-                'name'              => 'fetchAllWithSqlResultSetMapping',
-                'query'             => 'SELECT id, name, discr AS discriminator FROM company_persons ORDER BY name',
-                'resultSetMapping'  => 'mappingFetchAll',
-            ]
-        );
-
-        $metadata->addSqlResultSetMapping(
-            [
-                'name'      => 'mappingFetchAll',
-                'columns'   => [],
-                'entities'  => [
-                    [
-                        'fields' => [
-                            [
-                                'name'      => 'id',
-                                'column'    => 'id',
-                            ],
-                            [
-                                'name'      => 'name',
-                                'column'    => 'name',
-                            ],
-                        ],
-                        'entityClass' => self::class,
-                        'discriminatorColumn' => 'discriminator',
-                    ],
-                ],
-            ]
+            ['name' => 'company_person'],
         );
     }
 }

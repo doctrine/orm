@@ -12,38 +12,22 @@ use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\ManyToMany;
 
-/** @Entity */
 #[Entity]
 class DDC3579Group
 {
-    /**
-     * @var int
-     * @GeneratedValue
-     * @Id
-     * @Column(type="integer")
-     */
     #[Id]
     #[GeneratedValue]
     #[Column(type: 'integer')]
-    private $id;
+    private int $id;
 
-    /**
-     * @var string|null
-     * @Column
-     */
-    #[Column]
-    private $name;
-
-    /**
-     * @psalm-var Collection<int, DDC3579Admin>
-     * @ManyToMany(targetEntity="DDC3579Admin", mappedBy="groups")
-     */
+    /** @psalm-var Collection<int, DDC3579Admin> */
     #[ManyToMany(targetEntity: DDC3579Admin::class, mappedBy: 'groups')]
     private $admins;
 
-    public function __construct(?string $name = null)
-    {
-        $this->name   = $name;
+    public function __construct(
+        #[Column]
+        private string|null $name = null,
+    ) {
         $this->admins = new ArrayCollection();
     }
 
@@ -52,7 +36,7 @@ class DDC3579Group
         $this->name = $name;
     }
 
-    public function getName(): ?string
+    public function getName(): string|null
     {
         return $this->name;
     }

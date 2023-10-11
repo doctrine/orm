@@ -14,10 +14,12 @@ use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\Table;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
+use Stringable;
 
 use function is_string;
 
-/** @group DDC-2984 */
+#[Group('DDC-2984')]
 class DDC2984Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -27,7 +29,7 @@ class DDC2984Test extends OrmFunctionalTestCase
         if (! Type::hasType('ddc2984_domain_user_id')) {
             Type::addType(
                 'ddc2984_domain_user_id',
-                DDC2984UserIdCustomDbalType::class
+                DDC2984UserIdCustomDbalType::class,
             );
         }
 
@@ -59,29 +61,19 @@ class DDC2984Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- * @Table(name="users")
- */
+#[Table(name: 'users')]
+#[Entity]
 class DDC2984User
 {
-    /**
-     * @Id
-     * @Column(type="ddc2984_domain_user_id", length=255)
-     * @GeneratedValue(strategy="NONE")
-     * @var DDC2984DomainUserId
-     */
-    private $userId;
+    #[Column(type: 'string', length: 50)]
+    private string|null $name = null;
 
-    /**
-     * @var string
-     * @Column(type="string", length=50)
-     */
-    private $name;
-
-    public function __construct(DDC2984DomainUserId $aUserId)
-    {
-        $this->userId = $aUserId;
+    public function __construct(
+        #[Id]
+        #[Column(type: 'ddc2984_domain_user_id', length: 255)]
+        #[GeneratedValue(strategy: 'NONE')]
+        private DDC2984DomainUserId $userId,
+    ) {
     }
 
     public function userId(): DDC2984DomainUserId
@@ -108,14 +100,10 @@ class DDC2984User
 /**
  * DDC2984DomainUserId ValueObject
  */
-class DDC2984DomainUserId
+class DDC2984DomainUserId implements Stringable
 {
-    /** @var string */
-    private $userIdString;
-
-    public function __construct(string $aUserIdString)
+    public function __construct(private string $userIdString)
     {
-        $this->userIdString = $aUserIdString;
     }
 
     public function toString(): string
@@ -146,7 +134,7 @@ class DDC2984UserIdCustomDbalType extends StringType
     /**
      * {@inheritDoc}
      */
-    public function convertToPHPValue($value, AbstractPlatform $platform)
+    public function convertToPHPValue($value, AbstractPlatform $platform): DDC2984DomainUserId|null
     {
         return ! empty($value)
             ? new DDC2984DomainUserId($value)
@@ -156,7 +144,7 @@ class DDC2984UserIdCustomDbalType extends StringType
     /**
      * {@inheritDoc}
      */
-    public function convertToDatabaseValue($value, AbstractPlatform $platform)
+    public function convertToDatabaseValue($value, AbstractPlatform $platform): mixed
     {
         if (empty($value)) {
             return null;

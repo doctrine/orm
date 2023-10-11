@@ -4,19 +4,26 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Decorator;
 
+use DateTimeInterface;
+use Doctrine\Common\EventManager;
+use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\LockMode;
+use Doctrine\ORM\Cache;
+use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
+use Doctrine\ORM\Internal\Hydration\AbstractHydrator;
+use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\ClassMetadataFactory;
+use Doctrine\ORM\NativeQuery;
+use Doctrine\ORM\Proxy\ProxyFactory;
+use Doctrine\ORM\Query;
+use Doctrine\ORM\Query\Expr;
+use Doctrine\ORM\Query\FilterCollection;
 use Doctrine\ORM\Query\ResultSetMapping;
+use Doctrine\ORM\QueryBuilder;
+use Doctrine\ORM\UnitOfWork;
 use Doctrine\Persistence\ObjectManagerDecorator;
-
-use function func_get_arg;
-use function func_num_args;
-use function get_debug_type;
-use function method_exists;
-use function sprintf;
-use function trigger_error;
-
-use const E_USER_NOTICE;
 
 /**
  * Base class for EntityManager decorators
@@ -30,287 +37,142 @@ abstract class EntityManagerDecorator extends ObjectManagerDecorator implements 
         $this->wrapped = $wrapped;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function getConnection()
-    {
-        return $this->wrapped->getConnection();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function getExpressionBuilder()
-    {
-        return $this->wrapped->getExpressionBuilder();
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * @psalm-param class-string<T> $className
-     *
-     * @psalm-return EntityRepository<T>
-     *
-     * @template T of object
-     */
-    public function getRepository($className)
+    public function getRepository(string $className): EntityRepository
     {
         return $this->wrapped->getRepository($className);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function getClassMetadata($className)
+    public function getMetadataFactory(): ClassMetadataFactory
+    {
+        return $this->wrapped->getMetadataFactory();
+    }
+
+    public function getClassMetadata(string $className): ClassMetadata
     {
         return $this->wrapped->getClassMetadata($className);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function beginTransaction()
+    public function getConnection(): Connection
+    {
+        return $this->wrapped->getConnection();
+    }
+
+    public function getExpressionBuilder(): Expr
+    {
+        return $this->wrapped->getExpressionBuilder();
+    }
+
+    public function beginTransaction(): void
     {
         $this->wrapped->beginTransaction();
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function transactional($func)
+    public function wrapInTransaction(callable $func): mixed
     {
-        return $this->wrapped->transactional($func);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function wrapInTransaction(callable $func)
-    {
-        if (! method_exists($this->wrapped, 'wrapInTransaction')) {
-            trigger_error(
-                sprintf('Calling `transactional()` instead of `wrapInTransaction()` which is not implemented on %s', get_debug_type($this->wrapped)),
-                E_USER_NOTICE
-            );
-
-            return $this->wrapped->transactional($func);
-        }
-
         return $this->wrapped->wrapInTransaction($func);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function commit()
+    public function commit(): void
     {
         $this->wrapped->commit();
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function rollback()
+    public function rollback(): void
     {
         $this->wrapped->rollback();
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function createQuery($dql = '')
+    public function createQuery(string $dql = ''): Query
     {
         return $this->wrapped->createQuery($dql);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function createNamedQuery($name)
-    {
-        return $this->wrapped->createNamedQuery($name);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function createNativeQuery($sql, ResultSetMapping $rsm)
+    public function createNativeQuery(string $sql, ResultSetMapping $rsm): NativeQuery
     {
         return $this->wrapped->createNativeQuery($sql, $rsm);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function createNamedNativeQuery($name)
-    {
-        return $this->wrapped->createNamedNativeQuery($name);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function createQueryBuilder()
+    public function createQueryBuilder(): QueryBuilder
     {
         return $this->wrapped->createQueryBuilder();
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function getReference($entityName, $id)
+    public function getReference(string $entityName, mixed $id): object|null
     {
         return $this->wrapped->getReference($entityName, $id);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function getPartialReference($entityName, $identifier)
+    public function getPartialReference(string $entityName, mixed $identifier): object|null
     {
         return $this->wrapped->getPartialReference($entityName, $identifier);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function close()
+    public function close(): void
     {
         $this->wrapped->close();
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function copy($entity, $deep = false)
-    {
-        return $this->wrapped->copy($entity, $deep);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function lock($entity, $lockMode, $lockVersion = null)
+    public function lock(object $entity, LockMode|int $lockMode, DateTimeInterface|int|null $lockVersion = null): void
     {
         $this->wrapped->lock($entity, $lockMode, $lockVersion);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function find($className, $id, $lockMode = null, $lockVersion = null)
+    public function find(string $className, mixed $id, LockMode|int|null $lockMode = null, int|null $lockVersion = null): object|null
     {
         return $this->wrapped->find($className, $id, $lockMode, $lockVersion);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function flush($entity = null)
+    public function refresh(object $object, LockMode|int|null $lockMode = null): void
     {
-        $this->wrapped->flush($entity);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function refresh($object)
-    {
-        $lockMode = null;
-
-        if (func_num_args() > 1) {
-            $lockMode = func_get_arg(1);
-        }
-
         $this->wrapped->refresh($object, $lockMode);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function getEventManager()
+    public function getEventManager(): EventManager
     {
         return $this->wrapped->getEventManager();
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function getConfiguration()
+    public function getConfiguration(): Configuration
     {
         return $this->wrapped->getConfiguration();
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function isOpen()
+    public function isOpen(): bool
     {
         return $this->wrapped->isOpen();
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function getUnitOfWork()
+    public function getUnitOfWork(): UnitOfWork
     {
         return $this->wrapped->getUnitOfWork();
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function getHydrator($hydrationMode)
-    {
-        return $this->wrapped->getHydrator($hydrationMode);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function newHydrator($hydrationMode)
+    public function newHydrator(string|int $hydrationMode): AbstractHydrator
     {
         return $this->wrapped->newHydrator($hydrationMode);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function getProxyFactory()
+    public function getProxyFactory(): ProxyFactory
     {
         return $this->wrapped->getProxyFactory();
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function getFilters()
+    public function getFilters(): FilterCollection
     {
         return $this->wrapped->getFilters();
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function isFiltersStateClean()
+    public function isFiltersStateClean(): bool
     {
         return $this->wrapped->isFiltersStateClean();
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function hasFilters()
+    public function hasFilters(): bool
     {
         return $this->wrapped->hasFilters();
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function getCache()
+    public function getCache(): Cache|null
     {
         return $this->wrapped->getCache();
     }

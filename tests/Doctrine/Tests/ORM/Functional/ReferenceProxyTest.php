@@ -11,10 +11,10 @@ use Doctrine\Tests\Models\Company\CompanyAuction;
 use Doctrine\Tests\Models\ECommerce\ECommerceProduct;
 use Doctrine\Tests\Models\ECommerce\ECommerceShipping;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
 use function assert;
 use function file_exists;
-use function get_class;
 use function str_replace;
 use function strlen;
 use function substr;
@@ -66,18 +66,18 @@ class ReferenceProxyTest extends OrmFunctionalTestCase
         self::assertEquals('Doctrine Cookbook', $productProxy->getName());
     }
 
-    /** @group DDC-727 */
+    #[Group('DDC-727')]
     public function testAccessMetatadaForProxy(): void
     {
         $id = $this->createProduct();
 
         $entity = $this->_em->getReference(ECommerceProduct::class, $id);
-        $class  = $this->_em->getClassMetadata(get_class($entity));
+        $class  = $this->_em->getClassMetadata($entity::class);
 
         self::assertEquals(ECommerceProduct::class, $class->name);
     }
 
-    /** @group DDC-1033 */
+    #[Group('DDC-1033')]
     public function testReferenceFind(): void
     {
         $id = $this->createProduct();
@@ -89,7 +89,7 @@ class ReferenceProxyTest extends OrmFunctionalTestCase
         self::assertEquals('Doctrine Cookbook', $entity2->getName());
     }
 
-    /** @group DDC-1033 */
+    #[Group('DDC-1033')]
     public function testCloneProxy(): void
     {
         $id = $this->createProduct();
@@ -112,7 +112,7 @@ class ReferenceProxyTest extends OrmFunctionalTestCase
         self::assertFalse($entity->isCloned);
     }
 
-    /** @group DDC-733 */
+    #[Group('DDC-733')]
     public function testInitializeProxy(): void
     {
         $id = $this->createProduct();
@@ -125,7 +125,7 @@ class ReferenceProxyTest extends OrmFunctionalTestCase
         self::assertFalse($this->isUninitializedObject($entity), 'Should be initialized after called UnitOfWork::initializeObject()');
     }
 
-    /** @group DDC-1163 */
+    #[Group('DDC-1163')]
     public function testInitializeChangeAndFlushProxy(): void
     {
         $id = $this->createProduct();
@@ -141,7 +141,7 @@ class ReferenceProxyTest extends OrmFunctionalTestCase
         self::assertEquals('Doctrine 2 Cookbook', $entity->getName());
     }
 
-    /** @group DDC-1022 */
+    #[Group('DDC-1022')]
     public function testWakeupOnProxy(): void
     {
         $id = $this->createProduct();
@@ -172,7 +172,7 @@ class ReferenceProxyTest extends OrmFunctionalTestCase
         self::assertTrue($this->isUninitializedObject($entity), "Getting the identifier doesn't initialize the proxy.");
     }
 
-    /** @group DDC-1625 */
+    #[Group('DDC-1625')]
     public function testDoNotInitializeProxyOnGettingTheIdentifierDDC1625(): void
     {
         $id = $this->createAuction();
@@ -220,7 +220,7 @@ class ReferenceProxyTest extends OrmFunctionalTestCase
         self::assertFalse($this->isUninitializedObject($entity), 'Getting something other than the identifier initializes the proxy.');
     }
 
-    /** @group DDC-1604 */
+    #[Group('DDC-1604')]
     public function testCommonPersistenceProxy(): void
     {
         $id = $this->createProduct();
@@ -233,8 +233,8 @@ class ReferenceProxyTest extends OrmFunctionalTestCase
         self::assertTrue($this->isUninitializedObject($entity));
         self::assertEquals(ECommerceProduct::class, $className);
 
-        $restName      = str_replace($this->_em->getConfiguration()->getProxyNamespace(), '', get_class($entity));
-        $restName      = substr(get_class($entity), strlen($this->_em->getConfiguration()->getProxyNamespace()) + 1);
+        $restName      = str_replace($this->_em->getConfiguration()->getProxyNamespace(), '', $entity::class);
+        $restName      = substr($entity::class, strlen($this->_em->getConfiguration()->getProxyNamespace()) + 1);
         $proxyFileName = $this->_em->getConfiguration()->getProxyDir() . DIRECTORY_SEPARATOR . str_replace('\\', '', $restName) . '.php';
         self::assertTrue(file_exists($proxyFileName), 'Proxy file name cannot be found generically.');
 

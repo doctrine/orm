@@ -6,13 +6,18 @@ namespace Doctrine\Tests\ORM\Functional;
 
 use DateTime;
 use DateTimeZone;
+use Doctrine\DBAL\Types\ArrayType;
+use Doctrine\DBAL\Types\ObjectType;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\Tests\Models\Generic\BooleanModel;
 use Doctrine\Tests\Models\Generic\DateTimeModel;
 use Doctrine\Tests\Models\Generic\DecimalModel;
 use Doctrine\Tests\Models\Generic\SerializationModel;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 use stdClass;
+
+use function class_exists;
 
 class TypeTest extends OrmFunctionalTestCase
 {
@@ -40,7 +45,7 @@ class TypeTest extends OrmFunctionalTestCase
         self::assertSame('0.1515', $decimal->highScale);
     }
 
-    /** @group DDC-1394 */
+    #[Group('DDC-1394')]
     public function testBoolean(): void
     {
         $bool               = new BooleanModel();
@@ -68,6 +73,10 @@ class TypeTest extends OrmFunctionalTestCase
 
     public function testArray(): void
     {
+        if (! class_exists(ArrayType::class)) {
+            self::markTestSkipped('Test valid for doctrine/dbal:3.x only.');
+        }
+
         $serialize               = new SerializationModel();
         $serialize->array['foo'] = 'bar';
         $serialize->array['bar'] = 'baz';
@@ -86,6 +95,10 @@ class TypeTest extends OrmFunctionalTestCase
 
     public function testObject(): void
     {
+        if (! class_exists(ObjectType::class)) {
+            self::markTestSkipped('Test valid for doctrine/dbal:3.x only.');
+        }
+
         $serialize         = new SerializationModel();
         $serialize->object = new stdClass();
 
@@ -98,7 +111,7 @@ class TypeTest extends OrmFunctionalTestCase
         $dql       = 'SELECT s FROM ' . SerializationModel::class . ' s';
         $serialize = $this->_em->createQuery($dql)->getSingleResult();
 
-        self::assertInstanceOf('stdClass', $serialize->object);
+        self::assertInstanceOf(stdClass::class, $serialize->object);
     }
 
     public function testDate(): void

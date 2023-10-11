@@ -14,39 +14,29 @@ use Doctrine\ORM\Mapping\Table;
 
 /**
  * Describes a product feature.
- *
- * @Entity
- * @Table(name="ecommerce_features")
  */
+#[Table(name: 'ecommerce_features')]
+#[Entity]
 class ECommerceFeature
 {
-    /**
-     * @var int
-     * @Column(type="integer")
-     * @Id
-     * @GeneratedValue
-     */
-    private $id;
+    #[Column(type: 'integer')]
+    #[Id]
+    #[GeneratedValue]
+    private int $id;
 
-    /**
-     * @var string|null
-     * @Column(length=50)
-     */
-    private $description;
+    #[Column(length: 50)]
+    private string|null $description = null;
 
-    /**
-     * @var ECommerceProduct|null
-     * @ManyToOne(targetEntity="ECommerceProduct", inversedBy="features")
-     * @JoinColumn(name="product_id", referencedColumnName="id")
-     */
-    private $product;
+    #[ManyToOne(targetEntity: 'ECommerceProduct', inversedBy: 'features')]
+    #[JoinColumn(name: 'product_id', referencedColumnName: 'id')]
+    private ECommerceProduct|null $product = null;
 
     public function getId(): int
     {
         return $this->id;
     }
 
-    public function getDescription(): ?string
+    public function getDescription(): string|null
     {
         return $this->description;
     }
@@ -70,7 +60,7 @@ class ECommerceFeature
         }
     }
 
-    public function getProduct(): ?ECommerceProduct
+    public function getProduct(): ECommerceProduct|null
     {
         return $this->product;
     }

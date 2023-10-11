@@ -13,6 +13,7 @@ use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
 class DDC6460Test extends OrmFunctionalTestCase
 {
@@ -25,13 +26,13 @@ class DDC6460Test extends OrmFunctionalTestCase
                 [
                     DDC6460Entity::class,
                     DDC6460ParentEntity::class,
-                ]
+                ],
             );
-        } catch (SchemaException $e) {
+        } catch (SchemaException) {
         }
     }
 
-    /** @group DDC-6460 */
+    #[Group('DDC-6460')]
     public function testInlineEmbeddable(): void
     {
         $isFieldMapped = $this->_em
@@ -41,7 +42,7 @@ class DDC6460Test extends OrmFunctionalTestCase
         self::assertTrue($isFieldMapped);
     }
 
-    /** @group DDC-6460 */
+    #[Group('DDC-6460')]
     public function testInlineEmbeddableProxyInitialization(): void
     {
         $entity                  = new DDC6460Entity();
@@ -67,48 +68,38 @@ class DDC6460Test extends OrmFunctionalTestCase
     }
 }
 
-/** @Embeddable() */
+#[Embeddable]
 class DDC6460Embeddable
 {
-    /**
-     * @var string
-     * @Column(type="string", length=255)
-     */
+    /** @var string */
+    #[Column(type: 'string', length: 255)]
     public $field;
 }
 
-/** @Entity() */
+#[Entity]
 class DDC6460Entity
 {
-    /**
-     * @var int
-     * @Id
-     * @GeneratedValue(strategy = "NONE")
-     * @Column(type = "integer")
-     */
+    /** @var int */
+    #[Id]
+    #[GeneratedValue(strategy: 'NONE')]
+    #[Column(type: 'integer')]
     public $id;
 
-    /**
-     * @var DDC6460Embeddable
-     * @Embedded(class = "DDC6460Embeddable")
-     */
+    /** @var DDC6460Embeddable */
+    #[Embedded(class: 'DDC6460Embeddable')]
     public $embedded;
 }
 
-/** @Entity() */
+#[Entity]
 class DDC6460ParentEntity
 {
-    /**
-     * @var int
-     * @Id
-     * @GeneratedValue(strategy = "NONE")
-     * @Column(type = "integer")
-     */
+    /** @var int */
+    #[Id]
+    #[GeneratedValue(strategy: 'NONE')]
+    #[Column(type: 'integer')]
     public $id;
 
-    /**
-     * @var DDC6460Entity
-     * @ManyToOne(targetEntity="DDC6460Entity", fetch="EXTRA_LAZY", cascade={"persist"})
-     */
+    /** @var DDC6460Entity */
+    #[ManyToOne(targetEntity: 'DDC6460Entity', fetch: 'EXTRA_LAZY', cascade: ['persist'])]
     public $lazyLoaded;
 }

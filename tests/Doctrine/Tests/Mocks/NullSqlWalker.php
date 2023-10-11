@@ -12,24 +12,24 @@ use Doctrine\ORM\Query\SqlWalker;
 /**
  * SqlWalker implementation that does not produce SQL.
  */
-class NullSqlWalker extends SqlWalker
+final class NullSqlWalker extends SqlWalker
 {
-    public function walkSelectStatement(AST\SelectStatement $AST): string
+    public function walkSelectStatement(AST\SelectStatement $selectStatement): string
     {
         return '';
     }
 
-    public function walkUpdateStatement(AST\UpdateStatement $AST): string
+    public function walkUpdateStatement(AST\UpdateStatement $updateStatement): string
     {
         return '';
     }
 
-    public function walkDeleteStatement(AST\DeleteStatement $AST): string
+    public function walkDeleteStatement(AST\DeleteStatement $deleteStatement): string
     {
         return '';
     }
 
-    public function getExecutor($AST): AbstractSqlExecutor
+    public function getExecutor(AST\SelectStatement|AST\UpdateStatement|AST\DeleteStatement $statement): AbstractSqlExecutor
     {
         return new class extends AbstractSqlExecutor {
             public function execute(Connection $conn, array $params, array $types): int

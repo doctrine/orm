@@ -23,7 +23,7 @@ use const PHP_VERSION_ID;
 final class DefaultTypedFieldMapper implements TypedFieldMapper
 {
     /** @var array<class-string|ScalarName, class-string<Type>|string> $typedFieldMappings */
-    private $typedFieldMappings;
+    private array $typedFieldMappings;
 
     private const DEFAULT_TYPED_FIELD_MAPPINGS = [
         DateInterval::class => Types::DATEINTERVAL,

@@ -10,26 +10,6 @@ use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 
-/**
- * @Entity
- * @AttributeOverrides({
- *      @AttributeOverride(name="id",
- *          column=@Column(
- *              name     = "guest_id",
- *              type     = "integer",
-                length   = 140
- *          )
- *      ),
- *      @AttributeOverride(name="name",
- *          column=@Column(
- *              name     = "guest_name",
- *              nullable = false,
- *              unique   = true,
- *              length   = 240
- *          )
- *      )
- * })
- */
 #[Entity]
 #[AttributeOverrides([new AttributeOverride(name: 'id', column: new Column(name: 'guest_id', type: 'integer', length: 140)), new AttributeOverride(name: 'name', column: new Column(name: 'guest_name', nullable: false, unique: true, length: 240))])]
 class DDC964Guest extends DDC964User
@@ -49,7 +29,7 @@ class DDC964Guest extends DDC964User
                 'nullable'      => false,
                 'unique'        => true,
                 'length'        => 240,
-            ]
+            ],
         );
     }
 }

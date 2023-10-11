@@ -24,14 +24,14 @@ class CountWalker extends TreeWalkerAdapter
      */
     public const HINT_DISTINCT = 'doctrine_paginator.distinct';
 
-    public function walkSelectStatement(SelectStatement $AST)
+    public function walkSelectStatement(SelectStatement $selectStatement): void
     {
-        if ($AST->havingClause) {
+        if ($selectStatement->havingClause) {
             throw new RuntimeException('Cannot count query that uses a HAVING clause. Use the output walkers for pagination');
         }
 
         // Get the root entity and alias from the AST fromClause
-        $from = $AST->fromClause->identificationVariableDeclarations;
+        $from = $selectStatement->fromClause->identificationVariableDeclarations;
 
         if (count($from) > 1) {
             throw new RuntimeException('Cannot count query which selects two FROM components, cannot make distinction');
@@ -50,19 +50,19 @@ class CountWalker extends TreeWalkerAdapter
         $pathExpression       = new PathExpression(
             PathExpression::TYPE_STATE_FIELD | PathExpression::TYPE_SINGLE_VALUED_ASSOCIATION,
             $rootAlias,
-            $identifierFieldName
+            $identifierFieldName,
         );
         $pathExpression->type = $pathType;
 
-        $distinct                             = $this->_getQuery()->getHint(self::HINT_DISTINCT);
-        $AST->selectClause->selectExpressions = [
+        $distinct                                         = $this->_getQuery()->getHint(self::HINT_DISTINCT);
+        $selectStatement->selectClause->selectExpressions = [
             new SelectExpression(
                 new AggregateExpression('count', $pathExpression, $distinct),
-                null
+                null,
             ),
         ];
 
         // ORDER BY is not needed, only increases query execution through unnecessary sorting.
-        $AST->orderByClause = null;
+        $selectStatement->orderByClause = null;
     }
 }

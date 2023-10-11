@@ -22,7 +22,7 @@ class Ticket4646InstanceOfTest extends OrmFunctionalTestCase
 
         $this->createSchemaForModels(
             PersonTicket4646::class,
-            EmployeeTicket4646::class
+            EmployeeTicket4646::class,
         );
     }
 
@@ -42,36 +42,26 @@ class Ticket4646InstanceOfTest extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity()
- * @Table(name="instance_of_test_person")
- * @InheritanceType(value="JOINED")
- * @DiscriminatorColumn(name="kind", type="string")
- * @DiscriminatorMap(value={
- *     "person": "Doctrine\Tests\ORM\Functional\Ticket\PersonTicket4646",
- *     "employee": "Doctrine\Tests\ORM\Functional\Ticket\EmployeeTicket4646"
- * })
- */
+#[Table(name: 'instance_of_test_person')]
+#[Entity]
+#[InheritanceType(value: 'JOINED')]
+#[DiscriminatorColumn(name: 'kind', type: 'string')]
+#[DiscriminatorMap(value: ['person' => 'Doctrine\Tests\ORM\Functional\Ticket\PersonTicket4646', 'employee' => 'Doctrine\Tests\ORM\Functional\Ticket\EmployeeTicket4646'])]
 class PersonTicket4646
 {
-    /**
-     * @var int
-     * @Id()
-     * @GeneratedValue()
-     * @Column(type="integer")
-     */
-    private $id;
+    #[Id]
+    #[GeneratedValue]
+    #[Column(type: 'integer')]
+    private int $id;
 
-    public function getId(): ?int
+    public function getId(): int|null
     {
         return $this->id;
     }
 }
 
-/**
- * @Entity()
- * @Table(name="instance_of_test_employee")
- */
+#[Table(name: 'instance_of_test_employee')]
+#[Entity]
 class EmployeeTicket4646 extends PersonTicket4646
 {
 }

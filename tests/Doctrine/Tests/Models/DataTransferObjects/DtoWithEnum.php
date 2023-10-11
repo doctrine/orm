@@ -11,7 +11,7 @@ final class DtoWithEnum
     /** @var Suit|null */
     public $suit;
 
-    public function __construct(?Suit $suit)
+    public function __construct(Suit|null $suit)
     {
         $this->suit = $suit;
     }

@@ -10,28 +10,20 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\ORM\Mapping\Table;
 
-/**
- * @Entity
- * @Table(name="vct_inversed_onetoone")
- */
+#[Table(name: 'vct_inversed_onetoone')]
+#[Entity]
 class InversedOneToOneEntity
 {
-    /**
-     * @var string
-     * @Column(type="rot13", length=255)
-     * @Id
-     */
+    /** @var string */
+    #[Column(type: 'rot13', length: 255)]
+    #[Id]
     public $id1;
 
-    /**
-     * @var string
-     * @Column(type="string", length=255, name="some_property")
-     */
+    /** @var string */
+    #[Column(type: 'string', length: 255, name: 'some_property')]
     public $someProperty;
 
-    /**
-     * @var OwningOneToOneEntity
-     * @OneToOne(targetEntity="OwningOneToOneEntity", mappedBy="associatedEntity")
-     */
+    /** @var OwningOneToOneEntity */
+    #[OneToOne(targetEntity: 'OwningOneToOneEntity', mappedBy: 'associatedEntity')]
     public $associatedEntity;
 }

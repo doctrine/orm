@@ -7,6 +7,7 @@ namespace Doctrine\Tests\ORM\Functional;
 use Doctrine\Tests\Models\CompositeKeyInheritance\JoinedChildClass;
 use Doctrine\Tests\Models\CompositeKeyInheritance\JoinedRootClass;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
 class JoinedTableCompositeKeyTest extends OrmFunctionalTestCase
 {
@@ -29,7 +30,7 @@ class JoinedTableCompositeKeyTest extends OrmFunctionalTestCase
         self::assertEquals($childEntity, $entity);
     }
 
-    /** @group non-cacheable */
+    #[Group('non-cacheable')]
     public function testUpdateWithCompositeKey(): void
     {
         $childEntity = new JoinedChildClass();
@@ -53,7 +54,7 @@ class JoinedTableCompositeKeyTest extends OrmFunctionalTestCase
     {
         return $this->_em->find(
             JoinedRootClass::class,
-            ['keyPart1' => 'part-1', 'keyPart2' => 'part-2']
+            ['keyPart1' => 'part-1', 'keyPart2' => 'part-2'],
         );
     }
 }

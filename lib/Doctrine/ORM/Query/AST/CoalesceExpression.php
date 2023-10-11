@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Query\AST;
 
+use Doctrine\ORM\Query\SqlWalker;
+
 /**
  * CoalesceExpression ::= "COALESCE" "(" ScalarExpression {"," ScalarExpression}* ")"
  *
@@ -11,20 +13,13 @@ namespace Doctrine\ORM\Query\AST;
  */
 class CoalesceExpression extends Node
 {
-    /** @var mixed[] */
-    public $scalarExpressions = [];
-
     /** @param mixed[] $scalarExpressions */
-    public function __construct(array $scalarExpressions)
+    public function __construct(public array $scalarExpressions)
     {
-        $this->scalarExpressions = $scalarExpressions;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function dispatch($sqlWalker)
+    public function dispatch(SqlWalker $walker): string
     {
-        return $sqlWalker->walkCoalesceExpression($this);
+        return $walker->walkCoalesceExpression($this);
     }
 }

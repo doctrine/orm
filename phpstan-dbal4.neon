@@ -1,0 +1,24 @@
+includes:
+    - phpstan.neon
+
+parameters:
+    ignoreErrors:
+        # Compatibility with DBAL 3
+        # See https://github.com/doctrine/dbal/pull/3480
+        -
+            message: '~^Result of method Doctrine\\DBAL\\Connection::commit\(\) \(void\) is used\.$~'
+            path: lib/Doctrine/ORM/UnitOfWork.php
+        -
+            message: '~^Strict comparison using === between void and false will always evaluate to false\.$~'
+            path: lib/Doctrine/ORM/UnitOfWork.php
+        -
+            message: '~^Variable \$e on left side of \?\? always exists and is not nullable\.$~'
+            path: lib/Doctrine/ORM/UnitOfWork.php
+
+        -
+            message: '~^Parameter #1 \$command of method Symfony\\Component\\Console\\Application::add\(\) expects Symfony\\Component\\Console\\Command\\Command, Doctrine\\DBAL\\Tools\\Console\\Command\\ReservedWordsCommand given\.$~'
+            path: lib/Doctrine/ORM/Tools/Console/ConsoleRunner.php
+
+        -
+            message: '~Strict comparison using \=\=\= between callable\(\)\: mixed and null will always evaluate to false\.~'
+            path: lib/Doctrine/ORM/Tools/SchemaTool.php

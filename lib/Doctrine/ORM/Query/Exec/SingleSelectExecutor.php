@@ -18,16 +18,14 @@ class SingleSelectExecutor extends AbstractSqlExecutor
 {
     public function __construct(SelectStatement $AST, SqlWalker $sqlWalker)
     {
-        $this->_sqlStatements = $sqlWalker->walkSelectStatement($AST);
+        $this->sqlStatements = $sqlWalker->walkSelectStatement($AST);
     }
 
     /**
      * {@inheritDoc}
-     *
-     * @return Result
      */
-    public function execute(Connection $conn, array $params, array $types)
+    public function execute(Connection $conn, array $params, array $types): Result
     {
-        return $conn->executeQuery($this->_sqlStatements, $params, $types, $this->queryCacheProfile);
+        return $conn->executeQuery($this->sqlStatements, $params, $types, $this->queryCacheProfile);
     }
 }

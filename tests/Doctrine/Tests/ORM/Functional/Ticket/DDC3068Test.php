@@ -8,15 +8,14 @@ use Doctrine\Tests\Models\Taxi\Car;
 use Doctrine\Tests\Models\Taxi\Driver;
 use Doctrine\Tests\Models\Taxi\Ride;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
-/** @group DDC-3068 */
+#[Group('DDC-3068')]
 class DDC3068Test extends OrmFunctionalTestCase
 {
-    /** @var Driver */
-    private $foo;
+    private Driver $foo;
 
-    /** @var Car */
-    private $merc;
+    private Car $merc;
 
     protected function setUp(): void
     {

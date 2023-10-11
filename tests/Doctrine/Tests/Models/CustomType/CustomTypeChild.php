@@ -10,23 +10,17 @@ use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\Table;
 
-/**
- * @Entity
- * @Table(name="customtype_children")
- */
+#[Table(name: 'customtype_children')]
+#[Entity]
 class CustomTypeChild
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue(strategy: 'AUTO')]
     public $id;
 
-    /**
-     * @var string
-     * @Column(type="upper_case_string", length=255)
-     */
+    /** @var string */
+    #[Column(type: 'upper_case_string', length: 255)]
     public $lowerCaseString = 'foo';
 }

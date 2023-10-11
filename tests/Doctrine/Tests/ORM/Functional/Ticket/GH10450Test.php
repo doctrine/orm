@@ -8,14 +8,12 @@ use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\Tests\OrmTestCase;
 use Generator;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 class GH10450Test extends OrmTestCase
 {
-    /**
-     * @param class-string $className
-     *
-     * @dataProvider classesThatOverrideFieldNames
-     */
+    /** @param class-string $className */
+    #[DataProvider('classesThatOverrideFieldNames')]
     public function testDuplicatePrivateFieldsShallBeRejected(string $className): void
     {
         $em = $this->getTestEntityManager();
@@ -25,7 +23,7 @@ class GH10450Test extends OrmTestCase
         $em->getClassMetadata($className);
     }
 
-    public function classesThatOverrideFieldNames(): Generator
+    public static function classesThatOverrideFieldNames(): Generator
     {
         yield 'Entity class that redeclares a private field inherited from a base entity' => [GH10450EntityChildPrivate::class];
         yield 'Entity class that redeclares a private field inherited from a mapped superclass' => [GH10450MappedSuperclassChildPrivate::class];
@@ -34,148 +32,84 @@ class GH10450Test extends OrmTestCase
     }
 }
 
-/**
- * @ORM\Entity
- * @ORM\InheritanceType("JOINED")
- * @ORM\DiscriminatorMap({ "base": "GH10450BaseEntityPrivate", "child": "GH10450EntityChildPrivate" })
- * @ORM\DiscriminatorColumn(name="type")
- */
+#[ORM\Entity]
+#[ORM\InheritanceType('JOINED')]
+#[ORM\DiscriminatorMap(['base' => GH10450BaseEntityPrivate::class, 'child' => GH10450EntityChildPrivate::class])]
+#[ORM\DiscriminatorColumn(name: 'type')]
 class GH10450BaseEntityPrivate
 {
-    /**
-     * @ORM\Column(type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue
-     *
-     * @var int
-     */
-    private $id;
+    #[ORM\Column(type: 'integer')]
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    private int $id;
 
-    /**
-     * @ORM\Column(type="text", name="base")
-     *
-     * @var string
-     */
-    private $field;
+    #[ORM\Column(type: 'text', name: 'base')]
+    private string $field;
 }
 
-/**
- * @ORM\Entity
- */
+#[ORM\Entity]
 class GH10450EntityChildPrivate extends GH10450BaseEntityPrivate
 {
-    /**
-     * @ORM\Column(type="text", name="child")
-     *
-     * @var string
-     */
-    private $field;
+    #[ORM\Column(type: 'text', name: 'child')]
+    private string $field;
 }
 
-/**
- * @ORM\MappedSuperclass
- */
+#[ORM\MappedSuperclass]
 class GH10450BaseMappedSuperclassPrivate
 {
-    /**
-     * @ORM\Column(type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue
-     *
-     * @var int
-     */
-    private $id;
+    #[ORM\Column(type: 'integer')]
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    private int $id;
 
-    /**
-     * @ORM\Column(type="text", name="base")
-     *
-     * @var string
-     */
-    private $field;
+    #[ORM\Column(type: 'text', name: 'base')]
+    private string $field;
 }
 
-/**
- * @ORM\Entity
- */
+#[ORM\Entity]
 class GH10450MappedSuperclassChildPrivate extends GH10450BaseMappedSuperclassPrivate
 {
-    /**
-     * @ORM\Column(type="text", name="child")
-     *
-     * @var string
-     */
-    private $field;
+    #[ORM\Column(type: 'text', name: 'child')]
+    private string $field;
 }
 
-/**
- * @ORM\Entity
- * @ORM\InheritanceType("JOINED")
- * @ORM\DiscriminatorMap({ "base": "GH10450BaseEntityProtected", "child": "GH10450EntityChildProtected" })
- * @ORM\DiscriminatorColumn(name="type")
- */
+#[ORM\Entity]
+#[ORM\InheritanceType('JOINED')]
+#[ORM\DiscriminatorMap(['base' => GH10450BaseEntityProtected::class, 'child' => GH10450EntityChildProtected::class])]
+#[ORM\DiscriminatorColumn(name: 'type')]
 class GH10450BaseEntityProtected
 {
-    /**
-     * @ORM\Column(type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue
-     *
-     * @var int
-     */
-    protected $id;
+    #[ORM\Column(type: 'integer')]
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    protected int $id;
 
-    /**
-     * @ORM\Column(type="text", name="base")
-     *
-     * @var string
-     */
-    protected $field;
+    #[ORM\Column(type: 'text', name: 'base')]
+    protected string $field;
 }
 
-/**
- * @ORM\Entity
- */
+#[ORM\Entity]
 class GH10450EntityChildProtected extends GH10450BaseEntityProtected
 {
-    /**
-     * @ORM\Column(type="text", name="child")
-     *
-     * @var string
-     */
-    protected $field;
+    #[ORM\Column(type: 'text', name: 'child')]
+    protected string $field;
 }
 
-/**
- * @ORM\MappedSuperclass
- */
+#[ORM\MappedSuperclass]
 class GH10450BaseMappedSuperclassProtected
 {
-    /**
-     * @ORM\Column(type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue
-     *
-     * @var int
-     */
-    protected $id;
+    #[ORM\Column(type: 'integer')]
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    protected int $id;
 
-    /**
-     * @ORM\Column(type="text", name="base")
-     *
-     * @var string
-     */
-    protected $field;
+    #[ORM\Column(type: 'text', name: 'base')]
+    protected string $field;
 }
 
-/**
- * @ORM\Entity
- */
+#[ORM\Entity]
 class GH10450MappedSuperclassChildProtected extends GH10450BaseMappedSuperclassProtected
 {
-    /**
-     * @ORM\Column(type="text", name="child")
-     *
-     * @var string
-     */
-    protected $field;
+    #[ORM\Column(type: 'text', name: 'child')]
+    protected string $field;
 }

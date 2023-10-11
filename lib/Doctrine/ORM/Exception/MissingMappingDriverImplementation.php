@@ -4,13 +4,15 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Exception;
 
-final class MissingMappingDriverImplementation extends ORMException implements ManagerException
+use LogicException;
+
+final class MissingMappingDriverImplementation extends LogicException implements ManagerException
 {
     public static function create(): self
     {
         return new self(
             "It's a requirement to specify a Metadata Driver and pass it " .
-            'to Doctrine\\ORM\\Configuration::setMetadataDriverImpl().'
+            'to Doctrine\\ORM\\Configuration::setMetadataDriverImpl().',
         );
     }
 }

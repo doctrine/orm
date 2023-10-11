@@ -15,8 +15,7 @@ use Exception;
  */
 class PostFlushEventTest extends OrmFunctionalTestCase
 {
-    /** @var PostFlushListener */
-    private $listener;
+    private PostFlushListener $listener;
 
     protected function setUp(): void
     {
@@ -45,7 +44,7 @@ class PostFlushEventTest extends OrmFunctionalTestCase
 
         try {
             $this->_em->flush();
-        } catch (Exception $ex) {
+        } catch (Exception) {
             $exceptionRaised = true;
         }
 

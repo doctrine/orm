@@ -6,7 +6,6 @@ namespace Doctrine\Tests\ORM;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Criteria;
-use Doctrine\Deprecations\PHPUnit\VerifyDeprecations;
 use Doctrine\ORM\Cache;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\Expr\Join;
@@ -20,9 +19,9 @@ use Doctrine\Tests\Models\CMS\CmsGroup;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\OrmTestCase;
 use InvalidArgumentException;
+use PHPUnit\Framework\Attributes\Group;
 
 use function array_filter;
-use function get_class;
 
 /**
  * Test case for the QueryBuilder class used to build DQL query string in a
@@ -30,10 +29,7 @@ use function get_class;
  */
 class QueryBuilderTest extends OrmTestCase
 {
-    use VerifyDeprecations;
-
-    /** @var EntityManagerMock */
-    private $entityManager;
+    private EntityManagerMock $entityManager;
 
     protected function setUp(): void
     {
@@ -54,16 +50,7 @@ class QueryBuilderTest extends OrmTestCase
             ->delete(CmsUser::class, 'u')
             ->select('u.id', 'u.username');
 
-        self::assertEquals($qb->getType(), QueryBuilder::SELECT);
-    }
-
-    public function testEmptySelectSetsType(): void
-    {
-        $qb = $this->entityManager->createQueryBuilder()
-            ->delete(CmsUser::class, 'u')
-            ->select();
-
-        self::assertEquals($qb->getType(), QueryBuilder::SELECT);
+        $this->assertValidQueryBuilder($qb, 'SELECT u.id, u.username FROM Doctrine\Tests\Models\CMS\CmsUser u');
     }
 
     public function testDeleteSetsType(): void
@@ -72,7 +59,7 @@ class QueryBuilderTest extends OrmTestCase
             ->from(CmsUser::class, 'u')
             ->delete();
 
-        self::assertEquals($qb->getType(), QueryBuilder::DELETE);
+        $this->assertValidQueryBuilder($qb, 'DELETE Doctrine\Tests\Models\CMS\CmsUser u');
     }
 
     public function testUpdateSetsType(): void
@@ -81,7 +68,7 @@ class QueryBuilderTest extends OrmTestCase
             ->from(CmsUser::class, 'u')
             ->update();
 
-        self::assertEquals($qb->getType(), QueryBuilder::UPDATE);
+        $this->assertValidQueryBuilder($qb, 'UPDATE Doctrine\Tests\Models\CMS\CmsUser u');
     }
 
     public function testSimpleSelect(): void
@@ -148,7 +135,7 @@ class QueryBuilderTest extends OrmTestCase
 
         $this->assertValidQueryBuilder(
             $qb,
-            'SELECT u, a FROM Doctrine\Tests\Models\CMS\CmsUser u INNER JOIN u.articles a ON u.id = a.author_id'
+            'SELECT u, a FROM Doctrine\Tests\Models\CMS\CmsUser u INNER JOIN u.articles a ON u.id = a.author_id',
         );
     }
 
@@ -162,7 +149,7 @@ class QueryBuilderTest extends OrmTestCase
 
         $this->assertValidQueryBuilder(
             $qb,
-            'SELECT u, a FROM Doctrine\Tests\Models\CMS\CmsUser u INNER JOIN u.articles a ON u.id = a.author_id'
+            'SELECT u, a FROM Doctrine\Tests\Models\CMS\CmsUser u INNER JOIN u.articles a ON u.id = a.author_id',
         );
     }
 
@@ -174,12 +161,12 @@ class QueryBuilderTest extends OrmTestCase
             ->from(CmsUser::class, 'u')
             ->innerJoin('u.articles', 'a', Join::ON, $qb->expr()->andX(
                 $qb->expr()->eq('u.id', 'a.author_id'),
-                $qb->expr()->isNotNull('u.name')
+                $qb->expr()->isNotNull('u.name'),
             ));
 
         $this->assertValidQueryBuilder(
             $qb,
-            'SELECT u, a FROM Doctrine\Tests\Models\CMS\CmsUser u INNER JOIN u.articles a ON u.id = a.author_id AND u.name IS NOT NULL'
+            'SELECT u, a FROM Doctrine\Tests\Models\CMS\CmsUser u INNER JOIN u.articles a ON u.id = a.author_id AND u.name IS NOT NULL',
         );
     }
 
@@ -191,12 +178,12 @@ class QueryBuilderTest extends OrmTestCase
             ->from(CmsUser::class, 'u')
             ->innerJoin('u.articles', 'a', Join::WITH, $qb->expr()->in(
                 'u.id',
-                [1, 2, 3]
+                [1, 2, 3],
             ));
 
         $this->assertValidQueryBuilder(
             $qb,
-            'SELECT u, a FROM Doctrine\Tests\Models\CMS\CmsUser u INNER JOIN u.articles a WITH u.id IN(1, 2, 3)'
+            'SELECT u, a FROM Doctrine\Tests\Models\CMS\CmsUser u INNER JOIN u.articles a WITH u.id IN(1, 2, 3)',
         );
     }
 
@@ -209,7 +196,7 @@ class QueryBuilderTest extends OrmTestCase
 
         $this->assertValidQueryBuilder(
             $qb,
-            'SELECT u, a FROM Doctrine\Tests\Models\CMS\CmsUser u INNER JOIN u.articles a INDEX BY a.name ON u.id = a.author_id'
+            'SELECT u, a FROM Doctrine\Tests\Models\CMS\CmsUser u INNER JOIN u.articles a INDEX BY a.name ON u.id = a.author_id',
         );
     }
 
@@ -491,7 +478,7 @@ class QueryBuilderTest extends OrmTestCase
         $criteria = new Criteria();
         $criteria->where($criteria->expr()->andX(
             $criteria->expr()->eq('field', 'value1'),
-            $criteria->expr()->eq('field', 'value2')
+            $criteria->expr()->eq('field', 'value2'),
         ));
 
         $qb->addCriteria($criteria);
@@ -501,7 +488,7 @@ class QueryBuilderTest extends OrmTestCase
         self::assertNotNull($qb->getParameter('field_1'));
     }
 
-    /** @group DDC-2844 */
+    #[Group('DDC-2844')]
     public function testAddCriteriaWhereWithMultipleParametersWithSameField(): void
     {
         $qb = $this->entityManager->createQueryBuilder();
@@ -518,7 +505,7 @@ class QueryBuilderTest extends OrmTestCase
         self::assertSame('value2', $qb->getParameter('field_1')->getValue());
     }
 
-    /** @group DDC-2844 */
+    #[Group('DDC-2844')]
     public function testAddCriteriaWhereWithMultipleParametersWithDifferentFields(): void
     {
         $qb = $this->entityManager->createQueryBuilder();
@@ -535,7 +522,7 @@ class QueryBuilderTest extends OrmTestCase
         self::assertSame('value2', $qb->getParameter('field2')->getValue());
     }
 
-    /** @group DDC-2844 */
+    #[Group('DDC-2844')]
     public function testAddCriteriaWhereWithMultipleParametersWithSubpathsAndDifferentProperties(): void
     {
         $qb = $this->entityManager->createQueryBuilder();
@@ -552,7 +539,7 @@ class QueryBuilderTest extends OrmTestCase
         self::assertSame('value2', $qb->getParameter('field2')->getValue());
     }
 
-    /** @group DDC-2844 */
+    #[Group('DDC-2844')]
     public function testAddCriteriaWhereWithMultipleParametersWithSubpathsAndSameProperty(): void
     {
         $qb = $this->entityManager->createQueryBuilder();
@@ -584,7 +571,7 @@ class QueryBuilderTest extends OrmTestCase
         self::assertEquals('u.field DESC', (string) $orderBy[0]);
     }
 
-    /** @group DDC-3108 */
+    #[Group('DDC-3108')]
     public function testAddCriteriaOrderOnJoinAlias(): void
     {
         $qb = $this->entityManager->createQueryBuilder();
@@ -640,7 +627,7 @@ class QueryBuilderTest extends OrmTestCase
             ->from(CmsUser::class, 'u');
         $q  = $qb->getQuery();
 
-        self::assertEquals(Query::class, get_class($q));
+        self::assertEquals(Query::class, $q::class);
     }
 
     public function testSetParameter(): void
@@ -837,21 +824,6 @@ class QueryBuilderTest extends OrmTestCase
         self::assertEquals($this->entityManager, $qb->getEntityManager());
     }
 
-    public function testInitialStateIsClean(): void
-    {
-        $qb = $this->entityManager->createQueryBuilder();
-        self::assertEquals(QueryBuilder::STATE_CLEAN, $qb->getState());
-    }
-
-    public function testAlteringQueryChangesStateToDirty(): void
-    {
-        $qb = $this->entityManager->createQueryBuilder()
-            ->select('u')
-            ->from(CmsUser::class, 'u');
-
-        self::assertEquals(QueryBuilder::STATE_DIRTY, $qb->getState());
-    }
-
     public function testSelectWithFuncExpression(): void
     {
         $qb   = $this->entityManager->createQueryBuilder();
@@ -905,7 +877,7 @@ class QueryBuilderTest extends OrmTestCase
         self::assertCount(0, $qb->getDQLPart('orderBy'));
     }
 
-    /** @group DDC-867 */
+    #[Group('DDC-867')]
     public function testDeepClone(): void
     {
         $qb = $this->entityManager->createQueryBuilder()
@@ -923,7 +895,7 @@ class QueryBuilderTest extends OrmTestCase
         self::assertEquals(2, $expr->count(), 'Modifying the second query should affect the first one.');
     }
 
-    /** @group DDC-3108 */
+    #[Group('DDC-3108')]
     public function testAddCriteriaWhereWithJoinAlias(): void
     {
         $qb = $this->entityManager->createQueryBuilder();
@@ -941,7 +913,7 @@ class QueryBuilderTest extends OrmTestCase
         self::assertSame('value2', $qb->getParameter('alias2_field')->getValue());
     }
 
-    /** @group DDC-3108 */
+    #[Group('DDC-3108')]
     public function testAddCriteriaWhereWithDefaultAndJoinAlias(): void
     {
         $qb = $this->entityManager->createQueryBuilder();
@@ -959,7 +931,7 @@ class QueryBuilderTest extends OrmTestCase
         self::assertSame('value2', $qb->getParameter('alias2_field')->getValue());
     }
 
-    /** @group DDC-3108 */
+    #[Group('DDC-3108')]
     public function testAddCriteriaWhereOnJoinAliasWithDuplicateFields(): void
     {
         $qb = $this->entityManager->createQueryBuilder();
@@ -979,7 +951,7 @@ class QueryBuilderTest extends OrmTestCase
         self::assertSame('value3', $qb->getParameter('alias2_field_2')->getValue());
     }
 
-    /** @group DDC-1933 */
+    #[Group('DDC-1933')]
     public function testParametersAreCloned(): void
     {
         $originalQb = new QueryBuilder($this->entityManager);
@@ -1042,7 +1014,7 @@ class QueryBuilderTest extends OrmTestCase
         self::assertEquals('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u INNER JOIN u.groups g', $qb->getDQL());
     }
 
-    /** @group DDC-1211 */
+    #[Group('DDC-1211')]
     public function testEmptyStringLiteral(): void
     {
         $expr = $this->entityManager->getExpressionBuilder();
@@ -1054,7 +1026,7 @@ class QueryBuilderTest extends OrmTestCase
         self::assertEquals("SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.username = ''", $qb->getDQL());
     }
 
-    /** @group DDC-1211 */
+    #[Group('DDC-1211')]
     public function testEmptyNumericLiteral(): void
     {
         $expr = $this->entityManager->getExpressionBuilder();
@@ -1066,7 +1038,7 @@ class QueryBuilderTest extends OrmTestCase
         self::assertEquals('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.username = 0', $qb->getDQL());
     }
 
-    /** @group DDC-1227 */
+    #[Group('DDC-1227')]
     public function testAddFromString(): void
     {
         $qb = $this->entityManager->createQueryBuilder()
@@ -1076,7 +1048,7 @@ class QueryBuilderTest extends OrmTestCase
         self::assertEquals('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u', $qb->getDQL());
     }
 
-    /** @group DDC-1619 */
+    #[Group('DDC-1619')]
     public function testAddDistinct(): void
     {
         $qb = $this->entityManager->createQueryBuilder()
@@ -1099,7 +1071,7 @@ class QueryBuilderTest extends OrmTestCase
         self::assertEquals('SELECT DISTINCT u FROM Doctrine\Tests\Models\CMS\CmsUser u', $qb->getDQL());
     }
 
-    /** @group DDC-2192 */
+    #[Group('DDC-2192')]
     public function testWhereAppend(): void
     {
         $this->expectException(InvalidArgumentException::class);
@@ -1149,7 +1121,7 @@ class QueryBuilderTest extends OrmTestCase
         self::assertEquals(Cache::MODE_REFRESH, $query->getCacheMode());
     }
 
-    /** @group DDC-2253 */
+    #[Group('DDC-2253')]
     public function testRebuildsFromParts(): void
     {
         $qb = $this->entityManager->createQueryBuilder()
@@ -1192,7 +1164,7 @@ class QueryBuilderTest extends OrmTestCase
         self::assertEquals(['u', 'g'], $aliases);
     }
 
-    /** @group 6699 */
+    #[Group('6699')]
     public function testGetParameterTypeJuggling(): void
     {
         $builder = $this->entityManager->createQueryBuilder()
@@ -1207,7 +1179,7 @@ class QueryBuilderTest extends OrmTestCase
         self::assertSame(0, $builder->getParameter('0')->getValue());
     }
 
-    /** @group 6699 */
+    #[Group('6699')]
     public function testSetParameterWithNameZeroIsNotOverridden(): void
     {
         $builder = $this->entityManager->createQueryBuilder()
@@ -1224,7 +1196,7 @@ class QueryBuilderTest extends OrmTestCase
         self::assertSame('Doctrine', $builder->getParameter('name')->getValue());
     }
 
-    /** @group 6699 */
+    #[Group('6699')]
     public function testSetParameterWithNameZeroDoesNotOverrideAnotherParameter(): void
     {
         $builder = $this->entityManager->createQueryBuilder()
@@ -1241,7 +1213,7 @@ class QueryBuilderTest extends OrmTestCase
         self::assertSame('Doctrine', $builder->getParameter('name')->getValue());
     }
 
-    /** @group 6699 */
+    #[Group('6699')]
     public function testSetParameterWithTypeJugglingWorks(): void
     {
         $builder = $this->entityManager->createQueryBuilder()
@@ -1272,24 +1244,21 @@ class QueryBuilderTest extends OrmTestCase
         self::assertSame('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u LEFT JOIN Doctrine\Tests\Models\CMS\CmsArticle a0 INNER JOIN Doctrine\Tests\Models\CMS\CmsArticle a1', $builder->getDQL());
     }
 
-    public function testUpdateDeprecationMessage(): void
+    public function testUpdateWithoutAlias(): void
     {
-        $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/issues/9733');
+        $qb = $this->entityManager->createQueryBuilder();
 
-        $qb = $this->entityManager->createQueryBuilder()
-            ->update(CmsUser::class . ' u')
-            ->set('u.username', ':username');
-
-        $this->assertValidQueryBuilder($qb, 'UPDATE Doctrine\Tests\Models\CMS\CmsUser u  SET u.username = :username');
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Doctrine\ORM\QueryBuilder::update(): The alias for entity Doctrine\Tests\Models\CMS\CmsUser u must not be omitted.');
+        $qb->update(CmsUser::class . ' u');
     }
 
-    public function testDeleteDeprecationMessage(): void
+    public function testDeleteWithoutAlias(): void
     {
-        $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/issues/9733');
+        $qb = $this->entityManager->createQueryBuilder();
 
-        $qb = $this->entityManager->createQueryBuilder()
-            ->delete(CmsUser::class . ' u');
-
-        $this->assertValidQueryBuilder($qb, 'DELETE Doctrine\Tests\Models\CMS\CmsUser u ');
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Doctrine\ORM\QueryBuilder::delete(): The alias for entity Doctrine\Tests\Models\CMS\CmsUser u must not be omitted.');
+        $qb->delete(CmsUser::class . ' u');
     }
 }

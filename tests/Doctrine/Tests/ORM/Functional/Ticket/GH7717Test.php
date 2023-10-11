@@ -10,9 +10,6 @@ use Doctrine\Tests\Models\GH7717\GH7717Child;
 use Doctrine\Tests\Models\GH7717\GH7717Parent;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-/**
- * @requires PHP 7.4
- */
 final class GH7717Test extends OrmFunctionalTestCase
 {
     public function setUp(): void
@@ -21,7 +18,7 @@ final class GH7717Test extends OrmFunctionalTestCase
 
         $this->createSchemaForModels(
             GH7717Parent::class,
-            GH7717Child::class
+            GH7717Child::class,
         );
     }
 

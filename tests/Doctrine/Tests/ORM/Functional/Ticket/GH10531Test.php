@@ -15,7 +15,7 @@ class GH10531Test extends OrmFunctionalTestCase
 
         $this->createSchemaForModels(
             GH10531A::class,
-            GH10531B::class
+            GH10531B::class,
         );
     }
 
@@ -113,39 +113,30 @@ class GH10531Test extends OrmFunctionalTestCase
 }
 
 /**
- * @ORM\Entity
- * @ORM\Table(name="gh10531_a")
- * @ORM\DiscriminatorColumn(name="discr", type="string")
- * @ORM\DiscriminatorMap({ "A": "GH10531A", "B": "GH10531B" })
- * @ORM\InheritanceType("JOINED")
- *
  * We are using JTI here, since STI would relax the not-nullable constraint for the "parent"
  * column (it has to be NULL when the row contains a GH10531A instance). Causes another error,
  * but not the constraint violation I'd like to point out.
  */
+#[ORM\Entity]
+#[ORM\Table(name: 'gh10531_a')]
+#[ORM\DiscriminatorColumn(name: 'discr', type: 'string')]
+#[ORM\DiscriminatorMap(['A' => GH10531A::class, 'B' => GH10531B::class])]
+#[ORM\InheritanceType('JOINED')]
 class GH10531A
 {
-    /**
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     * @ORM\Column(type="integer")
-     *
-     * @var int
-     */
+    /** @var int */
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: 'AUTO')]
+    #[ORM\Column(type: 'integer')]
     public $id;
 }
 
-/**
- * @ORM\Entity
- * @ORM\Table(name="gh10531_b")
- */
+#[ORM\Entity]
+#[ORM\Table(name: 'gh10531_b')]
 class GH10531B extends GH10531A
 {
-    /**
-     * @ORM\ManyToOne(targetEntity="GH10531A")
-     * @ORM\JoinColumn(nullable=false, name="parent_id")
-     *
-     * @var GH10531A
-     */
+    /** @var GH10531A */
+    #[ORM\ManyToOne(targetEntity: GH10531A::class)]
+    #[ORM\JoinColumn(nullable: false, name: 'parent_id')]
     public $parent;
 }

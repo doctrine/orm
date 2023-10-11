@@ -33,10 +33,6 @@ jobs:
     strategy:
       matrix:
         php-version:
-          - "7.2"
-          - "7.3"
-          - "7.4"
-          - "8.0"
           - "8.1"
           - "8.2"
           - "8.3"
@@ -44,21 +40,21 @@ jobs:
           - "default"
         extension:
           - "pdo_sqlite"
-        proxy:
-          - "common"
+        deps:
+          - "highest"
         include:
-          - php-version: "8.0"
-            dbal-version: "2.13"
-            extension: "pdo_sqlite"
           - php-version: "8.2"
             dbal-version: "3@dev"
+            extension: "pdo_sqlite"
+          - php-version: "8.1"
+            dbal-version: "4@dev"
             extension: "pdo_sqlite"
           - php-version: "8.2"
             dbal-version: "default"
             extension: "sqlite3"
           - php-version: "8.1"
             dbal-version: "default"
-            proxy: "lazy-ghost"
+            deps: "lowest"
             extension: "pdo_sqlite"
 
     steps:
@@ -83,18 +79,17 @@ jobs:
         uses: "ramsey/composer-install@v2"
         with:
           composer-options: "--ignore-platform-req=php+"
+          dependency-versions: "${{ matrix.deps }}"
 
       - name: "Run PHPUnit"
         run: "vendor/bin/phpunit -c ci/github/phpunit/${{ matrix.extension }}.xml --coverage-clover=coverage-no-cache.xml"
         env:
             ENABLE_SECOND_LEVEL_CACHE: 0
-            ORM_PROXY_IMPLEMENTATION: "${{ matrix.proxy }}"
 
       - name: "Run PHPUnit with Second Level Cache"
         run: "vendor/bin/phpunit -c ci/github/phpunit/${{ matrix.extension }}.xml --exclude-group performance,non-cacheable,locking_functional --coverage-clover=coverage-cache.xml"
         env:
             ENABLE_SECOND_LEVEL_CACHE: 1
-            ORM_PROXY_IMPLEMENTATION: "${{ matrix.proxy }}"
 
       - name: "Upload coverage file"
         uses: "actions/upload-artifact@v3"
@@ -122,8 +117,8 @@ jobs:
           - pdo_pgsql
           - pgsql
         include:
-          - php-version: "8.0"
-            dbal-version: "2.13"
+          - php-version: "8.2"
+            dbal-version: "4@dev"
             postgres-version: "14"
             extension: pdo_pgsql
           - php-version: "8.2"
@@ -189,16 +184,12 @@ jobs:
         dbal-version:
           - "default"
           - "3@dev"
+          - "4@dev"
         mariadb-version:
           - "10.9"
         extension:
           - "mysqli"
           - "pdo_mysql"
-        include:
-          - php-version: "8.0"
-            dbal-version: "2.13"
-            mariadb-version: "10.6"
-            extension: "pdo_mysql"
 
     services:
       mariadb:
@@ -266,8 +257,12 @@ jobs:
           - "mysqli"
           - "pdo_mysql"
         include:
-          - php-version: "8.0"
-            dbal-version: "2.13"
+          - php-version: "8.1"
+            dbal-version: "4@dev"
+            mysql-version: "8.0"
+            extension: "mysqli"
+          - php-version: "8.1"
+            dbal-version: "4@dev"
             mysql-version: "8.0"
             extension: "pdo_mysql"
 
@@ -321,40 +316,6 @@ jobs:
         with:
           name: "${{ github.job }}-${{ matrix.mysql-version }}-${{ matrix.extension }}-${{ matrix.php-version }}-${{ matrix.dbal-version }}-coverage"
           path: "coverage*.xml"
-
-
-  phpunit-lower-php-versions:
-    name: "PHPUnit with SQLite"
-    runs-on: "ubuntu-22.04"
-
-    strategy:
-      matrix:
-        php-version:
-          - "7.1"
-        deps:
-          - "highest"
-          - "lowest"
-
-    steps:
-      - name: "Checkout"
-        uses: "actions/checkout@v4"
-        with:
-          fetch-depth: 2
-
-      - name: "Install PHP"
-        uses: "shivammathur/setup-php@v2"
-        with:
-          php-version: "${{ matrix.php-version }}"
-          ini-values: "zend.assertions=1, apc.enable_cli=1"
-
-      - name: "Install dependencies with Composer"
-        uses: "ramsey/composer-install@v2"
-        with:
-          dependency-versions: "${{ matrix.deps }}"
-
-      - name: "Run PHPUnit"
-        run: "vendor/bin/phpunit -c ci/github/phpunit/pdo_sqlite.xml"
-
 
   upload_coverage:
     name: "Upload coverage to Codecov"

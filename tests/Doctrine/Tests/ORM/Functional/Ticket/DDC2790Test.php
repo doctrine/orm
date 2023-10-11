@@ -8,12 +8,12 @@ use Doctrine\ORM\Event\OnFlushEventArgs;
 use Doctrine\ORM\Events;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
 use function array_intersect_key;
-use function get_class;
 use function intval;
 
-/** @group DDC-2790 */
+#[Group('DDC-2790')]
 class DDC2790Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -36,7 +36,7 @@ class DDC2790Test extends OrmFunctionalTestCase
         $entity->name     = 'Roman';
 
         $qb = $this->_em->createQueryBuilder();
-        $qb->from(get_class($entity), 'c');
+        $qb->from($entity::class, 'c');
         $qb->select('count(c)');
         $initial = intval($qb->getQuery()->getSingleScalarResult());
 
@@ -51,7 +51,7 @@ class DDC2790Test extends OrmFunctionalTestCase
         $this->_em->flush();
 
         $qb = $this->_em->createQueryBuilder();
-        $qb->from(get_class($entity), 'c');
+        $qb->from($entity::class, 'c');
         $qb->select('count(c)');
         $count = intval($qb->getQuery()->getSingleScalarResult());
         self::assertEquals($initial, $count);

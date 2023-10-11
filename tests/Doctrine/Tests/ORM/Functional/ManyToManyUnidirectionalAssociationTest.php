@@ -23,17 +23,13 @@ class ManyToManyUnidirectionalAssociationTest extends AbstractManyToManyAssociat
     /** @var string */
     protected $table = 'ecommerce_carts_products';
 
-    /** @var ECommerceProduct */
-    private $firstProduct;
+    private ECommerceProduct $firstProduct;
 
-    /** @var ECommerceProduct */
-    private $secondProduct;
+    private ECommerceProduct $secondProduct;
 
-    /** @var ECommerceCart */
-    private $firstCart;
+    private ECommerceCart $firstCart;
 
-    /** @var ECommerceCart */
-    private $secondCart;
+    private ECommerceCart $secondCart;
 
     protected function setUp(): void
     {
@@ -93,8 +89,8 @@ class ManyToManyUnidirectionalAssociationTest extends AbstractManyToManyAssociat
     public function testLazyLoadsCollection(): void
     {
         $this->createFixture();
-        $metadata                                           = $this->_em->getClassMetadata(ECommerceCart::class);
-        $metadata->associationMappings['products']['fetch'] = ClassMetadata::FETCH_LAZY;
+        $metadata                                         = $this->_em->getClassMetadata(ECommerceCart::class);
+        $metadata->associationMappings['products']->fetch = ClassMetadata::FETCH_LAZY;
 
         $query      = $this->_em->createQuery('SELECT c FROM Doctrine\Tests\Models\ECommerce\ECommerceCart c');
         $result     = $query->getResult();

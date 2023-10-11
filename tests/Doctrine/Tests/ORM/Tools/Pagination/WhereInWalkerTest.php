@@ -8,13 +8,13 @@ use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\Parser;
 use Doctrine\ORM\Tools\Pagination\WhereInWalker;
 use Generator;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Group;
 
-/** @group DDC-1613 */
+#[Group('DDC-1613')]
 class WhereInWalkerTest extends PaginationTestCase
 {
-    /**
-     * @dataProvider exampleQueries
-     */
+    #[DataProvider('exampleQueries')]
     public function testDqlQueryTransformation(string $dql, string $expectedSql): void
     {
         $query = $this->entityManager->createQuery($dql);

@@ -13,9 +13,11 @@ use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\OneToOne;
+use Doctrine\Tests\Mocks\CompatibilityType;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
-/** @group GH9335 */
+#[Group('GH9335')]
 final class GH9335Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -52,6 +54,8 @@ final class GH9335Test extends OrmFunctionalTestCase
 
 class GH9335IntObjectType extends Type
 {
+    use CompatibilityType;
+
     public function getSQLDeclaration(array $column, AbstractPlatform $platform): string
     {
         return $platform->getIntegerTypeDeclarationSQL($column);
@@ -72,7 +76,7 @@ class GH9335IntObjectType extends Type
         return new GH9335IntObject((int) $value);
     }
 
-    public function getBindingType(): int
+    private function doGetBindingType(): ParameterType|int
     {
         return ParameterType::INTEGER;
     }
@@ -99,36 +103,30 @@ class GH9335IntObject
     }
 }
 
-/** @Entity */
+#[Entity]
 class GH9335Book
 {
-    /**
-     * @var GH9335IntObject
-     * @Id
-     * @Column(type=GH9335IntObjectType::class, unique=true)
-     */
+    /** @var GH9335IntObject */
+    #[Id]
+    #[Column(type: GH9335IntObjectType::class, unique: true)]
     private $id;
 
-    /**
-     * @Column(type="string")
-     * @var string
-     */
+    /** @var string */
+    #[Column(type: 'string')]
     private $title;
 
-    /**
-     * @OneToOne(targetEntity="GH9335Author", mappedBy="book", cascade={"persist", "remove"})
-     * @var GH9335Author
-     */
+    /** @var GH9335Author */
+    #[OneToOne(targetEntity: 'GH9335Author', mappedBy: 'book', cascade: ['persist', 'remove'])]
     private $author;
 
-    public function __construct(GH9335IntObject $id, string $title, ?GH9335Author $author = null)
+    public function __construct(GH9335IntObject $id, string $title, GH9335Author|null $author = null)
     {
         $this->setId($id);
         $this->setTitle($title);
         $this->setAuthor($author);
     }
 
-    public function getId(): ?GH9335IntObject
+    public function getId(): GH9335IntObject|null
     {
         return $this->id;
     }
@@ -138,7 +136,7 @@ class GH9335Book
         $this->id = $id;
     }
 
-    public function getTitle(): ?string
+    public function getTitle(): string|null
     {
         return $this->title;
     }
@@ -148,12 +146,12 @@ class GH9335Book
         $this->title = $title;
     }
 
-    public function getAuthor(): ?GH9335Author
+    public function getAuthor(): GH9335Author|null
     {
         return $this->author;
     }
 
-    public function setAuthor(?GH9335Author $author): self
+    public function setAuthor(GH9335Author|null $author): self
     {
         $this->author = $author;
 
@@ -166,29 +164,25 @@ class GH9335Book
     }
 }
 
-/** @Entity */
+#[Entity]
 class GH9335Author
 {
-    /**
-     * @var GH9335Book
-     * @Id
-     * @OneToOne(targetEntity="GH9335Book", inversedBy="author")
-     * @JoinColumn(name="book")
-     */
+    /** @var GH9335Book */
+    #[Id]
+    #[OneToOne(targetEntity: 'GH9335Book', inversedBy: 'author')]
+    #[JoinColumn(name: 'book')]
     private $book;
 
-    /**
-     * @Column(type="string", nullable="true" )
-     * @var string
-     */
+    /** @var string */
+    #[Column(type: 'string', nullable: true)]
     private $name;
 
-    public function __construct(?string $name)
+    public function __construct(string|null $name)
     {
         $this->setName($name);
     }
 
-    public function getBook(): ?GH9335Book
+    public function getBook(): GH9335Book|null
     {
         return $this->book;
     }

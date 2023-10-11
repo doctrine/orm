@@ -14,24 +14,17 @@ use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\ORM\Mapping\Table;
 
-/**
- * @Entity
- * @Table(name="company_organizations")
- */
+#[Table(name: 'company_organizations')]
+#[Entity]
 class CompanyOrganization
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
-     */
-    private $id;
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue(strategy: 'AUTO')]
+    private int $id;
 
-    /**
-     * @psalm-var Collection<int, CompanyEvent>
-     * @OneToMany(targetEntity="CompanyEvent", mappedBy="organization", cascade={"persist"}, fetch="EXTRA_LAZY")
-     */
+    /** @psalm-var Collection<int, CompanyEvent> */
+    #[OneToMany(targetEntity: 'CompanyEvent', mappedBy: 'organization', cascade: ['persist'], fetch: 'EXTRA_LAZY')]
     public $events;
 
     public function getId(): int
@@ -51,14 +44,11 @@ class CompanyOrganization
         $event->setOrganization($this);
     }
 
-    /**
-     * @var CompanyEvent|null
-     * @OneToOne(targetEntity="CompanyEvent", cascade={"persist"})
-     * @JoinColumn(name="main_event_id", referencedColumnName="id", nullable=true)
-     */
-    private $mainevent;
+    #[OneToOne(targetEntity: 'CompanyEvent', cascade: ['persist'])]
+    #[JoinColumn(name: 'main_event_id', referencedColumnName: 'id', nullable: true)]
+    private CompanyEvent|null $mainevent = null;
 
-    public function getMainEvent(): ?CompanyEvent
+    public function getMainEvent(): CompanyEvent|null
     {
         return $this->mainevent;
     }

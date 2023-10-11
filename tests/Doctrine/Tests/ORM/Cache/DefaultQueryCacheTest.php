@@ -6,6 +6,7 @@ namespace Doctrine\Tests\ORM\Cache;
 
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Cache;
+use Doctrine\ORM\Cache\DefaultCacheFactory;
 use Doctrine\ORM\Cache\DefaultQueryCache;
 use Doctrine\ORM\Cache\EntityCacheEntry;
 use Doctrine\ORM\Cache\EntityCacheKey;
@@ -25,22 +26,18 @@ use Doctrine\Tests\Models\Cache\Restaurant;
 use Doctrine\Tests\Models\Cache\State;
 use Doctrine\Tests\Models\Generic\BooleanModel;
 use Doctrine\Tests\OrmTestCase;
+use PHPUnit\Framework\Attributes\Group;
 use ReflectionMethod;
 
 use function microtime;
 use function sprintf;
 
-/** @group DDC-2183 */
+#[Group('DDC-2183')]
 class DefaultQueryCacheTest extends OrmTestCase
 {
-    /** @var DefaultQueryCache */
-    private $queryCache;
-
-    /** @var EntityManagerMock */
-    private $em;
-
-    /** @var CacheRegionMock */
-    private $region;
+    private DefaultQueryCache $queryCache;
+    private EntityManagerMock $em;
+    private CacheRegionMock $region;
 
     protected function setUp(): void
     {
@@ -273,7 +270,7 @@ class DefaultQueryCacheTest extends OrmTestCase
             [
                 ['identifier' => ['id' => 1]],
                 ['identifier' => ['id' => 2]],
-            ]
+            ],
         );
 
         $data = [
@@ -288,7 +285,7 @@ class DefaultQueryCacheTest extends OrmTestCase
             [
                 new EntityCacheEntry(Country::class, $data[0]),
                 new EntityCacheEntry(Country::class, $data[1]),
-            ]
+            ],
         );
 
         $rsm->addRootEntityFromClassMetadata(Country::class, 'c');
@@ -312,7 +309,7 @@ class DefaultQueryCacheTest extends OrmTestCase
             [
                 ['identifier' => ['id' => 1]],
                 ['identifier' => ['id' => 2]],
-            ]
+            ],
         );
 
         $data = [
@@ -327,7 +324,7 @@ class DefaultQueryCacheTest extends OrmTestCase
             [
                 new EntityCacheEntry(Country::class, $data[0]),
                 new EntityCacheEntry(Country::class, $data[1]),
-            ]
+            ],
         );
 
         $rsm->addRootEntityFromClassMetadata(Country::class, 'c');
@@ -351,7 +348,7 @@ class DefaultQueryCacheTest extends OrmTestCase
             [
                 ['identifier' => ['id' => 1]],
                 ['identifier' => ['id' => 2]],
-            ]
+            ],
         );
 
         $this->region->addReturn('get', $entry);
@@ -361,7 +358,7 @@ class DefaultQueryCacheTest extends OrmTestCase
             [
                 new EntityCacheEntry(Country::class, ['id' => 1, 'name' => 'Foo']),
                 false,
-            ]
+            ],
         );
 
         $rsm->addRootEntityFromClassMetadata(Country::class, 'c');
@@ -468,7 +465,7 @@ class DefaultQueryCacheTest extends OrmTestCase
             [
                 ['identifier' => ['id' => 1]],
                 ['identifier' => ['id' => 2]],
-            ]
+            ],
         );
 
         $rsm->addRootEntityFromClassMetadata(Country::class, 'c');
@@ -507,14 +504,13 @@ class DefaultQueryCacheTest extends OrmTestCase
             [
                 ['identifier' => ['id' => 1]],
                 ['identifier' => ['id' => 2]],
-            ]
+            ],
+            microtime(true) - 100,
         );
         $entities = [
             ['id' => 1, 'name' => 'Foo'],
             ['id' => 2, 'name' => 'Bar'],
         ];
-
-        $entry->time = microtime(true) - 100;
 
         $this->region->addReturn('get', $entry);
 
@@ -523,7 +519,7 @@ class DefaultQueryCacheTest extends OrmTestCase
             [
                 new EntityCacheEntry(Country::class, $entities[0]),
                 new EntityCacheEntry(Country::class, $entities[1]),
-            ]
+            ],
         );
 
         $rsm->addRootEntityFromClassMetadata(Country::class, 'c');
@@ -552,7 +548,7 @@ class DefaultQueryCacheTest extends OrmTestCase
             [
                 new EntityCacheEntry(Country::class, $data[0]),
                 new EntityCacheEntry(Country::class, $data[1]),
-            ]
+            ],
         );
 
         $rsm->addRootEntityFromClassMetadata(Country::class, 'c');
@@ -568,7 +564,7 @@ class DefaultQueryCacheTest extends OrmTestCase
             [
                 ['identifier' => ['id' => 1]],
                 ['identifier' => ['id' => 2]],
-            ]
+            ],
         );
 
         $this->region->addReturn('get', $entry);
@@ -584,8 +580,6 @@ class DefaultQueryCacheTest extends OrmTestCase
         $reflection = new ReflectionMethod($this->queryCache, 'getAssociationValue');
         $rsm        = new ResultSetMappingBuilder($this->em);
         $key        = new QueryCacheKey('query.key1', 0);
-
-        $reflection->setAccessible(true);
 
         $germany  = new Country('Germany');
         $bavaria  = new State('Bavaria', $germany);
@@ -674,21 +668,15 @@ class DefaultQueryCacheTest extends OrmTestCase
     }
 }
 
-class CacheFactoryDefaultQueryCacheTest extends Cache\DefaultCacheFactory
+class CacheFactoryDefaultQueryCacheTest extends DefaultCacheFactory
 {
-    /** @var DefaultQueryCache */
-    private $queryCache;
-
-    /** @var CacheRegionMock */
-    private $region;
-
-    public function __construct(DefaultQueryCache $queryCache, CacheRegionMock $region)
-    {
-        $this->queryCache = $queryCache;
-        $this->region     = $region;
+    public function __construct(
+        private DefaultQueryCache $queryCache,
+        private CacheRegionMock $region,
+    ) {
     }
 
-    public function buildQueryCache(EntityManagerInterface $em, $regionName = null): DefaultQueryCache
+    public function buildQueryCache(EntityManagerInterface $em, string|null $regionName = null): DefaultQueryCache
     {
         return $this->queryCache;
     }

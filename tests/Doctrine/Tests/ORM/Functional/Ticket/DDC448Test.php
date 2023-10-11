@@ -28,7 +28,7 @@ class DDC448Test extends OrmFunctionalTestCase
         $this->createSchemaForModels(
             DDC448MainTable::class,
             DDC448ConnectedClass::class,
-            DDC448SubTable::class
+            DDC448SubTable::class,
         );
     }
 
@@ -37,58 +37,41 @@ class DDC448Test extends OrmFunctionalTestCase
         $q = $this->_em->createQuery('select b from ' . __NAMESPACE__ . '\\DDC448SubTable b where b.connectedClassId = ?1');
         self::assertEquals(
             strtolower('SELECT d0_.id AS id_0, d0_.discr AS discr_1, d0_.connectedClassId AS connectedClassId_2 FROM SubTable s1_ INNER JOIN DDC448MainTable d0_ ON s1_.id = d0_.id WHERE d0_.connectedClassId = ?'),
-            strtolower($q->getSQL())
+            strtolower($q->getSQL()),
         );
     }
 }
 
-/**
- * @Entity
- * @InheritanceType("JOINED")
- * @DiscriminatorColumn(name="discr", type="smallint")
- * @DiscriminatorMap({
- *     "0" = "DDC448MainTable",
- *     "1" = "DDC448SubTable"
- * })
- */
+#[Entity]
+#[InheritanceType('JOINED')]
+#[DiscriminatorColumn(name: 'discr', type: 'smallint')]
+#[DiscriminatorMap(['0' => 'DDC448MainTable', '1' => 'DDC448SubTable'])]
 class DDC448MainTable
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(name="id", type="integer")
-     * @GeneratedValue(strategy="AUTO")
-     */
-    private $id;
+    #[Id]
+    #[Column(name: 'id', type: 'integer')]
+    #[GeneratedValue(strategy: 'AUTO')]
+    private int $id;
 
-    /**
-     * @var DDC448ConnectedClass
-     * @ManyToOne(targetEntity="DDC448ConnectedClass",  cascade={"all"}, fetch="EAGER")
-     * @JoinColumn(name="connectedClassId", referencedColumnName="id", onDelete="CASCADE", nullable=true)
-     */
-    private $connectedClassId;
+    #[ManyToOne(targetEntity: 'DDC448ConnectedClass', cascade: ['all'], fetch: 'EAGER')]
+    #[JoinColumn(name: 'connectedClassId', referencedColumnName: 'id', onDelete: 'CASCADE', nullable: true)]
+    private DDC448ConnectedClass $connectedClassId;
 }
 
-/**
- * @Entity
- * @Table(name="connectedClass")
- * @HasLifecycleCallbacks
- */
+#[Table(name: 'connectedClass')]
+#[Entity]
+#[HasLifecycleCallbacks]
 class DDC448ConnectedClass
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(name="id", type="integer")
-     * @GeneratedValue(strategy="AUTO")
-     */
+    /** @var int */
+    #[Id]
+    #[Column(name: 'id', type: 'integer')]
+    #[GeneratedValue(strategy: 'AUTO')]
     protected $id; // connected with DDC448MainTable
 }
 
-/**
- * @Entity
- * @Table(name="SubTable")
- */
+#[Table(name: 'SubTable')]
+#[Entity]
 class DDC448SubTable extends DDC448MainTable
 {
 }

@@ -13,8 +13,9 @@ use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\InheritanceType;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
-/** @group DDC-2306 */
+#[Group('DDC-2306')]
 class DDC3170Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -25,7 +26,7 @@ class DDC3170Test extends OrmFunctionalTestCase
             DDC3170AbstractEntityJoined::class,
             DDC3170ProductJoined::class,
             DDC3170AbstractEntitySingleTable::class,
-            DDC3170ProductSingleTable::class
+            DDC3170ProductSingleTable::class,
         );
     }
 
@@ -68,46 +69,38 @@ class DDC3170Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- * @InheritanceType("JOINED")
- * @DiscriminatorColumn(name="type", type="string")
- * @DiscriminatorMap({"product" = "DDC3170ProductJoined"})
- */
+#[Entity]
+#[InheritanceType('JOINED')]
+#[DiscriminatorColumn(name: 'type', type: 'string')]
+#[DiscriminatorMap(['product' => 'DDC3170ProductJoined'])]
 abstract class DDC3170AbstractEntityJoined
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     public $id;
 }
 
-/** @Entity */
+#[Entity]
 class DDC3170ProductJoined extends DDC3170AbstractEntityJoined
 {
 }
 
-/**
- * @Entity
- * @InheritanceType("SINGLE_TABLE")
- * @DiscriminatorColumn(name="type", type="string")
- * @DiscriminatorMap({"product" = "DDC3170ProductSingleTable"})
- */
+#[Entity]
+#[InheritanceType('SINGLE_TABLE')]
+#[DiscriminatorColumn(name: 'type', type: 'string')]
+#[DiscriminatorMap(['product' => 'DDC3170ProductSingleTable'])]
 abstract class DDC3170AbstractEntitySingleTable
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     public $id;
 }
 
-/** @Entity */
+#[Entity]
 class DDC3170ProductSingleTable extends DDC3170AbstractEntitySingleTable
 {
 }

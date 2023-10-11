@@ -9,6 +9,7 @@ use Doctrine\Tests\Models\Cache\City;
 use Doctrine\Tests\Models\Cache\Country;
 use Doctrine\Tests\Models\Cache\State;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
 use function count;
 use function microtime;
@@ -19,10 +20,8 @@ use function str_repeat;
 
 use const PHP_EOL;
 
-/**
- * @group DDC-2183
- * @group performance
- */
+#[Group('DDC-2183')]
+#[Group('performance')]
 class SecondLevelCacheTest extends OrmFunctionalTestCase
 {
     protected function setUp(): void

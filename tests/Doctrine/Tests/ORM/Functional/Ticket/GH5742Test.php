@@ -18,7 +18,7 @@ class GH5742Test extends OrmFunctionalTestCase
         $this->createSchemaForModels(
             GH5742Person::class,
             GH5742Toothbrush::class,
-            GH5742ToothpasteBrand::class
+            GH5742ToothpasteBrand::class,
         );
     }
 
@@ -88,38 +88,24 @@ class GH5742Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @ORM\Entity
- */
+#[ORM\Entity]
 class GH5742Person
 {
-    /**
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     * @ORM\Column(type="integer")
-     *
-     * @var int
-     */
-    public $id;
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: 'AUTO')]
+    #[ORM\Column(type: 'integer')]
+    public int $id;
 
-    /**
-     * @ORM\OneToOne(targetEntity="GH5742Toothbrush", cascade={"persist"})
-     * @ORM\JoinColumn(nullable=false)
-     *
-     * @var GH5742Toothbrush
-     */
-    public $toothbrush;
+    #[ORM\OneToOne(targetEntity: 'GH5742Toothbrush', cascade: ['persist'])]
+    #[ORM\JoinColumn(nullable: false)]
+    public GH5742Toothbrush $toothbrush;
 
-    /**
-     * @ORM\ManyToMany(targetEntity="GH5742ToothpasteBrand")
-     * @ORM\JoinTable(name="gh5742person_gh5742toothpastebrand",
-     *      joinColumns={@ORM\JoinColumn(name="person_id", referencedColumnName="id", onDelete="CASCADE")},
-     *      inverseJoinColumns={@ORM\JoinColumn(name="brand_id", referencedColumnName="id")}
-     * )
-     *
-     * @var Collection<GH5742ToothpasteBrand>
-     */
-    public $preferredBrands;
+    /** @var Collection<GH5742ToothpasteBrand> */
+    #[ORM\ManyToMany(targetEntity: 'GH5742ToothpasteBrand')]
+    #[ORM\JoinTable('gh5742person_gh5742toothpastebrand')]
+    #[ORM\JoinColumn(name: 'person_id', referencedColumnName: 'id', onDelete: 'CASCADE')]
+    #[ORM\InverseJoinColumn(name: 'brand_id', referencedColumnName: 'id')]
+    public Collection $preferredBrands;
 
     public function __construct()
     {
@@ -127,32 +113,20 @@ class GH5742Person
     }
 }
 
-/**
- * @ORM\Entity
- */
+#[ORM\Entity]
 class GH5742Toothbrush
 {
-    /**
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     * @ORM\Column(type="integer")
-     *
-     * @var int
-     */
-    public $id;
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: 'AUTO')]
+    #[ORM\Column(type: 'integer')]
+    public int $id;
 }
 
-/**
- * @ORM\Entity
- */
+#[ORM\Entity]
 class GH5742ToothpasteBrand
 {
-    /**
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     * @ORM\Column(type="integer")
-     *
-     * @var int
-     */
-    public $id;
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: 'AUTO')]
+    #[ORM\Column(type: 'integer')]
+    public int $id;
 }

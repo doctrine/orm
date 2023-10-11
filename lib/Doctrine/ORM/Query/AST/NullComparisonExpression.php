@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Query\AST;
 
+use Doctrine\ORM\Query\SqlWalker;
+
 /**
  * NullComparisonExpression ::= (SingleValuedPathExpression | InputParameter) "IS" ["NOT"] "NULL"
  *
@@ -11,24 +13,14 @@ namespace Doctrine\ORM\Query\AST;
  */
 class NullComparisonExpression extends Node
 {
-    /** @var bool */
-    public $not;
-
-    /** @var Node */
-    public $expression;
-
-    /** @param Node $expression */
-    public function __construct($expression, bool $not = false)
-    {
-        $this->expression = $expression;
-        $this->not        = $not;
+    public function __construct(
+        public Node|string $expression,
+        public bool $not = false,
+    ) {
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function dispatch($sqlWalker)
+    public function dispatch(SqlWalker $walker): string
     {
-        return $sqlWalker->walkNullComparisonExpression($this);
+        return $walker->walkNullComparisonExpression($this);
     }
 }

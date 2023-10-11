@@ -14,6 +14,7 @@ use Doctrine\ORM\Mapping\InheritanceType;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
 class DDC279Test extends OrmFunctionalTestCase
 {
@@ -25,11 +26,11 @@ class DDC279Test extends OrmFunctionalTestCase
             DDC279EntityXAbstract::class,
             DDC279EntityX::class,
             DDC279EntityY::class,
-            DDC279EntityZ::class
+            DDC279EntityZ::class,
         );
     }
 
-    /** @group DDC-279 */
+    #[Group('DDC-279')]
     public function testDDC279(): void
     {
         $x = new DDC279EntityX();
@@ -52,7 +53,7 @@ class DDC279Test extends OrmFunctionalTestCase
 
         $query = $this->_em->createQuery(
             'SELECT x, y, z FROM Doctrine\Tests\ORM\Functional\Ticket\DDC279EntityX x ' .
-            'INNER JOIN x.y y INNER JOIN y.z z WHERE x.id = ?1'
+            'INNER JOIN x.y y INNER JOIN y.z z WHERE x.id = ?1',
         )->setParameter(1, $x->id);
 
         $result = $query->getResult();
@@ -68,79 +69,61 @@ class DDC279Test extends OrmFunctionalTestCase
 }
 
 
-/**
- * @Entity
- * @InheritanceType("JOINED")
- * @DiscriminatorColumn(name="discr", type="string")
- * @DiscriminatorMap({"DDC279EntityX" = "DDC279EntityX"})
- */
+#[Entity]
+#[InheritanceType('JOINED')]
+#[DiscriminatorColumn(name: 'discr', type: 'string')]
+#[DiscriminatorMap(['DDC279EntityX' => 'DDC279EntityX'])]
 abstract class DDC279EntityXAbstract
 {
-    /**
-     * @var int
-     * @Id
-     * @GeneratedValue
-     * @Column(name="id", type="integer")
-     */
+    /** @var int */
+    #[Id]
+    #[GeneratedValue]
+    #[Column(name: 'id', type: 'integer')]
     public $id;
 
-    /**
-     * @var string
-     * @Column(type="string", length=255)
-     */
+    /** @var string */
+    #[Column(type: 'string', length: 255)]
     public $data;
 }
 
-/** @Entity */
+#[Entity]
 class DDC279EntityX extends DDC279EntityXAbstract
 {
-    /**
-     * @var DDC279EntityY
-     * @OneToOne(targetEntity="DDC279EntityY")
-     * @JoinColumn(name="y_id", referencedColumnName="id")
-     */
+    /** @var DDC279EntityY */
+    #[OneToOne(targetEntity: 'DDC279EntityY')]
+    #[JoinColumn(name: 'y_id', referencedColumnName: 'id')]
     public $y;
 }
 
-/** @Entity */
+#[Entity]
 class DDC279EntityY
 {
-    /**
-     * @var int
-     * @Id
-     * @GeneratedValue
-     * @Column(name="id", type="integer")
-     */
+    /** @var int */
+    #[Id]
+    #[GeneratedValue]
+    #[Column(name: 'id', type: 'integer')]
     public $id;
 
-    /**
-     * @var string
-     * @Column(type="string", length=255)
-     */
+    /** @var string */
+    #[Column(type: 'string', length: 255)]
     public $data;
 
-    /**
-     * @var DDC279EntityZ
-     * @OneToOne(targetEntity="DDC279EntityZ")
-     * @JoinColumn(name="z_id", referencedColumnName="id")
-     */
+    /** @var DDC279EntityZ */
+    #[OneToOne(targetEntity: 'DDC279EntityZ')]
+    #[JoinColumn(name: 'z_id', referencedColumnName: 'id')]
     public $z;
 }
 
-/** @Entity */
+#[Entity]
 class DDC279EntityZ
 {
-    /**
-     * @var int
-     * @Id
-     * @GeneratedValue
-     * @Column(name="id", type="integer")
-     */
+    /** @var int */
+    #[Id]
+    #[GeneratedValue]
+    #[Column(name: 'id', type: 'integer')]
     public $id;
 
-    /**
-     * @var string
-     * @Column(type="string", length=255)
-     */
+    /** @var string */
+    #[Column(type: 'string', length: 255)]
     public $data;
 }

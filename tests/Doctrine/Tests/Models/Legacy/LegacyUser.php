@@ -10,58 +10,44 @@ use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\InverseJoinColumn;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\JoinTable;
 use Doctrine\ORM\Mapping\ManyToMany;
 use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\Table;
 
-/**
- * @Entity
- * @Table(name="legacy_users")
- */
+#[Table(name: 'legacy_users')]
+#[Entity]
 class LegacyUser
 {
-    /**
-     * @var int
-     * @Id
-     * @GeneratedValue
-     * @Column(name="iUserId", type="integer", nullable=false)
-     */
+    /** @var int */
+    #[Id]
+    #[GeneratedValue]
+    #[Column(name: 'iUserId', type: 'integer', nullable: false)]
     public $id;
 
-    /**
-     * @var string
-     * @Column(name="sUsername", type="string", length=255, unique=true)
-     */
+    /** @var string */
+    #[Column(name: 'sUsername', type: 'string', length: 255, unique: true)]
     public $username;
 
-    /**
-     * @var string
-     * @Column(type="string", length=255, name="name")
-     */
+    /** @var string */
+    #[Column(type: 'string', length: 255, name: 'name')]
     public $name;
 
-    /**
-     * @psalm-var Collection<int, LegacyArticle>
-     * @OneToMany(targetEntity="LegacyArticle", mappedBy="user")
-     */
+    /** @psalm-var Collection<int, LegacyArticle> */
+    #[OneToMany(targetEntity: 'LegacyArticle', mappedBy: 'user')]
     public $articles;
 
-    /**
-     * @psalm-var Collection<int, LegacyUserReference>
-     * @OneToMany(targetEntity="LegacyUserReference", mappedBy="_source", cascade={"remove"})
-     */
+    /** @psalm-var Collection<int, LegacyUserReference> */
+    #[OneToMany(targetEntity: 'LegacyUserReference', mappedBy: '_source', cascade: ['remove'])]
     public $references;
 
-    /**
-     * @psalm-var Collection<int, LegacyCar>
-     * @ManyToMany(targetEntity="LegacyCar", inversedBy="users", cascade={"persist", "merge"})
-     * @JoinTable(name="legacy_users_cars",
-     *      joinColumns={@JoinColumn(name="iUserId", referencedColumnName="iUserId")},
-     *      inverseJoinColumns={@JoinColumn(name="iCarId", referencedColumnName="iCarId")}
-     * )
-     */
+    /** @psalm-var Collection<int, LegacyCar> */
+    #[JoinTable(name: 'legacy_users_cars')]
+    #[JoinColumn(name: 'iUserId', referencedColumnName: 'iUserId')]
+    #[InverseJoinColumn(name: 'iCarId', referencedColumnName: 'iCarId')]
+    #[ManyToMany(targetEntity: 'LegacyCar', inversedBy: 'users', cascade: ['persist'])]
     public $cars;
 
     public function __construct()

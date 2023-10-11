@@ -15,8 +15,9 @@ use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\ORM\Mapping\Table;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
-/** @group GH-9579 */
+#[Group('GH-9579')]
 class GH9579Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -26,7 +27,7 @@ class GH9579Test extends OrmFunctionalTestCase
         $this->createSchemaForModels(
             GH9579Container::class,
             GH9579Item::class,
-            GH9579Part::class
+            GH9579Part::class,
         );
 
         $container = new GH9579Container();
@@ -47,7 +48,7 @@ class GH9579Test extends OrmFunctionalTestCase
         $this->_em->clear();
     }
 
-    /** @group GH-9579 */
+    #[Group('GH-9579')]
     public function testIssue(): void
     {
         $dql        = <<<'DQL'
@@ -65,24 +66,18 @@ DQL;
     }
 }
 
-/**
- * @Entity
- * @Table(name="GH9579_containers")
- */
+#[Table(name: 'GH9579_containers')]
+#[Entity]
 class GH9579Container
 {
-    /**
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     * @var int
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     public $id;
 
-    /**
-     * @var Collection<int, GH9579Item>
-     * @OneToMany (targetEntity="GH9579Item", mappedBy="container")
-     */
+    /** @var Collection<int, GH9579Item> */
+    #[OneToMany(targetEntity: 'GH9579Item', mappedBy: 'container')]
     public $items;
 
     public function __construct()
@@ -90,18 +85,14 @@ class GH9579Container
         $this->items = new ArrayCollection();
     }
 
-    /**
-     * @var GH9579Item
-     * @OneToOne(targetEntity="GH9579Item")
-     * @JoinColumn(name="item_id", referencedColumnName="id")
-     */
+    /** @var GH9579Item */
+    #[OneToOne(targetEntity: 'GH9579Item')]
+    #[JoinColumn(name: 'item_id', referencedColumnName: 'id')]
     public $currentItem;
 }
 
-/**
- * @Entity
- * @Table(name="GH9579_items")
- */
+#[Table(name: 'GH9579_items')]
+#[Entity]
 class GH9579Item
 {
     public function __construct()
@@ -109,46 +100,34 @@ class GH9579Item
         $this->parts = new ArrayCollection();
     }
 
-    /**
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     * @var int
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     public $id;
 
-    /**
-     * @var Collection<int, GH9579Part>
-     * @OneToMany(targetEntity="GH9579Part", mappedBy="item")
-     */
+    /** @var Collection<int, GH9579Part> */
+    #[OneToMany(targetEntity: 'GH9579Part', mappedBy: 'item')]
     public $parts;
 
-    /**
-     * @var GH9579Container
-     * @ManyToOne (targetEntity="GH9579Container", inversedBy="items")
-     * @JoinColumn(name="container_id", referencedColumnName="id")
-     */
+    /** @var GH9579Container */
+    #[ManyToOne(targetEntity: 'GH9579Container', inversedBy: 'items')]
+    #[JoinColumn(name: 'container_id', referencedColumnName: 'id')]
     public $container;
 }
 
-/**
- * @Entity
- * @Table(name="GH9579_parts")
- */
+#[Table(name: 'GH9579_parts')]
+#[Entity]
 class GH9579Part
 {
-    /**
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     * @var int
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     public $id;
 
-    /**
-     * @var GH9579Item
-     * @ManyToOne (targetEntity="GH9579Item", inversedBy="parts")
-     * @JoinColumn(name="item_id", referencedColumnName="id")
-     */
+    /** @var GH9579Item */
+    #[ManyToOne(targetEntity: 'GH9579Item', inversedBy: 'parts')]
+    #[JoinColumn(name: 'item_id', referencedColumnName: 'id')]
     public $item;
 }

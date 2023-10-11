@@ -16,7 +16,6 @@ use Doctrine\ORM\Mapping\PreUpdate;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 use function assert;
-use function get_class;
 
 class DDC2895Test extends OrmFunctionalTestCase
 {
@@ -36,7 +35,7 @@ class DDC2895Test extends OrmFunctionalTestCase
                 'prePersist' => ['setLastModifiedPreUpdate'],
                 'preUpdate' => ['setLastModifiedPreUpdate'],
             ],
-            $cm->lifecycleCallbacks
+            $cm->lifecycleCallbacks,
         );
 
         $ddc2895 = new DDC2895();
@@ -45,29 +44,23 @@ class DDC2895Test extends OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $ddc2895 = $this->_em->find(get_class($ddc2895), $ddc2895->id);
+        $ddc2895 = $this->_em->find($ddc2895::class, $ddc2895->id);
         assert($ddc2895 instanceof DDC2895);
 
         self::assertNotNull($ddc2895->getLastModified());
     }
 }
 
-/**
- * @MappedSuperclass
- * @HasLifecycleCallbacks
- */
+#[MappedSuperclass]
+#[HasLifecycleCallbacks]
 abstract class AbstractDDC2895
 {
-    /**
-     * @Column(name="last_modified", type="datetimetz", nullable=false)
-     * @var DateTime
-     */
+    /** @var DateTime */
+    #[Column(name: 'last_modified', type: 'datetimetz', nullable: false)]
     protected $lastModified;
 
-    /**
-     * @PrePersist
-     * @PreUpdate
-     */
+    #[PrePersist]
+    #[PreUpdate]
     public function setLastModifiedPreUpdate(): void
     {
         $this->setLastModified(new DateTime());
@@ -84,28 +77,22 @@ abstract class AbstractDDC2895
     }
 }
 
-/**
- * @Entity
- * @HasLifecycleCallbacks
- */
+#[Entity]
+#[HasLifecycleCallbacks]
 class DDC2895 extends AbstractDDC2895
 {
-    /**
-     * @var int
-     * @Id
-     * @GeneratedValue
-     * @Column(type="integer")
-     */
+    /** @var int */
+    #[Id]
+    #[GeneratedValue]
+    #[Column(type: 'integer')]
     public $id;
 
-    /** @param mixed $id */
-    public function setId($id): void
+    public function setId(mixed $id): void
     {
         $this->id = $id;
     }
 
-    /** @return mixed */
-    public function getId()
+    public function getId(): mixed
     {
         return $this->id;
     }

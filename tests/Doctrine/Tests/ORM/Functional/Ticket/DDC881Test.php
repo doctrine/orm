@@ -11,11 +11,11 @@ use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\JoinColumn;
-use Doctrine\ORM\Mapping\JoinColumns;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
 class DDC881Test extends OrmFunctionalTestCase
 {
@@ -26,14 +26,12 @@ class DDC881Test extends OrmFunctionalTestCase
         $this->createSchemaForModels(
             DDC881User::class,
             DDC881PhoneNumber::class,
-            DDC881PhoneCall::class
+            DDC881PhoneCall::class,
         );
     }
 
-    /**
-     * @group DDC-117
-     * @group DDC-881
-     */
+    #[Group('DDC-117')]
+    #[Group('DDC-881')]
     public function testIssue(): void
     {
         /* Create two test users: albert and alfons */
@@ -101,27 +99,19 @@ class DDC881Test extends OrmFunctionalTestCase
     }
 }
 
-/** @Entity */
+#[Entity]
 class DDC881User
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
-     */
-    private $id;
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue(strategy: 'AUTO')]
+    private int $id;
 
-    /**
-     * @var string
-     * @Column(type="string", length=255)
-     */
-    private $name;
+    #[Column(type: 'string', length: 255)]
+    private string|null $name = null;
 
-    /**
-     * @psalm-var Collection<int, DDC881PhoneNumber>
-     * @OneToMany(targetEntity="DDC881PhoneNumber",mappedBy="id")
-     */
+    /** @psalm-var Collection<int, DDC881PhoneNumber> */
+    #[OneToMany(targetEntity: 'DDC881PhoneNumber', mappedBy: 'id')]
     private $phoneNumbers;
 
     public function getName(): string
@@ -135,33 +125,22 @@ class DDC881User
     }
 }
 
-/** @Entity */
+#[Entity]
 class DDC881PhoneNumber
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     */
-    private $id;
+    #[Id]
+    #[Column(type: 'integer')]
+    private int|null $id = null;
 
-    /**
-     * @var DDC881User
-     * @Id
-     * @ManyToOne(targetEntity="DDC881User",cascade={"all"})
-     */
-    private $user;
+    #[Id]
+    #[ManyToOne(targetEntity: 'DDC881User', cascade: ['all'])]
+    private DDC881User|null $user = null;
 
-    /**
-     * @var string
-     * @Column(type="string", length=255)
-     */
-    private $phonenumber;
+    #[Column(type: 'string', length: 255)]
+    private string|null $phonenumber = null;
 
-    /**
-     * @psalm-var Collection<int, DDC881PhoneCall>
-     * @OneToMany(targetEntity="DDC881PhoneCall", mappedBy="phonenumber")
-     */
+    /** @psalm-var Collection<int, DDC881PhoneCall> */
+    #[OneToMany(targetEntity: 'DDC881PhoneCall', mappedBy: 'phonenumber')]
     private $calls;
 
     public function __construct()
@@ -191,32 +170,21 @@ class DDC881PhoneNumber
     }
 }
 
-/** @Entity */
+#[Entity]
 class DDC881PhoneCall
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
-     */
-    private $id;
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue(strategy: 'AUTO')]
+    private int $id;
 
-    /**
-     * @var DDC881PhoneNumber
-     * @ManyToOne(targetEntity="DDC881PhoneNumber", inversedBy="calls", cascade={"all"})
-     * @JoinColumns({
-     *  @JoinColumn(name="phonenumber_id", referencedColumnName="id"),
-     *  @JoinColumn(name="user_id", referencedColumnName="user_id")
-     * })
-     */
-    private $phonenumber;
+    #[JoinColumn(name: 'phonenumber_id', referencedColumnName: 'id')]
+    #[JoinColumn(name: 'user_id', referencedColumnName: 'user_id')]
+    #[ManyToOne(targetEntity: 'DDC881PhoneNumber', inversedBy: 'calls', cascade: ['all'])]
+    private DDC881PhoneNumber|null $phonenumber = null;
 
-    /**
-     * @var string
-     * @Column(type="string",nullable=true)
-     */
-    private $callDate;
+    #[Column(type: 'string', nullable: true)]
+    private string $callDate;
 
     public function setPhoneNumber(DDC881PhoneNumber $phoneNumber): void
     {

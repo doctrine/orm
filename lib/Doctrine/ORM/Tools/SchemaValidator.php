@@ -17,10 +17,9 @@ use Doctrine\DBAL\Types\SmallIntType;
 use Doctrine\DBAL\Types\StringType;
 use Doctrine\DBAL\Types\TextType;
 use Doctrine\DBAL\Types\Type;
-use Doctrine\Deprecations\Deprecation;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
-use Doctrine\ORM\Mapping\ClassMetadataInfo;
+use Doctrine\ORM\Mapping\FieldMapping;
 use ReflectionNamedType;
 
 use function array_diff;
@@ -45,14 +44,9 @@ use const PHP_VERSION_ID;
  * Performs strict validation of the mapping schema
  *
  * @link        www.doctrine-project.com
- *
- * @psalm-import-type FieldMapping from ClassMetadata
  */
 class SchemaValidator
 {
-    /** @var EntityManagerInterface */
-    private $em;
-
     /**
      * It maps built-in Doctrine types to PHP types
      */
@@ -71,9 +65,8 @@ class SchemaValidator
         TextType::class => 'string',
     ];
 
-    public function __construct(EntityManagerInterface $em)
+    public function __construct(private readonly EntityManagerInterface $em)
     {
-        $this->em = $em;
     }
 
     /**
@@ -88,7 +81,7 @@ class SchemaValidator
      *
      * @psalm-return array<string, list<string>>
      */
-    public function validateMapping()
+    public function validateMapping(): array
     {
         $errors  = [];
         $cmf     = $this->em->getMetadataFactory();
@@ -110,25 +103,14 @@ class SchemaValidator
      * @return string[]
      * @psalm-return list<string>
      */
-    public function validateClass(ClassMetadataInfo $class)
+    public function validateClass(ClassMetadata $class): array
     {
-        if (! $class instanceof ClassMetadata) {
-            Deprecation::trigger(
-                'doctrine/orm',
-                'https://github.com/doctrine/orm/pull/249',
-                'Passing an instance of %s to %s is deprecated, please pass a ClassMetadata instance instead.',
-                get_class($class),
-                __METHOD__,
-                ClassMetadata::class
-            );
-        }
-
         $ce  = [];
         $cmf = $this->em->getMetadataFactory();
 
         foreach ($class->fieldMappings as $fieldName => $mapping) {
-            if (! Type::hasType($mapping['type'])) {
-                $ce[] = "The field '" . $class->name . '#' . $fieldName . "' uses a non-existent type '" . $mapping['type'] . "'.";
+            if (! Type::hasType($mapping->type)) {
+                $ce[] = "The field '" . $class->name . '#' . $fieldName . "' uses a non-existent type '" . $mapping->type . "'.";
             }
         }
 
@@ -138,136 +120,132 @@ class SchemaValidator
         }
 
         foreach ($class->associationMappings as $fieldName => $assoc) {
-            if (! class_exists($assoc['targetEntity']) || $cmf->isTransient($assoc['targetEntity'])) {
-                $ce[] = "The target entity '" . $assoc['targetEntity'] . "' specified on " . $class->name . '#' . $fieldName . ' is unknown or not an entity.';
+            if (! class_exists($assoc->targetEntity) || $cmf->isTransient($assoc->targetEntity)) {
+                $ce[] = "The target entity '" . $assoc->targetEntity . "' specified on " . $class->name . '#' . $fieldName . ' is unknown or not an entity.';
 
                 return $ce;
             }
 
-            $targetMetadata = $cmf->getMetadataFor($assoc['targetEntity']);
+            $targetMetadata = $cmf->getMetadataFor($assoc->targetEntity);
 
             if ($targetMetadata->isMappedSuperclass) {
-                $ce[] = "The target entity '" . $assoc['targetEntity'] . "' specified on " . $class->name . '#' . $fieldName . ' is a mapped superclass. This is not possible since there is no table that a foreign key could refer to.';
+                $ce[] = "The target entity '" . $assoc->targetEntity . "' specified on " . $class->name . '#' . $fieldName . ' is a mapped superclass. This is not possible since there is no table that a foreign key could refer to.';
 
                 return $ce;
             }
 
-            if ($assoc['mappedBy'] && $assoc['inversedBy']) {
-                $ce[] = 'The association ' . $class . '#' . $fieldName . ' cannot be defined as both inverse and owning.';
-            }
-
-            if (isset($assoc['id']) && $targetMetadata->containsForeignIdentifier) {
+            if (isset($assoc->id) && $targetMetadata->containsForeignIdentifier) {
                 $ce[] = "Cannot map association '" . $class->name . '#' . $fieldName . ' as identifier, because ' .
                         "the target entity '" . $targetMetadata->name . "' also maps an association as identifier.";
             }
 
-            if ($assoc['mappedBy']) {
-                if ($targetMetadata->hasField($assoc['mappedBy'])) {
+            if (! $assoc->isOwningSide()) {
+                if ($targetMetadata->hasField($assoc->mappedBy)) {
                     $ce[] = 'The association ' . $class->name . '#' . $fieldName . ' refers to the owning side ' .
-                            'field ' . $assoc['targetEntity'] . '#' . $assoc['mappedBy'] . ' which is not defined as association, but as field.';
+                            'field ' . $assoc->targetEntity . '#' . $assoc->mappedBy . ' which is not defined as association, but as field.';
                 }
 
-                if (! $targetMetadata->hasAssociation($assoc['mappedBy'])) {
+                if (! $targetMetadata->hasAssociation($assoc->mappedBy)) {
                     $ce[] = 'The association ' . $class->name . '#' . $fieldName . ' refers to the owning side ' .
-                            'field ' . $assoc['targetEntity'] . '#' . $assoc['mappedBy'] . ' which does not exist.';
-                } elseif ($targetMetadata->associationMappings[$assoc['mappedBy']]['inversedBy'] === null) {
+                            'field ' . $assoc->targetEntity . '#' . $assoc->mappedBy . ' which does not exist.';
+                } elseif ($targetMetadata->associationMappings[$assoc->mappedBy]->inversedBy === null) {
                     $ce[] = 'The field ' . $class->name . '#' . $fieldName . ' is on the inverse side of a ' .
                             'bi-directional relationship, but the specified mappedBy association on the target-entity ' .
-                            $assoc['targetEntity'] . '#' . $assoc['mappedBy'] . ' does not contain the required ' .
+                            $assoc->targetEntity . '#' . $assoc->mappedBy . ' does not contain the required ' .
                             "'inversedBy=\"" . $fieldName . "\"' attribute.";
-                } elseif ($targetMetadata->associationMappings[$assoc['mappedBy']]['inversedBy'] !== $fieldName) {
+                } elseif ($targetMetadata->associationMappings[$assoc->mappedBy]->inversedBy !== $fieldName) {
                     $ce[] = 'The mappings ' . $class->name . '#' . $fieldName . ' and ' .
-                            $assoc['targetEntity'] . '#' . $assoc['mappedBy'] . ' are ' .
+                            $assoc->targetEntity . '#' . $assoc->mappedBy . ' are ' .
                             'inconsistent with each other.';
                 }
             }
 
-            if ($assoc['inversedBy']) {
-                if ($targetMetadata->hasField($assoc['inversedBy'])) {
+            if ($assoc->isOwningSide() && $assoc->inversedBy) {
+                if ($targetMetadata->hasField($assoc->inversedBy)) {
                     $ce[] = 'The association ' . $class->name . '#' . $fieldName . ' refers to the inverse side ' .
-                            'field ' . $assoc['targetEntity'] . '#' . $assoc['inversedBy'] . ' which is not defined as association.';
+                            'field ' . $assoc->targetEntity . '#' . $assoc->inversedBy . ' which is not defined as association.';
                 }
 
-                if (! $targetMetadata->hasAssociation($assoc['inversedBy'])) {
+                if (! $targetMetadata->hasAssociation($assoc->inversedBy)) {
                     $ce[] = 'The association ' . $class->name . '#' . $fieldName . ' refers to the inverse side ' .
-                            'field ' . $assoc['targetEntity'] . '#' . $assoc['inversedBy'] . ' which does not exist.';
-                } elseif ($targetMetadata->associationMappings[$assoc['inversedBy']]['mappedBy'] === null) {
+                            'field ' . $assoc->targetEntity . '#' . $assoc->inversedBy . ' which does not exist.';
+                } elseif ($targetMetadata->associationMappings[$assoc->inversedBy]->isOwningSide()) {
                     $ce[] = 'The field ' . $class->name . '#' . $fieldName . ' is on the owning side of a ' .
                             'bi-directional relationship, but the specified inversedBy association on the target-entity ' .
-                            $assoc['targetEntity'] . '#' . $assoc['inversedBy'] . ' does not contain the required ' .
+                            $assoc->targetEntity . '#' . $assoc->inversedBy . ' does not contain the required ' .
                             "'mappedBy=\"" . $fieldName . "\"' attribute.";
-                } elseif ($targetMetadata->associationMappings[$assoc['inversedBy']]['mappedBy'] !== $fieldName) {
+                } elseif ($targetMetadata->associationMappings[$assoc->inversedBy]->mappedBy !== $fieldName) {
                     $ce[] = 'The mappings ' . $class->name . '#' . $fieldName . ' and ' .
-                            $assoc['targetEntity'] . '#' . $assoc['inversedBy'] . ' are ' .
+                            $assoc->targetEntity . '#' . $assoc->inversedBy . ' are ' .
                             'inconsistent with each other.';
                 }
 
                 // Verify inverse side/owning side match each other
-                if (array_key_exists($assoc['inversedBy'], $targetMetadata->associationMappings)) {
-                    $targetAssoc = $targetMetadata->associationMappings[$assoc['inversedBy']];
-                    if ($assoc['type'] === ClassMetadata::ONE_TO_ONE && $targetAssoc['type'] !== ClassMetadata::ONE_TO_ONE) {
+                if (array_key_exists($assoc->inversedBy, $targetMetadata->associationMappings)) {
+                    $targetAssoc = $targetMetadata->associationMappings[$assoc->inversedBy];
+                    if ($assoc->isOneToOne() && ! $targetAssoc->isOneToOne()) {
                         $ce[] = 'If association ' . $class->name . '#' . $fieldName . ' is one-to-one, then the inversed ' .
-                                'side ' . $targetMetadata->name . '#' . $assoc['inversedBy'] . ' has to be one-to-one as well.';
-                    } elseif ($assoc['type'] === ClassMetadata::MANY_TO_ONE && $targetAssoc['type'] !== ClassMetadata::ONE_TO_MANY) {
+                                'side ' . $targetMetadata->name . '#' . $assoc->inversedBy . ' has to be one-to-one as well.';
+                    } elseif ($assoc->isManyToOne() && ! $targetAssoc->isOneToMany()) {
                         $ce[] = 'If association ' . $class->name . '#' . $fieldName . ' is many-to-one, then the inversed ' .
-                                'side ' . $targetMetadata->name . '#' . $assoc['inversedBy'] . ' has to be one-to-many.';
-                    } elseif ($assoc['type'] === ClassMetadata::MANY_TO_MANY && $targetAssoc['type'] !== ClassMetadata::MANY_TO_MANY) {
+                                'side ' . $targetMetadata->name . '#' . $assoc->inversedBy . ' has to be one-to-many.';
+                    } elseif ($assoc->isManyToMany() && ! $targetAssoc->isManyToMany()) {
                         $ce[] = 'If association ' . $class->name . '#' . $fieldName . ' is many-to-many, then the inversed ' .
-                                'side ' . $targetMetadata->name . '#' . $assoc['inversedBy'] . ' has to be many-to-many as well.';
+                                'side ' . $targetMetadata->name . '#' . $assoc->inversedBy . ' has to be many-to-many as well.';
                     }
                 }
             }
 
-            if ($assoc['isOwningSide']) {
-                if ($assoc['type'] === ClassMetadata::MANY_TO_MANY) {
+            if ($assoc->isOwningSide()) {
+                if ($assoc->isManyToManyOwningSide()) {
                     $identifierColumns = $class->getIdentifierColumnNames();
-                    foreach ($assoc['joinTable']['joinColumns'] as $joinColumn) {
-                        if (! in_array($joinColumn['referencedColumnName'], $identifierColumns, true)) {
-                            $ce[] = "The referenced column name '" . $joinColumn['referencedColumnName'] . "' " .
+                    foreach ($assoc->joinTable->joinColumns as $joinColumn) {
+                        if (! in_array($joinColumn->referencedColumnName, $identifierColumns, true)) {
+                            $ce[] = "The referenced column name '" . $joinColumn->referencedColumnName . "' " .
                                 "has to be a primary key column on the target entity class '" . $class->name . "'.";
                             break;
                         }
                     }
 
                     $identifierColumns = $targetMetadata->getIdentifierColumnNames();
-                    foreach ($assoc['joinTable']['inverseJoinColumns'] as $inverseJoinColumn) {
-                        if (! in_array($inverseJoinColumn['referencedColumnName'], $identifierColumns, true)) {
-                            $ce[] = "The referenced column name '" . $inverseJoinColumn['referencedColumnName'] . "' " .
+                    foreach ($assoc->joinTable->inverseJoinColumns as $inverseJoinColumn) {
+                        if (! in_array($inverseJoinColumn->referencedColumnName, $identifierColumns, true)) {
+                            $ce[] = "The referenced column name '" . $inverseJoinColumn->referencedColumnName . "' " .
                                 "has to be a primary key column on the target entity class '" . $targetMetadata->name . "'.";
                             break;
                         }
                     }
 
-                    if (count($targetMetadata->getIdentifierColumnNames()) !== count($assoc['joinTable']['inverseJoinColumns'])) {
-                        $ce[] = "The inverse join columns of the many-to-many table '" . $assoc['joinTable']['name'] . "' " .
+                    if (count($targetMetadata->getIdentifierColumnNames()) !== count($assoc->joinTable->inverseJoinColumns)) {
+                        $ce[] = "The inverse join columns of the many-to-many table '" . $assoc->joinTable->name . "' " .
                                 "have to contain to ALL identifier columns of the target entity '" . $targetMetadata->name . "', " .
-                                "however '" . implode(', ', array_diff($targetMetadata->getIdentifierColumnNames(), array_values($assoc['relationToTargetKeyColumns']))) .
+                                "however '" . implode(', ', array_diff($targetMetadata->getIdentifierColumnNames(), array_values($assoc->relationToTargetKeyColumns))) .
                                 "' are missing.";
                     }
 
-                    if (count($class->getIdentifierColumnNames()) !== count($assoc['joinTable']['joinColumns'])) {
-                        $ce[] = "The join columns of the many-to-many table '" . $assoc['joinTable']['name'] . "' " .
+                    if (count($class->getIdentifierColumnNames()) !== count($assoc->joinTable->joinColumns)) {
+                        $ce[] = "The join columns of the many-to-many table '" . $assoc->joinTable->name . "' " .
                                 "have to contain to ALL identifier columns of the source entity '" . $class->name . "', " .
-                                "however '" . implode(', ', array_diff($class->getIdentifierColumnNames(), array_values($assoc['relationToSourceKeyColumns']))) .
+                                "however '" . implode(', ', array_diff($class->getIdentifierColumnNames(), array_values($assoc->relationToSourceKeyColumns))) .
                                 "' are missing.";
                     }
-                } elseif ($assoc['type'] & ClassMetadata::TO_ONE) {
+                } elseif ($assoc->isToOneOwningSide()) {
                     $identifierColumns = $targetMetadata->getIdentifierColumnNames();
-                    foreach ($assoc['joinColumns'] as $joinColumn) {
-                        if (! in_array($joinColumn['referencedColumnName'], $identifierColumns, true)) {
-                            $ce[] = "The referenced column name '" . $joinColumn['referencedColumnName'] . "' " .
+                    foreach ($assoc->joinColumns as $joinColumn) {
+                        if (! in_array($joinColumn->referencedColumnName, $identifierColumns, true)) {
+                            $ce[] = "The referenced column name '" . $joinColumn->referencedColumnName . "' " .
                                     "has to be a primary key column on the target entity class '" . $targetMetadata->name . "'.";
                         }
                     }
 
-                    if (count($identifierColumns) !== count($assoc['joinColumns'])) {
+                    if (count($identifierColumns) !== count($assoc->joinColumns)) {
                         $ids = [];
 
-                        foreach ($assoc['joinColumns'] as $joinColumn) {
-                            $ids[] = $joinColumn['name'];
+                        foreach ($assoc->joinColumns as $joinColumn) {
+                            $ids[] = $joinColumn->name;
                         }
 
-                        $ce[] = "The join columns of the association '" . $assoc['fieldName'] . "' " .
+                        $ce[] = "The join columns of the association '" . $assoc->fieldName . "' " .
                                 "have to match to ALL identifier columns of the target entity '" . $targetMetadata->name . "', " .
                                 "however '" . implode(', ', array_diff($targetMetadata->getIdentifierColumnNames(), $ids)) .
                                 "' are missing.";
@@ -275,8 +253,8 @@ class SchemaValidator
                 }
             }
 
-            if (isset($assoc['orderBy']) && $assoc['orderBy'] !== null) {
-                foreach ($assoc['orderBy'] as $orderField => $orientation) {
+            if ($assoc->isOrdered()) {
+                foreach ($assoc->orderBy() as $orderField => $orientation) {
                     if (! $targetMetadata->hasField($orderField) && ! $targetMetadata->hasAssociation($orderField)) {
                         $ce[] = 'The association ' . $class->name . '#' . $fieldName . ' is ordered by a foreign field ' .
                                 $orderField . ' that is not a field on the target entity ' . $targetMetadata->name . '.';
@@ -322,10 +300,8 @@ class SchemaValidator
 
     /**
      * Checks if the Database Schema is in sync with the current metadata state.
-     *
-     * @return bool
      */
-    public function schemaInSyncWithMetadata()
+    public function schemaInSyncWithMetadata(): bool
     {
         return count($this->getUpdateSchemaList()) === 0;
     }
@@ -341,23 +317,22 @@ class SchemaValidator
 
         $allMetadata = $this->em->getMetadataFactory()->getAllMetadata();
 
-        return $schemaTool->getUpdateSchemaSql($allMetadata, true);
+        return $schemaTool->getUpdateSchemaSql($allMetadata);
     }
 
     /** @return list<string> containing the found issues */
-    private function validatePropertiesTypes(ClassMetadataInfo $class): array
+    private function validatePropertiesTypes(ClassMetadata $class): array
     {
         return array_values(
             array_filter(
                 array_map(
-                    /** @param FieldMapping $fieldMapping */
-                    function (array $fieldMapping) use ($class): ?string {
-                        $fieldName = $fieldMapping['fieldName'];
+                    function (FieldMapping $fieldMapping) use ($class): string|null {
+                        $fieldName = $fieldMapping->fieldName;
                         assert(isset($class->reflFields[$fieldName]));
                         $propertyType = $class->reflFields[$fieldName]->getType();
 
                         // If the field type is not a built-in type, we cannot check it
-                        if (! Type::hasType($fieldMapping['type'])) {
+                        if (! Type::hasType($fieldMapping->type)) {
                             return null;
                         }
 
@@ -386,12 +361,12 @@ class SchemaValidator
                             $fieldName,
                             $propertyType,
                             $metadataFieldType,
-                            $fieldMapping['type']
+                            $fieldMapping['type'],
                         );
                     },
-                    $class->fieldMappings
-                )
-            )
+                    $class->fieldMappings,
+                ),
+            ),
         );
     }
 
@@ -399,7 +374,7 @@ class SchemaValidator
      * The exact DBAL type must be used (no subclasses), since consumers of doctrine/orm may have their own
      * customization around field types.
      */
-    private function findBuiltInType(Type $type): ?string
+    private function findBuiltInType(Type $type): string|null
     {
         $typeName = get_class($type);
 

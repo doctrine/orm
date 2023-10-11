@@ -13,6 +13,7 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\InheritanceType;
 use Doctrine\ORM\Mapping\Table;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
 class DDC144Test extends OrmFunctionalTestCase
 {
@@ -22,11 +23,11 @@ class DDC144Test extends OrmFunctionalTestCase
 
         $this->createSchemaForModels(
             DDC144FlowElement::class,
-            DDC144Operand::class
+            DDC144Operand::class,
         );
     }
 
-    /** @group DDC-144 */
+    #[Group('DDC-144')]
     public function testIssue(): void
     {
         $operand                  = new DDC144Operand();
@@ -40,27 +41,21 @@ class DDC144Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- * @Table(name="ddc144_flowelements")
- * @InheritanceType("JOINED")
- * @DiscriminatorColumn(type="string", name="discr")
- * @DiscriminatorMap({"flowelement" = "DDC144FlowElement", "operand" = "DDC144Operand"})
- */
+#[Table(name: 'ddc144_flowelements')]
+#[Entity]
+#[InheritanceType('JOINED')]
+#[DiscriminatorColumn(type: 'string', name: 'discr')]
+#[DiscriminatorMap(['flowelement' => 'DDC144FlowElement', 'operand' => 'DDC144Operand'])]
 class DDC144FlowElement
 {
-    /**
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     * @var int
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     public $id;
 
-    /**
-     * @var string
-     * @Column
-     */
+    /** @var string */
+    #[Column]
     public $property;
 }
 
@@ -69,16 +64,12 @@ abstract class DDC144Expression extends DDC144FlowElement
     abstract public function method(): void;
 }
 
-/**
- * @Entity
- * @Table(name="ddc144_operands")
- */
+#[Table(name: 'ddc144_operands')]
+#[Entity]
 class DDC144Operand extends DDC144Expression
 {
-    /**
-     * @var string
-     * @Column
-     */
+    /** @var string */
+    #[Column]
     public $operandProperty;
 
     public function method(): void

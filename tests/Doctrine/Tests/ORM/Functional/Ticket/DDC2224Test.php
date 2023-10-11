@@ -12,12 +12,13 @@ use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Query;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Depends;
+use PHPUnit\Framework\Attributes\Group;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
 
-use function method_exists;
 use function sprintf;
 
-/** @group DDC-2224 */
+#[Group('DDC-2224')]
 class DDC2224Test extends OrmFunctionalTestCase
 {
     public static function setUpBeforeClass(): void
@@ -37,7 +38,7 @@ class DDC2224Test extends OrmFunctionalTestCase
         return $query;
     }
 
-    /** @depends testIssue */
+    #[Depends('testIssue')]
     public function testCacheMissWhenTypeChanges(Query $query): void
     {
         $query->setParameter('field', 'test', 'string');
@@ -50,13 +51,9 @@ class DDC2224Type extends Type
     /**
      * {@inheritDoc}
      */
-    public function getSQLDeclaration(array $fieldDeclaration, AbstractPlatform $platform)
+    public function getSQLDeclaration(array $column, AbstractPlatform $platform): string
     {
-        if (method_exists($platform, 'getStringTypeDeclarationSQL')) {
-            return $platform->getStringTypeDeclarationSQL($fieldDeclaration);
-        }
-
-        return $platform->getVarcharTypeDeclarationSQL($fieldDeclaration);
+        return $platform->getStringTypeDeclarationSQL($column);
     }
 
     public function getName(): string
@@ -67,34 +64,22 @@ class DDC2224Type extends Type
     /**
      * {@inheritDoc}
      */
-    public function canRequireSQLConversion()
-    {
-        return true;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function convertToDatabaseValueSQL($sqlExpr, AbstractPlatform $platform)
+    public function convertToDatabaseValueSQL($sqlExpr, AbstractPlatform $platform): string
     {
         return sprintf('FUNCTION(%s)', $sqlExpr);
     }
 }
 
-/** @Entity */
+#[Entity]
 class DDC2224Entity
 {
-    /**
-     * @var int
-     * @Id
-     * @GeneratedValue
-     * @Column(type="integer")
-     */
+    /** @var int */
+    #[Id]
+    #[GeneratedValue]
+    #[Column(type: 'integer')]
     public $id;
 
-    /**
-     * @var mixed
-     * @Column(type="DDC2224Type", length=255)
-     */
+    /** @var mixed */
+    #[Column(type: 'DDC2224Type', length: 255)]
     public $field;
 }

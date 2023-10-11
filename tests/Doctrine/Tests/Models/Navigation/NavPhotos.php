@@ -9,44 +9,26 @@ use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\JoinColumn;
-use Doctrine\ORM\Mapping\JoinColumns;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\Table;
 
-/**
- * @Entity
- * @Table(name="navigation_photos")
- */
+#[Table(name: 'navigation_photos')]
+#[Entity]
 class NavPhotos
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
-    private $id;
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
+    private int $id;
 
-    /**
-     * @var NavPointOfInterest
-     * @ManyToOne(targetEntity="NavPointOfInterest")
-     * @JoinColumns({
-     *   @JoinColumn(name="poi_long", referencedColumnName="nav_long"),
-     *   @JoinColumn(name="poi_lat", referencedColumnName="nav_lat")
-     * })
-     */
-    private $poi;
-
-    /**
-     * @var string
-     * @Column(type="string", length=255, name="file_name")
-     */
-    private $file;
-
-    public function __construct(NavPointOfInterest $poi, string $file)
-    {
-        $this->poi  = $poi;
-        $this->file = $file;
+    public function __construct(
+        #[JoinColumn(name: 'poi_long', referencedColumnName: 'nav_long')]
+        #[JoinColumn(name: 'poi_lat', referencedColumnName: 'nav_lat')]
+        #[ManyToOne(targetEntity: 'NavPointOfInterest')]
+        private NavPointOfInterest $poi,
+        #[Column(type: 'string', length: 255, name: 'file_name')]
+        private string $file,
+    ) {
     }
 
     public function getId(): int

@@ -12,19 +12,15 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\InheritanceType;
 use Doctrine\ORM\Mapping\Table;
 
-/**
- * @Entity
- * @Table(name="one_to_one_single_table_inheritance_pet")
- * @InheritanceType("SINGLE_TABLE")
- * @DiscriminatorMap({"cat" = "Cat"})
- */
+#[Table(name: 'one_to_one_single_table_inheritance_pet')]
+#[Entity]
+#[InheritanceType('SINGLE_TABLE')]
+#[DiscriminatorMap(['cat' => 'Cat'])]
 abstract class Pet
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue(strategy: 'AUTO')]
     public $id;
 }

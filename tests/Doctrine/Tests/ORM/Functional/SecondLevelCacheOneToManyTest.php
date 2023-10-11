@@ -11,10 +11,11 @@ use Doctrine\Tests\Models\Cache\State;
 use Doctrine\Tests\Models\Cache\Token;
 use Doctrine\Tests\Models\Cache\Travel;
 use Doctrine\Tests\Models\Cache\Traveler;
+use PHPUnit\Framework\Attributes\Group;
 
 use function sprintf;
 
-/** @group DDC-2183 */
+#[Group('DDC-2183')]
 class SecondLevelCacheOneToManyTest extends SecondLevelCacheFunctionalTestCase
 {
     public function testShouldPutCollectionInverseSideOnPersist(): void
@@ -383,7 +384,7 @@ class SecondLevelCacheOneToManyTest extends SecondLevelCacheFunctionalTestCase
 
         $query  = sprintf(
             'SELECT t, tt FROM Doctrine\Tests\Models\Cache\Traveler t JOIN t.travels tt WHERE t.id = %s',
-            $travelerId
+            $travelerId,
         );
         $result = $this->_em->createQuery($query)->getSingleResult();
 

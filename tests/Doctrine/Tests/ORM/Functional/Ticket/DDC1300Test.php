@@ -13,8 +13,9 @@ use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
-/** @group DDC-1300 */
+#[Group('DDC-1300')]
 class DDC1300Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -23,7 +24,7 @@ class DDC1300Test extends OrmFunctionalTestCase
 
         $this->createSchemaForModels(
             DDC1300Foo::class,
-            DDC1300FooLocale::class
+            DDC1300FooLocale::class,
         );
     }
 
@@ -50,58 +51,45 @@ class DDC1300Test extends OrmFunctionalTestCase
     }
 }
 
-/** @Entity */
+#[Entity]
 class DDC1300Foo
 {
-    /**
-     * @var int fooID
-     * @Column(name="fooID", type="integer", nullable=false)
-     * @GeneratedValue(strategy="AUTO")
-     * @Id
-     */
+    /** @var int fooID */
+    #[Column(name: 'fooID', type: 'integer', nullable: false)]
+    #[GeneratedValue(strategy: 'AUTO')]
+    #[Id]
     public $fooID = null;
 
-    /**
-     * @var string fooReference
-     * @Column(name="fooReference", type="string", nullable=true, length=45)
-     */
+    /** @var string fooReference */
+    #[Column(name: 'fooReference', type: 'string', nullable: true, length: 45)]
     public $fooReference = null;
 
-    /**
-     * @psalm-var Collection<int, DDC1300FooLocale>
-     * @OneToMany(targetEntity="DDC1300FooLocale", mappedBy="foo",
-     * cascade={"persist"})
-     */
+    /** @psalm-var Collection<int, DDC1300FooLocale> */
+    #[OneToMany(targetEntity: 'DDC1300FooLocale', mappedBy: 'foo', cascade: ['persist'])]
     public $fooLocaleRefFoo = null;
 
     /** @param mixed[]|null $options */
-    public function __construct(?array $options = null)
+    public function __construct(array|null $options = null)
     {
         $this->fooLocaleRefFoo = new ArrayCollection();
     }
 }
 
-/** @Entity */
+#[Entity]
 class DDC1300FooLocale
 {
-    /**
-     * @var DDC1300Foo
-     * @ManyToOne(targetEntity="DDC1300Foo")
-     * @JoinColumn(name="fooID", referencedColumnName="fooID")
-     * @Id
-     */
+    /** @var DDC1300Foo */
+    #[ManyToOne(targetEntity: 'DDC1300Foo')]
+    #[JoinColumn(name: 'fooID', referencedColumnName: 'fooID')]
+    #[Id]
     public $foo = null;
 
-    /**
-     * @var string locale
-     * @Column(name="locale", type="string", nullable=false, length=5)
-     * @Id
-     */
+    /** @var string locale */
+    #[Column(name: 'locale', type: 'string', nullable: false, length: 5)]
+    #[Id]
     public $locale = null;
 
-    /**
-     * @var string title
-     * @Column(name="title", type="string", nullable=true, length=150)
-     */
+    /** @var string title */
+    #[Column(name: 'title', type: 'string', nullable: true, length: 150)]
     public $title = null;
 }

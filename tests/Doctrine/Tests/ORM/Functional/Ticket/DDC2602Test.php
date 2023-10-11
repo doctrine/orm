@@ -16,11 +16,14 @@ use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
 use function in_array;
 use function json_decode;
 
-/** @group DDC-2602 */
+use const JSON_THROW_ON_ERROR;
+
+#[Group('DDC-2602')]
 class DDC2602Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -31,7 +34,7 @@ class DDC2602Test extends OrmFunctionalTestCase
             DDC2602User::class,
             DDC2602Biography::class,
             DDC2602BiographyField::class,
-            DDC2602BiographyFieldChoice::class
+            DDC2602BiographyFieldChoice::class,
         );
 
         $this->loadFixture();
@@ -137,7 +140,7 @@ class DDC2602PostLoadListener
         ');
 
         $result    = $query->getResult();
-        $content   = json_decode($entity->content);
+        $content   = json_decode($entity->content, null, 512, JSON_THROW_ON_ERROR);
         $fieldList = new ArrayCollection();
 
         foreach ($content as $selection) {
@@ -146,9 +149,7 @@ class DDC2602PostLoadListener
             $fieldSelection = new DDC2602FieldSelection();
 
             $fieldSelection->field      = $field;
-            $fieldSelection->choiceList = $field->choiceList->filter(static function ($choice) use ($choiceList) {
-                return in_array($choice->id, $choiceList, true);
-            });
+            $fieldSelection->choiceList = $field->choiceList->filter(static fn ($choice) => in_array($choice->id, $choiceList, true));
 
             $fieldList->add($fieldSelection);
         }
@@ -158,97 +159,65 @@ class DDC2602PostLoadListener
 }
 
 
-/** @Entity */
+#[Entity]
 class DDC2602User
 {
-    /**
-     * @Id
-     * @GeneratedValue
-     * @Column(type="integer")
-     * @var int
-     */
+    /** @var int */
+    #[Id]
+    #[GeneratedValue]
+    #[Column(type: 'integer')]
     public $id;
 
-    /**
-     * @Column(type="string", length=15)
-     * @var string
-     */
+    /** @var string */
+    #[Column(type: 'string', length: 15)]
     public $name;
 
-    /**
-     * @var DDC2602Biography
-     * @OneToOne(
-     *     targetEntity="DDC2602Biography",
-     *     inversedBy="user",
-     *     cascade={"persist", "merge", "refresh", "remove"}
-     * )
-     * @JoinColumn(nullable=false)
-     */
+    /** @var DDC2602Biography */
+    #[OneToOne(targetEntity: 'DDC2602Biography', inversedBy: 'user', cascade: ['persist', 'refresh', 'remove'])]
+    #[JoinColumn(nullable: false)]
     public $biography;
 }
 
-/** @Entity */
+#[Entity]
 class DDC2602Biography
 {
-    /**
-     * @Id
-     * @GeneratedValue
-     * @Column(type="integer")
-     * @var int
-     */
+    /** @var int */
+    #[Id]
+    #[GeneratedValue]
+    #[Column(type: 'integer')]
     public $id;
 
-    /**
-     * @var DDC2602User
-     * @OneToOne(
-     *     targetEntity="DDC2602User",
-     *     mappedBy="biography",
-     *     cascade={"persist", "merge", "refresh"}
-     * )
-     */
+    /** @var DDC2602User */
+    #[OneToOne(targetEntity: 'DDC2602User', mappedBy: 'biography', cascade: ['persist', 'refresh'])]
     public $user;
 
-    /**
-     * @Column(type="text", nullable=true)
-     * @var string
-     */
+    /** @var string */
+    #[Column(type: 'text', nullable: true)]
     public $content;
 
     /** @var array */
     public $fieldList = [];
 }
 
-/** @Entity */
+#[Entity]
 class DDC2602BiographyField
 {
-    /**
-     * @Id
-     * @GeneratedValue
-     * @Column(type="integer")
-     * @var int
-     */
+    /** @var int */
+    #[Id]
+    #[GeneratedValue]
+    #[Column(type: 'integer')]
     public $id;
 
-    /**
-     * @var string
-     * @Column(type="string", unique=true, length=100)
-     */
+    /** @var string */
+    #[Column(type: 'string', unique: true, length: 100)]
     public $alias;
 
-    /**
-     * @var string
-     * @Column(type="string", length=100)
-     */
+    /** @var string */
+    #[Column(type: 'string', length: 100)]
     public $label;
 
-    /**
-     * @OneToMany(
-     *     targetEntity="DDC2602BiographyFieldChoice",
-     *     mappedBy="field",
-     *     cascade={"persist", "merge", "refresh"}
-     * )
-     * @var ArrayCollection
-     */
+    /** @var ArrayCollection */
+    #[OneToMany(targetEntity: 'DDC2602BiographyFieldChoice', mappedBy: 'field', cascade: ['persist', 'refresh'])]
     public $choiceList;
 
     public function __construct()
@@ -257,31 +226,22 @@ class DDC2602BiographyField
     }
 }
 
-/** @Entity */
+#[Entity]
 class DDC2602BiographyFieldChoice
 {
-    /**
-     * @Id
-     * @GeneratedValue
-     * @Column(type="integer")
-     * @var int
-     */
+    /** @var int */
+    #[Id]
+    #[GeneratedValue]
+    #[Column(type: 'integer')]
     public $id;
 
-    /**
-     * @var string
-     * @Column(type="string", unique=true, length=100)
-     */
+    /** @var string */
+    #[Column(type: 'string', unique: true, length: 100)]
     public $label;
 
-    /**
-     * @ManyToOne(
-     *     targetEntity="DDC2602BiographyField",
-     *     inversedBy="choiceList"
-     * )
-     * @JoinColumn(onDelete="CASCADE")
-     * @var DDC2602BiographyField
-     */
+    /** @var DDC2602BiographyField */
+    #[ManyToOne(targetEntity: 'DDC2602BiographyField', inversedBy: 'choiceList')]
+    #[JoinColumn(onDelete: 'CASCADE')]
     public $field;
 }
 

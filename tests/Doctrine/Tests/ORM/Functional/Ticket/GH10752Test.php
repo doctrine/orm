@@ -9,10 +9,9 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Exception\ForeignKeyConstraintViolationException;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
-/**
- * @group GH10752
- */
+#[Group('GH10752')]
 class GH10752Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -27,10 +26,6 @@ class GH10752Test extends OrmFunctionalTestCase
 
     public function testThrowExceptionWhenRemovingPromotionThatIsInUse(): void
     {
-        if (! $this->_em->getConnection()->getDatabasePlatform()->supportsForeignKeyConstraints()) {
-            self::markTestSkipped('Platform does not support foreign keys.');
-        }
-
         $order     = new GH10752Order();
         $promotion = new GH10752Promotion();
 
@@ -48,10 +43,6 @@ class GH10752Test extends OrmFunctionalTestCase
 
     public function testThrowExceptionWhenRemovingPromotionThatIsInUseAndOrderIsNotInMemory(): void
     {
-        if (! $this->_em->getConnection()->getDatabasePlatform()->supportsForeignKeyConstraints()) {
-            self::markTestSkipped('Platform does not support foreign keys.');
-        }
-
         $order     = new GH10752Order();
         $promotion = new GH10752Promotion();
 
@@ -71,30 +62,19 @@ class GH10752Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @ORM\Entity
- */
+#[ORM\Entity]
 class GH10752Order
 {
-    /**
-     * @ORM\Id
-     * @ORM\GeneratedValue
-     * @ORM\Column(type="integer")
-     *
-     * @var int
-     */
-    private $id = null;
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column(type: 'integer')]
+    private int|null $id = null;
 
-    /**
-     * @ORM\ManyToMany(targetEntity="GH10752Promotion", cascade={"persist"})
-     * @ORM\JoinTable(name="order_promotion",
-     *      joinColumns={@ORM\JoinColumn(name="order_id", referencedColumnName="id", onDelete="CASCADE")},
-     *      inverseJoinColumns={@ORM\JoinColumn(name="promotion_id", referencedColumnName="id")}
-     * )
-     *
-     * @var Collection
-     */
-    private $promotions;
+    #[ORM\ManyToMany(targetEntity: GH10752Promotion::class, cascade: ['persist'])]
+    #[ORM\JoinTable(name: 'order_promotion')]
+    #[ORM\JoinColumn(name: 'order_id', referencedColumnName: 'id', onDelete: 'CASCADE')]
+    #[ORM\InverseJoinColumn(name: 'promotion_id', referencedColumnName: 'id')]
+    private Collection $promotions;
 
     public function __construct()
     {
@@ -109,17 +89,11 @@ class GH10752Order
     }
 }
 
-/**
- * @ORM\Entity
- */
+#[ORM\Entity]
 class GH10752Promotion
 {
-    /**
-     * @ORM\Id
-     * @ORM\GeneratedValue
-     * @ORM\Column(type="integer")
-     *
-     * @var int
-     */
-    public $id = null;
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column(type: 'integer')]
+    public int|null $id = null;
 }

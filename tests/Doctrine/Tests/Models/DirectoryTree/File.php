@@ -8,19 +8,15 @@ use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\Table;
 
-/**
- * @Entity
- * @Table(name="`file`")
- */
+#[Table(name: '`file`')]
+#[Entity]
 class File extends AbstractContentItem
 {
-    /**
-     * @var string
-     * @Column(type="string", length=255)
-     */
+    /** @var string */
+    #[Column(type: 'string', length: 255)]
     protected $extension = 'html';
 
-    public function __construct(?Directory $parent = null)
+    public function __construct(Directory|null $parent = null)
     {
         parent::__construct($parent);
     }

@@ -26,7 +26,7 @@ class DDC493Test extends OrmFunctionalTestCase
         $this->createSchemaForModels(
             DDC493Customer::class,
             DDC493Distributor::class,
-            DDC493Contact::class
+            DDC493Contact::class,
         );
     }
 
@@ -35,52 +35,42 @@ class DDC493Test extends OrmFunctionalTestCase
         $q = $this->_em->createQuery('select u, c.data from ' . __NAMESPACE__ . '\\DDC493Distributor u JOIN u.contact c');
         self::assertEquals(
             strtolower('SELECT d0_.id AS id_0, d1_.data AS data_1, d0_.discr AS discr_2, d0_.contact AS contact_3 FROM DDC493Distributor d2_ INNER JOIN DDC493Customer d0_ ON d2_.id = d0_.id INNER JOIN DDC493Contact d1_ ON d0_.contact = d1_.id'),
-            strtolower($q->getSQL())
+            strtolower($q->getSQL()),
         );
     }
 }
 
-/**
- * @Entity
- * @InheritanceType("JOINED")
- * @DiscriminatorColumn(name="discr", type="string")
- * @DiscriminatorMap({"distributor" = "DDC493Distributor", "customer" = "DDC493Customer"})
- */
+#[Entity]
+#[InheritanceType('JOINED')]
+#[DiscriminatorColumn(name: 'discr', type: 'string')]
+#[DiscriminatorMap(['distributor' => 'DDC493Distributor', 'customer' => 'DDC493Customer'])]
 class DDC493Customer
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue(strategy: 'AUTO')]
     public $id;
-    /**
-     * @var DDC493Contact
-     * @OneToOne(targetEntity="DDC493Contact", cascade={"remove","persist"})
-     * @JoinColumn(name="contact", referencedColumnName="id")
-     */
+    /** @var DDC493Contact */
+    #[OneToOne(targetEntity: 'DDC493Contact', cascade: ['remove', 'persist'])]
+    #[JoinColumn(name: 'contact', referencedColumnName: 'id')]
     public $contact;
 }
 
-/** @Entity */
+#[Entity]
 class DDC493Distributor extends DDC493Customer
 {
 }
 
-/** @Entity */
+#[Entity]
 class DDC493Contact
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue(strategy: 'AUTO')]
     public $id;
-    /**
-     * @var string
-     * @Column(type="string", length=255)
-     */
+    /** @var string */
+    #[Column(type: 'string', length: 255)]
     public $data;
 }

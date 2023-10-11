@@ -5,13 +5,15 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Mapping;
 
 use Doctrine\ORM\Mapping\DefaultEntityListenerResolver;
+use Doctrine\Tests\Models\Company\CompanyContractListener;
+use Doctrine\Tests\Models\Company\CompanyFlexUltraContractListener;
 use Doctrine\Tests\OrmTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
-/** @group DDC-1955 */
+#[Group('DDC-1955')]
 class EntityListenerResolverTest extends OrmTestCase
 {
-    /** @var DefaultEntityListenerResolver */
-    private $resolver;
+    private DefaultEntityListenerResolver $resolver;
 
     protected function setUp(): void
     {
@@ -22,7 +24,7 @@ class EntityListenerResolverTest extends OrmTestCase
 
     public function testResolve(): void
     {
-        $className = '\Doctrine\Tests\Models\Company\CompanyContractListener';
+        $className = CompanyContractListener::class;
         $object    = $this->resolver->resolve($className);
 
         self::assertInstanceOf($className, $object);
@@ -31,7 +33,7 @@ class EntityListenerResolverTest extends OrmTestCase
 
     public function testRegisterAndResolve(): void
     {
-        $className = '\Doctrine\Tests\Models\Company\CompanyContractListener';
+        $className = CompanyContractListener::class;
         $object    = new $className();
 
         $this->resolver->register($object);
@@ -41,8 +43,8 @@ class EntityListenerResolverTest extends OrmTestCase
 
     public function testClearOne(): void
     {
-        $className1 = '\Doctrine\Tests\Models\Company\CompanyContractListener';
-        $className2 = '\Doctrine\Tests\Models\Company\CompanyFlexUltraContractListener';
+        $className1 = CompanyContractListener::class;
+        $className2 = CompanyFlexUltraContractListener::class;
 
         $obj1 = $this->resolver->resolve($className1);
         $obj2 = $this->resolver->resolve($className2);
@@ -64,8 +66,8 @@ class EntityListenerResolverTest extends OrmTestCase
 
     public function testClearAll(): void
     {
-        $className1 = '\Doctrine\Tests\Models\Company\CompanyContractListener';
-        $className2 = '\Doctrine\Tests\Models\Company\CompanyFlexUltraContractListener';
+        $className1 = CompanyContractListener::class;
+        $className2 = CompanyFlexUltraContractListener::class;
 
         $obj1 = $this->resolver->resolve($className1);
         $obj2 = $this->resolver->resolve($className2);
@@ -83,12 +85,5 @@ class EntityListenerResolverTest extends OrmTestCase
 
         self::assertNotSame($obj1, $this->resolver->resolve($className1));
         self::assertNotSame($obj2, $this->resolver->resolve($className2));
-    }
-
-    public function testRegisterStringException(): void
-    {
-        $this->expectException('InvalidArgumentException');
-        $this->expectExceptionMessage('An object was expected, but got "string".');
-        $this->resolver->register('CompanyContractListener');
     }
 }

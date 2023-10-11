@@ -12,16 +12,14 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\Tests\Models\Enums\Suit;
 
-/** @Entity */
+#[Entity]
 class Complex
 {
-    /**
-     * @Id
-     * @Column(type = "string", enumType = Suit::class)
-     */
+    #[Id]
+    #[Column(type: 'string', enumType: Suit::class)]
     protected Suit $type;
 
-    /** @OneToMany(targetEntity = ComplexChild::class, mappedBy = "complex", cascade = {"persist"}) */
+    #[OneToMany(targetEntity: ComplexChild::class, mappedBy: 'complex', cascade: ['persist'])]
     protected Collection $complexChildren;
 
     public function __construct()

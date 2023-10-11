@@ -16,6 +16,7 @@ use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\Table;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
 /**
  * Functional tests for cascade remove with class table inheritance.
@@ -32,11 +33,11 @@ class DDC2775Test extends OrmFunctionalTestCase
                 Role::class,
                 AdminRole::class,
                 Authorization::class,
-            ]
+            ],
         );
     }
 
-    /** @group DDC-2775 */
+    #[Group('DDC-2775')]
     public function testIssueCascadeRemove(): void
     {
         $role = new AdminRole();
@@ -65,33 +66,25 @@ class DDC2775Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- * @Table(name="ddc2775_role")
- * @InheritanceType("JOINED")
- * @DiscriminatorColumn(name="role_type", type="string")
- * @DiscriminatorMap({"admin"="AdminRole"})
- */
+#[Table(name: 'ddc2775_role')]
+#[Entity]
+#[InheritanceType('JOINED')]
+#[DiscriminatorColumn(name: 'role_type', type: 'string')]
+#[DiscriminatorMap(['admin' => 'AdminRole'])]
 abstract class Role
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     public $id;
 
-    /**
-     * @var User
-     * @ManyToOne(targetEntity="User", inversedBy="roles")
-     */
+    /** @var User */
+    #[ManyToOne(targetEntity: 'User', inversedBy: 'roles')]
     public $user;
 
-    /**
-     * @psalm-var Collection<int, Authorization>
-     * @OneToMany(targetEntity="Authorization", mappedBy="role", cascade={"all"}, orphanRemoval=true)
-     */
+    /** @psalm-var Collection<int, Authorization> */
+    #[OneToMany(targetEntity: 'Authorization', mappedBy: 'role', cascade: ['all'], orphanRemoval: true)]
     public $authorizations;
 
     public function addAuthorization(Authorization $authorization): void
@@ -101,65 +94,47 @@ abstract class Role
     }
 }
 
-/**
- * @Entity
- * @Table(name="ddc2775_admin_role")
- */
+#[Table(name: 'ddc2775_admin_role')]
+#[Entity]
 class AdminRole extends Role
 {
 }
 
-/**
- * @Entity
- * @Table(name="ddc2775_authorizations")
- */
+#[Table(name: 'ddc2775_authorizations')]
+#[Entity]
 class Authorization
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     public $id;
 
-    /**
-     * @var User
-     * @ManyToOne(targetEntity="User", inversedBy="authorizations")
-     */
+    /** @var User */
+    #[ManyToOne(targetEntity: 'User', inversedBy: 'authorizations')]
     public $user;
 
-    /**
-     * @var Role
-     * @ManyToOne(targetEntity="Role", inversedBy="authorizations")
-     */
+    /** @var Role */
+    #[ManyToOne(targetEntity: 'Role', inversedBy: 'authorizations')]
     public $role;
 }
 
-/**
- * @Entity
- * @Table(name="ddc2775_users")
- */
+#[Table(name: 'ddc2775_users')]
+#[Entity]
 class User
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue(strategy: 'AUTO')]
     public $id;
 
-    /**
-     * @psalm-var Collection<int, Role>
-     * @OneToMany(targetEntity="Role", mappedBy="user", cascade={"all"}, orphanRemoval=true)
-     */
+    /** @psalm-var Collection<int, Role> */
+    #[OneToMany(targetEntity: 'Role', mappedBy: 'user', cascade: ['all'], orphanRemoval: true)]
     public $roles;
 
-    /**
-     * @psalm-var Collection<int, Authorization>
-     * @OneToMany(targetEntity="Authorization", mappedBy="user", cascade={"all"}, orphanRemoval=true)
-     */
+    /** @psalm-var Collection<int, Authorization> */
+    #[OneToMany(targetEntity: 'Authorization', mappedBy: 'user', cascade: ['all'], orphanRemoval: true)]
     public $authorizations;
 
     public function addRole(Role $role): void

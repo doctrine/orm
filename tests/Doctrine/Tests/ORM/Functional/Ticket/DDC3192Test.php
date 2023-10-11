@@ -16,13 +16,12 @@ use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\Table;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
 use function array_search;
 
-/**
- * @group DDC-2494
- * @group non-cacheable
- */
+#[Group('DDC-2494')]
+#[Group('non-cacheable')]
 class DDC3192Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -32,7 +31,7 @@ class DDC3192Test extends OrmFunctionalTestCase
         if (Type::hasType('ddc3192_currency_code')) {
             self::fail(
                 'Type ddc3192_currency_code exists for testing DDC-3192 only, ' .
-                'but it has already been registered for some reason'
+                'but it has already been registered for some reason',
             );
         }
 
@@ -40,7 +39,7 @@ class DDC3192Test extends OrmFunctionalTestCase
 
         $this->createSchemaForModels(
             DDC3192Currency::class,
-            DDC3192Transaction::class
+            DDC3192Transaction::class,
         );
     }
 
@@ -77,82 +76,59 @@ class DDC3192Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Table(name="ddc3192_currency")
- * @Entity
- */
+#[Table(name: 'ddc3192_currency')]
+#[Entity]
 class DDC3192Currency
 {
-    /**
-     * @var string
-     * @Id
-     * @Column(type="ddc3192_currency_code")
-     */
-    public $code;
-
-    /**
-     * @var Collection<int, DDC3192Transaction>
-     * @OneToMany(targetEntity="DDC3192Transaction", mappedBy="currency")
-     */
+    /** @var Collection<int, DDC3192Transaction> */
+    #[OneToMany(targetEntity: 'DDC3192Transaction', mappedBy: 'currency')]
     public $transactions;
 
-    public function __construct(string $code)
-    {
-        $this->code = $code;
+    public function __construct(
+        #[Id]
+        #[Column(type: 'ddc3192_currency_code')]
+        public string $code,
+    ) {
     }
 }
 
-/**
- * @Table(name="ddc3192_transaction")
- * @Entity
- */
+#[Table(name: 'ddc3192_transaction')]
+#[Entity]
 class DDC3192Transaction
 {
-    /**
-     * @var int
-     * @Id
-     * @GeneratedValue
-     * @Column(type="integer")
-     */
+    /** @var int */
+    #[Id]
+    #[GeneratedValue]
+    #[Column(type: 'integer')]
     public $id;
 
-    /**
-     * @var int
-     * @Column(type="integer")
-     */
-    public $amount;
-
-    /**
-     * @var DDC3192Currency
-     * @ManyToOne(targetEntity="DDC3192Currency", inversedBy="transactions")
-     * @JoinColumn(name="currency_id", referencedColumnName="code", nullable=false)
-     */
-    public $currency;
-
-    public function __construct(int $amount, DDC3192Currency $currency)
-    {
-        $this->amount   = $amount;
-        $this->currency = $currency;
+    public function __construct(
+        #[Column(type: 'integer')]
+        public int $amount,
+        #[ManyToOne(targetEntity: 'DDC3192Currency', inversedBy: 'transactions')]
+        #[JoinColumn(name: 'currency_id', referencedColumnName: 'code', nullable: false)]
+        public DDC3192Currency $currency,
+    ) {
     }
 }
 
 class DDC3192CurrencyCode extends Type
 {
     /** @psalm-var array<string, int> */
-    private static $map = ['BYR' => 974];
+    private static array $map = ['BYR' => 974];
 
     /**
      * {@inheritDoc}
      */
-    public function getSQLDeclaration(array $fieldDeclaration, AbstractPlatform $platform)
+    public function getSQLDeclaration(array $column, AbstractPlatform $platform): string
     {
-        return $platform->getSmallIntTypeDeclarationSQL($fieldDeclaration);
+        return $platform->getSmallIntTypeDeclarationSQL($column);
     }
 
     /**
      * {@inheritDoc}
      */
-    public function convertToDatabaseValue($value, AbstractPlatform $platform)
+    public function convertToDatabaseValue($value, AbstractPlatform $platform): int
     {
         return self::$map[$value];
     }
@@ -160,15 +136,12 @@ class DDC3192CurrencyCode extends Type
     /**
      * {@inheritDoc}
      */
-    public function convertToPHPValue($value, AbstractPlatform $platform)
+    public function convertToPHPValue($value, AbstractPlatform $platform): mixed
     {
         return array_search((int) $value, self::$map, true);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function getName()
+    public function getName(): string
     {
         return 'ddc3192_currency_code';
     }

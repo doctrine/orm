@@ -10,8 +10,7 @@ use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\Tests\OrmFunctionalTestCase;
-
-use function get_class;
+use PHPUnit\Framework\Attributes\Group;
 
 class DDC1193Test extends OrmFunctionalTestCase
 {
@@ -22,11 +21,11 @@ class DDC1193Test extends OrmFunctionalTestCase
         $this->createSchemaForModels(
             DDC1193Company::class,
             DDC1193Person::class,
-            DDC1193Account::class
+            DDC1193Account::class,
         );
     }
 
-    /** @group DDC-1193 */
+    #[Group('DDC-1193')]
     public function testIssue(): void
     {
         $company = new DDC1193Company();
@@ -42,7 +41,7 @@ class DDC1193Test extends OrmFunctionalTestCase
         $companyId = $company->id;
         $this->_em->clear();
 
-        $company = $this->_em->find(get_class($company), $companyId);
+        $company = $this->_em->find($company::class, $companyId);
 
         self::assertTrue($this->_em->getUnitOfWork()->isInIdentityMap($company), 'Company is in identity map.');
         self::assertTrue($this->isUninitializedObject($company->member), 'Pre-Condition');
@@ -51,54 +50,44 @@ class DDC1193Test extends OrmFunctionalTestCase
         $this->_em->remove($company);
         $this->_em->flush();
 
-        self::assertCount(0, $this->_em->getRepository(get_class($account))->findAll());
+        self::assertCount(0, $this->_em->getRepository($account::class)->findAll());
     }
 }
 
-/** @Entity */
+#[Entity]
 class DDC1193Company
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     public $id;
 
-    /**
-     * @var DDC1193Person
-     * @OneToOne(targetEntity="DDC1193Person", cascade={"persist", "remove"})
-     */
+    /** @var DDC1193Person */
+    #[OneToOne(targetEntity: 'DDC1193Person', cascade: ['persist', 'remove'])]
     public $member;
 }
 
-/** @Entity */
+#[Entity]
 class DDC1193Person
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     public $id;
 
-    /**
-     * @var DDC1193Account
-     * @OneToOne(targetEntity="DDC1193Account", cascade={"persist", "remove"})
-     */
+    /** @var DDC1193Account */
+    #[OneToOne(targetEntity: 'DDC1193Account', cascade: ['persist', 'remove'])]
     public $account;
 }
 
-/** @Entity */
+#[Entity]
 class DDC1193Account
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     public $id;
 }

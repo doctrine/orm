@@ -20,26 +20,18 @@ use function is_a;
 final class IdentifierFlattener
 {
     /**
-     * The UnitOfWork used to coordinate object-level transactions.
-     *
-     * @var UnitOfWork
-     */
-    private $unitOfWork;
-
-    /**
-     * The metadata factory, used to retrieve the ORM metadata of entity classes.
-     *
-     * @var ClassMetadataFactory
-     */
-    private $metadataFactory;
-
-    /**
      * Initializes a new IdentifierFlattener instance, bound to the given EntityManager.
      */
-    public function __construct(UnitOfWork $unitOfWork, ClassMetadataFactory $metadataFactory)
-    {
-        $this->unitOfWork      = $unitOfWork;
-        $this->metadataFactory = $metadataFactory;
+    public function __construct(
+        /**
+         * The UnitOfWork used to coordinate object-level transactions.
+         */
+        private readonly UnitOfWork $unitOfWork,
+        /**
+         * The metadata factory, used to retrieve the ORM metadata of entity classes.
+         */
+        private readonly ClassMetadataFactory $metadataFactory,
+    ) {
     }
 
     /**
@@ -55,9 +47,9 @@ final class IdentifierFlattener
         $flatId = [];
 
         foreach ($class->identifier as $field) {
-            if (isset($class->associationMappings[$field]) && isset($id[$field]) && is_a($id[$field], $class->associationMappings[$field]['targetEntity'])) {
+            if (isset($class->associationMappings[$field]) && isset($id[$field]) && is_a($id[$field], $class->associationMappings[$field]->targetEntity)) {
                 $targetClassMetadata = $this->metadataFactory->getMetadataFor(
-                    $class->associationMappings[$field]['targetEntity']
+                    $class->associationMappings[$field]->targetEntity,
                 );
                 assert($targetClassMetadata instanceof ClassMetadata);
 
@@ -69,10 +61,11 @@ final class IdentifierFlattener
 
                 $flatId[$field] = implode(' ', $associatedId);
             } elseif (isset($class->associationMappings[$field])) {
+                assert($class->associationMappings[$field]->isToOneOwningSide());
                 $associatedId = [];
 
-                foreach ($class->associationMappings[$field]['joinColumns'] as $joinColumn) {
-                    $associatedId[] = $id[$joinColumn['name']];
+                foreach ($class->associationMappings[$field]->joinColumns as $joinColumn) {
+                    $associatedId[] = $id[$joinColumn->name];
                 }
 
                 $flatId[$field] = implode(' ', $associatedId);

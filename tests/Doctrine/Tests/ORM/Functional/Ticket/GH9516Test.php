@@ -22,56 +22,41 @@ class GH9516Test extends OrmFunctionalTestCase
     }
 }
 
-/** @Entity */
+#[Entity]
 class GH9516Passenger
 {
-    /**
-     * @Id
-     * @Column(type="integer")
-     * @var int $id
-     */
+    /** @var int $id */
+    #[Id]
+    #[Column(type: 'integer')]
     private $id;
 
-    /**
-     * @ManyToOne(targetEntity="GH9516Vehicle", inversedBy="passengers")
-     * @var GH9516Vehicle $vehicle
-     */
+    /** @var GH9516Vehicle $vehicle */
+    #[ManyToOne(targetEntity: GH9516Vehicle::class, inversedBy: 'passengers')]
     private $vehicle;
 }
 
-/**
- * @ORM\DiscriminatorColumn(name="type", type="string")
- * @ORM\DiscriminatorMap({ "sports" = "\Doctrine\Tests\ORM\Functional\Ticket\GH9516SportsCar" })
- * @ORM\InheritanceType("SINGLE_TABLE")
- *
- * @Entity
- */
+#[ORM\DiscriminatorColumn(name: 'type', type: 'string')]
+#[ORM\DiscriminatorMap(['sports' => GH9516SportsCar::class])]
+#[ORM\InheritanceType('SINGLE_TABLE')]
+#[Entity]
 abstract class GH9516Vehicle
 {
-    /**
-     * @Id
-     * @Column(type="integer")
-     * @var int $id
-     */
+    /** @var int $id */
+    #[Id]
+    #[Column(type: 'integer')]
     private $id;
 
-    /**
-     * @OneToMany(targetEntity="GH9516Passenger", mappedBy="vehicle")
-     * @var GH9516Passenger[] $passengers
-     */
+    /** @var GH9516Passenger[] $passengers */
+    #[OneToMany(targetEntity: GH9516Passenger::class, mappedBy: 'vehicle')]
     private $passengers;
 }
 
-/**
- * @MappedSuperclass
- */
+#[MappedSuperclass]
 abstract class GH9516Car extends GH9516Vehicle
 {
 }
 
-/**
- * @Entity
- */
+#[Entity]
 class GH9516SportsCar extends GH9516Car
 {
 }

@@ -12,10 +12,11 @@ use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\Table;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
 use function strtolower;
 
-/** @group DDC-1225 */
+#[Group('DDC-1225')]
 class DDC1225Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -24,7 +25,7 @@ class DDC1225Test extends OrmFunctionalTestCase
 
         $this->createSchemaForModels(
             DDC1225TestEntity1::class,
-            DDC1225TestEntity2::class
+            DDC1225TestEntity2::class,
         );
     }
 
@@ -38,24 +39,19 @@ class DDC1225Test extends OrmFunctionalTestCase
 
         self::assertEquals(
             strtolower('SELECT t0_.test_entity2_id AS test_entity2_id_0 FROM te1 t0_ WHERE t0_.test_entity2_id = ?'),
-            strtolower($qb->getQuery()->getSQL())
+            strtolower($qb->getQuery()->getSQL()),
         );
     }
 }
 
-/**
- * @Entity
- * @Table(name="te1")
- */
+#[Table(name: 'te1')]
+#[Entity]
 class DDC1225TestEntity1
 {
-    /**
-     * @var DDC1225TestEntity2
-     * @Id
-     * @ManyToOne(targetEntity="Doctrine\Tests\ORM\Functional\Ticket\DDC1225TestEntity2")
-     * @JoinColumn(name="test_entity2_id", referencedColumnName="id", nullable=false)
-     */
-    private $testEntity2;
+    #[Id]
+    #[ManyToOne(targetEntity: 'Doctrine\Tests\ORM\Functional\Ticket\DDC1225TestEntity2')]
+    #[JoinColumn(name: 'test_entity2_id', referencedColumnName: 'id', nullable: false)]
+    private DDC1225TestEntity2|null $testEntity2 = null;
 
     public function setTestEntity2(DDC1225TestEntity2 $testEntity2): void
     {
@@ -68,17 +64,12 @@ class DDC1225TestEntity1
     }
 }
 
-/**
- * @Entity
- * @Table(name="te2")
- */
+#[Table(name: 'te2')]
+#[Entity]
 class DDC1225TestEntity2
 {
-    /**
-     * @var int
-     * @Id
-     * @GeneratedValue(strategy="AUTO")
-     * @Column(type="integer")
-     */
-    private $id;
+    #[Id]
+    #[GeneratedValue(strategy: 'AUTO')]
+    #[Column(type: 'integer')]
+    private int $id;
 }

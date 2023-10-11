@@ -12,17 +12,16 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\PreFlush;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
-use function get_class;
-
-/** @group DDC-2996 */
+#[Group('DDC-2996')]
 class DDC2996Test extends OrmFunctionalTestCase
 {
     public function testIssue(): void
     {
         $this->createSchemaForModels(
             DDC2996User::class,
-            DDC2996UserPreference::class
+            DDC2996UserPreference::class,
         );
 
         $pref        = new DDC2996UserPreference();
@@ -45,59 +44,47 @@ class DDC2996Test extends OrmFunctionalTestCase
     }
 }
 
-/** @Entity */
+#[Entity]
 class DDC2996User
 {
-    /**
-     * @var int
-     * @Id
-     * @GeneratedValue
-     * @Column(type="integer")
-     */
+    /** @var int */
+    #[Id]
+    #[GeneratedValue]
+    #[Column(type: 'integer')]
     public $id;
-    /**
-     * @var int
-     * @Column(type="integer")
-     */
+    /** @var int */
+    #[Column(type: 'integer')]
     public $counter = 0;
 }
 
-/**
- * @Entity
- * @HasLifecycleCallbacks
- */
+#[Entity]
+#[HasLifecycleCallbacks]
 class DDC2996UserPreference
 {
-    /**
-     * @var int
-     * @Id
-     * @GeneratedValue
-     * @Column(type="integer")
-     */
+    /** @var int */
+    #[Id]
+    #[GeneratedValue]
+    #[Column(type: 'integer')]
     public $id;
-    /**
-     * @var string
-     * @Column(type="string", length=255)
-     */
+    /** @var string */
+    #[Column(type: 'string', length: 255)]
     public $value;
 
-    /**
-     * @var DDC2996User
-     * @ManyToOne(targetEntity="DDC2996User")
-     */
+    /** @var DDC2996User */
+    #[ManyToOne(targetEntity: 'DDC2996User')]
     public $user;
 
-    /** @PreFlush */
+    #[PreFlush]
     public function preFlush($event): void
     {
-        $em  = $event->getEntityManager();
+        $em  = $event->getObjectManager();
         $uow = $em->getUnitOfWork();
 
         if ($uow->getOriginalEntityData($this->user)) {
             $this->user->counter++;
             $uow->recomputeSingleEntityChangeSet(
-                $em->getClassMetadata(get_class($this->user)),
-                $this->user
+                $em->getClassMetadata($this->user::class),
+                $this->user,
             );
         }
     }

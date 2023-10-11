@@ -11,17 +11,11 @@ use Doctrine\ORM\Persisters\SqlExpressionVisitor;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
-use function method_exists;
-
 class SqlExpressionVisitorTest extends TestCase
 {
-    /** @var SqlExpressionVisitor */
-    private $visitor;
-
-    /** @var BasicEntityPersister&MockObject */
-    private $persister;
-    /** @var ClassMetadata */
-    private $classMetadata;
+    private SqlExpressionVisitor $visitor;
+    private BasicEntityPersister&MockObject $persister;
+    private ClassMetadata $classMetadata;
 
     protected function setUp(): void
     {
@@ -32,10 +26,6 @@ class SqlExpressionVisitorTest extends TestCase
 
     public function testWalkNotCompositeExpression(): void
     {
-        if (! method_exists(CriteriaBuilder::class, 'not')) {
-            self::markTestSkipped('doctrine/collections in version ^2.1 is required for this test to run.');
-        }
-
         $cb = new CriteriaBuilder();
 
         $this->persister
@@ -45,8 +35,8 @@ class SqlExpressionVisitorTest extends TestCase
 
         $expr = $this->visitor->walkCompositeExpression(
             $cb->not(
-                $cb->eq('foo', 1)
-            )
+                $cb->eq('foo', 1),
+            ),
         );
 
         self::assertEquals('NOT (dummy expression)', $expr);

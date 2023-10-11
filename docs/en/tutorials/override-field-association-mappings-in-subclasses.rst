@@ -66,7 +66,7 @@ which has mapping metadata that is overridden by the attribute above:
         #[Column(name: 'trait_foo', type: 'integer', length: 100, nullable: true, unique: true)]
         protected int $foo;
 
-        #[OneToOne(targetEntity: Bar::class, cascade: ['persist', 'merge'])]
+        #[OneToOne(targetEntity: Bar::class, cascade: ['persist'])]
         #[JoinColumn(name: 'example_trait_bar_id', referencedColumnName: 'id')]
         protected Bar|null $bar = null;
     }
@@ -81,4 +81,4 @@ The case for just extending a class would be just the same but:
         // ...
     }
 
-Overriding is also supported via XML and YAML (:ref:`examples <inheritence_mapping_overrides>`).
+Overriding is also supported via XML (:ref:`examples <inheritence_mapping_overrides>`).

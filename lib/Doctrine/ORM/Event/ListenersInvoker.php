@@ -15,20 +15,16 @@ use Doctrine\ORM\Mapping\EntityListenerResolver;
  */
 class ListenersInvoker
 {
-    public const INVOKE_NONE      = 0;
-    public const INVOKE_LISTENERS = 1;
-    public const INVOKE_CALLBACKS = 2;
-    public const INVOKE_MANAGER   = 4;
+    final public const INVOKE_NONE      = 0;
+    final public const INVOKE_LISTENERS = 1;
+    final public const INVOKE_CALLBACKS = 2;
+    final public const INVOKE_MANAGER   = 4;
 
-    /** @var EntityListenerResolver The Entity listener resolver. */
-    private $resolver;
+    /** The Entity listener resolver. */
+    private readonly EntityListenerResolver $resolver;
 
-    /**
-     * The EventManager used for dispatching events.
-     *
-     * @var EventManager
-     */
-    private $eventManager;
+    /** The EventManager used for dispatching events. */
+    private readonly EventManager $eventManager;
 
     public function __construct(EntityManagerInterface $em)
     {
@@ -42,10 +38,9 @@ class ListenersInvoker
      * @param ClassMetadata $metadata  The entity metadata.
      * @param string        $eventName The entity lifecycle event.
      *
-     * @return int Bitmask of subscribed event systems.
-     * @psalm-return int-mask-of<self::INVOKE_*>
+     * @psalm-return int-mask-of<self::INVOKE_*> Bitmask of subscribed event systems.
      */
-    public function getSubscribedSystems(ClassMetadata $metadata, $eventName)
+    public function getSubscribedSystems(ClassMetadata $metadata, string $eventName): int
     {
         $invoke = self::INVOKE_NONE;
 
@@ -71,13 +66,15 @@ class ListenersInvoker
      * @param string        $eventName The entity lifecycle event.
      * @param object        $entity    The Entity on which the event occurred.
      * @param EventArgs     $event     The Event args.
-     * @param int           $invoke    Bitmask to invoke listeners.
-     * @psalm-param int-mask-of<self::INVOKE_*> $invoke
-     *
-     * @return void
+     * @psalm-param int-mask-of<self::INVOKE_*> $invoke Bitmask to invoke listeners.
      */
-    public function invoke(ClassMetadata $metadata, $eventName, $entity, EventArgs $event, $invoke)
-    {
+    public function invoke(
+        ClassMetadata $metadata,
+        string $eventName,
+        object $entity,
+        EventArgs $event,
+        int $invoke,
+    ): void {
         if ($invoke & self::INVOKE_CALLBACKS) {
             foreach ($metadata->lifecycleCallbacks[$eventName] as $callback) {
                 $entity->$callback($event);

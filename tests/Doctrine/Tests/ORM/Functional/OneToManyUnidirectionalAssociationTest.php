@@ -54,7 +54,7 @@ class OneToManyUnidirectionalAssociationTest extends OrmFunctionalTestCase
 
         $routes = $this->_em->createQuery(
             'SELECT r, l, f, t FROM Doctrine\Tests\Models\Routing\RoutingRoute r ' .
-            'JOIN r.legs l JOIN l.fromLocation f JOIN l.toLocation t'
+            'JOIN r.legs l JOIN l.fromLocation f JOIN l.toLocation t',
         )->getSingleResult();
 
         self::assertCount(1, $routes->legs);

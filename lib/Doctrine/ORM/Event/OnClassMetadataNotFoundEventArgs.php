@@ -4,13 +4,10 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Event;
 
-use Doctrine\Deprecations\Deprecation;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\Event\ManagerEventArgs;
 use Doctrine\Persistence\Mapping\ClassMetadata;
 use Doctrine\Persistence\ObjectManager;
-
-use function func_num_args;
 
 /**
  * Class that holds event arguments for a `onClassMetadataNotFound` event.
@@ -22,50 +19,30 @@ use function func_num_args;
  */
 class OnClassMetadataNotFoundEventArgs extends ManagerEventArgs
 {
-    /** @var string */
-    private $className;
+    private ClassMetadata|null $foundMetadata = null;
 
-    /** @var ClassMetadata|null */
-    private $foundMetadata;
-
-    /**
-     * @param string                 $className
-     * @param EntityManagerInterface $objectManager
-     */
-    public function __construct($className, ObjectManager $objectManager)
-    {
-        $this->className = (string) $className;
-
+    /** @param EntityManagerInterface $objectManager */
+    public function __construct(
+        private readonly string $className,
+        ObjectManager $objectManager,
+    ) {
         parent::__construct($objectManager);
     }
 
-    /** @return void */
-    public function setFoundMetadata(?ClassMetadata $classMetadata = null)
+    public function setFoundMetadata(ClassMetadata|null $classMetadata): void
     {
-        if (func_num_args() < 1) {
-            Deprecation::trigger(
-                'doctrine/orm',
-                'https://github.com/doctrine/orm/pull/9791',
-                'Calling %s without arguments is deprecated, pass null instead.',
-                __METHOD__
-            );
-        }
-
         $this->foundMetadata = $classMetadata;
     }
 
-    /** @return ClassMetadata|null */
-    public function getFoundMetadata()
+    public function getFoundMetadata(): ClassMetadata|null
     {
         return $this->foundMetadata;
     }
 
     /**
      * Retrieve class name for which a failed metadata fetch attempt was executed
-     *
-     * @return string
      */
-    public function getClassName()
+    public function getClassName(): string
     {
         return $this->className;
     }

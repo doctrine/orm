@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Query\AST;
 
+use Doctrine\ORM\Query\SqlWalker;
+
 /**
  * SimpleArithmeticExpression ::= ArithmeticTerm {("+" | "-") ArithmeticTerm}*
  *
@@ -11,20 +13,13 @@ namespace Doctrine\ORM\Query\AST;
  */
 class SimpleArithmeticExpression extends Node
 {
-    /** @var mixed[] */
-    public $arithmeticTerms = [];
-
     /** @param mixed[] $arithmeticTerms */
-    public function __construct(array $arithmeticTerms)
+    public function __construct(public array $arithmeticTerms)
     {
-        $this->arithmeticTerms = $arithmeticTerms;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function dispatch($sqlWalker)
+    public function dispatch(SqlWalker $walker): string
     {
-        return $sqlWalker->walkSimpleArithmeticExpression($this);
+        return $walker->walkSimpleArithmeticExpression($this);
     }
 }

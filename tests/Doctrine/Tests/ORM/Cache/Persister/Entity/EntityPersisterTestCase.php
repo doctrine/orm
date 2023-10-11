@@ -12,25 +12,22 @@ use Doctrine\ORM\Cache\Persister\Entity\CachedEntityPersister;
 use Doctrine\ORM\Cache\Region;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\OneToOneInverseSideMapping;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\Persisters\Entity\EntityPersister;
 use Doctrine\ORM\Query\ResultSetMappingBuilder;
 use Doctrine\Tests\Mocks\EntityManagerMock;
 use Doctrine\Tests\Models\Cache\Country;
 use Doctrine\Tests\OrmTestCase;
+use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\MockObject\MockObject;
 
-/** @group DDC-2183 */
+#[Group('DDC-2183')]
 abstract class EntityPersisterTestCase extends OrmTestCase
 {
-    /** @var Region&MockObject */
-    protected $region;
-
-    /** @var EntityPersister&MockObject */
-    protected $entityPersister;
-
-    /** @var EntityManagerMock */
-    protected $em;
+    protected Region&MockObject $region;
+    protected EntityPersister&MockObject $entityPersister;
+    protected EntityManagerMock $em;
 
     abstract protected function createPersister(EntityManagerInterface $em, EntityPersister $persister, Region $region, ClassMetadata $metadata): AbstractEntityPersister;
 
@@ -46,8 +43,7 @@ abstract class EntityPersisterTestCase extends OrmTestCase
         $this->entityPersister = $this->createMock(EntityPersister::class);
     }
 
-    /** @return Region&MockObject */
-    protected function createRegion(): Region
+    protected function createRegion(): Region&MockObject
     {
         return $this->createMock(Region::class);
     }
@@ -94,25 +90,27 @@ abstract class EntityPersisterTestCase extends OrmTestCase
     {
         $persister = $this->createPersisterDefault();
 
+        $associationMapping = new OneToOneInverseSideMapping('foo', 'bar', 'baz');
+
         $this->entityPersister->expects(self::once())
             ->method('getSelectSQL')
             ->with(
                 self::identicalTo(['name' => 'Foo']),
-                self::identicalTo([0]),
+                self::identicalTo($associationMapping),
                 self::identicalTo(1),
                 self::identicalTo(2),
                 self::identicalTo(3),
-                self::identicalTo([4])
+                self::identicalTo([4]),
             )
             ->willReturn('SELECT * FROM foo WERE name = ?');
 
         self::assertSame('SELECT * FROM foo WERE name = ?', $persister->getSelectSQL(
             ['name' => 'Foo'],
-            [0],
+            $associationMapping,
             1,
             2,
             3,
-            [4]
+            [4],
         ));
     }
 
@@ -156,12 +154,18 @@ abstract class EntityPersisterTestCase extends OrmTestCase
     {
         $persister = $this->createPersisterDefault();
 
+        $associationMapping = new OneToOneInverseSideMapping('foo', 'bar', 'baz');
+
         $this->entityPersister->expects(self::once())
             ->method('getSelectConditionStatementSQL')
-            ->with(self::identicalTo('id'), self::identicalTo(1), self::identicalTo([]), self::identicalTo('='))
-            ->willReturn('name = 1');
+            ->with(
+                self::identicalTo('id'),
+                self::identicalTo(1),
+                self::identicalTo($associationMapping),
+                self::identicalTo('='),
+            )->willReturn('name = 1');
 
-        self::assertSame('name = 1', $persister->getSelectConditionStatementSQL('id', 1, [], '='));
+        self::assertSame('name = 1', $persister->getSelectConditionStatementSQL('id', 1, $associationMapping, '='));
     }
 
     public function testInvokeExecuteInserts(): void
@@ -169,10 +173,9 @@ abstract class EntityPersisterTestCase extends OrmTestCase
         $persister = $this->createPersisterDefault();
 
         $this->entityPersister->expects(self::once())
-            ->method('executeInserts')
-            ->willReturn(['id' => 1]);
+            ->method('executeInserts');
 
-        self::assertSame(['id' => 1], $persister->executeInserts());
+        $persister->executeInserts();
     }
 
     public function testInvokeUpdate(): void
@@ -221,20 +224,22 @@ abstract class EntityPersisterTestCase extends OrmTestCase
         $persister = $this->createPersisterDefault();
         $entity    = new Country('Foo');
 
+        $associationMapping = new OneToOneInverseSideMapping('foo', 'bar', 'baz');
+
         $this->entityPersister->expects(self::once())
             ->method('load')
             ->with(
                 self::identicalTo(['id' => 1]),
                 self::identicalTo($entity),
-                self::identicalTo([0]),
+                self::identicalTo($associationMapping),
                 self::identicalTo([1]),
                 self::identicalTo(2),
                 self::identicalTo(3),
-                self::identicalTo([4])
+                self::identicalTo([4]),
             )
             ->willReturn($entity);
 
-        self::assertSame($entity, $persister->load(['id' => 1], $entity, [0], [1], 2, 3, [4]));
+        self::assertSame($entity, $persister->load(['id' => 1], $entity, $associationMapping, [1], 2, 3, [4]));
     }
 
     public function testInvokeLoadAll(): void
@@ -279,12 +284,14 @@ abstract class EntityPersisterTestCase extends OrmTestCase
         $entity    = new Country('Foo');
         $owner     = (object) [];
 
+        $associationMapping = new OneToOneInverseSideMapping('foo', 'bar', 'baz');
+
         $this->entityPersister->expects(self::once())
             ->method('loadOneToOneEntity')
-            ->with(self::identicalTo([]), self::identicalTo($owner), self::identicalTo(['id' => 11]))
+            ->with(self::identicalTo($associationMapping), self::identicalTo($owner), self::identicalTo(['id' => 11]))
             ->willReturn($entity);
 
-        self::assertSame($entity, $persister->loadOneToOneEntity([], $owner, ['id' => 11]));
+        self::assertSame($entity, $persister->loadOneToOneEntity($associationMapping, $owner, ['id' => 11]));
     }
 
     public function testInvokeRefresh(): void
@@ -328,12 +335,14 @@ abstract class EntityPersisterTestCase extends OrmTestCase
         $entity    = new Country('Foo');
         $owner     = (object) [];
 
+        $associationMapping = new OneToOneInverseSideMapping('foo', 'bar', 'baz');
+
         $this->entityPersister->expects(self::once())
             ->method('getManyToManyCollection')
-            ->with(self::identicalTo([]), self::identicalTo($owner), self::identicalTo(1), self::identicalTo(2))
+            ->with(self::identicalTo($associationMapping), self::identicalTo($owner), self::identicalTo(1), self::identicalTo(2))
             ->willReturn([$entity]);
 
-        self::assertSame([$entity], $persister->getManyToManyCollection([], $owner, 1, 2));
+        self::assertSame([$entity], $persister->getManyToManyCollection($associationMapping, $owner, 1, 2));
     }
 
     public function testInvokeGetOneToManyCollection(): void
@@ -342,18 +351,20 @@ abstract class EntityPersisterTestCase extends OrmTestCase
         $entity    = new Country('Foo');
         $owner     = (object) [];
 
+        $associationMapping = new OneToOneInverseSideMapping('foo', 'bar', 'baz');
+
         $this->entityPersister->expects(self::once())
             ->method('getOneToManyCollection')
-            ->with(self::identicalTo([]), self::identicalTo($owner), self::identicalTo(1), self::identicalTo(2))
+            ->with(self::identicalTo($associationMapping), self::identicalTo($owner), self::identicalTo(1), self::identicalTo(2))
             ->willReturn([$entity]);
 
-        self::assertSame([$entity], $persister->getOneToManyCollection([], $owner, 1, 2));
+        self::assertSame([$entity], $persister->getOneToManyCollection($associationMapping, $owner, 1, 2));
     }
 
     public function testInvokeLoadManyToManyCollection(): void
     {
         $mapping   = $this->em->getClassMetadata(Country::class);
-        $assoc     = ['type' => 1];
+        $assoc     = new OneToOneInverseSideMapping('foo', 'bar', 'baz');
         $coll      = new PersistentCollection($this->em, $mapping, new ArrayCollection());
         $persister = $this->createPersisterDefault();
         $entity    = new Country('Foo');
@@ -370,7 +381,7 @@ abstract class EntityPersisterTestCase extends OrmTestCase
     public function testInvokeLoadOneToManyCollection(): void
     {
         $mapping   = $this->em->getClassMetadata(Country::class);
-        $assoc     = ['type' => 1];
+        $assoc     = new OneToOneInverseSideMapping('foo', 'bar', 'baz');
         $coll      = new PersistentCollection($this->em, $mapping, new ArrayCollection());
         $persister = $this->createPersisterDefault();
         $entity    = new Country('Foo');

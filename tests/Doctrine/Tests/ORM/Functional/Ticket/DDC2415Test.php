@@ -7,12 +7,13 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Id\AbstractIdGenerator;
 use Doctrine\ORM\Mapping\ClassMetadata;
-use Doctrine\ORM\Mapping\Driver\StaticPHPDriver;
+use Doctrine\Persistence\Mapping\Driver\StaticPHPDriver;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
 use function md5;
 
-/** @group DDC-2415 */
+#[Group('DDC-2415')]
 class DDC2415Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -23,7 +24,7 @@ class DDC2415Test extends OrmFunctionalTestCase
 
         $this->createSchemaForModels(
             DDC2415ParentEntity::class,
-            DDC2415ChildEntity::class
+            DDC2415ChildEntity::class,
         );
     }
 
@@ -66,7 +67,7 @@ class DDC2415ParentEntity
                 'id'        => true,
                 'fieldName' => 'id',
                 'type'      => 'string',
-            ]
+            ],
         );
 
         $metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_CUSTOM);
@@ -78,12 +79,8 @@ class DDC2415ParentEntity
 
 class DDC2415ChildEntity extends DDC2415ParentEntity
 {
-    /** @var string */
-    protected $name;
-
-    public function __construct(string $name)
+    public function __construct(protected string $name)
     {
-        $this->name = $name;
     }
 
     public function getName(): string
@@ -97,14 +94,14 @@ class DDC2415ChildEntity extends DDC2415ParentEntity
             [
                 'fieldName' => 'name',
                 'type'      => 'string',
-            ]
+            ],
         );
     }
 }
 
 class DDC2415Generator extends AbstractIdGenerator
 {
-    public function generateId(EntityManagerInterface $em, $entity): string
+    public function generateId(EntityManagerInterface $em, object|null $entity): string
     {
         return md5($entity->getName());
     }

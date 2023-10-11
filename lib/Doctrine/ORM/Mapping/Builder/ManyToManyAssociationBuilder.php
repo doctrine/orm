@@ -11,18 +11,13 @@ namespace Doctrine\ORM\Mapping\Builder;
  */
 class ManyToManyAssociationBuilder extends OneToManyAssociationBuilder
 {
-    /** @var string|null */
-    private $joinTableName;
+    private string|null $joinTableName = null;
 
     /** @var mixed[] */
-    private $inverseJoinColumns = [];
+    private array $inverseJoinColumns = [];
 
-    /**
-     * @param string $name
-     *
-     * @return $this
-     */
-    public function setJoinTable($name)
+    /** @return $this */
+    public function setJoinTable(string $name): static
     {
         $this->joinTableName = $name;
 
@@ -32,17 +27,16 @@ class ManyToManyAssociationBuilder extends OneToManyAssociationBuilder
     /**
      * Adds Inverse Join Columns.
      *
-     * @param string      $columnName
-     * @param string      $referencedColumnName
-     * @param bool        $nullable
-     * @param bool        $unique
-     * @param string|null $onDelete
-     * @param string|null $columnDef
-     *
      * @return $this
      */
-    public function addInverseJoinColumn($columnName, $referencedColumnName, $nullable = true, $unique = false, $onDelete = null, $columnDef = null)
-    {
+    public function addInverseJoinColumn(
+        string $columnName,
+        string $referencedColumnName,
+        bool $nullable = true,
+        bool $unique = false,
+        string|null $onDelete = null,
+        string|null $columnDef = null,
+    ): static {
         $this->inverseJoinColumns[] = [
             'name' => $columnName,
             'referencedColumnName' => $referencedColumnName,
@@ -55,8 +49,7 @@ class ManyToManyAssociationBuilder extends OneToManyAssociationBuilder
         return $this;
     }
 
-    /** @return ClassMetadataBuilder */
-    public function build()
+    public function build(): ClassMetadataBuilder
     {
         $mapping              = $this->mapping;
         $mapping['joinTable'] = [];

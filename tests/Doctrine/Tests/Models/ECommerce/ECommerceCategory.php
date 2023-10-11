@@ -19,44 +19,30 @@ use Doctrine\ORM\Mapping\Table;
 /**
  * ECommerceCategory
  * Represents a tag applied on particular products.
- *
- * @Entity
- * @Table(name="ecommerce_categories")
  */
+#[Table(name: 'ecommerce_categories')]
+#[Entity]
 class ECommerceCategory
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
-     */
-    private $id;
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue(strategy: 'AUTO')]
+    private int $id;
 
-    /**
-     * @var string
-     * @Column(type="string", length=50)
-     */
-    private $name;
+    #[Column(type: 'string', length: 50)]
+    private string|null $name = null;
 
-    /**
-     * @psalm-var Collection<int, ECommerceProduct>
-     * @ManyToMany(targetEntity="ECommerceProduct", mappedBy="categories")
-     */
+    /** @psalm-var Collection<int, ECommerceProduct> */
+    #[ManyToMany(targetEntity: 'ECommerceProduct', mappedBy: 'categories')]
     private $products;
 
-    /**
-     * @psalm-var Collection<int, ECommerceCategory>
-     * @OneToMany(targetEntity="ECommerceCategory", mappedBy="parent", cascade={"persist"})
-     */
+    /** @psalm-var Collection<int, ECommerceCategory> */
+    #[OneToMany(targetEntity: 'ECommerceCategory', mappedBy: 'parent', cascade: ['persist'])]
     private $children;
 
-    /**
-     * @var ECommerceCategory
-     * @ManyToOne(targetEntity="ECommerceCategory", inversedBy="children")
-     * @JoinColumn(name="parent_id", referencedColumnName="id")
-     */
-    private $parent;
+    #[ManyToOne(targetEntity: 'ECommerceCategory', inversedBy: 'children')]
+    #[JoinColumn(name: 'parent_id', referencedColumnName: 'id')]
+    private ECommerceCategory|null $parent = null;
 
     public function __construct()
     {
@@ -112,7 +98,7 @@ class ECommerceCategory
         return $this->children;
     }
 
-    public function getParent(): ?ECommerceCategory
+    public function getParent(): ECommerceCategory|null
     {
         return $this->parent;
     }

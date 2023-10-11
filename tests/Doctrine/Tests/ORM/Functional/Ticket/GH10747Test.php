@@ -15,15 +15,15 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\Table;
 use Doctrine\Tests\DbalTypes\CustomIdObject;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
 use function method_exists;
 use function str_replace;
 
 /**
  * Functional tests for asserting that orphaned children in a OneToMany relationship get removed with a custom identifier
- *
- * @group GH10747
  */
+#[Group('GH10747')]
 final class GH10747Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -40,17 +40,17 @@ final class GH10747Test extends OrmFunctionalTestCase
     public function testOrphanedOneToManyDeletesCollection(): void
     {
         $object = new GH10747Article(
-            new CustomIdObject('article')
+            new CustomIdObject('article'),
         );
 
         $creditOne = new GH10747Credit(
             $object,
-            'credit1'
+            'credit1',
         );
 
         $creditTwo = new GH10747Credit(
             $object,
-            'credit2'
+            'credit2',
         );
 
         $object->setCredits(new ArrayCollection([$creditOne, $creditTwo]));
@@ -66,7 +66,7 @@ final class GH10747Test extends OrmFunctionalTestCase
 
         $creditThree = new GH10747Credit(
             $object2,
-            'credit3'
+            'credit3',
         );
 
         $object2->setCredits(new ArrayCollection([$creditThree]));
@@ -85,25 +85,17 @@ final class GH10747Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- * @Table
- */
+#[Entity]
+#[Table]
 class GH10747Article
 {
-    /**
-     * @Id
-     * @Column(type="Doctrine\Tests\ORM\Functional\Ticket\GH10747CustomIdObjectHashType")
-     * @var CustomIdObject
-     */
-    public $id;
+    #[Id]
+    #[Column(type: GH10747CustomIdObjectHashType::class, length: 24)] // strlen(PHP_INT_MAX . '_test')
+    public CustomIdObject $id;
 
-    /**
-     * @ORM\OneToMany(targetEntity="GH10747Credit", mappedBy="article", orphanRemoval=true)
-     *
-     * @var Collection<int, GH10747Credit>
-     */
-    public $credits;
+    /** @var Collection<int, GH10747Credit> */
+    #[ORM\OneToMany(mappedBy: 'article', targetEntity: GH10747Credit::class, orphanRemoval: true)]
+    public Collection $credits;
 
     public function __construct(CustomIdObject $id)
     {
@@ -123,60 +115,37 @@ class GH10747Article
     }
 }
 
-/**
- * @Entity
- * @Table
- */
+#[Entity]
+#[Table]
 class GH10747Credit
 {
-    /**
-     * @ORM\Column(type="integer")
-     * @ORM\GeneratedValue()
-     *
-     * @Id()
-     * @var int|null
-     */
-    public $id = null;
+    #[ORM\Column(type: 'integer')]
+    #[ORM\GeneratedValue]
+    #[Id]
+    public int|null $id = null;
 
-    /** @var string */
-    public $name;
+    #[ORM\ManyToOne(inversedBy: 'credits', targetEntity: GH10747Article::class)]
+    public GH10747Article $article;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="GH10747Article", inversedBy="credits")
-     *
-     * @var GH10747Article
-     */
-    public $article;
-
-    public function __construct(GH10747Article $article, string $name)
+    public function __construct(GH10747Article $article, public string $name)
     {
         $this->article = $article;
-        $this->name    = $name;
     }
 }
 
 class GH10747CustomIdObjectHashType extends DBALType
 {
-    /**
-     * {@inheritDoc}
-     */
-    public function convertToDatabaseValue($value, AbstractPlatform $platform)
+    public function convertToDatabaseValue(mixed $value, AbstractPlatform $platform): mixed
     {
         return $value->id . '_test';
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function convertToPHPValue($value, AbstractPlatform $platform)
+    public function convertToPHPValue(mixed $value, AbstractPlatform $platform): mixed
     {
         return new CustomIdObject(str_replace('_test', '', $value));
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function getSQLDeclaration(array $fieldDeclaration, AbstractPlatform $platform)
+    public function getSQLDeclaration(array $fieldDeclaration, AbstractPlatform $platform): string
     {
         if (method_exists($platform, 'getStringTypeDeclarationSQL')) {
             return $platform->getStringTypeDeclarationSQL($fieldDeclaration);
@@ -185,10 +154,7 @@ class GH10747CustomIdObjectHashType extends DBALType
         return $platform->getVarcharTypeDeclarationSQL($fieldDeclaration);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function getName()
+    public function getName(): string
     {
         return self::class;
     }

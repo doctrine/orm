@@ -14,32 +14,22 @@ use Doctrine\ORM\Mapping\Table;
 
 /**
  * Description of CmsEmployee
- *
- * @Entity
- * @Table(name="cms_employees")
  */
+#[Table(name: 'cms_employees')]
+#[Entity]
 class CmsEmployee
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
-    private $id;
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
+    private int $id;
 
-    /**
-     * @var string
-     * @Column
-     */
-    private $name;
+    #[Column]
+    private string $name;
 
-    /**
-     * @var CmsEmployee
-     * @OneToOne(targetEntity="CmsEmployee")
-     * @JoinColumn(name="spouse_id", referencedColumnName="id")
-     */
-    private $spouse;
+    #[OneToOne(targetEntity: 'CmsEmployee')]
+    #[JoinColumn(name: 'spouse_id', referencedColumnName: 'id')]
+    private CmsEmployee $spouse;
 
     public function getId(): int
     {
@@ -51,7 +41,7 @@ class CmsEmployee
         return $this->name;
     }
 
-    public function getSpouse(): ?CmsEmployee
+    public function getSpouse(): CmsEmployee|null
     {
         return $this->spouse;
     }

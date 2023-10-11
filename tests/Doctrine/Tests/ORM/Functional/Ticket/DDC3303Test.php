@@ -13,6 +13,7 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\MappedSuperclass;
 use Doctrine\ORM\Mapping\Table;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
 class DDC3303Test extends OrmFunctionalTestCase
 {
@@ -24,18 +25,17 @@ class DDC3303Test extends OrmFunctionalTestCase
     }
 
     /**
-     * @group GH-4097
-     * @group GH-4277
-     * @group GH-5867
-     *
      * When using an embedded field in an inheritance, private properties should also be inherited.
      */
+    #[Group('GH-4097')]
+    #[Group('GH-4277')]
+    #[Group('GH-5867')]
     public function testEmbeddedObjectsAreAlsoInherited(): void
     {
         $employee = new DDC3303Employee(
             'John Doe',
             new DDC3303Address('Somewhere', 123, 'Over the rainbow'),
-            'Doctrine Inc'
+            'Doctrine Inc',
         );
 
         $this->_em->persist($employee);
@@ -46,75 +46,44 @@ class DDC3303Test extends OrmFunctionalTestCase
     }
 }
 
-/** @MappedSuperclass */
+#[MappedSuperclass]
 abstract class DDC3303Person
 {
-    /**
-     * @var string
-     * @Id
-     * @GeneratedValue(strategy="NONE")
-     * @Column(type="string", length=255)
-     */
-    private $name;
-
-    /**
-     * @var DDC3303Address
-     * @Embedded(class="DDC3303Address")
-     */
-    private $address;
-
-    public function __construct(string $name, DDC3303Address $address)
-    {
-        $this->name    = $name;
-        $this->address = $address;
+    public function __construct(
+        #[Id]
+        #[GeneratedValue(strategy: 'NONE')]
+        #[Column(type: 'string', length: 255)]
+        private string $name,
+        #[Embedded(class: 'DDC3303Address')]
+        private DDC3303Address $address,
+    ) {
     }
 }
 
-/** @Embeddable */
+#[Embeddable]
 class DDC3303Address
 {
-    /**
-     * @var string
-     * @Column(type="string", length=255)
-     */
-    private $street;
-
-    /**
-     * @var int
-     * @Column(type="integer")
-     */
-    private $number;
-
-    /**
-     * @var string
-     * @Column(type="string", length=255)
-     */
-    private $city;
-
-    public function __construct(string $street, int $number, string $city)
-    {
-        $this->street = $street;
-        $this->number = $number;
-        $this->city   = $city;
+    public function __construct(
+        #[Column(type: 'string', length: 255)]
+        private string $street,
+        #[Column(type: 'integer')]
+        private int $number,
+        #[Column(type: 'string', length: 255)]
+        private string $city,
+    ) {
     }
 }
 
-/**
- * @Entity
- * @Table(name="ddc3303_employee")
- */
+#[Table(name: 'ddc3303_employee')]
+#[Entity]
 class DDC3303Employee extends DDC3303Person
 {
-    /**
-     * @var string
-     * @Column(type="string", length=255)
-     */
-    private $company;
-
-    public function __construct(string $name, DDC3303Address $address, $company)
-    {
+    public function __construct(
+        string $name,
+        DDC3303Address $address,
+        #[Column(type: 'string', length: 255)]
+        private string $company,
+    ) {
         parent::__construct($name, $address);
-
-        $this->company = $company;
     }
 }

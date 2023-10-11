@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Query\AST;
 
+use Doctrine\ORM\Query\SqlWalker;
+
 /**
  * DeleteClause ::= "DELETE" ["FROM"] AbstractSchemaName [["AS"] AliasIdentificationVariable]
  *
@@ -11,23 +13,14 @@ namespace Doctrine\ORM\Query\AST;
  */
 class DeleteClause extends Node
 {
-    /** @var string */
-    public $abstractSchemaName;
+    public string $aliasIdentificationVariable;
 
-    /** @var string */
-    public $aliasIdentificationVariable;
-
-    /** @param string $abstractSchemaName */
-    public function __construct($abstractSchemaName)
+    public function __construct(public string $abstractSchemaName)
     {
-        $this->abstractSchemaName = $abstractSchemaName;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function dispatch($sqlWalker)
+    public function dispatch(SqlWalker $walker): string
     {
-        return $sqlWalker->walkDeleteClause($this);
+        return $walker->walkDeleteClause($this);
     }
 }

@@ -10,7 +10,6 @@ use Doctrine\ORM\Internal\Hydration\SimpleObjectHydrator;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\Tests\DbalTypes\GH8565EmployeePayloadType;
 use Doctrine\Tests\DbalTypes\GH8565ManagerPayloadType;
-use Doctrine\Tests\Mocks\ArrayResultFactory;
 use Doctrine\Tests\Models\CMS\CmsAddress;
 use Doctrine\Tests\Models\Company\CompanyPerson;
 use Doctrine\Tests\Models\GH8565\GH8565Employee;
@@ -19,10 +18,11 @@ use Doctrine\Tests\Models\GH8565\GH8565Person;
 use Doctrine\Tests\Models\Issue5989\Issue5989Employee;
 use Doctrine\Tests\Models\Issue5989\Issue5989Manager;
 use Doctrine\Tests\Models\Issue5989\Issue5989Person;
+use PHPUnit\Framework\Attributes\Group;
 
 class SimpleObjectHydratorTest extends HydrationTestCase
 {
-    /** @group DDC-1470 */
+    #[Group('DDC-1470')]
     public function testMissingDiscriminatorColumnException(): void
     {
         $this->expectException(HydrationException::class);
@@ -40,7 +40,7 @@ class SimpleObjectHydratorTest extends HydrationTestCase
             ],
         ];
 
-        $stmt     = ArrayResultFactory::createFromArray($resultSet);
+        $stmt     = $this->createResultMock($resultSet);
         $hydrator = new SimpleObjectHydrator($this->entityManager);
         $hydrator->hydrateAll($stmt, $rsm);
     }
@@ -63,16 +63,16 @@ class SimpleObjectHydratorTest extends HydrationTestCase
         $expectedEntity->id   = 1;
         $expectedEntity->city = 'Cracow';
 
-        $stmt     = ArrayResultFactory::createFromArray($resultSet);
+        $stmt     = $this->createResultMock($resultSet);
         $hydrator = new SimpleObjectHydrator($this->entityManager);
         $result   = $hydrator->hydrateAll($stmt, $rsm);
         self::assertEquals($result[0], $expectedEntity);
     }
 
-    /** @group DDC-3076 */
+    #[Group('DDC-3076')]
     public function testInvalidDiscriminatorValueException(): void
     {
-        $this->expectException('Doctrine\ORM\Internal\Hydration\HydrationException');
+        $this->expectException(HydrationException::class);
         $this->expectExceptionMessage('The discriminator value "subworker" is invalid. It must be one of "person", "manager", "employee".');
         $rsm = new ResultSetMapping();
 
@@ -91,12 +91,12 @@ class SimpleObjectHydratorTest extends HydrationTestCase
             ],
         ];
 
-        $stmt     = ArrayResultFactory::createFromArray($resultSet);
+        $stmt     = $this->createResultMock($resultSet);
         $hydrator = new SimpleObjectHydrator($this->entityManager);
         $hydrator->hydrateAll($stmt, $rsm);
     }
 
-    /** @group issue-5989 */
+    #[Group('issue-5989')]
     public function testNullValueShouldNotOverwriteFieldWithSameNameInJoinedInheritance(): void
     {
         $rsm = new ResultSetMapping();
@@ -118,7 +118,7 @@ class SimpleObjectHydratorTest extends HydrationTestCase
         $expectedEntity->id   = 1;
         $expectedEntity->tags = ['tag1', 'tag2'];
 
-        $stmt     = ArrayResultFactory::createFromArray($resultSet);
+        $stmt     = $this->createResultMock($resultSet);
         $hydrator = new SimpleObjectHydrator($this->entityManager);
         $result   = $hydrator->hydrateAll($stmt, $rsm);
         self::assertEquals($result[0], $expectedEntity);
@@ -150,7 +150,7 @@ class SimpleObjectHydratorTest extends HydrationTestCase
         $expectedEntity->id   = 1;
         $expectedEntity->type = 'type field';
 
-        $stmt     = ArrayResultFactory::createFromArray($resultSet);
+        $stmt     = $this->createResultMock($resultSet);
         $hydrator = new SimpleObjectHydrator($this->entityManager);
         $result   = $hydrator->hydrateAll($stmt, $rsm);
         self::assertEquals($result[0], $expectedEntity);

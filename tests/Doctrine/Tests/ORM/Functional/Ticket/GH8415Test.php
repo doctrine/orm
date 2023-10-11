@@ -13,14 +13,12 @@ class GH8415Test extends OrmFunctionalTestCase
     {
         parent::setUp();
 
-        $this->setUpEntitySchema(
-            [
-                GH8415BaseClass::class,
-                GH8415MiddleMappedSuperclass::class,
-                GH8415LeafClass::class,
-                GH8415AssociationTarget::class,
-            ]
-        );
+        $this->setUpEntitySchema([
+            GH8415BaseClass::class,
+            GH8415MiddleMappedSuperclass::class,
+            GH8415LeafClass::class,
+            GH8415AssociationTarget::class,
+        ]);
     }
 
     public function testAssociationIsBasedOnBaseClass(): void
@@ -47,75 +45,49 @@ class GH8415Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @ORM\Entity
- */
+#[ORM\Entity]
 class GH8415AssociationTarget
 {
-    /**
-     * @ORM\Column(type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue
-     *
-     * @var int
-     */
+    /** @var int */
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column(type: 'integer')]
     public $id;
 }
 
-/**
- * @ORM\Entity
- * @ORM\InheritanceType("JOINED")
- * @ORM\DiscriminatorColumn(name="discriminator", type="string")
- * @ORM\DiscriminatorMap({"1" = "Doctrine\Tests\ORM\Functional\Ticket\GH8415BaseClass", "2" = "Doctrine\Tests\ORM\Functional\Ticket\GH8415LeafClass"})
- */
+#[ORM\Entity]
+#[ORM\InheritanceType('JOINED')]
+#[ORM\DiscriminatorColumn(name: 'discriminator', type: 'string')]
+#[ORM\DiscriminatorMap(['1' => GH8415BaseClass::class, '2' => GH8415LeafClass::class])]
 class GH8415BaseClass
 {
-    /**
-     * @ORM\Column(type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue
-     *
-     * @var int
-     */
+    /** @var int */
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column(type: 'integer')]
     public $id;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="GH8415AssociationTarget")
-     *
-     * @var GH8415AssociationTarget
-     */
+    /** @var GH8415AssociationTarget */
+    #[ORM\ManyToOne(targetEntity: GH8415AssociationTarget::class)]
     public $target;
 
-    /**
-     * @ORM\Column(type="string")
-     *
-     * @var string
-     */
+    /** @var string */
+    #[ORM\Column(type: 'string')]
     public $baseField;
 }
 
-/**
- * @ORM\MappedSuperclass
- */
+#[ORM\MappedSuperclass]
 class GH8415MiddleMappedSuperclass extends GH8415BaseClass
 {
-    /**
-     * @ORM\Column(type="string")
-     *
-     * @var string
-     */
+    /** @var string */
+    #[ORM\Column(type: 'string')]
     public $middleField;
 }
 
-/**
- * @ORM\Entity
- */
+#[ORM\Entity]
 class GH8415LeafClass extends GH8415MiddleMappedSuperclass
 {
-    /**
-     * @ORM\Column(type="string")
-     *
-     * @var string
-     */
+    /** @var string */
+    #[ORM\Column(type: 'string')]
     public $leafField;
 }

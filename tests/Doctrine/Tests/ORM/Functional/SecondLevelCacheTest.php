@@ -12,11 +12,12 @@ use Doctrine\ORM\Events;
 use Doctrine\Tests\Models\Cache\Country;
 use Doctrine\Tests\Models\Cache\State;
 use Exception;
+use PHPUnit\Framework\Attributes\Group;
 use RuntimeException;
 
 use function uniqid;
 
-/** @group DDC-2183 */
+#[Group('DDC-2183')]
 class SecondLevelCacheTest extends SecondLevelCacheFunctionalTestCase
 {
     public function testPutOnPersist(): void
@@ -208,7 +209,7 @@ class SecondLevelCacheTest extends SecondLevelCacheFunctionalTestCase
                 Events::postFlush => static function (): void {
                     throw new RuntimeException('post flush failure');
                 },
-            ]
+            ],
         );
 
         $this->_em->getEventManager()
@@ -240,7 +241,7 @@ class SecondLevelCacheTest extends SecondLevelCacheFunctionalTestCase
                 Events::postUpdate => static function (): void {
                     throw new RuntimeException('post update failure');
                 },
-            ]
+            ],
         );
 
         $this->_em->getEventManager()
@@ -287,7 +288,7 @@ class SecondLevelCacheTest extends SecondLevelCacheFunctionalTestCase
                 Events::postRemove => static function (): void {
                     throw new RuntimeException('post remove failure');
                 },
-            ]
+            ],
         );
 
         $this->_em->getEventManager()
@@ -314,7 +315,7 @@ class SecondLevelCacheTest extends SecondLevelCacheFunctionalTestCase
 
         self::assertFalse(
             $this->cache->containsEntity(Country::class, $countryId),
-            'Removal attempts should clear the cache entry corresponding to the entity'
+            'Removal attempts should clear the cache entry corresponding to the entity',
         );
 
         self::assertInstanceOf(Country::class, $this->_em->find(Country::class, $countryId));
@@ -338,13 +339,12 @@ class SecondLevelCacheTest extends SecondLevelCacheFunctionalTestCase
 
 class ListenerSecondLevelCacheTest
 {
-    /** @var array<string, callable> */
-    public $callbacks;
-
-    /** @psalm-param array<string, callable> $callbacks */
-    public function __construct(array $callbacks = [])
+    /**
+     * @param array<string, callable> $callbacks
+     * @psalm-param array<string, callable> $callbacks
+     */
+    public function __construct(public array $callbacks = [])
     {
-        $this->callbacks = $callbacks;
     }
 
     private function dispatch(string $eventName, EventArgs $args): void

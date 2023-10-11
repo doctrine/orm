@@ -6,9 +6,7 @@ namespace Doctrine\Tests\Models\ValueObjects;
 
 class Name
 {
-    /** @var string */
-    private $firstName;
+    private string $firstName;
 
-    /** @var string */
-    private $lastName;
+    private string $lastName;
 }

@@ -13,8 +13,6 @@ use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\ORM\Mapping\Table;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-use function get_class;
-
 class DDC237Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -24,7 +22,7 @@ class DDC237Test extends OrmFunctionalTestCase
         $this->createSchemaForModels(
             DDC237EntityX::class,
             DDC237EntityY::class,
-            DDC237EntityZ::class
+            DDC237EntityZ::class,
         );
     }
 
@@ -48,12 +46,12 @@ class DDC237Test extends OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $x2 = $this->_em->find(get_class($x), $x->id); // proxy injected for Y
+        $x2 = $this->_em->find($x::class, $x->id); // proxy injected for Y
         self::assertTrue($this->isUninitializedObject($x2->y));
 
         // proxy for Y is in identity map
 
-        $z2 = $this->_em->createQuery('select z,y from ' . get_class($z) . ' z join z.y y where z.id = ?1')
+        $z2 = $this->_em->createQuery('select z,y from ' . $z::class . ' z join z.y y where z.id = ?1')
                 ->setParameter(1, $z->id)
                 ->getSingleResult();
         self::assertFalse($this->isUninitializedObject($z2->y));
@@ -70,76 +68,54 @@ class DDC237Test extends OrmFunctionalTestCase
 }
 
 
-/**
- * @Entity
- * @Table(name="ddc237_x")
- */
+#[Table(name: 'ddc237_x')]
+#[Entity]
 class DDC237EntityX
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     public $id;
-    /**
-     * @var string
-     * @Column(type="string", length=255)
-     */
+    /** @var string */
+    #[Column(type: 'string', length: 255)]
     public $data;
-    /**
-     * @var DDC237EntityY
-     * @OneToOne(targetEntity="DDC237EntityY")
-     * @JoinColumn(name="y_id", referencedColumnName="id")
-     */
+    /** @var DDC237EntityY */
+    #[OneToOne(targetEntity: 'DDC237EntityY')]
+    #[JoinColumn(name: 'y_id', referencedColumnName: 'id')]
     public $y;
 }
 
 
-/**
- * @Entity
- * @Table(name="ddc237_y")
- */
+#[Table(name: 'ddc237_y')]
+#[Entity]
 class DDC237EntityY
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     public $id;
-    /**
-     * @var string
-     * @Column(type="string", length=255)
-     */
+    /** @var string */
+    #[Column(type: 'string', length: 255)]
     public $data;
 }
 
-/**
- * @Entity
- * @Table(name="ddc237_z")
- */
+#[Table(name: 'ddc237_z')]
+#[Entity]
 class DDC237EntityZ
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     public $id;
-    /**
-     * @var string
-     * @Column(type="string", length=255)
-     */
+    /** @var string */
+    #[Column(type: 'string', length: 255)]
     public $data;
 
-    /**
-     * @var DDC237EntityY
-     * @OneToOne(targetEntity="DDC237EntityY")
-     * @JoinColumn(name="y_id", referencedColumnName="id")
-     */
+    /** @var DDC237EntityY */
+    #[OneToOne(targetEntity: 'DDC237EntityY')]
+    #[JoinColumn(name: 'y_id', referencedColumnName: 'id')]
     public $y;
 }

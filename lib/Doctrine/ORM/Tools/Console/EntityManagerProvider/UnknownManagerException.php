@@ -17,7 +17,7 @@ final class UnknownManagerException extends OutOfBoundsException
         return new self(sprintf(
             'Requested unknown entity manager: %s, known managers: %s',
             $unknownManager,
-            implode(', ', $knownManagers)
+            implode(', ', $knownManagers),
         ));
     }
 }

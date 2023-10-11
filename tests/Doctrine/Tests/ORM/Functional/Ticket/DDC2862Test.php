@@ -12,11 +12,10 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\ORM\Mapping\Table;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
-/**
- * @group DDC-2862
- * @group DDC-2183
- */
+#[Group('DDC-2862')]
+#[Group('DDC-2183')]
 class DDC2862Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -114,38 +113,24 @@ class DDC2862Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- * @Table(name="ddc2862_drivers")
- * @Cache("NONSTRICT_READ_WRITE")
- */
+#[Table(name: 'ddc2862_drivers')]
+#[Entity]
+#[Cache('NONSTRICT_READ_WRITE')]
 class DDC2862Driver
 {
-    /**
-     * @var int
-     * @Id
-     * @GeneratedValue
-     * @Column(type="integer")
-     */
+    /** @var int */
+    #[Id]
+    #[GeneratedValue]
+    #[Column(type: 'integer')]
     protected $id;
 
-    /**
-     * @Column(type="string", length=255)
-     * @var string
-     */
-    protected $name;
-
-    /**
-     * @Cache()
-     * @OneToOne(targetEntity="DDC2862User")
-     * @var DDC2862User
-     */
-    protected $userProfile;
-
-    public function __construct($name, $userProfile = null)
-    {
-        $this->name        = $name;
-        $this->userProfile = $userProfile;
+    public function __construct(
+        #[Column(type: 'string', length: 255)]
+        protected string $name,
+        #[Cache]
+        #[OneToOne(targetEntity: 'DDC2862User')]
+        protected DDC2862User|null $userProfile = null,
+    ) {
     }
 
     public function getId(): int
@@ -174,30 +159,21 @@ class DDC2862Driver
     }
 }
 
-/**
- * @Entity
- * @Table(name="ddc2862_users")
- * @Cache("NONSTRICT_READ_WRITE")
- */
+#[Table(name: 'ddc2862_users')]
+#[Entity]
+#[Cache('NONSTRICT_READ_WRITE')]
 class DDC2862User
 {
-    /**
-     * @var int
-     * @Id
-     * @GeneratedValue
-     * @Column(type="integer")
-     */
+    /** @var int */
+    #[Id]
+    #[GeneratedValue]
+    #[Column(type: 'integer')]
     protected $id;
 
-    /**
-     * @Column(type="string", length=255)
-     * @var string
-     */
-    protected $name;
-
-    public function __construct($name)
-    {
-        $this->name = $name;
+    public function __construct(
+        #[Column(type: 'string', length: 255)]
+        protected string $name,
+    ) {
     }
 
     public function getId(): int

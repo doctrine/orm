@@ -12,6 +12,8 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
+use Stringable;
 
 class DDC1209Test extends OrmFunctionalTestCase
 {
@@ -22,11 +24,11 @@ class DDC1209Test extends OrmFunctionalTestCase
         $this->createSchemaForModels(
             DDC1209One::class,
             DDC1209Two::class,
-            DDC1209Three::class
+            DDC1209Three::class,
         );
     }
 
-    /** @group DDC-1209 */
+    #[Group('DDC-1209')]
     public function testIdentifierCanHaveCustomType(): void
     {
         $entity = new DDC1209Three();
@@ -37,7 +39,7 @@ class DDC1209Test extends OrmFunctionalTestCase
         self::assertSame($entity, $this->_em->find(DDC1209Three::class, $entity->date));
     }
 
-    /** @group DDC-1209 */
+    #[Group('DDC-1209')]
     public function testCompositeIdentifierCanHaveCustomType(): void
     {
         $future1 = new DDC1209One();
@@ -59,22 +61,19 @@ class DDC1209Test extends OrmFunctionalTestCase
                     'startingDatetime' => $future2->startingDatetime,
                     'duringDatetime'   => $future2->duringDatetime,
                     'endingDatetime'   => $future2->endingDatetime,
-                ]
-            )
+                ],
+            ),
         );
     }
 }
 
-/** @Entity */
+#[Entity]
 class DDC1209One
 {
-    /**
-     * @var int
-     * @Id
-     * @GeneratedValue
-     * @Column(type="integer")
-     */
-    private $id;
+    #[Id]
+    #[GeneratedValue]
+    #[Column(type: 'integer')]
+    private int $id;
 
     public function getId(): int
     {
@@ -82,55 +81,42 @@ class DDC1209One
     }
 }
 
-/** @Entity */
+#[Entity]
 class DDC1209Two
 {
-    /**
-     * @var DDC1209One
-     * @Id
-     * @ManyToOne(targetEntity="DDC1209One")
-     * @JoinColumn(referencedColumnName="id", nullable=false)
-     */
-    private $future1;
-
-    /**
-     * @var DateTime2
-     * @Id
-     * @Column(type="datetime", nullable=false)
-     */
+    /** @var DateTime2 */
+    #[Id]
+    #[Column(type: 'datetime', nullable: false)]
     public $startingDatetime;
 
-    /**
-     * @var DateTime2
-     * @Id
-     * @Column(type="datetime", nullable=false)
-     */
+    /** @var DateTime2 */
+    #[Id]
+    #[Column(type: 'datetime', nullable: false)]
     public $duringDatetime;
 
-    /**
-     * @var DateTime2
-     * @Id
-     * @Column(type="datetime", nullable=false)
-     */
+    /** @var DateTime2 */
+    #[Id]
+    #[Column(type: 'datetime', nullable: false)]
     public $endingDatetime;
 
-    public function __construct(DDC1209One $future1)
-    {
-        $this->future1          = $future1;
+    public function __construct(
+        #[Id]
+        #[ManyToOne(targetEntity: 'DDC1209One')]
+        #[JoinColumn(referencedColumnName: 'id', nullable: false)]
+        private DDC1209One $future1,
+    ) {
         $this->startingDatetime = new DateTime2();
         $this->duringDatetime   = new DateTime2();
         $this->endingDatetime   = new DateTime2();
     }
 }
 
-/** @Entity */
+#[Entity]
 class DDC1209Three
 {
-    /**
-     * @var DateTime2
-     * @Id
-     * @Column(type="datetime", name="somedate")
-     */
+    /** @var DateTime2 */
+    #[Id]
+    #[Column(type: 'datetime', name: 'somedate')]
     public $date;
 
     public function __construct()
@@ -139,7 +125,7 @@ class DDC1209Three
     }
 }
 
-class DateTime2 extends DateTime
+class DateTime2 extends DateTime implements Stringable
 {
     public function __toString(): string
     {

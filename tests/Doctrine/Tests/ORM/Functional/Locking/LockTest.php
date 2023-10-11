@@ -13,8 +13,10 @@ use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use Exception;
 use InvalidArgumentException;
+use PHPUnit\Framework\Attributes\DoesNotPerformAssertions;
+use PHPUnit\Framework\Attributes\Group;
 
-/** @group locking */
+#[Group('locking')]
 class LockTest extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -24,13 +26,10 @@ class LockTest extends OrmFunctionalTestCase
         parent::setUp();
     }
 
-    /**
-     * @group DDC-178
-     * @group locking
-     * @testWith [false]
-     *           [true]
-     */
-    public function testLockVersionedEntity(bool $useStringVersion): void
+    #[Group('DDC-178')]
+    #[Group('locking')]
+    #[DoesNotPerformAssertions]
+    public function testLockVersionedEntity(): void
     {
         $article        = new CmsArticle();
         $article->text  = 'my article';
@@ -39,26 +38,12 @@ class LockTest extends OrmFunctionalTestCase
         $this->_em->persist($article);
         $this->_em->flush();
 
-        $lockVersion = $article->version;
-        if ($useStringVersion) {
-            // NOTE: Officially, the lock method (and callers) do not accept a string argument. Calling code should
-            // cast the version to (int) as per the docs. However, this is not currently enforced. This may change in
-            // a future release.
-            $lockVersion = (string) $lockVersion;
-        }
-
-        $this->_em->lock($article, LockMode::OPTIMISTIC, $lockVersion);
-
-        $this->addToAssertionCount(1);
+        $this->_em->lock($article, LockMode::OPTIMISTIC, $article->version);
     }
 
-    /**
-     * @group DDC-178
-     * @group locking
-     * @testWith [false]
-     *           [true]
-     */
-    public function testLockVersionedEntityMismatchThrowsException(bool $useStringVersion): void
+    #[Group('DDC-178')]
+    #[Group('locking')]
+    public function testLockVersionedEntityMismatchThrowsException(): void
     {
         $article        = new CmsArticle();
         $article->text  = 'my article';
@@ -68,18 +53,11 @@ class LockTest extends OrmFunctionalTestCase
         $this->_em->flush();
 
         $this->expectException(OptimisticLockException::class);
-        $lockVersion = $article->version + 1;
-        if ($useStringVersion) {
-            $lockVersion = (string) $lockVersion;
-        }
-
-        $this->_em->lock($article, LockMode::OPTIMISTIC, $lockVersion);
+        $this->_em->lock($article, LockMode::OPTIMISTIC, $article->version + 1);
     }
 
-    /**
-     * @group DDC-178
-     * @group locking
-     */
+    #[Group('DDC-178')]
+    #[Group('locking')]
     public function testLockUnversionedEntityThrowsException(): void
     {
         $user           = new CmsUser();
@@ -95,10 +73,8 @@ class LockTest extends OrmFunctionalTestCase
         $this->_em->lock($user, LockMode::OPTIMISTIC);
     }
 
-    /**
-     * @group DDC-178
-     * @group locking
-     */
+    #[Group('DDC-178')]
+    #[Group('locking')]
     public function testLockUnmanagedEntityThrowsException(): void
     {
         $article = new CmsArticle();
@@ -109,10 +85,8 @@ class LockTest extends OrmFunctionalTestCase
         $this->_em->lock($article, LockMode::OPTIMISTIC, $article->version + 1);
     }
 
-    /**
-     * @group DDC-178
-     * @group locking
-     */
+    #[Group('DDC-178')]
+    #[Group('locking')]
     public function testLockPessimisticReadNoTransactionThrowsException(): void
     {
         $article        = new CmsArticle();
@@ -127,10 +101,8 @@ class LockTest extends OrmFunctionalTestCase
         $this->_em->lock($article, LockMode::PESSIMISTIC_READ);
     }
 
-    /**
-     * @group DDC-178
-     * @group locking
-     */
+    #[Group('DDC-178')]
+    #[Group('locking')]
     public function testLockPessimisticWriteNoTransactionThrowsException(): void
     {
         $article        = new CmsArticle();
@@ -145,9 +117,7 @@ class LockTest extends OrmFunctionalTestCase
         $this->_em->lock($article, LockMode::PESSIMISTIC_WRITE);
     }
 
-    /**
-     * @group locking
-     */
+    #[Group('locking')]
     public function testRefreshWithLockPessimisticWriteNoTransactionThrowsException(): void
     {
         $article        = new CmsArticle();
@@ -162,10 +132,8 @@ class LockTest extends OrmFunctionalTestCase
         $this->_em->refresh($article, LockMode::PESSIMISTIC_WRITE);
     }
 
-    /**
-     * @group DDC-178
-     * @group locking
-     */
+    #[Group('DDC-178')]
+    #[Group('locking')]
     public function testLockPessimisticWrite(): void
     {
         $writeLockSql = $this->_em->getConnection()->getDatabasePlatform()->getWriteLockSQL();
@@ -185,7 +153,7 @@ class LockTest extends OrmFunctionalTestCase
         try {
             $this->_em->lock($article, LockMode::PESSIMISTIC_WRITE);
             $this->_em->commit();
-        } catch (Exception $e) {
+        } catch (Exception) {
             $this->_em->rollback();
         }
 
@@ -198,9 +166,7 @@ class LockTest extends OrmFunctionalTestCase
         self::assertStringContainsString($writeLockSql, $lastLoggedQuery);
     }
 
-    /**
-     * @group locking
-     */
+    #[Group('locking')]
     public function testRefreshWithLockPessimisticWrite(): void
     {
         $writeLockSql = $this->_em->getConnection()->getDatabasePlatform()->getWriteLockSQL();
@@ -220,7 +186,7 @@ class LockTest extends OrmFunctionalTestCase
         try {
             $this->_em->refresh($article, LockMode::PESSIMISTIC_WRITE);
             $this->_em->commit();
-        } catch (Exception $e) {
+        } catch (Exception) {
             $this->_em->rollback();
         }
 
@@ -233,7 +199,7 @@ class LockTest extends OrmFunctionalTestCase
         self::assertStringContainsString($writeLockSql, $lastLoggedQuery);
     }
 
-    /** @group DDC-178 */
+    #[Group('DDC-178')]
     public function testLockPessimisticRead(): void
     {
         $readLockSql = $this->_em->getConnection()->getDatabasePlatform()->getReadLockSQL();
@@ -254,7 +220,7 @@ class LockTest extends OrmFunctionalTestCase
         try {
             $this->_em->lock($article, LockMode::PESSIMISTIC_READ);
             $this->_em->commit();
-        } catch (Exception $e) {
+        } catch (Exception) {
             $this->_em->rollback();
         }
 
@@ -267,7 +233,7 @@ class LockTest extends OrmFunctionalTestCase
         self::assertStringContainsString($readLockSql, $lastLoggedQuery);
     }
 
-    /** @group DDC-1693 */
+    #[Group('DDC-1693')]
     public function testLockOptimisticNonVersionedThrowsExceptionInDQL(): void
     {
         $dql = 'SELECT u FROM ' . CmsUser::class . " u WHERE u.username = 'gblanco'";

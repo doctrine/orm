@@ -10,27 +10,27 @@ use Doctrine\Tests\Models\Generic\BooleanModel;
 use Doctrine\Tests\Models\Reflection\AbstractEmbeddable;
 use Doctrine\Tests\Models\Reflection\ArrayObjectExtendingClass;
 use Doctrine\Tests\Models\Reflection\ConcreteEmbeddable;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use ReflectionProperty;
 
 /**
  * Tests for {@see \Doctrine\ORM\Mapping\ReflectionEmbeddedProperty}
- *
- * @covers \Doctrine\ORM\Mapping\ReflectionEmbeddedProperty
  */
+#[CoversClass(ReflectionEmbeddedProperty::class)]
 class ReflectionEmbeddedPropertyTest extends TestCase
 {
     /**
      * @param ReflectionProperty $parentProperty  property of the embeddable/entity where to write the embeddable to
      * @param ReflectionProperty $childProperty   property of the embeddable class where to write values to
      * @param string             $embeddableClass name of the embeddable class to be instantiated
-     *
-     * @dataProvider getTestedReflectionProperties
      */
+    #[DataProvider('getTestedReflectionProperties')]
     public function testCanSetAndGetEmbeddedProperty(
         ReflectionProperty $parentProperty,
         ReflectionProperty $childProperty,
-        string $embeddableClass
+        string $embeddableClass,
     ): void {
         $embeddedPropertyReflection = new ReflectionEmbeddedProperty($parentProperty, $childProperty, $embeddableClass);
 
@@ -51,70 +51,58 @@ class ReflectionEmbeddedPropertyTest extends TestCase
      * @param ReflectionProperty $parentProperty  property of the embeddable/entity where to write the embeddable to
      * @param ReflectionProperty $childProperty   property of the embeddable class where to write values to
      * @param string             $embeddableClass name of the embeddable class to be instantiated
-     *
-     * @dataProvider getTestedReflectionProperties
      */
+    #[DataProvider('getTestedReflectionProperties')]
     public function testWillSkipReadingPropertiesFromNullEmbeddable(
         ReflectionProperty $parentProperty,
         ReflectionProperty $childProperty,
-        string $embeddableClass
+        string $embeddableClass,
     ): void {
         $embeddedPropertyReflection = new ReflectionEmbeddedProperty($parentProperty, $childProperty, $embeddableClass);
 
         $instantiator = new Instantiator();
 
         self::assertNull($embeddedPropertyReflection->getValue(
-            $instantiator->instantiate($parentProperty->getDeclaringClass()->getName())
+            $instantiator->instantiate($parentProperty->getDeclaringClass()->getName()),
         ));
     }
 
-    /**
-     * @return ReflectionProperty[][]|string[][]
-     */
+    /** @return ReflectionProperty[][]|string[][] */
     public static function getTestedReflectionProperties(): array
     {
         return [
             [
-                self::getReflectionProperty(BooleanModel::class, 'id'),
-                self::getReflectionProperty(BooleanModel::class, 'id'),
+                new ReflectionProperty(BooleanModel::class, 'id'),
+                new ReflectionProperty(BooleanModel::class, 'id'),
                 BooleanModel::class,
             ],
             // reflection on embeddables that have properties defined in abstract ancestors:
             [
-                self::getReflectionProperty(BooleanModel::class, 'id'),
-                self::getReflectionProperty(AbstractEmbeddable::class, 'propertyInAbstractClass'),
+                new ReflectionProperty(BooleanModel::class, 'id'),
+                new ReflectionProperty(AbstractEmbeddable::class, 'propertyInAbstractClass'),
                 ConcreteEmbeddable::class,
             ],
             [
-                self::getReflectionProperty(BooleanModel::class, 'id'),
-                self::getReflectionProperty(ConcreteEmbeddable::class, 'propertyInConcreteClass'),
+                new ReflectionProperty(BooleanModel::class, 'id'),
+                new ReflectionProperty(ConcreteEmbeddable::class, 'propertyInConcreteClass'),
                 ConcreteEmbeddable::class,
             ],
             // reflection on classes extending internal PHP classes:
             [
-                self::getReflectionProperty(ArrayObjectExtendingClass::class, 'publicProperty'),
-                self::getReflectionProperty(ArrayObjectExtendingClass::class, 'privateProperty'),
+                new ReflectionProperty(ArrayObjectExtendingClass::class, 'publicProperty'),
+                new ReflectionProperty(ArrayObjectExtendingClass::class, 'privateProperty'),
                 ArrayObjectExtendingClass::class,
             ],
             [
-                self::getReflectionProperty(ArrayObjectExtendingClass::class, 'publicProperty'),
-                self::getReflectionProperty(ArrayObjectExtendingClass::class, 'protectedProperty'),
+                new ReflectionProperty(ArrayObjectExtendingClass::class, 'publicProperty'),
+                new ReflectionProperty(ArrayObjectExtendingClass::class, 'protectedProperty'),
                 ArrayObjectExtendingClass::class,
             ],
             [
-                self::getReflectionProperty(ArrayObjectExtendingClass::class, 'publicProperty'),
-                self::getReflectionProperty(ArrayObjectExtendingClass::class, 'publicProperty'),
+                new ReflectionProperty(ArrayObjectExtendingClass::class, 'publicProperty'),
+                new ReflectionProperty(ArrayObjectExtendingClass::class, 'publicProperty'),
                 ArrayObjectExtendingClass::class,
             ],
         ];
-    }
-
-    private static function getReflectionProperty(string $className, string $propertyName): ReflectionProperty
-    {
-        $reflectionProperty = new ReflectionProperty($className, $propertyName);
-
-        $reflectionProperty->setAccessible(true);
-
-        return $reflectionProperty;
     }
 }

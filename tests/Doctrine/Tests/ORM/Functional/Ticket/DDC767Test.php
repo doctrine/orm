@@ -8,9 +8,9 @@ use Doctrine\Tests\Models\CMS\CmsGroup;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use Exception;
+use PHPUnit\Framework\Attributes\Group;
 
 use function assert;
-use function get_class;
 
 class DDC767Test extends OrmFunctionalTestCase
 {
@@ -21,7 +21,7 @@ class DDC767Test extends OrmFunctionalTestCase
         parent::setUp();
     }
 
-    /** @group DDC-767 */
+    #[Group('DDC-767')]
     public function testCollectionChangesInsideTransaction(): void
     {
         $user           = new CmsUser();
@@ -49,7 +49,7 @@ class DDC767Test extends OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $pUser = $this->_em->find(get_class($user), $user->id);
+        $pUser = $this->_em->find($user::class, $user->id);
         assert($pUser instanceof CmsUser);
 
         self::assertNotNull($pUser, 'User not retrieved from database.');
@@ -65,12 +65,12 @@ class DDC767Test extends OrmFunctionalTestCase
 
             // Add new
             foreach ($groups as $groupId) {
-                $pUser->addGroup($this->_em->find(get_class($group1), $groupId));
+                $pUser->addGroup($this->_em->find($group1::class, $groupId));
             }
 
             $this->_em->flush();
             $this->_em->commit();
-        } catch (Exception $e) {
+        } catch (Exception) {
             $this->_em->rollback();
         }
     }

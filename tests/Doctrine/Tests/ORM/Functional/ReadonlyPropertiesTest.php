@@ -14,9 +14,6 @@ use Doctrine\Tests\TestUtil;
 
 use function dirname;
 
-/**
- * @requires PHP 8.1
- */
 class ReadonlyPropertiesTest extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -27,7 +24,7 @@ class ReadonlyPropertiesTest extends OrmFunctionalTestCase
 
         $this->_em         = $this->getEntityManager(null, new AttributeDriver(
             [dirname(__DIR__, 2) . '/Models/ReadonlyProperties'],
-            true
+            true,
         ));
         $this->_schemaTool = new SchemaTool($this->_em);
 
@@ -79,7 +76,7 @@ class ReadonlyPropertiesTest extends OrmFunctionalTestCase
         [$book] = $this->_em->createQueryBuilder()
             ->from(SimpleBook::class, 'b')
             ->join('b.author', 'a')
-            ->select(['b', 'a'])
+            ->select('b', 'a')
             ->where('b.id = :id')
             ->setParameter('id', $bookId)
             ->getQuery()

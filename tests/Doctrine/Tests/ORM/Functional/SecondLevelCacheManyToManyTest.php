@@ -9,8 +9,9 @@ use Doctrine\Tests\Models\Cache\City;
 use Doctrine\Tests\Models\Cache\State;
 use Doctrine\Tests\Models\Cache\Travel;
 use Doctrine\Tests\Models\Cache\Traveler;
+use PHPUnit\Framework\Attributes\Group;
 
-/** @group DDC-2183 */
+#[Group('DDC-2183')]
 class SecondLevelCacheManyToManyTest extends SecondLevelCacheFunctionalTestCase
 {
     public function testShouldPutManyToManyCollectionOwningSideOnPersist(): void

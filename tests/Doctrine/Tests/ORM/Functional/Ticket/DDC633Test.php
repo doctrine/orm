@@ -10,6 +10,7 @@ use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
 class DDC633Test extends OrmFunctionalTestCase
 {
@@ -19,15 +20,13 @@ class DDC633Test extends OrmFunctionalTestCase
 
         $this->createSchemaForModels(
             DDC633Patient::class,
-            DDC633Appointment::class
+            DDC633Appointment::class,
         );
     }
 
-    /**
-     * @group DDC-633
-     * @group DDC-952
-     * @group DDC-914
-     */
+    #[Group('DDC-633')]
+    #[Group('DDC-952')]
+    #[Group('DDC-914')]
     public function testOneToOneEager(): void
     {
         $app              = new DDC633Appointment();
@@ -47,10 +46,8 @@ class DDC633Test extends OrmFunctionalTestCase
         self::assertTrue($this->_em->contains($eagerAppointment->patient));
     }
 
-    /**
-     * @group DDC-633
-     * @group DDC-952
-     */
+    #[Group('DDC-633')]
+    #[Group('DDC-952')]
     public function testDQLDeferredEagerLoad(): void
     {
         for ($i = 0; $i < 10; $i++) {
@@ -74,38 +71,30 @@ class DDC633Test extends OrmFunctionalTestCase
     }
 }
 
-/** @Entity */
+#[Entity]
 class DDC633Appointment
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     public $id;
 
-    /**
-     * @var DDC633Patient
-     * @OneToOne(targetEntity="DDC633Patient", inversedBy="appointment", fetch="EAGER")
-     */
+    /** @var DDC633Patient */
+    #[OneToOne(targetEntity: 'DDC633Patient', inversedBy: 'appointment', fetch: 'EAGER')]
     public $patient;
 }
 
-/** @Entity */
+#[Entity]
 class DDC633Patient
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     public $id;
 
-    /**
-     * @var DDC633Appointment
-     * @OneToOne(targetEntity="DDC633Appointment", mappedBy="patient")
-     */
+    /** @var DDC633Appointment */
+    #[OneToOne(targetEntity: 'DDC633Appointment', mappedBy: 'patient')]
     public $appointment;
 }

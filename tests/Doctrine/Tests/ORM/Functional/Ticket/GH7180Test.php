@@ -12,13 +12,13 @@ use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
 /**
  * Tests suggested in https://github.com/doctrine/orm/pull/7180#issuecomment-380841413 and
  * https://github.com/doctrine/orm/pull/7180#issuecomment-381067448.
- *
- * @group 7180
  */
+#[Group('GH7180')]
 final class GH7180Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -75,149 +75,106 @@ final class GH7180Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- */
+#[Entity]
 class GH7180A
 {
-    /**
-     * @GeneratedValue()
-     * @Id
-     * @Column(type="integer")
-     * @var int
-     */
+    /** @var int */
+    #[GeneratedValue]
+    #[Id]
+    #[Column(type: 'integer')]
     public $id;
 
-    /**
-     * @OneToOne(targetEntity=GH7180B::class, inversedBy="a")
-     * @JoinColumn(nullable=false)
-     * @var GH7180B
-     */
+    /** @var GH7180B */
+    #[OneToOne(targetEntity: GH7180B::class, inversedBy: 'a')]
+    #[JoinColumn(nullable: false)]
     public $b;
 }
 
-/**
- * @Entity
- */
+#[Entity]
 class GH7180B
 {
-    /**
-     * @GeneratedValue()
-     * @Id
-     * @Column(type="integer")
-     * @var int
-     */
+    /** @var int */
+    #[GeneratedValue]
+    #[Id]
+    #[Column(type: 'integer')]
     public $id;
 
-    /**
-     * @OneToOne(targetEntity=GH7180A::class, mappedBy="b")
-     * @JoinColumn(nullable=true)
-     * @var GH7180A
-     */
+    /** @var GH7180A */
+    #[OneToOne(targetEntity: GH7180A::class, mappedBy: 'b')]
     public $a;
 }
 
-/**
- * @Entity
- */
+#[Entity]
 class GH7180C
 {
-    /**
-     * @GeneratedValue()
-     * @Id
-     * @Column(type="integer")
-     * @var int
-     */
+    /** @var int */
+    #[GeneratedValue]
+    #[Id]
+    #[Column(type: 'integer')]
     public $id;
 
-    /**
-     * @ManyToOne(targetEntity=GH7180A::class)
-     * @JoinColumn(nullable=false)
-     * @var GH7180A
-     */
+    /** @var GH7180A */
+    #[ManyToOne(targetEntity: GH7180A::class)]
+    #[JoinColumn(nullable: false)]
     public $a;
 }
 
-/**
- * @Entity
- */
+#[Entity]
 class GH7180D
 {
-    /**
-     * @GeneratedValue()
-     * @Id
-     * @Column(type="integer")
-     * @var int
-     */
+    /** @var int */
+    #[GeneratedValue]
+    #[Id]
+    #[Column(type: 'integer')]
     public $id;
 
-    /**
-     * @OneToOne(targetEntity=GH7180E::class)
-     * @JoinColumn(nullable=false)
-     * @var GH7180E
-     */
+    /** @var GH7180E */
+    #[OneToOne(targetEntity: GH7180E::class)]
+    #[JoinColumn(nullable: false)]
     public $e;
 }
 
-/**
- * @Entity
- */
+#[Entity]
 class GH7180E
 {
-    /**
-     * @GeneratedValue()
-     * @Id
-     * @Column(type="integer")
-     * @var int
-     */
+    /** @var int */
+    #[GeneratedValue]
+    #[Id]
+    #[Column(type: 'integer')]
     public $id;
 
-    /**
-     * @OneToOne(targetEntity=GH7180F::class)
-     * @JoinColumn(nullable=false)
-     * @var GH7180F
-     */
+    /** @var GH7180F */
+    #[OneToOne(targetEntity: GH7180F::class)]
+    #[JoinColumn(nullable: false)]
     public $f;
 }
 
-/**
- * @Entity
- */
+#[Entity]
 class GH7180F
 {
-    /**
-     * @GeneratedValue()
-     * @Id
-     * @Column(type="integer")
-     * @var int
-     */
+    /** @var int */
+    #[GeneratedValue]
+    #[Id]
+    #[Column(type: 'integer')]
     public $id;
 
-    /**
-     * @ManyToOne(targetEntity=GH7180D::class)
-     * @JoinColumn(nullable=true)
-     * @var GH7180D
-     */
+    /** @var GH7180D */
+    #[ManyToOne(targetEntity: GH7180D::class)]
+    #[JoinColumn(nullable: true)]
     public $d;
 }
 
-/**
- * @Entity
- */
+#[Entity]
 class GH7180G
 {
-    /**
-     * @GeneratedValue()
-     * @Id
-     * @Column(type="integer")
-     * @var int
-     */
+    /** @var int */
+    #[GeneratedValue]
+    #[Id]
+    #[Column(type: 'integer')]
     public $id;
 
-    /**
-     * @ManyToOne(targetEntity=GH7180D::class)
-     * @JoinColumn(nullable=false)
-     * @var GH7180D
-     */
+    /** @var GH7180D */
+    #[ManyToOne(targetEntity: GH7180D::class)]
+    #[JoinColumn(nullable: false)]
     public $d;
 }

@@ -9,6 +9,7 @@ use Doctrine\ORM\Cache;
 use Doctrine\ORM\Cache\EntityCacheEntry;
 use Doctrine\ORM\Cache\EntityCacheKey;
 use Doctrine\ORM\Cache\Exception\CacheException;
+use Doctrine\ORM\Cache\QueryCacheEntry;
 use Doctrine\ORM\Cache\QueryCacheKey;
 use Doctrine\ORM\Proxy\InternalProxy;
 use Doctrine\ORM\Query;
@@ -17,9 +18,10 @@ use Doctrine\Tests\Models\Cache\Attraction;
 use Doctrine\Tests\Models\Cache\City;
 use Doctrine\Tests\Models\Cache\Country;
 use Doctrine\Tests\Models\Cache\State;
+use PHPUnit\Framework\Attributes\Group;
 use ReflectionMethod;
 
-/** @group DDC-2183 */
+#[Group('DDC-2183')]
 class SecondLevelCacheQueryCacheTest extends SecondLevelCacheFunctionalTestCase
 {
     public function testBasicQueryCache(): void
@@ -287,7 +289,7 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheFunctionalTestCase
         self::assertEquals(1, $this->secondLevelCacheLogger->getRegionMissCount($this->getDefaultQueryRegionName()));
     }
 
-    /** @group 5854 */
+    #[Group('5854')]
     public function testMultipleNestedDQLAliases(): void
     {
         $this->loadFixturesCountries();
@@ -804,7 +806,6 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheFunctionalTestCase
 
         $getHash = static function (AbstractQuery $query) {
             $method = new ReflectionMethod($query, 'getHash');
-            $method->setAccessible(true);
 
             return $method->invoke($query);
         };
@@ -828,8 +829,8 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheFunctionalTestCase
             ->getRegion()
             ->get($key);
 
-        self::assertInstanceOf(Cache\QueryCacheEntry::class, $entry);
-        $entry->time /= 2;
+        self::assertInstanceOf(QueryCacheEntry::class, $entry);
+        $entry = new QueryCacheEntry($entry->result, $entry->time / 2);
 
         $this->cache->getQueryCache()
             ->getRegion()

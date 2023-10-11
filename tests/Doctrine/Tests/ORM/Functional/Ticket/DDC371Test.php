@@ -15,8 +15,9 @@ use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Query;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
-/** @group DDC-371 */
+#[Group('DDC-371')]
 class DDC371Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -56,48 +57,34 @@ class DDC371Test extends OrmFunctionalTestCase
     }
 }
 
-/** @Entity */
+#[Entity]
 class DDC371Child
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
-    private $id;
-    /**
-     * @var string
-     * @Column(type="string", length=255)
-     */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
+    private int $id;
+    /** @var string */
+    #[Column(type: 'string', length: 255)]
     public $data;
-    /**
-     * @var DDC371Parent
-     * @ManyToOne(targetEntity="DDC371Parent", inversedBy="children")
-     * @JoinColumn(name="parentId")
-     */
+    /** @var DDC371Parent */
+    #[ManyToOne(targetEntity: 'DDC371Parent', inversedBy: 'children')]
+    #[JoinColumn(name: 'parentId')]
     public $parent;
 }
 
-/** @Entity */
+#[Entity]
 class DDC371Parent
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
-    private $id;
-    /**
-     * @var string
-     * @Column(type="string", length=255)
-     */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
+    private int $id;
+    /** @var string */
+    #[Column(type: 'string', length: 255)]
     public $data;
 
-    /**
-     * @psalm-var Collection<int, DDC371Child>
-     * @OneToMany(targetEntity="DDC371Child", mappedBy="parent")
-     */
+    /** @psalm-var Collection<int, DDC371Child> */
+    #[OneToMany(targetEntity: 'DDC371Child', mappedBy: 'parent')]
     public $children;
 }

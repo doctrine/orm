@@ -10,17 +10,13 @@ use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\Table;
 
-/**
- * @Entity
- * @Table(name="vct_owning_manytoone_foreignkey")
- */
+#[Table(name: 'vct_owning_manytoone_foreignkey')]
+#[Entity]
 class OwningManyToOneIdForeignKeyEntity
 {
-    /**
-     * @var associatedEntities
-     * @Id
-     * @ManyToOne(targetEntity=AuxiliaryEntity::class, inversedBy="associatedEntities")
-     * @JoinColumn(name="associated_id", referencedColumnName="id4")
-     */
+    /** @var associatedEntities */
+    #[Id]
+    #[ManyToOne(targetEntity: AuxiliaryEntity::class, inversedBy: 'associatedEntities')]
+    #[JoinColumn(name: 'associated_id', referencedColumnName: 'id4')]
     public $associatedEntity;
 }

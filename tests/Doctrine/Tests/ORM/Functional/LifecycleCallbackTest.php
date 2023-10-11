@@ -34,10 +34,10 @@ use Doctrine\ORM\Mapping\PreUpdate;
 use Doctrine\ORM\Mapping\Table;
 use Doctrine\ORM\Query;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
 use function count;
 use function current;
-use function get_class;
 use function iterator_to_array;
 use function sprintf;
 
@@ -51,7 +51,7 @@ class LifecycleCallbackTest extends OrmFunctionalTestCase
             LifecycleCallbackEventArgEntity::class,
             LifecycleCallbackTestEntity::class,
             LifecycleCallbackTestUser::class,
-            LifecycleCallbackCascader::class
+            LifecycleCallbackCascader::class,
         );
     }
 
@@ -114,13 +114,13 @@ class LifecycleCallbackTest extends OrmFunctionalTestCase
 
         $this->_em->clear();
 
-        $user2 = $this->_em->find(get_class($user), $user->getId());
+        $user2 = $this->_em->find($user::class, $user->getId());
 
         self::assertEquals('Alice', $user2->getName());
         self::assertEquals('Hello World', $user2->getValue());
     }
 
-    /** @group DDC-194 */
+    #[Group('DDC-194')]
     public function testGetReferenceWithPostLoadEventIsDelayedUntilProxyTrigger(): void
     {
         $entity        = new LifecycleCallbackTestEntity();
@@ -138,7 +138,7 @@ class LifecycleCallbackTest extends OrmFunctionalTestCase
         self::assertTrue($reference->postLoadCallbackInvoked);
     }
 
-    /** @group DDC-958 */
+    #[Group('DDC-958')]
     public function testPostLoadTriggeredOnRefresh(): void
     {
         $entity        = new LifecycleCallbackTestEntity();
@@ -157,7 +157,7 @@ class LifecycleCallbackTest extends OrmFunctionalTestCase
         self::assertTrue($reference->postLoadCallbackInvoked, 'postLoad should be invoked when refresh() is called.');
     }
 
-    /** @group DDC-113 */
+    #[Group('DDC-113')]
     public function testCascadedEntitiesCallsPrePersist(): void
     {
         $e1 = new LifecycleCallbackTestEntity();
@@ -178,10 +178,8 @@ class LifecycleCallbackTest extends OrmFunctionalTestCase
         self::assertTrue($e2->prePersistCallbackInvoked);
     }
 
-    /**
-     * @group DDC-54
-     * @group DDC-3005
-     */
+    #[Group('DDC-54')]
+    #[Group('DDC-3005')]
     public function testCascadedEntitiesLoadedInPostLoad(): void
     {
         $e1 = new LifecycleCallbackTestEntity();
@@ -220,10 +218,8 @@ DQL;
         self::assertEquals(current($entities)->cascader->postLoadEntitiesCount, 2);
     }
 
-    /**
-     * @group DDC-54
-     * @group DDC-3005
-     */
+    #[Group('DDC-54')]
+    #[Group('DDC-3005')]
     public function testCascadedEntitiesNotLoadedInPostLoadDuringIteration(): void
     {
         $e1 = new LifecycleCallbackTestEntity();
@@ -253,15 +249,6 @@ DQL;
 
         $query = $this->_em->createQuery(sprintf($dql, $e1->getId(), $e2->getId()));
 
-        $result = iterator_to_array($query->iterate());
-
-        foreach ($result as $entity) {
-            self::assertTrue($entity[0]->postLoadCallbackInvoked);
-            self::assertFalse($entity[0]->postLoadCascaderNotNull);
-
-            break;
-        }
-
         $iterableResult = iterator_to_array($query->toIterable());
 
         foreach ($iterableResult as $entity) {
@@ -272,10 +259,8 @@ DQL;
         }
     }
 
-    /**
-     * @group DDC-54
-     * @group DDC-3005
-     */
+    #[Group('DDC-54')]
+    #[Group('DDC-3005')]
     public function testCascadedEntitiesNotLoadedInPostLoadDuringIterationWithSimpleObjectHydrator(): void
     {
         $this->_em->persist(new LifecycleCallbackTestEntity());
@@ -285,17 +270,8 @@ DQL;
         $this->_em->clear();
 
         $query = $this->_em->createQuery(
-            'SELECT e FROM Doctrine\Tests\ORM\Functional\LifecycleCallbackTestEntity AS e'
+            'SELECT e FROM Doctrine\Tests\ORM\Functional\LifecycleCallbackTestEntity AS e',
         );
-
-        $result = iterator_to_array($query->iterate(null, Query::HYDRATE_SIMPLEOBJECT));
-
-        foreach ($result as $entity) {
-            self::assertTrue($entity[0]->postLoadCallbackInvoked);
-            self::assertFalse($entity[0]->postLoadCascaderNotNull);
-
-            break;
-        }
 
         $result = iterator_to_array($query->toIterable([], Query::HYDRATE_SIMPLEOBJECT));
 
@@ -380,7 +356,7 @@ DQL;
         self::assertEquals('Bob', $bob->getName());
     }
 
-    /** @group DDC-1955 */
+    #[Group('DDC-1955')]
     public function testLifecycleCallbackEventArgs(): void
     {
         $e = new LifecycleCallbackEventArgEntity();
@@ -418,31 +394,20 @@ DQL;
     }
 }
 
-/**
- * @Entity
- * @HasLifecycleCallbacks
- */
+#[Entity]
+#[HasLifecycleCallbacks]
 class LifecycleCallbackTestUser
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
-    private $id;
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
+    private int $id;
 
-    /**
-     * @var string
-     * @Column(type="string", length=255)
-     */
-    private $value;
+    #[Column(type: 'string', length: 255)]
+    private string|null $value = null;
 
-    /**
-     * @var string
-     * @Column(type="string", length=255)
-     */
-    private $name;
+    #[Column(type: 'string', length: 255)]
+    private string|null $name = null;
 
     public function getId(): int
     {
@@ -469,18 +434,16 @@ class LifecycleCallbackTestUser
         $this->name = $name;
     }
 
-    /** @PreUpdate */
+    #[PreUpdate]
     public function testCallback(): void
     {
         $this->value = 'Hello World';
     }
 }
 
-/**
- * @Entity
- * @HasLifecycleCallbacks
- * @Table(name="lc_cb_test_entity")
- */
+#[Table(name: 'lc_cb_test_entity')]
+#[Entity]
+#[HasLifecycleCallbacks]
 class LifecycleCallbackTestEntity
 {
     /* test stuff */
@@ -500,25 +463,18 @@ class LifecycleCallbackTestEntity
     /** @var bool */
     public $preFlushCallbackInvoked = false;
 
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
-     */
-    private $id;
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue(strategy: 'AUTO')]
+    private int $id;
 
-    /**
-     * @var string
-     * @Column(type="string", nullable=true)
-     */
+    /** @var string */
+    #[Column(type: 'string', nullable: true)]
     public $value;
 
-    /**
-     * @var LifecycleCallbackCascader
-     * @ManyToOne(targetEntity="LifecycleCallbackCascader")
-     * @JoinColumn(name="cascader_id", referencedColumnName="id")
-     */
+    /** @var LifecycleCallbackCascader */
+    #[ManyToOne(targetEntity: 'LifecycleCallbackCascader')]
+    #[JoinColumn(name: 'cascader_id', referencedColumnName: 'id')]
     public $cascader;
 
     public function getId(): int
@@ -531,43 +487,41 @@ class LifecycleCallbackTestEntity
         return $this->value;
     }
 
-    /** @PrePersist */
+    #[PrePersist]
     public function doStuffOnPrePersist(): void
     {
         $this->prePersistCallbackInvoked = true;
     }
 
-    /** @PostPersist */
+    #[PostPersist]
     public function doStuffOnPostPersist(): void
     {
         $this->postPersistCallbackInvoked = true;
     }
 
-    /** @PostLoad */
+    #[PostLoad]
     public function doStuffOnPostLoad(): void
     {
         $this->postLoadCallbackInvoked = true;
         $this->postLoadCascaderNotNull = isset($this->cascader);
     }
 
-    /** @PreUpdate */
+    #[PreUpdate]
     public function doStuffOnPreUpdate(): void
     {
         $this->value = 'changed from preUpdate callback!';
     }
 
-    /** @PreFlush */
+    #[PreFlush]
     public function doStuffOnPreFlush(): void
     {
         $this->preFlushCallbackInvoked = true;
     }
 }
 
-/**
- * @Entity
- * @HasLifecycleCallbacks
- * @Table(name="lc_cb_test_cascade")
- */
+#[Table(name: 'lc_cb_test_cascade')]
+#[Entity]
+#[HasLifecycleCallbacks]
 class LifecycleCallbackCascader
 {
     /* test stuff */
@@ -577,18 +531,13 @@ class LifecycleCallbackCascader
     /** @var int */
     public $postLoadEntitiesCount = 0;
 
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
-     */
-    private $id;
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue(strategy: 'AUTO')]
+    private int $id;
 
-    /**
-     * @psalm-var Collection<int, LifecycleCallbackTestEntity>
-     * @OneToMany(targetEntity="LifecycleCallbackTestEntity", mappedBy="cascader", cascade={"persist"})
-     */
+    /** @psalm-var Collection<int, LifecycleCallbackTestEntity> */
+    #[OneToMany(targetEntity: 'LifecycleCallbackTestEntity', mappedBy: 'cascader', cascade: ['persist'])]
     public $entities;
 
     public function __construct()
@@ -596,7 +545,7 @@ class LifecycleCallbackCascader
         $this->entities = new ArrayCollection();
     }
 
-    /** @PostLoad */
+    #[PostLoad]
     public function doStuffOnPostLoad(): void
     {
         $this->postLoadCallbackInvoked = true;
@@ -609,31 +558,24 @@ class LifecycleCallbackCascader
     }
 }
 
-/**
- * @MappedSuperclass
- * @HasLifecycleCallbacks
- */
+#[MappedSuperclass]
+#[HasLifecycleCallbacks]
 class LifecycleCallbackParentEntity
 {
-    /** @PrePersist */
+    #[PrePersist]
     public function doStuff(): void
     {
     }
 }
 
-/**
- * @Entity
- * @Table(name="lc_cb_childentity")
- */
+#[Table(name: 'lc_cb_childentity')]
+#[Entity]
 class LifecycleCallbackChildEntity extends LifecycleCallbackParentEntity
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
-    private $id;
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
+    private int $id;
 }
 
 class LifecycleListenerPreUpdate
@@ -644,72 +586,66 @@ class LifecycleListenerPreUpdate
     }
 }
 
-/**
- * @Entity
- * @HasLifecycleCallbacks
- */
+#[Entity]
+#[HasLifecycleCallbacks]
 class LifecycleCallbackEventArgEntity
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     public $id;
 
-    /**
-     * @var string
-     * @Column()
-     */
+    /** @var string */
+    #[Column]
     public $value;
 
     /** @var array<string, BaseLifecycleEventArgs> */
     public $calls = [];
 
-    /** @PostPersist */
+    #[PostPersist]
     public function postPersistHandler(PostPersistEventArgs $event): void
     {
         $this->calls[__FUNCTION__] = $event;
     }
 
-    /** @PrePersist */
+    #[PrePersist]
     public function prePersistHandler(PrePersistEventArgs $event): void
     {
         $this->calls[__FUNCTION__] = $event;
     }
 
-    /** @PostUpdate */
+    #[PostUpdate]
     public function postUpdateHandler(PostUpdateEventArgs $event): void
     {
         $this->calls[__FUNCTION__] = $event;
     }
 
-    /** @PreUpdate */
+    #[PreUpdate]
     public function preUpdateHandler(PreUpdateEventArgs $event): void
     {
         $this->calls[__FUNCTION__] = $event;
     }
 
-    /** @PostRemove */
+    #[PostRemove]
     public function postRemoveHandler(PostRemoveEventArgs $event): void
     {
         $this->calls[__FUNCTION__] = $event;
     }
 
-    /** @PreRemove */
+    #[PreRemove]
     public function preRemoveHandler(PreRemoveEventArgs $event): void
     {
         $this->calls[__FUNCTION__] = $event;
     }
 
-    /** @PreFlush */
+    #[PreFlush]
     public function preFlushHandler(PreFlushEventArgs $event): void
     {
         $this->calls[__FUNCTION__] = $event;
     }
 
-    /** @PostLoad */
+    #[PostLoad]
     public function postLoadHandler(PostLoadEventArgs $event): void
     {
         $this->calls[__FUNCTION__] = $event;

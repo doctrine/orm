@@ -13,29 +13,20 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\Table;
 
-/**
- * @Entity
- * @Table("cache_action")
- */
+#[Table('cache_action')]
+#[Entity]
 class Action
 {
-    /**
-     * @var string
-     * @Id
-     * @Column(type="string", length=255)
-     * @GeneratedValue(strategy="NONE")
-     */
-    public $name;
-
-    /**
-     * @psalm-var Collection<int, Token>
-     * @OneToMany(targetEntity="Token", cascade={"persist", "remove"}, mappedBy="action")
-     */
+    /** @psalm-var Collection<int, Token> */
+    #[OneToMany(targetEntity: 'Token', cascade: ['persist', 'remove'], mappedBy: 'action')]
     public $tokens;
 
-    public function __construct($name)
-    {
-        $this->name   = $name;
+    public function __construct(
+        #[Id]
+        #[Column(type: 'string', length: 255)]
+        #[GeneratedValue(strategy: 'NONE')]
+        public string $name,
+    ) {
         $this->tokens = new ArrayCollection();
     }
 

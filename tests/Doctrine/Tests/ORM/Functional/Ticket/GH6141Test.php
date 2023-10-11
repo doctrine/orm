@@ -17,6 +17,8 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\InheritanceType;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use InvalidArgumentException;
+use PHPUnit\Framework\Attributes\Group;
+use Stringable;
 
 use function in_array;
 
@@ -31,7 +33,7 @@ class GH6141Test extends OrmFunctionalTestCase
         $this->createSchemaForModels(
             GH6141Person::class,
             GH6141Boss::class,
-            GH6141Employee::class
+            GH6141Employee::class,
         );
     }
 
@@ -39,9 +41,8 @@ class GH6141Test extends OrmFunctionalTestCase
      * The intent of this test is to ensure that the ORM is capable
      * of using objects as discriminators (which makes things a bit
      * more dynamic as you can see on the mapping of `GH6141Person`)
-     *
-     * @group GH-6141
      */
+    #[Group('GH-6141')]
     public function testEnumDiscriminatorsShouldBeConvertedToString(): void
     {
         $boss     = new GH6141Boss('John');
@@ -64,14 +65,14 @@ class GH6141Test extends OrmFunctionalTestCase
         self::assertEquals($boss, $query->getOneOrNullResult(AbstractQuery::HYDRATE_OBJECT));
         self::assertEquals(
             GH6141People::get(GH6141People::BOSS),
-            $query->getOneOrNullResult(AbstractQuery::HYDRATE_ARRAY)['discr']
+            $query->getOneOrNullResult(AbstractQuery::HYDRATE_ARRAY)['discr'],
         );
 
         $query->setParameter('name', 'Bob');
         self::assertEquals($employee, $query->getOneOrNullResult(AbstractQuery::HYDRATE_OBJECT));
         self::assertEquals(
             GH6141People::get(GH6141People::EMPLOYEE),
-            $query->getOneOrNullResult(AbstractQuery::HYDRATE_ARRAY)['discr']
+            $query->getOneOrNullResult(AbstractQuery::HYDRATE_ARRAY)['discr'],
         );
     }
 }
@@ -83,7 +84,7 @@ class GH6141PeopleType extends StringType
     /**
      * {@inheritDoc}
      */
-    public function convertToDatabaseValue($value, AbstractPlatform $platform)
+    public function convertToDatabaseValue($value, AbstractPlatform $platform): string
     {
         if (! $value instanceof GH6141People) {
             $value = GH6141People::get($value);
@@ -95,27 +96,21 @@ class GH6141PeopleType extends StringType
     /**
      * {@inheritDoc}
      */
-    public function convertToPHPValue($value, AbstractPlatform $platform)
+    public function convertToPHPValue($value, AbstractPlatform $platform): GH6141People
     {
         return GH6141People::get($value);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function getName()
+    public function getName(): string
     {
         return self::NAME;
     }
 }
 
-class GH6141People
+class GH6141People implements Stringable
 {
     public const BOSS     = 'boss';
     public const EMPLOYEE = 'employee';
-
-    /** @var string */
-    private $value;
 
     /** @throws InvalidArgumentException */
     public static function get(string $value): GH6141People
@@ -132,9 +127,8 @@ class GH6141People
         return in_array($valid, [self::BOSS, self::EMPLOYEE], true);
     }
 
-    private function __construct(string $value)
+    private function __construct(private string $value)
     {
-        $this->value = $value;
     }
 
     public function getValue(): string
@@ -148,43 +142,31 @@ class GH6141People
     }
 }
 
-/**
- * @Entity
- * @InheritanceType("JOINED")
- * @DiscriminatorColumn(name="discr", type="gh6141people")
- * @DiscriminatorMap({
- *      GH6141People::BOSS     = GH6141Boss::class,
- *      GH6141People::EMPLOYEE = GH6141Employee::class
- * })
- */
+#[Entity]
+#[InheritanceType('JOINED')]
+#[DiscriminatorColumn(name: 'discr', type: 'gh6141people')]
+#[DiscriminatorMap([GH6141People::BOSS => GH6141Boss::class, GH6141People::EMPLOYEE => GH6141Employee::class])]
 abstract class GH6141Person
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue(strategy: 'AUTO')]
     public $id;
 
-    /**
-     * @var string
-     * @Column(type="string", length=255)
-     */
-    public $name;
-
-    public function __construct(string $name)
-    {
-        $this->name = $name;
+    public function __construct(
+        #[Column(type: 'string', length: 255)]
+        public string $name,
+    ) {
     }
 }
 
-/** @Entity */
+#[Entity]
 class GH6141Boss extends GH6141Person
 {
 }
 
-/** @Entity */
+#[Entity]
 class GH6141Employee extends GH6141Person
 {
 }

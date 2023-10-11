@@ -16,12 +16,12 @@ use Doctrine\Tests\Models\Company\CompanyFixContract;
 use Doctrine\Tests\Models\Company\CompanyPerson;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use PHPUnit\Framework\Assert;
+use PHPUnit\Framework\Attributes\Group;
 
-/** @group DDC-1955 */
+#[Group('DDC-1955')]
 class EntityListenersTest extends OrmFunctionalTestCase
 {
-    /** @var CompanyContractListener */
-    private $listener;
+    private CompanyContractListener $listener;
 
     protected function setUp(): void
     {

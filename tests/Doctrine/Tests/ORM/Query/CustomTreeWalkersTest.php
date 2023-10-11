@@ -6,9 +6,18 @@ namespace Doctrine\Tests\ORM\Query;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Query;
+use Doctrine\ORM\Query\AST\ComparisonExpression;
+use Doctrine\ORM\Query\AST\ConditionalExpression;
+use Doctrine\ORM\Query\AST\ConditionalFactor;
+use Doctrine\ORM\Query\AST\ConditionalPrimary;
+use Doctrine\ORM\Query\AST\ConditionalTerm;
+use Doctrine\ORM\Query\AST\PathExpression;
+use Doctrine\ORM\Query\AST\SelectStatement;
+use Doctrine\ORM\Query\AST\WhereClause;
 use Doctrine\ORM\Query\QueryException;
 use Doctrine\ORM\Query\SqlWalker;
 use Doctrine\ORM\Query\TreeWalker;
+use Doctrine\ORM\Query\TreeWalkerAdapter;
 use Doctrine\Tests\Mocks\CustomTreeWalkerJoin;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\OrmTestCase;
@@ -23,8 +32,7 @@ use function count;
  */
 class CustomTreeWalkersTest extends OrmTestCase
 {
-    /** @var EntityManagerInterface */
-    private $entityManager;
+    private EntityManagerInterface $entityManager;
 
     protected function setUp(): void
     {
@@ -35,7 +43,7 @@ class CustomTreeWalkersTest extends OrmTestCase
      * @param list<class-string<TreeWalker>> $treeWalkers
      * @param class-string<SqlWalker>|null   $outputWalker
      */
-    public function generateSql(string $dqlToBeTested, array $treeWalkers, ?string $outputWalker): string
+    public function generateSql(string $dqlToBeTested, array $treeWalkers, string|null $outputWalker): string
     {
         $query = $this->entityManager->createQuery($dqlToBeTested);
         $query->setHint(Query::HINT_CUSTOM_TREE_WALKERS, $treeWalkers)
@@ -56,7 +64,7 @@ class CustomTreeWalkersTest extends OrmTestCase
         string $dqlToBeTested,
         string $sqlToBeConfirmed,
         array $treeWalkers = [],
-        ?string $outputWalker = null
+        string|null $outputWalker = null,
     ): void {
         self::assertEquals($sqlToBeConfirmed, $this->generateSql($dqlToBeTested, $treeWalkers, $outputWalker));
     }
@@ -66,7 +74,7 @@ class CustomTreeWalkersTest extends OrmTestCase
         $this->assertSqlGeneration(
             'select u from Doctrine\Tests\Models\CMS\CmsUser u',
             'SELECT c0_.id AS id_0, c0_.status AS status_1, c0_.username AS username_2, c0_.name AS name_3, c0_.email_id AS email_id_4 FROM cms_users c0_ WHERE c0_.id = 1',
-            [CustomTreeWalker::class]
+            [CustomTreeWalker::class],
         );
     }
 
@@ -75,7 +83,7 @@ class CustomTreeWalkersTest extends OrmTestCase
         $this->assertSqlGeneration(
             'select u from Doctrine\Tests\Models\CMS\CmsUser u where u.name = :name or u.name = :otherName',
             'SELECT c0_.id AS id_0, c0_.status AS status_1, c0_.username AS username_2, c0_.name AS name_3, c0_.email_id AS email_id_4 FROM cms_users c0_ WHERE (c0_.name = ? OR c0_.name = ?) AND c0_.id = 1',
-            [CustomTreeWalker::class]
+            [CustomTreeWalker::class],
         );
     }
 
@@ -84,7 +92,7 @@ class CustomTreeWalkersTest extends OrmTestCase
         $this->assertSqlGeneration(
             'select u from Doctrine\Tests\Models\CMS\CmsUser u where u.name = :name',
             'SELECT c0_.id AS id_0, c0_.status AS status_1, c0_.username AS username_2, c0_.name AS name_3, c0_.email_id AS email_id_4 FROM cms_users c0_ WHERE c0_.name = ? AND c0_.id = 1',
-            [CustomTreeWalker::class]
+            [CustomTreeWalker::class],
         );
     }
 
@@ -96,7 +104,7 @@ class CustomTreeWalkersTest extends OrmTestCase
         $this->generateSql(
             'select u from Doctrine\Tests\Models\CMS\CmsUser u',
             [],
-            AddUnknownQueryComponentWalker::class
+            AddUnknownQueryComponentWalker::class,
         );
     }
 
@@ -105,24 +113,26 @@ class CustomTreeWalkersTest extends OrmTestCase
         $this->assertSqlGeneration(
             'select u from Doctrine\Tests\Models\CMS\CmsUser u',
             'SELECT c0_.id AS id_0, c0_.status AS status_1, c0_.username AS username_2, c0_.name AS name_3, c1_.id AS id_4, c1_.country AS country_5, c1_.zip AS zip_6, c1_.city AS city_7, c0_.email_id AS email_id_8, c1_.user_id AS user_id_9 FROM cms_users c0_ LEFT JOIN cms_addresses c1_ ON c0_.id = c1_.user_id WHERE c0_.id = 1',
-            [CustomTreeWalkerJoin::class, CustomTreeWalker::class]
+            [CustomTreeWalkerJoin::class, CustomTreeWalker::class],
         );
     }
 }
 
-class AddUnknownQueryComponentWalker extends Query\SqlWalker
+class AddUnknownQueryComponentWalker extends SqlWalker
 {
-    public function walkSelectStatement(Query\AST\SelectStatement $selectStatement): void
+    public function walkSelectStatement(SelectStatement $selectStatement): string
     {
-        parent::walkSelectStatement($selectStatement);
+        $sql = parent::walkSelectStatement($selectStatement);
 
         $this->setQueryComponent('x', []);
+
+        return $sql;
     }
 }
 
-class CustomTreeWalker extends Query\TreeWalkerAdapter
+class CustomTreeWalker extends TreeWalkerAdapter
 {
-    public function walkSelectStatement(Query\AST\SelectStatement $selectStatement): void
+    public function walkSelectStatement(SelectStatement $selectStatement): void
     {
         // Get the DQL aliases of all the classes we want to modify
         $dqlAliases = [];
@@ -138,14 +148,14 @@ class CustomTreeWalker extends Query\TreeWalkerAdapter
         // Create our conditions for all involved classes
         $factors = [];
         foreach ($dqlAliases as $alias) {
-            $pathExpr       = new Query\AST\PathExpression(Query\AST\PathExpression::TYPE_STATE_FIELD, $alias, 'id');
-            $pathExpr->type = Query\AST\PathExpression::TYPE_STATE_FIELD;
-            $comparisonExpr = new Query\AST\ComparisonExpression($pathExpr, '=', 1);
+            $pathExpr       = new PathExpression(PathExpression::TYPE_STATE_FIELD, $alias, 'id');
+            $pathExpr->type = PathExpression::TYPE_STATE_FIELD;
+            $comparisonExpr = new ComparisonExpression($pathExpr, '=', 1);
 
-            $condPrimary                              = new Query\AST\ConditionalPrimary();
+            $condPrimary                              = new ConditionalPrimary();
             $condPrimary->simpleConditionalExpression = $comparisonExpr;
 
-            $factor    = new Query\AST\ConditionalFactor($condPrimary);
+            $factor    = new ConditionalFactor($condPrimary);
             $factors[] = $factor;
         }
 
@@ -155,8 +165,8 @@ class CustomTreeWalker extends Query\TreeWalkerAdapter
             $condExpr = $whereClause->conditionalExpression;
 
             // Since Phase 1 AST optimizations were included, we need to re-add the ConditionalExpression
-            if (! ($condExpr instanceof Query\AST\ConditionalExpression)) {
-                $condExpr = new Query\AST\ConditionalExpression([$condExpr]);
+            if (! ($condExpr instanceof ConditionalExpression)) {
+                $condExpr = new ConditionalExpression([$condExpr]);
 
                 $whereClause->conditionalExpression = $condExpr;
             }
@@ -167,10 +177,10 @@ class CustomTreeWalker extends Query\TreeWalkerAdapter
                 // More than one term, so we need to wrap all these terms in a single root term
                 // i.e: "WHERE u.name = :foo or u.other = :bar" => "WHERE (u.name = :foo or u.other = :bar) AND <our condition>"
 
-                $primary                        = new Query\AST\ConditionalPrimary();
-                $primary->conditionalExpression = new Query\AST\ConditionalExpression($existingTerms);
-                $existingFactor                 = new Query\AST\ConditionalFactor($primary);
-                $term                           = new Query\AST\ConditionalTerm(array_merge([$existingFactor], $factors));
+                $primary                        = new ConditionalPrimary();
+                $primary->conditionalExpression = new ConditionalExpression($existingTerms);
+                $existingFactor                 = new ConditionalFactor($primary);
+                $term                           = new ConditionalTerm([...[$existingFactor], ...$factors]);
 
                 $selectStatement->whereClause->conditionalExpression->conditionalTerms = [$term];
             } else {
@@ -178,8 +188,8 @@ class CustomTreeWalker extends Query\TreeWalkerAdapter
                 $singleTerm = $selectStatement->whereClause->conditionalExpression->conditionalTerms[0];
 
                 // Since Phase 1 AST optimizations were included, we need to re-add the ConditionalExpression
-                if (! ($singleTerm instanceof Query\AST\ConditionalTerm)) {
-                    $singleTerm = new Query\AST\ConditionalTerm([$singleTerm]);
+                if (! ($singleTerm instanceof ConditionalTerm)) {
+                    $singleTerm = new ConditionalTerm([$singleTerm]);
 
                     $selectStatement->whereClause->conditionalExpression->conditionalTerms[0] = $singleTerm;
                 }
@@ -189,9 +199,9 @@ class CustomTreeWalker extends Query\TreeWalkerAdapter
             }
         } else {
             // Create a new WHERE clause with our factors
-            $term                         = new Query\AST\ConditionalTerm($factors);
-            $condExpr                     = new Query\AST\ConditionalExpression([$term]);
-            $whereClause                  = new Query\AST\WhereClause($condExpr);
+            $term                         = new ConditionalTerm($factors);
+            $condExpr                     = new ConditionalExpression([$term]);
+            $whereClause                  = new WhereClause($condExpr);
             $selectStatement->whereClause = $whereClause;
         }
     }

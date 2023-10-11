@@ -9,6 +9,7 @@ use Doctrine\ORM\Cache\Exception\CacheException;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\Mapping\Driver\XmlDriver;
+use Doctrine\ORM\Mapping\EmbeddedClassMapping;
 use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
 use Doctrine\Persistence\Mapping\MappingException as PersistenceMappingException;
@@ -28,6 +29,9 @@ use Doctrine\Tests\Models\Project\ProjectInvalidMapping;
 use Doctrine\Tests\Models\Project\ProjectName;
 use Doctrine\Tests\Models\ValueObjects\Name;
 use Doctrine\Tests\Models\ValueObjects\Person;
+use InvalidArgumentException;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Group;
 
 use function substr_count;
 
@@ -40,7 +44,7 @@ class XmlMappingDriverTest extends MappingDriverTestCase
         return new XmlDriver(
             __DIR__ . DIRECTORY_SEPARATOR . 'xml',
             XmlDriver::DEFAULT_FILE_EXTENSION,
-            true
+            true,
         );
     }
 
@@ -86,8 +90,7 @@ class XmlMappingDriverTest extends MappingDriverTestCase
         self::assertEquals(['language', 'article'], $class->identifier);
         self::assertArrayHasKey('article', $class->associationMappings);
 
-        self::assertArrayHasKey('id', $class->associationMappings['article']);
-        self::assertTrue($class->associationMappings['article']['id']);
+        self::assertTrue($class->associationMappings['article']->id);
     }
 
     public function testEmbeddableMapping(): void
@@ -97,11 +100,9 @@ class XmlMappingDriverTest extends MappingDriverTestCase
         self::assertTrue($class->isEmbeddedClass);
     }
 
-    /**
-     * @group DDC-3293
-     * @group DDC-3477
-     * @group 1238
-     */
+    #[Group('DDC-3293')]
+    #[Group('DDC-3477')]
+    #[Group('1238')]
     public function testEmbeddedMappingsWithUseColumnPrefix(): void
     {
         $factory = new ClassMetadataFactory();
@@ -113,15 +114,13 @@ class XmlMappingDriverTest extends MappingDriverTestCase
         self::assertEquals(
             '__prefix__',
             $factory->getMetadataFor(DDC3293UserPrefixed::class)
-                ->embeddedClasses['address']['columnPrefix']
+                ->embeddedClasses['address']->columnPrefix,
         );
     }
 
-    /**
-     * @group DDC-3293
-     * @group DDC-3477
-     * @group 1238
-     */
+    #[Group('DDC-3293')]
+    #[Group('DDC-3477')]
+    #[Group('1238')]
     public function testEmbeddedMappingsWithFalseUseColumnPrefix(): void
     {
         $factory = new ClassMetadataFactory();
@@ -132,7 +131,7 @@ class XmlMappingDriverTest extends MappingDriverTestCase
 
         self::assertFalse(
             $factory->getMetadataFor(DDC3293User::class)
-                ->embeddedClasses['address']['columnPrefix']
+                ->embeddedClasses['address']->columnPrefix,
         );
     }
 
@@ -142,18 +141,18 @@ class XmlMappingDriverTest extends MappingDriverTestCase
 
         self::assertEquals(
             [
-                'name' => [
+                'name' => EmbeddedClassMapping::fromMappingArray([
                     'class' => Name::class,
                     'columnPrefix' => 'nm_',
                     'declaredField' => null,
                     'originalField' => null,
-                ],
+                ]),
             ],
-            $class->embeddedClasses
+            $class->embeddedClasses,
         );
     }
 
-    /** @group DDC-1468 */
+    #[Group('DDC-1468')]
     public function testItMentionsFilenameAndEntityNameOnInvalidMapping(): void
     {
         $this->expectException(PersistenceMappingException::class);
@@ -161,15 +160,13 @@ class XmlMappingDriverTest extends MappingDriverTestCase
         $this->createClassMetadata(BooleanModel::class);
     }
 
-    /**
-     * @dataProvider dataValidSchema
-     * @group DDC-2429
-     */
+    #[Group('DDC-2429')]
+    #[DataProvider('dataValidSchema')]
     public function testValidateXmlSchema(
         string $class,
         string $tableName,
         array $fieldNames,
-        array $associationNames
+        array $associationNames,
     ): void {
         $metadata = $this->createClassMetadata($class);
 
@@ -207,9 +204,8 @@ class XmlMappingDriverTest extends MappingDriverTestCase
     /**
      * @param class-string                 $class
      * @param non-empty-array<string, int> $expectedExceptionOccurrences
-     *
-     * @dataProvider dataInvalidSchema
      */
+    #[DataProvider('dataInvalidSchema')]
     public function testValidateIncorrectXmlSchema(string $class, array $expectedExceptionOccurrences): void
     {
         try {
@@ -250,7 +246,7 @@ class XmlMappingDriverTest extends MappingDriverTestCase
         ];
     }
 
-    /** @group GH-7141 */
+    #[Group('GH-7141')]
     public function testOneToManyDefaultOrderByAsc(): void
     {
         $driver = $this->loadDriver();
@@ -261,7 +257,7 @@ class XmlMappingDriverTest extends MappingDriverTestCase
 
         self::assertEquals(
             Criteria::ASC,
-            $class->getMetadataValue('associationMappings')['tags']['orderBy']['position']
+            $class->getMetadataValue('associationMappings')['tags']->orderBy['position'],
         );
     }
 
@@ -275,11 +271,11 @@ class XmlMappingDriverTest extends MappingDriverTestCase
 
         self::assertEquals(
             Criteria::ASC,
-            $class->getMetadataValue('associationMappings')['tags']['orderBy']['position']
+            $class->getMetadataValue('associationMappings')['tags']->orderBy['position'],
         );
     }
 
-    /** @group DDC-889 */
+    #[Group('DDC-889')]
     public function testInvalidEntityOrMappedSuperClassShouldMentionParentClasses(): void
     {
         $this->expectException(MappingException::class);
@@ -303,6 +299,17 @@ class XmlMappingDriverTest extends MappingDriverTestCase
 
         self::assertEquals(ProjectId::class, $id['type']);
         self::assertEquals(ProjectName::class, $name['type']);
+    }
+
+    public function testDisablingXmlValidationIsNotPossible(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+
+        new XmlDriver(
+            __DIR__ . DIRECTORY_SEPARATOR . 'xml',
+            XmlDriver::DEFAULT_FILE_EXTENSION,
+            false,
+        );
     }
 }
 

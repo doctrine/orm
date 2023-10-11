@@ -13,9 +13,6 @@ class CycleDetectedException extends RuntimeException
     /** @var list<object> */
     private $cycle;
 
-    /** @var object */
-    private $startNode;
-
     /**
      * Do we have the complete cycle collected?
      *
@@ -24,12 +21,11 @@ class CycleDetectedException extends RuntimeException
     private $cycleCollected = false;
 
     /** @param object $startNode */
-    public function __construct($startNode)
+    public function __construct(private $startNode)
     {
         parent::__construct('A cycle has been detected, so a topological sort is not possible. The getCycle() method provides the list of nodes that form the cycle.');
 
-        $this->startNode = $startNode;
-        $this->cycle     = [$startNode];
+        $this->cycle = [$startNode];
     }
 
     /** @return list<object> */

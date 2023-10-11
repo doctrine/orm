@@ -10,8 +10,9 @@ use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
-/** @group DDC-1548 */
+#[Group('DDC-1548')]
 class DDC1548Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -21,7 +22,7 @@ class DDC1548Test extends OrmFunctionalTestCase
         $this->createSchemaForModels(
             DDC1548E1::class,
             DDC1548E2::class,
-            DDC1548Rel::class
+            DDC1548Rel::class,
         );
     }
 
@@ -43,47 +44,37 @@ class DDC1548Test extends OrmFunctionalTestCase
     }
 }
 
-/** @Entity */
+#[Entity]
 class DDC1548E1
 {
-    /**
-     * @var DDC1548Rel
-     * @Id
-     * @OneToOne(targetEntity="DDC1548Rel", inversedBy="e1")
-     */
+    /** @var DDC1548Rel */
+    #[Id]
+    #[OneToOne(targetEntity: 'DDC1548Rel', inversedBy: 'e1')]
     public $rel;
 }
 
-/** @Entity */
+#[Entity]
 class DDC1548E2
 {
-    /**
-     * @var DDC1548Rel
-     * @Id
-     * @OneToOne(targetEntity="DDC1548Rel", inversedBy="e2")
-     */
+    /** @var DDC1548Rel */
+    #[Id]
+    #[OneToOne(targetEntity: 'DDC1548Rel', inversedBy: 'e2')]
     public $rel;
 }
 
-/** @Entity */
+#[Entity]
 class DDC1548Rel
 {
-    /**
-     * @var int
-     * @Id
-     * @GeneratedValue
-     * @Column(type="integer")
-     */
+    /** @var int */
+    #[Id]
+    #[GeneratedValue]
+    #[Column(type: 'integer')]
     public $id;
 
-    /**
-     * @var DDC1548E1
-     * @OneToOne(targetEntity="DDC1548E1", mappedBy="rel")
-     */
+    /** @var DDC1548E1 */
+    #[OneToOne(targetEntity: 'DDC1548E1', mappedBy: 'rel')]
     public $e1;
-    /**
-     * @var DDC1548E2
-     * @OneToOne(targetEntity="DDC1548E2", mappedBy="rel")
-     */
+    /** @var DDC1548E2 */
+    #[OneToOne(targetEntity: 'DDC1548E2', mappedBy: 'rel')]
     public $e2;
 }

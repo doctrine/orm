@@ -12,8 +12,9 @@ use Doctrine\Tests\Models\Cache\Token;
 use Doctrine\Tests\Models\Cache\Traveler;
 use Doctrine\Tests\Models\Cache\TravelerProfile;
 use Doctrine\Tests\Models\Cache\TravelerProfileInfo;
+use PHPUnit\Framework\Attributes\Group;
 
-/** @group DDC-2183 */
+#[Group('DDC-2183')]
 class SecondLevelCacheOneToOneTest extends SecondLevelCacheFunctionalTestCase
 {
     public function testPutOneToOneOnUnidirectionalPersist(): void

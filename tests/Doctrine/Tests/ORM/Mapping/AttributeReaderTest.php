@@ -22,9 +22,6 @@ use PHPUnit\Framework\TestCase;
 use ReflectionClass;
 use ReflectionProperty;
 
-/**
- * @requires PHP 8.0
- */
 class AttributeReaderTest extends TestCase
 {
     public function testItThrowsWhenGettingRepeatableAttributeWithTheWrongMethod(): void
@@ -33,7 +30,7 @@ class AttributeReaderTest extends TestCase
         $property = new ReflectionProperty(TestEntity::class, 'id');
         $this->expectException(LogicException::class);
         $this->expectExceptionMessage(
-            'The attribute "Doctrine\ORM\Mapping\Index" is repeatable. Call getPropertyAttributeCollection() instead.'
+            'The attribute "Doctrine\ORM\Mapping\Index" is repeatable. Call getPropertyAttributeCollection() instead.',
         );
         $reader->getPropertyAttribute($property, ORM\Index::class);
     }
@@ -44,7 +41,7 @@ class AttributeReaderTest extends TestCase
         $property = new ReflectionProperty(TestEntity::class, 'id');
         $this->expectException(LogicException::class);
         $this->expectExceptionMessage(
-            'The attribute "Doctrine\ORM\Mapping\Id" is not repeatable. Call getPropertyAttribute() instead.'
+            'The attribute "Doctrine\ORM\Mapping\Id" is not repeatable. Call getPropertyAttribute() instead.',
         );
         $reader->getPropertyAttributeCollection($property, ORM\Id::class);
     }

@@ -9,15 +9,11 @@ use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\Table;
 use Doctrine\Tests\Models\DDC1590\DDC1590Entity;
 
-/**
- * @Entity
- * @Table(name="users")
- */
+#[Table(name: 'users')]
+#[Entity]
 class DDC1590User extends DDC1590Entity
 {
-    /**
-     * @var string
-     * @Column(type="string", length=255, length=255)
-     */
+    /** @var string */
+    #[Column(type: 'string', length: 255)]
     protected $name;
 }

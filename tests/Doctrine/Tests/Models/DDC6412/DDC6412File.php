@@ -8,19 +8,15 @@ use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
 
-/** @Entity */
+#[Entity]
 class DDC6412File
 {
-    /**
-     * @var int
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    /** @var int */
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     public $id;
 
-    /**
-     * @var string
-     * @Column(length=50, name="file_name")
-     */
+    /** @var string */
+    #[Column(length: 50, name: 'file_name')]
     public $name;
 }

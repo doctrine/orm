@@ -16,12 +16,13 @@ use Doctrine\ORM\Mapping\Table;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\Persistence\Mapping\MappingException;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
 use function array_keys;
 use function array_walk;
 use function count;
 
-/** @group #6303 */
+#[Group('#6303')]
 class DDC6303Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -31,7 +32,7 @@ class DDC6303Test extends OrmFunctionalTestCase
         $this->createSchemaForModels(
             DDC6303BaseClass::class,
             DDC6303ChildA::class,
-            DDC6303ChildB::class
+            DDC6303ChildB::class,
         );
     }
 
@@ -86,64 +87,45 @@ class DDC6303Test extends OrmFunctionalTestCase
 }
 
 /**
- * @Entity
- * @Table
- * @InheritanceType("JOINED")
- * @DiscriminatorColumn(name="discr", type="string")
- * @DiscriminatorMap({
- *      DDC6303ChildB::class = DDC6303ChildB::class,
- *      DDC6303ChildA::class = DDC6303ChildA::class,
- * })
- *
  * Note: discriminator map order *IS IMPORTANT* for this test
  */
+#[Table]
+#[Entity]
+#[InheritanceType('JOINED')]
+#[DiscriminatorColumn(name: 'discr', type: 'string')]
+#[DiscriminatorMap([DDC6303ChildB::class => DDC6303ChildB::class, DDC6303ChildA::class => DDC6303ChildA::class])]
 abstract class DDC6303BaseClass
 {
-    /**
-     * @var string
-     * @Id
-     * @Column(type="string", length=255)
-     * @GeneratedValue(strategy="NONE")
-     */
+    /** @var string */
+    #[Id]
+    #[Column(type: 'string', length: 255)]
+    #[GeneratedValue(strategy: 'NONE')]
     public $id;
 }
 
-/**
- * @Entity
- * @Table
- */
+#[Table]
+#[Entity]
 class DDC6303ChildA extends DDC6303BaseClass
 {
-    /**
-     * @var mixed
-     * @Column(type="string", length=255)
-     */
-    private $originalData;
-
-    /** @param mixed $originalData */
-    public function __construct(string $id, $originalData)
-    {
-        $this->id           = $id;
-        $this->originalData = $originalData;
+    public function __construct(
+        string $id,
+        #[Column(type: 'string', length: 255)]
+        private mixed $originalData,
+    ) {
+        $this->id = $id;
     }
 }
 
-/**
- * @Entity
- * @Table
- */
+#[Table]
+#[Entity]
 class DDC6303ChildB extends DDC6303BaseClass
 {
-    /**
-     * @var mixed[]
-     * @Column(type="simple_array", nullable=true)
-     */
-    private $originalData;
-
     /** @param mixed[] $originalData */
-    public function __construct(string $id, array $originalData)
-    {
-        $this->id           = $id;
-        $this->originalData = $originalData;
+    public function __construct(
+        string $id,
+        #[Column(type: 'simple_array', nullable: true)]
+        private array $originalData,
+    ) {
+        $this->id = $id;
     }
 }

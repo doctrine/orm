@@ -65,15 +65,6 @@ Where the ``attribute_name`` column contains the key and
 The feature request for persistence of primitive value arrays
 `is described in the DDC-298 ticket <https://github.com/doctrine/orm/issues/3743>`_.
 
-Cascade Merge with Bi-directional Associations
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-There are two bugs now that concern the use of cascade merge in combination with bi-directional associations.
-Make sure to study the behavior of cascade merge if you are using it:
-
--  `DDC-875 <https://github.com/doctrine/orm/issues/5398>`_ Merge can sometimes add the same entity twice into a collection
--  `DDC-763 <https://github.com/doctrine/orm/issues/5277>`_ Cascade merge on associated entities can insert too many rows through "Persistence by Reachability"
-
 Custom Persisters
 ~~~~~~~~~~~~~~~~~
 

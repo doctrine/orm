@@ -206,7 +206,7 @@ class TopologicalSortTest extends OrmTestCase
         } catch (CycleDetectedException $exception) {
             self::assertEquals(
                 [$this->nodes['D'], $this->nodes['B'], $this->nodes['C'], $this->nodes['D']],
-                $exception->getCycle()
+                $exception->getCycle(),
             );
         }
     }
@@ -225,9 +225,7 @@ class TopologicalSortTest extends OrmTestCase
         $this->topologicalSort->addEdge($this->nodes[$from], $this->nodes[$to], $optional);
     }
 
-    /**
-     * @return list<string>
-     */
+    /** @return list<string> */
     private function computeResult(): array
     {
         return array_map(static function (Node $n): string {

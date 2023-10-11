@@ -8,6 +8,7 @@ use Doctrine\ORM\Tools\Console\Command\RunDqlCommand;
 use Doctrine\ORM\Tools\Console\EntityManagerProvider\SingleManagerProvider;
 use Doctrine\Tests\Models\Generic\DateTimeModel;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
 
@@ -15,19 +16,15 @@ use function trim;
 
 /**
  * Tests for {@see \Doctrine\ORM\Tools\Console\Command\RunDqlCommand}
- *
- * @covers \Doctrine\ORM\Tools\Console\Command\RunDqlCommand
  */
+#[CoversClass(RunDqlCommand::class)]
 class RunDqlCommandTest extends OrmFunctionalTestCase
 {
-    /** @var Application */
-    private $application;
+    private Application $application;
 
-    /** @var RunDqlCommand */
-    private $command;
+    private RunDqlCommand $command;
 
-    /** @var CommandTester */
-    private $tester;
+    private CommandTester $tester;
 
     protected function setUp(): void
     {
@@ -59,8 +56,8 @@ class RunDqlCommandTest extends OrmFunctionalTestCase
                 [
                     'command' => $this->command->getName(),
                     'dql'     => 'SELECT e FROM ' . DateTimeModel::class . ' e',
-                ]
-            )
+                ],
+            ),
         );
 
         self::assertStringContainsString(DateTimeModel::class, $this->tester->getDisplay());
@@ -78,8 +75,8 @@ class RunDqlCommandTest extends OrmFunctionalTestCase
                     'command'    => $this->command->getName(),
                     'dql'        => 'SELECT e FROM ' . DateTimeModel::class . ' e',
                     '--show-sql' => 'true',
-                ]
-            )
+                ],
+            ),
         );
 
         self::assertStringMatchesFormat('SELECT %a', trim($this->tester->getDisplay()));

@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-use Doctrine\Tests\Models;
+use Doctrine\Tests\Models\Company\CompanyFixContract;
+use Doctrine\Tests\Models\Company\CompanyFlexContract;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
-/** @group DDC-1041 */
+#[Group('DDC-1041')]
 class DDC1041Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -19,7 +21,7 @@ class DDC1041Test extends OrmFunctionalTestCase
 
     public function testGrabWrongSubtypeReturnsNull(): void
     {
-        $fix = new Models\Company\CompanyFixContract();
+        $fix = new CompanyFixContract();
         $fix->setFixPrice(2000);
 
         $this->_em->persist($fix);
@@ -27,8 +29,8 @@ class DDC1041Test extends OrmFunctionalTestCase
 
         $id = $fix->getId();
 
-        self::assertNull($this->_em->find(Models\Company\CompanyFlexContract::class, $id));
-        self::assertNull($this->_em->getReference(Models\Company\CompanyFlexContract::class, $id));
-        self::assertNull($this->_em->getPartialReference(Models\Company\CompanyFlexContract::class, $id));
+        self::assertNull($this->_em->find(CompanyFlexContract::class, $id));
+        self::assertNull($this->_em->getReference(CompanyFlexContract::class, $id));
+        self::assertNull($this->_em->getPartialReference(CompanyFlexContract::class, $id));
     }
 }

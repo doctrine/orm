@@ -6,17 +6,18 @@ namespace Doctrine\Tests\ORM\Hydration;
 
 use Doctrine\ORM\Internal\Hydration\ArrayHydrator;
 use Doctrine\ORM\Query\ResultSetMapping;
-use Doctrine\Tests\Mocks\ArrayResultFactory;
 use Doctrine\Tests\Models\CMS\CmsArticle;
 use Doctrine\Tests\Models\CMS\CmsComment;
 use Doctrine\Tests\Models\CMS\CmsPhonenumber;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\Models\Forum\ForumBoard;
 use Doctrine\Tests\Models\Forum\ForumCategory;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Group;
 
 class ArrayHydratorTest extends HydrationTestCase
 {
-    /** @psalm-return list<array{mixed}> */
+    /** @psalm-return list<array{int|string}> */
     public static function provideDataForUserEntityResult(): array
     {
         return [
@@ -51,7 +52,7 @@ class ArrayHydratorTest extends HydrationTestCase
             ],
         ];
 
-        $stmt     = ArrayResultFactory::createFromArray($resultSet);
+        $stmt     = $this->createResultMock($resultSet);
         $hydrator = new ArrayHydrator($this->entityManager);
         $result   = $hydrator->hydrateAll($stmt, $rsm);
 
@@ -68,10 +69,9 @@ class ArrayHydratorTest extends HydrationTestCase
     /**
      * SELECT PARTIAL scalars.{id, name}, UPPER(scalars.name) AS nameUpper
      *   FROM Doctrine\Tests\Models\CMS\CmsUser scalars
-     *
-     * @dataProvider provideDataForUserEntityResult
      */
-    public function testSimpleEntityWithScalarQuery($userEntityKey): void
+    #[DataProvider('provideDataForUserEntityResult')]
+    public function testSimpleEntityWithScalarQuery(int|string $userEntityKey): void
     {
         $alias = $userEntityKey ?: 'u';
         $rsm   = new ResultSetMapping();
@@ -95,7 +95,7 @@ class ArrayHydratorTest extends HydrationTestCase
             ],
         ];
 
-        $stmt     = ArrayResultFactory::createFromArray($resultSet);
+        $stmt     = $this->createResultMock($resultSet);
         $hydrator = new ArrayHydrator($this->entityManager);
         $result   = $hydrator->hydrateAll($stmt, $rsm);
 
@@ -143,7 +143,7 @@ class ArrayHydratorTest extends HydrationTestCase
             ],
         ];
 
-        $stmt     = ArrayResultFactory::createFromArray($resultSet);
+        $stmt     = $this->createResultMock($resultSet);
         $hydrator = new ArrayHydrator($this->entityManager);
         $result   = $hydrator->hydrateAll($stmt, $rsm);
 
@@ -190,7 +190,7 @@ class ArrayHydratorTest extends HydrationTestCase
             ],
         ];
 
-        $stmt     = ArrayResultFactory::createFromArray($resultSet);
+        $stmt     = $this->createResultMock($resultSet);
         $hydrator = new ArrayHydrator($this->entityManager);
         $result   = $hydrator->hydrateAll($stmt, $rsm);
 
@@ -240,7 +240,7 @@ class ArrayHydratorTest extends HydrationTestCase
             ],
         ];
 
-        $stmt     = ArrayResultFactory::createFromArray($resultSet);
+        $stmt     = $this->createResultMock($resultSet);
         $hydrator = new ArrayHydrator($this->entityManager);
         $result   = $hydrator->hydrateAll($stmt, $rsm);
 
@@ -294,7 +294,7 @@ class ArrayHydratorTest extends HydrationTestCase
             ],
         ];
 
-        $stmt     = ArrayResultFactory::createFromArray($resultSet);
+        $stmt     = $this->createResultMock($resultSet);
         $hydrator = new ArrayHydrator($this->entityManager);
         $result   = $hydrator->hydrateAll($stmt, $rsm);
 
@@ -348,7 +348,7 @@ class ArrayHydratorTest extends HydrationTestCase
             ],
         ];
 
-        $stmt     = ArrayResultFactory::createFromArray($resultSet);
+        $stmt     = $this->createResultMock($resultSet);
         $hydrator = new ArrayHydrator($this->entityManager);
         $result   = $hydrator->hydrateAll($stmt, $rsm);
 
@@ -376,10 +376,9 @@ class ArrayHydratorTest extends HydrationTestCase
      *   FROM Doctrine\Tests\Models\CMS\CmsUser u
      *   JOIN u.phonenumbers p
      *  GROUP BY u.status, u.id
-     *
-     * @dataProvider provideDataForUserEntityResult
      */
-    public function testMixedQueryNormalJoin($userEntityKey): void
+    #[DataProvider('provideDataForUserEntityResult')]
+    public function testMixedQueryNormalJoin(int|string $userEntityKey): void
     {
         $rsm = new ResultSetMapping();
 
@@ -403,7 +402,7 @@ class ArrayHydratorTest extends HydrationTestCase
             ],
         ];
 
-        $stmt     = ArrayResultFactory::createFromArray($resultSet);
+        $stmt     = $this->createResultMock($resultSet);
         $hydrator = new ArrayHydrator($this->entityManager);
         $result   = $hydrator->hydrateAll($stmt, $rsm);
 
@@ -425,10 +424,9 @@ class ArrayHydratorTest extends HydrationTestCase
      * SELECT PARTIAL u.{id, status}, PARTIAL p.{phonenumber}, UPPER(u.name) AS nameUpper
      *   FROM Doctrine\Tests\Models\CMS\CmsUser u
      *   JOIN u.phonenumbers p
-     *
-     * @dataProvider provideDataForUserEntityResult
      */
-    public function testMixedQueryFetchJoin($userEntityKey): void
+    #[DataProvider('provideDataForUserEntityResult')]
+    public function testMixedQueryFetchJoin(int|string $userEntityKey): void
     {
         $rsm = new ResultSetMapping();
 
@@ -437,7 +435,7 @@ class ArrayHydratorTest extends HydrationTestCase
             CmsPhonenumber::class,
             'p',
             'u',
-            'phonenumbers'
+            'phonenumbers',
         );
         $rsm->addFieldResult('u', 'u__id', 'id');
         $rsm->addFieldResult('u', 'u__status', 'status');
@@ -467,7 +465,7 @@ class ArrayHydratorTest extends HydrationTestCase
             ],
         ];
 
-        $stmt     = ArrayResultFactory::createFromArray($resultSet);
+        $stmt     = $this->createResultMock($resultSet);
         $hydrator = new ArrayHydrator($this->entityManager);
         $result   = $hydrator->hydrateAll($stmt, $rsm);
 
@@ -496,10 +494,9 @@ class ArrayHydratorTest extends HydrationTestCase
      *        INDEX BY u.id
      *   JOIN u.phonenumbers p
      *        INDEX BY p.phonenumber
-     *
-     * @dataProvider provideDataForUserEntityResult
      */
-    public function testMixedQueryFetchJoinCustomIndex($userEntityKey): void
+    #[DataProvider('provideDataForUserEntityResult')]
+    public function testMixedQueryFetchJoinCustomIndex(int|string $userEntityKey): void
     {
         $rsm = new ResultSetMapping();
 
@@ -508,7 +505,7 @@ class ArrayHydratorTest extends HydrationTestCase
             CmsPhonenumber::class,
             'p',
             'u',
-            'phonenumbers'
+            'phonenumbers',
         );
         $rsm->addFieldResult('u', 'u__id', 'id');
         $rsm->addFieldResult('u', 'u__status', 'status');
@@ -540,7 +537,7 @@ class ArrayHydratorTest extends HydrationTestCase
             ],
         ];
 
-        $stmt     = ArrayResultFactory::createFromArray($resultSet);
+        $stmt     = $this->createResultMock($resultSet);
         $hydrator = new ArrayHydrator($this->entityManager);
         $result   = $hydrator->hydrateAll($stmt, $rsm);
 
@@ -586,13 +583,13 @@ class ArrayHydratorTest extends HydrationTestCase
             CmsPhonenumber::class,
             'p',
             'u',
-            'phonenumbers'
+            'phonenumbers',
         );
         $rsm->addJoinedEntityResult(
             CmsArticle::class,
             'a',
             'u',
-            'articles'
+            'articles',
         );
         $rsm->addFieldResult('u', 'u__id', 'id');
         $rsm->addFieldResult('u', 'u__status', 'status');
@@ -654,7 +651,7 @@ class ArrayHydratorTest extends HydrationTestCase
             ],
         ];
 
-        $stmt     = ArrayResultFactory::createFromArray($resultSet);
+        $stmt     = $this->createResultMock($resultSet);
         $hydrator = new ArrayHydrator($this->entityManager);
         $result   = $hydrator->hydrateAll($stmt, $rsm);
 
@@ -705,19 +702,19 @@ class ArrayHydratorTest extends HydrationTestCase
             CmsPhonenumber::class,
             'p',
             'u',
-            'phonenumbers'
+            'phonenumbers',
         );
         $rsm->addJoinedEntityResult(
             CmsArticle::class,
             'a',
             'u',
-            'articles'
+            'articles',
         );
         $rsm->addJoinedEntityResult(
             CmsComment::class,
             'c',
             'a',
-            'comments'
+            'comments',
         );
         $rsm->addFieldResult('u', 'u__id', 'id');
         $rsm->addFieldResult('u', 'u__status', 'status');
@@ -793,7 +790,7 @@ class ArrayHydratorTest extends HydrationTestCase
             ],
         ];
 
-        $stmt     = ArrayResultFactory::createFromArray($resultSet);
+        $stmt     = $this->createResultMock($resultSet);
         $hydrator = new ArrayHydrator($this->entityManager);
         $result   = $hydrator->hydrateAll($stmt, $rsm);
 
@@ -862,7 +859,7 @@ class ArrayHydratorTest extends HydrationTestCase
             ForumBoard::class,
             'b',
             'c',
-            'boards'
+            'boards',
         );
 
         $rsm->addFieldResult('c', 'c__id', 'id');
@@ -907,7 +904,7 @@ class ArrayHydratorTest extends HydrationTestCase
             ],
         ];
 
-        $stmt     = ArrayResultFactory::createFromArray($resultSet);
+        $stmt     = $this->createResultMock($resultSet);
         $hydrator = new ArrayHydrator($this->entityManager);
         $result   = $hydrator->hydrateAll($stmt, $rsm);
 
@@ -926,10 +923,9 @@ class ArrayHydratorTest extends HydrationTestCase
      *   FROM Doctrine\Tests\Models\CMS\CmsUser u
      *   LEFT JOIN u.articles a
      *   LEFT JOIN a.comments c
-     *
-     * @dataProvider provideDataForUserEntityResult
      */
-    public function testChainedJoinWithScalars($entityKey): void
+    #[DataProvider('provideDataForUserEntityResult')]
+    public function testChainedJoinWithScalars(int|string $entityKey): void
     {
         $rsm = new ResultSetMapping();
 
@@ -970,7 +966,7 @@ class ArrayHydratorTest extends HydrationTestCase
             ],
         ];
 
-        $stmt     = ArrayResultFactory::createFromArray($resultSet);
+        $stmt     = $this->createResultMock($resultSet);
         $hydrator = new ArrayHydrator($this->entityManager);
         $result   = $hydrator->hydrateAll($stmt, $rsm);
 
@@ -1019,21 +1015,18 @@ class ArrayHydratorTest extends HydrationTestCase
             ],
         ];
 
-        $stmt     = ArrayResultFactory::createFromArray($resultSet);
+        $stmt     = $this->createResultMock($resultSet);
         $hydrator = new ArrayHydrator($this->entityManager);
-        $iterator = $hydrator->iterate($stmt, $rsm);
+        $iterator = $hydrator->toIterable($stmt, $rsm);
         $rowNum   = 0;
 
-        while (($row = $iterator->next()) !== false) {
-            self::assertCount(1, $row);
-            self::assertIsArray($row[0]);
-
+        foreach ($iterator as $row) {
             if ($rowNum === 0) {
-                self::assertEquals(1, $row[0]['id']);
-                self::assertEquals('romanb', $row[0]['name']);
+                self::assertEquals(1, $row['id']);
+                self::assertEquals('romanb', $row['name']);
             } elseif ($rowNum === 1) {
-                self::assertEquals(2, $row[0]['id']);
-                self::assertEquals('jwage', $row[0]['name']);
+                self::assertEquals(2, $row['id']);
+                self::assertEquals('jwage', $row['name']);
             }
 
             ++$rowNum;
@@ -1064,22 +1057,20 @@ class ArrayHydratorTest extends HydrationTestCase
             ],
         ];
 
-        $stmt     = ArrayResultFactory::createFromArray($resultSet);
+        $stmt     = $this->createResultMock($resultSet);
         $hydrator = new ArrayHydrator($this->entityManager);
-        $iterator = $hydrator->iterate($stmt, $rsm);
+        $iterator = $hydrator->toIterable($stmt, $rsm);
         $rowNum   = 0;
 
-        while (($row = $iterator->next()) !== false) {
-            self::assertCount(1, $row);
-            self::assertArrayHasKey(0, $row);
-            self::assertArrayHasKey('user', $row[0]);
+        foreach ($iterator as $row) {
+            self::assertArrayHasKey('user', $row);
 
             if ($rowNum === 0) {
-                self::assertEquals(1, $row[0]['user']['id']);
-                self::assertEquals('romanb', $row[0]['user']['name']);
+                self::assertEquals(1, $row['user']['id']);
+                self::assertEquals('romanb', $row['user']['name']);
             } elseif ($rowNum === 1) {
-                self::assertEquals(2, $row[0]['user']['id']);
-                self::assertEquals('jwage', $row[0]['user']['name']);
+                self::assertEquals(2, $row['user']['id']);
+                self::assertEquals('jwage', $row['user']['name']);
             }
 
             ++$rowNum;
@@ -1089,9 +1080,8 @@ class ArrayHydratorTest extends HydrationTestCase
     /**
      * SELECT PARTIAL u.{id, name}
      *   FROM Doctrine\Tests\Models\CMS\CmsUser u
-     *
-     * @group DDC-644
      */
+    #[Group('DDC-644')]
     public function testSkipUnknownColumns(): void
     {
         $rsm = new ResultSetMapping();
@@ -1109,7 +1099,7 @@ class ArrayHydratorTest extends HydrationTestCase
             ],
         ];
 
-        $stmt     = ArrayResultFactory::createFromArray($resultSet);
+        $stmt     = $this->createResultMock($resultSet);
         $hydrator = new ArrayHydrator($this->entityManager);
         $result   = $hydrator->hydrateAll($stmt, $rsm);
 
@@ -1122,11 +1112,10 @@ class ArrayHydratorTest extends HydrationTestCase
     /**
      * SELECT PARTIAL u.{id, status}, UPPER(u.name) AS nameUpper
      *   FROM Doctrine\Tests\Models\CMS\CmsUser u
-     *
-     * @group DDC-1358
-     * @dataProvider provideDataForUserEntityResult
      */
-    public function testMissingIdForRootEntity($userEntityKey): void
+    #[DataProvider('provideDataForUserEntityResult')]
+    #[Group('DDC-1358')]
+    public function testMissingIdForRootEntity(int|string $userEntityKey): void
     {
         $rsm = new ResultSetMapping();
 
@@ -1160,7 +1149,7 @@ class ArrayHydratorTest extends HydrationTestCase
             ],
         ];
 
-        $stmt     = ArrayResultFactory::createFromArray($resultSet);
+        $stmt     = $this->createResultMock($resultSet);
         $hydrator = new ArrayHydrator($this->entityManager);
         $result   = $hydrator->hydrateAll($stmt, $rsm);
 
@@ -1181,11 +1170,10 @@ class ArrayHydratorTest extends HydrationTestCase
      * SELECT PARTIAL u.{id, status}, UPPER(u.name) AS nameUpper
      *   FROM Doctrine\Tests\Models\CMS\CmsUser u
      *        INDEX BY u.id
-     *
-     * @group DDC-1385
-     * @dataProvider provideDataForUserEntityResult
      */
-    public function testIndexByAndMixedResult($userEntityKey): void
+    #[DataProvider('provideDataForUserEntityResult')]
+    #[Group('DDC-1385')]
+    public function testIndexByAndMixedResult(int|string $userEntityKey): void
     {
         $rsm = new ResultSetMapping();
 
@@ -1210,7 +1198,7 @@ class ArrayHydratorTest extends HydrationTestCase
             ],
         ];
 
-        $stmt     = ArrayResultFactory::createFromArray($resultSet);
+        $stmt     = $this->createResultMock($resultSet);
         $hydrator = new ArrayHydrator($this->entityManager);
         $result   = $hydrator->hydrateAll($stmt, $rsm);
 

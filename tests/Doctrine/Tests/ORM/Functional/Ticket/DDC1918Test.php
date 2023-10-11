@@ -8,10 +8,11 @@ use Doctrine\ORM\Tools\Pagination\Paginator;
 use Doctrine\Tests\Models\CMS\CmsGroup;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
 use function iterator_to_array;
 
-/** @group DDC-1918 */
+#[Group('DDC-1918')]
 class DDC1918Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void

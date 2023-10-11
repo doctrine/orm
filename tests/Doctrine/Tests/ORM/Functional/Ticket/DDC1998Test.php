@@ -11,8 +11,10 @@ use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
+use Stringable;
 
-/** @group DDC-1998 */
+#[Group('DDC-1998')]
 class DDC1998Test extends OrmFunctionalTestCase
 {
     public function testSqlConversionAsIdentifier(): void
@@ -45,20 +47,16 @@ class DDC1998Test extends OrmFunctionalTestCase
     }
 }
 
-/** @Entity */
+#[Entity]
 class DDC1998Entity
 {
-    /**
-     * @var string
-     * @Id
-     * @Column(type="ddc1998", length=255)
-     */
+    /** @var string */
+    #[Id]
+    #[Column(type: 'ddc1998', length: 255)]
     public $id;
 
-    /**
-     * @var int
-     * @Column(type="integer")
-     */
+    /** @var int */
+    #[Column(type: 'integer')]
     public $num = 0;
 }
 
@@ -69,7 +67,7 @@ class DDC1998Type extends StringType
     /**
      * {@inheritDoc}
      */
-    public function convertToDatabaseValue($value, AbstractPlatform $platform)
+    public function convertToDatabaseValue($value, AbstractPlatform $platform): string
     {
         return (string) $value;
     }
@@ -77,28 +75,21 @@ class DDC1998Type extends StringType
     /**
      * {@inheritDoc}
      */
-    public function convertToPHPValue($value, AbstractPlatform $platform)
+    public function convertToPHPValue($value, AbstractPlatform $platform): DDC1998Id
     {
         return new DDC1998Id($value);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function getName()
+    public function getName(): string
     {
         return self::NAME;
     }
 }
 
-class DDC1998Id
+class DDC1998Id implements Stringable
 {
-    /** @var string */
-    private $val;
-
-    public function __construct(string $val)
+    public function __construct(private string $val)
     {
-        $this->val = $val;
     }
 
     public function __toString(): string

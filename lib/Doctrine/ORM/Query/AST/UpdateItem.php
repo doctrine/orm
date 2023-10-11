@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Query\AST;
 
+use Doctrine\ORM\Query\SqlWalker;
+
 /**
  * UpdateItem ::= [IdentificationVariable "."] {StateField | SingleValuedAssociationField} "=" NewValue
  * NewValue ::= SimpleArithmeticExpression | StringPrimary | DatetimePrimary | BooleanPrimary |
@@ -13,27 +15,16 @@ namespace Doctrine\ORM\Query\AST;
  */
 class UpdateItem extends Node
 {
-    /** @var PathExpression */
-    public $pathExpression;
-
-    /** @var InputParameter|ArithmeticExpression|null */
-    public $newValue;
-
     /**
      * @param PathExpression                           $pathExpression
      * @param InputParameter|ArithmeticExpression|null $newValue
      */
-    public function __construct($pathExpression, $newValue)
+    public function __construct(public $pathExpression, public $newValue)
     {
-        $this->pathExpression = $pathExpression;
-        $this->newValue       = $newValue;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function dispatch($sqlWalker)
+    public function dispatch(SqlWalker $walker): string
     {
-        return $sqlWalker->walkUpdateItem($this);
+        return $walker->walkUpdateItem($this);
     }
 }

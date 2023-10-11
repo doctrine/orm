@@ -8,18 +8,11 @@ use function microtime;
 
 class TimestampQueryCacheValidator implements QueryCacheValidator
 {
-    /** @var TimestampRegion */
-    private $timestampRegion;
-
-    public function __construct(TimestampRegion $timestampRegion)
+    public function __construct(private readonly TimestampRegion $timestampRegion)
     {
-        $this->timestampRegion = $timestampRegion;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function isValid(QueryCacheKey $key, QueryCacheEntry $entry)
+    public function isValid(QueryCacheKey $key, QueryCacheEntry $entry): bool
     {
         if ($this->regionUpdated($key, $entry)) {
             return false;

@@ -17,6 +17,7 @@ use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
 /**
  * Functional tests for orphan removal with one to many association.
@@ -33,11 +34,11 @@ class DDC3644Test extends OrmFunctionalTestCase
                 DDC3644Address::class,
                 DDC3644Animal::class,
                 DDC3644Pet::class,
-            ]
+            ],
         );
     }
 
-    /** @group DDC-3644 */
+    #[Group('DDC-3644')]
     public function testIssueWithRegularEntity(): void
     {
         // Define initial dataset
@@ -87,7 +88,7 @@ class DDC3644Test extends OrmFunctionalTestCase
         self::assertCount(1, $addresses);
     }
 
-    /** @group DDC-3644 */
+    #[Group('DDC-3644')]
     public function testIssueWithJoinedEntity(): void
     {
         // Define initial dataset
@@ -136,33 +137,25 @@ class DDC3644Test extends OrmFunctionalTestCase
     }
 }
 
-/** @Entity */
+#[Entity]
 class DDC3644User
 {
-    /**
-     * @var int
-     * @Id
-     * @GeneratedValue
-     * @Column(type="integer", name="hash_id")
-     */
+    /** @var int */
+    #[Id]
+    #[GeneratedValue]
+    #[Column(type: 'integer', name: 'hash_id')]
     public $id;
 
-    /**
-     * @var string
-     * @Column(type="string", length=255)
-     */
+    /** @var string */
+    #[Column(type: 'string', length: 255)]
     public $name;
 
-    /**
-     * @psalm-var Collection<int, DDC3644Address>
-     * @OneToMany(targetEntity="DDC3644Address", mappedBy="user", orphanRemoval=true)
-     */
+    /** @psalm-var Collection<int, DDC3644Address> */
+    #[OneToMany(targetEntity: 'DDC3644Address', mappedBy: 'user', orphanRemoval: true)]
     public $addresses = [];
 
-    /**
-     * @psalm-var Collection<int, DDC3644Pet>
-     * @OneToMany(targetEntity="DDC3644Pet", mappedBy="owner", orphanRemoval=true)
-     */
+    /** @psalm-var Collection<int, DDC3644Pet> */
+    #[OneToMany(targetEntity: 'DDC3644Pet', mappedBy: 'owner', orphanRemoval: true)]
     public $pets = [];
 
     public function setAddresses(Collection $addresses): void
@@ -184,71 +177,51 @@ class DDC3644User
     }
 }
 
-/** @Entity */
+#[Entity]
 class DDC3644Address
 {
-    /**
-     * @var int
-     * @Id
-     * @GeneratedValue
-     * @Column(type="integer")
-     */
+    /** @var int */
+    #[Id]
+    #[GeneratedValue]
+    #[Column(type: 'integer')]
     public $id;
 
-    /**
-     * @var DDC3644User
-     * @ManyToOne(targetEntity="DDC3644User", inversedBy="addresses")
-     * @JoinColumn(referencedColumnName="hash_id")
-     */
+    /** @var DDC3644User */
+    #[ManyToOne(targetEntity: 'DDC3644User', inversedBy: 'addresses')]
+    #[JoinColumn(referencedColumnName: 'hash_id')]
     public $user;
 
-    /**
-     * @var string
-     * @Column(type="string", length=255)
-     */
-    public $address;
-
-    public function __construct($address)
-    {
-        $this->address = $address;
+    public function __construct(
+        #[Column(type: 'string', length: 255)]
+        public string $address,
+    ) {
     }
 }
 
-/**
- * @Entity
- * @InheritanceType("JOINED")
- * @DiscriminatorColumn(name="discriminator", type="string")
- * @DiscriminatorMap({"pet" = "DDC3644Pet"})
- */
+#[Entity]
+#[InheritanceType('JOINED')]
+#[DiscriminatorColumn(name: 'discriminator', type: 'string')]
+#[DiscriminatorMap(['pet' => 'DDC3644Pet'])]
 abstract class DDC3644Animal
 {
-    /**
-     * @var int
-     * @Id
-     * @GeneratedValue
-     * @Column(type="integer")
-     */
+    /** @var int */
+    #[Id]
+    #[GeneratedValue]
+    #[Column(type: 'integer')]
     public $id;
 
-    /**
-     * @var string
-     * @Column(type="string", length=255)
-     */
-    public $name;
-
-    public function __construct($name)
-    {
-        $this->name = $name;
+    public function __construct(
+        #[Column(type: 'string', length: 255)]
+        public string $name,
+    ) {
     }
 }
 
-/** @Entity */
+#[Entity]
 class DDC3644Pet extends DDC3644Animal
 {
-    /**
-     * @var DDC3644User
-     * @ManyToOne(targetEntity="DDC3644User", inversedBy="pets")
-     * @JoinColumn(referencedColumnName="hash_id")
-     */
+    /** @var DDC3644User */
+    #[ManyToOne(targetEntity: 'DDC3644User', inversedBy: 'pets')]
+    #[JoinColumn(referencedColumnName: 'hash_id')]
     public $owner;
 }

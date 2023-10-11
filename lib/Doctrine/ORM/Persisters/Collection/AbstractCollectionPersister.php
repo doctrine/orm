@@ -15,31 +15,17 @@ use Doctrine\ORM\UnitOfWork;
  */
 abstract class AbstractCollectionPersister implements CollectionPersister
 {
-    /** @var EntityManagerInterface */
-    protected $em;
-
-    /** @var Connection */
-    protected $conn;
-
-    /** @var UnitOfWork */
-    protected $uow;
-
-    /**
-     * The database platform.
-     *
-     * @var AbstractPlatform
-     */
-    protected $platform;
-
-    /** @var QuoteStrategy */
-    protected $quoteStrategy;
+    protected Connection $conn;
+    protected UnitOfWork $uow;
+    protected AbstractPlatform $platform;
+    protected QuoteStrategy $quoteStrategy;
 
     /**
      * Initializes a new instance of a class derived from AbstractCollectionPersister.
      */
-    public function __construct(EntityManagerInterface $em)
-    {
-        $this->em            = $em;
+    public function __construct(
+        protected EntityManagerInterface $em,
+    ) {
         $this->uow           = $em->getUnitOfWork();
         $this->conn          = $em->getConnection();
         $this->platform      = $this->conn->getDatabasePlatform();
@@ -48,12 +34,8 @@ abstract class AbstractCollectionPersister implements CollectionPersister
 
     /**
      * Check if entity is in a valid state for operations.
-     *
-     * @param object $entity
-     *
-     * @return bool
      */
-    protected function isValidEntityState($entity)
+    protected function isValidEntityState(object $entity): bool
     {
         $entityState = $this->uow->getEntityState($entity, UnitOfWork::STATE_NEW);
 

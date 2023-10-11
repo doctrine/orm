@@ -11,72 +11,49 @@ use Doctrine\ORM\Cache\Logging\CacheLogger;
  */
 class CacheConfiguration
 {
-    /** @var CacheFactory|null */
-    private $cacheFactory;
+    private CacheFactory|null $cacheFactory          = null;
+    private RegionsConfiguration|null $regionsConfig = null;
+    private CacheLogger|null $cacheLogger            = null;
+    private QueryCacheValidator|null $queryValidator = null;
 
-    /** @var RegionsConfiguration|null */
-    private $regionsConfig;
-
-    /** @var CacheLogger|null */
-    private $cacheLogger;
-
-    /** @var QueryCacheValidator|null */
-    private $queryValidator;
-
-    /** @return CacheFactory|null */
-    public function getCacheFactory()
+    public function getCacheFactory(): CacheFactory|null
     {
         return $this->cacheFactory;
     }
 
-    /** @return void */
-    public function setCacheFactory(CacheFactory $factory)
+    public function setCacheFactory(CacheFactory $factory): void
     {
         $this->cacheFactory = $factory;
     }
 
-    /** @return CacheLogger|null */
-    public function getCacheLogger()
+    public function getCacheLogger(): CacheLogger|null
     {
          return $this->cacheLogger;
     }
 
-    /** @return void */
-    public function setCacheLogger(CacheLogger $logger)
+    public function setCacheLogger(CacheLogger $logger): void
     {
         $this->cacheLogger = $logger;
     }
 
-    /** @return RegionsConfiguration */
-    public function getRegionsConfiguration()
+    public function getRegionsConfiguration(): RegionsConfiguration
     {
-        if ($this->regionsConfig === null) {
-            $this->regionsConfig = new RegionsConfiguration();
-        }
-
-        return $this->regionsConfig;
+        return $this->regionsConfig ??= new RegionsConfiguration();
     }
 
-    /** @return void */
-    public function setRegionsConfiguration(RegionsConfiguration $regionsConfig)
+    public function setRegionsConfiguration(RegionsConfiguration $regionsConfig): void
     {
         $this->regionsConfig = $regionsConfig;
     }
 
-    /** @return QueryCacheValidator */
-    public function getQueryValidator()
+    public function getQueryValidator(): QueryCacheValidator
     {
-        if ($this->queryValidator === null) {
-            $this->queryValidator = new TimestampQueryCacheValidator(
-                $this->cacheFactory->getTimestampRegion()
-            );
-        }
-
-         return $this->queryValidator;
+        return $this->queryValidator ??= new TimestampQueryCacheValidator(
+            $this->cacheFactory->getTimestampRegion(),
+        );
     }
 
-    /** @return void */
-    public function setQueryValidator(QueryCacheValidator $validator)
+    public function setQueryValidator(QueryCacheValidator $validator): void
     {
         $this->queryValidator = $validator;
     }

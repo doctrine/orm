@@ -13,8 +13,9 @@ use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\Table;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
-/** @group DDC-2692 */
+#[Group('DDC-2692')]
 class DDC2692Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -58,17 +59,13 @@ class DDC2692Test extends OrmFunctionalTestCase
         self::assertSame(1, $listener->registeredCalls);
     }
 }
-/**
- * @Entity
- * @Table(name="ddc_2692_foo")
- */
+#[Table(name: 'ddc_2692_foo')]
+#[Entity]
 class DDC2692Foo
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     public $id;
 }

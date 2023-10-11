@@ -9,9 +9,6 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 
 use function uniqid;
 
-/**
- * @group GH7877
- */
 class GH7877Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -20,7 +17,7 @@ class GH7877Test extends OrmFunctionalTestCase
 
         $this->createSchemaForModels(
             GH7877ApplicationGeneratedIdEntity::class,
-            GH7877EntityWithNullableAssociation::class
+            GH7877EntityWithNullableAssociation::class,
         );
     }
 
@@ -76,29 +73,18 @@ class GH7877Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @ORM\Entity
- */
+#[ORM\Entity]
 class GH7877ApplicationGeneratedIdEntity
 {
-    /**
-     * @ORM\Id
-     * @ORM\Column(type="string")
-     * @ORM\GeneratedValue(strategy="NONE")
-     *
-     * @var string
-     */
-    public $id;
+    #[ORM\Id]
+    #[ORM\Column(type: 'string', length: 32)]
+    #[ORM\GeneratedValue(strategy: 'NONE')]
+    public string $id;
 
-    /**
-     * (!) Note this uses "nullable=false"
-     *
-     * @ORM\ManyToOne(targetEntity="GH7877ApplicationGeneratedIdEntity")
-     * @ORM\JoinColumn(name="parent_id", referencedColumnName="id", nullable=false)
-     *
-     * @var self
-     */
-    public $parent;
+    /** (!) Note this uses "nullable=false" */
+    #[ORM\ManyToOne(targetEntity: self::class)]
+    #[ORM\JoinColumn(name: 'parent_id', referencedColumnName: 'id', nullable: false)]
+    public self $parent;
 
     public function __construct()
     {
@@ -106,27 +92,17 @@ class GH7877ApplicationGeneratedIdEntity
     }
 }
 
-/**
- * @ORM\Entity
- */
+#[ORM\Entity]
 class GH7877EntityWithNullableAssociation
 {
-    /**
-     * @ORM\Id
-     * @ORM\Column(type="string")
-     * @ORM\GeneratedValue(strategy="NONE")
-     *
-     * @var string
-     */
-    public $id;
+    #[ORM\Id]
+    #[ORM\Column(type: 'string', length: 32)]
+    #[ORM\GeneratedValue(strategy: 'NONE')]
+    public string $id;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="GH7877EntityWithNullableAssociation")
-     * @ORM\JoinColumn(name="parent_id", referencedColumnName="id", nullable=true)
-     *
-     * @var self
-     */
-    public $parent;
+    #[ORM\ManyToOne(targetEntity: self::class)]
+    #[ORM\JoinColumn(name: 'parent_id', referencedColumnName: 'id', nullable: true)]
+    public self $parent;
 
     public function __construct()
     {

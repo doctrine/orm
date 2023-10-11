@@ -14,15 +14,14 @@ use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\Models\DDC117\DDC117Article;
 use Doctrine\Tests\Models\DDC117\DDC117ArticleDetails;
 use Doctrine\Tests\OrmTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
-/** @group DDC-1845 */
+#[Group('DDC-1845')]
 class QuoteStrategyTest extends OrmTestCase
 {
-    /** @var DefaultQuoteStrategy */
-    private $strategy;
+    private DefaultQuoteStrategy $strategy;
 
-    /** @var AbstractPlatform */
-    private $platform;
+    private AbstractPlatform $platform;
 
     protected function setUp(): void
     {
@@ -88,7 +87,7 @@ class QuoteStrategyTest extends OrmTestCase
                 'targetEntity'  => 'CmsUser',
                 'inversedBy'    => 'users',
                 'joinTable'     => ['name' => '`cmsaddress_cmsuser`'],
-            ]
+            ],
         );
 
         $cm2->mapManyToMany(
@@ -97,7 +96,7 @@ class QuoteStrategyTest extends OrmTestCase
                 'targetEntity'  => 'CmsUser',
                 'inversedBy'    => 'users',
                 'joinTable'     => ['name' => 'cmsaddress_cmsuser'],
-            ]
+            ],
         );
 
         self::assertEquals('"cmsaddress_cmsuser"', $this->strategy->getJoinTableName($cm1->associationMappings['user'], $cm1, $this->platform));
@@ -114,7 +113,7 @@ class QuoteStrategyTest extends OrmTestCase
                 'id'            => true,
                 'fieldName'     => 'id',
                 'columnName'    => '`id`',
-            ]
+            ],
         );
 
         $cm2->mapField(
@@ -122,7 +121,7 @@ class QuoteStrategyTest extends OrmTestCase
                 'id'            => true,
                 'fieldName'     => 'id',
                 'columnName'    => 'id',
-            ]
+            ],
         );
 
         self::assertEquals(['"id"'], $this->strategy->getIdentifierColumnNames($cm1, $this->platform));
@@ -148,9 +147,9 @@ class QuoteStrategyTest extends OrmTestCase
                 'fieldName'     => 'article',
                 'targetEntity'  => DDC117Article::class,
                 'joinColumns'    => [
-                    ['name' => '`article`'],
+                    ['name' => '`article`', 'referencedColumnName' => 'article'],
                 ],
-            ]
+            ],
         );
 
         self::assertEquals(['"article"'], $this->strategy->getIdentifierColumnNames($cm, $this->platform));
@@ -166,12 +165,12 @@ class QuoteStrategyTest extends OrmTestCase
                 'fieldName'     => 'article',
                 'targetEntity'  => DDC117Article::class,
                 'joinColumns'    => [
-                    ['name' => '`article`'],
+                    ['name' => '`article`', 'referencedColumnName' => 'article'],
                 ],
-            ]
+            ],
         );
 
-        $joinColumn = $cm->associationMappings['article']['joinColumns'][0];
+        $joinColumn = $cm->associationMappings['article']->joinColumns[0];
         self::assertEquals('"article"', $this->strategy->getJoinColumnName($joinColumn, $cm, $this->platform));
     }
 
@@ -185,12 +184,12 @@ class QuoteStrategyTest extends OrmTestCase
                 'fieldName'     => 'article',
                 'targetEntity'  => DDC117Article::class,
                 'joinColumns'    => [
-                    ['name' => '`article`'],
+                    ['name' => '`article`', 'referencedColumnName' => 'id'],
                 ],
-            ]
+            ],
         );
 
-        $joinColumn = $cm->associationMappings['article']['joinColumns'][0];
+        $joinColumn = $cm->associationMappings['article']->joinColumns[0];
         self::assertEquals('"id"', $this->strategy->getReferencedJoinColumnName($joinColumn, $cm, $this->platform));
     }
 }

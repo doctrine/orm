@@ -8,9 +8,9 @@ use Doctrine\DBAL\Types\Type;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Query\AST\Node;
 use Doctrine\ORM\Query\AST\TypedExpression;
-use Doctrine\ORM\Query\Lexer;
 use Doctrine\ORM\Query\Parser;
 use Doctrine\ORM\Query\SqlWalker;
+use Doctrine\ORM\Query\TokenType;
 
 /**
  * "LENGTH" "(" StringPrimary ")"
@@ -19,26 +19,23 @@ use Doctrine\ORM\Query\SqlWalker;
  */
 class LengthFunction extends FunctionNode implements TypedExpression
 {
-    /** @var Node */
-    public $stringPrimary;
+    public Node $stringPrimary;
 
-    /** @inheritDoc */
-    public function getSql(SqlWalker $sqlWalker)
+    public function getSql(SqlWalker $sqlWalker): string
     {
         return $sqlWalker->getConnection()->getDatabasePlatform()->getLengthExpression(
-            $sqlWalker->walkSimpleArithmeticExpression($this->stringPrimary)
+            $sqlWalker->walkSimpleArithmeticExpression($this->stringPrimary),
         );
     }
 
-    /** @inheritDoc */
-    public function parse(Parser $parser)
+    public function parse(Parser $parser): void
     {
-        $parser->match(Lexer::T_IDENTIFIER);
-        $parser->match(Lexer::T_OPEN_PARENTHESIS);
+        $parser->match(TokenType::T_IDENTIFIER);
+        $parser->match(TokenType::T_OPEN_PARENTHESIS);
 
         $this->stringPrimary = $parser->StringPrimary();
 
-        $parser->match(Lexer::T_CLOSE_PARENTHESIS);
+        $parser->match(TokenType::T_CLOSE_PARENTHESIS);
     }
 
     public function getReturnType(): Type

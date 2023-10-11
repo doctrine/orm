@@ -5,23 +5,22 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Id;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\Id\AssignedGenerator;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\Id;
-use Doctrine\ORM\ORMException;
 use Doctrine\Tests\OrmTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 /**
  * AssignedGeneratorTest
  */
 class AssignedGeneratorTest extends OrmTestCase
 {
-    /** @var EntityManagerInterface */
-    private $entityManager;
+    private EntityManagerInterface $entityManager;
 
-    /** @var AssignedGenerator */
-    private $assignedGen;
+    private AssignedGenerator $assignedGen;
 
     protected function setUp(): void
     {
@@ -29,7 +28,7 @@ class AssignedGeneratorTest extends OrmTestCase
         $this->assignedGen   = new AssignedGenerator();
     }
 
-    /** @dataProvider entitiesWithoutId */
+    #[DataProvider('entitiesWithoutId')]
     public function testThrowsExceptionIfIdNotAssigned($entity): void
     {
         $this->expectException(ORMException::class);
@@ -60,31 +59,25 @@ class AssignedGeneratorTest extends OrmTestCase
     }
 }
 
-/** @Entity */
+#[Entity]
 class AssignedSingleIdEntity
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer')]
     public $myId;
 }
 
-/** @Entity */
+#[Entity]
 class AssignedCompositeIdEntity
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer')]
     public $myId1;
 
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer')]
     public $myId2;
 }

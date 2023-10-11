@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Cache;
 
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Cache\Persister\CachedPersister;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
@@ -18,26 +19,18 @@ use function assert;
  */
 class DefaultCollectionHydrator implements CollectionHydrator
 {
-    /** @var EntityManagerInterface */
-    private $em;
-
-    /** @var UnitOfWork */
-    private $uow;
+    private readonly UnitOfWork $uow;
 
     /** @var array<string,mixed> */
-    private static $hints = [Query::HINT_CACHE_ENABLED => true];
+    private static array $hints = [Query::HINT_CACHE_ENABLED => true];
 
-    /** @param EntityManagerInterface $em The entity manager. */
-    public function __construct(EntityManagerInterface $em)
-    {
-        $this->em  = $em;
+    public function __construct(
+        private readonly EntityManagerInterface $em,
+    ) {
         $this->uow = $em->getUnitOfWork();
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function buildCacheEntry(ClassMetadata $metadata, CollectionCacheKey $key, $collection)
+    public function buildCacheEntry(ClassMetadata $metadata, CollectionCacheKey $key, array|Collection $collection): CollectionCacheEntry
     {
         $data = [];
 
@@ -48,13 +41,10 @@ class DefaultCollectionHydrator implements CollectionHydrator
         return new CollectionCacheEntry($data);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function loadCacheEntry(ClassMetadata $metadata, CollectionCacheKey $key, CollectionCacheEntry $entry, PersistentCollection $collection)
+    public function loadCacheEntry(ClassMetadata $metadata, CollectionCacheKey $key, CollectionCacheEntry $entry, PersistentCollection $collection): array|null
     {
         $assoc           = $metadata->associationMappings[$key->association];
-        $targetPersister = $this->uow->getEntityPersister($assoc['targetEntity']);
+        $targetPersister = $this->uow->getEntityPersister($assoc->targetEntity);
         assert($targetPersister instanceof CachedPersister);
         $targetRegion = $targetPersister->getCacheRegion();
         $list         = [];
@@ -70,7 +60,7 @@ class DefaultCollectionHydrator implements CollectionHydrator
             $entity = $this->uow->createEntity(
                 $entityEntry->class,
                 $entityEntry->resolveAssociationEntries($this->em),
-                self::$hints
+                self::$hints,
             );
 
             $collection->hydrateSet($index, $entity);

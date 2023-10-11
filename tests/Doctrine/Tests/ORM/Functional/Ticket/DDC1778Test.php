@@ -7,15 +7,14 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 use Doctrine\Tests\Models\CMS\CmsPhonenumber;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
-/** @group DDC-1778 */
+#[Group('DDC-1778')]
 class DDC1778Test extends OrmFunctionalTestCase
 {
-    /** @var CmsUser */
-    private $user;
+    private CmsUser|null $user;
 
-    /** @var CmsPhonenumber */
-    private $phone;
+    private CmsPhonenumber|null $phone;
 
     protected function setUp(): void
     {

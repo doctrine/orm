@@ -10,11 +10,10 @@ use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
-/**
- * @group DDC-1228
- * @group DDC-1226
- */
+#[Group('DDC-1228')]
+#[Group('DDC-1226')]
 class DDC1228Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -76,27 +75,21 @@ class DDC1228Test extends OrmFunctionalTestCase
     }
 }
 
-/** @Entity */
+#[Entity]
 class DDC1228User
 {
-    /**
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     * @var int
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     public $id;
 
-    /**
-     * @Column(type="string", length=255)
-     * @var string
-     */
+    /** @var string */
+    #[Column(type: 'string', length: 255)]
     public $name = 'Bar';
 
-    /**
-     * @var DDC1228Profile
-     * @OneToOne(targetEntity="DDC1228Profile")
-     */
+    /** @var DDC1228Profile */
+    #[OneToOne(targetEntity: 'DDC1228Profile')]
     public $profile;
 
     public function getProfile(): DDC1228Profile
@@ -105,21 +98,17 @@ class DDC1228User
     }
 }
 
-/** @Entity */
+#[Entity]
 class DDC1228Profile
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     public $id;
 
-    /**
-     * @Column(type="string", length=255)
-     * @var string
-     */
+    /** @var string */
+    #[Column(type: 'string', length: 255)]
     public $name;
 
     public function getName(): string

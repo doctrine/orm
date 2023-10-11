@@ -13,8 +13,9 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\InheritanceType;
 use Doctrine\ORM\Mapping\Version;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
-/** @group DDC-1787 */
+#[Group('DDC-1787')]
 class DDC1787Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -23,7 +24,7 @@ class DDC1787Test extends OrmFunctionalTestCase
 
         $this->createSchemaForModels(
             DDC1787Foo::class,
-            DDC1787Bar::class
+            DDC1787Bar::class,
         );
     }
 
@@ -40,28 +41,20 @@ class DDC1787Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- * @InheritanceType("JOINED")
- * @DiscriminatorColumn(name="discr", type="string")
- * @DiscriminatorMap({"bar" = "DDC1787Bar", "foo" = "DDC1787Foo"})
- */
+#[Entity]
+#[InheritanceType('JOINED')]
+#[DiscriminatorColumn(name: 'discr', type: 'string')]
+#[DiscriminatorMap(['bar' => 'DDC1787Bar', 'foo' => 'DDC1787Foo'])]
 class DDC1787Foo
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
-     */
-    private $id;
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue(strategy: 'AUTO')]
+    private int $id;
 
-    /**
-     * @var int
-     * @Version
-     * @Column(type="integer")
-     */
-    private $version;
+    #[Version]
+    #[Column(type: 'integer')]
+    private int $version;
 
     public function getVersion(): int
     {
@@ -69,7 +62,7 @@ class DDC1787Foo
     }
 }
 
-/** @Entity */
+#[Entity]
 class DDC1787Bar extends DDC1787Foo
 {
 }

@@ -5,6 +5,9 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Cache\ArrayResult;
+use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Result;
 use Doctrine\ORM\Internal\Hydration\ObjectHydrator;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\DiscriminatorColumn;
@@ -16,8 +19,8 @@ use Doctrine\ORM\Mapping\InheritanceType;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Query\ResultSetMapping;
-use Doctrine\Tests\Mocks\ArrayResultFactory;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
 final class GH6362Test extends OrmFunctionalTestCase
 {
@@ -29,19 +32,18 @@ final class GH6362Test extends OrmFunctionalTestCase
             GH6362Start::class,
             GH6362Base::class,
             GH6362Child::class,
-            GH6362Join::class
+            GH6362Join::class,
         );
     }
 
     /**
-     * @group GH-6362
-     *
      * SELECT a as base, b, c, d
      * FROM Start a
      * LEFT JOIN a.bases b
      * LEFT JOIN Child c WITH b.id = c.id
      * LEFT JOIN c.joins d
      */
+    #[Group('GH-6362')]
     public function testInheritanceJoinAlias(): void
     {
         $rsm = new ResultSetMapping();
@@ -76,7 +78,7 @@ final class GH6362Test extends OrmFunctionalTestCase
             ],
         ];
 
-        $stmt     = ArrayResultFactory::createFromArray($resultSet);
+        $stmt     = new Result(new ArrayResult($resultSet), $this->createMock(Connection::class));
         $hydrator = new ObjectHydrator($this->_em);
         $result   = $hydrator->hydrateAll($stmt, $rsm);
 
@@ -85,71 +87,52 @@ final class GH6362Test extends OrmFunctionalTestCase
     }
 }
 
-/** @Entity */
+#[Entity]
 class GH6362Start
 {
-    /**
-     * @var int
-     * @Column(type="integer")
-     * @Id
-     * @GeneratedValue
-     */
+    /** @var int */
+    #[Column(type: 'integer')]
+    #[Id]
+    #[GeneratedValue]
     protected $id;
 
-    /**
-     * @var GH6362Base
-     * @ManyToOne(targetEntity="GH6362Base", inversedBy="starts")
-     */
-    private $bases;
+    #[ManyToOne(targetEntity: 'GH6362Base', inversedBy: 'starts')]
+    private GH6362Base $bases;
 }
 
-/**
- * @InheritanceType("SINGLE_TABLE")
- * @DiscriminatorColumn(name="type", type="string")
- * @DiscriminatorMap({"child" = "GH6362Child"})
- * @Entity
- */
+#[InheritanceType('SINGLE_TABLE')]
+#[DiscriminatorColumn(name: 'type', type: 'string')]
+#[DiscriminatorMap(['child' => 'GH6362Child'])]
+#[Entity]
 abstract class GH6362Base
 {
-    /**
-     * @var int
-     * @Column(type="integer")
-     * @Id
-     * @GeneratedValue
-     */
+    /** @var int */
+    #[Column(type: 'integer')]
+    #[Id]
+    #[GeneratedValue]
     protected $id;
 
-    /**
-     * @psalm-var Collection<int, GH6362Start>
-     * @OneToMany(targetEntity="GH6362Start", mappedBy="bases")
-     */
+    /** @psalm-var Collection<int, GH6362Start> */
+    #[OneToMany(targetEntity: 'GH6362Start', mappedBy: 'bases')]
     private $starts;
 }
 
-/** @Entity */
+#[Entity]
 class GH6362Child extends GH6362Base
 {
-    /**
-     * @psalm-var Collection<int, GH6362Join>
-     * @OneToMany(targetEntity="GH6362Join", mappedBy="child")
-     */
+    /** @psalm-var Collection<int, GH6362Join> */
+    #[OneToMany(targetEntity: 'GH6362Join', mappedBy: 'child')]
     private $joins;
 }
 
-/** @Entity */
+#[Entity]
 class GH6362Join
 {
-    /**
-     * @var int
-     * @Column(type="integer")
-     * @Id
-     * @GeneratedValue
-     */
-    private $id;
+    #[Column(type: 'integer')]
+    #[Id]
+    #[GeneratedValue]
+    private int $id;
 
-    /**
-     * @var GH6362Child
-     * @ManyToOne(targetEntity="GH6362Child", inversedBy="joins")
-     */
-    private $child;
+    #[ManyToOne(targetEntity: 'GH6362Child', inversedBy: 'joins')]
+    private GH6362Child $child;
 }

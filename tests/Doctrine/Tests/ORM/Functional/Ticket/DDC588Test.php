@@ -9,6 +9,7 @@ use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\DoesNotPerformAssertions;
 
 class DDC588Test extends OrmFunctionalTestCase
 {
@@ -19,6 +20,7 @@ class DDC588Test extends OrmFunctionalTestCase
         $this->createSchemaForModels(DDC588Site::class);
     }
 
+    #[DoesNotPerformAssertions]
     public function testIssue(): void
     {
         $site = new DDC588Site('Foo');
@@ -27,30 +29,21 @@ class DDC588Test extends OrmFunctionalTestCase
         $this->_em->flush();
         // Following should not result in exception
         $this->_em->refresh($site);
-
-        $this->addToAssertionCount(1);
     }
 }
 
-/** @Entity */
+#[Entity]
 class DDC588Site
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer", name="site_id")
-     * @GeneratedValue
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer', name: 'site_id')]
+    #[GeneratedValue]
     public $id;
 
-    /**
-     * @var string
-     * @Column(type="string", length=45)
-     */
-    protected $name = null;
-
-    public function __construct($name = '')
-    {
-        $this->name = $name;
+    public function __construct(
+        #[Column(type: 'string', length: 45)]
+        protected string $name = '',
+    ) {
     }
 }

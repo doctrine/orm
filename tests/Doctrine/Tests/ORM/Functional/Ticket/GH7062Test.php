@@ -15,6 +15,7 @@ use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\ORM\Mapping\Table;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
 use function assert;
 
@@ -33,11 +34,11 @@ class GH7062Test extends OrmFunctionalTestCase
                 GH7062Season::class,
                 GH7062Ranking::class,
                 GH7062RankingPosition::class,
-            ]
+            ],
         );
     }
 
-    /** @group GH-7062 */
+    #[Group('GH-7062')]
     public function testEntityWithAssociationKeyIdentityCanBeUpdated(): void
     {
         $this->createInitialRankingWithRelatedEntities();
@@ -92,31 +93,26 @@ class GH7062Test extends OrmFunctionalTestCase
 
 /**
  * Simple Entity whose identity is defined through another Entity (Season)
- *
- * @Entity
- * @Table(name="soccer_rankings")
  */
+#[Table(name: 'soccer_rankings')]
+#[Entity]
 class GH7062Ranking
 {
     /**
-     * @Id
-     * @OneToOne(targetEntity=GH7062Season::class, inversedBy="ranking")
-     * @JoinColumn(name="season", referencedColumnName="id")
-     * @var GH7062Season
-     */
-    public $season;
-
-    /**
-     * @OneToMany(targetEntity=GH7062RankingPosition::class, mappedBy="ranking", cascade={"all"})
      * @var Collection|GH7062RankingPosition[]
      * @psalm-var Collection<GH7062RankingPosition>
      */
+    #[OneToMany(targetEntity: GH7062RankingPosition::class, mappedBy: 'ranking', cascade: ['all'])]
     public $positions;
 
     /** @param GH7062Team[] $teams */
-    public function __construct(GH7062Season $season, array $teams)
-    {
-        $this->season    = $season;
+    public function __construct(
+        #[Id]
+        #[OneToOne(targetEntity: GH7062Season::class, inversedBy: 'ranking')]
+        #[JoinColumn(name: 'season', referencedColumnName: 'id')]
+        public GH7062Season $season,
+        array $teams,
+    ) {
         $this->positions = new ArrayCollection();
 
         foreach ($teams as $team) {
@@ -127,86 +123,59 @@ class GH7062Ranking
 
 /**
  * Entity which serves as a identity provider for other entities
- *
- * @Entity
- * @Table(name="soccer_seasons")
  */
+#[Table(name: 'soccer_seasons')]
+#[Entity]
 class GH7062Season
 {
-    /**
-     * @Id
-     * @Column(type="string", length=255)
-     * @var string
-     */
-    public $id;
-
-    /**
-     * @var GH7062Ranking|null
-     * @OneToOne(targetEntity=GH7062Ranking::class, mappedBy="season", cascade={"all"})
-     */
+    /** @var GH7062Ranking|null */
+    #[OneToOne(targetEntity: GH7062Ranking::class, mappedBy: 'season', cascade: ['all'])]
     public $ranking;
 
-    public function __construct(string $id)
-    {
-        $this->id = $id;
+    public function __construct(
+        #[Id]
+        #[Column(type: 'string', length: 255)]
+        public string $id,
+    ) {
     }
 }
 
 /**
  * Entity which serves as a identity provider for other entities
- *
- * @Entity
- * @Table(name="soccer_teams")
  */
+#[Table(name: 'soccer_teams')]
+#[Entity]
 class GH7062Team
 {
-    /**
-     * @Id
-     * @Column(type="string", length=255)
-     * @var string
-     */
-    public $id;
-
-    public function __construct(string $id)
-    {
-        $this->id = $id;
+    public function __construct(
+        #[Id]
+        #[Column(type: 'string', length: 255)]
+        public string $id,
+    ) {
     }
 }
 
 /**
  * Entity whose identity is defined through two other entities
- *
- * @Entity
- * @Table(name="soccer_ranking_positions")
  */
+#[Table(name: 'soccer_ranking_positions')]
+#[Entity]
 class GH7062RankingPosition
 {
-    /**
-     * @Id
-     * @ManyToOne(targetEntity=GH7062Ranking::class, inversedBy="positions")
-     * @JoinColumn(name="season", referencedColumnName="season")
-     * @var GH7062Ranking
-     */
-    public $ranking;
-
-    /**
-     * @Id
-     * @ManyToOne(targetEntity=GH7062Team::class)
-     * @JoinColumn(name="team_id", referencedColumnName="id")
-     * @var GH7062Team
-     */
-    public $team;
-
-    /**
-     * @Column(type="integer")
-     * @var int
-     */
+    /** @var int */
+    #[Column(type: 'integer')]
     public $points;
 
-    public function __construct(GH7062Ranking $ranking, GH7062Team $team)
-    {
-        $this->ranking = $ranking;
-        $this->team    = $team;
-        $this->points  = 0;
+    public function __construct(
+        #[Id]
+        #[ManyToOne(targetEntity: GH7062Ranking::class, inversedBy: 'positions')]
+        #[JoinColumn(name: 'season', referencedColumnName: 'season')]
+        public GH7062Ranking $ranking,
+        #[Id]
+        #[ManyToOne(targetEntity: GH7062Team::class)]
+        #[JoinColumn(name: 'team_id', referencedColumnName: 'id')]
+        public GH7062Team $team,
+    ) {
+        $this->points = 0;
     }
 }

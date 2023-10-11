@@ -17,12 +17,11 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\InheritanceType;
 use Doctrine\Tests\Models\GH10288\GH10288People;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
 /**
  * This test makes sure that Discriminator columns can use both custom types using PHP enums as well as
  * enumType definition of enums.
- *
- * @requires PHP 8.1
  */
 class GH10288Test extends OrmFunctionalTestCase
 {
@@ -42,17 +41,16 @@ class GH10288Test extends OrmFunctionalTestCase
             GH10288EmployeeWithEnumType::class,
             GH10288PersonCustomEnumType::class,
             GH10288BossCustomEnumType::class,
-            GH10288EmployeeCustomEnumType::class
+            GH10288EmployeeCustomEnumType::class,
         );
     }
 
-    /**
-     * @param class-string $personType
-     * @psalm-param GH10288BossWithEnumType|GH10288BossCustomEnumType $boss
-     * @psalm-param GH10288EmployeeWithEnumType|GH10288EmployeeCustomEnumType $employee
-     */
-    private function performEnumDiscriminatorTest($boss, $employee, string $personType): void
-    {
+    /** @param class-string $personType */
+    private function performEnumDiscriminatorTest(
+        GH10288BossWithEnumType|GH10288BossCustomEnumType $boss,
+        GH10288EmployeeWithEnumType|GH10288EmployeeCustomEnumType $employee,
+        string $personType,
+    ): void {
         $boss->bossId = 1;
 
         $this->_em->persist($boss);
@@ -74,14 +72,14 @@ class GH10288Test extends OrmFunctionalTestCase
         self::assertEquals($boss, $query->getOneOrNullResult(AbstractQuery::HYDRATE_OBJECT));
         self::assertEquals(
             GH10288People::BOSS,
-            $query->getOneOrNullResult(AbstractQuery::HYDRATE_ARRAY)['discr']
+            $query->getOneOrNullResult(AbstractQuery::HYDRATE_ARRAY)['discr'],
         );
 
         $query->setParameter('name', 'Bob');
         self::assertEquals($employee, $query->getOneOrNullResult(AbstractQuery::HYDRATE_OBJECT));
         self::assertEquals(
             GH10288People::EMPLOYEE,
-            $query->getOneOrNullResult(AbstractQuery::HYDRATE_ARRAY)['discr']
+            $query->getOneOrNullResult(AbstractQuery::HYDRATE_ARRAY)['discr'],
         );
 
         $this->_em->clear();
@@ -91,9 +89,7 @@ class GH10288Test extends OrmFunctionalTestCase
         self::assertEquals($boss, $bossFetched);
     }
 
-    /**
-     * @group GH10288
-     */
+    #[Group('GH10288')]
     public function testEnumDiscriminatorWithEnumType(): void
     {
         $boss     = new GH10288BossWithEnumType('John');
@@ -102,9 +98,7 @@ class GH10288Test extends OrmFunctionalTestCase
         $this->performEnumDiscriminatorTest($boss, $employee, GH10288PersonWithEnumType::class);
     }
 
-    /**
-     * @group GH10288
-     */
+    #[Group('GH10288')]
     public function testEnumDiscriminatorWithCustomEnumType(): void
     {
         $boss     = new GH10288BossCustomEnumType('John');
@@ -118,10 +112,7 @@ class GH10288PeopleType extends StringType
 {
     public const NAME = 'GH10288PeopleType';
 
-    /**
-     * {@inheritDoc}
-     */
-    public function convertToDatabaseValue($value, AbstractPlatform $platform)
+    public function convertToDatabaseValue(mixed $value, AbstractPlatform $platform): string
     {
         if (! $value instanceof GH10288People) {
             $value = GH10288People::from($value);
@@ -130,92 +121,68 @@ class GH10288PeopleType extends StringType
         return $value->value;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function convertToPHPValue($value, AbstractPlatform $platform)
+    public function convertToPHPValue(mixed $value, AbstractPlatform $platform): GH10288People
     {
         return GH10288People::from($value);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function getName()
+    public function getName(): string
     {
         return self::NAME;
     }
 }
 
-/**
- * @Entity
- * @InheritanceType("JOINED")
- * @DiscriminatorColumn(name="discr", enumType=GH10288People::class)
- * @DiscriminatorMap({
- *      "boss"     = GH10288BossWithEnumType::class,
- *      "employee" = GH10288EmployeeWithEnumType::class
- * })
- */
+#[Entity]
+#[InheritanceType('JOINED')]
+#[DiscriminatorColumn(name: 'discr', enumType: GH10288People::class)]
+#[DiscriminatorMap([
+    'boss'     => GH10288BossWithEnumType::class,
+    'employee' => GH10288EmployeeWithEnumType::class,
+])]
 abstract class GH10288PersonWithEnumType
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
-     */
-    public $id;
+    #[Id]
+    #[Column]
+    #[GeneratedValue(strategy: 'AUTO')]
+    public int|null $id = null;
 
-    /**
-     * @var string
-     * @Column(type="string", length=255)
-     */
-    public $name;
-
-    public function __construct(string $name)
-    {
-        $this->name = $name;
+    public function __construct(
+        #[Column(length: 255)]
+        public string $name,
+    ) {
     }
 }
 
-/** @Entity */
+#[Entity]
 class GH10288BossWithEnumType extends GH10288PersonWithEnumType
 {
-    /**
-     * @var int
-     * @Column(type="integer")
-     */
+    /** @var int */
+    #[Column(type: 'integer')]
     public $bossId;
 }
 
-/** @Entity */
+#[Entity]
 class GH10288EmployeeWithEnumType extends GH10288PersonWithEnumType
 {
 }
 
-/**
- * @Entity
- * @InheritanceType("SINGLE_TABLE")
- * @DiscriminatorColumn(name="discr", type="GH10288PeopleType")
- * @DiscriminatorMap({
- *      "boss"     = GH10288BossCustomEnumType::class,
- *      "employee" = GH10288EmployeeCustomEnumType::class
- * })
- */
+#[Entity]
+#[InheritanceType('SINGLE_TABLE')]
+#[DiscriminatorColumn(name: 'discr', type: 'GH10288PeopleType')]
+#[DiscriminatorMap([
+    'boss'     => GH10288BossCustomEnumType::class,
+    'employee' => GH10288EmployeeCustomEnumType::class,
+])]
 abstract class GH10288PersonCustomEnumType
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue(strategy: 'AUTO')]
     public $id;
 
-    /**
-     * @var string
-     * @Column(type="string", length=255)
-     */
+    /** @var string */
+    #[Column(type: 'string', length: 255)]
     public $name;
 
     public function __construct(string $name)
@@ -224,17 +191,15 @@ abstract class GH10288PersonCustomEnumType
     }
 }
 
-/** @Entity */
+#[Entity]
 class GH10288BossCustomEnumType extends GH10288PersonCustomEnumType
 {
-    /**
-     * @var int
-     * @Column(type="integer")
-     */
+    /** @var int */
+    #[Column(type: 'integer')]
     public $bossId;
 }
 
-/** @Entity */
+#[Entity]
 class GH10288EmployeeCustomEnumType extends GH10288PersonCustomEnumType
 {
 }

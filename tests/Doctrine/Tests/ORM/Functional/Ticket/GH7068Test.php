@@ -21,7 +21,7 @@ final class GH7068Test extends OrmFunctionalTestCase
         $this->setUpEntitySchema(
             [
                 SomeEntity::class,
-            ]
+            ],
         );
     }
 
@@ -39,14 +39,12 @@ final class GH7068Test extends OrmFunctionalTestCase
     }
 }
 
-/** @Entity */
+#[Entity]
 final class SomeEntity
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     public $id;
 }

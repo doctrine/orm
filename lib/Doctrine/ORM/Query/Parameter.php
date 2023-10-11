@@ -15,50 +15,33 @@ class Parameter
 {
     /**
      * Returns the internal representation of a parameter name.
-     *
-     * @param string|int $name The parameter name or position.
-     *
-     * @return string The normalized parameter name.
      */
-    public static function normalizeName($name)
+    public static function normalizeName(int|string $name): string
     {
         return trim((string) $name, ':');
     }
 
     /**
      * The parameter name.
-     *
-     * @var string
      */
-    private $name;
+    private readonly string $name;
 
     /**
      * The parameter value.
-     *
-     * @var mixed
      */
-    private $value;
+    private mixed $value;
 
     /**
      * The parameter type.
-     *
-     * @var mixed
      */
-    private $type;
+    private mixed $type;
 
     /**
      * Whether the parameter type was explicitly specified or not
-     *
-     * @var bool
      */
-    private $typeSpecified;
+    private readonly bool $typeSpecified;
 
-    /**
-     * @param string|int $name  Parameter name
-     * @param mixed      $value Parameter value
-     * @param mixed      $type  Parameter type
-     */
-    public function __construct($name, $value, $type = null)
+    public function __construct(int|string $name, mixed $value, mixed $type = null)
     {
         $this->name          = self::normalizeName($name);
         $this->typeSpecified = $type !== null;
@@ -68,43 +51,32 @@ class Parameter
 
     /**
      * Retrieves the Parameter name.
-     *
-     * @return string
      */
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
 
     /**
      * Retrieves the Parameter value.
-     *
-     * @return mixed
      */
-    public function getValue()
+    public function getValue(): mixed
     {
         return $this->value;
     }
 
     /**
      * Retrieves the Parameter type.
-     *
-     * @return mixed
      */
-    public function getType()
+    public function getType(): mixed
     {
         return $this->type;
     }
 
     /**
      * Defines the Parameter value.
-     *
-     * @param mixed $value Parameter value.
-     * @param mixed $type  Parameter type.
-     *
-     * @return void
      */
-    public function setValue($value, $type = null)
+    public function setValue(mixed $value, mixed $type = null): void
     {
         $this->value = $value;
         $this->type  = $type ?: ParameterTypeInferer::inferType($value);

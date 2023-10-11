@@ -55,26 +55,17 @@ class DDC735Test extends OrmFunctionalTestCase
     }
 }
 
-/** @Entity */
+#[Entity]
 class DDC735Product
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     protected $id;
 
-    /**
-     * @psalm-var Collection<int, DDC735Review>
-     * @OneToMany(
-     *   targetEntity="DDC735Review",
-     *   mappedBy="product",
-     *   cascade={"persist"},
-     *   orphanRemoval=true
-     * )
-     */
+    /** @psalm-var Collection<int, DDC735Review> */
+    #[OneToMany(targetEntity: 'DDC735Review', mappedBy: 'product', cascade: ['persist'], orphanRemoval: true)]
     protected $reviews;
 
     public function __construct()
@@ -99,26 +90,19 @@ class DDC735Product
     }
 }
 
-/** @Entity */
+#[Entity]
 class DDC735Review
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     protected $id;
 
-    /**
-     * @var DDC735Product
-     * @ManyToOne(targetEntity="DDC735Product", inversedBy="reviews")
-     */
-    protected $product;
-
-    public function __construct(DDC735Product $product)
-    {
-        $this->product = $product;
+    public function __construct(
+        #[ManyToOne(targetEntity: 'DDC735Product', inversedBy: 'reviews')]
+        protected DDC735Product $product,
+    ) {
         $product->addReview($this);
     }
 

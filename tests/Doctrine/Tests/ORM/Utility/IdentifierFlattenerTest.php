@@ -10,20 +10,19 @@ use Doctrine\Tests\Models\Cache\Flight;
 use Doctrine\Tests\Models\VersionedOneToOne\FirstRelatedEntity;
 use Doctrine\Tests\Models\VersionedOneToOne\SecondRelatedEntity;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Group;
 
 /**
  * Test the IdentifierFlattener utility class
- *
- * @covers \Doctrine\ORM\Utility\IdentifierFlattener
  */
+#[CoversClass(IdentifierFlattener::class)]
 class IdentifierFlattenerTest extends OrmFunctionalTestCase
 {
     /**
      * Identifier flattener
-     *
-     * @var IdentifierFlattener
      */
-    private $identifierFlattener;
+    private IdentifierFlattener $identifierFlattener;
 
     protected function setUp(): void
     {
@@ -31,18 +30,18 @@ class IdentifierFlattenerTest extends OrmFunctionalTestCase
 
         $this->identifierFlattener = new IdentifierFlattener(
             $this->_em->getUnitOfWork(),
-            $this->_em->getMetadataFactory()
+            $this->_em->getMetadataFactory(),
         );
 
         $this->createSchemaForModels(
             FirstRelatedEntity::class,
             SecondRelatedEntity::class,
             Flight::class,
-            City::class
+            City::class,
         );
     }
 
-    /** @group utilities */
+    #[Group('utilities')]
     public function testFlattenIdentifierWithOneToOneId(): void
     {
         $secondRelatedEntity       = new SecondRelatedEntity();
@@ -70,9 +69,9 @@ class IdentifierFlattenerTest extends OrmFunctionalTestCase
         self::assertArrayHasKey('secondEntity', $id, 'It should be called secondEntity');
 
         self::assertInstanceOf(
-            '\Doctrine\Tests\Models\VersionedOneToOne\SecondRelatedEntity',
+            SecondRelatedEntity::class,
             $id['secondEntity'],
-            'The entity should be an instance of SecondRelatedEntity'
+            'The entity should be an instance of SecondRelatedEntity',
         );
 
         $flatIds = $this->identifierFlattener->flattenIdentifier($class, $id);
@@ -84,7 +83,7 @@ class IdentifierFlattenerTest extends OrmFunctionalTestCase
         self::assertEquals($id['secondEntity']->id, $flatIds['secondEntity']);
     }
 
-    /** @group utilities */
+    #[Group('utilities')]
     public function testFlattenIdentifierWithMutlipleIds(): void
     {
         $leeds  = new City('Leeds');

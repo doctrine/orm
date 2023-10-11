@@ -5,10 +5,12 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional;
 
 use DateTimeImmutable;
-use Doctrine\DBAL\Platforms\SqlitePlatform;
+use Doctrine\DBAL\Platforms\SQLitePlatform;
 use Doctrine\ORM\AbstractQuery;
 use Doctrine\Tests\Models\Company\CompanyManager;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Group;
 
 use function round;
 use function sprintf;
@@ -32,7 +34,7 @@ class QueryDqlFunctionTest extends OrmFunctionalTestCase
         $salarySum = $this->_em->createQuery('SELECT SUM(m.salary) AS salary FROM Doctrine\Tests\Models\Company\CompanyManager m')
                                ->getSingleResult();
 
-        self::assertEquals(1500000, $salarySum['salary']);
+        self::assertEquals(1_500_000, $salarySum['salary']);
     }
 
     public function testAggregateAvg(): void
@@ -246,10 +248,10 @@ class QueryDqlFunctionTest extends OrmFunctionalTestCase
         self::assertEquals(200000, $result[0]['op']);
         self::assertEquals(400000, $result[1]['op']);
         self::assertEquals(800000, $result[2]['op']);
-        self::assertEquals(1600000, $result[3]['op']);
+        self::assertEquals(1_600_000, $result[3]['op']);
     }
 
-    /** @group test */
+    #[Group('test')]
     public function testOperatorDiv(): void
     {
         $result = $this->_em->createQuery('SELECT m, (m.salary/0.5) AS op FROM Doctrine\Tests\Models\Company\CompanyManager m ORDER BY m.salary ASC')
@@ -259,7 +261,7 @@ class QueryDqlFunctionTest extends OrmFunctionalTestCase
         self::assertEquals(200000, $result[0]['op']);
         self::assertEquals(400000, $result[1]['op']);
         self::assertEquals(800000, $result[2]['op']);
-        self::assertEquals(1600000, $result[3]['op']);
+        self::assertEquals(1_600_000, $result[3]['op']);
     }
 
     public function testConcatFunction(): void
@@ -274,7 +276,7 @@ class QueryDqlFunctionTest extends OrmFunctionalTestCase
         self::assertEquals('Benjamin E.HR', $arg[3]['namedep']);
     }
 
-    /** @group DDC-1014 */
+    #[Group('DDC-1014')]
     public function testDateDiff(): void
     {
         $query = $this->_em->createQuery("SELECT DATE_DIFF(CURRENT_TIMESTAMP(), DATE_ADD(CURRENT_TIMESTAMP(), 10, 'day')) AS diff FROM Doctrine\Tests\Models\Company\CompanyManager m");
@@ -288,18 +290,16 @@ class QueryDqlFunctionTest extends OrmFunctionalTestCase
         self::assertEqualsWithDelta(10, $arg[0]['diff'], 1, 'Should be roughly 10 (or 9)');
     }
 
-    /**
-     * @group DDC-1014
-     * @group DDC-2938
-     * @dataProvider dateAddSubProvider
-     */
+    #[DataProvider('dateAddSubProvider')]
+    #[Group('DDC-1014')]
+    #[Group('DDC-2938')]
     public function testDateAdd(string $unit, int $amount, int $delta = 0): void
     {
         $query = sprintf(
             'SELECT CURRENT_TIMESTAMP() as now, DATE_ADD(CURRENT_TIMESTAMP(), %d, \'%s\') AS add FROM %s m',
             $amount,
             $unit,
-            CompanyManager::class
+            CompanyManager::class,
         );
 
         $result = $this->_em->createQuery($query)
@@ -314,7 +314,7 @@ class QueryDqlFunctionTest extends OrmFunctionalTestCase
         if (
             $unit === 'month'
             && $inOneUnit->format('m') === $now->modify('+2 month')->format('m')
-            && ! $this->_em->getConnection()->getDatabasePlatform() instanceof SqlitePlatform
+            && ! $this->_em->getConnection()->getDatabasePlatform() instanceof SQLitePlatform
         ) {
             $inOneUnit = new DateTimeImmutable('last day of next month');
         }
@@ -322,22 +322,20 @@ class QueryDqlFunctionTest extends OrmFunctionalTestCase
         self::assertEqualsWithDelta(
             $inOneUnit,
             new DateTimeImmutable($result['add']),
-            $delta
+            $delta,
         );
     }
 
-    /**
-     * @group DDC-1014
-     * @group DDC-2938
-     * @dataProvider dateAddSubProvider
-     */
+    #[DataProvider('dateAddSubProvider')]
+    #[Group('DDC-1014')]
+    #[Group('DDC-2938')]
     public function testDateSub(string $unit, int $amount, int $delta = 0): void
     {
         $query = sprintf(
             'SELECT CURRENT_TIMESTAMP() as now, DATE_SUB(CURRENT_TIMESTAMP(), %d, \'%s\') AS sub FROM %s m',
             $amount,
             $unit,
-            CompanyManager::class
+            CompanyManager::class,
         );
 
         $result = $this->_em->createQuery($query)
@@ -352,7 +350,7 @@ class QueryDqlFunctionTest extends OrmFunctionalTestCase
         if (
             $unit === 'month'
             && $oneUnitAgo->format('m') === $now->format('m')
-            && ! $this->_em->getConnection()->getDatabasePlatform() instanceof SqlitePlatform
+            && ! $this->_em->getConnection()->getDatabasePlatform() instanceof SQLitePlatform
         ) {
             $oneUnitAgo = new DateTimeImmutable('last day of previous month');
         }
@@ -360,7 +358,7 @@ class QueryDqlFunctionTest extends OrmFunctionalTestCase
         self::assertEqualsWithDelta(
             $oneUnitAgo,
             new DateTimeImmutable($result['sub']),
-            $delta
+            $delta,
         );
     }
 
@@ -379,7 +377,7 @@ class QueryDqlFunctionTest extends OrmFunctionalTestCase
         ];
     }
 
-    /** @group DDC-1213 */
+    #[Group('DDC-1213')]
     public function testBitOrComparison(): void
     {
         $dql    = 'SELECT m, ' .
@@ -401,7 +399,7 @@ class QueryDqlFunctionTest extends OrmFunctionalTestCase
         self::assertEquals($result[3][0]['salary'] / 100000 | 2, $result[3]['salary_bit_or']);
     }
 
-    /** @group DDC-1213 */
+    #[Group('DDC-1213')]
     public function testBitAndComparison(): void
     {
         $dql    = 'SELECT m, ' .

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Query\AST;
 
+use Doctrine\ORM\Query\SqlWalker;
+
 /**
  * SimpleSelectClause  ::= "SELECT" ["DISTINCT"] SimpleSelectExpression
  *
@@ -11,27 +13,15 @@ namespace Doctrine\ORM\Query\AST;
  */
 class SimpleSelectClause extends Node
 {
-    /** @var bool */
-    public $isDistinct = false;
-
-    /** @var SimpleSelectExpression */
-    public $simpleSelectExpression;
-
-    /**
-     * @param SimpleSelectExpression $simpleSelectExpression
-     * @param bool                   $isDistinct
-     */
-    public function __construct($simpleSelectExpression, $isDistinct)
-    {
-        $this->simpleSelectExpression = $simpleSelectExpression;
-        $this->isDistinct             = $isDistinct;
+    /** @param SimpleSelectExpression $simpleSelectExpression */
+    public function __construct(
+        public $simpleSelectExpression,
+        public bool $isDistinct = false,
+    ) {
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function dispatch($sqlWalker)
+    public function dispatch(SqlWalker $walker): string
     {
-        return $sqlWalker->walkSimpleSelectClause($this);
+        return $walker->walkSimpleSelectClause($this);
     }
 }

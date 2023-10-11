@@ -12,49 +12,35 @@ use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\Table;
 
-/**
- * @Entity
- * @Table(name="legacy_users_reference")
- */
+#[Table(name: 'legacy_users_reference')]
+#[Entity]
 class LegacyUserReference
 {
-    /**
-     * @var LegacyUser
-     * @Id
-     * @ManyToOne(targetEntity="LegacyUser", inversedBy="references")
-     * @JoinColumn(name="iUserIdSource", referencedColumnName="iUserId")
-     */
-    private $_source;
+    #[Id]
+    #[ManyToOne(targetEntity: 'LegacyUser', inversedBy: 'references')]
+    #[JoinColumn(name: 'iUserIdSource', referencedColumnName: 'iUserId')]
+    private LegacyUser $_source;
 
-    /**
-     * @var LegacyUser
-     * @Id
-     * @ManyToOne(targetEntity="LegacyUser")
-     * @JoinColumn(name="iUserIdTarget", referencedColumnName="iUserId")
-     */
-    private $_target;
+    #[Id]
+    #[ManyToOne(targetEntity: 'LegacyUser')]
+    #[JoinColumn(name: 'iUserIdTarget', referencedColumnName: 'iUserId')]
+    private LegacyUser $_target;
 
-    /**
-     * @var string
-     * @Column(type="string", length=255, name="description")
-     */
-    private $_description;
+    #[Column(type: 'datetime', name: 'created')]
+    private DateTime $created;
 
-    /**
-     * @var DateTime
-     * @Column(type="datetime", name="created")
-     */
-    private $created;
-
-    public function __construct(LegacyUser $source, LegacyUser $target, string $description)
-    {
+    public function __construct(
+        LegacyUser $source,
+        LegacyUser $target,
+        #[Column(type: 'string', length: 255, name: 'description')]
+        private string $_description,
+    ) {
         $source->addReference($this);
         $target->addReference($this);
 
-        $this->_source      = $source;
-        $this->_target      = $target;
-        $this->_description = $description;
-        $this->created      = new DateTime('now');
+        $this->_source = $source;
+        $this->_target = $target;
+        $this->created = new DateTime('now');
     }
 
     public function source(): LegacyUser

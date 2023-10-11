@@ -6,6 +6,7 @@ namespace Doctrine\Tests\ORM\Mapping\Symfony;
 
 use Doctrine\Persistence\Mapping\Driver\FileDriver;
 use Doctrine\Persistence\Mapping\MappingException;
+use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\TestCase;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
@@ -16,11 +17,10 @@ use function sys_get_temp_dir;
 use function touch;
 use function unlink;
 
-/** @group DDC-1418 */
+#[Group('DDC-1418')]
 abstract class DriverTestCase extends TestCase
 {
-    /** @var string */
-    private $dir;
+    private string $dir;
 
     public function testFindMappingFile(): void
     {
@@ -28,7 +28,7 @@ abstract class DriverTestCase extends TestCase
             [
                 'MyNamespace\MySubnamespace\EntityFoo' => 'foo',
                 'MyNamespace\MySubnamespace\Entity' => $this->dir,
-            ]
+            ],
         );
 
         touch($filename = $this->dir . '/Foo' . $this->getFileExtension());
@@ -40,7 +40,7 @@ abstract class DriverTestCase extends TestCase
         $driver = $this->getDriver(
             [
                 'MyNamespace\MySubnamespace\Entity' => $this->dir,
-            ]
+            ],
         );
 
         touch($filename = $this->dir . '/Foo.Bar' . $this->getFileExtension());
@@ -55,7 +55,7 @@ abstract class DriverTestCase extends TestCase
         $driver = $this->getDriver(
             [
                 'MyNamespace\MySubnamespace\Entity' => $this->dir,
-            ]
+            ],
         );
 
         $driver->getLocator()->findMappingFile('MyNamespace\MySubnamespace\Entity\Foo');
@@ -69,7 +69,7 @@ abstract class DriverTestCase extends TestCase
         $driver = $this->getDriver(
             [
                 'MyNamespace\MySubnamespace\Entity' => $this->dir,
-            ]
+            ],
         );
 
         $driver->getLocator()->findMappingFile('MyOtherNamespace\MySubnamespace\Entity\Foo');

@@ -12,9 +12,7 @@ interface TimestampRegion extends Region
     /**
      * Update a specific key into the cache region.
      *
-     * @return void
-     *
      * @throws LockException Indicates a problem accessing the region.
      */
-    public function update(CacheKey $key);
+    public function update(CacheKey $key): void;
 }

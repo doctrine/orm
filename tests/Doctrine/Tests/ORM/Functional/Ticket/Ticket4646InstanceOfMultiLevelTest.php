@@ -23,7 +23,7 @@ class Ticket4646InstanceOfMultiLevelTest extends OrmFunctionalTestCase
         $this->createSchemaForModels(
             PersonTicket4646MultiLevel::class,
             EmployeeTicket4646MultiLevel::class,
-            EngineerTicket4646MultiLevel::class
+            EngineerTicket4646MultiLevel::class,
         );
     }
 
@@ -44,45 +44,32 @@ class Ticket4646InstanceOfMultiLevelTest extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity()
- * @Table(name="instance_of_multi_level_test_person")
- * @InheritanceType(value="JOINED")
- * @DiscriminatorColumn(name="kind", type="string")
- * @DiscriminatorMap(value={
- *     "person": "Doctrine\Tests\ORM\Functional\Ticket\PersonTicket4646MultiLevel",
- *     "employee": "Doctrine\Tests\ORM\Functional\Ticket\EmployeeTicket4646MultiLevel",
- *     "engineer": "Doctrine\Tests\ORM\Functional\Ticket\EngineerTicket4646MultiLevel",
- * })
- */
+#[Table(name: 'instance_of_multi_level_test_person')]
+#[Entity]
+#[InheritanceType(value: 'JOINED')]
+#[DiscriminatorColumn(name: 'kind', type: 'string')]
+#[DiscriminatorMap(value: ['person' => 'Doctrine\Tests\ORM\Functional\Ticket\PersonTicket4646MultiLevel', 'employee' => 'Doctrine\Tests\ORM\Functional\Ticket\EmployeeTicket4646MultiLevel', 'engineer' => 'Doctrine\Tests\ORM\Functional\Ticket\EngineerTicket4646MultiLevel'])]
 class PersonTicket4646MultiLevel
 {
-    /**
-     * @var int
-     * @Id()
-     * @GeneratedValue()
-     * @Column(type="integer")
-     */
-    private $id;
+    #[Id]
+    #[GeneratedValue]
+    #[Column(type: 'integer')]
+    private int $id;
 
-    public function getId(): ?int
+    public function getId(): int|null
     {
         return $this->id;
     }
 }
 
-/**
- * @Entity()
- * @Table(name="instance_of_multi_level_employee")
- */
+#[Table(name: 'instance_of_multi_level_employee')]
+#[Entity]
 class EmployeeTicket4646MultiLevel extends PersonTicket4646MultiLevel
 {
 }
 
-/**
- * @Entity()
- * @Table(name="instance_of_multi_level_engineer")
- */
+#[Table(name: 'instance_of_multi_level_engineer')]
+#[Entity]
 class EngineerTicket4646MultiLevel extends EmployeeTicket4646MultiLevel
 {
 }

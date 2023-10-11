@@ -12,35 +12,23 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\Table;
 
-/**
- * @Entity
- * @Table(name="navigation_countries")
- */
+#[Table(name: 'navigation_countries')]
+#[Entity]
 class NavCountry
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
-    private $id;
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
+    private int $id;
 
-    /**
-     * @var string
-     * @Column(type="string", length=255)
-     */
-    private $name;
-
-    /**
-     * @psalm-var Collection<int, NavPointOfInterest>
-     * @OneToMany(targetEntity="NavPointOfInterest", mappedBy="country")
-     */
+    /** @psalm-var Collection<int, NavPointOfInterest> */
+    #[OneToMany(targetEntity: 'NavPointOfInterest', mappedBy: 'country')]
     private $pois;
 
-    public function __construct(string $name)
-    {
-        $this->name = $name;
+    public function __construct(
+        #[Column(type: 'string', length: 255)]
+        private string $name,
+    ) {
     }
 
     public function getId(): int

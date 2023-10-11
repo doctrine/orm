@@ -34,67 +34,51 @@ class DDC1757Test extends OrmFunctionalTestCase
         self::assertEquals(
             'SELECT _a FROM ' . __NAMESPACE__ . '\DDC1757A _a, ' . __NAMESPACE__ . '\DDC1757B _b INNER JOIN _b.c _c INNER JOIN _c.d _d',
             $dql,
-            'Wrong DQL query'
+            'Wrong DQL query',
         );
     }
 }
 
-/** @Entity */
+#[Entity]
 class DDC1757A
 {
-    /**
-     * @var int
-     * @Column(type="integer")
-     * @Id
-     * @GeneratedValue(strategy="AUTO")
-     */
-    private $id;
+    #[Column(type: 'integer')]
+    #[Id]
+    #[GeneratedValue(strategy: 'AUTO')]
+    private int $id;
 }
 
-/** @Entity */
+#[Entity]
 class DDC1757B
 {
-    /**
-     * @var int
-     * @Column(type="integer")
-     * @Id
-     * @GeneratedValue(strategy="AUTO")
-     */
-    private $id;
+    #[Column(type: 'integer')]
+    #[Id]
+    #[GeneratedValue(strategy: 'AUTO')]
+    private int $id;
 
-    /**
-     * @var DDC1757C
-     * @OneToOne(targetEntity="DDC1757C")
-     */
-    private $c;
+    #[OneToOne(targetEntity: 'DDC1757C')]
+    private DDC1757C $c;
 }
 
-/** @Entity */
+#[Entity]
 class DDC1757C
 {
-    /**
-     * @var int
-     * @Column(type="integer")
-     * @Id
-     * @GeneratedValue(strategy="AUTO")
-     */
+    /** @var int */
+    #[Column(type: 'integer')]
+    #[Id]
+    #[GeneratedValue(strategy: 'AUTO')]
     public $id;
 
-    /**
-     * @var DDC1757D
-     * @OneToOne(targetEntity="DDC1757D")
-     */
-    private $d;
+    #[OneToOne(targetEntity: 'DDC1757D')]
+    private DDC1757D $d;
 }
 
-/** @Entity */
+#[Entity]
 class DDC1757D
 {
-    /**
-     * @var int
-     * @Column(type="integer")
-     * @Id
-     * @GeneratedValue(strategy="AUTO")
-     */
+    /** @var int */
+    #[Column(type: 'integer')]
+    #[Id]
+    #[GeneratedValue(strategy: 'AUTO')]
     public $id;
 }

@@ -12,14 +12,18 @@ use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\Table;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
+use Stringable;
 
 /**
  * This test verifies that custom post-insert identifiers respect type conversion semantics.
  * The generated identifier must be converted via DBAL types before populating the entity
  * identifier field.
- *
- * @group 5935 5684 6020 6152
  */
+#[Group('5935')]
+#[Group('5684')]
+#[Group('6020')]
+#[Group('6152')]
 class DDC5684Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -64,7 +68,7 @@ class DDC5684ObjectIdType extends DBALTypes\Type
     /**
      * {@inheritDoc}
      */
-    public function convertToPHPValue($value, AbstractPlatform $platform)
+    public function convertToPHPValue($value, AbstractPlatform $platform): DDC5684ObjectId
     {
         return new DDC5684ObjectId($value);
     }
@@ -72,25 +76,14 @@ class DDC5684ObjectIdType extends DBALTypes\Type
     /**
      * {@inheritDoc}
      */
-    public function convertToDatabaseValue($value, AbstractPlatform $platform)
+    public function convertToDatabaseValue($value, AbstractPlatform $platform): mixed
     {
         return $value->value;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function getName()
+    public function getName(): string
     {
         return self::class;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function requiresSQLCommentHint(AbstractPlatform $platform)
-    {
-        return true;
     }
 
     public function getSQLDeclaration(array $column, AbstractPlatform $platform): string
@@ -99,15 +92,10 @@ class DDC5684ObjectIdType extends DBALTypes\Type
     }
 }
 
-class DDC5684ObjectId
+class DDC5684ObjectId implements Stringable
 {
-    /** @var mixed */
-    public $value;
-
-    /** @param mixed $value */
-    public function __construct($value)
+    public function __construct(public mixed $value)
     {
-        $this->value = $value;
     }
 
     public function __toString(): string
@@ -116,17 +104,13 @@ class DDC5684ObjectId
     }
 }
 
-/**
- * @Entity
- * @Table(name="ticket_5684_objects")
- */
+#[Table(name: 'ticket_5684_objects')]
+#[Entity]
 class DDC5684Object
 {
-    /**
-     * @var DDC5684ObjectIdType
-     * @Id
-     * @Column(type=DDC5684ObjectIdType::class)
-     * @GeneratedValue(strategy="AUTO")
-     */
+    /** @var DDC5684ObjectIdType */
+    #[Id]
+    #[Column(type: DDC5684ObjectIdType::class)]
+    #[GeneratedValue(strategy: 'AUTO')]
     public $id;
 }

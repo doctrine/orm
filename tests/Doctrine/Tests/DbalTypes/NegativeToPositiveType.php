@@ -11,10 +11,7 @@ class NegativeToPositiveType extends Type
 {
     public const NAME = 'negative_to_positive';
 
-    /**
-     * {@inheritDoc}
-     */
-    public function getName()
+    public function getName(): string
     {
         return self::NAME;
     }
@@ -22,23 +19,15 @@ class NegativeToPositiveType extends Type
     /**
      * {@inheritDoc}
      */
-    public function getSQLDeclaration(array $fieldDeclaration, AbstractPlatform $platform)
+    public function getSQLDeclaration(array $column, AbstractPlatform $platform): string
     {
-        return $platform->getIntegerTypeDeclarationSQL($fieldDeclaration);
+        return $platform->getIntegerTypeDeclarationSQL($column);
     }
 
     /**
      * {@inheritDoc}
      */
-    public function canRequireSQLConversion()
-    {
-        return true;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function convertToDatabaseValueSQL($sqlExpr, AbstractPlatform $platform)
+    public function convertToDatabaseValueSQL($sqlExpr, AbstractPlatform $platform): string
     {
         return 'ABS(' . $sqlExpr . ')';
     }
@@ -46,7 +35,7 @@ class NegativeToPositiveType extends Type
     /**
      * {@inheritDoc}
      */
-    public function convertToPHPValueSQL($sqlExpr, $platform)
+    public function convertToPHPValueSQL($sqlExpr, $platform): string
     {
         return '-(' . $sqlExpr . ')';
     }

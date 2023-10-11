@@ -10,24 +10,24 @@ use Doctrine\ORM\Cache\CollectionCacheKey;
 use Doctrine\ORM\Cache\DefaultCache;
 use Doctrine\ORM\Cache\EntityCacheEntry;
 use Doctrine\ORM\Cache\EntityCacheKey;
+use Doctrine\ORM\Cache\QueryCache;
+use Doctrine\ORM\Cache\Region;
 use Doctrine\Tests\Mocks\EntityManagerMock;
 use Doctrine\Tests\Models\Cache\Country;
 use Doctrine\Tests\Models\Cache\State;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\OrmTestCase;
+use PHPUnit\Framework\Attributes\Group;
 use ReflectionMethod;
 use ReflectionProperty;
 
 use function array_merge;
 
-/** @group DDC-2183 */
+#[Group('DDC-2183')]
 class DefaultCacheTest extends OrmTestCase
 {
-    /** @var DefaultCache */
-    private $cache;
-
-    /** @var EntityManagerMock */
-    private $em;
+    private DefaultCache $cache;
+    private EntityManagerMock $em;
 
     protected function setUp(): void
     {
@@ -66,13 +66,13 @@ class DefaultCacheTest extends OrmTestCase
 
     public function testGetEntityCacheRegionAccess(): void
     {
-        self::assertInstanceOf(Cache\Region::class, $this->cache->getEntityCacheRegion(State::class));
+        self::assertInstanceOf(Region::class, $this->cache->getEntityCacheRegion(State::class));
         self::assertNull($this->cache->getEntityCacheRegion(CmsUser::class));
     }
 
     public function testGetCollectionCacheRegionAccess(): void
     {
-        self::assertInstanceOf(Cache\Region::class, $this->cache->getCollectionCacheRegion(State::class, 'cities'));
+        self::assertInstanceOf(Region::class, $this->cache->getCollectionCacheRegion(State::class, 'cities'));
         self::assertNull($this->cache->getCollectionCacheRegion(CmsUser::class, 'phonenumbers'));
     }
 
@@ -221,8 +221,8 @@ class DefaultCacheTest extends OrmTestCase
         $defaultQueryCache = $this->cache->getQueryCache();
         $fooQueryCache     = $this->cache->getQueryCache('foo');
 
-        self::assertInstanceOf(Cache\QueryCache::class, $defaultQueryCache);
-        self::assertInstanceOf(Cache\QueryCache::class, $fooQueryCache);
+        self::assertInstanceOf(QueryCache::class, $defaultQueryCache);
+        self::assertInstanceOf(QueryCache::class, $fooQueryCache);
         self::assertSame($defaultQueryCache, $this->cache->getQueryCache());
         self::assertSame($fooQueryCache, $this->cache->getQueryCache('foo'));
 
@@ -244,8 +244,6 @@ class DefaultCacheTest extends OrmTestCase
         $method     = new ReflectionMethod($this->cache, 'toIdentifierArray');
         $property   = new ReflectionProperty($entity, 'id');
 
-        $property->setAccessible(true);
-        $method->setAccessible(true);
         $property->setValue($entity, $identifier);
 
         self::assertEquals(['id' => $identifier], $method->invoke($this->cache, $metadata, $identifier));

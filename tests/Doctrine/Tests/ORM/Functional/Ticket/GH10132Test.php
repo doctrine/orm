@@ -9,9 +9,6 @@ use Doctrine\Tests\Models\GH10132\Complex;
 use Doctrine\Tests\Models\GH10132\ComplexChild;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-/**
- * @requires PHP 8.1
- */
 class GH10132Test extends OrmFunctionalTestCase
 {
     public function setUp(): void
@@ -20,7 +17,7 @@ class GH10132Test extends OrmFunctionalTestCase
 
         $this->createSchemaForModels(
             Complex::class,
-            ComplexChild::class
+            ComplexChild::class,
         );
     }
 

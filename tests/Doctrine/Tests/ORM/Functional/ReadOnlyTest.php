@@ -10,14 +10,12 @@ use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Query;
 use Doctrine\Tests\OrmFunctionalTestCase;
-
-use function get_class;
+use PHPUnit\Framework\Attributes\Group;
 
 /**
  * Functional Query tests.
- *
- * @group DDC-692
  */
+#[Group('DDC-692')]
 class ReadOnlyTest extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -44,7 +42,7 @@ class ReadOnlyTest extends OrmFunctionalTestCase
         self::assertEquals(1234, $dbReadOnly->numericValue);
     }
 
-    /** @group DDC-1659 */
+    #[Group('DDC-1659')]
     public function testClearReadOnly(): void
     {
         $readOnly = new ReadOnlyEntity('Test1', 1234);
@@ -57,7 +55,7 @@ class ReadOnlyTest extends OrmFunctionalTestCase
         self::assertFalse($this->_em->getUnitOfWork()->isReadOnly($readOnly));
     }
 
-    /** @group DDC-1659 */
+    #[Group('DDC-1659')]
     public function testClearEntitiesReadOnly(): void
     {
         $readOnly = new ReadOnlyEntity('Test1', 1234);
@@ -65,7 +63,7 @@ class ReadOnlyTest extends OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->getUnitOfWork()->markReadOnly($readOnly);
 
-        $this->_em->clear(get_class($readOnly));
+        $this->_em->clear();
 
         self::assertFalse($this->_em->getUnitOfWork()->isReadOnly($readOnly));
     }
@@ -135,30 +133,20 @@ class ReadOnlyTest extends OrmFunctionalTestCase
     }
 }
 
-/** @Entity(readOnly=true) */
+#[Entity(readOnly: true)]
 class ReadOnlyEntity
 {
-    /**
-     * @Id
-     * @GeneratedValue
-     * @Column(type="integer")
-     * @var int
-     */
+    /** @var int */
+    #[Id]
+    #[GeneratedValue]
+    #[Column(type: 'integer')]
     public $id;
-    /**
-     * @var string
-     * @Column(type="string", length=255)
-     */
-    public $name;
-    /**
-     * @var int
-     * @Column(type="integer")
-     */
-    public $numericValue;
 
-    public function __construct($name, $number)
-    {
-        $this->name         = $name;
-        $this->numericValue = $number;
+    public function __construct(
+        #[Column(type: 'string', length: 255)]
+        public string $name,
+        #[Column(type: 'integer')]
+        public int $numericValue,
+    ) {
     }
 }

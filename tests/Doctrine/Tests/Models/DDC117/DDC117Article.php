@@ -13,50 +13,33 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\OneToOne;
 
-/** @Entity */
+#[Entity]
 class DDC117Article
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer", name="article_id")
-     * @GeneratedValue
-     */
-    private $id;
+    #[Id]
+    #[Column(type: 'integer', name: 'article_id')]
+    #[GeneratedValue]
+    private int $id;
 
-    /**
-     * @var string
-     * @Column
-     */
-    private $title;
-
-    /**
-     * @psalm-var Collection<int, DDC117Reference>
-     * @OneToMany(targetEntity="DDC117Reference", mappedBy="source", cascade={"remove"})
-     */
+    /** @psalm-var Collection<int, DDC117Reference> */
+    #[OneToMany(targetEntity: 'DDC117Reference', mappedBy: 'source', cascade: ['remove'])]
     private $references;
 
-    /**
-     * @var DDC117ArticleDetails
-     * @OneToOne(targetEntity="DDC117ArticleDetails", mappedBy="article", cascade={"persist", "remove"})
-     */
-    private $details;
+    #[OneToOne(targetEntity: 'DDC117ArticleDetails', mappedBy: 'article', cascade: ['persist', 'remove'])]
+    private DDC117ArticleDetails|null $details = null;
 
-    /**
-     * @psalm-var Collection<int, DDC117Translation>
-     * @OneToMany(targetEntity="DDC117Translation", mappedBy="article", cascade={"persist", "remove"})
-     */
+    /** @psalm-var Collection<int, DDC117Translation> */
+    #[OneToMany(targetEntity: 'DDC117Translation', mappedBy: 'article', cascade: ['persist', 'remove'])]
     private $translations;
 
-    /**
-     * @var Collection<int, DDC117Translation>
-     * @OneToMany(targetEntity="DDC117Link", mappedBy="source", indexBy="target_id", cascade={"persist", "remove"})
-     */
-    private $links;
+    /** @var Collection<int, DDC117Translation> */
+    #[OneToMany(targetEntity: 'DDC117Link', mappedBy: 'source', indexBy: 'target_id', cascade: ['persist', 'remove'])]
+    private Collection $links;
 
-    public function __construct(string $title)
-    {
-        $this->title        = $title;
+    public function __construct(
+        #[Column]
+        private string $title,
+    ) {
         $this->references   = new ArrayCollection();
         $this->translations = new ArrayCollection();
     }

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Doctrine\Performance\Mock;
 
+use Doctrine\DBAL\LockMode;
+use Doctrine\ORM\Mapping\AssociationMapping;
 use Doctrine\ORM\Persisters\Entity\BasicEntityPersister;
 
 /**
@@ -20,13 +22,13 @@ class NonLoadingPersister extends BasicEntityPersister
      */
     public function load(
         array $criteria,
-        $entity = null,
-        $assoc = null,
+        object|null $entity = null,
+        AssociationMapping|null $assoc = null,
         array $hints = [],
-        $lockMode = null,
-        $limit = null,
-        ?array $orderBy = null
-    ) {
+        LockMode|int|null $lockMode = null,
+        int|null $limit = null,
+        array|null $orderBy = null,
+    ): object|null {
         return $entity;
     }
 }

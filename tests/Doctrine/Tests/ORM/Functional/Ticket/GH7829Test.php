@@ -7,8 +7,9 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Doctrine\Tests\Models\CMS\CmsArticle;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
-/** @group GH7829 */
+#[Group('GH7829')]
 final class GH7829Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void

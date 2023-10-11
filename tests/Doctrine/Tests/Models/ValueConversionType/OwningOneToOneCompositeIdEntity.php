@@ -8,30 +8,21 @@ use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\JoinColumn;
-use Doctrine\ORM\Mapping\JoinColumns;
 use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\ORM\Mapping\Table;
 
-/**
- * @Entity
- * @Table(name="vct_owning_onetoone_compositeid")
- */
+#[Table(name: 'vct_owning_onetoone_compositeid')]
+#[Entity]
 class OwningOneToOneCompositeIdEntity
 {
-    /**
-     * @var string
-     * @Column(type="rot13", length=255)
-     * @Id
-     */
+    /** @var string */
+    #[Column(type: 'rot13', length: 255)]
+    #[Id]
     public $id3;
 
-    /**
-     * @var InversedOneToOneCompositeIdEntity
-     * @OneToOne(targetEntity="InversedOneToOneCompositeIdEntity", inversedBy="associatedEntity")
-     * @JoinColumns({
-     *     @JoinColumn(name="associated_id1", referencedColumnName="id1"),
-     *     @JoinColumn(name="associated_id2", referencedColumnName="id2")
-     * })
-     */
+    /** @var InversedOneToOneCompositeIdEntity */
+    #[JoinColumn(name: 'associated_id1', referencedColumnName: 'id1')]
+    #[JoinColumn(name: 'associated_id2', referencedColumnName: 'id2')]
+    #[OneToOne(targetEntity: 'InversedOneToOneCompositeIdEntity', inversedBy: 'associatedEntity')]
     public $associatedEntity;
 }

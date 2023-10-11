@@ -8,24 +8,15 @@ use Doctrine\ORM\Events;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\Column;
-use Doctrine\ORM\Mapping\Entity;
-use Doctrine\ORM\Mapping\EntityListeners;
 
 use function max;
 
-/**
- * @Entity
- * @EntityListeners({"CompanyContractListener","CompanyFlexUltraContractListener"})
- */
 #[ORM\Entity]
 #[ORM\EntityListeners(['CompanyContractListener', 'CompanyFlexUltraContractListener'])]
 class CompanyFlexUltraContract extends CompanyFlexContract
 {
-    /**
-     * @Column(type="integer")
-     * @var int
-     */
-    private $maxPrice = 0;
+    #[Column(type: 'integer')]
+    private int $maxPrice = 0;
 
     public function calculatePrice(): int
     {
@@ -49,7 +40,7 @@ class CompanyFlexUltraContract extends CompanyFlexContract
                 'type'      => 'integer',
                 'name'      => 'maxPrice',
                 'fieldName' => 'maxPrice',
-            ]
+            ],
         );
         $metadata->addEntityListener(Events::postPersist, 'CompanyContractListener', 'postPersistHandler');
         $metadata->addEntityListener(Events::prePersist, 'CompanyContractListener', 'prePersistHandler');

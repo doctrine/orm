@@ -6,53 +6,60 @@ namespace Doctrine\Performance\Hydration;
 
 use Doctrine\ORM\EntityRepository;
 use Doctrine\Performance\EntityManagerFactory;
-use Doctrine\Tests\Models\Company;
+use Doctrine\Tests\Models\Company\CompanyAuction;
+use Doctrine\Tests\Models\Company\CompanyCar;
+use Doctrine\Tests\Models\Company\CompanyContract;
+use Doctrine\Tests\Models\Company\CompanyEmployee;
+use Doctrine\Tests\Models\Company\CompanyEvent;
+use Doctrine\Tests\Models\Company\CompanyFixContract;
+use Doctrine\Tests\Models\Company\CompanyFlexContract;
+use Doctrine\Tests\Models\Company\CompanyFlexUltraContract;
+use Doctrine\Tests\Models\Company\CompanyManager;
+use Doctrine\Tests\Models\Company\CompanyOrganization;
+use Doctrine\Tests\Models\Company\CompanyPerson;
+use Doctrine\Tests\Models\Company\CompanyRaffle;
 use PhpBench\Benchmark\Metadata\Annotations\BeforeMethods;
 
 /** @BeforeMethods({"init"}) */
 final class SingleTableInheritanceHydrationPerformanceBench
 {
-    /** @var EntityRepository */
-    private $contractsRepository;
+    private EntityRepository|null $contractsRepository = null;
 
-    /** @var EntityRepository */
-    private $fixContractsRepository;
+    private EntityRepository|null $fixContractsRepository = null;
 
-    /** @var EntityRepository */
-    private $flexContractRepository;
+    private EntityRepository|null $flexContractRepository = null;
 
-    /** @var EntityRepository */
-    private $ultraContractRepository;
+    private EntityRepository|null $ultraContractRepository = null;
 
     public function init(): void
     {
         $entityManager = EntityManagerFactory::getEntityManager([
-            Company\CompanyPerson::class,
-            Company\CompanyEmployee::class,
-            Company\CompanyManager::class,
-            Company\CompanyOrganization::class,
-            Company\CompanyEvent::class,
-            Company\CompanyAuction::class,
-            Company\CompanyRaffle::class,
-            Company\CompanyCar::class,
-            Company\CompanyContract::class,
+            CompanyPerson::class,
+            CompanyEmployee::class,
+            CompanyManager::class,
+            CompanyOrganization::class,
+            CompanyEvent::class,
+            CompanyAuction::class,
+            CompanyRaffle::class,
+            CompanyCar::class,
+            CompanyContract::class,
         ]);
 
-        $this->contractsRepository     = $entityManager->getRepository(Company\CompanyContract::class);
-        $this->fixContractsRepository  = $entityManager->getRepository(Company\CompanyFixContract::class);
-        $this->flexContractRepository  = $entityManager->getRepository(Company\CompanyFlexContract::class);
-        $this->ultraContractRepository = $entityManager->getRepository(Company\CompanyFlexUltraContract::class);
+        $this->contractsRepository     = $entityManager->getRepository(CompanyContract::class);
+        $this->fixContractsRepository  = $entityManager->getRepository(CompanyFixContract::class);
+        $this->flexContractRepository  = $entityManager->getRepository(CompanyFlexContract::class);
+        $this->ultraContractRepository = $entityManager->getRepository(CompanyFlexUltraContract::class);
 
-        $person = new Company\CompanyEmployee();
+        $person = new CompanyEmployee();
         $person->setName('Poor Sales Guy');
         $person->setDepartment('Sales');
         $person->setSalary(100);
         $entityManager->persist($person);
 
         for ($i = 0; $i < 33; $i++) {
-            $fixContract   = new Company\CompanyFixContract();
-            $flexContract  = new Company\CompanyFlexContract();
-            $ultraContract = new Company\CompanyFlexUltraContract();
+            $fixContract   = new CompanyFixContract();
+            $flexContract  = new CompanyFlexContract();
+            $ultraContract = new CompanyFlexUltraContract();
 
             $fixContract->setFixPrice(1000);
             $fixContract->setSalesPerson($person);

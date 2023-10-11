@@ -6,9 +6,7 @@ namespace Doctrine\Tests\Models\Project;
 
 final class ProjectName
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     private $name;
 
     public function __construct(string $name)

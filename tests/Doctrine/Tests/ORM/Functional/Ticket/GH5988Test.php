@@ -15,15 +15,14 @@ use Doctrine\ORM\Mapping\InheritanceType;
 use Doctrine\ORM\Mapping\Table;
 use Doctrine\Tests\DbalTypes\CustomIdObject;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
-use function method_exists;
 use function str_replace;
 
 /**
  * Functional tests for the Class Table Inheritance mapping strategy with custom id object types.
- *
- * @group GH5988
  */
+#[Group('GH5988')]
 final class GH5988Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -61,7 +60,7 @@ class GH5988CustomIdObjectHashType extends DBALType
     /**
      * {@inheritDoc}
      */
-    public function convertToDatabaseValue($value, AbstractPlatform $platform)
+    public function convertToDatabaseValue($value, AbstractPlatform $platform): string
     {
         return $value->id . '_test';
     }
@@ -69,7 +68,7 @@ class GH5988CustomIdObjectHashType extends DBALType
     /**
      * {@inheritDoc}
      */
-    public function convertToPHPValue($value, AbstractPlatform $platform)
+    public function convertToPHPValue($value, AbstractPlatform $platform): CustomIdObject
     {
         return new CustomIdObject(str_replace('_test', '', $value));
     }
@@ -77,54 +76,37 @@ class GH5988CustomIdObjectHashType extends DBALType
     /**
      * {@inheritDoc}
      */
-    public function getSQLDeclaration(array $fieldDeclaration, AbstractPlatform $platform)
+    public function getSQLDeclaration(array $column, AbstractPlatform $platform): string
     {
-        if (method_exists($platform, 'getStringTypeDeclarationSQL')) {
-            return $platform->getStringTypeDeclarationSQL($fieldDeclaration);
-        }
-
-        return $platform->getVarcharTypeDeclarationSQL($fieldDeclaration);
+        return $platform->getStringTypeDeclarationSQL($column);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function getName()
+    public function getName(): string
     {
         return self::class;
     }
 }
 
-/**
- * @Entity
- * @Table
- * @InheritanceType("JOINED")
- * @DiscriminatorColumn(name="type", type="string")
- * @DiscriminatorMap({"child" = GH5988CustomIdObjectTypeChild::class})
- */
+#[Table]
+#[Entity]
+#[InheritanceType('JOINED')]
+#[DiscriminatorColumn(name: 'type', type: 'string')]
+#[DiscriminatorMap(['child' => GH5988CustomIdObjectTypeChild::class])]
 abstract class GH5988CustomIdObjectTypeParent
 {
-    /**
-     * @Id
-     * @Column(type="Doctrine\Tests\ORM\Functional\Ticket\GH5988CustomIdObjectHashType", length=255)
-     * @var CustomIdObject
-     */
+    /** @var CustomIdObject */
+    #[Id]
+    #[Column(type: 'Doctrine\Tests\ORM\Functional\Ticket\GH5988CustomIdObjectHashType', length: 255)]
     public $id;
 }
 
 
-/**
- * @Entity
- * @Table
- */
+#[Table]
+#[Entity]
 class GH5988CustomIdObjectTypeChild extends GH5988CustomIdObjectTypeParent
 {
-    /** @var string */
-    public $name;
-
-    public function __construct(CustomIdObject $id, string $name)
+    public function __construct(CustomIdObject $id, public string $name)
     {
-        $this->id   = $id;
-        $this->name = $name;
+        $this->id = $id;
     }
 }

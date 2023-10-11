@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Mapping;
 
-use Doctrine\Deprecations\Deprecation;
-
 use function preg_replace;
 use function str_contains;
 use function strrpos;
@@ -24,40 +22,17 @@ use const CASE_UPPER;
  */
 class UnderscoreNamingStrategy implements NamingStrategy
 {
-    private const DEFAULT_PATTERN      = '/(?<=[a-z])([A-Z])/';
-    private const NUMBER_AWARE_PATTERN = '/(?<=[a-z0-9])([A-Z])/';
-
-    /** @var int */
-    private $case;
-
-    /**
-     * @var string
-     * @psalm-var non-empty-string
-     */
-    private $pattern;
-
     /**
      * Underscore naming strategy construct.
      *
      * @param int $case CASE_LOWER | CASE_UPPER
      */
-    public function __construct($case = CASE_LOWER, bool $numberAware = false)
+    public function __construct(private int $case = CASE_LOWER)
     {
-        if (! $numberAware) {
-            Deprecation::trigger(
-                'doctrine/orm',
-                'https://github.com/doctrine/orm/pull/7908',
-                'Creating %s without setting second argument $numberAware=true is deprecated and will be removed in Doctrine ORM 3.0.',
-                self::class
-            );
-        }
-
-        $this->case    = $case;
-        $this->pattern = $numberAware ? self::NUMBER_AWARE_PATTERN : self::DEFAULT_PATTERN;
     }
 
     /** @return int CASE_LOWER | CASE_UPPER */
-    public function getCase()
+    public function getCase(): int
     {
         return $this->case;
     }
@@ -65,20 +40,13 @@ class UnderscoreNamingStrategy implements NamingStrategy
     /**
      * Sets string case CASE_LOWER | CASE_UPPER.
      * Alphabetic characters converted to lowercase or uppercase.
-     *
-     * @param int $case
-     *
-     * @return void
      */
-    public function setCase($case)
+    public function setCase(int $case): void
     {
         $this->case = $case;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function classToTableName($className)
+    public function classToTableName(string $className): string
     {
         if (str_contains($className, '\\')) {
             $className = substr($className, strrpos($className, '\\') + 1);
@@ -87,61 +55,49 @@ class UnderscoreNamingStrategy implements NamingStrategy
         return $this->underscore($className);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function propertyToColumnName($propertyName, $className = null)
+    public function propertyToColumnName(string $propertyName, string $className): string
     {
         return $this->underscore($propertyName);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function embeddedFieldToColumnName($propertyName, $embeddedColumnName, $className = null, $embeddedClassName = null)
-    {
+    public function embeddedFieldToColumnName(
+        string $propertyName,
+        string $embeddedColumnName,
+        string $className,
+        string $embeddedClassName,
+    ): string {
         return $this->underscore($propertyName) . '_' . $embeddedColumnName;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function referenceColumnName()
+    public function referenceColumnName(): string
     {
         return $this->case === CASE_UPPER ?  'ID' : 'id';
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * @param string       $propertyName
-     * @param class-string $className
-     */
-    public function joinColumnName($propertyName, $className = null)
+    public function joinColumnName(string $propertyName, string $className): string
     {
         return $this->underscore($propertyName) . '_' . $this->referenceColumnName();
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function joinTableName($sourceEntity, $targetEntity, $propertyName = null)
-    {
+    public function joinTableName(
+        string $sourceEntity,
+        string $targetEntity,
+        string $propertyName,
+    ): string {
         return $this->classToTableName($sourceEntity) . '_' . $this->classToTableName($targetEntity);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function joinKeyColumnName($entityName, $referencedColumnName = null)
-    {
+    public function joinKeyColumnName(
+        string $entityName,
+        string|null $referencedColumnName,
+    ): string {
         return $this->classToTableName($entityName) . '_' .
                 ($referencedColumnName ?: $this->referenceColumnName());
     }
 
     private function underscore(string $string): string
     {
-        $string = preg_replace($this->pattern, '_$1', $string);
+        $string = preg_replace('/(?<=[a-z0-9])([A-Z])/', '_$1', $string);
 
         if ($this->case === CASE_UPPER) {
             return strtoupper($string);

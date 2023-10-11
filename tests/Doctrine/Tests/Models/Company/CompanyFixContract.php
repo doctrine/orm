@@ -7,17 +7,12 @@ namespace Doctrine\Tests\Models\Company;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\Column;
-use Doctrine\ORM\Mapping\Entity;
 
-/** @Entity */
 #[ORM\Entity]
 class CompanyFixContract extends CompanyContract
 {
-    /**
-     * @Column(type="integer")
-     * @var int
-     */
-    private $fixPrice = 0;
+    #[Column(type: 'integer')]
+    private int $fixPrice = 0;
 
     public function calculatePrice(): int
     {
@@ -41,7 +36,7 @@ class CompanyFixContract extends CompanyContract
                 'type'      => 'integer',
                 'name'      => 'fixPrice',
                 'fieldName' => 'fixPrice',
-            ]
+            ],
         );
     }
 }

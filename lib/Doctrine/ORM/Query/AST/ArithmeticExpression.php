@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Query\AST;
 
+use Doctrine\ORM\Query\SqlWalker;
+
 /**
  * ArithmeticExpression ::= SimpleArithmeticExpression | "(" Subselect ")"
  *
@@ -11,28 +13,22 @@ namespace Doctrine\ORM\Query\AST;
  */
 class ArithmeticExpression extends Node
 {
-    /** @var SimpleArithmeticExpression|null */
-    public $simpleArithmeticExpression;
+    public Node|string|null $simpleArithmeticExpression = null;
 
     /** @var Subselect|null */
     public $subselect;
 
-    /** @return bool */
-    public function isSimpleArithmeticExpression()
+    public function isSimpleArithmeticExpression(): bool
     {
         return (bool) $this->simpleArithmeticExpression;
     }
 
-    /** @return bool */
-    public function isSubselect()
+    public function isSubselect(): bool
     {
         return (bool) $this->subselect;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function dispatch($walker)
+    public function dispatch(SqlWalker $walker): string
     {
         return $walker->walkArithmeticExpression($this);
     }

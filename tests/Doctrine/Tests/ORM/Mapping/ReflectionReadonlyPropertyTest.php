@@ -12,9 +12,6 @@ use LogicException;
 use PHPUnit\Framework\TestCase;
 use ReflectionProperty;
 
-/**
- * @requires PHP 8.1
- */
 class ReflectionReadonlyPropertyTest extends TestCase
 {
     public function testSecondWriteWithSameValue(): void

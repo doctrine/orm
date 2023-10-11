@@ -10,10 +10,11 @@ use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Query\AST\Functions\FunctionNode;
 use Doctrine\ORM\Query\AST\Node;
-use Doctrine\ORM\Query\Lexer;
 use Doctrine\ORM\Query\Parser;
 use Doctrine\ORM\Query\SqlWalker;
+use Doctrine\ORM\Query\TokenType;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
 final class GH7286Test extends OrmFunctionalTestCase
 {
@@ -24,7 +25,7 @@ final class GH7286Test extends OrmFunctionalTestCase
         $this->setUpEntitySchema(
             [
                 GH7286Entity::class,
-            ]
+            ],
         );
 
         $this->_em->persist(new GH7286Entity('foo', 1));
@@ -42,7 +43,7 @@ final class GH7286Test extends OrmFunctionalTestCase
             . ' FROM ' . GH7286Entity::class . ' e'
             . ' WHERE e.type IS NOT NULL'
             . ' GROUP BY e.type'
-            . ' ORDER BY e.type'
+            . ' ORDER BY e.type',
         );
 
         self::assertSame(
@@ -50,11 +51,11 @@ final class GH7286Test extends OrmFunctionalTestCase
                 ['pair' => 'bar3'],
                 ['pair' => 'foo1'],
             ],
-            $query->getArrayResult()
+            $query->getArrayResult(),
         );
     }
 
-    /** @group DDC-1091 */
+    #[Group('DDC-1091')]
     public function testAggregateFunctionInCustomFunction(): void
     {
         $this->_em->getConfiguration()->addCustomStringFunction('CC', GH7286CustomConcat::class);
@@ -63,72 +64,58 @@ final class GH7286Test extends OrmFunctionalTestCase
             'SELECT CC(e.type, MIN(e.version)) pair'
             . ' FROM ' . GH7286Entity::class . ' e'
             . ' WHERE e.type IS NOT NULL AND e.type != :type'
-            . ' GROUP BY e.type'
+            . ' GROUP BY e.type',
         );
         $query->setParameter('type', 'bar');
 
         self::assertSame(
             ['pair' => 'foo1'],
-            $query->getSingleResult()
+            $query->getSingleResult(),
         );
     }
 }
 
-/** @Entity */
+#[Entity]
 class GH7286Entity
 {
-    /**
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     * @var int
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     public $id;
 
-    /**
-     * @Column(nullable=true)
-     * @var string|null
-     */
-    public $type;
-
-    /**
-     * @Column(type="integer")
-     * @var int
-     */
-    public $version;
-
-    public function __construct(?string $type, int $version)
-    {
-        $this->type    = $type;
-        $this->version = $version;
+    public function __construct(
+        #[Column(nullable: true)]
+        public string|null $type,
+        #[Column(type: 'integer')]
+        public int $version,
+    ) {
     }
 }
 
 class GH7286CustomConcat extends FunctionNode
 {
-    /** @var Node */
-    private $first;
+    private Node|null $first = null;
 
-    /** @var Node */
-    private $second;
+    private Node|null $second = null;
 
     public function parse(Parser $parser): void
     {
-        $parser->match(Lexer::T_IDENTIFIER);
-        $parser->match(Lexer::T_OPEN_PARENTHESIS);
+        $parser->match(TokenType::T_IDENTIFIER);
+        $parser->match(TokenType::T_OPEN_PARENTHESIS);
 
         $this->first = $parser->StringPrimary();
-        $parser->match(Lexer::T_COMMA);
+        $parser->match(TokenType::T_COMMA);
         $this->second = $parser->StringPrimary();
 
-        $parser->match(Lexer::T_CLOSE_PARENTHESIS);
+        $parser->match(TokenType::T_CLOSE_PARENTHESIS);
     }
 
     public function getSql(SqlWalker $walker): string
     {
         return $walker->getConnection()->getDatabasePlatform()->getConcatExpression(
             $this->first->dispatch($walker),
-            $this->second->dispatch($walker)
+            $this->second->dispatch($walker),
         );
     }
 }

@@ -9,18 +9,16 @@ use Doctrine\ORM\Cache\EntityCacheKey;
 use Doctrine\ORM\Cache\Logging\CacheLogger;
 use Doctrine\ORM\Cache\Logging\CacheLoggerChain;
 use Doctrine\ORM\Cache\QueryCacheKey;
-use Doctrine\Tests\DoctrineTestCase;
 use Doctrine\Tests\Models\Cache\State;
+use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\TestCase;
 
-/** @group DDC-2183 */
-class CacheLoggerChainTest extends DoctrineTestCase
+#[Group('DDC-2183')]
+class CacheLoggerChainTest extends TestCase
 {
-    /** @var CacheLoggerChain */
-    private $logger;
-
-    /** @var CacheLogger&MockObject */
-    private $mock;
+    private CacheLoggerChain $logger;
+    private CacheLogger&MockObject $mock;
 
     protected function setUp(): void
     {

@@ -10,8 +10,9 @@ use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\Table;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
-/** @group DDC-1719 */
+#[Group('DDC-1719')]
 class DDC1719Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -81,28 +82,19 @@ class DDC1719Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- * @Table(name="`ddc-1719-simple-entity`")
- */
+#[Table(name: '`ddc-1719-simple-entity`')]
+#[Entity]
 class DDC1719SimpleEntity
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer", name="`simple-entity-id`")
-     * @GeneratedValue(strategy="AUTO")
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer', name: '`simple-entity-id`')]
+    #[GeneratedValue(strategy: 'AUTO')]
     public $id;
 
-    /**
-     * @var string
-     * @Column(type="string", name="`simple-entity-value`")
-     */
-    public $value;
-
-    public function __construct(string $value)
-    {
-        $this->value = $value;
+    public function __construct(
+        #[Column(type: 'string', name: '`simple-entity-value`')]
+        public string $value,
+    ) {
     }
 }

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\Performance;
 
 use Doctrine\Common\EventManager;
+use Doctrine\DBAL\Cache\ArrayResult;
 use Doctrine\DBAL\Cache\QueryCacheProfile;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Driver\PDO\SQLite\Driver;
@@ -13,10 +14,9 @@ use Doctrine\DBAL\Result;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\ORMSetup;
+use Doctrine\ORM\Mapping\Driver\AttributeDriver;
 use Doctrine\ORM\Proxy\ProxyFactory;
 use Doctrine\ORM\Tools\SchemaTool;
-use Doctrine\Tests\Mocks\DriverResultMock;
 use Doctrine\Tests\TestUtil;
 
 use function array_map;
@@ -30,7 +30,7 @@ final class EntityManagerFactory
 
         TestUtil::configureProxies($config);
         $config->setAutoGenerateProxyClasses(ProxyFactory::AUTOGENERATE_EVAL);
-        $config->setMetadataDriverImpl(ORMSetup::createDefaultAnnotationDriver([
+        $config->setMetadataDriverImpl(new AttributeDriver([
             realpath(__DIR__ . '/Models/Cache'),
             realpath(__DIR__ . '/Models/GeoNames'),
         ]));
@@ -40,7 +40,7 @@ final class EntityManagerFactory
                 'driverClass' => Driver::class,
                 'memory'      => true,
             ], $config),
-            $config
+            $config,
         );
 
         (new SchemaTool($entityManager))
@@ -55,7 +55,7 @@ final class EntityManagerFactory
 
         TestUtil::configureProxies($config);
         $config->setAutoGenerateProxyClasses(ProxyFactory::AUTOGENERATE_EVAL);
-        $config->setMetadataDriverImpl(ORMSetup::createDefaultAnnotationDriver([
+        $config->setMetadataDriverImpl(new AttributeDriver([
             realpath(__DIR__ . '/Models/Cache'),
             realpath(__DIR__ . '/Models/Generic'),
             realpath(__DIR__ . '/Models/GeoNames'),
@@ -65,9 +65,9 @@ final class EntityManagerFactory
         $connection = new class ([], new Driver(), null, new EventManager()) extends Connection
         {
             /** {@inheritDoc} */
-            public function executeQuery(string $sql, array $params = [], $types = [], ?QueryCacheProfile $qcp = null): Result
+            public function executeQuery(string $sql, array $params = [], $types = [], QueryCacheProfile|null $qcp = null): Result
             {
-                return new Result(new DriverResultMock(), $this);
+                return new Result(new ArrayResult([]), $this);
             }
         };
 

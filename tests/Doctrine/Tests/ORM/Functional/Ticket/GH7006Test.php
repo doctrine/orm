@@ -39,64 +39,42 @@ class GH7006Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @ORM\Entity
- */
+#[ORM\Entity]
 class GH7006Book
 {
-    /**
-     * @ORM\Id
-     * @ORM\Column(type="integer")
-     * @ORM\GeneratedValue(strategy="AUTO")
-     *
-     * @var int
-     */
+    /** @var int */
+    #[ORM\Id]
+    #[ORM\Column(type: 'integer')]
+    #[ORM\GeneratedValue(strategy: 'AUTO')]
     public $id;
 
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     *
-     * @var string
-     */
+    /** @var string */
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
     public $exchangeCode;
 
-    /**
-     * @ORM\OneToOne(targetEntity="GH7006PCT", cascade={"persist", "remove"})
-     * @ORM\JoinColumn(name="paymentCardTransactionId", referencedColumnName="id")
-     *
-     * @var GH7006PCT
-     */
+    /** @var GH7006PCT */
+    #[ORM\OneToOne(targetEntity: GH7006PCT::class, cascade: ['persist', 'remove'])]
+    #[ORM\JoinColumn(name: 'paymentCardTransactionId', referencedColumnName: 'id')]
     public $paymentCardTransaction;
 }
 
-/**
- * @ORM\Entity
- */
+#[ORM\Entity]
 class GH7006PCT
 {
-    /**
-     * @ORM\Id
-     * @ORM\Column(type="integer")
-     * @ORM\GeneratedValue(strategy="AUTO")
-     *
-     * @var int
-     */
+    /** @var int */
+    #[ORM\Id]
+    #[ORM\Column(type: 'integer')]
+    #[ORM\GeneratedValue(strategy: 'AUTO')]
     public $id;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="GH7006Book")
-     * @ORM\JoinColumn(name="bookingId", referencedColumnName="id", nullable=false)
-     *
-     * @var GH7006Book
-     */
+    /** @var GH7006Book */
+    #[ORM\ManyToOne(targetEntity: GH7006Book::class)]
+    #[ORM\JoinColumn(name: 'bookingId', referencedColumnName: 'id', nullable: false)]
     public $book;
 
-    /**
-     * @ORM\OneToMany(targetEntity="GH7006PCTFee", mappedBy="pct", cascade={"persist", "remove"})
-     * @ORM\OrderBy({"id" = "ASC"})
-     *
-     * @var Collection<int, GH7006PCTFee>
-     */
+    /** @var Collection<int, GH7006PCTFee> */
+    #[ORM\OneToMany(targetEntity: GH7006PCTFee::class, mappedBy: 'pct', cascade: ['persist', 'remove'])]
+    #[ORM\OrderBy(['id' => 'ASC'])]
     public $fees;
 
     public function __construct()
@@ -105,26 +83,18 @@ class GH7006PCT
     }
 }
 
-/**
- * @ORM\Entity
- */
+#[ORM\Entity]
 class GH7006PCTFee
 {
-    /**
-     * @ORM\Id
-     * @ORM\Column(type="integer")
-     * @ORM\GeneratedValue(strategy="AUTO")
-     *
-     * @var int
-     */
+    /** @var int */
+    #[ORM\Id]
+    #[ORM\Column(type: 'integer')]
+    #[ORM\GeneratedValue(strategy: 'AUTO')]
     public $id;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="GH7006PCT", inversedBy="fees")
-     * @ORM\JoinColumn(name="paymentCardTransactionId", referencedColumnName="id", nullable=false)
-     *
-     * @var GH7006PCT
-     */
+    /** @var GH7006PCT */
+    #[ORM\ManyToOne(targetEntity: GH7006PCT::class, inversedBy: 'fees')]
+    #[ORM\JoinColumn(name: 'paymentCardTransactionId', referencedColumnName: 'id', nullable: false)]
     public $pct;
 
     public function __construct(GH7006PCT $pct)

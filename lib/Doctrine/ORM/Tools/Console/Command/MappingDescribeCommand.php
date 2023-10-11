@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Tools\Console\Command;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Mapping\AssociationMapping;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\FieldMapping;
 use Doctrine\Persistence\Mapping\MappingException;
 use InvalidArgumentException;
 use Symfony\Component\Console\Input\InputArgument;
@@ -32,6 +34,7 @@ use function print_r;
 use function sprintf;
 
 use const JSON_PRETTY_PRINT;
+use const JSON_THROW_ON_ERROR;
 use const JSON_UNESCAPED_SLASHES;
 use const JSON_UNESCAPED_UNICODE;
 
@@ -39,9 +42,6 @@ use const JSON_UNESCAPED_UNICODE;
  * Show information about mapped entities.
  *
  * @link    www.doctrine-project.org
- *
- * @psalm-import-type AssociationMapping from ClassMetadata
- * @psalm-import-type FieldMapping from ClassMetadata
  */
 final class MappingDescribeCommand extends AbstractEntityManagerCommand
 {
@@ -59,8 +59,7 @@ The %command.full_name% command describes the metadata for the given full or par
 Or:
 
     <info>%command.full_name%</info> MyEntity
-EOT
-             );
+EOT);
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -82,7 +81,7 @@ EOT
     private function displayEntity(
         string $entityName,
         EntityManagerInterface $entityManager,
-        SymfonyStyle $ui
+        SymfonyStyle $ui,
     ): void {
         $metadata = $this->getClassMetadata($entityName, $entityManager);
 
@@ -99,9 +98,6 @@ EOT
                     $this->formatField('Parent classes', $metadata->parentClasses),
                     $this->formatField('Sub classes', $metadata->subClasses),
                     $this->formatField('Embedded classes', $metadata->subClasses),
-                    $this->formatField('Named queries', $metadata->namedQueries),
-                    $this->formatField('Named native queries', $metadata->namedNativeQueries),
-                    $this->formatField('SQL result set mappings', $metadata->sqlResultSetMappings),
                     $this->formatField('Identifier', $metadata->identifier),
                     $this->formatField('Inheritance type', $metadata->inheritanceType),
                     $this->formatField('Discriminator column', $metadata->discriminatorColumn),
@@ -123,8 +119,8 @@ EOT
                 [$this->formatField('Association mappings:', '')],
                 $this->formatMappings($metadata->associationMappings),
                 [$this->formatField('Field mappings:', '')],
-                $this->formatMappings($metadata->fieldMappings)
-            )
+                $this->formatMappings($metadata->fieldMappings),
+            ),
         );
     }
 
@@ -143,7 +139,7 @@ EOT
         if (! $entityClassNames) {
             throw new InvalidArgumentException(
                 'You do not have any mapped Doctrine ORM entities according to the current configuration. ' .
-                'If you have entities or mapping files you should check your mapping configuration for errors.'
+                'If you have entities or mapping files you should check your mapping configuration for errors.',
             );
         }
 
@@ -158,24 +154,22 @@ EOT
      */
     private function getClassMetadata(
         string $entityName,
-        EntityManagerInterface $entityManager
+        EntityManagerInterface $entityManager,
     ): ClassMetadata {
         try {
             return $entityManager->getClassMetadata($entityName);
-        } catch (MappingException $e) {
+        } catch (MappingException) {
         }
 
         $matches = array_filter(
             $this->getMappedEntities($entityManager),
-            static function ($mappedEntity) use ($entityName) {
-                return preg_match('{' . preg_quote($entityName) . '}', $mappedEntity);
-            }
+            static fn ($mappedEntity) => preg_match('{' . preg_quote($entityName) . '}', $mappedEntity)
         );
 
         if (! $matches) {
             throw new InvalidArgumentException(sprintf(
                 'Could not find any mapped Entity classes matching "%s"',
-                $entityName
+                $entityName,
             ));
         }
 
@@ -183,7 +177,7 @@ EOT
             throw new InvalidArgumentException(sprintf(
                 'Entity name "%s" is ambiguous, possible matches: "%s"',
                 $entityName,
-                implode(', ', $matches)
+                implode(', ', $matches),
             ));
         }
 
@@ -192,10 +186,8 @@ EOT
 
     /**
      * Format the given value for console output
-     *
-     * @param mixed $value
      */
-    private function formatValue($value): string
+    private function formatValue(mixed $value): string
     {
         if ($value === '') {
             return '';
@@ -214,7 +206,10 @@ EOT
         }
 
         if (is_array($value)) {
-            return json_encode($value, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT);
+            return json_encode(
+                $value,
+                JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR,
+            );
         }
 
         if (is_object($value)) {
@@ -237,7 +232,7 @@ EOT
      * @return string[]
      * @psalm-return array{0: string, 1: string}
      */
-    private function formatField(string $label, $value): array
+    private function formatField(string $label, mixed $value): array
     {
         if ($value === null) {
             $value = '<comment>None</comment>';
@@ -261,7 +256,7 @@ EOT
         foreach ($propertyMappings as $propertyName => $mapping) {
             $output[] = $this->formatField(sprintf('  %s', $propertyName), '');
 
-            foreach ($mapping as $field => $value) {
+            foreach ((array) $mapping as $field => $value) {
                 $output[] = $this->formatField(sprintf('    %s', $field), $this->formatValue($value));
             }
         }

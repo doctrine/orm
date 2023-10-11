@@ -7,25 +7,24 @@ namespace Doctrine\ORM\Cache\Persister\Collection;
 use Doctrine\ORM\Cache\CollectionCacheKey;
 use Doctrine\ORM\Cache\ConcurrentRegion;
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\AssociationMapping;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\Persisters\Collection\CollectionPersister;
 
 use function spl_object_id;
 
-/** @psalm-import-type AssociationMapping from ClassMetadata */
 class ReadWriteCachedCollectionPersister extends AbstractCollectionPersister
 {
-    /** @param AssociationMapping $association The association mapping. */
-    public function __construct(CollectionPersister $persister, ConcurrentRegion $region, EntityManagerInterface $em, array $association)
-    {
+    public function __construct(
+        CollectionPersister $persister,
+        ConcurrentRegion $region,
+        EntityManagerInterface $em,
+        AssociationMapping $association,
+    ) {
         parent::__construct($persister, $region, $em, $association);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function afterTransactionComplete()
+    public function afterTransactionComplete(): void
     {
         if (isset($this->queuedCache['update'])) {
             foreach ($this->queuedCache['update'] as $item) {
@@ -42,10 +41,7 @@ class ReadWriteCachedCollectionPersister extends AbstractCollectionPersister
         $this->queuedCache = [];
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function afterTransactionRolledBack()
+    public function afterTransactionRolledBack(): void
     {
         if (isset($this->queuedCache['update'])) {
             foreach ($this->queuedCache['update'] as $item) {
@@ -62,13 +58,10 @@ class ReadWriteCachedCollectionPersister extends AbstractCollectionPersister
         $this->queuedCache = [];
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function delete(PersistentCollection $collection)
+    public function delete(PersistentCollection $collection): void
     {
         $ownerId = $this->uow->getEntityIdentifier($collection->getOwner());
-        $key     = new CollectionCacheKey($this->sourceEntity->rootEntityName, $this->association['fieldName'], $ownerId);
+        $key     = new CollectionCacheKey($this->sourceEntity->rootEntityName, $this->association->fieldName, $ownerId);
         $lock    = $this->region->lock($key);
 
         $this->persister->delete($collection);
@@ -83,10 +76,7 @@ class ReadWriteCachedCollectionPersister extends AbstractCollectionPersister
         ];
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function update(PersistentCollection $collection)
+    public function update(PersistentCollection $collection): void
     {
         $isInitialized = $collection->isInitialized();
         $isDirty       = $collection->isDirty();
@@ -98,7 +88,7 @@ class ReadWriteCachedCollectionPersister extends AbstractCollectionPersister
         $this->persister->update($collection);
 
         $ownerId = $this->uow->getEntityIdentifier($collection->getOwner());
-        $key     = new CollectionCacheKey($this->sourceEntity->rootEntityName, $this->association['fieldName'], $ownerId);
+        $key     = new CollectionCacheKey($this->sourceEntity->rootEntityName, $this->association->fieldName, $ownerId);
         $lock    = $this->region->lock($key);
 
         if ($lock === null) {

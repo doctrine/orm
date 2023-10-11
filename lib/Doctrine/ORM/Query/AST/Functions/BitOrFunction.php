@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Query\AST\Functions;
 
 use Doctrine\ORM\Query\AST\Node;
-use Doctrine\ORM\Query\Lexer;
 use Doctrine\ORM\Query\Parser;
 use Doctrine\ORM\Query\SqlWalker;
+use Doctrine\ORM\Query\TokenType;
 
 /**
  * "BIT_OR" "(" ArithmeticPrimary "," ArithmeticPrimary ")"
@@ -16,33 +16,28 @@ use Doctrine\ORM\Query\SqlWalker;
  */
 class BitOrFunction extends FunctionNode
 {
-    /** @var Node */
-    public $firstArithmetic;
+    public Node $firstArithmetic;
+    public Node $secondArithmetic;
 
-    /** @var Node */
-    public $secondArithmetic;
-
-    /** @inheritDoc */
-    public function getSql(SqlWalker $sqlWalker)
+    public function getSql(SqlWalker $sqlWalker): string
     {
         $platform = $sqlWalker->getConnection()->getDatabasePlatform();
 
         return $platform->getBitOrComparisonExpression(
             $this->firstArithmetic->dispatch($sqlWalker),
-            $this->secondArithmetic->dispatch($sqlWalker)
+            $this->secondArithmetic->dispatch($sqlWalker),
         );
     }
 
-    /** @inheritDoc */
-    public function parse(Parser $parser)
+    public function parse(Parser $parser): void
     {
-        $parser->match(Lexer::T_IDENTIFIER);
-        $parser->match(Lexer::T_OPEN_PARENTHESIS);
+        $parser->match(TokenType::T_IDENTIFIER);
+        $parser->match(TokenType::T_OPEN_PARENTHESIS);
 
         $this->firstArithmetic = $parser->ArithmeticPrimary();
-        $parser->match(Lexer::T_COMMA);
+        $parser->match(TokenType::T_COMMA);
         $this->secondArithmetic = $parser->ArithmeticPrimary();
 
-        $parser->match(Lexer::T_CLOSE_PARENTHESIS);
+        $parser->match(TokenType::T_CLOSE_PARENTHESIS);
     }
 }

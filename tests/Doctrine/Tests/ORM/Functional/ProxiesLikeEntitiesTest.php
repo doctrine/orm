@@ -41,7 +41,7 @@ class ProxiesLikeEntitiesTest extends OrmFunctionalTestCase
             CmsArticle::class,
             CmsAddress::class,
             CmsEmail::class,
-            CmsGroup::class
+            CmsGroup::class,
         );
 
         $this->user           = new CmsUser();

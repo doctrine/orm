@@ -6,24 +6,18 @@ namespace Doctrine\Tests\Models\DDC889;
 
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\ClassMetadata;
-use Doctrine\ORM\Mapping\Column;
-use Doctrine\ORM\Mapping\MappedSuperclass;
 
-/** @MappedSuperclass */
 #[ORM\MappedSuperclass]
 class DDC889SuperClass
 {
-    /**
-     * @var string
-     * @Column()
-     */
+    /** @var string */
     #[ORM\Column]
     protected $name;
 
     public static function loadMetadata(ClassMetadata $metadata): void
     {
         $metadata->mapField(
-            ['fieldName' => 'name']
+            ['fieldName' => 'name'],
         );
 
         $metadata->isMappedSuperclass = true;

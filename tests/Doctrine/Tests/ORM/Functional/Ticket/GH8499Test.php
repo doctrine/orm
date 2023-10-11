@@ -16,6 +16,8 @@ use Doctrine\ORM\Mapping\Table;
 use Doctrine\ORM\Mapping\Version;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Depends;
+use PHPUnit\Framework\Attributes\Group;
 
 use function date;
 use function strtotime;
@@ -37,7 +39,7 @@ class GH8499Test extends OrmFunctionalTestCase
         $this->createSchemaForModels(GH8499VersionableEntity::class);
     }
 
-    /** @group GH-8499 */
+    #[Group('GH-8499')]
     public function testOptimisticTimestampSetsDefaultValue(): GH8499VersionableEntity
     {
         $this->createSchema();
@@ -54,10 +56,8 @@ class GH8499Test extends OrmFunctionalTestCase
         return $entity;
     }
 
-    /**
-     * @group GH-8499
-     * @depends testOptimisticTimestampSetsDefaultValue
-     */
+    #[Depends('testOptimisticTimestampSetsDefaultValue')]
+    #[Group('GH-8499')]
     public function testOptimisticLockWithDateTimeForVersion(GH8499VersionableEntity $entity): void
     {
         $q = $this->_em->createQuery('SELECT t FROM Doctrine\Tests\ORM\Functional\Ticket\GH8499VersionableEntity t WHERE t.id = :id');
@@ -67,12 +67,12 @@ class GH8499Test extends OrmFunctionalTestCase
         $format       = $this->_em->getConnection()->getDatabasePlatform()->getDateTimeFormatString();
         $modifiedDate = new DateTime(date(
             $format,
-            strtotime($test->getRevision()->format($format)) - 3600
+            strtotime($test->getRevision()->format($format)) - 3600,
         ));
 
         $this->conn->executeQuery(
             'UPDATE GH8499VersionableEntity SET revision = ? WHERE id = ?',
-            [$modifiedDate->format($format), $test->id]
+            [$modifiedDate->format($format), $test->id],
         );
 
         $this->_em->refresh($test);
@@ -85,16 +85,16 @@ class GH8499Test extends OrmFunctionalTestCase
         self::assertEquals(
             'Test Entity Locked',
             $test->getName(),
-            'Entity not modified after persist/flush,'
+            'Entity not modified after persist/flush,',
         );
         self::assertGreaterThan(
             $modifiedDate->getTimestamp(),
             $test->getRevision()->getTimestamp(),
-            'Current version timestamp is not greater than previous one.'
+            'Current version timestamp is not greater than previous one.',
         );
     }
 
-    /** @group GH-8499 */
+    #[Group('GH-8499')]
     public function testOptimisticLockWithDateTimeForVersionThrowsException(): void
     {
         $this->createSchema();
@@ -109,37 +109,27 @@ class GH8499Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- * @Table
- */
+#[Table]
+#[Entity]
 class GH8499VersionableEntity
 {
-    /**
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     * @var int
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     public $id;
 
-    /**
-     * @Column(type="string", length=255)
-     * @var string
-     */
+    /** @var string */
+    #[Column(type: 'string', length: 255)]
     public $name;
 
-    /**
-     * @Column(type="string", length=255)
-     * @var string
-     */
+    /** @var string */
+    #[Column(type: 'string', length: 255)]
     public $description;
 
-    /**
-     * @Version
-     * @Column(type="datetime")
-     * @var DateTimeInterface
-     */
+    /** @var DateTimeInterface */
+    #[Version]
+    #[Column(type: 'datetime')]
     public $revision;
 
     public function getId(): int
@@ -167,7 +157,7 @@ class GH8499VersionableEntity
         $this->description = $description;
     }
 
-    public function getRevision(): ?DateTimeInterface
+    public function getRevision(): DateTimeInterface|null
     {
         return $this->revision;
     }

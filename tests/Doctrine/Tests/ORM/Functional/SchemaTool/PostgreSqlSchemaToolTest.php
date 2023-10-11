@@ -12,8 +12,9 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\Table;
-use Doctrine\Tests\Models;
+use Doctrine\Tests\Models\CMS\CmsAddress;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
 use function array_filter;
 use function implode;
@@ -33,89 +34,75 @@ class PostgreSqlSchemaToolTest extends OrmFunctionalTestCase
 
     public function testPostgresMetadataSequenceIncrementedBy10(): void
     {
-        $address = $this->_em->getClassMetadata(Models\CMS\CmsAddress::class);
+        $address = $this->_em->getClassMetadata(CmsAddress::class);
 
         self::assertEquals(1, $address->sequenceGeneratorDefinition['allocationSize']);
     }
 
-    /** @group DDC-1657 */
+    #[Group('DDC-1657')]
     public function testUpdateSchemaWithPostgreSQLSchema(): void
     {
         $sql = $this->getUpdateSchemaSqlForModels(
             DDC1657Screen::class,
-            DDC1657Avatar::class
+            DDC1657Avatar::class,
         );
-        $sql = array_filter($sql, static function ($sql) {
-            return str_starts_with($sql, 'DROP SEQUENCE stonewood.');
-        });
+        $sql = array_filter($sql, static fn ($sql) => str_starts_with($sql, 'DROP SEQUENCE stonewood.'));
 
         self::assertCount(0, $sql, implode("\n", $sql));
     }
 }
 
-/**
- * @Entity
- * @Table(name="stonewood.screen")
- */
+#[Table(name: 'stonewood.screen')]
+#[Entity]
 class DDC1657Screen
 {
     /**
      * Identifier
-     *
-     * @var int
-     * @Id
-     * @GeneratedValue(strategy="IDENTITY")
-     * @Column(name="pk", type="integer", nullable=false)
      */
-    private $pk;
+    #[Id]
+    #[GeneratedValue(strategy: 'IDENTITY')]
+    #[Column(name: 'pk', type: 'integer', nullable: false)]
+    private int $pk;
 
     /**
      * Title
-     *
-     * @var string
-     * @Column(name="title", type="string", length=255, nullable=false)
      */
-    private $title;
+    #[Column(name: 'title', type: 'string', length: 255, nullable: false)]
+    private string $title;
 
     /**
      * Path
-     *
-     * @var string
-     * @Column(name="path", type="string", length=255, nullable=false)
      */
-    private $path;
+    #[Column(name: 'path', type: 'string', length: 255, nullable: false)]
+    private string $path;
 
     /**
      * Register date
      *
      * @var Date
-     * @Column(name="ddate", type="date", nullable=false)
      */
+    #[Column(name: 'ddate', type: 'date', nullable: false)]
     private $ddate;
 
     /**
      * Avatar
      *
      * @var Stonewood\Model\Entity\Avatar
-     * @ManyToOne(targetEntity="DDC1657Avatar")
-     * @JoinColumn(name="pk_avatar", referencedColumnName="pk", nullable=true, onDelete="CASCADE")
      */
+    #[ManyToOne(targetEntity: 'DDC1657Avatar')]
+    #[JoinColumn(name: 'pk_avatar', referencedColumnName: 'pk', nullable: true, onDelete: 'CASCADE')]
     private $avatar;
 }
 
-/**
- * @Entity
- * @Table(name="stonewood.avatar")
- */
+#[Table(name: 'stonewood.avatar')]
+#[Entity]
 class DDC1657Avatar
 {
     /**
      * Identifier
-     *
-     * @var int
-     * @Id
-     * @GeneratedValue(strategy="IDENTITY")
-     * @Column(name="pk", type="integer", nullable=false)
      */
-    private $pk;
+    #[Id]
+    #[GeneratedValue(strategy: 'IDENTITY')]
+    #[Column(name: 'pk', type: 'integer', nullable: false)]
+    private int $pk;
 }

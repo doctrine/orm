@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\ValueConversionType;
 
-use Doctrine\Tests\Models;
 use Doctrine\Tests\Models\ValueConversionType as Entity;
+use Doctrine\Tests\Models\ValueConversionType\InversedOneToManyExtraLazyEntity;
+use Doctrine\Tests\Models\ValueConversionType\OwningManyToOneExtraLazyEntity;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
 /**
  * The entities all use a custom type that converst the value as identifier(s).
@@ -14,9 +16,8 @@ use Doctrine\Tests\OrmFunctionalTestCase;
  *
  * Test that OneToMany associations work correctly, focusing on EXTRA_LAZY
  * functionality.
- *
- * @group DDC-3380
  */
+#[Group('DDC-3380')]
 class OneToManyExtraLazyTest extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -64,8 +65,8 @@ class OneToManyExtraLazyTest extends OrmFunctionalTestCase
     public function testThatExtraLazyCollectionIsCounted(): void
     {
         $inversed = $this->_em->find(
-            Models\ValueConversionType\InversedOneToManyExtraLazyEntity::class,
-            'abc'
+            InversedOneToManyExtraLazyEntity::class,
+            'abc',
         );
 
         self::assertEquals(3, $inversed->associatedEntities->count());
@@ -74,13 +75,13 @@ class OneToManyExtraLazyTest extends OrmFunctionalTestCase
     public function testThatExtraLazyCollectionContainsAnEntity(): void
     {
         $inversed = $this->_em->find(
-            Models\ValueConversionType\InversedOneToManyExtraLazyEntity::class,
-            'abc'
+            InversedOneToManyExtraLazyEntity::class,
+            'abc',
         );
 
         $owning = $this->_em->find(
-            Models\ValueConversionType\OwningManyToOneExtraLazyEntity::class,
-            'def'
+            OwningManyToOneExtraLazyEntity::class,
+            'def',
         );
 
         self::assertTrue($inversed->associatedEntities->contains($owning));
@@ -89,8 +90,8 @@ class OneToManyExtraLazyTest extends OrmFunctionalTestCase
     public function testThatExtraLazyCollectionContainsAnIndexbyKey(): void
     {
         $inversed = $this->_em->find(
-            Models\ValueConversionType\InversedOneToManyExtraLazyEntity::class,
-            'abc'
+            InversedOneToManyExtraLazyEntity::class,
+            'abc',
         );
 
         self::assertTrue($inversed->associatedEntities->containsKey('def'));
@@ -99,8 +100,8 @@ class OneToManyExtraLazyTest extends OrmFunctionalTestCase
     public function testThatASliceOfTheExtraLazyCollectionIsLoaded(): void
     {
         $inversed = $this->_em->find(
-            Models\ValueConversionType\InversedOneToManyExtraLazyEntity::class,
-            'abc'
+            InversedOneToManyExtraLazyEntity::class,
+            'abc',
         );
 
         self::assertCount(2, $inversed->associatedEntities->slice(0, 2));

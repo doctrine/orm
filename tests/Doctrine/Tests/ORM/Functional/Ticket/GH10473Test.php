@@ -6,7 +6,6 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Tools\ResolveTargetEntityListener;
 use Doctrine\Tests\OrmTestCase;
 
@@ -21,7 +20,7 @@ class GH10473Test extends OrmTestCase
         $resolveTargetEntity->addResolveTargetEntity(
             GH10473BaseUser::class,
             GH10473UserImplementation::class,
-            []
+            [],
         );
 
         $em->getEventManager()->addEventSubscriber($resolveTargetEntity);
@@ -32,25 +31,25 @@ class GH10473Test extends OrmTestCase
         self::assertTrue($userMetadata->isInheritanceTypeNone());
 
         $socialMediaAccountsMapping = $userMetadata->getAssociationMapping('socialMediaAccounts');
-        self::assertArrayNotHasKey('inherited', $socialMediaAccountsMapping);
-        self::assertTrue((bool) ($socialMediaAccountsMapping['type'] & ClassMetadata::TO_MANY));
-        self::assertFalse($socialMediaAccountsMapping['isOwningSide']);
-        self::assertSame(GH10473SocialMediaAccount::class, $socialMediaAccountsMapping['targetEntity']);
-        self::assertSame('user', $socialMediaAccountsMapping['mappedBy']);
+        self::assertNull($socialMediaAccountsMapping->inherited);
+        self::assertTrue($socialMediaAccountsMapping->isToMany());
+        self::assertFalse($socialMediaAccountsMapping->isOwningSide());
+        self::assertSame(GH10473SocialMediaAccount::class, $socialMediaAccountsMapping->targetEntity);
+        self::assertSame('user', $socialMediaAccountsMapping->mappedBy);
 
         $createdByMapping = $userMetadata->getAssociationMapping('createdBy');
-        self::assertArrayNotHasKey('inherited', $createdByMapping);
-        self::assertTrue((bool) ($createdByMapping['type'] & ClassMetadata::TO_ONE));
-        self::assertTrue($createdByMapping['isOwningSide']);
-        self::assertSame(GH10473UserImplementation::class, $createdByMapping['targetEntity']);
-        self::assertSame('createdUsers', $createdByMapping['inversedBy']);
+        self::assertNull($createdByMapping->inherited);
+        self::assertTrue($createdByMapping->isToOne());
+        self::assertTrue($createdByMapping->isOwningSide());
+        self::assertSame(GH10473UserImplementation::class, $createdByMapping->targetEntity);
+        self::assertSame('createdUsers', $createdByMapping->inversedBy);
 
         $createdUsersMapping = $userMetadata->getAssociationMapping('createdUsers');
-        self::assertArrayNotHasKey('inherited', $createdUsersMapping);
-        self::assertTrue((bool) ($createdUsersMapping['type'] & ClassMetadata::TO_MANY));
-        self::assertFalse($createdUsersMapping['isOwningSide']);
-        self::assertSame(GH10473UserImplementation::class, $createdUsersMapping['targetEntity']);
-        self::assertSame('createdBy', $createdUsersMapping['mappedBy']);
+        self::assertNull($createdUsersMapping->inherited);
+        self::assertTrue($createdUsersMapping->isToMany());
+        self::assertFalse($createdUsersMapping->isOwningSide());
+        self::assertSame(GH10473UserImplementation::class, $createdUsersMapping->targetEntity);
+        self::assertSame('createdBy', $createdUsersMapping->mappedBy);
 
         $socialMediaAccountMetadata = $em->getClassMetadata(GH10473SocialMediaAccount::class);
 
@@ -58,73 +57,49 @@ class GH10473Test extends OrmTestCase
         self::assertTrue($socialMediaAccountMetadata->isInheritanceTypeNone());
 
         $userMapping = $socialMediaAccountMetadata->getAssociationMapping('user');
-        self::assertArrayNotHasKey('inherited', $userMapping);
-        self::assertTrue((bool) ($userMapping['type'] & ClassMetadata::TO_ONE));
-        self::assertTrue($userMapping['isOwningSide']);
-        self::assertSame(GH10473UserImplementation::class, $userMapping['targetEntity']);
-        self::assertSame('socialMediaAccounts', $userMapping['inversedBy']);
+        self::assertNull($userMapping->inherited);
+        self::assertTrue($userMapping->isToOne());
+        self::assertTrue($userMapping->isOwningSide());
+        self::assertSame(GH10473UserImplementation::class, $userMapping->targetEntity);
+        self::assertSame('socialMediaAccounts', $userMapping->inversedBy);
     }
 }
 
-/**
- * @ORM\MappedSuperclass
- */
+#[ORM\MappedSuperclass]
 abstract class GH10473BaseUser
 {
-    /**
-     * @ORM\Id
-     * @ORM\Column(type="integer")
-     *
-     * @var int
-     */
+    /** @var int */
+    #[ORM\Column(type: 'integer')]
+    #[ORM\Id]
     private $id;
 
-    /**
-     * @ORM\OneToMany(targetEntity="GH10473SocialMediaAccount", mappedBy="user")
-     *
-     * @var Collection
-     */
+    /** @var Collection */
+    #[ORM\OneToMany(targetEntity: GH10473SocialMediaAccount::class, mappedBy: 'user')]
     private $socialMediaAccounts;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="GH10473BaseUser", inversedBy="createdUsers")
-     *
-     * @var GH10473BaseUser
-     */
+    /** @var GH10473BaseUser */
+    #[ORM\ManyToOne(targetEntity: self::class, inversedBy: 'createdUsers')]
     private $createdBy;
 
-    /**
-     * @ORM\OneToMany(targetEntity="GH10473BaseUser", mappedBy="createdBy")
-     *
-     * @var Collection
-     */
+    /** @var Collection */
+    #[ORM\OneToMany(targetEntity: self::class, mappedBy: 'createdBy')]
     private $createdUsers;
 }
 
-/**
- * @ORM\Entity
- */
+#[ORM\Entity]
 class GH10473SocialMediaAccount
 {
-    /**
-     * @ORM\Id
-     * @ORM\Column(type="integer")
-     *
-     * @var int
-     */
+    /** @var int */
+    #[ORM\Column(type: 'integer')]
+    #[ORM\Id]
     private $id;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="GH10473BaseUser", inversedBy="socialMediaAccounts")
-     *
-     * @var GH10473BaseUser
-     */
+    /** @var GH10473BaseUser */
+    #[ORM\ManyToOne(targetEntity: GH10473BaseUser::class, inversedBy: 'socialMediaAccounts')]
     private $user;
 }
 
-/**
- * @ORM\Entity
- */
+#[ORM\Entity]
 class GH10473UserImplementation extends GH10473BaseUser
 {
 }

@@ -9,7 +9,6 @@ use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\JoinColumn;
-use Doctrine\ORM\Mapping\JoinColumns;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\UnitOfWork;
 use Doctrine\Tests\OrmFunctionalTestCase;
@@ -73,25 +72,17 @@ class DDC353Test extends OrmFunctionalTestCase
     }
 }
 
-/** @Entity */
+#[Entity]
 class DDC353Picture
 {
-    /**
-     * @var int
-     * @Column(name="picture_id", type="integer")
-     * @Id
-     * @GeneratedValue
-     */
-    private $pictureId;
+    #[Column(name: 'picture_id', type: 'integer')]
+    #[Id]
+    #[GeneratedValue]
+    private int $pictureId;
 
-    /**
-     * @var DDC353File
-     * @ManyToOne(targetEntity="DDC353File", cascade={"persist", "remove"})
-     * @JoinColumns({
-     *   @JoinColumn(name="file_id", referencedColumnName="file_id")
-     * })
-     */
-    private $file;
+    #[JoinColumn(name: 'file_id', referencedColumnName: 'file_id')]
+    #[ManyToOne(targetEntity: 'DDC353File', cascade: ['persist', 'remove'])]
+    private DDC353File|null $file = null;
 
     public function getPictureId(): int
     {
@@ -109,15 +100,13 @@ class DDC353Picture
     }
 }
 
-/** @Entity */
+#[Entity]
 class DDC353File
 {
-    /**
-     * @var int
-     * @Column(name="file_id", type="integer")
-     * @Id
-     * @GeneratedValue(strategy="AUTO")
-     */
+    /** @var int */
+    #[Column(name: 'file_id', type: 'integer')]
+    #[Id]
+    #[GeneratedValue(strategy: 'AUTO')]
     public $fileId;
 
     /**

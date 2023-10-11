@@ -8,8 +8,9 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\Tests\Models\Cache\Country;
 use Doctrine\Tests\Models\Cache\State;
+use PHPUnit\Framework\Attributes\Group;
 
-/** @group DDC-2183 */
+#[Group('DDC-2183')]
 class SecondLevelCacheCriteriaTest extends SecondLevelCacheFunctionalTestCase
 {
     public function testMatchingPut(): void
@@ -26,7 +27,7 @@ class SecondLevelCacheCriteriaTest extends SecondLevelCacheFunctionalTestCase
         $this->getQueryLog()->reset()->enable();
         $name    = $this->countries[0]->getName();
         $result1 = $repository->matching(new Criteria(
-            Criteria::expr()->eq('name', $name)
+            Criteria::expr()->eq('name', $name),
         ));
 
         // Because matching returns lazy collection, we force initialization
@@ -41,7 +42,7 @@ class SecondLevelCacheCriteriaTest extends SecondLevelCacheFunctionalTestCase
         $this->_em->clear();
 
         $result2 = $repository->matching(new Criteria(
-            Criteria::expr()->eq('name', $name)
+            Criteria::expr()->eq('name', $name),
         ));
 
         $this->assertQueryCount(1);
@@ -65,7 +66,7 @@ class SecondLevelCacheCriteriaTest extends SecondLevelCacheFunctionalTestCase
         $repository = $this->_em->getRepository(Country::class);
         $this->getQueryLog()->reset()->enable();
         $result1 = $repository->matching(new Criteria(
-            Criteria::expr()->eq('name', $this->countries[0]->getName())
+            Criteria::expr()->eq('name', $this->countries[0]->getName()),
         ));
 
         // Because matching returns lazy collection, we force initialization
@@ -79,7 +80,7 @@ class SecondLevelCacheCriteriaTest extends SecondLevelCacheFunctionalTestCase
         $this->_em->clear();
 
         $result2 = $repository->matching(new Criteria(
-            Criteria::expr()->eq('name', $this->countries[0]->getName())
+            Criteria::expr()->eq('name', $this->countries[0]->getName()),
         ));
 
         // Because matching returns lazy collection, we force initialization
@@ -94,7 +95,7 @@ class SecondLevelCacheCriteriaTest extends SecondLevelCacheFunctionalTestCase
         self::assertEquals($this->countries[0]->getName(), $result2[0]->getName());
 
         $result3 = $repository->matching(new Criteria(
-            Criteria::expr()->eq('name', $this->countries[1]->getName())
+            Criteria::expr()->eq('name', $this->countries[1]->getName()),
         ));
 
         // Because matching returns lazy collection, we force initialization
@@ -109,7 +110,7 @@ class SecondLevelCacheCriteriaTest extends SecondLevelCacheFunctionalTestCase
         self::assertEquals($this->countries[1]->getName(), $result3[0]->getName());
 
         $result4 = $repository->matching(new Criteria(
-            Criteria::expr()->eq('name', $this->countries[1]->getName())
+            Criteria::expr()->eq('name', $this->countries[1]->getName()),
         ));
 
         $this->assertQueryCount(2);
@@ -134,7 +135,7 @@ class SecondLevelCacheCriteriaTest extends SecondLevelCacheFunctionalTestCase
         $this->getQueryLog()->reset()->enable();
         $collection = $entity->getCities();
         $matching   = $collection->matching(new Criteria(
-            Criteria::expr()->eq('name', $itemName)
+            Criteria::expr()->eq('name', $itemName),
         ));
 
         $this->assertQueryCount(1);
@@ -147,7 +148,7 @@ class SecondLevelCacheCriteriaTest extends SecondLevelCacheFunctionalTestCase
         $this->getQueryLog()->reset()->enable();
         $collection = $entity->getCities();
         $matching   = $collection->matching(new Criteria(
-            Criteria::expr()->eq('name', $itemName)
+            Criteria::expr()->eq('name', $itemName),
         ));
 
         $this->assertQueryCount(0);

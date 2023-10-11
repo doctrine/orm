@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Query\AST;
 
+use Doctrine\ORM\Query\SqlWalker;
+
 /**
  * ExistsExpression ::= ["NOT"] "EXISTS" "(" Subselect ")"
  *
@@ -11,24 +13,15 @@ namespace Doctrine\ORM\Query\AST;
  */
 class ExistsExpression extends Node
 {
-    /** @var bool */
-    public $not;
-
-    /** @var Subselect */
-    public $subselect;
-
     /** @param Subselect $subselect */
-    public function __construct($subselect, bool $not = false)
-    {
-        $this->subselect = $subselect;
-        $this->not       = $not;
+    public function __construct(
+        public $subselect,
+        public bool $not = false,
+    ) {
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function dispatch($sqlWalker)
+    public function dispatch(SqlWalker $walker): string
     {
-        return $sqlWalker->walkExistsExpression($this);
+        return $walker->walkExistsExpression($this);
     }
 }

@@ -14,6 +14,7 @@ use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
 final class GH6531Test extends OrmFunctionalTestCase
 {
@@ -30,11 +31,11 @@ final class GH6531Test extends OrmFunctionalTestCase
                 GH6531Order::class,
                 GH6531OrderItem::class,
                 GH6531Product::class,
-            ]
+            ],
         );
     }
 
-    /** @group GH-6531 */
+    #[Group('GH-6531')]
     public function testSimpleDerivedIdentity(): void
     {
         $user          = new GH6531User();
@@ -49,7 +50,7 @@ final class GH6531Test extends OrmFunctionalTestCase
         self::assertSame($address, $this->_em->find(GH6531Address::class, $user));
     }
 
-    /** @group GH-6531 */
+    #[Group('GH-6531')]
     public function testDynamicAttributes(): void
     {
         $article = new GH6531Article();
@@ -60,11 +61,11 @@ final class GH6531Test extends OrmFunctionalTestCase
 
         self::assertSame(
             $article->attributes['name'],
-            $this->_em->find(GH6531ArticleAttribute::class, ['article' => $article, 'attribute' => 'name'])
+            $this->_em->find(GH6531ArticleAttribute::class, ['article' => $article, 'attribute' => 'name']),
         );
     }
 
-    /** @group GH-6531 */
+    #[Group('GH-6531')]
     public function testJoinTableWithMetadata(): void
     {
         $product = new GH6531Product();
@@ -79,49 +80,41 @@ final class GH6531Test extends OrmFunctionalTestCase
 
         self::assertSame(
             $order->items->first(),
-            $this->_em->find(GH6531OrderItem::class, ['product' => $product, 'order' => $order])
+            $this->_em->find(GH6531OrderItem::class, ['product' => $product, 'order' => $order]),
         );
     }
 }
 
-/** @Entity */
+#[Entity]
 class GH6531User
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     public $id;
 }
 
-/** @Entity */
+#[Entity]
 class GH6531Address
 {
-    /**
-     * @var GH6531User
-     * @Id
-     * @OneToOne(targetEntity=GH6531User::class)
-     */
+    /** @var GH6531User */
+    #[Id]
+    #[OneToOne(targetEntity: GH6531User::class)]
     public $user;
 }
 
-/** @Entity */
+#[Entity]
 class GH6531Article
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     public $id;
 
-    /**
-     * @psalm-var Collection<string, GH6531ArticleAttribute>
-     * @OneToMany(targetEntity=GH6531ArticleAttribute::class, mappedBy="article", cascade={"ALL"}, indexBy="attribute")
-     * */
+    /** @psalm-var Collection<string, GH6531ArticleAttribute> */
+    #[OneToMany(targetEntity: GH6531ArticleAttribute::class, mappedBy: 'article', cascade: ['ALL'], indexBy: 'attribute')]
     public $attributes;
 
     public function addAttribute(string $name, string $value): void
@@ -130,52 +123,33 @@ class GH6531Article
     }
 }
 
-/** @Entity */
+#[Entity]
 class GH6531ArticleAttribute
 {
-    /**
-     * @var GH6531Article
-     * @Id
-     * @ManyToOne(targetEntity=GH6531Article::class, inversedBy="attributes")
-     */
-    public $article;
-
-    /**
-     * @var string
-     * @Id
-     * @Column(type="string", length=255)
-     */
-    public $attribute;
-
-    /**
-     * @var string
-     * @Column(type="string", length=255)
-     */
-    public $value;
-
-    public function __construct(string $name, string $value, GH6531Article $article)
-    {
-        $this->attribute = $name;
-        $this->value     = $value;
-        $this->article   = $article;
+    public function __construct(
+        #[Id]
+        #[Column(type: 'string', length: 255)]
+        public string $attribute,
+        #[Column(type: 'string', length: 255)]
+        public string $value,
+        #[Id]
+        #[ManyToOne(targetEntity: GH6531Article::class, inversedBy: 'attributes')]
+        public GH6531Article $article,
+    ) {
     }
 }
 
-/** @Entity */
+#[Entity]
 class GH6531Order
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     public $id;
 
-    /**
-     * @psalm-var Collection<int, GH6531OrderItem>
-     * @OneToMany(targetEntity=GH6531OrderItem::class, mappedBy="order", cascade={"ALL"})
-     */
+    /** @psalm-var Collection<int, GH6531OrderItem> */
+    #[OneToMany(targetEntity: GH6531OrderItem::class, mappedBy: 'order', cascade: ['ALL'])]
     public $items;
 
     public function __construct()
@@ -189,45 +163,28 @@ class GH6531Order
     }
 }
 
-/** @Entity */
+#[Entity]
 class GH6531Product
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     public $id;
 }
 
-/** @Entity */
+#[Entity]
 class GH6531OrderItem
 {
-    /**
-     * @var GH6531Order
-     * @Id
-     * @ManyToOne(targetEntity=GH6531Order::class)
-     */
-    public $order;
-
-    /**
-     * @var GH6531Product
-     * @Id
-     * @ManyToOne(targetEntity=GH6531Product::class)
-     */
-    public $product;
-
-    /**
-     * @var int
-     * @Column(type="integer")
-     */
-    public $amount = 1;
-
-    public function __construct(GH6531Order $order, GH6531Product $product, int $amount = 1)
-    {
-        $this->order   = $order;
-        $this->product = $product;
-        $this->amount  = $amount;
+    public function __construct(
+        #[Id]
+        #[ManyToOne(targetEntity: GH6531Order::class)]
+        public GH6531Order $order,
+        #[Id]
+        #[ManyToOne(targetEntity: GH6531Product::class)]
+        public GH6531Product $product,
+        #[Column(type: 'integer')]
+        public int $amount = 1,
+    ) {
     }
 }

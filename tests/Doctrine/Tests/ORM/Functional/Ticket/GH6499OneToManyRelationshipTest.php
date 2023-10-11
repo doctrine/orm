@@ -8,10 +8,9 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
-/**
- * @group GH6499
- */
+#[Group('GH6499')]
 class GH6499OneToManyRelationshipTest extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -49,27 +48,19 @@ class GH6499OneToManyRelationshipTest extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @ORM\Entity
- * @ORM\Table("GH6499OTM_application")
- */
+#[ORM\Entity]
+#[ORM\Table(name: 'GH6499OTM_application')]
 class Application
 {
-    /**
-     * @ORM\Id
-     * @ORM\GeneratedValue
-     * @ORM\Column(type="integer")
-     *
-     * @var int
-     */
+    /** @var int */
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column(type: 'integer')]
     public $id;
 
-    /**
-     * @ORM\OneToMany(targetEntity=ApplicationPerson::class, mappedBy="application", orphanRemoval=true, cascade={"persist"})
-     * @ORM\JoinColumn(nullable=false)
-     *
-     * @var Collection
-     */
+    /** @var Collection */
+    #[ORM\OneToMany(mappedBy: 'application', targetEntity: ApplicationPerson::class, orphanRemoval: true, cascade: ['persist'])]
+    #[ORM\JoinColumn(nullable: false)]
     private $applicationPeople;
 
     public function __construct()
@@ -82,27 +73,20 @@ class Application
         return $this->applicationPeople;
     }
 }
-/**
- * @ORM\Entity()
- * @ORM\Table("GH6499OTM_person")
- */
+
+#[ORM\Entity]
+#[ORM\Table(name: 'GH6499OTM_person')]
 class Person
 {
-    /**
-     * @ORM\Id
-     * @ORM\GeneratedValue
-     * @ORM\Column(type="integer")
-     *
-     * @var int
-     */
+    /** @var int */
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column(type: 'integer')]
     public $id;
 
-    /**
-     * @ORM\OneToMany(targetEntity=ApplicationPerson::class, mappedBy="person", orphanRemoval=true, cascade={"persist"})
-     * @ORM\JoinColumn(nullable=false)
-     *
-     * @var Collection
-     */
+    /** @var Collection */
+    #[ORM\OneToMany(mappedBy: 'person', targetEntity: ApplicationPerson::class, orphanRemoval: true, cascade: ['persist'])]
+    #[ORM\JoinColumn(nullable: false)]
     private $applicationPeople;
 
     public function __construct()
@@ -116,35 +100,24 @@ class Person
     }
 }
 
-/**
- * @ORM\Entity()
- * @ORM\Table("GH6499OTM_application_person")
- */
+#[ORM\Entity]
+#[ORM\Table(name: 'GH6499OTM_application_person')]
 class ApplicationPerson
 {
-    /**
-     * @ORM\Id
-     * @ORM\GeneratedValue
-     * @ORM\Column(type="integer")
-     *
-     * @var int
-     */
+    /** @var int */
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column(type: 'integer')]
     public $id;
 
-    /**
-     * @ORM\ManyToOne(targetEntity=Application::class, inversedBy="applicationPeople", cascade={"persist"})
-     * @ORM\JoinColumn(nullable=false)
-     *
-     * @var Application
-     */
+    /** @var Application */
+    #[ORM\ManyToOne(targetEntity: Application::class, inversedBy: 'applicationPeople', cascade: ['persist'])]
+    #[ORM\JoinColumn(nullable: false)]
     public $application;
 
-    /**
-     * @ORM\ManyToOne(targetEntity=Person::class, inversedBy="applicationPeople", cascade={"persist"})
-     * @ORM\JoinColumn(nullable=false)
-     *
-     * @var Person
-     */
+    /** @var Person */
+    #[ORM\ManyToOne(targetEntity: Person::class, inversedBy: 'applicationPeople', cascade: ['persist'])]
+    #[ORM\JoinColumn(nullable: false)]
     public $person;
 
     public function __construct(Person $person, Application $application)

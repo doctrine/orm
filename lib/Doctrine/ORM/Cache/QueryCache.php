@@ -12,24 +12,17 @@ use Doctrine\ORM\Query\ResultSetMapping;
  */
 interface QueryCache
 {
-    /** @return bool */
-    public function clear();
+    public function clear(): bool;
 
-    /**
-     * @param mixed   $result
-     * @param mixed[] $hints
-     *
-     * @return bool
-     */
-    public function put(QueryCacheKey $key, ResultSetMapping $rsm, $result, array $hints = []);
+    /** @param mixed[] $hints */
+    public function put(QueryCacheKey $key, ResultSetMapping $rsm, mixed $result, array $hints = []): bool;
 
     /**
      * @param mixed[] $hints
      *
      * @return mixed[]|null
      */
-    public function get(QueryCacheKey $key, ResultSetMapping $rsm, array $hints = []);
+    public function get(QueryCacheKey $key, ResultSetMapping $rsm, array $hints = []): array|null;
 
-    /** @return Region */
-    public function getRegion();
+    public function getRegion(): Region;
 }

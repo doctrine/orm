@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Query\AST;
 
+use Doctrine\ORM\Query\SqlWalker;
+
 /**
  * JoinVariableDeclaration ::= Join [IndexBy]
  *
@@ -11,26 +13,15 @@ namespace Doctrine\ORM\Query\AST;
  */
 class JoinVariableDeclaration extends Node
 {
-    /** @var Join */
-    public $join;
-
-    /** @var IndexBy|null */
-    public $indexBy;
-
     /**
      * @param Join         $join
      * @param IndexBy|null $indexBy
      */
-    public function __construct($join, $indexBy)
+    public function __construct(public $join, public $indexBy)
     {
-        $this->join    = $join;
-        $this->indexBy = $indexBy;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function dispatch($walker)
+    public function dispatch(SqlWalker $walker): string
     {
         return $walker->walkJoinVariableDeclaration($this);
     }

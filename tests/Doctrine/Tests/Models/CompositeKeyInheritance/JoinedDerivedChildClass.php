@@ -9,22 +9,15 @@ use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\Table;
 
-/**
- * @Entity
- * @Table(name = "joined_derived_child")
- */
+#[Table(name: 'joined_derived_child')]
+#[Entity]
 class JoinedDerivedChildClass extends JoinedDerivedRootClass
 {
-    /**
-     * @var string
-     * @Column(type="string", length=255)
-     */
+    /** @var string */
+    #[Column(type: 'string', length: 255)]
     public $extension = 'ext';
 
-    /**
-     * @var string
-     * @Column(type="string", length=255)
-     * @Id
-     */
-    private $additionalId = 'additional';
+    #[Column(type: 'string', length: 255)]
+    #[Id]
+    private string $additionalId = 'additional';
 }

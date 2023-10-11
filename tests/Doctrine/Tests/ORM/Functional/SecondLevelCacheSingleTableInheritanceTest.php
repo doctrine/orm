@@ -10,11 +10,11 @@ use Doctrine\Tests\Models\Cache\Bar;
 use Doctrine\Tests\Models\Cache\Beach;
 use Doctrine\Tests\Models\Cache\City;
 use Doctrine\Tests\Models\Cache\Restaurant;
+use PHPUnit\Framework\Attributes\Group;
 
 use function count;
-use function get_class;
 
-/** @group DDC-2183 */
+#[Group('DDC-2183')]
 class SecondLevelCacheSingleTableInheritanceTest extends SecondLevelCacheFunctionalTestCase
 {
     public function testUseSameRegion(): void
@@ -53,7 +53,7 @@ class SecondLevelCacheSingleTableInheritanceTest extends SecondLevelCacheFunctio
 
         foreach ($this->attractions as $attraction) {
             self::assertTrue($this->cache->containsEntity(Attraction::class, $attraction->getId()));
-            self::assertTrue($this->cache->containsEntity(get_class($attraction), $attraction->getId()));
+            self::assertTrue($this->cache->containsEntity($attraction::class, $attraction->getId()));
         }
     }
 
@@ -235,7 +235,7 @@ class SecondLevelCacheSingleTableInheritanceTest extends SecondLevelCacheFunctio
 
         $contact = new Beach(
             'Botafogo',
-            $this->_em->find(City::class, $this->cities[1]->getId())
+            $this->_em->find(City::class, $this->cities[1]->getId()),
         );
 
         $this->_em->persist($contact);

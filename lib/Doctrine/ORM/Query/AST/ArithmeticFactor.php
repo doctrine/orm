@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Query\AST;
 
+use Doctrine\ORM\Query\SqlWalker;
+
 /**
  * ArithmeticFactor ::= [("+" | "-")] ArithmeticPrimary
  *
@@ -11,43 +13,24 @@ namespace Doctrine\ORM\Query\AST;
  */
 class ArithmeticFactor extends Node
 {
-    /** @var mixed */
-    public $arithmeticPrimary;
-
-    /**
-     * NULL represents no sign, TRUE means positive and FALSE means negative sign.
-     *
-     * @var bool|null
-     */
-    public $sign;
-
-    /**
-     * @param mixed     $arithmeticPrimary
-     * @param bool|null $sign
-     */
-    public function __construct($arithmeticPrimary, $sign = null)
-    {
-        $this->arithmeticPrimary = $arithmeticPrimary;
-        $this->sign              = $sign;
+    public function __construct(
+        public mixed $arithmeticPrimary,
+        public bool|null $sign = null,
+    ) {
     }
 
-    /** @return bool */
-    public function isPositiveSigned()
+    public function isPositiveSigned(): bool
     {
         return $this->sign === true;
     }
 
-    /** @return bool */
-    public function isNegativeSigned()
+    public function isNegativeSigned(): bool
     {
         return $this->sign === false;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function dispatch($sqlWalker)
+    public function dispatch(SqlWalker $walker): string
     {
-        return $sqlWalker->walkArithmeticFactor($this);
+        return $walker->walkArithmeticFactor($this);
     }
 }

@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Query\Exec;
 
+use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\Cache\QueryCacheProfile;
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\ParameterType;
 use Doctrine\DBAL\Result;
 use Doctrine\DBAL\Types\Type;
 
@@ -15,37 +17,35 @@ use Doctrine\DBAL\Types\Type;
  * @link        http://www.doctrine-project.org
  *
  * @todo Rename: AbstractSQLExecutor
+ * @psalm-type WrapperParameterType = string|Type|ParameterType::*|ArrayParameterType::*
+ * @psalm-type WrapperParameterTypeArray = array<int<0, max>, WrapperParameterType>|array<string, WrapperParameterType>
  */
 abstract class AbstractSqlExecutor
 {
     /** @var list<string>|string */
-    protected $_sqlStatements;
+    protected array|string $sqlStatements;
 
-    /** @var QueryCacheProfile */
-    protected $queryCacheProfile;
+    protected QueryCacheProfile|null $queryCacheProfile = null;
 
     /**
      * Gets the SQL statements that are executed by the executor.
      *
      * @return mixed[]|string  All the SQL update statements.
      */
-    public function getSqlStatements()
+    public function getSqlStatements(): array|string
     {
-        return $this->_sqlStatements;
+        return $this->sqlStatements;
     }
 
-    /** @return void */
-    public function setQueryCacheProfile(QueryCacheProfile $qcp)
+    public function setQueryCacheProfile(QueryCacheProfile $qcp): void
     {
         $this->queryCacheProfile = $qcp;
     }
 
     /**
      * Do not use query cache
-     *
-     * @return void
      */
-    public function removeQueryCacheProfile()
+    public function removeQueryCacheProfile(): void
     {
         $this->queryCacheProfile = null;
     }
@@ -53,11 +53,9 @@ abstract class AbstractSqlExecutor
     /**
      * Executes all sql statements.
      *
-     * @param Connection                                                           $conn   The database connection that is used to execute the queries.
-     * @param list<mixed>|array<string, mixed>                                     $params The parameters.
-     * @param array<int, int|string|Type|null>|array<string, int|string|Type|null> $types  The parameter types.
-     *
-     * @return Result|int
+     * @param Connection                       $conn   The database connection that is used to execute the queries.
+     * @param list<mixed>|array<string, mixed> $params The parameters.
+     * @psalm-param WrapperParameterTypeArray  $types  The parameter types.
      */
-    abstract public function execute(Connection $conn, array $params, array $types);
+    abstract public function execute(Connection $conn, array $params, array $types): Result|int;
 }

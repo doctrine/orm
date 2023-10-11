@@ -13,8 +13,9 @@ use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\ManyToMany;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
-/** @group GH-9109 */
+#[Group('GH-9109')]
 class GH9109Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -86,28 +87,22 @@ class GH9109Test extends OrmFunctionalTestCase
     }
 }
 
-/** @Entity */
+#[Entity]
 class GH9109Product
 {
-    /**
-     * @var int $id
-     * @Column(name="`id`", type="integer")
-     * @Id
-     * @GeneratedValue(strategy="AUTO")
-     */
-    private $id;
+    #[Column(name: '`id`', type: 'integer')]
+    #[Id]
+    #[GeneratedValue(strategy: 'AUTO')]
+    private int $id;
 
-    /**
-     * @var string $title
-     * @Column(name="`title`", type="string", length=255)
-     */
-    private $title;
+    #[Column(name: '`title`', type: 'string', length: 255)]
+    private string|null $title = null;
 
     /**
      * @var Collection|GH9109User[]
      * @psalm-var Collection<int, GH9109User>
-     * @ManyToMany(targetEntity="GH9109User")
      */
+    #[ManyToMany(targetEntity: 'GH9109User')]
     private $buyers;
 
     public function __construct()
@@ -142,28 +137,19 @@ class GH9109Product
     }
 }
 
-/** @Entity */
+#[Entity]
 class GH9109User
 {
-    /**
-     * @var int
-     * @Column(name="`id`", type="integer")
-     * @Id
-     * @GeneratedValue(strategy="AUTO")
-     */
-    private $id;
+    #[Column(name: '`id`', type: 'integer')]
+    #[Id]
+    #[GeneratedValue(strategy: 'AUTO')]
+    private int $id;
 
-    /**
-     * @var string
-     * @Column(name="`first_name`", type="string", length=255)
-     */
-    private $firstName;
+    #[Column(name: '`first_name`', type: 'string', length: 255)]
+    private string|null $firstName = null;
 
-    /**
-     * @var string
-     * @Column(name="last_name", type="string", length=255)
-     */
-    private $lastName;
+    #[Column(name: 'last_name', type: 'string', length: 255)]
+    private string|null $lastName = null;
 
     public function getId(): int
     {

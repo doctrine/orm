@@ -211,7 +211,7 @@ DQL;
         $this->_em->createQuery($dql)->execute();
 
         $query = $this->_em->createQuery(
-            'SELECT count(p.id) FROM Doctrine\Tests\Models\Company\CompanyEmployee p WHERE p.salary = 1'
+            'SELECT count(p.id) FROM Doctrine\Tests\Models\Company\CompanyEmployee p WHERE p.salary = 1',
         );
         self::assertGreaterThan(0, $query->getResult());
 

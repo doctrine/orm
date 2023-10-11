@@ -10,77 +10,12 @@ use Doctrine\ORM\Events;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\Column;
-use Doctrine\ORM\Mapping\DiscriminatorColumn;
-use Doctrine\ORM\Mapping\DiscriminatorMap;
-use Doctrine\ORM\Mapping\Entity;
-use Doctrine\ORM\Mapping\EntityListeners;
-use Doctrine\ORM\Mapping\EntityResult;
-use Doctrine\ORM\Mapping\FieldResult;
-use Doctrine\ORM\Mapping\GeneratedValue;
-use Doctrine\ORM\Mapping\Id;
-use Doctrine\ORM\Mapping\InheritanceType;
+use Doctrine\ORM\Mapping\InverseJoinColumn;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\JoinTable;
 use Doctrine\ORM\Mapping\ManyToMany;
 use Doctrine\ORM\Mapping\ManyToOne;
-use Doctrine\ORM\Mapping\NamedNativeQueries;
-use Doctrine\ORM\Mapping\NamedNativeQuery;
-use Doctrine\ORM\Mapping\SqlResultSetMapping;
-use Doctrine\ORM\Mapping\SqlResultSetMappings;
-use Doctrine\ORM\Mapping\Table;
 
-/**
- * @Entity
- * @Table(name="company_contracts")
- * @InheritanceType("SINGLE_TABLE")
- * @DiscriminatorColumn(name="discr", type="string", length=255)
- * @EntityListeners({"CompanyContractListener"})
- * @DiscriminatorMap({
- *     "fix"       = "CompanyFixContract",
- *     "flexible"  = "CompanyFlexContract",
- *     "flexultra" = "CompanyFlexUltraContract"
- * })
- * @NamedNativeQueries({
- *      @NamedNativeQuery(
- *          name           = "all-contracts",
- *          resultClass    = "__CLASS__",
- *          query          = "SELECT id, completed, discr FROM company_contracts"
- *      ),
- *      @NamedNativeQuery(
- *          name           = "all",
- *          resultClass    = "__CLASS__",
- *          query          = "SELECT id, completed, discr FROM company_contracts"
- *      ),
- * })
- * @SqlResultSetMappings({
- *      @SqlResultSetMapping(
- *          name    = "mapping-all-contracts",
- *          entities= {
- *              @EntityResult(
- *                  entityClass         = "__CLASS__",
- *                  discriminatorColumn = "discr",
- *                  fields              = {
- *                      @FieldResult("id"),
- *                      @FieldResult("completed"),
- *                  }
- *              )
- *          }
- *      ),
- *      @SqlResultSetMapping(
- *          name    = "mapping-all",
- *          entities= {
- *              @EntityResult(
- *                  entityClass         = "__CLASS__",
- *                  discriminatorColumn = "discr",
- *                  fields              = {
- *                      @FieldResult("id"),
- *                      @FieldResult("completed"),
- *                  }
- *              )
- *          }
- *      ),
- * })
- */
 #[ORM\Entity]
 #[ORM\Table(name: 'company_contracts')]
 #[ORM\InheritanceType('SINGLE_TABLE')]
@@ -89,37 +24,22 @@ use Doctrine\ORM\Mapping\Table;
 #[ORM\EntityListeners(['CompanyContractListener'])]
 abstract class CompanyContract
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
     #[ORM\Id]
     #[ORM\Column(type: 'integer')]
     #[ORM\GeneratedValue]
-    private $id;
+    private int $id;
 
-    /**
-     * @var CompanyEmployee
-     * @ManyToOne(targetEntity="CompanyEmployee", inversedBy="soldContracts")
-     */
-    private $salesPerson;
+    #[ManyToOne(targetEntity: 'CompanyEmployee', inversedBy: 'soldContracts')]
+    private CompanyEmployee|null $salesPerson = null;
 
-    /**
-     * @Column(type="boolean")
-     * @var bool
-     */
-    private $completed = false;
+    #[Column(type: 'boolean')]
+    private bool $completed = false;
 
-    /**
-     * @psalm-var Collection<int, CompanyEmployee>
-     * @ManyToMany(targetEntity="CompanyEmployee", inversedBy="contracts")
-     * @JoinTable(name="company_contract_employees",
-     *    joinColumns={@JoinColumn(name="contract_id", referencedColumnName="id", onDelete="CASCADE")},
-     *    inverseJoinColumns={@JoinColumn(name="employee_id", referencedColumnName="id")}
-     * )
-     */
+    /** @psalm-var Collection<int, CompanyEmployee> */
+    #[JoinTable(name: 'company_contract_employees')]
+    #[JoinColumn(name: 'contract_id', referencedColumnName: 'id', onDelete: 'CASCADE')]
+    #[InverseJoinColumn(name: 'employee_id', referencedColumnName: 'id')]
+    #[ManyToMany(targetEntity: 'CompanyEmployee', inversedBy: 'contracts')]
     private $engineers;
 
     public function __construct()
@@ -178,7 +98,7 @@ abstract class CompanyContract
             [
                 'name' => 'discr',
                 'type' => 'string',
-            ]
+            ],
         );
 
         $metadata->mapField(
@@ -186,7 +106,7 @@ abstract class CompanyContract
                 'id'        => true,
                 'name'      => 'id',
                 'fieldName' => 'id',
-            ]
+            ],
         );
 
         $metadata->mapField(
@@ -194,7 +114,7 @@ abstract class CompanyContract
                 'type'      => 'boolean',
                 'name'      => 'completed',
                 'fieldName' => 'completed',
-            ]
+            ],
         );
 
         $metadata->setDiscriminatorMap(
@@ -202,7 +122,7 @@ abstract class CompanyContract
                 'fix'       => 'CompanyFixContract',
                 'flexible'  => 'CompanyFlexContract',
                 'flexultra' => 'CompanyFlexUltraContract',
-            ]
+            ],
         );
 
         $metadata->addEntityListener(Events::postPersist, 'CompanyContractListener', 'postPersistHandler');

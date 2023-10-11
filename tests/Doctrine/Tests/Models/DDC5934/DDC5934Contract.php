@@ -9,12 +9,6 @@ use Doctrine\ORM\Mapping\AssociationOverrides;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\Entity;
 
-/**
- * @Entity
- * @AssociationOverrides(
- *     @AssociationOverride(name="members", fetch="EXTRA_LAZY")
- * )
- */
 #[Entity]
 #[AssociationOverrides([new AssociationOverride(name: 'members', fetch: 'EXTRA_LAZY')])]
 class DDC5934Contract extends DDC5934BaseContract

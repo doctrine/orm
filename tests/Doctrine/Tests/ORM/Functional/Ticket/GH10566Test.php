@@ -7,6 +7,7 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use Generator;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 use function is_a;
 
@@ -19,13 +20,11 @@ class GH10566Test extends OrmFunctionalTestCase
         $this->createSchemaForModels(
             GH10566A::class,
             GH10566B::class,
-            GH10566C::class
+            GH10566C::class,
         );
     }
 
-    /**
-     * @dataProvider provideEntityClasses
-     */
+    #[DataProvider('provideEntityClasses')]
     public function testInsertion(string $startEntityClass): void
     {
         $a = new GH10566A();
@@ -51,9 +50,7 @@ class GH10566Test extends OrmFunctionalTestCase
         self::assertNotNull($c->id);
     }
 
-    /**
-     * @dataProvider provideEntityClasses
-     */
+    #[DataProvider('provideEntityClasses')]
     public function testRemoval(string $startEntityClass): void
     {
         $a = new GH10566A();
@@ -96,7 +93,8 @@ class GH10566Test extends OrmFunctionalTestCase
         self::assertFalse($this->_em->getConnection()->fetchOne('SELECT id FROM gh10566_c WHERE id = ?', [$cId]));
     }
 
-    public function provideEntityClasses(): Generator
+    /** @return Generator<array{class-string}> */
+    public static function provideEntityClasses(): Generator
     {
         yield [GH10566A::class];
         yield [GH10566B::class];
@@ -104,74 +102,50 @@ class GH10566Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @ORM\Entity
- * @ORM\Table(name="gh10566_a")
- */
+#[ORM\Entity]
+#[ORM\Table(name: 'gh10566_a')]
 class GH10566A
 {
-    /**
-     * @ORM\Id
-     * @ORM\Column(type="integer")
-     * @ORM\GeneratedValue()
-     *
-     * @var int
-     */
+    /** @var int */
+    #[ORM\Id]
+    #[ORM\Column(type: 'integer')]
+    #[ORM\GeneratedValue]
     public $id;
 
-    /**
-     * @ORM\OneToOne(targetEntity="GH10566B", cascade={"all"})
-     * @ORM\JoinColumn(nullable=true, onDelete="SET NULL")
-     *
-     * @var GH10566B
-     */
+    /** @var GH10566B */
+    #[ORM\OneToOne(targetEntity: GH10566B::class, cascade: ['all'])]
+    #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
     public $other;
 }
 
-/**
- * @ORM\Entity
- * @ORM\Table(name="gh10566_b")
- */
+#[ORM\Entity]
+#[ORM\Table(name: 'gh10566_b')]
 class GH10566B
 {
-    /**
-     * @ORM\Id
-     * @ORM\Column(type="integer")
-     * @ORM\GeneratedValue()
-     *
-     * @var int
-     */
+    /** @var int */
+    #[ORM\Id]
+    #[ORM\Column(type: 'integer')]
+    #[ORM\GeneratedValue]
     public $id;
 
-    /**
-     * @ORM\OneToOne(targetEntity="GH10566C", cascade={"all"})
-     * @ORM\JoinColumn(nullable=true)
-     *
-     * @var GH10566C
-     */
+    /** @var GH10566C */
+    #[ORM\OneToOne(targetEntity: GH10566C::class, cascade: ['all'])]
+    #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
     public $other;
 }
 
-/**
- * @ORM\Entity
- * @ORM\Table(name="gh10566_c")
- */
+#[ORM\Entity]
+#[ORM\Table(name: 'gh10566_c')]
 class GH10566C
 {
-    /**
-     * @ORM\Id
-     * @ORM\Column(type="integer")
-     * @ORM\GeneratedValue()
-     *
-     * @var int
-     */
+    /** @var int */
+    #[ORM\Id]
+    #[ORM\Column(type: 'integer')]
+    #[ORM\GeneratedValue]
     public $id;
 
-    /**
-     * @ORM\OneToOne(targetEntity="GH10566A", cascade={"all"})
-     * @ORM\JoinColumn(nullable=true)
-     *
-     * @var GH10566A
-     */
+    /** @var GH10566A */
+    #[ORM\OneToOne(targetEntity: GH10566A::class, cascade: ['all'])]
+    #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
     public $other;
 }

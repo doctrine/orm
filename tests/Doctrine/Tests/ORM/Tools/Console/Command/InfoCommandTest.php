@@ -9,25 +9,18 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\ORM\Tools\Console\Command\InfoCommand;
 use Doctrine\ORM\Tools\Console\EntityManagerProvider\SingleManagerProvider;
-use Doctrine\ORM\Tools\Console\Helper\EntityManagerHelper;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
 use Doctrine\Tests\Models\Cache\AttractionInfo;
 use Doctrine\Tests\Models\Cache\City;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use Symfony\Component\Console\Application;
-use Symfony\Component\Console\Helper\HelperSet;
 use Symfony\Component\Console\Tester\CommandTester;
 
 class InfoCommandTest extends OrmFunctionalTestCase
 {
-    /** @var Application */
-    private $application;
-
-    /** @var InfoCommand */
-    private $command;
-
-    /** @var CommandTester */
-    private $tester;
+    private Application $application;
+    private InfoCommand $command;
+    private CommandTester $tester;
 
     protected function setUp(): void
     {
@@ -65,8 +58,7 @@ class InfoCommandTest extends OrmFunctionalTestCase
            ->willReturn($configuration);
 
         $application = new Application();
-        $application->setHelperSet(new HelperSet(['em' => new EntityManagerHelper($em)]));
-        $application->add(new InfoCommand());
+        $application->add(new InfoCommand(new SingleManagerProvider($em)));
 
         $command = $application->find('orm:info');
         $tester  = new CommandTester($command);
@@ -75,12 +67,12 @@ class InfoCommandTest extends OrmFunctionalTestCase
 
         self::assertStringContainsString(
             ' ! [CAUTION] You do not have any mapped Doctrine ORM entities according to the current configuration',
-            $tester->getDisplay()
+            $tester->getDisplay(),
         );
 
         self::assertStringContainsString(
             ' !           If you have entities or mapping files you should check your mapping configuration for errors.',
-            $tester->getDisplay()
+            $tester->getDisplay(),
         );
     }
 
@@ -104,8 +96,7 @@ class InfoCommandTest extends OrmFunctionalTestCase
            ->willThrowException(new MappingException('exception message'));
 
         $application = new Application();
-        $application->setHelperSet(new HelperSet(['em' => new EntityManagerHelper($em)]));
-        $application->add(new InfoCommand());
+        $application->add(new InfoCommand(new SingleManagerProvider($em)));
 
         $command = $application->find('orm:info');
         $tester  = new CommandTester($command);

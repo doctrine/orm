@@ -6,14 +6,14 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
 /**
- * @group GH6499
- *
  * Specifically, GH6499B has a dependency on GH6499A, and GH6499A
  * has a dependency on GH6499B. Since GH6499A#b is not nullable,
  * the database row for GH6499B should be inserted first.
  */
+#[Group('GH6499')]
 class GH6499Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -57,47 +57,31 @@ class GH6499Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @ORM\Entity
- */
+#[ORM\Entity]
 class GH6499A
 {
-    /**
-     * @ORM\Id
-     * @ORM\Column(type="integer")
-     * @ORM\GeneratedValue
-     *
-     * @var int
-     */
+    /** @var int */
+    #[ORM\Id]
+    #[ORM\Column(type: 'integer')]
+    #[ORM\GeneratedValue]
     public $id;
 
-    /**
-     * @ORM\JoinColumn(nullable=false)
-     * @ORM\OneToOne(targetEntity=GH6499B::class)
-     *
-     * @var GH6499B
-     */
+    /** @var GH6499B */
+    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\OneToOne(targetEntity: GH6499B::class)]
     public $b;
 }
 
-/**
- * @ORM\Entity
- */
+#[ORM\Entity]
 class GH6499B
 {
-    /**
-     * @ORM\Id
-     * @ORM\Column(type="integer")
-     * @ORM\GeneratedValue
-     *
-     * @var int
-     */
+    /** @var int */
+    #[ORM\Id]
+    #[ORM\Column(type: 'integer')]
+    #[ORM\GeneratedValue]
     public $id;
 
-    /**
-     * @ORM\ManyToOne(targetEntity=GH6499A::class)
-     *
-     * @var GH6499A
-     */
+    /** @var GH6499A */
+    #[ORM\ManyToOne(targetEntity: GH6499A::class)]
     private $a;
 }

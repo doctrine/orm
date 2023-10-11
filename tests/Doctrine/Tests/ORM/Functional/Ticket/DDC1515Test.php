@@ -10,8 +10,9 @@ use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
-/** @group DDC-1515 */
+#[Group('DDC-1515')]
 class DDC1515Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -20,7 +21,7 @@ class DDC1515Test extends OrmFunctionalTestCase
 
         $this->createSchemaForModels(
             DDC1515Foo::class,
-            DDC1515Bar::class
+            DDC1515Bar::class,
         );
     }
 
@@ -41,31 +42,25 @@ class DDC1515Test extends OrmFunctionalTestCase
     }
 }
 
-/** @Entity */
+#[Entity]
 class DDC1515Foo
 {
-    /**
-     * @var DDC1515Bar
-     * @OneToOne(targetEntity="DDC1515Bar", inversedBy="foo")
-     * @Id
-     */
+    /** @var DDC1515Bar */
+    #[OneToOne(targetEntity: 'DDC1515Bar', inversedBy: 'foo')]
+    #[Id]
     public $bar;
 }
 
-/** @Entity */
+#[Entity]
 class DDC1515Bar
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     public $id;
 
-    /**
-     * @var DDC1515Foo
-     * @OneToOne(targetEntity="DDC1515Foo", mappedBy="bar")
-     */
+    /** @var DDC1515Foo */
+    #[OneToOne(targetEntity: 'DDC1515Foo', mappedBy: 'bar')]
     public $foo;
 }

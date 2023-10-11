@@ -6,40 +6,27 @@ namespace Doctrine\Tests\ORM;
 
 use Doctrine\Common\EventManager;
 use Doctrine\DBAL\Connection;
-use Doctrine\Deprecations\PHPUnit\VerifyDeprecations;
 use Doctrine\ORM\Configuration;
-use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Exception\EntityManagerClosed;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
-use Doctrine\ORM\NativeQuery;
-use Doctrine\ORM\ORMInvalidArgumentException;
 use Doctrine\ORM\Proxy\ProxyFactory;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\UnitOfWork;
-use Doctrine\Persistence\Mapping\Driver\MappingDriver;
-use Doctrine\Persistence\Mapping\MappingException;
+use Doctrine\Tests\Mocks\EntityManagerMock;
 use Doctrine\Tests\Models\CMS\CmsUser;
-use Doctrine\Tests\Models\GeoNames\Country;
 use Doctrine\Tests\OrmTestCase;
 use Generator;
-use InvalidArgumentException;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Group;
 use stdClass;
 use TypeError;
 
-use function get_class;
-use function random_int;
-use function sys_get_temp_dir;
-use function uniqid;
-
 class EntityManagerTest extends OrmTestCase
 {
-    use VerifyDeprecations;
-
-    /** @var EntityManager */
-    private $entityManager;
+    private EntityManagerMock $entityManager;
 
     protected function setUp(): void
     {
@@ -48,7 +35,7 @@ class EntityManagerTest extends OrmTestCase
         $this->entityManager = $this->getTestEntityManager();
     }
 
-    /** @group DDC-899 */
+    #[Group('DDC-899')]
     public function testIsOpen(): void
     {
         self::assertTrue($this->entityManager->isOpen());
@@ -94,17 +81,6 @@ class EntityManagerTest extends OrmTestCase
         self::assertSame('SELECT foo', $query->getSql());
     }
 
-    /** @covers \Doctrine\ORM\EntityManager::createNamedNativeQuery */
-    public function testCreateNamedNativeQuery(): void
-    {
-        $rsm = new ResultSetMapping();
-        $this->entityManager->getConfiguration()->addNamedNativeQuery('foo', 'SELECT foo', $rsm);
-
-        $query = $this->entityManager->createNamedNativeQuery('foo');
-
-        self::assertInstanceOf(NativeQuery::class, $query);
-    }
-
     public function testCreateQueryBuilder(): void
     {
         self::assertInstanceOf(QueryBuilder::class, $this->entityManager->createQueryBuilder());
@@ -144,37 +120,6 @@ class EntityManagerTest extends OrmTestCase
         self::assertEquals('SELECT 1', $q->getDql());
     }
 
-    /** @covers Doctrine\ORM\EntityManager::createNamedQuery */
-    public function testCreateNamedQuery(): void
-    {
-        $this->entityManager->getConfiguration()->addNamedQuery('foo', 'SELECT 1');
-
-        $query = $this->entityManager->createNamedQuery('foo');
-        self::assertInstanceOf(Query::class, $query);
-        self::assertEquals('SELECT 1', $query->getDql());
-    }
-
-    /** @psalm-return list<array{string}> */
-    public static function dataMethodsAffectedByNoObjectArguments(): array
-    {
-        return [
-            ['persist'],
-            ['remove'],
-            ['merge'],
-            ['refresh'],
-            ['detach'],
-        ];
-    }
-
-    /** @dataProvider dataMethodsAffectedByNoObjectArguments */
-    public function testThrowsExceptionOnNonObjectValues($methodName): void
-    {
-        $this->expectException(ORMInvalidArgumentException::class);
-        $this->expectExceptionMessage('EntityManager#' . $methodName . '() expects parameter 1 to be an entity object, NULL given.');
-
-        $this->entityManager->$methodName(null);
-    }
-
     /** @psalm-return list<array{string}> */
     public static function dataAffectedByErrorIfClosedException(): array
     {
@@ -182,12 +127,11 @@ class EntityManagerTest extends OrmTestCase
             ['flush'],
             ['persist'],
             ['remove'],
-            ['merge'],
             ['refresh'],
         ];
     }
 
-    /** @dataProvider dataAffectedByErrorIfClosedException */
+    #[DataProvider('dataAffectedByErrorIfClosedException')]
     public function testAffectedByErrorIfClosedException(string $methodName): void
     {
         $this->expectException(EntityManagerClosed::class);
@@ -210,95 +154,18 @@ class EntityManagerTest extends OrmTestCase
         yield ['foo'];
     }
 
-    /**
-     * @param mixed $expectedValue
-     *
-     * @dataProvider dataToBeReturnedByWrapInTransaction
-     * @group DDC-1125
-     */
-    public function testWrapInTransactionAcceptsReturn($expectedValue): void
+    #[DataProvider('dataToBeReturnedByWrapInTransaction')]
+    #[Group('DDC-1125')]
+    public function testWrapInTransactionAcceptsReturn(mixed $expectedValue): void
     {
         $return = $this->entityManager->wrapInTransaction(
-            /** @return mixed */
-            static function (EntityManagerInterface $em) use ($expectedValue) {
-                return $expectedValue;
-            }
+            static fn (EntityManagerInterface $em): mixed => $expectedValue,
         );
 
         $this->assertSame($expectedValue, $return);
     }
 
-    /** @group DDC-1125 */
-    public function testTransactionalAcceptsReturn(): void
-    {
-        $return = $this->entityManager->transactional(static function ($em) {
-            return 'foo';
-        });
-
-        self::assertEquals('foo', $return);
-    }
-
-    public function testTransactionalAcceptsVariousCallables(): void
-    {
-        self::assertSame('callback', $this->entityManager->transactional([$this, 'transactionalCallback']));
-    }
-
-    public function testTransactionalThrowsInvalidArgumentExceptionIfNonCallablePassed(): void
-    {
-        $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Expected argument of type "callable", got "object"');
-
-        $this->entityManager->transactional($this);
-    }
-
-    public function transactionalCallback($em): string
-    {
-        self::assertSame($this->entityManager, $em);
-
-        return 'callback';
-    }
-
-    public function testCreateInvalidConnection(): void
-    {
-        $config = new Configuration();
-        $config->setMetadataDriverImpl($this->createMock(MappingDriver::class));
-
-        $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Invalid $connection argument of type int given: "1".');
-        EntityManager::create(1, $config);
-    }
-
-    public function testNamedConstructorDeprecation(): void
-    {
-        $config = new Configuration();
-        $config->setMetadataDriverImpl($this->createMock(MappingDriver::class));
-        $config->setProxyDir(sys_get_temp_dir());
-        $config->setProxyNamespace(__NAMESPACE__ . '\\MyProxies');
-
-        $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/pull/9961');
-
-        $em = EntityManager::create(['driver' => 'pdo_sqlite', 'memory' => true], $config);
-
-        self::assertInstanceOf(Connection::class, $em->getConnection());
-    }
-
-    /** @group #5796 */
-    public function testTransactionalReThrowsThrowables(): void
-    {
-        try {
-            $this->entityManager->transactional(static function (): void {
-                (static function (array $value): void {
-                    // this only serves as an IIFE that throws a `TypeError`
-                })(null);
-            });
-
-            self::fail('TypeError expected to be thrown');
-        } catch (TypeError $ignored) {
-            self::assertFalse($this->entityManager->isOpen());
-        }
-    }
-
-    /** @group #5796 */
+    #[Group('#5796')]
     public function testWrapInTransactionReThrowsThrowables(): void
     {
         try {
@@ -309,76 +176,8 @@ class EntityManagerTest extends OrmTestCase
             });
 
             self::fail('TypeError expected to be thrown');
-        } catch (TypeError $ignored) {
+        } catch (TypeError) {
             self::assertFalse($this->entityManager->isOpen());
         }
-    }
-
-    /** @group 6017 */
-    public function testClearManagerWithObject(): void
-    {
-        $entity = new Country(456, 'United Kingdom');
-
-        $this->expectException(ORMInvalidArgumentException::class);
-
-        $this->entityManager->clear($entity);
-    }
-
-    /** @group 6017 */
-    public function testClearManagerWithUnknownEntityName(): void
-    {
-        $this->expectException(MappingException::class);
-
-        $this->entityManager->clear(uniqid('nonExisting', true));
-    }
-
-    /** @group 6017 */
-    public function testClearManagerWithProxyClassName(): void
-    {
-        $proxy = $this->entityManager->getReference(Country::class, ['id' => random_int(457, 100000)]);
-
-        $entity = new Country(456, 'United Kingdom');
-
-        $this->entityManager->persist($entity);
-
-        self::assertTrue($this->entityManager->contains($entity));
-
-        $this->entityManager->clear(get_class($proxy));
-
-        self::assertFalse($this->entityManager->contains($entity));
-    }
-
-    /** @group 6017 */
-    public function testClearManagerWithNullValue(): void
-    {
-        $entity = new Country(456, 'United Kingdom');
-
-        $this->entityManager->persist($entity);
-
-        self::assertTrue($this->entityManager->contains($entity));
-
-        $this->entityManager->clear(null);
-
-        self::assertFalse($this->entityManager->contains($entity));
-    }
-
-    public function testDeprecatedClearWithArguments(): void
-    {
-        $entity = new Country(456, 'United Kingdom');
-        $this->entityManager->persist($entity);
-
-        $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/issues/8460');
-
-        $this->entityManager->clear(Country::class);
-    }
-
-    public function testDeprecatedFlushWithArguments(): void
-    {
-        $entity = new Country(456, 'United Kingdom');
-        $this->entityManager->persist($entity);
-
-        $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/issues/8459');
-
-        $this->entityManager->flush($entity);
     }
 }

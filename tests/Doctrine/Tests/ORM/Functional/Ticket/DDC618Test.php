@@ -15,8 +15,9 @@ use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Query;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
-/** @group DDC-618 */
+#[Group('DDC-618')]
 class DDC618Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -44,7 +45,7 @@ class DDC618Test extends OrmFunctionalTestCase
 
             $this->_em->flush();
             $this->_em->clear();
-        } catch (UniqueConstraintViolationException $e) {
+        } catch (UniqueConstraintViolationException) {
         }
     }
 
@@ -72,7 +73,7 @@ class DDC618Test extends OrmFunctionalTestCase
         self::assertArrayHasKey('Alice', $result, "INDEX BY A.name should return an index by the name of 'Alice'.");
     }
 
-    /** @group DDC-1018 */
+    #[Group('DDC-1018')]
     public function testIndexByJoin(): void
     {
         $dql    = 'SELECT A, B FROM Doctrine\Tests\ORM\Functional\Ticket\DDC618Author A ' .
@@ -94,7 +95,7 @@ class DDC618Test extends OrmFunctionalTestCase
         self::assertTrue(isset($result[0]['books']['Test']), 'Indexing by title should have books by title.');
     }
 
-    /** @group DDC-1018 */
+    #[Group('DDC-1018')]
     public function testIndexByToOneJoinSilentlyIgnored(): void
     {
         $dql    = 'SELECT B, A FROM Doctrine\Tests\ORM\Functional\Ticket\DDC618Book B ' .
@@ -111,7 +112,7 @@ class DDC618Test extends OrmFunctionalTestCase
         self::assertEquals('Alice', $result[0]['author']['name']);
     }
 
-    /** @group DDC-1018 */
+    #[Group('DDC-1018')]
     public function testCombineIndexBy(): void
     {
         $dql    = 'SELECT A, B FROM Doctrine\Tests\ORM\Functional\Ticket\DDC618Author A INDEX BY A.id ' .
@@ -128,26 +129,20 @@ class DDC618Test extends OrmFunctionalTestCase
     }
 }
 
-/** @Entity */
+#[Entity]
 class DDC618Author
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer')]
     public $id;
 
-    /**
-     * @var string
-     * @Column(type="string", length=255)
-     */
+    /** @var string */
+    #[Column(type: 'string', length: 255)]
     public $name;
 
-    /**
-     * @psalm-var Collection<int, DDC618Book>
-     * @OneToMany(targetEntity="DDC618Book", mappedBy="author", cascade={"persist"})
-     */
+    /** @psalm-var Collection<int, DDC618Book> */
+    #[OneToMany(targetEntity: 'DDC618Book', mappedBy: 'author', cascade: ['persist'])]
     public $books;
 
     public function __construct()
@@ -162,32 +157,20 @@ class DDC618Author
     }
 }
 
-/** @Entity */
+#[Entity]
 class DDC618Book
 {
-    /**
-     * @var int
-     * @Id
-     * @GeneratedValue
-     * @Column(type="integer")
-     */
+    /** @var int */
+    #[Id]
+    #[GeneratedValue]
+    #[Column(type: 'integer')]
     public $id;
 
-    /**
-     * @var string
-     * @Column(type="string", length=255)
-     */
-    public $title;
-
-    /**
-     * @var DDC618Author
-     * @ManyToOne(targetEntity="DDC618Author", inversedBy="books")
-     */
-    public $author;
-
-    public function __construct($title, $author)
-    {
-        $this->title  = $title;
-        $this->author = $author;
+    public function __construct(
+        #[Column(type: 'string', length: 255)]
+        public string $title,
+        #[ManyToOne(targetEntity: 'DDC618Author', inversedBy: 'books')]
+        public DDC618Author $author,
+    ) {
     }
 }

@@ -7,10 +7,9 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 use Doctrine\DBAL\LockMode;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
-/**
- * @group GH-5998
- */
+#[Group('GH-5998')]
 class GH5998Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -60,7 +59,7 @@ class GH5998Test extends OrmFunctionalTestCase
         self::assertNotNull($child);
 
         // Test lock and update
-        $this->_em->transactional(static function ($em) use ($child): void {
+        $this->_em->wrapInTransaction(static function ($em) use ($child): void {
             $em->lock($child, LockMode::NONE);
             $child->firstName = 'Bob';
             $child->status    = 0;
@@ -79,76 +78,52 @@ class GH5998Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @ORM\MappedSuperclass
- */
+#[ORM\MappedSuperclass]
 class GH5998Common
 {
-    /**
-     * @ORM\Id
-     * @ORM\Column(type="integer")
-     * @ORM\GeneratedValue
-     *
-     * @var int
-     */
+    /** @var int */
+    #[ORM\Id]
+    #[ORM\Column(type: 'integer')]
+    #[ORM\GeneratedValue]
     public $id;
-    /**
-     * @ORM\ManyToOne(targetEntity=GH5998Related::class)
-     * @ORM\JoinColumn(name="related_id", referencedColumnName="id")
-     *
-     * @var GH5998Related
-     */
+
+    /** @var GH5998Related */
+    #[ORM\ManyToOne(targetEntity: GH5998Related::class)]
+    #[ORM\JoinColumn(name: 'related_id', referencedColumnName: 'id')]
     public $rel;
-    /**
-     * @ORM\Version
-     * @ORM\Column(type="integer")
-     *
-     * @var int
-     */
+
+    /** @var int */
+    #[ORM\Version]
+    #[ORM\Column(type: 'integer')]
     public $version;
 
     /** @var mixed */
     public $other;
 }
 
-/**
- * @ORM\Entity
- * @ORM\InheritanceType("JOINED")
- * @ORM\DiscriminatorMap({"child" = GH5998JTIChild::class})
- */
+#[ORM\Entity]
+#[ORM\InheritanceType('JOINED')]
+#[ORM\DiscriminatorMap(['child' => GH5998JTIChild::class])]
 abstract class GH5998JTI extends GH5998Common
 {
-    /**
-     * @ORM\Column(type="string", length=255)
-     *
-     * @var string
-     */
+    /** @var string */
+    #[ORM\Column(type: 'string', length: 255)]
     public $firstName;
 }
 
-/**
- * @ORM\MappedSuperclass
- */
+#[ORM\MappedSuperclass]
 class GH5998JTICommon extends GH5998JTI
 {
-    /**
-     * @ORM\Column(type="integer")
-     *
-     * @var int
-     */
+    /** @var int */
+    #[ORM\Column(type: 'integer')]
     public $status;
 }
 
-/**
- * @ORM\Entity
- */
+#[ORM\Entity]
 class GH5998JTIChild extends GH5998JTICommon
 {
-    /**
-     * @ORM\Column(type="integer")
-     *
-     * @var int
-     */
+    /** @var int */
+    #[ORM\Column(type: 'integer')]
     public $type;
 
     public function __construct(string $firstName, int $type, int $status)
@@ -159,44 +134,29 @@ class GH5998JTIChild extends GH5998JTICommon
     }
 }
 
-/**
- * @ORM\Entity
- * @ORM\InheritanceType("SINGLE_TABLE")
- * @ORM\DiscriminatorMap({"child" = GH5998STIChild::class})
- */
+#[ORM\Entity]
+#[ORM\InheritanceType('SINGLE_TABLE')]
+#[ORM\DiscriminatorMap(['child' => GH5998STIChild::class])]
 abstract class GH5998STI extends GH5998Common
 {
-    /**
-     * @ORM\Column(type="string", length=255)
-     *
-     * @var string
-     */
+    /** @var string */
+    #[ORM\Column(type: 'string', length: 255)]
     public $firstName;
 }
 
-/**
- * @ORM\MappedSuperclass
- */
+#[ORM\MappedSuperclass]
 class GH5998STICommon extends GH5998STI
 {
-    /**
-     * @ORM\Column(type="integer")
-     *
-     * @var int
-     */
+    /** @var int */
+    #[ORM\Column(type: 'integer')]
     public $status;
 }
 
-/**
- * @ORM\Entity
- */
+#[ORM\Entity]
 class GH5998STIChild extends GH5998STICommon
 {
-    /**
-     * @ORM\Column(type="integer")
-     *
-     * @var int
-     */
+    /** @var int */
+    #[ORM\Column(type: 'integer')]
     public $type;
 
     public function __construct(string $firstName, int $type, int $status)
@@ -207,30 +167,19 @@ class GH5998STIChild extends GH5998STICommon
     }
 }
 
-/**
- * @ORM\Entity
- */
+#[ORM\Entity]
 class GH5998Basic extends GH5998Common
 {
-    /**
-     * @ORM\Column(type="string", length=255)
-     *
-     * @var string
-     */
+    /** @var string */
+    #[ORM\Column(type: 'string', length: 255)]
     public $firstName;
 
-    /**
-     * @ORM\Column(type="integer")
-     *
-     * @var int
-     */
+    /** @var int */
+    #[ORM\Column(type: 'integer')]
     public $status;
 
-    /**
-     * @ORM\Column(type="integer")
-     *
-     * @var int
-     */
+    /** @var int */
+    #[ORM\Column(type: 'integer')]
     public $type;
 
     public function __construct(string $firstName, int $type, int $status)
@@ -241,17 +190,12 @@ class GH5998Basic extends GH5998Common
     }
 }
 
-/**
- * @ORM\Entity()
- */
+#[ORM\Entity]
 class GH5998Related
 {
-    /**
-     * @ORM\Id
-     * @ORM\Column(type="integer")
-     * @ORM\GeneratedValue
-     *
-     * @var int
-     */
+    /** @var int */
+    #[ORM\Id]
+    #[ORM\Column(type: 'integer')]
+    #[ORM\GeneratedValue]
     public $id;
 }

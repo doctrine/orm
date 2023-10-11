@@ -38,27 +38,21 @@ class GH10462Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- * @Table(name="gh10462_person")
- * @InheritanceType("SINGLE_TABLE")
- * @DiscriminatorColumn(name="discr", type="string", options={"charset"="ascii", "collation"="ascii_general_ci"})
- * @DiscriminatorMap({"person"=GH10462Person::class, "employee"=GH10462Employee::class})
- */
+#[Entity]
+#[Table(name: 'gh10462_person')]
+#[InheritanceType(value: 'SINGLE_TABLE')]
+#[DiscriminatorColumn(name: 'discr', type: 'string', options: ['charset' => 'ascii', 'collation' => 'ascii_general_ci'])]
+#[DiscriminatorMap(['person' => GH10462Person::class, 'employee' => GH10462Employee::class])]
 class GH10462Person
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     public $id;
 }
 
-/**
- * @Entity
- */
+#[Entity]
 class GH10462Employee extends GH10462Person
 {
 }

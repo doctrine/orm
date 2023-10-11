@@ -25,7 +25,7 @@ class CustomHydrator extends AbstractHydrator
     /**
      * {@inheritDoc}
      */
-    protected function hydrateAllData()
+    protected function hydrateAllData(): array
     {
         return $this->_stmt->fetchAllAssociative();
     }

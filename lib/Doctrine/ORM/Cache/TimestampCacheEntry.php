@@ -6,21 +6,13 @@ namespace Doctrine\ORM\Cache;
 
 use function microtime;
 
-/**
- * Timestamp cache entry
- */
 class TimestampCacheEntry implements CacheEntry
 {
-    /**
-     * @readonly Public only for performance reasons, it should be considered immutable.
-     * @var float
-     */
-    public $time;
+    public readonly float $time;
 
-    /** @param float|null $time */
-    public function __construct($time = null)
+    public function __construct(float|null $time = null)
     {
-        $this->time = $time ? (float) $time : microtime(true);
+        $this->time = $time ?? microtime(true);
     }
 
     /**
@@ -29,10 +21,8 @@ class TimestampCacheEntry implements CacheEntry
      * This method allow Doctrine\Common\Cache\PhpFileCache compatibility
      *
      * @param array<string,float> $values array containing property values
-     *
-     * @return TimestampCacheEntry
      */
-    public static function __set_state(array $values)
+    public static function __set_state(array $values): TimestampCacheEntry
     {
         return new self($values['time']);
     }

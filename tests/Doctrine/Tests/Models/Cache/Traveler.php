@@ -15,44 +15,31 @@ use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\ORM\Mapping\Table;
 
-/**
- * @Cache
- * @Entity
- * @Table("cache_traveler")
- */
+#[Table('cache_traveler')]
+#[Cache]
+#[Entity]
 class Traveler
 {
-    /**
-     * @var int
-     * @Id
-     * @GeneratedValue
-     * @Column(type="integer")
-     */
+    /** @var int */
+    #[Id]
+    #[GeneratedValue]
+    #[Column(type: 'integer')]
     protected $id;
 
-    /**
-     * @var string
-     * @Column
-     */
-    protected $name;
-
-    /**
-     * @psalm-var Collection<int, Travel>
-     * @Cache("NONSTRICT_READ_WRITE")
-     * @OneToMany(targetEntity="Travel", mappedBy="traveler", cascade={"persist", "remove"}, orphanRemoval=true)
-     */
+    /** @psalm-var Collection<int, Travel> */
+    #[Cache('NONSTRICT_READ_WRITE')]
+    #[OneToMany(targetEntity: 'Travel', mappedBy: 'traveler', cascade: ['persist', 'remove'], orphanRemoval: true)]
     public $travels;
 
-    /**
-     * @var TravelerProfile
-     * @Cache
-     * @OneToOne(targetEntity="TravelerProfile")
-     */
+    /** @var TravelerProfile */
+     #[Cache]
+     #[OneToOne(targetEntity: 'TravelerProfile')]
      protected $profile;
 
-    public function __construct(string $name)
-    {
-        $this->name    = $name;
+    public function __construct(
+        #[Column]
+        protected string $name,
+    ) {
         $this->travels = new ArrayCollection();
     }
 

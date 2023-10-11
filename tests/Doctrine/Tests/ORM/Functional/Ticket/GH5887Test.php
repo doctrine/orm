@@ -14,10 +14,12 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
+use Stringable;
 
 use function assert;
 
-/** @group GH-5887 */
+#[Group('GH-5887')]
 class GH5887Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -59,25 +61,20 @@ class GH5887Test extends OrmFunctionalTestCase
     }
 }
 
-/** @Entity */
+#[Entity]
 class GH5887Cart
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue(strategy="NONE")
-     */
-    private $id;
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue(strategy: 'NONE')]
+    private int|null $id = null;
 
     /**
      * One Cart has One Customer.
-     *
-     * @var GH5887Customer
-     * @OneToOne(targetEntity="GH5887Customer", inversedBy="cart")
-     * @JoinColumn(name="customer_id", referencedColumnName="id")
      */
-    private $customer;
+    #[OneToOne(targetEntity: 'GH5887Customer', inversedBy: 'cart')]
+    #[JoinColumn(name: 'customer_id', referencedColumnName: 'id')]
+    private GH5887Customer|null $customer = null;
 
     public function getId(): int
     {
@@ -103,24 +100,19 @@ class GH5887Cart
     }
 }
 
-/** @Entity */
+#[Entity]
 class GH5887Customer
 {
-    /**
-     * @var GH5887CustomIdObject
-     * @Id
-     * @Column(type="GH5887CustomIdObject", length=255)
-     * @GeneratedValue(strategy="NONE")
-     */
-    private $id;
+    #[Id]
+    #[Column(type: 'GH5887CustomIdObject', length: 255)]
+    #[GeneratedValue(strategy: 'NONE')]
+    private GH5887CustomIdObject|null $id = null;
 
     /**
      * One Customer has One Cart.
-     *
-     * @var GH5887Cart
-     * @OneToOne(targetEntity="GH5887Cart", mappedBy="customer")
      */
-    private $cart;
+    #[OneToOne(targetEntity: 'GH5887Cart', mappedBy: 'customer')]
+    private GH5887Cart|null $cart = null;
 
     public function getId(): GH5887CustomIdObject
     {
@@ -146,14 +138,10 @@ class GH5887Customer
     }
 }
 
-class GH5887CustomIdObject
+class GH5887CustomIdObject implements Stringable
 {
-    /** @var int */
-    private $id;
-
-    public function __construct(int $id)
+    public function __construct(private int $id)
     {
-        $this->id = $id;
     }
 
     public function getId(): int
@@ -174,7 +162,7 @@ class GH5887CustomIdObjectType extends StringType
     /**
      * {@inheritDoc}
      */
-    public function convertToDatabaseValue($value, AbstractPlatform $platform)
+    public function convertToDatabaseValue($value, AbstractPlatform $platform): mixed
     {
         return $value->getId();
     }
@@ -182,15 +170,12 @@ class GH5887CustomIdObjectType extends StringType
     /**
      * {@inheritDoc}
      */
-    public function convertToPHPValue($value, AbstractPlatform $platform)
+    public function convertToPHPValue($value, AbstractPlatform $platform): GH5887CustomIdObject
     {
         return new GH5887CustomIdObject((int) $value);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function getName()
+    public function getName(): string
     {
         return self::NAME;
     }

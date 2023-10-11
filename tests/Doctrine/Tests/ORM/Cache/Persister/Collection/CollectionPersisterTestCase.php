@@ -10,26 +10,28 @@ use Doctrine\ORM\Cache\Persister\Collection\AbstractCollectionPersister;
 use Doctrine\ORM\Cache\Persister\Collection\CachedCollectionPersister;
 use Doctrine\ORM\Cache\Region;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Mapping\AssociationMapping;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\Persisters\Collection\CollectionPersister;
 use Doctrine\Tests\Mocks\EntityManagerMock;
 use Doctrine\Tests\Models\Cache\State;
 use Doctrine\Tests\OrmTestCase;
+use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\MockObject\MockObject;
 
-/** @group DDC-2183 */
+#[Group('DDC-2183')]
 abstract class CollectionPersisterTestCase extends OrmTestCase
 {
-    /** @var Region&MockObject */
-    protected $region;
+    protected Region&MockObject $region;
+    protected CollectionPersister&MockObject $collectionPersister;
+    protected EntityManagerMock $em;
 
-    /** @var CollectionPersister&MockObject */
-    protected $collectionPersister;
-
-    /** @var EntityManagerMock */
-    protected $em;
-
-    abstract protected function createPersister(EntityManagerInterface $em, CollectionPersister $persister, Region $region, array $mapping): AbstractCollectionPersister;
+    abstract protected function createPersister(
+        EntityManagerInterface $em,
+        CollectionPersister $persister,
+        Region $region,
+        AssociationMapping $mapping,
+    ): AbstractCollectionPersister;
 
     protected function setUp(): void
     {
@@ -43,14 +45,12 @@ abstract class CollectionPersisterTestCase extends OrmTestCase
         $this->collectionPersister = $this->createMock(CollectionPersister::class);
     }
 
-    /** @return Region&MockObject */
-    protected function createRegion(): Region
+    protected function createRegion(): Region&MockObject
     {
         return $this->createMock(Region::class);
     }
 
-    /** @param object $owner */
-    protected function createCollection($owner): PersistentCollection
+    protected function createCollection(object $owner): PersistentCollection
     {
         $class = $this->em->getClassMetadata(State::class);
         $assoc = $class->associationMappings['cities'];

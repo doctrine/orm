@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Query\AST;
 
+use Doctrine\ORM\Query\SqlWalker;
+
 /**
  * CollectionMemberExpression ::= EntityExpression ["NOT"] "MEMBER" ["OF"] CollectionValuedPathExpression
  *
@@ -11,30 +13,15 @@ namespace Doctrine\ORM\Query\AST;
  */
 class CollectionMemberExpression extends Node
 {
-    /** @var mixed */
-    public $entityExpression;
-
-    /** @var PathExpression */
-    public $collectionValuedPathExpression;
-
-    /** @var bool */
-    public $not;
-
-    /**
-     * @param mixed          $entityExpr
-     * @param PathExpression $collValuedPathExpr
-     */
-    public function __construct($entityExpr, $collValuedPathExpr, bool $not = false)
-    {
-        $this->entityExpression               = $entityExpr;
-        $this->collectionValuedPathExpression = $collValuedPathExpr;
-        $this->not                            = $not;
+    /** @param PathExpression $collectionValuedPathExpression */
+    public function __construct(
+        public mixed $entityExpression,
+        public $collectionValuedPathExpression,
+        public bool $not = false,
+    ) {
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function dispatch($walker)
+    public function dispatch(SqlWalker $walker): string
     {
         return $walker->walkCollectionMemberExpression($this);
     }

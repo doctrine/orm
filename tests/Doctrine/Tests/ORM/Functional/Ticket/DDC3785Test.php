@@ -13,11 +13,14 @@ use Doctrine\ORM\Mapping\Embeddable;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\InverseJoinColumn;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\JoinTable;
 use Doctrine\ORM\Mapping\ManyToMany;
 use Doctrine\ORM\Mapping\Table;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
+use Stringable;
 
 class DDC3785Test extends OrmFunctionalTestCase
 {
@@ -30,11 +33,11 @@ class DDC3785Test extends OrmFunctionalTestCase
         $this->createSchemaForModels(
             DDC3785Asset::class,
             DDC3785AssetId::class,
-            DDC3785Attribute::class
+            DDC3785Attribute::class,
         );
     }
 
-    /** @group DDC-3785 */
+    #[Group('DDC-3785')]
     public function testOwningValueObjectIdIsCorrectlyTransformedWhenRemovingOrphanedChildEntities(): void
     {
         $id = new DDC3785AssetId('919609ba-57d9-4a13-be1d-d202521e858a');
@@ -60,34 +63,25 @@ class DDC3785Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- * @Table(name="asset")
- */
+#[Table(name: 'asset')]
+#[Entity]
 class DDC3785Asset
 {
-    /**
-     * @var DDC3785AssetId
-     * @Id
-     * @GeneratedValue(strategy="NONE")
-     * @Column(type="ddc3785_asset_id")
-     */
-    private $id;
-
-    /**
-     * @psalm-var Collection<int, DDC3785Attribute>
-     * @ManyToMany(targetEntity="DDC3785Attribute", cascade={"persist"}, orphanRemoval=true)
-     * @JoinTable(name="asset_attributes",
-     *      joinColumns={@JoinColumn(name="asset_id", referencedColumnName="id")},
-     *      inverseJoinColumns={@JoinColumn(name="attribute_id", referencedColumnName="id")}
-     *      )
-     */
+    /** @psalm-var Collection<int, DDC3785Attribute> */
+    #[JoinTable(name: 'asset_attributes')]
+    #[JoinColumn(name: 'asset_id', referencedColumnName: 'id')]
+    #[InverseJoinColumn(name: 'attribute_id', referencedColumnName: 'id')]
+    #[ManyToMany(targetEntity: 'DDC3785Attribute', cascade: ['persist'], orphanRemoval: true)]
     private $attributes;
 
     /** @psalm-param list<DDC3785Attribute> $attributes */
-    public function __construct(DDC3785AssetId $id, $attributes = [])
-    {
-        $this->id         = $id;
+    public function __construct(
+        #[Id]
+        #[GeneratedValue(strategy: 'NONE')]
+        #[Column(type: 'ddc3785_asset_id')]
+        private DDC3785AssetId $id,
+        $attributes = [],
+    ) {
         $this->attributes = new ArrayCollection();
 
         foreach ($attributes as $attribute) {
@@ -107,51 +101,32 @@ class DDC3785Asset
     }
 }
 
-/**
- * @Entity
- * @Table(name="attribute")
- */
+#[Table(name: 'attribute')]
+#[Entity]
 class DDC3785Attribute
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     public $id;
 
-    /**
-     * @var string
-     * @Column(type="string", length=255)
-     */
-    private $name;
-
-    /**
-     * @var string
-     * @Column(type="string", length=255)
-     */
-    private $value;
-
-    public function __construct(string $name, string $value)
-    {
-        $this->name  = $name;
-        $this->value = $value;
+    public function __construct(
+        #[Column(type: 'string', length: 255)]
+        private string $name,
+        #[Column(type: 'string', length: 255)]
+        private string $value,
+    ) {
     }
 }
 
-/** @Embeddable */
-class DDC3785AssetId
+#[Embeddable]
+class DDC3785AssetId implements Stringable
 {
-    /**
-     * @var string
-     * @Column(type = "guid")
-     */
-    private $id;
-
-    public function __construct(string $id)
-    {
-        $this->id = $id;
+    public function __construct(
+        #[Column(type: 'guid')]
+        private string $id,
+    ) {
     }
 
     public function __toString(): string
@@ -165,15 +140,15 @@ class DDC3785AssetIdType extends Type
     /**
      * {@inheritDoc}
      */
-    public function getSQLDeclaration(array $fieldDeclaration, AbstractPlatform $platform)
+    public function getSQLDeclaration(array $column, AbstractPlatform $platform): string
     {
-        return $platform->getGuidTypeDeclarationSQL($fieldDeclaration);
+        return $platform->getGuidTypeDeclarationSQL($column);
     }
 
     /**
      * {@inheritDoc}
      */
-    public function convertToDatabaseValue($value, AbstractPlatform $platform)
+    public function convertToDatabaseValue($value, AbstractPlatform $platform): string
     {
         return (string) $value;
     }
@@ -181,15 +156,12 @@ class DDC3785AssetIdType extends Type
     /**
      * {@inheritDoc}
      */
-    public function convertToPHPValue($value, AbstractPlatform $platform)
+    public function convertToPHPValue($value, AbstractPlatform $platform): DDC3785AssetId
     {
         return new DDC3785AssetId($value);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function getName()
+    public function getName(): string
     {
         return 'ddc3785_asset_id';
     }

@@ -6,30 +6,17 @@ namespace Doctrine\Tests\Models\DDC1476;
 
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\ClassMetadata;
-use Doctrine\ORM\Mapping\Column;
-use Doctrine\ORM\Mapping\Entity;
-use Doctrine\ORM\Mapping\GeneratedValue;
-use Doctrine\ORM\Mapping\Id;
 
-/** @Entity() */
 #[ORM\Entity]
 class DDC1476EntityWithDefaultFieldType
 {
-    /**
-     * @var int
-     * @Id
-     * @Column()
-     * @GeneratedValue("NONE")
-     */
+    /** @var int */
     #[ORM\Id]
     #[ORM\Column]
     #[ORM\GeneratedValue(strategy: 'NONE')]
     protected $id;
 
-    /**
-     * @var string
-     * @Column()
-     */
+    /** @var string */
     #[ORM\Column]
     protected $name;
 
@@ -54,10 +41,10 @@ class DDC1476EntityWithDefaultFieldType
             [
                 'id'         => true,
                 'fieldName'  => 'id',
-            ]
+            ],
         );
         $metadata->mapField(
-            ['fieldName' => 'name']
+            ['fieldName' => 'name'],
         );
 
         $metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_NONE);

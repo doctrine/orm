@@ -29,27 +29,17 @@ class FilterCollection
      */
     public const FILTERS_STATE_DIRTY = 2;
 
-    /**
-     * The used Configuration.
-     *
-     * @var Configuration
-     */
-    private $config;
-
-    /**
-     * The EntityManager that "owns" this FilterCollection instance.
-     *
-     * @var EntityManagerInterface
-     */
-    private $em;
+    private readonly Configuration $config;
 
     /**
      * Instances of enabled filters.
      *
-     * @var SQLFilter[]
-     * @psalm-var array<string, SQLFilter>
+     * @var array<string, SQLFilter>
      */
-    private $enabledFilters = [];
+    private array $enabledFilters = [];
+
+    /** The filter hash from the last time the query was parsed. */
+    private string $filterHash = '';
 
     /**
      * Instances of suspended filters.
@@ -57,36 +47,27 @@ class FilterCollection
      * @var SQLFilter[]
      * @psalm-var array<string, SQLFilter>
      */
-    private $suspendedFilters = [];
-
-    /**
-     * The filter hash from the last time the query was parsed.
-     *
-     * @var string
-     */
-    private $filterHash = '';
+    private array $suspendedFilters = [];
 
     /**
      * The current state of this filter.
      *
-     * @var int
      * @psalm-var self::FILTERS_STATE_*
      */
-    private $filtersState = self::FILTERS_STATE_CLEAN;
+    private int $filtersState = self::FILTERS_STATE_CLEAN;
 
-    public function __construct(EntityManagerInterface $em)
-    {
-        $this->em     = $em;
+    public function __construct(
+        private readonly EntityManagerInterface $em,
+    ) {
         $this->config = $em->getConfiguration();
     }
 
     /**
      * Gets all the enabled filters.
      *
-     * @return SQLFilter[] The enabled filters.
-     * @psalm-return array<string, SQLFilter>
+     * @return array<string, SQLFilter> The enabled filters.
      */
-    public function getEnabledFilters()
+    public function getEnabledFilters(): array
     {
         return $this->enabledFilters;
     }
@@ -105,13 +86,9 @@ class FilterCollection
     /**
      * Enables a filter from the collection.
      *
-     * @param string $name Name of the filter.
-     *
-     * @return SQLFilter The enabled filter.
-     *
      * @throws InvalidArgumentException If the filter does not exist.
      */
-    public function enable($name)
+    public function enable(string $name): SQLFilter
     {
         if (! $this->has($name)) {
             throw new InvalidArgumentException("Filter '" . $name . "' does not exist.");
@@ -139,13 +116,9 @@ class FilterCollection
     /**
      * Disables a filter.
      *
-     * @param string $name Name of the filter.
-     *
-     * @return SQLFilter The disabled filter.
-     *
      * @throws InvalidArgumentException If the filter does not exist.
      */
-    public function disable($name)
+    public function disable(string $name): SQLFilter
     {
         // Get the filter to return it
         $filter = $this->getFilter($name);
@@ -208,13 +181,9 @@ class FilterCollection
     /**
      * Gets an enabled filter from the collection.
      *
-     * @param string $name Name of the filter.
-     *
-     * @return SQLFilter The filter.
-     *
      * @throws InvalidArgumentException If the filter is not enabled.
      */
-    public function getFilter($name)
+    public function getFilter(string $name): SQLFilter
     {
         if (! $this->isEnabled($name)) {
             throw new InvalidArgumentException("Filter '" . $name . "' is not enabled.");
@@ -225,24 +194,16 @@ class FilterCollection
 
     /**
      * Checks whether filter with given name is defined.
-     *
-     * @param string $name Name of the filter.
-     *
-     * @return bool true if the filter exists, false if not.
      */
-    public function has($name)
+    public function has(string $name): bool
     {
         return $this->config->getFilterClassName($name) !== null;
     }
 
     /**
      * Checks if a filter is enabled.
-     *
-     * @param string $name Name of the filter.
-     *
-     * @return bool True if the filter is enabled, false otherwise.
      */
-    public function isEnabled($name)
+    public function isEnabled(string $name): bool
     {
         return isset($this->enabledFilters[$name]);
     }
@@ -261,20 +222,16 @@ class FilterCollection
 
     /**
      * Checks if the filter collection is clean.
-     *
-     * @return bool
      */
-    public function isClean()
+    public function isClean(): bool
     {
         return $this->filtersState === self::FILTERS_STATE_CLEAN;
     }
 
     /**
      * Generates a string of currently enabled filters to use for the cache id.
-     *
-     * @return string
      */
-    public function getHash()
+    public function getHash(): string
     {
         // If there are only clean filters, the previous hash can be returned
         if ($this->filtersState === self::FILTERS_STATE_CLEAN) {
@@ -295,10 +252,8 @@ class FilterCollection
 
     /**
      * Sets the filter state to dirty.
-     *
-     * @return void
      */
-    public function setFiltersStateDirty()
+    public function setFiltersStateDirty(): void
     {
         $this->filtersState = self::FILTERS_STATE_DIRTY;
     }

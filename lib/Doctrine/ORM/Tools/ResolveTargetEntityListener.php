@@ -8,6 +8,7 @@ use Doctrine\Common\EventSubscriber;
 use Doctrine\ORM\Event\LoadClassMetadataEventArgs;
 use Doctrine\ORM\Event\OnClassMetadataNotFoundEventArgs;
 use Doctrine\ORM\Events;
+use Doctrine\ORM\Mapping\AssociationMapping;
 use Doctrine\ORM\Mapping\ClassMetadata;
 
 use function array_key_exists;
@@ -19,18 +20,16 @@ use function ltrim;
  *
  * Mechanism to overwrite interfaces or classes specified as association
  * targets.
- *
- * @psalm-import-type AssociationMapping from ClassMetadata
  */
 class ResolveTargetEntityListener implements EventSubscriber
 {
     /** @var mixed[][] indexed by original entity name */
-    private $resolveTargetEntities = [];
+    private array $resolveTargetEntities = [];
 
     /**
      * {@inheritDoc}
      */
-    public function getSubscribedEvents()
+    public function getSubscribedEvents(): array
     {
         return [
             Events::loadClassMetadata,
@@ -41,30 +40,22 @@ class ResolveTargetEntityListener implements EventSubscriber
     /**
      * Adds a target-entity class name to resolve to a new class name.
      *
-     * @param string $originalEntity
-     * @param string $newEntity
      * @psalm-param array<string, mixed> $mapping
-     *
-     * @return void
      */
-    public function addResolveTargetEntity($originalEntity, $newEntity, array $mapping)
+    public function addResolveTargetEntity(string $originalEntity, string $newEntity, array $mapping): void
     {
         $mapping['targetEntity']                                   = ltrim($newEntity, '\\');
         $this->resolveTargetEntities[ltrim($originalEntity, '\\')] = $mapping;
     }
 
-    /**
-     * @internal this is an event callback, and should not be called directly
-     *
-     * @return void
-     */
-    public function onClassMetadataNotFound(OnClassMetadataNotFoundEventArgs $args)
+    /** @internal this is an event callback, and should not be called directly */
+    public function onClassMetadataNotFound(OnClassMetadataNotFoundEventArgs $args): void
     {
         if (array_key_exists($args->getClassName(), $this->resolveTargetEntities)) {
             $args->setFoundMetadata(
                 $args
                     ->getObjectManager()
-                    ->getClassMetadata($this->resolveTargetEntities[$args->getClassName()]['targetEntity'])
+                    ->getClassMetadata($this->resolveTargetEntities[$args->getClassName()]['targetEntity']),
             );
         }
     }
@@ -73,15 +64,13 @@ class ResolveTargetEntityListener implements EventSubscriber
      * Processes event and resolves new target entity names.
      *
      * @internal this is an event callback, and should not be called directly
-     *
-     * @return void
      */
-    public function loadClassMetadata(LoadClassMetadataEventArgs $args)
+    public function loadClassMetadata(LoadClassMetadataEventArgs $args): void
     {
         $cm = $args->getClassMetadata();
 
         foreach ($cm->associationMappings as $mapping) {
-            if (isset($this->resolveTargetEntities[$mapping['targetEntity']])) {
+            if (isset($this->resolveTargetEntities[$mapping->targetEntity])) {
                 $this->remapAssociation($cm, $mapping);
             }
         }
@@ -99,16 +88,18 @@ class ResolveTargetEntityListener implements EventSubscriber
         }
     }
 
-    /** @param AssociationMapping $mapping */
-    private function remapAssociation(ClassMetadata $classMetadata, array $mapping): void
+    private function remapAssociation(ClassMetadata $classMetadata, AssociationMapping $mapping): void
     {
-        $newMapping              = $this->resolveTargetEntities[$mapping['targetEntity']];
-        $newMapping              = array_replace_recursive($mapping, $newMapping);
-        $newMapping['fieldName'] = $mapping['fieldName'];
+        $newMapping              = $this->resolveTargetEntities[$mapping->targetEntity];
+        $newMapping              = array_replace_recursive(
+            $mapping->toArray(),
+            $newMapping,
+        );
+        $newMapping['fieldName'] = $mapping->fieldName;
 
-        unset($classMetadata->associationMappings[$mapping['fieldName']]);
+        unset($classMetadata->associationMappings[$mapping->fieldName]);
 
-        switch ($mapping['type']) {
+        switch ($mapping->type()) {
             case ClassMetadata::MANY_TO_MANY:
                 $classMetadata->mapManyToMany($newMapping);
                 break;

@@ -14,18 +14,16 @@ use Doctrine\Tests\Mocks\ConcurrentRegionMock;
 use Doctrine\Tests\Mocks\TimestampRegionMock;
 use Doctrine\Tests\Models\Cache\Country;
 use Doctrine\Tests\Models\Cache\State;
+use PHPUnit\Framework\Attributes\Group;
 use Psr\Cache\CacheItemPoolInterface;
 
 use function assert;
 
-/** @group DDC-2183 */
+#[Group('DDC-2183')]
 class SecondLevelCacheConcurrentTest extends SecondLevelCacheFunctionalTestCase
 {
-    /** @var CacheFactorySecondLevelCacheConcurrentTest */
-    private $cacheFactory;
-
-    /** @var ClassMetadata */
-    private $countryMetadata;
+    private CacheFactorySecondLevelCacheConcurrentTest $cacheFactory;
+    private ClassMetadata $countryMetadata;
 
     protected function setUp(): void
     {
@@ -132,12 +130,8 @@ class SecondLevelCacheConcurrentTest extends SecondLevelCacheFunctionalTestCase
 
 class CacheFactorySecondLevelCacheConcurrentTest extends DefaultCacheFactory
 {
-    /** @var CacheItemPoolInterface */
-    private $cache;
-
-    public function __construct(CacheItemPoolInterface $cache)
+    public function __construct(private CacheItemPoolInterface $cache)
     {
-        $this->cache = $cache;
     }
 
     public function getRegion(array $cache): ConcurrentRegionMock

@@ -21,23 +21,20 @@ use Doctrine\Tests\Models\CMS\CmsPhonenumber;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\Models\CMS\CmsUserDTO;
 use Doctrine\Tests\Models\Company\CompanyContract;
-use Doctrine\Tests\Models\Company\CompanyEmployee;
 use Doctrine\Tests\Models\Company\CompanyFixContract;
-use Doctrine\Tests\Models\Company\CompanyFlexContract;
-use Doctrine\Tests\Models\Company\CompanyPerson;
 use Doctrine\Tests\Models\CustomType\CustomTypeUpperCase;
 use Doctrine\Tests\Models\DDC3899\DDC3899FixContract;
 use Doctrine\Tests\Models\DDC3899\DDC3899User;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use InvalidArgumentException;
+use PHPUnit\Framework\Attributes\Group;
 
 class NativeQueryTest extends OrmFunctionalTestCase
 {
     use SQLResultCasing;
     use VerifyDeprecations;
 
-    /** @var AbstractPlatform */
-    private $platform = null;
+    private AbstractPlatform|null $platform = null;
 
     protected function setUp(): void
     {
@@ -214,7 +211,7 @@ INNER JOIN cms_addresses a ON u.id = a.user_id
      WHERE username = ?
 SQL
             ,
-            $rsm
+            $rsm,
         );
         $query->setParameter(1, 'romanb');
 
@@ -289,7 +286,6 @@ SQL
           ->setHint('foo', 'bar')
           ->setParameter(1, 'foo')
           ->setParameters($parameters)
-          ->setResultCacheDriver(null)
           ->setResultCacheLifetime(3500);
 
         self::assertSame($q, $q2);
@@ -392,7 +388,7 @@ SQL
         self::assertEquals($user->name, $address->getUser()->getName());
     }
 
-    /** @group rsm-sti */
+    #[Group('rsm-sti')]
     public function testConcreteClassInSingleTableInheritanceSchemaWithRSMBuilderIsFine(): void
     {
         $rsm = new ResultSetMappingBuilder($this->_em);
@@ -401,7 +397,7 @@ SQL
         self::assertSame(CompanyFixContract::class, $rsm->getClassName('c'));
     }
 
-    /** @group rsm-sti */
+    #[Group('rsm-sti')]
     public function testAbstractClassInSingleTableInheritanceSchemaWithRSMBuilderThrowsException(): void
     {
         $this->expectException(InvalidArgumentException::class);
@@ -413,13 +409,13 @@ SQL
 
     public function testRSMBuilderThrowsExceptionOnColumnConflict(): void
     {
-        $this->expectException('InvalidArgumentException');
+        $this->expectException(InvalidArgumentException::class);
         $rsm = new ResultSetMappingBuilder($this->_em);
         $rsm->addRootEntityFromClassMetadata(CmsUser::class, 'u');
         $rsm->addJoinedEntityFromClassMetadata(CmsAddress::class, 'a', 'u', 'address');
     }
 
-    /** @group PR-39 */
+    #[Group('PR-39')]
     public function testUnknownParentAliasThrowsException(): void
     {
         $rsm = new ResultSetMappingBuilder($this->_em);
@@ -435,343 +431,7 @@ SQL
         $users = $query->getResult();
     }
 
-    /** @group DDC-1663 */
-    public function testBasicNativeNamedQueryWithSqlResultSetMapping(): void
-    {
-        $user           = new CmsUser();
-        $user->name     = 'Fabio B. Silva';
-        $user->username = 'FabioBatSilva';
-        $user->status   = 'dev';
-
-        $addr          = new CmsAddress();
-        $addr->country = 'Brazil';
-        $addr->zip     = 10827;
-        $addr->city    = 'São Paulo';
-
-        $user->setAddress($addr);
-
-        $this->_em->clear();
-        $this->_em->persist($user);
-        $this->_em->flush();
-
-        $this->_em->clear();
-
-        $repository = $this->_em->getRepository(CmsAddress::class);
-        $query      = $repository->createNativeNamedQuery('find-all');
-        $result     = $query->getResult();
-
-        self::assertCount(1, $result);
-        self::assertInstanceOf(CmsAddress::class, $result[0]);
-        self::assertEquals($addr->id, $result[0]->id);
-        self::assertEquals($addr->city, $result[0]->city);
-        self::assertEquals($addr->country, $result[0]->country);
-    }
-
-    /** @group DDC-1663 */
-    public function testBasicNativeNamedQueryWithResultClass(): void
-    {
-        $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/issues/8592');
-
-        $user           = new CmsUser();
-        $user->name     = 'Fabio B. Silva';
-        $user->username = 'FabioBatSilva';
-        $user->status   = 'dev';
-
-        $email        = new CmsEmail();
-        $email->email = 'fabio.bat.silva@gmail.com';
-
-        $user->setEmail($email);
-
-        $this->_em->clear();
-        $this->_em->persist($user);
-        $this->_em->flush();
-
-        $this->_em->clear();
-
-        $repository = $this->_em->getRepository(CmsUser::class);
-
-        $result = $repository->createNativeNamedQuery('fetchIdAndUsernameWithResultClass')
-                            ->setParameter(1, 'FabioBatSilva')
-                            ->getResult();
-
-        self::assertCount(1, $result);
-        self::assertInstanceOf(CmsUser::class, $result[0]);
-        self::assertNull($result[0]->name);
-        self::assertNull($result[0]->email);
-        self::assertEquals($user->id, $result[0]->id);
-        self::assertEquals('FabioBatSilva', $result[0]->username);
-
-        $this->_em->clear();
-
-        $result = $repository->createNativeNamedQuery('fetchAllColumns')
-                            ->setParameter(1, 'FabioBatSilva')
-                            ->getResult();
-
-        self::assertCount(1, $result);
-        self::assertInstanceOf(CmsUser::class, $result[0]);
-        self::assertEquals($user->id, $result[0]->id);
-        self::assertEquals('Fabio B. Silva', $result[0]->name);
-        self::assertEquals('FabioBatSilva', $result[0]->username);
-        self::assertEquals('dev', $result[0]->status);
-        self::assertInstanceOf(CmsEmail::class, $result[0]->email);
-    }
-
-    /** @group DDC-1663 */
-    public function testJoinedOneToOneNativeNamedQueryWithResultSetMapping(): void
-    {
-        $user           = new CmsUser();
-        $user->name     = 'Fabio B. Silva';
-        $user->username = 'FabioBatSilva';
-        $user->status   = 'dev';
-
-        $addr          = new CmsAddress();
-        $addr->country = 'Brazil';
-        $addr->zip     = 10827;
-        $addr->city    = 'São Paulo';
-
-        $user->setAddress($addr);
-
-        $this->_em->persist($user);
-        $this->_em->flush();
-        $this->_em->clear();
-
-        $result = $this->_em->getRepository(CmsUser::class)
-                            ->createNativeNamedQuery('fetchJoinedAddress')
-                            ->setParameter(1, 'FabioBatSilva')
-                            ->getResult();
-
-        self::assertCount(1, $result);
-        self::assertInstanceOf(CmsUser::class, $result[0]);
-        self::assertEquals('Fabio B. Silva', $result[0]->name);
-        self::assertInstanceOf(PersistentCollection::class, $result[0]->getPhonenumbers());
-        self::assertFalse($result[0]->getPhonenumbers()->isInitialized());
-        self::assertInstanceOf(CmsAddress::class, $result[0]->getAddress());
-        self::assertEquals($result[0]->getAddress()->getUser(), $result[0]);
-        self::assertEquals('Brazil', $result[0]->getAddress()->getCountry());
-        self::assertEquals(10827, $result[0]->getAddress()->getZipCode());
-        self::assertEquals('São Paulo', $result[0]->getAddress()->getCity());
-    }
-
-    /** @group DDC-1663 */
-    public function testJoinedOneToManyNativeNamedQueryWithResultSetMapping(): void
-    {
-        $user           = new CmsUser();
-        $user->name     = 'Fabio B. Silva';
-        $user->username = 'FabioBatSilva';
-        $user->status   = 'dev';
-
-        $phone              = new CmsPhonenumber();
-        $phone->phonenumber = 424242;
-
-        $user->addPhonenumber($phone);
-
-        $this->_em->persist($user);
-        $this->_em->flush();
-
-        $this->_em->clear();
-
-        $repository = $this->_em->getRepository(CmsUser::class);
-
-        $result = $repository->createNativeNamedQuery('fetchJoinedPhonenumber')
-                        ->setParameter(1, 'FabioBatSilva')->getResult();
-
-        self::assertCount(1, $result);
-        self::assertInstanceOf(CmsUser::class, $result[0]);
-        self::assertEquals('Fabio B. Silva', $result[0]->name);
-        self::assertInstanceOf(PersistentCollection::class, $result[0]->getPhonenumbers());
-        self::assertTrue($result[0]->getPhonenumbers()->isInitialized());
-        self::assertCount(1, $result[0]->getPhonenumbers());
-        $phones = $result[0]->getPhonenumbers();
-        self::assertEquals(424242, $phones[0]->phonenumber);
-        self::assertSame($phones[0]->getUser(), $result[0]);
-    }
-
-    /** @group DDC-1663 */
-    public function testMixedNativeNamedQueryNormalJoin(): void
-    {
-        $user1           = new CmsUser();
-        $user1->name     = 'Fabio B. Silva';
-        $user1->username = 'FabioBatSilva';
-        $user1->status   = 'dev';
-
-        $user2           = new CmsUser();
-        $user2->name     = 'test tester';
-        $user2->username = 'test';
-        $user2->status   = 'tester';
-
-        $phone1              = new CmsPhonenumber();
-        $phone2              = new CmsPhonenumber();
-        $phone3              = new CmsPhonenumber();
-        $phone1->phonenumber = 11111111;
-        $phone2->phonenumber = 22222222;
-        $phone3->phonenumber = 33333333;
-
-        $user1->addPhonenumber($phone1);
-        $user1->addPhonenumber($phone2);
-        $user2->addPhonenumber($phone3);
-
-        $this->_em->persist($user1);
-        $this->_em->persist($user2);
-        $this->_em->flush();
-
-        $this->_em->clear();
-
-        $repository = $this->_em->getRepository(CmsUser::class);
-
-        $result = $repository->createNativeNamedQuery('fetchUserPhonenumberCount')
-                        ->setParameter(1, ['test', 'FabioBatSilva'])->getResult();
-
-        self::assertCount(2, $result);
-        self::assertIsArray($result[0]);
-        self::assertIsArray($result[1]);
-
-        // first user => 2 phonenumbers
-        self::assertInstanceOf(CmsUser::class, $result[0][0]);
-        self::assertEquals('Fabio B. Silva', $result[0][0]->name);
-        self::assertEquals(2, $result[0]['numphones']);
-
-        // second user => 1 phonenumbers
-        self::assertInstanceOf(CmsUser::class, $result[1][0]);
-        self::assertEquals('test tester', $result[1][0]->name);
-        self::assertEquals(1, $result[1]['numphones']);
-    }
-
-    /** @group DDC-1663 */
-    public function testNativeNamedQueryInheritance(): void
-    {
-        $person = new CompanyPerson();
-        $person->setName('Fabio B. Silva');
-
-        $employee = new CompanyEmployee();
-        $employee->setName('Fabio Silva');
-        $employee->setSalary(100000);
-        $employee->setDepartment('IT');
-
-        $this->_em->persist($person);
-        $this->_em->persist($employee);
-
-        $this->_em->flush();
-        $this->_em->clear();
-
-        $repository = $this->_em->getRepository(CompanyPerson::class);
-
-        $result = $repository->createNativeNamedQuery('fetchAllWithSqlResultSetMapping')
-                        ->getResult();
-
-        self::assertCount(2, $result);
-        self::assertInstanceOf(CompanyPerson::class, $result[0]);
-        self::assertInstanceOf(CompanyEmployee::class, $result[1]);
-        self::assertIsNumeric($result[0]->getId());
-        self::assertIsNumeric($result[1]->getId());
-        self::assertEquals('Fabio B. Silva', $result[0]->getName());
-        self::assertEquals('Fabio Silva', $result[1]->getName());
-
-        $this->_em->clear();
-
-        $result = $repository->createNativeNamedQuery('fetchAllWithResultClass')
-                        ->getResult();
-
-        self::assertCount(2, $result);
-        self::assertInstanceOf(CompanyPerson::class, $result[0]);
-        self::assertInstanceOf(CompanyEmployee::class, $result[1]);
-        self::assertIsNumeric($result[0]->getId());
-        self::assertIsNumeric($result[1]->getId());
-        self::assertEquals('Fabio B. Silva', $result[0]->getName());
-        self::assertEquals('Fabio Silva', $result[1]->getName());
-    }
-
-    /**
-     * @group DDC-1663
-     * DQL : SELECT u, a, COUNT(p) AS numphones FROM Doctrine\Tests\Models\CMS\CmsUser u JOIN u.address a JOIN u.phonenumbers p
-     */
-    public function testMultipleEntityResults(): void
-    {
-        $user           = new CmsUser();
-        $user->name     = 'Fabio B. Silva';
-        $user->username = 'FabioBatSilva';
-        $user->status   = 'dev';
-
-        $addr          = new CmsAddress();
-        $addr->country = 'Brazil';
-        $addr->zip     = 10827;
-        $addr->city    = 'São Paulo';
-
-        $phone              = new CmsPhonenumber();
-        $phone->phonenumber = 424242;
-
-        $user->setAddress($addr);
-        $user->addPhonenumber($phone);
-
-        $this->_em->clear();
-        $this->_em->persist($user);
-        $this->_em->flush();
-
-        $this->_em->clear();
-
-        $repository = $this->_em->getRepository(CmsUser::class);
-        $query      = $repository->createNativeNamedQuery('fetchMultipleJoinsEntityResults');
-        $result     = $query->getResult();
-
-        self::assertCount(1, $result);
-        self::assertIsArray($result[0]);
-        self::assertInstanceOf(CmsUser::class, $result[0][0]);
-        self::assertEquals('Fabio B. Silva', $result[0][0]->name);
-        self::assertInstanceOf(CmsAddress::class, $result[0][0]->getAddress());
-        self::assertEquals($result[0][0]->getAddress()->getUser(), $result[0][0]);
-        self::assertEquals('Brazil', $result[0][0]->getAddress()->getCountry());
-        self::assertEquals(10827, $result[0][0]->getAddress()->getZipCode());
-
-        self::assertEquals(1, $result[0]['numphones']);
-    }
-
-    /** @group DDC-1663 */
-    public function testNamedNativeQueryInheritance(): void
-    {
-        $contractMetadata = $this->_em->getClassMetadata(CompanyContract::class);
-        $flexMetadata     = $this->_em->getClassMetadata(CompanyFlexContract::class);
-
-        $contractQueries = $contractMetadata->getNamedNativeQueries();
-        $flexQueries     = $flexMetadata->getNamedNativeQueries();
-
-        $contractMappings = $contractMetadata->getSqlResultSetMappings();
-        $flexMappings     = $flexMetadata->getSqlResultSetMappings();
-
-        // contract queries
-        self::assertEquals('all-contracts', $contractQueries['all-contracts']['name']);
-        self::assertEquals(CompanyContract::class, $contractQueries['all-contracts']['resultClass']);
-
-        self::assertEquals('all', $contractQueries['all']['name']);
-        self::assertEquals(CompanyContract::class, $contractQueries['all']['resultClass']);
-
-        // flex contract queries
-        self::assertEquals('all-contracts', $flexQueries['all-contracts']['name']);
-        self::assertEquals(CompanyFlexContract::class, $flexQueries['all-contracts']['resultClass']);
-
-        self::assertEquals('all-flex', $flexQueries['all-flex']['name']);
-        self::assertEquals(CompanyFlexContract::class, $flexQueries['all-flex']['resultClass']);
-
-        self::assertEquals('all', $flexQueries['all']['name']);
-        self::assertEquals(CompanyFlexContract::class, $flexQueries['all']['resultClass']);
-
-        // contract result mapping
-        self::assertEquals('mapping-all-contracts', $contractMappings['mapping-all-contracts']['name']);
-        self::assertEquals(CompanyContract::class, $contractMappings['mapping-all-contracts']['entities'][0]['entityClass']);
-
-        self::assertEquals('mapping-all', $contractMappings['mapping-all']['name']);
-        self::assertEquals(CompanyContract::class, $contractMappings['mapping-all-contracts']['entities'][0]['entityClass']);
-
-        // flex contract result mapping
-        self::assertEquals('mapping-all-contracts', $flexMappings['mapping-all-contracts']['name']);
-        self::assertEquals(CompanyFlexContract::class, $flexMappings['mapping-all-contracts']['entities'][0]['entityClass']);
-
-        self::assertEquals('mapping-all', $flexMappings['mapping-all']['name']);
-        self::assertEquals(CompanyFlexContract::class, $flexMappings['mapping-all']['entities'][0]['entityClass']);
-
-        self::assertEquals('mapping-all-flex', $flexMappings['mapping-all-flex']['name']);
-        self::assertEquals(CompanyFlexContract::class, $flexMappings['mapping-all-flex']['entities'][0]['entityClass']);
-    }
-
-    /** @group DDC-2055 */
+    #[Group('DDC-2055')]
     public function testGenerateSelectClauseNoRenameSingleEntity(): void
     {
         $rsm = new ResultSetMappingBuilder($this->_em);
@@ -782,7 +442,7 @@ SQL
         $this->assertSQLEquals('u.id AS id, u.status AS status, u.username AS username, u.name AS name, u.email_id AS email_id', $selectClause);
     }
 
-    /** @group DDC-2055 */
+    #[Group('DDC-2055')]
     public function testGenerateSelectClauseCustomRenames(): void
     {
         $rsm = new ResultSetMappingBuilder($this->_em);
@@ -796,7 +456,7 @@ SQL
         $this->assertSQLEquals('u.id AS id1, u.status AS status, u.username AS username2, u.name AS name, u.email_id AS email_id', $selectClause);
     }
 
-    /** @group DDC-2055 */
+    #[Group('DDC-2055')]
     public function testGenerateSelectClauseRenameTableAlias(): void
     {
         $rsm = new ResultSetMappingBuilder($this->_em);
@@ -807,7 +467,7 @@ SQL
         $this->assertSQLEquals('u1.id AS id, u1.status AS status, u1.username AS username, u1.name AS name, u1.email_id AS email_id', $selectClause);
     }
 
-    /** @group DDC-2055 */
+    #[Group('DDC-2055')]
     public function testGenerateSelectClauseIncrement(): void
     {
         $rsm = new ResultSetMappingBuilder($this->_em, ResultSetMappingBuilder::COLUMN_RENAMING_INCREMENT);
@@ -818,7 +478,7 @@ SQL
         $this->assertSQLEquals('u.id AS id0, u.status AS status1, u.username AS username2, u.name AS name3, u.email_id AS email_id4', $selectClause);
     }
 
-    /** @group DDC-2055 */
+    #[Group('DDC-2055')]
     public function testGenerateSelectClauseToString(): void
     {
         $rsm = new ResultSetMappingBuilder($this->_em, ResultSetMappingBuilder::COLUMN_RENAMING_INCREMENT);
@@ -827,7 +487,7 @@ SQL
         $this->assertSQLEquals('u.id AS id0, u.status AS status1, u.username AS username2, u.name AS name3, u.email_id AS email_id4', (string) $rsm);
     }
 
-    /** @group DDC-3899 */
+    #[Group('DDC-3899')]
     public function testGenerateSelectClauseWithDiscriminatorColumn(): void
     {
         $rsm = new ResultSetMappingBuilder($this->_em, ResultSetMappingBuilder::COLUMN_RENAMING_INCREMENT);

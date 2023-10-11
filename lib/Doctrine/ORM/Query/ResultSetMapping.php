@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Query;
 
-use function array_merge;
 use function count;
 
 /**
@@ -25,17 +24,15 @@ class ResultSetMapping
      * Whether the result is mixed (contains scalar values together with field values).
      *
      * @ignore
-     * @var bool
      */
-    public $isMixed = false;
+    public bool $isMixed = false;
 
     /**
      * Whether the result is a select statement.
      *
      * @ignore
-     * @var bool
      */
-    public $isSelect = true;
+    public bool $isSelect = true;
 
     /**
      * Maps alias names to class names.
@@ -43,7 +40,7 @@ class ResultSetMapping
      * @ignore
      * @psalm-var array<string, class-string>
      */
-    public $aliasMap = [];
+    public array $aliasMap = [];
 
     /**
      * Maps alias names to related association field names.
@@ -51,7 +48,7 @@ class ResultSetMapping
      * @ignore
      * @psalm-var array<string, string>
      */
-    public $relationMap = [];
+    public array $relationMap = [];
 
     /**
      * Maps alias names to parent alias names.
@@ -59,7 +56,7 @@ class ResultSetMapping
      * @ignore
      * @psalm-var array<string, string>
      */
-    public $parentAliasMap = [];
+    public array $parentAliasMap = [];
 
     /**
      * Maps column names in the result set to field names for each class.
@@ -67,7 +64,7 @@ class ResultSetMapping
      * @ignore
      * @psalm-var array<string, string>
      */
-    public $fieldMappings = [];
+    public array $fieldMappings = [];
 
     /**
      * Maps column names in the result set to the alias/field name to use in the mapped result.
@@ -75,7 +72,7 @@ class ResultSetMapping
      * @ignore
      * @psalm-var array<string, string|int>
      */
-    public $scalarMappings = [];
+    public array $scalarMappings = [];
 
     /**
      * Maps scalar columns to enums
@@ -91,7 +88,7 @@ class ResultSetMapping
      * @ignore
      * @psalm-var array<string, string>
      */
-    public $typeMappings = [];
+    public array $typeMappings = [];
 
     /**
      * Maps entities in the result set to the alias name to use in the mapped result.
@@ -99,7 +96,7 @@ class ResultSetMapping
      * @ignore
      * @psalm-var array<string, string|null>
      */
-    public $entityMappings = [];
+    public array $entityMappings = [];
 
     /**
      * Maps column names of meta columns (foreign keys, discriminator columns, ...) to field names.
@@ -107,7 +104,7 @@ class ResultSetMapping
      * @ignore
      * @psalm-var array<string, string>
      */
-    public $metaMappings = [];
+    public array $metaMappings = [];
 
     /**
      * Maps column names in the result set to the alias they belong to.
@@ -115,7 +112,7 @@ class ResultSetMapping
      * @ignore
      * @psalm-var array<string, string>
      */
-    public $columnOwnerMap = [];
+    public array $columnOwnerMap = [];
 
     /**
      * List of columns in the result set that are used as discriminator columns.
@@ -123,7 +120,7 @@ class ResultSetMapping
      * @ignore
      * @psalm-var array<string, string>
      */
-    public $discriminatorColumns = [];
+    public array $discriminatorColumns = [];
 
     /**
      * Maps alias names to field names that should be used for indexing.
@@ -131,7 +128,7 @@ class ResultSetMapping
      * @ignore
      * @psalm-var array<string, string>
      */
-    public $indexByMap = [];
+    public array $indexByMap = [];
 
     /**
      * Map from column names to class names that declare the field the column is mapped to.
@@ -139,35 +136,35 @@ class ResultSetMapping
      * @ignore
      * @psalm-var array<string, class-string>
      */
-    public $declaringClasses = [];
+    public array $declaringClasses = [];
 
     /**
      * This is necessary to hydrate derivate foreign keys correctly.
      *
      * @psalm-var array<string, array<string, bool>>
      */
-    public $isIdentifierColumn = [];
+    public array $isIdentifierColumn = [];
 
     /**
      * Maps column names in the result set to field names for each new object expression.
      *
      * @psalm-var array<string, array<string, mixed>>
      */
-    public $newObjectMappings = [];
+    public array $newObjectMappings = [];
 
     /**
      * Maps metadata parameter names to the metadata attribute.
      *
      * @psalm-var array<int|string, string>
      */
-    public $metadataParameterMapping = [];
+    public array $metadataParameterMapping = [];
 
     /**
      * Contains query parameter names to be resolved as discriminator values
      *
      * @psalm-var array<string, string>
      */
-    public $discriminatorParameters = [];
+    public array $discriminatorParameters = [];
 
     /**
      * Adds an entity result to this ResultSetMapping.
@@ -183,7 +180,7 @@ class ResultSetMapping
      *
      * @todo Rename: addRootEntity
      */
-    public function addEntityResult($class, $alias, $resultAlias = null)
+    public function addEntityResult(string $class, string $alias, string|null $resultAlias = null): static
     {
         $this->aliasMap[$alias]       = $class;
         $this->entityMappings[$alias] = $resultAlias;
@@ -208,7 +205,7 @@ class ResultSetMapping
      *
      * @todo Rename: addDiscriminatorColumn
      */
-    public function setDiscriminatorColumn($alias, $discrColumn)
+    public function setDiscriminatorColumn(string $alias, string $discrColumn): static
     {
         $this->discriminatorColumns[$alias] = $discrColumn;
         $this->columnOwnerMap[$discrColumn] = $alias;
@@ -224,11 +221,11 @@ class ResultSetMapping
      *
      * @return $this
      */
-    public function addIndexBy($alias, $fieldName)
+    public function addIndexBy(string $alias, string $fieldName): static
     {
         $found = false;
 
-        foreach (array_merge($this->metaMappings, $this->fieldMappings) as $columnName => $columnFieldName) {
+        foreach ([...$this->metaMappings, ...$this->fieldMappings] as $columnName => $columnFieldName) {
             if (! ($columnFieldName === $fieldName && $this->columnOwnerMap[$columnName] === $alias)) {
                 continue;
             }
@@ -257,11 +254,9 @@ class ResultSetMapping
     /**
      * Sets to index by a scalar result column name.
      *
-     * @param string $resultColumnName
-     *
      * @return $this
      */
-    public function addIndexByScalar($resultColumnName)
+    public function addIndexByScalar(string $resultColumnName): static
     {
         $this->indexByMap['scalars'] = $resultColumnName;
 
@@ -271,12 +266,9 @@ class ResultSetMapping
     /**
      * Sets a column to use for indexing an entity or joined entity result by the given alias name.
      *
-     * @param string $alias
-     * @param string $resultColumnName
-     *
      * @return $this
      */
-    public function addIndexByColumn($alias, $resultColumnName)
+    public function addIndexByColumn(string $alias, string $resultColumnName): static
     {
         $this->indexByMap[$alias] = $resultColumnName;
 
@@ -287,13 +279,9 @@ class ResultSetMapping
      * Checks whether an entity result or joined entity result with a given alias has
      * a field set for indexing.
      *
-     * @param string $alias
-     *
-     * @return bool
-     *
      * @todo Rename: isIndexed($alias)
      */
-    public function hasIndexBy($alias)
+    public function hasIndexBy(string $alias): bool
     {
         return isset($this->indexByMap[$alias]);
     }
@@ -304,11 +292,9 @@ class ResultSetMapping
      *
      * @param string $columnName The name of the column in the SQL result set.
      *
-     * @return bool
-     *
      * @todo Rename: isField
      */
-    public function isFieldResult($columnName)
+    public function isFieldResult(string $columnName): bool
     {
         return isset($this->fieldMappings[$columnName]);
     }
@@ -330,7 +316,7 @@ class ResultSetMapping
      *
      * @todo Rename: addField
      */
-    public function addFieldResult($alias, $columnName, $fieldName, $declaringClass = null)
+    public function addFieldResult(string $alias, string $columnName, string $fieldName, string|null $declaringClass = null): static
     {
         // column name (in result set) => field name
         $this->fieldMappings[$columnName] = $fieldName;
@@ -360,7 +346,7 @@ class ResultSetMapping
      *
      * @todo Rename: addJoinedEntity
      */
-    public function addJoinedEntityResult($class, $alias, $parentAlias, $relation)
+    public function addJoinedEntityResult(string $class, string $alias, string $parentAlias, string $relation): static
     {
         $this->aliasMap[$alias]       = $class;
         $this->parentAliasMap[$alias] = $parentAlias;
@@ -380,7 +366,7 @@ class ResultSetMapping
      *
      * @todo Rename: addScalar
      */
-    public function addScalarResult($columnName, $alias, $type = 'string')
+    public function addScalarResult(string $columnName, string|int $alias, string $type = 'string'): static
     {
         $this->scalarMappings[$columnName] = $alias;
         $this->typeMappings[$columnName]   = $type;
@@ -400,7 +386,7 @@ class ResultSetMapping
      *
      * @return $this
      */
-    public function addEnumResult($columnName, $enumType)
+    public function addEnumResult(string $columnName, string $enumType): static
     {
         $this->enumMappings[$columnName] = $enumType;
 
@@ -409,13 +395,8 @@ class ResultSetMapping
 
     /**
      * Adds a metadata parameter mappings.
-     *
-     * @param string|int $parameter The parameter name in the SQL result set.
-     * @param string     $attribute The metadata attribute.
-     *
-     * @return void
      */
-    public function addMetadataParameterMapping($parameter, $attribute)
+    public function addMetadataParameterMapping(string|int $parameter, string $attribute): void
     {
         $this->metadataParameterMapping[$parameter] = $attribute;
     }
@@ -423,13 +404,9 @@ class ResultSetMapping
     /**
      * Checks whether a column with a given name is mapped as a scalar result.
      *
-     * @param string $columnName The name of the column in the SQL result set.
-     *
-     * @return bool
-     *
      * @todo Rename: isScalar
      */
-    public function isScalarResult($columnName)
+    public function isScalarResult(string $columnName): bool
     {
         return isset($this->scalarMappings[$columnName]);
     }
@@ -438,11 +415,9 @@ class ResultSetMapping
      * Gets the name of the class of an entity result or joined entity result,
      * identified by the given unique alias.
      *
-     * @param string $alias
-     *
-     * @return class-string
+     * @psalm-return class-string
      */
-    public function getClassName($alias)
+    public function getClassName(string $alias): string
     {
         return $this->aliasMap[$alias];
     }
@@ -451,10 +426,8 @@ class ResultSetMapping
      * Gets the field alias for a column that is mapped as a scalar value.
      *
      * @param string $columnName The name of the column in the SQL result set.
-     *
-     * @return string|int
      */
-    public function getScalarAlias($columnName)
+    public function getScalarAlias(string $columnName): string|int
     {
         return $this->scalarMappings[$columnName];
     }
@@ -462,85 +435,57 @@ class ResultSetMapping
     /**
      * Gets the name of the class that owns a field mapping for the specified column.
      *
-     * @param string $columnName
-     *
-     * @return class-string
+     * @psalm-return class-string
      */
-    public function getDeclaringClass($columnName)
+    public function getDeclaringClass(string $columnName): string
     {
         return $this->declaringClasses[$columnName];
     }
 
-    /**
-     * @param string $alias
-     *
-     * @return string
-     */
-    public function getRelation($alias)
+    public function getRelation(string $alias): string
     {
         return $this->relationMap[$alias];
     }
 
-    /**
-     * @param string $alias
-     *
-     * @return bool
-     */
-    public function isRelation($alias)
+    public function isRelation(string $alias): bool
     {
         return isset($this->relationMap[$alias]);
     }
 
     /**
      * Gets the alias of the class that owns a field mapping for the specified column.
-     *
-     * @param string $columnName
-     *
-     * @return string
      */
-    public function getEntityAlias($columnName)
+    public function getEntityAlias(string $columnName): string
     {
         return $this->columnOwnerMap[$columnName];
     }
 
     /**
      * Gets the parent alias of the given alias.
-     *
-     * @param string $alias
-     *
-     * @return string
      */
-    public function getParentAlias($alias)
+    public function getParentAlias(string $alias): string
     {
         return $this->parentAliasMap[$alias];
     }
 
     /**
      * Checks whether the given alias has a parent alias.
-     *
-     * @param string $alias
-     *
-     * @return bool
      */
-    public function hasParentAlias($alias)
+    public function hasParentAlias(string $alias): bool
     {
         return isset($this->parentAliasMap[$alias]);
     }
 
     /**
      * Gets the field name for a column name.
-     *
-     * @param string $columnName
-     *
-     * @return string
      */
-    public function getFieldName($columnName)
+    public function getFieldName(string $columnName): string
     {
         return $this->fieldMappings[$columnName];
     }
 
     /** @psalm-return array<string, class-string> */
-    public function getAliasMap()
+    public function getAliasMap(): array
     {
         return $this->aliasMap;
     }
@@ -548,10 +493,9 @@ class ResultSetMapping
     /**
      * Gets the number of different entities that appear in the mapped result.
      *
-     * @return int
      * @psalm-return 0|positive-int
      */
-    public function getEntityResultCount()
+    public function getEntityResultCount(): int
     {
         return count($this->aliasMap);
     }
@@ -562,10 +506,8 @@ class ResultSetMapping
      * Mixed results can only occur in object and array (graph) hydration. In such a
      * case a mixed result means that scalar values are mixed with objects/array in
      * the result.
-     *
-     * @return bool
      */
-    public function isMixedResult()
+    public function isMixedResult(): bool
     {
         return $this->isMixed;
     }
@@ -573,18 +515,22 @@ class ResultSetMapping
     /**
      * Adds a meta column (foreign key or discriminator column) to the result set.
      *
-     * @param string      $alias              The result alias with which the meta result should be placed in the result structure.
-     * @param string      $columnName         The name of the column in the SQL result set.
-     * @param string      $fieldName          The name of the field on the declaring class.
-     * @param bool        $isIdentifierColumn
-     * @param string|null $type               The column type
+     * @param string      $alias      The result alias with which the meta result should be placed in the result structure.
+     * @param string      $columnName The name of the column in the SQL result set.
+     * @param string      $fieldName  The name of the field on the declaring class.
+     * @param string|null $type       The column type
      *
      * @return $this
      *
      * @todo Make all methods of this class require all parameters and not infer anything
      */
-    public function addMetaResult($alias, $columnName, $fieldName, $isIdentifierColumn = false, $type = null)
-    {
+    public function addMetaResult(
+        string $alias,
+        string $columnName,
+        string $fieldName,
+        bool $isIdentifierColumn = false,
+        string|null $type = null,
+    ): static {
         $this->metaMappings[$columnName]   = $fieldName;
         $this->columnOwnerMap[$columnName] = $alias;
 

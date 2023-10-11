@@ -13,10 +13,7 @@ use Doctrine\ORM\Cache\TimestampRegion;
  */
 class UpdateTimestampCache extends DefaultRegion implements TimestampRegion
 {
-    /**
-     * {@inheritDoc}
-     */
-    public function update(CacheKey $key)
+    public function update(CacheKey $key): void
     {
         $this->put($key, new TimestampCacheEntry());
     }

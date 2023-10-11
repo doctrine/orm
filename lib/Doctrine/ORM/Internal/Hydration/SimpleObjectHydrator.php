@@ -14,6 +14,7 @@ use ValueError;
 
 use function array_keys;
 use function array_search;
+use function assert;
 use function count;
 use function in_array;
 use function key;
@@ -24,13 +25,9 @@ class SimpleObjectHydrator extends AbstractHydrator
 {
     use SQLResultCasing;
 
-    /** @var ClassMetadata */
-    private $class;
+    private ClassMetadata|null $class = null;
 
-    /**
-     * {@inheritDoc}
-     */
-    protected function prepare()
+    protected function prepare(): void
     {
         if (count($this->resultSetMapping()->aliasMap) !== 1) {
             throw new RuntimeException('Cannot use SimpleObjectHydrator with a ResultSetMapping that contains more than one object result.');
@@ -43,21 +40,18 @@ class SimpleObjectHydrator extends AbstractHydrator
         $this->class = $this->getClassMetadata(reset($this->resultSetMapping()->aliasMap));
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    protected function cleanup()
+    protected function cleanup(): void
     {
         parent::cleanup();
 
-        $this->_uow->triggerEagerLoads();
-        $this->_uow->hydrationComplete();
+        $this->uow->triggerEagerLoads();
+        $this->uow->hydrationComplete();
     }
 
     /**
      * {@inheritDoc}
      */
-    protected function hydrateAllData()
+    protected function hydrateAllData(): array
     {
         $result = [];
 
@@ -65,7 +59,7 @@ class SimpleObjectHydrator extends AbstractHydrator
             $this->hydrateRowData($row, $result);
         }
 
-        $this->_em->getUnitOfWork()->triggerEagerLoads();
+        $this->em->getUnitOfWork()->triggerEagerLoads();
 
         return $result;
     }
@@ -73,8 +67,9 @@ class SimpleObjectHydrator extends AbstractHydrator
     /**
      * {@inheritDoc}
      */
-    protected function hydrateRowData(array $row, array &$result)
+    protected function hydrateRowData(array $row, array &$result): void
     {
+        assert($this->class !== null);
         $entityName       = $this->class->name;
         $data             = [];
         $discrColumnValue = null;
@@ -82,7 +77,7 @@ class SimpleObjectHydrator extends AbstractHydrator
         // We need to find the correct entity class name if we have inheritance in resultset
         if ($this->class->inheritanceType !== ClassMetadata::INHERITANCE_TYPE_NONE) {
             $discrColumn     = $this->class->getDiscriminatorColumn();
-            $discrColumnName = $this->getSQLResultCasing($this->_platform, $discrColumn['name']);
+            $discrColumnName = $this->getSQLResultCasing($this->platform, $discrColumn->name);
 
             // Find mapped discriminator column from the result set.
             $metaMappingDiscrColumnName = array_search($discrColumnName, $this->resultSetMapping()->metaMappings, true);
@@ -94,13 +89,13 @@ class SimpleObjectHydrator extends AbstractHydrator
                 throw HydrationException::missingDiscriminatorColumn(
                     $entityName,
                     $discrColumnName,
-                    key($this->resultSetMapping()->aliasMap)
+                    key($this->resultSetMapping()->aliasMap),
                 );
             }
 
             if ($row[$discrColumnName] === '') {
                 throw HydrationException::emptyDiscriminatorValue(key(
-                    $this->resultSetMapping()->aliasMap
+                    $this->resultSetMapping()->aliasMap,
                 ));
             }
 
@@ -139,7 +134,7 @@ class SimpleObjectHydrator extends AbstractHydrator
             // Convert field to a valid PHP value
             if (isset($cacheKeyInfo['type'])) {
                 $type  = $cacheKeyInfo['type'];
-                $value = $type->convertToPHPValue($value, $this->_platform);
+                $value = $type->convertToPHPValue($value, $this->platform);
             }
 
             if ($value !== null && isset($cacheKeyInfo['enumType'])) {
@@ -152,7 +147,7 @@ class SimpleObjectHydrator extends AbstractHydrator
                         $cacheKeyInfo['fieldName'],
                         (string) $originalValue,
                         $cacheKeyInfo['enumType'],
-                        $e
+                        $e,
                     );
                 }
             }
@@ -165,17 +160,17 @@ class SimpleObjectHydrator extends AbstractHydrator
             }
         }
 
-        if (isset($this->_hints[Query::HINT_REFRESH_ENTITY])) {
-            $this->registerManaged($this->class, $this->_hints[Query::HINT_REFRESH_ENTITY], $data);
+        if (isset($this->hints[Query::HINT_REFRESH_ENTITY])) {
+            $this->registerManaged($this->class, $this->hints[Query::HINT_REFRESH_ENTITY], $data);
         }
 
-        $uow    = $this->_em->getUnitOfWork();
-        $entity = $uow->createEntity($entityName, $data, $this->_hints);
+        $uow    = $this->em->getUnitOfWork();
+        $entity = $uow->createEntity($entityName, $data, $this->hints);
 
         $result[] = $entity;
 
-        if (isset($this->_hints[Query::HINT_INTERNAL_ITERATION]) && $this->_hints[Query::HINT_INTERNAL_ITERATION]) {
-            $this->_uow->hydrationComplete();
+        if (isset($this->hints[Query::HINT_INTERNAL_ITERATION]) && $this->hints[Query::HINT_INTERNAL_ITERATION]) {
+            $this->uow->hydrationComplete();
         }
     }
 }

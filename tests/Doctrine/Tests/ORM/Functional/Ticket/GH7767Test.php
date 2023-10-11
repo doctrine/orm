@@ -14,10 +14,11 @@ use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\OrderBy;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
 use function assert;
 
-/** @group GH7767 */
+#[Group('GH7767')]
 class GH7767Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -61,22 +62,17 @@ class GH7767Test extends OrmFunctionalTestCase
     }
 }
 
-/** @Entity */
+#[Entity]
 class GH7767ParentEntity
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
-    private $id;
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
+    private int $id;
 
-    /**
-     * @psalm-var Collection<int, GH7767ChildEntity>
-     * @OneToMany(targetEntity=GH7767ChildEntity::class, mappedBy="parent", fetch="EXTRA_LAZY", cascade={"persist"})
-     * @OrderBy({"position" = "ASC"})
-     */
+    /** @psalm-var Collection<int, GH7767ChildEntity> */
+    #[OneToMany(targetEntity: GH7767ChildEntity::class, mappedBy: 'parent', fetch: 'EXTRA_LAZY', cascade: ['persist'])]
+    #[OrderBy(['position' => 'ASC'])]
     private $children;
 
     public function addChild(int $position): void
@@ -91,32 +87,19 @@ class GH7767ParentEntity
     }
 }
 
-/** @Entity */
+#[Entity]
 class GH7767ChildEntity
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
-    private $id;
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
+    private int $id;
 
-    /**
-     * @var int
-     * @Column(type="integer")
-     */
-    public $position;
-
-    /**
-     * @var GH7767ParentEntity
-     * @ManyToOne(targetEntity=GH7767ParentEntity::class, inversedBy="children")
-     */
-    private $parent;
-
-    public function __construct(GH7767ParentEntity $parent, int $position)
-    {
-        $this->parent   = $parent;
-        $this->position = $position;
+    public function __construct(
+        #[ManyToOne(targetEntity: GH7767ParentEntity::class, inversedBy: 'children')]
+        private GH7767ParentEntity $parent,
+        #[Column(type: 'integer')]
+        public int $position,
+    ) {
     }
 }

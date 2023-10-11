@@ -82,7 +82,7 @@ final class Events
 
     /**
      * The loadClassMetadata event occurs after the mapping metadata for a class
-     * has been loaded from a mapping source (attributes/xml/yaml).
+     * has been loaded from a mapping source (attributes/xml).
      */
     public const loadClassMetadata = 'loadClassMetadata';
 

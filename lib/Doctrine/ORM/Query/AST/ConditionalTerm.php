@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Query\AST;
 
+use Doctrine\ORM\Query\SqlWalker;
+
 /**
  * ConditionalTerm ::= ConditionalFactor {"AND" ConditionalFactor}*
  *
@@ -11,20 +13,13 @@ namespace Doctrine\ORM\Query\AST;
  */
 class ConditionalTerm extends Node
 {
-    /** @var mixed[] */
-    public $conditionalFactors = [];
-
     /** @param mixed[] $conditionalFactors */
-    public function __construct(array $conditionalFactors)
+    public function __construct(public array $conditionalFactors)
     {
-        $this->conditionalFactors = $conditionalFactors;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function dispatch($sqlWalker)
+    public function dispatch(SqlWalker $walker): string
     {
-        return $sqlWalker->walkConditionalTerm($this);
+        return $walker->walkConditionalTerm($this);
     }
 }

@@ -11,29 +11,18 @@ use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\OneToMany;
 
-/**
- * @Entity
- */
+#[Entity]
 class GH10334ProductType
 {
-    /**
-     * @var GH10334ProductTypeId
-     * @Id
-     * @Column(type="string", enumType="Doctrine\Tests\Models\GH10334\GH10334ProductTypeId")
-     */
-    protected $id;
+    #[Id]
+    #[Column(type: 'string', enumType: 'Doctrine\Tests\Models\GH10334\GH10334ProductTypeId', length: 255)]
+    protected GH10334ProductTypeId $id;
 
-    /**
-     * @var float
-     * @Column(type="float")
-     */
-    private $value;
+    #[Column(type: 'float')]
+    private float $value;
 
-    /**
-     * @OneToMany(targetEntity="GH10334Product", mappedBy="productType", cascade={"persist", "remove"})
-     * @var Collection $products
-     */
-    private $products;
+    #[OneToMany(targetEntity: 'GH10334Product', mappedBy: 'productType', cascade: ['persist', 'remove'])]
+    private Collection $products;
 
     public function __construct(GH10334ProductTypeId $id, float $value)
     {

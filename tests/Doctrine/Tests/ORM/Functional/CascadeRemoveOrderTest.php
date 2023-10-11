@@ -14,8 +14,9 @@ use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
-/** @group CascadeRemoveOrderTest */
+#[Group('CascadeRemoveOrderTest')]
 class CascadeRemoveOrderTest extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -24,7 +25,7 @@ class CascadeRemoveOrderTest extends OrmFunctionalTestCase
 
         $this->createSchemaForModels(
             CascadeRemoveOrderEntityO::class,
-            CascadeRemoveOrderEntityG::class
+            CascadeRemoveOrderEntityG::class,
         );
     }
 
@@ -69,32 +70,20 @@ class CascadeRemoveOrderTest extends OrmFunctionalTestCase
     }
 }
 
-/** @Entity */
+#[Entity]
 class CascadeRemoveOrderEntityO
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
-    private $id;
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
+    private int $id;
 
-    /**
-     * @var CascadeRemoveOrderEntityG
-     * @OneToOne(targetEntity="Doctrine\Tests\ORM\Functional\CascadeRemoveOrderEntityG")
-     * @JoinColumn(nullable=true, onDelete="SET NULL")
-     */
-    private $oneToOneG;
+    #[OneToOne(targetEntity: 'Doctrine\Tests\ORM\Functional\CascadeRemoveOrderEntityG')]
+    #[JoinColumn(nullable: true, onDelete: 'SET NULL')]
+    private CascadeRemoveOrderEntityG|null $oneToOneG = null;
 
-    /**
-     * @psalm-var Collection<int, CascadeRemoveOrderEntityG>
-     * @OneToMany(
-     *     targetEntity="Doctrine\Tests\ORM\Functional\CascadeRemoveOrderEntityG",
-     *     mappedBy="ownerO",
-     *     cascade={"persist", "remove"}
-     * )
-     */
+    /** @psalm-var Collection<int, CascadeRemoveOrderEntityG> */
+    #[OneToMany(targetEntity: 'Doctrine\Tests\ORM\Functional\CascadeRemoveOrderEntityG', mappedBy: 'ownerO', cascade: ['persist', 'remove'])]
     private $oneToManyG;
 
     public function __construct()
@@ -129,33 +118,19 @@ class CascadeRemoveOrderEntityO
     }
 }
 
-/** @Entity */
+#[Entity]
 class CascadeRemoveOrderEntityG
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
-    private $id;
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
+    private int $id;
 
-    /**
-     * @var CascadeRemoveOrderEntityO
-     * @ManyToOne(
-     *     targetEntity="Doctrine\Tests\ORM\Functional\CascadeRemoveOrderEntityO",
-     *     inversedBy="oneToMany"
-     * )
-     */
-    private $ownerO;
-
-    /** @var int */
-    private $position;
-
-    public function __construct(CascadeRemoveOrderEntityO $eO, $position = 1)
-    {
-        $this->position = $position;
-        $this->ownerO   = $eO;
+    public function __construct(
+        #[ManyToOne(targetEntity: 'Doctrine\Tests\ORM\Functional\CascadeRemoveOrderEntityO', inversedBy: 'oneToMany')]
+        private CascadeRemoveOrderEntityO $ownerO,
+        private int $position = 1,
+    ) {
         $this->ownerO->addOneToManyG($this);
     }
 

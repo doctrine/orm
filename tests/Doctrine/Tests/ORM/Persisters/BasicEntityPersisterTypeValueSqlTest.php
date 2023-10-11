@@ -6,7 +6,11 @@ namespace Doctrine\Tests\ORM\Persisters;
 
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\Common\Collections\Expr\Comparison;
+use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Driver;
+use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Type as DBALType;
+use Doctrine\ORM\Mapping\OneToManyAssociationMapping;
 use Doctrine\ORM\Persisters\Entity\BasicEntityPersister;
 use Doctrine\Tests\DbalTypes\NegativeToPositiveType;
 use Doctrine\Tests\DbalTypes\UpperCaseStringType;
@@ -15,17 +19,15 @@ use Doctrine\Tests\Models\CustomType\CustomTypeChild;
 use Doctrine\Tests\Models\CustomType\CustomTypeParent;
 use Doctrine\Tests\Models\Generic\NonAlphaColumnsEntity;
 use Doctrine\Tests\OrmTestCase;
+use PHPUnit\Framework\Attributes\Group;
 use ReflectionMethod;
 
-use function array_shift;
+use function array_slice;
 
 class BasicEntityPersisterTypeValueSqlTest extends OrmTestCase
 {
-    /** @var BasicEntityPersister */
-    protected $persister;
-
-    /** @var EntityManagerMock */
-    protected $entityManager;
+    protected BasicEntityPersister $persister;
+    protected EntityManagerMock $entityManager;
 
     protected function setUp(): void
     {
@@ -51,89 +53,113 @@ class BasicEntityPersisterTypeValueSqlTest extends OrmTestCase
     public function testGetInsertSQLUsesTypeValuesSQL(): void
     {
         $method = new ReflectionMethod($this->persister, 'getInsertSQL');
-        $method->setAccessible(true);
-
-        $sql = $method->invoke($this->persister);
+        $sql    = $method->invoke($this->persister);
 
         self::assertEquals('INSERT INTO customtype_parents (customInteger, child_id) VALUES (ABS(?), ?)', $sql);
     }
 
     public function testUpdateUsesTypeValuesSQL(): void
     {
+        $driver = $this->createMock(Driver::class);
+        $driver->method('connect')
+            ->willReturn($this->createMock(Driver\Connection::class));
+
+        $platform = $this->getMockBuilder(AbstractPlatform::class)
+            ->onlyMethods(['supportsIdentityColumns'])
+            ->getMockForAbstractClass();
+        $platform->method('supportsIdentityColumns')
+            ->willReturn(true);
+
+        $connection = $this->getMockBuilder(Connection::class)
+            ->setConstructorArgs([[], $driver])
+            ->onlyMethods(['executeStatement', 'getDatabasePlatform'])
+            ->getMock();
+        $connection->method('getDatabasePlatform')
+            ->willReturn($platform);
+
         $child = new CustomTypeChild();
 
         $parent                = new CustomTypeParent();
         $parent->customInteger = 1;
         $parent->child         = $child;
 
-        $this->entityManager->getUnitOfWork()->registerManaged($parent, ['id' => 1], ['customInteger' => 0, 'child' => null]);
-        $this->entityManager->getUnitOfWork()->registerManaged($child, ['id' => 1], []);
+        $entityManager = $this->createTestEntityManagerWithConnection($connection);
 
-        $this->entityManager->getUnitOfWork()->propertyChanged($parent, 'customInteger', 0, 1);
-        $this->entityManager->getUnitOfWork()->propertyChanged($parent, 'child', null, $child);
+        $entityManager->getUnitOfWork()->registerManaged($parent, ['id' => 1], ['customInteger' => 0, 'child' => null]);
+        $entityManager->getUnitOfWork()->registerManaged($child, ['id' => 1], []);
 
-        $this->persister->update($parent);
+        $entityManager->getUnitOfWork()->propertyChanged($parent, 'customInteger', 0, 1);
+        $entityManager->getUnitOfWork()->propertyChanged($parent, 'child', null, $child);
 
-        $executeStatements = $this->entityManager->getConnection()->getExecuteStatements();
+        $persister = new BasicEntityPersister($entityManager, $entityManager->getClassMetadata(CustomTypeParent::class));
 
-        self::assertEquals('UPDATE customtype_parents SET customInteger = ABS(?), child_id = ? WHERE id = ?', $executeStatements[0]['sql']);
+        $connection->expects($this->once())
+            ->method('executeStatement')
+            ->with('UPDATE customtype_parents SET customInteger = ABS(?), child_id = ? WHERE id = ?');
+
+        $persister->update($parent);
     }
 
     public function testGetSelectConditionSQLUsesTypeValuesSQL(): void
     {
         $method = new ReflectionMethod($this->persister, 'getSelectConditionSQL');
-        $method->setAccessible(true);
-
-        $sql = $method->invoke($this->persister, ['customInteger' => 1, 'child' => 1]);
+        $sql    = $method->invoke($this->persister, ['customInteger' => 1, 'child' => 1]);
 
         self::assertEquals('t0.customInteger = ABS(?) AND t0.child_id = ?', $sql);
     }
 
-    /** @group DDC-1719 */
+    #[Group('DDC-1719')]
     public function testStripNonAlphanumericCharactersFromSelectColumnListSQL(): void
     {
         $persister = new BasicEntityPersister($this->entityManager, $this->entityManager->getClassMetadata(NonAlphaColumnsEntity::class));
         $method    = new ReflectionMethod($persister, 'getSelectColumnsSQL');
-        $method->setAccessible(true);
 
         self::assertEquals('t0."simple-entity-id" AS simpleentityid_1, t0."simple-entity-value" AS simpleentityvalue_2', $method->invoke($persister));
     }
 
-    /** @group DDC-2073 */
+    #[Group('DDC-2073')]
     public function testSelectConditionStatementIsNull(): void
     {
-        $statement = $this->persister->getSelectConditionStatementSQL('test', null, [], Comparison::IS);
+        $associationMapping = new OneToManyAssociationMapping('foo', 'bar', 'baz');
+        $statement          = $this->persister->getSelectConditionStatementSQL('test', null, $associationMapping, Comparison::IS);
         self::assertEquals('test IS NULL', $statement);
     }
 
     public function testSelectConditionStatementEqNull(): void
     {
-        $statement = $this->persister->getSelectConditionStatementSQL('test', null, [], Comparison::EQ);
+        $associationMapping = new OneToManyAssociationMapping('foo', 'bar', 'baz');
+        $statement          = $this->persister->getSelectConditionStatementSQL('test', null, $associationMapping, Comparison::EQ);
         self::assertEquals('test IS NULL', $statement);
     }
 
     public function testSelectConditionStatementNeqNull(): void
     {
-        $statement = $this->persister->getSelectConditionStatementSQL('test', null, [], Comparison::NEQ);
+        $associationMapping = new OneToManyAssociationMapping('foo', 'bar', 'baz');
+        $statement          = $this->persister->getSelectConditionStatementSQL(
+            'test',
+            null,
+            $associationMapping,
+            Comparison::NEQ,
+        );
         self::assertEquals('test IS NOT NULL', $statement);
     }
 
-    /** @group DDC-3056 */
+    #[Group('DDC-3056')]
     public function testSelectConditionStatementWithMultipleValuesContainingNull(): void
     {
         self::assertEquals(
             '(t0.id IN (?) OR t0.id IS NULL)',
-            $this->persister->getSelectConditionStatementSQL('id', [null])
+            $this->persister->getSelectConditionStatementSQL('id', [null]),
         );
 
         self::assertEquals(
             '(t0.id IN (?) OR t0.id IS NULL)',
-            $this->persister->getSelectConditionStatementSQL('id', [null, 123])
+            $this->persister->getSelectConditionStatementSQL('id', [null, 123]),
         );
 
         self::assertEquals(
             '(t0.id IN (?) OR t0.id IS NULL)',
-            $this->persister->getSelectConditionStatementSQL('id', [123, null])
+            $this->persister->getSelectConditionStatementSQL('id', [123, null]),
         );
     }
 
@@ -158,26 +184,46 @@ class BasicEntityPersisterTypeValueSqlTest extends OrmTestCase
 
     public function testDeleteManyToManyUsesTypeValuesSQL(): void
     {
+        $connection = $this->getMockBuilder(Connection::class)
+            ->setConstructorArgs([[], $this->createMock(Driver::class)])
+            ->onlyMethods(['delete', 'getDatabasePlatform'])
+            ->getMock();
+        $connection->method('getDatabasePlatform')
+            ->willReturn($this->createMock(AbstractPlatform::class));
+
+        $entityManager = $this->createTestEntityManagerWithConnection($connection);
+
+        $persister = new BasicEntityPersister($entityManager, $this->entityManager->getClassMetadata(CustomTypeParent::class));
+
         $friend = new CustomTypeParent();
         $parent = new CustomTypeParent();
         $parent->addMyFriend($friend);
 
-        $this->entityManager->getUnitOfWork()->registerManaged($parent, ['id' => 1], []);
-        $this->entityManager->getUnitOfWork()->registerManaged($friend, ['id' => 2], []);
+        $entityManager->getUnitOfWork()->registerManaged($parent, ['id' => 1], []);
+        $entityManager->getUnitOfWork()->registerManaged($friend, ['id' => 2], []);
 
-        $this->persister->delete($parent);
+        $deleteCalls = [];
 
-        $deletes = $this->entityManager->getConnection()->getDeletes();
+        $connection->method('delete')
+            ->willReturnCallback(static function (...$args) use (&$deleteCalls): int {
+                $deleteCalls[] = $args;
 
-        self::assertEquals([
-            'table' => 'customtype_parent_friends',
-            'criteria' => ['friend_customtypeparent_id' => 1],
-            'types' => ['integer'],
-        ], array_shift($deletes));
-        self::assertEquals([
-            'table' => 'customtype_parent_friends',
-            'criteria' => ['customtypeparent_id' => 1],
-            'types' => ['integer'],
-        ], array_shift($deletes));
+                return 1;
+            });
+
+        $persister->delete($parent);
+
+        self::assertSame([
+            [
+                'customtype_parent_friends',
+                ['friend_customtypeparent_id' => 1],
+                ['integer'],
+            ],
+            [
+                'customtype_parent_friends',
+                ['customtypeparent_id' => 1],
+                ['integer'],
+            ],
+        ], array_slice($deleteCalls, 0, 2));
     }
 }

@@ -9,6 +9,7 @@ use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\InverseJoinColumn;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\JoinTable;
 use Doctrine\ORM\Mapping\ManyToMany;
@@ -35,20 +36,18 @@ class DDC719Test extends OrmFunctionalTestCase
 
         self::assertEquals(
             strtolower($referenceSQL),
-            strtolower($q->getSQL())
+            strtolower($q->getSQL()),
         );
     }
 }
 
-/** @MappedSuperclass */
+#[MappedSuperclass]
 class MyEntity
 {
-    /**
-     * @var int
-     * @Id
-     * @GeneratedValue
-     * @Column(type="integer")
-     */
+    /** @var int */
+    #[Id]
+    #[GeneratedValue]
+    #[Column(type: 'integer')]
     protected $id;
 
     public function getId(): int
@@ -57,44 +56,31 @@ class MyEntity
     }
 }
 
-/**
- * @Entity
- * @Table(name="groups")
- */
+#[Table(name: 'groups')]
+#[Entity]
 class DDC719Group extends MyEntity
 {
-    /**
-     * @var string
-     * @Column(type="string", nullable=false)
-     */
+    /** @var string */
+    #[Column(type: 'string', nullable: false)]
     protected $name;
 
-    /**
-     * @var string
-     * @Column(type="string", nullable=true)
-     */
+    /** @var string */
+    #[Column(type: 'string', nullable: true)]
     protected $description;
 
-    /**
-     * @psalm-var Collection<int, DDC719Group>
-     * @ManyToMany(targetEntity="DDC719Group", inversedBy="parents")
-     * @JoinTable(name="groups_groups",
-     *      joinColumns={@JoinColumn(name="parent_id", referencedColumnName="id")},
-     *      inverseJoinColumns={@JoinColumn(name="child_id", referencedColumnName="id")}
-     * )
-     */
+    /** @psalm-var Collection<int, DDC719Group> */
+    #[JoinTable(name: 'groups_groups')]
+    #[JoinColumn(name: 'parent_id', referencedColumnName: 'id')]
+    #[InverseJoinColumn(name: 'child_id', referencedColumnName: 'id')]
+    #[ManyToMany(targetEntity: 'DDC719Group', inversedBy: 'parents')]
     protected $children = null;
 
-    /**
-     * @psalm-var Collection<int, DDC719Group>
-     * @ManyToMany(targetEntity="DDC719Group", mappedBy="children")
-     */
+    /** @psalm-var Collection<int, DDC719Group> */
+    #[ManyToMany(targetEntity: 'DDC719Group', mappedBy: 'children')]
     protected $parents = null;
 
     public function __construct()
     {
-        parent::__construct();
-
         $this->channels = new ArrayCollection();
         $this->children = new ArrayCollection();
         $this->parents  = new ArrayCollection();

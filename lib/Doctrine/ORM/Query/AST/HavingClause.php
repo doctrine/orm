@@ -4,22 +4,17 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Query\AST;
 
+use Doctrine\ORM\Query\SqlWalker;
+
 class HavingClause extends Node
 {
-    /** @var ConditionalExpression */
-    public $conditionalExpression;
-
     /** @param ConditionalExpression $conditionalExpression */
-    public function __construct($conditionalExpression)
+    public function __construct(public $conditionalExpression)
     {
-        $this->conditionalExpression = $conditionalExpression;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function dispatch($sqlWalker)
+    public function dispatch(SqlWalker $walker): string
     {
-        return $sqlWalker->walkHavingClause($this);
+        return $walker->walkHavingClause($this);
     }
 }

@@ -12,40 +12,25 @@ use Doctrine\ORM\Mapping\ManyToMany;
 use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\Table;
 
-/**
- * @Entity
- * @Table(name="company_employees")
- */
+#[Table(name: 'company_employees')]
+#[Entity]
 class CompanyEmployee extends CompanyPerson
 {
-    /**
-     * @var int
-     * @Column(type="integer")
-     */
-    private $salary;
+    #[Column(type: 'integer')]
+    private int|null $salary = null;
 
-    /**
-     * @var string
-     * @Column(type="string", length=255)
-     */
-    private $department;
+    #[Column(type: 'string', length: 255)]
+    private string|null $department = null;
 
-    /**
-     * @var DateTime|null
-     * @Column(type="datetime", nullable=true)
-     */
-    private $startDate;
+    #[Column(type: 'datetime', nullable: true)]
+    private DateTime|null $startDate = null;
 
-    /**
-     * @psalm-var Collection<int, CompanyContract>
-     * @ManyToMany(targetEntity="CompanyContract", mappedBy="engineers", fetch="EXTRA_LAZY")
-     */
+    /** @psalm-var Collection<int, CompanyContract> */
+    #[ManyToMany(targetEntity: 'CompanyContract', mappedBy: 'engineers', fetch: 'EXTRA_LAZY')]
     public $contracts;
 
-    /**
-     * @psalm-var Collection<int, CompanyFlexUltraContract>
-     * @OneToMany(targetEntity="CompanyFlexUltraContract", mappedBy="salesPerson", fetch="EXTRA_LAZY")
-     */
+    /** @psalm-var Collection<int, CompanyFlexUltraContract> */
+    #[OneToMany(targetEntity: 'CompanyFlexUltraContract', mappedBy: 'salesPerson', fetch: 'EXTRA_LAZY')]
     public $soldContracts;
 
     public function getSalary(): int
@@ -68,7 +53,7 @@ class CompanyEmployee extends CompanyPerson
         $this->department = $dep;
     }
 
-    public function getStartDate(): ?DateTime
+    public function getStartDate(): DateTime|null
     {
         return $this->startDate;
     }

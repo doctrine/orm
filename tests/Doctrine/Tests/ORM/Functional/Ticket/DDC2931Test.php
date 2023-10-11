@@ -11,8 +11,9 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\ORM\Query;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
-/** @group DDC-2931 */
+#[Group('DDC-2931')]
 class DDC2931Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -70,7 +71,7 @@ class DDC2931Test extends OrmFunctionalTestCase
             ->_em
             ->createQuery(
                 'SELECT e, p, c FROM '
-                . __NAMESPACE__ . '\\DDC2931User e LEFT JOIN e.parent p LEFT JOIN e.child c WHERE e = :id'
+                . __NAMESPACE__ . '\\DDC2931User e LEFT JOIN e.parent p LEFT JOIN e.child c WHERE e = :id',
             )
             ->setParameter('id', $second)
             ->setHint(Query::HINT_REFRESH, true)
@@ -84,33 +85,25 @@ class DDC2931Test extends OrmFunctionalTestCase
 }
 
 
-/** @Entity */
+#[Entity]
 class DDC2931User
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue(strategy: 'AUTO')]
     public $id;
 
-    /**
-     * @var DDC2931User
-     * @OneToOne(targetEntity="DDC2931User", inversedBy="child")
-     */
+    /** @var DDC2931User */
+    #[OneToOne(targetEntity: 'DDC2931User', inversedBy: 'child')]
     public $parent;
 
-    /**
-     * @var DDC2931User
-     * @OneToOne(targetEntity="DDC2931User", mappedBy="parent")
-     */
+    /** @var DDC2931User */
+    #[OneToOne(targetEntity: 'DDC2931User', mappedBy: 'parent')]
     public $child;
 
-    /**
-     * @var int
-     * @Column(type="integer")
-     */
+    /** @var int */
+    #[Column(type: 'integer')]
     public $value = 0;
 
     /**

@@ -43,10 +43,10 @@ class WhereInWalker extends TreeWalkerAdapter
      */
     public const PAGINATOR_ID_ALIAS = 'dpid';
 
-    public function walkSelectStatement(SelectStatement $AST)
+    public function walkSelectStatement(SelectStatement $selectStatement): void
     {
         // Get the root entity and alias from the AST fromClause
-        $from = $AST->fromClause->identificationVariableDeclarations;
+        $from = $selectStatement->fromClause->identificationVariableDeclarations;
 
         if (count($from) > 1) {
             throw new RuntimeException('Cannot count query which selects two FROM components, cannot make distinction');
@@ -70,11 +70,11 @@ class WhereInWalker extends TreeWalkerAdapter
         if ($hasIds) {
             $arithmeticExpression                             = new ArithmeticExpression();
             $arithmeticExpression->simpleArithmeticExpression = new SimpleArithmeticExpression(
-                [$pathExpression]
+                [$pathExpression],
             );
             $expression                                       = new InListExpression(
                 $arithmeticExpression,
-                [new InputParameter(':' . self::PAGINATOR_ID_ALIAS)]
+                [new InputParameter(':' . self::PAGINATOR_ID_ALIAS)],
             );
         } else {
             $expression = new NullComparisonExpression($pathExpression);
@@ -82,38 +82,38 @@ class WhereInWalker extends TreeWalkerAdapter
 
         $conditionalPrimary                              = new ConditionalPrimary();
         $conditionalPrimary->simpleConditionalExpression = $expression;
-        if ($AST->whereClause) {
-            if ($AST->whereClause->conditionalExpression instanceof ConditionalTerm) {
-                $AST->whereClause->conditionalExpression->conditionalFactors[] = $conditionalPrimary;
-            } elseif ($AST->whereClause->conditionalExpression instanceof ConditionalPrimary) {
-                $AST->whereClause->conditionalExpression = new ConditionalExpression(
+        if ($selectStatement->whereClause) {
+            if ($selectStatement->whereClause->conditionalExpression instanceof ConditionalTerm) {
+                $selectStatement->whereClause->conditionalExpression->conditionalFactors[] = $conditionalPrimary;
+            } elseif ($selectStatement->whereClause->conditionalExpression instanceof ConditionalPrimary) {
+                $selectStatement->whereClause->conditionalExpression = new ConditionalExpression(
                     [
                         new ConditionalTerm(
                             [
-                                $AST->whereClause->conditionalExpression,
+                                $selectStatement->whereClause->conditionalExpression,
                                 $conditionalPrimary,
-                            ]
+                            ],
                         ),
-                    ]
+                    ],
                 );
             } elseif (
-                $AST->whereClause->conditionalExpression instanceof ConditionalExpression
-                || $AST->whereClause->conditionalExpression instanceof ConditionalFactor
+                $selectStatement->whereClause->conditionalExpression instanceof ConditionalExpression
+                || $selectStatement->whereClause->conditionalExpression instanceof ConditionalFactor
             ) {
-                $tmpPrimary                              = new ConditionalPrimary();
-                $tmpPrimary->conditionalExpression       = $AST->whereClause->conditionalExpression;
-                $AST->whereClause->conditionalExpression = new ConditionalTerm(
+                $tmpPrimary                                          = new ConditionalPrimary();
+                $tmpPrimary->conditionalExpression                   = $selectStatement->whereClause->conditionalExpression;
+                $selectStatement->whereClause->conditionalExpression = new ConditionalTerm(
                     [
                         $tmpPrimary,
                         $conditionalPrimary,
-                    ]
+                    ],
                 );
             }
         } else {
-            $AST->whereClause = new WhereClause(
+            $selectStatement->whereClause = new WhereClause(
                 new ConditionalExpression(
-                    [new ConditionalTerm([$conditionalPrimary])]
-                )
+                    [new ConditionalTerm([$conditionalPrimary])],
+                ),
             );
         }
     }

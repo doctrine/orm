@@ -6,6 +6,7 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 class GH8127Test extends OrmFunctionalTestCase
 {
@@ -16,13 +17,11 @@ class GH8127Test extends OrmFunctionalTestCase
         $this->createSchemaForModels(
             GH8127Root::class,
             GH8127Middle::class,
-            GH8127Leaf::class
+            GH8127Leaf::class,
         );
     }
 
-    /**
-     * @dataProvider queryClasses
-     */
+    #[DataProvider('queryClasses')]
     public function testLoadFieldsFromAllClassesInHierarchy(string $queryClass): void
     {
         $entity         = new GH8127Leaf();
@@ -50,53 +49,35 @@ class GH8127Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @ORM\Entity
- * @ORM\Table(name="root")
- * @ORM\InheritanceType("JOINED")
- * @ORM\DiscriminatorMap({ "leaf": "GH8127Leaf" })
- */
+#[ORM\Entity]
+#[ORM\Table(name: 'root')]
+#[ORM\InheritanceType('JOINED')]
+#[ORM\DiscriminatorMap(['leaf' => GH8127Leaf::class])]
 abstract class GH8127Root
 {
-    /**
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     * @ORM\Column(type="integer")
-     *
-     * @var int
-     */
+    /** @var int */
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: 'AUTO')]
+    #[ORM\Column(type: 'integer')]
     public $id;
 
-    /**
-     * @ORM\Column
-     *
-     * @var string
-     */
+    /** @var string */
+    #[ORM\Column]
     public $root;
 }
 
-/**
- * @ORM\Entity
- */
+#[ORM\Entity]
 abstract class GH8127Middle extends GH8127Root
 {
-    /**
-     * @ORM\Column
-     *
-     * @var string
-     */
+    /** @var string */
+    #[ORM\Column]
     public $middle;
 }
 
-/**
- * @ORM\Entity
- */
+#[ORM\Entity]
 class GH8127Leaf extends GH8127Middle
 {
-    /**
-     * @ORM\Column
-     *
-     * @var string
-     */
+    /** @var string */
+    #[ORM\Column]
     public $leaf;
 }

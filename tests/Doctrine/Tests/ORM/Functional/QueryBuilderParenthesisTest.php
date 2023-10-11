@@ -37,7 +37,7 @@ class QueryBuilderParenthesisTest extends OrmFunctionalTestCase
 
         self::assertSame(
             'SELECT o FROM ' . QueryBuilderParenthesisEntity::class . ' o WHERE o.property3 = :value3 AND (o.property1 = :value1 OR o.property2 = :value2) AND (o.property1 = :value1 or o.property2 = :value2)',
-            $dql
+            $dql,
         );
     }
 
@@ -49,7 +49,7 @@ class QueryBuilderParenthesisTest extends OrmFunctionalTestCase
 
         $queryBuilder->andWhere(
             'o.property1 = :value1
-OR o.property2 = :value2'
+OR o.property2 = :value2',
         );
         $queryBuilder->setParameter('value1', 'x');
         $queryBuilder->setParameter('value2', 'x');
@@ -63,38 +63,30 @@ OR o.property2 = :value2'
         self::assertSame(
             'SELECT o FROM ' . QueryBuilderParenthesisEntity::class . ' o WHERE o.property3 = :value3 AND (o.property1 = :value1
 OR o.property2 = :value2)',
-            $dql
+            $dql,
         );
     }
 }
 
 
-/** @Entity */
+#[Entity]
 class QueryBuilderParenthesisEntity
 {
-    /**
-     * @var int|null
-     * @Column(type="integer")
-     * @Id
-     * @GeneratedValue
-     */
+    /** @var int|null */
+    #[Column(type: 'integer')]
+    #[Id]
+    #[GeneratedValue]
     public $id;
 
-    /**
-     * @var string|null
-     * @Column()
-     */
+    /** @var string|null */
+    #[Column]
     public $property1;
 
-    /**
-     * @var string|null
-     * @Column()
-     */
+    /** @var string|null */
+    #[Column]
     public $property2;
 
-    /**
-     * @var string|null
-     * @Column()
-     */
+    /** @var string|null */
+    #[Column]
     public $property3;
 }

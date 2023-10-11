@@ -11,26 +11,22 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\Table;
 use Doctrine\ORM\Mapping\Version;
 
-/**
- * @Entity
- * @Table(name="versioned_many_to_one_category")
- */
+#[Table(name: 'versioned_many_to_one_category')]
+#[Entity]
 class Category
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(name="id", type="integer")
-     * @GeneratedValue(strategy="AUTO")
-     */
+    /** @var int */
+    #[Id]
+    #[Column(name: 'id', type: 'integer')]
+    #[GeneratedValue(strategy: 'AUTO')]
     public $id;
 
     /**
      * Version column
      *
      * @var int
-     * @Column(type="integer", name="version")
-     * @Version
      */
+    #[Column(type: 'integer', name: 'version')]
+    #[Version]
     public $version;
 }

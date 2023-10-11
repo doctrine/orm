@@ -6,21 +6,19 @@ namespace Doctrine\Tests\ORM\Query;
 
 use DateTime;
 use DateTimeImmutable;
-use Doctrine\Common\Cache\Cache;
-use Doctrine\Common\Cache\Psr6\CacheAdapter;
-use Doctrine\Common\Cache\Psr6\DoctrineProvider;
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\DBAL\Cache\QueryCacheProfile;
+use Doctrine\DBAL\Cache\ArrayResult;
+use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Driver;
+use Doctrine\DBAL\Driver\Result;
 use Doctrine\DBAL\ParameterType;
+use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\Deprecations\PHPUnit\VerifyDeprecations;
-use Doctrine\ORM\Internal\Hydration\IterableResult;
 use Doctrine\ORM\Query\Parameter;
 use Doctrine\ORM\Query\QueryException;
 use Doctrine\ORM\UnitOfWork;
 use Doctrine\Persistence\Mapping\Driver\MappingDriverChain;
-use Doctrine\Tests\Mocks\DriverConnectionMock;
-use Doctrine\Tests\Mocks\DriverResultMock;
 use Doctrine\Tests\Mocks\EntityManagerMock;
 use Doctrine\Tests\Models\CMS\CmsAddress;
 use Doctrine\Tests\Models\CMS\CmsGroup;
@@ -31,14 +29,13 @@ use Doctrine\Tests\Models\Enums\UserStatus;
 use Doctrine\Tests\Models\Generic\DateTimeModel;
 use Doctrine\Tests\OrmTestCase;
 use Generator;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Group;
+use Psr\Cache\CacheItemInterface;
 use Psr\Cache\CacheItemPoolInterface;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
 
 use function array_map;
-use function assert;
-use function method_exists;
-
-use const PHP_VERSION_ID;
 
 class QueryTest extends OrmTestCase
 {
@@ -115,14 +112,12 @@ class QueryTest extends OrmTestCase
         $q  = $this->entityManager->createQuery('select a from Doctrine\Tests\Models\CMS\CmsArticle a');
         $q2 = $q->expireQueryCache(true)
           ->setQueryCacheLifetime(3600)
-          ->setQueryCacheDriver(null)
           ->setQueryCache(null)
           ->expireResultCache(true)
           ->setHint('foo', 'bar')
           ->setHint('bar', 'baz')
           ->setParameter(1, 'bar')
           ->setParameters(new ArrayCollection([new Parameter(2, 'baz')]))
-          ->setResultCacheDriver(null)
           ->setResultCache(null)
           ->setResultCacheId('foo')
           ->setDQL('foo')
@@ -132,21 +127,7 @@ class QueryTest extends OrmTestCase
         self::assertSame($q2, $q);
     }
 
-    public function testSettingNullDqlIsDeprecated(): void
-    {
-        $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/pull/9784');
-        $q = $this->entityManager->createQuery();
-        $q->setDQL(null);
-    }
-
-    public function testSettingNullFirstResultIsDeprecated(): void
-    {
-        $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/pull/9809');
-        $q = $this->entityManager->createQuery();
-        $q->setFirstResult(null);
-    }
-
-    /** @group DDC-968 */
+    #[Group('DDC-968')]
     public function testHints(): void
     {
         $q = $this->entityManager->createQuery('select a from Doctrine\Tests\Models\CMS\CmsArticle a');
@@ -159,50 +140,12 @@ class QueryTest extends OrmTestCase
         self::assertFalse($q->hasHint('barFooBaz'));
     }
 
-    /** @group DDC-1588 */
-    public function testQueryDefaultResultCache(): void
-    {
-        if (! method_exists(QueryCacheProfile::class, 'getResultCache')) {
-            self::markTestSkipped('This test requires DBAL 3.2 or newer.');
-        }
-
-        $this->entityManager->getConfiguration()->setResultCache(new ArrayAdapter());
-        $q = $this->entityManager->createQuery('select a from Doctrine\Tests\Models\CMS\CmsArticle a');
-        $q->enableResultCache();
-        self::assertSame($this->entityManager->getConfiguration()->getResultCache(), $q->getQueryCacheProfile()->getResultCache());
-    }
-
-    /** @group DDC-1588 */
-    public function testQueryDefaultResultCacheLegacy(): void
-    {
-        $this->entityManager->getConfiguration()->setResultCacheImpl(DoctrineProvider::wrap(new ArrayAdapter()));
-        $q = $this->entityManager->createQuery('select a from Doctrine\Tests\Models\CMS\CmsArticle a');
-        $q->enableResultCache();
-        self::assertSame($this->entityManager->getConfiguration()->getResultCache(), CacheAdapter::wrap($q->getQueryCacheProfile()->getResultCacheDriver()));
-    }
-
-    public function testIterateWithNoDistinctAndWrongSelectClause(): void
-    {
-        $this->expectException(QueryException::class);
-
-        $q = $this->entityManager->createQuery('select u, a from Doctrine\Tests\Models\CMS\CmsUser u LEFT JOIN u.articles a');
-        $q->iterate();
-    }
-
     public function testToIterableWithNoDistinctAndWrongSelectClause(): void
     {
         $this->expectException(QueryException::class);
 
         $q = $this->entityManager->createQuery('select u, a from Doctrine\Tests\Models\CMS\CmsUser u LEFT JOIN u.articles a');
         $q->toIterable();
-    }
-
-    public function testIterateWithNoDistinctAndWithValidSelectClause(): void
-    {
-        $this->expectException(QueryException::class);
-
-        $q = $this->entityManager->createQuery('select u from Doctrine\Tests\Models\CMS\CmsUser u LEFT JOIN u.articles a');
-        $q->iterate();
     }
 
     public function testToIterableWithNoDistinctAndWithValidSelectClause(): void
@@ -217,7 +160,7 @@ class QueryTest extends OrmTestCase
     {
         $q = $this->entityManager->createQuery('SELECT DISTINCT u from Doctrine\Tests\Models\CMS\CmsUser u LEFT JOIN u.articles a');
 
-        self::assertInstanceOf(IterableResult::class, $q->iterate());
+        self::assertInstanceOf(Generator::class, $q->toIterable());
     }
 
     public function testIterateEmptyResult(): void
@@ -231,7 +174,7 @@ class QueryTest extends OrmTestCase
         self::assertTrue(true);
     }
 
-    /** @group DDC-1697 */
+    #[Group('DDC-1697')]
     public function testCollectionParameters(): void
     {
         $cities = [
@@ -267,13 +210,10 @@ class QueryTest extends OrmTestCase
         yield 'simple_array' => [$baseArray];
         yield 'doctrine_collection' => [new ArrayCollection($baseArray)];
         yield 'generator' => [$gen()];
-
-        if (PHP_VERSION_ID >= 80100) {
-            yield 'array_of_enum' => [array_map([City::class, 'from'], $baseArray)];
-        }
+        yield 'array_of_enum' => [array_map([City::class, 'from'], $baseArray)];
     }
 
-    /** @dataProvider provideProcessParameterValueIterable */
+    #[DataProvider('provideProcessParameterValueIterable')]
     public function testProcessParameterValueIterable(iterable $cities): void
     {
         $query = $this->entityManager->createQuery('SELECT a FROM Doctrine\Tests\Models\CMS\CmsAddress a WHERE a.city IN (:cities)');
@@ -283,7 +223,7 @@ class QueryTest extends OrmTestCase
                 3 => 'Cannes',
                 9 => 'St Julien',
             ],
-            $query->processParameterValue($cities)
+            $query->processParameterValue($cities),
         );
     }
 
@@ -296,13 +236,13 @@ class QueryTest extends OrmTestCase
         self::assertEquals(1, $query->processParameterValue($group));
     }
 
-    /** @group DDC-2224 */
+    #[Group('DDC-2224')]
     public function testProcessParameterValueClassMetadata(): void
     {
         $query = $this->entityManager->createQuery('SELECT a FROM Doctrine\Tests\Models\CMS\CmsAddress a WHERE a.city IN (:cities)');
         self::assertEquals(
             CmsAddress::class,
-            $query->processParameterValue($this->entityManager->getClassMetadata(CmsAddress::class))
+            $query->processParameterValue($this->entityManager->getClassMetadata(CmsAddress::class)),
         );
     }
 
@@ -314,14 +254,14 @@ class QueryTest extends OrmTestCase
 
         self::assertSame(
             12345,
-            $query->processParameterValue($user)
+            $query->processParameterValue($user),
         );
     }
 
     public function testProcessParameterValueValueObjectWithDriverChain(): void
     {
         $driverChain = new MappingDriverChain();
-        $driverChain->addDriver($this->createAnnotationDriver(), 'Foo');
+        $driverChain->addDriver($this->createAttributeDriver(), 'Foo');
         $this->entityManager->getConfiguration()->setMetadataDriverImpl($driverChain);
 
         $query = $this->entityManager->createQuery();
@@ -338,9 +278,6 @@ class QueryTest extends OrmTestCase
         self::assertNull($query->processParameterValue(null));
     }
 
-    /**
-     * @requires PHP 8.1
-     */
     public function testProcessParameterValueBackedEnum(): void
     {
         $query = $this->entityManager->createQuery('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.status = :status');
@@ -349,9 +286,6 @@ class QueryTest extends OrmTestCase
         self::assertSame([2], $query->processParameterValue([AccessLevel::User]));
     }
 
-    /**
-     * @requires PHP 8.1
-     */
     public function testProcessParameterValueBackedEnumArray(): void
     {
         $query = $this->entityManager->createQuery('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.status IN (:status)');
@@ -378,18 +312,22 @@ class QueryTest extends OrmTestCase
         self::assertSame($config->getDefaultQueryHints(), $q2->getHints());
     }
 
-    /** @group DDC-3714 */
+    #[Group('DDC-3714')]
     public function testResultCacheCaching(): void
     {
-        $this->entityManager->getConfiguration()->setResultCache(new ArrayAdapter());
-        $this->entityManager->getConfiguration()->setQueryCache(new ArrayAdapter());
-        $driverConnectionMock = $this->entityManager->getConnection()->getWrappedConnection();
-        assert($driverConnectionMock instanceof DriverConnectionMock);
-        $result = new DriverResultMock([
-            ['id_0' => 1],
-        ]);
-        $driverConnectionMock->setResultMock($result);
-        $res = $this->entityManager->createQuery('select u from Doctrine\Tests\Models\CMS\CmsUser u')
+        $entityManager = $this->createTestEntityManagerWithConnection(
+            $this->createConnection(
+                new ArrayResult([
+                    ['id_0' => 1],
+                ]),
+                new ArrayResult([]),
+            ),
+        );
+
+        $entityManager->getConfiguration()->setResultCache(new ArrayAdapter());
+        $entityManager->getConfiguration()->setQueryCache(new ArrayAdapter());
+
+        $res = $entityManager->createQuery('select u from Doctrine\Tests\Models\CMS\CmsUser u')
             ->useQueryCache(true)
             ->enableResultCache(60)
             //let it cache
@@ -397,16 +335,14 @@ class QueryTest extends OrmTestCase
 
         self::assertCount(1, $res);
 
-        $driverConnectionMock->setResultMock(null);
-
-        $res = $this->entityManager->createQuery('select u from Doctrine\Tests\Models\CMS\CmsUser u')
+        $res = $entityManager->createQuery('select u from Doctrine\Tests\Models\CMS\CmsUser u')
             ->useQueryCache(true)
             ->disableResultCache()
             ->getResult();
         self::assertCount(0, $res);
     }
 
-    /** @group DDC-3741 */
+    #[Group('DDC-3741')]
     public function testSetHydrationCacheProfileNull(): void
     {
         $query = $this->entityManager->createQuery();
@@ -414,38 +350,43 @@ class QueryTest extends OrmTestCase
         self::assertNull($query->getHydrationCacheProfile());
     }
 
-    /** @group 2947 */
+    #[Group('2947')]
     public function testResultCacheEviction(): void
     {
-        $this->entityManager->getConfiguration()->setResultCache(new ArrayAdapter());
+        $entityManager = $this->createTestEntityManagerWithConnection(
+            $this->createConnection(
+                new ArrayResult([
+                    ['id_0' => 1],
+                ]),
+                new ArrayResult([
+                    ['id_0' => 1],
+                    ['id_0' => 2],
+                ]),
+                new ArrayResult([
+                    ['id_0' => 1],
+                ]),
+            ),
+        );
 
-        $query = $this->entityManager->createQuery('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u')
-                           ->enableResultCache();
+        $entityManager->getConfiguration()->setResultCache(new ArrayAdapter());
 
-        $driverConnectionMock = $this->entityManager->getConnection()
-                                          ->getWrappedConnection();
-        assert($driverConnectionMock instanceof DriverConnectionMock);
-
-        $driverConnectionMock->setResultMock(new DriverResultMock([['id_0' => 1]]));
+        $query = $entityManager->createQuery('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u')
+            ->enableResultCache();
 
         // Performs the query and sets up the initial cache
         self::assertCount(1, $query->getResult());
-
-        $driverConnectionMock->setResultMock(new DriverResultMock([['id_0' => 1], ['id_0' => 2]]));
 
         // Retrieves cached data since expire flag is false and we have a cached result set
         self::assertCount(1, $query->getResult());
 
         // Performs the query and caches the result set since expire flag is true
-        self::assertCount(2, $query->expireResultCache(true)->getResult());
-
-        $driverConnectionMock->setResultMock(new DriverResultMock([['id_0' => 1]]));
+        self::assertCount(2, $query->expireResultCache()->getResult());
 
         // Retrieves cached data since expire flag is false and we have a cached result set
         self::assertCount(2, $query->expireResultCache(false)->getResult());
     }
 
-    /** @group #6162 */
+    #[Group('#6162')]
     public function testSelectJoinSubquery(): void
     {
         $query = $this->entityManager->createQuery('select u from Doctrine\Tests\Models\CMS\CmsUser u JOIN (SELECT )');
@@ -455,7 +396,7 @@ class QueryTest extends OrmTestCase
         $query->getSQL();
     }
 
-    /** @group #6162 */
+    #[Group('#6162')]
     public function testSelectFromSubquery(): void
     {
         $query = $this->entityManager->createQuery('select u from (select Doctrine\Tests\Models\CMS\CmsUser c) as u');
@@ -465,7 +406,7 @@ class QueryTest extends OrmTestCase
         $query->getSQL();
     }
 
-    /** @group 6699 */
+    #[Group('6699')]
     public function testGetParameterTypeJuggling(): void
     {
         $query = $this->entityManager->createQuery('select u from ' . CmsUser::class . ' u where u.id = ?0');
@@ -477,7 +418,7 @@ class QueryTest extends OrmTestCase
         self::assertSame(0, $query->getParameter('0')->getValue());
     }
 
-    /** @group 6699 */
+    #[Group('6699')]
     public function testSetParameterWithNameZeroIsNotOverridden(): void
     {
         $query = $this->entityManager->createQuery('select u from ' . CmsUser::class . ' u where u.id != ?0 and u.username = :name');
@@ -490,7 +431,7 @@ class QueryTest extends OrmTestCase
         self::assertSame('Doctrine', $query->getParameter('name')->getValue());
     }
 
-    /** @group 6699 */
+    #[Group('6699')]
     public function testSetParameterWithNameZeroDoesNotOverrideAnotherParameter(): void
     {
         $query = $this->entityManager->createQuery('select u from ' . CmsUser::class . ' u where u.id != ?0 and u.username = :name');
@@ -503,7 +444,7 @@ class QueryTest extends OrmTestCase
         self::assertSame('Doctrine', $query->getParameter('name')->getValue());
     }
 
-    /** @group 6699 */
+    #[Group('6699')]
     public function testSetParameterWithTypeJugglingWorks(): void
     {
         $query = $this->entityManager->createQuery('select u from ' . CmsUser::class . ' u where u.id != ?0 and u.username = :name');
@@ -519,19 +460,19 @@ class QueryTest extends OrmTestCase
         self::assertSame('Doctrine', $query->getParameter('name')->getValue());
     }
 
-    /** @group 6748 */
+    #[Group('6748')]
     public function testResultCacheProfileCanBeRemovedViaSetter(): void
     {
         $this->entityManager->getConfiguration()->setResultCache(new ArrayAdapter());
 
         $query = $this->entityManager->createQuery('SELECT u FROM ' . CmsUser::class . ' u');
         $query->enableResultCache();
-        $query->setResultCacheProfile();
+        $query->setResultCacheProfile(null);
 
         self::assertNull($query->getQueryCacheProfile());
     }
 
-    /** @group 7527 */
+    #[Group('7527')]
     public function testValuesAreNotBeingResolvedForSpecifiedParameterTypes(): void
     {
         $unitOfWork = $this->createMock(UnitOfWork::class);
@@ -549,7 +490,7 @@ class QueryTest extends OrmTestCase
         self::assertEmpty($query->getResult());
     }
 
-    /** @group 7982 */
+    #[Group('7982')]
     public function testNonExistentExecutor(): void
     {
         $this->expectException(QueryException::class);
@@ -558,7 +499,7 @@ class QueryTest extends OrmTestCase
         $this->entityManager->createQuery('0')->execute();
     }
 
-    /** @group 8106 */
+    #[Group('8106')]
     public function testGetParameterColonNormalize(): void
     {
         $query = $this->entityManager->createQuery('select u from ' . CmsUser::class . ' u where u.name = :name');
@@ -573,33 +514,56 @@ class QueryTest extends OrmTestCase
 
     public function testGetQueryCacheDriverWithDefaults(): void
     {
-        $cache = $this->createMock(CacheItemPoolInterface::class);
+        $cache         = $this->createMock(CacheItemPoolInterface::class);
+        $cacheItemMock = $this->createMock(CacheItemInterface::class);
+        $cacheItemMock->method('set')->willReturnSelf();
+        $cacheItemMock->method('expiresAfter')->willReturnSelf();
+        $cache
+            ->expects(self::atLeastOnce())
+            ->method('getItem')
+            ->willReturn($cacheItemMock);
 
         $this->entityManager->getConfiguration()->setQueryCache($cache);
-        $query = $this->entityManager->createQuery('select u from ' . CmsUser::class . ' u');
-
-        self::assertSame($cache, CacheAdapter::wrap($query->getQueryCacheDriver()));
-    }
-
-    public function testGetQueryCacheDriverWithCacheExplicitlySetLegacy(): void
-    {
-        $cache = $this->createMock(Cache::class);
-
-        $query = $this->entityManager
+        $this->entityManager
             ->createQuery('select u from ' . CmsUser::class . ' u')
-            ->setQueryCacheDriver($cache);
-
-        self::assertSame($cache, $query->getQueryCacheDriver());
+            ->getSQL();
     }
 
     public function testGetQueryCacheDriverWithCacheExplicitlySet(): void
     {
-        $cache = $this->createMock(CacheItemPoolInterface::class);
+        $cache         = $this->createMock(CacheItemPoolInterface::class);
+        $cacheItemMock = $this->createMock(CacheItemInterface::class);
+        $cacheItemMock->method('set')->willReturnSelf();
+        $cacheItemMock->method('expiresAfter')->willReturnSelf();
+        $cache
+            ->expects(self::atLeastOnce())
+            ->method('getItem')
+            ->willReturn($cacheItemMock);
 
-        $query = $this->entityManager
+        $this->entityManager
             ->createQuery('select u from ' . CmsUser::class . ' u')
-            ->setQueryCache($cache);
+            ->setQueryCache($cache)
+            ->getSQL();
+    }
 
-        self::assertSame($cache, CacheAdapter::wrap($query->getQueryCacheDriver()));
+    private function createConnection(Result ...$results): Connection
+    {
+        $driverConnection = $this->createMock(Driver\Connection::class);
+        $driverConnection->method('query')
+            ->will($this->onConsecutiveCalls(...$results));
+
+        $platform = $this->getMockBuilder(AbstractPlatform::class)
+            ->onlyMethods(['supportsIdentityColumns'])
+            ->getMockForAbstractClass();
+        $platform->method('supportsIdentityColumns')
+            ->willReturn(true);
+
+        $driver = $this->createMock(Driver::class);
+        $driver->method('connect')
+            ->willReturn($driverConnection);
+        $driver->method('getDatabasePlatform')
+            ->willReturn($platform);
+
+        return new Connection([], $driver);
     }
 }

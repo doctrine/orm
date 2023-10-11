@@ -23,20 +23,17 @@ use function array_shift;
 class ConcurrentRegionMock implements ConcurrentRegion
 {
     /** @psalm-var array<string, list<array<string, mixed>>> */
-    public $calls = [];
+    public array $calls = [];
 
     /** @psalm-var array<string, list<Exception>> */
-    public $exceptions = [];
+    public array $exceptions = [];
 
     /** @psalm-var array<string, Lock> */
-    public $locks = [];
+    public array $locks = [];
 
-    /** @var Region */
-    private $region;
-
-    public function __construct(Region $region)
-    {
-        $this->region = $region;
+    public function __construct(
+        private readonly Region $region,
+    ) {
     }
 
     /**
@@ -100,7 +97,7 @@ class ConcurrentRegionMock implements ConcurrentRegion
         return $this->region->evictAll();
     }
 
-    public function get(CacheKey $key): ?CacheEntry
+    public function get(CacheKey $key): CacheEntry|null
     {
         $this->calls[__FUNCTION__][] = ['key' => $key];
 
@@ -113,10 +110,7 @@ class ConcurrentRegionMock implements ConcurrentRegion
         return $this->region->get($key);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function getMultiple(CollectionCacheEntry $collection): ?array
+    public function getMultiple(CollectionCacheEntry $collection): array|null
     {
         $this->calls[__FUNCTION__][] = ['collection' => $collection];
 
@@ -134,7 +128,7 @@ class ConcurrentRegionMock implements ConcurrentRegion
         return $this->region->getName();
     }
 
-    public function put(CacheKey $key, CacheEntry $entry, ?Lock $lock = null): bool
+    public function put(CacheKey $key, CacheEntry $entry, Lock|null $lock = null): bool
     {
         $this->calls[__FUNCTION__][] = ['key' => $key, 'entry' => $entry];
 
@@ -151,7 +145,7 @@ class ConcurrentRegionMock implements ConcurrentRegion
         return $this->region->put($key, $entry);
     }
 
-    public function lock(CacheKey $key): ?Lock
+    public function lock(CacheKey $key): Lock|null
     {
         $this->calls[__FUNCTION__][] = ['key' => $key];
 

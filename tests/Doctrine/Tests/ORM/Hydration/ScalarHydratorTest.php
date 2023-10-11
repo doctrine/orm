@@ -6,8 +6,8 @@ namespace Doctrine\Tests\ORM\Hydration;
 
 use Doctrine\ORM\Internal\Hydration\ScalarHydrator;
 use Doctrine\ORM\Query\ResultSetMapping;
-use Doctrine\Tests\Mocks\ArrayResultFactory;
 use Doctrine\Tests\Models\CMS\CmsUser;
+use PHPUnit\Framework\Attributes\Group;
 
 class ScalarHydratorTest extends HydrationTestCase
 {
@@ -33,7 +33,7 @@ class ScalarHydratorTest extends HydrationTestCase
             ],
         ];
 
-        $stmt     = ArrayResultFactory::createFromArray($resultSet);
+        $stmt     = $this->createResultMock($resultSet);
         $hydrator = new ScalarHydrator($this->entityManager);
 
         $result = $hydrator->hydrateAll($stmt, $rsm);
@@ -46,7 +46,7 @@ class ScalarHydratorTest extends HydrationTestCase
         self::assertEquals(2, $result[1]['u_id']);
     }
 
-    /** @group DDC-407 */
+    #[Group('DDC-407')]
     public function testHydrateScalarResults(): void
     {
         $rsm = new ResultSetMapping();
@@ -62,13 +62,13 @@ class ScalarHydratorTest extends HydrationTestCase
             ],
         ];
 
-        $stmt     = ArrayResultFactory::createFromArray($resultSet);
+        $stmt     = $this->createResultMock($resultSet);
         $hydrator = new ScalarHydrator($this->entityManager);
 
         self::assertCount(1, $hydrator->hydrateAll($stmt, $rsm));
     }
 
-    /** @group DDC-644 */
+    #[Group('DDC-644')]
     public function testSkipUnknownColumns(): void
     {
         $rsm = new ResultSetMapping();
@@ -90,7 +90,7 @@ class ScalarHydratorTest extends HydrationTestCase
             ],
         ];
 
-        $stmt     = ArrayResultFactory::createFromArray($resultSet);
+        $stmt     = $this->createResultMock($resultSet);
         $hydrator = new ScalarHydrator($this->entityManager);
 
         self::assertCount(1, $hydrator->hydrateAll($stmt, $rsm));

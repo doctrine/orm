@@ -4,23 +4,20 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Cache;
 
-use Doctrine\Common\Cache\Psr6\DoctrineProvider;
 use Doctrine\ORM\Cache\CollectionCacheEntry;
-use Doctrine\ORM\Cache\Region;
 use Doctrine\ORM\Cache\Region\DefaultRegion;
 use Doctrine\Tests\Mocks\CacheEntryMock;
 use Doctrine\Tests\Mocks\CacheKeyMock;
-use Symfony\Component\Cache\Adapter\ArrayAdapter;
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\Test;
 
 use function array_map;
 
-/**
- * @extends RegionTestCase<DefaultRegion>
- * @group DDC-2183
- */
+/** @extends RegionTestCase<DefaultRegion> */
+#[Group('DDC-2183')]
 class DefaultRegionTest extends RegionTestCase
 {
-    protected function createRegion(): Region
+    protected function createRegion(): DefaultRegion
     {
         return new DefaultRegion('default.region.test', $this->cacheItemPool);
     }
@@ -28,7 +25,6 @@ class DefaultRegionTest extends RegionTestCase
     public function testGetters(): void
     {
         self::assertEquals('default.region.test', $this->region->getName());
-        self::assertSame($this->cacheItemPool, $this->region->getCache()->getPool());
     }
 
     public function testSharedRegion(): void
@@ -51,18 +47,6 @@ class DefaultRegionTest extends RegionTestCase
 
         self::assertFalse($region1->contains($key));
         self::assertTrue($region2->contains($key));
-    }
-
-    public function testDoesNotModifyCacheNamespace(): void
-    {
-        $cache = DoctrineProvider::wrap(new ArrayAdapter());
-
-        $cache->setNamespace('foo');
-
-        new DefaultRegion('bar', $cache);
-        new DefaultRegion('baz', $cache);
-
-        self::assertSame('foo', $cache->getNamespace());
     }
 
     public function testGetMulti(): void
@@ -101,7 +85,7 @@ class DefaultRegionTest extends RegionTestCase
 
         $actual = array_map(
             'iterator_to_array',
-            $this->region->getMultiple(new CollectionCacheEntry(['one' => $key1, 'two' => $key2]))
+            $this->region->getMultiple(new CollectionCacheEntry(['one' => $key1, 'two' => $key2])),
         );
 
         self::assertSame([
@@ -110,34 +94,30 @@ class DefaultRegionTest extends RegionTestCase
         ], $actual);
     }
 
-    /**
-     * @test
-     * @group GH7266
-     */
+    #[Test]
+    #[Group('GH7266')]
     public function corruptedDataDoesNotLeakIntoApplicationWhenGettingSingleEntry(): void
     {
         $key1 = new CacheKeyMock('key.1');
         $this->cacheItemPool->save(
             $this->cacheItemPool
                 ->getItem('DC2_REGION_' . $this->region->getName() . '_' . $key1->hash)
-                ->set('a-very-invalid-value')
+                ->set('a-very-invalid-value'),
         );
 
         self::assertTrue($this->region->contains($key1));
         self::assertNull($this->region->get($key1));
     }
 
-    /**
-     * @test
-     * @group GH7266
-     */
+    #[Test]
+    #[Group('GH7266')]
     public function corruptedDataDoesNotLeakIntoApplicationWhenGettingMultipleEntries(): void
     {
         $key1 = new CacheKeyMock('key.1');
         $this->cacheItemPool->save(
             $this->cacheItemPool
                 ->getItem('DC2_REGION_' . $this->region->getName() . '_' . $key1->hash)
-                ->set('a-very-invalid-value')
+                ->set('a-very-invalid-value'),
         );
 
         self::assertTrue($this->region->contains($key1));

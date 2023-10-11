@@ -12,11 +12,12 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\InheritanceType;
 use Doctrine\ORM\UnitOfWork;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
-use function getrandmax;
+use function mt_getrandmax;
 use function random_int;
 
-/** @group DDC-1454 */
+#[Group('DDC-1454')]
 class DDC1454Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -34,29 +35,25 @@ class DDC1454Test extends OrmFunctionalTestCase
     }
 }
 
-/** @Entity */
+#[Entity]
 class DDC1454Picture extends DDC1454File
 {
 }
 
-/**
- * @Entity
- * @InheritanceType("JOINED")
- * @DiscriminatorColumn(name="discr", type="string")
- * @DiscriminatorMap({"file" = "DDC1454File", "picture" = "DDC1454Picture"})
- */
+#[Entity]
+#[InheritanceType('JOINED')]
+#[DiscriminatorColumn(name: 'discr', type: 'string')]
+#[DiscriminatorMap(['file' => 'DDC1454File', 'picture' => 'DDC1454Picture'])]
 class DDC1454File
 {
-    /**
-     * @var int
-     * @Column(name="file_id", type="integer")
-     * @Id
-     */
+    /** @var int */
+    #[Column(name: 'file_id', type: 'integer')]
+    #[Id]
     public $fileId;
 
     public function __construct()
     {
-        $this->fileId = random_int(0, getrandmax());
+        $this->fileId = random_int(0, mt_getrandmax());
     }
 
     public function getFileId(): int

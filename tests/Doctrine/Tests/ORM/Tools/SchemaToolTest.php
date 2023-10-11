@@ -40,13 +40,14 @@ use Doctrine\Tests\Models\Forum\ForumAvatar;
 use Doctrine\Tests\Models\Forum\ForumUser;
 use Doctrine\Tests\Models\NullDefault\NullDefaultColumn;
 use Doctrine\Tests\OrmTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
 use function count;
 use function current;
 
 class SchemaToolTest extends OrmTestCase
 {
-    public function testAddUniqueIndexForUniqueFieldAnnotation(): void
+    public function testAddUniqueIndexForUniqueFieldAttribute(): void
     {
         $em         = $this->getTestEntityManager();
         $schemaTool = new SchemaTool($em);
@@ -67,15 +68,15 @@ class SchemaToolTest extends OrmTestCase
         self::assertTrue($schema->getTable('cms_users')->columnsAreIndexed(['username']), 'username column should be indexed.');
     }
 
-    public function testAnnotationOptionsAttribute(): void
+    public function testAttributeOptionsArgument(): void
     {
         $em         = $this->getTestEntityManager();
         $schemaTool = new SchemaTool($em);
 
         $schema = $schemaTool->getSchemaFromMetadata(
-            [$em->getClassMetadata(TestEntityWithAnnotationOptionsAttribute::class)]
+            [$em->getClassMetadata(TestEntityWithAttributeOptionsArgument::class)],
         );
-        $table  = $schema->getTable('TestEntityWithAnnotationOptionsAttribute');
+        $table  = $schema->getTable('TestEntityWithAttributeOptionsArgument');
 
         foreach ([$table->getOptions(), $table->getColumn('test')->getPlatformOptions()] as $options) {
             self::assertArrayHasKey('foo', $options);
@@ -85,7 +86,7 @@ class SchemaToolTest extends OrmTestCase
         }
     }
 
-    /** @group DDC-200 */
+    #[Group('DDC-200')]
     public function testPassColumnDefinitionToJoinColumn(): void
     {
         $customColumnDef = 'MEDIUMINT(6) UNSIGNED NOT NULL';
@@ -93,9 +94,9 @@ class SchemaToolTest extends OrmTestCase
         $em         = $this->getTestEntityManager();
         $schemaTool = new SchemaTool($em);
 
-        $avatar                                          = $em->getClassMetadata(ForumAvatar::class);
-        $avatar->fieldMappings['id']['columnDefinition'] = $customColumnDef;
-        $user                                            = $em->getClassMetadata(ForumUser::class);
+        $avatar                                        = $em->getClassMetadata(ForumAvatar::class);
+        $avatar->fieldMappings['id']->columnDefinition = $customColumnDef;
+        $user                                          = $em->getClassMetadata(ForumUser::class);
 
         $classes = [$avatar, $user];
 
@@ -107,7 +108,7 @@ class SchemaToolTest extends OrmTestCase
         self::assertEquals($customColumnDef, $table->getColumn('avatar_id')->getColumnDefinition());
     }
 
-    /** @group 6830 */
+    #[Group('6830')]
     public function testPassColumnOptionsToJoinColumn(): void
     {
         $em       = $this->getTestEntityManager();
@@ -128,22 +129,22 @@ class SchemaToolTest extends OrmTestCase
         self::assertSame(
             $tableCategory->getColumn('id')->getFixed(),
             $tableBoard->getColumn('category_id')->getFixed(),
-            'Foreign key/join column should have the same value of option `fixed` as the referenced column'
+            'Foreign key/join column should have the same value of option `fixed` as the referenced column',
         );
 
         self::assertEquals(
-            $tableCategory->getColumn('id')->getCustomSchemaOptions(),
-            $tableBoard->getColumn('category_id')->getCustomSchemaOptions(),
-            'Foreign key/join column should have the same custom options as the referenced column'
+            $tableCategory->getColumn('id')->getPlatformOptions(),
+            $tableBoard->getColumn('category_id')->getPlatformOptions(),
+            'Foreign key/join column should have the same custom options as the referenced column',
         );
 
         self::assertEquals(
             ['collation' => 'latin1_bin', 'foo' => 'bar'],
-            $tableBoard->getColumn('category_id')->getPlatformOptions()
+            $tableBoard->getColumn('category_id')->getPlatformOptions(),
         );
     }
 
-    /** @group DDC-283 */
+    #[Group('DDC-283')]
     public function testPostGenerateEvents(): void
     {
         $listener = new GenerateSchemaEventListener();
@@ -151,7 +152,7 @@ class SchemaToolTest extends OrmTestCase
         $em = $this->getTestEntityManager();
         $em->getEventManager()->addEventListener(
             [ToolEvents::postGenerateSchemaTable, ToolEvents::postGenerateSchema],
-            $listener
+            $listener,
         );
         $schemaTool = new SchemaTool($em);
 
@@ -171,22 +172,17 @@ class SchemaToolTest extends OrmTestCase
         self::assertTrue($listener->schemaCalled);
     }
 
-    public function testNullDefaultNotAddedToCustomSchemaOptions(): void
+    public function testNullDefaultNotAddedToPlatformOptions(): void
     {
         $em         = $this->getTestEntityManager();
         $schemaTool = new SchemaTool($em);
 
-        $customSchemaOptions = $schemaTool->getSchemaFromMetadata([$em->getClassMetadata(NullDefaultColumn::class)])
+        self::assertSame([], $schemaTool->getSchemaFromMetadata([$em->getClassMetadata(NullDefaultColumn::class)])
             ->getTable('NullDefaultColumn')
             ->getColumn('nullDefault')
-            ->getCustomSchemaOptions();
-
-        self::assertSame([], $customSchemaOptions);
+            ->getPlatformOptions());
     }
 
-    /**
-     * @requires PHP 8.1
-     */
     public function testEnumTypeAddedToCustomSchemaOptions(): void
     {
         $em         = $this->getTestEntityManager();
@@ -201,19 +197,19 @@ class SchemaToolTest extends OrmTestCase
         self::assertSame(Suit::class, $platformOptions['enumType']);
     }
 
-    /** @group DDC-3671 */
-    public function testSchemaHasProperIndexesFromUniqueConstraintAnnotation(): void
+    #[Group('DDC-3671')]
+    public function testSchemaHasProperIndexesFromUniqueConstraintAttribute(): void
     {
         $em         = $this->getTestEntityManager();
         $schemaTool = new SchemaTool($em);
         $classes    = [
-            $em->getClassMetadata(UniqueConstraintAnnotationModel::class),
+            $em->getClassMetadata(UniqueConstraintAttributeModel::class),
         ];
 
         $schema = $schemaTool->getSchemaFromMetadata($classes);
 
-        self::assertTrue($schema->hasTable('unique_constraint_annotation_table'));
-        $table = $schema->getTable('unique_constraint_annotation_table');
+        self::assertTrue($schema->hasTable('unique_constraint_attribute_table'));
+        $table = $schema->getTable('unique_constraint_attribute_table');
 
         self::assertCount(2, $table->getIndexes());
         self::assertTrue($table->hasIndex('primary'));
@@ -269,7 +265,7 @@ class SchemaToolTest extends OrmTestCase
                 $em->getClassMetadata(JoinedDerivedIdentityClass::class),
                 $em->getClassMetadata(JoinedDerivedRootClass::class),
                 $em->getClassMetadata(JoinedDerivedChildClass::class),
-            ]
+            ],
         );
 
         self::assertTrue($schema->hasTable('joined_derived_identity'));
@@ -349,7 +345,7 @@ class SchemaToolTest extends OrmTestCase
         $schemaTool->getSchemaFromMetadata([$class]);
     }
 
-    /** @group schema-configuration */
+    #[Group('schema-configuration')]
     public function testConfigurationSchemaIgnoredEntity(): void
     {
         $em         = $this->getTestEntityManager();
@@ -376,24 +372,16 @@ class SchemaToolTest extends OrmTestCase
     }
 }
 
-/**
- * @Entity
- * @Table(options={"foo": "bar", "baz": {"key": "val"}})
- */
-class TestEntityWithAnnotationOptionsAttribute
+#[Table(options: ['foo' => 'bar', 'baz' => ['key' => 'val']])]
+#[Entity]
+class TestEntityWithAttributeOptionsArgument
 {
-    /**
-     * @var int
-     * @Id
-     * @Column
-     */
-    private $id;
+    #[Id]
+    #[Column]
+    private int $id;
 
-    /**
-     * @var string
-     * @Column(type="string", options={"foo": "bar", "baz": {"key": "val"}})
-     */
-    private $test;
+    #[Column(type: 'string', options: ['foo' => 'bar', 'baz' => ['key' => 'val']])]
+    private string $test;
 }
 
 class GenerateSchemaEventListener
@@ -415,147 +403,100 @@ class GenerateSchemaEventListener
     }
 }
 
-/**
- * @Entity
- * @Table(name="unique_constraint_annotation_table", uniqueConstraints={
- *   @UniqueConstraint(name="uniq_hash", columns={"hash"})
- * })
- */
-class UniqueConstraintAnnotationModel
+#[Table(name: 'unique_constraint_attribute_table')]
+#[UniqueConstraint(name: 'uniq_hash', columns: ['hash'])]
+#[Entity]
+class UniqueConstraintAttributeModel
 {
-    /**
-     * @var int
-     * @Id
-     * @Column
-     */
-    private $id;
+    #[Id]
+    #[Column]
+    private int $id;
 
-    /**
-     * @var string
-     * @Column(name="hash", type="string", length=8, nullable=false, unique=true)
-     */
-    private $hash;
+    #[Column(name: 'hash', type: 'string', length: 8, nullable: false, unique: true)]
+    private string $hash;
 }
 
-/**
- * @Entity
- * @Table(name="first_entity")
- */
+#[Table(name: 'first_entity')]
+#[Entity]
 class FirstEntity
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(name="id")
-     */
+    /** @var int */
+    #[Id]
+    #[Column(name: 'id')]
     public $id;
 
-    /**
-     * @var SecondEntity
-     * @OneToOne(targetEntity="SecondEntity")
-     * @JoinColumn(name="id", referencedColumnName="first_entity_id")
-     */
+    /** @var SecondEntity */
+    #[OneToOne(targetEntity: 'SecondEntity')]
+    #[JoinColumn(name: 'id', referencedColumnName: 'first_entity_id')]
     public $secondEntity;
 
-    /**
-     * @var string
-     * @Column(name="name")
-     */
+    /** @var string */
+    #[Column(name: 'name')]
     public $name;
 }
 
-/**
- * @Entity
- * @Table(name="second_entity")
- */
+#[Table(name: 'second_entity')]
+#[Entity]
 class SecondEntity
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(name="first_entity_id")
-     */
+    /** @var int */
+    #[Id]
+    #[Column(name: 'first_entity_id')]
     public $firstEntityId;
 
-    /**
-     * @var string
-     * @Column(name="name")
-     */
+    /** @var string */
+    #[Column(name: 'name')]
     public $name;
 }
 
-/** @Entity */
+#[Entity]
 class GH6830Board
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer')]
     public $id;
 
-    /**
-     * @var GH6830Category
-     * @ManyToOne(targetEntity=GH6830Category::class, inversedBy="boards")
-     * @JoinColumn(name="category_id", referencedColumnName="id")
-     */
+    /** @var GH6830Category */
+    #[ManyToOne(targetEntity: GH6830Category::class, inversedBy: 'boards')]
+    #[JoinColumn(name: 'category_id', referencedColumnName: 'id')]
     public $category;
 }
 
-/** @Entity */
+#[Entity]
 class GH6830Category
 {
-    /**
-     * @Id
-     * @Column(type="string", length=8, options={"fixed":true, "collation":"latin1_bin", "foo":"bar"})
-     * @var string
-     */
+    /** @var string */
+    #[Id]
+    #[Column(type: 'string', length: 8, options: ['fixed' => true, 'collation' => 'latin1_bin', 'foo' => 'bar'])]
     public $id;
 
-    /**
-     * @psalm-var Collection<int, GH6830Board>
-     * @OneToMany(targetEntity=GH6830Board::class, mappedBy="category")
-     */
+    /** @psalm-var Collection<int, GH6830Board> */
+    #[OneToMany(targetEntity: GH6830Board::class, mappedBy: 'category')]
     public $boards;
 }
 
-/**
- * @Entity
- * @Table(
- *     name="field_index",
- *     indexes={
- *         @Index(name="index", fields={"index", "fieldName"}),
- *     },
- *     uniqueConstraints={
- *         @UniqueConstraint(name="uniq", fields={"index", "table"})
- *     }
- * )
- */
+#[Table(name: 'field_index')]
+#[Index(name: 'index', fields: ['index', 'fieldName'])]
+#[UniqueConstraint(name: 'uniq', fields: ['index', 'table'])]
+#[Entity]
 class IndexByFieldEntity
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer')]
     public $id;
 
-    /**
-     * @var string
-     * @Column
-     */
+    /** @var string */
+    #[Column]
     public $index;
 
-    /**
-     * @var string
-     * @Column
-     */
+    /** @var string */
+    #[Column]
     public $table;
 
-    /**
-     * @var string
-     * @Column
-     */
+    /** @var string */
+    #[Column]
     public $fieldName;
 }
 
@@ -579,7 +520,7 @@ class IncorrectIndexByFieldEntity
             [
                 'id'                 => true,
                 'fieldName'          => 'id',
-            ]
+            ],
         );
 
         $metadata->mapField(['fieldName' => 'index']);
@@ -593,7 +534,7 @@ class IncorrectIndexByFieldEntity
                 'indexes' => [
                     ['columns' => ['index'], 'fields' => ['fieldName']],
                 ],
-            ]
+            ],
         );
     }
 }
@@ -618,7 +559,7 @@ class IncorrectUniqueConstraintByFieldEntity
             [
                 'id'                 => true,
                 'fieldName'          => 'id',
-            ]
+            ],
         );
 
         $metadata->mapField(['fieldName' => 'index']);
@@ -632,7 +573,7 @@ class IncorrectUniqueConstraintByFieldEntity
                 'uniqueConstraints' => [
                     ['columns' => ['index'], 'fields' => ['fieldName']],
                 ],
-            ]
+            ],
         );
     }
 }

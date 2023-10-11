@@ -5,12 +5,13 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\ORM\Query;
-use Doctrine\ORM\Query\AST;
 use Doctrine\ORM\Query\AST\SelectExpression;
+use Doctrine\ORM\Query\AST\SelectStatement;
 use Doctrine\ORM\Query\TreeWalkerAdapter;
 use Doctrine\Tests\Models\ECommerce\ECommerceCart;
 use Doctrine\Tests\Models\ECommerce\ECommerceCustomer;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
 use function assert;
 
@@ -23,7 +24,7 @@ class DDC736Test extends OrmFunctionalTestCase
         parent::setUp();
     }
 
-    /** @group DDC-736 */
+    #[Group('DDC-736')]
     public function testReorderEntityFetchJoinForHydration(): void
     {
         $cust = new ECommerceCustomer();
@@ -50,11 +51,9 @@ class DDC736Test extends OrmFunctionalTestCase
         self::assertEquals(['name' => 'roman', 'payment' => 'cash'], $result);
     }
 
-    /**
-     * @group DDC-736
-     * @group DDC-925
-     * @group DDC-915
-     */
+    #[Group('DDC-736')]
+    #[Group('DDC-925')]
+    #[Group('DDC-915')]
     public function testDqlTreeWalkerReordering(): void
     {
         $cust = new ECommerceCustomer();
@@ -82,12 +81,12 @@ class DDC736Test extends OrmFunctionalTestCase
 
 class DisableFetchJoinTreeWalker extends TreeWalkerAdapter
 {
-    public function walkSelectStatement(AST\SelectStatement $AST): void
+    public function walkSelectStatement(SelectStatement $selectStatement): void
     {
-        foreach ($AST->selectClause->selectExpressions as $key => $selectExpr) {
+        foreach ($selectStatement->selectClause->selectExpressions as $key => $selectExpr) {
             assert($selectExpr instanceof SelectExpression);
             if ($selectExpr->expression === 'c') {
-                unset($AST->selectClause->selectExpressions[$key]);
+                unset($selectStatement->selectClause->selectExpressions[$key]);
                 break;
             }
         }

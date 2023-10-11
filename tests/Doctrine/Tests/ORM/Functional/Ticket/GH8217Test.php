@@ -14,6 +14,7 @@ use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
 final class GH8217Test extends OrmFunctionalTestCase
 {
@@ -25,11 +26,11 @@ final class GH8217Test extends OrmFunctionalTestCase
             [
                 GH8217Collection::class,
                 GH8217CollectionItem::class,
-            ]
+            ],
         );
     }
 
-    /** @group GH-8217 */
+    #[Group('GH-8217')]
     public function testNoQueriesAfterSecondFlush(): void
     {
         $collection = new GH8217Collection();
@@ -44,22 +45,17 @@ final class GH8217Test extends OrmFunctionalTestCase
     }
 }
 
-/** @Entity */
+#[Entity]
 class GH8217Collection
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     public $id;
 
-    /**
-     * @psalm-var Collection<int, GH8217CollectionItem>
-     * @OneToMany(targetEntity="GH8217CollectionItem", mappedBy="collection",
-     *     cascade={"persist", "remove"}, orphanRemoval=true)
-     */
+    /** @psalm-var Collection<int, GH8217CollectionItem> */
+    #[OneToMany(targetEntity: 'GH8217CollectionItem', mappedBy: 'collection', cascade: ['persist', 'remove'], orphanRemoval: true)]
     public $items;
 
     public function __construct()
@@ -73,27 +69,17 @@ class GH8217Collection
     }
 }
 
-/** @Entity */
+#[Entity]
 class GH8217CollectionItem
 {
-    /**
-     * @var GH8217Collection
-     * @Id
-     * @ManyToOne(targetEntity="GH8217Collection", inversedBy="items")
-     * @JoinColumn(name="id", referencedColumnName="id")
-     */
-    public $collection;
-
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer", options={"unsigned": true})
-     */
-    public $collectionIndex;
-
-    public function __construct(GH8217Collection $collection, int $collectionIndex)
-    {
-        $this->collection      = $collection;
-        $this->collectionIndex = $collectionIndex;
+    public function __construct(
+        #[Id]
+        #[ManyToOne(targetEntity: 'GH8217Collection', inversedBy: 'items')]
+        #[JoinColumn(name: 'id', referencedColumnName: 'id')]
+        public GH8217Collection $collection,
+        #[Id]
+        #[Column(type: 'integer', options: ['unsigned' => true])]
+        public int $collectionIndex,
+    ) {
     }
 }

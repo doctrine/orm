@@ -14,11 +14,8 @@ use Doctrine\Tests\OrmTestCase;
 
 class BasicEntityPersisterCompositeTypeParametersTest extends OrmTestCase
 {
-    /** @var BasicEntityPersister */
-    protected $persister;
-
-    /** @var EntityManagerMock */
-    protected $entityManager;
+    protected BasicEntityPersister $persister;
+    protected EntityManagerMock $entityManager;
 
     protected function setUp(): void
     {

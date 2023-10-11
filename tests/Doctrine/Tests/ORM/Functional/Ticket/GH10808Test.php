@@ -13,10 +13,11 @@ use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\ORM\Mapping\Table;
 use Doctrine\ORM\UnitOfWork;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
 use function get_class;
 
-/** @group GH10808 */
+#[Group('GH10808')]
 class GH10808Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -25,7 +26,7 @@ class GH10808Test extends OrmFunctionalTestCase
 
         $this->createSchemaForModels(
             GH10808Appointment::class,
-            GH10808AppointmentChild::class
+            GH10808AppointmentChild::class,
         );
     }
 
@@ -40,7 +41,7 @@ class GH10808Test extends OrmFunctionalTestCase
         $query = $this->_em->createQuery(
             'SELECT appointment from Doctrine\Tests\ORM\Functional\Ticket\GH10808Appointment appointment
                JOIN appointment.child appointment_child
-               WITH appointment_child.id = 1'
+               WITH appointment_child.id = 1',
         );
 
         // By default, UnitOfWork::HINT_DEFEREAGERLOAD is set to 'true'
@@ -54,35 +55,29 @@ class GH10808Test extends OrmFunctionalTestCase
         self::assertNotEquals(
             GH10808AppointmentChild::class,
             get_class($deferredLoadResult->child),
-            '$deferredLoadResult->child should be a proxy'
+            '$deferredLoadResult->child should be a proxy',
         );
         self::assertEquals(
             GH10808AppointmentChild::class,
             get_class($eagerLoadResult->child),
-            '$eagerLoadResult->child should not be a proxy'
+            '$eagerLoadResult->child should not be a proxy',
         );
     }
 }
 
-/**
- * @Entity
- * @Table(name="gh10808_appointment")
- */
+#[Entity]
+#[Table(name: 'gh10808_appointment')]
 class GH10808Appointment
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     public $id;
 
-    /**
-     * @var GH10808AppointmentChild
-     * @OneToOne(targetEntity="GH10808AppointmentChild", cascade={"persist", "remove"}, fetch="EAGER")
-     * @JoinColumn(name="child_id", referencedColumnName="id")
-     */
+    /** @var GH10808AppointmentChild */
+    #[OneToOne(targetEntity: GH10808AppointmentChild::class, cascade: ['persist', 'remove'], fetch: 'EAGER')]
+    #[JoinColumn(name: 'child_id', referencedColumnName: 'id')]
     public $child;
 
     public function __construct()
@@ -91,17 +86,13 @@ class GH10808Appointment
     }
 }
 
-/**
- * @Entity
- * @Table(name="gh10808_appointment_child")
- */
+#[Entity]
+#[Table(name: 'gh10808_appointment_child')]
 class GH10808AppointmentChild
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     private $id;
 }

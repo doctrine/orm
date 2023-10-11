@@ -13,28 +13,18 @@ use Doctrine\ORM\Persisters\Entity\BasicEntityPersister;
  */
 class EntityPersisterMock extends BasicEntityPersister
 {
-    /** @var array */
-    private $inserts = [];
-
-    /** @var array */
-    private $updates = [];
-
-    /** @var array */
-    private $deletes = [];
-
-    /** @var int */
-    private $identityColumnValueCounter = 0;
-
-    /** @var int|null */
-    private $mockIdGeneratorType;
+    private array $inserts                  = [];
+    private array $updates                  = [];
+    private array $deletes                  = [];
+    private int $identityColumnValueCounter = 0;
+    private int|null $mockIdGeneratorType   = null;
 
     /** @psalm-var list<array{generatedId: int, entity: object}> */
-    private $postInsertIds = [];
+    private array $postInsertIds = [];
 
-    /** @var bool */
-    private $existsCalled = false;
+    private bool $existsCalled = false;
 
-    public function addInsert($entity): void
+    public function addInsert(object $entity): void
     {
         $this->inserts[] = $entity;
         if ($this->mockIdGeneratorType !== ClassMetadata::GENERATOR_TYPE_IDENTITY && ! $this->class->isIdGeneratorIdentity()) {
@@ -48,10 +38,11 @@ class EntityPersisterMock extends BasicEntityPersister
         ];
     }
 
-    /** @psalm-return list<array{generatedId: int, entity: object}> */
-    public function executeInserts(): array
+    public function executeInserts(): void
     {
-        return $this->postInsertIds;
+        foreach ($this->postInsertIds as $item) {
+            $this->em->getUnitOfWork()->assignPostInsertId($item['entity'], $item['generatedId']);
+        }
     }
 
     public function setMockIdGeneratorType(int $genType): void
@@ -59,28 +50,19 @@ class EntityPersisterMock extends BasicEntityPersister
         $this->mockIdGeneratorType = $genType;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function update($entity): void
+    public function update(object $entity): void
     {
         $this->updates[] = $entity;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function exists($entity, ?Criteria $extraConditions = null): bool
+    public function exists(object $entity, Criteria|null $extraConditions = null): bool
     {
         $this->existsCalled = true;
 
         return false;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function delete($entity): bool
+    public function delete(object $entity): bool
     {
         $this->deletes[] = $entity;
 

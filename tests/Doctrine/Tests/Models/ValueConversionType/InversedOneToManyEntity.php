@@ -12,29 +12,21 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\Table;
 
-/**
- * @Entity
- * @Table(name="vct_inversed_onetomany")
- */
+#[Table(name: 'vct_inversed_onetomany')]
+#[Entity]
 class InversedOneToManyEntity
 {
-    /**
-     * @var string
-     * @Column(type="rot13", length=255)
-     * @Id
-     */
+    /** @var string */
+    #[Column(type: 'rot13', length: 255)]
+    #[Id]
     public $id1;
 
-    /**
-     * @psalm-var Collection<int, OwningManyToOneEntity>
-     * @OneToMany(targetEntity="OwningManyToOneEntity", mappedBy="associatedEntity")
-     */
+    /** @psalm-var Collection<int, OwningManyToOneEntity> */
+    #[OneToMany(targetEntity: 'OwningManyToOneEntity', mappedBy: 'associatedEntity')]
     public $associatedEntities;
 
-    /**
-     * @var string
-     * @Column(type="string", name="some_property", length=255)
-     */
+    /** @var string */
+    #[Column(type: 'string', name: 'some_property', length: 255)]
     public $someProperty;
 
     public function __construct()

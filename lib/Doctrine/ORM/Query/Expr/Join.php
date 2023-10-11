@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Query\Expr;
 
+use Stringable;
+
 use function strtoupper;
 
 /**
@@ -11,102 +13,61 @@ use function strtoupper;
  *
  * @link    www.doctrine-project.org
  */
-class Join
+class Join implements Stringable
 {
-    public const INNER_JOIN = 'INNER';
-    public const LEFT_JOIN  = 'LEFT';
+    final public const INNER_JOIN = 'INNER';
+    final public const LEFT_JOIN  = 'LEFT';
 
-    public const ON   = 'ON';
-    public const WITH = 'WITH';
-
-    /**
-     * @var string
-     * @psalm-var self::INNER_JOIN|self::LEFT_JOIN
-     */
-    protected $joinType;
-
-    /** @var string */
-    protected $join;
-
-    /** @var string|null */
-    protected $alias;
+    final public const ON   = 'ON';
+    final public const WITH = 'WITH';
 
     /**
-     * @var string|null
-     * @psalm-var self::ON|self::WITH|null
-     */
-    protected $conditionType;
-
-    /** @var string|Comparison|Composite|Func|null */
-    protected $condition;
-
-    /** @var string|null */
-    protected $indexBy;
-
-    /**
-     * @param string                                $joinType      The condition type constant. Either INNER_JOIN or LEFT_JOIN.
-     * @param string                                $join          The relationship to join.
-     * @param string|null                           $alias         The alias of the join.
-     * @param string|null                           $conditionType The condition type constant. Either ON or WITH.
-     * @param string|Comparison|Composite|Func|null $condition     The condition for the join.
-     * @param string|null                           $indexBy       The index for the join.
      * @psalm-param self::INNER_JOIN|self::LEFT_JOIN $joinType
      * @psalm-param self::ON|self::WITH|null $conditionType
      */
-    public function __construct($joinType, $join, $alias = null, $conditionType = null, $condition = null, $indexBy = null)
-    {
-        $this->joinType      = $joinType;
-        $this->join          = $join;
-        $this->alias         = $alias;
-        $this->conditionType = $conditionType;
-        $this->condition     = $condition;
-        $this->indexBy       = $indexBy;
+    public function __construct(
+        protected string $joinType,
+        protected string $join,
+        protected string|null $alias = null,
+        protected string|null $conditionType = null,
+        protected string|Comparison|Composite|Func|null $condition = null,
+        protected string|null $indexBy = null,
+    ) {
     }
 
-    /**
-     * @return string
-     * @psalm-return self::INNER_JOIN|self::LEFT_JOIN
-     */
-    public function getJoinType()
+    /** @psalm-return self::INNER_JOIN|self::LEFT_JOIN */
+    public function getJoinType(): string
     {
         return $this->joinType;
     }
 
-    /** @return string */
-    public function getJoin()
+    public function getJoin(): string
     {
         return $this->join;
     }
 
-    /** @return string|null */
-    public function getAlias()
+    public function getAlias(): string|null
     {
         return $this->alias;
     }
 
-    /**
-     * @return string|null
-     * @psalm-return self::ON|self::WITH|null
-     */
-    public function getConditionType()
+    /** @psalm-return self::ON|self::WITH|null */
+    public function getConditionType(): string|null
     {
         return $this->conditionType;
     }
 
-    /** @return string|Comparison|Composite|Func|null */
-    public function getCondition()
+    public function getCondition(): string|Comparison|Composite|Func|null
     {
         return $this->condition;
     }
 
-    /** @return string|null */
-    public function getIndexBy()
+    public function getIndexBy(): string|null
     {
         return $this->indexBy;
     }
 
-    /** @return string */
-    public function __toString()
+    public function __toString(): string
     {
         return strtoupper($this->joinType) . ' JOIN ' . $this->join
              . ($this->alias ? ' ' . $this->alias : '')

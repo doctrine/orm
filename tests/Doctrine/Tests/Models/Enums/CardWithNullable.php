@@ -10,23 +10,16 @@ use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 
-/** @Entity */
 #[Entity]
 class CardWithNullable
 {
-    /**
-     * @Id @GeneratedValue @Column(type="integer")
-     * @var int
-     */
+    /** @var int */
     #[Id]
     #[GeneratedValue]
     #[Column(type: 'integer')]
     public $id;
 
-    /**
-     * @Column(type="string", length=255, enumType=Suit::class, nullable=true)
-     * @var ?Suit
-     */
+    /** @var ?Suit */
     #[Column(type: 'string', nullable: true, enumType: Suit::class)]
     public $suit;
 
@@ -37,7 +30,7 @@ class CardWithNullable
                 'id' => true,
                 'fieldName' => 'id',
                 'type' => 'integer',
-            ]
+            ],
         );
         $metadata->mapField(
             [
@@ -45,7 +38,7 @@ class CardWithNullable
                 'type' => 'string',
                 'enumType' => Suit::class,
                 'nullable' => true,
-            ]
+            ],
         );
     }
 }

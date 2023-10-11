@@ -7,10 +7,11 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 use Doctrine\Tests\Models\DDC3346\DDC3346Article;
 use Doctrine\Tests\Models\DDC3346\DDC3346Author;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
 use function assert;
 
-/** @group DDC-3346 */
+#[Group('DDC-3346')]
 class DDC3346Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -25,7 +26,7 @@ class DDC3346Test extends OrmFunctionalTestCase
     public function testFindOneWithEagerFetchWillNotHydrateLimitedCollection(): void
     {
         $author = $this->_em->getRepository(DDC3346Author::class)->findOneBy(
-            ['username' => 'bwoogy']
+            ['username' => 'bwoogy'],
         );
         assert($author instanceof DDC3346Author);
 
@@ -38,7 +39,7 @@ class DDC3346Test extends OrmFunctionalTestCase
         $authors = $this->_em->getRepository(DDC3346Author::class)->findBy(
             ['username' => 'bwoogy'],
             null,
-            1
+            1,
         );
 
         self::assertCount(1, $authors);
@@ -52,7 +53,7 @@ class DDC3346Test extends OrmFunctionalTestCase
             ['username' => 'bwoogy'],
             null,
             null,
-            0 // using an explicitly defined offset
+            0, // using an explicitly defined offset
         );
 
         self::assertCount(1, $authors);

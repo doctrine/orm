@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Query\AST;
 
+use Doctrine\ORM\Query\SqlWalker;
+
 /**
  * ArithmeticTerm ::= ArithmeticFactor {("*" | "/") ArithmeticFactor}*
  *
@@ -11,20 +13,13 @@ namespace Doctrine\ORM\Query\AST;
  */
 class ArithmeticTerm extends Node
 {
-    /** @var mixed[] */
-    public $arithmeticFactors;
-
     /** @param mixed[] $arithmeticFactors */
-    public function __construct(array $arithmeticFactors)
+    public function __construct(public array $arithmeticFactors)
     {
-        $this->arithmeticFactors = $arithmeticFactors;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function dispatch($sqlWalker)
+    public function dispatch(SqlWalker $walker): string
     {
-        return $sqlWalker->walkArithmeticTerm($this);
+        return $walker->walkArithmeticTerm($this);
     }
 }

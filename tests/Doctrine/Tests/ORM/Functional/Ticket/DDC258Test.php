@@ -13,6 +13,7 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\InheritanceType;
 use Doctrine\ORM\Mapping\Table;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
 class DDC258Test extends OrmFunctionalTestCase
 {
@@ -24,11 +25,11 @@ class DDC258Test extends OrmFunctionalTestCase
             DDC258Super::class,
             DDC258Class1::class,
             DDC258Class2::class,
-            DDC258Class3::class
+            DDC258Class3::class,
         );
     }
 
-    /** @group DDC-258 */
+    #[Group('DDC-258')]
     public function testIssue(): void
     {
         $c1              = new DDC258Class1();
@@ -78,78 +79,59 @@ class DDC258Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- * @Table(name="DDC258Super")
- * @InheritanceType("JOINED")
- * @DiscriminatorColumn(name="type", type="string")
- * @DiscriminatorMap({"class1" = "DDC258Class1", "class2" = "DDC258Class2", "class3"="DDC258Class3"})
- */
+#[Table(name: 'DDC258Super')]
+#[Entity]
+#[InheritanceType('JOINED')]
+#[DiscriminatorColumn(name: 'type', type: 'string')]
+#[DiscriminatorMap(['class1' => 'DDC258Class1', 'class2' => 'DDC258Class2', 'class3' => 'DDC258Class3'])]
 abstract class DDC258Super
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(name="id", type="integer")
-     * @GeneratedValue(strategy="AUTO")
-     */
+    /** @var int */
+    #[Id]
+    #[Column(name: 'id', type: 'integer')]
+    #[GeneratedValue(strategy: 'AUTO')]
     public $id;
 }
 
-/** @Entity */
+#[Entity]
 class DDC258Class1 extends DDC258Super
 {
-    /**
-     * @var string
-     * @Column(name="title", type="string", length=150)
-     */
+    /** @var string */
+    #[Column(name: 'title', type: 'string', length: 150)]
     public $title;
 
-    /**
-     * @var string
-     * @Column(name="content", type="string", length=500)
-     */
+    /** @var string */
+    #[Column(name: 'content', type: 'string', length: 500)]
     public $description;
 }
 
-/** @Entity */
+#[Entity]
 class DDC258Class2 extends DDC258Super
 {
-    /**
-     * @var string
-     * @Column(name="title", type="string", length=150)
-     */
+    /** @var string */
+    #[Column(name: 'title', type: 'string', length: 150)]
     public $title;
 
-    /**
-     * @var string
-     * @Column(name="content", type="string", length=500)
-     */
+    /** @var string */
+    #[Column(name: 'content', type: 'string', length: 500)]
     public $description;
 
-    /**
-     * @var string
-     * @Column(name="text", type="text")
-     */
+    /** @var string */
+    #[Column(name: 'text', type: 'text')]
     public $text;
 }
 
 /**
  * An extra class to demonstrate why title and description aren't in Super
- *
- * @Entity
  */
+#[Entity]
 class DDC258Class3 extends DDC258Super
 {
-    /**
-     * @var string
-     * @Column(name="title", type="string", length=150)
-     */
+    /** @var string */
+    #[Column(name: 'title', type: 'string', length: 150)]
     public $apples;
 
-    /**
-     * @var string
-     * @Column(name="content", type="string", length=500)
-     */
+    /** @var string */
+    #[Column(name: 'content', type: 'string', length: 500)]
     public $bananas;
 }

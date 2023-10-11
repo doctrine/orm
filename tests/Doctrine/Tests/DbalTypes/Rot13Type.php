@@ -7,7 +7,6 @@ namespace Doctrine\Tests\DbalTypes;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Type;
 
-use function method_exists;
 use function str_rot13;
 
 /**
@@ -18,12 +17,9 @@ class Rot13Type extends Type
     /**
      * {@inheritDoc}
      *
-     * @param string|null      $value
-     * @param AbstractPlatform $platform
-     *
-     * @return string|null
+     * @param string|null $value
      */
-    public function convertToDatabaseValue($value, AbstractPlatform $platform)
+    public function convertToDatabaseValue($value, AbstractPlatform $platform): string|null
     {
         if ($value === null) {
             return null;
@@ -35,12 +31,9 @@ class Rot13Type extends Type
     /**
      * {@inheritDoc}
      *
-     * @param string|null      $value
-     * @param AbstractPlatform $platform
-     *
-     * @return string|null
+     * @param string|null $value
      */
-    public function convertToPHPValue($value, AbstractPlatform $platform)
+    public function convertToPHPValue($value, AbstractPlatform $platform): string|null
     {
         if ($value === null) {
             return null;
@@ -51,39 +44,13 @@ class Rot13Type extends Type
 
     /**
      * {@inheritDoc}
-     *
-     * @param array            $fieldDeclaration
-     * @param AbstractPlatform $platform
-     *
-     * @return string
      */
-    public function getSQLDeclaration(array $fieldDeclaration, AbstractPlatform $platform)
+    public function getSQLDeclaration(array $column, AbstractPlatform $platform): string
     {
-        if (method_exists($platform, 'getStringTypeDeclarationSQL')) {
-            return $platform->getStringTypeDeclarationSQL($fieldDeclaration);
-        }
-
-        return $platform->getVarcharTypeDeclarationSQL($fieldDeclaration);
+        return $platform->getStringTypeDeclarationSQL($column);
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * @param AbstractPlatform $platform
-     *
-     * @return int|null
-     */
-    public function getDefaultLength(AbstractPlatform $platform)
-    {
-        return $platform->getVarcharDefaultLength();
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * @return string
-     */
-    public function getName()
+    public function getName(): string
     {
         return 'rot13';
     }

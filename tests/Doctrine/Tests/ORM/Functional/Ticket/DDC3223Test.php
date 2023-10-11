@@ -30,7 +30,7 @@ class DDC3223Test extends OrmFunctionalTestCase
                 Participant::class,
                 Status::class,
                 ProfileStatus::class,
-            ]
+            ],
         );
     }
 
@@ -54,60 +54,41 @@ class DDC3223Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- * @Table(name="ddc3223_journalist")
- */
+#[Table(name: 'ddc3223_journalist')]
+#[Entity]
 class Journalist extends Participant
 {
 }
 
-/**
- * @Entity
- * @Table(name="ddc3223_participant")
- * @InheritanceType("JOINED")
- * @DiscriminatorColumn(name="discr", type="string")
- * @DiscriminatorMap({
- *     "journalist"  = "Journalist",
- *     "participant" = "Participant",
- * })
- */
+#[Table(name: 'ddc3223_participant')]
+#[Entity]
+#[InheritanceType('JOINED')]
+#[DiscriminatorColumn(name: 'discr', type: 'string')]
+#[DiscriminatorMap(['journalist' => 'Journalist', 'participant' => 'Participant'])]
 class Participant
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     public $id;
 
-    /**
-     * @var ProfileStatus
-     * @ManyToOne(targetEntity="ProfileStatus")
-     */
+    /** @var ProfileStatus */
+    #[ManyToOne(targetEntity: 'ProfileStatus')]
     public $profileStatus;
 }
 
-/**
- * @Entity
- * @Table(name="ddc3223_status")
- * @InheritanceType("SINGLE_TABLE")
- * @DiscriminatorColumn(name="discr", type="string")
- * @DiscriminatorMap({
- *     "profile" = "ProfileStatus",
- *     "status"  = "Status",
- * })
- */
+#[Table(name: 'ddc3223_status')]
+#[Entity]
+#[InheritanceType('SINGLE_TABLE')]
+#[DiscriminatorColumn(name: 'discr', type: 'string')]
+#[DiscriminatorMap(['profile' => 'ProfileStatus', 'status' => 'Status'])]
 class Status
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
-     */
-    private $id;
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue(strategy: 'AUTO')]
+    private int $id;
 
     public function getId(): int
     {
@@ -115,7 +96,7 @@ class Status
     }
 }
 
-/** @Entity */
+#[Entity]
 class ProfileStatus extends Status
 {
 }

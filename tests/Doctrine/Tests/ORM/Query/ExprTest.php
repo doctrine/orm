@@ -6,9 +6,23 @@ namespace Doctrine\Tests\ORM\Query;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Query\Expr;
+use Doctrine\ORM\Query\Expr\Andx;
+use Doctrine\ORM\Query\Expr\Comparison;
+use Doctrine\ORM\Query\Expr\From;
+use Doctrine\ORM\Query\Expr\Func;
+use Doctrine\ORM\Query\Expr\GroupBy;
+use Doctrine\ORM\Query\Expr\Join;
+use Doctrine\ORM\Query\Expr\Literal;
+use Doctrine\ORM\Query\Expr\Math;
+use Doctrine\ORM\Query\Expr\OrderBy;
+use Doctrine\ORM\Query\Expr\Orx;
+use Doctrine\ORM\Query\Expr\Select;
 use Doctrine\Tests\Models\Company\CompanyEmployee;
 use Doctrine\Tests\OrmTestCase;
 use Generator;
+use InvalidArgumentException;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Group;
 
 /**
  * Test case for the DQL Expr class used for generating DQL snippets through
@@ -18,11 +32,9 @@ use Generator;
  */
 class ExprTest extends OrmTestCase
 {
-    /** @var EntityManagerInterface */
-    private $entityManager;
+    private EntityManagerInterface $entityManager;
 
-    /** @var Expr */
-    private $expr;
+    private Expr $expr;
 
     protected function setUp(): void
     {
@@ -109,7 +121,7 @@ class ExprTest extends OrmTestCase
     {
         self::assertEquals(
             '1 = 1 AND 2 = 2',
-            (string) $this->expr->andX($this->expr->orX($this->expr->andX($this->expr->eq(1, 1))), (string) $this->expr->eq(2, 2))
+            (string) $this->expr->andX($this->expr->orX($this->expr->andX($this->expr->eq(1, 1))), (string) $this->expr->eq(2, 2)),
         );
     }
 
@@ -185,10 +197,8 @@ class ExprTest extends OrmTestCase
         self::assertEquals('MOD(10, 1)', (string) $this->expr->mod(10, 1));
     }
 
-    /**
-     * @group regression
-     * @group DDC-612
-     */
+    #[Group('regression')]
+    #[Group('DDC-612')]
     public function testSubstringExprAcceptsTwoArguments(): void
     {
         self::assertEquals('SUBSTRING(a.title, 5)', (string) $this->expr->substring('a.title', 5));
@@ -229,10 +239,8 @@ class ExprTest extends OrmTestCase
         self::assertEquals(5, (string) $this->expr->literal(5));
     }
 
-    /**
-     * @group regression
-     * @group DDC-610
-     */
+    #[Group('regression')]
+    #[Group('DDC-610')]
     public function testLiteralExprProperlyQuotesStrings(): void
     {
         self::assertEquals("'00010001'", (string) $this->expr->literal('00010001'));
@@ -298,25 +306,25 @@ class ExprTest extends OrmTestCase
         yield 'generator' => [$gen()];
     }
 
-    /** @dataProvider provideIterableValue */
+    #[DataProvider('provideIterableValue')]
     public function testInExpr(iterable $value): void
     {
         self::assertEquals('u.id IN(1, 2, 3)', (string) $this->expr->in('u.id', $value));
     }
 
-    /** @dataProvider provideLiteralIterableValue */
+    #[DataProvider('provideLiteralIterableValue')]
     public function testInLiteralExpr(iterable $value): void
     {
         self::assertEquals("u.type IN('foo', 'bar')", (string) $this->expr->in('u.type', $value));
     }
 
-    /** @dataProvider provideIterableValue */
+    #[DataProvider('provideIterableValue')]
     public function testNotInExpr(iterable $value): void
     {
         self::assertEquals('u.id NOT IN(1, 2, 3)', (string) $this->expr->notIn('u.id', $value));
     }
 
-    /** @dataProvider provideLiteralIterableValue */
+    #[DataProvider('provideLiteralIterableValue')]
     public function testNotInLiteralExpr(iterable $value): void
     {
         self::assertEquals("u.type NOT IN('foo', 'bar')", (string) $this->expr->notIn('u.type', $value));
@@ -366,75 +374,75 @@ class ExprTest extends OrmTestCase
 
     public function testAddThrowsException(): void
     {
-        $this->expectException('InvalidArgumentException');
+        $this->expectException(InvalidArgumentException::class);
         $orExpr = $this->expr->orX();
         $orExpr->add($this->expr->quot(5, 2));
     }
 
-    /** @group DDC-1683 */
+    #[Group('DDC-1683')]
     public function testBooleanLiteral(): void
     {
         self::assertEquals('true', $this->expr->literal(true));
         self::assertEquals('false', $this->expr->literal(false));
     }
 
-    /** @group DDC-1686 */
+    #[Group('DDC-1686')]
     public function testExpressionGetter(): void
     {
         // Andx
-        $andx = new Expr\Andx(['1 = 1', '2 = 2']);
+        $andx = new Andx(['1 = 1', '2 = 2']);
         self::assertEquals(['1 = 1', '2 = 2'], $andx->getParts());
 
         // Comparison
-        $comparison = new Expr\Comparison('foo', Expr\Comparison::EQ, 'bar');
+        $comparison = new Comparison('foo', Comparison::EQ, 'bar');
         self::assertEquals('foo', $comparison->getLeftExpr());
         self::assertEquals('bar', $comparison->getRightExpr());
-        self::assertEquals(Expr\Comparison::EQ, $comparison->getOperator());
+        self::assertEquals(Comparison::EQ, $comparison->getOperator());
 
         // From
-        $from = new Expr\From('Foo', 'f', 'f.id');
+        $from = new From('Foo', 'f', 'f.id');
         self::assertEquals('f', $from->getAlias());
         self::assertEquals('Foo', $from->getFrom());
         self::assertEquals('f.id', $from->getIndexBy());
 
         // Func
-        $func = new Expr\Func('MAX', ['f.id']);
+        $func = new Func('MAX', ['f.id']);
         self::assertEquals('MAX', $func->getName());
         self::assertEquals(['f.id'], $func->getArguments());
 
         // GroupBy
-        $group = new Expr\GroupBy(['foo DESC', 'bar ASC']);
+        $group = new GroupBy(['foo DESC', 'bar ASC']);
         self::assertEquals(['foo DESC', 'bar ASC'], $group->getParts());
 
         // Join
-        $join = new Expr\Join(Expr\Join::INNER_JOIN, 'f.bar', 'b', Expr\Join::ON, 'b.bar_id = 1', 'b.bar_id');
-        self::assertEquals(Expr\Join::INNER_JOIN, $join->getJoinType());
-        self::assertEquals(Expr\Join::ON, $join->getConditionType());
+        $join = new Join(Join::INNER_JOIN, 'f.bar', 'b', Join::ON, 'b.bar_id = 1', 'b.bar_id');
+        self::assertEquals(Join::INNER_JOIN, $join->getJoinType());
+        self::assertEquals(Join::ON, $join->getConditionType());
         self::assertEquals('b.bar_id = 1', $join->getCondition());
         self::assertEquals('b.bar_id', $join->getIndexBy());
         self::assertEquals('f.bar', $join->getJoin());
         self::assertEquals('b', $join->getAlias());
 
         // Literal
-        $literal = new Expr\Literal(['foo']);
+        $literal = new Literal(['foo']);
         self::assertEquals(['foo'], $literal->getParts());
 
         // Math
-        $math = new Expr\Math(10, '+', 20);
+        $math = new Math(10, '+', 20);
         self::assertEquals(10, $math->getLeftExpr());
         self::assertEquals(20, $math->getRightExpr());
         self::assertEquals('+', $math->getOperator());
 
         // OrderBy
-        $order = new Expr\OrderBy('foo', 'DESC');
+        $order = new OrderBy('foo', 'DESC');
         self::assertEquals(['foo DESC'], $order->getParts());
 
         // Andx
-        $orx = new Expr\Orx(['foo = 1', 'bar = 2']);
+        $orx = new Orx(['foo = 1', 'bar = 2']);
         self::assertEquals(['foo = 1', 'bar = 2'], $orx->getParts());
 
         // Select
-        $select = new Expr\Select(['foo', 'bar']);
+        $select = new Select(['foo', 'bar']);
         self::assertEquals(['foo', 'bar'], $select->getParts());
     }
 

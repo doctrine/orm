@@ -47,17 +47,14 @@ mapping metadata:
 -  :doc:`Attributes <attributes-reference>`
 -  :doc:`XML <xml-mapping>`
 -  :doc:`PHP code <php-mapping>`
--  :doc:`Docblock Annotations <annotations-reference>` (deprecated and will be removed in ``doctrine/orm`` 3.0)
--  :doc:`YAML <yaml-mapping>` (deprecated and will be removed in ``doctrine/orm`` 3.0.)
 
 This manual will usually show mapping metadata via attributes, though
-many examples also show the equivalent configuration in annotations,
-YAML and XML.
+many examples also show the equivalent configuration in XML.
 
 .. note::
 
     All metadata drivers perform equally. Once the metadata of a class has been
-    read from the source (attributes, annotations, XML, etc.) it is stored in an instance
+    read from the source (attributes, XML, etc.) it is stored in an instance
     of the ``Doctrine\ORM\Mapping\ClassMetadata`` class which are
     stored in the metadata cache.  If you're not using a metadata cache (not
     recommended!) then the XML driver is the fastest.
@@ -77,17 +74,6 @@ Marking our ``Message`` class as an entity for Doctrine is straightforward:
             // ...
         }
 
-    .. code-block:: annotation
-
-        <?php
-        use Doctrine\ORM\Mapping\Entity;
-
-        /** @Entity */
-        class Message
-        {
-            // ...
-        }
-
     .. code-block:: xml
 
         <doctrine-mapping>
@@ -95,12 +81,6 @@ Marking our ``Message`` class as an entity for Doctrine is straightforward:
               <!-- ... -->
           </entity>
         </doctrine-mapping>
-
-    .. code-block:: yaml
-
-        Message:
-          type: entity
-          # ...
 
 With no additional information, Doctrine expects the entity to be saved
 into a table with the same name as the class in our case ``Message``.
@@ -121,21 +101,6 @@ You can change this by configuring information about the table:
             // ...
         }
 
-    .. code-block:: annotation
-
-        <?php
-        use Doctrine\ORM\Mapping\Entity;
-        use Doctrine\ORM\Mapping\Table;
-
-        /**
-         * @Entity
-         * @Table(name="message")
-         */
-        class Message
-        {
-            // ...
-        }
-
     .. code-block:: xml
 
         <doctrine-mapping>
@@ -143,13 +108,6 @@ You can change this by configuring information about the table:
               <!-- ... -->
           </entity>
         </doctrine-mapping>
-
-    .. code-block:: yaml
-
-        Message:
-          type: entity
-          table: message
-          # ...
 
 Now the class ``Message`` will be saved and fetched from the table ``message``.
 
@@ -182,23 +140,6 @@ specified, ``string`` is used as the default.
             private $postedAt;
         }
 
-    .. code-block:: annotation
-
-        <?php
-        use Doctrine\ORM\Mapping\Entity;
-        use Doctrine\ORM\Mapping\Column;
-
-        /** @Entity */
-        class Message
-        {
-            /** @Column(type="integer") */
-            private $id;
-            /** @Column(length=140) */
-            private $text;
-            /** @Column(type="datetime", name="posted_at") */
-            private $postedAt;
-        }
-
     .. code-block:: xml
 
         <doctrine-mapping>
@@ -208,19 +149,6 @@ specified, ``string`` is used as the default.
             <field name="postedAt" column="posted_at" type="datetime" />
           </entity>
         </doctrine-mapping>
-
-    .. code-block:: yaml
-
-        Message:
-          type: entity
-          fields:
-            id:
-              type: integer
-            text:
-              length: 140
-            postedAt:
-              type: datetime
-              column: posted_at
 
 When we don't explicitly specify a column name via the ``name`` option, Doctrine
 assumes the field name is also the column name. So in this example:
@@ -384,20 +312,6 @@ the field that serves as the identifier with the ``#[Id]`` attribute.
             // ...
         }
 
-    .. code-block:: annotation
-
-        <?php
-        class Message
-        {
-            /**
-             * @Id
-             * @Column(type="integer")
-             * @GeneratedValue
-             */
-            private int|null $id = null;
-            // ...
-        }
-
     .. code-block:: xml
 
         <doctrine-mapping>
@@ -408,18 +322,6 @@ the field that serves as the identifier with the ``#[Id]`` attribute.
             <!-- -->
           </entity>
         </doctrine-mapping>
-
-    .. code-block:: yaml
-
-        Message:
-          type: entity
-          id:
-            id:
-              type: integer
-              generator:
-                strategy: AUTO
-          fields:
-            # fields here
 
 In most cases using the automatic generator strategy (``#[GeneratedValue]``) is
 what you want. It defaults to the identifier generation mechanism your current
@@ -452,14 +354,12 @@ Here is the list of possible generation strategies:
    strategy does currently not provide full portability and is
    supported by the following platforms: MySQL/SQLite/SQL Anywhere
    (AUTO\_INCREMENT), MSSQL (IDENTITY) and PostgreSQL (SERIAL).
--  ``UUID`` (deprecated): Tells Doctrine to use the built-in Universally
-   Unique Identifier generator. This strategy provides full portability.
 -  ``NONE``: Tells Doctrine that the identifiers are assigned (and
    thus generated) by your code. The assignment must take place before
    a new entity is passed to ``EntityManager#persist``. NONE is the
    same as leaving off the ``#[GeneratedValue]`` entirely.
 -  ``CUSTOM``: With this option, you can use the ``#[CustomIdGenerator]`` attribute.
-   It will allow you to pass a :ref:`class of your own to generate the identifiers.<annref_customidgenerator>`
+   It will allow you to pass a :ref:`class of your own to generate the identifiers.<attrref_customidgenerator>`
 
 Sequence Generator
 ^^^^^^^^^^^^^^^^^^
@@ -482,20 +382,6 @@ besides specifying the sequence's name:
             // ...
         }
 
-    .. code-block:: annotation
-
-        <?php
-        class Message
-        {
-            /**
-             * @Id
-             * @GeneratedValue(strategy="SEQUENCE")
-             * @SequenceGenerator(sequenceName="message_seq", initialValue=1, allocationSize=100)
-             */
-            protected int|null $id = null;
-            // ...
-        }
-
     .. code-block:: xml
 
         <doctrine-mapping>
@@ -506,20 +392,6 @@ besides specifying the sequence's name:
             </id>
           </entity>
         </doctrine-mapping>
-
-    .. code-block:: yaml
-
-        Message:
-          type: entity
-          id:
-            id:
-              type: integer
-              generator:
-                strategy: SEQUENCE
-              sequenceGenerator:
-                sequenceName: message_seq
-                allocationSize: 100
-                initialValue: 1
 
 The initial value specifies at which value the sequence should
 start.

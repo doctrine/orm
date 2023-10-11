@@ -9,20 +9,18 @@ use Doctrine\Common\Collections\Criteria;
 use Doctrine\Tests\Models\ECommerce\ECommerceFeature;
 use Doctrine\Tests\Models\ECommerce\ECommerceProduct;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
 /**
  * Tests a bidirectional one-to-one association mapping (without inheritance).
  */
 class OneToManyBidirectionalAssociationTest extends OrmFunctionalTestCase
 {
-    /** @var ECommerceProduct */
-    private $product;
+    private ECommerceProduct $product;
 
-    /** @var ECommerceFeature */
-    private $firstFeature;
+    private ECommerceFeature $firstFeature;
 
-    /** @var ECommerceFeature */
-    private $secondFeature;
+    private ECommerceFeature $secondFeature;
 
     protected function setUp(): void
     {
@@ -35,7 +33,7 @@ class OneToManyBidirectionalAssociationTest extends OrmFunctionalTestCase
         $this->firstFeature = new ECommerceFeature();
         $this->firstFeature->setDescription('Model writing tutorial');
         $this->secondFeature = new ECommerceFeature();
-        $this->secondFeature->setDescription('Annotations examples');
+        $this->secondFeature->setDescription('Attributes examples');
     }
 
     public function testSavesAOneToManyAssociationWithCascadeSaveSet(): void
@@ -95,7 +93,7 @@ class OneToManyBidirectionalAssociationTest extends OrmFunctionalTestCase
         self::assertInstanceOf(ECommerceFeature::class, $features[1]);
         self::assertSame($product, $features[1]->getProduct());
         self::assertFalse($this->isUninitializedObject($features[1]->getProduct()));
-        self::assertEquals('Annotations examples', $features[1]->getDescription());
+        self::assertEquals('Attributes examples', $features[1]->getDescription());
     }
 
     public function testLazyLoadsObjectsOnTheOwningSide(): void
@@ -114,7 +112,7 @@ class OneToManyBidirectionalAssociationTest extends OrmFunctionalTestCase
         self::assertEquals('Model writing tutorial', $features[0]->getDescription());
         self::assertInstanceOf(ECommerceFeature::class, $features[1]);
         self::assertSame($product, $features[1]->getProduct());
-        self::assertEquals('Annotations examples', $features[1]->getDescription());
+        self::assertEquals('Attributes examples', $features[1]->getDescription());
     }
 
     public function testLazyLoadsObjectsOnTheInverseSide(): void
@@ -158,7 +156,7 @@ class OneToManyBidirectionalAssociationTest extends OrmFunctionalTestCase
         self::assertCount(0, $features);
     }
 
-    /** @group DDC-1637 */
+    #[Group('DDC-1637')]
     public function testMatching(): void
     {
         $this->createFixture();
@@ -167,7 +165,7 @@ class OneToManyBidirectionalAssociationTest extends OrmFunctionalTestCase
         $features = $product->getFeatures();
 
         $results = $features->matching(new Criteria(
-            Criteria::expr()->eq('description', 'Model writing tutorial')
+            Criteria::expr()->eq('description', 'Model writing tutorial'),
         ));
 
         self::assertInstanceOf(Collection::class, $results);
@@ -179,7 +177,7 @@ class OneToManyBidirectionalAssociationTest extends OrmFunctionalTestCase
         self::assertCount(2, $results);
     }
 
-    /** @group DDC-2340 */
+    #[Group('DDC-2340')]
     public function testMatchingOnDirtyCollection(): void
     {
         $this->createFixture();
@@ -193,7 +191,7 @@ class OneToManyBidirectionalAssociationTest extends OrmFunctionalTestCase
         $features->add($thirdFeature);
 
         $results = $features->matching(new Criteria(
-            Criteria::expr()->eq('description', 'Model writing tutorial')
+            Criteria::expr()->eq('description', 'Model writing tutorial'),
         ));
 
         self::assertCount(2, $results);
@@ -211,7 +209,7 @@ class OneToManyBidirectionalAssociationTest extends OrmFunctionalTestCase
         $product->addFeature($thirdFeature);
 
         $results = $features->matching(new Criteria(
-            Criteria::expr()->eq('description', 'Third feature')
+            Criteria::expr()->eq('description', 'Third feature'),
         ));
 
         self::assertInstanceOf(Collection::class, $results);
@@ -237,7 +235,7 @@ class OneToManyBidirectionalAssociationTest extends OrmFunctionalTestCase
     {
         $foreignKey = $this->_em->getConnection()->executeQuery(
             'SELECT product_id FROM ecommerce_features WHERE id=?',
-            [$feature->getId()]
+            [$feature->getId()],
         )->fetchOne();
         self::assertEquals($value, $foreignKey);
     }

@@ -15,8 +15,7 @@ use InvalidArgumentException;
  */
 class FilterCollectionTest extends OrmTestCase
 {
-    /** @var EntityManagerMock */
-    private $em;
+    private EntityManagerMock $em;
 
     protected function setUp(): void
     {
@@ -199,10 +198,7 @@ class FilterCollectionTest extends OrmTestCase
 
 class MyFilter extends SQLFilter
 {
-    /**
-     * {@inheritDoc}
-     */
-    public function addFilterConstraint(ClassMetadata $targetEntity, $targetTableAlias): string
+    public function addFilterConstraint(ClassMetadata $targetEntity, string $targetTableAlias): string
     {
         // getParameter applies quoting automatically
         return $targetTableAlias . '.id = ' . $this->getParameter('id');

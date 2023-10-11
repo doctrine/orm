@@ -17,8 +17,11 @@ use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\ORM\UnitOfWork;
 use Doctrine\Tests\Mocks\EntityManagerMock;
 use Doctrine\Tests\OrmTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
-/** @group GH7869 */
+use function method_exists;
+
+#[Group('GH7869')]
 class GH7869Test extends OrmTestCase
 {
     public function testDQLDeferredEagerLoad(): void
@@ -30,8 +33,11 @@ class GH7869Test extends OrmTestCase
         $connection = $this->createMock(Connection::class);
         $connection->method('getDatabasePlatform')
             ->willReturn($platform);
-        $connection->method('getEventManager')
-            ->willReturn(new EventManager());
+
+        if (method_exists($connection, 'getEventManager')) {
+            $connection->method('getEventManager')
+                ->willReturn(new EventManager());
+        }
 
         $em = new class (new EntityManagerMock($connection)) extends EntityManagerDecorator {
             /** @var int */
@@ -59,38 +65,30 @@ class GH7869Test extends OrmTestCase
     }
 }
 
-/** @Entity */
+#[Entity]
 class GH7869Appointment
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     public $id;
 
-    /**
-     * @var GH7869Patient
-     * @OneToOne(targetEntity="GH7869Patient", inversedBy="appointment", fetch="EAGER")
-     */
+    /** @var GH7869Patient */
+    #[OneToOne(targetEntity: 'GH7869Patient', inversedBy: 'appointment', fetch: 'EAGER')]
     public $patient;
 }
 
-/** @Entity */
+#[Entity]
 class GH7869Patient
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     public $id;
 
-    /**
-     * @var GH7869Appointment
-     * @OneToOne(targetEntity="GH7869Appointment", mappedBy="patient")
-     */
+    /** @var GH7869Appointment */
+    #[OneToOne(targetEntity: 'GH7869Appointment', mappedBy: 'patient')]
     public $appointment;
 }

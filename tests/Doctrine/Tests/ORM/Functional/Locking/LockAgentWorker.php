@@ -9,7 +9,7 @@ use Doctrine\DBAL\Connection;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\ORMSetup;
+use Doctrine\Tests\ORM\Functional\Locking\Doctrine\ORM\Query;
 use Doctrine\Tests\TestUtil;
 use GearmanWorker;
 use InvalidArgumentException;
@@ -23,8 +23,7 @@ use function unserialize;
 
 class LockAgentWorker
 {
-    /** @var EntityManagerInterface */
-    private $em;
+    private EntityManagerInterface|null $em = null;
 
     public static function run(): void
     {
@@ -33,7 +32,7 @@ class LockAgentWorker
         $worker = new GearmanWorker();
         $worker->addServer(
             $_SERVER['GEARMAN_HOST'] ?? null,
-            $_SERVER['GEARMAN_PORT'] ?? 4730
+            $_SERVER['GEARMAN_PORT'] ?? 4730,
         );
         $worker->addFunction('findWithLock', [$lockAgent, 'findWithLock']);
         $worker->addFunction('dqlWithLock', [$lockAgent, 'dqlWithLock']);
@@ -75,7 +74,7 @@ class LockAgentWorker
     {
         return $this->process($job, static function ($fixture, $em): void {
             $query = $em->createQuery($fixture['dql']);
-            assert($query instanceof Doctrine\ORM\Query);
+            assert($query instanceof Query);
             $query->setLockMode($fixture['lockMode']);
             $query->setParameters($fixture['dqlParams']);
             $result = $query->getResult();
@@ -117,7 +116,7 @@ class LockAgentWorker
         TestUtil::configureProxies($config);
         $config->setAutoGenerateProxyClasses(true);
 
-        $annotDriver = ORMSetup::createDefaultAnnotationDriver([__DIR__ . '/../../../Models/']);
+        $annotDriver = new AttributeDriver([__DIR__ . '/../../../Models/']);
         $config->setMetadataDriverImpl($annotDriver);
         $config->setMetadataCache(new ArrayAdapter());
 

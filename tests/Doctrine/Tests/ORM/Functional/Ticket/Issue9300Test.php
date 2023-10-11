@@ -8,10 +8,9 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Tests\Models\Issue9300\Issue9300Child;
 use Doctrine\Tests\Models\Issue9300\Issue9300Parent;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
-/**
- * @group GH-9300
- */
+#[Group('GH-9300')]
 class Issue9300Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -21,9 +20,6 @@ class Issue9300Test extends OrmFunctionalTestCase
         parent::setUp();
     }
 
-    /**
-     * @group GH-9300
-     */
     public function testPersistedCollectionIsPresentInOriginalDataAfterFlush(): void
     {
         $parent = new Issue9300Parent();
@@ -45,9 +41,6 @@ class Issue9300Test extends OrmFunctionalTestCase
         self::assertArrayHasKey('parents', $this->_em->getUnitOfWork()->getOriginalEntityData($child));
     }
 
-    /**
-     * @group GH-9300
-     */
     public function testPersistingCollectionAfterFlushWorksAsExpected(): void
     {
         $parentOne = new Issue9300Parent();

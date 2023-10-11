@@ -6,10 +6,9 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
-/**
- * @group GH6499
- */
+#[Group('GH6499')]
 class GH6499OneToOneRelationshipTest extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -33,29 +32,23 @@ class GH6499OneToOneRelationshipTest extends OrmFunctionalTestCase
         self::assertEquals(
             $this->_em->find(GH6499OTOA::class, $a->id)->b->id,
             $a->b->id,
-            'Issue #6499 will result in an integrity constraint violation before reaching this point.'
+            'Issue #6499 will result in an integrity constraint violation before reaching this point.',
         );
     }
 }
 
-/** @ORM\Entity */
+#[ORM\Entity]
 class GH6499OTOA
 {
-    /**
-     * @ORM\Id
-     * @ORM\Column(type="integer")
-     * @ORM\GeneratedValue
-     *
-     * @var int
-     */
+    /** @var int */
+    #[ORM\Id]
+    #[ORM\Column(type: 'integer')]
+    #[ORM\GeneratedValue]
     public $id;
 
-    /**
-     * @ORM\OneToOne(targetEntity="GH6499OTOB", cascade={"persist"})
-     * @ORM\JoinColumn(nullable=false)
-     *
-     * @var GH6499OTOB
-     */
+    /** @var GH6499OTOB */
+    #[ORM\OneToOne(targetEntity: GH6499OTOB::class, cascade: ['persist'])]
+    #[ORM\JoinColumn(nullable: false)]
     public $b;
 
     public function __construct()
@@ -64,15 +57,12 @@ class GH6499OTOA
     }
 }
 
-/** @ORM\Entity */
+#[ORM\Entity]
 class GH6499OTOB
 {
-    /**
-     * @ORM\Id
-     * @ORM\Column(type="integer")
-     * @ORM\GeneratedValue
-     *
-     * @var int
-     */
+    /** @var int */
+    #[ORM\Id]
+    #[ORM\Column(type: 'integer')]
+    #[ORM\GeneratedValue]
     public $id;
 }

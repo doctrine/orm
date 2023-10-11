@@ -15,18 +15,15 @@ class AnsiQuoteStrategy implements QuoteStrategy
 {
     use SQLResultCasing;
 
-    /**
-     * {@inheritDoc}
-     */
-    public function getColumnName($fieldName, ClassMetadata $class, AbstractPlatform $platform)
-    {
-        return $class->fieldMappings[$fieldName]['columnName'];
+    public function getColumnName(
+        string $fieldName,
+        ClassMetadata $class,
+        AbstractPlatform $platform,
+    ): string {
+        return $class->fieldMappings[$fieldName]->columnName;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function getTableName(ClassMetadata $class, AbstractPlatform $platform)
+    public function getTableName(ClassMetadata $class, AbstractPlatform $platform): string
     {
         return $class->table['name'];
     }
@@ -34,48 +31,46 @@ class AnsiQuoteStrategy implements QuoteStrategy
     /**
      * {@inheritDoc}
      */
-    public function getSequenceName(array $definition, ClassMetadata $class, AbstractPlatform $platform)
+    public function getSequenceName(array $definition, ClassMetadata $class, AbstractPlatform $platform): string
     {
         return $definition['sequenceName'];
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function getJoinColumnName(array $joinColumn, ClassMetadata $class, AbstractPlatform $platform)
+    public function getJoinColumnName(JoinColumnMapping $joinColumn, ClassMetadata $class, AbstractPlatform $platform): string
     {
-        return $joinColumn['name'];
+        return $joinColumn->name;
+    }
+
+    public function getReferencedJoinColumnName(
+        JoinColumnMapping $joinColumn,
+        ClassMetadata $class,
+        AbstractPlatform $platform,
+    ): string {
+        return $joinColumn->referencedColumnName;
+    }
+
+    public function getJoinTableName(
+        ManyToManyOwningSideMapping $association,
+        ClassMetadata $class,
+        AbstractPlatform $platform,
+    ): string {
+        return $association->joinTable->name;
     }
 
     /**
      * {@inheritDoc}
      */
-    public function getReferencedJoinColumnName(array $joinColumn, ClassMetadata $class, AbstractPlatform $platform)
-    {
-        return $joinColumn['referencedColumnName'];
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function getJoinTableName(array $association, ClassMetadata $class, AbstractPlatform $platform)
-    {
-        return $association['joinTable']['name'];
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function getIdentifierColumnNames(ClassMetadata $class, AbstractPlatform $platform)
+    public function getIdentifierColumnNames(ClassMetadata $class, AbstractPlatform $platform): array
     {
         return $class->identifier;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function getColumnAlias($columnName, $counter, AbstractPlatform $platform, ?ClassMetadata $class = null)
-    {
+    public function getColumnAlias(
+        string $columnName,
+        int $counter,
+        AbstractPlatform $platform,
+        ClassMetadata|null $class = null,
+    ): string {
         return $this->getSQLResultCasing($platform, $columnName . '_' . $counter);
     }
 }

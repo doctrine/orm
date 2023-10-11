@@ -13,9 +13,10 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Persisters\Entity\EntityPersister;
 use Doctrine\Tests\Models\Cache\Country;
+use PHPUnit\Framework\Attributes\Group;
 use ReflectionProperty;
 
-/** @group DDC-2183 */
+#[Group('DDC-2183')]
 class NonStrictReadWriteCachedEntityPersisterTest extends EntityPersisterTestCase
 {
     protected function createPersister(EntityManagerInterface $em, EntityPersister $persister, Region $region, ClassMetadata $metadata): AbstractEntityPersister
@@ -28,8 +29,6 @@ class NonStrictReadWriteCachedEntityPersisterTest extends EntityPersisterTestCas
         $entity    = new Country('Foo');
         $persister = $this->createPersisterDefault();
         $property  = new ReflectionProperty($persister, 'queuedCache');
-
-        $property->setAccessible(true);
 
         $this->em->getUnitOfWork()->registerManaged($entity, ['id' => 1], ['id' => 1, 'name' => 'Foo']);
 
@@ -50,8 +49,6 @@ class NonStrictReadWriteCachedEntityPersisterTest extends EntityPersisterTestCas
         $key       = new EntityCacheKey(Country::class, ['id' => 1]);
         $entry     = new EntityCacheEntry(Country::class, ['id' => 1, 'name' => 'Foo']);
         $property  = new ReflectionProperty($persister, 'queuedCache');
-
-        $property->setAccessible(true);
 
         $this->region->expects(self::once())
             ->method('put')
@@ -88,8 +85,6 @@ class NonStrictReadWriteCachedEntityPersisterTest extends EntityPersisterTestCas
         $entry     = new EntityCacheEntry(Country::class, ['id' => 1, 'name' => 'Foo']);
         $property  = new ReflectionProperty($persister, 'queuedCache');
 
-        $property->setAccessible(true);
-
         $this->region->expects(self::once())
             ->method('put')
             ->with(self::equalTo($key), self::equalTo($entry));
@@ -115,8 +110,6 @@ class NonStrictReadWriteCachedEntityPersisterTest extends EntityPersisterTestCas
         $persister = $this->createPersisterDefault();
         $key       = new EntityCacheKey(Country::class, ['id' => 1]);
         $property  = new ReflectionProperty($persister, 'queuedCache');
-
-        $property->setAccessible(true);
 
         $this->region->expects(self::once())
             ->method('evict')

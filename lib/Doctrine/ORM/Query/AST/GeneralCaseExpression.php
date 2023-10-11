@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Query\AST;
 
+use Doctrine\ORM\Query\SqlWalker;
+
 /**
  * GeneralCaseExpression ::= "CASE" WhenClause {WhenClause}* "ELSE" ScalarExpression "END"
  *
@@ -11,27 +13,15 @@ namespace Doctrine\ORM\Query\AST;
  */
 class GeneralCaseExpression extends Node
 {
-    /** @var mixed[] */
-    public $whenClauses = [];
-
-    /** @var mixed */
-    public $elseScalarExpression = null;
-
-    /**
-     * @param mixed[] $whenClauses
-     * @param mixed   $elseScalarExpression
-     */
-    public function __construct(array $whenClauses, $elseScalarExpression)
-    {
-        $this->whenClauses          = $whenClauses;
-        $this->elseScalarExpression = $elseScalarExpression;
+    /** @param mixed[] $whenClauses */
+    public function __construct(
+        public array $whenClauses,
+        public mixed $elseScalarExpression = null,
+    ) {
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function dispatch($sqlWalker)
+    public function dispatch(SqlWalker $walker): string
     {
-        return $sqlWalker->walkGeneralCaseExpression($this);
+        return $walker->walkGeneralCaseExpression($this);
     }
 }

@@ -11,30 +11,20 @@ use Doctrine\ORM\Mapping\ManyToOne;
 
 /**
  * Foreign Key Entity without additional fields!
- *
- * @Entity
  */
+#[Entity]
 class DDC117Link
 {
-    /**
-     * @var DDC117Article
-     * @Id
-     * @ManyToOne(targetEntity="DDC117Article", inversedBy="links")
-     * @JoinColumn(name="source_id", referencedColumnName="article_id")
-     */
-    public $source;
-
-    /**
-     * @var DDC117Article
-     * @Id
-     * @ManyToOne(targetEntity="DDC117Article")
-     * @JoinColumn(name="target_id", referencedColumnName="article_id")
-     */
-    public $target;
-
-    public function __construct($source, $target, $description)
-    {
-        $this->source = $source;
-        $this->target = $target;
+    public function __construct(
+        #[Id]
+        #[ManyToOne(targetEntity: 'DDC117Article', inversedBy: 'links')]
+        #[JoinColumn(name: 'source_id', referencedColumnName: 'article_id')]
+        public DDC117Article $source,
+        #[Id]
+        #[ManyToOne(targetEntity: 'DDC117Article')]
+        #[JoinColumn(name: 'target_id', referencedColumnName: 'article_id')]
+        public DDC117Article $target,
+        $description,
+    ) {
     }
 }

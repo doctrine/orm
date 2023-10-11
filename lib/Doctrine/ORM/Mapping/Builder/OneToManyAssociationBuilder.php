@@ -16,27 +16,22 @@ class OneToManyAssociationBuilder extends AssociationBuilder
      *
      * @return $this
      */
-    public function setOrderBy(array $fieldNames)
+    public function setOrderBy(array $fieldNames): static
     {
         $this->mapping['orderBy'] = $fieldNames;
 
         return $this;
     }
 
-    /**
-     * @param string $fieldName
-     *
-     * @return $this
-     */
-    public function setIndexBy($fieldName)
+    /** @return $this */
+    public function setIndexBy(string $fieldName): static
     {
         $this->mapping['indexBy'] = $fieldName;
 
         return $this;
     }
 
-    /** @return ClassMetadataBuilder */
-    public function build()
+    public function build(): ClassMetadataBuilder
     {
         $mapping = $this->mapping;
         if ($this->joinColumns) {

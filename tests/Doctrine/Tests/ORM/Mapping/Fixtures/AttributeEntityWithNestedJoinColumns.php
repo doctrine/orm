@@ -21,7 +21,7 @@ class AttributeEntityWithNestedJoinColumns
     #[ORM\JoinTable(
         name: 'assoc_table',
         joinColumns: new ORM\JoinColumn(name: 'assoz_id', referencedColumnName: 'assoz_id'),
-        inverseJoinColumns: new ORM\JoinColumn(name: 'inverse_assoz_id', referencedColumnName: 'inverse_assoz_id')
+        inverseJoinColumns: new ORM\JoinColumn(name: 'inverse_assoz_id', referencedColumnName: 'inverse_assoz_id'),
     )]
     public $assoc;
 }

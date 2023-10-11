@@ -18,32 +18,25 @@ use function array_shift;
 class CacheRegionMock implements Region
 {
     /** @var array<string, list<array<string, mixed>>> */
-    public $calls = [];
+    public array $calls = [];
 
     /** @var array<string, mixed> */
-    public $returns = [];
+    public array $returns = [];
 
-    /** @var string */
-    public $name = 'mock';
+    public string $name = 'mock';
 
     /**
      * Queue a return value for a specific method invocation
-     *
-     * @param mixed $value
      */
-    public function addReturn(string $method, $value): void
+    public function addReturn(string $method, mixed $value): void
     {
         $this->returns[$method][] = $value;
     }
 
     /**
      * Dequeue a value for a specific method invocation
-     *
-     * @param mixed $default
-     *
-     * @return mixed
      */
-    private function getReturn(string $method, $default)
+    private function getReturn(string $method, mixed $default): mixed
     {
         if (isset($this->returns[$method]) && ! empty($this->returns[$method])) {
             return array_shift($this->returns[$method]);
@@ -80,24 +73,21 @@ class CacheRegionMock implements Region
         return $this->getReturn(__FUNCTION__, true);
     }
 
-    public function get(CacheKey $key): ?CacheEntry
+    public function get(CacheKey $key): CacheEntry|null
     {
         $this->calls[__FUNCTION__][] = ['key' => $key];
 
         return $this->getReturn(__FUNCTION__, null);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function getMultiple(CollectionCacheEntry $collection): ?array
+    public function getMultiple(CollectionCacheEntry $collection): array|null
     {
         $this->calls[__FUNCTION__][] = ['collection' => $collection];
 
         return $this->getReturn(__FUNCTION__, null);
     }
 
-    public function put(CacheKey $key, CacheEntry $entry, ?Lock $lock = null): bool
+    public function put(CacheKey $key, CacheEntry $entry, Lock|null $lock = null): bool
     {
         $this->calls[__FUNCTION__][] = ['key' => $key, 'entry' => $entry];
 

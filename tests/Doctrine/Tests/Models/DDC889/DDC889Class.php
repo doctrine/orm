@@ -11,12 +11,10 @@ use Doctrine\ORM\Mapping\Id;
 
 class DDC889Class extends DDC889SuperClass
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     protected $id;
 
     public static function loadMetadata(ClassMetadata $metadata): void
@@ -27,7 +25,7 @@ class DDC889Class extends DDC889SuperClass
                 'fieldName'  => 'id',
                 'type'       => 'integer',
                 'columnName' => 'id',
-            ]
+            ],
         );
 
         $metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_AUTO);

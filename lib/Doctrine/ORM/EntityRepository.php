@@ -8,19 +8,15 @@ use BadMethodCallException;
 use Doctrine\Common\Collections\AbstractLazyCollection;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\Common\Collections\Selectable;
-use Doctrine\Common\Persistence\PersistentObject;
 use Doctrine\DBAL\LockMode;
-use Doctrine\Deprecations\Deprecation;
 use Doctrine\Inflector\Inflector;
 use Doctrine\Inflector\InflectorFactory;
-use Doctrine\ORM\Exception\NotSupported;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Query\ResultSetMappingBuilder;
 use Doctrine\ORM\Repository\Exception\InvalidMagicMethodCall;
 use Doctrine\Persistence\ObjectRepository;
 
 use function array_slice;
-use function class_exists;
 use function lcfirst;
 use function sprintf;
 use function str_starts_with;
@@ -39,162 +35,55 @@ use function substr;
  */
 class EntityRepository implements ObjectRepository, Selectable
 {
-    /**
-     * @internal This property will be private in 3.0, call {@see getEntityName()} instead.
-     *
-     * @var string
-     * @psalm-var class-string<T>
-     */
-    protected $_entityName;
-
-    /**
-     * @internal This property will be private in 3.0, call {@see getEntityManager()} instead.
-     *
-     * @var EntityManagerInterface
-     */
-    protected $_em;
-
-    /**
-     * @internal This property will be private in 3.0, call {@see getClassMetadata()} instead.
-     *
-     * @var ClassMetadata
-     * @psalm-var ClassMetadata<T>
-     */
-    protected $_class;
-
-    /** @var Inflector|null */
-    private static $inflector;
+    /** @psalm-var class-string<T> */
+    private readonly string $entityName;
+    private static Inflector|null $inflector = null;
 
     /** @psalm-param ClassMetadata<T> $class */
-    public function __construct(EntityManagerInterface $em, ClassMetadata $class)
-    {
-        $this->_entityName = $class->name;
-        $this->_em         = $em;
-        $this->_class      = $class;
+    public function __construct(
+        private readonly EntityManagerInterface $em,
+        private readonly ClassMetadata $class,
+    ) {
+        $this->entityName = $class->name;
     }
 
     /**
      * Creates a new QueryBuilder instance that is prepopulated for this entity name.
-     *
-     * @param string      $alias
-     * @param string|null $indexBy The index for the from.
-     *
-     * @return QueryBuilder
      */
-    public function createQueryBuilder($alias, $indexBy = null)
+    public function createQueryBuilder(string $alias, string|null $indexBy = null): QueryBuilder
     {
-        return $this->_em->createQueryBuilder()
+        return $this->em->createQueryBuilder()
             ->select($alias)
-            ->from($this->_entityName, $alias, $indexBy);
+            ->from($this->entityName, $alias, $indexBy);
     }
 
     /**
      * Creates a new result set mapping builder for this entity.
      *
      * The column naming strategy is "INCREMENT".
-     *
-     * @param string $alias
-     *
-     * @return ResultSetMappingBuilder
      */
-    public function createResultSetMappingBuilder($alias)
+    public function createResultSetMappingBuilder(string $alias): ResultSetMappingBuilder
     {
-        $rsm = new ResultSetMappingBuilder($this->_em, ResultSetMappingBuilder::COLUMN_RENAMING_INCREMENT);
-        $rsm->addRootEntityFromClassMetadata($this->_entityName, $alias);
+        $rsm = new ResultSetMappingBuilder($this->em, ResultSetMappingBuilder::COLUMN_RENAMING_INCREMENT);
+        $rsm->addRootEntityFromClassMetadata($this->entityName, $alias);
 
         return $rsm;
     }
 
     /**
-     * Creates a new Query instance based on a predefined metadata named query.
-     *
-     * @deprecated
-     *
-     * @param string $queryName
-     *
-     * @return Query
-     */
-    public function createNamedQuery($queryName)
-    {
-        Deprecation::trigger(
-            'doctrine/orm',
-            'https://github.com/doctrine/orm/issues/8592',
-            'Named Queries are deprecated, here "%s" on entity %s. Move the query logic into EntityRepository',
-            $queryName,
-            $this->_class->name
-        );
-
-        return $this->_em->createQuery($this->_class->getNamedQuery($queryName));
-    }
-
-    /**
-     * Creates a native SQL query.
-     *
-     * @deprecated
-     *
-     * @param string $queryName
-     *
-     * @return NativeQuery
-     */
-    public function createNativeNamedQuery($queryName)
-    {
-        Deprecation::trigger(
-            'doctrine/orm',
-            'https://github.com/doctrine/orm/issues/8592',
-            'Named Native Queries are deprecated, here "%s" on entity %s. Move the query logic into EntityRepository',
-            $queryName,
-            $this->_class->name
-        );
-
-        $queryMapping = $this->_class->getNamedNativeQuery($queryName);
-        $rsm          = new Query\ResultSetMappingBuilder($this->_em);
-        $rsm->addNamedNativeQueryMapping($this->_class, $queryMapping);
-
-        return $this->_em->createNativeQuery($queryMapping['query'], $rsm);
-    }
-
-    /**
-     * Clears the repository, causing all managed entities to become detached.
-     *
-     * @deprecated 2.8 This method is being removed from the ORM and won't have any replacement
-     *
-     * @return void
-     */
-    public function clear()
-    {
-        Deprecation::trigger(
-            'doctrine/orm',
-            'https://github.com/doctrine/orm/issues/8460',
-            'Calling %s() is deprecated and will not be supported in Doctrine ORM 3.0.',
-            __METHOD__
-        );
-
-        if (! class_exists(PersistentObject::class)) {
-            throw NotSupported::createForPersistence3(sprintf(
-                'Partial clearing of entities for class %s',
-                $this->_class->rootEntityName
-            ));
-        }
-
-        $this->_em->clear($this->_class->rootEntityName);
-    }
-
-    /**
      * Finds an entity by its primary key / identifier.
      *
-     * @param mixed    $id          The identifier.
-     * @param int|null $lockMode    One of the \Doctrine\DBAL\LockMode::* constants
-     *                              or NULL if no specific lock mode should be used
-     *                              during the search.
-     * @param int|null $lockVersion The lock version.
+     * @param LockMode|int|null $lockMode One of the \Doctrine\DBAL\LockMode::* constants
+     *                                    or NULL if no specific lock mode should be used
+     *                                    during the search.
      * @psalm-param LockMode::*|null $lockMode
      *
      * @return object|null The entity instance or NULL if the entity can not be found.
      * @psalm-return ?T
      */
-    public function find($id, $lockMode = null, $lockVersion = null)
+    public function find(mixed $id, LockMode|int|null $lockMode = null, int|null $lockVersion = null): object|null
     {
-        return $this->_em->find($this->_entityName, $id, $lockMode, $lockVersion);
+        return $this->em->find($this->entityName, $id, $lockMode, $lockVersion);
     }
 
     /**
@@ -202,7 +91,7 @@ class EntityRepository implements ObjectRepository, Selectable
      *
      * @psalm-return list<T> The entities.
      */
-    public function findAll()
+    public function findAll(): array
     {
         return $this->findBy([]);
     }
@@ -210,17 +99,13 @@ class EntityRepository implements ObjectRepository, Selectable
     /**
      * Finds entities by a set of criteria.
      *
-     * @param int|null $limit
-     * @param int|null $offset
-     * @psalm-param array<string, mixed> $criteria
-     * @psalm-param array<string, string>|null $orderBy
+     * {@inheritDoc}
      *
-     * @return object[] The objects.
      * @psalm-return list<T>
      */
-    public function findBy(array $criteria, ?array $orderBy = null, $limit = null, $offset = null)
+    public function findBy(array $criteria, array|null $orderBy = null, int|null $limit = null, int|null $offset = null): array
     {
-        $persister = $this->_em->getUnitOfWork()->getEntityPersister($this->_entityName);
+        $persister = $this->em->getUnitOfWork()->getEntityPersister($this->entityName);
 
         return $persister->loadAll($criteria, $orderBy, $limit, $offset);
     }
@@ -231,12 +116,11 @@ class EntityRepository implements ObjectRepository, Selectable
      * @psalm-param array<string, mixed> $criteria
      * @psalm-param array<string, string>|null $orderBy
      *
-     * @return object|null The entity instance or NULL if the entity can not be found.
-     * @psalm-return ?T
+     * @psalm-return T|null
      */
-    public function findOneBy(array $criteria, ?array $orderBy = null)
+    public function findOneBy(array $criteria, array|null $orderBy = null): object|null
     {
-        $persister = $this->_em->getUnitOfWork()->getEntityPersister($this->_entityName);
+        $persister = $this->em->getUnitOfWork()->getEntityPersister($this->entityName);
 
         return $persister->load($criteria, null, null, [], null, 1, $orderBy);
     }
@@ -250,23 +134,20 @@ class EntityRepository implements ObjectRepository, Selectable
      *
      * @todo Add this method to `ObjectRepository` interface in the next major release
      */
-    public function count(array $criteria)
+    public function count(array $criteria = []): int
     {
-        return $this->_em->getUnitOfWork()->getEntityPersister($this->_entityName)->count($criteria);
+        return $this->em->getUnitOfWork()->getEntityPersister($this->entityName)->count($criteria);
     }
 
     /**
      * Adds support for magic method calls.
      *
-     * @param string  $method
      * @param mixed[] $arguments
      * @psalm-param list<mixed> $arguments
      *
-     * @return mixed The returned value from the resolved method.
-     *
      * @throws BadMethodCallException If the method called is invalid.
      */
-    public function __call($method, $arguments)
+    public function __call(string $method, array $arguments): mixed
     {
         if (str_starts_with($method, 'findBy')) {
             return $this->resolveMagicCall('findBy', substr($method, 6), $arguments);
@@ -283,52 +164,41 @@ class EntityRepository implements ObjectRepository, Selectable
         throw new BadMethodCallException(sprintf(
             'Undefined method "%s". The method name must start with ' .
             'either findBy, findOneBy or countBy!',
-            $method
+            $method,
         ));
     }
 
-    /**
-     * @return string
-     * @psalm-return class-string<T>
-     */
-    protected function getEntityName()
+    /** @psalm-return class-string<T> */
+    protected function getEntityName(): string
     {
-        return $this->_entityName;
+        return $this->entityName;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function getClassName()
+    public function getClassName(): string
     {
         return $this->getEntityName();
     }
 
-    /** @return EntityManagerInterface */
-    protected function getEntityManager()
+    protected function getEntityManager(): EntityManagerInterface
     {
-        return $this->_em;
+        return $this->em;
     }
 
-    /**
-     * @return ClassMetadata
-     * @psalm-return ClassMetadata<T>
-     */
-    protected function getClassMetadata()
+    /** @psalm-return ClassMetadata<T> */
+    protected function getClassMetadata(): ClassMetadata
     {
-        return $this->_class;
+        return $this->class;
     }
 
     /**
      * Select all elements from a selectable that match the expression and
      * return a new collection containing these elements.
      *
-     * @return AbstractLazyCollection
      * @psalm-return AbstractLazyCollection<int, T>&Selectable<int, T>
      */
-    public function matching(Criteria $criteria)
+    public function matching(Criteria $criteria): AbstractLazyCollection&Selectable
     {
-        $persister = $this->_em->getUnitOfWork()->getEntityPersister($this->_entityName);
+        $persister = $this->em->getUnitOfWork()->getEntityPersister($this->entityName);
 
         return new LazyCriteriaCollection($persister, $criteria);
     }
@@ -340,28 +210,24 @@ class EntityRepository implements ObjectRepository, Selectable
      * @param string $by     The property name used as condition
      * @psalm-param list<mixed> $arguments The arguments to pass at method call
      *
-     * @return mixed
-     *
      * @throws InvalidMagicMethodCall If the method called is invalid or the
      *                                requested field/association does not exist.
      */
-    private function resolveMagicCall(string $method, string $by, array $arguments)
+    private function resolveMagicCall(string $method, string $by, array $arguments): mixed
     {
         if (! $arguments) {
             throw InvalidMagicMethodCall::onMissingParameter($method . $by);
         }
 
-        if (self::$inflector === null) {
-            self::$inflector = InflectorFactory::create()->build();
-        }
+        self::$inflector ??= InflectorFactory::create()->build();
 
         $fieldName = lcfirst(self::$inflector->classify($by));
 
-        if (! ($this->_class->hasField($fieldName) || $this->_class->hasAssociation($fieldName))) {
+        if (! ($this->class->hasField($fieldName) || $this->class->hasAssociation($fieldName))) {
             throw InvalidMagicMethodCall::becauseFieldNotFoundIn(
-                $this->_entityName,
+                $this->entityName,
                 $fieldName,
-                $method . $by
+                $method . $by,
             );
         }
 

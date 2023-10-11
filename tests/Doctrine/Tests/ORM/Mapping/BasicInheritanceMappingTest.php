@@ -32,17 +32,19 @@ use Doctrine\Tests\Models\DDC869\DDC869Payment;
 use Doctrine\Tests\Models\DDC869\DDC869PaymentRepository;
 use Doctrine\Tests\OrmTestCase;
 use Generator;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Group;
 
 use function assert;
 use function serialize;
+use function sprintf;
 use function unserialize;
 
 class BasicInheritanceMappingTest extends OrmTestCase
 {
     use VerifyDeprecations;
 
-    /** @var ClassMetadataFactory */
-    private $cmf;
+    private ClassMetadataFactory $cmf;
 
     protected function setUp(): void
     {
@@ -80,14 +82,14 @@ class BasicInheritanceMappingTest extends OrmTestCase
         self::assertArrayHasKey('id', $class->fieldMappings);
         self::assertArrayHasKey('name', $class->fieldMappings);
 
-        self::assertArrayNotHasKey('inherited', $class->fieldMappings['mapped1']);
-        self::assertArrayNotHasKey('inherited', $class->fieldMappings['mapped2']);
+        self::assertNull($class->fieldMappings['mapped1']->inherited);
+        self::assertNull($class->fieldMappings['mapped2']->inherited);
         self::assertArrayNotHasKey('transient', $class->fieldMappings);
 
         self::assertArrayHasKey('mappedRelated1', $class->associationMappings);
     }
 
-    /** @group DDC-869 */
+    #[Group('DDC-869')]
     public function testGetMetadataForSubclassWithMappedSuperclassWithRepository(): void
     {
         $class = $this->cmf->getMetadataFor(DDC869CreditCardPayment::class);
@@ -112,7 +114,7 @@ class BasicInheritanceMappingTest extends OrmTestCase
         self::assertEquals($class->customRepositoryClassName, EntityRepository::class);
     }
 
-    /** @group DDC-388 */
+    #[Group('DDC-388')]
     public function testSerializationWithPrivateFieldsFromMappedSuperclass(): void
     {
         $class = $this->cmf->getMetadataFor(EntitySubClass2::class);
@@ -125,7 +127,7 @@ class BasicInheritanceMappingTest extends OrmTestCase
         self::assertArrayHasKey('mappedRelated1', $class2->reflFields);
     }
 
-    /** @group DDC-1203 */
+    #[Group('DDC-1203')]
     public function testUnmappedSuperclassInHierarchy(): void
     {
         $class = $this->cmf->getMetadataFor(HierarchyD::class);
@@ -135,7 +137,7 @@ class BasicInheritanceMappingTest extends OrmTestCase
         self::assertArrayHasKey('d', $class->fieldMappings);
     }
 
-    /** @group DDC-1204 */
+    #[Group('DDC-1204')]
     public function testUnmappedEntityInHierarchy(): void
     {
         $this->expectException(MappingException::class);
@@ -143,16 +145,14 @@ class BasicInheritanceMappingTest extends OrmTestCase
             'Entity \'Doctrine\Tests\ORM\Mapping\HierarchyBEntity\' has to be part of the discriminator map'
             . ' of \'Doctrine\Tests\ORM\Mapping\HierarchyBase\' to be properly mapped in the inheritance hierarchy.'
             . ' Alternatively you can make \'Doctrine\Tests\ORM\Mapping\HierarchyBEntity\' an abstract class to'
-            . ' avoid this exception from occurring.'
+            . ' avoid this exception from occurring.',
         );
 
         $this->cmf->getMetadataFor(HierarchyE::class);
     }
 
-    /**
-     * @group DDC-1204
-     * @group DDC-1203
-     */
+    #[Group('DDC-1204')]
+    #[Group('DDC-1203')]
     public function testMappedSuperclassWithId(): void
     {
         $class = $this->cmf->getMetadataFor(SuperclassEntity::class);
@@ -160,10 +160,8 @@ class BasicInheritanceMappingTest extends OrmTestCase
         self::assertArrayHasKey('id', $class->fieldMappings);
     }
 
-    /**
-     * @group DDC-1156
-     * @group DDC-1218
-     */
+    #[Group('DDC-1156')]
+    #[Group('DDC-1218')]
     public function testGeneratedValueFromMappedSuperclass(): void
     {
         $class = $this->cmf->getMetadataFor(SuperclassEntity::class);
@@ -172,14 +170,12 @@ class BasicInheritanceMappingTest extends OrmTestCase
         self::assertInstanceOf(IdSequenceGenerator::class, $class->idGenerator);
         self::assertEquals(
             ['allocationSize' => 1, 'initialValue' => 10, 'sequenceName' => 'foo'],
-            $class->sequenceGeneratorDefinition
+            $class->sequenceGeneratorDefinition,
         );
     }
 
-    /**
-     * @group DDC-1156
-     * @group DDC-1218
-     */
+    #[Group('DDC-1156')]
+    #[Group('DDC-1218')]
     public function testSequenceDefinitionInHierarchyWithSandwichMappedSuperclass(): void
     {
         $class = $this->cmf->getMetadataFor(HierarchyD::class);
@@ -188,14 +184,12 @@ class BasicInheritanceMappingTest extends OrmTestCase
         self::assertInstanceOf(IdSequenceGenerator::class, $class->idGenerator);
         self::assertEquals(
             ['allocationSize' => 1, 'initialValue' => 10, 'sequenceName' => 'foo'],
-            $class->sequenceGeneratorDefinition
+            $class->sequenceGeneratorDefinition,
         );
     }
 
-    /**
-     * @group DDC-1156
-     * @group DDC-1218
-     */
+    #[Group('DDC-1156')]
+    #[Group('DDC-1218')]
     public function testMultipleMappedSuperclasses(): void
     {
         $class = $this->cmf->getMetadataFor(MediumSuperclassEntity::class);
@@ -204,15 +198,14 @@ class BasicInheritanceMappingTest extends OrmTestCase
         self::assertInstanceOf(IdSequenceGenerator::class, $class->idGenerator);
         self::assertEquals(
             ['allocationSize' => 1, 'initialValue' => 10, 'sequenceName' => 'foo'],
-            $class->sequenceGeneratorDefinition
+            $class->sequenceGeneratorDefinition,
         );
     }
 
     /**
      * Ensure indexes are inherited from the mapped superclass.
-     *
-     * @group DDC-3418
      */
+    #[Group('DDC-3418')]
     public function testMappedSuperclassIndex(): void
     {
         $class = $this->cmf->getMetadataFor(EntityIndexSubClass::class);
@@ -224,12 +217,15 @@ class BasicInheritanceMappingTest extends OrmTestCase
         self::assertArrayHasKey('IDX_MAPPED2_INDEX', $class->table['indexes']);
     }
 
-    /**
-     * @dataProvider invalidHierarchyDeclarationClasses
-     */
+    #[DataProvider('invalidHierarchyDeclarationClasses')]
     public function testUndeclaredHierarchyRejection(string $rootEntity, string $childClass): void
     {
-        $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/pull/10431');
+        $this->expectException(MappingException::class);
+        $this->expectExceptionMessage(sprintf(
+            "Entity class '%s' is a subclass of the root entity class '%s', but no inheritance mapping type was declared.",
+            $childClass,
+            $rootEntity,
+        ));
 
         $this->cmf->getMetadataFor($childClass);
     }
@@ -252,22 +248,23 @@ class BasicInheritanceMappingTest extends OrmTestCase
             => [InvalidComplexRoot::class, InvalidComplexEntity::class];
     }
 
-    /** @group DDC-964 */
+    #[Group('DDC-964')]
     public function testInvalidOverrideFieldInheritedFromEntity(): void
     {
         $cm = $this->cmf->getMetadataFor(CompanyFixContract::class);
 
-        $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/pull/10470');
+        $this->expectException(MappingException::class);
+        $this->expectExceptionMessageMatches('/Overrides are only allowed for fields or associations declared in mapped superclasses or traits./');
 
         $cm->setAttributeOverride('completed', ['name' => 'other_column_name']);
     }
 
-    /** @group DDC-964 */
     public function testInvalidOverrideAssociationInheritedFromEntity(): void
     {
         $cm = $this->cmf->getMetadataFor(CompanyFixContract::class);
 
-        $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/pull/10470');
+        $this->expectException(MappingException::class);
+        $this->expectExceptionMessage('Overrides are only allowed for fields or associations declared in mapped superclasses or traits. This is not the case for Doctrine\Tests\Models\Company\CompanyFixContract::salesPerson, which was inherited from Doctrine\Tests\Models\Company\CompanyContract.');
 
         $cm->setAssociationOverride('salesPerson', ['inversedBy' => 'other_inversed_by_name']);
     }
@@ -282,285 +279,211 @@ class TransientBaseClass
     private $transient2;
 }
 
-/** @Entity */
+#[Entity]
 class EntitySubClass extends TransientBaseClass
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     */
-    private $id;
+    #[Id]
+    #[Column(type: 'integer')]
+    private int $id;
 
-    /**
-     * @var string
-     * @Column(type="string", length=255)
-     */
-    private $name;
+    #[Column(type: 'string', length: 255)]
+    private string $name;
 }
 
-/** @MappedSuperclass */
+#[MappedSuperclass]
 class MappedSuperclassBase
 {
-    /**
-     * @var int
-     * @Column(type="integer")
-     */
-    private $mapped1;
+    #[Column(type: 'integer')]
+    private int $mapped1;
 
-    /**
-     * @var string
-     * @Column(type="string", length=255)
-     */
-    private $mapped2;
+    #[Column(type: 'string', length: 255)]
+    private string $mapped2;
 
-    /**
-     * @var MappedSuperclassRelated1
-     * @OneToOne(targetEntity="MappedSuperclassRelated1")
-     * @JoinColumn(name="related1_id", referencedColumnName="id")
-     */
-    private $mappedRelated1;
+    #[OneToOne(targetEntity: 'MappedSuperclassRelated1')]
+    #[JoinColumn(name: 'related1_id', referencedColumnName: 'id')]
+    private MappedSuperclassRelated1 $mappedRelated1;
 
     /** @var mixed */
     private $transient;
 }
 
+#[Entity]
 class MappedSuperclassRelated1
 {
 }
 
-/** @Entity */
+#[Entity]
 class EntitySubClass2 extends MappedSuperclassBase
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     */
-    private $id;
+    #[Id]
+    #[Column(type: 'integer')]
+    private int $id;
 
-    /**
-     * @var string
-     * @Column(type="string", length=255)
-     */
-    private $name;
+    #[Column(type: 'string', length: 255)]
+    private string $name;
 }
 
-/**
- * @MappedSuperclass
- * @Table(
- *  uniqueConstraints={@UniqueConstraint(name="IDX_MAPPED1_INDEX",columns={"mapped1"})},
- *  indexes={@Index(name="IDX_MAPPED2_INDEX", columns={"mapped2"})}
- * )
- */
+#[Table]
+#[Index(name: 'IDX_MAPPED2_INDEX', columns: ['mapped2'])]
+#[UniqueConstraint(name: 'IDX_MAPPED1_INDEX', columns: ['mapped1'])]
+#[MappedSuperclass]
 class MappedSuperclassBaseIndex
 {
-    /**
-     * @var string
-     * @Column(type="string", length=255)
-     */
-    private $mapped1;
-    /**
-     * @var string
-     * @Column(type="string", length=255)
-     */
-    private $mapped2;
+    #[Column(type: 'string', length: 255)]
+    private string $mapped1;
+    #[Column(type: 'string', length: 255)]
+    private string $mapped2;
 }
 
-/**
- * @Entity
- * @Table(uniqueConstraints={@UniqueConstraint(name="IDX_NAME_INDEX",columns={"name"})})
- */
+#[Table]
+#[UniqueConstraint(name: 'IDX_NAME_INDEX', columns: ['name'])]
+#[Entity]
 class EntityIndexSubClass extends MappedSuperclassBaseIndex
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     */
-    private $id;
+    #[Id]
+    #[Column(type: 'integer')]
+    private int $id;
 
-    /**
-     * @var string
-     * @Column(type="string", length=255)
-     */
-    private $name;
+    #[Column(type: 'string', length: 255)]
+    private string $name;
 }
 
-/**
- * @Entity
- * @InheritanceType("SINGLE_TABLE")
- * @DiscriminatorColumn(name="type", type="string", length=20)
- * @DiscriminatorMap({
- *     "c"   = "HierarchyC",
- *     "d"   = "HierarchyD",
- *     "e"   = "HierarchyE"
- * })
- */
+#[Entity]
+#[InheritanceType('SINGLE_TABLE')]
+#[DiscriminatorColumn(name: 'type', type: 'string', length: 20)]
+#[DiscriminatorMap(['c' => 'HierarchyC', 'd' => 'HierarchyD', 'e' => 'HierarchyE'])]
 abstract class HierarchyBase
 {
-    /**
-     * @Column(type="integer")
-     * @Id
-     * @GeneratedValue(strategy="SEQUENCE")
-     * @SequenceGenerator(sequenceName="foo", initialValue=10)
-     * @var int
-     */
+    /** @var int */
+    #[Column(type: 'integer')]
+    #[Id]
+    #[GeneratedValue(strategy: 'SEQUENCE')]
+    #[SequenceGenerator(sequenceName: 'foo', initialValue: 10)]
     public $id;
 }
 
-/** @MappedSuperclass */
+#[MappedSuperclass]
 abstract class HierarchyASuperclass extends HierarchyBase
 {
-    /**
-     * @var string
-     * @Column(type="string", length=255)
-     */
+    /** @var string */
+    #[Column(type: 'string', length: 255)]
     public $a;
 }
 
-/** @Entity */
+#[Entity]
 class HierarchyBEntity extends HierarchyBase
 {
-    /**
-     * @var string
-     * @Column(type="string", length=255)
-     */
+    /** @var string */
+    #[Column(type: 'string', length: 255)]
     public $b;
 }
 
-/** @Entity */
+#[Entity]
 class HierarchyC extends HierarchyBase
 {
-    /**
-     * @var string
-     * @Column(type="string", length=255)
-     */
+    /** @var string */
+    #[Column(type: 'string', length: 255)]
     public $c;
 }
 
-/** @Entity */
+#[Entity]
 class HierarchyD extends HierarchyASuperclass
 {
-    /**
-     * @var string
-     * @Column(type="string", length=255)
-     */
+    /** @var string */
+    #[Column(type: 'string', length: 255)]
     public $d;
 }
 
-/** @Entity */
+#[Entity]
 class HierarchyE extends HierarchyBEntity
 {
-    /**
-     * @var string
-     * @Column(type="string", length=255)
-     */
+    /** @var string */
+    #[Column(type: 'string', length: 255)]
     public $e;
 }
 
-/** @Entity */
+#[Entity]
 class SuperclassEntity extends SuperclassBase
 {
 }
 
-/** @MappedSuperclass */
+#[MappedSuperclass]
 abstract class SuperclassBase
 {
-    /**
-     * @var int
-     * @Column(type="integer")
-     * @Id
-     * @GeneratedValue(strategy="SEQUENCE")
-     * @SequenceGenerator(sequenceName="foo", initialValue=10)
-     */
+    /** @var int */
+    #[Column(type: 'integer')]
+    #[Id]
+    #[GeneratedValue(strategy: 'SEQUENCE')]
+    #[SequenceGenerator(sequenceName: 'foo', initialValue: 10)]
     public $id;
 }
 
-/** @MappedSuperclass */
+#[MappedSuperclass]
 abstract class MediumSuperclassBase extends SuperclassBase
 {
 }
 
-/** @Entity */
+#[Entity]
 class MediumSuperclassEntity extends MediumSuperclassBase
 {
 }
 
-/** @Entity(repositoryClass = "Doctrine\ORM\EntityRepository") */
+#[Entity(repositoryClass: 'Doctrine\ORM\EntityRepository')]
 class SubclassWithRepository extends DDC869Payment
 {
 }
 
-/**
- * @Entity
- *
- * This class misses the DiscriminatorMap declaration
- */
+/** This class misses the DiscriminatorMap declaration */
+#[Entity]
 class InvalidEntityRoot
 {
-    /**
-     * @Column(type="integer")
-     * @Id
-     * @GeneratedValue(strategy="AUTO")
-     * @var int
-     */
-    public $id;
+    #[Column]
+    #[Id]
+    #[GeneratedValue]
+    public int|null $id = null;
 }
 
-/** @Entity */
+#[Entity]
 class InvalidEntityRootChild extends InvalidEntityRoot
 {
 }
 
-/** @Entity */
+#[Entity]
 abstract class InvalidEntityRootAbstractChild extends InvalidEntityRoot
 {
 }
 
-/**
- * @Entity
- *
- * This class misses the DiscriminatorMap declaration
- */
+/** This class misses the DiscriminatorMap declaration */
+#[Entity]
 class InvalidAbstractEntityRoot
 {
-    /**
-     * @Column(type="integer")
-     * @Id
-     * @GeneratedValue(strategy="AUTO")
-     * @var int
-     */
-    public $id;
+    #[Column]
+    #[Id]
+    #[GeneratedValue]
+    public int|null $id = null;
 }
 
-/** @Entity */
+#[Entity]
 class InvalidAbstractEntityRootChild extends InvalidAbstractEntityRoot
 {
 }
 
-/** @Entity */
+#[Entity]
 abstract class InvalidAbstractEntityRootAbstractChild extends InvalidAbstractEntityRoot
 {
 }
 
-/**
- * @Entity
- *
- * This class misses the DiscriminatorMap declaration
- */
+/** This class misses the DiscriminatorMap declaration */
+#[Entity]
 class InvalidComplexRoot
 {
-    /**
-     * @Column(type="integer")
-     * @Id
-     * @GeneratedValue(strategy="AUTO")
-     * @var int
-     */
-    public $id;
+    #[Column]
+    #[Id]
+    #[GeneratedValue]
+    public int|null $id = null;
 }
 
-/** @MappedSuperclass */
+#[MappedSuperclass]
 class InvalidComplexMappedSuperclass extends InvalidComplexRoot
 {
 }
@@ -569,7 +492,7 @@ class InvalidComplexTransientClass extends InvalidComplexMappedSuperclass
 {
 }
 
-/** @Entity */
+#[Entity]
 class InvalidComplexEntity extends InvalidComplexTransientClass
 {
 }

@@ -11,6 +11,7 @@ use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\HasLifecycleCallbacks;
 use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\InverseJoinColumn;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\JoinTable;
 use Doctrine\ORM\Mapping\ManyToMany;
@@ -18,8 +19,9 @@ use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\Table;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
-/** @group DDC-2252 */
+#[Group('DDC-2252')]
 class DDC2252Test extends OrmFunctionalTestCase
 {
     /** @psalm-var DDC2252User */
@@ -32,7 +34,7 @@ class DDC2252Test extends OrmFunctionalTestCase
     private $membership;
 
     /** @psalm-var list<DDC2252Privilege> */
-    private $privileges = [];
+    private array $privileges = [];
 
     protected function setUp(): void
     {
@@ -42,7 +44,7 @@ class DDC2252Test extends OrmFunctionalTestCase
             DDC2252User::class,
             DDC2252Privilege::class,
             DDC2252Membership::class,
-            DDC2252MerchantAccount::class
+            DDC2252MerchantAccount::class,
         );
 
         $this->loadFixtures();
@@ -119,18 +121,14 @@ class DDC2252Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity()
- * @Table(name="ddc2252_acl_privilege")
- */
+#[Table(name: 'ddc2252_acl_privilege')]
+#[Entity]
 class DDC2252Privilege
 {
-    /**
-     * @var int
-     * @Id
-     * @GeneratedValue
-     * @Column(type="integer")
-     */
+    /** @var int */
+    #[Id]
+    #[GeneratedValue]
+    #[Column(type: 'integer')]
     protected $privilegeid;
 
     public function getPrivilegeid(): int
@@ -139,17 +137,13 @@ class DDC2252Privilege
     }
 }
 
-/**
- * @Entity
- * @Table(name="ddc2252_mch_account")
- */
+#[Table(name: 'ddc2252_mch_account')]
+#[Entity]
 class DDC2252MerchantAccount
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer')]
     protected $accountid = 111;
 
     public function getAccountid(): int
@@ -158,24 +152,18 @@ class DDC2252MerchantAccount
     }
 }
 
-/**
- * @Entity
- * @Table(name="ddc2252_user_account")
- */
+#[Table(name: 'ddc2252_user_account')]
+#[Entity]
 class DDC2252User
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer')]
     protected $uid = 222;
 
-    /**
-     * @psalm-var Collection<int, DDC2252Membership>
-     * @OneToMany(targetEntity="DDC2252Membership", mappedBy="userAccount", cascade={"persist"})
-     * @JoinColumn(name="uid", referencedColumnName="uid")
-     */
+    /** @psalm-var Collection<int, DDC2252Membership> */
+    #[OneToMany(targetEntity: 'DDC2252Membership', mappedBy: 'userAccount', cascade: ['persist'])]
+    #[JoinColumn(name: 'uid', referencedColumnName: 'uid')]
     protected $memberships;
 
     public function __construct()
@@ -200,49 +188,30 @@ class DDC2252User
     }
 }
 
-/**
- * @Entity
- * @Table(name="ddc2252_mch_account_member")
- * @HasLifecycleCallbacks
- */
+#[Table(name: 'ddc2252_mch_account_member')]
+#[Entity]
+#[HasLifecycleCallbacks]
 class DDC2252Membership
 {
-    /**
-     * @var DDC2252User
-     * @Id
-     * @ManyToOne(targetEntity="DDC2252User", inversedBy="memberships")
-     * @JoinColumn(name="uid", referencedColumnName="uid")
-     */
-    protected $userAccount;
-
-    /**
-     * @var DDC2252MerchantAccount
-     * @Id
-     * @ManyToOne(targetEntity="DDC2252MerchantAccount")
-     * @JoinColumn(name="mch_accountid", referencedColumnName="accountid")
-     */
-    protected $merchantAccount;
-
-    /**
-     * @psalm-var Collection<int, DDC2252Privilege>
-     * @ManyToMany(targetEntity="DDC2252Privilege", indexBy="privilegeid")
-     * @JoinTable(name="ddc2252_user_mch_account_privilege",
-     *   joinColumns={
-     *       @JoinColumn(name="mch_accountid", referencedColumnName="mch_accountid"),
-     *       @JoinColumn(name="uid", referencedColumnName="uid")
-     *   },
-     *   inverseJoinColumns={
-     *       @JoinColumn(name="privilegeid", referencedColumnName="privilegeid")
-     *   }
-     * )
-     */
+    /** @psalm-var Collection<int, DDC2252Privilege> */
+    #[JoinTable(name: 'ddc2252_user_mch_account_privilege')]
+    #[JoinColumn(name: 'mch_accountid', referencedColumnName: 'mch_accountid')]
+    #[JoinColumn(name: 'uid', referencedColumnName: 'uid')]
+    #[InverseJoinColumn(name: 'privilegeid', referencedColumnName: 'privilegeid')]
+    #[ManyToMany(targetEntity: 'DDC2252Privilege', indexBy: 'privilegeid')]
     protected $privileges;
 
-    public function __construct(DDC2252User $user, DDC2252MerchantAccount $merchantAccount)
-    {
-        $this->userAccount     = $user;
-        $this->merchantAccount = $merchantAccount;
-        $this->privileges      = new ArrayCollection();
+    public function __construct(
+        #[Id]
+        #[ManyToOne(targetEntity: 'DDC2252User', inversedBy: 'memberships')]
+        #[JoinColumn(name: 'uid', referencedColumnName: 'uid')]
+        protected DDC2252User $userAccount,
+        #[Id]
+        #[ManyToOne(targetEntity: 'DDC2252MerchantAccount')]
+        #[JoinColumn(name: 'mch_accountid', referencedColumnName: 'accountid')]
+        protected DDC2252MerchantAccount $merchantAccount,
+    ) {
+        $this->privileges = new ArrayCollection();
     }
 
     public function addPrivilege(DDC2252Privilege $privilege): void

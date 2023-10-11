@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Exception;
 
+use LogicException;
+
 use function implode;
 use function sprintf;
 
-final class MultipleSelectorsFoundException extends ORMException
+final class MultipleSelectorsFoundException extends LogicException implements ORMException
 {
     public const MULTIPLE_SELECTORS_FOUND_EXCEPTION = 'Multiple selectors found: %s. Please select only one.';
 
@@ -17,8 +19,8 @@ final class MultipleSelectorsFoundException extends ORMException
         return new self(
             sprintf(
                 self::MULTIPLE_SELECTORS_FOUND_EXCEPTION,
-                implode(', ', $selectors)
-            )
+                implode(', ', $selectors),
+            ),
         );
     }
 }

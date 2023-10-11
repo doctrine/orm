@@ -5,22 +5,18 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\ORM\Mapping as ORM;
-use Doctrine\ORM\Mapping\Column;
-use Doctrine\ORM\Mapping\Entity;
-use Doctrine\ORM\Mapping\GeneratedValue;
-use Doctrine\ORM\Mapping\Id;
-use Doctrine\ORM\Mapping\Table;
 use Doctrine\Tests\Models\DDC2825\ExplicitSchemaAndTable;
 use Doctrine\Tests\Models\DDC2825\SchemaAndTableInTableName;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Group;
 
 use function sprintf;
 
 /**
  * This class makes tests on the correct use of a database schema when entities are stored
- *
- * @group DDC-2825
  */
+#[Group('DDC-2825')]
 class DDC2825Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -29,12 +25,12 @@ class DDC2825Test extends OrmFunctionalTestCase
 
         $platform = $this->_em->getConnection()->getDatabasePlatform();
 
-        if (! $platform->supportsSchemas() && ! $platform->canEmulateSchemas()) {
+        if (! $platform->supportsSchemas()) {
             self::markTestSkipped('This test is only useful for databases that support schemas or can emulate them.');
         }
     }
 
-    /** @dataProvider getTestedClasses */
+    #[DataProvider('getTestedClasses')]
     public function testClassSchemaMappingsValidity(string $className, string $expectedSchemaName, string $expectedTableName): void
     {
         $classMetadata   = $this->_em->getClassMetadata($className);
@@ -56,11 +52,11 @@ class DDC2825Test extends OrmFunctionalTestCase
         // Checks sequence name validity
         self::assertEquals(
             $fullTableName . '_' . $classMetadata->getSingleIdentifierColumnName() . '_seq',
-            $classMetadata->getSequenceName($platform)
+            $classMetadata->getSequenceName($platform),
         );
     }
 
-    /** @dataProvider getTestedClasses */
+    #[DataProvider('getTestedClasses')]
     public function testPersistenceOfEntityWithSchemaMapping(string $className): void
     {
         $this->createSchemaForModels($className);
@@ -87,20 +83,11 @@ class DDC2825Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- * @Table(name="myschema.order")
- */
 #[ORM\Entity]
 #[ORM\Table(name: 'myschema.order')]
 class DDC2825ClassWithImplicitlyDefinedSchemaAndQuotedTableName
 {
-    /**
-     * @Id
-     * @GeneratedValue
-     * @Column(type="integer")
-     * @var int
-     */
+    /** @var int */
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]

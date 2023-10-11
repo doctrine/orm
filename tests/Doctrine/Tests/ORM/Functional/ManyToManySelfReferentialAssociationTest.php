@@ -23,17 +23,13 @@ class ManyToManySelfReferentialAssociationTest extends AbstractManyToManyAssocia
     /** @var string */
     protected $table = 'ecommerce_products_related';
 
-    /** @var ECommerceProduct */
-    private $firstProduct;
+    private ECommerceProduct $firstProduct;
 
-    /** @var ECommerceProduct */
-    private $secondProduct;
+    private ECommerceProduct $secondProduct;
 
-    /** @var ECommerceProduct */
-    private $firstRelated;
+    private ECommerceProduct $firstRelated;
 
-    /** @var ECommerceProduct */
-    private $secondRelated;
+    private ECommerceProduct $secondRelated;
 
     protected function setUp(): void
     {
@@ -58,11 +54,11 @@ class ManyToManySelfReferentialAssociationTest extends AbstractManyToManyAssocia
 
         $this->assertForeignKeysContain(
             $this->firstProduct->getId(),
-            $this->firstRelated->getId()
+            $this->firstRelated->getId(),
         );
         $this->assertForeignKeysContain(
             $this->firstProduct->getId(),
-            $this->secondRelated->getId()
+            $this->secondRelated->getId(),
         );
     }
 
@@ -77,11 +73,11 @@ class ManyToManySelfReferentialAssociationTest extends AbstractManyToManyAssocia
 
         $this->assertForeignKeysNotContain(
             $this->firstProduct->getId(),
-            $this->firstRelated->getId()
+            $this->firstRelated->getId(),
         );
         $this->assertForeignKeysContain(
             $this->firstProduct->getId(),
-            $this->secondRelated->getId()
+            $this->secondRelated->getId(),
         );
     }
 
@@ -96,8 +92,8 @@ class ManyToManySelfReferentialAssociationTest extends AbstractManyToManyAssocia
     {
         $this->createLoadingFixture();
 
-        $metadata                                          = $this->_em->getClassMetadata(ECommerceProduct::class);
-        $metadata->associationMappings['related']['fetch'] = ClassMetadata::FETCH_LAZY;
+        $metadata                                        = $this->_em->getClassMetadata(ECommerceProduct::class);
+        $metadata->associationMappings['related']->fetch = ClassMetadata::FETCH_LAZY;
 
         $query    = $this->_em->createQuery('SELECT p FROM Doctrine\Tests\Models\ECommerce\ECommerceProduct p');
         $products = $query->getResult();

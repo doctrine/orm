@@ -14,8 +14,9 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
-/** @group DDC-2106 */
+#[Group('DDC-2106')]
 class DDC2106Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -31,7 +32,7 @@ class DDC2106Test extends OrmFunctionalTestCase
         $entity = new DDC2106Entity();
         $this->_em->persist($entity);
         $this->_em->flush();
-        $this->_em->clear(DDC2106Entity::class);
+        $this->_em->clear();
         $entity = $this->_em->getRepository(DDC2106Entity::class)->findOneBy([]);
 
         // ... and a managed entity without id
@@ -44,27 +45,21 @@ class DDC2106Test extends OrmFunctionalTestCase
     }
 }
 
-/** @Entity */
+#[Entity]
 class DDC2106Entity
 {
-    /**
-     * @var int
-     * @Id
-     * @GeneratedValue(strategy="IDENTITY")
-     * @Column(type="integer")
-     */
+    /** @var int */
+    #[Id]
+    #[GeneratedValue(strategy: 'IDENTITY')]
+    #[Column(type: 'integer')]
     public $id;
 
-    /**
-     * @var DDC2106Entity
-     * @ManyToOne(targetEntity="DDC2106Entity", inversedBy="children")
-     */
+    /** @var DDC2106Entity */
+    #[ManyToOne(targetEntity: 'DDC2106Entity', inversedBy: 'children')]
     public $parent;
 
-    /**
-     * @psalm-var Collection<int, DDC2106Entity>
-     * @OneToMany(targetEntity="DDC2106Entity", mappedBy="parent", cascade={"persist"})
-     */
+    /** @psalm-var Collection<int, DDC2106Entity> */
+    #[OneToMany(targetEntity: 'DDC2106Entity', mappedBy: 'parent', cascade: ['persist'])]
     public $children;
 
     public function __construct()

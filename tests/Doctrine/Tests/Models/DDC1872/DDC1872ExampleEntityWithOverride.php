@@ -12,27 +12,9 @@ use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\JoinColumn;
 
-/**
- * @Entity
- * @AttributeOverrides({
- * @AttributeOverride(name="foo",
- *          column=@Column(
- *              name     = "foo_overridden",
- *              type     = "integer",
- *              length   = 140,
- *              nullable = false,
- *              unique   = false
- *          )
- *      )
- * })
- * @AssociationOverrides({
- * @AssociationOverride(name="bar",
- *          joinColumns=@JoinColumn(
- *              name="example_entity_overridden_bar_id", referencedColumnName="id"
- *          )
- *      )
- * })
- */
+#[Entity]
+#[AttributeOverrides([new AttributeOverride(name: 'foo', column: new Column(name: 'foo_overridden', type: 'integer', length: 140, nullable: false, unique: false))])]
+#[AssociationOverrides([new AssociationOverride(name: 'bar', joinColumns: new JoinColumn(name: 'example_entity_overridden_bar_id', referencedColumnName: 'id'))])]
 class DDC1872ExampleEntityWithOverride
 {
     use DDC1872ExampleTrait;

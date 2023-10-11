@@ -11,8 +11,7 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\Tests\OrmFunctionalTestCase;
-
-use function get_class;
+use PHPUnit\Framework\Attributes\Group;
 
 /**
  * Tests that join columns (foreign keys) can be named the same as the association
@@ -27,11 +26,11 @@ class DDC522Test extends OrmFunctionalTestCase
         $this->createSchemaForModels(
             DDC522Customer::class,
             DDC522Cart::class,
-            DDC522ForeignKeyTest::class
+            DDC522ForeignKeyTest::class,
         );
     }
 
-    /** @group DDC-522 */
+    #[Group('DDC-522')]
     public function testJoinColumnWithSameNameAsAssociationField(): void
     {
         $cust           = new DDC522Customer();
@@ -61,15 +60,13 @@ class DDC522Test extends OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $fkt2 = $this->_em->find(get_class($fkt), $fkt->id);
+        $fkt2 = $this->_em->find($fkt::class, $fkt->id);
         self::assertEquals($fkt->cart->id, $fkt2->cartId);
         self::assertTrue($this->isUninitializedObject($fkt2->cart));
     }
 
-    /**
-     * @group DDC-522
-     * @group DDC-762
-     */
+    #[Group('DDC-522')]
+    #[Group('DDC-762')]
     public function testJoinColumnWithNullSameNameAssociationField(): void
     {
         $fkCust       = new DDC522ForeignKeyTest();
@@ -87,76 +84,58 @@ class DDC522Test extends OrmFunctionalTestCase
     }
 }
 
-/** @Entity */
+#[Entity]
 class DDC522Customer
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     public $id;
 
-    /**
-     * @var mixed
-     * @Column
-     */
+    /** @var mixed */
+    #[Column]
     public $name;
 
-    /**
-     * @var DDC522Cart
-     * @OneToOne(targetEntity="DDC522Cart", mappedBy="customer")
-     */
+    /** @var DDC522Cart */
+    #[OneToOne(targetEntity: 'DDC522Cart', mappedBy: 'customer')]
     public $cart;
 }
 
-/** @Entity */
+#[Entity]
 class DDC522Cart
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     public $id;
 
-    /**
-     * @var int
-     * @Column(type="integer")
-     */
+    /** @var int */
+    #[Column(type: 'integer')]
     public $total;
 
-    /**
-     * @var DDC522Customer
-     * @OneToOne(targetEntity="DDC522Customer", inversedBy="cart")
-     * @JoinColumn(name="customer", referencedColumnName="id")
-     */
+    /** @var DDC522Customer */
+    #[OneToOne(targetEntity: 'DDC522Customer', inversedBy: 'cart')]
+    #[JoinColumn(name: 'customer', referencedColumnName: 'id')]
     public $customer;
 }
 
-/** @Entity */
+#[Entity]
 class DDC522ForeignKeyTest
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     public $id;
 
-    /**
-     * @var int|null
-     * @Column(type="integer", name="cart_id", nullable=true)
-     */
+    /** @var int|null */
+    #[Column(type: 'integer', name: 'cart_id', nullable: true)]
     public $cartId;
 
-    /**
-     * @var DDC522Cart|null
-     * @OneToOne(targetEntity="DDC522Cart")
-     * @JoinColumn(name="cart_id", referencedColumnName="id")
-     */
+    /** @var DDC522Cart|null */
+    #[OneToOne(targetEntity: 'DDC522Cart')]
+    #[JoinColumn(name: 'cart_id', referencedColumnName: 'id')]
     public $cart;
 }

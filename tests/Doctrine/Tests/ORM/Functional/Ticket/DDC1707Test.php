@@ -14,8 +14,9 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\InheritanceType;
 use Doctrine\ORM\Mapping\PostLoad;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
-/** @group DDC-1707 */
+#[Group('DDC-1707')]
 class DDC1707Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -24,7 +25,7 @@ class DDC1707Test extends OrmFunctionalTestCase
 
         $this->createSchemaForModels(
             DDC1707Base::class,
-            DDC1707Child::class
+            DDC1707Child::class,
         );
     }
 
@@ -39,32 +40,28 @@ class DDC1707Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- * @InheritanceType("SINGLE_TABLE")
- * @DiscriminatorMap({"c": "DDC1707Child"})
- * @HasLifecycleCallbacks
- */
+#[Entity]
+#[InheritanceType('SINGLE_TABLE')]
+#[DiscriminatorMap(['c' => 'DDC1707Child'])]
+#[HasLifecycleCallbacks]
 abstract class DDC1707Base
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     protected $id;
 
     /** @var bool */
     public $postLoad = false;
 
-    /** @PostLoad */
+    #[PostLoad]
     public function onPostLoad(): void
     {
         $this->postLoad = true;
     }
 }
-/** @Entity */
+#[Entity]
 class DDC1707Child extends DDC1707Base
 {
 }

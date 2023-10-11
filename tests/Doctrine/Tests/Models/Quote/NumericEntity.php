@@ -10,28 +10,19 @@ use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\Table;
 
-/**
- * @Entity
- * @Table(name="table")
- */
+#[Table(name: 'table')]
+#[Entity]
 class NumericEntity
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer", name="`1:1`")
-     * @GeneratedValue(strategy="AUTO")
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer', name: '`1:1`')]
+    #[GeneratedValue(strategy: 'AUTO')]
     public $id;
 
-    /**
-     * @var string
-     * @Column(type="string", length=255, name="`2:2`")
-     */
-    public $value;
-
-    public function __construct(string $value)
-    {
-        $this->value = $value;
+    public function __construct(
+        #[Column(type: 'string', length: 255, name: '`2:2`')]
+        public string $value,
+    ) {
     }
 }

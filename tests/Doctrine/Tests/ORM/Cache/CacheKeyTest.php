@@ -4,17 +4,15 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Cache;
 
-use Doctrine\Deprecations\PHPUnit\VerifyDeprecations;
 use Doctrine\ORM\Cache\CacheKey;
 use Doctrine\ORM\Cache\CollectionCacheKey;
 use Doctrine\ORM\Cache\EntityCacheKey;
-use Doctrine\Tests\DoctrineTestCase;
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\TestCase;
 
-/** @group DDC-2183 */
-class CacheKeyTest extends DoctrineTestCase
+#[Group('DDC-2183')]
+class CacheKeyTest extends TestCase
 {
-    use VerifyDeprecations;
-
     public function testEntityCacheKeyIdentifierCollision(): void
     {
         $key1 = new EntityCacheKey('Foo', ['id' => 1]);
@@ -74,22 +72,6 @@ class CacheKeyTest extends DoctrineTestCase
     public function testConstructor(): void
     {
         $key = new class ('my-hash') extends CacheKey {
-        };
-
-        self::assertSame('my-hash', $key->hash);
-    }
-
-    public function testDeprecatedConstructor(): void
-    {
-        $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/pull/10212');
-
-        $key = new class extends CacheKey {
-            public function __construct()
-            {
-                $this->hash = 'my-hash';
-
-                parent::__construct();
-            }
         };
 
         self::assertSame('my-hash', $key->hash);

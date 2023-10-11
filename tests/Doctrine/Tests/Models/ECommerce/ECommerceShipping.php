@@ -13,39 +13,30 @@ use Doctrine\ORM\Mapping\Table;
 /**
  * ECommerceShipping
  * Represents a shipping method.
- *
- * @Entity
- * @Table(name="ecommerce_shippings")
  */
+#[Table(name: 'ecommerce_shippings')]
+#[Entity]
 class ECommerceShipping
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
-    private $id;
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
+    private int $id;
 
-    /**
-     * @var int|string
-     * @Column(type="integer")
-     */
-    private $days;
+    #[Column(type: 'integer')]
+    private int|string|null $days = null;
 
     public function getId(): int
     {
         return $this->id;
     }
 
-    /** @return int|string */
-    public function getDays()
+    public function getDays(): int|string
     {
         return $this->days;
     }
 
-    /** @param int|string $days */
-    public function setDays($days): void
+    public function setDays(int|string $days): void
     {
         $this->days = $days;
     }

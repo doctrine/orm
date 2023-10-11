@@ -61,59 +61,43 @@ class GH10880Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @ORM\Entity
- */
+#[ORM\Entity]
 class GH10880ProcessOwner
 {
-    /**
-     * @ORM\Id
-     * @ORM\GeneratedValue
-     * @ORM\Column(type="integer")
-     *
-     * @var int
-     */
+    /** @var int */
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column(type: 'integer')]
     public $id;
 
     /**
      * fetch=EAGER is important to reach the part of \Doctrine\ORM\UnitOfWork::createEntity()
      * that is important for this regression test
      *
-     * @ORM\ManyToOne(targetEntity="GH10880Process", fetch="EAGER")
-     *
      * @var GH10880Process
      */
+    #[ORM\ManyToOne(targetEntity: GH10880Process::class, fetch: 'EAGER')]
     public $process;
 }
 
-/**
- * @ORM\Entity()
- * @ORM\InheritanceType("SINGLE_TABLE")
- * @ORM\DiscriminatorColumn(name="type", type="string")
- * @ORM\DiscriminatorMap({"process" = "GH10880Process"})
- */
+#[ORM\Entity]
+#[ORM\InheritanceType('SINGLE_TABLE')]
+#[ORM\DiscriminatorColumn(name: 'type', type: 'string')]
+#[ORM\DiscriminatorMap(['process' => GH10880Process::class])]
 abstract class GH10880BaseProcess
 {
-    /**
-     * @ORM\Id
-     * @ORM\GeneratedValue
-     * @ORM\Column(type="integer")
-     *
-     * @var int
-     */
+    /** @var int */
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column(type: 'integer')]
     public $id;
 
-    /**
-     * @ORM\Column(type="text")
-     *
-     * @var string
-     */
+    /** @var string */
+    #[ORM\Column(type: 'text')]
     public $description;
 }
 
-/**
- * @ORM\Entity
- */
+#[ORM\Entity]
 class GH10880Process extends GH10880BaseProcess
 {
 }

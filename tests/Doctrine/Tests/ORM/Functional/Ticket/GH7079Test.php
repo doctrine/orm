@@ -16,15 +16,14 @@ use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\ORM\Mapping\Table;
 use Doctrine\Persistence\Mapping\RuntimeReflectionService;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
-/** @group GH7079 */
+#[Group('GH7079')]
 final class GH7079Test extends OrmFunctionalTestCase
 {
-    /** @var DefaultQuoteStrategy */
-    private $strategy;
+    private DefaultQuoteStrategy $strategy;
 
-    /** @var AbstractPlatform */
-    private $platform;
+    private AbstractPlatform $platform;
 
     protected function setUp(): void
     {
@@ -61,23 +60,18 @@ final class GH7079Test extends OrmFunctionalTestCase
                 'targetEntity' => 'DDC7079CmsUser',
                 'inversedBy'   => 'users',
                 'joinTable'    => $table,
-            ]
+            ],
         );
 
         self::assertEquals(
             $this->getTableFullName($table),
-            $this->strategy->getJoinTableName($cm->associationMappings['user'], $cm, $this->platform)
+            $this->strategy->getJoinTableName($cm->associationMappings['user'], $cm, $this->platform),
         );
     }
 
     private function getTableFullName(array $table): string
     {
-        $join = '.';
-        if (! $this->platform->supportsSchemas() && $this->platform->canEmulateSchemas()) {
-            $join = '__';
-        }
-
-        return $table['schema'] . $join . $table['name'];
+        return $table['schema'] . '.' . $table['name'];
     }
 
     private function createClassMetadata(string $className): ClassMetadata
@@ -89,45 +83,33 @@ final class GH7079Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- * @Table(name="cms_users", schema="cms")
- */
+#[Table(name: 'cms_users', schema: 'cms')]
+#[Entity]
 class GH7079CmsUser
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     public $id;
 
-    /**
-     * @var GH7079CmsAddress
-     * @OneToOne(targetEntity=GH7079CmsAddress::class, mappedBy="user", cascade={"persist"}, orphanRemoval=true)
-     */
+    /** @var GH7079CmsAddress */
+    #[OneToOne(targetEntity: GH7079CmsAddress::class, mappedBy: 'user', cascade: ['persist'], orphanRemoval: true)]
     public $address;
 }
 
-/**
- * @Entity
- * @Table(name="cms_addresses", schema="cms")
- */
+#[Table(name: 'cms_addresses', schema: 'cms')]
+#[Entity]
 class GH7079CmsAddress
 {
-    /**
-     * @var int
-     * @Column(type="integer")
-     * @Id
-     * @GeneratedValue
-     */
+    /** @var int */
+    #[Column(type: 'integer')]
+    #[Id]
+    #[GeneratedValue]
     public $id;
 
-    /**
-     * @var GH7079CmsUser
-     * @OneToOne(targetEntity=GH7079CmsUser::class, inversedBy="address")
-     * @JoinColumn(referencedColumnName="id")
-     */
+    /** @var GH7079CmsUser */
+    #[OneToOne(targetEntity: GH7079CmsUser::class, inversedBy: 'address')]
+    #[JoinColumn(referencedColumnName: 'id')]
     public $user;
 }

@@ -8,17 +8,15 @@ use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Tools\SchemaTool;
 use Doctrine\Tests\OrmTestCase;
 use Generator;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Group;
 
 use function array_map;
 
-/**
- * @group GH-10387
- */
+#[Group('GH-10387')]
 class GH10387Test extends OrmTestCase
 {
-    /**
-     * @dataProvider classHierachies
-     */
+    #[DataProvider('classHierachies')]
     public function testSchemaToolCreatesColumnForFieldInTheMiddleClass(array $classes): void
     {
         $em         = $this->getTestEntityManager();
@@ -40,134 +38,89 @@ class GH10387Test extends OrmTestCase
     }
 }
 
-/**
- * @ORM\Entity
- * @ORM\Table(name="root")
- * @ORM\InheritanceType("SINGLE_TABLE")
- * @ORM\DiscriminatorMap({ "A": "GH10387EntitiesOnlyRoot", "B": "GH10387EntitiesOnlyMiddle", "C": "GH10387EntitiesOnlyLeaf"})
- */
+#[ORM\Entity]
+#[ORM\Table(name: 'root')]
+#[ORM\InheritanceType('SINGLE_TABLE')]
+#[ORM\DiscriminatorMap(['A' => GH10387EntitiesOnlyRoot::class, 'B' => GH10387EntitiesOnlyMiddle::class, 'C' => GH10387EntitiesOnlyLeaf::class])]
 class GH10387EntitiesOnlyRoot
 {
-    /**
-     * @ORM\Id
-     * @ORM\Column
-     *
-     * @var string
-     */
+    /** @var string */
+    #[ORM\Id]
+    #[ORM\Column]
     private $id;
 }
 
-/**
- * @ORM\Entity
- */
+#[ORM\Entity]
 class GH10387EntitiesOnlyMiddle extends GH10387EntitiesOnlyRoot
 {
-    /**
-     * @ORM\Column(name="middle_class_field")
-     *
-     * @var string
-     */
+    /** @var string */
+    #[ORM\Column(name: 'middle_class_field')]
     private $parentValue;
 }
 
-/**
- * @ORM\Entity
- */
+#[ORM\Entity]
 class GH10387EntitiesOnlyLeaf extends GH10387EntitiesOnlyMiddle
 {
-    /**
-     * @ORM\Column(name="leaf_class_field")
-     *
-     * @var string
-     */
+    /** @var string */
+    #[ORM\Column(name: 'leaf_class_field')]
     private $childValue;
 }
 
-/**
- * @ORM\Entity
- * @ORM\Table(name="root")
- * @ORM\InheritanceType("SINGLE_TABLE")
- * @ORM\DiscriminatorMap({ "A": "GH10387MappedSuperclassRoot", "B": "GH10387MappedSuperclassLeaf"})
- * ^- This DiscriminatorMap contains the Entity classes only, not the Mapped Superclass
- */
+/** ↓ This DiscriminatorMap contains the Entity classes only, not the Mapped Superclass */
+#[ORM\DiscriminatorMap(['A' => GH10387MappedSuperclassRoot::class, 'B' => GH10387MappedSuperclassLeaf::class])]
+#[ORM\Entity]
+#[ORM\Table(name: 'root')]
+#[ORM\InheritanceType('SINGLE_TABLE')]
 class GH10387MappedSuperclassRoot
 {
-    /**
-     * @ORM\Id
-     * @ORM\Column
-     *
-     * @var string
-     */
+    /** @var string */
+    #[ORM\Id]
+    #[ORM\Column]
     private $id;
 }
 
-/**
- * @ORM\MappedSuperclass
- */
+#[ORM\MappedSuperclass]
 class GH10387MappedSuperclassMiddle extends GH10387MappedSuperclassRoot
 {
-    /**
-     * @ORM\Column(name="middle_class_field")
-     *
-     * @var string
-     */
+    /** @var string */
+    #[ORM\Column(name: 'middle_class_field')]
     private $parentValue;
 }
 
-/**
- * @ORM\Entity
- */
+#[ORM\Entity]
 class GH10387MappedSuperclassLeaf extends GH10387MappedSuperclassMiddle
 {
-    /**
-     * @ORM\Column(name="leaf_class_field")
-     *
-     * @var string
-     */
+    /** @var string */
+    #[ORM\Column(name: 'leaf_class_field')]
     private $childValue;
 }
 
 
-/**
- * @ORM\Entity
- * @ORM\Table(name="root")
- * @ORM\InheritanceType("SINGLE_TABLE")
- * @ORM\DiscriminatorMap({ "A": "GH10387AbstractEntitiesLeaf"})
- * ^- This DiscriminatorMap contains the single non-abstract Entity class only
- */
+/** ↓ This DiscriminatorMap contains the single non-abstract Entity class only */
+#[ORM\DiscriminatorMap(['A' => GH10387AbstractEntitiesLeaf::class])]
+#[ORM\Entity]
+#[ORM\Table(name: 'root')]
+#[ORM\InheritanceType('SINGLE_TABLE')]
 abstract class GH10387AbstractEntitiesRoot
 {
-    /**
-     * @ORM\Id
-     * @ORM\Column
-     *
-     * @var string
-     */
+    /** @var string */
+    #[ORM\Id]
+    #[ORM\Column]
     private $id;
 }
 
-/**
- * @ORM\Entity
- */
+#[ORM\Entity]
 abstract class GH10387AbstractEntitiesMiddle extends GH10387AbstractEntitiesRoot
 {
-    /**
-     * @ORM\Column(name="middle_class_field")
-     *
-     * @var string
-     */
+    /** @var string */
+    #[ORM\Column(name: 'middle_class_field')]
     private $parentValue;
 }
 
-/**
- * @ORM\Entity
- */
+#[ORM\Entity]
 class GH10387AbstractEntitiesLeaf extends GH10387AbstractEntitiesMiddle
 {
-    /**
-     * @ORM\Column(name="leaf_class_field")
-     *
-     * @var string
-     */
+    /** @var string */
+    #[ORM\Column(name: 'leaf_class_field')]
     private $childValue;
 }

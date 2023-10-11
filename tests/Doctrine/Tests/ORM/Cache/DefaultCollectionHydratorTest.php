@@ -15,12 +15,12 @@ use Doctrine\ORM\UnitOfWork;
 use Doctrine\Tests\Models\Cache\City;
 use Doctrine\Tests\Models\Cache\State;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
-/** @group DDC-2183 */
+#[Group('DDC-2183')]
 class DefaultCollectionHydratorTest extends OrmFunctionalTestCase
 {
-    /** @var DefaultCollectionHydrator */
-    private $structure;
+    private DefaultCollectionHydrator $structure;
 
     protected function setUp(): void
     {
@@ -43,7 +43,7 @@ class DefaultCollectionHydratorTest extends OrmFunctionalTestCase
             [
                 new EntityCacheKey(City::class, ['id' => 31]),
                 new EntityCacheKey(City::class, ['id' => 32]),
-            ]
+            ],
         );
 
         $targetRegion->put(new EntityCacheKey(City::class, ['id' => 31]), new EntityCacheEntry(City::class, ['id' => 31, 'name' => 'Foo']));

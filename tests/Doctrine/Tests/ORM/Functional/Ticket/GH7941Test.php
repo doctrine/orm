@@ -11,11 +11,13 @@ use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\Table;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\Test;
 
 use function ltrim;
 use function strlen;
 
-/** @group GH7941 */
+#[Group('GH7941')]
 final class GH7941Test extends OrmFunctionalTestCase
 {
     private const PRODUCTS = [
@@ -41,7 +43,7 @@ final class GH7941Test extends OrmFunctionalTestCase
         $this->_em->clear();
     }
 
-    /** @test */
+    #[Test]
     public function typesShouldBeConvertedForDQLFunctions(): void
     {
         $query = $this->_em->createQuery(
@@ -49,7 +51,7 @@ final class GH7941Test extends OrmFunctionalTestCase
                  COUNT(product.id) as count,
                  SUM(product.price) as sales,
                  AVG(product.price) as average
-             FROM ' . GH7941Product::class . ' product'
+             FROM ' . GH7941Product::class . ' product',
         );
 
         $result = $query->getSingleResult();
@@ -69,7 +71,7 @@ final class GH7941Test extends OrmFunctionalTestCase
                  ABS(product.price) as absolute,
                  SQRT(ABS(product.price)) as square_root,
                  LENGTH(product.name) as length
-             FROM ' . GH7941Product::class . ' product'
+             FROM ' . GH7941Product::class . ' product',
         );
 
         foreach ($query->getResult() as $i => $item) {
@@ -86,42 +88,26 @@ final class GH7941Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- * @Table()
- */
+#[Table]
+#[Entity]
 class GH7941Product
 {
-    /**
-     * @var int
-     * @Id
-     * @GeneratedValue
-     * @Column(type="integer")
-     */
+    /** @var int */
+    #[Id]
+    #[GeneratedValue]
+    #[Column(type: 'integer')]
     public $id;
 
-    /**
-     * @var string
-     * @Column(type="string", length=255)
-     */
-    public $name;
-
-    /**
-     * @var string
-     * @Column(type="decimal", precision=10)
-     */
-    public $price;
-
-    /**
-     * @var DateTimeImmutable
-     * @Column(type="datetime_immutable")
-     */
+    /** @var DateTimeImmutable */
+    #[Column(type: 'datetime_immutable')]
     public $createdAt;
 
-    public function __construct(string $name, string $price)
-    {
-        $this->name      = $name;
-        $this->price     = $price;
+    public function __construct(
+        #[Column(type: 'string', length: 255)]
+        public string $name,
+        #[Column(type: 'decimal', precision: 10)]
+        public string $price,
+    ) {
         $this->createdAt = new DateTimeImmutable();
     }
 }

@@ -12,10 +12,12 @@ use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\Table;
 use Doctrine\Tests\OrmTestCase;
+use PHPUnit\Framework\Attributes\Group;
+use ReflectionProperty;
 
 class ClassMetadataLoadEventTest extends OrmTestCase
 {
-    /** @group DDC-1610 */
+    #[Group('DDC-1610')]
     public function testEvent(): void
     {
         $em              = $this->getTestEntityManager();
@@ -25,7 +27,7 @@ class ClassMetadataLoadEventTest extends OrmTestCase
         $classMetadata = $metadataFactory->getMetadataFor(LoadEventTestEntity::class);
         self::assertTrue($classMetadata->hasField('about'));
         self::assertArrayHasKey('about', $classMetadata->reflFields);
-        self::assertInstanceOf('ReflectionProperty', $classMetadata->reflFields['about']);
+        self::assertInstanceOf(ReflectionProperty::class, $classMetadata->reflFields['about']);
     }
 
     public function loadClassMetadata(LoadClassMetadataEventArgs $eventArgs): void
@@ -40,25 +42,17 @@ class ClassMetadataLoadEventTest extends OrmTestCase
     }
 }
 
-/**
- * @Entity
- * @Table(name="load_event_test_entity")
- */
+#[Table(name: 'load_event_test_entity')]
+#[Entity]
 class LoadEventTestEntity
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
-     */
-    private $id;
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue(strategy: 'AUTO')]
+    private int $id;
 
-    /**
-     * @var string
-     * @Column(type="string", length=255)
-     */
-    private $name;
+    #[Column(type: 'string', length: 255)]
+    private string $name;
 
     /** @var mixed */
     private $about;

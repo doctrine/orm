@@ -12,6 +12,7 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\InheritanceType;
 use Doctrine\ORM\Mapping\Version;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
 class DDC960Test extends OrmFunctionalTestCase
 {
@@ -22,7 +23,7 @@ class DDC960Test extends OrmFunctionalTestCase
         $this->createSchemaForModels(DDC960Root::class, DDC960Child::class);
     }
 
-    /** @group DDC-960 */
+    #[Group('DDC-960')]
     public function testUpdateRootVersion(): void
     {
         $child = new DDC960Child('Test');
@@ -37,30 +38,19 @@ class DDC960Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- * @InheritanceType("JOINED")
- * @DiscriminatorMap({
- *  "root" = "DDC960Root",
- *  "child" = "DDC960Child"
- * })
- */
+#[Entity]
+#[InheritanceType('JOINED')]
+#[DiscriminatorMap(['root' => 'DDC960Root', 'child' => 'DDC960Child'])]
 class DDC960Root
 {
-    /**
-     * @var int
-     * @Id
-     * @GeneratedValue
-     * @Column(type="integer")
-     */
-    private $id;
+    #[Id]
+    #[GeneratedValue]
+    #[Column(type: 'integer')]
+    private int $id;
 
-    /**
-     * @var int
-     * @Column(type="integer")
-     * @Version
-     */
-    private $version;
+    #[Column(type: 'integer')]
+    #[Version]
+    private int $version;
 
     public function getId(): int
     {
@@ -73,18 +63,13 @@ class DDC960Root
     }
 }
 
-/** @Entity */
+#[Entity]
 class DDC960Child extends DDC960Root
 {
-    /**
-     * @Column(type="string", length=255)
-     * @var string
-     */
-    private $name;
-
-    public function __construct($name)
-    {
-        $this->name = $name;
+    public function __construct(
+        #[Column(type: 'string', length: 255)]
+        private string $name,
+    ) {
     }
 
     public function setName($name): void

@@ -12,29 +12,21 @@ use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\ManyToMany;
 
-/**
- * @Entity
- */
+#[Entity]
 class Issue9300Child
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     public $id;
 
-    /**
-     * @var Collection<int, Issue9300Parent>
-     * @ManyToMany(targetEntity="Issue9300Parent")
-     */
+    /** @var Collection<int, Issue9300Parent> */
+    #[ManyToMany(targetEntity: Issue9300Parent::class)]
     public $parents;
 
-    /**
-     * @var string
-     * @Column(type="string")
-     */
+    /** @var string */
+    #[Column(type: 'string')]
     public $name;
 
     public function __construct()

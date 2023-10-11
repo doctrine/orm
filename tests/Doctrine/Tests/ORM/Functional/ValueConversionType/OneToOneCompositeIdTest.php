@@ -4,18 +4,20 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\ValueConversionType;
 
-use Doctrine\Tests\Models;
 use Doctrine\Tests\Models\ValueConversionType as Entity;
+use Doctrine\Tests\Models\ValueConversionType\InversedOneToOneCompositeIdEntity;
+use Doctrine\Tests\Models\ValueConversionType\OwningOneToOneCompositeIdEntity;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Depends;
+use PHPUnit\Framework\Attributes\Group;
 
 /**
  * The entities all use a custom type that converst the value as identifier(s).
  * {@see \Doctrine\Tests\DbalTypes\Rot13Type}
  *
  * Test that OneToOne associations with composite id work correctly.
- *
- * @group DDC-3380
  */
+#[Group('DDC-3380')]
 class OneToOneCompositeIdTest extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -62,34 +64,34 @@ class OneToOneCompositeIdTest extends OrmFunctionalTestCase
         self::assertEquals('qrs', $conn->fetchOne('SELECT associated_id2 FROM vct_owning_onetoone_compositeid LIMIT 1'));
     }
 
-    /** @depends testThatTheValueOfIdentifiersAreConvertedInTheDatabase */
+    #[Depends('testThatTheValueOfIdentifiersAreConvertedInTheDatabase')]
     public function testThatEntitiesAreFetchedFromTheDatabase(): void
     {
         $inversed = $this->_em->find(
-            Models\ValueConversionType\InversedOneToOneCompositeIdEntity::class,
-            ['id1' => 'abc', 'id2' => 'def']
+            InversedOneToOneCompositeIdEntity::class,
+            ['id1' => 'abc', 'id2' => 'def'],
         );
 
         $owning = $this->_em->find(
-            Models\ValueConversionType\OwningOneToOneCompositeIdEntity::class,
-            'ghi'
+            OwningOneToOneCompositeIdEntity::class,
+            'ghi',
         );
 
-        self::assertInstanceOf(Models\ValueConversionType\InversedOneToOneCompositeIdEntity::class, $inversed);
-        self::assertInstanceOf(Models\ValueConversionType\OwningOneToOneCompositeIdEntity::class, $owning);
+        self::assertInstanceOf(InversedOneToOneCompositeIdEntity::class, $inversed);
+        self::assertInstanceOf(OwningOneToOneCompositeIdEntity::class, $owning);
     }
 
-    /** @depends testThatEntitiesAreFetchedFromTheDatabase */
+    #[Depends('testThatEntitiesAreFetchedFromTheDatabase')]
     public function testThatTheValueOfIdentifiersAreConvertedBackAfterBeingFetchedFromTheDatabase(): void
     {
         $inversed = $this->_em->find(
-            Models\ValueConversionType\InversedOneToOneCompositeIdEntity::class,
-            ['id1' => 'abc', 'id2' => 'def']
+            InversedOneToOneCompositeIdEntity::class,
+            ['id1' => 'abc', 'id2' => 'def'],
         );
 
         $owning = $this->_em->find(
-            Models\ValueConversionType\OwningOneToOneCompositeIdEntity::class,
-            'ghi'
+            OwningOneToOneCompositeIdEntity::class,
+            'ghi',
         );
 
         self::assertEquals('abc', $inversed->id1);
@@ -97,12 +99,12 @@ class OneToOneCompositeIdTest extends OrmFunctionalTestCase
         self::assertEquals('ghi', $owning->id3);
     }
 
-    /** @depends testThatEntitiesAreFetchedFromTheDatabase */
+    #[Depends('testThatEntitiesAreFetchedFromTheDatabase')]
     public function testThatTheProxyFromOwningToInversedIsLoaded(): void
     {
         $owning = $this->_em->find(
-            Models\ValueConversionType\OwningOneToOneCompositeIdEntity::class,
-            'ghi'
+            OwningOneToOneCompositeIdEntity::class,
+            'ghi',
         );
 
         $inversedProxy = $owning->associatedEntity;
@@ -110,14 +112,14 @@ class OneToOneCompositeIdTest extends OrmFunctionalTestCase
         self::assertEquals('some value to be loaded', $inversedProxy->someProperty);
     }
 
-    /** @depends testThatEntitiesAreFetchedFromTheDatabase */
+    #[Depends('testThatEntitiesAreFetchedFromTheDatabase')]
     public function testThatTheEntityFromInversedToOwningIsEagerLoaded(): void
     {
         $inversed = $this->_em->find(
-            Models\ValueConversionType\InversedOneToOneCompositeIdEntity::class,
-            ['id1' => 'abc', 'id2' => 'def']
+            InversedOneToOneCompositeIdEntity::class,
+            ['id1' => 'abc', 'id2' => 'def'],
         );
 
-        self::assertInstanceOf(Models\ValueConversionType\OwningOneToOneCompositeIdEntity::class, $inversed->associatedEntity);
+        self::assertInstanceOf(OwningOneToOneCompositeIdEntity::class, $inversed->associatedEntity);
     }
 }

@@ -16,25 +16,8 @@ use function unserialize;
  */
 class SequenceGenerator extends AbstractIdGenerator implements Serializable
 {
-    /**
-     * The allocation size of the sequence.
-     *
-     * @var int
-     */
-    private $allocationSize;
-
-    /**
-     * The name of the sequence.
-     *
-     * @var string
-     */
-    private $sequenceName;
-
-    /** @var int */
-    private $nextValue = 0;
-
-    /** @var int|null */
-    private $maxValue = null;
+    private int $nextValue     = 0;
+    private int|null $maxValue = null;
 
     /**
      * Initializes a new sequence generator.
@@ -42,16 +25,13 @@ class SequenceGenerator extends AbstractIdGenerator implements Serializable
      * @param string $sequenceName   The name of the sequence.
      * @param int    $allocationSize The allocation size of the sequence.
      */
-    public function __construct($sequenceName, $allocationSize)
-    {
-        $this->sequenceName   = $sequenceName;
-        $this->allocationSize = $allocationSize;
+    public function __construct(
+        private string $sequenceName,
+        private int $allocationSize,
+    ) {
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function generateId(EntityManagerInterface $em, $entity)
+    public function generateId(EntityManagerInterface $em, object|null $entity): int
     {
         if ($this->maxValue === null || $this->nextValue === $this->maxValue) {
             // Allocate new values
@@ -71,30 +51,21 @@ class SequenceGenerator extends AbstractIdGenerator implements Serializable
 
     /**
      * Gets the maximum value of the currently allocated bag of values.
-     *
-     * @return int|null
      */
-    public function getCurrentMaxValue()
+    public function getCurrentMaxValue(): int|null
     {
         return $this->maxValue;
     }
 
     /**
      * Gets the next value that will be returned by generate().
-     *
-     * @return int
      */
-    public function getNextValue()
+    public function getNextValue(): int
     {
         return $this->nextValue;
     }
 
-    /**
-     * @return string
-     *
-     * @final
-     */
-    public function serialize()
+    final public function serialize(): string
     {
         return serialize($this->__serialize());
     }
@@ -108,14 +79,7 @@ class SequenceGenerator extends AbstractIdGenerator implements Serializable
         ];
     }
 
-    /**
-     * @param string $serialized
-     *
-     * @return void
-     *
-     * @final
-     */
-    public function unserialize($serialized)
+    final public function unserialize(string $serialized): void
     {
         $this->__unserialize(unserialize($serialized));
     }

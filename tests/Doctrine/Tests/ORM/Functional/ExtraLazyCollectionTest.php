@@ -12,6 +12,7 @@ use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\Models\DDC2504\DDC2504ChildClass;
 use Doctrine\Tests\Models\DDC2504\DDC2504OtherClass;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
 use function array_shift;
 use function assert;
@@ -21,32 +22,23 @@ use function assert;
  */
 class ExtraLazyCollectionTest extends OrmFunctionalTestCase
 {
-    /** @var int */
-    private $userId;
+    private int|null $userId = null;
 
-    /** @var int */
-    private $userId2;
+    private int|null $userId2 = null;
 
-    /** @var int */
-    private $groupId;
+    private int|null $groupId = null;
 
-    /** @var int */
-    private $articleId;
+    private int|null $articleId = null;
 
-    /** @var int */
-    private $ddc2504OtherClassId;
+    private int|null $ddc2504OtherClassId = null;
 
-    /** @var int */
-    private $ddc2504ChildClassId;
+    private int|null $ddc2504ChildClassId = null;
 
-    /** @var string */
-    private $username;
+    private string|null $username = null;
 
-    /** @var string */
-    private $groupname;
+    private string|null $groupname = null;
 
-    /** @var string */
-    private $topic;
+    private string|null $topic = null;
 
     /** @var CmsPhonenumber */
     private $phonenumber;
@@ -62,25 +54,25 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
 
         parent::setUp();
 
-        $class                                                 = $this->_em->getClassMetadata(CmsUser::class);
-        $class->associationMappings['groups']['fetch']         = ClassMetadata::FETCH_EXTRA_LAZY;
-        $class->associationMappings['groups']['indexBy']       = 'name';
-        $class->associationMappings['articles']['fetch']       = ClassMetadata::FETCH_EXTRA_LAZY;
-        $class->associationMappings['articles']['indexBy']     = 'topic';
-        $class->associationMappings['phonenumbers']['fetch']   = ClassMetadata::FETCH_EXTRA_LAZY;
-        $class->associationMappings['phonenumbers']['indexBy'] = 'phonenumber';
+        $class                                               = $this->_em->getClassMetadata(CmsUser::class);
+        $class->associationMappings['groups']->fetch         = ClassMetadata::FETCH_EXTRA_LAZY;
+        $class->associationMappings['groups']->indexBy       = 'name';
+        $class->associationMappings['articles']->fetch       = ClassMetadata::FETCH_EXTRA_LAZY;
+        $class->associationMappings['articles']->indexBy     = 'topic';
+        $class->associationMappings['phonenumbers']->fetch   = ClassMetadata::FETCH_EXTRA_LAZY;
+        $class->associationMappings['phonenumbers']->indexBy = 'phonenumber';
 
         foreach (['phonenumbers', 'articles', 'users'] as $field) {
-            if (isset($class->associationMappings[$field]['cache'])) {
-                $this->previousCacheConfig[$field] = $class->associationMappings[$field]['cache'];
+            if (isset($class->associationMappings[$field]->cache)) {
+                $this->previousCacheConfig[$field] = $class->associationMappings[$field]->cache;
             }
 
-            unset($class->associationMappings[$field]['cache']);
+            unset($class->associationMappings[$field]->cache);
         }
 
-        $class                                          = $this->_em->getClassMetadata(CmsGroup::class);
-        $class->associationMappings['users']['fetch']   = ClassMetadata::FETCH_EXTRA_LAZY;
-        $class->associationMappings['users']['indexBy'] = 'username';
+        $class                                        = $this->_em->getClassMetadata(CmsGroup::class);
+        $class->associationMappings['users']->fetch   = ClassMetadata::FETCH_EXTRA_LAZY;
+        $class->associationMappings['users']->indexBy = 'username';
 
         $this->loadFixture();
     }
@@ -89,32 +81,30 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
     {
         parent::tearDown();
 
-        $class                                               = $this->_em->getClassMetadata(CmsUser::class);
-        $class->associationMappings['groups']['fetch']       = ClassMetadata::FETCH_LAZY;
-        $class->associationMappings['articles']['fetch']     = ClassMetadata::FETCH_LAZY;
-        $class->associationMappings['phonenumbers']['fetch'] = ClassMetadata::FETCH_LAZY;
+        $class                                             = $this->_em->getClassMetadata(CmsUser::class);
+        $class->associationMappings['groups']->fetch       = ClassMetadata::FETCH_LAZY;
+        $class->associationMappings['articles']->fetch     = ClassMetadata::FETCH_LAZY;
+        $class->associationMappings['phonenumbers']->fetch = ClassMetadata::FETCH_LAZY;
 
         foreach (['phonenumbers', 'articles', 'users'] as $field) {
             if (isset($this->previousCacheConfig[$field])) {
-                $class->associationMappings[$field]['cache'] = $this->previousCacheConfig[$field];
+                $class->associationMappings[$field]->cache = $this->previousCacheConfig[$field];
                 unset($this->previousCacheConfig[$field]);
             }
         }
 
-        unset($class->associationMappings['groups']['indexBy']);
-        unset($class->associationMappings['articles']['indexBy']);
-        unset($class->associationMappings['phonenumbers']['indexBy']);
+        unset($class->associationMappings['groups']->indexBy);
+        unset($class->associationMappings['articles']->indexBy);
+        unset($class->associationMappings['phonenumbers']->indexBy);
 
-        $class                                        = $this->_em->getClassMetadata(CmsGroup::class);
-        $class->associationMappings['users']['fetch'] = ClassMetadata::FETCH_LAZY;
+        $class                                      = $this->_em->getClassMetadata(CmsGroup::class);
+        $class->associationMappings['users']->fetch = ClassMetadata::FETCH_LAZY;
 
-        unset($class->associationMappings['users']['indexBy']);
+        unset($class->associationMappings['users']->indexBy);
     }
 
-    /**
-     * @group DDC-546
-     * @group non-cacheable
-     */
+    #[Group('DDC-546')]
+    #[Group('non-cacheable')]
     public function testCountNotInitializesCollection(): void
     {
         $user = $this->_em->find(CmsUser::class, $this->userId);
@@ -130,7 +120,7 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
         $this->assertQueryCount(2, 'Expecting two queries to be fired for count, then iteration.');
     }
 
-    /** @group DDC-546 */
+    #[Group('DDC-546')]
     public function testCountWhenNewEntityPresent(): void
     {
         $user = $this->_em->find(CmsUser::class, $this->userId);
@@ -146,10 +136,8 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
         self::assertFalse($user->groups->isInitialized());
     }
 
-    /**
-     * @group DDC-546
-     * @group non-cacheable
-     */
+    #[Group('DDC-546')]
+    #[Group('non-cacheable')]
     public function testCountWhenInitialized(): void
     {
         $user = $this->_em->find(CmsUser::class, $this->userId);
@@ -163,7 +151,7 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
         $this->assertQueryCount(1, 'Should only execute one query to initialize collection, no extra query for count() more.');
     }
 
-    /** @group DDC-546 */
+    #[Group('DDC-546')]
     public function testCountInverseCollection(): void
     {
         $group = $this->_em->find(CmsGroup::class, $this->groupId);
@@ -173,7 +161,7 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
         self::assertFalse($group->users->isInitialized(), 'Extra Lazy collection should not be initialized by counting the collection.');
     }
 
-    /** @group DDC-546 */
+    #[Group('DDC-546')]
     public function testCountOneToMany(): void
     {
         $user = $this->_em->find(CmsUser::class, $this->userId);
@@ -182,7 +170,7 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
         self::assertCount(2, $user->articles);
     }
 
-    /** @group DDC-2504 */
+    #[Group('DDC-2504')]
     public function testCountOneToManyJoinedInheritance(): void
     {
         $otherClass = $this->_em->find(DDC2504OtherClass::class, $this->ddc2504OtherClassId);
@@ -191,7 +179,7 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
         self::assertCount(2, $otherClass->childClasses);
     }
 
-    /** @group DDC-546 */
+    #[Group('DDC-546')]
     public function testFullSlice(): void
     {
         $user = $this->_em->find(CmsUser::class, $this->userId);
@@ -201,10 +189,8 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
         self::assertCount(3, $someGroups);
     }
 
-    /**
-     * @group DDC-546
-     * @group non-cacheable
-     */
+    #[Group('DDC-546')]
+    #[Group('non-cacheable')]
     public function testSlice(): void
     {
         $user = $this->_em->find(CmsUser::class, $this->userId);
@@ -233,10 +219,8 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
         $this->assertQueryCount(3);
     }
 
-    /**
-     * @group DDC-546
-     * @group non-cacheable
-     */
+    #[Group('DDC-546')]
+    #[Group('non-cacheable')]
     public function testSliceInitializedCollection(): void
     {
         $user = $this->_em->find(CmsUser::class, $this->userId);
@@ -254,7 +238,7 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
         self::assertTrue($user->groups->contains(array_shift($someGroups)));
     }
 
-    /** @group DDC-546 */
+    #[Group('DDC-546')]
     public function testSliceInverseCollection(): void
     {
         $group = $this->_em->find(CmsGroup::class, $this->groupId);
@@ -273,7 +257,7 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
         $this->assertQueryCount(2, 'Slicing two parts should only execute two additional queries.');
     }
 
-    /** @group DDC-546 */
+    #[Group('DDC-546')]
     public function testSliceOneToMany(): void
     {
         $user = $this->_em->find(CmsUser::class, $this->userId);
@@ -287,7 +271,7 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
         $this->assertQueryCount(2);
     }
 
-    /** @group DDC-546 */
+    #[Group('DDC-546')]
     public function testContainsOneToMany(): void
     {
         $user = $this->_em->find(CmsUser::class, $this->userId);
@@ -333,7 +317,7 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
         self::assertFalse($user->articles->isInitialized(), 'Post-Condition: Collection is not initialized.');
     }
 
-    /** @group DDC-2504 */
+    #[Group('DDC-2504')]
     public function testLazyOneToManyJoinedInheritanceIsLazilyInitialized(): void
     {
         $otherClass = $this->_em->find(DDC2504OtherClass::class, $this->ddc2504OtherClassId);
@@ -341,7 +325,7 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
         self::assertFalse($otherClass->childClasses->isInitialized(), 'Collection is not initialized.');
     }
 
-    /** @group DDC-2504 */
+    #[Group('DDC-2504')]
     public function testContainsOnOneToManyJoinedInheritanceWillNotInitializeCollectionWhenMatchingItemIsFound(): void
     {
         $otherClass = $this->_em->find(DDC2504OtherClass::class, $this->ddc2504OtherClassId);
@@ -355,7 +339,7 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
         $this->assertQueryCount(1, 'Search operation was performed via SQL');
     }
 
-    /** @group DDC-2504 */
+    #[Group('DDC-2504')]
     public function testContainsOnOneToManyJoinedInheritanceWillNotCauseQueriesWhenNonPersistentItemIsMatched(): void
     {
         $otherClass = $this->_em->find(DDC2504OtherClass::class, $this->ddc2504OtherClassId);
@@ -365,7 +349,7 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
         $this->assertQueryCount(0, 'Checking for contains of new entity should cause no query to be executed.');
     }
 
-    /** @group DDC-2504 */
+    #[Group('DDC-2504')]
     public function testContainsOnOneToManyJoinedInheritanceWillNotInitializeCollectionWithClearStateMatchingItem(): void
     {
         $otherClass = $this->_em->find(DDC2504OtherClass::class, $this->ddc2504OtherClassId);
@@ -381,7 +365,7 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
         self::assertFalse($otherClass->childClasses->isInitialized(), 'Post-Condition: Collection is not initialized.');
     }
 
-    /** @group DDC-2504 */
+    #[Group('DDC-2504')]
     public function testContainsOnOneToManyJoinedInheritanceWillNotInitializeCollectionWithNewStateNotMatchingItem(): void
     {
         $otherClass = $this->_em->find(DDC2504OtherClass::class, $this->ddc2504OtherClassId);
@@ -396,7 +380,7 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
         self::assertFalse($otherClass->childClasses->isInitialized(), 'Post-Condition: Collection is not initialized.');
     }
 
-    /** @group DDC-2504 */
+    #[Group('DDC-2504')]
     public function testCountingOnOneToManyJoinedInheritanceWillNotInitializeCollection(): void
     {
         $otherClass = $this->_em->find(DDC2504OtherClass::class, $this->ddc2504OtherClassId);
@@ -406,7 +390,7 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
         self::assertFalse($otherClass->childClasses->isInitialized());
     }
 
-    /** @group DDC-546 */
+    #[Group('DDC-546')]
     public function testContainsManyToMany(): void
     {
         $user = $this->_em->find(CmsUser::class, $this->userId);
@@ -453,7 +437,7 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
         self::assertFalse($user->groups->isInitialized(), 'Post-Condition: Collection is not initialized.');
     }
 
-    /** @group DDC-546 */
+    #[Group('DDC-546')]
     public function testContainsManyToManyInverse(): void
     {
         $group = $this->_em->find(CmsGroup::class, $this->groupId);
@@ -475,7 +459,7 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
         self::assertFalse($user->groups->isInitialized(), 'Post-Condition: Collection is not initialized.');
     }
 
-    /** @group DDC-1399 */
+    #[Group('DDC-1399')]
     public function testCountAfterAddThenFlush(): void
     {
         $user = $this->_em->find(CmsUser::class, $this->userId);
@@ -495,10 +479,8 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
         self::assertCount(4, $user->groups);
     }
 
-    /**
-     * @group DDC-1462
-     * @group non-cacheable
-     */
+    #[Group('DDC-1462')]
+    #[Group('non-cacheable')]
     public function testSliceOnDirtyCollection(): void
     {
         $user = $this->_em->find(CmsUser::class, $this->userId);
@@ -517,10 +499,8 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
         $this->assertQueryCount(1);
     }
 
-    /**
-     * @group DDC-1398
-     * @group non-cacheable
-     */
+    #[Group('DDC-1398')]
+    #[Group('non-cacheable')]
     public function testGetIndexByIdentifier(): void
     {
         $user = $this->_em->find(CmsUser::class, $this->userId);
@@ -537,7 +517,7 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
         $this->assertQueryCount(1, 'Getting the same entity should not cause an extra query to be executed');
     }
 
-    /** @group DDC-1398 */
+    #[Group('DDC-1398')]
     public function testGetIndexByOneToMany(): void
     {
         $user = $this->_em->find(CmsUser::class, $this->userId);
@@ -552,7 +532,7 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
         self::assertSame($article, $this->_em->find(CmsArticle::class, $this->articleId));
     }
 
-    /** @group DDC-1398 */
+    #[Group('DDC-1398')]
     public function testGetIndexByManyToManyInverseSide(): void
     {
         $group = $this->_em->find(CmsGroup::class, $this->groupId);
@@ -567,7 +547,7 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
         self::assertSame($user, $this->_em->find(CmsUser::class, $this->userId));
     }
 
-    /** @group DDC-1398 */
+    #[Group('DDC-1398')]
     public function testGetIndexByManyToManyOwningSide(): void
     {
         $user = $this->_em->find(CmsUser::class, $this->userId);
@@ -582,7 +562,7 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
         self::assertSame($group, $this->_em->find(CmsGroup::class, $this->groupId));
     }
 
-    /** @group DDC-1398 */
+    #[Group('DDC-1398')]
     public function testGetNonExistentIndexBy(): void
     {
         $user = $this->_em->find(CmsUser::class, $this->userId);
@@ -606,8 +586,8 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
 
     public function testContainsKeyIndexByOneToManyJoinedInheritance(): void
     {
-        $class                                                 = $this->_em->getClassMetadata(DDC2504OtherClass::class);
-        $class->associationMappings['childClasses']['indexBy'] = 'id';
+        $class                                               = $this->_em->getClassMetadata(DDC2504OtherClass::class);
+        $class->associationMappings['childClasses']->indexBy = 'id';
 
         $otherClass = $this->_em->find(DDC2504OtherClass::class, $this->ddc2504OtherClassId);
 
@@ -651,8 +631,8 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
 
     public function testContainsKeyIndexByWithPkManyToMany(): void
     {
-        $class                                           = $this->_em->getClassMetadata(CmsUser::class);
-        $class->associationMappings['groups']['indexBy'] = 'id';
+        $class                                         = $this->_em->getClassMetadata(CmsUser::class);
+        $class->associationMappings['groups']->indexBy = 'id';
 
         $user = $this->_em->find(CmsUser::class, $this->userId2);
 
@@ -667,8 +647,8 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
 
     public function testContainsKeyIndexByWithPkManyToManyNonOwning(): void
     {
-        $class                                          = $this->_em->getClassMetadata(CmsGroup::class);
-        $class->associationMappings['users']['indexBy'] = 'id';
+        $class                                        = $this->_em->getClassMetadata(CmsGroup::class);
+        $class->associationMappings['users']->indexBy = 'id';
 
         $group = $this->_em->find(CmsGroup::class, $this->groupId);
 

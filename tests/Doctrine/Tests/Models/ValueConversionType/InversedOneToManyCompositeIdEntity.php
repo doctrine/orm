@@ -12,36 +12,26 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\Table;
 
-/**
- * @Entity
- * @Table(name="vct_inversed_onetomany_compositeid")
- */
+#[Table(name: 'vct_inversed_onetomany_compositeid')]
+#[Entity]
 class InversedOneToManyCompositeIdEntity
 {
-    /**
-     * @var string
-     * @Column(type="rot13", length=255)
-     * @Id
-     */
+    /** @var string */
+    #[Column(type: 'rot13', length: 255)]
+    #[Id]
     public $id1;
 
-    /**
-     * @var string
-     * @Column(type="rot13", length=255)
-     * @Id
-     */
+    /** @var string */
+    #[Column(type: 'rot13', length: 255)]
+    #[Id]
     public $id2;
 
-    /**
-     * @var string
-     * @Column(type="string", length=255, name="some_property")
-     */
+    /** @var string */
+    #[Column(type: 'string', length: 255, name: 'some_property')]
     public $someProperty;
 
-    /**
-     * @psalm-var Collection<int, OwningManyToOneCompositeIdEntity>
-     * @OneToMany(targetEntity="OwningManyToOneCompositeIdEntity", mappedBy="associatedEntity")
-     */
+    /** @psalm-var Collection<int, OwningManyToOneCompositeIdEntity> */
+    #[OneToMany(targetEntity: 'OwningManyToOneCompositeIdEntity', mappedBy: 'associatedEntity')]
     public $associatedEntities;
 
     public function __construct()

@@ -12,12 +12,12 @@ use Doctrine\Tests\Models\CMS\CmsEmail;
 use Doctrine\Tests\Models\CMS\CmsPhonenumber;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 use RuntimeException;
 
 class PostLoadEventTest extends OrmFunctionalTestCase
 {
-    /** @var int */
-    private $userId;
+    private int|null $userId = null;
 
     protected function setUp(): void
     {
@@ -199,7 +199,7 @@ class PostLoadEventTest extends OrmFunctionalTestCase
         $phonenumbersCol->first();
     }
 
-    /** @group DDC-3005 */
+    #[Group('DDC-3005')]
     public function testAssociationsArePopulatedWhenEventIsFired(): void
     {
         $checkerListener = new PostLoadListenerCheckAssociationsArePopulated();
@@ -214,7 +214,7 @@ class PostLoadEventTest extends OrmFunctionalTestCase
         self::assertTrue($checkerListener->populated, 'Association of email is not populated in postLoad event');
     }
 
-    /** @group DDC-3005 */
+    #[Group('DDC-3005')]
     public function testEventRaisedCorrectTimesWhenOtherEntityLoadedInEventHandler(): void
     {
         $eventManager = $this->_em->getEventManager();
@@ -297,7 +297,7 @@ class PostLoadListenerCheckAssociationsArePopulated
 class PostLoadListenerLoadEntityInEventHandler
 {
     /** @psalm-var array<class-string, int> */
-    private $firedByClasses = [];
+    private array $firedByClasses = [];
 
     public function postLoad(PostLoadEventArgs $event): void
     {

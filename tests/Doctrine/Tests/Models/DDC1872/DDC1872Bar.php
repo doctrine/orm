@@ -8,13 +8,10 @@ use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\Id;
 
-/** @Entity */
+#[Entity]
 class DDC1872Bar
 {
-    /**
-     * @var string
-     * @Id
-     * @Column(type="string", length=255)
-     */
-    private $id;
+    #[Id]
+    #[Column(type: 'string', length: 255)]
+    private string $id;
 }

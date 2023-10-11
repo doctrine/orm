@@ -16,8 +16,9 @@ use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\OrderBy;
 use Doctrine\ORM\Mapping\Table;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
-/** @group DDC-1080 */
+#[Group('DDC-1080')]
 class DDC1080Test extends OrmFunctionalTestCase
 {
     public function testHydration(): void
@@ -25,7 +26,7 @@ class DDC1080Test extends OrmFunctionalTestCase
         $this->createSchemaForModels(
             DDC1080Foo::class,
             DDC1080Bar::class,
-            DDC1080FooBar::class
+            DDC1080FooBar::class,
         );
 
         $foo1 = new DDC1080Foo();
@@ -76,32 +77,23 @@ class DDC1080Test extends OrmFunctionalTestCase
 }
 
 
-/**
- * @Entity
- * @Table(name="foo")
- */
+#[Table(name: 'foo')]
+#[Entity]
 class DDC1080Foo
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(name="fooID", type="integer")
-     * @GeneratedValue(strategy="AUTO")
-     */
+    /** @var int */
+    #[Id]
+    #[Column(name: 'fooID', type: 'integer')]
+    #[GeneratedValue(strategy: 'AUTO')]
     protected $fooID;
 
-    /**
-     * @var string
-     * @Column(name="fooTitle", type="string", length=255)
-     */
+    /** @var string */
+    #[Column(name: 'fooTitle', type: 'string', length: 255)]
     protected $fooTitle;
 
-    /**
-     * @psalm-var Collection<DDC1080FooBar>
-     * @OneToMany(targetEntity="DDC1080FooBar", mappedBy="foo",
-     * cascade={"persist"})
-     * @OrderBy({"orderNr"="ASC"})
-     */
+    /** @psalm-var Collection<DDC1080FooBar> */
+    #[OneToMany(targetEntity: 'DDC1080FooBar', mappedBy: 'foo', cascade: ['persist'])]
+    #[OrderBy(['orderNr' => 'ASC'])]
     protected $fooBars;
 
     public function __construct()
@@ -140,32 +132,23 @@ class DDC1080Foo
         $this->fooBars = $fooBars;
     }
 }
-/**
- * @Entity
- * @Table(name="bar")
- */
+#[Table(name: 'bar')]
+#[Entity]
 class DDC1080Bar
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(name="barID", type="integer")
-     * @GeneratedValue(strategy="AUTO")
-     */
+    /** @var int */
+    #[Id]
+    #[Column(name: 'barID', type: 'integer')]
+    #[GeneratedValue(strategy: 'AUTO')]
     protected $barID;
 
-    /**
-     * @var string
-     * @Column(name="barTitle", type="string", length=255)
-     */
+    /** @var string */
+    #[Column(name: 'barTitle', type: 'string', length: 255)]
     protected $barTitle;
 
-    /**
-     * @psalm-var Collection<DDC1080FooBar>
-     * @OneToMany(targetEntity="DDC1080FooBar", mappedBy="bar",
-     * cascade={"persist"})
-     * @OrderBy({"orderNr"="ASC"})
-     */
+    /** @psalm-var Collection<DDC1080FooBar> */
+    #[OneToMany(targetEntity: 'DDC1080FooBar', mappedBy: 'bar', cascade: ['persist'])]
+    #[OrderBy(['orderNr' => 'ASC'])]
     protected $fooBars;
 
     public function __construct()
@@ -205,32 +188,24 @@ class DDC1080Bar
     }
 }
 
-/**
- * @Table(name="fooBar")
- * @Entity
- */
+#[Table(name: 'fooBar')]
+#[Entity]
 class DDC1080FooBar
 {
-    /**
-     * @var DDC1080Foo
-     * @ManyToOne(targetEntity="DDC1080Foo")
-     * @JoinColumn(name="fooID", referencedColumnName="fooID")
-     * @Id
-     */
+    /** @var DDC1080Foo */
+    #[ManyToOne(targetEntity: 'DDC1080Foo')]
+    #[JoinColumn(name: 'fooID', referencedColumnName: 'fooID')]
+    #[Id]
     protected $foo = null;
 
-    /**
-     * @var DDC1080Bar
-     * @ManyToOne(targetEntity="DDC1080Bar")
-     * @JoinColumn(name="barID", referencedColumnName="barID")
-     * @Id
-     */
+    /** @var DDC1080Bar */
+    #[ManyToOne(targetEntity: 'DDC1080Bar')]
+    #[JoinColumn(name: 'barID', referencedColumnName: 'barID')]
+    #[Id]
     protected $bar = null;
 
-    /**
-     * @var int orderNr
-     * @Column(name="orderNr", type="integer", nullable=false)
-     */
+    /** @var int orderNr */
+    #[Column(name: 'orderNr', type: 'integer', nullable: false)]
     protected $orderNr = null;
 
     public function getFoo(): DDC1080Foo
@@ -257,12 +232,12 @@ class DDC1080FooBar
         return $this;
     }
 
-    public function getOrderNr(): ?int
+    public function getOrderNr(): int|null
     {
         return $this->orderNr;
     }
 
-    public function setOrderNr(?int $orderNr): DDC1080FooBar
+    public function setOrderNr(int|null $orderNr): DDC1080FooBar
     {
         $this->orderNr = $orderNr;
 

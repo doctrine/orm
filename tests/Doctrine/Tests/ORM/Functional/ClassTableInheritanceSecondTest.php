@@ -20,7 +20,6 @@ use Doctrine\ORM\Mapping\Table;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 use function count;
-use function get_class;
 
 /**
  * Functional tests for the Class Table Inheritance mapping strategy.
@@ -35,7 +34,7 @@ class ClassTableInheritanceSecondTest extends OrmFunctionalTestCase
             CTIParent::class,
             CTIChild::class,
             CTIRelated::class,
-            CTIRelated2::class
+            CTIRelated2::class,
         );
     }
 
@@ -77,7 +76,7 @@ class ClassTableInheritanceSecondTest extends OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $mmrel2 = $this->_em->find(get_class($mmrel), $mmrel->getId());
+        $mmrel2 = $this->_em->find($mmrel::class, $mmrel->getId());
         self::assertFalse($mmrel2->getCTIChildren()->isInitialized());
         self::assertEquals(1, count($mmrel2->getCTIChildren()));
         self::assertTrue($mmrel2->getCTIChildren()->isInitialized());
@@ -85,28 +84,20 @@ class ClassTableInheritanceSecondTest extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- * @Table(name="cti_parents")
- * @InheritanceType("JOINED")
- * @DiscriminatorColumn(name="type", type="string")
- * @DiscriminatorMap({"parent" = "CTIParent", "child" = "CTIChild"})
- */
+#[Table(name: 'cti_parents')]
+#[Entity]
+#[InheritanceType('JOINED')]
+#[DiscriminatorColumn(name: 'type', type: 'string')]
+#[DiscriminatorMap(['parent' => 'CTIParent', 'child' => 'CTIChild'])]
 class CTIParent
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
-     */
-    private $id;
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue(strategy: 'AUTO')]
+    private int $id;
 
-    /**
-     * @var CTIRelated
-     * @OneToOne(targetEntity="CTIRelated", mappedBy="ctiParent")
-     */
-    private $related;
+    #[OneToOne(targetEntity: 'CTIRelated', mappedBy: 'ctiParent')]
+    private CTIRelated|null $related = null;
 
     public function getId(): int
     {
@@ -125,17 +116,12 @@ class CTIParent
     }
 }
 
-/**
- * @Entity
- * @Table(name="cti_children")
- */
+#[Table(name: 'cti_children')]
+#[Entity]
 class CTIChild extends CTIParent
 {
-    /**
-     * @var string
-     * @Column(type="string", length=255)
-     */
-    private $data;
+    #[Column(type: 'string', length: 255)]
+    private string|null $data = null;
 
     public function getData(): string
     {
@@ -148,23 +134,17 @@ class CTIChild extends CTIParent
     }
 }
 
-/** @Entity */
+#[Entity]
 class CTIRelated
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
-     */
-    private $id;
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue(strategy: 'AUTO')]
+    private int $id;
 
-    /**
-     * @var CTIParent
-     * @OneToOne(targetEntity="CTIParent")
-     * @JoinColumn(name="ctiparent_id", referencedColumnName="id")
-     */
-    private $ctiParent;
+    #[OneToOne(targetEntity: 'CTIParent')]
+    #[JoinColumn(name: 'ctiparent_id', referencedColumnName: 'id')]
+    private CTIParent|null $ctiParent = null;
 
     public function getId(): int
     {
@@ -182,21 +162,16 @@ class CTIRelated
     }
 }
 
-/** @Entity */
+#[Entity]
 class CTIRelated2
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
-    private $id;
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
+    private int $id;
 
-    /**
-     * @psalm-var Collection<int, CTIChild>
-     * @ManyToMany(targetEntity="CTIChild")
-     */
+    /** @psalm-var Collection<int, CTIChild> */
+    #[ManyToMany(targetEntity: 'CTIChild')]
     private $ctiChildren;
 
     public function __construct()

@@ -29,21 +29,17 @@ class GH8663Test extends OrmFunctionalTestCase
     }
 }
 
-/** @Entity */
+#[Entity]
 class GH8663VersionedEntity
 {
-    /**
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     * @var int
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     protected $id;
 
-    /**
-     * @Version
-     * @Column(type="integer")
-     * @var int
-     */
+    /** @var int */
+    #[Version]
+    #[Column(type: 'integer')]
     protected $version;
 }

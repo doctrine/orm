@@ -22,14 +22,12 @@ use Doctrine\Tests\Models\Enums\Suit;
 use Doctrine\Tests\Models\Enums\TypedCard;
 use Doctrine\Tests\Models\Enums\Unit;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 use function dirname;
 use function sprintf;
 use function uniqid;
 
-/**
- * @requires PHP 8.1
- */
 class EnumTest extends OrmFunctionalTestCase
 {
     public function setUp(): void
@@ -44,11 +42,8 @@ class EnumTest extends OrmFunctionalTestCase
         }
     }
 
-    /**
-     * @param class-string $cardClass
-     *
-     * @dataProvider provideCardClasses
-     */
+    /** @param class-string $cardClass */
+    #[DataProvider('provideCardClasses')]
     public function testEnumMapping(string $cardClass): void
     {
         $this->setUpEntitySchema([$cardClass]);
@@ -275,7 +270,7 @@ class EnumTest extends OrmFunctionalTestCase
 
         $this->_em->getUnitOfWork()->recomputeSingleEntityChangeSet(
             $this->_em->getClassMetadata(Card::class),
-            $result
+            $result,
         );
 
         self::assertFalse($this->_em->getUnitOfWork()->isScheduledForUpdate($result));
@@ -284,7 +279,7 @@ class EnumTest extends OrmFunctionalTestCase
 
         $this->_em->getUnitOfWork()->recomputeSingleEntityChangeSet(
             $this->_em->getClassMetadata(Card::class),
-            $result
+            $result,
         );
 
         self::assertTrue($this->_em->getUnitOfWork()->isScheduledForUpdate($result));
@@ -305,7 +300,7 @@ class EnumTest extends OrmFunctionalTestCase
 
         $this->_em->getUnitOfWork()->recomputeSingleEntityChangeSet(
             $this->_em->getClassMetadata(Card::class),
-            $result
+            $result,
         );
 
         self::assertFalse($this->_em->getUnitOfWork()->isScheduledForUpdate($result));
@@ -326,7 +321,7 @@ class EnumTest extends OrmFunctionalTestCase
 
         $this->_em->getUnitOfWork()->recomputeSingleEntityChangeSet(
             $this->_em->getClassMetadata(Scale::class),
-            $result
+            $result,
         );
 
         self::assertFalse($this->_em->getUnitOfWork()->isScheduledForUpdate($result));
@@ -418,11 +413,8 @@ class EnumTest extends OrmFunctionalTestCase
         }
     }
 
-    /**
-     * @param class-string $cardClass
-     *
-     * @dataProvider provideCardClasses
-     */
+    /** @param class-string $cardClass */
+    #[DataProvider('provideCardClasses')]
     public function testEnumWithNonMatchingDatabaseValueThrowsException(string $cardClass): void
     {
         $this->setUpEntitySchema([$cardClass]);
@@ -437,8 +429,8 @@ class EnumTest extends OrmFunctionalTestCase
         $metadata = $this->_em->getClassMetadata($cardClass);
         $this->_em->getConnection()->update(
             $metadata->table['name'],
-            [$metadata->fieldMappings['suit']['columnName'] => 'invalid'],
-            [$metadata->fieldMappings['id']['columnName'] => $card->id]
+            [$metadata->fieldMappings['suit']->columnName => 'invalid'],
+            [$metadata->fieldMappings['id']->columnName => $card->id],
         );
 
         $this->expectException(MappingException::class);
@@ -449,7 +441,7 @@ Problem: Case "invalid" is not listed in enum "Doctrine\Tests\Models\Enums\Suit"
 Solution: Either add the case to the enum type or migrate the database column to use another case of the enum
 EXCEPTION
             ,
-            $cardClass
+            $cardClass,
         ));
 
         $this->_em->find($cardClass, $card->id);

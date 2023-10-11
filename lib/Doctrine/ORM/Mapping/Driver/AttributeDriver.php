@@ -4,16 +4,15 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Mapping\Driver;
 
-use Doctrine\Deprecations\Deprecation;
 use Doctrine\ORM\Events;
 use Doctrine\ORM\Mapping;
 use Doctrine\ORM\Mapping\Builder\EntityListenerBuilder;
 use Doctrine\ORM\Mapping\ClassMetadata;
-use Doctrine\ORM\Mapping\MappingAttribute;
 use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\Persistence\Mapping\ClassMetadata as PersistenceClassMetadata;
 use Doctrine\Persistence\Mapping\Driver\ColocatedMappingDriver;
-use LogicException;
+use Doctrine\Persistence\Mapping\Driver\MappingDriver;
+use InvalidArgumentException;
 use ReflectionClass;
 use ReflectionMethod;
 use ReflectionProperty;
@@ -22,11 +21,9 @@ use function assert;
 use function class_exists;
 use function constant;
 use function defined;
-use function get_class;
+use function sprintf;
 
-use const PHP_VERSION_ID;
-
-class AttributeDriver extends CompatibilityAnnotationDriver
+class AttributeDriver implements MappingDriver
 {
     use ColocatedMappingDriver;
     use ReflectionBasedDriver;
@@ -36,85 +33,32 @@ class AttributeDriver extends CompatibilityAnnotationDriver
         Mapping\MappedSuperclass::class => 2,
     ];
 
-    /**
-     * @deprecated override isTransient() instead of overriding this property
-     *
-     * @var array<class-string<MappingAttribute>, int>
-     */
-    protected $entityAnnotationClasses = self::ENTITY_ATTRIBUTE_CLASSES;
+    private readonly AttributeReader $reader;
 
     /**
-     * The attribute reader.
-     *
-     * @internal this property will be private in 3.0
-     *
-     * @var AttributeReader
+     * @param array<string> $paths
+     * @param true          $reportFieldsWhereDeclared no-op, to be removed in 4.0
      */
-    protected $reader;
-
-    /** @param array<string> $paths */
-    public function __construct(array $paths, bool $reportFieldsWhereDeclared = false)
+    public function __construct(array $paths, bool $reportFieldsWhereDeclared = true)
     {
-        if (PHP_VERSION_ID < 80000) {
-            throw new LogicException(
-                'The attribute metadata driver cannot be enabled on PHP 7. Please upgrade to PHP 8 or choose a different'
-                . ' metadata driver.'
-            );
+        if (! $reportFieldsWhereDeclared) {
+            throw new InvalidArgumentException(sprintf(
+                'The $reportFieldsWhereDeclared argument is no longer supported, make sure to omit it when calling %s.',
+                __METHOD__,
+            ));
         }
 
         $this->reader = new AttributeReader();
         $this->addPaths($paths);
-
-        if ($this->entityAnnotationClasses !== self::ENTITY_ATTRIBUTE_CLASSES) {
-            Deprecation::trigger(
-                'doctrine/orm',
-                'https://github.com/doctrine/orm/pull/10204',
-                'Changing the value of %s::$entityAnnotationClasses is deprecated and will have no effect in Doctrine ORM 3.0.',
-                self::class
-            );
-        }
-
-        if (! $reportFieldsWhereDeclared) {
-            Deprecation::trigger(
-                'doctrine/orm',
-                'https://github.com/doctrine/orm/pull/10455',
-                'In ORM 3.0, the AttributeDriver will report fields for the classes where they are declared. This may uncover invalid mapping configurations. To opt into the new mode today, set the "reportFieldsWhereDeclared" constructor parameter to true.',
-                self::class
-            );
-        }
-
-        $this->reportFieldsWhereDeclared = $reportFieldsWhereDeclared;
     }
 
-    /**
-     * Retrieve the current annotation reader
-     *
-     * @deprecated no replacement planned.
-     *
-     * @return AttributeReader
-     */
-    public function getReader()
-    {
-        Deprecation::trigger(
-            'doctrine/orm',
-            'https://github.com/doctrine/orm/pull/9587',
-            '%s is deprecated with no replacement',
-            __METHOD__
-        );
-
-        return $this->reader;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function isTransient($className)
+    public function isTransient(string $className): bool
     {
         $classAttributes = $this->reader->getClassAttributes(new ReflectionClass($className));
 
         foreach ($classAttributes as $a) {
             $attr = $a instanceof RepeatableAttributeCollection ? $a[0] : $a;
-            if (isset($this->entityAnnotationClasses[get_class($attr)])) {
+            if (isset(self::ENTITY_ATTRIBUTE_CLASSES[$attr::class])) {
                 return false;
             }
         }
@@ -130,7 +74,7 @@ class AttributeDriver extends CompatibilityAnnotationDriver
      *
      * @template T of object
      */
-    public function loadMetadataForClass($className, PersistenceClassMetadata $metadata): void
+    public function loadMetadataForClass(string $className, PersistenceClassMetadata $metadata): void
     {
         $reflectionClass = $metadata->getReflectionClass()
             // this happens when running attribute driver in combination with
@@ -197,7 +141,7 @@ class AttributeDriver extends CompatibilityAnnotationDriver
                 ) {
                     throw MappingException::invalidIndexConfiguration(
                         $className,
-                        (string) ($indexAnnot->name ?? $idx)
+                        (string) ($indexAnnot->name ?? $idx),
                     );
                 }
 
@@ -242,7 +186,7 @@ class AttributeDriver extends CompatibilityAnnotationDriver
                 ) {
                     throw MappingException::invalidUniqueConstraintConfiguration(
                         $className,
-                        (string) ($uniqueConstraintAnnot->name ?? $idx)
+                        (string) ($uniqueConstraintAnnot->name ?? $idx),
                     );
                 }
 
@@ -284,24 +228,25 @@ class AttributeDriver extends CompatibilityAnnotationDriver
             $inheritanceTypeAttribute = $classAttributes[Mapping\InheritanceType::class];
 
             $metadata->setInheritanceType(
-                constant('Doctrine\ORM\Mapping\ClassMetadata::INHERITANCE_TYPE_' . $inheritanceTypeAttribute->value)
+                constant('Doctrine\ORM\Mapping\ClassMetadata::INHERITANCE_TYPE_' . $inheritanceTypeAttribute->value),
             );
 
             if ($metadata->inheritanceType !== ClassMetadata::INHERITANCE_TYPE_NONE) {
                 // Evaluate DiscriminatorColumn attribute
                 if (isset($classAttributes[Mapping\DiscriminatorColumn::class])) {
                     $discrColumnAttribute = $classAttributes[Mapping\DiscriminatorColumn::class];
+                    assert($discrColumnAttribute instanceof Mapping\DiscriminatorColumn);
 
                     $columnDef = [
-                        'name' => isset($discrColumnAttribute->name) ? (string) $discrColumnAttribute->name : null,
-                        'type' => isset($discrColumnAttribute->type) ? (string) $discrColumnAttribute->type : 'string',
-                        'length' => isset($discrColumnAttribute->length) ? (int) $discrColumnAttribute->length : 255,
-                        'columnDefinition' => isset($discrColumnAttribute->columnDefinition) ? (string) $discrColumnAttribute->columnDefinition : null,
-                        'enumType' => isset($discrColumnAttribute->enumType) ? (string) $discrColumnAttribute->enumType : null,
+                        'name'             => $discrColumnAttribute->name,
+                        'type'             => $discrColumnAttribute->type ?? 'string',
+                        'length'           => $discrColumnAttribute->length ?? 255,
+                        'columnDefinition' => $discrColumnAttribute->columnDefinition,
+                        'enumType'         => $discrColumnAttribute->enumType,
                     ];
 
                     if ($discrColumnAttribute->options) {
-                        $columnDef['options'] = (array) $discrColumnAttribute->options;
+                        $columnDef['options'] = $discrColumnAttribute->options;
                     }
 
                     $metadata->setDiscriminatorColumn($columnDef);
@@ -347,7 +292,7 @@ class AttributeDriver extends CompatibilityAnnotationDriver
                     [
                         'usage'  => (int) constant('Doctrine\ORM\Mapping\ClassMetadata::CACHE_USAGE_' . $cacheAttribute->usage),
                         'region' => $cacheAttribute->region,
-                    ]
+                    ],
                 );
             }
 
@@ -398,13 +343,13 @@ class AttributeDriver extends CompatibilityAnnotationDriver
                             'sequenceName' => $seqGeneratorAttribute->sequenceName,
                             'allocationSize' => $seqGeneratorAttribute->allocationSize,
                             'initialValue' => $seqGeneratorAttribute->initialValue,
-                        ]
+                        ],
                     );
                 } elseif ($customGeneratorAttribute !== null) {
                     $metadata->setCustomGeneratorDefinition(
                         [
                             'class' => $customGeneratorAttribute->class,
-                        ]
+                        ],
                     );
                 }
             } elseif ($oneToOneAttribute !== null) {
@@ -731,8 +676,6 @@ class AttributeDriver extends CompatibilityAnnotationDriver
     /**
      * Parse the given JoinColumn as array
      *
-     * @param Mapping\JoinColumn|Mapping\InverseJoinColumn $joinColumn
-     *
      * @return mixed[]
      * @psalm-return array{
      *                   name: string|null,
@@ -744,7 +687,7 @@ class AttributeDriver extends CompatibilityAnnotationDriver
      *                   options?: array<string, mixed>
      *               }
      */
-    private function joinColumnToArray($joinColumn): array
+    private function joinColumnToArray(Mapping\JoinColumn|Mapping\InverseJoinColumn $joinColumn): array
     {
         $mapping = [
             'name' => $joinColumn->name,

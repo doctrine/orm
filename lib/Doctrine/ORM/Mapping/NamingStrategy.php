@@ -15,64 +15,48 @@ interface NamingStrategy
      * Returns a table name for an entity class.
      *
      * @param class-string $className
-     *
-     * @return string A table name.
      */
-    public function classToTableName($className);
+    public function classToTableName(string $className): string;
 
     /**
      * Returns a column name for a property.
      *
-     * @param string       $propertyName A property name.
-     * @param class-string $className    The fully-qualified class name.
-     *
-     * @return string A column name.
+     * @param class-string $className
      */
-    public function propertyToColumnName($propertyName, $className = null);
+    public function propertyToColumnName(string $propertyName, string $className): string;
 
     /**
      * Returns a column name for an embedded property.
      *
-     * @param string       $propertyName
-     * @param string       $embeddedColumnName
      * @param class-string $className
      * @param class-string $embeddedClassName
-     *
-     * @return string
      */
     public function embeddedFieldToColumnName(
-        $propertyName,
-        $embeddedColumnName,
-        $className = null,
-        $embeddedClassName = null
-    );
+        string $propertyName,
+        string $embeddedColumnName,
+        string $className,
+        string $embeddedClassName,
+    ): string;
 
     /**
      * Returns the default reference column name.
-     *
-     * @return string A column name.
      */
-    public function referenceColumnName();
+    public function referenceColumnName(): string;
 
     /**
      * Returns a join column name for a property.
      *
-     * @param string $propertyName A property name.
-     *
-     * @return string A join column name.
+     * @param class-string $className
      */
-    public function joinColumnName($propertyName/*, string $className */);
+    public function joinColumnName(string $propertyName, string $className): string;
 
     /**
      * Returns a join table name.
      *
-     * @param class-string $sourceEntity The source entity.
-     * @param class-string $targetEntity The target entity.
-     * @param string       $propertyName A property name.
-     *
-     * @return string A join table name.
+     * @param class-string $sourceEntity
+     * @param class-string $targetEntity
      */
-    public function joinTableName($sourceEntity, $targetEntity, $propertyName = null);
+    public function joinTableName(string $sourceEntity, string $targetEntity, string $propertyName): string;
 
     /**
      * Returns the foreign key column name for the given parameters.
@@ -82,8 +66,6 @@ interface NamingStrategy
      *                                           case of a self-referencing
      *                                           entity with join columns
      *                                           defined in the mapping
-     *
-     * @return string A join column name.
      */
-    public function joinKeyColumnName($entityName, $referencedColumnName = null);
+    public function joinKeyColumnName(string $entityName, string|null $referencedColumnName): string;
 }

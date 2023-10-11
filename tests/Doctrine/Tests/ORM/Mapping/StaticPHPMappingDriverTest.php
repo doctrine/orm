@@ -8,6 +8,7 @@ use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
 use Doctrine\Persistence\Mapping\Driver\StaticPHPDriver;
 use Doctrine\Tests\Models\DDC889\DDC889Class;
+use PHPUnit\Framework\Attributes\Group;
 
 use const DIRECTORY_SEPARATOR;
 
@@ -20,28 +21,23 @@ class StaticPHPMappingDriverTest extends MappingDriverTestCase
 
     /**
      * All class with static::loadMetadata are entities for php driver
-     *
-     * @group DDC-889
      */
+    #[Group('DDC-889')]
     public function testinvalidEntityOrMappedSuperClassShouldMentionParentClasses(): void
     {
         self::assertInstanceOf(ClassMetadata::class, $this->createClassMetadata(DDC889Class::class));
     }
 
-    /**
-     * @group DDC-2825
-     * @group 881
-     */
-    public function testSchemaDefinitionViaExplicitTableSchemaAnnotationProperty(): void
+    #[Group('DDC-2825')]
+    #[Group('881')]
+    public function testSchemaDefinitionViaExplicitTableSchemaAttributeProperty(): void
     {
         self::markTestIncomplete();
     }
 
-    /**
-     * @group DDC-2825
-     * @group 881
-     */
-    public function testSchemaDefinitionViaSchemaDefinedInTableNameInTableAnnotationProperty(): void
+    #[Group('DDC-2825')]
+    #[Group('881')]
+    public function testSchemaDefinitionViaSchemaDefinedInTableNameInTableAttributeProperty(): void
     {
         self::markTestIncomplete();
     }

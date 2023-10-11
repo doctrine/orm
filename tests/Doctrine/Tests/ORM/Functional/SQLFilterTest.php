@@ -27,59 +27,35 @@ use Doctrine\Tests\Models\Company\CompanyOrganization;
 use Doctrine\Tests\Models\Company\CompanyPerson;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use InvalidArgumentException;
+use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\MockObject\MockObject;
 use ReflectionMethod;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
 
 use function count;
 use function in_array;
+use function method_exists;
 use function serialize;
 
 /**
  * Tests SQLFilter functionality.
- *
- * @group non-cacheable
  */
+#[Group('non-cacheable')]
 class SQLFilterTest extends OrmFunctionalTestCase
 {
-    /** @var int */
-    private $userId;
-
-    /** @var int */
-    private $userId2;
-
-    /** @var int */
-    private $articleId;
-
-    /** @var int */
-    private $articleId2;
-
-    /** @var int */
-    private $groupId;
-
-    /** @var int */
-    private $groupId2;
-
-    /** @var int */
-    private $managerId;
-
-    /** @var int */
-    private $managerId2;
-
-    /** @var int */
-    private $contractId1;
-
-    /** @var int */
-    private $contractId2;
-
-    /** @var int */
-    private $organizationId;
-
-    /** @var int */
-    private $eventId1;
-
-    /** @var int */
-    private $eventId2;
+    private int $userId;
+    private int $userId2;
+    private int $articleId;
+    private int $articleId2;
+    private int $groupId;
+    private int $groupId2;
+    private int $managerId;
+    private int $managerId2;
+    private int $contractId1;
+    private int $contractId2;
+    private int $organizationId;
+    private int $eventId1;
+    private int $eventId2;
 
     protected function setUp(): void
     {
@@ -93,9 +69,9 @@ class SQLFilterTest extends OrmFunctionalTestCase
     {
         parent::tearDown();
 
-        $class                                           = $this->_em->getClassMetadata(CmsUser::class);
-        $class->associationMappings['groups']['fetch']   = ClassMetadata::FETCH_LAZY;
-        $class->associationMappings['articles']['fetch'] = ClassMetadata::FETCH_LAZY;
+        $class                                         = $this->_em->getClassMetadata(CmsUser::class);
+        $class->associationMappings['groups']->fetch   = ClassMetadata::FETCH_LAZY;
+        $class->associationMappings['articles']->fetch = ClassMetadata::FETCH_LAZY;
     }
 
     public function testConfigureFilter(): void
@@ -125,7 +101,7 @@ class SQLFilterTest extends OrmFunctionalTestCase
         $exceptionThrown = false;
         try {
             $filter = $em->getFilters()->enable('foo');
-        } catch (InvalidArgumentException $e) {
+        } catch (InvalidArgumentException) {
             $exceptionThrown = true;
         }
 
@@ -163,7 +139,7 @@ class SQLFilterTest extends OrmFunctionalTestCase
         $exceptionThrown = false;
         try {
             $filter = $em->getFilters()->disable('foo');
-        } catch (InvalidArgumentException $e) {
+        } catch (InvalidArgumentException) {
             $exceptionThrown = true;
         }
 
@@ -173,7 +149,7 @@ class SQLFilterTest extends OrmFunctionalTestCase
         $exceptionThrown = false;
         try {
             $filter = $em->getFilters()->disable('locale');
-        } catch (InvalidArgumentException $e) {
+        } catch (InvalidArgumentException) {
             $exceptionThrown = true;
         }
 
@@ -195,14 +171,14 @@ class SQLFilterTest extends OrmFunctionalTestCase
         $exceptionThrown = false;
         try {
             $filter = $em->getFilters()->getFilter('soft_delete');
-        } catch (InvalidArgumentException $e) {
+        } catch (InvalidArgumentException) {
             $exceptionThrown = true;
         }
 
         self::assertTrue($exceptionThrown);
     }
 
-    /** @group DDC-2203 */
+    #[Group('DDC-2203')]
     public function testEntityManagerIsFilterEnabled(): void
     {
         $em = $this->getEntityManager();
@@ -228,28 +204,23 @@ class SQLFilterTest extends OrmFunctionalTestCase
         $config->addFilter('soft_delete', '\Doctrine\Tests\ORM\Functional\MySoftDeleteFilter');
     }
 
-    /** @return Connection&MockObject */
-    private function getMockConnection(): Connection
+    private function getMockConnection(): Connection&MockObject
     {
         $connection = $this->createMock(Connection::class);
-        $connection->method('getEventManager')
-            ->willReturn(new EventManager());
+        if (method_exists($connection, 'getEventManager')) {
+            $connection->method('getEventManager')
+                ->willReturn(new EventManager());
+        }
 
         return $connection;
     }
 
-    /** @return EntityManagerInterface&MockObject */
-    private function getMockEntityManager(): EntityManagerInterface
+    private function getMockEntityManager(): EntityManagerInterface&MockObject
     {
         return $this->createMock(EntityManagerInterface::class);
     }
 
-    /**
-     * @psalm-param EntityManagerInterface&MockObject $em
-     *
-     * @return FilterCollection&MockObject
-     */
-    private function addMockFilterCollection(EntityManagerInterface $em): FilterCollection
+    private function addMockFilterCollection(EntityManagerInterface&MockObject $em): FilterCollection&MockObject
     {
         $filterCollection = $this->createMock(FilterCollection::class);
 
@@ -286,10 +257,8 @@ class SQLFilterTest extends OrmFunctionalTestCase
         self::assertEquals("'en'", $filter->getParameter('locale'));
     }
 
-    /**
-     * @group DDC-3161
-     * @group 1054
-     */
+    #[Group('DDC-3161')]
+    #[Group('1054')]
     public function testSQLFilterGetConnection(): void
     {
         // Setup mock connection
@@ -303,7 +272,6 @@ class SQLFilterTest extends OrmFunctionalTestCase
         $filter = new MyLocaleFilter($em);
 
         $reflMethod = new ReflectionMethod(SQLFilter::class, 'getConnection');
-        $reflMethod->setAccessible(true);
 
         self::assertSame($conn, $reflMethod->invoke($filter));
     }
@@ -339,9 +307,7 @@ class SQLFilterTest extends OrmFunctionalTestCase
         // Setup mock connection
         $conn = $this->getMockConnection();
         $conn->method('quote')
-             ->will(self::returnCallback(static function ($value) {
-                 return "'" . $value . "'";
-             }));
+             ->will(self::returnCallback(static fn ($value) => "'" . $value . "'"));
 
         $em = $this->getMockEntityManager();
         $em->method('getConnection')
@@ -465,14 +431,14 @@ class SQLFilterTest extends OrmFunctionalTestCase
         $this->loadFixtureData();
 
         self::assertCount(1, $this->_em->getRepository(CmsGroup::class)->findBy(
-            ['id' => $this->groupId2]
+            ['id' => $this->groupId2],
         ));
 
         $this->useCMSGroupPrefixFilter();
         $this->_em->clear();
 
         self::assertCount(0, $this->_em->getRepository(CmsGroup::class)->findBy(
-            ['id' => $this->groupId2]
+            ['id' => $this->groupId2],
         ));
     }
 
@@ -493,14 +459,14 @@ class SQLFilterTest extends OrmFunctionalTestCase
         $this->loadFixtureData();
 
         self::assertNotNull($this->_em->getRepository(CmsGroup::class)->findOneBy(
-            ['id' => $this->groupId2]
+            ['id' => $this->groupId2],
         ));
 
         $this->useCMSGroupPrefixFilter();
         $this->_em->clear();
 
         self::assertNull($this->_em->getRepository(CmsGroup::class)->findOneBy(
-            ['id' => $this->groupId2]
+            ['id' => $this->groupId2],
         ));
     }
 
@@ -587,9 +553,9 @@ class SQLFilterTest extends OrmFunctionalTestCase
 
     private function loadLazyFixtureData(): void
     {
-        $class                                           = $this->_em->getClassMetadata(CmsUser::class);
-        $class->associationMappings['articles']['fetch'] = ClassMetadata::FETCH_EXTRA_LAZY;
-        $class->associationMappings['groups']['fetch']   = ClassMetadata::FETCH_EXTRA_LAZY;
+        $class                                         = $this->_em->getClassMetadata(CmsUser::class);
+        $class->associationMappings['articles']->fetch = ClassMetadata::FETCH_EXTRA_LAZY;
+        $class->associationMappings['groups']->fetch   = ClassMetadata::FETCH_EXTRA_LAZY;
         $this->loadFixtureData();
     }
 
@@ -1184,8 +1150,7 @@ class SQLFilterTest extends OrmFunctionalTestCase
 
 class MySoftDeleteFilter extends SQLFilter
 {
-    /** {@inheritDoc} */
-    public function addFilterConstraint(ClassMetadata $targetEntity, $targetTableAlias)
+    public function addFilterConstraint(ClassMetadata $targetEntity, string $targetTableAlias): string
     {
         if ($targetEntity->name !== 'MyEntity\SoftDeleteNewsItem') {
             return '';
@@ -1197,8 +1162,7 @@ class MySoftDeleteFilter extends SQLFilter
 
 class MyLocaleFilter extends SQLFilter
 {
-    /** {@inheritDoc} */
-    public function addFilterConstraint(ClassMetadata $targetEntity, $targetTableAlias)
+    public function addFilterConstraint(ClassMetadata $targetEntity, string $targetTableAlias): string
     {
         if (! in_array('LocaleAware', $targetEntity->reflClass->getInterfaceNames(), true)) {
             return '';
@@ -1210,8 +1174,7 @@ class MyLocaleFilter extends SQLFilter
 
 class CMSCountryFilter extends SQLFilter
 {
-    /** {@inheritDoc} */
-    public function addFilterConstraint(ClassMetadata $targetEntity, $targetTableAlias)
+    public function addFilterConstraint(ClassMetadata $targetEntity, string $targetTableAlias): string
     {
         if ($targetEntity->name !== CmsAddress::class) {
             return '';
@@ -1223,8 +1186,7 @@ class CMSCountryFilter extends SQLFilter
 
 class CMSGroupPrefixFilter extends SQLFilter
 {
-    /** {@inheritDoc} */
-    public function addFilterConstraint(ClassMetadata $targetEntity, $targetTableAlias)
+    public function addFilterConstraint(ClassMetadata $targetEntity, string $targetTableAlias): string
     {
         if ($targetEntity->name !== CmsGroup::class) {
             return '';
@@ -1236,8 +1198,7 @@ class CMSGroupPrefixFilter extends SQLFilter
 
 class CMSArticleTopicFilter extends SQLFilter
 {
-    /** {@inheritDoc} */
-    public function addFilterConstraint(ClassMetadata $targetEntity, $targetTableAlias)
+    public function addFilterConstraint(ClassMetadata $targetEntity, string $targetTableAlias): string
     {
         if ($targetEntity->name !== CmsArticle::class) {
             return '';
@@ -1249,8 +1210,7 @@ class CMSArticleTopicFilter extends SQLFilter
 
 class CompanyPersonNameFilter extends SQLFilter
 {
-    /** {@inheritDoc} */
-    public function addFilterConstraint(ClassMetadata $targetEntity, $targetTableAlias, $targetTable = '')
+    public function addFilterConstraint(ClassMetadata $targetEntity, string $targetTableAlias): string
     {
         if ($targetEntity->name !== CompanyPerson::class) {
             return '';
@@ -1262,8 +1222,7 @@ class CompanyPersonNameFilter extends SQLFilter
 
 class CompletedContractFilter extends SQLFilter
 {
-    /** {@inheritDoc} */
-    public function addFilterConstraint(ClassMetadata $targetEntity, $targetTableAlias, $targetTable = '')
+    public function addFilterConstraint(ClassMetadata $targetEntity, string $targetTableAlias): string
     {
         if ($targetEntity->name !== CompanyContract::class) {
             return '';
@@ -1275,8 +1234,7 @@ class CompletedContractFilter extends SQLFilter
 
 class CompanyEventFilter extends SQLFilter
 {
-    /** {@inheritDoc} */
-    public function addFilterConstraint(ClassMetadata $targetEntity, $targetTableAlias, $targetTable = '')
+    public function addFilterConstraint(ClassMetadata $targetEntity, string $targetTableAlias): string
     {
         if ($targetEntity->name !== CompanyEvent::class) {
             return '';

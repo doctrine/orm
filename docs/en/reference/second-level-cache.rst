@@ -295,30 +295,6 @@ level cache region.
             // other properties and methods
         }
 
-    .. code-block:: annotation
-
-        <?php
-        /**
-         * @Entity
-         * @Cache("NONSTRICT_READ_WRITE")
-         */
-        class State
-        {
-            /**
-             * @Id
-             * @GeneratedValue
-             * @Column(type="integer")
-             */
-            protected int|null $id = null;
-
-            /**
-             * @Column(unique=true)
-             */
-            protected string $name;
-
-            // other properties and methods
-        }
-
     .. code-block:: xml
 
         <?xml version="1.0" encoding="utf-8"?>
@@ -334,24 +310,6 @@ level cache region.
             <field name="name" type="string" column="name"/>
           </entity>
         </doctrine-mapping>
-
-    .. code-block:: yaml
-
-        Country:
-          type: entity
-          cache:
-            usage: READ_ONLY
-            region: my_entity_region
-          id:
-            id:
-              type: integer
-              id: true
-              generator:
-                strategy: IDENTITY
-          fields:
-            name:
-              type: string
-
 
 Association cache definition
 ----------------------------
@@ -389,44 +347,6 @@ It caches the primary keys of association and cache each element will be cached 
             // other properties and methods
         }
 
-    .. code-block:: annotation
-
-        <?php
-        /**
-         * @Entity
-         * @Cache("NONSTRICT_READ_WRITE")
-         */
-        class State
-        {
-            /**
-             * @Id
-             * @GeneratedValue
-             * @Column(type="integer")
-             */
-            protected int|null $id = null;
-
-            /**
-             * @Column(unique=true)
-             */
-            protected string $name;
-
-            /**
-             * @Cache("NONSTRICT_READ_WRITE")
-             * @ManyToOne(targetEntity="Country")
-             * @JoinColumn(name="country_id", referencedColumnName="id")
-             */
-            protected Country|null $country;
-
-            /**
-             * @Cache("NONSTRICT_READ_WRITE")
-             * @OneToMany(targetEntity="City", mappedBy="state")
-             * @var Collection<int, City>
-             */
-            protected Collection $cities;
-
-            // other properties and methods
-        }
-
     .. code-block:: xml
 
         <?xml version="1.0" encoding="utf-8"?>
@@ -457,38 +377,6 @@ It caches the primary keys of association and cache each element will be cached 
             </one-to-many>
           </entity>
         </doctrine-mapping>
-
-    .. code-block:: yaml
-
-        State:
-          type: entity
-          cache:
-            usage: NONSTRICT_READ_WRITE
-          id:
-            id:
-              type: integer
-              id: true
-              generator:
-                strategy: IDENTITY
-          fields:
-            name:
-              type: string
-
-          manyToOne:
-            state:
-              targetEntity: Country
-              joinColumns:
-                country_id:
-                  referencedColumnName: id
-              cache:
-                usage: NONSTRICT_READ_WRITE
-
-          oneToMany:
-            cities:
-              targetEntity:City
-              mappedBy: state
-              cache:
-                usage: NONSTRICT_READ_WRITE
 
 .. note::
 

@@ -11,7 +11,6 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 use function array_keys;
-use function get_class;
 
 class DDC656Test extends OrmFunctionalTestCase
 {
@@ -29,10 +28,10 @@ class DDC656Test extends OrmFunctionalTestCase
         $entity->setType('type1');
         $this->_em->persist($entity);
 
-        $this->_em->getUnitOfWork()->computeChangeSet($this->_em->getClassMetadata(get_class($entity)), $entity);
+        $this->_em->getUnitOfWork()->computeChangeSet($this->_em->getClassMetadata($entity::class), $entity);
         $data1 = $this->_em->getUnitOfWork()->getEntityChangeSet($entity);
         $entity->setType('type2');
-        $this->_em->getUnitOfWork()->recomputeSingleEntityChangeSet($this->_em->getClassMetadata(get_class($entity)), $entity);
+        $this->_em->getUnitOfWork()->recomputeSingleEntityChangeSet($this->_em->getClassMetadata($entity::class), $entity);
         $data2 = $this->_em->getUnitOfWork()->getEntityChangeSet($entity);
 
         self::assertEquals(array_keys($data1), array_keys($data2));
@@ -40,33 +39,27 @@ class DDC656Test extends OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $persistedEntity = $this->_em->find(get_class($entity), $entity->specificationId);
+        $persistedEntity = $this->_em->find($entity::class, $entity->specificationId);
         self::assertEquals('type2', $persistedEntity->getType());
         self::assertEquals('test1', $persistedEntity->getName());
     }
 }
 
-/** @Entity */
+#[Entity]
 class DDC656Entity
 {
-    /**
-     * @var string
-     * @Column(type="string", length=255)
-     */
+    /** @var string */
+    #[Column(type: 'string', length: 255)]
     public $name;
 
-    /**
-     * @var string
-     * @Column(type="string", length=255)
-     */
+    /** @var string */
+    #[Column(type: 'string', length: 255)]
     public $type;
 
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     public $specificationId;
 
     public function getName(): string

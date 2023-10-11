@@ -12,8 +12,9 @@ use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\Table;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
-/** @group DDC-192 */
+#[Group('DDC-192')]
 class DDC192Test extends OrmFunctionalTestCase
 {
     public function testSchemaCreation(): void
@@ -30,53 +31,41 @@ class DDC192Test extends OrmFunctionalTestCase
         foreach ($classes as $class) {
             self::assertContains(
                 $this->_em->getClassMetadata($class)->getTableName(),
-                $tables
+                $tables,
             );
         }
     }
 }
 
-/**
- * @Entity
- * @Table(name="ddc192_users")
- */
+#[Table(name: 'ddc192_users')]
+#[Entity]
 class DDC192User
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(name="id", type="integer")
-     * @GeneratedValue(strategy="AUTO")
-     */
+    /** @var int */
+    #[Id]
+    #[Column(name: 'id', type: 'integer')]
+    #[GeneratedValue(strategy: 'AUTO')]
     public $id;
 
-    /**
-     * @var string
-     * @Column(name="name", type="string", length=255)
-     */
+    /** @var string */
+    #[Column(name: 'name', type: 'string', length: 255)]
     public $name;
 }
 
 
-/**
- * @Entity
- * @Table(name="ddc192_phonenumbers")
- */
+#[Table(name: 'ddc192_phonenumbers')]
+#[Entity]
 class DDC192Phonenumber
 {
-    /**
-     * @var string
-     * @Id
-     * @Column(name="phone", type="string", length=40)
-     */
+    /** @var string */
+    #[Id]
+    #[Column(name: 'phone', type: 'string', length: 40)]
     protected $phone;
 
-    /**
-     * @var DDC192User
-     * @Id
-     * @ManyToOne(targetEntity="DDC192User")
-     * @JoinColumn(name="userId", referencedColumnName="id")
-     */
+    /** @var DDC192User */
+    #[Id]
+    #[ManyToOne(targetEntity: 'DDC192User')]
+    #[JoinColumn(name: 'userId', referencedColumnName: 'id')]
     protected $user;
 
     public function setPhone(string $value): void

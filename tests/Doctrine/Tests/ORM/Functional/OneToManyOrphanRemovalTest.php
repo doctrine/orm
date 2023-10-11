@@ -7,6 +7,7 @@ namespace Doctrine\Tests\ORM\Functional;
 use Doctrine\Tests\Models\CMS\CmsPhonenumber;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
 /**
  * Tests a bidirectional one-to-many association mapping with orphan removal.
@@ -62,7 +63,7 @@ class OneToManyOrphanRemovalTest extends OrmFunctionalTestCase
         self::assertCount(0, $result, 'CmsPhonenumber should be removed by orphanRemoval');
     }
 
-    /** @group DDC-3382 */
+    #[Group('DDC-3382')]
     public function testOrphanRemovalRemoveFromCollection(): void
     {
         $user = $this->_em->find(CmsUser::class, $this->userId);
@@ -78,7 +79,7 @@ class OneToManyOrphanRemovalTest extends OrmFunctionalTestCase
         self::assertCount(1, $result, 'CmsPhonenumber should be removed by orphanRemoval');
     }
 
-    /** @group DDC-3382 */
+    #[Group('DDC-3382')]
     public function testOrphanRemovalClearCollectionAndReAdd(): void
     {
         $user = $this->_em->find(CmsUser::class, $this->userId);
@@ -96,7 +97,7 @@ class OneToManyOrphanRemovalTest extends OrmFunctionalTestCase
         self::assertCount(1, $result, 'CmsPhonenumber should be removed by orphanRemoval');
     }
 
-    /** @group DDC-2524 */
+    #[Group('DDC-2524')]
     public function testOrphanRemovalClearCollectionAndAddNew(): void
     {
         $user     = $this->_em->find(CmsUser::class, $this->userId);
@@ -115,7 +116,7 @@ class OneToManyOrphanRemovalTest extends OrmFunctionalTestCase
         self::assertCount(1, $result, 'Old CmsPhonenumbers should be removed by orphanRemoval and new one added');
     }
 
-    /** @group DDC-1496 */
+    #[Group('DDC-1496')]
     public function testOrphanRemovalUnitializedCollection(): void
     {
         $user = $this->_em->find(CmsUser::class, $this->userId);

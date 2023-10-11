@@ -11,29 +11,23 @@ use Doctrine\Common\Collections\ExpressionBuilder as CriteriaBuilder;
 use Doctrine\ORM\Query\Expr as QueryBuilder;
 use Doctrine\ORM\Query\Parameter;
 use Doctrine\ORM\Query\QueryExpressionVisitor;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
-
-use function method_exists;
 
 /**
  * Test for QueryExpressionVisitor
  */
 class QueryExpressionVisitorTest extends TestCase
 {
-    /** @var QueryExpressionVisitor */
-    private $visitor;
+    private QueryExpressionVisitor $visitor;
 
     protected function setUp(): void
     {
         $this->visitor = new QueryExpressionVisitor(['o', 'p']);
     }
 
-    /**
-     * @param QueryBuilder\Comparison|QueryBuilder\Func|string $queryExpr
-     *
-     * @dataProvider comparisonData
-     */
-    public function testWalkComparison(CriteriaComparison $criteriaExpr, $queryExpr, ?Parameter $parameter = null): void
+    #[DataProvider('comparisonData')]
+    public function testWalkComparison(CriteriaComparison $criteriaExpr, QueryBuilder\Comparison|QueryBuilder\Func|string $queryExpr, Parameter|null $parameter = null): void
     {
         self::assertEquals($queryExpr, $this->visitor->walkComparison($criteriaExpr));
         if ($parameter) {
@@ -89,8 +83,8 @@ class QueryExpressionVisitorTest extends TestCase
         $expr = $this->visitor->walkCompositeExpression(
             $cb->andX(
                 $cb->eq('foo', 1),
-                $cb->eq('bar', 1)
-            )
+                $cb->eq('bar', 1),
+            ),
         );
 
         self::assertInstanceOf(QueryBuilder\Andx::class, $expr);
@@ -103,8 +97,8 @@ class QueryExpressionVisitorTest extends TestCase
         $expr = $this->visitor->walkCompositeExpression(
             $cb->orX(
                 $cb->eq('foo', 1),
-                $cb->eq('bar', 1)
-            )
+                $cb->eq('bar', 1),
+            ),
         );
 
         self::assertInstanceOf(QueryBuilder\Orx::class, $expr);
@@ -113,17 +107,13 @@ class QueryExpressionVisitorTest extends TestCase
 
     public function testWalkNotCompositeExpression(): void
     {
-        if (! method_exists(CriteriaBuilder::class, 'not')) {
-            self::markTestSkipped('doctrine/collections in version ^2.1 is required for this test to run.');
-        }
-
         $qb = new QueryBuilder();
         $cb = new CriteriaBuilder();
 
         $expr = $this->visitor->walkCompositeExpression(
             $cb->not(
-                $cb->eq('foo', 1)
-            )
+                $cb->eq('foo', 1),
+            ),
         );
 
         self::assertInstanceOf(QueryBuilder\Func::class, $expr);

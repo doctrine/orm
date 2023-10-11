@@ -15,7 +15,6 @@ use Doctrine\ORM\Query\Parser;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\ORM\QueryBuilder;
 use IteratorAggregate;
-use ReturnTypeWillChange;
 use Traversable;
 
 use function array_key_exists;
@@ -36,38 +35,26 @@ class Paginator implements Countable, IteratorAggregate
 
     public const HINT_ENABLE_DISTINCT = 'paginator.distinct.enable';
 
-    /** @var Query */
-    private $query;
+    private readonly Query $query;
+    private bool|null $useOutputWalkers = null;
+    private int|null $count             = null;
 
-    /** @var bool */
-    private $fetchJoinCollection;
-
-    /** @var bool|null */
-    private $useOutputWalkers;
-
-    /** @var int|null */
-    private $count;
-
-    /**
-     * @param Query|QueryBuilder $query               A Doctrine ORM query or query builder.
-     * @param bool               $fetchJoinCollection Whether the query joins a collection (true by default).
-     */
-    public function __construct($query, $fetchJoinCollection = true)
-    {
+    /** @param bool $fetchJoinCollection Whether the query joins a collection (true by default). */
+    public function __construct(
+        Query|QueryBuilder $query,
+        private readonly bool $fetchJoinCollection = true,
+    ) {
         if ($query instanceof QueryBuilder) {
             $query = $query->getQuery();
         }
 
-        $this->query               = $query;
-        $this->fetchJoinCollection = (bool) $fetchJoinCollection;
+        $this->query = $query;
     }
 
     /**
      * Returns the query.
-     *
-     * @return Query
      */
-    public function getQuery()
+    public function getQuery(): Query
     {
         return $this->query;
     }
@@ -77,17 +64,15 @@ class Paginator implements Countable, IteratorAggregate
      *
      * @return bool Whether the query joins a collection.
      */
-    public function getFetchJoinCollection()
+    public function getFetchJoinCollection(): bool
     {
         return $this->fetchJoinCollection;
     }
 
     /**
      * Returns whether the paginator will use an output walker.
-     *
-     * @return bool|null
      */
-    public function getUseOutputWalkers()
+    public function getUseOutputWalkers(): bool|null
     {
         return $this->useOutputWalkers;
     }
@@ -95,30 +80,21 @@ class Paginator implements Countable, IteratorAggregate
     /**
      * Sets whether the paginator will use an output walker.
      *
-     * @param bool|null $useOutputWalkers
-     *
      * @return $this
-     * @psalm-return static<T>
      */
-    public function setUseOutputWalkers($useOutputWalkers)
+    public function setUseOutputWalkers(bool|null $useOutputWalkers): static
     {
         $this->useOutputWalkers = $useOutputWalkers;
 
         return $this;
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * @return int
-     */
-    #[ReturnTypeWillChange]
-    public function count()
+    public function count(): int
     {
         if ($this->count === null) {
             try {
                 $this->count = (int) array_sum(array_map('current', $this->getCountQuery()->getScalarResult()));
-            } catch (NoResultException $e) {
+            } catch (NoResultException) {
                 $this->count = 0;
             }
         }
@@ -129,11 +105,9 @@ class Paginator implements Countable, IteratorAggregate
     /**
      * {@inheritDoc}
      *
-     * @return Traversable
      * @psalm-return Traversable<array-key, T>
      */
-    #[ReturnTypeWillChange]
-    public function getIterator()
+    public function getIterator(): Traversable
     {
         $offset = $this->query->getFirstResult();
         $length = $this->query->getMaxResults();
@@ -284,7 +258,7 @@ class Paginator implements Countable, IteratorAggregate
         $type       = $query->getSQL();
         assert(is_string($type));
 
-        return array_map(static function ($id) use ($connection, $type) {
+        return array_map(static function ($id) use ($connection, $type): mixed {
             return $connection->convertToDatabaseValue($id, $type);
         }, $identifiers);
     }

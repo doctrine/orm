@@ -12,6 +12,7 @@ use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\EntityListeners;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\ORM\Tools\AttachEntityListenersListener;
 use Doctrine\Tests\OrmTestCase;
 
@@ -19,19 +20,16 @@ use function func_get_args;
 
 class AttachEntityListenersListenerTest extends OrmTestCase
 {
-    /** @var EntityManagerInterface */
-    private $em;
+    private EntityManagerInterface $em;
 
-    /** @var AttachEntityListenersListener */
-    private $listener;
+    private AttachEntityListenersListener $listener;
 
-    /** @var ClassMetadataFactory */
-    private $factory;
+    private ClassMetadataFactory $factory;
 
     protected function setUp(): void
     {
         $this->listener = new AttachEntityListenersListener();
-        $driver         = $this->createAnnotationDriver();
+        $driver         = $this->createAttributeDriver();
         $this->em       = $this->getTestEntityManager();
         $evm            = $this->em->getEventManager();
         $this->factory  = new ClassMetadataFactory();
@@ -47,7 +45,7 @@ class AttachEntityListenersListenerTest extends OrmTestCase
             AttachEntityListenersListenerTestFooEntity::class,
             AttachEntityListenersListenerTestListener::class,
             Events::postLoad,
-            'postLoadHandler'
+            'postLoadHandler',
         );
 
         $metadata = $this->factory->getMetadataFor(AttachEntityListenersListenerTestFooEntity::class);
@@ -74,14 +72,14 @@ class AttachEntityListenersListenerTest extends OrmTestCase
         $this->listener->addEntityListener(
             AttachEntityListenersListenerTestBarEntity::class,
             AttachEntityListenersListenerTestListener2::class,
-            Events::prePersist
+            Events::prePersist,
         );
 
         $this->listener->addEntityListener(
             AttachEntityListenersListenerTestBarEntity::class,
             AttachEntityListenersListenerTestListener2::class,
             Events::postPersist,
-            'postPersistHandler'
+            'postPersistHandler',
         );
 
         $metadata = $this->factory->getMetadataFor(AttachEntityListenersListenerTestBarEntity::class);
@@ -107,18 +105,18 @@ class AttachEntityListenersListenerTest extends OrmTestCase
 
     public function testDuplicateEntityListenerException(): void
     {
-        $this->expectException('Doctrine\ORM\Mapping\MappingException');
+        $this->expectException(MappingException::class);
         $this->expectExceptionMessage('Entity Listener "Doctrine\Tests\ORM\Tools\AttachEntityListenersListenerTestListener#postPersist()" in "Doctrine\Tests\ORM\Tools\AttachEntityListenersListenerTestFooEntity" was already declared, but it must be declared only once.');
         $this->listener->addEntityListener(
             AttachEntityListenersListenerTestFooEntity::class,
             AttachEntityListenersListenerTestListener::class,
-            Events::postPersist
+            Events::postPersist,
         );
 
         $this->listener->addEntityListener(
             AttachEntityListenersListenerTestFooEntity::class,
             AttachEntityListenersListenerTestListener::class,
-            Events::postPersist
+            Events::postPersist,
         );
 
         $this->factory->getMetadataFor(AttachEntityListenersListenerTestFooEntity::class);
@@ -129,7 +127,6 @@ class AttachEntityListenersListenerTest extends OrmTestCase
         $this->listener->addEntityListener(
             AttachEntityListenersListenerTestFooEntity::class,
             AttachEntityListenersListenerTestListener::class,
-            null
         );
 
         $metadata = $this->factory->getMetadataFor(AttachEntityListenersListenerTestFooEntity::class);
@@ -150,30 +147,24 @@ class AttachEntityListenersListenerTest extends OrmTestCase
     }
 }
 
-/** @Entity */
+#[Entity]
 class AttachEntityListenersListenerTestFooEntity
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue(strategy: 'AUTO')]
     public $id;
 }
 
-/**
- * @Entity
- * @EntityListeners({"AttachEntityListenersListenerTestListener"})
- */
+#[Entity]
+#[EntityListeners(['AttachEntityListenersListenerTestListener'])]
 class AttachEntityListenersListenerTestBarEntity
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue(strategy: 'AUTO')]
     public $id;
 }
 

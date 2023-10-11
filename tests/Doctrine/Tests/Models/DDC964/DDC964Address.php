@@ -9,51 +9,24 @@ use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 
-/** @Entity */
+#[Entity]
 class DDC964Address
 {
-    /**
-     * @var int
-     * @GeneratedValue
-     * @Id
-     * @Column(type="integer")
-     */
-    private $id;
-
-    /**
-     * @var string|null
-     * @Column
-     */
-    private $country;
-
-    /**
-     * @var string|null
-     * @Column
-     */
-    private $zip;
-
-    /**
-     * @var string|null
-     * @Column
-     */
-    private $city;
-
-    /**
-     * @var string|null
-     * @Column
-     */
-    private $street;
+    #[GeneratedValue]
+    #[Id]
+    #[Column(type: 'integer')]
+    private int $id;
 
     public function __construct(
-        ?string $zip = null,
-        ?string $country = null,
-        ?string $city = null,
-        ?string $street = null
+        #[Column]
+        private string|null $zip = null,
+        #[Column]
+        private string|null $country = null,
+        #[Column]
+        private string|null $city = null,
+        #[Column]
+        private string|null $street = null,
     ) {
-        $this->zip     = $zip;
-        $this->country = $country;
-        $this->city    = $city;
-        $this->street  = $street;
     }
 
     public function getId(): int
@@ -61,7 +34,7 @@ class DDC964Address
         return $this->id;
     }
 
-    public function getCountry(): ?string
+    public function getCountry(): string|null
     {
         return $this->country;
     }
@@ -71,7 +44,7 @@ class DDC964Address
         $this->country = $country;
     }
 
-    public function getZip(): ?string
+    public function getZip(): string|null
     {
         return $this->zip;
     }
@@ -81,7 +54,7 @@ class DDC964Address
         $this->zip = $zip;
     }
 
-    public function getCity(): ?string
+    public function getCity(): string|null
     {
         return $this->city;
     }
@@ -91,7 +64,7 @@ class DDC964Address
         $this->city = $city;
     }
 
-    public function getStreet(): ?string
+    public function getStreet(): string|null
     {
         return $this->street;
     }

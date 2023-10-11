@@ -7,12 +7,12 @@ namespace Doctrine\Tests\ORM\Functional;
 use Doctrine\Tests\Models\VersionedOneToOne\FirstRelatedEntity;
 use Doctrine\Tests\Models\VersionedOneToOne\SecondRelatedEntity;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
 /**
  * Tests that an entity with a OneToOne relationship defined as the id, with a version field can be created.
- *
- * @group VersionedOneToOne
  */
+#[Group('VersionedOneToOne')]
 class VersionedOneToOneTest extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -21,7 +21,7 @@ class VersionedOneToOneTest extends OrmFunctionalTestCase
 
         $this->createSchemaForModels(
             FirstRelatedEntity::class,
-            SecondRelatedEntity::class
+            SecondRelatedEntity::class,
         );
     }
 

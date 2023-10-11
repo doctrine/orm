@@ -12,37 +12,25 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\ORM\Mapping\Table;
 
-/**
- * @Entity
- * @Table("cache_traveler_profile")
- * @Cache("NONSTRICT_READ_WRITE")
- */
+#[Table('cache_traveler_profile')]
+#[Entity]
+#[Cache('NONSTRICT_READ_WRITE')]
 class TravelerProfile
 {
-    /**
-     * @var int
-     * @Id
-     * @GeneratedValue
-     * @Column(type="integer")
-     */
+    /** @var int */
+    #[Id]
+    #[GeneratedValue]
+    #[Column(type: 'integer')]
     protected $id;
 
-    /**
-     * @var string
-     * @Column(unique=true)
-     */
-    private $name;
+    #[OneToOne(targetEntity: 'TravelerProfileInfo', mappedBy: 'profile')]
+    #[Cache]
+    private TravelerProfileInfo|null $info = null;
 
-    /**
-     * @var TravelerProfileInfo
-     * @OneToOne(targetEntity="TravelerProfileInfo", mappedBy="profile")
-     * @Cache()
-     */
-    private $info;
-
-    public function __construct(string $name)
-    {
-        $this->name = $name;
+    public function __construct(
+        #[Column(unique: true)]
+        private string $name,
+    ) {
     }
 
     public function getId(): int

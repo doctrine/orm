@@ -5,19 +5,20 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Tools;
 
 use BackedEnum;
-use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Schema\AbstractAsset;
 use Doctrine\DBAL\Schema\AbstractSchemaManager;
-use Doctrine\DBAL\Schema\Comparator;
 use Doctrine\DBAL\Schema\Index;
 use Doctrine\DBAL\Schema\Schema;
-use Doctrine\DBAL\Schema\Sequence;
 use Doctrine\DBAL\Schema\Table;
 use Doctrine\DBAL\Schema\Visitor\RemoveNamespacedAssets;
-use Doctrine\Deprecations\Deprecation;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Mapping\AssociationMapping;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\DiscriminatorColumnMapping;
+use Doctrine\ORM\Mapping\FieldMapping;
+use Doctrine\ORM\Mapping\JoinColumnMapping;
+use Doctrine\ORM\Mapping\ManyToManyOwningSideMapping;
 use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\ORM\Mapping\QuoteStrategy;
 use Doctrine\ORM\Tools\Event\GenerateSchemaEventArgs;
@@ -32,12 +33,11 @@ use function array_filter;
 use function array_flip;
 use function array_intersect_key;
 use function assert;
+use function class_exists;
 use function count;
 use function current;
-use function func_num_args;
 use function implode;
 use function in_array;
-use function is_array;
 use function is_numeric;
 use function method_exists;
 use function strtolower;
@@ -47,44 +47,24 @@ use function strtolower;
  * <tt>ClassMetadata</tt> class descriptors.
  *
  * @link    www.doctrine-project.org
- *
- * @psalm-import-type AssociationMapping from ClassMetadata
- * @psalm-import-type DiscriminatorColumnMapping from ClassMetadata
- * @psalm-import-type FieldMapping from ClassMetadata
- * @psalm-import-type JoinColumnData from ClassMetadata
  */
 class SchemaTool
 {
     private const KNOWN_COLUMN_OPTIONS = ['comment', 'unsigned', 'fixed', 'default'];
 
-    /** @var EntityManagerInterface */
-    private $em;
-
-    /** @var AbstractPlatform */
-    private $platform;
-
-    /**
-     * The quote strategy.
-     *
-     * @var QuoteStrategy
-     */
-    private $quoteStrategy;
-
-    /** @var AbstractSchemaManager */
-    private $schemaManager;
+    private readonly AbstractPlatform $platform;
+    private readonly QuoteStrategy $quoteStrategy;
+    private readonly AbstractSchemaManager $schemaManager;
 
     /**
      * Initializes a new SchemaTool instance that uses the connection of the
      * provided EntityManager.
      */
-    public function __construct(EntityManagerInterface $em)
+    public function __construct(private readonly EntityManagerInterface $em)
     {
-        $this->em            = $em;
         $this->platform      = $em->getConnection()->getDatabasePlatform();
         $this->quoteStrategy = $em->getConfiguration()->getQuoteStrategy();
-        $this->schemaManager = method_exists(Connection::class, 'createSchemaManager')
-            ? $em->getConnection()->createSchemaManager()
-            : $em->getConnection()->getSchemaManager();
+        $this->schemaManager = $em->getConnection()->createSchemaManager();
     }
 
     /**
@@ -92,11 +72,9 @@ class SchemaTool
      *
      * @psalm-param list<ClassMetadata> $classes
      *
-     * @return void
-     *
      * @throws ToolsException
      */
-    public function createSchema(array $classes)
+    public function createSchema(array $classes): void
     {
         $createSchemaSql = $this->getCreateSchemaSql($classes);
         $conn            = $this->em->getConnection();
@@ -118,7 +96,7 @@ class SchemaTool
      *
      * @return list<string> The SQL statements needed to create the schema for the classes.
      */
-    public function getCreateSchemaSql(array $classes)
+    public function getCreateSchemaSql(array $classes): array
     {
         $schema = $this->getSchemaFromMetadata($classes);
 
@@ -132,7 +110,7 @@ class SchemaTool
      */
     private function processingNotRequired(
         ClassMetadata $class,
-        array $processedClasses
+        array $processedClasses,
     ): bool {
         return isset($processedClasses[$class->name]) ||
             $class->isMappedSuperclass ||
@@ -160,8 +138,8 @@ class SchemaTool
             )
         ) {
             throw MappingException::invalidIndexConfiguration(
-                $class,
-                $indexData['name'] ?? 'unnamed'
+                (string) $class,
+                $indexData['name'] ?? 'unnamed',
             );
         }
 
@@ -174,7 +152,9 @@ class SchemaTool
                 if ($class->hasField($fieldName)) {
                     $columns[] = $this->quoteStrategy->getColumnName($fieldName, $class, $this->platform);
                 } elseif ($class->hasAssociation($fieldName)) {
-                    foreach ($class->getAssociationMapping($fieldName)['joinColumns'] as $joinColumn) {
+                    $assoc = $class->getAssociationMapping($fieldName);
+                    assert($assoc->isToOneOwningSide());
+                    foreach ($assoc->joinColumns as $joinColumn) {
                         $columns[] = $this->quoteStrategy->getJoinColumnName($joinColumn, $class, $this->platform);
                     }
                 }
@@ -189,11 +169,9 @@ class SchemaTool
      *
      * @psalm-param list<ClassMetadata> $classes
      *
-     * @return Schema
-     *
      * @throws NotSupported
      */
-    public function getSchemaFromMetadata(array $classes)
+    public function getSchemaFromMetadata(array $classes): Schema
     {
         // Reminder for processed classes, used for hierarchies
         $processedClasses     = [];
@@ -234,7 +212,7 @@ class SchemaTool
             } elseif ($class->isInheritanceTypeJoined()) {
                 // Add all non-inherited fields as columns
                 foreach ($class->fieldMappings as $fieldName => $mapping) {
-                    if (! isset($mapping['inherited'])) {
+                    if (! isset($mapping->inherited)) {
                         $this->gatherColumn($class, $mapping, $table);
                     }
                 }
@@ -250,13 +228,13 @@ class SchemaTool
                     $inheritedKeyColumns = [];
 
                     foreach ($class->identifier as $identifierField) {
-                        if (isset($class->fieldMappings[$identifierField]['inherited'])) {
+                        if (isset($class->fieldMappings[$identifierField]->inherited)) {
                             $idMapping = $class->fieldMappings[$identifierField];
                             $this->gatherColumn($class, $idMapping, $table);
                             $columnName = $this->quoteStrategy->getColumnName(
                                 $identifierField,
                                 $class,
-                                $this->platform
+                                $this->platform,
                             );
                             // TODO: This seems rather hackish, can we optimize it?
                             $table->getColumn($columnName)->setAutoincrement(false);
@@ -267,24 +245,23 @@ class SchemaTool
                             continue;
                         }
 
-                        if (isset($class->associationMappings[$identifierField]['inherited'])) {
+                        if (isset($class->associationMappings[$identifierField]->inherited)) {
                             $idMapping = $class->associationMappings[$identifierField];
+                            assert($idMapping->isToOneOwningSide());
 
                             $targetEntity = current(
                                 array_filter(
                                     $classes,
-                                    static function (ClassMetadata $class) use ($idMapping): bool {
-                                        return $class->name === $idMapping['targetEntity'];
-                                    }
-                                )
+                                    static fn (ClassMetadata $class): bool => $class->name === $idMapping->targetEntity,
+                                ),
                             );
 
-                            foreach ($idMapping['joinColumns'] as $joinColumn) {
-                                if (isset($targetEntity->fieldMappings[$joinColumn['referencedColumnName']])) {
+                            foreach ($idMapping->joinColumns as $joinColumn) {
+                                if (isset($targetEntity->fieldMappings[$joinColumn->referencedColumnName])) {
                                     $columnName = $this->quoteStrategy->getJoinColumnName(
                                         $joinColumn,
                                         $class,
-                                        $this->platform
+                                        $this->platform,
                                     );
 
                                     $pkColumns[]           = $columnName;
@@ -299,11 +276,11 @@ class SchemaTool
                         $table->addForeignKeyConstraint(
                             $this->quoteStrategy->getTableName(
                                 $this->em->getClassMetadata($class->rootEntityName),
-                                $this->platform
+                                $this->platform,
                             ),
                             $inheritedKeyColumns,
                             $inheritedKeyColumns,
-                            ['onDelete' => 'CASCADE']
+                            ['onDelete' => 'CASCADE'],
                         );
                     }
 
@@ -311,8 +288,6 @@ class SchemaTool
                         $table->setPrimaryKey($pkColumns);
                     }
                 }
-            } elseif ($class->isInheritanceTypeTablePerClass()) {
-                throw NotSupported::create();
             } else {
                 $this->gatherColumns($class, $table);
                 $this->gatherRelationsSql($class, $table, $schema, $addedFks, $blacklistedFks);
@@ -325,9 +300,9 @@ class SchemaTool
                     $pkColumns[] = $this->quoteStrategy->getColumnName($identifierField, $class, $this->platform);
                 } elseif (isset($class->associationMappings[$identifierField])) {
                     $assoc = $class->associationMappings[$identifierField];
-                    assert(is_array($assoc));
+                    assert($assoc->isToOneOwningSide());
 
-                    foreach ($assoc['joinColumns'] as $joinColumn) {
+                    foreach ($assoc->joinColumns as $joinColumn) {
                         $pkColumns[] = $this->quoteStrategy->getJoinColumnName($joinColumn, $class, $this->platform);
                     }
                 }
@@ -358,7 +333,7 @@ class SchemaTool
                         $this->getIndexColumns($class, $indexData),
                         is_numeric($indexName) ? null : $indexName,
                         (array) $indexData['flags'],
-                        $indexData['options'] ?? []
+                        $indexData['options'] ?? [],
                     );
                 }
             }
@@ -368,8 +343,7 @@ class SchemaTool
                     $uniqIndex = new Index($indexName, $this->getIndexColumns($class, $indexData), true, false, [], $indexData['options'] ?? []);
 
                     foreach ($table->getIndexes() as $tableIndexName => $tableIndex) {
-                        $method = method_exists($tableIndex, 'isFulfilledBy') ? 'isFulfilledBy' : 'isFullfilledBy';
-                        if ($tableIndex->$method($uniqIndex)) {
+                        if ($tableIndex->isFulfilledBy($uniqIndex)) {
                             $table->dropIndex($tableIndexName);
                             break;
                         }
@@ -394,7 +368,7 @@ class SchemaTool
                     $schema->createSequence(
                         $quotedName,
                         (int) $seqDef['allocationSize'],
-                        (int) $seqDef['initialValue']
+                        (int) $seqDef['initialValue'],
                     );
                 }
             }
@@ -402,25 +376,23 @@ class SchemaTool
             if ($eventManager->hasListeners(ToolEvents::postGenerateSchemaTable)) {
                 $eventManager->dispatchEvent(
                     ToolEvents::postGenerateSchemaTable,
-                    new GenerateSchemaTableEventArgs($class, $schema, $table)
+                    new GenerateSchemaTableEventArgs($class, $schema, $table),
                 );
             }
         }
 
-        if (! $this->platform->supportsSchemas()) {
-            $filter = /** @param Sequence|Table $asset */ static function ($asset) use ($schema): bool {
-                return ! $asset->isInDefaultNamespace($schema->getName());
-            };
-
-            if (array_filter($schema->getSequences() + $schema->getTables(), $filter) && ! $this->platform->canEmulateSchemas()) {
-                $schema->visit(new RemoveNamespacedAssets());
-            }
+        if (
+            ! $this->platform->supportsSchemas()
+            && class_exists(RemoveNamespacedAssets::class)
+            && method_exists($schema, 'visit')
+        ) {
+            $schema->visit(new RemoveNamespacedAssets());
         }
 
         if ($eventManager->hasListeners(ToolEvents::postGenerateSchema)) {
             $eventManager->dispatchEvent(
                 ToolEvents::postGenerateSchema,
-                new GenerateSchemaEventArgs($this->em, $schema)
+                new GenerateSchemaEventArgs($this->em, $schema),
             );
         }
 
@@ -434,26 +406,24 @@ class SchemaTool
     private function addDiscriminatorColumnDefinition(ClassMetadata $class, Table $table): void
     {
         $discrColumn = $class->discriminatorColumn;
+        assert($discrColumn !== null);
 
-        if (
-            ! isset($discrColumn['type']) ||
-            (strtolower($discrColumn['type']) === 'string' && ! isset($discrColumn['length']))
-        ) {
-            $discrColumn['type']   = 'string';
-            $discrColumn['length'] = 255;
+        if (strtolower($discrColumn->type) === 'string' && ! isset($discrColumn->length)) {
+            $discrColumn->type   = 'string';
+            $discrColumn->length = 255;
         }
 
         $options = [
-            'length'    => $discrColumn['length'] ?? null,
+            'length'    => $discrColumn->length ?? null,
             'notnull'   => true,
         ];
 
-        if (isset($discrColumn['columnDefinition'])) {
-            $options['columnDefinition'] = $discrColumn['columnDefinition'];
+        if (isset($discrColumn->columnDefinition)) {
+            $options['columnDefinition'] = $discrColumn->columnDefinition;
         }
 
         $options = $this->gatherColumnOptions($discrColumn) + $options;
-        $table->addColumn($discrColumn['name'], $discrColumn['type'], $options);
+        $table->addColumn($discrColumn->name, $discrColumn->type, $options);
     }
 
     /**
@@ -465,14 +435,14 @@ class SchemaTool
         $pkColumns = [];
 
         foreach ($class->fieldMappings as $mapping) {
-            if ($class->isInheritanceTypeSingleTable() && isset($mapping['inherited'])) {
+            if ($class->isInheritanceTypeSingleTable() && isset($mapping->inherited)) {
                 continue;
             }
 
             $this->gatherColumn($class, $mapping, $table);
 
-            if ($class->isIdentifier($mapping['fieldName'])) {
-                $pkColumns[] = $this->quoteStrategy->getColumnName($mapping['fieldName'], $class, $this->platform);
+            if ($class->isIdentifier($mapping->fieldName)) {
+                $pkColumns[] = $this->quoteStrategy->getColumnName($mapping->fieldName, $class, $this->platform);
             }
         }
     }
@@ -485,46 +455,46 @@ class SchemaTool
      */
     private function gatherColumn(
         ClassMetadata $class,
-        array $mapping,
-        Table $table
+        FieldMapping $mapping,
+        Table $table,
     ): void {
-        $columnName = $this->quoteStrategy->getColumnName($mapping['fieldName'], $class, $this->platform);
-        $columnType = $mapping['type'];
+        $columnName = $this->quoteStrategy->getColumnName($mapping->fieldName, $class, $this->platform);
+        $columnType = $mapping->type;
 
         $options            = [];
-        $options['length']  = $mapping['length'] ?? null;
-        $options['notnull'] = isset($mapping['nullable']) ? ! $mapping['nullable'] : true;
+        $options['length']  = $mapping->length ?? null;
+        $options['notnull'] = isset($mapping->nullable) ? ! $mapping->nullable : true;
         if ($class->isInheritanceTypeSingleTable() && $class->parentClasses) {
             $options['notnull'] = false;
         }
 
         $options['platformOptions']            = [];
-        $options['platformOptions']['version'] = $class->isVersioned && $class->versionField === $mapping['fieldName'];
+        $options['platformOptions']['version'] = $class->isVersioned && $class->versionField === $mapping->fieldName;
 
         if (strtolower($columnType) === 'string' && $options['length'] === null) {
             $options['length'] = 255;
         }
 
-        if (isset($mapping['precision'])) {
-            $options['precision'] = $mapping['precision'];
+        if (isset($mapping->precision)) {
+            $options['precision'] = $mapping->precision;
         }
 
-        if (isset($mapping['scale'])) {
-            $options['scale'] = $mapping['scale'];
+        if (isset($mapping->scale)) {
+            $options['scale'] = $mapping->scale;
         }
 
-        if (isset($mapping['default'])) {
-            $options['default'] = $mapping['default'];
+        if (isset($mapping->default)) {
+            $options['default'] = $mapping->default;
         }
 
-        if (isset($mapping['columnDefinition'])) {
-            $options['columnDefinition'] = $mapping['columnDefinition'];
+        if (isset($mapping->columnDefinition)) {
+            $options['columnDefinition'] = $mapping->columnDefinition;
         }
 
         // the 'default' option can be overwritten here
         $options = $this->gatherColumnOptions($mapping) + $options;
 
-        if ($class->isIdGeneratorIdentity() && $class->getIdentifierFieldNames() === [$mapping['fieldName']]) {
+        if ($class->isIdGeneratorIdentity() && $class->getIdentifierFieldNames() === [$mapping->fieldName]) {
             $options['autoincrement'] = true;
         }
 
@@ -533,14 +503,13 @@ class SchemaTool
         }
 
         if ($table->hasColumn($columnName)) {
-            $method = method_exists($table, 'modifyColumn') ? 'modifyColumn' : 'changeColumn';
             // required in some inheritance scenarios
-            $table->$method($columnName, $options);
+            $table->modifyColumn($columnName, $options);
         } else {
             $table->addColumn($columnName, $columnType, $options);
         }
 
-        $isUnique = $mapping['unique'] ?? false;
+        $isUnique = $mapping->unique ?? false;
         if ($isUnique) {
             $table->addUniqueIndex([$columnName]);
         }
@@ -563,66 +532,61 @@ class SchemaTool
         Table $table,
         Schema $schema,
         array &$addedFks,
-        array &$blacklistedFks
+        array &$blacklistedFks,
     ): void {
         foreach ($class->associationMappings as $id => $mapping) {
-            if (isset($mapping['inherited']) && ! in_array($id, $class->identifier, true)) {
+            if (isset($mapping->inherited) && ! in_array($id, $class->identifier, true)) {
                 continue;
             }
 
-            $foreignClass = $this->em->getClassMetadata($mapping['targetEntity']);
+            $foreignClass = $this->em->getClassMetadata($mapping->targetEntity);
 
-            if ($mapping['type'] & ClassMetadata::TO_ONE && $mapping['isOwningSide']) {
+            if ($mapping->isToOneOwningSide()) {
                 $primaryKeyColumns = []; // PK is unnecessary for this relation-type
 
                 $this->gatherRelationJoinColumns(
-                    $mapping['joinColumns'],
+                    $mapping->joinColumns,
                     $table,
                     $foreignClass,
                     $mapping,
                     $primaryKeyColumns,
                     $addedFks,
-                    $blacklistedFks
+                    $blacklistedFks,
                 );
-            } elseif ($mapping['type'] === ClassMetadata::ONE_TO_MANY && $mapping['isOwningSide']) {
-                //... create join table, one-many through join table supported later
-                throw NotSupported::create();
-            } elseif ($mapping['type'] === ClassMetadata::MANY_TO_MANY && $mapping['isOwningSide']) {
+            } elseif ($mapping instanceof ManyToManyOwningSideMapping) {
                 // create join table
-                $joinTable = $mapping['joinTable'];
+                $joinTable = $mapping->joinTable;
 
                 $theJoinTable = $schema->createTable(
-                    $this->quoteStrategy->getJoinTableName($mapping, $foreignClass, $this->platform)
+                    $this->quoteStrategy->getJoinTableName($mapping, $foreignClass, $this->platform),
                 );
 
-                if (isset($joinTable['options'])) {
-                    foreach ($joinTable['options'] as $key => $val) {
-                        $theJoinTable->addOption($key, $val);
-                    }
+                foreach ($joinTable->options as $key => $val) {
+                    $theJoinTable->addOption($key, $val);
                 }
 
                 $primaryKeyColumns = [];
 
                 // Build first FK constraint (relation table => source table)
                 $this->gatherRelationJoinColumns(
-                    $joinTable['joinColumns'],
+                    $joinTable->joinColumns,
                     $theJoinTable,
                     $class,
                     $mapping,
                     $primaryKeyColumns,
                     $addedFks,
-                    $blacklistedFks
+                    $blacklistedFks,
                 );
 
                 // Build second FK constraint (relation table => target table)
                 $this->gatherRelationJoinColumns(
-                    $joinTable['inverseJoinColumns'],
+                    $joinTable->inverseJoinColumns,
                     $theJoinTable,
                     $foreignClass,
                     $mapping,
                     $primaryKeyColumns,
                     $addedFks,
-                    $blacklistedFks
+                    $blacklistedFks,
                 );
 
                 $theJoinTable->setPrimaryKey($primaryKeyColumns);
@@ -641,7 +605,7 @@ class SchemaTool
      *
      * @psalm-return array{ClassMetadata, string}|null
      */
-    private function getDefiningClass(ClassMetadata $class, string $referencedColumnName): ?array
+    private function getDefiningClass(ClassMetadata $class, string $referencedColumnName): array|null
     {
         $referencedFieldName = $class->getFieldName($referencedColumnName);
 
@@ -657,8 +621,8 @@ class SchemaTool
                     && $class->getSingleAssociationJoinColumnName($fieldName) === $referencedColumnName
                 ) {
                     return $this->getDefiningClass(
-                        $this->em->getClassMetadata($class->associationMappings[$fieldName]['targetEntity']),
-                        $class->getSingleAssociationReferencedJoinColumnName($fieldName)
+                        $this->em->getClassMetadata($class->associationMappings[$fieldName]->targetEntity),
+                        $class->getSingleAssociationReferencedJoinColumnName($fieldName),
                     );
                 }
             }
@@ -670,8 +634,7 @@ class SchemaTool
     /**
      * Gathers columns and fk constraints that are required for one part of relationship.
      *
-     * @psalm-param array<string, JoinColumnData>    $joinColumns
-     * @psalm-param AssociationMapping               $mapping
+     * @psalm-param list<JoinColumnMapping>          $joinColumns
      * @psalm-param list<string>                     $primaryKeyColumns
      * @psalm-param array<string, array{
      *                  foreignTableName: string,
@@ -685,10 +648,10 @@ class SchemaTool
         array $joinColumns,
         Table $theJoinTable,
         ClassMetadata $class,
-        array $mapping,
+        AssociationMapping $mapping,
         array &$primaryKeyColumns,
         array &$addedFks,
-        array &$blacklistedFks
+        array &$blacklistedFks,
     ): void {
         $localColumns      = [];
         $foreignColumns    = [];
@@ -699,14 +662,14 @@ class SchemaTool
         foreach ($joinColumns as $joinColumn) {
             [$definingClass, $referencedFieldName] = $this->getDefiningClass(
                 $class,
-                $joinColumn['referencedColumnName']
+                $joinColumn->referencedColumnName,
             );
 
             if (! $definingClass) {
                 throw MissingColumnException::fromColumnSourceAndTarget(
-                    $joinColumn['referencedColumnName'],
-                    $mapping['sourceEntity'],
-                    $mapping['targetEntity']
+                    $joinColumn->referencedColumnName,
+                    $mapping->sourceEntity,
+                    $mapping->targetEntity,
                 );
             }
 
@@ -714,7 +677,7 @@ class SchemaTool
             $quotedRefColumnName = $this->quoteStrategy->getReferencedJoinColumnName(
                 $joinColumn,
                 $class,
-                $this->platform
+                $this->platform,
             );
 
             $primaryKeyColumns[] = $quotedColumnName;
@@ -730,38 +693,38 @@ class SchemaTool
 
                 $columnOptions = ['notnull' => false];
 
-                if (isset($joinColumn['columnDefinition'])) {
-                    $columnOptions['columnDefinition'] = $joinColumn['columnDefinition'];
-                } elseif (isset($fieldMapping['columnDefinition'])) {
-                    $columnOptions['columnDefinition'] = $fieldMapping['columnDefinition'];
+                if (isset($joinColumn->columnDefinition)) {
+                    $columnOptions['columnDefinition'] = $joinColumn->columnDefinition;
+                } elseif (isset($fieldMapping->columnDefinition)) {
+                    $columnOptions['columnDefinition'] = $fieldMapping->columnDefinition;
                 }
 
-                if (isset($joinColumn['nullable'])) {
-                    $columnOptions['notnull'] = ! $joinColumn['nullable'];
+                if (isset($joinColumn->nullable)) {
+                    $columnOptions['notnull'] = ! $joinColumn->nullable;
                 }
 
                 $columnOptions += $this->gatherColumnOptions($fieldMapping);
 
-                if (isset($fieldMapping['length'])) {
-                    $columnOptions['length'] = $fieldMapping['length'];
+                if (isset($fieldMapping->length)) {
+                    $columnOptions['length'] = $fieldMapping->length;
                 }
 
-                if ($fieldMapping['type'] === 'decimal') {
-                    $columnOptions['scale']     = $fieldMapping['scale'];
-                    $columnOptions['precision'] = $fieldMapping['precision'];
+                if ($fieldMapping->type === 'decimal') {
+                    $columnOptions['scale']     = $fieldMapping->scale;
+                    $columnOptions['precision'] = $fieldMapping->precision;
                 }
 
                 $columnOptions = $this->gatherColumnOptions($joinColumn) + $columnOptions;
 
-                $theJoinTable->addColumn($quotedColumnName, $fieldMapping['type'], $columnOptions);
+                $theJoinTable->addColumn($quotedColumnName, $fieldMapping->type, $columnOptions);
             }
 
-            if (isset($joinColumn['unique']) && $joinColumn['unique'] === true) {
+            if (isset($joinColumn->unique) && $joinColumn->unique === true) {
                 $uniqueConstraints[] = ['columns' => [$quotedColumnName]];
             }
 
-            if (isset($joinColumn['onDelete'])) {
-                $fkOptions['onDelete'] = $joinColumn['onDelete'];
+            if (isset($joinColumn->onDelete)) {
+                $fkOptions['onDelete'] = $joinColumn->onDelete;
             }
         }
 
@@ -795,22 +758,18 @@ class SchemaTool
                 $foreignTableName,
                 $localColumns,
                 $foreignColumns,
-                $fkOptions
+                $fkOptions,
             );
         }
     }
 
-    /**
-     * @psalm-param JoinColumnData|FieldMapping|DiscriminatorColumnMapping $mapping
-     *
-     * @return mixed[]
-     */
-    private function gatherColumnOptions(array $mapping): array
+    /** @return mixed[] */
+    private function gatherColumnOptions(JoinColumnMapping|FieldMapping|DiscriminatorColumnMapping $mapping): array
     {
-        $mappingOptions = $mapping['options'] ?? [];
+        $mappingOptions = $mapping->options ?? [];
 
-        if (isset($mapping['enumType'])) {
-            $mappingOptions['enumType'] = $mapping['enumType'];
+        if (isset($mapping->enumType)) {
+            $mappingOptions['enumType'] = $mapping->enumType;
         }
 
         if (($mappingOptions['default'] ?? null) instanceof BackedEnum) {
@@ -834,10 +793,8 @@ class SchemaTool
      * issued for all classes of the schema and some probably just don't exist.
      *
      * @psalm-param list<ClassMetadata> $classes
-     *
-     * @return void
      */
-    public function dropSchema(array $classes)
+    public function dropSchema(array $classes): void
     {
         $dropSchemaSql = $this->getDropSchemaSQL($classes);
         $conn          = $this->em->getConnection();
@@ -845,7 +802,7 @@ class SchemaTool
         foreach ($dropSchemaSql as $sql) {
             try {
                 $conn->executeStatement($sql);
-            } catch (Throwable $e) {
+            } catch (Throwable) {
                 // ignored
             }
         }
@@ -853,10 +810,8 @@ class SchemaTool
 
     /**
      * Drops all elements in the database of the current connection.
-     *
-     * @return void
      */
-    public function dropDatabase()
+    public function dropDatabase(): void
     {
         $dropSchemaSql = $this->getDropDatabaseSQL();
         $conn          = $this->em->getConnection();
@@ -871,14 +826,10 @@ class SchemaTool
      *
      * @return list<string>
      */
-    public function getDropDatabaseSQL()
+    public function getDropDatabaseSQL(): array
     {
-        $method = method_exists(AbstractSchemaManager::class, 'introspectSchema') ?
-            'introspectSchema' :
-            'createSchema';
-
         return $this->schemaManager
-            ->$method()
+            ->introspectSchema()
             ->toDropSql($this->platform);
     }
 
@@ -889,11 +840,11 @@ class SchemaTool
      *
      * @return list<string>
      */
-    public function getDropSchemaSQL(array $classes)
+    public function getDropSchemaSQL(array $classes): array
     {
         $schema = $this->getSchemaFromMetadata($classes);
 
-        $deployedSchema = $this->introspectSchema();
+        $deployedSchema = $this->schemaManager->introspectSchema();
 
         foreach ($schema->getTables() as $table) {
             if (! $deployedSchema->hasTable($table->getName())) {
@@ -932,26 +883,12 @@ class SchemaTool
      * instances to the current database schema that is inspected.
      *
      * @param mixed[] $classes
-     * @param bool    $saveMode If TRUE, only performs a partial update
-     *                           without dropping assets which are scheduled for deletion.
-     *
-     * @return void
      */
-    public function updateSchema(array $classes, $saveMode = false)
+    public function updateSchema(array $classes): void
     {
-        if (func_num_args() > 1) {
-            Deprecation::triggerIfCalledFromOutside(
-                'doctrine/orm',
-                'https://github.com/doctrine/orm/pull/10153',
-                'Passing $saveMode to %s() is deprecated and will not be possible in Doctrine ORM 3.0.',
-                __METHOD__
-            );
-        }
+        $conn = $this->em->getConnection();
 
-        $updateSchemaSql = $this->getUpdateSchemaSql($classes, $saveMode);
-        $conn            = $this->em->getConnection();
-
-        foreach ($updateSchemaSql as $sql) {
+        foreach ($this->getUpdateSchemaSql($classes) as $sql) {
             $conn->executeStatement($sql);
         }
     }
@@ -960,41 +897,16 @@ class SchemaTool
      * Gets the sequence of SQL statements that need to be performed in order
      * to bring the given class mappings in-synch with the relational schema.
      *
-     * @param bool                $saveMode If TRUE, only generates SQL for a partial update
-     *                                      that does not include SQL for dropping assets which are scheduled for deletion.
-     * @param list<ClassMetadata> $classes  The classes to consider.
+     * @param list<ClassMetadata> $classes The classes to consider.
      *
      * @return list<string> The sequence of SQL statements.
      */
-    public function getUpdateSchemaSql(array $classes, $saveMode = false)
+    public function getUpdateSchemaSql(array $classes): array
     {
-        if (func_num_args() > 1) {
-            Deprecation::triggerIfCalledFromOutside(
-                'doctrine/orm',
-                'https://github.com/doctrine/orm/pull/10153',
-                'Passing $saveMode to %s() is deprecated and will not be possible in Doctrine ORM 3.0.',
-                __METHOD__
-            );
-        }
-
         $toSchema   = $this->getSchemaFromMetadata($classes);
         $fromSchema = $this->createSchemaForComparison($toSchema);
-
-        if (method_exists($this->schemaManager, 'createComparator')) {
-            $comparator = $this->schemaManager->createComparator();
-        } else {
-            $comparator = new Comparator();
-        }
-
+        $comparator = $this->schemaManager->createComparator();
         $schemaDiff = $comparator->compareSchemas($fromSchema, $toSchema);
-
-        if ($saveMode) {
-            return $schemaDiff->toSaveSql($this->platform);
-        }
-
-        if (! method_exists(AbstractPlatform::class, 'getAlterSchemaSQL')) {
-            return $schemaDiff->toSql($this->platform);
-        }
 
         return $this->platform->getAlterSchemaSQL($schemaDiff);
     }
@@ -1011,7 +923,7 @@ class SchemaTool
         $previousFilter = $config->getSchemaAssetsFilter();
 
         if ($previousFilter === null) {
-            return $this->introspectSchema();
+            return $this->schemaManager->introspectSchema();
         }
 
         // whitelist assets we already know about in $toSchema, use the existing filter otherwise
@@ -1022,19 +934,10 @@ class SchemaTool
         });
 
         try {
-            return $this->introspectSchema();
+            return $this->schemaManager->introspectSchema();
         } finally {
             // restore schema assets filter
             $config->setSchemaAssetsFilter($previousFilter);
         }
-    }
-
-    private function introspectSchema(): Schema
-    {
-        $method = method_exists($this->schemaManager, 'introspectSchema')
-            ? 'introspectSchema'
-            : 'createSchema';
-
-        return $this->schemaManager->$method();
     }
 }

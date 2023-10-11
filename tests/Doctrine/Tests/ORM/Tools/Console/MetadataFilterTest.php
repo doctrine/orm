@@ -4,35 +4,34 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Tools\Console;
 
+use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Tools\Console\MetadataFilter;
-use Doctrine\ORM\Tools\DisconnectedClassMetadataFactory;
 use Doctrine\Tests\OrmTestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
 
 use function count;
 
 /**
  * Tests for {@see \Doctrine\ORM\Tools\Console\MetadataFilter}
- *
- * @covers \Doctrine\ORM\Tools\Console\MetadataFilter
  */
+#[CoversClass(MetadataFilter::class)]
 class MetadataFilterTest extends OrmTestCase
 {
-    /** @var DisconnectedClassMetadataFactory */
-    private $cmf;
+    private ClassMetadataFactory $cmf;
 
     protected function setUp(): void
     {
         parent::setUp();
 
-        $driver = $this->createAnnotationDriver();
+        $driver = $this->createAttributeDriver();
         $em     = $this->getTestEntityManager();
 
         $em->getConfiguration()->setMetadataDriverImpl($driver);
 
-        $this->cmf = new DisconnectedClassMetadataFactory();
+        $this->cmf = new ClassMetadataFactory();
         $this->cmf->setEntityManager($em);
     }
 
@@ -147,68 +146,56 @@ class MetadataFilterTest extends OrmTestCase
     }
 }
 
-/** @Entity */
+#[Entity]
 class MetadataFilterTestEntityAaa
 {
-    /**
-     * @var int
-     * @Id
-     * @Column
-     */
+    /** @var int */
+    #[Id]
+    #[Column]
     protected $id;
 }
 
-/** @Entity */
+#[Entity]
 class MetadataFilterTestEntityBbb
 {
-    /**
-     * @var int
-     * @Id
-     * @Column
-     */
+    /** @var int */
+    #[Id]
+    #[Column]
     protected $id;
 }
 
-/** @Entity */
+#[Entity]
 class MetadataFilterTestEntityCcc
 {
-    /**
-     * @var int
-     * @Id
-     * @Column
-     */
+    /** @var int */
+    #[Id]
+    #[Column]
     protected $id;
 }
 
-/** @Entity */
+#[Entity]
 class MetadataFilterTestEntityFoo
 {
-    /**
-     * @var int
-     * @Id
-     * @Column
-     */
+    /** @var int */
+    #[Id]
+    #[Column]
     protected $id;
 }
 
-/** @Entity */
+#[Entity]
 class MetadataFilterTestEntityBar
 {
-    /**
-     * @var int
-     * @Id
-     * @Column
-     */
+    /** @var int */
+    #[Id]
+    #[Column]
     protected $id;
 }
 
-/** @Entity */
+#[Entity]
 class MetadataFilterTestEntityFooBar
 {
-    /**
-     * @var int
-     * @Id
-     * @Column
-     */
+    /** @var int */
+    #[Id]
+    #[Column]
     protected $id;
 }

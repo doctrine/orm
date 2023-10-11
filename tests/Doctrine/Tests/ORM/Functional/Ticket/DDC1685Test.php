@@ -8,13 +8,13 @@ use Doctrine\ORM\Tools\Pagination\Paginator;
 use Doctrine\Tests\Models\DDC117\DDC117Article;
 use Doctrine\Tests\Models\DDC117\DDC117ArticleDetails;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 use RuntimeException;
 
-/** @group DDC-1685 */
+#[Group('DDC-1685')]
 class DDC1685Test extends OrmFunctionalTestCase
 {
-    /** @var Paginator */
-    private $paginator;
+    private Paginator $paginator;
 
     protected function setUp(): void
     {

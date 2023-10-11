@@ -15,42 +15,30 @@ use Doctrine\ORM\Mapping\Table;
 /**
  * ECommerceCustomer
  * Represents a registered user of a shopping application.
- *
- * @Entity
- * @Table(name="ecommerce_customers")
  */
+#[Table(name: 'ecommerce_customers')]
+#[Entity]
 class ECommerceCustomer
 {
-    /**
-     * @var int
-     * @Column(type="integer")
-     * @Id
-     * @GeneratedValue(strategy="AUTO")
-     */
-    private $id;
+    #[Column(type: 'integer')]
+    #[Id]
+    #[GeneratedValue(strategy: 'AUTO')]
+    private int $id;
 
-    /**
-     * @var string
-     * @Column(type="string", length=50)
-     */
-    private $name;
+    #[Column(type: 'string', length: 50)]
+    private string|null $name = null;
 
-    /**
-     * @var ECommerceCart|null
-     * @OneToOne(targetEntity="ECommerceCart", mappedBy="customer", cascade={"persist"})
-     */
-    private $cart;
+    #[OneToOne(targetEntity: 'ECommerceCart', mappedBy: 'customer', cascade: ['persist'])]
+    private ECommerceCart|null $cart = null;
 
     /**
      * Example of a one-one self referential association. A mentor can follow
      * only one customer at the time, while a customer can choose only one
      * mentor. Not properly appropriate but it works.
-     *
-     * @var ECommerceCustomer|null
-     * @OneToOne(targetEntity="ECommerceCustomer", cascade={"persist"}, fetch="EAGER")
-     * @JoinColumn(name="mentor_id", referencedColumnName="id")
      */
-    private $mentor;
+    #[OneToOne(targetEntity: 'ECommerceCustomer', cascade: ['persist'], fetch: 'EAGER')]
+    #[JoinColumn(name: 'mentor_id', referencedColumnName: 'id')]
+    private ECommerceCustomer|null $mentor = null;
 
     public function getId(): int
     {
@@ -81,7 +69,7 @@ class ECommerceCustomer
         $this->cart = $cart;
     }
 
-    public function getCart(): ?ECommerceCart
+    public function getCart(): ECommerceCart|null
     {
         return $this->cart;
     }
@@ -105,7 +93,7 @@ class ECommerceCustomer
         $this->mentor = null;
     }
 
-    public function getMentor(): ?ECommerceCustomer
+    public function getMentor(): ECommerceCustomer|null
     {
         return $this->mentor;
     }

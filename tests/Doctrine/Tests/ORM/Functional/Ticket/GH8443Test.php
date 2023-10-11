@@ -18,6 +18,7 @@ use Doctrine\ORM\Query;
 use Doctrine\Tests\Models\Company\CompanyManager;
 use Doctrine\Tests\Models\Company\CompanyPerson;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
 use function assert;
 
@@ -32,7 +33,7 @@ final class GH8443Test extends OrmFunctionalTestCase
         $this->createSchemaForModels(GH8443Foo::class);
     }
 
-    /** @group GH-8443 */
+    #[Group('GH-8443')]
     public function testJoinRootEntityWithForcePartialLoad(): void
     {
         $person = new CompanyPerson();
@@ -54,14 +55,14 @@ final class GH8443Test extends OrmFunctionalTestCase
         $manager = $this->_em->createQuery(
             "SELECT m from Doctrine\Tests\Models\Company\CompanyManager m
                JOIN m.spouse s
-               WITH s.name = 'John'"
+               WITH s.name = 'John'",
         )->setHint(Query::HINT_FORCE_PARTIAL_LOAD, true)->getSingleResult();
         $this->_em->refresh($manager);
 
         $this->assertEquals('John', $manager->getSpouse()->getName());
     }
 
-    /** @group GH-8443 */
+    #[Group('GH-8443')]
     public function testJoinRootEntityWithOnlyOneEntityInHierarchy(): void
     {
         $bar = new GH8443Foo('bar');
@@ -75,7 +76,7 @@ final class GH8443Test extends OrmFunctionalTestCase
         $this->_em->clear();
 
         $foo = $this->_em->createQuery(
-            'SELECT f from ' . GH8443Foo::class . " f JOIN f.bar b WITH b.name = 'bar'"
+            'SELECT f from ' . GH8443Foo::class . " f JOIN f.bar b WITH b.name = 'bar'",
         )->getSingleResult();
         assert($foo instanceof GH8443Foo);
 
@@ -84,44 +85,30 @@ final class GH8443Test extends OrmFunctionalTestCase
         $this->assertEquals('bar', $bar->getName());
     }
 }
-/**
- * @Entity
- * @Table(name="GH2947_foo")
- * @InheritanceType("JOINED")
- * @DiscriminatorColumn(name="discr", type="string")
- * @DiscriminatorMap({
- *      "foo" = "GH8443Foo"
- * })
- */
+#[Table(name: 'GH2947_foo')]
+#[Entity]
+#[InheritanceType('JOINED')]
+#[DiscriminatorColumn(name: 'discr', type: 'string')]
+#[DiscriminatorMap(['foo' => 'GH8443Foo'])]
 class GH8443Foo
 {
-    /**
-     * @var int|null
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
-    private $id;
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
+    private int|null $id = null;
 
-    /**
-     * @var string
-     * @Column
-     */
-    private $name;
-
-    /**
-     * @var GH8443Foo|null
-     * @OneToOne(targetEntity="GH8443Foo")
-     * @JoinColumn(name="bar_id", referencedColumnName="id")
-     */
+    /** @var GH8443Foo|null */
+    #[OneToOne(targetEntity: 'GH8443Foo')]
+    #[JoinColumn(name: 'bar_id', referencedColumnName: 'id')]
     private $bar;
 
-    public function __construct(string $name)
-    {
-        $this->name = $name;
+    public function __construct(
+        #[Column]
+        private string $name,
+    ) {
     }
 
-    public function getName(): ?string
+    public function getName(): string|null
     {
         return $this->name;
     }
@@ -134,7 +121,7 @@ class GH8443Foo
         }
     }
 
-    public function getBar(): ?GH8443Foo
+    public function getBar(): GH8443Foo|null
     {
         return $this->bar;
     }

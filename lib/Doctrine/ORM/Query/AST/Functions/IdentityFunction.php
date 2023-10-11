@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Query\AST\Functions;
 
 use Doctrine\ORM\Query\AST\PathExpression;
-use Doctrine\ORM\Query\Lexer;
 use Doctrine\ORM\Query\Parser;
 use Doctrine\ORM\Query\QueryException;
 use Doctrine\ORM\Query\SqlWalker;
+use Doctrine\ORM\Query\TokenType;
 
 use function assert;
 use function reset;
@@ -24,13 +24,9 @@ class IdentityFunction extends FunctionNode
     /** @var PathExpression */
     public $pathExpression;
 
-    /** @var string|null */
-    public $fieldMapping;
+    public string|null $fieldMapping = null;
 
-    /**
-     * {@inheritDoc}
-     */
-    public function getSql(SqlWalker $sqlWalker)
+    public function getSql(SqlWalker $sqlWalker): string
     {
         assert($this->pathExpression->field !== null);
         $entityManager = $sqlWalker->getEntityManager();
@@ -39,8 +35,10 @@ class IdentityFunction extends FunctionNode
         $dqlAlias      = $this->pathExpression->identificationVariable;
         $assocField    = $this->pathExpression->field;
         $assoc         = $sqlWalker->getMetadataForDqlAlias($dqlAlias)->associationMappings[$assocField];
-        $targetEntity  = $entityManager->getClassMetadata($assoc['targetEntity']);
-        $joinColumn    = reset($assoc['joinColumns']);
+        $targetEntity  = $entityManager->getClassMetadata($assoc->targetEntity);
+
+        assert($assoc->isToOneOwningSide());
+        $joinColumn = reset($assoc->joinColumns);
 
         if ($this->fieldMapping !== null) {
             if (! isset($targetEntity->fieldMappings[$this->fieldMapping])) {
@@ -50,8 +48,8 @@ class IdentityFunction extends FunctionNode
             $field      = $targetEntity->fieldMappings[$this->fieldMapping];
             $joinColumn = null;
 
-            foreach ($assoc['joinColumns'] as $mapping) {
-                if ($mapping['referencedColumnName'] === $field['columnName']) {
+            foreach ($assoc->joinColumns as $mapping) {
+                if ($mapping->referencedColumnName === $field->columnName) {
                     $joinColumn = $mapping;
 
                     break;
@@ -64,7 +62,7 @@ class IdentityFunction extends FunctionNode
         }
 
         // The table with the relation may be a subclass, so get the table name from the association definition
-        $tableName = $entityManager->getClassMetadata($assoc['sourceEntity'])->getTableName();
+        $tableName = $entityManager->getClassMetadata($assoc->sourceEntity)->getTableName();
 
         $tableAlias = $sqlWalker->getSQLTableAlias($tableName, $dqlAlias);
         $columnName = $quoteStrategy->getJoinColumnName($joinColumn, $targetEntity, $platform);
@@ -72,25 +70,22 @@ class IdentityFunction extends FunctionNode
         return $tableAlias . '.' . $columnName;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function parse(Parser $parser)
+    public function parse(Parser $parser): void
     {
-        $parser->match(Lexer::T_IDENTIFIER);
-        $parser->match(Lexer::T_OPEN_PARENTHESIS);
+        $parser->match(TokenType::T_IDENTIFIER);
+        $parser->match(TokenType::T_OPEN_PARENTHESIS);
 
         $this->pathExpression = $parser->SingleValuedAssociationPathExpression();
 
-        if ($parser->getLexer()->isNextToken(Lexer::T_COMMA)) {
-            $parser->match(Lexer::T_COMMA);
-            $parser->match(Lexer::T_STRING);
+        if ($parser->getLexer()->isNextToken(TokenType::T_COMMA)) {
+            $parser->match(TokenType::T_COMMA);
+            $parser->match(TokenType::T_STRING);
 
             $token = $parser->getLexer()->token;
             assert($token !== null);
             $this->fieldMapping = $token->value;
         }
 
-        $parser->match(Lexer::T_CLOSE_PARENTHESIS);
+        $parser->match(TokenType::T_CLOSE_PARENTHESIS);
     }
 }

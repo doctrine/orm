@@ -20,16 +20,14 @@ use function sprintf;
 class PersisterHelper
 {
     /**
-     * @param string $fieldName
-     *
-     * @return array<int, string>
+     * @return list<string>
      *
      * @throws QueryException
      */
-    public static function getTypeOfField($fieldName, ClassMetadata $class, EntityManagerInterface $em)
+    public static function getTypeOfField(string $fieldName, ClassMetadata $class, EntityManagerInterface $em): array
     {
         if (isset($class->fieldMappings[$fieldName])) {
-            return [$class->fieldMappings[$fieldName]['type']];
+            return [$class->fieldMappings[$fieldName]->type];
         }
 
         if (! isset($class->associationMappings[$fieldName])) {
@@ -38,53 +36,47 @@ class PersisterHelper
 
         $assoc = $class->associationMappings[$fieldName];
 
-        if (! $assoc['isOwningSide']) {
-            return self::getTypeOfField($assoc['mappedBy'], $em->getClassMetadata($assoc['targetEntity']), $em);
+        if (! $assoc->isOwningSide()) {
+            return self::getTypeOfField($assoc->mappedBy, $em->getClassMetadata($assoc->targetEntity), $em);
         }
 
-        if ($assoc['type'] & ClassMetadata::MANY_TO_MANY) {
-            $joinData = $assoc['joinTable'];
+        if ($assoc->isManyToManyOwningSide()) {
+            $joinData = $assoc->joinTable;
         } else {
             $joinData = $assoc;
         }
 
         $types       = [];
-        $targetClass = $em->getClassMetadata($assoc['targetEntity']);
+        $targetClass = $em->getClassMetadata($assoc->targetEntity);
 
-        foreach ($joinData['joinColumns'] as $joinColumn) {
-            $types[] = self::getTypeOfColumn($joinColumn['referencedColumnName'], $targetClass, $em);
+        foreach ($joinData->joinColumns as $joinColumn) {
+            $types[] = self::getTypeOfColumn($joinColumn->referencedColumnName, $targetClass, $em);
         }
 
         return $types;
     }
 
-    /**
-     * @param string $columnName
-     *
-     * @return string
-     *
-     * @throws RuntimeException
-     */
-    public static function getTypeOfColumn($columnName, ClassMetadata $class, EntityManagerInterface $em)
+    /** @throws RuntimeException */
+    public static function getTypeOfColumn(string $columnName, ClassMetadata $class, EntityManagerInterface $em): string
     {
         if (isset($class->fieldNames[$columnName])) {
             $fieldName = $class->fieldNames[$columnName];
 
             if (isset($class->fieldMappings[$fieldName])) {
-                return $class->fieldMappings[$fieldName]['type'];
+                return $class->fieldMappings[$fieldName]->type;
             }
         }
 
         // iterate over to-one association mappings
         foreach ($class->associationMappings as $assoc) {
-            if (! isset($assoc['joinColumns'])) {
+            if (! $assoc->isToOneOwningSide()) {
                 continue;
             }
 
-            foreach ($assoc['joinColumns'] as $joinColumn) {
-                if ($joinColumn['name'] === $columnName) {
-                    $targetColumnName = $joinColumn['referencedColumnName'];
-                    $targetClass      = $em->getClassMetadata($assoc['targetEntity']);
+            foreach ($assoc->joinColumns as $joinColumn) {
+                if ($joinColumn->name === $columnName) {
+                    $targetColumnName = $joinColumn->referencedColumnName;
+                    $targetClass      = $em->getClassMetadata($assoc->targetEntity);
 
                     return self::getTypeOfColumn($targetColumnName, $targetClass, $em);
                 }
@@ -93,14 +85,14 @@ class PersisterHelper
 
         // iterate over to-many association mappings
         foreach ($class->associationMappings as $assoc) {
-            if (! (isset($assoc['joinTable']) && isset($assoc['joinTable']['joinColumns']))) {
+            if (! $assoc->isManyToManyOwningSide()) {
                 continue;
             }
 
-            foreach ($assoc['joinTable']['joinColumns'] as $joinColumn) {
-                if ($joinColumn['name'] === $columnName) {
-                    $targetColumnName = $joinColumn['referencedColumnName'];
-                    $targetClass      = $em->getClassMetadata($assoc['targetEntity']);
+            foreach ($assoc->joinTable->joinColumns as $joinColumn) {
+                if ($joinColumn->name === $columnName) {
+                    $targetColumnName = $joinColumn->referencedColumnName;
+                    $targetClass      = $em->getClassMetadata($assoc->targetEntity);
 
                     return self::getTypeOfColumn($targetColumnName, $targetClass, $em);
                 }
@@ -110,7 +102,7 @@ class PersisterHelper
         throw new RuntimeException(sprintf(
             'Could not resolve type of column "%s" of class "%s"',
             $columnName,
-            $class->getName()
+            $class->getName(),
         ));
     }
 }

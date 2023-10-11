@@ -6,9 +6,6 @@ namespace Doctrine\Tests\ORM\Functional\Ticket\GH10049;
 
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-/**
- * @requires PHP 8.1
- */
 class GH10049Test extends OrmFunctionalTestCase
 {
     public function setUp(): void
@@ -17,13 +14,11 @@ class GH10049Test extends OrmFunctionalTestCase
 
         $this->createSchemaForModels(
             ReadOnlyPropertyOwner::class,
-            ReadOnlyPropertyInheritor::class
+            ReadOnlyPropertyInheritor::class,
         );
     }
 
-    /**
-     * @doesNotPerformAssertions
-     */
+    /** @doesNotPerformAssertions */
     public function testInheritedReadOnlyPropertyValueCanBeSet(): void
     {
         $child = new ReadOnlyPropertyInheritor(10049);

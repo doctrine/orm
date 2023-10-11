@@ -6,132 +6,31 @@ namespace Doctrine\ORM\Mapping;
 
 use Attribute;
 use BackedEnum;
-use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
 
-/**
- * @Annotation
- * @NamedArgumentConstructor
- * @Target({"PROPERTY","ANNOTATION"})
- */
 #[Attribute(Attribute::TARGET_PROPERTY)]
 final class Column implements MappingAttribute
 {
     /**
-     * @var string|null
-     * @readonly
-     */
-    public $name;
-
-    /**
-     * @var mixed
-     * @readonly
-     */
-    public $type;
-
-    /**
-     * @var int|null
-     * @readonly
-     */
-    public $length;
-
-    /**
-     * The precision for a decimal (exact numeric) column (Applies only for decimal column).
-     *
-     * @var int|null
-     * @readonly
-     */
-    public $precision = 0;
-
-    /**
-     * The scale for a decimal (exact numeric) column (Applies only for decimal column).
-     *
-     * @var int|null
-     * @readonly
-     */
-    public $scale = 0;
-
-    /**
-     * @var bool
-     * @readonly
-     */
-    public $unique = false;
-
-    /**
-     * @var bool
-     * @readonly
-     */
-    public $nullable = false;
-
-    /**
-     * @var bool
-     * @readonly
-     */
-    public $insertable = true;
-
-    /**
-     * @var bool
-     * @readonly
-     */
-    public $updatable = true;
-
-    /**
-     * @var class-string<BackedEnum>|null
-     * @readonly
-     */
-    public $enumType = null;
-
-    /**
-     * @var array<string,mixed>
-     * @readonly
-     */
-    public $options = [];
-
-    /**
-     * @var string|null
-     * @readonly
-     */
-    public $columnDefinition;
-
-    /**
-     * @var string|null
-     * @readonly
-     * @psalm-var 'NEVER'|'INSERT'|'ALWAYS'|null
-     * @Enum({"NEVER", "INSERT", "ALWAYS"})
-     */
-    public $generated;
-
-    /**
+     * @param int|null                      $precision The precision for a decimal (exact numeric) column (Applies only for decimal column).
+     * @param int|null                      $scale     The scale for a decimal (exact numeric) column (Applies only for decimal column).
      * @param class-string<BackedEnum>|null $enumType
      * @param array<string,mixed>           $options
      * @psalm-param 'NEVER'|'INSERT'|'ALWAYS'|null $generated
      */
     public function __construct(
-        ?string $name = null,
-        ?string $type = null,
-        ?int $length = null,
-        ?int $precision = null,
-        ?int $scale = null,
-        bool $unique = false,
-        bool $nullable = false,
-        bool $insertable = true,
-        bool $updatable = true,
-        ?string $enumType = null,
-        array $options = [],
-        ?string $columnDefinition = null,
-        ?string $generated = null
+        public readonly string|null $name = null,
+        public readonly string|null $type = null,
+        public readonly int|null $length = null,
+        public readonly int|null $precision = null,
+        public readonly int|null $scale = null,
+        public readonly bool $unique = false,
+        public readonly bool $nullable = false,
+        public readonly bool $insertable = true,
+        public readonly bool $updatable = true,
+        public readonly string|null $enumType = null,
+        public readonly array $options = [],
+        public readonly string|null $columnDefinition = null,
+        public readonly string|null $generated = null,
     ) {
-        $this->name             = $name;
-        $this->type             = $type;
-        $this->length           = $length;
-        $this->precision        = $precision;
-        $this->scale            = $scale;
-        $this->unique           = $unique;
-        $this->nullable         = $nullable;
-        $this->insertable       = $insertable;
-        $this->updatable        = $updatable;
-        $this->enumType         = $enumType;
-        $this->options          = $options;
-        $this->columnDefinition = $columnDefinition;
-        $this->generated        = $generated;
     }
 }

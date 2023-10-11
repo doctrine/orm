@@ -10,10 +10,7 @@ class CustomIntType extends IntegerType
 {
     public const NAME = 'custom_int_type';
 
-    /**
-     * {@inheritDoc}
-     */
-    public function getName()
+    public function getName(): string
     {
         return self::NAME;
     }

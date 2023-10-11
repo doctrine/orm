@@ -4,40 +4,41 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests;
 
-use Doctrine\Common\Annotations;
 use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\DriverManager;
+use Doctrine\DBAL\Driver;
+use Doctrine\DBAL\Driver\Result;
+use Doctrine\DBAL\Platforms\AbstractPlatform;
+use Doctrine\DBAL\Schema\AbstractSchemaManager;
+use Doctrine\DBAL\Schema\SchemaConfig;
 use Doctrine\ORM\Cache\CacheConfiguration;
 use Doctrine\ORM\Cache\CacheFactory;
 use Doctrine\ORM\Cache\DefaultCacheFactory;
 use Doctrine\ORM\Cache\Logging\StatisticsCacheLogger;
 use Doctrine\ORM\Configuration;
-use Doctrine\ORM\Mapping\Driver\AnnotationDriver;
-use Doctrine\ORM\ORMSetup;
+use Doctrine\ORM\Mapping\Driver\AttributeDriver;
 use Doctrine\Tests\Mocks\EntityManagerMock;
+use PHPUnit\Framework\TestCase;
 use Psr\Cache\CacheItemPoolInterface;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
 
+use function method_exists;
 use function realpath;
+use function sprintf;
 
 /**
  * Base testcase class for all ORM testcases.
  */
-abstract class OrmTestCase extends DoctrineTestCase
+abstract class OrmTestCase extends TestCase
 {
     /**
      * The metadata cache that is shared between all ORM tests (except functional tests).
-     *
-     * @var CacheItemPoolInterface|null
      */
-    private static $metadataCache = null;
+    private static CacheItemPoolInterface|null $metadataCache = null;
 
     /**
      * The query cache that is shared between all ORM tests (except functional tests).
-     *
-     * @var CacheItemPoolInterface|null
      */
-    private static $queryCache = null;
+    private static CacheItemPoolInterface|null $queryCache = null;
 
     /** @var bool */
     protected $isSecondLevelCacheEnabled = false;
@@ -51,15 +52,11 @@ abstract class OrmTestCase extends DoctrineTestCase
     /** @var StatisticsCacheLogger */
     protected $secondLevelCacheLogger;
 
-    /** @var CacheItemPoolInterface|null */
-    private $secondLevelCache = null;
+    private CacheItemPoolInterface|null $secondLevelCache = null;
 
-    protected function createAnnotationDriver(array $paths = []): AnnotationDriver
+    protected function createAttributeDriver(array $paths = []): AttributeDriver
     {
-        return new AnnotationDriver(
-            new Annotations\PsrCachedReader(new Annotations\AnnotationReader(), new ArrayAdapter()),
-            $paths
-        );
+        return new AttributeDriver($paths);
     }
 
     /**
@@ -70,7 +67,26 @@ abstract class OrmTestCase extends DoctrineTestCase
      * be configured in the tests to simulate the DBAL behavior that is desired
      * for a particular test,
      */
-    protected function getTestEntityManager(?Connection $connection = null): EntityManagerMock
+    protected function getTestEntityManager(): EntityManagerMock
+    {
+        return $this->buildTestEntityManagerWithPlatform(
+            $this->createConnectionMock($this->createPlatformMock()),
+        );
+    }
+
+    protected function createTestEntityManagerWithConnection(Connection $connection): EntityManagerMock
+    {
+        return $this->buildTestEntityManagerWithPlatform($connection);
+    }
+
+    protected function createTestEntityManagerWithPlatform(AbstractPlatform $platform): EntityManagerMock
+    {
+        return $this->buildTestEntityManagerWithPlatform(
+            $this->createConnectionMock($platform),
+        );
+    }
+
+    private function buildTestEntityManagerWithPlatform(Connection $connection): EntityManagerMock
     {
         $metadataCache = self::getSharedMetadataCacheImpl();
 
@@ -79,15 +95,15 @@ abstract class OrmTestCase extends DoctrineTestCase
         TestUtil::configureProxies($config);
         $config->setMetadataCache($metadataCache);
         $config->setQueryCache(self::getSharedQueryCache());
-        $config->setMetadataDriverImpl(ORMSetup::createDefaultAnnotationDriver([
+        $config->setMetadataDriverImpl(new AttributeDriver([
             realpath(__DIR__ . '/Models/Cache'),
-        ], null, true));
+        ], true));
 
         if ($this->isSecondLevelCacheEnabled) {
             $cacheConfig = new CacheConfiguration();
             $factory     = new DefaultCacheFactory(
                 $cacheConfig->getRegionsConfiguration(),
-                $this->getSharedSecondLevelCache()
+                $this->getSharedSecondLevelCache(),
             );
 
             $this->secondLevelCacheFactory = $factory;
@@ -95,15 +111,6 @@ abstract class OrmTestCase extends DoctrineTestCase
             $cacheConfig->setCacheFactory($factory);
             $config->setSecondLevelCacheEnabled();
             $config->setSecondLevelCacheConfiguration($cacheConfig);
-        }
-
-        if ($connection === null) {
-            $connection = DriverManager::getConnection([
-                'driverClass'  => Mocks\DriverMock::class,
-                'wrapperClass' => Mocks\ConnectionMock::class,
-                'user'         => 'john',
-                'password'     => 'wayne',
-            ], $config);
         }
 
         return new EntityManagerMock($connection, $config);
@@ -131,5 +138,57 @@ abstract class OrmTestCase extends DoctrineTestCase
     {
         return $this->secondLevelCache
             ?? $this->secondLevelCache = new ArrayAdapter();
+    }
+
+    private function createConnectionMock(AbstractPlatform $platform): Connection
+    {
+        $connection = $this->getMockBuilder(Connection::class)
+            ->setConstructorArgs([[], $this->createDriverMock($platform)])
+            ->onlyMethods(['quote'])
+            ->getMockForAbstractClass();
+        $connection->method('quote')->willReturnCallback(static fn (string $input) => sprintf("'%s'", $input));
+
+        return $connection;
+    }
+
+    private function createPlatformMock(): AbstractPlatform
+    {
+        $schemaManager = $this->createMock(AbstractSchemaManager::class);
+        $schemaManager->method('createSchemaConfig')
+            ->willReturn(new SchemaConfig());
+
+        $platform = $this->getMockBuilder(AbstractPlatform::class)
+            ->onlyMethods(['supportsIdentityColumns', 'createSchemaManager'])
+            ->getMockForAbstractClass();
+        $platform->method('supportsIdentityColumns')
+            ->willReturn(true);
+        $platform->method('createSchemaManager')
+            ->willReturn($schemaManager);
+
+        return $platform;
+    }
+
+    private function createDriverMock(AbstractPlatform $platform): Driver
+    {
+        $result = $this->createMock(Result::class);
+        $result->method('fetchAssociative')
+            ->willReturn(false);
+
+        $connection = $this->createMock(Driver\Connection::class);
+        $connection->method('query')
+            ->willReturn($result);
+
+        $driver = $this->createMock(Driver::class);
+        $driver->method('connect')
+            ->willReturn($connection);
+        $driver->method('getDatabasePlatform')
+            ->willReturn($platform);
+
+        if (method_exists(Driver::class, 'getSchemaManager')) {
+            $driver->method('getSchemaManager')
+                ->willReturnCallback([$platform, 'createSchemaManager']);
+        }
+
+        return $driver;
     }
 }

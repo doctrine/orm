@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Query\AST;
 
+use Doctrine\ORM\Query\SqlWalker;
+
 /**
  * IdentificationVariableDeclaration ::= RangeVariableDeclaration [IndexBy] {JoinVariableDeclaration}*
  *
@@ -11,32 +13,20 @@ namespace Doctrine\ORM\Query\AST;
  */
 class IdentificationVariableDeclaration extends Node
 {
-    /** @var RangeVariableDeclaration|null */
-    public $rangeVariableDeclaration = null;
-
-    /** @var IndexBy|null */
-    public $indexBy = null;
-
-    /** @var mixed[] */
-    public $joins = [];
-
     /**
-     * @param RangeVariableDeclaration|null $rangeVariableDecl
+     * @param RangeVariableDeclaration|null $rangeVariableDeclaration
      * @param IndexBy|null                  $indexBy
      * @param mixed[]                       $joins
      */
-    public function __construct($rangeVariableDecl, $indexBy, array $joins)
-    {
-        $this->rangeVariableDeclaration = $rangeVariableDecl;
-        $this->indexBy                  = $indexBy;
-        $this->joins                    = $joins;
+    public function __construct(
+        public $rangeVariableDeclaration = null,
+        public $indexBy = null,
+        public array $joins = [],
+    ) {
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function dispatch($sqlWalker)
+    public function dispatch(SqlWalker $walker): string
     {
-        return $sqlWalker->walkIdentificationVariableDeclaration($this);
+        return $walker->walkIdentificationVariableDeclaration($this);
     }
 }

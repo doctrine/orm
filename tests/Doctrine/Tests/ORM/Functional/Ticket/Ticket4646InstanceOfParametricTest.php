@@ -22,7 +22,7 @@ class Ticket4646InstanceOfParametricTest extends OrmFunctionalTestCase
 
         $this->createSchemaForModels(
             PersonTicket4646Parametric::class,
-            EmployeeTicket4646Parametric::class
+            EmployeeTicket4646Parametric::class,
         );
     }
 
@@ -36,7 +36,7 @@ class Ticket4646InstanceOfParametricTest extends OrmFunctionalTestCase
         $query = $this->_em->createQuery($dql);
         $query->setParameter(
             'parameter',
-            $this->_em->getClassMetadata(PersonTicket4646Parametric::class)
+            $this->_em->getClassMetadata(PersonTicket4646Parametric::class),
         );
         $result = $query->getResult();
         self::assertCount(2, $result);
@@ -44,36 +44,26 @@ class Ticket4646InstanceOfParametricTest extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity()
- * @Table(name="instance_of_parametric_person")
- * @InheritanceType(value="JOINED")
- * @DiscriminatorColumn(name="kind", type="string")
- * @DiscriminatorMap(value={
- *     "person": "Doctrine\Tests\ORM\Functional\Ticket\PersonTicket4646Parametric",
- *     "employee": "Doctrine\Tests\ORM\Functional\Ticket\EmployeeTicket4646Parametric"
- * })
- */
+#[Table(name: 'instance_of_parametric_person')]
+#[Entity]
+#[InheritanceType(value: 'JOINED')]
+#[DiscriminatorColumn(name: 'kind', type: 'string')]
+#[DiscriminatorMap(value: ['person' => 'Doctrine\Tests\ORM\Functional\Ticket\PersonTicket4646Parametric', 'employee' => 'Doctrine\Tests\ORM\Functional\Ticket\EmployeeTicket4646Parametric'])]
 class PersonTicket4646Parametric
 {
-    /**
-     * @var int
-     * @Id()
-     * @GeneratedValue()
-     * @Column(type="integer")
-     */
-    private $id;
+    #[Id]
+    #[GeneratedValue]
+    #[Column(type: 'integer')]
+    private int $id;
 
-    public function getId(): ?int
+    public function getId(): int|null
     {
         return $this->id;
     }
 }
 
-/**
- * @Entity()
- * @Table(name="instance_of_parametric_employee")
- */
+#[Table(name: 'instance_of_parametric_employee')]
+#[Entity]
 class EmployeeTicket4646Parametric extends PersonTicket4646Parametric
 {
 }

@@ -13,8 +13,9 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\InheritanceType;
 use Doctrine\ORM\Tools\ResolveTargetEntityListener;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
-/** @group DDC-3300 */
+#[Group('DDC-3300')]
 class DDC3300Test extends OrmFunctionalTestCase
 {
     public function testResolveTargetEntitiesChangesDiscriminatorMapValues(): void
@@ -24,13 +25,13 @@ class DDC3300Test extends OrmFunctionalTestCase
         $resolveTargetEntity->addResolveTargetEntity(
             DDC3300Boss::class,
             DDC3300HumanBoss::class,
-            []
+            [],
         );
 
         $resolveTargetEntity->addResolveTargetEntity(
             DDC3300Employee::class,
             DDC3300HumanEmployee::class,
-            []
+            [],
         );
 
         $this->_em->getEventManager()->addEventSubscriber($resolveTargetEntity);
@@ -51,23 +52,16 @@ class DDC3300Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- * @InheritanceType("SINGLE_TABLE")
- * @DiscriminatorColumn(name="discr", type="string")
- * @DiscriminatorMap({
- *      "boss"     = "Doctrine\Tests\ORM\Functional\Ticket\DDC3300Boss",
- *      "employee" = "Doctrine\Tests\ORM\Functional\Ticket\DDC3300Employee"
- * })
- */
+#[Entity]
+#[InheritanceType('SINGLE_TABLE')]
+#[DiscriminatorColumn(name: 'discr', type: 'string')]
+#[DiscriminatorMap(['boss' => 'Doctrine\Tests\ORM\Functional\Ticket\DDC3300Boss', 'employee' => 'Doctrine\Tests\ORM\Functional\Ticket\DDC3300Employee'])]
 abstract class DDC3300Person
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue(strategy: 'AUTO')]
     public $id;
 }
 
@@ -75,18 +69,13 @@ interface DDC3300Boss
 {
 }
 
-/** @Entity */
+#[Entity]
 class DDC3300HumanBoss extends DDC3300Person implements DDC3300Boss
 {
-    /**
-     * @var string
-     * @Column(type="string", length=255)
-     */
-    public $bossCol;
-
-    public function __construct($bossCol)
-    {
-        $this->bossCol = $bossCol;
+    public function __construct(
+        #[Column(type: 'string', length: 255)]
+        public string $bossCol,
+    ) {
     }
 }
 
@@ -94,17 +83,12 @@ interface DDC3300Employee
 {
 }
 
-/** @Entity */
+#[Entity]
 class DDC3300HumanEmployee extends DDC3300Person implements DDC3300Employee
 {
-    /**
-     * @var string
-     * @Column(type="string", length=255)
-     */
-    public $employeeCol;
-
-    public function __construct($employeeCol)
-    {
-        $this->employeeCol = $employeeCol;
+    public function __construct(
+        #[Column(type: 'string', length: 255)]
+        public string $employeeCol,
+    ) {
     }
 }

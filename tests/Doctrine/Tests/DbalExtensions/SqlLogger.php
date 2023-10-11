@@ -8,12 +8,8 @@ use Psr\Log\AbstractLogger;
 
 final class SqlLogger extends AbstractLogger
 {
-    /** @var QueryLog */
-    private $queryLog;
-
-    public function __construct(QueryLog $queryLog)
+    public function __construct(private readonly QueryLog $queryLog)
     {
-        $this->queryLog = $queryLog;
     }
 
     public function log($level, $message, array $context = []): void
@@ -25,7 +21,7 @@ final class SqlLogger extends AbstractLogger
         $this->queryLog->logQuery(
             $context['sql'],
             $context['params'] ?? null,
-            $context['types'] ?? null
+            $context['types'] ?? null,
         );
     }
 }

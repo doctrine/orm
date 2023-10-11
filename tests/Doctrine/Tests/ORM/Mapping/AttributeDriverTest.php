@@ -8,83 +8,20 @@ use Attribute;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Driver\AttributeDriver;
+use Doctrine\ORM\Mapping\JoinColumnMapping;
 use Doctrine\ORM\Mapping\MappingAttribute;
-use Doctrine\Persistence\Mapping\Driver\AnnotationDriver as PersistenceAnnotationDriver;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
 use Doctrine\Tests\ORM\Mapping\Fixtures\AttributeEntityWithNestedJoinColumns;
+use InvalidArgumentException;
 use stdClass;
-
-use function class_exists;
-use function is_subclass_of;
-
-use const PHP_VERSION_ID;
 
 class AttributeDriverTest extends MappingDriverTestCase
 {
-    /** @before */
-    public function requiresPhp8Assertion(): void
-    {
-        if (PHP_VERSION_ID < 80000) {
-            self::markTestSkipped('requires PHP 8.0');
-        }
-    }
-
     protected function loadDriver(): MappingDriver
     {
         $paths = [];
 
         return new AttributeDriver($paths, true);
-    }
-
-    public function testNamedQuery(): void
-    {
-        self::markTestSkipped('AttributeDriver does not support named queries.');
-    }
-
-    public function testNamedNativeQuery(): void
-    {
-        self::markTestSkipped('AttributeDriver does not support named native queries.');
-    }
-
-    public function testSqlResultSetMapping(): void
-    {
-        self::markTestSkipped('AttributeDriver does not support named sql resultset mapping.');
-    }
-
-    public function testAssociationOverridesMapping(): void
-    {
-        if (PHP_VERSION_ID < 80100) {
-            self::markTestSkipped('AttributeDriver does not support association overrides.');
-        } else {
-            parent::testAssociationOverridesMapping();
-        }
-    }
-
-    public function testInversedByOverrideMapping(): void
-    {
-        if (PHP_VERSION_ID < 80100) {
-            self::markTestSkipped('AttributeDriver does not support association overrides.');
-        } else {
-            parent::testInversedByOverrideMapping();
-        }
-    }
-
-    public function testFetchOverrideMapping(): void
-    {
-        if (PHP_VERSION_ID < 80100) {
-            self::markTestSkipped('AttributeDriver does not support association overrides.');
-        } else {
-            parent::testFetchOverrideMapping();
-        }
-    }
-
-    public function testAttributeOverridesMapping(): void
-    {
-        if (PHP_VERSION_ID < 80100) {
-            self::markTestSkipped('AttributeDriver does not support association overrides.');
-        } else {
-            parent::testAttributeOverridesMapping();
-        }
     }
 
     public function testOriginallyNestedAttributesDeclaredWithoutOriginalParent(): void
@@ -99,9 +36,9 @@ class AttributeDriverTest extends MappingDriverTestCase
                 'uniqueConstraints' => ['foo' => ['columns' => ['id']]],
                 'indexes' => ['bar' => ['columns' => ['id']]],
             ],
-            $metadata->table
+            $metadata->table,
         );
-        self::assertEquals(['assoz_id', 'assoz_id'], $metadata->associationMappings['assoc']['joinTableColumns']);
+        self::assertEquals(['assoz_id', 'assoz_id'], $metadata->associationMappings['assoc']->joinTableColumns);
     }
 
     public function testIsTransient(): void
@@ -117,18 +54,6 @@ class AttributeDriverTest extends MappingDriverTestCase
         self::assertFalse($driver->isTransient(AttributeEntityStartingWithRepeatableAttributes::class));
     }
 
-    public function testLegacyInheritance(): void
-    {
-        if (! class_exists(PersistenceAnnotationDriver::class)) {
-            self::markTestSkipped('This test requires doctrine/persistence 2.');
-        }
-
-        self::assertTrue(is_subclass_of(AttributeDriver::class, PersistenceAnnotationDriver::class));
-    }
-
-    /**
-     * @requires PHP 8.1
-     */
     public function testManyToManyAssociationWithNestedJoinColumns(): void
     {
         $factory = $this->createClassMetadataFactory();
@@ -137,31 +62,38 @@ class AttributeDriverTest extends MappingDriverTestCase
 
         self::assertEquals(
             [
-                [
+                JoinColumnMapping::fromMappingArray([
                     'name' => 'assoz_id',
                     'referencedColumnName' => 'assoz_id',
                     'unique' => false,
                     'nullable' => true,
                     'onDelete' => null,
                     'columnDefinition' => null,
-                ],
+                ]),
             ],
-            $metadata->associationMappings['assoc']['joinTable']['joinColumns']
+            $metadata->associationMappings['assoc']->joinTable->joinColumns,
         );
 
         self::assertEquals(
             [
-                [
+                JoinColumnMapping::fromMappingArray([
                     'name' => 'inverse_assoz_id',
                     'referencedColumnName' => 'inverse_assoz_id',
                     'unique' => false,
                     'nullable' => true,
                     'onDelete' => null,
                     'columnDefinition' => null,
-                ],
+                ]),
             ],
-            $metadata->associationMappings['assoc']['joinTable']['inverseJoinColumns']
+            $metadata->associationMappings['assoc']->joinTable->inverseJoinColumns,
         );
+    }
+
+    public function testItThrowsWhenSettingReportFieldsWhereDeclaredToFalse(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+
+        new AttributeDriver([], false);
     }
 }
 
@@ -191,11 +123,11 @@ class AttributeEntityStartingWithRepeatableAttributes
 }
 
 #[Attribute(Attribute::IS_REPEATABLE | Attribute::TARGET_ALL)]
-class AttributeTransientAnnotation implements MappingAttribute
+class AttributeTransientAttribute implements MappingAttribute
 {
 }
 
-#[AttributeTransientAnnotation]
+#[AttributeTransientAttribute]
 class AttributeTransientClass
 {
 }

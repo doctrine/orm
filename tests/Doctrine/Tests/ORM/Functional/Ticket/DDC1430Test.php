@@ -16,8 +16,9 @@ use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use Exception;
+use PHPUnit\Framework\Attributes\Group;
 
-/** @group DDC-1430 */
+#[Group('DDC-1430')]
 class DDC1430Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -29,10 +30,10 @@ class DDC1430Test extends OrmFunctionalTestCase
                 [
                     $this->_em->getClassMetadata(DDC1430Order::class),
                     $this->_em->getClassMetadata(DDC1430OrderProduct::class),
-                ]
+                ],
             );
             $this->loadFixtures();
-        } catch (Exception $exc) {
+        } catch (Exception) {
         }
     }
 
@@ -139,43 +140,30 @@ class DDC1430Test extends OrmFunctionalTestCase
     }
 }
 
-/** @Entity */
+#[Entity]
 class DDC1430Order
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(name="order_id", type="integer")
-     * @GeneratedValue()
-     */
+    /** @var int */
+    #[Id]
+    #[Column(name: 'order_id', type: 'integer')]
+    #[GeneratedValue]
     protected $id;
 
-    /**
-     * @var DateTime
-     * @Column(name="created_at", type="datetime")
-     */
-    private $date;
+    #[Column(name: 'created_at', type: 'datetime')]
+    private DateTime $date;
 
-    /**
-     * @var string
-     * @Column(name="order_status", type="string", length=255)
-     */
-    private $status;
-
-    /**
-     * @OneToMany(targetEntity="DDC1430OrderProduct", mappedBy="order", cascade={"persist", "remove"})
-     * @var Collection $products
-     */
-    private $products;
+    #[OneToMany(targetEntity: 'DDC1430OrderProduct', mappedBy: 'order', cascade: ['persist', 'remove'])]
+    private Collection $products;
 
     public function getId(): int
     {
         return $this->id;
     }
 
-    public function __construct(string $status)
-    {
-        $this->status   = $status;
+    public function __construct(
+        #[Column(name: 'order_status', type: 'string', length: 255)]
+        private string $status,
+    ) {
         $this->date     = new DateTime();
         $this->products = new ArrayCollection();
     }
@@ -207,33 +195,23 @@ class DDC1430Order
     }
 }
 
-/** @Entity */
+#[Entity]
 class DDC1430OrderProduct
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue()
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     protected $id;
 
-    /**
-     * @var DDC1430Order $order
-     * @ManyToOne(targetEntity="DDC1430Order", inversedBy="products")
-     * @JoinColumn(name="order_id", referencedColumnName="order_id", nullable = false)
-     */
-    private $order;
+    #[ManyToOne(targetEntity: 'DDC1430Order', inversedBy: 'products')]
+    #[JoinColumn(name: 'order_id', referencedColumnName: 'order_id', nullable: false)]
+    private DDC1430Order|null $order = null;
 
-    /**
-     * @var float
-     * @Column(type="float")
-     */
-    private $value;
-
-    public function __construct(float $value)
-    {
-        $this->value = $value;
+    public function __construct(
+        #[Column(type: 'float')]
+        private float $value,
+    ) {
     }
 
     public function getId(): int

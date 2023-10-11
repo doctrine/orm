@@ -23,7 +23,7 @@ final class HierarchyDiscriminatorResolver
      */
     public static function resolveDiscriminatorsForClass(
         ClassMetadata $rootClassMetadata,
-        EntityManagerInterface $entityManager
+        EntityManagerInterface $entityManager,
     ): array {
         $hierarchyClasses   = $rootClassMetadata->subClasses;
         $hierarchyClasses[] = $rootClassMetadata->name;

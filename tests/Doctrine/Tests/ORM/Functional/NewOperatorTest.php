@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional;
 
-use Doctrine\Common\Persistence\PersistentObject;
 use Doctrine\ORM\Query;
+use Doctrine\ORM\Query\QueryException;
 use Doctrine\Tests\Models\CMS\CmsAddress;
 use Doctrine\Tests\Models\CMS\CmsAddressDTO;
 use Doctrine\Tests\Models\CMS\CmsEmail;
@@ -13,11 +13,12 @@ use Doctrine\Tests\Models\CMS\CmsPhonenumber;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\Models\CMS\CmsUserDTO;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Group;
 
-use function class_exists;
 use function count;
 
-/** @group DDC-1574 */
+#[Group('DDC-1574')]
 class NewOperatorTest extends OrmFunctionalTestCase
 {
     /** @var list<CmsUser> */
@@ -102,7 +103,7 @@ class NewOperatorTest extends OrmFunctionalTestCase
         $this->fixtures = [$u1, $u2, $u3];
     }
 
-    /** @dataProvider provideDataForHydrationMode */
+    #[DataProvider('provideDataForHydrationMode')]
     public function testShouldSupportsBasicUsage($hydrationMode): void
     {
         $dql = '
@@ -143,7 +144,7 @@ class NewOperatorTest extends OrmFunctionalTestCase
         self::assertEquals($this->fixtures[2]->address->city, $result[2]->address);
     }
 
-    /** @dataProvider provideDataForHydrationMode */
+    #[DataProvider('provideDataForHydrationMode')]
     public function testShouldIgnoreAliasesForSingleObject($hydrationMode): void
     {
         $dql = '
@@ -197,68 +198,6 @@ class NewOperatorTest extends OrmFunctionalTestCase
                 u.address a
             ORDER BY
                 u.name';
-
-        $query  = $this->_em->createQuery($dql);
-        $result = $query->getResult();
-
-        self::assertCount(3, $result);
-
-        self::assertInstanceOf(CmsUserDTO::class, $result[0]);
-        self::assertInstanceOf(CmsUserDTO::class, $result[1]);
-        self::assertInstanceOf(CmsUserDTO::class, $result[2]);
-    }
-
-    public function testShouldSupportFromEntityNamespaceAlias(): void
-    {
-        if (! class_exists(PersistentObject::class)) {
-            self::markTestSkipped('This test requires doctrine/persistence 2');
-        }
-
-        $dql = '
-            SELECT
-                new CmsUserDTO(u.name, e.email, a.city)
-            FROM
-                cms:CmsUser u
-            JOIN
-                u.email e
-            JOIN
-                u.address a
-            ORDER BY
-                u.name';
-
-        $this->_em->getConfiguration()
-            ->addEntityNamespace('cms', 'Doctrine\Tests\Models\CMS');
-
-        $query  = $this->_em->createQuery($dql);
-        $result = $query->getResult();
-
-        self::assertCount(3, $result);
-
-        self::assertInstanceOf(CmsUserDTO::class, $result[0]);
-        self::assertInstanceOf(CmsUserDTO::class, $result[1]);
-        self::assertInstanceOf(CmsUserDTO::class, $result[2]);
-    }
-
-    public function testShouldSupportValueObjectNamespaceAlias(): void
-    {
-        if (! class_exists(PersistentObject::class)) {
-            self::markTestSkipped('This test requires doctrine/persistence 2');
-        }
-
-        $dql = '
-            SELECT
-                new cms:CmsUserDTO(u.name, e.email, a.city)
-            FROM
-                cms:CmsUser u
-            JOIN
-                u.email e
-            JOIN
-                u.address a
-            ORDER BY
-                u.name';
-
-        $this->_em->getConfiguration()
-            ->addEntityNamespace('cms', 'Doctrine\Tests\Models\CMS');
 
         $query  = $this->_em->createQuery($dql);
         $result = $query->getResult();
@@ -405,17 +344,17 @@ class NewOperatorTest extends OrmFunctionalTestCase
 
         self::assertEquals(
             $this->fixtures[0]->address->id + $this->fixtures[0]->id,
-            $result[0]->phonenumbers
+            $result[0]->phonenumbers,
         );
 
         self::assertEquals(
             $this->fixtures[1]->address->id + $this->fixtures[1]->id,
-            $result[1]->phonenumbers
+            $result[1]->phonenumbers,
         );
 
         self::assertEquals(
             $this->fixtures[2]->address->id + $this->fixtures[2]->id,
-            $result[2]->phonenumbers
+            $result[2]->phonenumbers,
         );
     }
 
@@ -465,17 +404,17 @@ class NewOperatorTest extends OrmFunctionalTestCase
 
         self::assertEquals(
             count($this->fixtures[0]->phonenumbers),
-            $result[0]->phonenumbers
+            $result[0]->phonenumbers,
         );
 
         self::assertEquals(
             count($this->fixtures[1]->phonenumbers),
-            $result[1]->phonenumbers
+            $result[1]->phonenumbers,
         );
 
         self::assertEquals(
             count($this->fixtures[2]->phonenumbers),
-            $result[2]->phonenumbers
+            $result[2]->phonenumbers,
         );
     }
 
@@ -525,17 +464,17 @@ class NewOperatorTest extends OrmFunctionalTestCase
 
         self::assertEquals(
             count($this->fixtures[0]->phonenumbers) + $this->fixtures[0]->id,
-            $result[0]->phonenumbers
+            $result[0]->phonenumbers,
         );
 
         self::assertEquals(
             count($this->fixtures[1]->phonenumbers) + $this->fixtures[1]->id,
-            $result[1]->phonenumbers
+            $result[1]->phonenumbers,
         );
 
         self::assertEquals(
             count($this->fixtures[2]->phonenumbers) + $this->fixtures[2]->id,
-            $result[2]->phonenumbers
+            $result[2]->phonenumbers,
         );
     }
 
@@ -1045,7 +984,7 @@ class NewOperatorTest extends OrmFunctionalTestCase
 
     public function testInvalidClassException(): void
     {
-        $this->expectException('Doctrine\ORM\Query\QueryException');
+        $this->expectException(QueryException::class);
         $this->expectExceptionMessage('[Semantical Error] line 0, col 11 near \'\InvalidClass(u.name)\': Error: Class "\InvalidClass" is not defined.');
         $dql = 'SELECT new \InvalidClass(u.name) FROM Doctrine\Tests\Models\CMS\CmsUser u';
         $this->_em->createQuery($dql)->getResult();
@@ -1053,7 +992,7 @@ class NewOperatorTest extends OrmFunctionalTestCase
 
     public function testInvalidClassConstructorException(): void
     {
-        $this->expectException('Doctrine\ORM\Query\QueryException');
+        $this->expectException(QueryException::class);
         $this->expectExceptionMessage('[Semantical Error] line 0, col 11 near \'\stdClass(u.name)\': Error: Class "\stdClass" has not a valid constructor.');
         $dql = 'SELECT new \stdClass(u.name) FROM Doctrine\Tests\Models\CMS\CmsUser u';
         $this->_em->createQuery($dql)->getResult();
@@ -1061,7 +1000,7 @@ class NewOperatorTest extends OrmFunctionalTestCase
 
     public function testInvalidClassWithoutConstructorException(): void
     {
-        $this->expectException('Doctrine\ORM\Query\QueryException');
+        $this->expectException(QueryException::class);
         $this->expectExceptionMessage('[Semantical Error] line 0, col 11 near \'Doctrine\Tests\ORM\Functional\ClassWithTooMuchArgs(u.name)\': Error: Number of arguments does not match with "Doctrine\Tests\ORM\Functional\ClassWithTooMuchArgs" constructor declaration.');
         $dql = 'SELECT new Doctrine\Tests\ORM\Functional\ClassWithTooMuchArgs(u.name) FROM Doctrine\Tests\Models\CMS\CmsUser u';
         $this->_em->createQuery($dql)->getResult();
@@ -1069,7 +1008,7 @@ class NewOperatorTest extends OrmFunctionalTestCase
 
     public function testClassCantBeInstantiatedException(): void
     {
-        $this->expectException('Doctrine\ORM\Query\QueryException');
+        $this->expectException(QueryException::class);
         $this->expectExceptionMessage('[Semantical Error] line 0, col 11 near \'Doctrine\Tests\ORM\Functional\ClassWithPrivateConstructor(u.name)\': Error: Class "Doctrine\Tests\ORM\Functional\ClassWithPrivateConstructor" can not be instantiated.');
         $dql = 'SELECT new Doctrine\Tests\ORM\Functional\ClassWithPrivateConstructor(u.name) FROM Doctrine\Tests\Models\CMS\CmsUser u';
         $this->_em->createQuery($dql)->getResult();

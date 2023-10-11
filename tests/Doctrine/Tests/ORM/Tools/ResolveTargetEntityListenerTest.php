@@ -19,29 +19,26 @@ use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\ORM\Tools\ResolveTargetEntityListener;
 use Doctrine\Tests\OrmTestCase;
+use PHPUnit\Framework\Attributes\CoversNothing;
+use PHPUnit\Framework\Attributes\Group;
 
 class ResolveTargetEntityListenerTest extends OrmTestCase
 {
-    /** @var EntityManagerInterface */
-    private $em;
+    private EntityManagerInterface $em;
 
-    /** @var ResolveTargetEntityListener */
-    private $listener;
+    private ResolveTargetEntityListener $listener;
 
-    /** @var ClassMetadataFactory */
-    private $factory;
+    private ClassMetadataFactory $factory;
 
     protected function setUp(): void
     {
-        $annotationDriver = $this->createAnnotationDriver();
-
         $this->em = $this->getTestEntityManager();
-        $this->em->getConfiguration()->setMetadataDriverImpl($annotationDriver);
+        $this->em->getConfiguration()->setMetadataDriverImpl($this->createAttributeDriver());
         $this->factory  = $this->em->getMetadataFactory();
         $this->listener = new ResolveTargetEntityListener();
     }
 
-    /** @group DDC-1544 */
+    #[Group('DDC-1544')]
     public function testResolveTargetEntityListenerCanResolveTargetEntity(): void
     {
         $evm = $this->em->getEventManager();
@@ -52,19 +49,17 @@ class ResolveTargetEntityListenerTest extends OrmTestCase
         $cm   = $this->factory->getMetadataFor(ResolveTargetEntity::class);
         $meta = $cm->associationMappings;
 
-        self::assertSame(TargetEntity::class, $meta['manyToMany']['targetEntity']);
-        self::assertSame(ResolveTargetEntity::class, $meta['manyToOne']['targetEntity']);
-        self::assertSame(ResolveTargetEntity::class, $meta['oneToMany']['targetEntity']);
-        self::assertSame(TargetEntity::class, $meta['oneToOne']['targetEntity']);
+        self::assertSame(TargetEntity::class, $meta['manyToMany']->targetEntity);
+        self::assertSame(ResolveTargetEntity::class, $meta['manyToOne']->targetEntity);
+        self::assertSame(ResolveTargetEntity::class, $meta['oneToMany']->targetEntity);
+        self::assertSame(TargetEntity::class, $meta['oneToOne']->targetEntity);
 
         self::assertSame($cm, $this->factory->getMetadataFor(ResolveTarget::class));
     }
 
-    /**
-     * @group DDC-3385
-     * @group 1181
-     * @group 385
-     */
+    #[Group('DDC-3385')]
+    #[Group('1181')]
+    #[Group('385')]
     public function testResolveTargetEntityListenerCanRetrieveTargetEntityByInterfaceName(): void
     {
         $this->listener->addResolveTargetEntity(ResolveTarget::class, ResolveTargetEntity::class, []);
@@ -76,7 +71,7 @@ class ResolveTargetEntityListenerTest extends OrmTestCase
         self::assertSame($this->factory->getMetadataFor(ResolveTargetEntity::class), $cm);
     }
 
-    /** @group DDC-2109 */
+    #[Group('DDC-2109')]
     public function testAssertTableColumnsAreNotAddedInManyToMany(): void
     {
         $evm = $this->em->getEventManager();
@@ -87,15 +82,13 @@ class ResolveTargetEntityListenerTest extends OrmTestCase
         $cm   = $this->factory->getMetadataFor(ResolveTargetEntity::class);
         $meta = $cm->associationMappings['manyToMany'];
 
-        self::assertSame(TargetEntity::class, $meta['targetEntity']);
-        self::assertEquals(['resolvetargetentity_id', 'target_id'], $meta['joinTableColumns']);
+        self::assertSame(TargetEntity::class, $meta->targetEntity);
+        self::assertEquals(['resolvetargetentity_id', 'target_id'], $meta->joinTableColumns);
     }
 
-    /**
-     * @group 1572
-     * @group functional
-     * @coversNothing
-     */
+    #[CoversNothing]
+    #[Group('1572')]
+    #[Group('functional')]
     public function testDoesResolveTargetEntitiesInDQLAlsoWithInterfaces(): void
     {
         $evm = $this->em->getEventManager();
@@ -108,7 +101,7 @@ class ResolveTargetEntityListenerTest extends OrmTestCase
             $this
                 ->em
                 ->createQuery('SELECT f FROM Doctrine\Tests\ORM\Tools\ResolveTarget f')
-                ->getSQL()
+                ->getSQL(),
         );
     }
 }
@@ -122,41 +115,28 @@ interface Target extends ResolveTarget
 {
 }
 
-/** @Entity */
+#[Entity]
 class ResolveTargetEntity implements ResolveTarget
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
-     */
-    private $id;
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue(strategy: 'AUTO')]
+    private int $id;
 
-    /**
-     * @psalm-var Collection<int, Target>
-     * @ManyToMany(targetEntity="Doctrine\Tests\ORM\Tools\Target")
-     */
+    /** @psalm-var Collection<int, Target> */
+    #[ManyToMany(targetEntity: 'Doctrine\Tests\ORM\Tools\Target')]
     private $manyToMany;
 
-    /**
-     * @var ResolveTarget
-     * @ManyToOne(targetEntity="Doctrine\Tests\ORM\Tools\ResolveTarget", inversedBy="oneToMany")
-     */
-    private $manyToOne;
+    #[ManyToOne(targetEntity: 'Doctrine\Tests\ORM\Tools\ResolveTarget', inversedBy: 'oneToMany')]
+    private ResolveTarget $manyToOne;
 
-    /**
-     * @psalm-var Collection<int, ResolveTarget>
-     * @OneToMany(targetEntity="Doctrine\Tests\ORM\Tools\ResolveTarget", mappedBy="manyToOne")
-     */
+    /** @psalm-var Collection<int, ResolveTarget> */
+    #[OneToMany(targetEntity: 'Doctrine\Tests\ORM\Tools\ResolveTarget', mappedBy: 'manyToOne')]
     private $oneToMany;
 
-    /**
-     * @var Target
-     * @OneToOne(targetEntity="Doctrine\Tests\ORM\Tools\Target")
-     * @JoinColumn(name="target_entity_id", referencedColumnName="id")
-     */
-    private $oneToOne;
+    #[OneToOne(targetEntity: 'Doctrine\Tests\ORM\Tools\Target')]
+    #[JoinColumn(name: 'target_entity_id', referencedColumnName: 'id')]
+    private Target $oneToOne;
 
     public function getId(): int
     {
@@ -164,16 +144,13 @@ class ResolveTargetEntity implements ResolveTarget
     }
 }
 
-/** @Entity */
+#[Entity]
 class TargetEntity implements Target
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
-     */
-    private $id;
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue(strategy: 'AUTO')]
+    private int $id;
 
     public function getId(): int
     {

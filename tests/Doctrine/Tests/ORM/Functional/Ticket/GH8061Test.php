@@ -11,11 +11,11 @@ use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\Tests\OrmTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
-use function method_exists;
 use function sprintf;
 
-/** @group GH8061 */
+#[Group('GH8061')]
 final class GH8061Test extends OrmTestCase
 {
     public static function setUpBeforeClass(): void
@@ -33,43 +33,30 @@ final class GH8061Test extends OrmTestCase
     }
 }
 
-/** @Entity */
+#[Entity]
 final class GH8061Entity
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     public $id;
 
-    /**
-     * @var mixed
-     * @Column(type="GH8061Type", length=255)
-     */
+    /** @var mixed */
+    #[Column(type: 'GH8061Type', length: 255)]
     public $field;
 }
 
 final class GH8061Type extends Type
 {
-    public function getSQLDeclaration(array $fieldDeclaration, AbstractPlatform $platform): string
+    public function getSQLDeclaration(array $column, AbstractPlatform $platform): string
     {
-        if (method_exists($platform, 'getStringTypeDeclarationSQL')) {
-            return $platform->getStringTypeDeclarationSQL($fieldDeclaration);
-        }
-
-        return $platform->getVarcharTypeDeclarationSQL($fieldDeclaration);
+        return $platform->getStringTypeDeclarationSQL($column);
     }
 
     public function getName(): string
     {
         return 'GH8061';
-    }
-
-    public function canRequireSQLConversion(): bool
-    {
-        return true;
     }
 
     public function convertToPHPValueSQL($sqlExpr, $platform): string
@@ -80,11 +67,7 @@ final class GH8061Type extends Type
 
 final class GH8061Class
 {
-    /** @var string */
-    public $field;
-
-    public function __construct(string $field)
+    public function __construct(public string $field)
     {
-        $this->field = $field;
     }
 }

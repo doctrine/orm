@@ -43,54 +43,35 @@ final class GH10348Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @ORM\Entity
- */
+#[ORM\Entity]
 class GH10348Person
 {
-    /**
-     * @ORM\Id
-     * @ORM\Column(type="integer")
-     * @ORM\GeneratedValue
-     *
-     * @var ?int
-     */
+    /** @var ?int */
+    #[ORM\Id]
+    #[ORM\Column(type: 'integer')]
+    #[ORM\GeneratedValue]
     public $id = null;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="GH10348Company", inversedBy="employees")
-     *
-     * @var ?GH10348Company
-     */
+    /** @var ?GH10348Company */
+    #[ORM\ManyToOne(targetEntity: GH10348Company::class, inversedBy: 'employees')]
     public $employer = null;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="GH10348Person", cascade={"remove"})
-     *
-     * @var ?GH10348Person
-     */
+    /** @var ?GH10348Person */
+    #[ORM\ManyToOne(targetEntity: self::class, cascade: ['remove'])]
     public $mentor = null;
 }
 
-/**
- * @ORM\Entity
- */
+#[ORM\Entity]
 class GH10348Company
 {
-    /**
-     * @ORM\Id
-     * @ORM\Column(type="integer")
-     * @ORM\GeneratedValue
-     *
-     * @var ?int
-     */
+    /** @var ?int */
+    #[ORM\Id]
+    #[ORM\Column(type: 'integer')]
+    #[ORM\GeneratedValue]
     public $id = null;
 
-    /**
-     * @ORM\OneToMany(targetEntity="GH10348Person", mappedBy="emplo", cascade={"persist", "remove"})
-     *
-     * @var Collection
-     */
+    /** @var Collection */
+    #[ORM\OneToMany(mappedBy: 'employer', targetEntity: GH10348Person::class, cascade: ['persist', 'remove'])]
     private $employees;
 
     public function __construct()

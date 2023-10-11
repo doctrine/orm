@@ -17,7 +17,7 @@ class GH10532Test extends OrmFunctionalTestCase
             GH10532A::class,
             GH10532B::class,
             GH10532C::class,
-            GH10532X::class
+            GH10532X::class,
         );
     }
 
@@ -117,70 +117,51 @@ class GH10532Test extends OrmFunctionalTestCase
 }
 
 /**
- * @ORM\Entity
- * @ORM\Table(name="gh10532_x")
- * @ORM\DiscriminatorColumn(name="discr", type="string")
- * @ORM\DiscriminatorMap({ "B": "GH10532B", "C": "GH10532C" })
- * @ORM\InheritanceType("JOINED")
- *
  * We are using JTI here, since STI would relax the not-nullable constraint for the "parent"
  * column. Causes another error, but not the constraint violation I'd like to point out.
  */
+#[ORM\Entity]
+#[ORM\Table(name: 'gh10532_x')]
+#[ORM\DiscriminatorColumn(name: 'discr', type: 'string')]
+#[ORM\DiscriminatorMap(['B' => GH10532B::class, 'C' => GH10532C::class])]
+#[ORM\InheritanceType('JOINED')]
 abstract class GH10532X
 {
-    /**
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     * @ORM\Column(type="integer")
-     *
-     * @var int
-     */
+    /** @var int */
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: 'AUTO')]
+    #[ORM\Column(type: 'integer')]
     public $id;
 }
 
-/**
- * @ORM\Entity
- * @ORM\Table(name="gh10532_b")
- */
+#[ORM\Entity]
+#[ORM\Table(name: 'gh10532_b')]
 class GH10532B extends GH10532X
 {
-    /**
-     * @ORM\ManyToOne(targetEntity="GH10532A")
-     * @ORM\JoinColumn(nullable=false, name="gh10532a_id")
-     *
-     * @var GH10532A
-     */
+    /** @var GH10532A */
+    #[ORM\ManyToOne(targetEntity: GH10532A::class)]
+    #[ORM\JoinColumn(nullable: false, name: 'gh10532a_id')]
     public $a;
 }
 
-/**
- * @ORM\Entity
- * @ORM\Table(name="gh10532_c")
- */
+#[ORM\Entity]
+#[ORM\Table(name: 'gh10532_c')]
 class GH10532C extends GH10532X
 {
 }
 
-/**
- * @ORM\Entity
- * @ORM\Table(name="gh10532_a")
- */
+#[ORM\Entity]
+#[ORM\Table(name: 'gh10532_a')]
 class GH10532A
 {
-    /**
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     * @ORM\Column(type="integer")
-     *
-     * @var int
-     */
+    /** @var int */
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: 'AUTO')]
+    #[ORM\Column(type: 'integer')]
     public $id;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="GH10532X")
-     * @ORM\JoinColumn(nullable=false, name="gh10532x_id")
-     *
-     * @var GH10532X
-     */
+    /** @var GH10532X */
+    #[ORM\ManyToOne(targetEntity: GH10532X::class)]
+    #[ORM\JoinColumn(nullable: false, name: 'gh10532x_id')]
     public $x;
 }

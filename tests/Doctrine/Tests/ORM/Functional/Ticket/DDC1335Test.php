@@ -15,8 +15,9 @@ use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
-/** @group DDC-1335 */
+#[Group('DDC-1335')]
 class DDC1335Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -26,7 +27,7 @@ class DDC1335Test extends OrmFunctionalTestCase
         $this->createSchemaForModels(DDC1335User::class, DDC1335Phone::class);
         try {
             $this->loadFixture();
-        } catch (UniqueConstraintViolationException $e) {
+        } catch (UniqueConstraintViolationException) {
         }
     }
 
@@ -153,39 +154,25 @@ class DDC1335Test extends OrmFunctionalTestCase
     }
 }
 
-/** @Entity */
+#[Entity]
 class DDC1335User
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
-    public $id;
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
+    public int|null $id = null;
 
-    /**
-     * @var string
-     * @Column(type="string", length=255, unique=true)
-     */
-    public $email;
+    /** @psalm-var Collection<int, DDC1335Phone> */
+    #[OneToMany(targetEntity: 'DDC1335Phone', mappedBy: 'user', cascade: ['persist', 'remove'])]
+    public Collection $phones;
 
-    /**
-     * @var string
-     * @Column(type="string", length=255)
-     */
-    public $name;
-
-    /**
-     * @psalm-var Collection<int, DDC1335Phone>
-     * @OneToMany(targetEntity="DDC1335Phone", mappedBy="user", cascade={"persist", "remove"})
-     */
-    public $phones;
-
-    public function __construct($email, $name, array $numbers = [])
-    {
-        $this->name   = $name;
-        $this->email  = $email;
+    public function __construct(
+        #[Column(type: 'string', length: 255, unique: true)]
+        public string $email,
+        #[Column(type: 'string', length: 255)]
+        public string $name,
+        array $numbers = [],
+    ) {
         $this->phones = new ArrayCollection();
 
         foreach ($numbers as $number) {
@@ -194,33 +181,20 @@ class DDC1335User
     }
 }
 
-/** @Entity */
+#[Entity]
 class DDC1335Phone
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(name="id", type="integer")
-     * @GeneratedValue
-     */
-    public $id;
+    #[Id]
+    #[Column(name: 'id', type: 'integer')]
+    #[GeneratedValue]
+    public int|null $id = null;
 
-    /**
-     * @var string
-     * @Column(name="numericalValue", type="string", nullable = false)
-     */
-    public $numericalValue;
-
-    /**
-     * @var DDC1335User
-     * @ManyToOne(targetEntity="DDC1335User", inversedBy="phones")
-     * @JoinColumn(name="user_id", referencedColumnName="id", nullable = false)
-     */
-    public $user;
-
-    public function __construct($user, $number)
-    {
-        $this->user           = $user;
-        $this->numericalValue = $number;
+    public function __construct(
+        #[ManyToOne(targetEntity: 'DDC1335User', inversedBy: 'phones')]
+        #[JoinColumn(name: 'user_id', referencedColumnName: 'id', nullable: false)]
+        public DDC1335User $user,
+        #[Column(name: 'numericalValue', type: 'string', nullable: false)]
+        public string $numericalValue,
+    ) {
     }
 }

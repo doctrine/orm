@@ -4,27 +4,36 @@ declare(strict_types=1);
 
 namespace Doctrine\Performance\Mock;
 
+use DateTimeInterface;
+use Doctrine\Common\EventManager;
+use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\LockMode;
+use Doctrine\ORM\Cache;
+use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\EntityRepository;
+use Doctrine\ORM\Internal\Hydration\AbstractHydrator;
+use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\ClassMetadataFactory;
+use Doctrine\ORM\NativeQuery;
 use Doctrine\ORM\Proxy\ProxyFactory;
+use Doctrine\ORM\Query;
+use Doctrine\ORM\Query\Expr;
+use Doctrine\ORM\Query\FilterCollection;
 use Doctrine\ORM\Query\ResultSetMapping;
+use Doctrine\ORM\QueryBuilder;
+use Doctrine\ORM\UnitOfWork;
 
 /**
  * An entity manager mock that prevents lazy-loading of proxies
  */
 class NonProxyLoadingEntityManager implements EntityManagerInterface
 {
-    /** @var EntityManagerInterface */
-    private $realEntityManager;
-
-    public function __construct(EntityManagerInterface $realEntityManager)
+    public function __construct(private readonly EntityManagerInterface $realEntityManager)
     {
-        $this->realEntityManager = $realEntityManager;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function getProxyFactory()
+    public function getProxyFactory(): ProxyFactory
     {
         $config = $this->realEntityManager->getConfiguration();
 
@@ -32,198 +41,106 @@ class NonProxyLoadingEntityManager implements EntityManagerInterface
             $this,
             $config->getProxyDir(),
             $config->getProxyNamespace(),
-            $config->getAutoGenerateProxyClasses()
+            $config->getAutoGenerateProxyClasses(),
         );
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function getMetadataFactory()
+    public function getMetadataFactory(): ClassMetadataFactory
     {
         return $this->realEntityManager->getMetadataFactory();
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function getClassMetadata($className)
+    public function getClassMetadata(string $className): ClassMetadata
     {
         return $this->realEntityManager->getClassMetadata($className);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function getUnitOfWork()
+    public function getUnitOfWork(): UnitOfWork
     {
         return new NonProxyLoadingUnitOfWork();
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function getCache()
+    public function getCache(): Cache|null
     {
         return $this->realEntityManager->getCache();
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function getConnection()
+    public function getConnection(): Connection
     {
         return $this->realEntityManager->getConnection();
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function getExpressionBuilder()
+    public function getExpressionBuilder(): Expr
     {
         return $this->realEntityManager->getExpressionBuilder();
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function beginTransaction()
+    public function beginTransaction(): void
     {
         $this->realEntityManager->beginTransaction();
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function transactional($func)
-    {
-        return $this->realEntityManager->transactional($func);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function wrapInTransaction(callable $func)
+    public function wrapInTransaction(callable $func): mixed
     {
         return $this->realEntityManager->wrapInTransaction($func);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function commit()
+    public function commit(): void
     {
         $this->realEntityManager->commit();
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function rollback()
+    public function rollback(): void
     {
         $this->realEntityManager->rollback();
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function createQuery($dql = '')
+    public function createQuery(string $dql = ''): Query
     {
         return $this->realEntityManager->createQuery($dql);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function createNamedQuery($name)
-    {
-        return $this->realEntityManager->createNamedQuery($name);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function createNativeQuery($sql, ResultSetMapping $rsm)
+    public function createNativeQuery(string $sql, ResultSetMapping $rsm): NativeQuery
     {
         return $this->realEntityManager->createNativeQuery($sql, $rsm);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function createNamedNativeQuery($name)
-    {
-        return $this->realEntityManager->createNamedNativeQuery($name);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function createQueryBuilder()
+    public function createQueryBuilder(): QueryBuilder
     {
         return $this->realEntityManager->createQueryBuilder();
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function getReference($entityName, $id)
+    public function getReference(string $entityName, mixed $id): object|null
     {
         return $this->realEntityManager->getReference($entityName, $id);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function getPartialReference($entityName, $identifier)
+    public function getPartialReference(string $entityName, mixed $identifier): object|null
     {
         return $this->realEntityManager->getPartialReference($entityName, $identifier);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function close()
+    public function close(): void
     {
         $this->realEntityManager->close();
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function copy($entity, $deep = false)
-    {
-        return $this->realEntityManager->copy($entity, $deep);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function lock($entity, $lockMode, $lockVersion = null)
+    public function lock(object $entity, LockMode|int $lockMode, DateTimeInterface|int|null $lockVersion = null): void
     {
         $this->realEntityManager->lock($entity, $lockMode, $lockVersion);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function getEventManager()
+    public function getEventManager(): EventManager
     {
         return $this->realEntityManager->getEventManager();
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function getConfiguration()
+    public function getConfiguration(): Configuration
     {
         return $this->realEntityManager->getConfiguration();
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function isOpen()
+    public function isOpen(): bool
     {
         return $this->realEntityManager->isOpen();
     }
@@ -231,127 +148,72 @@ class NonProxyLoadingEntityManager implements EntityManagerInterface
     /**
      * {@inheritDoc}
      */
-    public function getHydrator($hydrationMode)
-    {
-        return $this->realEntityManager->getHydrator($hydrationMode);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function newHydrator($hydrationMode)
+    public function newHydrator($hydrationMode): AbstractHydrator
     {
         return $this->realEntityManager->newHydrator($hydrationMode);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function getFilters()
+    public function getFilters(): FilterCollection
     {
         return $this->realEntityManager->getFilters();
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function isFiltersStateClean()
+    public function isFiltersStateClean(): bool
     {
         return $this->realEntityManager->isFiltersStateClean();
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function hasFilters()
+    public function hasFilters(): bool
     {
         return $this->realEntityManager->hasFilters();
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function find($className, $id)
+    public function find(string $className, mixed $id, LockMode|int|null $lockMode = null, int|null $lockVersion = null): object|null
     {
-        return $this->realEntityManager->find($className, $id);
+        return $this->realEntityManager->find($className, $id, $lockMode, $lockVersion);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function persist($object)
+    public function persist(object $object): void
     {
         $this->realEntityManager->persist($object);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function remove($object)
+    public function remove(object $object): void
     {
         $this->realEntityManager->remove($object);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function merge($object)
+    public function clear(): void
     {
-        return $this->realEntityManager->merge($object);
+        $this->realEntityManager->clear();
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function clear($objectName = null)
-    {
-        $this->realEntityManager->clear($objectName);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function detach($object)
+    public function detach(object $object): void
     {
         $this->realEntityManager->detach($object);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function refresh($object, ?int $lockMode = null)
+    public function refresh(object $object, LockMode|int|null $lockMode = null): void
     {
         $this->realEntityManager->refresh($object, $lockMode);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function flush()
+    public function flush(): void
     {
         $this->realEntityManager->flush();
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function getRepository($className)
+    public function getRepository(string $className): EntityRepository
     {
         return $this->realEntityManager->getRepository($className);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function initializeObject($obj)
+    public function initializeObject(object $obj): void
     {
         $this->realEntityManager->initializeObject($obj);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function contains($object)
+    public function contains(object $object): bool
     {
         return $this->realEntityManager->contains($object);
     }

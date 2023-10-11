@@ -12,11 +12,10 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
-/**
- * @group DDC-2350
- * @group non-cacheable
- */
+#[Group('DDC-2350')]
+#[Group('non-cacheable')]
 class DDC2350Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -52,37 +51,29 @@ class DDC2350Test extends OrmFunctionalTestCase
     }
 }
 
-/** @Entity */
+#[Entity]
 class DDC2350User
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     public $id;
 
-    /**
-     * @psalm-var Collection<int, DDC2350Bug>
-     * @OneToMany(targetEntity="DDC2350Bug", mappedBy="user", fetch="EAGER")
-     */
+    /** @psalm-var Collection<int, DDC2350Bug> */
+    #[OneToMany(targetEntity: 'DDC2350Bug', mappedBy: 'user', fetch: 'EAGER')]
     public $reportedBugs;
 }
 
-/** @Entity */
+#[Entity]
 class DDC2350Bug
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     public $id;
-    /**
-     * @var DDC2350User
-     * @ManyToOne(targetEntity="DDC2350User", inversedBy="reportedBugs")
-     */
+    /** @var DDC2350User */
+    #[ManyToOne(targetEntity: 'DDC2350User', inversedBy: 'reportedBugs')]
     public $user;
 }

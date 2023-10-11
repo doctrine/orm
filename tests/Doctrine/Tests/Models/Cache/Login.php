@@ -12,36 +12,25 @@ use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\Table;
 
-/**
- * @Entity
- * @Table("cache_login")
- */
+#[Table('cache_login')]
+#[Entity]
 class Login
 {
-    /**
-     * @var int
-     * @Id
-     * @GeneratedValue
-     * @Column(type="integer")
-     */
+    /** @var int */
+    #[Id]
+    #[GeneratedValue]
+    #[Column(type: 'integer')]
     public $id;
 
-    /**
-     * @var string
-     * @Column
-     */
-    public $name;
-
-    /**
-     * @var Token
-     * @ManyToOne(targetEntity="Token", cascade={"persist", "remove"}, inversedBy="logins")
-     * @JoinColumn(name="token_id", referencedColumnName="token")
-     */
+    /** @var Token */
+    #[ManyToOne(targetEntity: 'Token', cascade: ['persist', 'remove'], inversedBy: 'logins')]
+    #[JoinColumn(name: 'token_id', referencedColumnName: 'token')]
     public $token;
 
-    public function __construct(string $name)
-    {
-        $this->name = $name;
+    public function __construct(
+        #[Column]
+        public string $name,
+    ) {
     }
 
     public function getToken(): Token

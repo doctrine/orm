@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-use Doctrine\DBAL\Configuration;
 use Doctrine\DBAL\Platforms\PostgreSQLPlatform;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
@@ -12,18 +11,19 @@ use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\Table;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\After;
+use PHPUnit\Framework\Attributes\Group;
 
 use function array_filter;
 use function current;
-use function method_exists;
 use function sprintf;
 use function str_contains;
 use function str_starts_with;
 
-/** @group GH7875 */
+#[Group('GH7875')]
 final class GH7875Test extends OrmFunctionalTestCase
 {
-    /** @after */
+    #[After]
     public function cleanUpSchema(): void
     {
         $connection = $this->_em->getConnection();
@@ -45,9 +45,7 @@ final class GH7875Test extends OrmFunctionalTestCase
      */
     private function filterCreateTable(array $sqls, string $tableName): array
     {
-        return array_filter($sqls, static function (string $sql) use ($tableName): bool {
-            return str_starts_with($sql, sprintf('CREATE TABLE %s (', $tableName));
-        });
+        return array_filter($sqls, static fn (string $sql): bool => str_starts_with($sql, sprintf('CREATE TABLE %s (', $tableName)));
     }
 
     public function testUpdateSchemaSql(): void
@@ -60,9 +58,7 @@ final class GH7875Test extends OrmFunctionalTestCase
 
         $this->_em->getConnection()->executeStatement(current($sqls));
 
-        $sqls = array_filter($this->getUpdateSchemaSqlForModels(...$classes), static function (string $sql): bool {
-            return str_contains($sql, ' gh7875_my_entity ');
-        });
+        $sqls = array_filter($this->getUpdateSchemaSqlForModels(...$classes), static fn (string $sql): bool => str_contains($sql, ' gh7875_my_entity '));
 
         self::assertSame([], $sqls);
 
@@ -74,76 +70,45 @@ final class GH7875Test extends OrmFunctionalTestCase
         self::assertCount(1, $this->filterCreateTable($sqls, 'gh7875_my_other_entity'));
     }
 
-    /** @return array<array<string|callable|null>> */
-    public static function provideUpdateSchemaSqlWithSchemaAssetFilter(): array
+    public function testUpdateSchemaSqlWithSchemaAssetFilter(): void
     {
-        return [
-            ['/^(?!my_enti)/', null],
-            [
-                null,
-                static function ($assetName): bool {
-                    return $assetName !== 'gh7875_my_entity';
-                },
-            ],
-        ];
-    }
-
-    /** @dataProvider provideUpdateSchemaSqlWithSchemaAssetFilter */
-    public function testUpdateSchemaSqlWithSchemaAssetFilter(?string $filterRegex, ?callable $filterCallback): void
-    {
-        if ($filterRegex && ! method_exists(Configuration::class, 'setFilterSchemaAssetsExpression')) {
-            self::markTestSkipped(sprintf('Test require %s::setFilterSchemaAssetsExpression method', Configuration::class));
-        }
+        $filterCallback = static fn ($assetName): bool => $assetName !== 'gh7875_my_entity';
 
         $class = GH7875MyEntity::class;
 
         $this->createSchemaForModels($class);
 
         $config = $this->_em->getConnection()->getConfiguration();
-        if ($filterRegex) {
-            $config->setFilterSchemaAssetsExpression($filterRegex);
-        } else {
-            $config->setSchemaAssetsFilter($filterCallback);
-        }
+        $config->setSchemaAssetsFilter($filterCallback);
 
         $previousFilter = $config->getSchemaAssetsFilter();
 
         $sqls = $this->getUpdateSchemaSqlForModels($class);
-        $sqls = array_filter($sqls, static function (string $sql): bool {
-            return str_contains($sql, ' gh7875_my_entity ');
-        });
+        $sqls = array_filter($sqls, static fn (string $sql): bool => str_contains($sql, ' gh7875_my_entity '));
 
         self::assertCount(0, $sqls);
         self::assertSame($previousFilter, $config->getSchemaAssetsFilter());
     }
 }
 
-/**
- * @Entity
- * @Table(name="gh7875_my_entity")
- */
+#[Table(name: 'gh7875_my_entity')]
+#[Entity]
 class GH7875MyEntity
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue(strategy: 'AUTO')]
     public $id;
 }
 
-/**
- * @Entity
- * @Table(name="gh7875_my_other_entity")
- */
+#[Table(name: 'gh7875_my_other_entity')]
+#[Entity]
 class GH7875MyOtherEntity
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue(strategy: 'AUTO')]
     public $id;
 }

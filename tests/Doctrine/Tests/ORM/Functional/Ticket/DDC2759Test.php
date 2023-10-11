@@ -14,8 +14,9 @@ use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\ORM\Mapping\Table;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
-/** @group DDC-2759 */
+#[Group('DDC-2759')]
 class DDC2759Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -26,7 +27,7 @@ class DDC2759Test extends OrmFunctionalTestCase
             DDC2759Qualification::class,
             DDC2759Category::class,
             DDC2759QualificationMetadata::class,
-            DDC2759MetadataCategory::class
+            DDC2759MetadataCategory::class,
         );
 
         $qualification         = new DDC2759Qualification();
@@ -67,109 +68,72 @@ class DDC2759Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- * @Table(name="ddc_2759_qualification")
- */
+#[Table(name: 'ddc_2759_qualification')]
+#[Entity]
 class DDC2759Qualification
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     public $id;
 
-    /**
-     * @var DDC2759QualificationMetadata
-     * @OneToOne(targetEntity="DDC2759QualificationMetadata", mappedBy="content")
-     */
+    /** @var DDC2759QualificationMetadata */
+    #[OneToOne(targetEntity: 'DDC2759QualificationMetadata', mappedBy: 'content')]
     public $metadata;
 }
 
-/**
- * @Entity
- * @Table(name="ddc_2759_category")
- */
+#[Table(name: 'ddc_2759_category')]
+#[Entity]
 class DDC2759Category
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     public $id;
 
-    /**
-     * @psalm-var Collection<int, DDC2759MetadataCategory>
-     * @OneToMany(targetEntity="DDC2759MetadataCategory", mappedBy="category")
-     */
+    /** @psalm-var Collection<int, DDC2759MetadataCategory> */
+    #[OneToMany(targetEntity: 'DDC2759MetadataCategory', mappedBy: 'category')]
     public $metadataCategories;
 }
 
-/**
- * @Entity
- * @Table(name="ddc_2759_qualification_metadata")
- */
+#[Table(name: 'ddc_2759_qualification_metadata')]
+#[Entity]
 class DDC2759QualificationMetadata
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     public $id;
 
-    /**
-     * @var DDC2759Qualification
-     * @OneToOne(targetEntity="DDC2759Qualification", inversedBy="metadata")
-     */
-    public $content;
-
-    /**
-     * @psalm-var Collection<int, DDC2759MetadataCategory>
-     * @OneToMany(targetEntity="DDC2759MetadataCategory", mappedBy="metadata")
-     */
+    /** @psalm-var Collection<int, DDC2759MetadataCategory> */
+    #[OneToMany(targetEntity: 'DDC2759MetadataCategory', mappedBy: 'metadata')]
     protected $metadataCategories;
 
-    public function __construct(DDC2759Qualification $content)
-    {
-        $this->content = $content;
+    public function __construct(
+        #[OneToOne(targetEntity: 'DDC2759Qualification', inversedBy: 'metadata')]
+        public DDC2759Qualification $content,
+    ) {
     }
 }
 
-/**
- * @Entity
- * @Table(name="ddc_2759_metadata_category")
- */
+#[Table(name: 'ddc_2759_metadata_category')]
+#[Entity]
 class DDC2759MetadataCategory
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     public $id;
 
-    /**
-     * @var DDC2759QualificationMetadata
-     * @ManyToOne(targetEntity="DDC2759QualificationMetadata", inversedBy="metadataCategories")
-     */
-    public $metadata;
-
-    /**
-     * @var DDC2759Category
-     * @ManyToOne(targetEntity="DDC2759Category", inversedBy="metadataCategories")
-     */
-    public $category;
-
-    public function __construct(DDC2759QualificationMetadata $metadata, DDC2759Category $category)
-    {
-        $this->metadata = $metadata;
-        $this->category = $category;
+    public function __construct(
+        #[ManyToOne(targetEntity: 'DDC2759QualificationMetadata', inversedBy: 'metadataCategories')]
+        public DDC2759QualificationMetadata $metadata,
+        #[ManyToOne(targetEntity: 'DDC2759Category', inversedBy: 'metadataCategories')]
+        public DDC2759Category $category,
+    ) {
     }
 }

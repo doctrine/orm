@@ -14,47 +14,28 @@ use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\Table;
 
-/**
- * @Entity
- * @Table(name="geonames_admin1")
- * @Cache
- */
+#[Table(name: 'geonames_admin1')]
+#[Entity]
+#[Cache]
 class Admin1
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer", length=25)
-     * @GeneratedValue(strategy="NONE")
-     */
-    public $id;
-
-    /**
-     * @var Country
-     * @Id
-     * @ManyToOne(targetEntity="Country")
-     * @JoinColumn(name="country", referencedColumnName="id")
-     * @Cache
-     */
-    public $country;
-
-    /**
-     * @psalm-var Collection<int, Admin1AlternateName>
-     * @OneToMany(targetEntity="Admin1AlternateName", mappedBy="admin1")
-     * @Cache
-     */
+    /** @psalm-var Collection<int, Admin1AlternateName> */
+    #[OneToMany(targetEntity: 'Admin1AlternateName', mappedBy: 'admin1')]
+    #[Cache]
     public $names = [];
 
-    /**
-     * @var string
-     * @Column(type="string", length=255);
-     */
-    public $name;
-
-    public function __construct(int $id, string $name, Country $country)
-    {
-        $this->id      = $id;
-        $this->name    = $name;
-        $this->country = $country;
+    public function __construct(
+        #[Id]
+        #[Column(type: 'integer', length: 25)]
+        #[GeneratedValue(strategy: 'NONE')]
+        public int $id,
+        #[Column(type: 'string', length: 255)]
+        public string $name,
+        #[Id]
+        #[ManyToOne(targetEntity: 'Country')]
+        #[JoinColumn(name: 'country', referencedColumnName: 'id')]
+        #[Cache]
+        public Country $country,
+    ) {
     }
 }

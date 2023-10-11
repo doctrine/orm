@@ -11,29 +11,21 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\Table;
 
-/**
- * @Entity
- * @Table(name="tweet_user_list")
- */
+#[Table(name: 'tweet_user_list')]
+#[Entity]
 class UserList
 {
-    /**
-     * @var int
-     * @Id
-     * @GeneratedValue
-     * @Column(type="integer")
-     */
+    /** @var int */
+    #[Id]
+    #[GeneratedValue]
+    #[Column(type: 'integer')]
     public $id;
 
-    /**
-     * @var string
-     * @Column(type="string", length=255)
-     */
+    /** @var string */
+    #[Column(type: 'string', length: 255)]
     public $listName;
 
-    /**
-     * @var User
-     * @ManyToOne(targetEntity="User", inversedBy="userLists")
-     */
+    /** @var User */
+    #[ManyToOne(targetEntity: 'User', inversedBy: 'userLists')]
     public $owner;
 }

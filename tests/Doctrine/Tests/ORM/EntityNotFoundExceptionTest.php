@@ -5,20 +5,20 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM;
 
 use Doctrine\ORM\EntityNotFoundException;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 
 /**
  * Tests for {@see \Doctrine\ORM\EntityNotFoundException}
- *
- * @covers \Doctrine\ORM\EntityNotFoundException
  */
+#[CoversClass(EntityNotFoundException::class)]
 class EntityNotFoundExceptionTest extends TestCase
 {
     public function testFromClassNameAndIdentifier(): void
     {
         $exception = EntityNotFoundException::fromClassNameAndIdentifier(
             'foo',
-            ['foo' => 'bar']
+            ['foo' => 'bar'],
         );
 
         self::assertInstanceOf(EntityNotFoundException::class, $exception);
@@ -26,7 +26,7 @@ class EntityNotFoundExceptionTest extends TestCase
 
         $exception = EntityNotFoundException::fromClassNameAndIdentifier(
             'foo',
-            []
+            [],
         );
 
         self::assertInstanceOf(EntityNotFoundException::class, $exception);

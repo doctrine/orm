@@ -4,28 +4,18 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM;
 
+use Doctrine\ORM\Mapping\OneToManyAssociationMapping;
 use Doctrine\ORM\ORMInvalidArgumentException;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use stdClass;
 
 use function spl_object_id;
 
-/** @covers \Doctrine\ORM\ORMInvalidArgumentException */
+#[CoversClass(ORMInvalidArgumentException::class)]
 class ORMInvalidArgumentExceptionTest extends TestCase
 {
-    /**
-     * @param mixed $value
-     *
-     * @dataProvider invalidEntityNames
-     */
-    public function testInvalidEntityName($value, string $expectedMessage): void
-    {
-        $exception = ORMInvalidArgumentException::invalidEntityName($value);
-
-        self::assertInstanceOf(ORMInvalidArgumentException::class, $exception);
-        self::assertSame($expectedMessage, $exception->getMessage());
-    }
-
     /** @psalm-return list<array{mixed, string}> */
     public static function invalidEntityNames(): array
     {
@@ -38,7 +28,7 @@ class ORMInvalidArgumentExceptionTest extends TestCase
         ];
     }
 
-    /** @dataProvider newEntitiesFoundThroughRelationshipsErrorMessages */
+    #[DataProvider('newEntitiesFoundThroughRelationshipsErrorMessages')]
     public function testNewEntitiesFoundThroughRelationships(array $newEntities, string $expectedMessage): void
     {
         $exception = ORMInvalidArgumentException::newEntitiesFoundThroughRelationships($newEntities);
@@ -57,21 +47,21 @@ class ORMInvalidArgumentExceptionTest extends TestCase
                 return 'ThisIsAStringRepresentationOfEntity3';
             }
         };
-        $association1 = [
+        $association1 = OneToManyAssociationMapping::fromMappingArray([
             'sourceEntity' => 'foo1',
             'fieldName'    => 'bar1',
             'targetEntity' => 'baz1',
-        ];
-        $association2 = [
+        ]);
+        $association2 = OneToManyAssociationMapping::fromMappingArray([
             'sourceEntity' => 'foo2',
             'fieldName'    => 'bar2',
             'targetEntity' => 'baz2',
-        ];
-        $association3 = [
+        ]);
+        $association3 = OneToManyAssociationMapping::fromMappingArray([
             'sourceEntity' => 'foo3',
             'fieldName'    => 'bar3',
             'targetEntity' => 'baz3',
-        ];
+        ]);
 
         return [
             'one entity found' => [

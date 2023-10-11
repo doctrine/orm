@@ -8,6 +8,7 @@ use Doctrine\Common\Collections\Criteria;
 use Doctrine\Tests\Models\Company\CompanyFlexContract;
 use Doctrine\Tests\Models\Company\CompanyManager;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
 class DDC3719Test extends OrmFunctionalTestCase
 {
@@ -18,7 +19,7 @@ class DDC3719Test extends OrmFunctionalTestCase
         parent::setUp();
     }
 
-    /** @group DDC-3719 */
+    #[Group('DDC-3719')]
     public function testCriteriaOnNotOwningSide(): void
     {
         $manager = new CompanyManager();

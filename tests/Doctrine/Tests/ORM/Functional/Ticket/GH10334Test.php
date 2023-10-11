@@ -11,10 +11,6 @@ use Doctrine\Tests\Models\GH10334\GH10334ProductType;
 use Doctrine\Tests\Models\GH10334\GH10334ProductTypeId;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-/**
- * @group GH10334Test
- * @requires PHP 8.1
- */
 class GH10334Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void

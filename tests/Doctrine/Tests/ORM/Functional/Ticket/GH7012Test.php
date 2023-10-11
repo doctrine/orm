@@ -12,6 +12,7 @@ use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\ORM\Mapping\Table;
 use Doctrine\Tests\Models\Quote\User as QuotedUser;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
 final class GH7012Test extends OrmFunctionalTestCase
 {
@@ -24,7 +25,7 @@ final class GH7012Test extends OrmFunctionalTestCase
         $this->setUpEntitySchema([GH7012UserData::class]);
     }
 
-    /** @group GH-7012 */
+    #[Group('GH-7012')]
     public function testUpdateEntityWithIdentifierAssociationWithQuotedJoinColumn(): void
     {
         $user       = new QuotedUser();
@@ -43,35 +44,23 @@ final class GH7012Test extends OrmFunctionalTestCase
 
         self::assertSame(
             '4321',
-            $this->_em->getRepository(GH7012UserData::class)->findOneBy(['user' => $user])->name
+            $this->_em->getRepository(GH7012UserData::class)->findOneBy(['user' => $user])->name,
         );
     }
 }
 
 
-/**
- * @Entity
- * @Table(name="`quote-user-data`")
- */
+#[Table(name: '`quote-user-data`')]
+#[Entity]
 class GH7012UserData
 {
-    /**
-     * @var QuotedUser
-     * @Id
-     * @OneToOne(targetEntity=QuotedUser::class)
-     * @JoinColumn(name="`user-id`", referencedColumnName="`user-id`", onDelete="CASCADE")
-     */
-    public $user;
-
-    /**
-     * @var string
-     * @Column(type="string", name="`name`")
-     */
-    public $name;
-
-    public function __construct(QuotedUser $user, string $name)
-    {
-        $this->user = $user;
-        $this->name = $name;
+    public function __construct(
+        #[Id]
+        #[OneToOne(targetEntity: QuotedUser::class)]
+        #[JoinColumn(name: '`user-id`', referencedColumnName: '`user-id`', onDelete: 'CASCADE')]
+        public QuotedUser $user,
+        #[Column(type: 'string', name: '`name`')]
+        public string $name,
+    ) {
     }
 }

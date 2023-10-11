@@ -26,25 +26,18 @@ use Doctrine\Tests\Models\Cache\AttractionLocationInfo;
 use Doctrine\Tests\Models\Cache\City;
 use Doctrine\Tests\Models\Cache\State;
 use Doctrine\Tests\OrmTestCase;
-use Doctrine\Tests\PHPUnitCompatibility\MockBuilderCompatibilityTools;
 use InvalidArgumentException;
 use LogicException;
+use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\MockObject\MockObject;
 use Psr\Cache\CacheItemPoolInterface;
 
-/** @group DDC-2183 */
+#[Group('DDC-2183')]
 class DefaultCacheFactoryTest extends OrmTestCase
 {
-    use MockBuilderCompatibilityTools;
-
-    /** @var CacheFactory&MockObject */
-    private $factory;
-
-    /** @var EntityManagerMock */
-    private $em;
-
-    /** @var RegionsConfiguration */
-    private $regionsConfig;
+    private CacheFactory&MockObject $factory;
+    private EntityManagerMock $em;
+    private RegionsConfiguration $regionsConfig;
 
     protected function setUp(): void
     {
@@ -55,7 +48,8 @@ class DefaultCacheFactoryTest extends OrmTestCase
         $this->em            = $this->getTestEntityManager();
         $this->regionsConfig = new RegionsConfiguration();
         $arguments           = [$this->regionsConfig, $this->getSharedSecondLevelCache()];
-        $this->factory       = $this->getMockBuilderWithOnlyMethods(DefaultCacheFactory::class, ['getRegion'])
+        $this->factory       = $this->getMockBuilder(DefaultCacheFactory::class)
+                                    ->onlyMethods(['getRegion'])
                                     ->setConstructorArgs($arguments)
                                     ->getMock();
     }
@@ -133,11 +127,11 @@ class DefaultCacheFactoryTest extends OrmTestCase
         $persister = new OneToManyPersister($em);
         $region    = new ConcurrentRegionMock(new DefaultRegion('regionName', $this->getSharedSecondLevelCache()));
 
-        $mapping['cache']['usage'] = ClassMetadata::CACHE_USAGE_READ_ONLY;
+        $mapping->cache['usage'] = ClassMetadata::CACHE_USAGE_READ_ONLY;
 
         $this->factory->expects(self::once())
             ->method('getRegion')
-            ->with(self::equalTo($mapping['cache']))
+            ->with(self::equalTo($mapping->cache))
             ->will(self::returnValue($region));
 
         $cachedPersister = $this->factory->buildCachedCollectionPersister($em, $persister, $mapping);
@@ -154,11 +148,11 @@ class DefaultCacheFactoryTest extends OrmTestCase
         $persister = new OneToManyPersister($em);
         $region    = new ConcurrentRegionMock(new DefaultRegion('regionName', $this->getSharedSecondLevelCache()));
 
-        $mapping['cache']['usage'] = ClassMetadata::CACHE_USAGE_READ_WRITE;
+        $mapping->cache['usage'] = ClassMetadata::CACHE_USAGE_READ_WRITE;
 
         $this->factory->expects(self::once())
             ->method('getRegion')
-            ->with(self::equalTo($mapping['cache']))
+            ->with(self::equalTo($mapping->cache))
             ->will(self::returnValue($region));
 
         $cachedPersister = $this->factory->buildCachedCollectionPersister($em, $persister, $mapping);
@@ -175,11 +169,11 @@ class DefaultCacheFactoryTest extends OrmTestCase
         $persister = new OneToManyPersister($em);
         $region    = new ConcurrentRegionMock(new DefaultRegion('regionName', $this->getSharedSecondLevelCache()));
 
-        $mapping['cache']['usage'] = ClassMetadata::CACHE_USAGE_NONSTRICT_READ_WRITE;
+        $mapping->cache['usage'] = ClassMetadata::CACHE_USAGE_NONSTRICT_READ_WRITE;
 
         $this->factory->expects(self::once())
             ->method('getRegion')
-            ->with(self::equalTo($mapping['cache']))
+            ->with(self::equalTo($mapping->cache))
             ->will(self::returnValue($region));
 
         $cachedPersister = $this->factory->buildCachedCollectionPersister($em, $persister, $mapping);
@@ -247,7 +241,7 @@ class DefaultCacheFactoryTest extends OrmTestCase
         $mapping   = $metadata->associationMappings['cities'];
         $persister = new OneToManyPersister($em);
 
-        $mapping['cache']['usage'] = -1;
+        $mapping->cache['usage'] = -1;
 
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Unrecognized access strategy type [-1]');
@@ -263,14 +257,14 @@ class DefaultCacheFactoryTest extends OrmTestCase
         $this->expectExceptionMessage(
             'If you want to use a "READ_WRITE" cache an implementation of "Doctrine\ORM\Cache\ConcurrentRegion" '
             . 'is required, The default implementation provided by doctrine is '
-            . '"Doctrine\ORM\Cache\Region\FileLockRegion" if you want to use it please provide a valid directory'
+            . '"Doctrine\ORM\Cache\Region\FileLockRegion" if you want to use it please provide a valid directory',
         );
 
         $factory->getRegion(
             [
                 'usage'   => ClassMetadata::CACHE_USAGE_READ_WRITE,
                 'region'  => 'foo',
-            ]
+            ],
         );
     }
 
@@ -284,14 +278,14 @@ class DefaultCacheFactoryTest extends OrmTestCase
         $this->expectExceptionMessage(
             'If you want to use a "READ_WRITE" cache an implementation of "Doctrine\ORM\Cache\ConcurrentRegion" '
             . 'is required, The default implementation provided by doctrine is '
-            . '"Doctrine\ORM\Cache\Region\FileLockRegion" if you want to use it please provide a valid directory'
+            . '"Doctrine\ORM\Cache\Region\FileLockRegion" if you want to use it please provide a valid directory',
         );
 
         $factory->getRegion(
             [
                 'usage'   => ClassMetadata::CACHE_USAGE_READ_WRITE,
                 'region'  => 'foo',
-            ]
+            ],
         );
     }
 
@@ -305,8 +299,8 @@ class DefaultCacheFactoryTest extends OrmTestCase
                 [
                     'region' => 'bar',
                     'usage'  => ClassMetadata::CACHE_USAGE_READ_ONLY,
-                ]
-            )
+                ],
+            ),
         );
     }
 }

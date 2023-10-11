@@ -14,6 +14,7 @@ use Doctrine\ORM\Mapping\InheritanceType;
 use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\ORM\Mapping\Table;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
 class DDC837Test extends OrmFunctionalTestCase
 {
@@ -26,11 +27,11 @@ class DDC837Test extends OrmFunctionalTestCase
             DDC837Class1::class,
             DDC837Class2::class,
             DDC837Class3::class,
-            DDC837Aggregate::class
+            DDC837Aggregate::class,
         );
     }
 
-    /** @group DDC-837 */
+    #[Group('DDC-837')]
     public function testIssue(): void
     {
         $c1              = new DDC837Class1();
@@ -98,114 +99,84 @@ class DDC837Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- * @Table(name="DDC837Super")
- * @InheritanceType("JOINED")
- * @DiscriminatorColumn(name="type", type="string")
- * @DiscriminatorMap({"class1" = "DDC837Class1", "class2" = "DDC837Class2", "class3"="DDC837Class3"})
- */
+#[Table(name: 'DDC837Super')]
+#[Entity]
+#[InheritanceType('JOINED')]
+#[DiscriminatorColumn(name: 'type', type: 'string')]
+#[DiscriminatorMap(['class1' => 'DDC837Class1', 'class2' => 'DDC837Class2', 'class3' => 'DDC837Class3'])]
 abstract class DDC837Super
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(name="id", type="integer")
-     * @GeneratedValue(strategy="AUTO")
-     */
+    /** @var int */
+    #[Id]
+    #[Column(name: 'id', type: 'integer')]
+    #[GeneratedValue(strategy: 'AUTO')]
     public $id;
 }
 
-/** @Entity */
+#[Entity]
 class DDC837Class1 extends DDC837Super
 {
-    /**
-     * @var string
-     * @Column(name="title", type="string", length=150)
-     */
+    /** @var string */
+    #[Column(name: 'title', type: 'string', length: 150)]
     public $title;
 
-    /**
-     * @var string
-     * @Column(name="content", type="string", length=500)
-     */
+    /** @var string */
+    #[Column(name: 'content', type: 'string', length: 500)]
     public $description;
 
-    /**
-     * @var DDC837Aggregate
-     * @OneToOne(targetEntity="DDC837Aggregate")
-     */
+    /** @var DDC837Aggregate */
+    #[OneToOne(targetEntity: 'DDC837Aggregate')]
     public $aggregate;
 }
 
-/** @Entity */
+#[Entity]
 class DDC837Class2 extends DDC837Super
 {
-    /**
-     * @var string
-     * @Column(name="title", type="string", length=150)
-     */
+    /** @var string */
+    #[Column(name: 'title', type: 'string', length: 150)]
     public $title;
 
-    /**
-     * @var string
-     * @Column(name="content", type="string", length=500)
-     */
+    /** @var string */
+    #[Column(name: 'content', type: 'string', length: 500)]
     public $description;
 
-    /**
-     * @var string
-     * @Column(name="text", type="text")
-     */
+    /** @var string */
+    #[Column(name: 'text', type: 'text')]
     public $text;
 
-    /**
-     * @var DDC837Aggregate
-     * @OneToOne(targetEntity="DDC837Aggregate")
-     */
+    /** @var DDC837Aggregate */
+    #[OneToOne(targetEntity: 'DDC837Aggregate')]
     public $aggregate;
 }
 
 /**
  * An extra class to demonstrate why title and description aren't in Super
- *
- * @Entity
  */
+#[Entity]
 class DDC837Class3 extends DDC837Super
 {
-    /**
-     * @var string
-     * @Column(name="title", type="string", length=150)
-     */
+    /** @var string */
+    #[Column(name: 'title', type: 'string', length: 150)]
     public $apples;
 
-    /**
-     * @var string
-     * @Column(name="content", type="string", length=500)
-     */
+    /** @var string */
+    #[Column(name: 'content', type: 'string', length: 500)]
     public $bananas;
 }
 
-/** @Entity */
+#[Entity]
 class DDC837Aggregate
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(name="id", type="integer")
-     * @GeneratedValue
-     */
+    /** @var int */
+    #[Id]
+    #[Column(name: 'id', type: 'integer')]
+    #[GeneratedValue]
     public $id;
 
-    /**
-     * @var string
-     * @Column(name="sysname", type="string", length=255)
-     */
-    protected $sysname;
-
-    public function __construct(string $sysname)
-    {
-        $this->sysname = $sysname;
+    public function __construct(
+        #[Column(name: 'sysname', type: 'string', length: 255)]
+        protected string $sysname,
+    ) {
     }
 
     public function getSysname(): string

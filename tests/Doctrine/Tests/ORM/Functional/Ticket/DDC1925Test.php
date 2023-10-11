@@ -10,18 +10,18 @@ use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\InverseJoinColumn;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\JoinTable;
 use Doctrine\ORM\Mapping\ManyToMany;
 use Doctrine\ORM\Mapping\Table;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
 use function assert;
 
-/**
- * @group DDC-1925
- * @group DDC-1210
- */
+#[Group('DDC-1925')]
+#[Group('DDC-1210')]
 class DDC1925Test extends OrmFunctionalTestCase
 {
     public function testIssue(): void
@@ -54,35 +54,23 @@ class DDC1925Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Table
- * @Entity
- */
+#[Table]
+#[Entity]
 class DDC1925Product
 {
-    /**
-     * @var int $id
-     * @Column(name="id", type="integer")
-     * @Id
-     * @GeneratedValue(strategy="AUTO")
-     */
-    private $id;
+    #[Column(name: 'id', type: 'integer')]
+    #[Id]
+    #[GeneratedValue(strategy: 'AUTO')]
+    private int $id;
 
-    /**
-     * @var string $title
-     * @Column(name="title", type="string", length=255)
-     */
-    private $title;
+    #[Column(name: 'title', type: 'string', length: 255)]
+    private string|null $title = null;
 
-    /**
-     * @psalm-var Collection<int, DDC1925User>
-     * @ManyToMany(targetEntity="DDC1925User")
-     * @JoinTable(
-     *   name="user_purchases",
-     *   joinColumns={@JoinColumn(name="product_id", referencedColumnName="id")},
-     *   inverseJoinColumns={@JoinColumn(name="user_id", referencedColumnName="id")}
-     * )
-     */
+    /** @psalm-var Collection<int, DDC1925User> */
+    #[JoinTable(name: 'user_purchases')]
+    #[JoinColumn(name: 'product_id', referencedColumnName: 'id')]
+    #[InverseJoinColumn(name: 'user_id', referencedColumnName: 'id')]
+    #[ManyToMany(targetEntity: 'DDC1925User')]
     private $buyers;
 
     /**
@@ -122,25 +110,17 @@ class DDC1925Product
     }
 }
 
-/**
- * @Table
- * @Entity
- */
+#[Table]
+#[Entity]
 class DDC1925User
 {
-    /**
-     * @var int
-     * @Column(name="id", type="integer")
-     * @Id
-     * @GeneratedValue(strategy="AUTO")
-     */
-    private $id;
+    #[Column(name: 'id', type: 'integer')]
+    #[Id]
+    #[GeneratedValue(strategy: 'AUTO')]
+    private int $id;
 
-    /**
-     * @var string
-     * @Column(name="title", type="string", length=255)
-     */
-    private $title;
+    #[Column(name: 'title', type: 'string', length: 255)]
+    private string|null $title = null;
 
     /**
      * Get id

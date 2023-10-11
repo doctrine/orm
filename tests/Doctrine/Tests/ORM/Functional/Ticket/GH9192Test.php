@@ -44,33 +44,22 @@ class GH9192Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @ORM\Entity
- */
+#[ORM\Entity]
 class GH9192A
 {
-    /**
-     * @ORM\Id
-     * @ORM\Column(type="integer")
-     * @ORM\GeneratedValue(strategy="AUTO")
-     *
-     * @var int
-     */
+    /** @var int */
+    #[ORM\Id]
+    #[ORM\Column(type: 'integer')]
+    #[ORM\GeneratedValue(strategy: 'AUTO')]
     public $id;
 
-    /**
-     * @ORM\OneToMany(targetEntity="GH9192B", mappedBy="a", cascade={"remove"})
-     *
-     * @var Collection<GH9192B>
-     */
+    /** @var Collection<GH9192B> */
+    #[ORM\OneToMany(mappedBy: 'a', targetEntity: GH9192B::class, cascade: ['remove'])]
     public $bs;
 
-    /**
-     * @ORM\OneToOne(targetEntity="GH9192C")
-     * @ORM\JoinColumn(nullable=true, onDelete="SET NULL")
-     *
-     * @var GH9192C
-     */
+    /** @var GH9192C */
+    #[ORM\OneToOne(targetEntity: GH9192C::class)]
+    #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
     public $c;
 
     public function __construct()
@@ -79,32 +68,21 @@ class GH9192A
     }
 }
 
-/**
- * @ORM\Entity
- */
+#[ORM\Entity]
 class GH9192B
 {
-    /**
-     * @ORM\Id
-     * @ORM\Column(type="integer")
-     * @ORM\GeneratedValue(strategy="AUTO")
-     *
-     * @var int
-     */
+    /** @var int */
+    #[ORM\Id]
+    #[ORM\Column(type: 'integer')]
+    #[ORM\GeneratedValue(strategy: 'AUTO')]
     public $id;
 
-    /**
-     * @ORM\OneToMany(targetEntity="GH9192C", mappedBy="b", cascade={"remove"})
-     *
-     * @var Collection<GH9192C>
-     */
+    /** @var Collection<GH9192C> */
+    #[ORM\OneToMany(mappedBy: 'b', targetEntity: GH9192C::class, cascade: ['remove'])]
     public $cs;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="GH9192A", inversedBy="bs")
-     *
-     * @var GH9192A
-     */
+    /** @var GH9192A */
+    #[ORM\ManyToOne(inversedBy: 'bs', targetEntity: GH9192A::class)]
     public $a;
 
     public function __construct()
@@ -113,24 +91,16 @@ class GH9192B
     }
 }
 
-/**
- * @ORM\Entity
- */
+#[ORM\Entity]
 class GH9192C
 {
-    /**
-     * @ORM\Id
-     * @ORM\Column(type="integer")
-     * @ORM\GeneratedValue(strategy="AUTO")
-     *
-     * @var int
-     */
+    /** @var int */
+    #[ORM\Id]
+    #[ORM\Column(type: 'integer')]
+    #[ORM\GeneratedValue(strategy: 'AUTO')]
     public $id;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="GH9192B", inversedBy="cs")
-     *
-     * @var GH9192B
-     */
+    /** @var GH9192B */
+    #[ORM\ManyToOne(inversedBy: 'cs', targetEntity: GH9192B::class)]
     public $b;
 }

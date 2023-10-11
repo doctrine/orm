@@ -7,8 +7,7 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 use Doctrine\Tests\Models\CMS\CmsArticle;
 use Doctrine\Tests\Models\CMS\CmsComment;
 use Doctrine\Tests\OrmFunctionalTestCase;
-
-use function get_class;
+use PHPUnit\Framework\Attributes\Group;
 
 class DDC812Test extends OrmFunctionalTestCase
 {
@@ -19,7 +18,7 @@ class DDC812Test extends OrmFunctionalTestCase
         parent::setUp();
     }
 
-    /** @group DDC-812 */
+    #[Group('DDC-812')]
     public function testFetchJoinInitializesPreviouslyUninitializedCollectionOfManagedEntity(): void
     {
         $article        = new CmsArticle();
@@ -36,10 +35,10 @@ class DDC812Test extends OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $article2 = $this->_em->find(get_class($article), $article->id);
+        $article2 = $this->_em->find($article::class, $article->id);
 
         $article2Again = $this->_em->createQuery(
-            'select a, c from Doctrine\Tests\Models\CMS\CmsArticle a join a.comments c where a.id = ?1'
+            'select a, c from Doctrine\Tests\Models\CMS\CmsArticle a join a.comments c where a.id = ?1',
         )
             ->setParameter(1, $article->id)
             ->getSingleResult();

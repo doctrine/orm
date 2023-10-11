@@ -12,31 +12,20 @@ use Doctrine\ORM\Mapping\Table;
 
 /**
  * Test model that contains only Id-columns
- *
- * @Entity
- * @Table(name="taxi_ride")
  */
+#[Table(name: 'taxi_ride')]
+#[Entity]
 class Ride
 {
-    /**
-     * @var Driver
-     * @Id
-     * @ManyToOne(targetEntity="Driver", inversedBy="freeDriverRides")
-     * @JoinColumn(name="driver_id", referencedColumnName="id")
-     */
-    private $driver;
-
-    /**
-     * @var Car
-     * @Id
-     * @ManyToOne(targetEntity="Car", inversedBy="freeCarRides")
-     * @JoinColumn(name="car", referencedColumnName="brand")
-     */
-    private $car;
-
-    public function __construct(Driver $driver, Car $car)
-    {
-        $this->driver = $driver;
-        $this->car    = $car;
+    public function __construct(
+        #[Id]
+        #[ManyToOne(targetEntity: 'Driver', inversedBy: 'freeDriverRides')]
+        #[JoinColumn(name: 'driver_id', referencedColumnName: 'id')]
+        private Driver $driver,
+        #[Id]
+        #[ManyToOne(targetEntity: 'Car', inversedBy: 'freeCarRides')]
+        #[JoinColumn(name: 'car', referencedColumnName: 'brand')]
+        private Car $car,
+    ) {
     }
 }

@@ -10,6 +10,7 @@ use Doctrine\ORM\Query\ParserResult;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use Generator;
+use PHPUnit\Framework\Attributes\DataProvider;
 use ReflectionMethod;
 
 use function file_get_contents;
@@ -41,9 +42,7 @@ class ParserResultSerializationTest extends OrmFunctionalTestCase
         $this->assertInstanceOf(SingleSelectExecutor::class, $unserialized->getSqlExecutor());
     }
 
-    /**
-     * @dataProvider provideSerializedSingleSelectResults
-     */
+    #[DataProvider('provideSerializedSingleSelectResults')]
     public function testUnserializeSingleSelectResult(string $serialized): void
     {
         $unserialized = unserialize($serialized);

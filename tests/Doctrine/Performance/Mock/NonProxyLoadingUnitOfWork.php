@@ -11,18 +11,14 @@ use Doctrine\ORM\UnitOfWork;
  */
 class NonProxyLoadingUnitOfWork extends UnitOfWork
 {
-    /** @var NonLoadingPersister */
-    private $entityPersister;
+    private NonLoadingPersister $entityPersister;
 
     public function __construct()
     {
         $this->entityPersister = new NonLoadingPersister();
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function getEntityPersister($entityName)
+    public function getEntityPersister(string $entityName): NonLoadingPersister
     {
         return $this->entityPersister;
     }

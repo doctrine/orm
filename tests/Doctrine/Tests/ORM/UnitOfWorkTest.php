@@ -5,14 +5,14 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM;
 
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\EventManager;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Driver;
+use Doctrine\DBAL\Driver\Statement;
+use Doctrine\DBAL\Exception;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\Deprecations\PHPUnit\VerifyDeprecations;
 use Doctrine\ORM\EntityNotFoundException;
-use Doctrine\ORM\Events;
 use Doctrine\ORM\Exception\EntityIdentityCollisionException;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\Column;
@@ -20,15 +20,10 @@ use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\ManyToOne;
-use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\Version;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMInvalidArgumentException;
 use Doctrine\ORM\UnitOfWork;
-use Doctrine\Persistence\Event\LifecycleEventArgs;
-use Doctrine\Persistence\NotifyPropertyChanged;
-use Doctrine\Persistence\PropertyChangedListener;
-use Doctrine\Tests\Mocks\ConnectionMock;
 use Doctrine\Tests\Mocks\EntityManagerMock;
 use Doctrine\Tests\Mocks\EntityPersisterMock;
 use Doctrine\Tests\Mocks\UnitOfWorkMock;
@@ -37,18 +32,12 @@ use Doctrine\Tests\Models\CMS\CmsPhonenumber;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\Models\Forum\ForumAvatar;
 use Doctrine\Tests\Models\Forum\ForumUser;
-use Doctrine\Tests\Models\GeoNames\City;
-use Doctrine\Tests\Models\GeoNames\Country;
 use Doctrine\Tests\OrmTestCase;
-use Doctrine\Tests\PHPUnitCompatibility\MockBuilderCompatibilityTools;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\MockObject\MockObject;
 use stdClass;
 
-use function assert;
-use function count;
-use function gc_collect_cycles;
-use function get_class;
-use function method_exists;
 use function random_int;
 use function uniqid;
 
@@ -57,32 +46,24 @@ use function uniqid;
  */
 class UnitOfWorkTest extends OrmTestCase
 {
-    use MockBuilderCompatibilityTools;
     use VerifyDeprecations;
 
     /**
      * SUT
-     *
-     * @var UnitOfWorkMock
      */
-    private $_unitOfWork;
+    private UnitOfWorkMock $_unitOfWork;
 
     /**
      * Provides a sequence mock to the UnitOfWork
-     *
-     * @var ConnectionMock&MockObject
      */
-    private $_connectionMock;
+    private Connection $connection;
 
     /**
      * The EntityManager mock that provides the mock persisters
-     *
-     * @var EntityManagerMock
      */
-    private $_emMock;
+    private EntityManagerMock $_emMock;
 
-    /** @var EventManager&MockObject */
-    private $eventManager;
+    private EventManager&MockObject $eventManager;
 
     protected function setUp(): void
     {
@@ -92,19 +73,7 @@ class UnitOfWorkTest extends OrmTestCase
         $platform->method('supportsIdentityColumns')
             ->willReturn(true);
 
-        if (method_exists($platform, 'getSQLResultCasing')) {
-            $platform->method('getSQLResultCasing')
-                ->willReturnCallback(static function (string $column): string {
-                    return $column;
-                });
-        }
-
-        $driverStatement = $this->createMock(Driver\Statement::class);
-
-        if (method_exists($driverStatement, 'rowCount')) {
-            $driverStatement->method('rowCount')
-                ->willReturn(0);
-        }
+        $driverStatement = $this->createMock(Statement::class);
 
         $driverConnection = $this->createMock(Driver\Connection::class);
         $driverConnection->method('prepare')
@@ -118,9 +87,9 @@ class UnitOfWorkTest extends OrmTestCase
         $driver->method('connect')
             ->willReturn($driverConnection);
 
-        $this->eventManager    = $this->getMockBuilder(EventManager::class)->getMock();
-        $this->_connectionMock = new Connection([], $driver, null, $this->eventManager);
-        $this->_emMock         = new EntityManagerMock($this->_connectionMock);
+        $this->eventManager = $this->getMockBuilder(EventManager::class)->getMock();
+        $this->connection   = new Connection([], $driver, null, $this->eventManager);
+        $this->_emMock      = new EntityManagerMock($this->connection);
         // SUT
         $this->_unitOfWork = new UnitOfWorkMock($this->_emMock);
         $this->_emMock->setUnitOfWork($this->_unitOfWork);
@@ -209,87 +178,6 @@ class UnitOfWorkTest extends OrmTestCase
         self::assertCount(0, $avatarPersister->getDeletes());
     }
 
-    public function testChangeTrackingNotify(): void
-    {
-        $persister = new EntityPersisterMock($this->_emMock, $this->_emMock->getClassMetadata(NotifyChangedEntity::class));
-        $this->_unitOfWork->setEntityPersister(NotifyChangedEntity::class, $persister);
-        $itemPersister = new EntityPersisterMock($this->_emMock, $this->_emMock->getClassMetadata(NotifyChangedRelatedItem::class));
-        $this->_unitOfWork->setEntityPersister(NotifyChangedRelatedItem::class, $itemPersister);
-
-        $entity = new NotifyChangedEntity();
-        $entity->setData('thedata');
-        $this->_unitOfWork->persist($entity);
-
-        $this->_unitOfWork->commit();
-        self::assertCount(1, $persister->getInserts());
-        $persister->reset();
-
-        self::assertTrue($this->_unitOfWork->isInIdentityMap($entity));
-
-        $entity->setData('newdata');
-        $entity->setTransient('newtransientvalue');
-
-        self::assertTrue($this->_unitOfWork->isScheduledForDirtyCheck($entity));
-
-        self::assertEquals(['data' => ['thedata', 'newdata']], $this->_unitOfWork->getEntityChangeSet($entity));
-
-        $item = new NotifyChangedRelatedItem();
-        $entity->getItems()->add($item);
-        $item->setOwner($entity);
-        $this->_unitOfWork->persist($item);
-
-        $this->_unitOfWork->commit();
-        self::assertCount(1, $itemPersister->getInserts());
-        $persister->reset();
-        $itemPersister->reset();
-
-        $entity->getItems()->removeElement($item);
-        $item->setOwner(null);
-        self::assertTrue($entity->getItems()->isDirty());
-        $this->_unitOfWork->commit();
-        $updates = $itemPersister->getUpdates();
-        self::assertCount(1, $updates);
-        self::assertSame($updates[0], $item);
-    }
-
-    public function testChangeTrackingNotifyIndividualCommit(): void
-    {
-        $persister = new EntityPersisterMock($this->_emMock, $this->_emMock->getClassMetadata('Doctrine\Tests\ORM\NotifyChangedEntity'));
-        $this->_unitOfWork->setEntityPersister('Doctrine\Tests\ORM\NotifyChangedEntity', $persister);
-        $itemPersister = new EntityPersisterMock($this->_emMock, $this->_emMock->getClassMetadata('Doctrine\Tests\ORM\NotifyChangedRelatedItem'));
-        $this->_unitOfWork->setEntityPersister('Doctrine\Tests\ORM\NotifyChangedRelatedItem', $itemPersister);
-
-        $entity = new NotifyChangedEntity();
-        $entity->setData('thedata');
-
-        $entity2 = new NotifyChangedEntity();
-        $entity2->setData('thedata');
-
-        $this->_unitOfWork->persist($entity);
-        $this->_unitOfWork->persist($entity2);
-
-        $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/issues/8459');
-
-        $this->_unitOfWork->commit($entity);
-        $this->_unitOfWork->commit();
-
-        self::assertEquals(2, count($persister->getInserts()));
-
-        $persister->reset();
-
-        self::assertTrue($this->_unitOfWork->isInIdentityMap($entity2));
-
-        $entity->setData('newdata');
-        $entity2->setData('newdata');
-
-        $this->_unitOfWork->commit($entity);
-
-        self::assertTrue($this->_unitOfWork->isScheduledForDirtyCheck($entity2));
-        self::assertEquals(['data' => ['thedata', 'newdata']], $this->_unitOfWork->getEntityChangeSet($entity2));
-        self::assertFalse($this->_unitOfWork->isScheduledForDirtyCheck($entity));
-        self::assertEquals([], $this->_unitOfWork->getEntityChangeSet($entity));
-    }
-
     public function testGetEntityStateOnVersionedEntityWithAssignedIdentifier(): void
     {
         $persister = new EntityPersisterMock($this->_emMock, $this->_emMock->getClassMetadata(VersionedAssignedIdentifierEntity::class));
@@ -351,20 +239,16 @@ class UnitOfWorkTest extends OrmTestCase
         self::assertEmpty($this->_unitOfWork->getScheduledEntityUpdates());
     }
 
-    /**
-     * @param mixed $invalidValue
-     *
-     * @group DDC-3490
-     * @dataProvider invalidAssociationValuesDataProvider
-     */
-    public function testRejectsPersistenceOfObjectsWithInvalidAssociationValue($invalidValue): void
+    #[DataProvider('invalidAssociationValuesDataProvider')]
+    #[Group('DDC-3490')]
+    public function testRejectsPersistenceOfObjectsWithInvalidAssociationValue(mixed $invalidValue): void
     {
         $this->_unitOfWork->setEntityPersister(
             ForumUser::class,
             new EntityPersisterMock(
                 $this->_emMock,
-                $this->_emMock->getClassMetadata(ForumUser::class)
-            )
+                $this->_emMock->getClassMetadata(ForumUser::class),
+            ),
         );
 
         $user           = new ForumUser();
@@ -376,19 +260,15 @@ class UnitOfWorkTest extends OrmTestCase
         $this->_unitOfWork->persist($user);
     }
 
-    /**
-     * @param mixed $invalidValue
-     *
-     * @group DDC-3490
-     * @dataProvider invalidAssociationValuesDataProvider
-     */
-    public function testRejectsChangeSetComputationForObjectsWithInvalidAssociationValue($invalidValue): void
+    #[DataProvider('invalidAssociationValuesDataProvider')]
+    #[Group('DDC-3490')]
+    public function testRejectsChangeSetComputationForObjectsWithInvalidAssociationValue(mixed $invalidValue): void
     {
         $metadata = $this->_emMock->getClassMetadata(ForumUser::class);
 
         $this->_unitOfWork->setEntityPersister(
             ForumUser::class,
-            new EntityPersisterMock($this->_emMock, $metadata)
+            new EntityPersisterMock($this->_emMock, $metadata),
         );
 
         $user = new ForumUser();
@@ -403,10 +283,8 @@ class UnitOfWorkTest extends OrmTestCase
         $this->_unitOfWork->computeChangeSet($metadata, $user);
     }
 
-    /**
-     * @group DDC-3619
-     * @group 1338
-     */
+    #[Group('DDC-3619')]
+    #[Group('1338')]
     public function testRemovedAndRePersistedEntitiesAreInTheIdentityMapAndAreNotGarbageCollected(): void
     {
         $entity     = new ForumUser();
@@ -420,73 +298,6 @@ class UnitOfWorkTest extends OrmTestCase
 
         $this->_unitOfWork->persist($entity);
         self::assertTrue($this->_unitOfWork->isInIdentityMap($entity));
-    }
-
-    /**
-     * @group 5849
-     * @group 5850
-     */
-    public function testPersistedEntityAndClearManager(): void
-    {
-        $entity1 = new City(123, 'London');
-        $entity2 = new Country(456, 'United Kingdom');
-
-        $this->_unitOfWork->persist($entity1);
-        self::assertTrue($this->_unitOfWork->isInIdentityMap($entity1));
-
-        $this->_unitOfWork->persist($entity2);
-        self::assertTrue($this->_unitOfWork->isInIdentityMap($entity2));
-
-        $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/issues/8460');
-
-        $this->_unitOfWork->clear(Country::class);
-        self::assertTrue($this->_unitOfWork->isInIdentityMap($entity1));
-        self::assertFalse($this->_unitOfWork->isInIdentityMap($entity2));
-        self::assertTrue($this->_unitOfWork->isScheduledForInsert($entity1));
-        self::assertFalse($this->_unitOfWork->isScheduledForInsert($entity2));
-    }
-
-    /** @group #5579 */
-    public function testEntityChangeSetIsNotClearedAfterFlushOnSingleEntity(): void
-    {
-        $entity1 = new NotifyChangedEntity();
-        $entity2 = new NotifyChangedEntity();
-
-        $entity1->setData('thedata');
-        $entity2->setData('thedata');
-
-        $this->_unitOfWork->persist($entity1);
-        $this->_unitOfWork->persist($entity2);
-
-        $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/issues/8459');
-
-        $this->_unitOfWork->commit($entity1);
-        self::assertEmpty($this->_unitOfWork->getEntityChangeSet($entity1));
-        self::assertCount(1, $this->_unitOfWork->getEntityChangeSet($entity2));
-    }
-
-    /** @group #5579 */
-    public function testEntityChangeSetIsNotClearedAfterFlushOnArrayOfEntities(): void
-    {
-        $entity1 = new NotifyChangedEntity();
-        $entity2 = new NotifyChangedEntity();
-        $entity3 = new NotifyChangedEntity();
-
-        $entity1->setData('thedata');
-        $entity2->setData('thedata');
-        $entity3->setData('thedata');
-
-        $this->_unitOfWork->persist($entity1);
-        $this->_unitOfWork->persist($entity2);
-        $this->_unitOfWork->persist($entity3);
-
-        $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/issues/8459');
-
-        $this->_unitOfWork->commit([$entity1, $entity3]);
-
-        self::assertEmpty($this->_unitOfWork->getEntityChangeSet($entity1));
-        self::assertEmpty($this->_unitOfWork->getEntityChangeSet($entity3));
-        self::assertCount(1, $this->_unitOfWork->getEntityChangeSet($entity2));
     }
 
     /**
@@ -506,17 +317,13 @@ class UnitOfWorkTest extends OrmTestCase
         ];
     }
 
-    /**
-     * @param object $entity
-     *
-     * @dataProvider entitiesWithValidIdentifiersProvider
-     */
-    public function testAddToIdentityMapValidIdentifiers($entity, string $idHash): void
+    #[DataProvider('entitiesWithValidIdentifiersProvider')]
+    public function testAddToIdentityMapValidIdentifiers(object $entity, string $idHash): void
     {
         $this->_unitOfWork->persist($entity);
         $this->_unitOfWork->addToIdentityMap($entity);
 
-        self::assertSame($entity, $this->_unitOfWork->getByIdHash($idHash, get_class($entity)));
+        self::assertSame($entity, $this->_unitOfWork->getByIdHash($idHash, $entity::class));
     }
 
     /** @psalm-return array<string, array{object, string}> */
@@ -565,13 +372,9 @@ class UnitOfWorkTest extends OrmTestCase
         $this->_unitOfWork->registerManaged(new EntityWithBooleanIdentifier(), [], []);
     }
 
-    /**
-     * @param object               $entity
-     * @param array<string, mixed> $identifier
-     *
-     * @dataProvider entitiesWithInvalidIdentifiersProvider
-     */
-    public function testAddToIdentityMapInvalidIdentifiers($entity, array $identifier): void
+    /** @param array<string, mixed> $identifier */
+    #[DataProvider('entitiesWithInvalidIdentifiersProvider')]
+    public function testAddToIdentityMapInvalidIdentifiers(object $entity, array $identifier): void
     {
         $this->expectException(ORMInvalidArgumentException::class);
 
@@ -598,121 +401,11 @@ class UnitOfWorkTest extends OrmTestCase
     }
 
     /**
-     * @group 5689
-     * @group 1465
-     */
-    public function testObjectHashesOfMergedEntitiesAreNotUsedInOriginalEntityDataMap(): void
-    {
-        $user       = new CmsUser();
-        $user->name = 'ocramius';
-        $mergedUser = $this->_unitOfWork->merge($user);
-
-        self::assertSame([], $this->_unitOfWork->getOriginalEntityData($user), 'No original data was stored');
-        self::assertSame([], $this->_unitOfWork->getOriginalEntityData($mergedUser), 'No original data was stored');
-
-        $user       = null;
-        $mergedUser = null;
-
-        // force garbage collection of $user (frees the used object hashes, which may be recycled)
-        gc_collect_cycles();
-
-        $newUser       = new CmsUser();
-        $newUser->name = 'ocramius';
-
-        $this->_unitOfWork->persist($newUser);
-
-        self::assertSame([], $this->_unitOfWork->getOriginalEntityData($newUser), 'No original data was stored');
-    }
-
-    /**
-     * @group DDC-1955
-     * @group 5570
-     * @group 6174
-     */
-    public function testMergeWithNewEntityWillPersistItAndTriggerPrePersistListenersWithMergedEntityData(): void
-    {
-        $entity = new EntityWithRandomlyGeneratedField();
-
-        $generatedFieldValue = $entity->generatedField;
-
-        $this
-            ->eventManager
-            ->expects(self::any())
-            ->method('hasListeners')
-            ->willReturnCallback(static function ($eventName) {
-                return $eventName === Events::prePersist;
-            });
-        $this
-            ->eventManager
-            ->expects(self::once())
-            ->method('dispatchEvent')
-            ->with(
-                self::anything(),
-                self::callback(static function (LifecycleEventArgs $args) use ($entity, $generatedFieldValue) {
-                    $object = $args->getObject();
-                    assert($object instanceof EntityWithRandomlyGeneratedField);
-
-                    self::assertInstanceOf(EntityWithRandomlyGeneratedField::class, $object);
-                    self::assertNotSame($entity, $object);
-                    self::assertSame($generatedFieldValue, $object->generatedField);
-
-                    return true;
-                })
-            );
-
-        $object = $this->_unitOfWork->merge($entity);
-        assert($object instanceof EntityWithRandomlyGeneratedField);
-
-        self::assertNotSame($object, $entity);
-        self::assertInstanceOf(EntityWithRandomlyGeneratedField::class, $object);
-        self::assertSame($object->generatedField, $entity->generatedField);
-    }
-
-    /**
-     * @group DDC-1955
-     * @group 5570
-     * @group 6174
-     */
-    public function testMergeWithExistingEntityWillNotPersistItNorTriggerPrePersistListeners(): void
-    {
-        $persistedEntity = new EntityWithRandomlyGeneratedField();
-        $mergedEntity    = new EntityWithRandomlyGeneratedField();
-
-        $mergedEntity->id             = $persistedEntity->id;
-        $mergedEntity->generatedField = random_int(
-            $persistedEntity->generatedField + 1,
-            $persistedEntity->generatedField + 1000
-        );
-
-        $this
-            ->eventManager
-            ->expects(self::any())
-            ->method('hasListeners')
-            ->willReturnCallback(static function ($eventName) {
-                return $eventName === Events::prePersist;
-            });
-        $this->eventManager->expects(self::never())->method('dispatchEvent');
-
-        $this->_unitOfWork->registerManaged(
-            $persistedEntity,
-            ['id' => $persistedEntity->id],
-            ['generatedField' => $persistedEntity->generatedField]
-        );
-
-        $merged = $this->_unitOfWork->merge($mergedEntity);
-        assert($merged instanceof EntityWithRandomlyGeneratedField);
-
-        self::assertSame($merged, $persistedEntity);
-        self::assertSame($persistedEntity->generatedField, $mergedEntity->generatedField);
-    }
-
-    /**
      * Unlike next test, this one demonstrates that the problem does
      * not necessarily reproduce if all the pieces are being flushed together.
-     *
-     * @group DDC-2922
-     * @group #1521
      */
+    #[Group('DDC-2922')]
+    #[Group('#1521')]
     public function testNewAssociatedEntityPersistenceOfNewEntitiesThroughCascadedAssociationsFirst(): void
     {
         $persister1 = new EntityPersisterMock($this->_emMock, $this->_emMock->getClassMetadata(CascadePersistedEntity::class));
@@ -746,10 +439,9 @@ class UnitOfWorkTest extends OrmTestCase
     /**
      * This test exhibits the bug describe in the ticket, where an object that
      * ought to be reachable causes errors.
-     *
-     * @group DDC-2922
-     * @group #1521
      */
+    #[Group('DDC-2922')]
+    #[Group('#1521')]
     public function testNewAssociatedEntityPersistenceOfNewEntitiesThroughNonCascadedAssociationsFirst(): void
     {
         $persister1 = new EntityPersisterMock($this->_emMock, $this->_emMock->getClassMetadata(CascadePersistedEntity::class));
@@ -797,10 +489,9 @@ class UnitOfWorkTest extends OrmTestCase
     /**
      * This test exhibits the bug describe in the ticket, where an object that
      * ought to be reachable causes errors.
-     *
-     * @group DDC-2922
-     * @group #1521
      */
+    #[Group('DDC-2922')]
+    #[Group('#1521')]
     public function testPreviousDetectedIllegalNewNonCascadedEntitiesAreCleanedUpOnSubsequentCommits(): void
     {
         $persister1 = new EntityPersisterMock($this->_emMock, $this->_emMock->getClassMetadata(CascadePersistedEntity::class));
@@ -820,7 +511,7 @@ class UnitOfWorkTest extends OrmTestCase
             $this->_unitOfWork->commit();
 
             self::fail('An exception was supposed to be raised');
-        } catch (ORMInvalidArgumentException $ignored) {
+        } catch (ORMInvalidArgumentException) {
             self::assertEmpty($persister1->getInserts());
             self::assertEmpty($persister2->getInserts());
         }
@@ -834,22 +525,32 @@ class UnitOfWorkTest extends OrmTestCase
         self::assertCount(0, $persister2->getInserts());
     }
 
-    /** @group #7946 Throw OptimisticLockException when connection::commit() returns false. */
-    public function testCommitThrowOptimisticLockExceptionWhenConnectionCommitReturnFalse(): void
+    #[Group('#7946')] // Throw OptimisticLockException when connection::commit() returns false.
+    public function testCommitThrowOptimisticLockExceptionWhenConnectionCommitFails(): void
     {
+        $platform = $this->getMockBuilder(AbstractPlatform::class)
+            ->onlyMethods(['supportsIdentityColumns'])
+            ->getMockForAbstractClass();
+        $platform->method('supportsIdentityColumns')
+            ->willReturn(true);
+
         $driver = $this->createMock(Driver::class);
         $driver->method('connect')
             ->willReturn($this->createMock(Driver\Connection::class));
+        $driver->method('getDatabasePlatform')
+            ->willReturn($platform);
 
         // Set another connection mock that fail on commit
-        $this->_connectionMock = $this->getMockBuilderWithOnlyMethods(ConnectionMock::class, ['commit'])
+        $this->connection  = $this->getMockBuilder(Connection::class)
+            ->onlyMethods(['commit'])
             ->setConstructorArgs([[], $driver])
             ->getMock();
-        $this->_emMock         = new EntityManagerMock($this->_connectionMock);
-        $this->_unitOfWork     = new UnitOfWorkMock($this->_emMock);
+        $this->_emMock     = new EntityManagerMock($this->connection);
+        $this->_unitOfWork = new UnitOfWorkMock($this->_emMock);
         $this->_emMock->setUnitOfWork($this->_unitOfWork);
 
-        $this->_connectionMock->method('commit')->willReturn(false);
+        $this->connection->method('commit')
+            ->willThrowException($this->createStub(Exception::class));
 
         // Setup fake persister and id generator
         $userPersister = new EntityPersisterMock($this->_emMock, $this->_emMock->getClassMetadata(ForumUser::class));
@@ -892,7 +593,7 @@ class UnitOfWorkTest extends OrmTestCase
         // Test that the removed entity has been removed from the many to many collection
         self::assertEmpty(
             $user->groups,
-            'the removed entity should have been removed from the many to many collection'
+            'the removed entity should have been removed from the many to many collection',
         );
 
         // Collection is clean, snapshot has been updated
@@ -927,28 +628,8 @@ class UnitOfWorkTest extends OrmTestCase
         self::assertEmpty($user->phonenumbers->getSnapshot());
     }
 
-    public function testItTriggersADeprecationNoticeWhenApplicationProvidedIdsCollide(): void
-    {
-        // We're using application-provided IDs and assign the same ID twice
-        // Note this is about colliding IDs in the identity map in memory.
-        // Duplicate database-level IDs would be spotted when the EM is flushed.
-
-        $phone1              = new CmsPhonenumber();
-        $phone1->phonenumber = '1234';
-        $this->_unitOfWork->persist($phone1);
-
-        $phone2              = new CmsPhonenumber();
-        $phone2->phonenumber = '1234';
-
-        $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/pull/10785');
-
-        $this->_unitOfWork->persist($phone2);
-    }
-
     public function testItThrowsWhenApplicationProvidedIdsCollide(): void
     {
-        $this->_emMock->getConfiguration()->setRejectIdCollisionInIdentityMap(true);
-
         // We're using application-provided IDs and assign the same ID twice
         // Note this is about colliding IDs in the identity map in memory.
         // Duplicate database-level IDs would be spotted when the EM is flushed.
@@ -967,198 +648,63 @@ class UnitOfWorkTest extends OrmTestCase
     }
 }
 
-/** @Entity */
-class NotifyChangedEntity implements NotifyPropertyChanged
-{
-    /** @psalm-var list<PropertyChangedListener> */
-    private $_listeners = [];
 
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
-    private $id;
-
-    /**
-     * @var string
-     * @Column(type="string", length=255)
-     */
-    private $data;
-
-    /** @var mixed */
-    private $transient; // not persisted
-
-    /**
-     * @psalm-var Collection<int, NotifyChangedRelatedItem>
-     * @OneToMany(targetEntity="NotifyChangedRelatedItem", mappedBy="owner")
-     */
-    private $items;
-
-    public function __construct()
-    {
-        $this->items = new ArrayCollection();
-    }
-
-    public function getId(): int
-    {
-        return $this->id;
-    }
-
-    public function getItems(): Collection
-    {
-        return $this->items;
-    }
-
-    public function setTransient($value): void
-    {
-        if ($value !== $this->transient) {
-            $this->onPropertyChanged('transient', $this->transient, $value);
-            $this->transient = $value;
-        }
-    }
-
-    /** @return mixed */
-    public function getData()
-    {
-        return $this->data;
-    }
-
-    /** @param mixed $data */
-    public function setData($data): void
-    {
-        if ($data !== $this->data) {
-            $this->onPropertyChanged('data', $this->data, $data);
-            $this->data = $data;
-        }
-    }
-
-    public function addPropertyChangedListener(PropertyChangedListener $listener): void
-    {
-        $this->_listeners[] = $listener;
-    }
-
-    /**
-     * @param mixed $propName
-     * @param mixed $oldValue
-     * @param mixed $newValue
-     */
-    protected function onPropertyChanged($propName, $oldValue, $newValue): void
-    {
-        if ($this->_listeners) {
-            foreach ($this->_listeners as $listener) {
-                $listener->propertyChanged($this, $propName, $oldValue, $newValue);
-            }
-        }
-    }
-}
-
-/** @Entity */
-class NotifyChangedRelatedItem
-{
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
-    private $id;
-
-    /**
-     * @var NotifyChangedEntity|null
-     * @ManyToOne(targetEntity="NotifyChangedEntity", inversedBy="items")
-     */
-    private $owner;
-
-    public function getId(): int
-    {
-        return $this->id;
-    }
-
-    public function getOwner(): ?NotifyChangedEntity
-    {
-        return $this->owner;
-    }
-
-    public function setOwner(?NotifyChangedEntity $owner): void
-    {
-        $this->owner = $owner;
-    }
-}
-
-/** @Entity */
+#[Entity]
 class VersionedAssignedIdentifierEntity
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer')]
     public $id;
 
-    /**
-     * @var int
-     * @Version
-     * @Column(type="integer")
-     */
+    /** @var int */
+    #[Version]
+    #[Column(type: 'integer')]
     public $version;
 }
 
-/** @Entity */
+#[Entity]
 class EntityWithStringIdentifier
 {
-    /**
-     * @Id
-     * @Column(type="string", length=255)
-     * @var string|null
-     */
+    /** @var string|null */
+    #[Id]
+    #[Column(type: 'string', length: 255)]
     public $id;
 }
 
-/** @Entity */
+#[Entity]
 class EntityWithBooleanIdentifier
 {
-    /**
-     * @Id
-     * @Column(type="boolean")
-     * @var bool|null
-     */
+    /** @var bool|null */
+    #[Id]
+    #[Column(type: 'boolean')]
     public $id;
 }
 
-/** @Entity */
+#[Entity]
 class EntityWithCompositeStringIdentifier
 {
-    /**
-     * @Id
-     * @Column(type="string", length=255)
-     * @var string|null
-     */
+    /** @var string|null */
+    #[Id]
+    #[Column(type: 'string', length: 255)]
     public $id1;
 
-    /**
-     * @Id
-     * @Column(type="string", length=255)
-     * @var string|null
-     */
+    /** @var string|null */
+    #[Id]
+    #[Column(type: 'string', length: 255)]
     public $id2;
 }
 
-/** @Entity */
+#[Entity]
 class EntityWithRandomlyGeneratedField
 {
-    /**
-     * @var string
-     * @Id
-     * @Column(type="string", length=255)
-     */
+    /** @var string */
+    #[Id]
+    #[Column(type: 'string', length: 255)]
     public $id;
 
-    /**
-     * @var int
-     * @Column(type="integer")
-     */
+    /** @var int */
+    #[Column(type: 'integer')]
     public $generatedField;
 
     public function __construct()
@@ -1168,16 +714,13 @@ class EntityWithRandomlyGeneratedField
     }
 }
 
-/** @Entity */
+#[Entity]
 class CascadePersistedEntity
 {
-    /**
-     * @var string
-     * @Id
-     * @Column(type="string", length=255)
-     * @GeneratedValue(strategy="NONE")
-     */
-    private $id;
+    #[Id]
+    #[Column(type: 'string', length: 255)]
+    #[GeneratedValue(strategy: 'NONE')]
+    private string $id;
 
     public function __construct()
     {
@@ -1185,21 +728,16 @@ class CascadePersistedEntity
     }
 }
 
-/** @Entity */
+#[Entity]
 class EntityWithCascadingAssociation
 {
-    /**
-     * @var string
-     * @Id
-     * @Column(type="string", length=255)
-     * @GeneratedValue(strategy="NONE")
-     */
-    private $id;
+    #[Id]
+    #[Column(type: 'string', length: 255)]
+    #[GeneratedValue(strategy: 'NONE')]
+    private string $id;
 
-    /**
-     * @var CascadePersistedEntity|null
-     * @ManyToOne(targetEntity=CascadePersistedEntity::class, cascade={"persist"})
-     */
+    /** @var CascadePersistedEntity|null */
+    #[ManyToOne(targetEntity: CascadePersistedEntity::class, cascade: ['persist'])]
     public $cascaded;
 
     public function __construct()
@@ -1208,21 +746,16 @@ class EntityWithCascadingAssociation
     }
 }
 
-/** @Entity */
+#[Entity]
 class EntityWithNonCascadingAssociation
 {
-    /**
-     * @var string
-     * @Id
-     * @Column(type="string", length=255)
-     * @GeneratedValue(strategy="NONE")
-     */
-    private $id;
+    #[Id]
+    #[Column(type: 'string', length: 255)]
+    #[GeneratedValue(strategy: 'NONE')]
+    private string $id;
 
-    /**
-     * @var CascadePersistedEntity|null
-     * @ManyToOne(targetEntity=CascadePersistedEntity::class)
-     */
+    /** @var CascadePersistedEntity|null */
+    #[ManyToOne(targetEntity: CascadePersistedEntity::class)]
     public $nonCascaded;
 
     public function __construct()

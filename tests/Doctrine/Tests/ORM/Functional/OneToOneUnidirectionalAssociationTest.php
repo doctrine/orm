@@ -9,8 +9,7 @@ use Doctrine\ORM\Query;
 use Doctrine\Tests\Models\ECommerce\ECommerceProduct;
 use Doctrine\Tests\Models\ECommerce\ECommerceShipping;
 use Doctrine\Tests\OrmFunctionalTestCase;
-
-use function get_class;
+use PHPUnit\Framework\Attributes\Group;
 
 /**
  * Tests a unidirectional one-to-one association mapping (without inheritance).
@@ -18,11 +17,9 @@ use function get_class;
  */
 class OneToOneUnidirectionalAssociationTest extends OrmFunctionalTestCase
 {
-    /** @var ECommerceProduct */
-    private $product;
+    private ECommerceProduct $product;
 
-    /** @var ECommerceShipping */
-    private $shipping;
+    private ECommerceShipping $shipping;
 
     protected function setUp(): void
     {
@@ -71,8 +68,8 @@ class OneToOneUnidirectionalAssociationTest extends OrmFunctionalTestCase
     public function testLazyLoadsObjects(): void
     {
         $this->createFixture();
-        $metadata                                           = $this->_em->getClassMetadata(ECommerceProduct::class);
-        $metadata->associationMappings['shipping']['fetch'] = ClassMetadata::FETCH_LAZY;
+        $metadata                                         = $this->_em->getClassMetadata(ECommerceProduct::class);
+        $metadata->associationMappings['shipping']->fetch = ClassMetadata::FETCH_LAZY;
 
         $query   = $this->_em->createQuery('select p from Doctrine\Tests\Models\ECommerce\ECommerceProduct p');
         $result  = $query->getResult();
@@ -113,12 +110,12 @@ class OneToOneUnidirectionalAssociationTest extends OrmFunctionalTestCase
     {
         $foreignKey = $this->_em->getConnection()->executeQuery(
             'SELECT shipping_id FROM ecommerce_products WHERE id=?',
-            [$this->product->getId()]
+            [$this->product->getId()],
         )->fetchOne();
         self::assertEquals($value, $foreignKey);
     }
 
-    /** @group DDC-762 */
+    #[Group('DDC-762')]
     public function testNullForeignKey(): void
     {
         $product = new ECommerceProduct();
@@ -127,7 +124,7 @@ class OneToOneUnidirectionalAssociationTest extends OrmFunctionalTestCase
         $this->_em->persist($product);
         $this->_em->flush();
 
-        $product = $this->_em->find(get_class($product), $product->getId());
+        $product = $this->_em->find($product::class, $product->getId());
 
         self::assertNull($product->getShipping());
     }

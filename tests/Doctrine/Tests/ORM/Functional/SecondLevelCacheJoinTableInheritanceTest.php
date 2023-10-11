@@ -9,11 +9,11 @@ use Doctrine\Tests\Models\Cache\Attraction;
 use Doctrine\Tests\Models\Cache\AttractionContactInfo;
 use Doctrine\Tests\Models\Cache\AttractionInfo;
 use Doctrine\Tests\Models\Cache\AttractionLocationInfo;
+use PHPUnit\Framework\Attributes\Group;
 
 use function count;
-use function get_class;
 
-/** @group DDC-2183 */
+#[Group('DDC-2183')]
 class SecondLevelCacheJoinTableInheritanceTest extends SecondLevelCacheFunctionalTestCase
 {
     public function testUseSameRegion(): void
@@ -54,7 +54,7 @@ class SecondLevelCacheJoinTableInheritanceTest extends SecondLevelCacheFunctiona
 
         foreach ($this->attractionsInfo as $info) {
             self::assertTrue($this->cache->containsEntity(AttractionInfo::class, $info->getId()));
-            self::assertTrue($this->cache->containsEntity(get_class($info), $info->getId()));
+            self::assertTrue($this->cache->containsEntity($info::class, $info->getId()));
         }
     }
 
@@ -214,7 +214,7 @@ class SecondLevelCacheJoinTableInheritanceTest extends SecondLevelCacheFunctiona
 
         $contact = new AttractionContactInfo(
             '1234-1234',
-            $this->_em->find(Attraction::class, $this->attractions[5]->getId())
+            $this->_em->find(Attraction::class, $this->attractions[5]->getId()),
         );
 
         $this->_em->persist($contact);

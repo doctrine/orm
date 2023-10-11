@@ -13,39 +13,27 @@ use function constant;
  */
 class FieldBuilder
 {
-    /** @var ClassMetadataBuilder */
-    private $builder;
+    private bool $version               = false;
+    private string|null $generatedValue = null;
 
-    /** @var mixed[] */
-    private $mapping;
+    /** @var mixed[]|null */
+    private array|null $sequenceDef = null;
 
-    /** @var bool */
-    private $version;
-
-    /** @var string */
-    private $generatedValue;
-
-    /** @var mixed[] */
-    private $sequenceDef;
-
-    /** @var string|null */
-    private $customIdGenerator;
+    private string|null $customIdGenerator = null;
 
     /** @param mixed[] $mapping */
-    public function __construct(ClassMetadataBuilder $builder, array $mapping)
-    {
-        $this->builder = $builder;
-        $this->mapping = $mapping;
+    public function __construct(
+        private readonly ClassMetadataBuilder $builder,
+        private array $mapping,
+    ) {
     }
 
     /**
      * Sets length.
      *
-     * @param int $length
-     *
      * @return $this
      */
-    public function length($length)
+    public function length(int $length): static
     {
         $this->mapping['length'] = $length;
 
@@ -55,13 +43,11 @@ class FieldBuilder
     /**
      * Sets nullable.
      *
-     * @param bool $flag
-     *
      * @return $this
      */
-    public function nullable($flag = true)
+    public function nullable(bool $flag = true): static
     {
-        $this->mapping['nullable'] = (bool) $flag;
+        $this->mapping['nullable'] = $flag;
 
         return $this;
     }
@@ -69,13 +55,11 @@ class FieldBuilder
     /**
      * Sets Unique.
      *
-     * @param bool $flag
-     *
      * @return $this
      */
-    public function unique($flag = true)
+    public function unique(bool $flag = true): static
     {
-        $this->mapping['unique'] = (bool) $flag;
+        $this->mapping['unique'] = $flag;
 
         return $this;
     }
@@ -83,11 +67,9 @@ class FieldBuilder
     /**
      * Sets column name.
      *
-     * @param string $name
-     *
      * @return $this
      */
-    public function columnName($name)
+    public function columnName(string $name): static
     {
         $this->mapping['columnName'] = $name;
 
@@ -97,11 +79,9 @@ class FieldBuilder
     /**
      * Sets Precision.
      *
-     * @param int $p
-     *
      * @return $this
      */
-    public function precision($p)
+    public function precision(int $p): static
     {
         $this->mapping['precision'] = $p;
 
@@ -139,11 +119,9 @@ class FieldBuilder
     /**
      * Sets scale.
      *
-     * @param int $s
-     *
      * @return $this
      */
-    public function scale($s)
+    public function scale(int $s): static
     {
         $this->mapping['scale'] = $s;
 
@@ -153,21 +131,9 @@ class FieldBuilder
     /**
      * Sets field as primary key.
      *
-     * @deprecated Use makePrimaryKey() instead
-     *
-     * @return FieldBuilder
-     */
-    public function isPrimaryKey()
-    {
-        return $this->makePrimaryKey();
-    }
-
-    /**
-     * Sets field as primary key.
-     *
      * @return $this
      */
-    public function makePrimaryKey()
+    public function makePrimaryKey(): static
     {
         $this->mapping['id'] = true;
 
@@ -177,24 +143,17 @@ class FieldBuilder
     /**
      * Sets an option.
      *
-     * @param string $name
-     * @param mixed  $value
-     *
      * @return $this
      */
-    public function option($name, $value)
+    public function option(string $name, mixed $value): static
     {
         $this->mapping['options'][$name] = $value;
 
         return $this;
     }
 
-    /**
-     * @param string $strategy
-     *
-     * @return $this
-     */
-    public function generatedValue($strategy = 'AUTO')
+    /** @return $this */
+    public function generatedValue(string $strategy = 'AUTO'): static
     {
         $this->generatedValue = $strategy;
 
@@ -206,7 +165,7 @@ class FieldBuilder
      *
      * @return $this
      */
-    public function isVersionField()
+    public function isVersionField(): static
     {
         $this->version = true;
 
@@ -216,13 +175,9 @@ class FieldBuilder
     /**
      * Sets Sequence Generator.
      *
-     * @param string $sequenceName
-     * @param int    $allocationSize
-     * @param int    $initialValue
-     *
      * @return $this
      */
-    public function setSequenceGenerator($sequenceName, $allocationSize = 1, $initialValue = 1)
+    public function setSequenceGenerator(string $sequenceName, int $allocationSize = 1, int $initialValue = 1): static
     {
         $this->sequenceDef = [
             'sequenceName' => $sequenceName,
@@ -236,11 +191,9 @@ class FieldBuilder
     /**
      * Sets column definition.
      *
-     * @param string $def
-     *
      * @return $this
      */
-    public function columnDefinition($def)
+    public function columnDefinition(string $def): static
     {
         $this->mapping['columnDefinition'] = $def;
 
@@ -251,13 +204,11 @@ class FieldBuilder
      * Set the FQCN of the custom ID generator.
      * This class must extend \Doctrine\ORM\Id\AbstractIdGenerator.
      *
-     * @param string $customIdGenerator
-     *
      * @return $this
      */
-    public function setCustomIdGenerator($customIdGenerator)
+    public function setCustomIdGenerator(string $customIdGenerator): static
     {
-        $this->customIdGenerator = (string) $customIdGenerator;
+        $this->customIdGenerator = $customIdGenerator;
 
         return $this;
     }
@@ -266,10 +217,8 @@ class FieldBuilder
      * Finalizes this field and attach it to the ClassMetadata.
      *
      * Without this call a FieldBuilder has no effect on the ClassMetadata.
-     *
-     * @return ClassMetadataBuilder
      */
-    public function build()
+    public function build(): ClassMetadataBuilder
     {
         $cm = $this->builder->getClassMetadata();
         if ($this->generatedValue) {

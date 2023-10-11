@@ -7,8 +7,9 @@ namespace Doctrine\Tests\ORM\Functional;
 use Doctrine\ORM\Proxy\InternalProxy;
 use Doctrine\Tests\Models\Cache\Country;
 use Doctrine\Tests\Models\Cache\State;
+use PHPUnit\Framework\Attributes\Group;
 
-/** @group DDC-2183 */
+#[Group('DDC-2183')]
 class SecondLevelCacheRepositoryTest extends SecondLevelCacheFunctionalTestCase
 {
     public function testRepositoryCacheFind(): void

@@ -2,35 +2,31 @@
 
 declare(strict_types=1);
 
-namespace Doctrine\Tests\ORM\Functional\Ticket;
+namespace Doctrine\Tests\ORM\Hydration;
 
 use Doctrine\Common\EventManager;
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Result;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Events;
+use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\Internal\Hydration\AbstractHydrator;
-use Doctrine\ORM\ORMException;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\MockObject\MockObject;
 
 use function iterator_to_array;
 
-/** @covers \Doctrine\ORM\Internal\Hydration\AbstractHydrator */
+#[CoversClass(AbstractHydrator::class)]
 class AbstractHydratorTest extends OrmFunctionalTestCase
 {
-    /** @var EventManager&MockObject */
-    private $mockEventManager;
-
-    /** @var Result&MockObject */
-    private $mockResult;
-
-    /** @var ResultSetMapping&MockObject */
-    private $mockResultMapping;
-
-    /** @var AbstractHydrator&MockObject */
-    private $hydrator;
+    private EventManager&MockObject $mockEventManager;
+    private Result&MockObject $mockResult;
+    private ResultSetMapping&MockObject $mockResultMapping;
+    private AbstractHydrator&MockObject $hydrator;
 
     protected function setUp(): void
     {
@@ -42,16 +38,16 @@ class AbstractHydratorTest extends OrmFunctionalTestCase
         $this->mockResult           = $this->createMock(Result::class);
         $this->mockResultMapping    = $this->createMock(ResultSetMapping::class);
 
+        $mockConnection
+            ->method('getDatabasePlatform')
+            ->willReturn($this->createMock(AbstractPlatform::class));
         $mockEntityManagerInterface
-            ->expects(self::any())
             ->method('getEventManager')
             ->willReturn($this->mockEventManager);
         $mockEntityManagerInterface
-            ->expects(self::any())
             ->method('getConnection')
             ->willReturn($mockConnection);
         $this->mockResult
-            ->expects(self::any())
             ->method('fetchAssociative')
             ->willReturn(false);
 
@@ -62,12 +58,11 @@ class AbstractHydratorTest extends OrmFunctionalTestCase
     }
 
     /**
-     * @group DDC-3146
-     * @group #1515
-     *
      * Verify that the number of added events to the event listener from the abstract hydrator class is equal to the
      * number of removed events
      */
+    #[Group('DDC-3146')]
+    #[Group('#1515')]
     public function testOnClearEventListenerIsDetachedOnCleanup(): void
     {
         $eventListenerHasBeenRegistered = false;
@@ -91,10 +86,10 @@ class AbstractHydratorTest extends OrmFunctionalTestCase
                 $this->assertTrue($eventListenerHasBeenRegistered);
             });
 
-        iterator_to_array($this->hydrator->iterate($this->mockResult, $this->mockResultMapping));
+        iterator_to_array($this->hydrator->toIterable($this->mockResult, $this->mockResultMapping));
     }
 
-    /** @group #6623 */
+    #[Group('#6623')]
     public function testHydrateAllRegistersAndClearsAllAttachedListeners(): void
     {
         $eventListenerHasBeenRegistered = false;
@@ -121,7 +116,7 @@ class AbstractHydratorTest extends OrmFunctionalTestCase
         $this->hydrator->hydrateAll($this->mockResult, $this->mockResultMapping);
     }
 
-    /** @group #8482 */
+    #[Group('#8482')]
     public function testHydrateAllClearsAllAttachedListenersEvenOnError(): void
     {
         $eventListenerHasBeenRegistered = false;
@@ -149,7 +144,7 @@ class AbstractHydratorTest extends OrmFunctionalTestCase
             ->hydrator
             ->expects(self::once())
             ->method('hydrateAllData')
-            ->willThrowException(new ORMException());
+            ->willThrowException($this->createStub(ORMException::class));
 
         $this->expectException(ORMException::class);
         $this->hydrator->hydrateAll($this->mockResult, $this->mockResultMapping);

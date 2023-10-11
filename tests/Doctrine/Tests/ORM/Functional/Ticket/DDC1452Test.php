@@ -15,8 +15,9 @@ use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\Tests\Models\CMS\CmsAddress;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
-/** @group DDC-1452 */
+#[Group('DDC-1452')]
 class DDC1452Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -27,7 +28,7 @@ class DDC1452Test extends OrmFunctionalTestCase
 
         $this->createSchemaForModels(
             DDC1452EntityA::class,
-            DDC1452EntityB::class
+            DDC1452EntityB::class,
         );
     }
 
@@ -90,27 +91,21 @@ class DDC1452Test extends OrmFunctionalTestCase
     }
 }
 
-/** @Entity */
+#[Entity]
 class DDC1452EntityA
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     public $id;
 
-    /**
-     * @var string
-     * @Column
-     */
+    /** @var string */
+    #[Column]
     public $title;
 
-    /**
-     * @psalm-var Collection<int, DDC1452EntityB>
-     * @OneToMany(targetEntity="DDC1452EntityB", mappedBy="entityAFrom")
-     */
+    /** @psalm-var Collection<int, DDC1452EntityB> */
+    #[OneToMany(targetEntity: 'DDC1452EntityB', mappedBy: 'entityAFrom')]
     public $entitiesB;
 
     public function __construct()
@@ -125,25 +120,19 @@ class DDC1452EntityA
     }
 }
 
-/** @Entity */
+#[Entity]
 class DDC1452EntityB
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     public $id;
 
-    /**
-     * @var DDC1452EntityA
-     * @ManyToOne(targetEntity="DDC1452EntityA", inversedBy="entitiesB")
-     */
+    /** @var DDC1452EntityA */
+    #[ManyToOne(targetEntity: 'DDC1452EntityA', inversedBy: 'entitiesB')]
     public $entityAFrom;
-    /**
-     * @var DDC1452EntityA
-     * @ManyToOne(targetEntity="DDC1452EntityA")
-     */
+    /** @var DDC1452EntityA */
+    #[ManyToOne(targetEntity: 'DDC1452EntityA')]
     public $entityATo;
 }

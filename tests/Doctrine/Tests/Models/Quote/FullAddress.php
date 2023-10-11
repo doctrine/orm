@@ -8,13 +8,11 @@ use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\OneToOne;
 
-/** @Entity */
+#[Entity]
 class FullAddress extends Address
 {
-    /**
-     * @var City
-     * @OneToOne(targetEntity=City::class, cascade={"persist"})
-     * @JoinColumn(name="`city-id`", referencedColumnName="`city-id`")
-     */
+    /** @var City */
+    #[OneToOne(targetEntity: City::class, cascade: ['persist'])]
+    #[JoinColumn(name: '`city-id`', referencedColumnName: '`city-id`')]
     public $city;
 }

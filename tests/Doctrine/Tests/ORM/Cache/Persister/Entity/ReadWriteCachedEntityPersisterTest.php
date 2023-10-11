@@ -14,9 +14,11 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Persisters\Entity\EntityPersister;
 use Doctrine\Tests\Models\Cache\Country;
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\MockObject\MockObject;
 use ReflectionProperty;
 
-/** @group DDC-2183 */
+#[Group('DDC-2183')]
 class ReadWriteCachedEntityPersisterTest extends EntityPersisterTestCase
 {
     protected function createPersister(EntityManagerInterface $em, EntityPersister $persister, Region $region, ClassMetadata $metadata): AbstractEntityPersister
@@ -24,7 +26,7 @@ class ReadWriteCachedEntityPersisterTest extends EntityPersisterTestCase
         return new ReadWriteCachedEntityPersister($persister, $region, $em, $metadata);
     }
 
-    protected function createRegion(): Region
+    protected function createRegion(): ConcurrentRegion&MockObject
     {
         return $this->createMock(ConcurrentRegion::class);
     }
@@ -39,7 +41,7 @@ class ReadWriteCachedEntityPersisterTest extends EntityPersisterTestCase
         $this->region->expects(self::once())
             ->method('lock')
             ->with(self::equalTo($key))
-            ->will(self::returnValue($lock));
+            ->willReturn($lock);
 
         $this->em->getUnitOfWork()->registerManaged($entity, ['id' => 1], ['id' => 1, 'name' => 'Foo']);
 
@@ -56,7 +58,7 @@ class ReadWriteCachedEntityPersisterTest extends EntityPersisterTestCase
         $this->region->expects(self::once())
             ->method('lock')
             ->with(self::equalTo($key))
-            ->will(self::returnValue($lock));
+            ->willReturn($lock);
 
         $this->em->getUnitOfWork()->registerManaged($entity, ['id' => 1], ['id' => 1, 'name' => 'Foo']);
 
@@ -73,12 +75,12 @@ class ReadWriteCachedEntityPersisterTest extends EntityPersisterTestCase
         $this->region->expects(self::once())
             ->method('lock')
             ->with(self::equalTo($key))
-            ->will(self::returnValue($lock));
+            ->willReturn($lock);
 
         $this->region->expects(self::once())
             ->method('evict')
             ->with(self::equalTo($key))
-            ->will(self::returnValue($lock));
+            ->willReturn(true);
 
         $this->em->getUnitOfWork()->registerManaged($entity, ['id' => 1], ['id' => 1, 'name' => 'Foo']);
 
@@ -96,7 +98,7 @@ class ReadWriteCachedEntityPersisterTest extends EntityPersisterTestCase
         $this->region->expects(self::once())
             ->method('lock')
             ->with(self::equalTo($key))
-            ->will(self::returnValue($lock));
+            ->willReturn($lock);
 
         $this->region->expects(self::once())
             ->method('evict')
@@ -116,12 +118,10 @@ class ReadWriteCachedEntityPersisterTest extends EntityPersisterTestCase
         $key       = new EntityCacheKey(Country::class, ['id' => 1]);
         $property  = new ReflectionProperty(ReadWriteCachedEntityPersister::class, 'queuedCache');
 
-        $property->setAccessible(true);
-
         $this->region->expects(self::exactly(2))
             ->method('lock')
             ->with(self::equalTo($key))
-            ->will(self::returnValue($lock));
+            ->willReturn($lock);
 
         $this->region->expects(self::exactly(2))
             ->method('evict')
@@ -147,12 +147,10 @@ class ReadWriteCachedEntityPersisterTest extends EntityPersisterTestCase
         $key       = new EntityCacheKey(Country::class, ['id' => 1]);
         $property  = new ReflectionProperty(ReadWriteCachedEntityPersister::class, 'queuedCache');
 
-        $property->setAccessible(true);
-
         $this->region->expects(self::exactly(2))
             ->method('lock')
             ->with(self::equalTo($key))
-            ->will(self::returnValue($lock));
+            ->willReturn($lock);
 
         $this->region->expects(self::exactly(2))
             ->method('evict')
@@ -177,12 +175,10 @@ class ReadWriteCachedEntityPersisterTest extends EntityPersisterTestCase
         $key       = new EntityCacheKey(Country::class, ['id' => 1]);
         $property  = new ReflectionProperty(ReadWriteCachedEntityPersister::class, 'queuedCache');
 
-        $property->setAccessible(true);
-
         $this->region->expects(self::once())
             ->method('lock')
             ->with(self::equalTo($key))
-            ->will(self::returnValue(null));
+            ->willReturn(null);
 
         $this->entityPersister->expects(self::once())
             ->method('delete')
@@ -201,12 +197,10 @@ class ReadWriteCachedEntityPersisterTest extends EntityPersisterTestCase
         $key       = new EntityCacheKey(Country::class, ['id' => 1]);
         $property  = new ReflectionProperty(ReadWriteCachedEntityPersister::class, 'queuedCache');
 
-        $property->setAccessible(true);
-
         $this->region->expects(self::once())
             ->method('lock')
             ->with(self::equalTo($key))
-            ->will(self::returnValue(null));
+            ->willReturn(null);
 
         $this->entityPersister->expects(self::once())
             ->method('update')

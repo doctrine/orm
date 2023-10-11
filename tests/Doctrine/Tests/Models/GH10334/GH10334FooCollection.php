@@ -12,33 +12,24 @@ use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\OneToMany;
 
-/**
- * @Entity
- */
+#[Entity]
 class GH10334FooCollection
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
-    protected $id;
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
+    protected int $id;
 
-    /**
-     * @OneToMany(targetEntity="GH10334Foo", mappedBy="collection", cascade={"persist", "remove"})
-     * @var Collection<GH10334Foo> $foos
-     */
-    private $foos;
+    /** @var Collection<GH10334Foo> $foos */
+    #[OneToMany(targetEntity: 'GH10334Foo', mappedBy: 'collection', cascade: ['persist', 'remove'])]
+    private Collection $foos;
 
     public function __construct()
     {
         $this->foos = new ArrayCollection();
     }
 
-    /**
-     * @return Collection<GH10334Foo>
-     */
+    /** @return Collection<GH10334Foo> */
     public function getFoos(): Collection
     {
         return $this->foos;

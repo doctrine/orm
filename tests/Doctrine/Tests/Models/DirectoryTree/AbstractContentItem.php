@@ -10,35 +10,22 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\MappedSuperclass;
 
-/** @MappedSuperclass */
+#[MappedSuperclass]
 abstract class AbstractContentItem
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
-    private $id;
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
+    private int $id;
 
-    /**
-     * @var Directory
-     * @ManyToOne(targetEntity="Directory")
-     */
-    protected $parentDirectory;
-
-    /**
-     * @var string
-     * @Column(type="string", length=255)
-     */
+    /** @var string */
+    #[Column(type: 'string', length: 255)]
     protected $name;
 
     /**
      * This field is transient and private on purpose
-     *
-     * @var bool
      */
-    private $nodeIsLoaded = false;
+    private bool $nodeIsLoaded = false;
 
     /**
      * This field is transient on purpose
@@ -47,9 +34,10 @@ abstract class AbstractContentItem
      */
     public static $fileSystem;
 
-    public function __construct(?Directory $parentDir = null)
-    {
-        $this->parentDirectory = $parentDir;
+    public function __construct(
+        #[ManyToOne(targetEntity: 'Directory')]
+        protected Directory|null $parentDirectory = null,
+    ) {
     }
 
     public function getId(): int

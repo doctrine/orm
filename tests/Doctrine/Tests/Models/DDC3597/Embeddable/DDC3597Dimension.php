@@ -9,22 +9,15 @@ use Doctrine\ORM\Mapping\Embeddable;
 
 /**
  * Description of DDC3597Dimension
- *
- * @Embeddable
  */
+#[Embeddable]
 class DDC3597Dimension
 {
-    /**
-     * @var int
-     * @Column(type="integer", name="width")
-     */
-    private $width;
+    #[Column(type: 'integer', name: 'width')]
+    private int $width;
 
-    /**
-     * @var int
-     * @Column(type="integer", name="height")
-     */
-    private $height;
+    #[Column(type: 'integer', name: 'height')]
+    private int $height;
 
     public function __construct($width = 0, $height = 0)
     {

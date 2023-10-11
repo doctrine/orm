@@ -13,6 +13,7 @@ use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\HasLifecycleCallbacks;
 use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\InverseJoinColumn;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\JoinTable;
 use Doctrine\ORM\Mapping\ManyToMany;
@@ -20,17 +21,16 @@ use Doctrine\ORM\Mapping\PostUpdate;
 use Doctrine\ORM\Mapping\PreUpdate;
 use Doctrine\ORM\Mapping\Table;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
-use function get_class;
-
-/** @group DDC-3033 */
+#[Group('DDC-3033')]
 class DDC3033Test extends OrmFunctionalTestCase
 {
     public function testIssue(): void
     {
         $this->createSchemaForModels(
             DDC3033User::class,
-            DDC3033Product::class
+            DDC3033Product::class,
         );
 
         $user       = new DDC3033User();
@@ -65,39 +65,29 @@ class DDC3033Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Table
- * @Entity
- * @HasLifecycleCallbacks
- */
+#[Table]
+#[Entity]
+#[HasLifecycleCallbacks]
 class DDC3033Product
 {
     /** @psalm-var array<string, array{mixed, mixed}> */
     public $changeSet = [];
 
-    /**
-     * @var int $id
-     * @Column(name="id", type="integer")
-     * @Id
-     * @GeneratedValue(strategy="AUTO")
-     */
+    /** @var int $id */
+    #[Column(name: 'id', type: 'integer')]
+    #[Id]
+    #[GeneratedValue(strategy: 'AUTO')]
     public $id;
 
-    /**
-     * @var string $title
-     * @Column(name="title", type="string", length=255)
-     */
+    /** @var string $title */
+    #[Column(name: 'title', type: 'string', length: 255)]
     public $title;
 
-    /**
-     * @var Collection<int, DDC3033User>
-     * @ManyToMany(targetEntity="DDC3033User")
-     * @JoinTable(
-     *   name="user_purchases_3033",
-     *   joinColumns={@JoinColumn(name="product_id", referencedColumnName="id")},
-     *   inverseJoinColumns={@JoinColumn(name="user_id", referencedColumnName="id")}
-     * )
-     */
+    /** @var Collection<int, DDC3033User> */
+    #[JoinTable(name: 'user_purchases_3033')]
+    #[JoinColumn(name: 'product_id', referencedColumnName: 'id')]
+    #[InverseJoinColumn(name: 'user_id', referencedColumnName: 'id')]
+    #[ManyToMany(targetEntity: 'DDC3033User')]
     public $buyers;
 
     /**
@@ -108,42 +98,36 @@ class DDC3033Product
         $this->buyers = new ArrayCollection();
     }
 
-    /** @PreUpdate */
+    #[PreUpdate]
     public function preUpdate(PreUpdateEventArgs $eventArgs): void
     {
     }
 
-    /** @PostUpdate */
+    #[PostUpdate]
     public function postUpdate(PostUpdateEventArgs $eventArgs): void
     {
         $em            = $eventArgs->getObjectManager();
         $uow           = $em->getUnitOfWork();
         $entity        = $eventArgs->getObject();
-        $classMetadata = $em->getClassMetadata(get_class($entity));
+        $classMetadata = $em->getClassMetadata($entity::class);
 
         $uow->computeChangeSet($classMetadata, $entity);
         $this->changeSet = $uow->getEntityChangeSet($entity);
     }
 }
 
-/**
- * @Table
- * @Entity
- * @HasLifecycleCallbacks
- */
+#[Table]
+#[Entity]
+#[HasLifecycleCallbacks]
 class DDC3033User
 {
-    /**
-     * @var int
-     * @Column(name="id", type="integer")
-     * @Id
-     * @GeneratedValue(strategy="AUTO")
-     */
+    /** @var int */
+    #[Column(name: 'id', type: 'integer')]
+    #[Id]
+    #[GeneratedValue(strategy: 'AUTO')]
     public $id;
 
-    /**
-     * @var string
-     * @Column(name="title", type="string", length=255)
-     */
+    /** @var string */
+    #[Column(name: 'title', type: 'string', length: 255)]
     public $name;
 }

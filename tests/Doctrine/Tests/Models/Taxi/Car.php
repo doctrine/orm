@@ -12,36 +12,24 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\Table;
 
-/**
- * @Entity
- * @Table(name="taxi_car")
- */
+#[Table(name: 'taxi_car')]
+#[Entity]
 class Car
 {
-    /**
-     * @var string
-     * @Id
-     * @Column(type="string", length=25)
-     * @GeneratedValue(strategy="NONE")
-     */
-    private $brand;
+    #[Id]
+    #[Column(type: 'string', length: 25)]
+    #[GeneratedValue(strategy: 'NONE')]
+    private string|null $brand = null;
 
-    /**
-     * @var string
-     * @Column(type="string", length=255);
-     */
-    private $model;
+    #[Column(type: 'string', length: 255)]
+    private string|null $model = null;
 
-    /**
-     * @psalm-var Collection<int, Ride>
-     * @OneToMany(targetEntity="Ride", mappedBy="car")
-     */
+    /** @psalm-var Collection<int, Ride> */
+    #[OneToMany(targetEntity: 'Ride', mappedBy: 'car')]
     private $freeCarRides;
 
-    /**
-     * @psalm-var Collection<int, PaidRide>
-     * @OneToMany(targetEntity="PaidRide", mappedBy="car")
-     */
+    /** @psalm-var Collection<int, PaidRide> */
+    #[OneToMany(targetEntity: 'PaidRide', mappedBy: 'car')]
     private $carRides;
 
     public function getBrand(): string

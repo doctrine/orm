@@ -9,6 +9,7 @@ use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\InverseJoinColumn;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\JoinTable;
 use Doctrine\ORM\Mapping\ManyToMany;
@@ -37,72 +38,53 @@ class DDC698Test extends OrmFunctionalTestCase
 
         self::assertEquals(
             strtolower('SELECT p0_.privilegeID AS privilegeID_0, p0_.name AS name_1, r1_.roleID AS roleID_2, r1_.name AS name_3, r1_.shortName AS shortName_4 FROM Privileges p0_ LEFT JOIN RolePrivileges r2_ ON p0_.privilegeID = r2_.privilegeID LEFT JOIN Roles r1_ ON r1_.roleID = r2_.roleID'),
-            strtolower($sql)
+            strtolower($sql),
         );
     }
 }
 
-/**
- * @Table(name="Roles")
- * @Entity
- */
+#[Table(name: 'Roles')]
+#[Entity]
 class DDC698Role
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(name="roleID", type="integer")
-     * @GeneratedValue(strategy="AUTO")
-     */
+    /** @var int */
+    #[Id]
+    #[Column(name: 'roleID', type: 'integer')]
+    #[GeneratedValue(strategy: 'AUTO')]
     protected $roleID;
 
-    /**
-     * @var string
-     * @Column(name="name", type="string", length=45)
-     */
+    /** @var string */
+    #[Column(name: 'name', type: 'string', length: 45)]
     protected $name;
 
-    /**
-     * @var string
-     * @Column(name="shortName", type="string", length=45)
-     */
+    /** @var string */
+    #[Column(name: 'shortName', type: 'string', length: 45)]
     protected $shortName;
 
-    /**
-     * @var Collection<int, DDC698Privilege>
-     * @ManyToMany(targetEntity="DDC698Privilege", inversedBy="roles")
-     * @JoinTable(name="RolePrivileges",
-     *     joinColumns={@JoinColumn(name="roleID", referencedColumnName="roleID")},
-     *     inverseJoinColumns={@JoinColumn(name="privilegeID", referencedColumnName="privilegeID")}
-     * )
-     */
+    /** @var Collection<int, DDC698Privilege> */
+    #[JoinTable(name: 'RolePrivileges')]
+    #[JoinColumn(name: 'roleID', referencedColumnName: 'roleID')]
+    #[InverseJoinColumn(name: 'privilegeID', referencedColumnName: 'privilegeID')]
+    #[ManyToMany(targetEntity: 'DDC698Privilege', inversedBy: 'roles')]
     protected $privilege;
 }
 
 
-/**
- * @Table(name="Privileges")
- * @Entity()
- */
+#[Table(name: 'Privileges')]
+#[Entity]
 class DDC698Privilege
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(name="privilegeID", type="integer")
-     * @GeneratedValue(strategy="AUTO")
-     */
+    /** @var int */
+    #[Id]
+    #[Column(name: 'privilegeID', type: 'integer')]
+    #[GeneratedValue(strategy: 'AUTO')]
     protected $privilegeID;
 
-    /**
-     * @var string
-     * @Column(name="name", type="string", length=45)
-     */
+    /** @var string */
+    #[Column(name: 'name', type: 'string', length: 45)]
     protected $name;
 
-    /**
-     * @psalm-var Collection<int, DDC698Role>
-     * @ManyToMany(targetEntity="DDC698Role", mappedBy="privilege")
-     */
+    /** @psalm-var Collection<int, DDC698Role> */
+    #[ManyToMany(targetEntity: 'DDC698Role', mappedBy: 'privilege')]
     protected $roles;
 }

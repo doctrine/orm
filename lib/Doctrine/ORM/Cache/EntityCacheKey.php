@@ -17,31 +17,21 @@ class EntityCacheKey extends CacheKey
     /**
      * The entity identifier
      *
-     * @readonly Public only for performance reasons, it should be considered immutable.
      * @var array<string, mixed>
      */
-    public $identifier;
+    public readonly array $identifier;
 
     /**
-     * The entity class name
-     *
-     * @readonly Public only for performance reasons, it should be considered immutable.
-     * @var string
-     * @psalm-var class-string
-     */
-    public $entityClass;
-
-    /**
-     * @param string               $entityClass The entity class name. In a inheritance hierarchy it should always be the root entity class.
+     * @param class-string         $entityClass The entity class name. In a inheritance hierarchy it should always be the root entity class.
      * @param array<string, mixed> $identifier  The entity identifier
-     * @psalm-param class-string $entityClass
      */
-    public function __construct($entityClass, array $identifier)
-    {
+    public function __construct(
+        public readonly string $entityClass,
+        array $identifier,
+    ) {
         ksort($identifier);
 
-        $this->identifier  = $identifier;
-        $this->entityClass = $entityClass;
+        $this->identifier = $identifier;
 
         parent::__construct(str_replace('\\', '.', strtolower($entityClass) . '_' . implode(' ', $identifier)));
     }

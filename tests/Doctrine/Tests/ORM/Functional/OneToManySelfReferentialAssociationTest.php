@@ -15,14 +15,11 @@ use function strstr;
  */
 class OneToManySelfReferentialAssociationTest extends OrmFunctionalTestCase
 {
-    /** @var ECommerceCategory */
-    private $parent;
+    private ECommerceCategory $parent;
 
-    /** @var ECommerceCategory */
-    private $firstChild;
+    private ECommerceCategory $firstChild;
 
-    /** @var ECommerceCategory */
-    private $secondChild;
+    private ECommerceCategory $secondChild;
 
     protected function setUp(): void
     {
@@ -101,8 +98,8 @@ class OneToManySelfReferentialAssociationTest extends OrmFunctionalTestCase
     public function testLazyLoadsOneToManyAssociation(): void
     {
         $this->createFixture();
-        $metadata                                           = $this->_em->getClassMetadata(ECommerceCategory::class);
-        $metadata->associationMappings['children']['fetch'] = ClassMetadata::FETCH_LAZY;
+        $metadata                                         = $this->_em->getClassMetadata(ECommerceCategory::class);
+        $metadata->associationMappings['children']->fetch = ClassMetadata::FETCH_LAZY;
 
         $query    = $this->_em->createQuery('select c from Doctrine\Tests\Models\ECommerce\ECommerceCategory c order by c.id asc');
         $result   = $query->getResult();

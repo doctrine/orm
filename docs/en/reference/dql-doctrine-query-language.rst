@@ -807,7 +807,7 @@ classes have to implement the base class :
     namespace MyProject\Query\AST;
 
     use Doctrine\ORM\Query\AST\Functions\FunctionNode;
-    use Doctrine\ORM\Query\Lexer;
+    use Doctrine\ORM\Query\TokenType;
 
     class MysqlFloor extends FunctionNode
     {
@@ -822,12 +822,12 @@ classes have to implement the base class :
 
         public function parse(\Doctrine\ORM\Query\Parser $parser)
         {
-            $parser->match(Lexer::T_IDENTIFIER);
-            $parser->match(Lexer::T_OPEN_PARENTHESIS);
+            $parser->match(TokenType::T_IDENTIFIER);
+            $parser->match(TokenType::T_OPEN_PARENTHESIS);
 
             $this->simpleArithmeticExpression = $parser->SimpleArithmeticExpression();
 
-            $parser->match(Lexer::T_CLOSE_PARENTHESIS);
+            $parser->match(TokenType::T_CLOSE_PARENTHESIS);
         }
     }
 
@@ -1582,8 +1582,8 @@ Identifiers
     /* Alias Identification declaration (the "u" of "FROM User u") */
     AliasIdentificationVariable :: = identifier
 
-    /* identifier that must be a class name (the "User" of "FROM User u"), possibly as a fully qualified class name or namespace-aliased */
-    AbstractSchemaName ::= fully_qualified_name | aliased_name | identifier
+    /* identifier that must be a class name (the "User" of "FROM User u"), possibly as a fully qualified class name */
+    AbstractSchemaName ::= fully_qualified_name | identifier
 
     /* Alias ResultVariable declaration (the "total" of "COUNT(*) AS total") */
     AliasResultVariable = identifier

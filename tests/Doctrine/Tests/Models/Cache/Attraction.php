@@ -18,52 +18,32 @@ use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\Table;
 
-/**
- * @Cache("NONSTRICT_READ_WRITE")
- * @Entity
- * @Table("cache_attraction")
- * @InheritanceType("SINGLE_TABLE")
- * @DiscriminatorMap({
- *  1  = "Restaurant",
- *  2  = "Beach",
- *  3  = "Bar"
- * })
- */
+#[Table('cache_attraction')]
+#[Cache('NONSTRICT_READ_WRITE')]
+#[Entity]
+#[InheritanceType('SINGLE_TABLE')]
+#[DiscriminatorMap([1 => 'Restaurant', 2 => 'Beach', 3 => 'Bar'])]
 abstract class Attraction
 {
-    /**
-     * @var int
-     * @Id
-     * @GeneratedValue
-     * @Column(type="integer")
-     */
+    /** @var int */
+    #[Id]
+    #[GeneratedValue]
+    #[Column(type: 'integer')]
     protected $id;
 
-    /**
-     * @var string
-     * @Column(unique=true)
-     */
-    protected $name;
-
-    /**
-     * @var City
-     * @Cache
-     * @ManyToOne(targetEntity="City", inversedBy="attractions")
-     * @JoinColumn(name="city_id", referencedColumnName="id")
-     */
-    protected $city;
-
-    /**
-     * @psalm-var Collection<int, AttractionInfo>
-     * @Cache
-     * @OneToMany(targetEntity="AttractionInfo", mappedBy="attraction")
-     */
+    /** @psalm-var Collection<int, AttractionInfo> */
+    #[Cache]
+    #[OneToMany(targetEntity: 'AttractionInfo', mappedBy: 'attraction')]
     protected $infos;
 
-    public function __construct(string $name, City $city)
-    {
-        $this->name  = $name;
-        $this->city  = $city;
+    public function __construct(
+        #[Column(unique: true)]
+        protected string $name,
+        #[Cache]
+        #[ManyToOne(targetEntity: 'City', inversedBy: 'attractions')]
+        #[JoinColumn(name: 'city_id', referencedColumnName: 'id')]
+        protected City $city,
+    ) {
         $this->infos = new ArrayCollection();
     }
 

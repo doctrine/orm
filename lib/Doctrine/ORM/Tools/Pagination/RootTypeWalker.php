@@ -24,10 +24,10 @@ use function reset;
  */
 final class RootTypeWalker extends SqlWalker
 {
-    public function walkSelectStatement(AST\SelectStatement $AST): string
+    public function walkSelectStatement(AST\SelectStatement $selectStatement): string
     {
         // Get the root entity and alias from the AST fromClause
-        $from = $AST->fromClause->identificationVariableDeclarations;
+        $from = $selectStatement->fromClause->identificationVariableDeclarations;
 
         if (count($from) > 1) {
             throw new RuntimeException('Can only process queries that select only one FROM component');
@@ -42,7 +42,7 @@ final class RootTypeWalker extends SqlWalker
             $identifierFieldName,
             $rootClass,
             $this->getQuery()
-                ->getEntityManager()
+                ->getEntityManager(),
         )[0];
     }
 }

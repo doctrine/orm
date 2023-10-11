@@ -11,8 +11,9 @@ use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\ManyToMany;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
-/** @group DDC-1654 */
+#[Group('DDC-1654')]
 class DDC1654Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -23,7 +24,7 @@ class DDC1654Test extends OrmFunctionalTestCase
             [
                 DDC1654Post::class,
                 DDC1654Comment::class,
-            ]
+            ],
         );
     }
 
@@ -73,7 +74,7 @@ class DDC1654Test extends OrmFunctionalTestCase
         self::assertCount(0, $comments);
     }
 
-    /** @group DDC-3382 */
+    #[Group('DDC-3382')]
     public function testManyToManyRemoveElementFromReAddToCollectionOrphanRemoval(): void
     {
         $post             = new DDC1654Post();
@@ -112,7 +113,7 @@ class DDC1654Test extends OrmFunctionalTestCase
         self::assertCount(0, $comments);
     }
 
-    /** @group DDC-3382 */
+    #[Group('DDC-3382')]
     public function testManyToManyClearCollectionReAddOrphanRemoval(): void
     {
         $post             = new DDC1654Post();
@@ -134,33 +135,26 @@ class DDC1654Test extends OrmFunctionalTestCase
     }
 }
 
-/** @Entity */
+#[Entity]
 class DDC1654Post
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     public $id;
 
-    /**
-     * @psalm-var Collection<int, DDC1654Comment>
-     * @ManyToMany(targetEntity="DDC1654Comment", orphanRemoval=true,
-     * cascade={"persist"})
-     */
+    /** @psalm-var Collection<int, DDC1654Comment> */
+    #[ManyToMany(targetEntity: 'DDC1654Comment', orphanRemoval: true, cascade: ['persist'])]
     public $comments = [];
 }
 
-/** @Entity */
+#[Entity]
 class DDC1654Comment
 {
-    /**
-     * @var int
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    /** @var int */
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
     public $id;
 }

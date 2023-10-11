@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Query\Expr;
 
+use Stringable;
+
 use function implode;
 
 /**
@@ -11,41 +13,36 @@ use function implode;
  *
  * @link    www.doctrine-project.org
  */
-class Func
+class Func implements Stringable
 {
-    /** @var string */
-    protected $name;
-
     /** @var mixed[] */
-    protected $arguments;
+    protected array $arguments;
 
     /**
      * Creates a function, with the given argument.
      *
-     * @param string        $name
      * @param mixed[]|mixed $arguments
      * @psalm-param list<mixed>|mixed $arguments
      */
-    public function __construct($name, $arguments)
-    {
-        $this->name      = $name;
+    public function __construct(
+        protected string $name,
+        $arguments,
+    ) {
         $this->arguments = (array) $arguments;
     }
 
-    /** @return string */
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
 
     /** @psalm-return list<mixed> */
-    public function getArguments()
+    public function getArguments(): array
     {
         return $this->arguments;
     }
 
-    /** @return string */
-    public function __toString()
+    public function __toString(): string
     {
         return $this->name . '(' . implode(', ', $this->arguments) . ')';
     }

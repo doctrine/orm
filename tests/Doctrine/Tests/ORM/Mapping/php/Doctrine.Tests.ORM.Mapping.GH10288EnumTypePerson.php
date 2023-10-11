@@ -9,14 +9,14 @@ $metadata->mapField(
     [
         'id'                 => true,
         'fieldName'          => 'id',
-    ]
+    ],
 );
 
 $metadata->setDiscriminatorColumn(
     [
         'name'     => 'discr',
         'enumType' => GH10288People::class,
-    ]
+    ],
 );
 
 $metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_NONE);

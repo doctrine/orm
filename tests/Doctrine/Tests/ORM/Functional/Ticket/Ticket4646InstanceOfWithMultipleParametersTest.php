@@ -24,7 +24,7 @@ class Ticket4646InstanceOfWithMultipleParametersTest extends OrmFunctionalTestCa
             PersonTicket4646Multiple::class,
             EmployeeTicket4646Multiple::class,
             ManagerTicket4646Multiple::class,
-            InternTicket4646Multiple::class
+            InternTicket4646Multiple::class,
         );
     }
 
@@ -46,27 +46,17 @@ class Ticket4646InstanceOfWithMultipleParametersTest extends OrmFunctionalTestCa
     }
 }
 
-/**
- * @Entity()
- * @Table(name="instance_of_test_multiple_person")
- * @InheritanceType(value="JOINED")
- * @DiscriminatorColumn(name="kind", type="string")
- * @DiscriminatorMap(value={
- *     "person": "Doctrine\Tests\ORM\Functional\Ticket\PersonTicket4646Multiple",
- *     "employee": "Doctrine\Tests\ORM\Functional\Ticket\EmployeeTicket4646Multiple",
- *     "manager": "Doctrine\Tests\ORM\Functional\Ticket\ManagerTicket4646Multiple",
- *     "intern": "Doctrine\Tests\ORM\Functional\Ticket\InternTicket4646Multiple"
- * })
- */
+#[Table(name: 'instance_of_test_multiple_person')]
+#[Entity]
+#[InheritanceType(value: 'JOINED')]
+#[DiscriminatorColumn(name: 'kind', type: 'string')]
+#[DiscriminatorMap(value: ['person' => 'Doctrine\Tests\ORM\Functional\Ticket\PersonTicket4646Multiple', 'employee' => 'Doctrine\Tests\ORM\Functional\Ticket\EmployeeTicket4646Multiple', 'manager' => 'Doctrine\Tests\ORM\Functional\Ticket\ManagerTicket4646Multiple', 'intern' => 'Doctrine\Tests\ORM\Functional\Ticket\InternTicket4646Multiple'])]
 class PersonTicket4646Multiple
 {
-    /**
-     * @var int
-     * @Id()
-     * @GeneratedValue()
-     * @Column(type="integer")
-     */
-    private $id;
+    #[Id]
+    #[GeneratedValue]
+    #[Column(type: 'integer')]
+    private int $id;
 
     public function getId(): int
     {
@@ -74,26 +64,20 @@ class PersonTicket4646Multiple
     }
 }
 
-/**
- * @Entity()
- * @Table(name="instance_of_test_multiple_employee")
- */
+#[Table(name: 'instance_of_test_multiple_employee')]
+#[Entity]
 class EmployeeTicket4646Multiple extends PersonTicket4646Multiple
 {
 }
 
-/**
- * @Entity()
- * @Table(name="instance_of_test_multiple_manager")
- */
+#[Table(name: 'instance_of_test_multiple_manager')]
+#[Entity]
 class ManagerTicket4646Multiple extends PersonTicket4646Multiple
 {
 }
 
-/**
- * @Entity()
- * @Table(name="instance_of_test_multiple_intern")
- */
+#[Table(name: 'instance_of_test_multiple_intern')]
+#[Entity]
 class InternTicket4646Multiple extends PersonTicket4646Multiple
 {
 }

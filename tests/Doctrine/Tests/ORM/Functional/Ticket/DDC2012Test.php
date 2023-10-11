@@ -15,19 +15,16 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\InheritanceType;
 use Doctrine\ORM\Mapping\Table;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
 use function explode;
-use function get_class;
 use function implode;
 use function is_array;
-use function method_exists;
 use function sprintf;
 use function strtolower;
 
-/**
- * @group DDC-2012
- * @group non-cacheable
- */
+#[Group('DDC-2012')]
+#[Group('non-cacheable')]
 class DDC2012Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -40,7 +37,7 @@ class DDC2012Test extends OrmFunctionalTestCase
 
         $this->createSchemaForModels(
             DDC2012Item::class,
-            DDC2012ItemPerson::class
+            DDC2012ItemPerson::class,
         );
     }
 
@@ -53,7 +50,7 @@ class DDC2012Test extends OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $item = $this->_em->find(get_class($item), $item->id);
+        $item = $this->_em->find($item::class, $item->id);
 
         self::assertArrayHasKey('convertToDatabaseValueSQL', DDC2012TsVectorType::$calls);
         self::assertArrayHasKey('convertToDatabaseValue', DDC2012TsVectorType::$calls);
@@ -72,7 +69,7 @@ class DDC2012Test extends OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $item = $this->_em->find(get_class($item), $item->id);
+        $item = $this->_em->find($item::class, $item->id);
 
         self::assertCount(2, DDC2012TsVectorType::$calls['convertToDatabaseValueSQL']);
         self::assertCount(2, DDC2012TsVectorType::$calls['convertToDatabaseValue']);
@@ -83,37 +80,26 @@ class DDC2012Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Table(name="ddc2010_item")
- * @Entity
- * @InheritanceType("JOINED")
- * @DiscriminatorColumn(name="type_id", type="smallint")
- * @DiscriminatorMap({
- *      1 = "DDC2012ItemPerson",
- *      2 = "DDC2012Item"
- * })
- */
+#[Table(name: 'ddc2010_item')]
+#[Entity]
+#[InheritanceType('JOINED')]
+#[DiscriminatorColumn(name: 'type_id', type: 'smallint')]
+#[DiscriminatorMap([1 => 'DDC2012ItemPerson', 2 => 'DDC2012Item'])]
 class DDC2012Item
 {
-    /**
-     * @var int
-     * @Id
-     * @GeneratedValue
-     * @Column(type="integer")
-     */
+    /** @var int */
+    #[Id]
+    #[GeneratedValue]
+    #[Column(type: 'integer')]
     public $id;
 
-    /**
-     * @psalm-var list<string>
-     * @Column(name="tsv", type="tsvector", length=255, nullable=true)
-     */
+    /** @psalm-var list<string> */
+    #[Column(name: 'tsv', type: 'tsvector', length: 255, nullable: true)]
     public $tsv;
 }
 
-/**
- * @Table(name="ddc2010_item_person")
- * @Entity
- */
+#[Table(name: 'ddc2010_item_person')]
+#[Entity]
 class DDC2012ItemPerson extends DDC2012Item
 {
 }
@@ -128,19 +114,15 @@ class DDC2012TsVectorType extends Type
     /**
      * {@inheritDoc}
      */
-    public function getSQLDeclaration(array $fieldDeclaration, AbstractPlatform $platform)
+    public function getSQLDeclaration(array $column, AbstractPlatform $platform): string
     {
-        if (method_exists($platform, 'getStringTypeDeclarationSQL')) {
-            return $platform->getStringTypeDeclarationSQL($fieldDeclaration);
-        }
-
-        return $platform->getVarcharTypeDeclarationSQL($fieldDeclaration);
+        return $platform->getStringTypeDeclarationSQL($column);
     }
 
     /**
      * {@inheritDoc}
      */
-    public function convertToDatabaseValue($value, AbstractPlatform $platform)
+    public function convertToDatabaseValue($value, AbstractPlatform $platform): mixed
     {
         if (is_array($value)) {
             $value = implode(' ', $value);
@@ -156,8 +138,10 @@ class DDC2012TsVectorType extends Type
 
     /**
      * {@inheritDoc}
+     *
+     * @return list<string>
      */
-    public function convertToPHPValue($value, AbstractPlatform $platform)
+    public function convertToPHPValue($value, AbstractPlatform $platform): array
     {
         self::$calls[__FUNCTION__][] = [
             'value'     => $value,
@@ -170,7 +154,7 @@ class DDC2012TsVectorType extends Type
     /**
      * {@inheritDoc}
      */
-    public function convertToDatabaseValueSQL($sqlExpr, AbstractPlatform $platform)
+    public function convertToDatabaseValueSQL($sqlExpr, AbstractPlatform $platform): string
     {
         self::$calls[__FUNCTION__][] = [
             'sqlExpr'   => $sqlExpr,
@@ -183,18 +167,7 @@ class DDC2012TsVectorType extends Type
         return sprintf('UPPER(%s)', $sqlExpr);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function canRequireSQLConversion()
-    {
-        return true;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function getName()
+    public function getName(): string
     {
         return self::MYTYPE;
     }

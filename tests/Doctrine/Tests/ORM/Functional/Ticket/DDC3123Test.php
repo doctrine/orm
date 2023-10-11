@@ -9,9 +9,10 @@ use Doctrine\ORM\UnitOfWork;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use PHPUnit\Framework\Assert;
+use PHPUnit\Framework\Attributes\Group;
 use ReflectionProperty;
 
-/** @group DDC-3123 */
+#[Group('DDC-3123')]
 class DDC3123Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -44,11 +45,10 @@ class DDC3123Test extends OrmFunctionalTestCase
             public function postFlush(): void
             {
                 $property = new ReflectionProperty(UnitOfWork::class, 'extraUpdates');
-                $property->setAccessible(true);
 
                 Assert::assertEmpty(
                     $property->getValue($this->uow),
-                    'ExtraUpdates are reset before postFlush'
+                    'ExtraUpdates are reset before postFlush',
                 );
             }
         });

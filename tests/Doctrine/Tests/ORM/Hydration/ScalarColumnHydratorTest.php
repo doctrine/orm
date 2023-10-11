@@ -7,7 +7,6 @@ namespace Doctrine\Tests\ORM\Hydration;
 use Doctrine\ORM\Exception\MultipleSelectorsFoundException;
 use Doctrine\ORM\Internal\Hydration\ScalarColumnHydrator;
 use Doctrine\ORM\Query\ResultSetMapping;
-use Doctrine\Tests\Mocks\ArrayResultFactory;
 use Doctrine\Tests\Models\CMS\CmsUser;
 
 use function sprintf;
@@ -24,7 +23,7 @@ class ScalarColumnHydratorTest extends HydrationTestCase
         $rsm->addEntityResult(CmsUser::class, 'u');
         $rsm->addFieldResult('u', 'u__id', 'id');
 
-        $stmt     = ArrayResultFactory::createFromArray($emptyResultSet = []);
+        $stmt     = $this->createResultMock([]);
         $hydrator = new ScalarColumnHydrator($this->entityManager);
         $result   = $hydrator->hydrateAll($stmt, $rsm);
 
@@ -47,7 +46,7 @@ class ScalarColumnHydratorTest extends HydrationTestCase
             ['u__id' => '2'],
         ];
 
-        $stmt     = ArrayResultFactory::createFromArray($resultSet);
+        $stmt     = $this->createResultMock($resultSet);
         $hydrator = new ScalarColumnHydrator($this->entityManager);
         $result   = $hydrator->hydrateAll($stmt, $rsm);
 
@@ -75,7 +74,7 @@ class ScalarColumnHydratorTest extends HydrationTestCase
             ['u__id' => '2'],
         ];
 
-        $stmt     = ArrayResultFactory::createFromArray($resultSet);
+        $stmt     = $this->createResultMock($resultSet);
         $hydrator = new ScalarColumnHydrator($this->entityManager);
         $result   = $hydrator->hydrateAll($stmt, $rsm);
 
@@ -108,13 +107,13 @@ class ScalarColumnHydratorTest extends HydrationTestCase
             ],
         ];
 
-        $stmt     = ArrayResultFactory::createFromArray($resultSet);
+        $stmt     = $this->createResultMock($resultSet);
         $hydrator = new ScalarColumnHydrator($this->entityManager);
 
         $this->expectException(MultipleSelectorsFoundException::class);
         $this->expectExceptionMessage(sprintf(
             MultipleSelectorsFoundException::MULTIPLE_SELECTORS_FOUND_EXCEPTION,
-            'id, name'
+            'id, name',
         ));
 
         $hydrator->hydrateAll($stmt, $rsm);

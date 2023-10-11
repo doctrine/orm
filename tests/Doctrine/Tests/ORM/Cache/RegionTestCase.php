@@ -10,23 +10,18 @@ use Doctrine\ORM\Cache\Region;
 use Doctrine\Tests\Mocks\CacheEntryMock;
 use Doctrine\Tests\Mocks\CacheKeyMock;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Group;
 use Psr\Cache\CacheItemPoolInterface;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
 
-/**
- * @template TRegion of Region
- * @group DDC-2183
- */
+/** @template TRegion of Region */
+#[Group('DDC-2183')]
 abstract class RegionTestCase extends OrmFunctionalTestCase
 {
-    /**
-     * @var Region
-     * @psalm-var TRegion
-     */
-    protected $region;
-
-    /** @var CacheItemPoolInterface */
-    protected $cacheItemPool;
+    /** @psalm-var TRegion */
+    protected Region $region;
+    protected CacheItemPoolInterface $cacheItemPool;
 
     protected function setUp(): void
     {
@@ -48,7 +43,7 @@ abstract class RegionTestCase extends OrmFunctionalTestCase
         ];
     }
 
-    /** @dataProvider dataProviderCacheValues */
+    #[DataProvider('dataProviderCacheValues')]
     public function testPutGetContainsEvict(CacheKey $key, CacheEntry $value): void
     {
         self::assertFalse($this->region->contains($key));

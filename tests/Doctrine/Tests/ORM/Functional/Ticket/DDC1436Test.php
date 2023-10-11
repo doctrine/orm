@@ -11,8 +11,9 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
-/** @group DDC-1436 */
+#[Group('DDC-1436')]
 class DDC1436Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -54,22 +55,18 @@ class DDC1436Test extends OrmFunctionalTestCase
     }
 }
 
-/** @Entity */
+#[Entity]
 class DDC1436Page
 {
-    /**
-     * @var int
-     * @Id
-     * @GeneratedValue
-     * @Column(type="integer", name="id")
-     */
+    /** @var int */
+    #[Id]
+    #[GeneratedValue]
+    #[Column(type: 'integer', name: 'id')]
     protected $id;
 
-    /**
-     * @var DDC1436Page
-     * @ManyToOne(targetEntity="DDC1436Page")
-     * @JoinColumn(name="pid", referencedColumnName="id")
-     */
+    /** @var DDC1436Page */
+    #[ManyToOne(targetEntity: 'DDC1436Page')]
+    #[JoinColumn(name: 'pid', referencedColumnName: 'id')]
     protected $parent;
 
     public function getId(): int

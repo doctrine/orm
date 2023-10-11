@@ -17,54 +17,31 @@ use Doctrine\ORM\Mapping\ManyToMany;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\MappedSuperclass;
 
-/** @MappedSuperclass */
 #[MappedSuperclass]
 class DDC964User
 {
-    /**
-     * @var int
-     * @Id
-     * @GeneratedValue
-     * @Column(type="integer", name="user_id", length=150)
-     */
+    /** @var int */
     #[Id]
     #[GeneratedValue]
     #[Column(type: 'integer', name: 'user_id', length: 150)]
     protected $id;
 
-    /**
-     * @var string|null
-     * @Column(name="user_name", nullable=true, unique=false, length=250)
-     */
-    #[Column(name: 'user_name', nullable: true, unique: false, length: 250)]
-    protected $name;
-
-    /**
-     * @psalm-var Collection<int, DDC964Group>
-     * @ManyToMany(targetEntity="DDC964Group", inversedBy="users", cascade={"persist", "merge", "detach"})
-     * @JoinTable(name="ddc964_users_groups",
-     *  joinColumns={@JoinColumn(name="user_id", referencedColumnName="id")},
-     *  inverseJoinColumns={@JoinColumn(name="group_id", referencedColumnName="id")}
-     * )
-     */
-    #[ManyToMany(targetEntity: DDC964Group::class, inversedBy: 'users', cascade: ['persist', 'merge', 'detach'])]
+    /** @psalm-var Collection<int, DDC964Group> */
+    #[ManyToMany(targetEntity: DDC964Group::class, inversedBy: 'users', cascade: ['persist', 'detach'])]
     #[JoinTable(name: 'ddc964_users_groups')]
     #[JoinColumn(name: 'user_id', referencedColumnName: 'id')]
     #[InverseJoinColumn(name: 'group_id', referencedColumnName: 'id')]
     protected $groups;
 
-    /**
-     * @var DDC964Address
-     * @ManyToOne(targetEntity="DDC964Address", cascade={"persist", "merge"})
-     * @JoinColumn(name="address_id", referencedColumnName="id")
-     */
-    #[ManyToOne(targetEntity: DDC964Address::class, cascade: ['persist', 'merge'])]
+    /** @var DDC964Address */
+    #[ManyToOne(targetEntity: DDC964Address::class, cascade: ['persist'])]
     #[JoinColumn(name: 'address_id', referencedColumnName: 'id')]
     protected $address;
 
-    public function __construct(?string $name = null)
-    {
-        $this->name   = $name;
+    public function __construct(
+        #[Column(name: 'user_name', nullable: true, unique: false, length: 250)]
+        protected string|null $name = null,
+    ) {
         $this->groups = new ArrayCollection();
     }
 
@@ -73,7 +50,7 @@ class DDC964User
         return $this->id;
     }
 
-    public function getName(): ?string
+    public function getName(): string|null
     {
         return $this->name;
     }
@@ -116,7 +93,7 @@ class DDC964User
                 'type'       => 'integer',
                 'columnName' => 'user_id',
                 'length'     => 150,
-            ]
+            ],
         );
         $metadata->mapField(
             [
@@ -126,16 +103,16 @@ class DDC964User
                 'nullable'  => true,
                 'unique'    => false,
                 'length'    => 250,
-            ]
+            ],
         );
 
         $metadata->mapManyToOne(
             [
                 'fieldName'      => 'address',
                 'targetEntity'   => 'DDC964Address',
-                'cascade'        => ['persist','merge'],
-                'joinColumns'    => [['name' => 'address_id', 'referencedColumnMame' => 'id']],
-            ]
+                'cascade'        => ['persist'],
+                'joinColumns'    => [['name' => 'address_id', 'referencedColumnName' => 'id']],
+            ],
         );
 
         $metadata->mapManyToMany(
@@ -143,7 +120,7 @@ class DDC964User
                 'fieldName'      => 'groups',
                 'targetEntity'   => 'DDC964Group',
                 'inversedBy'     => 'users',
-                'cascade'        => ['persist','merge','detach'],
+                'cascade'        => ['persist','detach'],
                 'joinTable'      => [
                     'name'          => 'ddc964_users_groups',
                     'joinColumns'   => [
@@ -159,7 +136,7 @@ class DDC964User
                         ],
                     ],
                 ],
-            ]
+            ],
         );
 
         $metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_AUTO);

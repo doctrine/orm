@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Exception;
 
+use Exception;
+
 use function get_class;
 use function sprintf;
 
-final class EntityIdentityCollisionException extends ORMException
+final class EntityIdentityCollisionException extends Exception implements ORMException
 {
     /**
      * @param object $existingEntity
@@ -35,8 +37,8 @@ EXCEPTION
                 ,
                 get_class($newEntity),
                 $idHash,
-                get_class($existingEntity)
-            )
+                get_class($existingEntity),
+            ),
         );
     }
 }

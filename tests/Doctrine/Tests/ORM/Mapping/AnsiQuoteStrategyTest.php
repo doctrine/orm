@@ -13,18 +13,15 @@ use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\Models\DDC117\DDC117Article;
 use Doctrine\Tests\Models\DDC117\DDC117ArticleDetails;
 use Doctrine\Tests\OrmTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
-/**
- * @group DDC-1845
- * @group DDC-2459
- */
+#[Group('DDC-1845')]
+#[Group('DDC-2459')]
 class AnsiQuoteStrategyTest extends OrmTestCase
 {
-    /** @var AnsiQuoteStrategy */
-    private $strategy;
+    private AnsiQuoteStrategy $strategy;
 
-    /** @var AbstractPlatform */
-    private $platform;
+    private AbstractPlatform $platform;
 
     protected function setUp(): void
     {
@@ -71,7 +68,7 @@ class AnsiQuoteStrategyTest extends OrmTestCase
                 'targetEntity'  => 'CmsUser',
                 'inversedBy'    => 'users',
                 'joinTable'     => ['name' => 'cmsaddress_cmsuser'],
-            ]
+            ],
         );
 
         self::assertEquals('cmsaddress_cmsuser', $this->strategy->getJoinTableName($class->associationMappings['user'], $class, $this->platform));
@@ -86,7 +83,7 @@ class AnsiQuoteStrategyTest extends OrmTestCase
                 'id'            => true,
                 'fieldName'     => 'id',
                 'columnName'    => 'id',
-            ]
+            ],
         );
 
         self::assertEquals(['id'], $this->strategy->getIdentifierColumnNames($class, $this->platform));
@@ -107,12 +104,12 @@ class AnsiQuoteStrategyTest extends OrmTestCase
                 'fieldName'     => 'article',
                 'targetEntity'  => DDC117Article::class,
                 'joinColumns'    => [
-                    ['name' => 'article'],
+                    ['name' => 'article', 'referencedColumnName' => 'id'],
                 ],
-            ]
+            ],
         );
 
-        $joinColumn = $class->associationMappings['article']['joinColumns'][0];
+        $joinColumn = $class->associationMappings['article']->joinColumns[0];
         self::assertEquals('article', $this->strategy->getJoinColumnName($joinColumn, $class, $this->platform));
     }
 
@@ -126,12 +123,12 @@ class AnsiQuoteStrategyTest extends OrmTestCase
                 'fieldName'     => 'article',
                 'targetEntity'  => DDC117Article::class,
                 'joinColumns'    => [
-                    ['name' => 'article'],
+                    ['name' => 'article', 'referencedColumnName' => 'id'],
                 ],
-            ]
+            ],
         );
 
-        $joinColumn = $cm->associationMappings['article']['joinColumns'][0];
+        $joinColumn = $cm->associationMappings['article']->joinColumns[0];
         self::assertEquals('id', $this->strategy->getReferencedJoinColumnName($joinColumn, $cm, $this->platform));
     }
 

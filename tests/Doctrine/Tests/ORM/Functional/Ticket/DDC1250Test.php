@@ -11,8 +11,9 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
-/** @group DDC-1250 */
+#[Group('DDC-1250')]
 class DDC1250Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -43,28 +44,22 @@ class DDC1250Test extends OrmFunctionalTestCase
     }
 }
 
-/** @Entity */
+#[Entity]
 class DDC1250ClientHistory
 {
-    /**
-     * @var int
-     * @Id
-     * @GeneratedValue
-     * @Column(type="integer")
-     */
+    /** @var int */
+    #[Id]
+    #[GeneratedValue]
+    #[Column(type: 'integer')]
     public $id;
 
-    /**
-     * @var DDC1250ClientHistory
-     * @OneToOne(targetEntity="DDC1250ClientHistory", inversedBy="declinedBy")
-     * @JoinColumn(name="declined_clients_history_id", referencedColumnName="id")
-     */
+    /** @var DDC1250ClientHistory */
+    #[OneToOne(targetEntity: 'DDC1250ClientHistory', inversedBy: 'declinedBy')]
+    #[JoinColumn(name: 'declined_clients_history_id', referencedColumnName: 'id')]
     public $declinedClientsHistory;
 
-    /**
-     * @var DDC1250ClientHistory
-     * @OneToOne(targetEntity="DDC1250ClientHistory", mappedBy="declinedClientsHistory")
-     */
+    /** @var DDC1250ClientHistory */
+    #[OneToOne(targetEntity: 'DDC1250ClientHistory', mappedBy: 'declinedClientsHistory')]
     public $declinedBy;
 }
 
