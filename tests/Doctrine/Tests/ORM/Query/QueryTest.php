@@ -7,6 +7,7 @@ namespace Doctrine\Tests\ORM\Query;
 use DateTime;
 use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\Cache\ArrayResult;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Driver;
@@ -186,6 +187,26 @@ class QueryTest extends OrmTestCase
         $query = $this->entityManager
                 ->createQuery('SELECT a FROM Doctrine\Tests\Models\CMS\CmsAddress a WHERE a.city IN (:cities)')
                 ->setParameter('cities', $cities);
+
+        $parameters = $query->getParameters();
+        $parameter  = $parameters->first();
+
+        self::assertEquals('cities', $parameter->getName());
+        self::assertEquals($cities, $parameter->getValue());
+    }
+
+    #[Group('DDC-1697')]
+    public function testExplicitCollectionParameters(): void
+    {
+        $cities = [
+            0 => 'Paris',
+            3 => 'Cannes',
+            9 => 'St Julien',
+        ];
+
+        $query = $this->entityManager
+                ->createQuery('SELECT a FROM Doctrine\Tests\Models\CMS\CmsAddress a WHERE a.city IN (:cities)')
+                ->setParameter('cities', $cities, ArrayParameterType::STRING);
 
         $parameters = $query->getParameters();
         $parameter  = $parameters->first();
