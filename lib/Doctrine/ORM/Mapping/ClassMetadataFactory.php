@@ -7,7 +7,6 @@ namespace Doctrine\ORM\Mapping;
 use Doctrine\Common\EventManager;
 use Doctrine\DBAL\Platforms;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
-use Doctrine\Deprecations\Deprecation;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Event\LoadClassMetadataEventArgs;
 use Doctrine\ORM\Event\OnClassMetadataNotFoundEventArgs;
@@ -29,7 +28,6 @@ use ReflectionException;
 
 use function assert;
 use function class_exists;
-use function constant;
 use function count;
 use function end;
 use function explode;
@@ -58,26 +56,8 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     /** @var mixed[] */
     private array $embeddablesActiveNesting = [];
 
-    private const LEGACY_DEFAULTS_FOR_ID_GENERATION = [
-        'Doctrine\DBAL\Platforms\MySqlPlatform' => ClassMetadata::GENERATOR_TYPE_IDENTITY,
-        'Doctrine\DBAL\Platforms\PostgreSqlPlatform' => ClassMetadata::GENERATOR_TYPE_SEQUENCE,
-        Platforms\DB2Platform::class => ClassMetadata::GENERATOR_TYPE_IDENTITY,
-        Platforms\MySQLPlatform::class => ClassMetadata::GENERATOR_TYPE_IDENTITY,
+    private const NON_IDENTITY_DEFAULT_STRATEGY = [
         Platforms\OraclePlatform::class => ClassMetadata::GENERATOR_TYPE_SEQUENCE,
-        Platforms\PostgreSQLPlatform::class => ClassMetadata::GENERATOR_TYPE_SEQUENCE,
-        Platforms\SQLServerPlatform::class => ClassMetadata::GENERATOR_TYPE_IDENTITY,
-        Platforms\SqlitePlatform::class => ClassMetadata::GENERATOR_TYPE_IDENTITY,
-    ];
-
-    private const RECOMMENDED_STRATEGY = [
-        'Doctrine\DBAL\Platforms\MySqlPlatform' => 'IDENTITY',
-        'Doctrine\DBAL\Platforms\PostgreSqlPlatform' => 'IDENTITY',
-        Platforms\DB2Platform::class => 'IDENTITY',
-        Platforms\MySQLPlatform::class => 'IDENTITY',
-        Platforms\OraclePlatform::class => 'SEQUENCE',
-        Platforms\PostgreSQLPlatform::class => 'IDENTITY',
-        Platforms\SQLServerPlatform::class => 'IDENTITY',
-        Platforms\SqlitePlatform::class => 'IDENTITY',
     ];
 
     public function setEntityManager(EntityManagerInterface $em): void
@@ -634,43 +614,13 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
             }
         }
 
-        foreach (self::LEGACY_DEFAULTS_FOR_ID_GENERATION as $platformFamily => $strategy) {
+        foreach (self::NON_IDENTITY_DEFAULT_STRATEGY as $platformFamily => $strategy) {
             if (is_a($platform, $platformFamily)) {
-                $recommendedStrategyName = self::RECOMMENDED_STRATEGY[$platformFamily];
-                if ($strategy !== constant('Doctrine\ORM\Mapping\ClassMetadata::GENERATOR_TYPE_' . $recommendedStrategyName)) {
-                    Deprecation::trigger(
-                        'doctrine/orm',
-                        'https://github.com/doctrine/orm/issues/8893',
-                        <<<'DEPRECATION'
-Relying on non-optimal defaults for ID generation is deprecated.
-Instead, configure identifier generation strategies explicitly through
-configuration.
-We currently recommend "%s" for "%s", so you should use
-$configuration->setIdentityGenerationPreferences([
-    "%s" => ClassMetadata::GENERATOR_TYPE_%s,
-]);
-DEPRECATION
-                        ,
-                        $recommendedStrategyName,
-                        $platformFamily,
-                        $platformFamily,
-                        $recommendedStrategyName,
-                    );
-                }
-
                 return $strategy;
             }
         }
 
-        if ($platform->supportsIdentityColumns()) {
-            return ClassMetadata::GENERATOR_TYPE_IDENTITY;
-        }
-
-        if ($platform->supportsSequences()) {
-            return ClassMetadata::GENERATOR_TYPE_SEQUENCE;
-        }
-
-        throw CannotGenerateIds::withPlatform($platform);
+        return ClassMetadata::GENERATOR_TYPE_IDENTITY;
     }
 
     private function truncateSequenceName(string $schemaElementName): string

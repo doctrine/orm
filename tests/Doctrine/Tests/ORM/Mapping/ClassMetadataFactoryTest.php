@@ -23,7 +23,6 @@ use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\DiscriminatorColumn;
 use Doctrine\ORM\Mapping\DiscriminatorMap;
 use Doctrine\ORM\Mapping\Entity;
-use Doctrine\ORM\Mapping\Exception\CannotGenerateIds;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\InheritanceType;
@@ -99,25 +98,6 @@ class ClassMetadataFactoryTest extends OrmTestCase
         self::assertTrue($cmMap1->hasField('name'));
     }
 
-    public function testItThrowsWhenUsingAutoWithIncompatiblePlatform(): void
-    {
-        $cm1 = $this->createValidClassMetadata();
-        $cm1->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_AUTO);
-
-        $driver = $this->createMock(Driver::class);
-        $driver->method('getDatabasePlatform')
-            ->willReturn($this->createMock(AbstractPlatform::class));
-
-        $connection    = new Connection([], $driver);
-        $entityManager = $this->createEntityManager(new MetadataDriverMock(), $connection);
-        $cmf           = new ClassMetadataFactoryTestSubject();
-        $cmf->setEntityManager($entityManager);
-        $cmf->setMetadataForClass($cm1->name, $cm1);
-        $this->expectException(CannotGenerateIds::class);
-
-        $actual = $cmf->getMetadataFor($cm1->name);
-    }
-
     public function testGetMetadataForReturnsLoadedCustomIdGenerator(): void
     {
         $cm1 = $this->createValidClassMetadata();
@@ -147,32 +127,6 @@ class ClassMetadataFactoryTest extends OrmTestCase
         $entityManager->getConfiguration()->setIdentityGenerationPreferences($preferences);
 
         return $cmf;
-    }
-
-    public function testRelyingOnLegacyIdGenerationDefaultsIsDeprecatedIfItResultsInASuboptimalDefault(): void
-    {
-        $cm = $this->createValidClassMetadata();
-        $cm->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_AUTO);
-
-        $cmf = $this->setUpCmfForPlatform(new PostgreSQLPlatform());
-        $cmf->setMetadataForClass($cm->name, $cm);
-
-        $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/issues/8893');
-        $cmf->getMetadataFor($cm->name);
-    }
-
-    public function testSpecifyingIdGenerationStrategyThroughConfigurationFixesTheDeprecation(): void
-    {
-        $cm = $this->createValidClassMetadata();
-        $cm->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_AUTO);
-
-        $cmf = $this->setUpCmfForPlatform(new PostgreSQLPlatform(), [
-            PostgreSQLPlatform::class => ClassMetadata::GENERATOR_TYPE_IDENTITY,
-        ]);
-        $cmf->setMetadataForClass($cm->name, $cm);
-
-        $this->expectNoDeprecationWithIdentifier('https://github.com/doctrine/orm/issues/8893');
-        $cmf->getMetadataFor($cm->name);
     }
 
     public function testRelyingOnLegacyIdGenerationDefaultsIsOKIfItResultsInTheCurrentlyRecommendedStrategyBeingUsed(): void
