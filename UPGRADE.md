@@ -1,5 +1,29 @@
 # Upgrade to 3.0
 
+## BC BREAK: AUTO keyword for identity generation defaults to IDENTITY for PostgreSQL now
+
+When using the AUTO strategy to let Doctrine determine the identity generation mecehanism for
+an entity, PostgreSQL now uses IDENTITY instead of SEQUENCE. When upgrading from ORM 2.x
+and preference is on keeping the SEQUENCE based identity generation, then configure the ORM
+this way:
+
+```php
+use Doctrine\DBAL\Platforms\PostgreSQLPlatform;
+use Doctrine\ORM\Configuration;
+use Doctrine\ORM\Mapping\ClassMetadata;
+
+assert($configuration instanceof Configuration);
+$configuration->setIdentityGenerationPreferences([
+    PostgreSQLPlatform::CLASS => ClassMetadata::GENERATOR_TYPE_SEQUENCE,
+]);
+```
+
+## BC BREAK: Throw exceptions when using illegal attributes on Embeddable
+
+There are only a few attributes allowed on an embeddable such as `#[Column]` or
+`#[Embedded]`. Previously all others that target entity classes where ignored,
+now they throw an exception.
+
 ## BC BREAK: Partial objects are removed
 
 - The `PARTIAL` keyword in DQL no longer exists.
