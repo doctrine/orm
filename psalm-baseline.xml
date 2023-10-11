@@ -373,6 +373,7 @@
   </file>
   <file src="lib/Doctrine/ORM/Mapping/ClassMetadataFactory.php">
     <ArgumentTypeCoercion>
+      <code>$platformFamily</code>
       <code><![CDATA[new $definition['class']()]]></code>
     </ArgumentTypeCoercion>
     <InvalidArrayOffset>

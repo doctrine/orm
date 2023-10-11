@@ -12,7 +12,6 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\Table;
-use Doctrine\Tests\Models\CMS\CmsAddress;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use PHPUnit\Framework\Attributes\Group;
 
@@ -30,13 +29,6 @@ class PostgreSqlSchemaToolTest extends OrmFunctionalTestCase
         if (! $platform instanceof PostgreSQLPlatform) {
             self::markTestSkipped('The ' . self::class . ' requires the use of postgresql.');
         }
-    }
-
-    public function testPostgresMetadataSequenceIncrementedBy10(): void
-    {
-        $address = $this->_em->getClassMetadata(CmsAddress::class);
-
-        self::assertEquals(1, $address->sequenceGeneratorDefinition['allocationSize']);
     }
 
     #[Group('DDC-1657')]

@@ -637,6 +637,34 @@ Use `toIterable()` instead.
 
 # Upgrade to 2.17
 
+## Deprecated: reliance on the non-optimal defaults that come with the `AUTO` identifier generation strategy
+
+When the `AUTO` identifier generation strategy was introduced, the best
+strategy at the time was selected for each database platform.
+A lot of time has passed since then, and support for better strategies has been
+added.
+
+Because of that, it is now deprecated to rely on the historical defaults when
+they differ from what we recommend now.
+
+Instead, you should pick a strategy for each database platform you use, and it
+will be used when using `AUTO`. As of now, only PostgreSQL is affected by this.
+It is recommended that PostgreSQL user configure their new applications to use
+`IDENTITY`:
+
+```php
+use Doctrine\DBAL\Platforms\PostgreSQLPlatform;
+use Doctrine\ORM\Configuration;
+
+assert($configuration instanceof Configuration);
+$configuration->setIdentityGenerationPreferences([
+    PostgreSQLPlatform::CLASS => ClassMetadata::GENERATOR_TYPE_IDENTITY,
+]);
+```
+
+If migrating an existing application is too costly, the deprecation can be
+addressed by configuring `SEQUENCE` as the default strategy.
+
 ## Deprecate `EntityManagerInterface::getPartialReference()`
 
 This method does not have a replacement and will be removed in 3.0.
