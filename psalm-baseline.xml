@@ -296,10 +296,84 @@
     </PossiblyNullArgument>
   </file>
   <file src="lib/Doctrine/ORM/Mapping/ClassMetadata.php">
-    <PropertyNotSetInConstructor/>
+    <DeprecatedProperty>
+      <code><![CDATA[$this->columnNames]]></code>
+      <code><![CDATA[$this->columnNames]]></code>
+      <code><![CDATA[$this->columnNames]]></code>
+      <code><![CDATA[$this->columnNames]]></code>
+    </DeprecatedProperty>
+    <InvalidArgument>
+      <code>$mapping</code>
+      <code>$mapping</code>
+      <code>$mapping</code>
+      <code>$mapping</code>
+      <code>$overrideMapping</code>
+    </InvalidArgument>
+    <InvalidNullableReturnType>
+      <code>ReflectionClass|null</code>
+    </InvalidNullableReturnType>
+    <InvalidPropertyAssignmentValue>
+      <code>$definition</code>
+      <code><![CDATA[$this->subClasses]]></code>
+    </InvalidPropertyAssignmentValue>
+    <LessSpecificReturnStatement>
+      <code>$className</code>
+      <code>$className</code>
+      <code><![CDATA[$this->namespace . '\\' . $className]]></code>
+    </LessSpecificReturnStatement>
+    <MoreSpecificReturnType>
+      <code>class-string|null</code>
+    </MoreSpecificReturnType>
+    <NullableReturnStatement>
+      <code><![CDATA[$this->reflClass]]></code>
+    </NullableReturnStatement>
+    <ParamNameMismatch>
+      <code>$entity</code>
+    </ParamNameMismatch>
+    <PossiblyNullArgument>
+      <code>$class</code>
+      <code>$className</code>
+      <code><![CDATA[$mapping['targetEntity']]]></code>
+      <code><![CDATA[$mapping['targetEntity']]]></code>
+      <code><![CDATA[$parentReflFields[$embeddedClass->declaredField]]]></code>
+    </PossiblyNullArgument>
+    <PossiblyNullReference>
+      <code>getProperty</code>
+      <code>getProperty</code>
+      <code>getProperty</code>
+      <code>getValue</code>
+      <code>getValue</code>
+      <code>getValue</code>
+      <code>instantiate</code>
+      <code>setValue</code>
+      <code>setValue</code>
+    </PossiblyNullReference>
+    <PossiblyUndefinedArrayOffset>
+      <code><![CDATA[$mapping['isOwningSide']]]></code>
+      <code><![CDATA[$mapping['isOwningSide']]]></code>
+      <code><![CDATA[$mapping['isOwningSide']]]></code>
+      <code><![CDATA[$mapping['targetEntity']]]></code>
+      <code><![CDATA[$table['name']]]></code>
+    </PossiblyUndefinedArrayOffset>
+    <PropertyNotSetInConstructor>
+      <code>$idGenerator</code>
+      <code>$table</code>
+    </PropertyNotSetInConstructor>
+    <RedundantCondition>
+      <code>$mapping !== false</code>
+      <code>$mapping !== false</code>
+    </RedundantCondition>
+    <RedundantFunctionCall>
+      <code>array_values</code>
+    </RedundantFunctionCall>
+    <RedundantPropertyInitializationCheck>
+      <code><![CDATA[$this->table]]></code>
+      <code>null</code>
+    </RedundantPropertyInitializationCheck>
   </file>
   <file src="lib/Doctrine/ORM/Mapping/ClassMetadataFactory.php">
     <ArgumentTypeCoercion>
+      <code>$platformFamily</code>
       <code><![CDATA[new $definition['class']()]]></code>
     </ArgumentTypeCoercion>
     <InvalidArrayOffset>
