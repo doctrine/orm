@@ -27,7 +27,6 @@
                 <!-- We wire the command as long as DBAL ships it -->
                 <referencedClass name="Doctrine\DBAL\Tools\Console\Command\ReservedWordsCommand" />
                 <!-- Remove on 3.0.x -->
-                <referencedClass name="Doctrine\DBAL\Schema\Visitor\RemoveNamespacedAssets"/>
                 <referencedClass name="Doctrine\ORM\Event\LifecycleEventArgs"/>
                 <referencedClass name="Doctrine\ORM\Exception\UnknownEntityNamespace"/>
                 <referencedClass name="Doctrine\ORM\Mapping\Driver\AnnotationDriver"/>
@@ -47,7 +46,6 @@
                 <!-- Remove on 3.0.x -->
                 <!-- Compatibility with DBAL 3 -->
                 <referencedMethod name="Doctrine\DBAL\Connection::getEventManager"/>
-                <referencedMethod name="Doctrine\DBAL\Schema\Schema::visit"/>
                 <file name="lib/Doctrine/ORM/Query/TreeWalkerChain.php"/>
             </errorLevel>
         </DeprecatedMethod>
@@ -196,9 +194,6 @@
             <errorLevel type="suppress">
                 <!-- Persistence 2 compatibility -->
                 <referencedClass name="Doctrine\Persistence\ObjectManagerAware"/>
-
-                <!-- See https://github.com/doctrine/dbal/pull/5432 -->
-                <referencedClass name="Doctrine\DBAL\Schema\Visitor\RemoveNamespacedAssets"/>
             </errorLevel>
         </UndefinedClass>
         <UndefinedMethod>
