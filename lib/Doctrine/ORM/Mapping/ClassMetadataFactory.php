@@ -24,6 +24,7 @@ use Doctrine\ORM\Id\UuidGenerator;
 use Doctrine\ORM\Mapping\Exception\CannotGenerateIds;
 use Doctrine\ORM\Mapping\Exception\InvalidCustomGenerator;
 use Doctrine\ORM\Mapping\Exception\UnknownGeneratorType;
+use Doctrine\ORM\Proxy\DefaultProxyClassNameResolver;
 use Doctrine\Persistence\Mapping\AbstractClassMetadataFactory;
 use Doctrine\Persistence\Mapping\ClassMetadata as ClassMetadataInterface;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
@@ -98,6 +99,8 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     /** @return void */
     public function setEntityManager(EntityManagerInterface $em)
     {
+        parent::setProxyClassNameResolver(new DefaultProxyClassNameResolver());
+
         $this->em = $em;
     }
 

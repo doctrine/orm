@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional;
 
-use Doctrine\Common\Util\ClassUtils;
 use Doctrine\ORM\Event\PostLoadEventArgs;
 use Doctrine\ORM\Events;
+use Doctrine\ORM\Proxy\DefaultProxyClassNameResolver;
 use Doctrine\Tests\Models\CMS\CmsAddress;
 use Doctrine\Tests\Models\CMS\CmsEmail;
 use Doctrine\Tests\Models\CMS\CmsPhonenumber;
@@ -302,7 +302,7 @@ class PostLoadListenerLoadEntityInEventHandler
     public function postLoad(PostLoadEventArgs $event): void
     {
         $object = $event->getObject();
-        $class  = ClassUtils::getClass($object);
+        $class  = DefaultProxyClassNameResolver::getClass($object);
         if (! isset($this->firedByClasses[$class])) {
             $this->firedByClasses[$class] = 1;
         } else {

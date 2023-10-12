@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Cache\Persister\Collection;
 
-use Doctrine\Common\Util\ClassUtils;
 use Doctrine\ORM\Cache\Exception\CannotUpdateReadOnlyCollection;
 use Doctrine\ORM\PersistentCollection;
+use Doctrine\ORM\Proxy\DefaultProxyClassNameResolver;
 
 class ReadOnlyCachedCollectionPersister extends NonStrictReadWriteCachedCollectionPersister
 {
@@ -17,7 +17,7 @@ class ReadOnlyCachedCollectionPersister extends NonStrictReadWriteCachedCollecti
     {
         if ($collection->isDirty() && $collection->getSnapshot()) {
             throw CannotUpdateReadOnlyCollection::fromEntityAndField(
-                ClassUtils::getClass($collection->getOwner()),
+                DefaultProxyClassNameResolver::getClass($collection->getOwner()),
                 $this->association['fieldName']
             );
         }

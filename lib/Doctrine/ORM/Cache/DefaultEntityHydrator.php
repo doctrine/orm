@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Cache;
 
-use Doctrine\Common\Util\ClassUtils;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Proxy\DefaultProxyClassNameResolver;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\UnitOfWork;
 use Doctrine\ORM\Utility\IdentifierFlattener;
@@ -112,7 +112,7 @@ class DefaultEntityHydrator implements EntityHydrator
             }
 
             if (! isset($assoc['id'])) {
-                $targetClass = ClassUtils::getClass($data[$name]);
+                $targetClass = DefaultProxyClassNameResolver::getClass($data[$name]);
                 $targetId    = $this->uow->getEntityIdentifier($data[$name]);
                 $data[$name] = new AssociationCacheEntry($targetClass, $targetId);
 
