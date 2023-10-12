@@ -4,14 +4,15 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Cache;
 
-use Doctrine\Common\Util\ClassUtils;
 use Doctrine\ORM\Cache;
 use Doctrine\ORM\Cache\Persister\CachedPersister;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\ORMInvalidArgumentException;
 use Doctrine\ORM\UnitOfWork;
+use Doctrine\Persistence\Mapping\ProxyClassNameResolver;
 
+use function get_class;
 use function is_array;
 use function is_object;
 
@@ -29,6 +30,9 @@ class DefaultCache implements Cache
      /** @var CacheFactory */
     private $cacheFactory;
 
+     /** @var ProxyClassNameResolver */
+    private $proxyClassNameResolver;
+
     /**
      * @var QueryCache[]
      * @psalm-var array<string, QueryCache>
@@ -40,11 +44,12 @@ class DefaultCache implements Cache
 
     public function __construct(EntityManagerInterface $em)
     {
-        $this->em           = $em;
-        $this->uow          = $em->getUnitOfWork();
-        $this->cacheFactory = $em->getConfiguration()
+        $this->em                     = $em;
+        $this->uow                    = $em->getUnitOfWork();
+        $this->cacheFactory           = $em->getConfiguration()
             ->getSecondLevelCacheConfiguration()
             ->getCacheFactory();
+        $this->proxyClassNameResolver = $em->getConfiguration()->getProxyClassNameResolver();
     }
 
     /**
@@ -293,7 +298,7 @@ class DefaultCache implements Cache
     private function toIdentifierArray(ClassMetadata $metadata, $identifier): array
     {
         if (is_object($identifier)) {
-            $class = ClassUtils::getClass($identifier);
+            $class = $this->proxyClassNameResolver->resolveClassName(get_class($identifier));
             if ($this->em->getMetadataFactory()->hasMetadataFor($class)) {
                 $identifier = $this->uow->getSingleIdentifierValue($identifier);
 

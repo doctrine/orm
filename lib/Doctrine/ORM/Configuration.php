@@ -38,6 +38,7 @@ use Doctrine\ORM\Mapping\EntityListenerResolver;
 use Doctrine\ORM\Mapping\NamingStrategy;
 use Doctrine\ORM\Mapping\QuoteStrategy;
 use Doctrine\ORM\Mapping\TypedFieldMapper;
+use Doctrine\ORM\Proxy\DefaultProxyClassNameResolver;
 use Doctrine\ORM\Proxy\ProxyFactory;
 use Doctrine\ORM\Query\AST\Functions\FunctionNode;
 use Doctrine\ORM\Query\Filter\SQLFilter;
@@ -45,6 +46,7 @@ use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\ORM\Repository\DefaultRepositoryFactory;
 use Doctrine\ORM\Repository\RepositoryFactory;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
+use Doctrine\Persistence\Mapping\ProxyClassNameResolver;
 use Doctrine\Persistence\ObjectRepository;
 use Doctrine\Persistence\Reflection\RuntimeReflectionProperty;
 use LogicException;
@@ -149,6 +151,20 @@ class Configuration extends \Doctrine\DBAL\Configuration
     public function setProxyNamespace($ns)
     {
         $this->_attributes['proxyNamespace'] = $ns;
+    }
+
+    /**
+     * Gets the proxy class name resolver.
+     *
+     * @internal
+     */
+    public function getProxyClassNameResolver(): ProxyClassNameResolver
+    {
+        if (! isset($this->_attributes['proxyClassNameResolver'])) {
+            $this->_attributes['proxyClassNameResolver'] = new DefaultProxyClassNameResolver();
+        }
+
+        return $this->_attributes['proxyClassNameResolver'];
     }
 
     /**

@@ -6,7 +6,6 @@ namespace Doctrine\ORM\Cache\Persister\Collection;
 
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\Criteria;
-use Doctrine\Common\Util\ClassUtils;
 use Doctrine\Deprecations\Deprecation;
 use Doctrine\ORM\Cache\CollectionCacheKey;
 use Doctrine\ORM\Cache\CollectionHydrator;
@@ -20,10 +19,12 @@ use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\Persisters\Collection\CollectionPersister;
 use Doctrine\ORM\UnitOfWork;
+use Doctrine\Persistence\Mapping\ProxyClassNameResolver;
 
 use function array_values;
 use function assert;
 use function count;
+use function get_class;
 
 /** @psalm-import-type AssociationMapping from ClassMetadata */
 abstract class AbstractCollectionPersister implements CachedCollectionPersister
@@ -49,6 +50,9 @@ abstract class AbstractCollectionPersister implements CachedCollectionPersister
     /** @var mixed[] */
     protected $queuedCache = [];
 
+    /** @var ProxyClassNameResolver */
+    protected $proxyClassNameResolver;
+
     /** @var Region */
     protected $region;
 
@@ -73,16 +77,17 @@ abstract class AbstractCollectionPersister implements CachedCollectionPersister
         $cacheConfig   = $configuration->getSecondLevelCacheConfiguration();
         $cacheFactory  = $cacheConfig->getCacheFactory();
 
-        $this->region          = $region;
-        $this->persister       = $persister;
-        $this->association     = $association;
-        $this->regionName      = $region->getName();
-        $this->uow             = $em->getUnitOfWork();
-        $this->metadataFactory = $em->getMetadataFactory();
-        $this->cacheLogger     = $cacheConfig->getCacheLogger();
-        $this->hydrator        = $cacheFactory->buildCollectionHydrator($em, $association);
-        $this->sourceEntity    = $em->getClassMetadata($association['sourceEntity']);
-        $this->targetEntity    = $em->getClassMetadata($association['targetEntity']);
+        $this->region                 = $region;
+        $this->persister              = $persister;
+        $this->association            = $association;
+        $this->regionName             = $region->getName();
+        $this->uow                    = $em->getUnitOfWork();
+        $this->metadataFactory        = $em->getMetadataFactory();
+        $this->cacheLogger            = $cacheConfig->getCacheLogger();
+        $this->hydrator               = $cacheFactory->buildCollectionHydrator($em, $association);
+        $this->sourceEntity           = $em->getClassMetadata($association['sourceEntity']);
+        $this->targetEntity           = $em->getClassMetadata($association['targetEntity']);
+        $this->proxyClassNameResolver = $configuration->getProxyClassNameResolver();
     }
 
     /**
@@ -148,7 +153,7 @@ abstract class AbstractCollectionPersister implements CachedCollectionPersister
             }
 
             $class     = $this->targetEntity;
-            $className = ClassUtils::getClass($elements[$index]);
+            $className = $this->proxyClassNameResolver->resolveClassName(get_class($elements[$index]));
 
             if ($className !== $this->targetEntity->name) {
                 $class = $this->metadataFactory->getMetadataFor($className);

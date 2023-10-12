@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional;
 
-use Doctrine\Common\Util\ClassUtils;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Event\PostLoadEventArgs;
 use Doctrine\ORM\Events;
 use Doctrine\Tests\Models\CMS\CmsAddress;
@@ -13,6 +13,9 @@ use Doctrine\Tests\Models\CMS\CmsPhonenumber;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use RuntimeException;
+
+use function assert;
+use function get_class;
 
 class PostLoadEventTest extends OrmFunctionalTestCase
 {
@@ -302,7 +305,9 @@ class PostLoadListenerLoadEntityInEventHandler
     public function postLoad(PostLoadEventArgs $event): void
     {
         $object = $event->getObject();
-        $class  = ClassUtils::getClass($object);
+        $om     = $event->getObjectManager();
+        assert($om instanceof EntityManagerInterface);
+        $class = $om->getConfiguration()->getProxyClassNameResolver()->resolveClassName(get_class($object));
         if (! isset($this->firedByClasses[$class])) {
             $this->firedByClasses[$class] = 1;
         } else {

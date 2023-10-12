@@ -10,7 +10,6 @@ use Doctrine\Common\Cache\Psr6\CacheAdapter;
 use Doctrine\Common\Cache\Psr6\DoctrineProvider;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\Common\Util\ClassUtils;
 use Doctrine\DBAL\Cache\QueryCacheProfile;
 use Doctrine\DBAL\Result;
 use Doctrine\Deprecations\Deprecation;
@@ -33,6 +32,7 @@ use function array_shift;
 use function assert;
 use function count;
 use function func_num_args;
+use function get_class;
 use function in_array;
 use function is_array;
 use function is_numeric;
@@ -430,7 +430,7 @@ abstract class AbstractQuery
         }
 
         try {
-            $class = ClassUtils::getClass($value);
+            $class = $this->_em->getConfiguration()->getProxyClassNameResolver()->resolveClassName(get_class($value));
             $value = $this->_em->getUnitOfWork()->getSingleIdentifierValue($value);
 
             if ($value === null) {

@@ -7,7 +7,6 @@ namespace Doctrine\ORM\Persisters\Entity;
 use BackedEnum;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\Common\Collections\Expr\Comparison;
-use Doctrine\Common\Util\ClassUtils;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\LockMode;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
@@ -32,6 +31,7 @@ use Doctrine\ORM\Repository\Exception\InvalidFindByCall;
 use Doctrine\ORM\UnitOfWork;
 use Doctrine\ORM\Utility\IdentifierFlattener;
 use Doctrine\ORM\Utility\PersisterHelper;
+use Doctrine\Persistence\Mapping\ProxyClassNameResolver;
 use LengthException;
 
 use function array_combine;
@@ -43,6 +43,7 @@ use function array_unique;
 use function array_values;
 use function assert;
 use function count;
+use function get_class;
 use function implode;
 use function is_array;
 use function is_object;
@@ -194,28 +195,32 @@ class BasicEntityPersister implements EntityPersister
     /** @var CachedPersisterContext */
     private $noLimitsContext;
 
+    /** @var ProxyClassNameResolver */
+    private $proxyClassNameResolver;
+
     /**
      * Initializes a new <tt>BasicEntityPersister</tt> that uses the given EntityManager
      * and persists instances of the class described by the given ClassMetadata descriptor.
      */
     public function __construct(EntityManagerInterface $em, ClassMetadata $class)
     {
-        $this->em                    = $em;
-        $this->class                 = $class;
-        $this->conn                  = $em->getConnection();
-        $this->platform              = $this->conn->getDatabasePlatform();
-        $this->quoteStrategy         = $em->getConfiguration()->getQuoteStrategy();
-        $this->identifierFlattener   = new IdentifierFlattener($em->getUnitOfWork(), $em->getMetadataFactory());
-        $this->noLimitsContext       = $this->currentPersisterContext = new CachedPersisterContext(
+        $this->em                     = $em;
+        $this->class                  = $class;
+        $this->conn                   = $em->getConnection();
+        $this->platform               = $this->conn->getDatabasePlatform();
+        $this->quoteStrategy          = $em->getConfiguration()->getQuoteStrategy();
+        $this->identifierFlattener    = new IdentifierFlattener($em->getUnitOfWork(), $em->getMetadataFactory());
+        $this->noLimitsContext        = $this->currentPersisterContext = new CachedPersisterContext(
             $class,
             new Query\ResultSetMapping(),
             false
         );
-        $this->limitsHandlingContext = new CachedPersisterContext(
+        $this->limitsHandlingContext  = new CachedPersisterContext(
             $class,
             new Query\ResultSetMapping(),
             true
         );
+        $this->proxyClassNameResolver = $em->getConfiguration()->getProxyClassNameResolver();
     }
 
     /**
@@ -2028,7 +2033,7 @@ class BasicEntityPersister implements EntityPersister
             return [$value->value];
         }
 
-        $valueClass = ClassUtils::getClass($value);
+        $valueClass = $this->proxyClassNameResolver->resolveClassName(get_class($value));
 
         if ($this->em->getMetadataFactory()->isTransient($valueClass)) {
             return [$value];

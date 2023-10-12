@@ -9,7 +9,6 @@ use BadMethodCallException;
 use Doctrine\Common\Cache\Psr6\CacheAdapter;
 use Doctrine\Common\EventManager;
 use Doctrine\Common\Persistence\PersistentObject;
-use Doctrine\Common\Util\ClassUtils;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DriverManager;
 use Doctrine\DBAL\LockMode;
@@ -36,6 +35,7 @@ use Throwable;
 
 use function array_keys;
 use function class_exists;
+use function get_class;
 use function get_debug_type;
 use function gettype;
 use function is_array;
@@ -444,7 +444,7 @@ class EntityManager implements EntityManagerInterface
 
         foreach ($id as $i => $value) {
             if (is_object($value)) {
-                $className = ClassUtils::getClass($value);
+                $className = $this->getConfiguration()->getProxyClassNameResolver()->resolveClassName(get_class($value));
                 if ($this->metadataFactory->hasMetadataFor($className)) {
                     $id[$i] = $this->unitOfWork->getSingleIdentifierValue($value);
 

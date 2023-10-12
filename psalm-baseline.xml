@@ -1366,6 +1366,15 @@
       <code>$columnList</code>
     </PossiblyUndefinedVariable>
   </file>
+  <file src="lib/Doctrine/ORM/Proxy/DefaultProxyClassNameResolver.php">
+    <LessSpecificReturnStatement>
+      <code>$className</code>
+      <code>substr($className, $pos + Proxy::MARKER_LENGTH + 2)</code>
+    </LessSpecificReturnStatement>
+    <MoreSpecificReturnType>
+      <code>string</code>
+    </MoreSpecificReturnType>
+  </file>
   <file src="lib/Doctrine/ORM/Proxy/ProxyFactory.php">
     <ArgumentTypeCoercion>
       <code>$classMetadata</code>

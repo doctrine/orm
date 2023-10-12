@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\Common\Proxy\Proxy as CommonProxy;
-use Doctrine\Common\Util\ClassUtils;
 use Doctrine\ORM\Proxy\InternalProxy;
 use Doctrine\Tests\Models\Company\CompanyAuction;
 use Doctrine\Tests\Models\ECommerce\ECommerceProduct;
@@ -227,7 +226,7 @@ class ReferenceProxyTest extends OrmFunctionalTestCase
 
         $entity = $this->_em->getReference(ECommerceProduct::class, $id);
         assert($entity instanceof ECommerceProduct);
-        $className = ClassUtils::getClass($entity);
+        $className = $this->_em->getConfiguration()->getProxyClassNameResolver()->resolveClassName(get_class($entity));
 
         self::assertInstanceOf(InternalProxy::class, $entity);
         self::assertTrue($this->isUninitializedObject($entity));

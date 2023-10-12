@@ -98,6 +98,8 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     /** @return void */
     public function setEntityManager(EntityManagerInterface $em)
     {
+        parent::setProxyClassNameResolver($em->getConfiguration()->getProxyClassNameResolver());
+
         $this->em = $em;
     }
 

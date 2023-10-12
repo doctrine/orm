@@ -195,6 +195,11 @@
         <exclude-pattern>tests/Doctrine/Tests/ORM/Functional/Ticket/DDC832Test.php</exclude-pattern>
     </rule>
 
+    <rule ref="Squiz.Classes.ValidClassName.NotCamelCaps">
+        <!-- we need to test what happens with an stdClass proxy -->
+        <exclude-pattern>tests/Doctrine/Tests/Proxy/DefaultProxyClassNameResolverTest.php</exclude-pattern>
+    </rule>
+
     <rule ref="Squiz.Commenting.FunctionComment.WrongStyle">
         <!-- https://github.com/squizlabs/PHP_CodeSniffer/issues/1961 -->
         <exclude-pattern>tests/Doctrine/Tests/Mocks/DatabasePlatformMock.php</exclude-pattern>
