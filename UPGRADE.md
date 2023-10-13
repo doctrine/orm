@@ -1,5 +1,10 @@
 # Upgrade to 2.17
 
+## Undeprecate `Doctrine\ORM\Proxy\Autoloader`
+
+It will be a full-fledged class, no longer extending
+`Doctrine\Common\Proxy\Autoloader` in 3.0.x.
+
 ## Deprecated: reliance on the non-optimal defaults that come with the `AUTO` identifier generation strategy
 
 When the `AUTO` identifier generation strategy was introduced, the best
