@@ -624,13 +624,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
 
                 // Platforms that do not have native IDENTITY support need a sequence to emulate this behaviour.
                 /** @psalm-suppress UndefinedClass, InvalidClass */
-                if (
-                    ! $class->isMappedSuperclass
-                    && ! $platform instanceof MySQLPlatform
-                    && ! $platform instanceof SqlitePlatform
-                    && ! $platform instanceof SQLServerPlatform
-                    && $platform->usesSequenceEmulatedIdentityColumns()
-                ) {
+                if (! $platform instanceof MySQLPlatform && ! $platform instanceof SqlitePlatform && ! $platform instanceof SQLServerPlatform && $platform->usesSequenceEmulatedIdentityColumns()) {
                     Deprecation::trigger(
                         'doctrine/orm',
                         'https://github.com/doctrine/orm/issues/8850',
