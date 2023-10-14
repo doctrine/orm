@@ -1,50 +1,55 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Query\QueryException;
 use Doctrine\Tests\OrmFunctionalTestCase;
-use Doctrine\ORM\Mapping as ORM;
+use Exception;
 
-class SubselectFetchCollectionTest extends OrmFunctionalTestCase
+use function count;
+
+class EagerFetchCollectionTest extends OrmFunctionalTestCase
 {
-    protected function setUp() : void
+    protected function setUp(): void
     {
         parent::setUp();
 
         try {
             $this->_schemaTool->createSchema([
-                $this->_em->getClassMetadata(SubselectFetchOwner::class),
-                $this->_em->getClassMetadata(SubselectFetchChild::class),
+                $this->_em->getClassMetadata(EagerFetchOwner::class),
+                $this->_em->getClassMetadata(EagerFetchChild::class),
             ]);
-        } catch(\Exception $e) {
+        } catch (Exception $e) {
         }
     }
 
-    public function testSubselectFetchMode(): void
+    public function testEagerFetchMode(): void
     {
-        $owner = $this->createOwnerWithChildren(2);
+        $owner  = $this->createOwnerWithChildren(2);
         $owner2 = $this->createOwnerWithChildren(3);
 
         $this->_em->flush();
-
         $this->_em->clear();
 
-        $owner = $this->_em->find(SubselectFetchOwner::class, $owner->id);
+        $owner = $this->_em->find(EagerFetchOwner::class, $owner->id);
 
         $afterQueryCount = count($this->getQueryLog()->queries);
         $this->assertCount(2, $owner->children);
+
         $anotherQueryCount = count($this->getQueryLog()->queries);
 
         $this->assertEquals($anotherQueryCount, $afterQueryCount);
 
-        $this->assertCount(3, $this->_em->find(SubselectFetchOwner::class, $owner2->id)->children);
+        $this->assertCount(3, $this->_em->find(EagerFetchOwner::class, $owner2->id)->children);
 
         $this->_em->clear();
 
-        $beforeQueryCount = count($this->getQueryLog()->queries);
-        $owners = $this->_em->getRepository(SubselectFetchOwner::class)->findAll();
+        $beforeQueryCount  = count($this->getQueryLog()->queries);
+        $owners            = $this->_em->getRepository(EagerFetchOwner::class)->findAll();
         $anotherQueryCount = count($this->getQueryLog()->queries);
 
         // the findAll() + 1 subselect loading both collections of the two returned $owners
@@ -60,23 +65,19 @@ class SubselectFetchCollectionTest extends OrmFunctionalTestCase
     public function testSubselectFetchJoinWithNotAllowed(): void
     {
         $this->expectException(QueryException::class);
-        $this->expectExceptionMessage('Associations with fetch-mode subselects may not be using WITH conditions');
+        $this->expectExceptionMessage('Associations with fetch-mode=EAGER may not be using WITH conditions');
 
-        $query = $this->_em->createQuery('SELECT o, c FROM ' . SubselectFetchOwner::class . ' o JOIN o.children c WITH c.id = 1');
+        $query = $this->_em->createQuery('SELECT o, c FROM ' . EagerFetchOwner::class . ' o JOIN o.children c WITH c.id = 1');
         $query->getResult();
     }
 
-    /**
-     * @return SubselectFetchOwner
-     * @throws \Doctrine\ORM\ORMException
-     */
-    protected function createOwnerWithChildren(int $children): SubselectFetchOwner
+    protected function createOwnerWithChildren(int $children): EagerFetchOwner
     {
-        $owner = new SubselectFetchOwner();
+        $owner = new EagerFetchOwner();
         $this->_em->persist($owner);
 
         for ($i = 0; $i < $children; $i++) {
-            $child = new SubselectFetchChild();
+            $child        = new EagerFetchChild();
             $child->owner = $owner;
 
             $owner->children->add($child);
@@ -91,15 +92,15 @@ class SubselectFetchCollectionTest extends OrmFunctionalTestCase
 /**
  * @ORM\Entity
  */
-class SubselectFetchOwner
+class EagerFetchOwner
 {
     /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue() */
     public $id;
 
     /**
-     * @var ArrayCollection
+     * @ORM\OneToMany(targetEntity="EagerFetchChild", mappedBy="owner", fetch="EAGER")
      *
-     * @ORM\OneToMany(targetEntity="SubselectFetchChild", mappedBy="owner", fetch="SUBSELECT")
+     * @var ArrayCollection
      */
     public $children;
 
@@ -112,15 +113,15 @@ class SubselectFetchOwner
 /**
  * @ORM\Entity
  */
-class SubselectFetchChild
+class EagerFetchChild
 {
     /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue() */
     public $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity="SubselectFetchOwner", inversedBy="children")
+     * @ORM\ManyToOne(targetEntity="EagerFetchOwner", inversedBy="children")
      *
-     * @var SubselectFetchOwner
+     * @var EagerFetchOwner
      */
     public $owner;
 }

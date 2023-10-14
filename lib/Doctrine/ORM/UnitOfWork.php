@@ -316,8 +316,8 @@ class UnitOfWork implements PropertyChangedListener
      */
     private $eagerLoadingEntities = [];
 
-    /** @var array */
-    private $subselectLoadingEntities = [];
+    /** @var array<string, array<string, mixed>> */
+    private $eagerLoadingCollections = [];
 
     /** @var bool */
     protected $hasCache = false;
@@ -2764,6 +2764,7 @@ EXCEPTION
             $this->pendingCollectionElementRemovals =
             $this->visitedCollections               =
             $this->eagerLoadingEntities             =
+            $this->eagerLoadingCollections          =
             $this->orphanRemovals                   = [];
         } else {
             Deprecation::triggerIfCalledFromOutside(
@@ -3115,10 +3116,6 @@ EXCEPTION
 
                     switch ($hints['fetchMode'][$class->name][$field]) {
                         case ClassMetadata::FETCH_EAGER:
-                            $this->loadCollection($pColl);
-                            $pColl->takeSnapshot();
-                            break;
-                        case ClassMetadata::FETCH_SUBSELECT:
                             $this->scheduleCollectionForBatchLoading($pColl, $class);
                             break;
                     }
@@ -3137,7 +3134,7 @@ EXCEPTION
     /** @return void */
     public function triggerEagerLoads()
     {
-        if (! $this->eagerLoadingEntities && ! $this->subselectLoadingEntities) {
+        if (! $this->eagerLoadingEntities && ! $this->eagerLoadingCollections) {
             return;
         }
 
@@ -3157,11 +3154,11 @@ EXCEPTION
             );
         }
 
-        $subselectLoadingEntities       = $this->subselectLoadingEntities; // avoid recursion
-        $this->subselectLoadingEntities = [];
+        $eagerLoadingCollections       = $this->eagerLoadingCollections; // avoid recursion
+        $this->eagerLoadingCollections = [];
 
-        foreach ($subselectLoadingEntities as $group) {
-            $this->subselectLoadCollection($group['items'], $group['mapping']);
+        foreach ($eagerLoadingCollections as $group) {
+            $this->eagerLoadCollections($group['items'], $group['mapping']);
         }
     }
 
@@ -3169,15 +3166,17 @@ EXCEPTION
      * Load all data into the given collections, according to the specified mapping
      *
      * @param PersistentCollection[] $collections
-     * @param array                  $mapping
+     * @param array<string, mixed>   $mapping
+     *
+     * @psalm-var array{items: PersistentCollection[], mapping: array{targetEntity: class-string, sourceEntity: class-string, mappedBy: string, indexBy: string|null}} $mapping
      */
-    private function subselectLoadCollection(array $collections, array $mapping): void
+    private function eagerLoadCollections(array $collections, array $mapping): void
     {
         $targetEntity = $mapping['targetEntity'];
         $class        = $this->em->getClassMetadata($mapping['sourceEntity']);
         $mappedBy     = $mapping['mappedBy'];
 
-        $batches = array_chunk($collections, $this->em->getConfiguration()->getFetchModeSubselectBatchSize(), true);
+        $batches = array_chunk($collections, $this->em->getConfiguration()->getEagerFetchBatchSize(), true);
 
         foreach ($batches as $collectionBatch) {
             $entities = [];
@@ -3197,7 +3196,12 @@ EXCEPTION
                 $id     = $this->identifierFlattener->flattenIdentifier($class, $class->getIdentifierValues($sourceEntity));
                 $idHash = implode(' ', $id);
 
-                $collectionBatch[$idHash]->add($targetValue);
+                if ($mapping['indexBy']) {
+                    $indexByProperty = $targetClass->getReflectionProperty($mapping['indexBy']);
+                    $collectionBatch[$idHash]->hydrateSet($indexByProperty->getValue($targetValue), $targetValue);
+                } else {
+                    $collectionBatch[$idHash]->add($targetValue);
+                }
             }
         }
 
@@ -3242,8 +3246,8 @@ EXCEPTION
         $mapping = $collection->getMapping();
         $name    = $mapping['sourceEntity'] . '#' . $mapping['fieldName'];
 
-        if (! isset($this->subselectLoadingEntities[$name])) {
-            $this->subselectLoadingEntities[$name] = [
+        if (! isset($this->eagerLoadingCollections[$name])) {
+            $this->eagerLoadingCollections[$name] = [
                 'items'   => [],
                 'mapping' => $mapping,
             ];
@@ -3255,7 +3259,7 @@ EXCEPTION
         );
         $idHash = implode(' ', $id);
 
-        $this->subselectLoadingEntities[$name]['items'][$idHash] = $collection;
+        $this->eagerLoadingCollections[$name]['items'][$idHash] = $collection;
     }
 
     /**
