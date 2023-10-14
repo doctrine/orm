@@ -6,7 +6,6 @@ namespace Doctrine\ORM\Cache\Persister\Collection;
 
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\Criteria;
-use Doctrine\Common\Util\ClassUtils;
 use Doctrine\Deprecations\Deprecation;
 use Doctrine\ORM\Cache\CollectionCacheKey;
 use Doctrine\ORM\Cache\CollectionHydrator;
@@ -19,6 +18,7 @@ use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\Persisters\Collection\CollectionPersister;
+use Doctrine\ORM\Proxy\DefaultProxyClassNameResolver;
 use Doctrine\ORM\UnitOfWork;
 
 use function array_values;
@@ -148,7 +148,7 @@ abstract class AbstractCollectionPersister implements CachedCollectionPersister
             }
 
             $class     = $this->targetEntity;
-            $className = ClassUtils::getClass($elements[$index]);
+            $className = DefaultProxyClassNameResolver::getClass($elements[$index]);
 
             if ($className !== $this->targetEntity->name) {
                 $class = $this->metadataFactory->getMetadataFor($className);

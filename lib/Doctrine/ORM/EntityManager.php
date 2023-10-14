@@ -9,7 +9,6 @@ use BadMethodCallException;
 use Doctrine\Common\Cache\Psr6\CacheAdapter;
 use Doctrine\Common\EventManager;
 use Doctrine\Common\Persistence\PersistentObject;
-use Doctrine\Common\Util\ClassUtils;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DriverManager;
 use Doctrine\DBAL\LockMode;
@@ -24,6 +23,7 @@ use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\Exception\UnrecognizedIdentifierFields;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
+use Doctrine\ORM\Proxy\DefaultProxyClassNameResolver;
 use Doctrine\ORM\Proxy\ProxyFactory;
 use Doctrine\ORM\Query\Expr;
 use Doctrine\ORM\Query\FilterCollection;
@@ -444,7 +444,7 @@ class EntityManager implements EntityManagerInterface
 
         foreach ($id as $i => $value) {
             if (is_object($value)) {
-                $className = ClassUtils::getClass($value);
+                $className = DefaultProxyClassNameResolver::getClass($value);
                 if ($this->metadataFactory->hasMetadataFor($className)) {
                     $id[$i] = $this->unitOfWork->getSingleIdentifierValue($value);
 

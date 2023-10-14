@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Cache\Persister\Entity;
 
 use Doctrine\Common\Collections\Criteria;
-use Doctrine\Common\Util\ClassUtils;
 use Doctrine\ORM\Cache;
 use Doctrine\ORM\Cache\CollectionCacheKey;
 use Doctrine\ORM\Cache\EntityCacheKey;
@@ -21,6 +20,7 @@ use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\Persisters\Entity\EntityPersister;
+use Doctrine\ORM\Proxy\DefaultProxyClassNameResolver;
 use Doctrine\ORM\UnitOfWork;
 
 use function array_merge;
@@ -190,7 +190,7 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
     public function storeEntityCache($entity, EntityCacheKey $key)
     {
         $class     = $this->class;
-        $className = ClassUtils::getClass($entity);
+        $className = DefaultProxyClassNameResolver::getClass($entity);
 
         if ($className !== $this->class->name) {
             $class = $this->metadataFactory->getMetadataFor($className);
@@ -438,7 +438,7 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
         }
 
         $class     = $this->class;
-        $className = ClassUtils::getClass($entity);
+        $className = DefaultProxyClassNameResolver::getClass($entity);
 
         if ($className !== $this->class->name) {
             $class = $this->metadataFactory->getMetadataFor($className);
