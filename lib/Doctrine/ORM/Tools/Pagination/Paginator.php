@@ -34,6 +34,8 @@ class Paginator implements Countable, IteratorAggregate
 {
     use SQLResultCasing;
 
+    public const HINT_ENABLE_DISTINCT = 'paginator.distinct.enable';
+
     /** @var Query */
     private $query;
 

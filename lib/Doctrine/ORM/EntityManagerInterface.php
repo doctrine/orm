@@ -200,6 +200,8 @@ interface EntityManagerInterface extends ObjectManager
      * never be visible to the application (especially not event listeners) as it will
      * never be loaded in the first place.
      *
+     * @deprecated 2.7 This method is being removed from the ORM and won't have any replacement
+     *
      * @param string $entityName The name of the entity type.
      * @param mixed  $identifier The entity identifier.
      * @psalm-param class-string<T> $entityName

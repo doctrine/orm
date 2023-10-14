@@ -15,7 +15,6 @@ use Doctrine\ORM\Mapping\QuoteStrategy;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\AST\OrderByClause;
-use Doctrine\ORM\Query\AST\PartialObjectExpression;
 use Doctrine\ORM\Query\AST\PathExpression;
 use Doctrine\ORM\Query\AST\SelectExpression;
 use Doctrine\ORM\Query\AST\SelectStatement;
@@ -335,7 +334,7 @@ class LimitSubqueryOutputWalker extends SqlWalker
 
         // Add select items which were not excluded to the AST's select clause.
         foreach ($selects as $idVar => $fields) {
-            $AST->selectClause->selectExpressions[] = new SelectExpression(new PartialObjectExpression($idVar, array_keys($fields)), null, true);
+            $AST->selectClause->selectExpressions[] = new SelectExpression($idVar, null, true);
         }
     }
 
@@ -374,8 +373,7 @@ class LimitSubqueryOutputWalker extends SqlWalker
         string $innerSql
     ): string {
         [$searchPatterns, $replacements] = $this->generateSqlAliasReplacements();
-
-        $orderByItems = [];
+        $orderByItems                    = [];
 
         foreach ($orderByClause->orderByItems as $orderByItem) {
             // Walk order by item to get string representation of it and

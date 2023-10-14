@@ -39,6 +39,7 @@ jobs:
           - "8.0"
           - "8.1"
           - "8.2"
+          - "8.3"
         dbal-version:
           - "default"
         extension:
@@ -62,7 +63,7 @@ jobs:
 
     steps:
       - name: "Checkout"
-        uses: "actions/checkout@v3"
+        uses: "actions/checkout@v4"
         with:
           fetch-depth: 2
 
@@ -111,6 +112,7 @@ jobs:
       matrix:
         php-version:
           - "8.2"
+          - "8.3"
         dbal-version:
           - "default"
           - "3@dev"
@@ -143,7 +145,7 @@ jobs:
 
     steps:
       - name: "Checkout"
-        uses: "actions/checkout@v3"
+        uses: "actions/checkout@v4"
         with:
           fetch-depth: 2
 
@@ -183,6 +185,7 @@ jobs:
       matrix:
         php-version:
           - "8.2"
+          - "8.3"
         dbal-version:
           - "default"
           - "3@dev"
@@ -212,7 +215,7 @@ jobs:
 
     steps:
       - name: "Checkout"
-        uses: "actions/checkout@v3"
+        uses: "actions/checkout@v4"
         with:
           fetch-depth: 2
 
@@ -252,6 +255,7 @@ jobs:
       matrix:
         php-version:
           - "8.2"
+          - "8.3"
         dbal-version:
           - "default"
           - "3@dev"
@@ -281,7 +285,7 @@ jobs:
 
     steps:
       - name: "Checkout"
-        uses: "actions/checkout@v3"
+        uses: "actions/checkout@v4"
         with:
           fetch-depth: 2
 
@@ -333,7 +337,7 @@ jobs:
 
     steps:
       - name: "Checkout"
-        uses: "actions/checkout@v3"
+        uses: "actions/checkout@v4"
         with:
           fetch-depth: 2
 
@@ -363,7 +367,7 @@ jobs:
 
     steps:
       - name: "Checkout"
-        uses: "actions/checkout@v3"
+        uses: "actions/checkout@v4"
         with:
           fetch-depth: 2
 

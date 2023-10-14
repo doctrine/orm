@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Decorator;
 
+use Doctrine\Deprecations\Deprecation;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Query\ResultSetMapping;
@@ -170,6 +171,13 @@ abstract class EntityManagerDecorator extends ObjectManagerDecorator implements 
      */
     public function getPartialReference($entityName, $identifier)
     {
+        Deprecation::trigger(
+            'doctrine/orm',
+            'https://github.com/doctrine/orm/pull/10987',
+            'Method %s is deprecated and will be removed in 3.0.',
+            __METHOD__
+        );
+
         return $this->wrapped->getPartialReference($entityName, $identifier);
     }
 

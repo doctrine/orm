@@ -27,7 +27,6 @@ use Doctrine\ORM\Exception\EntityIdentityCollisionException;
 use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\Exception\UnexpectedAssociationValue;
 use Doctrine\ORM\Id\AssignedGenerator;
-use Doctrine\ORM\Internal\CommitOrderCalculator;
 use Doctrine\ORM\Internal\HydrationCompleteHandler;
 use Doctrine\ORM\Internal\TopologicalSort;
 use Doctrine\ORM\Mapping\ClassMetadata;
@@ -1686,11 +1685,11 @@ IDs should uniquely map to entity object instances. This problem may occur if:
 clearing the EntityManager;
 - you might have been using EntityManager#getReference() to create a reference
 for a nonexistent ID that was subsequently (by the RDBMS) assigned to another
-entity. 
+entity.
 
 Otherwise, it might be an ORM-internal inconsistency, please report it.
 
-To opt-in to the new exception, call 
+To opt-in to the new exception, call
 \Doctrine\ORM\Configuration::setRejectIdCollisionInIdentityMap on the entity
 manager's configuration.
 EXCEPTION
@@ -2723,16 +2722,6 @@ EXCEPTION
             default:
                 // Do nothing
         }
-    }
-
-    /**
-     * Gets the CommitOrderCalculator used by the UnitOfWork to order commits.
-     *
-     * @return CommitOrderCalculator
-     */
-    public function getCommitOrderCalculator()
-    {
-        return new Internal\CommitOrderCalculator();
     }
 
     /**
