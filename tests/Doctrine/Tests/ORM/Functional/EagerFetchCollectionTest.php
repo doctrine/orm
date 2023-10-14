@@ -62,6 +62,31 @@ class EagerFetchCollectionTest extends OrmFunctionalTestCase
         $this->assertEquals($anotherQueryCount, count($this->getQueryLog()->queries));
     }
 
+    public function testEagerFetchModeWithDQL(): void
+    {
+        $owner  = $this->createOwnerWithChildren(2);
+        $owner2 = $this->createOwnerWithChildren(3);
+
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $query = $this->_em->createQuery('SELECT o FROM ' . EagerFetchOwner::class . ' o');
+        $query->setFetchMode(EagerFetchOwner::class, 'children', ORM\ClassMetadata::FETCH_EAGER);
+
+        $beforeQueryCount = count($this->getQueryLog()->queries);
+        $owners           = $query->getResult();
+        $afterQueryCount  = count($this->getQueryLog()->queries);
+
+        $this->assertEquals($beforeQueryCount + 2, $afterQueryCount);
+
+        $owners[0]->children->count();
+        $owners[1]->children->count();
+
+        $anotherQueryCount = count($this->getQueryLog()->queries);
+
+        $this->assertEquals($anotherQueryCount, $afterQueryCount);
+    }
+
     public function testSubselectFetchJoinWithNotAllowed(): void
     {
         $this->expectException(QueryException::class);
