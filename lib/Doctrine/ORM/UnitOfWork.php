@@ -3159,7 +3159,6 @@ EXCEPTION
      *
      * @param PersistentCollection[] $collections
      * @param array<string, mixed>   $mapping
-     *
      * @psalm-param array{targetEntity: class-string, sourceEntity: class-string, mappedBy: string, indexBy: string|null} $mapping
      */
     private function eagerLoadCollections(array $collections, array $mapping): void
@@ -3245,9 +3244,12 @@ EXCEPTION
             ];
         }
 
+        $owner = $collection->getOwner();
+        assert($owner !== null);
+
         $id     = $this->identifierFlattener->flattenIdentifier(
             $sourceClass,
-            $sourceClass->getIdentifierValues($collection->getOwner())
+            $sourceClass->getIdentifierValues($owner)
         );
         $idHash = implode(' ', $id);
 
