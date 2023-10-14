@@ -94,7 +94,13 @@ class EagerFetchCollectionTest extends OrmFunctionalTestCase
  */
 class EagerFetchOwner
 {
-    /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue() */
+    /**
+     * @ORM\Column(type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue()
+     *
+     * @var int
+     */
     public $id;
 
     /**
@@ -115,7 +121,13 @@ class EagerFetchOwner
  */
 class EagerFetchChild
 {
-    /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue() */
+    /**
+     * @ORM\Column(type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue()
+     *
+     * @var int
+     */
     public $id;
 
     /**
