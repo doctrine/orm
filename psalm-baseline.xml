@@ -536,8 +536,8 @@
     <ArgumentTypeCoercion>
       <code>$class</code>
       <code>$class</code>
-      <code><![CDATA[new $definition['class']()]]></code>
       <code>$platformFamily</code>
+      <code><![CDATA[new $definition['class']()]]></code>
     </ArgumentTypeCoercion>
     <DeprecatedClass>
       <code>new UuidGenerator()</code>
@@ -2414,11 +2414,6 @@
     <PossiblyNullReference>
       <code>getAllClassNames</code>
     </PossiblyNullReference>
-  </file>
-  <file src="lib/Doctrine/ORM/Tools/Console/Command/RunDqlCommand.php">
-    <DeprecatedClass>
-      <code><![CDATA[Debug::dump($resultSet, (int) $input->getOption('depth'), true, false)]]></code>
-    </DeprecatedClass>
   </file>
   <file src="lib/Doctrine/ORM/Tools/Console/Command/SchemaTool/AbstractCommand.php">
     <InvalidNullableReturnType>

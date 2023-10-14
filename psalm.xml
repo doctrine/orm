@@ -125,6 +125,11 @@
                 <file name="lib/Doctrine/ORM/Tools/Console/Helper/EntityManagerHelper.php"/>
             </errorLevel>
         </DuplicateClass>
+        <ForbiddenCode>
+            <errorLevel type="suppress">
+                <file name="lib/Doctrine/ORM/Tools/Debug.php"/>
+            </errorLevel>
+        </ForbiddenCode>
         <InvalidArgument>
             <errorLevel type="suppress">
                 <!-- Argument type changes in DBAL 3.2 -->
