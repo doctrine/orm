@@ -69,8 +69,7 @@ final class AttributeReader
             ));
         }
 
-        return $this->getPropertyAttributes($property)[$attributeName]
-            ?? ($this->isRepeatable($attributeName) ? new RepeatableAttributeCollection() : null);
+        return $this->getPropertyAttributes($property)[$attributeName] ?? null;
     }
 
     /**

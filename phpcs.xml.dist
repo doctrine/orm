@@ -57,6 +57,11 @@
         <exclude-pattern>tests/*</exclude-pattern>
     </rule>
 
+    <rule ref="Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps">
+        <exclude-pattern>lib/Doctrine/ORM/Tools/Debug.php</exclude-pattern>
+        <exclude-pattern>tests/Doctrine/Tests/ORM/Tools/DebugTest.php</exclude-pattern>
+    </rule>
+
     <rule ref="Generic.NamingConventions.UpperCaseConstantName.ClassConstantNotUpperCase">
         <exclude-pattern>lib/Doctrine/ORM/Events.php</exclude-pattern>
         <exclude-pattern>lib/Doctrine/ORM/Tools/ToolEvents.php</exclude-pattern>
@@ -200,6 +205,12 @@
     -->
     <rule ref="SlevomatCodingStandard.Namespaces.UseFromSameNamespace.UseFromSameNamespace">
         <exclude-pattern>tests/Doctrine/Tests/Models/DDC1590/DDC1590User.php</exclude-pattern>
+    </rule>
+
+
+    <rule ref="Squiz.Classes.ValidClassName.NotCamelCaps">
+        <!-- we need to test what happens with an stdClass proxy -->
+        <exclude-pattern>tests/Doctrine/Tests/Proxy/DefaultProxyClassNameResolverTest.php</exclude-pattern>
     </rule>
 
     <rule ref="Squiz.Commenting.FunctionComment.WrongStyle">
