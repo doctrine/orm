@@ -204,11 +204,11 @@ class QueryException extends ORMException
         );
     }
 
-    public static function eagerFetchJoinWithNotAllowed($assoc): QueryException
+    public static function eagerFetchJoinWithNotAllowed(string $sourceEntity, string $fieldName): QueryException
     {
         return new self(
             'Associations with fetch-mode=EAGER may not be using WITH conditions in
-             "' . $assoc['sourceEntity'] . '#' . $assoc['fieldName'] . '".'
+             "' . $sourceEntity . '#' . $fieldName . '".'
         );
     }
 

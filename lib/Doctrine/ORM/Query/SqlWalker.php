@@ -1048,7 +1048,7 @@ class SqlWalker implements TreeWalker
         }
 
         if ($relation['fetch'] === ClassMetadata::FETCH_EAGER && $condExpr !== null) {
-            throw QueryException::eagerFetchJoinWithNotAllowed($assoc);
+            throw QueryException::eagerFetchJoinWithNotAllowed($assoc['sourceEntity'], $assoc['fieldName']);
         }
 
         // This condition is not checking ClassMetadata::MANY_TO_ONE, because by definition it cannot

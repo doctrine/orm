@@ -3171,7 +3171,7 @@ EXCEPTION
      * @param PersistentCollection[] $collections
      * @param array<string, mixed>   $mapping
      *
-     * @psalm-var array{items: PersistentCollection[], mapping: array{targetEntity: class-string, sourceEntity: class-string, mappedBy: string, indexBy: string|null}} $mapping
+     * @psalm-param array{targetEntity: class-string, sourceEntity: class-string, mappedBy: string, indexBy: string|null} $mapping
      */
     private function eagerLoadCollections(array $collections, array $mapping): void
     {

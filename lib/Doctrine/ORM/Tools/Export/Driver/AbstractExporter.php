@@ -211,6 +211,8 @@ abstract class AbstractExporter
             case ClassMetadataInfo::FETCH_LAZY:
                 return 'LAZY';
         }
+
+        return 'LAZY';
     }
 
     /**
