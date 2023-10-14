@@ -3114,10 +3114,13 @@ EXCEPTION
                     $reflField = $class->reflFields[$field];
                     $reflField->setValue($entity, $pColl);
 
-                    switch ($hints['fetchMode'][$class->name][$field]) {
-                        case ClassMetadata::FETCH_EAGER:
+                    if ($hints['fetchMode'][$class->name][$field] === ClassMetadata::FETCH_EAGER) {
+                        if ($assoc['type'] === ClassMetadata::ONE_TO_MANY) {
                             $this->scheduleCollectionForBatchLoading($pColl, $class);
-                            break;
+                        } elseif ($assoc['type'] === ClassMetadata::MANY_TO_MANY) {
+                            $this->loadCollection($pColl);
+                            $pColl->takeSnapshot();
+                        }
                     }
 
                     $this->originalEntityData[$oid][$field] = $pColl;
@@ -3196,7 +3199,7 @@ EXCEPTION
                 $id     = $this->identifierFlattener->flattenIdentifier($class, $class->getIdentifierValues($sourceEntity));
                 $idHash = implode(' ', $id);
 
-                if ($mapping['indexBy']) {
+                if (isset($mapping['indexBy'])) {
                     $indexByProperty = $targetClass->getReflectionProperty($mapping['indexBy']);
                     $collectionBatch[$idHash]->hydrateSet($indexByProperty->getValue($targetValue), $targetValue);
                 } else {

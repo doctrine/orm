@@ -1353,20 +1353,6 @@ class ClassMetadataTest extends OrmTestCase
             'columnPrefix' => false,
         ]);
     }
-
-    public function testIllegalFetchModeSubselect(): void
-    {
-        $metadata = new ClassMetadata(TestEntity1::class);
-
-        $this->expectException(MappingException::class);
-        $this->expectExceptionMessage('Cannot use fetch-mode SUBSELECT for a to-one association on entity');
-
-        $metadata->mapManyToOne([
-            'fieldName'    => 'association',
-            'targetEntity' => DDC2700MappedSuperClass::class,
-            'fetch'        => ClassMetadata::FETCH_SUBSELECT,
-        ]);
-    }
 }
 
 /** @MappedSuperclass */
