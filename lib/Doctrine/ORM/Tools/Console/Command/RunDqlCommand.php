@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Tools\Console\Command;
 
-use Doctrine\Common\Util\Debug;
+use Doctrine\ORM\Tools\Debug;
 use LogicException;
 use RuntimeException;
 use Symfony\Component\Console\Input\InputArgument;
@@ -111,7 +111,7 @@ class RunDqlCommand extends AbstractEntityManagerCommand
 
         $resultSet = $query->execute([], constant($hydrationMode));
 
-        $ui->text(Debug::dump($resultSet, (int) $input->getOption('depth'), true, false));
+        $ui->text(Debug::dump($resultSet, (int) $input->getOption('depth')));
 
         return 0;
     }

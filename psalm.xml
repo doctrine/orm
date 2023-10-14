@@ -65,6 +65,11 @@
                 <file name="lib/Doctrine/ORM/ORMSetup.php"/>
             </errorLevel>
         </DocblockTypeContradiction>
+        <ForbiddenCode>
+            <errorLevel type="suppress">
+                <file name="lib/Doctrine/ORM/Tools/Debug.php"/>
+            </errorLevel>
+        </ForbiddenCode>
         <InvalidArgument>
             <errorLevel type="suppress">
                 <referencedFunction name="Doctrine\ORM\Mapping\ClassMetadata::addInheritedAssociationMapping"/>
