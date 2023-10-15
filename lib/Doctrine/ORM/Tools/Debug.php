@@ -53,7 +53,7 @@ final class Debug
      * @param mixed $var      The variable to dump.
      * @param int   $maxDepth The maximum nesting level for object properties.
      */
-    public static function dump($var, int $maxDepth = 2): string
+    public static function dump(mixed $var, int $maxDepth = 2): string
     {
         $html = ini_get('html_errors');
 
@@ -88,12 +88,7 @@ final class Debug
         return $dumpText;
     }
 
-    /**
-     * @param mixed $var
-     *
-     * @return mixed
-     */
-    public static function export($var, int $maxDepth)
+    public static function export(mixed $var, int $maxDepth): mixed
     {
         if ($var instanceof Collection) {
             $var = $var->toArray();
@@ -144,12 +139,8 @@ final class Debug
     /**
      * Fill the $return variable with class attributes
      * Based on obj2array function from {@see https://secure.php.net/manual/en/function.get-object-vars.php#47075}
-     *
-     * @param object $var
-     *
-     * @return mixed
      */
-    private static function fillReturnWithClassAttributes($var, stdClass $return, int $maxDepth)
+    private static function fillReturnWithClassAttributes(object $var, stdClass $return, int $maxDepth): stdClass
     {
         $clone = (array) $var;
 
