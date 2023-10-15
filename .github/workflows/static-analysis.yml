@@ -32,8 +32,8 @@ jobs:
         include:
         - dbal-version: default
           config: phpstan.neon
-        - dbal-version: 4@dev
-          config: phpstan-dbal4.neon
+        - dbal-version: 3.7
+          config: phpstan-dbal3.neon
 
     steps:
       - name: "Checkout code"
@@ -65,7 +65,7 @@ jobs:
       matrix:
         dbal-version:
         - default
-        - 4@dev
+        - 3.7
 
     steps:
       - name: "Checkout code"
