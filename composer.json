@@ -24,7 +24,6 @@
         "composer-runtime-api": "^2",
         "ext-ctype": "*",
         "doctrine/collections": "^2.1",
-        "doctrine/common": "^3.3",
         "doctrine/dbal": "^3.6 || ^4",
         "doctrine/deprecations": "^0.5.3 || ^1",
         "doctrine/event-manager": "^1.2 || ^2",

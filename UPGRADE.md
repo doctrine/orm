@@ -1,5 +1,9 @@
 # Upgrade to 3.0
 
+## BC BREAK: `Doctrine\ORM\Proxy\Autoloader` no longer extends `Doctrine\Common\Proxy\Autoloader`
+
+Make sure to use the former when writing a type declaration or an `instanceof` check.
+
 ## Minor BC BREAK: Changed order of arguments passed to `OneToOne`, `ManyToOne` and `Index` mapping PHP attributes
 
 To keep PHP mapping attributes consistent, order of arguments passed to above attributes has been changed
@@ -327,10 +331,6 @@ Use `Doctrine\Persistence\Mapping\Driver\StaticPHPDriver` and
 
 The second argument to `UnderscoreNamingStrategy::__construct()` was dropped,
 the strategy can no longer be unaware of numbers.
-
-## BC BREAK: Remove `Doctrine\ORM\Proxy\Autoloader`
-
-Use `Doctrine\Common\Proxy\Autoloader` instead.
 
 ## BC BREAK: Remove `Doctrine\ORM\Tools\DisconnectedClassMetadataFactory`
 
