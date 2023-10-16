@@ -9,7 +9,7 @@ namespace Doctrine\ORM\Query\AST;
  *
  * @link    www.doctrine-project.org
  */
-class ConditionalTerm extends Node
+class ConditionalTerm extends Node implements Phase2OptimizableConditional
 {
     /** @var mixed[] */
     public $conditionalFactors = [];
