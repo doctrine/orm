@@ -38,19 +38,18 @@ jobs:
           - "8.3"
         dbal-version:
           - "default"
+          - "3.7"
         extension:
+          - "sqlite3"
           - "pdo_sqlite"
         deps:
           - "highest"
         include:
           - php-version: "8.2"
-            dbal-version: "3@dev"
-            extension: "pdo_sqlite"
-          - php-version: "8.1"
             dbal-version: "4@dev"
             extension: "pdo_sqlite"
           - php-version: "8.2"
-            dbal-version: "default"
+            dbal-version: "4@dev"
             extension: "sqlite3"
           - php-version: "8.1"
             dbal-version: "default"
@@ -110,7 +109,7 @@ jobs:
           - "8.3"
         dbal-version:
           - "default"
-          - "3@dev"
+          - "3.7"
         postgres-version:
           - "15"
         extension:
@@ -122,7 +121,7 @@ jobs:
             postgres-version: "14"
             extension: pdo_pgsql
           - php-version: "8.2"
-            dbal-version: "default"
+            dbal-version: "3.7"
             postgres-version: "9.6"
             extension: pdo_pgsql
 
@@ -183,7 +182,7 @@ jobs:
           - "8.3"
         dbal-version:
           - "default"
-          - "3@dev"
+          - "3.7"
           - "4@dev"
         mariadb-version:
           - "10.9"
@@ -249,7 +248,7 @@ jobs:
           - "8.3"
         dbal-version:
           - "default"
-          - "3@dev"
+          - "3.7"
         mysql-version:
           - "5.7"
           - "8.0"
@@ -257,11 +256,11 @@ jobs:
           - "mysqli"
           - "pdo_mysql"
         include:
-          - php-version: "8.1"
+          - php-version: "8.2"
             dbal-version: "4@dev"
             mysql-version: "8.0"
             extension: "mysqli"
-          - php-version: "8.1"
+          - php-version: "8.2"
             dbal-version: "4@dev"
             mysql-version: "8.0"
             extension: "pdo_mysql"
