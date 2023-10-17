@@ -24,28 +24,34 @@ performance it is also recommended that you use APC with PHP.
 Doctrine ORM Packages
 -------------------
 
-Doctrine ORM is divided into three main packages.
+Doctrine ORM is divided into four main packages.
 
--  Common
--  DBAL (includes Common)
--  ORM (includes DBAL+Common)
+-  `Collections <https://www.doctrine-project.org/projects/doctrine-collections/en/stable/index.html>`_
+-  `Event Manager <https://www.doctrine-project.org/projects/doctrine-event-manager/en/stable/index.html>`_
+-  `Persistence <https://www.doctrine-project.org/projects/doctrine-persistence/en/stable/index.html>`_
+-  `DBAL <https://www.doctrine-project.org/projects/doctrine-dbal/en/stable/index.html>`_
+-  ORM (depends on DBAL+Persistence+Collections)
 
 This manual mainly covers the ORM package, sometimes touching parts
-of the underlying DBAL and Common packages. The Doctrine code base
+of the underlying DBAL and Persistence packages. The Doctrine code base
 is split in to these packages for a few reasons and they are to...
 
 
 -  ...make things more maintainable and decoupled
--  ...allow you to use the code in Doctrine Common without the ORM
-   or DBAL
+-  ...allow you to use the code in Doctrine Persistence and Collections
+  without the ORM or DBAL
 -  ...allow you to use the DBAL without the ORM
 
-The Common Package
-~~~~~~~~~~~~~~~~~~
+Collection, Event Manager and Persistence
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The Common package contains highly reusable components that have no
-dependencies beyond the package itself (and PHP, of course). The
-root namespace of the Common package is ``Doctrine\Common``.
+The Collection, Event Manager and Persistence packages contain highly
+reusable components that have no dependencies beyond the packages
+themselves (and PHP, of course). The root namespace of the Persistence
+package is ``Doctrine\Persistence``. The root namespace of the
+Collection package is ``Doctrine\Common\Collections``, for historical
+reasons. The root namespace of the Event Manager package is just
+``Doctrine\Common``, also for historical reasons.
 
 The DBAL Package
 ~~~~~~~~~~~~~~~~
@@ -199,5 +205,3 @@ typical implementation of the
 to keep track of all the things that need to be done the next time
 ``flush`` is invoked. You usually do not directly interact with a
 ``UnitOfWork`` but with the ``EntityManager`` instead.
-
-
