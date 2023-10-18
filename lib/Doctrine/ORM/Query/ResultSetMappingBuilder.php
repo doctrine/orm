@@ -154,6 +154,11 @@ class ResultSetMappingBuilder extends ResultSetMapping
             }
 
             $this->addFieldResult($alias, $columnAlias, $propertyName);
+
+            $enumType = $classMetadata->getFieldMapping($propertyName)['enumType'] ?? null;
+            if (! empty($enumType)) {
+                $this->addEnumResult($columnAlias, $enumType);
+            }
         }
 
         foreach ($classMetadata->associationMappings as $associationMapping) {
