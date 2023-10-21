@@ -456,6 +456,11 @@ parameters:
 			path: lib/Doctrine/ORM/Query/SqlWalker.php
 
 		-
+			message: "#^Parameter \\#1 \\$condTerm of method Doctrine\\\\ORM\\\\Query\\\\SqlWalker\\:\\:walkConditionalTerm\\(\\) expects Doctrine\\\\ORM\\\\Query\\\\AST\\\\ConditionalFactor\\|Doctrine\\\\ORM\\\\Query\\\\AST\\\\ConditionalPrimary\\|Doctrine\\\\ORM\\\\Query\\\\AST\\\\ConditionalTerm, Doctrine\\\\ORM\\\\Query\\\\AST\\\\Phase2OptimizableConditional given\\.$#"
+			count: 1
+			path: lib/Doctrine/ORM/Query/SqlWalker.php
+
+		-
 			message: "#^Result of && is always false\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Query/SqlWalker.php
@@ -609,16 +614,6 @@ parameters:
 			message: "#^Property Doctrine\\\\ORM\\\\Mapping\\\\ClassMetadataInfo\\<object\\>\\:\\:\\$table \\(array\\<string, array\\|bool\\|string\\>\\) on left side of \\?\\? is not nullable\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Tools/Export/Driver/YamlExporter.php
-
-		-
-			message: "#^Instanceof between \\*NEVER\\* and Doctrine\\\\ORM\\\\Query\\\\AST\\\\ConditionalFactor will always evaluate to false\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Tools/Pagination/WhereInWalker.php
-
-		-
-			message: "#^Instanceof between Doctrine\\\\ORM\\\\Query\\\\AST\\\\ConditionalExpression and Doctrine\\\\ORM\\\\Query\\\\AST\\\\ConditionalPrimary will always evaluate to false\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Tools/Pagination/WhereInWalker.php
 
 		-
 			message: "#^Else branch is unreachable because ternary operator condition is always true\\.$#"

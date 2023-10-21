@@ -10,7 +10,9 @@ use Doctrine\Common\Cache\Cache;
 use Doctrine\Common\Cache\Psr6\CacheAdapter;
 use Doctrine\Common\Cache\Psr6\DoctrineProvider;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\Cache\QueryCacheProfile;
+use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\ParameterType;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\Deprecations\PHPUnit\VerifyDeprecations;
@@ -36,6 +38,7 @@ use Symfony\Component\Cache\Adapter\ArrayAdapter;
 
 use function array_map;
 use function assert;
+use function class_exists;
 use function method_exists;
 
 use const PHP_VERSION_ID;
@@ -243,6 +246,26 @@ class QueryTest extends OrmTestCase
         $query = $this->entityManager
                 ->createQuery('SELECT a FROM Doctrine\Tests\Models\CMS\CmsAddress a WHERE a.city IN (:cities)')
                 ->setParameter('cities', $cities);
+
+        $parameters = $query->getParameters();
+        $parameter  = $parameters->first();
+
+        self::assertEquals('cities', $parameter->getName());
+        self::assertEquals($cities, $parameter->getValue());
+    }
+
+    /** @group DDC-1697 */
+    public function testExplicitCollectionParameters(): void
+    {
+        $cities = [
+            0 => 'Paris',
+            3 => 'Cannes',
+            9 => 'St Julien',
+        ];
+
+        $query = $this->entityManager
+            ->createQuery('SELECT a FROM Doctrine\Tests\Models\CMS\CmsAddress a WHERE a.city IN (:cities)')
+            ->setParameter('cities', $cities, class_exists(ArrayParameterType::class) ? ArrayParameterType::STRING : Connection::PARAM_STR_ARRAY);
 
         $parameters = $query->getParameters();
         $parameter  = $parameters->first();

@@ -9,7 +9,7 @@ namespace Doctrine\ORM\Query\AST;
  *
  * @link    www.doctrine-project.org
  */
-class ConditionalFactor extends Node
+class ConditionalFactor extends Node implements Phase2OptimizableConditional
 {
     /** @var bool */
     public $not = false;

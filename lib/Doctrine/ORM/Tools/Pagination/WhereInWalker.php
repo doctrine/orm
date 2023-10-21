@@ -6,7 +6,6 @@ namespace Doctrine\ORM\Tools\Pagination;
 
 use Doctrine\ORM\Query\AST\ArithmeticExpression;
 use Doctrine\ORM\Query\AST\ConditionalExpression;
-use Doctrine\ORM\Query\AST\ConditionalFactor;
 use Doctrine\ORM\Query\AST\ConditionalPrimary;
 use Doctrine\ORM\Query\AST\ConditionalTerm;
 use Doctrine\ORM\Query\AST\InListExpression;
@@ -96,10 +95,7 @@ class WhereInWalker extends TreeWalkerAdapter
                         ),
                     ]
                 );
-            } elseif (
-                $AST->whereClause->conditionalExpression instanceof ConditionalExpression
-                || $AST->whereClause->conditionalExpression instanceof ConditionalFactor
-            ) {
+            } else {
                 $tmpPrimary                              = new ConditionalPrimary();
                 $tmpPrimary->conditionalExpression       = $AST->whereClause->conditionalExpression;
                 $AST->whereClause->conditionalExpression = new ConditionalTerm(
