@@ -73,10 +73,8 @@ class SqlValueVisitor extends ExpressionVisitor
     /**
      * Returns the value from a Comparison. In case of a CONTAINS comparison,
      * the value is wrapped in %-signs, because it will be used in a LIKE clause.
-     *
-     * @return mixed
      */
-    protected function getValueFromComparison(Comparison $comparison)
+    protected function getValueFromComparison(Comparison $comparison): mixed
     {
         $value = $comparison->getValue()->getValue();
 

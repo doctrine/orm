@@ -11,11 +11,7 @@ use function sprintf;
 
 final class EntityIdentityCollisionException extends Exception implements ORMException
 {
-    /**
-     * @param object $existingEntity
-     * @param object $newEntity
-     */
-    public static function create($existingEntity, $newEntity, string $idHash): self
+    public static function create(object $existingEntity, object $newEntity, string $idHash): self
     {
         return new self(
             sprintf(

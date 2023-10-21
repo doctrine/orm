@@ -13,9 +13,8 @@ use Doctrine\ORM\Query\SqlWalker;
  */
 class WhenClause extends Node
 {
-    /** @param ConditionalExpression|Phase2OptimizableConditional $caseConditionExpression */
     public function __construct(
-        public $caseConditionExpression,
+        public ConditionalExpression|Phase2OptimizableConditional $caseConditionExpression,
         public mixed $thenScalarExpression = null,
     ) {
     }

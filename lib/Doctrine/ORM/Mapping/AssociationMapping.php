@@ -231,7 +231,7 @@ abstract class AssociationMapping implements ArrayAccess
         return isset($this->$offset) || in_array($offset, ['isOwningSide', 'type'], true);
     }
 
-    final public function offsetGet($offset): mixed
+    final public function offsetGet(mixed $offset): mixed
     {
         return match ($offset) {
             'isOwningSide' => $this->isOwningSide(),

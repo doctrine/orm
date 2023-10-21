@@ -28,12 +28,8 @@ final class DefaultProxyClassNameResolver implements ProxyClassNameResolver
         return substr($className, $pos + Proxy::MARKER_LENGTH + 2);
     }
 
-    /**
-     * @param object $object
-     *
-     * @return class-string
-     */
-    public static function getClass($object): string
+    /** @return class-string */
+    public static function getClass(object $object): string
     {
         return (new self())->resolveClassName(get_class($object));
     }

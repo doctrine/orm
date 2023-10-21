@@ -150,7 +150,7 @@ class CustomTreeWalker extends TreeWalkerAdapter
         foreach ($dqlAliases as $alias) {
             $pathExpr       = new PathExpression(PathExpression::TYPE_STATE_FIELD, $alias, 'id');
             $pathExpr->type = PathExpression::TYPE_STATE_FIELD;
-            $comparisonExpr = new ComparisonExpression($pathExpr, '=', 1);
+            $comparisonExpr = new ComparisonExpression($pathExpr, '=', '1');
 
             $condPrimary                              = new ConditionalPrimary();
             $condPrimary->simpleConditionalExpression = $comparisonExpr;

@@ -723,11 +723,6 @@
       <code><![CDATA[$this->currentPersisterContext->sqlTableAliases]]></code>
     </PropertyTypeCoercion>
   </file>
-  <file src="lib/Doctrine/ORM/Persisters/Entity/CachedPersisterContext.php">
-    <PropertyNotSetInConstructor>
-      <code>$selectJoinSql</code>
-    </PropertyNotSetInConstructor>
-  </file>
   <file src="lib/Doctrine/ORM/Proxy/DefaultProxyClassNameResolver.php">
     <LessSpecificReturnStatement>
       <code>$className</code>
@@ -1036,7 +1031,6 @@
   </file>
   <file src="lib/Doctrine/ORM/Query/SqlWalker.php">
     <DocblockTypeContradiction>
-      <code><![CDATA[$this->conn->quote((string) $newValue)]]></code>
       <code>throw QueryException::invalidLiteral($literal)</code>
     </DocblockTypeContradiction>
     <PossiblyInvalidArgument>

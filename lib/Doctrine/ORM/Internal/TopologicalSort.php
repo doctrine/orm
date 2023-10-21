@@ -31,7 +31,7 @@ final class TopologicalSort
      *
      * @var array<int, object>
      */
-    private $nodes = [];
+    private array $nodes = [];
 
     /**
      * DFS state for the different nodes, indexed by node object id and using one of
@@ -39,7 +39,7 @@ final class TopologicalSort
      *
      * @var array<int, self::*>
      */
-    private $states = [];
+    private array $states = [];
 
     /**
      * Edges between the nodes. The first-level key is the object id of the outgoing
@@ -48,17 +48,16 @@ final class TopologicalSort
      *
      * @var array<int, array<int, bool>>
      */
-    private $edges = [];
+    private array $edges = [];
 
     /**
      * Builds up the result during the DFS.
      *
      * @var list<object>
      */
-    private $sortResult = [];
+    private array $sortResult = [];
 
-    /** @param object $node */
-    public function addNode($node): void
+    public function addNode(object $node): void
     {
         $id                = spl_object_id($node);
         $this->nodes[$id]  = $node;
@@ -66,8 +65,7 @@ final class TopologicalSort
         $this->edges[$id]  = [];
     }
 
-    /** @param object $node */
-    public function hasNode($node): bool
+    public function hasNode(object $node): bool
     {
         return isset($this->nodes[spl_object_id($node)]);
     }
@@ -75,11 +73,9 @@ final class TopologicalSort
     /**
      * Adds a new edge between two nodes to the graph
      *
-     * @param object $from
-     * @param object $to
-     * @param bool   $optional This indicates whether the edge may be ignored during the topological sort if it is necessary to break cycles.
+     * @param bool $optional This indicates whether the edge may be ignored during the topological sort if it is necessary to break cycles.
      */
-    public function addEdge($from, $to, bool $optional): void
+    public function addEdge(object $from, object $to, bool $optional): void
     {
         $fromId = spl_object_id($from);
         $toId   = spl_object_id($to);

@@ -21,8 +21,7 @@ use function sprintf;
  */
 class UpdateCommand extends AbstractCommand
 {
-    /** @var string */
-    protected $name = 'orm:schema-tool:update';
+    protected string $name = 'orm:schema-tool:update';
 
     protected function configure(): void
     {

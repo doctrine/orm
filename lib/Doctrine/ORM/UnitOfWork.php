@@ -1512,7 +1512,7 @@ class UnitOfWork implements PropertyChangedListener
      *
      * @return string The entity id hash.
      */
-    public function getIdHashByEntity($entity): string
+    public function getIdHashByEntity(object $entity): string
     {
         $identifier = $this->entityIdentifiers[spl_object_id($entity)];
 
@@ -2875,11 +2875,9 @@ class UnitOfWork implements PropertyChangedListener
     /**
      * Tests if a value is an uninitialized entity.
      *
-     * @param mixed $obj
-     *
      * @psalm-assert-if-true InternalProxy $obj
      */
-    public function isUninitializedObject($obj): bool
+    public function isUninitializedObject(mixed $obj): bool
     {
         return $obj instanceof InternalProxy && ! $obj->__isInitialized();
     }
@@ -2924,7 +2922,7 @@ class UnitOfWork implements PropertyChangedListener
      */
     private function afterTransactionComplete(): void
     {
-        $this->performCallbackOnCachedPersister(static function (CachedPersister $persister) {
+        $this->performCallbackOnCachedPersister(static function (CachedPersister $persister): void {
             $persister->afterTransactionComplete();
         });
     }
@@ -2934,7 +2932,7 @@ class UnitOfWork implements PropertyChangedListener
      */
     private function afterTransactionRolledBack(): void
     {
-        $this->performCallbackOnCachedPersister(static function (CachedPersister $persister) {
+        $this->performCallbackOnCachedPersister(static function (CachedPersister $persister): void {
             $persister->afterTransactionRolledBack();
         });
     }
@@ -3071,11 +3069,8 @@ class UnitOfWork implements PropertyChangedListener
      * This is used by EntityPersisters after they inserted entities into the database.
      * It will place the assigned ID values in the entity's fields and start tracking
      * the entity in the identity map.
-     *
-     * @param object $entity
-     * @param mixed  $generatedId
      */
-    final public function assignPostInsertId($entity, $generatedId): void
+    final public function assignPostInsertId(object $entity, mixed $generatedId): void
     {
         $class   = $this->em->getClassMetadata(get_class($entity));
         $idField = $class->getSingleIdentifierFieldName();

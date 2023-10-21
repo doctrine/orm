@@ -145,8 +145,7 @@ EXCEPTION
         ));
     }
 
-    /** @param mixed $value */
-    public static function invalidAutoGenerateMode($value): self
+    public static function invalidAutoGenerateMode(mixed $value): self
     {
         return new self(sprintf('Invalid auto generate mode "%s" given.', is_scalar($value) ? (string) $value : get_debug_type($value)));
     }

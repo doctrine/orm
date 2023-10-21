@@ -13,10 +13,9 @@ use Doctrine\ORM\Query\SqlWalker;
  */
 class CollectionMemberExpression extends Node
 {
-    /** @param PathExpression $collectionValuedPathExpression */
     public function __construct(
         public mixed $entityExpression,
-        public $collectionValuedPathExpression,
+        public PathExpression $collectionValuedPathExpression,
         public bool $not = false,
     ) {
     }
