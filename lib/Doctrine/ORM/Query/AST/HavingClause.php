@@ -8,7 +8,7 @@ use Doctrine\ORM\Query\SqlWalker;
 
 class HavingClause extends Node
 {
-    /** @param ConditionalExpression $conditionalExpression */
+    /** @param ConditionalExpression|Phase2OptimizableConditional $conditionalExpression */
     public function __construct(public $conditionalExpression)
     {
     }

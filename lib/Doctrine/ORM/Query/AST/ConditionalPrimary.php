@@ -11,12 +11,12 @@ use Doctrine\ORM\Query\SqlWalker;
  *
  * @link    www.doctrine-project.org
  */
-class ConditionalPrimary extends Node
+class ConditionalPrimary extends Node implements Phase2OptimizableConditional
 {
     /** @var Node|null */
     public $simpleConditionalExpression;
 
-    /** @var ConditionalExpression|null */
+    /** @var ConditionalExpression|Phase2OptimizableConditional|null */
     public $conditionalExpression;
 
     public function isSimpleConditionalExpression(): bool

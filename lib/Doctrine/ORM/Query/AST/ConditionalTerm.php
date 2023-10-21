@@ -11,7 +11,7 @@ use Doctrine\ORM\Query\SqlWalker;
  *
  * @link    www.doctrine-project.org
  */
-class ConditionalTerm extends Node
+class ConditionalTerm extends Node implements Phase2OptimizableConditional
 {
     /** @param mixed[] $conditionalFactors */
     public function __construct(public array $conditionalFactors)

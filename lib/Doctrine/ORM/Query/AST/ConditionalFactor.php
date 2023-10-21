@@ -11,7 +11,7 @@ use Doctrine\ORM\Query\SqlWalker;
  *
  * @link    www.doctrine-project.org
  */
-class ConditionalFactor extends Node
+class ConditionalFactor extends Node implements Phase2OptimizableConditional
 {
     /** @param ConditionalPrimary $conditionalPrimary */
     public function __construct(

@@ -1002,18 +1002,11 @@
     </PossiblyFalseArgument>
     <PossiblyInvalidArgument>
       <code>$AST</code>
-      <code>$conditionalExpression</code>
       <code>$expr</code>
-      <code><![CDATA[$this->ConditionalExpression()]]></code>
-      <code><![CDATA[$this->ConditionalExpression()]]></code>
       <code><![CDATA[$this->lexer->getLiteral($token)]]></code>
       <code><![CDATA[$this->lexer->getLiteral($token)]]></code>
       <code><![CDATA[$this->lexer->getLiteral($token)]]></code>
     </PossiblyInvalidArgument>
-    <PossiblyInvalidPropertyAssignmentValue>
-      <code><![CDATA[$this->ConditionalExpression()]]></code>
-      <code><![CDATA[$this->ConditionalExpression()]]></code>
-    </PossiblyInvalidPropertyAssignmentValue>
     <PossiblyNullArgument>
       <code>$dql</code>
       <code><![CDATA[$this->query->getDQL()]]></code>
@@ -1046,9 +1039,6 @@
       <code><![CDATA[$this->conn->quote((string) $newValue)]]></code>
       <code>throw QueryException::invalidLiteral($literal)</code>
     </DocblockTypeContradiction>
-    <InvalidArgument>
-      <code><![CDATA[$join->conditionalExpression]]></code>
-    </InvalidArgument>
     <PossiblyInvalidArgument>
       <code>$expr</code>
     </PossiblyInvalidArgument>
@@ -1207,21 +1197,6 @@
     <PropertyNotSetInConstructor>
       <code>$orderByClause</code>
     </PropertyNotSetInConstructor>
-  </file>
-  <file src="lib/Doctrine/ORM/Tools/Pagination/WhereInWalker.php">
-    <DocblockTypeContradiction>
-      <code><![CDATA[$selectStatement->whereClause->conditionalExpression instanceof ConditionalExpression
-                || $selectStatement->whereClause->conditionalExpression instanceof ConditionalFactor]]></code>
-      <code><![CDATA[$selectStatement->whereClause->conditionalExpression instanceof ConditionalFactor]]></code>
-      <code><![CDATA[$selectStatement->whereClause->conditionalExpression instanceof ConditionalPrimary]]></code>
-    </DocblockTypeContradiction>
-    <PossiblyInvalidPropertyAssignmentValue>
-      <code><![CDATA[$selectStatement->whereClause->conditionalExpression]]></code>
-    </PossiblyInvalidPropertyAssignmentValue>
-    <RedundantConditionGivenDocblockType>
-      <code><![CDATA[$selectStatement->whereClause->conditionalExpression instanceof ConditionalExpression
-                || $selectStatement->whereClause->conditionalExpression instanceof ConditionalFactor]]></code>
-    </RedundantConditionGivenDocblockType>
   </file>
   <file src="lib/Doctrine/ORM/Tools/SchemaTool.php">
     <ArgumentTypeCoercion>

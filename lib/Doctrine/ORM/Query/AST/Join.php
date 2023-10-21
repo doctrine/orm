@@ -18,7 +18,7 @@ class Join extends Node
     final public const JOIN_TYPE_LEFTOUTER = 2;
     final public const JOIN_TYPE_INNER     = 3;
 
-    /** @var ConditionalExpression|null */
+    /** @var ConditionalExpression|Phase2OptimizableConditional|null */
     public $conditionalExpression = null;
 
     /**

@@ -865,7 +865,7 @@ class SqlWalker
     public function walkJoinAssociationDeclaration(
         AST\JoinAssociationDeclaration $joinAssociationDeclaration,
         int $joinType = AST\Join::JOIN_TYPE_INNER,
-        AST\ConditionalPrimary|null $condExpr = null,
+        AST\ConditionalExpression|AST\Phase2OptimizableConditional|null $condExpr = null,
     ): string {
         $sql = '';
 
@@ -1724,7 +1724,7 @@ class SqlWalker
      * Walk down a ConditionalExpression AST node, thereby generating the appropriate SQL.
      */
     public function walkConditionalExpression(
-        AST\ConditionalExpression|AST\ConditionalPrimary|AST\ConditionalTerm|AST\ConditionalFactor $condExpr,
+        AST\ConditionalExpression|AST\Phase2OptimizableConditional $condExpr,
     ): string {
         // Phase 2 AST optimization: Skip processing of ConditionalExpression
         // if only one ConditionalTerm is defined
