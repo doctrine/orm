@@ -183,6 +183,12 @@ class OneToManyPersister extends AbstractCollectionPersister
             $types[]      = PersisterHelper::getTypeOfColumn($joinColumn['referencedColumnName'], $sourceClass, $this->em);
         }
 
+        if ($targetClass->discriminatorValue && $targetClass->discriminatorColumn) {
+            $columns[]    = $targetClass->discriminatorColumn['name'];
+            $parameters[] = $targetClass->discriminatorValue;
+            $types[]      = $targetClass->discriminatorColumn['type'];
+        }
+
         $statement = 'DELETE FROM ' . $this->quoteStrategy->getTableName($targetClass, $this->platform)
             . ' WHERE ' . implode(' = ? AND ', $columns) . ' = ?';
 
