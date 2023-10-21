@@ -6,10 +6,10 @@ namespace Doctrine\ORM\Query\AST;
 
 class HavingClause extends Node
 {
-    /** @var ConditionalExpression */
+    /** @var ConditionalExpression|Phase2OptimizableConditional */
     public $conditionalExpression;
 
-    /** @param ConditionalExpression $conditionalExpression */
+    /** @param ConditionalExpression|Phase2OptimizableConditional $conditionalExpression */
     public function __construct($conditionalExpression)
     {
         $this->conditionalExpression = $conditionalExpression;

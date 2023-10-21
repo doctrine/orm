@@ -2022,18 +2022,13 @@
     </PossiblyFalseArgument>
     <PossiblyInvalidArgument>
       <code>$AST</code>
-      <code>$conditionalExpression</code>
       <code>$expr</code>
       <code>$pathExp</code>
-      <code><![CDATA[$this->ConditionalExpression()]]></code>
-      <code><![CDATA[$this->ConditionalExpression()]]></code>
       <code><![CDATA[$this->lexer->getLiteral($token)]]></code>
       <code><![CDATA[$this->lexer->getLiteral($token)]]></code>
       <code><![CDATA[$this->lexer->getLiteral($token)]]></code>
     </PossiblyInvalidArgument>
     <PossiblyInvalidPropertyAssignmentValue>
-      <code><![CDATA[$this->ConditionalExpression()]]></code>
-      <code><![CDATA[$this->ConditionalExpression()]]></code>
       <code><![CDATA[$this->SimpleArithmeticExpression()]]></code>
     </PossiblyInvalidPropertyAssignmentValue>
     <PossiblyNullArgument>
@@ -2145,11 +2140,6 @@
     <ImplicitToStringCast>
       <code>$expr</code>
     </ImplicitToStringCast>
-    <InvalidArgument>
-      <code>$condExpr</code>
-      <code>$condTerm</code>
-      <code>$factor</code>
-    </InvalidArgument>
     <InvalidNullableReturnType>
       <code>string</code>
     </InvalidNullableReturnType>
@@ -2158,7 +2148,6 @@
     </MoreSpecificImplementedParamType>
     <PossiblyInvalidArgument>
       <code><![CDATA[$aggExpression->pathExpression]]></code>
-      <code><![CDATA[$whereClause->conditionalExpression]]></code>
     </PossiblyInvalidArgument>
     <PossiblyNullArgument>
       <code><![CDATA[$AST->whereClause]]></code>
@@ -2194,7 +2183,6 @@
     </PossiblyUndefinedArrayOffset>
     <RedundantConditionGivenDocblockType>
       <code>$whereClause !== null</code>
-      <code><![CDATA[($factor->not ? 'NOT ' : '') . $this->walkConditionalPrimary($factor->conditionalPrimary)]]></code>
     </RedundantConditionGivenDocblockType>
   </file>
   <file src="lib/Doctrine/ORM/Query/TreeWalkerAdapter.php">
@@ -2632,21 +2620,6 @@
     <PropertyNotSetInConstructor>
       <code>$orderByClause</code>
     </PropertyNotSetInConstructor>
-  </file>
-  <file src="lib/Doctrine/ORM/Tools/Pagination/WhereInWalker.php">
-    <DocblockTypeContradiction>
-      <code><![CDATA[$AST->whereClause->conditionalExpression instanceof ConditionalExpression
-                || $AST->whereClause->conditionalExpression instanceof ConditionalFactor]]></code>
-      <code><![CDATA[$AST->whereClause->conditionalExpression instanceof ConditionalFactor]]></code>
-      <code><![CDATA[$AST->whereClause->conditionalExpression instanceof ConditionalPrimary]]></code>
-    </DocblockTypeContradiction>
-    <PossiblyInvalidPropertyAssignmentValue>
-      <code><![CDATA[$AST->whereClause->conditionalExpression]]></code>
-    </PossiblyInvalidPropertyAssignmentValue>
-    <RedundantConditionGivenDocblockType>
-      <code><![CDATA[$AST->whereClause->conditionalExpression instanceof ConditionalExpression
-                || $AST->whereClause->conditionalExpression instanceof ConditionalFactor]]></code>
-    </RedundantConditionGivenDocblockType>
   </file>
   <file src="lib/Doctrine/ORM/Tools/SchemaTool.php">
     <ArgumentTypeCoercion>

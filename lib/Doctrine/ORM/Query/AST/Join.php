@@ -25,7 +25,7 @@ class Join extends Node
     /** @var Node|null */
     public $joinAssociationDeclaration = null;
 
-    /** @var ConditionalExpression|null */
+    /** @var ConditionalExpression|Phase2OptimizableConditional|null */
     public $conditionalExpression = null;
 
     /**
