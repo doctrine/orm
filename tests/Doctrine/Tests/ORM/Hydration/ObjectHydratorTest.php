@@ -11,6 +11,7 @@ use Doctrine\ORM\Internal\Hydration\HydrationException;
 use Doctrine\ORM\Internal\Hydration\ObjectHydrator;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\PersistentCollection;
+use Doctrine\ORM\Proxy\InternalProxy;
 use Doctrine\ORM\Proxy\ProxyFactory;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\Tests\Models\CMS\CmsAddress;
@@ -30,9 +31,11 @@ use Doctrine\Tests\Models\Hydration\EntityWithArrayDefaultArrayValueM2M;
 use Doctrine\Tests\Models\Hydration\SimpleEntity;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\TestCase;
 
 use function count;
 use function property_exists;
+use function sys_get_temp_dir;
 
 class ObjectHydratorTest extends HydrationTestCase
 {
@@ -1021,18 +1024,21 @@ class ObjectHydratorTest extends HydrationTestCase
             ],
         ];
 
-        $proxyInstance = new ECommerceShipping();
+        // extending the proxy factory to spy on getProxy()
+        $proxyFactory = new class (
+            $this->entityManager,
+            sys_get_temp_dir(),
+            'Proxies',
+            ProxyFactory::AUTOGENERATE_ALWAYS,
+        ) extends ProxyFactory {
+            public function getProxy(string $className, array $identifier): InternalProxy
+            {
+                TestCase::assertSame(ECommerceShipping::class, $className);
+                TestCase::assertSame(['id' => 42], $identifier);
 
-        // mocking the proxy factory
-        $proxyFactory = $this->getMockBuilder(ProxyFactory::class)
-                             ->onlyMethods(['getProxy'])
-                             ->disableOriginalConstructor()
-                             ->getMock();
-
-        $proxyFactory->expects(self::once())
-                     ->method('getProxy')
-                     ->with(self::equalTo(ECommerceShipping::class), ['id' => 42])
-                     ->will(self::returnValue($proxyInstance));
+                return parent::getProxy($className, $identifier);
+            }
+        };
 
         $this->entityManager->setProxyFactory($proxyFactory);
 
@@ -1072,16 +1078,21 @@ class ObjectHydratorTest extends HydrationTestCase
 
         $proxyInstance = new ECommerceShipping();
 
-        // mocking the proxy factory
-        $proxyFactory = $this->getMockBuilder(ProxyFactory::class)
-            ->onlyMethods(['getProxy'])
-                             ->disableOriginalConstructor()
-                             ->getMock();
+        // extending the proxy factory to spy on getProxy()
+        $proxyFactory = new class (
+            $this->entityManager,
+            sys_get_temp_dir(),
+            'Proxies',
+            ProxyFactory::AUTOGENERATE_ALWAYS,
+        ) extends ProxyFactory {
+            public function getProxy(string $className, array $identifier): InternalProxy
+            {
+                TestCase::assertSame(ECommerceShipping::class, $className);
+                TestCase::assertSame(['id' => 42], $identifier);
 
-        $proxyFactory->expects(self::once())
-                     ->method('getProxy')
-                     ->with(self::equalTo(ECommerceShipping::class), ['id' => 42])
-                     ->will(self::returnValue($proxyInstance));
+                return parent::getProxy($className, $identifier);
+            }
+        };
 
         $this->entityManager->setProxyFactory($proxyFactory);
 

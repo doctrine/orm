@@ -166,10 +166,8 @@ EOPHP;
     /**
      * @param class-string $className
      * @param array<mixed> $identifier
-     *
-     * @return InternalProxy
      */
-    public function getProxy(string $className, array $identifier)
+    public function getProxy(string $className, array $identifier): InternalProxy
     {
         $proxyFactory = $this->proxyFactories[$className] ?? $this->getProxyFactory($className);
 
