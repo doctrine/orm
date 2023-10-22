@@ -9,27 +9,54 @@
     <!-- Ignore warnings, show progress of the run and show sniff names -->
     <arg value="nps"/>
 
+    <config name="php_version" value="70100"/>
+
     <file>lib</file>
     <file>tests</file>
-    <file>tools</file>
 
-    <exclude-pattern>*/tests/Doctrine/Tests/Proxies/__CG__/*</exclude-pattern>
+    <exclude-pattern>*/lib/Doctrine/ORM/Mapping/InverseJoinColumn.php</exclude-pattern>
+    <exclude-pattern>*/tests/Doctrine/Tests/Proxies/__CG__*</exclude-pattern>
+    <exclude-pattern>*/tests/Doctrine/Tests/ORM/Tools/Export/export/*</exclude-pattern>
 
     <rule ref="Doctrine">
-        <exclude name="SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingParameterTypeHint"/>
+        <exclude name="SlevomatCodingStandard.TypeHints.ParameterTypeHint.MissingAnyTypeHint" />
         <exclude name="SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingReturnTypeHint"/>
+        <exclude name="SlevomatCodingStandard.TypeHints.PropertyTypeHint.MissingNativeTypeHint" />
         <exclude name="SlevomatCodingStandard.Exceptions.ReferenceThrowableOnly.ReferencedGeneralException"/>
         <exclude name="SlevomatCodingStandard.ControlStructures.EarlyExit"/>
         <exclude name="SlevomatCodingStandard.Classes.SuperfluousAbstractClassNaming"/>
         <exclude name="SlevomatCodingStandard.Classes.SuperfluousExceptionNaming"/>
     </rule>
 
-    <rule ref="PSR1.Classes.ClassDeclaration.MultipleClasses">
+    <rule ref="SlevomatCodingStandard.Commenting.RequireOneLineDocComment.MultiLineDocComment">
+        <!-- Remove when dropping PHPUnit 7 -->
         <exclude-pattern>*/tests/*</exclude-pattern>
     </rule>
 
+    <rule ref="SlevomatCodingStandard.TypeHints.ParameterTypeHint.MissingNativeTypeHint">
+        <exclude-pattern>*/lib/*</exclude-pattern>
+        <!--
+            that class extends another one inside lib/ and can therefore not
+            have more native typehints since its parent cannot have them: that
+            would break signature compatibility.
+        -->
+        <exclude-pattern>tests/Doctrine/Tests/Mocks/HydratorMockStatement.php</exclude-pattern>
+    </rule>
+
+    <rule ref="SlevomatCodingStandard.TypeHints.ReturnTypeHint.MissingNativeTypeHint">
+        <exclude-pattern>*/lib/*</exclude-pattern>
+    </rule>
+
+    <rule ref="PSR1.Classes.ClassDeclaration.MultipleClasses">
+        <exclude-pattern>lib/Doctrine/ORM/Mapping/Driver/CompatibilityAnnotationDriver.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/Tools/Console/CommandCompatibility.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/Tools/Console/Helper/EntityManagerHelper.php</exclude-pattern>
+        <exclude-pattern>tests/*</exclude-pattern>
+    </rule>
+
     <rule ref="Squiz.Classes.ClassFileName.NoMatch">
-        <exclude-pattern>*/tests/*</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/Tools/Console/Helper/EntityManagerHelper.php</exclude-pattern>
+        <exclude-pattern>tests/*</exclude-pattern>
     </rule>
 
     <rule ref="Generic.NamingConventions.UpperCaseConstantName.ClassConstantNotUpperCase">
@@ -37,11 +64,15 @@
         <exclude-pattern>lib/Doctrine/ORM/Tools/ToolEvents.php</exclude-pattern>
     </rule>
 
-    <rule ref="SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingTraversablePropertyTypeHintSpecification">
-        <exclude-pattern>lib/Doctrine/ORM/Annotation/*</exclude-pattern>
+    <rule ref="SlevomatCodingStandard.TypeHints.PropertyTypeHint.MissingTraversableTypeHintSpecification">
+        <!-- https://github.com/doctrine/annotations/issues/129 -->
+        <exclude-pattern>lib/Doctrine/ORM/Mapping/Column.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/Mapping/Index.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/Mapping/Table.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/Mapping/UniqueConstraint.php</exclude-pattern>
     </rule>
 
-    <rule ref="SlevomatCodingStandard.ControlStructures.DisallowEqualOperators.DisallowedNotEqualOperator">
+    <rule ref="SlevomatCodingStandard.Operators.DisallowEqualOperators.DisallowedNotEqualOperator">
         <exclude-pattern>lib/Doctrine/ORM/Internal/Hydration/AbstractHydrator.php</exclude-pattern>
     </rule>
 
@@ -109,27 +140,23 @@
         <exclude-pattern>lib/Doctrine/ORM/EntityManagerInterface.php</exclude-pattern>
     </rule>
 
-    <rule ref="SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingPropertyTypeHint">
+    <rule ref="SlevomatCodingStandard.Classes.SuperfluousTraitNaming.SuperfluousSuffix">
+        <exclude-pattern>tests/Doctrine/Tests/Models/DDC1872/DDC1872ExampleTrait.php</exclude-pattern>
+    </rule>
+
+    <rule name="SlevomatCodingStandard.TypeHints.PropertyTypeHint.MissingAnyTypeHint">
         <exclude-pattern>*/tests/*</exclude-pattern>
     </rule>
 
-    <rule ref="SlevomatCodingStandard.Classes.UnusedPrivateElements.UnusedProperty">
+    <rule ref="SlevomatCodingStandard.TypeHints.ParameterTypeHint.MissingTraversableTypeHintSpecification">
         <exclude-pattern>*/tests/*</exclude-pattern>
     </rule>
 
-    <rule ref="SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingTraversableParameterTypeHintSpecification">
+    <rule ref="SlevomatCodingStandard.TypeHints.PropertyTypeHint.MissingTraversableTypeHintSpecification">
         <exclude-pattern>*/tests/*</exclude-pattern>
     </rule>
 
-    <rule ref="SlevomatCodingStandard.Classes.UnusedPrivateElements.WriteOnlyProperty">
-        <exclude-pattern>*/tests/*</exclude-pattern>
-    </rule>
-
-    <rule ref="SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingTraversablePropertyTypeHintSpecification">
-        <exclude-pattern>*/tests/*</exclude-pattern>
-    </rule>
-
-    <rule ref="SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingTraversableReturnTypeHintSpecification">
+    <rule ref="SlevomatCodingStandard.TypeHints.ReturnTypeHint.MissingTraversableTypeHintSpecification">
         <exclude-pattern>*/tests/*</exclude-pattern>
     </rule>
 
@@ -154,5 +181,92 @@
     <rule ref="Generic.CodeAnalysis.EmptyStatement.DetectedForeach">
         <exclude-pattern>tests/Doctrine/Tests/ORM/Functional/Ticket/DDC1301Test.php</exclude-pattern>
         <exclude-pattern>tests/Doctrine/Tests/ORM/Functional/ExtraLazyCollectionTest.php</exclude-pattern>
+    </rule>
+
+    <!--
+        That file is used in a test as a template to create another one with a
+        different namespace. The use statement has to stay.
+    -->
+    <rule ref="SlevomatCodingStandard.Namespaces.UseFromSameNamespace.UseFromSameNamespace">
+        <exclude-pattern>tests/Doctrine/Tests/Models/DDC1590/DDC1590User.php</exclude-pattern>
+    </rule>
+
+    <rule ref="SlevomatCodingStandard.Commenting.ForbiddenAnnotations.AnnotationForbidden">
+        <exclude-pattern>tests/Doctrine/Tests/ORM/Functional/Ticket/DDC832Test.php</exclude-pattern>
+    </rule>
+
+    <rule ref="Squiz.Commenting.FunctionComment.WrongStyle">
+        <!-- https://github.com/squizlabs/PHP_CodeSniffer/issues/1961 -->
+        <exclude-pattern>tests/Doctrine/Tests/Mocks/DatabasePlatformMock.php</exclude-pattern>
+        <exclude-pattern>tests/Doctrine/Tests/Mocks/DriverMock.php</exclude-pattern>
+        <exclude-pattern>tests/Doctrine/Tests/ORM/UnitOfWorkTest.php</exclude-pattern>
+        <exclude-pattern>tests/Doctrine/Tests/ORM/Query/DeleteSqlGenerationTest.php</exclude-pattern>
+    </rule>
+    <rule ref="Squiz.Commenting.FunctionComment.InvalidNoReturn">
+        <!-- https://github.com/squizlabs/PHP_CodeSniffer/issues/2099 -->
+        <exclude-pattern>lib/Doctrine/ORM/Query/AST/Node.php</exclude-pattern>
+    </rule>
+
+    <rule ref="SlevomatCodingStandard.Commenting.InlineDocCommentDeclaration.NoAssignment">
+        <exclude-pattern>tests/Doctrine/Tests/ORM/Mapping/php/Doctrine.Tests*</exclude-pattern>
+    </rule>
+
+    <rule ref="PSR2.Methods.MethodDeclaration.Underscore">
+        <exclude-pattern>lib/Doctrine/ORM/AbstractQuery.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/Mapping/ClassMetadataInfo.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/NativeQuery.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/Query.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/Query/TreeWalkerAdapter.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/Tools/Export/Driver/AbstractExporter.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/Tools/Export/Driver/AnnotationExporter.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/Tools/Export/Driver/PhpExporter.php</exclude-pattern>
+        <!-- extending a class from another package -->
+        <exclude-pattern>tests/Doctrine/Tests/Mocks/DatabasePlatformMock.php</exclude-pattern>
+        <exclude-pattern>tests/Doctrine/Tests/Mocks/SchemaManagerMock.php</exclude-pattern>
+        <exclude-pattern>tests/Doctrine/Tests/ORM/Functional/Ticket/DDC3634Test.php</exclude-pattern>
+    </rule>
+
+    <rule ref="Squiz.NamingConventions.ValidVariableName.PublicHasUnderscore">
+        <exclude-pattern>lib/Doctrine/ORM/AbstractQuery.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/Configuration.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/EntityRepository.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/Internal/Hydration/AbstractHydrator.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/Query/Exec/AbstractSqlExecutor.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/Query/Exec/AbstractSqlExecutor.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/Query/Printer.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/Tools/EntityRepositoryGenerator.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/Tools/Console/Helper/EntityManagerHelper.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/Tools/Export/Driver/AbstractExporter.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/Tools/Export/Driver/AnnotationExporter.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/Tools/Export/Driver/PhpExporter.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/Tools/Export/Driver/XmlExporter.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/Tools/Export/Driver/YamlExporter.php</exclude-pattern>
+        <!-- the impact of changing this would be too big -->
+        <exclude-pattern>tests/Doctrine/Tests/OrmFunctionalTestCase.php</exclude-pattern>
+    </rule>
+    <rule ref="Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps">
+        <!-- Member variable "__isCloning" is not in valid camel caps format -->
+        <exclude-pattern>lib/Doctrine/ORM/Proxy/ProxyFactory.php</exclude-pattern>
+        <!-- accessing public property __isInitialized__ of a proxy -->
+        <exclude-pattern>tests/Doctrine/Tests/ORM/Functional/ProxiesLikeEntitiesTest.php</exclude-pattern>
+    </rule>
+
+    <rule ref="SlevomatCodingStandard.Namespaces.UnusedUses.MismatchingCaseSensitivity">
+        <!-- Using @group and Group entity in the same file -->
+        <exclude-pattern>tests/Doctrine/Tests/ORM/Functional/Ticket/DDC1885Test.php</exclude-pattern>
+        <exclude-pattern>tests/Doctrine/Tests/ORM/Functional/Ticket/DDC1843Test.php</exclude-pattern>
+    </rule>
+
+    <rule ref="Generic.CodeAnalysis.EmptyStatement.DetectedElse">
+        <!-- The missing code needs to be implemented someday -->
+        <exclude-pattern>lib/Doctrine/ORM/Id/TableGenerator.php</exclude-pattern>
+    </rule>
+    <rule ref="Generic.CodeAnalysis.EmptyStatement.DetectedIf">
+        <!-- The missing code needs to be implemented someday -->
+        <exclude-pattern>lib/Doctrine/ORM/Id/TableGenerator.php</exclude-pattern>
+    </rule>
+    <rule ref="Squiz.Commenting.FunctionComment.ExtraParamComment">
+        <!-- https://github.com/doctrine/orm/issues/8537 -->
+        <exclude-pattern>lib/Doctrine/ORM/QueryBuilder.php</exclude-pattern>
     </rule>
 </ruleset>

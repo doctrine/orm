@@ -4,12 +4,12 @@
                   xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
                                       https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
 
-    <entity name="Doctrine\Tests\Models\DDC5934\DDC5934BaseContract">
+    <mapped-superclass name="Doctrine\Tests\Models\DDC5934\DDC5934BaseContract">
         <id name="id" type="integer">
             <generator strategy="AUTO" />
         </id>
 
         <many-to-many target-entity="DDC5934Member" inversed-by="contract" fetch="LAZY" field="members" />
-    </entity>
+    </mapped-superclass>
 
 </doctrine-mapping>

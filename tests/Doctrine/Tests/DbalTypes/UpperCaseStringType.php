@@ -1,16 +1,18 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\DbalTypes;
 
-use Doctrine\DBAL\Types\StringType;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
+use Doctrine\DBAL\Types\StringType;
 
 class UpperCaseStringType extends StringType
 {
-    const NAME = 'upper_case_string';
+    public const NAME = 'upper_case_string';
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function getName()
     {
@@ -18,7 +20,7 @@ class UpperCaseStringType extends StringType
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function canRequireSQLConversion()
     {
@@ -26,7 +28,7 @@ class UpperCaseStringType extends StringType
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function convertToDatabaseValueSQL($sqlExpr, AbstractPlatform $platform)
     {
@@ -34,7 +36,7 @@ class UpperCaseStringType extends StringType
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function convertToPHPValueSQL($sqlExpr, $platform)
     {

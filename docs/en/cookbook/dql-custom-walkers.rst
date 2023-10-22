@@ -1,4 +1,4 @@
-Extending DQL in Doctrine 2: Custom AST Walkers
+Extending DQL in Doctrine ORM: Custom AST Walkers
 ===============================================
 
 .. sectionauthor:: Benjamin Eberlei <kontakt@beberlei.de>
@@ -12,9 +12,9 @@ the Doctrine ORM.
 
 In Doctrine 1 the DQL language was not implemented using a real
 parser. This made modifications of the DQL by the user impossible.
-Doctrine 2 in contrast has a real parser for the DQL language,
+Doctrine ORM in contrast has a real parser for the DQL language,
 which transforms the DQL statement into an
-`Abstract Syntax Tree <http://en.wikipedia.org/wiki/Abstract_syntax_tree>`_
+`Abstract Syntax Tree <https://en.wikipedia.org/wiki/Abstract_syntax_tree>`_
 and generates the appropriate SQL statement for it. Since this
 process is deterministic Doctrine heavily caches the SQL that is
 generated from any given DQL query, which reduces the performance
@@ -33,8 +33,8 @@ the DQL parser:
    is only ever one of them. We implemented the default SqlWalker
    implementation for it.
 -  A tree walker. There can be many tree walkers, they cannot
-   generate the sql, however they can modify the AST before its
-   rendered to sql.
+   generate the SQL, however they can modify the AST before its
+   rendered to SQL.
 
 Now this is all awfully technical, so let me come to some use-cases
 fast to keep you motivated. Using walker implementation you can for
@@ -50,7 +50,7 @@ example:
 -  Modify the Output walker to pretty print the SQL for debugging
    purposes.
 
-In this cookbook-entry I will show examples on the first two
+In this cookbook-entry I will show examples of the first two
 points. There are probably much more use-cases.
 
 Generic count query for pagination
@@ -64,7 +64,7 @@ like:
 
     SELECT p, c, a FROM BlogPost p JOIN p.category c JOIN p.author a WHERE ...
 
-Now in this query the blog post is the root entity, meaning its the
+Now in this query the blog post is the root entity, meaning it's the
 one that is hydrated directly from the query and returned as an
 array of blog posts. In contrast the comment and author are loaded
 for deeper use in the object tree.
@@ -79,7 +79,7 @@ query for pagination would look like:
     SELECT count(DISTINCT p.id) FROM BlogPost p JOIN p.category c JOIN p.author a WHERE ...
 
 Now you could go and write each of these queries by hand, or you
-can use a tree walker to modify the AST for you. Lets see how the
+can use a tree walker to modify the AST for you. Let's see how the
 API would look for this use-case:
 
 .. code-block:: php
@@ -88,7 +88,7 @@ API would look for this use-case:
     $pageNum = 1;
     $query = $em->createQuery($dql);
     $query->setFirstResult( ($pageNum-1) * 20)->setMaxResults(20);
-    
+
     $totalResults = Paginate::count($query);
     $results = $query->getResult();
 
@@ -101,12 +101,12 @@ The ``Paginate::count(Query $query)`` looks like:
     {
         static public function count(Query $query)
         {
-            /* @var $countQuery Query */
+            /** @var Query $countQuery */
             $countQuery = clone $query;
-    
+
             $countQuery->setHint(Query::HINT_CUSTOM_TREE_WALKERS, array('DoctrineExtensions\Paginate\CountSqlWalker'));
             $countQuery->setFirstResult(null)->setMaxResults(null);
-    
+
             return $countQuery->getSingleScalarResult();
         }
     }
@@ -137,13 +137,13 @@ implementation is:
                     break;
                 }
             }
-    
+
             $pathExpression = new PathExpression(
                 PathExpression::TYPE_STATE_FIELD | PathExpression::TYPE_SINGLE_VALUED_ASSOCIATION, $parentName,
                 $parent['metadata']->getSingleIdentifierFieldName()
             );
             $pathExpression->type = PathExpression::TYPE_STATE_FIELD;
-    
+
             $AST->selectClause->selectExpressions = array(
                 new SelectExpression(
                     new AggregateExpression('count', $pathExpression, true), null
@@ -167,7 +167,7 @@ can be set via ``Query::setHint($name, $value)`` as shown in the
 previous example with the ``HINT_CUSTOM_TREE_WALKERS`` query hint.
 
 We will implement a custom Output Walker that allows to specify the
-SQL\_NO\_CACHE query hint.
+``SQL_NO_CACHE`` query hint.
 
 .. code-block:: php
 
@@ -180,7 +180,7 @@ SQL\_NO\_CACHE query hint.
 
 Our ``MysqlWalker`` will extend the default ``SqlWalker``. We will
 modify the generation of the SELECT clause, adding the
-SQL\_NO\_CACHE on those queries that need it:
+``SQL_NO_CACHE`` on those queries that need it:
 
 .. code-block:: php
 
@@ -196,7 +196,7 @@ SQL\_NO\_CACHE on those queries that need it:
         public function walkSelectClause($selectClause)
         {
             $sql = parent::walkSelectClause($selectClause);
-    
+
             if ($this->getQuery()->getHint('mysqlWalker.sqlNoCache') === true) {
                 if ($selectClause->isDistinct) {
                     $sql = str_replace('SELECT DISTINCT', 'SELECT DISTINCT SQL_NO_CACHE', $sql);
@@ -204,7 +204,7 @@ SQL\_NO\_CACHE on those queries that need it:
                     $sql = str_replace('SELECT', 'SELECT SQL_NO_CACHE', $sql);
                 }
             }
-    
+
             return $sql;
         }
     }

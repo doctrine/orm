@@ -4,30 +4,22 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional;
 
-use Doctrine\ORM\Tools\ToolsException;
 use Doctrine\Tests\Models\OneToOneInverseSideLoad\InverseSide;
 use Doctrine\Tests\Models\OneToOneInverseSideLoad\OwningSide;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
+use function assert;
+
 class OneToOneInverseSideLoadAfterDqlQueryTest extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
 
-        try {
-            $this->_schemaTool->createSchema([
-                $this->_em->getClassMetadata(OwningSide::class),
-                $this->_em->getClassMetadata(InverseSide::class),
-            ]);
-        } catch(ToolsException $e) {
-            // ignored
-        }
+        $this->createSchemaForModels(OwningSide::class, InverseSide::class);
     }
 
-    /**
-     * @group 6759
-     */
+    /** @group GH-6759 */
     public function testInverseSideOneToOneLoadedAfterDqlQuery(): void
     {
         $owner   = new OwningSide();
@@ -43,7 +35,6 @@ class OneToOneInverseSideLoadAfterDqlQueryTest extends OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        /* @var $fetchedInverse InverseSide */
         $fetchedInverse = $this
             ->_em
             ->createQueryBuilder()
@@ -53,18 +44,19 @@ class OneToOneInverseSideLoadAfterDqlQueryTest extends OrmFunctionalTestCase
             ->setParameter('id', 'inverse')
             ->getQuery()
             ->getSingleResult();
+        assert($fetchedInverse instanceof InverseSide);
 
         self::assertInstanceOf(InverseSide::class, $fetchedInverse);
         self::assertInstanceOf(OwningSide::class, $fetchedInverse->owning);
 
         $this->assertSQLEquals(
             'select o0_.id as id_0 from one_to_one_inverse_side_load_inverse o0_ where o0_.id = ?',
-            $this->_sqlLoggerStack->queries[$this->_sqlLoggerStack->currentQuery - 1]['sql']
+            $this->getLastLoggedQuery(1)['sql']
         );
 
         $this->assertSQLEquals(
             'select t0.id as id_1, t0.inverse as inverse_2 from one_to_one_inverse_side_load_owning t0 WHERE t0.inverse = ?',
-            $this->_sqlLoggerStack->queries[$this->_sqlLoggerStack->currentQuery]['sql']
+            $this->getLastLoggedQuery()['sql']
         );
     }
 }

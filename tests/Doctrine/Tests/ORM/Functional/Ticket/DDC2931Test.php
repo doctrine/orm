@@ -1,30 +1,28 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\ORM\Query;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
-/**
- * @group DDC-2931
- */
-class DDC2931Test extends \Doctrine\Tests\OrmFunctionalTestCase
+/** @group DDC-2931 */
+class DDC2931Test extends OrmFunctionalTestCase
 {
-    public function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
 
-        try {
-            $this->_schemaTool->createSchema(
-                [
-                $this->_em->getClassMetadata(DDC2931User::class),
-                ]
-            );
-        } catch (\Exception $e) {
-            // no action needed - schema seems to be already in place
-        }
+        $this->createSchemaForModels(DDC2931User::class);
     }
 
-    public function testIssue()
+    public function testIssue(): void
     {
         $first  = new DDC2931User();
         $second = new DDC2931User();
@@ -42,10 +40,10 @@ class DDC2931Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $second = $this->_em->find(DDC2931User::class, $second->id);
 
-        $this->assertSame(2, $second->getRank());
+        self::assertSame(2, $second->getRank());
     }
 
-    public function testFetchJoinedEntitiesCanBeRefreshed()
+    public function testFetchJoinedEntitiesCanBeRefreshed(): void
     {
         $first  = new DDC2931User();
         $second = new DDC2931User();
@@ -78,10 +76,10 @@ class DDC2931Test extends \Doctrine\Tests\OrmFunctionalTestCase
             ->setHint(Query::HINT_REFRESH, true)
             ->getResult();
 
-        $this->assertCount(1, $refreshedSecond);
-        $this->assertSame(1, $first->value);
-        $this->assertSame(2, $second->value);
-        $this->assertSame(3, $third->value);
+        self::assertCount(1, $refreshedSecond);
+        self::assertSame(1, $first->value);
+        self::assertSame(2, $second->value);
+        self::assertSame(3, $third->value);
     }
 }
 
@@ -89,30 +87,42 @@ class DDC2931Test extends \Doctrine\Tests\OrmFunctionalTestCase
 /** @Entity */
 class DDC2931User
 {
-
-    /** @Id @Column(type="integer") @GeneratedValue(strategy="AUTO") */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue(strategy="AUTO")
+     */
     public $id;
 
-    /** @OneToOne(targetEntity="DDC2931User", inversedBy="child") */
+    /**
+     * @var DDC2931User
+     * @OneToOne(targetEntity="DDC2931User", inversedBy="child")
+     */
     public $parent;
 
-    /** @OneToOne(targetEntity="DDC2931User", mappedBy="parent") */
+    /**
+     * @var DDC2931User
+     * @OneToOne(targetEntity="DDC2931User", mappedBy="parent")
+     */
     public $child;
 
-    /** @Column(type="integer") */
+    /**
+     * @var int
+     * @Column(type="integer")
+     */
     public $value = 0;
 
     /**
      * Return Rank recursively
      * My rank is 1 + rank of my parent
-     * @return int
      */
-    public function getRank()
+    public function getRank(): int
     {
         return 1 + ($this->parent ? $this->parent->getRank() : 0);
     }
 
-    public function __wakeup()
+    public function __wakeup(): void
     {
     }
 }

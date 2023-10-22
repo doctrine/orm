@@ -1,32 +1,40 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-/**
- * @group DDC-618
- */
-class DDC618Test extends \Doctrine\Tests\OrmFunctionalTestCase
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\ManyToOne;
+use Doctrine\ORM\Mapping\OneToMany;
+use Doctrine\ORM\Query;
+use Doctrine\Tests\OrmFunctionalTestCase;
+
+/** @group DDC-618 */
+class DDC618Test extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
-        try {
-            $this->_schemaTool->createSchema(
-                [
-                $this->_em->getClassMetadata(DDC618Author::class),
-                $this->_em->getClassMetadata(DDC618Book::class)
-                ]
-            );
 
+        $this->createSchemaForModels(DDC618Author::class, DDC618Book::class);
+
+        try {
             // Create author 10/Joe with two books 22/JoeA and 20/JoeB
-            $author = new DDC618Author();
-            $author->id = 10;
+            $author       = new DDC618Author();
+            $author->id   = 10;
             $author->name = 'Joe';
             $this->_em->persist($author);
 
             // Create author 11/Alice with two books 21/AliceA and 23/AliceB
-            $author = new DDC618Author();
-            $author->id = 11;
+            $author       = new DDC618Author();
+            $author->id   = 11;
             $author->name = 'Alice';
             $author->addBook('In Wonderland');
             $author->addBook('Reloaded');
@@ -36,148 +44,150 @@ class DDC618Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
             $this->_em->flush();
             $this->_em->clear();
-        } catch(\Exception $e) {
-
+        } catch (UniqueConstraintViolationException $e) {
         }
     }
 
-    public function testIndexByHydrateObject()
+    public function testIndexByHydrateObject(): void
     {
-        $dql = 'SELECT A FROM Doctrine\Tests\ORM\Functional\Ticket\DDC618Author A INDEX BY A.name ORDER BY A.name ASC';
-        $result = $this->_em->createQuery($dql)->getResult(\Doctrine\ORM\Query::HYDRATE_OBJECT);
+        $dql    = 'SELECT A FROM Doctrine\Tests\ORM\Functional\Ticket\DDC618Author A INDEX BY A.name ORDER BY A.name ASC';
+        $result = $this->_em->createQuery($dql)->getResult(Query::HYDRATE_OBJECT);
 
-        $joe    = $this->_em->find(DDC618Author::class, 10);
-        $alice  = $this->_em->find(DDC618Author::class, 11);
+        $joe   = $this->_em->find(DDC618Author::class, 10);
+        $alice = $this->_em->find(DDC618Author::class, 11);
 
-        $this->assertArrayHasKey('Joe', $result, "INDEX BY A.name should return an index by the name of 'Joe'.");
-        $this->assertArrayHasKey('Alice', $result, "INDEX BY A.name should return an index by the name of 'Alice'.");
+        self::assertArrayHasKey('Joe', $result, "INDEX BY A.name should return an index by the name of 'Joe'.");
+        self::assertArrayHasKey('Alice', $result, "INDEX BY A.name should return an index by the name of 'Alice'.");
     }
 
-    public function testIndexByHydrateArray()
+    public function testIndexByHydrateArray(): void
     {
-        $dql = 'SELECT A FROM Doctrine\Tests\ORM\Functional\Ticket\DDC618Author A INDEX BY A.name ORDER BY A.name ASC';
-        $result = $this->_em->createQuery($dql)->getResult(\Doctrine\ORM\Query::HYDRATE_ARRAY);
+        $dql    = 'SELECT A FROM Doctrine\Tests\ORM\Functional\Ticket\DDC618Author A INDEX BY A.name ORDER BY A.name ASC';
+        $result = $this->_em->createQuery($dql)->getResult(Query::HYDRATE_ARRAY);
 
-        $joe    = $this->_em->find(DDC618Author::class, 10);
-        $alice  = $this->_em->find(DDC618Author::class, 11);
+        $joe   = $this->_em->find(DDC618Author::class, 10);
+        $alice = $this->_em->find(DDC618Author::class, 11);
 
-        $this->assertArrayHasKey('Joe', $result, "INDEX BY A.name should return an index by the name of 'Joe'.");
-        $this->assertArrayHasKey('Alice', $result, "INDEX BY A.name should return an index by the name of 'Alice'.");
+        self::assertArrayHasKey('Joe', $result, "INDEX BY A.name should return an index by the name of 'Joe'.");
+        self::assertArrayHasKey('Alice', $result, "INDEX BY A.name should return an index by the name of 'Alice'.");
     }
 
-    /**
-     * @group DDC-1018
-     */
-    public function testIndexByJoin()
+    /** @group DDC-1018 */
+    public function testIndexByJoin(): void
     {
-        $dql = 'SELECT A, B FROM Doctrine\Tests\ORM\Functional\Ticket\DDC618Author A '.
+        $dql    = 'SELECT A, B FROM Doctrine\Tests\ORM\Functional\Ticket\DDC618Author A ' .
                'INNER JOIN A.books B INDEX BY B.title ORDER BY A.name ASC';
-        $result = $this->_em->createQuery($dql)->getResult(\Doctrine\ORM\Query::HYDRATE_OBJECT);
+        $result = $this->_em->createQuery($dql)->getResult(Query::HYDRATE_OBJECT);
 
-        $this->assertEquals(3, count($result[0]->books)); // Alice, Joe doesn't appear because he has no books.
-        $this->assertEquals('Alice', $result[0]->name);
-        $this->assertTrue( isset($result[0]->books["In Wonderland"] ), "Indexing by title should have books by title.");
-        $this->assertTrue( isset($result[0]->books["Reloaded"] ), "Indexing by title should have books by title.");
-        $this->assertTrue( isset($result[0]->books["Test"] ), "Indexing by title should have books by title.");
+        self::assertCount(3, $result[0]->books); // Alice, Joe doesn't appear because he has no books.
+        self::assertEquals('Alice', $result[0]->name);
+        self::assertTrue(isset($result[0]->books['In Wonderland']), 'Indexing by title should have books by title.');
+        self::assertTrue(isset($result[0]->books['Reloaded']), 'Indexing by title should have books by title.');
+        self::assertTrue(isset($result[0]->books['Test']), 'Indexing by title should have books by title.');
 
-        $result = $this->_em->createQuery($dql)->getResult(\Doctrine\ORM\Query::HYDRATE_ARRAY);
+        $result = $this->_em->createQuery($dql)->getResult(Query::HYDRATE_ARRAY);
 
-        $this->assertEquals(3, count($result[0]['books'])); // Alice, Joe doesn't appear because he has no books.
-        $this->assertEquals('Alice', $result[0]['name']);
-        $this->assertTrue( isset($result[0]['books']["In Wonderland"] ), "Indexing by title should have books by title.");
-        $this->assertTrue( isset($result[0]['books']["Reloaded"] ), "Indexing by title should have books by title.");
-        $this->assertTrue( isset($result[0]['books']["Test"] ), "Indexing by title should have books by title.");
+        self::assertCount(3, $result[0]['books']); // Alice, Joe doesn't appear because he has no books.
+        self::assertEquals('Alice', $result[0]['name']);
+        self::assertTrue(isset($result[0]['books']['In Wonderland']), 'Indexing by title should have books by title.');
+        self::assertTrue(isset($result[0]['books']['Reloaded']), 'Indexing by title should have books by title.');
+        self::assertTrue(isset($result[0]['books']['Test']), 'Indexing by title should have books by title.');
     }
 
-    /**
-     * @group DDC-1018
-     */
-    public function testIndexByToOneJoinSilentlyIgnored()
+    /** @group DDC-1018 */
+    public function testIndexByToOneJoinSilentlyIgnored(): void
     {
-        $dql = 'SELECT B, A FROM Doctrine\Tests\ORM\Functional\Ticket\DDC618Book B '.
+        $dql    = 'SELECT B, A FROM Doctrine\Tests\ORM\Functional\Ticket\DDC618Book B ' .
                'INNER JOIN B.author A INDEX BY A.name ORDER BY A.name ASC';
-        $result = $this->_em->createQuery($dql)->getResult(\Doctrine\ORM\Query::HYDRATE_OBJECT);
+        $result = $this->_em->createQuery($dql)->getResult(Query::HYDRATE_OBJECT);
 
-        $this->assertInstanceOf(DDC618Book::class, $result[0]);
-        $this->assertInstanceOf(DDC618Author::class, $result[0]->author);
+        self::assertInstanceOf(DDC618Book::class, $result[0]);
+        self::assertInstanceOf(DDC618Author::class, $result[0]->author);
 
-        $dql = 'SELECT B, A FROM Doctrine\Tests\ORM\Functional\Ticket\DDC618Book B '.
+        $dql    = 'SELECT B, A FROM Doctrine\Tests\ORM\Functional\Ticket\DDC618Book B ' .
                'INNER JOIN B.author A INDEX BY A.name ORDER BY A.name ASC';
-        $result = $this->_em->createQuery($dql)->getResult(\Doctrine\ORM\Query::HYDRATE_ARRAY);
+        $result = $this->_em->createQuery($dql)->getResult(Query::HYDRATE_ARRAY);
 
-        $this->assertEquals("Alice", $result[0]['author']['name']);
+        self::assertEquals('Alice', $result[0]['author']['name']);
     }
 
-    /**
-     * @group DDC-1018
-     */
-    public function testCombineIndexBy()
+    /** @group DDC-1018 */
+    public function testCombineIndexBy(): void
     {
-        $dql = 'SELECT A, B FROM Doctrine\Tests\ORM\Functional\Ticket\DDC618Author A INDEX BY A.id '.
+        $dql    = 'SELECT A, B FROM Doctrine\Tests\ORM\Functional\Ticket\DDC618Author A INDEX BY A.id ' .
                'INNER JOIN A.books B INDEX BY B.title ORDER BY A.name ASC';
-        $result = $this->_em->createQuery($dql)->getResult(\Doctrine\ORM\Query::HYDRATE_OBJECT);
+        $result = $this->_em->createQuery($dql)->getResult(Query::HYDRATE_OBJECT);
 
-        $this->assertArrayHasKey(11, $result); // Alice
+        self::assertArrayHasKey(11, $result); // Alice
 
-        $this->assertEquals(3, count($result[11]->books)); // Alice, Joe doesn't appear because he has no books.
-        $this->assertEquals('Alice', $result[11]->name);
-        $this->assertTrue( isset($result[11]->books["In Wonderland"] ), "Indexing by title should have books by title.");
-        $this->assertTrue( isset($result[11]->books["Reloaded"] ), "Indexing by title should have books by title.");
-        $this->assertTrue( isset($result[11]->books["Test"] ), "Indexing by title should have books by title.");
+        self::assertCount(3, $result[11]->books); // Alice, Joe doesn't appear because he has no books.
+        self::assertEquals('Alice', $result[11]->name);
+        self::assertTrue(isset($result[11]->books['In Wonderland']), 'Indexing by title should have books by title.');
+        self::assertTrue(isset($result[11]->books['Reloaded']), 'Indexing by title should have books by title.');
+        self::assertTrue(isset($result[11]->books['Test']), 'Indexing by title should have books by title.');
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC618Author
 {
     /**
+     * @var int
      * @Id
      * @Column(type="integer")
      */
     public $id;
 
-    /** @Column(type="string") */
+    /**
+     * @var string
+     * @Column(type="string", length=255)
+     */
     public $name;
 
     /**
+     * @psalm-var Collection<int, DDC618Book>
      * @OneToMany(targetEntity="DDC618Book", mappedBy="author", cascade={"persist"})
      */
     public $books;
 
     public function __construct()
     {
-        $this->books = new \Doctrine\Common\Collections\ArrayCollection;
+        $this->books = new ArrayCollection();
     }
 
-    public function addBook($title)
+    public function addBook(string $title): void
     {
-        $book = new DDC618Book($title, $this);
+        $book          = new DDC618Book($title, $this);
         $this->books[] = $book;
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC618Book
 {
     /**
-     * @Id @GeneratedValue
+     * @var int
+     * @Id
+     * @GeneratedValue
      * @Column(type="integer")
      */
     public $id;
 
-    /** @column(type="string") */
+    /**
+     * @var string
+     * @Column(type="string", length=255)
+     */
     public $title;
 
-    /** @ManyToOne(targetEntity="DDC618Author", inversedBy="books") */
+    /**
+     * @var DDC618Author
+     * @ManyToOne(targetEntity="DDC618Author", inversedBy="books")
+     */
     public $author;
 
-    function __construct($title, $author)
+    public function __construct($title, $author)
     {
-        $this->title = $title;
+        $this->title  = $title;
         $this->author = $author;
     }
 }

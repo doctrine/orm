@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Mocks;
 
 use Doctrine\ORM\Cache\CacheKey;
@@ -11,11 +13,9 @@ use Doctrine\ORM\Cache\CacheKey;
  */
 class CacheKeyMock extends CacheKey
 {
-    /**
-     * @param string $hash The string hash that represend this cache key
-     */
-    function __construct($hash)
+    /** @param string $hash The string hash that represents this cache key */
+    public function __construct(string $hash)
     {
-        $this->hash = $hash;
+        parent::__construct($hash);
     }
 }

@@ -1,36 +1,50 @@
 <?php
-/*
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * This software consists of voluntary contributions made by many individuals
- * and is licensed under the MIT license. For more information, see
- * <http://www.doctrine-project.org>.
- */
+
+declare(strict_types=1);
 
 namespace Doctrine\ORM;
 
+use BackedEnum;
+use BadMethodCallException;
+use Doctrine\Common\Cache\Psr6\CacheAdapter;
 use Doctrine\Common\EventManager;
+use Doctrine\Common\Persistence\PersistentObject;
+use Doctrine\Common\Util\ClassUtils;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DriverManager;
 use Doctrine\DBAL\LockMode;
+use Doctrine\Deprecations\Deprecation;
+use Doctrine\ORM\Exception\EntityManagerClosed;
+use Doctrine\ORM\Exception\InvalidHydrationMode;
+use Doctrine\ORM\Exception\MismatchedEventManager;
+use Doctrine\ORM\Exception\MissingIdentifierField;
+use Doctrine\ORM\Exception\MissingMappingDriverImplementation;
+use Doctrine\ORM\Exception\NotSupported;
+use Doctrine\ORM\Exception\ORMException;
+use Doctrine\ORM\Exception\UnrecognizedIdentifierFields;
 use Doctrine\ORM\Mapping\ClassMetadata;
-use Doctrine\ORM\Query\ResultSetMapping;
+use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\Proxy\ProxyFactory;
+use Doctrine\ORM\Query\Expr;
 use Doctrine\ORM\Query\FilterCollection;
-use Doctrine\Common\Util\ClassUtils;
+use Doctrine\ORM\Query\ResultSetMapping;
+use Doctrine\ORM\Repository\RepositoryFactory;
+use Doctrine\Persistence\Mapping\MappingException;
+use Doctrine\Persistence\ObjectRepository;
+use InvalidArgumentException;
 use Throwable;
-use const E_USER_DEPRECATED;
-use function trigger_error;
+
+use function array_keys;
+use function class_exists;
+use function get_debug_type;
+use function gettype;
+use function is_array;
+use function is_callable;
+use function is_object;
+use function is_string;
+use function ltrim;
+use function sprintf;
+use function strpos;
 
 /**
  * The EntityManager is the central access point to ORM functionality.
@@ -40,84 +54,80 @@ use function trigger_error;
  * the static create() method. The quickest way to obtain a fully
  * configured EntityManager is:
  *
- *     use Doctrine\ORM\Tools\Setup;
+ *     use Doctrine\ORM\Tools\ORMSetup;
  *     use Doctrine\ORM\EntityManager;
  *
- *     $paths = array('/path/to/entity/mapping/files');
+ *     $paths = ['/path/to/entity/mapping/files'];
  *
- *     $config = Setup::createAnnotationMetadataConfiguration($paths);
- *     $dbParams = array('driver' => 'pdo_sqlite', 'memory' => true);
- *     $entityManager = EntityManager::create($dbParams, $config);
+ *     $config = ORMSetup::createAttributeMetadataConfiguration($paths);
+ *     $connection = DriverManager::getConnection(['driver' => 'pdo_sqlite', 'memory' => true], $config);
+ *     $entityManager = new EntityManager($connection, $config);
  *
  * For more information see
- * {@link http://docs.doctrine-project.org/projects/doctrine-orm/en/latest/reference/configuration.html}
+ * {@link http://docs.doctrine-project.org/projects/doctrine-orm/en/stable/reference/configuration.html}
  *
  * You should never attempt to inherit from the EntityManager: Inheritance
  * is not a valid extension point for the EntityManager. Instead you
  * should take a look at the {@see \Doctrine\ORM\Decorator\EntityManagerDecorator}
  * and wrap your entity manager in a decorator.
  *
- * @since   2.0
- * @author  Benjamin Eberlei <kontakt@beberlei.de>
- * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
- * @author  Jonathan Wage <jonwage@gmail.com>
- * @author  Roman Borschel <roman@code-factory.org>
+ * @final
  */
-/* final */class EntityManager implements EntityManagerInterface
+class EntityManager implements EntityManagerInterface
 {
     /**
      * The used Configuration.
      *
-     * @var \Doctrine\ORM\Configuration
+     * @var Configuration
      */
     private $config;
 
     /**
      * The database connection used by the EntityManager.
      *
-     * @var \Doctrine\DBAL\Connection
+     * @var Connection
      */
     private $conn;
 
     /**
      * The metadata factory, used to retrieve the ORM metadata of entity classes.
      *
-     * @var \Doctrine\ORM\Mapping\ClassMetadataFactory
+     * @var ClassMetadataFactory
      */
     private $metadataFactory;
 
     /**
      * The UnitOfWork used to coordinate object-level transactions.
      *
-     * @var \Doctrine\ORM\UnitOfWork
+     * @var UnitOfWork
      */
     private $unitOfWork;
 
     /**
      * The event manager that is the central point of the event system.
      *
-     * @var \Doctrine\Common\EventManager
+     * @var EventManager
      */
     private $eventManager;
 
     /**
      * The proxy factory used to create dynamic proxies.
      *
-     * @var \Doctrine\ORM\Proxy\ProxyFactory
+     * @var ProxyFactory
      */
     private $proxyFactory;
 
     /**
      * The repository factory used to create dynamic repositories.
      *
-     * @var \Doctrine\ORM\Repository\RepositoryFactory
+     * @var RepositoryFactory
      */
     private $repositoryFactory;
 
     /**
      * The expression builder instance used to generate query expressions.
      *
-     * @var \Doctrine\ORM\Query\Expr
+     * @var Expr|null
      */
     private $expressionBuilder;
 
@@ -131,34 +141,37 @@ use function trigger_error;
     /**
      * Collection of query filters.
      *
-     * @var \Doctrine\ORM\Query\FilterCollection
+     * @var FilterCollection|null
      */
     private $filterCollection;
 
     /**
-     * @var \Doctrine\ORM\Cache The second level cache regions API.
+     * The second level cache regions API.
+     *
+     * @var Cache|null
      */
     private $cache;
 
     /**
      * Creates a new EntityManager that operates on the given database connection
      * and uses the given Configuration and EventManager implementations.
-     *
-     * @param \Doctrine\DBAL\Connection     $conn
-     * @param \Doctrine\ORM\Configuration   $config
-     * @param \Doctrine\Common\EventManager $eventManager
      */
-    protected function __construct(Connection $conn, Configuration $config, EventManager $eventManager)
+    public function __construct(Connection $conn, Configuration $config, ?EventManager $eventManager = null)
     {
-        $this->conn              = $conn;
-        $this->config            = $config;
-        $this->eventManager      = $eventManager;
+        if (! $config->getMetadataDriverImpl()) {
+            throw MissingMappingDriverImplementation::create();
+        }
+
+        $this->conn         = $conn;
+        $this->config       = $config;
+        $this->eventManager = $eventManager ?? $conn->getEventManager();
 
         $metadataFactoryClassName = $config->getClassMetadataFactoryName();
 
-        $this->metadataFactory = new $metadataFactoryClassName;
+        $this->metadataFactory = new $metadataFactoryClassName();
         $this->metadataFactory->setEntityManager($this);
-        $this->metadataFactory->setCacheDriver($this->config->getMetadataCacheImpl());
+
+        $this->configureMetadataCache();
 
         $this->repositoryFactory = $config->getRepositoryFactory();
         $this->unitOfWork        = new UnitOfWork($this);
@@ -170,9 +183,9 @@ use function trigger_error;
         );
 
         if ($config->isSecondLevelCacheEnabled()) {
-            $cacheConfig    = $config->getSecondLevelCacheConfiguration();
-            $cacheFactory   = $cacheConfig->getCacheFactory();
-            $this->cache    = $cacheFactory->createCache($this);
+            $cacheConfig  = $config->getSecondLevelCacheConfiguration();
+            $cacheFactory = $cacheConfig->getCacheFactory();
+            $this->cache  = $cacheFactory->createCache($this);
         }
     }
 
@@ -187,7 +200,7 @@ use function trigger_error;
     /**
      * Gets the metadata factory used to gather the metadata of classes.
      *
-     * @return \Doctrine\ORM\Mapping\ClassMetadataFactory
+     * @return ClassMetadataFactory
      */
     public function getMetadataFactory()
     {
@@ -200,7 +213,7 @@ use function trigger_error;
     public function getExpressionBuilder()
     {
         if ($this->expressionBuilder === null) {
-            $this->expressionBuilder = new Query\Expr;
+            $this->expressionBuilder = new Query\Expr();
         }
 
         return $this->expressionBuilder;
@@ -227,19 +240,41 @@ use function trigger_error;
      */
     public function transactional($func)
     {
-        if (!is_callable($func)) {
-            throw new \InvalidArgumentException('Expected argument of type "callable", got "' . gettype($func) . '"');
+        if (! is_callable($func)) {
+            throw new InvalidArgumentException('Expected argument of type "callable", got "' . gettype($func) . '"');
         }
 
         $this->conn->beginTransaction();
 
         try {
-            $return = call_user_func($func, $this);
+            $return = $func($this);
 
             $this->flush();
             $this->conn->commit();
 
             return $return ?: true;
+        } catch (Throwable $e) {
+            $this->close();
+            $this->conn->rollBack();
+
+            throw $e;
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function wrapInTransaction(callable $func)
+    {
+        $this->conn->beginTransaction();
+
+        try {
+            $return = $func($this);
+
+            $this->flush();
+            $this->conn->commit();
+
+            return $return;
         } catch (Throwable $e) {
             $this->close();
             $this->conn->rollBack();
@@ -276,9 +311,7 @@ use function trigger_error;
      *
      * Internal note: Performance-sensitive method.
      *
-     * @param string $className
-     *
-     * @return \Doctrine\ORM\Mapping\ClassMetadata
+     * {@inheritDoc}
      */
     public function getClassMetadata($className)
     {
@@ -292,7 +325,7 @@ use function trigger_error;
     {
         $query = new Query($this);
 
-        if ( ! empty($dql)) {
+        if (! empty($dql)) {
             $query->setDQL($dql);
         }
 
@@ -325,7 +358,7 @@ use function trigger_error;
      */
     public function createNamedNativeQuery($name)
     {
-        list($sql, $rsm) = $this->config->getNamedNativeQuery($name);
+        [$sql, $rsm] = $this->config->getNamedNativeQuery($name);
 
         return $this->createNativeQuery($sql, $rsm);
     }
@@ -346,20 +379,22 @@ use function trigger_error;
      * If an entity is explicitly passed to this method only this entity and
      * the cascade-persist semantics + scheduled inserts/removals are synchronized.
      *
-     * @param null|object|array $entity
+     * @param object|mixed[]|null $entity
      *
      * @return void
      *
-     * @throws \Doctrine\ORM\OptimisticLockException If a version check on an entity that
-     *         makes use of optimistic locking fails.
+     * @throws OptimisticLockException If a version check on an entity that
+     * makes use of optimistic locking fails.
      * @throws ORMException
      */
     public function flush($entity = null)
     {
         if ($entity !== null) {
-            @trigger_error(
-                'Calling ' . __METHOD__ . '() with any arguments to flush specific entities is deprecated and will not be supported in Doctrine ORM 3.0.',
-                E_USER_DEPRECATED
+            Deprecation::trigger(
+                'doctrine/orm',
+                'https://github.com/doctrine/orm/issues/8459',
+                'Calling %s() with any arguments to flush specific entities is deprecated and will not be supported in Doctrine ORM 3.0.',
+                __METHOD__
             );
         }
 
@@ -371,30 +406,35 @@ use function trigger_error;
     /**
      * Finds an Entity by its identifier.
      *
-     * @param string       $entityName  The class name of the entity to find.
-     * @param mixed        $id          The identity of the entity to find.
-     * @param integer|null $lockMode    One of the \Doctrine\DBAL\LockMode::* constants
-     *                                  or NULL if no specific lock mode should be used
-     *                                  during the search.
-     * @param integer|null $lockVersion The version of the entity to find when using
-     *                                  optimistic locking.
+     * @param string   $className   The class name of the entity to find.
+     * @param mixed    $id          The identity of the entity to find.
+     * @param int|null $lockMode    One of the \Doctrine\DBAL\LockMode::* constants
+     *    or NULL if no specific lock mode should be used
+     *    during the search.
+     * @param int|null $lockVersion The version of the entity to find when using
+     * optimistic locking.
+     * @psalm-param class-string<T> $className
+     * @psalm-param LockMode::*|null $lockMode
      *
      * @return object|null The entity instance or NULL if the entity can not be found.
+     * @psalm-return ?T
      *
      * @throws OptimisticLockException
      * @throws ORMInvalidArgumentException
      * @throws TransactionRequiredException
      * @throws ORMException
+     *
+     * @template T
      */
-    public function find($entityName, $id, $lockMode = null, $lockVersion = null)
+    public function find($className, $id, $lockMode = null, $lockVersion = null)
     {
-        $class = $this->metadataFactory->getMetadataFor(ltrim($entityName, '\\'));
+        $class = $this->metadataFactory->getMetadataFor(ltrim($className, '\\'));
 
         if ($lockMode !== null) {
             $this->checkLockRequirements($lockMode, $class);
         }
 
-        if ( ! is_array($id)) {
+        if (! is_array($id)) {
             if ($class->isIdentifierComposite) {
                 throw ORMInvalidArgumentException::invalidCompositeIdentifier();
             }
@@ -403,11 +443,14 @@ use function trigger_error;
         }
 
         foreach ($id as $i => $value) {
-            if (is_object($value) && $this->metadataFactory->hasMetadataFor(ClassUtils::getClass($value))) {
-                $id[$i] = $this->unitOfWork->getSingleIdentifierValue($value);
+            if (is_object($value)) {
+                $className = ClassUtils::getClass($value);
+                if ($this->metadataFactory->hasMetadataFor($className)) {
+                    $id[$i] = $this->unitOfWork->getSingleIdentifierValue($value);
 
-                if ($id[$i] === null) {
-                    throw ORMInvalidArgumentException::invalidIdentifierBindingEntity();
+                    if ($id[$i] === null) {
+                        throw ORMInvalidArgumentException::invalidIdentifierBindingEntity($className);
+                    }
                 }
             }
         }
@@ -415,34 +458,41 @@ use function trigger_error;
         $sortedId = [];
 
         foreach ($class->identifier as $identifier) {
-            if ( ! isset($id[$identifier])) {
-                throw ORMException::missingIdentifierField($class->name, $identifier);
+            if (! isset($id[$identifier])) {
+                throw MissingIdentifierField::fromFieldAndClass($identifier, $class->name);
             }
 
-            $sortedId[$identifier] = $id[$identifier];
+            if ($id[$identifier] instanceof BackedEnum) {
+                $sortedId[$identifier] = $id[$identifier]->value;
+            } else {
+                $sortedId[$identifier] = $id[$identifier];
+            }
+
             unset($id[$identifier]);
         }
 
         if ($id) {
-            throw ORMException::unrecognizedIdentifierFields($class->name, array_keys($id));
+            throw UnrecognizedIdentifierFields::fromClassAndFieldNames($class->name, array_keys($id));
         }
 
         $unitOfWork = $this->getUnitOfWork();
 
+        $entity = $unitOfWork->tryGetById($sortedId, $class->rootEntityName);
+
         // Check identity map first
-        if (($entity = $unitOfWork->tryGetById($sortedId, $class->rootEntityName)) !== false) {
-            if ( ! ($entity instanceof $class->name)) {
+        if ($entity !== false) {
+            if (! ($entity instanceof $class->name)) {
                 return null;
             }
 
             switch (true) {
-                case LockMode::OPTIMISTIC === $lockMode:
+                case $lockMode === LockMode::OPTIMISTIC:
                     $this->lock($entity, $lockMode, $lockVersion);
                     break;
 
-                case LockMode::NONE === $lockMode:
-                case LockMode::PESSIMISTIC_READ === $lockMode:
-                case LockMode::PESSIMISTIC_WRITE === $lockMode:
+                case $lockMode === LockMode::NONE:
+                case $lockMode === LockMode::PESSIMISTIC_READ:
+                case $lockMode === LockMode::PESSIMISTIC_WRITE:
                     $persister = $unitOfWork->getEntityPersister($class->name);
                     $persister->refresh($sortedId, $entity, $lockMode);
                     break;
@@ -454,15 +504,17 @@ use function trigger_error;
         $persister = $unitOfWork->getEntityPersister($class->name);
 
         switch (true) {
-            case LockMode::OPTIMISTIC === $lockMode:
+            case $lockMode === LockMode::OPTIMISTIC:
                 $entity = $persister->load($sortedId);
 
-                $unitOfWork->lock($entity, $lockMode, $lockVersion);
+                if ($entity !== null) {
+                    $unitOfWork->lock($entity, $lockMode, $lockVersion);
+                }
 
                 return $entity;
 
-            case LockMode::PESSIMISTIC_READ === $lockMode:
-            case LockMode::PESSIMISTIC_WRITE === $lockMode:
+            case $lockMode === LockMode::PESSIMISTIC_READ:
+            case $lockMode === LockMode::PESSIMISTIC_WRITE:
                 return $persister->load($sortedId, null, null, [], $lockMode);
 
             default:
@@ -477,15 +529,15 @@ use function trigger_error;
     {
         $class = $this->metadataFactory->getMetadataFor(ltrim($entityName, '\\'));
 
-        if ( ! is_array($id)) {
+        if (! is_array($id)) {
             $id = [$class->identifier[0] => $id];
         }
 
         $sortedId = [];
 
         foreach ($class->identifier as $identifier) {
-            if ( ! isset($id[$identifier])) {
-                throw ORMException::missingIdentifierField($class->name, $identifier);
+            if (! isset($id[$identifier])) {
+                throw MissingIdentifierField::fromFieldAndClass($identifier, $class->name);
             }
 
             $sortedId[$identifier] = $id[$identifier];
@@ -493,12 +545,14 @@ use function trigger_error;
         }
 
         if ($id) {
-            throw ORMException::unrecognizedIdentifierFields($class->name, array_keys($id));
+            throw UnrecognizedIdentifierFields::fromClassAndFieldNames($class->name, array_keys($id));
         }
 
+        $entity = $this->unitOfWork->tryGetById($sortedId, $class->rootEntityName);
+
         // Check identity map first, if its already in there just return it.
-        if (($entity = $this->unitOfWork->tryGetById($sortedId, $class->rootEntityName)) !== false) {
-            return ($entity instanceof $class->name) ? $entity : null;
+        if ($entity !== false) {
+            return $entity instanceof $class->name ? $entity : null;
         }
 
         if ($class->subClasses) {
@@ -517,14 +571,22 @@ use function trigger_error;
      */
     public function getPartialReference($entityName, $identifier)
     {
+        Deprecation::trigger(
+            'doctrine/orm',
+            'https://github.com/doctrine/orm/pull/10987',
+            'Method %s is deprecated and will be removed in 3.0.',
+            __METHOD__
+        );
         $class = $this->metadataFactory->getMetadataFor(ltrim($entityName, '\\'));
 
+        $entity = $this->unitOfWork->tryGetById($identifier, $class->rootEntityName);
+
         // Check identity map first, if its already in there just return it.
-        if (($entity = $this->unitOfWork->tryGetById($identifier, $class->rootEntityName)) !== false) {
-            return ($entity instanceof $class->name) ? $entity : null;
+        if ($entity !== false) {
+            return $entity instanceof $class->name ? $entity : null;
         }
 
-        if ( ! is_array($identifier)) {
+        if (! is_array($identifier)) {
             $identifier = [$class->identifier[0] => $identifier];
         }
 
@@ -546,25 +608,27 @@ use function trigger_error;
      *
      * @return void
      *
-     * @throws ORMInvalidArgumentException                           if a non-null non-string value is given
-     * @throws \Doctrine\Common\Persistence\Mapping\MappingException if a $entityName is given, but that entity is not
-     *                                                               found in the mappings
+     * @throws ORMInvalidArgumentException If a non-null non-string value is given.
+     * @throws MappingException            If a $entityName is given, but that entity is not
+     *                                     found in the mappings.
      */
     public function clear($entityName = null)
     {
-        if (null !== $entityName && ! is_string($entityName)) {
+        if ($entityName !== null && ! is_string($entityName)) {
             throw ORMInvalidArgumentException::invalidEntityName($entityName);
         }
 
         if ($entityName !== null) {
-            @trigger_error(
-                'Calling ' . __METHOD__ . '() with any arguments to clear specific entities is deprecated and will not be supported in Doctrine ORM 3.0.',
-                E_USER_DEPRECATED
+            Deprecation::trigger(
+                'doctrine/orm',
+                'https://github.com/doctrine/orm/issues/8460',
+                'Calling %s() with any arguments to clear specific entities is deprecated and will not be supported in Doctrine ORM 3.0.',
+                __METHOD__
             );
         }
 
         $this->unitOfWork->clear(
-            null === $entityName
+            $entityName === null
                 ? null
                 : $this->metadataFactory->getMetadataFor($entityName)->getName()
         );
@@ -598,7 +662,7 @@ use function trigger_error;
      */
     public function persist($entity)
     {
-        if ( ! is_object($entity)) {
+        if (! is_object($entity)) {
             throw ORMInvalidArgumentException::invalidObject('EntityManager#persist()', $entity);
         }
 
@@ -622,7 +686,7 @@ use function trigger_error;
      */
     public function remove($entity)
     {
-        if ( ! is_object($entity)) {
+        if (! is_object($entity)) {
             throw ORMInvalidArgumentException::invalidObject('EntityManager#remove()', $entity);
         }
 
@@ -635,22 +699,24 @@ use function trigger_error;
      * Refreshes the persistent state of an entity from the database,
      * overriding any local changes that have not yet been persisted.
      *
-     * @param object $entity The entity to refresh.
+     * @param object $entity The entity to refresh
+     * @psalm-param LockMode::*|null $lockMode
      *
      * @return void
      *
      * @throws ORMInvalidArgumentException
      * @throws ORMException
+     * @throws TransactionRequiredException
      */
-    public function refresh($entity)
+    public function refresh($entity, ?int $lockMode = null)
     {
-        if ( ! is_object($entity)) {
+        if (! is_object($entity)) {
             throw ORMInvalidArgumentException::invalidObject('EntityManager#refresh()', $entity);
         }
 
         $this->errorIfClosed();
 
-        $this->unitOfWork->refresh($entity);
+        $this->unitOfWork->refresh($entity, $lockMode);
     }
 
     /**
@@ -665,14 +731,10 @@ use function trigger_error;
      * @return void
      *
      * @throws ORMInvalidArgumentException
-     *
-     * @deprecated 2.7 This method is being removed from the ORM and won't have any replacement
      */
     public function detach($entity)
     {
-        @trigger_error('Method ' . __METHOD__ . '() is deprecated and will be removed in Doctrine ORM 3.0.', E_USER_DEPRECATED);
-
-        if ( ! is_object($entity)) {
+        if (! is_object($entity)) {
             throw ORMInvalidArgumentException::invalidObject('EntityManager#detach()', $entity);
         }
 
@@ -684,20 +746,25 @@ use function trigger_error;
      * of this EntityManager and returns the managed copy of the entity.
      * The entity passed to merge will not become associated/managed with this EntityManager.
      *
+     * @deprecated 2.7 This method is being removed from the ORM and won't have any replacement
+     *
      * @param object $entity The detached entity to merge into the persistence context.
      *
      * @return object The managed copy of the entity.
      *
      * @throws ORMInvalidArgumentException
      * @throws ORMException
-     *
-     * @deprecated 2.7 This method is being removed from the ORM and won't have any replacement
      */
     public function merge($entity)
     {
-        @trigger_error('Method ' . __METHOD__ . '() is deprecated and will be removed in Doctrine ORM 3.0.', E_USER_DEPRECATED);
+        Deprecation::trigger(
+            'doctrine/orm',
+            'https://github.com/doctrine/orm/issues/8461',
+            'Method %s() is deprecated and will be removed in Doctrine ORM 3.0.',
+            __METHOD__
+        );
 
-        if ( ! is_object($entity)) {
+        if (! is_object($entity)) {
             throw ORMInvalidArgumentException::invalidObject('EntityManager#merge()', $entity);
         }
 
@@ -708,12 +775,19 @@ use function trigger_error;
 
     /**
      * {@inheritDoc}
+     *
+     * @psalm-return never
      */
     public function copy($entity, $deep = false)
     {
-        @trigger_error('Method ' . __METHOD__ . '() is deprecated and will be removed in Doctrine ORM 3.0.', E_USER_DEPRECATED);
+        Deprecation::trigger(
+            'doctrine/orm',
+            'https://github.com/doctrine/orm/issues/8462',
+            'Method %s() is deprecated and will be removed in Doctrine ORM 3.0.',
+            __METHOD__
+        );
 
-        throw new \BadMethodCallException("Not implemented.");
+        throw new BadMethodCallException('Not implemented.');
     }
 
     /**
@@ -728,12 +802,44 @@ use function trigger_error;
      * Gets the repository for an entity class.
      *
      * @param string $entityName The name of the entity.
+     * @psalm-param class-string<T> $entityName
      *
-     * @return \Doctrine\Common\Persistence\ObjectRepository|\Doctrine\ORM\EntityRepository The repository class.
+     * @return ObjectRepository|EntityRepository The repository class.
+     * @psalm-return EntityRepository<T>
+     *
+     * @template T of object
      */
     public function getRepository($entityName)
     {
-        return $this->repositoryFactory->getRepository($this, $entityName);
+        if (strpos($entityName, ':') !== false) {
+            if (class_exists(PersistentObject::class)) {
+                Deprecation::trigger(
+                    'doctrine/orm',
+                    'https://github.com/doctrine/orm/issues/8818',
+                    'Short namespace aliases such as "%s" are deprecated and will be removed in Doctrine ORM 3.0.',
+                    $entityName
+                );
+            } else {
+                throw NotSupported::createForPersistence3(sprintf(
+                    'Using short namespace alias "%s" when calling %s',
+                    $entityName,
+                    __METHOD__
+                ));
+            }
+        }
+
+        $repository = $this->repositoryFactory->getRepository($this, $entityName);
+        if (! $repository instanceof EntityRepository) {
+            Deprecation::trigger(
+                'doctrine/orm',
+                'https://github.com/doctrine/orm/pull/9533',
+                'Not returning an instance of %s from %s::getRepository() is deprecated and will cause a TypeError on 3.0.',
+                EntityRepository::class,
+                get_debug_type($this->repositoryFactory)
+            );
+        }
+
+        return $repository;
     }
 
     /**
@@ -741,7 +847,7 @@ use function trigger_error;
      *
      * @param object $entity
      *
-     * @return boolean TRUE if this EntityManager currently manages the given entity, FALSE otherwise.
+     * @return bool TRUE if this EntityManager currently manages the given entity, FALSE otherwise.
      */
     public function contains($entity)
     {
@@ -769,14 +875,12 @@ use function trigger_error;
     /**
      * Throws an exception if the EntityManager is closed or currently not active.
      *
-     * @return void
-     *
-     * @throws ORMException If the EntityManager is closed.
+     * @throws EntityManagerClosed If the EntityManager is closed.
      */
-    private function errorIfClosed()
+    private function errorIfClosed(): void
     {
         if ($this->closed) {
-            throw ORMException::entityManagerClosed();
+            throw EntityManagerClosed::create();
         }
     }
 
@@ -785,7 +889,7 @@ use function trigger_error;
      */
     public function isOpen()
     {
-        return (!$this->closed);
+        return ! $this->closed;
     }
 
     /**
@@ -825,13 +929,18 @@ use function trigger_error;
             case Query::HYDRATE_SIMPLEOBJECT:
                 return new Internal\Hydration\SimpleObjectHydrator($this);
 
+            case Query::HYDRATE_SCALAR_COLUMN:
+                return new Internal\Hydration\ScalarColumnHydrator($this);
+
             default:
-                if (($class = $this->config->getCustomHydrationMode($hydrationMode)) !== null) {
+                $class = $this->config->getCustomHydrationMode($hydrationMode);
+
+                if ($class !== null) {
                     return new $class($this);
                 }
         }
 
-        throw ORMException::invalidHydrationMode($hydrationMode);
+        throw InvalidHydrationMode::fromMode((string) $hydrationMode);
     }
 
     /**
@@ -851,58 +960,85 @@ use function trigger_error;
     }
 
     /**
+     * {@inheritDoc}
+     */
+    public function isUninitializedObject($obj): bool
+    {
+        return $this->unitOfWork->isUninitializedObject($obj);
+    }
+
+    /**
      * Factory method to create EntityManager instances.
      *
-     * @param array|Connection $connection   An array with the connection parameters or an existing Connection instance.
-     * @param Configuration    $config       The Configuration instance to use.
-     * @param EventManager     $eventManager The EventManager instance to use.
+     * @deprecated Use {@see DriverManager::getConnection()} to bootstrap the connection and call the constructor.
+     *
+     * @param mixed[]|Connection $connection   An array with the connection parameters or an existing Connection instance.
+     * @param Configuration      $config       The Configuration instance to use.
+     * @param EventManager|null  $eventManager The EventManager instance to use.
+     * @psalm-param array<string, mixed>|Connection $connection
      *
      * @return EntityManager The created EntityManager.
      *
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      * @throws ORMException
      */
-    public static function create($connection, Configuration $config, EventManager $eventManager = null)
+    public static function create($connection, Configuration $config, ?EventManager $eventManager = null)
     {
-        if ( ! $config->getMetadataDriverImpl()) {
-            throw ORMException::missingMappingDriverImpl();
-        }
+        Deprecation::trigger(
+            'doctrine/orm',
+            'https://github.com/doctrine/orm/pull/9961',
+            '%s() is deprecated. To boostrap a DBAL connection, call %s::getConnection() instead. Use the constructor to create an instance of %s.',
+            __METHOD__,
+            DriverManager::class,
+            self::class
+        );
 
         $connection = static::createConnection($connection, $config, $eventManager);
 
-        return new EntityManager($connection, $config, $connection->getEventManager());
+        return new EntityManager($connection, $config);
     }
 
     /**
      * Factory method to create Connection instances.
      *
-     * @param array|Connection $connection   An array with the connection parameters or an existing Connection instance.
-     * @param Configuration    $config       The Configuration instance to use.
-     * @param EventManager     $eventManager The EventManager instance to use.
+     * @deprecated Use {@see DriverManager::getConnection()} to bootstrap the connection.
+     *
+     * @param mixed[]|Connection $connection   An array with the connection parameters or an existing Connection instance.
+     * @param Configuration      $config       The Configuration instance to use.
+     * @param EventManager|null  $eventManager The EventManager instance to use.
+     * @psalm-param array<string, mixed>|Connection $connection
      *
      * @return Connection
      *
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      * @throws ORMException
      */
-    protected static function createConnection($connection, Configuration $config, EventManager $eventManager = null)
+    protected static function createConnection($connection, Configuration $config, ?EventManager $eventManager = null)
     {
+        Deprecation::triggerIfCalledFromOutside(
+            'doctrine/orm',
+            'https://github.com/doctrine/orm/pull/9961',
+            '%s() is deprecated, call %s::getConnection() instead.',
+            __METHOD__,
+            DriverManager::class
+        );
+
         if (is_array($connection)) {
             return DriverManager::getConnection($connection, $config, $eventManager ?: new EventManager());
         }
 
-        if ( ! $connection instanceof Connection) {
-            throw new \InvalidArgumentException(
+        if (! $connection instanceof Connection) {
+            throw new InvalidArgumentException(
                 sprintf(
                     'Invalid $connection argument of type %s given%s.',
-                    is_object($connection) ? get_class($connection) : gettype($connection),
+                    get_debug_type($connection),
                     is_object($connection) ? '' : ': "' . $connection . '"'
                 )
             );
         }
 
         if ($eventManager !== null && $connection->getEventManager() !== $eventManager) {
-            throw ORMException::mismatchedEventManager();
+            throw MismatchedEventManager::create();
         }
 
         return $connection;
@@ -913,7 +1049,7 @@ use function trigger_error;
      */
     public function getFilters()
     {
-        if (null === $this->filterCollection) {
+        if ($this->filterCollection === null) {
             $this->filterCollection = new FilterCollection($this);
         }
 
@@ -925,7 +1061,7 @@ use function trigger_error;
      */
     public function isFiltersStateClean()
     {
-        return null === $this->filterCollection || $this->filterCollection->isClean();
+        return $this->filterCollection === null || $this->filterCollection->isClean();
     }
 
     /**
@@ -933,12 +1069,12 @@ use function trigger_error;
      */
     public function hasFilters()
     {
-        return null !== $this->filterCollection;
+        return $this->filterCollection !== null;
     }
 
     /**
-     * @param int $lockMode
-     * @param ClassMetadata $class
+     * @psalm-param LockMode::* $lockMode
+     *
      * @throws OptimisticLockException
      * @throws TransactionRequiredException
      */
@@ -946,15 +1082,39 @@ use function trigger_error;
     {
         switch ($lockMode) {
             case LockMode::OPTIMISTIC:
-                if (!$class->isVersioned) {
+                if (! $class->isVersioned) {
                     throw OptimisticLockException::notVersioned($class->name);
                 }
+
                 break;
             case LockMode::PESSIMISTIC_READ:
             case LockMode::PESSIMISTIC_WRITE:
-                if (!$this->getConnection()->isTransactionActive()) {
+                if (! $this->getConnection()->isTransactionActive()) {
                     throw TransactionRequiredException::transactionRequired();
                 }
         }
+    }
+
+    private function configureMetadataCache(): void
+    {
+        $metadataCache = $this->config->getMetadataCache();
+        if (! $metadataCache) {
+            $this->configureLegacyMetadataCache();
+
+            return;
+        }
+
+        $this->metadataFactory->setCache($metadataCache);
+    }
+
+    private function configureLegacyMetadataCache(): void
+    {
+        $metadataCache = $this->config->getMetadataCacheImpl();
+        if (! $metadataCache) {
+            return;
+        }
+
+        // Wrap doctrine/cache to provide PSR-6 interface
+        $this->metadataFactory->setCache(CacheAdapter::wrap($metadataCache));
     }
 }

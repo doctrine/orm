@@ -1,17 +1,27 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\ECommerce;
+
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\ManyToOne;
+use Doctrine\ORM\Mapping\Table;
 
 /**
  * Describes a product feature.
  *
- * @author Giorgio Sironi
  * @Entity
  * @Table(name="ecommerce_features")
  */
 class ECommerceFeature
 {
     /**
+     * @var int
      * @Column(type="integer")
      * @Id
      * @GeneratedValue
@@ -19,41 +29,49 @@ class ECommerceFeature
     private $id;
 
     /**
+     * @var string|null
      * @Column(length=50)
      */
     private $description;
 
     /**
+     * @var ECommerceProduct|null
      * @ManyToOne(targetEntity="ECommerceProduct", inversedBy="features")
      * @JoinColumn(name="product_id", referencedColumnName="id")
      */
     private $product;
 
-    public function getId() {
+    public function getId(): int
+    {
         return $this->id;
     }
 
-    public function getDescription() {
+    public function getDescription(): ?string
+    {
         return $this->description;
     }
 
-    public function setDescription($description) {
+    public function setDescription(string $description): void
+    {
         $this->description = $description;
     }
 
-    public function setProduct(ECommerceProduct $product) {
+    public function setProduct(ECommerceProduct $product): void
+    {
         $this->product = $product;
     }
 
-    public function removeProduct() {
+    public function removeProduct(): void
+    {
         if ($this->product !== null) {
-            $product = $this->product;
+            $product       = $this->product;
             $this->product = null;
             $product->removeFeature($this);
         }
     }
 
-    public function getProduct() {
+    public function getProduct(): ?ECommerceProduct
+    {
         return $this->product;
     }
 }

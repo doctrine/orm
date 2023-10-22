@@ -1,36 +1,54 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional;
 
+use DateTime;
 use Doctrine\DBAL\DriverManager;
-use Doctrine\DBAL\Logging\DebugStack;
-use Doctrine\DBAL\Logging\SQLLogger;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityManager;
-use Doctrine\ORM\Proxy\Proxy;
+use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\ORMSetup;
 use Doctrine\ORM\Tools\SchemaTool;
+use Doctrine\Tests\DbalExtensions\Connection;
+use Doctrine\Tests\DbalExtensions\QueryLog;
 use Doctrine\Tests\Models\Generic\DateTimeModel;
 use Doctrine\Tests\OrmFunctionalTestCase;
-use Doctrine\Tests\VerifyDeprecations;
+use Doctrine\Tests\TestUtil;
+
+use function assert;
+use function realpath;
+use function serialize;
+use function unserialize;
 
 class MergeProxiesTest extends OrmFunctionalTestCase
 {
-    use VerifyDeprecations;
-
-    /**
-     * {@inheritDoc}
-     */
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->useModelSet('generic');
 
         parent::setUp();
     }
 
-    /** @after */
-    public function ensureTestGeneratedDeprecationMessages() : void
+    /**
+     * @group DDC-1392
+     * @group DDC-1734
+     * @group DDC-3368
+     * @group #1172
+     */
+    public function testMergeDetachedUnInitializedProxy(): void
     {
-        $this->assertHasDeprecationMessages();
+        $detachedUninitialized = $this->_em->getReference(DateTimeModel::class, 123);
+
+        $this->_em->clear();
+
+        $managed = $this->_em->getReference(DateTimeModel::class, 123);
+
+        self::assertSame($managed, $this->_em->merge($detachedUninitialized));
+
+        self::assertTrue($this->isUninitializedObject($managed));
+        self::assertTrue($this->isUninitializedObject($detachedUninitialized));
     }
 
     /**
@@ -39,7 +57,7 @@ class MergeProxiesTest extends OrmFunctionalTestCase
      * @group DDC-3368
      * @group #1172
      */
-    public function testMergeDetachedUnInitializedProxy()
+    public function testMergeUnserializedUnInitializedProxy(): void
     {
         $detachedUninitialized = $this->_em->getReference(DateTimeModel::class, 123);
 
@@ -47,33 +65,13 @@ class MergeProxiesTest extends OrmFunctionalTestCase
 
         $managed = $this->_em->getReference(DateTimeModel::class, 123);
 
-        $this->assertSame($managed, $this->_em->merge($detachedUninitialized));
-
-        $this->assertFalse($managed->__isInitialized());
-        $this->assertFalse($detachedUninitialized->__isInitialized());
-    }
-
-    /**
-     * @group DDC-1392
-     * @group DDC-1734
-     * @group DDC-3368
-     * @group #1172
-     */
-    public function testMergeUnserializedUnInitializedProxy()
-    {
-        $detachedUninitialized = $this->_em->getReference(DateTimeModel::class, 123);
-
-        $this->_em->clear();
-
-        $managed = $this->_em->getReference(DateTimeModel::class, 123);
-
-        $this->assertSame(
+        self::assertSame(
             $managed,
             $this->_em->merge(unserialize(serialize($this->_em->merge($detachedUninitialized))))
         );
 
-        $this->assertFalse($managed->__isInitialized());
-        $this->assertFalse($detachedUninitialized->__isInitialized());
+        self::assertTrue($this->isUninitializedObject($managed));
+        self::assertTrue($this->isUninitializedObject($detachedUninitialized));
     }
 
     /**
@@ -82,13 +80,13 @@ class MergeProxiesTest extends OrmFunctionalTestCase
      * @group DDC-3368
      * @group #1172
      */
-    public function testMergeManagedProxy()
+    public function testMergeManagedProxy(): void
     {
         $managed = $this->_em->getReference(DateTimeModel::class, 123);
 
-        $this->assertSame($managed, $this->_em->merge($managed));
+        self::assertSame($managed, $this->_em->merge($managed));
 
-        $this->assertFalse($managed->__isInitialized());
+        self::assertTrue($this->isUninitializedObject($managed));
     }
 
     /**
@@ -100,7 +98,7 @@ class MergeProxiesTest extends OrmFunctionalTestCase
      * Bug discovered while working on DDC-2704 - merging towards un-initialized proxies does not initialize them,
      * causing merged data to be lost when they are actually initialized
      */
-    public function testMergeWithExistingUninitializedManagedProxy()
+    public function testMergeWithExistingUninitializedManagedProxy(): void
     {
         $date = new DateTimeModel();
 
@@ -110,14 +108,13 @@ class MergeProxiesTest extends OrmFunctionalTestCase
 
         $managed = $this->_em->getReference(DateTimeModel::class, $date->id);
 
-        $this->assertInstanceOf(Proxy::class, $managed);
-        $this->assertFalse($managed->__isInitialized());
+        self::assertTrue($this->isUninitializedObject($managed));
 
-        $date->date = $dateTime = new \DateTime();
+        $date->date = $dateTime = new DateTime();
 
-        $this->assertSame($managed, $this->_em->merge($date));
-        $this->assertTrue($managed->__isInitialized());
-        $this->assertSame($dateTime, $managed->date, 'Data was merged into the proxy after initialization');
+        self::assertSame($managed, $this->_em->merge($date));
+        self::assertFalse($this->isUninitializedObject($managed));
+        self::assertSame($dateTime, $managed->date, 'Data was merged into the proxy after initialization');
     }
 
     /**
@@ -126,10 +123,10 @@ class MergeProxiesTest extends OrmFunctionalTestCase
      * @group DDC-3368
      * @group #1172
      */
-    public function testMergingProxyFromDifferentEntityManagerWithExistingManagedInstanceDoesNotReplaceInitializer()
+    public function testMergingProxyFromDifferentEntityManagerWithExistingManagedInstanceDoesNotReplaceInitializer(): void
     {
-        $em1 = $this->createEntityManager($logger1 = new DebugStack());
-        $em2 = $this->createEntityManager($logger2 = new DebugStack());
+        $em1 = $this->createEntityManager();
+        $em2 = $this->createEntityManager();
 
         $file1 = new DateTimeModel();
         $file2 = new DateTimeModel();
@@ -141,41 +138,41 @@ class MergeProxiesTest extends OrmFunctionalTestCase
         $em1->clear();
         $em2->clear();
 
-        $queryCount1 = count($logger1->queries);
-        $queryCount2 = count($logger2->queries);
+        $logger1 = $this->getResetQueryLogFromEntityManager($em1);
+        $logger2 = $this->getResetQueryLogFromEntityManager($em2);
 
         $proxy1  = $em1->getReference(DateTimeModel::class, $file1->id);
         $proxy2  = $em2->getReference(DateTimeModel::class, $file1->id);
         $merged2 = $em2->merge($proxy1);
 
-        $this->assertNotSame($proxy1, $merged2);
-        $this->assertSame($proxy2, $merged2);
+        self::assertNotSame($proxy1, $merged2);
+        self::assertSame($proxy2, $merged2);
 
-        $this->assertFalse($proxy1->__isInitialized());
-        $this->assertFalse($proxy2->__isInitialized());
+        self::assertTrue($this->isUninitializedObject($proxy1));
+        self::assertTrue($this->isUninitializedObject($proxy2));
 
         $proxy1->__load();
 
-        $this->assertCount(
-            $queryCount1 + 1,
+        self::assertCount(
+            1,
             $logger1->queries,
             'Loading the first proxy was done through the first entity manager'
         );
-        $this->assertCount(
-            $queryCount2,
+        self::assertCount(
+            0,
             $logger2->queries,
             'No queries were executed on the second entity manager, as it is unrelated with the first proxy'
         );
 
         $proxy2->__load();
 
-        $this->assertCount(
-            $queryCount1 + 1,
+        self::assertCount(
+            1,
             $logger1->queries,
             'Loading the second proxy does not affect the first entity manager'
         );
-        $this->assertCount(
-            $queryCount2 + 1,
+        self::assertCount(
+            1,
             $logger2->queries,
             'Loading of the second proxy instance was done through the second entity manager'
         );
@@ -187,10 +184,10 @@ class MergeProxiesTest extends OrmFunctionalTestCase
      * @group DDC-3368
      * @group #1172
      */
-    public function testMergingUnInitializedProxyDoesNotInitializeIt()
+    public function testMergingUnInitializedProxyDoesNotInitializeIt(): void
     {
-        $em1 = $this->createEntityManager($logger1 = new DebugStack());
-        $em2 = $this->createEntityManager($logger2 = new DebugStack());
+        $em1 = $this->createEntityManager();
+        $em2 = $this->createEntityManager();
 
         $file1 = new DateTimeModel();
         $file2 = new DateTimeModel();
@@ -202,57 +199,50 @@ class MergeProxiesTest extends OrmFunctionalTestCase
         $em1->clear();
         $em2->clear();
 
-        $queryCount1 = count($logger1->queries);
-        $queryCount2 = count($logger1->queries);
+        $logger1 = $this->getResetQueryLogFromEntityManager($em1);
+        $logger2 = $this->getResetQueryLogFromEntityManager($em2);
 
         $unManagedProxy = $em1->getReference(DateTimeModel::class, $file1->id);
         $mergedInstance = $em2->merge($unManagedProxy);
 
-        $this->assertNotInstanceOf(Proxy::class, $mergedInstance);
-        $this->assertNotSame($unManagedProxy, $mergedInstance);
-        $this->assertFalse($unManagedProxy->__isInitialized());
+        self::assertFalse($this->isUninitializedObject($mergedInstance));
+        self::assertTrue($this->isUninitializedObject($unManagedProxy));
 
-        $this->assertCount(
-            $queryCount1,
+        self::assertCount(
+            0,
             $logger1->queries,
             'Loading the merged instance affected only the first entity manager'
         );
-        $this->assertCount(
-            $queryCount1 + 1,
+        self::assertCount(
+            1,
             $logger2->queries,
             'Loading the merged instance was done via the second entity manager'
         );
 
         $unManagedProxy->__load();
 
-        $this->assertCount(
-            $queryCount1 + 1,
+        self::assertCount(
+            1,
             $logger1->queries,
             'Loading the first proxy was done through the first entity manager'
         );
-        $this->assertCount(
-            $queryCount2 + 1,
+        self::assertCount(
+            1,
             $logger2->queries,
             'No queries were executed on the second entity manager, as it is unrelated with the first proxy'
         );
     }
 
-    /**
-     * @param SQLLogger $logger
-     *
-     * @return EntityManager
-     */
-    private function createEntityManager(SQLLogger $logger)
+    private function createEntityManager(): EntityManagerInterface
     {
         $config = new Configuration();
 
-        $config->setProxyDir(realpath(__DIR__ . '/../../Proxies'));
-        $config->setProxyNamespace('Doctrine\Tests\Proxies');
-        $config->setMetadataDriverImpl($config->newDefaultAnnotationDriver(
+        TestUtil::configureProxies($config);
+        $config->setMetadataDriverImpl(ORMSetup::createDefaultAnnotationDriver(
             [realpath(__DIR__ . '/../../Models/Cache')],
+            null,
             true
         ));
-        $config->setSQLLogger($logger);
 
         // always runs on sqlite to prevent multi-connection race-conditions with the test suite
         // multi-connection is not relevant for the purpose of checking locking here, but merely
@@ -260,16 +250,24 @@ class MergeProxiesTest extends OrmFunctionalTestCase
         $connection = DriverManager::getConnection(
             [
                 'driver' => 'pdo_sqlite',
-                'memory' => true
+                'memory' => true,
+                'wrapperClass' => Connection::class,
             ],
             $config
         );
 
-
-        $entityManager = EntityManager::create($connection, $config);
+        $entityManager = new EntityManager($connection, $config);
 
         (new SchemaTool($entityManager))->createSchema([$entityManager->getClassMetadata(DateTimeModel::class)]);
 
         return $entityManager;
+    }
+
+    private function getResetQueryLogFromEntityManager(EntityManagerInterface $entityManager): QueryLog
+    {
+        $connection = $entityManager->getConnection();
+        assert($connection instanceof Connection);
+
+        return $connection->queryLog->reset()->enable();
     }
 }

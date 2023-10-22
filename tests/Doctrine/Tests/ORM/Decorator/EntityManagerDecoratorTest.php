@@ -1,19 +1,31 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Decorator;
 
+use Doctrine\Deprecations\PHPUnit\VerifyDeprecations;
 use Doctrine\ORM\Decorator\EntityManagerDecorator;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Query\ResultSetMapping;
-use Doctrine\Tests\VerifyDeprecations;
+use Generator;
+use LogicException;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use ReflectionClass;
+use ReflectionMethod;
+use ReflectionNamedType;
+use stdClass;
+
+use function assert;
 use function in_array;
+use function sprintf;
 
 class EntityManagerDecoratorTest extends TestCase
 {
     use VerifyDeprecations;
 
-    const VOID_METHODS = [
+    public const VOID_METHODS = [
         'persist',
         'remove',
         'clear',
@@ -21,70 +33,89 @@ class EntityManagerDecoratorTest extends TestCase
         'refresh',
         'flush',
         'initializeObject',
+        'beginTransaction',
+        'commit',
+        'rollback',
+        'close',
+        'lock',
     ];
 
-    /**
-     * @var EntityManagerInterface|\PHPUnit_Framework_MockObject_MockObject
-     */
+    /** @var EntityManagerInterface&MockObject */
     private $wrapped;
 
-    /** @before */
-    public function ignoreDeprecationMessagesFromDoctrinePersistence() : void
-    {
-        $this->ignoreDeprecationMessage('The Doctrine\Common\Persistence\ObjectManagerDecorator class is deprecated since doctrine/persistence 1.3 and will be removed in 2.0. Use \Doctrine\Persistence\ObjectManagerDecorator instead.');
-    }
-
-    public function setUp()
+    protected function setUp(): void
     {
         $this->wrapped = $this->createMock(EntityManagerInterface::class);
     }
 
-    public function getMethodParameters()
+    /** @psalm-return Generator<string, mixed[]> */
+    public static function getMethodParameters(): Generator
     {
-        $class = new \ReflectionClass(EntityManagerInterface::class);
-        $methods = [];
+        $class = new ReflectionClass(EntityManagerInterface::class);
 
         foreach ($class->getMethods() as $method) {
-            if ($method->isConstructor() || $method->isStatic() || !$method->isPublic()) {
+            if ($method->isConstructor() || $method->isStatic() || ! $method->isPublic()) {
                 continue;
             }
 
-            $methods[$method->getName()] = $this->getParameters($method);
+            yield $method->getName() => self::getParameters($method);
         }
-
-        return $methods;
     }
 
-    private function getParameters(\ReflectionMethod $method)
+    /** @return mixed[] */
+    private static function getParameters(ReflectionMethod $method): array
     {
         /** Special case EntityManager::createNativeQuery() */
         if ($method->getName() === 'createNativeQuery') {
             return [$method->getName(), ['name', new ResultSetMapping()]];
         }
 
-        if ($method->getNumberOfRequiredParameters() === 0) {
-            return [$method->getName(), []];
+        if ($method->getName() === 'wrapInTransaction') {
+            return [
+                $method->getName(),
+                [
+                    static function (): void {
+                    },
+                ],
+            ];
         }
 
-        if ($method->getNumberOfRequiredParameters() > 0) {
-            return [$method->getName(), array_fill(0, $method->getNumberOfRequiredParameters(), 'req') ?: []];
+        $parameters = [];
+
+        foreach ($method->getParameters() as $parameter) {
+            if ($parameter->getType() === null) {
+                $parameters[] = 'mixed';
+                continue;
+            }
+
+            $type = $parameter->getType();
+            assert($type instanceof ReflectionNamedType);
+            switch ($type->getName()) {
+                case 'string':
+                    $parameters[] = 'parameter';
+                    break;
+
+                case 'object':
+                    $parameters[] = new stdClass();
+                    break;
+
+                default:
+                    throw new LogicException(sprintf(
+                        'Type %s is not handled yet',
+                        (string) $parameter->getType()
+                    ));
+            }
         }
 
-        if ($method->getNumberOfParameters() != $method->getNumberOfRequiredParameters()) {
-            return [$method->getName(), array_fill(0, $method->getNumberOfParameters(), 'all') ?: []];
-        }
-
-        return [];
+        return [$method->getName(), $parameters];
     }
 
-    /**
-     * @dataProvider getMethodParameters
-     */
-    public function testAllMethodCallsAreDelegatedToTheWrappedInstance($method, array $parameters)
+    /** @dataProvider getMethodParameters */
+    public function testAllMethodCallsAreDelegatedToTheWrappedInstance($method, array $parameters): void
     {
-        $return = !in_array($method, self::VOID_METHODS) ? 'INNER VALUE FROM ' . $method : null;
+        $return = ! in_array($method, self::VOID_METHODS, true) ? 'INNER VALUE FROM ' . $method : null;
 
-        $this->wrapped->expects($this->once())
+        $this->wrapped->expects(self::once())
             ->method($method)
             ->with(...$parameters)
             ->willReturn($return);
@@ -92,13 +123,14 @@ class EntityManagerDecoratorTest extends TestCase
         $decorator = new class ($this->wrapped) extends EntityManagerDecorator {
         };
 
-        $this->assertSame($return, $decorator->$method(...$parameters));
+        self::assertSame($return, $decorator->$method(...$parameters));
+    }
 
-        if (in_array($method, ['copy', 'merge', 'detach', 'getHydrator'], true)) {
-            $this->assertHasDeprecationMessages();
-            return;
-        }
-
-        $this->assertNotHasDeprecationMessages();
+    public function testGetPartialReferenceIsDeprecated(): void
+    {
+        $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/pull/10987');
+        $decorator = new class ($this->wrapped) extends EntityManagerDecorator {
+        };
+        $decorator->getPartialReference(stdClass::class, 1);
     }
 }

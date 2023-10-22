@@ -1,34 +1,39 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional;
 
-use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\Common\Persistence\PersistentObject;
+use Doctrine\Tests\Models\PersistentObject\PersistentCollectionContent;
+use Doctrine\Tests\Models\PersistentObject\PersistentCollectionHolder;
 use Doctrine\Tests\OrmFunctionalTestCase;
+
+use function class_exists;
 
 class PersistentCollectionTest extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp(): void
     {
-        parent::setUp();
-        try {
-            $this->_schemaTool->createSchema(
-                [
-                $this->_em->getClassMetadata(PersistentCollectionHolder::class),
-                $this->_em->getClassMetadata(PersistentCollectionContent::class),
-                ]
-            );
-        } catch (\Exception $e) {
-
+        if (! class_exists(PersistentObject::class)) {
+            self::markTestSkipped('This test requires doctrine/persistence 2');
         }
+
+        parent::setUp();
+
+        $this->createSchemaForModels(
+            PersistentCollectionHolder::class,
+            PersistentCollectionContent::class
+        );
+
         PersistentObject::setObjectManager($this->_em);
     }
 
-    public function testPersist()
+    public function testPersist(): void
     {
         $collectionHolder = new PersistentCollectionHolder();
-        $content = new PersistentCollectionContent('first element');
+        $content          = new PersistentCollectionContent('first element');
         $collectionHolder->addElement($content);
 
         $this->_em->persist($collectionHolder);
@@ -41,13 +46,13 @@ class PersistentCollectionTest extends OrmFunctionalTestCase
         $content = new PersistentCollectionContent('second element');
         $collectionHolder->addElement($content);
 
-        $this->assertEquals(2, $collectionHolder->getCollection()->count());
+        self::assertEquals(2, $collectionHolder->getCollection()->count());
     }
 
     /**
      * Tests that PersistentCollection::isEmpty() does not initialize the collection when FETCH_EXTRA_LAZY is used.
      */
-    public function testExtraLazyIsEmptyDoesNotInitializeCollection()
+    public function testExtraLazyIsEmptyDoesNotInitializeCollection(): void
     {
         $collectionHolder = new PersistentCollectionHolder();
 
@@ -56,10 +61,10 @@ class PersistentCollectionTest extends OrmFunctionalTestCase
         $this->_em->clear();
 
         $collectionHolder = $this->_em->find(PersistentCollectionHolder::class, $collectionHolder->getId());
-        $collection = $collectionHolder->getRawCollection();
+        $collection       = $collectionHolder->getRawCollection();
 
-        $this->assertTrue($collection->isEmpty());
-        $this->assertFalse($collection->isInitialized());
+        self::assertTrue($collection->isEmpty());
+        self::assertFalse($collection->isInitialized());
 
         $collectionHolder->addElement(new PersistentCollectionContent());
 
@@ -67,17 +72,17 @@ class PersistentCollectionTest extends OrmFunctionalTestCase
         $this->_em->clear();
 
         $collectionHolder = $this->_em->find(PersistentCollectionHolder::class, $collectionHolder->getId());
-        $collection = $collectionHolder->getRawCollection();
+        $collection       = $collectionHolder->getRawCollection();
 
-        $this->assertFalse($collection->isEmpty());
-        $this->assertFalse($collection->isInitialized());
+        self::assertFalse($collection->isEmpty());
+        self::assertFalse($collection->isInitialized());
     }
 
     /**
      * @group #1206
      * @group DDC-3430
      */
-    public function testMatchingDoesNotModifyTheGivenCriteria()
+    public function testMatchingDoesNotModifyTheGivenCriteria(): void
     {
         $collectionHolder = new PersistentCollectionHolder();
 
@@ -90,68 +95,9 @@ class PersistentCollectionTest extends OrmFunctionalTestCase
         $collectionHolder = $this->_em->find(PersistentCollectionHolder::class, $collectionHolder->getId());
         $collectionHolder->getCollection()->matching($criteria);
 
-        $this->assertEmpty($criteria->getWhereExpression());
-        $this->assertEmpty($criteria->getFirstResult());
-        $this->assertEmpty($criteria->getMaxResults());
-        $this->assertEmpty($criteria->getOrderings());
+        self::assertEmpty($criteria->getWhereExpression());
+        self::assertEmpty($criteria->getFirstResult());
+        self::assertEmpty($criteria->getMaxResults());
+        self::assertEmpty($criteria->getOrderings());
     }
-}
-
-/**
- * @Entity
- */
-class PersistentCollectionHolder extends PersistentObject
-{
-    /**
-     * @Id @Column(type="integer") @GeneratedValue
-     * @var int
-     */
-    protected $id;
-
-    /**
-     * @var \Doctrine\Common\Collections\Collection
-     * @ManyToMany(targetEntity="PersistentCollectionContent", cascade={"all"}, fetch="EXTRA_LAZY")
-     */
-    protected $collection;
-
-    public function __construct()
-    {
-        $this->collection = new ArrayCollection();
-    }
-
-    /**
-     * @param PersistentCollectionContent $element
-     */
-    public function addElement(PersistentCollectionContent $element)
-    {
-        $this->collection->add($element);
-    }
-
-    /**
-     * @return \Doctrine\Common\Collections\Collection
-     */
-    public function getCollection()
-    {
-        return clone $this->collection;
-    }
-
-    /**
-     * @return \Doctrine\Common\Collections\Collection
-     */
-    public function getRawCollection()
-    {
-        return $this->collection;
-    }
-}
-
-/**
- * @Entity
- */
-class PersistentCollectionContent extends PersistentObject
-{
-    /**
-     * @Id @Column(type="integer") @GeneratedValue
-     * @var int
-     */
-    protected $id;
 }

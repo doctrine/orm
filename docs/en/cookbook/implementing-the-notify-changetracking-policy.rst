@@ -7,8 +7,13 @@ The NOTIFY change-tracking policy is the most effective
 change-tracking policy provided by Doctrine but it requires some
 boilerplate code. This recipe will show you how this boilerplate
 code should look like. We will implement it on a
-`Layer Supertype <http://martinfowler.com/eaaCatalog/layerSupertype.html>`_
+`Layer Supertype <https://martinfowler.com/eaaCatalog/layerSupertype.html>`_
 for all our domain objects.
+
+.. note::
+
+    The notify change tracking policy is deprecated and will be removed in ORM 3.0.
+    (\ `Details <https://github.com/doctrine/orm/issues/8383>`_)
 
 Implementing NotifyPropertyChanged
 ----------------------------------
@@ -22,17 +27,17 @@ implement the ``NotifyPropertyChanged`` interface from the
 .. code-block:: php
 
     <?php
-    use Doctrine\Common\NotifyPropertyChanged;
-    use Doctrine\Common\PropertyChangedListener;
-    
+    use Doctrine\Persistence\NotifyPropertyChanged;
+    use Doctrine\Persistence\PropertyChangedListener;
+
     abstract class DomainObject implements NotifyPropertyChanged
     {
         private $listeners = array();
-    
+
         public function addPropertyChangedListener(PropertyChangedListener $listener) {
             $this->listeners[] = $listener;
         }
-    
+
         /** Notifies listeners of a change. */
         protected function onPropertyChanged($propName, $oldValue, $newValue) {
             if ($this->listeners) {
@@ -50,12 +55,12 @@ listeners:
 .. code-block:: php
 
     <?php
-    // Mapping not shown, either in annotations, xml or yaml as usual
+    // Mapping not shown, either in attributes, annotations, xml or yaml as usual
     class MyEntity extends DomainObject
     {
         private $data;
         // ... other fields as usual
-    
+
         public function setData($data) {
             if ($data != $this->data) { // check: is it actually modified?
                 $this->onPropertyChanged('data', $this->data, $data);
@@ -68,5 +73,3 @@ The check whether the new value is different from the old one is
 not mandatory but recommended. That way you can avoid unnecessary
 updates and also have full control over when you consider a
 property changed.
-
-

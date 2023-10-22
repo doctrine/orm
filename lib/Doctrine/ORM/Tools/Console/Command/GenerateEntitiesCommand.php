@@ -1,57 +1,44 @@
 <?php
-/*
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * This software consists of voluntary contributions made by many individuals
- * and is licensed under the MIT license. For more information, see
- * <http://www.doctrine-project.org>.
- */
+
+declare(strict_types=1);
 
 namespace Doctrine\ORM\Tools\Console\Command;
 
+use Doctrine\ORM\Tools\Console\CommandCompatibility;
 use Doctrine\ORM\Tools\Console\MetadataFilter;
 use Doctrine\ORM\Tools\DisconnectedClassMetadataFactory;
 use Doctrine\ORM\Tools\EntityGenerator;
-use Symfony\Component\Console\Command\Command;
+use InvalidArgumentException;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
+use function file_exists;
+use function is_writable;
+use function realpath;
+use function sprintf;
+
 /**
  * Command to generate entity classes and method stubs from your mapping information.
  *
- * @link    www.doctrine-project.org
- * @since   2.0
- * @author  Benjamin Eberlei <kontakt@beberlei.de>
- * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
- * @author  Jonathan Wage <jonwage@gmail.com>
- * @author  Roman Borschel <roman@code-factory.org>
- *
  * @deprecated 2.7 This class is being removed from the ORM and won't have any replacement
+ *
+ * @link    www.doctrine-project.org
  */
-class GenerateEntitiesCommand extends Command
+class GenerateEntitiesCommand extends AbstractEntityManagerCommand
 {
-    /**
-     * {@inheritdoc}
-     */
+    use CommandCompatibility;
+
+    /** @return void */
     protected function configure()
     {
         $this->setName('orm:generate-entities')
              ->setAliases(['orm:generate:entities'])
              ->setDescription('Generate entity classes and method stubs from your mapping information')
              ->addArgument('dest-path', InputArgument::REQUIRED, 'The path to generate your entity classes.')
+             ->addOption('em', null, InputOption::VALUE_REQUIRED, 'Name of the entity manager to operate on')
              ->addOption('filter', null, InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY, 'A string pattern used to match entities that should be processed.')
              ->addOption('generate-annotations', null, InputOption::VALUE_OPTIONAL, 'Flag to define if generator should generate annotation metadata on entities.', false)
              ->addOption('generate-methods', null, InputOption::VALUE_OPTIONAL, 'Flag to define if generator should generate stub methods on entities.', true)
@@ -60,7 +47,7 @@ class GenerateEntitiesCommand extends Command
              ->addOption('extend', null, InputOption::VALUE_REQUIRED, 'Defines a base class to be extended by generated entity classes.')
              ->addOption('num-spaces', null, InputOption::VALUE_REQUIRED, 'Defines the number of indentation spaces', 4)
              ->addOption('no-backup', null, InputOption::VALUE_NONE, 'Flag to define if generator should avoid backuping existing entity file if it exists.')
-             ->setHelp(<<<EOT
+             ->setHelp(<<<'EOT'
 Generate entity classes and method stubs from your mapping information.
 
 If you use the <comment>--update-entities</comment> or <comment>--regenerate-entities</comment> flags your existing
@@ -83,15 +70,12 @@ EOT
              );
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    private function doExecute(InputInterface $input, OutputInterface $output): int
     {
-        $ui = new SymfonyStyle($input, $output);
+        $ui = (new SymfonyStyle($input, $output))->getErrorStyle();
         $ui->warning('Command ' . $this->getName() . ' is deprecated and will be removed in Doctrine ORM 3.0.');
 
-        $em = $this->getHelper('em')->getEntityManager();
+        $em = $this->getEntityManager($input);
 
         $cmf = new DisconnectedClassMetadataFactory();
         $cmf->setEntityManager($em);
@@ -101,20 +85,21 @@ EOT
         // Process destination directory
         $destPath = realpath($input->getArgument('dest-path'));
 
-        if ( ! file_exists($destPath)) {
-            throw new \InvalidArgumentException(
+        if (! file_exists($destPath)) {
+            throw new InvalidArgumentException(
                 sprintf("Entities destination directory '<info>%s</info>' does not exist.", $input->getArgument('dest-path'))
             );
         }
 
-        if ( ! is_writable($destPath)) {
-            throw new \InvalidArgumentException(
+        if (! is_writable($destPath)) {
+            throw new InvalidArgumentException(
                 sprintf("Entities destination directory '<info>%s</info>' does not have write permissions.", $destPath)
             );
         }
 
         if (empty($metadatas)) {
             $ui->success('No Metadata Classes to process.');
+
             return 0;
         }
 
@@ -124,10 +109,11 @@ EOT
         $entityGenerator->setGenerateStubMethods($input->getOption('generate-methods'));
         $entityGenerator->setRegenerateEntityIfExists($input->getOption('regenerate-entities'));
         $entityGenerator->setUpdateEntityIfExists($input->getOption('update-entities'));
-        $entityGenerator->setNumSpaces($input->getOption('num-spaces'));
-        $entityGenerator->setBackupExisting(!$input->getOption('no-backup'));
+        $entityGenerator->setNumSpaces((int) $input->getOption('num-spaces'));
+        $entityGenerator->setBackupExisting(! $input->getOption('no-backup'));
 
-        if (($extend = $input->getOption('extend')) !== null) {
+        $extend = $input->getOption('extend');
+        if ($extend !== null) {
             $entityGenerator->setClassToExtend($extend);
         }
 

@@ -1,31 +1,37 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\ManyToOne;
+use Doctrine\ORM\Mapping\Table;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-/**
- * @group DDC-192
- */
+/** @group DDC-192 */
 class DDC192Test extends OrmFunctionalTestCase
 {
-    public function testSchemaCreation()
+    public function testSchemaCreation(): void
     {
         $classes = [
-            $this->_em->getClassMetadata(DDC192User::class),
-            $this->_em->getClassMetadata(DDC192Phonenumber::class),
+            DDC192User::class,
+            DDC192Phonenumber::class,
         ];
 
-        $this->_schemaTool->createSchema($classes);
+        $this->createSchemaForModels(...$classes);
 
-        $tables = $this->_em->getConnection()
-                            ->getSchemaManager()
-                            ->listTableNames();
+        $tables = $this->createSchemaManager()->listTableNames();
 
-        /** @var ClassMetadata $class */
         foreach ($classes as $class) {
-            self::assertContains($class->getTableName(), $tables);
+            self::assertContains(
+                $this->_em->getClassMetadata($class)->getTableName(),
+                $tables
+            );
         }
     }
 }
@@ -37,6 +43,7 @@ class DDC192Test extends OrmFunctionalTestCase
 class DDC192User
 {
     /**
+     * @var int
      * @Id
      * @Column(name="id", type="integer")
      * @GeneratedValue(strategy="AUTO")
@@ -44,7 +51,8 @@ class DDC192User
     public $id;
 
     /**
-     * @Column(name="name", type="string")
+     * @var string
+     * @Column(name="name", type="string", length=255)
      */
     public $name;
 }
@@ -57,36 +65,37 @@ class DDC192User
 class DDC192Phonenumber
 {
     /**
+     * @var string
      * @Id
      * @Column(name="phone", type="string", length=40)
      */
     protected $phone;
 
     /**
+     * @var DDC192User
      * @Id
      * @ManyToOne(targetEntity="DDC192User")
      * @JoinColumn(name="userId", referencedColumnName="id")
      */
-    protected $User;
+    protected $user;
 
-
-    public function setPhone($value)
+    public function setPhone(string $value): void
     {
         $this->phone = $value;
     }
 
-    public function getPhone()
+    public function getPhone(): string
     {
         return $this->phone;
     }
 
-    public function setUser(User $user)
+    public function setUser(DDC192User $user): void
     {
-        $this->User = $user;
+        $this->user = $user;
     }
 
-    public function getUser()
+    public function getUser(): DDC192User
     {
-        return $this->User;
+        return $this->user;
     }
 }

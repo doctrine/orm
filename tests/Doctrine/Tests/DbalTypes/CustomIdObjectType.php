@@ -1,16 +1,20 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\DbalTypes;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Type;
 
+use function method_exists;
+
 class CustomIdObjectType extends Type
 {
-    const NAME      = 'CustomIdObject';
+    public const NAME = 'CustomIdObject';
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function convertToDatabaseValue($value, AbstractPlatform $platform)
     {
@@ -18,25 +22,27 @@ class CustomIdObjectType extends Type
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function convertToPHPValue($value, AbstractPlatform $platform)
     {
-        $idObject = new CustomIdObject($value);
-
-        return $idObject;
+        return new CustomIdObject($value);
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function getSQLDeclaration(array $fieldDeclaration, AbstractPlatform $platform)
     {
+        if (method_exists($platform, 'getStringTypeDeclarationSQL')) {
+            return $platform->getStringTypeDeclarationSQL($fieldDeclaration);
+        }
+
         return $platform->getVarcharTypeDeclarationSQL($fieldDeclaration);
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function getName()
     {

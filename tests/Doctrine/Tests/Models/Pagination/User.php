@@ -1,27 +1,38 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\Pagination;
 
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\DiscriminatorColumn;
+use Doctrine\ORM\Mapping\DiscriminatorMap;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\InheritanceType;
+use Doctrine\ORM\Mapping\Table;
 
 /**
- * @package Doctrine\Tests\Models\Pagination
- *
  * @Entity
  * @Table(name="pagination_user")
  * @InheritanceType("SINGLE_TABLE")
- * @DiscriminatorColumn(name="type", type="string")
+ * @DiscriminatorColumn(name="type", type="string", length=255)
  * @DiscriminatorMap({"user1"="User1"})
  */
 abstract class User
 {
     /**
-     * @Id @Column(type="integer")
+     * @var int
+     * @Id
+     * @Column(type="integer")
      * @GeneratedValue
      */
     private $id;
 
     /**
-     * @Column(type="string")
+     * @var string
+     * @Column(type="string", length=255)
      */
     public $name;
 }

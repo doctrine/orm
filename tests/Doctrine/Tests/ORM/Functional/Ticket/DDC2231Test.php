@@ -1,30 +1,39 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-use Doctrine\Common\Persistence\Mapping\ClassMetadata;
-use Doctrine\Common\Persistence\ObjectManager;
-use Doctrine\Common\Persistence\ObjectManagerAware;
-use Doctrine\ORM\Proxy\Proxy;
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\Table;
+use Doctrine\Persistence\Mapping\ClassMetadata;
+use Doctrine\Persistence\ObjectManager;
+use Doctrine\Persistence\ObjectManagerAware;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
-/**
- * @group DDC-2231
- */
-class DDC2231Test extends \Doctrine\Tests\OrmFunctionalTestCase
+use function get_class;
+use function interface_exists;
+
+/** @group DDC-2231 */
+class DDC2231Test extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp(): void
     {
+        if (! interface_exists(ObjectManagerAware::class)) {
+            self::markTestSkipped('This test requires doctrine/persistence 2');
+        }
+
         parent::setUp();
-        $this->_schemaTool->createSchema(
-            [
-            $this->_em->getClassMetadata(DDC2231EntityY::class),
-            ]
-        );
+
+        $this->createSchemaForModels(DDC2231EntityY::class);
     }
 
-    public function testInjectObjectManagerInProxyIfInitializedInUow()
+    public function testInjectObjectManagerInProxyIfInitializedInUow(): void
     {
-        $y1 = new DDC2231EntityY;
+        $y1 = new DDC2231EntityY();
 
         $this->_em->persist($y1);
 
@@ -33,38 +42,45 @@ class DDC2231Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $y1ref = $this->_em->getReference(get_class($y1), $y1->id);
 
-        $this->assertInstanceOf(Proxy::class, $y1ref);
-        $this->assertFalse($y1ref->__isInitialized__);
+        self::assertTrue($this->isUninitializedObject($y1ref));
 
         $id = $y1ref->doSomething();
 
-        $this->assertTrue($y1ref->__isInitialized__);
-        $this->assertEquals($this->_em, $y1ref->om);
+        self::assertFalse($this->isUninitializedObject($y1ref));
+        self::assertEquals($this->_em, $y1ref->om);
     }
 }
 
-
-/** @Entity @Table(name="ddc2231_y") */
-class DDC2231EntityY implements ObjectManagerAware
-{
+if (interface_exists(ObjectManagerAware::class)) {
     /**
-     * @Id @Column(type="integer") @GeneratedValue
+     * @Entity
+     * @Table(name="ddc2231_y")
      */
-    public $id;
-
-    public $om;
-
-    public function injectObjectManager(ObjectManager $objectManager, ClassMetadata $classMetadata)
+    class DDC2231EntityY implements ObjectManagerAware
     {
-        $this->om = $objectManager;
-    }
+        /**
+         * @var int
+         * @Id
+         * @Column(type="integer")
+         * @GeneratedValue
+         */
+        public $id;
 
-    public function getId()
-    {
-        return $this->id;
-    }
+        /** @var ObjectManager */
+        public $om;
 
-    public function doSomething()
-    {
+        public function injectObjectManager(ObjectManager $objectManager, ClassMetadata $classMetadata): void
+        {
+            $this->om = $objectManager;
+        }
+
+        public function getId(): int
+        {
+            return $this->id;
+        }
+
+        public function doSomething(): void
+        {
+        }
     }
 }

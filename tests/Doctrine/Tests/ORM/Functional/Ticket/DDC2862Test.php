@@ -1,73 +1,75 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-use Doctrine\ORM\Tools\ToolsException;
+use Doctrine\ORM\Mapping\Cache;
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\OneToOne;
+use Doctrine\ORM\Mapping\Table;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * @group DDC-2862
  * @group DDC-2183
  */
-class DDC2862Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC2862Test extends OrmFunctionalTestCase
 {
-    public function setUp()
+    protected function setUp(): void
     {
         $this->enableSecondLevelCache();
+
         parent::setUp();
 
-        try {
-            $this->_schemaTool->createSchema(
-                [
-                $this->_em->getClassMetadata(DDC2862User::class),
-                $this->_em->getClassMetadata(DDC2862Driver::class),
-                ]
-            );
-        } catch (ToolsException $exc) {
-        }
+        $this->createSchemaForModels(DDC2862User::class, DDC2862Driver::class);
     }
 
-    public function testIssue()
+    public function testIssue(): void
     {
-        $user1    = new DDC2862User('Foo');
-        $driver1  = new DDC2862Driver('Bar' , $user1);
+        $user1   = new DDC2862User('Foo');
+        $driver1 = new DDC2862Driver('Bar', $user1);
 
         $this->_em->persist($user1);
         $this->_em->persist($driver1);
         $this->_em->flush();
         $this->_em->clear();
 
-        $this->assertTrue($this->_em->getCache()->containsEntity(DDC2862User::class, ['id' => $user1->getId()]));
-        $this->assertTrue($this->_em->getCache()->containsEntity(DDC2862Driver::class, ['id' => $driver1->getId()]));
+        self::assertTrue($this->_em->getCache()->containsEntity(DDC2862User::class, ['id' => $user1->getId()]));
+        self::assertTrue($this->_em->getCache()->containsEntity(DDC2862Driver::class, ['id' => $driver1->getId()]));
 
-        $queryCount = $this->getCurrentQueryCount();
-        $driver2    = $this->_em->find(DDC2862Driver::class, $driver1->getId());
+        $this->getQueryLog()->reset()->enable();
+        $driver2 = $this->_em->find(DDC2862Driver::class, $driver1->getId());
 
-        $this->assertEquals($queryCount, $this->getCurrentQueryCount());
-        $this->assertInstanceOf(DDC2862Driver::class, $driver2);
-        $this->assertInstanceOf(DDC2862User::class, $driver2->getUserProfile());
+        $this->assertQueryCount(0);
+        self::assertInstanceOf(DDC2862Driver::class, $driver2);
+        self::assertInstanceOf(DDC2862User::class, $driver2->getUserProfile());
 
         $driver2->setName('Franta');
 
         $this->_em->flush();
         $this->_em->clear();
 
-        $this->assertTrue($this->_em->getCache()->containsEntity(DDC2862User::class, ['id' => $user1->getId()]));
-        $this->assertTrue($this->_em->getCache()->containsEntity(DDC2862Driver::class, ['id' => $driver1->getId()]));
+        self::assertTrue($this->_em->getCache()->containsEntity(DDC2862User::class, ['id' => $user1->getId()]));
+        self::assertTrue($this->_em->getCache()->containsEntity(DDC2862Driver::class, ['id' => $driver1->getId()]));
 
-        $queryCount = $this->getCurrentQueryCount();
-        $driver3    = $this->_em->find(DDC2862Driver::class, $driver1->getId());
+        $this->getQueryLog()->reset()->enable();
+        $driver3 = $this->_em->find(DDC2862Driver::class, $driver1->getId());
 
-        $this->assertEquals($queryCount, $this->getCurrentQueryCount());
-        $this->assertInstanceOf(DDC2862Driver::class, $driver3);
-        $this->assertInstanceOf(DDC2862User::class, $driver3->getUserProfile());
-        $this->assertEquals('Franta', $driver3->getName());
-        $this->assertEquals('Foo', $driver3->getUserProfile()->getName());
+        $this->assertQueryCount(0);
+        self::assertInstanceOf(DDC2862Driver::class, $driver3);
+        self::assertInstanceOf(DDC2862User::class, $driver3->getUserProfile());
+        self::assertEquals('Franta', $driver3->getName());
+        self::assertEquals('Foo', $driver3->getUserProfile()->getName());
     }
 
-    public function testIssueReopened()
+    public function testIssueReopened(): void
     {
-        $user1    = new DDC2862User('Foo');
-        $driver1  = new DDC2862Driver('Bar' , $user1);
+        $user1   = new DDC2862User('Foo');
+        $driver1 = new DDC2862Driver('Bar', $user1);
 
         $this->_em->persist($user1);
         $this->_em->persist($driver1);
@@ -77,38 +79,38 @@ class DDC2862Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->getCache()->evictEntityRegion(DDC2862User::class);
         $this->_em->getCache()->evictEntityRegion(DDC2862Driver::class);
 
-        $this->assertFalse($this->_em->getCache()->containsEntity(DDC2862User::class, ['id' => $user1->getId()]));
-        $this->assertFalse($this->_em->getCache()->containsEntity(DDC2862Driver::class, ['id' => $driver1->getId()]));
+        self::assertFalse($this->_em->getCache()->containsEntity(DDC2862User::class, ['id' => $user1->getId()]));
+        self::assertFalse($this->_em->getCache()->containsEntity(DDC2862Driver::class, ['id' => $driver1->getId()]));
 
-        $queryCount = $this->getCurrentQueryCount();
-        $driver2    = $this->_em->find(DDC2862Driver::class, $driver1->getId());
+        $this->getQueryLog()->reset()->enable();
+        $driver2 = $this->_em->find(DDC2862Driver::class, $driver1->getId());
 
-        $this->assertInstanceOf(DDC2862Driver::class, $driver2);
-        $this->assertInstanceOf(DDC2862User::class, $driver2->getUserProfile());
-        $this->assertEquals($queryCount + 1, $this->getCurrentQueryCount());
+        self::assertInstanceOf(DDC2862Driver::class, $driver2);
+        self::assertInstanceOf(DDC2862User::class, $driver2->getUserProfile());
+        $this->assertQueryCount(1);
 
         $this->_em->clear();
 
-        $this->assertFalse($this->_em->getCache()->containsEntity(DDC2862User::class, ['id' => $user1->getId()]));
-        $this->assertTrue($this->_em->getCache()->containsEntity(DDC2862Driver::class, ['id' => $driver1->getId()]));
+        self::assertFalse($this->_em->getCache()->containsEntity(DDC2862User::class, ['id' => $user1->getId()]));
+        self::assertTrue($this->_em->getCache()->containsEntity(DDC2862Driver::class, ['id' => $driver1->getId()]));
 
-        $queryCount = $this->getCurrentQueryCount();
-        $driver3    = $this->_em->find(DDC2862Driver::class, $driver1->getId());
+        $this->getQueryLog()->reset()->enable();
+        $driver3 = $this->_em->find(DDC2862Driver::class, $driver1->getId());
 
-        $this->assertInstanceOf(DDC2862Driver::class, $driver3);
-        $this->assertInstanceOf(DDC2862User::class, $driver3->getUserProfile());
-        $this->assertEquals($queryCount, $this->getCurrentQueryCount());
-        $this->assertEquals('Foo', $driver3->getUserProfile()->getName());
-        $this->assertEquals($queryCount + 1, $this->getCurrentQueryCount());
+        self::assertInstanceOf(DDC2862Driver::class, $driver3);
+        self::assertInstanceOf(DDC2862User::class, $driver3->getUserProfile());
+        $this->assertQueryCount(0);
+        self::assertEquals('Foo', $driver3->getUserProfile()->getName());
+        $this->assertQueryCount(1);
 
-        $queryCount = $this->getCurrentQueryCount();
-        $driver4    = $this->_em->find(DDC2862Driver::class, $driver1->getId());
+        $this->getQueryLog()->reset()->enable();
+        $driver4 = $this->_em->find(DDC2862Driver::class, $driver1->getId());
 
-        $this->assertInstanceOf(DDC2862Driver::class, $driver4);
-        $this->assertInstanceOf(DDC2862User::class, $driver4->getUserProfile());
-        $this->assertEquals($queryCount, $this->getCurrentQueryCount());
-        $this->assertEquals('Foo', $driver4->getUserProfile()->getName());
-        $this->assertEquals($queryCount, $this->getCurrentQueryCount());
+        self::assertInstanceOf(DDC2862Driver::class, $driver4);
+        self::assertInstanceOf(DDC2862User::class, $driver4->getUserProfile());
+        $this->assertQueryCount(0);
+        self::assertEquals('Foo', $driver4->getUserProfile()->getName());
+        $this->assertQueryCount(0);
     }
 }
 
@@ -120,6 +122,7 @@ class DDC2862Test extends \Doctrine\Tests\OrmFunctionalTestCase
 class DDC2862Driver
 {
     /**
+     * @var int
      * @Id
      * @GeneratedValue
      * @Column(type="integer")
@@ -127,7 +130,7 @@ class DDC2862Driver
     protected $id;
 
     /**
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      * @var string
      */
     protected $name;
@@ -135,7 +138,7 @@ class DDC2862Driver
     /**
      * @Cache()
      * @OneToOne(targetEntity="DDC2862User")
-     * @var User
+     * @var DDC2862User
      */
     protected $userProfile;
 
@@ -145,46 +148,30 @@ class DDC2862Driver
         $this->userProfile = $userProfile;
     }
 
-    /**
-     * @return integer
-     */
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
 
-    /**
-     * @param string $name
-     */
-    public function setName($name)
+    public function setName(string $name): void
     {
         $this->name = $name;
     }
 
-    /**
-     * @return string
-     */
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
 
-    /**
-     * @param \Entities\User $userProfile
-     */
-    public function setUserProfile($userProfile)
+    public function setUserProfile(DDC2862User $userProfile): void
     {
         $this->userProfile = $userProfile;
     }
 
-    /**
-     * @return \Entities\User
-     */
-    public function getUserProfile()
+    public function getUserProfile(): DDC2862User
     {
         return $this->userProfile;
     }
-
 }
 
 /**
@@ -195,6 +182,7 @@ class DDC2862Driver
 class DDC2862User
 {
     /**
+     * @var int
      * @Id
      * @GeneratedValue
      * @Column(type="integer")
@@ -202,7 +190,7 @@ class DDC2862User
     protected $id;
 
     /**
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      * @var string
      */
     protected $name;
@@ -212,28 +200,18 @@ class DDC2862User
         $this->name = $name;
     }
 
-    /**
-     * @return integer
-     */
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
 
-    /**
-     * @param string $name
-     */
-    public function setName($name)
+    public function setName(string $name): void
     {
         $this->name = $name;
     }
 
-    /**
-     * @return string
-     */
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
-
 }

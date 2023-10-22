@@ -1,36 +1,44 @@
 <?php
-/*
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * This software consists of voluntary contributions made by many individuals
- * and is licensed under the MIT license. For more information, see
- * <http://www.doctrine-project.org>.
- */
+
+declare(strict_types=1);
 
 namespace Doctrine\ORM\Tools;
 
-use Doctrine\Common\ClassLoader;
+use Doctrine\Common\Cache\ApcuCache;
+use Doctrine\Common\Cache\ArrayCache;
 use Doctrine\Common\Cache\Cache;
 use Doctrine\Common\Cache\CacheProvider;
-use Doctrine\Common\Cache\ArrayCache;
+use Doctrine\Common\Cache\MemcachedCache;
+use Doctrine\Common\Cache\Psr6\CacheAdapter;
+use Doctrine\Common\Cache\Psr6\DoctrineProvider;
+use Doctrine\Common\Cache\RedisCache;
+use Doctrine\Common\ClassLoader;
+use Doctrine\Deprecations\Deprecation;
 use Doctrine\ORM\Configuration;
+use Doctrine\ORM\Mapping\Driver\AttributeDriver;
 use Doctrine\ORM\Mapping\Driver\XmlDriver;
 use Doctrine\ORM\Mapping\Driver\YamlDriver;
+use Doctrine\ORM\ORMSetup;
+use Memcached;
+use Redis;
+use RuntimeException;
+use Symfony\Component\Cache\Adapter\ApcuAdapter;
+use Symfony\Component\Cache\Adapter\ArrayAdapter;
+use Symfony\Component\Cache\Adapter\MemcachedAdapter;
+use Symfony\Component\Cache\Adapter\RedisAdapter;
+
+use function apcu_enabled;
+use function class_exists;
+use function dirname;
+use function extension_loaded;
+use function file_exists;
+use function md5;
+use function sys_get_temp_dir;
 
 /**
  * Convenience class for setting up Doctrine from different installations and configurations.
  *
- * @author Benjamin Eberlei <kontakt@beberlei.de>
+ * @deprecated Use {@see ORMSetup} instead.
  */
 class Setup
 {
@@ -38,36 +46,49 @@ class Setup
      * Use this method to register all autoloads for a downloaded Doctrine library.
      * Pick the directory the library was uncompressed into.
      *
+     * @deprecated Use Composer's autoloader instead.
+     *
      * @param string $directory
      *
      * @return void
      */
     public static function registerAutoloadDirectory($directory)
     {
-        if (!class_exists('Doctrine\Common\ClassLoader', false)) {
-            require_once $directory . "/Doctrine/Common/ClassLoader.php";
+        if (! class_exists('Doctrine\Common\ClassLoader', false)) {
+            if (file_exists($directory . '/Doctrine/Common/ClassLoader.php')) {
+                require_once $directory . '/Doctrine/Common/ClassLoader.php';
+            } elseif (file_exists(dirname($directory) . '/src/ClassLoader.php')) {
+                require_once dirname($directory) . '/src/ClassLoader.php';
+            }
         }
 
-        $loader = new ClassLoader("Doctrine", $directory);
+        $loader = new ClassLoader('Doctrine', $directory);
         $loader->register();
 
-        $loader = new ClassLoader("Symfony\Component", $directory . "/Doctrine");
+        $loader = new ClassLoader('Symfony\Component', $directory . '/Doctrine');
         $loader->register();
     }
 
     /**
      * Creates a configuration with an annotation metadata driver.
      *
-     * @param array   $paths
-     * @param boolean $isDevMode
-     * @param string  $proxyDir
-     * @param Cache   $cache
-     * @param bool    $useSimpleAnnotationReader
+     * @param string[]    $paths
+     * @param bool        $isDevMode
+     * @param string|null $proxyDir
+     * @param bool        $useSimpleAnnotationReader
      *
      * @return Configuration
      */
-    public static function createAnnotationMetadataConfiguration(array $paths, $isDevMode = false, $proxyDir = null, Cache $cache = null, $useSimpleAnnotationReader = true)
+    public static function createAnnotationMetadataConfiguration(array $paths, $isDevMode = false, $proxyDir = null, ?Cache $cache = null, $useSimpleAnnotationReader = true)
     {
+        Deprecation::trigger(
+            'doctrine/orm',
+            'https://github.com/doctrine/orm/pull/9443',
+            '%s is deprecated and will be removed in Doctrine 3.0, please use %s instead.',
+            self::class,
+            ORMSetup::class
+        );
+
         $config = self::createConfiguration($isDevMode, $proxyDir, $cache);
         $config->setMetadataDriverImpl($config->newDefaultAnnotationDriver($paths, $useSimpleAnnotationReader));
 
@@ -75,17 +96,51 @@ class Setup
     }
 
     /**
-     * Creates a configuration with a xml metadata driver.
+     * Creates a configuration with an attribute metadata driver.
      *
-     * @param array   $paths
-     * @param boolean $isDevMode
-     * @param string  $proxyDir
-     * @param Cache   $cache
+     * @param string[]    $paths
+     * @param bool        $isDevMode
+     * @param string|null $proxyDir
+     */
+    public static function createAttributeMetadataConfiguration(
+        array $paths,
+        $isDevMode = false,
+        $proxyDir = null,
+        ?Cache $cache = null
+    ): Configuration {
+        Deprecation::trigger(
+            'doctrine/orm',
+            'https://github.com/doctrine/orm/pull/9443',
+            '%s is deprecated and will be removed in Doctrine 3.0, please use %s instead.',
+            self::class,
+            ORMSetup::class
+        );
+
+        $config = self::createConfiguration($isDevMode, $proxyDir, $cache);
+        $config->setMetadataDriverImpl(new AttributeDriver($paths));
+
+        return $config;
+    }
+
+    /**
+     * Creates a configuration with an XML metadata driver.
+     *
+     * @param string[]    $paths
+     * @param bool        $isDevMode
+     * @param string|null $proxyDir
      *
      * @return Configuration
      */
-    public static function createXMLMetadataConfiguration(array $paths, $isDevMode = false, $proxyDir = null, Cache $cache = null)
+    public static function createXMLMetadataConfiguration(array $paths, $isDevMode = false, $proxyDir = null, ?Cache $cache = null)
     {
+        Deprecation::trigger(
+            'doctrine/orm',
+            'https://github.com/doctrine/orm/pull/9443',
+            '%s is deprecated and will be removed in Doctrine 3.0, please use %s instead.',
+            self::class,
+            ORMSetup::class
+        );
+
         $config = self::createConfiguration($isDevMode, $proxyDir, $cache);
         $config->setMetadataDriverImpl(new XmlDriver($paths));
 
@@ -93,17 +148,24 @@ class Setup
     }
 
     /**
-     * Creates a configuration with a yaml metadata driver.
+     * Creates a configuration with a YAML metadata driver.
      *
-     * @param array   $paths
-     * @param boolean $isDevMode
-     * @param string  $proxyDir
-     * @param Cache   $cache
+     * @deprecated YAML metadata mapping is deprecated and will be removed in 3.0
+     *
+     * @param string[]    $paths
+     * @param bool        $isDevMode
+     * @param string|null $proxyDir
      *
      * @return Configuration
      */
-    public static function createYAMLMetadataConfiguration(array $paths, $isDevMode = false, $proxyDir = null, Cache $cache = null)
+    public static function createYAMLMetadataConfiguration(array $paths, $isDevMode = false, $proxyDir = null, ?Cache $cache = null)
     {
+        Deprecation::trigger(
+            'doctrine/orm',
+            'https://github.com/doctrine/orm/issues/8465',
+            'YAML mapping driver is deprecated and will be removed in Doctrine ORM 3.0, please migrate to attribute or XML driver.'
+        );
+
         $config = self::createConfiguration($isDevMode, $proxyDir, $cache);
         $config->setMetadataDriverImpl(new YamlDriver($paths));
 
@@ -113,22 +175,30 @@ class Setup
     /**
      * Creates a configuration without a metadata driver.
      *
-     * @param bool   $isDevMode
-     * @param string $proxyDir
-     * @param Cache  $cache
+     * @param bool        $isDevMode
+     * @param string|null $proxyDir
      *
      * @return Configuration
      */
-    public static function createConfiguration($isDevMode = false, $proxyDir = null, Cache $cache = null)
+    public static function createConfiguration($isDevMode = false, $proxyDir = null, ?Cache $cache = null)
     {
+        Deprecation::triggerIfCalledFromOutside(
+            'doctrine/orm',
+            'https://github.com/doctrine/orm/pull/9443',
+            '%s is deprecated and will be removed in Doctrine 3.0, please use %s instead.',
+            self::class,
+            ORMSetup::class
+        );
+
         $proxyDir = $proxyDir ?: sys_get_temp_dir();
 
         $cache = self::createCacheConfiguration($isDevMode, $proxyDir, $cache);
 
         $config = new Configuration();
-        $config->setMetadataCacheImpl($cache);
-        $config->setQueryCacheImpl($cache);
-        $config->setResultCacheImpl($cache);
+
+        $config->setMetadataCache(CacheAdapter::wrap($cache));
+        $config->setQueryCache(CacheAdapter::wrap($cache));
+        $config->setResultCache(CacheAdapter::wrap($cache));
         $config->setProxyDir($proxyDir);
         $config->setProxyNamespace('DoctrineProxies');
         $config->setAutoGenerateProxyClasses($isDevMode);
@@ -136,11 +206,11 @@ class Setup
         return $config;
     }
 
-    private static function createCacheConfiguration(bool $isDevMode, string $proxyDir, ?Cache $cache) :  Cache
+    private static function createCacheConfiguration(bool $isDevMode, string $proxyDir, ?Cache $cache): Cache
     {
         $cache = self::createCacheInstance($isDevMode, $cache);
 
-        if ( ! $cache instanceof CacheProvider) {
+        if (! $cache instanceof CacheProvider) {
             return $cache;
         }
 
@@ -155,41 +225,44 @@ class Setup
         return $cache;
     }
 
-    private static function createCacheInstance(bool $isDevMode, ?Cache $cache) : Cache
+    private static function createCacheInstance(bool $isDevMode, ?Cache $cache): Cache
     {
         if ($cache !== null) {
             return $cache;
         }
 
+        if (! class_exists(ArrayCache::class) && ! class_exists(ArrayAdapter::class)) {
+            throw new RuntimeException('Setup tool cannot configure caches without doctrine/cache 1.11 or symfony/cache. Please add an explicit dependency to either library.');
+        }
+
         if ($isDevMode === true) {
-            return new ArrayCache();
-        }
-
-        if (extension_loaded('apcu')) {
-            return new \Doctrine\Common\Cache\ApcuCache();
-        }
-
-
-        if (extension_loaded('memcached')) {
-            $memcached = new \Memcached();
+            $cache = class_exists(ArrayCache::class) ? new ArrayCache() : new ArrayAdapter();
+        } elseif (extension_loaded('apcu') && apcu_enabled()) {
+            $cache = class_exists(ApcuCache::class) ? new ApcuCache() : new ApcuAdapter();
+        } elseif (extension_loaded('memcached') && (class_exists(MemcachedCache::class) || MemcachedAdapter::isSupported())) {
+            $memcached = new Memcached();
             $memcached->addServer('127.0.0.1', 11211);
 
-            $cache = new \Doctrine\Common\Cache\MemcachedCache();
-            $cache->setMemcached($memcached);
-
-            return $cache;
-        }
-
-        if (extension_loaded('redis')) {
-            $redis = new \Redis();
+            if (class_exists(MemcachedCache::class)) {
+                $cache = new MemcachedCache();
+                $cache->setMemcached($memcached);
+            } else {
+                $cache = new MemcachedAdapter($memcached);
+            }
+        } elseif (extension_loaded('redis')) {
+            $redis = new Redis();
             $redis->connect('127.0.0.1');
 
-            $cache = new \Doctrine\Common\Cache\RedisCache();
-            $cache->setRedis($redis);
-
-            return $cache;
+            if (class_exists(RedisCache::class)) {
+                $cache = new RedisCache();
+                $cache->setRedis($redis);
+            } else {
+                $cache = new RedisAdapter($redis);
+            }
+        } else {
+            $cache = class_exists(ArrayCache::class) ? new ArrayCache() : new ArrayAdapter();
         }
 
-        return new ArrayCache();
+        return $cache instanceof Cache ? $cache : DoctrineProvider::wrap($cache);
     }
 }

@@ -1,41 +1,27 @@
 <?php
 
-/*
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * This software consists of voluntary contributions made by many individuals
- * and is licensed under the MIT license. For more information, see
- * <http://www.doctrine-project.org>.
- */
+declare(strict_types=1);
 
 namespace Doctrine\ORM\Mapping;
+
+use function str_contains;
+use function strrpos;
+use function strtolower;
+use function substr;
 
 /**
  * The default NamingStrategy
  *
- *
  * @link    www.doctrine-project.org
- * @since   2.3
- * @author  Fabio B. Silva <fabio.bat.silva@gmail.com>
  */
 class DefaultNamingStrategy implements NamingStrategy
 {
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function classToTableName($className)
     {
-        if (strpos($className, '\\') !== false) {
+        if (str_contains($className, '\\')) {
             return substr($className, strrpos($className, '\\') + 1);
         }
 
@@ -43,7 +29,7 @@ class DefaultNamingStrategy implements NamingStrategy
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function propertyToColumnName($propertyName, $className = null)
     {
@@ -51,15 +37,15 @@ class DefaultNamingStrategy implements NamingStrategy
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function embeddedFieldToColumnName($propertyName, $embeddedColumnName, $className = null, $embeddedClassName = null)
     {
-        return $propertyName.'_'.$embeddedColumnName;
+        return $propertyName . '_' . $embeddedColumnName;
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function referenceColumnName()
     {
@@ -67,7 +53,10 @@ class DefaultNamingStrategy implements NamingStrategy
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
+     *
+     * @param string       $propertyName
+     * @param class-string $className
      */
     public function joinColumnName($propertyName, $className = null)
     {
@@ -75,7 +64,7 @@ class DefaultNamingStrategy implements NamingStrategy
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function joinTableName($sourceEntity, $targetEntity, $propertyName = null)
     {
@@ -84,7 +73,7 @@ class DefaultNamingStrategy implements NamingStrategy
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function joinKeyColumnName($entityName, $referencedColumnName = null)
     {

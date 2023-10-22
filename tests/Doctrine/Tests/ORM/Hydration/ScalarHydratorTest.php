@@ -1,10 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Hydration;
 
 use Doctrine\ORM\Internal\Hydration\ScalarHydrator;
-use Doctrine\Tests\Mocks\HydratorMockStatement;
 use Doctrine\ORM\Query\ResultSetMapping;
+use Doctrine\Tests\Mocks\ArrayResultFactory;
 use Doctrine\Tests\Models\CMS\CmsUser;
 
 class ScalarHydratorTest extends HydrationTestCase
@@ -12,9 +14,9 @@ class ScalarHydratorTest extends HydrationTestCase
     /**
      * Select u.id, u.name from CmsUser u
      */
-    public function testNewHydrationSimpleEntityQuery()
+    public function testNewHydrationSimpleEntityQuery(): void
     {
-        $rsm = new ResultSetMapping;
+        $rsm = new ResultSetMapping();
         $rsm->addEntityResult(CmsUser::class, 'u');
         $rsm->addFieldResult('u', 'u__id', 'id');
         $rsm->addFieldResult('u', 'u__name', 'name');
@@ -23,32 +25,29 @@ class ScalarHydratorTest extends HydrationTestCase
         $resultSet = [
             [
                 'u__id' => '1',
-                'u__name' => 'romanb'
+                'u__name' => 'romanb',
             ],
             [
                 'u__id' => '2',
-                'u__name' => 'jwage'
-            ]
+                'u__name' => 'jwage',
+            ],
         ];
 
-
-        $stmt = new HydratorMockStatement($resultSet);
-        $hydrator = new ScalarHydrator($this->_em);
+        $stmt     = ArrayResultFactory::createFromArray($resultSet);
+        $hydrator = new ScalarHydrator($this->entityManager);
 
         $result = $hydrator->hydrateAll($stmt, $rsm);
 
-        $this->assertInternalType('array', $result);
-        $this->assertCount(2, $result);
-        $this->assertEquals('romanb', $result[0]['u_name']);
-        $this->assertEquals(1, $result[0]['u_id']);
-        $this->assertEquals('jwage', $result[1]['u_name']);
-        $this->assertEquals(2, $result[1]['u_id']);
+        self::assertIsArray($result);
+        self::assertCount(2, $result);
+        self::assertEquals('romanb', $result[0]['u_name']);
+        self::assertEquals(1, $result[0]['u_id']);
+        self::assertEquals('jwage', $result[1]['u_name']);
+        self::assertEquals(2, $result[1]['u_id']);
     }
 
-    /**
-     * @group DDC-407
-     */
-    public function testHydrateScalarResults()
+    /** @group DDC-407 */
+    public function testHydrateScalarResults(): void
     {
         $rsm = new ResultSetMapping();
         $rsm->addScalarResult('foo1', 'foo', 'string');
@@ -63,18 +62,16 @@ class ScalarHydratorTest extends HydrationTestCase
             ],
         ];
 
-        $stmt = new HydratorMockStatement($resultSet);
-        $hydrator = new ScalarHydrator($this->_em);
+        $stmt     = ArrayResultFactory::createFromArray($resultSet);
+        $hydrator = new ScalarHydrator($this->entityManager);
 
         self::assertCount(1, $hydrator->hydrateAll($stmt, $rsm));
     }
 
-    /**
-     * @group DDC-644
-     */
-    public function testSkipUnknownColumns()
+    /** @group DDC-644 */
+    public function testSkipUnknownColumns(): void
     {
-        $rsm = new ResultSetMapping;
+        $rsm = new ResultSetMapping();
         $rsm->addEntityResult(CmsUser::class, 'u');
         $rsm->addFieldResult('u', 'u__id', 'id');
         $rsm->addFieldResult('u', 'u__name', 'name');
@@ -93,8 +90,8 @@ class ScalarHydratorTest extends HydrationTestCase
             ],
         ];
 
-        $stmt = new HydratorMockStatement($resultSet);
-        $hydrator = new ScalarHydrator($this->_em);
+        $stmt     = ArrayResultFactory::createFromArray($resultSet);
+        $hydrator = new ScalarHydrator($this->entityManager);
 
         self::assertCount(1, $hydrator->hydrateAll($stmt, $rsm));
     }

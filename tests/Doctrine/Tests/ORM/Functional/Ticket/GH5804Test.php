@@ -1,32 +1,38 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Type;
-use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Id\AbstractIdGenerator;
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\CustomIdGenerator;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\Version;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-/**
- * @group 5804
- */
+use function method_exists;
+
+/** @group GH-5804 */
 final class GH5804Test extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
 
         Type::addType(GH5804Type::NAME, GH5804Type::class);
 
-        $this->_schemaTool->createSchema(
-            [$this->_em->getClassMetadata(GH5804Article::class)]
-        );
+        $this->createSchemaForModels(GH5804Article::class);
     }
 
-    public function testTextColumnSaveAndRetrieve2()
+    public function testTextColumnSaveAndRetrieve2(): void
     {
-        $firstArticle = new GH5804Article;
+        $firstArticle       = new GH5804Article();
         $firstArticle->text = 'Max';
         $this->_em->persist($firstArticle);
         $this->_em->flush();
@@ -44,9 +50,9 @@ final class GH5804Test extends OrmFunctionalTestCase
 final class GH5804Generator extends AbstractIdGenerator
 {
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
-    public function generate(EntityManager $em, $entity)
+    public function generateId(EntityManagerInterface $em, $entity)
     {
         return 'test5804';
     }
@@ -54,23 +60,30 @@ final class GH5804Generator extends AbstractIdGenerator
 
 final class GH5804Type extends Type
 {
-    const NAME = 'GH5804Type';
+    public const NAME = 'GH5804Type';
 
+    /**
+     * {@inheritDoc}
+     */
     public function getName()
     {
         return self::NAME;
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function getSQLDeclaration(array $fieldDeclaration, AbstractPlatform $platform)
     {
+        if (method_exists($platform, 'getStringTypeDeclarationSQL')) {
+            return $platform->getStringTypeDeclarationSQL($fieldDeclaration);
+        }
+
         return $platform->getVarcharTypeDeclarationSQL($fieldDeclaration);
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function convertToDatabaseValue($value, AbstractPlatform $platform)
     {
@@ -82,26 +95,27 @@ final class GH5804Type extends Type
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class GH5804Article
 {
     /**
+     * @var string
      * @Id
-     * @Column(type="GH5804Type")
+     * @Column(type="GH5804Type", length=255)
      * @GeneratedValue(strategy="CUSTOM")
-     * @CustomIdGenerator(class=\Doctrine\Tests\ORM\Functional\Ticket\GH5804Generator::class)
+     * @CustomIdGenerator(class=GH5804Generator::class)
      */
     public $id;
 
     /**
+     * @var int
      * @Version
      * @Column(type="integer")
      */
     public $version;
 
     /**
+     * @var string
      * @Column(type="text")
      */
     public $text;

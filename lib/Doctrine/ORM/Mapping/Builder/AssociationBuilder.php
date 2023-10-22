@@ -1,64 +1,41 @@
 <?php
-/*
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * This software consists of voluntary contributions made by many individuals
- * and is licensed under the MIT license. For more information, see
- * <http://www.doctrine-project.org>.
- */
+
+declare(strict_types=1);
 
 namespace Doctrine\ORM\Mapping\Builder;
 
 use Doctrine\ORM\Mapping\ClassMetadata;
+use InvalidArgumentException;
 
 class AssociationBuilder
 {
-    /**
-     * @var ClassMetadataBuilder
-     */
+    /** @var ClassMetadataBuilder */
     protected $builder;
 
-    /**
-     * @var array
-     */
+    /** @var mixed[] */
     protected $mapping;
 
-    /**
-     * @var array|null
-     */
+    /** @var mixed[]|null */
     protected $joinColumns;
 
-    /**
-     * @var int
-     */
+    /** @var int */
     protected $type;
 
     /**
-     * @param ClassMetadataBuilder $builder
-     * @param array                $mapping
-     * @param int                  $type
+     * @param mixed[] $mapping
+     * @param int     $type
      */
     public function __construct(ClassMetadataBuilder $builder, array $mapping, $type)
     {
         $this->builder = $builder;
         $this->mapping = $mapping;
-        $this->type = $type;
+        $this->type    = $type;
     }
 
     /**
      * @param string $fieldName
      *
-     * @return AssociationBuilder
+     * @return $this
      */
     public function mappedBy($fieldName)
     {
@@ -70,7 +47,7 @@ class AssociationBuilder
     /**
      * @param string $fieldName
      *
-     * @return AssociationBuilder
+     * @return $this
      */
     public function inversedBy($fieldName)
     {
@@ -79,69 +56,55 @@ class AssociationBuilder
         return $this;
     }
 
-    /**
-     * @return AssociationBuilder
-     */
+    /** @return $this */
     public function cascadeAll()
     {
-        $this->mapping['cascade'] = ["ALL"];
+        $this->mapping['cascade'] = ['ALL'];
 
         return $this;
     }
 
-    /**
-     * @return AssociationBuilder
-     */
+    /** @return $this */
     public function cascadePersist()
     {
-        $this->mapping['cascade'][] = "persist";
+        $this->mapping['cascade'][] = 'persist';
 
         return $this;
     }
 
-    /**
-     * @return AssociationBuilder
-     */
+    /** @return $this */
     public function cascadeRemove()
     {
-        $this->mapping['cascade'][] = "remove";
+        $this->mapping['cascade'][] = 'remove';
 
         return $this;
     }
 
-    /**
-     * @return AssociationBuilder
-     */
+    /** @return $this */
     public function cascadeMerge()
     {
-        $this->mapping['cascade'][] = "merge";
+        $this->mapping['cascade'][] = 'merge';
 
         return $this;
     }
 
-    /**
-     * @return AssociationBuilder
-     */
+    /** @return $this */
     public function cascadeDetach()
     {
-        $this->mapping['cascade'][] = "detach";
+        $this->mapping['cascade'][] = 'detach';
 
         return $this;
     }
 
-    /**
-     * @return AssociationBuilder
-     */
+    /** @return $this */
     public function cascadeRefresh()
     {
-        $this->mapping['cascade'][] = "refresh";
+        $this->mapping['cascade'][] = 'refresh';
 
         return $this;
     }
 
-    /**
-     * @return AssociationBuilder
-     */
+    /** @return $this */
     public function fetchExtraLazy()
     {
         $this->mapping['fetch'] = ClassMetadata::FETCH_EXTRA_LAZY;
@@ -149,9 +112,7 @@ class AssociationBuilder
         return $this;
     }
 
-    /**
-     * @return AssociationBuilder
-     */
+    /** @return $this */
     public function fetchEager()
     {
         $this->mapping['fetch'] = ClassMetadata::FETCH_EAGER;
@@ -159,9 +120,7 @@ class AssociationBuilder
         return $this;
     }
 
-    /**
-     * @return AssociationBuilder
-     */
+    /** @return $this */
     public function fetchLazy()
     {
         $this->mapping['fetch'] = ClassMetadata::FETCH_LAZY;
@@ -179,7 +138,7 @@ class AssociationBuilder
      * @param string|null $onDelete
      * @param string|null $columnDef
      *
-     * @return AssociationBuilder
+     * @return $this
      */
     public function addJoinColumn($columnName, $referencedColumnName, $nullable = true, $unique = false, $onDelete = null, $columnDef = null)
     {
@@ -198,7 +157,7 @@ class AssociationBuilder
     /**
      * Sets field as primary key.
      *
-     * @return self
+     * @return $this
      */
     public function makePrimaryKey()
     {
@@ -210,7 +169,7 @@ class AssociationBuilder
     /**
      * Removes orphan entities when detached from their parent.
      *
-     * @return self
+     * @return $this
      */
     public function orphanRemoval()
     {
@@ -222,7 +181,7 @@ class AssociationBuilder
     /**
      * @return ClassMetadataBuilder
      *
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public function build()
     {
@@ -230,13 +189,14 @@ class AssociationBuilder
         if ($this->joinColumns) {
             $mapping['joinColumns'] = $this->joinColumns;
         }
+
         $cm = $this->builder->getClassMetadata();
-        if ($this->type == ClassMetadata::MANY_TO_ONE) {
+        if ($this->type === ClassMetadata::MANY_TO_ONE) {
             $cm->mapManyToOne($mapping);
-        } else if ($this->type == ClassMetadata::ONE_TO_ONE) {
+        } elseif ($this->type === ClassMetadata::ONE_TO_ONE) {
             $cm->mapOneToOne($mapping);
         } else {
-            throw new \InvalidArgumentException("Type should be a ToOne Association here");
+            throw new InvalidArgumentException('Type should be a ToOne Association here');
         }
 
         return $this->builder;

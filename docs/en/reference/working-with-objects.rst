@@ -27,7 +27,7 @@ Work that have not yet been persisted are lost.
 
 .. note::
 
-    Doctrine does NEVER touch the public API of methods in your entity 
+    Doctrine NEVER touches the public API of methods in your entity
     classes (like getters and setters) nor the constructor method.
     Instead, it uses reflection to get/set data from/to your entity objects.
     When Doctrine fetches data from DB and saves it back,
@@ -48,12 +48,12 @@ headline "Hello World" with the ID 1234:
     <?php
     $article = $entityManager->find('CMS\Article', 1234);
     $article->setHeadline('Hello World dude!');
-    
+
     $article2 = $entityManager->find('CMS\Article', 1234);
     echo $article2->getHeadline();
 
 In this case the Article is accessed from the entity manager twice,
-but modified in between. Doctrine 2 realizes this and will only
+but modified in between. Doctrine ORM realizes this and will only
 ever give you access to one instance of the Article with ID 1234,
 no matter how often do you retrieve it from the EntityManager and
 even no matter what kind of Query method you are using (find,
@@ -95,30 +95,31 @@ from newly opened EntityManager.
 .. code-block:: php
 
     <?php
-    /** @Entity */
+    #[Entity]
     class Article
     {
-        /** @Id @Column(type="integer") @GeneratedValue */
-        private $id;
-    
-        /** @Column(type="string") */
-        private $headline;
-    
-        /** @ManyToOne(targetEntity="User") */
-        private $author;
-    
-        /** @OneToMany(targetEntity="Comment", mappedBy="article") */
-        private $comments;
-    
+        #[Id, Column(type: 'integer'), GeneratedValue]
+        private int|null $id = null;
+
+        #[Column(type: 'string')]
+        private string $headline;
+
+        #[ManyToOne(targetEntity: User::class)]
+        private User|null $author = null;
+
+        /** @var Collection<int, Comment> */
+        #[OneToMany(targetEntity: Comment::class, mappedBy: 'article')]
+        private Collection $comments;
+
         public function __construct()
         {
             $this->comments = new ArrayCollection();
         }
-    
-        public function getAuthor() { return $this->author; }
-        public function getComments() { return $this->comments; }
+
+        public function getAuthor(): User|null { return $this->author; }
+        public function getComments(): Collection { return $this->comments; }
     }
-    
+
     $article = $em->find('Article', 1);
 
 This code only retrieves the ``Article`` instance with id 1 executing
@@ -139,48 +140,26 @@ your code. See the following code:
 
     <?php
     $article = $em->find('Article', 1);
-    
+
     // accessing a method of the user instance triggers the lazy-load
     echo "Author: " . $article->getAuthor()->getName() . "\n";
-    
+
     // Lazy Loading Proxies pass instanceof tests:
     if ($article->getAuthor() instanceof User) {
         // a User Proxy is a generated "UserProxy" class
     }
-    
+
     // accessing the comments as an iterator triggers the lazy-load
     // retrieving ALL the comments of this article from the database
     // using a single SELECT statement
     foreach ($article->getComments() as $comment) {
         echo $comment->getText() . "\n\n";
     }
-    
+
     // Article::$comments passes instanceof tests for the Collection interface
     // But it will NOT pass for the ArrayCollection interface
     if ($article->getComments() instanceof \Doctrine\Common\Collections\Collection) {
         echo "This will always be true!";
-    }
-
-A slice of the generated proxy classes code looks like the
-following piece of code. A real proxy class override ALL public
-methods along the lines of the ``getName()`` method shown below:
-
-.. code-block:: php
-
-    <?php
-    class UserProxy extends User implements Proxy
-    {
-        private function _load()
-        {
-            // lazy loading code
-        }
-    
-        public function getName()
-        {
-            $this->_load();
-            return parent::getName();
-        }
-        // .. other public methods of User
     }
 
 .. warning::
@@ -213,6 +192,11 @@ be properly synchronized with the database when
     database in the most efficient way and a single, short transaction,
     taking care of maintaining referential integrity.
 
+.. note::
+
+    Do not make any assumptions in your code about the number of queries
+    it takes to flush changes, about the ordering of ``INSERT``, ``UPDATE``
+    and ``DELETE`` queries or the order in which entities will be processed.
 
 Example:
 
@@ -250,6 +234,12 @@ as follows:
 -  If X is a detached entity, an exception will be thrown on
    flush.
 
+.. caution::
+
+    Do not pass detached entities to the persist operation. The persist operation always
+    considers entities that are not yet known to the ``EntityManager`` as new entities
+    (refer to the ``STATE_NEW`` constant inside the ``UnitOfWork``).
+
 Removing entities
 -----------------
 
@@ -269,7 +259,7 @@ which means that its persistent state will be deleted once
     for and appear in query and collection results. See
     the section on :ref:`Database and UnitOfWork Out-Of-Sync <workingobjects_database_uow_outofsync>`
     for more information.
-    
+
 
 Example:
 
@@ -298,24 +288,60 @@ as follows:
 -  A removed entity X will be removed from the database as a result
    of the flush operation.
 
-After an entity has been removed its in-memory state is the same as
+After an entity has been removed, its in-memory state is the same as
 before the removal, except for generated identifiers.
 
-Removing an entity will also automatically delete any existing
-records in many-to-many join tables that link this entity. The
-action taken depends on the value of the ``@joinColumn`` mapping
-attribute "onDelete". Either Doctrine issues a dedicated ``DELETE``
-statement for records of each join table or it depends on the
-foreign key semantics of onDelete="CASCADE".
+During the ``EntityManager#flush()`` operation, the removed entity
+will also be removed from all collections in entities currently
+loaded into memory.
+
+.. _remove_object_many_to_many_join_tables:
+
+Join-table management when removing from many-to-many collections
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Regarding existing rows in many-to-many join tables that refer to
+an entity being removed, the following applies.
+
+When the entity being removed does not declare the many-to-many association
+itself (that is, the many-to-many association is unidirectional and
+the entity is on the inverse side), the ORM has no reasonable way to
+detect associations targeting the entity's class. Thus, no ORM-level handling
+of join-table rows is attempted and database-level constraints apply.
+In case of database-level ``ON DELETE RESTRICT`` constraints, the
+``EntityManager#flush()`` operation may abort and a ``ConstraintViolationException``
+may be thrown. No in-memory collections will be modified in this case.
+With ``ON DELETE CASCADE``, the RDBMS will take care of removing rows
+from join tables.
+
+When the entity being removed is part of bi-directional many-to-many
+association, either as the owning or inverse side, the ORM will
+delete rows from join tables before removing the entity itself. That means
+database-level ``ON DELETE RESTRICT`` constraints on join tables are not
+effective, since the join table rows are removed first. Removal of join table
+rows happens through specialized methods in entity and collection persister
+classes and take one query per entity and join table. In case the association
+uses a ``@JoinColumn`` configuration with ``onDelete="CASCADE"``, instead
+of using a dedicated ``DELETE`` query the database-level operation will be
+relied upon.
+
+.. note::
+
+    In case you rely on database-level ``ON DELETE RESTRICT`` constraints,
+    be aware that by making many-to-many associations bidirectional the
+    assumed protection may be lost.
+
+
+Performance of different deletion strategies
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Deleting an object with all its associated objects can be achieved
 in multiple ways with very different performance impacts.
 
-
-1. If an association is marked as ``CASCADE=REMOVE`` Doctrine 2
+1. If an association is marked as ``CASCADE=REMOVE`` Doctrine ORM
    will fetch this association. If its a Single association it will
    pass this entity to
-   ´EntityManager#remove()``. If the association is a collection, Doctrine will loop over all    its elements and pass them to``EntityManager#remove()\`.
+   ``EntityManager#remove()``. If the association is a collection, Doctrine will loop over all    its elements and pass them to``EntityManager#remove()``.
    In both cases the cascade remove semantics are applied recursively.
    For large object graphs this removal strategy can be very costly.
 2. Using a DQL ``DELETE`` statement allows you to delete multiple
@@ -329,6 +355,13 @@ in multiple ways with very different performance impacts.
    completely by-passes any foreign key ``onDelete=CASCADE`` option,
    because Doctrine will fetch and remove all associated entities
    explicitly nevertheless.
+
+.. note::
+
+    Calling ``remove`` on an entity will remove the object from the identity
+    map and therefore detach it. Querying the same entity again, for example
+    via a lazy loaded relation, will return a new object.
+
 
 Detaching entities
 ------------------
@@ -375,8 +408,7 @@ automatically without invoking the ``detach`` method:
    currently managed by the EntityManager instance become detached.
 -  When serializing an entity. The entity retrieved upon subsequent
    unserialization will be detached (This is the case for all entities
-   that are serialized and stored in some cache, i.e. when using the
-   Query Result Cache).
+   that are serialized and stored in some cache).
 
 The ``detach`` operation is usually not as frequently needed and
 used as ``persist`` and ``remove``.
@@ -400,14 +432,6 @@ Example:
     $entity = $em->merge($detachedEntity);
     // $entity now refers to the fully managed copy returned by the merge operation.
     // The EntityManager $em now manages the persistence of $entity as usual.
-
-.. note::
-
-    When you want to serialize/unserialize entities you
-    have to make all entity properties protected, never private. The
-    reason for this is, if you serialize a class that was a proxy
-    instance before, the private variables won't be serialized and a
-    PHP Notice is thrown.
 
 
 The semantics of the merge operation, applied to an entity X, are
@@ -640,7 +664,7 @@ just created via the "new" operator).
 Querying
 --------
 
-Doctrine 2 provides the following ways, in increasing level of
+Doctrine ORM provides the following ways, in increasing level of
 power and flexibility, to query for persistent objects. You should
 always start with the simplest one that suits your needs.
 
@@ -687,13 +711,13 @@ methods on a repository as follows:
 
     <?php
     // $em instanceof EntityManager
-    
+
     // All users that are 20 years old
     $users = $em->getRepository('MyProject\Domain\User')->findBy(array('age' => 20));
-    
+
     // All users that are 20 years old and have a surname of 'Miller'
     $users = $em->getRepository('MyProject\Domain\User')->findBy(array('age' => 20, 'surname' => 'Miller'));
-    
+
     // A single user by its nickname
     $user = $em->getRepository('MyProject\Domain\User')->findOneBy(array('nickname' => 'romanb'));
 
@@ -729,7 +753,7 @@ examples are equivalent:
     <?php
     // A single user by its nickname
     $user = $em->getRepository('MyProject\Domain\User')->findOneBy(array('nickname' => 'romanb'));
-    
+
     // A single user by its nickname (__call magic)
     $user = $em->getRepository('MyProject\Domain\User')->findOneByNickname('romanb');
 
@@ -743,8 +767,6 @@ Additionally, you can just count the result of the provided conditions when you 
 
 By Criteria
 ~~~~~~~~~~~
-
-.. versionadded:: 2.3
 
 The Repository implement the ``Doctrine\Common\Collections\Selectable``
 interface. That means you can build ``Doctrine\Common\Collections\Criteria``
@@ -787,7 +809,7 @@ A DQL query is represented by an instance of the
 
     <?php
     // $em instanceof EntityManager
-    
+
     // All users with an age between 20 and 30 (inclusive).
     $q = $em->createQuery("select u from MyDomain\Model\User u where u.age >= 20 and u.age <= 30");
     $users = $q->getResult();
@@ -823,7 +845,7 @@ By default the EntityManager returns a default implementation of
 ``Doctrine\ORM\EntityRepository`` when you call
 ``EntityManager#getRepository($entityClass)``. You can overwrite
 this behaviour by specifying the class name of your own Entity
-Repository in the Annotation, XML or YAML metadata. In large
+Repository in the Attribute, Annotation, XML or YAML metadata. In large
 applications that require lots of specialized DQL queries using a
 custom repository is one recommended way of grouping these queries
 in a central location.
@@ -832,21 +854,21 @@ in a central location.
 
     <?php
     namespace MyDomain\Model;
-    
+
+    use MyDomain\Model\UserRepository;
     use Doctrine\ORM\EntityRepository;
     use Doctrine\ORM\Mapping as ORM;
-    
-    /**
-     * @ORM\Entity(repositoryClass="MyDomain\Model\UserRepository")
-     */
+
+    #[ORM\Entity(repositoryClass: UserRepository::class)]
     class User
     {
-    
+
     }
-    
+
     class UserRepository extends EntityRepository
     {
-        public function getAllAdminUsers()
+        /** @return Collection<User> */
+        public function getAllAdminUsers(): Collection
         {
             return $this->_em->createQuery('SELECT u FROM MyDomain\Model\User u WHERE u.status = "admin"')
                              ->getResult();
@@ -859,7 +881,5 @@ You can access your repository now by calling:
 
     <?php
     // $em instanceof EntityManager
-    
+
     $admins = $em->getRepository('MyDomain\Model\User')->getAllAdminUsers();
-
-

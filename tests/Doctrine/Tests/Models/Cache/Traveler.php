@@ -1,8 +1,19 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\Cache;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\Mapping\Cache;
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\OneToMany;
+use Doctrine\ORM\Mapping\OneToOne;
+use Doctrine\ORM\Mapping\Table;
 
 /**
  * @Cache
@@ -12,6 +23,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 class Traveler
 {
     /**
+     * @var int
      * @Id
      * @GeneratedValue
      * @Column(type="integer")
@@ -19,80 +31,70 @@ class Traveler
     protected $id;
 
     /**
+     * @var string
      * @Column
      */
     protected $name;
 
     /**
+     * @psalm-var Collection<int, Travel>
      * @Cache("NONSTRICT_READ_WRITE")
      * @OneToMany(targetEntity="Travel", mappedBy="traveler", cascade={"persist", "remove"}, orphanRemoval=true)
-     *
-     * @var \Doctrine\Common\Collections\Collection
      */
     public $travels;
 
     /**
+     * @var TravelerProfile
      * @Cache
      * @OneToOne(targetEntity="TravelerProfile")
      */
      protected $profile;
 
-    /**
-     * @param string $name
-     */
-    public function __construct($name)
+    public function __construct(string $name)
     {
-        $this->name     = $name;
-        $this->travels  = new ArrayCollection();
+        $this->name    = $name;
+        $this->travels = new ArrayCollection();
     }
 
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
 
-    public function setId($id)
+    public function setId(int $id): void
     {
         $this->id = $id;
     }
 
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
 
-    public function setName($name)
+    public function setName(string $name): void
     {
         $this->name = $name;
     }
 
-    /**
-     * @return \Doctrine\Tests\Models\Cache\TravelerProfile
-     */
-    public function getProfile()
+    public function getProfile(): TravelerProfile
     {
         return $this->profile;
     }
 
-    /**
-     * @param \Doctrine\Tests\Models\Cache\TravelerProfile $profile
-     */
-    public function setProfile(TravelerProfile $profile)
+    public function setProfile(TravelerProfile $profile): void
     {
         $this->profile = $profile;
     }
 
-    public function getTravels()
+    /** @psalm-return Collection<int, Travel> */
+    public function getTravels(): Collection
     {
         return $this->travels;
     }
 
-    /**
-     * @param \Doctrine\Tests\Models\Cache\Travel $item
-     */
-    public function addTravel(Travel $item)
+    public function addTravel(Travel $item): void
     {
-        if ( ! $this->travels->contains($item)) {
+        if (! $this->travels->contains($item)) {
             $this->travels->add($item);
         }
 
@@ -101,10 +103,7 @@ class Traveler
         }
     }
 
-    /**
-     * @param \Doctrine\Tests\Models\Cache\Travel $item
-     */
-    public function removeTravel(Travel $item)
+    public function removeTravel(Travel $item): void
     {
         $this->travels->removeElement($item);
     }

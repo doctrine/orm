@@ -1,17 +1,24 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests;
 
 use Doctrine\Common\Annotations;
-use Doctrine\Common\Cache\ArrayCache;
-use Doctrine\Common\Version;
+use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DriverManager;
 use Doctrine\ORM\Cache\CacheConfiguration;
+use Doctrine\ORM\Cache\CacheFactory;
 use Doctrine\ORM\Cache\DefaultCacheFactory;
+use Doctrine\ORM\Cache\Logging\StatisticsCacheLogger;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\Mapping\Driver\AnnotationDriver;
-use Doctrine\Tests\Mocks;
+use Doctrine\ORM\ORMSetup;
 use Doctrine\Tests\Mocks\EntityManagerMock;
+use Psr\Cache\CacheItemPoolInterface;
+use Symfony\Component\Cache\Adapter\ArrayAdapter;
+
+use function realpath;
 
 /**
  * Base testcase class for all ORM testcases.
@@ -21,85 +28,38 @@ abstract class OrmTestCase extends DoctrineTestCase
     /**
      * The metadata cache that is shared between all ORM tests (except functional tests).
      *
-     * @var \Doctrine\Common\Cache\Cache|null
+     * @var CacheItemPoolInterface|null
      */
-    private static $_metadataCacheImpl = null;
+    private static $metadataCache = null;
 
     /**
      * The query cache that is shared between all ORM tests (except functional tests).
      *
-     * @var \Doctrine\Common\Cache\Cache|null
+     * @var CacheItemPoolInterface|null
      */
-    private static $_queryCacheImpl = null;
+    private static $queryCache = null;
 
-    /**
-     * @var bool
-     */
+    /** @var bool */
     protected $isSecondLevelCacheEnabled = false;
 
-    /**
-     * @var bool
-     */
+    /** @var bool */
     protected $isSecondLevelCacheLogEnabled = false;
 
-    /**
-     * @var \Doctrine\ORM\Cache\CacheFactory
-     */
+    /** @var CacheFactory */
     protected $secondLevelCacheFactory;
 
-    /**
-     * @var \Doctrine\ORM\Cache\Logging\StatisticsCacheLogger
-     */
+    /** @var StatisticsCacheLogger */
     protected $secondLevelCacheLogger;
 
-    /**
-     * @var \Doctrine\Common\Cache\Cache|null
-     */
-    protected $secondLevelCacheDriverImpl = null;
+    /** @var CacheItemPoolInterface|null */
+    private $secondLevelCache = null;
 
-    /**
-     * @param array $paths
-     * @param mixed $alias
-     *
-     * @return \Doctrine\ORM\Mapping\Driver\AnnotationDriver
-     */
-    protected function createAnnotationDriver($paths = [], $alias = null)
+    protected function createAnnotationDriver(array $paths = []): AnnotationDriver
     {
-        if (version_compare(Version::VERSION, '3.0.0', '>=')) {
-            $reader = new Annotations\CachedReader(new Annotations\AnnotationReader(), new ArrayCache());
-        } else if (version_compare(Version::VERSION, '2.2.0-DEV', '>=')) {
-            // Register the ORM Annotations in the AnnotationRegistry
-            $reader = new Annotations\SimpleAnnotationReader();
-
-            $reader->addNamespace('Doctrine\ORM\Mapping');
-
-            $reader = new Annotations\CachedReader($reader, new ArrayCache());
-        } else if (version_compare(Version::VERSION, '2.1.0-BETA3-DEV', '>=')) {
-            $reader = new Annotations\AnnotationReader();
-
-            $reader->setIgnoreNotImportedAnnotations(true);
-            $reader->setEnableParsePhpImports(false);
-
-            if ($alias) {
-                $reader->setAnnotationNamespaceAlias('Doctrine\ORM\Mapping\\', $alias);
-            } else {
-                $reader->setDefaultAnnotationNamespace('Doctrine\ORM\Mapping\\');
-            }
-
-            $reader = new Annotations\CachedReader(new Annotations\IndexedReader($reader), new ArrayCache());
-        } else {
-            $reader = new Annotations\AnnotationReader();
-
-            if ($alias) {
-                $reader->setAnnotationNamespaceAlias('Doctrine\ORM\Mapping\\', $alias);
-            } else {
-                $reader->setDefaultAnnotationNamespace('Doctrine\ORM\Mapping\\');
-            }
-        }
-
-        Annotations\AnnotationRegistry::registerFile(__DIR__ . "/../../../lib/Doctrine/ORM/Mapping/Driver/DoctrineAnnotations.php");
-
-        return new AnnotationDriver($reader, (array) $paths);
+        return new AnnotationDriver(
+            new Annotations\PsrCachedReader(new Annotations\AnnotationReader(), new ArrayAdapter()),
+            $paths
+        );
     }
 
     /**
@@ -109,98 +69,67 @@ abstract class OrmTestCase extends DoctrineTestCase
      * mocked out using a DriverMock, ConnectionMock, etc. These mocks can then
      * be configured in the tests to simulate the DBAL behavior that is desired
      * for a particular test,
-     *
-     * @param \Doctrine\DBAL\Connection|array    $conn
-     * @param mixed                              $conf
-     * @param \Doctrine\Common\EventManager|null $eventManager
-     * @param bool                               $withSharedMetadata
      */
-    protected function _getTestEntityManager($conn = null, $conf = null, $eventManager = null, $withSharedMetadata = true) : EntityManagerMock
+    protected function getTestEntityManager(?Connection $connection = null): EntityManagerMock
     {
-        $metadataCache = $withSharedMetadata
-            ? self::getSharedMetadataCacheImpl()
-            : new ArrayCache();
+        $metadataCache = self::getSharedMetadataCacheImpl();
 
         $config = new Configuration();
 
-        $config->setMetadataCacheImpl($metadataCache);
-        $config->setMetadataDriverImpl($config->newDefaultAnnotationDriver([], true));
-        $config->setQueryCacheImpl(self::getSharedQueryCacheImpl());
-        $config->setProxyDir(__DIR__ . '/Proxies');
-        $config->setProxyNamespace('Doctrine\Tests\Proxies');
-        $config->setMetadataDriverImpl($config->newDefaultAnnotationDriver(
-            [
-            realpath(__DIR__ . '/Models/Cache')
-            ], true));
+        TestUtil::configureProxies($config);
+        $config->setMetadataCache($metadataCache);
+        $config->setQueryCache(self::getSharedQueryCache());
+        $config->setMetadataDriverImpl(ORMSetup::createDefaultAnnotationDriver([
+            realpath(__DIR__ . '/Models/Cache'),
+        ], null, true));
 
         if ($this->isSecondLevelCacheEnabled) {
-
-            $cacheConfig    = new CacheConfiguration();
-            $cache          = $this->getSharedSecondLevelCacheDriverImpl();
-            $factory        = new DefaultCacheFactory($cacheConfig->getRegionsConfiguration(), $cache);
+            $cacheConfig = new CacheConfiguration();
+            $factory     = new DefaultCacheFactory(
+                $cacheConfig->getRegionsConfiguration(),
+                $this->getSharedSecondLevelCache()
+            );
 
             $this->secondLevelCacheFactory = $factory;
 
             $cacheConfig->setCacheFactory($factory);
-            $config->setSecondLevelCacheEnabled(true);
+            $config->setSecondLevelCacheEnabled();
             $config->setSecondLevelCacheConfiguration($cacheConfig);
         }
 
-        if ($conn === null) {
-            $conn = [
+        if ($connection === null) {
+            $connection = DriverManager::getConnection([
                 'driverClass'  => Mocks\DriverMock::class,
                 'wrapperClass' => Mocks\ConnectionMock::class,
                 'user'         => 'john',
-                'password'     => 'wayne'
-            ];
+                'password'     => 'wayne',
+            ], $config);
         }
 
-        if (is_array($conn)) {
-            $conn = DriverManager::getConnection($conn, $config, $eventManager);
-        }
-
-        return EntityManagerMock::create($conn, $config, $eventManager);
+        return new EntityManagerMock($connection, $config);
     }
 
-    protected function enableSecondLevelCache($log = true)
+    protected function enableSecondLevelCache(bool $log = true): void
     {
         $this->isSecondLevelCacheEnabled    = true;
         $this->isSecondLevelCacheLogEnabled = $log;
     }
 
-    /**
-     * @return \Doctrine\Common\Cache\Cache
-     */
-    private static function getSharedMetadataCacheImpl()
+    private static function getSharedMetadataCacheImpl(): CacheItemPoolInterface
     {
-        if (self::$_metadataCacheImpl === null) {
-            self::$_metadataCacheImpl = new ArrayCache();
-        }
-
-        return self::$_metadataCacheImpl;
+        return self::$metadataCache
+            ?? self::$metadataCache = new ArrayAdapter();
     }
 
-    /**
-     * @return \Doctrine\Common\Cache\Cache
-     */
-    private static function getSharedQueryCacheImpl()
+    private static function getSharedQueryCache(): CacheItemPoolInterface
     {
-        if (self::$_queryCacheImpl === null) {
-            self::$_queryCacheImpl = new ArrayCache();
-        }
-
-        return self::$_queryCacheImpl;
+        return self::$queryCache
+            ?? self::$queryCache = new ArrayAdapter();
     }
 
-    /**
-     * @return \Doctrine\Common\Cache\Cache
-     */
-    protected function getSharedSecondLevelCacheDriverImpl()
+    protected function getSharedSecondLevelCache(): CacheItemPoolInterface
     {
-        if ($this->secondLevelCacheDriverImpl === null) {
-            $this->secondLevelCacheDriverImpl = new ArrayCache();
-        }
-
-        return $this->secondLevelCacheDriverImpl;
+        return $this->secondLevelCache
+            ?? $this->secondLevelCache = new ArrayAdapter();
     }
 }

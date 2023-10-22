@@ -1,19 +1,45 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\DDC3699;
 
-/** @Entity @Table(name="ddc3699_child") */
+use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\OneToMany;
+use Doctrine\ORM\Mapping\OneToOne;
+use Doctrine\ORM\Mapping\Table;
+
+/**
+ * @Entity
+ * @Table(name="ddc3699_child")
+ */
 class DDC3699Child extends DDC3699Parent
 {
-    /** @Id @Column(type="integer") */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     */
     public $id;
 
-    /** @Column(type="string") */
+    /**
+     * @var string
+     * @Column(type="string", length=255)
+     */
     public $childField;
 
-    /** @OneToOne(targetEntity="DDC3699RelationOne", inversedBy="child") */
+    /**
+     * @var DDC3699RelationOne
+     * @OneToOne(targetEntity="DDC3699RelationOne", inversedBy="child")
+     */
     public $oneRelation;
 
-    /** @OneToMany(targetEntity="DDC3699RelationMany", mappedBy="child") */
+    /**
+     * @psalm-var Collection<int, DDC3699RelationMany>
+     * @OneToMany(targetEntity="DDC3699RelationMany", mappedBy="child")
+     */
     public $relations;
 }

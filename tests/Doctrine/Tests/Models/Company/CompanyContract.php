@@ -1,19 +1,45 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\Company;
+
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\Events;
+use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\DiscriminatorColumn;
+use Doctrine\ORM\Mapping\DiscriminatorMap;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\EntityListeners;
+use Doctrine\ORM\Mapping\EntityResult;
+use Doctrine\ORM\Mapping\FieldResult;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\InheritanceType;
+use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\JoinTable;
+use Doctrine\ORM\Mapping\ManyToMany;
+use Doctrine\ORM\Mapping\ManyToOne;
+use Doctrine\ORM\Mapping\NamedNativeQueries;
+use Doctrine\ORM\Mapping\NamedNativeQuery;
+use Doctrine\ORM\Mapping\SqlResultSetMapping;
+use Doctrine\ORM\Mapping\SqlResultSetMappings;
+use Doctrine\ORM\Mapping\Table;
 
 /**
  * @Entity
  * @Table(name="company_contracts")
  * @InheritanceType("SINGLE_TABLE")
- * @DiscriminatorColumn(name="discr", type="string")
+ * @DiscriminatorColumn(name="discr", type="string", length=255)
  * @EntityListeners({"CompanyContractListener"})
  * @DiscriminatorMap({
  *     "fix"       = "CompanyFixContract",
  *     "flexible"  = "CompanyFlexContract",
  *     "flexultra" = "CompanyFlexUltraContract"
  * })
- *
  * @NamedNativeQueries({
  *      @NamedNativeQuery(
  *          name           = "all-contracts",
@@ -26,7 +52,6 @@ namespace Doctrine\Tests\Models\Company;
  *          query          = "SELECT id, completed, discr FROM company_contracts"
  *      ),
  * })
- *
  * @SqlResultSetMappings({
  *      @SqlResultSetMapping(
  *          name    = "mapping-all-contracts",
@@ -56,14 +81,27 @@ namespace Doctrine\Tests\Models\Company;
  *      ),
  * })
  */
+#[ORM\Entity]
+#[ORM\Table(name: 'company_contracts')]
+#[ORM\InheritanceType('SINGLE_TABLE')]
+#[ORM\DiscriminatorColumn(name: 'discr', type: 'string')]
+#[ORM\DiscriminatorMap(['fix' => 'CompanyFixContract', 'flexible' => 'CompanyFlexContract', 'flexultra' => 'CompanyFlexUltraContract'])]
+#[ORM\EntityListeners(['CompanyContractListener'])]
 abstract class CompanyContract
 {
     /**
-     * @Id @column(type="integer") @GeneratedValue
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
      */
+    #[ORM\Id]
+    #[ORM\Column(type: 'integer')]
+    #[ORM\GeneratedValue]
     private $id;
 
     /**
+     * @var CompanyEmployee
      * @ManyToOne(targetEntity="CompanyEmployee", inversedBy="soldContracts")
      */
     private $salesPerson;
@@ -75,6 +113,7 @@ abstract class CompanyContract
     private $completed = false;
 
     /**
+     * @psalm-var Collection<int, CompanyEmployee>
      * @ManyToMany(targetEntity="CompanyEmployee", inversedBy="contracts")
      * @JoinTable(name="company_contract_employees",
      *    joinColumns={@JoinColumn(name="contract_id", referencedColumnName="id", onDelete="CASCADE")},
@@ -85,96 +124,97 @@ abstract class CompanyContract
 
     public function __construct()
     {
-        $this->engineers = new \Doctrine\Common\Collections\ArrayCollection;
+        $this->engineers = new ArrayCollection();
     }
 
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
 
-    public function markCompleted()
+    public function markCompleted(): void
     {
         $this->completed = true;
     }
 
-    public function isCompleted()
+    public function isCompleted(): bool
     {
         return $this->completed;
     }
 
-    public function getSalesPerson()
+    public function getSalesPerson(): CompanyEmployee
     {
         return $this->salesPerson;
     }
 
-    public function setSalesPerson(CompanyEmployee $salesPerson)
+    public function setSalesPerson(CompanyEmployee $salesPerson): void
     {
         $this->salesPerson = $salesPerson;
     }
 
-    public function getEngineers()
+    /** @psalm-return Collection<int, CompanyEmployee> */
+    public function getEngineers(): Collection
     {
         return $this->engineers;
     }
 
-    public function addEngineer(CompanyEmployee $engineer)
+    public function addEngineer(CompanyEmployee $engineer): void
     {
         $this->engineers[] = $engineer;
     }
 
-    public function removeEngineer(CompanyEmployee $engineer)
+    public function removeEngineer(CompanyEmployee $engineer): void
     {
         $this->engineers->removeElement($engineer);
     }
 
-    abstract public function calculatePrice();
+    abstract public function calculatePrice(): int;
 
-    static public function loadMetadata(\Doctrine\ORM\Mapping\ClassMetadataInfo $metadata)
+    public static function loadMetadata(ClassMetadata $metadata): void
     {
-        $metadata->setInheritanceType(\Doctrine\ORM\Mapping\ClassMetadata::INHERITANCE_TYPE_JOINED);
-        $metadata->setTableName( 'company_contracts');
+        $metadata->setInheritanceType(ClassMetadata::INHERITANCE_TYPE_JOINED);
+        $metadata->setTableName('company_contracts');
         $metadata->setDiscriminatorColumn(
             [
-            'name' => 'discr',
-            'type' => 'string',
+                'name' => 'discr',
+                'type' => 'string',
             ]
         );
 
         $metadata->mapField(
             [
-            'id'        => true,
-            'name'      => 'id',
-            'fieldName' => 'id',
+                'id'        => true,
+                'name'      => 'id',
+                'fieldName' => 'id',
             ]
         );
 
         $metadata->mapField(
             [
-            'type'      => 'boolean',
-            'name'      => 'completed',
-            'fieldName' => 'completed',
+                'type'      => 'boolean',
+                'name'      => 'completed',
+                'fieldName' => 'completed',
             ]
         );
 
         $metadata->setDiscriminatorMap(
             [
-            "fix"       => "CompanyFixContract",
-            "flexible"  => "CompanyFlexContract",
-            "flexultra" => "CompanyFlexUltraContract"
+                'fix'       => 'CompanyFixContract',
+                'flexible'  => 'CompanyFlexContract',
+                'flexultra' => 'CompanyFlexUltraContract',
             ]
         );
 
-        $metadata->addEntityListener(\Doctrine\ORM\Events::postPersist, 'CompanyContractListener', 'postPersistHandler');
-        $metadata->addEntityListener(\Doctrine\ORM\Events::prePersist, 'CompanyContractListener', 'prePersistHandler');
+        $metadata->addEntityListener(Events::postPersist, 'CompanyContractListener', 'postPersistHandler');
+        $metadata->addEntityListener(Events::prePersist, 'CompanyContractListener', 'prePersistHandler');
 
-        $metadata->addEntityListener(\Doctrine\ORM\Events::postUpdate, 'CompanyContractListener', 'postUpdateHandler');
-        $metadata->addEntityListener(\Doctrine\ORM\Events::preUpdate, 'CompanyContractListener', 'preUpdateHandler');
+        $metadata->addEntityListener(Events::postUpdate, 'CompanyContractListener', 'postUpdateHandler');
+        $metadata->addEntityListener(Events::preUpdate, 'CompanyContractListener', 'preUpdateHandler');
 
-        $metadata->addEntityListener(\Doctrine\ORM\Events::postRemove, 'CompanyContractListener', 'postRemoveHandler');
-        $metadata->addEntityListener(\Doctrine\ORM\Events::preRemove, 'CompanyContractListener', 'preRemoveHandler');
+        $metadata->addEntityListener(Events::postRemove, 'CompanyContractListener', 'postRemoveHandler');
+        $metadata->addEntityListener(Events::preRemove, 'CompanyContractListener', 'preRemoveHandler');
 
-        $metadata->addEntityListener(\Doctrine\ORM\Events::preFlush, 'CompanyContractListener', 'preFlushHandler');
-        $metadata->addEntityListener(\Doctrine\ORM\Events::postLoad, 'CompanyContractListener', 'postLoadHandler');
+        $metadata->addEntityListener(Events::preFlush, 'CompanyContractListener', 'preFlushHandler');
+        $metadata->addEntityListener(Events::postLoad, 'CompanyContractListener', 'postLoadHandler');
     }
 }

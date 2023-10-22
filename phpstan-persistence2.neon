@@ -1,0 +1,38 @@
+includes:
+    - phpstan-baseline.neon
+    - phpstan-params.neon
+
+parameters:
+    ignoreErrors:
+        # deprecations from doctrine/dbal:3.x
+        - '/^Call to an undefined method Doctrine\\DBAL\\Platforms\\AbstractPlatform::getGuidExpression\(\).$/'
+
+        # Fallback logic for DBAL 2
+        -
+            message: '/Application::add\(\) expects Symfony\\Component\\Console\\Command\\Command/'
+            path: lib/Doctrine/ORM/Tools/Console/ConsoleRunner.php
+
+        - '/^Class Doctrine\\DBAL\\Platforms\\SQLAnywherePlatform not found\.$/'
+        - '/^Call to method \w+\(\) on an unknown class Doctrine\\DBAL\\Platforms\\SQLAnywherePlatform\.$/'
+
+        -
+        	message: '/^Call to an undefined method Doctrine\\DBAL\\Platforms\\AbstractPlatform::getSQLResultCasing\(\)\.$/'
+        	path: lib/Doctrine/ORM/Internal/SQLResultCasing.php
+        -
+        	message: '/^Parameter \$stmt of method .* has invalid type Doctrine\\DBAL\\Driver\\ResultStatement\.$/'
+        	path: lib/Doctrine/ORM/Internal/Hydration/AbstractHydrator.php
+        -
+        	message: '/^Class Doctrine\\DBAL\\Driver\\ResultStatement not found\.$/'
+        	path: lib/Doctrine/ORM/Internal/Hydration/AbstractHydrator.php
+        -
+        	message: '/^Call to static method ensure\(\) on an unknown class Doctrine\\DBAL\\ForwardCompatibility\\Result\.$/'
+        	path: lib/Doctrine/ORM/Internal/Hydration/AbstractHydrator.php
+
+        # False positive
+        -
+            message: '/^Call to an undefined method Doctrine\\Common\\Cache\\Cache::deleteAll\(\)\.$/'
+            count: 1
+            path: lib/Doctrine/ORM/Tools/Console/Command/ClearCache/ResultCommand.php
+
+        # Symfony cache supports passing a key prefix to the clear method.
+        - '/^Method Psr\\Cache\\CacheItemPoolInterface\:\:clear\(\) invoked with 1 parameter, 0 required\.$/'

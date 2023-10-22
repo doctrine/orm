@@ -1,7 +1,16 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\ManyToOne;
+use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
@@ -10,24 +19,19 @@ use Doctrine\Tests\OrmFunctionalTestCase;
  */
 class DDC2350Test extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
 
-        $this->_schemaTool->createSchema(
-            [
-            $this->_em->getClassMetadata(DDC2350User::class),
-            $this->_em->getClassMetadata(DDC2350Bug::class),
-            ]
-        );
+        $this->createSchemaForModels(DDC2350User::class, DDC2350Bug::class);
     }
 
-    public function testEagerCollectionsAreOnlyRetrievedOnce()
+    public function testEagerCollectionsAreOnlyRetrievedOnce(): void
     {
-        $user = new DDC2350User();
-        $bug1 = new DDC2350Bug();
+        $user       = new DDC2350User();
+        $bug1       = new DDC2350Bug();
         $bug1->user = $user;
-        $bug2 = new DDC2350Bug();
+        $bug2       = new DDC2350Bug();
         $bug2->user = $user;
 
         $this->_em->persist($user);
@@ -37,35 +41,48 @@ class DDC2350Test extends OrmFunctionalTestCase
 
         $this->_em->clear();
 
-        $cnt = $this->getCurrentQueryCount();
+        $this->getQueryLog()->reset()->enable();
         $user = $this->_em->find(DDC2350User::class, $user->id);
 
-        $this->assertEquals($cnt + 1, $this->getCurrentQueryCount());
+        $this->assertQueryCount(1);
 
-        $this->assertEquals(2, count($user->reportedBugs));
+        self::assertCount(2, $user->reportedBugs);
 
-        $this->assertEquals($cnt + 1, $this->getCurrentQueryCount());
+        $this->assertQueryCount(1);
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC2350User
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     */
     public $id;
-    /** @OneToMany(targetEntity="DDC2350Bug", mappedBy="user", fetch="EAGER") */
+
+    /**
+     * @psalm-var Collection<int, DDC2350Bug>
+     * @OneToMany(targetEntity="DDC2350Bug", mappedBy="user", fetch="EAGER")
+     */
     public $reportedBugs;
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC2350Bug
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     */
     public $id;
-    /** @ManyToOne(targetEntity="DDC2350User", inversedBy="reportedBugs") */
+    /**
+     * @var DDC2350User
+     * @ManyToOne(targetEntity="DDC2350User", inversedBy="reportedBugs")
+     */
     public $user;
 }

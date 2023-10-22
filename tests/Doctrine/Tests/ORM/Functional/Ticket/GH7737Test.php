@@ -5,15 +5,20 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\Criteria;
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\JoinTable;
+use Doctrine\ORM\Mapping\ManyToMany;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-/**
- * @group GH7737
- */
+/** @group GH7737 */
 class GH7737Test extends OrmFunctionalTestCase
 {
-    protected function setUp() : void
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -30,10 +35,8 @@ class GH7737Test extends OrmFunctionalTestCase
         $this->_em->clear();
     }
 
-    /**
-     * @test
-     */
-    public function memberOfCriteriaShouldBeCompatibleWithQueryBuilder() : void
+    /** @test */
+    public function memberOfCriteriaShouldBeCompatibleWithQueryBuilder(): void
     {
         $query = $this->_em->createQueryBuilder()
             ->select('person')
@@ -54,18 +57,20 @@ class GH7737Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class GH7737Group
 {
     /**
+     * @var int
      * @Id
      * @Column(type="integer")
      */
     public $id;
 
-    /** @Column */
+    /**
+     * @var string
+     * @Column
+     */
     public $name;
 
     public function __construct(int $id, string $name)
@@ -75,18 +80,18 @@ class GH7737Group
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class GH7737Person
 {
     /**
+     * @var int
      * @Id
      * @Column(type="integer")
      */
     public $id;
 
     /**
+     * @var Collection<int, GH7737Group>
      * @ManyToMany(targetEntity=GH7737Group::class)
      * @JoinTable(inverseJoinColumns={@JoinColumn(name="group_id", referencedColumnName="id", unique=true)})
      */

@@ -1,23 +1,22 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Tools\Export;
+
+use function class_exists;
 
 /**
  * Test case for YamlClassMetadataExporterTest
  *
- * @author      Jonathan H. Wage <jonwage@gmail.com>
- * @author      Roman Borschel <roman@code-factory.org
- * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link        http://www.phpdoctrine.org
- * @since       2.0
- * @version     $Revision$
  */
-class YamlClassMetadataExporterTest extends AbstractClassMetadataExporterTest
+class YamlClassMetadataExporterTest extends ClassMetadataExporterTestCase
 {
-    protected function _getType()
+    protected function getType(): string
     {
-        if (!class_exists('Symfony\Component\Yaml\Yaml', true)) {
-            $this->markTestSkipped('Please install Symfony YAML Component into the include path of your PHP installation.');
+        if (! class_exists('Symfony\Component\Yaml\Yaml', true)) {
+            self::markTestSkipped('Please install Symfony YAML Component into the include path of your PHP installation.');
         }
 
         return 'yaml';

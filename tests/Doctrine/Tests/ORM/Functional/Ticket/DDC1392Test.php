@@ -1,37 +1,33 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\UnitOfWork;
-use Doctrine\Tests\VerifyDeprecations;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
-/**
- * @group DDC-1392
- */
-class DDC1392Test extends \Doctrine\Tests\OrmFunctionalTestCase
+/** @group DDC-1392 */
+class DDC1392Test extends OrmFunctionalTestCase
 {
-    use VerifyDeprecations;
-
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
 
-        try {
-            $this->_schemaTool->createSchema(
-                [
-                $this->_em->getClassMetadata(DDC1392File::class),
-                $this->_em->getClassMetadata(DDC1392Picture::class),
-                ]
-            );
-        } catch (\Exception $ignored) {
-        }
+        $this->createSchemaForModels(DDC1392File::class, DDC1392Picture::class);
     }
 
-    public function testFailingCase()
+    public function testFailingCase(): void
     {
-        $file = new DDC1392File;
+        $file = new DDC1392File();
 
-        $picture = new DDC1392Picture;
+        $picture = new DDC1392Picture();
         $picture->setFile($file);
 
         $em = $this->_em;
@@ -39,13 +35,13 @@ class DDC1392Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $em->flush();
         $em->clear();
 
-        $fileId = $file->getFileId();
+        $fileId    = $file->getFileId();
         $pictureId = $picture->getPictureId();
 
-        $this->assertTrue($fileId > 0);
+        self::assertTrue($fileId > 0);
 
         $picture = $em->find(DDC1392Picture::class, $pictureId);
-        $this->assertEquals(UnitOfWork::STATE_MANAGED, $em->getUnitOfWork()->getEntityState($picture->getFile()), "Lazy Proxy should be marked MANAGED.");
+        self::assertEquals(UnitOfWork::STATE_MANAGED, $em->getUnitOfWork()->getEntityState($picture->getFile()), 'Lazy Proxy should be marked MANAGED.');
 
         $file = $picture->getFile();
 
@@ -60,72 +56,59 @@ class DDC1392Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $em->flush();
 
-        $q = $this->_em->createQuery("SELECT COUNT(e) FROM " . __NAMESPACE__ . '\DDC1392File e');
+        $q      = $this->_em->createQuery('SELECT COUNT(e) FROM ' . __NAMESPACE__ . '\DDC1392File e');
         $result = $q->getSingleScalarResult();
 
         self::assertEquals(1, $result);
-        $this->assertHasDeprecationMessages();
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC1392Picture
 {
     /**
+     * @var int
      * @Column(name="picture_id", type="integer")
-     * @Id @GeneratedValue
+     * @Id
+     * @GeneratedValue
      */
     private $pictureId;
 
     /**
+     * @var DDC1392File
      * @ManyToOne(targetEntity="DDC1392File", cascade={"persist", "remove"})
      * @JoinColumn(name="file_id", referencedColumnName="file_id")
      */
     private $file;
 
-    /**
-     * Get pictureId
-     */
-    public function getPictureId()
+    public function getPictureId(): int
     {
         return $this->pictureId;
     }
 
-    /**
-     * Set file
-     */
-    public function setFile($value = null)
+    public function setFile(?DDC1392File $value = null): void
     {
         $this->file = $value;
     }
 
-    /**
-     * Get file
-     */
-    public function getFile()
+    public function getFile(): ?DDC1392File
     {
         return $this->file;
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC1392File
 {
     /**
+     * @var int
      * @Column(name="file_id", type="integer")
      * @Id
      * @GeneratedValue(strategy="AUTO")
      */
     public $fileId;
 
-    /**
-     * Get fileId
-     */
-    public function getFileId()
+    public function getFileId(): int
     {
         return $this->fileId;
     }

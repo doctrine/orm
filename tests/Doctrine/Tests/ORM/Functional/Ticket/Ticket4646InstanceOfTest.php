@@ -1,7 +1,17 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\DiscriminatorColumn;
+use Doctrine\ORM\Mapping\DiscriminatorMap;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\InheritanceType;
+use Doctrine\ORM\Mapping\Table;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 class Ticket4646InstanceOfTest extends OrmFunctionalTestCase
@@ -10,10 +20,10 @@ class Ticket4646InstanceOfTest extends OrmFunctionalTestCase
     {
         parent::setUp();
 
-        $this->_schemaTool->createSchema([
-            $this->_em->getClassMetadata(PersonTicket4646::class),
-            $this->_em->getClassMetadata(EmployeeTicket4646::class),
-        ]);
+        $this->createSchemaForModels(
+            PersonTicket4646::class,
+            EmployeeTicket4646::class
+        );
     }
 
     public function testInstanceOf(): void
@@ -22,9 +32,9 @@ class Ticket4646InstanceOfTest extends OrmFunctionalTestCase
         $this->_em->persist(new EmployeeTicket4646());
         $this->_em->flush();
 
-        $dql = 'SELECT p FROM Doctrine\Tests\ORM\Functional\Ticket\PersonTicket4646 p
+        $dql    = 'SELECT p FROM Doctrine\Tests\ORM\Functional\Ticket\PersonTicket4646 p
                 WHERE p INSTANCE OF Doctrine\Tests\ORM\Functional\Ticket\PersonTicket4646';
-        $query = $this->_em->createQuery($dql);
+        $query  = $this->_em->createQuery($dql);
         $result = $query->getResult();
 
         self::assertCount(2, $result);
@@ -45,6 +55,7 @@ class Ticket4646InstanceOfTest extends OrmFunctionalTestCase
 class PersonTicket4646
 {
     /**
+     * @var int
      * @Id()
      * @GeneratedValue()
      * @Column(type="integer")

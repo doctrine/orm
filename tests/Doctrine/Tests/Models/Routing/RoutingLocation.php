@@ -1,24 +1,32 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\Routing;
 
-/**
- * @Entity
- */
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
+
+/** @Entity */
 class RoutingLocation
 {
     /**
-     * @Id @GeneratedValue
+     * @var int
+     * @Id
+     * @GeneratedValue
      * @Column(type="integer")
      */
     public $id;
 
     /**
-     * @Column(type="string")
+     * @var string
+     * @Column(type="string", length=255)
      */
     public $name;
 
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }

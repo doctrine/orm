@@ -1,14 +1,18 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\ORM\Mapping\ChangeTrackingPolicy;
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 class GH7629Test extends OrmFunctionalTestCase
 {
-    /**
-     * {@inheritDoc}
-     */
     protected function setUp(): void
     {
         parent::setUp();
@@ -31,6 +35,18 @@ class GH7629Test extends OrmFunctionalTestCase
 
         self::assertFalse($this->_em->getUnitOfWork()->isScheduledForDirtyCheck($entity));
     }
+
+    /** @group GH-8231 */
+    public function testPersistAfterRemoveSchedulesForSynchronization(): void
+    {
+        $entity = $this->_em->find(GH7629Entity::class, 1);
+
+        $this->_em->remove($entity);
+
+        $this->_em->persist($entity);
+
+        self::assertTrue($this->_em->getUnitOfWork()->isScheduledForDirtyCheck($entity));
+    }
 }
 
 /**
@@ -40,6 +56,7 @@ class GH7629Test extends OrmFunctionalTestCase
 class GH7629Entity
 {
     /**
+     * @var int
      * @Id
      * @Column(type="integer")
      * @GeneratedValue

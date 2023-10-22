@@ -32,62 +32,62 @@ information about its type and if it's the owning or inverse side.
 .. code-block:: php
 
     <?php
-    /** @Entity */
+    #[Entity]
     class User
     {
-        /** @Id @GeneratedValue @Column(type="string") */
-        private $id;
-    
+        #[Id, GeneratedValue, Column]
+        private int|null $id = null;
+
         /**
          * Bidirectional - Many users have Many favorite comments (OWNING SIDE)
          *
-         * @ManyToMany(targetEntity="Comment", inversedBy="userFavorites")
-         * @JoinTable(name="user_favorite_comments")
+         * @var Collection<int, Comment>
          */
-        private $favorites;
-    
+        #[ManyToMany(targetEntity: Comment::class, inversedBy: 'userFavorites')]
+        #[JoinTable(name: 'user_favorite_comments')]
+        private Collection $favorites;
+
         /**
          * Unidirectional - Many users have marked many comments as read
          *
-         * @ManyToMany(targetEntity="Comment")
-         * @JoinTable(name="user_read_comments")
+         * @var Collection<int, Comment>
          */
-        private $commentsRead;
-    
+        #[ManyToMany(targetEntity: Comment::class)]
+        #[JoinTable(name: 'user_read_comments')]
+        private Collection $commentsRead;
+
         /**
          * Bidirectional - One-To-Many (INVERSE SIDE)
          *
-         * @OneToMany(targetEntity="Comment", mappedBy="author")
+         * @var Collection<int, Comment>
          */
-        private $commentsAuthored;
-    
-        /**
-         * Unidirectional - Many-To-One
-         *
-         * @ManyToOne(targetEntity="Comment")
-         */
-        private $firstComment;
+        #[OneToMany(targetEntity: Comment::class, mappedBy: 'author')]
+        private Collection $commentsAuthored;
+
+        /** Unidirectional - Many-To-One */
+        #[ManyToOne(targetEntity: Comment::class)]
+        private Comment|null $firstComment = null;
     }
-    
-    /** @Entity */
+
+    #[Entity]
     class Comment
     {
-        /** @Id @GeneratedValue @Column(type="string") */
-        private $id;
-    
+        #[Id, GeneratedValue, Column]
+        private string $id;
+
         /**
          * Bidirectional - Many comments are favorited by many users (INVERSE SIDE)
          *
-         * @ManyToMany(targetEntity="User", mappedBy="favorites")
+         * @var Collection<int, User>
          */
-        private $userFavorites;
-    
+        #[ManyToMany(targetEntity: User::class, mappedBy: 'favorites')]
+        private Collection $userFavorites;
+
         /**
          * Bidirectional - Many Comments are authored by one user (OWNING SIDE)
-         *
-         * @ManyToOne(targetEntity="User", inversedBy="commentsAuthored")
          */
-         private $author;
+        #[ManyToOne(targetEntity: User::class, inversedBy: 'commentsAuthored')]
+        private User|null $author = null;
     }
 
 This two entities generate the following MySQL Schema (Foreign Key
@@ -100,19 +100,19 @@ definitions omitted):
         firstComment_id VARCHAR(255) DEFAULT NULL,
         PRIMARY KEY(id)
     ) ENGINE = InnoDB;
-    
+
     CREATE TABLE Comment (
         id VARCHAR(255) NOT NULL,
         author_id VARCHAR(255) DEFAULT NULL,
         PRIMARY KEY(id)
     ) ENGINE = InnoDB;
-    
+
     CREATE TABLE user_favorite_comments (
         user_id VARCHAR(255) NOT NULL,
         favorite_comment_id VARCHAR(255) NOT NULL,
         PRIMARY KEY(user_id, favorite_comment_id)
     ) ENGINE = InnoDB;
-    
+
     CREATE TABLE user_read_comments (
         user_id VARCHAR(255) NOT NULL,
         comment_id VARCHAR(255) NOT NULL,
@@ -132,11 +132,12 @@ relations of the ``User``:
     class User
     {
         // ...
-        public function getReadComments() {
+        /** @return Collection<int, Comment> */
+        public function getReadComments(): Collection {
              return $this->commentsRead;
         }
-    
-        public function setFirstComment(Comment $c) {
+
+        public function setFirstComment(Comment $c): void {
             $this->firstComment = $c;
         }
     }
@@ -148,17 +149,17 @@ The interaction code would then look like in the following snippet
 
     <?php
     $user = $em->find('User', $userId);
-    
+
     // unidirectional many to many
     $comment = $em->find('Comment', $readCommentId);
     $user->getReadComments()->add($comment);
-    
+
     $em->flush();
-    
+
     // unidirectional many to one
     $myFirstComment = new Comment();
     $user->setFirstComment($myFirstComment);
-    
+
     $em->persist($myFirstComment);
     $em->flush();
 
@@ -171,40 +172,43 @@ fields on both sides:
     class User
     {
         // ..
-    
-        public function getAuthoredComments() {
+
+        /** @return Collection<int, Comment> */
+        public function getAuthoredComments(): Collection {
             return $this->commentsAuthored;
         }
-    
-        public function getFavoriteComments() {
+
+        /** @return Collection<int, Comment> */
+        public function getFavoriteComments(): Collection {
             return $this->favorites;
         }
     }
-    
+
     class Comment
     {
         // ...
-    
-        public function getUserFavorites() {
+
+        /** @return Collection<int, User> */
+        public function getUserFavorites(): Collection {
             return $this->userFavorites;
         }
-    
-        public function setAuthor(User $author = null) {
+
+        public function setAuthor(User|null $author = null): void {
             $this->author = $author;
         }
     }
-    
+
     // Many-to-Many
     $user->getFavorites()->add($favoriteComment);
     $favoriteComment->getUserFavorites()->add($user);
-    
+
     $em->flush();
-    
+
     // Many-To-One / One-To-Many Bidirectional
     $newComment = new Comment();
     $user->getAuthoredComments()->add($newComment);
     $newComment->setAuthor($user);
-    
+
     $em->persist($newComment);
     $em->flush();
 
@@ -225,10 +229,10 @@ element. Here are some examples:
     // Remove by Elements
     $user->getComments()->removeElement($comment);
     $comment->setAuthor(null);
-    
+
     $user->getFavorites()->removeElement($comment);
     $comment->getUserFavorites()->removeElement($user);
-    
+
     // Remove by Key
     $user->getComments()->remove($ithComment);
     $comment->setAuthor(null);
@@ -240,7 +244,7 @@ Notice how both sides of the bidirectional association are always
 updated. Unidirectional associations are consequently simpler to
 handle.
 
-Also note that if you use type-hinting in your methods, you will 
+Also note that if you use type-hinting in your methods, you will
 have to specify a nullable type, i.e. ``setAddress(?Address $address)``,
 otherwise ``setAddress(null)`` will fail to remove the association.
 Another way to deal with this is to provide a special method, like
@@ -271,8 +275,8 @@ entities that have been re-added to the collection.
 
 Say you clear a collection of tags by calling
 ``$post->getTags()->clear();`` and then call
-``$post->getTags()->add($tag)``. This will not recognize the tag having 
-already been added previously and will consequently issue two separate database 
+``$post->getTags()->add($tag)``. This will not recognize the tag having
+already been added previously and will consequently issue two separate database
 calls.
 
 Association Management Methods
@@ -291,44 +295,44 @@ example that encapsulate much of the association management code:
     <?php
     class User
     {
-        //...
-        public function markCommentRead(Comment $comment) {
+        // ...
+        public function markCommentRead(Comment $comment): void {
             // Collections implement ArrayAccess
             $this->commentsRead[] = $comment;
         }
-    
-        public function addComment(Comment $comment) {
+
+        public function addComment(Comment $comment): void {
             if (count($this->commentsAuthored) == 0) {
                 $this->setFirstComment($comment);
             }
             $this->comments[] = $comment;
             $comment->setAuthor($this);
         }
-    
-        private function setFirstComment(Comment $c) {
+
+        private function setFirstComment(Comment $c): void {
             $this->firstComment = $c;
         }
-    
-        public function addFavorite(Comment $comment) {
+
+        public function addFavorite(Comment $comment): void {
             $this->favorites->add($comment);
             $comment->addUserFavorite($this);
         }
-    
-        public function removeFavorite(Comment $comment) {
+
+        public function removeFavorite(Comment $comment): void {
             $this->favorites->removeElement($comment);
             $comment->removeUserFavorite($this);
         }
     }
-    
+
     class Comment
     {
         // ..
-    
-        public function addUserFavorite(User $user) {
+
+        public function addUserFavorite(User $user): void {
             $this->userFavorites[] = $user;
         }
-    
-        public function removeUserFavorite(User $user) {
+
+        public function removeUserFavorite(User $user): void {
             $this->userFavorites->removeElement($user);
         }
     }
@@ -356,7 +360,8 @@ the details inside the classes can be challenging.
 
     <?php
     class User {
-        public function getReadComments() {
+        /** @return array<int, Comment> */
+        public function getReadComments(): array {
             return $this->commentsRead->toArray();
         }
     }
@@ -373,7 +378,7 @@ as your preferences.
 Synchronizing Bidirectional Collections
 ---------------------------------------
 
-In the case of Many-To-Many associations you as the developer have the 
+In the case of Many-To-Many associations you as the developer have the
 responsibility of keeping the collections on the owning and inverse side
 in sync when you apply changes to them. Doctrine can only
 guarantee a consistent state for the hydration, not for your client
@@ -387,7 +392,7 @@ can show the possible caveats you can encounter:
     <?php
     $user->getFavorites()->add($favoriteComment);
     // not calling $favoriteComment->getUserFavorites()->add($user);
-    
+
     $user->getFavorites()->contains($favoriteComment); // TRUE
     $favoriteComment->getUserFavorites()->contains($user); // FALSE
 
@@ -407,7 +412,7 @@ There are two approaches to handle this problem in your code:
 Transitive persistence / Cascade Operations
 -------------------------------------------
 
-Doctrine 2 provides a mechanism for transitive persistence through cascading of certain operations.
+Doctrine ORM provides a mechanism for transitive persistence through cascading of certain operations.
 Each association to another entity or a collection of
 entities can be configured to automatically cascade the following operations to the associated entities:
 ``persist``, ``remove``, ``merge``, ``detach``, ``refresh`` or ``all``.
@@ -422,7 +427,7 @@ comment might look like in your controller (without ``cascade: persist``):
     $user = new User();
     $myFirstComment = new Comment();
     $user->addComment($myFirstComment);
-    
+
     $em->persist($user);
     $em->persist($myFirstComment); // required, if `cascade: persist` is not set
     $em->flush();
@@ -437,8 +442,10 @@ only accessing it through the User entity:
     // User entity
     class User
     {
-        private $id;
-        private $comments;
+        private int $id;
+
+        /** @var Collection<int, Comment> */
+        private Collection $comments;
 
         public function __construct()
         {
@@ -463,14 +470,11 @@ If you then set up the cascading to the ``User#commentsAuthored`` property...
     <?php
     class User
     {
-        //...
-        /**
-         * Bidirectional - One-To-Many (INVERSE SIDE)
-         *
-         * @OneToMany(targetEntity="Comment", mappedBy="author", cascade={"persist", "remove"})
-         */
+        // ...
+        /** Bidirectional - One-To-Many (INVERSE SIDE) */
+        #[OneToMany(targetEntity: Comment::class, mappedBy: 'author', cascade: ['persist', 'remove'])]
         private $commentsAuthored;
-        //...
+        // ...
     }
 
 ...you can now create a user and an associated comment like this:
@@ -480,7 +484,7 @@ If you then set up the cascading to the ``User#commentsAuthored`` property...
     <?php
     $user = new User();
     $user->comment('Lorem ipsum', new DateTime());
-    
+
     $em->persist($user);
     $em->flush();
 
@@ -521,6 +525,8 @@ For each cascade operation that gets activated, Doctrine also
 applies that operation to the association, be it single or
 collection valued.
 
+.. _persistence-by-reachability:
+
 Persistence by Reachability: Cascade Persist
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -557,6 +563,13 @@ OrphanRemoval works with one-to-one, one-to-many and many-to-many associations.
     If you neglect this assumption your entities will get deleted by Doctrine even if
     you assigned the orphaned entity to another one.
 
+.. note::
+
+    ``orphanRemoval=true`` option should be used in combination with ``cascade=["persist"]`` option
+    as the child entity, that is manually persisted, will not be deleted automatically by Doctrine
+    when a collection is still an instance of ArrayCollection (before first flush / hydration).
+    This is a Doctrine limitation since ArrayCollection does not have access to a UnitOfWork.
+
 As a better example consider an Addressbook application where you have Contacts, Addresses
 and StandingData:
 
@@ -568,31 +581,30 @@ and StandingData:
 
     use Doctrine\Common\Collections\ArrayCollection;
 
-    /**
-     * @Entity
-     */
+    #[Entity]
     class Contact
     {
-        /** @Id @Column(type="integer") @GeneratedValue */
-        private $id;
+        #[Id, Column(type: 'integer'), GeneratedValue]
+        private int|null $id = null;
 
-        /** @OneToOne(targetEntity="StandingData", orphanRemoval=true) */
-        private $standingData;
+        #[OneToOne(targetEntity: StandingData::class, cascade: ['persist'], orphanRemoval: true)]
+        private StandingData|null $standingData = null;
 
-        /** @OneToMany(targetEntity="Address", mappedBy="contact", orphanRemoval=true) */
-        private $addresses;
+        /** @var Collection<int, Address> */
+        #[OneToMany(targetEntity: Address::class, mappedBy: 'contact', cascade: ['persist'], orphanRemoval: true)]
+        private Collection $addresses;
 
         public function __construct()
         {
             $this->addresses = new ArrayCollection();
         }
 
-        public function newStandingData(StandingData $sd)
+        public function newStandingData(StandingData $sd): void
         {
             $this->standingData = $sd;
         }
 
-        public function removeAddress($pos)
+        public function removeAddress(int $pos): void
         {
             unset($this->addresses[$pos]);
         }
@@ -610,10 +622,10 @@ Now two examples of what happens when you remove the references:
 
     $em->flush();
 
-In this case you have not only changed the ``Contact`` entity itself but 
-you have also removed the references for standing data and as well as one 
-address reference. When flush is called not only are the references removed 
-but both the old standing data and the one address entity are also deleted 
+In this case you have not only changed the ``Contact`` entity itself but
+you have also removed the references for standing data and as well as one
+address reference. When flush is called not only are the references removed
+but both the old standing data and the one address entity are also deleted
 from the database.
 
 .. _filtering-collections:
@@ -706,6 +718,7 @@ methods:
 
 * ``andX($arg1, $arg2, ...)``
 * ``orX($arg1, $arg2, ...)``
+* ``not($expression)``
 * ``eq($field, $value)``
 * ``gt($field, $value)``
 * ``lt($field, $value)``

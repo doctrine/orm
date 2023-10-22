@@ -1,40 +1,34 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\ManyToOne;
+use Doctrine\ORM\Mapping\OneToMany;
+use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-/**
- * @group CascadeRemoveOrderTest
- */
+/** @group CascadeRemoveOrderTest */
 class CascadeRemoveOrderTest extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
 
-        $this->_schemaTool->createSchema(
-            [
-                $this->_em->getClassMetadata(CascadeRemoveOrderEntityO::class),
-                $this->_em->getClassMetadata(CascadeRemoveOrderEntityG::class),
-            ]
+        $this->createSchemaForModels(
+            CascadeRemoveOrderEntityO::class,
+            CascadeRemoveOrderEntityG::class
         );
     }
 
-    protected function tearDown()
-    {
-        parent::tearDown();
-
-        $this->_schemaTool->dropSchema(
-            [
-                $this->_em->getClassMetadata(CascadeRemoveOrderEntityO::class),
-                $this->_em->getClassMetadata(CascadeRemoveOrderEntityG::class),
-            ]
-        );
-    }
-
-    public function testSingle()
+    public function testSingle(): void
     {
         $eO = new CascadeRemoveOrderEntityO();
         $eG = new CascadeRemoveOrderEntityG($eO);
@@ -51,7 +45,7 @@ class CascadeRemoveOrderTest extends OrmFunctionalTestCase
         self::assertNull($this->_em->find(CascadeRemoveOrderEntityG::class, $eG->getId()));
     }
 
-    public function testMany()
+    public function testMany(): void
     {
         $eO  = new CascadeRemoveOrderEntityO();
         $eG1 = new CascadeRemoveOrderEntityG($eO);
@@ -75,24 +69,26 @@ class CascadeRemoveOrderTest extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class CascadeRemoveOrderEntityO
 {
     /**
-     * @Id @Column(type="integer")
+     * @var int
+     * @Id
+     * @Column(type="integer")
      * @GeneratedValue
      */
     private $id;
 
     /**
+     * @var CascadeRemoveOrderEntityG
      * @OneToOne(targetEntity="Doctrine\Tests\ORM\Functional\CascadeRemoveOrderEntityG")
      * @JoinColumn(nullable=true, onDelete="SET NULL")
      */
     private $oneToOneG;
 
     /**
+     * @psalm-var Collection<int, CascadeRemoveOrderEntityG>
      * @OneToMany(
      *     targetEntity="Doctrine\Tests\ORM\Functional\CascadeRemoveOrderEntityG",
      *     mappedBy="ownerO",
@@ -101,50 +97,51 @@ class CascadeRemoveOrderEntityO
      */
     private $oneToManyG;
 
-
     public function __construct()
     {
         $this->oneToManyG = new ArrayCollection();
     }
 
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
 
-    public function setOneToOneG(CascadeRemoveOrderEntityG $eG)
+    public function setOneToOneG(CascadeRemoveOrderEntityG $eG): void
     {
         $this->oneToOneG = $eG;
     }
 
-    public function getOneToOneG()
+    public function getOneToOneG(): CascadeRemoveOrderEntityG
     {
         return $this->oneToOneG;
     }
 
-    public function addOneToManyG(CascadeRemoveOrderEntityG $eG)
+    public function addOneToManyG(CascadeRemoveOrderEntityG $eG): void
     {
         $this->oneToManyG->add($eG);
     }
 
-    public function getOneToManyGs()
+    /** @psalm-return array<int, CascadeRemoveOrderEntityG> */
+    public function getOneToManyGs(): array
     {
         return $this->oneToManyG->toArray();
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class CascadeRemoveOrderEntityG
 {
     /**
-     * @Id @Column(type="integer")
+     * @var int
+     * @Id
+     * @Column(type="integer")
      * @GeneratedValue
      */
     private $id;
 
     /**
+     * @var CascadeRemoveOrderEntityO
      * @ManyToOne(
      *     targetEntity="Doctrine\Tests\ORM\Functional\CascadeRemoveOrderEntityO",
      *     inversedBy="oneToMany"
@@ -152,14 +149,17 @@ class CascadeRemoveOrderEntityG
      */
     private $ownerO;
 
-    public function __construct(CascadeRemoveOrderEntityO $eO, $position=1)
+    /** @var int */
+    private $position;
+
+    public function __construct(CascadeRemoveOrderEntityO $eO, $position = 1)
     {
         $this->position = $position;
-        $this->ownerO= $eO;
+        $this->ownerO   = $eO;
         $this->ownerO->addOneToManyG($this);
     }
 
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }

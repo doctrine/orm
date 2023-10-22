@@ -1,15 +1,24 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\Tests\Models\Company\CompanyEmployee;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
-class DDC168Test extends \Doctrine\Tests\OrmFunctionalTestCase
+use function ksort;
+
+class DDC168Test extends OrmFunctionalTestCase
 {
+    /** @var ClassMetadata */
     protected $oldMetadata;
 
-    protected function setUp() {
+    protected function setUp(): void
+    {
         $this->useModelSet('company');
+
         parent::setUp();
 
         $this->oldMetadata = $this->_em->getClassMetadata(CompanyEmployee::class);
@@ -19,27 +28,24 @@ class DDC168Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->getMetadataFactory()->setMetadataFor(CompanyEmployee::class, $metadata);
     }
 
-    public function tearDown()
+    public function tearDown(): void
     {
         $this->_em->getMetadataFactory()->setMetadataFor(CompanyEmployee::class, $this->oldMetadata);
+
         parent::tearDown();
     }
 
-    /**
-     * @group DDC-168
-     */
-    public function testJoinedSubclassPersisterRequiresSpecificOrderOfMetadataReflFieldsArray()
+    /** @group DDC-168 */
+    public function testJoinedSubclassPersisterRequiresSpecificOrderOfMetadataReflFieldsArray(): void
     {
-        //$this->_em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
-
-        $spouse = new CompanyEmployee;
-        $spouse->setName("Blub");
-        $spouse->setDepartment("Accounting");
+        $spouse = new CompanyEmployee();
+        $spouse->setName('Blub');
+        $spouse->setDepartment('Accounting');
         $spouse->setSalary(500);
 
-        $employee = new CompanyEmployee;
-        $employee->setName("Foo");
-        $employee->setDepartment("bar");
+        $employee = new CompanyEmployee();
+        $employee->setName('Foo');
+        $employee->setDepartment('bar');
         $employee->setSalary(1000);
         $employee->setSpouse($spouse);
 
@@ -49,14 +55,14 @@ class DDC168Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $q = $this->_em->createQuery("SELECT e FROM Doctrine\Tests\Models\Company\CompanyEmployee e WHERE e.name = ?1");
-        $q->setParameter(1, "Foo");
+        $q = $this->_em->createQuery('SELECT e FROM Doctrine\Tests\Models\Company\CompanyEmployee e WHERE e.name = ?1');
+        $q->setParameter(1, 'Foo');
         $theEmployee = $q->getSingleResult();
 
-        $this->assertEquals("bar", $theEmployee->getDepartment());
-        $this->assertEquals("Foo", $theEmployee->getName());
-        $this->assertEquals(1000, $theEmployee->getSalary());
-        $this->assertInstanceOf(CompanyEmployee::class, $theEmployee);
-        $this->assertInstanceOf(CompanyEmployee::class, $theEmployee->getSpouse());
+        self::assertEquals('bar', $theEmployee->getDepartment());
+        self::assertEquals('Foo', $theEmployee->getName());
+        self::assertEquals(1000, $theEmployee->getSalary());
+        self::assertInstanceOf(CompanyEmployee::class, $theEmployee);
+        self::assertInstanceOf(CompanyEmployee::class, $theEmployee->getSpouse());
     }
 }

@@ -16,13 +16,13 @@ transaction. Without any explicit transaction demarcation from your
 side, this quickly results in poor performance because transactions
 are not cheap.
 
-For the most part, Doctrine 2 already takes care of proper
+For the most part, Doctrine ORM already takes care of proper
 transaction demarcation for you: All the write operations
 (INSERT/UPDATE/DELETE) are queued until ``EntityManager#flush()``
 is invoked which wraps all of these changes in a single
 transaction.
 
-However, Doctrine 2 also allows (and encourages) you to take over
+However, Doctrine ORM also allows (and encourages) you to take over
 and control transaction demarcation yourself.
 
 These are two ways to deal with transactions when using the
@@ -68,7 +68,7 @@ looks like this:
     // $em instanceof EntityManager
     $em->getConnection()->beginTransaction(); // suspend auto-commit
     try {
-        //... do some work
+        // ... do some work
         $user = new User;
         $user->setName('George');
         $em->persist($user);
@@ -98,7 +98,7 @@ functionally equivalent to the previously shown code looks as follows:
     <?php
     // $em instanceof EntityManager
     $em->transactional(function($em) {
-        //... do some work
+        // ... do some work
         $user = new User;
         $user->setName('George');
         $em->persist($user);
@@ -114,8 +114,8 @@ functionally equivalent to the previously shown code looks as follows:
 The difference between ``Connection#transactional($func)`` and
 ``EntityManager#transactional($func)`` is that the latter
 abstraction flushes the ``EntityManager`` prior to transaction
-commit and rolls back the transaction when an
-exception occurs.
+commit and in case of an exception the ``EntityManager`` gets closed
+in addition to the transaction rollback.
 
 .. _transactions-and-concurrency_exception-handling:
 
@@ -154,7 +154,7 @@ occurred you should do that with a new ``EntityManager``.
 Locking Support
 ---------------
 
-Doctrine 2 offers support for Pessimistic- and Optimistic-locking
+Doctrine ORM offers support for Pessimistic- and Optimistic-locking
 strategies natively. This allows to take very fine-grained control
 over what kind of locking is required for your Entities in your
 application.
@@ -189,14 +189,25 @@ example we'll use an integer.
 
 .. configuration-block::
 
-    .. code-block:: php
+    .. code-block:: attribute
+
+        <?php
+        class User
+        {
+            // ...
+            #[Version, Column(type: 'integer')]
+            private int $version;
+            // ...
+        }
+
+    .. code-block:: annotation
 
         <?php
         class User
         {
             // ...
             /** @Version @Column(type="integer") */
-            private $version;
+            private int $version;
             // ...
         }
 
@@ -222,14 +233,25 @@ timestamp or datetime):
 
 .. configuration-block::
 
-    .. code-block:: php
+    .. code-block:: attribute
+
+        <?php
+        class User
+        {
+            // ...
+            #[Version, Column(type: 'datetime')]
+            private DateTime $version;
+            // ...
+        }
+
+    .. code-block:: annotation
 
         <?php
         class User
         {
             // ...
             /** @Version @Column(type="datetime") */
-            private $version;
+            private DateTime $version;
             // ...
         }
 
@@ -279,15 +301,15 @@ either when calling ``EntityManager#find()``:
     <?php
     use Doctrine\DBAL\LockMode;
     use Doctrine\ORM\OptimisticLockException;
-    
+
     $theEntityId = 1;
     $expectedVersion = 184;
-    
+
     try {
         $entity = $em->find('User', $theEntityId, LockMode::OPTIMISTIC, $expectedVersion);
-    
+
         // do the work
-    
+
         $em->flush();
     } catch(OptimisticLockException $e) {
         echo "Sorry, but someone else has already changed this entity. Please apply the changes again!";
@@ -300,16 +322,16 @@ Or you can use ``EntityManager#lock()`` to find out:
     <?php
     use Doctrine\DBAL\LockMode;
     use Doctrine\ORM\OptimisticLockException;
-    
+
     $theEntityId = 1;
     $expectedVersion = 184;
-    
+
     $entity = $em->find('User', $theEntityId);
-    
+
     try {
         // assert version
         $em->lock($entity, LockMode::OPTIMISTIC, $expectedVersion);
-    
+
     } catch(OptimisticLockException $e) {
         echo "Sorry, but someone else has already changed this entity. Please apply the changes again!";
     }
@@ -348,7 +370,7 @@ See the example code, The form (GET Request):
 
     <?php
     $post = $em->find('BlogPost', 123456);
-    
+
     echo '<input type="hidden" name="id" value="' . $post->getId() . '" />';
     echo '<input type="hidden" name="version" value="' . $post->getCurrentVersion() . '" />';
 
@@ -359,7 +381,7 @@ And the change headline action (POST Request):
     <?php
     $postId = (int)$_GET['id'];
     $postVersion = (int)$_GET['version'];
-    
+
     $post = $em->find('BlogPost', $postId, \Doctrine\DBAL\LockMode::OPTIMISTIC, $postVersion);
 
 .. _transactions-and-concurrency_pessimistic-locking:
@@ -367,7 +389,7 @@ And the change headline action (POST Request):
 Pessimistic Locking
 ~~~~~~~~~~~~~~~~~~~
 
-Doctrine 2 supports Pessimistic Locking at the database level. No
+Doctrine ORM supports Pessimistic Locking at the database level. No
 attempt is being made to implement pessimistic locking inside
 Doctrine, rather vendor-specific and ANSI-SQL commands are used to
 acquire row-level locks. Every Entity can be part of a pessimistic
@@ -376,11 +398,11 @@ lock, there is no special metadata required to use this feature.
 However for Pessimistic Locking to work you have to disable the
 Auto-Commit Mode of your Database and start a transaction around
 your pessimistic lock use-case using the "Approach 2: Explicit
-Transaction Demarcation" described above. Doctrine 2 will throw an
+Transaction Demarcation" described above. Doctrine ORM will throw an
 Exception if you attempt to acquire an pessimistic lock and no
 transaction is running.
 
-Doctrine 2 currently supports two pessimistic lock modes:
+Doctrine ORM currently supports two pessimistic lock modes:
 
 
 -  Pessimistic Write
@@ -390,7 +412,7 @@ Doctrine 2 currently supports two pessimistic lock modes:
    locks other concurrent requests that attempt to update or lock rows
    in write mode.
 
-You can use pessimistic locks in three different scenarios:
+You can use pessimistic locks in four different scenarios:
 
 
 1. Using
@@ -402,8 +424,10 @@ You can use pessimistic locks in three different scenarios:
    or
    ``EntityManager#lock($entity, \Doctrine\DBAL\LockMode::PESSIMISTIC_READ)``
 3. Using
+   ``EntityManager#refresh($entity, \Doctrine\DBAL\LockMode::PESSIMISTIC_WRITE)``
+   or
+   ``EntityManager#refresh($entity, \Doctrine\DBAL\LockMode::PESSIMISTIC_READ)``
+4. Using
    ``Query#setLockMode(\Doctrine\DBAL\LockMode::PESSIMISTIC_WRITE)``
    or
    ``Query#setLockMode(\Doctrine\DBAL\LockMode::PESSIMISTIC_READ)``
-
-

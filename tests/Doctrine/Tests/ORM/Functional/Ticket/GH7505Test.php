@@ -4,17 +4,22 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\DiscriminatorColumn;
+use Doctrine\ORM\Mapping\DiscriminatorMap;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\InheritanceType;
+use Doctrine\ORM\Mapping\Table;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-/**
- * @group GH7505
- */
+use function assert;
+
+/** @group GH7505 */
 final class GH7505Test extends OrmFunctionalTestCase
 {
-    /**
-     * {@inheritDoc}
-     */
-    protected function setUp() : void
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -25,7 +30,7 @@ final class GH7505Test extends OrmFunctionalTestCase
         ]);
     }
 
-    public function testSimpleArrayTypeHydratedCorrectly() : void
+    public function testSimpleArrayTypeHydratedCorrectly(): void
     {
         $arrayResponse = new GH7505ArrayResponse();
         $this->_em->persist($arrayResponse);
@@ -38,12 +43,12 @@ final class GH7505Test extends OrmFunctionalTestCase
 
         $repository = $this->_em->getRepository(GH7505AbstractResponse::class);
 
-        /** @var GH7505ArrayResponse $arrayResponse */
         $arrayResponse = $repository->find($arrayResponse->id);
+        assert($arrayResponse instanceof GH7505ArrayResponse);
         self::assertSame([], $arrayResponse->value);
 
-        /** @var GH7505TextResponse $textResponse */
         $textResponse = $repository->find($textResponse->id);
+        assert($textResponse instanceof GH7505TextResponse);
         self::assertNull($textResponse->value);
     }
 }
@@ -61,31 +66,29 @@ final class GH7505Test extends OrmFunctionalTestCase
 abstract class GH7505AbstractResponse
 {
     /**
-     * @Id @GeneratedValue
+     * @var int
+     * @Id
+     * @GeneratedValue
      * @Column(type="integer")
      */
     public $id;
 }
 
-/**
- * @Entity()
- */
+/** @Entity() */
 class GH7505ArrayResponse extends GH7505AbstractResponse
 {
     /**
+     * @var mixed[]
      * @Column(name="value_array", type="simple_array")
-     * @var array
      */
     public $value = [];
 }
 
-/**
- * @Entity()
- */
+/** @Entity() */
 class GH7505TextResponse extends GH7505AbstractResponse
 {
     /**
-     * @Column(name="value_string", type="string")
+     * @Column(name="value_string", type="string", length=255)
      * @var string|null
      */
     public $value;

@@ -1,6 +1,5 @@
 <?php
 
-$metadata->setAssociationOverride('groups', [
-    'inversedBy' => 'admins'
-]
-);
+declare(strict_types=1);
+
+$metadata->setAssociationOverride('groups', ['inversedBy' => 'admins']);

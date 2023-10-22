@@ -1,13 +1,21 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\Routing;
 
-/**
- * @Entity
- */
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\ManyToOne;
+
+/** @Entity */
 class RoutingRouteBooking
 {
     /**
+     * @var int
      * @Id
      * @Column(type="integer")
      * @GeneratedValue
@@ -15,17 +23,19 @@ class RoutingRouteBooking
     public $id;
 
     /**
+     * @var RoutingRoute
      * @ManyToOne(targetEntity="RoutingRoute", inversedBy="bookings")
      * @JoinColumn(name="route_id", referencedColumnName="id")
      */
     public $route;
 
     /**
-     * @Column(type="string")
+     * @var string
+     * @Column(type="string", length=255)
      */
     public $passengerName = null;
 
-    public function getPassengerName()
+    public function getPassengerName(): string
     {
         return $this->passengerName;
     }

@@ -2,29 +2,29 @@ Architecture
 ============
 
 This chapter gives an overview of the overall architecture,
-terminology and constraints of Doctrine 2. It is recommended to
+terminology and constraints of Doctrine ORM. It is recommended to
 read this chapter carefully.
 
 Using an Object-Relational Mapper
 ---------------------------------
 
-As the term ORM already hints at, Doctrine 2 aims to simplify the
+As the term ORM already hints at, Doctrine ORM aims to simplify the
 translation between database rows and the PHP object model. The
 primary use case for Doctrine are therefore applications that
 utilize the Object-Oriented Programming Paradigm. For applications
-that do not primarily work with objects Doctrine 2 is not suited very
+that do not primarily work with objects Doctrine ORM is not suited very
 well.
 
 Requirements
 ------------
 
-Doctrine 2 requires a minimum of PHP 7.1. For greatly improved
+Doctrine ORM requires a minimum of PHP 7.1. For greatly improved
 performance it is also recommended that you use APC with PHP.
 
-Doctrine 2 Packages
+Doctrine ORM Packages
 -------------------
 
-Doctrine 2 is divided into three main packages.
+Doctrine ORM is divided into three main packages.
 
 -  Common
 -  DBAL (includes Common)
@@ -66,33 +66,21 @@ The root namespace of the ORM package is ``Doctrine\ORM``.
 Terminology
 -----------
 
+.. _terminology_entities:
+
 Entities
 ~~~~~~~~
 
 An entity is a lightweight, persistent domain object. An entity can
 be any regular PHP class observing the following restrictions:
 
-
--  An entity class must not be final or contain final methods.
--  All persistent properties/field of any entity class should
-   always be private or protected, otherwise lazy-loading might not
-   work as expected. In case you serialize entities (for example Session)
-   properties should be protected (See Serialize section below).
--  An entity class must not implement ``__clone`` or
-   :doc:`do so safely <../cookbook/implementing-wakeup-or-clone>`.
--  An entity class must not implement ``__wakeup`` or
-   :doc:`do so safely <../cookbook/implementing-wakeup-or-clone>`.
-   Also consider implementing
-   `Serializable <http://php.net/manual/en/class.serializable.php>`_
-   instead.
+-  An entity class must not be final nor read-only but
+   it may contain final methods or read-only properties.
 -  Any two entity classes in a class hierarchy that inherit
    directly or indirectly from one another must not have a mapped
    property with the same name. That is, if B inherits from A then B
    must not have a mapped field with the same name as an already
    mapped field that is inherited from A.
--  An entity cannot make use of func_get_args() to implement variable parameters.
-   Generated proxies do not support this for performance reasons and your code might
-   actually fail to work when violating this restriction.
 
 Entities support inheritance, polymorphic associations, and
 polymorphic queries. Both abstract and concrete classes can be
@@ -106,6 +94,25 @@ classes, and non-entity classes may extend entity classes.
     never calls entity constructors, thus you are free to use them as
     you wish and even have it require arguments of any type.
 
+Mapped Superclasses
+~~~~~~~~~~~~~~~~~~~
+
+A mapped superclass is an abstract or concrete class that provides
+persistent entity state and mapping information for its subclasses,
+but which is not itself an entity.
+
+Mapped superclasses are explained in greater detail in the chapter
+on :doc:`inheritance mapping </reference/inheritance-mapping>`.
+
+Transient Classes
+~~~~~~~~~~~~~~~~~
+
+The term "transient class" appears in some places in the mapping
+drivers as well as the code dealing with metadata handling.
+
+A transient class is a class that is neither an entity nor a mapped
+superclass. From the ORM's point of view, these classes can be
+completely ignored, and no class metadata is loaded for them at all.
 
 Entity states
 ~~~~~~~~~~~~~
@@ -152,22 +159,19 @@ Serializing entities
 
 Serializing entities can be problematic and is not really
 recommended, at least not as long as an entity instance still holds
-references to proxy objects or is still managed by an
-EntityManager. If you intend to serialize (and unserialize) entity
-instances that still hold references to proxy objects you may run
-into problems with private properties because of technical
-limitations. Proxy objects implement ``__sleep`` and it is not
-possible for ``__sleep`` to return names of private properties in
-parent classes. On the other hand it is not a solution for proxy
-objects to implement ``Serializable`` because Serializable does not
-work well with any potential cyclic object references (at least we
-did not find a way yet, if you did, please contact us).
+references to proxy objects or is still managed by an EntityManager.
+By default, serializing proxy objects does not initialize them. On
+unserialization, resulting objects are detached from the entity
+manager and cannot be initialiazed anymore. You can implement the
+``__serialize()`` method if you want to change that behavior, but
+then you need to ensure that you won't generate large serialized
+object graphs and take care of circular associations.
 
 The EntityManager
 ~~~~~~~~~~~~~~~~~
 
-The ``EntityManager`` class is a central access point to the ORM
-functionality provided by Doctrine 2. The ``EntityManager`` API is
+The ``EntityManager`` class is a central access point to the
+functionality provided by Doctrine ORM. The ``EntityManager`` API is
 used to manage the persistence of your objects and to query for
 persistent objects.
 
@@ -184,12 +188,14 @@ in well defined units of work. Work with your objects and modify
 them as usual and when you're done call ``EntityManager#flush()``
 to make your changes persistent.
 
+.. _unit-of-work:
+
 The Unit of Work
 ~~~~~~~~~~~~~~~~
 
 Internally an ``EntityManager`` uses a ``UnitOfWork``, which is a
 typical implementation of the
-`Unit of Work pattern <http://martinfowler.com/eaaCatalog/unitOfWork.html>`_,
+`Unit of Work pattern <https://martinfowler.com/eaaCatalog/unitOfWork.html>`_,
 to keep track of all the things that need to be done the next time
 ``flush`` is invoked. You usually do not directly interact with a
 ``UnitOfWork`` but with the ``EntityManager`` instead.

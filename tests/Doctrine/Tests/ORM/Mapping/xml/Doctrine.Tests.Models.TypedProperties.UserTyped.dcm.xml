@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
+                          https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+
+  <entity name="Doctrine\Tests\Models\TypedProperties\UserTyped" table="cms_users_typed">
+    <id name="id">
+      <generator strategy="AUTO"/>
+    </id>
+
+    <field name="status" length="50"/>
+    <field name="username" length="255" unique="true"/>
+    <field name="dateInterval"/>
+    <field name="dateTime"/>
+    <field name="dateTimeImmutable"/>
+    <field name="array"/>
+    <field name="boolean"/>
+    <field name="float"/>
+
+    <one-to-one field="email" orphan-removal="true">
+      <cascade><cascade-persist /></cascade>
+      <join-column/>
+    </one-to-one>
+
+    <many-to-one field="mainEmail"/>
+
+    <embedded name="contact" />
+  </entity>
+</doctrine-mapping>

@@ -1,46 +1,90 @@
 <?php
-/*
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * This software consists of voluntary contributions made by many individuals
- * and is licensed under the MIT license. For more information, see
- * <http://www.doctrine-project.org>.
- */
+
+declare(strict_types=1);
 
 namespace Doctrine\ORM\Id;
 
+use Doctrine\Deprecations\Deprecation;
 use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
+use InvalidArgumentException;
+use LogicException;
+
+use function get_debug_type;
+use function sprintf;
 
 abstract class AbstractIdGenerator
 {
+    /** @var bool */
+    private $alreadyDelegatedToGenerateId = false;
+
     /**
      * Generates an identifier for an entity.
      *
-     * @param EntityManager $em
+     * @deprecated Call {@see generateId()} instead.
+     *
      * @param object|null $entity
+     *
      * @return mixed
      */
-    abstract public function generate(EntityManager $em, $entity);
+    public function generate(EntityManager $em, $entity)
+    {
+        if ($this->alreadyDelegatedToGenerateId) {
+            throw new LogicException(sprintf(
+                'Endless recursion detected in %s. Please implement generateId() without calling the parent implementation.',
+                get_debug_type($this)
+            ));
+        }
+
+        Deprecation::trigger(
+            'doctrine/orm',
+            'https://github.com/doctrine/orm/pull/9325',
+            '%s::generate() is deprecated, call generateId() instead.',
+            get_debug_type($this)
+        );
+
+        $this->alreadyDelegatedToGenerateId = true;
+
+        try {
+            return $this->generateId($em, $entity);
+        } finally {
+            $this->alreadyDelegatedToGenerateId = false;
+        }
+    }
+
+    /**
+     * Generates an identifier for an entity.
+     *
+     * @param object|null $entity
+     *
+     * @return mixed
+     */
+    public function generateId(EntityManagerInterface $em, $entity)
+    {
+        Deprecation::trigger(
+            'doctrine/orm',
+            'https://github.com/doctrine/orm/pull/9325',
+            'Not implementing %s in %s is deprecated.',
+            __FUNCTION__,
+            get_debug_type($this)
+        );
+
+        if (! $em instanceof EntityManager) {
+            throw new InvalidArgumentException('Unsupported entity manager implementation.');
+        }
+
+        return $this->generate($em, $entity);
+    }
 
     /**
      * Gets whether this generator is a post-insert generator which means that
-     * {@link generate()} must be called after the entity has been inserted
+     * {@link generateId()} must be called after the entity has been inserted
      * into the database.
      *
      * By default, this method returns FALSE. Generators that have this requirement
      * must override this method and return TRUE.
      *
-     * @return boolean
+     * @return bool
      */
     public function isPostInsertGenerator()
     {

@@ -71,7 +71,7 @@ with inheritance hierarchies.
 
     use Doctrine\ORM\Query\ResultSetMappingBuilder;
 
-    $sql = "SELECT u.id, u.name, a.id AS address_id, a.street, a.city " . 
+    $sql = "SELECT u.id, u.name, a.id AS address_id, a.street, a.city " .
            "FROM users u INNER JOIN address a ON u.address_id = a.id";
 
     $rsm = new ResultSetMappingBuilder($entityManager);
@@ -80,9 +80,7 @@ with inheritance hierarchies.
 
 The builder extends the ``ResultSetMapping`` class and as such has all the functionality of it as well.
 
-.. versionadded:: 2.4
-
-Starting with Doctrine ORM 2.4 you can generate the ``SELECT`` clause
+The ``SELECT`` clause can be generated
 from a ``ResultSetMappingBuilder``. You can either cast the builder
 object to ``(string)`` and the DQL aliases are used as SQL table aliases
 or use the ``generateSelectClause($tableAliases)`` method and pass
@@ -252,6 +250,40 @@ The first parameter is the name of the column in the SQL result set
 and the second parameter is the result alias under which the value
 of the column will be placed in the transformed Doctrine result.
 
+Special case: DTOs
+...................
+
+You can also use ``ResultSetMapping`` to map the results of a native SQL
+query to a DTO (Data Transfer Object). This is done by adding scalar
+results for each argument of the DTO's constructor, then filling the
+``newObjectMappings`` property of the ``ResultSetMapping`` with
+information about where to map each scalar result:
+
+.. code-block:: php
+
+   <?php
+
+    $rsm = new ResultSetMapping();
+    $rsm->addScalarResult('name', 1, 'string');
+    $rsm->addScalarResult('email', 2, 'string');
+    $rsm->addScalarResult('city', 3, 'string');
+    $rsm->newObjectMappings['name']  = [
+        'className' => CmsUserDTO::class,
+        'objIndex'  => 0, // a result can contain many DTOs, this is the index of the DTO to map to
+        'argIndex'  => 0, // each scalar result can be mapped to a different argument of the DTO constructor
+    ];
+    $rsm->newObjectMappings['email'] = [
+        'className' => CmsUserDTO::class,
+        'objIndex'  => 0,
+        'argIndex'  => 1,
+    ];
+    $rsm->newObjectMappings['city']  = [
+        'className' => CmsUserDTO::class,
+        'objIndex'  => 0,
+        'argIndex'  => 2,
+    ];
+
+
 Meta results
 ~~~~~~~~~~~~
 
@@ -267,7 +299,7 @@ detail:
     <?php
     /**
      * Adds a meta column (foreign key or discriminator column) to the result set.
-     * 
+     *
      * @param string  $alias
      * @param string  $columnAlias
      * @param string  $columnName
@@ -322,10 +354,10 @@ entity.
     $rsm->addEntityResult('User', 'u');
     $rsm->addFieldResult('u', 'id', 'id');
     $rsm->addFieldResult('u', 'name', 'name');
-    
+
     $query = $this->_em->createNativeQuery('SELECT id, name FROM users WHERE name = ?', $rsm);
     $query->setParameter(1, 'romanb');
-    
+
     $users = $query->getResult();
 
 The result would look like this:
@@ -358,10 +390,10 @@ thus owns the foreign key.
     $rsm->addFieldResult('u', 'id', 'id');
     $rsm->addFieldResult('u', 'name', 'name');
     $rsm->addMetaResult('u', 'address_id', 'address_id');
-    
+
     $query = $this->_em->createNativeQuery('SELECT id, name, address_id FROM users WHERE name = ?', $rsm);
     $query->setParameter(1, 'romanb');
-    
+
     $users = $query->getResult();
 
 Foreign keys are used by Doctrine for lazy-loading purposes when
@@ -387,12 +419,12 @@ associations that are lazy.
     $rsm->addFieldResult('a', 'address_id', 'id');
     $rsm->addFieldResult('a', 'street', 'street');
     $rsm->addFieldResult('a', 'city', 'city');
-    
+
     $sql = 'SELECT u.id, u.name, a.id AS address_id, a.street, a.city FROM users u ' .
            'INNER JOIN address a ON u.address_id = a.id WHERE u.name = ?';
     $query = $this->_em->createNativeQuery($sql, $rsm);
     $query->setParameter(1, 'romanb');
-    
+
     $users = $query->getResult();
 
 In this case the nested entity ``Address`` is registered with the
@@ -422,10 +454,10 @@ to map the hierarchy (both use a discriminator column).
     $rsm->addFieldResult('u', 'name', 'name');
     $rsm->addMetaResult('u', 'discr', 'discr'); // discriminator column
     $rsm->setDiscriminatorColumn('u', 'discr');
-    
+
     $query = $this->_em->createNativeQuery('SELECT id, name, discr FROM users WHERE name = ?', $rsm);
     $query->setParameter(1, 'romanb');
-    
+
     $users = $query->getResult();
 
 Note that in the case of Class Table Inheritance, an example as
@@ -436,6 +468,10 @@ strategy but with native SQL it is your responsibility.
 
 Named Native Query
 ------------------
+
+.. note::
+
+    Named Native Queries are deprecated as of version 2.9 and will be removed in ORM 3.0
 
 You can also map a native query using a named native query mapping.
 
@@ -791,7 +827,7 @@ followed by a dot ("."), followed by the name or the field or property of the pr
                     6:
                       name: address.country
                       column: a_country
-                    
+
 
 
 If you retrieve a single entity and if you use the default mapping,

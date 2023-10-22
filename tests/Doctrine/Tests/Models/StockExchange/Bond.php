@@ -1,6 +1,16 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\StockExchange;
+
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\JoinTable;
+use Doctrine\ORM\Mapping\ManyToMany;
+use Doctrine\ORM\Mapping\Table;
 
 /**
  * Bonds have many stocks. This uses a many to many association and fails to model how many of a
@@ -12,13 +22,15 @@ namespace Doctrine\Tests\Models\StockExchange;
 class Bond
 {
     /**
-     * @Id @GeneratedValue @column(type="integer")
+     * @Id
+     * @GeneratedValue
+     * @Column(type="integer")
      * @var int
      */
     private $id;
 
     /**
-     * @column(type="string")
+     * @Column(type="string", length=255)
      * @var string
      */
     private $name;
@@ -30,17 +42,17 @@ class Bond
      */
     public $stocks;
 
-    public function __construct($name)
+    public function __construct(string $name)
     {
         $this->name = $name;
     }
 
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
 
-    public function addStock(Stock $stock)
+    public function addStock(Stock $stock): void
     {
         $this->stocks[$stock->getSymbol()] = $stock;
     }

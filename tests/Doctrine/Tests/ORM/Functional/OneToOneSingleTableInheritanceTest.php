@@ -1,24 +1,27 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional;
 
-use Doctrine\ORM\Query;
 use Doctrine\Tests\Models\OneToOneSingleTableInheritance\Cat;
 use Doctrine\Tests\Models\OneToOneSingleTableInheritance\LitterBox;
 use Doctrine\Tests\Models\OneToOneSingleTableInheritance\Pet;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
+use function assert;
+
 class OneToOneSingleTableInheritanceTest extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
 
-        $this->_schemaTool->createSchema([
-            $this->_em->getClassMetadata(Pet::class),
-            $this->_em->getClassMetadata(Cat::class),
-            $this->_em->getClassMetadata(LitterBox::class),
-        ]);
+        $this->createSchemaForModels(
+            Pet::class,
+            Cat::class,
+            LitterBox::class
+        );
     }
 
     /**
@@ -27,7 +30,7 @@ class OneToOneSingleTableInheritanceTest extends OrmFunctionalTestCase
      * @group DDC-3517
      * @group #1265
      */
-    public function testFindFromOneToOneOwningSideJoinedTableInheritance()
+    public function testFindFromOneToOneOwningSideJoinedTableInheritance(): void
     {
         $cat            = new Cat();
         $cat->litterBox = new LitterBox();
@@ -37,12 +40,12 @@ class OneToOneSingleTableInheritanceTest extends OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        /* @var $foundCat Cat */
         $foundCat = $this->_em->find(Pet::class, $cat->id);
+        assert($foundCat instanceof Cat);
 
-        $this->assertInstanceOf(Cat::class, $foundCat);
-        $this->assertSame($cat->id, $foundCat->id);
-        $this->assertInstanceOf(LitterBox::class, $foundCat->litterBox);
-        $this->assertSame($cat->litterBox->id, $foundCat->litterBox->id);
+        self::assertInstanceOf(Cat::class, $foundCat);
+        self::assertSame($cat->id, $foundCat->id);
+        self::assertInstanceOf(LitterBox::class, $foundCat->litterBox);
+        self::assertSame($cat->litterBox->id, $foundCat->litterBox->id);
     }
 }

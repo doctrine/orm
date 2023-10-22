@@ -1,29 +1,32 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Mocks;
 
+use BadMethodCallException;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Driver;
+use Doctrine\DBAL\Driver\API\ExceptionConverter;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Schema\AbstractSchemaManager;
+use Exception;
+
+use function sprintf;
 
 /**
  * Mock class for Driver.
  */
 class DriverMock implements Driver
 {
-    /**
-     * @var \Doctrine\DBAL\Platforms\AbstractPlatform|null
-     */
+    /** @var AbstractPlatform|null */
     private $_platformMock;
 
-    /**
-     * @var \Doctrine\DBAL\Schema\AbstractSchemaManager|null
-     */
+    /** @var AbstractSchemaManager|null */
     private $_schemaManagerMock;
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function connect(array $params, $username = null, $password = null, array $driverOptions = [])
     {
@@ -31,67 +34,59 @@ class DriverMock implements Driver
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function getDatabasePlatform()
     {
-        if ( ! $this->_platformMock) {
-            $this->_platformMock = new DatabasePlatformMock;
+        if (! $this->_platformMock) {
+            $this->_platformMock = new DatabasePlatformMock();
         }
+
         return $this->_platformMock;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getSchemaManager(Connection $conn)
+    public function getSchemaManager(Connection $conn, ?AbstractPlatform $platform = null): AbstractSchemaManager
     {
-        if ($this->_schemaManagerMock == null) {
-            return new SchemaManagerMock($conn);
-        }
+        return $this->_schemaManagerMock ?? new SchemaManagerMock($conn, $platform ?? new DatabasePlatformMock());
+    }
 
-        return $this->_schemaManagerMock;
+    public function getExceptionConverter(): ExceptionConverter
+    {
+        return new ExceptionConverterMock();
     }
 
     /* MOCK API */
 
-    /**
-     * @param \Doctrine\DBAL\Platforms\AbstractPlatform $platform
-     *
-     * @return void
-     */
-    public function setDatabasePlatform(AbstractPlatform $platform)
+    public function setDatabasePlatform(AbstractPlatform $platform): void
     {
         $this->_platformMock = $platform;
     }
 
-    /**
-     * @param \Doctrine\DBAL\Schema\AbstractSchemaManager $sm
-     *
-     * @return void
-     */
-    public function setSchemaManager(AbstractSchemaManager $sm)
+    public function setSchemaManager(AbstractSchemaManager $sm): void
     {
         $this->_schemaManagerMock = $sm;
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function getName()
     {
-        return 'mock';
+        throw new BadMethodCallException(sprintf(
+            'Call to deprecated method %s().',
+            __METHOD__
+        ));
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function getDatabase(Connection $conn)
     {
-        return;
+        return 'not implemented';
     }
 
-    public function convertExceptionCode(\Exception $exception)
+    public function convertExceptionCode(Exception $exception): int
     {
         return 0;
     }

@@ -1,6 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\Navigation;
+
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\Table;
 
 /**
  * @Entity
@@ -9,20 +17,21 @@ namespace Doctrine\Tests\Models\Navigation;
 class NavUser
 {
     /**
+     * @var int
      * @Id
      * @Column(type="integer")
-     * @generatedValue
+     * @GeneratedValue
      */
     private $id;
 
     /**
-     * @column(type="string")
+     * @var string
+     * @Column(type="string", length=255)
      */
     private $name;
 
-    public function __construct($name)
+    public function __construct(string $name)
     {
         $this->name = $name;
     }
 }
-

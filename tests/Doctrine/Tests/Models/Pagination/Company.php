@@ -1,39 +1,54 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\Pagination;
+
+use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\OneToMany;
+use Doctrine\ORM\Mapping\OneToOne;
+use Doctrine\ORM\Mapping\Table;
 
 /**
  * Company
  *
- * @package Doctrine\Tests\Models\Pagination
- *
- * @author Bill Schaller
  * @Entity
  * @Table(name="pagination_company")
  */
 class Company
 {
     /**
-     * @Id @Column(type="integer")
+     * @var int
+     * @Id
+     * @Column(type="integer")
      * @GeneratedValue
      */
     public $id;
 
     /**
-     * @Column(type="string")
+     * @var string
+     * @Column(type="string", length=255)
      */
     public $name;
 
     /**
-     * @Column(type="string", name="jurisdiction_code", nullable=true)
+     * @var string
+     * @Column(type="string", length=255, name="jurisdiction_code", nullable=true)
      */
     public $jurisdiction;
 
     /**
+     * @var Logo
      * @OneToOne(targetEntity="Logo", mappedBy="company", cascade={"persist"}, orphanRemoval=true)
      */
     public $logo;
 
     /**
+     * @psalm-var Collection<int, Department>
      * @OneToMany(targetEntity="Department", mappedBy="company", cascade={"persist"}, orphanRemoval=true)
      */
     public $departments;

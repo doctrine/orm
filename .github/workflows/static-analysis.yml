@@ -1,0 +1,103 @@
+name: "Static Analysis"
+
+on:
+  pull_request:
+    branches:
+      - "*.x"
+    paths:
+      - .github/workflows/static-analysis.yml
+      - composer.*
+      - lib/**
+      - phpstan*
+      - psalm*
+      - tests/Doctrine/StaticAnalysis/**
+  push:
+    branches:
+      - "*.x"
+    paths:
+      - .github/workflows/static-analysis.yml
+      - composer.*
+      - lib/**
+      - phpstan*
+      - psalm*
+      - tests/Doctrine/StaticAnalysis/**
+
+jobs:
+  static-analysis-phpstan:
+    name: "Static Analysis with PHPStan"
+    runs-on: "ubuntu-22.04"
+
+    strategy:
+      fail-fast: false
+      matrix:
+        dbal-version:
+          - "default"
+        persistence-version:
+          - "default"
+        include:
+          - dbal-version: "2.13"
+            persistence-version: "default"
+          - dbal-version: "default"
+            persistence-version: "2.5"
+
+    steps:
+      - name: "Checkout code"
+        uses: "actions/checkout@v4"
+
+      - name: "Install PHP"
+        uses: "shivammathur/setup-php@v2"
+        with:
+          coverage: "none"
+          php-version: "8.2"
+
+      - name: "Require specific DBAL version"
+        run: "composer require doctrine/dbal ^${{ matrix.dbal-version }} --no-update"
+        if: "${{ matrix.dbal-version != 'default' }}"
+
+      - name: "Require specific persistence version"
+        run: "composer require doctrine/persistence ^$([ ${{ matrix.persistence-version }} = default ] && echo '3.1' || echo ${{ matrix.persistence-version }}) --no-update"
+
+      - name: "Install dependencies with Composer"
+        uses: "ramsey/composer-install@v2"
+        with:
+          dependency-versions: "highest"
+
+      - name: "Run a static analysis with phpstan/phpstan"
+        run: "vendor/bin/phpstan analyse"
+        if: "${{ matrix.dbal-version == 'default' && matrix.persistence-version == 'default'}}"
+
+      - name: "Run a static analysis with phpstan/phpstan"
+        run: "vendor/bin/phpstan analyse -c phpstan-dbal2.neon"
+        if: "${{ matrix.dbal-version == '2.13' }}"
+
+      - name: "Run a static analysis with phpstan/phpstan"
+        run: "vendor/bin/phpstan analyse -c phpstan-persistence2.neon"
+        if: "${{ matrix.dbal-version == 'default' && matrix.persistence-version != 'default'}}"
+
+  static-analysis-psalm:
+    name: "Static Analysis with Psalm"
+    runs-on: "ubuntu-22.04"
+
+    strategy:
+      fail-fast: false
+
+    steps:
+      - name: "Checkout code"
+        uses: "actions/checkout@v4"
+
+      - name: "Install PHP"
+        uses: "shivammathur/setup-php@v2"
+        with:
+          coverage: "none"
+          php-version: "8.2"
+
+      - name: "Require specific persistence version"
+        run: "composer require doctrine/persistence ^3.1 --no-update"
+
+      - name: "Install dependencies with Composer"
+        uses: "ramsey/composer-install@v2"
+        with:
+          dependency-versions: "highest"
+
+      - name: "Run a static analysis with vimeo/psalm"
+        run: "vendor/bin/psalm --show-info=false --stats --output-format=github --threads=$(nproc)"

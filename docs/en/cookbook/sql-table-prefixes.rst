@@ -47,7 +47,7 @@ appropriate autoloaders.
             }
 
             foreach ($classMetadata->getAssociationMappings() as $fieldName => $mapping) {
-                if ($mapping['type'] == \Doctrine\ORM\Mapping\ClassMetadataInfo::MANY_TO_MANY && $mapping['isOwningSide']) {
+                if ($mapping['type'] == \Doctrine\ORM\Mapping\ClassMetadata::MANY_TO_MANY && $mapping['isOwningSide']) {
                     $mappedTableName = $mapping['joinTable']['name'];
                     $classMetadata->associationMappings[$fieldName]['joinTable']['name'] = $this->prefix . $mappedTableName;
                 }
@@ -81,6 +81,4 @@ before the prefix has been set.
     $tablePrefix = new \DoctrineExtensions\TablePrefix('prefix_');
     $evm->addEventListener(\Doctrine\ORM\Events::loadClassMetadata, $tablePrefix);
     
-    $em = \Doctrine\ORM\EntityManager::create($connectionOptions, $config, $evm);
-
-
+    $em = new \Doctrine\ORM\EntityManager($connection, $config, $evm);

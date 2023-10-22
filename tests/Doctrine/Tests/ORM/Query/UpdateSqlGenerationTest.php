@@ -1,51 +1,49 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Query;
 
 use Doctrine\DBAL\Types\Type as DBALType;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Tests\DbalTypes\NegativeToPositiveType;
 use Doctrine\Tests\OrmTestCase;
 
 /**
  * Test case for testing the saving and referencing of query identifiers.
  *
- * @author      Guilherme Blanco <guilhermeblanco@hotmail.com>
- * @author      Janne Vanhala <jpvanhal@cc.hut.fi>
- * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
- * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link        http://www.phpdoctrine.org
- * @since       2.0
- * @version     $Revision$
+ *
  * @todo        1) [romanb] We  might want to split the SQL generation tests into multiple
  *              testcases later since we'll have a lot of them and we might want to have special SQL
  *              generation tests for some dbms specific SQL syntaxes.
  */
 class UpdateSqlGenerationTest extends OrmTestCase
 {
-    private $_em;
+    /** @var EntityManagerInterface */
+    private $entityManager;
 
-    protected function setUp() {
+    protected function setUp(): void
+    {
         if (DBALType::hasType('negative_to_positive')) {
             DBALType::overrideType('negative_to_positive', NegativeToPositiveType::class);
         } else {
             DBALType::addType('negative_to_positive', NegativeToPositiveType::class);
         }
 
-        $this->_em = $this->_getTestEntityManager();
+        $this->entityManager = $this->getTestEntityManager();
     }
 
-    public function assertSqlGeneration($dqlToBeTested, $sqlToBeConfirmed)
+    public function assertSqlGeneration($dqlToBeTested, $sqlToBeConfirmed): void
     {
-        try {
-            $query = $this->_em->createQuery($dqlToBeTested);
-            parent::assertEquals($sqlToBeConfirmed, $query->getSql());
-            $query->free();
-        } catch (\Exception $e) {
-            $this->fail($e->getMessage());
-        }
+        $query = $this->entityManager->createQuery($dqlToBeTested);
+
+        parent::assertEquals($sqlToBeConfirmed, $query->getSql());
+
+        $query->free();
     }
 
-    public function testSupportsQueriesWithoutWhere()
+    public function testSupportsQueriesWithoutWhere(): void
     {
         $this->assertSqlGeneration(
             'UPDATE Doctrine\Tests\Models\CMS\CmsUser u SET u.name = ?1',
@@ -53,7 +51,7 @@ class UpdateSqlGenerationTest extends OrmTestCase
         );
     }
 
-    public function testSupportsMultipleFieldsWithoutWhere()
+    public function testSupportsMultipleFieldsWithoutWhere(): void
     {
         $this->assertSqlGeneration(
             'UPDATE Doctrine\Tests\Models\CMS\CmsUser u SET u.name = ?1, u.username = ?2',
@@ -61,7 +59,7 @@ class UpdateSqlGenerationTest extends OrmTestCase
         );
     }
 
-    public function testSupportsWhereClauses()
+    public function testSupportsWhereClauses(): void
     {
         $this->assertSqlGeneration(
             'UPDATE Doctrine\Tests\Models\CMS\CmsUser u SET u.name = ?1 WHERE u.id = ?2',
@@ -69,7 +67,7 @@ class UpdateSqlGenerationTest extends OrmTestCase
         );
     }
 
-    public function testSupportsWhereClausesOnTheUpdatedField()
+    public function testSupportsWhereClausesOnTheUpdatedField(): void
     {
         $this->assertSqlGeneration(
             'UPDATE Doctrine\Tests\Models\CMS\CmsUser u SET u.name = ?1 WHERE u.name = ?2',
@@ -77,7 +75,7 @@ class UpdateSqlGenerationTest extends OrmTestCase
         );
     }
 
-    public function testSupportsMultipleWhereClause()
+    public function testSupportsMultipleWhereClause(): void
     {
         $this->assertSqlGeneration(
             'UPDATE Doctrine\Tests\Models\CMS\CmsUser u SET u.name = ?1 WHERE u.name = ?2 AND u.status = ?3',
@@ -85,7 +83,7 @@ class UpdateSqlGenerationTest extends OrmTestCase
         );
     }
 
-    public function testSupportsInClause()
+    public function testSupportsInClause(): void
     {
         $this->assertSqlGeneration(
             'UPDATE Doctrine\Tests\Models\CMS\CmsUser u SET u.name = ?1 WHERE u.id IN (1, 3, 4)',
@@ -93,7 +91,7 @@ class UpdateSqlGenerationTest extends OrmTestCase
         );
     }
 
-    public function testSupportsParametrizedInClause()
+    public function testSupportsParametrizedInClause(): void
     {
         $this->assertSqlGeneration(
             'UPDATE Doctrine\Tests\Models\CMS\CmsUser u SET u.name = ?1 WHERE u.id IN (?2, ?3, ?4)',
@@ -101,7 +99,7 @@ class UpdateSqlGenerationTest extends OrmTestCase
         );
     }
 
-    public function testSupportsNotInClause()
+    public function testSupportsNotInClause(): void
     {
         $this->assertSqlGeneration(
             'UPDATE Doctrine\Tests\Models\CMS\CmsUser u SET u.name = ?1 WHERE u.id NOT IN (1, 3, 4)',
@@ -109,7 +107,7 @@ class UpdateSqlGenerationTest extends OrmTestCase
         );
     }
 
-    public function testSupportsGreaterThanClause()
+    public function testSupportsGreaterThanClause(): void
     {
         $this->assertSqlGeneration(
             'UPDATE Doctrine\Tests\Models\CMS\CmsUser u SET u.status = ?1 WHERE u.id > ?2',
@@ -117,7 +115,7 @@ class UpdateSqlGenerationTest extends OrmTestCase
         );
     }
 
-    public function testSupportsGreaterThanOrEqualToClause()
+    public function testSupportsGreaterThanOrEqualToClause(): void
     {
         $this->assertSqlGeneration(
             'UPDATE Doctrine\Tests\Models\CMS\CmsUser u SET u.status = ?1 WHERE u.id >= ?2',
@@ -125,7 +123,7 @@ class UpdateSqlGenerationTest extends OrmTestCase
         );
     }
 
-    public function testSupportsLessThanClause()
+    public function testSupportsLessThanClause(): void
     {
         $this->assertSqlGeneration(
             'UPDATE Doctrine\Tests\Models\CMS\CmsUser u SET u.status = ?1 WHERE u.id < ?2',
@@ -133,7 +131,7 @@ class UpdateSqlGenerationTest extends OrmTestCase
         );
     }
 
-    public function testSupportsLessThanOrEqualToClause()
+    public function testSupportsLessThanOrEqualToClause(): void
     {
         $this->assertSqlGeneration(
             'UPDATE Doctrine\Tests\Models\CMS\CmsUser u SET u.status = ?1 WHERE u.id <= ?2',
@@ -141,7 +139,7 @@ class UpdateSqlGenerationTest extends OrmTestCase
         );
     }
 
-    public function testSupportsBetweenClause()
+    public function testSupportsBetweenClause(): void
     {
         $this->assertSqlGeneration(
             'UPDATE Doctrine\Tests\Models\CMS\CmsUser u SET u.status = ?1 WHERE u.id BETWEEN :from AND :to',
@@ -149,26 +147,24 @@ class UpdateSqlGenerationTest extends OrmTestCase
         );
     }
 
-    public function testSingleValuedAssociationFieldInWhere()
+    public function testSingleValuedAssociationFieldInWhere(): void
     {
         $this->assertSqlGeneration(
-            "UPDATE Doctrine\Tests\Models\CMS\CmsPhonenumber p SET p.phonenumber = 1234 WHERE p.user = ?1",
-            "UPDATE cms_phonenumbers SET phonenumber = 1234 WHERE user_id = ?"
+            'UPDATE Doctrine\Tests\Models\CMS\CmsPhonenumber p SET p.phonenumber = 1234 WHERE p.user = ?1',
+            'UPDATE cms_phonenumbers SET phonenumber = 1234 WHERE user_id = ?'
         );
     }
 
-    public function testSingleValuedAssociationFieldInSetClause()
+    public function testSingleValuedAssociationFieldInSetClause(): void
     {
         $this->assertSqlGeneration(
-            "update Doctrine\Tests\Models\CMS\CmsComment c set c.article = null where c.article=?1",
-            "UPDATE cms_comments SET article_id = NULL WHERE article_id = ?"
+            'update Doctrine\Tests\Models\CMS\CmsComment c set c.article = null where c.article=?1',
+            'UPDATE cms_comments SET article_id = NULL WHERE article_id = ?'
         );
     }
 
-    /**
-     * @group DDC-980
-     */
-    public function testSubselectTableAliasReferencing()
+    /** @group DDC-980 */
+    public function testSubselectTableAliasReferencing(): void
     {
         $this->assertSqlGeneration(
             "UPDATE Doctrine\Tests\Models\CMS\CmsUser u SET u.status = 'inactive' WHERE SIZE(u.groups) = 10",
@@ -176,7 +172,7 @@ class UpdateSqlGenerationTest extends OrmTestCase
         );
     }
 
-    public function testCustomTypeValueSqlCompletelyIgnoredInUpdateStatements()
+    public function testCustomTypeValueSqlCompletelyIgnoredInUpdateStatements(): void
     {
         $this->assertSqlGeneration(
             'UPDATE Doctrine\Tests\Models\CustomType\CustomTypeParent p SET p.customInteger = 1 WHERE p.id = 1',
@@ -184,10 +180,10 @@ class UpdateSqlGenerationTest extends OrmTestCase
         );
     }
 
-    public function testUpdateWithSubselectAsNewValue()
+    public function testUpdateWithSubselectAsNewValue(): void
     {
         $this->assertSqlGeneration(
-            "UPDATE Doctrine\Tests\Models\Company\CompanyFixContract fc SET fc.fixPrice = (SELECT ce2.salary FROM Doctrine\Tests\Models\Company\CompanyEmployee ce2 WHERE ce2.id = 2) WHERE fc.id = 1",
+            'UPDATE Doctrine\Tests\Models\Company\CompanyFixContract fc SET fc.fixPrice = (SELECT ce2.salary FROM Doctrine\Tests\Models\Company\CompanyEmployee ce2 WHERE ce2.id = 2) WHERE fc.id = 1',
             "UPDATE company_contracts SET fixPrice = (SELECT c0_.salary FROM company_employees c0_ INNER JOIN company_persons c1_ ON c0_.id = c1_.id LEFT JOIN company_managers c2_ ON c0_.id = c2_.id WHERE c1_.id = 2) WHERE (id = 1) AND discr IN ('fix')"
         );
     }

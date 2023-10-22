@@ -1,30 +1,32 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\ManyToOne;
+use Doctrine\ORM\Mapping\OneToMany;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
-class DDC735Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC735Test extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
-        try {
-            $this->_schemaTool->createSchema(
-                [
-                $this->_em->getClassMetadata(DDC735Product::class),
-                $this->_em->getClassMetadata(DDC735Review::class)
-                ]
-            );
-        } catch(\Exception $e) {
 
-        }
+        $this->createSchemaForModels(DDC735Product::class, DDC735Review::class);
     }
 
-    public function testRemoveElement_AppliesOrphanRemoval()
+    public function testRemoveElementAppliesOrphanRemoval(): void
     {
         // Create a product and its first review
-        $product = new DDC735Product;
+        $product = new DDC735Product();
         $review  = new DDC735Review($product);
 
         // Persist and flush
@@ -32,7 +34,7 @@ class DDC735Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->flush();
 
         // Now you see it
-        $this->assertEquals(1, count($product->getReviews()));
+        self::assertCount(1, $product->getReviews());
 
         // Remove the review
         $reviewId = $review->getId();
@@ -40,30 +42,32 @@ class DDC735Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->flush();
 
         // Now you don't
-        $this->assertEquals(0, count($product->getReviews()), 'count($reviews) should be 0 after removing its only Review');
+        self::assertCount(0, $product->getReviews(), 'count($reviews) should be 0 after removing its only Review');
 
         // Refresh
         $this->_em->refresh($product);
 
         // It should still be 0
-        $this->assertEquals(0, count($product->getReviews()), 'count($reviews) should still be 0 after the refresh');
+        self::assertCount(0, $product->getReviews(), 'count($reviews) should still be 0 after the refresh');
 
         // Review should also not be available anymore
-        $this->assertNull($this->_em->find(DDC735Review::class, $reviewId));
+        self::assertNull($this->_em->find(DDC735Review::class, $reviewId));
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC735Product
 {
     /**
-     * @Id @Column(type="integer") @GeneratedValue
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
      */
     protected $id;
 
     /**
+     * @psalm-var Collection<int, DDC735Review>
      * @OneToMany(
      *   targetEntity="DDC735Review",
      *   mappedBy="product",
@@ -75,36 +79,39 @@ class DDC735Product
 
     public function __construct()
     {
-        $this->reviews = new ArrayCollection;
+        $this->reviews = new ArrayCollection();
     }
 
-    public function getReviews()
+    /** @psalm-return Collection<int, DDC735Review> */
+    public function getReviews(): Collection
     {
         return $this->reviews;
     }
 
-    public function addReview(DDC735Review $review)
+    public function addReview(DDC735Review $review): void
     {
         $this->reviews->add($review);
     }
 
-    public function removeReview(DDC735Review $review)
+    public function removeReview(DDC735Review $review): void
     {
         $this->reviews->removeElement($review);
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC735Review
 {
     /**
-     * @Id @Column(type="integer") @GeneratedValue
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
      */
     protected $id;
 
     /**
+     * @var DDC735Product
      * @ManyToOne(targetEntity="DDC735Product", inversedBy="reviews")
      */
     protected $product;
@@ -115,7 +122,7 @@ class DDC735Review
         $product->addReview($this);
     }
 
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }

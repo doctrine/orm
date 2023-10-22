@@ -1,70 +1,70 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\DDC3579;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\ManyToMany;
 
-/**
- * @Entity
- */
+/** @Entity */
+#[Entity]
 class DDC3579Group
 {
-
     /**
+     * @var int
      * @GeneratedValue
-     * @Id @Column(type="integer")
+     * @Id
+     * @Column(type="integer")
      */
+    #[Id]
+    #[GeneratedValue]
+    #[Column(type: 'integer')]
     private $id;
 
     /**
+     * @var string|null
      * @Column
      */
+    #[Column]
     private $name;
 
     /**
-     * @ArrayCollection
-     *
+     * @psalm-var Collection<int, DDC3579Admin>
      * @ManyToMany(targetEntity="DDC3579Admin", mappedBy="groups")
      */
+    #[ManyToMany(targetEntity: DDC3579Admin::class, mappedBy: 'groups')]
     private $admins;
 
-    public function __construct($name = null)
+    public function __construct(?string $name = null)
     {
-        $this->name = $name;
-        $this->users = new ArrayCollection();
+        $this->name   = $name;
+        $this->admins = new ArrayCollection();
     }
 
-    /**
-     * @param string $name
-     */
-    public function setName($name)
+    public function setName(string $name): void
     {
         $this->name = $name;
     }
 
-    /**
-     * @return string
-     */
-    public function getName()
+    public function getName(): ?string
     {
         return $this->name;
     }
 
-    /**
-     * @param DDC3579Admin $admin
-     */
-    public function addAdmin(DDC3579Admin $admin)
+    public function addAdmin(DDC3579Admin $admin): void
     {
         $this->admins[] = $admin;
     }
 
-    /**
-     * @return ArrayCollection
-     */
-    public function getAdmins()
+    /** @psalm-return Collection<int, DDC3579Admin> */
+    public function getAdmins(): Collection
     {
         return $this->admins;
     }
-
 }
-

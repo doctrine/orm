@@ -1,25 +1,28 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-class DDC381Test extends \Doctrine\Tests\OrmFunctionalTestCase
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\Tests\OrmFunctionalTestCase;
+
+use function serialize;
+use function unserialize;
+
+class DDC381Test extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
 
-        try {
-            $this->_schemaTool->createSchema(
-                [
-                $this->_em->getClassMetadata(DDC381Entity::class),
-                ]
-            );
-        } catch(\Exception $e) {
-
-        }
+        $this->createSchemaForModels(DDC381Entity::class);
     }
 
-    public function testCallUnserializedProxyMethods()
+    public function testCallUnserializedProxyMethods(): void
     {
         $entity = new DDC381Entity();
 
@@ -33,30 +36,30 @@ class DDC381Test extends \Doctrine\Tests\OrmFunctionalTestCase
         // explicitly load proxy (getId() does not trigger reload of proxy)
         $id = $entity->getOtherMethod();
 
-        $data = serialize($entity);
+        $data   = serialize($entity);
         $entity = unserialize($data);
 
-        $this->assertEquals($persistedId, $entity->getId());
+        self::assertEquals($persistedId, $entity->getId());
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC381Entity
 {
     /**
-     * @Id @Column(type="integer") @GeneratedValue
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
      */
     protected $id;
 
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
 
-    public function getOtherMethod()
+    public function getOtherMethod(): void
     {
-
     }
 }

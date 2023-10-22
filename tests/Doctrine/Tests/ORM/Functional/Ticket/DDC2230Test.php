@@ -1,36 +1,35 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-use Doctrine\Common\NotifyPropertyChanged;
-use Doctrine\Common\PropertyChangedListener;
-use Doctrine\Common\Proxy\Proxy;
-use Doctrine\ORM\Tools\ToolsException;
+use Doctrine\ORM\Mapping\ChangeTrackingPolicy;
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\OneToOne;
+use Doctrine\Persistence\NotifyPropertyChanged;
+use Doctrine\Persistence\PropertyChangedListener;
 use Doctrine\Tests\OrmFunctionalTestCase;
-use Doctrine\Tests\VerifyDeprecations;
 
-/**
- * @group DDC-2230
- */
+use function assert;
+
+/** @group DDC-2230 */
 class DDC2230Test extends OrmFunctionalTestCase
 {
-    use VerifyDeprecations;
-
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
 
-        try {
-            $this->_schemaTool->createSchema(
-                [
-                $this->_em->getClassMetadata(DDC2230User::class),
-                $this->_em->getClassMetadata(DDC2230Address::class),
-                ]
-            );
-        } catch (ToolsException $e) {}
+        $this->createSchemaForModels(
+            DDC2230User::class,
+            DDC2230Address::class
+        );
     }
 
-    public function testNotifyTrackingNotCalledOnUninitializedProxies()
+    public function testNotifyTrackingNotCalledOnUninitializedProxies(): void
     {
         $insertedUser          = new DDC2230User();
         $insertedUser->address = new DDC2230Address();
@@ -46,15 +45,12 @@ class DDC2230Test extends OrmFunctionalTestCase
 
         $mergedUser = $this->_em->merge($user);
 
-        /* @var $address Proxy */
         $address = $mergedUser->address;
 
-        $this->assertInstanceOf(Proxy::class, $address);
-        $this->assertFalse($address->__isInitialized());
-        $this->assertHasDeprecationMessages();
+        self::assertTrue($this->isUninitializedObject($address));
     }
 
-    public function testNotifyTrackingCalledOnProxyInitialization()
+    public function testNotifyTrackingCalledOnProxyInitialization(): void
     {
         $insertedAddress = new DDC2230Address();
 
@@ -63,25 +59,30 @@ class DDC2230Test extends OrmFunctionalTestCase
         $this->_em->clear();
 
         $addressProxy = $this->_em->getReference(DDC2230Address::class, $insertedAddress->id);
+        assert($addressProxy instanceof DDC2230Address);
 
-        /* @var $addressProxy Proxy|\Doctrine\Tests\ORM\Functional\Ticket\DDC2230Address */
-        $this->assertFalse($addressProxy->__isInitialized());
-        $this->assertNull($addressProxy->listener);
+        self::assertTrue($this->isUninitializedObject($addressProxy));
+        self::assertNull($addressProxy->listener);
 
-        $addressProxy->__load();
+        $this->_em->getUnitOfWork()->initializeObject($addressProxy);
 
-        $this->assertSame($this->_em->getUnitOfWork(), $addressProxy->listener);
-        $this->assertNotHasDeprecationMessages();
+        self::assertSame($this->_em->getUnitOfWork(), $addressProxy->listener);
     }
 }
 
 /** @Entity */
 class DDC2230User
 {
-    /** @Id @Column(type="integer") @GeneratedValue(strategy="AUTO") */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue(strategy="AUTO")
+     */
     public $id;
 
     /**
+     * @var DDC2230Address
      * @OneToOne(targetEntity="DDC2230Address")
      */
     public $address;
@@ -93,18 +94,20 @@ class DDC2230User
  */
 class DDC2230Address implements NotifyPropertyChanged
 {
-    /** @Id @Column(type="integer") @GeneratedValue(strategy="AUTO") */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue(strategy="AUTO")
+     */
     public $id;
 
-    /**
-     * @var \Doctrine\Common\PropertyChangedListener
-     */
+    /** @var \Doctrine\Common\PropertyChangedListener */
     public $listener;
 
     /** {@inheritDoc} */
-    function addPropertyChangedListener(PropertyChangedListener $listener)
+    public function addPropertyChangedListener(PropertyChangedListener $listener)
     {
         $this->listener = $listener;
     }
 }
-

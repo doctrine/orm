@@ -1,59 +1,51 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Id;
 
-use Doctrine\ORM\EntityManager;
+use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Driver;
+use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\ORM\Id\SequenceGenerator;
-use Doctrine\Tests\Mocks\ConnectionMock;
-use Doctrine\Tests\Mocks\StatementArrayMock;
 use Doctrine\Tests\OrmTestCase;
+use Doctrine\Tests\PHPUnitCompatibility\MockBuilderCompatibilityTools;
 
 class SequenceGeneratorTest extends OrmTestCase
 {
-    /**
-     * @var EntityManager
-     */
-    private $entityManager;
+    use MockBuilderCompatibilityTools;
 
-    /**
-     * @var SequenceGenerator
-     */
-    private $sequenceGenerator;
-
-    /**
-     * @var ConnectionMock
-     */
-    private $connection;
-
-    protected function setUp() : void
+    public function testGeneration(): void
     {
-        parent::setUp();
+        $sequenceGenerator = new SequenceGenerator('seq', 10);
 
-        $this->entityManager     = $this->_getTestEntityManager();
-        $this->sequenceGenerator = new SequenceGenerator('seq', 10);
-        $this->connection        = $this->entityManager->getConnection();
+        $platform = $this->createMock(AbstractPlatform::class);
+        $platform->method('getSequenceNextValSQL')
+            ->willReturn('');
 
-        self::assertInstanceOf(ConnectionMock::class, $this->connection);
-    }
+        $connection = $this->getMockBuilderWithOnlyMethods(Connection::class, ['fetchOne', 'getDatabasePlatform'])
+            ->setConstructorArgs([[], $this->createMock(Driver::class)])
+            ->getMock();
+        $connection->method('getDatabasePlatform')
+            ->willReturn($platform);
 
-    public function testGeneration() : void
-    {
-        $this->connection->setFetchOneException(new \BadMethodCallException(
-            'Fetch* method used. Query method should be used instead, '
-            . 'as NEXTVAL should be run on a master server in master-slave setup.'
-        ));
+        // Sequence values should be generated once per ten identifiers
+        $connection->expects($this->exactly(5))
+            ->method('fetchOne')
+            ->willReturnCallback(static function () use (&$i) {
+                self::assertEquals(0, $i % 10);
+
+                return $i;
+            });
+
+        $entityManager = $this->getTestEntityManager($connection);
 
         for ($i = 0; $i < 42; ++$i) {
-            if ($i % 10 == 0) {
-                $this->connection->setQueryResult(new StatementArrayMock([[(int)($i / 10) * 10]]));
-            }
-
-            $id = $this->sequenceGenerator->generate($this->entityManager, null);
+            $id = $sequenceGenerator->generateId($entityManager, null);
 
             self::assertSame($i, $id);
-            self::assertSame((int)($i / 10) * 10 + 10, $this->sequenceGenerator->getCurrentMaxValue());
-            self::assertSame($i + 1, $this->sequenceGenerator->getNextValue());
+            self::assertSame((int) ($i / 10) * 10 + 10, $sequenceGenerator->getCurrentMaxValue());
+            self::assertSame($i + 1, $sequenceGenerator->getNextValue());
         }
     }
 }
-

@@ -1,102 +1,107 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Mocks;
 
+use Doctrine\DBAL\Driver\Result;
 use Doctrine\DBAL\Driver\Statement;
+use EmptyIterator;
+use IteratorAggregate;
+use PDO;
+use Traversable;
 
 /**
  * This class is a mock of the Statement interface.
- *
- * @author Alexander <iam.asm89@gmail.com>
  */
-class StatementMock implements \IteratorAggregate, Statement
+class StatementMock implements IteratorAggregate, Statement
 {
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function bindValue($param, $value, $type = null)
     {
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function bindParam($column, &$variable, $type = null, $length = null)
     {
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function errorCode()
     {
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
-    public function errorInfo(){}
-
-    /**
-     * {@inheritdoc}
-     */
-    public function execute($params = null)
+    public function errorInfo()
     {
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
-    public function rowCount()
+    public function execute($params = null): Result
     {
+        return new DriverResultMock();
+    }
+
+    public function rowCount(): int
+    {
+        return 1;
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function closeCursor()
     {
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function columnCount()
     {
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function setFetchMode($fetchStyle, $arg2 = null, $arg3 = null)
     {
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
-    public function fetch($fetchMode = null, $cursorOrientation = \PDO::FETCH_ORI_NEXT, $cursorOffset = 0)
+    public function fetch($fetchMode = null, $cursorOrientation = PDO::FETCH_ORI_NEXT, $cursorOffset = 0)
     {
+        return false;
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function fetchAll($fetchMode = null, $fetchArgument = null, $ctorArgs = null)
     {
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function fetchColumn($columnIndex = 0)
     {
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getIterator()
+    public function getIterator(): Traversable
     {
+        return new EmptyIterator();
     }
 }

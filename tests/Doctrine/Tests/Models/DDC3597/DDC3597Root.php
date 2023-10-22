@@ -1,23 +1,34 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\DDC3597;
+
+use DateTime;
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\DiscriminatorColumn;
 use Doctrine\ORM\Mapping\DiscriminatorMap;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\HasLifecycleCallbacks;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\InheritanceType;
+use Doctrine\ORM\Mapping\PrePersist;
+use Doctrine\ORM\Mapping\PreUpdate;
 
 /**
  * Description of Root
  *
  * @Entity
- *
  * @InheritanceType("JOINED")
- * @DiscriminatorColumn(name="discriminator", type="string")
+ * @DiscriminatorColumn(name="discriminator", type="string", length=255)
  * @DiscriminatorMap({ "image" = "DDC3597Image"})
  * @HasLifecycleCallbacks
  */
-abstract class DDC3597Root {
-
+abstract class DDC3597Root
+{
     /**
      * @var int
-     *
      * @Column(name="id", type="integer", nullable=false)
      * @Id
      * @GeneratedValue(strategy="IDENTITY")
@@ -25,13 +36,13 @@ abstract class DDC3597Root {
     protected $id;
 
     /**
-     * @var \DateTime
+     * @var DateTime
      * @Column(name="created_at", type="datetime", nullable=false)
      */
     protected $createdAt = null;
 
     /**
-     * @var \DateTime
+     * @var DateTime
      * @Column(name="updated_at", type="datetime", nullable=false)
      */
     protected $updatedAt = null;
@@ -41,8 +52,9 @@ abstract class DDC3597Root {
      *
      * @PrePersist
      */
-    public function _prePersist() {
-        $this->updatedAt = $this->createdAt = new \DateTime();
+    public function prePersist(): void
+    {
+        $this->updatedAt = $this->createdAt = new DateTime();
     }
 
     /**
@@ -50,29 +62,23 @@ abstract class DDC3597Root {
      *
      * @PreUpdate
      */
-    public function _preUpdate() {
-        $this->updatedAt = new \DateTime();
+    public function preUpdate(): void
+    {
+        $this->updatedAt = new DateTime();
     }
 
-    /**
-     * @return int
-     */
-    public function getId() {
-        return (int)$this->id;
+    public function getId(): int
+    {
+        return (int) $this->id;
     }
 
-
-    /**
-     * @return \DateTime
-     */
-    public function getCreatedAt() {
+    public function getCreatedAt(): DateTime
+    {
         return $this->createdAt;
     }
 
-    /**
-     * @return \DateTime
-     */
-    public function getUpdatedAt() {
+    public function getUpdatedAt(): DateTime
+    {
         return $this->updatedAt;
     }
 }

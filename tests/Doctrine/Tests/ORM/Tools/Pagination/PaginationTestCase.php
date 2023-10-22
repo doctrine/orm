@@ -1,141 +1,204 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Tools\Pagination;
 
+use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\JoinTable;
+use Doctrine\ORM\Mapping\ManyToMany;
+use Doctrine\ORM\Mapping\ManyToOne;
+use Doctrine\ORM\Mapping\MappedSuperclass;
+use Doctrine\ORM\Mapping\OneToOne;
+use Doctrine\ORM\Mapping\Table;
 use Doctrine\Tests\OrmTestCase;
 
 abstract class PaginationTestCase extends OrmTestCase
 {
-    /**
-     * @var \Doctrine\ORM\EntityManagerInterface
-     */
+    /** @var EntityManagerInterface */
     public $entityManager;
 
-    protected function setUp()
+    protected function setUp(): void
     {
-        $this->entityManager = $this->_getTestEntityManager();
+        $this->entityManager = $this->getTestEntityManager();
     }
 }
 
 
-/**
-* @Entity
-*/
+/** @Entity */
 class MyBlogPost
 {
-
-    /** @Id @Column(type="integer") @GeneratedValue */
-    public $id;
     /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     */
+    public $id;
+
+    /**
+     * @var Author
      * @ManyToOne(targetEntity="Author")
      */
     public $author;
+
     /**
+     * @var Category
      * @ManyToOne(targetEntity="Category")
      */
     public $category;
-    /** @Column(type="string") */
+
+    /**
+     * @var string
+     * @Column(type="string", length=255)
+     */
     public $title;
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class MyAuthor
 {
-
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     */
     public $id;
-
 }
 
-/**
-* @Entity
-*/
+/** @Entity */
 class MyCategory
 {
-
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     */
     public $id;
-
 }
 
 
-/**
- * @Entity
- */
+/** @Entity */
 class BlogPost
 {
-
-    /** @Id @Column(type="integer") @GeneratedValue */
-    public $id;
     /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     */
+    public $id;
+
+    /**
+     * @var Author
      * @ManyToOne(targetEntity="Author")
      */
     public $author;
+
     /**
+     * @var Category
      * @ManyToOne(targetEntity="Category")
      */
     public $category;
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class Author
 {
-
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     */
     public $id;
-    /** @Column(type="string") */
-    public $name;
 
+    /**
+     * @var string
+     * @Column(type="string", length=255)
+     */
+    public $name;
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class Person
 {
-
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     */
     public $id;
-    /** @Column(type="string") */
-    public $name;
-    /** @Column(type="string") */
-    public $biography;
 
+    /**
+     * @var string
+     * @Column(type="string", length=255)
+     */
+    public $name;
+
+    /**
+     * @var string
+     * @Column(type="string", length=255)
+     */
+    public $biography;
 }
+
+/** @Entity */
+class Category
+{
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     */
+    public $id;
+}
+
 
 /**
  * @Entity
+ * @Table(name="groups")
  */
-class Category
-{
-
-    /** @Id @Column(type="integer") @GeneratedValue */
-    public $id;
-
-}
-
-
-/** @Entity @Table(name="groups") */
 class Group
 {
-
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     */
     public $id;
-    /** @ManyToMany(targetEntity="User", mappedBy="groups") */
+
+    /**
+     * @psalm-var Collection<int, User>
+     * @ManyToMany(targetEntity="User", mappedBy="groups")
+     */
     public $users;
 }
 
 /** @Entity */
 class User
 {
-
-    /** @Id @Column(type="integer") @GeneratedValue */
-    public $id;
     /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     */
+    public $id;
+
+    /**
+     * @psalm-var Collection<int, Group>
      * @ManyToMany(targetEntity="Group", inversedBy="users")
      * @JoinTable(
      * name="user_group",
@@ -144,7 +207,9 @@ class User
      * )
      */
     public $groups;
+
     /**
+     * @var Avatar
      * @OneToOne(targetEntity="Avatar", mappedBy="user")
      */
     public $avatar;
@@ -153,30 +218,58 @@ class User
 /** @Entity */
 class Avatar
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
-    public $id;
     /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     */
+    public $id;
+
+    /**
+     * @var User
      * @OneToOne(targetEntity="User", inversedBy="avatar")
      * @JoinColumn(name="user_id", referencedColumnName="id")
      */
     public $user;
-    /** @Column(type="string", length=255) */
+
+    /**
+     * @var string
+     * @Column(type="string", length=255)
+     */
     public $image;
-    /** @Column(type="integer") */
-    public $image_height;
-    /** @Column(type="integer") */
-    public $image_width;
-    /** @Column(type="string", length=255) */
-    public $image_alt_desc;
+
+    /**
+     * @var int
+     * @Column(type="integer")
+     */
+    public $imageHeight;
+
+    /**
+     * @var int
+     * @Column(type="integer")
+     */
+    public $imageWidth;
+
+    /**
+     * @var string
+     * @Column(type="string", length=255)
+     */
+    public $imageAltDesc;
 }
 
 /** @MappedSuperclass */
 abstract class Identified
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     */
     private $id;
 
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
@@ -185,6 +278,9 @@ abstract class Identified
 /** @Entity */
 class Banner extends Identified
 {
-    /** @Column(type="string") */
+    /**
+     * @var string
+     * @Column(type="string", length=255)
+     */
     public $name;
 }

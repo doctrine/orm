@@ -4,31 +4,46 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\Common\EventManager;
+use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\ORM\Decorator\EntityManagerDecorator;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\ORM\UnitOfWork;
-use Doctrine\Tests\Mocks\ConnectionMock;
-use Doctrine\Tests\Mocks\DriverMock;
 use Doctrine\Tests\Mocks\EntityManagerMock;
 use Doctrine\Tests\OrmTestCase;
 
-/**
- * @group GH7869
- */
+/** @group GH7869 */
 class GH7869Test extends OrmTestCase
 {
-    public function testDQLDeferredEagerLoad()
+    public function testDQLDeferredEagerLoad(): void
     {
-        $decoratedEm = EntityManagerMock::create(new ConnectionMock([], new DriverMock()));
+        $platform = $this->createMock(AbstractPlatform::class);
+        $platform->method('supportsIdentityColumns')
+            ->willReturn(true);
 
-        $em = $this->getMockBuilder(EntityManagerDecorator::class)
-            ->setConstructorArgs([$decoratedEm])
-            ->setMethods(['getClassMetadata'])
-            ->getMock();
+        $connection = $this->createMock(Connection::class);
+        $connection->method('getDatabasePlatform')
+            ->willReturn($platform);
+        $connection->method('getEventManager')
+            ->willReturn(new EventManager());
 
-        $em->expects($this->exactly(2))
-            ->method('getClassMetadata')
-            ->willReturnCallback([$decoratedEm, 'getClassMetadata']);
+        $em = new class (new EntityManagerMock($connection)) extends EntityManagerDecorator {
+            /** @var int */
+            public $getClassMetadataCalls = 0;
+
+            public function getClassMetadata($className): ClassMetadata
+            {
+                ++$this->getClassMetadataCalls;
+
+                return parent::getClassMetadata($className);
+            }
+        };
 
         $hints = [
             UnitOfWork::HINT_DEFEREAGERLOAD => true,
@@ -39,29 +54,43 @@ class GH7869Test extends OrmTestCase
         $uow->createEntity(GH7869Appointment::class, ['id' => 1, 'patient_id' => 1], $hints);
         $uow->clear();
         $uow->triggerEagerLoads();
+
+        self::assertSame(4, $em->getClassMetadataCalls);
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class GH7869Appointment
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     */
     public $id;
 
-    /** @OneToOne(targetEntity="GH7869Patient", inversedBy="appointment", fetch="EAGER") */
+    /**
+     * @var GH7869Patient
+     * @OneToOne(targetEntity="GH7869Patient", inversedBy="appointment", fetch="EAGER")
+     */
     public $patient;
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class GH7869Patient
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     */
     public $id;
 
-    /** @OneToOne(targetEntity="GH7869Appointment", mappedBy="patient") */
+    /**
+     * @var GH7869Appointment
+     * @OneToOne(targetEntity="GH7869Appointment", mappedBy="patient")
+     */
     public $appointment;
 }

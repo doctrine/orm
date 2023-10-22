@@ -1,83 +1,73 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Mocks;
 
+use BadMethodCallException;
 use Doctrine\Common\EventManager;
+use Doctrine\DBAL\Connection;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\ORMSetup;
+use Doctrine\ORM\Proxy\ProxyFactory;
+use Doctrine\ORM\UnitOfWork;
+use Doctrine\Tests\TestUtil;
+
+use function sprintf;
 
 /**
  * Special EntityManager mock used for testing purposes.
  */
 class EntityManagerMock extends EntityManager
 {
-    /**
-     * @var \Doctrine\ORM\UnitOfWork|null
-     */
+    /** @var UnitOfWork|null */
     private $_uowMock;
 
-    /**
-     * @var \Doctrine\ORM\Proxy\ProxyFactory|null
-     */
+    /** @var ProxyFactory|null */
     private $_proxyFactoryMock;
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getUnitOfWork()
+    public function __construct(Connection $conn, ?Configuration $config = null, ?EventManager $eventManager = null)
     {
-        return isset($this->_uowMock) ? $this->_uowMock : parent::getUnitOfWork();
+        if ($config === null) {
+            $config = new Configuration();
+            TestUtil::configureProxies($config);
+            $config->setMetadataDriverImpl(ORMSetup::createDefaultAnnotationDriver());
+        }
+
+        parent::__construct($conn, $config, $eventManager);
+    }
+
+    public function getUnitOfWork(): UnitOfWork
+    {
+        return $this->_uowMock ?? parent::getUnitOfWork();
     }
 
     /* Mock API */
 
     /**
      * Sets a (mock) UnitOfWork that will be returned when getUnitOfWork() is called.
-     *
-     * @param \Doctrine\ORM\UnitOfWork $uow
-     *
-     * @return void
      */
-    public function setUnitOfWork($uow)
+    public function setUnitOfWork(UnitOfWork $uow): void
     {
         $this->_uowMock = $uow;
     }
 
-    /**
-     * @param \Doctrine\ORM\Proxy\ProxyFactory $proxyFactory
-     *
-     * @return void
-     */
-    public function setProxyFactory($proxyFactory)
+    public function setProxyFactory(ProxyFactory $proxyFactory): void
     {
         $this->_proxyFactoryMock = $proxyFactory;
     }
 
-    /**
-     * @return \Doctrine\ORM\Proxy\ProxyFactory
-     */
-    public function getProxyFactory()
+    public function getProxyFactory(): ProxyFactory
     {
-        return isset($this->_proxyFactoryMock) ? $this->_proxyFactoryMock : parent::getProxyFactory();
+        return $this->_proxyFactoryMock ?? parent::getProxyFactory();
     }
 
     /**
-     * Mock factory method to create an EntityManager.
-     *
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
-    public static function create($conn, Configuration $config = null, EventManager $eventManager = null)
+    public static function create($connection, Configuration $config, ?EventManager $eventManager = null): self
     {
-        if (null === $config) {
-            $config = new Configuration();
-            $config->setProxyDir(__DIR__ . '/../Proxies');
-            $config->setProxyNamespace('Doctrine\Tests\Proxies');
-            $config->setMetadataDriverImpl($config->newDefaultAnnotationDriver([], true));
-        }
-        if (null === $eventManager) {
-            $eventManager = new EventManager();
-        }
-
-        return new EntityManagerMock($conn, $config, $eventManager);
+        throw new BadMethodCallException(sprintf('Call to deprecated method %s().', __METHOD__));
     }
 }

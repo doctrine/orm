@@ -1,6 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\DirectoryTree;
+
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\Table;
 
 /**
  * @Entity
@@ -8,20 +14,23 @@ namespace Doctrine\Tests\Models\DirectoryTree;
  */
 class File extends AbstractContentItem
 {
-    /** @Column(type="string") */
-    protected $extension = "html";
+    /**
+     * @var string
+     * @Column(type="string", length=255)
+     */
+    protected $extension = 'html';
 
-    public function __construct(Directory $parent = null)
+    public function __construct(?Directory $parent = null)
     {
         parent::__construct($parent);
     }
 
-    public function getExtension()
+    public function getExtension(): string
     {
         return $this->extension;
     }
 
-    public function setExtension($ext)
+    public function setExtension(string $ext): void
     {
         $this->extension = $ext;
     }

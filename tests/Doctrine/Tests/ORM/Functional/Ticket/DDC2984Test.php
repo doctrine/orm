@@ -1,40 +1,40 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\ConversionException;
 use Doctrine\DBAL\Types\StringType;
 use Doctrine\DBAL\Types\Type;
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\Table;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
-/**
- * @group DDC-2984
- */
-class DDC2984Test extends \Doctrine\Tests\OrmFunctionalTestCase
+use function is_string;
+
+/** @group DDC-2984 */
+class DDC2984Test extends OrmFunctionalTestCase
 {
-    public function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
 
-        if ( ! Type::hasType('ddc2984_domain_user_id')) {
+        if (! Type::hasType('ddc2984_domain_user_id')) {
             Type::addType(
                 'ddc2984_domain_user_id',
                 DDC2984UserIdCustomDbalType::class
             );
         }
 
-        try {
-            $this->_schemaTool->createSchema(
-                [
-                $this->_em->getClassMetadata(DDC2984User::class),
-                ]
-            );
-        } catch (\Exception $e) {
-            // no action needed - schema seems to be already in place
-        }
+        $this->createSchemaForModels(DDC2984User::class);
     }
 
-    public function testIssue()
+    public function testIssue(): void
     {
         $user = new DDC2984User(new DDC2984DomainUserId('unique_id_within_a_vo'));
         $user->applyName('Alex');
@@ -42,35 +42,41 @@ class DDC2984Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->persist($user);
         $this->_em->flush();
 
-        $repository = $this->_em->getRepository(__NAMESPACE__ . "\DDC2984User");
+        $repository = $this->_em->getRepository(__NAMESPACE__ . '\DDC2984User');
 
         $sameUser = $repository->find(new DDC2984DomainUserId('unique_id_within_a_vo'));
 
         //Until know, everything works as expected
-        $this->assertTrue($user->sameIdentityAs($sameUser));
+        self::assertTrue($user->sameIdentityAs($sameUser));
 
         $this->_em->clear();
 
         //After clearing the identity map, the UnitOfWork produces the warning described in DDC-2984
         $equalUser = $repository->find(new DDC2984DomainUserId('unique_id_within_a_vo'));
 
-        $this->assertNotSame($user, $equalUser);
-        $this->assertTrue($user->sameIdentityAs($equalUser));
+        self::assertNotSame($user, $equalUser);
+        self::assertTrue($user->sameIdentityAs($equalUser));
     }
 }
 
-/** @Entity @Table(name="users") */
+/**
+ * @Entity
+ * @Table(name="users")
+ */
 class DDC2984User
 {
     /**
-     * @Id @Column(type="ddc2984_domain_user_id")
+     * @Id
+     * @Column(type="ddc2984_domain_user_id", length=255)
      * @GeneratedValue(strategy="NONE")
-     *
      * @var DDC2984DomainUserId
      */
     private $userId;
 
-    /** @Column(type="string", length=50) */
+    /**
+     * @var string
+     * @Column(type="string", length=50)
+     */
     private $name;
 
     public function __construct(DDC2984DomainUserId $aUserId)
@@ -78,35 +84,22 @@ class DDC2984User
         $this->userId = $aUserId;
     }
 
-    /**
-     * @return DDC2984DomainUserId
-     */
-    public function userId()
+    public function userId(): DDC2984DomainUserId
     {
         return $this->userId;
     }
 
-    /**
-     * @return string
-     */
-    public function name()
+    public function name(): string
     {
         return $this->name;
     }
 
-    /**
-     * @param string $name
-     */
-    public function applyName($name)
+    public function applyName(string $name): void
     {
         $this->name = $name;
     }
 
-    /**
-     * @param DDC2984User $other
-     * @return bool
-     */
-    public function sameIdentityAs(DDC2984User $other)
+    public function sameIdentityAs(DDC2984User $other): bool
     {
         return $this->userId()->sameValueAs($other->userId());
     }
@@ -114,61 +107,42 @@ class DDC2984User
 
 /**
  * DDC2984DomainUserId ValueObject
- *
- * @author Alexander Miertsch <kontakt@codeliner.ws>
  */
 class DDC2984DomainUserId
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     private $userIdString;
 
-    /**
-     * @param string $aUserIdString
-     */
-    public function __construct($aUserIdString)
+    public function __construct(string $aUserIdString)
     {
         $this->userIdString = $aUserIdString;
     }
 
-    /**
-     * @return string
-     */
-    public function toString()
+    public function toString(): string
     {
         return $this->userIdString;
     }
 
-    /**
-     * @return string
-     */
-    public function __toString()
+    public function __toString(): string
     {
         return $this->toString();
     }
 
-    /**
-     * @param DDC2984DomainUserId $other
-     * @return bool
-     */
-    public function sameValueAs(DDC2984DomainUserId $other)
+    public function sameValueAs(DDC2984DomainUserId $other): bool
     {
         return $this->toString() === $other->toString();
     }
 }
 
-/**
- * Class DDC2984UserIdCustomDbalType
- *
- * @author Alexander Miertsch <kontakt@codeliner.ws>
- */
 class DDC2984UserIdCustomDbalType extends StringType
 {
-    public function getName()
+    private const TYPE_NAME = 'ddc2984_domain_user_id';
+
+    public function getName(): string
     {
-        return 'ddc2984_domain_user_id';
+        return self::TYPE_NAME;
     }
+
     /**
      * {@inheritDoc}
      */
@@ -192,8 +166,8 @@ class DDC2984UserIdCustomDbalType extends StringType
             return $value;
         }
 
-        if ( ! $value instanceof DDC2984DomainUserId) {
-            throw ConversionException::conversionFailed($value, $this->getName());
+        if (! $value instanceof DDC2984DomainUserId) {
+            throw ConversionException::conversionFailed($value, self::TYPE_NAME);
         }
 
         return $value->toString();

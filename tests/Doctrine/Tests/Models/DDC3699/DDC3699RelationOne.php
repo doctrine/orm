@@ -1,6 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\DDC3699;
+
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\OneToOne;
+use Doctrine\ORM\Mapping\Table;
 
 /**
  * @Entity
@@ -8,9 +16,16 @@ namespace Doctrine\Tests\Models\DDC3699;
  */
 class DDC3699RelationOne
 {
-    /** @Id @Column(type="integer") */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     */
     public $id;
 
-    /** @OneToOne(targetEntity="DDC3699Child", mappedBy="oneRelation") */
+    /**
+     * @var DDC3699Child
+     * @OneToOne(targetEntity="DDC3699Child", mappedBy="oneRelation")
+     */
     public $child;
 }

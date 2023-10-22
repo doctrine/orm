@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
+                          https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+
+    <entity name="Doctrine\Tests\ORM\Mapping\UserMissingAttributes" table="cms_users">
+        <id name="id" type="integer" column="id">
+            <generator strategy="AUTO"/>
+            <sequence-generator sequence-name="tablename_seq" allocation-size="100" initial-value="1" />
+            <options>
+                <option name="foo">bar</option>
+                <option name="unsigned">false</option>
+            </options>
+        </id>
+
+        <field name="email" column="user_email" type="string" column-definition="CHAR(32) NOT NULL" />
+        <field />
+    </entity>
+
+</doctrine-mapping>

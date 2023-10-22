@@ -1,97 +1,98 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Mocks;
 
+use BadMethodCallException;
+use Doctrine\DBAL\Exception as DBALException;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
+
+use function sprintf;
 
 /**
  * Mock class for DatabasePlatform.
  */
 class DatabasePlatformMock extends AbstractPlatform
 {
-    /**
-     * @var string
-     */
-    private $_sequenceNextValSql = "";
-
-    /**
-     * @var bool
-     */
-    private $_prefersIdentityColumns = true;
-
-    /**
-     * @var bool
-     */
-    private $_prefersSequences = false;
-
-    /**
-     * {@inheritdoc}
-     */
-    public function prefersIdentityColumns()
+    public function prefersIdentityColumns(): bool
     {
-        return $this->_prefersIdentityColumns;
+        throw new BadMethodCallException(sprintf(
+            'Call to deprecated method %s().',
+            __METHOD__
+        ));
+    }
+
+    public function supportsIdentityColumns(): bool
+    {
+        return true;
+    }
+
+    public function prefersSequences(): bool
+    {
+        throw new BadMethodCallException(sprintf(
+            'Call to deprecated method %s().',
+            __METHOD__
+        ));
+    }
+
+    public function supportsSequences(): bool
+    {
+        return false;
     }
 
     /**
-     * {@inheritdoc}
-     */
-    public function prefersSequences()
-    {
-        return $this->_prefersSequences;
-    }
-
-    /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function getSequenceNextValSQL($sequenceName)
     {
-        return $this->_sequenceNextValSql;
+        return '';
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function getBooleanTypeDeclarationSQL(array $field)
     {
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function getIntegerTypeDeclarationSQL(array $field)
     {
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function getBigIntTypeDeclarationSQL(array $field)
     {
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function getSmallIntTypeDeclarationSQL(array $field)
     {
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     protected function _getCommonIntegerTypeDeclarationSQL(array $columnDef)
     {
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function getVarcharTypeDeclarationSQL(array $field)
     {
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function getClobTypeDeclarationSQL(array $field)
     {
@@ -99,55 +100,30 @@ class DatabasePlatformMock extends AbstractPlatform
 
     /* MOCK API */
 
-    /**
-     * @param bool $bool
-     *
-     * @return void
-     */
-    public function setPrefersIdentityColumns($bool)
+    public function getName(): string
     {
-        $this->_prefersIdentityColumns = $bool;
+        throw new BadMethodCallException(sprintf(
+            'Call to deprecated method %s().',
+            __METHOD__
+        ));
     }
 
     /**
-     * @param bool $bool
-     *
-     * @return void
-     */
-    public function setPrefersSequences($bool)
-    {
-        $this->_prefersSequences = $bool;
-    }
-
-    /**
-     * @param string $sql
-     *
-     * @return void
-     */
-    public function setSequenceNextValSql($sql)
-    {
-        $this->_sequenceNextValSql = $sql;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getName()
-    {
-        return 'mock';
-    }
-
-    /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     protected function initializeDoctrineTypeMappings()
     {
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function getBlobTypeDeclarationSQL(array $field)
+    {
+        throw DBALException::notSupported(__METHOD__);
+    }
+
+    public function getCurrentDatabaseExpression(): string
     {
         throw DBALException::notSupported(__METHOD__);
     }

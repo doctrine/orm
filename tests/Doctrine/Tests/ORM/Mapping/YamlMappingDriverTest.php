@@ -1,24 +1,30 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Mapping;
 
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\Mapping\Driver\YamlDriver;
+use Doctrine\Persistence\Mapping\Driver\MappingDriver;
+use Doctrine\Persistence\Mapping\MappingException;
+use Doctrine\Tests\Models\DDC3711\DDC3711EntityA;
 use Doctrine\Tests\Models\DirectoryTree\Directory;
 use Doctrine\Tests\Models\DirectoryTree\File;
-use Doctrine\Tests\Models\Generic\SerializationModel;
-use Doctrine\Tests\VerifyDeprecations;
+use Doctrine\Tests\Models\Generic\BooleanModel;
 use Symfony\Component\Yaml\Yaml;
 
-class YamlMappingDriverTest extends AbstractMappingDriverTest
-{
-    use VerifyDeprecations;
+use function class_exists;
 
-    protected function _loadDriver()
+use const DIRECTORY_SEPARATOR;
+
+class YamlMappingDriverTest extends MappingDriverTestCase
+{
+    protected function loadDriver(): MappingDriver
     {
-        if (!class_exists(Yaml::class, true)) {
-            $this->markTestSkipped('Please install Symfony YAML Component into the include path of your PHP installation.');
+        if (! class_exists(Yaml::class, true)) {
+            self::markTestSkipped('Please install Symfony YAML Component into the include path of your PHP installation.');
         }
 
         return new YamlDriver(__DIR__ . DIRECTORY_SEPARATOR . 'yaml');
@@ -29,41 +35,35 @@ class YamlMappingDriverTest extends AbstractMappingDriverTest
      *
      * Entities for this test are in AbstractMappingDriverTest
      */
-    public function testJoinTablesWithMappedSuperclassForYamlDriver()
+    public function testJoinTablesWithMappedSuperclassForYamlDriver(): void
     {
-        $yamlDriver = $this->_loadDriver();
+        $yamlDriver = $this->loadDriver();
         $yamlDriver->getLocator()->addPaths([__DIR__ . DIRECTORY_SEPARATOR . 'yaml']);
 
-        $em = $this->_getTestEntityManager();
+        $em = $this->getTestEntityManager();
         $em->getConfiguration()->setMetadataDriverImpl($yamlDriver);
         $factory = new ClassMetadataFactory();
         $factory->setEntityManager($em);
 
         $classPage = new ClassMetadata(File::class);
         $classPage = $factory->getMetadataFor(File::class);
-        $this->assertEquals(File::class, $classPage->associationMappings['parentDirectory']['sourceEntity']);
+        self::assertEquals(File::class, $classPage->associationMappings['parentDirectory']['sourceEntity']);
 
         $classDirectory = new ClassMetadata(Directory::class);
         $classDirectory = $factory->getMetadataFor(Directory::class);
-        $this->assertEquals(Directory::class, $classDirectory->associationMappings['parentDirectory']['sourceEntity']);
-        $this->assertHasDeprecationMessages();
+        self::assertEquals(Directory::class, $classDirectory->associationMappings['parentDirectory']['sourceEntity']);
     }
 
-    /**
-     * @group DDC-1468
-     *
-     * @expectedException Doctrine\Common\Persistence\Mapping\MappingException
-     * @expectedExceptionMessage Invalid mapping file 'Doctrine.Tests.Models.Generic.SerializationModel.dcm.yml' for class 'Doctrine\Tests\Models\Generic\SerializationModel'.
-     */
-    public function testInvalidMappingFileException()
+    /** @group DDC-1468 */
+    public function testItMentionsFilenameAndEntityNameOnInvalidMapping(): void
     {
-        $this->createClassMetadata(SerializationModel::class);
+        $this->expectException(MappingException::class);
+        $this->expectExceptionMessage('Invalid mapping file \'Doctrine.Tests.Models.Generic.BooleanModel.dcm.yml\' for class \'Doctrine\Tests\Models\Generic\BooleanModel\'.');
+        $this->createClassMetadata(BooleanModel::class);
     }
 
-    /**
-     * @group DDC-2069
-     */
-    public function testSpacesShouldBeIgnoredWhenUseExplode()
+    /** @group DDC-2069 */
+    public function testSpacesShouldBeIgnoredWhenUseExplode(): void
     {
         $metadata = $this->createClassMetadata(DDC2069Entity::class);
         $unique   = $metadata->table['uniqueConstraints'][0]['columns'];
@@ -72,30 +72,41 @@ class YamlMappingDriverTest extends AbstractMappingDriverTest
         $nameField  = $metadata->fieldMappings['name'];
         $valueField = $metadata->fieldMappings['value'];
 
-        $this->assertEquals('name', $unique[0]);
-        $this->assertEquals('value', $unique[1]);
+        self::assertEquals('name', $unique[0]);
+        self::assertEquals('value', $unique[1]);
 
-        $this->assertEquals('value', $indexes[0]);
-        $this->assertEquals('name', $indexes[1]);
+        self::assertEquals('value', $indexes[0]);
+        self::assertEquals('name', $indexes[1]);
 
-        $this->assertEquals(255, $nameField['length']);
-        $this->assertEquals(255, $valueField['length']);
-        $this->assertHasDeprecationMessages();
+        self::assertEquals(255, $nameField['length']);
+        self::assertEquals(255, $valueField['length']);
     }
 
-    public function testDeprecation() : void
+    public function testCompositeKeyForJoinTableInManyToManyCreation(): void
     {
-        $this->createClassMetadata(DDC2069Entity::class);
-        $this->expectDeprecationMessage('YAML mapping driver is deprecated and will be removed in Doctrine ORM 3.0, please migrate to annotation or XML driver.');
-    }
+        $yamlDriver = $this->loadDriver();
 
+        $em = $this->getTestEntityManager();
+        $em->getConfiguration()->setMetadataDriverImpl($yamlDriver);
+        $factory = new ClassMetadataFactory();
+        $factory->setEntityManager($em);
+
+        $entityA = new ClassMetadata(DDC3711EntityA::class);
+        $entityA = $factory->getMetadataFor(DDC3711EntityA::class);
+
+        self::assertEquals(['link_a_id1' => 'id1', 'link_a_id2' => 'id2'], $entityA->associationMappings['entityB']['relationToSourceKeyColumns']);
+        self::assertEquals(['link_b_id1' => 'id1', 'link_b_id2' => 'id2'], $entityA->associationMappings['entityB']['relationToTargetKeyColumns']);
+    }
 }
 
 class DDC2069Entity
 {
+    /** @var int */
     public $id;
 
+    /** @var string */
     public $name;
 
+    /** @var mixed */
     public $value;
 }

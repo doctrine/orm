@@ -1,13 +1,20 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional;
 
+use Doctrine\DBAL\Exception as DBALException;
+use Doctrine\DBAL\Types\Type as DBALType;
 use Doctrine\ORM\Tools\SchemaValidator;
 use Doctrine\Tests\DbalTypes\CustomIdObjectType;
 use Doctrine\Tests\DbalTypes\NegativeToPositiveType;
 use Doctrine\Tests\DbalTypes\UpperCaseStringType;
 use Doctrine\Tests\OrmFunctionalTestCase;
-use Doctrine\DBAL\Types\Type as DBALType;
+
+use function array_keys;
+use function constant;
+use function implode;
 
 /**
  * Test the validity of all modelsets
@@ -16,7 +23,7 @@ use Doctrine\DBAL\Types\Type as DBALType;
  */
 class SchemaValidatorTest extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->registerType(CustomIdObjectType::class);
         $this->registerType(UpperCaseStringType::class);
@@ -25,19 +32,14 @@ class SchemaValidatorTest extends OrmFunctionalTestCase
         parent::setUp();
     }
 
-    /**
-     * @param string $className
-     *
-     * @throws \Doctrine\DBAL\DBALException
-     *
-     * @return void
-     */
-    private function registerType(string $className)
+    /** @throws DBALException */
+    private function registerType(string $className): void
     {
         $type = constant($className . '::NAME');
 
         if (DBALType::hasType($type)) {
             DBALType::overrideType($type, $className);
+
             return;
         }
 
@@ -48,29 +50,27 @@ class SchemaValidatorTest extends OrmFunctionalTestCase
     {
         $modelSets = [];
 
-        foreach (array_keys(self::$_modelSets) as $modelSet) {
+        foreach (array_keys(self::$modelSets) as $modelSet) {
             $modelSets[$modelSet] = [$modelSet];
         }
 
         return $modelSets;
     }
 
-    /**
-     * @dataProvider dataValidateModelSets
-     */
-    public function testValidateModelSets(string $modelSet)
+    /** @dataProvider dataValidateModelSets */
+    public function testValidateModelSets(string $modelSet): void
     {
         $validator = new SchemaValidator($this->_em);
         $classes   = [];
 
-        foreach (self::$_modelSets[$modelSet] as $className) {
+        foreach (self::$modelSets[$modelSet] as $className) {
             $classes[] = $this->_em->getClassMetadata($className);
         }
 
         foreach ($classes as $class) {
             $ce = $validator->validateClass($class);
 
-            $this->assertEmpty($ce, "Invalid Modelset: " . $modelSet . " class " . $class->name . ": ". implode("\n", $ce));
+            self::assertEmpty($ce, 'Invalid Modelset: ' . $modelSet . ' class ' . $class->name . ': ' . implode("\n", $ce));
         }
     }
 }

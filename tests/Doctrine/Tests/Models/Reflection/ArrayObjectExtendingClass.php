@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\Reflection;
 
 use ArrayObject;
@@ -9,7 +11,12 @@ use ArrayObject;
  */
 class ArrayObjectExtendingClass extends ArrayObject
 {
+    /** @var mixed */
     private $privateProperty;
+
+    /** @var mixed */
     protected $protectedProperty;
+
+    /** @var mixed */
     public $publicProperty;
 }

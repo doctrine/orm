@@ -1,21 +1,19 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Performance\Mock;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Proxy\ProxyFactory;
-use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\ResultSetMapping;
-use Doctrine\Tests\ORM\Performance\MockUnitOfWork;
 
 /**
  * An entity manager mock that prevents lazy-loading of proxies
  */
 class NonProxyLoadingEntityManager implements EntityManagerInterface
 {
-    /**
-     * @var EntityManagerInterface
-     */
+    /** @var EntityManagerInterface */
     private $realEntityManager;
 
     public function __construct(EntityManagerInterface $realEntityManager)
@@ -100,6 +98,14 @@ class NonProxyLoadingEntityManager implements EntityManagerInterface
     public function transactional($func)
     {
         return $this->realEntityManager->transactional($func);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function wrapInTransaction(callable $func)
+    {
+        return $this->realEntityManager->wrapInTransaction($func);
     }
 
     /**
@@ -313,9 +319,9 @@ class NonProxyLoadingEntityManager implements EntityManagerInterface
     /**
      * {@inheritDoc}
      */
-    public function refresh($object)
+    public function refresh($object, ?int $lockMode = null)
     {
-        $this->realEntityManager->refresh($object);
+        $this->realEntityManager->refresh($object, $lockMode);
     }
 
     /**

@@ -1,30 +1,29 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-/**
- * @group DDC-1238
- */
-class DDC1238Test extends \Doctrine\Tests\OrmFunctionalTestCase
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\Tests\OrmFunctionalTestCase;
+
+/** @group DDC-1238 */
+class DDC1238Test extends OrmFunctionalTestCase
 {
-    public function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
-        try {
-            $this->_schemaTool->createSchema(
-                [
-                $this->_em->getClassMetadata(DDC1238User::class),
-                ]
-            );
-        } catch(\Exception $e) {
 
-        }
+        $this->createSchemaForModels(DDC1238User::class);
     }
 
-    public function testIssue()
+    public function testIssue(): void
     {
-        $user = new DDC1238User;
-        $user->setName("test");
+        $user = new DDC1238User();
+        $user->setName('test');
 
         $this->_em->persist($user);
         $this->_em->flush();
@@ -37,20 +36,18 @@ class DDC1238Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->clear();
 
         $userId2 = $user->getId();
-        $this->assertEquals($userId, $userId2, "This proxy can still be initialized.");
+        self::assertEquals($userId, $userId2, 'This proxy can still be initialized.');
     }
 
-    public function testIssueProxyClear()
+    public function testIssueProxyClear(): void
     {
-        $user = new DDC1238User;
-        $user->setName("test");
+        $user = new DDC1238User();
+        $user->setName('test');
 
         $this->_em->persist($user);
         $this->_em->flush();
         $this->_em->clear();
 
-        // force proxy load, getId() doesn't work anymore
-        $user->getName();
         $userId = $user->getId();
         $this->_em->clear();
 
@@ -59,39 +56,45 @@ class DDC1238Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $user2 = $this->_em->getReference(DDC1238User::class, $userId);
 
-        // force proxy load, getId() doesn't work anymore
-        $user->getName();
-        $this->assertNull($user->getId(), "Now this is null, we already have a user instance of that type");
+        //$user->__load();
+
+        self::assertIsInt($user->getId(), 'Even if a proxy is detached, it should still have an identifier');
+
+        $user2->__load();
+
+        self::assertIsInt($user2->getId(), 'The managed instance still has an identifier');
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC1238User
 {
-    /** @Id @GeneratedValue @Column(type="integer") */
+    /**
+     * @var int|null
+     * @Id
+     * @GeneratedValue
+     * @Column(type="integer")
+     */
     private $id;
 
     /**
      * @Column
-     * @var string
+     * @var string|null
      */
     private $name;
 
-    public function getId()
+    public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getName()
+    public function getName(): ?string
     {
         return $this->name;
     }
 
-    public function setName($name)
+    public function setName(string $name): void
     {
         $this->name = $name;
     }
 }
-

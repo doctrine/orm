@@ -1,47 +1,53 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-use Doctrine\Common\Cache\ArrayCache;
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\Table;
+use Doctrine\ORM\Query;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use Symfony\Component\Cache\Adapter\ArrayAdapter;
 
-/**
- * @group 2947
- */
+/** @group GH-2947 */
 class GH2947Test extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp(): void
     {
-        $this->resultCacheImpl = new ArrayCache();
+        $this->resultCache = new ArrayAdapter();
 
         parent::setUp();
 
-        $this->_schemaTool->createSchema([$this->_em->getClassMetadata(GH2947Car::class)]);
+        $this->createSchemaForModels(GH2947Car::class);
     }
 
-    public function testIssue()
+    public function testIssue(): void
     {
         $this->createData();
-        $initialQueryCount = $this->getCurrentQueryCount();
+        $this->getQueryLog()->reset()->enable();
 
         $query = $this->createQuery();
         self::assertEquals('BMW', (string) $query->getSingleResult());
-        self::assertEquals($initialQueryCount + 1, $this->getCurrentQueryCount());
+        $this->assertQueryCount(1);
 
         $this->updateData();
         self::assertEquals('BMW', (string) $query->getSingleResult());
-        self::assertEquals($initialQueryCount + 2, $this->getCurrentQueryCount());
+        $this->assertQueryCount(2);
 
         $query->expireResultCache(true);
         self::assertEquals('Dacia', (string) $query->getSingleResult());
-        self::assertEquals($initialQueryCount + 3, $this->getCurrentQueryCount());
+        $this->assertQueryCount(3);
 
         $query->expireResultCache(false);
         self::assertEquals('Dacia', (string) $query->getSingleResult());
-        self::assertEquals($initialQueryCount + 3, $this->getCurrentQueryCount());
+        $this->assertQueryCount(3);
     }
 
-    private function createQuery()
+    private function createQuery(): Query
     {
         return $this->_em->createQueryBuilder()
                          ->select('car')
@@ -50,14 +56,14 @@ class GH2947Test extends OrmFunctionalTestCase
                          ->useResultCache(true, 3600, 'foo-cache-id');
     }
 
-    private function createData()
+    private function createData(): void
     {
         $this->_em->persist(new GH2947Car('BMW'));
         $this->_em->flush();
         $this->_em->clear();
     }
 
-    private function updateData()
+    private function updateData(): void
     {
         $this->_em->createQueryBuilder()
                   ->update(GH2947Car::class, 'car')
@@ -77,6 +83,7 @@ class GH2947Test extends OrmFunctionalTestCase
 class GH2947Car
 {
     /**
+     * @var string
      * @Id
      * @Column(type="string", length=25)
      * @GeneratedValue(strategy="NONE")

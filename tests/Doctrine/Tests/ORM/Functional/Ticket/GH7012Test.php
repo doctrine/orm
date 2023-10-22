@@ -4,12 +4,18 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\OneToOne;
+use Doctrine\ORM\Mapping\Table;
 use Doctrine\Tests\Models\Quote\User as QuotedUser;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 final class GH7012Test extends OrmFunctionalTestCase
 {
-    protected function setUp() : void
+    protected function setUp(): void
     {
         $this->useModelSet('quote');
 
@@ -18,10 +24,8 @@ final class GH7012Test extends OrmFunctionalTestCase
         $this->setUpEntitySchema([GH7012UserData::class]);
     }
 
-    /**
-     * @group 7012
-     */
-    public function testUpdateEntityWithIdentifierAssociationWithQuotedJoinColumn() : void
+    /** @group GH-7012 */
+    public function testUpdateEntityWithIdentifierAssociationWithQuotedJoinColumn(): void
     {
         $user       = new QuotedUser();
         $user->name = 'John Doe';
@@ -37,20 +41,9 @@ final class GH7012Test extends OrmFunctionalTestCase
         $userData->name = '4321';
         $this->_em->flush();
 
-        $platform         = $this->_em->getConnection()->getDatabasePlatform();
-        $quotedTableName  = $platform->quoteIdentifier('quote-user-data');
-        $quotedColumn     = $platform->quoteIdentifier('name');
-        $quotedIdentifier = $platform->quoteIdentifier('user-id');
-
-        self::assertNotEquals('quote-user-data', $quotedTableName);
-        self::assertNotEquals('name', $quotedColumn);
-        self::assertNotEquals('user-id', $quotedIdentifier);
-
-        $queries = $this->_sqlLoggerStack->queries;
-
-        $this->assertSQLEquals(
-            sprintf('UPDATE %s SET %s = ? WHERE %s = ?', $quotedTableName, $quotedColumn, $quotedIdentifier),
-            $queries[$this->_sqlLoggerStack->currentQuery - 1]['sql']
+        self::assertSame(
+            '4321',
+            $this->_em->getRepository(GH7012UserData::class)->findOneBy(['user' => $user])->name
         );
     }
 }
@@ -63,13 +56,15 @@ final class GH7012Test extends OrmFunctionalTestCase
 class GH7012UserData
 {
     /**
+     * @var QuotedUser
      * @Id
-     * @OneToOne(targetEntity=Doctrine\Tests\Models\Quote\User::class)
+     * @OneToOne(targetEntity=QuotedUser::class)
      * @JoinColumn(name="`user-id`", referencedColumnName="`user-id`", onDelete="CASCADE")
      */
     public $user;
 
     /**
+     * @var string
      * @Column(type="string", name="`name`")
      */
     public $name;

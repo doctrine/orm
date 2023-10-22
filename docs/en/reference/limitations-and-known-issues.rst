@@ -6,7 +6,7 @@ Therefore we think it is very important to be honest about the
 current limitations to our users. Much like every other piece of
 software Doctrine2 is not perfect and far from feature complete.
 This section should give you an overview of current limitations of
-Doctrine 2 as well as critical known issues that you should know
+Doctrine ORM as well as critical known issues that you should know
 about.
 
 Current Limitations
@@ -107,17 +107,17 @@ to the same entity.
 Behaviors
 ~~~~~~~~~
 
-Doctrine 2 will **never** include a behavior system like Doctrine 1
+Doctrine ORM will **never** include a behavior system like Doctrine 1
 in the core library. We don't think behaviors add more value than
 they cost pain and debugging hell. Please see the many different
 blog posts we have written on this topics:
 
--  `Doctrine2 "Behaviors" in a Nutshell <http://www.doctrine-project.org/2010/02/17/doctrine2-behaviours-nutshell.html>`_
--  `A re-usable Versionable behavior for Doctrine2 <http://www.doctrine-project.org/2010/02/24/doctrine2-versionable.html>`_
--  `Write your own ORM on top of Doctrine2 <http://www.doctrine-project.org/2010/07/19/your-own-orm-doctrine2.html>`_
--  `Doctrine 2 Behavioral Extensions <http://www.doctrine-project.org/2010/11/18/doctrine2-behavioral-extensions.html>`_
+-  `Doctrine2 "Behaviors" in a Nutshell <https://www.doctrine-project.org/2010/02/17/doctrine2-behaviours-nutshell.html>`_
+-  `A re-usable Versionable behavior for Doctrine2 <https://www.doctrine-project.org/2010/02/24/doctrine2-versionable.html>`_
+-  `Write your own ORM on top of Doctrine2 <https://www.doctrine-project.org/2010/07/19/your-own-orm-doctrine2.html>`_
+-  `Doctrine ORM Behavioral Extensions <https://www.doctrine-project.org/2010/11/18/doctrine2-behavioral-extensions.html>`_
 
-Doctrine 2 has enough hooks and extension points so that **you** can
+Doctrine ORM has enough hooks and extension points so that **you** can
 add whatever you want on top of it. None of this will ever become
 core functionality of Doctrine2 however, you will have to rely on
 third party extensions for magical behaviors.
@@ -126,13 +126,54 @@ Nested Set
 ~~~~~~~~~~
 
 NestedSet was offered as a behavior in Doctrine 1 and will not be
-included in the core of Doctrine 2. However there are already two
+included in the core of Doctrine ORM. However there are already two
 extensions out there that offer support for Nested Set with
-Doctrine 2:
+ORM:
 
+-  `Doctrine2 Hierarchical-Structural Behavior <https://github.com/guilhermeblanco/Doctrine2-Hierarchical-Structural-Behavior>`_
+-  `Doctrine2 NestedSet <https://github.com/blt04/doctrine2-nestedset>`_
 
--  `Doctrine2 Hierarchical-Structural Behavior <http://github.com/guilhermeblanco/Doctrine2-Hierarchical-Structural-Behavior>`_
--  `Doctrine2 NestedSet <http://github.com/blt04/doctrine2-nestedset>`_
+Using Traits in Entity Classes
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The use of traits in entity or mapped superclasses, at least when they
+include mapping configuration or mapped fields, is currently not
+endorsed by the Doctrine project. The reasons for this are as follows.
+
+Traits were added in PHP 5.4 more than 10 years ago, but at the same time
+more than two years after the initial Doctrine 2 release and the time where
+core components were designed.
+
+In fact, this documentation mentions traits only in the context of
+:doc:`overriding field association mappings in subclasses </tutorials/override-field-association-mappings-in-subclasses>`.
+Coverage of traits in test cases is practically nonexistent.
+
+Thus, you should at least be aware that when using traits in your entity and
+mapped superclasses, you will be in uncharted terrain.
+
+.. warning::
+
+    There be dragons.
+
+From a more technical point of view, traits basically work at the language level
+as if the code contained in them had been copied into the class where the trait
+is used, and even private fields are accessible by the using class. In addition to
+that, some precedence and conflict resolution rules apply.
+
+When it comes to loading mapping configuration, the annotation and attribute drivers
+rely on PHP reflection to inspect class properties including their docblocks.
+As long as the results are consistent with what a solution *without* traits would
+have produced, this is probably fine.
+
+However, to mention known limitations, it is currently not possible to use "class"
+level `annotations <https://github.com/doctrine/orm/pull/1517>`_ or
+`attributes <https://github.com/doctrine/orm/issues/8868>`_ on traits, and attempts to
+improve parser support for traits as `here <https://github.com/doctrine/annotations/pull/102>`_
+or `there <https://github.com/doctrine/annotations/pull/63>`_ have been abandoned
+due to complexity.
+
+XML mapping configuration probably needs to completely re-configure or otherwise
+copy-and-paste configuration for fields used from traits.
 
 Known Issues
 ------------
@@ -149,9 +190,9 @@ Identifier Quoting and Legacy Databases
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 For compatibility reasons between all the supported vendors and
-edge case problems Doctrine 2 does **NOT** do automatic identifier
+edge case problems Doctrine ORM does **NOT** do automatic identifier
 quoting. This can lead to problems when trying to get
-legacy-databases to work with Doctrine 2.
+legacy-databases to work with Doctrine ORM.
 
 
 -  You can quote column-names as described in the
@@ -177,27 +218,3 @@ MySQL with MyISAM tables
 Doctrine cannot provide atomic operations when calling ``EntityManager#flush()`` if one
 of the tables involved uses the storage engine MyISAM. You must use InnoDB or
 other storage engines that support transactions if you need integrity.
-
-Entities, Proxies and Reflection
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-Using methods for Reflection on entities can be prone to error, when the entity
-is actually a proxy the following methods will not work correctly:
-
-- ``new ReflectionClass``
-- ``new ReflectionObject``
-- ``get_class()``
-- ``get_parent_class()``
-
-This is why ``Doctrine\Common\Util\ClassUtils`` class exists that has similar
-methods, which resolve the proxy problem beforehand.
-
-.. code-block:: php
-
-    <?php
-    use Doctrine\Common\Util\ClassUtils;
-
-    $bookProxy = $entityManager->getReference('Acme\Book');
-
-    $reflection = ClassUtils::newReflectionClass($bookProxy);
-    $class = ClassUtils::getClass($bookProxy)¸

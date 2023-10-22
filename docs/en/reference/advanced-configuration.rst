@@ -9,51 +9,61 @@ steps of configuration.
 .. code-block:: php
 
     <?php
-    use Doctrine\ORM\EntityManager,
-        Doctrine\ORM\Configuration;
-    
+
+    use Doctrine\ORM\Configuration;
+    use Doctrine\ORM\EntityManager;
+    use Doctrine\ORM\Mapping\Driver\AttributeDriver;
+    use Doctrine\ORM\ORMSetup;
+    use Symfony\Component\Cache\Adapter\ArrayAdapter;
+    use Symfony\Component\Cache\Adapter\PhpFilesAdapter;
+
     // ...
-    
+
     if ($applicationMode == "development") {
-        $cache = new \Doctrine\Common\Cache\ArrayCache;
+        $queryCache = new ArrayAdapter();
+        $metadataCache = new ArrayAdapter();
     } else {
-        $cache = new \Doctrine\Common\Cache\ApcCache;
+        $queryCache = new PhpFilesAdapter('doctrine_queries');
+        $metadataCache = new PhpFilesAdapter('doctrine_metadata');
     }
-    
+
     $config = new Configuration;
-    $config->setMetadataCacheImpl($cache);
-    $driverImpl = $config->newDefaultAnnotationDriver('/path/to/lib/MyProject/Entities');
+    $config->setMetadataCache($metadataCache);
+    $driverImpl = new AttributeDriver(['/path/to/lib/MyProject/Entities'], true);
     $config->setMetadataDriverImpl($driverImpl);
-    $config->setQueryCacheImpl($cache);
+    $config->setQueryCache($queryCache);
     $config->setProxyDir('/path/to/myproject/lib/MyProject/Proxies');
     $config->setProxyNamespace('MyProject\Proxies');
-    
+
     if ($applicationMode == "development") {
         $config->setAutoGenerateProxyClasses(true);
     } else {
         $config->setAutoGenerateProxyClasses(false);
     }
-    
-    $connectionOptions = array(
+
+    $connection = DriverManager::getConnection([
         'driver' => 'pdo_sqlite',
-        'path' => 'database.sqlite'
-    );
-    
-    $em = EntityManager::create($connectionOptions, $config);
+        'path' => 'database.sqlite',
+    ], $config);
+
+    $em = new EntityManager($connection, $config);
+
+Doctrine and Caching
+--------------------
+
+Doctrine is optimized for working with caches. The main parts in Doctrine
+that are optimized for caching are the metadata mapping information with
+the metadata cache and the DQL to SQL conversions with the query cache.
+These 2 caches require only an absolute minimum of memory yet they heavily
+improve the runtime performance of Doctrine.
+
+Doctrine does not bundle its own cache implementation anymore. Instead,
+the PSR-6 standard interfaces are used to access the cache. In the examples
+in this documentation, Symfony Cache is used as a reference implementation.
 
 .. note::
 
     Do not use Doctrine without a metadata and query cache!
-    Doctrine is optimized for working with caches. The main
-    parts in Doctrine that are optimized for caching are the metadata
-    mapping information with the metadata cache and the DQL to SQL
-    conversions with the query cache. These 2 caches require only an
-    absolute minimum of memory yet they heavily improve the runtime
-    performance of Doctrine. The recommended cache driver to use with
-    Doctrine is `APC <http://www.php.net/apc>`_. APC provides you with
-    an opcode-cache (which is highly recommended anyway) and a very
-    fast in-memory cache storage that you can use for the metadata and
-    query caches as seen in the previous code snippet.
 
 Configuration Options
 ---------------------
@@ -101,29 +111,33 @@ Gets or sets the metadata driver implementation that is used by
 Doctrine to acquire the object-relational metadata for your
 classes.
 
-There are currently 4 available implementations:
+There are currently 5 available implementations:
 
 
--  ``Doctrine\ORM\Mapping\Driver\AnnotationDriver``
+-  ``Doctrine\ORM\Mapping\Driver\AttributeDriver``
 -  ``Doctrine\ORM\Mapping\Driver\XmlDriver``
--  ``Doctrine\ORM\Mapping\Driver\YamlDriver``
 -  ``Doctrine\ORM\Mapping\Driver\DriverChain``
+-  ``Doctrine\ORM\Mapping\Driver\AnnotationDriver`` (deprecated and will
+  be removed in ``doctrine/orm`` 3.0)
+-  ``Doctrine\ORM\Mapping\Driver\YamlDriver`` (deprecated and will be
+   removed in ``doctrine/orm`` 3.0)
 
-Throughout the most part of this manual the AnnotationDriver is
-used in the examples. For information on the usage of the XmlDriver
-or YamlDriver please refer to the dedicated chapters
-``XML Mapping`` and ``YAML Mapping``.
+Throughout the most part of this manual the AttributeDriver is
+used in the examples. For information on the usage of the
+AnnotationDriver, XmlDriver or YamlDriver please refer to the dedicated
+chapters ``Annotation Reference``, ``XML Mapping`` and ``YAML Mapping``.
 
-The annotation driver can be configured with a factory method on
-the ``Doctrine\ORM\Configuration``:
+The attribute driver can be injected in the ``Doctrine\ORM\Configuration``:
 
 .. code-block:: php
 
     <?php
-    $driverImpl = $config->newDefaultAnnotationDriver('/path/to/lib/MyProject/Entities');
+    use Doctrine\ORM\Mapping\Driver\AttributeDriver;
+
+    $driverImpl = new AttributeDriver(['/path/to/lib/MyProject/Entities'], true);
     $config->setMetadataDriverImpl($driverImpl);
 
-The path information to the entities is required for the annotation
+The path information to the entities is required for the attribute
 driver, because otherwise mass-operations on all entities through
 the console could not work correctly. All of metadata drivers
 accept either a single directory as a string or an array of
@@ -136,30 +150,21 @@ Metadata Cache (***RECOMMENDED***)
 .. code-block:: php
 
     <?php
-    $config->setMetadataCacheImpl($cache);
-    $config->getMetadataCacheImpl();
+    $config->setMetadataCache($cache);
+    $config->getMetadataCache();
 
-Gets or sets the cache implementation to use for caching metadata
-information, that is, all the information you supply via
+Gets or sets the cache adapter to use for caching metadata
+information, that is, all the information you supply via attributes,
 annotations, xml or yaml, so that they do not need to be parsed and
 loaded from scratch on every single request which is a waste of
-resources. The cache implementation must implement the
-``Doctrine\Common\Cache\Cache`` interface.
+resources. The cache implementation must implement the PSR-6
+``Psr\Cache\CacheItemPoolInterface`` interface.
 
 Usage of a metadata cache is highly recommended.
 
-The recommended implementations for production are:
-
-
--  ``Doctrine\Common\Cache\ApcCache``
--  ``Doctrine\Common\Cache\ApcuCache``
--  ``Doctrine\Common\Cache\MemcacheCache``
--  ``Doctrine\Common\Cache\XcacheCache``
--  ``Doctrine\Common\Cache\RedisCache``
-
-For development you should use the
-``Doctrine\Common\Cache\ArrayCache`` which only caches data on a
-per-request basis.
+For development you should use an array cache like
+``Symfony\Component\Cache\Adapter\ArrayAdapter``
+which only caches data on a per-request basis.
 
 Query Cache (***RECOMMENDED***)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -167,8 +172,8 @@ Query Cache (***RECOMMENDED***)
 .. code-block:: php
 
     <?php
-    $config->setQueryCacheImpl($cache);
-    $config->getQueryCacheImpl();
+    $config->setQueryCache($cache);
+    $config->getQueryCache();
 
 Gets or sets the cache implementation to use for caching DQL
 queries, that is, the result of a DQL parsing process that includes
@@ -180,18 +185,9 @@ minimal memory usage in your cache).
 
 Usage of a query cache is highly recommended.
 
-The recommended implementations for production are:
-
-
--  ``Doctrine\Common\Cache\ApcCache``
--  ``Doctrine\Common\Cache\ApcuCache``
--  ``Doctrine\Common\Cache\MemcacheCache``
--  ``Doctrine\Common\Cache\XcacheCache``
--  ``Doctrine\Common\Cache\RedisCache``
-
-For development you should use the
-``Doctrine\Common\Cache\ArrayCache`` which only caches data on a
-per-request basis.
+For development you should use an array cache like
+``Symfony\Component\Cache\Adapter\ArrayAdapter``
+which only caches data on a per-request basis.
 
 SQL Logger (***Optional***)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -204,10 +200,7 @@ SQL Logger (***Optional***)
 
 Gets or sets the logger to use for logging all SQL statements
 executed by Doctrine. The logger class must implement the
-``Doctrine\DBAL\Logging\SQLLogger`` interface. A simple default
-implementation that logs to the standard output using ``echo`` and
-``var_dump`` can be found at
-``Doctrine\DBAL\Logging\EchoSQLLogger``.
+deprecated ``Doctrine\DBAL\Logging\SQLLogger`` interface.
 
 Auto-generating Proxy Classes (***OPTIONAL***)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -223,7 +216,7 @@ option that controls this behavior is:
 
 Possible values for ``$mode`` are:
 
--  ``Doctrine\Common\Proxy\AbstractProxyFactory::AUTOGENERATE_NEVER``
+-  ``Doctrine\ORM\Proxy\ProxyFactory::AUTOGENERATE_NEVER``
 
 Never autogenerate a proxy. You will need to generate the proxies
 manually, for this use the Doctrine Console like so:
@@ -239,17 +232,17 @@ methods were added to the entity class that are not yet in the proxy class.
 In such a case, simply use the Doctrine Console to (re)generate the
 proxy classes.
 
--  ``Doctrine\Common\Proxy\AbstractProxyFactory::AUTOGENERATE_ALWAYS``
+-  ``Doctrine\ORM\Proxy\ProxyFactory::AUTOGENERATE_ALWAYS``
 
 Always generates a new proxy in every request and writes it to disk.
 
--  ``Doctrine\Common\Proxy\AbstractProxyFactory::AUTOGENERATE_FILE_NOT_EXISTS``
+-  ``Doctrine\ORM\Proxy\ProxyFactory::AUTOGENERATE_FILE_NOT_EXISTS``
 
 Generate the proxy class when the proxy file does not exist.
 This strategy causes a file exists call whenever any proxy is
 used the first time in a request.
 
--  ``Doctrine\Common\Proxy\AbstractProxyFactory::AUTOGENERATE_EVAL``
+-  ``Doctrine\ORM\Proxy\ProxyFactory::AUTOGENERATE_EVAL``
 
 Generate the proxy classes and evaluate them on the fly via eval(),
 avoiding writing the proxies to disk.
@@ -259,7 +252,7 @@ In a production environment, it is highly recommended to use
 AUTOGENERATE_NEVER to allow for optimal performances. The other
 options are interesting in development environment.
 
-Before v2.4, ``setAutoGenerateProxyClasses`` would accept a boolean
+``setAutoGenerateProxyClasses`` can accept a boolean
 value. This is still possible, ``FALSE`` being equivalent to
 AUTOGENERATE_NEVER and ``TRUE`` to AUTOGENERATE_ALWAYS.
 
@@ -268,10 +261,10 @@ Development vs Production Configuration
 
 You should code your Doctrine2 bootstrapping with two different
 runtime models in mind. There are some serious benefits of using
-APC or Memcache in production. In development however this will
+APCu or Memcache in production. In development however this will
 frequently give you fatal errors, when you change your entities and
 the cache still keeps the outdated metadata. That is why we
-recommend the ``ArrayCache`` for development.
+recommend an array cache for development.
 
 Furthermore you should have the Auto-generating Proxy Classes
 option to true in development and to false in production. If this
@@ -283,15 +276,13 @@ proxy sets an exclusive file lock which can cause serious
 performance bottlenecks in systems with regular concurrent
 requests.
 
-Connection Options
-------------------
+Connection
+----------
 
-The ``$connectionOptions`` passed as the first argument to
-``EntityManager::create()`` has to be either an array or an
-instance of ``Doctrine\DBAL\Connection``. If an array is passed it
-is directly passed along to the DBAL Factory
-``Doctrine\DBAL\DriverManager::getConnection()``. The DBAL
-configuration is explained in the
+The ``$connection`` passed as the first argument to he constructor of
+``EntityManager`` has to be an instance of ``Doctrine\DBAL\Connection``.
+You can use the factory ``Doctrine\DBAL\DriverManager::getConnection()``
+to create such a connection. The DBAL configuration is explained in the
 `DBAL section <https://www.doctrine-project.org/projects/doctrine-dbal/en/current/reference/configuration.html>`_.
 
 Proxy Objects
@@ -299,7 +290,7 @@ Proxy Objects
 
 A proxy object is an object that is put in place or used instead of
 the "real" object. A proxy object can add behavior to the object
-being proxied without that object being aware of it. In Doctrine 2,
+being proxied without that object being aware of it. In ORM,
 proxy objects are used to realize several features but mainly for
 transparent lazy-loading.
 
@@ -309,7 +300,7 @@ of the objects. This is an essential property as without it there
 would always be fragile partial objects at the outer edges of your
 object graph.
 
-Doctrine 2 implements a variant of the proxy pattern where it
+Doctrine ORM implements a variant of the proxy pattern where it
 generates classes that extend your entity classes and adds
 lazy-loading capabilities to them. Doctrine can then give you an
 instance of such a proxy class whenever you request an object of
@@ -320,10 +311,12 @@ Reference Proxies
 
 The method ``EntityManager#getReference($entityName, $identifier)``
 lets you obtain a reference to an entity for which the identifier
-is known, without loading that entity from the database. This is
-useful, for example, as a performance enhancement, when you want to
-establish an association to an entity for which you have the
-identifier. You could simply do this:
+is known, without necessarily loading that entity from the database.
+This is useful, for example, as a performance enhancement, when you
+want to establish an association to an entity for which you have the
+identifier.
+
+Consider the following example:
 
 .. code-block:: php
 
@@ -333,13 +326,32 @@ identifier. You could simply do this:
     $item = $em->getReference('MyProject\Model\Item', $itemId);
     $cart->addItem($item);
 
-Here, we added an Item to a Cart without loading the Item from the
-database. If you invoke any method on the Item instance, it would
-fully initialize its state transparently from the database. Here
-$item is actually an instance of the proxy class that was generated
-for the Item class but your code does not need to care. In fact it
-**should not care**. Proxy objects should be transparent to your
+Whether the object being returned from ``EntityManager#getReference()``
+is a proxy or a direct instance of the entity class may depend on different
+factors, including whether the entity has already been loaded into memory
+or entity inheritance being used. But your code does not need to care
+and in fact it **should not care**. Proxy objects should be transparent to your
 code.
+
+When using the ``EntityManager#getReference()`` method, you need to be aware
+of a few peculiarities.
+
+At the best case, the ORM can avoid querying the database at all. But, that
+also means that this method will not throw an exception when an invalid value
+for the ``$identifier`` parameter is passed. ``$identifier`` values are
+not checked and there is no guarantee that the requested entity instance even
+exists – the method will still return a proxy object.
+
+Its only when the proxy has to be fully initialized or associations cannot
+be written to the database that invalid ``$identifier`` values may lead to
+exceptions.
+
+The ``EntityManager#getReference()`` is mostly useful when you only
+need a reference to some entity to make an association, like in the example
+above. In that case, it can save you from loading data from the database
+that you don't need. But remember – as soon as you read any property values
+besides those making up the ID, a database request will be made to initialize
+all fields.
 
 Association proxies
 ~~~~~~~~~~~~~~~~~~~
@@ -411,17 +423,17 @@ be found.
 Multiple Metadata Sources
 -------------------------
 
-When using different components using Doctrine 2 you may end up
+When using different components using Doctrine ORM you may end up
 with them using two different metadata drivers, for example XML and
-YAML. You can use the DriverChain Metadata implementations to
+YAML. You can use the MappingDriverChain Metadata implementations to
 aggregate these drivers based on namespaces:
 
 .. code-block:: php
 
     <?php
-    use Doctrine\ORM\Mapping\Driver\DriverChain;
+    use Doctrine\Persistence\Mapping\Driver\MappingDriverChain;
 
-    $chain = new DriverChain();
+    $chain = new MappingDriverChain();
     $chain->addDriver($xmlDriver, 'Doctrine\Tests\Models\Company');
     $chain->addDriver($yamlDriver, 'Doctrine\Tests\ORM\Mapping');
 
@@ -449,22 +461,22 @@ That will be available for all entities without a custom repository class.
 The default value is ``Doctrine\ORM\EntityRepository``.
 Any repository class must be a subclass of EntityRepository otherwise you got an ORMException
 
-Setting up the Console
-----------------------
+Ignoring entities (***OPTIONAL***)
+-----------------------------------
 
-Doctrine uses the Symfony Console component for generating the command
-line interface. You can take a look at the ``vendor/bin/doctrine.php``
-script and the ``Doctrine\ORM\Tools\Console\ConsoleRunner`` command
-for inspiration how to setup the cli.
-
-In general the required code looks like this:
+Specifies the Entity FQCNs to ignore.
+SchemaTool will then skip these (e.g. when comparing schemas).
 
 .. code-block:: php
 
     <?php
-    $cli = new Application('Doctrine Command Line Interface', \Doctrine\ORM\Version::VERSION);
-    $cli->setCatchExceptions(true);
-    $cli->setHelperSet($helperSet);
-    Doctrine\ORM\Tools\Console\ConsoleRunner::addCommands($cli);
-    $cli->run();
+    $config->setSchemaIgnoreClasses([$fqcn]);
+    $config->getSchemaIgnoreClasses();
 
+
+Setting up the Console
+----------------------
+
+Doctrine uses the Symfony Console component for generating the command
+line interface. You can take a look at the
+:doc:`tools chapter <../reference/tools>` for inspiration how to setup the cli.

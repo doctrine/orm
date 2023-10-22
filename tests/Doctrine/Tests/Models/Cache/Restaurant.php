@@ -1,10 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\Cache;
 
-/**
- * @Entity
- */
+use Doctrine\ORM\Mapping\Entity;
+
+/** @Entity */
 class Restaurant extends Attraction
 {
 }

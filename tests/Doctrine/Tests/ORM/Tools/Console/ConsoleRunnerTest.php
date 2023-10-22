@@ -1,29 +1,35 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Tools\Console;
 
+use Composer\InstalledVersions;
+use Doctrine\Deprecations\PHPUnit\VerifyDeprecations;
 use Doctrine\ORM\Tools\Console\ConsoleRunner;
+use Doctrine\ORM\Tools\Console\EntityManagerProvider;
 use Doctrine\Tests\DoctrineTestCase;
-use PackageVersions\Versions;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\HelperSet;
 
 /**
  * @group DDC-3186
- *
  * @covers \Doctrine\ORM\Tools\Console\ConsoleRunner
  */
 final class ConsoleRunnerTest extends DoctrineTestCase
 {
-    public function testCreateApplicationShouldReturnAnApplicationWithTheCorrectCommands() : void
+    use VerifyDeprecations;
+
+    public function testCreateApplicationShouldReturnAnApplicationWithTheCorrectCommands(): void
     {
+        $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/issues/8327');
+
         $helperSet = new HelperSet();
         $app       = ConsoleRunner::createApplication($helperSet);
 
         self::assertSame($helperSet, $app->getHelperSet());
-        self::assertSame(Versions::getVersion('doctrine/orm'), $app->getVersion());
+        self::assertSame(InstalledVersions::getVersion('doctrine/orm'), $app->getVersion());
 
-        self::assertTrue($app->has('dbal:import'));
         self::assertTrue($app->has('dbal:reserved-words'));
         self::assertTrue($app->has('dbal:run-sql'));
         self::assertTrue($app->has('orm:clear-cache:region:collection'));
@@ -52,11 +58,19 @@ final class ConsoleRunnerTest extends DoctrineTestCase
         self::assertTrue($app->has('orm:validate-schema'));
     }
 
-    public function testCreateApplicationShouldAppendGivenCommands() : void
+    public function testCreateApplicationShouldAppendGivenCommands(): void
     {
         $command = 'my:lovely-command';
         $app     = ConsoleRunner::createApplication(new HelperSet(), [new Command($command)]);
 
         self::assertTrue($app->has($command));
+    }
+
+    public function testCreateApplicationWithProvider(): void
+    {
+        $provider = $this->createMock(EntityManagerProvider::class);
+        $app      = ConsoleRunner::createApplication($provider, []);
+
+        self::assertTrue($app->has('orm:info'));
     }
 }

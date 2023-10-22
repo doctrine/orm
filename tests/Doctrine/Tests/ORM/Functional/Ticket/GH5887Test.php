@@ -1,39 +1,42 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\StringType;
 use Doctrine\DBAL\Types\Type;
-use Doctrine\DBAL\Platforms\AbstractPlatform;
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-/**
- * @group 5887
- */
+use function assert;
+
+/** @group GH-5887 */
 class GH5887Test extends OrmFunctionalTestCase
 {
-    public function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
 
         Type::addType(GH5887CustomIdObjectType::NAME, GH5887CustomIdObjectType::class);
 
-        $this->_schemaTool->createSchema(
-            [
-                $this->_em->getClassMetadata(GH5887Cart::class),
-                $this->_em->getClassMetadata(GH5887Customer::class),
-            ]
-        );
+        $this->createSchemaForModels(GH5887Cart::class, GH5887Customer::class);
     }
 
-    public function testLazyLoadsForeignEntitiesInOneToOneRelationWhileHavingCustomIdObject()
+    public function testLazyLoadsForeignEntitiesInOneToOneRelationWhileHavingCustomIdObject(): void
     {
         $customerId = new GH5887CustomIdObject(1);
-        $customer = new GH5887Customer();
+        $customer   = new GH5887Customer();
         $customer->setId($customerId);
 
         $cartId = 2;
-        $cart = new GH5887Cart();
+        $cart   = new GH5887Cart();
         $cart->setId($cartId);
         $cart->setCustomer($customer);
 
@@ -45,25 +48,22 @@ class GH5887Test extends OrmFunctionalTestCase
         $this->_em->clear();
 
         $customerRepository = $this->_em->getRepository(GH5887Customer::class);
-        /** @var GH5887Customer $customer */
-        $customer = $customerRepository->createQueryBuilder('c')
+        $customer           = $customerRepository->createQueryBuilder('c')
             ->where('c.id = :id')
             ->setParameter('id', $customerId->getId())
             ->getQuery()
             ->getOneOrNullResult();
+        assert($customer instanceof GH5887Customer);
 
-        $this->assertInstanceOf(GH5887Cart::class, $customer->getCart());
+        self::assertInstanceOf(GH5887Cart::class, $customer->getCart());
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class GH5887Cart
 {
     /**
      * @var int
-     *
      * @Id
      * @Column(type="integer")
      * @GeneratedValue(strategy="NONE")
@@ -74,40 +74,27 @@ class GH5887Cart
      * One Cart has One Customer.
      *
      * @var GH5887Customer
-     *
      * @OneToOne(targetEntity="GH5887Customer", inversedBy="cart")
      * @JoinColumn(name="customer_id", referencedColumnName="id")
      */
     private $customer;
 
-    /**
-     * @return int
-     */
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
 
-    /**
-     * @param int $id
-     */
-    public function setId($id)
+    public function setId(int $id): void
     {
         $this->id = $id;
     }
 
-    /**
-     * @return GH5887Customer
-     */
-    public function getCustomer()
+    public function getCustomer(): GH5887Customer
     {
         return $this->customer;
     }
 
-    /**
-     * @param GH5887Customer $customer
-     */
-    public function setCustomer(GH5887Customer $customer)
+    public function setCustomer(GH5887Customer $customer): void
     {
         if ($this->customer !== $customer) {
             $this->customer = $customer;
@@ -116,16 +103,13 @@ class GH5887Cart
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class GH5887Customer
 {
     /**
      * @var GH5887CustomIdObject
-     *
      * @Id
-     * @Column(type="GH5887CustomIdObject")
+     * @Column(type="GH5887CustomIdObject", length=255)
      * @GeneratedValue(strategy="NONE")
      */
     private $id;
@@ -134,39 +118,26 @@ class GH5887Customer
      * One Customer has One Cart.
      *
      * @var GH5887Cart
-     *
      * @OneToOne(targetEntity="GH5887Cart", mappedBy="customer")
      */
     private $cart;
 
-    /**
-     * @return GH5887CustomIdObject
-     */
-    public function getId()
+    public function getId(): GH5887CustomIdObject
     {
         return $this->id;
     }
 
-    /**
-     * @param GH5887CustomIdObject $id
-     */
-    public function setId(GH5887CustomIdObject $id)
+    public function setId(GH5887CustomIdObject $id): void
     {
         $this->id = $id;
     }
 
-    /**
-     * @return GH5887Cart
-     */
     public function getCart(): GH5887Cart
     {
         return $this->cart;
     }
 
-    /**
-     * @param GH5887Cart $cart
-     */
-    public function setCart(GH5887Cart $cart)
+    public function setCart(GH5887Cart $cart): void
     {
         if ($this->cart !== $cart) {
             $this->cart = $cart;
@@ -177,28 +148,20 @@ class GH5887Customer
 
 class GH5887CustomIdObject
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     private $id;
 
-    /**
-     * @param int $id
-     */
-    public function __construct($id)
+    public function __construct(int $id)
     {
         $this->id = $id;
     }
 
-    /**
-     * @return int
-     */
     public function getId(): int
     {
         return $this->id;
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         return 'non existing id';
     }
@@ -206,10 +169,10 @@ class GH5887CustomIdObject
 
 class GH5887CustomIdObjectType extends StringType
 {
-    const NAME = 'GH5887CustomIdObject';
+    public const NAME = 'GH5887CustomIdObject';
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function convertToDatabaseValue($value, AbstractPlatform $platform)
     {
@@ -217,15 +180,15 @@ class GH5887CustomIdObjectType extends StringType
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function convertToPHPValue($value, AbstractPlatform $platform)
     {
-        return new GH5887CustomIdObject($value);
+        return new GH5887CustomIdObject((int) $value);
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function getName()
     {

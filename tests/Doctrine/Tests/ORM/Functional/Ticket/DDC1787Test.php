@@ -1,33 +1,42 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-/**
- * @group DDC-1787
- */
-class DDC1787Test extends \Doctrine\Tests\OrmFunctionalTestCase
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\DiscriminatorColumn;
+use Doctrine\ORM\Mapping\DiscriminatorMap;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\InheritanceType;
+use Doctrine\ORM\Mapping\Version;
+use Doctrine\Tests\OrmFunctionalTestCase;
+
+/** @group DDC-1787 */
+class DDC1787Test extends OrmFunctionalTestCase
 {
-    public function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
-        $this->_schemaTool->createSchema(
-            [
-            $this->_em->getClassMetadata(DDC1787Foo::class),
-            $this->_em->getClassMetadata(DDC1787Bar::class),
-            ]
+
+        $this->createSchemaForModels(
+            DDC1787Foo::class,
+            DDC1787Bar::class
         );
     }
 
-    public function testIssue()
+    public function testIssue(): void
     {
-        $bar = new DDC1787Bar;
-        $bar2 = new DDC1787Bar;
+        $bar  = new DDC1787Bar();
+        $bar2 = new DDC1787Bar();
 
         $this->_em->persist($bar);
         $this->_em->persist($bar2);
         $this->_em->flush();
 
-        $this->assertSame(1, $bar->getVersion());
+        self::assertSame(1, $bar->getVersion());
     }
 }
 
@@ -40,24 +49,27 @@ class DDC1787Test extends \Doctrine\Tests\OrmFunctionalTestCase
 class DDC1787Foo
 {
     /**
-     * @Id @Column(type="integer") @GeneratedValue(strategy="AUTO")
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue(strategy="AUTO")
      */
     private $id;
 
     /**
-     * @Version @Column(type="integer")
+     * @var int
+     * @Version
+     * @Column(type="integer")
      */
     private $version;
 
-    public function getVersion()
+    public function getVersion(): int
     {
         return $this->version;
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC1787Bar extends DDC1787Foo
 {
 }

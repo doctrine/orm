@@ -1,6 +1,17 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\Navigation;
+
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\JoinColumns;
+use Doctrine\ORM\Mapping\ManyToOne;
+use Doctrine\ORM\Mapping\Table;
 
 /**
  * @Entity
@@ -9,13 +20,15 @@ namespace Doctrine\Tests\Models\Navigation;
 class NavPhotos
 {
     /**
+     * @var int
      * @Id
-     * @column(type="integer")
-     * @generatedValue
+     * @Column(type="integer")
+     * @GeneratedValue
      */
     private $id;
 
     /**
+     * @var NavPointOfInterest
      * @ManyToOne(targetEntity="NavPointOfInterest")
      * @JoinColumns({
      *   @JoinColumn(name="poi_long", referencedColumnName="nav_long"),
@@ -25,24 +38,29 @@ class NavPhotos
     private $poi;
 
     /**
-     * @column(type="string", name="file_name")
+     * @var string
+     * @Column(type="string", length=255, name="file_name")
      */
     private $file;
 
-    function __construct($poi, $file) {
-        $this->poi = $poi;
+    public function __construct(NavPointOfInterest $poi, string $file)
+    {
+        $this->poi  = $poi;
         $this->file = $file;
     }
 
-    public function getId() {
+    public function getId(): int
+    {
         return $this->id;
     }
 
-    public function getPointOfInterest() {
+    public function getPointOfInterest(): NavPointOfInterest
+    {
         return $this->poi;
     }
 
-    public function getFile() {
+    public function getFile(): string
+    {
         return $this->file;
     }
 }

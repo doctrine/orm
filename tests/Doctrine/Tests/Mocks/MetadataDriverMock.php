@@ -1,9 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Mocks;
 
-use Doctrine\Common\Persistence\Mapping\Driver\MappingDriver;
-use Doctrine\Common\Persistence\Mapping\ClassMetadata;
+use Doctrine\Persistence\Mapping\ClassMetadata;
+use Doctrine\Persistence\Mapping\Driver\MappingDriver;
 
 /**
  * Mock class for MappingDriver.
@@ -11,14 +13,14 @@ use Doctrine\Common\Persistence\Mapping\ClassMetadata;
 class MetadataDriverMock implements MappingDriver
 {
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function loadMetadataForClass($className, ClassMetadata $metadata)
     {
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function isTransient($className)
     {
@@ -26,7 +28,7 @@ class MetadataDriverMock implements MappingDriver
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function getAllClassNames()
     {

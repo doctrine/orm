@@ -1,25 +1,27 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\DDC3597;
+
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Entity;
 
 /**
  * Description of Media
  *
- * @author Volker von Hoesslin <volker.von.hoesslin@empora.com>
  * @Entity
  */
-abstract class DDC3597Media extends DDC3597Root {
-
+abstract class DDC3597Media extends DDC3597Root
+{
     /**
      * @var string
-     *
      * @Column
      */
     private $distributionHash;
 
     /**
-     * @var integer
-     *
+     * @var int
      * @Column
      */
     private $size = 0;
@@ -30,45 +32,33 @@ abstract class DDC3597Media extends DDC3597Root {
      */
     private $format;
 
-    function __construct($distributionHash) {
+    public function __construct($distributionHash)
+    {
         $this->distributionHash = $distributionHash;
     }
 
-    /**
-     * @return string
-     */
-    public function getDistributionHash() {
+    public function getDistributionHash(): string
+    {
         return $this->distributionHash;
     }
 
-    /**
-     * @return int
-     */
-    public function getSize() {
+    public function getSize(): int
+    {
         return $this->size;
     }
 
-    /**
-     * @param int $size
-     */
-    public function setSize($size) {
+    public function setSize(int $size): void
+    {
         $this->size = $size;
     }
 
-    /**
-     * @return string
-     */
-    public function getFormat() {
+    public function getFormat(): string
+    {
         return $this->format;
     }
 
-    /**
-     * @param string $format
-     */
-    public function setFormat($format) {
+    public function setFormat(string $format): void
+    {
         $this->format = $format;
     }
-
-
-
 }

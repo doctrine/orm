@@ -1,12 +1,20 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional;
 
-use Doctrine\ORM\Mapping\AssociationMapping;
 use Doctrine\ORM\Mapping\ClassMetadata;
-use Doctrine\ORM\Proxy\Proxy;
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\Tests\Models\ECommerce\ECommerceCustomer;
 use Doctrine\Tests\OrmFunctionalTestCase;
+
+use function get_class;
 
 /**
  * Tests a self referential one-to-one association mapping (without inheritance).
@@ -17,20 +25,26 @@ use Doctrine\Tests\OrmFunctionalTestCase;
  */
 class OneToOneSelfReferentialAssociationTest extends OrmFunctionalTestCase
 {
+    /** @var ECommerceCustomer */
     private $customer;
+
+    /** @var ECommerceCustomer */
     private $mentor;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->useModelSet('ecommerce');
+
         parent::setUp();
+
         $this->customer = new ECommerceCustomer();
         $this->customer->setName('Anakin Skywalker');
         $this->mentor = new ECommerceCustomer();
         $this->mentor->setName('Obi-wan Kenobi');
     }
 
-    public function testSavesAOneToOneAssociationWithCascadeSaveSet() {
+    public function testSavesAOneToOneAssociationWithCascadeSaveSet(): void
+    {
         $this->customer->setMentor($this->mentor);
         $this->_em->persist($this->customer);
         $this->_em->flush();
@@ -38,7 +52,7 @@ class OneToOneSelfReferentialAssociationTest extends OrmFunctionalTestCase
         $this->assertForeignKeyIs($this->mentor->getId());
     }
 
-    public function testRemovesOneToOneAssociation()
+    public function testRemovesOneToOneAssociation(): void
     {
         $this->customer->setMentor($this->mentor);
         $this->_em->persist($this->customer);
@@ -49,88 +63,79 @@ class OneToOneSelfReferentialAssociationTest extends OrmFunctionalTestCase
         $this->assertForeignKeyIs(null);
     }
 
-    public function testFind()
+    public function testFind(): void
     {
-        $id = $this->_createFixture();
+        $id = $this->createFixture();
 
         $customer = $this->_em->find(ECommerceCustomer::class, $id);
-        $this->assertNotInstanceOf(Proxy::class, $customer->getMentor());
+        self::assertFalse($this->isUninitializedObject($customer->getMentor()));
     }
 
-    public function testEagerLoadsAssociation()
+    public function testEagerLoadsAssociation(): void
     {
-        $this->_createFixture();
+        $customerId = $this->createFixture();
 
-        $query = $this->_em->createQuery('select c, m from Doctrine\Tests\Models\ECommerce\ECommerceCustomer c left join c.mentor m order by c.id asc');
-        $result = $query->getResult();
+        $query = $this->_em->createQuery('select c, m from Doctrine\Tests\Models\ECommerce\ECommerceCustomer c left join c.mentor m where c.id = :id');
+        $query->setParameter('id', $customerId);
+
+        $result   = $query->getResult();
         $customer = $result[0];
         $this->assertLoadingOfAssociation($customer);
     }
 
-    /**
-     * @group mine
-     * @return unknown_type
-     */
-    public function testLazyLoadsAssociation()
+    /** @group mine */
+    public function testLazyLoadsAssociation(): void
     {
-        $this->_createFixture();
+        $this->createFixture();
 
-        $metadata = $this->_em->getClassMetadata(ECommerceCustomer::class);
+        $metadata                                         = $this->_em->getClassMetadata(ECommerceCustomer::class);
         $metadata->associationMappings['mentor']['fetch'] = ClassMetadata::FETCH_LAZY;
 
-        $query = $this->_em->createQuery("select c from Doctrine\Tests\Models\ECommerce\ECommerceCustomer c where c.name='Luke Skywalker'");
-        $result = $query->getResult();
+        $query    = $this->_em->createQuery("select c from Doctrine\Tests\Models\ECommerce\ECommerceCustomer c where c.name='Luke Skywalker'");
+        $result   = $query->getResult();
         $customer = $result[0];
         $this->assertLoadingOfAssociation($customer);
     }
 
-    public function testMultiSelfReference()
+    public function testMultiSelfReference(): void
     {
-        try {
-            $this->_schemaTool->createSchema(
-                [
-                $this->_em->getClassMetadata(MultiSelfReference::class)
-                ]
-            );
-        } catch (\Exception $e) {
-            // Swallow all exceptions. We do not test the schema tool here.
-        }
+        $this->createSchemaForModels(MultiSelfReference::class);
 
         $entity1 = new MultiSelfReference();
         $this->_em->persist($entity1);
-        $entity1->setOther1($entity2 = new MultiSelfReference);
-        $entity1->setOther2($entity3 = new MultiSelfReference);
+        $entity1->setOther1($entity2 = new MultiSelfReference());
+        $entity1->setOther2($entity3 = new MultiSelfReference());
         $this->_em->flush();
 
         $this->_em->clear();
 
         $entity2 = $this->_em->find(get_class($entity1), $entity1->getId());
 
-        $this->assertInstanceOf(MultiSelfReference::class, $entity2->getOther1());
-        $this->assertInstanceOf(MultiSelfReference::class, $entity2->getOther2());
-        $this->assertNull($entity2->getOther1()->getOther1());
-        $this->assertNull($entity2->getOther1()->getOther2());
-        $this->assertNull($entity2->getOther2()->getOther1());
-        $this->assertNull($entity2->getOther2()->getOther2());
+        self::assertInstanceOf(MultiSelfReference::class, $entity2->getOther1());
+        self::assertInstanceOf(MultiSelfReference::class, $entity2->getOther2());
+        self::assertNull($entity2->getOther1()->getOther1());
+        self::assertNull($entity2->getOther1()->getOther2());
+        self::assertNull($entity2->getOther2()->getOther1());
+        self::assertNull($entity2->getOther2()->getOther2());
     }
 
-    public function assertLoadingOfAssociation($customer)
+    public function assertLoadingOfAssociation($customer): void
     {
-        $this->assertInstanceOf(ECommerceCustomer::class, $customer->getMentor());
-        $this->assertEquals('Obi-wan Kenobi', $customer->getMentor()->getName());
+        self::assertInstanceOf(ECommerceCustomer::class, $customer->getMentor());
+        self::assertEquals('Obi-wan Kenobi', $customer->getMentor()->getName());
     }
 
-    public function assertForeignKeyIs($value) {
-        $foreignKey = $this->_em->getConnection()->executeQuery('SELECT mentor_id FROM ecommerce_customers WHERE id=?', [$this->customer->getId()]
-        )->fetchColumn();
-        $this->assertEquals($value, $foreignKey);
-    }
-
-    private function _createFixture()
+    public function assertForeignKeyIs($value): void
     {
-        $customer = new ECommerceCustomer;
+        $foreignKey = $this->_em->getConnection()->executeQuery('SELECT mentor_id FROM ecommerce_customers WHERE id=?', [$this->customer->getId()])->fetchOne();
+        self::assertEquals($value, $foreignKey);
+    }
+
+    private function createFixture(): int
+    {
+        $customer = new ECommerceCustomer();
         $customer->setName('Luke Skywalker');
-        $mentor = new ECommerceCustomer;
+        $mentor = new ECommerceCustomer();
         $mentor->setName('Obi-wan Kenobi');
         $customer->setMentor($mentor);
 
@@ -143,26 +148,53 @@ class OneToOneSelfReferentialAssociationTest extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- */
-class MultiSelfReference {
-    /** @Id @GeneratedValue(strategy="AUTO") @Column(type="integer") */
-    private $id;
+/** @Entity */
+class MultiSelfReference
+{
     /**
+     * @var int
+     * @Id
+     * @GeneratedValue(strategy="AUTO")
+     * @Column(type="integer")
+     */
+    private $id;
+
+    /**
+     * @var MultiSelfReference|null
      * @OneToOne(targetEntity="MultiSelfReference", cascade={"persist"})
      * @JoinColumn(name="other1", referencedColumnName="id")
      */
     private $other1;
+
     /**
+     * @var MultiSelfReference|null
      * @OneToOne(targetEntity="MultiSelfReference", cascade={"persist"})
      * @JoinColumn(name="other2", referencedColumnName="id")
      */
     private $other2;
 
-    public function getId() {return $this->id;}
-    public function setOther1($other1) {$this->other1 = $other1;}
-    public function getOther1() {return $this->other1;}
-    public function setOther2($other2) {$this->other2 = $other2;}
-    public function getOther2() {return $this->other2;}
+    public function getId(): int
+    {
+        return $this->id;
+    }
+
+    public function setOther1(MultiSelfReference $other1): void
+    {
+        $this->other1 = $other1;
+    }
+
+    public function getOther1(): ?MultiSelfReference
+    {
+        return $this->other1;
+    }
+
+    public function setOther2(MultiSelfReference $other2): void
+    {
+        $this->other2 = $other2;
+    }
+
+    public function getOther2(): ?MultiSelfReference
+    {
+        return $this->other2;
+    }
 }

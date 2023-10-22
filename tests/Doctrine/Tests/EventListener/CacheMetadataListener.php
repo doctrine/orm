@@ -1,33 +1,32 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\EventListener;
 
-use Doctrine\Common\Persistence\Event\LoadClassMetadataEventArgs;
-use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Event\LoadClassMetadataEventArgs;
 use Doctrine\ORM\Mapping\ClassMetadata;
+
+use function strstr;
 
 class CacheMetadataListener
 {
-
     /**
      * Tracks which entities we have already forced caching enabled on. This is
      * important to avoid some potential infinite-recursion issues.
      *
      * Key is the name of the entity, payload is unimportant.
      *
-     * @var array
+     * @var array<string, bool>
      */
     protected $enabledItems = [];
 
-    /**
-     * @param \Doctrine\Common\Persistence\Event\LoadClassMetadataEventArgs $event
-     */
-    public function loadClassMetadata(LoadClassMetadataEventArgs $event)
+    public function loadClassMetadata(LoadClassMetadataEventArgs $event): void
     {
         $metadata = $event->getClassMetadata();
-        $em = $event->getObjectManager();
+        $em       = $event->getObjectManager();
 
-        /** @var $metadata \Doctrine\ORM\Mapping\ClassMetadata */
         if (strstr($metadata->name, 'Doctrine\Tests\Models\Cache')) {
             return;
         }
@@ -35,36 +34,24 @@ class CacheMetadataListener
         $this->enableCaching($metadata, $em);
     }
 
-    /**
-     * @param ClassMetadata $metadata
-     *
-     * @return bool
-     */
-    private function isVisited(ClassMetadata $metadata)
+    private function isVisited(ClassMetadata $metadata): bool
     {
         return isset($this->enabledItems[$metadata->getName()]);
     }
 
-    /**
-     * @param ClassMetadata $metadata
-     */
-    private function recordVisit(ClassMetadata $metadata)
+    private function recordVisit(ClassMetadata $metadata): void
     {
         $this->enabledItems[$metadata->getName()] = true;
     }
 
-    /**
-     * @param ClassMetadata $metadata
-     * @param EntityManager $em
-     */
-    protected function enableCaching(ClassMetadata $metadata, EntityManager $em)
+    protected function enableCaching(ClassMetadata $metadata, EntityManagerInterface $em): void
     {
         if ($this->isVisited($metadata)) {
             return; // Already handled in the past
         }
 
         $cache = [
-            'usage' => ClassMetadata::CACHE_USAGE_NONSTRICT_READ_WRITE
+            'usage' => ClassMetadata::CACHE_USAGE_NONSTRICT_READ_WRITE,
         ];
 
         if ($metadata->isVersioned) {

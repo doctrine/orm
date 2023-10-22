@@ -13,7 +13,7 @@ as you want, or just pick a preferred one.
 
     The ``QueryBuilder`` is not an abstraction of DQL, but merely a tool to dynamically build it.
     You should still use plain DQL when you can, as it is simpler and more readable.
-    More about this in the :doc:`FAQ <faq>`_.
+    More about this in the :doc:`FAQ <faq>`.
 
 Constructing a new QueryBuilder object
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -252,8 +252,23 @@ while the named placeholders start with a : followed by a string.
 Calling ``setParameter()`` automatically infers which type you are setting as
 value. This works for integers, arrays of strings/integers, DateTime instances
 and for managed entities. If you want to set a type explicitly you can call
-the third argument to ``setParameter()`` explicitly. It accepts either a PDO
-type or a DBAL Type name for conversion.
+the third argument to ``setParameter()`` explicitly. It accepts either a DBAL
+``Doctrine\DBAL\ParameterType::*`` or a DBAL Type name for conversion.
+
+.. note::
+
+    Even though passing DateTime instance is allowed, it impacts performance 
+    as by default there is an attempt to load metadata for object, and if it's not found, 
+    type is inferred from the original value.
+    
+.. code-block:: php
+
+    <?php
+    
+    use Doctrine\DBAL\Types\Types;
+    
+    // prevents attempt to load metadata for date time class, improving performance
+    $qb->setParameter('date', new \DateTimeImmutable(), Types::DATETIME_IMMUTABLE)
 
 If you've got several parameters to bind to your query, you can
 also use setParameters() instead of setParameter() with the
@@ -262,10 +277,17 @@ following syntax:
 .. code-block:: php
 
     <?php
+
+    use Doctrine\Common\Collections\ArrayCollection;
+    use Doctrine\ORM\Query\Parameter;
+    
     // $qb instanceof QueryBuilder
 
     // Query here...
-    $qb->setParameters(array(1 => 'value for ?1', 2 => 'value for ?2'));
+    $qb->setParameters(new ArrayCollection([
+        new Parameter('1', 'value for ?1'),
+        new Parameter('2', 'value for ?2')
+    ]));
 
 Getting already bound parameters is easy - simply use the above
 mentioned syntax with "getParameter()" or "getParameters()":
@@ -339,6 +361,7 @@ a querybuilder instance into a Query object:
 
     // Execute Query
     $result = $query->getResult();
+    $iterableResult = $query->toIterable();
     $single = $query->getSingleResult();
     $array = $query->getArrayResult();
     $scalar = $query->getScalarResult();
@@ -410,6 +433,12 @@ complete list of supported helper methods available:
 
         // Example - $qb->expr()->isNotNull('u.id') => u.id IS NOT NULL
         public function isNotNull($x); // Returns string
+
+        // Example - $qb->expr()->isMemberOf('?1', 'u.groups') => ?1 MEMBER OF u.groups
+        public function isMemberOf($x, $y); // Returns Expr\Comparison instance
+
+        // Example - $qb->expr()->isInstanceOf('u', Employee::class) => u INSTANCE OF Employee
+        public function isInstanceOf($x, $y); // Returns Expr\Comparison instance
 
 
         /** Arithmetic objects **/
@@ -497,6 +526,9 @@ complete list of supported helper methods available:
         // Example - $qb->expr()->sqrt('u.currentBalance')
         public function sqrt($x); // Returns Expr\Func
 
+        // Example - $qb->expr()->mod('u.currentBalance', '10')
+        public function mod($x); // Returns Expr\Func
+
         // Example - $qb->expr()->count('u.firstname')
         public function count($x); // Returns Expr\Func
 
@@ -517,7 +549,7 @@ using ``addCriteria``:
     // ...
 
     $criteria = Criteria::create()
-        ->orderBy(['firstName', 'ASC']);
+        ->orderBy(['firstName' => Criteria::ASC]);
 
     // $qb instanceof QueryBuilder
     $qb->addCriteria($criteria);
@@ -545,8 +577,6 @@ of DQL. It takes 3 parameters: ``$dqlPartName``, ``$dqlPart`` and
    should override all previously defined items in ``$dqlPartName`` or
    not (no effect on the ``where`` and ``having`` DQL query parts,
    which always override all previously defined items)
-
--
 
 .. code-block:: php
 
@@ -581,4 +611,3 @@ same query of example 6 written using
       ->add('from', new Expr\From('User', 'u'))
       ->add('where', new Expr\Comparison('u.id', '=', '?1'))
       ->add('orderBy', new Expr\OrderBy('u.name', 'ASC'));
-

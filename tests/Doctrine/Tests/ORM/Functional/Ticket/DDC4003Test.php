@@ -1,13 +1,18 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Tests\Models\Cache\Bar;
-use Doctrine\Tests\ORM\Functional\SecondLevelCacheAbstractTest;
+use Doctrine\Tests\ORM\Functional\SecondLevelCacheFunctionalTestCase;
 
-class DDC4003Test extends SecondLevelCacheAbstractTest
+use function assert;
+use function uniqid;
+
+class DDC4003Test extends SecondLevelCacheFunctionalTestCase
 {
-    public function test_reads_through_repository_same_data_that_it_wrote_in_cache()
+    public function testReadsThroughRepositorySameDataThatItWroteInCache(): void
     {
         $this->loadFixturesCountries();
         $this->loadFixturesStates();
@@ -23,10 +28,9 @@ class DDC4003Test extends SecondLevelCacheAbstractTest
          * This instance is fresh new, no QueryCache, so the full entity gets loaded from DB.
          * It will be saved in the WRONG KEY (notice the cache.bar at the end):
          * doctrine_tests_models_cache_attraction[doctrine_tests_models_cache_attraction_doctrine.tests.models.cache.bar_1][1]
-         *
-         * @var Bar $bar
          */
         $bar = $repository->findOneBy(['id' => $id]);
+        assert($bar instanceof Bar);
 
         // Let's change it so that we can compare its state
         $bar->setName($newName = uniqid());
@@ -51,11 +55,10 @@ class DDC4003Test extends SecondLevelCacheAbstractTest
          * Right now QueryCache will HIT, as nothing changed between the last one and now.
          * QueryCache holds a reference to the WRONG KEY, as we saw was formed in line 24 of this test.
          * So this instance won't be updated and will have the original name ("Boteco São Bento"), and not the uniqid().
-         *
-         * @var Bar $cached
          */
         $cached = $repository->findOneBy(['id' => $id]);
+        assert($cached instanceof Bar);
 
-        $this->assertEquals($newName, $cached->getName());
+        self::assertEquals($newName, $cached->getName());
     }
 }

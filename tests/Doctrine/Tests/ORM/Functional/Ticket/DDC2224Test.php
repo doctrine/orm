@@ -1,61 +1,71 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-use Doctrine\Common\Cache\ArrayCache;
-use Doctrine\DBAL\Types\Type;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
+use Doctrine\DBAL\Types\Type;
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Query;
+use Doctrine\Tests\OrmFunctionalTestCase;
+use Symfony\Component\Cache\Adapter\ArrayAdapter;
 
-/**
- * @group DDC-2224
- */
-class DDC2224Test extends \Doctrine\Tests\OrmFunctionalTestCase
+use function method_exists;
+use function sprintf;
+
+/** @group DDC-2224 */
+class DDC2224Test extends OrmFunctionalTestCase
 {
-    public static function setUpBeforeClass()
+    public static function setUpBeforeClass(): void
     {
-        \Doctrine\DBAL\Types\Type::addType('DDC2224Type', DDC2224Type::class);
+        Type::addType('DDC2224Type', DDC2224Type::class);
     }
 
-    public function testIssue()
+    public function testIssue(): Query
     {
-        $dql = 'SELECT e FROM ' . __NAMESPACE__ . '\DDC2224Entity e WHERE e.field = :field';
+        $dql   = 'SELECT e FROM ' . __NAMESPACE__ . '\DDC2224Entity e WHERE e.field = :field';
         $query = $this->_em->createQuery($dql);
-        $query->setQueryCacheDriver(new ArrayCache());
+        $query->setQueryCache(new ArrayAdapter());
 
         $query->setParameter('field', 'test', 'DDC2224Type');
-        $this->assertStringEndsWith('.field = FUNCTION(?)', $query->getSQL());
+        self::assertStringEndsWith('.field = FUNCTION(?)', $query->getSQL());
 
         return $query;
     }
 
-    /**
-     * @depends testIssue
-     */
-    public function testCacheMissWhenTypeChanges(Query $query)
+    /** @depends testIssue */
+    public function testCacheMissWhenTypeChanges(Query $query): void
     {
         $query->setParameter('field', 'test', 'string');
-        $this->assertStringEndsWith('.field = ?', $query->getSQL());
+        self::assertStringEndsWith('.field = ?', $query->getSQL());
     }
 }
 
 class DDC2224Type extends Type
 {
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function getSQLDeclaration(array $fieldDeclaration, AbstractPlatform $platform)
     {
+        if (method_exists($platform, 'getStringTypeDeclarationSQL')) {
+            return $platform->getStringTypeDeclarationSQL($fieldDeclaration);
+        }
+
         return $platform->getVarcharTypeDeclarationSQL($fieldDeclaration);
     }
 
-    public function getName()
+    public function getName(): string
     {
         return 'DDC2224Type';
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function canRequireSQLConversion()
     {
@@ -63,7 +73,7 @@ class DDC2224Type extends Type
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function convertToDatabaseValueSQL($sqlExpr, AbstractPlatform $platform)
     {
@@ -71,18 +81,20 @@ class DDC2224Type extends Type
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC2224Entity
 {
     /**
-     * @Id @GeneratedValue @Column(type="integer")
+     * @var int
+     * @Id
+     * @GeneratedValue
+     * @Column(type="integer")
      */
     public $id;
 
     /**
-     * @Column(type="DDC2224Type")
+     * @var mixed
+     * @Column(type="DDC2224Type", length=255)
      */
     public $field;
 }

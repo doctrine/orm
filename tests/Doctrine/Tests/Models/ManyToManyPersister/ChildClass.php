@@ -1,9 +1,19 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\ManyToManyPersister;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\JoinTable;
+use Doctrine\ORM\Mapping\ManyToMany;
+use Doctrine\ORM\Mapping\ManyToOne;
+use Doctrine\ORM\Mapping\Table;
 
 /**
  * @Entity
@@ -14,8 +24,7 @@ class ChildClass
     /**
      * @Id
      * @Column(name="id1", type="integer")
-     *
-     * @var integer
+     * @var int
      */
     public $id1;
 
@@ -23,7 +32,6 @@ class ChildClass
      * @Id
      * @ManyToOne(targetEntity=OtherParentClass::class, cascade={"persist"})
      * @JoinColumn(name="other_parent_id", referencedColumnName="id")
-     *
      * @var OtherParentClass
      */
     public $otherParent;
@@ -38,8 +46,8 @@ class ChildClass
      *     },
      *     inverseJoinColumns={@JoinColumn(name="parent_id", referencedColumnName="id")}
      * )
-     *
      * @var Collection|ParentClass[]
+     * @psalm-var Collection<ParentClass>
      */
     public $parents;
 

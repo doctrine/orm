@@ -1,9 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\DbalTypes;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Type;
+
+use function method_exists;
+use function str_rot13;
 
 /**
  * Shifts every letter by 13 places in the alphabet (ROT13 encoding).
@@ -11,7 +16,7 @@ use Doctrine\DBAL\Types\Type;
 class Rot13Type extends Type
 {
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      *
      * @param string|null      $value
      * @param AbstractPlatform $platform
@@ -28,7 +33,7 @@ class Rot13Type extends Type
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      *
      * @param string|null      $value
      * @param AbstractPlatform $platform
@@ -45,7 +50,7 @@ class Rot13Type extends Type
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      *
      * @param array            $fieldDeclaration
      * @param AbstractPlatform $platform
@@ -54,11 +59,15 @@ class Rot13Type extends Type
      */
     public function getSQLDeclaration(array $fieldDeclaration, AbstractPlatform $platform)
     {
+        if (method_exists($platform, 'getStringTypeDeclarationSQL')) {
+            return $platform->getStringTypeDeclarationSQL($fieldDeclaration);
+        }
+
         return $platform->getVarcharTypeDeclarationSQL($fieldDeclaration);
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      *
      * @param AbstractPlatform $platform
      *
@@ -70,7 +79,7 @@ class Rot13Type extends Type
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      *
      * @return string
      */

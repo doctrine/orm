@@ -1,102 +1,91 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Mocks;
 
 use Doctrine\DBAL\Driver\Connection;
+use Doctrine\DBAL\Driver\Result;
+use Doctrine\DBAL\Driver\Statement;
+use Doctrine\DBAL\ParameterType;
 
 /**
  * Mock class for DriverConnection.
  */
 class DriverConnectionMock implements Connection
 {
-    /**
-     * @var \Doctrine\DBAL\Driver\Statement
-     */
-    private $statementMock;
+    /** @var Result|null */
+    private $resultMock;
 
-    /**
-     * @return \Doctrine\DBAL\Driver\Statement
-     */
-    public function getStatementMock()
+    public function setResultMock(?Result $resultMock): void
     {
-        return $this->statementMock;
+        $this->resultMock = $resultMock;
     }
 
     /**
-     * @param \Doctrine\DBAL\Driver\Statement $statementMock
+     * {@inheritDoc}
      */
-    public function setStatementMock($statementMock)
+    public function prepare($prepareString): Statement
     {
-        $this->statementMock = $statementMock;
+        return new StatementMock();
+    }
+
+    public function query(?string $sql = null): Result
+    {
+        return $this->resultMock ?? new DriverResultMock();
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
-    public function prepare($prepareString)
-    {
-        return $this->statementMock ?: new StatementMock();
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function query()
-    {
-        return $this->statementMock ?: new StatementMock();
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function quote($input, $type=\PDO::PARAM_STR)
+    public function quote($input, $type = ParameterType::STRING)
     {
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
-    public function exec($statement)
+    public function exec($statement): int
     {
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function lastInsertId($name = null)
     {
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function beginTransaction()
     {
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function commit()
     {
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function rollBack()
     {
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function errorCode()
     {
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function errorInfo()
     {

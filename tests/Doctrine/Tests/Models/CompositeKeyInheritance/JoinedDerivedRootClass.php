@@ -1,11 +1,23 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\CompositeKeyInheritance;
+
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\DiscriminatorColumn;
+use Doctrine\ORM\Mapping\DiscriminatorMap;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\InheritanceType;
+use Doctrine\ORM\Mapping\ManyToOne;
+use Doctrine\ORM\Mapping\Table;
 
 /**
  * @Entity
  * @Table(name = "joined_derived_root")
  * @InheritanceType("JOINED")
- * @DiscriminatorColumn(name="discr", type="string")
+ * @DiscriminatorColumn(name="discr", type="string", length=255)
  * @DiscriminatorMap({"child" = "JoinedDerivedChildClass", "root" = "JoinedDerivedRootClass"})
  */
 class JoinedDerivedRootClass
@@ -22,7 +34,7 @@ class JoinedDerivedRootClass
 
     /**
      * @var string
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      * @Id
      */
     protected $keyPart2 = 'part-2';

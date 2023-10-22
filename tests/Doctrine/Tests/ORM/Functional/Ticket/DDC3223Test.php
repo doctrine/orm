@@ -1,35 +1,44 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\DiscriminatorColumn;
+use Doctrine\ORM\Mapping\DiscriminatorMap;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\InheritanceType;
+use Doctrine\ORM\Mapping\ManyToOne;
+use Doctrine\ORM\Mapping\Table;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * Functional tests for get Id after clone child entity
- *
- * @author Lallement Thomas <thomas.lallement@9online.fr>
  */
 class DDC3223Test extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
 
         $this->setUpEntitySchema(
             [
-            Journalist::class,
-            Participant::class,
-            Status::class,
-            ProfileStatus::class,
+                Journalist::class,
+                Participant::class,
+                Status::class,
+                ProfileStatus::class,
             ]
         );
     }
 
-    public function testIssueGetId()
+    public function testIssueGetId(): void
     {
         $profileStatus = new ProfileStatus();
 
-        $participant = new Journalist();
+        $participant                = new Journalist();
         $participant->profileStatus = $profileStatus;
 
         $this->_em->persist($profileStatus);
@@ -41,17 +50,21 @@ class DDC3223Test extends OrmFunctionalTestCase
 
         $profileStatus = clone $participant->profileStatus;
 
-        $this->assertSame(1, $profileStatus->getId(), 'The identifier on the cloned instance is an integer');
+        self::assertSame(1, $profileStatus->getId(), 'The identifier on the cloned instance is an integer');
     }
 }
 
-/** @Entity @Table(name="ddc3223_journalist") */
+/**
+ * @Entity
+ * @Table(name="ddc3223_journalist")
+ */
 class Journalist extends Participant
 {
 }
 
 /**
- * @Entity @Table(name="ddc3223_participant")
+ * @Entity
+ * @Table(name="ddc3223_participant")
  * @InheritanceType("JOINED")
  * @DiscriminatorColumn(name="discr", type="string")
  * @DiscriminatorMap({
@@ -61,15 +74,24 @@ class Journalist extends Participant
  */
 class Participant
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     */
     public $id;
 
-    /** @ManyToOne(targetEntity="ProfileStatus") */
+    /**
+     * @var ProfileStatus
+     * @ManyToOne(targetEntity="ProfileStatus")
+     */
     public $profileStatus;
 }
 
 /**
- * @Entity @Table(name="ddc3223_status")
+ * @Entity
+ * @Table(name="ddc3223_status")
  * @InheritanceType("SINGLE_TABLE")
  * @DiscriminatorColumn(name="discr", type="string")
  * @DiscriminatorMap({
@@ -79,18 +101,21 @@ class Participant
  */
 class Status
 {
-    /** @Id @Column(type="integer") @GeneratedValue(strategy="AUTO") */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue(strategy="AUTO")
+     */
     private $id;
 
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class ProfileStatus extends Status
 {
 }

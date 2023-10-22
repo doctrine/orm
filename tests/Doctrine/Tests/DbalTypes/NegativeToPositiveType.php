@@ -1,16 +1,18 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\DbalTypes;
 
-use Doctrine\DBAL\Types\Type;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
+use Doctrine\DBAL\Types\Type;
 
 class NegativeToPositiveType extends Type
 {
-    const NAME = 'negative_to_positive';
+    public const NAME = 'negative_to_positive';
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function getName()
     {
@@ -18,7 +20,7 @@ class NegativeToPositiveType extends Type
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function getSQLDeclaration(array $fieldDeclaration, AbstractPlatform $platform)
     {
@@ -26,7 +28,7 @@ class NegativeToPositiveType extends Type
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function canRequireSQLConversion()
     {
@@ -34,7 +36,7 @@ class NegativeToPositiveType extends Type
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function convertToDatabaseValueSQL($sqlExpr, AbstractPlatform $platform)
     {
@@ -42,7 +44,7 @@ class NegativeToPositiveType extends Type
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function convertToPHPValueSQL($sqlExpr, $platform)
     {

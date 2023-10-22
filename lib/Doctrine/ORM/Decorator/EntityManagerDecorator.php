@@ -1,51 +1,38 @@
 <?php
-/*
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * This software consists of voluntary contributions made by many individuals
- * and is licensed under the MIT license. For more information, see
- * <http://www.doctrine-project.org>.
- */
+
+declare(strict_types=1);
 
 namespace Doctrine\ORM\Decorator;
 
-use Doctrine\ORM\Query\ResultSetMapping;
+use Doctrine\Deprecations\Deprecation;
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\Common\Persistence\ObjectManagerDecorator;
+use Doctrine\ORM\EntityRepository;
+use Doctrine\ORM\Query\ResultSetMapping;
+use Doctrine\Persistence\ObjectManagerDecorator;
+
+use function func_get_arg;
+use function func_num_args;
+use function get_debug_type;
+use function method_exists;
+use function sprintf;
+use function trigger_error;
+
+use const E_USER_NOTICE;
 
 /**
  * Base class for EntityManager decorators
  *
- * @since   2.4
- * @author  Lars Strojny <lars@strojny.net
+ * @extends ObjectManagerDecorator<EntityManagerInterface>
  */
 abstract class EntityManagerDecorator extends ObjectManagerDecorator implements EntityManagerInterface
 {
-    /**
-     * @var EntityManagerInterface
-     */
-    protected $wrapped;
-
-    /**
-     * @param EntityManagerInterface $wrapped
-     */
     public function __construct(EntityManagerInterface $wrapped)
     {
         $this->wrapped = $wrapped;
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function getConnection()
     {
@@ -53,7 +40,7 @@ abstract class EntityManagerDecorator extends ObjectManagerDecorator implements 
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function getExpressionBuilder()
     {
@@ -61,15 +48,37 @@ abstract class EntityManagerDecorator extends ObjectManagerDecorator implements 
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
+     *
+     * @psalm-param class-string<T> $className
+     *
+     * @psalm-return EntityRepository<T>
+     *
+     * @template T of object
      */
-    public function beginTransaction()
+    public function getRepository($className)
     {
-        return $this->wrapped->beginTransaction();
+        return $this->wrapped->getRepository($className);
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
+     */
+    public function getClassMetadata($className)
+    {
+        return $this->wrapped->getClassMetadata($className);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function beginTransaction()
+    {
+        $this->wrapped->beginTransaction();
+    }
+
+    /**
+     * {@inheritDoc}
      */
     public function transactional($func)
     {
@@ -77,23 +86,40 @@ abstract class EntityManagerDecorator extends ObjectManagerDecorator implements 
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
+     */
+    public function wrapInTransaction(callable $func)
+    {
+        if (! method_exists($this->wrapped, 'wrapInTransaction')) {
+            trigger_error(
+                sprintf('Calling `transactional()` instead of `wrapInTransaction()` which is not implemented on %s', get_debug_type($this->wrapped)),
+                E_USER_NOTICE
+            );
+
+            return $this->wrapped->transactional($func);
+        }
+
+        return $this->wrapped->wrapInTransaction($func);
+    }
+
+    /**
+     * {@inheritDoc}
      */
     public function commit()
     {
-        return $this->wrapped->commit();
+        $this->wrapped->commit();
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function rollback()
     {
-        return $this->wrapped->rollback();
+        $this->wrapped->rollback();
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function createQuery($dql = '')
     {
@@ -101,7 +127,7 @@ abstract class EntityManagerDecorator extends ObjectManagerDecorator implements 
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function createNamedQuery($name)
     {
@@ -109,7 +135,7 @@ abstract class EntityManagerDecorator extends ObjectManagerDecorator implements 
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function createNativeQuery($sql, ResultSetMapping $rsm)
     {
@@ -117,7 +143,7 @@ abstract class EntityManagerDecorator extends ObjectManagerDecorator implements 
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function createNamedNativeQuery($name)
     {
@@ -125,7 +151,7 @@ abstract class EntityManagerDecorator extends ObjectManagerDecorator implements 
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function createQueryBuilder()
     {
@@ -133,7 +159,7 @@ abstract class EntityManagerDecorator extends ObjectManagerDecorator implements 
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function getReference($entityName, $id)
     {
@@ -141,23 +167,30 @@ abstract class EntityManagerDecorator extends ObjectManagerDecorator implements 
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function getPartialReference($entityName, $identifier)
     {
+        Deprecation::trigger(
+            'doctrine/orm',
+            'https://github.com/doctrine/orm/pull/10987',
+            'Method %s is deprecated and will be removed in 3.0.',
+            __METHOD__
+        );
+
         return $this->wrapped->getPartialReference($entityName, $identifier);
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function close()
     {
-        return $this->wrapped->close();
+        $this->wrapped->close();
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function copy($entity, $deep = false)
     {
@@ -165,31 +198,45 @@ abstract class EntityManagerDecorator extends ObjectManagerDecorator implements 
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function lock($entity, $lockMode, $lockVersion = null)
     {
-        return $this->wrapped->lock($entity, $lockMode, $lockVersion);
+        $this->wrapped->lock($entity, $lockMode, $lockVersion);
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
-    public function find($entityName, $id, $lockMode = null, $lockVersion = null)
+    public function find($className, $id, $lockMode = null, $lockVersion = null)
     {
-        return $this->wrapped->find($entityName, $id, $lockMode, $lockVersion);
+        return $this->wrapped->find($className, $id, $lockMode, $lockVersion);
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function flush($entity = null)
     {
-        return $this->wrapped->flush($entity);
+        $this->wrapped->flush($entity);
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
+     */
+    public function refresh($object)
+    {
+        $lockMode = null;
+
+        if (func_num_args() > 1) {
+            $lockMode = func_get_arg(1);
+        }
+
+        $this->wrapped->refresh($object, $lockMode);
+    }
+
+    /**
+     * {@inheritDoc}
      */
     public function getEventManager()
     {
@@ -197,7 +244,7 @@ abstract class EntityManagerDecorator extends ObjectManagerDecorator implements 
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function getConfiguration()
     {
@@ -205,7 +252,7 @@ abstract class EntityManagerDecorator extends ObjectManagerDecorator implements 
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function isOpen()
     {
@@ -213,7 +260,7 @@ abstract class EntityManagerDecorator extends ObjectManagerDecorator implements 
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function getUnitOfWork()
     {
@@ -221,7 +268,7 @@ abstract class EntityManagerDecorator extends ObjectManagerDecorator implements 
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function getHydrator($hydrationMode)
     {
@@ -229,7 +276,7 @@ abstract class EntityManagerDecorator extends ObjectManagerDecorator implements 
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function newHydrator($hydrationMode)
     {
@@ -237,7 +284,7 @@ abstract class EntityManagerDecorator extends ObjectManagerDecorator implements 
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function getProxyFactory()
     {
@@ -245,7 +292,7 @@ abstract class EntityManagerDecorator extends ObjectManagerDecorator implements 
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function getFilters()
     {
@@ -253,7 +300,7 @@ abstract class EntityManagerDecorator extends ObjectManagerDecorator implements 
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function isFiltersStateClean()
     {
@@ -261,7 +308,7 @@ abstract class EntityManagerDecorator extends ObjectManagerDecorator implements 
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function hasFilters()
     {
@@ -269,7 +316,7 @@ abstract class EntityManagerDecorator extends ObjectManagerDecorator implements 
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function getCache()
     {

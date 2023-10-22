@@ -1,13 +1,11 @@
 Keeping your Modules independent
 =================================
 
-.. versionadded:: 2.2
-
 One of the goals of using modules is to create discrete units of functionality
 that do not have many (if any) dependencies, allowing you to use that
 functionality in other applications without including unnecessary items.
 
-Doctrine 2.2 includes a new utility called the ``ResolveTargetEntityListener``,
+Doctrine ORM includes a new utility called the ``ResolveTargetEntityListener``,
 that functions by intercepting certain calls inside Doctrine and rewrite
 targetEntity parameters in your metadata mapping at runtime. It means that
 in your bundle you are able to use an interface or abstract class in your
@@ -129,7 +127,8 @@ the targetEntity resolution will occur reliably:
     // Add the ResolveTargetEntityListener
     $evm->addEventListener(Doctrine\ORM\Events::loadClassMetadata, $rtel);
 
-    $em = \Doctrine\ORM\EntityManager::create($connectionOptions, $config, $evm);
+    $connection = \Doctrine\DBAL\DriverManager::createConnection($connectionOptions, $config, $evm);
+    $em = new \Doctrine\ORM\EntityManager($connection, $config, $evm);
 
 Final Thoughts
 --------------
@@ -138,5 +137,3 @@ With the ``ResolveTargetEntityListener``, we are able to decouple our
 bundles, keeping them usable by themselves, but still being able to
 define relationships between different objects. By using this method,
 I've found my bundles end up being easier to maintain independently.
-
-

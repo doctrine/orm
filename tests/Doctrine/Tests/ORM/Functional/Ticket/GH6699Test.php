@@ -1,23 +1,23 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-/**
- * @group 6699
- */
+/** @group GH-6699 */
 final class GH6699Test extends OrmFunctionalTestCase
 {
-    protected function setUp() : void
+    protected function setUp(): void
     {
         $this->useModelSet('cms');
 
         parent::setUp();
     }
 
-    public function testMixedParametersWithZeroNumber() : void
+    public function testMixedParametersWithZeroNumber(): void
     {
         $query = $this->_em->createQueryBuilder()
                            ->select('u')
@@ -36,7 +36,7 @@ final class GH6699Test extends OrmFunctionalTestCase
         self::assertSame('bar', $query->getParameter('username')->getValue());
     }
 
-    public function testMixedParametersWithZeroNumberOnQueryBuilder() : void
+    public function testMixedParametersWithZeroNumberOnQueryBuilder(): void
     {
         $query = $this->_em->createQueryBuilder()
                            ->select('u')

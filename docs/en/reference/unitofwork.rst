@@ -17,7 +17,7 @@ ask for an entity with a specific ID twice, it will return the same instance:
 
 .. code-block:: php
 
-    public function testIdentityMap()
+    public function testIdentityMap(): void
     {
         $objectA = $this->entityManager->find('EntityName', 1);
         $objectB = $this->entityManager->find('EntityName', 1);
@@ -34,11 +34,11 @@ will still end up with the same reference:
 
 .. code-block:: php
 
-    public function testIdentityMapReference()
+    public function testIdentityMapReference(): void
     {
         $objectA = $this->entityManager->getReference('EntityName', 1);
-        // check for proxyinterface
-        $this->assertInstanceOf('Doctrine\ORM\Proxy\Proxy', $objectA);
+        // check entity is not initialized
+        $this->assertTrue($this->entityManager->isUninitializedObject($objectA));
 
         $objectB = $this->entityManager->find('EntityName', 1);
 
@@ -104,7 +104,7 @@ How Doctrine Detects Changes
 Doctrine is a data-mapper that tries to achieve persistence-ignorance (PI).
 This means you map php objects into a relational database that don't
 necessarily know about the database at all. A natural question would now be,
-"how does Doctrine even detect objects have changed?". 
+"how does Doctrine even detect objects have changed?".
 
 For this Doctrine keeps a second map inside the UnitOfWork. Whenever you fetch
 an object from the database Doctrine will keep a copy of all the properties and
@@ -134,6 +134,10 @@ optimize the performance of the Flush Operation:
   explicit strategies of notifying the UnitOfWork what objects/properties
   changed.
 
+.. note::
+
+    Flush only a single entity with ``$entityManager->flush($entity)`` is deprecated and will be removed in ORM 3.0.
+    (\ `Details <https://github.com/doctrine/orm/issues/8459>`_)
 
 Query Internals
 ---------------
@@ -148,8 +152,8 @@ Hydration
 ~~~~~~~~~
 
 Responsible for creating a final result from a raw database statement and a
-result-set mapping object. The developer can choose which kind of result he
-wishes to be hydrated. Default result-types include:
+result-set mapping object. The developer can choose which kind of result they
+wish to be hydrated. Default result-types include:
 
 - SQL to Entities
 - SQL to structured Arrays
@@ -198,4 +202,3 @@ ClassMetadataFactory
 ~~~~~~~~~~~~~~~~~~~~
 
 tbr
-

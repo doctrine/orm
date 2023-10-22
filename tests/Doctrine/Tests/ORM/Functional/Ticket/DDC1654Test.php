@@ -1,34 +1,43 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-/**
- * @group DDC-1654
- */
-class DDC1654Test extends \Doctrine\Tests\OrmFunctionalTestCase
+use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\ManyToMany;
+use Doctrine\Tests\OrmFunctionalTestCase;
+
+/** @group DDC-1654 */
+class DDC1654Test extends OrmFunctionalTestCase
 {
-    public function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
+
         $this->setUpEntitySchema(
             [
-            DDC1654Post::class,
-            DDC1654Comment::class,
+                DDC1654Post::class,
+                DDC1654Comment::class,
             ]
         );
     }
 
-    public function tearDown()
+    public function tearDown(): void
     {
-        $conn = static::$_sharedConn;
-        $conn->executeUpdate('DELETE FROM ddc1654post_ddc1654comment');
-        $conn->executeUpdate('DELETE FROM DDC1654Comment');
-        $conn->executeUpdate('DELETE FROM DDC1654Post');
+        $conn = static::$sharedConn;
+        $conn->executeStatement('DELETE FROM ddc1654post_ddc1654comment');
+        $conn->executeStatement('DELETE FROM DDC1654Comment');
+        $conn->executeStatement('DELETE FROM DDC1654Post');
     }
 
-    public function testManyToManyRemoveFromCollectionOrphanRemoval()
+    public function testManyToManyRemoveFromCollectionOrphanRemoval(): void
     {
-        $post = new DDC1654Post();
+        $post             = new DDC1654Post();
         $post->comments[] = new DDC1654Comment();
         $post->comments[] = new DDC1654Comment();
 
@@ -42,12 +51,12 @@ class DDC1654Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->clear();
 
         $comments = $this->_em->getRepository(DDC1654Comment::class)->findAll();
-        $this->assertEquals(0, count($comments));
+        self::assertCount(0, $comments);
     }
 
-    public function testManyToManyRemoveElementFromCollectionOrphanRemoval()
+    public function testManyToManyRemoveElementFromCollectionOrphanRemoval(): void
     {
-        $post = new DDC1654Post();
+        $post             = new DDC1654Post();
         $post->comments[] = new DDC1654Comment();
         $post->comments[] = new DDC1654Comment();
 
@@ -61,15 +70,13 @@ class DDC1654Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->clear();
 
         $comments = $this->_em->getRepository(DDC1654Comment::class)->findAll();
-        $this->assertEquals(0, count($comments));
+        self::assertCount(0, $comments);
     }
 
-    /**
-     * @group DDC-3382
-     */
-    public function testManyToManyRemoveElementFromReAddToCollectionOrphanRemoval()
+    /** @group DDC-3382 */
+    public function testManyToManyRemoveElementFromReAddToCollectionOrphanRemoval(): void
     {
-        $post = new DDC1654Post();
+        $post             = new DDC1654Post();
         $post->comments[] = new DDC1654Comment();
         $post->comments[] = new DDC1654Comment();
 
@@ -84,12 +91,12 @@ class DDC1654Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->clear();
 
         $comments = $this->_em->getRepository(DDC1654Comment::class)->findAll();
-        $this->assertEquals(2, count($comments));
+        self::assertCount(2, $comments);
     }
 
-    public function testManyToManyClearCollectionOrphanRemoval()
+    public function testManyToManyClearCollectionOrphanRemoval(): void
     {
-        $post = new DDC1654Post();
+        $post             = new DDC1654Post();
         $post->comments[] = new DDC1654Comment();
         $post->comments[] = new DDC1654Comment();
 
@@ -102,16 +109,13 @@ class DDC1654Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->clear();
 
         $comments = $this->_em->getRepository(DDC1654Comment::class)->findAll();
-        $this->assertEquals(0, count($comments));
-
+        self::assertCount(0, $comments);
     }
 
-    /**
-     * @group DDC-3382
-     */
-    public function testManyToManyClearCollectionReAddOrphanRemoval()
+    /** @group DDC-3382 */
+    public function testManyToManyClearCollectionReAddOrphanRemoval(): void
     {
-        $post = new DDC1654Post();
+        $post             = new DDC1654Post();
         $post->comments[] = new DDC1654Comment();
         $post->comments[] = new DDC1654Comment();
 
@@ -126,34 +130,37 @@ class DDC1654Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->clear();
 
         $comments = $this->_em->getRepository(DDC1654Comment::class)->findAll();
-        $this->assertEquals(1, count($comments));
+        self::assertCount(1, $comments);
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC1654Post
 {
     /**
-     * @Id @Column(type="integer") @GeneratedValue
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
      */
     public $id;
 
     /**
+     * @psalm-var Collection<int, DDC1654Comment>
      * @ManyToMany(targetEntity="DDC1654Comment", orphanRemoval=true,
      * cascade={"persist"})
      */
     public $comments = [];
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC1654Comment
 {
     /**
-     * @Id @Column(type="integer") @GeneratedValue
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
      */
     public $id;
 }

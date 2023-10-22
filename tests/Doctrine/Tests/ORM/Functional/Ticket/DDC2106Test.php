@@ -1,26 +1,31 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\Criteria;
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\ManyToOne;
+use Doctrine\ORM\Mapping\OneToMany;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
-/**
- * @group DDC-2106
- */
-class DDC2106Test extends \Doctrine\Tests\OrmFunctionalTestCase
+/** @group DDC-2106 */
+class DDC2106Test extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
 
-        $this->_schemaTool->createSchema(
-            [
-                $this->_em->getClassMetadata(DDC2106Entity::class),
-            ]
-        );
+        $this->createSchemaForModels(DDC2106Entity::class);
     }
 
-    public function testDetachedEntityAsId()
+    public function testDetachedEntityAsId(): void
     {
         // We want an uninitialized PersistentCollection $entity->children
         $entity = new DDC2106Entity();
@@ -39,29 +44,31 @@ class DDC2106Test extends \Doctrine\Tests\OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC2106Entity
 {
     /**
+     * @var int
      * @Id
      * @GeneratedValue(strategy="IDENTITY")
      * @Column(type="integer")
      */
     public $id;
 
-    /** @ManyToOne(targetEntity="DDC2106Entity", inversedBy="children") */
+    /**
+     * @var DDC2106Entity
+     * @ManyToOne(targetEntity="DDC2106Entity", inversedBy="children")
+     */
     public $parent;
 
     /**
+     * @psalm-var Collection<int, DDC2106Entity>
      * @OneToMany(targetEntity="DDC2106Entity", mappedBy="parent", cascade={"persist"})
      */
     public $children;
 
     public function __construct()
     {
-        $this->children = new \Doctrine\Common\Collections\ArrayCollection;
+        $this->children = new ArrayCollection();
     }
 }
-

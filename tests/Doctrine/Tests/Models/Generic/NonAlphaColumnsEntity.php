@@ -1,6 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\Generic;
+
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\Table;
 
 /**
  * @Entity
@@ -9,6 +17,7 @@ namespace Doctrine\Tests\Models\Generic;
 class NonAlphaColumnsEntity
 {
     /**
+     * @var int
      * @Id
      * @Column(type="integer", name="`simple-entity-id`")
      * @GeneratedValue(strategy="AUTO")
@@ -16,14 +25,12 @@ class NonAlphaColumnsEntity
     public $id;
 
     /**
-     * @Column(type="string", name="`simple-entity-value`")
+     * @var string
+     * @Column(type="string", length=255, name="`simple-entity-value`")
      */
     public $value;
 
-    /**
-     * @param string $value
-     */
-    public function __construct($value)
+    public function __construct(string $value)
     {
         $this->value = $value;
     }

@@ -1,7 +1,25 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\Cache;
+
+use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\Mapping\Cache;
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\JoinColumns;
+use Doctrine\ORM\Mapping\ManyToOne;
+use Doctrine\ORM\Mapping\OneToMany;
+use Doctrine\ORM\Mapping\OneToOne;
+use Doctrine\ORM\Mapping\Table;
+
+use function date;
+use function strtotime;
 
 /**
  * @Entity
@@ -11,31 +29,34 @@ use Doctrine\Common\Collections\ArrayCollection;
 class Token
 {
     /**
+     * @var string
      * @Id
-     * @Column(type="string")
+     * @Column(type="string", length=255)
      */
     public $token;
 
     /**
+     * @var DateTime
      * @Column(type="date")
      */
     public $expiresAt;
 
     /**
+     * @var Client|null
      * @OneToOne(targetEntity="Client")
      */
     public $client;
 
     /**
+     * @psalm-var Collection<int, Login>
      * @OneToMany(targetEntity="Login", cascade={"persist", "remove"}, mappedBy="token")
-     * @var array
      */
     public $logins;
 
     /**
+     * @var Action
      * @ManyToOne(targetEntity="Action", cascade={"persist", "remove"}, inversedBy="tokens")
      * @JoinColumn(name="action_name", referencedColumnName="name")
-     * @var array
      */
     public $action;
 
@@ -49,45 +70,32 @@ class Token
      */
     public $complexAction;
 
-    public function __construct($token, Client $client = null)
+    public function __construct(string $token, ?Client $client = null)
     {
         $this->logins    = new ArrayCollection();
         $this->token     = $token;
         $this->client    = $client;
-        $this->expiresAt = new \DateTime(date('Y-m-d H:i:s', strtotime("+7 day")));
+        $this->expiresAt = new DateTime(date('Y-m-d H:i:s', strtotime('+7 day')));
     }
 
-    /**
-     * @param Login $login
-     */
-    public function addLogin(Login $login)
+    public function addLogin(Login $login): void
     {
         $this->logins[] = $login;
-        $login->token = $this;
+        $login->token   = $this;
     }
 
-    /**
-     * @return Client
-     */
-    public function getClient()
+    public function getClient(): ?Client
     {
         return $this->client;
     }
 
-    /**
-     * @return Action
-     */
-    public function getAction()
+    public function getAction(): Action
     {
         return $this->action;
     }
 
-    /**
-     * @return ComplexAction
-     */
-    public function getComplexAction()
+    public function getComplexAction(): ComplexAction
     {
         return $this->complexAction;
     }
-
 }

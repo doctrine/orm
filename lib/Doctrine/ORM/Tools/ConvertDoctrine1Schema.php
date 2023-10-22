@@ -1,74 +1,72 @@
 <?php
-/*
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * This software consists of voluntary contributions made by many individuals
- * and is licensed under the MIT license. For more information, see
- * <http://www.doctrine-project.org>.
- */
+
+declare(strict_types=1);
 
 namespace Doctrine\ORM\Tools;
 
-use Doctrine\ORM\Mapping\ClassMetadataInfo;
-use Doctrine\Common\Inflector\Inflector;
 use Doctrine\DBAL\Types\Type;
+use Doctrine\Deprecations\Deprecation;
+use Doctrine\Inflector\InflectorFactory;
+use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use Symfony\Component\Yaml\Yaml;
+
+use function array_merge;
+use function count;
+use function explode;
+use function file_get_contents;
+use function glob;
+use function in_array;
+use function is_array;
+use function is_dir;
+use function is_string;
+use function preg_match;
+use function strtolower;
 
 /**
  * Class to help with converting Doctrine 1 schema files to Doctrine 2 mapping files
  *
+ * @deprecated This class is being removed from the ORM and won't have any replacement
  *
  * @link    www.doctrine-project.org
- * @since   2.0
- * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
- * @author  Jonathan Wage <jonwage@gmail.com>
- * @author  Roman Borschel <roman@code-factory.org>
  */
 class ConvertDoctrine1Schema
 {
-    /**
-     * @var array
-     */
+    /** @var mixed[] */
     private $from;
 
-    /**
-     * @var array
-     */
+    /** @var array<string,string> */
     private $legacyTypeMap = [
         // TODO: This list may need to be updated
         'clob' => 'text',
         'timestamp' => 'datetime',
-        'enum' => 'string'
+        'enum' => 'string',
     ];
 
     /**
      * Constructor passes the directory or array of directories
      * to convert the Doctrine 1 schema files from.
      *
-     * @param array $from
-     *
-     * @author Jonathan Wage
+     * @param string[]|string $from
+     * @psalm-param list<string>|string $from
      */
     public function __construct($from)
     {
         $this->from = (array) $from;
+
+        Deprecation::trigger(
+            'doctrine/orm',
+            'https://github.com/doctrine/orm/issues/8458',
+            '%s is deprecated with no replacement',
+            self::class
+        );
     }
 
     /**
      * Gets an array of ClassMetadataInfo instances from the passed
      * Doctrine 1 schema.
      *
-     * @return array An array of ClassMetadataInfo instances
+     * @return ClassMetadataInfo[] An array of ClassMetadataInfo instances
+     * @psalm-return list<ClassMetadataInfo>
      */
     public function getMetadata()
     {
@@ -93,13 +91,13 @@ class ConvertDoctrine1Schema
     }
 
     /**
-     * @param string $className
-     * @param array  $mappingInformation
-     *
-     * @return \Doctrine\ORM\Mapping\ClassMetadataInfo
+     * @param mixed[] $mappingInformation
+     * @psalm-param class-string $className
      */
-    private function convertToClassMetadataInfo($className, $mappingInformation)
-    {
+    private function convertToClassMetadataInfo(
+        string $className,
+        array $mappingInformation
+    ): ClassMetadataInfo {
         $metadata = new ClassMetadataInfo($className);
 
         $this->convertTableName($className, $mappingInformation, $metadata);
@@ -110,36 +108,27 @@ class ConvertDoctrine1Schema
         return $metadata;
     }
 
-    /**
-     * @param string            $className
-     * @param array             $model
-     * @param ClassMetadataInfo $metadata
-     *
-     * @return void
-     */
-    private function convertTableName($className, array $model, ClassMetadataInfo $metadata)
+    /** @param mixed[] $model */
+    private function convertTableName(string $className, array $model, ClassMetadataInfo $metadata): void
     {
         if (isset($model['tableName']) && $model['tableName']) {
             $e = explode('.', $model['tableName']);
 
             if (count($e) > 1) {
                 $metadata->table['schema'] = $e[0];
-                $metadata->table['name'] = $e[1];
+                $metadata->table['name']   = $e[1];
             } else {
                 $metadata->table['name'] = $e[0];
             }
         }
     }
 
-    /**
-     * @param string            $className
-     * @param array             $model
-     * @param ClassMetadataInfo $metadata
-     *
-     * @return void
-     */
-    private function convertColumns($className, array $model, ClassMetadataInfo $metadata)
-    {
+    /** @param mixed[] $model */
+    private function convertColumns(
+        string $className,
+        array $model,
+        ClassMetadataInfo $metadata
+    ): void {
         $id = false;
 
         if (isset($model['columns']) && $model['columns']) {
@@ -152,12 +141,12 @@ class ConvertDoctrine1Schema
             }
         }
 
-        if ( ! $id) {
+        if (! $id) {
             $fieldMapping = [
                 'fieldName' => 'id',
                 'columnName' => 'id',
                 'type' => 'integer',
-                'id' => true
+                'id' => true,
             ];
             $metadata->mapField($fieldMapping);
             $metadata->setIdGeneratorType(ClassMetadataInfo::GENERATOR_TYPE_AUTO);
@@ -165,36 +154,37 @@ class ConvertDoctrine1Schema
     }
 
     /**
-     * @param string            $className
-     * @param string            $name
-     * @param string|array      $column
-     * @param ClassMetadataInfo $metadata
+     * @param string|mixed[] $column
      *
-     * @return array
+     * @return mixed[]
      *
      * @throws ToolsException
      */
-    private function convertColumn($className, $name, $column, ClassMetadataInfo $metadata)
-    {
+    private function convertColumn(
+        string $className,
+        string $name,
+        $column,
+        ClassMetadataInfo $metadata
+    ): array {
         if (is_string($column)) {
-            $string = $column;
-            $column = [];
+            $string         = $column;
+            $column         = [];
             $column['type'] = $string;
         }
 
-        if ( ! isset($column['name'])) {
+        if (! isset($column['name'])) {
             $column['name'] = $name;
         }
 
         // check if a column alias was used (column_name as field_name)
-        if (preg_match("/(\w+)\sas\s(\w+)/i", $column['name'], $matches)) {
-            $name = $matches[1];
-            $column['name'] = $name;
+        if (preg_match('/(\w+)\sas\s(\w+)/i', $column['name'], $matches)) {
+            $name            = $matches[1];
+            $column['name']  = $name;
             $column['alias'] = $matches[2];
         }
 
-        if (preg_match("/([a-zA-Z]+)\(([0-9]+)\)/", $column['type'], $matches)) {
-            $column['type'] = $matches[1];
+        if (preg_match('/([a-zA-Z]+)\(([0-9]+)\)/', $column['type'], $matches)) {
+            $column['type']   = $matches[1];
             $column['length'] = $matches[2];
         }
 
@@ -204,28 +194,30 @@ class ConvertDoctrine1Schema
             $column['type'] = $this->legacyTypeMap[$column['type']];
         }
 
-        if ( ! Type::hasType($column['type'])) {
+        if (! Type::hasType($column['type'])) {
             throw ToolsException::couldNotMapDoctrine1Type($column['type']);
         }
 
-        $fieldMapping = [];
+        $fieldMapping = [
+            'nullable' => ! ($column['notnull'] ?? true), // Doctrine 1 columns are nullable by default
+        ];
 
         if (isset($column['primary'])) {
             $fieldMapping['id'] = true;
         }
 
-        $fieldMapping['fieldName'] = $column['alias'] ?? $name;
+        $fieldMapping['fieldName']  = $column['alias'] ?? $name;
         $fieldMapping['columnName'] = $column['name'];
-        $fieldMapping['type'] = $column['type'];
+        $fieldMapping['type']       = $column['type'];
 
         if (isset($column['length'])) {
             $fieldMapping['length'] = $column['length'];
         }
 
-        $allowed = ['precision', 'scale', 'unique', 'options', 'notnull', 'version'];
+        $allowed = ['precision', 'scale', 'unique', 'options', 'version'];
 
         foreach ($column as $key => $value) {
-            if (in_array($key, $allowed)) {
+            if (in_array($key, $allowed, true)) {
                 $fieldMapping[$key] = $value;
             }
         }
@@ -238,15 +230,15 @@ class ConvertDoctrine1Schema
             $metadata->setIdGeneratorType(ClassMetadataInfo::GENERATOR_TYPE_SEQUENCE);
 
             $definition = [
-                'sequenceName' => is_array($column['sequence']) ? $column['sequence']['name']:$column['sequence']
+                'sequenceName' => (string) (is_array($column['sequence']) ? $column['sequence']['name'] : $column['sequence']),
             ];
 
             if (isset($column['sequence']['size'])) {
-                $definition['allocationSize'] = $column['sequence']['size'];
+                $definition['allocationSize'] = (int) $column['sequence']['size'];
             }
 
             if (isset($column['sequence']['value'])) {
-                $definition['initialValue'] = $column['sequence']['value'];
+                $definition['initialValue'] = (int) $column['sequence']['value'];
             }
 
             $metadata->setSequenceGeneratorDefinition($definition);
@@ -255,88 +247,88 @@ class ConvertDoctrine1Schema
         return $fieldMapping;
     }
 
-    /**
-     * @param string            $className
-     * @param array             $model
-     * @param ClassMetadataInfo $metadata
-     *
-     * @return void
-     */
-    private function convertIndexes($className, array $model, ClassMetadataInfo $metadata)
-    {
+    /** @param mixed[] $model */
+    private function convertIndexes(
+        string $className,
+        array $model,
+        ClassMetadataInfo $metadata
+    ): void {
         if (empty($model['indexes'])) {
             return;
         }
 
         foreach ($model['indexes'] as $name => $index) {
-            $type = (isset($index['type']) && $index['type'] == 'unique')
+            $type = isset($index['type']) && $index['type'] === 'unique'
                 ? 'uniqueConstraints' : 'indexes';
 
             $metadata->table[$type][$name] = [
-                'columns' => $index['fields']
+                'columns' => $index['fields'],
             ];
         }
     }
 
-    /**
-     * @param string            $className
-     * @param array             $model
-     * @param ClassMetadataInfo $metadata
-     *
-     * @return void
-     */
-    private function convertRelations($className, array $model, ClassMetadataInfo $metadata)
-    {
+    /** @param mixed[] $model */
+    private function convertRelations(
+        string $className,
+        array $model,
+        ClassMetadataInfo $metadata
+    ): void {
         if (empty($model['relations'])) {
             return;
         }
 
+        $inflector = InflectorFactory::create()->build();
+
         foreach ($model['relations'] as $name => $relation) {
-            if ( ! isset($relation['alias'])) {
+            if (! isset($relation['alias'])) {
                 $relation['alias'] = $name;
             }
-            if ( ! isset($relation['class'])) {
+
+            if (! isset($relation['class'])) {
                 $relation['class'] = $name;
             }
-            if ( ! isset($relation['local'])) {
-                $relation['local'] = Inflector::tableize($relation['class']);
+
+            if (! isset($relation['local'])) {
+                $relation['local'] = $inflector->tableize($relation['class']);
             }
-            if ( ! isset($relation['foreign'])) {
+
+            if (! isset($relation['foreign'])) {
                 $relation['foreign'] = 'id';
             }
-            if ( ! isset($relation['foreignAlias'])) {
+
+            if (! isset($relation['foreignAlias'])) {
                 $relation['foreignAlias'] = $className;
             }
 
             if (isset($relation['refClass'])) {
-                $type = 'many';
+                $type        = 'many';
                 $foreignType = 'many';
                 $joinColumns = [];
             } else {
-                $type = $relation['type'] ?? 'one';
+                $type        = $relation['type'] ?? 'one';
                 $foreignType = $relation['foreignType'] ?? 'many';
                 $joinColumns = [
                     [
                         'name' => $relation['local'],
                         'referencedColumnName' => $relation['foreign'],
                         'onDelete' => $relation['onDelete'] ?? null,
-                    ]
+                    ],
                 ];
             }
 
-            if ($type == 'one' && $foreignType == 'one') {
+            if ($type === 'one' && $foreignType === 'one') {
                 $method = 'mapOneToOne';
-            } elseif ($type == 'many' && $foreignType == 'many') {
+            } elseif ($type === 'many' && $foreignType === 'many') {
                 $method = 'mapManyToMany';
             } else {
                 $method = 'mapOneToMany';
             }
 
-            $associationMapping = [];
-            $associationMapping['fieldName'] = $relation['alias'];
+            $associationMapping                 = [];
+            $associationMapping['fieldName']    = $relation['alias'];
             $associationMapping['targetEntity'] = $relation['class'];
-            $associationMapping['mappedBy'] = $relation['foreignAlias'];
-            $associationMapping['joinColumns'] = $joinColumns;
+            $associationMapping['mappedBy']     = $relation['foreignAlias'];
+            $associationMapping['joinColumns']  = $joinColumns;
 
             $metadata->$method($associationMapping);
         }

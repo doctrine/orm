@@ -10,7 +10,7 @@ we cannot protect you from SQL injection.
 Please also read the documentation chapter on Security in Doctrine DBAL. This
 page only handles Security issues in the ORM.
 
-- `DBAL Security Page <http://www.doctrine-project.org/projects/doctrine-dbal/en/current/reference/security.html>`
+- `DBAL Security Page <https://www.doctrine-project.org/projects/doctrine-dbal/en/current/reference/security.html>`
 
 If you find a Security bug in Doctrine, please report it on Jira and change the
 Security Level to "Security Issues". It will be visible to Doctrine Core
@@ -98,19 +98,20 @@ entity might look like this:
 
     <?php
 
-    /**
-     * @Entity
-     */
+    #[Entity]
     class InsecureEntity
     {
-        /** @Id @Column(type="integer") @GeneratedValue */
-        private $id;
-        /** @Column */
-        private $email;
-        /** @Column(type="boolean") */
-        private $isAdmin;
+        #[Id, Column, GeneratedValue]
+        private int|null $id = null;
 
-        public function fromArray(array $userInput)
+        #[Column]
+        private string $email;
+
+        #[Column]
+        private bool $isAdmin;
+
+        /** @param array<string, mixed> $userInput */
+        public function fromArray(array $userInput): void
         {
             foreach ($userInput as $key => $value) {
                 $this->$key = $value;
@@ -118,7 +119,7 @@ entity might look like this:
         }
     }
 
-Now the possiblity of mass-asignment exists on this entity and can
+Now the possiblity of mass-assignment exists on this entity and can
 be exploited by attackers to set the "isAdmin" flag to true on any
 object when you pass the whole request data to this method like:
 

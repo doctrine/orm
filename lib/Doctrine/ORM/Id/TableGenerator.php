@@ -1,61 +1,32 @@
 <?php
-/*
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * This software consists of voluntary contributions made by many individuals
- * and is licensed under the MIT license. For more information, see
- * <http://www.doctrine-project.org>.
- */
+
+declare(strict_types=1);
 
 namespace Doctrine\ORM\Id;
 
-use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 
 /**
  * Id generator that uses a single-row database table and a hi/lo algorithm.
  *
- * @since   2.0
- * @author  Benjamin Eberlei <kontakt@beberlei.de>
- * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
- * @author  Jonathan Wage <jonwage@gmail.com>
- * @author  Roman Borschel <roman@code-factory.org>
+ * @deprecated no replacement planned
  */
 class TableGenerator extends AbstractIdGenerator
 {
-    /**
-     * @var string
-     */
-    private $_tableName;
+    /** @var string */
+    private $tableName;
 
-    /**
-     * @var string
-     */
-    private $_sequenceName;
+    /** @var string */
+    private $sequenceName;
 
-    /**
-     * @var int
-     */
-    private $_allocationSize;
+    /** @var int */
+    private $allocationSize;
 
-    /**
-     * @var int|null
-     */
-    private $_nextValue;
+    /** @var int|null */
+    private $nextValue;
 
-    /**
-     * @var int|null
-     */
-    private $_maxValue;
+    /** @var int|null */
+    private $maxValue;
 
     /**
      * @param string $tableName
@@ -64,35 +35,38 @@ class TableGenerator extends AbstractIdGenerator
      */
     public function __construct($tableName, $sequenceName = 'default', $allocationSize = 10)
     {
-        $this->_tableName = $tableName;
-        $this->_sequenceName = $sequenceName;
-        $this->_allocationSize = $allocationSize;
+        $this->tableName      = $tableName;
+        $this->sequenceName   = $sequenceName;
+        $this->allocationSize = $allocationSize;
     }
 
     /**
      * {@inheritDoc}
      */
-    public function generate(
-        EntityManager $em, $entity)
-    {
-        if ($this->_maxValue === null || $this->_nextValue == $this->_maxValue) {
+    public function generateId(
+        EntityManagerInterface $em,
+        $entity
+    ) {
+        if ($this->maxValue === null || $this->nextValue === $this->maxValue) {
             // Allocate new values
             $conn = $em->getConnection();
 
             if ($conn->getTransactionNestingLevel() === 0) {
                 // use select for update
-                $sql          = $conn->getDatabasePlatform()->getTableHiLoCurrentValSql($this->_tableName, $this->_sequenceName);
-                $currentLevel = $conn->fetchColumn($sql);
+                $sql          = $conn->getDatabasePlatform()->getTableHiLoCurrentValSql($this->tableName, $this->sequenceName);
+                $currentLevel = $conn->fetchOne($sql);
 
-                if ($currentLevel != null) {
-                    $this->_nextValue = $currentLevel;
-                    $this->_maxValue = $this->_nextValue + $this->_allocationSize;
+                if ($currentLevel !== null) {
+                    $this->nextValue = $currentLevel;
+                    $this->maxValue  = $this->nextValue + $this->allocationSize;
 
                     $updateSql = $conn->getDatabasePlatform()->getTableHiLoUpdateNextValSql(
-                        $this->_tableName, $this->_sequenceName, $this->_allocationSize
+                        $this->tableName,
+                        $this->sequenceName,
+                        $this->allocationSize
                     );
 
-                    if ($conn->executeUpdate($updateSql, [1 => $currentLevel, 2 => $currentLevel+1]) !== 1) {
+                    if ($conn->executeStatement($updateSql, [1 => $currentLevel, 2 => $currentLevel + 1]) !== 1) {
                         // no affected rows, concurrency issue, throw exception
                     }
                 } else {
@@ -104,6 +78,6 @@ class TableGenerator extends AbstractIdGenerator
             }
         }
 
-        return $this->_nextValue++;
+        return $this->nextValue++;
     }
 }

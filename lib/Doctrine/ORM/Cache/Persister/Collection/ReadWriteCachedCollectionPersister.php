@@ -1,50 +1,29 @@
 <?php
 
-/*
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * This software consists of voluntary contributions made by many individuals
- * and is licensed under the MIT license. For more information, see
- * <http://www.doctrine-project.org>.
- */
+declare(strict_types=1);
 
 namespace Doctrine\ORM\Cache\Persister\Collection;
 
-use Doctrine\ORM\Persisters\Collection\CollectionPersister;
-use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Cache\CollectionCacheKey;
 use Doctrine\ORM\Cache\ConcurrentRegion;
+use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\PersistentCollection;
+use Doctrine\ORM\Persisters\Collection\CollectionPersister;
 
-/**
- * @author Fabio B. Silva <fabio.bat.silva@gmail.com>
- * @since 2.5
- */
+use function spl_object_id;
+
+/** @psalm-import-type AssociationMapping from ClassMetadata */
 class ReadWriteCachedCollectionPersister extends AbstractCollectionPersister
 {
-    /**
-     * @param \Doctrine\ORM\Persisters\Collection\CollectionPersister $persister   The collection persister that will be cached.
-     * @param \Doctrine\ORM\Cache\ConcurrentRegion                    $region      The collection region.
-     * @param \Doctrine\ORM\EntityManagerInterface                    $em          The entity manager.
-     * @param array                                                   $association The association mapping.
-     */
+    /** @param AssociationMapping $association The association mapping. */
     public function __construct(CollectionPersister $persister, ConcurrentRegion $region, EntityManagerInterface $em, array $association)
     {
         parent::__construct($persister, $region, $em, $association);
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function afterTransactionComplete()
     {
@@ -64,7 +43,7 @@ class ReadWriteCachedCollectionPersister extends AbstractCollectionPersister
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function afterTransactionRolledBack()
     {
@@ -84,7 +63,7 @@ class ReadWriteCachedCollectionPersister extends AbstractCollectionPersister
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function delete(PersistentCollection $collection)
     {
@@ -98,21 +77,21 @@ class ReadWriteCachedCollectionPersister extends AbstractCollectionPersister
             return;
         }
 
-        $this->queuedCache['delete'][spl_object_hash($collection)] = [
+        $this->queuedCache['delete'][spl_object_id($collection)] = [
             'key'   => $key,
-            'lock'  => $lock
+            'lock'  => $lock,
         ];
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function update(PersistentCollection $collection)
     {
         $isInitialized = $collection->isInitialized();
         $isDirty       = $collection->isDirty();
 
-        if ( ! $isInitialized && ! $isDirty) {
+        if (! $isInitialized && ! $isDirty) {
             return;
         }
 
@@ -126,9 +105,9 @@ class ReadWriteCachedCollectionPersister extends AbstractCollectionPersister
             return;
         }
 
-        $this->queuedCache['update'][spl_object_hash($collection)] = [
+        $this->queuedCache['update'][spl_object_id($collection)] = [
             'key'   => $key,
-            'lock'  => $lock
+            'lock'  => $lock,
         ];
     }
 }

@@ -1,11 +1,9 @@
 Composite and Foreign Keys as Primary Key
 =========================================
 
-.. versionadded:: 2.1
-
-Doctrine 2 supports composite primary keys natively. Composite keys are a very powerful relational database concept
-and we took good care to make sure Doctrine 2 supports as many of the composite primary key use-cases.
-For Doctrine 2.0 composite keys of primitive data-types are supported, for Doctrine 2.1 even foreign keys as
+Doctrine ORM supports composite primary keys natively. Composite keys are a very powerful relational database concept
+and we took good care to make sure Doctrine ORM supports as many of the composite primary key use-cases.
+For Doctrine ORM composite keys of primitive data-types are supported, even foreign keys as
 primary keys are supported.
 
 This tutorial shows how the semantics of composite primary keys work and how they map to the database.
@@ -19,13 +17,40 @@ the ID fields have to have their values set before you call ``EntityManager#pers
 Primitive Types only
 ~~~~~~~~~~~~~~~~~~~~
 
-Even in version 2.0 you can have composite keys as long as they only consist of the primitive types
+You can have composite keys as long as they only consist of the primitive types
 ``integer`` and ``string``. Suppose you want to create a database of cars and use the model-name
 and year of production as primary keys:
 
 .. configuration-block::
 
-    .. code-block:: php
+    .. code-block:: attribute
+
+        <?php
+        namespace VehicleCatalogue\Model;
+
+        #[Entity]
+        class Car
+        {
+            public function __construct(
+                #[Id, Column]
+                private string $name,
+                #[Id, Column]
+                private int $year,
+            ) {
+            }
+
+            public function getModelName(): string
+            {
+                return $this->name;
+            }
+
+            public function getYearOfProduction(): int
+            {
+                return $this->year;
+            }
+        }
+
+    .. code-block:: annotation
 
         <?php
         namespace VehicleCatalogue\Model;
@@ -36,9 +61,9 @@ and year of production as primary keys:
         class Car
         {
             /** @Id @Column(type="string") */
-            private $name;
+            private string $name;
             /** @Id @Column(type="integer") */
-            private $year;
+            private int $year;
 
             public function __construct($name, $year)
             {
@@ -46,12 +71,12 @@ and year of production as primary keys:
                 $this->year = $year;
             }
 
-            public function getModelName()
+            public function getModelName(): string
             {
                 return $this->name;
             }
 
-            public function getYearOfProduction()
+            public function getYearOfProduction(): int
             {
                 return $this->year;
             }
@@ -61,7 +86,7 @@ and year of production as primary keys:
 
         <?xml version="1.0" encoding="UTF-8"?>
         <doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
-              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xmlns:xsi="https://www.w3.org/2001/XMLSchema-instance"
               xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
                                   https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
 
@@ -106,7 +131,7 @@ And for querying you can use arrays to both DQL and EntityRepositories:
 
     $dql = "SELECT c FROM VehicleCatalogue\Model\Car c WHERE c.id = ?1";
     $audi = $em->createQuery($dql)
-               ->setParameter(1, array("name" => "Audi A8", "year" => 2010))
+               ->setParameter(1, ["name" => "Audi A8", "year" => 2010])
                ->getSingleResult();
 
 You can also use this entity in associations. Doctrine will then generate two foreign keys one for ``name``
@@ -119,10 +144,6 @@ and to ``year`` to the related entities.
 
 Identity through foreign Entities
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-.. note::
-
-    Identity through foreign entities is only supported with Doctrine 2.1
 
 There are tons of use-cases where the identity of an Entity should be determined by the entity
 of one or many parent entities.
@@ -137,7 +158,7 @@ of one or many parent entities.
 The semantics of mapping identity through foreign entities are easy:
 
 -   Only allowed on Many-To-One or One-To-One associations.
--   Plug an ``@Id`` annotation onto every association.
+-   Plug an ``#[Id]`` attribute onto every association.
 -   Set an attribute ``association-key`` with the field name of the association in XML.
 -   Set a key ``associationKey:`` with the field name of the association in YAML.
 
@@ -148,7 +169,52 @@ We keep up the example of an Article with arbitrary attributes, the mapping look
 
 .. configuration-block::
 
-    .. code-block:: php
+    .. code-block:: attribute
+
+        <?php
+        namespace Application\Model;
+
+        use Doctrine\Common\Collections\ArrayCollection;
+
+        #[Entity]
+        class Article
+        {
+            #[Id, Column, GeneratedValue]
+            private int|null $id = null;
+            #[Column]
+            private string $title;
+
+            /** @var ArrayCollection<string, ArticleAttribute> */
+            #[OneToMany(targetEntity: ArticleAttribute::class, mappedBy: 'article', cascade: ['ALL'], indexBy: 'attribute')]
+            private Collection $attributes;
+
+            public function addAttribute(string $name, ArticleAttribute $value): void
+            {
+                $this->attributes[$name] = new ArticleAttribute($name, $value, $this);
+            }
+        }
+
+        #[Entity]
+        class ArticleAttribute
+        {
+            #[Id, ManyToOne(targetEntity: Article::class, inversedBy: 'attributes')]
+            private Article $article;
+
+            #[Id, Column]
+            private string $attribute;
+
+            #[Column]
+            private string $value;
+
+            public function __construct(string $name, string $value, Article $article)
+            {
+                $this->attribute = $name;
+                $this->value = $value;
+                $this->article = $article;
+            }
+        }
+
+    .. code-block:: annotation
 
         <?php
         namespace Application\Model;
@@ -161,16 +227,17 @@ We keep up the example of an Article with arbitrary attributes, the mapping look
         class Article
         {
             /** @Id @Column(type="integer") @GeneratedValue */
-            private $id;
+            private int|null $id = null;
             /** @Column(type="string") */
-            private $title;
+            private string $title;
 
             /**
              * @OneToMany(targetEntity="ArticleAttribute", mappedBy="article", cascade={"ALL"}, indexBy="attribute")
+             * @var Collection<int, ArticleAttribute>
              */
-            private $attributes;
+            private Collection $attributes;
 
-            public function addAttribute($name, $value)
+            public function addAttribute($name, $value): void
             {
                 $this->attributes[$name] = new ArticleAttribute($name, $value, $this);
             }
@@ -182,13 +249,13 @@ We keep up the example of an Article with arbitrary attributes, the mapping look
         class ArticleAttribute
         {
             /** @Id @ManyToOne(targetEntity="Article", inversedBy="attributes") */
-            private $article;
+            private Article|null $article;
 
             /** @Id @Column(type="string") */
-            private $attribute;
+            private string $attribute;
 
             /** @Column(type="string") */
-            private $value;
+            private string $value;
 
             public function __construct($name, $value, $article)
             {
@@ -201,14 +268,14 @@ We keep up the example of an Article with arbitrary attributes, the mapping look
     .. code-block:: xml
 
         <doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
-              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xmlns:xsi="https://www.w3.org/2001/XMLSchema-instance"
               xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
                                   https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
 
              <entity name="Application\Model\ArticleAttribute">
                 <id name="article" association-key="true" />
                 <id name="attribute" type="string" />
-                
+
                 <field name="value" type="string" />
 
                 <many-to-one field="article" target-entity="Article" inversed-by="attributes" />
@@ -243,25 +310,22 @@ One good example for this is a user-address relationship:
 
 .. configuration-block::
 
-    .. code-block:: php
+    .. code-block:: attribute
 
         <?php
-        /**
-         * @Entity
-         */
+
+        #[Entity]
         class User
         {
-            /** @Id @Column(type="integer") @GeneratedValue */
-            private $id;
+            #[Id, Column, GeneratedValue]
+            private int|null $id = null;
         }
 
-        /**
-         * @Entity
-         */
+        #[Entity]
         class Address
         {
-            /** @Id @OneToOne(targetEntity="User") */
-            private $user;
+            #[Id, OneToOne(targetEntity: User::class)]
+            private User|null $user = null;
         }
 
     .. code-block:: yaml
@@ -294,68 +358,70 @@ of products purchased and maybe even the current price.
 .. code-block:: php
 
     <?php
+
+    use DateTime;
     use Doctrine\Common\Collections\ArrayCollection;
 
-    /** @Entity */
+    #[Entity]
     class Order
     {
-        /** @Id @Column(type="integer") @GeneratedValue */
-        private $id;
+        #[Id, Column, GeneratedValue]
+        private int|null $id = null;
 
-        /** @ManyToOne(targetEntity="Customer") */
-        private $customer;
-        /** @OneToMany(targetEntity="OrderItem", mappedBy="order") */
-        private $items;
+        /** @var ArrayCollection<int, OrderItem> */
+        #[OneToMany(targetEntity: OrderItem::class, mappedBy: 'order')]
+        private Collection $items;
 
-        /** @Column(type="boolean") */
-        private $payed = false;
-        /** @Column(type="boolean") */
-        private $shipped = false;
-        /** @Column(type="datetime") */
-        private $created;
+        #[Column]
+        private bool $paid = false;
+        #[Column]
+        private bool $shipped = false;
+        #[Column]
+        private DateTime $created;
 
-        public function __construct(Customer $customer)
-        {
-            $this->customer = $customer;
+        public function __construct(
+            #[ManyToOne(targetEntity: Customer::class)]
+            private Customer $customer,
+        ) {
             $this->items = new ArrayCollection();
-            $this->created = new \DateTime("now");
+            $this->created = new DateTime("now");
         }
     }
 
-    /** @Entity */
+    #[Entity]
     class Product
     {
-        /** @Id @Column(type="integer") @GeneratedValue */
-        private $id;
+        #[Id, Column, GeneratedValue]
+        private int|null $id = null;
 
-        /** @Column(type="string") */
-        private $name;
+        #[Column]
+        private string $name;
 
-        /** @Column(type="decimal") */
-        private $currentPrice;
+        #[Column]
+        private int $currentPrice;
 
-        public function getCurrentPrice()
+        public function getCurrentPrice(): int
         {
             return $this->currentPrice;
         }
     }
 
-    /** @Entity */
+    #[Entity]
     class OrderItem
     {
-        /** @Id @ManyToOne(targetEntity="Order") */
-        private $order;
+        #[Id, ManyToOne(targetEntity: Order::class)]
+        private Order|null $order = null;
 
-        /** @Id @ManyToOne(targetEntity="Product") */
-        private $product;
+        #[Id, ManyToOne(targetEntity: Product::class)]
+        private Product|null $product = null;
 
-        /** @Column(type="integer") */
-        private $amount = 1;
+        #[Column]
+        private int $amount = 1;
 
-        /** @Column(type="decimal") */
-        private $offeredPrice;
+        #[Column]
+        private int $offeredPrice;
 
-        public function __construct(Order $order, Product $product, $amount = 1)
+        public function __construct(Order $order, Product $product, int $amount = 1)
         {
             $this->order = $order;
             $this->product = $product;

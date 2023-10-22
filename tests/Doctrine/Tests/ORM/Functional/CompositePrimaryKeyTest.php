@@ -1,38 +1,44 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional;
-use Doctrine\ORM\ORMException;
+
+use Doctrine\ORM\Exception\MissingIdentifierField;
+use Doctrine\ORM\Exception\UnrecognizedIdentifierFields;
 use Doctrine\ORM\Query\QueryException;
+use Doctrine\Tests\IterableTester;
 use Doctrine\Tests\Models\Navigation\NavCountry;
+use Doctrine\Tests\Models\Navigation\NavPhotos;
 use Doctrine\Tests\Models\Navigation\NavPointOfInterest;
 use Doctrine\Tests\Models\Navigation\NavTour;
-use Doctrine\Tests\Models\Navigation\NavPhotos;
 use Doctrine\Tests\Models\Navigation\NavUser;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 class CompositePrimaryKeyTest extends OrmFunctionalTestCase
 {
-    public function setUp()
+    protected function setUp(): void
     {
         $this->useModelSet('navigation');
+
         parent::setUp();
     }
 
-    public function putGermanysBrandenburderTor()
+    public function putGermanysBrandenburderTor(): void
     {
-        $country = new NavCountry("Germany");
+        $country = new NavCountry('Germany');
         $this->_em->persist($country);
-        $poi = new NavPointOfInterest(100, 200, "Brandenburger Tor", $country);
+        $poi = new NavPointOfInterest(100, 200, 'Brandenburger Tor', $country);
         $this->_em->persist($poi);
         $this->_em->flush();
         $this->_em->clear();
     }
 
-    public function putTripAroundEurope()
+    public function putTripAroundEurope(): NavTour
     {
         $poi = $this->_em->find(NavPointOfInterest::class, ['lat' => 100, 'long' => 200]);
 
-        $tour = new NavTour("Trip around Europe");
+        $tour = new NavTour('Trip around Europe');
         $tour->addPointOfInterest($poi);
 
         $this->_em->persist($tour);
@@ -42,27 +48,25 @@ class CompositePrimaryKeyTest extends OrmFunctionalTestCase
         return $tour;
     }
 
-    public function testPersistCompositePkEntity()
+    public function testPersistCompositePkEntity(): void
     {
         $this->putGermanysBrandenburderTor();
 
         $poi = $this->_em->find(NavPointOfInterest::class, ['lat' => 100, 'long' => 200]);
 
-        $this->assertInstanceOf(NavPointOfInterest::class, $poi);
-        $this->assertEquals(100, $poi->getLat());
-        $this->assertEquals(200, $poi->getLong());
-        $this->assertEquals('Brandenburger Tor', $poi->getName());
+        self::assertInstanceOf(NavPointOfInterest::class, $poi);
+        self::assertEquals(100, $poi->getLat());
+        self::assertEquals(200, $poi->getLong());
+        self::assertEquals('Brandenburger Tor', $poi->getName());
     }
 
-    /**
-     * @group DDC-1651
-     */
-    public function testSetParameterCompositeKeyObject()
+    /** @group DDC-1651 */
+    public function testSetParameterCompositeKeyObject(): void
     {
         $this->putGermanysBrandenburderTor();
 
-        $poi = $this->_em->find(NavPointOfInterest::class, ['lat' => 100, 'long' => 200]);
-        $photo = new NavPhotos($poi, "asdf");
+        $poi   = $this->_em->find(NavPointOfInterest::class, ['lat' => 100, 'long' => 200]);
+        $photo = new NavPhotos($poi, 'asdf');
         $this->_em->persist($photo);
         $this->_em->flush();
         $this->_em->clear();
@@ -75,93 +79,102 @@ class CompositePrimaryKeyTest extends OrmFunctionalTestCase
         $sql = $this->_em->createQuery($dql)->getSQL();
     }
 
-    public function testIdentityFunctionWithCompositePrimaryKey()
+    public function testIdentityFunctionWithCompositePrimaryKey(): void
     {
         $this->putGermanysBrandenburderTor();
 
-        $poi    = $this->_em->find(NavPointOfInterest::class, ['lat' => 100, 'long' => 200]);
-        $photo  = new NavPhotos($poi, "asdf");
+        $poi   = $this->_em->find(NavPointOfInterest::class, ['lat' => 100, 'long' => 200]);
+        $photo = new NavPhotos($poi, 'asdf');
         $this->_em->persist($photo);
         $this->_em->flush();
         $this->_em->clear();
 
         $dql    = "SELECT IDENTITY(p.poi, 'long') AS long, IDENTITY(p.poi, 'lat') AS lat FROM Doctrine\Tests\Models\Navigation\NavPhotos p";
-        $result = $this->_em->createQuery($dql)->getResult();
+        $query  = $this->_em->createQuery($dql);
+        $result = $query->getResult();
 
-        $this->assertCount(1, $result);
-        $this->assertEquals(200, $result[0]['long']);
-        $this->assertEquals(100, $result[0]['lat']);
+        self::assertCount(1, $result);
+        self::assertEquals(200, $result[0]['long']);
+        self::assertEquals(100, $result[0]['lat']);
+
+        $this->_em->clear();
+
+        IterableTester::assertResultsAreTheSame($query);
     }
 
-    public function testManyToManyCompositeRelation()
+    public function testManyToManyCompositeRelation(): void
     {
         $this->putGermanysBrandenburderTor();
         $tour = $this->putTripAroundEurope();
 
         $tour = $this->_em->find(NavTour::class, $tour->getId());
 
-        $this->assertEquals(1, count($tour->getPointOfInterests()));
+        self::assertCount(1, $tour->getPointOfInterests());
     }
 
-    public function testCompositeDqlEagerFetching()
+    public function testCompositeDqlEagerFetching(): void
     {
         $this->putGermanysBrandenburderTor();
         $this->putTripAroundEurope();
 
-        $dql = 'SELECT t, p, c FROM Doctrine\Tests\Models\Navigation\NavTour t ' .
+        $dql   = 'SELECT t, p, c FROM Doctrine\Tests\Models\Navigation\NavTour t ' .
                'INNER JOIN t.pois p INNER JOIN p.country c';
         $tours = $this->_em->createQuery($dql)->getResult();
 
-        $this->assertEquals(1, count($tours));
+        $query = $this->_em->createQuery($dql);
+        $tours = $query->getResult();
+
+        self::assertCount(1, $tours);
 
         $pois = $tours[0]->getPointOfInterests();
 
-        $this->assertEquals(1, count($pois));
-        $this->assertEquals('Brandenburger Tor', $pois[0]->getName());
+        self::assertCount(1, $pois);
+        self::assertEquals('Brandenburger Tor', $pois[0]->getName());
     }
 
-    public function testCompositeCollectionMemberExpression()
+    public function testCompositeCollectionMemberExpression(): void
     {
-        $this->markTestSkipped('How to test this?');
+        self::markTestSkipped('How to test this?');
 
         $this->putGermanysBrandenburderTor();
         $this->putTripAroundEurope();
 
-        $dql = 'SELECT t FROM Doctrine\Tests\Models\Navigation\NavTour t, Doctrine\Tests\Models\Navigation\NavPointOfInterest p ' .
+        $dql   = 'SELECT t FROM Doctrine\Tests\Models\Navigation\NavTour t, Doctrine\Tests\Models\Navigation\NavPointOfInterest p ' .
                'WHERE p MEMBER OF t.pois';
         $tours = $this->_em->createQuery($dql)
                            ->getResult();
 
-        $this->assertEquals(1, count($tours));
+        self::assertCount(1, $tours);
+
+        $this->_em->clear();
+
+        IterableTester::assertResultsAreTheSame($query);
     }
 
-    public function testSpecifyUnknownIdentifierPrimaryKeyFails()
+    public function testSpecifyUnknownIdentifierPrimaryKeyFails(): void
     {
-        $this->expectException(ORMException::class);
+        $this->expectException(MissingIdentifierField::class);
         $this->expectExceptionMessage('The identifier long is missing for a query of Doctrine\Tests\Models\Navigation\NavPointOfInterest');
 
         $poi = $this->_em->find(NavPointOfInterest::class, ['key1' => 100]);
     }
 
-    public function testUnrecognizedIdentifierFieldsOnGetReference()
+    public function testUnrecognizedIdentifierFieldsOnGetReference(): void
     {
-        $this->expectException(ORMException::class);
-        $this->expectExceptionMessage("Unrecognized identifier fields: 'key1'");
+        $this->expectException(UnrecognizedIdentifierFields::class);
+        $this->expectExceptionMessage('Unrecognized identifier fields: "key1"');
 
-        $poi = $this->_em->getReference(NavPointOfInterest::class, ['lat' => 10, 'long' => 20, 'key1' => 100]
-        );
+        $poi = $this->_em->getReference(NavPointOfInterest::class, ['lat' => 10, 'long' => 20, 'key1' => 100]);
     }
 
-    /**
-     * @group DDC-1939
-     */
-    public function testDeleteCompositePersistentCollection()
+    /** @group DDC-1939 */
+    public function testDeleteCompositePersistentCollection(): void
     {
         $this->putGermanysBrandenburderTor();
 
         $poi = $this->_em->find(NavPointOfInterest::class, ['lat' => 100, 'long' => 200]);
-        $poi->addVisitor(new NavUser("test1"));
-        $poi->addVisitor(new NavUser("test2"));
+        $poi->addVisitor(new NavUser('test1'));
+        $poi->addVisitor(new NavUser('test2'));
 
         $this->_em->flush();
 
@@ -171,6 +184,6 @@ class CompositePrimaryKeyTest extends OrmFunctionalTestCase
         $this->_em->clear();
 
         $poi = $this->_em->find(NavPointOfInterest::class, ['lat' => 100, 'long' => 200]);
-        $this->assertEquals(0, count($poi->getVisitors()));
+        self::assertCount(0, $poi->getVisitors());
     }
 }

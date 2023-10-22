@@ -1,27 +1,28 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-/**
- * @group DDC-1436
- */
-class DDC1436Test extends \Doctrine\Tests\OrmFunctionalTestCase
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\ManyToOne;
+use Doctrine\Tests\OrmFunctionalTestCase;
+
+/** @group DDC-1436 */
+class DDC1436Test extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
 
-        try {
-            $this->_schemaTool->createSchema(
-                [
-                $this->_em->getClassMetadata(DDC1436Page::class),
-                ]
-            );
-        } catch (\Exception $ignored) {
-        }
+        $this->createSchemaForModels(DDC1436Page::class);
     }
 
-    public function testIdentityMap()
+    public function testIdentityMap(): void
     {
         // fixtures
         $parent = null;
@@ -31,6 +32,7 @@ class DDC1436Test extends \Doctrine\Tests\OrmFunctionalTestCase
             $this->_em->persist($page);
             $parent = $page;
         }
+
         $this->_em->flush();
         $this->_em->clear();
 
@@ -42,49 +44,46 @@ class DDC1436Test extends \Doctrine\Tests\OrmFunctionalTestCase
                 ->setParameter('id', $id)
                 ->getOneOrNullResult();
 
-        $this->assertInstanceOf(DDC1436Page::class, $page);
+        self::assertInstanceOf(DDC1436Page::class, $page);
 
         // step 2
         $page = $this->_em->find(DDC1436Page::class, $id);
-        $this->assertInstanceOf(DDC1436Page::class, $page);
-        $this->assertInstanceOf(DDC1436Page::class, $page->getParent());
-        $this->assertInstanceOf(DDC1436Page::class, $page->getParent()->getParent());
+        self::assertInstanceOf(DDC1436Page::class, $page);
+        self::assertInstanceOf(DDC1436Page::class, $page->getParent());
+        self::assertInstanceOf(DDC1436Page::class, $page->getParent()->getParent());
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC1436Page
 {
     /**
+     * @var int
      * @Id
      * @GeneratedValue
      * @Column(type="integer", name="id")
      */
     protected $id;
+
     /**
+     * @var DDC1436Page
      * @ManyToOne(targetEntity="DDC1436Page")
      * @JoinColumn(name="pid", referencedColumnName="id")
      */
     protected $parent;
 
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
 
-    /**
-     * @return DDC1436Page
-     */
-    public function getParent()
+    public function getParent(): DDC1436Page
     {
         return $this->parent;
     }
 
-    public function setParent($parent)
+    public function setParent($parent): void
     {
         $this->parent = $parent;
     }
 }
-

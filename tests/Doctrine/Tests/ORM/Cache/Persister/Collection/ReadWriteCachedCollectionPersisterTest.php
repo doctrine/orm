@@ -1,305 +1,292 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Cache\Persister\Collection;
 
+use Doctrine\ORM\Cache\CollectionCacheKey;
 use Doctrine\ORM\Cache\ConcurrentRegion;
 use Doctrine\ORM\Cache\Lock;
-use Doctrine\ORM\Cache\Region;
-use Doctrine\ORM\EntityManager;
-use Doctrine\Tests\Models\Cache\State;
-use Doctrine\ORM\Cache\CollectionCacheKey;
-use Doctrine\ORM\Persisters\Collection\CollectionPersister;
+use Doctrine\ORM\Cache\Persister\Collection\AbstractCollectionPersister;
 use Doctrine\ORM\Cache\Persister\Collection\ReadWriteCachedCollectionPersister;
+use Doctrine\ORM\Cache\Region;
+use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Persisters\Collection\CollectionPersister;
+use Doctrine\Tests\Models\Cache\State;
+use ReflectionProperty;
 
-/**
- * @group DDC-2183
- */
-class ReadWriteCachedCollectionPersisterTest extends AbstractCollectionPersisterTest
+/** @group DDC-2183 */
+class ReadWriteCachedCollectionPersisterTest extends CollectionPersisterTestCase
 {
-    protected $regionMockMethods = [
-        'getName',
-        'contains',
-        'get',
-        'getMultiple',
-        'put',
-        'evict',
-        'evictAll',
-        'lock',
-        'unlock',
-    ];
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function createPersister(EntityManager $em, CollectionPersister $persister, Region $region, array $mapping)
+    protected function createPersister(EntityManagerInterface $em, CollectionPersister $persister, Region $region, array $mapping): AbstractCollectionPersister
     {
         return new ReadWriteCachedCollectionPersister($persister, $region, $em, $mapping);
     }
 
-    /**
-     * @return \Doctrine\ORM\Cache\Region
-     */
-    protected function createRegion()
+    protected function createRegion(): Region
     {
-        return $this->getMockBuilder(ConcurrentRegion::class)
-                    ->setMethods($this->regionMockMethods)
-                    ->getMock();
+        return $this->createMock(ConcurrentRegion::class);
     }
 
-    public function testDeleteShouldLockItem()
+    public function testDeleteShouldLockItem(): void
     {
-        $entity     = new State("Foo");
+        $entity     = new State('Foo');
         $lock       = Lock::createLockRead();
         $persister  = $this->createPersisterDefault();
         $collection = $this->createCollection($entity);
-        $key        = new CollectionCacheKey(State::class, 'cities', ['id'=>1]);
+        $key        = new CollectionCacheKey(State::class, 'cities', ['id' => 1]);
 
-        $this->region->expects($this->once())
+        $this->region->expects(self::once())
             ->method('lock')
-            ->with($this->equalTo($key))
-            ->will($this->returnValue($lock));
+            ->with(self::equalTo($key))
+            ->willReturn($lock);
 
-        $this->em->getUnitOfWork()->registerManaged($entity, ['id'=>1], ['id'=>1, 'name'=>'Foo']);
+        $this->em->getUnitOfWork()->registerManaged($entity, ['id' => 1], ['id' => 1, 'name' => 'Foo']);
 
         $persister->delete($collection);
     }
 
-    public function testUpdateShouldLockItem()
+    public function testUpdateShouldLockItem(): void
     {
-        $entity     = new State("Foo");
+        $entity     = new State('Foo');
         $lock       = Lock::createLockRead();
         $persister  = $this->createPersisterDefault();
         $collection = $this->createCollection($entity);
-        $key        = new CollectionCacheKey(State::class, 'cities', ['id'=>1]);
+        $key        = new CollectionCacheKey(State::class, 'cities', ['id' => 1]);
 
-        $this->region->expects($this->once())
+        $this->region->expects(self::once())
             ->method('lock')
-            ->with($this->equalTo($key))
-            ->will($this->returnValue($lock));
+            ->with(self::equalTo($key))
+            ->willReturn($lock);
 
-        $this->em->getUnitOfWork()->registerManaged($entity, ['id'=>1], ['id'=>1, 'name'=>'Foo']);
+        $this->em->getUnitOfWork()->registerManaged($entity, ['id' => 1], ['id' => 1, 'name' => 'Foo']);
 
         $persister->update($collection);
     }
 
-    public function testUpdateTransactionRollBackShouldEvictItem()
+    public function testUpdateTransactionRollBackShouldEvictItem(): void
     {
-        $entity     = new State("Foo");
+        $entity     = new State('Foo');
         $lock       = Lock::createLockRead();
         $persister  = $this->createPersisterDefault();
         $collection = $this->createCollection($entity);
-        $key        = new CollectionCacheKey(State::class, 'cities', ['id'=>1]);
+        $key        = new CollectionCacheKey(State::class, 'cities', ['id' => 1]);
 
-        $this->region->expects($this->once())
+        $this->region->expects(self::once())
             ->method('lock')
-            ->with($this->equalTo($key))
-            ->will($this->returnValue($lock));
+            ->with(self::equalTo($key))
+            ->willReturn($lock);
 
-        $this->region->expects($this->once())
+        $this->region->expects(self::once())
             ->method('evict')
-            ->with($this->equalTo($key))
-            ->will($this->returnValue($lock));
+            ->with(self::equalTo($key))
+            ->willReturn(true);
 
-        $this->em->getUnitOfWork()->registerManaged($entity, ['id'=>1], ['id'=>1, 'name'=>'Foo']);
+        $this->em->getUnitOfWork()->registerManaged($entity, ['id' => 1], ['id' => 1, 'name' => 'Foo']);
 
         $persister->update($collection);
         $persister->afterTransactionRolledBack();
     }
 
-    public function testDeleteTransactionRollBackShouldEvictItem()
+    public function testDeleteTransactionRollBackShouldEvictItem(): void
     {
-        $entity     = new State("Foo");
+        $entity     = new State('Foo');
         $lock       = Lock::createLockRead();
         $persister  = $this->createPersisterDefault();
         $collection = $this->createCollection($entity);
-        $key        = new CollectionCacheKey(State::class, 'cities', ['id'=>1]);
+        $key        = new CollectionCacheKey(State::class, 'cities', ['id' => 1]);
 
-        $this->region->expects($this->once())
+        $this->region->expects(self::once())
             ->method('lock')
-            ->with($this->equalTo($key))
-            ->will($this->returnValue($lock));
+            ->with(self::equalTo($key))
+            ->willReturn($lock);
 
-        $this->region->expects($this->once())
+        $this->region->expects(self::once())
             ->method('evict')
-            ->with($this->equalTo($key));
+            ->with(self::equalTo($key))
+            ->willReturn(true);
 
-        $this->em->getUnitOfWork()->registerManaged($entity, ['id'=>1], ['id'=>1, 'name'=>'Foo']);
+        $this->em->getUnitOfWork()->registerManaged($entity, ['id' => 1], ['id' => 1, 'name' => 'Foo']);
 
         $persister->delete($collection);
         $persister->afterTransactionRolledBack();
     }
 
-    public function testTransactionRollBackDeleteShouldClearQueue()
+    public function testTransactionRollBackDeleteShouldClearQueue(): void
     {
-        $entity     = new State("Foo");
+        $entity     = new State('Foo');
         $lock       = Lock::createLockRead();
         $persister  = $this->createPersisterDefault();
         $collection = $this->createCollection($entity);
-        $key        = new CollectionCacheKey(State::class, 'cities', ['id'=>1]);
-        $property   = new \ReflectionProperty(ReadWriteCachedCollectionPersister::class, 'queuedCache');
+        $key        = new CollectionCacheKey(State::class, 'cities', ['id' => 1]);
+        $property   = new ReflectionProperty(ReadWriteCachedCollectionPersister::class, 'queuedCache');
 
         $property->setAccessible(true);
 
-        $this->region->expects($this->once())
+        $this->region->expects(self::once())
             ->method('lock')
-            ->with($this->equalTo($key))
-            ->will($this->returnValue($lock));
+            ->with(self::equalTo($key))
+            ->willReturn($lock);
 
-        $this->region->expects($this->once())
+        $this->region->expects(self::once())
             ->method('evict')
-            ->with($this->equalTo($key));
+            ->with(self::equalTo($key))
+            ->willReturn(true);
 
-        $this->em->getUnitOfWork()->registerManaged($entity, ['id'=>1], ['id'=>1, 'name'=>'Foo']);
+        $this->em->getUnitOfWork()->registerManaged($entity, ['id' => 1], ['id' => 1, 'name' => 'Foo']);
 
         $persister->delete($collection);
 
-        $this->assertCount(1, $property->getValue($persister));
+        self::assertCount(1, $property->getValue($persister));
 
         $persister->afterTransactionRolledBack();
 
-        $this->assertCount(0, $property->getValue($persister));
+        self::assertCount(0, $property->getValue($persister));
     }
 
-    public function testTransactionRollBackUpdateShouldClearQueue()
+    public function testTransactionRollBackUpdateShouldClearQueue(): void
     {
-        $entity     = new State("Foo");
+        $entity     = new State('Foo');
         $lock       = Lock::createLockRead();
         $persister  = $this->createPersisterDefault();
         $collection = $this->createCollection($entity);
-        $key        = new CollectionCacheKey(State::class, 'cities', ['id'=>1]);
-        $property   = new \ReflectionProperty(ReadWriteCachedCollectionPersister::class, 'queuedCache');
+        $key        = new CollectionCacheKey(State::class, 'cities', ['id' => 1]);
+        $property   = new ReflectionProperty(ReadWriteCachedCollectionPersister::class, 'queuedCache');
 
         $property->setAccessible(true);
 
-        $this->region->expects($this->once())
+        $this->region->expects(self::once())
             ->method('lock')
-            ->with($this->equalTo($key))
-            ->will($this->returnValue($lock));
+            ->with(self::equalTo($key))
+            ->willReturn($lock);
 
-        $this->region->expects($this->once())
+        $this->region->expects(self::once())
             ->method('evict')
-            ->with($this->equalTo($key));
+            ->with(self::equalTo($key))
+            ->willReturn(true);
 
-        $this->em->getUnitOfWork()->registerManaged($entity, ['id'=>1], ['id'=>1, 'name'=>'Foo']);
+        $this->em->getUnitOfWork()->registerManaged($entity, ['id' => 1], ['id' => 1, 'name' => 'Foo']);
 
         $persister->update($collection);
 
-        $this->assertCount(1, $property->getValue($persister));
+        self::assertCount(1, $property->getValue($persister));
 
         $persister->afterTransactionRolledBack();
 
-        $this->assertCount(0, $property->getValue($persister));
+        self::assertCount(0, $property->getValue($persister));
     }
 
-    public function testTransactionRollCommitDeleteShouldClearQueue()
+    public function testTransactionRollCommitDeleteShouldClearQueue(): void
     {
-        $entity     = new State("Foo");
+        $entity     = new State('Foo');
         $lock       = Lock::createLockRead();
         $persister  = $this->createPersisterDefault();
         $collection = $this->createCollection($entity);
-        $key        = new CollectionCacheKey(State::class, 'cities', ['id'=>1]);
-        $property   = new \ReflectionProperty(ReadWriteCachedCollectionPersister::class, 'queuedCache');
+        $key        = new CollectionCacheKey(State::class, 'cities', ['id' => 1]);
+        $property   = new ReflectionProperty(ReadWriteCachedCollectionPersister::class, 'queuedCache');
 
         $property->setAccessible(true);
 
-        $this->region->expects($this->once())
+        $this->region->expects(self::once())
             ->method('lock')
-            ->with($this->equalTo($key))
-            ->will($this->returnValue($lock));
+            ->with(self::equalTo($key))
+            ->willReturn($lock);
 
-        $this->region->expects($this->once())
+        $this->region->expects(self::once())
             ->method('evict')
-            ->with($this->equalTo($key));
+            ->with(self::equalTo($key))
+            ->willReturn(true);
 
-        $this->em->getUnitOfWork()->registerManaged($entity, ['id'=>1], ['id'=>1, 'name'=>'Foo']);
+        $this->em->getUnitOfWork()->registerManaged($entity, ['id' => 1], ['id' => 1, 'name' => 'Foo']);
 
         $persister->delete($collection);
 
-        $this->assertCount(1, $property->getValue($persister));
+        self::assertCount(1, $property->getValue($persister));
 
         $persister->afterTransactionComplete();
 
-        $this->assertCount(0, $property->getValue($persister));
+        self::assertCount(0, $property->getValue($persister));
     }
 
-    public function testTransactionRollCommitUpdateShouldClearQueue()
+    public function testTransactionRollCommitUpdateShouldClearQueue(): void
     {
-        $entity     = new State("Foo");
+        $entity     = new State('Foo');
         $lock       = Lock::createLockRead();
         $persister  = $this->createPersisterDefault();
         $collection = $this->createCollection($entity);
-        $key        = new CollectionCacheKey(State::class, 'cities', ['id'=>1]);
-        $property   = new \ReflectionProperty(ReadWriteCachedCollectionPersister::class, 'queuedCache');
+        $key        = new CollectionCacheKey(State::class, 'cities', ['id' => 1]);
+        $property   = new ReflectionProperty(ReadWriteCachedCollectionPersister::class, 'queuedCache');
 
         $property->setAccessible(true);
 
-        $this->region->expects($this->once())
+        $this->region->expects(self::once())
             ->method('lock')
-            ->with($this->equalTo($key))
-            ->will($this->returnValue($lock));
+            ->with(self::equalTo($key))
+            ->willReturn($lock);
 
-        $this->region->expects($this->once())
+        $this->region->expects(self::once())
             ->method('evict')
-            ->with($this->equalTo($key));
+            ->with(self::equalTo($key))
+            ->willReturn(true);
 
-        $this->em->getUnitOfWork()->registerManaged($entity, ['id'=>1], ['id'=>1, 'name'=>'Foo']);
+        $this->em->getUnitOfWork()->registerManaged($entity, ['id' => 1], ['id' => 1, 'name' => 'Foo']);
 
         $persister->update($collection);
 
-        $this->assertCount(1, $property->getValue($persister));
+        self::assertCount(1, $property->getValue($persister));
 
         $persister->afterTransactionComplete();
 
-        $this->assertCount(0, $property->getValue($persister));
+        self::assertCount(0, $property->getValue($persister));
     }
 
-    public function testDeleteLockFailureShouldIgnoreQueue()
+    public function testDeleteLockFailureShouldIgnoreQueue(): void
     {
-        $entity     = new State("Foo");
+        $entity     = new State('Foo');
         $persister  = $this->createPersisterDefault();
         $collection = $this->createCollection($entity);
-        $key        = new CollectionCacheKey(State::class, 'cities', ['id'=>1]);
-        $property   = new \ReflectionProperty(ReadWriteCachedCollectionPersister::class, 'queuedCache');
+        $key        = new CollectionCacheKey(State::class, 'cities', ['id' => 1]);
+        $property   = new ReflectionProperty(ReadWriteCachedCollectionPersister::class, 'queuedCache');
 
         $property->setAccessible(true);
 
-        $this->region->expects($this->once())
+        $this->region->expects(self::once())
             ->method('lock')
-            ->with($this->equalTo($key))
-            ->will($this->returnValue(null));
+            ->with(self::equalTo($key))
+            ->will(self::returnValue(null));
 
-        $this->collectionPersister->expects($this->once())
+        $this->collectionPersister->expects(self::once())
             ->method('delete')
-            ->with($this->equalTo($collection));
+            ->with(self::identicalTo($collection));
 
-        $this->em->getUnitOfWork()->registerManaged($entity, ['id'=>1], ['id'=>1, 'name'=>'Foo']);
+        $this->em->getUnitOfWork()->registerManaged($entity, ['id' => 1], ['id' => 1, 'name' => 'Foo']);
 
         $persister->delete($collection);
-        $this->assertCount(0, $property->getValue($persister));
+        self::assertCount(0, $property->getValue($persister));
     }
 
-    public function testUpdateLockFailureShouldIgnoreQueue()
+    public function testUpdateLockFailureShouldIgnoreQueue(): void
     {
-        $entity     = new State("Foo");
+        $entity     = new State('Foo');
         $persister  = $this->createPersisterDefault();
         $collection = $this->createCollection($entity);
-        $key        = new CollectionCacheKey(State::class, 'cities', ['id'=>1]);
-        $property   = new \ReflectionProperty(ReadWriteCachedCollectionPersister::class, 'queuedCache');
+        $key        = new CollectionCacheKey(State::class, 'cities', ['id' => 1]);
+        $property   = new ReflectionProperty(ReadWriteCachedCollectionPersister::class, 'queuedCache');
 
         $property->setAccessible(true);
 
-        $this->region->expects($this->once())
+        $this->region->expects(self::once())
             ->method('lock')
-            ->with($this->equalTo($key))
-            ->will($this->returnValue(null));
+            ->with(self::equalTo($key))
+            ->will(self::returnValue(null));
 
-        $this->collectionPersister->expects($this->once())
+        $this->collectionPersister->expects(self::once())
             ->method('update')
-            ->with($this->equalTo($collection));
+            ->with(self::identicalTo($collection));
 
-        $this->em->getUnitOfWork()->registerManaged($entity, ['id'=>1], ['id'=>1, 'name'=>'Foo']);
+        $this->em->getUnitOfWork()->registerManaged($entity, ['id' => 1], ['id' => 1, 'name' => 'Foo']);
 
         $persister->update($collection);
-        $this->assertCount(0, $property->getValue($persister));
+        self::assertCount(0, $property->getValue($persister));
     }
 }

@@ -1,30 +1,32 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\DiscriminatorColumn;
+use Doctrine\ORM\Mapping\DiscriminatorMap;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\InheritanceType;
 use Doctrine\ORM\UnitOfWork;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
-/**
- * @group DDC-1454
- */
-class DDC1454Test extends \Doctrine\Tests\OrmFunctionalTestCase
+use function getrandmax;
+use function random_int;
+
+/** @group DDC-1454 */
+class DDC1454Test extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
 
-        try {
-            $this->_schemaTool->createSchema(
-                [
-                    $this->_em->getClassMetadata(DDC1454File::class),
-                    $this->_em->getClassMetadata(DDC1454Picture::class),
-                ]
-            );
-        } catch (\Exception $ignored) {
-        }
+        $this->createSchemaForModels(DDC1454File::class, DDC1454Picture::class);
     }
 
-    public function testFailingCase()
+    public function testFailingCase(): void
     {
         $pic = new DDC1454Picture();
 
@@ -32,9 +34,7 @@ class DDC1454Test extends \Doctrine\Tests\OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC1454Picture extends DDC1454File
 {
 }
@@ -48,6 +48,7 @@ class DDC1454Picture extends DDC1454File
 class DDC1454File
 {
     /**
+     * @var int
      * @Column(name="file_id", type="integer")
      * @Id
      */
@@ -58,12 +59,8 @@ class DDC1454File
         $this->fileId = random_int(0, getrandmax());
     }
 
-    /**
-     * Get fileId
-     */
-    public function getFileId()
+    public function getFileId(): int
     {
         return $this->fileId;
     }
-
 }

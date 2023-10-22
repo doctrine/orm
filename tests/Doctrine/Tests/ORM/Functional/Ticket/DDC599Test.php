@@ -1,29 +1,41 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-class DDC599Test extends \Doctrine\Tests\OrmFunctionalTestCase
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\DiscriminatorColumn;
+use Doctrine\ORM\Mapping\DiscriminatorMap;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\InheritanceType;
+use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\ManyToOne;
+use Doctrine\ORM\Mapping\OneToMany;
+use Doctrine\Tests\OrmFunctionalTestCase;
+
+class DDC599Test extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
-        //$this->_em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
-        try {
-            $this->_schemaTool->createSchema(
-                [
-                $this->_em->getClassMetadata(DDC599Item::class),
-                $this->_em->getClassMetadata(DDC599Subitem::class),
-                $this->_em->getClassMetadata(DDC599Child::class),
-                ]
+
+            $this->createSchemaForModels(
+                DDC599Item::class,
+                DDC599Subitem::class,
+                DDC599Child::class
             );
-        } catch (\Exception $ignored) {}
     }
 
-    public function testCascadeRemoveOnInheritanceHierarchy()
+    public function testCascadeRemoveOnInheritanceHierarchy(): void
     {
-        $item = new DDC599Subitem;
-        $item->elem = "foo";
-        $child = new DDC599Child;
+        $item          = new DDC599Subitem();
+        $item->elem    = 'foo';
+        $child         = new DDC599Child();
         $child->parent = $item;
         $item->getChildren()->add($child);
         $this->_em->persist($item);
@@ -36,19 +48,18 @@ class DDC599Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->remove($item);
         $this->_em->flush(); // Should not fail
 
-        $this->assertFalse($this->_em->contains($item));
+        self::assertFalse($this->_em->contains($item));
         $children = $item->getChildren();
-        $this->assertFalse($this->_em->contains($children[0]));
+        self::assertFalse($this->_em->contains($children[0]));
 
         $this->_em->clear();
 
-
-        $item2 = new DDC599Subitem;
-        $item2->elem = "bar";
+        $item2       = new DDC599Subitem();
+        $item2->elem = 'bar';
         $this->_em->persist($item2);
         $this->_em->flush();
 
-        $child2 = new DDC599Child;
+        $child2         = new DDC599Child();
         $child2->parent = $item2;
         $item2->getChildren()->add($child2);
         $this->_em->persist($child2);
@@ -57,17 +68,17 @@ class DDC599Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->remove($item2);
         $this->_em->flush(); // should not fail
 
-        $this->assertFalse($this->_em->contains($item));
+        self::assertFalse($this->_em->contains($item));
         $children = $item->getChildren();
-        $this->assertFalse($this->_em->contains($children[0]));
+        self::assertFalse($this->_em->contains($children[0]));
     }
 
-    public function testCascadeRemoveOnChildren()
+    public function testCascadeRemoveOnChildren(): void
     {
         $class = $this->_em->getClassMetadata(DDC599Subitem::class);
 
-        $this->assertArrayHasKey('children', $class->associationMappings);
-        $this->assertTrue($class->associationMappings['children']['isCascadeRemove']);
+        self::assertArrayHasKey('children', $class->associationMappings);
+        self::assertTrue($class->associationMappings['children']['isCascadeRemove']);
     }
 }
 
@@ -80,6 +91,7 @@ class DDC599Test extends \Doctrine\Tests\OrmFunctionalTestCase
 class DDC599Item
 {
     /**
+     * @var int
      * @Id
      * @Column(type="integer")
      * @GeneratedValue(strategy="AUTO")
@@ -87,38 +99,38 @@ class DDC599Item
     public $id;
 
     /**
+     * @psalm-var Collection<int, DDC599Child>
      * @OneToMany(targetEntity="DDC599Child", mappedBy="parent", cascade={"remove"})
      */
     protected $children;
 
     public function __construct()
     {
-        $this->children = new \Doctrine\Common\Collections\ArrayCollection;
+        $this->children = new ArrayCollection();
     }
 
-    public function getChildren()
+    /** @psalm-return Collection<int, DDC599Child> */
+    public function getChildren(): Collection
     {
         return $this->children;
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC599Subitem extends DDC599Item
 {
     /**
-     * @Column(type="string")
+     * @var string
+     * @Column(type="string", length=255)
      */
     public $elem;
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC599Child
 {
     /**
+     * @var int
      * @Id
      * @Column(type="integer")
      * @GeneratedValue(strategy="AUTO")
@@ -126,6 +138,7 @@ class DDC599Child
     public $id;
 
     /**
+     * @var DDC599Item
      * @ManyToOne(targetEntity="DDC599Item", inversedBy="children")
      * @JoinColumn(name="parentId", referencedColumnName="id")
      */

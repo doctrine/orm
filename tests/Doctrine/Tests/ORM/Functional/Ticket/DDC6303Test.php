@@ -1,31 +1,41 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-use Doctrine\ORM\Tools\ToolsException;
+use Doctrine\ORM\Exception\ORMException;
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\DiscriminatorColumn;
+use Doctrine\ORM\Mapping\DiscriminatorMap;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\InheritanceType;
+use Doctrine\ORM\Mapping\Table;
+use Doctrine\ORM\OptimisticLockException;
+use Doctrine\Persistence\Mapping\MappingException;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-/**
- * @group #6303
- */
+use function array_keys;
+use function array_walk;
+use function count;
+
+/** @group #6303 */
 class DDC6303Test extends OrmFunctionalTestCase
 {
-    public function setUp() : void
+    protected function setUp(): void
     {
         parent::setUp();
 
-        try {
-            $this->_schemaTool->createSchema([
-                $this->_em->getClassMetadata(DDC6303BaseClass::class),
-                $this->_em->getClassMetadata(DDC6303ChildA::class),
-                $this->_em->getClassMetadata(DDC6303ChildB::class),
-            ]);
-        } catch (ToolsException $ignored) {
-        }
+        $this->createSchemaForModels(
+            DDC6303BaseClass::class,
+            DDC6303ChildA::class,
+            DDC6303ChildB::class
+        );
     }
 
-    public function testMixedTypeHydratedCorrectlyInJoinedInheritance() : void
+    public function testMixedTypeHydratedCorrectlyInJoinedInheritance(): void
     {
         // DDC6303ChildA and DDC6303ChildB have an inheritance from DDC6303BaseClass,
         // but one has a string originalData and the second has an array, since the fields
@@ -34,10 +44,9 @@ class DDC6303Test extends OrmFunctionalTestCase
             'a' => new DDC6303ChildA('a', 'authorized'),
             'b' => new DDC6303ChildB('b', ['accepted', 'authorized']),
         ]);
-
     }
 
-    public function testEmptyValuesInJoinedInheritance() : void
+    public function testEmptyValuesInJoinedInheritance(): void
     {
         $this->assertHydratedEntitiesSameToPersistedOnes([
             'stringEmpty' => new DDC6303ChildA('stringEmpty', ''),
@@ -49,17 +58,17 @@ class DDC6303Test extends OrmFunctionalTestCase
     /**
      * @param DDC6303BaseClass[] $persistedEntities indexed by identifier
      *
-     * @throws \Doctrine\Common\Persistence\Mapping\MappingException
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
+     * @throws MappingException
+     * @throws ORMException
+     * @throws OptimisticLockException
      */
-    private function assertHydratedEntitiesSameToPersistedOnes(array $persistedEntities) : void
+    private function assertHydratedEntitiesSameToPersistedOnes(array $persistedEntities): void
     {
         array_walk($persistedEntities, [$this->_em, 'persist']);
         $this->_em->flush();
         $this->_em->clear();
 
-        /* @var $entities DDC6303BaseClass[] */
+        /** @var DDC6303BaseClass[] $entities */
         $entities = $this
             ->_em
             ->getRepository(DDC6303BaseClass::class)
@@ -90,16 +99,28 @@ class DDC6303Test extends OrmFunctionalTestCase
  */
 abstract class DDC6303BaseClass
 {
-    /** @Id @Column(type="string") @GeneratedValue(strategy="NONE") */
+    /**
+     * @var string
+     * @Id
+     * @Column(type="string", length=255)
+     * @GeneratedValue(strategy="NONE")
+     */
     public $id;
 }
 
-/** @Entity @Table */
+/**
+ * @Entity
+ * @Table
+ */
 class DDC6303ChildA extends DDC6303BaseClass
 {
-    /** @Column(type="string") */
+    /**
+     * @var mixed
+     * @Column(type="string", length=255)
+     */
     private $originalData;
 
+    /** @param mixed $originalData */
     public function __construct(string $id, $originalData)
     {
         $this->id           = $id;
@@ -107,12 +128,19 @@ class DDC6303ChildA extends DDC6303BaseClass
     }
 }
 
-/** @Entity @Table */
+/**
+ * @Entity
+ * @Table
+ */
 class DDC6303ChildB extends DDC6303BaseClass
 {
-    /** @Column(type="simple_array", nullable=true) */
+    /**
+     * @var mixed[]
+     * @Column(type="simple_array", nullable=true)
+     */
     private $originalData;
 
+    /** @param mixed[] $originalData */
     public function __construct(string $id, array $originalData)
     {
         $this->id           = $id;

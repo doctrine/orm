@@ -1,17 +1,27 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\ManyToMany;
+use Doctrine\ORM\Mapping\ManyToOne;
+use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\ORMInvalidArgumentException;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
+use function sprintf;
+
 final class GH6029Test extends OrmFunctionalTestCase
 {
-    /**
-     * {@inheritDoc}
-     */
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -30,9 +40,9 @@ final class GH6029Test extends OrmFunctionalTestCase
      * Verifies that when wrong entity is persisted via relationship field, the error message does not correctly state
      * the expected class name.
      *
-     * @group 6029
+     * @group GH-6029
      */
-    public function testManyToManyAssociation() : void
+    public function testManyToManyAssociation(): void
     {
         $user = new GH6029User();
         $user->groups->add(new GH6029Group2());
@@ -55,9 +65,9 @@ final class GH6029Test extends OrmFunctionalTestCase
      * Verifies that when wrong entity is persisted via relationship field, the error message does not correctly state
      * the expected class name.
      *
-     * @group 6029
+     * @group GH-6029
      */
-    public function testOneToManyAssociation() : void
+    public function testOneToManyAssociation(): void
     {
         $product = new GH6029Product();
         $product->features->add(new GH6029Group2());
@@ -80,10 +90,18 @@ final class GH6029Test extends OrmFunctionalTestCase
 /** @Entity */
 class GH6029User
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     */
     public $id;
 
-    /** @ManyToMany(targetEntity=GH6029Group::class, cascade={"all"}) */
+    /**
+     * @psalm-var Collection<int, GH6029Group>
+     * @ManyToMany(targetEntity=GH6029Group::class, cascade={"all"})
+     */
     public $groups;
 
     public function __construct()
@@ -95,24 +113,40 @@ class GH6029User
 /** @Entity */
 class GH6029Group
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     */
     public $id;
 }
 
 /** @Entity */
 class GH6029Group2
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     */
     public $id;
 }
 
 /** @Entity */
 class GH6029Product
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     */
     public $id;
 
     /**
+     * @psalm-var Collection<int,GH6029Feature>
      * @OneToMany(targetEntity=GH6029Feature::class, mappedBy="product", cascade={"all"})
      */
     public $features;
@@ -126,10 +160,16 @@ class GH6029Product
 /** @Entity */
 class GH6029Feature
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     */
     public $id;
 
     /**
+     * @var GH6029Product
      * @ManyToOne(targetEntity=GH6029Product::class, inversedBy="features")
      * @JoinColumn(name="product_id", referencedColumnName="id")
      */

@@ -4,15 +4,21 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-use Doctrine\Common\Cache\ClearableCache;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\StringType;
 use Doctrine\DBAL\Types\Type;
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Assert;
+use Psr\Cache\CacheItemInterface;
+use Symfony\Component\Cache\Adapter\ArrayAdapter;
+use Symfony\Component\Cache\CacheItem;
+
 use function array_map;
-use function assert;
 use function is_string;
 use function iterator_to_array;
 
@@ -45,7 +51,7 @@ class GH7820Test extends OrmFunctionalTestCase
         'Don\'t know, don\'t know, don\'t know...',
     ];
 
-    protected function setUp() : void
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -65,53 +71,87 @@ class GH7820Test extends OrmFunctionalTestCase
         $this->_em->flush();
     }
 
-    public function testWillFindSongsInPaginator() : void
+    public function testWillFindSongsInPaginator(): void
     {
-        $query = $this->_em->getRepository(GH7820Line::class)
-            ->createQueryBuilder('l')
-            ->orderBy('l.lineNumber', Criteria::ASC);
+        $lines = $this->fetchSongLinesWithPaginator();
 
-        self::assertSame(
-            self::SONG,
-            array_map(static function (GH7820Line $line) : string {
-                return $line->toString();
-            }, iterator_to_array(new Paginator($query)))
-        );
+        self::assertSame(self::SONG, $lines);
     }
 
     /** @group GH7837 */
-    public function testWillFindSongsInPaginatorEvenWithCachedQueryParsing() : void
+    public function testWillFindSongsInPaginatorEvenWithCachedQueryParsing(): void
     {
-        $cache = $this->_em->getConfiguration()
-            ->getQueryCacheImpl();
+        // Enable the query cache
+        $this->_em->getConfiguration()
+            ->getQueryCache()
+            ->clear();
 
-        assert($cache instanceof ClearableCache);
+        // Fetch song lines with the paginator, also priming the query cache
+        $lines = $this->fetchSongLinesWithPaginator();
+        self::assertSame(self::SONG, $lines, 'Expected to return expected data before query cache is populated with DQL -> SQL translation. Were SQL parameters translated?');
 
-        $cache->deleteAll();
+        // Fetch song lines again
+        $lines = $this->fetchSongLinesWithPaginator();
+        self::assertSame(self::SONG, $lines, 'Expected to return expected data even when DQL -> SQL translation is present in cache. Were SQL parameters translated again?');
+    }
 
+    public function testPaginatorDoesNotForceCacheToUpdateEntries(): void
+    {
+        $this->_em->getConfiguration()->setQueryCache(new class extends ArrayAdapter {
+            public function save(CacheItemInterface $item): bool
+            {
+                Assert::assertFalse($this->hasItem($item->getKey()), 'The cache should not have to overwrite the entry');
+
+                return parent::save($item);
+            }
+        });
+
+        // "Prime" the cache (in fact, that should not even happen)
+        $this->fetchSongLinesWithPaginator();
+
+        // Make sure we can query again without overwriting the cache
+        $this->fetchSongLinesWithPaginator();
+    }
+
+    public function testPaginatorQueriesWillBeCached(): void
+    {
+        $cache = new class extends ArrayAdapter {
+            /** @var bool */
+            private $failOnCacheMiss = false;
+
+            public function failOnCacheMiss(): void
+            {
+                $this->failOnCacheMiss = true;
+            }
+
+            public function getItem($key): CacheItem
+            {
+                $item = parent::getItem($key);
+                Assert::assertTrue(! $this->failOnCacheMiss || $item->isHit(), 'cache was missed');
+
+                return $item;
+            }
+        };
+        $this->_em->getConfiguration()->setQueryCache($cache);
+
+        // Prime the cache
+        $this->fetchSongLinesWithPaginator();
+
+        $cache->failOnCacheMiss();
+
+        $this->fetchSongLinesWithPaginator();
+    }
+
+    private function fetchSongLinesWithPaginator(): array
+    {
         $query = $this->_em->getRepository(GH7820Line::class)
             ->createQueryBuilder('l')
-            ->orderBy('l.lineNumber', Criteria::ASC);
+            ->orderBy('l.lineNumber', Criteria::ASC)
+            ->setMaxResults(100);
 
-        self::assertSame(
-            self::SONG,
-            array_map(static function (GH7820Line $line) : string {
-                return $line->toString();
-            }, iterator_to_array(new Paginator($query))),
-            'Expected to return expected data before query cache is populated with DQL -> SQL translation. Were SQL parameters translated?'
-        );
-
-        $query = $this->_em->getRepository(GH7820Line::class)
-            ->createQueryBuilder('l')
-            ->orderBy('l.lineNumber', Criteria::ASC);
-
-        self::assertSame(
-            self::SONG,
-            array_map(static function (GH7820Line $line) : string {
-                return $line->toString();
-            }, iterator_to_array(new Paginator($query))),
-            'Expected to return expected data even when DQL -> SQL translation is present in cache. Were SQL parameters translated again?'
-        );
+        return array_map(static function (GH7820Line $line): string {
+            return $line->toString();
+        }, iterator_to_array(new Paginator($query)));
     }
 }
 
@@ -121,7 +161,7 @@ class GH7820Line
     /**
      * @var GH7820LineText
      * @Id()
-     * @Column(type="Doctrine\Tests\ORM\Functional\Ticket\GH7820LineTextType")
+     * @Column(type="Doctrine\Tests\ORM\Functional\Ticket\GH7820LineTextType", length=255)
      */
     private $text;
 
@@ -137,7 +177,7 @@ class GH7820Line
         $this->lineNumber = $index;
     }
 
-    public function toString() : string
+    public function toString(): string
     {
         return $this->text->getText();
     }
@@ -153,17 +193,17 @@ final class GH7820LineText
         $this->text = $text;
     }
 
-    public static function fromText(string $text) : self
+    public static function fromText(string $text): self
     {
         return new self($text);
     }
 
-    public function getText() : string
+    public function getText(): string
     {
         return $this->text;
     }
 
-    public function __toString() : string
+    public function __toString(): string
     {
         return 'Line: ' . $this->text;
     }
@@ -171,6 +211,9 @@ final class GH7820LineText
 
 final class GH7820LineTextType extends StringType
 {
+    /**
+     * {@inheritDoc}
+     */
     public function convertToPHPValue($value, AbstractPlatform $platform)
     {
         $text = parent::convertToPHPValue($value, $platform);
@@ -182,6 +225,9 @@ final class GH7820LineTextType extends StringType
         return GH7820LineText::fromText($text);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function convertToDatabaseValue($value, AbstractPlatform $platform)
     {
         if (! $value instanceof GH7820LineText) {
@@ -191,8 +237,8 @@ final class GH7820LineTextType extends StringType
         return parent::convertToDatabaseValue($value->getText(), $platform);
     }
 
-    /** {@inheritdoc} */
-    public function getName() : string
+    /** {@inheritDoc} */
+    public function getName(): string
     {
         return self::class;
     }

@@ -18,13 +18,13 @@ This chapter is split into three different sections.
 
 One tip for working with relations is to read the relation from left to right, where the left word refers to the current Entity. For example:
 
-- OneToMany - One instance of the current Entity has Many instances (references) to the refered Entity.
-- ManyToOne - Many instances of the current Entity refer to One instance of the refered Entity.
-- OneToOne - One instance of the current Entity refers to One instance of the refered Entity.
+- OneToMany - One instance of the current Entity has Many instances (references) to the referred Entity.
+- ManyToOne - Many instances of the current Entity refer to One instance of the referred Entity.
+- OneToOne - One instance of the current Entity refers to One instance of the referred Entity.
 
-See below for all the possible relations. 
+See below for all the possible relations.
 
-An association is considered to be unidirectional if only one side of the association has 
+An association is considered to be unidirectional if only one side of the association has
 a property referring to the other side.
 
 To gain a full understanding of associations you should also read about :doc:`owning and
@@ -37,7 +37,26 @@ A many-to-one association is the most common association between objects. Exampl
 
 .. configuration-block::
 
-    .. code-block:: php
+    .. code-block:: attribute
+
+        <?php
+        #[Entity]
+        class User
+        {
+            // ...
+
+            #[ManyToOne(targetEntity: Address::class)]
+            #[JoinColumn(name: 'address_id', referencedColumnName: 'id')]
+            private Address|null $address = null;
+        }
+
+        #[Entity]
+        class Address
+        {
+            // ...
+        }
+
+    .. code-block:: annotation
 
         <?php
         /** @Entity */
@@ -49,7 +68,7 @@ A many-to-one association is the most common association between objects. Exampl
              * @ManyToOne(targetEntity="Address")
              * @JoinColumn(name="address_id", referencedColumnName="id")
              */
-            private $address;
+            private Address|null $address = null;
         }
 
         /** @Entity */
@@ -82,9 +101,11 @@ A many-to-one association is the most common association between objects. Exampl
 
 .. note::
 
-    The above ``@JoinColumn`` is optional as it would default
+    The above ``#[JoinColumn]`` is optional as it would default
     to ``address_id`` and ``id`` anyways. You can omit it and let it
     use the defaults.
+    Likewise, inside the ``#[ManyToOne]`` attribute you can omit the
+    ``targetEntity`` argument and it will default to ``Address``.
 
 Generated MySQL Schema:
 
@@ -111,7 +132,29 @@ references one ``Shipment`` entity.
 
 .. configuration-block::
 
-    .. code-block:: php
+    .. code-block:: attribute
+
+        <?php
+        #[Entity]
+        class Product
+        {
+            // ...
+
+            /** One Product has One Shipment. */
+            #[OneToOne(targetEntity: Shipment::class)]
+            #[JoinColumn(name: 'shipment_id', referencedColumnName: 'id')]
+            private Shipment|null $shipment = null;
+
+            // ...
+        }
+
+        #[Entity]
+        class Shipment
+        {
+            // ...
+        }
+
+    .. code-block:: annotation
 
         <?php
         /** @Entity */
@@ -124,7 +167,7 @@ references one ``Shipment`` entity.
              * @OneToOne(targetEntity="Shipment")
              * @JoinColumn(name="shipment_id", referencedColumnName="id")
              */
-            private $shipment;
+            private Shipment|null $shipment = null;
 
             // ...
         }
@@ -156,7 +199,7 @@ references one ``Shipment`` entity.
                 name: shipment_id
                 referencedColumnName: id
 
-Note that the @JoinColumn is not really necessary in this example,
+Note that the ``#[JoinColumn]`` is not really necessary in this example,
 as the defaults would be the same.
 
 Generated MySQL Schema:
@@ -182,13 +225,41 @@ Here is a one-to-one relationship between a ``Customer`` and a
 ``Cart``. The ``Cart`` has a reference back to the ``Customer`` so
 it is bidirectional.
 
-Here we see the ``mappedBy`` and ``inversedBy`` annotations for the first time.
+Here we see the ``mappedBy`` and ``inversedBy`` attributes for the first time.
 They are used to tell Doctrine which property on the other side refers to the
 object.
 
 .. configuration-block::
 
-    .. code-block:: php
+    .. code-block:: attribute
+
+        <?php
+        #[Entity]
+        class Customer
+        {
+            // ...
+
+            /** One Customer has One Cart. */
+            #[OneToOne(targetEntity: Cart::class, mappedBy: 'customer')]
+            private Cart|null $cart = null;
+
+            // ...
+        }
+
+        #[Entity]
+        class Cart
+        {
+            // ...
+
+            /** One Cart has One Customer. */
+            #[OneToOne(targetEntity: Customer::class, inversedBy: 'cart')]
+            #[JoinColumn(name: 'customer_id', referencedColumnName: 'id')]
+            private Customer|null $customer = null;
+
+            // ...
+        }
+
+    .. code-block:: annotation
 
         <?php
         /** @Entity */
@@ -200,7 +271,7 @@ object.
              * One Customer has One Cart.
              * @OneToOne(targetEntity="Cart", mappedBy="customer")
              */
-            private $cart;
+            private Cart|null $cart = null;
 
             // ...
         }
@@ -215,7 +286,7 @@ object.
              * @OneToOne(targetEntity="Customer", inversedBy="cart")
              * @JoinColumn(name="customer_id", referencedColumnName="id")
              */
-            private $customer;
+            private Customer|null $customer = null;
 
             // ...
         }
@@ -259,6 +330,7 @@ Generated MySQL Schema:
     CREATE TABLE Cart (
         id INT AUTO_INCREMENT NOT NULL,
         customer_id INT DEFAULT NULL,
+        UNIQUE INDEX UNIQ_BA388B79395C3F3 (customer_id),
         PRIMARY KEY(id)
     ) ENGINE = InnoDB;
     CREATE TABLE Customer (
@@ -280,17 +352,15 @@ below.
 .. code-block:: php
 
     <?php
-    /** @Entity */
+    #[Entity]
     class Student
     {
         // ...
 
-        /**
-         * One Student has One Mentor.
-         * @OneToOne(targetEntity="Student")
-         * @JoinColumn(name="mentor_id", referencedColumnName="id")
-         */
-        private $mentor;
+        /** One Student has One Mentor. */
+        #[OneToOne(targetEntity: Student::class)]
+        #[JoinColumn(name: 'mentor_id', referencedColumnName: 'id')]
+        private Student|null $mentor = null;
 
         // ...
     }
@@ -325,7 +395,40 @@ bidirectional many-to-one.
 
 .. configuration-block::
 
-    .. code-block:: php
+    .. code-block:: attribute
+
+        <?php
+        use Doctrine\Common\Collections\ArrayCollection;
+
+        #[Entity]
+        class Product
+        {
+            // ...
+            /**
+             * One product has many features. This is the inverse side.
+             * @var Collection<int, Feature>
+             */
+            #[OneToMany(targetEntity: Feature::class, mappedBy: 'product')]
+            private Collection $features;
+            // ...
+
+            public function __construct() {
+                $this->features = new ArrayCollection();
+            }
+        }
+
+        #[Entity]
+        class Feature
+        {
+            // ...
+            /** Many features have one product. This is the owning side. */
+            #[ManyToOne(targetEntity: Product::class, inversedBy: 'features')]
+            #[JoinColumn(name: 'product_id', referencedColumnName: 'id')]
+            private Product|null $product = null;
+            // ...
+        }
+
+    .. code-block:: annotation
 
         <?php
         use Doctrine\Common\Collections\ArrayCollection;
@@ -336,9 +439,10 @@ bidirectional many-to-one.
             // ...
             /**
              * One product has many features. This is the inverse side.
+             * @var Collection<int, Feature>
              * @OneToMany(targetEntity="Feature", mappedBy="product")
              */
-            private $features;
+            private Collection $features;
             // ...
 
             public function __construct() {
@@ -355,7 +459,7 @@ bidirectional many-to-one.
              * @ManyToOne(targetEntity="Product", inversedBy="features")
              * @JoinColumn(name="product_id", referencedColumnName="id")
              */
-            private $product;
+            private Product|null $product = null;
             // ...
         }
 
@@ -420,7 +524,39 @@ The following example sets up such a unidirectional one-to-many association:
 
 .. configuration-block::
 
-    .. code-block:: php
+    .. code-block:: attribute
+
+        <?php
+        #[Entity]
+        class User
+        {
+            // ...
+
+            /**
+             * Many Users have Many Phonenumbers.
+             * @var Collection<int, Phonenumber>
+             */
+            #[JoinTable(name: 'users_phonenumbers')]
+            #[JoinColumn(name: 'user_id', referencedColumnName: 'id')]
+            #[InverseJoinColumn(name: 'phonenumber_id', referencedColumnName: 'id', unique: true)]
+            #[ManyToMany(targetEntity: 'Phonenumber')]
+            private Collection $phonenumbers;
+
+            public function __construct()
+            {
+                $this->phonenumbers = new ArrayCollection();
+            }
+
+            // ...
+        }
+
+        #[Entity]
+        class Phonenumber
+        {
+            // ...
+        }
+
+    .. code-block:: annotation
 
         <?php
         /** @Entity */
@@ -429,14 +565,15 @@ The following example sets up such a unidirectional one-to-many association:
             // ...
 
             /**
-             * Many User have Many Phonenumbers.
+             * Many Users have Many Phonenumbers.
              * @ManyToMany(targetEntity="Phonenumber")
              * @JoinTable(name="users_phonenumbers",
              *      joinColumns={@JoinColumn(name="user_id", referencedColumnName="id")},
              *      inverseJoinColumns={@JoinColumn(name="phonenumber_id", referencedColumnName="id", unique=true)}
              *      )
+             * @var Collection<int, Phonenumber>
              */
-            private $phonenumbers;
+            private Collection $phonenumbers;
 
             public function __construct()
             {
@@ -522,7 +659,32 @@ database perspective is known as an adjacency list approach.
 
 .. configuration-block::
 
-    .. code-block:: php
+    .. code-block:: attribute
+
+        <?php
+        #[Entity]
+        class Category
+        {
+            // ...
+            /**
+             * One Category has Many Categories.
+             * @var Collection<int, Category>
+             */
+            #[OneToMany(targetEntity: Category::class, mappedBy: 'parent')]
+            private Collection $children;
+
+            /** Many Categories have One Category. */
+            #[ManyToOne(targetEntity: Category::class, inversedBy: 'children')]
+            #[JoinColumn(name: 'parent_id', referencedColumnName: 'id')]
+            private Category|null $parent = null;
+            // ...
+
+            public function __construct() {
+                $this->children = new ArrayCollection();
+            }
+        }
+
+    .. code-block:: annotation
 
         <?php
         /** @Entity */
@@ -532,15 +694,16 @@ database perspective is known as an adjacency list approach.
             /**
              * One Category has Many Categories.
              * @OneToMany(targetEntity="Category", mappedBy="parent")
+             * @var Collection<int, Category>
              */
-            private $children;
+            private Collection $children;
 
             /**
              * Many Categories have One Category.
              * @ManyToOne(targetEntity="Category", inversedBy="children")
              * @JoinColumn(name="parent_id", referencedColumnName="id")
              */
-            private $parent;
+            private Category|null $parent = null;
             // ...
 
             public function __construct() {
@@ -593,7 +756,38 @@ entities:
 
 .. configuration-block::
 
-    .. code-block:: php
+    .. code-block:: attribute
+
+        <?php
+        #[Entity]
+        class User
+        {
+            // ...
+
+            /**
+             * Many Users have Many Groups.
+             * @var Collection<int, Group>
+             */
+            #[JoinTable(name: 'users_groups')]
+            #[JoinColumn(name: 'user_id', referencedColumnName: 'id')]
+            #[InverseJoinColumn(name: 'group_id', referencedColumnName: 'id')]
+            #[ManyToMany(targetEntity: Group::class)]
+            private Collection $groups;
+
+            // ...
+
+            public function __construct() {
+                $this->groups = new ArrayCollection();
+            }
+        }
+
+        #[Entity]
+        class Group
+        {
+            // ...
+        }
+
+    .. code-block:: annotation
 
         <?php
         /** @Entity */
@@ -608,8 +802,9 @@ entities:
              *      joinColumns={@JoinColumn(name="user_id", referencedColumnName="id")},
              *      inverseJoinColumns={@JoinColumn(name="group_id", referencedColumnName="id")}
              *      )
+             * @var Collection<int, Group>
              */
-            private $groups;
+            private Collection $groups;
 
             // ...
 
@@ -686,6 +881,15 @@ Generated MySQL Schema:
     replaced by one-to-many/many-to-one associations between the 3
     participating classes.
 
+.. note::
+
+    For many-to-many associations, the ORM takes care of managing rows
+    in the join table connecting both sides. Due to the way it deals
+    with entity removals, database-level constraints may not work the
+    way one might intuitively assume. Thus, be sure not to miss the section
+    on :ref:`join table management <remove_object_many_to_many_join_tables>`.
+
+
 Many-To-Many, Bidirectional
 ---------------------------
 
@@ -694,7 +898,48 @@ one is bidirectional.
 
 .. configuration-block::
 
-    .. code-block:: php
+    .. code-block:: attribute
+
+        <?php
+        #[Entity]
+        class User
+        {
+            // ...
+
+            /**
+             * Many Users have Many Groups.
+             * @var Collection<int, Group>
+             */
+            #[ManyToMany(targetEntity: Group::class, inversedBy: 'users')]
+            #[JoinTable(name: 'users_groups')]
+            private Collection $groups;
+
+            public function __construct() {
+                $this->groups = new ArrayCollection();
+            }
+
+            // ...
+        }
+
+        #[Entity]
+        class Group
+        {
+            // ...
+            /**
+             * Many Groups have Many Users.
+             * @var Collection<int, User>
+             */
+            #[ManyToMany(targetEntity: User::class, mappedBy: 'groups')]
+            private Collection $users;
+
+            public function __construct() {
+                $this->users = new ArrayCollection();
+            }
+
+            // ...
+        }
+
+    .. code-block:: annotation
 
         <?php
         /** @Entity */
@@ -706,8 +951,9 @@ one is bidirectional.
              * Many Users have Many Groups.
              * @ManyToMany(targetEntity="Group", inversedBy="users")
              * @JoinTable(name="users_groups")
+             * @var Collection<int, Group>
              */
-            private $groups;
+            private Collection $groups;
 
             public function __construct() {
                 $this->groups = new \Doctrine\Common\Collections\ArrayCollection();
@@ -723,8 +969,9 @@ one is bidirectional.
             /**
              * Many Groups have Many Users.
              * @ManyToMany(targetEntity="User", mappedBy="groups")
+             * @var Collection<int, User>
              */
-            private $users;
+            private Collection $users;
 
             public function __construct() {
                 $this->users = new \Doctrine\Common\Collections\ArrayCollection();
@@ -781,6 +1028,15 @@ one is bidirectional.
 The MySQL schema is exactly the same as for the Many-To-Many
 uni-directional case above.
 
+.. note::
+
+    For many-to-many associations, the ORM takes care of managing rows
+    in the join table connecting both sides. Due to the way it deals
+    with entity removals, database-level constraints may not work the
+    way one might intuitively assume. Thus, be sure not to miss the section
+    on :ref:`join table management <remove_object_many_to_many_join_tables>`.
+
+
 Owning and Inverse Side on a ManyToMany Association
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -805,9 +1061,9 @@ understandable:
     <?php
     class Article
     {
-        private $tags;
+        private Collection $tags;
 
-        public function addTag(Tag $tag)
+        public function addTag(Tag $tag): void
         {
             $tag->addArticle($this); // synchronously updating inverse side
             $this->tags[] = $tag;
@@ -816,9 +1072,9 @@ understandable:
 
     class Tag
     {
-        private $articles;
+        private Collection $articles;
 
-        public function addArticle(Article $article)
+        public function addArticle(Article $article): void
         {
             $this->articles[] = $article;
         }
@@ -846,30 +1102,31 @@ field named ``$friendsWithMe`` and ``$myFriends``.
 .. code-block:: php
 
     <?php
-    /** @Entity */
+    #[Entity]
     class User
     {
         // ...
 
         /**
          * Many Users have Many Users.
-         * @ManyToMany(targetEntity="User", mappedBy="myFriends")
+         * @var Collection<int, User>
          */
-        private $friendsWithMe;
+        #[ManyToMany(targetEntity: User::class, mappedBy: 'myFriends')]
+        private Collection $friendsWithMe;
 
         /**
          * Many Users have many Users.
-         * @ManyToMany(targetEntity="User", inversedBy="friendsWithMe")
-         * @JoinTable(name="friends",
-         *      joinColumns={@JoinColumn(name="user_id", referencedColumnName="id")},
-         *      inverseJoinColumns={@JoinColumn(name="friend_user_id", referencedColumnName="id")}
-         *      )
+         * @var Collection<int, User>
          */
-        private $myFriends;
+        #[JoinTable(name: 'friends')]
+        #[JoinColumn(name: 'user_id', referencedColumnName: 'id')]
+        #[InverseJoinColumn(name: 'friend_user_id', referencedColumnName: 'id')]
+        #[ManyToMany(targetEntity: 'User', inversedBy: 'friendsWithMe')]
+        private Collection $myFriends;
 
         public function __construct() {
-            $this->friendsWithMe = new \Doctrine\Common\Collections\ArrayCollection();
-            $this->myFriends = new \Doctrine\Common\Collections\ArrayCollection();
+            $this->friendsWithMe = new ArrayCollection();
+            $this->myFriends = new ArrayCollection();
         }
 
         // ...
@@ -909,11 +1166,17 @@ As an example, consider this mapping:
 
 .. configuration-block::
 
-    .. code-block:: php
+    .. code-block:: attribute
+
+        <?php
+        #[OneToOne(targetEntity: Shipment::class)]
+        private Shipment|null $shipment = null;
+
+    .. code-block:: annotation
 
         <?php
         /** @OneToOne(targetEntity="Shipment") */
-        private $shipment;
+        private Shipment|null $shipment = null;
 
     .. code-block:: xml
 
@@ -936,7 +1199,15 @@ mapping:
 
 .. configuration-block::
 
-    .. code-block:: php
+    .. code-block:: attribute
+
+        <?php
+        /** One Product has One Shipment. */
+        #[OneToOne(targetEntity: Shipment::class)]
+        #[JoinColumn(name: 'shipment_id', referencedColumnName: 'id')]
+        private Shipment|null $shipment = null;
+
+    .. code-block:: annotation
 
         <?php
         /**
@@ -944,7 +1215,7 @@ mapping:
          * @OneToOne(targetEntity="Shipment")
          * @JoinColumn(name="shipment_id", referencedColumnName="id")
          */
-        private $shipment;
+        private Shipment|null $shipment = null;
 
     .. code-block:: xml
 
@@ -972,15 +1243,30 @@ similar defaults. As an example, consider this mapping:
 
 .. configuration-block::
 
-    .. code-block:: php
+    .. code-block:: attribute
 
         <?php
         class User
         {
-            //...
-            /** @ManyToMany(targetEntity="Group") */
-            private $groups;
-            //...
+            // ...
+            /** @var Collection<int, Group> */
+            #[ManyToMany(targetEntity: Group::class)]
+            private Collection $groups;
+            // ...
+        }
+
+    .. code-block:: annotation
+
+        <?php
+        class User
+        {
+            // ...
+            /**
+             * @ManyToMany(targetEntity="Group")
+             * @var Collection<int, Group>
+             */
+            private Collection $groups;
+            // ...
         }
 
     .. code-block:: xml
@@ -1003,12 +1289,30 @@ This is essentially the same as the following, more verbose, mapping:
 
 .. configuration-block::
 
-    .. code-block:: php
+    .. code-block:: attribute
 
         <?php
         class User
         {
-            //...
+            // ...
+            /**
+             * Many Users have Many Groups.
+             * @var Collection<int, Group>
+             */
+            #[JoinTable(name: 'User_Group')]
+            #[JoinColumn(name: 'User_id', referencedColumnName: 'id')]
+            #[InverseJoinColumn(name: 'Group_id', referencedColumnName: 'id')]
+            #[ManyToMany(targetEntity: Group::class)]
+            private Collection $groups;
+            // ...
+        }
+
+    .. code-block:: annotation
+
+        <?php
+        class User
+        {
+            // ...
             /**
              * Many Users have Many Groups.
              * @ManyToMany(targetEntity="Group")
@@ -1016,9 +1320,10 @@ This is essentially the same as the following, more verbose, mapping:
              *      joinColumns={@JoinColumn(name="User_id", referencedColumnName="id")},
              *      inverseJoinColumns={@JoinColumn(name="Group_id", referencedColumnName="id")}
              *      )
+             * @var Collection<int, Group>
              */
-            private $groups;
-            //...
+            private Collection $groups;
+            // ...
         }
 
     .. code-block:: xml
@@ -1061,6 +1366,84 @@ join columns default to the simple, unqualified class name of the
 targeted class followed by "\_id". The referencedColumnName always
 defaults to "id", just as in one-to-one or many-to-one mappings.
 
+Additionally, when using typed properties with Doctrine 2.9 or newer
+you can skip ``targetEntity`` in ``ManyToOne`` and ``OneToOne``
+associations as they will be set based on type. Also ``nullable``
+attribute on ``JoinColumn`` will be inherited from PHP type. So that:
+
+.. configuration-block::
+
+    .. code-block:: attribute
+
+        <?php
+        #[OneToOne]
+        private Shipment $shipment;
+
+    .. code-block:: annotation
+
+        <?php
+        /** @OneToOne */
+        private Shipment $shipment;
+
+    .. code-block:: xml
+
+        <doctrine-mapping>
+            <entity class="Product">
+                <one-to-one field="shipment" />
+            </entity>
+        </doctrine-mapping>
+
+    .. code-block:: yaml
+
+        Product:
+          type: entity
+          oneToOne:
+            shipment: ~
+
+Is essentially the same as following:
+
+.. configuration-block::
+
+    .. code-block:: attribute
+
+        <?php
+        /** One Product has One Shipment. */
+        #[OneToOne(targetEntity: Shipment::class)]
+        #[JoinColumn(name: 'shipment_id', referencedColumnName: 'id', nullable: false)]
+        private Shipment $shipment;
+
+    .. code-block:: annotation
+
+        <?php
+        /**
+         * One Product has One Shipment.
+         * @OneToOne(targetEntity="Shipment")
+         * @JoinColumn(name="shipment_id", referencedColumnName="id", nullable=false)
+         */
+        private Shipment $shipment;
+
+    .. code-block:: xml
+
+        <doctrine-mapping>
+            <entity class="Product">
+                <one-to-one field="shipment" target-entity="Shipment">
+                    <join-column name="shipment_id" referenced-column-name="id" nulable=false />
+                </one-to-one>
+            </entity>
+        </doctrine-mapping>
+
+    .. code-block:: yaml
+
+        Product:
+          type: entity
+          oneToOne:
+            shipment:
+              targetEntity: Shipment
+              joinColumn:
+                name: shipment_id
+                referencedColumnName: id
+                nullable: false
+
 If you accept these defaults, you can reduce the mapping code to a
 minimum.
 
@@ -1098,22 +1481,19 @@ and ``@ManyToMany`` associations in the constructor of your entities:
     use Doctrine\Common\Collections\Collection;
     use Doctrine\Common\Collections\ArrayCollection;
 
-    /** @Entity */
+    #[Entity]
     class User
     {
-        /**
-         * Many Users have Many Groups.
-         * @var Collection
-         * @ManyToMany(targetEntity="Group")
-         */
-        private $groups;
+        /** Many Users have Many Groups. */
+        #[ManyToMany(targetEntity: Group::class)]
+        private Collection $groups;
 
         public function __construct()
         {
             $this->groups = new ArrayCollection();
         }
 
-        public function getGroups()
+        public function getGroups(): Collection
         {
             return $this->groups;
         }

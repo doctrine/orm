@@ -1,16 +1,16 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Test\ORM\Functional\Ticket;
 
-use Doctrine\ORM\Mapping\ClassMetadataInfo;
+use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 final class GH6682Test extends OrmFunctionalTestCase
 {
-    /**
-     * @group 6682
-     */
-    public function testIssue() : void
+    /** @group GH-6682 */
+    public function testIssue(): void
     {
         $parsedDefinition = [
             'sequenceName'   => 'test_sequence',
@@ -18,12 +18,12 @@ final class GH6682Test extends OrmFunctionalTestCase
             'initialValue'   => '',
         ];
 
-        $classMetadataInfo = new ClassMetadataInfo('test_entity');
-        $classMetadataInfo->setSequenceGeneratorDefinition($parsedDefinition);
+        $classMetadata = new ClassMetadata('test_entity');
+        $classMetadata->setSequenceGeneratorDefinition($parsedDefinition);
 
         self::assertSame(
             ['sequenceName' => 'test_sequence', 'allocationSize' => '1', 'initialValue' => '1'],
-            $classMetadataInfo->sequenceGeneratorDefinition
+            $classMetadata->sequenceGeneratorDefinition
         );
     }
 }

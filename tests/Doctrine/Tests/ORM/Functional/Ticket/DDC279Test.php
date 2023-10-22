@@ -1,26 +1,36 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-class DDC279Test extends \Doctrine\Tests\OrmFunctionalTestCase
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\DiscriminatorColumn;
+use Doctrine\ORM\Mapping\DiscriminatorMap;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\InheritanceType;
+use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\OneToOne;
+use Doctrine\Tests\OrmFunctionalTestCase;
+
+class DDC279Test extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
-        $this->_schemaTool->createSchema(
-            [
-            $this->_em->getClassMetadata(DDC279EntityXAbstract::class),
-            $this->_em->getClassMetadata(DDC279EntityX::class),
-            $this->_em->getClassMetadata(DDC279EntityY::class),
-            $this->_em->getClassMetadata(DDC279EntityZ::class),
-            ]
+
+        $this->createSchemaForModels(
+            DDC279EntityXAbstract::class,
+            DDC279EntityX::class,
+            DDC279EntityY::class,
+            DDC279EntityZ::class
         );
     }
 
-    /**
-     * @group DDC-279
-     */
-    public function testDDC279()
+    /** @group DDC-279 */
+    public function testDDC279(): void
     {
         $x = new DDC279EntityX();
         $y = new DDC279EntityY();
@@ -41,7 +51,7 @@ class DDC279Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->clear();
 
         $query = $this->_em->createQuery(
-            'SELECT x, y, z FROM Doctrine\Tests\ORM\Functional\Ticket\DDC279EntityX x '.
+            'SELECT x, y, z FROM Doctrine\Tests\ORM\Functional\Ticket\DDC279EntityX x ' .
             'INNER JOIN x.y y INNER JOIN y.z z WHERE x.id = ?1'
         )->setParameter(1, $x->id);
 
@@ -50,10 +60,10 @@ class DDC279Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $expected1 = 'Y';
         $expected2 = 'Z';
 
-        $this->assertEquals(1, count($result));
+        self::assertCount(1, $result);
 
-        $this->assertEquals($expected1, $result[0]->y->data);
-        $this->assertEquals($expected2, $result[0]->y->z->data);
+        self::assertEquals($expected1, $result[0]->y->data);
+        self::assertEquals($expected2, $result[0]->y->z->data);
     }
 }
 
@@ -67,6 +77,7 @@ class DDC279Test extends \Doctrine\Tests\OrmFunctionalTestCase
 abstract class DDC279EntityXAbstract
 {
     /**
+     * @var int
      * @Id
      * @GeneratedValue
      * @Column(name="id", type="integer")
@@ -74,60 +85,62 @@ abstract class DDC279EntityXAbstract
     public $id;
 
     /**
-     * @column(type="string")
+     * @var string
+     * @Column(type="string", length=255)
      */
     public $data;
-
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC279EntityX extends DDC279EntityXAbstract
 {
     /**
+     * @var DDC279EntityY
      * @OneToOne(targetEntity="DDC279EntityY")
      * @JoinColumn(name="y_id", referencedColumnName="id")
      */
     public $y;
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC279EntityY
 {
     /**
-     * @Id @GeneratedValue
+     * @var int
+     * @Id
+     * @GeneratedValue
      * @Column(name="id", type="integer")
      */
     public $id;
 
     /**
-     * @column(type="string")
+     * @var string
+     * @Column(type="string", length=255)
      */
     public $data;
 
     /**
+     * @var DDC279EntityZ
      * @OneToOne(targetEntity="DDC279EntityZ")
      * @JoinColumn(name="z_id", referencedColumnName="id")
      */
     public $z;
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC279EntityZ
 {
     /**
-     * @Id @GeneratedValue
+     * @var int
+     * @Id
+     * @GeneratedValue
      * @Column(name="id", type="integer")
      */
     public $id;
 
     /**
-     * @column(type="string")
+     * @var string
+     * @Column(type="string", length=255)
      */
     public $data;
 }

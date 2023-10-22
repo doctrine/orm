@@ -1,71 +1,56 @@
 <?php
-/*
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * This software consists of voluntary contributions made by many individuals
- * and is licensed under the MIT license. For more information, see
- * <http://www.doctrine-project.org>.
- */
+
+declare(strict_types=1);
 
 namespace Doctrine\ORM\Event;
 
+use Doctrine\Deprecations\Deprecation;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\Persistence\Event\OnClearEventArgs as BaseOnClearEventArgs;
 
 /**
  * Provides event arguments for the onClear event.
  *
- * @license     http://www.opensource.org/licenses/mit-license.php MIT
  * @link        www.doctrine-project.org
- * @since       2.0
- * @author      Roman Borschel <roman@code-factory.de>
- * @author      Benjamin Eberlei <kontakt@beberlei.de>
+ *
+ * @extends BaseOnClearEventArgs<EntityManagerInterface>
  */
-class OnClearEventArgs extends \Doctrine\Common\EventArgs
+class OnClearEventArgs extends BaseOnClearEventArgs
 {
-    /**
-     * @var EntityManagerInterface
-     */
-    private $em;
-
-    /**
-     * @var string
-     */
+    /** @var string|null */
     private $entityClass;
 
-    /**
-     * Constructor.
-     *
-     * @param EntityManagerInterface $em
-     * @param string|null            $entityClass Optional entity class.
-     */
+    /** @param string|null $entityClass Optional entity class. */
     public function __construct(EntityManagerInterface $em, $entityClass = null)
     {
-        $this->em          = $em;
+        parent::__construct($em);
+
         $this->entityClass = $entityClass;
     }
 
     /**
      * Retrieves associated EntityManager.
      *
-     * @return \Doctrine\ORM\EntityManager
+     * @deprecated 2.13. Use {@see getObjectManager} instead.
+     *
+     * @return EntityManagerInterface
      */
     public function getEntityManager()
     {
-        return $this->em;
+        Deprecation::trigger(
+            'doctrine/orm',
+            'https://github.com/doctrine/orm/issues/9875',
+            'Method %s() is deprecated and will be removed in Doctrine ORM 3.0. Use getObjectManager() instead.',
+            __METHOD__
+        );
+
+        return $this->getObjectManager();
     }
 
     /**
      * Name of the entity class that is cleared, or empty if all are cleared.
+     *
+     * @deprecated Clearing the entity manager partially is deprecated. This method will be removed in 3.0.
      *
      * @return string|null
      */
@@ -77,10 +62,12 @@ class OnClearEventArgs extends \Doctrine\Common\EventArgs
     /**
      * Checks if event clears all entities.
      *
+     * @deprecated Clearing the entity manager partially is deprecated. This method will be removed in 3.0.
+     *
      * @return bool
      */
     public function clearsAllEntities()
     {
-        return ($this->entityClass === null);
+        return $this->entityClass === null;
     }
 }

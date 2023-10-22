@@ -1,80 +1,80 @@
 <?php
-/*
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * This software consists of voluntary contributions made by many individuals
- * and is licensed under the MIT license. For more information, see
- * <http://www.doctrine-project.org>.
- */
+
+declare(strict_types=1);
 
 namespace Doctrine\ORM\Query;
 
+use ArrayAccess;
+use Doctrine\Deprecations\Deprecation;
+use Doctrine\ORM\AbstractQuery;
+use Iterator;
+use ReturnTypeWillChange;
+
+use function key;
+use function next;
+use function reset;
+
 /**
+ * @deprecated This class will be removed in 3.0 without replacement.
  *
+ * @template-implements Iterator<TreeWalker>
+ * @template-implements ArrayAccess<int, TreeWalker>
  */
-class TreeWalkerChainIterator implements \Iterator, \ArrayAccess
+class TreeWalkerChainIterator implements Iterator, ArrayAccess
 {
-    /**
-     * @var TreeWalker[]
-     */
+    /** @var class-string<TreeWalker>[] */
     private $walkers = [];
-    /**
-     * @var TreeWalkerChain
-     */
+    /** @var TreeWalkerChain */
     private $treeWalkerChain;
-    /**
-     * @var
-     */
+    /** @var AbstractQuery */
     private $query;
-    /**
-     * @var
-     */
+    /** @var ParserResult */
     private $parserResult;
 
+    /**
+     * @param AbstractQuery $query
+     * @param ParserResult  $parserResult
+     */
     public function __construct(TreeWalkerChain $treeWalkerChain, $query, $parserResult)
     {
+        Deprecation::trigger(
+            'doctrine/orm',
+            'https://github.com/doctrine/orm/pull/9511',
+            '%s is deprecated and will be removed without replacement.',
+            self::class
+        );
+
         $this->treeWalkerChain = $treeWalkerChain;
-        $this->query = $query;
-        $this->parserResult = $parserResult;
+        $this->query           = $query;
+        $this->parserResult    = $parserResult;
     }
 
     /**
-     * {@inheritdoc}
+     * @return string|false
+     * @psalm-return class-string<TreeWalker>|false
      */
+    #[ReturnTypeWillChange]
     public function rewind()
     {
         return reset($this->walkers);
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    /** @return TreeWalker|null */
+    #[ReturnTypeWillChange]
     public function current()
     {
         return $this->offsetGet(key($this->walkers));
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    /** @return int */
+    #[ReturnTypeWillChange]
     public function key()
     {
         return key($this->walkers);
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    /** @return TreeWalker|null */
+    #[ReturnTypeWillChange]
     public function next()
     {
         next($this->walkers);
@@ -83,24 +83,35 @@ class TreeWalkerChainIterator implements \Iterator, \ArrayAccess
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
+     *
+     * @return bool
      */
+    #[ReturnTypeWillChange]
     public function valid()
     {
         return key($this->walkers) !== null;
     }
 
     /**
-     * {@inheritdoc}
+     * @param mixed $offset
+     * @psalm-param array-key|null $offset
+     *
+     * @return bool
      */
+    #[ReturnTypeWillChange]
     public function offsetExists($offset)
     {
-        return isset($this->walkers[$offset]);
+        return isset($this->walkers[$offset ?? '']);
     }
 
     /**
-     * {@inheritdoc}
+     * @param mixed $offset
+     * @psalm-param array-key|null $offset
+     *
+     * @return TreeWalker|null
      */
+    #[ReturnTypeWillChange]
     public function offsetGet($offset)
     {
         if ($this->offsetExists($offset)) {
@@ -115,11 +126,17 @@ class TreeWalkerChainIterator implements \Iterator, \ArrayAccess
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
+     *
+     * @param string $value
+     * @psalm-param array-key|null $offset
+     *
+     * @return void
      */
+    #[ReturnTypeWillChange]
     public function offsetSet($offset, $value)
     {
-        if (null === $offset) {
+        if ($offset === null) {
             $this->walkers[] = $value;
         } else {
             $this->walkers[$offset] = $value;
@@ -127,12 +144,16 @@ class TreeWalkerChainIterator implements \Iterator, \ArrayAccess
     }
 
     /**
-     * {@inheritdoc}
+     * @param mixed $offset
+     * @psalm-param array-key|null $offset
+     *
+     * @return void
      */
+    #[ReturnTypeWillChange]
     public function offsetUnset($offset)
     {
         if ($this->offsetExists($offset)) {
-            unset($this->walkers[$offset]);
+            unset($this->walkers[$offset ?? '']);
         }
     }
 }

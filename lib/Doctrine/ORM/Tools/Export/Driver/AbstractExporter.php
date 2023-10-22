@@ -1,67 +1,53 @@
 <?php
-/*
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * This software consists of voluntary contributions made by many individuals
- * and is licensed under the MIT license. For more information, see
- * <http://www.doctrine-project.org>.
- */
+
+declare(strict_types=1);
 
 namespace Doctrine\ORM\Tools\Export\Driver;
 
+use Doctrine\Deprecations\Deprecation;
+use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use Doctrine\ORM\Tools\Export\ExportException;
-use const E_USER_DEPRECATED;
-use function trigger_error;
+
+use function chmod;
+use function dirname;
+use function file_exists;
+use function file_put_contents;
+use function is_dir;
+use function mkdir;
+use function str_replace;
 
 /**
  * Abstract base class which is to be used for the Exporter drivers
  * which can be found in \Doctrine\ORM\Tools\Export\Driver.
  *
- * @link    www.doctrine-project.org
- * @since   2.0
- * @author  Jonathan Wage <jonwage@gmail.com>
- *
  * @deprecated 2.7 This class is being removed from the ORM and won't have any replacement
+ *
+ * @link    www.doctrine-project.org
  */
 abstract class AbstractExporter
 {
-    /**
-     * @var array
-     */
+    /** @var ClassMetadata[] */
     protected $_metadata = [];
 
-    /**
-     * @var string|null
-     */
+    /** @var string|null */
     protected $_outputDir;
 
-    /**
-     * @var string|null
-     */
+    /** @var string|null */
     protected $_extension;
 
-    /**
-     * @var bool
-     */
+    /** @var bool */
     protected $_overwriteExistingFiles = false;
 
-    /**
-     * @param string|null $dir
-     */
+    /** @param string|null $dir */
     public function __construct($dir = null)
     {
-        @trigger_error(static::class . ' is deprecated and will be removed in Doctrine ORM 3.0', E_USER_DEPRECATED);
+        Deprecation::trigger(
+            'doctrine/orm',
+            'https://github.com/doctrine/orm/issues/8458',
+            '%s is deprecated with no replacement',
+            self::class
+        );
 
         $this->_outputDir = $dir;
     }
@@ -80,16 +66,14 @@ abstract class AbstractExporter
      * Converts a single ClassMetadata instance to the exported format
      * and returns it.
      *
-     * @param ClassMetadataInfo $metadata
-     *
      * @return string
      */
     abstract public function exportClassMetadata(ClassMetadataInfo $metadata);
 
     /**
-     * Sets the array of ClassMetadataInfo instances to export.
+     * Sets the array of ClassMetadata instances to export.
      *
-     * @param array $metadata
+     * @psalm-param list<ClassMetadata> $metadata
      *
      * @return void
      */
@@ -131,25 +115,28 @@ abstract class AbstractExporter
      *
      * @return void
      *
-     * @throws \Doctrine\ORM\Tools\Export\ExportException
+     * @throws ExportException
      */
     public function export()
     {
-        if ( ! is_dir($this->_outputDir)) {
+        if (! is_dir($this->_outputDir)) {
             mkdir($this->_outputDir, 0775, true);
         }
 
         foreach ($this->_metadata as $metadata) {
             // In case output is returned, write it to a file, skip otherwise
-            if ($output = $this->exportClassMetadata($metadata)) {
+            $output = $this->exportClassMetadata($metadata);
+            if ($output) {
                 $path = $this->_generateOutputPath($metadata);
-                $dir = dirname($path);
-                if ( ! is_dir($dir)) {
+                $dir  = dirname($path);
+                if (! is_dir($dir)) {
                     mkdir($dir, 0775, true);
                 }
-                if (file_exists($path) && !$this->_overwriteExistingFiles) {
+
+                if (file_exists($path) && ! $this->_overwriteExistingFiles) {
                     throw ExportException::attemptOverwriteExistingFile($path);
                 }
+
                 file_put_contents($path, $output);
                 chmod($path, 0664);
             }
@@ -158,8 +145,6 @@ abstract class AbstractExporter
 
     /**
      * Generates the path to write the class for the given ClassMetadataInfo instance.
-     *
-     * @param ClassMetadataInfo $metadata
      *
      * @return string
      */
@@ -187,6 +172,7 @@ abstract class AbstractExporter
 
     /**
      * @param int $type
+     * @psalm-param ClassMetadataInfo::INHERITANCE_TYPE_* $type
      *
      * @return string
      */
@@ -209,6 +195,7 @@ abstract class AbstractExporter
 
     /**
      * @param int $mode
+     * @psalm-param ClassMetadataInfo::FETCH_* $mode
      *
      * @return string
      */
@@ -228,6 +215,7 @@ abstract class AbstractExporter
 
     /**
      * @param int $policy
+     * @psalm-param ClassMetadataInfo::CHANGETRACKING_* $policy
      *
      * @return string
      */
@@ -247,6 +235,7 @@ abstract class AbstractExporter
 
     /**
      * @param int $type
+     * @psalm-param ClassMetadataInfo::GENERATOR_TYPE_* $type
      *
      * @return string
      */
@@ -258,9 +247,6 @@ abstract class AbstractExporter
 
             case ClassMetadataInfo::GENERATOR_TYPE_SEQUENCE:
                 return 'SEQUENCE';
-
-            case ClassMetadataInfo::GENERATOR_TYPE_TABLE:
-                return 'TABLE';
 
             case ClassMetadataInfo::GENERATOR_TYPE_IDENTITY:
                 return 'IDENTITY';

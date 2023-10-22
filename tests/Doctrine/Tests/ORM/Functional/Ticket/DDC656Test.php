@@ -1,24 +1,28 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-class DDC656Test extends \Doctrine\Tests\OrmFunctionalTestCase
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\Tests\OrmFunctionalTestCase;
+
+use function array_keys;
+use function get_class;
+
+class DDC656Test extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
-        try {
-            $this->_schemaTool->createSchema(
-                [
-                $this->_em->getClassMetadata(DDC656Entity::class)
-                ]
-            );
-        } catch(\Exception $e) {
 
-        }
+        $this->createSchemaForModels(DDC656Entity::class);
     }
 
-    public function testRecomputeSingleEntityChangeSet_PreservesFieldOrder()
+    public function testRecomputeSingleEntityChangeSetPreservesFieldOrder(): void
     {
         $entity = new DDC656Entity();
         $entity->setName('test1');
@@ -31,50 +35,57 @@ class DDC656Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->getUnitOfWork()->recomputeSingleEntityChangeSet($this->_em->getClassMetadata(get_class($entity)), $entity);
         $data2 = $this->_em->getUnitOfWork()->getEntityChangeSet($entity);
 
-        $this->assertEquals(array_keys($data1), array_keys($data2));
+        self::assertEquals(array_keys($data1), array_keys($data2));
 
         $this->_em->flush();
         $this->_em->clear();
 
         $persistedEntity = $this->_em->find(get_class($entity), $entity->specificationId);
-        $this->assertEquals('type2', $persistedEntity->getType());
-        $this->assertEquals('test1', $persistedEntity->getName());
+        self::assertEquals('type2', $persistedEntity->getType());
+        self::assertEquals('test1', $persistedEntity->getName());
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class DDC656Entity
 {
     /**
-     * @Column(type="string")
+     * @var string
+     * @Column(type="string", length=255)
      */
     public $name;
 
     /**
-     * @Column(type="string")
+     * @var string
+     * @Column(type="string", length=255)
      */
     public $type;
 
     /**
-     * @Id @Column(type="integer") @GeneratedValue
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
      */
     public $specificationId;
 
-    public function getName() {
+    public function getName(): string
+    {
         return $this->name;
     }
 
-    public function setName($name) {
+    public function setName(string $name): void
+    {
         $this->name = $name;
     }
 
-    public function getType() {
+    public function getType(): string
+    {
         return $this->type;
     }
 
-    public function setType($type) {
+    public function setType(string $type): void
+    {
         $this->type = $type;
     }
 }

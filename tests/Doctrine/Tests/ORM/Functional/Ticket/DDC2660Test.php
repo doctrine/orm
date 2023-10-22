@@ -1,37 +1,42 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\ManyToOne;
+use Doctrine\ORM\Mapping\Table;
 use Doctrine\ORM\Query\ResultSetMappingBuilder;
+use Doctrine\Tests\OrmFunctionalTestCase;
+use Exception;
 
-/**
- * @group DDC-2660
- */
-class DDC2660Test extends \Doctrine\Tests\OrmFunctionalTestCase
+/** @group DDC-2660 */
+class DDC2660Test extends OrmFunctionalTestCase
 {
-    /**
-     * {@inheritDoc}
-     */
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
 
         try {
             $this->_schemaTool->createSchema(
                 [
-                $this->_em->getClassMetadata(DDC2660Product::class),
-                $this->_em->getClassMetadata(DDC2660Customer::class),
-                $this->_em->getClassMetadata(DDC2660CustomerOrder::class)
+                    $this->_em->getClassMetadata(DDC2660Product::class),
+                    $this->_em->getClassMetadata(DDC2660Customer::class),
+                    $this->_em->getClassMetadata(DDC2660CustomerOrder::class),
                 ]
             );
-        } catch(\Exception $e) {
+        } catch (Exception $e) {
             return;
         }
 
         for ($i = 0; $i < 5; $i++) {
-            $product = new DDC2660Product();
+            $product  = new DDC2660Product();
             $customer = new DDC2660Customer();
-            $order = new DDC2660CustomerOrder($product, $customer, 'name' . $i);
+            $order    = new DDC2660CustomerOrder($product, $customer, 'name' . $i);
 
             $this->_em->persist($product);
             $this->_em->persist($customer);
@@ -44,73 +49,95 @@ class DDC2660Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->clear();
     }
 
-    public function testIssueWithExtraColumn()
+    public function testIssueWithExtraColumn(): void
     {
-        $sql = "SELECT o.product_id, o.customer_id, o.name FROM ddc_2660_customer_order o";
+        $sql = 'SELECT o.product_id, o.customer_id, o.name FROM ddc_2660_customer_order o';
 
-        $rsm = new ResultSetMappingBuilder($this->_getEntityManager());
+        $rsm = new ResultSetMappingBuilder($this->getEntityManager());
         $rsm->addRootEntityFromClassMetadata(DDC2660CustomerOrder::class, 'c');
 
         $query  = $this->_em->createNativeQuery($sql, $rsm);
         $result = $query->getResult();
 
-        $this->assertCount(5, $result);
+        self::assertCount(5, $result);
 
         foreach ($result as $order) {
-            $this->assertNotNull($order);
-            $this->assertInstanceOf(DDC2660CustomerOrder::class, $order);
+            self::assertNotNull($order);
+            self::assertInstanceOf(DDC2660CustomerOrder::class, $order);
         }
     }
 
-    public function testIssueWithoutExtraColumn()
+    public function testIssueWithoutExtraColumn(): void
     {
-        $sql = "SELECT o.product_id, o.customer_id FROM ddc_2660_customer_order o";
+        $sql = 'SELECT o.product_id, o.customer_id FROM ddc_2660_customer_order o';
 
-        $rsm = new ResultSetMappingBuilder($this->_getEntityManager());
+        $rsm = new ResultSetMappingBuilder($this->getEntityManager());
         $rsm->addRootEntityFromClassMetadata(DDC2660CustomerOrder::class, 'c');
 
         $query  = $this->_em->createNativeQuery($sql, $rsm);
         $result = $query->getResult();
 
-        $this->assertCount(5, $result);
+        self::assertCount(5, $result);
 
         foreach ($result as $order) {
-            $this->assertNotNull($order);
-            $this->assertInstanceOf(DDC2660CustomerOrder::class, $order);
+            self::assertNotNull($order);
+            self::assertInstanceOf(DDC2660CustomerOrder::class, $order);
         }
     }
 }
 /**
- * @Entity @Table(name="ddc_2660_product")
+ * @Entity
+ * @Table(name="ddc_2660_product")
  */
 class DDC2660Product
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     */
     public $id;
 }
 
-/** @Entity  @Table(name="ddc_2660_customer") */
+/**
+ * @Entity
+ * @Table(name="ddc_2660_customer")
+ */
 class DDC2660Customer
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     */
     public $id;
 }
 
-/** @Entity @Table(name="ddc_2660_customer_order") */
+/**
+ * @Entity
+ * @Table(name="ddc_2660_customer_order")
+ */
 class DDC2660CustomerOrder
 {
     /**
-     * @Id @ManyToOne(targetEntity="DDC2660Product")
+     * @var DDC2660Product
+     * @Id
+     * @ManyToOne(targetEntity="DDC2660Product")
      */
     public $product;
 
     /**
-     * @Id @ManyToOne(targetEntity="DDC2660Customer")
+     * @var DDC2660Customer
+     * @Id
+     * @ManyToOne(targetEntity="DDC2660Customer")
      */
     public $customer;
 
     /**
-     * @Column(type="string")
+     * @var string
+     * @Column(type="string", length=255)
      */
     public $name;
 
@@ -118,6 +145,6 @@ class DDC2660CustomerOrder
     {
         $this->product  = $product;
         $this->customer = $customer;
-        $this->name = $name;
+        $this->name     = $name;
     }
 }

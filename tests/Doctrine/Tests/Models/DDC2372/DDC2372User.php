@@ -1,33 +1,55 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\DDC2372;
 
-use Doctrine\Tests\Models\DDC2372\Traits\DDC2372AddressTrait;
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\DiscriminatorColumn;
+use Doctrine\ORM\Mapping\DiscriminatorMap;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\InheritanceType;
+use Doctrine\ORM\Mapping\Table;
+use Doctrine\Tests\Models\DDC2372\Traits\DDC2372AddressAndAccessors;
 
-/** @Entity @Table(name="users") */
+/**
+ * @Entity
+ * @Table(name="users")
+ * @InheritanceType("SINGLE_TABLE")
+ * @DiscriminatorColumn("type")
+ * @DiscriminatorMap({"user"="DDC2372User", "admin"="DDC2372Admin"})
+ */
 class DDC2372User
 {
-    use DDC2372AddressTrait;
+    use DDC2372AddressAndAccessors;
 
     /**
-     * @Id @Column(type="integer")
+     * @var int
+     * @Id
+     * @Column(type="integer")
      * @GeneratedValue(strategy="AUTO")
      */
     private $id;
-    /** @Column(type="string", length=50) */
+
+    /**
+     * @var string
+     * @Column(type="string", length=50)
+     */
     private $name;
 
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
 
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
 
-    public function setName($name)
+    public function setName(string $name): void
     {
         $this->name = $name;
     }

@@ -1,27 +1,34 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\DBAL\LockMode;
+use Doctrine\DBAL\Platforms\SqlitePlatform;
+use Doctrine\ORM\Exception\ORMException;
+use Doctrine\ORM\OptimisticLockException;
+use Doctrine\ORM\TransactionRequiredException;
+use Doctrine\Persistence\Mapping\MappingException;
 use Doctrine\Tests\Models\Company\CompanyManager;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use Doctrine\Tests\TestUtil;
 
+use function assert;
+
 class DDC933Test extends OrmFunctionalTestCase
 {
-    public function setUp()
+    protected function setUp(): void
     {
         $this->useModelSet('company');
 
         parent::setUp();
     }
 
-    /**
-     * @group DDC-933
-     */
-    public function testLockCTIClass()
+    /** @group DDC-933 */
+    public function testLockCTIClass(): void
     {
-        if ($this->_em->getConnection()->getDatabasePlatform()->getName() === 'sqlite') {
+        if ($this->_em->getConnection()->getDatabasePlatform() instanceof SqlitePlatform) {
             self::markTestSkipped('It should not run on in-memory databases');
         }
 
@@ -29,7 +36,7 @@ class DDC933Test extends OrmFunctionalTestCase
         $manager->setName('beberlei');
         $manager->setSalary(1234);
         $manager->setTitle('Vice President of This Test');
-        $manager->setDepartment("Foo");
+        $manager->setDepartment('Foo');
 
         $this->_em->persist($manager);
         $this->_em->flush();
@@ -43,22 +50,17 @@ class DDC933Test extends OrmFunctionalTestCase
     }
 
     /**
-     * @param int    $id
-     * @param string $newName
-     *
-     * @return void
-     *
-     * @throws \Doctrine\Common\Persistence\Mapping\MappingException
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
-     * @throws \Doctrine\ORM\TransactionRequiredException
+     * @throws MappingException
+     * @throws ORMException
+     * @throws OptimisticLockException
+     * @throws TransactionRequiredException
      */
-    private function assertManagerCanBeUpdatedOnAnotherConnection(int $id, string $newName)
+    private function assertManagerCanBeUpdatedOnAnotherConnection(int $id, string $newName): void
     {
-        $em = $this->_getEntityManager(TestUtil::getConnection());
+        $em = $this->getEntityManager(TestUtil::getConnection());
 
-        /** @var CompanyManager $manager */
         $manager = $em->find(CompanyManager::class, $id);
+        assert($manager instanceof CompanyManager);
         $manager->setName($newName);
 
         $em->flush();
