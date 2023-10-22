@@ -3139,11 +3139,14 @@ EXCEPTION
                 continue;
             }
 
-            $class = $this->em->getClassMetadata($entityName);
+            $class   = $this->em->getClassMetadata($entityName);
+            $batches = array_chunk($ids, $this->em->getConfiguration()->getEagerFetchBatchSize());
 
-            $this->getEntityPersister($entityName)->loadAll(
-                array_combine($class->identifier, [array_values($ids)])
-            );
+            foreach ($batches as $batchedIds) {
+                $this->getEntityPersister($entityName)->loadAll(
+                    array_combine($class->identifier, [$batchedIds])
+                );
+            }
         }
 
         $eagerLoadingCollections       = $this->eagerLoadingCollections; // avoid recursion
