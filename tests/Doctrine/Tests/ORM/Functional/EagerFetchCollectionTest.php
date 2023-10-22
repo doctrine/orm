@@ -8,7 +8,6 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Query\QueryException;
 use Doctrine\Tests\OrmFunctionalTestCase;
-use Exception;
 
 use function count;
 
@@ -18,13 +17,7 @@ class EagerFetchCollectionTest extends OrmFunctionalTestCase
     {
         parent::setUp();
 
-        try {
-            $this->_schemaTool->createSchema([
-                $this->_em->getClassMetadata(EagerFetchOwner::class),
-                $this->_em->getClassMetadata(EagerFetchChild::class),
-            ]);
-        } catch (Exception $e) {
-        }
+        $this->createSchemaForModels(EagerFetchOwner::class, EagerFetchChild::class);
     }
 
     public function testEagerFetchMode(): void
@@ -40,26 +33,21 @@ class EagerFetchCollectionTest extends OrmFunctionalTestCase
         $afterQueryCount = count($this->getQueryLog()->queries);
         $this->assertCount(2, $owner->children);
 
-        $anotherQueryCount = count($this->getQueryLog()->queries);
-
-        $this->assertEquals($anotherQueryCount, $afterQueryCount);
+        $this->assertQueryCount($afterQueryCount, 'The $owner->children collection should already be initialized by find EagerFetchOwner before.');
 
         $this->assertCount(3, $this->_em->find(EagerFetchOwner::class, $owner2->id)->children);
 
         $this->_em->clear();
 
-        $beforeQueryCount  = count($this->getQueryLog()->queries);
-        $owners            = $this->_em->getRepository(EagerFetchOwner::class)->findAll();
-        $anotherQueryCount = count($this->getQueryLog()->queries);
+        $beforeQueryCount = count($this->getQueryLog()->queries);
+        $owners           = $this->_em->getRepository(EagerFetchOwner::class)->findAll();
 
-        // the findAll() + 1 subselect loading both collections of the two returned $owners
-        $this->assertEquals($beforeQueryCount + 2, $anotherQueryCount);
+        $this->assertQueryCount($beforeQueryCount + 2, 'the findAll() + 1 subselect loading both collections of the two returned $owners');
 
         $this->assertCount(2, $owners[0]->children);
         $this->assertCount(3, $owners[1]->children);
 
-        // both collections are already initialized and count'ing them does not make a difference in total query count
-        $this->assertEquals($anotherQueryCount, count($this->getQueryLog()->queries));
+        $this->assertQueryCount($beforeQueryCount + 2, 'both collections are already initialized and counting them does not make a difference in total query count');
     }
 
     public function testEagerFetchModeWithDQL(): void
