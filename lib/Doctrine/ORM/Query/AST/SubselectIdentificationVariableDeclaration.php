@@ -11,9 +11,8 @@ namespace Doctrine\ORM\Query\AST;
  */
 class SubselectIdentificationVariableDeclaration
 {
-    /** @param PathExpression $associationPathExpression */
     public function __construct(
-        public $associationPathExpression,
+        public PathExpression $associationPathExpression,
         public string $aliasIdentificationVariable,
     ) {
     }

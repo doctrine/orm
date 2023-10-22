@@ -14,12 +14,9 @@ use Doctrine\ORM\Query\SqlWalker;
  */
 class InstanceOfExpression extends Node
 {
-    /**
-     * @param string                                $identificationVariable
-     * @param non-empty-list<InputParameter|string> $value
-     */
+    /** @param non-empty-list<InputParameter|string> $value */
     public function __construct(
-        public $identificationVariable,
+        public string $identificationVariable,
         public array $value,
         public bool $not = false,
     ) {

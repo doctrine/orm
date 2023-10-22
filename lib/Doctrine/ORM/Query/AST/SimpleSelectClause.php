@@ -13,9 +13,8 @@ use Doctrine\ORM\Query\SqlWalker;
  */
 class SimpleSelectClause extends Node
 {
-    /** @param SimpleSelectExpression $simpleSelectExpression */
     public function __construct(
-        public $simpleSelectExpression,
+        public SimpleSelectExpression $simpleSelectExpression,
         public bool $isDistinct = false,
     ) {
     }

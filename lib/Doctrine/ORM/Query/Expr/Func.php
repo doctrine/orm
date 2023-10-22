@@ -21,12 +21,11 @@ class Func implements Stringable
     /**
      * Creates a function, with the given argument.
      *
-     * @param mixed[]|mixed $arguments
      * @psalm-param list<mixed>|mixed $arguments
      */
     public function __construct(
         protected string $name,
-        $arguments,
+        mixed $arguments,
     ) {
         $this->arguments = (array) $arguments;
     }

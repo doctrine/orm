@@ -118,9 +118,6 @@ EOPHP;
     /** The UnitOfWork this factory uses to retrieve persisters */
     private readonly UnitOfWork $uow;
 
-    /** @var string */
-    private $proxyDir;
-
     /** @var self::AUTOGENERATE_* */
     private $autoGenerate;
 
@@ -128,7 +125,7 @@ EOPHP;
     private readonly IdentifierFlattener $identifierFlattener;
 
     /** @var array<class-string, Closure> */
-    private $proxyFactories = [];
+    private array $proxyFactories = [];
 
     /**
      * Initializes a new instance of the <tt>ProxyFactory</tt> class that is
@@ -141,7 +138,7 @@ EOPHP;
      */
     public function __construct(
         private readonly EntityManagerInterface $em,
-        string $proxyDir,
+        private string $proxyDir,
         private readonly string $proxyNs,
         bool|int $autoGenerate = self::AUTOGENERATE_NEVER,
     ) {
@@ -158,7 +155,6 @@ EOPHP;
         }
 
         $this->uow                 = $em->getUnitOfWork();
-        $this->proxyDir            = $proxyDir;
         $this->autoGenerate        = (int) $autoGenerate;
         $this->identifierFlattener = new IdentifierFlattener($this->uow, $em->getMetadataFactory());
     }
@@ -166,10 +162,8 @@ EOPHP;
     /**
      * @param class-string $className
      * @param array<mixed> $identifier
-     *
-     * @return InternalProxy
      */
-    public function getProxy(string $className, array $identifier)
+    public function getProxy(string $className, array $identifier): InternalProxy
     {
         $proxyFactory = $this->proxyFactories[$className] ?? $this->getProxyFactory($className);
 
@@ -186,7 +180,7 @@ EOPHP;
      *
      * @return int Number of generated proxies.
      */
-    public function generateProxyClasses(array $classes, $proxyDir = null): int
+    public function generateProxyClasses(array $classes, string|null $proxyDir = null): int
     {
         $generated = 0;
 

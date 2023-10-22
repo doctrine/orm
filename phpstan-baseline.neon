@@ -277,7 +277,7 @@ parameters:
 
 		-
 			message: "#^Match arm is unreachable because previous comparison is always true\\.$#"
-			count: 2
+			count: 1
 			path: lib/Doctrine/ORM/Query/SqlWalker.php
 
 		-

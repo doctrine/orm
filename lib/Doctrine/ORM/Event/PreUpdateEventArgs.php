@@ -23,11 +23,10 @@ class PreUpdateEventArgs extends LifecycleEventArgs
     private array $entityChangeSet;
 
     /**
-     * @param object    $entity
      * @param mixed[][] $changeSet
      * @psalm-param array<string, array{mixed, mixed}|PersistentCollection> $changeSet
      */
-    public function __construct($entity, EntityManagerInterface $em, array &$changeSet)
+    public function __construct(object $entity, EntityManagerInterface $em, array &$changeSet)
     {
         parent::__construct($entity, $em);
 
@@ -55,10 +54,8 @@ class PreUpdateEventArgs extends LifecycleEventArgs
 
     /**
      * Gets the old value of the changeset of the changed field.
-     *
-     * @return mixed
      */
-    public function getOldValue(string $field)
+    public function getOldValue(string $field): mixed
     {
         $this->assertValidField($field);
 
@@ -67,10 +64,8 @@ class PreUpdateEventArgs extends LifecycleEventArgs
 
     /**
      * Gets the new value of the changeset of the changed field.
-     *
-     * @return mixed
      */
-    public function getNewValue(string $field)
+    public function getNewValue(string $field): mixed
     {
         $this->assertValidField($field);
 

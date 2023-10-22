@@ -13,11 +13,9 @@ use Doctrine\ORM\Query\SqlWalker;
  */
 class ConditionalPrimary extends Node implements Phase2OptimizableConditional
 {
-    /** @var Node|null */
-    public $simpleConditionalExpression;
+    public Node|null $simpleConditionalExpression = null;
 
-    /** @var ConditionalExpression|Phase2OptimizableConditional|null */
-    public $conditionalExpression;
+    public ConditionalExpression|Phase2OptimizableConditional|null $conditionalExpression = null;
 
     public function isSimpleConditionalExpression(): bool
     {

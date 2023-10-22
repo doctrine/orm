@@ -11,17 +11,14 @@ use function array_unshift;
 class CycleDetectedException extends RuntimeException
 {
     /** @var list<object> */
-    private $cycle;
+    private array $cycle;
 
     /**
      * Do we have the complete cycle collected?
-     *
-     * @var bool
      */
-    private $cycleCollected = false;
+    private bool $cycleCollected = false;
 
-    /** @param object $startNode */
-    public function __construct(private $startNode)
+    public function __construct(private object $startNode)
     {
         parent::__construct('A cycle has been detected, so a topological sort is not possible. The getCycle() method provides the list of nodes that form the cycle.');
 
@@ -34,8 +31,7 @@ class CycleDetectedException extends RuntimeException
         return $this->cycle;
     }
 
-    /** @param object $node */
-    public function addToCycle($node): void
+    public function addToCycle(object $node): void
     {
         array_unshift($this->cycle, $node);
 

@@ -21,8 +21,7 @@ use function sprintf;
  */
 class IdentityFunction extends FunctionNode
 {
-    /** @var PathExpression */
-    public $pathExpression;
+    public PathExpression $pathExpression;
 
     public string|null $fieldMapping = null;
 

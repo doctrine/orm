@@ -1670,7 +1670,6 @@ class SqlWalker
         $sql .= match (true) {
             $newValue instanceof AST\Node => $newValue->dispatch($this),
             $newValue === null => 'NULL',
-            default => $this->conn->quote((string) $newValue),
         };
 
         $this->useSqlTableAliases = $useTableAliasesBefore;
