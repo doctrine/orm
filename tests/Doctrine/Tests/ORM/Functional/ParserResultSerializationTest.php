@@ -40,6 +40,7 @@ class ParserResultSerializationTest extends OrmFunctionalTestCase
         $this->assertInstanceOf(ResultSetMapping::class, $unserialized->getResultSetMapping());
         $this->assertEquals(['name' => [0]], $unserialized->getParameterMappings());
         $this->assertInstanceOf(SingleSelectExecutor::class, $unserialized->getSqlExecutor());
+        $this->assertIsString($unserialized->getSqlExecutor()->getSqlStatements());
     }
 
     #[DataProvider('provideSerializedSingleSelectResults')]
@@ -51,6 +52,7 @@ class ParserResultSerializationTest extends OrmFunctionalTestCase
         $this->assertInstanceOf(ResultSetMapping::class, $unserialized->getResultSetMapping());
         $this->assertEquals(['name' => [0]], $unserialized->getParameterMappings());
         $this->assertInstanceOf(SingleSelectExecutor::class, $unserialized->getSqlExecutor());
+        $this->assertIsString($unserialized->getSqlExecutor()->getSqlStatements());
     }
 
     /** @return Generator<string, array{string}> */

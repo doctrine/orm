@@ -11,6 +11,8 @@ use Doctrine\DBAL\ParameterType;
 use Doctrine\DBAL\Result;
 use Doctrine\DBAL\Types\Type;
 
+use function sprintf;
+
 /**
  * Base class for SQL statement executors.
  *
@@ -58,4 +60,16 @@ abstract class AbstractSqlExecutor
      * @psalm-param WrapperParameterTypeArray  $types  The parameter types.
      */
     abstract public function execute(Connection $conn, array $params, array $types): Result|int;
+
+    public function __wakeup(): void
+    {
+        $this->__unserialize((array) $this);
+    }
+
+    /** @param array<string, mixed> $data */
+    public function __unserialize(array $data): void
+    {
+        $this->sqlStatements = $data[sprintf("\0*\0%s", '_sqlStatements')]
+            ?? $data[sprintf("\0*\0%s", 'sqlStatements')];
+    }
 }
