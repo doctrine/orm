@@ -1847,6 +1847,18 @@
     <PossiblyNullPropertyAssignmentValue>
       <code>null</code>
     </PossiblyNullPropertyAssignmentValue>
+    <PropertyNotSetInConstructor>
+      <code>$_sqlStatements</code>
+      <code>$queryCacheProfile</code>
+      <code>$sqlStatements</code>
+    </PropertyNotSetInConstructor>
+    <UninitializedProperty>
+      <code><![CDATA[$this->sqlStatements]]></code>
+    </UninitializedProperty>
+    <UnsupportedPropertyReferenceUsage>
+      <code><![CDATA[$this->_sqlStatements = &$this->sqlStatements]]></code>
+      <code><![CDATA[$this->_sqlStatements = &$this->sqlStatements]]></code>
+    </UnsupportedPropertyReferenceUsage>
   </file>
   <file src="lib/Doctrine/ORM/Query/Exec/MultiTableDeleteExecutor.php">
     <InvalidReturnStatement>
@@ -1856,15 +1868,12 @@
       <code>int</code>
     </InvalidReturnType>
     <PossiblyInvalidIterator>
-      <code><![CDATA[$this->_sqlStatements]]></code>
+      <code><![CDATA[$this->sqlStatements]]></code>
     </PossiblyInvalidIterator>
     <PropertyNotSetInConstructor>
       <code>MultiTableDeleteExecutor</code>
       <code>MultiTableDeleteExecutor</code>
     </PropertyNotSetInConstructor>
-    <UninitializedProperty>
-      <code><![CDATA[$this->_sqlStatements]]></code>
-    </UninitializedProperty>
   </file>
   <file src="lib/Doctrine/ORM/Query/Exec/MultiTableUpdateExecutor.php">
     <InvalidReturnStatement>
@@ -1874,38 +1883,38 @@
       <code>int</code>
     </InvalidReturnType>
     <PossiblyInvalidIterator>
-      <code><![CDATA[$this->_sqlStatements]]></code>
+      <code><![CDATA[$this->sqlStatements]]></code>
     </PossiblyInvalidIterator>
     <PropertyNotSetInConstructor>
       <code>MultiTableUpdateExecutor</code>
       <code>MultiTableUpdateExecutor</code>
+      <code>MultiTableUpdateExecutor</code>
     </PropertyNotSetInConstructor>
     <PropertyTypeCoercion>
-      <code><![CDATA[$this->_sqlStatements]]></code>
+      <code><![CDATA[$this->sqlStatements]]></code>
     </PropertyTypeCoercion>
-    <UninitializedProperty>
-      <code><![CDATA[$this->_sqlStatements]]></code>
-    </UninitializedProperty>
   </file>
   <file src="lib/Doctrine/ORM/Query/Exec/SingleSelectExecutor.php">
     <PossiblyInvalidArgument>
-      <code><![CDATA[$this->_sqlStatements]]></code>
+      <code><![CDATA[$this->sqlStatements]]></code>
     </PossiblyInvalidArgument>
     <PropertyNotSetInConstructor>
+      <code>SingleSelectExecutor</code>
       <code>SingleSelectExecutor</code>
     </PropertyNotSetInConstructor>
   </file>
   <file src="lib/Doctrine/ORM/Query/Exec/SingleTableDeleteUpdateExecutor.php">
     <InvalidReturnStatement>
-      <code><![CDATA[$conn->executeStatement($this->_sqlStatements, $params, $types)]]></code>
+      <code><![CDATA[$conn->executeStatement($this->sqlStatements, $params, $types)]]></code>
     </InvalidReturnStatement>
     <InvalidReturnType>
       <code>int</code>
     </InvalidReturnType>
     <PossiblyInvalidArgument>
-      <code><![CDATA[$this->_sqlStatements]]></code>
+      <code><![CDATA[$this->sqlStatements]]></code>
     </PossiblyInvalidArgument>
     <PropertyNotSetInConstructor>
+      <code>SingleTableDeleteUpdateExecutor</code>
       <code>SingleTableDeleteUpdateExecutor</code>
       <code>SingleTableDeleteUpdateExecutor</code>
     </PropertyNotSetInConstructor>

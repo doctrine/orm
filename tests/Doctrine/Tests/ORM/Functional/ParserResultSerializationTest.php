@@ -11,6 +11,7 @@ use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use Generator;
 use ReflectionMethod;
+use ReflectionProperty;
 
 use function file_get_contents;
 use function rtrim;
@@ -41,6 +42,30 @@ class ParserResultSerializationTest extends OrmFunctionalTestCase
         $this->assertInstanceOf(SingleSelectExecutor::class, $unserialized->getSqlExecutor());
     }
 
+    public function testItSerializesParserResultWithAForwardCompatibleFormat(): void
+    {
+        $query = $this->_em
+            ->createQuery('SELECT u FROM Doctrine\Tests\Models\Company\CompanyEmployee u WHERE u.name = :name');
+
+        $parserResult = self::parseQuery($query);
+        $serialized   = serialize($parserResult);
+        $this->assertStringNotContainsString(
+            '_sqlStatements',
+            $serialized,
+            'ParserResult should not contain any reference to _sqlStatements, which is a legacy property.'
+        );
+        $unserialized = unserialize($serialized);
+
+        $r = new ReflectionProperty($unserialized->getSqlExecutor(), '_sqlStatements');
+        $r->setAccessible(true);
+
+        $this->assertSame(
+            $r->getValue($unserialized->getSqlExecutor()),
+            $unserialized->getSqlExecutor()->getSqlStatements(),
+            'The legacy property should be populated with the same value as the new one.'
+        );
+    }
+
     /**
      * @dataProvider provideSerializedSingleSelectResults
      */
@@ -59,6 +84,7 @@ class ParserResultSerializationTest extends OrmFunctionalTestCase
     {
         yield '2.14.3' => [rtrim(file_get_contents(__DIR__ . '/ParserResults/single_select_2_14_3.txt'), "\n")];
         yield '2.15.0' => [rtrim(file_get_contents(__DIR__ . '/ParserResults/single_select_2_15_0.txt'), "\n")];
+        yield '2.17.0' => [rtrim(file_get_contents(__DIR__ . '/ParserResults/single_select_2_17_0.txt'), "\n")];
     }
 
     private static function parseQuery(Query $query): ParserResult
