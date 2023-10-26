@@ -26,7 +26,7 @@ class IdentifierFlattenerEnumIdTest extends OrmFunctionalTestCase
         $this->createSchemaForModels(
             TypedCardEnumId::class,
             TypedCardEnumCompositeId::class,
-            ReferenceToTypedCardEnumId::class,
+            ReferenceToTypedCardEnumId::class
         );
     }
 

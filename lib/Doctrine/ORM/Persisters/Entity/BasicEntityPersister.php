@@ -42,12 +42,13 @@ use function array_search;
 use function array_unique;
 use function array_values;
 use function assert;
+use function call_user_func;
 use function count;
-use function enum_exists;
 use function get_class;
 use function implode;
 use function is_array;
 use function is_object;
+use function is_callable;
 use function reset;
 use function spl_object_id;
 use function sprintf;
@@ -275,7 +276,11 @@ class BasicEntityPersister implements EntityPersister
                 $paramIndex = 1;
 
                 foreach ($insertData[$tableName] as $column => $value) {
-                    if (is_object($value) && enum_exists(get_class($value))) {
+                    if (
+                        is_object($value)
+                        && is_callable('enum_exists')
+                        && call_user_func('enum_exists', get_class($value))
+                    ) {
                         $value = $value->value;
                     }
 
