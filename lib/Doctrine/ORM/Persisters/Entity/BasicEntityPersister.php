@@ -44,6 +44,7 @@ use function array_values;
 use function assert;
 use function count;
 use function enum_exists;
+use function get_class;
 use function implode;
 use function is_array;
 use function is_object;
@@ -274,7 +275,7 @@ class BasicEntityPersister implements EntityPersister
                 $paramIndex = 1;
 
                 foreach ($insertData[$tableName] as $column => $value) {
-                    if (is_object($value) && enum_exists($value::class)) {
+                    if (is_object($value) && enum_exists(get_class($value))) {
                         $value = $value->value;
                     }
 
