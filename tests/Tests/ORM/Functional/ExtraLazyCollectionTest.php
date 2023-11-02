@@ -179,6 +179,63 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
         self::assertCount(2, $otherClass->childClasses);
     }
 
+    #[Group('non-cacheable')]
+    public function testFirstWhenInitialized(): void
+    {
+        $user = $this->_em->find(CmsUser::class, $this->userId);
+        $this->getQueryLog()->reset()->enable();
+        $user->groups->toArray();
+
+        self::assertTrue($user->groups->isInitialized());
+        self::assertInstanceOf(CmsGroup::class, $user->groups->first());
+        $this->assertQueryCount(1, 'Should only execute one query to initialize collection, no extra query for first().');
+    }
+
+    public function testFirstOnEmptyCollectionWhenInitialized(): void
+    {
+        foreach ($this->_em->getRepository(CmsGroup::class)->findAll() as $group) {
+            $this->_em->remove($group);
+        }
+
+        $this->_em->flush();
+
+        $user = $this->_em->find(CmsUser::class, $this->userId);
+        $this->getQueryLog()->reset()->enable();
+        $user->groups->toArray();
+
+        self::assertTrue($user->groups->isInitialized());
+        self::assertFalse($user->groups->first());
+        $this->assertQueryCount(1, 'Should only execute one query to initialize collection, no extra query for first().');
+    }
+
+    public function testFirstWhenNotInitialized(): void
+    {
+        $user = $this->_em->find(CmsUser::class, $this->userId);
+        $this->getQueryLog()->reset()->enable();
+
+        self::assertFalse($user->groups->isInitialized());
+        self::assertInstanceOf(CmsGroup::class, $user->groups->first());
+        self::assertFalse($user->groups->isInitialized());
+        $this->assertQueryCount(1, 'Should only execute one query for first().');
+    }
+
+    public function testFirstOnEmptyCollectionWhenNotInitialized(): void
+    {
+        foreach ($this->_em->getRepository(CmsGroup::class)->findAll() as $group) {
+            $this->_em->remove($group);
+        }
+
+        $this->_em->flush();
+
+        $user = $this->_em->find(CmsUser::class, $this->userId);
+        $this->getQueryLog()->reset()->enable();
+
+        self::assertFalse($user->groups->isInitialized());
+        self::assertFalse($user->groups->first());
+        self::assertFalse($user->groups->isInitialized());
+        $this->assertQueryCount(1, 'Should only execute one query for first().');
+    }
+
     #[Group('DDC-546')]
     public function testFullSlice(): void
     {
