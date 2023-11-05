@@ -8,7 +8,6 @@ use Doctrine\Common\EventManager;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Driver;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
-use Doctrine\DBAL\Platforms\OraclePlatform;
 use Doctrine\DBAL\Platforms\PostgreSQLPlatform;
 use Doctrine\Deprecations\PHPUnit\VerifyDeprecations;
 use Doctrine\ORM\Configuration;
@@ -127,17 +126,6 @@ class ClassMetadataFactoryTest extends OrmTestCase
         $entityManager->getConfiguration()->setIdentityGenerationPreferences($preferences);
 
         return $cmf;
-    }
-
-    public function testRelyingOnLegacyIdGenerationDefaultsIsOKIfItResultsInTheCurrentlyRecommendedStrategyBeingUsed(): void
-    {
-        $cm = $this->createValidClassMetadata();
-        $cm->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_AUTO);
-        $cmf = $this->setUpCmfForPlatform(new OraclePlatform());
-        $cmf->setMetadataForClass($cm->name, $cm);
-
-        $this->expectNoDeprecationWithIdentifier('https://github.com/doctrine/orm/issues/8893');
-        $cmf->getMetadataFor($cm->name);
     }
 
     public function testPostgresSticksWithSequencesWhenDbal3IsUsed(): void

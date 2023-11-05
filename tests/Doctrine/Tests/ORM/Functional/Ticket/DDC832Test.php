@@ -18,6 +18,8 @@ use Doctrine\ORM\Mapping\Version;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use PHPUnit\Framework\Attributes\Group;
 
+use function method_exists;
+
 class DDC832Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -44,7 +46,8 @@ class DDC832Test extends OrmFunctionalTestCase
         $sm->dropTable($platform->quoteIdentifier('INDEX'));
         $sm->dropTable($platform->quoteIdentifier('LIKE'));
 
-        if ($platform instanceof PostgreSQLPlatform) {
+        // DBAL 3
+        if ($platform instanceof PostgreSQLPlatform && method_exists($platform, 'getIdentitySequenceName')) {
             $sm->dropSequence($platform->quoteIdentifier('INDEX_id_seq'));
             $sm->dropSequence($platform->quoteIdentifier('LIKE_id_seq'));
         }
