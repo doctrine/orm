@@ -796,7 +796,7 @@ then the global batch size configuration is used to avoid IN(?) queries with
 too many arguments. The default batch size is 100 and can be changed with
 ``Configuration::setEagerFetchBatchSize()``.
 
-For eagerly laoded Many-To-Many associations one query has to made for each
+For eagerly loaded Many-To-Many associations one query has to be made for each
 collection.
 
 By Lazy Loading
