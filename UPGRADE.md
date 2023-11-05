@@ -1,5 +1,9 @@
 # Upgrade to 2.17
 
+## Deprecate `Doctrine\ORM\Query\Exec\AbstractSqlExecutor::_sqlStatements`
+
+Use `Doctrine\ORM\Query\Exec\AbstractSqlExecutor::sqlStatements` instead.
+
 ## Undeprecate `Doctrine\ORM\Proxy\Autoloader`
 
 It will be a full-fledged class, no longer extending
