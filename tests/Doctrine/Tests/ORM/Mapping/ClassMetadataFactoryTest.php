@@ -170,7 +170,18 @@ class ClassMetadataFactoryTest extends OrmTestCase
         return $cmf;
     }
 
-    public function testRelyingOnLegacyIdGenerationDefaultsIsDeprecatedIfItResultsInASuboptimalDefault(): void
+    public function testRelyingOnLegacyIdGenerationDefaultsIsOKIfItResultsInTheCurrentlyRecommendedStrategyBeingUsed(): void
+    {
+        $cm = $this->createValidClassMetadata();
+        $cm->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_AUTO);
+        $cmf = $this->setUpCmfForPlatform(new OraclePlatform());
+        $cmf->setMetadataForClass($cm->name, $cm);
+
+        $this->expectNoDeprecationWithIdentifier('https://github.com/doctrine/orm/issues/8893');
+        $cmf->getMetadataFor($cm->name);
+    }
+
+    public function testRelyingOnLegacyIdGenerationDefaultsIsDeprecatedIfItResultsInADefaultThatWillChange(): void
     {
         $cm = $this->createValidClassMetadata();
         $cm->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_AUTO);
@@ -188,19 +199,8 @@ class ClassMetadataFactoryTest extends OrmTestCase
         $cm->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_AUTO);
 
         $cmf = $this->setUpCmfForPlatform(new PostgreSQLPlatform(), [
-            PostgreSQLPlatform::class => ClassMetadata::GENERATOR_TYPE_IDENTITY,
+            PostgreSQLPlatform::class => ClassMetadata::GENERATOR_TYPE_SEQUENCE,
         ]);
-        $cmf->setMetadataForClass($cm->name, $cm);
-
-        $this->expectNoDeprecationWithIdentifier('https://github.com/doctrine/orm/issues/8893');
-        $cmf->getMetadataFor($cm->name);
-    }
-
-    public function testRelyingOnLegacyIdGenerationDefaultsIsOKIfItResultsInTheCurrentlyRecommendedStrategyBeingUsed(): void
-    {
-        $cm = $this->createValidClassMetadata();
-        $cm->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_AUTO);
-        $cmf = $this->setUpCmfForPlatform(new OraclePlatform());
         $cmf->setMetadataForClass($cm->name, $cm);
 
         $this->expectNoDeprecationWithIdentifier('https://github.com/doctrine/orm/issues/8893');

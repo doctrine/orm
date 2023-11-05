@@ -34,7 +34,6 @@ use ReflectionException;
 
 use function assert;
 use function class_exists;
-use function constant;
 use function count;
 use function end;
 use function explode;
@@ -74,26 +73,10 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     /** @var mixed[] */
     private $embeddablesActiveNesting = [];
 
-    private const LEGACY_DEFAULTS_FOR_ID_GENERATION = [
-        'Doctrine\DBAL\Platforms\MySqlPlatform' => ClassMetadata::GENERATOR_TYPE_IDENTITY,
+    private const NON_IDENTITY_DEFAULT_STRATEGY = [
         'Doctrine\DBAL\Platforms\PostgreSqlPlatform' => ClassMetadata::GENERATOR_TYPE_SEQUENCE,
-        Platforms\DB2Platform::class => ClassMetadata::GENERATOR_TYPE_IDENTITY,
-        Platforms\MySQLPlatform::class => ClassMetadata::GENERATOR_TYPE_IDENTITY,
         Platforms\OraclePlatform::class => ClassMetadata::GENERATOR_TYPE_SEQUENCE,
         Platforms\PostgreSQLPlatform::class => ClassMetadata::GENERATOR_TYPE_SEQUENCE,
-        Platforms\SQLServerPlatform::class => ClassMetadata::GENERATOR_TYPE_IDENTITY,
-        Platforms\SqlitePlatform::class => ClassMetadata::GENERATOR_TYPE_IDENTITY,
-    ];
-
-    private const RECOMMENDED_STRATEGY = [
-        'Doctrine\DBAL\Platforms\MySqlPlatform' => 'IDENTITY',
-        'Doctrine\DBAL\Platforms\PostgreSqlPlatform' => 'IDENTITY',
-        Platforms\DB2Platform::class => 'IDENTITY',
-        Platforms\MySQLPlatform::class => 'IDENTITY',
-        Platforms\OraclePlatform::class => 'SEQUENCE',
-        Platforms\PostgreSQLPlatform::class => 'IDENTITY',
-        Platforms\SQLServerPlatform::class => 'IDENTITY',
-        Platforms\SqlitePlatform::class => 'IDENTITY',
     ];
 
     /** @return void */
@@ -657,7 +640,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
                         'https://github.com/doctrine/orm/issues/8850',
                         <<<'DEPRECATION'
 Context: Loading metadata for class %s
-Problem: Using the IDENTITY generator strategy with platform "%s" is deprecated and will not be possible in Doctrine ORM 3.0.
+Problem: Using identity columns emulated with a sequence is deprecated and will not be possible in Doctrine ORM 3.0.
 Solution: Use the SEQUENCE generator strategy instead.
 DEPRECATION
                             ,
@@ -762,27 +745,25 @@ DEPRECATION
             }
         }
 
-        foreach (self::LEGACY_DEFAULTS_FOR_ID_GENERATION as $platformFamily => $strategy) {
+        foreach (self::NON_IDENTITY_DEFAULT_STRATEGY as $platformFamily => $strategy) {
             if (is_a($platform, $platformFamily)) {
-                $recommendedStrategyName = self::RECOMMENDED_STRATEGY[$platformFamily];
-                if ($strategy !== constant('Doctrine\ORM\Mapping\ClassMetadata::GENERATOR_TYPE_' . $recommendedStrategyName)) {
+                if ($platform instanceof Platforms\PostgreSQLPlatform || is_a($platform, 'Doctrine\DBAL\Platforms\PostgreSqlPlatform')) {
                     Deprecation::trigger(
                         'doctrine/orm',
                         'https://github.com/doctrine/orm/issues/8893',
                         <<<'DEPRECATION'
-Relying on non-optimal defaults for ID generation is deprecated.
+Relying on non-optimal defaults for ID generation is deprecated, and IDENTITY
+results in SERIAL, which is not recommended.
 Instead, configure identifier generation strategies explicitly through
 configuration.
-We currently recommend "%s" for "%s", so you should use
+We currently recommend "SEQUENCE" for "%s", so you should use
 $configuration->setIdentityGenerationPreferences([
-    "%s" => ClassMetadata::GENERATOR_TYPE_%s,
+    "%s" => ClassMetadata::GENERATOR_TYPE_SEQUENCE,
 ]);
 DEPRECATION
                         ,
-                        $recommendedStrategyName,
                         $platformFamily,
-                        $platformFamily,
-                        $recommendedStrategyName
+                        $platformFamily
                     );
                 }
 
