@@ -9,6 +9,7 @@ use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Driver;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Platforms\OraclePlatform;
+use Doctrine\DBAL\Platforms\PostgreSQLPlatform;
 use Doctrine\Deprecations\PHPUnit\VerifyDeprecations;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityManagerInterface;
@@ -137,6 +138,38 @@ class ClassMetadataFactoryTest extends OrmTestCase
 
         $this->expectNoDeprecationWithIdentifier('https://github.com/doctrine/orm/issues/8893');
         $cmf->getMetadataFor($cm->name);
+    }
+
+    public function testPostgresSticksWithSequencesWhenDbal3IsUsed(): void
+    {
+        if (! method_exists(AbstractPlatform::class, 'getIdentitySequenceName')) {
+            self::markTestSkipped('This test requires DBAL 3');
+        }
+
+        $cm = $this->createValidClassMetadata();
+        $cm->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_AUTO);
+        $cmf = $this->setUpCmfForPlatform(new PostgreSQLPlatform());
+        $cmf->setMetadataForClass($cm->name, $cm);
+
+        $metadata = $cmf->getMetadataFor($cm->name);
+
+        self::assertSame(ClassMetadata::GENERATOR_TYPE_SEQUENCE, $metadata->generatorType);
+    }
+
+    public function testPostgresSwitchesToIdentityColumnsWhenDbal4IsUsed(): void
+    {
+        if (method_exists(AbstractPlatform::class, 'getIdentitySequenceName')) {
+            self::markTestSkipped('This test requires DBAL 4');
+        }
+
+        $cm = $this->createValidClassMetadata();
+        $cm->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_AUTO);
+        $cmf = $this->setUpCmfForPlatform(new PostgreSQLPlatform());
+        $cmf->setMetadataForClass($cm->name, $cm);
+
+        $metadata = $cmf->getMetadataFor($cm->name);
+
+        self::assertSame(ClassMetadata::GENERATOR_TYPE_IDENTITY, $metadata->generatorType);
     }
 
     public function testGetMetadataForThrowsExceptionOnUnknownCustomGeneratorClass(): void
