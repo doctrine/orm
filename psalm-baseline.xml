@@ -1844,6 +1844,14 @@
     </ParamNameMismatch>
   </file>
   <file src="lib/Doctrine/ORM/Query/Exec/AbstractSqlExecutor.php">
+    <DeprecatedProperty>
+      <code><![CDATA[$this->_sqlStatements]]></code>
+      <code><![CDATA[$this->_sqlStatements]]></code>
+    </DeprecatedProperty>
+    <DocblockTypeContradiction>
+      <code><![CDATA[$this->_sqlStatements !== null && $this->sqlStatements === null]]></code>
+      <code><![CDATA[$this->sqlStatements === null]]></code>
+    </DocblockTypeContradiction>
     <PossiblyNullPropertyAssignmentValue>
       <code>null</code>
     </PossiblyNullPropertyAssignmentValue>
@@ -1852,6 +1860,9 @@
       <code>$queryCacheProfile</code>
       <code>$sqlStatements</code>
     </PropertyNotSetInConstructor>
+    <RedundantConditionGivenDocblockType>
+      <code><![CDATA[$this->_sqlStatements !== null]]></code>
+    </RedundantConditionGivenDocblockType>
     <UninitializedProperty>
       <code><![CDATA[$this->sqlStatements]]></code>
     </UninitializedProperty>

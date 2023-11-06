@@ -89,6 +89,10 @@ abstract class AbstractSqlExecutor
 
     public function __wakeup(): void
     {
+        if ($this->_sqlStatements !== null && $this->sqlStatements === null) {
+            $this->sqlStatements = $this->_sqlStatements;
+        }
+
         $this->_sqlStatements = &$this->sqlStatements;
     }
 }
