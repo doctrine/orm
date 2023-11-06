@@ -536,12 +536,12 @@ parameters:
 			path: lib/Doctrine/ORM/Tools/Console/Command/MappingDescribeCommand.php
 
 		-
-			message: "#^Offset 'allocationSize' on array\\{sequenceName\\: string, allocationSize\\: string, initialValue\\: string, quoted\\?\\: mixed\\} in isset\\(\\) always exists and is not nullable\\.$#"
+			message: "#^Offset 'allocationSize' on array\\{sequenceName\\: string, allocationSize\\: string, initialValue\\: string, quoted\\?\\: mixed, implicit\\?\\: bool\\} in isset\\(\\) always exists and is not nullable\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Tools/EntityGenerator.php
 
 		-
-			message: "#^Offset 'initialValue' on array\\{sequenceName\\: string, allocationSize\\: string, initialValue\\: string, quoted\\?\\: mixed\\} in isset\\(\\) always exists and is not nullable\\.$#"
+			message: "#^Offset 'initialValue' on array\\{sequenceName\\: string, allocationSize\\: string, initialValue\\: string, quoted\\?\\: mixed, implicit\\?\\: bool\\} in isset\\(\\) always exists and is not nullable\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Tools/EntityGenerator.php
 
@@ -551,7 +551,7 @@ parameters:
 			path: lib/Doctrine/ORM/Tools/EntityGenerator.php
 
 		-
-			message: "#^Offset 'sequenceName' on array\\{sequenceName\\: string, allocationSize\\: string, initialValue\\: string, quoted\\?\\: mixed\\} in isset\\(\\) always exists and is not nullable\\.$#"
+			message: "#^Offset 'sequenceName' on array\\{sequenceName\\: string, allocationSize\\: string, initialValue\\: string, quoted\\?\\: mixed, implicit\\?\\: bool\\} in isset\\(\\) always exists and is not nullable\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Tools/EntityGenerator.php
 

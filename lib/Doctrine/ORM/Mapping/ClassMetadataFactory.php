@@ -113,7 +113,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
         if ($parent) {
             $class->setInheritanceType($parent->inheritanceType);
             $class->setDiscriminatorColumn($parent->discriminatorColumn);
-            $this->inheritIdGeneratorMapping($class, $parent);
+            $class->setIdGeneratorType($parent->generatorType);
             $this->addInheritedFields($class, $parent);
             $this->addInheritedRelations($class, $parent);
             $this->addInheritedEmbeddedClasses($class, $parent);
@@ -141,8 +141,9 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
             throw MappingException::reflectionFailure($class->getName(), $e);
         }
 
-        // Complete id generator mapping when the generator was declared/added in this class
-        if ($class->identifier && (! $parent || ! $parent->identifier)) {
+        if ($parent && ($rootEntityFound || ($parent->sequenceGeneratorDefinition && ! isset($parent->sequenceGeneratorDefinition['implicit'])))) {
+            $this->inheritIdGeneratorMapping($class, $parent);
+        } else {
             $this->completeIdGeneratorMapping($class);
         }
 
@@ -677,6 +678,7 @@ DEPRECATION
                         'sequenceName'      => $this->truncateSequenceName($sequenceName),
                         'allocationSize'    => 1,
                         'initialValue'      => 1,
+                        'implicit'          => true,
                     ];
 
                     if ($quoted) {

@@ -721,7 +721,7 @@ class ClassMetadataInfo implements ClassMetadata
      * </code>
      *
      * @var array<string, mixed>|null
-     * @psalm-var array{sequenceName: string, allocationSize: string, initialValue: string, quoted?: mixed}|null
+     * @psalm-var array{sequenceName: string, allocationSize: string, initialValue: string, quoted?: mixed, implicit?: bool}|null
      * @todo Merge with tableGeneratorDefinition into generic generatorDefinition
      */
     public $sequenceGeneratorDefinition;
@@ -3433,7 +3433,7 @@ class ClassMetadataInfo implements ClassMetadata
      * )
      * </code>
      *
-     * @psalm-param array{sequenceName?: string, allocationSize?: int|string, initialValue?: int|string, quoted?: mixed} $definition
+     * @psalm-param array{sequenceName?: string, allocationSize?: int|string, initialValue?: int|string, quoted?: mixed, implicit?: bool} $definition
      *
      * @return void
      *

@@ -163,6 +163,7 @@ class BasicInheritanceMappingTest extends OrmTestCase
     /**
      * @group DDC-1156
      * @group DDC-1218
+     * @group GH-10927
      */
     public function testGeneratedValueFromMappedSuperclass(): void
     {
@@ -179,6 +180,7 @@ class BasicInheritanceMappingTest extends OrmTestCase
     /**
      * @group DDC-1156
      * @group DDC-1218
+     * @group GH-10927
      */
     public function testSequenceDefinitionInHierarchyWithSandwichMappedSuperclass(): void
     {
@@ -195,6 +197,7 @@ class BasicInheritanceMappingTest extends OrmTestCase
     /**
      * @group DDC-1156
      * @group DDC-1218
+     * @group GH-10927
      */
     public function testMultipleMappedSuperclasses(): void
     {
