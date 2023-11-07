@@ -537,6 +537,7 @@
       <code>$class</code>
       <code>$class</code>
       <code>$platformFamily</code>
+      <code><![CDATA['Doctrine\DBAL\Platforms\PostgreSqlPlatform']]></code>
       <code><![CDATA[new $definition['class']()]]></code>
     </ArgumentTypeCoercion>
     <DeprecatedClass>

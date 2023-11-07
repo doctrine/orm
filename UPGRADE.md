@@ -13,16 +13,17 @@ It will be a full-fledged class, no longer extending
 
 When the `AUTO` identifier generation strategy was introduced, the best
 strategy at the time was selected for each database platform.
-A lot of time has passed since then, and support for better strategies has been
-added.
+A lot of time has passed since then, and with ORM 3.0.0 and DBAL 4.0.0, support
+for better strategies will be added.
 
 Because of that, it is now deprecated to rely on the historical defaults when
-they differ from what we recommend now.
+they differ from what we will be recommended in the future.
 
 Instead, you should pick a strategy for each database platform you use, and it
 will be used when using `AUTO`. As of now, only PostgreSQL is affected by this.
-It is recommended that PostgreSQL user configure their new applications to use
-`IDENTITY`:
+
+It is recommended that PostgreSQL users configure their existing and new
+applications to use `SEQUENCE` until `doctrine/dbal` 4.0.0 is released:
 
 ```php
 use Doctrine\DBAL\Platforms\PostgreSQLPlatform;
@@ -30,12 +31,12 @@ use Doctrine\ORM\Configuration;
 
 assert($configuration instanceof Configuration);
 $configuration->setIdentityGenerationPreferences([
-    PostgreSQLPlatform::CLASS => ClassMetadata::GENERATOR_TYPE_IDENTITY,
+    PostgreSQLPlatform::CLASS => ClassMetadata::GENERATOR_TYPE_SEQUENCE,
 ]);
 ```
 
-If migrating an existing application is too costly, the deprecation can be
-addressed by configuring `SEQUENCE` as the default strategy.
+When DBAL 4 is released, `AUTO` will result in `IDENTITY`, and the above
+configuration should be removed to migrate to it.
 
 ## Deprecate `EntityManagerInterface::getPartialReference()`
 

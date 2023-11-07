@@ -427,20 +427,6 @@ defaults to the identifier generation mechanism your current database
 vendor preferred at the time that strategy was introduced:
 ``AUTO_INCREMENT`` with MySQL, sequences with PostgreSQL and Oracle and
 so on.
-We now recommend using ``IDENTITY`` for PostgreSQL, and you can achieve
-that while still using the ``AUTO`` strategy, by configuring what it
-defaults to.
-
-.. code-block:: php
-
-    <?php
-    use Doctrine\DBAL\Platforms\PostgreSQLPlatform;
-    use Doctrine\ORM\Configuration;
-
-    $config = new Configuration();
-    $config->setIdentityGenerationPreferences([
-        PostgreSQLPlatform::class => ClassMetadata::GENERATOR_TYPE_IDENTITY,
-    ]);
 
 .. _identifier-generation-strategies:
 
