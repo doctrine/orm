@@ -301,7 +301,13 @@ class ObjectHydrator extends AbstractHydrator
             return $this->_uow->tryGetByIdHash($data[$class->associationMappings[$class->identifier[0]]['joinColumns'][0]['name']], $class->rootEntityName);
         }
 
-        return $this->_uow->tryGetByIdHash($data[$class->identifier[0]], $class->rootEntityName);
+        $idHash = $data[$class->identifier[0]];
+
+        if ($idHash instanceof \BackedEnum) {
+            $idHash = $idHash->value;
+        }
+
+        return $this->_uow->tryGetByIdHash($idHash, $class->rootEntityName);
     }
 
     /**
