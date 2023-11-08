@@ -241,7 +241,7 @@ class ProxyFactoryTest extends OrmTestCase
         self::assertSame('Bob', $cloned->getName(), 'Expect properties on the CompanyPerson class to be cloned');
     }
 
-    public function testProxyWithoutIdentifierThrowWhenLoaded(): void
+    public function testProxyWithoutIdentifierThrowsWhenLoaded(): void
     {
         $proxy = $this->proxyFactory->getProxy(ECommerceFeature::class, ['id' => 'toBeRemoved']);
         $id    = new ReflectionProperty(ECommerceFeature::class, 'id');
