@@ -330,7 +330,8 @@ vendor preferred at the time that strategy was introduced:
 ``AUTO_INCREMENT`` with MySQL, sequences with PostgreSQL and Oracle and
 so on.
 If you are using `doctrine/dbal` 4, we now recommend using ``IDENTITY``
-for PostgreSQL, and you can achieve that while still using the ``AUTO``
+for PostgreSQL, and ``AUTO`` resolves to it because of that.
+You can stick with ``SEQUENCE`` while still using the ``AUTO``
 strategy, by configuring what it defaults to.
 
 .. code-block:: php
@@ -341,7 +342,7 @@ strategy, by configuring what it defaults to.
 
     $config = new Configuration();
     $config->setIdentityGenerationPreferences([
-        PostgreSQLPlatform::class => ClassMetadata::GENERATOR_TYPE_IDENTITY,
+        PostgreSQLPlatform::class => ClassMetadata::GENERATOR_TYPE_SEQUENCE,
     ]);
 
 .. _identifier-generation-strategies:

@@ -51,13 +51,13 @@ class ParserResultSerializationTest extends OrmFunctionalTestCase
         $this->assertInstanceOf(ResultSetMapping::class, $unserialized->getResultSetMapping());
         $this->assertEquals(['name' => [0]], $unserialized->getParameterMappings());
         $this->assertInstanceOf(SingleSelectExecutor::class, $unserialized->getSqlExecutor());
+        $this->assertIsString($unserialized->getSqlExecutor()->getSqlStatements());
     }
 
     /** @return Generator<string, array{string}> */
     public static function provideSerializedSingleSelectResults(): Generator
     {
-        yield '2.14.3' => [rtrim(file_get_contents(__DIR__ . '/ParserResults/single_select_2_14_3.txt'), "\n")];
-        yield '2.15.0' => [rtrim(file_get_contents(__DIR__ . '/ParserResults/single_select_2_15_0.txt'), "\n")];
+        yield '2.17.0' => [rtrim(file_get_contents(__DIR__ . '/ParserResults/single_select_2_17_0.txt'), "\n")];
     }
 
     private static function parseQuery(Query $query): ParserResult

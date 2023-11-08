@@ -7,6 +7,7 @@ namespace Doctrine\ORM\Mapping;
 use Doctrine\Common\EventManager;
 use Doctrine\DBAL\Platforms;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
+use Doctrine\Deprecations\Deprecation;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Event\LoadClassMetadataEventArgs;
 use Doctrine\ORM\Event\OnClassMetadataNotFoundEventArgs;
@@ -626,6 +627,30 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
 
         foreach ($nonIdentityDefaultStrategy as $platformFamily => $strategy) {
             if (is_a($platform, $platformFamily)) {
+                if ($platform instanceof Platforms\PostgreSQLPlatform) {
+                    Deprecation::trigger(
+                        'doctrine/orm',
+                        'https://github.com/doctrine/orm/issues/8893',
+                        <<<'DEPRECATION'
+                        Relying on non-optimal defaults for ID generation is deprecated, and IDENTITY
+                        results in SERIAL, which is not recommended.
+                        Instead, configure identifier generation strategies explicitly through
+                        configuration.
+                        We currently recommend "SEQUENCE" for "%s", when using DBAL 3,
+                        and "IDENTITY" when using DBAL 4,
+                        so you should use probably use the following configuration before upgrading to DBAL 4,
+                        and remove it after deploying that upgrade:
+
+                        $configuration->setIdentityGenerationPreferences([
+                            "%s" => ClassMetadata::GENERATOR_TYPE_SEQUENCE,
+                        ]);
+
+                        DEPRECATION,
+                        $platformFamily,
+                        $platformFamily,
+                    );
+                }
+
                 return $strategy;
             }
         }
