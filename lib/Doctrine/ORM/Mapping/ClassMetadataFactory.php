@@ -34,6 +34,7 @@ use function explode;
 use function in_array;
 use function is_a;
 use function is_subclass_of;
+use function method_exists;
 use function str_contains;
 use function strlen;
 use function strtolower;
@@ -616,7 +617,14 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
             }
         }
 
-        foreach (self::NON_IDENTITY_DEFAULT_STRATEGY as $platformFamily => $strategy) {
+        $nonIdentityDefaultStrategy = self::NON_IDENTITY_DEFAULT_STRATEGY;
+
+        // DBAL 3
+        if (method_exists($platform, 'getIdentitySequenceName')) {
+            $nonIdentityDefaultStrategy[Platforms\PostgreSQLPlatform::class] = ClassMetadata::GENERATOR_TYPE_SEQUENCE;
+        }
+
+        foreach ($nonIdentityDefaultStrategy as $platformFamily => $strategy) {
             if (is_a($platform, $platformFamily)) {
                 return $strategy;
             }

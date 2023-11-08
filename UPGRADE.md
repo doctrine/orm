@@ -9,12 +9,12 @@ Make sure to use the former when writing a type declaration or an `instanceof` c
 To keep PHP mapping attributes consistent, order of arguments passed to above attributes has been changed
 so `$targetEntity` is a first argument now. This change affects only non-named arguments usage.
 
-## BC BREAK: AUTO keyword for identity generation defaults to IDENTITY for PostgreSQL now
+## BC BREAK: AUTO keyword for identity generation defaults to IDENTITY for PostgreSQL when using `doctrine/dbal` 4
 
-When using the AUTO strategy to let Doctrine determine the identity generation mecehanism for
-an entity, PostgreSQL now uses IDENTITY instead of SEQUENCE. When upgrading from ORM 2.x
-and preference is on keeping the SEQUENCE based identity generation, then configure the ORM
-this way:
+When using the `AUTO` strategy to let Doctrine determine the identity generation mechanism for
+an entity, and when using `doctrine/dbal` 4, PostgreSQL now uses `IDENTITY`
+instead of `SEQUENCE`. When upgrading from ORM 2.x and preference is on keeping
+the `SEQUENCE` based identity generation, then configure the ORM this way:
 
 ```php
 use Doctrine\DBAL\Platforms\PostgreSQLPlatform;
