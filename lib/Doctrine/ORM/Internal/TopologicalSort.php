@@ -129,7 +129,7 @@ final class TopologicalSort
         $this->states[$oid] = self::IN_PROGRESS;
 
         // Continue the DFS downwards the edge list
-        foreach ($this->edges[$oid] as $adjacentId => $optional) {
+        foreach (array_reverse($this->edges[$oid], true) as $adjacentId => $optional) {
             try {
                 $this->visit($adjacentId);
             } catch (CycleDetectedException $exception) {
