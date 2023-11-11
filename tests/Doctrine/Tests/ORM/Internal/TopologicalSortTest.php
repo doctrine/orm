@@ -155,7 +155,7 @@ class TopologicalSortTest extends OrmTestCase
 
     public function testNodesMaintainOrderWhenEdgesPermit(): void
     {
-        $this->addNodes( 'A', 'B', 'C');
+        $this->addNodes('A', 'B', 'C');
         $this->addEdge('A', 'B');
         $this->addEdge('A', 'C');
 
@@ -166,7 +166,7 @@ class TopologicalSortTest extends OrmTestCase
 
     public function testNodesMaintainOrderWhenEdgesPermitAndMainNodePersistedLast(): void
     {
-        $this->addNodes( 'B', 'C', 'A');
+        $this->addNodes('B', 'C', 'A');
         $this->addEdge('A', 'B');
         $this->addEdge('A', 'C');
 
