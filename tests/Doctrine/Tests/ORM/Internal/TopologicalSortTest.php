@@ -153,6 +153,28 @@ class TopologicalSortTest extends OrmTestCase
         self::assertSame(['A', 'B', 'C'], $this->computeResult());
     }
 
+    public function testNodesMaintainOrderWhenEdgesPermit(): void
+    {
+        $this->addNodes( 'A', 'B', 'C');
+        $this->addEdge('A', 'B');
+        $this->addEdge('A', 'C');
+
+        // Nodes shall maintain the order in which they were added
+        // when permitted by edges/constraints
+        self::assertSame(['A', 'B', 'C'], $this->computeResult());
+    }
+
+    public function testNodesMaintainOrderWhenEdgesPermitAndMainNodePersistedLast(): void
+    {
+        $this->addNodes( 'B', 'C', 'A');
+        $this->addEdge('A', 'B');
+        $this->addEdge('A', 'C');
+
+        // Nodes shall maintain the order in which they were added
+        // when permitted by edges/constraints
+        self::assertSame(['A', 'B', 'C'], $this->computeResult());
+    }
+
     public function testDetectSmallCycle(): void
     {
         $this->addNodes('A', 'B');
