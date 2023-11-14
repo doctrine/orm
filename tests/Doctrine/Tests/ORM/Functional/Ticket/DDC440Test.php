@@ -49,7 +49,7 @@ class DDC440Test extends OrmFunctionalTestCase
         $phone->setClient($client);
 
         $phone2 = new DDC440Phone();
-        $phone->setId(2);
+        $phone2->setId(2);
         $phone2->setNumber('418 222-2222');
         $phone2->setClient($client);
 
@@ -88,10 +88,10 @@ class DDC440Test extends OrmFunctionalTestCase
 class DDC440Phone
 {
     /**
-     * @var int
      * @Column(name="id", type="integer")
      * @Id
      * @GeneratedValue(strategy="AUTO")
+     * @var int
      */
     protected $id;
 

@@ -51,6 +51,7 @@ use RuntimeException;
 use Throwable;
 use UnexpectedValueException;
 
+use function array_chunk;
 use function array_combine;
 use function array_diff_key;
 use function array_filter;
@@ -313,6 +314,9 @@ class UnitOfWork implements PropertyChangedListener
      * @psalm-var array<class-string, array<string, mixed>>
      */
     private $eagerLoadingEntities = [];
+
+    /** @var array<string, array<string, mixed>> */
+    private $eagerLoadingCollections = [];
 
     /** @var bool */
     protected $hasCache = false;
@@ -2749,6 +2753,7 @@ EXCEPTION
             $this->pendingCollectionElementRemovals =
             $this->visitedCollections               =
             $this->eagerLoadingEntities             =
+            $this->eagerLoadingCollections          =
             $this->orphanRemovals                   = [];
         } else {
             Deprecation::triggerIfCalledFromOutside(
@@ -2938,6 +2943,10 @@ EXCEPTION
                 continue;
             }
 
+            if (! isset($hints['fetchMode'][$class->name][$field])) {
+                $hints['fetchMode'][$class->name][$field] = $assoc['fetch'];
+            }
+
             $targetClass = $this->em->getClassMetadata($assoc['targetEntity']);
 
             switch (true) {
@@ -2999,10 +3008,6 @@ EXCEPTION
                         $this->originalEntityData[$oid][$field] = null;
 
                         break;
-                    }
-
-                    if (! isset($hints['fetchMode'][$class->name][$field])) {
-                        $hints['fetchMode'][$class->name][$field] = $assoc['fetch'];
                     }
 
                     // Foreign key is set
@@ -3098,9 +3103,13 @@ EXCEPTION
                     $reflField = $class->reflFields[$field];
                     $reflField->setValue($entity, $pColl);
 
-                    if ($assoc['fetch'] === ClassMetadata::FETCH_EAGER) {
-                        $this->loadCollection($pColl);
-                        $pColl->takeSnapshot();
+                    if ($hints['fetchMode'][$class->name][$field] === ClassMetadata::FETCH_EAGER) {
+                        if ($assoc['type'] === ClassMetadata::ONE_TO_MANY) {
+                            $this->scheduleCollectionForBatchLoading($pColl, $class);
+                        } elseif ($assoc['type'] === ClassMetadata::MANY_TO_MANY) {
+                            $this->loadCollection($pColl);
+                            $pColl->takeSnapshot();
+                        }
                     }
 
                     $this->originalEntityData[$oid][$field] = $pColl;
@@ -3117,7 +3126,7 @@ EXCEPTION
     /** @return void */
     public function triggerEagerLoads()
     {
-        if (! $this->eagerLoadingEntities) {
+        if (! $this->eagerLoadingEntities && ! $this->eagerLoadingCollections) {
             return;
         }
 
@@ -3130,11 +3139,69 @@ EXCEPTION
                 continue;
             }
 
-            $class = $this->em->getClassMetadata($entityName);
+            $class   = $this->em->getClassMetadata($entityName);
+            $batches = array_chunk($ids, $this->em->getConfiguration()->getEagerFetchBatchSize());
 
-            $this->getEntityPersister($entityName)->loadAll(
-                array_combine($class->identifier, [array_values($ids)])
-            );
+            foreach ($batches as $batchedIds) {
+                $this->getEntityPersister($entityName)->loadAll(
+                    array_combine($class->identifier, [$batchedIds])
+                );
+            }
+        }
+
+        $eagerLoadingCollections       = $this->eagerLoadingCollections; // avoid recursion
+        $this->eagerLoadingCollections = [];
+
+        foreach ($eagerLoadingCollections as $group) {
+            $this->eagerLoadCollections($group['items'], $group['mapping']);
+        }
+    }
+
+    /**
+     * Load all data into the given collections, according to the specified mapping
+     *
+     * @param PersistentCollection[] $collections
+     * @param array<string, mixed>   $mapping
+     * @psalm-param array{targetEntity: class-string, sourceEntity: class-string, mappedBy: string, indexBy: string|null} $mapping
+     */
+    private function eagerLoadCollections(array $collections, array $mapping): void
+    {
+        $targetEntity = $mapping['targetEntity'];
+        $class        = $this->em->getClassMetadata($mapping['sourceEntity']);
+        $mappedBy     = $mapping['mappedBy'];
+
+        $batches = array_chunk($collections, $this->em->getConfiguration()->getEagerFetchBatchSize(), true);
+
+        foreach ($batches as $collectionBatch) {
+            $entities = [];
+
+            foreach ($collectionBatch as $collection) {
+                $entities[] = $collection->getOwner();
+            }
+
+            $found = $this->getEntityPersister($targetEntity)->loadAll([$mappedBy => $entities]);
+
+            $targetClass    = $this->em->getClassMetadata($targetEntity);
+            $targetProperty = $targetClass->getReflectionProperty($mappedBy);
+
+            foreach ($found as $targetValue) {
+                $sourceEntity = $targetProperty->getValue($targetValue);
+
+                $id     = $this->identifierFlattener->flattenIdentifier($class, $class->getIdentifierValues($sourceEntity));
+                $idHash = implode(' ', $id);
+
+                if (isset($mapping['indexBy'])) {
+                    $indexByProperty = $targetClass->getReflectionProperty($mapping['indexBy']);
+                    $collectionBatch[$idHash]->hydrateSet($indexByProperty->getValue($targetValue), $targetValue);
+                } else {
+                    $collectionBatch[$idHash]->add($targetValue);
+                }
+            }
+        }
+
+        foreach ($collections as $association) {
+            $association->setInitialized(true);
+            $association->takeSnapshot();
         }
     }
 
@@ -3163,6 +3230,33 @@ EXCEPTION
         }
 
         $collection->setInitialized(true);
+    }
+
+    /**
+     * Schedule this collection for batch loading at the end of the UnitOfWork
+     */
+    private function scheduleCollectionForBatchLoading(PersistentCollection $collection, ClassMetadata $sourceClass): void
+    {
+        $mapping = $collection->getMapping();
+        $name    = $mapping['sourceEntity'] . '#' . $mapping['fieldName'];
+
+        if (! isset($this->eagerLoadingCollections[$name])) {
+            $this->eagerLoadingCollections[$name] = [
+                'items'   => [],
+                'mapping' => $mapping,
+            ];
+        }
+
+        $owner = $collection->getOwner();
+        assert($owner !== null);
+
+        $id     = $this->identifierFlattener->flattenIdentifier(
+            $sourceClass,
+            $sourceClass->getIdentifierValues($owner)
+        );
+        $idHash = implode(' ', $id);
+
+        $this->eagerLoadingCollections[$name]['items'][$idHash] = $collection;
     }
 
     /**

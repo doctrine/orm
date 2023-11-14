@@ -204,6 +204,14 @@ class QueryException extends ORMException
         );
     }
 
+    public static function eagerFetchJoinWithNotAllowed(string $sourceEntity, string $fieldName): QueryException
+    {
+        return new self(
+            'Associations with fetch-mode=EAGER may not be using WITH conditions in
+             "' . $sourceEntity . '#' . $fieldName . '".'
+        );
+    }
+
     public static function iterateWithMixedResultNotAllowed(): QueryException
     {
         return new self('Iterating a query with mixed results (using scalars) is not supported.');
