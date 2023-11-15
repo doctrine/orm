@@ -49,7 +49,7 @@ class DDC440Test extends OrmFunctionalTestCase
         $phone->setClient($client);
 
         $phone2 = new DDC440Phone();
-        $phone->setId(2);
+        $phone2->setId(2);
         $phone2->setNumber('418 222-2222');
         $phone2->setClient($client);
 

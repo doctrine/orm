@@ -894,7 +894,9 @@ class SqlWalker
             }
         }
 
-        $targetTableJoin = null;
+        if ($relation->fetch === ClassMetadata::FETCH_EAGER && $condExpr !== null) {
+            throw QueryException::eagerFetchJoinWithNotAllowed($assoc->sourceEntity, $assoc->fieldName);
+        }
 
         // This condition is not checking ClassMetadata::MANY_TO_ONE, because by definition it cannot
         // be the owning side and previously we ensured that $assoc is always the owning side of the associations.
