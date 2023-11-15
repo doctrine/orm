@@ -1217,7 +1217,7 @@ class BasicEntityPersister implements EntityPersister
             }
 
             $isAssocToOneInverseSide = $assoc->isToOne() && ! $assoc->isOwningSide();
-            $isAssocFromOneEager     = ! $assoc->isManyToMany() && $assoc->fetch === ClassMetadata::FETCH_EAGER;
+            $isAssocFromOneEager     = $assoc->isToOne() && $assoc->fetch === ClassMetadata::FETCH_EAGER;
 
             if (! ($isAssocFromOneEager || $isAssocToOneInverseSide)) {
                 continue;

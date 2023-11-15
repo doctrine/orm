@@ -636,4 +636,14 @@ class Configuration extends \Doctrine\DBAL\Configuration
     {
         return true;
     }
+
+    public function setEagerFetchBatchSize(int $batchSize = 100): void
+    {
+        $this->attributes['fetchModeSubselectBatchSize'] = $batchSize;
+    }
+
+    public function getEagerFetchBatchSize(): int
+    {
+        return $this->attributes['fetchModeSubselectBatchSize'] ?? 100;
+    }
 }

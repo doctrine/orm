@@ -666,6 +666,15 @@ Use `toIterable()` instead.
 
 # Upgrade to 2.17
 
+## Deprecate annotations classes for named queries
+
+The following classes have been deprecated:
+
+* `Doctrine\ORM\Mapping\NamedNativeQueries`
+* `Doctrine\ORM\Mapping\NamedNativeQuery`
+* `Doctrine\ORM\Mapping\NamedQueries`
+* `Doctrine\ORM\Mapping\NamedQuery`
+
 ## Deprecate `Doctrine\ORM\Query\Exec\AbstractSqlExecutor::_sqlStatements`
 
 Use `Doctrine\ORM\Query\Exec\AbstractSqlExecutor::sqlStatements` instead.
