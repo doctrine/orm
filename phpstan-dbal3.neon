@@ -24,6 +24,8 @@ parameters:
             message: '~^Unreachable statement \- code above always terminates\.$~'
             path: lib/Doctrine/ORM/Mapping/AssociationMapping.php
 
+        - '~^Class Doctrine\\DBAL\\Platforms\\SQLitePlatform not found\.$~'
+
         # To be removed in 4.0
         -
             message: '#Negated boolean expression is always false\.#'

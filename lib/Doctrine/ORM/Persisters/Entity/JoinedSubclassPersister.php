@@ -11,6 +11,7 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Internal\SQLResultCasing;
 use Doctrine\ORM\Mapping\AssociationMapping;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Utility\LockSqlHelper;
 use Doctrine\ORM\Utility\PersisterHelper;
 use LengthException;
 
@@ -27,6 +28,7 @@ use function implode;
  */
 class JoinedSubclassPersister extends AbstractEntityInheritancePersister
 {
+    use LockSqlHelper;
     use SQLResultCasing;
 
     /**
@@ -279,12 +281,12 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
 
         switch ($lockMode) {
             case LockMode::PESSIMISTIC_READ:
-                $lockSql = ' ' . $this->platform->getReadLockSQL();
+                $lockSql = ' ' . $this->getReadLockSQL($this->platform);
 
                 break;
 
             case LockMode::PESSIMISTIC_WRITE:
-                $lockSql = ' ' . $this->platform->getWriteLockSQL();
+                $lockSql = ' ' . $this->getWriteLockSQL($this->platform);
 
                 break;
         }

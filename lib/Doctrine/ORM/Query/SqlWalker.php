@@ -15,6 +15,7 @@ use Doctrine\ORM\Mapping\QuoteStrategy;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Utility\HierarchyDiscriminatorResolver;
+use Doctrine\ORM\Utility\LockSqlHelper;
 use Doctrine\ORM\Utility\PersisterHelper;
 use InvalidArgumentException;
 use LogicException;
@@ -46,6 +47,8 @@ use function trim;
  */
 class SqlWalker
 {
+    use LockSqlHelper;
+
     public const HINT_DISTINCT = 'doctrine.distinct';
 
     private readonly ResultSetMapping $rsm;
@@ -475,11 +478,11 @@ class SqlWalker
         }
 
         if ($lockMode === LockMode::PESSIMISTIC_READ) {
-            return $sql . ' ' . $this->platform->getReadLockSQL();
+            return $sql . ' ' . $this->getReadLockSQL($this->platform);
         }
 
         if ($lockMode === LockMode::PESSIMISTIC_WRITE) {
-            return $sql . ' ' . $this->platform->getWriteLockSQL();
+            return $sql . ' ' . $this->getWriteLockSQL($this->platform);
         }
 
         if ($lockMode !== LockMode::OPTIMISTIC) {
