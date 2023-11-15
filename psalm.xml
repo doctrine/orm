@@ -193,12 +193,13 @@
                 <file name="lib/Doctrine/ORM/Mapping/ClassMetadataFactory.php"/>
                 <!-- DBAL 3 compatibility -->
                 <file name="lib/Doctrine/ORM/UnitOfWork.php"/>
+                <file name="lib/Doctrine/ORM/Utility/LockSqlHelper.php"/>
             </errorLevel>
         </TypeDoesNotContainType>
         <UndefinedClass>
             <errorLevel type="suppress">
-                <!-- Persistence 2 compatibility -->
-                <referencedClass name="Doctrine\Persistence\ObjectManagerAware"/>
+                <!-- Compatibility with DBAL 3 -->
+                <referencedClass name="Doctrine\DBAL\Platforms\SQLitePlatform"/>
             </errorLevel>
         </UndefinedClass>
         <UndefinedMethod>
