@@ -11,7 +11,9 @@ use Doctrine\DBAL\Types\Type;
 
 use function array_diff;
 use function array_keys;
+use function array_map;
 use function array_values;
+use function str_replace;
 
 /**
  * Base class for SQL statement executors.
@@ -84,7 +86,9 @@ abstract class AbstractSqlExecutor
              serialized representation becomes compatible with 3.0.x, meaning
              there will not be a deprecation warning about a missing property
              when unserializing data */
-        return array_values(array_diff(array_keys((array) $this), ["\0*\0_sqlStatements"]));
+        return array_values(array_diff(array_map(static function (string $prop): string {
+            return str_replace("\0*\0", '', $prop);
+        }, array_keys((array) $this)), ['_sqlStatements']));
     }
 
     public function __wakeup(): void
