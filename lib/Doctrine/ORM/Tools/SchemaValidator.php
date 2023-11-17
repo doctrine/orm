@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Tools;
 
+use BackedEnum;
 use Doctrine\DBAL\Types\AsciiStringType;
 use Doctrine\DBAL\Types\BigIntType;
 use Doctrine\DBAL\Types\BooleanType;
@@ -20,6 +21,7 @@ use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\FieldMapping;
+use ReflectionEnum;
 use ReflectionNamedType;
 
 use function array_diff;
@@ -36,6 +38,7 @@ use function count;
 use function get_class;
 use function implode;
 use function in_array;
+use function is_a;
 use function sprintf;
 
 use const PHP_VERSION_ID;
@@ -353,6 +356,23 @@ class SchemaValidator
                         // If the property type is the same as the metadata field type, we are ok
                         if ($propertyType === $metadataFieldType) {
                             return null;
+                        }
+
+                        if (
+                            is_a($propertyType, BackedEnum::class, true)
+                            && $metadataFieldType === (string) (new ReflectionEnum($propertyType))->getBackingType()
+                        ) {
+                            if (! isset($fieldMapping['enumType']) || $propertyType === $fieldMapping['enumType']) {
+                                return null;
+                            }
+
+                            return sprintf(
+                                "The field '%s#%s' has the property type '%s' that differs from the metadata enumType '%s'.",
+                                $class->name,
+                                $fieldName,
+                                $propertyType,
+                                $fieldMapping['enumType'],
+                            );
                         }
 
                         return sprintf(
