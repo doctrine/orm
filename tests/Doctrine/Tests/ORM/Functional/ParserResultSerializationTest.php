@@ -13,7 +13,6 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 use Generator;
 use ReflectionMethod;
 use ReflectionProperty;
-use Symfony\Component\VarExporter\Instantiator;
 use Symfony\Component\VarExporter\VarExporter;
 
 use function file_get_contents;
@@ -57,11 +56,6 @@ class ParserResultSerializationTest extends OrmFunctionalTestCase
                 return unserialize(serialize($parserResult));
             },
         ];
-
-        $instantiatorMethod = new ReflectionMethod(Instantiator::class, 'instantiate');
-        if ($instantiatorMethod->getReturnType() === null) {
-            $this->markTestSkipped('symfony/var-exporter 5.4+ is required.');
-        }
 
         yield 'symfony/var-exporter' => [
             static function (ParserResult $parserResult): ParserResult {
