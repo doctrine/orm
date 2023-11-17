@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional;
 
+use Closure;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\Exec\SingleSelectExecutor;
 use Doctrine\ORM\Query\ParserResult;
@@ -12,6 +13,8 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 use Generator;
 use PHPUnit\Framework\Attributes\DataProvider;
 use ReflectionMethod;
+use Symfony\Component\VarExporter\Instantiator;
+use Symfony\Component\VarExporter\VarExporter;
 
 use function file_get_contents;
 use function rtrim;
@@ -27,19 +30,41 @@ class ParserResultSerializationTest extends OrmFunctionalTestCase
         parent::setUp();
     }
 
-    public function testSerializeParserResult(): void
+    /** @param Closure(ParserResult): ParserResult $toSerializedAndBack */
+    #[DataProvider('provideToSerializedAndBack')]
+    public function testSerializeParserResult(Closure $toSerializedAndBack): void
     {
         $query = $this->_em
             ->createQuery('SELECT u FROM Doctrine\Tests\Models\Company\CompanyEmployee u WHERE u.name = :name');
 
         $parserResult = self::parseQuery($query);
-        $serialized   = serialize($parserResult);
-        $unserialized = unserialize($serialized);
+        $unserialized = $toSerializedAndBack($parserResult);
 
         $this->assertInstanceOf(ParserResult::class, $unserialized);
         $this->assertInstanceOf(ResultSetMapping::class, $unserialized->getResultSetMapping());
         $this->assertEquals(['name' => [0]], $unserialized->getParameterMappings());
         $this->assertInstanceOf(SingleSelectExecutor::class, $unserialized->getSqlExecutor());
+    }
+
+    /** @return Generator<string, array{Closure(ParserResult): ParserResult}> */
+    public function provideToSerializedAndBack(): Generator
+    {
+        yield 'native serialization function' => [
+            static function (ParserResult $parserResult): ParserResult {
+                return unserialize(serialize($parserResult));
+            },
+        ];
+
+        $instantiatorMethod = new ReflectionMethod(Instantiator::class, 'instantiate');
+        if ($instantiatorMethod->getReturnType() === null) {
+            $this->markTestSkipped('symfony/var-exporter 5.4+ is required.');
+        }
+
+        yield 'symfony/var-exporter' => [
+            static function (ParserResult $parserResult): ParserResult {
+                return eval('return ' . VarExporter::export($parserResult) . ';');
+            },
+        ];
     }
 
     #[DataProvider('provideSerializedSingleSelectResults')]
