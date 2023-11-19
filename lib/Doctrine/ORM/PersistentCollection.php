@@ -137,7 +137,6 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
      */
     public function hydrateAdd(mixed $element): void
     {
-        assert($this->association !== null);
         $this->unwrap()->add($element);
 
         // If _backRefFieldName is set and its a one-to-many association,
