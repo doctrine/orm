@@ -3104,9 +3104,10 @@ EXCEPTION
                     $reflField->setValue($entity, $pColl);
 
                     if ($hints['fetchMode'][$class->name][$field] === ClassMetadata::FETCH_EAGER) {
-                        if ($assoc['type'] === ClassMetadata::ONE_TO_MANY) {
+                        $isIteration = isset($hints[Query::HINT_INTERNAL_ITERATION]) && $hints[Query::HINT_INTERNAL_ITERATION];
+                        if (! $isIteration && $assoc['type'] === ClassMetadata::ONE_TO_MANY) {
                             $this->scheduleCollectionForBatchLoading($pColl, $class);
-                        } elseif ($assoc['type'] === ClassMetadata::MANY_TO_MANY) {
+                        } elseif (($isIteration && $assoc['type'] === ClassMetadata::ONE_TO_MANY) || $assoc['type'] === ClassMetadata::MANY_TO_MANY) {
                             $this->loadCollection($pColl);
                             $pColl->takeSnapshot();
                         }
