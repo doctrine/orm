@@ -1378,9 +1378,10 @@ class UnitOfWork implements PropertyChangedListener
                 $joinColumns = reset($assoc['joinColumns']);
                 $isNullable  = ! isset($joinColumns['nullable']) || $joinColumns['nullable'];
 
-                // Add dependency. The dependency direction implies that "$targetEntity has to go before $entity",
-                // so we can work through the topo sort result from left to right (with all edges pointing right).
-                $sort->addEdge($targetEntity, $entity, $isNullable);
+                // Add dependency. The dependency direction implies that "$entity depends on $targetEntity". The
+                // topological sort result will output the depended-upon nodes first, which means we can insert
+                // entities in that order.
+                $sort->addEdge($entity, $targetEntity, $isNullable);
             }
         }
 
@@ -1432,9 +1433,10 @@ class UnitOfWork implements PropertyChangedListener
                     continue;
                 }
 
-                // Add dependency. The dependency direction implies that "$entity has to be removed before $targetEntity",
-                // so we can work through the topo sort result from left to right (with all edges pointing right).
-                $sort->addEdge($entity, $targetEntity, false);
+                // Add dependency. The dependency direction implies that "$targetEntity depends on $entity
+                // being deleted first". The topological sort will output the depended-upon nodes first,
+                // so we can work through the result in the returned order.
+                $sort->addEdge($targetEntity, $entity, false);
             }
         }
 
