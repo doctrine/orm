@@ -255,7 +255,6 @@ class XmlDriver extends FileDriver
 
         // The mapping assignment is done in 2 times as a bug might occurs on some php/xml lib versions
         // The internal SimpleXmlIterator get resetted, to this generate a duplicate field exception
-        $mappings = [];
         // Evaluate <field ...> mappings
         if (isset($xmlRoot->field)) {
             foreach ($xmlRoot->field as $fieldMapping) {
@@ -288,14 +287,6 @@ class XmlDriver extends FileDriver
 
                 $metadata->mapEmbedded($mapping);
             }
-        }
-
-        foreach ($mappings as $mapping) {
-            if (isset($mapping['version'])) {
-                $metadata->setVersionMapping($mapping);
-            }
-
-            $metadata->mapField($mapping);
         }
 
         // Evaluate <id ...> mappings
