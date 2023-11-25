@@ -136,16 +136,6 @@ parameters:
 			path: lib/Doctrine/ORM/Mapping/ClassMetadataFactory.php
 
 		-
-			message: "#^Empty array passed to foreach\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Mapping/Driver/XmlDriver.php
-
-		-
-			message: "#^Offset 'version' on \\*NEVER\\* in isset\\(\\) always exists and is always null\\.$#"
-			count: 1
-			path: lib/Doctrine/ORM/Mapping/Driver/XmlDriver.php
-
-		-
 			message: "#^Method Doctrine\\\\ORM\\\\Mapping\\\\ToOneOwningSideMapping\\:\\:fromMappingArray\\(\\) should return static\\(Doctrine\\\\ORM\\\\Mapping\\\\ToOneOwningSideMapping\\) but returns Doctrine\\\\ORM\\\\Mapping\\\\ManyToOneAssociationMapping\\|Doctrine\\\\ORM\\\\Mapping\\\\OneToOneOwningSideMapping\\.$#"
 			count: 1
 			path: lib/Doctrine/ORM/Mapping/ToOneOwningSideMapping.php
