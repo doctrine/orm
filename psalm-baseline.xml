@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<files psalm-version="5.15.0@5c774aca4746caf3d239d9c8cadb9f882ca29352">
+<files psalm-version="5.16.0@2897ba636551a8cb61601cc26f6ccfbba6c36591">
   <file src="lib/Doctrine/ORM/AbstractQuery.php">
     <DeprecatedClass>
       <code>IterableResult</code>
@@ -590,7 +590,6 @@
     <DocblockTypeContradiction>
       <code><![CDATA[! $mapping['isOwningSide']]]></code>
       <code><![CDATA[! $this->table]]></code>
-      <code><![CDATA[! class_exists($mapping['targetEntity'])]]></code>
       <code><![CDATA[$this->table]]></code>
       <code><![CDATA[isset($mapping['id']) && $mapping['id'] === true && ! $mapping['isOwningSide']]]></code>
       <code><![CDATA[isset($mapping['orderBy']) && ! is_array($mapping['orderBy'])]]></code>
@@ -626,9 +625,6 @@
       <code>$quotedColumnNames</code>
       <code><![CDATA[$this->namespace . '\\' . $className]]></code>
     </LessSpecificReturnStatement>
-    <MethodSignatureMustProvideReturnType>
-      <code>__toString</code>
-    </MethodSignatureMustProvideReturnType>
     <MoreSpecificReturnType>
       <code>FieldMapping</code>
       <code>class-string|null</code>
@@ -869,6 +865,9 @@
     <MoreSpecificReturnType>
       <code>class-string</code>
     </MoreSpecificReturnType>
+    <NoValue>
+      <code>$metadata</code>
+    </NoValue>
     <PossiblyNullArrayAccess>
       <code><![CDATA[$this->tables[$tableName]]]></code>
       <code><![CDATA[$this->tables[$tableName]]]></code>
@@ -1730,11 +1729,6 @@
       <code>$sqlWalker</code>
     </ParamNameMismatch>
   </file>
-  <file src="lib/Doctrine/ORM/Query/AST/Node.php">
-    <MethodSignatureMustProvideReturnType>
-      <code>__toString</code>
-    </MethodSignatureMustProvideReturnType>
-  </file>
   <file src="lib/Doctrine/ORM/Query/AST/NullComparisonExpression.php">
     <ParamNameMismatch>
       <code>$sqlWalker</code>
@@ -1942,36 +1936,15 @@
       <code>$parts</code>
     </NonInvariantDocblockPropertyType>
   </file>
-  <file src="lib/Doctrine/ORM/Query/Expr/Base.php">
-    <MethodSignatureMustProvideReturnType>
-      <code>__toString</code>
-    </MethodSignatureMustProvideReturnType>
-  </file>
-  <file src="lib/Doctrine/ORM/Query/Expr/Comparison.php">
-    <MethodSignatureMustProvideReturnType>
-      <code>__toString</code>
-    </MethodSignatureMustProvideReturnType>
-  </file>
   <file src="lib/Doctrine/ORM/Query/Expr/Composite.php">
-    <MethodSignatureMustProvideReturnType>
-      <code>__toString</code>
-    </MethodSignatureMustProvideReturnType>
     <PossiblyInvalidCast>
       <code>$part</code>
     </PossiblyInvalidCast>
-  </file>
-  <file src="lib/Doctrine/ORM/Query/Expr/From.php">
-    <MethodSignatureMustProvideReturnType>
-      <code>__toString</code>
-    </MethodSignatureMustProvideReturnType>
   </file>
   <file src="lib/Doctrine/ORM/Query/Expr/Func.php">
     <LessSpecificReturnStatement>
       <code><![CDATA[$this->arguments]]></code>
     </LessSpecificReturnStatement>
-    <MethodSignatureMustProvideReturnType>
-      <code>__toString</code>
-    </MethodSignatureMustProvideReturnType>
     <MoreSpecificReturnType>
       <code><![CDATA[list<mixed>]]></code>
     </MoreSpecificReturnType>
@@ -1982,9 +1955,6 @@
     </NonInvariantDocblockPropertyType>
   </file>
   <file src="lib/Doctrine/ORM/Query/Expr/Join.php">
-    <MethodSignatureMustProvideReturnType>
-      <code>__toString</code>
-    </MethodSignatureMustProvideReturnType>
     <PossiblyNullArgument>
       <code><![CDATA[$this->conditionType]]></code>
     </PossiblyNullArgument>
@@ -1993,16 +1963,6 @@
     <NonInvariantDocblockPropertyType>
       <code>$parts</code>
     </NonInvariantDocblockPropertyType>
-  </file>
-  <file src="lib/Doctrine/ORM/Query/Expr/Math.php">
-    <MethodSignatureMustProvideReturnType>
-      <code>__toString</code>
-    </MethodSignatureMustProvideReturnType>
-  </file>
-  <file src="lib/Doctrine/ORM/Query/Expr/OrderBy.php">
-    <MethodSignatureMustProvideReturnType>
-      <code>__toString</code>
-    </MethodSignatureMustProvideReturnType>
   </file>
   <file src="lib/Doctrine/ORM/Query/Expr/Orx.php">
     <NonInvariantDocblockPropertyType>
@@ -2017,9 +1977,6 @@
     </NonInvariantDocblockPropertyType>
   </file>
   <file src="lib/Doctrine/ORM/Query/Filter/SQLFilter.php">
-    <MethodSignatureMustProvideReturnType>
-      <code>__toString</code>
-    </MethodSignatureMustProvideReturnType>
     <MissingClosureParamType>
       <code>$value</code>
     </MissingClosureParamType>
@@ -2127,9 +2084,6 @@
       <code>addNamedNativeQueryResultClassMapping</code>
       <code>addNamedNativeQueryResultSetMapping</code>
     </DeprecatedMethod>
-    <MethodSignatureMustProvideReturnType>
-      <code>__toString</code>
-    </MethodSignatureMustProvideReturnType>
     <PossiblyUndefinedArrayOffset>
       <code><![CDATA[$associationMapping['joinColumns']]]></code>
       <code><![CDATA[$associationMapping['joinColumns']]]></code>
@@ -2192,12 +2146,18 @@
     <ImplicitToStringCast>
       <code>$expr</code>
     </ImplicitToStringCast>
+    <InvalidArrayOffset>
+      <code><![CDATA[$this->queryComponents[$expression]]]></code>
+    </InvalidArrayOffset>
     <InvalidNullableReturnType>
       <code>string</code>
     </InvalidNullableReturnType>
     <MoreSpecificImplementedParamType>
       <code>$query</code>
     </MoreSpecificImplementedParamType>
+    <NoValue>
+      <code>$expression</code>
+    </NoValue>
     <PossiblyInvalidArgument>
       <code><![CDATA[$aggExpression->pathExpression]]></code>
     </PossiblyInvalidArgument>
@@ -2293,9 +2253,6 @@
     <InvalidPropertyAssignmentValue>
       <code>new ArrayCollection($parameters)</code>
     </InvalidPropertyAssignmentValue>
-    <MethodSignatureMustProvideReturnType>
-      <code>__toString</code>
-    </MethodSignatureMustProvideReturnType>
     <PossiblyFalseArgument>
       <code>$spacePos</code>
       <code>$spacePos</code>
@@ -2748,6 +2705,7 @@
     <NoValue>
       <code>$entityState</code>
       <code>$entityState</code>
+      <code>$object</code>
     </NoValue>
     <PossiblyInvalidArgument>
       <code>$value</code>
