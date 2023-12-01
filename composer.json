@@ -42,8 +42,8 @@
         "phpunit/phpunit": "^10.4.0",
         "psr/log": "^1 || ^2 || ^3",
         "squizlabs/php_codesniffer": "3.7.2",
-        "symfony/cache": "^5.4 || ^6.2",
-        "vimeo/psalm": "5.15.0"
+        "symfony/cache": "^5.4 || ^6.2 || ^7.0",
+        "vimeo/psalm": "5.16.0"
     },
     "minimum-stability": "RC",
     "suggest": {
