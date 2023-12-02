@@ -371,7 +371,7 @@ class SchemaValidator
                         }
 
                         // If the property type is not a named type, we cannot check it
-                        if (! ($propertyType instanceof ReflectionNamedType)) {
+                        if (! ($propertyType instanceof ReflectionNamedType) || $propertyType->getName() === 'mixed') {
                             return null;
                         }
 
@@ -404,6 +404,13 @@ class SchemaValidator
                                 $propertyType,
                                 $fieldMapping['enumType']
                             );
+                        }
+
+                        if (
+                            $fieldMapping['type'] === 'json'
+                            && in_array($propertyType, ['string', 'int', 'float', 'bool', 'true', 'false', 'null'], true)
+                        ) {
+                            return null;
                         }
 
                         return sprintf(
