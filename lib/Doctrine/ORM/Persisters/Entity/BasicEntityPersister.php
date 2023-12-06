@@ -792,7 +792,7 @@ class BasicEntityPersister implements EntityPersister
     /**
      * {@inheritDoc}
      */
-    public function loadOneToOneEntity(array $assoc, $sourceEntity, array $identifier = [])
+    public function loadOneToOneEntity(array $assoc, $sourceEntity, array $identifier = [], array $sourceEntityData = [])
     {
         $foundEntity = $this->em->getUnitOfWork()->tryGetById($identifier, $assoc['targetEntity']);
         if ($foundEntity !== false) {
@@ -830,14 +830,32 @@ class BasicEntityPersister implements EntityPersister
         // TRICKY: since the association is specular source and target are flipped
         foreach ($owningAssoc['targetToSourceKeyColumns'] as $sourceKeyColumn => $targetKeyColumn) {
             if (! isset($sourceClass->fieldNames[$sourceKeyColumn])) {
-                throw MappingException::joinColumnMustPointToMappedField(
-                    $sourceClass->name,
-                    $sourceKeyColumn
-                );
-            }
+                // The likely case here is that the column is a join column
+                // in an association mapping. However, there is no guarantee
+                // at this point that a corresponding (generally identifying)
+                // association has been mapped in the source entity. To handle
+                // this case we directly reference the column-keyed data used
+                // to initialize the source entity before throwing an exception.
+                $resolvedSourceData = false;
+                if (isset($sourceEntityData[$sourceKeyColumn])) {
+                    $dataValue = $sourceEntityData[$sourceKeyColumn];
+                    if ($dataValue !== null) {
+                        $resolvedSourceData                                                    = true;
+                        $computedIdentifier[$targetClass->getFieldForColumn($targetKeyColumn)] =
+                            $dataValue;
+                    }
+                }
 
-            $computedIdentifier[$targetClass->getFieldForColumn($targetKeyColumn)] =
-                $sourceClass->reflFields[$sourceClass->fieldNames[$sourceKeyColumn]]->getValue($sourceEntity);
+                if (! $resolvedSourceData) {
+                    throw MappingException::joinColumnMustPointToMappedField(
+                        $sourceClass->name,
+                        $sourceKeyColumn
+                    );
+                }
+            } else {
+                $computedIdentifier[$targetClass->getFieldForColumn($targetKeyColumn)] =
+                    $sourceClass->reflFields[$sourceClass->fieldNames[$sourceKeyColumn]]->getValue($sourceEntity);
+            }
         }
 
         $targetEntity = $this->load($computedIdentifier, null, $assoc);
