@@ -217,21 +217,16 @@ interface EntityPersister
      * association from another entity.
      *
      * @param object $sourceEntity The entity that owns the association (not necessarily the "owning side").
-     * @psalm-param array<string, mixed> $sourceEntityData The data used to create the sourceEntity. If the sourceEntity
-     *                                                     is identified by an association, then that association may
-     *                                                     not be initialize before this call. This original data is used
-     *                                                     as a backup to access originating state that has not yet been
-     *                                                     written to a newly initialized sourceEntity.
-     * @psalm-param array<string, mixed> $identifier       The identifier of the entity to load. Must be provided if
-     *                                                     the association to load represents the owning side, otherwise
-     *                                                     the identifier is derived from the $sourceEntity.
-     * @psalm-param AssociationMapping $assoc              The association to load.
+     * @psalm-param array<string, mixed> $identifier The identifier of the entity to load. Must be provided if
+     *                                               the association to load represents the owning side, otherwise
+     *                                               the identifier is derived from the $sourceEntity.
+     * @psalm-param AssociationMapping $assoc        The association to load.
      *
      * @return object The loaded and managed entity instance or NULL if the entity can not be found.
      *
      * @throws MappingException
      */
-    public function loadOneToOneEntity(array $assoc, $sourceEntity, array $identifier = [], array $sourceEntityData = []);
+    public function loadOneToOneEntity(array $assoc, $sourceEntity, array $identifier = []);
 
     /**
      * Refreshes a managed entity.

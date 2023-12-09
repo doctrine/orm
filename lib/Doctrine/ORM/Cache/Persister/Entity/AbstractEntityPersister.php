@@ -582,9 +582,9 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
     /**
      * {@inheritDoc}
      */
-    public function loadOneToOneEntity(array $assoc, $sourceEntity, array $identifier = [], array $sourceEntityData = [])
+    public function loadOneToOneEntity(array $assoc, $sourceEntity, array $identifier = [])
     {
-        return $this->persister->loadOneToOneEntity($assoc, $sourceEntity, $identifier, $sourceEntityData);
+        return $this->persister->loadOneToOneEntity($assoc, $sourceEntity, $identifier);
     }
 
     /**

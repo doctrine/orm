@@ -792,7 +792,7 @@ class BasicEntityPersister implements EntityPersister
     /**
      * {@inheritDoc}
      */
-    public function loadOneToOneEntity(array $assoc, $sourceEntity, array $identifier = [], array $sourceEntityData = [])
+    public function loadOneToOneEntity(array $assoc, $sourceEntity, array $identifier = [])
     {
         $foundEntity = $this->em->getUnitOfWork()->tryGetById($identifier, $assoc['targetEntity']);
         if ($foundEntity !== false) {
@@ -827,6 +827,9 @@ class BasicEntityPersister implements EntityPersister
 
         $computedIdentifier = [];
 
+        /** @var array<string,mixed>|null */
+        $sourceEntityData = null;
+
         // TRICKY: since the association is specular source and target are flipped
         foreach ($owningAssoc['targetToSourceKeyColumns'] as $sourceKeyColumn => $targetKeyColumn) {
             if (! isset($sourceClass->fieldNames[$sourceKeyColumn])) {
@@ -837,7 +840,7 @@ class BasicEntityPersister implements EntityPersister
                 // this case we directly reference the column-keyed data used
                 // to initialize the source entity before throwing an exception.
                 $resolvedSourceData = false;
-                if (isset($sourceEntityData[$sourceKeyColumn])) {
+                if (isset(($sourceEntityData ??= $this->em->getUnitOfWork()->getOriginalEntityData($sourceEntity))[$sourceKeyColumn])) {
                     $dataValue = $sourceEntityData[$sourceKeyColumn];
                     if ($dataValue !== null) {
                         $resolvedSourceData                                                    = true;
