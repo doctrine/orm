@@ -827,7 +827,7 @@ class BasicEntityPersister implements EntityPersister
 
         $computedIdentifier = [];
 
-        /** @var array<string,mixed>|null */
+        /** @var array<string,mixed>|null $sourceEntityData */
         $sourceEntityData = null;
 
         // TRICKY: since the association is specular source and target are flipped
