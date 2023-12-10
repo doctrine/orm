@@ -840,7 +840,11 @@ class BasicEntityPersister implements EntityPersister
                 // this case we directly reference the column-keyed data used
                 // to initialize the source entity before throwing an exception.
                 $resolvedSourceData = false;
-                if (isset(($sourceEntityData ??= $this->em->getUnitOfWork()->getOriginalEntityData($sourceEntity))[$sourceKeyColumn])) {
+                if (! isset($sourceEntityData)) {
+                    $sourceEntityData = $this->em->getUnitOfWork()->getOriginalEntityData($sourceEntity);
+                }
+
+                if (isset($sourceEntityData[$sourceKeyColumn])) {
                     $dataValue = $sourceEntityData[$sourceKeyColumn];
                     if ($dataValue !== null) {
                         $resolvedSourceData                                                    = true;
