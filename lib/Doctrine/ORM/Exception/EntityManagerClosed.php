@@ -8,7 +8,7 @@ use Throwable;
 
 final class EntityManagerClosed extends ORMException implements ManagerException
 {
-    const EXCEPTION_CLOSED = 'The EntityManager is closed.';
+    private const EXCEPTION_CLOSED = 'The EntityManager is closed.';
 
     public static function create(): self
     {
@@ -17,6 +17,6 @@ final class EntityManagerClosed extends ORMException implements ManagerException
 
     public static function createWithClosingThrowable(Throwable $previousThrowable): self
     {
-        return (new self(self::EXCEPTION_CLOSED, 0, $previousThrowable));
+        return new self(self::EXCEPTION_CLOSED, 0, $previousThrowable);
     }
 }
