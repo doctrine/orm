@@ -44,8 +44,8 @@ use Doctrine\Tests\OrmTestCase;
 use Doctrine\Tests\PHPUnitCompatibility\MockBuilderCompatibilityTools;
 use PHPUnit\Framework\MockObject\MockObject;
 use stdClass;
-
 use Throwable;
+
 use function assert;
 use function count;
 use function gc_collect_cycles;
