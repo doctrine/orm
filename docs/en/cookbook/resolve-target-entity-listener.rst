@@ -127,7 +127,7 @@ the targetEntity resolution will occur reliably:
     // Add the ResolveTargetEntityListener
     $evm->addEventListener(Doctrine\ORM\Events::loadClassMetadata, $rtel);
 
-    $connection = \Doctrine\DBAL\DriverManager::createConnection($connectionOptions, $config, $evm);
+    $connection = \Doctrine\DBAL\DriverManager::getConnection($connectionOptions, $config, $evm);
     $em = new \Doctrine\ORM\EntityManager($connection, $config, $evm);
 
 Final Thoughts
