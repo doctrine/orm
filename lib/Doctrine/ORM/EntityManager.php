@@ -987,7 +987,7 @@ class EntityManager implements EntityManagerInterface
         Deprecation::trigger(
             'doctrine/orm',
             'https://github.com/doctrine/orm/pull/9961',
-            '%s() is deprecated. To boostrap a DBAL connection, call %s::getConnection() instead. Use the constructor to create an instance of %s.',
+            '%s() is deprecated. To bootstrap a DBAL connection, call %s::getConnection() instead. Use the constructor to create an instance of %s.',
             __METHOD__,
             DriverManager::class,
             self::class
