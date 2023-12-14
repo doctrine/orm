@@ -39,6 +39,7 @@ use function count;
 use function get_class;
 use function implode;
 use function in_array;
+use function interface_exists;
 use function is_a;
 use function sprintf;
 
@@ -389,10 +390,20 @@ class SchemaValidator
                             return null;
                         }
 
-                        if (
-                            is_a($propertyType, BackedEnum::class, true)
-                            && $metadataFieldType === (string) (new ReflectionEnum($propertyType))->getBackingType()
-                        ) {
+                        if (is_a($propertyType, BackedEnum::class, true)) {
+                            $backingType = (string) (new ReflectionEnum($propertyType))->getBackingType();
+
+                            if ($metadataFieldType !== $backingType) {
+                                return sprintf(
+                                    "The field '%s#%s' has the property type '%s' with a backing type of '%s' that differs from the metadata field type '%s'.",
+                                    $class->name,
+                                    $fieldName,
+                                    $propertyType,
+                                    $backingType,
+                                    $metadataFieldType
+                                );
+                            }
+
                             if (! isset($fieldMapping['enumType']) || $propertyType === $fieldMapping['enumType']) {
                                 return null;
                             }
@@ -403,6 +414,28 @@ class SchemaValidator
                                 $fieldName,
                                 $propertyType,
                                 $fieldMapping['enumType']
+                            );
+                        }
+
+                        if (
+                            isset($fieldMapping['enumType'])
+                            && $propertyType !== $fieldMapping['enumType']
+                            && interface_exists($propertyType)
+                            && is_a($fieldMapping['enumType'], $propertyType, true)
+                        ) {
+                            $backingType = (string) (new ReflectionEnum($fieldMapping['enumType']))->getBackingType();
+
+                            if ($metadataFieldType === $backingType) {
+                                return null;
+                            }
+
+                            return sprintf(
+                                "The field '%s#%s' has the metadata enumType '%s' with a backing type of '%s' that differs from the metadata field type '%s'.",
+                                $class->name,
+                                $fieldName,
+                                $fieldMapping['enumType'],
+                                $backingType,
+                                $metadataFieldType
                             );
                         }
 

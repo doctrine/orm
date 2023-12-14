@@ -28,4 +28,9 @@ class ValidEntityWithTypedEnum
      * @Column(type="smallint", enumType=IntEntityStatus::class)
      */
     protected IntEntityStatus $status2;
+
+    /**
+     * @Column(type="string", enumType=StringEntityStatus::class)
+     */
+    protected EntityStatus $status3;
 }
