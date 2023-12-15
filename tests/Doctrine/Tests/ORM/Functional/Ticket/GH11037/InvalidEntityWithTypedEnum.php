@@ -28,4 +28,9 @@ class InvalidEntityWithTypedEnum
      * @Column(type="integer", enumType=StringEntityStatus::class)
      */
     protected IntEntityStatus $status2;
+
+    /**
+     * @Column(type="integer", enumType=StringEntityStatus::class)
+     */
+    protected EntityStatus $status3;
 }
