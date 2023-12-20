@@ -39,6 +39,7 @@ use function count;
 use function get_class;
 use function implode;
 use function in_array;
+use function interface_exists;
 use function is_a;
 use function sprintf;
 
@@ -55,6 +56,9 @@ class SchemaValidator
 {
     /** @var EntityManagerInterface */
     private $em;
+
+    /** @var bool */
+    private $validatePropertyTypes;
 
     /**
      * It maps built-in Doctrine types to PHP types
@@ -74,9 +78,10 @@ class SchemaValidator
         TextType::class => 'string',
     ];
 
-    public function __construct(EntityManagerInterface $em)
+    public function __construct(EntityManagerInterface $em, bool $validatePropertyTypes = true)
     {
-        $this->em = $em;
+        $this->em                    = $em;
+        $this->validatePropertyTypes = $validatePropertyTypes;
     }
 
     /**
@@ -136,7 +141,7 @@ class SchemaValidator
         }
 
         // PHP 7.4 introduces the ability to type properties, so we can't validate them in previous versions
-        if (PHP_VERSION_ID >= 70400) {
+        if (PHP_VERSION_ID >= 70400 && $this->validatePropertyTypes) {
             array_push($ce, ...$this->validatePropertiesTypes($class));
         }
 
@@ -389,10 +394,20 @@ class SchemaValidator
                             return null;
                         }
 
-                        if (
-                            is_a($propertyType, BackedEnum::class, true)
-                            && $metadataFieldType === (string) (new ReflectionEnum($propertyType))->getBackingType()
-                        ) {
+                        if (is_a($propertyType, BackedEnum::class, true)) {
+                            $backingType = (string) (new ReflectionEnum($propertyType))->getBackingType();
+
+                            if ($metadataFieldType !== $backingType) {
+                                return sprintf(
+                                    "The field '%s#%s' has the property type '%s' with a backing type of '%s' that differs from the metadata field type '%s'.",
+                                    $class->name,
+                                    $fieldName,
+                                    $propertyType,
+                                    $backingType,
+                                    $metadataFieldType
+                                );
+                            }
+
                             if (! isset($fieldMapping['enumType']) || $propertyType === $fieldMapping['enumType']) {
                                 return null;
                             }
@@ -403,6 +418,28 @@ class SchemaValidator
                                 $fieldName,
                                 $propertyType,
                                 $fieldMapping['enumType']
+                            );
+                        }
+
+                        if (
+                            isset($fieldMapping['enumType'])
+                            && $propertyType !== $fieldMapping['enumType']
+                            && interface_exists($propertyType)
+                            && is_a($fieldMapping['enumType'], $propertyType, true)
+                        ) {
+                            $backingType = (string) (new ReflectionEnum($fieldMapping['enumType']))->getBackingType();
+
+                            if ($metadataFieldType === $backingType) {
+                                return null;
+                            }
+
+                            return sprintf(
+                                "The field '%s#%s' has the metadata enumType '%s' with a backing type of '%s' that differs from the metadata field type '%s'.",
+                                $class->name,
+                                $fieldName,
+                                $fieldMapping['enumType'],
+                                $backingType,
+                                $metadataFieldType
                             );
                         }
 
