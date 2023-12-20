@@ -31,6 +31,7 @@ class ValidateSchemaCommand extends AbstractEntityManagerCommand
              ->addOption('em', null, InputOption::VALUE_REQUIRED, 'Name of the entity manager to operate on')
              ->addOption('skip-mapping', null, InputOption::VALUE_NONE, 'Skip the mapping validation check')
              ->addOption('skip-sync', null, InputOption::VALUE_NONE, 'Skip checking if the mapping is in sync with the database')
+             ->addOption('skip-property-types', null, InputOption::VALUE_NONE, 'Skip checking if property types match the Doctrine types')
              ->setHelp('Validate that the mapping files are correct and in sync with the database.');
     }
 
@@ -39,7 +40,7 @@ class ValidateSchemaCommand extends AbstractEntityManagerCommand
         $ui = (new SymfonyStyle($input, $output))->getErrorStyle();
 
         $em        = $this->getEntityManager($input);
-        $validator = new SchemaValidator($em);
+        $validator = new SchemaValidator($em, ! $input->getOption('skip-property-types'));
         $exit      = 0;
 
         $ui->section('Mapping');
