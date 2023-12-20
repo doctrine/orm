@@ -57,6 +57,9 @@ class SchemaValidator
     /** @var EntityManagerInterface */
     private $em;
 
+    /** @var bool */
+    private $validatePropertyTypes;
+
     /**
      * It maps built-in Doctrine types to PHP types
      */
@@ -75,9 +78,10 @@ class SchemaValidator
         TextType::class => 'string',
     ];
 
-    public function __construct(EntityManagerInterface $em)
+    public function __construct(EntityManagerInterface $em, bool $validatePropertyTypes = true)
     {
-        $this->em = $em;
+        $this->em                    = $em;
+        $this->validatePropertyTypes = $validatePropertyTypes;
     }
 
     /**
@@ -137,7 +141,7 @@ class SchemaValidator
         }
 
         // PHP 7.4 introduces the ability to type properties, so we can't validate them in previous versions
-        if (PHP_VERSION_ID >= 70400) {
+        if (PHP_VERSION_ID >= 70400 && $this->validatePropertyTypes) {
             array_push($ce, ...$this->validatePropertiesTypes($class));
         }
 
