@@ -7,8 +7,6 @@ namespace Doctrine\ORM\Internal;
 use Doctrine\ORM\Internal\TopologicalSort\CycleDetectedException;
 
 use function array_keys;
-use function array_reverse;
-use function array_unshift;
 use function spl_object_id;
 
 /**
@@ -93,18 +91,14 @@ final class TopologicalSort
 
     /**
      * Returns a topological sort of all nodes. When we have an edge A->B between two nodes
-     * A and B, then A will be listed before B in the result.
+     * A and B, then B will be listed before A in the result. Visually speaking, when ordering
+     * the nodes in the result order from left to right, all edges point to the left.
      *
      * @return list<object>
      */
     public function sort(): array
     {
-        /*
-         * When possible, keep objects in the result in the same order in which they were added as nodes.
-         * Since nodes are unshifted into $this->>sortResult (see the visit() method), that means we
-         * need to work them in array_reverse order here.
-         */
-        foreach (array_reverse(array_keys($this->nodes)) as $oid) {
+        foreach (array_keys($this->nodes) as $oid) {
             if ($this->states[$oid] === self::NOT_VISITED) {
                 $this->visit($oid);
             }
@@ -147,7 +141,7 @@ final class TopologicalSort
                 }
 
                 // We have found a cycle and cannot break it at $edge. Best we can do
-                // is to retreat from the current vertex, hoping that somewhere up the
+                // is to backtrack from the current vertex, hoping that somewhere up the
                 // stack this can be salvaged.
                 $this->states[$oid] = self::NOT_VISITED;
                 $exception->addToCycle($this->nodes[$oid]);
@@ -160,6 +154,6 @@ final class TopologicalSort
         // So we're done with this vertex as well.
 
         $this->states[$oid] = self::VISITED;
-        array_unshift($this->sortResult, $this->nodes[$oid]);
+        $this->sortResult[] = $this->nodes[$oid];
     }
 }
