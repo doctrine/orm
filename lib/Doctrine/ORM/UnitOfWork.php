@@ -469,6 +469,8 @@ class UnitOfWork implements PropertyChangedListener
             // (first delete entities depending upon others, before deleting depended-upon entities).
             if ($this->entityDeletions) {
                 $this->executeDeletions();
+            } else {
+                $this->finalizeCollectionUpdates();
             }
 
             // Commit failed silently
@@ -490,7 +492,12 @@ class UnitOfWork implements PropertyChangedListener
         }
 
         $this->afterTransactionComplete();
+        $this->dispatchPostFlushEvent();
+        $this->postCommitCleanup($entity);
+    }
 
+    private function finalizeCollectionUpdates(): void
+    {
         // Unset removed entities from collections, and take new snapshots from
         // all visited collections.
         foreach ($this->visitedCollections as $coid => $coll) {
@@ -502,10 +509,6 @@ class UnitOfWork implements PropertyChangedListener
 
             $coll->takeSnapshot();
         }
-
-        $this->dispatchPostFlushEvent();
-
-        $this->postCommitCleanup($entity);
     }
 
     /** @param object|object[]|null $entity */
@@ -1316,6 +1319,8 @@ class UnitOfWork implements PropertyChangedListener
                 $eventsToDispatch[] = ['class' => $class, 'entity' => $entity, 'invoke' => $invoke];
             }
         }
+
+        $this->finalizeCollectionUpdates();
 
         // Defer dispatching `postRemove` events to until all entities have been removed.
         foreach ($eventsToDispatch as $event) {

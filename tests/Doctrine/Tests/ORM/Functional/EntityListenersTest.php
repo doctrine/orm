@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Event\PostPersistEventArgs;
 use Doctrine\ORM\Event\PostRemoveEventArgs;
 use Doctrine\ORM\Event\PreFlushEventArgs;
@@ -12,6 +13,7 @@ use Doctrine\ORM\Events;
 use Doctrine\ORM\UnitOfWork;
 use Doctrine\Persistence\Event\LifecycleEventArgs;
 use Doctrine\Tests\Models\Company\CompanyContractListener;
+use Doctrine\Tests\Models\Company\CompanyEmployee;
 use Doctrine\Tests\Models\Company\CompanyFixContract;
 use Doctrine\Tests\Models\Company\CompanyPerson;
 use Doctrine\Tests\OrmFunctionalTestCase;
@@ -265,5 +267,45 @@ class EntityListenersTest extends OrmFunctionalTestCase
         $this->_em->flush();
 
         self::assertSame(2, $listener->invocationCount);
+    }
+
+    public function testPostRemoveCalledAfterAllInMemoryCollectionsHaveBeenUpdated(): void
+    {
+        $contract = new CompanyFixContract();
+        $contract->setFixPrice(2000);
+
+        $engineer = new CompanyEmployee();
+        $engineer->setName('J. Doe');
+        $engineer->setSalary(50);
+        $engineer->setDepartment('tech');
+
+        $contract->addEngineer($engineer);
+        $engineer->contracts = new ArrayCollection([$contract]);
+
+        $this->_em->persist($contract);
+        $this->_em->persist($engineer);
+        $this->_em->flush();
+
+        $this->_em->getEventManager()->addEventListener([Events::postRemove], new class ($contract) {
+            /** @var CompanyFixContract */
+            private $contract;
+
+            public function __construct(CompanyFixContract $contract)
+            {
+                $this->contract = $contract;
+            }
+
+            public function postRemove(): void
+            {
+                Assert::assertEmpty($this->contract->getEngineers()); // Assert collection has been updated before event was dispatched
+                Assert::assertFalse($this->contract->getEngineers()->isDirty()); // Collections are clean at this point
+            }
+        });
+
+        $this->_em->remove($engineer);
+        $this->_em->flush();
+
+        self::assertEmpty($contract->getEngineers());
+        self::assertFalse($contract->getEngineers()->isDirty());
     }
 }
