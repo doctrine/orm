@@ -2558,6 +2558,10 @@ class ClassMetadataInfo implements ClassMetadata
             $overrideMapping['id'] = $mapping['id'];
         }
 
+        if (isset($mapping['declared'])) {
+            $overrideMapping['declared'] = $mapping['declared'];
+        }
+
         if (! isset($overrideMapping['type'])) {
             $overrideMapping['type'] = $mapping['type'];
         }
