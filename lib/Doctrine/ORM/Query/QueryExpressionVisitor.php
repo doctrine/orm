@@ -96,6 +96,9 @@ class QueryExpressionVisitor extends ExpressionVisitor
             case CompositeExpression::TYPE_OR:
                 return new Expr\Orx($expressionList);
 
+            case CompositeExpression::TYPE_NOT:
+                return new Expr\Func('NOT', $expressionList);
+
             default:
                 // Multiversion support for `doctrine/collections` before and after v2.1.0
                 if (defined(CompositeExpression::class . '::TYPE_NOT') && $expr->getType() === CompositeExpression::TYPE_NOT) {
