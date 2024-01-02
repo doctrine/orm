@@ -6,12 +6,22 @@ namespace Doctrine\Tests\ORM\Functional\Ticket\GH11072;
 
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
 
 /**
  * @Entity
  */
-class GH11072EntityAdvanced extends GH11072EntityBasic
+class GH11072EntityAdvanced
 {
+    /**
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     * @var int
+     */
+    public $id;
+
     /** @Column(type="json") */
     public mixed $anything;
 
