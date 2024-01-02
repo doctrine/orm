@@ -11,11 +11,11 @@
     errorBaseline="psalm-baseline.xml"
 >
     <projectFiles>
-        <directory name="lib/Doctrine/ORM" />
-        <directory name="tests/Doctrine/StaticAnalysis" />
+        <directory name="src" />
+        <directory name="tests/StaticAnalysis" />
         <ignoreFiles>
             <directory name="vendor" />
-            <file name="lib/Doctrine/ORM/Mapping/Driver/AttributeReader.php" />
+            <file name="src/Mapping/Driver/AttributeReader.php" />
         </ignoreFiles>
     </projectFiles>
     <enableExtensions>
@@ -50,28 +50,28 @@
                 <!-- Remove on 3.0.x -->
                 <!-- Compatibility with DBAL 3 -->
                 <referencedMethod name="Doctrine\DBAL\Connection::getEventManager"/>
-                <file name="lib/Doctrine/ORM/Query/TreeWalkerChain.php"/>
+                <file name="src/Query/TreeWalkerChain.php"/>
             </errorLevel>
         </DeprecatedMethod>
         <DocblockTypeContradiction>
             <errorLevel type="suppress">
                 <!-- We're catching invalid input here. -->
-                <file name="lib/Doctrine/ORM/Internal/Hydration/AbstractHydrator.php"/>
+                <file name="src/Internal/Hydration/AbstractHydrator.php"/>
 
                 <!-- DBAL 3.2 forward compatibility -->
-                <file name="lib/Doctrine/ORM/Tools/Pagination/CountOutputWalker.php"/>
-                <file name="lib/Doctrine/ORM/Tools/Pagination/LimitSubqueryOutputWalker.php"/>
+                <file name="src/Tools/Pagination/CountOutputWalker.php"/>
+                <file name="src/Tools/Pagination/LimitSubqueryOutputWalker.php"/>
                 <!-- https://github.com/vimeo/psalm/issues/8520 -->
-                <file name="lib/Doctrine/ORM/PersistentCollection.php"/>
+                <file name="src/PersistentCollection.php"/>
                 <!-- Remove on 4.0.x -->
-                <file name="lib/Doctrine/ORM/Mapping/Driver/AttributeDriver.php"/>
-                <file name="lib/Doctrine/ORM/Mapping/Driver/XmlDriver.php"/>
-                <file name="lib/Doctrine/ORM/ORMSetup.php"/>
+                <file name="src/Mapping/Driver/AttributeDriver.php"/>
+                <file name="src/Mapping/Driver/XmlDriver.php"/>
+                <file name="src/ORMSetup.php"/>
             </errorLevel>
         </DocblockTypeContradiction>
         <ForbiddenCode>
             <errorLevel type="suppress">
-                <file name="lib/Doctrine/ORM/Tools/Debug.php"/>
+                <file name="src/Tools/Debug.php"/>
             </errorLevel>
         </ForbiddenCode>
         <InvalidArgument>
@@ -82,92 +82,92 @@
         <InvalidArrayAccess>
             <errorLevel type="suppress">
                 <!-- https://github.com/vimeo/psalm/issues/9160 -->
-                <file name="lib/Doctrine/ORM/Mapping/ClassMetadataFactory.php"/>
+                <file name="src/Mapping/ClassMetadataFactory.php"/>
             </errorLevel>
         </InvalidArrayAccess>
         <InvalidArrayAssignment>
             <errorLevel type="suppress">
                 <!-- https://github.com/vimeo/psalm/issues/9160 -->
-                <file name="lib/Doctrine/ORM/Mapping/ClassMetadataFactory.php"/>
+                <file name="src/Mapping/ClassMetadataFactory.php"/>
             </errorLevel>
         </InvalidArrayAssignment>
         <LessSpecificReturnStatement>
             <errorLevel type="suppress">
                 <!-- In DBAL 4, column precision is nullable. See https://github.com/doctrine/dbal/pull/3511 -->
-                <file name="lib/Doctrine/ORM/Mapping/Driver/DatabaseDriver.php"/>
+                <file name="src/Mapping/Driver/DatabaseDriver.php"/>
             </errorLevel>
         </LessSpecificReturnStatement>
         <MoreSpecificReturnType>
             <errorLevel type="suppress">
                 <!-- In DBAL 4, the default column value is mixed. See https://github.com/doctrine/dbal/pull/3511 -->
-                <file name="lib/Doctrine/ORM/Mapping/Driver/DatabaseDriver.php"/>
+                <file name="src/Mapping/Driver/DatabaseDriver.php"/>
             </errorLevel>
         </MoreSpecificReturnType>
         <InvalidReturnType>
             <errorLevel type="suppress">
                 <!-- https://github.com/vimeo/psalm/issues/8819 -->
-                <file name="lib/Doctrine/ORM/Internal/Hydration/AbstractHydrator.php"/>
+                <file name="src/Internal/Hydration/AbstractHydrator.php"/>
             </errorLevel>
         </InvalidReturnType>
         <InvalidParamDefault>
             <errorLevel type="suppress">
                 <!-- Remove on 3.0.x -->
-                <file name="lib/Doctrine/ORM/Query/AST/InstanceOfExpression.php"/>
+                <file name="src/Query/AST/InstanceOfExpression.php"/>
             </errorLevel>
         </InvalidParamDefault>
         <InvalidPropertyAssignmentValue>
             <errorLevel type="suppress">
                 <!-- https://github.com/vimeo/psalm/issues/9155 -->
-                <file name="lib/Doctrine/ORM/Mapping/ClassMetadataFactory.php"/>
+                <file name="src/Mapping/ClassMetadataFactory.php"/>
             </errorLevel>
         </InvalidPropertyAssignmentValue>
         <MethodSignatureMismatch>
             <errorLevel type="suppress">
                 <!-- See https://github.com/vimeo/psalm/issues/7357 -->
-                <file name="lib/Doctrine/ORM/Mapping/ReflectionReadonlyProperty.php"/>
+                <file name="src/Mapping/ReflectionReadonlyProperty.php"/>
             </errorLevel>
         </MethodSignatureMismatch>
         <MissingParamType>
             <errorLevel type="suppress">
                 <!-- Persistence 2 compatibility -->
-                <file name="lib/Doctrine/ORM/EntityManager.php"/>
-                <file name="lib/Doctrine/ORM/Mapping/ClassMetadataFactory.php"/>
-                <file name="lib/Doctrine/ORM/Mapping/ClassMetadata.php"/>
+                <file name="src/EntityManager.php"/>
+                <file name="src/Mapping/ClassMetadataFactory.php"/>
+                <file name="src/Mapping/ClassMetadata.php"/>
             </errorLevel>
         </MissingParamType>
         <PossiblyInvalidArgument>
             <errorLevel type="suppress">
                 <!-- https://github.com/vimeo/psalm/issues/9155 -->
-                <file name="lib/Doctrine/ORM/Mapping/ClassMetadataFactory.php"/>
+                <file name="src/Mapping/ClassMetadataFactory.php"/>
             </errorLevel>
         </PossiblyInvalidArgument>
         <PossiblyNullArrayOffset>
             <errorLevel type="suppress">
                 <!-- https://github.com/vimeo/psalm/issues/7878 -->
-                <file name="lib/Doctrine/ORM/Persisters/Collection/ManyToManyPersister.php"/>
+                <file name="src/Persisters/Collection/ManyToManyPersister.php"/>
             </errorLevel>
         </PossiblyNullArrayOffset>
         <PropertyNotSetInConstructor>
             <errorLevel type="suppress">
-                <directory name="lib/Doctrine/ORM/Query/AST" />
+                <directory name="src/Query/AST" />
             </errorLevel>
         </PropertyNotSetInConstructor>
         <PropertyTypeCoercion>
             <errorLevel type="suppress">
-                <file name="lib/Doctrine/ORM/Mapping/ClassMetadata.php"/>
+                <file name="src/Mapping/ClassMetadata.php"/>
             </errorLevel>
         </PropertyTypeCoercion>
         <RedundantCastGivenDocblockType>
             <errorLevel type="suppress">
                 <!-- Can be removed once the "getMaxResults" methods of those classes have native parameter types -->
-                <file name="lib/Doctrine/ORM/Query.php"/>
-                <file name="lib/Doctrine/ORM/QueryBuilder.php"/>
+                <file name="src/Query.php"/>
+                <file name="src/QueryBuilder.php"/>
             </errorLevel>
         </RedundantCastGivenDocblockType>
         <ReferenceConstraintViolation>
             <errorLevel type="suppress">
                 <!-- https://github.com/vimeo/psalm/issues/9155 -->
-                <file name="lib/Doctrine/ORM/Mapping/ClassMetadataFactory.php"/>
+                <file name="src/Mapping/ClassMetadataFactory.php"/>
             </errorLevel>
         </ReferenceConstraintViolation>
         <TooManyArguments>
@@ -188,16 +188,16 @@
         <TypeDoesNotContainNull>
             <errorLevel type="suppress">
                 <!-- DBAL 3 compatibility -->
-                <file name="lib/Doctrine/ORM/Tools/SchemaTool.php"/>
+                <file name="src/Tools/SchemaTool.php"/>
             </errorLevel>
         </TypeDoesNotContainNull>
         <TypeDoesNotContainType>
             <errorLevel type="suppress">
-                <file name="lib/Doctrine/ORM/Internal/SQLResultCasing.php"/>
-                <file name="lib/Doctrine/ORM/Mapping/ClassMetadataFactory.php"/>
+                <file name="src/Internal/SQLResultCasing.php"/>
+                <file name="src/Mapping/ClassMetadataFactory.php"/>
                 <!-- DBAL 3 compatibility -->
-                <file name="lib/Doctrine/ORM/UnitOfWork.php"/>
-                <file name="lib/Doctrine/ORM/Utility/LockSqlHelper.php"/>
+                <file name="src/UnitOfWork.php"/>
+                <file name="src/Utility/LockSqlHelper.php"/>
             </errorLevel>
         </TypeDoesNotContainType>
         <UndefinedClass>
@@ -217,22 +217,22 @@
         <UndefinedPropertyFetch>
             <errorLevel type="suppress">
                 <!-- https://github.com/vimeo/psalm/issues/7878 -->
-                <file name="lib/Doctrine/ORM/Persisters/Collection/ManyToManyPersister.php"/>
-                <file name="lib/Doctrine/ORM/PersistentCollection.php"/>
-                <file name="lib/Doctrine/ORM/Utility/PersisterHelper.php"/>
-                <file name="lib/Doctrine/ORM/Tools/SchemaValidator.php"/>
+                <file name="src/Persisters/Collection/ManyToManyPersister.php"/>
+                <file name="src/PersistentCollection.php"/>
+                <file name="src/Utility/PersisterHelper.php"/>
+                <file name="src/Tools/SchemaValidator.php"/>
             </errorLevel>
         </UndefinedPropertyFetch>
         <UnhandledMatchCondition>
             <errorLevel type="suppress">
                 <!-- We can be certain that those values are not matched. -->
-                <file name="lib/Doctrine/ORM/Persisters/Entity/BasicEntityPersister.php"/>
+                <file name="src/Persisters/Entity/BasicEntityPersister.php"/>
             </errorLevel>
         </UnhandledMatchCondition>
         <ArgumentTypeCoercion>
             <errorLevel type="suppress">
                 <!-- See https://github.com/JetBrains/phpstorm-stubs/pull/1383 -->
-                <file name="lib/Doctrine/ORM/Mapping/ClassMetadata.php"/>
+                <file name="src/Mapping/ClassMetadata.php"/>
             </errorLevel>
         </ArgumentTypeCoercion>
     </issueHandlers>

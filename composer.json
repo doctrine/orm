@@ -51,13 +51,13 @@
         "symfony/cache": "Provides cache support for Setup Tool with doctrine/cache 2.0"
     },
     "autoload": {
-        "psr-4": { "Doctrine\\ORM\\": "lib/Doctrine/ORM" }
+        "psr-4": { "Doctrine\\ORM\\": "src" }
     },
     "autoload-dev": {
         "psr-4": {
-            "Doctrine\\Tests\\": "tests/Doctrine/Tests",
-            "Doctrine\\StaticAnalysis\\": "tests/Doctrine/StaticAnalysis",
-            "Doctrine\\Performance\\": "tests/Doctrine/Performance"
+            "Doctrine\\Tests\\": "tests/Tests",
+            "Doctrine\\StaticAnalysis\\": "tests/StaticAnalysis",
+            "Doctrine\\Performance\\": "tests/Performance"
         }
     },
     "archive": {

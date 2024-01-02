@@ -10,19 +10,19 @@ parameters:
         # We can be certain that those values are not matched.
         -
             message: '~^Match expression does not handle remaining values:~'
-            path: lib/Doctrine/ORM/Persisters/Entity/BasicEntityPersister.php
+            path: src/Persisters/Entity/BasicEntityPersister.php
 
         # DBAL 4 compatibility
         -
             message: '~^Method Doctrine\\ORM\\Query\\AST\\Functions\\TrimFunction::getTrimMode\(\) never returns .* so it can be removed from the return type\.$~'
-            path: lib/Doctrine/ORM/Query/AST/Functions/TrimFunction.php
+            path: src/Query/AST/Functions/TrimFunction.php
         -
             message: '~^Method Doctrine\\ORM\\Persisters\\Entity\\BasicEntityPersister\:\:getArrayBindingType\(\) never returns .* so it can be removed from the return type\.$~'
-            path: lib/Doctrine/ORM/Persisters/Entity/BasicEntityPersister.php
+            path: src/Persisters/Entity/BasicEntityPersister.php
 
         -
             message: '~^Unreachable statement \- code above always terminates\.$~'
-            path: lib/Doctrine/ORM/Mapping/AssociationMapping.php
+            path: src/Mapping/AssociationMapping.php
 
         - '~^Class Doctrine\\DBAL\\Platforms\\SQLitePlatform not found\.$~'
 
@@ -30,7 +30,7 @@ parameters:
         -
             message: '#Negated boolean expression is always false\.#'
             paths:
-                - lib/Doctrine/ORM/Mapping/Driver/AttributeDriver.php
-                - lib/Doctrine/ORM/Mapping/Driver/SimplifiedXmlDriver.php
-                - lib/Doctrine/ORM/Mapping/Driver/XmlDriver.php
-                - lib/Doctrine/ORM/ORMSetup.php
+                - src/Mapping/Driver/AttributeDriver.php
+                - src/Mapping/Driver/SimplifiedXmlDriver.php
+                - src/Mapping/Driver/XmlDriver.php
+                - src/ORMSetup.php

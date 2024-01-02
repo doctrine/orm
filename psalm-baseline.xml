@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <files psalm-version="5.16.0@2897ba636551a8cb61601cc26f6ccfbba6c36591">
-  <file src="lib/Doctrine/ORM/AbstractQuery.php">
+  <file src="src/AbstractQuery.php">
     <FalsableReturnStatement>
       <code><![CDATA[! $filteredParameters->isEmpty() ? $filteredParameters->first() : null]]></code>
     </FalsableReturnStatement>
@@ -20,12 +20,12 @@
       <code>getQueryCache</code>
     </PossiblyNullReference>
   </file>
-  <file src="lib/Doctrine/ORM/Cache/CacheConfiguration.php">
+  <file src="src/Cache/CacheConfiguration.php">
     <PossiblyNullReference>
       <code>getTimestampRegion</code>
     </PossiblyNullReference>
   </file>
-  <file src="lib/Doctrine/ORM/Cache/DefaultCache.php">
+  <file src="src/Cache/DefaultCache.php">
     <PossiblyNullPropertyAssignmentValue>
       <code><![CDATA[$em->getConfiguration()
             ->getSecondLevelCacheConfiguration()
@@ -35,12 +35,12 @@
       <code>getCacheFactory</code>
     </PossiblyNullReference>
   </file>
-  <file src="lib/Doctrine/ORM/Cache/DefaultEntityHydrator.php">
+  <file src="src/Cache/DefaultEntityHydrator.php">
     <UndefinedInterfaceMethod>
       <code>getCacheRegion</code>
     </UndefinedInterfaceMethod>
   </file>
-  <file src="lib/Doctrine/ORM/Cache/DefaultQueryCache.php">
+  <file src="src/Cache/DefaultQueryCache.php">
     <ArgumentTypeCoercion>
       <code><![CDATA[$assocKeys->identifiers[$assocIndex]]]></code>
       <code><![CDATA[$assocKeys->identifiers[$assocIndex]]]></code>
@@ -65,7 +65,7 @@
       <code>storeEntityCache</code>
     </UndefinedInterfaceMethod>
   </file>
-  <file src="lib/Doctrine/ORM/Cache/Persister/Collection/AbstractCollectionPersister.php">
+  <file src="src/Cache/Persister/Collection/AbstractCollectionPersister.php">
     <ArgumentTypeCoercion>
       <code>$cache</code>
       <code>$entityKey</code>
@@ -81,18 +81,18 @@
       <code>getCacheFactory</code>
     </PossiblyNullReference>
   </file>
-  <file src="lib/Doctrine/ORM/Cache/Persister/Collection/NonStrictReadWriteCachedCollectionPersister.php">
+  <file src="src/Cache/Persister/Collection/NonStrictReadWriteCachedCollectionPersister.php">
     <PossiblyNullArgument>
       <code><![CDATA[$collection->getOwner()]]></code>
       <code><![CDATA[$collection->getOwner()]]></code>
     </PossiblyNullArgument>
   </file>
-  <file src="lib/Doctrine/ORM/Cache/Persister/Collection/ReadOnlyCachedCollectionPersister.php">
+  <file src="src/Cache/Persister/Collection/ReadOnlyCachedCollectionPersister.php">
     <PossiblyNullArgument>
       <code><![CDATA[$collection->getOwner()]]></code>
     </PossiblyNullArgument>
   </file>
-  <file src="lib/Doctrine/ORM/Cache/Persister/Collection/ReadWriteCachedCollectionPersister.php">
+  <file src="src/Cache/Persister/Collection/ReadWriteCachedCollectionPersister.php">
     <PossiblyNullArgument>
       <code><![CDATA[$collection->getOwner()]]></code>
       <code><![CDATA[$collection->getOwner()]]></code>
@@ -102,7 +102,7 @@
       <code>lock</code>
     </UndefinedInterfaceMethod>
   </file>
-  <file src="lib/Doctrine/ORM/Cache/Persister/Entity/AbstractEntityPersister.php">
+  <file src="src/Cache/Persister/Entity/AbstractEntityPersister.php">
     <ArgumentTypeCoercion>
       <code>$cacheEntry</code>
     </ArgumentTypeCoercion>
@@ -135,7 +135,7 @@
       <code>storeEntityCache</code>
     </UndefinedInterfaceMethod>
   </file>
-  <file src="lib/Doctrine/ORM/Cache/Persister/Entity/ReadWriteCachedEntityPersister.php">
+  <file src="src/Cache/Persister/Entity/ReadWriteCachedEntityPersister.php">
     <RedundantCondition>
       <code>$isChanged</code>
     </RedundantCondition>
@@ -144,17 +144,17 @@
       <code>lock</code>
     </UndefinedInterfaceMethod>
   </file>
-  <file src="lib/Doctrine/ORM/Cache/TimestampQueryCacheValidator.php">
+  <file src="src/Cache/TimestampQueryCacheValidator.php">
     <NoInterfaceProperties>
       <code><![CDATA[$timestamp->time]]></code>
     </NoInterfaceProperties>
   </file>
-  <file src="lib/Doctrine/ORM/Configuration.php">
+  <file src="src/Configuration.php">
     <ArgumentTypeCoercion>
       <code>$className</code>
     </ArgumentTypeCoercion>
   </file>
-  <file src="lib/Doctrine/ORM/Decorator/EntityManagerDecorator.php">
+  <file src="src/Decorator/EntityManagerDecorator.php">
     <InvalidReturnStatement>
       <code><![CDATA[$this->wrapped->getClassMetadata($className)]]></code>
     </InvalidReturnStatement>
@@ -162,7 +162,7 @@
       <code>ClassMetadata</code>
     </InvalidReturnType>
   </file>
-  <file src="lib/Doctrine/ORM/EntityManager.php">
+  <file src="src/EntityManager.php">
     <ArgumentTypeCoercion>
       <code>$className</code>
     </ArgumentTypeCoercion>
@@ -195,7 +195,7 @@
       <code>(string) $hydrationMode</code>
     </RedundantCastGivenDocblockType>
   </file>
-  <file src="lib/Doctrine/ORM/EntityRepository.php">
+  <file src="src/EntityRepository.php">
     <InvalidReturnStatement>
       <code><![CDATA[$persister->load($criteria, null, null, [], null, 1, $orderBy)]]></code>
       <code>new LazyCriteriaCollection($persister, $criteria)</code>
@@ -211,18 +211,18 @@
       <code><![CDATA[list<T>]]></code>
     </MoreSpecificReturnType>
   </file>
-  <file src="lib/Doctrine/ORM/Id/AssignedGenerator.php">
+  <file src="src/Id/AssignedGenerator.php">
     <PossiblyNullArgument>
       <code>$entity</code>
     </PossiblyNullArgument>
   </file>
-  <file src="lib/Doctrine/ORM/Internal/Hydration/AbstractHydrator.php">
+  <file src="src/Internal/Hydration/AbstractHydrator.php">
     <ReferenceConstraintViolation>
       <code>return $rowData;</code>
       <code>return $rowData;</code>
     </ReferenceConstraintViolation>
   </file>
-  <file src="lib/Doctrine/ORM/Internal/Hydration/ArrayHydrator.php">
+  <file src="src/Internal/Hydration/ArrayHydrator.php">
     <PossiblyInvalidArgument>
       <code>$index</code>
     </PossiblyInvalidArgument>
@@ -250,7 +250,7 @@
       <code><![CDATA[$this->resultPointers[$dqlAlias] =& $coll[array_key_last($coll)]]]></code>
     </UnsupportedReferenceUsage>
   </file>
-  <file src="lib/Doctrine/ORM/Internal/Hydration/ObjectHydrator.php">
+  <file src="src/Internal/Hydration/ObjectHydrator.php">
     <InvalidArgument>
       <code>$element</code>
     </InvalidArgument>
@@ -277,7 +277,7 @@
       <code><![CDATA[$newObject['args']]]></code>
     </PossiblyUndefinedArrayOffset>
   </file>
-  <file src="lib/Doctrine/ORM/Mapping/AssociationMapping.php">
+  <file src="src/Mapping/AssociationMapping.php">
     <LessSpecificReturnStatement>
       <code>$mapping</code>
     </LessSpecificReturnStatement>
@@ -285,17 +285,17 @@
       <code>static</code>
     </MoreSpecificReturnType>
   </file>
-  <file src="lib/Doctrine/ORM/Mapping/Builder/ClassMetadataBuilder.php">
+  <file src="src/Mapping/Builder/ClassMetadataBuilder.php">
     <ArgumentTypeCoercion>
       <code>$repositoryClassName</code>
     </ArgumentTypeCoercion>
   </file>
-  <file src="lib/Doctrine/ORM/Mapping/Builder/EntityListenerBuilder.php">
+  <file src="src/Mapping/Builder/EntityListenerBuilder.php">
     <PossiblyNullArgument>
       <code>$class</code>
     </PossiblyNullArgument>
   </file>
-  <file src="lib/Doctrine/ORM/Mapping/ClassMetadata.php">
+  <file src="src/Mapping/ClassMetadata.php">
     <DeprecatedProperty>
       <code><![CDATA[$this->columnNames]]></code>
       <code><![CDATA[$this->columnNames]]></code>
@@ -371,7 +371,7 @@
       <code>null</code>
     </RedundantPropertyInitializationCheck>
   </file>
-  <file src="lib/Doctrine/ORM/Mapping/ClassMetadataFactory.php">
+  <file src="src/Mapping/ClassMetadataFactory.php">
     <ArgumentTypeCoercion>
       <code>$platformFamily</code>
       <code><![CDATA[new $definition['class']()]]></code>
@@ -406,7 +406,7 @@
             $owningSide instanceof ManyToOneAssociationMapping)</code>
     </RedundantConditionGivenDocblockType>
   </file>
-  <file src="lib/Doctrine/ORM/Mapping/DefaultEntityListenerResolver.php">
+  <file src="src/Mapping/DefaultEntityListenerResolver.php">
     <InvalidStringClass>
       <code>new $className()</code>
     </InvalidStringClass>
@@ -414,12 +414,12 @@
       <code><![CDATA[$this->instances]]></code>
     </PropertyTypeCoercion>
   </file>
-  <file src="lib/Doctrine/ORM/Mapping/DefaultNamingStrategy.php">
+  <file src="src/Mapping/DefaultNamingStrategy.php">
     <PossiblyFalseOperand>
       <code><![CDATA[strrpos($className, '\\')]]></code>
     </PossiblyFalseOperand>
   </file>
-  <file src="lib/Doctrine/ORM/Mapping/DefaultTypedFieldMapper.php">
+  <file src="src/Mapping/DefaultTypedFieldMapper.php">
     <LessSpecificReturnStatement>
       <code>$mapping</code>
     </LessSpecificReturnStatement>
@@ -430,7 +430,7 @@
       <code>array_merge(self::DEFAULT_TYPED_FIELD_MAPPINGS, $typedFieldMappings)</code>
     </PropertyTypeCoercion>
   </file>
-  <file src="lib/Doctrine/ORM/Mapping/Driver/AttributeDriver.php">
+  <file src="src/Mapping/Driver/AttributeDriver.php">
     <InvalidArgument>
       <code>$mapping</code>
       <code><![CDATA[[
@@ -476,7 +476,7 @@
       <code><![CDATA[new ReflectionClass($metadata->name)]]></code>
     </TypeDoesNotContainNull>
   </file>
-  <file src="lib/Doctrine/ORM/Mapping/Driver/DatabaseDriver.php">
+  <file src="src/Mapping/Driver/DatabaseDriver.php">
     <DocblockTypeContradiction>
       <code>$metadata instanceof ClassMetadata</code>
     </DocblockTypeContradiction>
@@ -493,13 +493,13 @@
       <code>getIndexes</code>
     </PossiblyNullReference>
   </file>
-  <file src="lib/Doctrine/ORM/Mapping/Driver/SimplifiedXmlDriver.php">
+  <file src="src/Mapping/Driver/SimplifiedXmlDriver.php">
     <MissingParamType>
       <code>$fileExtension</code>
       <code>$prefixes</code>
     </MissingParamType>
   </file>
-  <file src="lib/Doctrine/ORM/Mapping/Driver/XmlDriver.php">
+  <file src="src/Mapping/Driver/XmlDriver.php">
     <ArgumentTypeCoercion>
       <code>$mapping</code>
       <code><![CDATA[(string) $xmlRoot['repository-class']]]></code>
@@ -560,17 +560,17 @@
       <code><![CDATA[$xmlRoot->getName() === 'mapped-superclass']]></code>
     </TypeDoesNotContainType>
   </file>
-  <file src="lib/Doctrine/ORM/Mapping/ManyToManyInverseSideMapping.php">
+  <file src="src/Mapping/ManyToManyInverseSideMapping.php">
     <PropertyNotSetInConstructor>
       <code>ManyToManyInverseSideMapping</code>
     </PropertyNotSetInConstructor>
   </file>
-  <file src="lib/Doctrine/ORM/Mapping/ManyToManyOwningSideMapping.php">
+  <file src="src/Mapping/ManyToManyOwningSideMapping.php">
     <PropertyNotSetInConstructor>
       <code>$joinTable</code>
     </PropertyNotSetInConstructor>
   </file>
-  <file src="lib/Doctrine/ORM/Mapping/OneToManyAssociationMapping.php">
+  <file src="src/Mapping/OneToManyAssociationMapping.php">
     <PropertyNotSetInConstructor>
       <code>OneToManyAssociationMapping</code>
     </PropertyNotSetInConstructor>
@@ -578,12 +578,12 @@
       <code><![CDATA[isset($mapping->mappedBy)]]></code>
     </TypeDoesNotContainType>
   </file>
-  <file src="lib/Doctrine/ORM/Mapping/OneToOneInverseSideMapping.php">
+  <file src="src/Mapping/OneToOneInverseSideMapping.php">
     <PropertyNotSetInConstructor>
       <code>OneToOneInverseSideMapping</code>
     </PropertyNotSetInConstructor>
   </file>
-  <file src="lib/Doctrine/ORM/Mapping/ReflectionEmbeddedProperty.php">
+  <file src="src/Mapping/ReflectionEmbeddedProperty.php">
     <MethodSignatureMismatch>
       <code>$object</code>
     </MethodSignatureMismatch>
@@ -592,7 +592,7 @@
       <code>ReflectionEmbeddedProperty</code>
     </PropertyNotSetInConstructor>
   </file>
-  <file src="lib/Doctrine/ORM/Mapping/ReflectionEnumProperty.php">
+  <file src="src/Mapping/ReflectionEnumProperty.php">
     <MethodSignatureMismatch>
       <code>$object</code>
     </MethodSignatureMismatch>
@@ -601,13 +601,13 @@
       <code>ReflectionEnumProperty</code>
     </PropertyNotSetInConstructor>
   </file>
-  <file src="lib/Doctrine/ORM/Mapping/ReflectionReadonlyProperty.php">
+  <file src="src/Mapping/ReflectionReadonlyProperty.php">
     <PropertyNotSetInConstructor>
       <code>ReflectionReadonlyProperty</code>
       <code>ReflectionReadonlyProperty</code>
     </PropertyNotSetInConstructor>
   </file>
-  <file src="lib/Doctrine/ORM/Mapping/ToOneInverseSideMapping.php">
+  <file src="src/Mapping/ToOneInverseSideMapping.php">
     <LessSpecificReturnStatement>
       <code>$mapping</code>
     </LessSpecificReturnStatement>
@@ -615,7 +615,7 @@
       <code>static</code>
     </MoreSpecificReturnType>
   </file>
-  <file src="lib/Doctrine/ORM/Mapping/ToOneOwningSideMapping.php">
+  <file src="src/Mapping/ToOneOwningSideMapping.php">
     <LessSpecificReturnStatement>
       <code>$instance</code>
       <code>$mapping</code>
@@ -625,17 +625,17 @@
       <code>static</code>
     </MoreSpecificReturnType>
   </file>
-  <file src="lib/Doctrine/ORM/Mapping/UnderscoreNamingStrategy.php">
+  <file src="src/Mapping/UnderscoreNamingStrategy.php">
     <PossiblyFalseOperand>
       <code><![CDATA[strrpos($className, '\\')]]></code>
     </PossiblyFalseOperand>
   </file>
-  <file src="lib/Doctrine/ORM/NativeQuery.php">
+  <file src="src/NativeQuery.php">
     <PropertyNotSetInConstructor>
       <code>$sql</code>
     </PropertyNotSetInConstructor>
   </file>
-  <file src="lib/Doctrine/ORM/PersistentCollection.php">
+  <file src="src/PersistentCollection.php">
     <ImplementedReturnTypeMismatch>
       <code><![CDATA[Collection<TKey, T>]]></code>
     </ImplementedReturnTypeMismatch>
@@ -666,7 +666,7 @@
       <code><![CDATA[[$this->unwrap(), 'add']]]></code>
     </UndefinedMethod>
   </file>
-  <file src="lib/Doctrine/ORM/Persisters/Collection/ManyToManyPersister.php">
+  <file src="src/Persisters/Collection/ManyToManyPersister.php">
     <PossiblyNullArgument>
       <code><![CDATA[$collection->getOwner()]]></code>
       <code><![CDATA[$collection->getOwner()]]></code>
@@ -682,14 +682,14 @@
       <code>getFieldForColumn</code>
     </PossiblyNullReference>
   </file>
-  <file src="lib/Doctrine/ORM/Persisters/Collection/OneToManyPersister.php">
+  <file src="src/Persisters/Collection/OneToManyPersister.php">
     <PossiblyNullArgument>
       <code><![CDATA[$collection->getOwner()]]></code>
       <code><![CDATA[$collection->getOwner()]]></code>
       <code><![CDATA[$collection->getOwner()]]></code>
     </PossiblyNullArgument>
   </file>
-  <file src="lib/Doctrine/ORM/Persisters/Entity/BasicEntityPersister.php">
+  <file src="src/Persisters/Entity/BasicEntityPersister.php">
     <DocblockTypeContradiction>
       <code>$value === null</code>
     </DocblockTypeContradiction>
@@ -723,7 +723,7 @@
       <code><![CDATA[$this->currentPersisterContext->sqlTableAliases]]></code>
     </PropertyTypeCoercion>
   </file>
-  <file src="lib/Doctrine/ORM/Proxy/Autoloader.php">
+  <file src="src/Proxy/Autoloader.php">
     <ArgumentTypeCoercion>
       <code>$autoloader</code>
     </ArgumentTypeCoercion>
@@ -737,7 +737,7 @@
       <code>require $file</code>
     </UnresolvableInclude>
   </file>
-  <file src="lib/Doctrine/ORM/Proxy/DefaultProxyClassNameResolver.php">
+  <file src="src/Proxy/DefaultProxyClassNameResolver.php">
     <LessSpecificReturnStatement>
       <code>$className</code>
       <code>substr($className, $pos + Proxy::MARKER_LENGTH + 2)</code>
@@ -746,7 +746,7 @@
       <code>string</code>
     </MoreSpecificReturnType>
   </file>
-  <file src="lib/Doctrine/ORM/Proxy/ProxyFactory.php">
+  <file src="src/Proxy/ProxyFactory.php">
     <ArgumentTypeCoercion>
       <code>$classMetadata</code>
     </ArgumentTypeCoercion>
@@ -782,7 +782,7 @@
       <code>require $fileName</code>
     </UnresolvableInclude>
   </file>
-  <file src="lib/Doctrine/ORM/Query.php">
+  <file src="src/Query.php">
     <InvalidArgument>
       <code>$sqlParams</code>
     </InvalidArgument>
@@ -802,19 +802,19 @@
       <code>$parserResult</code>
     </PropertyNotSetInConstructor>
   </file>
-  <file src="lib/Doctrine/ORM/Query/AST/Functions/BitAndFunction.php">
+  <file src="src/Query/AST/Functions/BitAndFunction.php">
     <PossiblyInvalidPropertyAssignmentValue>
       <code><![CDATA[$parser->ArithmeticPrimary()]]></code>
       <code><![CDATA[$parser->ArithmeticPrimary()]]></code>
     </PossiblyInvalidPropertyAssignmentValue>
   </file>
-  <file src="lib/Doctrine/ORM/Query/AST/Functions/BitOrFunction.php">
+  <file src="src/Query/AST/Functions/BitOrFunction.php">
     <PossiblyInvalidPropertyAssignmentValue>
       <code><![CDATA[$parser->ArithmeticPrimary()]]></code>
       <code><![CDATA[$parser->ArithmeticPrimary()]]></code>
     </PossiblyInvalidPropertyAssignmentValue>
   </file>
-  <file src="lib/Doctrine/ORM/Query/AST/Functions/DateAddFunction.php">
+  <file src="src/Query/AST/Functions/DateAddFunction.php">
     <PossiblyInvalidPropertyAssignmentValue>
       <code><![CDATA[$parser->ArithmeticPrimary()]]></code>
       <code><![CDATA[$parser->ArithmeticPrimary()]]></code>
@@ -823,48 +823,48 @@
       <code><![CDATA[$this->unit->value]]></code>
     </UndefinedPropertyFetch>
   </file>
-  <file src="lib/Doctrine/ORM/Query/AST/Functions/DateDiffFunction.php">
+  <file src="src/Query/AST/Functions/DateDiffFunction.php">
     <PossiblyInvalidPropertyAssignmentValue>
       <code><![CDATA[$parser->ArithmeticPrimary()]]></code>
       <code><![CDATA[$parser->ArithmeticPrimary()]]></code>
     </PossiblyInvalidPropertyAssignmentValue>
   </file>
-  <file src="lib/Doctrine/ORM/Query/AST/Functions/DateSubFunction.php">
+  <file src="src/Query/AST/Functions/DateSubFunction.php">
     <UndefinedPropertyFetch>
       <code><![CDATA[$this->unit->value]]></code>
     </UndefinedPropertyFetch>
   </file>
-  <file src="lib/Doctrine/ORM/Query/AST/Functions/FunctionNode.php">
+  <file src="src/Query/AST/Functions/FunctionNode.php">
     <ParamNameMismatch>
       <code>$sqlWalker</code>
     </ParamNameMismatch>
   </file>
-  <file src="lib/Doctrine/ORM/Query/AST/Functions/LocateFunction.php">
+  <file src="src/Query/AST/Functions/LocateFunction.php">
     <PossiblyInvalidArgument>
       <code><![CDATA[$this->simpleArithmeticExpression]]></code>
     </PossiblyInvalidArgument>
   </file>
-  <file src="lib/Doctrine/ORM/Query/AST/JoinClassPathExpression.php">
+  <file src="src/Query/AST/JoinClassPathExpression.php">
     <UndefinedMethod>
       <code>walkJoinPathExpression</code>
     </UndefinedMethod>
   </file>
-  <file src="lib/Doctrine/ORM/Query/AST/JoinVariableDeclaration.php">
+  <file src="src/Query/AST/JoinVariableDeclaration.php">
     <UndefinedMethod>
       <code>walkJoinVariableDeclaration</code>
     </UndefinedMethod>
   </file>
-  <file src="lib/Doctrine/ORM/Query/AST/SimpleWhenClause.php">
+  <file src="src/Query/AST/SimpleWhenClause.php">
     <UndefinedMethod>
       <code>walkWhenClauseExpression</code>
     </UndefinedMethod>
   </file>
-  <file src="lib/Doctrine/ORM/Query/AST/WhenClause.php">
+  <file src="src/Query/AST/WhenClause.php">
     <UndefinedMethod>
       <code>walkWhenClauseExpression</code>
     </UndefinedMethod>
   </file>
-  <file src="lib/Doctrine/ORM/Query/Exec/MultiTableDeleteExecutor.php">
+  <file src="src/Query/Exec/MultiTableDeleteExecutor.php">
     <InvalidReturnStatement>
       <code>$numDeleted</code>
     </InvalidReturnStatement>
@@ -881,7 +881,7 @@
       <code><![CDATA[$this->sqlStatements]]></code>
     </UninitializedProperty>
   </file>
-  <file src="lib/Doctrine/ORM/Query/Exec/MultiTableUpdateExecutor.php">
+  <file src="src/Query/Exec/MultiTableUpdateExecutor.php">
     <InvalidArgument>
       <code>$paramTypes</code>
     </InvalidArgument>
@@ -904,12 +904,12 @@
       <code><![CDATA[$this->sqlStatements]]></code>
     </UninitializedProperty>
   </file>
-  <file src="lib/Doctrine/ORM/Query/Exec/SingleSelectExecutor.php">
+  <file src="src/Query/Exec/SingleSelectExecutor.php">
     <PossiblyInvalidArgument>
       <code><![CDATA[$this->sqlStatements]]></code>
     </PossiblyInvalidArgument>
   </file>
-  <file src="lib/Doctrine/ORM/Query/Exec/SingleTableDeleteUpdateExecutor.php">
+  <file src="src/Query/Exec/SingleTableDeleteUpdateExecutor.php">
     <InvalidReturnStatement>
       <code><![CDATA[$conn->executeStatement($this->sqlStatements, $params, $types)]]></code>
     </InvalidReturnStatement>
@@ -923,13 +923,13 @@
       <code>SingleTableDeleteUpdateExecutor</code>
     </PropertyNotSetInConstructor>
   </file>
-  <file src="lib/Doctrine/ORM/Query/Expr/Andx.php">
+  <file src="src/Query/Expr/Andx.php">
     <NonInvariantDocblockPropertyType>
       <code>$allowedClasses</code>
       <code>$parts</code>
     </NonInvariantDocblockPropertyType>
   </file>
-  <file src="lib/Doctrine/ORM/Query/Expr/Func.php">
+  <file src="src/Query/Expr/Func.php">
     <LessSpecificReturnStatement>
       <code><![CDATA[$this->arguments]]></code>
     </LessSpecificReturnStatement>
@@ -937,39 +937,39 @@
       <code><![CDATA[list<mixed>]]></code>
     </MoreSpecificReturnType>
   </file>
-  <file src="lib/Doctrine/ORM/Query/Expr/GroupBy.php">
+  <file src="src/Query/Expr/GroupBy.php">
     <NonInvariantDocblockPropertyType>
       <code>$parts</code>
     </NonInvariantDocblockPropertyType>
   </file>
-  <file src="lib/Doctrine/ORM/Query/Expr/Join.php">
+  <file src="src/Query/Expr/Join.php">
     <PossiblyNullArgument>
       <code><![CDATA[$this->conditionType]]></code>
     </PossiblyNullArgument>
   </file>
-  <file src="lib/Doctrine/ORM/Query/Expr/Literal.php">
+  <file src="src/Query/Expr/Literal.php">
     <NonInvariantDocblockPropertyType>
       <code>$parts</code>
     </NonInvariantDocblockPropertyType>
   </file>
-  <file src="lib/Doctrine/ORM/Query/Expr/Orx.php">
-    <NonInvariantDocblockPropertyType>
-      <code>$allowedClasses</code>
-      <code>$parts</code>
-    </NonInvariantDocblockPropertyType>
-  </file>
-  <file src="lib/Doctrine/ORM/Query/Expr/Select.php">
+  <file src="src/Query/Expr/Orx.php">
     <NonInvariantDocblockPropertyType>
       <code>$allowedClasses</code>
       <code>$parts</code>
     </NonInvariantDocblockPropertyType>
   </file>
-  <file src="lib/Doctrine/ORM/Query/Filter/SQLFilter.php">
+  <file src="src/Query/Expr/Select.php">
+    <NonInvariantDocblockPropertyType>
+      <code>$allowedClasses</code>
+      <code>$parts</code>
+    </NonInvariantDocblockPropertyType>
+  </file>
+  <file src="src/Query/Filter/SQLFilter.php">
     <PropertyTypeCoercion>
       <code><![CDATA[$this->parameters]]></code>
     </PropertyTypeCoercion>
   </file>
-  <file src="lib/Doctrine/ORM/Query/Parser.php">
+  <file src="src/Query/Parser.php">
     <ArgumentTypeCoercion>
       <code>$stringPattern</code>
     </ArgumentTypeCoercion>
@@ -1018,7 +1018,7 @@
       <code><![CDATA[$token->value === TokenType::T_IDENTIFIER->value]]></code>
     </RedundantCondition>
   </file>
-  <file src="lib/Doctrine/ORM/Query/QueryExpressionVisitor.php">
+  <file src="src/Query/QueryExpressionVisitor.php">
     <InvalidReturnStatement>
       <code><![CDATA[new ArrayCollection($this->parameters)]]></code>
     </InvalidReturnStatement>
@@ -1029,7 +1029,7 @@
       <code>Comparison::EQ</code>
     </RedundantConditionGivenDocblockType>
   </file>
-  <file src="lib/Doctrine/ORM/Query/SqlWalker.php">
+  <file src="src/Query/SqlWalker.php">
     <DocblockTypeContradiction>
       <code>throw QueryException::invalidLiteral($literal)</code>
     </DocblockTypeContradiction>
@@ -1053,7 +1053,7 @@
       <code>dispatch</code>
     </PossiblyNullReference>
   </file>
-  <file src="lib/Doctrine/ORM/QueryBuilder.php">
+  <file src="src/QueryBuilder.php">
     <ArgumentTypeCoercion>
       <code>$having</code>
       <code>$having</code>
@@ -1087,7 +1087,7 @@
       <code>$dqlPart</code>
     </PossiblyInvalidIterator>
   </file>
-  <file src="lib/Doctrine/ORM/Repository/DefaultRepositoryFactory.php">
+  <file src="src/Repository/DefaultRepositoryFactory.php">
     <InvalidReturnStatement>
       <code><![CDATA[$this->repositoryList[$repositoryHash] ??= $this->createRepository($entityManager, $entityName)]]></code>
     </InvalidReturnStatement>
@@ -1098,17 +1098,17 @@
       <code>new $repositoryClassName($entityManager, $metadata)</code>
     </UnsafeInstantiation>
   </file>
-  <file src="lib/Doctrine/ORM/Tools/Console/Command/ClearCache/CollectionRegionCommand.php">
+  <file src="src/Tools/Console/Command/ClearCache/CollectionRegionCommand.php">
     <PossiblyNullReference>
       <code>evictAll</code>
     </PossiblyNullReference>
   </file>
-  <file src="lib/Doctrine/ORM/Tools/Console/Command/ClearCache/EntityRegionCommand.php">
+  <file src="src/Tools/Console/Command/ClearCache/EntityRegionCommand.php">
     <PossiblyNullReference>
       <code>evictAll</code>
     </PossiblyNullReference>
   </file>
-  <file src="lib/Doctrine/ORM/Tools/Console/Command/GenerateProxiesCommand.php">
+  <file src="src/Tools/Console/Command/GenerateProxiesCommand.php">
     <NoInterfaceProperties>
       <code><![CDATA[$metadata->name]]></code>
     </NoInterfaceProperties>
@@ -1116,12 +1116,12 @@
       <code><![CDATA[$em->getConfiguration()->getProxyDir()]]></code>
     </PossiblyNullArgument>
   </file>
-  <file src="lib/Doctrine/ORM/Tools/Console/Command/InfoCommand.php">
+  <file src="src/Tools/Console/Command/InfoCommand.php">
     <PossiblyNullReference>
       <code>getAllClassNames</code>
     </PossiblyNullReference>
   </file>
-  <file src="lib/Doctrine/ORM/Tools/Console/Command/MappingDescribeCommand.php">
+  <file src="src/Tools/Console/Command/MappingDescribeCommand.php">
     <ArgumentTypeCoercion>
       <code><![CDATA[$metadata->entityListeners]]></code>
     </ArgumentTypeCoercion>
@@ -1129,25 +1129,16 @@
       <code>getAllClassNames</code>
     </PossiblyNullReference>
   </file>
-  <file src="lib/Doctrine/ORM/Tools/Console/Command/SchemaTool/CreateCommand.php">
+  <file src="src/Tools/Console/Command/SchemaTool/CreateCommand.php">
     <ArgumentTypeCoercion>
       <code>$metadatas</code>
       <code>$metadatas</code>
     </ArgumentTypeCoercion>
   </file>
-  <file src="lib/Doctrine/ORM/Tools/Console/Command/SchemaTool/DropCommand.php">
+  <file src="src/Tools/Console/Command/SchemaTool/DropCommand.php">
     <ArgumentTypeCoercion>
       <code>$metadatas</code>
       <code>$metadatas</code>
-      <code>$metadatas</code>
-    </ArgumentTypeCoercion>
-    <PossiblyNullArgument>
-      <code><![CDATA[$this->getName()]]></code>
-      <code><![CDATA[$this->getName()]]></code>
-    </PossiblyNullArgument>
-  </file>
-  <file src="lib/Doctrine/ORM/Tools/Console/Command/SchemaTool/UpdateCommand.php">
-    <ArgumentTypeCoercion>
       <code>$metadatas</code>
     </ArgumentTypeCoercion>
     <PossiblyNullArgument>
@@ -1155,7 +1146,16 @@
       <code><![CDATA[$this->getName()]]></code>
     </PossiblyNullArgument>
   </file>
-  <file src="lib/Doctrine/ORM/Tools/Console/MetadataFilter.php">
+  <file src="src/Tools/Console/Command/SchemaTool/UpdateCommand.php">
+    <ArgumentTypeCoercion>
+      <code>$metadatas</code>
+    </ArgumentTypeCoercion>
+    <PossiblyNullArgument>
+      <code><![CDATA[$this->getName()]]></code>
+      <code><![CDATA[$this->getName()]]></code>
+    </PossiblyNullArgument>
+  </file>
+  <file src="src/Tools/Console/MetadataFilter.php">
     <InvalidArgument>
       <code>new ArrayIterator($metadatas)</code>
     </InvalidArgument>
@@ -1163,12 +1163,12 @@
       <code>MetadataFilter</code>
     </MissingTemplateParam>
   </file>
-  <file src="lib/Doctrine/ORM/Tools/DebugUnitOfWorkListener.php">
+  <file src="src/Tools/DebugUnitOfWorkListener.php">
     <RedundantConditionGivenDocblockType>
       <code>$state === UnitOfWork::STATE_DETACHED</code>
     </RedundantConditionGivenDocblockType>
   </file>
-  <file src="lib/Doctrine/ORM/Tools/Pagination/LimitSubqueryOutputWalker.php">
+  <file src="src/Tools/Pagination/LimitSubqueryOutputWalker.php">
     <PossiblyFalseArgument>
       <code><![CDATA[strrpos($orderByItemString, ' ')]]></code>
     </PossiblyFalseArgument>
@@ -1182,17 +1182,17 @@
       <code><![CDATA[$orderByClause->orderByItems]]></code>
     </PossiblyNullPropertyFetch>
   </file>
-  <file src="lib/Doctrine/ORM/Tools/Pagination/Paginator.php">
+  <file src="src/Tools/Pagination/Paginator.php">
     <ArgumentTypeCoercion>
       <code>$parameters</code>
     </ArgumentTypeCoercion>
   </file>
-  <file src="lib/Doctrine/ORM/Tools/Pagination/RowNumberOverFunction.php">
+  <file src="src/Tools/Pagination/RowNumberOverFunction.php">
     <PropertyNotSetInConstructor>
       <code>$orderByClause</code>
     </PropertyNotSetInConstructor>
   </file>
-  <file src="lib/Doctrine/ORM/Tools/SchemaTool.php">
+  <file src="src/Tools/SchemaTool.php">
     <ArgumentTypeCoercion>
       <code>$classes</code>
     </ArgumentTypeCoercion>
@@ -1209,7 +1209,7 @@
       <code>$indexName</code>
     </TypeDoesNotContainType>
   </file>
-  <file src="lib/Doctrine/ORM/UnitOfWork.php">
+  <file src="src/UnitOfWork.php">
     <InvalidArgument>
       <code>$collectionToDelete</code>
       <code>$collectionToUpdate</code>
@@ -1270,7 +1270,7 @@
       <code>$visited</code>
     </ReferenceConstraintViolation>
   </file>
-  <file src="lib/Doctrine/ORM/Utility/HierarchyDiscriminatorResolver.php">
+  <file src="src/Utility/HierarchyDiscriminatorResolver.php">
     <NoInterfaceProperties>
       <code><![CDATA[$rootClassMetadata->name]]></code>
       <code><![CDATA[$rootClassMetadata->subClasses]]></code>

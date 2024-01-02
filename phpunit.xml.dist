@@ -19,12 +19,12 @@
          failOnNotice="true"
          failOnWarning="true"
          failOnRisky="true"
-         bootstrap="./tests/Doctrine/Tests/TestInit.php"
+         bootstrap="./tests/Tests/TestInit.php"
          cacheDirectory=".phpunit.cache"
 >
     <testsuites>
         <testsuite name="Doctrine ORM Test Suite">
-            <directory>./tests/Doctrine/Tests/ORM</directory>
+            <directory>./tests/Tests/ORM</directory>
         </testsuite>
     </testsuites>
 

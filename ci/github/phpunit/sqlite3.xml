@@ -24,7 +24,7 @@
 
     <source>
         <include>
-            <directory suffix=".php">../../../lib/Doctrine</directory>
+            <directory suffix=".php">../../../src</directory>
         </include>
     </source>
 
