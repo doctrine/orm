@@ -153,6 +153,13 @@ class EntityManager implements EntityManagerInterface
     private $cache;
 
     /**
+     * This will hold the last throwable before we close the entity manager.
+     *
+     * @var ?Throwable
+     */
+    private $closingThrowable = null;
+
+    /**
      * Creates a new EntityManager that operates on the given database connection
      * and uses the given Configuration and EventManager implementations.
      */
@@ -255,6 +262,7 @@ class EntityManager implements EntityManagerInterface
             return $return ?: true;
         } catch (Throwable $e) {
             $this->close();
+            $this->closingThrowable = $e;
             $this->conn->rollBack();
 
             throw $e;
@@ -277,6 +285,7 @@ class EntityManager implements EntityManagerInterface
             return $return;
         } catch (Throwable $e) {
             $this->close();
+            $this->closingThrowable = $e;
             $this->conn->rollBack();
 
             throw $e;
@@ -880,6 +889,10 @@ class EntityManager implements EntityManagerInterface
     private function errorIfClosed(): void
     {
         if ($this->closed) {
+            if ($this->closingThrowable instanceof Throwable) {
+                throw EntityManagerClosed::createWithClosingThrowable($this->closingThrowable);
+            }
+
             throw EntityManagerClosed::create();
         }
     }
@@ -1116,5 +1129,10 @@ class EntityManager implements EntityManagerInterface
 
         // Wrap doctrine/cache to provide PSR-6 interface
         $this->metadataFactory->setCache(CacheAdapter::wrap($metadataCache));
+    }
+
+    public function setClosingThrowable(Throwable $closingThrowable): void
+    {
+        $this->closingThrowable = $closingThrowable;
     }
 }

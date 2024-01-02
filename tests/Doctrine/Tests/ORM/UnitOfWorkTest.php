@@ -14,6 +14,7 @@ use Doctrine\Deprecations\PHPUnit\VerifyDeprecations;
 use Doctrine\ORM\EntityNotFoundException;
 use Doctrine\ORM\Events;
 use Doctrine\ORM\Exception\EntityIdentityCollisionException;
+use Doctrine\ORM\Exception\EntityManagerClosed;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
@@ -43,6 +44,7 @@ use Doctrine\Tests\OrmTestCase;
 use Doctrine\Tests\PHPUnitCompatibility\MockBuilderCompatibilityTools;
 use PHPUnit\Framework\MockObject\MockObject;
 use stdClass;
+use Throwable;
 
 use function assert;
 use function count;
@@ -869,6 +871,61 @@ class UnitOfWorkTest extends OrmTestCase
     {
         $this->expectException(EntityNotFoundException::class);
         $this->_unitOfWork->getEntityIdentifier(new stdClass());
+    }
+
+    public function testWeKeepTrackOfExceptionThatClosedManager(): void
+    {
+        $driver = $this->createMock(Driver::class);
+        $driver->method('connect')
+            ->willReturn($this->createMock(Driver\Connection::class));
+
+        // Set another connection mock that fail on commit
+        $this->_connectionMock = $this->getMockBuilderWithOnlyMethods(ConnectionMock::class, ['commit'])
+            ->setConstructorArgs([[], $driver])
+            ->getMock();
+        $this->_emMock         = new EntityManagerMock($this->_connectionMock);
+        $this->_unitOfWork     = new UnitOfWorkMock($this->_emMock);
+        $this->_emMock->setUnitOfWork($this->_unitOfWork);
+
+        $this->_connectionMock->method('commit')->willReturn(false);
+
+        // Create a test user
+        $user           = new ForumUser();
+        $user->username = 'Ifigenia';
+        $this->_unitOfWork->persist($user);
+
+        try {
+            $this->_unitOfWork->commit();
+        } catch (Throwable $exception) {
+            // We get an optimistic lock exception and internally the entity manager closes.
+            $this->assertInstanceOf(OptimisticLockException::class, $exception);
+
+            // We should have no previous exception here.
+            $this->assertNull($exception->getPrevious());
+
+            // Let's assume we do nothing here with this exception, and we try to do more operations
+            // on the database.
+        }
+
+        // Turn the mock commit to normal.
+        $this->_connectionMock->method('commit')->willReturn(true);
+
+        // Try to persist the user again.
+        $user->username = 'Petros';
+        $this->_unitOfWork->persist($user);
+
+        try {
+            $this->_emMock->flush();
+        } catch (Throwable $exception) {
+            $this->assertInstanceOf(EntityManagerClosed::class, $exception);
+
+            // We should also have a previous exception.
+            $this->assertInstanceOf(OptimisticLockException::class, $exception->getPrevious());
+
+            return;
+        }
+
+        self::fail('We should have thrown an before this point');
     }
 
     public function testRemovedEntityIsRemovedFromManyToManyCollection(): void

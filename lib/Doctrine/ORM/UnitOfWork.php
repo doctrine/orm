@@ -480,6 +480,10 @@ class UnitOfWork implements PropertyChangedListener
         } catch (Throwable $e) {
             $this->em->close();
 
+            if ($this->em instanceof EntityManager) {
+                $this->em->setClosingThrowable($e);
+            }
+
             if ($conn->isTransactionActive()) {
                 $conn->rollBack();
             }
