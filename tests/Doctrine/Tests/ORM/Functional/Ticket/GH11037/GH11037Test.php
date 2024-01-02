@@ -37,8 +37,9 @@ final class GH11037Test extends OrmTestCase
 
         self::assertEquals(
             [
-                "The field 'Doctrine\Tests\ORM\Functional\Ticket\GH11037\InvalidEntityWithTypedEnum#status1' has the property type 'Doctrine\Tests\ORM\Functional\Ticket\GH11037\StringEntityStatus' that differs from the metadata field type 'int' returned by the 'integer' DBAL type.",
+                "The field 'Doctrine\Tests\ORM\Functional\Ticket\GH11037\InvalidEntityWithTypedEnum#status1' has the property type 'Doctrine\Tests\ORM\Functional\Ticket\GH11037\StringEntityStatus' with a backing type of 'string' that differs from the metadata field type 'int'.",
                 "The field 'Doctrine\Tests\ORM\Functional\Ticket\GH11037\InvalidEntityWithTypedEnum#status2' has the property type 'Doctrine\Tests\ORM\Functional\Ticket\GH11037\IntEntityStatus' that differs from the metadata enumType 'Doctrine\Tests\ORM\Functional\Ticket\GH11037\StringEntityStatus'.",
+                "The field 'Doctrine\Tests\ORM\Functional\Ticket\GH11037\InvalidEntityWithTypedEnum#status3' has the metadata enumType 'Doctrine\Tests\ORM\Functional\Ticket\GH11037\StringEntityStatus' with a backing type of 'string' that differs from the metadata field type 'int'.",
             ],
             $ce,
         );

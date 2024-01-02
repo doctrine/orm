@@ -38,6 +38,7 @@ use function count;
 use function get_class;
 use function implode;
 use function in_array;
+use function interface_exists;
 use function is_a;
 use function sprintf;
 
@@ -68,8 +69,10 @@ class SchemaValidator
         TextType::class => 'string',
     ];
 
-    public function __construct(private readonly EntityManagerInterface $em)
-    {
+    public function __construct(
+        private readonly EntityManagerInterface $em,
+        private readonly bool $validatePropertyTypes = true,
+    ) {
     }
 
     /**
@@ -118,7 +121,7 @@ class SchemaValidator
         }
 
         // PHP 7.4 introduces the ability to type properties, so we can't validate them in previous versions
-        if (PHP_VERSION_ID >= 70400) {
+        if (PHP_VERSION_ID >= 70400 && $this->validatePropertyTypes) {
             array_push($ce, ...$this->validatePropertiesTypes($class));
         }
 
@@ -340,7 +343,7 @@ class SchemaValidator
                         }
 
                         // If the property type is not a named type, we cannot check it
-                        if (! ($propertyType instanceof ReflectionNamedType)) {
+                        if (! ($propertyType instanceof ReflectionNamedType) || $propertyType->getName() === 'mixed') {
                             return null;
                         }
 
@@ -358,10 +361,20 @@ class SchemaValidator
                             return null;
                         }
 
-                        if (
-                            is_a($propertyType, BackedEnum::class, true)
-                            && $metadataFieldType === (string) (new ReflectionEnum($propertyType))->getBackingType()
-                        ) {
+                        if (is_a($propertyType, BackedEnum::class, true)) {
+                            $backingType = (string) (new ReflectionEnum($propertyType))->getBackingType();
+
+                            if ($metadataFieldType !== $backingType) {
+                                return sprintf(
+                                    "The field '%s#%s' has the property type '%s' with a backing type of '%s' that differs from the metadata field type '%s'.",
+                                    $class->name,
+                                    $fieldName,
+                                    $propertyType,
+                                    $backingType,
+                                    $metadataFieldType,
+                                );
+                            }
+
                             if (! isset($fieldMapping['enumType']) || $propertyType === $fieldMapping['enumType']) {
                                 return null;
                             }
@@ -373,6 +386,35 @@ class SchemaValidator
                                 $propertyType,
                                 $fieldMapping['enumType'],
                             );
+                        }
+
+                        if (
+                            isset($fieldMapping['enumType'])
+                            && $propertyType !== $fieldMapping['enumType']
+                            && interface_exists($propertyType)
+                            && is_a($fieldMapping['enumType'], $propertyType, true)
+                        ) {
+                            $backingType = (string) (new ReflectionEnum($fieldMapping['enumType']))->getBackingType();
+
+                            if ($metadataFieldType === $backingType) {
+                                return null;
+                            }
+
+                            return sprintf(
+                                "The field '%s#%s' has the metadata enumType '%s' with a backing type of '%s' that differs from the metadata field type '%s'.",
+                                $class->name,
+                                $fieldName,
+                                $fieldMapping['enumType'],
+                                $backingType,
+                                $metadataFieldType,
+                            );
+                        }
+
+                        if (
+                            $fieldMapping['type'] === 'json'
+                            && in_array($propertyType, ['string', 'int', 'float', 'bool', 'true', 'false', 'null'], true)
+                        ) {
+                            return null;
                         }
 
                         return sprintf(

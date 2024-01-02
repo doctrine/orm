@@ -47,7 +47,7 @@ class ParserResultSerializationTest extends OrmFunctionalTestCase
     }
 
     /** @return Generator<string, array{Closure(ParserResult): ParserResult}> */
-    public function provideToSerializedAndBack(): Generator
+    public static function provideToSerializedAndBack(): Generator
     {
         yield 'native serialization function' => [
             static function (ParserResult $parserResult): ParserResult {
@@ -57,7 +57,7 @@ class ParserResultSerializationTest extends OrmFunctionalTestCase
 
         $instantiatorMethod = new ReflectionMethod(Instantiator::class, 'instantiate');
         if ($instantiatorMethod->getReturnType() === null) {
-            $this->markTestSkipped('symfony/var-exporter 5.4+ is required.');
+            self::markTestSkipped('symfony/var-exporter 5.4+ is required.');
         }
 
         yield 'symfony/var-exporter' => [
