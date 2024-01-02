@@ -17,8 +17,6 @@ use function array_merge;
 use function assert;
 use function enum_exists;
 
-use const PHP_VERSION_ID;
-
 /** @psalm-type ScalarName = 'array'|'bool'|'float'|'int'|'string' */
 final class DefaultTypedFieldMapper implements TypedFieldMapper
 {
@@ -53,7 +51,7 @@ final class DefaultTypedFieldMapper implements TypedFieldMapper
             ! isset($mapping['type'])
             && ($type instanceof ReflectionNamedType)
         ) {
-            if (PHP_VERSION_ID >= 80100 && ! $type->isBuiltin() && enum_exists($type->getName())) {
+            if (! $type->isBuiltin() && enum_exists($type->getName())) {
                 $mapping['enumType'] = $type->getName();
 
                 $reflection = new ReflectionEnum($type->getName());

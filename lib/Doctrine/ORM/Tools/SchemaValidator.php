@@ -42,8 +42,6 @@ use function interface_exists;
 use function is_a;
 use function sprintf;
 
-use const PHP_VERSION_ID;
-
 /**
  * Performs strict validation of the mapping schema
  *
@@ -120,8 +118,7 @@ class SchemaValidator
             }
         }
 
-        // PHP 7.4 introduces the ability to type properties, so we can't validate them in previous versions
-        if (PHP_VERSION_ID >= 70400 && $this->validatePropertyTypes) {
+        if ($this->validatePropertyTypes) {
             array_push($ce, ...$this->validatePropertiesTypes($class));
         }
 
