@@ -1393,7 +1393,7 @@ class UnitOfWork implements PropertyChangedListener
     private function computeDeleteExecutionOrder(): array
     {
         $stronglyConnectedComponents = new StronglyConnectedComponents();
-        $sort = new TopologicalSort();
+        $sort                        = new TopologicalSort();
 
         foreach ($this->entityDeletions as $entity) {
             $stronglyConnectedComponents->addNode($entity);
@@ -1412,13 +1412,13 @@ class UnitOfWork implements PropertyChangedListener
                 // We only need to consider the owning sides of to-one associations,
                 // since many-to-many associations can always be (and have already been)
                 // deleted in a preceding step.
-                if (!($assoc['isOwningSide'] && $assoc['type'] & ClassMetadata::TO_ONE)) {
+                if (! ($assoc['isOwningSide'] && $assoc['type'] & ClassMetadata::TO_ONE)) {
                     continue;
                 }
 
                 assert(isset($assoc['joinColumns']));
                 $joinColumns = reset($assoc['joinColumns']);
-                if (!isset($joinColumns['onDelete'])) {
+                if (! isset($joinColumns['onDelete'])) {
                     continue;
                 }
 

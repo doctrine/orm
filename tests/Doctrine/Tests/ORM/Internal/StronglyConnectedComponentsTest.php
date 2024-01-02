@@ -84,7 +84,7 @@ class StronglyConnectedComponentsTest extends OrmTestCase
     private function addNodes(string ...$names): void
     {
         foreach ($names as $name) {
-            $node = new Node($name);
+            $node               = new Node($name);
             $this->nodes[$name] = $node;
             $this->stronglyConnectedComponents->addNode($node);
         }
