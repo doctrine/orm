@@ -1214,11 +1214,7 @@
       <code>$collectionToDelete</code>
       <code>$collectionToUpdate</code>
     </InvalidArgument>
-    <InvalidPropertyAssignmentValue>
-      <code><![CDATA[$this->entityChangeSets]]></code>
-      <code><![CDATA[$this->entityChangeSets]]></code>
-    </InvalidPropertyAssignmentValue>
-    <NoValue>
+    <NoValue occurrences="2">
       <code>$entityState</code>
       <code>$entityState</code>
     </NoValue>
