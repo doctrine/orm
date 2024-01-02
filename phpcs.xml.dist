@@ -11,12 +11,12 @@
 
     <config name="php_version" value="70100"/>
 
-    <file>lib</file>
+    <file>src</file>
     <file>tests</file>
 
-    <exclude-pattern>*/lib/Doctrine/ORM/Mapping/InverseJoinColumn.php</exclude-pattern>
-    <exclude-pattern>*/tests/Doctrine/Tests/Proxies/__CG__*</exclude-pattern>
-    <exclude-pattern>*/tests/Doctrine/Tests/ORM/Tools/Export/export/*</exclude-pattern>
+    <exclude-pattern>*/src/Mapping/InverseJoinColumn.php</exclude-pattern>
+    <exclude-pattern>*/tests/Tests/Proxies/__CG__*</exclude-pattern>
+    <exclude-pattern>*/tests/Tests/ORM/Tools/Export/export/*</exclude-pattern>
 
     <rule ref="Doctrine">
         <exclude name="SlevomatCodingStandard.TypeHints.ParameterTypeHint.MissingAnyTypeHint" />
@@ -34,119 +34,119 @@
     </rule>
 
     <rule ref="SlevomatCodingStandard.TypeHints.ParameterTypeHint.MissingNativeTypeHint">
-        <exclude-pattern>*/lib/*</exclude-pattern>
+        <exclude-pattern>*/src/*</exclude-pattern>
         <!--
-            that class extends another one inside lib/ and can therefore not
+            that class extends another one inside src/ and can therefore not
             have more native typehints since its parent cannot have them: that
             would break signature compatibility.
         -->
-        <exclude-pattern>tests/Doctrine/Tests/Mocks/HydratorMockStatement.php</exclude-pattern>
+        <exclude-pattern>tests/Tests/Mocks/HydratorMockStatement.php</exclude-pattern>
     </rule>
 
     <rule ref="SlevomatCodingStandard.TypeHints.ReturnTypeHint.MissingNativeTypeHint">
-        <exclude-pattern>*/lib/*</exclude-pattern>
+        <exclude-pattern>*/src/*</exclude-pattern>
     </rule>
 
     <rule ref="PSR1.Classes.ClassDeclaration.MultipleClasses">
-        <exclude-pattern>lib/Doctrine/ORM/Mapping/Driver/CompatibilityAnnotationDriver.php</exclude-pattern>
-        <exclude-pattern>lib/Doctrine/ORM/Tools/Console/CommandCompatibility.php</exclude-pattern>
-        <exclude-pattern>lib/Doctrine/ORM/Tools/Console/Helper/EntityManagerHelper.php</exclude-pattern>
+        <exclude-pattern>src/Mapping/Driver/CompatibilityAnnotationDriver.php</exclude-pattern>
+        <exclude-pattern>src/Tools/Console/CommandCompatibility.php</exclude-pattern>
+        <exclude-pattern>src/Tools/Console/Helper/EntityManagerHelper.php</exclude-pattern>
         <exclude-pattern>tests/*</exclude-pattern>
     </rule>
 
     <rule ref="Squiz.Classes.ClassFileName.NoMatch">
-        <exclude-pattern>lib/Doctrine/ORM/Tools/Console/Helper/EntityManagerHelper.php</exclude-pattern>
+        <exclude-pattern>src/Tools/Console/Helper/EntityManagerHelper.php</exclude-pattern>
         <exclude-pattern>tests/*</exclude-pattern>
     </rule>
 
     <rule ref="Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps">
-        <exclude-pattern>lib/Doctrine/ORM/Tools/Debug.php</exclude-pattern>
-        <exclude-pattern>tests/Doctrine/Tests/ORM/Tools/DebugTest.php</exclude-pattern>
+        <exclude-pattern>src/Tools/Debug.php</exclude-pattern>
+        <exclude-pattern>tests/Tests/ORM/Tools/DebugTest.php</exclude-pattern>
     </rule>
 
     <rule ref="Generic.NamingConventions.UpperCaseConstantName.ClassConstantNotUpperCase">
-        <exclude-pattern>lib/Doctrine/ORM/Events.php</exclude-pattern>
-        <exclude-pattern>lib/Doctrine/ORM/Tools/ToolEvents.php</exclude-pattern>
+        <exclude-pattern>src/Events.php</exclude-pattern>
+        <exclude-pattern>src/Tools/ToolEvents.php</exclude-pattern>
     </rule>
 
     <rule ref="SlevomatCodingStandard.TypeHints.PropertyTypeHint.MissingTraversableTypeHintSpecification">
         <!-- https://github.com/doctrine/annotations/issues/129 -->
-        <exclude-pattern>lib/Doctrine/ORM/Mapping/Column.php</exclude-pattern>
-        <exclude-pattern>lib/Doctrine/ORM/Mapping/Index.php</exclude-pattern>
-        <exclude-pattern>lib/Doctrine/ORM/Mapping/Table.php</exclude-pattern>
-        <exclude-pattern>lib/Doctrine/ORM/Mapping/UniqueConstraint.php</exclude-pattern>
+        <exclude-pattern>src/Mapping/Column.php</exclude-pattern>
+        <exclude-pattern>src/Mapping/Index.php</exclude-pattern>
+        <exclude-pattern>src/Mapping/Table.php</exclude-pattern>
+        <exclude-pattern>src/Mapping/UniqueConstraint.php</exclude-pattern>
     </rule>
 
     <rule ref="SlevomatCodingStandard.Operators.DisallowEqualOperators.DisallowedNotEqualOperator">
-        <exclude-pattern>lib/Doctrine/ORM/Internal/Hydration/AbstractHydrator.php</exclude-pattern>
+        <exclude-pattern>src/Internal/Hydration/AbstractHydrator.php</exclude-pattern>
     </rule>
 
     <rule ref="PSR1.Methods.CamelCapsMethodName.NotCamelCaps">
-        <exclude-pattern>lib/Doctrine/ORM/Query/Parser.php</exclude-pattern>
+        <exclude-pattern>src/Query/Parser.php</exclude-pattern>
     </rule>
 
     <rule ref="SlevomatCodingStandard.Namespaces.ReferenceUsedNamesOnly.ReferenceViaFullyQualifiedName">
-        <exclude-pattern>lib/Doctrine/ORM/Mapping/AssociationOverride.php</exclude-pattern>
-        <exclude-pattern>lib/Doctrine/ORM/Mapping/AssociationOverrides.php</exclude-pattern>
-        <exclude-pattern>lib/Doctrine/ORM/Mapping/AttributeOverride.php</exclude-pattern>
-        <exclude-pattern>lib/Doctrine/ORM/Mapping/AttributeOverrides.php</exclude-pattern>
-        <exclude-pattern>lib/Doctrine/ORM/Mapping/Cache.php</exclude-pattern>
-        <exclude-pattern>lib/Doctrine/ORM/Mapping/ChangeTrackingPolicy.php</exclude-pattern>
-        <exclude-pattern>lib/Doctrine/ORM/Mapping/Column.php</exclude-pattern>
-        <exclude-pattern>lib/Doctrine/ORM/Mapping/ColumnResult.php</exclude-pattern>
-        <exclude-pattern>lib/Doctrine/ORM/Mapping/CustomIdGenerator.php</exclude-pattern>
-        <exclude-pattern>lib/Doctrine/ORM/Mapping/DiscriminatorColumn.php</exclude-pattern>
-        <exclude-pattern>lib/Doctrine/ORM/Mapping/DiscriminatorMap.php</exclude-pattern>
-        <exclude-pattern>lib/Doctrine/ORM/Mapping/Embeddable.php</exclude-pattern>
-        <exclude-pattern>lib/Doctrine/ORM/Mapping/Embedded.php</exclude-pattern>
-        <exclude-pattern>lib/Doctrine/ORM/Mapping/Entity.php</exclude-pattern>
-        <exclude-pattern>lib/Doctrine/ORM/Mapping/EntityListeners.php</exclude-pattern>
-        <exclude-pattern>lib/Doctrine/ORM/Mapping/EntityResult.php</exclude-pattern>
-        <exclude-pattern>lib/Doctrine/ORM/Mapping/FieldResult.php</exclude-pattern>
-        <exclude-pattern>lib/Doctrine/ORM/Mapping/GeneratedValue.php</exclude-pattern>
-        <exclude-pattern>lib/Doctrine/ORM/Mapping/HasLifecycleCallbacks.php</exclude-pattern>
-        <exclude-pattern>lib/Doctrine/ORM/Mapping/Id.php</exclude-pattern>
-        <exclude-pattern>lib/Doctrine/ORM/Mapping/Index.php</exclude-pattern>
-        <exclude-pattern>lib/Doctrine/ORM/Mapping/InheritanceType.php</exclude-pattern>
-        <exclude-pattern>lib/Doctrine/ORM/Mapping/JoinColumn.php</exclude-pattern>
-        <exclude-pattern>lib/Doctrine/ORM/Mapping/JoinColumns.php</exclude-pattern>
-        <exclude-pattern>lib/Doctrine/ORM/Mapping/JoinTable.php</exclude-pattern>
-        <exclude-pattern>lib/Doctrine/ORM/Mapping/ManyToMany.php</exclude-pattern>
-        <exclude-pattern>lib/Doctrine/ORM/Mapping/ManyToOne.php</exclude-pattern>
-        <exclude-pattern>lib/Doctrine/ORM/Mapping/MappedSuperclass.php</exclude-pattern>
-        <exclude-pattern>lib/Doctrine/ORM/Mapping/NamedNativeQueries.php</exclude-pattern>
-        <exclude-pattern>lib/Doctrine/ORM/Mapping/NamedNativeQuery.php</exclude-pattern>
-        <exclude-pattern>lib/Doctrine/ORM/Mapping/NamedQueries.php</exclude-pattern>
-        <exclude-pattern>lib/Doctrine/ORM/Mapping/NamedQuery.php</exclude-pattern>
-        <exclude-pattern>lib/Doctrine/ORM/Mapping/OneToMany.php</exclude-pattern>
-        <exclude-pattern>lib/Doctrine/ORM/Mapping/OneToOne.php</exclude-pattern>
-        <exclude-pattern>lib/Doctrine/ORM/Mapping/OrderBy.php</exclude-pattern>
-        <exclude-pattern>lib/Doctrine/ORM/Mapping/PostLoad.php</exclude-pattern>
-        <exclude-pattern>lib/Doctrine/ORM/Mapping/PostPersist.php</exclude-pattern>
-        <exclude-pattern>lib/Doctrine/ORM/Mapping/PostRemove.php</exclude-pattern>
-        <exclude-pattern>lib/Doctrine/ORM/Mapping/PostUpdate.php</exclude-pattern>
-        <exclude-pattern>lib/Doctrine/ORM/Mapping/PreFlush.php</exclude-pattern>
-        <exclude-pattern>lib/Doctrine/ORM/Mapping/PrePersist.php</exclude-pattern>
-        <exclude-pattern>lib/Doctrine/ORM/Mapping/PreRemove.php</exclude-pattern>
-        <exclude-pattern>lib/Doctrine/ORM/Mapping/PreUpdate.php</exclude-pattern>
-        <exclude-pattern>lib/Doctrine/ORM/Mapping/SequenceGenerator.php</exclude-pattern>
-        <exclude-pattern>lib/Doctrine/ORM/Mapping/SqlResultSetMapping.php</exclude-pattern>
-        <exclude-pattern>lib/Doctrine/ORM/Mapping/SqlResultSetMappings.php</exclude-pattern>
-        <exclude-pattern>lib/Doctrine/ORM/Mapping/Table.php</exclude-pattern>
-        <exclude-pattern>lib/Doctrine/ORM/Mapping/UniqueConstraint.php</exclude-pattern>
-        <exclude-pattern>lib/Doctrine/ORM/Mapping/Version.php</exclude-pattern>
+        <exclude-pattern>src/Mapping/AssociationOverride.php</exclude-pattern>
+        <exclude-pattern>src/Mapping/AssociationOverrides.php</exclude-pattern>
+        <exclude-pattern>src/Mapping/AttributeOverride.php</exclude-pattern>
+        <exclude-pattern>src/Mapping/AttributeOverrides.php</exclude-pattern>
+        <exclude-pattern>src/Mapping/Cache.php</exclude-pattern>
+        <exclude-pattern>src/Mapping/ChangeTrackingPolicy.php</exclude-pattern>
+        <exclude-pattern>src/Mapping/Column.php</exclude-pattern>
+        <exclude-pattern>src/Mapping/ColumnResult.php</exclude-pattern>
+        <exclude-pattern>src/Mapping/CustomIdGenerator.php</exclude-pattern>
+        <exclude-pattern>src/Mapping/DiscriminatorColumn.php</exclude-pattern>
+        <exclude-pattern>src/Mapping/DiscriminatorMap.php</exclude-pattern>
+        <exclude-pattern>src/Mapping/Embeddable.php</exclude-pattern>
+        <exclude-pattern>src/Mapping/Embedded.php</exclude-pattern>
+        <exclude-pattern>src/Mapping/Entity.php</exclude-pattern>
+        <exclude-pattern>src/Mapping/EntityListeners.php</exclude-pattern>
+        <exclude-pattern>src/Mapping/EntityResult.php</exclude-pattern>
+        <exclude-pattern>src/Mapping/FieldResult.php</exclude-pattern>
+        <exclude-pattern>src/Mapping/GeneratedValue.php</exclude-pattern>
+        <exclude-pattern>src/Mapping/HasLifecycleCallbacks.php</exclude-pattern>
+        <exclude-pattern>src/Mapping/Id.php</exclude-pattern>
+        <exclude-pattern>src/Mapping/Index.php</exclude-pattern>
+        <exclude-pattern>src/Mapping/InheritanceType.php</exclude-pattern>
+        <exclude-pattern>src/Mapping/JoinColumn.php</exclude-pattern>
+        <exclude-pattern>src/Mapping/JoinColumns.php</exclude-pattern>
+        <exclude-pattern>src/Mapping/JoinTable.php</exclude-pattern>
+        <exclude-pattern>src/Mapping/ManyToMany.php</exclude-pattern>
+        <exclude-pattern>src/Mapping/ManyToOne.php</exclude-pattern>
+        <exclude-pattern>src/Mapping/MappedSuperclass.php</exclude-pattern>
+        <exclude-pattern>src/Mapping/NamedNativeQueries.php</exclude-pattern>
+        <exclude-pattern>src/Mapping/NamedNativeQuery.php</exclude-pattern>
+        <exclude-pattern>src/Mapping/NamedQueries.php</exclude-pattern>
+        <exclude-pattern>src/Mapping/NamedQuery.php</exclude-pattern>
+        <exclude-pattern>src/Mapping/OneToMany.php</exclude-pattern>
+        <exclude-pattern>src/Mapping/OneToOne.php</exclude-pattern>
+        <exclude-pattern>src/Mapping/OrderBy.php</exclude-pattern>
+        <exclude-pattern>src/Mapping/PostLoad.php</exclude-pattern>
+        <exclude-pattern>src/Mapping/PostPersist.php</exclude-pattern>
+        <exclude-pattern>src/Mapping/PostRemove.php</exclude-pattern>
+        <exclude-pattern>src/Mapping/PostUpdate.php</exclude-pattern>
+        <exclude-pattern>src/Mapping/PreFlush.php</exclude-pattern>
+        <exclude-pattern>src/Mapping/PrePersist.php</exclude-pattern>
+        <exclude-pattern>src/Mapping/PreRemove.php</exclude-pattern>
+        <exclude-pattern>src/Mapping/PreUpdate.php</exclude-pattern>
+        <exclude-pattern>src/Mapping/SequenceGenerator.php</exclude-pattern>
+        <exclude-pattern>src/Mapping/SqlResultSetMapping.php</exclude-pattern>
+        <exclude-pattern>src/Mapping/SqlResultSetMappings.php</exclude-pattern>
+        <exclude-pattern>src/Mapping/Table.php</exclude-pattern>
+        <exclude-pattern>src/Mapping/UniqueConstraint.php</exclude-pattern>
+        <exclude-pattern>src/Mapping/Version.php</exclude-pattern>
     </rule>
 
     <rule ref="SlevomatCodingStandard.Commenting.EmptyComment">
-        <exclude-pattern>lib/Doctrine/ORM/Cache/DefaultQueryCache.php</exclude-pattern>
+        <exclude-pattern>src/Cache/DefaultQueryCache.php</exclude-pattern>
     </rule>
 
     <rule ref="SlevomatCodingStandard.Classes.SuperfluousInterfaceNaming">
-        <exclude-pattern>lib/Doctrine/ORM/EntityManagerInterface.php</exclude-pattern>
+        <exclude-pattern>src/EntityManagerInterface.php</exclude-pattern>
     </rule>
 
     <rule ref="SlevomatCodingStandard.Classes.SuperfluousTraitNaming.SuperfluousSuffix">
-        <exclude-pattern>tests/Doctrine/Tests/Models/DDC1872/DDC1872ExampleTrait.php</exclude-pattern>
+        <exclude-pattern>tests/Tests/Models/DDC1872/DDC1872ExampleTrait.php</exclude-pattern>
     </rule>
 
     <rule name="SlevomatCodingStandard.TypeHints.PropertyTypeHint.MissingAnyTypeHint">
@@ -167,25 +167,25 @@
 
     <!-- intentionally without namespace -->
     <rule ref="PSR1.Classes.ClassDeclaration.MissingNamespace">
-        <exclude-pattern>tests/Doctrine/Tests/Models/Global/GlobalNamespaceModel.php</exclude-pattern>
-        <exclude-pattern>tests/Doctrine/Tests/Models/DDC3231/DDC3231User1NoNamespace.php</exclude-pattern>
-        <exclude-pattern>tests/Doctrine/Tests/Models/DDC3231/DDC3231User2NoNamespace.php</exclude-pattern>
+        <exclude-pattern>tests/Tests/Models/Global/GlobalNamespaceModel.php</exclude-pattern>
+        <exclude-pattern>tests/Tests/Models/DDC3231/DDC3231User1NoNamespace.php</exclude-pattern>
+        <exclude-pattern>tests/Tests/Models/DDC3231/DDC3231User2NoNamespace.php</exclude-pattern>
     </rule>
 
     <!-- file with multiple namespaces confuses the sniff -->
     <rule ref="PSR2.Namespaces.UseDeclaration.UseAfterNamespace">
-        <exclude-pattern>tests/Doctrine/Tests/ORM/Functional/Ticket/DDC2084Test.php</exclude-pattern>
+        <exclude-pattern>tests/Tests/ORM/Functional/Ticket/DDC2084Test.php</exclude-pattern>
     </rule>
 
     <!-- file with multiple namespaces confuses the sniff -->
     <rule ref="SlevomatCodingStandard.Namespaces.AlphabeticallySortedUses.IncorrectlyOrderedUses">
-        <exclude-pattern>tests/Doctrine/Tests/ORM/Functional/Ticket/DDC2084Test.php</exclude-pattern>
+        <exclude-pattern>tests/Tests/ORM/Functional/Ticket/DDC2084Test.php</exclude-pattern>
     </rule>
 
     <!-- intentionally empty blocks -->
     <rule ref="Generic.CodeAnalysis.EmptyStatement.DetectedForeach">
-        <exclude-pattern>tests/Doctrine/Tests/ORM/Functional/Ticket/DDC1301Test.php</exclude-pattern>
-        <exclude-pattern>tests/Doctrine/Tests/ORM/Functional/ExtraLazyCollectionTest.php</exclude-pattern>
+        <exclude-pattern>tests/Tests/ORM/Functional/Ticket/DDC1301Test.php</exclude-pattern>
+        <exclude-pattern>tests/Tests/ORM/Functional/ExtraLazyCollectionTest.php</exclude-pattern>
     </rule>
 
     <!--
@@ -193,90 +193,90 @@
         different namespace. The use statement has to stay.
     -->
     <rule ref="SlevomatCodingStandard.Namespaces.UseFromSameNamespace.UseFromSameNamespace">
-        <exclude-pattern>tests/Doctrine/Tests/Models/DDC1590/DDC1590User.php</exclude-pattern>
+        <exclude-pattern>tests/Tests/Models/DDC1590/DDC1590User.php</exclude-pattern>
     </rule>
 
     <rule ref="SlevomatCodingStandard.Commenting.ForbiddenAnnotations.AnnotationForbidden">
-        <exclude-pattern>tests/Doctrine/Tests/ORM/Functional/Ticket/DDC832Test.php</exclude-pattern>
+        <exclude-pattern>tests/Tests/ORM/Functional/Ticket/DDC832Test.php</exclude-pattern>
     </rule>
 
     <rule ref="Squiz.Classes.ValidClassName.NotCamelCaps">
         <!-- we need to test what happens with an stdClass proxy -->
-        <exclude-pattern>tests/Doctrine/Tests/Proxy/DefaultProxyClassNameResolverTest.php</exclude-pattern>
+        <exclude-pattern>tests/Tests/Proxy/DefaultProxyClassNameResolverTest.php</exclude-pattern>
     </rule>
 
     <rule ref="Squiz.Commenting.FunctionComment.WrongStyle">
         <!-- https://github.com/squizlabs/PHP_CodeSniffer/issues/1961 -->
-        <exclude-pattern>tests/Doctrine/Tests/Mocks/DatabasePlatformMock.php</exclude-pattern>
-        <exclude-pattern>tests/Doctrine/Tests/Mocks/DriverMock.php</exclude-pattern>
-        <exclude-pattern>tests/Doctrine/Tests/ORM/UnitOfWorkTest.php</exclude-pattern>
-        <exclude-pattern>tests/Doctrine/Tests/ORM/Query/DeleteSqlGenerationTest.php</exclude-pattern>
+        <exclude-pattern>tests/Tests/Mocks/DatabasePlatformMock.php</exclude-pattern>
+        <exclude-pattern>tests/Tests/Mocks/DriverMock.php</exclude-pattern>
+        <exclude-pattern>tests/Tests/ORM/UnitOfWorkTest.php</exclude-pattern>
+        <exclude-pattern>tests/Tests/ORM/Query/DeleteSqlGenerationTest.php</exclude-pattern>
     </rule>
     <rule ref="Squiz.Commenting.FunctionComment.InvalidNoReturn">
         <!-- https://github.com/squizlabs/PHP_CodeSniffer/issues/2099 -->
-        <exclude-pattern>lib/Doctrine/ORM/Query/AST/Node.php</exclude-pattern>
+        <exclude-pattern>src/Query/AST/Node.php</exclude-pattern>
     </rule>
 
     <rule ref="SlevomatCodingStandard.Commenting.InlineDocCommentDeclaration.NoAssignment">
-        <exclude-pattern>tests/Doctrine/Tests/ORM/Mapping/php/Doctrine.Tests*</exclude-pattern>
+        <exclude-pattern>tests/Tests/ORM/Mapping/php/Doctrine.Tests*</exclude-pattern>
     </rule>
 
     <rule ref="PSR2.Methods.MethodDeclaration.Underscore">
-        <exclude-pattern>lib/Doctrine/ORM/AbstractQuery.php</exclude-pattern>
-        <exclude-pattern>lib/Doctrine/ORM/Mapping/ClassMetadataInfo.php</exclude-pattern>
-        <exclude-pattern>lib/Doctrine/ORM/NativeQuery.php</exclude-pattern>
-        <exclude-pattern>lib/Doctrine/ORM/Query.php</exclude-pattern>
-        <exclude-pattern>lib/Doctrine/ORM/Query/TreeWalkerAdapter.php</exclude-pattern>
-        <exclude-pattern>lib/Doctrine/ORM/Tools/Export/Driver/AbstractExporter.php</exclude-pattern>
-        <exclude-pattern>lib/Doctrine/ORM/Tools/Export/Driver/AnnotationExporter.php</exclude-pattern>
-        <exclude-pattern>lib/Doctrine/ORM/Tools/Export/Driver/PhpExporter.php</exclude-pattern>
+        <exclude-pattern>src/AbstractQuery.php</exclude-pattern>
+        <exclude-pattern>src/Mapping/ClassMetadataInfo.php</exclude-pattern>
+        <exclude-pattern>src/NativeQuery.php</exclude-pattern>
+        <exclude-pattern>src/Query.php</exclude-pattern>
+        <exclude-pattern>src/Query/TreeWalkerAdapter.php</exclude-pattern>
+        <exclude-pattern>src/Tools/Export/Driver/AbstractExporter.php</exclude-pattern>
+        <exclude-pattern>src/Tools/Export/Driver/AnnotationExporter.php</exclude-pattern>
+        <exclude-pattern>src/Tools/Export/Driver/PhpExporter.php</exclude-pattern>
         <!-- extending a class from another package -->
-        <exclude-pattern>tests/Doctrine/Tests/Mocks/DatabasePlatformMock.php</exclude-pattern>
-        <exclude-pattern>tests/Doctrine/Tests/Mocks/SchemaManagerMock.php</exclude-pattern>
-        <exclude-pattern>tests/Doctrine/Tests/ORM/Functional/Ticket/DDC3634Test.php</exclude-pattern>
+        <exclude-pattern>tests/Tests/Mocks/DatabasePlatformMock.php</exclude-pattern>
+        <exclude-pattern>tests/Tests/Mocks/SchemaManagerMock.php</exclude-pattern>
+        <exclude-pattern>tests/Tests/ORM/Functional/Ticket/DDC3634Test.php</exclude-pattern>
     </rule>
 
     <rule ref="Squiz.NamingConventions.ValidVariableName.PublicHasUnderscore">
-        <exclude-pattern>lib/Doctrine/ORM/AbstractQuery.php</exclude-pattern>
-        <exclude-pattern>lib/Doctrine/ORM/Configuration.php</exclude-pattern>
-        <exclude-pattern>lib/Doctrine/ORM/EntityRepository.php</exclude-pattern>
-        <exclude-pattern>lib/Doctrine/ORM/Internal/Hydration/AbstractHydrator.php</exclude-pattern>
-        <exclude-pattern>lib/Doctrine/ORM/Query/Exec/AbstractSqlExecutor.php</exclude-pattern>
-        <exclude-pattern>lib/Doctrine/ORM/Query/Exec/AbstractSqlExecutor.php</exclude-pattern>
-        <exclude-pattern>lib/Doctrine/ORM/Query/Printer.php</exclude-pattern>
-        <exclude-pattern>lib/Doctrine/ORM/Tools/EntityRepositoryGenerator.php</exclude-pattern>
-        <exclude-pattern>lib/Doctrine/ORM/Tools/Console/Helper/EntityManagerHelper.php</exclude-pattern>
-        <exclude-pattern>lib/Doctrine/ORM/Tools/Export/Driver/AbstractExporter.php</exclude-pattern>
-        <exclude-pattern>lib/Doctrine/ORM/Tools/Export/Driver/AnnotationExporter.php</exclude-pattern>
-        <exclude-pattern>lib/Doctrine/ORM/Tools/Export/Driver/PhpExporter.php</exclude-pattern>
-        <exclude-pattern>lib/Doctrine/ORM/Tools/Export/Driver/XmlExporter.php</exclude-pattern>
-        <exclude-pattern>lib/Doctrine/ORM/Tools/Export/Driver/YamlExporter.php</exclude-pattern>
+        <exclude-pattern>src/AbstractQuery.php</exclude-pattern>
+        <exclude-pattern>src/Configuration.php</exclude-pattern>
+        <exclude-pattern>src/EntityRepository.php</exclude-pattern>
+        <exclude-pattern>src/Internal/Hydration/AbstractHydrator.php</exclude-pattern>
+        <exclude-pattern>src/Query/Exec/AbstractSqlExecutor.php</exclude-pattern>
+        <exclude-pattern>src/Query/Exec/AbstractSqlExecutor.php</exclude-pattern>
+        <exclude-pattern>src/Query/Printer.php</exclude-pattern>
+        <exclude-pattern>src/Tools/EntityRepositoryGenerator.php</exclude-pattern>
+        <exclude-pattern>src/Tools/Console/Helper/EntityManagerHelper.php</exclude-pattern>
+        <exclude-pattern>src/Tools/Export/Driver/AbstractExporter.php</exclude-pattern>
+        <exclude-pattern>src/Tools/Export/Driver/AnnotationExporter.php</exclude-pattern>
+        <exclude-pattern>src/Tools/Export/Driver/PhpExporter.php</exclude-pattern>
+        <exclude-pattern>src/Tools/Export/Driver/XmlExporter.php</exclude-pattern>
+        <exclude-pattern>src/Tools/Export/Driver/YamlExporter.php</exclude-pattern>
         <!-- the impact of changing this would be too big -->
-        <exclude-pattern>tests/Doctrine/Tests/OrmFunctionalTestCase.php</exclude-pattern>
+        <exclude-pattern>tests/Tests/OrmFunctionalTestCase.php</exclude-pattern>
     </rule>
     <rule ref="Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps">
         <!-- Member variable "__isCloning" is not in valid camel caps format -->
-        <exclude-pattern>lib/Doctrine/ORM/Proxy/ProxyFactory.php</exclude-pattern>
+        <exclude-pattern>src/Proxy/ProxyFactory.php</exclude-pattern>
         <!-- accessing public property __isInitialized__ of a proxy -->
-        <exclude-pattern>tests/Doctrine/Tests/ORM/Functional/ProxiesLikeEntitiesTest.php</exclude-pattern>
+        <exclude-pattern>tests/Tests/ORM/Functional/ProxiesLikeEntitiesTest.php</exclude-pattern>
     </rule>
 
     <rule ref="SlevomatCodingStandard.Namespaces.UnusedUses.MismatchingCaseSensitivity">
         <!-- Using @group and Group entity in the same file -->
-        <exclude-pattern>tests/Doctrine/Tests/ORM/Functional/Ticket/DDC1885Test.php</exclude-pattern>
-        <exclude-pattern>tests/Doctrine/Tests/ORM/Functional/Ticket/DDC1843Test.php</exclude-pattern>
+        <exclude-pattern>tests/Tests/ORM/Functional/Ticket/DDC1885Test.php</exclude-pattern>
+        <exclude-pattern>tests/Tests/ORM/Functional/Ticket/DDC1843Test.php</exclude-pattern>
     </rule>
 
     <rule ref="Generic.CodeAnalysis.EmptyStatement.DetectedElse">
         <!-- The missing code needs to be implemented someday -->
-        <exclude-pattern>lib/Doctrine/ORM/Id/TableGenerator.php</exclude-pattern>
+        <exclude-pattern>src/Id/TableGenerator.php</exclude-pattern>
     </rule>
     <rule ref="Generic.CodeAnalysis.EmptyStatement.DetectedIf">
         <!-- The missing code needs to be implemented someday -->
-        <exclude-pattern>lib/Doctrine/ORM/Id/TableGenerator.php</exclude-pattern>
+        <exclude-pattern>src/Id/TableGenerator.php</exclude-pattern>
     </rule>
     <rule ref="Squiz.Commenting.FunctionComment.ExtraParamComment">
         <!-- https://github.com/doctrine/orm/issues/8537 -->
-        <exclude-pattern>lib/Doctrine/ORM/QueryBuilder.php</exclude-pattern>
+        <exclude-pattern>src/QueryBuilder.php</exclude-pattern>
     </rule>
 </ruleset>

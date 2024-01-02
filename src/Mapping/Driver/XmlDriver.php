@@ -1003,7 +1003,7 @@ class XmlDriver extends FileDriver
             $document = new DOMDocument();
             $document->load($file);
 
-            if (! $document->schemaValidate(__DIR__ . '/../../../../../doctrine-mapping.xsd')) {
+            if (! $document->schemaValidate(__DIR__ . '/../../../doctrine-mapping.xsd')) {
                 throw MappingException::fromLibXmlErrors(libxml_get_errors());
             }
         } finally {

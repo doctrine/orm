@@ -1235,7 +1235,7 @@ The EntityRepository now has an interface Doctrine\Persistence\ObjectRepository.
 The annotation reader was heavily refactored between 2.0 and 2.1-RC1. In theory the operation of the new reader should be backwards compatible, but it has to be setup differently to work that way:
 
     // new call to the AnnotationRegistry
-    \Doctrine\Common\Annotations\AnnotationRegistry::registerFile('/doctrine-src/lib/Doctrine/ORM/Mapping/Driver/DoctrineAnnotations.php');
+    \Doctrine\Common\Annotations\AnnotationRegistry::registerFile('/doctrine-src/src/Mapping/Driver/DoctrineAnnotations.php');
 
     $reader = new \Doctrine\Common\Annotations\AnnotationReader();
     $reader->setDefaultAnnotationNamespace('Doctrine\ORM\Mapping\\');
