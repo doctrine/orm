@@ -115,7 +115,7 @@ class GH10913Test extends OrmFunctionalTestCase
 
         $this->_em->flush();
 
-        $queries = array_values(array_filter($queryLog->queries, static function ($entry) {
+        $queries = array_values(array_filter($queryLog->queries, static function (array $entry): bool {
             return strpos($entry['sql'], 'DELETE') === 0;
         }));
 

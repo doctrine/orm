@@ -72,15 +72,14 @@ class GH10912Test extends OrmFunctionalTestCase
 
         $this->_em->flush();
 
-        $queries = array_values(array_filter($queryLog->queries, static function ($entry) {
+        $queries = array_values(array_filter($queryLog->queries, static function (array $entry): bool {
             return strpos($entry['sql'], 'DELETE') === 0;
         }));
 
         self::assertCount(3, $queries);
 
-        // $room deletion is the first query
         // we do not care about the order of $user vs. $profile, so do not check them.
-        self::assertSame('DELETE FROM GH10912Room WHERE id = ?', $queries[0]['sql']);
+        self::assertSame('DELETE FROM GH10912Room WHERE id = ?', $queries[0]['sql'], '$room deletion is the first query');
 
         // The EntityManager is aware that all three entities have been deleted (sanity check)
         $im = $this->_em->getUnitOfWork()->getIdentityMap();

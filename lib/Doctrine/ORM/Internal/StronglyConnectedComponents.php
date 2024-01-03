@@ -76,7 +76,11 @@ final class StronglyConnectedComponents
      */
     private $representingNodes = [];
 
-    /** @var array<int> */
+    /**
+     * Stack with OIDs of nodes visited in the current state of the DFS
+     *
+     * @var list<int>
+     */
     private $stack = [];
 
     /** @param object $node */
