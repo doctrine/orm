@@ -84,6 +84,18 @@ class EagerFetchCollectionTest extends OrmFunctionalTestCase
         $query->getResult();
     }
 
+    public function testEagerFetchWithIterable(): void
+    {
+        $this->createOwnerWithChildren(2);
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $iterable = $this->_em->getRepository(EagerFetchOwner::class)->createQueryBuilder('o')->getQuery()->toIterable();
+        $owner    = $iterable->current();
+
+        $this->assertCount(2, $owner->children);
+    }
+
     protected function createOwnerWithChildren(int $children): EagerFetchOwner
     {
         $owner = new EagerFetchOwner();

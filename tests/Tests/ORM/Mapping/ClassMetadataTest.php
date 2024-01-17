@@ -29,6 +29,8 @@ use Doctrine\Tests\Models\DDC117\DDC117ArticleDetails;
 use Doctrine\Tests\Models\DDC6412\DDC6412File;
 use Doctrine\Tests\Models\DDC964\DDC964Admin;
 use Doctrine\Tests\Models\DDC964\DDC964Guest;
+use Doctrine\Tests\Models\DirectoryTree\AbstractContentItem;
+use Doctrine\Tests\Models\DirectoryTree\Directory;
 use Doctrine\Tests\Models\Routing\RoutingLeg;
 use Doctrine\Tests\Models\TypedProperties;
 use Doctrine\Tests\ORM\Mapping\TypedFieldMapper\CustomIntAsStringTypedFieldMapper;
@@ -1184,6 +1186,30 @@ class ClassMetadataTest extends OrmTestCase
         $cm->mapField(['fieldName' => 'name', 'type' => 'string']);
 
         $cm->setAttributeOverride('name', ['type' => 'date']);
+    }
+
+    public function testAttributeOverrideKeepsDeclaringClass(): void
+    {
+        $cm = new ClassMetadata(Directory::class);
+        $cm->mapField(['fieldName' => 'id', 'type' => 'integer', 'declared' => AbstractContentItem::class]);
+        $cm->setAttributeOverride('id', ['columnName' => 'new_id']);
+
+        $mapping = $cm->getFieldMapping('id');
+
+        self::assertArrayHasKey('declared', $mapping);
+        self::assertSame(AbstractContentItem::class, $mapping['declared']);
+    }
+
+    public function testAssociationOverrideKeepsDeclaringClass(): void
+    {
+        $cm = new ClassMetadata(Directory::class);
+        $cm->mapManyToOne(['fieldName' => 'parentDirectory', 'targetEntity' => Directory::class, 'cascade' => ['remove'], 'declared' => Directory::class]);
+        $cm->setAssociationOverride('parentDirectory', ['cascade' => '']);
+
+        $mapping = $cm->getAssociationMapping('parentDirectory');
+
+        self::assertArrayHasKey('declared', $mapping);
+        self::assertSame(Directory::class, $mapping['declared']);
     }
 
     /** @group DDC-1955 */

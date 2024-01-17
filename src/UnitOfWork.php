@@ -28,6 +28,7 @@ use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\Exception\UnexpectedAssociationValue;
 use Doctrine\ORM\Id\AssignedGenerator;
 use Doctrine\ORM\Internal\HydrationCompleteHandler;
+use Doctrine\ORM\Internal\StronglyConnectedComponents;
 use Doctrine\ORM\Internal\TopologicalSort;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\MappingException;
@@ -1391,14 +1392,19 @@ class UnitOfWork implements PropertyChangedListener
     /** @return list<object> */
     private function computeDeleteExecutionOrder(): array
     {
-        $sort = new TopologicalSort();
+        $stronglyConnectedComponents = new StronglyConnectedComponents();
+        $sort                        = new TopologicalSort();
 
-        // First make sure we have all the nodes
         foreach ($this->entityDeletions as $entity) {
+            $stronglyConnectedComponents->addNode($entity);
             $sort->addNode($entity);
         }
 
-        // Now add edges
+        // First, consider only "on delete cascade" associations between entities
+        // and find strongly connected groups. Once we delete any one of the entities
+        // in such a group, _all_ of the other entities will be removed as well. So,
+        // we need to treat those groups like a single entity when performing delete
+        // order topological sorting.
         foreach ($this->entityDeletions as $entity) {
             $class = $this->em->getClassMetadata(get_class($entity));
 
@@ -1410,16 +1416,65 @@ class UnitOfWork implements PropertyChangedListener
                     continue;
                 }
 
-                // For associations that implement a database-level cascade/set null operation,
+                assert(isset($assoc['joinColumns']));
+                $joinColumns = reset($assoc['joinColumns']);
+                if (! isset($joinColumns['onDelete'])) {
+                    continue;
+                }
+
+                $onDeleteOption = strtolower($joinColumns['onDelete']);
+                if ($onDeleteOption !== 'cascade') {
+                    continue;
+                }
+
+                $targetEntity = $class->getFieldValue($entity, $assoc['fieldName']);
+
+                // If the association does not refer to another entity or that entity
+                // is not to be deleted, there is no ordering problem and we can
+                // skip this particular association.
+                if ($targetEntity === null || ! $stronglyConnectedComponents->hasNode($targetEntity)) {
+                    continue;
+                }
+
+                $stronglyConnectedComponents->addEdge($entity, $targetEntity);
+            }
+        }
+
+        $stronglyConnectedComponents->findStronglyConnectedComponents();
+
+        // Now do the actual topological sorting to find the delete order.
+        foreach ($this->entityDeletions as $entity) {
+            $class = $this->em->getClassMetadata(get_class($entity));
+
+            // Get the entities representing the SCC
+            $entityComponent = $stronglyConnectedComponents->getNodeRepresentingStronglyConnectedComponent($entity);
+
+            // When $entity is part of a non-trivial strongly connected component group
+            // (a group containing not only those entities alone), make sure we process it _after_ the
+            // entity representing the group.
+            // The dependency direction implies that "$entity depends on $entityComponent
+            // being deleted first". The topological sort will output the depended-upon nodes first.
+            if ($entityComponent !== $entity) {
+                $sort->addEdge($entity, $entityComponent, false);
+            }
+
+            foreach ($class->associationMappings as $assoc) {
+                // We only need to consider the owning sides of to-one associations,
+                // since many-to-many associations can always be (and have already been)
+                // deleted in a preceding step.
+                if (! ($assoc['isOwningSide'] && $assoc['type'] & ClassMetadata::TO_ONE)) {
+                    continue;
+                }
+
+                // For associations that implement a database-level set null operation,
                 // we do not have to follow a particular order: If the referred-to entity is
-                // deleted first, the DBMS will either delete the current $entity right away
-                // (CASCADE) or temporarily set the foreign key to NULL (SET NULL).
-                // Either way, we can skip it in the computation.
+                // deleted first, the DBMS will temporarily set the foreign key to NULL (SET NULL).
+                // So, we can skip it in the computation.
                 assert(isset($assoc['joinColumns']));
                 $joinColumns = reset($assoc['joinColumns']);
                 if (isset($joinColumns['onDelete'])) {
                     $onDeleteOption = strtolower($joinColumns['onDelete']);
-                    if ($onDeleteOption === 'cascade' || $onDeleteOption === 'set null') {
+                    if ($onDeleteOption === 'set null') {
                         continue;
                     }
                 }
@@ -1433,10 +1488,17 @@ class UnitOfWork implements PropertyChangedListener
                     continue;
                 }
 
-                // Add dependency. The dependency direction implies that "$targetEntity depends on $entity
+                // Get the entities representing the SCC
+                $targetEntityComponent = $stronglyConnectedComponents->getNodeRepresentingStronglyConnectedComponent($targetEntity);
+
+                // When we have a dependency between two different groups of strongly connected nodes,
+                // add it to the computation.
+                // The dependency direction implies that "$targetEntityComponent depends on $entityComponent
                 // being deleted first". The topological sort will output the depended-upon nodes first,
                 // so we can work through the result in the returned order.
-                $sort->addEdge($targetEntity, $entity, false);
+                if ($targetEntityComponent !== $entityComponent) {
+                    $sort->addEdge($targetEntityComponent, $entityComponent, false);
+                }
             }
         }
 
@@ -3106,9 +3168,10 @@ EXCEPTION
                     $reflField->setValue($entity, $pColl);
 
                     if ($hints['fetchMode'][$class->name][$field] === ClassMetadata::FETCH_EAGER) {
-                        if ($assoc['type'] === ClassMetadata::ONE_TO_MANY) {
+                        $isIteration = isset($hints[Query::HINT_INTERNAL_ITERATION]) && $hints[Query::HINT_INTERNAL_ITERATION];
+                        if (! $isIteration && $assoc['type'] === ClassMetadata::ONE_TO_MANY) {
                             $this->scheduleCollectionForBatchLoading($pColl, $class);
-                        } elseif ($assoc['type'] === ClassMetadata::MANY_TO_MANY) {
+                        } elseif (($isIteration && $assoc['type'] === ClassMetadata::ONE_TO_MANY) || $assoc['type'] === ClassMetadata::MANY_TO_MANY) {
                             $this->loadCollection($pColl);
                             $pColl->takeSnapshot();
                         }

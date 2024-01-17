@@ -173,6 +173,19 @@ Events Overview
 | :ref:`onClear<reference-events-on-clear>`                       | ``$em->clear()``      | No        | `OnClearEventArgs`_                 |
 +-----------------------------------------------------------------+-----------------------+-----------+-------------------------------------+
 
+.. warning::
+
+    Making changes to entities and calling ``EntityManager::flush()`` from within
+    event handlers dispatched by ``EntityManager::flush()`` itself is strongly
+    discouraged, and might be deprecated and eventually prevented in the future.
+
+    The reason is that it causes re-entrance into ``UnitOfWork::commit()`` while a commit
+    is currently being processed. The ``UnitOfWork`` was never designed to support this,
+    and its behavior in this situation is not covered by any tests.
+
+    This may lead to entity or collection updates being missed, applied only in parts and
+    changes being lost at the end of the commit phase.
+
 Naming convention
 ~~~~~~~~~~~~~~~~~
 
@@ -699,30 +712,33 @@ Restrictions for this event:
 postUpdate, postRemove, postPersist
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-These three post* events are called inside ``EntityManager::flush()``.
+These three ``post*`` events are called inside ``EntityManager::flush()``.
 Changes in here are not relevant to the persistence in the
 database, but you can use these events to alter non-persistable items,
 like non-mapped fields, logging or even associated classes that are
 not directly mapped by Doctrine.
 
 -  The ``postUpdate`` event occurs after the database
-   update operations to entity data. It is not called for a DQL
-   ``UPDATE`` statement.
+   update operations to entity data, but before the database transaction
+   has been committed. It is not called for a DQL ``UPDATE`` statement.
 -  The ``postPersist`` event occurs for an entity after the entity has
    been made persistent. It will be invoked after all database insert
-   operations for new entities have been performed. Generated primary
-   key values will be available for all entities at the time this
-   event is triggered.
+   operations for new entities have been performed, but before the database
+   transaction has been committed. Generated primary key values will be
+   available for all entities at the time this event is triggered.
 -  The ``postRemove`` event occurs for an entity after the
    entity has been deleted. It will be invoked after all database
-   delete operations for entity rows have been executed. This event is
-   not called for a DQL ``DELETE`` statement.
+   delete operations for entity rows have been executed, but before the
+   database transaction has been committed. This event is not called for
+   a DQL ``DELETE`` statement.
 
 .. note::
 
     At the time ``postPersist`` is called, there may still be collection and/or
     "extra" updates pending. The database may not yet be completely in
-    sync with the entity states in memory, not even for the new entities.
+    sync with the entity states in memory, not even for the new entities. Similarly,
+    also at the time ``postUpdate`` and ``postRemove`` are called, in-memory collections
+    may still be in a "dirty" state or still contain removed entities.
 
 .. warning::
 
@@ -730,19 +746,6 @@ not directly mapped by Doctrine.
     can receive an uninitializable proxy in case you have configured an entity to
     cascade remove relations. In this case, you should load yourself the proxy in
     the associated ``pre*`` event.
-
-.. warning::
-
-    Making changes to entities and calling ``EntityManager::flush()`` from within
-    ``post*`` event handlers is strongly discouraged, and might be deprecated and
-    eventually prevented in the future.
-
-    The reason is that it causes re-entrance into ``UnitOfWork::commit()`` while a commit
-    is currently being processed. The ``UnitOfWork`` was never designed to support this,
-    and its behavior in this situation is not covered by any tests.
-
-    This may lead to entity or collection updates being missed, applied only in parts and
-    changes being lost at the end of the commit phase.
 
 .. _reference-events-post-load:
 
