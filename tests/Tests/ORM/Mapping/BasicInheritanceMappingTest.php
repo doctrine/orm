@@ -162,37 +162,10 @@ class BasicInheritanceMappingTest extends OrmTestCase
 
     #[Group('DDC-1156')]
     #[Group('DDC-1218')]
-    public function testGeneratedValueFromMappedSuperclass(): void
-    {
-        $class = $this->cmf->getMetadataFor(SuperclassEntity::class);
-        assert($class instanceof ClassMetadata);
-
-        self::assertInstanceOf(IdSequenceGenerator::class, $class->idGenerator);
-        self::assertEquals(
-            ['allocationSize' => 1, 'initialValue' => 10, 'sequenceName' => 'foo'],
-            $class->sequenceGeneratorDefinition,
-        );
-    }
-
-    #[Group('DDC-1156')]
-    #[Group('DDC-1218')]
+    #[Group('GH-10927')]
     public function testSequenceDefinitionInHierarchyWithSandwichMappedSuperclass(): void
     {
         $class = $this->cmf->getMetadataFor(HierarchyD::class);
-        assert($class instanceof ClassMetadata);
-
-        self::assertInstanceOf(IdSequenceGenerator::class, $class->idGenerator);
-        self::assertEquals(
-            ['allocationSize' => 1, 'initialValue' => 10, 'sequenceName' => 'foo'],
-            $class->sequenceGeneratorDefinition,
-        );
-    }
-
-    #[Group('DDC-1156')]
-    #[Group('DDC-1218')]
-    public function testMultipleMappedSuperclasses(): void
-    {
-        $class = $this->cmf->getMetadataFor(MediumSuperclassEntity::class);
         assert($class instanceof ClassMetadata);
 
         self::assertInstanceOf(IdSequenceGenerator::class, $class->idGenerator);

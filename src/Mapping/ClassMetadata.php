@@ -1383,7 +1383,7 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
                     $mapping,
                     $this->namingStrategy,
                     $this->name,
-                    $this->table,
+                    $this->table ?? null,
                     $this->isInheritanceTypeSingleTable(),
                 );
 
@@ -1745,6 +1745,10 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
 
         if (isset($mapping->id)) {
             $overrideMapping['id'] = $mapping->id;
+        }
+
+        if (isset($mapping->declared)) {
+            $overrideMapping['declared'] = $mapping->declared;
         }
 
         if (! isset($overrideMapping['type'])) {

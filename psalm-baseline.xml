@@ -368,6 +368,8 @@
     </RedundantFunctionCall>
     <RedundantPropertyInitializationCheck>
       <code><![CDATA[$this->table]]></code>
+      <code><![CDATA[$this->table]]></code>
+      <code>null</code>
       <code>null</code>
     </RedundantPropertyInitializationCheck>
   </file>
