@@ -18,6 +18,10 @@ class EagerFetchCollectionTest extends OrmFunctionalTestCase
         parent::setUp();
 
         $this->createSchemaForModels(EagerFetchOwner::class, EagerFetchChild::class);
+
+        // Ensure tables are empty
+        $this->_em->getRepository(EagerFetchChild::class)->createQueryBuilder('o')->delete()->getQuery()->execute();
+        $this->_em->getRepository(EagerFetchOwner::class)->createQueryBuilder('o')->delete()->getQuery()->execute();
     }
 
     public function testEagerFetchMode(): void
@@ -91,9 +95,11 @@ class EagerFetchCollectionTest extends OrmFunctionalTestCase
         $this->_em->clear();
 
         $iterable = $this->_em->getRepository(EagerFetchOwner::class)->createQueryBuilder('o')->getQuery()->toIterable();
-        $owner    = $iterable->current();
 
-        $this->assertCount(2, $owner->children);
+        // There is only a single record, but use a foreach to ensure the iterator is marked as finished and the table lock is released
+        foreach ($iterable as $owner) {
+            $this->assertCount(2, $owner->children);
+        }
     }
 
     protected function createOwnerWithChildren(int $children): EagerFetchOwner
