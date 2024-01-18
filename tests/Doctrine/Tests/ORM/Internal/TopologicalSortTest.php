@@ -287,14 +287,3 @@ class TopologicalSortTest extends OrmTestCase
         }, array_values($this->topologicalSort->sort()));
     }
 }
-
-class Node
-{
-    /** @var string */
-    public $name;
-
-    public function __construct(string $name)
-    {
-        $this->name = $name;
-    }
-}
