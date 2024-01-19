@@ -514,7 +514,11 @@ EOPHP;
                 }
                 // no break
             case self::AUTOGENERATE_ALWAYS:
-                $this->generateProxyClass($class, $fileName, $proxyClassName);
+                $handle = fopen(sys_get_temp_dir() . '/generate_proxy_class.lock', "w+");
+                if (flock($handle, LOCK_EX)) {
+                    $this->generateProxyClass($class, $fileName, $proxyClassName);
+                    flock($handle, LOCK_UN);
+                }
                 break;
         }
 
