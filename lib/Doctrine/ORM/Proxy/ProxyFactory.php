@@ -33,6 +33,8 @@ use function dirname;
 use function file_exists;
 use function file_put_contents;
 use function filemtime;
+use function flock;
+use function fopen;
 use function is_bool;
 use function is_dir;
 use function is_int;
@@ -48,9 +50,12 @@ use function strpos;
 use function strrpos;
 use function strtr;
 use function substr;
+use function sys_get_temp_dir;
 use function ucfirst;
 
 use const DIRECTORY_SEPARATOR;
+use const LOCK_EX;
+use const LOCK_UN;
 use const PHP_VERSION_ID;
 
 /**
@@ -514,11 +519,12 @@ EOPHP;
                 }
                 // no break
             case self::AUTOGENERATE_ALWAYS:
-                $handle = fopen(sys_get_temp_dir() . '/generate_proxy_class.lock', "w+");
+                $handle = fopen(sys_get_temp_dir() . '/generate_proxy_class.lock', 'w+');
                 if (flock($handle, LOCK_EX)) {
                     $this->generateProxyClass($class, $fileName, $proxyClassName);
                     flock($handle, LOCK_UN);
                 }
+
                 break;
         }
 
