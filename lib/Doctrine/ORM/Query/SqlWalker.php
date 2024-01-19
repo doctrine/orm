@@ -1047,7 +1047,7 @@ class SqlWalker implements TreeWalker
             }
         }
 
-        if ($relation['fetch'] === ClassMetadata::FETCH_EAGER && $condExpr !== null) {
+        if (($this->query->getHint('fetchMode')[$assoc['sourceEntity']][$assoc['fieldName']] ?? $relation['fetch']) === ClassMetadata::FETCH_EAGER && $condExpr !== null) {
             throw QueryException::eagerFetchJoinWithNotAllowed($assoc['sourceEntity'], $assoc['fieldName']);
         }
 
