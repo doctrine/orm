@@ -257,7 +257,7 @@ class LimitSubqueryOutputWalker extends SqlWalker
             $innerSql
         );
 
-        // http://www.doctrine-project.org/jira/browse/DDC-1958
+        // https://github.com/doctrine/orm/issues/2630
         $sql = $this->preserveSqlOrdering($sqlIdentifier, $innerSql, $sql, $orderByClause);
 
         // Apply the limit and offset.
