@@ -303,7 +303,7 @@ class ObjectHydrator extends AbstractHydrator
 
         $idHash = $data[$class->identifier[0]];
 
-        if ($idHash instanceof \BackedEnum) {
+        if ($idHash instanceof BackedEnum) {
             $idHash = $idHash->value;
         }
 
