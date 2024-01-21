@@ -50,12 +50,14 @@ class LimitSubqueryWalker extends TreeWalkerAdapter
             throw new RuntimeException('Paginating an entity with foreign key as identifier only works when using the Output Walkers. Call Paginator#setUseOutputWalkers(true) before iterating the paginator.');
         }
 
-        $this->_getQuery()->setHint(
+        $query = $this->_getQuery();
+
+        $query->setHint(
             self::IDENTIFIER_TYPE,
             Type::getType($rootClass->fieldMappings[$identifier]['type'])
         );
 
-        $this->_getQuery()->setHint(self::FORCE_DBAL_TYPE_CONVERSION, true);
+        $query->setHint(self::FORCE_DBAL_TYPE_CONVERSION, true);
 
         $pathExpression = new PathExpression(
             PathExpression::TYPE_STATE_FIELD | PathExpression::TYPE_SINGLE_VALUED_ASSOCIATION,
@@ -66,7 +68,7 @@ class LimitSubqueryWalker extends TreeWalkerAdapter
         $pathExpression->type = PathExpression::TYPE_STATE_FIELD;
 
         $AST->selectClause->selectExpressions = [new SelectExpression($pathExpression, '_dctrn_id')];
-        $AST->selectClause->isDistinct        = true;
+        $AST->selectClause->isDistinct        = ($query->getHints()[Paginator::HINT_ENABLE_DISTINCT] ?? true) === true;
 
         if (! isset($AST->orderByClause)) {
             return;

@@ -39,8 +39,7 @@ class GH10808Test extends OrmFunctionalTestCase
 
         $query = $this->_em->createQuery(
             'SELECT appointment from Doctrine\Tests\ORM\Functional\Ticket\GH10808Appointment appointment
-               JOIN appointment.child appointment_child
-               WITH appointment_child.id = 1'
+               JOIN appointment.child appointment_child'
         );
 
         // By default, UnitOfWork::HINT_DEFEREAGERLOAD is set to 'true'

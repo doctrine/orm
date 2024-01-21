@@ -141,7 +141,9 @@ class ParserResult
     {
         foreach (self::LEGACY_PROPERTY_MAPPING as $property => $legacyProperty) {
             $this->$property = $data[sprintf("\0%s\0%s", self::class, $legacyProperty)]
+                ?? $data[self::class][$legacyProperty]
                 ?? $data[sprintf("\0%s\0%s", self::class, $property)]
+                ?? $data[self::class][$property]
                 ?? $this->$property
                 ?? null;
         }

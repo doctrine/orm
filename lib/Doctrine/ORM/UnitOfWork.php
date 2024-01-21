@@ -27,8 +27,8 @@ use Doctrine\ORM\Exception\EntityIdentityCollisionException;
 use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\Exception\UnexpectedAssociationValue;
 use Doctrine\ORM\Id\AssignedGenerator;
-use Doctrine\ORM\Internal\CommitOrderCalculator;
 use Doctrine\ORM\Internal\HydrationCompleteHandler;
+use Doctrine\ORM\Internal\StronglyConnectedComponents;
 use Doctrine\ORM\Internal\TopologicalSort;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\MappingException;
@@ -52,6 +52,7 @@ use RuntimeException;
 use Throwable;
 use UnexpectedValueException;
 
+use function array_chunk;
 use function array_combine;
 use function array_diff_key;
 use function array_filter;
@@ -314,6 +315,9 @@ class UnitOfWork implements PropertyChangedListener
      * @psalm-var array<class-string, array<string, mixed>>
      */
     private $eagerLoadingEntities = [];
+
+    /** @var array<string, array<string, mixed>> */
+    private $eagerLoadingCollections = [];
 
     /** @var bool */
     protected $hasCache = false;
@@ -1375,9 +1379,10 @@ class UnitOfWork implements PropertyChangedListener
                 $joinColumns = reset($assoc['joinColumns']);
                 $isNullable  = ! isset($joinColumns['nullable']) || $joinColumns['nullable'];
 
-                // Add dependency. The dependency direction implies that "$targetEntity has to go before $entity",
-                // so we can work through the topo sort result from left to right (with all edges pointing right).
-                $sort->addEdge($targetEntity, $entity, $isNullable);
+                // Add dependency. The dependency direction implies that "$entity depends on $targetEntity". The
+                // topological sort result will output the depended-upon nodes first, which means we can insert
+                // entities in that order.
+                $sort->addEdge($entity, $targetEntity, $isNullable);
             }
         }
 
@@ -1387,14 +1392,19 @@ class UnitOfWork implements PropertyChangedListener
     /** @return list<object> */
     private function computeDeleteExecutionOrder(): array
     {
-        $sort = new TopologicalSort();
+        $stronglyConnectedComponents = new StronglyConnectedComponents();
+        $sort                        = new TopologicalSort();
 
-        // First make sure we have all the nodes
         foreach ($this->entityDeletions as $entity) {
+            $stronglyConnectedComponents->addNode($entity);
             $sort->addNode($entity);
         }
 
-        // Now add edges
+        // First, consider only "on delete cascade" associations between entities
+        // and find strongly connected groups. Once we delete any one of the entities
+        // in such a group, _all_ of the other entities will be removed as well. So,
+        // we need to treat those groups like a single entity when performing delete
+        // order topological sorting.
         foreach ($this->entityDeletions as $entity) {
             $class = $this->em->getClassMetadata(get_class($entity));
 
@@ -1406,16 +1416,65 @@ class UnitOfWork implements PropertyChangedListener
                     continue;
                 }
 
-                // For associations that implement a database-level cascade/set null operation,
+                assert(isset($assoc['joinColumns']));
+                $joinColumns = reset($assoc['joinColumns']);
+                if (! isset($joinColumns['onDelete'])) {
+                    continue;
+                }
+
+                $onDeleteOption = strtolower($joinColumns['onDelete']);
+                if ($onDeleteOption !== 'cascade') {
+                    continue;
+                }
+
+                $targetEntity = $class->getFieldValue($entity, $assoc['fieldName']);
+
+                // If the association does not refer to another entity or that entity
+                // is not to be deleted, there is no ordering problem and we can
+                // skip this particular association.
+                if ($targetEntity === null || ! $stronglyConnectedComponents->hasNode($targetEntity)) {
+                    continue;
+                }
+
+                $stronglyConnectedComponents->addEdge($entity, $targetEntity);
+            }
+        }
+
+        $stronglyConnectedComponents->findStronglyConnectedComponents();
+
+        // Now do the actual topological sorting to find the delete order.
+        foreach ($this->entityDeletions as $entity) {
+            $class = $this->em->getClassMetadata(get_class($entity));
+
+            // Get the entities representing the SCC
+            $entityComponent = $stronglyConnectedComponents->getNodeRepresentingStronglyConnectedComponent($entity);
+
+            // When $entity is part of a non-trivial strongly connected component group
+            // (a group containing not only those entities alone), make sure we process it _after_ the
+            // entity representing the group.
+            // The dependency direction implies that "$entity depends on $entityComponent
+            // being deleted first". The topological sort will output the depended-upon nodes first.
+            if ($entityComponent !== $entity) {
+                $sort->addEdge($entity, $entityComponent, false);
+            }
+
+            foreach ($class->associationMappings as $assoc) {
+                // We only need to consider the owning sides of to-one associations,
+                // since many-to-many associations can always be (and have already been)
+                // deleted in a preceding step.
+                if (! ($assoc['isOwningSide'] && $assoc['type'] & ClassMetadata::TO_ONE)) {
+                    continue;
+                }
+
+                // For associations that implement a database-level set null operation,
                 // we do not have to follow a particular order: If the referred-to entity is
-                // deleted first, the DBMS will either delete the current $entity right away
-                // (CASCADE) or temporarily set the foreign key to NULL (SET NULL).
-                // Either way, we can skip it in the computation.
+                // deleted first, the DBMS will temporarily set the foreign key to NULL (SET NULL).
+                // So, we can skip it in the computation.
                 assert(isset($assoc['joinColumns']));
                 $joinColumns = reset($assoc['joinColumns']);
                 if (isset($joinColumns['onDelete'])) {
                     $onDeleteOption = strtolower($joinColumns['onDelete']);
-                    if ($onDeleteOption === 'cascade' || $onDeleteOption === 'set null') {
+                    if ($onDeleteOption === 'set null') {
                         continue;
                     }
                 }
@@ -1429,9 +1488,17 @@ class UnitOfWork implements PropertyChangedListener
                     continue;
                 }
 
-                // Add dependency. The dependency direction implies that "$entity has to be removed before $targetEntity",
-                // so we can work through the topo sort result from left to right (with all edges pointing right).
-                $sort->addEdge($entity, $targetEntity, false);
+                // Get the entities representing the SCC
+                $targetEntityComponent = $stronglyConnectedComponents->getNodeRepresentingStronglyConnectedComponent($targetEntity);
+
+                // When we have a dependency between two different groups of strongly connected nodes,
+                // add it to the computation.
+                // The dependency direction implies that "$targetEntityComponent depends on $entityComponent
+                // being deleted first". The topological sort will output the depended-upon nodes first,
+                // so we can work through the result in the returned order.
+                if ($targetEntityComponent !== $entityComponent) {
+                    $sort->addEdge($targetEntityComponent, $entityComponent, false);
+                }
             }
         }
 
@@ -1682,11 +1749,11 @@ IDs should uniquely map to entity object instances. This problem may occur if:
 clearing the EntityManager;
 - you might have been using EntityManager#getReference() to create a reference
 for a nonexistent ID that was subsequently (by the RDBMS) assigned to another
-entity. 
+entity.
 
 Otherwise, it might be an ORM-internal inconsistency, please report it.
 
-To opt-in to the new exception, call 
+To opt-in to the new exception, call
 \Doctrine\ORM\Configuration::setRejectIdCollisionInIdentityMap on the entity
 manager's configuration.
 EXCEPTION
@@ -2722,16 +2789,6 @@ EXCEPTION
     }
 
     /**
-     * Gets the CommitOrderCalculator used by the UnitOfWork to order commits.
-     *
-     * @return CommitOrderCalculator
-     */
-    public function getCommitOrderCalculator()
-    {
-        return new Internal\CommitOrderCalculator();
-    }
-
-    /**
      * Clears the UnitOfWork.
      *
      * @param string|null $entityName if given, only entities of this type will get detached.
@@ -2760,6 +2817,7 @@ EXCEPTION
             $this->pendingCollectionElementRemovals =
             $this->visitedCollections               =
             $this->eagerLoadingEntities             =
+            $this->eagerLoadingCollections          =
             $this->orphanRemovals                   = [];
         } else {
             Deprecation::triggerIfCalledFromOutside(
@@ -2949,6 +3007,10 @@ EXCEPTION
                 continue;
             }
 
+            if (! isset($hints['fetchMode'][$class->name][$field])) {
+                $hints['fetchMode'][$class->name][$field] = $assoc['fetch'];
+            }
+
             $targetClass = $this->em->getClassMetadata($assoc['targetEntity']);
 
             switch (true) {
@@ -3010,10 +3072,6 @@ EXCEPTION
                         $this->originalEntityData[$oid][$field] = null;
 
                         break;
-                    }
-
-                    if (! isset($hints['fetchMode'][$class->name][$field])) {
-                        $hints['fetchMode'][$class->name][$field] = $assoc['fetch'];
                     }
 
                     // Foreign key is set
@@ -3109,9 +3167,14 @@ EXCEPTION
                     $reflField = $class->reflFields[$field];
                     $reflField->setValue($entity, $pColl);
 
-                    if ($assoc['fetch'] === ClassMetadata::FETCH_EAGER) {
-                        $this->loadCollection($pColl);
-                        $pColl->takeSnapshot();
+                    if ($hints['fetchMode'][$class->name][$field] === ClassMetadata::FETCH_EAGER) {
+                        $isIteration = isset($hints[Query::HINT_INTERNAL_ITERATION]) && $hints[Query::HINT_INTERNAL_ITERATION];
+                        if (! $isIteration && $assoc['type'] === ClassMetadata::ONE_TO_MANY) {
+                            $this->scheduleCollectionForBatchLoading($pColl, $class);
+                        } elseif (($isIteration && $assoc['type'] === ClassMetadata::ONE_TO_MANY) || $assoc['type'] === ClassMetadata::MANY_TO_MANY) {
+                            $this->loadCollection($pColl);
+                            $pColl->takeSnapshot();
+                        }
                     }
 
                     $this->originalEntityData[$oid][$field] = $pColl;
@@ -3128,7 +3191,7 @@ EXCEPTION
     /** @return void */
     public function triggerEagerLoads()
     {
-        if (! $this->eagerLoadingEntities) {
+        if (! $this->eagerLoadingEntities && ! $this->eagerLoadingCollections) {
             return;
         }
 
@@ -3141,11 +3204,69 @@ EXCEPTION
                 continue;
             }
 
-            $class = $this->em->getClassMetadata($entityName);
+            $class   = $this->em->getClassMetadata($entityName);
+            $batches = array_chunk($ids, $this->em->getConfiguration()->getEagerFetchBatchSize());
 
-            $this->getEntityPersister($entityName)->loadAll(
-                array_combine($class->identifier, [array_values($ids)])
-            );
+            foreach ($batches as $batchedIds) {
+                $this->getEntityPersister($entityName)->loadAll(
+                    array_combine($class->identifier, [$batchedIds])
+                );
+            }
+        }
+
+        $eagerLoadingCollections       = $this->eagerLoadingCollections; // avoid recursion
+        $this->eagerLoadingCollections = [];
+
+        foreach ($eagerLoadingCollections as $group) {
+            $this->eagerLoadCollections($group['items'], $group['mapping']);
+        }
+    }
+
+    /**
+     * Load all data into the given collections, according to the specified mapping
+     *
+     * @param PersistentCollection[] $collections
+     * @param array<string, mixed>   $mapping
+     * @psalm-param array{targetEntity: class-string, sourceEntity: class-string, mappedBy: string, indexBy: string|null} $mapping
+     */
+    private function eagerLoadCollections(array $collections, array $mapping): void
+    {
+        $targetEntity = $mapping['targetEntity'];
+        $class        = $this->em->getClassMetadata($mapping['sourceEntity']);
+        $mappedBy     = $mapping['mappedBy'];
+
+        $batches = array_chunk($collections, $this->em->getConfiguration()->getEagerFetchBatchSize(), true);
+
+        foreach ($batches as $collectionBatch) {
+            $entities = [];
+
+            foreach ($collectionBatch as $collection) {
+                $entities[] = $collection->getOwner();
+            }
+
+            $found = $this->getEntityPersister($targetEntity)->loadAll([$mappedBy => $entities]);
+
+            $targetClass    = $this->em->getClassMetadata($targetEntity);
+            $targetProperty = $targetClass->getReflectionProperty($mappedBy);
+
+            foreach ($found as $targetValue) {
+                $sourceEntity = $targetProperty->getValue($targetValue);
+
+                $id     = $this->identifierFlattener->flattenIdentifier($class, $class->getIdentifierValues($sourceEntity));
+                $idHash = implode(' ', $id);
+
+                if (isset($mapping['indexBy'])) {
+                    $indexByProperty = $targetClass->getReflectionProperty($mapping['indexBy']);
+                    $collectionBatch[$idHash]->hydrateSet($indexByProperty->getValue($targetValue), $targetValue);
+                } else {
+                    $collectionBatch[$idHash]->add($targetValue);
+                }
+            }
+        }
+
+        foreach ($collections as $association) {
+            $association->setInitialized(true);
+            $association->takeSnapshot();
         }
     }
 
@@ -3174,6 +3295,33 @@ EXCEPTION
         }
 
         $collection->setInitialized(true);
+    }
+
+    /**
+     * Schedule this collection for batch loading at the end of the UnitOfWork
+     */
+    private function scheduleCollectionForBatchLoading(PersistentCollection $collection, ClassMetadata $sourceClass): void
+    {
+        $mapping = $collection->getMapping();
+        $name    = $mapping['sourceEntity'] . '#' . $mapping['fieldName'];
+
+        if (! isset($this->eagerLoadingCollections[$name])) {
+            $this->eagerLoadingCollections[$name] = [
+                'items'   => [],
+                'mapping' => $mapping,
+            ];
+        }
+
+        $owner = $collection->getOwner();
+        assert($owner !== null);
+
+        $id     = $this->identifierFlattener->flattenIdentifier(
+            $sourceClass,
+            $sourceClass->getIdentifierValues($owner)
+        );
+        $idHash = implode(' ', $id);
+
+        $this->eagerLoadingCollections[$name]['items'][$idHash] = $collection;
     }
 
     /**

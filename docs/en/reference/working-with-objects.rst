@@ -782,6 +782,23 @@ and these associations are mapped as EAGER, they will automatically
 be loaded together with the entity being queried and is thus
 immediately available to your application.
 
+Eager Loading can also be configured at runtime through
+``AbstractQuery::setFetchMode`` in DQL or Native Queries.
+
+Eager loading for many-to-one and one-to-one associations is using either a
+LEFT JOIN or a second query for fetching the related entity eagerly.
+
+Eager loading for many-to-one associations uses a second query to load
+the collections for several entities at the same time.
+
+When many-to-many, one-to-one or one-to-many associations are eagerly loaded,
+then the global batch size configuration is used to avoid IN(?) queries with
+too many arguments. The default batch size is 100 and can be changed with
+``Configuration::setEagerFetchBatchSize()``.
+
+For eagerly loaded Many-To-Many associations one query has to be made for each
+collection.
+
 By Lazy Loading
 ~~~~~~~~~~~~~~~
 

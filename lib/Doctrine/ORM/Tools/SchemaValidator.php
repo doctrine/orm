@@ -4,36 +4,84 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Tools;
 
+use BackedEnum;
+use Doctrine\DBAL\Types\AsciiStringType;
+use Doctrine\DBAL\Types\BigIntType;
+use Doctrine\DBAL\Types\BooleanType;
+use Doctrine\DBAL\Types\DecimalType;
+use Doctrine\DBAL\Types\FloatType;
+use Doctrine\DBAL\Types\GuidType;
+use Doctrine\DBAL\Types\IntegerType;
+use Doctrine\DBAL\Types\JsonType;
+use Doctrine\DBAL\Types\SimpleArrayType;
+use Doctrine\DBAL\Types\SmallIntType;
+use Doctrine\DBAL\Types\StringType;
+use Doctrine\DBAL\Types\TextType;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\Deprecations\Deprecation;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
+use ReflectionEnum;
+use ReflectionNamedType;
 
 use function array_diff;
+use function array_filter;
 use function array_key_exists;
+use function array_map;
+use function array_push;
 use function array_search;
 use function array_values;
+use function assert;
 use function class_exists;
 use function class_parents;
 use function count;
 use function get_class;
 use function implode;
 use function in_array;
+use function interface_exists;
+use function is_a;
+use function sprintf;
+
+use const PHP_VERSION_ID;
 
 /**
  * Performs strict validation of the mapping schema
  *
  * @link        www.doctrine-project.com
+ *
+ * @psalm-import-type FieldMapping from ClassMetadata
  */
 class SchemaValidator
 {
     /** @var EntityManagerInterface */
     private $em;
 
-    public function __construct(EntityManagerInterface $em)
+    /** @var bool */
+    private $validatePropertyTypes;
+
+    /**
+     * It maps built-in Doctrine types to PHP types
+     */
+    private const BUILTIN_TYPES_MAP = [
+        AsciiStringType::class => 'string',
+        BigIntType::class => 'string',
+        BooleanType::class => 'bool',
+        DecimalType::class => 'string',
+        FloatType::class => 'float',
+        GuidType::class => 'string',
+        IntegerType::class => 'int',
+        JsonType::class => 'array',
+        SimpleArrayType::class => 'array',
+        SmallIntType::class => 'int',
+        StringType::class => 'string',
+        TextType::class => 'string',
+    ];
+
+    public function __construct(EntityManagerInterface $em, bool $validatePropertyTypes = true)
     {
-        $this->em = $em;
+        $this->em                    = $em;
+        $this->validatePropertyTypes = $validatePropertyTypes;
     }
 
     /**
@@ -90,6 +138,11 @@ class SchemaValidator
             if (! Type::hasType($mapping['type'])) {
                 $ce[] = "The field '" . $class->name . '#' . $fieldName . "' uses a non-existent type '" . $mapping['type'] . "'.";
             }
+        }
+
+        // PHP 7.4 introduces the ability to type properties, so we can't validate them in previous versions
+        if (PHP_VERSION_ID >= 70400 && $this->validatePropertyTypes) {
+            array_push($ce, ...$this->validatePropertiesTypes($class));
         }
 
         if ($class->isEmbeddedClass && count($class->associationMappings) > 0) {
@@ -303,5 +356,123 @@ class SchemaValidator
         $allMetadata = $this->em->getMetadataFactory()->getAllMetadata();
 
         return $schemaTool->getUpdateSchemaSql($allMetadata, true);
+    }
+
+    /** @return list<string> containing the found issues */
+    private function validatePropertiesTypes(ClassMetadataInfo $class): array
+    {
+        return array_values(
+            array_filter(
+                array_map(
+                    /** @param FieldMapping $fieldMapping */
+                    function (array $fieldMapping) use ($class): ?string {
+                        $fieldName = $fieldMapping['fieldName'];
+                        assert(isset($class->reflFields[$fieldName]));
+                        $propertyType = $class->reflFields[$fieldName]->getType();
+
+                        // If the field type is not a built-in type, we cannot check it
+                        if (! Type::hasType($fieldMapping['type'])) {
+                            return null;
+                        }
+
+                        // If the property type is not a named type, we cannot check it
+                        if (! ($propertyType instanceof ReflectionNamedType) || $propertyType->getName() === 'mixed') {
+                            return null;
+                        }
+
+                        $metadataFieldType = $this->findBuiltInType(Type::getType($fieldMapping['type']));
+
+                        //If the metadata field type is not a mapped built-in type, we cannot check it
+                        if ($metadataFieldType === null) {
+                            return null;
+                        }
+
+                        $propertyType = $propertyType->getName();
+
+                        // If the property type is the same as the metadata field type, we are ok
+                        if ($propertyType === $metadataFieldType) {
+                            return null;
+                        }
+
+                        if (is_a($propertyType, BackedEnum::class, true)) {
+                            $backingType = (string) (new ReflectionEnum($propertyType))->getBackingType();
+
+                            if ($metadataFieldType !== $backingType) {
+                                return sprintf(
+                                    "The field '%s#%s' has the property type '%s' with a backing type of '%s' that differs from the metadata field type '%s'.",
+                                    $class->name,
+                                    $fieldName,
+                                    $propertyType,
+                                    $backingType,
+                                    $metadataFieldType
+                                );
+                            }
+
+                            if (! isset($fieldMapping['enumType']) || $propertyType === $fieldMapping['enumType']) {
+                                return null;
+                            }
+
+                            return sprintf(
+                                "The field '%s#%s' has the property type '%s' that differs from the metadata enumType '%s'.",
+                                $class->name,
+                                $fieldName,
+                                $propertyType,
+                                $fieldMapping['enumType']
+                            );
+                        }
+
+                        if (
+                            isset($fieldMapping['enumType'])
+                            && $propertyType !== $fieldMapping['enumType']
+                            && interface_exists($propertyType)
+                            && is_a($fieldMapping['enumType'], $propertyType, true)
+                        ) {
+                            $backingType = (string) (new ReflectionEnum($fieldMapping['enumType']))->getBackingType();
+
+                            if ($metadataFieldType === $backingType) {
+                                return null;
+                            }
+
+                            return sprintf(
+                                "The field '%s#%s' has the metadata enumType '%s' with a backing type of '%s' that differs from the metadata field type '%s'.",
+                                $class->name,
+                                $fieldName,
+                                $fieldMapping['enumType'],
+                                $backingType,
+                                $metadataFieldType
+                            );
+                        }
+
+                        if (
+                            $fieldMapping['type'] === 'json'
+                            && in_array($propertyType, ['string', 'int', 'float', 'bool', 'true', 'false', 'null'], true)
+                        ) {
+                            return null;
+                        }
+
+                        return sprintf(
+                            "The field '%s#%s' has the property type '%s' that differs from the metadata field type '%s' returned by the '%s' DBAL type.",
+                            $class->name,
+                            $fieldName,
+                            $propertyType,
+                            $metadataFieldType,
+                            $fieldMapping['type']
+                        );
+                    },
+                    $class->fieldMappings
+                )
+            )
+        );
+    }
+
+    /**
+     * The exact DBAL type must be used (no subclasses), since consumers of doctrine/orm may have their own
+     * customization around field types.
+     */
+    private function findBuiltInType(Type $type): ?string
+    {
+        $typeName = get_class($type);
+
+        return self::BUILTIN_TYPES_MAP[$typeName] ?? null;
     }
 }

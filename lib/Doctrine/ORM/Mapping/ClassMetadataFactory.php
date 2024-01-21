@@ -24,6 +24,7 @@ use Doctrine\ORM\Id\UuidGenerator;
 use Doctrine\ORM\Mapping\Exception\CannotGenerateIds;
 use Doctrine\ORM\Mapping\Exception\InvalidCustomGenerator;
 use Doctrine\ORM\Mapping\Exception\UnknownGeneratorType;
+use Doctrine\ORM\Proxy\DefaultProxyClassNameResolver;
 use Doctrine\Persistence\Mapping\AbstractClassMetadataFactory;
 use Doctrine\Persistence\Mapping\ClassMetadata as ClassMetadataInterface;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
@@ -38,6 +39,7 @@ use function end;
 use function explode;
 use function get_class;
 use function in_array;
+use function is_a;
 use function is_subclass_of;
 use function str_contains;
 use function strlen;
@@ -71,9 +73,17 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     /** @var mixed[] */
     private $embeddablesActiveNesting = [];
 
+    private const NON_IDENTITY_DEFAULT_STRATEGY = [
+        'Doctrine\DBAL\Platforms\PostgreSqlPlatform' => ClassMetadata::GENERATOR_TYPE_SEQUENCE,
+        Platforms\OraclePlatform::class => ClassMetadata::GENERATOR_TYPE_SEQUENCE,
+        Platforms\PostgreSQLPlatform::class => ClassMetadata::GENERATOR_TYPE_SEQUENCE,
+    ];
+
     /** @return void */
     public function setEntityManager(EntityManagerInterface $em)
     {
+        parent::setProxyClassNameResolver(new DefaultProxyClassNameResolver());
+
         $this->em = $em;
     }
 
@@ -113,7 +123,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
         if ($parent) {
             $class->setInheritanceType($parent->inheritanceType);
             $class->setDiscriminatorColumn($parent->discriminatorColumn);
-            $this->inheritIdGeneratorMapping($class, $parent);
+            $class->setIdGeneratorType($parent->generatorType);
             $this->addInheritedFields($class, $parent);
             $this->addInheritedRelations($class, $parent);
             $this->addInheritedEmbeddedClasses($class, $parent);
@@ -141,8 +151,12 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
             throw MappingException::reflectionFailure($class->getName(), $e);
         }
 
-        // Complete id generator mapping when the generator was declared/added in this class
-        if ($class->identifier && (! $parent || ! $parent->identifier)) {
+        // If this class has a parent the id generator strategy is inherited.
+        // However this is only true if the hierarchy of parents contains the root entity,
+        // if it consists of mapped superclasses these don't necessarily include the id field.
+        if ($parent && $rootEntityFound) {
+            $this->inheritIdGeneratorMapping($class, $parent);
+        } else {
             $this->completeIdGeneratorMapping($class);
         }
 
@@ -630,7 +644,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
                         'https://github.com/doctrine/orm/issues/8850',
                         <<<'DEPRECATION'
 Context: Loading metadata for class %s
-Problem: Using the IDENTITY generator strategy with platform "%s" is deprecated and will not be possible in Doctrine ORM 3.0.
+Problem: Using identity columns emulated with a sequence is deprecated and will not be possible in Doctrine ORM 3.0.
 Solution: Use the SEQUENCE generator strategy instead.
 DEPRECATION
                             ,
@@ -725,14 +739,40 @@ DEPRECATION
         }
     }
 
-    /** @psalm-return ClassMetadata::GENERATOR_TYPE_SEQUENCE|ClassMetadata::GENERATOR_TYPE_IDENTITY */
+    /** @psalm-return ClassMetadata::GENERATOR_TYPE_* */
     private function determineIdGeneratorStrategy(AbstractPlatform $platform): int
     {
-        if (
-            $platform instanceof Platforms\OraclePlatform
-            || $platform instanceof Platforms\PostgreSQLPlatform
-        ) {
-            return ClassMetadata::GENERATOR_TYPE_SEQUENCE;
+        assert($this->em !== null);
+        foreach ($this->em->getConfiguration()->getIdentityGenerationPreferences() as $platformFamily => $strategy) {
+            if (is_a($platform, $platformFamily)) {
+                return $strategy;
+            }
+        }
+
+        foreach (self::NON_IDENTITY_DEFAULT_STRATEGY as $platformFamily => $strategy) {
+            if (is_a($platform, $platformFamily)) {
+                if ($platform instanceof Platforms\PostgreSQLPlatform || is_a($platform, 'Doctrine\DBAL\Platforms\PostgreSqlPlatform')) {
+                    Deprecation::trigger(
+                        'doctrine/orm',
+                        'https://github.com/doctrine/orm/issues/8893',
+                        <<<'DEPRECATION'
+Relying on non-optimal defaults for ID generation is deprecated, and IDENTITY
+results in SERIAL, which is not recommended.
+Instead, configure identifier generation strategies explicitly through
+configuration.
+We currently recommend "SEQUENCE" for "%s", so you should use
+$configuration->setIdentityGenerationPreferences([
+    "%s" => ClassMetadata::GENERATOR_TYPE_SEQUENCE,
+]);
+DEPRECATION
+                        ,
+                        $platformFamily,
+                        $platformFamily
+                    );
+                }
+
+                return $strategy;
+            }
         }
 
         if ($platform->supportsIdentityColumns()) {

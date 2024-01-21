@@ -131,6 +131,7 @@ class EntityManagerTest extends OrmTestCase
 
     public function testGetPartialReference(): void
     {
+        $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/pull/10987');
         $user = $this->entityManager->getPartialReference(CmsUser::class, 42);
         self::assertTrue($this->entityManager->contains($user));
         self::assertEquals(42, $user->id);

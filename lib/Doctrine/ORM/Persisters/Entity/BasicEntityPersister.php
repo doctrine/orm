@@ -7,7 +7,6 @@ namespace Doctrine\ORM\Persisters\Entity;
 use BackedEnum;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\Common\Collections\Expr\Comparison;
-use Doctrine\Common\Util\ClassUtils;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\LockMode;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
@@ -26,6 +25,7 @@ use Doctrine\ORM\Persisters\Exception\InvalidOrientation;
 use Doctrine\ORM\Persisters\Exception\UnrecognizedField;
 use Doctrine\ORM\Persisters\SqlExpressionVisitor;
 use Doctrine\ORM\Persisters\SqlValueVisitor;
+use Doctrine\ORM\Proxy\DefaultProxyClassNameResolver;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\QueryException;
 use Doctrine\ORM\Repository\Exception\InvalidFindByCall;
@@ -1264,7 +1264,7 @@ class BasicEntityPersister implements EntityPersister
             }
 
             $isAssocToOneInverseSide = $assoc['type'] & ClassMetadata::TO_ONE && ! $assoc['isOwningSide'];
-            $isAssocFromOneEager     = $assoc['type'] !== ClassMetadata::MANY_TO_MANY && $assoc['fetch'] === ClassMetadata::FETCH_EAGER;
+            $isAssocFromOneEager     = $assoc['type'] & ClassMetadata::TO_ONE && $assoc['fetch'] === ClassMetadata::FETCH_EAGER;
 
             if (! ($isAssocFromOneEager || $isAssocToOneInverseSide)) {
                 continue;
@@ -2028,7 +2028,7 @@ class BasicEntityPersister implements EntityPersister
             return [$value->value];
         }
 
-        $valueClass = ClassUtils::getClass($value);
+        $valueClass = DefaultProxyClassNameResolver::getClass($value);
 
         if ($this->em->getMetadataFactory()->isTransient($valueClass)) {
             return [$value];

@@ -34,7 +34,7 @@
         "doctrine/lexer": "^2",
         "doctrine/persistence": "^2.4 || ^3",
         "psr/cache": "^1 || ^2 || ^3",
-        "symfony/console": "^4.2 || ^5.0 || ^6.0",
+        "symfony/console": "^4.2 || ^5.0 || ^6.0 || ^7.0",
         "symfony/polyfill-php72": "^1.23",
         "symfony/polyfill-php80": "^1.16"
     },
@@ -46,10 +46,10 @@
         "phpunit/phpunit": "^7.5 || ^8.5 || ^9.6",
         "psr/log": "^1 || ^2 || ^3",
         "squizlabs/php_codesniffer": "3.7.2",
-        "symfony/cache": "^4.4 || ^5.4 || ^6.0",
-        "symfony/var-exporter": "^4.4 || ^5.4 || ^6.2",
-        "symfony/yaml": "^3.4 || ^4.0 || ^5.0 || ^6.0",
-        "vimeo/psalm": "4.30.0 || 5.15.0"
+        "symfony/cache": "^4.4 || ^5.4 || ^6.4 || ^7.0",
+        "symfony/var-exporter": "^4.4 || ^5.4 || ^6.2 || ^7.0",
+        "symfony/yaml": "^3.4 || ^4.0 || ^5.0 || ^6.0 || ^7.0",
+        "vimeo/psalm": "4.30.0 || 5.16.0"
     },
     "conflict": {
         "doctrine/annotations": "<1.13 || >= 3.0"

@@ -6,6 +6,7 @@ namespace Doctrine\Tests\ORM\Tools\Pagination;
 
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Tools\Pagination\LimitSubqueryWalker;
+use Doctrine\ORM\Tools\Pagination\Paginator;
 
 /** @group DDC-1613 */
 class LimitSubqueryWalkerTest extends PaginationTestCase
@@ -20,6 +21,21 @@ class LimitSubqueryWalkerTest extends PaginationTestCase
 
         self::assertEquals(
             'SELECT DISTINCT m0_.id AS id_0 FROM MyBlogPost m0_ INNER JOIN Category c1_ ON m0_.category_id = c1_.id INNER JOIN Author a2_ ON m0_.author_id = a2_.id',
+            $limitQuery->getSQL()
+        );
+    }
+
+    public function testHintCanDisableDistinct(): void
+    {
+        $dql        = 'SELECT p, c, a FROM Doctrine\Tests\ORM\Tools\Pagination\MyBlogPost p JOIN p.category c JOIN p.author a';
+        $query      = $this->entityManager->createQuery($dql);
+        $limitQuery = clone $query;
+
+        $limitQuery->setHint(Query::HINT_CUSTOM_TREE_WALKERS, [LimitSubqueryWalker::class]);
+        $limitQuery->setHint(Paginator::HINT_ENABLE_DISTINCT, false);
+
+        self::assertEquals(
+            'SELECT m0_.id AS id_0 FROM MyBlogPost m0_ INNER JOIN Category c1_ ON m0_.category_id = c1_.id INNER JOIN Author a2_ ON m0_.author_id = a2_.id',
             $limitQuery->getSQL()
         );
     }

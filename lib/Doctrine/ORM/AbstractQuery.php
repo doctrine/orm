@@ -10,7 +10,6 @@ use Doctrine\Common\Cache\Psr6\CacheAdapter;
 use Doctrine\Common\Cache\Psr6\DoctrineProvider;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\Common\Util\ClassUtils;
 use Doctrine\DBAL\Cache\QueryCacheProfile;
 use Doctrine\DBAL\Result;
 use Doctrine\Deprecations\Deprecation;
@@ -20,6 +19,7 @@ use Doctrine\ORM\Cache\QueryCacheKey;
 use Doctrine\ORM\Cache\TimestampCacheKey;
 use Doctrine\ORM\Internal\Hydration\IterableResult;
 use Doctrine\ORM\Mapping\MappingException as ORMMappingException;
+use Doctrine\ORM\Proxy\DefaultProxyClassNameResolver;
 use Doctrine\ORM\Query\Parameter;
 use Doctrine\ORM\Query\QueryException;
 use Doctrine\ORM\Query\ResultSetMapping;
@@ -430,7 +430,7 @@ abstract class AbstractQuery
         }
 
         try {
-            $class = ClassUtils::getClass($value);
+            $class = DefaultProxyClassNameResolver::getClass($value);
             $value = $this->_em->getUnitOfWork()->getSingleIdentifierValue($value);
 
             if ($value === null) {

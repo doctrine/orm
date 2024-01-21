@@ -15,6 +15,7 @@ use function func_num_args;
 use function get_debug_type;
 use function gettype;
 use function implode;
+use function is_scalar;
 use function method_exists;
 use function reset;
 use function spl_object_id;
@@ -259,6 +260,32 @@ EXCEPTION
         );
 
         return new self(sprintf('Entity name must be a string, %s given', get_debug_type($entityName)));
+    }
+
+    /** @param mixed $value */
+    public static function invalidAutoGenerateMode($value): self
+    {
+        return new self(sprintf('Invalid auto generate mode "%s" given.', is_scalar($value) ? (string) $value : get_debug_type($value)));
+    }
+
+    public static function missingPrimaryKeyValue(string $className, string $idField): self
+    {
+        return new self(sprintf('Missing value for primary key %s on %s', $idField, $className));
+    }
+
+    public static function proxyDirectoryRequired(): self
+    {
+        return new self('You must configure a proxy directory. See docs for details');
+    }
+
+    public static function proxyNamespaceRequired(): self
+    {
+        return new self('You must configure a proxy namespace');
+    }
+
+    public static function proxyDirectoryNotWritable(string $proxyDirectory): self
+    {
+        return new self(sprintf('Your proxy directory "%s" must be writable', $proxyDirectory));
     }
 
     /**

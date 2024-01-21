@@ -8,6 +8,8 @@ use BadMethodCallException;
 use Doctrine\DBAL\Exception as DBALException;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 
+use function sprintf;
+
 /**
  * Mock class for DatabasePlatform.
  */
@@ -15,7 +17,10 @@ class DatabasePlatformMock extends AbstractPlatform
 {
     public function prefersIdentityColumns(): bool
     {
-        throw new BadMethodCallException('Call to deprecated method.');
+        throw new BadMethodCallException(sprintf(
+            'Call to deprecated method %s().',
+            __METHOD__
+        ));
     }
 
     public function supportsIdentityColumns(): bool
@@ -25,7 +30,10 @@ class DatabasePlatformMock extends AbstractPlatform
 
     public function prefersSequences(): bool
     {
-        throw new BadMethodCallException('Call to deprecated method.');
+        throw new BadMethodCallException(sprintf(
+            'Call to deprecated method %s().',
+            __METHOD__
+        ));
     }
 
     public function supportsSequences(): bool
@@ -94,7 +102,10 @@ class DatabasePlatformMock extends AbstractPlatform
 
     public function getName(): string
     {
-        throw new BadMethodCallException('Call to deprecated method.');
+        throw new BadMethodCallException(sprintf(
+            'Call to deprecated method %s().',
+            __METHOD__
+        ));
     }
 
     /**

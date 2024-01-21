@@ -30,6 +30,8 @@ use function is_numeric;
 
 /**
  * The AnnotationDriver reads the mapping metadata from docblock annotations.
+ *
+ * @deprecated This class will be removed in 3.0 without replacement.
  */
 class AnnotationDriver extends CompatibilityAnnotationDriver
 {

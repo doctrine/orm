@@ -44,11 +44,11 @@ class DDC2350Test extends OrmFunctionalTestCase
         $this->getQueryLog()->reset()->enable();
         $user = $this->_em->find(DDC2350User::class, $user->id);
 
-        $this->assertQueryCount(1);
+        $this->assertQueryCount(2);
 
         self::assertCount(2, $user->reportedBugs);
 
-        $this->assertQueryCount(1);
+        $this->assertQueryCount(2);
     }
 }
 

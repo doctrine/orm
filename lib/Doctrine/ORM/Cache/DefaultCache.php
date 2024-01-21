@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Cache;
 
-use Doctrine\Common\Util\ClassUtils;
 use Doctrine\ORM\Cache;
 use Doctrine\ORM\Cache\Persister\CachedPersister;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\ORMInvalidArgumentException;
+use Doctrine\ORM\Proxy\DefaultProxyClassNameResolver;
 use Doctrine\ORM\UnitOfWork;
 
 use function is_array;
@@ -293,7 +293,7 @@ class DefaultCache implements Cache
     private function toIdentifierArray(ClassMetadata $metadata, $identifier): array
     {
         if (is_object($identifier)) {
-            $class = ClassUtils::getClass($identifier);
+            $class = DefaultProxyClassNameResolver::getClass($identifier);
             if ($this->em->getMetadataFactory()->hasMetadataFor($class)) {
                 $identifier = $this->uow->getSingleIdentifierValue($identifier);
 

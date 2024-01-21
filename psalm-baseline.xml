@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<files psalm-version="5.15.0@5c774aca4746caf3d239d9c8cadb9f882ca29352">
+<files psalm-version="5.16.0@2897ba636551a8cb61601cc26f6ccfbba6c36591">
   <file src="lib/Doctrine/ORM/AbstractQuery.php">
     <DeprecatedClass>
       <code>IterableResult</code>
@@ -400,12 +400,6 @@
       <code>getTableHiLoUpdateNextValSql</code>
     </UndefinedMethod>
   </file>
-  <file src="lib/Doctrine/ORM/Internal/CommitOrderCalculator.php">
-    <RedundantCondition>
-      <code><![CDATA[$vertex->state !== VertexState::VISITED]]></code>
-      <code><![CDATA[$vertex->state !== VertexState::VISITED]]></code>
-    </RedundantCondition>
-  </file>
   <file src="lib/Doctrine/ORM/Internal/Hydration/AbstractHydrator.php">
     <DeprecatedClass>
       <code>IterableResult</code>
@@ -542,6 +536,8 @@
     <ArgumentTypeCoercion>
       <code>$class</code>
       <code>$class</code>
+      <code>$platformFamily</code>
+      <code><![CDATA['Doctrine\DBAL\Platforms\PostgreSqlPlatform']]></code>
       <code><![CDATA[new $definition['class']()]]></code>
     </ArgumentTypeCoercion>
     <DeprecatedClass>
@@ -594,7 +590,6 @@
     <DocblockTypeContradiction>
       <code><![CDATA[! $mapping['isOwningSide']]]></code>
       <code><![CDATA[! $this->table]]></code>
-      <code><![CDATA[! class_exists($mapping['targetEntity'])]]></code>
       <code><![CDATA[$this->table]]></code>
       <code><![CDATA[isset($mapping['id']) && $mapping['id'] === true && ! $mapping['isOwningSide']]]></code>
       <code><![CDATA[isset($mapping['orderBy']) && ! is_array($mapping['orderBy'])]]></code>
@@ -630,9 +625,6 @@
       <code>$quotedColumnNames</code>
       <code><![CDATA[$this->namespace . '\\' . $className]]></code>
     </LessSpecificReturnStatement>
-    <MethodSignatureMustProvideReturnType>
-      <code>__toString</code>
-    </MethodSignatureMustProvideReturnType>
     <MoreSpecificReturnType>
       <code>FieldMapping</code>
       <code>class-string|null</code>
@@ -873,6 +865,9 @@
     <MoreSpecificReturnType>
       <code>class-string</code>
     </MoreSpecificReturnType>
+    <NoValue>
+      <code>$metadata</code>
+    </NoValue>
     <PossiblyNullArrayAccess>
       <code><![CDATA[$this->tables[$tableName]]]></code>
       <code><![CDATA[$this->tables[$tableName]]]></code>
@@ -1371,38 +1366,74 @@
       <code>$columnList</code>
     </PossiblyUndefinedVariable>
   </file>
+  <file src="lib/Doctrine/ORM/Proxy/DefaultProxyClassNameResolver.php">
+    <LessSpecificReturnStatement>
+      <code>$className</code>
+      <code>substr($className, $pos + Proxy::MARKER_LENGTH + 2)</code>
+    </LessSpecificReturnStatement>
+    <MoreSpecificReturnType>
+      <code>string</code>
+    </MoreSpecificReturnType>
+  </file>
   <file src="lib/Doctrine/ORM/Proxy/ProxyFactory.php">
     <ArgumentTypeCoercion>
       <code>$classMetadata</code>
       <code>$classMetadata</code>
       <code>$classMetadata</code>
     </ArgumentTypeCoercion>
-    <DirectConstructorCall>
-      <code><![CDATA[$proxy->__construct(static function (InternalProxy $object) use ($initializer, $proxy): void {
-            $initializer($object, $proxy);
-        })]]></code>
-    </DirectConstructorCall>
+    <DeprecatedMethod>
+      <code>createCloner</code>
+      <code>createInitializer</code>
+    </DeprecatedMethod>
     <InvalidArgument>
       <code><![CDATA[$classMetadata->getReflectionProperties()]]></code>
       <code><![CDATA[$em->getMetadataFactory()]]></code>
       <code><![CDATA[$em->getMetadataFactory()]]></code>
     </InvalidArgument>
+    <InvalidNullableReturnType>
+      <code>Closure</code>
+    </InvalidNullableReturnType>
+    <InvalidPropertyAssignmentValue>
+      <code><![CDATA[$this->proxyFactories]]></code>
+    </InvalidPropertyAssignmentValue>
     <NoInterfaceProperties>
       <code><![CDATA[$metadata->isEmbeddedClass]]></code>
       <code><![CDATA[$metadata->isMappedSuperclass]]></code>
     </NoInterfaceProperties>
+    <NullableReturnStatement>
+      <code><![CDATA[$this->proxyFactories[$className] = $proxyFactory]]></code>
+    </NullableReturnStatement>
+    <PossiblyFalseArgument>
+      <code>$i</code>
+    </PossiblyFalseArgument>
+    <PossiblyFalseOperand>
+      <code>$i</code>
+    </PossiblyFalseOperand>
     <PossiblyNullPropertyFetch>
       <code><![CDATA[$property->name]]></code>
       <code><![CDATA[$property->name]]></code>
     </PossiblyNullPropertyFetch>
     <PossiblyNullReference>
+      <code>getValue</code>
       <code>setAccessible</code>
-      <code>setAccessible</code>
+      <code>setValue</code>
+      <code>setValue</code>
     </PossiblyNullReference>
+    <TypeDoesNotContainType>
+      <code><![CDATA[$autoGenerate < 0]]></code>
+      <code><![CDATA[$autoGenerate > 4]]></code>
+    </TypeDoesNotContainType>
     <UndefinedInterfaceMethod>
-      <code>__construct</code>
       <code>__wakeup</code>
     </UndefinedInterfaceMethod>
+    <UndefinedMethod>
+      <code><![CDATA[self::createLazyGhost(static function (InternalProxy $object) use ($initializer, &$proxy): void {
+                $initializer($object, $proxy);
+            }, $skippedProperties)]]></code>
+    </UndefinedMethod>
+    <UnresolvableInclude>
+      <code>require $fileName</code>
+    </UnresolvableInclude>
   </file>
   <file src="lib/Doctrine/ORM/Query.php">
     <DeprecatedClass>
@@ -1698,11 +1729,6 @@
       <code>$sqlWalker</code>
     </ParamNameMismatch>
   </file>
-  <file src="lib/Doctrine/ORM/Query/AST/Node.php">
-    <MethodSignatureMustProvideReturnType>
-      <code>__toString</code>
-    </MethodSignatureMustProvideReturnType>
-  </file>
   <file src="lib/Doctrine/ORM/Query/AST/NullComparisonExpression.php">
     <ParamNameMismatch>
       <code>$sqlWalker</code>
@@ -1813,9 +1839,32 @@
     </ParamNameMismatch>
   </file>
   <file src="lib/Doctrine/ORM/Query/Exec/AbstractSqlExecutor.php">
+    <DeprecatedProperty>
+      <code><![CDATA[$this->_sqlStatements]]></code>
+      <code><![CDATA[$this->_sqlStatements]]></code>
+    </DeprecatedProperty>
+    <DocblockTypeContradiction>
+      <code><![CDATA[$this->_sqlStatements !== null && $this->sqlStatements === null]]></code>
+      <code><![CDATA[$this->sqlStatements === null]]></code>
+    </DocblockTypeContradiction>
     <PossiblyNullPropertyAssignmentValue>
       <code>null</code>
     </PossiblyNullPropertyAssignmentValue>
+    <PropertyNotSetInConstructor>
+      <code>$_sqlStatements</code>
+      <code>$queryCacheProfile</code>
+      <code>$sqlStatements</code>
+    </PropertyNotSetInConstructor>
+    <RedundantConditionGivenDocblockType>
+      <code><![CDATA[$this->_sqlStatements !== null]]></code>
+    </RedundantConditionGivenDocblockType>
+    <UninitializedProperty>
+      <code><![CDATA[$this->sqlStatements]]></code>
+    </UninitializedProperty>
+    <UnsupportedPropertyReferenceUsage>
+      <code><![CDATA[$this->_sqlStatements = &$this->sqlStatements]]></code>
+      <code><![CDATA[$this->_sqlStatements = &$this->sqlStatements]]></code>
+    </UnsupportedPropertyReferenceUsage>
   </file>
   <file src="lib/Doctrine/ORM/Query/Exec/MultiTableDeleteExecutor.php">
     <InvalidReturnStatement>
@@ -1825,15 +1874,12 @@
       <code>int</code>
     </InvalidReturnType>
     <PossiblyInvalidIterator>
-      <code><![CDATA[$this->_sqlStatements]]></code>
+      <code><![CDATA[$this->sqlStatements]]></code>
     </PossiblyInvalidIterator>
     <PropertyNotSetInConstructor>
       <code>MultiTableDeleteExecutor</code>
       <code>MultiTableDeleteExecutor</code>
     </PropertyNotSetInConstructor>
-    <UninitializedProperty>
-      <code><![CDATA[$this->_sqlStatements]]></code>
-    </UninitializedProperty>
   </file>
   <file src="lib/Doctrine/ORM/Query/Exec/MultiTableUpdateExecutor.php">
     <InvalidReturnStatement>
@@ -1843,38 +1889,38 @@
       <code>int</code>
     </InvalidReturnType>
     <PossiblyInvalidIterator>
-      <code><![CDATA[$this->_sqlStatements]]></code>
+      <code><![CDATA[$this->sqlStatements]]></code>
     </PossiblyInvalidIterator>
     <PropertyNotSetInConstructor>
       <code>MultiTableUpdateExecutor</code>
       <code>MultiTableUpdateExecutor</code>
+      <code>MultiTableUpdateExecutor</code>
     </PropertyNotSetInConstructor>
     <PropertyTypeCoercion>
-      <code><![CDATA[$this->_sqlStatements]]></code>
+      <code><![CDATA[$this->sqlStatements]]></code>
     </PropertyTypeCoercion>
-    <UninitializedProperty>
-      <code><![CDATA[$this->_sqlStatements]]></code>
-    </UninitializedProperty>
   </file>
   <file src="lib/Doctrine/ORM/Query/Exec/SingleSelectExecutor.php">
     <PossiblyInvalidArgument>
-      <code><![CDATA[$this->_sqlStatements]]></code>
+      <code><![CDATA[$this->sqlStatements]]></code>
     </PossiblyInvalidArgument>
     <PropertyNotSetInConstructor>
+      <code>SingleSelectExecutor</code>
       <code>SingleSelectExecutor</code>
     </PropertyNotSetInConstructor>
   </file>
   <file src="lib/Doctrine/ORM/Query/Exec/SingleTableDeleteUpdateExecutor.php">
     <InvalidReturnStatement>
-      <code><![CDATA[$conn->executeStatement($this->_sqlStatements, $params, $types)]]></code>
+      <code><![CDATA[$conn->executeStatement($this->sqlStatements, $params, $types)]]></code>
     </InvalidReturnStatement>
     <InvalidReturnType>
       <code>int</code>
     </InvalidReturnType>
     <PossiblyInvalidArgument>
-      <code><![CDATA[$this->_sqlStatements]]></code>
+      <code><![CDATA[$this->sqlStatements]]></code>
     </PossiblyInvalidArgument>
     <PropertyNotSetInConstructor>
+      <code>SingleTableDeleteUpdateExecutor</code>
       <code>SingleTableDeleteUpdateExecutor</code>
       <code>SingleTableDeleteUpdateExecutor</code>
     </PropertyNotSetInConstructor>
@@ -1890,36 +1936,15 @@
       <code>$parts</code>
     </NonInvariantDocblockPropertyType>
   </file>
-  <file src="lib/Doctrine/ORM/Query/Expr/Base.php">
-    <MethodSignatureMustProvideReturnType>
-      <code>__toString</code>
-    </MethodSignatureMustProvideReturnType>
-  </file>
-  <file src="lib/Doctrine/ORM/Query/Expr/Comparison.php">
-    <MethodSignatureMustProvideReturnType>
-      <code>__toString</code>
-    </MethodSignatureMustProvideReturnType>
-  </file>
   <file src="lib/Doctrine/ORM/Query/Expr/Composite.php">
-    <MethodSignatureMustProvideReturnType>
-      <code>__toString</code>
-    </MethodSignatureMustProvideReturnType>
     <PossiblyInvalidCast>
       <code>$part</code>
     </PossiblyInvalidCast>
-  </file>
-  <file src="lib/Doctrine/ORM/Query/Expr/From.php">
-    <MethodSignatureMustProvideReturnType>
-      <code>__toString</code>
-    </MethodSignatureMustProvideReturnType>
   </file>
   <file src="lib/Doctrine/ORM/Query/Expr/Func.php">
     <LessSpecificReturnStatement>
       <code><![CDATA[$this->arguments]]></code>
     </LessSpecificReturnStatement>
-    <MethodSignatureMustProvideReturnType>
-      <code>__toString</code>
-    </MethodSignatureMustProvideReturnType>
     <MoreSpecificReturnType>
       <code><![CDATA[list<mixed>]]></code>
     </MoreSpecificReturnType>
@@ -1930,9 +1955,6 @@
     </NonInvariantDocblockPropertyType>
   </file>
   <file src="lib/Doctrine/ORM/Query/Expr/Join.php">
-    <MethodSignatureMustProvideReturnType>
-      <code>__toString</code>
-    </MethodSignatureMustProvideReturnType>
     <PossiblyNullArgument>
       <code><![CDATA[$this->conditionType]]></code>
     </PossiblyNullArgument>
@@ -1941,16 +1963,6 @@
     <NonInvariantDocblockPropertyType>
       <code>$parts</code>
     </NonInvariantDocblockPropertyType>
-  </file>
-  <file src="lib/Doctrine/ORM/Query/Expr/Math.php">
-    <MethodSignatureMustProvideReturnType>
-      <code>__toString</code>
-    </MethodSignatureMustProvideReturnType>
-  </file>
-  <file src="lib/Doctrine/ORM/Query/Expr/OrderBy.php">
-    <MethodSignatureMustProvideReturnType>
-      <code>__toString</code>
-    </MethodSignatureMustProvideReturnType>
   </file>
   <file src="lib/Doctrine/ORM/Query/Expr/Orx.php">
     <NonInvariantDocblockPropertyType>
@@ -1965,9 +1977,6 @@
     </NonInvariantDocblockPropertyType>
   </file>
   <file src="lib/Doctrine/ORM/Query/Filter/SQLFilter.php">
-    <MethodSignatureMustProvideReturnType>
-      <code>__toString</code>
-    </MethodSignatureMustProvideReturnType>
     <MissingClosureParamType>
       <code>$value</code>
     </MissingClosureParamType>
@@ -2075,9 +2084,6 @@
       <code>addNamedNativeQueryResultClassMapping</code>
       <code>addNamedNativeQueryResultSetMapping</code>
     </DeprecatedMethod>
-    <MethodSignatureMustProvideReturnType>
-      <code>__toString</code>
-    </MethodSignatureMustProvideReturnType>
     <PossiblyUndefinedArrayOffset>
       <code><![CDATA[$associationMapping['joinColumns']]]></code>
       <code><![CDATA[$associationMapping['joinColumns']]]></code>
@@ -2140,12 +2146,18 @@
     <ImplicitToStringCast>
       <code>$expr</code>
     </ImplicitToStringCast>
+    <InvalidArrayOffset>
+      <code><![CDATA[$this->queryComponents[$expression]]]></code>
+    </InvalidArrayOffset>
     <InvalidNullableReturnType>
       <code>string</code>
     </InvalidNullableReturnType>
     <MoreSpecificImplementedParamType>
       <code>$query</code>
     </MoreSpecificImplementedParamType>
+    <NoValue>
+      <code>$expression</code>
+    </NoValue>
     <PossiblyInvalidArgument>
       <code><![CDATA[$aggExpression->pathExpression]]></code>
     </PossiblyInvalidArgument>
@@ -2241,9 +2253,6 @@
     <InvalidPropertyAssignmentValue>
       <code>new ArrayCollection($parameters)</code>
     </InvalidPropertyAssignmentValue>
-    <MethodSignatureMustProvideReturnType>
-      <code>__toString</code>
-    </MethodSignatureMustProvideReturnType>
     <PossiblyFalseArgument>
       <code>$spacePos</code>
       <code>$spacePos</code>
@@ -2371,11 +2380,6 @@
     <PossiblyNullReference>
       <code>getAllClassNames</code>
     </PossiblyNullReference>
-  </file>
-  <file src="lib/Doctrine/ORM/Tools/Console/Command/RunDqlCommand.php">
-    <DeprecatedClass>
-      <code><![CDATA[Debug::dump($resultSet, (int) $input->getOption('depth'), true, false)]]></code>
-    </DeprecatedClass>
   </file>
   <file src="lib/Doctrine/ORM/Tools/Console/Command/SchemaTool/AbstractCommand.php">
     <InvalidNullableReturnType>
@@ -2701,6 +2705,7 @@
     <NoValue>
       <code>$entityState</code>
       <code>$entityState</code>
+      <code>$object</code>
     </NoValue>
     <PossiblyInvalidArgument>
       <code>$value</code>

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Tools\Console\Command;
 
+use Doctrine\ORM\Tools\Console\CommandCompatibility;
 use Doctrine\ORM\Tools\ConvertDoctrine1Schema;
 use Doctrine\ORM\Tools\EntityGenerator;
 use Doctrine\ORM\Tools\Export\ClassMetadataExporter;
@@ -34,6 +35,8 @@ use const PHP_EOL;
  */
 class ConvertDoctrine1SchemaCommand extends Command
 {
+    use CommandCompatibility;
+
     /** @var EntityGenerator|null */
     private $entityGenerator = null;
 
@@ -87,12 +90,7 @@ class ConvertDoctrine1SchemaCommand extends Command
              ->setHelp('Converts Doctrine 1.x schema into a Doctrine 2.x schema.');
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * @return int
-     */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    private function doExecute(InputInterface $input, OutputInterface $output): int
     {
         $ui = new SymfonyStyle($input, $output);
         $ui->getErrorStyle()->warning('Command ' . $this->getName() . ' is deprecated and will be removed in Doctrine ORM 3.0.');

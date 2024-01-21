@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Tools\Console\Command\SchemaTool;
 
 use Doctrine\ORM\Tools\Console\Command\AbstractEntityManagerCommand;
+use Doctrine\ORM\Tools\Console\CommandCompatibility;
 use Doctrine\ORM\Tools\SchemaTool;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -17,6 +18,8 @@ use Symfony\Component\Console\Style\SymfonyStyle;
  */
 abstract class AbstractCommand extends AbstractEntityManagerCommand
 {
+    use CommandCompatibility;
+
     /**
      * @param mixed[] $metadatas
      *
@@ -24,12 +27,7 @@ abstract class AbstractCommand extends AbstractEntityManagerCommand
      */
     abstract protected function executeSchemaCommand(InputInterface $input, OutputInterface $output, SchemaTool $schemaTool, array $metadatas, SymfonyStyle $ui);
 
-    /**
-     * {@inheritDoc}
-     *
-     * @return int
-     */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    private function doExecute(InputInterface $input, OutputInterface $output): int
     {
         $ui = new SymfonyStyle($input, $output);
 

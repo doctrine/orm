@@ -13,6 +13,7 @@ use Doctrine\Common\Cache\Cache as CacheDriver;
 use Doctrine\Common\Cache\Psr6\CacheAdapter;
 use Doctrine\Common\Cache\Psr6\DoctrineProvider;
 use Doctrine\Common\Persistence\PersistentObject;
+use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\Deprecations\Deprecation;
 use Doctrine\ORM\Cache\CacheConfiguration;
 use Doctrine\ORM\Cache\Exception\CacheException;
@@ -27,6 +28,7 @@ use Doctrine\ORM\Exception\NotSupported;
 use Doctrine\ORM\Exception\ProxyClassesAlwaysRegenerating;
 use Doctrine\ORM\Exception\UnknownEntityNamespace;
 use Doctrine\ORM\Internal\Hydration\AbstractHydrator;
+use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\Mapping\DefaultEntityListenerResolver;
 use Doctrine\ORM\Mapping\DefaultNamingStrategy;
@@ -67,6 +69,21 @@ class Configuration extends \Doctrine\DBAL\Configuration
 {
     /** @var mixed[] */
     protected $_attributes = [];
+
+    /** @psalm-var array<class-string<AbstractPlatform>, ClassMetadata::GENERATOR_TYPE_*> */
+    private $identityGenerationPreferences = [];
+
+    /** @psalm-param array<class-string<AbstractPlatform>, ClassMetadata::GENERATOR_TYPE_*> $value */
+    public function setIdentityGenerationPreferences(array $value): void
+    {
+        $this->identityGenerationPreferences = $value;
+    }
+
+    /** @psalm-return array<class-string<AbstractPlatform>, ClassMetadata::GENERATOR_TYPE_*> $value */
+    public function getIdentityGenerationPreferences(): array
+    {
+        return $this->identityGenerationPreferences;
+    }
 
     /**
      * Sets the directory where Doctrine generates any necessary proxy class files.
@@ -1126,5 +1143,15 @@ class Configuration extends \Doctrine\DBAL\Configuration
     public function isRejectIdCollisionInIdentityMapEnabled(): bool
     {
         return $this->_attributes['rejectIdCollisionInIdentityMap'] ?? false;
+    }
+
+    public function setEagerFetchBatchSize(int $batchSize = 100): void
+    {
+        $this->_attributes['fetchModeSubselectBatchSize'] = $batchSize;
+    }
+
+    public function getEagerFetchBatchSize(): int
+    {
+        return $this->_attributes['fetchModeSubselectBatchSize'] ?? 100;
     }
 }

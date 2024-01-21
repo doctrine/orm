@@ -49,11 +49,19 @@
 
     <rule ref="PSR1.Classes.ClassDeclaration.MultipleClasses">
         <exclude-pattern>lib/Doctrine/ORM/Mapping/Driver/CompatibilityAnnotationDriver.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/Tools/Console/CommandCompatibility.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/Tools/Console/Helper/EntityManagerHelper.php</exclude-pattern>
         <exclude-pattern>tests/*</exclude-pattern>
     </rule>
 
     <rule ref="Squiz.Classes.ClassFileName.NoMatch">
-        <exclude-pattern>*/tests/*</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/Tools/Console/Helper/EntityManagerHelper.php</exclude-pattern>
+        <exclude-pattern>tests/*</exclude-pattern>
+    </rule>
+
+    <rule ref="Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps">
+        <exclude-pattern>lib/Doctrine/ORM/Tools/Debug.php</exclude-pattern>
+        <exclude-pattern>tests/Doctrine/Tests/ORM/Tools/DebugTest.php</exclude-pattern>
     </rule>
 
     <rule ref="Generic.NamingConventions.UpperCaseConstantName.ClassConstantNotUpperCase">
@@ -190,6 +198,11 @@
 
     <rule ref="SlevomatCodingStandard.Commenting.ForbiddenAnnotations.AnnotationForbidden">
         <exclude-pattern>tests/Doctrine/Tests/ORM/Functional/Ticket/DDC832Test.php</exclude-pattern>
+    </rule>
+
+    <rule ref="Squiz.Classes.ValidClassName.NotCamelCaps">
+        <!-- we need to test what happens with an stdClass proxy -->
+        <exclude-pattern>tests/Doctrine/Tests/Proxy/DefaultProxyClassNameResolverTest.php</exclude-pattern>
     </rule>
 
     <rule ref="Squiz.Commenting.FunctionComment.WrongStyle">

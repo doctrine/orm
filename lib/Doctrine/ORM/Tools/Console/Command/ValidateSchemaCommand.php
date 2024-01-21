@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Tools\Console\Command;
 
+use Doctrine\ORM\Tools\Console\CommandCompatibility;
 use Doctrine\ORM\Tools\SchemaValidator;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -20,6 +21,8 @@ use function sprintf;
  */
 class ValidateSchemaCommand extends AbstractEntityManagerCommand
 {
+    use CommandCompatibility;
+
     /** @return void */
     protected function configure()
     {
@@ -28,20 +31,16 @@ class ValidateSchemaCommand extends AbstractEntityManagerCommand
              ->addOption('em', null, InputOption::VALUE_REQUIRED, 'Name of the entity manager to operate on')
              ->addOption('skip-mapping', null, InputOption::VALUE_NONE, 'Skip the mapping validation check')
              ->addOption('skip-sync', null, InputOption::VALUE_NONE, 'Skip checking if the mapping is in sync with the database')
+             ->addOption('skip-property-types', null, InputOption::VALUE_NONE, 'Skip checking if property types match the Doctrine types')
              ->setHelp('Validate that the mapping files are correct and in sync with the database.');
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * @return int
-     */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    private function doExecute(InputInterface $input, OutputInterface $output): int
     {
         $ui = (new SymfonyStyle($input, $output))->getErrorStyle();
 
         $em        = $this->getEntityManager($input);
-        $validator = new SchemaValidator($em);
+        $validator = new SchemaValidator($em, ! $input->getOption('skip-property-types'));
         $exit      = 0;
 
         $ui->section('Mapping');
