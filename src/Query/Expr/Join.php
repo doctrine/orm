@@ -16,6 +16,7 @@ class Join
     public const INNER_JOIN = 'INNER';
     public const LEFT_JOIN  = 'LEFT';
 
+    /** @deprecated This constant is deprecated and will be removed in Doctrine ORM 3.0. */
     public const ON   = 'ON';
     public const WITH = 'WITH';
 
