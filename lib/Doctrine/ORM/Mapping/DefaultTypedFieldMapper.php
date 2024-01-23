@@ -57,7 +57,15 @@ final class DefaultTypedFieldMapper implements TypedFieldMapper
                 $mapping['enumType'] = $type->getName();
 
                 $reflection = new ReflectionEnum($type->getName());
-                $type       = $reflection->getBackingType();
+                if (! $reflection->isBacked()) {
+                    throw MappingException::backedEnumTypeRequired(
+                        $field->class,
+                        $mapping['fieldName'],
+                        $mapping['enumType']
+                    );
+                }
+
+                $type = $reflection->getBackingType();
 
                 assert($type instanceof ReflectionNamedType);
             }
