@@ -1,7 +1,7 @@
-| [3.0.x][3.0] | [2.16.x][2.16] | [2.15.x][2.15] |
+| [3.0.x][3.0] | [2.18.x][2.18] | [2.17.x][2.17] |
 |:----------------:|:----------------:|:----------:|
-| [![Build status][3.0 image]][3.0] | [![Build status][2.16 image]][2.16] | [![Build status][2.15 image]][2.15] |
-| [![Coverage Status][3.0 coverage image]][3.0 coverage]| [![Coverage Status][2.16 coverage image]][2.16 coverage] | [![Coverage Status][2.15 coverage image]][2.15 coverage]  |
+| [![Build status][3.0 image]][3.0] | [![Build status][2.18 image]][2.18] | [![Build status][2.17 image]][2.17] |
+| [![Coverage Status][3.0 coverage image]][3.0 coverage]| [![Coverage Status][2.18 coverage image]][2.18 coverage] | [![Coverage Status][2.17 coverage image]][2.17 coverage]  |
 
 [<h1 align="center">🇺🇦 UKRAINE NEEDS YOUR HELP NOW!</h1>](https://www.doctrine-project.org/stop-war.html)
 
@@ -22,11 +22,11 @@ without requiring unnecessary code duplication.
   [3.0]: https://github.com/doctrine/orm/tree/3.0.x
   [3.0 coverage image]: https://codecov.io/gh/doctrine/orm/branch/3.0.x/graph/badge.svg
   [3.0 coverage]: https://codecov.io/gh/doctrine/orm/branch/3.0.x
-  [2.16 image]: https://github.com/doctrine/orm/actions/workflows/continuous-integration.yml/badge.svg?branch=2.16.x
-  [2.16]: https://github.com/doctrine/orm/tree/2.16.x
-  [2.16 coverage image]: https://codecov.io/gh/doctrine/orm/branch/2.16.x/graph/badge.svg
-  [2.16 coverage]: https://codecov.io/gh/doctrine/orm/branch/2.16.x
-  [2.15 image]: https://github.com/doctrine/orm/actions/workflows/continuous-integration.yml/badge.svg?branch=2.15.x
-  [2.15]: https://github.com/doctrine/orm/tree/2.15.x
-  [2.15 coverage image]: https://codecov.io/gh/doctrine/orm/branch/2.15.x/graph/badge.svg
-  [2.15 coverage]: https://codecov.io/gh/doctrine/orm/branch/2.15.x
+  [2.18 image]: https://github.com/doctrine/orm/actions/workflows/continuous-integration.yml/badge.svg?branch=2.18.x
+  [2.18]: https://github.com/doctrine/orm/tree/2.18.x
+  [2.18 coverage image]: https://codecov.io/gh/doctrine/orm/branch/2.18.x/graph/badge.svg
+  [2.18 coverage]: https://codecov.io/gh/doctrine/orm/branch/2.18.x
+  [2.17 image]: https://github.com/doctrine/orm/actions/workflows/continuous-integration.yml/badge.svg?branch=2.17.x
+  [2.17]: https://github.com/doctrine/orm/tree/2.17.x
+  [2.17 coverage image]: https://codecov.io/gh/doctrine/orm/branch/2.17.x/graph/badge.svg
+  [2.17 coverage]: https://codecov.io/gh/doctrine/orm/branch/2.17.x
