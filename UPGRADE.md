@@ -76,12 +76,11 @@ explicitly forbidden to point out mistakes.
 
 You should use `DEFERRED_EXPLICIT` instead.
 
-## BC BREAK: `Mapping\Driver\XmlDriver::__construct()` third argument is now a no-op
+## BC BREAK: `Mapping\Driver\XmlDriver::__construct()` third argument is now enabled by default
 
 The third argument to
 `Doctrine\ORM\Mapping\Driver\XmlDriver::__construct()` was introduced to
-let users opt-in to XML validation, that is now always enabled, regardless of
-the value of that argument.
+let users opt-in to XML validation, that is now always enabled by default.
 
 As a consequence, the same goes for
 `Doctrine\ORM\Mapping\Driver\SimplifiedXmlDriver`, and for

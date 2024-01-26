@@ -23,13 +23,13 @@ use Doctrine\Tests\Models\DDC889\DDC889SuperClass;
 use Doctrine\Tests\Models\Generic\BooleanModel;
 use Doctrine\Tests\Models\GH7141\GH7141Article;
 use Doctrine\Tests\Models\GH7316\GH7316Article;
+use Doctrine\Tests\Models\InvalidXml;
 use Doctrine\Tests\Models\Project\Project;
 use Doctrine\Tests\Models\Project\ProjectId;
 use Doctrine\Tests\Models\Project\ProjectInvalidMapping;
 use Doctrine\Tests\Models\Project\ProjectName;
 use Doctrine\Tests\Models\ValueObjects\Name;
 use Doctrine\Tests\Models\ValueObjects\Person;
-use InvalidArgumentException;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Group;
 
@@ -301,15 +301,48 @@ class XmlMappingDriverTest extends MappingDriverTestCase
         self::assertEquals(ProjectName::class, $name['type']);
     }
 
-    public function testDisablingXmlValidationIsNotPossible(): void
+    public function testDisablingXmlValidationIsPossible(): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectNotToPerformAssertions();
 
         new XmlDriver(
             __DIR__ . DIRECTORY_SEPARATOR . 'xml',
             XmlDriver::DEFAULT_FILE_EXTENSION,
             false,
         );
+    }
+
+    public function testXmlValidationEnabled(): void
+    {
+        $driver = new XmlDriver(
+            __DIR__ . DIRECTORY_SEPARATOR . 'invalid_xml',
+            XmlDriver::DEFAULT_FILE_EXTENSION,
+            true,
+        );
+
+        $class = new ClassMetadata(InvalidXml::class);
+        $class->initializeReflection(new RuntimeReflectionService());
+
+        self::expectException(MappingException::class);
+        self::expectExceptionMessage("libxml error: Element '{http://doctrine-project.org/schemas/orm/doctrine-mapping}field', attribute 'invalid': The attribute 'invalid' is not allowed.");
+
+        $driver->loadMetadataForClass(InvalidXml::class, $class);
+    }
+
+    public function testXmlValidationDisabled(): void
+    {
+        $driver = new XmlDriver(
+            __DIR__ . DIRECTORY_SEPARATOR . 'invalid_xml',
+            XmlDriver::DEFAULT_FILE_EXTENSION,
+            false,
+        );
+
+        $class = new ClassMetadata(InvalidXml::class);
+        $class->initializeReflection(new RuntimeReflectionService());
+
+        $driver->loadMetadataForClass(InvalidXml::class, $class);
+
+        self::assertCount(1, $class->fieldMappings);
     }
 }
 

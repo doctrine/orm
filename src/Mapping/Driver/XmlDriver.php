@@ -43,13 +43,11 @@ class XmlDriver extends FileDriver
 
     /**
      * {@inheritDoc}
-     *
-     * @param true $isXsdValidationEnabled no-op, will be removed in 4.0
      */
     public function __construct(
         string|array|FileLocator $locator,
         string $fileExtension = self::DEFAULT_FILE_EXTENSION,
-        bool $isXsdValidationEnabled = true,
+        private readonly bool $isXsdValidationEnabled = true,
     ) {
         if (! extension_loaded('simplexml')) {
             throw new LogicException(
@@ -58,14 +56,7 @@ class XmlDriver extends FileDriver
             );
         }
 
-        if (! $isXsdValidationEnabled) {
-            throw new InvalidArgumentException(sprintf(
-                'The $isXsdValidationEnabled argument is no longer supported, make sure to omit it when calling %s.',
-                __METHOD__,
-            ));
-        }
-
-        if (! extension_loaded('dom')) {
+        if ($isXsdValidationEnabled && ! extension_loaded('dom')) {
             throw new LogicException(
                 'XSD validation cannot be enabled because the DOM extension is missing.',
             );
@@ -914,6 +905,10 @@ class XmlDriver extends FileDriver
 
     private function validateMapping(string $file): void
     {
+        if (! $this->isXsdValidationEnabled) {
+            return;
+        }
+
         $backedUpErrorSetting = libxml_use_internal_errors(true);
 
         try {
