@@ -314,9 +314,6 @@ class XmlMappingDriverTest extends MappingDriverTestCase
 
     public function testXmlValidationEnabled(): void
     {
-        self::expectException(MappingException::class);
-        self::expectExceptionMessage("libxml error: Element '{http://doctrine-project.org/schemas/orm/doctrine-mapping}field', attribute 'invalid': The attribute 'invalid' is not allowed.");
-
         $driver = new XmlDriver(
             __DIR__ . DIRECTORY_SEPARATOR . 'invalid_xml',
             XmlDriver::DEFAULT_FILE_EXTENSION,
@@ -325,6 +322,9 @@ class XmlMappingDriverTest extends MappingDriverTestCase
 
         $class = new ClassMetadata(InvalidXml::class);
         $class->initializeReflection(new RuntimeReflectionService());
+
+        self::expectException(MappingException::class);
+        self::expectExceptionMessage("libxml error: Element '{http://doctrine-project.org/schemas/orm/doctrine-mapping}field', attribute 'invalid': The attribute 'invalid' is not allowed.");
 
         $driver->loadMetadataForClass(InvalidXml::class, $class);
     }
