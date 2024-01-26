@@ -56,7 +56,7 @@ class XmlDriver extends FileDriver
             );
         }
 
-        if (! extension_loaded('dom')) {
+        if ($isXsdValidationEnabled && ! extension_loaded('dom')) {
             throw new LogicException(
                 'XSD validation cannot be enabled because the DOM extension is missing.',
             );
