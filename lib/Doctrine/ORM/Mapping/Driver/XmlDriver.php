@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Mapping\Driver;
 
 use Doctrine\Common\Collections\Criteria;
-use Doctrine\Deprecations\Deprecation;
 use Doctrine\ORM\Mapping\Builder\EntityListenerBuilder;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\MappingException;
@@ -53,15 +52,6 @@ class XmlDriver extends FileDriver
             throw new LogicException(
                 'The XML metadata driver cannot be enabled because the SimpleXML PHP extension is missing.'
                 . ' Please configure PHP with SimpleXML or choose a different metadata driver.'
-            );
-        }
-
-        if (! $isXsdValidationEnabled) {
-            Deprecation::trigger(
-                'doctrine/orm',
-                'https://github.com/doctrine/orm/pull/6728',
-                'Using XML mapping driver with XSD validation disabled is deprecated'
-                . ' and will not be supported in Doctrine ORM 3.0.'
             );
         }
 
