@@ -546,10 +546,15 @@ class SqlWalker implements TreeWalker
      */
     public function walkSelectStatement(AST\SelectStatement $AST)
     {
-        $limit    = $this->query->getMaxResults();
-        $offset   = $this->query->getFirstResult();
-        $lockMode = $this->query->getHint(Query::HINT_LOCK_MODE) ?: LockMode::NONE;
-        $sql      = $this->walkSelectClause($AST->selectClause)
+        $sql       = $this->createSqlForFinalizer($AST);
+        $finalizer = new Exec\SingleSelectSqlFinalizer($sql);
+
+        return $finalizer->finalizeSql($this->query);
+    }
+
+    protected function createSqlForFinalizer(AST\SelectStatement $AST): string
+    {
+        $sql = $this->walkSelectClause($AST->selectClause)
             . $this->walkFromClause($AST->fromClause)
             . $this->walkWhereClause($AST->whereClause);
 
@@ -570,31 +575,22 @@ class SqlWalker implements TreeWalker
             $sql .= ' ORDER BY ' . $orderBySql;
         }
 
-        $sql = $this->platform->modifyLimitQuery($sql, $limit, $offset);
-
-        if ($lockMode === LockMode::NONE) {
-            return $sql;
-        }
-
-        if ($lockMode === LockMode::PESSIMISTIC_READ) {
-            return $sql . ' ' . $this->platform->getReadLockSQL();
-        }
-
-        if ($lockMode === LockMode::PESSIMISTIC_WRITE) {
-            return $sql . ' ' . $this->platform->getWriteLockSQL();
-        }
-
-        if ($lockMode !== LockMode::OPTIMISTIC) {
-            throw QueryException::invalidLockMode();
-        }
-
-        foreach ($this->selectedClasses as $selectedClass) {
-            if (! $selectedClass['class']->isVersioned) {
-                throw OptimisticLockException::lockFailed($selectedClass['class']->name);
-            }
-        }
+        $this->assertOptimisticLockingHasAllClassesVersioned();
 
         return $sql;
+    }
+
+    private function assertOptimisticLockingHasAllClassesVersioned(): void
+    {
+        $lockMode = $this->query->getHint(Query::HINT_LOCK_MODE) ?: LockMode::NONE;
+
+        if ($lockMode === LockMode::OPTIMISTIC) {
+            foreach ($this->selectedClasses as $selectedClass) {
+                if (! $selectedClass['class']->isVersioned) {
+                    throw OptimisticLockException::lockFailed($selectedClass['class']->name);
+                }
+            }
+        }
     }
 
     /**
