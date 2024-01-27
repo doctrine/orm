@@ -26,16 +26,16 @@ class GH11112Test extends OrmFunctionalTestCase
 
         $query->setMaxResults(10);
         $query->setFirstResult(20);
-        $sql10_20 = $query->getSQL();
+        $sqlMax10First20 = $query->getSQL();
 
         $query->setMaxResults(30);
         $query->setFirstResult(40);
-        $sql30_40 = $query->getSQL();
+        $sqlMax30First40 = $query->getSQL();
 
         // The SQL is platform specific and may even be something with outer SELECTS being added. So,
         // derive the expected value at runtime through the platform.
-        self::assertSame($platform->modifyLimitQuery($originalSql, 10, 20), $sql10_20);
-        self::assertSame($platform->modifyLimitQuery($originalSql, 30, 40), $sql30_40);
+        self::assertSame($platform->modifyLimitQuery($originalSql, 10, 20), $sqlMax10First20);
+        self::assertSame($platform->modifyLimitQuery($originalSql, 30, 40), $sqlMax30First40);
 
         $cacheEntries = self::$queryCache->getValues();
         self::assertCount(1, $cacheEntries);
