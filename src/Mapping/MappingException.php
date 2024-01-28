@@ -622,6 +622,16 @@ class MappingException extends PersistenceMappingException implements ORMExcepti
         ));
     }
 
+    public static function backedEnumTypeRequired(string $className, string $fieldName, string $enumType): self
+    {
+        return new self(sprintf(
+            'Attempting to map a non-backed enum type %s in entity %s::$%s. Please use backed enums only',
+            $enumType,
+            $className,
+            $fieldName,
+        ));
+    }
+
     public static function nonEnumTypeMapped(string $className, string $fieldName, string $enumType): self
     {
         return new self(sprintf(

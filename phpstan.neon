@@ -49,6 +49,3 @@ parameters:
             message: '#Negated boolean expression is always false\.#'
             paths:
                 - src/Mapping/Driver/AttributeDriver.php
-                - src/Mapping/Driver/SimplifiedXmlDriver.php
-                - src/Mapping/Driver/XmlDriver.php
-                - src/ORMSetup.php
