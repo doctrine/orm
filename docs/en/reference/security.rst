@@ -12,9 +12,8 @@ page only handles Security issues in the ORM.
 
 - `DBAL Security Page <https://www.doctrine-project.org/projects/doctrine-dbal/en/current/reference/security.html>`
 
-If you find a Security bug in Doctrine, please report it on Jira and change the
-Security Level to "Security Issues". It will be visible to Doctrine Core
-developers and you only.
+If you find a Security bug in Doctrine, please follow our
+`Security reporting guidelines <https://www.doctrine-project.org/policies/security.html#reporting>`_.
 
 User input and Doctrine ORM
 ---------------------------
