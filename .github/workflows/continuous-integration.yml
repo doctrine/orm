@@ -8,7 +8,7 @@ on:
       - .github/workflows/continuous-integration.yml
       - ci/**
       - composer.*
-      - lib/**
+      - src/**
       - phpunit.xml.dist
       - tests/**
   push:
@@ -18,7 +18,7 @@ on:
       - .github/workflows/continuous-integration.yml
       - ci/**
       - composer.*
-      - lib/**
+      - src/**
       - phpunit.xml.dist
       - tests/**
 

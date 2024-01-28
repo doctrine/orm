@@ -47,10 +47,8 @@ A Customer entity
     use Acme\CustomerModule\Entity\Customer as BaseCustomer;
     use Acme\InvoiceModule\Model\InvoiceSubjectInterface;
 
-    /**
-     * @ORM\Entity
-     * @ORM\Table(name="customer")
-     */
+    #[ORM\Entity]
+    #[ORM\Table(name: 'customer')]
     class Customer extends BaseCustomer implements InvoiceSubjectInterface
     {
         // In our example, any methods defined in the InvoiceSubjectInterface
@@ -69,19 +67,12 @@ An Invoice entity
     use Doctrine\ORM\Mapping AS ORM;
     use Acme\InvoiceModule\Model\InvoiceSubjectInterface;
 
-    /**
-     * Represents an Invoice.
-     *
-     * @ORM\Entity
-     * @ORM\Table(name="invoice")
-     */
+    #[ORM\Entity]
+    #[ORM\Table(name: 'invoice')]
     class Invoice
     {
-        /**
-         * @ORM\ManyToOne(targetEntity="Acme\InvoiceModule\Model\InvoiceSubjectInterface")
-         * @var InvoiceSubjectInterface
-         */
-        protected $subject;
+        #[ORM\ManyToOne(targetEntity: InvoiceSubjectInterface::class)]
+        protected InvoiceSubjectInterface $subject;
     }
 
 An InvoiceSubjectInterface
