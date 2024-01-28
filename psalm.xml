@@ -88,6 +88,8 @@
                 <referencedMethod name="Doctrine\DBAL\Platforms\AbstractPlatform::supportsForeignKeyConstraints"/>
                 <!-- Remove on 3.0.x -->
                 <referencedMethod name="Doctrine\DBAL\Connection::getEventManager"/>
+                <referencedMethod name="Doctrine\DBAL\Platforms\AbstractPlatform::getReadLockSQL"/>
+                <referencedMethod name="Doctrine\DBAL\Platforms\AbstractPlatform::getWriteLockSQL"/>
                 <referencedMethod name="Doctrine\DBAL\Schema\Schema::visit"/>
                 <referencedMethod name="Doctrine\DBAL\Schema\SchemaDiff::toSaveSql"/>
                 <referencedMethod name="Doctrine\DBAL\Schema\SchemaDiff::toSql"/>
