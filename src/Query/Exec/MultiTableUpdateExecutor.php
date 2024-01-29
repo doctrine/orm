@@ -87,13 +87,13 @@ class MultiTableUpdateExecutor extends AbstractSqlExecutor
 
         // 3. Create and store UPDATE statements
         $classNames = array_merge($primaryClass->parentClasses, [$primaryClass->name], $primaryClass->subClasses);
-        $i          = -1;
 
         foreach (array_reverse($classNames) as $className) {
             $affected  = false;
             $class     = $em->getClassMetadata($className);
             $updateSql = 'UPDATE ' . $quoteStrategy->getTableName($class, $platform) . ' SET ';
 
+            $sqlParameters = [];
             foreach ($updateItems as $updateItem) {
                 $field = $updateItem->pathExpression->field;
 
@@ -105,7 +105,6 @@ class MultiTableUpdateExecutor extends AbstractSqlExecutor
 
                     if (! $affected) {
                         $affected = true;
-                        ++$i;
                     } else {
                         $updateSql .= ', ';
                     }
@@ -113,7 +112,7 @@ class MultiTableUpdateExecutor extends AbstractSqlExecutor
                     $updateSql .= $sqlWalker->walkUpdateItem($updateItem);
 
                     if ($newValue instanceof AST\InputParameter) {
-                        $this->sqlParameters[$i][] = $newValue->name;
+                        $sqlParameters[] = $newValue->name;
 
                         ++$this->numParametersInUpdateClause;
                     }
@@ -121,7 +120,8 @@ class MultiTableUpdateExecutor extends AbstractSqlExecutor
             }
 
             if ($affected) {
-                $this->sqlStatements[$i] = $updateSql . ' WHERE (' . $idColumnList . ') IN (' . $idSubselect . ')';
+                $this->sqlParameters[] = $sqlParameters;
+                $this->sqlStatements[] = $updateSql . ' WHERE (' . $idColumnList . ') IN (' . $idSubselect . ')';
             }
         }
 
