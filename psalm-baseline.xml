@@ -1445,12 +1445,18 @@
     <InvalidArgument>
       <code>$sqlParams</code>
     </InvalidArgument>
+    <InvalidNullableReturnType>
+      <code>AbstractSqlExecutor</code>
+    </InvalidNullableReturnType>
     <LessSpecificReturnStatement>
-      <code><![CDATA[$this->parse()->getSqlExecutor()->getSqlStatements()]]></code>
+      <code><![CDATA[$this->getSqlExecutor()->getSqlStatements()]]></code>
     </LessSpecificReturnStatement>
     <MoreSpecificReturnType>
       <code><![CDATA[list<string>|string]]></code>
     </MoreSpecificReturnType>
+    <NullableReturnStatement>
+      <code><![CDATA[$this->sqlExecutor]]></code>
+    </NullableReturnStatement>
     <PossiblyNullArgument>
       <code><![CDATA[$this->getDQL()]]></code>
     </PossiblyNullArgument>
@@ -1866,6 +1872,15 @@
       <code><![CDATA[$this->_sqlStatements = &$this->sqlStatements]]></code>
     </UnsupportedPropertyReferenceUsage>
   </file>
+  <file src="lib/Doctrine/ORM/Query/Exec/FinalizedSelectExecutor.php">
+    <PossiblyInvalidArgument>
+      <code><![CDATA[$this->getSqlStatements()]]></code>
+    </PossiblyInvalidArgument>
+    <PropertyNotSetInConstructor>
+      <code>FinalizedSelectExecutor</code>
+      <code>FinalizedSelectExecutor</code>
+    </PropertyNotSetInConstructor>
+  </file>
   <file src="lib/Doctrine/ORM/Query/Exec/MultiTableDeleteExecutor.php">
     <InvalidReturnStatement>
       <code>$numDeleted</code>
@@ -2057,11 +2072,6 @@
       <code>$AST instanceof AST\SelectStatement</code>
       <code>$token === Lexer::T_IDENTIFIER</code>
     </RedundantConditionGivenDocblockType>
-  </file>
-  <file src="lib/Doctrine/ORM/Query/ParserResult.php">
-    <PropertyNotSetInConstructor>
-      <code>$sqlExecutor</code>
-    </PropertyNotSetInConstructor>
   </file>
   <file src="lib/Doctrine/ORM/Query/QueryExpressionVisitor.php">
     <InvalidReturnStatement>

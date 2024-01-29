@@ -149,8 +149,8 @@ class Query extends AbstractQuery
      */
     private $parserResult;
 
-    /** @var AbstractSqlExecutor */
-    private $sqlExecutor = null;
+    /** @var ?AbstractSqlExecutor */
+    private $sqlExecutor;
 
     /**
      * The first result to return (the "offset").

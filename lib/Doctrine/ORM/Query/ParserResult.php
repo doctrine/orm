@@ -28,16 +28,16 @@ class ParserResult
     /**
      * The SQL executor used for executing the SQL.
      *
-     * @var AbstractSqlExecutor
+     * @var ?AbstractSqlExecutor
      */
     private $sqlExecutor;
 
     /**
      * The SQL executor used for executing the SQL.
      *
-     * @var SqlFinalizer
+     * @var ?SqlFinalizer
      */
-    private $sqlFinalizer = null;
+    private $sqlFinalizer;
 
     /**
      * The ResultSetMapping that describes how to map the SQL result set.
@@ -101,6 +101,10 @@ class ParserResult
      */
     public function getSqlExecutor()
     {
+        if ($this->sqlExecutor === null) {
+            throw new RuntimeException('This ParserResult was not created with an SqlExecutor');
+        }
+
         return $this->sqlExecutor;
     }
 
