@@ -97,13 +97,10 @@ class ParserResult
     /**
      * Gets the SQL executor used by this ParserResult.
      *
-     * @return AbstractSqlExecutor
+     * @return ?AbstractSqlExecutor
      */
     public function getSqlExecutor()
     {
-        if ($this->sqlExecutor === null) {
-            throw new RuntimeException('This ParserResult was not created with an SqlExecutor');
-        }
 
         return $this->sqlExecutor;
     }
@@ -122,6 +119,12 @@ class ParserResult
         return $this->sqlFinalizer;
     }
 
+    /**
+     * @internal
+     *
+     * @psalm-internal Doctrine\ORM\Query
+     * @psalm-assert-if-true !null $this->sqlFinalizer
+     */
     public function hasSqlFinalizer(): bool
     {
         return $this->sqlFinalizer !== null;
