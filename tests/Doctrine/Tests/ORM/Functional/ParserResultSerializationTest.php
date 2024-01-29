@@ -35,7 +35,30 @@ class ParserResultSerializationTest extends OrmFunctionalTestCase
      *
      * @dataProvider provideToSerializedAndBack
      */
-    public function testSerializeParserResult(Closure $toSerializedAndBack): void
+    public function testSerializeParserResultForQueryWithSqlWalker(Closure $toSerializedAndBack): void
+    {
+        $query = $this->_em
+            ->createQuery('SELECT u FROM Doctrine\Tests\Models\Company\CompanyEmployee u WHERE u.name = :name');
+
+        // Use the (legacy) SqlWalker which directly puts an SqlExecutor instance into the parser result
+        $query->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, Query\SqlWalker::class);
+
+        $parserResult = self::parseQuery($query);
+        $unserialized = $toSerializedAndBack($parserResult);
+
+        $this->assertInstanceOf(ParserResult::class, $unserialized);
+        $this->assertInstanceOf(ResultSetMapping::class, $unserialized->getResultSetMapping());
+        $this->assertEquals(['name' => [0]], $unserialized->getParameterMappings());
+        $this->assertFalse($unserialized->hasSqlFinalizer());
+        $this->assertInstanceOf(SingleSelectExecutor::class, $unserialized->getSqlExecutor());
+    }
+
+    /**
+     * @param Closure(ParserResult): ParserResult $toSerializedAndBack
+     *
+     * @dataProvider provideToSerializedAndBack
+     */
+    public function testSerializeParserResultForQueryWithSqlOutputWalker(Closure $toSerializedAndBack): void
     {
         $query = $this->_em
             ->createQuery('SELECT u FROM Doctrine\Tests\Models\Company\CompanyEmployee u WHERE u.name = :name');
@@ -46,7 +69,8 @@ class ParserResultSerializationTest extends OrmFunctionalTestCase
         $this->assertInstanceOf(ParserResult::class, $unserialized);
         $this->assertInstanceOf(ResultSetMapping::class, $unserialized->getResultSetMapping());
         $this->assertEquals(['name' => [0]], $unserialized->getParameterMappings());
-        $this->assertInstanceOf(SingleSelectExecutor::class, $unserialized->getSqlExecutor());
+        $this->assertTrue($unserialized->hasSqlFinalizer());
+        $this->assertNotNull($unserialized->getSqlFinalizer());
     }
 
     /** @return Generator<string, array{Closure(ParserResult): ParserResult}> */
