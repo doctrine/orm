@@ -101,7 +101,6 @@ class ParserResult
      */
     public function getSqlExecutor()
     {
-
         return $this->sqlExecutor;
     }
 
