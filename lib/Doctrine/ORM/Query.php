@@ -149,9 +149,7 @@ class Query extends AbstractQuery
      */
     private $parserResult;
 
-    /**
-     * @var AbstractSqlExecutor
-     */
+    /** @var AbstractSqlExecutor */
     private $sqlExecutor = null;
 
     /**
