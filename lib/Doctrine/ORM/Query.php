@@ -293,7 +293,6 @@ class Query extends AbstractQuery
 
     private function initializeSqlExecutor(): void
     {
-        // This will be the only code path in 3.0
         if ($this->parserResult->hasSqlFinalizer()) {
             $this->sqlExecutor = $this->parserResult->getSqlFinalizer()->createExecutor($this);
         } else {
