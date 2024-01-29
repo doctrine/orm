@@ -8,7 +8,7 @@ use Doctrine\ORM\Query;
 
 /**
  * PreparedExecutorFinalizer is a wrapper for the SQL finalization
- * phase that does nothing - it constructed with the sql executor
+ * phase that does nothing - it is constructed with the sql executor
  * already.
  */
 final class PreparedExecutorFinalizer implements SqlFinalizer
