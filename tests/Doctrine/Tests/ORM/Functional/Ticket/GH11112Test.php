@@ -12,8 +12,6 @@ class GH11112Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
     {
-        $this->markTestSkipped('Skipping test while applying refactorings');
-
         $this->useModelSet('cms');
         self::$queryCache = new ArrayAdapter();
 
