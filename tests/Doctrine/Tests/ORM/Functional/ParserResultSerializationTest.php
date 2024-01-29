@@ -75,6 +75,9 @@ class ParserResultSerializationTest extends OrmFunctionalTestCase
         $query = $this->_em
             ->createQuery('SELECT u FROM Doctrine\Tests\Models\Company\CompanyEmployee u WHERE u.name = :name');
 
+        // Use the (legacy) SqlWalker which directly puts an SqlExecutor instance into the parser result
+        $query->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, Query\SqlWalker::class);
+
         $parserResult = self::parseQuery($query);
         $serialized   = serialize($parserResult);
         $this->assertStringNotContainsString(
