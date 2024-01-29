@@ -18,6 +18,7 @@ use Doctrine\ORM\Query\AST\DeleteStatement;
 use Doctrine\ORM\Query\AST\SelectStatement;
 use Doctrine\ORM\Query\AST\UpdateStatement;
 use Doctrine\ORM\Query\Exec\AbstractSqlExecutor;
+use Doctrine\ORM\Query\OutputWalker;
 use Doctrine\ORM\Query\Parameter;
 use Doctrine\ORM\Query\ParameterTypeInferer;
 use Doctrine\ORM\Query\Parser;
@@ -33,6 +34,7 @@ use function assert;
 use function count;
 use function get_debug_type;
 use function in_array;
+use function is_a;
 use function is_int;
 use function ksort;
 use function md5;
@@ -148,6 +150,11 @@ class Query extends AbstractQuery
     private $parserResult;
 
     /**
+     * @var AbstractSqlExecutor
+     */
+    private $sqlExecutor = null;
+
+    /**
      * The first result to return (the "offset").
      *
      * @var int
@@ -196,7 +203,7 @@ class Query extends AbstractQuery
      */
     public function getSQL()
     {
-        return $this->parse()->getSqlExecutor()->getSqlStatements();
+        return $this->getSqlExecutor()->getSqlStatements();
     }
 
     /**
@@ -254,6 +261,7 @@ class Query extends AbstractQuery
             $parser = new Parser($this);
 
             $this->parserResult = $parser->parse();
+            $this->initializeSqlExecutor();
 
             return $this->parserResult;
         }
@@ -265,6 +273,7 @@ class Query extends AbstractQuery
             if ($cached instanceof ParserResult) {
                 // Cache hit.
                 $this->parserResult = $cached;
+                $this->initializeSqlExecutor();
 
                 return $this->parserResult;
             }
@@ -277,7 +286,19 @@ class Query extends AbstractQuery
 
         $queryCache->save($cacheItem->set($this->parserResult)->expiresAfter($this->queryCacheTTL));
 
+        $this->initializeSqlExecutor();
+
         return $this->parserResult;
+    }
+
+    private function initializeSqlExecutor(): void
+    {
+        // This will be the only code path in 3.0
+        if ($this->parserResult->hasSqlFinalizer()) {
+            $this->sqlExecutor = $this->parserResult->getSqlFinalizer()->createExecutor($this);
+        } else {
+            $this->sqlExecutor = $this->parserResult->getSqlExecutor();
+        }
     }
 
     /**
@@ -285,7 +306,7 @@ class Query extends AbstractQuery
      */
     protected function _doExecute()
     {
-        $executor = $this->parse()->getSqlExecutor();
+        $executor = $this->getSqlExecutor();
 
         if ($this->_queryCacheProfile) {
             $executor->setQueryCacheProfile($this->_queryCacheProfile);
@@ -812,11 +833,23 @@ class Query extends AbstractQuery
     {
         ksort($this->_hints);
 
+        if (! $this->hasHint(self::HINT_CUSTOM_OUTPUT_WALKER)) {
+            // Assume Parser will create the SqlOutputWalker; save is_a call, which might trigger a class load
+            $firstAndMaxResult = '';
+        } else {
+            $outputWalkerClass = $this->getHint(self::HINT_CUSTOM_OUTPUT_WALKER);
+            if (is_a($outputWalkerClass, OutputWalker::class, true)) {
+                $firstAndMaxResult = '';
+            } else {
+                $firstAndMaxResult = '&firstResult=' . $this->firstResult . '&maxResult=' . $this->maxResults;
+            }
+        }
+
         return md5(
             $this->getDQL() . serialize($this->_hints) .
             '&platform=' . get_debug_type($this->getEntityManager()->getConnection()->getDatabasePlatform()) .
             ($this->_em->hasFilters() ? $this->_em->getFilters()->getHash() : '') .
-            '&firstResult=' . $this->firstResult . '&maxResult=' . $this->maxResults .
+            $firstAndMaxResult .
             '&hydrationMode=' . $this->_hydrationMode . '&types=' . serialize($this->parsedTypes) . 'DOCTRINE_QUERY_CACHE_SALT'
         );
     }
@@ -834,5 +867,12 @@ class Query extends AbstractQuery
         parent::__clone();
 
         $this->state = self::STATE_DIRTY;
+    }
+
+    private function getSqlExecutor(): AbstractSqlExecutor
+    {
+        $this->parse();
+
+        return $this->sqlExecutor;
     }
 }
