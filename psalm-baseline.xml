@@ -1445,12 +1445,6 @@
     <InvalidArgument>
       <code>$sqlParams</code>
     </InvalidArgument>
-    <LessSpecificReturnStatement>
-      <code><![CDATA[$this->parse()->getSqlExecutor()->getSqlStatements()]]></code>
-    </LessSpecificReturnStatement>
-    <MoreSpecificReturnType>
-      <code><![CDATA[list<string>|string]]></code>
-    </MoreSpecificReturnType>
     <PossiblyNullArgument>
       <code><![CDATA[$this->getDQL()]]></code>
     </PossiblyNullArgument>
@@ -1896,9 +1890,6 @@
       <code>MultiTableUpdateExecutor</code>
       <code>MultiTableUpdateExecutor</code>
     </PropertyNotSetInConstructor>
-    <PropertyTypeCoercion>
-      <code><![CDATA[$this->sqlStatements]]></code>
-    </PropertyTypeCoercion>
   </file>
   <file src="src/Query/Exec/SingleSelectExecutor.php">
     <PossiblyInvalidArgument>
