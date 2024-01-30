@@ -30,7 +30,7 @@ class SingleSelectSqlFinalizer implements SqlFinalizer
      *
      * @internal
      *
-     * @psalm-internal Doctrine\ORM\Query
+     * @psalm-internal Doctrine\ORM
      */
     public function finalizeSql(Query $query): string
     {
@@ -53,6 +53,9 @@ class SingleSelectSqlFinalizer implements SqlFinalizer
         return $sql;
     }
 
+    /**
+     * @return FinalizedSelectExecutor
+     */
     public function createExecutor(Query $query): AbstractSqlExecutor
     {
         return new FinalizedSelectExecutor($this->finalizeSql($query));

@@ -291,6 +291,7 @@ class Query extends AbstractQuery
 
     private function initializeSqlExecutor(): void
     {
+        // This will be the only code path in 3.0
         if ($this->parserResult->hasSqlFinalizer()) {
             $this->sqlExecutor = $this->parserResult->getSqlFinalizer()->createExecutor($this);
         } else {
@@ -829,6 +830,8 @@ class Query extends AbstractQuery
     protected function getQueryCacheId(): string
     {
         ksort($this->_hints);
+
+        // TODO: In 3.0, make the finalization phase mandatory for OutputWalkers, so we never need this check
 
         if (! $this->hasHint(self::HINT_CUSTOM_OUTPUT_WALKER)) {
             // Assume Parser will create the SqlOutputWalker; save is_a call, which might trigger a class load

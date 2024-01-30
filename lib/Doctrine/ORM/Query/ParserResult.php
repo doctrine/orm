@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Query;
 
+use Doctrine\Deprecations\Deprecation;
 use Doctrine\ORM\Query\Exec\AbstractSqlExecutor;
 use Doctrine\ORM\Query\Exec\SqlFinalizer;
 use RuntimeException;
@@ -91,6 +92,13 @@ class ParserResult
      */
     public function setSqlExecutor($executor)
     {
+        Deprecation::triggerIfCalledFromOutside(
+            'doctrine/orm',
+            'https://github.com/doctrine/orm/pull/xxx',
+            'In Doctrine ORM 3.0, the sqlExecutor will be removed from the ParserResult class.',
+            OutputWalker::class
+        );
+
         $this->sqlExecutor = $executor;
     }
 
@@ -101,6 +109,13 @@ class ParserResult
      */
     public function getSqlExecutor()
     {
+        Deprecation::triggerIfCalledFromOutside(
+            'doctrine/orm',
+            'https://github.com/doctrine/orm/pull/xxx',
+            'In Doctrine ORM 3.0, the sqlExecutor will be removed from the ParserResult class.',
+            OutputWalker::class
+        );
+
         return $this->sqlExecutor;
     }
 
@@ -120,6 +135,7 @@ class ParserResult
 
     /**
      * @internal
+     * @deprecated will be removed in 3.0, SqlFinalizers will have to be present in every ParserResult
      *
      * @psalm-internal Doctrine\ORM\Query
      * @psalm-assert-if-true !null $this->sqlFinalizer

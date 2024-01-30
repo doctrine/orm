@@ -17,7 +17,9 @@ use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\AST\OrderByClause;
 use Doctrine\ORM\Query\AST\PathExpression;
 use Doctrine\ORM\Query\AST\SelectExpression;
+use Doctrine\ORM\Query\AST\DeleteStatement;
 use Doctrine\ORM\Query\AST\SelectStatement;
+use Doctrine\ORM\Query\AST\UpdateStatement;
 use Doctrine\ORM\Query\Exec\SingleSelectSqlFinalizer;
 use Doctrine\ORM\Query\Exec\SqlFinalizer;
 use Doctrine\ORM\Query\Parser;
@@ -171,6 +173,11 @@ class LimitSubqueryOutputWalker extends SqlOutputWalker
         return $abstractSqlExecutor->getSqlStatements();
     }
 
+    /**
+     * @param DeleteStatement|UpdateStatement|SelectStatement $AST
+     *
+     * @return SingleSelectSqlFinalizer
+     */
     public function getFinalizer($AST): SqlFinalizer
     {
         if (! $AST instanceof SelectStatement) {
@@ -265,7 +272,7 @@ class LimitSubqueryOutputWalker extends SqlOutputWalker
         );
     }
 
-    private function createSqlWithoutRowNumber(SelectStatement $AST, $addMissingItemsFromOrderByToSelect = true): string
+    private function createSqlWithoutRowNumber(SelectStatement $AST, bool $addMissingItemsFromOrderByToSelect = true): string
     {
         // We don't want to call this recursively!
         if ($AST->orderByClause instanceof OrderByClause && $addMissingItemsFromOrderByToSelect) {
