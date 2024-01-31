@@ -476,7 +476,11 @@ class SqlWalker implements TreeWalker
             }
 
             foreach ($class->subClasses as $subclassName) {
-                $values[] = $conn->quote($this->em->getClassMetadata($subclassName)->discriminatorValue);
+                $discriminatorValue = $this->em->getClassMetadata($subclassName)->discriminatorValue;
+                if ($discriminatorValue === null) {
+                    continue;
+                }
+                $values[] = $conn->quote($discriminatorValue);
             }
 
             $sqlTableAlias = $this->useSqlTableAliases
