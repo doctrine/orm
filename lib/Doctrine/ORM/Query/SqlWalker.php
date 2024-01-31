@@ -275,8 +275,6 @@ class SqlWalker implements TreeWalker
     /**
      * Gets an executor that can be used to execute the result of this walker.
      *
-     * @deprecated This method will be replaced by the getFinalizer() method in 3.0
-     *
      * @param AST\DeleteStatement|AST\UpdateStatement|AST\SelectStatement $AST
      *
      * @return Exec\AbstractSqlExecutor
@@ -592,38 +590,6 @@ class SqlWalker implements TreeWalker
             }
         }
     }
-
-//    public static function modifyLateQueryXX(string $sql, Query $query, AbstractPlatform $platform): string
-//    {
-//        $sqlWithLimit = self::modifyLimitQueryXX($sql, $query, $platform);
-//        $sqlWithLocking = self::modifyLockingQueryXX($sqlWithLimit, $query, $platform);
-//
-//        return $sqlWithLocking;
-//    }
-//
-//    private static function modifyLimitQueryXX(string $sql, Query $query, AbstractPlatform $platform): string
-//    {
-//        return $platform->modifyLimitQuery($sql, $query->getMaxResults(), $query->getFirstResult());
-//    }
-//
-//    private static function modifyLockingQueryXX(string $sql, Query $query, AbstractPlatform $platform): string
-//    {
-//        $lockMode = $query->getHint(Query::HINT_LOCK_MODE) ?: LockMode::NONE;
-//
-//        if ($lockMode !== LockMode::NONE && $lockMode !== LockMode::OPTIMISTIC && $lockMode !== LockMode::PESSIMISTIC_READ && $lockMode !== LockMode::PESSIMISTIC_WRITE) {
-//            throw QueryException::invalidLockMode();
-//        }
-//
-//        if ($lockMode === LockMode::PESSIMISTIC_READ) {
-//            return $sql . ' ' . $platform->getReadLockSQL();
-//        }
-//
-//        if ($lockMode === LockMode::PESSIMISTIC_WRITE) {
-//            return $sql . ' ' . $platform->getWriteLockSQL();
-//        }
-//
-//        return $sql;
-//    }
 
     /**
      * Walks down an UpdateStatement AST node, thereby generating the appropriate SQL.
