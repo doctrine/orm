@@ -7,6 +7,7 @@ namespace Doctrine\ORM\Query\Exec;
 use Doctrine\DBAL\LockMode;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\QueryException;
+use Doctrine\ORM\Utility\LockSqlHelper;
 
 /**
  * SingleSelectSqlFinalizer finalizes a given SQL query by applying
@@ -17,6 +18,8 @@ use Doctrine\ORM\Query\QueryException;
  */
 class SingleSelectSqlFinalizer implements SqlFinalizer
 {
+    use LockSqlHelper;
+
     /** @var string */
     private $sql;
 
@@ -45,9 +48,9 @@ class SingleSelectSqlFinalizer implements SqlFinalizer
         }
 
         if ($lockMode === LockMode::PESSIMISTIC_READ) {
-            $sql .= ' ' . $platform->getReadLockSQL();
+            $sql .= ' ' . $this->getReadLockSQL($platform);
         } elseif ($lockMode === LockMode::PESSIMISTIC_WRITE) {
-            $sql .= ' ' . $platform->getWriteLockSQL();
+            $sql .= ' ' . $this->getWriteLockSQL($platform);
         }
 
         return $sql;
