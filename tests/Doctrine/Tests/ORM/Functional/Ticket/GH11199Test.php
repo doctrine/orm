@@ -8,11 +8,11 @@ use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-use function substr;
-use function strpos;
-use function trim;
-use function explode;
 use function array_map;
+use function explode;
+use function strpos;
+use function substr;
+use function trim;
 
 class GH11199Test extends OrmFunctionalTestCase
 {

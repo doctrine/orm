@@ -480,6 +480,7 @@ class SqlWalker implements TreeWalker
                 if ($discriminatorValue === null) {
                     continue;
                 }
+
                 $values[] = $conn->quote($discriminatorValue);
             }
 
