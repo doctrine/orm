@@ -10,6 +10,8 @@ parameters:
         - '/Call to an undefined method Doctrine\\DBAL\\Connection::createSchemaManager\(\)\./'
         # Class name will change in DBAL 3.
         - '/^Class Doctrine\\DBAL\\Platforms\\PostgreSQLPlatform not found\.$/'
+        - '/^Class Doctrine\\DBAL\\Platforms\\AbstractMySQLPlatform not found\.$/'
+        - '/^Class Doctrine\\DBAL\\Platforms\\MySQLPlatform not found\.$/'
         -
             message: '/Doctrine\\DBAL\\Platforms\\MyS(ql|QL)Platform/'
             path: lib/Doctrine/ORM/Mapping/ClassMetadataFactory.php

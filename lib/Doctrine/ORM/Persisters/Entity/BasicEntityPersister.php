@@ -31,6 +31,7 @@ use Doctrine\ORM\Query\QueryException;
 use Doctrine\ORM\Repository\Exception\InvalidFindByCall;
 use Doctrine\ORM\UnitOfWork;
 use Doctrine\ORM\Utility\IdentifierFlattener;
+use Doctrine\ORM\Utility\LockSqlHelper;
 use Doctrine\ORM\Utility\PersisterHelper;
 use LengthException;
 
@@ -92,6 +93,8 @@ use function trim;
  */
 class BasicEntityPersister implements EntityPersister
 {
+    use LockSqlHelper;
+
     /** @var array<string,string> */
     private static $comparisonMap = [
         Comparison::EQ          => '= %s',
@@ -1116,11 +1119,11 @@ class BasicEntityPersister implements EntityPersister
 
         switch ($lockMode) {
             case LockMode::PESSIMISTIC_READ:
-                $lockSql = ' ' . $this->platform->getReadLockSQL();
+                $lockSql = ' ' . $this->getReadLockSQL($this->platform);
                 break;
 
             case LockMode::PESSIMISTIC_WRITE:
-                $lockSql = ' ' . $this->platform->getWriteLockSQL();
+                $lockSql = ' ' . $this->getWriteLockSQL($this->platform);
                 break;
         }
 
@@ -1578,11 +1581,11 @@ class BasicEntityPersister implements EntityPersister
 
         switch ($lockMode) {
             case LockMode::PESSIMISTIC_READ:
-                $lockSql = $this->platform->getReadLockSQL();
+                $lockSql = $this->getReadLockSQL($this->platform);
 
                 break;
             case LockMode::PESSIMISTIC_WRITE:
-                $lockSql = $this->platform->getWriteLockSQL();
+                $lockSql = $this->getWriteLockSQL($this->platform);
                 break;
         }
 

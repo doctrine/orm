@@ -160,6 +160,7 @@
             <errorLevel type="suppress">
                 <!-- Class name changes in DBAL 3. -->
                 <referencedClass name="Doctrine\DBAL\Platforms\PostgreSQLPlatform" />
+                <referencedClass name="Doctrine\DBAL\Platforms\MySQLPlatform" />
             </errorLevel>
         </InvalidClass>
         <InvalidParamDefault>
@@ -258,6 +259,7 @@
             <errorLevel type="suppress">
                 <file name="lib/Doctrine/ORM/Internal/SQLResultCasing.php"/>
                 <file name="lib/Doctrine/ORM/Mapping/ClassMetadataFactory.php"/>
+                <file name="lib/Doctrine/ORM/Utility/LockSqlHelper.php"/>
             </errorLevel>
         </TypeDoesNotContainType>
         <UndefinedClass>
