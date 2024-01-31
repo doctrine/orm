@@ -468,6 +468,10 @@ class SqlWalker implements TreeWalker
                 continue;
             }
 
+            $sqlTableAlias = $this->useSqlTableAliases
+                ? $this->getSQLTableAlias($class->getTableName(), $dqlAlias) . '.'
+                : '';
+
             $conn   = $this->em->getConnection();
             $values = [];
 
@@ -476,19 +480,20 @@ class SqlWalker implements TreeWalker
             }
 
             foreach ($class->subClasses as $subclassName) {
-                $discriminatorValue = $this->em->getClassMetadata($subclassName)->discriminatorValue;
-                if ($discriminatorValue === null) {
+                $subclassMetadata = $this->em->getClassMetadata($subclassName);
+
+                if ($subclassMetadata->reflClass->isAbstract()) {
                     continue;
                 }
 
-                $values[] = $conn->quote($discriminatorValue);
+                $values[] = $conn->quote($subclassMetadata->discriminatorValue);
             }
 
-            $sqlTableAlias = $this->useSqlTableAliases
-                ? $this->getSQLTableAlias($class->getTableName(), $dqlAlias) . '.'
-                : '';
-
-            $sqlParts[] = $sqlTableAlias . $class->getDiscriminatorColumn()['name'] . ' IN (' . implode(', ', $values) . ')';
+            if ($values) {
+                $sqlParts[] = $sqlTableAlias . $class->getDiscriminatorColumn()['name'] . ' IN (' . implode(', ', $values) . ')';
+            } else {
+                $sqlParts[] = '1=0'; // impossible condition
+            }
         }
 
         $sql = implode(' AND ', $sqlParts);

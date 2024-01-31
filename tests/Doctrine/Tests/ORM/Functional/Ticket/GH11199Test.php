@@ -4,15 +4,9 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Tests\OrmFunctionalTestCase;
-
-use function array_map;
-use function explode;
-use function strpos;
-use function substr;
-use function trim;
+use Generator;
 
 class GH11199Test extends OrmFunctionalTestCase
 {
@@ -24,23 +18,29 @@ class GH11199Test extends OrmFunctionalTestCase
             GH11199Root::class,
             GH11199Parent::class,
             GH11199Foo::class,
-            GH11199Bar::class,
             GH11199Baz::class,
+            GH11199AbstractLeaf::class,
         ]);
     }
 
-    /**
-     * @throws ORMException
-     */
-    public function testGH11199(): void
+    public function dqlStatements(): Generator
     {
-        $em             = $this->getEntityManager();
-        $sql            = $em->createQueryBuilder()->select('e')->from(GH11199Root::class, 'e')->getQuery()->getSQL();
-        $condition      = substr($sql, strpos($sql, '('));
-        $condition      = trim($condition, '()');
-        $conditionParts = explode(',', $condition);
-        $conditionParts = array_map('trim', $conditionParts);
-        self::assertNotContains("''", $conditionParts, 'Discriminator column condition values contain empty string');
+        yield ['SELECT e FROM ' . GH11199Root::class . ' e', "/WHERE g0_.asset_type IN \('root', 'foo', 'baz'\)$/"];
+        yield ['SELECT e FROM ' . GH11199Parent::class . ' e', "/WHERE g0_.asset_type IN \('foo'\)$/"];
+        yield ['SELECT e FROM ' . GH11199Foo::class . ' e', "/WHERE g0_.asset_type IN \('foo'\)$/"];
+        yield ['SELECT e FROM ' . GH11199Baz::class . ' e', "/WHERE g0_.asset_type IN \('baz'\)$/"];
+        yield ['SELECT e FROM ' . GH11199AbstractLeaf::class . ' e', '/WHERE 1=0/'];
+    }
+
+    /**
+     * @dataProvider dqlStatements
+     */
+    public function testGH11199(string $dql, string $expectedDiscriminatorValues): void
+    {
+        $query = $this->_em->createQuery($dql);
+        $sql   = $query->getSQL();
+
+        self::assertMatchesRegularExpression($expectedDiscriminatorValues, $sql);
     }
 }
 
@@ -50,9 +50,9 @@ class GH11199Test extends OrmFunctionalTestCase
  * @ORM\InheritanceType("SINGLE_TABLE")
  * @ORM\DiscriminatorColumn(name="asset_type", type="string")
  * @ORM\DiscriminatorMap({
- *     "foo" = "\Doctrine\Tests\ORM\Functional\Ticket\GH11199Foo",
- *     "bar" = "\Doctrine\Tests\ORM\Functional\Ticket\GH11199Bar",
- *     "baz" = "\Doctrine\Tests\ORM\Functional\Ticket\GH11199Baz",
+ *     "root" = "\Doctrine\Tests\ORM\Functional\Ticket\GH11199Root",
+ *     "foo"  = "\Doctrine\Tests\ORM\Functional\Ticket\GH11199Foo",
+ *     "baz"  = "\Doctrine\Tests\ORM\Functional\Ticket\GH11199Baz",
  * })
  */
 class GH11199Root
@@ -84,13 +84,13 @@ class GH11199Foo extends GH11199Parent
 /**
  * @ORM\Entity()
  */
-class GH11199Bar extends GH11199Parent
+class GH11199Baz extends GH11199Root
 {
 }
 
 /**
  * @ORM\Entity()
  */
-class GH11199Baz extends GH11199Root
+abstract class GH11199AbstractLeaf extends GH11199Root
 {
 }
