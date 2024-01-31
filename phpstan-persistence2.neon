@@ -27,6 +27,9 @@ parameters:
         -
             message: '/^Call to static method ensure\(\) on an unknown class Doctrine\\DBAL\\ForwardCompatibility\\Result\.$/'
             path: src/Internal/Hydration/AbstractHydrator.php
+        -
+            message: '/^Instanceof between Doctrine\\DBAL\\Platforms\\AbstractPlatform and Doctrine\\DBAL\\Platforms\\MySQLPlatform will always evaluate to false\.$/'
+            path: src/Utility/LockSqlHelper.php
 
         # False positive
         -

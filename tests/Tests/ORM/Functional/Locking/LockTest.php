@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional\Locking;
 
 use Doctrine\DBAL\LockMode;
+use Doctrine\DBAL\Platforms\SQLitePlatform;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\TransactionRequiredException;
@@ -168,9 +169,7 @@ class LockTest extends OrmFunctionalTestCase
      */
     public function testLockPessimisticWrite(): void
     {
-        $writeLockSql = $this->_em->getConnection()->getDatabasePlatform()->getWriteLockSQL();
-
-        if (! $writeLockSql) {
+        if ($this->_em->getConnection()->getDatabasePlatform() instanceof SQLitePlatform) {
             self::markTestSkipped('Database Driver has no Write Lock support.');
         }
 
@@ -195,7 +194,7 @@ class LockTest extends OrmFunctionalTestCase
             $lastLoggedQuery = $this->getLastLoggedQuery(1)['sql'];
         }
 
-        self::assertStringContainsString($writeLockSql, $lastLoggedQuery);
+        self::assertStringContainsString('FOR UPDATE', $lastLoggedQuery);
     }
 
     /**
@@ -203,9 +202,7 @@ class LockTest extends OrmFunctionalTestCase
      */
     public function testRefreshWithLockPessimisticWrite(): void
     {
-        $writeLockSql = $this->_em->getConnection()->getDatabasePlatform()->getWriteLockSQL();
-
-        if (! $writeLockSql) {
+        if ($this->_em->getConnection()->getDatabasePlatform() instanceof SQLitePlatform) {
             self::markTestSkipped('Database Driver has no Write Lock support.');
         }
 
@@ -230,15 +227,13 @@ class LockTest extends OrmFunctionalTestCase
             $lastLoggedQuery = $this->getLastLoggedQuery(1)['sql'];
         }
 
-        self::assertStringContainsString($writeLockSql, $lastLoggedQuery);
+        self::assertStringContainsString('FOR UPDATE', $lastLoggedQuery);
     }
 
     /** @group DDC-178 */
     public function testLockPessimisticRead(): void
     {
-        $readLockSql = $this->_em->getConnection()->getDatabasePlatform()->getReadLockSQL();
-
-        if (! $readLockSql) {
+        if ($this->_em->getConnection()->getDatabasePlatform() instanceof SQLitePlatform) {
             self::markTestSkipped('Database Driver has no Write Lock support.');
         }
 
@@ -264,7 +259,11 @@ class LockTest extends OrmFunctionalTestCase
             $lastLoggedQuery = $this->getLastLoggedQuery(1)['sql'];
         }
 
-        self::assertStringContainsString($readLockSql, $lastLoggedQuery);
+        self::assertThat($lastLoggedQuery, self::logicalOr(
+            self::stringContains('FOR UPDATE'),
+            self::stringContains('FOR SHARE'),
+            self::stringContains('LOCK IN SHARE MODE')
+        ));
     }
 
     /** @group DDC-1693 */
