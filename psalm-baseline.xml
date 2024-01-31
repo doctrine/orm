@@ -1873,9 +1873,6 @@
     </UnsupportedPropertyReferenceUsage>
   </file>
   <file src="lib/Doctrine/ORM/Query/Exec/FinalizedSelectExecutor.php">
-    <PossiblyInvalidArgument>
-      <code><![CDATA[$this->getSqlStatements()]]></code>
-    </PossiblyInvalidArgument>
     <PropertyNotSetInConstructor>
       <code>FinalizedSelectExecutor</code>
       <code>FinalizedSelectExecutor</code>
