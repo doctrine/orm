@@ -35,8 +35,7 @@ class NullSqlWalker extends SqlOutputWalker
     {
         return new PreparedExecutorFinalizer(
             new class extends AbstractSqlExecutor {
-                /** @return int */
-                public function execute(Connection $conn, array $params, array $types)
+                public function execute(Connection $conn, array $params, array $types): int
                 {
                     return 0;
                 }

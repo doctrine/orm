@@ -56,9 +56,7 @@ class SingleSelectSqlFinalizer implements SqlFinalizer
         return $sql;
     }
 
-    /**
-     * @return FinalizedSelectExecutor
-     */
+    /** @return FinalizedSelectExecutor */
     public function createExecutor(Query $query): AbstractSqlExecutor
     {
         return new FinalizedSelectExecutor($this->finalizeSql($query));

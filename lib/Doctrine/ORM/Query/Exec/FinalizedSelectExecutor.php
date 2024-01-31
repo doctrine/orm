@@ -11,7 +11,7 @@ use Doctrine\DBAL\Types\Type;
 /**
  * SQL executor for a given, final, single SELECT SQL query
  *
- * @method getSqlStatements(): string
+ * @method string getSqlStatements()
  */
 class FinalizedSelectExecutor extends AbstractSqlExecutor
 {
