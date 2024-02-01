@@ -107,7 +107,6 @@
             <errorLevel type="suppress">
                 <!-- https://github.com/vimeo/psalm/issues/8819 -->
                 <file name="src/Internal/Hydration/AbstractHydrator.php"/>
-                <referencedClass name="Doctrine\DBAL\Platforms\MySQLPlatform" />
             </errorLevel>
         </InvalidReturnType>
         <InvalidParamDefault>

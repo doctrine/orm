@@ -42,10 +42,11 @@ class MultiTableUpdateExecutor extends AbstractSqlExecutor
      */
     public function __construct(AST\Node $AST, SqlWalker $sqlWalker)
     {
-        $em            = $sqlWalker->getEntityManager();
-        $conn          = $em->getConnection();
-        $platform      = $conn->getDatabasePlatform();
-        $quoteStrategy = $em->getConfiguration()->getQuoteStrategy();
+        $em                  = $sqlWalker->getEntityManager();
+        $conn                = $em->getConnection();
+        $platform            = $conn->getDatabasePlatform();
+        $quoteStrategy       = $em->getConfiguration()->getQuoteStrategy();
+        $this->sqlStatements = [];
 
         if ($conn instanceof PrimaryReadReplicaConnection) {
             $conn->ensureConnectedToPrimary();

@@ -890,9 +890,6 @@
     <PossiblyInvalidIterator>
       <code><![CDATA[$this->sqlStatements]]></code>
     </PossiblyInvalidIterator>
-    <PropertyNotSetInConstructor>
-      <code>MultiTableUpdateExecutor</code>
-    </PropertyNotSetInConstructor>
   </file>
   <file src="src/Query/Exec/SingleSelectExecutor.php">
     <PossiblyInvalidArgument>
