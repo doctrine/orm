@@ -30,7 +30,7 @@ abstract class AbstractSqlExecutor
     /**
      * Gets the SQL statements that are executed by the executor.
      *
-     * @return mixed[]|string  All the SQL update statements.
+     * @return list<string>|string  All the SQL update statements.
      */
     public function getSqlStatements(): array|string
     {
