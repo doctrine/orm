@@ -482,7 +482,7 @@ class SqlWalker implements TreeWalker
             foreach ($class->subClasses as $subclassName) {
                 $subclassMetadata = $this->em->getClassMetadata($subclassName);
 
-                if ($subclassMetadata->reflClass->isAbstract()) {
+                if ($subclassMetadata->reflClass && $subclassMetadata->reflClass->isAbstract()) {
                     continue;
                 }
 
