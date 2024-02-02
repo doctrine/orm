@@ -19,9 +19,12 @@ use Doctrine\Tests\Models\CMS\CmsComment;
 use Doctrine\Tests\Models\CMS\CmsGroup;
 use Doctrine\Tests\Models\CMS\CmsPhonenumber;
 use Doctrine\Tests\Models\CMS\CmsUser;
+use Doctrine\Tests\Models\GH7212\GH7212Child;
+use Doctrine\Tests\Models\GH7212\GH7212Parent;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use InvalidArgumentException;
 
+use function assert;
 use function get_class;
 
 class BasicFunctionalTest extends OrmFunctionalTestCase
@@ -1356,5 +1359,46 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
 
         // post insert IDs will be assigned during flush
         $this->_em->flush();
+    }
+
+    public function testIndexedRelationUpdatesWhenSelectedUsingLeftJoin(): void
+    {
+        $this->_schemaTool->createSchema(
+            [
+                $this->_em->getClassMetadata(GH7212Parent::class),
+                $this->_em->getClassMetadata(GH7212Child::class),
+            ]
+        );
+
+        $parent = new GH7212Parent(1);
+        $child  = new GH7212Child(1, $parent);
+
+        $this->_em->persist($parent);
+        $this->_em->persist($child);
+
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $parent = $this->_em->createQueryBuilder()
+            ->select('p, c')
+            ->from(GH7212Parent::class, 'p')
+            // Prefetching Child relation using left join
+            ->leftJoin('p.children', 'c')
+            ->getQuery()
+            ->getSingleResult();
+        assert($parent instanceof GH7212Parent);
+
+        $children = $parent->getChildren();
+        foreach ($children as $child) {
+            $child->setParent(null);
+            $parent->removeChild($child);
+        }
+
+        $this->_em->flush();
+
+        $childrenRows = $this->_em->getConnection()->fetchAllAssociative('SELECT * FROM GH7212Child');
+        $this->assertCount(1, $childrenRows);
+        $this->assertSame('1', $childrenRows[0]['id']);
+        $this->assertNull($childrenRows[0]['parent_id']);
     }
 }
