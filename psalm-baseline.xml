@@ -1445,6 +1445,12 @@
     <InvalidArgument>
       <code>$sqlParams</code>
     </InvalidArgument>
+    <InvalidNullableReturnType>
+      <code>AbstractSqlExecutor</code>
+    </InvalidNullableReturnType>
+    <NullableReturnStatement>
+      <code><![CDATA[$this->sqlExecutor]]></code>
+    </NullableReturnStatement>
     <PossiblyNullArgument>
       <code><![CDATA[$this->getDQL()]]></code>
     </PossiblyNullArgument>
@@ -1860,6 +1866,12 @@
       <code><![CDATA[$this->_sqlStatements = &$this->sqlStatements]]></code>
     </UnsupportedPropertyReferenceUsage>
   </file>
+  <file src="src/Query/Exec/FinalizedSelectExecutor.php">
+    <PropertyNotSetInConstructor>
+      <code>FinalizedSelectExecutor</code>
+      <code>FinalizedSelectExecutor</code>
+    </PropertyNotSetInConstructor>
+  </file>
   <file src="src/Query/Exec/MultiTableDeleteExecutor.php">
     <InvalidReturnStatement>
       <code>$numDeleted</code>
@@ -2048,11 +2060,6 @@
       <code>$AST instanceof AST\SelectStatement</code>
       <code>$token === Lexer::T_IDENTIFIER</code>
     </RedundantConditionGivenDocblockType>
-  </file>
-  <file src="src/Query/ParserResult.php">
-    <PropertyNotSetInConstructor>
-      <code>$sqlExecutor</code>
-    </PropertyNotSetInConstructor>
   </file>
   <file src="src/Query/QueryExpressionVisitor.php">
     <InvalidReturnStatement>
