@@ -221,7 +221,7 @@ abstract class AssociationMapping implements ArrayAccess
             $this instanceof OneToManyAssociationMapping => ClassMetadata::ONE_TO_MANY,
             $this instanceof ManyToOneAssociationMapping => ClassMetadata::MANY_TO_ONE,
             $this instanceof ManyToManyAssociationMapping => ClassMetadata::MANY_TO_MANY,
-            default => throw new Exception('Cannot determine type for ' . $this::class),
+            default => throw new Exception('Cannot determine type for ' . static::class),
         };
     }
 

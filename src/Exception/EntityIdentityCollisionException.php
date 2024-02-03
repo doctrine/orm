@@ -6,7 +6,6 @@ namespace Doctrine\ORM\Exception;
 
 use Exception;
 
-use function get_class;
 use function sprintf;
 
 final class EntityIdentityCollisionException extends Exception implements ORMException
@@ -31,9 +30,9 @@ entity.
 Otherwise, it might be an ORM-internal inconsistency, please report it.
 EXCEPTION
                 ,
-                get_class($newEntity),
+                $newEntity::class,
                 $idHash,
-                get_class($existingEntity),
+                $existingEntity::class,
             ),
         );
     }

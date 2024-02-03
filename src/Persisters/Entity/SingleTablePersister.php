@@ -138,7 +138,7 @@ class SingleTablePersister extends AbstractEntityInheritancePersister
 
     protected function getSelectConditionDiscriminatorValueSQL(): string
     {
-        $values = array_map([$this->conn, 'quote'], array_map(
+        $values = array_map($this->conn->quote(...), array_map(
             strval(...),
             array_flip(array_intersect($this->class->discriminatorMap, $this->class->subClasses)),
         ));

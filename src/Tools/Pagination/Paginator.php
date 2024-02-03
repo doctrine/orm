@@ -258,8 +258,6 @@ class Paginator implements Countable, IteratorAggregate
         $type       = $query->getSQL();
         assert(is_string($type));
 
-        return array_map(static function ($id) use ($connection, $type): mixed {
-            return $connection->convertToDatabaseValue($id, $type);
-        }, $identifiers);
+        return array_map(static fn ($id): mixed => $connection->convertToDatabaseValue($id, $type), $identifiers);
     }
 }

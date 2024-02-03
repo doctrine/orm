@@ -7,7 +7,6 @@ namespace Doctrine\ORM\Proxy;
 use Doctrine\Persistence\Mapping\ProxyClassNameResolver;
 use Doctrine\Persistence\Proxy;
 
-use function get_class;
 use function strrpos;
 use function substr;
 
@@ -31,6 +30,6 @@ final class DefaultProxyClassNameResolver implements ProxyClassNameResolver
     /** @return class-string */
     public static function getClass(object $object): string
     {
-        return (new self())->resolveClassName(get_class($object));
+        return (new self())->resolveClassName($object::class);
     }
 }

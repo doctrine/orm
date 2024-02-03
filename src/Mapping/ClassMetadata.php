@@ -2488,11 +2488,7 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
 
     public function getMetadataValue(string $name): mixed
     {
-        if (isset($this->$name)) {
-            return $this->$name;
-        }
-
-        return null;
+        return $this->$name ?? null;
     }
 
     /**

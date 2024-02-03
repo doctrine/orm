@@ -35,7 +35,6 @@ use function assert;
 use function class_exists;
 use function class_parents;
 use function count;
-use function get_class;
 use function implode;
 use function in_array;
 use function interface_exists;
@@ -435,7 +434,7 @@ class SchemaValidator
      */
     private function findBuiltInType(Type $type): string|null
     {
-        $typeName = get_class($type);
+        $typeName = $type::class;
 
         return self::BUILTIN_TYPES_MAP[$typeName] ?? null;
     }

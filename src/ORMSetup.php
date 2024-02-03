@@ -43,7 +43,6 @@ final class ORMSetup
      * Creates a configuration with an XML metadata driver.
      *
      * @param string[] $paths
-     * @param true     $isXsdValidationEnabled
      */
     public static function createXMLMetadataConfiguration(
         array $paths,

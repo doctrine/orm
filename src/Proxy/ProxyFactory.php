@@ -138,7 +138,7 @@ EOPHP;
      */
     public function __construct(
         private readonly EntityManagerInterface $em,
-        private string $proxyDir,
+        private readonly string $proxyDir,
         private readonly string $proxyNs,
         bool|int $autoGenerate = self::AUTOGENERATE_NEVER,
     ) {
