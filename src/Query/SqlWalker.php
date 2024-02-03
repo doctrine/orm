@@ -786,7 +786,7 @@ class SqlWalker
                 $class     = $this->getMetadataForDqlAlias($alias);
 
                 if (isset($class->associationMappings[$fieldName]->inherited)) {
-                    $class = $this->em->getClassMetadata($class->associationMappings[$fieldName]['inherited']);
+                    $class = $this->em->getClassMetadata($class->associationMappings[$fieldName]->inherited);
                 }
 
                 $association = $class->associationMappings[$fieldName];
