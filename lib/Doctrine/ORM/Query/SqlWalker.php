@@ -491,7 +491,7 @@ class SqlWalker implements TreeWalker
                 $values[] = $conn->quote($subclassMetadata->discriminatorValue);
             }
 
-            if ($values) {
+            if ($values !== []) {
                 $sqlParts[] = $sqlTableAlias . $class->getDiscriminatorColumn()['name'] . ' IN (' . implode(', ', $values) . ')';
             } else {
                 $sqlParts[] = '1=0'; // impossible condition
