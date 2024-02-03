@@ -343,7 +343,7 @@ class SchemaValidator
                             return null;
                         }
 
-                        $metadataFieldType = $this->findBuiltInType(Type::getType($fieldMapping['type']));
+                        $metadataFieldType = $this->findBuiltInType(Type::getType($fieldMapping->type));
 
                         //If the metadata field type is not a mapped built-in type, we cannot check it
                         if ($metadataFieldType === null) {
@@ -371,7 +371,7 @@ class SchemaValidator
                                 );
                             }
 
-                            if (! isset($fieldMapping['enumType']) || $propertyType === $fieldMapping['enumType']) {
+                            if (! isset($fieldMapping->enumType) || $propertyType === $fieldMapping->enumType) {
                                 return null;
                             }
 
@@ -380,17 +380,17 @@ class SchemaValidator
                                 $class->name,
                                 $fieldName,
                                 $propertyType,
-                                $fieldMapping['enumType'],
+                                $fieldMapping->enumType,
                             );
                         }
 
                         if (
-                            isset($fieldMapping['enumType'])
-                            && $propertyType !== $fieldMapping['enumType']
+                            isset($fieldMapping->enumType)
+                            && $propertyType !== $fieldMapping->enumType
                             && interface_exists($propertyType)
-                            && is_a($fieldMapping['enumType'], $propertyType, true)
+                            && is_a($fieldMapping->enumType, $propertyType, true)
                         ) {
-                            $backingType = (string) (new ReflectionEnum($fieldMapping['enumType']))->getBackingType();
+                            $backingType = (string) (new ReflectionEnum($fieldMapping->enumType))->getBackingType();
 
                             if ($metadataFieldType === $backingType) {
                                 return null;
@@ -400,14 +400,14 @@ class SchemaValidator
                                 "The field '%s#%s' has the metadata enumType '%s' with a backing type of '%s' that differs from the metadata field type '%s'.",
                                 $class->name,
                                 $fieldName,
-                                $fieldMapping['enumType'],
+                                $fieldMapping->enumType,
                                 $backingType,
                                 $metadataFieldType,
                             );
                         }
 
                         if (
-                            $fieldMapping['type'] === 'json'
+                            $fieldMapping->type === 'json'
                             && in_array($propertyType, ['string', 'int', 'float', 'bool', 'true', 'false', 'null'], true)
                         ) {
                             return null;
@@ -419,7 +419,7 @@ class SchemaValidator
                             $fieldName,
                             $propertyType,
                             $metadataFieldType,
-                            $fieldMapping['type'],
+                            $fieldMapping->type,
                         );
                     },
                     $class->fieldMappings,

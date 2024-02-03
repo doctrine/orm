@@ -25,8 +25,8 @@ class GH11135Test extends OrmFunctionalTestCase
         $cm1 = $this->_em->getClassMetadata(GH11135EntityWithOverride::class);
         $cm2 = $this->_em->getClassMetadata(GH11135EntityWithoutOverride::class);
 
-        self::assertSame($cm1->getFieldMapping('id')['declared'], $cm2->getFieldMapping('id')['declared']);
-        self::assertSame($cm1->getAssociationMapping('ref')['declared'], $cm2->getAssociationMapping('ref')['declared']);
+        self::assertSame($cm1->getFieldMapping('id')->declared, $cm2->getFieldMapping('id')->declared);
+        self::assertSame($cm1->getAssociationMapping('ref')->declared, $cm2->getAssociationMapping('ref')->declared);
     }
 }
 

@@ -297,8 +297,8 @@ class XmlMappingDriverTest extends MappingDriverTestCase
         /** @var array{type: string} $name */
         $name = $class->getFieldMapping('name');
 
-        self::assertEquals(ProjectId::class, $id['type']);
-        self::assertEquals(ProjectName::class, $name['type']);
+        self::assertEquals(ProjectId::class, $id->type);
+        self::assertEquals(ProjectName::class, $name->type);
     }
 
     public function testDisablingXmlValidationIsPossible(): void

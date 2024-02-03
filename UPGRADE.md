@@ -1,3 +1,15 @@
+# Upgrade to 3.1
+
+## Deprecate array access
+
+Use array access on instances of the following classes is deprecated:
+
+- `Doctrine\ORM\Mapping\DiscriminatorColumnMapping`
+- `Doctrine\ORM\Mapping\EmbedClassMapping`
+- `Doctrine\ORM\Mapping\FieldMapping`
+- `Doctrine\ORM\Mapping\JoinColumnMapping`
+- `Doctrine\ORM\Mapping\JoinTableMapping`
+
 # Upgrade to 3.0
 
 ## BC BREAK: `Doctrine\ORM\Proxy\Autoloader` no longer extends `Doctrine\Common\Proxy\Autoloader`

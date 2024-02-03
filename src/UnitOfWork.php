@@ -997,7 +997,7 @@ class UnitOfWork implements PropertyChangedListener
         foreach ($actualData as $propName => $actualValue) {
             $orgValue = $originalData[$propName] ?? null;
 
-            if (isset($class->fieldMappings[$propName]['enumType'])) {
+            if (isset($class->fieldMappings[$propName]->enumType)) {
                 if (is_array($orgValue)) {
                     foreach ($orgValue as $id => $val) {
                         if ($val instanceof BackedEnum) {
@@ -1267,16 +1267,16 @@ class UnitOfWork implements PropertyChangedListener
                 }
 
                 $joinColumns = reset($assoc->joinColumns);
-                if (! isset($joinColumns['onDelete'])) {
+                if (! isset($joinColumns->onDelete)) {
                     continue;
                 }
 
-                $onDeleteOption = strtolower($joinColumns['onDelete']);
+                $onDeleteOption = strtolower($joinColumns->onDelete);
                 if ($onDeleteOption !== 'cascade') {
                     continue;
                 }
 
-                $targetEntity = $class->getFieldValue($entity, $assoc['fieldName']);
+                $targetEntity = $class->getFieldValue($entity, $assoc->fieldName);
 
                 // If the association does not refer to another entity or that entity
                 // is not to be deleted, there is no ordering problem and we can
