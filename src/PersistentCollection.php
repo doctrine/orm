@@ -62,11 +62,6 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
     private AssociationMapping|null $association = null;
 
     /**
-     * The EntityManager that manages the persistence of the collection.
-     */
-    private EntityManagerInterface|null $em = null;
-
-    /**
      * The name of the field on the target entities that points to the owner
      * of the collection. This is only set if the association is bi-directional.
      */
@@ -86,12 +81,11 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
      * @psalm-param Collection<TKey, T>&Selectable<TKey, T> $collection The collection elements.
      */
     public function __construct(
-        EntityManagerInterface $em,
+        private EntityManagerInterface|null $em,
         private readonly ClassMetadata|null $typeClass,
         Collection $collection,
     ) {
         $this->collection  = $collection;
-        $this->em          = $em;
         $this->initialized = true;
     }
 

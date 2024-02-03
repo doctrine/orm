@@ -62,7 +62,6 @@ use function array_sum;
 use function array_values;
 use function assert;
 use function current;
-use function get_class;
 use function get_debug_type;
 use function implode;
 use function in_array;
@@ -1039,7 +1038,7 @@ class UnitOfWork implements PropertyChangedListener
 
         foreach ($entities as $entity) {
             $oid       = spl_object_id($entity);
-            $class     = $this->em->getClassMetadata(get_class($entity));
+            $class     = $this->em->getClassMetadata($entity::class);
             $persister = $this->getEntityPersister($class->name);
 
             $persister->addInsert($entity);
@@ -1112,7 +1111,7 @@ class UnitOfWork implements PropertyChangedListener
     private function executeUpdates(): void
     {
         foreach ($this->entityUpdates as $oid => $entity) {
-            $class            = $this->em->getClassMetadata(get_class($entity));
+            $class            = $this->em->getClassMetadata($entity::class);
             $persister        = $this->getEntityPersister($class->name);
             $preUpdateInvoke  = $this->listenersInvoker->getSubscribedSystems($class, Events::preUpdate);
             $postUpdateInvoke = $this->listenersInvoker->getSubscribedSystems($class, Events::postUpdate);
@@ -1145,7 +1144,7 @@ class UnitOfWork implements PropertyChangedListener
 
         foreach ($entities as $entity) {
             $oid       = spl_object_id($entity);
-            $class     = $this->em->getClassMetadata(get_class($entity));
+            $class     = $this->em->getClassMetadata($entity::class);
             $persister = $this->getEntityPersister($class->name);
             $invoke    = $this->listenersInvoker->getSubscribedSystems($class, Events::postRemove);
 
@@ -1194,7 +1193,7 @@ class UnitOfWork implements PropertyChangedListener
 
         // Now add edges
         foreach ($this->entityInsertions as $entity) {
-            $class = $this->em->getClassMetadata(get_class($entity));
+            $class = $this->em->getClassMetadata($entity::class);
 
             foreach ($class->associationMappings as $assoc) {
                 // We only need to consider the owning sides of to-one associations,
@@ -1257,7 +1256,7 @@ class UnitOfWork implements PropertyChangedListener
         // we need to treat those groups like a single entity when performing delete
         // order topological sorting.
         foreach ($this->entityDeletions as $entity) {
-            $class = $this->em->getClassMetadata(get_class($entity));
+            $class = $this->em->getClassMetadata($entity::class);
 
             foreach ($class->associationMappings as $assoc) {
                 // We only need to consider the owning sides of to-one associations,
@@ -1294,7 +1293,7 @@ class UnitOfWork implements PropertyChangedListener
 
         // Now do the actual topological sorting to find the delete order.
         foreach ($this->entityDeletions as $entity) {
-            $class = $this->em->getClassMetadata(get_class($entity));
+            $class = $this->em->getClassMetadata($entity::class);
 
             // Get the entities representing the SCC
             $entityComponent = $stronglyConnectedComponents->getNodeRepresentingStronglyConnectedComponent($entity);
@@ -1585,7 +1584,7 @@ class UnitOfWork implements PropertyChangedListener
         $identifier = $this->entityIdentifiers[spl_object_id($entity)];
 
         if (empty($identifier) || in_array(null, $identifier, true)) {
-            $classMetadata = $this->em->getClassMetadata(get_class($entity));
+            $classMetadata = $this->em->getClassMetadata($entity::class);
 
             throw ORMInvalidArgumentException::entityWithoutIdentity($classMetadata->name, $entity);
         }
@@ -3231,7 +3230,7 @@ class UnitOfWork implements PropertyChangedListener
      */
     final public function assignPostInsertId(object $entity, mixed $generatedId): void
     {
-        $class   = $this->em->getClassMetadata(get_class($entity));
+        $class   = $this->em->getClassMetadata($entity::class);
         $idField = $class->getSingleIdentifierFieldName();
         $idValue = $this->convertSingleFieldIdentifierToPHPValue($class, $generatedId);
         $oid     = spl_object_id($entity);

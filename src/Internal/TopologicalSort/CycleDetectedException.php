@@ -18,7 +18,7 @@ class CycleDetectedException extends RuntimeException
      */
     private bool $cycleCollected = false;
 
-    public function __construct(private object $startNode)
+    public function __construct(private readonly object $startNode)
     {
         parent::__construct('A cycle has been detected, so a topological sort is not possible. The getCycle() method provides the list of nodes that form the cycle.');
 

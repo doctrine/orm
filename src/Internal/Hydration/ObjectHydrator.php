@@ -277,11 +277,9 @@ class ObjectHydrator extends AbstractHydrator
             $idHash = UnitOfWork::getIdHashByIdentifier(
                 array_map(
                     /** @return mixed */
-                    static function (string $fieldName) use ($data, $class) {
-                        return isset($class->associationMappings[$fieldName]) && assert($class->associationMappings[$fieldName]->isToOneOwningSide())
-                            ? $data[$class->associationMappings[$fieldName]->joinColumns[0]->name]
-                            : $data[$fieldName];
-                    },
+                    static fn (string $fieldName) => isset($class->associationMappings[$fieldName]) && assert($class->associationMappings[$fieldName]->isToOneOwningSide())
+                        ? $data[$class->associationMappings[$fieldName]->joinColumns[0]->name]
+                        : $data[$fieldName],
                     $class->identifier,
                 ),
             );

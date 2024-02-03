@@ -17,7 +17,6 @@ use function count;
 use function end;
 use function explode;
 use function extension_loaded;
-use function get_class;
 use function html_entity_decode;
 use function ini_get;
 use function ini_set;
@@ -95,7 +94,7 @@ final class Debug
         }
 
         if (! $maxDepth) {
-            return is_object($var) ? get_class($var)
+            return is_object($var) ? $var::class
                 : (is_array($var) ? 'Array(' . count($var) . ')' : $var);
         }
 
@@ -115,7 +114,7 @@ final class Debug
 
         $return = new stdClass();
         if ($var instanceof DateTimeInterface) {
-            $return->__CLASS__ = get_class($var);
+            $return->__CLASS__ = $var::class;
             $return->date      = $var->format('c');
             $return->timezone  = $var->getTimezone()->getName();
 

@@ -10,8 +10,8 @@ use function file_exists;
 use function ltrim;
 use function spl_autoload_register;
 use function str_replace;
+use function str_starts_with;
 use function strlen;
-use function strpos;
 use function substr;
 
 use const DIRECTORY_SEPARATOR;
@@ -34,7 +34,7 @@ final class Autoloader
      */
     public static function resolveFile(string $proxyDir, string $proxyNamespace, string $className): string
     {
-        if (strpos($className, $proxyNamespace) !== 0) {
+        if (! str_starts_with($className, $proxyNamespace)) {
             throw new NotAProxyClass($className, $proxyNamespace);
         }
 
@@ -66,7 +66,7 @@ final class Autoloader
                 return;
             }
 
-            if (strpos($className, $proxyNamespace) !== 0) {
+            if (! str_starts_with($className, $proxyNamespace)) {
                 return;
             }
 
