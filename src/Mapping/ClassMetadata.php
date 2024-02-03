@@ -2199,6 +2199,35 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
         $this->addSubClass($className);
     }
 
+    /**
+     * @internal
+     *
+     * @return list<int|string>
+     *
+     * @psalm-internal Doctrine\ORM
+     */
+    public function getDiscriminatorValuesForClassAndSubclasses(): array
+    {
+        $values       = [];
+        $valueByClass = array_flip($this->discriminatorMap);
+
+        // Even if this class is part of an inheritance hierarchy, the discriminator
+        // value may be null in case the class is abstract.
+        if ($this->discriminatorValue !== null) {
+            $values[] = $this->discriminatorValue;
+        }
+
+        foreach ($this->subClasses as $subClass) {
+            // Abstract entity classes show up in the list of subClasses,
+            // but may be omitted from the discriminator map.
+            if (isset($valueByClass[$subClass])) {
+                $values[] = $valueByClass[$subClass];
+            }
+        }
+
+        return $values;
+    }
+
     /** @param array<class-string> $classes */
     public function addSubClasses(array $classes): void
     {

@@ -368,6 +368,7 @@ class SqlWalker
     private function generateDiscriminatorColumnConditionSQL(array $dqlAliases): string
     {
         $sqlParts = [];
+        $conn     = $this->em->getConnection();
 
         foreach ($dqlAliases as $dqlAlias) {
             $class = $this->getMetadataForDqlAlias($dqlAlias);
@@ -376,22 +377,20 @@ class SqlWalker
                 continue;
             }
 
-            $conn   = $this->em->getConnection();
-            $values = [];
-
-            if ($class->discriminatorValue !== null) { // discriminators can be 0
-                $values[] = $conn->quote($class->discriminatorValue);
-            }
-
-            foreach ($class->subClasses as $subclassName) {
-                $values[] = $conn->quote((string) $this->em->getClassMetadata($subclassName)->discriminatorValue);
-            }
-
             $sqlTableAlias = $this->useSqlTableAliases
                 ? $this->getSQLTableAlias($class->getTableName(), $dqlAlias) . '.'
                 : '';
 
-            $sqlParts[] = $sqlTableAlias . $class->getDiscriminatorColumn()->name . ' IN (' . implode(', ', $values) . ')';
+            $discriminatorValues = array_map(
+                $conn->quote(...),
+                array_map(strval(...), $class->getDiscriminatorValuesForClassAndSubclasses())
+            );
+
+            if ($discriminatorValues !== []) {
+                $sqlParts[] = $sqlTableAlias . $class->getDiscriminatorColumn()->name . ' IN (' . implode(', ', $discriminatorValues) . ')';
+            } else {
+                $sqlParts[] = '1=0'; // impossible condition
+            }
         }
 
         $sql = implode(' AND ', $sqlParts);
