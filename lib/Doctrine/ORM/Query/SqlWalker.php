@@ -482,7 +482,9 @@ class SqlWalker implements TreeWalker
             foreach ($class->subClasses as $subclassName) {
                 $subclassMetadata = $this->em->getClassMetadata($subclassName);
 
-                if ($subclassMetadata->reflClass && $subclassMetadata->reflClass->isAbstract()) {
+                // Abstract entity classes show up in the list of subClasses, but may be omitted
+                // from the discriminator map. In that case, they have a null discriminator value.
+                if ($subclassMetadata->discriminatorValue === null) {
                     continue;
                 }
 
