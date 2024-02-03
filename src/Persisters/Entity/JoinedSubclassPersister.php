@@ -466,7 +466,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
                     || isset($this->class->associationMappings[$name]->inherited)
                     || ($this->class->isVersioned && $this->class->versionField === $name)
                     || isset($this->class->embeddedClasses[$name])
-                    || isset($this->class->fieldMappings[$name]['notInsertable'])
+                    || isset($this->class->fieldMappings[$name]->notInsertable)
             ) {
                 continue;
             }
@@ -519,9 +519,9 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
             $class = null;
             if ($this->class->isVersioned && $key === $versionedClass->versionField) {
                 $class = $versionedClass;
-            } elseif (isset($column['generated'])) {
-                $class = isset($column['inherited'])
-                    ? $this->em->getClassMetadata($column['inherited'])
+            } elseif (isset($column->generated)) {
+                $class = isset($column->inherited)
+                    ? $this->em->getClassMetadata($column->inherited)
                     : $this->class;
             } else {
                 continue;

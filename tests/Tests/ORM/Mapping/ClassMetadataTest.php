@@ -859,8 +859,7 @@ class ClassMetadataTest extends OrmTestCase
 
         $mapping = $cm->getFieldMapping('id');
 
-        self::assertArrayHasKey('declared', $mapping);
-        self::assertSame(AbstractContentItem::class, $mapping['declared']);
+        self::assertSame(AbstractContentItem::class, $mapping->declared);
     }
 
     public function testAssociationOverrideKeepsDeclaringClass(): void
