@@ -870,8 +870,7 @@ class ClassMetadataTest extends OrmTestCase
 
         $mapping = $cm->getAssociationMapping('parentDirectory');
 
-        self::assertArrayHasKey('declared', $mapping);
-        self::assertSame(Directory::class, $mapping['declared']);
+        self::assertSame(Directory::class, $mapping->declared);
     }
 
     #[TestGroup('DDC-1955')]
