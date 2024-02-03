@@ -1151,7 +1151,7 @@ class BasicEntityPersister implements EntityPersister
 
             if (isset($this->class->fieldMappings[$fieldName])) {
                 $tableAlias = isset($this->class->fieldMappings[$fieldName]->inherited)
-                    ? $this->getSQLTableAlias($this->class->fieldMappings[$fieldName]['inherited'])
+                    ? $this->getSQLTableAlias($this->class->fieldMappings[$fieldName]->inherited)
                     : $baseTableAlias;
 
                 $columnName    = $this->quoteStrategy->getColumnName($fieldName, $this->class, $this->platform);

@@ -2,7 +2,7 @@
 
 ## Deprecate array access
 
-Use array access on instances of the following classes is deprecated:
+Using array access on instances of the following classes is deprecated:
 
 - `Doctrine\ORM\Mapping\DiscriminatorColumnMapping`
 - `Doctrine\ORM\Mapping\EmbedClassMapping`
