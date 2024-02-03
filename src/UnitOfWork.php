@@ -2713,7 +2713,7 @@ class UnitOfWork implements PropertyChangedListener
     private function scheduleCollectionForBatchLoading(PersistentCollection $collection, ClassMetadata $sourceClass): void
     {
         $mapping = $collection->getMapping();
-        $name    = $mapping['sourceEntity'] . '#' . $mapping['fieldName'];
+        $name    = $mapping->sourceEntity . '#' . $mapping->fieldName;
 
         if (! isset($this->eagerLoadingCollections[$name])) {
             $this->eagerLoadingCollections[$name] = [
