@@ -367,11 +367,15 @@ class ObjectHydrator extends AbstractHydrator
                     $parentObject = $this->resultPointers[$parentAlias];
                 } else {
                     // Parent object of relation not found, mark as not-fetched again
-                    $element = $this->getEntity($data, $dqlAlias);
+                    if (isset($nonemptyComponents[$dqlAlias])) {
+                        $element = $this->getEntity($data, $dqlAlias);
 
-                    // Update result pointer and provide initial fetch data for parent
-                    $this->resultPointers[$dqlAlias]               = $element;
-                    $rowData['data'][$parentAlias][$relationField] = $element;
+                        // Update result pointer and provide initial fetch data for parent
+                        $this->resultPointers[$dqlAlias]               = $element;
+                        $rowData['data'][$parentAlias][$relationField] = $element;
+                    } else {
+                        $element = null;
+                    }
 
                     // Mark as not-fetched again
                     unset($this->_hints['fetched'][$parentAlias][$relationField]);
