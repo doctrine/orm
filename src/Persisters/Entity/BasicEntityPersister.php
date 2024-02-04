@@ -339,8 +339,7 @@ class BasicEntityPersister implements EntityPersister
     /**
      * @param mixed[] $id
      *
-     * @return list<ParameterType|int|string>
-     * @psalm-return list<ParameterType::*|ArrayParameterType::*|string>
+     * @return list<ParameterType|ArrayParameterType|string>
      */
     final protected function extractIdentifierTypes(array $id, ClassMetadata $versionedClass): array
     {
@@ -723,7 +722,7 @@ class BasicEntityPersister implements EntityPersister
         object|null $entity = null,
         AssociationMapping|null $assoc = null,
         array $hints = [],
-        LockMode|int|null $lockMode = null,
+        LockMode|null $lockMode = null,
         int|null $limit = null,
         array|null $orderBy = null,
     ): object|null {
@@ -817,7 +816,7 @@ class BasicEntityPersister implements EntityPersister
     /**
      * {@inheritDoc}
      */
-    public function refresh(array $id, object $entity, LockMode|int|null $lockMode = null): void
+    public function refresh(array $id, object $entity, LockMode|null $lockMode = null): void
     {
         $sql              = $this->getSelectSQL($id, null, $lockMode);
         [$params, $types] = $this->expandParameters($id);
@@ -1054,7 +1053,7 @@ class BasicEntityPersister implements EntityPersister
     public function getSelectSQL(
         array|Criteria $criteria,
         AssociationMapping|null $assoc = null,
-        LockMode|int|null $lockMode = null,
+        LockMode|null $lockMode = null,
         int|null $limit = null,
         int|null $offset = null,
         array|null $orderBy = null,
@@ -1507,7 +1506,7 @@ class BasicEntityPersister implements EntityPersister
     /**
      * {@inheritDoc}
      */
-    public function lock(array $criteria, LockMode|int $lockMode): void
+    public function lock(array $criteria, LockMode $lockMode): void
     {
         $conditionSql = $this->getSelectConditionSQL($criteria);
 
@@ -1531,10 +1530,8 @@ class BasicEntityPersister implements EntityPersister
 
     /**
      * Gets the FROM and optionally JOIN conditions to lock the entity managed by this persister.
-     *
-     * @psalm-param LockMode::* $lockMode
      */
-    protected function getLockTablesSql(LockMode|int $lockMode): string
+    protected function getLockTablesSql(LockMode $lockMode): string
     {
         return $this->platform->appendLockHint(
             'FROM '
@@ -1833,7 +1830,7 @@ class BasicEntityPersister implements EntityPersister
      *                             - class to which the field belongs to
      *
      * @return mixed[][]
-     * @psalm-return array{0: array, 1: list<ParameterType::*|ArrayParameterType::*|string>}
+     * @psalm-return array{0: array, 1: list<ParameterType|ArrayParameterType|string>}
      */
     private function expandToManyParameters(array $criteria): array
     {
@@ -1855,8 +1852,7 @@ class BasicEntityPersister implements EntityPersister
     /**
      * Infers field types to be used by parameter type casting.
      *
-     * @return list<ParameterType|ArrayParameterType|int|string>
-     * @psalm-return list<ParameterType::*|ArrayParameterType::*|string>
+     * @return list<ParameterType|ArrayParameterType|string>
      *
      * @throws QueryException
      */
@@ -1898,11 +1894,10 @@ class BasicEntityPersister implements EntityPersister
         return $types;
     }
 
-    /** @psalm-return ArrayParameterType::* */
-    private function getArrayBindingType(ParameterType|int|string $type): ArrayParameterType|int
+    private function getArrayBindingType(ParameterType|string $type): ArrayParameterType
     {
         if (! $type instanceof ParameterType) {
-            $type = Type::getType((string) $type)->getBindingType();
+            $type = Type::getType($type)->getBindingType();
         }
 
         return match ($type) {

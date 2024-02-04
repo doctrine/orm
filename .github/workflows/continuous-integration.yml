@@ -38,7 +38,6 @@ jobs:
           - "8.3"
         dbal-version:
           - "default"
-          - "3.7"
         extension:
           - "sqlite3"
           - "pdo_sqlite"
@@ -109,7 +108,6 @@ jobs:
           - "8.3"
         dbal-version:
           - "default"
-          - "3.7"
         postgres-version:
           - "15"
         extension:
@@ -121,8 +119,8 @@ jobs:
             postgres-version: "14"
             extension: pdo_pgsql
           - php-version: "8.2"
-            dbal-version: "3.7"
-            postgres-version: "9.6"
+            dbal-version: "default"
+            postgres-version: "10"
             extension: pdo_pgsql
 
     services:
@@ -182,7 +180,6 @@ jobs:
           - "8.3"
         dbal-version:
           - "default"
-          - "3.7"
           - "4@dev"
         mariadb-version:
           - "10.9"
@@ -248,7 +245,6 @@ jobs:
           - "8.3"
         dbal-version:
           - "default"
-          - "3.7"
         mysql-version:
           - "5.7"
           - "8.0"

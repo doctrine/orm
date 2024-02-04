@@ -238,7 +238,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
     public function getSelectSQL(
         array|Criteria $criteria,
         AssociationMapping|null $assoc = null,
-        LockMode|int|null $lockMode = null,
+        LockMode|null $lockMode = null,
         int|null $limit = null,
         int|null $offset = null,
         array|null $orderBy = null,
@@ -329,7 +329,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
             . (empty($conditionSql) ? '' : ' WHERE ' . $conditionSql);
     }
 
-    protected function getLockTablesSql(LockMode|int $lockMode): string
+    protected function getLockTablesSql(LockMode $lockMode): string
     {
         $joinSql           = '';
         $identifierColumns = $this->class->getIdentifierColumnNames();

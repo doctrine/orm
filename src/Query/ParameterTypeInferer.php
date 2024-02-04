@@ -25,11 +25,12 @@ use function is_int;
 final class ParameterTypeInferer
 {
     /**
-     * Infers type of a given value, returning a compatible constant:
+     * Infers type of a given value, returning a compatible constant or enum case:
      * - Type (\Doctrine\DBAL\Types\Type::*)
-     * - Connection (\Doctrine\DBAL\Connection::PARAM_*)
+     * - ParameterType (\Doctrine\DBAL\ParameterType)
+     * - ArrayParameterType (\Doctrine\DBAL\ArrayParameterType)
      */
-    public static function inferType(mixed $value): ParameterType|ArrayParameterType|int|string
+    public static function inferType(mixed $value): ParameterType|ArrayParameterType|string
     {
         if (is_int($value)) {
             return Types::INTEGER;

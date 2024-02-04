@@ -11,11 +11,6 @@ class UpperCaseStringType extends StringType
 {
     public const NAME = 'upper_case_string';
 
-    public function getName(): string
-    {
-        return self::NAME;
-    }
-
     /**
      * {@inheritDoc}
      */

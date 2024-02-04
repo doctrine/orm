@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM;
 
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\EventManager;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Driver;
 use Doctrine\DBAL\Driver\Statement;
@@ -34,7 +33,6 @@ use Doctrine\Tests\Models\Forum\ForumUser;
 use Doctrine\Tests\OrmTestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Group;
-use PHPUnit\Framework\MockObject\MockObject;
 use stdClass;
 
 use function random_int;
@@ -60,8 +58,6 @@ class UnitOfWorkTest extends OrmTestCase
      */
     private EntityManagerMock $_emMock;
 
-    private EventManager&MockObject $eventManager;
-
     protected function setUp(): void
     {
         parent::setUp();
@@ -84,9 +80,8 @@ class UnitOfWorkTest extends OrmTestCase
         $driver->method('connect')
             ->willReturn($driverConnection);
 
-        $this->eventManager = $this->getMockBuilder(EventManager::class)->getMock();
-        $this->connection   = new Connection([], $driver, null, $this->eventManager);
-        $this->_emMock      = new EntityManagerMock($this->connection);
+        $this->connection = new Connection([], $driver, null);
+        $this->_emMock    = new EntityManagerMock($this->connection);
         // SUT
         $this->_unitOfWork = new UnitOfWorkMock($this->_emMock);
         $this->_emMock->setUnitOfWork($this->_unitOfWork);

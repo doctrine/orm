@@ -838,9 +838,6 @@
     </UninitializedProperty>
   </file>
   <file src="src/Query/Exec/MultiTableUpdateExecutor.php">
-    <InvalidArgument>
-      <code><![CDATA[$paramTypes]]></code>
-    </InvalidArgument>
     <InvalidReturnStatement>
       <code><![CDATA[$numUpdated]]></code>
     </InvalidReturnStatement>

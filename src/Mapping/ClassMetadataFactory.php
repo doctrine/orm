@@ -7,7 +7,6 @@ namespace Doctrine\ORM\Mapping;
 use Doctrine\Common\EventManager;
 use Doctrine\DBAL\Platforms;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
-use Doctrine\Deprecations\Deprecation;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Event\LoadClassMetadataEventArgs;
 use Doctrine\ORM\Event\OnClassMetadataNotFoundEventArgs;
@@ -35,7 +34,6 @@ use function explode;
 use function in_array;
 use function is_a;
 use function is_subclass_of;
-use function method_exists;
 use function str_contains;
 use function strlen;
 use function strtolower;
@@ -622,39 +620,8 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
             }
         }
 
-        $nonIdentityDefaultStrategy = self::NON_IDENTITY_DEFAULT_STRATEGY;
-
-        // DBAL 3
-        if (method_exists($platform, 'getIdentitySequenceName')) {
-            $nonIdentityDefaultStrategy[Platforms\PostgreSQLPlatform::class] = ClassMetadata::GENERATOR_TYPE_SEQUENCE;
-        }
-
-        foreach ($nonIdentityDefaultStrategy as $platformFamily => $strategy) {
+        foreach (self::NON_IDENTITY_DEFAULT_STRATEGY as $platformFamily => $strategy) {
             if (is_a($platform, $platformFamily)) {
-                if ($platform instanceof Platforms\PostgreSQLPlatform) {
-                    Deprecation::trigger(
-                        'doctrine/orm',
-                        'https://github.com/doctrine/orm/issues/8893',
-                        <<<'DEPRECATION'
-                        Relying on non-optimal defaults for ID generation is deprecated, and IDENTITY
-                        results in SERIAL, which is not recommended.
-                        Instead, configure identifier generation strategies explicitly through
-                        configuration.
-                        We currently recommend "SEQUENCE" for "%s", when using DBAL 3,
-                        and "IDENTITY" when using DBAL 4,
-                        so you should probably use the following configuration before upgrading to DBAL 4,
-                        and remove it after deploying that upgrade:
-
-                        $configuration->setIdentityGenerationPreferences([
-                            "%s" => ClassMetadata::GENERATOR_TYPE_SEQUENCE,
-                        ]);
-
-                        DEPRECATION,
-                        $platformFamily,
-                        $platformFamily,
-                    );
-                }
-
                 return $strategy;
             }
         }

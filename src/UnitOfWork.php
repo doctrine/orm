@@ -424,17 +424,10 @@ class UnitOfWork implements PropertyChangedListener
                 $this->executeDeletions();
             }
 
-            $commitFailed = false;
             try {
-                if ($conn->commit() === false) {
-                    $commitFailed = true;
-                }
+                $conn->commit();
             } catch (DBAL\Exception $e) {
-                $commitFailed = true;
-            }
-
-            if ($commitFailed) {
-                throw new OptimisticLockException('Commit failed', null, $e ?? null);
+                throw new OptimisticLockException('Commit failed', null, $e);
             }
         } catch (Throwable $e) {
             $this->em->close();
@@ -1955,12 +1948,10 @@ class UnitOfWork implements PropertyChangedListener
      * Refreshes the state of the given entity from the database, overwriting
      * any local, unpersisted changes.
      *
-     * @psalm-param LockMode::*|null $lockMode
-     *
      * @throws InvalidArgumentException If the entity is not MANAGED.
      * @throws TransactionRequiredException
      */
-    public function refresh(object $entity, LockMode|int|null $lockMode = null): void
+    public function refresh(object $entity, LockMode|null $lockMode = null): void
     {
         $visited = [];
 
@@ -1971,12 +1962,11 @@ class UnitOfWork implements PropertyChangedListener
      * Executes a refresh operation on an entity.
      *
      * @psalm-param array<int, object>  $visited The already visited entities during cascades.
-     * @psalm-param LockMode::*|null $lockMode
      *
      * @throws ORMInvalidArgumentException If the entity is not MANAGED.
      * @throws TransactionRequiredException
      */
-    private function doRefresh(object $entity, array &$visited, LockMode|int|null $lockMode = null): void
+    private function doRefresh(object $entity, array &$visited, LockMode|null $lockMode = null): void
     {
         switch (true) {
             case $lockMode === LockMode::PESSIMISTIC_READ:
@@ -2013,9 +2003,8 @@ class UnitOfWork implements PropertyChangedListener
      * Cascades a refresh operation to associated entities.
      *
      * @psalm-param array<int, object> $visited
-     * @psalm-param LockMode::*|null $lockMode
      */
-    private function cascadeRefresh(object $entity, array &$visited, LockMode|int|null $lockMode = null): void
+    private function cascadeRefresh(object $entity, array &$visited, LockMode|null $lockMode = null): void
     {
         $class = $this->em->getClassMetadata($entity::class);
 
@@ -2204,13 +2193,11 @@ class UnitOfWork implements PropertyChangedListener
     /**
      * Acquire a lock on the given entity.
      *
-     * @psalm-param LockMode::* $lockMode
-     *
      * @throws ORMInvalidArgumentException
      * @throws TransactionRequiredException
      * @throws OptimisticLockException
      */
-    public function lock(object $entity, LockMode|int $lockMode, DateTimeInterface|int|null $lockVersion = null): void
+    public function lock(object $entity, LockMode $lockMode, DateTimeInterface|int|null $lockVersion = null): void
     {
         if ($this->getEntityState($entity, self::STATE_DETACHED) !== self::STATE_MANAGED) {
             throw ORMInvalidArgumentException::entityNotManaged($entity);
