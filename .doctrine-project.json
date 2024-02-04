@@ -6,10 +6,22 @@
     "docsSlug": "doctrine-orm",
     "versions": [
         {
-            "name": "3.0",
-            "branchName": "3.0.x",
+            "name": "4.0",
+            "branchName": "4.0.x",
             "slug": "latest",
             "upcoming": true
+        },
+        {
+            "name": "3.1",
+            "branchName": "3.1.x",
+            "slug": "3.1",
+            "upcoming": true
+        },
+        {
+            "name": "3.0",
+            "branchName": "3.0.x",
+            "slug": "3.0",
+            "current": true
         },
         {
             "name": "2.19",
@@ -21,7 +33,7 @@
             "name": "2.18",
             "branchName": "2.18.x",
             "slug": "2.18",
-            "current": true
+            "maintained": true
         },
         {
             "name": "2.17",
