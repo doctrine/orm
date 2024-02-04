@@ -34,9 +34,4 @@ class CustomIdObjectType extends Type
     {
         return $platform->getStringTypeDeclarationSQL($column);
     }
-
-    public function getName(): string
-    {
-        return self::NAME;
-    }
 }

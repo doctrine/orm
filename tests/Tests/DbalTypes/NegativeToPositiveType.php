@@ -11,11 +11,6 @@ class NegativeToPositiveType extends Type
 {
     public const NAME = 'negative_to_positive';
 
-    public function getName(): string
-    {
-        return self::NAME;
-    }
-
     /**
      * {@inheritDoc}
      */

@@ -17,7 +17,7 @@ use Doctrine\DBAL\Types\Type;
  * @link        http://www.doctrine-project.org
  *
  * @todo Rename: AbstractSQLExecutor
- * @psalm-type WrapperParameterType = string|Type|ParameterType::*|ArrayParameterType::*
+ * @psalm-type WrapperParameterType = string|Type|ParameterType|ArrayParameterType
  * @psalm-type WrapperParameterTypeArray = array<int<0, max>, WrapperParameterType>|array<string, WrapperParameterType>
  */
 abstract class AbstractSqlExecutor

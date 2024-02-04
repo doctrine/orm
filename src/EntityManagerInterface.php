@@ -110,15 +110,13 @@ interface EntityManagerInterface extends ObjectManager
     /**
      * Finds an Entity by its identifier.
      *
-     * @param string            $className   The class name of the entity to find.
-     * @param mixed             $id          The identity of the entity to find.
-     * @param LockMode|int|null $lockMode    One of the \Doctrine\DBAL\LockMode::* constants
-     *                                       or NULL if no specific lock mode should be used
-     *                                       during the search.
-     * @param int|null          $lockVersion The version of the entity to find when using
-     *                                       optimistic locking.
+     * @param string        $className   The class name of the entity to find.
+     * @param mixed         $id          The identity of the entity to find.
+     * @param LockMode|null $lockMode    The lock mode or NULL if no specific lock mode
+     *                                   should be used during the search.
+     * @param int|null      $lockVersion The version of the entity to find when using
+     *                                   optimistic locking.
      * @psalm-param class-string<T> $className
-     * @psalm-param LockMode::*|null $lockMode
      *
      * @return object|null The entity instance or NULL if the entity can not be found.
      * @psalm-return T|null
@@ -130,22 +128,20 @@ interface EntityManagerInterface extends ObjectManager
      *
      * @template T of object
      */
-    public function find(string $className, mixed $id, LockMode|int|null $lockMode = null, int|null $lockVersion = null): object|null;
+    public function find(string $className, mixed $id, LockMode|null $lockMode = null, int|null $lockVersion = null): object|null;
 
     /**
      * Refreshes the persistent state of an object from the database,
      * overriding any local changes that have not yet been persisted.
      *
-     * @param LockMode|int|null $lockMode One of the \Doctrine\DBAL\LockMode::* constants
-     *                                    or NULL if no specific lock mode should be used
-     *                                    during the search.
-     * @psalm-param LockMode::*|null $lockMode
+     * @param LockMode|null $lockMode The lock mode or NULL if no specific lock mode
+     *                                should be used during the search.
      *
      * @throws ORMInvalidArgumentException
      * @throws ORMException
      * @throws TransactionRequiredException
      */
-    public function refresh(object $object, LockMode|int|null $lockMode = null): void;
+    public function refresh(object $object, LockMode|null $lockMode = null): void;
 
     /**
      * Gets a reference to the entity identified by the given type and identifier
@@ -173,12 +169,10 @@ interface EntityManagerInterface extends ObjectManager
     /**
      * Acquire a lock on the given entity.
      *
-     * @psalm-param LockMode::* $lockMode
-     *
      * @throws OptimisticLockException
      * @throws PessimisticLockException
      */
-    public function lock(object $entity, LockMode|int $lockMode, DateTimeInterface|int|null $lockVersion = null): void;
+    public function lock(object $entity, LockMode $lockMode, DateTimeInterface|int|null $lockVersion = null): void;
 
     /**
      * Gets the EventManager used by the EntityManager.
