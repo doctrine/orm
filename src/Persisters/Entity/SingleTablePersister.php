@@ -10,10 +10,7 @@ use Doctrine\ORM\Mapping\AssociationMapping;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Utility\PersisterHelper;
 
-use function array_flip;
-use function array_intersect;
 use function array_map;
-use function array_unshift;
 use function implode;
 use function strval;
 
@@ -138,19 +135,12 @@ class SingleTablePersister extends AbstractEntityInheritancePersister
 
     protected function getSelectConditionDiscriminatorValueSQL(): string
     {
-        $values = array_map($this->conn->quote(...), array_map(
-            strval(...),
-            array_flip(array_intersect($this->class->discriminatorMap, $this->class->subClasses)),
-        ));
-
-        if ($this->class->discriminatorValue !== null) { // discriminators can be 0
-            array_unshift($values, $this->conn->quote((string) $this->class->discriminatorValue));
-        }
-
+        $tableAlias     = $this->getSQLTableAlias($this->class->name);
         $discColumnName = $this->class->getDiscriminatorColumn()->name;
-
-        $values     = implode(', ', $values);
-        $tableAlias = $this->getSQLTableAlias($this->class->name);
+        $values         = implode(', ', array_map(
+            $this->conn->quote(...),
+            array_map(strval(...), $this->class->getDiscriminatorValuesForClassAndSubclasses())
+        ));
 
         return $tableAlias . '.' . $discColumnName . ' IN (' . $values . ')';
     }
