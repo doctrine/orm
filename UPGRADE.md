@@ -507,8 +507,8 @@ The methods have been replaced by PSR-6 compatible counterparts
 
 ## BC BREAK: Remove `Doctrine\ORM\Configuration::newDefaultAnnotationDriver`
 
-This functionality has been moved to the new `DoctrineSetup` class. Call
-`Doctrine\ORM\Tools\DoctrineSetup::createDefaultAnnotationDriver()` to create
+This functionality has been moved to the new `ORMSetup` class. Call
+`Doctrine\ORM\ORMSetup::createDefaultAnnotationDriver()` to create
 a new annotation driver.
 
 ## BC BREAK: Remove `Doctrine\ORM\Tools\Setup`
@@ -516,7 +516,7 @@ a new annotation driver.
 In our effort to migrate from Doctrine Cache to PSR-6, the `Setup` class which
 accepted a Doctrine Cache instance in each method has been removed.
 
-The replacement is `Doctrine\ORM\Tools\DoctrineSetup` which accepts a PSR-6
+The replacement is `Doctrine\ORM\ORMSetup` which accepts a PSR-6
 cache instead.
 
 ## BC BREAK: Removed named queries
