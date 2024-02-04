@@ -1,3 +1,15 @@
+# Upgrade to 4.0
+
+## Remove array access
+
+Using array access on instances of the following classes is no longer possible:
+
+- `Doctrine\ORM\Mapping\DiscriminatorColumnMapping`
+- `Doctrine\ORM\Mapping\EmbedClassMapping`
+- `Doctrine\ORM\Mapping\FieldMapping`
+- `Doctrine\ORM\Mapping\JoinColumnMapping`
+- `Doctrine\ORM\Mapping\JoinTableMapping`
+
 # Upgrade to 3.1
 
 ## Deprecate array access
