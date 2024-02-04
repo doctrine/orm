@@ -1143,16 +1143,16 @@ and the EntityManager.
         }
     }
 
-.. _PrePersistEventArgs: https://github.com/doctrine/orm/blob/HEAD/lib/Doctrine/ORM/Event/PrePersistEventArgs.php
-.. _PreRemoveEventArgs: https://github.com/doctrine/orm/blob/HEAD/lib/Doctrine/ORM/Event/PreRemoveEventArgs.php
-.. _PreUpdateEventArgs: https://github.com/doctrine/orm/blob/HEAD/lib/Doctrine/ORM/Event/PreUpdateEventArgs.php
-.. _PostPersistEventArgs: https://github.com/doctrine/orm/blob/HEAD/lib/Doctrine/ORM/Event/PostPersistEventArgs.php
-.. _PostRemoveEventArgs: https://github.com/doctrine/orm/blob/HEAD/lib/Doctrine/ORM/Event/PostRemoveEventArgs.php
-.. _PostUpdateEventArgs: https://github.com/doctrine/orm/blob/HEAD/lib/Doctrine/ORM/Event/PostUpdateEventArgs.php
-.. _PostLoadEventArgs: https://github.com/doctrine/orm/blob/HEAD/lib/Doctrine/ORM/Event/PostLoadEventArgs.php
-.. _PreFlushEventArgs: https://github.com/doctrine/orm/blob/HEAD/lib/Doctrine/ORM/Event/PreFlushEventArgs.php
-.. _PostFlushEventArgs: https://github.com/doctrine/orm/blob/HEAD/lib/Doctrine/ORM/Event/PostFlushEventArgs.php
-.. _OnFlushEventArgs: https://github.com/doctrine/orm/blob/HEAD/lib/Doctrine/ORM/Event/OnFlushEventArgs.php
-.. _OnClearEventArgs: https://github.com/doctrine/orm/blob/HEAD/lib/Doctrine/ORM/Event/OnClearEventArgs.php
-.. _LoadClassMetadataEventArgs: https://github.com/doctrine/orm/blob/HEAD/lib/Doctrine/ORM/Event/LoadClassMetadataEventArgs.php
-.. _OnClassMetadataNotFoundEventArgs: https://github.com/doctrine/orm/blob/HEAD/lib/Doctrine/ORM/Event/OnClassMetadataNotFoundEventArgs.php
+.. _PrePersistEventArgs: https://github.com/doctrine/orm/blob/HEAD/src/Event/PrePersistEventArgs.php
+.. _PreRemoveEventArgs: https://github.com/doctrine/orm/blob/HEAD/src/Event/PreRemoveEventArgs.php
+.. _PreUpdateEventArgs: https://github.com/doctrine/orm/blob/HEAD/src/Event/PreUpdateEventArgs.php
+.. _PostPersistEventArgs: https://github.com/doctrine/orm/blob/HEAD/src/Event/PostPersistEventArgs.php
+.. _PostRemoveEventArgs: https://github.com/doctrine/orm/blob/HEAD/src/Event/PostRemoveEventArgs.php
+.. _PostUpdateEventArgs: https://github.com/doctrine/orm/blob/HEAD/src/Event/PostUpdateEventArgs.php
+.. _PostLoadEventArgs: https://github.com/doctrine/orm/blob/HEAD/src/Event/PostLoadEventArgs.php
+.. _PreFlushEventArgs: https://github.com/doctrine/orm/blob/HEAD/src/Event/PreFlushEventArgs.php
+.. _PostFlushEventArgs: https://github.com/doctrine/orm/blob/HEAD/src/Event/PostFlushEventArgs.php
+.. _OnFlushEventArgs: https://github.com/doctrine/orm/blob/HEAD/src/Event/OnFlushEventArgs.php
+.. _OnClearEventArgs: https://github.com/doctrine/orm/blob/HEAD/src/Event/OnClearEventArgs.php
+.. _LoadClassMetadataEventArgs: https://github.com/doctrine/orm/blob/HEAD/src/Event/LoadClassMetadataEventArgs.php
+.. _OnClassMetadataNotFoundEventArgs: https://github.com/doctrine/orm/blob/HEAD/src/Event/OnClassMetadataNotFoundEventArgs.php

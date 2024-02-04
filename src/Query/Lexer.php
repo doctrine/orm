@@ -145,6 +145,8 @@ class Lexer extends AbstractLexer
 
     /**
      * {@inheritDoc}
+     *
+     * @param string $value
      */
     protected function getType(&$value)
     {

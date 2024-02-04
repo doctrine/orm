@@ -31,7 +31,7 @@
         "doctrine/event-manager": "^1.2 || ^2",
         "doctrine/inflector": "^1.4 || ^2.0",
         "doctrine/instantiator": "^1.3 || ^2",
-        "doctrine/lexer": "^2",
+        "doctrine/lexer": "^2 || ^3",
         "doctrine/persistence": "^2.4 || ^3",
         "psr/cache": "^1 || ^2 || ^3",
         "symfony/console": "^4.2 || ^5.0 || ^6.0 || ^7.0",
@@ -60,13 +60,13 @@
         "symfony/yaml": "If you want to use YAML Metadata Mapping Driver"
     },
     "autoload": {
-        "psr-4": { "Doctrine\\ORM\\": "lib/Doctrine/ORM" }
+        "psr-4": { "Doctrine\\ORM\\": "src" }
     },
     "autoload-dev": {
         "psr-4": {
-            "Doctrine\\Tests\\": "tests/Doctrine/Tests",
-            "Doctrine\\StaticAnalysis\\": "tests/Doctrine/StaticAnalysis",
-            "Doctrine\\Performance\\": "tests/Doctrine/Performance"
+            "Doctrine\\Tests\\": "tests/Tests",
+            "Doctrine\\StaticAnalysis\\": "tests/StaticAnalysis",
+            "Doctrine\\Performance\\": "tests/Performance"
         }
     },
     "bin": ["bin/doctrine"],

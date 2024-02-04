@@ -3,639 +3,639 @@ parameters:
 		-
 			message: "#^Call to an undefined method Doctrine\\\\ORM\\\\Persisters\\\\Entity\\\\EntityPersister\\:\\:getCacheRegion\\(\\)\\.$#"
 			count: 1
-			path: lib/Doctrine/ORM/Cache/DefaultEntityHydrator.php
+			path: src/Cache/DefaultEntityHydrator.php
 
 		-
 			message: "#^Access to an undefined property Doctrine\\\\ORM\\\\Cache\\\\CacheEntry\\:\\:\\$class\\.$#"
 			count: 2
-			path: lib/Doctrine/ORM/Cache/DefaultQueryCache.php
+			path: src/Cache/DefaultQueryCache.php
 
 		-
 			message: "#^Call to an undefined method Doctrine\\\\ORM\\\\Cache\\\\CacheEntry\\:\\:resolveAssociationEntries\\(\\)\\.$#"
 			count: 2
-			path: lib/Doctrine/ORM/Cache/DefaultQueryCache.php
+			path: src/Cache/DefaultQueryCache.php
 
 		-
 			message: "#^Call to an undefined method Doctrine\\\\ORM\\\\Persisters\\\\Entity\\\\EntityPersister\\:\\:getCacheRegion\\(\\)\\.$#"
 			count: 1
-			path: lib/Doctrine/ORM/Cache/DefaultQueryCache.php
+			path: src/Cache/DefaultQueryCache.php
 
 		-
 			message: "#^Call to an undefined method Doctrine\\\\ORM\\\\Persisters\\\\Entity\\\\EntityPersister\\:\\:storeEntityCache\\(\\)\\.$#"
 			count: 2
-			path: lib/Doctrine/ORM/Cache/DefaultQueryCache.php
+			path: src/Cache/DefaultQueryCache.php
 
 		-
 			message: "#^Parameter \\#2 \\$key of method Doctrine\\\\ORM\\\\Cache\\\\Logging\\\\CacheLogger\\:\\:entityCacheHit\\(\\) expects Doctrine\\\\ORM\\\\Cache\\\\EntityCacheKey, Doctrine\\\\ORM\\\\Cache\\\\CacheKey given\\.$#"
 			count: 2
-			path: lib/Doctrine/ORM/Cache/DefaultQueryCache.php
+			path: src/Cache/DefaultQueryCache.php
 
 		-
 			message: "#^Parameter \\#2 \\$key of method Doctrine\\\\ORM\\\\Cache\\\\Logging\\\\CacheLogger\\:\\:entityCacheMiss\\(\\) expects Doctrine\\\\ORM\\\\Cache\\\\EntityCacheKey, Doctrine\\\\ORM\\\\Cache\\\\CacheKey given\\.$#"
 			count: 2
-			path: lib/Doctrine/ORM/Cache/DefaultQueryCache.php
+			path: src/Cache/DefaultQueryCache.php
 
 		-
 			message: "#^Access to an undefined property Doctrine\\\\ORM\\\\Cache\\\\CacheEntry\\:\\:\\$identifiers\\.$#"
 			count: 1
-			path: lib/Doctrine/ORM/Cache/Persister/Collection/AbstractCollectionPersister.php
+			path: src/Cache/Persister/Collection/AbstractCollectionPersister.php
 
 		-
 			message: "#^Else branch is unreachable because ternary operator condition is always true\\.$#"
 			count: 1
-			path: lib/Doctrine/ORM/Cache/Persister/Collection/AbstractCollectionPersister.php
+			path: src/Cache/Persister/Collection/AbstractCollectionPersister.php
 
 		-
 			message: "#^Parameter \\#2 \\$key of method Doctrine\\\\ORM\\\\Cache\\\\EntityHydrator\\:\\:buildCacheEntry\\(\\) expects Doctrine\\\\ORM\\\\Cache\\\\EntityCacheKey, Doctrine\\\\ORM\\\\Cache\\\\CacheKey given\\.$#"
 			count: 1
-			path: lib/Doctrine/ORM/Cache/Persister/Collection/AbstractCollectionPersister.php
+			path: src/Cache/Persister/Collection/AbstractCollectionPersister.php
 
 		-
 			message: "#^Parameter \\#3 \\$entry of method Doctrine\\\\ORM\\\\Cache\\\\CollectionHydrator\\:\\:loadCacheEntry\\(\\) expects Doctrine\\\\ORM\\\\Cache\\\\CollectionCacheEntry, Doctrine\\\\ORM\\\\Cache\\\\CacheEntry given\\.$#"
 			count: 1
-			path: lib/Doctrine/ORM/Cache/Persister/Collection/AbstractCollectionPersister.php
+			path: src/Cache/Persister/Collection/AbstractCollectionPersister.php
 
 		-
 			message: "#^Call to an undefined method Doctrine\\\\ORM\\\\Cache\\\\Region\\:\\:lock\\(\\)\\.$#"
 			count: 2
-			path: lib/Doctrine/ORM/Cache/Persister/Collection/ReadWriteCachedCollectionPersister.php
+			path: src/Cache/Persister/Collection/ReadWriteCachedCollectionPersister.php
 
 		-
 			message: "#^Access to an undefined property Doctrine\\\\ORM\\\\Cache\\\\CacheEntry\\:\\:\\$class\\.$#"
 			count: 2
-			path: lib/Doctrine/ORM/Cache/Persister/Entity/AbstractEntityPersister.php
+			path: src/Cache/Persister/Entity/AbstractEntityPersister.php
 
 		-
 			message: "#^Call to an undefined method Doctrine\\\\ORM\\\\Cache\\\\Persister\\\\CachedPersister&Doctrine\\\\ORM\\\\Persisters\\\\Collection\\\\CollectionPersister\\:\\:loadCollectionCache\\(\\)\\.$#"
 			count: 2
-			path: lib/Doctrine/ORM/Cache/Persister/Entity/AbstractEntityPersister.php
+			path: src/Cache/Persister/Entity/AbstractEntityPersister.php
 
 		-
 			message: "#^Call to an undefined method Doctrine\\\\ORM\\\\Cache\\\\Persister\\\\CachedPersister&Doctrine\\\\ORM\\\\Persisters\\\\Collection\\\\CollectionPersister\\:\\:storeCollectionCache\\(\\)\\.$#"
 			count: 2
-			path: lib/Doctrine/ORM/Cache/Persister/Entity/AbstractEntityPersister.php
+			path: src/Cache/Persister/Entity/AbstractEntityPersister.php
 
 		-
 			message: "#^Call to an undefined method Doctrine\\\\ORM\\\\Persisters\\\\Entity\\\\EntityPersister\\:\\:storeEntityCache\\(\\)\\.$#"
 			count: 1
-			path: lib/Doctrine/ORM/Cache/Persister/Entity/AbstractEntityPersister.php
+			path: src/Cache/Persister/Entity/AbstractEntityPersister.php
 
 		-
 			message: "#^Parameter \\#3 \\$entry of method Doctrine\\\\ORM\\\\Cache\\\\EntityHydrator\\:\\:loadCacheEntry\\(\\) expects Doctrine\\\\ORM\\\\Cache\\\\EntityCacheEntry, Doctrine\\\\ORM\\\\Cache\\\\CacheEntry given\\.$#"
 			count: 1
-			path: lib/Doctrine/ORM/Cache/Persister/Entity/AbstractEntityPersister.php
+			path: src/Cache/Persister/Entity/AbstractEntityPersister.php
 
 		-
 			message: "#^Call to an undefined method Doctrine\\\\ORM\\\\Cache\\\\Region\\:\\:lock\\(\\)\\.$#"
 			count: 2
-			path: lib/Doctrine/ORM/Cache/Persister/Entity/ReadWriteCachedEntityPersister.php
+			path: src/Cache/Persister/Entity/ReadWriteCachedEntityPersister.php
 
 		-
 			message: "#^If condition is always true\\.$#"
 			count: 1
-			path: lib/Doctrine/ORM/Cache/Persister/Entity/ReadWriteCachedEntityPersister.php
+			path: src/Cache/Persister/Entity/ReadWriteCachedEntityPersister.php
 
 		-
 			message: "#^Method Doctrine\\\\ORM\\\\Cache\\\\Region\\\\DefaultRegion\\:\\:getCache\\(\\) should return Doctrine\\\\Common\\\\Cache\\\\CacheProvider but returns Doctrine\\\\Common\\\\Cache\\\\Cache\\.$#"
 			count: 1
-			path: lib/Doctrine/ORM/Cache/Region/DefaultRegion.php
+			path: src/Cache/Region/DefaultRegion.php
 
 		-
 			message: "#^Access to an undefined property Doctrine\\\\ORM\\\\Cache\\\\CacheEntry\\:\\:\\$time\\.$#"
 			count: 1
-			path: lib/Doctrine/ORM/Cache/TimestampQueryCacheValidator.php
+			path: src/Cache/TimestampQueryCacheValidator.php
 
 		-
 			message: "#^Class Doctrine\\\\Common\\\\Cache\\\\ArrayCache not found\\.$#"
 			count: 2
-			path: lib/Doctrine/ORM/Configuration.php
+			path: src/Configuration.php
 
 		-
 			message: "#^Method Doctrine\\\\Persistence\\\\ObjectManager\\:\\:find\\(\\) invoked with 4 parameters, 2 required\\.$#"
 			count: 1
-			path: lib/Doctrine/ORM/Decorator/EntityManagerDecorator.php
+			path: src/Decorator/EntityManagerDecorator.php
 
 		-
 			message: "#^Method Doctrine\\\\Persistence\\\\ObjectManager\\:\\:flush\\(\\) invoked with 1 parameter, 0 required\\.$#"
 			count: 1
-			path: lib/Doctrine/ORM/Decorator/EntityManagerDecorator.php
+			path: src/Decorator/EntityManagerDecorator.php
 
 		-
 			message: "#^Else branch is unreachable because ternary operator condition is always true\\.$#"
 			count: 1
-			path: lib/Doctrine/ORM/EntityManager.php
+			path: src/EntityManager.php
 
 		-
 			message: "#^Result of && is always false\\.$#"
 			count: 1
-			path: lib/Doctrine/ORM/EntityManager.php
+			path: src/EntityManager.php
 
 		-
 			message: "#^Return type \\(Doctrine\\\\ORM\\\\Mapping\\\\ClassMetadataFactory\\) of method Doctrine\\\\ORM\\\\EntityManager\\:\\:getMetadataFactory\\(\\) should be compatible with return type \\(Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadataFactory\\<Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadata\\<object\\>\\>\\) of method Doctrine\\\\Persistence\\\\ObjectManager\\:\\:getMetadataFactory\\(\\)$#"
 			count: 2
-			path: lib/Doctrine/ORM/EntityManager.php
+			path: src/EntityManager.php
 
 		-
 			message: "#^Template type T of method Doctrine\\\\ORM\\\\EntityManagerInterface\\:\\:getClassMetadata\\(\\) is not referenced in a parameter\\.$#"
 			count: 1
-			path: lib/Doctrine/ORM/EntityManagerInterface.php
+			path: src/EntityManagerInterface.php
 
 		-
 			message: "#^Method Doctrine\\\\ORM\\\\EntityRepository\\:\\:matching\\(\\) should return Doctrine\\\\Common\\\\Collections\\\\AbstractLazyCollection\\<int, T of object\\>&Doctrine\\\\Common\\\\Collections\\\\Selectable\\<int, T of object\\> but returns Doctrine\\\\ORM\\\\LazyCriteriaCollection\\<\\(int\\|string\\), object\\>\\.$#"
 			count: 1
-			path: lib/Doctrine/ORM/EntityRepository.php
+			path: src/EntityRepository.php
 
 		-
 			message: "#^Method Doctrine\\\\Persistence\\\\ObjectManager\\:\\:find\\(\\) invoked with 4 parameters, 2 required\\.$#"
 			count: 1
-			path: lib/Doctrine/ORM/EntityRepository.php
+			path: src/EntityRepository.php
 
 		-
 			message: "#^Call to an undefined method Doctrine\\\\DBAL\\\\Platforms\\\\AbstractPlatform\\:\\:getTableHiLoCurrentValSql\\(\\)\\.$#"
 			count: 1
-			path: lib/Doctrine/ORM/Id/TableGenerator.php
+			path: src/Id/TableGenerator.php
 
 		-
 			message: "#^Call to an undefined method Doctrine\\\\DBAL\\\\Platforms\\\\AbstractPlatform\\:\\:getTableHiLoUpdateNextValSql\\(\\)\\.$#"
 			count: 1
-			path: lib/Doctrine/ORM/Id/TableGenerator.php
+			path: src/Id/TableGenerator.php
 
 		-
 			message: "#^If condition is always true\\.$#"
 			count: 2
-			path: lib/Doctrine/ORM/Mapping/ClassMetadataFactory.php
+			path: src/Mapping/ClassMetadataFactory.php
 
 		-
 			message: "#^Parameter \\#2 \\$class of method Doctrine\\\\ORM\\\\Mapping\\\\QuoteStrategy\\:\\:getSequenceName\\(\\) expects Doctrine\\\\ORM\\\\Mapping\\\\ClassMetadata, Doctrine\\\\ORM\\\\Mapping\\\\ClassMetadataInfo given\\.$#"
 			count: 2
-			path: lib/Doctrine/ORM/Mapping/ClassMetadataFactory.php
+			path: src/Mapping/ClassMetadataFactory.php
 
 		-
 			message: "#^Method Doctrine\\\\ORM\\\\Mapping\\\\ClassMetadataInfo\\:\\:fullyQualifiedClassName\\(\\) should return class\\-string\\|null but returns string\\|null\\.$#"
 			count: 1
-			path: lib/Doctrine/ORM/Mapping/ClassMetadataInfo.php
+			path: src/Mapping/ClassMetadataInfo.php
 
 		-
 			message: "#^Method Doctrine\\\\ORM\\\\Mapping\\\\NamingStrategy\\:\\:joinColumnName\\(\\) invoked with 2 parameters, 1 required\\.$#"
 			count: 2
-			path: lib/Doctrine/ORM/Mapping/ClassMetadataInfo.php
+			path: src/Mapping/ClassMetadataInfo.php
 
 		-
 			message: "#^Negated boolean expression is always false\\.$#"
 			count: 2
-			path: lib/Doctrine/ORM/Mapping/ClassMetadataInfo.php
+			path: src/Mapping/ClassMetadataInfo.php
 
 		-
 			message: "#^Result of && is always false\\.$#"
 			count: 1
-			path: lib/Doctrine/ORM/Mapping/ClassMetadataInfo.php
+			path: src/Mapping/ClassMetadataInfo.php
 
 		-
 			message: "#^Call to an undefined method Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadata\\:\\:mapEmbedded\\(\\)\\.$#"
 			count: 1
-			path: lib/Doctrine/ORM/Mapping/Driver/AnnotationDriver.php
+			path: src/Mapping/Driver/AnnotationDriver.php
 
 		-
 			message: "#^Call to an undefined method Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadata\\:\\:mapManyToMany\\(\\)\\.$#"
 			count: 1
-			path: lib/Doctrine/ORM/Mapping/Driver/AnnotationDriver.php
+			path: src/Mapping/Driver/AnnotationDriver.php
 
 		-
 			message: "#^Call to an undefined method Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadata\\:\\:mapManyToOne\\(\\)\\.$#"
 			count: 1
-			path: lib/Doctrine/ORM/Mapping/Driver/AnnotationDriver.php
+			path: src/Mapping/Driver/AnnotationDriver.php
 
 		-
 			message: "#^Call to an undefined method Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadata\\:\\:mapOneToMany\\(\\)\\.$#"
 			count: 1
-			path: lib/Doctrine/ORM/Mapping/Driver/AnnotationDriver.php
+			path: src/Mapping/Driver/AnnotationDriver.php
 
 		-
 			message: "#^Call to an undefined method Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadata\\:\\:mapOneToOne\\(\\)\\.$#"
 			count: 1
-			path: lib/Doctrine/ORM/Mapping/Driver/AnnotationDriver.php
+			path: src/Mapping/Driver/AnnotationDriver.php
 
 		-
 			message: "#^Expression on left side of \\?\\? is not nullable\\.$#"
 			count: 1
-			path: lib/Doctrine/ORM/Mapping/Driver/AnnotationDriver.php
+			path: src/Mapping/Driver/AnnotationDriver.php
 
 		-
 			message: "#^Expression on left side of \\?\\? is not nullable\\.$#"
 			count: 1
-			path: lib/Doctrine/ORM/Mapping/Driver/AttributeDriver.php
+			path: src/Mapping/Driver/AttributeDriver.php
 
 		-
 			message: "#^Parameter \\#4 \\.\\.\\.\\$args of static method Doctrine\\\\Deprecations\\\\Deprecation\\:\\:trigger\\(\\) expects float\\|int\\|string, false given\\.$#"
 			count: 1
-			path: lib/Doctrine/ORM/Mapping/Driver/DatabaseDriver.php
+			path: src/Mapping/Driver/DatabaseDriver.php
 
 		-
 			message: "#^Empty array passed to foreach\\.$#"
 			count: 1
-			path: lib/Doctrine/ORM/Mapping/Driver/XmlDriver.php
+			path: src/Mapping/Driver/XmlDriver.php
 
 		-
 			message: "#^Offset 'version' on \\*NEVER\\* in isset\\(\\) always exists and is always null\\.$#"
 			count: 1
-			path: lib/Doctrine/ORM/Mapping/Driver/XmlDriver.php
+			path: src/Mapping/Driver/XmlDriver.php
 
 		-
 			message: "#^Call to function is_int\\(\\) with string will always evaluate to false\\.$#"
 			count: 1
-			path: lib/Doctrine/ORM/NativeQuery.php
+			path: src/NativeQuery.php
 
 		-
 			message: "#^Result of && is always false\\.$#"
 			count: 1
-			path: lib/Doctrine/ORM/NativeQuery.php
+			path: src/NativeQuery.php
 
 		-
 			message: "#^Method Doctrine\\\\ORM\\\\Persisters\\\\Collection\\\\OneToManyPersister\\:\\:delete\\(\\) should return int\\|null but empty return statement found\\.$#"
 			count: 1
-			path: lib/Doctrine/ORM/Persisters/Collection/OneToManyPersister.php
+			path: src/Persisters/Collection/OneToManyPersister.php
 
 		-
 			message: "#^Parameter \\#3 \\$hints of method Doctrine\\\\ORM\\\\Internal\\\\Hydration\\\\AbstractHydrator\\:\\:hydrateAll\\(\\) expects array\\<string, string\\>, array\\<string, Doctrine\\\\ORM\\\\PersistentCollection\\|true\\> given\\.$#"
 			count: 1
-			path: lib/Doctrine/ORM/Persisters/Entity/BasicEntityPersister.php
+			path: src/Persisters/Entity/BasicEntityPersister.php
 
 		-
 			message: "#^Parameter \\#3 \\$hints of method Doctrine\\\\ORM\\\\Internal\\\\Hydration\\\\AbstractHydrator\\:\\:hydrateAll\\(\\) expects array\\<string, string\\>, array\\<string, true\\> given\\.$#"
 			count: 4
-			path: lib/Doctrine/ORM/Persisters/Entity/BasicEntityPersister.php
+			path: src/Persisters/Entity/BasicEntityPersister.php
 
 		-
 			message: "#^Strict comparison using \\=\\=\\= between string and null will always evaluate to false\\.$#"
 			count: 1
-			path: lib/Doctrine/ORM/Persisters/Entity/BasicEntityPersister.php
+			path: src/Persisters/Entity/BasicEntityPersister.php
 
 		-
 			message: "#^Property Doctrine\\\\ORM\\\\Persisters\\\\Entity\\\\CachedPersisterContext\\:\\:\\$class \\(Doctrine\\\\ORM\\\\Mapping\\\\ClassMetadata\\) does not accept Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadata\\.$#"
 			count: 1
-			path: lib/Doctrine/ORM/Persisters/Entity/CachedPersisterContext.php
+			path: src/Persisters/Entity/CachedPersisterContext.php
 
 		-
 			message: "#^Access to an undefined property Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadata\\:\\:\\$isEmbeddedClass\\.$#"
 			count: 1
-			path: lib/Doctrine/ORM/Proxy/ProxyFactory.php
+			path: src/Proxy/ProxyFactory.php
 
 		-
 			message: "#^Access to an undefined property Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadata\\:\\:\\$isMappedSuperclass\\.$#"
 			count: 1
-			path: lib/Doctrine/ORM/Proxy/ProxyFactory.php
+			path: src/Proxy/ProxyFactory.php
 
 		-
 			message: "#^Call to an undefined method Doctrine\\\\Common\\\\Proxy\\\\Proxy\\:\\:__wakeup\\(\\)\\.$#"
 			count: 1
-			path: lib/Doctrine/ORM/Proxy/ProxyFactory.php
+			path: src/Proxy/ProxyFactory.php
 
 		-
 			message: "#^Call to an undefined static method Doctrine\\\\ORM\\\\Proxy\\\\ProxyFactory\\:\\:createLazyGhost\\(\\)\\.$#"
 			count: 1
-			path: lib/Doctrine/ORM/Proxy/ProxyFactory.php
+			path: src/Proxy/ProxyFactory.php
 
 		-
 			message: "#^Comparison operation \"\\<\" between 0\\|1\\|2\\|3\\|4 and 0 is always false\\.$#"
 			count: 1
-			path: lib/Doctrine/ORM/Proxy/ProxyFactory.php
+			path: src/Proxy/ProxyFactory.php
 
 		-
 			message: "#^Comparison operation \"\\>\" between 0\\|1\\|2\\|3\\|4 and 4 is always false\\.$#"
 			count: 1
-			path: lib/Doctrine/ORM/Proxy/ProxyFactory.php
+			path: src/Proxy/ProxyFactory.php
 
 		-
 			message: "#^Parameter \\#1 \\$class of method Doctrine\\\\ORM\\\\Utility\\\\IdentifierFlattener\\:\\:flattenIdentifier\\(\\) expects Doctrine\\\\ORM\\\\Mapping\\\\ClassMetadata, Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadata given\\.$#"
 			count: 3
-			path: lib/Doctrine/ORM/Proxy/ProxyFactory.php
+			path: src/Proxy/ProxyFactory.php
 
 		-
 			message: "#^Result of \\|\\| is always false\\.$#"
 			count: 1
-			path: lib/Doctrine/ORM/Proxy/ProxyFactory.php
+			path: src/Proxy/ProxyFactory.php
 
 		-
 			message: "#^Parameter \\#2 \\$sqlParams of method Doctrine\\\\ORM\\\\Query\\:\\:evictResultSetCache\\(\\) expects array\\<string, mixed\\>, array\\<int, mixed\\> given\\.$#"
 			count: 1
-			path: lib/Doctrine/ORM/Query.php
+			path: src/Query.php
 
 		-
 			message: "#^Access to an undefined property Doctrine\\\\ORM\\\\Query\\\\AST\\\\Node\\:\\:\\$value\\.$#"
 			count: 1
-			path: lib/Doctrine/ORM/Query/AST/Functions/DateAddFunction.php
+			path: src/Query/AST/Functions/DateAddFunction.php
 
 		-
 			message: "#^Access to an undefined property Doctrine\\\\ORM\\\\Query\\\\AST\\\\Node\\:\\:\\$value\\.$#"
 			count: 1
-			path: lib/Doctrine/ORM/Query/AST/Functions/DateSubFunction.php
+			path: src/Query/AST/Functions/DateSubFunction.php
 
 		-
 			message: "#^Parameter \\#1 \\$simpleArithmeticExpr of method Doctrine\\\\ORM\\\\Query\\\\SqlWalker\\:\\:walkSimpleArithmeticExpression\\(\\) expects Doctrine\\\\ORM\\\\Query\\\\AST\\\\SimpleArithmeticExpression, Doctrine\\\\ORM\\\\Query\\\\AST\\\\Node given\\.$#"
 			count: 1
-			path: lib/Doctrine/ORM/Query/AST/Functions/LengthFunction.php
+			path: src/Query/AST/Functions/LengthFunction.php
 
 		-
 			message: "#^Parameter \\#1 \\$simpleArithmeticExpr of method Doctrine\\\\ORM\\\\Query\\\\SqlWalker\\:\\:walkSimpleArithmeticExpression\\(\\) expects Doctrine\\\\ORM\\\\Query\\\\AST\\\\SimpleArithmeticExpression, Doctrine\\\\ORM\\\\Query\\\\AST\\\\Node given\\.$#"
 			count: 1
-			path: lib/Doctrine/ORM/Query/AST/Functions/LowerFunction.php
+			path: src/Query/AST/Functions/LowerFunction.php
 
 		-
 			message: "#^Parameter \\#1 \\$simpleArithmeticExpr of method Doctrine\\\\ORM\\\\Query\\\\SqlWalker\\:\\:walkSimpleArithmeticExpression\\(\\) expects Doctrine\\\\ORM\\\\Query\\\\AST\\\\SimpleArithmeticExpression, Doctrine\\\\ORM\\\\Query\\\\AST\\\\Node given\\.$#"
 			count: 1
-			path: lib/Doctrine/ORM/Query/AST/Functions/UpperFunction.php
+			path: src/Query/AST/Functions/UpperFunction.php
 
 		-
 			message: "#^Method Doctrine\\\\ORM\\\\Query\\\\AST\\\\IndexBy\\:\\:dispatch\\(\\) should return string but returns void\\.$#"
 			count: 1
-			path: lib/Doctrine/ORM/Query/AST/IndexBy.php
+			path: src/Query/AST/IndexBy.php
 
 		-
 			message: "#^Result of method Doctrine\\\\ORM\\\\Query\\\\SqlWalker\\:\\:walkIndexBy\\(\\) \\(void\\) is used\\.$#"
 			count: 1
-			path: lib/Doctrine/ORM/Query/AST/IndexBy.php
+			path: src/Query/AST/IndexBy.php
 
 		-
 			message: "#^Call to an undefined method Doctrine\\\\ORM\\\\Query\\\\SqlWalker\\:\\:walkJoinPathExpression\\(\\)\\.$#"
 			count: 1
-			path: lib/Doctrine/ORM/Query/AST/JoinClassPathExpression.php
+			path: src/Query/AST/JoinClassPathExpression.php
 
 		-
 			message: "#^Call to an undefined method Doctrine\\\\ORM\\\\Query\\\\SqlWalker\\:\\:walkJoinVariableDeclaration\\(\\)\\.$#"
 			count: 1
-			path: lib/Doctrine/ORM/Query/AST/JoinVariableDeclaration.php
+			path: src/Query/AST/JoinVariableDeclaration.php
 
 		-
 			message: "#^Call to an undefined method Doctrine\\\\ORM\\\\Query\\\\SqlWalker\\:\\:walkWhenClauseExpression\\(\\)\\.$#"
 			count: 1
-			path: lib/Doctrine/ORM/Query/AST/SimpleWhenClause.php
+			path: src/Query/AST/SimpleWhenClause.php
 
 		-
 			message: "#^Call to an undefined method Doctrine\\\\ORM\\\\Query\\\\SqlWalker\\:\\:walkWhenClauseExpression\\(\\)\\.$#"
 			count: 1
-			path: lib/Doctrine/ORM/Query/AST/WhenClause.php
+			path: src/Query/AST/WhenClause.php
 
 		-
 			message: "#^Property Doctrine\\\\ORM\\\\Query\\\\Exec\\\\AbstractSqlExecutor\\:\\:\\$queryCacheProfile \\(Doctrine\\\\DBAL\\\\Cache\\\\QueryCacheProfile\\) does not accept null\\.$#"
 			count: 1
-			path: lib/Doctrine/ORM/Query/Exec/AbstractSqlExecutor.php
+			path: src/Query/Exec/AbstractSqlExecutor.php
 
 		-
 			message: "#^PHPDoc type array\\<string\\> of property Doctrine\\\\ORM\\\\Query\\\\Expr\\\\Andx\\:\\:\\$allowedClasses is not covariant with PHPDoc type array\\<int, class\\-string\\> of overridden property Doctrine\\\\ORM\\\\Query\\\\Expr\\\\Base\\:\\:\\$allowedClasses\\.$#"
 			count: 1
-			path: lib/Doctrine/ORM/Query/Expr/Andx.php
+			path: src/Query/Expr/Andx.php
 
 		-
 			message: "#^PHPDoc type array\\<string\\> of property Doctrine\\\\ORM\\\\Query\\\\Expr\\\\Orx\\:\\:\\$allowedClasses is not covariant with PHPDoc type array\\<int, class\\-string\\> of overridden property Doctrine\\\\ORM\\\\Query\\\\Expr\\\\Base\\:\\:\\$allowedClasses\\.$#"
 			count: 1
-			path: lib/Doctrine/ORM/Query/Expr/Orx.php
+			path: src/Query/Expr/Orx.php
 
 		-
 			message: "#^PHPDoc type array\\<string\\> of property Doctrine\\\\ORM\\\\Query\\\\Expr\\\\Select\\:\\:\\$allowedClasses is not covariant with PHPDoc type array\\<int, class\\-string\\> of overridden property Doctrine\\\\ORM\\\\Query\\\\Expr\\\\Base\\:\\:\\$allowedClasses\\.$#"
 			count: 1
-			path: lib/Doctrine/ORM/Query/Expr/Select.php
+			path: src/Query/Expr/Select.php
 
 		-
 			message: "#^Comparison operation \"\\<\" between null and 102 is always true\\.$#"
 			count: 1
-			path: lib/Doctrine/ORM/Query/Parser.php
+			path: src/Query/Parser.php
 
 		-
 			message: "#^Method Doctrine\\\\ORM\\\\Query\\\\Parser\\:\\:ArithmeticFactor\\(\\) should return Doctrine\\\\ORM\\\\Query\\\\AST\\\\ArithmeticFactor but returns Doctrine\\\\ORM\\\\Query\\\\AST\\\\Node\\|string\\.$#"
 			count: 1
-			path: lib/Doctrine/ORM/Query/Parser.php
+			path: src/Query/Parser.php
 
 		-
 			message: "#^Method Doctrine\\\\ORM\\\\Query\\\\Parser\\:\\:ArithmeticTerm\\(\\) should return Doctrine\\\\ORM\\\\Query\\\\AST\\\\ArithmeticTerm but returns Doctrine\\\\ORM\\\\Query\\\\AST\\\\ArithmeticFactor\\|string\\.$#"
 			count: 1
-			path: lib/Doctrine/ORM/Query/Parser.php
+			path: src/Query/Parser.php
 
 		-
 			message: "#^Parameter \\#2 \\$stringPattern of class Doctrine\\\\ORM\\\\Query\\\\AST\\\\LikeExpression constructor expects Doctrine\\\\ORM\\\\Query\\\\AST\\\\Functions\\\\FunctionNode\\|Doctrine\\\\ORM\\\\Query\\\\AST\\\\InputParameter\\|Doctrine\\\\ORM\\\\Query\\\\AST\\\\Literal\\|Doctrine\\\\ORM\\\\Query\\\\AST\\\\PathExpression, Doctrine\\\\ORM\\\\Query\\\\AST\\\\Node given\\.$#"
 			count: 1
-			path: lib/Doctrine/ORM/Query/Parser.php
+			path: src/Query/Parser.php
 
 		-
 			message: "#^Result of && is always true\\.$#"
 			count: 1
-			path: lib/Doctrine/ORM/Query/Parser.php
+			path: src/Query/Parser.php
 
 		-
 			message: "#^Unreachable statement \\- code above always terminates\\.$#"
 			count: 4
-			path: lib/Doctrine/ORM/Query/Parser.php
+			path: src/Query/Parser.php
 
 		-
 			message: "#^Offset 'columns' on array\\{name\\: string, entities\\: array, columns\\: array\\} in isset\\(\\) always exists and is not nullable\\.$#"
 			count: 1
-			path: lib/Doctrine/ORM/Query/ResultSetMappingBuilder.php
+			path: src/Query/ResultSetMappingBuilder.php
 
 		-
 			message: "#^Offset 'entities' on array\\{name\\: string, entities\\: array, columns\\: array\\} in isset\\(\\) always exists and is not nullable\\.$#"
 			count: 1
-			path: lib/Doctrine/ORM/Query/ResultSetMappingBuilder.php
+			path: src/Query/ResultSetMappingBuilder.php
 
 		-
 			message: "#^Parameter \\#2 \\$class of static method Doctrine\\\\ORM\\\\Utility\\\\PersisterHelper\\:\\:getTypeOfColumn\\(\\) expects Doctrine\\\\ORM\\\\Mapping\\\\ClassMetadata, Doctrine\\\\ORM\\\\Mapping\\\\ClassMetadataInfo given\\.$#"
 			count: 1
-			path: lib/Doctrine/ORM/Query/ResultSetMappingBuilder.php
+			path: src/Query/ResultSetMappingBuilder.php
 
 		-
 			message: "#^Call to function is_string\\(\\) with Doctrine\\\\ORM\\\\Query\\\\AST\\\\Node will always evaluate to false\\.$#"
 			count: 1
-			path: lib/Doctrine/ORM/Query/SqlWalker.php
+			path: src/Query/SqlWalker.php
 
 		-
 			message: "#^Else branch is unreachable because ternary operator condition is always true\\.$#"
 			count: 1
-			path: lib/Doctrine/ORM/Query/SqlWalker.php
+			path: src/Query/SqlWalker.php
 
 		-
 			message: "#^Method Doctrine\\\\ORM\\\\Query\\\\SqlWalker\\:\\:walkConditionalPrimary\\(\\) should return string but return statement is missing\\.$#"
 			count: 1
-			path: lib/Doctrine/ORM/Query/SqlWalker.php
+			path: src/Query/SqlWalker.php
 
 		-
 			message: "#^Parameter \\#1 \\$condTerm of method Doctrine\\\\ORM\\\\Query\\\\SqlWalker\\:\\:walkConditionalTerm\\(\\) expects Doctrine\\\\ORM\\\\Query\\\\AST\\\\ConditionalFactor\\|Doctrine\\\\ORM\\\\Query\\\\AST\\\\ConditionalPrimary\\|Doctrine\\\\ORM\\\\Query\\\\AST\\\\ConditionalTerm, Doctrine\\\\ORM\\\\Query\\\\AST\\\\Phase2OptimizableConditional given\\.$#"
 			count: 1
-			path: lib/Doctrine/ORM/Query/SqlWalker.php
+			path: src/Query/SqlWalker.php
 
 		-
 			message: "#^Result of && is always false\\.$#"
 			count: 1
-			path: lib/Doctrine/ORM/Query/SqlWalker.php
+			path: src/Query/SqlWalker.php
 
 		-
 			message: "#^Method Doctrine\\\\ORM\\\\Query\\\\TreeWalkerAdapter\\:\\:getExecutor\\(\\) should return Doctrine\\\\ORM\\\\Query\\\\Exec\\\\AbstractSqlExecutor but returns null\\.$#"
 			count: 1
-			path: lib/Doctrine/ORM/Query/TreeWalkerAdapter.php
+			path: src/Query/TreeWalkerAdapter.php
 
 		-
 			message: "#^Method Doctrine\\\\ORM\\\\Query\\\\TreeWalkerChain\\:\\:getExecutor\\(\\) should return Doctrine\\\\ORM\\\\Query\\\\Exec\\\\AbstractSqlExecutor but returns null\\.$#"
 			count: 1
-			path: lib/Doctrine/ORM/Query/TreeWalkerChain.php
+			path: src/Query/TreeWalkerChain.php
 
 		-
 			message: "#^Parameter \\#2 \\$value \\(string\\) of method Doctrine\\\\ORM\\\\Query\\\\TreeWalkerChainIterator\\:\\:offsetSet\\(\\) should be compatible with parameter \\$value \\(Doctrine\\\\ORM\\\\Query\\\\TreeWalker\\) of method ArrayAccess\\<int,Doctrine\\\\ORM\\\\Query\\\\TreeWalker\\>\\:\\:offsetSet\\(\\)$#"
 			count: 1
-			path: lib/Doctrine/ORM/Query/TreeWalkerChainIterator.php
+			path: src/Query/TreeWalkerChainIterator.php
 
 		-
 			message: "#^PHPDoc tag @param references unknown parameter\\: \\$where$#"
 			count: 2
-			path: lib/Doctrine/ORM/QueryBuilder.php
+			path: src/QueryBuilder.php
 
 		-
 			message: "#^Parameter \\#2 \\$dqlPart of method Doctrine\\\\ORM\\\\QueryBuilder\\:\\:add\\(\\) expects array\\<'join'\\|int, array\\<int\\|string, object\\>\\|string\\>\\|object\\|string, non\\-empty\\-array\\<string, Doctrine\\\\ORM\\\\Query\\\\Expr\\\\Join\\> given\\.$#"
 			count: 2
-			path: lib/Doctrine/ORM/QueryBuilder.php
+			path: src/QueryBuilder.php
 
 		-
 			message: "#^Class Doctrine\\\\Common\\\\Cache\\\\ApcCache not found\\.$#"
 			count: 1
-			path: lib/Doctrine/ORM/Tools/Console/Command/ClearCache/QueryCommand.php
+			path: src/Tools/Console/Command/ClearCache/QueryCommand.php
 
 		-
 			message: "#^Class Doctrine\\\\Common\\\\Cache\\\\XcacheCache not found\\.$#"
 			count: 1
-			path: lib/Doctrine/ORM/Tools/Console/Command/ClearCache/QueryCommand.php
+			path: src/Tools/Console/Command/ClearCache/QueryCommand.php
 
 		-
 			message: "#^Class Doctrine\\\\Common\\\\Cache\\\\ApcCache not found\\.$#"
 			count: 1
-			path: lib/Doctrine/ORM/Tools/Console/Command/ClearCache/ResultCommand.php
+			path: src/Tools/Console/Command/ClearCache/ResultCommand.php
 
 		-
 			message: "#^Class Doctrine\\\\Common\\\\Cache\\\\XcacheCache not found\\.$#"
 			count: 1
-			path: lib/Doctrine/ORM/Tools/Console/Command/ClearCache/ResultCommand.php
+			path: src/Tools/Console/Command/ClearCache/ResultCommand.php
 
 		-
 			message: "#^Parameter \\#1 \\$metadata of method Doctrine\\\\ORM\\\\Tools\\\\Export\\\\Driver\\\\AbstractExporter\\:\\:setMetadata\\(\\) expects array\\<int, Doctrine\\\\ORM\\\\Mapping\\\\ClassMetadata\\>, array\\<int, Doctrine\\\\ORM\\\\Mapping\\\\ClassMetadataInfo\\> given\\.$#"
 			count: 1
-			path: lib/Doctrine/ORM/Tools/Console/Command/ConvertDoctrine1SchemaCommand.php
+			path: src/Tools/Console/Command/ConvertDoctrine1SchemaCommand.php
 
 		-
 			message: "#^Access to an undefined property Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadata\\:\\:\\$name\\.$#"
 			count: 1
-			path: lib/Doctrine/ORM/Tools/Console/Command/ConvertMappingCommand.php
+			path: src/Tools/Console/Command/ConvertMappingCommand.php
 
 		-
 			message: "#^Parameter \\#1 \\$metadata of method Doctrine\\\\ORM\\\\Tools\\\\Export\\\\Driver\\\\AbstractExporter\\:\\:setMetadata\\(\\) expects array\\<int, Doctrine\\\\ORM\\\\Mapping\\\\ClassMetadata\\>, array\\<Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadata\\> given\\.$#"
 			count: 1
-			path: lib/Doctrine/ORM/Tools/Console/Command/ConvertMappingCommand.php
+			path: src/Tools/Console/Command/ConvertMappingCommand.php
 
 		-
 			message: "#^Access to an undefined property Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadata\\:\\:\\$name\\.$#"
 			count: 1
-			path: lib/Doctrine/ORM/Tools/Console/Command/GenerateEntitiesCommand.php
+			path: src/Tools/Console/Command/GenerateEntitiesCommand.php
 
 		-
 			message: "#^Parameter \\#1 \\$metadatas of method Doctrine\\\\ORM\\\\Tools\\\\EntityGenerator\\:\\:generate\\(\\) expects array\\<int, Doctrine\\\\ORM\\\\Mapping\\\\ClassMetadataInfo\\>, array\\<Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadata\\> given\\.$#"
 			count: 1
-			path: lib/Doctrine/ORM/Tools/Console/Command/GenerateEntitiesCommand.php
+			path: src/Tools/Console/Command/GenerateEntitiesCommand.php
 
 		-
 			message: "#^Access to an undefined property Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadata\\:\\:\\$name\\.$#"
 			count: 1
-			path: lib/Doctrine/ORM/Tools/Console/Command/GenerateProxiesCommand.php
+			path: src/Tools/Console/Command/GenerateProxiesCommand.php
 
 		-
 			message: "#^Access to an undefined property Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadata\\:\\:\\$customRepositoryClassName\\.$#"
 			count: 1
-			path: lib/Doctrine/ORM/Tools/Console/Command/GenerateRepositoriesCommand.php
+			path: src/Tools/Console/Command/GenerateRepositoriesCommand.php
 
 		-
 			message: "#^Parameter \\#1 \\$entityListeners of method Doctrine\\\\ORM\\\\Tools\\\\Console\\\\Command\\\\MappingDescribeCommand\\:\\:formatEntityListeners\\(\\) expects array\\<int, object\\>, array\\<string, array\\<int, array\\<string, string\\>\\>\\> given\\.$#"
 			count: 1
-			path: lib/Doctrine/ORM/Tools/Console/Command/MappingDescribeCommand.php
+			path: src/Tools/Console/Command/MappingDescribeCommand.php
 
 		-
 			message: "#^Offset 'allocationSize' on array\\{sequenceName\\: string, allocationSize\\: string, initialValue\\: string, quoted\\?\\: mixed\\} in isset\\(\\) always exists and is not nullable\\.$#"
 			count: 1
-			path: lib/Doctrine/ORM/Tools/EntityGenerator.php
+			path: src/Tools/EntityGenerator.php
 
 		-
 			message: "#^Offset 'initialValue' on array\\{sequenceName\\: string, allocationSize\\: string, initialValue\\: string, quoted\\?\\: mixed\\} in isset\\(\\) always exists and is not nullable\\.$#"
 			count: 1
-			path: lib/Doctrine/ORM/Tools/EntityGenerator.php
+			path: src/Tools/EntityGenerator.php
 
 		-
 			message: "#^Offset 'name' on array\\{name\\: string, schema\\?\\: string, indexes\\?\\: array, uniqueConstraints\\?\\: array, options\\?\\: array\\<string, mixed\\>, quoted\\?\\: bool\\} in isset\\(\\) always exists and is not nullable\\.$#"
 			count: 1
-			path: lib/Doctrine/ORM/Tools/EntityGenerator.php
+			path: src/Tools/EntityGenerator.php
 
 		-
 			message: "#^Offset 'sequenceName' on array\\{sequenceName\\: string, allocationSize\\: string, initialValue\\: string, quoted\\?\\: mixed\\} in isset\\(\\) always exists and is not nullable\\.$#"
 			count: 1
-			path: lib/Doctrine/ORM/Tools/EntityGenerator.php
+			path: src/Tools/EntityGenerator.php
 
 		-
 			message: "#^Property Doctrine\\\\ORM\\\\Mapping\\\\ClassMetadataInfo\\<object\\>\\:\\:\\$lifecycleCallbacks \\(array\\<string, array\\<int, string\\>\\>\\) in isset\\(\\) is not nullable\\.$#"
 			count: 1
-			path: lib/Doctrine/ORM/Tools/EntityGenerator.php
+			path: src/Tools/EntityGenerator.php
 
 		-
 			message: "#^Method Doctrine\\\\ORM\\\\Tools\\\\Export\\\\Driver\\\\AbstractExporter\\:\\:_getIdGeneratorTypeString\\(\\) should return string but return statement is missing\\.$#"
 			count: 1
-			path: lib/Doctrine/ORM/Tools/Export/Driver/AbstractExporter.php
+			path: src/Tools/Export/Driver/AbstractExporter.php
 
 		-
 			message: "#^If condition is always true\\.$#"
 			count: 1
-			path: lib/Doctrine/ORM/Tools/Export/Driver/PhpExporter.php
+			path: src/Tools/Export/Driver/PhpExporter.php
 
 		-
 			message: "#^Offset 'name' on array\\{name\\: string, schema\\?\\: string, indexes\\?\\: array, uniqueConstraints\\?\\: array, options\\?\\: array\\<string, mixed\\>, quoted\\?\\: bool\\} in isset\\(\\) always exists and is not nullable\\.$#"
 			count: 1
-			path: lib/Doctrine/ORM/Tools/Export/Driver/XmlExporter.php
+			path: src/Tools/Export/Driver/XmlExporter.php
 
 		-
 			message: "#^Parameter \\#1 \\$policy of method Doctrine\\\\ORM\\\\Tools\\\\Export\\\\Driver\\\\AbstractExporter\\:\\:_getChangeTrackingPolicyString\\(\\) expects 1\\|2\\|3, int given\\.$#"
 			count: 1
-			path: lib/Doctrine/ORM/Tools/Export/Driver/XmlExporter.php
+			path: src/Tools/Export/Driver/XmlExporter.php
 
 		-
 			message: "#^Property Doctrine\\\\ORM\\\\Mapping\\\\ClassMetadataInfo\\<object\\>\\:\\:\\$lifecycleCallbacks \\(array\\<string, array\\<int, string\\>\\>\\) in isset\\(\\) is not nullable\\.$#"
 			count: 1
-			path: lib/Doctrine/ORM/Tools/Export/Driver/XmlExporter.php
+			path: src/Tools/Export/Driver/XmlExporter.php
 
 		-
 			message: "#^Right side of && is always true\\.$#"
 			count: 1
-			path: lib/Doctrine/ORM/Tools/Export/Driver/XmlExporter.php
+			path: src/Tools/Export/Driver/XmlExporter.php
 
 		-
 			message: "#^Property Doctrine\\\\ORM\\\\Mapping\\\\ClassMetadataInfo\\<object\\>\\:\\:\\$lifecycleCallbacks \\(array\\<string, array\\<int, string\\>\\>\\) in isset\\(\\) is not nullable\\.$#"
 			count: 1
-			path: lib/Doctrine/ORM/Tools/Export/Driver/YamlExporter.php
+			path: src/Tools/Export/Driver/YamlExporter.php
 
 		-
 			message: "#^Property Doctrine\\\\ORM\\\\Mapping\\\\ClassMetadataInfo\\<object\\>\\:\\:\\$table \\(array\\<string, array\\|bool\\|string\\>\\) on left side of \\?\\? is not nullable\\.$#"
 			count: 1
-			path: lib/Doctrine/ORM/Tools/Export/Driver/YamlExporter.php
+			path: src/Tools/Export/Driver/YamlExporter.php
 
 		-
 			message: "#^Else branch is unreachable because ternary operator condition is always true\\.$#"
 			count: 1
-			path: lib/Doctrine/ORM/Tools/SchemaTool.php
+			path: src/Tools/SchemaTool.php
 
 		-
 			message: "#^Negated boolean expression is always false\\.$#"
 			count: 1
-			path: lib/Doctrine/ORM/Tools/SchemaTool.php
+			path: src/Tools/SchemaTool.php
 
 		-
 			message: "#^Parameter \\#3 \\$changeSet of class Doctrine\\\\ORM\\\\Event\\\\PreUpdateEventArgs constructor is passed by reference, so it expects variables only$#"
 			count: 1
-			path: lib/Doctrine/ORM/UnitOfWork.php
+			path: src/UnitOfWork.php
 
 		-
 			message: "#^Access to an undefined property Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadata\\:\\:\\$name\\.$#"
 			count: 1
-			path: lib/Doctrine/ORM/Utility/HierarchyDiscriminatorResolver.php
+			path: src/Utility/HierarchyDiscriminatorResolver.php
 
 		-
 			message: "#^Access to an undefined property Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadata\\:\\:\\$subClasses\\.$#"
 			count: 1
-			path: lib/Doctrine/ORM/Utility/HierarchyDiscriminatorResolver.php
+			path: src/Utility/HierarchyDiscriminatorResolver.php
