@@ -1,4 +1,4 @@
-Welcome to Doctrine 2 ORM's documentation!
+Welcome to Doctrine 3 ORM's documentation!
 ==========================================
 
 The Doctrine documentation is comprised of tutorials, a reference section and
