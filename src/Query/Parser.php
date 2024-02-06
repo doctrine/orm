@@ -1634,12 +1634,20 @@ final class Parser
 
         $this->match(TokenType::T_OPEN_PARENTHESIS);
 
-        $args[] = $this->NewObjectArg();
+        $arg                   = $this->NewObjectArg();
+        $namedArgAlreadyParsed = $arg instanceof AST\NamedScalarExpression;
+        $args                  = [$arg];
 
         while ($this->lexer->isNextToken(TokenType::T_COMMA)) {
             $this->match(TokenType::T_COMMA);
+            if ($this->lexer->isNextToken(TokenType::T_CLOSE_PARENTHESIS)) {
+                // Comma above is a trailing comma, ignore it
+                break;
+            }
 
-            $args[] = $this->NewObjectArg();
+            $arg                   = $this->NewObjectArg($namedArgAlreadyParsed);
+            $namedArgAlreadyParsed = $namedArgAlreadyParsed || $arg instanceof AST\NamedScalarExpression;
+            $args[]                = $arg;
         }
 
         $this->match(TokenType::T_CLOSE_PARENTHESIS);
@@ -1657,15 +1665,26 @@ final class Parser
     }
 
     /**
-     * NewObjectArg ::= ScalarExpression | "(" Subselect ")"
+     * NewObjectArg ::= ScalarExpression | NamedScalarExpression | "(" Subselect ")"
      */
-    public function NewObjectArg(): mixed
+    public function NewObjectArg(bool $namedArgAlreadyParsed = false): mixed
     {
         assert($this->lexer->lookahead !== null);
         $token = $this->lexer->lookahead;
         $peek  = $this->lexer->glimpse();
 
         assert($peek !== null);
+        if ($token->type === TokenType::T_IDENTIFIER && $peek->type === TokenType::T_INPUT_PARAMETER) {
+            $this->match(TokenType::T_IDENTIFIER);
+            $this->match(TokenType::T_INPUT_PARAMETER);
+
+            return new AST\NamedScalarExpression($this->ScalarExpression(), $token->value);
+        }
+
+        if ($namedArgAlreadyParsed) {
+            throw QueryException::syntaxError('Cannot specify ordered arguments after named ones.');
+        }
+
         if ($token->type === TokenType::T_OPEN_PARENTHESIS && $peek->type === TokenType::T_SELECT) {
             $this->match(TokenType::T_OPEN_PARENTHESIS);
             $expression = $this->Subselect();

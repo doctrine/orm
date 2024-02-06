@@ -562,6 +562,16 @@ And then use the ``NEW`` DQL keyword :
 
 Note that you can only pass scalar expressions to the constructor.
 
+The ``NEW`` operator also supports named arguments:
+
+.. code-block:: php
+
+    <?php
+    $query = $em->createQuery('SELECT NEW CustomerDTO(email: e.email, name: c.name, address: a.city) FROM Customer c JOIN c.email e JOIN c.address a');
+    $users = $query->getResult(); // array of CustomerDTO
+
+Note that you must not pass ordered arguments after named ones.
+
 Using INDEX BY
 ~~~~~~~~~~~~~~
 
@@ -1650,7 +1660,7 @@ Select Expressions
     SelectExpression        ::= (IdentificationVariable | ScalarExpression | AggregateExpression | FunctionDeclaration | "(" Subselect ")" | CaseExpression | NewObjectExpression) [["AS"] ["HIDDEN"] AliasResultVariable]
     SimpleSelectExpression  ::= (StateFieldPathExpression | IdentificationVariable | FunctionDeclaration | AggregateExpression | "(" Subselect ")" | ScalarExpression) [["AS"] AliasResultVariable]
     NewObjectExpression     ::= "NEW" AbstractSchemaName "(" NewObjectArg {"," NewObjectArg}* ")"
-    NewObjectArg            ::= ScalarExpression | "(" Subselect ")"
+    NewObjectArg            ::= ScalarExpression | NamedScalarExpression | "(" Subselect ")"
 
 Conditional Expressions
 ~~~~~~~~~~~~~~~~~~~~~~~

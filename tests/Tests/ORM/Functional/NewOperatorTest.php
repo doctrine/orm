@@ -1013,6 +1013,189 @@ class NewOperatorTest extends OrmFunctionalTestCase
         $dql = 'SELECT new Doctrine\Tests\ORM\Functional\ClassWithPrivateConstructor(u.name) FROM Doctrine\Tests\Models\CMS\CmsUser u';
         $this->_em->createQuery($dql)->getResult();
     }
+
+    /** @return array<string, array{string}> */
+    public static function provideQueriesWithNamedArguments(): array
+    {
+        return [
+            'Only named arguments in order' => [
+                'SELECT
+                    new Doctrine\Tests\Models\CMS\CmsUserDTO(
+                        name: u.name,
+                        email: e.email,
+                        address: a.city,
+                    )
+                FROM
+                    Doctrine\Tests\Models\CMS\CmsUser u
+                JOIN
+                    u.email e
+                JOIN
+                    u.address a
+                ORDER BY
+                    u.name',
+            ],
+            'Only named arguments not in order' => [
+                'SELECT
+                    new Doctrine\Tests\Models\CMS\CmsUserDTO(
+                        email: e.email,
+                        name: u.name,
+                        address: a.city,
+                    )
+                FROM
+                    Doctrine\Tests\Models\CMS\CmsUser u
+                JOIN
+                    u.email e
+                JOIN
+                    u.address a
+                ORDER BY
+                    u.name',
+            ],
+            'Both named and ordered arguments' => [
+                'SELECT
+                    new Doctrine\Tests\Models\CMS\CmsUserDTO(
+                        u.name,
+                        address: a.city,
+                        email: e.email,
+                    )
+                FROM
+                    Doctrine\Tests\Models\CMS\CmsUser u
+                JOIN
+                    u.email e
+                JOIN
+                    u.address a
+                ORDER BY
+                    u.name',
+            ],
+            'Both named and ordered arguments without trailing comma' => [
+                'SELECT
+                    new Doctrine\Tests\Models\CMS\CmsUserDTO(
+                        u.name,
+                        address: a.city,
+                        email: e.email
+                    )
+                FROM
+                    Doctrine\Tests\Models\CMS\CmsUser u
+                JOIN
+                    u.email e
+                JOIN
+                    u.address a
+                ORDER BY
+                    u.name',
+            ],
+        ];
+    }
+
+    #[DataProvider('provideQueriesWithNamedArguments')]
+    public function testQueryWithNamedArguments(string $query): void
+    {
+        $query  = $this->_em->createQuery($query);
+        $result = $query->getResult();
+
+        self::assertCount(3, $result);
+
+        self::assertInstanceOf(CmsUserDTO::class, $result[0]);
+        self::assertInstanceOf(CmsUserDTO::class, $result[1]);
+        self::assertInstanceOf(CmsUserDTO::class, $result[2]);
+
+        self::assertEquals($this->fixtures[0]->name, $result[0]->name);
+        self::assertEquals($this->fixtures[1]->name, $result[1]->name);
+        self::assertEquals($this->fixtures[2]->name, $result[2]->name);
+
+        self::assertEquals($this->fixtures[0]->email->email, $result[0]->email);
+        self::assertEquals($this->fixtures[1]->email->email, $result[1]->email);
+        self::assertEquals($this->fixtures[2]->email->email, $result[2]->email);
+
+        self::assertEquals($this->fixtures[0]->address->city, $result[0]->address);
+        self::assertEquals($this->fixtures[1]->address->city, $result[1]->address);
+        self::assertEquals($this->fixtures[2]->address->city, $result[2]->address);
+
+        self::assertNull($result[0]->phonenumbers);
+        self::assertNull($result[1]->phonenumbers);
+        self::assertNull($result[2]->phonenumbers);
+    }
+
+    public function testQueryWithOrderedArgumentAfterNamedArgument(): void
+    {
+        $dql = '
+            SELECT
+                new Doctrine\Tests\Models\CMS\CmsUserDTO(
+                    address: a.city,
+                    email: e.email,
+                    u.name,
+                )
+            FROM
+                Doctrine\Tests\Models\CMS\CmsUser u
+            JOIN
+                u.email e
+            JOIN
+                u.address a
+            ORDER BY
+                u.name';
+
+        $query = $this->_em->createQuery($dql);
+        $this->expectException(QueryException::class);
+        $this->expectExceptionMessage('[Syntax Error] Cannot specify ordered arguments after named ones.');
+
+        $query->getResult();
+    }
+
+    public function testQueryWithNamedArgumentsWithoutOptionalParameters(): void
+    {
+        $dql = '
+            SELECT
+                new Doctrine\Tests\Models\CMS\CmsUserDTO(
+                    address: a.city,
+                    email: e.email,
+                )
+            FROM
+                Doctrine\Tests\Models\CMS\CmsUser u
+            JOIN
+                u.email e
+            JOIN
+                u.address a
+            ORDER BY
+                u.name';
+
+        $query  = $this->_em->createQuery($dql);
+        $result = $query->getResult();
+
+        self::assertInstanceOf(CmsUserDTO::class, $result[0]);
+        self::assertInstanceOf(CmsUserDTO::class, $result[1]);
+        self::assertInstanceOf(CmsUserDTO::class, $result[2]);
+
+        self::assertNull($result[0]->name);
+        self::assertNull($result[1]->name);
+        self::assertNull($result[2]->name);
+
+        self::assertEquals($this->fixtures[0]->email->email, $result[0]->email);
+        self::assertEquals($this->fixtures[1]->email->email, $result[1]->email);
+        self::assertEquals($this->fixtures[2]->email->email, $result[2]->email);
+
+        self::assertEquals($this->fixtures[0]->address->city, $result[0]->address);
+        self::assertEquals($this->fixtures[1]->address->city, $result[1]->address);
+        self::assertEquals($this->fixtures[2]->address->city, $result[2]->address);
+
+        self::assertNull($result[0]->phonenumbers);
+        self::assertNull($result[1]->phonenumbers);
+        self::assertNull($result[2]->phonenumbers);
+    }
+
+    public function testQueryWithNamedArgumentsMissingRequiredArguments(): void
+    {
+        $dql = '
+            SELECT
+                new ' . ClassWithTooMuchArgs::class . '(
+                    bar: u.name,
+                )
+            FROM
+                Doctrine\Tests\Models\CMS\CmsUser u
+        ';
+
+        $query = $this->_em->createQuery($dql);
+        $this->expectException(QueryException::class);
+        $this->expectExceptionMessage('Number of arguments does not match with "Doctrine\Tests\ORM\Functional\ClassWithTooMuchArgs" constructor declaration.');
+        $result = $query->getResult();
+    }
 }
 
 class ClassWithTooMuchArgs

@@ -1503,7 +1503,7 @@ class SqlWalker
             $this->rsm->newObjectMappings[$columnAlias] = [
                 'className' => $newObjectExpression->className,
                 'objIndex'  => $objIndex,
-                'argIndex'  => $argIndex,
+                'argIndex'  => $e instanceof AST\NamedScalarExpression ? $e->name : $argIndex,
             ];
         }
 
