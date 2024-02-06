@@ -39,9 +39,9 @@ final class DiscriminatorColumnMapping implements ArrayAccess
      *     type: string,
      *     fieldName: string,
      *     name: string,
-     *     length?: int,
-     *     columnDefinition?: string,
-     *     enumType?: class-string<BackedEnum>,
+     *     length?: int|null,
+     *     columnDefinition?: string|null,
+     *     enumType?: class-string<BackedEnum>|null,
      *     options?: array<string, mixed>,
      * } $mappingArray
      */

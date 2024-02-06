@@ -2108,13 +2108,12 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
      * @param DiscriminatorColumnMapping|mixed[]|null $columnDef
      * @psalm-param DiscriminatorColumnMapping|array{
      *     name: string|null,
-     *     fieldName?: string,
-     *     type?: string,
-     *     length?: int,
+     *     fieldName?: string|null,
+     *     type?: string|null,
+     *     length?: int|null,
      *     columnDefinition?: string|null,
      *     enumType?: class-string<BackedEnum>|null,
-     *     options?:array<string,
-     *     mixed>|null
+     *     options?:array<string, mixed>
      * }|null $columnDef
      *
      * @throws MappingException
