@@ -2135,20 +2135,12 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
                 throw MappingException::duplicateColumnName($this->name, $columnDef['name']);
             }
 
-            if (! isset($columnDef['fieldName'])) {
-                $columnDef['fieldName'] = $columnDef['name'];
-            }
-
-            if (! isset($columnDef['type'])) {
-                $columnDef['type'] = 'string';
-            }
+            $columnDef['fieldName'] ??= $columnDef['name'];
+            $columnDef['type'] ??= 'string';
+            $columnDef['options'] ??= [];
 
             if (in_array($columnDef['type'], ['boolean', 'array', 'object', 'datetime', 'time', 'date'], true)) {
                 throw MappingException::invalidDiscriminatorColumnType($this->name, $columnDef['type']);
-            }
-
-            if (! isset($columnDef['options'])) {
-                $columnDef['options'] = [];
             }
 
             $this->discriminatorColumn = DiscriminatorColumnMapping::fromMappingArray($columnDef);
