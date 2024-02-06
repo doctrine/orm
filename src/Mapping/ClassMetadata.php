@@ -2113,7 +2113,7 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
      *     length?: int|null,
      *     columnDefinition?: string|null,
      *     enumType?: class-string<BackedEnum>|null,
-     *     options?:array<string, mixed>|null
+     *     options?: array<string, mixed>|null
      * }|null $columnDef
      *
      * @throws MappingException
@@ -2136,8 +2136,8 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
             }
 
             $columnDef['fieldName'] ??= $columnDef['name'];
-            $columnDef['type'] ??= 'string';
-            $columnDef['options'] ??= [];
+            $columnDef['type']      ??= 'string';
+            $columnDef['options']   ??= [];
 
             if (in_array($columnDef['type'], ['boolean', 'array', 'object', 'datetime', 'time', 'date'], true)) {
                 throw MappingException::invalidDiscriminatorColumnType($this->name, $columnDef['type']);
