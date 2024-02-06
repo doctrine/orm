@@ -21,7 +21,7 @@ use function substr;
 /**
  * Scans a DQL query for tokens.
  *
- * @extends AbstractLexer<Lexer::T_*, string>
+ * @extends AbstractLexer<TokenType::T_*, string>
  */
 class Lexer extends AbstractLexer
 {
@@ -323,7 +323,7 @@ class Lexer extends AbstractLexer
 
             // Recognize identifiers, aliased or qualified names
             case ctype_alpha($value[0]) || $value[0] === '_' || $value[0] === '\\':
-                $name = 'Doctrine\ORM\Query\Lexer::T_' . strtoupper($value);
+                $name = 'Doctrine\ORM\Query\TokenType::T_' . strtoupper($value);
 
                 if (defined($name)) {
                     $type = constant($name);

@@ -827,12 +827,12 @@ classes have to implement the base class :
 
         public function parse(\Doctrine\ORM\Query\Parser $parser)
         {
-            $parser->match(Lexer::T_IDENTIFIER);
-            $parser->match(Lexer::T_OPEN_PARENTHESIS);
+            $parser->match(TokenType::T_IDENTIFIER);
+            $parser->match(TokenType::T_OPEN_PARENTHESIS);
 
             $this->simpleArithmeticExpression = $parser->SimpleArithmeticExpression();
 
-            $parser->match(Lexer::T_CLOSE_PARENTHESIS);
+            $parser->match(TokenType::T_CLOSE_PARENTHESIS);
         }
     }
 

@@ -2046,7 +2046,7 @@
     </PossiblyUndefinedVariable>
     <RedundantConditionGivenDocblockType>
       <code>$AST instanceof AST\SelectStatement</code>
-      <code>$token === Lexer::T_IDENTIFIER</code>
+      <code>$token === TokenType::T_IDENTIFIER</code>
     </RedundantConditionGivenDocblockType>
   </file>
   <file src="src/Query/ParserResult.php">

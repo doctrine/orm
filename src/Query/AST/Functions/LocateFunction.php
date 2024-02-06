@@ -6,9 +6,9 @@ namespace Doctrine\ORM\Query\AST\Functions;
 
 use Doctrine\ORM\Query\AST\Node;
 use Doctrine\ORM\Query\AST\SimpleArithmeticExpression;
-use Doctrine\ORM\Query\Lexer;
 use Doctrine\ORM\Query\Parser;
 use Doctrine\ORM\Query\SqlWalker;
+use Doctrine\ORM\Query\TokenType;
 
 /**
  * "LOCATE" "(" StringPrimary "," StringPrimary ["," SimpleArithmeticExpression]")"
@@ -48,22 +48,22 @@ class LocateFunction extends FunctionNode
     /** @inheritDoc */
     public function parse(Parser $parser)
     {
-        $parser->match(Lexer::T_IDENTIFIER);
-        $parser->match(Lexer::T_OPEN_PARENTHESIS);
+        $parser->match(TokenType::T_IDENTIFIER);
+        $parser->match(TokenType::T_OPEN_PARENTHESIS);
 
         $this->firstStringPrimary = $parser->StringPrimary();
 
-        $parser->match(Lexer::T_COMMA);
+        $parser->match(TokenType::T_COMMA);
 
         $this->secondStringPrimary = $parser->StringPrimary();
 
         $lexer = $parser->getLexer();
-        if ($lexer->isNextToken(Lexer::T_COMMA)) {
-            $parser->match(Lexer::T_COMMA);
+        if ($lexer->isNextToken(TokenType::T_COMMA)) {
+            $parser->match(TokenType::T_COMMA);
 
             $this->simpleArithmeticExpression = $parser->SimpleArithmeticExpression();
         }
 
-        $parser->match(Lexer::T_CLOSE_PARENTHESIS);
+        $parser->match(TokenType::T_CLOSE_PARENTHESIS);
     }
 }
