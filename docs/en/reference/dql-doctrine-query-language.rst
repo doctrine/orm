@@ -812,7 +812,7 @@ classes have to implement the base class :
     namespace MyProject\Query\AST;
 
     use Doctrine\ORM\Query\AST\Functions\FunctionNode;
-    use Doctrine\ORM\Query\Lexer;
+    use Doctrine\ORM\Query\TokenType;
 
     class MysqlFloor extends FunctionNode
     {
