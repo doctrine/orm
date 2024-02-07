@@ -84,7 +84,7 @@ class Lexer extends AbstractLexer
     public const T_CLOSE_CURLY_BRACE = TokenType::T_CLOSE_CURLY_BRACE;
 
     // All tokens that are identifiers or keywords that could be considered as identifiers should be >= 100
-    /** @deprecated use {@see TokenType::T_ALIASED_NAME} */
+    /** @deprecated No Replacement planned. */
     public const T_ALIASED_NAME = TokenType::T_ALIASED_NAME;
 
     /** @deprecated use {@see TokenType::T_FULLY_QUALIFIED_NAME} */
