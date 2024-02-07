@@ -1781,6 +1781,10 @@ EXCEPTION
      */
     final public static function getIdHashByIdentifier(array $identifier): string
     {
+        if (array_filter($identifier, 'is_array')) {
+            throw new UnexpectedValueException('Unexpected identifier value: Expecting scalar, got array.');
+        }
+
         return implode(
             ' ',
             array_map(
