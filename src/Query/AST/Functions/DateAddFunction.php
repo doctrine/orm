@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Query\AST\Functions;
 
 use Doctrine\ORM\Query\AST\Node;
-use Doctrine\ORM\Query\Lexer;
 use Doctrine\ORM\Query\Parser;
 use Doctrine\ORM\Query\QueryException;
 use Doctrine\ORM\Query\SqlWalker;
+use Doctrine\ORM\Query\TokenType;
 
 use function strtolower;
 
@@ -84,15 +84,15 @@ class DateAddFunction extends FunctionNode
     /** @inheritDoc */
     public function parse(Parser $parser)
     {
-        $parser->match(Lexer::T_IDENTIFIER);
-        $parser->match(Lexer::T_OPEN_PARENTHESIS);
+        $parser->match(TokenType::T_IDENTIFIER);
+        $parser->match(TokenType::T_OPEN_PARENTHESIS);
 
         $this->firstDateExpression = $parser->ArithmeticPrimary();
-        $parser->match(Lexer::T_COMMA);
+        $parser->match(TokenType::T_COMMA);
         $this->intervalExpression = $parser->ArithmeticPrimary();
-        $parser->match(Lexer::T_COMMA);
+        $parser->match(TokenType::T_COMMA);
         $this->unit = $parser->StringPrimary();
 
-        $parser->match(Lexer::T_CLOSE_PARENTHESIS);
+        $parser->match(TokenType::T_CLOSE_PARENTHESIS);
     }
 }
