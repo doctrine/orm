@@ -26,243 +26,243 @@ use function substr;
 class Lexer extends AbstractLexer
 {
     // All tokens that are not valid identifiers must be < 100
-    /** @deprecated use Doctrine\ORM\Query\TokenType */
+    /** @deprecated use {@see TokenType::T_NONE} */
     public const T_NONE = 1;
 
-    /** @deprecated use Doctrine\ORM\Query\TokenType */
+    /** @deprecated use {@see TokenType::T_INTEGER} */
     public const T_INTEGER = 2;
 
-    /** @deprecated use Doctrine\ORM\Query\TokenType */
+    /** @deprecated use {@see TokenType::T_STRING} */
     public const T_STRING = 3;
 
-    /** @deprecated use Doctrine\ORM\Query\TokenType */
+    /** @deprecated use {@see TokenType::T_INPUT_PARAMETER} */
     public const T_INPUT_PARAMETER = 4;
 
-    /** @deprecated use Doctrine\ORM\Query\TokenType */
+    /** @deprecated use {@see TokenType::T_FLOAT} */
     public const T_FLOAT = 5;
 
-    /** @deprecated use Doctrine\ORM\Query\TokenType */
+    /** @deprecated use {@see TokenType::T_CLOSE_PARENTHESIS} */
     public const T_CLOSE_PARENTHESIS = 6;
 
-    /** @deprecated use Doctrine\ORM\Query\TokenType */
+    /** @deprecated use {@see TokenType::T_OPEN_PARENTHESIS} */
     public const T_OPEN_PARENTHESIS = 7;
 
-    /** @deprecated use Doctrine\ORM\Query\TokenType */
+    /** @deprecated use {@see TokenType::T_COMMA} */
     public const T_COMMA = 8;
 
-    /** @deprecated use Doctrine\ORM\Query\TokenType */
+    /** @deprecated use {@see TokenType::T_DIVIDE} */
     public const T_DIVIDE = 9;
 
-    /** @deprecated use Doctrine\ORM\Query\TokenType */
+    /** @deprecated use {@see TokenType::T_DOT} */
     public const T_DOT = 10;
 
-    /** @deprecated use Doctrine\ORM\Query\TokenType */
+    /** @deprecated use {@see TokenType::T_EQUALS} */
     public const T_EQUALS = 11;
 
-    /** @deprecated use Doctrine\ORM\Query\TokenType */
+    /** @deprecated use {@see TokenType::T_GREATER_THAN} */
     public const T_GREATER_THAN = 12;
 
-    /** @deprecated use Doctrine\ORM\Query\TokenType */
+    /** @deprecated use {@see TokenType::T_LOWER_THAN} */
     public const T_LOWER_THAN = 13;
 
-    /** @deprecated use Doctrine\ORM\Query\TokenType */
+    /** @deprecated use {@see TokenType::T_MINUS} */
     public const T_MINUS = 14;
 
-    /** @deprecated use Doctrine\ORM\Query\TokenType */
+    /** @deprecated use {@see TokenType::T_MULTIPLY} */
     public const T_MULTIPLY = 15;
 
-    /** @deprecated use Doctrine\ORM\Query\TokenType */
+    /** @deprecated use {@see TokenType::T_NEGATE} */
     public const T_NEGATE = 16;
 
-    /** @deprecated use Doctrine\ORM\Query\TokenType */
+    /** @deprecated use {@see TokenType::T_PLUS} */
     public const T_PLUS = 17;
 
-    /** @deprecated use Doctrine\ORM\Query\TokenType */
+    /** @deprecated use {@see TokenType::T_OPEN_CURLY_BRACE} */
     public const T_OPEN_CURLY_BRACE = 18;
 
-    /** @deprecated use Doctrine\ORM\Query\TokenType */
+    /** @deprecated use {@see TokenType::T_CLOSE_CURLY_BRACE} */
     public const T_CLOSE_CURLY_BRACE = 19;
 
     // All tokens that are identifiers or keywords that could be considered as identifiers should be >= 100
-    /** @deprecated use Doctrine\ORM\Query\TokenType */
+    /** @deprecated use {@see TokenType::T_ALIASED_NAME} */
     public const T_ALIASED_NAME = 100;
 
-    /** @deprecated use Doctrine\ORM\Query\TokenType */
+    /** @deprecated use {@see TokenType::T_FULLY_QUALIFIED_NAME} */
     public const T_FULLY_QUALIFIED_NAME = 101;
 
-    /** @deprecated use Doctrine\ORM\Query\TokenType */
+    /** @deprecated use {@see TokenType::T_IDENTIFIER} */
     public const T_IDENTIFIER = 102;
 
     // All keyword tokens should be >= 200
-    /** @deprecated use Doctrine\ORM\Query\TokenType */
+    /** @deprecated use {@see TokenType::T_ALL} */
     public const T_ALL = 200;
 
-    /** @deprecated use Doctrine\ORM\Query\TokenType */
+    /** @deprecated use {@see TokenType::T_AND} */
     public const T_AND = 201;
 
-    /** @deprecated use Doctrine\ORM\Query\TokenType */
+    /** @deprecated use {@see TokenType::T_ANY} */
     public const T_ANY = 202;
 
-    /** @deprecated use Doctrine\ORM\Query\TokenType */
+    /** @deprecated use {@see TokenType::T_AS} */
     public const T_AS = 203;
 
-    /** @deprecated use Doctrine\ORM\Query\TokenType */
+    /** @deprecated use {@see TokenType::T_ASC} */
     public const T_ASC = 204;
 
-    /** @deprecated use Doctrine\ORM\Query\TokenType */
+    /** @deprecated use {@see TokenType::T_AVG} */
     public const T_AVG = 205;
 
-    /** @deprecated use Doctrine\ORM\Query\TokenType */
+    /** @deprecated use {@see TokenType::T_BETWEEN} */
     public const T_BETWEEN = 206;
 
-    /** @deprecated use Doctrine\ORM\Query\TokenType */
+    /** @deprecated use {@see TokenType::T_BOTH} */
     public const T_BOTH = 207;
 
-    /** @deprecated use Doctrine\ORM\Query\TokenType */
+    /** @deprecated use {@see TokenType::T_BY} */
     public const T_BY = 208;
 
-    /** @deprecated use Doctrine\ORM\Query\TokenType */
+    /** @deprecated use {@see TokenType::T_CASE} */
     public const T_CASE = 209;
 
-    /** @deprecated use Doctrine\ORM\Query\TokenType */
+    /** @deprecated use {@see TokenType::T_COALESCE} */
     public const T_COALESCE = 210;
 
-    /** @deprecated use Doctrine\ORM\Query\TokenType */
+    /** @deprecated use {@see TokenType::T_COUNT} */
     public const T_COUNT = 211;
 
-    /** @deprecated use Doctrine\ORM\Query\TokenType */
+    /** @deprecated use {@see TokenType::T_DELETE} */
     public const T_DELETE = 212;
 
-    /** @deprecated use Doctrine\ORM\Query\TokenType */
+    /** @deprecated use {@see TokenType::T_DESC} */
     public const T_DESC = 213;
 
-    /** @deprecated use Doctrine\ORM\Query\TokenType */
+    /** @deprecated use {@see TokenType::T_DISTINCT} */
     public const T_DISTINCT = 214;
 
-    /** @deprecated use Doctrine\ORM\Query\TokenType */
+    /** @deprecated use {@see TokenType::T_ELSE} */
     public const T_ELSE = 215;
 
-    /** @deprecated use Doctrine\ORM\Query\TokenType */
+    /** @deprecated use {@see TokenType::T_EMPTY} */
     public const T_EMPTY = 216;
 
-    /** @deprecated use Doctrine\ORM\Query\TokenType */
+    /** @deprecated use {@see TokenType::T_END} */
     public const T_END = 217;
 
-    /** @deprecated use Doctrine\ORM\Query\TokenType */
+    /** @deprecated use {@see TokenType::T_ESCAPE} */
     public const T_ESCAPE = 218;
 
-    /** @deprecated use Doctrine\ORM\Query\TokenType */
+    /** @deprecated use {@see TokenType::T_EXISTS} */
     public const T_EXISTS = 219;
 
-    /** @deprecated use Doctrine\ORM\Query\TokenType */
+    /** @deprecated use {@see TokenType::T_FALSE} */
     public const T_FALSE = 220;
 
-    /** @deprecated use Doctrine\ORM\Query\TokenType */
+    /** @deprecated use {@see TokenType::T_FROM} */
     public const T_FROM = 221;
 
-    /** @deprecated use Doctrine\ORM\Query\TokenType */
+    /** @deprecated use {@see TokenType::T_GROUP} */
     public const T_GROUP = 222;
 
-    /** @deprecated use Doctrine\ORM\Query\TokenType */
+    /** @deprecated use {@see TokenType::T_HAVING} */
     public const T_HAVING = 223;
 
-    /** @deprecated use Doctrine\ORM\Query\TokenType */
+    /** @deprecated use {@see TokenType::T_HIDDEN} */
     public const T_HIDDEN = 224;
 
-    /** @deprecated use Doctrine\ORM\Query\TokenType */
+    /** @deprecated use {@see TokenType::T_IN} */
     public const T_IN = 225;
 
-    /** @deprecated use Doctrine\ORM\Query\TokenType */
+    /** @deprecated use {@see TokenType::T_INDEX} */
     public const T_INDEX = 226;
 
-    /** @deprecated use Doctrine\ORM\Query\TokenType */
+    /** @deprecated use {@see TokenType::T_INNER} */
     public const T_INNER = 227;
 
-    /** @deprecated use Doctrine\ORM\Query\TokenType */
+    /** @deprecated use {@see TokenType::T_INSTANCE} */
     public const T_INSTANCE = 228;
 
-    /** @deprecated use Doctrine\ORM\Query\TokenType */
+    /** @deprecated use {@see TokenType::T_IS} */
     public const T_IS = 229;
 
-    /** @deprecated use Doctrine\ORM\Query\TokenType */
+    /** @deprecated use {@see TokenType::T_JOIN} */
     public const T_JOIN = 230;
 
-    /** @deprecated use Doctrine\ORM\Query\TokenType */
+    /** @deprecated use {@see TokenType::T_LEADING} */
     public const T_LEADING = 231;
 
-    /** @deprecated use Doctrine\ORM\Query\TokenType */
+    /** @deprecated use {@see TokenType::T_LEFT} */
     public const T_LEFT = 232;
 
-    /** @deprecated use Doctrine\ORM\Query\TokenType */
+    /** @deprecated use {@see TokenType::T_LIKE} */
     public const T_LIKE = 233;
 
-    /** @deprecated use Doctrine\ORM\Query\TokenType */
+    /** @deprecated use {@see TokenType::T_MAX} */
     public const T_MAX = 234;
 
-    /** @deprecated use Doctrine\ORM\Query\TokenType */
+    /** @deprecated use {@see TokenType::T_MEMBER} */
     public const T_MEMBER = 235;
 
-    /** @deprecated use Doctrine\ORM\Query\TokenType */
+    /** @deprecated use {@see TokenType::T_MIN} */
     public const T_MIN = 236;
 
-    /** @deprecated use Doctrine\ORM\Query\TokenType */
+    /** @deprecated use {@see TokenType::T_NEW} */
     public const T_NEW = 237;
 
-    /** @deprecated use Doctrine\ORM\Query\TokenType */
+    /** @deprecated use {@see TokenType::T_NOT} */
     public const T_NOT = 238;
 
-    /** @deprecated use Doctrine\ORM\Query\TokenType */
+    /** @deprecated use {@see TokenType::T_NULL} */
     public const T_NULL = 239;
 
-    /** @deprecated use Doctrine\ORM\Query\TokenType */
+    /** @deprecated use {@see TokenType::T_NULLIF} */
     public const T_NULLIF = 240;
 
-    /** @deprecated use Doctrine\ORM\Query\TokenType */
+    /** @deprecated use {@see TokenType::T_OF} */
     public const T_OF = 241;
 
-    /** @deprecated use Doctrine\ORM\Query\TokenType */
+    /** @deprecated use {@see TokenType::T_OR} */
     public const T_OR = 242;
 
-    /** @deprecated use Doctrine\ORM\Query\TokenType */
+    /** @deprecated use {@see TokenType::T_ORDER} */
     public const T_ORDER = 243;
 
-    /** @deprecated use Doctrine\ORM\Query\TokenType */
+    /** @deprecated use {@see TokenType::T_OUTER} */
     public const T_OUTER = 244;
 
-    /** @deprecated use Doctrine\ORM\Query\TokenType */
+    /** @deprecated use {@see TokenType::T_PARTIAL} */
     public const T_PARTIAL = 245;
 
-    /** @deprecated use Doctrine\ORM\Query\TokenType */
+    /** @deprecated use {@see TokenType::T_SELECT} */
     public const T_SELECT = 246;
 
-    /** @deprecated use Doctrine\ORM\Query\TokenType */
+    /** @deprecated use {@see TokenType::T_SET} */
     public const T_SET = 247;
 
-    /** @deprecated use Doctrine\ORM\Query\TokenType */
+    /** @deprecated use {@see TokenType::T_SOME} */
     public const T_SOME = 248;
 
-    /** @deprecated use Doctrine\ORM\Query\TokenType */
+    /** @deprecated use {@see TokenType::T_SUM} */
     public const T_SUM = 249;
 
-    /** @deprecated use Doctrine\ORM\Query\TokenType */
+    /** @deprecated use {@see TokenType::T_THEN} */
     public const T_THEN = 250;
 
-    /** @deprecated use Doctrine\ORM\Query\TokenType */
+    /** @deprecated use {@see TokenType::T_TRAILING} */
     public const T_TRAILING = 251;
 
-    /** @deprecated use Doctrine\ORM\Query\TokenType */
+    /** @deprecated use {@see TokenType::T_TRUE} */
     public const T_TRUE = 252;
 
-    /** @deprecated use Doctrine\ORM\Query\TokenType */
+    /** @deprecated use {@see TokenType::T_UPDATE} */
     public const T_UPDATE = 253;
 
-    /** @deprecated use Doctrine\ORM\Query\TokenType */
+    /** @deprecated use {@see TokenType::T_WHEN} */
     public const T_WHEN = 254;
 
-    /** @deprecated use Doctrine\ORM\Query\TokenType */
+    /** @deprecated use {@see TokenType::T_WHERE} */
     public const T_WHERE = 255;
 
-    /** @deprecated use Doctrine\ORM\Query\TokenType */
+    /** @deprecated use {@see TokenType::T_WITH} */
     public const T_WITH = 256;
 
     /**
