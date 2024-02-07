@@ -687,6 +687,12 @@ following classes and methods:
 
 Use `toIterable()` instead.
 
+# Upgrade to 2.19
+
+## Deprecate `Doctrine\ORM\Query\Lexer::T_*` constants
+
+Use `Doctrine\ORM\Query\TokenType::T_*` instead.
+
 # Upgrade to 2.17
 
 ## Deprecate annotations classes for named queries

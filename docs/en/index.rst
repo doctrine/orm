@@ -1,4 +1,4 @@
-Welcome to Doctrine 2 ORM's documentation!
+Welcome to Doctrine ORM's documentation!
 ==========================================
 
 The Doctrine documentation is comprised of tutorials, a reference section and
@@ -93,7 +93,7 @@ Tutorials
 Changelogs
 ----------
 
-* `Upgrade <https://github.com/doctrine/doctrine2/blob/master/UPGRADE.md>`_
+* `Upgrade <https://github.com/doctrine/orm/blob/HEAD/UPGRADE.md>`_
 
 Cookbook
 --------
