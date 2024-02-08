@@ -1,29 +1,16 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\DDC6573;
 
-class DDC6573Currency
+final class DDC6573Currency
 {
-    /**
-     * Currency code.
-     *
-     * @var string
-     */
-    private $code;
-
-    public function __construct($code)
+    public function __construct(private readonly string $code)
     {
-        if (!is_string($code)) {
-            throw new \InvalidArgumentException('Currency code should be string');
-        }
-
-        $this->code = $code;
     }
 
-    /**
-     * @return string
-     */
-    public function getCode()
+    public function getCode(): string
     {
         return $this->code;
     }

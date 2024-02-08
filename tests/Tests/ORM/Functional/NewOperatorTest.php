@@ -1024,9 +1024,11 @@ class NewOperatorTest extends OrmFunctionalTestCase
                     new CmsAddressDTO(
                         a.country,
                         a.city,
+                        a.zip,
                         new CmsAddressDTO(
                             a.country,
-                            a.city
+                            a.city,
+                            a.zip
                         )
                     )
                 ) as user,
@@ -1044,47 +1046,39 @@ class NewOperatorTest extends OrmFunctionalTestCase
         $query  = $this->getEntityManager()->createQuery($dql);
         $result = $query->getResult();
 
-        $this->assertCount(3, $result);
+        self::assertCount(3, $result);
 
-        $this->assertInstanceOf(CmsUserDTO::class, $result[0]['user']);
-        $this->assertInstanceOf(CmsUserDTO::class, $result[1]['user']);
-        $this->assertInstanceOf(CmsUserDTO::class, $result[2]['user']);
+        self::assertInstanceOf(CmsUserDTO::class, $result[0]['user']);
+        self::assertInstanceOf(CmsUserDTO::class, $result[1]['user']);
+        self::assertInstanceOf(CmsUserDTO::class, $result[2]['user']);
 
-        $this->assertInstanceOf(CmsAddressDTO::class, $result[0]['user']->address);
-        $this->assertInstanceOf(CmsAddressDTO::class, $result[1]['user']->address);
-        $this->assertInstanceOf(CmsAddressDTO::class, $result[2]['user']->address);
+        self::assertInstanceOf(CmsAddressDTO::class, $result[0]['user']->address);
+        self::assertInstanceOf(CmsAddressDTO::class, $result[1]['user']->address);
+        self::assertInstanceOf(CmsAddressDTO::class, $result[2]['user']->address);
 
-        $this->assertEquals($this->fixtures[0]->name, $result[0]['user']->name);
-        $this->assertEquals($this->fixtures[1]->name, $result[1]['user']->name);
-        $this->assertEquals($this->fixtures[2]->name, $result[2]['user']->name);
+        self::assertSame($this->fixtures[0]->name, $result[0]['user']->name);
+        self::assertSame($this->fixtures[1]->name, $result[1]['user']->name);
+        self::assertSame($this->fixtures[2]->name, $result[2]['user']->name);
 
-        $this->assertEquals($this->fixtures[0]->email->email, $result[0]['user']->email);
-        $this->assertEquals($this->fixtures[1]->email->email, $result[1]['user']->email);
-        $this->assertEquals($this->fixtures[2]->email->email, $result[2]['user']->email);
+        self::assertSame($this->fixtures[0]->email->email, $result[0]['user']->email);
+        self::assertSame($this->fixtures[1]->email->email, $result[1]['user']->email);
+        self::assertSame($this->fixtures[2]->email->email, $result[2]['user']->email);
 
-        $this->assertEquals($this->fixtures[0]->address->city, $result[0]['user']->address->city);
-        $this->assertEquals($this->fixtures[1]->address->city, $result[1]['user']->address->city);
-        $this->assertEquals($this->fixtures[2]->address->city, $result[2]['user']->address->city);
+        self::assertSame($this->fixtures[0]->address->city, $result[0]['user']->address->city);
+        self::assertSame($this->fixtures[1]->address->city, $result[1]['user']->address->city);
+        self::assertSame($this->fixtures[2]->address->city, $result[2]['user']->address->city);
 
-        $this->assertEquals($this->fixtures[0]->address->country, $result[0]['user']->address->country);
-        $this->assertEquals($this->fixtures[1]->address->country, $result[1]['user']->address->country);
-        $this->assertEquals($this->fixtures[2]->address->country, $result[2]['user']->address->country);
+        self::assertSame($this->fixtures[0]->address->country, $result[0]['user']->address->country);
+        self::assertSame($this->fixtures[1]->address->country, $result[1]['user']->address->country);
+        self::assertSame($this->fixtures[2]->address->country, $result[2]['user']->address->country);
 
-        $this->assertEquals($this->fixtures[0]->status,$result[0]['status']);
-        $this->assertEquals($this->fixtures[1]->status,$result[1]['status']);
-        $this->assertEquals($this->fixtures[2]->status,$result[2]['status']);
+        self::assertSame($this->fixtures[0]->status, $result[0]['status']);
+        self::assertSame($this->fixtures[1]->status, $result[1]['status']);
+        self::assertSame($this->fixtures[2]->status, $result[2]['status']);
 
-        $this->assertEquals($this->fixtures[0]->username,$result[0]['cmsUserUsername']);
-        $this->assertEquals($this->fixtures[1]->username,$result[1]['cmsUserUsername']);
-        $this->assertEquals($this->fixtures[2]->username,$result[2]['cmsUserUsername']);
-    }
-
-    private function dumpResultSetMapping(Query $query)
-    {
-        $rsm = (\Closure::bind(function ($q) {
-            return $q->getResultSetMapping();
-        }, null, Query::class))($query);
-        echo json_encode(get_object_vars($rsm), JSON_PRETTY_PRINT);
+        self::assertSame($this->fixtures[0]->username, $result[0]['cmsUserUsername']);
+        self::assertSame($this->fixtures[1]->username, $result[1]['cmsUserUsername']);
+        self::assertSame($this->fixtures[2]->username, $result[2]['cmsUserUsername']);
     }
 }
 

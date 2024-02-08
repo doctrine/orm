@@ -155,9 +155,9 @@ class ResultSetMapping
     /**
      * Maps last argument for new objects in order to initiate object construction
      *
-     * @var array
+     * @psalm-var array<int|string, array{ownerIndex: string|int, argIndex: int|string}>
      */
-    public $nestedNewObjectArguments = [];
+    public array $nestedNewObjectArguments = [];
 
     /**
      * Maps metadata parameter names to the metadata attribute.
@@ -552,7 +552,7 @@ class ResultSetMapping
         return $this;
     }
 
-    public function addNewObjectAsArgument($alias, $objOwner, $objOwnerIdx)
+    public function addNewObjectAsArgument(string|int $alias, string|int $objOwner, int $objOwnerIdx): static
     {
         $owner = [
             'ownerIndex' => $objOwner,
@@ -562,12 +562,14 @@ class ResultSetMapping
         if (!isset($this->nestedNewObjectArguments[$owner['ownerIndex']])) {
             $this->nestedNewObjectArguments[$alias] = $owner;
 
-            return;
+            return $this;
         }
 
         $this->nestedNewObjectArguments = array_merge(
             [$alias => $owner],
             $this->nestedNewObjectArguments
         );
+
+        return $this;
     }
 }

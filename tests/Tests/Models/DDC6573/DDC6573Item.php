@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\DDC6573;
 
 use Doctrine\DBAL\Types\Types;
@@ -13,24 +15,27 @@ use Doctrine\ORM\Mapping\Table;
 #[Table(name: 'ddc6573_items')]
 class DDC6573Item
 {
+    /**
+     * @var int
+     */
     #[Id]
     #[Column(type: Types::INTEGER)]
     #[GeneratedValue(strategy: 'AUTO')]
     public $id;
 
     #[Column(type: Types::STRING)]
-    public $name;
+    public string $name;
 
-    #[Column(type: Types::STRING)]
-    public $priceAmount;
+    #[Column(type: Types::INTEGER)]
+    public int $priceAmount;
 
     #[Column(type: Types::STRING, length: 3)]
-    public $priceCurrency;
+    public string $priceCurrency;
 
     public function __construct(string $name, DDC6573Money $price)
     {
-        $this->name = $name;
-        $this->priceAmount = $price->getAmount();
+        $this->name          = $name;
+        $this->priceAmount   = $price->getAmount();
         $this->priceCurrency = $price->getCurrency()->getCode();
     }
 

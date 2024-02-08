@@ -81,7 +81,7 @@ class SqlWalker
     /**
      * Contains nesting levels of new objects arguments
      *
-     * @var array of newObject indexes
+     * @psalm-var array<int, array{0: string|int, 1: int}>
      */
     private array $newObjectStack = [];
 
@@ -1461,9 +1461,8 @@ class SqlWalker
     public function walkNewObject(AST\NewObjectExpression $newObjectExpression, string|null $newObjectResultAlias = null): string
     {
         $sqlSelectExpressions = [];
-        //$objIndex             = $newObjectResultAlias ?: $this->newObjectCounter++;
         $objOwner = $objOwnerIdx = null;
-        if (!empty($this->newObjectStack)) {
+        if ($this->newObjectStack !== []) {
             [$objOwner, $objOwnerIdx] = end($this->newObjectStack);
             $objIndex = "$objOwner:$objOwnerIdx";
         } else {
@@ -1534,7 +1533,7 @@ class SqlWalker
                 'argIndex'  => $argIndex,
             ];
 
-            if ($objOwner !== null) {
+            if ($objOwner !== null && $objOwnerIdx !== null) {
                 $this->rsm->addNewObjectAsArgument($objIndex, $objOwner, $objOwnerIdx);
             }
         }

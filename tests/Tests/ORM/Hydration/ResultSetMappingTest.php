@@ -117,6 +117,6 @@ class ResultSetMappingTest extends OrmTestCase
             'objBLevel2' => ['ownerIndex' => 'objBLevel1', 'argIndex' => 1],
         ];
 
-        self::assertEquals($expectedArgumentMapping, $this->_rsm->nestedNewObjectArguments);
+        self::assertSame($expectedArgumentMapping, $this->_rsm->nestedNewObjectArguments);
     }
 }
