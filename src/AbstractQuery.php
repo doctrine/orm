@@ -44,6 +44,8 @@ use function sha1;
  * Base contract for ORM queries. Base class for Query and NativeQuery.
  *
  * @link    www.doctrine-project.org
+ *
+ * @psalm-import-type ParameterValue from Parameter
  */
 abstract class AbstractQuery
 {
@@ -296,7 +298,7 @@ abstract class AbstractQuery
      * Sets a collection of query parameters.
      *
      * @param ArrayCollection|mixed[] $parameters
-     * @psalm-param ArrayCollection<int, Parameter>|mixed[] $parameters
+     * @psalm-param ArrayCollection<int, Parameter>|array<ParameterValue> $parameters
      *
      * @return $this
      */
@@ -327,6 +329,7 @@ abstract class AbstractQuery
      *                                                                will be run through the type conversion of this
      *                                                                type. This is usually not needed for strings and
      *                                                                numeric types.
+     * @psalm-param ParameterValue $value
      *
      * @return $this
      */

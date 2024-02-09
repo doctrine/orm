@@ -35,6 +35,8 @@ use function substr;
 /**
  * This class is responsible for building DQL query strings via an object oriented
  * PHP interface.
+ *
+ * @psalm-import-type ParameterValue from Parameter
  */
 class QueryBuilder implements Stringable
 {
@@ -430,6 +432,7 @@ class QueryBuilder implements Stringable
      *
      * @param string|int      $key  The parameter position or name.
      * @param string|int|null $type ParameterType::* or \Doctrine\DBAL\Types\Type::* constant
+     * @psalm-param ParameterValue $value
      *
      * @return $this
      */

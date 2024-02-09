@@ -10,6 +10,8 @@ use function trim;
  * Defines a Query Parameter.
  *
  * @link    www.doctrine-project.org
+ *
+ * @psalm-type ParameterValue = bool|int|float|string|array<mixed>|object
  */
 class Parameter
 {
@@ -28,6 +30,8 @@ class Parameter
 
     /**
      * The parameter value.
+     *
+     * @psalm-var ParameterValue $value
      */
     private mixed $value;
 
@@ -41,6 +45,7 @@ class Parameter
      */
     private readonly bool $typeSpecified;
 
+    /** @psalm-param ParameterValue $value */
     public function __construct(int|string $name, mixed $value, mixed $type = null)
     {
         $this->name          = self::normalizeName($name);
