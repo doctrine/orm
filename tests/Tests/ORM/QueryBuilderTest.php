@@ -80,6 +80,15 @@ class QueryBuilderTest extends OrmTestCase
         $this->assertValidQueryBuilder($qb, 'SELECT u.id, u.username FROM Doctrine\Tests\Models\CMS\CmsUser u');
     }
 
+    public function testSimpleSelectArray(): void
+    {
+        $qb = $this->entityManager->createQueryBuilder()
+            ->from(CmsUser::class, 'u')
+            ->select(['u.id', 'u.username']);
+
+        $this->assertValidQueryBuilder($qb, 'SELECT u.id, u.username FROM Doctrine\Tests\Models\CMS\CmsUser u');
+    }
+
     public function testSimpleDelete(): void
     {
         $qb = $this->entityManager->createQueryBuilder()
