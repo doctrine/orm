@@ -246,12 +246,12 @@ Conclusion
 Now that you all know how you can implement vendor specific SQL
 functionalities in DQL, we would be excited to see user extensions
 that add vendor specific function packages, for example more math
-functions, XML + GIS Support, Hashing functions and so on.
+functions, XML + GIS support, hashing functions and so on.
 
 For ORM we will come with the current set of functions, however for
 a future version we will re-evaluate if we can abstract even more
-vendor sql functions and extend the DQL languages scope.
+vendor SQL functions and extend the DQL language's scope.
 
-Code for this Extension to DQL and other Doctrine Extensions can be
+Code for this extension to DQL and other Doctrine extensions can be
 found
 `in the GitHub DoctrineExtensions repository <https://github.com/beberlei/DoctrineExtensions>`_.
