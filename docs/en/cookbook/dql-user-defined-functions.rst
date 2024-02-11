@@ -97,7 +97,7 @@ discuss it step by step:
         public $firstDateExpression = null;
         public $secondDateExpression = null;
 
-        public function parse(\Doctrine\ORM\Query\Parser $parser)
+        public function parse(\Doctrine\ORM\Query\Parser $parser): void
         {
             $parser->match(TokenType::T_IDENTIFIER); // (2)
             $parser->match(TokenType::T_OPEN_PARENTHESIS); // (3)
@@ -181,7 +181,7 @@ I'll skip the blah and show the code for this function:
         public $intervalExpression = null;
         public $unit = null;
 
-        public function parse(\Doctrine\ORM\Query\Parser $parser)
+        public function parse(\Doctrine\ORM\Query\Parser $parser): void
         {
             $parser->match(TokenType::T_IDENTIFIER);
             $parser->match(TokenType::T_OPEN_PARENTHESIS);
