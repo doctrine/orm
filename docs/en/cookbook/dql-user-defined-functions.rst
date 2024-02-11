@@ -111,7 +111,7 @@ discuss it step by step:
             $parser->match(TokenType::T_CLOSE_PARENTHESIS); // (3)
         }
 
-        public function getSql(SqlWalker $sqlWalker)
+        public function getSql(SqlWalker $sqlWalker): string
         {
             return 'DATEDIFF(' .
                 $this->firstDateExpression->dispatch($sqlWalker) . ', ' .
@@ -210,7 +210,7 @@ I'll skip the blah and show the code for this function:
             $parser->match(TokenType::T_CLOSE_PARENTHESIS);
         }
 
-        public function getSql(SqlWalker $sqlWalker)
+        public function getSql(SqlWalker $sqlWalker): string
         {
             return 'DATE_ADD(' .
                 $this->firstDateExpression->dispatch($sqlWalker) . ', INTERVAL ' .
