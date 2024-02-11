@@ -88,6 +88,10 @@ discuss it step by step:
 .. code-block:: php
 
     <?php
+    use Doctrine\ORM\Query\Parser;
+    use Doctrine\ORM\Query\SqlWalker;
+    use Doctrine\ORM\Query\TokenType;
+
     /**
      * DateDiffFunction ::= "DATEDIFF" "(" ArithmeticPrimary "," ArithmeticPrimary ")"
      */
@@ -97,7 +101,7 @@ discuss it step by step:
         public $firstDateExpression = null;
         public $secondDateExpression = null;
 
-        public function parse(\Doctrine\ORM\Query\Parser $parser): void
+        public function parse(Parser $parser): void
         {
             $parser->match(TokenType::T_IDENTIFIER); // (2)
             $parser->match(TokenType::T_OPEN_PARENTHESIS); // (3)
@@ -107,7 +111,7 @@ discuss it step by step:
             $parser->match(TokenType::T_CLOSE_PARENTHESIS); // (3)
         }
 
-        public function getSql(\Doctrine\ORM\Query\SqlWalker $sqlWalker)
+        public function getSql(SqlWalker $sqlWalker)
         {
             return 'DATEDIFF(' .
                 $this->firstDateExpression->dispatch($sqlWalker) . ', ' .
@@ -171,6 +175,10 @@ I'll skip the blah and show the code for this function:
 .. code-block:: php
 
     <?php
+    use Doctrine\ORM\Query\Parser;
+    use Doctrine\ORM\Query\SqlWalker;
+    use Doctrine\ORM\Query\TokenType;
+
     /**
      * DateAddFunction ::=
      *     "DATE_ADD" "(" ArithmeticPrimary ", INTERVAL" ArithmeticPrimary Identifier ")"
@@ -181,7 +189,7 @@ I'll skip the blah and show the code for this function:
         public $intervalExpression = null;
         public $unit = null;
 
-        public function parse(\Doctrine\ORM\Query\Parser $parser): void
+        public function parse(Parser $parser): void
         {
             $parser->match(TokenType::T_IDENTIFIER);
             $parser->match(TokenType::T_OPEN_PARENTHESIS);
@@ -202,7 +210,7 @@ I'll skip the blah and show the code for this function:
             $parser->match(TokenType::T_CLOSE_PARENTHESIS);
         }
 
-        public function getSql(\Doctrine\ORM\Query\SqlWalker $sqlWalker)
+        public function getSql(SqlWalker $sqlWalker)
         {
             return 'DATE_ADD(' .
                 $this->firstDateExpression->dispatch($sqlWalker) . ', INTERVAL ' .
