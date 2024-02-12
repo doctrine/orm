@@ -46,7 +46,7 @@ You can register a function by adding it to the ORM configuration:
 
 * ``$name`` is the name of the function to be used in the DQL query.
 * ``$class`` is either a fully-qualified class name which has to
-extend ``Doctrine\ORM\Query\Node\FunctionNode``. Or a callable that returns the function object:
+extend ``Doctrine\ORM\Query\Node\FunctionNode``, or a callable that returns the function object:
 
 .. code-block:: php
 
