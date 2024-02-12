@@ -41,4 +41,4 @@ jobs:
           dependency-versions: "highest"
 
       - name: "Run guides-cli"
-        run: "vendor/bin/guides -vvv --no-progress docs/en 2>&1 | grep -v 'Unknown directive' | ( ! grep WARNING )"
+        run: "vendor/bin/guides -vvv --no-progress docs/en 2>&1 | grep -v 'No template found for rendering directive' | ( ! grep WARNING )"
