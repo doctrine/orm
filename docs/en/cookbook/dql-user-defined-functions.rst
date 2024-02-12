@@ -30,7 +30,7 @@ using a string function return value in a math expression).
 Registering your own DQL functions
 ----------------------------------
 
-You can register a function by adding them to the ORM configuration:
+You can register a function by adding it to the ORM configuration:
 
 .. code-block:: php
 
