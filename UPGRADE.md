@@ -15,7 +15,7 @@ When using the `AUTO` strategy to let Doctrine determine the identity generation
 an entity, and when using `doctrine/dbal` 4, PostgreSQL now uses `IDENTITY`
 instead of `SEQUENCE`.
 * If you want to upgrade your existing tables to `IDENTITY`, see [Migration to identity columns on PostgreSQL](https://www.doctrine-project.org/projects/doctrine-dbal/en/4.0/how-to/postgresql-identity-migration.html)
-* If you want to keep `SEQUENCE` or `SERIAL`, then configure the ORM this way:
+* If you want to keep the type `SEQUENCE` or `SERIAL`, then configure the ORM this way:
 ```php
 use Doctrine\DBAL\Platforms\PostgreSQLPlatform;
 use Doctrine\ORM\Configuration;
