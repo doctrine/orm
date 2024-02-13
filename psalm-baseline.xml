@@ -1042,10 +1042,6 @@
   </file>
   <file src="src/QueryBuilder.php">
     <ArgumentTypeCoercion>
-      <code>$having</code>
-      <code>$having</code>
-      <code>$where</code>
-      <code>$where</code>
       <code><![CDATA[[$rootAlias => $join]]]></code>
       <code><![CDATA[[$rootAlias => $join]]]></code>
     </ArgumentTypeCoercion>
