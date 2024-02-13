@@ -58,7 +58,7 @@ extend ``Doctrine\ORM\Query\Node\FunctionNode``, or a callable that returns the 
         return new MyCustomFunction();
     });
 
-In this chapter we will implement some MySQL specific date calculation
+In this article we will implement some MySQL specific date calculation
 methods:
 
 Date Diff
