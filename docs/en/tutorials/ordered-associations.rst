@@ -17,13 +17,15 @@ can specify the ``#[OrderBy]`` in the following way:
     .. code-block:: attribute
 
         <?php
+        use Doctrine\Common\Collections\Criteria;
+
         #[Entity]
         class User
         {
             // ...
 
             #[ManyToMany(targetEntity: Group::class)]
-            #[OrderBy(["name" => "ASC"])]
+            #[OrderBy(['name' => Criteria::ASC])]
             private Collection $groups;
         }
 
