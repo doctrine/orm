@@ -9,17 +9,16 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity]
-#[ORM\Table('gh11149_product')]
-class Product
+#[ORM\Table('gh11149_regular_product')]
+class RegularProduct
 {
     #[ORM\Id]
     #[ORM\Column(type: 'integer')]
     public int $id;
 
     #[ORM\OneToMany(
-        targetEntity: ProductTranslation::class,
+        targetEntity: RegularProductTranslation::class,
         mappedBy: 'product',
-        fetch: 'EAGER',
         indexBy: 'locale_code',
     )]
     public Collection $translations;
