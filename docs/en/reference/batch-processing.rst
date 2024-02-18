@@ -188,6 +188,3 @@ problems using the following approach:
     Iterating results is not possible with queries that
     fetch-join a collection-valued association. The nature of such SQL
     result sets is not suitable for incremental hydration.
-
-
-
