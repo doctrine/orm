@@ -1543,15 +1543,6 @@
     </PossiblyInvalidPropertyAssignmentValue>
   </file>
   <file src="src/Query/AST/Functions/DateAddFunction.php">
-    <ArgumentTypeCoercion>
-      <code><![CDATA[$this->intervalExpression->dispatch($sqlWalker)]]></code>
-      <code><![CDATA[$this->intervalExpression->dispatch($sqlWalker)]]></code>
-      <code><![CDATA[$this->intervalExpression->dispatch($sqlWalker)]]></code>
-      <code><![CDATA[$this->intervalExpression->dispatch($sqlWalker)]]></code>
-      <code><![CDATA[$this->intervalExpression->dispatch($sqlWalker)]]></code>
-      <code><![CDATA[$this->intervalExpression->dispatch($sqlWalker)]]></code>
-      <code><![CDATA[$this->intervalExpression->dispatch($sqlWalker)]]></code>
-    </ArgumentTypeCoercion>
     <PossiblyInvalidPropertyAssignmentValue>
       <code><![CDATA[$parser->ArithmeticPrimary()]]></code>
       <code><![CDATA[$parser->ArithmeticPrimary()]]></code>
@@ -1572,15 +1563,6 @@
     </PossiblyInvalidPropertyAssignmentValue>
   </file>
   <file src="src/Query/AST/Functions/DateSubFunction.php">
-    <ArgumentTypeCoercion>
-      <code><![CDATA[$this->intervalExpression->dispatch($sqlWalker)]]></code>
-      <code><![CDATA[$this->intervalExpression->dispatch($sqlWalker)]]></code>
-      <code><![CDATA[$this->intervalExpression->dispatch($sqlWalker)]]></code>
-      <code><![CDATA[$this->intervalExpression->dispatch($sqlWalker)]]></code>
-      <code><![CDATA[$this->intervalExpression->dispatch($sqlWalker)]]></code>
-      <code><![CDATA[$this->intervalExpression->dispatch($sqlWalker)]]></code>
-      <code><![CDATA[$this->intervalExpression->dispatch($sqlWalker)]]></code>
-    </ArgumentTypeCoercion>
     <UndefinedPropertyFetch>
       <code><![CDATA[$this->unit->value]]></code>
     </UndefinedPropertyFetch>
