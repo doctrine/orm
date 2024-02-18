@@ -750,11 +750,11 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
             $serialized[] = 'isReadOnly';
         }
 
-        if ($this->customGeneratorDefinition) {
+        if ($this->customGeneratorDefinition !== null && $this->customGeneratorDefinition !== []) {
             $serialized[] = 'customGeneratorDefinition';
         }
 
-        if ($this->cache) {
+        if ($this->cache !== null && $this->cache !== []) {
             $serialized[] = 'cache';
         }
 
@@ -1234,7 +1234,7 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
 
     /**
      * Validates & completes the basic mapping information that is common to all
-     * association mappings (one-to-one, many-ot-one, one-to-many, many-to-many).
+     * association mappings (one-to-one, many-to-one, one-to-many, many-to-many).
      *
      * @psalm-param array<string, mixed> $mapping The mapping.
      *
@@ -1304,7 +1304,7 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
                 $this->isIdentifierComposite = true;
             }
 
-            if ($this->cache && ! isset($mapping['cache'])) {
+            if ($this->cache !== null && ! isset($mapping['cache'])) {
                 throw NonCacheableEntityAssociation::fromEntityAndField(
                     $this->name,
                     $mapping['fieldName'],
@@ -2475,11 +2475,11 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
      */
     public function fullyQualifiedClassName(string|null $className): string|null
     {
-        if (empty($className)) {
+        if ($className === null) {
             return $className;
         }
 
-        if (! str_contains($className, '\\') && $this->namespace) {
+        if (! str_contains($className, '\\') && $this->namespace !== null && $this->namespace !== '') {
             return $this->namespace . '\\' . $className;
         }
 
@@ -2545,9 +2545,10 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
             $fieldMapping['originalField'] ??= $fieldMapping['fieldName'];
             $fieldMapping['fieldName']       = $property . '.' . $fieldMapping['fieldName'];
 
-            if (! empty($this->embeddedClasses[$property]->columnPrefix)) {
+            $columnPrefix = $this->embeddedClasses[$property]->columnPrefix;
+            if ($columnPrefix !== null && $columnPrefix !== false && $columnPrefix !== '') {
                 $fieldMapping['columnName'] = $this->embeddedClasses[$property]->columnPrefix . $fieldMapping['columnName'];
-            } elseif ($this->embeddedClasses[$property]->columnPrefix !== false) {
+            } elseif ($columnPrefix !== false) {
                 assert($this->reflClass !== null);
                 assert($embeddable->reflClass !== null);
                 $fieldMapping['columnName'] = $this->namingStrategy
@@ -2600,7 +2601,7 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
 
         // Prepend the schema name to the table name if there is one
         $schemaName = $this->getSchemaName();
-        if ($schemaName) {
+        if ($schemaName !== null) {
             $sequencePrefix = $schemaName . '.' . $tableName;
         }
 

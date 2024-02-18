@@ -319,7 +319,7 @@ class MappingException extends PersistenceMappingException implements ORMExcepti
 
     public static function fileMappingDriversRequireConfiguredDirectoryPath(string|null $path = null): self
     {
-        if (! empty($path)) {
+        if ($path !== null) {
             $path = '[' . $path . ']';
         }
 

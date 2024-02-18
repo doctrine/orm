@@ -147,7 +147,7 @@ class ArrayHydrator extends AbstractHydrator
                 // It's a root result element
 
                 $this->rootAliases[$dqlAlias] = true; // Mark as root
-                $entityKey                    = $this->resultSetMapping()->entityMappings[$dqlAlias] ?: 0;
+                $entityKey                    = $this->resultSetMapping()->entityMappings[$dqlAlias] ?? 0;
 
                 // if this row has a NULL value for the root result id then make it a null result.
                 if (! isset($nonemptyComponents[$dqlAlias])) {

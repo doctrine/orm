@@ -149,7 +149,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
             $class->setLifecycleCallbacks($parent->lifecycleCallbacks);
             $class->setChangeTrackingPolicy($parent->changeTrackingPolicy);
 
-            if (! empty($parent->customGeneratorDefinition)) {
+            if ($parent->customGeneratorDefinition !== null) {
                 $class->setCustomGeneratorDefinition($parent->customGeneratorDefinition);
             }
 
@@ -215,7 +215,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
 
             $this->addInheritedIndexes($class, $parent);
 
-            if ($parent->cache) {
+            if ($parent->cache !== null) {
                 $class->cache = $parent->cache;
             }
 
@@ -502,10 +502,10 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
                     'fieldName' => $prefix . '.' . $property,
                     'class' => $embeddableMetadata->name,
                     'columnPrefix' => $embeddableClass->columnPrefix,
-                    'declaredField' => $embeddableClass->declaredField
+                    'declaredField' => $embeddableClass->declaredField !== null
                             ? $prefix . '.' . $embeddableClass->declaredField
                             : $prefix,
-                    'originalField' => $embeddableClass->originalField ?: $property,
+                    'originalField' => $embeddableClass->originalField ?? $property,
                 ],
             );
         }
@@ -553,7 +553,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
                 $fieldName    = $class->identifier ? $class->getSingleIdentifierFieldName() : null;
                 $platform     = $this->getTargetPlatform();
 
-                $generator = $fieldName && $class->fieldMappings[$fieldName]->type === 'bigint'
+                $generator = $fieldName !== null && $class->fieldMappings[$fieldName]->type === 'bigint'
                     ? new BigIntegerIdentityGenerator()
                     : new IdentityGenerator();
 

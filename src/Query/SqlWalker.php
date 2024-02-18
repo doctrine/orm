@@ -1235,7 +1235,7 @@ class SqlWalker
                 $dqlAlias  = $expr->identificationVariable;
                 $class     = $this->getMetadataForDqlAlias($dqlAlias);
 
-                $resultAlias = $selectExpression->fieldIdentificationVariable ?: $fieldName;
+                $resultAlias = $selectExpression->fieldIdentificationVariable ?? $fieldName;
                 $tableName   = $class->isInheritanceTypeJoined()
                     ? $this->em->getUnitOfWork()->getEntityPersister($class->name)->getOwningTable($fieldName)
                     : $class->getTableName();
@@ -1276,7 +1276,7 @@ class SqlWalker
             case $expr instanceof AST\GeneralCaseExpression:
             case $expr instanceof AST\SimpleCaseExpression:
                 $columnAlias = $this->getSQLColumnAlias('sclr');
-                $resultAlias = $selectExpression->fieldIdentificationVariable ?: $this->scalarResultCounter++;
+                $resultAlias = $selectExpression->fieldIdentificationVariable ?? $this->scalarResultCounter++;
 
                 $sql .= $expr->dispatch($this) . ' AS ' . $columnAlias;
 
@@ -1300,7 +1300,7 @@ class SqlWalker
 
             case $expr instanceof AST\Subselect:
                 $columnAlias = $this->getSQLColumnAlias('sclr');
-                $resultAlias = $selectExpression->fieldIdentificationVariable ?: $this->scalarResultCounter++;
+                $resultAlias = $selectExpression->fieldIdentificationVariable ?? $this->scalarResultCounter++;
 
                 $sql .= '(' . $this->walkSubselect($expr) . ') AS ' . $columnAlias;
 
@@ -1320,7 +1320,7 @@ class SqlWalker
             default:
                 $dqlAlias    = $expr;
                 $class       = $this->getMetadataForDqlAlias($dqlAlias);
-                $resultAlias = $selectExpression->fieldIdentificationVariable ?: null;
+                $resultAlias = $selectExpression->fieldIdentificationVariable ?? null;
 
                 if (! isset($this->selectedClasses[$dqlAlias])) {
                     $this->selectedClasses[$dqlAlias] = [
@@ -1454,7 +1454,7 @@ class SqlWalker
     public function walkNewObject(AST\NewObjectExpression $newObjectExpression, string|null $newObjectResultAlias = null): string
     {
         $sqlSelectExpressions = [];
-        $objIndex             = $newObjectResultAlias ?: $this->newObjectCounter++;
+        $objIndex             = $newObjectResultAlias ??= $this->newObjectCounter++;
 
         foreach ($newObjectExpression->args as $argIndex => $e) {
             $resultAlias = $this->scalarResultCounter++;
@@ -1536,7 +1536,7 @@ class SqlWalker
                 break;
 
             case $expr instanceof AST\Subselect:
-                $alias = $simpleSelectExpression->fieldIdentificationVariable ?: $this->scalarResultCounter++;
+                $alias = $simpleSelectExpression->fieldIdentificationVariable ?? $this->scalarResultCounter++;
 
                 $columnAlias                        = 'sclr' . $this->aliasCounter++;
                 $this->scalarResultAliasMap[$alias] = $columnAlias;
@@ -1553,7 +1553,7 @@ class SqlWalker
             case $expr instanceof AST\CoalesceExpression:
             case $expr instanceof AST\GeneralCaseExpression:
             case $expr instanceof AST\SimpleCaseExpression:
-                $alias = $simpleSelectExpression->fieldIdentificationVariable ?: $this->scalarResultCounter++;
+                $alias = $simpleSelectExpression->fieldIdentificationVariable ?? $this->scalarResultCounter++;
 
                 $columnAlias                        = $this->getSQLColumnAlias('sclr');
                 $this->scalarResultAliasMap[$alias] = $columnAlias;

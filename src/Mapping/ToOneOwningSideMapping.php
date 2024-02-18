@@ -127,7 +127,7 @@ abstract class ToOneOwningSideMapping extends OwningSideMapping implements ToOne
         }
 
         if ($uniqueConstraintColumns) {
-            if (! $table) {
+            if ($table === null) {
                 throw new RuntimeException('ClassMetadata::setTable() has to be called before defining a one to one relationship.');
             }
 

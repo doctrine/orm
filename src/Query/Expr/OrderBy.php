@@ -30,14 +30,14 @@ class OrderBy implements Stringable
         string|null $sort = null,
         string|null $order = null,
     ) {
-        if ($sort) {
+        if ($sort !== null) {
             $this->add($sort, $order);
         }
     }
 
     public function add(string $sort, string|null $order = null): void
     {
-        $order         = ! $order ? 'ASC' : $order;
+        $order       ??= 'ASC';
         $this->parts[] = $sort . ' ' . $order;
     }
 

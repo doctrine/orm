@@ -583,9 +583,9 @@ class XmlDriver extends FileDriver
                 }
 
                 // Check for join-table
-                if ($overrideElement->{'join-table'}) {
-                    $joinTable        = null;
-                    $joinTableElement = $overrideElement->{'join-table'};
+                $joinTableElement = $overrideElement->{'join-table'};
+                if ($joinTableElement !== null && $joinTableElement->count() > 0) {
+                    $joinTable = null;
 
                     $joinTable = [
                         'name'      => (string) $joinTableElement['name'],
@@ -799,7 +799,7 @@ class XmlDriver extends FileDriver
             $mapping['generated'] = constant('Doctrine\ORM\Mapping\ClassMetadata::GENERATED_' . (string) $fieldMapping['generated']);
         }
 
-        if (isset($fieldMapping['version']) && $fieldMapping['version']) {
+        if (isset($fieldMapping['version'])) {
             $mapping['version'] = $this->evaluateBoolean($fieldMapping['version']);
         }
 
@@ -829,11 +829,11 @@ class XmlDriver extends FileDriver
         $region = isset($cacheMapping['region']) ? (string) $cacheMapping['region'] : null;
         $usage  = isset($cacheMapping['usage']) ? strtoupper((string) $cacheMapping['usage']) : null;
 
-        if ($usage && ! defined('Doctrine\ORM\Mapping\ClassMetadata::CACHE_USAGE_' . $usage)) {
+        if ($usage !== null && ! defined('Doctrine\ORM\Mapping\ClassMetadata::CACHE_USAGE_' . $usage)) {
             throw new InvalidArgumentException(sprintf('Invalid cache usage "%s"', $usage));
         }
 
-        if ($usage) {
+        if ($usage !== null) {
             $usage = (int) constant('Doctrine\ORM\Mapping\ClassMetadata::CACHE_USAGE_' . $usage);
         }
 

@@ -53,15 +53,15 @@ class ManyToManyAssociationBuilder extends OneToManyAssociationBuilder
     {
         $mapping              = $this->mapping;
         $mapping['joinTable'] = [];
-        if ($this->joinColumns) {
+        if ($this->joinColumns !== null && $this->joinColumns !== []) {
             $mapping['joinTable']['joinColumns'] = $this->joinColumns;
         }
 
-        if ($this->inverseJoinColumns) {
+        if ($this->inverseJoinColumns !== []) {
             $mapping['joinTable']['inverseJoinColumns'] = $this->inverseJoinColumns;
         }
 
-        if ($this->joinTableName) {
+        if ($this->joinTableName !== null) {
             $mapping['joinTable']['name'] = $this->joinTableName;
         }
 

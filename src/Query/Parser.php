@@ -319,7 +319,7 @@ final class Parser
         }
 
         // Run any custom tree walkers over the AST
-        if ($this->customTreeWalkers) {
+        if ($this->customTreeWalkers !== []) {
             $treeWalkerChain = new TreeWalkerChain($this->query, $this->parserResult, $this->queryComponents);
 
             foreach ($this->customTreeWalkers as $walker) {
@@ -335,7 +335,7 @@ final class Parser
             $this->queryComponents = $treeWalkerChain->getQueryComponents();
         }
 
-        $outputWalkerClass = $this->customOutputWalker ?: SqlWalker::class;
+        $outputWalkerClass = $this->customOutputWalker ?? SqlWalker::class;
         $outputWalker      = new $outputWalkerClass($this->query, $this->parserResult, $this->queryComponents);
 
         // Assign an SQL executor to the parser result
@@ -2027,7 +2027,7 @@ final class Parser
 
         $expr = new AST\SelectExpression($expression, $aliasResultVariable, $hiddenAliasResultVariable);
 
-        if ($identVariable) {
+        if ($identVariable !== null) {
             $this->identVariableExpressions[$identVariable] = $expr;
         }
 

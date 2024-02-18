@@ -905,7 +905,7 @@ abstract class AbstractQuery
             $this->setHydrationMode($hydrationMode);
         }
 
-        if (! empty($parameters)) {
+        if ($parameters !== null && $parameters !== []) {
             $this->setParameters($parameters);
         }
 

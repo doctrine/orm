@@ -57,6 +57,8 @@ class QueryExpressionVisitor extends ExpressionVisitor
 
     /**
      * Converts Criteria expression to Query one based on static map.
+     *
+     * @return Expr\Comparison::GT|Expr\Comparison::GTE|Expr\Comparison::LT|Expr\Comparison::LTE|null
      */
     private static function convertComparisonOperator(string $criteriaOperator): string|null
     {

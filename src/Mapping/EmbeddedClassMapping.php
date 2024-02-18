@@ -76,7 +76,7 @@ final class EmbeddedClassMapping implements ArrayAccess
     {
         $serialized = ['class'];
 
-        if ($this->columnPrefix) {
+        if ($this->columnPrefix !== null && $this->columnPrefix !== false) {
             $serialized[] = 'columnPrefix';
         }
 

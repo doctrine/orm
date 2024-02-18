@@ -318,7 +318,6 @@
     </InvalidPropertyAssignmentValue>
     <LessSpecificReturnStatement>
       <code>$className</code>
-      <code>$className</code>
       <code><![CDATA[$this->namespace . '\\' . $className]]></code>
     </LessSpecificReturnStatement>
     <MoreSpecificReturnType>

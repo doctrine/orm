@@ -92,7 +92,7 @@ class UnderscoreNamingStrategy implements NamingStrategy
         string|null $referencedColumnName,
     ): string {
         return $this->classToTableName($entityName) . '_' .
-                ($referencedColumnName ?: $this->referenceColumnName());
+                ($referencedColumnName ?? $this->referenceColumnName());
     }
 
     private function underscore(string $string): string

@@ -70,8 +70,8 @@ class Join implements Stringable
     public function __toString(): string
     {
         return strtoupper($this->joinType) . ' JOIN ' . $this->join
-             . ($this->alias ? ' ' . $this->alias : '')
-             . ($this->indexBy ? ' INDEX BY ' . $this->indexBy : '')
-             . ($this->condition ? ' ' . strtoupper($this->conditionType) . ' ' . $this->condition : '');
+             . ($this->alias !== null ? ' ' . $this->alias : '')
+             . ($this->indexBy !== null ? ' INDEX BY ' . $this->indexBy : '')
+             . ($this->condition !== null ? ' ' . strtoupper($this->conditionType) . ' ' . $this->condition : '');
     }
 }

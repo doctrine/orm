@@ -67,7 +67,7 @@ class FileLockRegion implements ConcurrentRegion
         $time    = $this->getLockTime($filename);
         $content = $this->getLockContent($filename);
 
-        if (! $content || ! $time) {
+        if ($content === false || $time === false) {
             @unlink($filename);
 
             return false;
@@ -158,7 +158,7 @@ class FileLockRegion implements ConcurrentRegion
         // when nothing matched (even though no errors occurred)
         $filenames = glob(sprintf('%s/*.%s', $this->directory, self::LOCK_EXTENSION));
 
-        if ($filenames) {
+        if ($filenames !== false) {
             foreach ($filenames as $filename) {
                 @unlink($filename);
             }
@@ -176,7 +176,7 @@ class FileLockRegion implements ConcurrentRegion
         $lock     = Lock::createLockRead();
         $filename = $this->getLockFileName($key);
 
-        if (! @file_put_contents($filename, $lock->value, LOCK_EX)) {
+        if (@file_put_contents($filename, $lock->value, LOCK_EX) === false) {
             return null;
         }
 

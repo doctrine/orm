@@ -488,7 +488,7 @@ class BasicEntityPersister implements EntityPersister
 
         $result = $this->conn->executeStatement($sql, $params, $types);
 
-        if ($versioned && ! $result) {
+        if ($versioned && $result === 0) {
             throw OptimisticLockException::lockFailed($entity);
         }
     }
@@ -682,7 +682,7 @@ class BasicEntityPersister implements EntityPersister
 
                 $this->quotedColumns[$sourceColumn]  = $quotedColumn;
                 $this->columnTypes[$sourceColumn]    = PersisterHelper::getTypeOfColumn($targetColumn, $targetClass, $this->em);
-                $result[$owningTable][$sourceColumn] = $newValId
+                $result[$owningTable][$sourceColumn] = $newValId !== null
                     ? $newValId[$targetClass->getFieldForColumn($targetColumn)]
                     : null;
             }
@@ -764,7 +764,7 @@ class BasicEntityPersister implements EntityPersister
         $targetClass = $this->em->getClassMetadata($assoc->targetEntity);
 
         if ($assoc->isOwningSide()) {
-            $isInverseSingleValued = $assoc->inversedBy && ! $targetClass->isCollectionValuedAssociation($assoc->inversedBy);
+            $isInverseSingleValued = $assoc->inversedBy !== null && ! $targetClass->isCollectionValuedAssociation($assoc->inversedBy);
 
             // Mark inverse side as fetched in the hints, otherwise the UoW would
             // try to load it in a separate query (remember: to-one inverse sides can not be lazy).
@@ -1068,7 +1068,7 @@ class BasicEntityPersister implements EntityPersister
             $orderBy = $assoc->orderBy();
         }
 
-        if ($orderBy) {
+        if ($orderBy !== [] && $orderBy !== null) {
             $orderBySql = $this->getOrderBySQL($orderBy, $this->getSQLTableAlias($this->class->name));
         }
 

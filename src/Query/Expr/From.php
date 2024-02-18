@@ -43,6 +43,6 @@ class From implements Stringable
     public function __toString(): string
     {
         return $this->from . ' ' . $this->alias .
-                ($this->indexBy ? ' INDEX BY ' . $this->indexBy : '');
+                ($this->indexBy !== null ? ' INDEX BY ' . $this->indexBy : '');
     }
 }

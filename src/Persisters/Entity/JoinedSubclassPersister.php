@@ -273,7 +273,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
             $orderBy = $assoc->orderBy();
         }
 
-        if ($orderBy) {
+        if ($orderBy !== null) {
             $orderBySql = $this->getOrderBySQL($orderBy, $baseTableAlias);
         }
 

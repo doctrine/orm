@@ -270,7 +270,7 @@ class QueryBuilder implements Stringable
             $query->setCacheable($this->cacheable);
         }
 
-        if ($this->cacheRegion) {
+        if ($this->cacheRegion !== null) {
             $query->setCacheRegion($this->cacheRegion);
         }
 
@@ -697,7 +697,7 @@ class QueryBuilder implements Stringable
             return $this;
         }
 
-        if (! $alias) {
+        if ($alias === null) {
             throw new InvalidArgumentException(sprintf(
                 '%s(): The alias for entity %s must not be omitted.',
                 __METHOD__,
@@ -732,7 +732,7 @@ class QueryBuilder implements Stringable
             return $this;
         }
 
-        if (! $alias) {
+        if ($alias === null) {
             throw new InvalidArgumentException(sprintf(
                 '%s(): The alias for entity %s must not be omitted.',
                 __METHOD__,

@@ -135,7 +135,7 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
 
         // If _backRefFieldName is set and its a one-to-many association,
         // we need to set the back reference.
-        if ($this->backRefFieldName && $this->getMapping()->isOneToMany()) {
+        if ($this->backRefFieldName !== null && $this->getMapping()->isOneToMany()) {
             assert($this->typeClass !== null);
             // Set back reference to owner
             $this->typeClass->reflFields[$this->backRefFieldName]->setValue(
@@ -161,7 +161,7 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
 
         // If _backRefFieldName is set, then the association is bidirectional
         // and we need to set the back reference.
-        if ($this->backRefFieldName && $this->getMapping()->isOneToMany()) {
+        if ($this->backRefFieldName !== null && $this->getMapping()->isOneToMany()) {
             assert($this->typeClass !== null);
             // Set back reference to owner
             $this->typeClass->reflFields[$this->backRefFieldName]->setValue(
@@ -294,7 +294,7 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
         //       association (table). Without initializing the collection.
         $removed = parent::remove($key);
 
-        if (! $removed) {
+        if ($removed === null) {
             return $removed;
         }
 

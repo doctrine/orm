@@ -221,7 +221,7 @@ class FieldBuilder
     public function build(): ClassMetadataBuilder
     {
         $cm = $this->builder->getClassMetadata();
-        if ($this->generatedValue) {
+        if ($this->generatedValue !== null) {
             $cm->setIdGeneratorType(constant('Doctrine\ORM\Mapping\ClassMetadata::GENERATOR_TYPE_' . $this->generatedValue));
         }
 
@@ -230,11 +230,11 @@ class FieldBuilder
         }
 
         $cm->mapField($this->mapping);
-        if ($this->sequenceDef) {
+        if ($this->sequenceDef !== null) {
             $cm->setSequenceGeneratorDefinition($this->sequenceDef);
         }
 
-        if ($this->customIdGenerator) {
+        if ($this->customIdGenerator !== null) {
             $cm->setCustomGeneratorDefinition(['class' => $this->customIdGenerator]);
         }
 

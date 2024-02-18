@@ -37,7 +37,7 @@ class DefaultQuoteStrategy implements QuoteStrategy
     {
         $tableName = $class->table['name'];
 
-        if (! empty($class->table['schema'])) {
+        if (isset($class->table['schema'])) {
             $tableName = $class->table['schema'] . '.' . $class->table['name'];
         }
 

@@ -122,7 +122,7 @@ class DefaultCacheFactory implements CacheFactory
             $em,
             $this->getRegion(
                 [
-                    'region' => $regionName ?: Cache::DEFAULT_QUERY_REGION_NAME,
+                    'region' => $regionName !== '' && $regionName !== null ? $regionName : Cache::DEFAULT_QUERY_REGION_NAME,
                     'usage'  => ClassMetadata::CACHE_USAGE_NONSTRICT_READ_WRITE,
                 ],
             ),

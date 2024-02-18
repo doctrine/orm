@@ -153,7 +153,7 @@ class AssociationBuilder
     public function build(): ClassMetadataBuilder
     {
         $mapping = $this->mapping;
-        if ($this->joinColumns) {
+        if ($this->joinColumns !== null && $this->joinColumns !== []) {
             $mapping['joinColumns'] = $this->joinColumns;
         }
 

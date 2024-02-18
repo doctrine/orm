@@ -189,7 +189,7 @@ EOPHP;
                 continue;
             }
 
-            $proxyFileName  = $this->getProxyFileName($class->getName(), $proxyDir ?: $this->proxyDir);
+            $proxyFileName  = $this->getProxyFileName($class->getName(), $proxyDir ?? $this->proxyDir);
             $proxyClassName = self::generateProxyClassName($class->getName(), $this->proxyNs);
 
             $this->generateProxyClass($class, $proxyFileName, $proxyClassName);
@@ -357,7 +357,7 @@ EOPHP;
 
         $proxyCode = strtr(self::PROXY_CLASS_TEMPLATE, $placeholders);
 
-        if (! $fileName) {
+        if ($fileName === null) {
             if (! class_exists($proxyClassName)) {
                 eval(substr($proxyCode, 5));
             }

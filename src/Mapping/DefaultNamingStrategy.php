@@ -63,6 +63,6 @@ class DefaultNamingStrategy implements NamingStrategy
         string|null $referencedColumnName,
     ): string {
         return strtolower($this->classToTableName($entityName) . '_' .
-            ($referencedColumnName ?: $this->referenceColumnName()));
+            ($referencedColumnName ?? $this->referenceColumnName()));
     }
 }

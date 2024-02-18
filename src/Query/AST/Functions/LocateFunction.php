@@ -28,7 +28,7 @@ class LocateFunction extends FunctionNode
         $firstString  = $sqlWalker->walkStringPrimary($this->firstStringPrimary);
         $secondString = $sqlWalker->walkStringPrimary($this->secondStringPrimary);
 
-        if ($this->simpleArithmeticExpression) {
+        if ($this->simpleArithmeticExpression !== false) {
             return $platform->getLocateExpression(
                 $secondString,
                 $firstString,

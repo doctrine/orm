@@ -18,7 +18,7 @@ class QueryCacheEntry implements CacheEntry
         public readonly array $result,
         float|null $time = null,
     ) {
-        $this->time = $time ?: microtime(true);
+        $this->time = $time ?? microtime(true);
     }
 
     /** @param array<string, mixed> $values */

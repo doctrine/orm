@@ -538,7 +538,7 @@ class ResultSetMapping
             $this->isIdentifierColumn[$alias][$columnName] = true;
         }
 
-        if ($type) {
+        if ($type !== null) {
             $this->typeMappings[$columnName] = $type;
         }
 

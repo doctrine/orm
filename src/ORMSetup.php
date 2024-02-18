@@ -65,7 +65,7 @@ final class ORMSetup
         string|null $proxyDir = null,
         CacheItemPoolInterface|null $cache = null,
     ): Configuration {
-        $proxyDir = $proxyDir ?: sys_get_temp_dir();
+        $proxyDir ??= sys_get_temp_dir();
 
         $cache = self::createCacheInstance($isDevMode, $proxyDir, $cache);
 

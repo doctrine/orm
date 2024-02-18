@@ -81,7 +81,7 @@ class SimpleObjectHydrator extends AbstractHydrator
 
             // Find mapped discriminator column from the result set.
             $metaMappingDiscrColumnName = array_search($discrColumnName, $this->resultSetMapping()->metaMappings, true);
-            if ($metaMappingDiscrColumnName) {
+            if ($metaMappingDiscrColumnName !== false) {
                 $discrColumnName = $metaMappingDiscrColumnName;
             }
 
@@ -119,7 +119,7 @@ class SimpleObjectHydrator extends AbstractHydrator
 
             $cacheKeyInfo = $this->hydrateColumnInfo($column);
 
-            if (! $cacheKeyInfo) {
+            if ($cacheKeyInfo === null) {
                 continue;
             }
 
