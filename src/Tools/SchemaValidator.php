@@ -162,7 +162,7 @@ class SchemaValidator
                 }
             }
 
-            if ($assoc->isOwningSide() && $assoc->inversedBy) {
+            if ($assoc->isOwningSide() && $assoc->inversedBy !== null) {
                 if ($targetMetadata->hasField($assoc->inversedBy)) {
                     $ce[] = 'The association ' . $class->name . '#' . $fieldName . ' refers to the inverse side ' .
                             'field ' . $assoc->targetEntity . '#' . $assoc->inversedBy . ' which is not defined as association.';
