@@ -67,7 +67,7 @@ class FileLockRegion implements ConcurrentRegion
         $time    = $this->getLockTime($filename);
         $content = $this->getLockContent($filename);
 
-        if (! $content || ! $time) {
+        if ($content === false || $time) {
             @unlink($filename);
 
             return false;
