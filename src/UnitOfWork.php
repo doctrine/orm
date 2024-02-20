@@ -2550,7 +2550,7 @@ class UnitOfWork implements PropertyChangedListener
                     $this->originalEntityData[$oid][$field] = $newValue;
                     $class->reflFields[$field]->setValue($entity, $newValue);
 
-                    if ($assoc->inversedBy && $assoc->isOneToOne() && $newValue !== null) {
+                    if ($assoc->inversedBy !== null && $assoc->isOneToOne() && $newValue !== null) {
                         $inverseAssoc = $targetClass->associationMappings[$assoc->inversedBy];
                         $targetClass->reflFields[$inverseAssoc->fieldName]->setValue($newValue, $entity);
                     }

@@ -764,7 +764,7 @@ class BasicEntityPersister implements EntityPersister
         $targetClass = $this->em->getClassMetadata($assoc->targetEntity);
 
         if ($assoc->isOwningSide()) {
-            $isInverseSingleValued = $assoc->inversedBy && ! $targetClass->isCollectionValuedAssociation($assoc->inversedBy);
+            $isInverseSingleValued = $assoc->inversedBy !== null && ! $targetClass->isCollectionValuedAssociation($assoc->inversedBy);
 
             // Mark inverse side as fetched in the hints, otherwise the UoW would
             // try to load it in a separate query (remember: to-one inverse sides can not be lazy).
