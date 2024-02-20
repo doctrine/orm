@@ -8,8 +8,6 @@ use Doctrine\ORM\Query\AST\ASTException;
 use Doctrine\ORM\Query\QueryException;
 use Doctrine\ORM\Query\SqlWalker;
 
-use function assert;
-use function is_numeric;
 use function strtolower;
 
 /**
@@ -56,16 +54,9 @@ class DateSubFunction extends DateAddFunction
         };
     }
 
-    /**
-     * @return numeric-string
-     *
-     * @throws ASTException
-     */
+    /** @throws ASTException */
     private function dispatchIntervalExpression(SqlWalker $sqlWalker): string
     {
-        $sql = $this->intervalExpression->dispatch($sqlWalker);
-        assert(is_numeric($sql));
-
-        return $sql;
+        return $this->intervalExpression->dispatch($sqlWalker);
     }
 }
