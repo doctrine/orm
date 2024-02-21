@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Mapping;
 
-use Doctrine\Deprecations\PHPUnit\VerifyDeprecations;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Id\SequenceGenerator as IdSequenceGenerator;
 use Doctrine\ORM\Mapping\ClassMetadata;
@@ -42,8 +41,6 @@ use function unserialize;
 
 class BasicInheritanceMappingTest extends OrmTestCase
 {
-    use VerifyDeprecations;
-
     private ClassMetadataFactory $cmf;
 
     protected function setUp(): void

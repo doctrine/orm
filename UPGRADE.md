@@ -25,9 +25,9 @@ so `$targetEntity` is a first argument now. This change affects only non-named a
 
 When using the `AUTO` strategy to let Doctrine determine the identity generation mechanism for
 an entity, and when using `doctrine/dbal` 4, PostgreSQL now uses `IDENTITY`
-instead of `SEQUENCE`. When upgrading from ORM 2.x and preference is on keeping
-the `SEQUENCE` based identity generation, then configure the ORM this way:
-
+instead of `SEQUENCE` or `SERIAL`.
+* If you want to upgrade your existing tables to identity columns, you will need to follow [migration to identity columns on PostgreSQL](https://www.doctrine-project.org/projects/doctrine-dbal/en/4.0/how-to/postgresql-identity-migration.html)
+* If you want to keep using SQL sequences, you need to configure the ORM this way:
 ```php
 use Doctrine\DBAL\Platforms\PostgreSQLPlatform;
 use Doctrine\ORM\Configuration;
