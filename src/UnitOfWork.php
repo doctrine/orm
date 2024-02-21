@@ -1567,7 +1567,7 @@ class UnitOfWork implements PropertyChangedListener
                     if (!is_scalar($value) || !$value instanceof Stringable) {
                         throw new UnexpectedValueException(sprintf(
                             'Unexpected identifier value: Expecting scalar, got %s.',
-                            gettype($value),
+                            get_debug_type($value),
                         ));
                     }
 
