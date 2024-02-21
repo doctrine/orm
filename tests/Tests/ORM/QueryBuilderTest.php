@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM;
 
+use BadMethodCallException;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\Cache;
@@ -76,6 +77,15 @@ class QueryBuilderTest extends OrmTestCase
         $qb = $this->entityManager->createQueryBuilder()
             ->from(CmsUser::class, 'u')
             ->select('u.id', 'u.username');
+
+        $this->assertValidQueryBuilder($qb, 'SELECT u.id, u.username FROM Doctrine\Tests\Models\CMS\CmsUser u');
+    }
+
+    public function testSimpleSelectArray(): void
+    {
+        $qb = $this->entityManager->createQueryBuilder()
+            ->from(CmsUser::class, 'u')
+            ->select(['u.id', 'u.username']);
 
         $this->assertValidQueryBuilder($qb, 'SELECT u.id, u.username FROM Doctrine\Tests\Models\CMS\CmsUser u');
     }
@@ -273,6 +283,18 @@ class QueryBuilderTest extends OrmTestCase
             ->where('u.id = :uid');
 
         $this->assertValidQueryBuilder($qb, 'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id = :uid');
+    }
+
+    public function testWhereWithUnexpectedNamedArguments(): void
+    {
+        $qb = $this->entityManager->createQueryBuilder()
+            ->select('u')
+            ->from(CmsUser::class, 'u');
+
+        $this->expectException(BadMethodCallException::class);
+        $this->expectExceptionMessage('Invalid call to Doctrine\ORM\QueryBuilder::where(), unknown named arguments: foo, bar');
+
+        $qb->where(foo: 'u.id = :uid', bar: 'u.name = :name');
     }
 
     public function testComplexAndWhere(): void

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM;
 
-use Doctrine\Deprecations\PHPUnit\VerifyDeprecations;
 use Doctrine\ORM\Cache\CacheConfiguration;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityRepository;
@@ -26,8 +25,6 @@ use Psr\Cache\CacheItemPoolInterface;
  */
 class ConfigurationTest extends TestCase
 {
-    use VerifyDeprecations;
-
     private Configuration $configuration;
 
     protected function setUp(): void

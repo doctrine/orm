@@ -10,7 +10,7 @@ on:
       - src/**
       - phpstan*
       - psalm*
-      - tests/Doctrine/StaticAnalysis/**
+      - tests/StaticAnalysis/**
   push:
     branches:
       - "*.x"
@@ -20,7 +20,7 @@ on:
       - src/**
       - phpstan*
       - psalm*
-      - tests/Doctrine/StaticAnalysis/**
+      - tests/StaticAnalysis/**
 
 jobs:
   static-analysis-phpstan:
@@ -32,7 +32,7 @@ jobs:
         include:
         - dbal-version: default
           config: phpstan.neon
-        - dbal-version: 3.7
+        - dbal-version: 3.8.2
           config: phpstan-dbal3.neon
 
     steps:
@@ -65,7 +65,7 @@ jobs:
       matrix:
         dbal-version:
         - default
-        - 3.7
+        - 3.8.2
 
     steps:
       - name: "Checkout code"

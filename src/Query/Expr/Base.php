@@ -7,10 +7,12 @@ namespace Doctrine\ORM\Query\Expr;
 use InvalidArgumentException;
 use Stringable;
 
+use function array_key_exists;
 use function count;
 use function get_debug_type;
 use function implode;
 use function in_array;
+use function is_array;
 use function is_string;
 use function sprintf;
 
@@ -33,6 +35,10 @@ abstract class Base implements Stringable
 
     public function __construct(mixed $args = [])
     {
+        if (is_array($args) && array_key_exists(0, $args) && is_array($args[0])) {
+            $args = $args[0];
+        }
+
         $this->addMultiple($args);
     }
 

@@ -4,18 +4,20 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Mapping;
 
+use Doctrine\ORM\Internal\NoUnknownNamedArguments;
 use ReflectionProperty;
 
 final class ChainTypedFieldMapper implements TypedFieldMapper
 {
-    /**
-     * @readonly
-     * @var TypedFieldMapper[] $typedFieldMappers
-     */
+    use NoUnknownNamedArguments;
+
+    /** @var list<TypedFieldMapper> $typedFieldMappers */
     private readonly array $typedFieldMappers;
 
     public function __construct(TypedFieldMapper ...$typedFieldMappers)
     {
+        self::validateVariadicParameter($typedFieldMappers);
+
         $this->typedFieldMappers = $typedFieldMappers;
     }
 
