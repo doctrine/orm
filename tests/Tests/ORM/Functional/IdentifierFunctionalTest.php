@@ -20,7 +20,7 @@ class IdentifierFunctionalTest extends OrmFunctionalTestCase
     public function testIdentifierArrayValue(): void
     {
         $this->expectException(UnexpectedValueException::class);
-        $this->expectExceptionMessage('Unexpected identifier value: Expecting scalar, got array.');
+        $this->expectExceptionMessage('Unexpected identifier value: Expecting scalar or Stringable, got array.');
         $this->_em->find(CmsUser::class, ['id' => ['array']]);
     }
 }
