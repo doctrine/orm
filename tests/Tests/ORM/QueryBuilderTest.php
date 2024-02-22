@@ -669,6 +669,17 @@ class QueryBuilderTest extends OrmTestCase
         $qb->setParameters($parameters);
 
         self::assertEquals($parameters, $qb->getQuery()->getParameters());
+
+        $qb->setParameters([]);
+
+        self::assertEquals(new ArrayCollection(), $qb->getQuery()->getParameters());
+
+        $qb->setParameters([
+            'username' => 'jwage',
+            'username2' => 'jonwage',
+        ]);
+
+        self::assertEquals($parameters, $qb->getQuery()->getParameters());
     }
 
     public function testGetParameters(): void

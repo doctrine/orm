@@ -464,12 +464,23 @@ class QueryBuilder implements Stringable
      *        )));
      * </code>
      *
-     * @psalm-param ArrayCollection<int, Parameter> $parameters
+     * @psalm-param ArrayCollection<int, Parameter>|mixed[] $parameters
      *
      * @return $this
      */
-    public function setParameters(ArrayCollection $parameters): static
+    public function setParameters(ArrayCollection|array $parameters): static
     {
+        if (is_array($parameters)) {
+            /** @psalm-var ArrayCollection<int, Parameter> $parameterCollection */
+            $parameterCollection = new ArrayCollection();
+
+            foreach ($parameters as $key => $value) {
+                $parameterCollection->add(new Parameter($key, $value));
+            }
+
+            $parameters = $parameterCollection;
+        }
+
         $this->parameters = $parameters;
 
         return $this;
