@@ -5,19 +5,16 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\DBAL\ArrayParameterType;
-use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\ParameterType;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
-use function class_exists;
-
-/** @group GH-11278 */
+#[Group('GH-11278')]
 final class QueryParameterTest extends OrmFunctionalTestCase
 {
-    /** @var int */
-    private $userId;
+    private int $userId;
 
     protected function setUp(): void
     {
@@ -104,7 +101,7 @@ final class QueryParameterTest extends OrmFunctionalTestCase
             ->select('u.name')
             ->where('u.username IN (:usernames)')
             ->orderBy('u.username')
-            ->setParameter('usernames', ['john', 'jane'], class_exists(ArrayParameterType::class) ? ArrayParameterType::STRING : Connection::PARAM_STR_ARRAY)
+            ->setParameter('usernames', ['john', 'jane'], ArrayParameterType::STRING)
             ->getQuery()
             ->getArrayResult();
 
@@ -119,7 +116,7 @@ final class QueryParameterTest extends OrmFunctionalTestCase
             ->where('u.username IN (:usernames)')
             ->orderBy('u.username')
             ->getQuery()
-            ->setParameter('usernames', ['john', 'jane'], class_exists(ArrayParameterType::class) ? ArrayParameterType::STRING : Connection::PARAM_STR_ARRAY)
+            ->setParameter('usernames', ['john', 'jane'], ArrayParameterType::STRING)
             ->getArrayResult();
 
         self::assertSame([['name' => 'Jane Doe'], ['name' => 'John Doe']], $result);
