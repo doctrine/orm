@@ -1557,18 +1557,16 @@ class UnitOfWork implements PropertyChangedListener
      */
     final public static function getIdHashByIdentifier(array $identifier): string
     {
+        if (array_filter($identifier, 'is_array')) {
+            throw new UnexpectedValueException('Unexpected identifier value: Expecting scalar, got array.');
+        }
+
         return implode(
             ' ',
             array_map(
                 static function ($value) {
                     if ($value instanceof BackedEnum) {
                         return $value->value;
-                    }
-                    if (!is_scalar($value) || !$value instanceof Stringable) {
-                        throw new UnexpectedValueException(sprintf(
-                            'Unexpected identifier value: Expecting scalar, got %s.',
-                            get_debug_type($value),
-                        ));
                     }
 
                     return $value;
