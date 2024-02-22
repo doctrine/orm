@@ -35,10 +35,10 @@ final class DiscriminatorColumnMapping
      *     type: string,
      *     fieldName: string,
      *     name: string,
-     *     length?: int,
-     *     columnDefinition?: string,
-     *     enumType?: class-string<BackedEnum>,
-     *     options?: array<string, mixed>,
+     *     length?: int|null,
+     *     columnDefinition?: string|null,
+     *     enumType?: class-string<BackedEnum>|null,
+     *     options?: array<string, mixed>|null,
      * } $mappingArray
      */
     public static function fromMappingArray(array $mappingArray): self
@@ -54,7 +54,7 @@ final class DiscriminatorColumnMapping
             }
 
             if (property_exists($mapping, $key)) {
-                $mapping->$key = $value;
+                $mapping->$key = $value ?? $mapping->$key;
             } else {
                 throw new Exception('Unknown property ' . $key . ' on class ' . static::class);
             }
