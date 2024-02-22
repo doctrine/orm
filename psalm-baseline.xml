@@ -607,7 +607,6 @@
     <InvalidPropertyAssignmentValue>
       <code>$definition</code>
       <code><![CDATA[$this->sqlResultSetMappings]]></code>
-      <code><![CDATA[$this->subClasses]]></code>
     </InvalidPropertyAssignmentValue>
     <InvalidReturnStatement>
       <code>$mapping</code>
@@ -618,16 +617,12 @@
       <code>getReflectionClass</code>
     </InvalidReturnType>
     <LessSpecificReturnStatement>
-      <code>$className</code>
-      <code>$className</code>
       <code>$columnNames</code>
       <code>$mapping</code>
       <code>$quotedColumnNames</code>
-      <code><![CDATA[$this->namespace . '\\' . $className]]></code>
     </LessSpecificReturnStatement>
     <MoreSpecificReturnType>
       <code>FieldMapping</code>
-      <code>class-string|null</code>
       <code><![CDATA[list<string>]]></code>
       <code><![CDATA[list<string>]]></code>
     </MoreSpecificReturnType>
