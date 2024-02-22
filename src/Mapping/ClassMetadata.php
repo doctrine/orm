@@ -2464,11 +2464,18 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
         return $assoc->mappedBy;
     }
 
-    /** @return string|null null if the input value is null */
+    /**
+     * @param C $className
+     *
+     * @return string|null null if and only if the input value is null
+     * @psalm-return (C is class-string ? class-string : (C is string ? string : null))
+     *
+     * @template C of string|null
+     */
     public function fullyQualifiedClassName(string|null $className): string|null
     {
-        if (empty($className)) {
-            return $className;
+        if ($className === null) {
+            return null;
         }
 
         if (! str_contains($className, '\\') && $this->namespace) {
@@ -2511,12 +2518,8 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
             throw MappingException::missingEmbeddedClass($mapping['fieldName']);
         }
 
-        $fqcn = $this->fullyQualifiedClassName($mapping['class']);
-
-        assert($fqcn !== null);
-
         $this->embeddedClasses[$mapping['fieldName']] = EmbeddedClassMapping::fromMappingArray([
-            'class' => $fqcn,
+            'class' => $this->fullyQualifiedClassName($mapping['class']),
             'columnPrefix' => $mapping['columnPrefix'] ?? null,
             'declaredField' => $mapping['declaredField'] ?? null,
             'originalField' => $mapping['originalField'] ?? null,
