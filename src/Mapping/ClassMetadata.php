@@ -2108,13 +2108,12 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
      * @param DiscriminatorColumnMapping|mixed[]|null $columnDef
      * @psalm-param DiscriminatorColumnMapping|array{
      *     name: string|null,
-     *     fieldName?: string,
-     *     type?: string,
-     *     length?: int,
+     *     fieldName?: string|null,
+     *     type?: string|null,
+     *     length?: int|null,
      *     columnDefinition?: string|null,
      *     enumType?: class-string<BackedEnum>|null,
-     *     options?:array<string,
-     *     mixed>|null
+     *     options?: array<string, mixed>|null
      * }|null $columnDef
      *
      * @throws MappingException
@@ -2136,13 +2135,9 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
                 throw MappingException::duplicateColumnName($this->name, $columnDef['name']);
             }
 
-            if (! isset($columnDef['fieldName'])) {
-                $columnDef['fieldName'] = $columnDef['name'];
-            }
-
-            if (! isset($columnDef['type'])) {
-                $columnDef['type'] = 'string';
-            }
+            $columnDef['fieldName'] ??= $columnDef['name'];
+            $columnDef['type']      ??= 'string';
+            $columnDef['options']   ??= [];
 
             if (in_array($columnDef['type'], ['boolean', 'array', 'object', 'datetime', 'time', 'date'], true)) {
                 throw MappingException::invalidDiscriminatorColumnType($this->name, $columnDef['type']);
