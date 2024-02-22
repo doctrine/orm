@@ -585,10 +585,10 @@ class QueryBuilder
      *         ->select('u')
      *         ->from('User', 'u')
      *         ->where('u.id = :user_id1 OR u.id = :user_id2')
-     *         ->setParameters(new ArrayCollection(array(
-     *             new Parameter('user_id1', 1),
-     *             new Parameter('user_id2', 2)
-     *        )));
+     *         ->setParameters([
+     *             'user_id1' => 1,
+     *             'user_id2' => 2,
+     *         ]);
      * </code>
      *
      * @param ArrayCollection|mixed[] $parameters The query parameters to set.
