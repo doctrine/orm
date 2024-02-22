@@ -6,6 +6,8 @@ namespace Doctrine\ORM;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Criteria;
+use Doctrine\DBAL\ArrayParameterType;
+use Doctrine\DBAL\ParameterType;
 use Doctrine\ORM\Internal\QueryType;
 use Doctrine\ORM\Query\Expr;
 use Doctrine\ORM\Query\Parameter;
@@ -428,12 +430,12 @@ class QueryBuilder implements Stringable
      *         ->setParameter('user_id', 1);
      * </code>
      *
-     * @param string|int      $key  The parameter position or name.
-     * @param string|int|null $type ParameterType::* or \Doctrine\DBAL\Types\Type::* constant
+     * @param string|int                                       $key  The parameter position or name.
+     * @param ParameterType|ArrayParameterType|string|int|null $type ParameterType::*, ArrayParameterType::* or \Doctrine\DBAL\Types\Type::* constant
      *
      * @return $this
      */
-    public function setParameter(string|int $key, mixed $value, string|int|null $type = null): static
+    public function setParameter(string|int $key, mixed $value, ParameterType|ArrayParameterType|string|int|null $type = null): static
     {
         $existingParameter = $this->getParameter($key);
 
