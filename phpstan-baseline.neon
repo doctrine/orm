@@ -331,21 +331,6 @@ parameters:
 			path: src/Query/AST/Functions/DateSubFunction.php
 
 		-
-			message: "#^Parameter \\#1 \\$simpleArithmeticExpr of method Doctrine\\\\ORM\\\\Query\\\\SqlWalker\\:\\:walkSimpleArithmeticExpression\\(\\) expects Doctrine\\\\ORM\\\\Query\\\\AST\\\\SimpleArithmeticExpression, Doctrine\\\\ORM\\\\Query\\\\AST\\\\Node given\\.$#"
-			count: 1
-			path: src/Query/AST/Functions/LengthFunction.php
-
-		-
-			message: "#^Parameter \\#1 \\$simpleArithmeticExpr of method Doctrine\\\\ORM\\\\Query\\\\SqlWalker\\:\\:walkSimpleArithmeticExpression\\(\\) expects Doctrine\\\\ORM\\\\Query\\\\AST\\\\SimpleArithmeticExpression, Doctrine\\\\ORM\\\\Query\\\\AST\\\\Node given\\.$#"
-			count: 1
-			path: src/Query/AST/Functions/LowerFunction.php
-
-		-
-			message: "#^Parameter \\#1 \\$simpleArithmeticExpr of method Doctrine\\\\ORM\\\\Query\\\\SqlWalker\\:\\:walkSimpleArithmeticExpression\\(\\) expects Doctrine\\\\ORM\\\\Query\\\\AST\\\\SimpleArithmeticExpression, Doctrine\\\\ORM\\\\Query\\\\AST\\\\Node given\\.$#"
-			count: 1
-			path: src/Query/AST/Functions/UpperFunction.php
-
-		-
 			message: "#^Method Doctrine\\\\ORM\\\\Query\\\\AST\\\\IndexBy\\:\\:dispatch\\(\\) should return string but returns void\\.$#"
 			count: 1
 			path: src/Query/AST/IndexBy.php

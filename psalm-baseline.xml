@@ -1577,11 +1577,6 @@
       <code><![CDATA[$assoc['joinColumns']]]></code>
     </PossiblyUndefinedArrayOffset>
   </file>
-  <file src="src/Query/AST/Functions/LengthFunction.php">
-    <ArgumentTypeCoercion>
-      <code><![CDATA[$this->stringPrimary]]></code>
-    </ArgumentTypeCoercion>
-  </file>
   <file src="src/Query/AST/Functions/LocateFunction.php">
     <PossiblyInvalidArgument>
       <code><![CDATA[$this->simpleArithmeticExpression]]></code>
@@ -1589,11 +1584,6 @@
     <PossiblyInvalidPropertyAssignmentValue>
       <code><![CDATA[$parser->SimpleArithmeticExpression()]]></code>
     </PossiblyInvalidPropertyAssignmentValue>
-  </file>
-  <file src="src/Query/AST/Functions/LowerFunction.php">
-    <ArgumentTypeCoercion>
-      <code><![CDATA[$this->stringPrimary]]></code>
-    </ArgumentTypeCoercion>
   </file>
   <file src="src/Query/AST/Functions/ModFunction.php">
     <PossiblyInvalidPropertyAssignmentValue>
@@ -1621,11 +1611,6 @@
       <code><![CDATA[$parser->SimpleArithmeticExpression()]]></code>
       <code><![CDATA[$parser->SimpleArithmeticExpression()]]></code>
     </PossiblyInvalidPropertyAssignmentValue>
-  </file>
-  <file src="src/Query/AST/Functions/UpperFunction.php">
-    <ArgumentTypeCoercion>
-      <code><![CDATA[$this->stringPrimary]]></code>
-    </ArgumentTypeCoercion>
   </file>
   <file src="src/Query/AST/GeneralCaseExpression.php">
     <ParamNameMismatch>
@@ -2131,9 +2116,6 @@
     <NoValue>
       <code>$expression</code>
     </NoValue>
-    <PossiblyInvalidArgument>
-      <code><![CDATA[$aggExpression->pathExpression]]></code>
-    </PossiblyInvalidArgument>
     <PossiblyNullArgument>
       <code><![CDATA[$AST->whereClause]]></code>
       <code><![CDATA[$AST->whereClause]]></code>
