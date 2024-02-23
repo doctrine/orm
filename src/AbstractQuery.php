@@ -819,7 +819,7 @@ abstract class AbstractQuery
         } catch (NoResultException) {
             return null;
         }
-    }    
+    }
 
     /**
      * Sets a query hint. If the hint name is not recognized, it is silently ignored.
