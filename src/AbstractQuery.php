@@ -17,6 +17,7 @@ use Doctrine\ORM\Cache\TimestampCacheKey;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\MappingException as ORMMappingException;
 use Doctrine\ORM\Proxy\DefaultProxyClassNameResolver;
+use Doctrine\ORM\NoResultException;
 use Doctrine\ORM\Query\Parameter;
 use Doctrine\ORM\Query\QueryException;
 use Doctrine\ORM\Query\ResultSetMapping;
@@ -800,6 +801,24 @@ abstract class AbstractQuery
     public function getSingleScalarResult(): mixed
     {
         return $this->getSingleResult(self::HYDRATE_SINGLE_SCALAR);
+    }
+
+    /**
+     * Gets the single scalar result of the query, returns null if result is empty.
+     *
+     * Alias for getSingleResult(HYDRATE_SINGLE_SCALAR) and try/catch NoResultException.
+     *
+     * @return bool|float|int|string|null The scalar result.
+     *
+     * @throws NonUniqueResultException If the query result is not unique.
+     */
+    public function getSingleScalarResultOrNull(): mixed
+    {
+        try {
+            return $this->getSingleResult(self::HYDRATE_SINGLE_SCALAR);
+        } catch (NoResultException) {
+            return null;
+        }
     }
 
     /**
