@@ -479,6 +479,9 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             Models\Issue9300\Issue9300Child::class,
             Models\Issue9300\Issue9300Parent::class,
         ],
+        'jedi' => [
+            Models\Jedi\JediKnight::class,
+        ],
     ];
 
     /** @param class-string ...$models */
@@ -806,6 +809,10 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             $conn->executeStatement('DELETE FROM issue5989_persons');
             $conn->executeStatement('DELETE FROM issue5989_employees');
             $conn->executeStatement('DELETE FROM issue5989_managers');
+        }
+
+        if (isset($this->_usedModelSets['jedi'])) {
+            $conn->executeStatement('DELETE FROM jedi_knights');
         }
 
         $this->_em->clear();
