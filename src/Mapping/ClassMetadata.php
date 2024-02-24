@@ -7,6 +7,7 @@ namespace Doctrine\ORM\Mapping;
 use BackedEnum;
 use BadMethodCallException;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
+use Doctrine\Deprecations\Deprecation;
 use Doctrine\Instantiator\Instantiator;
 use Doctrine\Instantiator\InstantiatorInterface;
 use Doctrine\ORM\Cache\Exception\NonCacheableEntityAssociation;
@@ -2003,6 +2004,12 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
      */
     public function setCustomRepositoryClass(string|null $repositoryClassName): void
     {
+        if ($repositoryClassName === null) {
+            $this->customRepositoryClassName = null;
+
+            return;
+        }
+
         $this->customRepositoryClassName = $this->fullyQualifiedClassName($repositoryClassName);
     }
 
@@ -2475,6 +2482,13 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
     public function fullyQualifiedClassName(string|null $className): string|null
     {
         if ($className === null) {
+            Deprecation::trigger(
+                'doctrine/orm',
+                'https://github.com/doctrine/orm/pull/11294',
+                'Passing null to %s is deprecated and will not be supported in Doctrine ORM 4.0',
+                __METHOD__,
+            );
+
             return null;
         }
 
