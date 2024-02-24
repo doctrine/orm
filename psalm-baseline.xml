@@ -314,16 +314,7 @@
     </InvalidNullableReturnType>
     <InvalidPropertyAssignmentValue>
       <code>$definition</code>
-      <code><![CDATA[$this->subClasses]]></code>
     </InvalidPropertyAssignmentValue>
-    <LessSpecificReturnStatement>
-      <code>$className</code>
-      <code>$className</code>
-      <code><![CDATA[$this->namespace . '\\' . $className]]></code>
-    </LessSpecificReturnStatement>
-    <MoreSpecificReturnType>
-      <code>class-string|null</code>
-    </MoreSpecificReturnType>
     <NullableReturnStatement>
       <code><![CDATA[$this->reflClass]]></code>
     </NullableReturnStatement>

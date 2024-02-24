@@ -126,11 +126,6 @@ parameters:
 			path: src/EntityRepository.php
 
 		-
-			message: "#^Method Doctrine\\\\ORM\\\\Mapping\\\\ClassMetadata\\:\\:fullyQualifiedClassName\\(\\) should return class\\-string\\|null but returns string\\|null\\.$#"
-			count: 1
-			path: src/Mapping/ClassMetadata.php
-
-		-
 			message: "#^If condition is always true\\.$#"
 			count: 1
 			path: src/Mapping/ClassMetadataFactory.php
