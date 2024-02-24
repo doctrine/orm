@@ -2464,10 +2464,7 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
         return $assoc->mappedBy;
     }
 
-    /**
-     * @return string|null null if the input value is null
-     * @psalm-return class-string|null
-     */
+    /** @return string|null null if the input value is null */
     public function fullyQualifiedClassName(string|null $className): string|null
     {
         if (empty($className)) {
