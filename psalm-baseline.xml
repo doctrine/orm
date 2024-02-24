@@ -607,7 +607,6 @@
     <InvalidPropertyAssignmentValue>
       <code>$definition</code>
       <code><![CDATA[$this->sqlResultSetMappings]]></code>
-      <code><![CDATA[$this->subClasses]]></code>
     </InvalidPropertyAssignmentValue>
     <InvalidReturnStatement>
       <code>$mapping</code>
@@ -618,16 +617,12 @@
       <code>getReflectionClass</code>
     </InvalidReturnType>
     <LessSpecificReturnStatement>
-      <code>$className</code>
-      <code>$className</code>
       <code>$columnNames</code>
       <code>$mapping</code>
       <code>$quotedColumnNames</code>
-      <code><![CDATA[$this->namespace . '\\' . $className]]></code>
     </LessSpecificReturnStatement>
     <MoreSpecificReturnType>
       <code>FieldMapping</code>
-      <code>class-string|null</code>
       <code><![CDATA[list<string>]]></code>
       <code><![CDATA[list<string>]]></code>
     </MoreSpecificReturnType>
@@ -1543,15 +1538,6 @@
     </PossiblyInvalidPropertyAssignmentValue>
   </file>
   <file src="src/Query/AST/Functions/DateAddFunction.php">
-    <ArgumentTypeCoercion>
-      <code><![CDATA[$this->intervalExpression->dispatch($sqlWalker)]]></code>
-      <code><![CDATA[$this->intervalExpression->dispatch($sqlWalker)]]></code>
-      <code><![CDATA[$this->intervalExpression->dispatch($sqlWalker)]]></code>
-      <code><![CDATA[$this->intervalExpression->dispatch($sqlWalker)]]></code>
-      <code><![CDATA[$this->intervalExpression->dispatch($sqlWalker)]]></code>
-      <code><![CDATA[$this->intervalExpression->dispatch($sqlWalker)]]></code>
-      <code><![CDATA[$this->intervalExpression->dispatch($sqlWalker)]]></code>
-    </ArgumentTypeCoercion>
     <PossiblyInvalidPropertyAssignmentValue>
       <code><![CDATA[$parser->ArithmeticPrimary()]]></code>
       <code><![CDATA[$parser->ArithmeticPrimary()]]></code>
@@ -1572,15 +1558,6 @@
     </PossiblyInvalidPropertyAssignmentValue>
   </file>
   <file src="src/Query/AST/Functions/DateSubFunction.php">
-    <ArgumentTypeCoercion>
-      <code><![CDATA[$this->intervalExpression->dispatch($sqlWalker)]]></code>
-      <code><![CDATA[$this->intervalExpression->dispatch($sqlWalker)]]></code>
-      <code><![CDATA[$this->intervalExpression->dispatch($sqlWalker)]]></code>
-      <code><![CDATA[$this->intervalExpression->dispatch($sqlWalker)]]></code>
-      <code><![CDATA[$this->intervalExpression->dispatch($sqlWalker)]]></code>
-      <code><![CDATA[$this->intervalExpression->dispatch($sqlWalker)]]></code>
-      <code><![CDATA[$this->intervalExpression->dispatch($sqlWalker)]]></code>
-    </ArgumentTypeCoercion>
     <UndefinedPropertyFetch>
       <code><![CDATA[$this->unit->value]]></code>
     </UndefinedPropertyFetch>

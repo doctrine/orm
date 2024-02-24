@@ -3707,7 +3707,6 @@ class ClassMetadataInfo implements ClassMetadata
      * @param string|null $className
      *
      * @return string|null null if the input value is null
-     * @psalm-return class-string|null
      */
     public function fullyQualifiedClassName($className)
     {
