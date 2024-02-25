@@ -41,6 +41,7 @@ use function is_subclass_of;
 use function ltrim;
 use function method_exists;
 use function spl_object_id;
+use function sprintf;
 use function str_contains;
 use function str_replace;
 use function strtolower;
@@ -2457,9 +2458,20 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
 
     public function getAssociationMappedByTargetField(string $assocName): string
     {
-        $assoc = $this->associationMappings[$assocName];
+        $assoc = $this->getAssociationMapping($assocName);
 
-        assert($assoc instanceof InverseSideMapping);
+        if (! $assoc instanceof InverseSideMapping) {
+            throw new LogicException(sprintf(
+                <<<'EXCEPTION'
+                Context: Calling %s() with "%s", which is the owning side of an association.
+                Problem: The owning side of an association has no "mappedBy" field.
+                Solution: Call %s::isAssociationInverseSide() to check first.
+                EXCEPTION,
+                __METHOD__,
+                $assocName,
+                self::class,
+            ));
+        }
 
         return $assoc->mappedBy;
     }
