@@ -3681,6 +3681,17 @@ class ClassMetadataInfo implements ClassMetadata
      */
     public function getAssociationMappedByTargetField($fieldName)
     {
+        if (! $this->isAssociationInverseSide($fieldName)) {
+            Deprecation::trigger(
+                'doctrine/orm',
+                'https://github.com/doctrine/orm/pull/11309',
+                'Calling %s with owning side field %s is deprecated and will no longer be supported in Doctrine ORM 3.0. Call %s::isAssociationInverseSide() to check first.',
+                __METHOD__,
+                $fieldName,
+                self::class
+            );
+        }
+
         return $this->associationMappings[$fieldName]['mappedBy'];
     }
 

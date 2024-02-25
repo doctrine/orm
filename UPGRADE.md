@@ -1,5 +1,16 @@
 # Upgrade to 2.19
 
+## Deprecate calling `ClassMetadata::getAssociationMappedByTargetField()` with the owning side of an association
+
+Calling
+`Doctrine\ORM\Mapping\ClassMetadata::getAssociationMappedByTargetField()` with
+the owning side of an association returns `null`, which is undocumented, and
+wrong according to the phpdoc of the parent method.
+
+If you do not know whether you are on the owning or inverse side of an association,
+you can use  `Doctrine\ORM\Mapping\ClassMetadata::isAssociationInverseSide()`
+to find out.
+
 ## Deprecate `Doctrine\ORM\Query\Lexer::T_*` constants
 
 Use `Doctrine\ORM\Query\TokenType::T_*` instead.

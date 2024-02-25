@@ -6,6 +6,7 @@ namespace Doctrine\Tests\ORM\Mapping;
 
 use ArrayObject;
 use Doctrine\DBAL\Types\Types;
+use Doctrine\Deprecations\PHPUnit\VerifyDeprecations;
 use Doctrine\ORM\Events;
 use Doctrine\ORM\Mapping\ChainTypedFieldMapper;
 use Doctrine\ORM\Mapping\ClassMetadata;
@@ -54,6 +55,8 @@ require_once __DIR__ . '/../../Models/Global/GlobalNamespaceModel.php';
 
 class ClassMetadataTest extends OrmTestCase
 {
+    use VerifyDeprecations;
+
     public function testClassMetadataInstanceSerialization(): void
     {
         $cm = new ClassMetadata(CMS\CmsUser::class);
@@ -1378,6 +1381,16 @@ class ClassMetadataTest extends OrmTestCase
             'class'        => '',
             'columnPrefix' => false,
         ]);
+    }
+
+    public function testInvalidCallToGetAssociationMappedByTargetFieldIsDeprecated(): void
+    {
+        $metadata = new ClassMetadata(self::class);
+        $metadata->mapOneToOne(['fieldName' => 'foo', 'targetEntity' => 'bar']);
+
+        $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/pull/11309');
+
+        $metadata->getAssociationMappedByTargetField('foo');
     }
 }
 
