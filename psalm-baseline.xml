@@ -318,7 +318,6 @@
     </ParamNameMismatch>
     <PossiblyNullArgument>
       <code><![CDATA[$mapping['targetEntity']]]></code>
-      <code><![CDATA[$mapping['targetEntity']]]></code>
       <code><![CDATA[$parentReflFields[$embeddedClass->declaredField]]]></code>
     </PossiblyNullArgument>
     <PossiblyNullReference>
@@ -446,9 +445,6 @@
      *                   columnDefinition?: string
      *               }</code>
     </MoreSpecificReturnType>
-    <PossiblyNullArgument>
-      <code>$listenerClassName</code>
-    </PossiblyNullArgument>
     <RedundantCondition>
       <code><![CDATA[$metadata->getReflectionClass()]]></code>
     </RedundantCondition>

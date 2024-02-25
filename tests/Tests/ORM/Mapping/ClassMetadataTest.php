@@ -6,7 +6,6 @@ namespace Doctrine\Tests\ORM\Mapping;
 
 use ArrayObject;
 use Doctrine\DBAL\Types\Types;
-use Doctrine\Deprecations\PHPUnit\VerifyDeprecations;
 use Doctrine\ORM\Events;
 use Doctrine\ORM\Mapping\ChainTypedFieldMapper;
 use Doctrine\ORM\Mapping\ClassMetadata;
@@ -67,8 +66,6 @@ require_once __DIR__ . '/../../Models/Global/GlobalNamespaceModel.php';
 
 class ClassMetadataTest extends OrmTestCase
 {
-    use VerifyDeprecations;
-
     public function testClassMetadataInstanceSerialization(): void
     {
         $cm = new ClassMetadata(CmsUser::class);
@@ -1054,15 +1051,6 @@ class ClassMetadataTest extends OrmTestCase
             EXCEPTION);
 
         $metadata->addLifecycleCallback('foo', 'bar');
-    }
-
-    public function testGettingAnFQCNForNullIsDeprecated(): void
-    {
-        $metadata = new ClassMetadata(self::class);
-
-        $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/pull/11294');
-
-        $metadata->fullyQualifiedClassName(null);
     }
 }
 

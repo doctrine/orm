@@ -1,5 +1,10 @@
 # Upgrade to 4.0
 
+## Forbid passing null to `ClassMetadata::fullyQualifiedClassName()`
+
+Passing `null` to `Doctrine\ORM\ClassMetadata::fullyQualifiedClassName()` is
+no longer possible.
+
 ## Remove array access
 
 Using array access on instances of the following classes is no longer possible:
