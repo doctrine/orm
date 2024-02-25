@@ -290,11 +290,6 @@
       <code>$repositoryClassName</code>
     </ArgumentTypeCoercion>
   </file>
-  <file src="src/Mapping/Builder/EntityListenerBuilder.php">
-    <PossiblyNullArgument>
-      <code>$class</code>
-    </PossiblyNullArgument>
-  </file>
   <file src="src/Mapping/ClassMetadata.php">
     <DeprecatedProperty>
       <code><![CDATA[$this->columnNames]]></code>
@@ -314,16 +309,7 @@
     </InvalidNullableReturnType>
     <InvalidPropertyAssignmentValue>
       <code>$definition</code>
-      <code><![CDATA[$this->subClasses]]></code>
     </InvalidPropertyAssignmentValue>
-    <LessSpecificReturnStatement>
-      <code>$className</code>
-      <code>$className</code>
-      <code><![CDATA[$this->namespace . '\\' . $className]]></code>
-    </LessSpecificReturnStatement>
-    <MoreSpecificReturnType>
-      <code>class-string|null</code>
-    </MoreSpecificReturnType>
     <NullableReturnStatement>
       <code><![CDATA[$this->reflClass]]></code>
     </NullableReturnStatement>
@@ -331,8 +317,6 @@
       <code>$entity</code>
     </ParamNameMismatch>
     <PossiblyNullArgument>
-      <code>$class</code>
-      <code>$className</code>
       <code><![CDATA[$mapping['targetEntity']]]></code>
       <code><![CDATA[$mapping['targetEntity']]]></code>
       <code><![CDATA[$parentReflFields[$embeddedClass->declaredField]]]></code>

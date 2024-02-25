@@ -7,6 +7,7 @@ namespace Doctrine\ORM\Mapping;
 use BackedEnum;
 use BadMethodCallException;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
+use Doctrine\Deprecations\Deprecation;
 use Doctrine\Instantiator\Instantiator;
 use Doctrine\Instantiator\InstantiatorInterface;
 use Doctrine\ORM\Cache\Exception\NonCacheableEntityAssociation;
@@ -2003,6 +2004,12 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
      */
     public function setCustomRepositoryClass(string|null $repositoryClassName): void
     {
+        if ($repositoryClassName === null) {
+            $this->customRepositoryClassName = null;
+
+            return;
+        }
+
         $this->customRepositoryClassName = $this->fullyQualifiedClassName($repositoryClassName);
     }
 
@@ -2465,13 +2472,24 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
     }
 
     /**
-     * @return string|null null if the input value is null
-     * @psalm-return class-string|null
+     * @param C $className
+     *
+     * @return string|null null if and only if the input value is null
+     * @psalm-return (C is class-string ? class-string : (C is string ? string : null))
+     *
+     * @template C of string|null
      */
     public function fullyQualifiedClassName(string|null $className): string|null
     {
-        if (empty($className)) {
-            return $className;
+        if ($className === null) {
+            Deprecation::trigger(
+                'doctrine/orm',
+                'https://github.com/doctrine/orm/pull/11294',
+                'Passing null to %s is deprecated and will not be supported in Doctrine ORM 4.0',
+                __METHOD__,
+            );
+
+            return null;
         }
 
         if (! str_contains($className, '\\') && $this->namespace) {
@@ -2514,12 +2532,8 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
             throw MappingException::missingEmbeddedClass($mapping['fieldName']);
         }
 
-        $fqcn = $this->fullyQualifiedClassName($mapping['class']);
-
-        assert($fqcn !== null);
-
         $this->embeddedClasses[$mapping['fieldName']] = EmbeddedClassMapping::fromMappingArray([
-            'class' => $fqcn,
+            'class' => $this->fullyQualifiedClassName($mapping['class']),
             'columnPrefix' => $mapping['columnPrefix'] ?? null,
             'declaredField' => $mapping['declaredField'] ?? null,
             'originalField' => $mapping['originalField'] ?? null,

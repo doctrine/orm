@@ -12,6 +12,11 @@ Using array access on instances of the following classes is no longer possible:
 
 # Upgrade to 3.1
 
+## Deprecate passing null to `ClassMetadata::fullyQualifiedClassName()`
+
+Passing `null` to `Doctrine\ORM\ClassMetadata::fullyQualifiedClassName()` is
+deprecated and will no longer be possible in 4.0.
+
 ## Deprecate array access
 
 Using array access on instances of the following classes is deprecated:
