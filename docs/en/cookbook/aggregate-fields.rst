@@ -352,7 +352,7 @@ the database using a FOR UPDATE.
     use Bank\Entities\Account;
     use Doctrine\DBAL\LockMode;
 
-    $account = $em->find(Account::class, $accId, LockMode::PESSIMISTIC_READ);
+    $account = $em->find(Account::class, $accId, LockMode::PESSIMISTIC_WRITE);
 
 Keeping Updates and Deletes in Sync
 -----------------------------------
