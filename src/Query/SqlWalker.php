@@ -2588,7 +2588,7 @@ class SqlWalker implements TreeWalker
     /**
      * Walks down an SimpleArithmeticExpression AST node, thereby generating the appropriate SQL.
      *
-     * @param AST\SimpleArithmeticExpression $simpleArithmeticExpr
+     * @param AST\Node|string $simpleArithmeticExpr
      *
      * @return string
      *
