@@ -48,7 +48,7 @@ class GH11149Test extends OrmFunctionalTestCase
     public function testFetchDefaultModeThroughEagerRepositoryCall(): void
     {
         // Load entities into database
-        $this->_em->persist($product = new RegularProduct(11189));
+        $this->_em->persist($product = new RegularProduct(11185));
         $this->_em->persist($locale = new Locale('nl_NL'));
         $this->_em->persist(new RegularProductTranslation($product, $locale));
         $this->_em->flush();
@@ -65,7 +65,7 @@ class GH11149Test extends OrmFunctionalTestCase
 
         $product = $queryBuilder
             ->getQuery()
-            ->setParameter('product_id', 11189)
+            ->setParameter('product_id', 11185)
             ->getSingleResult();
 
         // Assert associated entity is loaded eagerly
