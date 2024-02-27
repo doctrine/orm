@@ -6,6 +6,7 @@ namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Criteria;
+use Doctrine\Common\Collections\Order;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\UnitOfWork;
 use Doctrine\Tests\Models\CMS\CmsGroup;
@@ -14,6 +15,7 @@ use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 use function assert;
+use function class_exists;
 use function get_class;
 
 /**
@@ -436,7 +438,7 @@ class ManyToManyBasicAssociationTest extends OrmFunctionalTestCase
         $user = $this->_em->find(get_class($user), $user->id);
 
         $criteria = Criteria::create()
-            ->orderBy(['name' => Criteria::ASC]);
+            ->orderBy(['name' => class_exists(Order::class) ? Order::Ascending : Criteria::ASC]);
 
         self::assertEquals(
             ['A', 'B', 'C', 'Developers_0'],
@@ -478,7 +480,7 @@ class ManyToManyBasicAssociationTest extends OrmFunctionalTestCase
         $user = $this->_em->find(get_class($user), $user->id);
 
         $criteria = Criteria::create()
-            ->orderBy(['name' => Criteria::ASC]);
+            ->orderBy(['name' => class_exists(Order::class) ? Order::Ascending : Criteria::ASC]);
 
         self::assertEquals(
             ['A', 'B', 'C'],
