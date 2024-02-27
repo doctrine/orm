@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional\Ticket\GH11149;
 
 use Doctrine\ORM\PersistentCollection;
+use Doctrine\Persistence\Proxy;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 class GH11149Test extends OrmFunctionalTestCase
@@ -43,6 +44,7 @@ class GH11149Test extends OrmFunctionalTestCase
         // Assert associated entity is indexed by given property
         $translation = $product->translations->get('de_DE');
         static::assertInstanceOf(RegularProductTranslation::class, $translation);
+        static::assertNotInstanceOf(Proxy::class, $translation);
     }
 
     public function testFetchDefaultModeThroughEagerRepositoryCall(): void
@@ -77,6 +79,7 @@ class GH11149Test extends OrmFunctionalTestCase
         // Assert associated entity is indexed by given property
         $translation = $product->translations->get('nl_NL');
         static::assertInstanceOf(RegularProductTranslation::class, $translation);
+        static::assertNotInstanceOf(Proxy::class, $translation);
     }
 
     public function testFetchEagerModeWithIndexBy(): void
@@ -100,5 +103,6 @@ class GH11149Test extends OrmFunctionalTestCase
         // Assert associated entity is indexed by given property
         $translation = $product->translations->get('fr_FR');
         static::assertInstanceOf(EagerProductTranslation::class, $translation);
+        static::assertNotInstanceOf(Proxy::class, $translation);
     }
 }
