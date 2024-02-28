@@ -477,7 +477,7 @@ class EntityManager implements EntityManagerInterface
 
         $unitOfWork = $this->getUnitOfWork();
 
-        $entity = $unitOfWork->tryGetById($sortedId, $class->rootEntityName);
+        $entity = $unitOfWork->tryGetByIdWithClass($sortedId, $class);
 
         // Check identity map first
         if ($entity !== false) {
@@ -548,7 +548,7 @@ class EntityManager implements EntityManagerInterface
             throw UnrecognizedIdentifierFields::fromClassAndFieldNames($class->name, array_keys($id));
         }
 
-        $entity = $this->unitOfWork->tryGetById($sortedId, $class->rootEntityName);
+        $entity = $this->unitOfWork->tryGetByIdWithClass($sortedId, $class);
 
         // Check identity map first, if its already in there just return it.
         if ($entity !== false) {
@@ -579,7 +579,7 @@ class EntityManager implements EntityManagerInterface
         );
         $class = $this->metadataFactory->getMetadataFor(ltrim($entityName, '\\'));
 
-        $entity = $this->unitOfWork->tryGetById($identifier, $class->rootEntityName);
+        $entity = $this->unitOfWork->tryGetByIdWithClass($identifier, $class);
 
         // Check identity map first, if its already in there just return it.
         if ($entity !== false) {

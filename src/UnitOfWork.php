@@ -1867,7 +1867,7 @@ EXCEPTION
                 }
 
                 // Last try before db lookup: check the identity map.
-                if ($this->tryGetById($id, $class->rootEntityName)) {
+                if ($this->tryGetByIdWithClass($id, $class)) {
                     return self::STATE_DETACHED;
                 }
 
@@ -1884,7 +1884,7 @@ EXCEPTION
                 // the last resort: a db lookup
 
                 // Last try before db lookup: check the identity map.
-                if ($this->tryGetById($id, $class->rootEntityName)) {
+                if ($this->tryGetByIdWithClass($id, $class)) {
                     return self::STATE_DETACHED;
                 }
 
@@ -2238,7 +2238,7 @@ EXCEPTION
                     ? $this->identifierFlattener->flattenIdentifier($class, $id)
                     : $id;
 
-                $managedCopy = $this->tryGetById($flatId, $class->rootEntityName);
+                $managedCopy = $this->tryGetByIdWithClass($flatId, $class);
 
                 if ($managedCopy) {
                     // We have the entity in-memory already, just make sure its not removed.
@@ -3442,6 +3442,18 @@ EXCEPTION
     }
 
     /**
+     * @param mixed $id
+     * @param ClassMetadata $classMetadata
+     * @return false|mixed|object
+     */
+    public function tryGetByIdWithClass($id, $classMetadata)
+    {
+        $idHash = $classMetadata->idHashing->getIdHashByIdentifier((array) $id);
+
+        return $this->identityMap[$classMetadata->rootEntityName][$idHash] ?? false;
+    }
+
+    /**
      * Schedules an entity for dirty-checking at commit-time.
      *
      * @param object $entity The entity to schedule for dirty-checking.
@@ -3892,7 +3904,7 @@ EXCEPTION
                                 $targetClass = $this->em->getClassMetadata($assoc2['targetEntity']);
                                 $relatedId   = $targetClass->getIdentifierValues($other);
 
-                                $other = $this->tryGetById($relatedId, $targetClass->name);
+                                $other = $this->tryGetByIdWithClass($relatedId, $targetClass);
 
                                 if (! $other) {
                                     if ($targetClass->subClasses) {
