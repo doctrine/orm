@@ -7,7 +7,6 @@ namespace Doctrine\ORM\Mapping;
 use BackedEnum;
 use BadMethodCallException;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
-use Doctrine\Deprecations\Deprecation;
 use Doctrine\Instantiator\Instantiator;
 use Doctrine\Instantiator\InstantiatorInterface;
 use Doctrine\ORM\Cache\Exception\NonCacheableEntityAssociation;
@@ -2474,24 +2473,12 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
     /**
      * @param C $className
      *
-     * @return string|null null if and only if the input value is null
-     * @psalm-return (C is class-string ? class-string : (C is string ? string : null))
+     * @psalm-return (C is class-string ? class-string : string)
      *
-     * @template C of string|null
+     * @template C of string
      */
-    public function fullyQualifiedClassName(string|null $className): string|null
+    public function fullyQualifiedClassName(string $className): string
     {
-        if ($className === null) {
-            Deprecation::trigger(
-                'doctrine/orm',
-                'https://github.com/doctrine/orm/pull/11294',
-                'Passing null to %s is deprecated and will not be supported in Doctrine ORM 4.0',
-                __METHOD__,
-            );
-
-            return null;
-        }
-
         if (! str_contains($className, '\\') && $this->namespace) {
             return $this->namespace . '\\' . $className;
         }
