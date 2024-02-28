@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Query;
 
 use Doctrine\ORM\Query\Exec\AbstractSqlExecutor;
+use Doctrine\ORM\Query\Exec\SqlFinalizer;
+use RuntimeException;
 
 use function sprintf;
 
@@ -20,14 +22,22 @@ class ParserResult
         'sqlExecutor' => '_sqlExecutor',
         'resultSetMapping' => '_resultSetMapping',
         'parameterMappings' => '_parameterMappings',
+        'sqlFinalizer' => 'sqlFinalizer',
     ];
 
     /**
      * The SQL executor used for executing the SQL.
      *
-     * @var AbstractSqlExecutor
+     * @var ?AbstractSqlExecutor
      */
     private $sqlExecutor;
+
+    /**
+     * The SQL executor used for executing the SQL.
+     *
+     * @var ?SqlFinalizer
+     */
+    private $sqlFinalizer;
 
     /**
      * The ResultSetMapping that describes how to map the SQL result set.
@@ -87,11 +97,36 @@ class ParserResult
     /**
      * Gets the SQL executor used by this ParserResult.
      *
-     * @return AbstractSqlExecutor
+     * @return ?AbstractSqlExecutor
      */
     public function getSqlExecutor()
     {
         return $this->sqlExecutor;
+    }
+
+    public function setSqlFinalizer(SqlFinalizer $finalizer): void
+    {
+        $this->sqlFinalizer = $finalizer;
+    }
+
+    public function getSqlFinalizer(): SqlFinalizer
+    {
+        if ($this->sqlFinalizer === null) {
+            throw new RuntimeException('This ParserResult was not created with an SqlFinalizer');
+        }
+
+        return $this->sqlFinalizer;
+    }
+
+    /**
+     * @internal
+     *
+     * @psalm-internal Doctrine\ORM\Query
+     * @psalm-assert-if-true !null $this->sqlFinalizer
+     */
+    public function hasSqlFinalizer(): bool
+    {
+        return $this->sqlFinalizer !== null;
     }
 
     /**

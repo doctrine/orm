@@ -391,11 +391,16 @@ class Parser
             $this->queryComponents = $treeWalkerChain->getQueryComponents();
         }
 
-        $outputWalkerClass = $this->customOutputWalker ?: SqlWalker::class;
+        $outputWalkerClass = $this->customOutputWalker ?: SqlOutputWalker::class;
         $outputWalker      = new $outputWalkerClass($this->query, $this->parserResult, $this->queryComponents);
 
-        // Assign an SQL executor to the parser result
-        $this->parserResult->setSqlExecutor($outputWalker->getExecutor($AST));
+        if ($outputWalker instanceof OutputWalker) {
+            $finalizer = $outputWalker->getFinalizer($AST);
+            $this->parserResult->setSqlFinalizer($finalizer);
+        } else {
+            $executor = $outputWalker->getExecutor($AST);
+            $this->parserResult->setSqlExecutor($executor);
+        }
 
         return $this->parserResult;
     }
