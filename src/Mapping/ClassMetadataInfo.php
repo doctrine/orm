@@ -14,6 +14,9 @@ use Doctrine\Instantiator\InstantiatorInterface;
 use Doctrine\ORM\Cache\Exception\NonCacheableEntityAssociation;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Id\AbstractIdGenerator;
+use Doctrine\ORM\Internal\IdHashing\ComplexIdHashing;
+use Doctrine\ORM\Internal\IdHashing\IdHashing;
+use Doctrine\ORM\Internal\IdHashing\SingleElementIdHashing;
 use Doctrine\Persistence\Mapping\ClassMetadata;
 use Doctrine\Persistence\Mapping\ReflectionService;
 use InvalidArgumentException;
@@ -807,6 +810,9 @@ class ClassMetadataInfo implements ClassMetadata
     /** @var TypedFieldMapper $typedFieldMapper */
     private $typedFieldMapper;
 
+    /** @var IdHashing */
+    public $idHashing;
+
     /**
      * Initializes a new ClassMetadata instance that will hold the object-relational mapping
      * metadata of the class with the given name.
@@ -1092,6 +1098,9 @@ class ClassMetadataInfo implements ClassMetadata
         // Restore ReflectionClass and properties
         $this->reflClass    = $reflService->getClass($this->name);
         $this->instantiator = $this->instantiator ?: new Instantiator();
+        $this->idHashing    = count($this->identifier) === 1 && ! isset($this->fieldMappings[$this->identifier[0]]['enumType'])
+            ? new SingleElementIdHashing()
+            : new ComplexIdHashing();
 
         $parentReflFields = [];
 

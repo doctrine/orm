@@ -284,7 +284,7 @@ class ObjectHydrator extends AbstractHydrator
         $class = $this->_metadataCache[$className];
 
         if ($class->isIdentifierComposite) {
-            $idHash = UnitOfWork::getIdHashByIdentifier(
+            $idHash = $class->idHashing->getIdHashByIdentifier(
                 array_map(
                     /** @return mixed */
                     static function (string $fieldName) use ($data, $class) {

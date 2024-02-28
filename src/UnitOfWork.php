@@ -1805,15 +1805,14 @@ EXCEPTION
      */
     public function getIdHashByEntity($entity): string
     {
-        $identifier = $this->entityIdentifiers[spl_object_id($entity)];
+        $identifier    = $this->entityIdentifiers[spl_object_id($entity)];
+        $classMetadata = $this->em->getClassMetadata(get_class($entity));
 
         if (empty($identifier) || in_array(null, $identifier, true)) {
-            $classMetadata = $this->em->getClassMetadata(get_class($entity));
-
             throw ORMInvalidArgumentException::entityWithoutIdentity($classMetadata->name, $entity);
         }
 
-        return self::getIdHashByIdentifier($identifier);
+        return $classMetadata->idHashing->getIdHashByIdentifier($identifier);
     }
 
     /**
@@ -1918,7 +1917,7 @@ EXCEPTION
     {
         $oid           = spl_object_id($entity);
         $classMetadata = $this->em->getClassMetadata(get_class($entity));
-        $idHash        = self::getIdHashByIdentifier($this->entityIdentifiers[$oid]);
+        $idHash        = $classMetadata->idHashing->getIdHashByIdentifier($this->entityIdentifiers[$oid]);
 
         if ($idHash === '') {
             throw ORMInvalidArgumentException::entityHasNoIdentity($entity, 'remove from identity map');
@@ -1988,7 +1987,7 @@ EXCEPTION
         }
 
         $classMetadata = $this->em->getClassMetadata(get_class($entity));
-        $idHash        = self::getIdHashByIdentifier($this->entityIdentifiers[$oid]);
+        $idHash        = $classMetadata->idHashing->getIdHashByIdentifier($this->entityIdentifiers[$oid]);
 
         return isset($this->identityMap[$classMetadata->rootEntityName][$idHash]);
     }
@@ -2925,7 +2924,7 @@ EXCEPTION
         $class = $this->em->getClassMetadata($className);
 
         $id     = $this->identifierFlattener->flattenIdentifier($class, $data);
-        $idHash = self::getIdHashByIdentifier($id);
+        $idHash = $class->idHashing->getIdHashByIdentifier($id);
 
         if (isset($this->identityMap[$class->rootEntityName][$idHash])) {
             $entity = $this->identityMap[$class->rootEntityName][$idHash];
@@ -3078,7 +3077,7 @@ EXCEPTION
                     // Check identity map first
                     // FIXME: Can break easily with composite keys if join column values are in
                     //        wrong order. The correct order is the one in ClassMetadata#identifier.
-                    $relatedIdHash = self::getIdHashByIdentifier($associatedId);
+                    $relatedIdHash = $targetClass->idHashing->getIdHashByIdentifier($associatedId);
 
                     switch (true) {
                         case isset($this->identityMap[$targetClass->rootEntityName][$relatedIdHash]):
@@ -3436,7 +3435,8 @@ EXCEPTION
      */
     public function tryGetById($id, $rootClassName)
     {
-        $idHash = self::getIdHashByIdentifier((array) $id);
+        $classMetadata = $this->em->getClassMetadata($rootClassName);
+        $idHash        = $classMetadata->idHashing->getIdHashByIdentifier((array) $id);
 
         return $this->identityMap[$rootClassName][$idHash] ?? false;
     }
@@ -3830,7 +3830,7 @@ EXCEPTION
         $id1 = $this->entityIdentifiers[$oid1] ?? $this->identifierFlattener->flattenIdentifier($class, $class->getIdentifierValues($entity1));
         $id2 = $this->entityIdentifiers[$oid2] ?? $this->identifierFlattener->flattenIdentifier($class, $class->getIdentifierValues($entity2));
 
-        return $id1 === $id2 || self::getIdHashByIdentifier($id1) === self::getIdHashByIdentifier($id2);
+        return $id1 === $id2 || $class->idHashing->getIdHashByIdentifier($id1) === $class->idHashing->getIdHashByIdentifier($id2);
     }
 
     /** @throws ORMInvalidArgumentException */
