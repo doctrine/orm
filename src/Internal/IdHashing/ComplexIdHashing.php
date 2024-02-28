@@ -11,6 +11,9 @@ use function implode;
 
 class ComplexIdHashing implements IdHashing
 {
+    /**
+     * @param mixed[] $identifier
+     */
     public function getIdHashByIdentifier(array $identifier): string
     {
         return implode(

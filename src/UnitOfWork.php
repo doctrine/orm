@@ -3442,8 +3442,9 @@ EXCEPTION
     }
 
     /**
-     * @param mixed $id
+     * @param mixed         $id
      * @param ClassMetadata $classMetadata
+     *
      * @return false|mixed|object
      */
     public function tryGetByIdWithClass($id, $classMetadata)

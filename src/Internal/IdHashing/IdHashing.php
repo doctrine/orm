@@ -11,5 +11,8 @@ namespace Doctrine\ORM\Internal\IdHashing;
  */
 interface IdHashing
 {
+    /**
+     * @param mixed[] $identifier
+     */
     public function getIdHashByIdentifier(array $identifier): string;
 }
