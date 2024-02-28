@@ -16,6 +16,7 @@ use Doctrine\DBAL\Result;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Internal\CriteriaOrderings;
 use Doctrine\ORM\Mapping\AssociationMapping;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\JoinColumnMapping;
@@ -97,6 +98,7 @@ use function trim;
  */
 class BasicEntityPersister implements EntityPersister
 {
+    use CriteriaOrderings;
     use LockSqlHelper;
 
     /** @var array<string,string> */
@@ -842,7 +844,7 @@ class BasicEntityPersister implements EntityPersister
      */
     public function loadCriteria(Criteria $criteria): array
     {
-        $orderBy = $criteria->getOrderings();
+        $orderBy = self::getCriteriaOrderings($criteria);
         $limit   = $criteria->getMaxResults();
         $offset  = $criteria->getFirstResult();
         $query   = $this->getSelectSQL($criteria, null, null, $limit, $offset, $orderBy);

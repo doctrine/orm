@@ -6,6 +6,7 @@ namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Criteria;
+use Doctrine\Common\Collections\Order;
 use Doctrine\ORM\Mapping\AssociationMapping;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\UnitOfWork;
@@ -16,6 +17,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 use PHPUnit\Framework\Attributes\Group;
 
 use function assert;
+use function class_exists;
 
 /**
  * Basic many-to-many association tests.
@@ -435,7 +437,7 @@ class ManyToManyBasicAssociationTest extends OrmFunctionalTestCase
         $user = $this->_em->find($user::class, $user->id);
 
         $criteria = Criteria::create()
-            ->orderBy(['name' => Criteria::ASC]);
+            ->orderBy(['name' => class_exists(Order::class) ? Order::Ascending : Criteria::ASC]);
 
         self::assertEquals(
             ['A', 'B', 'C', 'Developers_0'],
@@ -475,7 +477,7 @@ class ManyToManyBasicAssociationTest extends OrmFunctionalTestCase
         $user = $this->_em->find($user::class, $user->id);
 
         $criteria = Criteria::create()
-            ->orderBy(['name' => Criteria::ASC]);
+            ->orderBy(['name' => class_exists(Order::class) ? Order::Ascending : Criteria::ASC]);
 
         self::assertEquals(
             ['A', 'B', 'C'],

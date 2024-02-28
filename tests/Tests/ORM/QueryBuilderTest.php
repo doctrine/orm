@@ -6,6 +6,7 @@ namespace Doctrine\Tests\ORM;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Criteria;
+use Doctrine\Common\Collections\Order;
 use Doctrine\ORM\Cache;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\Expr\Join;
@@ -22,6 +23,7 @@ use InvalidArgumentException;
 use PHPUnit\Framework\Attributes\Group;
 
 use function array_filter;
+use function class_exists;
 
 /**
  * Test case for the QueryBuilder class used to build DQL query string in a
@@ -572,7 +574,7 @@ class QueryBuilderTest extends OrmTestCase
             ->from(CmsUser::class, 'u');
 
         $criteria = new Criteria();
-        $criteria->orderBy(['field' => Criteria::DESC]);
+        $criteria->orderBy(['field' => class_exists(Order::class) ? Order::Descending : Criteria::DESC]);
 
         $qb->addCriteria($criteria);
 
@@ -589,7 +591,7 @@ class QueryBuilderTest extends OrmTestCase
             ->join('u.article', 'a');
 
         $criteria = new Criteria();
-        $criteria->orderBy(['a.field' => Criteria::DESC]);
+        $criteria->orderBy(['a.field' => class_exists(Order::class) ? Order::Descending : Criteria::DESC]);
 
         $qb->addCriteria($criteria);
 
