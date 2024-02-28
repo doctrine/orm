@@ -11,7 +11,7 @@ use Doctrine\ORM\Query\AST\SelectStatement;
 use Doctrine\ORM\Query\Parser;
 use Doctrine\ORM\Query\ParserResult;
 use Doctrine\ORM\Query\ResultSetMapping;
-use Doctrine\ORM\Query\SqlWalker;
+use Doctrine\ORM\Query\SqlOutputWalker;
 use RuntimeException;
 
 use function array_diff;
@@ -36,7 +36,7 @@ use function sprintf;
  *
  * @psalm-import-type QueryComponent from Parser
  */
-class CountOutputWalker extends SqlWalker
+class CountOutputWalker extends SqlOutputWalker
 {
     /** @var AbstractPlatform */
     private $platform;
@@ -62,16 +62,13 @@ class CountOutputWalker extends SqlWalker
         parent::__construct($query, $parserResult, $queryComponents);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function walkSelectStatement(SelectStatement $AST)
+    protected function createSqlForFinalizer(SelectStatement $AST): string
     {
         if ($this->platform instanceof SQLServerPlatform) {
             $AST->orderByClause = null;
         }
 
-        $sql = parent::walkSelectStatement($AST);
+        $sql = parent::createSqlForFinalizer($AST);
 
         if ($AST->groupByClause) {
             return sprintf(
