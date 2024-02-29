@@ -337,8 +337,14 @@ class SchemaTool
 
             if (isset($class->table['uniqueConstraints'])) {
                 foreach ($class->table['uniqueConstraints'] as $indexName => $indexData) {
-                    $uniqIndexName = is_numeric($indexName) ? null : $indexName;
-                    $uniqIndex     = new Index($uniqIndexName, $this->getIndexColumns($class, $indexData), true, false, [], $indexData['options'] ?? []);
+                    $uniqIndex = new Index(
+                        is_numeric($indexName) ? '' : $indexName,
+                        $this->getIndexColumns($class, $indexData),
+                        true,
+                        false,
+                        [],
+                        $indexData['options'] ?? [],
+                    );
 
                     foreach ($table->getIndexes() as $tableIndexName => $tableIndex) {
                         if ($tableIndex->isFulfilledBy($uniqIndex)) {
@@ -347,7 +353,11 @@ class SchemaTool
                         }
                     }
 
-                    $table->addUniqueIndex($uniqIndex->getColumns(), $uniqIndexName, $indexData['options'] ?? []);
+                    $table->addUniqueIndex(
+                        $uniqIndex->getColumns(),
+                        $uniqIndex->getName() === '' ? null : $uniqIndex->getName(),
+                        $indexData['options'] ?? [],
+                    );
                 }
             }
 
