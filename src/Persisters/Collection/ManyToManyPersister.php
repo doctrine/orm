@@ -9,6 +9,7 @@ use Doctrine\Common\Collections\Criteria;
 use Doctrine\Common\Collections\Expr\Comparison;
 use Doctrine\DBAL\Exception as DBALException;
 use Doctrine\DBAL\LockMode;
+use Doctrine\ORM\Internal\CriteriaOrderings;
 use Doctrine\ORM\Mapping\AssociationMapping;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\InverseSideMapping;
@@ -32,6 +33,8 @@ use function sprintf;
  */
 class ManyToManyPersister extends AbstractCollectionPersister
 {
+    use CriteriaOrderings;
+
     public function delete(PersistentCollection $collection): void
     {
         $mapping = $this->getMapping($collection);
@@ -732,7 +735,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
 
     private function getOrderingSql(Criteria $criteria, ClassMetadata $targetClass): string
     {
-        $orderings = $criteria->getOrderings();
+        $orderings = self::getCriteriaOrderings($criteria);
         if ($orderings) {
             $orderBy = [];
             foreach ($orderings as $name => $direction) {

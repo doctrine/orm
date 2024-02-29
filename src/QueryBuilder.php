@@ -8,6 +8,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\ParameterType;
+use Doctrine\ORM\Internal\CriteriaOrderings;
 use Doctrine\ORM\Internal\NoUnknownNamedArguments;
 use Doctrine\ORM\Internal\QueryType;
 use Doctrine\ORM\Query\Expr;
@@ -41,6 +42,7 @@ use function substr;
  */
 class QueryBuilder implements Stringable
 {
+    use CriteriaOrderings;
     use NoUnknownNamedArguments;
 
     /**
@@ -1187,22 +1189,20 @@ class QueryBuilder implements Stringable
             }
         }
 
-        if ($criteria->getOrderings()) {
-            foreach ($criteria->getOrderings() as $sort => $order) {
-                $hasValidAlias = false;
-                foreach ($allAliases as $alias) {
-                    if (str_starts_with($sort . '.', $alias . '.')) {
-                        $hasValidAlias = true;
-                        break;
-                    }
+        foreach (self::getCriteriaOrderings($criteria) as $sort => $order) {
+            $hasValidAlias = false;
+            foreach ($allAliases as $alias) {
+                if (str_starts_with($sort . '.', $alias . '.')) {
+                    $hasValidAlias = true;
+                    break;
                 }
-
-                if (! $hasValidAlias) {
-                    $sort = $allAliases[0] . '.' . $sort;
-                }
-
-                $this->addOrderBy($sort, $order);
             }
+
+            if (! $hasValidAlias) {
+                $sort = $allAliases[0] . '.' . $sort;
+            }
+
+            $this->addOrderBy($sort, $order);
         }
 
         // Overwrite limits only if they was set in criteria

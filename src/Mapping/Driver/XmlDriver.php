@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Mapping\Driver;
 
 use Doctrine\Common\Collections\Criteria;
+use Doctrine\Common\Collections\Order;
 use Doctrine\ORM\Mapping\Builder\EntityListenerBuilder;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\MappingException;
@@ -17,6 +18,7 @@ use LogicException;
 use SimpleXMLElement;
 
 use function assert;
+use function class_exists;
 use function constant;
 use function count;
 use function defined;
@@ -403,9 +405,10 @@ class XmlDriver extends FileDriver
                 if (isset($oneToManyElement->{'order-by'})) {
                     $orderBy = [];
                     foreach ($oneToManyElement->{'order-by'}->{'order-by-field'} ?? [] as $orderByField) {
+                        /** @psalm-suppress DeprecatedConstant */
                         $orderBy[(string) $orderByField['name']] = isset($orderByField['direction'])
                             ? (string) $orderByField['direction']
-                            : Criteria::ASC;
+                            : (class_exists(Order::class) ? (Order::Ascending)->value : Criteria::ASC);
                     }
 
                     $mapping['orderBy'] = $orderBy;
@@ -531,9 +534,10 @@ class XmlDriver extends FileDriver
                 if (isset($manyToManyElement->{'order-by'})) {
                     $orderBy = [];
                     foreach ($manyToManyElement->{'order-by'}->{'order-by-field'} ?? [] as $orderByField) {
+                        /** @psalm-suppress DeprecatedConstant */
                         $orderBy[(string) $orderByField['name']] = isset($orderByField['direction'])
                             ? (string) $orderByField['direction']
-                            : Criteria::ASC;
+                            : (class_exists(Order::class) ? (Order::Ascending)->value : Criteria::ASC);
                     }
 
                     $mapping['orderBy'] = $orderBy;
