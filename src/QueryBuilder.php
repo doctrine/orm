@@ -8,7 +8,6 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\ParameterType;
-use Doctrine\ORM\Internal\CriteriaOrderings;
 use Doctrine\ORM\Internal\NoUnknownNamedArguments;
 use Doctrine\ORM\Internal\QueryType;
 use Doctrine\ORM\Query\Expr;
@@ -42,7 +41,6 @@ use function substr;
  */
 class QueryBuilder implements Stringable
 {
-    use CriteriaOrderings;
     use NoUnknownNamedArguments;
 
     /**
@@ -1189,7 +1187,7 @@ class QueryBuilder implements Stringable
             }
         }
 
-        foreach (self::getCriteriaOrderings($criteria) as $sort => $order) {
+        foreach ($criteria->orderings() as $sort => $order) {
             $hasValidAlias = false;
             foreach ($allAliases as $alias) {
                 if (str_starts_with($sort . '.', $alias . '.')) {
@@ -1202,7 +1200,7 @@ class QueryBuilder implements Stringable
                 $sort = $allAliases[0] . '.' . $sort;
             }
 
-            $this->addOrderBy($sort, $order);
+            $this->addOrderBy($sort, $order->value);
         }
 
         // Overwrite limits only if they was set in criteria
