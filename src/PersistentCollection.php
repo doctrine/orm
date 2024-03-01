@@ -8,8 +8,8 @@ use Doctrine\Common\Collections\AbstractLazyCollection;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\Criteria;
+use Doctrine\Common\Collections\Order;
 use Doctrine\Common\Collections\Selectable;
-use Doctrine\ORM\Internal\CriteriaOrderings;
 use Doctrine\ORM\Mapping\AssociationMapping;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ToManyAssociationMapping;
@@ -24,6 +24,7 @@ use function array_walk;
 use function assert;
 use function is_object;
 use function spl_object_id;
+use function strtoupper;
 
 /**
  * A PersistentCollection represents a collection of elements that have persistent state.
@@ -41,8 +42,6 @@ use function spl_object_id;
  */
 final class PersistentCollection extends AbstractLazyCollection implements Selectable
 {
-    use CriteriaOrderings;
-
     /**
      * A snapshot of the collection at the moment it was fetched from the database.
      * This is used to create a diff of the collection at commit time.
@@ -588,9 +587,12 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
 
         $criteria = clone $criteria;
         $criteria->where($expression);
-        $criteria->orderBy(self::mapToOrderEnumIfAvailable(
-            self::getCriteriaOrderings($criteria) ?: $association->orderBy(),
-        ));
+        $criteria->orderBy(
+            $criteria->orderings() ?: array_map(
+                static fn (string $order): Order => Order::from(strtoupper($order)),
+                $association->orderBy(),
+            ),
+        );
 
         $persister = $this->getUnitOfWork()->getEntityPersister($association->targetEntity);
 
