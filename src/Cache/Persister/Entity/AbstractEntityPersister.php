@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Cache\Persister\Entity;
 
 use Doctrine\Common\Collections\Criteria;
+use Doctrine\Common\Collections\Order;
 use Doctrine\DBAL\LockMode;
 use Doctrine\ORM\Cache;
 use Doctrine\ORM\Cache\CollectionCacheKey;
@@ -17,7 +18,6 @@ use Doctrine\ORM\Cache\Region;
 use Doctrine\ORM\Cache\TimestampCacheKey;
 use Doctrine\ORM\Cache\TimestampRegion;
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\Internal\CriteriaOrderings;
 use Doctrine\ORM\Mapping\AssociationMapping;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
@@ -34,8 +34,6 @@ use function sha1;
 
 abstract class AbstractEntityPersister implements CachedEntityPersister
 {
-    use CriteriaOrderings;
-
     protected UnitOfWork $uow;
     protected ClassMetadataFactory $metadataFactory;
 
@@ -204,8 +202,8 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
     /**
      * Generates a string of currently query
      *
-     * @param string[]|Criteria $criteria
-     * @param string[]|null     $orderBy
+     * @param string[]|Criteria         $criteria
+     * @param array<string, Order>|null $orderBy
      */
     protected function getHash(
         string $query,
@@ -429,7 +427,7 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
      */
     public function loadCriteria(Criteria $criteria): array
     {
-        $orderBy     = self::getCriteriaOrderings($criteria);
+        $orderBy     = $criteria->orderings();
         $limit       = $criteria->getMaxResults();
         $offset      = $criteria->getFirstResult();
         $query       = $this->persister->getSelectSQL($criteria);
