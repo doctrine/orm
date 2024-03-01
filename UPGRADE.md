@@ -1,5 +1,11 @@
 # Upgrade to 3.1
 
+## Deprecate `Doctrine\ORM\Mapping\ReflectionEnumProperty`
+
+This class is deprecated and will be removed in 4.0.
+Instead, use `Doctrine\Persistence\ReflectionEnumProperty` from
+`doctrine/persistence`.
+
 ## Deprecate passing null to `ClassMetadata::fullyQualifiedClassName()`
 
 Passing `null` to `Doctrine\ORM\ClassMetadata::fullyQualifiedClassName()` is
