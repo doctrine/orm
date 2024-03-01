@@ -26,9 +26,7 @@ trait CriteriaOrderings
         }
 
         return array_map(
-            static function (Order $order): string {
-                return $order->value;
-            },
+            static fn (Order $order): string => $order->value,
             $criteria->orderings(),
         );
     }
@@ -45,9 +43,7 @@ trait CriteriaOrderings
         }
 
         return array_map(
-            static function (string $order): Order {
-                return Order::from(strtoupper($order));
-            },
+            static fn (string $order): Order => Order::from(strtoupper($order)),
             $orderings,
         );
     }
