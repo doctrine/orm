@@ -18,10 +18,10 @@ use LogicException;
 use SimpleXMLElement;
 
 use function assert;
-use function class_exists;
 use function constant;
 use function count;
 use function defined;
+use function enum_exists;
 use function explode;
 use function extension_loaded;
 use function file_get_contents;
@@ -408,7 +408,7 @@ class XmlDriver extends FileDriver
                         /** @psalm-suppress DeprecatedConstant */
                         $orderBy[(string) $orderByField['name']] = isset($orderByField['direction'])
                             ? (string) $orderByField['direction']
-                            : (class_exists(Order::class) ? (Order::Ascending)->value : Criteria::ASC);
+                            : (enum_exists(Order::class) ? Order::Ascending->value : Criteria::ASC);
                     }
 
                     $mapping['orderBy'] = $orderBy;
@@ -537,7 +537,7 @@ class XmlDriver extends FileDriver
                         /** @psalm-suppress DeprecatedConstant */
                         $orderBy[(string) $orderByField['name']] = isset($orderByField['direction'])
                             ? (string) $orderByField['direction']
-                            : (class_exists(Order::class) ? (Order::Ascending)->value : Criteria::ASC);
+                            : (enum_exists(Order::class) ? Order::Ascending->value : Criteria::ASC);
                     }
 
                     $mapping['orderBy'] = $orderBy;
