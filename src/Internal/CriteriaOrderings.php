@@ -8,7 +8,7 @@ use Doctrine\Common\Collections\Criteria;
 use Doctrine\Common\Collections\Order;
 
 use function array_map;
-use function class_exists;
+use function enum_exists;
 use function method_exists;
 use function strtoupper;
 
@@ -38,7 +38,7 @@ trait CriteriaOrderings
      */
     private static function mapToOrderEnumIfAvailable(array $orderings): array
     {
-        if (! class_exists(Order::class)) {
+        if (! enum_exists(Order::class)) {
             return $orderings;
         }
 
