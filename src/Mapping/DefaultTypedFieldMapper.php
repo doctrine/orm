@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Mapping;
 
+use BackedEnum;
 use DateInterval;
 use DateTime;
 use DateTimeImmutable;
@@ -16,6 +17,7 @@ use ReflectionProperty;
 use function array_merge;
 use function assert;
 use function enum_exists;
+use function is_a;
 
 /** @psalm-type ScalarName = 'array'|'bool'|'float'|'int'|'string' */
 final class DefaultTypedFieldMapper implements TypedFieldMapper
@@ -52,18 +54,18 @@ final class DefaultTypedFieldMapper implements TypedFieldMapper
             && ($type instanceof ReflectionNamedType)
         ) {
             if (! $type->isBuiltin() && enum_exists($type->getName())) {
-                $mapping['enumType'] = $type->getName();
-
                 $reflection = new ReflectionEnum($type->getName());
                 if (! $reflection->isBacked()) {
                     throw MappingException::backedEnumTypeRequired(
                         $field->class,
                         $mapping['fieldName'],
-                        $mapping['enumType'],
+                        $type->getName(),
                     );
                 }
 
-                $type = $reflection->getBackingType();
+                assert(is_a($type->getName(), BackedEnum::class, true));
+                $mapping['enumType'] = $type->getName();
+                $type                = $reflection->getBackingType();
 
                 assert($type instanceof ReflectionNamedType);
             }
