@@ -1789,7 +1789,7 @@ EXCEPTION
 
         return implode(
             ' ',
-            $identifier,
+            $identifier
         );
     }
 
