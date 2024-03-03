@@ -1557,18 +1557,15 @@ class UnitOfWork implements PropertyChangedListener
      */
     final public static function getIdHashByIdentifier(array $identifier): string
     {
+        foreach ($identifier as $k => $value) {
+            if ($value instanceof BackedEnum) {
+                $identifier[$k] = $value->value;
+            }
+        }
+
         return implode(
             ' ',
-            array_map(
-                static function ($value) {
-                    if ($value instanceof BackedEnum) {
-                        return $value->value;
-                    }
-
-                    return $value;
-                },
-                $identifier,
-            ),
+            $identifier,
         );
     }
 
