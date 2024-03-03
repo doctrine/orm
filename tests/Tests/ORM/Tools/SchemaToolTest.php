@@ -580,19 +580,30 @@ class IndexByFieldEntity
     public $fieldName;
 }
 
-#[UniqueConstraint(columns: ['field', 'anotherField'])]
-#[Entity]
+/**
+ * @Entity
+ * @Table(uniqueConstraints={@UniqueConstraint(columns={"field", "anotherField"})})
+ */
 class GH11314Entity
 {
-    #[Id]
-    #[Column]
-    private int $id;
+    /**
+     * @Column(type="integer")
+     * @Id
+     * @var int
+     */
+    private $id;
 
-    #[Column(name: 'field', type: 'string')]
-    private string $field;
+    /**
+     * @Column(name="field", type="string")
+     * @var string
+     */
+    private $field;
 
-    #[Column(name: 'anotherField', type: 'string')]
-    private string $anotherField;
+    /**
+     * @Column(name="anotherField", type="string")
+     * @var string
+     */
+    private $anotherField;
 }
 
 class IncorrectIndexByFieldEntity
