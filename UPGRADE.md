@@ -1,5 +1,11 @@
 # Upgrade to 4.0
 
+## Remove `Doctrine\ORM\Mapping\ReflectionEnumProperty`
+
+This class has been removed.
+Instead, use `Doctrine\Persistence\Reflection\EnumReflectionProperty` from
+`doctrine/persistence`.
+
 ## Forbid passing null to `ClassMetadata::fullyQualifiedClassName()`
 
 Passing `null` to `Doctrine\ORM\ClassMetadata::fullyQualifiedClassName()` is
