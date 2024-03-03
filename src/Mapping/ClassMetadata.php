@@ -15,6 +15,7 @@ use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Id\AbstractIdGenerator;
 use Doctrine\Persistence\Mapping\ClassMetadata as PersistenceClassMetadata;
 use Doctrine\Persistence\Mapping\ReflectionService;
+use Doctrine\Persistence\Reflection\EnumReflectionProperty;
 use InvalidArgumentException;
 use LogicException;
 use ReflectionClass;
@@ -822,7 +823,7 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
                 assert($childProperty !== null);
 
                 if (isset($mapping->enumType)) {
-                    $childProperty = new ReflectionEnumProperty(
+                    $childProperty = new EnumReflectionProperty(
                         $childProperty,
                         $mapping->enumType,
                     );
@@ -841,7 +842,7 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
                 : $this->getAccessibleProperty($reflService, $this->name, $field);
 
             if (isset($mapping->enumType) && $this->reflFields[$field] !== null) {
-                $this->reflFields[$field] = new ReflectionEnumProperty(
+                $this->reflFields[$field] = new EnumReflectionProperty(
                     $this->reflFields[$field],
                     $mapping->enumType,
                 );
