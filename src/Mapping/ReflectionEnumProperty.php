@@ -11,6 +11,7 @@ use ValueError;
 use function array_map;
 use function is_array;
 
+/** @deprecated use Doctrine\Persistence\Reflection\EnumReflectionProperty instead */
 final class ReflectionEnumProperty extends ReflectionProperty
 {
     /** @param class-string<BackedEnum> $enumType */
