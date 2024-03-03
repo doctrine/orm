@@ -375,7 +375,7 @@ class SchemaToolTest extends OrmTestCase
         self::assertFalse($schema->hasTable('second_entity'), 'Table second_entity should not exist.');
     }
 
-    #[Group('11314')]
+    /** @group GH-11314 */
     public function testLoadUniqueConstraintWithoutName(): void
     {
         $em     = $this->getTestEntityManager();
