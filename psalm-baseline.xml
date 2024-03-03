@@ -574,15 +574,6 @@
       <code><![CDATA[ReflectionEmbeddedProperty]]></code>
     </PropertyNotSetInConstructor>
   </file>
-  <file src="src/Mapping/ReflectionEnumProperty.php">
-    <MethodSignatureMismatch>
-      <code><![CDATA[$object]]></code>
-    </MethodSignatureMismatch>
-    <PropertyNotSetInConstructor>
-      <code><![CDATA[ReflectionEnumProperty]]></code>
-      <code><![CDATA[ReflectionEnumProperty]]></code>
-    </PropertyNotSetInConstructor>
-  </file>
   <file src="src/Mapping/ReflectionReadonlyProperty.php">
     <PropertyNotSetInConstructor>
       <code><![CDATA[ReflectionReadonlyProperty]]></code>
