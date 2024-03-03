@@ -3,69 +3,63 @@ DQL User Defined Functions
 
 .. sectionauthor:: Benjamin Eberlei <kontakt@beberlei.de>
 
-By default DQL supports a limited subset of all the vendor-specific
-SQL functions common between all the vendors. However in many cases
-once you have decided on a specific database vendor, you will never
-change it during the life of your project. This decision for a
-specific vendor potentially allows you to make use of powerful SQL
-features that are unique to the vendor.
+By default, DQL supports a limited subset of SQL functions which are common between all the vendors.
 
-It is worth to mention that Doctrine ORM also allows you to handwrite
-your SQL instead of extending the DQL parser. Extending DQL is sort of an
-advanced extension point. You can map arbitrary SQL to your objects
-and gain access to vendor specific functionalities using the
+If you need to write vendor-specific SQL, you have two options:
+
+* You can map arbitrary SQL to your objects
+and gain access to vendor-specific functionalities using the
 ``EntityManager#createNativeQuery()`` API as described in
 the :doc:`Native Query <../reference/native-sql>` chapter.
-
-
-The DQL Parser has hooks to register functions that can then be
+* The DQL parser has hooks to register functions that can then be
 used in your DQL queries and transformed into SQL, allowing to
-extend Doctrines Query capabilities to the vendors strength. This
-post explains the User-Defined Functions API (UDF) of the Dql
-Parser and shows some examples to give you some hints how you would
-extend DQL.
+extend Doctrine's query capabilities to the vendors strength. This
+chapter explains the user-defined functions API of the DQL
+parser and shows some examples.
 
-There are three types of functions in DQL, those that return a
-numerical value, those that return a string and those that return a
-Date. Your custom method has to be registered as either one of
+There are three types of functions in DQL:
+* those that return a **numerical value**
+* those that return a **string**
+* and those that return a **date.**
+
+Your custom method has to be registered as either one of
 those. The return type information is used by the DQL parser to
-check possible syntax errors during the parsing process, for
-example using a string function return value in a math expression.
+check possible syntax errors during the parsing process (e.g.
+using a string function return value in a math expression).
 
 Registering your own DQL functions
 ----------------------------------
 
-You can register your functions adding them to the ORM
-configuration:
+You can register a function by adding it to the ORM configuration:
 
 .. code-block:: php
 
     <?php
-    $config = new \Doctrine\ORM\Configuration();
-    $config->addCustomStringFunction($name, $class);
-    $config->addCustomNumericFunction($name, $class);
-    $config->addCustomDatetimeFunction($name, $class);
+    use Doctrine\ORM\Configuration;
+
+    $configuration = new Configuration();
+    $configuration->addCustomStringFunction($name, $class);
+    $configuration->addCustomNumericFunction($name, $class);
+    $configuration->addCustomDatetimeFunction($name, $class);
 
     $em = new EntityManager($connection, $config);
 
-The ``$name`` is the name the function will be referred to in the
-DQL query. ``$class`` is a string of a class-name which has to
-extend ``Doctrine\ORM\Query\Node\FunctionNode``. This is a class
-that offers all the necessary API and methods to implement a UDF.
-
-Instead of providing the function class name, you can also provide
-a callable that returns the function object:
+* ``$name`` is the name of the function to be used in the DQL query.
+* ``$class`` is either a fully-qualified class name which has to
+extend ``Doctrine\ORM\Query\Node\FunctionNode``, or a callable that returns the function object:
 
 .. code-block:: php
 
     <?php
-    $config = new \Doctrine\ORM\Configuration();
-    $config->addCustomStringFunction($name, function () {
+    use Doctrine\ORM\Configuration;
+
+    $configuration = new \Doctrine\ORM\Configuration();
+    $configuration->addCustomStringFunction($name, function() {
         return new MyCustomFunction();
     });
 
-In this post we will implement some MySql specific Date calculation
-methods, which are quite handy in my opinion:
+In this article we will implement some MySQL specific date calculation
+methods:
 
 Date Diff
 ---------
