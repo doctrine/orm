@@ -88,6 +88,10 @@ discuss it step by step:
 .. code-block:: php
 
     <?php
+    use Doctrine\ORM\Query\Parser;
+    use Doctrine\ORM\Query\SqlWalker;
+    use Doctrine\ORM\Query\TokenType;
+
     /**
      * DateDiffFunction ::= "DATEDIFF" "(" ArithmeticPrimary "," ArithmeticPrimary ")"
      */
@@ -97,7 +101,7 @@ discuss it step by step:
         public $firstDateExpression = null;
         public $secondDateExpression = null;
 
-        public function parse(\Doctrine\ORM\Query\Parser $parser)
+        public function parse(Parser $parser): void
         {
             $parser->match(TokenType::T_IDENTIFIER); // (2)
             $parser->match(TokenType::T_OPEN_PARENTHESIS); // (3)
@@ -107,7 +111,7 @@ discuss it step by step:
             $parser->match(TokenType::T_CLOSE_PARENTHESIS); // (3)
         }
 
-        public function getSql(\Doctrine\ORM\Query\SqlWalker $sqlWalker)
+        public function getSql(SqlWalker $sqlWalker): string
         {
             return 'DATEDIFF(' .
                 $this->firstDateExpression->dispatch($sqlWalker) . ', ' .
@@ -171,6 +175,10 @@ I'll skip the blah and show the code for this function:
 .. code-block:: php
 
     <?php
+    use Doctrine\ORM\Query\Parser;
+    use Doctrine\ORM\Query\SqlWalker;
+    use Doctrine\ORM\Query\TokenType;
+
     /**
      * DateAddFunction ::=
      *     "DATE_ADD" "(" ArithmeticPrimary ", INTERVAL" ArithmeticPrimary Identifier ")"
@@ -181,7 +189,7 @@ I'll skip the blah and show the code for this function:
         public $intervalExpression = null;
         public $unit = null;
 
-        public function parse(\Doctrine\ORM\Query\Parser $parser)
+        public function parse(Parser $parser): void
         {
             $parser->match(TokenType::T_IDENTIFIER);
             $parser->match(TokenType::T_OPEN_PARENTHESIS);
@@ -202,7 +210,7 @@ I'll skip the blah and show the code for this function:
             $parser->match(TokenType::T_CLOSE_PARENTHESIS);
         }
 
-        public function getSql(\Doctrine\ORM\Query\SqlWalker $sqlWalker)
+        public function getSql(SqlWalker $sqlWalker): string
         {
             return 'DATE_ADD(' .
                 $this->firstDateExpression->dispatch($sqlWalker) . ', INTERVAL ' .
@@ -238,12 +246,12 @@ Conclusion
 Now that you all know how you can implement vendor specific SQL
 functionalities in DQL, we would be excited to see user extensions
 that add vendor specific function packages, for example more math
-functions, XML + GIS Support, Hashing functions and so on.
+functions, XML + GIS support, hashing functions and so on.
 
 For ORM we will come with the current set of functions, however for
 a future version we will re-evaluate if we can abstract even more
-vendor sql functions and extend the DQL languages scope.
+vendor SQL functions and extend the DQL language's scope.
 
-Code for this Extension to DQL and other Doctrine Extensions can be
+Code for this extension to DQL and other Doctrine extensions can be
 found
 `in the GitHub DoctrineExtensions repository <https://github.com/beberlei/DoctrineExtensions>`_.
