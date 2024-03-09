@@ -279,4 +279,9 @@
         <!-- https://github.com/doctrine/orm/issues/8537 -->
         <exclude-pattern>src/QueryBuilder.php</exclude-pattern>
     </rule>
+
+    <rule ref="SlevomatCodingStandard.PHP.UselessParentheses">
+        <!-- We need those parentheses to make enum access seem like valid syntax on PHP 7 -->
+        <exclude-pattern>src/Mapping/Driver/XmlDriver.php</exclude-pattern>
+    </rule>
 </ruleset>

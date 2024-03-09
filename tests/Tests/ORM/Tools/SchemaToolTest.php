@@ -374,6 +374,27 @@ class SchemaToolTest extends OrmTestCase
         self::assertTrue($schema->hasTable('first_entity'), 'Table first_entity should exist.');
         self::assertFalse($schema->hasTable('second_entity'), 'Table second_entity should not exist.');
     }
+
+    /** @group GH-11314 */
+    public function testLoadUniqueConstraintWithoutName(): void
+    {
+        $em     = $this->getTestEntityManager();
+        $entity = $em->getClassMetadata(GH11314Entity::class);
+
+        $schemaTool = new SchemaTool($em);
+        $schema     = $schemaTool->getSchemaFromMetadata([$entity]);
+
+        self::assertTrue($schema->hasTable('GH11314Entity'));
+
+        $tableEntity = $schema->getTable('GH11314Entity');
+
+        self::assertTrue($tableEntity->hasIndex('uniq_2d81a3ed5bf54558875f7fd5'));
+
+        $tableIndex = $tableEntity->getIndex('uniq_2d81a3ed5bf54558875f7fd5');
+
+        self::assertTrue($tableIndex->isUnique());
+        self::assertSame(['field', 'anotherField'], $tableIndex->getColumns());
+    }
 }
 
 /**
@@ -557,6 +578,32 @@ class IndexByFieldEntity
      * @Column
      */
     public $fieldName;
+}
+
+/**
+ * @Entity
+ * @Table(uniqueConstraints={@UniqueConstraint(columns={"field", "anotherField"})})
+ */
+class GH11314Entity
+{
+    /**
+     * @Column(type="integer")
+     * @Id
+     * @var int
+     */
+    private $id;
+
+    /**
+     * @Column(name="field", type="string")
+     * @var string
+     */
+    private $field;
+
+    /**
+     * @Column(name="anotherField", type="string")
+     * @var string
+     */
+    private $anotherField;
 }
 
 class IncorrectIndexByFieldEntity
