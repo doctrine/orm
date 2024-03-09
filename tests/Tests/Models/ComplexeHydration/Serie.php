@@ -18,36 +18,36 @@ use Doctrine\ORM\Mapping\Table;
  */
 class Serie
 {
-    #[ORM\Id]
-    #[ORM\GeneratedValue]
-    #[ORM\Column(type: 'integer')]
     /**
      * @var int
      * @Column(type="integer")
      * @Id
      * @GeneratedValue
      */
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column(type: 'integer')]
     private int $id;
 
-    #[ORM\Column(type: 'string', length: 255)]
     /**
      * @var string
      * @Column(length=255)
      */
+    #[ORM\Column(type: 'string', length: 255)]
     private string|null $libelle;
 
-    #[ORM\OneToMany(mappedBy: 'serie', targetEntity: ItemSerie::class, cascade: ['persist'], orphanRemoval: true)]
     /**
      * @var Collection<int, ItemSerie>
      * @OneToMany(targetEntity="ItemSerie", mappedBy="serie")
      */
+    #[ORM\OneToMany(mappedBy: 'serie', targetEntity: ItemSerie::class, cascade: ['persist'], orphanRemoval: true)]
     private $itemSeries;
 
-    #[ORM\OneToMany(mappedBy: 'serie', targetEntity: SerieImportator::class, cascade: ['persist'], orphanRemoval: true)]
     /**
      * @var Collection<int, SerieImportator>
      * @OneToMany(targetEntity="SerieImportator", mappedBy="serie")
      */
+    #[ORM\OneToMany(mappedBy: 'serie', targetEntity: SerieImportator::class, cascade: ['persist'], orphanRemoval: true)]
     private $serieImportators;
 
     public function __construct()
