@@ -12,18 +12,37 @@ use Doctrine\ORM\Mapping\Table;
 
 #[Table(name: 'item')]
 #[Entity]
+/**
+ * @Entity
+ * @Table(name="item")
+ */
 class Item
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
+    /**
+     * @var int
+     * @Column(type="integer")
+     * @Id
+     * @GeneratedValue
+     */
     private int|null $id;
 
     #[ORM\Column(type: 'string', length: 255)]
+    /**
+     * @var string
+     * @Column(length=255)
+     */
     private string|null $libelle;
 
     #[ORM\OneToMany(targetEntity: ItemSerie::class, mappedBy: 'item', cascade: ['persist'], orphanRemoval: true)]
     #[ORM\JoinColumn(name: 'itemSeries', referencedColumnName: 'item_id')]
+    /**
+     * @var Collection<int, CmsComment>
+     * @OneToMany(targetEntity="CmsComment", mappedBy="article")
+     * @JoinColumn(name="itemSeries", referencedColumnName="item_id")
+     */
     private $itemSeries;
 
     public function __construct()
