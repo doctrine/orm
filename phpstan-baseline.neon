@@ -231,7 +231,7 @@ parameters:
 			path: src/Mapping/Driver/XmlDriver.php
 
 		-
-			message: "#^Offset 'version' on \\*NEVER\\* in isset\\(\\) always exists and is always null\\.$#"
+			message: "#^Offset 'version' on \\*NEVER\\* in isset\\(\\) always exists and is not nullable\\.$#"
 			count: 1
 			path: src/Mapping/Driver/XmlDriver.php
 
@@ -326,22 +326,7 @@ parameters:
 			path: src/Query/AST/Functions/DateSubFunction.php
 
 		-
-			message: "#^Parameter \\#1 \\$simpleArithmeticExpr of method Doctrine\\\\ORM\\\\Query\\\\SqlWalker\\:\\:walkSimpleArithmeticExpression\\(\\) expects Doctrine\\\\ORM\\\\Query\\\\AST\\\\SimpleArithmeticExpression, Doctrine\\\\ORM\\\\Query\\\\AST\\\\Node given\\.$#"
-			count: 1
-			path: src/Query/AST/Functions/LengthFunction.php
-
-		-
-			message: "#^Parameter \\#1 \\$simpleArithmeticExpr of method Doctrine\\\\ORM\\\\Query\\\\SqlWalker\\:\\:walkSimpleArithmeticExpression\\(\\) expects Doctrine\\\\ORM\\\\Query\\\\AST\\\\SimpleArithmeticExpression, Doctrine\\\\ORM\\\\Query\\\\AST\\\\Node given\\.$#"
-			count: 1
-			path: src/Query/AST/Functions/LowerFunction.php
-
-		-
-			message: "#^Parameter \\#1 \\$simpleArithmeticExpr of method Doctrine\\\\ORM\\\\Query\\\\SqlWalker\\:\\:walkSimpleArithmeticExpression\\(\\) expects Doctrine\\\\ORM\\\\Query\\\\AST\\\\SimpleArithmeticExpression, Doctrine\\\\ORM\\\\Query\\\\AST\\\\Node given\\.$#"
-			count: 1
-			path: src/Query/AST/Functions/UpperFunction.php
-
-		-
-			message: "#^Method Doctrine\\\\ORM\\\\Query\\\\AST\\\\IndexBy\\:\\:dispatch\\(\\) should return string but returns void\\.$#"
+			message: "#^Method Doctrine\\\\ORM\\\\Query\\\\AST\\\\IndexBy\\:\\:dispatch\\(\\) should return string but returns null\\.$#"
 			count: 1
 			path: src/Query/AST/IndexBy.php
 
@@ -391,11 +376,6 @@ parameters:
 			path: src/Query/Expr/Select.php
 
 		-
-			message: "#^Comparison operation \"\\<\" between null and 102 is always true\\.$#"
-			count: 1
-			path: src/Query/Parser.php
-
-		-
 			message: "#^Method Doctrine\\\\ORM\\\\Query\\\\Parser\\:\\:ArithmeticFactor\\(\\) should return Doctrine\\\\ORM\\\\Query\\\\AST\\\\ArithmeticFactor but returns Doctrine\\\\ORM\\\\Query\\\\AST\\\\Node\\|string\\.$#"
 			count: 1
 			path: src/Query/Parser.php
@@ -411,13 +391,8 @@ parameters:
 			path: src/Query/Parser.php
 
 		-
-			message: "#^Result of && is always true\\.$#"
-			count: 1
-			path: src/Query/Parser.php
-
-		-
 			message: "#^Unreachable statement \\- code above always terminates\\.$#"
-			count: 4
+			count: 3
 			path: src/Query/Parser.php
 
 		-

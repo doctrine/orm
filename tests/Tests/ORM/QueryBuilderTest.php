@@ -6,6 +6,7 @@ namespace Doctrine\Tests\ORM;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Criteria;
+use Doctrine\Common\Collections\Order;
 use Doctrine\Deprecations\PHPUnit\VerifyDeprecations;
 use Doctrine\ORM\Cache;
 use Doctrine\ORM\Query;
@@ -22,6 +23,7 @@ use Doctrine\Tests\OrmTestCase;
 use InvalidArgumentException;
 
 use function array_filter;
+use function class_exists;
 use function get_class;
 
 /**
@@ -576,7 +578,7 @@ class QueryBuilderTest extends OrmTestCase
             ->from(CmsUser::class, 'u');
 
         $criteria = new Criteria();
-        $criteria->orderBy(['field' => Criteria::DESC]);
+        $criteria->orderBy(['field' => class_exists(Order::class) ? Order::Descending : Criteria::DESC]);
 
         $qb->addCriteria($criteria);
 
@@ -593,7 +595,7 @@ class QueryBuilderTest extends OrmTestCase
             ->join('u.article', 'a');
 
         $criteria = new Criteria();
-        $criteria->orderBy(['a.field' => Criteria::DESC]);
+        $criteria->orderBy(['a.field' => class_exists(Order::class) ? Order::Descending : Criteria::DESC]);
 
         $qb->addCriteria($criteria);
 

@@ -365,7 +365,7 @@ class SchemaTool
 
             if (isset($class->table['uniqueConstraints'])) {
                 foreach ($class->table['uniqueConstraints'] as $indexName => $indexData) {
-                    $uniqIndex = new Index($indexName, $this->getIndexColumns($class, $indexData), true, false, [], $indexData['options'] ?? []);
+                    $uniqIndex = new Index('tmp__' . $indexName, $this->getIndexColumns($class, $indexData), true, false, [], $indexData['options'] ?? []);
 
                     foreach ($table->getIndexes() as $tableIndexName => $tableIndex) {
                         $method = method_exists($tableIndex, 'isFulfilledBy') ? 'isFulfilledBy' : 'isFullfilledBy';
