@@ -1,5 +1,3 @@
-:orphan:
-
 .. toc::
 
    .. tocheader:: Tutorials
