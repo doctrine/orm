@@ -10,12 +10,12 @@ use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\Table;
 
-#[Table(name: 'item')]
-#[Entity]
 /**
  * @Entity
  * @Table(name="item")
  */
+#[Table(name: 'item')]
+#[Entity]
 class Item
 {
     /**

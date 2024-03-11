@@ -8,12 +8,12 @@ use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\Table;
 
-#[Table(name: 'serie_importator')]
-#[Entity]
 /**
  * @Entity
  * @Table(name="serie_importator")
  */
+#[Table(name: 'serie_importator')]
+#[Entity]
 class SerieImportator
 {
     /**

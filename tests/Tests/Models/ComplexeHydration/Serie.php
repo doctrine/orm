@@ -10,16 +10,15 @@ use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\Table;
 
-#[Table(name: 'serie')]
-#[Entity]
 /**
  * @Entity
  * @Table(name="serie")
  */
+#[Table(name: 'serie')]
+#[Entity]
 class Serie
 {
     /**
-     * @var int
      * @Column(type="integer")
      * @Id
      * @GeneratedValue

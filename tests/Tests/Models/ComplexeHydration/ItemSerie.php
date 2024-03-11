@@ -11,12 +11,12 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\Table;
 
-#[Table(name: 'item_serie')]
-#[Entity]
 /**
  * @Entity
  * @Table(name="item_serie")
  */
+#[Table(name: 'item_serie')]
+#[Entity]
 class ItemSerie
 {
     /**
@@ -44,7 +44,7 @@ class ItemSerie
      * @var string
      * @Column(length=50)
      */
-	#[ORM\Column(type: 'string', length: 50)]
+    #[ORM\Column(type: 'string', length: 50)]
     private string|null $number;
 
     public function getItem(): item|null
