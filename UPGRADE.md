@@ -25,6 +25,12 @@ Using array access on instances of the following classes is no longer possible:
 - `Doctrine\ORM\Mapping\JoinColumnMapping`
 - `Doctrine\ORM\Mapping\JoinTableMapping`
 
+## Remove properties `$indexes` and `$uniqueConstraints` from `Doctrine\ORM\Mapping\Table`
+
+The properties `$indexes` and `$uniqueConstraints` have been removed since they had no effect at all.
+The preferred way of defining indices and unique constraints is by
+using the `\Doctrine\ORM\Mapping\UniqueConstraint` and `\Doctrine\ORM\Mapping\Index` attributes.
+
 # Upgrade to 3.2
 
 ## `orm:schema-tool:update` option `--complete` is deprecated
