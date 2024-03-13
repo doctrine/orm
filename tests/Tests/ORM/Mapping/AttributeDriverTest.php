@@ -11,6 +11,7 @@ use Doctrine\ORM\Mapping\Driver\AttributeDriver;
 use Doctrine\ORM\Mapping\MappingAttribute;
 use Doctrine\Persistence\Mapping\Driver\AnnotationDriver as PersistenceAnnotationDriver;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
+use Doctrine\Tests\ORM\Mapping\Fixtures\AttributeEntityWithIndicesAndUniqueConstraintInTableAttribute;
 use Doctrine\Tests\ORM\Mapping\Fixtures\AttributeEntityWithNestedJoinColumns;
 use stdClass;
 
@@ -115,6 +116,8 @@ class AttributeDriverTest extends MappingDriverTestCase
         self::assertFalse($driver->isTransient(AttributeEntityWithoutOriginalParents::class));
 
         self::assertFalse($driver->isTransient(AttributeEntityStartingWithRepeatableAttributes::class));
+
+        self::assertFalse($driver->isTransient(AttributeEntityWithIndicesAndUniqueConstraintInTableAttribute::class));
     }
 
     public function testLegacyInheritance(): void
@@ -163,7 +166,36 @@ class AttributeDriverTest extends MappingDriverTestCase
             $metadata->associationMappings['assoc']['joinTable']['inverseJoinColumns']
         );
     }
+
+    /**
+     * @requires PHP 8.1
+     */
+    public function testTableAttributeWithIndicesAndUniqueConstraints(): void
+    {
+        $factory = $this->createClassMetadataFactory();
+
+        $metadata = $factory->getMetadataFor(AttributeEntityWithIndicesAndUniqueConstraintInTableAttribute::class);
+
+        self::assertEquals(
+            [
+                'bar' => [
+                    'columns' => [0 => 'id'],
+                ],
+            ],
+            $metadata->table['indexes']
+        );
+
+        self::assertEquals(
+            [
+                'foo' => [
+                    'columns' => [0 => 'id'],
+                ],
+            ],
+            $metadata->table['uniqueConstraints']
+        );
+    }
 }
+
 
 #[ORM\Entity]
 #[ORM\UniqueConstraint(name: 'foo', columns: ['id'])]

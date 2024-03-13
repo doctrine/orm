@@ -1078,6 +1078,8 @@ Required parameters:
 Optional parameters:
 
 -  **schema**: Name of the schema the table lies in.
+-  **indexes**: A array with instances of :ref:`#[Index] <attrref_index>`
+-  **uniqueConstraints**: A array with instances of :ref:`#[UniqueConstraint] <attrref_uniqueconstraint>`
 
 Example:
 
@@ -1085,11 +1087,30 @@ Example:
 
     <?php
     use Doctrine\ORM\Mapping\Entity;
+    use Doctrine\ORM\Mapping\Index;
     use Doctrine\ORM\Mapping\Table;
+    use Doctrine\ORM\Mapping\UniqueConstraint;
 
     #[Entity]
     #[Table(name: "user", schema: "schema_name")]
     class User { }
+
+    #[Entity]
+    #[Table(
+        name: "contact",
+        schema: "schema_name",
+        indexes: [
+            new Index(['some_column_1'], name: 'some_name_1'),
+            new Index(['some_column_2'], name: 'some_name_2'),
+        ],
+        uniqueConstraints: [
+            new UniqueConstraint('some_unique_constraint', ['some_column_3']),
+        ],
+    )]
+    class Contact
+    {
+        // [...]
+    }
 
 .. _attrref_uniqueconstraint:
 

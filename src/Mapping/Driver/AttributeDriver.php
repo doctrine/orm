@@ -21,6 +21,7 @@ use ReflectionProperty;
 use function assert;
 use function class_exists;
 use function constant;
+use function count;
 use function defined;
 use function get_class;
 
@@ -163,9 +164,85 @@ class AttributeDriver extends CompatibilityAnnotationDriver
         $primaryTable = [];
 
         if (isset($classAttributes[Mapping\Table::class])) {
-            $tableAnnot             = $classAttributes[Mapping\Table::class];
-            $primaryTable['name']   = $tableAnnot->name;
-            $primaryTable['schema'] = $tableAnnot->schema;
+            $tableAnnot                        = $classAttributes[Mapping\Table::class];
+            $primaryTable['name']              = $tableAnnot->name;
+            $primaryTable['schema']            = $tableAnnot->schema;
+            $primaryTable['indexes']           = [];
+            $primaryTable['uniqueConstraints'] = [];
+
+            foreach ($tableAnnot->indexes ?? [] as $indexAnnot) {
+                $index = [];
+
+                if (! empty($indexAnnot->columns)) {
+                    $index['columns'] = $indexAnnot->columns;
+                }
+
+                if (! empty($indexAnnot->fields)) {
+                    $index['fields'] = $indexAnnot->fields;
+                }
+
+                if (
+                    isset($index['columns'], $index['fields'])
+                    || (
+                        ! isset($index['columns'])
+                        && ! isset($index['fields'])
+                    )
+                ) {
+                    throw MappingException::invalidIndexConfiguration(
+                        $className,
+                        (string) ($indexAnnot->name ?? count($primaryTable['indexes']))
+                    );
+                }
+
+                if (! empty($indexAnnot->flags)) {
+                    $index['flags'] = $indexAnnot->flags;
+                }
+
+                if (! empty($indexAnnot->options)) {
+                    $index['options'] = $indexAnnot->options;
+                }
+
+                if (! empty($indexAnnot->name)) {
+                    $primaryTable['indexes'][$indexAnnot->name] = $index;
+                } else {
+                    $primaryTable['indexes'][] = $index;
+                }
+            }
+
+            foreach ($tableAnnot->uniqueConstraints ?? [] as $uniqueConstraintAnnot) {
+                $uniqueConstraint = [];
+
+                if (! empty($uniqueConstraintAnnot->columns)) {
+                    $uniqueConstraint['columns'] = $uniqueConstraintAnnot->columns;
+                }
+
+                if (! empty($uniqueConstraintAnnot->fields)) {
+                    $uniqueConstraint['fields'] = $uniqueConstraintAnnot->fields;
+                }
+
+                if (
+                    isset($uniqueConstraint['columns'], $uniqueConstraint['fields'])
+                    || (
+                        ! isset($uniqueConstraint['columns'])
+                        && ! isset($uniqueConstraint['fields'])
+                    )
+                ) {
+                    throw MappingException::invalidUniqueConstraintConfiguration(
+                        $className,
+                        (string) ($uniqueConstraintAnnot->name ?? count($primaryTable['uniqueConstraints']))
+                    );
+                }
+
+                if (! empty($uniqueConstraintAnnot->options)) {
+                    $uniqueConstraint['options'] = $uniqueConstraintAnnot->options;
+                }
+
+                if (! empty($uniqueConstraintAnnot->name)) {
+                    $primaryTable['uniqueConstraints'][$uniqueConstraintAnnot->name] = $uniqueConstraint;
+                } else {
+                    $primaryTable['uniqueConstraints'][] = $uniqueConstraint;
+                }
+            }
 
             if ($tableAnnot->options) {
                 $primaryTable['options'] = $tableAnnot->options;
