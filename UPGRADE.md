@@ -21,6 +21,12 @@ Using array access on instances of the following classes is no longer possible:
 - `Doctrine\ORM\Mapping\JoinColumnMapping`
 - `Doctrine\ORM\Mapping\JoinTableMapping`
 
+# Upgrade to 3.2
+
+## `orm:schema-tool:update` option `--complete` is deprecated
+
+That option behaves as a no-op, and is deprecated. It will be removed in 4.0.
+
 # Upgrade to 3.1
 
 ## Deprecate `Doctrine\ORM\Mapping\ReflectionEnumProperty`
