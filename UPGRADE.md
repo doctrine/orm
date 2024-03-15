@@ -1,3 +1,9 @@
+# Upgrade to 3.2
+
+## `orm:schema-tool:update` option `--complete` is deprecated
+
+That option behaves as a no-op, and is deprecated. It will be removed in 4.0.
+
 # Upgrade to 3.1
 
 ## Deprecate `Doctrine\ORM\Mapping\ReflectionEnumProperty`
