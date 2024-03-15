@@ -1,5 +1,9 @@
 # Upgrade to 4.0
 
+## Remove `orm:schema-tool:update` option `--complete`
+
+That option was a no-op.
+
 ## Remove `Doctrine\ORM\Mapping\ReflectionEnumProperty`
 
 This class has been removed.
