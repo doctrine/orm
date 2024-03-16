@@ -147,6 +147,23 @@ final class LimitSubqueryOutputWalkerTest extends PaginationTestCase
         );
     }
 
+    public function testCountQueryWithComplexScalarOrderByItemJoinedWithPartial(): void
+    {
+        $entityManager = $this->createTestEntityManagerWithPlatform(new MySQLPlatform());
+
+        $query = $entityManager->createQuery(
+            'SELECT u, partial a.{id, imageAltDesc} FROM Doctrine\Tests\ORM\Tools\Pagination\User u JOIN u.avatar a ORDER BY a.imageHeight * a.imageWidth DESC',
+        );
+
+        $query->setHydrationMode(Query::HYDRATE_ARRAY);
+        $query->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, LimitSubqueryOutputWalker::class);
+
+        self::assertSame(
+            'SELECT DISTINCT id_0 FROM (SELECT DISTINCT id_0, imageHeight_5 * imageWidth_6 FROM (SELECT u0_.id AS id_0, a1_.id AS id_1, a1_.imageAltDesc AS imageAltDesc_2, a1_.id AS id_3, a1_.image AS image_4, a1_.imageHeight AS imageHeight_5, a1_.imageWidth AS imageWidth_6, a1_.imageAltDesc AS imageAltDesc_7 FROM User u0_ INNER JOIN Avatar a1_ ON u0_.id = a1_.user_id) dctrn_result_inner ORDER BY imageHeight_5 * imageWidth_6 DESC) dctrn_result',
+            $query->getSQL(),
+        );
+    }
+
     public function testCountQueryWithComplexScalarOrderByItemOracle(): void
     {
         $this->entityManager = $this->createTestEntityManagerWithPlatform(new OraclePlatform());

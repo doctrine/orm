@@ -523,6 +523,25 @@ when the DQL is switched to an arbitrary join.
     - HAVING is applied to the results of a query after
       aggregation (GROUP BY)
 
+
+Partial Hydration Syntax
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+By default when you run a DQL query in Doctrine and select only a
+subset of the fields for a given entity, you do not receive objects
+back. Instead, you receive only arrays as a flat rectangular result
+set, similar to how you would if you were just using SQL directly
+and joining some data.
+
+If you want to select a partial number of fields for hydration entity in
+the context of array hydration and joins you can use the ``partial`` DQL keyword:
+
+.. code-block:: php
+
+    <?php
+    $query = $em->createQuery('SELECT partial u.{id, username}, partial a.{id, name} FROM CmsUser u JOIN u.articles a');
+    $users = $query->getArrayResult(); // array of partially loaded CmsUser and CmsArticle fields
+
 "NEW" Operator Syntax
 ^^^^^^^^^^^^^^^^^^^^^
 
@@ -1647,8 +1666,10 @@ Select Expressions
 
 .. code-block:: php
 
-    SelectExpression        ::= (IdentificationVariable | ScalarExpression | AggregateExpression | FunctionDeclaration | "(" Subselect ")" | CaseExpression | NewObjectExpression) [["AS"] ["HIDDEN"] AliasResultVariable]
+    SelectExpression        ::= (IdentificationVariable | ScalarExpression | AggregateExpression | FunctionDeclaration | PartialObjectExpression | "(" Subselect ")" | CaseExpression | NewObjectExpression) [["AS"] ["HIDDEN"] AliasResultVariable]
     SimpleSelectExpression  ::= (StateFieldPathExpression | IdentificationVariable | FunctionDeclaration | AggregateExpression | "(" Subselect ")" | ScalarExpression) [["AS"] AliasResultVariable]
+    PartialObjectExpression ::= "PARTIAL" IdentificationVariable "." PartialFieldSet
+    PartialFieldSet         ::= "{" SimpleStateField {"," SimpleStateField}* "}"
     NewObjectExpression     ::= "NEW" AbstractSchemaName "(" NewObjectArg {"," NewObjectArg}* ")"
     NewObjectArg            ::= ScalarExpression | "(" Subselect ")"
 
