@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Doctrine\Tests\Models\AbstractFetchEager\WithFetchEager;
+namespace Doctrine\Tests\Models\AbstractFetchEager;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
