@@ -342,10 +342,6 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             Models\Issue9300\Issue9300Child::class,
             Models\Issue9300\Issue9300Parent::class,
         ],
-        'eager_fetched_composite_one_to_many' => [
-            Models\EagerFetchedCompositeOneToMany\RootEntity::class,
-            Models\EagerFetchedCompositeOneToMany\SecondLevel::class,
-        ],
     ];
 
     /** @param class-string ...$models */
@@ -673,11 +669,6 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             $conn->executeStatement('DELETE FROM issue5989_persons');
             $conn->executeStatement('DELETE FROM issue5989_employees');
             $conn->executeStatement('DELETE FROM issue5989_managers');
-        }
-
-        if (isset($this->_usedModelSets['eager_fetched_composite_one_to_many'])) {
-            $conn->executeStatement('DELETE FROM eager_composite_join_second_level');
-            $conn->executeStatement('DELETE FROM eager_composite_join_root');
         }
 
         $this->_em->clear();
