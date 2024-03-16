@@ -40,5 +40,10 @@ jobs:
         with:
           dependency-versions: "highest"
 
+      - name: "Add orphan metadata where needed"
+        run: |
+          printf '%s\n\n%s\n' ":orphan:" "$(cat docs/en/sidebar.rst)" > docs/en/sidebar.rst
+          printf '%s\n\n%s\n' ":orphan:" "$(cat docs/en/reference/installation.rst)" > docs/en/reference/installation.rst
+
       - name: "Run guides-cli"
         run: "vendor/bin/guides -vvv --no-progress docs/en 2>&1 | grep -v 'No template found for rendering directive' | ( ! grep WARNING )"
