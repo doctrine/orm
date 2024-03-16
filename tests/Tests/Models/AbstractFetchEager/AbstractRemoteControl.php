@@ -10,11 +10,12 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity()
+ * @ORM\Table(name="abstract_fetch_eager_remote_control")
  * @ORM\InheritanceType("SINGLE_TABLE")
  * @ORM\DiscriminatorColumn(name="type", type="string")
  * @ORM\DiscriminatorMap({"mobile"="MobileRemoteControl"})
  */
-abstract class AbstractRemoveControl
+abstract class AbstractRemoteControl
 {
     /**
      * @ORM\Id

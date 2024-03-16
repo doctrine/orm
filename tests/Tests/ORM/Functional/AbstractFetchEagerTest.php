@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional;
 
-use Doctrine\Tests\Models\AbstractFetchEager\AbstractRemoveControl;
+use Doctrine\Tests\Models\AbstractFetchEager\AbstractRemoteControl;
 use Doctrine\Tests\Models\AbstractFetchEager\MobileRemoteControl;
 use Doctrine\Tests\Models\AbstractFetchEager\User;
 use Doctrine\Tests\OrmFunctionalTestCase;
@@ -14,7 +14,7 @@ final class AbstractFetchEagerTest extends OrmFunctionalTestCase
     public function testWithAbstractFetchEager(): void
     {
         $this->createSchemaForModels(
-            AbstractRemoveControl::class,
+            AbstractRemoteControl::class,
             User::class
         );
 

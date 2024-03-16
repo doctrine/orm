@@ -8,6 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity()
+ * @ORM\Table(name="abstract_fetch_eager_user")
  */
 class User
 {
@@ -21,14 +22,14 @@ class User
     public $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity="AbstractRemoveControl", inversedBy="users")
+     * @ORM\ManyToOne(targetEntity="AbstractRemoteControl", inversedBy="users")
      * @ORM\JoinColumn(nullable=false)
      *
-     * @var AbstractRemoveControl
+     * @var AbstractRemoteControl
      */
     public $remoteControl;
 
-    public function __construct(AbstractRemoveControl $control)
+    public function __construct(AbstractRemoteControl $control)
     {
         $this->remoteControl = $control;
     }
