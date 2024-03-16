@@ -138,16 +138,16 @@ class QueryTest extends OrmFunctionalTestCase
 
         $this->assertEquals([
             [
-                'id' => 13,
+                'id' => $user->id,
                 'username' => 'gblanco',
                 'articles' =>
                 [
                     [
-                        'id' => 3,
+                        'id' => $article1->id,
                         'topic' => 'Doctrine 2',
                     ],
                     [
-                        'id' => 4,
+                        'id' => $article2->id,
                         'topic' => 'Symfony 2',
                     ],
                 ],
