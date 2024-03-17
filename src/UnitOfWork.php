@@ -2662,13 +2662,13 @@ class UnitOfWork implements PropertyChangedListener
             foreach ($found as $targetValue) {
                 $sourceEntity = $targetProperty->getValue($targetValue);
 
-                if ($sourceEntity === null && isset($targetClass->associationMappings[$mappedBy]['joinColumns'])) {
+                if ($sourceEntity === null && isset($targetClass->associationMappings[$mappedBy]->joinColumns)) {
                     // case where the hydration $targetValue itself has not yet fully completed, for example
                     // in case a bi-directional association is being hydrated and deferring eager loading is
                     // not possible due to subclassing.
                     $data = $this->getOriginalEntityData($targetValue);
                     $id   = [];
-                    foreach ($targetClass->associationMappings[$mappedBy]['joinColumns'] as $joinColumn) {
+                    foreach ($targetClass->associationMappings[$mappedBy]->joinColumns as $joinColumn) {
                         $id[] = $data[$joinColumn['name']];
                     }
                 } else {
