@@ -33,8 +33,8 @@ class SecondLevel
     /**
      * @ORM\ManyToOne(targetEntity=RootEntity::class, inversedBy="secondLevel")
      * @ORM\JoinColumns({
-     *      @ORM\JoinColumn(name="root_other_key", referencedColumnName="other_key"),
-     *      @ORM\JoinColumn(name="root_id", referencedColumnName="id")
+     *      @ORM\JoinColumn(name="root_id", referencedColumnName="id"),
+     *      @ORM\JoinColumn(name="root_other_key", referencedColumnName="other_key")
      *  })
      *
      * @var RootEntity
