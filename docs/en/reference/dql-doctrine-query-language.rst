@@ -1050,7 +1050,7 @@ to PHP is determined by the so-called "hydration mode":
    pure/mixed distinction does not apply.
 -  **``getSingleScalarResult()``** (``HYDRATE_SINGLE_SCALAR``: Retrieves a single scalar
    value from the result returned by the dbms. If the result contains
-   more than a single scalar value, an exception is thrown. The
+   more than a single scalar value, a ``NonUniqueResultException`` is thrown. The
    pure/mixed distinction does not apply.
 
 In parentheses are the constants of the ``Query`` class which you can use with the
