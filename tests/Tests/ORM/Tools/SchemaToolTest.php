@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Tools;
 
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Schema\Schema;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
@@ -41,9 +42,12 @@ use Doctrine\Tests\Models\Forum\ForumUser;
 use Doctrine\Tests\Models\NullDefault\NullDefaultColumn;
 use Doctrine\Tests\OrmTestCase;
 use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\MockObject\MockObject;
 
+use function assert;
 use function count;
 use function current;
+use function method_exists;
 
 class SchemaToolTest extends OrmTestCase
 {
@@ -147,14 +151,23 @@ class SchemaToolTest extends OrmTestCase
     #[Group('DDC-283')]
     public function testPostGenerateEvents(): void
     {
-        $listener = new GenerateSchemaEventListener();
+        $listener = new class {
+            public int $tableCalls    = 0;
+            public bool $schemaCalled = false;
+
+            public function postGenerateSchemaTable(GenerateSchemaTableEventArgs $eventArgs): void
+            {
+                $this->tableCalls++;
+            }
+
+            public function postGenerateSchema(GenerateSchemaEventArgs $eventArgs): void
+            {
+                $this->schemaCalled = true;
+            }
+        };
 
         $em = $this->getTestEntityManager();
-        $em->getEventManager()->addEventListener(
-            [ToolEvents::postGenerateSchemaTable, ToolEvents::postGenerateSchema],
-            $listener,
-        );
-        $schemaTool = new SchemaTool($em);
+        $em->getEventManager()->addEventListener([ToolEvents::postGenerateSchemaTable, ToolEvents::postGenerateSchema], $listener);
 
         $classes = [
             $em->getClassMetadata(CmsAddress::class),
@@ -166,10 +179,59 @@ class SchemaToolTest extends OrmTestCase
             $em->getClassMetadata(CmsUser::class),
         ];
 
-        $schema = $schemaTool->getSchemaFromMetadata($classes);
+        $schemaTool = new SchemaTool($em);
+        $schemaTool->getSchemaFromMetadata($classes);
 
         self::assertEquals(count($classes), $listener->tableCalls);
         self::assertTrue($listener->schemaCalled);
+    }
+
+    public function testGetUpdateSchemaSqlEvents(): void
+    {
+        $em = $this->getTestEntityManager();
+
+        // Listen to events.
+        $em->getEventManager()->addEventListener([ToolEvents::postGenerateSchema, ToolEvents::postGenerateComparisonSchema], new class {
+            public function postGenerateSchema(GenerateSchemaEventArgs $eventArgs): void
+            {
+                $eventArgs->getSchema()->createTable('test_new');
+            }
+
+            public function postGenerateComparisonSchema(GenerateSchemaEventArgs $eventArgs): void
+            {
+                $eventArgs->getSchema()->createTable('test_old');
+            }
+        });
+
+        $introspectedSchema = new class () extends Schema {
+            public static bool $called = false;
+
+            /** {@inheritDoc} */
+            public function createTable($name): \Doctrine\DBAL\Schema\Table
+            {
+                self::$called = true;
+
+                return parent::createTable($name);
+            }
+        };
+
+        $schemaManager = $em->getConnection()->createSchemaManager();
+        self::assertInstanceOf(MockObject::class, $schemaManager);
+
+        $schemaManager
+            ->expects(self::once())
+            ->method('introspectSchema')
+            ->willReturn($introspectedSchema);
+
+        $schemaTool = new SchemaTool($em);
+        $schemaTool->getUpdateSchemaSql([]);
+
+        self::assertTrue($introspectedSchema::$called);
+
+        $comparator = $em->getConnection()->createSchemaManager()->createComparator();
+
+        assert(method_exists($comparator, 'getOldSchema'));
+        self::assertEquals($introspectedSchema, $comparator->getOldSchema());
     }
 
     public function testNullDefaultNotAddedToPlatformOptions(): void
@@ -403,25 +465,6 @@ class TestEntityWithAttributeOptionsArgument
 
     #[Column(type: 'string', options: ['foo' => 'bar', 'baz' => ['key' => 'val']])]
     private string $test;
-}
-
-class GenerateSchemaEventListener
-{
-    /** @var int */
-    public $tableCalls = 0;
-
-    /** @var bool */
-    public $schemaCalled = false;
-
-    public function postGenerateSchemaTable(GenerateSchemaTableEventArgs $eventArgs): void
-    {
-        $this->tableCalls++;
-    }
-
-    public function postGenerateSchema(GenerateSchemaEventArgs $eventArgs): void
-    {
-        $this->schemaCalled = true;
-    }
 }
 
 #[Table(name: 'unique_constraint_attribute_table')]

@@ -40,10 +40,6 @@ parameters:
             message: '~^Parameter #1 \$command of method Symfony\\Component\\Console\\Application::add\(\) expects Symfony\\Component\\Console\\Command\\Command, Doctrine\\DBAL\\Tools\\Console\\Command\\ReservedWordsCommand given\.$~'
             path: src/Tools/Console/ConsoleRunner.php
 
-        -
-            message: '~Strict comparison using \=\=\= between callable\(\)\: mixed and null will always evaluate to false\.~'
-            path: src/Tools/SchemaTool.php
-
         # To be removed in 4.0
         -
             message: '#Negated boolean expression is always false\.#'
