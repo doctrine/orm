@@ -8,7 +8,9 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity
- * @ORM\Table(name="eager_composite_join_second_level")
+ * @ORM\Table(name="eager_composite_join_second_level", indexes={
+ *     @ORM\Index(name="root_other_key_idx", columns={"root_other_key", "root_id"})
+ * })
  */
 class SecondLevel
 {
