@@ -27,8 +27,6 @@ abstract class AbstractRemoteControl
     public $id;
 
     /**
-     * /**
-     *
      * @ORM\Column(type="string")
      *
      * @var string
