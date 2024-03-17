@@ -2669,7 +2669,7 @@ class UnitOfWork implements PropertyChangedListener
                     $data = $this->getOriginalEntityData($targetValue);
                     $id   = [];
                     foreach ($targetClass->associationMappings[$mappedBy]->joinColumns as $joinColumn) {
-                        $id[] = $data[$joinColumn['name']];
+                        $id[] = $data[$joinColumn->name];
                     }
                 } else {
                     $id = $this->identifierFlattener->flattenIdentifier($class, $class->getIdentifierValues($sourceEntity));
