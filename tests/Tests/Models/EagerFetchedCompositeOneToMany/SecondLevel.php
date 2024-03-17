@@ -18,14 +18,6 @@ class SecondLevel
      *
      * @var int|null
      */
-    private $id = null;
-
-    /**
-     * @ORM\Id
-     * @ORM\Column(type="integer", nullable=false)
-     *
-     * @var int|null
-     */
     private $upperId;
 
     /**
@@ -39,17 +31,16 @@ class SecondLevel
     /**
      * @ORM\ManyToOne(targetEntity=RootEntity::class, inversedBy="secondLevel")
      * @ORM\JoinColumns({
-     *      @ORM\JoinColumn(name="other_key", referencedColumnName="other_key"),
-     *      @ORM\JoinColumn(name="upper_id", referencedColumnName="id")
+     *      @ORM\JoinColumn(name="root_other_key", referencedColumnName="other_key"),
+     *      @ORM\JoinColumn(name="root_id", referencedColumnName="id")
      *  })
      *
      * @var RootEntity
      */
     private $root;
 
-    public function __construct(int $id, RootEntity $upper)
+    public function __construct(RootEntity $upper)
     {
-        $this->id       = $id;
         $this->upperId  = $upper->getId();
         $this->otherKey = $upper->getOtherKey();
         $this->root     = $upper;
