@@ -30,7 +30,6 @@ use function array_keys;
 use function is_array;
 use function is_object;
 use function ltrim;
-use function method_exists;
 
 /**
  * The EntityManager is the central access point to ORM functionality.
@@ -120,11 +119,7 @@ class EntityManager implements EntityManagerInterface
             throw MissingMappingDriverImplementation::create();
         }
 
-        $this->eventManager = $eventManager
-            ?? (method_exists($conn, 'getEventManager')
-                ? $conn->getEventManager()
-                : new EventManager()
-            );
+        $this->eventManager = $eventManager ?? new EventManager();
 
         $metadataFactoryClassName = $config->getClassMetadataFactoryName();
 
@@ -262,7 +257,7 @@ class EntityManager implements EntityManagerInterface
     /**
      * {@inheritDoc}
      */
-    public function find($className, mixed $id, LockMode|int|null $lockMode = null, int|null $lockVersion = null): object|null
+    public function find($className, mixed $id, LockMode|null $lockMode = null, int|null $lockVersion = null): object|null
     {
         $class = $this->metadataFactory->getMetadataFor(ltrim($className, '\\'));
 
@@ -450,7 +445,7 @@ class EntityManager implements EntityManagerInterface
         $this->unitOfWork->remove($object);
     }
 
-    public function refresh(object $object, LockMode|int|null $lockMode = null): void
+    public function refresh(object $object, LockMode|null $lockMode = null): void
     {
         $this->errorIfClosed();
 
@@ -471,7 +466,7 @@ class EntityManager implements EntityManagerInterface
         $this->unitOfWork->detach($object);
     }
 
-    public function lock(object $entity, LockMode|int $lockMode, DateTimeInterface|int|null $lockVersion = null): void
+    public function lock(object $entity, LockMode $lockMode, DateTimeInterface|int|null $lockVersion = null): void
     {
         $this->unitOfWork->lock($entity, $lockMode, $lockVersion);
     }
@@ -581,12 +576,10 @@ class EntityManager implements EntityManagerInterface
     }
 
     /**
-     * @psalm-param LockMode::* $lockMode
-     *
      * @throws OptimisticLockException
      * @throws TransactionRequiredException
      */
-    private function checkLockRequirements(LockMode|int $lockMode, ClassMetadata $class): void
+    private function checkLockRequirements(LockMode $lockMode, ClassMetadata $class): void
     {
         switch ($lockMode) {
             case LockMode::OPTIMISTIC:
