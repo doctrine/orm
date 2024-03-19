@@ -65,7 +65,7 @@ class ProxyFactoryTest extends OrmTestCase
     {
         $identifier = ['id' => 42];
         $proxyClass = 'Proxies\__CG__\Doctrine\Tests\Models\ECommerce\ECommerceFeature';
-        $persister  = $this->getMockBuilderWithOnlyMethods(BasicEntityPersister::class, ['load'])
+        $persister  = $this->getMockBuilderWithOnlyMethods(BasicEntityPersister::class, ['loadById'])
             ->disableOriginalConstructor()
             ->getMock();
 
@@ -75,8 +75,8 @@ class ProxyFactoryTest extends OrmTestCase
 
         $persister
             ->expects(self::atLeastOnce())
-            ->method('load')
-            ->with(self::equalTo($identifier), self::isInstanceOf($proxyClass))
+            ->method('loadById')
+            ->with(self::equalTo($identifier))
             ->will(self::returnValue($proxy));
 
         $proxy->getDescription();

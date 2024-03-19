@@ -1492,6 +1492,7 @@
       <code><![CDATA[getValue]]></code>
       <code><![CDATA[setAccessible]]></code>
       <code><![CDATA[setValue]]></code>
+      <code><![CDATA[setValue]]></code>
     </PossiblyNullReference>
     <TypeDoesNotContainType>
       <code><![CDATA[$autoGenerate < 0]]></code>
@@ -1501,13 +1502,8 @@
       <code><![CDATA[__wakeup]]></code>
     </UndefinedInterfaceMethod>
     <UndefinedMethod>
-      <code><![CDATA[self::createLazyGhost(static function (InternalProxy $object) use ($initializer, &$proxy): void {
-                $initializer($object, $proxy);
-            }, $skippedProperties)]]></code>
+      <code><![CDATA[self::createLazyGhost($initializer, $skippedProperties)]]></code>
     </UndefinedMethod>
-    <UndefinedVariable>
-      <code><![CDATA[$proxy]]></code>
-    </UndefinedVariable>
     <UnresolvableInclude>
       <code><![CDATA[require $fileName]]></code>
     </UnresolvableInclude>
