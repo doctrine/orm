@@ -234,7 +234,7 @@ EOPHP;
             $class = $entityPersister->getClassMetadata();
 
             foreach ($class->getReflectionProperties() as $property) {
-                if (! $property || ! $class->hasField($property->name) && ! $class->hasAssociation($property->name)) {
+                if (! $property || ! $class->hasField($property->getName()) && ! $class->hasAssociation($property->getName())) {
                     continue;
                 }
 
