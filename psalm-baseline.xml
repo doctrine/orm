@@ -251,9 +251,6 @@
     </UnsupportedReferenceUsage>
   </file>
   <file src="src/Internal/Hydration/ObjectHydrator.php">
-    <InvalidArgument>
-      <code><![CDATA[$element]]></code>
-    </InvalidArgument>
     <PossiblyFalseArgument>
       <code><![CDATA[$index]]></code>
     </PossiblyFalseArgument>
