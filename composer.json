@@ -33,7 +33,7 @@
         "doctrine/persistence": "^3.3.1",
         "psr/cache": "^1 || ^2 || ^3",
         "symfony/console": "^5.4 || ^6.0 || ^7.0",
-        "symfony/var-exporter": "~6.2.13 || ^6.3.2 || ^7.0"
+        "symfony/var-exporter": "^6.3.9 || ^7.0"
     },
     "require-dev": {
         "doctrine/coding-standard": "^12.0",
