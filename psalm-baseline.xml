@@ -760,13 +760,8 @@
       <code><![CDATA[$autoGenerate > 4]]></code>
     </TypeDoesNotContainType>
     <UndefinedMethod>
-      <code><![CDATA[self::createLazyGhost(static function (InternalProxy $object) use ($initializer, &$proxy): void {
-                $initializer($object, $proxy);
-            }, $skippedProperties)]]></code>
+      <code><![CDATA[self::createLazyGhost($initializer, $skippedProperties)]]></code>
     </UndefinedMethod>
-    <UndefinedVariable>
-      <code><![CDATA[$proxy]]></code>
-    </UndefinedVariable>
     <UnresolvableInclude>
       <code><![CDATA[require $fileName]]></code>
     </UnresolvableInclude>
