@@ -1055,7 +1055,7 @@ to PHP is determined by the so-called "hydration mode":
 
 In parentheses are the constants of the ``Query`` class which you can use with the
 general-purpose method ``Query::execute(array $params = [], $hydrationMode = Query::HYDRATE_OBJECT)``.
-In fact, the recommended methods in the list are just convenient shortcuts for the hydration mode.
+In fact, the methods in the list are just convenient shortcuts for the hydration mode.
 
 Pure and Mixed Results
 ~~~~~~~~~~~~~~~~~~~~~~
