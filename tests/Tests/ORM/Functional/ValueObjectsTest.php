@@ -218,6 +218,15 @@ class ValueObjectsTest extends OrmFunctionalTestCase
             ->execute();
     }
 
+    public function testPartialDqlWithNonExistentEmbeddableField(): void
+    {
+        $this->expectException(QueryException::class);
+        $this->expectExceptionMessage("no mapped field named 'address.asdfasdf'");
+
+        $this->_em->createQuery('SELECT PARTIAL p.{id,address.asdfasdf} FROM ' . __NAMESPACE__ . '\\DDC93Person p')
+            ->getArrayResult();
+    }
+
     public function testEmbeddableWithInheritance(): void
     {
         $car = new DDC93Car(new DDC93Address('Foo', '12345', 'Asdf'));

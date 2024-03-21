@@ -6,6 +6,7 @@ namespace Doctrine\ORM\Query;
 
 use Doctrine\Common\Lexer\Token;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Internal\Hydration\HydrationException;
 use Doctrine\ORM\Mapping\AssociationMapping;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Query;
@@ -13,6 +14,7 @@ use Doctrine\ORM\Query\AST\Functions;
 use LogicException;
 use ReflectionClass;
 
+use function array_intersect;
 use function array_search;
 use function assert;
 use function class_exists;
@@ -101,6 +103,9 @@ final class Parser
 
     /** @psalm-var list<array{token: DqlToken|null, expression: mixed, nestingLevel: int}> */
     private array $deferredIdentificationVariables = [];
+
+    /** @psalm-var list<array{token: DqlToken|null, expression: AST\PartialObjectExpression, nestingLevel: int}> */
+    private array $deferredPartialObjectExpressions = [];
 
     /** @psalm-var list<array{token: DqlToken|null, expression: AST\PathExpression, nestingLevel: int}> */
     private array $deferredPathExpressions = [];
@@ -223,6 +228,10 @@ final class Parser
         // Process any deferred validations of some nodes in the AST.
         // This also allows post-processing of the AST for modification purposes.
         $this->processDeferredIdentificationVariables();
+
+        if ($this->deferredPartialObjectExpressions) {
+            $this->processDeferredPartialObjectExpressions();
+        }
 
         if ($this->deferredPathExpressions) {
             $this->processDeferredPathExpressions();
@@ -595,6 +604,44 @@ final class Parser
 
             if ($class->getConstructor()->getNumberOfRequiredParameters() > count($args)) {
                 $this->semanticalError(sprintf('Number of arguments does not match with "%s" constructor declaration.', $className), $token);
+            }
+        }
+    }
+
+    /**
+     * Validates that the given <tt>PartialObjectExpression</tt> is semantically correct.
+     * It must exist in query components list.
+     */
+    private function processDeferredPartialObjectExpressions(): void
+    {
+        foreach ($this->deferredPartialObjectExpressions as $deferredItem) {
+            $expr  = $deferredItem['expression'];
+            $class = $this->getMetadataForDqlAlias($expr->identificationVariable);
+
+            foreach ($expr->partialFieldSet as $field) {
+                if (isset($class->fieldMappings[$field])) {
+                    continue;
+                }
+
+                if (
+                    isset($class->associationMappings[$field]) &&
+                    $class->associationMappings[$field]->isToOneOwningSide()
+                ) {
+                    continue;
+                }
+
+                $this->semanticalError(sprintf(
+                    "There is no mapped field named '%s' on class %s.",
+                    $field,
+                    $class->name,
+                ), $deferredItem['token']);
+            }
+
+            if (array_intersect($class->identifier, $expr->partialFieldSet) !== $class->identifier) {
+                $this->semanticalError(
+                    'The partial field selection of class ' . $class->name . ' must contain the identifier.',
+                    $deferredItem['token'],
+                );
             }
         }
     }
@@ -1622,6 +1669,67 @@ final class Parser
     }
 
     /**
+     * PartialObjectExpression ::= "PARTIAL" IdentificationVariable "." PartialFieldSet
+     * PartialFieldSet ::= "{" SimpleStateField {"," SimpleStateField}* "}"
+     */
+    public function PartialObjectExpression(): AST\PartialObjectExpression
+    {
+        if ($this->query->getHydrationMode() === Query::HYDRATE_OBJECT) {
+            throw HydrationException::partialObjectHydrationDisallowed();
+        }
+
+        $this->match(TokenType::T_PARTIAL);
+
+        $partialFieldSet = [];
+
+        $identificationVariable = $this->IdentificationVariable();
+
+        $this->match(TokenType::T_DOT);
+        $this->match(TokenType::T_OPEN_CURLY_BRACE);
+        $this->match(TokenType::T_IDENTIFIER);
+
+        assert($this->lexer->token !== null);
+        $field = $this->lexer->token->value;
+
+        // First field in partial expression might be embeddable property
+        while ($this->lexer->isNextToken(TokenType::T_DOT)) {
+            $this->match(TokenType::T_DOT);
+            $this->match(TokenType::T_IDENTIFIER);
+            $field .= '.' . $this->lexer->token->value;
+        }
+
+        $partialFieldSet[] = $field;
+
+        while ($this->lexer->isNextToken(TokenType::T_COMMA)) {
+            $this->match(TokenType::T_COMMA);
+            $this->match(TokenType::T_IDENTIFIER);
+
+            $field = $this->lexer->token->value;
+
+            while ($this->lexer->isNextToken(TokenType::T_DOT)) {
+                $this->match(TokenType::T_DOT);
+                $this->match(TokenType::T_IDENTIFIER);
+                $field .= '.' . $this->lexer->token->value;
+            }
+
+            $partialFieldSet[] = $field;
+        }
+
+        $this->match(TokenType::T_CLOSE_CURLY_BRACE);
+
+        $partialObjectExpression = new AST\PartialObjectExpression($identificationVariable, $partialFieldSet);
+
+        // Defer PartialObjectExpression validation
+        $this->deferredPartialObjectExpressions[] = [
+            'expression'   => $partialObjectExpression,
+            'nestingLevel' => $this->nestingLevel,
+            'token'        => $this->lexer->token,
+        ];
+
+        return $partialObjectExpression;
+    }
+
+    /**
      * NewObjectExpression ::= "NEW" AbstractSchemaName "(" NewObjectArg {"," NewObjectArg}* ")"
      */
     public function NewObjectExpression(): AST\NewObjectExpression
@@ -1920,7 +2028,7 @@ final class Parser
     /**
      * SelectExpression ::= (
      *     IdentificationVariable | ScalarExpression | AggregateExpression | FunctionDeclaration |
-     *     "(" Subselect ")" | CaseExpression | NewObjectExpression
+     *     PartialObjectExpression | "(" Subselect ")" | CaseExpression | NewObjectExpression
      * ) [["AS"] ["HIDDEN"] AliasResultVariable]
      */
     public function SelectExpression(): AST\SelectExpression
@@ -1961,6 +2069,12 @@ final class Parser
 
                 break;
 
+            // PartialObjectExpression (PARTIAL u.{id, name})
+            case $lookaheadType === TokenType::T_PARTIAL:
+                $expression    = $this->PartialObjectExpression();
+                $identVariable = $expression->identificationVariable;
+                break;
+
             // Subselect
             case $lookaheadType === TokenType::T_OPEN_PARENTHESIS && $peek->type === TokenType::T_SELECT:
                 $this->match(TokenType::T_OPEN_PARENTHESIS);
@@ -1986,7 +2100,7 @@ final class Parser
 
             default:
                 $this->syntaxError(
-                    'IdentificationVariable | ScalarExpression | AggregateExpression | FunctionDeclaration | "(" Subselect ")" | CaseExpression',
+                    'IdentificationVariable | ScalarExpression | AggregateExpression | FunctionDeclaration | PartialObjectExpression | "(" Subselect ")" | CaseExpression',
                     $this->lexer->lookahead,
                 );
         }

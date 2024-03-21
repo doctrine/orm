@@ -77,6 +77,7 @@ enum TokenType: int
     case T_OR       = 242;
     case T_ORDER    = 243;
     case T_OUTER    = 244;
+    case T_PARTIAL  = 245;
     case T_SELECT   = 246;
     case T_SET      = 247;
     case T_SOME     = 248;

@@ -109,6 +109,52 @@ class QueryTest extends OrmFunctionalTestCase
         self::assertEquals('Symfony 2', $users[0]->articles[1]->topic);
     }
 
+    public function testJoinPartialArrayHydration(): void
+    {
+        $user           = new CmsUser();
+        $user->name     = 'Guilherme';
+        $user->username = 'gblanco';
+        $user->status   = 'developer';
+
+        $article1        = new CmsArticle();
+        $article1->topic = 'Doctrine 2';
+        $article1->text  = 'This is an introduction to Doctrine 2.';
+        $user->addArticle($article1);
+
+        $article2        = new CmsArticle();
+        $article2->topic = 'Symfony 2';
+        $article2->text  = 'This is an introduction to Symfony 2.';
+        $user->addArticle($article2);
+
+        $this->_em->persist($user);
+        $this->_em->persist($article1);
+        $this->_em->persist($article2);
+
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $query = $this->_em->createQuery('select partial u.{id, username}, partial a.{id, topic} from ' . CmsUser::class . ' u join u.articles a ORDER BY a.topic');
+        $users = $query->getArrayResult();
+
+        $this->assertEquals([
+            [
+                'id' => $user->id,
+                'username' => 'gblanco',
+                'articles' =>
+                [
+                    [
+                        'id' => $article1->id,
+                        'topic' => 'Doctrine 2',
+                    ],
+                    [
+                        'id' => $article2->id,
+                        'topic' => 'Symfony 2',
+                    ],
+                ],
+            ],
+        ], $users);
+    }
+
     public function testUsingZeroBasedQueryParameterShouldWork(): void
     {
         $user           = new CmsUser();

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Query;
 
+use Doctrine\ORM\AbstractQuery;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
@@ -22,6 +23,7 @@ use PHPUnit\Framework\Attributes\Group;
 class LanguageRecognitionTest extends OrmTestCase
 {
     private EntityManagerInterface $entityManager;
+    private int $hydrationMode = AbstractQuery::HYDRATE_OBJECT;
 
     protected function setUp(): void
     {
@@ -45,6 +47,7 @@ class LanguageRecognitionTest extends OrmTestCase
     {
         $query = $this->entityManager->createQuery($dql);
         $query->setDQL($dql);
+        $query->setHydrationMode($this->hydrationMode);
 
         foreach ($hints as $key => $value) {
             $query->setHint($key, $value);
@@ -525,6 +528,18 @@ class LanguageRecognitionTest extends OrmTestCase
     public function testUnknownAbstractSchemaName(): void
     {
         $this->assertInvalidDQL('SELECT u FROM UnknownClassName u');
+    }
+
+    public function testCorrectPartialObjectLoad(): void
+    {
+        $this->hydrationMode = AbstractQuery::HYDRATE_ARRAY;
+        $this->assertValidDQL('SELECT PARTIAL u.{id,name} FROM Doctrine\Tests\Models\CMS\CmsUser u');
+    }
+
+    public function testIncorrectPartialObjectLoadBecauseOfMissingIdentifier(): void
+    {
+        $this->hydrationMode = AbstractQuery::HYDRATE_ARRAY;
+        $this->assertInvalidDQL('SELECT PARTIAL u.{name} FROM Doctrine\Tests\Models\CMS\CmsUser u');
     }
 
     public function testScalarExpressionInSelect(): void
