@@ -4,8 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Performance\Mock;
 
-use Doctrine\DBAL\LockMode;
-use Doctrine\ORM\Mapping\AssociationMapping;
+use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Persisters\Entity\BasicEntityPersister;
 
 /**
@@ -13,22 +12,14 @@ use Doctrine\ORM\Persisters\Entity\BasicEntityPersister;
  */
 class NonLoadingPersister extends BasicEntityPersister
 {
-    public function __construct()
-    {
+    public function __construct(
+        ClassMetadata $class,
+    ) {
+        $this->class = $class;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function load(
-        array $criteria,
-        object|null $entity = null,
-        AssociationMapping|null $assoc = null,
-        array $hints = [],
-        LockMode|int|null $lockMode = null,
-        int|null $limit = null,
-        array|null $orderBy = null,
-    ): object|null {
-        return $entity;
+    public function loadById(array $identifier, object|null $entity = null): object|null
+    {
+        return $entity ?? new ($this->class->name)();
     }
 }

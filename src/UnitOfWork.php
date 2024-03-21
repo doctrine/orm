@@ -2581,9 +2581,9 @@ class UnitOfWork implements PropertyChangedListener
 
                     if ($hints['fetchMode'][$class->name][$field] === ClassMetadata::FETCH_EAGER) {
                         $isIteration = isset($hints[Query::HINT_INTERNAL_ITERATION]) && $hints[Query::HINT_INTERNAL_ITERATION];
-                        if (! $isIteration && $assoc->isOneToMany()) {
+                        if (! $isIteration && $assoc->isOneToMany() && ! $targetClass->isIdentifierComposite && ! $assoc->isIndexed()) {
                             $this->scheduleCollectionForBatchLoading($pColl, $class);
-                        } elseif (($isIteration && $assoc->isOneToMany()) || $assoc->isManyToMany()) {
+                        } else {
                             $this->loadCollection($pColl);
                             $pColl->takeSnapshot();
                         }

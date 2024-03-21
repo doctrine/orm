@@ -57,7 +57,7 @@ class NonProxyLoadingEntityManager implements EntityManagerInterface
 
     public function getUnitOfWork(): UnitOfWork
     {
-        return new NonProxyLoadingUnitOfWork();
+        return new NonProxyLoadingUnitOfWork($this);
     }
 
     public function getCache(): Cache|null
