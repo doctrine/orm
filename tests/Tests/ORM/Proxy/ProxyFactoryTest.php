@@ -64,7 +64,6 @@ class ProxyFactoryTest extends OrmTestCase
     public function testReferenceProxyDelegatesLoadingToThePersister(): void
     {
         $identifier = ['id' => 42];
-        $proxyClass = 'Proxies\__CG__\Doctrine\Tests\Models\ECommerce\ECommerceFeature';
         $persister  = $this->getMockBuilderWithOnlyMethods(BasicEntityPersister::class, ['loadById'])
             ->disableOriginalConstructor()
             ->getMock();
