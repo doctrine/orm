@@ -1674,6 +1674,12 @@ final class Parser
             return $expression;
         }
 
+        if ($token->type === TokenType::T_NEW) {
+            $expression = $this->NewObjectExpression();
+
+            return $expression;
+        }
+
         return $this->ScalarExpression();
     }
 
