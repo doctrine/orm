@@ -53,7 +53,7 @@ class SchemaValidator
      */
     private const BUILTIN_TYPES_MAP = [
         AsciiStringType::class => 'string',
-        BigIntType::class => 'string',
+        BigIntType::class => 'string|int',
         BooleanType::class => 'bool',
         DecimalType::class => 'string',
         FloatType::class => 'float',
