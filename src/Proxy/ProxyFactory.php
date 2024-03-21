@@ -360,11 +360,11 @@ EOPHP;
      */
     private function createLazyInitializer(ClassMetadata $classMetadata, EntityPersister $entityPersister, IdentifierFlattener $identifierFlattener): Closure
     {
-        return static function (InternalProxy $proxy, InternalProxy $original) use ($entityPersister, $classMetadata, $identifierFlattener): void {
-            $identifier = $classMetadata->getIdentifierValues($original);
-            $entity     = $entityPersister->loadById($identifier, $original);
+        return static function (InternalProxy $proxy) use ($entityPersister, $classMetadata, $identifierFlattener): void {
+            $identifier = $classMetadata->getIdentifierValues($proxy);
+            $original   = $entityPersister->loadById($identifier);
 
-            if ($entity === null) {
+            if ($original === null) {
                 throw EntityNotFoundException::fromClassNameAndIdentifier(
                     $classMetadata->getName(),
                     $identifierFlattener->flattenIdentifier($classMetadata, $identifier)
@@ -382,7 +382,7 @@ EOPHP;
                     continue;
                 }
 
-                $property->setValue($proxy, $property->getValue($entity));
+                $property->setValue($proxy, $property->getValue($original));
             }
         };
     }
@@ -468,9 +468,7 @@ EOPHP;
         $identifierFields = array_intersect_key($class->getReflectionProperties(), $identifiers);
 
         $proxyFactory = Closure::bind(static function (array $identifier) use ($initializer, $skippedProperties, $identifierFields, $className): InternalProxy {
-            $proxy = self::createLazyGhost(static function (InternalProxy $object) use ($initializer, &$proxy): void {
-                $initializer($object, $proxy);
-            }, $skippedProperties);
+            $proxy = self::createLazyGhost($initializer, $skippedProperties);
 
             foreach ($identifierFields as $idField => $reflector) {
                 if (! isset($identifier[$idField])) {

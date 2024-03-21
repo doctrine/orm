@@ -3166,7 +3166,7 @@ EXCEPTION
 
                     if ($hints['fetchMode'][$class->name][$field] === ClassMetadata::FETCH_EAGER) {
                         $isIteration = isset($hints[Query::HINT_INTERNAL_ITERATION]) && $hints[Query::HINT_INTERNAL_ITERATION];
-                        if ($assoc['type'] === ClassMetadata::ONE_TO_MANY && ! $isIteration && ! $targetClass->isIdentifierComposite) {
+                        if ($assoc['type'] === ClassMetadata::ONE_TO_MANY && ! $isIteration && ! $targetClass->isIdentifierComposite && ! isset($assoc['indexBy'])) {
                             $this->scheduleCollectionForBatchLoading($pColl, $class);
                         } else {
                             $this->loadCollection($pColl);
