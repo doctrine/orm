@@ -487,11 +487,11 @@ class Expr
     /**
      * Creates a SUBSTRING() function expression with the given arguments.
      *
-     * @param mixed    $x    Argument to be used as string to be cropped by SUBSTRING() function.
-     * @param int      $from Initial offset to start cropping string. May accept negative values.
-     * @param int|null $len  Length of crop. May accept negative values.
+     * @param mixed              $x    Argument to be used as string to be cropped by SUBSTRING() function.
+     * @param int|Expr\Func      $from Initial offset to start cropping string. May accept negative values.
+     * @param int|Expr\Func|null $len  Length of crop. May accept negative values.
      */
-    public function substring(mixed $x, int $from, int|null $len = null): Expr\Func
+    public function substring(mixed $x, int|Expr\Func $from, int|Expr\Func|null $len = null): Expr\Func
     {
         $args = [$x, $from];
         if ($len !== null) {
