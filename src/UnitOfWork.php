@@ -41,6 +41,7 @@ use Doctrine\ORM\Persisters\Entity\EntityPersister;
 use Doctrine\ORM\Persisters\Entity\JoinedSubclassPersister;
 use Doctrine\ORM\Persisters\Entity\SingleTablePersister;
 use Doctrine\ORM\Proxy\InternalProxy;
+use Doctrine\ORM\Query\SqlWalker;
 use Doctrine\ORM\Utility\IdentifierFlattener;
 use Doctrine\Persistence\Mapping\RuntimeReflectionService;
 use Doctrine\Persistence\NotifyPropertyChanged;
@@ -2919,6 +2920,15 @@ EXCEPTION
      */
     public function createEntity($className, array $data, &$hints = [])
     {
+        if (isset($hints[SqlWalker::HINT_PARTIAL])) {
+            Deprecation::trigger(
+                'doctrine/orm',
+                'https://github.com/doctrine/orm/issues/8471',
+                'Partial Objects are deprecated for object hydration (here entity %s)',
+                $className
+            );
+        }
+
         $class = $this->em->getClassMetadata($className);
 
         $id     = $this->identifierFlattener->flattenIdentifier($class, $data);
