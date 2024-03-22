@@ -1003,8 +1003,8 @@ postGenerateSchema
 ~~~~~~~~~~~~~~~~~~
 
 This event is fired after the schema instance was successfully built and before SQL queries are generated from the
-schema information of ``Doctrine\DBAL\Schema\Schema``. It allows to access the full object representation of the database schema
-and the EntityManager.
+schema information of ``Doctrine\DBAL\Schema\Schema``. It allows to access the full object representation of the schema
+and the EntityManager as mapped by the metadata attributes.
 
 .. code-block:: php
 
@@ -1019,6 +1019,32 @@ and the EntityManager.
     class TestEventListener
     {
         public function postGenerateSchema(GenerateSchemaEventArgs $eventArgs)
+        {
+            $schema = $eventArgs->getSchema();
+            $em = $eventArgs->getEntityManager();
+        }
+    }
+
+postGenerateComparisonSchema
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+This event is fired after the schema instance was successfully built and before SQL queries are generated from the
+schema information of ``Doctrine\DBAL\Schema\Schema``. It allows to access the full object representation of the schema
+as it is introspected from the database platform.
+
+.. code-block:: php
+
+    <?php
+    use Doctrine\ORM\Tools\ToolEvents;
+    use Doctrine\ORM\Tools\Event\GenerateSchemaEventArgs;
+
+    $test = new TestEventListener();
+    $evm = $em->getEventManager();
+    $evm->addEventListener(ToolEvents::postGenerateComparisonSchema, $test);
+
+    class TestEventListener
+    {
+        public function postGenerateComparisonSchema(GenerateSchemaEventArgs $eventArgs)
         {
             $schema = $eventArgs->getSchema();
             $em = $eventArgs->getEntityManager();
