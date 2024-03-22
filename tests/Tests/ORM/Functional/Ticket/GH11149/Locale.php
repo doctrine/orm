@@ -14,7 +14,7 @@ class Locale
 {
     /**
      * @ORM\Id
-     * @ORM\Column(type="string")
+     * @ORM\Column(type="string", length=5)
      *
      * @var string
      */
