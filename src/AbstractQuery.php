@@ -44,6 +44,8 @@ use function sha1;
  * Base contract for ORM queries. Base class for Query and NativeQuery.
  *
  * @link    www.doctrine-project.org
+ *
+ * @template T
  */
 abstract class AbstractQuery
 {
@@ -683,6 +685,12 @@ abstract class AbstractQuery
      * Alias for execute(null, $hydrationMode = HYDRATE_OBJECT).
      *
      * @psalm-param string|AbstractQuery::HYDRATE_* $hydrationMode
+     *
+     * @psalm-return (
+     *    $hydrationMode is self::HYDRATE_OBJECT|null
+     *    ? array<array-key, T>
+     *    : mixed
+     * )
      */
     public function getResult(string|int $hydrationMode = self::HYDRATE_OBJECT): mixed
     {
@@ -730,6 +738,12 @@ abstract class AbstractQuery
      *
      * @psalm-param string|AbstractQuery::HYDRATE_*|null $hydrationMode
      *
+     * @psalm-return (
+     *    $hydrationMode is self::HYDRATE_OBJECT|null
+     *    ? null|T
+     *    : mixed
+     * )
+     *
      * @throws NonUniqueResultException
      */
     public function getOneOrNullResult(string|int|null $hydrationMode = null): mixed
@@ -764,6 +778,12 @@ abstract class AbstractQuery
      * If there is no result, a NoResultException is thrown.
      *
      * @psalm-param string|AbstractQuery::HYDRATE_*|null $hydrationMode
+     *
+     * @psalm-return (
+     *    $hydrationMode is self::HYDRATE_OBJECT|null
+     *    ? T
+     *    : mixed
+     * )
      *
      * @throws NonUniqueResultException If the query result is not unique.
      * @throws NoResultException        If the query returned no result.
