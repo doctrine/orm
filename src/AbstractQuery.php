@@ -740,7 +740,7 @@ abstract class AbstractQuery
      *
      * @psalm-return (
      *    $hydrationMode is self::HYDRATE_OBJECT|null
-     *    ? null|T
+     *    ? T|null
      *    : mixed
      * )
      *

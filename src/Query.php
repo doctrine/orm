@@ -39,7 +39,6 @@ use function stripos;
  *
  * @template T
  * @extends AbstractQuery<T>
- *
  * @final
  */
 class Query extends AbstractQuery

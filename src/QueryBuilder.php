@@ -617,9 +617,11 @@ class QueryBuilder implements Stringable
      * </code>
      *
      * @return $this
+     * @psalm-return static<mixed>
+     * @phpstan-return $this<mixed>
      *
-     * @psalm-this-out self<mixed>
-     * @psalm-return self<mixed>
+     * @psalm-this-out static<mixed>
+     * @phpstan-this-out $this<mixed>
      */
     public function select(mixed ...$select): static
     {
