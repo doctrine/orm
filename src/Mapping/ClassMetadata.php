@@ -1152,7 +1152,7 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
      *     fieldName?: string,
      *     columnName?: string,
      *     id?: bool,
-     *     generated?: int,
+     *     generated?: self::GENERATED_*,
      *     enumType?: class-string,
      * } $mapping The field mapping to validate & complete.
      *

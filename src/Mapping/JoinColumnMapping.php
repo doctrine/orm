@@ -31,7 +31,17 @@ final class JoinColumnMapping implements ArrayAccess
 
     /**
      * @param array<string, mixed> $mappingArray
-     * @psalm-param array{name: string, referencedColumnName: string, ...} $mappingArray
+     * @psalm-param array{
+     *     name: string,
+     *     referencedColumnName: string,
+     *     unique?: bool|null,
+     *     quoted?: bool|null,
+     *     fieldName?: string|null,
+     *     onDelete?: string|null,
+     *     columnDefinition?: string|null,
+     *     nullable?: bool|null,
+     *     options?: array<string, mixed>|null,
+     * } $mappingArray
      */
     public static function fromMappingArray(array $mappingArray): self
     {

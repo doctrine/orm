@@ -20,10 +20,6 @@ parameters:
             message: '~^Method Doctrine\\ORM\\Persisters\\Entity\\BasicEntityPersister\:\:getArrayBindingType\(\) never returns .* so it can be removed from the return type\.$~'
             path: src/Persisters/Entity/BasicEntityPersister.php
 
-        -
-            message: '~^Unreachable statement \- code above always terminates\.$~'
-            path: src/Mapping/AssociationMapping.php
-
         - '~^Class Doctrine\\DBAL\\Platforms\\SQLitePlatform not found\.$~'
 
         # To be removed in 4.0
