@@ -40,6 +40,7 @@ use function explode;
 use function get_class;
 use function in_array;
 use function is_a;
+use function is_numeric;
 use function is_subclass_of;
 use function str_contains;
 use function strlen;
@@ -541,7 +542,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
         foreach (['uniqueConstraints', 'indexes'] as $indexType) {
             if (isset($parentClass->table[$indexType])) {
                 foreach ($parentClass->table[$indexType] as $indexName => $index) {
-                    if (\is_numeric($indexName)) {
+                    if (is_numeric($indexName)) {
                         // Always add indices without a name
                         $subClass->table[$indexType][] = $index;
 
