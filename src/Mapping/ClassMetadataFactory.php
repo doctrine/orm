@@ -541,6 +541,13 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
         foreach (['uniqueConstraints', 'indexes'] as $indexType) {
             if (isset($parentClass->table[$indexType])) {
                 foreach ($parentClass->table[$indexType] as $indexName => $index) {
+                    if (\is_numeric($indexName)) {
+                        // Always add indices without a name
+                        $subClass->table[$indexType][] = $index;
+
+                        continue;
+                    }
+
                     if (isset($subClass->table[$indexType][$indexName])) {
                         continue; // Let the inheriting table override indices
                     }

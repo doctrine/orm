@@ -36,6 +36,7 @@ use Doctrine\Tests\Mocks\MetadataDriverMock;
 use Doctrine\Tests\Models\CMS\CmsArticle;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\Models\DDC4006\DDC4006User;
+use Doctrine\Tests\Models\InheritsIndexFromMappedSuperclass\Cat;
 use Doctrine\Tests\Models\JoinedInheritanceType\AnotherChildClass;
 use Doctrine\Tests\Models\JoinedInheritanceType\ChildClass;
 use Doctrine\Tests\Models\JoinedInheritanceType\RootClass;
@@ -520,6 +521,21 @@ class ClassMetadataFactoryTest extends OrmTestCase
         $userMetadata = $cmf->getMetadataFor(DDC4006User::class);
 
         self::assertTrue($userMetadata->isIdGeneratorIdentity());
+    }
+
+    public function testInheritsIndexFromMappedSuperclass(): void
+    {
+        $cmf    = new ClassMetadataFactory();
+        $driver = $this->createAnnotationDriver([__DIR__ . '/../../Models/InheritsIndexFromMappedSuperclass/']);
+        $em     = $this->createEntityManager($driver);
+        $cmf->setEntityManager($em);
+
+        $userMetadata = $cmf->getMetadataFor(Cat::class);
+
+        self::assertCount(3, $userMetadata->table['indexes']);
+        self::assertSame('lives', $userMetadata->table['indexes'][0]['columns'][0]);
+        self::assertSame(['name', 'label', 'lives'], $userMetadata->table['indexes']['composite_idx']['columns']);
+        self::assertSame('name', $userMetadata->table['indexes'][1]['columns'][0]);
     }
 
     public function testInvalidSubClassCase(): void
