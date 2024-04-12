@@ -1,5 +1,16 @@
 # Upgrade to 3.1
 
+## Deprecate `Doctrine\ORM\Mapping\ReflectionEnumProperty`
+
+This class is deprecated and will be removed in 4.0.
+Instead, use `Doctrine\Persistence\Reflection\EnumReflectionProperty` from
+`doctrine/persistence`.
+
+## Deprecate passing null to `ClassMetadata::fullyQualifiedClassName()`
+
+Passing `null` to `Doctrine\ORM\ClassMetadata::fullyQualifiedClassName()` is
+deprecated and will no longer be possible in 4.0.
+
 ## Deprecate array access
 
 Using array access on instances of the following classes is deprecated:
@@ -11,6 +22,17 @@ Using array access on instances of the following classes is deprecated:
 - `Doctrine\ORM\Mapping\JoinTableMapping`
 
 # Upgrade to 3.0
+
+## BC BREAK: Calling `ClassMetadata::getAssociationMappedByTargetField()` with the owning side of an association now throws an exception
+
+Previously, calling
+`Doctrine\ORM\Mapping\ClassMetadata::getAssociationMappedByTargetField()` with
+the owning side of an association returned `null`, which was undocumented, and
+wrong according to the phpdoc of the parent method.
+
+If you do not know whether you are on the owning or inverse side of an association,
+you can use  `Doctrine\ORM\Mapping\ClassMetadata::isAssociationInverseSide()`
+to find out.
 
 ## BC BREAK: `Doctrine\ORM\Proxy\Autoloader` no longer extends `Doctrine\Common\Proxy\Autoloader`
 
@@ -25,9 +47,9 @@ so `$targetEntity` is a first argument now. This change affects only non-named a
 
 When using the `AUTO` strategy to let Doctrine determine the identity generation mechanism for
 an entity, and when using `doctrine/dbal` 4, PostgreSQL now uses `IDENTITY`
-instead of `SEQUENCE`. When upgrading from ORM 2.x and preference is on keeping
-the `SEQUENCE` based identity generation, then configure the ORM this way:
-
+instead of `SEQUENCE` or `SERIAL`.
+* If you want to upgrade your existing tables to identity columns, you will need to follow [migration to identity columns on PostgreSQL](https://www.doctrine-project.org/projects/doctrine-dbal/en/4.0/how-to/postgresql-identity-migration.html)
+* If you want to keep using SQL sequences, you need to configure the ORM this way:
 ```php
 use Doctrine\DBAL\Platforms\PostgreSQLPlatform;
 use Doctrine\ORM\Configuration;
@@ -676,6 +698,17 @@ following classes and methods:
 Use `toIterable()` instead.
 
 # Upgrade to 2.19
+
+## Deprecate calling `ClassMetadata::getAssociationMappedByTargetField()` with the owning side of an association
+
+Calling
+`Doctrine\ORM\Mapping\ClassMetadata::getAssociationMappedByTargetField()` with
+the owning side of an association returns `null`, which is undocumented, and
+wrong according to the phpdoc of the parent method.
+
+If you do not know whether you are on the owning or inverse side of an association,
+you can use  `Doctrine\ORM\Mapping\ClassMetadata::isAssociationInverseSide()`
+to find out.
 
 ## Deprecate `Doctrine\ORM\Query\Lexer::T_*` constants
 

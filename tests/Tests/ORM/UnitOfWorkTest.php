@@ -11,7 +11,6 @@ use Doctrine\DBAL\Driver;
 use Doctrine\DBAL\Driver\Statement;
 use Doctrine\DBAL\Exception;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
-use Doctrine\Deprecations\PHPUnit\VerifyDeprecations;
 use Doctrine\ORM\EntityNotFoundException;
 use Doctrine\ORM\Exception\EntityIdentityCollisionException;
 use Doctrine\ORM\Mapping\ClassMetadata;
@@ -46,8 +45,6 @@ use function uniqid;
  */
 class UnitOfWorkTest extends OrmTestCase
 {
-    use VerifyDeprecations;
-
     /**
      * SUT
      */

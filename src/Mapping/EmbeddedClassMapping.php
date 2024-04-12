@@ -49,10 +49,12 @@ final class EmbeddedClassMapping implements ArrayAccess
 
     /**
      * @psalm-param array{
-     *    class: class-string,
-     *    columnPrefix?: false|string|null,
-     *    declaredField?: string|null,
-     *    originalField?: string|null
+     *     class: class-string,
+     *     columnPrefix?: false|string|null,
+     *     declaredField?: string|null,
+     *     originalField?: string|null,
+     *     inherited?: class-string|null,
+     *     declared?: class-string|null,
      * } $mappingArray
      */
     public static function fromMappingArray(array $mappingArray): self

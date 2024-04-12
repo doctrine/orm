@@ -642,7 +642,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
                         configuration.
                         We currently recommend "SEQUENCE" for "%s", when using DBAL 3,
                         and "IDENTITY" when using DBAL 4,
-                        so you should use probably use the following configuration before upgrading to DBAL 4,
+                        so you should probably use the following configuration before upgrading to DBAL 4,
                         and remove it after deploying that upgrade:
 
                         $configuration->setIdentityGenerationPreferences([

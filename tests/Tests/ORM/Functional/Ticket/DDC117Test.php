@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-use Doctrine\Deprecations\PHPUnit\VerifyDeprecations;
 use Doctrine\ORM\UnitOfWork;
 use Doctrine\Tests\Models\DDC117\DDC117ApproveChanges;
 use Doctrine\Tests\Models\DDC117\DDC117Article;
@@ -23,8 +22,6 @@ use function count;
 #[Group('DDC-117')]
 class DDC117Test extends OrmFunctionalTestCase
 {
-    use VerifyDeprecations;
-
     private DDC117Article|null $article1;
 
     private DDC117Article|null $article2;

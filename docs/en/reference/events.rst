@@ -131,47 +131,47 @@ There are two ways to set up an event handler:
 * For *all events* you can create a Lifecycle Event Listener or Subscriber class and register
 it by calling ``$eventManager->addEventListener()`` or ``eventManager->addEventSubscriber()``,
 see
-:ref:`Listening and subscribing to Lifecycle Events<listening-and-subscribing-to-lifecycle-events>`
+:ref:`Listening and subscribing to Lifecycle Events <listening-and-subscribing-to-lifecycle-events>`
 * For *some events* (see table below), you can create a *Lifecycle Callback* method in the
-entity, see :ref:`Lifecycle Callbacks<lifecycle-callbacks>`.
+entity, see :ref:`Lifecycle Callbacks <lifecycle-callbacks>`.
 
 .. _reference-events-lifecycle-events:
 
 Events Overview
 ---------------
 
-+-----------------------------------------------------------------+-----------------------+-----------+-------------------------------------+
-| Event                                                           | Dispatched by         | Lifecycle | Passed                              |
-|                                                                 |                       | Callback  | Argument                            |
-+=================================================================+=======================+===========+=====================================+
-| :ref:`preRemove<reference-events-pre-remove>`                   | ``$em->remove()``     | Yes       | `PreRemoveEventArgs`_               |
-+-----------------------------------------------------------------+-----------------------+-----------+-------------------------------------+
-| :ref:`postRemove<reference-events-post-update-remove-persist>`  | ``$em->flush()``      | Yes       | `PostRemoveEventArgs`_              |
-+-----------------------------------------------------------------+-----------------------+-----------+-------------------------------------+
-| :ref:`prePersist<reference-events-pre-persist>`                 | ``$em->persist()``    | Yes       | `PrePersistEventArgs`_              |
-|                                                                 | on *initial* persist  |           |                                     |
-+-----------------------------------------------------------------+-----------------------+-----------+-------------------------------------+
-| :ref:`postPersist<reference-events-post-update-remove-persist>` | ``$em->flush()``      | Yes       | `PostPersistEventArgs`_             |
-+-----------------------------------------------------------------+-----------------------+-----------+-------------------------------------+
-| :ref:`preUpdate<reference-events-pre-update>`                   | ``$em->flush()``      | Yes       | `PreUpdateEventArgs`_               |
-+-----------------------------------------------------------------+-----------------------+-----------+-------------------------------------+
-| :ref:`postUpdate<reference-events-post-update-remove-persist>`  | ``$em->flush()``      | Yes       | `PostUpdateEventArgs`_              |
-+-----------------------------------------------------------------+-----------------------+-----------+-------------------------------------+
-| :ref:`postLoad<reference-events-post-load>`                     | Loading from database | Yes       | `PostLoadEventArgs`_                |
-+-----------------------------------------------------------------+-----------------------+-----------+-------------------------------------+
-| :ref:`loadClassMetadata<reference-events-load-class-metadata>`  | Loading of mapping    | No        | `LoadClassMetadataEventArgs`_       |
-|                                                                 | metadata              |           |                                     |
-+-----------------------------------------------------------------+-----------------------+-----------+-------------------------------------+
-| ``onClassMetadataNotFound``                                     | ``MappingException``  | No        | `OnClassMetadataNotFoundEventArgs`_ |
-+-----------------------------------------------------------------+-----------------------+-----------+-------------------------------------+
-| :ref:`preFlush<reference-events-pre-flush>`                     | ``$em->flush()``      | Yes       | `PreFlushEventArgs`_                |
-+-----------------------------------------------------------------+-----------------------+-----------+-------------------------------------+
-| :ref:`onFlush<reference-events-on-flush>`                       | ``$em->flush()``      | No        | `OnFlushEventArgs`_                 |
-+-----------------------------------------------------------------+-----------------------+-----------+-------------------------------------+
-| :ref:`postFlush<reference-events-post-flush>`                   | ``$em->flush()``      | No        | `PostFlushEventArgs`_               |
-+-----------------------------------------------------------------+-----------------------+-----------+-------------------------------------+
-| :ref:`onClear<reference-events-on-clear>`                       | ``$em->clear()``      | No        | `OnClearEventArgs`_                 |
-+-----------------------------------------------------------------+-----------------------+-----------+-------------------------------------+
++------------------------------------------------------------------+-----------------------+-----------+-------------------------------------+
+| Event                                                            | Dispatched by         | Lifecycle | Passed                              |
+|                                                                  |                       | Callback  | Argument                            |
++==================================================================+=======================+===========+=====================================+
+| :ref:`preRemove <reference-events-pre-remove>`                   | ``$em->remove()``     | Yes       | `PreRemoveEventArgs`_               |
++------------------------------------------------------------------+-----------------------+-----------+-------------------------------------+
+| :ref:`postRemove <reference-events-post-update-remove-persist>`  | ``$em->flush()``      | Yes       | `PostRemoveEventArgs`_              |
++------------------------------------------------------------------+-----------------------+-----------+-------------------------------------+
+| :ref:`prePersist <reference-events-pre-persist>`                 | ``$em->persist()``    | Yes       | `PrePersistEventArgs`_              |
+|                                                                  | on *initial* persist  |           |                                     |
++------------------------------------------------------------------+-----------------------+-----------+-------------------------------------+
+| :ref:`postPersist <reference-events-post-update-remove-persist>` | ``$em->flush()``      | Yes       | `PostPersistEventArgs`_             |
++------------------------------------------------------------------+-----------------------+-----------+-------------------------------------+
+| :ref:`preUpdate <reference-events-pre-update>`                   | ``$em->flush()``      | Yes       | `PreUpdateEventArgs`_               |
++------------------------------------------------------------------+-----------------------+-----------+-------------------------------------+
+| :ref:`postUpdate <reference-events-post-update-remove-persist>`  | ``$em->flush()``      | Yes       | `PostUpdateEventArgs`_              |
++------------------------------------------------------------------+-----------------------+-----------+-------------------------------------+
+| :ref:`postLoad <reference-events-post-load>`                     | Loading from database | Yes       | `PostLoadEventArgs`_                |
++------------------------------------------------------------------+-----------------------+-----------+-------------------------------------+
+| :ref:`loadClassMetadata <reference-events-load-class-metadata>`  | Loading of mapping    | No        | `LoadClassMetadataEventArgs`_       |
+|                                                                  | metadata              |           |                                     |
++------------------------------------------------------------------+-----------------------+-----------+-------------------------------------+
+| ``onClassMetadataNotFound``                                      | ``MappingException``  | No        | `OnClassMetadataNotFoundEventArgs`_ |
++------------------------------------------------------------------+-----------------------+-----------+-------------------------------------+
+| :ref:`preFlush <reference-events-pre-flush>`                     | ``$em->flush()``      | Yes       | `PreFlushEventArgs`_                |
++------------------------------------------------------------------+-----------------------+-----------+-------------------------------------+
+| :ref:`onFlush <reference-events-on-flush>`                       | ``$em->flush()``      | No        | `OnFlushEventArgs`_                 |
++------------------------------------------------------------------+-----------------------+-----------+-------------------------------------+
+| :ref:`postFlush <reference-events-post-flush>`                   | ``$em->flush()``      | No        | `PostFlushEventArgs`_               |
++------------------------------------------------------------------+-----------------------+-----------+-------------------------------------+
+| :ref:`onClear <reference-events-on-clear>`                       | ``$em->clear()``      | No        | `OnClearEventArgs`_                 |
++------------------------------------------------------------------+-----------------------+-----------+-------------------------------------+
 
 .. warning::
 
@@ -313,7 +313,7 @@ behaviors across different entity classes.
 
 Note that they require much more detailed knowledge about the inner
 workings of the ``EntityManager`` and ``UnitOfWork`` classes. Please
-read the :ref:`Implementing Event Listeners<reference-events-implementing-listeners>` section
+read the :ref:`Implementing Event Listeners <reference-events-implementing-listeners>` section
 carefully if you are trying to write your own listener.
 
 For event subscribers, there are no surprises. They declare the
@@ -426,11 +426,11 @@ prePersist
 There are two ways for the ``prePersist`` event to be triggered:
 
 - One is when you call ``EntityManager::persist()``. The
-  event is also called for all :ref:`cascaded associations<transitive-persistence>`.
+  event is also called for all :ref:`cascaded associations <transitive-persistence>`.
 - The other is inside the ``flush()`` method when changes to associations are computed and
-  this association is marked as :ref:`cascade: persist<transitive-persistence>`. Any new entity found
+  this association is marked as :ref:`cascade: persist <transitive-persistence>`. Any new entity found
   during this operation is also persisted and ``prePersist`` called
-  on it. This is called :ref:`persistence by reachability<persistence-by-reachability>`.
+  on it. This is called :ref:`persistence by reachability <persistence-by-reachability>`.
 
 In both cases you get passed a ``PrePersistEventArgs`` instance
 which has access to the entity and the entity manager.
@@ -454,7 +454,7 @@ preRemove
 
 The ``preRemove`` event is called on every entity immediately when it is passed
 to the ``EntityManager::remove()`` method. It is cascaded for all
-associations that are marked as :ref:`cascade: remove<transitive-persistence>`
+associations that are marked as :ref:`cascade: remove <transitive-persistence>`
 
 It is not called for a DQL ``DELETE`` statement.
 
@@ -502,7 +502,7 @@ entities and their associations have been computed. This means, the
 -  Collections scheduled for removal
 
 To make use of the ``onFlush`` event you have to be familiar with the
-internal :ref:`UnitOfWork<unit-of-work>` API, which grants you access to the previously
+internal :ref:`UnitOfWork <unit-of-work>` API, which grants you access to the previously
 mentioned sets. See this example:
 
 .. code-block:: php

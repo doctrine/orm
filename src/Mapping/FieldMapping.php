@@ -26,7 +26,7 @@ final class FieldMapping implements ArrayAccess
     public bool|null $notInsertable      = null;
     public bool|null $notUpdatable       = null;
     public string|null $columnDefinition = null;
-    /** @psalm-var ClassMetadata::GENERATED_* */
+    /** @psalm-var ClassMetadata::GENERATED_*|null */
     public int|null $generated = null;
     /** @var class-string<BackedEnum>|null */
     public string|null $enumType = null;
@@ -83,7 +83,34 @@ final class FieldMapping implements ArrayAccess
     ) {
     }
 
-    /** @param array{type: string, fieldName: string, columnName: string} $mappingArray */
+    /**
+     * @param array<string, mixed> $mappingArray
+     * @psalm-param array{
+     *     type: string,
+     *     fieldName: string,
+     *     columnName: string,
+     *     length?: int|null,
+     *     id?: bool|null,
+     *     nullable?: bool|null,
+     *     notInsertable?: bool|null,
+     *     notUpdatable?: bool|null,
+     *     columnDefinition?: string|null,
+     *     generated?: ClassMetadata::GENERATED_*|null,
+     *     enumType?: string|null,
+     *     precision?: int|null,
+     *     scale?: int|null,
+     *     unique?: bool|null,
+     *     inherited?: string|null,
+     *     originalClass?: string|null,
+     *     originalField?: string|null,
+     *     quoted?: bool|null,
+     *     declared?: string|null,
+     *     declaredField?: string|null,
+     *     options?: array<string, mixed>|null,
+     *     version?: bool|null,
+     *     default?: string|int|null,
+     * } $mappingArray
+     */
     public static function fromMappingArray(array $mappingArray): self
     {
         $mapping = new self(

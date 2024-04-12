@@ -6,6 +6,7 @@ namespace Doctrine\Tests\ORM\Mapping;
 
 use ArrayObject;
 use Doctrine\DBAL\Types\Types;
+use Doctrine\Deprecations\PHPUnit\VerifyDeprecations;
 use Doctrine\ORM\Events;
 use Doctrine\ORM\Mapping\ChainTypedFieldMapper;
 use Doctrine\ORM\Mapping\ClassMetadata;
@@ -47,6 +48,7 @@ use Doctrine\Tests\Models\TypedProperties\UserTypedWithCustomTypedField;
 use Doctrine\Tests\ORM\Mapping\TypedFieldMapper\CustomIntAsStringTypedFieldMapper;
 use Doctrine\Tests\OrmTestCase;
 use DoctrineGlobalArticle;
+use LogicException;
 use PHPUnit\Framework\Attributes\Group as TestGroup;
 use ReflectionClass;
 use stdClass;
@@ -66,6 +68,8 @@ require_once __DIR__ . '/../../Models/Global/GlobalNamespaceModel.php';
 
 class ClassMetadataTest extends OrmTestCase
 {
+    use VerifyDeprecations;
+
     public function testClassMetadataInstanceSerialization(): void
     {
         $cm = new ClassMetadata(CmsUser::class);
@@ -1051,6 +1055,30 @@ class ClassMetadataTest extends OrmTestCase
             EXCEPTION);
 
         $metadata->addLifecycleCallback('foo', 'bar');
+    }
+
+    public function testGettingAnFQCNForNullIsDeprecated(): void
+    {
+        $metadata = new ClassMetadata(self::class);
+
+        $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/pull/11294');
+
+        $metadata->fullyQualifiedClassName(null);
+    }
+
+    public function testItThrowsOnInvalidCallToGetAssociationMappedByTargetField(): void
+    {
+        $metadata = new ClassMetadata(self::class);
+        $metadata->mapOneToOne(['fieldName' => 'foo', 'targetEntity' => 'bar']);
+
+        $this->expectException(LogicException::class);
+        $this->expectExceptionMessage(<<<'EXCEPTION'
+            Context: Calling Doctrine\ORM\Mapping\ClassMetadata::getAssociationMappedByTargetField() with "foo", which is the owning side of an association.
+            Problem: The owning side of an association has no "mappedBy" field.
+            Solution: Call Doctrine\ORM\Mapping\ClassMetadata::isAssociationInverseSide() to check first.
+            EXCEPTION);
+
+        $metadata->getAssociationMappedByTargetField('foo');
     }
 }
 

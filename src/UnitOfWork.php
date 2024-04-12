@@ -1558,6 +1558,12 @@ class UnitOfWork implements PropertyChangedListener
      */
     final public static function getIdHashByIdentifier(array $identifier): string
     {
+        foreach ($identifier as $k => $value) {
+            if ($value instanceof BackedEnum) {
+                $identifier[$k] = $value->value;
+            }
+        }
+
         return implode(
             ' ',
             array_map(
@@ -2558,7 +2564,7 @@ class UnitOfWork implements PropertyChangedListener
                     $this->originalEntityData[$oid][$field] = $newValue;
                     $class->reflFields[$field]->setValue($entity, $newValue);
 
-                    if ($assoc->inversedBy && $assoc->isOneToOne() && $newValue !== null) {
+                    if ($assoc->inversedBy !== null && $assoc->isOneToOne() && $newValue !== null) {
                         $inverseAssoc = $targetClass->associationMappings[$assoc->inversedBy];
                         $targetClass->reflFields[$inverseAssoc->fieldName]->setValue($newValue, $entity);
                     }
@@ -2592,9 +2598,9 @@ class UnitOfWork implements PropertyChangedListener
 
                     if ($hints['fetchMode'][$class->name][$field] === ClassMetadata::FETCH_EAGER) {
                         $isIteration = isset($hints[Query::HINT_INTERNAL_ITERATION]) && $hints[Query::HINT_INTERNAL_ITERATION];
-                        if (! $isIteration && $assoc->isOneToMany()) {
+                        if (! $isIteration && $assoc->isOneToMany() && ! $targetClass->isIdentifierComposite && ! $assoc->isIndexed()) {
                             $this->scheduleCollectionForBatchLoading($pColl, $class);
-                        } elseif (($isIteration && $assoc->isOneToMany()) || $assoc->isManyToMany()) {
+                        } else {
                             $this->loadCollection($pColl);
                             $pColl->takeSnapshot();
                         }
@@ -2673,7 +2679,19 @@ class UnitOfWork implements PropertyChangedListener
             foreach ($found as $targetValue) {
                 $sourceEntity = $targetProperty->getValue($targetValue);
 
-                $id     = $this->identifierFlattener->flattenIdentifier($class, $class->getIdentifierValues($sourceEntity));
+                if ($sourceEntity === null && isset($targetClass->associationMappings[$mappedBy]->joinColumns)) {
+                    // case where the hydration $targetValue itself has not yet fully completed, for example
+                    // in case a bi-directional association is being hydrated and deferring eager loading is
+                    // not possible due to subclassing.
+                    $data = $this->getOriginalEntityData($targetValue);
+                    $id   = [];
+                    foreach ($targetClass->associationMappings[$mappedBy]->joinColumns as $joinColumn) {
+                        $id[] = $data[$joinColumn->name];
+                    }
+                } else {
+                    $id = $this->identifierFlattener->flattenIdentifier($class, $class->getIdentifierValues($sourceEntity));
+                }
+
                 $idHash = implode(' ', $id);
 
                 if ($mapping->indexBy !== null) {

@@ -20,17 +20,13 @@ parameters:
             message: '~^Method Doctrine\\ORM\\Persisters\\Entity\\BasicEntityPersister\:\:getArrayBindingType\(\) never returns .* so it can be removed from the return type\.$~'
             path: src/Persisters/Entity/BasicEntityPersister.php
 
-        -
-            message: '~^Unreachable statement \- code above always terminates\.$~'
-            path: src/Mapping/AssociationMapping.php
-
         # Compatibility with DBAL 3
         # See https://github.com/doctrine/dbal/pull/3480
         -
             message: '~^Result of method Doctrine\\DBAL\\Connection::commit\(\) \(void\) is used\.$~'
             path: src/UnitOfWork.php
         -
-            message: '~^Strict comparison using === between void and false will always evaluate to false\.$~'
+            message: '~^Strict comparison using === between null and false will always evaluate to false\.$~'
             path: src/UnitOfWork.php
         -
             message: '~^Variable \$e on left side of \?\? always exists and is not nullable\.$~'

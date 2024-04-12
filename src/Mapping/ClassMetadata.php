@@ -7,6 +7,7 @@ namespace Doctrine\ORM\Mapping;
 use BackedEnum;
 use BadMethodCallException;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
+use Doctrine\Deprecations\Deprecation;
 use Doctrine\Instantiator\Instantiator;
 use Doctrine\Instantiator\InstantiatorInterface;
 use Doctrine\ORM\Cache\Exception\NonCacheableEntityAssociation;
@@ -14,6 +15,7 @@ use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Id\AbstractIdGenerator;
 use Doctrine\Persistence\Mapping\ClassMetadata as PersistenceClassMetadata;
 use Doctrine\Persistence\Mapping\ReflectionService;
+use Doctrine\Persistence\Reflection\EnumReflectionProperty;
 use InvalidArgumentException;
 use LogicException;
 use ReflectionClass;
@@ -41,6 +43,7 @@ use function is_subclass_of;
 use function ltrim;
 use function method_exists;
 use function spl_object_id;
+use function sprintf;
 use function str_contains;
 use function str_replace;
 use function strtolower;
@@ -820,7 +823,7 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
                 assert($childProperty !== null);
 
                 if (isset($mapping->enumType)) {
-                    $childProperty = new ReflectionEnumProperty(
+                    $childProperty = new EnumReflectionProperty(
                         $childProperty,
                         $mapping->enumType,
                     );
@@ -839,7 +842,7 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
                 : $this->getAccessibleProperty($reflService, $this->name, $field);
 
             if (isset($mapping->enumType) && $this->reflFields[$field] !== null) {
-                $this->reflFields[$field] = new ReflectionEnumProperty(
+                $this->reflFields[$field] = new EnumReflectionProperty(
                     $this->reflFields[$field],
                     $mapping->enumType,
                 );
@@ -1149,7 +1152,7 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
      *     fieldName?: string,
      *     columnName?: string,
      *     id?: bool,
-     *     generated?: int,
+     *     generated?: self::GENERATED_*,
      *     enumType?: class-string,
      * } $mapping The field mapping to validate & complete.
      *
@@ -2003,6 +2006,12 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
      */
     public function setCustomRepositoryClass(string|null $repositoryClassName): void
     {
+        if ($repositoryClassName === null) {
+            $this->customRepositoryClassName = null;
+
+            return;
+        }
+
         $this->customRepositoryClassName = $this->fullyQualifiedClassName($repositoryClassName);
     }
 
@@ -2108,13 +2117,12 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
      * @param DiscriminatorColumnMapping|mixed[]|null $columnDef
      * @psalm-param DiscriminatorColumnMapping|array{
      *     name: string|null,
-     *     fieldName?: string,
-     *     type?: string,
-     *     length?: int,
+     *     fieldName?: string|null,
+     *     type?: string|null,
+     *     length?: int|null,
      *     columnDefinition?: string|null,
      *     enumType?: class-string<BackedEnum>|null,
-     *     options?:array<string,
-     *     mixed>|null
+     *     options?: array<string, mixed>|null
      * }|null $columnDef
      *
      * @throws MappingException
@@ -2136,13 +2144,9 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
                 throw MappingException::duplicateColumnName($this->name, $columnDef['name']);
             }
 
-            if (! isset($columnDef['fieldName'])) {
-                $columnDef['fieldName'] = $columnDef['name'];
-            }
-
-            if (! isset($columnDef['type'])) {
-                $columnDef['type'] = 'string';
-            }
+            $columnDef['fieldName'] ??= $columnDef['name'];
+            $columnDef['type']      ??= 'string';
+            $columnDef['options']   ??= [];
 
             if (in_array($columnDef['type'], ['boolean', 'array', 'object', 'datetime', 'time', 'date'], true)) {
                 throw MappingException::invalidDiscriminatorColumnType($this->name, $columnDef['type']);
@@ -2462,21 +2466,43 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
 
     public function getAssociationMappedByTargetField(string $assocName): string
     {
-        $assoc = $this->associationMappings[$assocName];
+        $assoc = $this->getAssociationMapping($assocName);
 
-        assert($assoc instanceof InverseSideMapping);
+        if (! $assoc instanceof InverseSideMapping) {
+            throw new LogicException(sprintf(
+                <<<'EXCEPTION'
+                Context: Calling %s() with "%s", which is the owning side of an association.
+                Problem: The owning side of an association has no "mappedBy" field.
+                Solution: Call %s::isAssociationInverseSide() to check first.
+                EXCEPTION,
+                __METHOD__,
+                $assocName,
+                self::class,
+            ));
+        }
 
         return $assoc->mappedBy;
     }
 
     /**
-     * @return string|null null if the input value is null
-     * @psalm-return class-string|null
+     * @param C $className
+     *
+     * @return string|null null if and only if the input value is null
+     * @psalm-return (C is class-string ? class-string : (C is string ? string : null))
+     *
+     * @template C of string|null
      */
     public function fullyQualifiedClassName(string|null $className): string|null
     {
-        if (empty($className)) {
-            return $className;
+        if ($className === null) {
+            Deprecation::trigger(
+                'doctrine/orm',
+                'https://github.com/doctrine/orm/pull/11294',
+                'Passing null to %s is deprecated and will not be supported in Doctrine ORM 4.0',
+                __METHOD__,
+            );
+
+            return null;
         }
 
         if (! str_contains($className, '\\') && $this->namespace) {
@@ -2519,12 +2545,8 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
             throw MappingException::missingEmbeddedClass($mapping['fieldName']);
         }
 
-        $fqcn = $this->fullyQualifiedClassName($mapping['class']);
-
-        assert($fqcn !== null);
-
         $this->embeddedClasses[$mapping['fieldName']] = EmbeddedClassMapping::fromMappingArray([
-            'class' => $fqcn,
+            'class' => $this->fullyQualifiedClassName($mapping['class']),
             'columnPrefix' => $mapping['columnPrefix'] ?? null,
             'declaredField' => $mapping['declaredField'] ?? null,
             'originalField' => $mapping['originalField'] ?? null,

@@ -18,14 +18,20 @@ especially what the strategies presented here provide help with.
 
 .. note::
 
-    Having an SQL logger enabled when processing batches can have a serious impact on performance and resource usage.
-    To avoid that you should remove the corresponding middleware.
-    To remove all middlewares, you can use this line:
+    Having an SQL logger enabled when processing batches can have a
+    serious impact on performance and resource usage.
+    To avoid that, you should use a PSR logger implementation that can be
+    disabled at runtime.
+    For example, with Monolog, you can use ``Logger::pushHandler()``
+    to push a ``NullHandler`` to the logger instance, and then pop it
+    when you need to enable logging again.
+
+    With DBAL 2, you can disable the SQL logger like below:
+
 .. code-block:: php
 
     <?php
-    $em->getConnection()->getConfiguration()->setMiddlewares([]); // DBAL 3
-    $em->getConnection()->getConfiguration()->setSQLLogger(null); // DBAL 2
+    $em->getConnection()->getConfiguration()->setSQLLogger(null);
 
 Bulk Inserts
 ------------
@@ -188,6 +194,3 @@ problems using the following approach:
     Iterating results is not possible with queries that
     fetch-join a collection-valued association. The nature of such SQL
     result sets is not suitable for incremental hydration.
-
-
-

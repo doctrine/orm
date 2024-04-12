@@ -732,7 +732,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
 
     private function getOrderingSql(Criteria $criteria, ClassMetadata $targetClass): string
     {
-        $orderings = $criteria->getOrderings();
+        $orderings = $criteria->orderings();
         if ($orderings) {
             $orderBy = [];
             foreach ($orderings as $name => $direction) {
@@ -741,7 +741,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
                     $targetClass,
                     $this->platform,
                 );
-                $orderBy[] = $field . ' ' . $direction;
+                $orderBy[] = $field . ' ' . $direction->value;
             }
 
             return ' ORDER BY ' . implode(', ', $orderBy);

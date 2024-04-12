@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Query;
 
+use Doctrine\ORM\Internal\NoUnknownNamedArguments;
 use Traversable;
 
 use function implode;
@@ -23,6 +24,8 @@ use function str_replace;
  */
 class Expr
 {
+    use NoUnknownNamedArguments;
+
     /**
      * Creates a conjunction of the given boolean expressions.
      *
@@ -38,6 +41,8 @@ class Expr
      */
     public function andX(Expr\Comparison|Expr\Func|Expr\Andx|Expr\Orx|string ...$x): Expr\Andx
     {
+        self::validateVariadicParameter($x);
+
         return new Expr\Andx($x);
     }
 
@@ -56,6 +61,8 @@ class Expr
      */
     public function orX(Expr\Comparison|Expr\Func|Expr\Andx|Expr\Orx|string ...$x): Expr\Orx
     {
+        self::validateVariadicParameter($x);
+
         return new Expr\Orx($x);
     }
 
@@ -225,6 +232,8 @@ class Expr
      */
     public function countDistinct(mixed ...$x): string
     {
+        self::validateVariadicParameter($x);
+
         return 'COUNT(DISTINCT ' . implode(', ', $x) . ')';
     }
 
@@ -470,6 +479,8 @@ class Expr
      */
     public function concat(mixed ...$x): Expr\Func
     {
+        self::validateVariadicParameter($x);
+
         return new Expr\Func('CONCAT', $x);
     }
 

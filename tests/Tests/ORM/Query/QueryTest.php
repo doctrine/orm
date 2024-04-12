@@ -15,7 +15,6 @@ use Doctrine\DBAL\Driver\Result;
 use Doctrine\DBAL\ParameterType;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Types;
-use Doctrine\Deprecations\PHPUnit\VerifyDeprecations;
 use Doctrine\ORM\Query\Parameter;
 use Doctrine\ORM\Query\QueryException;
 use Doctrine\ORM\UnitOfWork;
@@ -40,8 +39,6 @@ use function array_map;
 
 class QueryTest extends OrmTestCase
 {
-    use VerifyDeprecations;
-
     /** @var EntityManagerMock */
     protected $entityManager;
 

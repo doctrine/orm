@@ -6,7 +6,6 @@ namespace Doctrine\Tests\ORM;
 
 use Doctrine\Common\EventManager;
 use Doctrine\DBAL\Connection;
-use Doctrine\Deprecations\PHPUnit\VerifyDeprecations;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Exception\EntityManagerClosed;
@@ -27,8 +26,6 @@ use TypeError;
 
 class EntityManagerTest extends OrmTestCase
 {
-    use VerifyDeprecations;
-
     private EntityManagerMock $entityManager;
 
     protected function setUp(): void

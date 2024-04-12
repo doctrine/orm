@@ -7,6 +7,7 @@ namespace Doctrine\Tests\ORM\Functional;
 use DateTimeImmutable;
 use Doctrine\DBAL\Platforms\SQLitePlatform;
 use Doctrine\ORM\AbstractQuery;
+use Doctrine\Tests\Models\Company\CompanyEmployee;
 use Doctrine\Tests\Models\Company\CompanyManager;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -486,5 +487,35 @@ SQL;
         $this->_em->persist($manager4);
         $this->_em->flush();
         $this->_em->clear();
+    }
+
+    #[Group('GH-11240')]
+    public function testDateAddWithColumnInterval(): void
+    {
+        $query = sprintf(
+            'SELECT DATE_ADD(CURRENT_TIMESTAMP(), m.salary, \'day\') AS add FROM %s m',
+            CompanyEmployee::class,
+        );
+
+        $result = $this->_em->createQuery($query)
+            ->setMaxResults(1)
+            ->getSingleResult(AbstractQuery::HYDRATE_ARRAY);
+
+        self::assertArrayHasKey('add', $result);
+    }
+
+    #[Group('GH-11240')]
+    public function testDateSubWithColumnInterval(): void
+    {
+        $query = sprintf(
+            'SELECT DATE_SUB(CURRENT_TIMESTAMP(), m.salary, \'day\') AS add FROM %s m',
+            CompanyEmployee::class,
+        );
+
+        $result = $this->_em->createQuery($query)
+            ->setMaxResults(1)
+            ->getSingleResult(AbstractQuery::HYDRATE_ARRAY);
+
+        self::assertArrayHasKey('add', $result);
     }
 }

@@ -8,7 +8,6 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Type as DBALType;
-use Doctrine\Deprecations\PHPUnit\VerifyDeprecations;
 use Doctrine\ORM\Internal\Hydration\HydrationException;
 use Doctrine\ORM\Internal\SQLResultCasing;
 use Doctrine\ORM\PersistentCollection;
@@ -33,7 +32,6 @@ use PHPUnit\Framework\Attributes\Group;
 class NativeQueryTest extends OrmFunctionalTestCase
 {
     use SQLResultCasing;
-    use VerifyDeprecations;
 
     private AbstractPlatform|null $platform = null;
 

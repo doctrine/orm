@@ -288,7 +288,7 @@ class ClassMetadataBuilder
     ): ClassMetadataBuilder {
         $builder = $this->createManyToOne($name, $targetEntity);
 
-        if ($inversedBy) {
+        if ($inversedBy !== null) {
             $builder->inversedBy($inversedBy);
         }
 
@@ -348,7 +348,7 @@ class ClassMetadataBuilder
     ): ClassMetadataBuilder {
         $builder = $this->createOneToOne($name, $targetEntity);
 
-        if ($inversedBy) {
+        if ($inversedBy !== null) {
             $builder->inversedBy($inversedBy);
         }
 
@@ -380,7 +380,7 @@ class ClassMetadataBuilder
     ): ClassMetadataBuilder {
         $builder = $this->createManyToMany($name, $targetEntity);
 
-        if ($inversedBy) {
+        if ($inversedBy !== null) {
             $builder->inversedBy($inversedBy);
         }
 

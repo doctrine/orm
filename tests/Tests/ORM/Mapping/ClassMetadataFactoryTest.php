@@ -9,7 +9,6 @@ use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Driver;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Platforms\PostgreSQLPlatform;
-use Doctrine\Deprecations\PHPUnit\VerifyDeprecations;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Event\OnClassMetadataNotFoundEventArgs;
@@ -55,8 +54,6 @@ use function sprintf;
 
 class ClassMetadataFactoryTest extends OrmTestCase
 {
-    use VerifyDeprecations;
-
     public function testGetMetadataForSingleClass(): void
     {
         $platform = $this->createMock(AbstractPlatform::class);

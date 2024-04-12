@@ -170,6 +170,12 @@
                 <file name="src/Mapping/ClassMetadataFactory.php"/>
             </errorLevel>
         </ReferenceConstraintViolation>
+        <RiskyTruthyFalsyComparison>
+            <!-- TODO: Enable this new rule on higher branches. -->
+            <errorLevel type="suppress">
+                <directory name="src" />
+            </errorLevel>
+        </RiskyTruthyFalsyComparison>
         <TooManyArguments>
             <errorLevel type="suppress">
                 <!-- Symfony cache supports passing a key prefix to the clear method. -->
