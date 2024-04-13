@@ -464,6 +464,11 @@ hierarchies:
     $query = $em->createQuery('SELECT u FROM Doctrine\Tests\Models\Company\CompanyPerson u WHERE u INSTANCE OF Doctrine\Tests\Models\Company\CompanyEmployee');
     $query = $em->createQuery('SELECT u FROM Doctrine\Tests\Models\Company\CompanyPerson u WHERE u INSTANCE OF ?1');
     $query = $em->createQuery('SELECT u FROM Doctrine\Tests\Models\Company\CompanyPerson u WHERE u NOT INSTANCE OF ?1');
+    $query->setParameter(0, $em->getClassMetadata(CompanyEmployee::class));
+
+.. note::
+    To use a class as parameter, you have to bind its class metadata:
+    ``$query->setParameter(0, $em->getClassMetadata(CompanyEmployee::class);``.
 
 Get all users visible on a given website that have chosen certain gender:
 
@@ -807,7 +812,7 @@ classes have to implement the base class :
     namespace MyProject\Query\AST;
 
     use Doctrine\ORM\Query\AST\Functions\FunctionNode;
-    use Doctrine\ORM\Query\Lexer;
+    use Doctrine\ORM\Query\TokenType;
 
     class MysqlFloor extends FunctionNode
     {
@@ -822,12 +827,12 @@ classes have to implement the base class :
 
         public function parse(\Doctrine\ORM\Query\Parser $parser)
         {
-            $parser->match(Lexer::T_IDENTIFIER);
-            $parser->match(Lexer::T_OPEN_PARENTHESIS);
+            $parser->match(TokenType::T_IDENTIFIER);
+            $parser->match(TokenType::T_OPEN_PARENTHESIS);
 
             $this->simpleArithmeticExpression = $parser->SimpleArithmeticExpression();
 
-            $parser->match(Lexer::T_CLOSE_PARENTHESIS);
+            $parser->match(TokenType::T_CLOSE_PARENTHESIS);
         }
     }
 

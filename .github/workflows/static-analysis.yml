@@ -7,20 +7,20 @@ on:
     paths:
       - .github/workflows/static-analysis.yml
       - composer.*
-      - lib/**
+      - src/**
       - phpstan*
       - psalm*
-      - tests/Doctrine/StaticAnalysis/**
+      - tests/StaticAnalysis/**
   push:
     branches:
       - "*.x"
     paths:
       - .github/workflows/static-analysis.yml
       - composer.*
-      - lib/**
+      - src/**
       - phpstan*
       - psalm*
-      - tests/Doctrine/StaticAnalysis/**
+      - tests/StaticAnalysis/**
 
 jobs:
   static-analysis-phpstan:
@@ -48,7 +48,7 @@ jobs:
         uses: "shivammathur/setup-php@v2"
         with:
           coverage: "none"
-          php-version: "8.2"
+          php-version: "8.3"
 
       - name: "Require specific DBAL version"
         run: "composer require doctrine/dbal ^${{ matrix.dbal-version }} --no-update"
@@ -89,7 +89,7 @@ jobs:
         uses: "shivammathur/setup-php@v2"
         with:
           coverage: "none"
-          php-version: "8.2"
+          php-version: "8.3"
 
       - name: "Require specific persistence version"
         run: "composer require doctrine/persistence ^3.1 --no-update"

@@ -408,7 +408,7 @@ means that you have to register a special autoloader for these classes:
 .. code-block:: php
 
     <?php
-    use Doctrine\Common\Proxy\Autoloader;
+    use Doctrine\ORM\Proxy\Autoloader;
 
     $proxyDir = "/path/to/proxies";
     $proxyNamespace = "MyProxies";

@@ -36,71 +36,50 @@ Our entities look like:
     namespace Bank\Entities;
 
     use Doctrine\ORM\Mapping as ORM;
-    
-    /**
-     * @ORM\Entity
-     */
+    use Doctrine\Common\Collections\ArrayCollection;
+    use Doctrine\Common\Collections\Collection;
+
+    #[ORM\Entity]
     class Account
     {
-        /**
-         * @ORM\Id
-         * @ORM\GeneratedValue
-         * @ORM\Column(type="integer")
-         */
+        #[ORM\Id]
+        #[ORM\GeneratedValue]
+        #[ORM\Column(type: 'integer')]
         private ?int $id;
-    
-        /**
-         * @ORM\Column(type="string", unique=true)
-         */
-        private string $no;
-    
-        /**
-         * @ORM\OneToMany(targetEntity="Entry", mappedBy="account", cascade={"persist"})
-         */
-        private array $entries;
-    
-        /**
-         * @ORM\Column(type="integer")
-         */
-        private int $maxCredit = 0;
-    
-        public function __construct(string $no, int $maxCredit = 0)
-        {
-            $this->no = $no;
-            $this->maxCredit = $maxCredit;
-            $this->entries = new \Doctrine\Common\Collections\ArrayCollection();
+
+        #[ORM\OneToMany(targetEntity: Entry::class, mappedBy: 'account', cascade: ['persist'])]
+        private Collection $entries;
+
+
+        public function __construct(
+            #[ORM\Column(type: 'string', unique: true)]
+            private string $no,
+
+            #[ORM\Column(type: 'integer')]
+            private int $maxCredit = 0,
+        ) {
+            $this->entries = new ArrayCollection();
         }
     }
-    
-    /**
-     * @ORM\Entity
-     */
+
+    #[ORM\Entity]
     class Entry
     {
-        /**
-         * @ORM\Id
-         * @ORM\GeneratedValue
-         * @ORM\Column(type="integer")
-         */
+        #[ORM\Id]
+        #[ORM\GeneratedValue]
+        #[ORM\Column(type: 'integer')]
         private ?int $id;
-    
-        /**
-         * @ORM\ManyToOne(targetEntity="Account", inversedBy="entries")
-         */
-        private Account $account;
-    
-        /**
-         * @ORM\Column(type="integer")
-         */
-        private int $amount;
-    
-        public function __construct(Account $account, int $amount)
-        {
-            $this->account = $account;
-            $this->amount = $amount;
+
+        public function __construct(
+            #[ORM\ManyToOne(targetEntity: Account::class, inversedBy: 'entries')]
+            private Account $account,
+
+            #[ORM\Column(type: 'integer')]
+            private int $amount,
+        ) {
             // more stuff here, from/to whom, stated reason, execution date and such
         }
-    
+
         public function getAmount(): Amount
         {
             return $this->amount;
@@ -193,9 +172,8 @@ relation with this method:
         public function addEntry(int $amount): void
         {
             $this->assertAcceptEntryAllowed($amount);
-    
-            $e = new Entry($this, $amount);
-            $this->entries[] = $e;
+
+            $this->entries[] = new Entry($this, $amount);
         }
     }
 
@@ -213,18 +191,18 @@ Now look at the following test-code for our entities:
         {
             $account = new Account("123456", maxCredit: 200);
             $this->assertEquals(0, $account->getBalance());
-    
+
             $account->addEntry(500);
             $this->assertEquals(500, $account->getBalance());
-    
+
             $account->addEntry(-700);
             $this->assertEquals(-200, $account->getBalance());
         }
-    
+
         public function testExceedMaxLimit()
         {
             $account = new Account("123456", maxCredit: 200);
-    
+
             $this->expectException(Exception::class);
             $account->addEntry(-1000);
         }
@@ -285,22 +263,19 @@ entries collection) we want to add an aggregate field called
     <?php
     class Account
     {
-        /**
-         * @ORM\Column(type="integer")
-         */
+        #[ORM\Column(type: 'integer')]
         private int $balance = 0;
-    
+
         public function getBalance(): int
         {
             return $this->balance;
         }
-    
+
         public function addEntry(int $amount): void
         {
             $this->assertAcceptEntryAllowed($amount);
-    
-            $e = new Entry($this, $amount);
-            $this->entries[] = $e;
+
+            $this->entries[] = new Entry($this, $amount);
             $this->balance += $amount;
         }
     }
@@ -331,13 +306,13 @@ potentially lead to inconsistent state. See this example:
     // The Account $accId has a balance of 0 and a max credit limit of 200:
     // request 1 account
     $account1 = $em->find(Account::class, $accId);
-    
+
     // request 2 account
     $account2 = $em->find(Account::class, $accId);
-    
+
     $account1->addEntry(-200);
     $account2->addEntry(-200);
-    
+
     // now request 1 and 2 both flush the changes.
 
 The aggregate field ``Account::$balance`` is now -200, however the
@@ -357,10 +332,8 @@ Optimistic locking is as easy as adding a version column:
 
     class Account
     {
-        /**
-         * @ORM\Column(type="integer")
-         * @ORM\Version
-         */
+        #[ORM\Column(type: 'integer')]
+        #[ORM\Version]
         private int $version;
     }
 

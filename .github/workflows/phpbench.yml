@@ -8,7 +8,7 @@ on:
     paths:
       - .github/workflows/phpbench.yml
       - composer.*
-      - lib/**
+      - src/**
       - phpbench.json
       - tests/**
   push:
@@ -17,7 +17,7 @@ on:
     paths:
       - .github/workflows/phpbench.yml
       - composer.*
-      - lib/**
+      - src/**
       - phpbench.json
       - tests/**
 

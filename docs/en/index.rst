@@ -96,7 +96,7 @@ Tutorials
 Changelogs
 ----------
 
-* `Upgrade <https://github.com/doctrine/doctrine2/blob/master/UPGRADE.md>`_
+* `Upgrade <https://github.com/doctrine/orm/blob/HEAD/UPGRADE.md>`_
 
 Cookbook
 --------
