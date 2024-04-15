@@ -154,14 +154,6 @@
       <code><![CDATA[$className]]></code>
     </ArgumentTypeCoercion>
   </file>
-  <file src="src/Decorator/EntityManagerDecorator.php">
-    <InvalidReturnStatement>
-      <code><![CDATA[$this->wrapped->getClassMetadata($className)]]></code>
-    </InvalidReturnStatement>
-    <InvalidReturnType>
-      <code><![CDATA[ClassMetadata]]></code>
-    </InvalidReturnType>
-  </file>
   <file src="src/EntityManager.php">
     <ArgumentTypeCoercion>
       <code><![CDATA[$className]]></code>
@@ -174,11 +166,9 @@
       <code><![CDATA[$persister->load($sortedId, null, null, [], $lockMode)]]></code>
       <code><![CDATA[$persister->loadById($sortedId)]]></code>
       <code><![CDATA[$this->metadataFactory]]></code>
-      <code><![CDATA[$this->metadataFactory->getMetadataFor($className)]]></code>
     </InvalidReturnStatement>
     <InvalidReturnType>
       <code><![CDATA[ClassMetadataFactory]]></code>
-      <code><![CDATA[Mapping\ClassMetadata]]></code>
     </InvalidReturnType>
     <PossiblyNullArgument>
       <code><![CDATA[$config->getProxyDir()]]></code>
@@ -251,9 +241,6 @@
     </UnsupportedReferenceUsage>
   </file>
   <file src="src/Internal/Hydration/ObjectHydrator.php">
-    <InvalidArgument>
-      <code><![CDATA[$element]]></code>
-    </InvalidArgument>
     <PossiblyFalseArgument>
       <code><![CDATA[$index]]></code>
     </PossiblyFalseArgument>

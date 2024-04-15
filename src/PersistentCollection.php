@@ -350,11 +350,6 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
         return parent::containsKey($key);
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * @template TMaybeContained
-     */
     public function contains(mixed $element): bool
     {
         if (! $this->initialized && $this->getMapping()->fetch === ClassMetadata::FETCH_EXTRA_LAZY) {
