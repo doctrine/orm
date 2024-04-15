@@ -257,12 +257,6 @@
       <code><![CDATA[transactional]]></code>
       <code><![CDATA[transactional]]></code>
     </DeprecatedMethod>
-    <InvalidReturnStatement>
-      <code><![CDATA[$this->wrapped->getClassMetadata($className)]]></code>
-    </InvalidReturnStatement>
-    <InvalidReturnType>
-      <code><![CDATA[getClassMetadata]]></code>
-    </InvalidReturnType>
     <MissingParamType>
       <code><![CDATA[$entity]]></code>
       <code><![CDATA[$lockMode]]></code>
@@ -309,11 +303,9 @@
       <code><![CDATA[$entity instanceof $class->name ? $entity : null]]></code>
       <code><![CDATA[$persister->load($sortedId, null, null, [], $lockMode)]]></code>
       <code><![CDATA[$persister->loadById($sortedId)]]></code>
-      <code><![CDATA[$this->metadataFactory->getMetadataFor($className)]]></code>
     </InvalidReturnStatement>
     <InvalidReturnType>
       <code><![CDATA[?T]]></code>
-      <code><![CDATA[getClassMetadata]]></code>
     </InvalidReturnType>
     <MissingReturnType>
       <code><![CDATA[wrapInTransaction]]></code>
@@ -462,9 +454,6 @@
     </RedundantConditionGivenDocblockType>
   </file>
   <file src="src/Internal/Hydration/ObjectHydrator.php">
-    <InvalidArgument>
-      <code><![CDATA[$element]]></code>
-    </InvalidArgument>
     <PossiblyFalseArgument>
       <code><![CDATA[$index]]></code>
     </PossiblyFalseArgument>
