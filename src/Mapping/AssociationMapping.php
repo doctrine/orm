@@ -25,7 +25,7 @@ abstract class AssociationMapping
     /**
      * The fetching strategy to use for the association, usually defaults to FETCH_LAZY.
      *
-     * @var ClassMetadata::FETCH_*
+     * @var ClassMetadata::FETCH_*|null
      */
     public int|null $fetch = null;
 
@@ -94,13 +94,26 @@ abstract class AssociationMapping
     }
 
     /**
+     * @param mixed[] $mappingArray
      * @psalm-param array{
      *     fieldName: string,
      *     sourceEntity: class-string,
      *     targetEntity: class-string,
+     *     cascade?: list<'persist'|'remove'|'detach'|'refresh'|'all'>,
+     *     fetch?: ClassMetadata::FETCH_*|null,
+     *     inherited?: class-string|null,
+     *     declared?: class-string|null,
+     *     cache?: array<mixed>|null,
+     *     id?: bool|null,
+     *     isOnDeleteCascade?: bool|null,
+     *     originalClass?: class-string|null,
+     *     originalField?: string|null,
+     *     orphanRemoval?: bool,
+     *     unique?: bool|null,
      *     joinTable?: mixed[]|null,
      *     type?: int,
-     *     isOwningSide: bool, ...} $mappingArray
+     *     isOwningSide: bool,
+     * } $mappingArray
      */
     public static function fromMappingArray(array $mappingArray): static
     {

@@ -25,6 +25,7 @@ use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\ORM\Mapping\OrderBy;
 use Doctrine\ORM\Mapping\Table;
 use Doctrine\ORM\Tools\SchemaValidator;
+use Doctrine\Tests\Models\BigIntegers\BigIntegers;
 use Doctrine\Tests\Models\ECommerce\ECommerceCart;
 use Doctrine\Tests\OrmTestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -226,6 +227,16 @@ class SchemaValidatorTest extends OrmTestCase
         self::assertEquals(
             ["The target entity 'Doctrine\Tests\ORM\Tools\InvalidMappedSuperClass' specified on Doctrine\Tests\ORM\Tools\InvalidMappedSuperClass#selfWhatever is a mapped superclass. This is not possible since there is no table that a foreign key could refer to."],
             $ce,
+        );
+    }
+
+    public function testBigIntProperty(): void
+    {
+        $class = $this->em->getClassMetadata(BigIntegers::class);
+
+        self::assertSame(
+            ['The field \'Doctrine\Tests\Models\BigIntegers\BigIntegers#three\' has the property type \'float\' that differs from the metadata field type \'int|string\' returned by the \'bigint\' DBAL type.'],
+            $this->validator->validateClass($class),
         );
     }
 }

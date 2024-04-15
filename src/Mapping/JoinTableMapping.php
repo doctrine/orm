@@ -30,10 +30,10 @@ final class JoinTableMapping
      * @param mixed[] $mappingArray
      * @psalm-param array{
      *    name: string,
-     *    quoted?: bool,
+     *    quoted?: bool|null,
      *    joinColumns?: mixed[],
      *    inverseJoinColumns?: mixed[],
-     *    schema?: string,
+     *    schema?: string|null,
      *    options?: array<string, mixed>
      * } $mappingArray
      */
