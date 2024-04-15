@@ -18,7 +18,7 @@ well.
 Requirements
 ------------
 
-Doctrine ORM requires a minimum of PHP 7.1. For greatly improved
+Doctrine ORM requires a minimum of PHP 8.1. For greatly improved
 performance it is also recommended that you use APC with PHP.
 
 Doctrine ORM Packages

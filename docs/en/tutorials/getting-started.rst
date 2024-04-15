@@ -27,7 +27,7 @@ What is Doctrine?
 -----------------
 
 Doctrine ORM is an `object-relational mapper (ORM) <https://en.wikipedia.org/wiki/Object-relational_mapping>`_
-for PHP 7.1+ that provides transparent persistence for PHP objects. It uses the Data Mapper
+for PHP that provides transparent persistence for PHP objects. It uses the Data Mapper
 pattern at the heart, aiming for a complete separation of your domain/business
 logic from the persistence in a relational database management system.
 
