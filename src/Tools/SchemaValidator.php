@@ -39,7 +39,6 @@ use function implode;
 use function in_array;
 use function interface_exists;
 use function is_a;
-use function method_exists;
 use function sprintf;
 
 /**
@@ -50,29 +49,11 @@ use function sprintf;
 class SchemaValidator
 {
     /**
-     * Map built-in Doctrine DBAL 3 types to PHP types
-     */
-    private const BUILTIN_TYPES_MAP_DBAL3 = [
-        AsciiStringType::class => 'string',
-        BigIntType::class => 'string',
-        BooleanType::class => 'bool',
-        DecimalType::class => 'string',
-        FloatType::class => 'float',
-        GuidType::class => 'string',
-        IntegerType::class => 'int',
-        JsonType::class => 'array',
-        SimpleArrayType::class => 'array',
-        SmallIntType::class => 'int',
-        StringType::class => 'string',
-        TextType::class => 'string',
-    ];
-
-    /**
-     * Map built-in Doctrine DBAL 4+ types to PHP types
+     * It maps built-in Doctrine types to PHP types
      */
     private const BUILTIN_TYPES_MAP = [
         AsciiStringType::class => 'string',
-        BigIntType::class => 'string|int',
+        BigIntType::class => 'string',
         BooleanType::class => 'bool',
         DecimalType::class => 'string',
         FloatType::class => 'float',
@@ -455,10 +436,6 @@ class SchemaValidator
     {
         $typeName = $type::class;
 
-        if (method_exists(BigIntType::class, 'getName')) { // DBAL 3
-            return self::BUILTIN_TYPES_MAP_DBAL3[$typeName] ?? null;
-        } else { // DBAL 4+
-            return self::BUILTIN_TYPES_MAP[$typeName] ?? null;
-        }
+        return self::BUILTIN_TYPES_MAP[$typeName] ?? null;
     }
 }

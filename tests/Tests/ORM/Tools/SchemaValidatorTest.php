@@ -6,8 +6,6 @@ namespace Doctrine\Tests\ORM\Tools;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\DBAL\Types\BigIntType;
-use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\DiscriminatorMap;
@@ -31,8 +29,6 @@ use Doctrine\Tests\Models\ECommerce\ECommerceCart;
 use Doctrine\Tests\OrmTestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Group;
-
-use function method_exists;
 
 class SchemaValidatorTest extends OrmTestCase
 {
@@ -231,47 +227,6 @@ class SchemaValidatorTest extends OrmTestCase
             ["The target entity 'Doctrine\Tests\ORM\Tools\InvalidMappedSuperClass' specified on Doctrine\Tests\ORM\Tools\InvalidMappedSuperClass#selfWhatever is a mapped superclass. This is not possible since there is no table that a foreign key could refer to."],
             $ce,
         );
-    }
-
-    public function testBigintMappedToStringInt(): void
-    {
-        $class = $this->em->getClassMetadata(BigintMappedToStringInt::class);
-        $ce    = $this->validator->validateClass($class);
-
-        $this->assertEquals([], $ce); // Same for DBAL 3 and 4+
-    }
-
-    public function testBigintMappedToInt(): void
-    {
-        $class = $this->em->getClassMetadata(BigintMappedToInt::class);
-        $ce    = $this->validator->validateClass($class);
-
-        if (method_exists(BigIntType::class, 'getName')) { // DBAL 3
-            $this->assertEquals(
-                ["The field 'Doctrine\Tests\ORM\Tools\BigintMappedToInt#bigint' has the property type 'int' that differs from the metadata field type 'string' returned by the 'bigint' DBAL type."],
-                $ce,
-            );
-        } else { // DBAL 4+
-            $this->assertEquals(
-                ["The field 'Doctrine\Tests\ORM\Tools\BigintMappedToInt#bigint' has the property type 'int' that differs from the metadata field type 'string|int' returned by the 'bigint' DBAL type."],
-                $ce,
-            );
-        }
-    }
-
-    public function testBigintMappedToString(): void
-    {
-        $class = $this->em->getClassMetadata(BigintMappedToString::class);
-        $ce    = $this->validator->validateClass($class);
-
-        if (method_exists(BigIntType::class, 'getName')) { // DBAL 3
-            $this->assertEquals([], $ce);
-        } else { // DBAL 4+
-            $this->assertEquals(
-                ["The field 'Doctrine\Tests\ORM\Tools\BigintMappedToString#bigint' has the property type 'string' that differs from the metadata field type 'string|int' returned by the 'bigint' DBAL type."],
-                $ce,
-            );
-        }
     }
 }
 
@@ -591,40 +546,4 @@ class InvalidMappedSuperClass
     /** @psalm-var Collection<int, self> */
     #[ManyToMany(targetEntity: 'InvalidMappedSuperClass', mappedBy: 'invalid')]
     private $selfWhatever;
-}
-
-#[Entity]
-class BigintMappedToStringInt
-{
-    #[Id]
-    #[Column]
-    #[GeneratedValue]
-    private int $id;
-
-    #[Column(type: Types::BIGINT)]
-    private string|int $bigint;
-}
-
-#[Entity]
-class BigintMappedToInt
-{
-    #[Id]
-    #[Column]
-    #[GeneratedValue]
-    private int $id;
-
-    #[Column(type: Types::BIGINT)]
-    private int $bigint;
-}
-
-#[Entity]
-class BigintMappedToString
-{
-    #[Id]
-    #[Column]
-    #[GeneratedValue]
-    private int $id;
-
-    #[Column(type: Types::BIGINT)]
-    private string $bigint;
 }
