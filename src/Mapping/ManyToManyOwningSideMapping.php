@@ -41,9 +41,21 @@ final class ManyToManyOwningSideMapping extends ToManyOwningSideMapping implemen
      *     fieldName: string,
      *     sourceEntity: class-string,
      *     targetEntity: class-string,
+     *     cascade?: list<'persist'|'remove'|'detach'|'refresh'|'all'>,
+     *     fetch?: ClassMetadata::FETCH_*|null,
+     *     inherited?: class-string|null,
+     *     declared?: class-string|null,
+     *     cache?: array<mixed>|null,
+     *     id?: bool|null,
+     *     isOnDeleteCascade?: bool|null,
+     *     originalClass?: class-string|null,
+     *     originalField?: string|null,
+     *     orphanRemoval?: bool,
+     *     unique?: bool|null,
      *     joinTable?: mixed[]|null,
      *     type?: int,
-     *     isOwningSide: bool, ...} $mappingArray
+     *     isOwningSide: bool,
+     * } $mappingArray
      */
     public static function fromMappingArrayAndNamingStrategy(array $mappingArray, NamingStrategy $namingStrategy): self
     {
