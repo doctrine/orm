@@ -64,18 +64,18 @@ class SchemaValidator
      * It maps built-in Doctrine types to PHP types
      */
     private const BUILTIN_TYPES_MAP = [
-        AsciiStringType::class => 'string',
-        BigIntType::class => 'string',
-        BooleanType::class => 'bool',
-        DecimalType::class => 'string',
-        FloatType::class => 'float',
-        GuidType::class => 'string',
-        IntegerType::class => 'int',
-        JsonType::class => 'array',
-        SimpleArrayType::class => 'array',
-        SmallIntType::class => 'int',
-        StringType::class => 'string',
-        TextType::class => 'string',
+        AsciiStringType::class => ['string'],
+        BigIntType::class => ['int', 'string'],
+        BooleanType::class => ['bool'],
+        DecimalType::class => ['string'],
+        FloatType::class => ['float'],
+        GuidType::class => ['string'],
+        IntegerType::class => ['int'],
+        JsonType::class => ['array'],
+        SimpleArrayType::class => ['array'],
+        SmallIntType::class => ['int'],
+        StringType::class => ['string'],
+        TextType::class => ['string'],
     ];
 
     public function __construct(EntityManagerInterface $em, bool $validatePropertyTypes = true)
@@ -390,21 +390,21 @@ class SchemaValidator
                         $propertyType = $propertyType->getName();
 
                         // If the property type is the same as the metadata field type, we are ok
-                        if ($propertyType === $metadataFieldType) {
+                        if (in_array($propertyType, $metadataFieldType, true)) {
                             return null;
                         }
 
                         if (is_a($propertyType, BackedEnum::class, true)) {
                             $backingType = (string) (new ReflectionEnum($propertyType))->getBackingType();
 
-                            if ($metadataFieldType !== $backingType) {
+                            if (! in_array($backingType, $metadataFieldType, true)) {
                                 return sprintf(
                                     "The field '%s#%s' has the property type '%s' with a backing type of '%s' that differs from the metadata field type '%s'.",
                                     $class->name,
                                     $fieldName,
                                     $propertyType,
                                     $backingType,
-                                    $metadataFieldType
+                                    implode('|', $metadataFieldType)
                                 );
                             }
 
@@ -429,7 +429,7 @@ class SchemaValidator
                         ) {
                             $backingType = (string) (new ReflectionEnum($fieldMapping['enumType']))->getBackingType();
 
-                            if ($metadataFieldType === $backingType) {
+                            if (in_array($backingType, $metadataFieldType, true)) {
                                 return null;
                             }
 
@@ -439,7 +439,7 @@ class SchemaValidator
                                 $fieldName,
                                 $fieldMapping['enumType'],
                                 $backingType,
-                                $metadataFieldType
+                                implode('|', $metadataFieldType)
                             );
                         }
 
@@ -455,7 +455,7 @@ class SchemaValidator
                             $class->name,
                             $fieldName,
                             $propertyType,
-                            $metadataFieldType,
+                            implode('|', $metadataFieldType),
                             $fieldMapping['type']
                         );
                     },
@@ -468,8 +468,10 @@ class SchemaValidator
     /**
      * The exact DBAL type must be used (no subclasses), since consumers of doctrine/orm may have their own
      * customization around field types.
+     *
+     * @return list<string>|null
      */
-    private function findBuiltInType(Type $type): ?string
+    private function findBuiltInType(Type $type): ?array
     {
         $typeName = get_class($type);
 
