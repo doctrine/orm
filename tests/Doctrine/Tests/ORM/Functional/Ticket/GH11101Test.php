@@ -28,7 +28,6 @@ final class GH11101Test extends OrmFunctionalTestCase
 
         $this->_em->persist($e1 = new GH11101Entity(1, 'A#1'));
         $this->_em->persist($e2 = new GH11101Entity(2, 'A#2'));
-        $this->_em->persist($e3 = new GH11101Entity(3, 'B#1'));
 
         $this->_em->flush();
         $this->_em->clear();
