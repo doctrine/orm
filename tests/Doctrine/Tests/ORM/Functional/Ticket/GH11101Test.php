@@ -38,40 +38,18 @@ final class GH11101Test extends OrmFunctionalTestCase
     {
         $evm = $this->_em->getEventManager();
         
-        $this->yieldFromToIterable();
-        self::assertCount(0, $evm->getListeners(Events::onClear));
-        
-        $this->yieldFromToIterable();
-        self::assertCount(0, $evm->getListeners(Events::onClear));
-    }
-    
-    private function yieldFromToIterable()
-    {
         $q = $this->_em->createQuery('SELECT a.id FROM ' . GH11101Entity::class . ' a')->setMaxResults(2);
-        $result = $q->toIterable();
-        
-        if ($result instanceof \IteratorAggregate) {
-            $result = $result->getIterator();
-        }
 
-        /* If the result is a MongoCursor, it must be advanced to the first
-        * element. Rewinding should have no ill effect if $result is another
-        * iterator implementation.
-        */
-        if ($result instanceof \Iterator) {
-            $result->rewind();
-            if ($result instanceof \Countable && 1 < \count($result)) {
-                $result = [$result->current(), $result->current()];
-            } else {
-                $result = $result->valid() && null !== $result->current() ? [$result->current()] : [];
-            }
-        } elseif (\is_array($result)) {
-            reset($result);
-        } else {
-            $result = null === $result ? [] : [$result];
+        // select two entity, but do no iterate
+        $q->toIterable();
+        self::assertCount(0, $evm->getListeners(Events::onClear));
+
+        // select two entity, but abort after first record
+        foreach ($q->toIterable() as $_) {
+            self::assertCount(1, $evm->getListeners(Events::onClear));
+            break;
         }
-        
-        return $result;
+        self::assertCount(0, $evm->getListeners(Events::onClear));
     }
 }
 
