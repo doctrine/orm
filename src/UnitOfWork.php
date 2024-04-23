@@ -3224,7 +3224,13 @@ EXCEPTION
      *
      * @param PersistentCollection[] $collections
      * @param array<string, mixed>   $mapping
-     * @psalm-param array{targetEntity: class-string, sourceEntity: class-string, mappedBy: string, indexBy: string|null} $mapping
+     * @psalm-param array{
+     *     targetEntity: class-string,
+     *     sourceEntity: class-string,
+     *     mappedBy: string,
+     *     indexBy: string|null,
+     *     orderBy: array<string, string>|null
+     * } $mapping
      */
     private function eagerLoadCollections(array $collections, array $mapping): void
     {
@@ -3241,7 +3247,7 @@ EXCEPTION
                 $entities[] = $collection->getOwner();
             }
 
-            $found = $this->getEntityPersister($targetEntity)->loadAll([$mappedBy => $entities]);
+            $found = $this->getEntityPersister($targetEntity)->loadAll([$mappedBy => $entities], $mapping['orderBy'] ?? null);
 
             $targetClass    = $this->em->getClassMetadata($targetEntity);
             $targetProperty = $targetClass->getReflectionProperty($mappedBy);
