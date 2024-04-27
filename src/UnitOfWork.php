@@ -1292,6 +1292,8 @@ class UnitOfWork implements PropertyChangedListener
         $eventsToDispatch = [];
 
         foreach ($entities as $entity) {
+            $this->removeFromIdentityMap($entity);
+
             $oid       = spl_object_id($entity);
             $class     = $this->em->getClassMetadata(get_class($entity));
             $persister = $this->getEntityPersister($class->name);
@@ -1666,8 +1668,6 @@ class UnitOfWork implements PropertyChangedListener
         if (! $this->isInIdentityMap($entity)) {
             return;
         }
-
-        $this->removeFromIdentityMap($entity);
 
         unset($this->entityUpdates[$oid]);
 
