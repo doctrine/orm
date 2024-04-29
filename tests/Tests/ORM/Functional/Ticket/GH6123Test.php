@@ -6,7 +6,6 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\UnitOfWork;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
@@ -17,7 +16,7 @@ class GH6123Test extends OrmFunctionalTestCase
         parent::setUp();
 
         $this->createSchemaForModels(
-            GH6123Entity::class,
+            GH6123Entity::class
         );
     }
 
@@ -58,7 +57,7 @@ class GH6123Test extends OrmFunctionalTestCase
         $this->_em->flush();
     }
 
-    private function loadEntityFromDatabase(int $id): GH6123Entity|null
+    private function loadEntityFromDatabase(int $id): ?GH6123Entity
     {
         return $this->_em->createQueryBuilder()
             ->select('e')
@@ -70,11 +69,20 @@ class GH6123Test extends OrmFunctionalTestCase
     }
 }
 
+/**
+ * @ORM\Entity
+ */
 #[ORM\Entity]
 class GH6123Entity
 {
+    /**
+     * @ORM\Id
+     * @ORM\GeneratedValue
+     * @ORM\Column(type="integer")
+     * @var int
+     */
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[Column(type: Types::INTEGER, nullable: false)]
-    public int $id;
+    #[ORM\Column(type: Types::INTEGER)]
+    public $id;
 }
