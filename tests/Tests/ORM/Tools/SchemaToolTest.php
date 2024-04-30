@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Tools;
 
+use Composer\InstalledVersions;
+use Composer\Semver\VersionParser;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\Column;
@@ -20,6 +22,7 @@ use Doctrine\ORM\Mapping\UnderscoreNamingStrategy;
 use Doctrine\ORM\Mapping\UniqueConstraint;
 use Doctrine\ORM\Tools\Event\GenerateSchemaEventArgs;
 use Doctrine\ORM\Tools\Event\GenerateSchemaTableEventArgs;
+use Doctrine\ORM\Tools\Event\SchemaChangedEventArgs;
 use Doctrine\ORM\Tools\SchemaTool;
 use Doctrine\ORM\Tools\ToolEvents;
 use Doctrine\Persistence\Mapping\Driver\StaticPHPDriver;
@@ -170,6 +173,30 @@ class SchemaToolTest extends OrmTestCase
 
         self::assertEquals(count($classes), $listener->tableCalls);
         self::assertTrue($listener->schemaCalled);
+    }
+
+    public function testSchemaChangedEvent(): void
+    {
+        if (InstalledVersions::satisfies(new VersionParser(), 'doctrine/dbal', '^3.0')) {
+            self::markTestSkipped('This test is not compatible with DBAL 3');
+        }
+
+        $em = $this->getTestEntityManager();
+
+        $schemaTool = new SchemaTool($em);
+
+        $listener = new class ()
+        {
+            public bool $called = false;
+
+            public function postSchemaChanged(SchemaChangedEventArgs $eventArgs): void
+            {
+                $this->called = true;
+            }
+        };
+        $em->getEventManager()->addEventListener(ToolEvents::postSchemaChanged, $listener);
+        $schemaTool->updateSchema([]);
+        self::assertTrue($listener->called);
     }
 
     public function testNullDefaultNotAddedToPlatformOptions(): void
