@@ -18,4 +18,25 @@ class SchemaChangedEventArgs extends EventArgs
         private readonly array $sqls,
     ) {
     }
+
+    public function getEntityManager(): EntityManagerInterface
+    {
+        return $this->em;
+    }
+
+    public function getSchema(): Schema
+    {
+        return $this->schema;
+    }
+
+    public function getOldSchema(): Schema
+    {
+        return $this->oldSchema;
+    }
+
+    /** @return array<string> */
+    public function getSqls(): array
+    {
+        return $this->sqls;
+    }
 }
