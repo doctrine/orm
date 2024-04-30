@@ -1025,6 +1025,37 @@ and the EntityManager.
         }
     }
 
+postSchemaChange
+~~~~~~~~~~~~~~~~
+
+This event is fired after the schema was successfully updated. It allows
+to access the full object representation of the database schema before
+and after the change, as well as the EntityManager and the SQL queries
+that were executed.
+
+.. code-block:: php
+
+    <?php
+
+    use Doctrine\ORM\Tools\ToolEvents;
+    use Doctrine\ORM\Tools\Event\SchemaChangedEventArgs;
+
+    $test = new TestEventListener();
+    $evm = $em->getEventManager();
+    $evm->addEventListener(ToolEvents::postSchemaChanged, $test);
+
+    class TestEventListener
+    {
+        public function postGenerateSchema(SchemaChangedEventArgs $eventArgs)
+        {
+            $schema = $eventArgs->getSchema();
+            $oldSchema = $eventArgs->getOldSchema();
+            $em = $eventArgs->getEntityManager();
+            $sqls = $eventArgs->getSqls();
+        }
+    }
+
+
 .. _PrePersistEventArgs: https://github.com/doctrine/orm/blob/HEAD/src/Event/PrePersistEventArgs.php
 .. _PreRemoveEventArgs: https://github.com/doctrine/orm/blob/HEAD/src/Event/PreRemoveEventArgs.php
 .. _PreUpdateEventArgs: https://github.com/doctrine/orm/blob/HEAD/src/Event/PreUpdateEventArgs.php
