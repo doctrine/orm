@@ -12,6 +12,7 @@ use Doctrine\ORM\Events;
 use Doctrine\ORM\Internal\Hydration\AbstractHydrator;
 use Doctrine\ORM\ORMException;
 use Doctrine\ORM\Query\ResultSetMapping;
+use Doctrine\Tests\Models\Hydration\SimpleEntity;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use PHPUnit\Framework\MockObject\MockObject;
 
@@ -153,5 +154,34 @@ class AbstractHydratorTest extends OrmFunctionalTestCase
 
         $this->expectException(ORMException::class);
         $this->hydrator->hydrateAll($this->mockResult, $this->mockResultMapping);
+    }
+
+    public function testToIterableIfYieldAndBreakBeforeFinishAlwaysCleansUp(): void
+    {
+        $this->setUpEntitySchema([SimpleEntity::class]);
+
+        $entity1 = new SimpleEntity();
+        $this->_em->persist($entity1);
+        $entity2 = new SimpleEntity();
+        $this->_em->persist($entity2);
+
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $evm = $this->_em->getEventManager();
+
+        $q = $this->_em->createQuery('SELECT e.id FROM ' . SimpleEntity::class . ' e');
+
+        // select two entities, but do no iterate
+        $q->toIterable();
+        self::assertCount(0, $evm->getListeners(Events::onClear));
+
+        // select two entities, but abort after first record
+        foreach ($q->toIterable() as $result) {
+            self::assertCount(1, $evm->getListeners(Events::onClear));
+            break;
+        }
+
+        self::assertCount(0, $evm->getListeners(Events::onClear));
     }
 }

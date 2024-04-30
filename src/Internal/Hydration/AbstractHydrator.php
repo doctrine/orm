@@ -182,29 +182,31 @@ abstract class AbstractHydrator
 
         $this->prepare();
 
-        while (true) {
-            $row = $this->statement()->fetchAssociative();
+        try {
+            while (true) {
+                $row = $this->statement()->fetchAssociative();
 
-            if ($row === false) {
-                $this->cleanup();
-
-                break;
-            }
-
-            $result = [];
-
-            $this->hydrateRowData($row, $result);
-
-            $this->cleanupAfterRowIteration();
-            if (count($result) === 1) {
-                if (count($resultSetMapping->indexByMap) === 0) {
-                    yield end($result);
-                } else {
-                    yield from $result;
+                if ($row === false) {
+                    break;
                 }
-            } else {
-                yield $result;
+
+                $result = [];
+
+                $this->hydrateRowData($row, $result);
+
+                $this->cleanupAfterRowIteration();
+                if (count($result) === 1) {
+                    if (count($resultSetMapping->indexByMap) === 0) {
+                        yield end($result);
+                    } else {
+                        yield from $result;
+                    }
+                } else {
+                    yield $result;
+                }
             }
+        } finally {
+            $this->cleanup();
         }
     }
 

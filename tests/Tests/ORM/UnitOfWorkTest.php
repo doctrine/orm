@@ -413,12 +413,18 @@ class UnitOfWorkTest extends OrmTestCase
         $entity->id = 123;
 
         $this->_unitOfWork->registerManaged($entity, ['id' => 123], []);
+        self::assertSame(UnitOfWork::STATE_MANAGED, $this->_unitOfWork->getEntityState($entity));
+        self::assertFalse($this->_unitOfWork->isScheduledForDelete($entity));
         self::assertTrue($this->_unitOfWork->isInIdentityMap($entity));
 
         $this->_unitOfWork->remove($entity);
-        self::assertFalse($this->_unitOfWork->isInIdentityMap($entity));
+        self::assertSame(UnitOfWork::STATE_REMOVED, $this->_unitOfWork->getEntityState($entity));
+        self::assertTrue($this->_unitOfWork->isScheduledForDelete($entity));
+        self::assertTrue($this->_unitOfWork->isInIdentityMap($entity));
 
         $this->_unitOfWork->persist($entity);
+        self::assertSame(UnitOfWork::STATE_MANAGED, $this->_unitOfWork->getEntityState($entity));
+        self::assertFalse($this->_unitOfWork->isScheduledForDelete($entity));
         self::assertTrue($this->_unitOfWork->isInIdentityMap($entity));
     }
 
