@@ -36,7 +36,7 @@ jobs:
         run: "composer require --dev phpdocumentor/guides-cli --no-update"
 
       - name: "Install dependencies with Composer"
-        uses: "ramsey/composer-install@v2"
+        uses: "ramsey/composer-install@v3"
         with:
           dependency-versions: "highest"
 
