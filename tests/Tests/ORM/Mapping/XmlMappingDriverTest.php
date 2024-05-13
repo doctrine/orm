@@ -14,6 +14,7 @@ use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
 use Doctrine\Persistence\Mapping\MappingException as PersistenceMappingException;
 use Doctrine\Persistence\Mapping\RuntimeReflectionService;
+use Doctrine\Tests\Models\Customer\CustomerType;
 use Doctrine\Tests\Models\DDC117\DDC117Translation;
 use Doctrine\Tests\Models\DDC3293\DDC3293User;
 use Doctrine\Tests\Models\DDC3293\DDC3293UserPrefixed;
@@ -299,6 +300,20 @@ class XmlMappingDriverTest extends MappingDriverTestCase
 
         self::assertEquals(ProjectId::class, $id->type);
         self::assertEquals(ProjectName::class, $name->type);
+    }
+
+    public function testClassNameMappingDiscriminatorValue(): void
+    {
+        $driver     = new XmlDriver(
+            __DIR__ . '/xml',
+            XmlDriver::DEFAULT_FILE_EXTENSION,
+            true,
+        );
+        $xmlElement = $driver->getElement(CustomerType::class);
+        self::assertEquals(
+            'Doctrine\Tests\Models\Customer\InternalCustomer',
+            $xmlElement->children()->{'discriminator-map'}->{'discriminator-mapping'}[0]->attributes()['value'],
+        );
     }
 
     public function testDisablingXmlValidationIsPossible(): void
