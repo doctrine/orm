@@ -49,6 +49,32 @@ class GH11341Test extends OrmFunctionalTestCase
 
         self::assertMatchesRegularExpression($expectedDiscriminatorValues, $sql);
     }
+
+    public static function dqlStatementsForInstanceOf(): Generator
+    {
+        yield [IntegerBaseClass::class, IntegerFooEntity::class];
+        yield [StringBaseClass::class, StringFooEntity::class];
+        yield [StringAsIntBaseClass::class, StringAsIntFooEntity::class];
+    }
+
+    /**
+     * @psalm-param class-string $baseClass
+     * @psalm-param class-string $inheritedClass
+     */
+    #[DataProvider('dqlStatementsForInstanceOf')]
+    public function testInstanceOf(string $baseClass, string $inheritedClass): void
+    {
+        $this->_em->persist(new $inheritedClass());
+        $this->_em->flush();
+
+        $dql = 'SELECT p FROM ' . $baseClass . ' p WHERE p INSTANCE OF ' . $baseClass;
+
+        $query  = $this->_em->createQuery($dql);
+        $result = $query->getResult();
+
+        self::assertCount(1, $result);
+        self::assertContainsOnlyInstancesOf($baseClass, $result);
+    }
 }
 
 #[ORM\Entity]

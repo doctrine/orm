@@ -2251,8 +2251,10 @@ class SqlWalker
             $discriminators += HierarchyDiscriminatorResolver::resolveDiscriminatorsForClass($metadata, $this->em);
         }
 
-        foreach (array_keys($discriminators) as $dis) {
-            $sqlParameterList[] = $this->conn->quote($dis);
+        foreach (array_keys($discriminators) as $discriminatorValue) {
+            $sqlParameterList[] = $rootClass->getDiscriminatorColumn()->type === 'integer' && is_int($discriminatorValue)
+                ? $discriminatorValue
+                : $this->conn->quote((string) $discriminatorValue);
         }
 
         return '(' . implode(', ', $sqlParameterList) . ')';
