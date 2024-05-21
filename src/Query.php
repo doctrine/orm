@@ -635,9 +635,10 @@ class Query extends AbstractQuery
     /**
      * Get the current lock mode for this query.
      *
-     * @return int|null The current lock mode of this query or NULL if no specific lock mode is set.
+     * @return LockMode|int|null The current lock mode of this query or NULL if no specific lock mode is set.
+     * @psalm-return LockMode::*|null
      */
-    public function getLockMode(): int|null
+    public function getLockMode(): LockMode|int|null
     {
         $lockMode = $this->getHint(self::HINT_LOCK_MODE);
 
