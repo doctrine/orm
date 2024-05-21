@@ -2653,7 +2653,7 @@ class UnitOfWork implements PropertyChangedListener
                 $entities[] = $collection->getOwner();
             }
 
-            $found = $this->getEntityPersister($targetEntity)->loadAll([$mappedBy => $entities], $mapping['orderBy'] ?? null);
+            $found = $this->getEntityPersister($targetEntity)->loadAll([$mappedBy => $entities], $mapping->orderBy);
 
             $targetClass    = $this->em->getClassMetadata($targetEntity);
             $targetProperty = $targetClass->getReflectionProperty($mappedBy);
