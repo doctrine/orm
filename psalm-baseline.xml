@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<files psalm-version="5.22.2@d768d914152dbbf3486c36398802f74e80cfde48">
+<files psalm-version="5.24.0@462c80e31c34e58cc4f750c656be3927e80e550e">
   <file src="src/AbstractQuery.php">
     <FalsableReturnStatement>
       <code><![CDATA[! $filteredParameters->isEmpty() ? $filteredParameters->first() : null]]></code>
@@ -205,6 +205,11 @@
     <PossiblyNullArgument>
       <code><![CDATA[$entity]]></code>
     </PossiblyNullArgument>
+  </file>
+  <file src="src/Id/SequenceGenerator.php">
+    <ParamNameMismatch>
+      <code><![CDATA[$serialized]]></code>
+    </ParamNameMismatch>
   </file>
   <file src="src/Internal/Hydration/AbstractHydrator.php">
     <ReferenceConstraintViolation>
