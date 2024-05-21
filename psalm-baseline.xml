@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<files psalm-version="5.22.2@d768d914152dbbf3486c36398802f74e80cfde48">
+<files psalm-version="5.24.0@462c80e31c34e58cc4f750c656be3927e80e550e">
   <file src="src/AbstractQuery.php">
     <DeprecatedClass>
       <code><![CDATA[IterableResult]]></code>
@@ -380,6 +380,9 @@
       <code><![CDATA[serialize]]></code>
       <code><![CDATA[unserialize]]></code>
     </MethodSignatureMustProvideReturnType>
+    <ParamNameMismatch>
+      <code><![CDATA[$serialized]]></code>
+    </ParamNameMismatch>
   </file>
   <file src="src/Id/TableGenerator.php">
     <PossiblyFalseOperand>
@@ -2341,9 +2344,6 @@
     <InvalidReturnType>
       <code><![CDATA[ObjectRepository]]></code>
     </InvalidReturnType>
-    <TypeDoesNotContainType>
-      <code><![CDATA[$repository instanceof EntityRepository]]></code>
-    </TypeDoesNotContainType>
     <UnsafeInstantiation>
       <code><![CDATA[new $repositoryClassName($entityManager, $metadata)]]></code>
     </UnsafeInstantiation>
@@ -2514,6 +2514,11 @@
     <PossiblyNullArgument>
       <code><![CDATA[$variableType]]></code>
     </PossiblyNullArgument>
+    <PossiblyUndefinedArrayOffset>
+      <code><![CDATA[$fieldMapping['declaredField']]]></code>
+      <code><![CDATA[$fieldMapping['declaredField']]]></code>
+      <code><![CDATA[$fieldMapping['declaredField']]]></code>
+    </PossiblyUndefinedArrayOffset>
     <PropertyNotSetInConstructor>
       <code><![CDATA[$classToExtend]]></code>
     </PropertyNotSetInConstructor>
