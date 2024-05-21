@@ -30,6 +30,7 @@ use function count;
 use function implode;
 use function is_array;
 use function is_float;
+use function is_int;
 use function is_numeric;
 use function is_string;
 use function preg_match;
@@ -384,7 +385,9 @@ class SqlWalker
             $values = [];
 
             if ($class->discriminatorValue !== null) { // discriminators can be 0
-                $values[] = $conn->quote($class->discriminatorValue);
+                $values[] = $class->getDiscriminatorColumn()->type === 'integer' && is_int($class->discriminatorValue)
+                    ? $class->discriminatorValue
+                    : $conn->quote((string) $class->discriminatorValue);
             }
 
             foreach ($class->subClasses as $subclassName) {
@@ -396,7 +399,9 @@ class SqlWalker
                     continue;
                 }
 
-                $values[] = $conn->quote((string) $subclassMetadata->discriminatorValue);
+                $values[] = $subclassMetadata->getDiscriminatorColumn()->type === 'integer' && is_int($subclassMetadata->discriminatorValue)
+                    ? $subclassMetadata->discriminatorValue
+                    : $conn->quote((string) $subclassMetadata->discriminatorValue);
             }
 
             if ($values !== []) {
@@ -2246,8 +2251,10 @@ class SqlWalker
             $discriminators += HierarchyDiscriminatorResolver::resolveDiscriminatorsForClass($metadata, $this->em);
         }
 
-        foreach (array_keys($discriminators) as $dis) {
-            $sqlParameterList[] = $this->conn->quote($dis);
+        foreach (array_keys($discriminators) as $discriminatorValue) {
+            $sqlParameterList[] = $rootClass->getDiscriminatorColumn()->type === 'integer' && is_int($discriminatorValue)
+                ? $discriminatorValue
+                : $this->conn->quote((string) $discriminatorValue);
         }
 
         return '(' . implode(', ', $sqlParameterList) . ')';
