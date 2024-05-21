@@ -6,6 +6,7 @@ namespace Doctrine\Tests\ORM\Cache\Persister\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Criteria;
+use Doctrine\DBAL\LockMode;
 use Doctrine\ORM\Cache\Persister\CachedPersister;
 use Doctrine\ORM\Cache\Persister\Entity\AbstractEntityPersister;
 use Doctrine\ORM\Cache\Persister\Entity\CachedEntityPersister;
@@ -99,7 +100,7 @@ abstract class EntityPersisterTestCase extends OrmTestCase
             ->with(
                 self::identicalTo(['name' => 'Foo']),
                 self::identicalTo([0]),
-                self::identicalTo(1),
+                self::identicalTo(LockMode::OPTIMISTIC),
                 self::identicalTo(2),
                 self::identicalTo(3),
                 self::identicalTo([4])
@@ -109,7 +110,7 @@ abstract class EntityPersisterTestCase extends OrmTestCase
         self::assertSame('SELECT * FROM foo WERE name = ?', $persister->getSelectSQL(
             ['name' => 'Foo'],
             [0],
-            1,
+            LockMode::OPTIMISTIC,
             2,
             3,
             [4]
@@ -228,13 +229,21 @@ abstract class EntityPersisterTestCase extends OrmTestCase
                 self::identicalTo($entity),
                 self::identicalTo([0]),
                 self::identicalTo([1]),
-                self::identicalTo(2),
+                self::identicalTo(LockMode::PESSIMISTIC_READ),
                 self::identicalTo(3),
                 self::identicalTo([4])
             )
             ->willReturn($entity);
 
-        self::assertSame($entity, $persister->load(['id' => 1], $entity, [0], [1], 2, 3, [4]));
+        self::assertSame($entity, $persister->load(
+            ['id' => 1],
+            $entity,
+            [0],
+            [1],
+            LockMode::PESSIMISTIC_READ,
+            3,
+            [4]
+        ));
     }
 
     public function testInvokeLoadAll(): void
@@ -391,9 +400,9 @@ abstract class EntityPersisterTestCase extends OrmTestCase
 
         $this->entityPersister->expects(self::once())
             ->method('lock')
-            ->with(self::identicalTo($identifier), self::identicalTo(1));
+            ->with(self::identicalTo($identifier), self::identicalTo(LockMode::OPTIMISTIC));
 
-        $persister->lock($identifier, 1);
+        $persister->lock($identifier, LockMode::OPTIMISTIC);
     }
 
     public function testInvokeExists(): void
