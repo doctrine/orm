@@ -467,9 +467,11 @@ class QueryBuilder implements Stringable
      *        )));
      * </code>
      *
-     * @psalm-param ArrayCollection<int, Parameter> $parameters
+     * @psalm-param ArrayCollection<TKey, Parameter> $parameters
      *
      * @return $this
+     *
+     * @template TKey of int
      */
     public function setParameters(ArrayCollection $parameters): static
     {
