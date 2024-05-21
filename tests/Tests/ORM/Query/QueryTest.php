@@ -13,10 +13,13 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\Cache\QueryCacheProfile;
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\LockMode;
 use Doctrine\DBAL\ParameterType;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\Deprecations\PHPUnit\VerifyDeprecations;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Internal\Hydration\IterableResult;
+use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\Parameter;
 use Doctrine\ORM\Query\QueryException;
 use Doctrine\ORM\UnitOfWork;
@@ -86,6 +89,33 @@ class QueryTest extends OrmTestCase
         $query->setParameters($parameters);
 
         self::assertEquals($parameters, $query->getParameters());
+    }
+
+    /**
+     * @psalm-param LockMode::* $lockMode
+     *
+     * @dataProvider provideLockModes
+     */
+    public function testSetLockMode(int $lockMode): void
+    {
+        $query = $this->entityManager->wrapInTransaction(static function (EntityManagerInterface $em) use ($lockMode): Query {
+            $query = $em->createQuery('select u from Doctrine\Tests\Models\CMS\CmsUser u where u.username = ?1');
+            $query->setLockMode($lockMode);
+
+            return $query;
+        });
+
+        self::assertSame($lockMode, $query->getLockMode());
+        self::assertSame($lockMode, $query->getHint(Query::HINT_LOCK_MODE));
+    }
+
+    /** @psalm-return list<array{LockMode::*}> */
+    public static function provideLockModes(): array
+    {
+        return [
+            [LockMode::PESSIMISTIC_READ],
+            [LockMode::PESSIMISTIC_WRITE],
+        ];
     }
 
     public function testFree(): void
