@@ -120,7 +120,7 @@ class NonProxyLoadingEntityManager implements EntityManagerInterface
         $this->realEntityManager->close();
     }
 
-    public function lock(object $entity, LockMode|int $lockMode, DateTimeInterface|int|null $lockVersion = null): void
+    public function lock(object $entity, LockMode $lockMode, DateTimeInterface|int|null $lockVersion = null): void
     {
         $this->realEntityManager->lock($entity, $lockMode, $lockVersion);
     }
@@ -163,7 +163,7 @@ class NonProxyLoadingEntityManager implements EntityManagerInterface
         return $this->realEntityManager->hasFilters();
     }
 
-    public function find(string $className, mixed $id, LockMode|int|null $lockMode = null, int|null $lockVersion = null): object|null
+    public function find(string $className, mixed $id, LockMode|null $lockMode = null, int|null $lockVersion = null): object|null
     {
         return $this->realEntityManager->find($className, $id, $lockMode, $lockVersion);
     }
@@ -188,7 +188,7 @@ class NonProxyLoadingEntityManager implements EntityManagerInterface
         $this->realEntityManager->detach($object);
     }
 
-    public function refresh(object $object, LockMode|int|null $lockMode = null): void
+    public function refresh(object $object, LockMode|null $lockMode = null): void
     {
         $this->realEntityManager->refresh($object, $lockMode);
     }

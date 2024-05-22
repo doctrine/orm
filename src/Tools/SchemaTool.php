@@ -911,10 +911,6 @@ class SchemaTool
         $config         = $connection->getConfiguration();
         $previousFilter = $config->getSchemaAssetsFilter();
 
-        if ($previousFilter === null) {
-            return $this->schemaManager->introspectSchema();
-        }
-
         // whitelist assets we already know about in $toSchema, use the existing filter otherwise
         $config->setSchemaAssetsFilter(static function ($asset) use ($previousFilter, $toSchema): bool {
             $assetName = $asset instanceof AbstractAsset ? $asset->getName() : $asset;

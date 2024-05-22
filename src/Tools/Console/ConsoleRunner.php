@@ -12,7 +12,6 @@ use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Command\Command as SymfonyCommand;
 
 use function assert;
-use function class_exists;
 
 /**
  * Handles running the Console Tools inside Symfony Console context.
@@ -57,10 +56,6 @@ final class ConsoleRunner
     public static function addCommands(Application $cli, EntityManagerProvider $entityManagerProvider): void
     {
         $connectionProvider = new ConnectionFromManagerProvider($entityManagerProvider);
-
-        if (class_exists(DBALConsole\Command\ReservedWordsCommand::class)) {
-            $cli->add(new DBALConsole\Command\ReservedWordsCommand($connectionProvider));
-        }
 
         $cli->addCommands(
             [

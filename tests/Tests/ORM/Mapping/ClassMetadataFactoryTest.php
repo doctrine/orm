@@ -125,28 +125,8 @@ class ClassMetadataFactoryTest extends OrmTestCase
         return $cmf;
     }
 
-    public function testPostgresSticksWithSequencesWhenDbal3IsUsed(): void
+    public function testPostgresSwitchesToIdentityColumns(): void
     {
-        if (! method_exists(AbstractPlatform::class, 'getIdentitySequenceName')) {
-            self::markTestSkipped('This test requires DBAL 3');
-        }
-
-        $cm = $this->createValidClassMetadata();
-        $cm->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_AUTO);
-        $cmf = $this->setUpCmfForPlatform(new PostgreSQLPlatform());
-        $cmf->setMetadataForClass($cm->name, $cm);
-
-        $metadata = $cmf->getMetadataFor($cm->name);
-
-        self::assertSame(ClassMetadata::GENERATOR_TYPE_SEQUENCE, $metadata->generatorType);
-    }
-
-    public function testPostgresSwitchesToIdentityColumnsWhenDbal4IsUsed(): void
-    {
-        if (method_exists(AbstractPlatform::class, 'getIdentitySequenceName')) {
-            self::markTestSkipped('This test requires DBAL 4');
-        }
-
         $cm = $this->createValidClassMetadata();
         $cm->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_AUTO);
         $cmf = $this->setUpCmfForPlatform(new PostgreSQLPlatform());

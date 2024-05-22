@@ -613,13 +613,11 @@ class Query extends AbstractQuery
      *
      * @see \Doctrine\DBAL\LockMode
      *
-     * @psalm-param LockMode::* $lockMode
-     *
      * @return $this
      *
      * @throws TransactionRequiredException
      */
-    public function setLockMode(LockMode|int $lockMode): self
+    public function setLockMode(LockMode $lockMode): self
     {
         if (in_array($lockMode, [LockMode::NONE, LockMode::PESSIMISTIC_READ, LockMode::PESSIMISTIC_WRITE], true)) {
             if (! $this->em->getConnection()->isTransactionActive()) {
@@ -635,10 +633,9 @@ class Query extends AbstractQuery
     /**
      * Get the current lock mode for this query.
      *
-     * @return LockMode|int|null The current lock mode of this query or NULL if no specific lock mode is set.
-     * @psalm-return LockMode::*|null
+     * @return LockMode|null The current lock mode of this query or NULL if no specific lock mode is set.
      */
-    public function getLockMode(): LockMode|int|null
+    public function getLockMode(): LockMode|null
     {
         $lockMode = $this->getHint(self::HINT_LOCK_MODE);
 

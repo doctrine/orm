@@ -90,7 +90,7 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
     public function getSelectSQL(
         array|Criteria $criteria,
         AssociationMapping|null $assoc = null,
-        LockMode|int|null $lockMode = null,
+        LockMode|null $lockMode = null,
         int|null $limit = null,
         int|null $offset = null,
         array|null $orderBy = null,
@@ -290,7 +290,7 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
         object|null $entity = null,
         AssociationMapping|null $assoc = null,
         array $hints = [],
-        LockMode|int|null $lockMode = null,
+        LockMode|null $lockMode = null,
         int|null $limit = null,
         array|null $orderBy = null,
     ): object|null {
@@ -533,7 +533,7 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
     /**
      * {@inheritDoc}
      */
-    public function lock(array $criteria, LockMode|int $lockMode): void
+    public function lock(array $criteria, LockMode $lockMode): void
     {
         $this->persister->lock($criteria, $lockMode);
     }
@@ -541,7 +541,7 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
     /**
      * {@inheritDoc}
      */
-    public function refresh(array $id, object $entity, LockMode|int|null $lockMode = null): void
+    public function refresh(array $id, object $entity, LockMode|null $lockMode = null): void
     {
         $this->persister->refresh($id, $entity, $lockMode);
     }

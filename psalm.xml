@@ -24,8 +24,6 @@
     <issueHandlers>
         <DeprecatedClass>
             <errorLevel type="suppress">
-                <!-- We wire the command as long as DBAL ships it -->
-                <referencedClass name="Doctrine\DBAL\Tools\Console\Command\ReservedWordsCommand" />
                 <!-- Remove on 3.0.x -->
                 <referencedClass name="Doctrine\ORM\Event\LifecycleEventArgs"/>
                 <referencedClass name="Doctrine\ORM\Exception\UnknownEntityNamespace"/>
@@ -45,22 +43,11 @@
                 <referencedClass name="Doctrine\ORM\Tools\Console\EntityManagerProvider\HelperSetManagerProvider"/>
             </errorLevel>
         </DeprecatedClass>
-        <DeprecatedMethod>
-            <errorLevel type="suppress">
-                <!-- Remove on 3.0.x -->
-                <!-- Compatibility with DBAL 3 -->
-                <referencedMethod name="Doctrine\DBAL\Connection::getEventManager"/>
-                <file name="src/Query/TreeWalkerChain.php"/>
-            </errorLevel>
-        </DeprecatedMethod>
         <DocblockTypeContradiction>
             <errorLevel type="suppress">
                 <!-- We're catching invalid input here. -->
                 <file name="src/Internal/Hydration/AbstractHydrator.php"/>
 
-                <!-- DBAL 3.2 forward compatibility -->
-                <file name="src/Tools/Pagination/CountOutputWalker.php"/>
-                <file name="src/Tools/Pagination/LimitSubqueryOutputWalker.php"/>
                 <!-- https://github.com/vimeo/psalm/issues/8520 -->
                 <file name="src/PersistentCollection.php"/>
                 <!-- Remove on 4.0.x -->
@@ -183,43 +170,13 @@
 
                 <!-- Persistence 2 compatibility -->
                 <referencedFunction name="Doctrine\Persistence\ObjectManager::clear"/>
-
-                <!-- See https://github.com/doctrine/orm/issues/8850 -->
-                <referencedFunction name="Doctrine\DBAL\Connection::lastInsertId"/>
-
-                <!-- FIXME -->
-                <referencedFunction name="Doctrine\DBAL\DriverManager::getConnection"/>
             </errorLevel>
         </TooManyArguments>
-        <TypeDoesNotContainNull>
-            <errorLevel type="suppress">
-                <!-- DBAL 3 compatibility -->
-                <file name="src/Tools/SchemaTool.php"/>
-            </errorLevel>
-        </TypeDoesNotContainNull>
         <TypeDoesNotContainType>
             <errorLevel type="suppress">
-                <file name="src/Internal/SQLResultCasing.php"/>
                 <file name="src/Mapping/ClassMetadataFactory.php"/>
-                <!-- DBAL 3 compatibility -->
-                <file name="src/UnitOfWork.php"/>
-                <file name="src/Utility/LockSqlHelper.php"/>
             </errorLevel>
         </TypeDoesNotContainType>
-        <UndefinedClass>
-            <errorLevel type="suppress">
-                <!-- Compatibility with DBAL 3 -->
-                <referencedClass name="Doctrine\DBAL\Platforms\SQLitePlatform"/>
-            </errorLevel>
-        </UndefinedClass>
-        <UndefinedMethod>
-            <errorLevel type="suppress">
-                <!-- Compatibility with DBAL 3 -->
-                <referencedMethod name="Doctrine\DBAL\Connection::getEventManager"/>
-                <!-- FIXME -->
-                <referencedMethod name="Doctrine\DBAL\Schema\SchemaDiff::toSaveSql"/>
-            </errorLevel>
-        </UndefinedMethod>
         <UndefinedPropertyFetch>
             <errorLevel type="suppress">
                 <!-- https://github.com/vimeo/psalm/issues/7878 -->

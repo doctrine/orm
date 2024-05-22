@@ -27,14 +27,6 @@ jobs:
     name: Static Analysis with PHPStan
     runs-on: ubuntu-22.04
 
-    strategy:
-      matrix:
-        include:
-        - dbal-version: default
-          config: phpstan.neon
-        - dbal-version: 3.8.2
-          config: phpstan-dbal3.neon
-
     steps:
       - name: "Checkout code"
         uses: "actions/checkout@v4"
@@ -45,27 +37,16 @@ jobs:
           coverage: none
           php-version: "8.3"
           tools: cs2pr
-
-      - name: Require specific DBAL version
-        run: "composer require doctrine/dbal ^${{ matrix.dbal-version }} --no-update"
-        if: "${{ matrix.dbal-version != 'default' }}"
-
 
       - name: Install dependencies with Composer
         uses: ramsey/composer-install@v2
 
       - name: Run static analysis with phpstan/phpstan
-        run: "vendor/bin/phpstan analyse -c ${{ matrix.config }} --error-format=checkstyle | cs2pr"
+        run: "vendor/bin/phpstan analyse --error-format=checkstyle | cs2pr"
 
   static-analysis-psalm:
     name: Static Analysis with Psalm
     runs-on: ubuntu-22.04
-
-    strategy:
-      matrix:
-        dbal-version:
-        - default
-        - 3.8.2
 
     steps:
       - name: "Checkout code"
@@ -76,11 +57,6 @@ jobs:
         with:
           coverage: none
           php-version: "8.3"
-          tools: cs2pr
-
-      - name: Require specific DBAL version
-        run: "composer require doctrine/dbal ^${{ matrix.dbal-version }} --no-update"
-        if: "${{ matrix.dbal-version != 'default' }}"
 
       - name: Install dependencies with Composer
         uses: ramsey/composer-install@v3

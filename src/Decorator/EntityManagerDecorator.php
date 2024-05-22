@@ -107,17 +107,17 @@ abstract class EntityManagerDecorator extends ObjectManagerDecorator implements 
         $this->wrapped->close();
     }
 
-    public function lock(object $entity, LockMode|int $lockMode, DateTimeInterface|int|null $lockVersion = null): void
+    public function lock(object $entity, LockMode $lockMode, DateTimeInterface|int|null $lockVersion = null): void
     {
         $this->wrapped->lock($entity, $lockMode, $lockVersion);
     }
 
-    public function find(string $className, mixed $id, LockMode|int|null $lockMode = null, int|null $lockVersion = null): object|null
+    public function find(string $className, mixed $id, LockMode|null $lockMode = null, int|null $lockVersion = null): object|null
     {
         return $this->wrapped->find($className, $id, $lockMode, $lockVersion);
     }
 
-    public function refresh(object $object, LockMode|int|null $lockMode = null): void
+    public function refresh(object $object, LockMode|null $lockMode = null): void
     {
         $this->wrapped->refresh($object, $lockMode);
     }
