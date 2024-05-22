@@ -1,5 +1,9 @@
 # Upgrade to 3.2
 
+## Deprecate the `NotSupported` exception
+
+The class `Doctrine\ORM\Exception\NotSupported` is deprecated without replacement.
+
 ## Deprecate remaining `Serializable` implementation
 
 Relying on `SequenceGenerator` implementing the `Serializable` is deprecated
