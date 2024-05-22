@@ -1,5 +1,14 @@
 # Upgrade to 4.0
 
+## Remove remaining `Serializable` implementation
+
+`SequenceGenerator` does not implement the `Serializable` interface anymore.
+
+The following methods have been removed:
+
+* `SequenceGenerator::serialize()`
+* `SequenceGenerator::unserialize()`
+
 ## Remove `orm:schema-tool:update` option `--complete`
 
 That option was a no-op.
