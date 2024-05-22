@@ -206,11 +206,6 @@
       <code><![CDATA[$entity]]></code>
     </PossiblyNullArgument>
   </file>
-  <file src="src/Id/SequenceGenerator.php">
-    <ParamNameMismatch>
-      <code><![CDATA[$serialized]]></code>
-    </ParamNameMismatch>
-  </file>
   <file src="src/Internal/Hydration/AbstractHydrator.php">
     <ReferenceConstraintViolation>
       <code><![CDATA[return $rowData;]]></code>
