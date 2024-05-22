@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Id;
 
 use Doctrine\DBAL\Connections\PrimaryReadReplicaConnection;
+use Doctrine\Deprecations\Deprecation;
 use Doctrine\ORM\EntityManagerInterface;
 use Serializable;
 
@@ -65,8 +66,17 @@ class SequenceGenerator extends AbstractIdGenerator implements Serializable
         return $this->nextValue;
     }
 
+    /** @deprecated without replacement. */
     final public function serialize(): string
     {
+        Deprecation::trigger(
+            'doctrine/orm',
+            'https://github.com/doctrine/orm/pull/11468',
+            '%s() is deprecated, use __serialize() instead. %s won\'t implement the Serializable interface anymore in ORM 4.',
+            __METHOD__,
+            self::class,
+        );
+
         return serialize($this->__serialize());
     }
 
@@ -79,8 +89,17 @@ class SequenceGenerator extends AbstractIdGenerator implements Serializable
         ];
     }
 
+    /** @deprecated without replacement. */
     final public function unserialize(string $serialized): void
     {
+        Deprecation::trigger(
+            'doctrine/orm',
+            'https://github.com/doctrine/orm/pull/11468',
+            '%s() is deprecated, use __unserialize() instead. %s won\'t implement the Serializable interface anymore in ORM 4.',
+            __METHOD__,
+            self::class,
+        );
+
         $this->__unserialize(unserialize($serialized));
     }
 

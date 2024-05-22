@@ -1,5 +1,15 @@
 # Upgrade to 3.2
 
+## Deprecate remaining `Serializable` implementation
+
+Relying on `SequenceGenerator` implementing the `Serializable` is deprecated
+because that interface won't be implemented in ORM 4 anymore.
+
+The following methods are deprecated:
+
+* `SequenceGenerator::serialize()`
+* `SequenceGenerator::unserialize()`
+
 ## `orm:schema-tool:update` option `--complete` is deprecated
 
 That option behaves as a no-op, and is deprecated. It will be removed in 4.0.
