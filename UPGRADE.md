@@ -1,5 +1,9 @@
 # Upgrade to 4.0
 
+## Remove the `NotSupported` exception
+
+The class `Doctrine\ORM\Exception\NotSupported` has been removed without replacement.
+
 ## Remove remaining `Serializable` implementation
 
 `SequenceGenerator` does not implement the `Serializable` interface anymore.
