@@ -63,27 +63,27 @@ class EntityManager implements EntityManagerInterface
     /**
      * The metadata factory, used to retrieve the ORM metadata of entity classes.
      */
-    private readonly ClassMetadataFactory $metadataFactory;
+    private ClassMetadataFactory $metadataFactory;
 
     /**
      * The UnitOfWork used to coordinate object-level transactions.
      */
-    private readonly UnitOfWork $unitOfWork;
+    private UnitOfWork $unitOfWork;
 
     /**
      * The event manager that is the central point of the event system.
      */
-    private readonly EventManager $eventManager;
+    private EventManager $eventManager;
 
     /**
      * The proxy factory used to create dynamic proxies.
      */
-    private readonly ProxyFactory $proxyFactory;
+    private ProxyFactory $proxyFactory;
 
     /**
      * The repository factory used to create dynamic repositories.
      */
-    private readonly RepositoryFactory $repositoryFactory;
+    private RepositoryFactory $repositoryFactory;
 
     /**
      * The expression builder instance used to generate query expressions.
@@ -112,8 +112,8 @@ class EntityManager implements EntityManagerInterface
      * @param Connection $conn The database connection used by the EntityManager.
      */
     public function __construct(
-        private readonly Connection $conn,
-        private readonly Configuration $config,
+        private Connection $conn,
+        private Configuration $config,
         EventManager|null $eventManager = null,
     ) {
         if (! $config->getMetadataDriverImpl()) {

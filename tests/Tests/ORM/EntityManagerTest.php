@@ -7,6 +7,7 @@ namespace Doctrine\Tests\ORM;
 use Doctrine\Common\EventManager;
 use Doctrine\DBAL\Connection;
 use Doctrine\ORM\Configuration;
+use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Exception\EntityManagerClosed;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
@@ -21,7 +22,9 @@ use Doctrine\Tests\OrmTestCase;
 use Generator;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Group;
+use ReflectionProperty;
 use stdClass;
+use Symfony\Component\VarExporter\LazyGhostTrait;
 use TypeError;
 
 class EntityManagerTest extends OrmTestCase
@@ -171,5 +174,37 @@ class EntityManagerTest extends OrmTestCase
         } catch (TypeError) {
             self::assertFalse($this->entityManager->isOpen());
         }
+    }
+
+    /** Resetting the EntityManager relies on lazy objects until https://github.com/doctrine/orm/issues/5933 is resolved */
+    public function testLazyGhostEntityManager(): void
+    {
+        $em = new class () extends EntityManager {
+            use LazyGhostTrait;
+
+            public function __construct()
+            {
+            }
+        };
+
+        $em = $em::createLazyGhost(static function ($em): void {
+            $r = new ReflectionProperty(EntityManager::class, 'unitOfWork');
+            $r->setValue($em, new class () extends UnitOfWork {
+                public function __construct()
+                {
+                }
+
+                public function clear(): void
+                {
+                }
+            });
+        });
+
+        $this->assertTrue($em->isOpen());
+        $em->close();
+        $this->assertFalse($em->isOpen());
+
+        $em->resetLazyObject();
+        $this->assertTrue($em->isOpen());
     }
 }
