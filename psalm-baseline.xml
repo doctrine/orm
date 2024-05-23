@@ -1502,7 +1502,9 @@
       <code><![CDATA[__wakeup]]></code>
     </UndefinedInterfaceMethod>
     <UndefinedMethod>
-      <code><![CDATA[self::createLazyGhost($initializer, $skippedProperties)]]></code>
+      <code><![CDATA[self::createLazyGhost(static function (InternalProxy $object) use ($initializer, $identifier): void {
+                $initializer($object, $identifier);
+            }, $skippedProperties)]]></code>
     </UndefinedMethod>
     <UnresolvableInclude>
       <code><![CDATA[require $fileName]]></code>

@@ -354,15 +354,14 @@ EOPHP;
     /**
      * Creates a closure capable of initializing a proxy
      *
-     * @return Closure(InternalProxy, InternalProxy):void
+     * @return Closure(InternalProxy, array):void
      *
      * @throws EntityNotFoundException
      */
     private function createLazyInitializer(ClassMetadata $classMetadata, EntityPersister $entityPersister, IdentifierFlattener $identifierFlattener): Closure
     {
-        return static function (InternalProxy $proxy) use ($entityPersister, $classMetadata, $identifierFlattener): void {
-            $identifier = $classMetadata->getIdentifierValues($proxy);
-            $original   = $entityPersister->loadById($identifier);
+        return static function (InternalProxy $proxy, array $identifier) use ($entityPersister, $classMetadata, $identifierFlattener): void {
+            $original = $entityPersister->loadById($identifier);
 
             if ($original === null) {
                 throw EntityNotFoundException::fromClassNameAndIdentifier(
@@ -378,7 +377,7 @@ EOPHP;
             $class = $entityPersister->getClassMetadata();
 
             foreach ($class->getReflectionProperties() as $property) {
-                if (! $class->hasField($property->name) && ! $class->hasAssociation($property->name)) {
+                if (isset($identifier[$property->name]) || ! $class->hasField($property->name) && ! $class->hasAssociation($property->name)) {
                     continue;
                 }
 
@@ -468,7 +467,9 @@ EOPHP;
         $identifierFields = array_intersect_key($class->getReflectionProperties(), $identifiers);
 
         $proxyFactory = Closure::bind(static function (array $identifier) use ($initializer, $skippedProperties, $identifierFields, $className): InternalProxy {
-            $proxy = self::createLazyGhost($initializer, $skippedProperties);
+            $proxy = self::createLazyGhost(static function (InternalProxy $object) use ($initializer, $identifier): void {
+                $initializer($object, $identifier);
+            }, $skippedProperties);
 
             foreach ($identifierFields as $idField => $reflector) {
                 if (! isset($identifier[$idField])) {
