@@ -9,7 +9,6 @@ use Doctrine\DBAL\Connection;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\Exception\EntityManagerClosed;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\Proxy\ProxyFactory;
 use Doctrine\ORM\Query;
@@ -23,7 +22,6 @@ use Generator;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Group;
 use ReflectionProperty;
-use stdClass;
 use Symfony\Component\VarExporter\LazyGhostTrait;
 use TypeError;
 
@@ -36,14 +34,6 @@ class EntityManagerTest extends OrmTestCase
         parent::setUp();
 
         $this->entityManager = $this->getTestEntityManager();
-    }
-
-    #[Group('DDC-899')]
-    public function testIsOpen(): void
-    {
-        self::assertTrue($this->entityManager->isOpen());
-        $this->entityManager->close();
-        self::assertFalse($this->entityManager->isOpen());
     }
 
     public function testGetConnection(): void
@@ -115,27 +105,6 @@ class EntityManagerTest extends OrmTestCase
         self::assertEquals('SELECT 1', $q->getDql());
     }
 
-    /** @psalm-return list<array{string}> */
-    public static function dataAffectedByErrorIfClosedException(): array
-    {
-        return [
-            ['flush'],
-            ['persist'],
-            ['remove'],
-            ['refresh'],
-        ];
-    }
-
-    #[DataProvider('dataAffectedByErrorIfClosedException')]
-    public function testAffectedByErrorIfClosedException(string $methodName): void
-    {
-        $this->expectException(EntityManagerClosed::class);
-        $this->expectExceptionMessage('closed');
-
-        $this->entityManager->close();
-        $this->entityManager->$methodName(new stdClass());
-    }
-
     /** @return Generator<array{mixed}> */
     public static function dataToBeReturnedByWrapInTransaction(): Generator
     {
@@ -172,7 +141,7 @@ class EntityManagerTest extends OrmTestCase
 
             self::fail('TypeError expected to be thrown');
         } catch (TypeError) {
-            self::assertFalse($this->entityManager->isOpen());
+            self::assertTrue($this->entityManager->isOpen());
         }
     }
 

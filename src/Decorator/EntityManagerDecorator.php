@@ -104,7 +104,7 @@ abstract class EntityManagerDecorator extends ObjectManagerDecorator implements 
 
     public function close(): void
     {
-        $this->wrapped->close();
+        $this->wrapped->clear();
     }
 
     public function lock(object $entity, LockMode|int $lockMode, DateTimeInterface|int|null $lockVersion = null): void
@@ -134,7 +134,7 @@ abstract class EntityManagerDecorator extends ObjectManagerDecorator implements 
 
     public function isOpen(): bool
     {
-        return $this->wrapped->isOpen();
+        return true;
     }
 
     public function getUnitOfWork(): UnitOfWork

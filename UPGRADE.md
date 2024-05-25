@@ -1,3 +1,24 @@
+# Upgrade to 3.3
+
+## Deprecated closed status for EntityManager
+
+It is always open now. As a consequence, the following methods, classes and
+properties have been deprecated and will be removed in 4.0:
+
+- `EntityManagerInterface::isOpen()`. All implementations should return `true`.
+- `EntityManagerInterface::close()`. All implementations and callers should call `clear()` instead.
+- `AbstractEntityPersister::$uow`: get the unit of work from `AbstractEntityPersister::$em` instead
+- `AbstractCollectionPersister::$uow`: get the unit of work from `AbstractCollectionPersister::$em` instead
+
+Mutating the following properties is deprecated and will not be possible in 4.0:
+
+- `EntityManager::$config`
+- `EntityManager::$conn`
+- `EntityManager::$eventManager`
+- `EntityManager::$metadataFactory`
+- `EntityManager::$proxyFactory`
+- `EntityManager::$repositoryFactory`
+
 # Upgrade to 3.2
 
 ## Deprecate the `NotSupported` exception

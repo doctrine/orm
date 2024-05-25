@@ -16,6 +16,7 @@ use Doctrine\ORM\UnitOfWork;
 abstract class AbstractCollectionPersister implements CollectionPersister
 {
     protected Connection $conn;
+    /** @deprecated */
     protected UnitOfWork $uow;
     protected AbstractPlatform $platform;
     protected QuoteStrategy $quoteStrategy;
@@ -37,7 +38,8 @@ abstract class AbstractCollectionPersister implements CollectionPersister
      */
     protected function isValidEntityState(object $entity): bool
     {
-        $entityState = $this->uow->getEntityState($entity, UnitOfWork::STATE_NEW);
+        $uow = $this->em->getUnitOfWork();
+        $entityState = $uow->getEntityState($entity, UnitOfWork::STATE_NEW);
 
         if ($entityState === UnitOfWork::STATE_NEW) {
             return false;
@@ -45,6 +47,6 @@ abstract class AbstractCollectionPersister implements CollectionPersister
 
         // If Entity is scheduled for inclusion, it is not in this collection.
         // We can assure that because it would have return true before on array check
-        return ! ($entityState === UnitOfWork::STATE_MANAGED && $this->uow->isScheduledForInsert($entity));
+        return ! ($entityState === UnitOfWork::STATE_MANAGED && $uow->isScheduledForInsert($entity));
     }
 }

@@ -106,6 +106,9 @@
     <ArgumentTypeCoercion>
       <code><![CDATA[$cacheEntry]]></code>
     </ArgumentTypeCoercion>
+    <DeprecatedProperty>
+      <code><![CDATA[$this->uow]]></code>
+    </DeprecatedProperty>
     <NoInterfaceProperties>
       <code><![CDATA[$cacheEntry->class]]></code>
     </NoInterfaceProperties>
@@ -647,6 +650,11 @@
     <UndefinedMethod>
       <code><![CDATA[[$this->unwrap(), 'add']]]></code>
     </UndefinedMethod>
+  </file>
+  <file src="src/Persisters/Collection/AbstractCollectionPersister.php">
+    <DeprecatedProperty>
+      <code><![CDATA[$this->uow]]></code>
+    </DeprecatedProperty>
   </file>
   <file src="src/Persisters/Collection/ManyToManyPersister.php">
     <PossiblyNullArgument>
