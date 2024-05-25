@@ -167,6 +167,8 @@ interface EntityManagerInterface extends ObjectManager
      * Closes the EntityManager. All entities that are currently managed
      * by this EntityManager become detached. The EntityManager may no longer
      * be used after it is closed.
+     *
+     * @deprecated call {@see EntityManagerInterface::clear()} instead
      */
     public function close(): void;
 
@@ -192,6 +194,10 @@ interface EntityManagerInterface extends ObjectManager
 
     /**
      * Check if the Entity manager is open or closed.
+     *
+     * @deprecated
+     *
+     * @return true
      */
     public function isOpen(): bool;
 

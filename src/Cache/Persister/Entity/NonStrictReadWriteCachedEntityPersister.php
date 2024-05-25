@@ -49,7 +49,7 @@ class NonStrictReadWriteCachedEntityPersister extends AbstractEntityPersister
 
     public function delete(object $entity): bool
     {
-        $key     = new EntityCacheKey($this->class->rootEntityName, $this->uow->getEntityIdentifier($entity));
+        $key     = new EntityCacheKey($this->class->rootEntityName, $this->em->getUnitOfWork()->getEntityIdentifier($entity));
         $deleted = $this->persister->delete($entity);
 
         if ($deleted) {
@@ -71,7 +71,7 @@ class NonStrictReadWriteCachedEntityPersister extends AbstractEntityPersister
     private function updateCache(object $entity, bool $isChanged): bool
     {
         $class     = $this->metadataFactory->getMetadataFor($entity::class);
-        $key       = new EntityCacheKey($class->rootEntityName, $this->uow->getEntityIdentifier($entity));
+        $key       = new EntityCacheKey($class->rootEntityName, $this->em->getUnitOfWork()->getEntityIdentifier($entity));
         $entry     = $this->hydrator->buildCacheEntry($class, $key, $entity);
         $cached    = $this->region->put($key, $entry);
         $isChanged = $isChanged || $cached;

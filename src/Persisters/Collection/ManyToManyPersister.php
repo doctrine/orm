@@ -88,7 +88,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
             throw new BadMethodCallException('Selecting a collection by index is only supported on indexed collections.');
         }
 
-        $persister = $this->uow->getEntityPersister($mapping->targetEntity);
+        $persister = $this->em->getUnitOfWork()->getEntityPersister($mapping->targetEntity);
         $mappedKey = $mapping->isOwningSide()
             ? $mapping->inversedBy
             : $mapping->mappedBy;
@@ -111,7 +111,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
         $params      = [];
         $types       = [];
         $mapping     = $this->getMapping($collection);
-        $id          = $this->uow->getEntityIdentifier($collection->getOwner());
+        $id          = $this->em->getUnitOfWork()->getEntityIdentifier($collection->getOwner());
         $sourceClass = $this->em->getClassMetadata($mapping->sourceEntity);
         $association = $this->em->getMetadataFactory()->getOwningSide($mapping);
 
@@ -143,7 +143,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
                 . ' ON' . implode(' AND ', $this->getOnConditionSQL($association));
 
             // And criteria conditions needs to be added
-            $persister    = $this->uow->getEntityPersister($targetClass->name);
+            $persister    = $this->em->getUnitOfWork()->getEntityPersister($targetClass->name);
             $visitor      = new SqlExpressionVisitor($persister, $targetClass);
             $conditions[] = $visitor->dispatch($expression);
 
@@ -164,7 +164,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
     public function slice(PersistentCollection $collection, int $offset, int|null $length = null): array
     {
         $mapping   = $this->getMapping($collection);
-        $persister = $this->uow->getEntityPersister($mapping->targetEntity);
+        $persister = $this->em->getUnitOfWork()->getEntityPersister($mapping->targetEntity);
 
         return $persister->getManyToManyCollection($mapping, $collection->getOwner(), $offset, $length);
     }
@@ -213,7 +213,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
         $mapping       = $this->getMapping($collection);
         $owner         = $collection->getOwner();
         $ownerMetadata = $this->em->getClassMetadata($owner::class);
-        $id            = $this->uow->getEntityIdentifier($owner);
+        $id            = $this->em->getUnitOfWork()->getEntityIdentifier($owner);
         $targetClass   = $this->em->getClassMetadata($mapping->targetEntity);
         $onConditions  = $this->getOnConditionSQL($mapping);
         $whereClauses  = $params = [];
@@ -387,7 +387,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
     {
         $mapping = $this->getMapping($collection);
         assert($mapping->isManyToManyOwningSide());
-        $identifier = $this->uow->getEntityIdentifier($collection->getOwner());
+        $identifier = $this->em->getUnitOfWork()->getEntityIdentifier($collection->getOwner());
 
         // Optimization for single column identifier
         if (count($mapping->relationToSourceKeyColumns) === 1) {
@@ -519,8 +519,9 @@ class ManyToManyPersister extends AbstractCollectionPersister
         assert($mapping->isManyToManyOwningSide());
         $isComposite = count($mapping->joinTableColumns) > 2;
 
-        $identifier1 = $this->uow->getEntityIdentifier($collection->getOwner());
-        $identifier2 = $this->uow->getEntityIdentifier($element);
+        $uow = $this->em->getUnitOfWork();
+        $identifier1 = $uow->getEntityIdentifier($collection->getOwner());
+        $identifier2 = $uow->getEntityIdentifier($element);
 
         $class1 = $class2 = null;
         if ($isComposite) {
@@ -567,7 +568,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
         $filterMapping = $this->getMapping($collection);
         $mapping       = $filterMapping;
         $indexBy       = $mapping->indexBy();
-        $id            = $this->uow->getEntityIdentifier($collection->getOwner());
+        $id            = $this->em->getUnitOfWork()->getEntityIdentifier($collection->getOwner());
         $sourceClass   = $this->em->getClassMetadata($mapping->sourceEntity);
         $targetClass   = $this->em->getClassMetadata($mapping->targetEntity);
 
@@ -660,13 +661,13 @@ class ManyToManyPersister extends AbstractCollectionPersister
         if (! $mapping->isOwningSide()) {
             $sourceClass = $this->em->getClassMetadata($mapping->targetEntity);
             $targetClass = $this->em->getClassMetadata($mapping->sourceEntity);
-            $sourceId    = $this->uow->getEntityIdentifier($element);
-            $targetId    = $this->uow->getEntityIdentifier($collection->getOwner());
+            $sourceId    = $this->em->getUnitOfWork()->getEntityIdentifier($element);
+            $targetId    = $this->em->getUnitOfWork()->getEntityIdentifier($collection->getOwner());
         } else {
             $sourceClass = $this->em->getClassMetadata($mapping->sourceEntity);
             $targetClass = $this->em->getClassMetadata($mapping->targetEntity);
-            $sourceId    = $this->uow->getEntityIdentifier($collection->getOwner());
-            $targetId    = $this->uow->getEntityIdentifier($element);
+            $sourceId    = $this->em->getUnitOfWork()->getEntityIdentifier($collection->getOwner());
+            $targetId    = $this->em->getUnitOfWork()->getEntityIdentifier($element);
         }
 
         $mapping = $this->em->getMetadataFactory()->getOwningSide($mapping);

@@ -34,6 +34,7 @@ use function sha1;
 
 abstract class AbstractEntityPersister implements CachedEntityPersister
 {
+    /** @deprecated get the unit of work with $this->em->getUnitOfWork() instead */
     protected UnitOfWork $uow;
     protected ClassMetadataFactory $metadataFactory;
 
@@ -57,7 +58,7 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
     public function __construct(
         protected EntityPersister $persister,
         protected Region $region,
-        EntityManagerInterface $em,
+        protected EntityManagerInterface $em,
         protected ClassMetadata $class,
     ) {
         $configuration = $em->getConfiguration();
@@ -190,10 +191,11 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
                 continue;
             }
 
-            $assocId        = $this->uow->getEntityIdentifier($assocEntity);
+            $uow            = $this->em->getUnitOfWork();
+            $assocId        = $uow->getEntityIdentifier($assocEntity);
             $assocMetadata  = $this->metadataFactory->getMetadataFor($assoc->targetEntity);
             $assocKey       = new EntityCacheKey($assocMetadata->rootEntityName, $assocId);
-            $assocPersister = $this->uow->getEntityPersister($assoc->targetEntity);
+            $assocPersister = $uow->getEntityPersister($assoc->targetEntity);
 
             $assocPersister->storeEntityCache($assocEntity, $assocKey);
         }
@@ -465,14 +467,15 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
         object $sourceEntity,
         PersistentCollection $collection,
     ): array {
-        $persister = $this->uow->getCollectionPersister($assoc);
+        $uow       = $this->em->getUnitOfWork();
+        $persister = $uow->getCollectionPersister($assoc);
         $hasCache  = ($persister instanceof CachedPersister);
 
         if (! $hasCache) {
             return $this->persister->loadManyToManyCollection($assoc, $sourceEntity, $collection);
         }
 
-        $ownerId = $this->uow->getEntityIdentifier($collection->getOwner());
+        $ownerId = $uow->getEntityIdentifier($collection->getOwner());
         $key     = $this->buildCollectionCacheKey($assoc, $ownerId);
         $list    = $persister->loadCollectionCache($collection, $key);
 
@@ -496,14 +499,15 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
         object $sourceEntity,
         PersistentCollection $collection,
     ): mixed {
-        $persister = $this->uow->getCollectionPersister($assoc);
+        $uow       = $this->em->getUnitOfWork();
+        $persister = $uow->getCollectionPersister($assoc);
         $hasCache  = ($persister instanceof CachedPersister);
 
         if (! $hasCache) {
             return $this->persister->loadOneToManyCollection($assoc, $sourceEntity, $collection);
         }
 
-        $ownerId = $this->uow->getEntityIdentifier($collection->getOwner());
+        $ownerId = $uow->getEntityIdentifier($collection->getOwner());
         $key     = $this->buildCollectionCacheKey($assoc, $ownerId);
         $list    = $persister->loadCollectionCache($collection, $key);
 

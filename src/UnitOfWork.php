@@ -437,7 +437,7 @@ class UnitOfWork implements PropertyChangedListener
                 throw new OptimisticLockException('Commit failed', null, $e ?? null);
             }
         } catch (Throwable $e) {
-            $this->em->close();
+            $this->em->clear();
 
             if ($conn->isTransactionActive()) {
                 $conn->rollBack();

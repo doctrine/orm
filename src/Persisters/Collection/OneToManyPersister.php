@@ -61,7 +61,7 @@ class OneToManyPersister extends AbstractCollectionPersister
             throw new BadMethodCallException('Selecting a collection by index is only supported on indexed collections.');
         }
 
-        $persister = $this->uow->getEntityPersister($mapping->targetEntity);
+        $persister = $this->em->getUnitOfWork()->getEntityPersister($mapping->targetEntity);
 
         return $persister->load(
             [
@@ -79,7 +79,7 @@ class OneToManyPersister extends AbstractCollectionPersister
     public function count(PersistentCollection $collection): int
     {
         $mapping   = $this->getMapping($collection);
-        $persister = $this->uow->getEntityPersister($mapping->targetEntity);
+        $persister = $this->em->getUnitOfWork()->getEntityPersister($mapping->targetEntity);
 
         // only works with single id identifier entities. Will throw an
         // exception in Entity Persisters if that is not the case for the
@@ -95,7 +95,7 @@ class OneToManyPersister extends AbstractCollectionPersister
     public function slice(PersistentCollection $collection, int $offset, int|null $length = null): array
     {
         $mapping   = $this->getMapping($collection);
-        $persister = $this->uow->getEntityPersister($mapping->targetEntity);
+        $persister = $this->em->getUnitOfWork()->getEntityPersister($mapping->targetEntity);
 
         return $persister->getOneToManyCollection($mapping, $collection->getOwner(), $offset, $length);
     }
@@ -108,7 +108,7 @@ class OneToManyPersister extends AbstractCollectionPersister
             throw new BadMethodCallException('Selecting a collection by index is only supported on indexed collections.');
         }
 
-        $persister = $this->uow->getEntityPersister($mapping->targetEntity);
+        $persister = $this->em->getUnitOfWork()->getEntityPersister($mapping->targetEntity);
 
         // only works with single id identifier entities. Will throw an
         // exception in Entity Persisters if that is not the case for the
@@ -128,7 +128,7 @@ class OneToManyPersister extends AbstractCollectionPersister
         }
 
         $mapping   = $this->getMapping($collection);
-        $persister = $this->uow->getEntityPersister($mapping->targetEntity);
+        $persister = $this->em->getUnitOfWork()->getEntityPersister($mapping->targetEntity);
 
         // only works with single id identifier entities. Will throw an
         // exception in Entity Persisters if that is not the case for the
@@ -150,7 +150,7 @@ class OneToManyPersister extends AbstractCollectionPersister
     private function deleteEntityCollection(PersistentCollection $collection): int
     {
         $mapping     = $this->getMapping($collection);
-        $identifier  = $this->uow->getEntityIdentifier($collection->getOwner());
+        $identifier  = $this->em->getUnitOfWork()->getEntityIdentifier($collection->getOwner());
         $sourceClass = $this->em->getClassMetadata($mapping->sourceEntity);
         $targetClass = $this->em->getClassMetadata($mapping->targetEntity);
         $columns     = [];

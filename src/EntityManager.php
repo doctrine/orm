@@ -9,7 +9,6 @@ use DateTimeInterface;
 use Doctrine\Common\EventManager;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\LockMode;
-use Doctrine\ORM\Exception\EntityManagerClosed;
 use Doctrine\ORM\Exception\InvalidHydrationMode;
 use Doctrine\ORM\Exception\MissingIdentifierField;
 use Doctrine\ORM\Exception\MissingMappingDriverImplementation;
@@ -62,6 +61,8 @@ class EntityManager implements EntityManagerInterface
 {
     /**
      * The metadata factory, used to retrieve the ORM metadata of entity classes.
+     *
+     * @readonly
      */
     private ClassMetadataFactory $metadataFactory;
 
@@ -72,16 +73,22 @@ class EntityManager implements EntityManagerInterface
 
     /**
      * The event manager that is the central point of the event system.
+     *
+     * @readonly
      */
     private EventManager $eventManager;
 
     /**
      * The proxy factory used to create dynamic proxies.
+     *
+     * @readonly
      */
     private ProxyFactory $proxyFactory;
 
     /**
      * The repository factory used to create dynamic repositories.
+     *
+     * @readonly
      */
     private RepositoryFactory $repositoryFactory;
 
@@ -89,11 +96,6 @@ class EntityManager implements EntityManagerInterface
      * The expression builder instance used to generate query expressions.
      */
     private Expr|null $expressionBuilder = null;
-
-    /**
-     * Whether the EntityManager is closed or not.
-     */
-    private bool $closed = false;
 
     /**
      * Collection of query filters.
@@ -112,7 +114,9 @@ class EntityManager implements EntityManagerInterface
      * @param Connection $conn The database connection used by the EntityManager.
      */
     public function __construct(
+        /** @readonly */
         private Connection $conn,
+        /** @readonly */
         private Configuration $config,
         EventManager|null $eventManager = null,
     ) {
@@ -186,7 +190,7 @@ class EntityManager implements EntityManagerInterface
 
             return $return;
         } catch (Throwable $e) {
-            $this->close();
+            $this->clear();
             $this->conn->rollBack();
 
             throw $e;
@@ -255,7 +259,6 @@ class EntityManager implements EntityManagerInterface
      */
     public function flush(): void
     {
-        $this->errorIfClosed();
         $this->unitOfWork->commit();
     }
 
@@ -406,13 +409,13 @@ class EntityManager implements EntityManagerInterface
     public function clear(): void
     {
         $this->unitOfWork->clear();
+
+        $this->unitOfWork = new UnitOfWork($this);
     }
 
     public function close(): void
     {
         $this->clear();
-
-        $this->closed = true;
     }
 
     /**
@@ -429,8 +432,6 @@ class EntityManager implements EntityManagerInterface
      */
     public function persist(object $object): void
     {
-        $this->errorIfClosed();
-
         $this->unitOfWork->persist($object);
     }
 
@@ -445,15 +446,11 @@ class EntityManager implements EntityManagerInterface
      */
     public function remove(object $object): void
     {
-        $this->errorIfClosed();
-
         $this->unitOfWork->remove($object);
     }
 
     public function refresh(object $object, LockMode|int|null $lockMode = null): void
     {
-        $this->errorIfClosed();
-
         $this->unitOfWork->refresh($object, $lockMode);
     }
 
@@ -512,21 +509,10 @@ class EntityManager implements EntityManagerInterface
         return $this->config;
     }
 
-    /**
-     * Throws an exception if the EntityManager is closed or currently not active.
-     *
-     * @throws EntityManagerClosed If the EntityManager is closed.
-     */
-    private function errorIfClosed(): void
-    {
-        if ($this->closed) {
-            throw EntityManagerClosed::create();
-        }
-    }
-
+    /** @return true */
     public function isOpen(): bool
     {
-        return ! $this->closed;
+        return true;
     }
 
     public function getUnitOfWork(): UnitOfWork
