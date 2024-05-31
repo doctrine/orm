@@ -440,7 +440,11 @@ class UnitOfWork implements PropertyChangedListener
             $this->em->close();
 
             if ($conn->isTransactionActive()) {
-                $conn->rollBack();
+                try {
+                    $conn->rollBack();
+                } catch (Exception) {
+                    // Swallow, the real exception is the commit exception
+                }
             }
 
             $this->afterTransactionRolledBack();
