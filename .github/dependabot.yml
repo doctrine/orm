@@ -1,5 +1,18 @@
 version: 2
 updates:
+  - package-ecosystem: "composer"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    labels:
+      - "CI"
+    target-branch: "2.19.x"
+    allow:
+      - dependency-name: "phpstan/phpstan"
+      - dependency-name: "squizlabs/php_codesniffer"
+      - dependency-name: "vimeo/psalm"
+    versioning-strategy: "increase-if-necessary"
+
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
