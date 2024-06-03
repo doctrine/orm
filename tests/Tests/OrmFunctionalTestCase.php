@@ -73,6 +73,7 @@ use Doctrine\Tests\Models\CompositeKeyInheritance\JoinedChildClass;
 use Doctrine\Tests\Models\CompositeKeyInheritance\JoinedRootClass;
 use Doctrine\Tests\Models\CompositeKeyInheritance\SingleChildClass;
 use Doctrine\Tests\Models\CompositeKeyInheritance\SingleRootClass;
+use Doctrine\Tests\Models\CompositeKeyRelations;
 use Doctrine\Tests\Models\CustomType\CustomIdObjectTypeChild;
 use Doctrine\Tests\Models\CustomType\CustomIdObjectTypeParent;
 use Doctrine\Tests\Models\CustomType\CustomTypeChild;
@@ -348,6 +349,10 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             JoinedChildClass::class,
             SingleRootClass::class,
             SingleChildClass::class,
+        ],
+        'compositekeyrelations' => [
+            CompositeKeyRelations\InvoiceClass::class,
+            CompositeKeyRelations\CustomerClass::class,
         ],
         'taxi' => [
             PaidRide::class,
