@@ -872,7 +872,6 @@ in a central location.
     <?php
     namespace MyDomain\Model;
 
-    use MyDomain\Model\UserRepository;
     use Doctrine\ORM\EntityRepository;
     use Doctrine\ORM\Mapping as ORM;
 

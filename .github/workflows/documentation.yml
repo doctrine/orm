@@ -15,6 +15,27 @@ on:
       - docs/**
 
 jobs:
+  validate-with-phpstan:
+    name: "Validate code blocks in documentation with phpstan"
+    runs-on: "ubuntu-latest"
+    steps:
+      - name: "Checkout code"
+        uses: "actions/checkout@v4"
+
+      - name: "Install PHP"
+        uses: "shivammathur/setup-php@v2"
+        with:
+          coverage: "none"
+          php-version: "8.3"
+      - name: "Install dependencies with Composer"
+        uses: "ramsey/composer-install@v3"
+        with:
+          dependency-versions: "highest"
+      - name: "Extract php blocks from docs"
+        run: "php docs/extract.php docs/ docs/extracted_blocks"
+      - name: "Run phpstan for docs"
+        run: "vendor/bin/phpstan analyse -c phpstan-docs.neon"
+
   validate-with-guides:
     name: "Validate documentation with phpDocumentor/guides"
     runs-on: "ubuntu-22.04"

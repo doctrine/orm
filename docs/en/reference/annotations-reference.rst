@@ -642,7 +642,7 @@ Examples:
      * @DiscriminatorColumn(name="discr", type="string")
      * @DiscriminatorMap({"person" = "Person", "employee" = "Employee"})
      */
-    class Person
+    class Person1
     {
         // ...
     }
@@ -653,7 +653,7 @@ Examples:
      * @DiscriminatorColumn(name="discr", type="string")
      * @DiscriminatorMap({"person" = "Person", "employee" = "Employee"})
      */
-    class Person
+    class Person2
     {
         // ...
     }
