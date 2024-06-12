@@ -1,7 +1,4 @@
 <?php
-
-use phpDocumentor\Reflection\DocBlock\Tags\Var_;
-
 if (!isset($argv[1])) {
     die("Usage: extract.php source-path output-dir\n");
 }
