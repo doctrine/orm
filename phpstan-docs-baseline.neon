@@ -131,6 +131,11 @@ parameters:
 			path: docs/extracted_blocks/advanced-configuration_line93.php
 
 		-
+			message: "#^Parameter \\#2 \\$className of static method Doctrine\\\\DBAL\\\\Types\\\\Type\\:\\:addType\\(\\) expects class\\-string\\<Doctrine\\\\DBAL\\\\Types\\\\Type\\>, string given\\.$#"
+			count: 1
+			path: docs/extracted_blocks/advanced-field-value-conversion-using-custom-mapping-types_line196.php
+
+		-
 			message: "#^Variable \\$em might not be defined\\.$#"
 			count: 5
 			path: docs/extracted_blocks/advanced-field-value-conversion-using-custom-mapping-types_line196.php
