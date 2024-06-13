@@ -14,7 +14,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Internal\Hydration\AbstractHydrator;
 use Doctrine\ORM\Mapping\ClassMetadata;
-use Doctrine\ORM\Mapping\ClassMetadataFactory;
+use Doctrine\ORM\Mapping\ClassMetadataFactoryInterface;
 use Doctrine\ORM\NativeQuery;
 use Doctrine\ORM\Proxy\ProxyFactory;
 use Doctrine\ORM\Query;
@@ -45,7 +45,7 @@ class NonProxyLoadingEntityManager implements EntityManagerInterface
         );
     }
 
-    public function getMetadataFactory(): ClassMetadataFactory
+    public function getMetadataFactory(): ClassMetadataFactoryInterface
     {
         return $this->realEntityManager->getMetadataFactory();
     }

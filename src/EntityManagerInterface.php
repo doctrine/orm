@@ -10,7 +10,7 @@ use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\LockMode;
 use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\Internal\Hydration\AbstractHydrator;
-use Doctrine\ORM\Mapping\ClassMetadataFactory;
+use Doctrine\ORM\Mapping\ClassMetadataFactoryInterface;
 use Doctrine\ORM\Proxy\ProxyFactory;
 use Doctrine\ORM\Query\Expr;
 use Doctrine\ORM\Query\FilterCollection;
@@ -40,7 +40,7 @@ interface EntityManagerInterface extends ObjectManager
      */
     public function getConnection(): Connection;
 
-    public function getMetadataFactory(): ClassMetadataFactory;
+    public function getMetadataFactory(): ClassMetadataFactoryInterface;
 
     /**
      * Gets an ExpressionBuilder used for object-oriented construction of query expressions.

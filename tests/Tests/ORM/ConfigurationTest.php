@@ -7,6 +7,7 @@ namespace Doctrine\Tests\ORM;
 use Doctrine\ORM\Cache\CacheConfiguration;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityRepository;
+use Doctrine\ORM\Exception\InvalidClassMetadataFactory;
 use Doctrine\ORM\Exception\InvalidEntityRepository;
 use Doctrine\ORM\Mapping as MappingNamespace;
 use Doctrine\ORM\Mapping\DefaultTypedFieldMapper;
@@ -16,6 +17,7 @@ use Doctrine\ORM\Mapping\QuoteStrategy;
 use Doctrine\ORM\Proxy\ProxyFactory;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
 use Doctrine\Tests\Models\DDC753\DDC753CustomRepository;
+use Doctrine\Tests\ORM\Mapping\ClassMetadataFactoryTestSubject;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\TestCase;
 use Psr\Cache\CacheItemPoolInterface;
@@ -147,8 +149,12 @@ class ConfigurationTest extends TestCase
     public function testSetGetClassMetadataFactoryName(): void
     {
         self::assertSame(MappingNamespace\ClassMetadataFactory::class, $this->configuration->getClassMetadataFactoryName());
+        $this->configuration->setClassMetadataFactoryName(ClassMetadataFactoryTestSubject::class);
+        self::assertSame(ClassMetadataFactoryTestSubject::class, $this->configuration->getClassMetadataFactoryName());
+
+        $this->expectException(InvalidClassMetadataFactory::class);
+        $this->expectExceptionMessage('Invalid class metadata factory class \'Doctrine\Tests\ORM\ConfigurationTest\'. It must be a Doctrine\ORM\Mapping\ClassMetadataFactoryInterface.');
         $this->configuration->setClassMetadataFactoryName(self::class);
-        self::assertSame(self::class, $this->configuration->getClassMetadataFactoryName());
     }
 
     public function testAddGetFilters(): void

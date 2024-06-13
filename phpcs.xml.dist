@@ -154,6 +154,7 @@
 
     <rule ref="SlevomatCodingStandard.Classes.SuperfluousInterfaceNaming">
         <exclude-pattern>src/EntityManagerInterface.php</exclude-pattern>
+        <exclude-pattern>src/Mapping/ClassMetadataFactoryInterface.php</exclude-pattern>
     </rule>
 
     <rule ref="SlevomatCodingStandard.Classes.SuperfluousTraitNaming.SuperfluousSuffix">
