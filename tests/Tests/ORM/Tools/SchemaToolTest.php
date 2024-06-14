@@ -391,6 +391,42 @@ class SchemaToolTest extends OrmTestCase
         self::assertTrue($tableIndex->isUnique());
         self::assertSame(['field', 'anotherField'], $tableIndex->getColumns());
     }
+
+    public function testJoinColumnWithOptions(): void
+    {
+        $em         = $this->getTestEntityManager();
+        $schemaTool = new SchemaTool($em);
+
+        $classes = [
+            $em->getClassMetadata(TestEntityWithJoinColumnWithOptions::class),
+            $em->getClassMetadata(TestEntityWithJoinColumnWithOptionsRelation::class),
+        ];
+
+        $schema = $schemaTool->getSchemaFromMetadata($classes);
+
+        self::assertSame(['deferrable' => true, 'deferred' => true], $schema->getTable('test')->getForeignKey('FK_D87F7E0C1E5D0459')->getOptions());
+    }
+}
+
+#[Table('test')]
+#[Entity]
+class TestEntityWithJoinColumnWithOptions
+{
+    #[Id]
+    #[Column]
+    private int $id;
+
+    #[OneToOne(targetEntity: TestEntityWithJoinColumnWithOptionsRelation::class)]
+    #[JoinColumn(options: ['deferrable' => true, 'deferred' => true])]
+    private TestEntityWithJoinColumnWithOptionsRelation $test;
+}
+
+#[Entity]
+class TestEntityWithJoinColumnWithOptionsRelation
+{
+    #[Id]
+    #[Column]
+    private int $id;
 }
 
 #[Table(options: ['foo' => 'bar', 'baz' => ['key' => 'val']])]
