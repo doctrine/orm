@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Mapping;
 
-use Doctrine\Instantiator\Instantiator;
 use Doctrine\ORM\Mapping\ReflectionEmbeddedProperty;
 use Doctrine\Tests\Models\Generic\BooleanModel;
 use Doctrine\Tests\Models\Reflection\AbstractEmbeddable;
@@ -13,6 +12,7 @@ use Doctrine\Tests\Models\Reflection\ConcreteEmbeddable;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
+use ReflectionClass;
 use ReflectionProperty;
 
 /**
@@ -34,9 +34,7 @@ class ReflectionEmbeddedPropertyTest extends TestCase
     ): void {
         $embeddedPropertyReflection = new ReflectionEmbeddedProperty($parentProperty, $childProperty, $embeddableClass);
 
-        $instantiator = new Instantiator();
-
-        $object = $instantiator->instantiate($parentProperty->getDeclaringClass()->getName());
+        $object = (new ReflectionClass($parentProperty->getDeclaringClass()->getName()))->newInstanceWithoutConstructor();
 
         $embeddedPropertyReflection->setValue($object, 'newValue');
 
@@ -60,11 +58,9 @@ class ReflectionEmbeddedPropertyTest extends TestCase
     ): void {
         $embeddedPropertyReflection = new ReflectionEmbeddedProperty($parentProperty, $childProperty, $embeddableClass);
 
-        $instantiator = new Instantiator();
+        $reflection = new ReflectionClass($parentProperty->getDeclaringClass()->getName());
 
-        self::assertNull($embeddedPropertyReflection->getValue(
-            $instantiator->instantiate($parentProperty->getDeclaringClass()->getName()),
-        ));
+        self::assertNull($embeddedPropertyReflection->getValue($reflection->newInstanceWithoutConstructor()));
     }
 
     /** @return ReflectionProperty[][]|string[][] */

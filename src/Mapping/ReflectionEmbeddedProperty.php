@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Mapping;
 
-use Doctrine\Instantiator\Instantiator;
+use ReflectionClass;
 use ReflectionProperty;
 
 /**
@@ -13,17 +13,13 @@ use ReflectionProperty;
  *
  * This way value objects "just work" without UnitOfWork, Persisters or Hydrators
  * needing any changes.
- *
- * TODO: Move this class into Common\Reflection
  */
 final class ReflectionEmbeddedProperty extends ReflectionProperty
 {
-    private Instantiator|null $instantiator = null;
-
     /**
      * @param ReflectionProperty $parentProperty reflection property of the class where the embedded object has to be put
      * @param ReflectionProperty $childProperty  reflection property of the embedded object
-     * @psalm-param class-string $embeddedClass
+     * @param class-string       $embeddedClass
      */
     public function __construct(
         private readonly ReflectionProperty $parentProperty,
@@ -49,9 +45,7 @@ final class ReflectionEmbeddedProperty extends ReflectionProperty
         $embeddedObject = $this->parentProperty->getValue($object);
 
         if ($embeddedObject === null) {
-            $this->instantiator ??= new Instantiator();
-
-            $embeddedObject = $this->instantiator->instantiate($this->embeddedClass);
+            $embeddedObject = (new ReflectionClass($this->embeddedClass))->newInstanceWithoutConstructor();
 
             $this->parentProperty->setValue($object, $embeddedObject);
         }

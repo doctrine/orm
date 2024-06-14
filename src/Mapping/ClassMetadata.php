@@ -8,8 +8,6 @@ use BackedEnum;
 use BadMethodCallException;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\Deprecations\Deprecation;
-use Doctrine\Instantiator\Instantiator;
-use Doctrine\Instantiator\InstantiatorInterface;
 use Doctrine\ORM\Cache\Exception\NonCacheableEntityAssociation;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Id\AbstractIdGenerator;
@@ -536,8 +534,6 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
      */
     public array $reflFields = [];
 
-    private InstantiatorInterface|null $instantiator = null;
-
     private readonly TypedFieldMapper $typedFieldMapper;
 
     /**
@@ -551,7 +547,6 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
     {
         $this->rootEntityName   = $name;
         $this->namingStrategy   = $namingStrategy ?? new DefaultNamingStrategy();
-        $this->instantiator     = new Instantiator();
         $this->typedFieldMapper = $typedFieldMapper ?? new DefaultTypedFieldMapper();
     }
 
@@ -773,7 +768,7 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
      */
     public function newInstance(): object
     {
-        return $this->instantiator->instantiate($this->name);
+        return ($this->reflClass ?? new ReflectionClass($this->name))->newInstanceWithoutConstructor();
     }
 
     /**
@@ -782,8 +777,7 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
     public function wakeupReflection(ReflectionService $reflService): void
     {
         // Restore ReflectionClass and properties
-        $this->reflClass    = $reflService->getClass($this->name);
-        $this->instantiator = $this->instantiator ?: new Instantiator();
+        $this->reflClass = $reflService->getClass($this->name);
 
         $parentReflFields = [];
 
