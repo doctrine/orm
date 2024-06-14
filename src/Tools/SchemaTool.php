@@ -31,6 +31,7 @@ use function array_diff_key;
 use function array_filter;
 use function array_flip;
 use function array_intersect_key;
+use function array_merge;
 use function assert;
 use function count;
 use function current;
@@ -710,6 +711,10 @@ class SchemaTool
 
             if (isset($joinColumn->unique) && $joinColumn->unique === true) {
                 $uniqueConstraints[] = ['columns' => [$quotedColumnName]];
+            }
+
+            if ($joinColumn->options) {
+                $fkOptions = array_merge($fkOptions, $joinColumn->options);
             }
 
             if (isset($joinColumn->onDelete)) {
