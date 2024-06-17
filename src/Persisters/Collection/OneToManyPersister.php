@@ -8,6 +8,8 @@ use BadMethodCallException;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\DBAL\Exception as DBALException;
 use Doctrine\DBAL\Types\Type;
+use Doctrine\ORM\EntityNotFoundException;
+use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\Utility\PersisterHelper;
 
@@ -166,7 +168,11 @@ class OneToManyPersister extends AbstractCollectionPersister
         throw new BadMethodCallException('Filtering a collection by Criteria is not supported by this CollectionPersister.');
     }
 
-    /** @throws DBALException */
+    /**
+     * @throws DBALException
+     * @throws EntityNotFoundException
+     * @throws MappingException
+     */
     private function deleteEntityCollection(PersistentCollection $collection): int
     {
         $mapping     = $collection->getMapping();
@@ -185,6 +191,13 @@ class OneToManyPersister extends AbstractCollectionPersister
 
         $statement = 'DELETE FROM ' . $this->quoteStrategy->getTableName($targetClass, $this->platform)
             . ' WHERE ' . implode(' = ? AND ', $columns) . ' = ?';
+
+        if ($targetClass->isInheritanceTypeSingleTable()) {
+            $discriminatorColumn = $targetClass->getDiscriminatorColumn();
+            $statement          .= ' AND ' . $discriminatorColumn['name'] . ' = ?';
+            $parameters[]        = $targetClass->discriminatorValue;
+            $types[]             = $discriminatorColumn['type'];
+        }
 
         $numAffected = $this->conn->executeStatement($statement, $parameters, $types);
 
