@@ -1,3 +1,10 @@
+# Upgrade to 2.20
+
+## PARTIAL DQL syntax is undeprecated for non-object hydration
+
+Use of the PARTIAL keyword is not deprecated anymore in DQL when used with a hydrator
+that is not creating entities, such as the ArrayHydrator.
+
 # Upgrade to 2.19
 
 ## Deprecate calling `ClassMetadata::getAssociationMappedByTargetField()` with the owning side of an association
@@ -14,11 +21,6 @@ to find out.
 ## Deprecate `Doctrine\ORM\Query\Lexer::T_*` constants
 
 Use `Doctrine\ORM\Query\TokenType::T_*` instead.
-
-## PARTIAL DQL syntax is undeprecated for non-object hydration
-
-Use of the PARTIAL keyword is not deprecated anymore in DQL when used with a hydrator
-that is not creating entities, such as the ArrayHydrator.
 
 # Upgrade to 2.17
 
