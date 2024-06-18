@@ -2926,7 +2926,10 @@ class Parser
             return new AST\ParenthesisExpression($expr);
         }
 
-        assert($this->lexer->lookahead !== null);
+        if ($this->lexer->lookahead === null) {
+            $this->syntaxError('ArithmeticPrimary');
+        }
+
         switch ($this->lexer->lookahead->type) {
             case TokenType::T_COALESCE:
             case TokenType::T_NULLIF:

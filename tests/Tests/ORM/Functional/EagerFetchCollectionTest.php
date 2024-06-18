@@ -88,6 +88,14 @@ class EagerFetchCollectionTest extends OrmFunctionalTestCase
         $query->getResult();
     }
 
+    public function testSubselectFetchJoinWithAllowedWhenOverriddenNotEager(): void
+    {
+        $query = $this->_em->createQuery('SELECT o, c FROM ' . EagerFetchOwner::class . ' o JOIN o.children c WITH c.id = 1');
+        $query->setFetchMode(EagerFetchChild::class, 'owner', ORM\ClassMetadata::FETCH_LAZY);
+
+        $this->assertIsString($query->getSql());
+    }
+
     public function testEagerFetchWithIterable(): void
     {
         $this->createOwnerWithChildren(2);
