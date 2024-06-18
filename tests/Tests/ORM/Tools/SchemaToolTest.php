@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Tools;
 
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Platforms\PostgreSQLPlatform;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
@@ -404,7 +405,13 @@ class SchemaToolTest extends OrmTestCase
 
         $schema = $schemaTool->getSchemaFromMetadata($classes);
 
-        self::assertSame(['deferrable' => true, 'deferred' => true], $schema->getTable('test')->getForeignKey('FK_D87F7E0C1E5D0459')->getOptions());
+        self::assertSame(['deferrable' => true, 'deferred' => true], $schema->getTable('test')->getForeignKey('FK_D87F7E0C331521C6')->getOptions());
+        self::assertSame([], $schema->getTable('test')->getForeignKey('FK_D87F7E0C21A08E28')->getOptions());
+
+        $sql = $schema->toSql(new PostgreSQLPlatform());
+
+        $this->assertSame('ALTER TABLE test ADD CONSTRAINT FK_D87F7E0C331521C6 FOREIGN KEY (testRelation1_id) REFERENCES test_relation (id) DEFERRABLE INITIALLY DEFERRED', $sql[count($sql) - 2]);
+        $this->assertSame('ALTER TABLE test ADD CONSTRAINT FK_D87F7E0C21A08E28 FOREIGN KEY (testRelation2_id) REFERENCES test_relation (id) NOT DEFERRABLE INITIALLY IMMEDIATE', $sql[count($sql) - 1]);
     }
 }
 
@@ -418,9 +425,14 @@ class TestEntityWithJoinColumnWithOptions
 
     #[OneToOne(targetEntity: TestEntityWithJoinColumnWithOptionsRelation::class)]
     #[JoinColumn(options: ['deferrable' => true, 'deferred' => true])]
-    private TestEntityWithJoinColumnWithOptionsRelation $test;
+    private TestEntityWithJoinColumnWithOptionsRelation $testRelation1;
+
+    #[OneToOne(targetEntity: TestEntityWithJoinColumnWithOptionsRelation::class)]
+    #[JoinColumn]
+    private TestEntityWithJoinColumnWithOptionsRelation $testRelation2;
 }
 
+#[Table('test_relation')]
 #[Entity]
 class TestEntityWithJoinColumnWithOptionsRelation
 {
