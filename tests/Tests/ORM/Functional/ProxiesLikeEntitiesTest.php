@@ -58,7 +58,7 @@ class ProxiesLikeEntitiesTest extends OrmFunctionalTestCase
     public function testPersistUpdate(): void
     {
         // Considering case (a)
-        $proxy = $this->_em->getProxyFactory()->getProxy(CmsUser::class, ['id' => 123]);
+        $proxy = $this->_em->getProxyFactory()->getProxy(CmsUser::class, ['id' => $this->user->getId()]);
 
         $proxy->id       = null;
         $proxy->username = 'ocra';
