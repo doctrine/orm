@@ -1,3 +1,9 @@
+# Upgrade to 3.3
+
+## Deprecate `DatabaseDriver`
+
+The class `Doctrine\ORM\Mapping\Driver\DatabaseDriver` is deprecated without replacement.
+
 # Upgrade to 3.2
 
 ## Deprecate the `NotSupported` exception
