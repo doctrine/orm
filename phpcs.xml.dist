@@ -14,7 +14,6 @@
     <file>src</file>
     <file>tests</file>
 
-    <exclude-pattern>*/src/Mapping/InverseJoinColumn.php</exclude-pattern>
     <exclude-pattern>*/tests/Tests/Proxies/__CG__*</exclude-pattern>
     <exclude-pattern>*/tests/Tests/ORM/Tools/Export/export/*</exclude-pattern>
 
