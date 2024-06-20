@@ -31,6 +31,8 @@ use function substr;
  * The YamlDriver reads the mapping metadata from yaml schema files.
  *
  * @deprecated 2.7 This class is being removed from the ORM and won't have any replacement
+ *
+ * @template-extends FileDriver<array<string, mixed>>
  */
 class YamlDriver extends FileDriver
 {
