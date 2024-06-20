@@ -387,12 +387,18 @@ EOPHP;
         $code = substr($code, 7 + (int) strpos($code, "\n{"));
         $code = substr($code, 0, (int) strpos($code, "\n}"));
         $code = str_replace('LazyGhostTrait;', str_replace("\n    ", "\n", 'LazyGhostTrait {
-            initializeLazyObject as __load;
+            initializeLazyObject as private;
             setLazyObjectAsInitialized as public __setInitialized;
             isLazyObjectInitialized as private;
             createLazyGhost as private;
             resetLazyObject as private;
-        }'), $code);
+        }
+
+        public function __load(): void
+        {
+            $this->initializeLazyObject();
+        }
+        '), $code);
 
         return $code;
     }
