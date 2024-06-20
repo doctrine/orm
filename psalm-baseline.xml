@@ -501,6 +501,7 @@
         ]]]></code>
     </InvalidReturnStatement>
     <InvalidReturnType>
+      <code><![CDATA[array]]></code>
       <code><![CDATA[array{
       *                   fieldName: string,
       *                   type?: string,
@@ -518,7 +519,6 @@
       *                   options?: array
       *               }]]></code>
       <code><![CDATA[array{usage: int|null, region?: string}]]></code>
-      <code><![CDATA[loadMappingFile]]></code>
     </InvalidReturnType>
     <MoreSpecificImplementedParamType>
       <code><![CDATA[$metadata]]></code>

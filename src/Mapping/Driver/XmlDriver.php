@@ -876,7 +876,7 @@ class XmlDriver extends FileDriver
     /**
      * {@inheritDoc}
      */
-    protected function loadMappingFile($file)
+    protected function loadMappingFile($file): array
     {
         $this->validateMapping($file);
         $result = [];
