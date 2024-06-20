@@ -932,13 +932,8 @@
     <InvalidPropertyAssignmentValue>
       <code><![CDATA[$metadata->table]]></code>
     </InvalidPropertyAssignmentValue>
-    <InvalidPropertyFetch>
-      <code><![CDATA[$xmlRoot->{'discriminator-column'}]]></code>
-      <code><![CDATA[$xmlRoot->{'discriminator-map'}]]></code>
-    </InvalidPropertyFetch>
     <InvalidReturnStatement>
       <code><![CDATA[$mapping]]></code>
-      <code><![CDATA[$result]]></code>
       <code><![CDATA[[
             'usage'  => $usage,
             'region' => $region,
@@ -962,7 +957,6 @@
       *                   options?: array
       *               }]]></code>
       <code><![CDATA[array{usage: int|null, region?: string}]]></code>
-      <code><![CDATA[loadMappingFile]]></code>
     </InvalidReturnType>
     <MissingParamType>
       <code><![CDATA[$fileExtension]]></code>
@@ -971,15 +965,6 @@
     <MoreSpecificImplementedParamType>
       <code><![CDATA[$metadata]]></code>
     </MoreSpecificImplementedParamType>
-    <NoInterfaceProperties>
-      <code><![CDATA[$xmlRoot->{'discriminator-column'}]]></code>
-      <code><![CDATA[$xmlRoot->{'discriminator-map'}]]></code>
-    </NoInterfaceProperties>
-    <TypeDoesNotContainType>
-      <code><![CDATA[$xmlRoot->getName() === 'embeddable']]></code>
-      <code><![CDATA[$xmlRoot->getName() === 'entity']]></code>
-      <code><![CDATA[$xmlRoot->getName() === 'mapped-superclass']]></code>
-    </TypeDoesNotContainType>
   </file>
   <file src="src/Mapping/Driver/YamlDriver.php">
     <ArgumentTypeCoercion>
@@ -1011,38 +996,6 @@
     <MoreSpecificReturnType>
       <code><![CDATA[array{usage: int|null, region: string|null}]]></code>
     </MoreSpecificReturnType>
-    <PossiblyUndefinedMethod>
-      <code><![CDATA[$element]]></code>
-      <code><![CDATA[$element]]></code>
-      <code><![CDATA[$element]]></code>
-      <code><![CDATA[$element]]></code>
-      <code><![CDATA[$element]]></code>
-      <code><![CDATA[$element]]></code>
-      <code><![CDATA[$element]]></code>
-      <code><![CDATA[$element]]></code>
-      <code><![CDATA[$element]]></code>
-      <code><![CDATA[$element]]></code>
-      <code><![CDATA[$element]]></code>
-      <code><![CDATA[$element]]></code>
-      <code><![CDATA[$element]]></code>
-      <code><![CDATA[$element]]></code>
-      <code><![CDATA[$element]]></code>
-      <code><![CDATA[$element]]></code>
-      <code><![CDATA[$element]]></code>
-      <code><![CDATA[$element]]></code>
-    </PossiblyUndefinedMethod>
-    <UndefinedInterfaceMethod>
-      <code><![CDATA[$element]]></code>
-      <code><![CDATA[$element]]></code>
-      <code><![CDATA[$element]]></code>
-      <code><![CDATA[$element]]></code>
-      <code><![CDATA[$element]]></code>
-      <code><![CDATA[$element]]></code>
-      <code><![CDATA[$element]]></code>
-      <code><![CDATA[$element]]></code>
-      <code><![CDATA[$element]]></code>
-      <code><![CDATA[$element]]></code>
-    </UndefinedInterfaceMethod>
   </file>
   <file src="src/Mapping/Embedded.php">
     <MissingParamType>
