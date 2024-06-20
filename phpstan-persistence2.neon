@@ -64,3 +64,9 @@ parameters:
 
         # Symfony cache supports passing a key prefix to the clear method.
         - '/^Method Psr\\Cache\\CacheItemPoolInterface\:\:clear\(\) invoked with 1 parameter, 0 required\.$/'
+
+        -
+            message: '#contains generic type.*but class.*is not generic#'
+            paths:
+                - src/Mapping/Driver/XmlDriver.php
+                - src/Mapping/Driver/YamlDriver.php
