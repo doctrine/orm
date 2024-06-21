@@ -15,10 +15,12 @@ use Doctrine\ORM\Mapping\InverseSideMapping;
 use Doctrine\ORM\Mapping\ManyToManyAssociationMapping;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\Persisters\SqlValueVisitor;
+use Doctrine\ORM\Persisters\Traits\ResolveValuesHelper;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Utility\PersisterHelper;
 
 use function array_fill;
+use function array_merge;
 use function array_pop;
 use function assert;
 use function count;
@@ -32,6 +34,8 @@ use function sprintf;
  */
 class ManyToManyPersister extends AbstractCollectionPersister
 {
+    use ResolveValuesHelper;
+
     public function delete(PersistentCollection $collection): void
     {
         $mapping = $this->getMapping($collection);
@@ -249,7 +253,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
                 $whereClauses[] = sprintf('te.%s %s NULL', $field, $operator === Comparison::EQ ? 'IS' : 'IS NOT');
             } else {
                 $whereClauses[] = sprintf('te.%s %s ?', $field, $operator);
-                $params[]       = $value;
+                $params         = array_merge($params, $this->getValues($value));
                 $paramTypes[]   = PersisterHelper::getTypeOfField($name, $targetClass, $this->em)[0];
             }
         }
