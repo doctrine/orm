@@ -9,6 +9,7 @@ use Doctrine\ORM\Proxy\DefaultProxyClassNameResolver;
 use Doctrine\ORM\Proxy\InternalProxy;
 use Doctrine\Tests\Models\Company\CompanyAuction;
 use Doctrine\Tests\Models\ECommerce\ECommerceProduct;
+use Doctrine\Tests\Models\ECommerce\ECommerceProduct2;
 use Doctrine\Tests\Models\ECommerce\ECommerceShipping;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use PHPUnit\Framework\Attributes\Group;
@@ -110,6 +111,24 @@ class ReferenceProxyTest extends OrmFunctionalTestCase
         // domain logic, Product::__clone sets isCloned public property
         self::assertTrue($clone->isCloned);
         self::assertFalse($entity->isCloned);
+    }
+
+    public function testCloneProxyWithResetId(): void
+    {
+        $id = $this->createProduct();
+
+        $entity = $this->_em->getReference(ECommerceProduct2::class, $id);
+        assert($entity instanceof ECommerceProduct2);
+
+        $clone = clone $entity;
+        assert($clone instanceof ECommerceProduct2);
+
+        self::assertEquals($id, $entity->getId());
+        self::assertEquals('Doctrine Cookbook', $entity->getName());
+
+        self::assertFalse($this->_em->contains($clone));
+        self::assertNull($clone->getId());
+        self::assertEquals('Clone of Doctrine Cookbook', $clone->getName());
     }
 
     #[Group('DDC-733')]

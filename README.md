@@ -1,7 +1,7 @@
-|                      [4.0.x][4.0]                      |                      [3.2.x][3.2]                      |                      [3.1.x][3.1]                      |                      [2.20.x][2.20]                      |                      [2.19.x][2.19]                      |
+|                      [4.0.x][4.0]                      |                      [3.3.x][3.3]                      |                      [3.2.x][3.2]                      |                      [2.20.x][2.20]                      |                      [2.19.x][2.19]                      |
 |:------------------------------------------------------:|:------------------------------------------------------:|:------------------------------------------------------:|:--------------------------------------------------------:|:--------------------------------------------------------:|
-|           [![Build status][4.0 image]][4.0]            |           [![Build status][3.2 image]][3.2]            |           [![Build status][3.1 image]][3.1]            |           [![Build status][2.20 image]][2.20]            |           [![Build status][2.19 image]][2.19]            |
-| [![Coverage Status][4.0 coverage image]][4.0 coverage] | [![Coverage Status][3.2 coverage image]][3.2 coverage] | [![Coverage Status][3.1 coverage image]][3.1 coverage] | [![Coverage Status][2.20 coverage image]][2.20 coverage] | [![Coverage Status][2.19 coverage image]][2.19 coverage] |
+|           [![Build status][4.0 image]][4.0]            |           [![Build status][3.3 image]][3.3]            |           [![Build status][3.2 image]][3.2]            |           [![Build status][2.20 image]][2.20]            |           [![Build status][2.19 image]][2.19]            |
+| [![Coverage Status][4.0 coverage image]][4.0 coverage] | [![Coverage Status][3.3 coverage image]][3.3 coverage] | [![Coverage Status][3.2 coverage image]][3.2 coverage] | [![Coverage Status][2.20 coverage image]][2.20 coverage] | [![Coverage Status][2.19 coverage image]][2.19 coverage] |
 
 [<h1 align="center">🇺🇦 UKRAINE NEEDS YOUR HELP NOW!</h1>](https://www.doctrine-project.org/stop-war.html)
 
@@ -22,14 +22,14 @@ without requiring unnecessary code duplication.
   [4.0]: https://github.com/doctrine/orm/tree/4.0.x
   [4.0 coverage image]: https://codecov.io/gh/doctrine/orm/branch/4.0.x/graph/badge.svg
   [4.0 coverage]: https://codecov.io/gh/doctrine/orm/branch/4.0.x
+  [3.3 image]: https://github.com/doctrine/orm/actions/workflows/continuous-integration.yml/badge.svg?branch=3.3.x
+  [3.3]: https://github.com/doctrine/orm/tree/3.3.x
+  [3.3 coverage image]: https://codecov.io/gh/doctrine/orm/branch/3.3.x/graph/badge.svg
+  [3.3 coverage]: https://codecov.io/gh/doctrine/orm/branch/3.3.x
   [3.2 image]: https://github.com/doctrine/orm/actions/workflows/continuous-integration.yml/badge.svg?branch=3.2.x
   [3.2]: https://github.com/doctrine/orm/tree/3.2.x
   [3.2 coverage image]: https://codecov.io/gh/doctrine/orm/branch/3.2.x/graph/badge.svg
   [3.2 coverage]: https://codecov.io/gh/doctrine/orm/branch/3.2.x
-  [3.1 image]: https://github.com/doctrine/orm/actions/workflows/continuous-integration.yml/badge.svg?branch=3.1.x
-  [3.1]: https://github.com/doctrine/orm/tree/3.1.x
-  [3.1 coverage image]: https://codecov.io/gh/doctrine/orm/branch/3.1.x/graph/badge.svg
-  [3.1 coverage]: https://codecov.io/gh/doctrine/orm/branch/3.1.x
   [2.20 image]: https://github.com/doctrine/orm/actions/workflows/continuous-integration.yml/badge.svg?branch=2.20.x
   [2.20]: https://github.com/doctrine/orm/tree/2.20.x
   [2.20 coverage image]: https://codecov.io/gh/doctrine/orm/branch/2.20.x/graph/badge.svg

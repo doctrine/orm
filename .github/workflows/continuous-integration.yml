@@ -182,7 +182,7 @@ jobs:
           - "default"
           - "4@dev"
         mariadb-version:
-          - "10.9"
+          - "11.4"
         extension:
           - "mysqli"
           - "pdo_mysql"
@@ -191,11 +191,11 @@ jobs:
       mariadb:
         image: "mariadb:${{ matrix.mariadb-version }}"
         env:
-          MYSQL_ALLOW_EMPTY_PASSWORD: yes
-          MYSQL_DATABASE: "doctrine_tests"
+          MARIADB_ALLOW_EMPTY_ROOT_PASSWORD: yes
+          MARIADB_DATABASE: "doctrine_tests"
 
         options: >-
-          --health-cmd "mysqladmin ping --silent"
+          --health-cmd "healthcheck.sh --connect --innodb_initialized"
 
         ports:
           - "3306:3306"

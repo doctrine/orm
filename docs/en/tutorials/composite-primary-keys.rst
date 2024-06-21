@@ -145,7 +145,7 @@ We keep up the example of an Article with arbitrary attributes, the mapping look
             #[OneToMany(targetEntity: ArticleAttribute::class, mappedBy: 'article', cascade: ['ALL'], indexBy: 'attribute')]
             private Collection $attributes;
 
-            public function addAttribute(string $name, ArticleAttribute $value): void
+            public function addAttribute(string $name, string $value): void
             {
                 $this->attributes[$name] = new ArticleAttribute($name, $value, $this);
             }

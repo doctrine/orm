@@ -35,6 +35,8 @@ use function strtolower;
 /**
  * The DatabaseDriver reverse engineers the mapping metadata from a database.
  *
+ * @deprecated No replacement planned
+ *
  * @link    www.doctrine-project.org
  */
 class DatabaseDriver implements MappingDriver

@@ -210,15 +210,14 @@ EOPHP;
     /**
      * Creates a closure capable of initializing a proxy
      *
-     * @return Closure(InternalProxy, InternalProxy):void
+     * @return Closure(InternalProxy, array):void
      *
      * @throws EntityNotFoundException
      */
     private function createLazyInitializer(ClassMetadata $classMetadata, EntityPersister $entityPersister, IdentifierFlattener $identifierFlattener): Closure
     {
-        return static function (InternalProxy $proxy) use ($entityPersister, $classMetadata, $identifierFlattener): void {
-            $identifier = $classMetadata->getIdentifierValues($proxy);
-            $original   = $entityPersister->loadById($identifier);
+        return static function (InternalProxy $proxy, array $identifier) use ($entityPersister, $classMetadata, $identifierFlattener): void {
+            $original = $entityPersister->loadById($identifier);
 
             if ($original === null) {
                 throw EntityNotFoundException::fromClassNameAndIdentifier(
@@ -234,7 +233,7 @@ EOPHP;
             $class = $entityPersister->getClassMetadata();
 
             foreach ($class->getReflectionProperties() as $property) {
-                if (! $property || ! $class->hasField($property->getName()) && ! $class->hasAssociation($property->getName())) {
+                if (! $property || isset($identifier[$property->getName()]) || ! $class->hasField($property->getName()) && ! $class->hasAssociation($property->getName())) {
                     continue;
                 }
 
@@ -283,7 +282,9 @@ EOPHP;
         $identifierFields = array_intersect_key($class->getReflectionProperties(), $identifiers);
 
         $proxyFactory = Closure::bind(static function (array $identifier) use ($initializer, $skippedProperties, $identifierFields, $className): InternalProxy {
-            $proxy = self::createLazyGhost($initializer, $skippedProperties);
+            $proxy = self::createLazyGhost(static function (InternalProxy $object) use ($initializer, $identifier): void {
+                $initializer($object, $identifier);
+            }, $skippedProperties);
 
             foreach ($identifierFields as $idField => $reflector) {
                 if (! isset($identifier[$idField])) {
@@ -386,12 +387,18 @@ EOPHP;
         $code = substr($code, 7 + (int) strpos($code, "\n{"));
         $code = substr($code, 0, (int) strpos($code, "\n}"));
         $code = str_replace('LazyGhostTrait;', str_replace("\n    ", "\n", 'LazyGhostTrait {
-            initializeLazyObject as __load;
+            initializeLazyObject as private;
             setLazyObjectAsInitialized as public __setInitialized;
             isLazyObjectInitialized as private;
             createLazyGhost as private;
             resetLazyObject as private;
-        }'), $code);
+        }
+
+        public function __load(): void
+        {
+            $this->initializeLazyObject();
+        }
+        '), $code);
 
         return $code;
     }

@@ -44,6 +44,12 @@ The properties `$indexes` and `$uniqueConstraints` have been removed since they 
 The preferred way of defining indices and unique constraints is by
 using the `\Doctrine\ORM\Mapping\UniqueConstraint` and `\Doctrine\ORM\Mapping\Index` attributes.
 
+# Upgrade to 3.3
+
+## Deprecate `DatabaseDriver`
+
+The class `Doctrine\ORM\Mapping\Driver\DatabaseDriver` is deprecated without replacement.
+
 # Upgrade to 3.2
 
 ## Deprecate the `NotSupported` exception
