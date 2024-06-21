@@ -174,9 +174,9 @@ class OneToManyPersister extends AbstractCollectionPersister
 
         if ($targetClass->isInheritanceTypeSingleTable()) {
             $discriminatorColumn = $targetClass->getDiscriminatorColumn();
-            $statement          .= ' AND ' . $discriminatorColumn['name'] . ' = ?';
+            $statement          .= ' AND ' . $discriminatorColumn->name . ' = ?';
             $parameters[]        = $targetClass->discriminatorValue;
-            $types[]             = $discriminatorColumn['type'];
+            $types[]             = $discriminatorColumn->type;
         }
 
         $numAffected = $this->conn->executeStatement($statement, $parameters, $types);
