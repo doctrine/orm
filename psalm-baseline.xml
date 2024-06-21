@@ -497,13 +497,8 @@
     <InvalidPropertyAssignmentValue>
       <code><![CDATA[$metadata->table]]></code>
     </InvalidPropertyAssignmentValue>
-    <InvalidPropertyFetch>
-      <code><![CDATA[$xmlRoot->{'discriminator-column'}]]></code>
-      <code><![CDATA[$xmlRoot->{'discriminator-map'}]]></code>
-    </InvalidPropertyFetch>
     <InvalidReturnStatement>
       <code><![CDATA[$mapping]]></code>
-      <code><![CDATA[$result]]></code>
       <code><![CDATA[[
             'usage'  => $usage,
             'region' => $region,
@@ -527,20 +522,10 @@
       *                   options?: array
       *               }]]></code>
       <code><![CDATA[array{usage: int|null, region?: string}]]></code>
-      <code><![CDATA[loadMappingFile]]></code>
     </InvalidReturnType>
     <MoreSpecificImplementedParamType>
       <code><![CDATA[$metadata]]></code>
     </MoreSpecificImplementedParamType>
-    <NoInterfaceProperties>
-      <code><![CDATA[$xmlRoot->{'discriminator-column'}]]></code>
-      <code><![CDATA[$xmlRoot->{'discriminator-map'}]]></code>
-    </NoInterfaceProperties>
-    <TypeDoesNotContainType>
-      <code><![CDATA[$xmlRoot->getName() === 'embeddable']]></code>
-      <code><![CDATA[$xmlRoot->getName() === 'entity']]></code>
-      <code><![CDATA[$xmlRoot->getName() === 'mapped-superclass']]></code>
-    </TypeDoesNotContainType>
   </file>
   <file src="src/Mapping/ManyToManyInverseSideMapping.php">
     <PropertyNotSetInConstructor>
