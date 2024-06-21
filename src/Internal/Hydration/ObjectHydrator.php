@@ -423,7 +423,7 @@ class ObjectHydrator extends AbstractHydrator
                                         $reflFieldValue->last();
                                     }
 
-                                    $this->identifierMap[$path][$id[$parentAlias]][$id[$dqlAlias]] = $reflFieldValue->key();
+                                    $this->identifierMap[$path][$id[$parentAlias]][$id[$dqlAlias]] = $reflFieldValue->indexOf($element);
                                 }
 
                                 // Update result pointer
