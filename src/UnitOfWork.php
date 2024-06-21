@@ -3053,10 +3053,7 @@ EXCEPTION
                             } else {
                                 $associatedId[$targetClass->fieldNames[$targetColumn]] = $joinColumnValue;
                             }
-                        } elseif (
-                            $targetClass->containsForeignIdentifier
-                            && in_array($targetClass->getFieldForColumn($targetColumn), $targetClass->identifier, true)
-                        ) {
+                        } elseif (in_array($targetClass->getFieldForColumn($targetColumn), $targetClass->identifier, true)) {
                             // the missing key is part of target's entity primary key
                             $associatedId = [];
                             break;
