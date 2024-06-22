@@ -78,18 +78,6 @@
                 <file name="src/Mapping/ClassMetadataFactory.php"/>
             </errorLevel>
         </InvalidArrayAssignment>
-        <LessSpecificReturnStatement>
-            <errorLevel type="suppress">
-                <!-- In DBAL 4, column precision is nullable. See https://github.com/doctrine/dbal/pull/3511 -->
-                <file name="src/Mapping/Driver/DatabaseDriver.php"/>
-            </errorLevel>
-        </LessSpecificReturnStatement>
-        <MoreSpecificReturnType>
-            <errorLevel type="suppress">
-                <!-- In DBAL 4, the default column value is mixed. See https://github.com/doctrine/dbal/pull/3511 -->
-                <file name="src/Mapping/Driver/DatabaseDriver.php"/>
-            </errorLevel>
-        </MoreSpecificReturnType>
         <InvalidReturnType>
             <errorLevel type="suppress">
                 <!-- https://github.com/vimeo/psalm/issues/8819 -->

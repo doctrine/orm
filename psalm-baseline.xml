@@ -449,23 +449,6 @@
       <code><![CDATA[new ReflectionClass($metadata->name)]]></code>
     </TypeDoesNotContainNull>
   </file>
-  <file src="src/Mapping/Driver/DatabaseDriver.php">
-    <DocblockTypeContradiction>
-      <code><![CDATA[$metadata instanceof ClassMetadata]]></code>
-    </DocblockTypeContradiction>
-    <MoreSpecificImplementedParamType>
-      <code><![CDATA[$metadata]]></code>
-    </MoreSpecificImplementedParamType>
-    <PossiblyNullArrayAccess>
-      <code><![CDATA[$this->tables[$tableName]]]></code>
-      <code><![CDATA[$this->tables[$tableName]]]></code>
-    </PossiblyNullArrayAccess>
-    <PossiblyNullReference>
-      <code><![CDATA[getColumns]]></code>
-      <code><![CDATA[getColumns]]></code>
-      <code><![CDATA[getIndexes]]></code>
-    </PossiblyNullReference>
-  </file>
   <file src="src/Mapping/Driver/SimplifiedXmlDriver.php">
     <MissingParamType>
       <code><![CDATA[$fileExtension]]></code>

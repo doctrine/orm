@@ -1,5 +1,9 @@
 # Upgrade to 4.0
 
+## Remove `DatabaseDriver`
+
+The class `Doctrine\ORM\Mapping\Driver\DatabaseDriver` is removed.
+
 ## Remove the `NotSupported` exception
 
 The class `Doctrine\ORM\Exception\NotSupported` has been removed without replacement.
