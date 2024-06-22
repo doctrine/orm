@@ -76,10 +76,7 @@ class AttributeDriver implements MappingDriver
      */
     public function loadMetadataForClass(string $className, PersistenceClassMetadata $metadata): void
     {
-        $reflectionClass = $metadata->getReflectionClass()
-            // this happens when running attribute driver in combination with
-            // static reflection services. This is not the nicest fix
-            ?? new ReflectionClass($metadata->name);
+        $reflectionClass = $metadata->getReflectionClass();
 
         $classAttributes = $this->reader->getClassAttributes($reflectionClass);
 

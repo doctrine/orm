@@ -20,7 +20,7 @@ class SqlExpressionVisitorTest extends TestCase
     protected function setUp(): void
     {
         $this->persister     = $this->createMock(BasicEntityPersister::class);
-        $this->classMetadata = new ClassMetadata('Dummy');
+        $this->classMetadata = new ClassMetadata(self::class);
         $this->visitor       = new SqlExpressionVisitor($this->persister, $this->classMetadata);
     }
 

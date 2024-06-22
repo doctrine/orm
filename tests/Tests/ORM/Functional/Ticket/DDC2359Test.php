@@ -14,12 +14,11 @@ use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
-use Doctrine\Persistence\Mapping\Driver\MappingDriver;
+use Doctrine\Tests\OrmTestCase;
 use PHPUnit\Framework\Attributes\Group;
-use PHPUnit\Framework\TestCase;
 
 #[Group('DDC-2359')]
-class DDC2359Test extends TestCase
+class DDC2359Test extends OrmTestCase
 {
     /**
      * Verifies that {@see \Doctrine\ORM\Mapping\ClassMetadataFactory::wakeupReflection} is
@@ -27,8 +26,8 @@ class DDC2359Test extends TestCase
      */
     public function testIssue(): void
     {
-        $mockDriver    = $this->createMock(MappingDriver::class);
-        $mockMetadata  = $this->createMock(ClassMetadata::class);
+        $mockDriver    = $this->createAttributeDriver();
+        $mockMetadata  = new ClassMetadata(DDC2359Foo::class);
         $entityManager = $this->createMock(EntityManager::class);
 
         $metadataFactory = $this->getMockBuilder(ClassMetadataFactory::class)
@@ -45,8 +44,8 @@ class DDC2359Test extends TestCase
             ->method('getMetadataDriverImpl')
             ->will(self::returnValue($mockDriver));
 
-        $entityManager->expects(self::any())->method('getConfiguration')->will(self::returnValue($configuration));
-        $entityManager->expects(self::any())->method('getConnection')->will(self::returnValue($connection));
+        $entityManager->method('getConfiguration')->will(self::returnValue($configuration));
+        $entityManager->method('getConnection')->will(self::returnValue($connection));
         $entityManager
             ->method('getEventManager')
             ->will(self::returnValue($this->createMock(EventManager::class)));
@@ -56,8 +55,6 @@ class DDC2359Test extends TestCase
 
         $metadataFactory->setEntityManager($entityManager);
 
-        $mockMetadata->method('getName')->willReturn(DDC2359Foo::class);
-
         self::assertSame($mockMetadata, $metadataFactory->getMetadataFor(DDC2359Foo::class));
     }
 }
@@ -65,9 +62,8 @@ class DDC2359Test extends TestCase
 #[Entity]
 class DDC2359Foo
 {
-    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
     #[GeneratedValue]
-    public $id;
+    public int $id;
 }

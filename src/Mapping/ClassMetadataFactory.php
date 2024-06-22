@@ -256,11 +256,6 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
      */
     protected function validateRuntimeMetadata(ClassMetadata $class, ClassMetadataInterface|null $parent): void
     {
-        if (! $class->reflClass) {
-            // only validate if there is a reflection class instance
-            return;
-        }
-
         $class->validateIdentifier();
         $class->validateAssociations();
         $class->validateLifecycleCallbacks($this->getReflectionService());

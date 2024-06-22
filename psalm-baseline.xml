@@ -295,15 +295,9 @@
       <code><![CDATA[$mapping]]></code>
       <code><![CDATA[$overrideMapping]]></code>
     </InvalidArgument>
-    <InvalidNullableReturnType>
-      <code><![CDATA[ReflectionClass|null]]></code>
-    </InvalidNullableReturnType>
     <InvalidPropertyAssignmentValue>
       <code><![CDATA[$definition]]></code>
     </InvalidPropertyAssignmentValue>
-    <NullableReturnStatement>
-      <code><![CDATA[$this->reflClass]]></code>
-    </NullableReturnStatement>
     <ParamNameMismatch>
       <code><![CDATA[$entity]]></code>
     </ParamNameMismatch>
@@ -312,9 +306,6 @@
       <code><![CDATA[$parentReflFields[$embeddedClass->declaredField]]]></code>
     </PossiblyNullArgument>
     <PossiblyNullReference>
-      <code><![CDATA[getProperty]]></code>
-      <code><![CDATA[getProperty]]></code>
-      <code><![CDATA[getProperty]]></code>
       <code><![CDATA[getValue]]></code>
       <code><![CDATA[getValue]]></code>
       <code><![CDATA[getValue]]></code>
@@ -436,18 +427,12 @@
      *                   columnDefinition?: string
      *               }]]></code>
     </MoreSpecificReturnType>
-    <RedundantCondition>
-      <code><![CDATA[$metadata->getReflectionClass()]]></code>
-    </RedundantCondition>
     <RedundantConditionGivenDocblockType>
       <code><![CDATA[assert($cacheAttribute instanceof Mapping\Cache)]]></code>
       <code><![CDATA[assert($method instanceof ReflectionMethod)]]></code>
       <code><![CDATA[assert($method instanceof ReflectionMethod)]]></code>
       <code><![CDATA[assert($property instanceof ReflectionProperty)]]></code>
     </RedundantConditionGivenDocblockType>
-    <TypeDoesNotContainNull>
-      <code><![CDATA[new ReflectionClass($metadata->name)]]></code>
-    </TypeDoesNotContainNull>
   </file>
   <file src="src/Mapping/Driver/SimplifiedXmlDriver.php">
     <MissingParamType>
