@@ -11,9 +11,7 @@ use function array_merge;
 use function is_array;
 use function is_object;
 
-/**
- * @internal
- */
+/** @internal */
 trait ResolveValuesHelper
 {
     /**
