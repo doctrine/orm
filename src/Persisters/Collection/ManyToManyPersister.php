@@ -242,7 +242,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
             $paramTypes[]   = PersisterHelper::getTypeOfColumn($value, $ownerMetadata, $this->em);
         }
 
-        $parameters = $this->expandCriteriaParameters($criteria);
+        $parameters   = $this->expandCriteriaParameters($criteria);
         $paramsValues = [];
 
         foreach ($parameters as $parameter) {
