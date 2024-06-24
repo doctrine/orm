@@ -5,17 +5,17 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Persisters\Traits;
 
 use BackedEnum;
-use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Proxy\DefaultProxyClassNameResolver;
 
 use function array_merge;
 use function is_array;
 use function is_object;
 
+/**
+ * @internal
+ */
 trait ResolveValuesHelper
 {
-    protected EntityManagerInterface $em;
-
     /**
      * Retrieves the parameters that identifies a value.
      *
@@ -24,13 +24,13 @@ trait ResolveValuesHelper
     private function getValues(mixed $value): array
     {
         if (is_array($value)) {
-            $newValue = [];
+            $newValues = [];
 
             foreach ($value as $itemValue) {
-                $newValue = array_merge($newValue, $this->getValues($itemValue));
+                $newValues[] = $this->getValues($itemValue);
             }
 
-            return [$newValue];
+            return [array_merge(...$newValues)];
         }
 
         return $this->getIndividualValue($value);
@@ -60,13 +60,13 @@ trait ResolveValuesHelper
         $class = $this->em->getClassMetadata($valueClass);
 
         if ($class->isIdentifierComposite) {
-            $newValue = [];
+            $newValues = [];
 
             foreach ($class->getIdentifierValues($value) as $innerValue) {
-                $newValue = array_merge($newValue, $this->getValues($innerValue));
+                $newValues[] = $this->getValues($innerValue);
             }
 
-            return $newValue;
+            return array_merge(...$newValues);
         }
 
         return [$this->em->getUnitOfWork()->getSingleIdentifierValue($value)];

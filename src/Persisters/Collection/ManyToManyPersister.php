@@ -243,6 +243,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
         }
 
         $parameters = $this->expandCriteriaParameters($criteria);
+        $paramsValues = [];
 
         foreach ($parameters as $parameter) {
             [$name, $value, $operator] = $parameter;
@@ -253,10 +254,13 @@ class ManyToManyPersister extends AbstractCollectionPersister
                 $whereClauses[] = sprintf('te.%s %s NULL', $field, $operator === Comparison::EQ ? 'IS' : 'IS NOT');
             } else {
                 $whereClauses[] = sprintf('te.%s %s ?', $field, $operator);
-                $params         = array_merge($params, $this->getValues($value));
+                $paramsValues[] = $this->getValues($value);
                 $paramTypes[]   = PersisterHelper::getTypeOfField($name, $targetClass, $this->em)[0];
             }
         }
+
+        $params = array_merge($params, ...$paramsValues);
+        unset($paramsValues);
 
         $tableName = $this->quoteStrategy->getTableName($targetClass, $this->platform);
         $joinTable = $this->quoteStrategy->getJoinTableName($mapping, $associationSourceClass, $this->platform);
