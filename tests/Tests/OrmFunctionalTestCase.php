@@ -349,6 +349,10 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             SingleRootClass::class,
             SingleChildClass::class,
         ],
+        'compositekeyrelations' => [
+            Models\CompositeKeyRelations\InvoiceClass::class,
+            Models\CompositeKeyRelations\CustomerClass::class,
+        ],
         'taxi' => [
             PaidRide::class,
             Ride::class,
