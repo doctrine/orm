@@ -70,6 +70,8 @@ use function trim;
  */
 class ClassMetadata implements PersistenceClassMetadata, Stringable
 {
+    use GetReflectionClassImplementation;
+
     /* The inheritance mapping types */
     /**
      * NONE means the class does not participate in an inheritance hierarchy
@@ -927,16 +929,6 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
                 }
             }
         }
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * Can return null when using static reflection, in violation of the LSP
-     */
-    public function getReflectionClass(): ReflectionClass|null
-    {
-        return $this->reflClass;
     }
 
     /** @psalm-param array{usage?: mixed, region?: mixed} $cache */

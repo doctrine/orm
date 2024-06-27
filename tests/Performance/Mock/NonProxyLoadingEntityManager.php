@@ -212,4 +212,12 @@ class NonProxyLoadingEntityManager implements EntityManagerInterface
     {
         return $this->realEntityManager->contains($object);
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function isUninitializedObject($value): bool
+    {
+        return $this->realEntityManager->isUninitializedObject($value);
+    }
 }

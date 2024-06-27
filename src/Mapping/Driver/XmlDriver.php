@@ -43,6 +43,8 @@ use function strtoupper;
  */
 class XmlDriver extends FileDriver
 {
+    use LoadMappingFileImplementation;
+
     public const DEFAULT_FILE_EXTENSION = '.dcm.xml';
 
     /**
@@ -876,10 +878,8 @@ class XmlDriver extends FileDriver
         return $cascades;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    protected function loadMappingFile($file)
+    /** @return array<class-string, SimpleXMLElement> */
+    private function doLoadMappingFile(string $file): array
     {
         $this->validateMapping($file);
         $result = [];
