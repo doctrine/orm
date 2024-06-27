@@ -8,6 +8,7 @@ use BadMethodCallException;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\Common\Collections\Order;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Cache;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\Expr\Join;
@@ -1284,5 +1285,45 @@ class QueryBuilderTest extends OrmTestCase
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Doctrine\ORM\QueryBuilder::delete(): The alias for entity Doctrine\Tests\Models\CMS\CmsUser u must not be omitted.');
         $qb->delete(CmsUser::class . ' u');
+    }
+
+    public function testCreateNamedParameter(): void
+    {
+        $qb = $this->entityManager->createQueryBuilder();
+
+        $qb->select('u')
+            ->from(CmsUser::class, 'u')
+            ->where(
+                $qb->expr()->eq('u.name', $qb->createNamedParameter('john doe', Types::STRING)),
+            )
+            ->orWhere(
+                $qb->expr()->eq('u.rank', $qb->createNamedParameter(100, Types::INTEGER)),
+            );
+
+        self::assertEquals('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.name = :dcValue1 OR u.rank = :dcValue2', $qb->getDQL());
+        self::assertEquals('john doe', $qb->getParameter('dcValue1')->getValue());
+        self::assertEquals(Types::STRING, $qb->getParameter('dcValue1')->getType());
+        self::assertEquals(100, $qb->getParameter('dcValue2')->getValue());
+        self::assertEquals(Types::INTEGER, $qb->getParameter('dcValue2')->getType());
+    }
+
+    public function testCreateNamedParameterCustomPlaceholder(): void
+    {
+        $qb = $this->entityManager->createQueryBuilder();
+
+        $qb->select('u')
+            ->from(CmsUser::class, 'u')
+            ->where(
+                $qb->expr()->eq('u.name', $qb->createNamedParameter('john doe', Types::STRING, ':test')),
+            )
+            ->andWhere(
+                $qb->expr()->eq('u.rank', $qb->createNamedParameter(100, Types::INTEGER)),
+            );
+
+        self::assertEquals('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.name = :test AND u.rank = :dcValue1', $qb->getDQL());
+        self::assertEquals('john doe', $qb->getParameter('test')->getValue());
+        self::assertEquals(Types::STRING, $qb->getParameter('test')->getType());
+        self::assertEquals(100, $qb->getParameter('dcValue1')->getValue());
+        self::assertEquals(Types::INTEGER, $qb->getParameter('dcValue1')->getType());
     }
 }

@@ -111,6 +111,13 @@ class QueryBuilder implements Stringable
     protected int $lifetime = 0;
 
     /**
+     * The counter of bound parameters.
+     *
+     * @var int<0, max>
+     */
+    private int $boundCounter = 0;
+
+    /**
      * Initializes a new <tt>QueryBuilder</tt> that uses the given <tt>EntityManager</tt>.
      *
      * @param EntityManagerInterface $em The EntityManager to use.
@@ -1334,6 +1341,41 @@ class QueryBuilder implements Stringable
         $this->dql             = null;
 
         return $this;
+    }
+
+    /**
+     * Creates a new named parameter and bind the value $value to it.
+     *
+     * The parameter $value specifies the value that you want to bind. If
+     * $placeholder is not provided createNamedParameter() will automatically
+     * create a placeholder for you. An automatic placeholder will be of the
+     * name ':dcValue1', ':dcValue2' etc.
+     *
+     * Example:
+     *  <code>
+     *   $qb = $em->createQueryBuilder();
+     *   $qb
+     *      ->select('u')
+     *      ->from('User', 'u')
+     *      ->where('u.username = ' . $qb->createNamedParameter('Foo', Types::STRING))
+     *      ->orWhere('u.username = ' . $qb->createNamedParameter('Bar', Types::STRING))
+     *  </code>
+     *
+     * @param ParameterType|ArrayParameterType|string|int|null $type        ParameterType::*, ArrayParameterType::* or \Doctrine\DBAL\Types\Type::* constant
+     * @param non-empty-string|null                            $placeholder The name to bind with. The string must start with a colon ':'.
+     *
+     * @return non-empty-string the placeholder name used.
+     */
+    public function createNamedParameter(mixed $value, ParameterType|ArrayParameterType|string|int|null $type = null, string|null $placeholder = null): string
+    {
+        if ($placeholder === null) {
+            $this->boundCounter++;
+            $placeholder = ':dcValue' . $this->boundCounter;
+        }
+
+        $this->setParameter(substr($placeholder, 1), $value, $type);
+
+        return $placeholder;
     }
 
     /**
