@@ -390,7 +390,7 @@ class AttributeDriver implements MappingDriver
                 $metadata->mapOneToMany($mapping);
             } elseif ($manyToOneAttribute !== null) {
                 if ($metadata->isEmbeddedClass) {
-                    throw MappingException::invalidAttributeOnEmbeddable($metadata->name, Mapping\OneToMany::class);
+                    throw MappingException::invalidAttributeOnEmbeddable($metadata->name, Mapping\ManyToOne::class);
                 }
 
                 $idAttribute = $this->reader->getPropertyAttribute($property, Mapping\Id::class);
