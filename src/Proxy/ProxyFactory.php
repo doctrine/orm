@@ -447,7 +447,7 @@ EOPHP;
             foreach ($reflector->getProperties($filter) as $property) {
                 $name = $property->name;
 
-                if ($property->isStatic() || (($class->hasField($name) || $class->hasAssociation($name)) && ! isset($identifiers[$name]))) {
+                if ($property->isStatic() || ! isset($identifiers[$name])) {
                     continue;
                 }
 
