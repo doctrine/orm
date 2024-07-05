@@ -17,7 +17,7 @@ trait ResolveValuesHelper
     /**
      * Retrieves the parameters that identifies a value.
      *
-     * @return mixed[]
+     * @psalm-return list<mixed>
      */
     private function getValues(mixed $value): array
     {
