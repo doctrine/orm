@@ -411,6 +411,7 @@ class ObjectHydrator extends AbstractHydrator
                                     unset($this->resultPointers[$dqlAlias]);
                                 }
                             } else {
+                                /** @var mixed $element */
                                 $element = $this->getEntity($data, $dqlAlias);
 
                                 if (isset($this->resultSetMapping()->indexByMap[$dqlAlias])) {
@@ -423,7 +424,7 @@ class ObjectHydrator extends AbstractHydrator
                                         $reflFieldValue->last();
                                     }
 
-                                    $this->identifierMap[$path][$id[$parentAlias]][$id[$dqlAlias]] = $reflFieldValue->key();
+                                    $this->identifierMap[$path][$id[$parentAlias]][$id[$dqlAlias]] = $reflFieldValue->indexOf($element);
                                 }
 
                                 // Update result pointer
