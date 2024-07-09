@@ -106,7 +106,7 @@ abstract class SQLFilter implements Stringable
             throw FilterException::cannotConvertListParameterIntoSingleValue($name);
         }
 
-        return $this->em->getConnection()->quote((string) $this->parameters[$name]['value']);
+        return $this->em->getConnection()->quote((string) $this->parameters[$name]['value'], $this->parameters[$name]['type']);
     }
 
     /**
