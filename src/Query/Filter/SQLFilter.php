@@ -132,7 +132,7 @@ abstract class SQLFilter implements Stringable
         $connection = $this->em->getConnection();
 
         $quoted = array_map(
-            static fn (mixed $value): string => $connection->quote((string) $value),
+            static fn (mixed $value): string => $connection->quote((string) $value, $param['type']),
             $param['value'],
         );
 
