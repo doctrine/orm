@@ -870,11 +870,21 @@ class ClassMetadataTest extends OrmTestCase
     {
         $cm = new ClassMetadata(Directory::class);
         $cm->mapManyToOne(['fieldName' => 'parentDirectory', 'targetEntity' => Directory::class, 'cascade' => ['remove'], 'declared' => Directory::class]);
-        $cm->setAssociationOverride('parentDirectory', ['cascade' => '']);
+        $cm->setAssociationOverride('parentDirectory', ['cascade' => ['remove']]);
 
         $mapping = $cm->getAssociationMapping('parentDirectory');
 
         self::assertSame(Directory::class, $mapping->declared);
+    }
+
+    public function testAssociationOverrideCanOverrideCascade(): void
+    {
+        $cm = new ClassMetadata(Directory::class);
+        $cm->mapManyToOne(['fieldName' => 'parentDirectory', 'targetEntity' => Directory::class, 'cascade' => ['remove'], 'declared' => Directory::class]);
+        $cm->setAssociationOverride('parentDirectory', ['cascade' => ['all']]);
+
+        $mapping = $cm->getAssociationMapping('parentDirectory');
+        self::assertSame(['remove', 'persist', 'refresh', 'detach'], $mapping['cascade']);
     }
 
     #[TestGroup('DDC-1955')]
