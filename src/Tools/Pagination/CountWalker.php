@@ -37,27 +37,31 @@ class CountWalker extends TreeWalkerAdapter
             throw new RuntimeException('Cannot count query which selects two FROM components, cannot make distinction');
         }
 
-        $fromRoot            = reset($from);
-        $rootAlias           = $fromRoot->rangeVariableDeclaration->aliasIdentificationVariable;
-        $rootClass           = $this->getMetadataForDqlAlias($rootAlias);
-        $identifierFieldName = $rootClass->getSingleIdentifierFieldName();
+        $distinct = $this->_getQuery()->getHint(self::HINT_DISTINCT);
 
-        $pathType = PathExpression::TYPE_STATE_FIELD;
-        if (isset($rootClass->associationMappings[$identifierFieldName])) {
-            $pathType = PathExpression::TYPE_SINGLE_VALUED_ASSOCIATION;
+        $countPathExpressionOrLiteral = '*';
+        if ($distinct) {
+            $fromRoot            = reset($from);
+            $rootAlias           = $fromRoot->rangeVariableDeclaration->aliasIdentificationVariable;
+            $rootClass           = $this->getMetadataForDqlAlias($rootAlias);
+            $identifierFieldName = $rootClass->getSingleIdentifierFieldName();
+
+            $pathType = PathExpression::TYPE_STATE_FIELD;
+            if (isset($rootClass->associationMappings[$identifierFieldName])) {
+                $pathType = PathExpression::TYPE_SINGLE_VALUED_ASSOCIATION;
+            }
+
+            $countPathExpressionOrLiteral       = new PathExpression(
+                PathExpression::TYPE_STATE_FIELD | PathExpression::TYPE_SINGLE_VALUED_ASSOCIATION,
+                $rootAlias,
+                $identifierFieldName,
+            );
+            $countPathExpressionOrLiteral->type = $pathType;
         }
 
-        $pathExpression       = new PathExpression(
-            PathExpression::TYPE_STATE_FIELD | PathExpression::TYPE_SINGLE_VALUED_ASSOCIATION,
-            $rootAlias,
-            $identifierFieldName,
-        );
-        $pathExpression->type = $pathType;
-
-        $distinct                                         = $this->_getQuery()->getHint(self::HINT_DISTINCT);
         $selectStatement->selectClause->selectExpressions = [
             new SelectExpression(
-                new AggregateExpression('count', $pathExpression, $distinct),
+                new AggregateExpression('count', $countPathExpressionOrLiteral, $distinct),
                 null,
             ),
         ];
