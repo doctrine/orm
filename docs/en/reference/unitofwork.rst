@@ -102,7 +102,7 @@ How Doctrine Detects Changes
 ----------------------------
 
 Doctrine is a data-mapper that tries to achieve persistence-ignorance (PI).
-This means you map php objects into a relational database that don't
+This means you map PHP objects into a relational database that don't
 necessarily know about the database at all. A natural question would now be,
 "how does Doctrine even detect objects have changed?".
 
