@@ -101,9 +101,11 @@ now they throw an exception.
 
 ## BC BREAK: Partial objects are removed
 
-- The `PARTIAL` keyword in DQL no longer exists.
-- `Doctrine\ORM\Query\AST\PartialObjectExpression`is removed.
-- `Doctrine\ORM\Query\SqlWalker::HINT_PARTIAL` and
+WARNING: This was relaxed in ORM 3.2 when partial was re-allowed for array-hydration.
+
+- The `PARTIAL` keyword in DQL no longer exists (reintroduced in ORM 3.2)
+- `Doctrine\ORM\Query\AST\PartialObjectExpression` is removed. (reintroduced in ORM 3.2)
+- `Doctrine\ORM\Query\SqlWalker::HINT_PARTIAL` (reintroduced in ORM 3.2) and
   `Doctrine\ORM\Query::HINT_FORCE_PARTIAL_LOAD` are removed.
 - `Doctrine\ORM\EntityManager*::getPartialReference()` is removed.
 
