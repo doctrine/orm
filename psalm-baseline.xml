@@ -861,20 +861,6 @@
       <code><![CDATA[$this->sqlStatements]]></code>
     </PossiblyInvalidArgument>
   </file>
-  <file src="src/Query/Exec/SingleTableDeleteUpdateExecutor.php">
-    <InvalidReturnStatement>
-      <code><![CDATA[$conn->executeStatement($this->sqlStatements, $params, $types)]]></code>
-    </InvalidReturnStatement>
-    <InvalidReturnType>
-      <code><![CDATA[int]]></code>
-    </InvalidReturnType>
-    <PossiblyInvalidArgument>
-      <code><![CDATA[$this->sqlStatements]]></code>
-    </PossiblyInvalidArgument>
-    <PropertyNotSetInConstructor>
-      <code><![CDATA[SingleTableDeleteUpdateExecutor]]></code>
-    </PropertyNotSetInConstructor>
-  </file>
   <file src="src/Query/Expr/Andx.php">
     <NonInvariantDocblockPropertyType>
       <code><![CDATA[$allowedClasses]]></code>

@@ -6,7 +6,7 @@ namespace Doctrine\Tests\ORM\Functional;
 
 use Closure;
 use Doctrine\ORM\Query;
-use Doctrine\ORM\Query\Exec\SingleSelectExecutor;
+use Doctrine\ORM\Query\Exec\SingleStatementExecutor;
 use Doctrine\ORM\Query\ParserResult;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\Tests\OrmFunctionalTestCase;
@@ -43,7 +43,7 @@ class ParserResultSerializationTest extends OrmFunctionalTestCase
         $this->assertInstanceOf(ParserResult::class, $unserialized);
         $this->assertInstanceOf(ResultSetMapping::class, $unserialized->getResultSetMapping());
         $this->assertEquals(['name' => [0]], $unserialized->getParameterMappings());
-        $this->assertInstanceOf(SingleSelectExecutor::class, $unserialized->getSqlExecutor());
+        $this->assertInstanceOf(SingleStatementExecutor::class, $unserialized->getSqlExecutor());
     }
 
     /** @return Generator<string, array{Closure(ParserResult): ParserResult}> */
@@ -75,7 +75,7 @@ class ParserResultSerializationTest extends OrmFunctionalTestCase
         $this->assertInstanceOf(ParserResult::class, $unserialized);
         $this->assertInstanceOf(ResultSetMapping::class, $unserialized->getResultSetMapping());
         $this->assertEquals(['name' => [0]], $unserialized->getParameterMappings());
-        $this->assertInstanceOf(SingleSelectExecutor::class, $unserialized->getSqlExecutor());
+        $this->assertInstanceOf(SingleStatementExecutor::class, $unserialized->getSqlExecutor());
         $this->assertIsString($unserialized->getSqlExecutor()->getSqlStatements());
     }
 
@@ -87,7 +87,7 @@ class ParserResultSerializationTest extends OrmFunctionalTestCase
 
     public function testSymfony44ProvidedData(): void
     {
-        $sqlExecutor      = $this->createMock(SingleSelectExecutor::class);
+        $sqlExecutor      = $this->createMock(SingleStatementExecutor::class);
         $resultSetMapping = $this->createMock(ResultSetMapping::class);
 
         $parserResult = new ParserResult();
@@ -101,7 +101,7 @@ class ParserResultSerializationTest extends OrmFunctionalTestCase
         $this->assertInstanceOf(ParserResult::class, $unserialized);
         $this->assertInstanceOf(ResultSetMapping::class, $unserialized->getResultSetMapping());
         $this->assertEquals(['name' => [0]], $unserialized->getParameterMappings());
-        $this->assertInstanceOf(SingleSelectExecutor::class, $unserialized->getSqlExecutor());
+        $this->assertInstanceOf(SingleStatementExecutor::class, $unserialized->getSqlExecutor());
     }
 
     private static function parseQuery(Query $query): ParserResult

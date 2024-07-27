@@ -4,12 +4,11 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Query\Exec;
 
-use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\Cache\QueryCacheProfile;
 use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\ParameterType;
 use Doctrine\DBAL\Result;
-use Doctrine\DBAL\Types\Type;
+use Doctrine\ORM\Query;
+use Doctrine\ORM\Query\SqlWalker;
 
 /**
  * Base class for SQL statement executors.
@@ -48,6 +47,19 @@ abstract class AbstractSqlExecutor
     public function removeQueryCacheProfile(): void
     {
         $this->queryCacheProfile = null;
+    }
+
+    /**
+     * Finalize and executes all sql statements.
+     *
+     * @param Query                            $query  The query to be finalized and executed.
+     * @param Connection                       $conn   The database connection that is used to execute the queries.
+     * @param list<mixed>|array<string, mixed> $params The parameters.
+     * @psalm-param WrapperParameterTypeArray  $types  The parameter types.
+     */
+    public function finalizeAndExecute(Query $query, Connection $connection, array $params, array $types)
+    {
+        return $this->execute($connection, $params, $types);
     }
 
     /**

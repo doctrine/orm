@@ -225,15 +225,15 @@ class SqlWalker
     {
         return match (true) {
             $statement instanceof AST\SelectStatement
-                => new Exec\SingleSelectExecutor($statement, $this),
+                => new Exec\SingleStatementExecutor($statement, $this),
             $statement instanceof AST\UpdateStatement
                 => $this->em->getClassMetadata($statement->updateClause->abstractSchemaName)->isInheritanceTypeJoined()
                     ? new Exec\MultiTableUpdateExecutor($statement, $this)
-                    : new Exec\SingleTableDeleteUpdateExecutor($statement, $this),
+                    : new Exec\SingleStatementExecutor($statement, $this),
             $statement instanceof AST\DeleteStatement
                 => $this->em->getClassMetadata($statement->deleteClause->abstractSchemaName)->isInheritanceTypeJoined()
                     ? new Exec\MultiTableDeleteExecutor($statement, $this)
-                    : new Exec\SingleTableDeleteUpdateExecutor($statement, $this),
+                    : new Exec\SingleStatementExecutor($statement, $this),
         };
     }
 
@@ -464,10 +464,7 @@ class SqlWalker
      */
     public function walkSelectStatement(AST\SelectStatement $selectStatement): string
     {
-        $limit    = $this->query->getMaxResults();
-        $offset   = $this->query->getFirstResult();
-        $lockMode = $this->query->getHint(Query::HINT_LOCK_MODE) ?: LockMode::NONE;
-        $sql      = $this->walkSelectClause($selectStatement->selectClause)
+        $sql = $this->walkSelectClause($selectStatement->selectClause)
             . $this->walkFromClause($selectStatement->fromClause)
             . $this->walkWhereClause($selectStatement->whereClause);
 
@@ -486,30 +483,6 @@ class SqlWalker
         $orderBySql = $this->generateOrderedCollectionOrderByItems();
         if (! $selectStatement->orderByClause && $orderBySql) {
             $sql .= ' ORDER BY ' . $orderBySql;
-        }
-
-        $sql = $this->platform->modifyLimitQuery($sql, $limit, $offset);
-
-        if ($lockMode === LockMode::NONE) {
-            return $sql;
-        }
-
-        if ($lockMode === LockMode::PESSIMISTIC_READ) {
-            return $sql . ' ' . $this->getReadLockSQL($this->platform);
-        }
-
-        if ($lockMode === LockMode::PESSIMISTIC_WRITE) {
-            return $sql . ' ' . $this->getWriteLockSQL($this->platform);
-        }
-
-        if ($lockMode !== LockMode::OPTIMISTIC) {
-            throw QueryException::invalidLockMode();
-        }
-
-        foreach ($this->selectedClasses as $selectedClass) {
-            if (! $selectedClass['class']->isVersioned) {
-                throw OptimisticLockException::lockFailed($selectedClass['class']->name);
-            }
         }
 
         return $sql;
@@ -2224,6 +2197,14 @@ class SqlWalker
         }
 
         return $resultAlias;
+    }
+
+    /**
+     * @return array A list of classes that appear in non-scalar SelectExpressions.
+     */
+    public function getSelectedClasses(): array
+    {
+        return $this->selectedClasses;
     }
 
     /**
