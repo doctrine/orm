@@ -78,8 +78,8 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
     /**
      * Creates a new persistent collection.
      *
-     * @param EntityManagerInterface|null                   $em        The EntityManager the collection will be associated with.
-     * @param ClassMetadata|null                            $typeClass The class descriptor of the entity type of this collection.
+     * @param EntityManagerInterface|null $em        The EntityManager the collection will be associated with.
+     * @param ClassMetadata|null          $typeClass The class descriptor of the entity type of this collection.
      * @psalm-param Collection<TKey, T>&Selectable<TKey, T> $collection The collection elements.
      */
     public function __construct(
