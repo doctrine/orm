@@ -201,7 +201,7 @@ class OneToManyPersister extends AbstractCollectionPersister
             $statement          .= ' AND ' . $discriminatorColumn['name'] . ' IN (' . implode(', ', array_fill(0, count($discriminatorValues), '?')) . ')';
             foreach ($discriminatorValues as $discriminatorValue) {
                 $parameters[] = $discriminatorValue;
-                $types[]      =  $discriminatorColumn['type'];
+                $types[]      = $discriminatorColumn['type'];
             }
         }
 
