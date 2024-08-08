@@ -667,16 +667,6 @@
       <code><![CDATA[[UnitOfWork::HINT_DEFEREAGERLOAD => true]]]></code>
       <code><![CDATA[[UnitOfWork::HINT_DEFEREAGERLOAD => true]]]></code>
     </InvalidArgument>
-    <LessSpecificReturnStatement>
-      <code><![CDATA[$newValue]]></code>
-      <code><![CDATA[[$params, $types]]]></code>
-      <code><![CDATA[[$sqlParams, $sqlTypes]]]></code>
-    </LessSpecificReturnStatement>
-    <MoreSpecificReturnType>
-      <code><![CDATA[array]]></code>
-      <code><![CDATA[array]]></code>
-      <code><![CDATA[list<mixed>]]></code>
-    </MoreSpecificReturnType>
     <PossiblyNullReference>
       <code><![CDATA[getValue]]></code>
       <code><![CDATA[getValue]]></code>
