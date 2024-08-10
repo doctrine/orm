@@ -252,8 +252,9 @@ abstract class AbstractHydrator
      * @psalm-return array{
      *                   data: array<array-key, array>,
      *                   newObjects?: array<array-key, array{
-     *                       class: mixed,
-     *                       args?: array
+     *                       class: ReflectionClass,
+     *                       args: array,
+     *                       obj: object
      *                   }>,
      *                   scalars?: array
      *               }
@@ -279,6 +280,10 @@ abstract class AbstractHydrator
 
                     if ($value !== null && isset($cacheKeyInfo['enumType'])) {
                         $value = $this->buildEnum($value, $cacheKeyInfo['enumType']);
+                    }
+
+                    if (! isset($rowData['newObjects'])) {
+                        $rowData['newObjects'] = [];
                     }
 
                     $rowData['newObjects'][$objIndex]['class']           = $cacheKeyInfo['class'];
@@ -332,6 +337,31 @@ abstract class AbstractHydrator
                     }
 
                     break;
+            }
+        }
+
+        foreach ($this->resultSetMapping()->nestedNewObjectArguments as $objIndex => ['ownerIndex' => $ownerIndex, 'argIndex' => $argIndex]) {
+            if (! isset($rowData['newObjects'][$objIndex])) {
+                continue;
+            }
+
+            $newObject = $rowData['newObjects'][$objIndex];
+            unset($rowData['newObjects'][$objIndex]);
+
+            $class = $newObject['class'];
+            $args  = $newObject['args'];
+            $obj   = $class->newInstanceArgs($args);
+
+            $rowData['newObjects'][$ownerIndex]['args'][$argIndex] = $obj;
+        }
+
+        if (isset($rowData['newObjects'])) {
+            foreach ($rowData['newObjects'] as $objIndex => $newObject) {
+                $class = $newObject['class'];
+                $args  = $newObject['args'];
+                $obj   = $class->newInstanceArgs($args);
+
+                $rowData['newObjects'][$objIndex]['obj'] = $obj;
             }
         }
 

@@ -25,8 +25,10 @@ use function array_filter;
 use function array_keys;
 use function array_map;
 use function array_merge;
+use function array_pop;
 use function assert;
 use function count;
+use function end;
 use function implode;
 use function is_array;
 use function is_float;
@@ -78,6 +80,13 @@ class SqlWalker
      * Counter for generating indexes.
      */
     private int $newObjectCounter = 0;
+
+    /**
+     * Contains nesting levels of new objects arguments
+     *
+     * @psalm-var array<int, array{0: string|int, 1: int}>
+     */
+    private array $newObjectStack = [];
 
     private readonly EntityManagerInterface $em;
     private readonly Connection $conn;
@@ -1461,7 +1470,14 @@ class SqlWalker
     public function walkNewObject(AST\NewObjectExpression $newObjectExpression, string|null $newObjectResultAlias = null): string
     {
         $sqlSelectExpressions = [];
-        $objIndex             = $newObjectResultAlias ?: $this->newObjectCounter++;
+        $objOwner             = $objOwnerIdx = null;
+
+        if ($this->newObjectStack !== []) {
+            [$objOwner, $objOwnerIdx] = end($this->newObjectStack);
+            $objIndex                 = $objOwner . ':' . $objOwnerIdx;
+        } else {
+            $objIndex = $newObjectResultAlias ?: $this->newObjectCounter++;
+        }
 
         foreach ($newObjectExpression->args as $argIndex => $e) {
             $resultAlias = $this->scalarResultCounter++;
@@ -1470,7 +1486,9 @@ class SqlWalker
 
             switch (true) {
                 case $e instanceof AST\NewObjectExpression:
+                    $this->newObjectStack[] = [$objIndex, $argIndex];
                     $sqlSelectExpressions[] = $e->dispatch($this);
+                    array_pop($this->newObjectStack);
                     break;
 
                 case $e instanceof AST\Subselect:
@@ -1524,6 +1542,10 @@ class SqlWalker
                 'objIndex'  => $objIndex,
                 'argIndex'  => $argIndex,
             ];
+
+            if ($objOwner !== null && $objOwnerIdx !== null) {
+                $this->rsm->addNewObjectAsArgument($objIndex, $objOwner, $objOwnerIdx);
+            }
         }
 
         return implode(', ', $sqlSelectExpressions);

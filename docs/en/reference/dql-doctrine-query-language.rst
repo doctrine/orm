@@ -560,7 +560,34 @@ And then use the ``NEW`` DQL keyword :
     $query = $em->createQuery('SELECT NEW CustomerDTO(c.name, e.email, a.city, SUM(o.value)) FROM Customer c JOIN c.email e JOIN c.address a JOIN c.orders o GROUP BY c');
     $users = $query->getResult(); // array of CustomerDTO
 
-Note that you can only pass scalar expressions to the constructor.
+You can also nest several DTO : 
+
+.. code-block:: php
+
+    <?php
+    class CustomerDTO
+    {
+        public function __construct($name, $email, $address, $value = null)
+        {
+            // Bind values to the object properties.
+        }
+    }
+	
+    class AddressDTO
+    {
+        public function __construct($street, $city, $zip)
+        {
+            // Bind values to the object properties.
+        }
+    }
+	
+.. code-block:: php
+
+    <?php
+    $query = $em->createQuery('SELECT NEW CustomerDTO(c.name, e.email, NEW AddressDTO(a.street, a.city, a.zip)) FROM Customer c JOIN c.email e JOIN c.address a');
+    $users = $query->getResult(); // array of CustomerDTO
+	
+Note that you can only pass scalar expressions or other Data Transfer Objects to the constructor.
 
 Using INDEX BY
 ~~~~~~~~~~~~~~
