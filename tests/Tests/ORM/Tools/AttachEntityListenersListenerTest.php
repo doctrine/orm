@@ -103,6 +103,114 @@ class AttachEntityListenersListenerTest extends OrmTestCase
         self::assertEquals(AttachEntityListenersListenerTestListener2::class, $metadata->entityListeners['postPersist'][1]['class']);
     }
 
+    public function testAttachToExistingInterfaceListeners(): void
+    {
+        $this->listener->addEntityListener(
+            AttachEntityListenersListenerTestInterfaceEntity::class,
+            AttachEntityListenersListenerTestListener2::class,
+            Events::prePersist,
+        );
+
+        $this->listener->addEntityListener(
+            AttachEntityListenersListenerTestBarEntity::class,
+            AttachEntityListenersListenerTestListener2::class,
+            Events::postPersist,
+            'postPersistHandler',
+        );
+
+        $metadata = $this->factory->getMetadataFor(AttachEntityListenersListenerTestBarEntity::class);
+
+        self::assertArrayHasKey('postPersist', $metadata->entityListeners);
+        self::assertArrayHasKey('prePersist', $metadata->entityListeners);
+
+        self::assertCount(2, $metadata->entityListeners['prePersist']);
+        self::assertCount(2, $metadata->entityListeners['postPersist']);
+
+        self::assertEquals('prePersist', $metadata->entityListeners['prePersist'][0]['method']);
+        self::assertEquals(AttachEntityListenersListenerTestListener::class, $metadata->entityListeners['prePersist'][0]['class']);
+
+        self::assertEquals('prePersist', $metadata->entityListeners['prePersist'][1]['method']);
+        self::assertEquals(AttachEntityListenersListenerTestListener2::class, $metadata->entityListeners['prePersist'][1]['class']);
+
+        self::assertEquals('postPersist', $metadata->entityListeners['postPersist'][0]['method']);
+        self::assertEquals(AttachEntityListenersListenerTestListener::class, $metadata->entityListeners['postPersist'][0]['class']);
+
+        self::assertEquals('postPersistHandler', $metadata->entityListeners['postPersist'][1]['method']);
+        self::assertEquals(AttachEntityListenersListenerTestListener2::class, $metadata->entityListeners['postPersist'][1]['class']);
+    }
+
+    public function testAttachToExistingParentListeners(): void
+    {
+        $this->listener->addEntityListener(
+            AttachEntityListenersListenerTestParentEntity::class,
+            AttachEntityListenersListenerTestListener2::class,
+            Events::prePersist,
+        );
+
+        $this->listener->addEntityListener(
+            AttachEntityListenersListenerTestBarEntity::class,
+            AttachEntityListenersListenerTestListener2::class,
+            Events::postPersist,
+            'postPersistHandler',
+        );
+
+        $metadata = $this->factory->getMetadataFor(AttachEntityListenersListenerTestBarEntity::class);
+
+        self::assertArrayHasKey('postPersist', $metadata->entityListeners);
+        self::assertArrayHasKey('prePersist', $metadata->entityListeners);
+
+        self::assertCount(2, $metadata->entityListeners['prePersist']);
+        self::assertCount(2, $metadata->entityListeners['postPersist']);
+
+        self::assertEquals('prePersist', $metadata->entityListeners['prePersist'][0]['method']);
+        self::assertEquals(AttachEntityListenersListenerTestListener::class, $metadata->entityListeners['prePersist'][0]['class']);
+
+        self::assertEquals('prePersist', $metadata->entityListeners['prePersist'][1]['method']);
+        self::assertEquals(AttachEntityListenersListenerTestListener2::class, $metadata->entityListeners['prePersist'][1]['class']);
+
+        self::assertEquals('postPersist', $metadata->entityListeners['postPersist'][0]['method']);
+        self::assertEquals(AttachEntityListenersListenerTestListener::class, $metadata->entityListeners['postPersist'][0]['class']);
+
+        self::assertEquals('postPersistHandler', $metadata->entityListeners['postPersist'][1]['method']);
+        self::assertEquals(AttachEntityListenersListenerTestListener2::class, $metadata->entityListeners['postPersist'][1]['class']);
+    }
+
+    public function testAttachToExistingTraitListeners(): void
+    {
+        $this->listener->addEntityListener(
+            AttachEntityListenersListenerTestTraitEntity::class,
+            AttachEntityListenersListenerTestListener2::class,
+            Events::prePersist,
+        );
+
+        $this->listener->addEntityListener(
+            AttachEntityListenersListenerTestBarEntity::class,
+            AttachEntityListenersListenerTestListener2::class,
+            Events::postPersist,
+            'postPersistHandler',
+        );
+
+        $metadata = $this->factory->getMetadataFor(AttachEntityListenersListenerTestBarEntity::class);
+
+        self::assertArrayHasKey('postPersist', $metadata->entityListeners);
+        self::assertArrayHasKey('prePersist', $metadata->entityListeners);
+
+        self::assertCount(2, $metadata->entityListeners['prePersist']);
+        self::assertCount(2, $metadata->entityListeners['postPersist']);
+
+        self::assertEquals('prePersist', $metadata->entityListeners['prePersist'][0]['method']);
+        self::assertEquals(AttachEntityListenersListenerTestListener::class, $metadata->entityListeners['prePersist'][0]['class']);
+
+        self::assertEquals('prePersist', $metadata->entityListeners['prePersist'][1]['method']);
+        self::assertEquals(AttachEntityListenersListenerTestListener2::class, $metadata->entityListeners['prePersist'][1]['class']);
+
+        self::assertEquals('postPersist', $metadata->entityListeners['postPersist'][0]['method']);
+        self::assertEquals(AttachEntityListenersListenerTestListener::class, $metadata->entityListeners['postPersist'][0]['class']);
+
+        self::assertEquals('postPersistHandler', $metadata->entityListeners['postPersist'][1]['method']);
+        self::assertEquals(AttachEntityListenersListenerTestListener2::class, $metadata->entityListeners['postPersist'][1]['class']);
+    }
+
     public function testDuplicateEntityListenerException(): void
     {
         $this->expectException(MappingException::class);
@@ -147,6 +255,17 @@ class AttachEntityListenersListenerTest extends OrmTestCase
     }
 }
 
+class AttachEntityListenersListenerTestParentEntity
+{
+}
+
+trait AttachEntityListenersListenerTestTraitEntity
+{
+}
+interface AttachEntityListenersListenerTestInterfaceEntity
+{
+}
+
 #[Entity]
 class AttachEntityListenersListenerTestFooEntity
 {
@@ -159,8 +278,10 @@ class AttachEntityListenersListenerTestFooEntity
 
 #[Entity]
 #[EntityListeners(['AttachEntityListenersListenerTestListener'])]
-class AttachEntityListenersListenerTestBarEntity
+class AttachEntityListenersListenerTestBarEntity extends AttachEntityListenersListenerTestParentEntity implements AttachEntityListenersListenerTestInterfaceEntity
 {
+    use AttachEntityListenersListenerTestTraitEntity;
+
     /** @var int */
     #[Id]
     #[Column(type: 'integer')]

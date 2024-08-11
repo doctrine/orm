@@ -57,7 +57,30 @@ class AttachEntityListenersListener
             return;
         }
 
-        foreach ($this->entityListeners[$metadata->name] as $listener) {
+        $tagetEntities = $this->entityListeners[$metadata->name];
+
+        foreach(class_implements($metadata->name, true) as $interface) {
+            echo $interface;
+            if(isset($this->entityListeners[$interface])) {
+                $tagetEntities = array_merge($tagetEntities, $this->entityListeners[$interface]);
+            }
+        }
+
+        foreach(class_parents($metadata->name, true) as $parent) {
+            echo $parent;
+            if(isset($this->entityListeners[$parent])) {
+                $tagetEntities = array_merge($tagetEntities, $this->entityListeners[$parent]);
+            }
+        }
+
+        foreach(class_uses($metadata->name, true) as $trait) {
+            echo $trait;
+            if(isset($this->entityListeners[$trait])) {
+                $tagetEntities = array_merge($tagetEntities, $this->entityListeners[$trait]);
+            }
+        }		
+
+        foreach ($tagetEntities as $listener) {
             if ($listener['event'] === null) {
                 EntityListenerBuilder::bindEntityListener($metadata, $listener['class']);
             } else {
