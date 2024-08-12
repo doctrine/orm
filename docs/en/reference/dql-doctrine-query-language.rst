@@ -567,7 +567,7 @@ You can also nest several DTO :
     <?php
     class CustomerDTO
     {
-        public function __construct($name, $email, $address, $value = null)
+        public function __construct(string $name, string $email, AddressDTO $address, string|null $value = null)
         {
             // Bind values to the object properties.
         }
@@ -575,7 +575,7 @@ You can also nest several DTO :
 	
     class AddressDTO
     {
-        public function __construct($street, $city, $zip)
+        public function __construct(string $street, string $city, string $zip)
         {
             // Bind values to the object properties.
         }
