@@ -1964,8 +1964,14 @@ class BasicEntityPersister implements EntityPersister
 
             return $newValue;
         }
+        
+        $singleIdentifierValue = $this->em->getUnitOfWork()->getSingleIdentifierValue($value);
+        $identifier = $class->getIdentifier()[0];
 
-        return [$this->em->getUnitOfWork()->getSingleIdentifierValue($value)];
+        $singleIdentifierValue = Type::getType($class->fieldMappings[$identifier]->type)
+            ->convertToDatabaseValue($singleIdentifierValue,$this->platform);
+
+        return [$singleIdentifierValue];;
     }
 
     public function exists(object $entity, Criteria|null $extraConditions = null): bool
