@@ -381,4 +381,4 @@ jobs:
         with:
           directory: reports
         env:
-          CODECOV_TOKEN: "${{ secrets.CODECOV_TOKEN }}"
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
