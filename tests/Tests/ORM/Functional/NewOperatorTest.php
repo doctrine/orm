@@ -1013,6 +1013,73 @@ class NewOperatorTest extends OrmFunctionalTestCase
         $dql = 'SELECT new Doctrine\Tests\ORM\Functional\ClassWithPrivateConstructor(u.name) FROM Doctrine\Tests\Models\CMS\CmsUser u';
         $this->_em->createQuery($dql)->getResult();
     }
+
+    public function testShouldSupportNestedNewOperators(): void
+    {
+        $dql = '
+            SELECT
+                new CmsUserDTO(
+                    u.name,
+                    e.email,
+                    new CmsAddressDTO(
+                        a.country,
+                        a.city,
+                        a.zip,
+                        new CmsAddressDTO(
+                            a.country,
+                            a.city,
+                            a.zip
+                        )
+                    )
+                ) as user,
+                u.status,
+                u.username as cmsUserUsername
+            FROM
+                Doctrine\Tests\Models\CMS\CmsUser u
+            JOIN
+                u.email e
+            JOIN
+                u.address a
+            ORDER BY
+                u.name';
+
+        $query  = $this->getEntityManager()->createQuery($dql);
+        $result = $query->getResult();
+
+        self::assertCount(3, $result);
+
+        self::assertInstanceOf(CmsUserDTO::class, $result[0]['user']);
+        self::assertInstanceOf(CmsUserDTO::class, $result[1]['user']);
+        self::assertInstanceOf(CmsUserDTO::class, $result[2]['user']);
+
+        self::assertInstanceOf(CmsAddressDTO::class, $result[0]['user']->address);
+        self::assertInstanceOf(CmsAddressDTO::class, $result[1]['user']->address);
+        self::assertInstanceOf(CmsAddressDTO::class, $result[2]['user']->address);
+
+        self::assertSame($this->fixtures[0]->name, $result[0]['user']->name);
+        self::assertSame($this->fixtures[1]->name, $result[1]['user']->name);
+        self::assertSame($this->fixtures[2]->name, $result[2]['user']->name);
+
+        self::assertSame($this->fixtures[0]->email->email, $result[0]['user']->email);
+        self::assertSame($this->fixtures[1]->email->email, $result[1]['user']->email);
+        self::assertSame($this->fixtures[2]->email->email, $result[2]['user']->email);
+
+        self::assertSame($this->fixtures[0]->address->city, $result[0]['user']->address->city);
+        self::assertSame($this->fixtures[1]->address->city, $result[1]['user']->address->city);
+        self::assertSame($this->fixtures[2]->address->city, $result[2]['user']->address->city);
+
+        self::assertSame($this->fixtures[0]->address->country, $result[0]['user']->address->country);
+        self::assertSame($this->fixtures[1]->address->country, $result[1]['user']->address->country);
+        self::assertSame($this->fixtures[2]->address->country, $result[2]['user']->address->country);
+
+        self::assertSame($this->fixtures[0]->status, $result[0]['status']);
+        self::assertSame($this->fixtures[1]->status, $result[1]['status']);
+        self::assertSame($this->fixtures[2]->status, $result[2]['status']);
+
+        self::assertSame($this->fixtures[0]->username, $result[0]['cmsUserUsername']);
+        self::assertSame($this->fixtures[1]->username, $result[1]['cmsUserUsername']);
+        self::assertSame($this->fixtures[2]->username, $result[2]['cmsUserUsername']);
+    }
 }
 
 class ClassWithTooMuchArgs

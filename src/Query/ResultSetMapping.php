@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Query;
 
+use function array_merge;
 use function count;
 
 /**
@@ -151,6 +152,13 @@ class ResultSetMapping
      * @psalm-var array<string, array<string, mixed>>
      */
     public array $newObjectMappings = [];
+
+    /**
+     * Maps last argument for new objects in order to initiate object construction
+     *
+     * @psalm-var array<int|string, array{ownerIndex: string|int, argIndex: int|string}>
+     */
+    public array $nestedNewObjectArguments = [];
 
     /**
      * Maps metadata parameter names to the metadata attribute.
@@ -541,6 +549,27 @@ class ResultSetMapping
         if ($type) {
             $this->typeMappings[$columnName] = $type;
         }
+
+        return $this;
+    }
+
+    public function addNewObjectAsArgument(string|int $alias, string|int $objOwner, int $objOwnerIdx): static
+    {
+        $owner = [
+            'ownerIndex' => $objOwner,
+            'argIndex' => $objOwnerIdx,
+        ];
+
+        if (! isset($this->nestedNewObjectArguments[$owner['ownerIndex']])) {
+            $this->nestedNewObjectArguments[$alias] = $owner;
+
+            return $this;
+        }
+
+        $this->nestedNewObjectArguments = array_merge(
+            [$alias => $owner],
+            $this->nestedNewObjectArguments,
+        );
 
         return $this;
     }

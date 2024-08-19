@@ -216,6 +216,10 @@
       <code><![CDATA[return $rowData;]]></code>
       <code><![CDATA[return $rowData;]]></code>
     </ReferenceConstraintViolation>
+    <PossiblyUndefinedArrayOffset>
+      <code><![CDATA[$newObject['args']]]></code>
+      <code><![CDATA[$newObject['args']]]></code>
+    </PossiblyUndefinedArrayOffset>
   </file>
   <file src="src/Internal/Hydration/ArrayHydrator.php">
     <PossiblyInvalidArgument>
@@ -228,9 +232,6 @@
       <code><![CDATA[$result[$resultKey]]]></code>
       <code><![CDATA[$result[$resultKey]]]></code>
     </PossiblyNullArrayAssignment>
-    <PossiblyUndefinedArrayOffset>
-      <code><![CDATA[$newObject['args']]]></code>
-    </PossiblyUndefinedArrayOffset>
     <ReferenceConstraintViolation>
       <code><![CDATA[$result]]></code>
     </ReferenceConstraintViolation>
@@ -265,9 +266,6 @@
       <code><![CDATA[setValue]]></code>
       <code><![CDATA[setValue]]></code>
     </PossiblyNullReference>
-    <PossiblyUndefinedArrayOffset>
-      <code><![CDATA[$newObject['args']]]></code>
-    </PossiblyUndefinedArrayOffset>
   </file>
   <file src="src/Mapping/AssociationMapping.php">
     <LessSpecificReturnStatement>
