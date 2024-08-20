@@ -1,0 +1,11 @@
+parameters:
+    level: 5
+    paths:
+      - docs/extracted_blocks
+    phpVersion: 80200
+    scanDirectories:
+      - docs/extracted_blocks
+    ignoreErrors:
+      - "#^Method .* is unused.$#"
+includes:
+    - phpstan-docs-baseline.neon

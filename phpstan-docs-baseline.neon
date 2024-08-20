@@ -1,0 +1,4931 @@
+parameters:
+	ignoreErrors:
+		-
+			message: "#^Variable \\$config might not be defined\\.$#"
+			count: 2
+			path: docs/extracted_blocks/advanced-configuration_line106.php
+
+		-
+			message: "#^Variable \\$driver might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/advanced-configuration_line106.php
+
+		-
+			message: "#^Call to static method getConnection\\(\\) on an unknown class DriverManager\\.$#"
+			count: 1
+			path: docs/extracted_blocks/advanced-configuration_line11.php
+
+		-
+			message: "#^Variable \\$applicationMode might not be defined\\.$#"
+			count: 2
+			path: docs/extracted_blocks/advanced-configuration_line11.php
+
+		-
+			message: "#^Variable \\$config might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/advanced-configuration_line134.php
+
+		-
+			message: "#^Variable \\$cache might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/advanced-configuration_line152.php
+
+		-
+			message: "#^Variable \\$config might not be defined\\.$#"
+			count: 2
+			path: docs/extracted_blocks/advanced-configuration_line152.php
+
+		-
+			message: "#^Variable \\$cache might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/advanced-configuration_line174.php
+
+		-
+			message: "#^Variable \\$config might not be defined\\.$#"
+			count: 2
+			path: docs/extracted_blocks/advanced-configuration_line174.php
+
+		-
+			message: "#^Variable \\$config might not be defined\\.$#"
+			count: 2
+			path: docs/extracted_blocks/advanced-configuration_line197.php
+
+		-
+			message: "#^Variable \\$logger might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/advanced-configuration_line197.php
+
+		-
+			message: "#^Variable \\$config might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/advanced-configuration_line214.php
+
+		-
+			message: "#^Variable \\$mode might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/advanced-configuration_line214.php
+
+		-
+			message: "#^Variable \\$cart might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/advanced-configuration_line323.php
+
+		-
+			message: "#^Variable \\$em might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/advanced-configuration_line323.php
+
+		-
+			message: "#^Variable \\$itemId might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/advanced-configuration_line323.php
+
+		-
+			message: "#^Variable \\$xmlDriver might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/advanced-configuration_line433.php
+
+		-
+			message: "#^Variable \\$yamlDriver might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/advanced-configuration_line433.php
+
+		-
+			message: "#^Variable \\$config might not be defined\\.$#"
+			count: 2
+			path: docs/extracted_blocks/advanced-configuration_line457.php
+
+		-
+			message: "#^Variable \\$fqcn might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/advanced-configuration_line457.php
+
+		-
+			message: "#^Variable \\$config might not be defined\\.$#"
+			count: 2
+			path: docs/extracted_blocks/advanced-configuration_line472.php
+
+		-
+			message: "#^Variable \\$fqcn might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/advanced-configuration_line472.php
+
+		-
+			message: "#^Variable \\$config might not be defined\\.$#"
+			count: 2
+			path: docs/extracted_blocks/advanced-configuration_line79.php
+
+		-
+			message: "#^Variable \\$dir might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/advanced-configuration_line79.php
+
+		-
+			message: "#^Variable \\$config might not be defined\\.$#"
+			count: 2
+			path: docs/extracted_blocks/advanced-configuration_line93.php
+
+		-
+			message: "#^Variable \\$namespace might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/advanced-configuration_line93.php
+
+		-
+			message: "#^Parameter \\#2 \\$className of static method Doctrine\\\\DBAL\\\\Types\\\\Type\\:\\:addType\\(\\) expects class\\-string\\<Doctrine\\\\DBAL\\\\Types\\\\Type\\>, string given\\.$#"
+			count: 1
+			path: docs/extracted_blocks/advanced-field-value-conversion-using-custom-mapping-types_line196.php
+
+		-
+			message: "#^Variable \\$em might not be defined\\.$#"
+			count: 5
+			path: docs/extracted_blocks/advanced-field-value-conversion-using-custom-mapping-types_line196.php
+
+		-
+			message: "#^Attribute class Geo\\\\Entity\\\\Column does not exist\\.$#"
+			count: 2
+			path: docs/extracted_blocks/advanced-field-value-conversion-using-custom-mapping-types_line31.php
+
+		-
+			message: "#^Attribute class Geo\\\\Entity\\\\Entity does not exist\\.$#"
+			count: 1
+			path: docs/extracted_blocks/advanced-field-value-conversion-using-custom-mapping-types_line31.php
+
+		-
+			message: "#^Access to an undefined property Account\\:\\:\\$entries\\.$#"
+			count: 1
+			path: docs/extracted_blocks/aggregate-fields_line137.php
+
+		-
+			message: "#^Access to an undefined property Account\\:\\:\\$entries\\.$#"
+			count: 1
+			path: docs/extracted_blocks/aggregate-fields_line169.php
+
+		-
+			message: "#^Call to an undefined method Account\\:\\:assertAcceptEntryAllowed\\(\\)\\.$#"
+			count: 1
+			path: docs/extracted_blocks/aggregate-fields_line169.php
+
+		-
+			message: "#^Instantiated class Entry not found\\.$#"
+			count: 1
+			path: docs/extracted_blocks/aggregate-fields_line169.php
+
+		-
+			message: "#^Call to an undefined method Account\\:\\:addEntry\\(\\)\\.$#"
+			count: 3
+			path: docs/extracted_blocks/aggregate-fields_line184.php
+
+		-
+			message: "#^Call to an undefined method Account\\:\\:getBalance\\(\\)\\.$#"
+			count: 3
+			path: docs/extracted_blocks/aggregate-fields_line184.php
+
+		-
+			message: "#^Class Account does not have a constructor and must be instantiated without any parameters\\.$#"
+			count: 2
+			path: docs/extracted_blocks/aggregate-fields_line184.php
+
+		-
+			message: "#^Access to an undefined property Account\\:\\:\\$maxCredit\\.$#"
+			count: 1
+			path: docs/extracted_blocks/aggregate-fields_line216.php
+
+		-
+			message: "#^Call to an undefined method Account\\:\\:getBalance\\(\\)\\.$#"
+			count: 1
+			path: docs/extracted_blocks/aggregate-fields_line216.php
+
+		-
+			message: "#^Call to an undefined method Account\\:\\:addEntry\\(\\)\\.$#"
+			count: 2
+			path: docs/extracted_blocks/aggregate-fields_line241.php
+
+		-
+			message: "#^Class Account does not have a constructor and must be instantiated without any parameters\\.$#"
+			count: 1
+			path: docs/extracted_blocks/aggregate-fields_line241.php
+
+		-
+			message: "#^Variable \\$em might not be defined\\.$#"
+			count: 2
+			path: docs/extracted_blocks/aggregate-fields_line241.php
+
+		-
+			message: "#^Access to an undefined property Account\\:\\:\\$entries\\.$#"
+			count: 1
+			path: docs/extracted_blocks/aggregate-fields_line263.php
+
+		-
+			message: "#^Attribute class ORM\\\\Column does not exist\\.$#"
+			count: 1
+			path: docs/extracted_blocks/aggregate-fields_line263.php
+
+		-
+			message: "#^Call to an undefined method Account\\:\\:assertAcceptEntryAllowed\\(\\)\\.$#"
+			count: 1
+			path: docs/extracted_blocks/aggregate-fields_line263.php
+
+		-
+			message: "#^Instantiated class Entry not found\\.$#"
+			count: 1
+			path: docs/extracted_blocks/aggregate-fields_line263.php
+
+		-
+			message: "#^Variable \\$accId might not be defined\\.$#"
+			count: 2
+			path: docs/extracted_blocks/aggregate-fields_line302.php
+
+		-
+			message: "#^Variable \\$em might not be defined\\.$#"
+			count: 2
+			path: docs/extracted_blocks/aggregate-fields_line302.php
+
+		-
+			message: "#^Attribute class ORM\\\\Column does not exist\\.$#"
+			count: 1
+			path: docs/extracted_blocks/aggregate-fields_line331.php
+
+		-
+			message: "#^Attribute class ORM\\\\Version does not exist\\.$#"
+			count: 1
+			path: docs/extracted_blocks/aggregate-fields_line331.php
+
+		-
+			message: "#^Property Account\\:\\:\\$version is unused\\.$#"
+			count: 1
+			path: docs/extracted_blocks/aggregate-fields_line331.php
+
+		-
+			message: "#^Method Bank\\\\Entities\\\\Entry\\:\\:getAmount\\(\\) has invalid return type Bank\\\\Entities\\\\Amount\\.$#"
+			count: 1
+			path: docs/extracted_blocks/aggregate-fields_line34.php
+
+		-
+			message: "#^Method Bank\\\\Entities\\\\Entry\\:\\:getAmount\\(\\) should return Bank\\\\Entities\\\\Amount but returns int\\.$#"
+			count: 1
+			path: docs/extracted_blocks/aggregate-fields_line34.php
+
+		-
+			message: "#^Property Bank\\\\Entities\\\\Account\\:\\:\\$entries is never read, only written\\.$#"
+			count: 1
+			path: docs/extracted_blocks/aggregate-fields_line34.php
+
+		-
+			message: "#^Property Bank\\\\Entities\\\\Account\\:\\:\\$id is unused\\.$#"
+			count: 1
+			path: docs/extracted_blocks/aggregate-fields_line34.php
+
+		-
+			message: "#^Property Bank\\\\Entities\\\\Account\\:\\:\\$maxCredit is never read, only written\\.$#"
+			count: 1
+			path: docs/extracted_blocks/aggregate-fields_line34.php
+
+		-
+			message: "#^Property Bank\\\\Entities\\\\Account\\:\\:\\$no is never read, only written\\.$#"
+			count: 1
+			path: docs/extracted_blocks/aggregate-fields_line34.php
+
+		-
+			message: "#^Property Bank\\\\Entities\\\\Entry\\:\\:\\$account is never read, only written\\.$#"
+			count: 1
+			path: docs/extracted_blocks/aggregate-fields_line34.php
+
+		-
+			message: "#^Property Bank\\\\Entities\\\\Entry\\:\\:\\$id is unused\\.$#"
+			count: 1
+			path: docs/extracted_blocks/aggregate-fields_line34.php
+
+		-
+			message: "#^Variable \\$accId might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/aggregate-fields_line350.php
+
+		-
+			message: "#^Variable \\$em might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/aggregate-fields_line350.php
+
+		-
+			message: "#^Variable \\$em might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/aggregate-fields_line98.php
+
+		-
+			message: "#^Variable \\$myAccountId might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/aggregate-fields_line98.php
+
+		-
+			message: "#^Access to an offset on an unknown class Collection\\.$#"
+			count: 2
+			path: docs/extracted_blocks/association-mapping_line1061.php
+
+		-
+			message: "#^Property Article\\:\\:\\$tags has unknown class Collection as its type\\.$#"
+			count: 1
+			path: docs/extracted_blocks/association-mapping_line1061.php
+
+		-
+			message: "#^Property Article\\:\\:\\$tags is never read, only written\\.$#"
+			count: 1
+			path: docs/extracted_blocks/association-mapping_line1061.php
+
+		-
+			message: "#^Property Tag\\:\\:\\$articles has unknown class Collection as its type\\.$#"
+			count: 1
+			path: docs/extracted_blocks/association-mapping_line1061.php
+
+		-
+			message: "#^Property Tag\\:\\:\\$articles is never read, only written\\.$#"
+			count: 1
+			path: docs/extracted_blocks/association-mapping_line1061.php
+
+		-
+			message: "#^Call to an undefined method Article\\:\\:addTag\\(\\)\\.$#"
+			count: 2
+			path: docs/extracted_blocks/association-mapping_line1088.php
+
+		-
+			message: "#^Variable \\$tagA might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/association-mapping_line1088.php
+
+		-
+			message: "#^Variable \\$tagB might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/association-mapping_line1088.php
+
+		-
+			message: "#^Attribute class Entity does not exist\\.$#"
+			count: 1
+			path: docs/extracted_blocks/association-mapping_line1104.php
+
+		-
+			message: "#^Attribute class InverseJoinColumn does not exist\\.$#"
+			count: 1
+			path: docs/extracted_blocks/association-mapping_line1104.php
+
+		-
+			message: "#^Attribute class JoinColumn does not exist\\.$#"
+			count: 1
+			path: docs/extracted_blocks/association-mapping_line1104.php
+
+		-
+			message: "#^Attribute class JoinTable does not exist\\.$#"
+			count: 1
+			path: docs/extracted_blocks/association-mapping_line1104.php
+
+		-
+			message: "#^Attribute class ManyToMany does not exist\\.$#"
+			count: 2
+			path: docs/extracted_blocks/association-mapping_line1104.php
+
+		-
+			message: "#^Instantiated class ArrayCollection not found\\.$#"
+			count: 2
+			path: docs/extracted_blocks/association-mapping_line1104.php
+
+		-
+			message: "#^Property User\\:\\:\\$friendsWithMe has unknown class Collection as its type\\.$#"
+			count: 2
+			path: docs/extracted_blocks/association-mapping_line1104.php
+
+		-
+			message: "#^Property User\\:\\:\\$friendsWithMe is never read, only written\\.$#"
+			count: 1
+			path: docs/extracted_blocks/association-mapping_line1104.php
+
+		-
+			message: "#^Property User\\:\\:\\$myFriends has unknown class Collection as its type\\.$#"
+			count: 2
+			path: docs/extracted_blocks/association-mapping_line1104.php
+
+		-
+			message: "#^Property User\\:\\:\\$myFriends is never read, only written\\.$#"
+			count: 1
+			path: docs/extracted_blocks/association-mapping_line1104.php
+
+		-
+			message: "#^Attribute class ManyToMany does not exist\\.$#"
+			count: 1
+			path: docs/extracted_blocks/association-mapping_line1248.php
+
+		-
+			message: "#^Property User\\:\\:\\$groups has unknown class Collection as its type\\.$#"
+			count: 2
+			path: docs/extracted_blocks/association-mapping_line1248.php
+
+		-
+			message: "#^Property User\\:\\:\\$groups is unused\\.$#"
+			count: 1
+			path: docs/extracted_blocks/association-mapping_line1248.php
+
+		-
+			message: "#^Property User\\:\\:\\$groups has unknown class Collection as its type\\.$#"
+			count: 2
+			path: docs/extracted_blocks/association-mapping_line1260.php
+
+		-
+			message: "#^Property User\\:\\:\\$groups is unused\\.$#"
+			count: 1
+			path: docs/extracted_blocks/association-mapping_line1260.php
+
+		-
+			message: "#^Attribute class InverseJoinColumn does not exist\\.$#"
+			count: 1
+			path: docs/extracted_blocks/association-mapping_line1294.php
+
+		-
+			message: "#^Attribute class JoinColumn does not exist\\.$#"
+			count: 1
+			path: docs/extracted_blocks/association-mapping_line1294.php
+
+		-
+			message: "#^Attribute class JoinTable does not exist\\.$#"
+			count: 1
+			path: docs/extracted_blocks/association-mapping_line1294.php
+
+		-
+			message: "#^Attribute class ManyToMany does not exist\\.$#"
+			count: 1
+			path: docs/extracted_blocks/association-mapping_line1294.php
+
+		-
+			message: "#^Property User\\:\\:\\$groups has unknown class Collection as its type\\.$#"
+			count: 2
+			path: docs/extracted_blocks/association-mapping_line1294.php
+
+		-
+			message: "#^Property User\\:\\:\\$groups is unused\\.$#"
+			count: 1
+			path: docs/extracted_blocks/association-mapping_line1294.php
+
+		-
+			message: "#^Property User\\:\\:\\$groups has unknown class Collection as its type\\.$#"
+			count: 2
+			path: docs/extracted_blocks/association-mapping_line1312.php
+
+		-
+			message: "#^Property User\\:\\:\\$groups is unused\\.$#"
+			count: 1
+			path: docs/extracted_blocks/association-mapping_line1312.php
+
+		-
+			message: "#^Attribute class Entity does not exist\\.$#"
+			count: 2
+			path: docs/extracted_blocks/association-mapping_line137.php
+
+		-
+			message: "#^Attribute class JoinColumn does not exist\\.$#"
+			count: 1
+			path: docs/extracted_blocks/association-mapping_line137.php
+
+		-
+			message: "#^Attribute class OneToOne does not exist\\.$#"
+			count: 1
+			path: docs/extracted_blocks/association-mapping_line137.php
+
+		-
+			message: "#^Property Product\\:\\:\\$shipment is never read, only written\\.$#"
+			count: 1
+			path: docs/extracted_blocks/association-mapping_line137.php
+
+		-
+			message: "#^Attribute class Entity does not exist\\.$#"
+			count: 1
+			path: docs/extracted_blocks/association-mapping_line1480.php
+
+		-
+			message: "#^Attribute class ManyToMany does not exist\\.$#"
+			count: 1
+			path: docs/extracted_blocks/association-mapping_line1480.php
+
+		-
+			message: "#^Call to an undefined method User\\:\\:getGroups\\(\\)\\.$#"
+			count: 1
+			path: docs/extracted_blocks/association-mapping_line1507.php
+
+		-
+			message: "#^Property Product\\:\\:\\$shipment is never read, only written\\.$#"
+			count: 1
+			path: docs/extracted_blocks/association-mapping_line159.php
+
+		-
+			message: "#^Attribute class Entity does not exist\\.$#"
+			count: 2
+			path: docs/extracted_blocks/association-mapping_line236.php
+
+		-
+			message: "#^Attribute class JoinColumn does not exist\\.$#"
+			count: 1
+			path: docs/extracted_blocks/association-mapping_line236.php
+
+		-
+			message: "#^Attribute class OneToOne does not exist\\.$#"
+			count: 2
+			path: docs/extracted_blocks/association-mapping_line236.php
+
+		-
+			message: "#^Property Cart\\:\\:\\$customer is never read, only written\\.$#"
+			count: 1
+			path: docs/extracted_blocks/association-mapping_line236.php
+
+		-
+			message: "#^Property Customer\\:\\:\\$cart is never read, only written\\.$#"
+			count: 1
+			path: docs/extracted_blocks/association-mapping_line236.php
+
+		-
+			message: "#^Property Cart\\:\\:\\$customer is never read, only written\\.$#"
+			count: 1
+			path: docs/extracted_blocks/association-mapping_line264.php
+
+		-
+			message: "#^Property Customer\\:\\:\\$cart is never read, only written\\.$#"
+			count: 1
+			path: docs/extracted_blocks/association-mapping_line264.php
+
+		-
+			message: "#^Attribute class Entity does not exist\\.$#"
+			count: 1
+			path: docs/extracted_blocks/association-mapping_line354.php
+
+		-
+			message: "#^Attribute class JoinColumn does not exist\\.$#"
+			count: 1
+			path: docs/extracted_blocks/association-mapping_line354.php
+
+		-
+			message: "#^Attribute class OneToOne does not exist\\.$#"
+			count: 1
+			path: docs/extracted_blocks/association-mapping_line354.php
+
+		-
+			message: "#^Property Student\\:\\:\\$mentor is never read, only written\\.$#"
+			count: 1
+			path: docs/extracted_blocks/association-mapping_line354.php
+
+		-
+			message: "#^Attribute class Entity does not exist\\.$#"
+			count: 2
+			path: docs/extracted_blocks/association-mapping_line400.php
+
+		-
+			message: "#^Attribute class JoinColumn does not exist\\.$#"
+			count: 1
+			path: docs/extracted_blocks/association-mapping_line400.php
+
+		-
+			message: "#^Attribute class ManyToOne does not exist\\.$#"
+			count: 1
+			path: docs/extracted_blocks/association-mapping_line400.php
+
+		-
+			message: "#^Attribute class OneToMany does not exist\\.$#"
+			count: 1
+			path: docs/extracted_blocks/association-mapping_line400.php
+
+		-
+			message: "#^Property Feature\\:\\:\\$product is never read, only written\\.$#"
+			count: 1
+			path: docs/extracted_blocks/association-mapping_line400.php
+
+		-
+			message: "#^Property Product\\:\\:\\$features has unknown class Collection as its type\\.$#"
+			count: 2
+			path: docs/extracted_blocks/association-mapping_line400.php
+
+		-
+			message: "#^Property Product\\:\\:\\$features is never read, only written\\.$#"
+			count: 1
+			path: docs/extracted_blocks/association-mapping_line400.php
+
+		-
+			message: "#^Attribute class Entity does not exist\\.$#"
+			count: 2
+			path: docs/extracted_blocks/association-mapping_line42.php
+
+		-
+			message: "#^Attribute class JoinColumn does not exist\\.$#"
+			count: 1
+			path: docs/extracted_blocks/association-mapping_line42.php
+
+		-
+			message: "#^Attribute class ManyToOne does not exist\\.$#"
+			count: 1
+			path: docs/extracted_blocks/association-mapping_line42.php
+
+		-
+			message: "#^Property User\\:\\:\\$address is never read, only written\\.$#"
+			count: 1
+			path: docs/extracted_blocks/association-mapping_line42.php
+
+		-
+			message: "#^Property Feature\\:\\:\\$product is never read, only written\\.$#"
+			count: 1
+			path: docs/extracted_blocks/association-mapping_line433.php
+
+		-
+			message: "#^Property Product\\:\\:\\$features has unknown class Collection as its type\\.$#"
+			count: 2
+			path: docs/extracted_blocks/association-mapping_line433.php
+
+		-
+			message: "#^Property Product\\:\\:\\$features is never read, only written\\.$#"
+			count: 1
+			path: docs/extracted_blocks/association-mapping_line433.php
+
+		-
+			message: "#^Attribute class Entity does not exist\\.$#"
+			count: 2
+			path: docs/extracted_blocks/association-mapping_line529.php
+
+		-
+			message: "#^Attribute class InverseJoinColumn does not exist\\.$#"
+			count: 1
+			path: docs/extracted_blocks/association-mapping_line529.php
+
+		-
+			message: "#^Attribute class JoinColumn does not exist\\.$#"
+			count: 1
+			path: docs/extracted_blocks/association-mapping_line529.php
+
+		-
+			message: "#^Attribute class JoinTable does not exist\\.$#"
+			count: 1
+			path: docs/extracted_blocks/association-mapping_line529.php
+
+		-
+			message: "#^Attribute class ManyToMany does not exist\\.$#"
+			count: 1
+			path: docs/extracted_blocks/association-mapping_line529.php
+
+		-
+			message: "#^Instantiated class ArrayCollection not found\\.$#"
+			count: 1
+			path: docs/extracted_blocks/association-mapping_line529.php
+
+		-
+			message: "#^Property User\\:\\:\\$phonenumbers has unknown class Collection as its type\\.$#"
+			count: 2
+			path: docs/extracted_blocks/association-mapping_line529.php
+
+		-
+			message: "#^Property User\\:\\:\\$phonenumbers is never read, only written\\.$#"
+			count: 1
+			path: docs/extracted_blocks/association-mapping_line529.php
+
+		-
+			message: "#^Property User\\:\\:\\$phonenumbers has unknown class Collection as its type\\.$#"
+			count: 2
+			path: docs/extracted_blocks/association-mapping_line561.php
+
+		-
+			message: "#^Property User\\:\\:\\$phonenumbers is never read, only written\\.$#"
+			count: 1
+			path: docs/extracted_blocks/association-mapping_line561.php
+
+		-
+			message: "#^Property User\\:\\:\\$address is never read, only written\\.$#"
+			count: 1
+			path: docs/extracted_blocks/association-mapping_line61.php
+
+		-
+			message: "#^Attribute class Entity does not exist\\.$#"
+			count: 1
+			path: docs/extracted_blocks/association-mapping_line664.php
+
+		-
+			message: "#^Attribute class JoinColumn does not exist\\.$#"
+			count: 1
+			path: docs/extracted_blocks/association-mapping_line664.php
+
+		-
+			message: "#^Attribute class ManyToOne does not exist\\.$#"
+			count: 1
+			path: docs/extracted_blocks/association-mapping_line664.php
+
+		-
+			message: "#^Attribute class OneToMany does not exist\\.$#"
+			count: 1
+			path: docs/extracted_blocks/association-mapping_line664.php
+
+		-
+			message: "#^Instantiated class ArrayCollection not found\\.$#"
+			count: 1
+			path: docs/extracted_blocks/association-mapping_line664.php
+
+		-
+			message: "#^Property Category\\:\\:\\$children has unknown class Collection as its type\\.$#"
+			count: 2
+			path: docs/extracted_blocks/association-mapping_line664.php
+
+		-
+			message: "#^Property Category\\:\\:\\$children is never read, only written\\.$#"
+			count: 1
+			path: docs/extracted_blocks/association-mapping_line664.php
+
+		-
+			message: "#^Property Category\\:\\:\\$parent is never read, only written\\.$#"
+			count: 1
+			path: docs/extracted_blocks/association-mapping_line664.php
+
+		-
+			message: "#^Property Category\\:\\:\\$children has unknown class Collection as its type\\.$#"
+			count: 2
+			path: docs/extracted_blocks/association-mapping_line689.php
+
+		-
+			message: "#^Property Category\\:\\:\\$children is never read, only written\\.$#"
+			count: 1
+			path: docs/extracted_blocks/association-mapping_line689.php
+
+		-
+			message: "#^Property Category\\:\\:\\$parent is never read, only written\\.$#"
+			count: 1
+			path: docs/extracted_blocks/association-mapping_line689.php
+
+		-
+			message: "#^Attribute class Entity does not exist\\.$#"
+			count: 2
+			path: docs/extracted_blocks/association-mapping_line761.php
+
+		-
+			message: "#^Attribute class InverseJoinColumn does not exist\\.$#"
+			count: 1
+			path: docs/extracted_blocks/association-mapping_line761.php
+
+		-
+			message: "#^Attribute class JoinColumn does not exist\\.$#"
+			count: 1
+			path: docs/extracted_blocks/association-mapping_line761.php
+
+		-
+			message: "#^Attribute class JoinTable does not exist\\.$#"
+			count: 1
+			path: docs/extracted_blocks/association-mapping_line761.php
+
+		-
+			message: "#^Attribute class ManyToMany does not exist\\.$#"
+			count: 1
+			path: docs/extracted_blocks/association-mapping_line761.php
+
+		-
+			message: "#^Instantiated class ArrayCollection not found\\.$#"
+			count: 1
+			path: docs/extracted_blocks/association-mapping_line761.php
+
+		-
+			message: "#^Property User\\:\\:\\$groups has unknown class Collection as its type\\.$#"
+			count: 2
+			path: docs/extracted_blocks/association-mapping_line761.php
+
+		-
+			message: "#^Property User\\:\\:\\$groups is never read, only written\\.$#"
+			count: 1
+			path: docs/extracted_blocks/association-mapping_line761.php
+
+		-
+			message: "#^Property User\\:\\:\\$groups has unknown class Collection as its type\\.$#"
+			count: 2
+			path: docs/extracted_blocks/association-mapping_line792.php
+
+		-
+			message: "#^Property User\\:\\:\\$groups is never read, only written\\.$#"
+			count: 1
+			path: docs/extracted_blocks/association-mapping_line792.php
+
+		-
+			message: "#^Attribute class Entity does not exist\\.$#"
+			count: 2
+			path: docs/extracted_blocks/association-mapping_line903.php
+
+		-
+			message: "#^Attribute class JoinTable does not exist\\.$#"
+			count: 1
+			path: docs/extracted_blocks/association-mapping_line903.php
+
+		-
+			message: "#^Attribute class ManyToMany does not exist\\.$#"
+			count: 2
+			path: docs/extracted_blocks/association-mapping_line903.php
+
+		-
+			message: "#^Instantiated class ArrayCollection not found\\.$#"
+			count: 2
+			path: docs/extracted_blocks/association-mapping_line903.php
+
+		-
+			message: "#^Property Group\\:\\:\\$users has unknown class Collection as its type\\.$#"
+			count: 2
+			path: docs/extracted_blocks/association-mapping_line903.php
+
+		-
+			message: "#^Property Group\\:\\:\\$users is never read, only written\\.$#"
+			count: 1
+			path: docs/extracted_blocks/association-mapping_line903.php
+
+		-
+			message: "#^Property User\\:\\:\\$groups has unknown class Collection as its type\\.$#"
+			count: 2
+			path: docs/extracted_blocks/association-mapping_line903.php
+
+		-
+			message: "#^Property User\\:\\:\\$groups is never read, only written\\.$#"
+			count: 1
+			path: docs/extracted_blocks/association-mapping_line903.php
+
+		-
+			message: "#^Property Group\\:\\:\\$users has unknown class Collection as its type\\.$#"
+			count: 2
+			path: docs/extracted_blocks/association-mapping_line944.php
+
+		-
+			message: "#^Property Group\\:\\:\\$users is never read, only written\\.$#"
+			count: 1
+			path: docs/extracted_blocks/association-mapping_line944.php
+
+		-
+			message: "#^Property User\\:\\:\\$groups has unknown class Collection as its type\\.$#"
+			count: 2
+			path: docs/extracted_blocks/association-mapping_line944.php
+
+		-
+			message: "#^Property User\\:\\:\\$groups is never read, only written\\.$#"
+			count: 1
+			path: docs/extracted_blocks/association-mapping_line944.php
+
+		-
+			message: "#^Attribute class Doctrine\\\\ORM\\\\Mapping\\\\ChangeTrackingPolicy is not repeatable but is already present above the class\\.$#"
+			count: 2
+			path: docs/extracted_blocks/attributes-reference_line305.php
+
+		-
+			message: "#^Class MyProject\\\\Repository\\\\UserRepository not found\\.$#"
+			count: 1
+			path: docs/extracted_blocks/attributes-reference_line462.php
+
+		-
+			message: "#^Access to undefined constant Doctrine\\\\DBAL\\\\Types\\\\Types\\:\\:DATETIME\\.$#"
+			count: 1
+			path: docs/extracted_blocks/basic-mapping_line170.php
+
+		-
+			message: "#^Attribute class Entity does not exist\\.$#"
+			count: 1
+			path: docs/extracted_blocks/basic-mapping_line170.php
+
+		-
+			message: "#^Property Message\\:\\:\\$id is unused\\.$#"
+			count: 1
+			path: docs/extracted_blocks/basic-mapping_line170.php
+
+		-
+			message: "#^Property Message\\:\\:\\$postedAt is unused\\.$#"
+			count: 1
+			path: docs/extracted_blocks/basic-mapping_line170.php
+
+		-
+			message: "#^Property Message\\:\\:\\$text is unused\\.$#"
+			count: 1
+			path: docs/extracted_blocks/basic-mapping_line170.php
+
+		-
+			message: "#^Property Message\\:\\:\\$id is unused\\.$#"
+			count: 1
+			path: docs/extracted_blocks/basic-mapping_line187.php
+
+		-
+			message: "#^Property Message\\:\\:\\$postedAt is unused\\.$#"
+			count: 1
+			path: docs/extracted_blocks/basic-mapping_line187.php
+
+		-
+			message: "#^Property Message\\:\\:\\$text is unused\\.$#"
+			count: 1
+			path: docs/extracted_blocks/basic-mapping_line187.php
+
+		-
+			message: "#^Property Message\\:\\:\\$id is unused\\.$#"
+			count: 1
+			path: docs/extracted_blocks/basic-mapping_line29.php
+
+		-
+			message: "#^Property Message\\:\\:\\$postedAt is unused\\.$#"
+			count: 1
+			path: docs/extracted_blocks/basic-mapping_line29.php
+
+		-
+			message: "#^Property Message\\:\\:\\$text is unused\\.$#"
+			count: 1
+			path: docs/extracted_blocks/basic-mapping_line29.php
+
+		-
+			message: "#^Attribute class Column does not exist\\.$#"
+			count: 1
+			path: docs/extracted_blocks/basic-mapping_line339.php
+
+		-
+			message: "#^Attribute class GeneratedValue does not exist\\.$#"
+			count: 1
+			path: docs/extracted_blocks/basic-mapping_line339.php
+
+		-
+			message: "#^Attribute class Id does not exist\\.$#"
+			count: 1
+			path: docs/extracted_blocks/basic-mapping_line339.php
+
+		-
+			message: "#^Property Message\\:\\:\\$id is never read, only written\\.$#"
+			count: 1
+			path: docs/extracted_blocks/basic-mapping_line339.php
+
+		-
+			message: "#^Property Message\\:\\:\\$id is never read, only written\\.$#"
+			count: 1
+			path: docs/extracted_blocks/basic-mapping_line351.php
+
+		-
+			message: "#^Attribute class GeneratedValue does not exist\\.$#"
+			count: 1
+			path: docs/extracted_blocks/basic-mapping_line440.php
+
+		-
+			message: "#^Attribute class Id does not exist\\.$#"
+			count: 1
+			path: docs/extracted_blocks/basic-mapping_line440.php
+
+		-
+			message: "#^Attribute class SequenceGenerator does not exist\\.$#"
+			count: 1
+			path: docs/extracted_blocks/basic-mapping_line440.php
+
+		-
+			message: "#^Variable \\$configuration might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/basic-mapping_line568.php
+
+		-
+			message: "#^Variable \\$em might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/batch-processing_line138.php
+
+		-
+			message: "#^Variable \\$em might not be defined\\.$#"
+			count: 5
+			path: docs/extracted_blocks/batch-processing_line152.php
+
+		-
+			message: "#^Variable \\$this might not be defined\\.$#"
+			count: 2
+			path: docs/extracted_blocks/batch-processing_line183.php
+
+		-
+			message: "#^Variable \\$em might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/batch-processing_line33.php
+
+		-
+			message: "#^Call to method setName\\(\\) on an unknown class CmsUser\\.$#"
+			count: 1
+			path: docs/extracted_blocks/batch-processing_line49.php
+
+		-
+			message: "#^Call to method setStatus\\(\\) on an unknown class CmsUser\\.$#"
+			count: 1
+			path: docs/extracted_blocks/batch-processing_line49.php
+
+		-
+			message: "#^Call to method setUsername\\(\\) on an unknown class CmsUser\\.$#"
+			count: 1
+			path: docs/extracted_blocks/batch-processing_line49.php
+
+		-
+			message: "#^Instantiated class CmsUser not found\\.$#"
+			count: 1
+			path: docs/extracted_blocks/batch-processing_line49.php
+
+		-
+			message: "#^Variable \\$em might not be defined\\.$#"
+			count: 5
+			path: docs/extracted_blocks/batch-processing_line49.php
+
+		-
+			message: "#^Variable \\$em might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/batch-processing_line78.php
+
+		-
+			message: "#^Variable \\$em might not be defined\\.$#"
+			count: 4
+			path: docs/extracted_blocks/batch-processing_line93.php
+
+		-
+			message: "#^Property MyProject\\\\Model\\\\User\\:\\:\\$addresses has unknown class MyProject\\\\Model\\\\Collection as its type\\.$#"
+			count: 2
+			path: docs/extracted_blocks/best-practices_line74.php
+
+		-
+			message: "#^Property MyProject\\\\Model\\\\User\\:\\:\\$addresses is never read, only written\\.$#"
+			count: 1
+			path: docs/extracted_blocks/best-practices_line74.php
+
+		-
+			message: "#^Property MyProject\\\\Model\\\\User\\:\\:\\$articles has unknown class MyProject\\\\Model\\\\Article as its type\\.$#"
+			count: 1
+			path: docs/extracted_blocks/best-practices_line74.php
+
+		-
+			message: "#^Property MyProject\\\\Model\\\\User\\:\\:\\$articles has unknown class MyProject\\\\Model\\\\Collection as its type\\.$#"
+			count: 2
+			path: docs/extracted_blocks/best-practices_line74.php
+
+		-
+			message: "#^Property MyProject\\\\Model\\\\User\\:\\:\\$articles is never read, only written\\.$#"
+			count: 1
+			path: docs/extracted_blocks/best-practices_line74.php
+
+		-
+			message: "#^Variable \\$query might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/caching_line105.php
+
+		-
+			message: "#^Function Symfony\\\\Component\\\\Cache\\\\Adapter\\\\PhpFilesAdapter not found\\.$#"
+			count: 1
+			path: docs/extracted_blocks/caching_line121.php
+
+		-
+			message: "#^Variable \\$em might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/caching_line54.php
+
+		-
+			message: "#^Variable \\$query might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/caching_line63.php
+
+		-
+			message: "#^Variable \\$query might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/caching_line79.php
+
+		-
+			message: "#^Variable \\$query might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/caching_line88.php
+
+		-
+			message: "#^Variable \\$query might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/caching_line97.php
+
+		-
+			message: "#^Attribute class ChangeTrackingPolicy does not exist\\.$#"
+			count: 1
+			path: docs/extracted_blocks/change-tracking-policies_line51.php
+
+		-
+			message: "#^Attribute class Entity does not exist\\.$#"
+			count: 1
+			path: docs/extracted_blocks/change-tracking-policies_line51.php
+
+		-
+			message: "#^Attribute class ChangeTrackingPolicy does not exist\\.$#"
+			count: 1
+			path: docs/extracted_blocks/change-tracking-policies_line77.php
+
+		-
+			message: "#^Attribute class Entity does not exist\\.$#"
+			count: 1
+			path: docs/extracted_blocks/change-tracking-policies_line77.php
+
+		-
+			message: "#^Property MyEntity\\:\\:\\$_listeners is never read, only written\\.$#"
+			count: 1
+			path: docs/extracted_blocks/change-tracking-policies_line77.php
+
+		-
+			message: "#^Variable \\$em might not be defined\\.$#"
+			count: 2
+			path: docs/extracted_blocks/composite-primary-keys_line113.php
+
+		-
+			message: "#^Variable \\$em might not be defined\\.$#"
+			count: 2
+			path: docs/extracted_blocks/composite-primary-keys_line126.php
+
+		-
+			message: "#^Access to offset string on an unknown class Application\\\\Model\\\\Collection\\.$#"
+			count: 1
+			path: docs/extracted_blocks/composite-primary-keys_line174.php
+
+		-
+			message: "#^Attribute class Application\\\\Model\\\\Column does not exist\\.$#"
+			count: 4
+			path: docs/extracted_blocks/composite-primary-keys_line174.php
+
+		-
+			message: "#^Attribute class Application\\\\Model\\\\Entity does not exist\\.$#"
+			count: 2
+			path: docs/extracted_blocks/composite-primary-keys_line174.php
+
+		-
+			message: "#^Attribute class Application\\\\Model\\\\GeneratedValue does not exist\\.$#"
+			count: 1
+			path: docs/extracted_blocks/composite-primary-keys_line174.php
+
+		-
+			message: "#^Attribute class Application\\\\Model\\\\Id does not exist\\.$#"
+			count: 3
+			path: docs/extracted_blocks/composite-primary-keys_line174.php
+
+		-
+			message: "#^Attribute class Application\\\\Model\\\\ManyToOne does not exist\\.$#"
+			count: 1
+			path: docs/extracted_blocks/composite-primary-keys_line174.php
+
+		-
+			message: "#^Attribute class Application\\\\Model\\\\OneToMany does not exist\\.$#"
+			count: 1
+			path: docs/extracted_blocks/composite-primary-keys_line174.php
+
+		-
+			message: "#^PHPDoc tag @var for property Application\\\\Model\\\\Article\\:\\:\\$attributes with type Doctrine\\\\Common\\\\Collections\\\\ArrayCollection\\<string, Application\\\\Model\\\\ArticleAttribute\\> is not subtype of native type Application\\\\Model\\\\Collection\\.$#"
+			count: 1
+			path: docs/extracted_blocks/composite-primary-keys_line174.php
+
+		-
+			message: "#^Property Application\\\\Model\\\\Article\\:\\:\\$attributes has unknown class Application\\\\Model\\\\Collection as its type\\.$#"
+			count: 1
+			path: docs/extracted_blocks/composite-primary-keys_line174.php
+
+		-
+			message: "#^Property Application\\\\Model\\\\Article\\:\\:\\$attributes is never read, only written\\.$#"
+			count: 1
+			path: docs/extracted_blocks/composite-primary-keys_line174.php
+
+		-
+			message: "#^Property Application\\\\Model\\\\Article\\:\\:\\$id is never read, only written\\.$#"
+			count: 1
+			path: docs/extracted_blocks/composite-primary-keys_line174.php
+
+		-
+			message: "#^Property Application\\\\Model\\\\Article\\:\\:\\$title is unused\\.$#"
+			count: 1
+			path: docs/extracted_blocks/composite-primary-keys_line174.php
+
+		-
+			message: "#^Property Application\\\\Model\\\\ArticleAttribute\\:\\:\\$article is never read, only written\\.$#"
+			count: 1
+			path: docs/extracted_blocks/composite-primary-keys_line174.php
+
+		-
+			message: "#^Property Application\\\\Model\\\\ArticleAttribute\\:\\:\\$attribute is never read, only written\\.$#"
+			count: 1
+			path: docs/extracted_blocks/composite-primary-keys_line174.php
+
+		-
+			message: "#^Property Application\\\\Model\\\\ArticleAttribute\\:\\:\\$value is never read, only written\\.$#"
+			count: 1
+			path: docs/extracted_blocks/composite-primary-keys_line174.php
+
+		-
+			message: "#^Access to offset mixed on an unknown class Application\\\\Model\\\\Collection\\.$#"
+			count: 1
+			path: docs/extracted_blocks/composite-primary-keys_line219.php
+
+		-
+			message: "#^Property Application\\\\Model\\\\Article\\:\\:\\$attributes has unknown class Application\\\\Model\\\\Collection as its type\\.$#"
+			count: 2
+			path: docs/extracted_blocks/composite-primary-keys_line219.php
+
+		-
+			message: "#^Property Application\\\\Model\\\\Article\\:\\:\\$attributes is never read, only written\\.$#"
+			count: 1
+			path: docs/extracted_blocks/composite-primary-keys_line219.php
+
+		-
+			message: "#^Property Application\\\\Model\\\\Article\\:\\:\\$id is never read, only written\\.$#"
+			count: 1
+			path: docs/extracted_blocks/composite-primary-keys_line219.php
+
+		-
+			message: "#^Property Application\\\\Model\\\\Article\\:\\:\\$title is unused\\.$#"
+			count: 1
+			path: docs/extracted_blocks/composite-primary-keys_line219.php
+
+		-
+			message: "#^Property Application\\\\Model\\\\ArticleAttribute\\:\\:\\$article is never read, only written\\.$#"
+			count: 1
+			path: docs/extracted_blocks/composite-primary-keys_line219.php
+
+		-
+			message: "#^Property Application\\\\Model\\\\ArticleAttribute\\:\\:\\$attribute is never read, only written\\.$#"
+			count: 1
+			path: docs/extracted_blocks/composite-primary-keys_line219.php
+
+		-
+			message: "#^Property Application\\\\Model\\\\ArticleAttribute\\:\\:\\$value is never read, only written\\.$#"
+			count: 1
+			path: docs/extracted_blocks/composite-primary-keys_line219.php
+
+		-
+			message: "#^Attribute class VehicleCatalogue\\\\Model\\\\Column does not exist\\.$#"
+			count: 2
+			path: docs/extracted_blocks/composite-primary-keys_line28.php
+
+		-
+			message: "#^Attribute class VehicleCatalogue\\\\Model\\\\Entity does not exist\\.$#"
+			count: 1
+			path: docs/extracted_blocks/composite-primary-keys_line28.php
+
+		-
+			message: "#^Attribute class VehicleCatalogue\\\\Model\\\\Id does not exist\\.$#"
+			count: 2
+			path: docs/extracted_blocks/composite-primary-keys_line28.php
+
+		-
+			message: "#^Attribute class Column does not exist\\.$#"
+			count: 1
+			path: docs/extracted_blocks/composite-primary-keys_line315.php
+
+		-
+			message: "#^Attribute class Entity does not exist\\.$#"
+			count: 2
+			path: docs/extracted_blocks/composite-primary-keys_line315.php
+
+		-
+			message: "#^Attribute class GeneratedValue does not exist\\.$#"
+			count: 1
+			path: docs/extracted_blocks/composite-primary-keys_line315.php
+
+		-
+			message: "#^Attribute class Id does not exist\\.$#"
+			count: 2
+			path: docs/extracted_blocks/composite-primary-keys_line315.php
+
+		-
+			message: "#^Attribute class OneToOne does not exist\\.$#"
+			count: 1
+			path: docs/extracted_blocks/composite-primary-keys_line315.php
+
+		-
+			message: "#^Property Address\\:\\:\\$user is never read, only written\\.$#"
+			count: 1
+			path: docs/extracted_blocks/composite-primary-keys_line315.php
+
+		-
+			message: "#^Property User\\:\\:\\$id is never read, only written\\.$#"
+			count: 1
+			path: docs/extracted_blocks/composite-primary-keys_line315.php
+
+		-
+			message: "#^Attribute class Column does not exist\\.$#"
+			count: 9
+			path: docs/extracted_blocks/composite-primary-keys_line360.php
+
+		-
+			message: "#^Attribute class Entity does not exist\\.$#"
+			count: 3
+			path: docs/extracted_blocks/composite-primary-keys_line360.php
+
+		-
+			message: "#^Attribute class GeneratedValue does not exist\\.$#"
+			count: 2
+			path: docs/extracted_blocks/composite-primary-keys_line360.php
+
+		-
+			message: "#^Attribute class Id does not exist\\.$#"
+			count: 4
+			path: docs/extracted_blocks/composite-primary-keys_line360.php
+
+		-
+			message: "#^Attribute class ManyToOne does not exist\\.$#"
+			count: 3
+			path: docs/extracted_blocks/composite-primary-keys_line360.php
+
+		-
+			message: "#^Attribute class OneToMany does not exist\\.$#"
+			count: 1
+			path: docs/extracted_blocks/composite-primary-keys_line360.php
+
+		-
+			message: "#^Call to an undefined method Product\\:\\:getCurrentPrice\\(\\)\\.$#"
+			count: 1
+			path: docs/extracted_blocks/composite-primary-keys_line360.php
+
+		-
+			message: "#^Constructor of class OrderItem has an unused parameter \\$amount\\.$#"
+			count: 1
+			path: docs/extracted_blocks/composite-primary-keys_line360.php
+
+		-
+			message: "#^PHPDoc tag @var for property Order\\:\\:\\$items with type Doctrine\\\\Common\\\\Collections\\\\ArrayCollection\\<int, OrderItem\\> is not subtype of native type Collection\\.$#"
+			count: 1
+			path: docs/extracted_blocks/composite-primary-keys_line360.php
+
+		-
+			message: "#^Property Order\\:\\:\\$created is never read, only written\\.$#"
+			count: 1
+			path: docs/extracted_blocks/composite-primary-keys_line360.php
+
+		-
+			message: "#^Property Order\\:\\:\\$customer is never read, only written\\.$#"
+			count: 1
+			path: docs/extracted_blocks/composite-primary-keys_line360.php
+
+		-
+			message: "#^Property Order\\:\\:\\$id is never read, only written\\.$#"
+			count: 1
+			path: docs/extracted_blocks/composite-primary-keys_line360.php
+
+		-
+			message: "#^Property Order\\:\\:\\$items \\(Collection\\) does not accept Doctrine\\\\Common\\\\Collections\\\\ArrayCollection\\<\\*NEVER\\*, \\*NEVER\\*\\>\\.$#"
+			count: 1
+			path: docs/extracted_blocks/composite-primary-keys_line360.php
+
+		-
+			message: "#^Property Order\\:\\:\\$items has unknown class Collection as its type\\.$#"
+			count: 1
+			path: docs/extracted_blocks/composite-primary-keys_line360.php
+
+		-
+			message: "#^Property Order\\:\\:\\$items is never read, only written\\.$#"
+			count: 1
+			path: docs/extracted_blocks/composite-primary-keys_line360.php
+
+		-
+			message: "#^Property Order\\:\\:\\$paid is never read, only written\\.$#"
+			count: 1
+			path: docs/extracted_blocks/composite-primary-keys_line360.php
+
+		-
+			message: "#^Property Order\\:\\:\\$shipped is never read, only written\\.$#"
+			count: 1
+			path: docs/extracted_blocks/composite-primary-keys_line360.php
+
+		-
+			message: "#^Property OrderItem\\:\\:\\$amount is never read, only written\\.$#"
+			count: 1
+			path: docs/extracted_blocks/composite-primary-keys_line360.php
+
+		-
+			message: "#^Property OrderItem\\:\\:\\$offeredPrice is never read, only written\\.$#"
+			count: 1
+			path: docs/extracted_blocks/composite-primary-keys_line360.php
+
+		-
+			message: "#^Property OrderItem\\:\\:\\$order is never read, only written\\.$#"
+			count: 1
+			path: docs/extracted_blocks/composite-primary-keys_line360.php
+
+		-
+			message: "#^Property OrderItem\\:\\:\\$product is never read, only written\\.$#"
+			count: 1
+			path: docs/extracted_blocks/composite-primary-keys_line360.php
+
+		-
+			message: "#^Property Product\\:\\:\\$currentPrice is never written, only read\\.$#"
+			count: 1
+			path: docs/extracted_blocks/composite-primary-keys_line360.php
+
+		-
+			message: "#^Property Product\\:\\:\\$id is never read, only written\\.$#"
+			count: 1
+			path: docs/extracted_blocks/composite-primary-keys_line360.php
+
+		-
+			message: "#^Property Product\\:\\:\\$name is unused\\.$#"
+			count: 1
+			path: docs/extracted_blocks/composite-primary-keys_line360.php
+
+		-
+			message: "#^Call to static method createXMLMetadataConfiguration\\(\\) on an unknown class ORMSetup\\.$#"
+			count: 1
+			path: docs/extracted_blocks/configuration_line72.php
+
+		-
+			message: "#^Call to static method getConnection\\(\\) on an unknown class DriverManager\\.$#"
+			count: 1
+			path: docs/extracted_blocks/configuration_line72.php
+
+		-
+			message: "#^Instantiated class EntityManager not found\\.$#"
+			count: 1
+			path: docs/extracted_blocks/configuration_line72.php
+
+		-
+			message: "#^Variable \\$dbParams might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/configuration_line72.php
+
+		-
+			message: "#^Variable \\$isDevMode might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/configuration_line72.php
+
+		-
+			message: "#^Call to static method createYAMLMetadataConfiguration\\(\\) on an unknown class ORMSetup\\.$#"
+			count: 1
+			path: docs/extracted_blocks/configuration_line82.php
+
+		-
+			message: "#^Call to static method getConnection\\(\\) on an unknown class DriverManager\\.$#"
+			count: 1
+			path: docs/extracted_blocks/configuration_line82.php
+
+		-
+			message: "#^Instantiated class EntityManager not found\\.$#"
+			count: 1
+			path: docs/extracted_blocks/configuration_line82.php
+
+		-
+			message: "#^Variable \\$dbParams might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/configuration_line82.php
+
+		-
+			message: "#^Variable \\$isDevMode might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/configuration_line82.php
+
+		-
+			message: "#^Method My\\\\Project\\\\Types\\\\MyType\\:\\:getSQLDeclaration\\(\\) should return string but return statement is missing\\.$#"
+			count: 1
+			path: docs/extracted_blocks/custom-mapping-types_line14.php
+
+		-
+			message: "#^Variable \\$em might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/custom-mapping-types_line85.php
+
+		-
+			message: "#^Property MyPersistentClass\\:\\:\\$field is unused\\.$#"
+			count: 1
+			path: docs/extracted_blocks/custom-mapping-types_line95.php
+
+		-
+			message: "#^Attribute class Test\\\\Decorator\\\\Column does not exist\\.$#"
+			count: 1
+			path: docs/extracted_blocks/decorator-pattern_line159.php
+
+		-
+			message: "#^Attribute class Test\\\\Decorator\\\\Entity does not exist\\.$#"
+			count: 1
+			path: docs/extracted_blocks/decorator-pattern_line159.php
+
+		-
+			message: "#^Attribute class Test\\\\Column does not exist\\.$#"
+			count: 2
+			path: docs/extracted_blocks/decorator-pattern_line22.php
+
+		-
+			message: "#^Attribute class Test\\\\DiscriminatorColumn does not exist\\.$#"
+			count: 1
+			path: docs/extracted_blocks/decorator-pattern_line22.php
+
+		-
+			message: "#^Attribute class Test\\\\DiscriminatorMap does not exist\\.$#"
+			count: 1
+			path: docs/extracted_blocks/decorator-pattern_line22.php
+
+		-
+			message: "#^Attribute class Test\\\\Entity does not exist\\.$#"
+			count: 1
+			path: docs/extracted_blocks/decorator-pattern_line22.php
+
+		-
+			message: "#^Attribute class Test\\\\GeneratedValue does not exist\\.$#"
+			count: 1
+			path: docs/extracted_blocks/decorator-pattern_line22.php
+
+		-
+			message: "#^Attribute class Test\\\\Id does not exist\\.$#"
+			count: 1
+			path: docs/extracted_blocks/decorator-pattern_line22.php
+
+		-
+			message: "#^Attribute class Test\\\\InheritanceType does not exist\\.$#"
+			count: 1
+			path: docs/extracted_blocks/decorator-pattern_line22.php
+
+		-
+			message: "#^Attribute class Test\\\\Component\\\\Entity does not exist\\.$#"
+			count: 1
+			path: docs/extracted_blocks/decorator-pattern_line67.php
+
+		-
+			message: "#^Attribute class Test\\\\JoinColumn does not exist\\.$#"
+			count: 1
+			path: docs/extracted_blocks/decorator-pattern_line86.php
+
+		-
+			message: "#^Attribute class Test\\\\MappedSuperclass does not exist\\.$#"
+			count: 1
+			path: docs/extracted_blocks/decorator-pattern_line86.php
+
+		-
+			message: "#^Attribute class Test\\\\OneToOne does not exist\\.$#"
+			count: 1
+			path: docs/extracted_blocks/decorator-pattern_line86.php
+
+		-
+			message: "#^Access to constant HINT_CUSTOM_OUTPUT_WALKER on an unknown class Query\\.$#"
+			count: 1
+			path: docs/extracted_blocks/dql-custom-walkers_line174.php
+
+		-
+			message: "#^Variable \\$m might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/dql-custom-walkers_line174.php
+
+		-
+			message: "#^Variable \\$dql might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/dql-custom-walkers_line87.php
+
+		-
+			message: "#^Variable \\$em might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/dql-custom-walkers_line87.php
+
+		-
+			message: "#^Access to constant HINT_CUSTOM_TREE_WALKERS on an unknown class Query\\.$#"
+			count: 1
+			path: docs/extracted_blocks/dql-custom-walkers_line99.php
+
+		-
+			message: "#^Call to method getSingleScalarResult\\(\\) on an unknown class Query\\.$#"
+			count: 1
+			path: docs/extracted_blocks/dql-custom-walkers_line99.php
+
+		-
+			message: "#^Call to method setFirstResult\\(\\) on an unknown class Query\\.$#"
+			count: 1
+			path: docs/extracted_blocks/dql-custom-walkers_line99.php
+
+		-
+			message: "#^Call to method setHint\\(\\) on an unknown class Query\\.$#"
+			count: 1
+			path: docs/extracted_blocks/dql-custom-walkers_line99.php
+
+		-
+			message: "#^Cloning object of an unknown class Query\\.$#"
+			count: 1
+			path: docs/extracted_blocks/dql-custom-walkers_line99.php
+
+		-
+			message: "#^PHPDoc tag @var for variable \\$countQuery contains unknown class Query\\.$#"
+			count: 1
+			path: docs/extracted_blocks/dql-custom-walkers_line99.php
+
+		-
+			message: "#^Parameter \\$query of method Paginate\\:\\:count\\(\\) has invalid type Query\\.$#"
+			count: 1
+			path: docs/extracted_blocks/dql-custom-walkers_line99.php
+
+		-
+			message: "#^Variable \\$em might not be defined\\.$#"
+			count: 2
+			path: docs/extracted_blocks/dql-doctrine-query-language_line1013.php
+
+		-
+			message: "#^Variable \\$em might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/dql-doctrine-query-language_line1037.php
+
+		-
+			message: "#^Access to constant HYDRATE_ARRAY on an unknown class AbstractQuery\\.$#"
+			count: 1
+			path: docs/extracted_blocks/dql-doctrine-query-language_line1068.php
+
+		-
+			message: "#^Variable \\$query might not be defined\\.$#"
+			count: 2
+			path: docs/extracted_blocks/dql-doctrine-query-language_line1068.php
+
+		-
+			message: "#^Access to constant HYDRATE_SCALAR on an unknown class AbstractQuery\\.$#"
+			count: 1
+			path: docs/extracted_blocks/dql-doctrine-query-language_line1081.php
+
+		-
+			message: "#^Variable \\$query might not be defined\\.$#"
+			count: 2
+			path: docs/extracted_blocks/dql-doctrine-query-language_line1081.php
+
+		-
+			message: "#^Access to constant HYDRATE_SINGLE_SCALAR on an unknown class AbstractQuery\\.$#"
+			count: 1
+			path: docs/extracted_blocks/dql-doctrine-query-language_line1097.php
+
+		-
+			message: "#^Variable \\$em might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/dql-doctrine-query-language_line1097.php
+
+		-
+			message: "#^Access to constant HYDRATE_SCALAR_COLUMN on an unknown class AbstractQuery\\.$#"
+			count: 1
+			path: docs/extracted_blocks/dql-doctrine-query-language_line1110.php
+
+		-
+			message: "#^Variable \\$em might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/dql-doctrine-query-language_line1110.php
+
+		-
+			message: "#^Variable \\$em might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/dql-doctrine-query-language_line1153.php
+
+		-
+			message: "#^Variable \\$em might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/dql-doctrine-query-language_line1160.php
+
+		-
+			message: "#^Variable \\$results might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/dql-doctrine-query-language_line1244.php
+
+		-
+			message: "#^Instantiated class ApcCache not found\\.$#"
+			count: 1
+			path: docs/extracted_blocks/dql-doctrine-query-language_line1311.php
+
+		-
+			message: "#^Variable \\$em might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/dql-doctrine-query-language_line1311.php
+
+		-
+			message: "#^Variable \\$em might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/dql-doctrine-query-language_line1434.php
+
+		-
+			message: "#^Variable \\$em might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/dql-doctrine-query-language_line160.php
+
+		-
+			message: "#^Variable \\$em might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/dql-doctrine-query-language_line168.php
+
+		-
+			message: "#^Variable \\$em might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/dql-doctrine-query-language_line215.php
+
+		-
+			message: "#^Variable \\$em might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/dql-doctrine-query-language_line223.php
+
+		-
+			message: "#^Variable \\$em might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/dql-doctrine-query-language_line231.php
+
+		-
+			message: "#^Variable \\$em might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/dql-doctrine-query-language_line240.php
+
+		-
+			message: "#^Variable \\$em might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/dql-doctrine-query-language_line248.php
+
+		-
+			message: "#^Variable \\$em might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/dql-doctrine-query-language_line257.php
+
+		-
+			message: "#^Variable \\$em might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/dql-doctrine-query-language_line266.php
+
+		-
+			message: "#^Variable \\$em might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/dql-doctrine-query-language_line275.php
+
+		-
+			message: "#^Variable \\$em might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/dql-doctrine-query-language_line283.php
+
+		-
+			message: "#^Variable \\$em might not be defined\\.$#"
+			count: 2
+			path: docs/extracted_blocks/dql-doctrine-query-language_line291.php
+
+		-
+			message: "#^Variable \\$em might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/dql-doctrine-query-language_line302.php
+
+		-
+			message: "#^Variable \\$em might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/dql-doctrine-query-language_line311.php
+
+		-
+			message: "#^Variable \\$em might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/dql-doctrine-query-language_line320.php
+
+		-
+			message: "#^Variable \\$em might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/dql-doctrine-query-language_line333.php
+
+		-
+			message: "#^Variable \\$em might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/dql-doctrine-query-language_line341.php
+
+		-
+			message: "#^Variable \\$em might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/dql-doctrine-query-language_line349.php
+
+		-
+			message: "#^Variable \\$em might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/dql-doctrine-query-language_line358.php
+
+		-
+			message: "#^Variable \\$em might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/dql-doctrine-query-language_line367.php
+
+		-
+			message: "#^Variable \\$em might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/dql-doctrine-query-language_line376.php
+
+		-
+			message: "#^Variable \\$em might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/dql-doctrine-query-language_line384.php
+
+		-
+			message: "#^Variable \\$em might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/dql-doctrine-query-language_line394.php
+
+		-
+			message: "#^Variable \\$em might not be defined\\.$#"
+			count: 3
+			path: docs/extracted_blocks/dql-doctrine-query-language_line402.php
+
+		-
+			message: "#^Variable \\$em might not be defined\\.$#"
+			count: 2
+			path: docs/extracted_blocks/dql-doctrine-query-language_line416.php
+
+		-
+			message: "#^Variable \\$em might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/dql-doctrine-query-language_line429.php
+
+		-
+			message: "#^Variable \\$em might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/dql-doctrine-query-language_line437.php
+
+		-
+			message: "#^Variable \\$group might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/dql-doctrine-query-language_line437.php
+
+		-
+			message: "#^Variable \\$em might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/dql-doctrine-query-language_line446.php
+
+		-
+			message: "#^Variable \\$em might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/dql-doctrine-query-language_line454.php
+
+		-
+			message: "#^Class CompanyEmployee not found\\.$#"
+			count: 1
+			path: docs/extracted_blocks/dql-doctrine-query-language_line463.php
+
+		-
+			message: "#^Variable \\$em might not be defined\\.$#"
+			count: 4
+			path: docs/extracted_blocks/dql-doctrine-query-language_line463.php
+
+		-
+			message: "#^Variable \\$em might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/dql-doctrine-query-language_line477.php
+
+		-
+			message: "#^Variable \\$em might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/dql-doctrine-query-language_line484.php
+
+		-
+			message: "#^Variable \\$em might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/dql-doctrine-query-language_line492.php
+
+		-
+			message: "#^Variable \\$em might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/dql-doctrine-query-language_line541.php
+
+		-
+			message: "#^Variable \\$em might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/dql-doctrine-query-language_line549.php
+
+		-
+			message: "#^Variable \\$em might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/dql-doctrine-query-language_line56.php
+
+		-
+			message: "#^Constructor of class CustomerDTO has an unused parameter \\$city\\.$#"
+			count: 1
+			path: docs/extracted_blocks/dql-doctrine-query-language_line567.php
+
+		-
+			message: "#^Constructor of class CustomerDTO has an unused parameter \\$email\\.$#"
+			count: 1
+			path: docs/extracted_blocks/dql-doctrine-query-language_line567.php
+
+		-
+			message: "#^Constructor of class CustomerDTO has an unused parameter \\$name\\.$#"
+			count: 1
+			path: docs/extracted_blocks/dql-doctrine-query-language_line567.php
+
+		-
+			message: "#^Constructor of class CustomerDTO has an unused parameter \\$value\\.$#"
+			count: 1
+			path: docs/extracted_blocks/dql-doctrine-query-language_line567.php
+
+		-
+			message: "#^Variable \\$em might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/dql-doctrine-query-language_line580.php
+
+		-
+			message: "#^Variable \\$em might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/dql-doctrine-query-language_line586.php
+
+		-
+			message: "#^Instantiated class EntityManager not found\\.$#"
+			count: 1
+			path: docs/extracted_blocks/dql-doctrine-query-language_line796.php
+
+		-
+			message: "#^Variable \\$class might not be defined\\.$#"
+			count: 3
+			path: docs/extracted_blocks/dql-doctrine-query-language_line796.php
+
+		-
+			message: "#^Variable \\$connection might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/dql-doctrine-query-language_line796.php
+
+		-
+			message: "#^Variable \\$name might not be defined\\.$#"
+			count: 3
+			path: docs/extracted_blocks/dql-doctrine-query-language_line796.php
+
+		-
+			message: "#^Variable \\$em might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/dql-doctrine-query-language_line843.php
+
+		-
+			message: "#^Attribute class Entities\\\\Column does not exist\\.$#"
+			count: 3
+			path: docs/extracted_blocks/dql-doctrine-query-language_line869.php
+
+		-
+			message: "#^Attribute class Entities\\\\DiscriminatorColumn does not exist\\.$#"
+			count: 1
+			path: docs/extracted_blocks/dql-doctrine-query-language_line869.php
+
+		-
+			message: "#^Attribute class Entities\\\\DiscriminatorMap does not exist\\.$#"
+			count: 1
+			path: docs/extracted_blocks/dql-doctrine-query-language_line869.php
+
+		-
+			message: "#^Attribute class Entities\\\\Entity does not exist\\.$#"
+			count: 2
+			path: docs/extracted_blocks/dql-doctrine-query-language_line869.php
+
+		-
+			message: "#^Attribute class Entities\\\\GeneratedValue does not exist\\.$#"
+			count: 1
+			path: docs/extracted_blocks/dql-doctrine-query-language_line869.php
+
+		-
+			message: "#^Attribute class Entities\\\\Id does not exist\\.$#"
+			count: 1
+			path: docs/extracted_blocks/dql-doctrine-query-language_line869.php
+
+		-
+			message: "#^Attribute class Entities\\\\InheritanceType does not exist\\.$#"
+			count: 1
+			path: docs/extracted_blocks/dql-doctrine-query-language_line869.php
+
+		-
+			message: "#^Property Entities\\\\Employee\\:\\:\\$department is unused\\.$#"
+			count: 1
+			path: docs/extracted_blocks/dql-doctrine-query-language_line869.php
+
+		-
+			message: "#^Call to an undefined method Entities\\\\Employee\\:\\:setDepartment\\(\\)\\.$#"
+			count: 1
+			path: docs/extracted_blocks/dql-doctrine-query-language_line914.php
+
+		-
+			message: "#^Call to an undefined method Entities\\\\Employee\\:\\:setName\\(\\)\\.$#"
+			count: 1
+			path: docs/extracted_blocks/dql-doctrine-query-language_line914.php
+
+		-
+			message: "#^Variable \\$em might not be defined\\.$#"
+			count: 2
+			path: docs/extracted_blocks/dql-doctrine-query-language_line914.php
+
+		-
+			message: "#^Attribute class DiscriminatorColumn does not exist\\.$#"
+			count: 1
+			path: docs/extracted_blocks/dql-doctrine-query-language_line956.php
+
+		-
+			message: "#^Attribute class DiscriminatorMap does not exist\\.$#"
+			count: 1
+			path: docs/extracted_blocks/dql-doctrine-query-language_line956.php
+
+		-
+			message: "#^Attribute class Entity does not exist\\.$#"
+			count: 1
+			path: docs/extracted_blocks/dql-doctrine-query-language_line956.php
+
+		-
+			message: "#^Attribute class InheritanceType does not exist\\.$#"
+			count: 1
+			path: docs/extracted_blocks/dql-doctrine-query-language_line956.php
+
+		-
+			message: "#^Parameter \\#2 \\$className of method Doctrine\\\\ORM\\\\Configuration\\:\\:addCustomStringFunction\\(\\) expects \\(callable\\(string\\)\\: Doctrine\\\\ORM\\\\Query\\\\AST\\\\Functions\\\\FunctionNode\\)\\|class\\-string\\<Doctrine\\\\ORM\\\\Query\\\\AST\\\\Functions\\\\FunctionNode\\>, 'DoctrineExtensions…' given\\.$#"
+			count: 1
+			path: docs/extracted_blocks/dql-user-defined-functions_line152.php
+
+		-
+			message: "#^Instantiated class EntityManager not found\\.$#"
+			count: 1
+			path: docs/extracted_blocks/dql-user-defined-functions_line43.php
+
+		-
+			message: "#^Variable \\$class might not be defined\\.$#"
+			count: 3
+			path: docs/extracted_blocks/dql-user-defined-functions_line43.php
+
+		-
+			message: "#^Variable \\$connection might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/dql-user-defined-functions_line43.php
+
+		-
+			message: "#^Variable \\$name might not be defined\\.$#"
+			count: 3
+			path: docs/extracted_blocks/dql-user-defined-functions_line43.php
+
+		-
+			message: "#^Instantiated class MyCustomFunction not found\\.$#"
+			count: 1
+			path: docs/extracted_blocks/dql-user-defined-functions_line61.php
+
+		-
+			message: "#^Parameter \\#2 \\$className of method Doctrine\\\\ORM\\\\Configuration\\:\\:addCustomStringFunction\\(\\) expects \\(callable\\(string\\)\\: Doctrine\\\\ORM\\\\Query\\\\AST\\\\Functions\\\\FunctionNode\\)\\|class\\-string\\<Doctrine\\\\ORM\\\\Query\\\\AST\\\\Functions\\\\FunctionNode\\>, Closure\\(\\)\\: MyCustomFunction given\\.$#"
+			count: 1
+			path: docs/extracted_blocks/dql-user-defined-functions_line61.php
+
+		-
+			message: "#^Variable \\$name might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/dql-user-defined-functions_line61.php
+
+		-
+			message: "#^Attribute class Embedded does not exist\\.$#"
+			count: 1
+			path: docs/extracted_blocks/embeddables_line141.php
+
+		-
+			message: "#^Attribute class Entity does not exist\\.$#"
+			count: 1
+			path: docs/extracted_blocks/embeddables_line141.php
+
+		-
+			message: "#^Property User\\:\\:\\$address is unused\\.$#"
+			count: 1
+			path: docs/extracted_blocks/embeddables_line141.php
+
+		-
+			message: "#^Property User\\:\\:\\$address is unused\\.$#"
+			count: 1
+			path: docs/extracted_blocks/embeddables_line152.php
+
+		-
+			message: "#^Attribute class Embedded does not exist\\.$#"
+			count: 1
+			path: docs/extracted_blocks/embeddables_line183.php
+
+		-
+			message: "#^Attribute class Entity does not exist\\.$#"
+			count: 1
+			path: docs/extracted_blocks/embeddables_line183.php
+
+		-
+			message: "#^Property User\\:\\:\\$address is unused\\.$#"
+			count: 1
+			path: docs/extracted_blocks/embeddables_line183.php
+
+		-
+			message: "#^Property User\\:\\:\\$address is unused\\.$#"
+			count: 1
+			path: docs/extracted_blocks/embeddables_line194.php
+
+		-
+			message: "#^Attribute class Column does not exist\\.$#"
+			count: 4
+			path: docs/extracted_blocks/embeddables_line22.php
+
+		-
+			message: "#^Attribute class Embeddable does not exist\\.$#"
+			count: 1
+			path: docs/extracted_blocks/embeddables_line22.php
+
+		-
+			message: "#^Attribute class Embedded does not exist\\.$#"
+			count: 1
+			path: docs/extracted_blocks/embeddables_line22.php
+
+		-
+			message: "#^Attribute class Entity does not exist\\.$#"
+			count: 1
+			path: docs/extracted_blocks/embeddables_line22.php
+
+		-
+			message: "#^Property Address\\:\\:\\$city is unused\\.$#"
+			count: 1
+			path: docs/extracted_blocks/embeddables_line22.php
+
+		-
+			message: "#^Property Address\\:\\:\\$country is unused\\.$#"
+			count: 1
+			path: docs/extracted_blocks/embeddables_line22.php
+
+		-
+			message: "#^Property Address\\:\\:\\$postalCode is unused\\.$#"
+			count: 1
+			path: docs/extracted_blocks/embeddables_line22.php
+
+		-
+			message: "#^Property Address\\:\\:\\$street is unused\\.$#"
+			count: 1
+			path: docs/extracted_blocks/embeddables_line22.php
+
+		-
+			message: "#^Property User\\:\\:\\$address is unused\\.$#"
+			count: 1
+			path: docs/extracted_blocks/embeddables_line22.php
+
+		-
+			message: "#^Property Address\\:\\:\\$city is unused\\.$#"
+			count: 1
+			path: docs/extracted_blocks/embeddables_line49.php
+
+		-
+			message: "#^Property Address\\:\\:\\$country is unused\\.$#"
+			count: 1
+			path: docs/extracted_blocks/embeddables_line49.php
+
+		-
+			message: "#^Property Address\\:\\:\\$postalCode is unused\\.$#"
+			count: 1
+			path: docs/extracted_blocks/embeddables_line49.php
+
+		-
+			message: "#^Property Address\\:\\:\\$street is unused\\.$#"
+			count: 1
+			path: docs/extracted_blocks/embeddables_line49.php
+
+		-
+			message: "#^Property User\\:\\:\\$address is unused\\.$#"
+			count: 1
+			path: docs/extracted_blocks/embeddables_line49.php
+
+		-
+			message: "#^Function GetEntityManager not found\\.$#"
+			count: 1
+			path: docs/extracted_blocks/entities-in-session_line31.php
+
+		-
+			message: "#^Call to method getId\\(\\) on an unknown class UserDto\\.$#"
+			count: 1
+			path: docs/extracted_blocks/entities-in-session_line55.php
+
+		-
+			message: "#^Class UserDto not found\\.$#"
+			count: 1
+			path: docs/extracted_blocks/entities-in-session_line55.php
+
+		-
+			message: "#^Function GetEntityManager not found\\.$#"
+			count: 1
+			path: docs/extracted_blocks/entities-in-session_line55.php
+
+		-
+			message: "#^Function GetEntityManager not found\\.$#"
+			count: 1
+			path: docs/extracted_blocks/entities-in-session_line82.php
+
+		-
+			message: "#^Instantiated class UserDto not found\\.$#"
+			count: 1
+			path: docs/extracted_blocks/entities-in-session_line82.php
+
+		-
+			message: "#^Variable \\$em might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/events_line1061.php
+
+		-
+			message: "#^Variable \\$em might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/events_line1102.php
+
+		-
+			message: "#^Variable \\$em might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/events_line1129.php
+
+		-
+			message: "#^Variable \\$evm might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/events_line113.php
+
+		-
+			message: "#^Variable \\$eventSubscriber might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/events_line121.php
+
+		-
+			message: "#^Instantiated class EventManager not found\\.$#"
+			count: 1
+			path: docs/extracted_blocks/events_line19.php
+
+		-
+			message: "#^Access to an undefined property User\\:\\:\\$createdAt\\.$#"
+			count: 1
+			path: docs/extracted_blocks/events_line228.php
+
+		-
+			message: "#^Attribute class Column does not exist\\.$#"
+			count: 1
+			path: docs/extracted_blocks/events_line228.php
+
+		-
+			message: "#^Parameter \\$eventArgs of method User\\:\\:doStuffOnPreUpdate\\(\\) has invalid type PreUpdateEventArgs\\.$#"
+			count: 1
+			path: docs/extracted_blocks/events_line228.php
+
+		-
+			message: "#^Access to an undefined property User\\:\\:\\$createdAt\\.$#"
+			count: 1
+			path: docs/extracted_blocks/events_line265.php
+
+		-
+			message: "#^Parameter \\$eventArgs of method User\\:\\:doStuffOnPreUpdate\\(\\) has invalid type PreUpdateEventArgs\\.$#"
+			count: 1
+			path: docs/extracted_blocks/events_line265.php
+
+		-
+			message: "#^Parameter \\$e of method TestEvent\\:\\:postFoo\\(\\) has invalid type EventArgs\\.$#"
+			count: 1
+			path: docs/extracted_blocks/events_line27.php
+
+		-
+			message: "#^Parameter \\$e of method TestEvent\\:\\:preFoo\\(\\) has invalid type EventArgs\\.$#"
+			count: 1
+			path: docs/extracted_blocks/events_line27.php
+
+		-
+			message: "#^Property TestEvent\\:\\:\\$_evm is unused\\.$#"
+			count: 1
+			path: docs/extracted_blocks/events_line27.php
+
+		-
+			message: "#^Variable \\$evm might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/events_line27.php
+
+		-
+			message: "#^Call to method hasChangedField\\(\\) on an unknown class PreUpdateEventArgs\\.$#"
+			count: 1
+			path: docs/extracted_blocks/events_line336.php
+
+		-
+			message: "#^Parameter \\$event of method User\\:\\:preUpdate\\(\\) has invalid type PreUpdateEventArgs\\.$#"
+			count: 1
+			path: docs/extracted_blocks/events_line336.php
+
+		-
+			message: "#^Call to method addEventListener\\(\\) on an unknown class EventManager\\.$#"
+			count: 1
+			path: docs/extracted_blocks/events_line429.php
+
+		-
+			message: "#^Call to method addEventSubscriber\\(\\) on an unknown class EventManager\\.$#"
+			count: 1
+			path: docs/extracted_blocks/events_line429.php
+
+		-
+			message: "#^Instantiated class EntityManager not found\\.$#"
+			count: 1
+			path: docs/extracted_blocks/events_line429.php
+
+		-
+			message: "#^Instantiated class EventManager not found\\.$#"
+			count: 1
+			path: docs/extracted_blocks/events_line429.php
+
+		-
+			message: "#^Instantiated class MyEventSubscriber not found\\.$#"
+			count: 1
+			path: docs/extracted_blocks/events_line429.php
+
+		-
+			message: "#^Variable \\$config might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/events_line429.php
+
+		-
+			message: "#^Variable \\$connection might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/events_line429.php
+
+		-
+			message: "#^Instantiated class MyEventSubscriber not found\\.$#"
+			count: 1
+			path: docs/extracted_blocks/events_line443.php
+
+		-
+			message: "#^Variable \\$entityManager might not be defined\\.$#"
+			count: 2
+			path: docs/extracted_blocks/events_line443.php
+
+		-
+			message: "#^Call to method getObjectManager\\(\\) on an unknown class OnFlushEventArgs\\.$#"
+			count: 1
+			path: docs/extracted_blocks/events_line555.php
+
+		-
+			message: "#^Parameter \\$eventArgs of method FlushExampleListener\\:\\:onFlush\\(\\) has invalid type OnFlushEventArgs\\.$#"
+			count: 1
+			path: docs/extracted_blocks/events_line555.php
+
+		-
+			message: "#^Variable \\$evm might not be defined\\.$#"
+			count: 2
+			path: docs/extracted_blocks/events_line61.php
+
+		-
+			message: "#^Using self outside of class scope\\.$#"
+			count: 2
+			path: docs/extracted_blocks/events_line70.php
+
+		-
+			message: "#^Variable \\$evm might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/events_line70.php
+
+		-
+			message: "#^Variable \\$this might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/events_line70.php
+
+		-
+			message: "#^Attribute class MyProject\\\\Entity\\\\Entity does not exist\\.$#"
+			count: 1
+			path: docs/extracted_blocks/events_line787.php
+
+		-
+			message: "#^Attribute class MyProject\\\\Entity\\\\EntityListeners does not exist\\.$#"
+			count: 1
+			path: docs/extracted_blocks/events_line787.php
+
+		-
+			message: "#^Class App\\\\EventListener\\\\UserListener not found\\.$#"
+			count: 1
+			path: docs/extracted_blocks/events_line787.php
+
+		-
+			message: "#^Variable \\$evm might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/events_line81.php
+
+		-
+			message: "#^Access to an undefined property UserListener\\:\\:\\$service\\.$#"
+			count: 2
+			path: docs/extracted_blocks/events_line992.php
+
+		-
+			message: "#^Parameter \\$service of method UserListener\\:\\:__construct\\(\\) has invalid type MyService\\.$#"
+			count: 1
+			path: docs/extracted_blocks/events_line992.php
+
+		-
+			message: "#^Variable \\$container might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/events_line992.php
+
+		-
+			message: "#^Variable \\$em might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/events_line992.php
+
+		-
+			message: "#^Attribute class Doctrine\\\\Tests\\\\Models\\\\CMS\\\\Entity does not exist\\.$#"
+			count: 1
+			path: docs/extracted_blocks/extra-lazy-associations_line57.php
+
+		-
+			message: "#^Attribute class Doctrine\\\\Tests\\\\Models\\\\CMS\\\\ManyToMany does not exist\\.$#"
+			count: 1
+			path: docs/extracted_blocks/extra-lazy-associations_line57.php
+
+		-
+			message: "#^Property Doctrine\\\\Tests\\\\Models\\\\CMS\\\\CmsGroup\\:\\:\\$users has unknown class Doctrine\\\\Tests\\\\Models\\\\CMS\\\\Collection as its type\\.$#"
+			count: 2
+			path: docs/extracted_blocks/extra-lazy-associations_line57.php
+
+		-
+			message: "#^Property Doctrine\\\\Tests\\\\Models\\\\CMS\\\\CmsGroup\\:\\:\\$users has unknown class Doctrine\\\\Tests\\\\Models\\\\CMS\\\\Collection as its type\\.$#"
+			count: 2
+			path: docs/extracted_blocks/extra-lazy-associations_line70.php
+
+		-
+			message: "#^Variable \\$entityManager might not be defined\\.$#"
+			count: 2
+			path: docs/extracted_blocks/faq_line227.php
+
+		-
+			message: "#^Variable \\$em might not be defined\\.$#"
+			count: 3
+			path: docs/extracted_blocks/filters_line109.php
+
+		-
+			message: "#^Variable \\$config might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/filters_line67.php
+
+		-
+			message: "#^Variable \\$em might not be defined\\.$#"
+			count: 2
+			path: docs/extracted_blocks/filters_line84.php
+
+		-
+			message: "#^Access to an offset on an unknown class Collection\\.$#"
+			count: 1
+			path: docs/extracted_blocks/getting-started_line1020.php
+
+		-
+			message: "#^Method Bug\\:\\:getProducts\\(\\) has invalid return type Collection\\.$#"
+			count: 2
+			path: docs/extracted_blocks/getting-started_line1020.php
+
+		-
+			message: "#^Property Bug\\:\\:\\$products has unknown class Collection as its type\\.$#"
+			count: 2
+			path: docs/extracted_blocks/getting-started_line1020.php
+
+		-
+			message: "#^Property Bug\\:\\:\\$created is unused\\.$#"
+			count: 1
+			path: docs/extracted_blocks/getting-started_line1048.php
+
+		-
+			message: "#^Property Bug\\:\\:\\$description is unused\\.$#"
+			count: 1
+			path: docs/extracted_blocks/getting-started_line1048.php
+
+		-
+			message: "#^Property Bug\\:\\:\\$engineer is never read, only written\\.$#"
+			count: 1
+			path: docs/extracted_blocks/getting-started_line1048.php
+
+		-
+			message: "#^Property Bug\\:\\:\\$id is never read, only written\\.$#"
+			count: 1
+			path: docs/extracted_blocks/getting-started_line1048.php
+
+		-
+			message: "#^Property Bug\\:\\:\\$products has unknown class Collection as its type\\.$#"
+			count: 2
+			path: docs/extracted_blocks/getting-started_line1048.php
+
+		-
+			message: "#^Property Bug\\:\\:\\$products is unused\\.$#"
+			count: 1
+			path: docs/extracted_blocks/getting-started_line1048.php
+
+		-
+			message: "#^Property Bug\\:\\:\\$reporter is unused\\.$#"
+			count: 1
+			path: docs/extracted_blocks/getting-started_line1048.php
+
+		-
+			message: "#^Property Bug\\:\\:\\$status is unused\\.$#"
+			count: 1
+			path: docs/extracted_blocks/getting-started_line1048.php
+
+		-
+			message: "#^Property Bug\\:\\:\\$created is unused\\.$#"
+			count: 1
+			path: docs/extracted_blocks/getting-started_line1087.php
+
+		-
+			message: "#^Property Bug\\:\\:\\$description is unused\\.$#"
+			count: 1
+			path: docs/extracted_blocks/getting-started_line1087.php
+
+		-
+			message: "#^Property Bug\\:\\:\\$engineer is unused\\.$#"
+			count: 1
+			path: docs/extracted_blocks/getting-started_line1087.php
+
+		-
+			message: "#^Property Bug\\:\\:\\$id is never read, only written\\.$#"
+			count: 1
+			path: docs/extracted_blocks/getting-started_line1087.php
+
+		-
+			message: "#^Property Bug\\:\\:\\$products has unknown class Collection as its type\\.$#"
+			count: 1
+			path: docs/extracted_blocks/getting-started_line1087.php
+
+		-
+			message: "#^Property Bug\\:\\:\\$products is unused\\.$#"
+			count: 1
+			path: docs/extracted_blocks/getting-started_line1087.php
+
+		-
+			message: "#^Property Bug\\:\\:\\$reporter is unused\\.$#"
+			count: 1
+			path: docs/extracted_blocks/getting-started_line1087.php
+
+		-
+			message: "#^Property Bug\\:\\:\\$status is unused\\.$#"
+			count: 1
+			path: docs/extracted_blocks/getting-started_line1087.php
+
+		-
+			message: "#^Property User\\:\\:\\$assignedBugs has unknown class Collection as its type\\.$#"
+			count: 1
+			path: docs/extracted_blocks/getting-started_line1224.php
+
+		-
+			message: "#^Property User\\:\\:\\$assignedBugs is unused\\.$#"
+			count: 1
+			path: docs/extracted_blocks/getting-started_line1224.php
+
+		-
+			message: "#^Property User\\:\\:\\$id is never read, only written\\.$#"
+			count: 1
+			path: docs/extracted_blocks/getting-started_line1224.php
+
+		-
+			message: "#^Property User\\:\\:\\$name is unused\\.$#"
+			count: 1
+			path: docs/extracted_blocks/getting-started_line1224.php
+
+		-
+			message: "#^Property User\\:\\:\\$reportedBugs has unknown class Collection as its type\\.$#"
+			count: 2
+			path: docs/extracted_blocks/getting-started_line1224.php
+
+		-
+			message: "#^Property User\\:\\:\\$reportedBugs is unused\\.$#"
+			count: 1
+			path: docs/extracted_blocks/getting-started_line1224.php
+
+		-
+			message: "#^Property User\\:\\:\\$assignedBugs has unknown class Collection as its type\\.$#"
+			count: 2
+			path: docs/extracted_blocks/getting-started_line1254.php
+
+		-
+			message: "#^Property User\\:\\:\\$assignedBugs is unused\\.$#"
+			count: 1
+			path: docs/extracted_blocks/getting-started_line1254.php
+
+		-
+			message: "#^Property User\\:\\:\\$id is never read, only written\\.$#"
+			count: 1
+			path: docs/extracted_blocks/getting-started_line1254.php
+
+		-
+			message: "#^Property User\\:\\:\\$name is unused\\.$#"
+			count: 1
+			path: docs/extracted_blocks/getting-started_line1254.php
+
+		-
+			message: "#^Property User\\:\\:\\$reportedBugs has unknown class Collection as its type\\.$#"
+			count: 2
+			path: docs/extracted_blocks/getting-started_line1254.php
+
+		-
+			message: "#^Property User\\:\\:\\$reportedBugs is unused\\.$#"
+			count: 1
+			path: docs/extracted_blocks/getting-started_line1254.php
+
+		-
+			message: "#^Call to an undefined method User\\:\\:getId\\(\\)\\.$#"
+			count: 1
+			path: docs/extracted_blocks/getting-started_line1359.php
+
+		-
+			message: "#^Call to an undefined method User\\:\\:setName\\(\\)\\.$#"
+			count: 1
+			path: docs/extracted_blocks/getting-started_line1359.php
+
+		-
+			message: "#^Variable \\$entityManager might not be defined\\.$#"
+			count: 2
+			path: docs/extracted_blocks/getting-started_line1359.php
+
+		-
+			message: "#^Call to an undefined method Bug\\:\\:assignToProduct\\(\\)\\.$#"
+			count: 1
+			path: docs/extracted_blocks/getting-started_line1383.php
+
+		-
+			message: "#^Call to an undefined method Bug\\:\\:getId\\(\\)\\.$#"
+			count: 1
+			path: docs/extracted_blocks/getting-started_line1383.php
+
+		-
+			message: "#^Call to an undefined method Bug\\:\\:setCreated\\(\\)\\.$#"
+			count: 1
+			path: docs/extracted_blocks/getting-started_line1383.php
+
+		-
+			message: "#^Call to an undefined method Bug\\:\\:setDescription\\(\\)\\.$#"
+			count: 1
+			path: docs/extracted_blocks/getting-started_line1383.php
+
+		-
+			message: "#^Call to an undefined method Bug\\:\\:setEngineer\\(\\)\\.$#"
+			count: 1
+			path: docs/extracted_blocks/getting-started_line1383.php
+
+		-
+			message: "#^Call to an undefined method Bug\\:\\:setReporter\\(\\)\\.$#"
+			count: 1
+			path: docs/extracted_blocks/getting-started_line1383.php
+
+		-
+			message: "#^Call to an undefined method Bug\\:\\:setStatus\\(\\)\\.$#"
+			count: 1
+			path: docs/extracted_blocks/getting-started_line1383.php
+
+		-
+			message: "#^Variable \\$entityManager might not be defined\\.$#"
+			count: 5
+			path: docs/extracted_blocks/getting-started_line1383.php
+
+		-
+			message: "#^Variable \\$entityManager might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/getting-started_line1442.php
+
+		-
+			message: "#^Variable \\$entityManager might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/getting-started_line1528.php
+
+		-
+			message: "#^Variable \\$entityManager might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/getting-started_line1564.php
+
+		-
+			message: "#^Variable \\$entityManager might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/getting-started_line1608.php
+
+		-
+			message: "#^Variable \\$entityManager might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/getting-started_line1641.php
+
+		-
+			message: "#^Access to an undefined property Bug\\:\\:\\$status\\.$#"
+			count: 1
+			path: docs/extracted_blocks/getting-started_line1661.php
+
+		-
+			message: "#^Variable \\$entityManager might not be defined\\.$#"
+			count: 2
+			path: docs/extracted_blocks/getting-started_line1674.php
+
+		-
+			message: "#^Variable \\$entityManager might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/getting-started_line1714.php
+
+		-
+			message: "#^Variable \\$productName might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/getting-started_line1714.php
+
+		-
+			message: "#^Variable \\$entityManager might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/getting-started_line1725.php
+
+		-
+			message: "#^Variable \\$entityManager might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/getting-started_line1845.php
+
+		-
+			message: "#^Variable \\$entityManager might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/getting-started_line1870.php
+
+		-
+			message: "#^Variable \\$productName might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/getting-started_line1870.php
+
+		-
+			message: "#^Variable \\$entityManager might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/getting-started_line209.php
+
+		-
+			message: "#^Property Product\\:\\:\\$id is never read, only written\\.$#"
+			count: 1
+			path: docs/extracted_blocks/getting-started_line260.php
+
+		-
+			message: "#^Property Product\\:\\:\\$name is unused\\.$#"
+			count: 1
+			path: docs/extracted_blocks/getting-started_line260.php
+
+		-
+			message: "#^Parameter \\$ban of method User\\:\\:addBan\\(\\) has invalid type Ban\\.$#"
+			count: 1
+			path: docs/extracted_blocks/getting-started_line336.php
+
+		-
+			message: "#^Property Product\\:\\:\\$id is never read, only written\\.$#"
+			count: 1
+			path: docs/extracted_blocks/getting-started_line511.php
+
+		-
+			message: "#^Property Product\\:\\:\\$name is unused\\.$#"
+			count: 1
+			path: docs/extracted_blocks/getting-started_line511.php
+
+		-
+			message: "#^Property Product\\:\\:\\$id is never read, only written\\.$#"
+			count: 1
+			path: docs/extracted_blocks/getting-started_line532.php
+
+		-
+			message: "#^Property Product\\:\\:\\$name is unused\\.$#"
+			count: 1
+			path: docs/extracted_blocks/getting-started_line532.php
+
+		-
+			message: "#^Call to an undefined method Product\\:\\:getId\\(\\)\\.$#"
+			count: 1
+			path: docs/extracted_blocks/getting-started_line616.php
+
+		-
+			message: "#^Call to an undefined method Product\\:\\:setName\\(\\)\\.$#"
+			count: 1
+			path: docs/extracted_blocks/getting-started_line616.php
+
+		-
+			message: "#^Variable \\$entityManager might not be defined\\.$#"
+			count: 2
+			path: docs/extracted_blocks/getting-started_line616.php
+
+		-
+			message: "#^Variable \\$entityManager might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/getting-started_line654.php
+
+		-
+			message: "#^Variable \\$entityManager might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/getting-started_line673.php
+
+		-
+			message: "#^Variable \\$entityManager might not be defined\\.$#"
+			count: 2
+			path: docs/extracted_blocks/getting-started_line697.php
+
+		-
+			message: "#^Property Bug\\:\\:\\$id is never written, only read\\.$#"
+			count: 1
+			path: docs/extracted_blocks/getting-started_line726.php
+
+		-
+			message: "#^Property Bug\\:\\:\\$products is never read, only written\\.$#"
+			count: 1
+			path: docs/extracted_blocks/getting-started_line843.php
+
+		-
+			message: "#^Property User\\:\\:\\$assignedBugs has unknown class Collection as its type\\.$#"
+			count: 2
+			path: docs/extracted_blocks/getting-started_line864.php
+
+		-
+			message: "#^Property User\\:\\:\\$assignedBugs is never read, only written\\.$#"
+			count: 1
+			path: docs/extracted_blocks/getting-started_line864.php
+
+		-
+			message: "#^Property User\\:\\:\\$reportedBugs has unknown class Collection as its type\\.$#"
+			count: 2
+			path: docs/extracted_blocks/getting-started_line864.php
+
+		-
+			message: "#^Property User\\:\\:\\$reportedBugs is never read, only written\\.$#"
+			count: 1
+			path: docs/extracted_blocks/getting-started_line864.php
+
+		-
+			message: "#^Call to an undefined method User\\:\\:addReportedBug\\(\\)\\.$#"
+			count: 1
+			path: docs/extracted_blocks/getting-started_line932.php
+
+		-
+			message: "#^Call to an undefined method User\\:\\:assignedToBug\\(\\)\\.$#"
+			count: 1
+			path: docs/extracted_blocks/getting-started_line932.php
+
+		-
+			message: "#^Access to an offset on an unknown class Collection\\.$#"
+			count: 2
+			path: docs/extracted_blocks/getting-started_line966.php
+
+		-
+			message: "#^Property User\\:\\:\\$assignedBugs has unknown class Collection as its type\\.$#"
+			count: 2
+			path: docs/extracted_blocks/getting-started_line966.php
+
+		-
+			message: "#^Property User\\:\\:\\$assignedBugs is never read, only written\\.$#"
+			count: 1
+			path: docs/extracted_blocks/getting-started_line966.php
+
+		-
+			message: "#^Property User\\:\\:\\$reportedBugs has unknown class Collection as its type\\.$#"
+			count: 2
+			path: docs/extracted_blocks/getting-started_line966.php
+
+		-
+			message: "#^Property User\\:\\:\\$reportedBugs is never read, only written\\.$#"
+			count: 1
+			path: docs/extracted_blocks/getting-started_line966.php
+
+		-
+			message: "#^Attribute class MyProject\\\\Model\\\\DiscriminatorColumn does not exist\\.$#"
+			count: 1
+			path: docs/extracted_blocks/inheritance-mapping_line193.php
+
+		-
+			message: "#^Attribute class MyProject\\\\Model\\\\DiscriminatorMap does not exist\\.$#"
+			count: 1
+			path: docs/extracted_blocks/inheritance-mapping_line193.php
+
+		-
+			message: "#^Attribute class MyProject\\\\Model\\\\Entity does not exist\\.$#"
+			count: 2
+			path: docs/extracted_blocks/inheritance-mapping_line193.php
+
+		-
+			message: "#^Attribute class MyProject\\\\Model\\\\InheritanceType does not exist\\.$#"
+			count: 1
+			path: docs/extracted_blocks/inheritance-mapping_line193.php
+
+		-
+			message: "#^Attribute class MyProject\\\\Model\\\\DiscriminatorColumn does not exist\\.$#"
+			count: 1
+			path: docs/extracted_blocks/inheritance-mapping_line299.php
+
+		-
+			message: "#^Attribute class MyProject\\\\Model\\\\DiscriminatorMap does not exist\\.$#"
+			count: 1
+			path: docs/extracted_blocks/inheritance-mapping_line299.php
+
+		-
+			message: "#^Attribute class MyProject\\\\Model\\\\Entity does not exist\\.$#"
+			count: 2
+			path: docs/extracted_blocks/inheritance-mapping_line299.php
+
+		-
+			message: "#^Attribute class MyProject\\\\Model\\\\InheritanceType does not exist\\.$#"
+			count: 1
+			path: docs/extracted_blocks/inheritance-mapping_line299.php
+
+		-
+			message: "#^Attribute class MyProject\\\\Model\\\\AssociationOverrides does not exist\\.$#"
+			count: 1
+			path: docs/extracted_blocks/inheritance-mapping_line399.php
+
+		-
+			message: "#^Attribute class MyProject\\\\Model\\\\Entity does not exist\\.$#"
+			count: 1
+			path: docs/extracted_blocks/inheritance-mapping_line399.php
+
+		-
+			message: "#^Attribute class MyProject\\\\Model\\\\InverseJoinColumn does not exist\\.$#"
+			count: 1
+			path: docs/extracted_blocks/inheritance-mapping_line399.php
+
+		-
+			message: "#^Attribute class MyProject\\\\Model\\\\JoinColumn does not exist\\.$#"
+			count: 2
+			path: docs/extracted_blocks/inheritance-mapping_line399.php
+
+		-
+			message: "#^Attribute class MyProject\\\\Model\\\\JoinTable does not exist\\.$#"
+			count: 1
+			path: docs/extracted_blocks/inheritance-mapping_line399.php
+
+		-
+			message: "#^Attribute class MyProject\\\\Model\\\\ManyToMany does not exist\\.$#"
+			count: 1
+			path: docs/extracted_blocks/inheritance-mapping_line399.php
+
+		-
+			message: "#^Attribute class MyProject\\\\Model\\\\ManyToOne does not exist\\.$#"
+			count: 1
+			path: docs/extracted_blocks/inheritance-mapping_line399.php
+
+		-
+			message: "#^Attribute class MyProject\\\\Model\\\\MappedSuperclass does not exist\\.$#"
+			count: 1
+			path: docs/extracted_blocks/inheritance-mapping_line399.php
+
+		-
+			message: "#^Instantiated class MyProject\\\\Model\\\\AssociationOverride not found\\.$#"
+			count: 2
+			path: docs/extracted_blocks/inheritance-mapping_line399.php
+
+		-
+			message: "#^Instantiated class MyProject\\\\Model\\\\JoinColumn not found\\.$#"
+			count: 3
+			path: docs/extracted_blocks/inheritance-mapping_line399.php
+
+		-
+			message: "#^Instantiated class MyProject\\\\Model\\\\JoinTable not found\\.$#"
+			count: 1
+			path: docs/extracted_blocks/inheritance-mapping_line399.php
+
+		-
+			message: "#^Property MyProject\\\\Model\\\\User\\:\\:\\$groups has unknown class MyProject\\\\Model\\\\Collection as its type\\.$#"
+			count: 2
+			path: docs/extracted_blocks/inheritance-mapping_line399.php
+
+		-
+			message: "#^Property MyProject\\\\Model\\\\User\\:\\:\\$groups has unknown class MyProject\\\\Model\\\\Group as its type\\.$#"
+			count: 1
+			path: docs/extracted_blocks/inheritance-mapping_line399.php
+
+		-
+			message: "#^Property MyProject\\\\Model\\\\User\\:\\:\\$groups has unknown class MyProject\\\\Model\\\\Collection as its type\\.$#"
+			count: 2
+			path: docs/extracted_blocks/inheritance-mapping_line444.php
+
+		-
+			message: "#^Property MyProject\\\\Model\\\\User\\:\\:\\$groups has unknown class MyProject\\\\Model\\\\Group as its type\\.$#"
+			count: 1
+			path: docs/extracted_blocks/inheritance-mapping_line444.php
+
+		-
+			message: "#^Attribute class MyProject\\\\Model\\\\AttributeOverrides does not exist\\.$#"
+			count: 1
+			path: docs/extracted_blocks/inheritance-mapping_line606.php
+
+		-
+			message: "#^Attribute class MyProject\\\\Model\\\\Column does not exist\\.$#"
+			count: 2
+			path: docs/extracted_blocks/inheritance-mapping_line606.php
+
+		-
+			message: "#^Attribute class MyProject\\\\Model\\\\Entity does not exist\\.$#"
+			count: 1
+			path: docs/extracted_blocks/inheritance-mapping_line606.php
+
+		-
+			message: "#^Attribute class MyProject\\\\Model\\\\GeneratedValue does not exist\\.$#"
+			count: 1
+			path: docs/extracted_blocks/inheritance-mapping_line606.php
+
+		-
+			message: "#^Attribute class MyProject\\\\Model\\\\Id does not exist\\.$#"
+			count: 1
+			path: docs/extracted_blocks/inheritance-mapping_line606.php
+
+		-
+			message: "#^Attribute class MyProject\\\\Model\\\\MappedSuperclass does not exist\\.$#"
+			count: 1
+			path: docs/extracted_blocks/inheritance-mapping_line606.php
+
+		-
+			message: "#^Instantiated class MyProject\\\\Model\\\\AttributeOverride not found\\.$#"
+			count: 2
+			path: docs/extracted_blocks/inheritance-mapping_line606.php
+
+		-
+			message: "#^Instantiated class MyProject\\\\Model\\\\Column not found\\.$#"
+			count: 2
+			path: docs/extracted_blocks/inheritance-mapping_line606.php
+
+		-
+			message: "#^Property Employee\\:\\:\\$id is never read, only written\\.$#"
+			count: 1
+			path: docs/extracted_blocks/inheritance-mapping_line69.php
+
+		-
+			message: "#^Property Employee\\:\\:\\$name is unused\\.$#"
+			count: 1
+			path: docs/extracted_blocks/inheritance-mapping_line69.php
+
+		-
+			message: "#^Property Toothbrush\\:\\:\\$id is never read, only written\\.$#"
+			count: 1
+			path: docs/extracted_blocks/inheritance-mapping_line69.php
+
+		-
+			message: "#^Variable \\$em might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/inheritance-mapping_line784.php
+
+		-
+			message: "#^Instantiated class MyMetadataDriver not found\\.$#"
+			count: 1
+			path: docs/extracted_blocks/metadata-drivers_line164.php
+
+		-
+			message: "#^Variable \\$em might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/metadata-drivers_line164.php
+
+		-
+			message: "#^Variable \\$em might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/metadata-drivers_line193.php
+
+		-
+			message: "#^Variable \\$class might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/metadata-drivers_line203.php
+
+		-
+			message: "#^Instantiated class ApcuCache not found\\.$#"
+			count: 1
+			path: docs/extracted_blocks/metadata-drivers_line43.php
+
+		-
+			message: "#^Variable \\$em might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/metadata-drivers_line43.php
+
+		-
+			message: "#^Variable \\$em might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/metadata-drivers_line55.php
+
+		-
+			message: "#^Property Article\\:\\:\\$status is unused\\.$#"
+			count: 1
+			path: docs/extracted_blocks/mysql-enums_line133.php
+
+		-
+			message: "#^Variable \\$em might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/mysql-enums_line35.php
+
+		-
+			message: "#^Property Article\\:\\:\\$status is never read, only written\\.$#"
+			count: 1
+			path: docs/extracted_blocks/mysql-enums_line45.php
+
+		-
+			message: "#^Property Article\\:\\:\\$status is unused\\.$#"
+			count: 1
+			path: docs/extracted_blocks/mysql-enums_line69.php
+
+		-
+			message: "#^Instantiated class MyNamingStrategy not found\\.$#"
+			count: 1
+			path: docs/extracted_blocks/namingstrategy_line23.php
+
+		-
+			message: "#^Variable \\$configuration might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/namingstrategy_line23.php
+
+		-
+			message: "#^Variable \\$configuration might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/namingstrategy_line34.php
+
+		-
+			message: "#^Access to property \\$newObjectMappings on an unknown class ResultSetMapping\\.$#"
+			count: 6
+			path: docs/extracted_blocks/native-sql_line264.php
+
+		-
+			message: "#^Call to method addScalarResult\\(\\) on an unknown class ResultSetMapping\\.$#"
+			count: 3
+			path: docs/extracted_blocks/native-sql_line264.php
+
+		-
+			message: "#^Class CmsUserDTO not found\\.$#"
+			count: 3
+			path: docs/extracted_blocks/native-sql_line264.php
+
+		-
+			message: "#^Instantiated class ResultSetMapping not found\\.$#"
+			count: 1
+			path: docs/extracted_blocks/native-sql_line264.php
+
+		-
+			message: "#^Call to method addEntityResult\\(\\) on an unknown class ResultSetMapping\\.$#"
+			count: 1
+			path: docs/extracted_blocks/native-sql_line350.php
+
+		-
+			message: "#^Call to method addFieldResult\\(\\) on an unknown class ResultSetMapping\\.$#"
+			count: 2
+			path: docs/extracted_blocks/native-sql_line350.php
+
+		-
+			message: "#^Instantiated class ResultSetMapping not found\\.$#"
+			count: 1
+			path: docs/extracted_blocks/native-sql_line350.php
+
+		-
+			message: "#^Variable \\$this might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/native-sql_line350.php
+
+		-
+			message: "#^Call to method addEntityResult\\(\\) on an unknown class ResultSetMapping\\.$#"
+			count: 1
+			path: docs/extracted_blocks/native-sql_line385.php
+
+		-
+			message: "#^Call to method addFieldResult\\(\\) on an unknown class ResultSetMapping\\.$#"
+			count: 2
+			path: docs/extracted_blocks/native-sql_line385.php
+
+		-
+			message: "#^Call to method addMetaResult\\(\\) on an unknown class ResultSetMapping\\.$#"
+			count: 1
+			path: docs/extracted_blocks/native-sql_line385.php
+
+		-
+			message: "#^Instantiated class ResultSetMapping not found\\.$#"
+			count: 1
+			path: docs/extracted_blocks/native-sql_line385.php
+
+		-
+			message: "#^Variable \\$this might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/native-sql_line385.php
+
+		-
+			message: "#^Call to method addEntityResult\\(\\) on an unknown class ResultSetMapping\\.$#"
+			count: 1
+			path: docs/extracted_blocks/native-sql_line411.php
+
+		-
+			message: "#^Call to method addFieldResult\\(\\) on an unknown class ResultSetMapping\\.$#"
+			count: 5
+			path: docs/extracted_blocks/native-sql_line411.php
+
+		-
+			message: "#^Call to method addJoinedEntityResult\\(\\) on an unknown class ResultSetMapping\\.$#"
+			count: 1
+			path: docs/extracted_blocks/native-sql_line411.php
+
+		-
+			message: "#^Instantiated class ResultSetMapping not found\\.$#"
+			count: 1
+			path: docs/extracted_blocks/native-sql_line411.php
+
+		-
+			message: "#^Variable \\$this might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/native-sql_line411.php
+
+		-
+			message: "#^Variable \\$entityManager might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/native-sql_line42.php
+
+		-
+			message: "#^Call to method addEntityResult\\(\\) on an unknown class ResultSetMapping\\.$#"
+			count: 1
+			path: docs/extracted_blocks/native-sql_line448.php
+
+		-
+			message: "#^Call to method addFieldResult\\(\\) on an unknown class ResultSetMapping\\.$#"
+			count: 2
+			path: docs/extracted_blocks/native-sql_line448.php
+
+		-
+			message: "#^Call to method addMetaResult\\(\\) on an unknown class ResultSetMapping\\.$#"
+			count: 1
+			path: docs/extracted_blocks/native-sql_line448.php
+
+		-
+			message: "#^Call to method setDiscriminatorColumn\\(\\) on an unknown class ResultSetMapping\\.$#"
+			count: 1
+			path: docs/extracted_blocks/native-sql_line448.php
+
+		-
+			message: "#^Instantiated class ResultSetMapping not found\\.$#"
+			count: 1
+			path: docs/extracted_blocks/native-sql_line448.php
+
+		-
+			message: "#^Variable \\$this might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/native-sql_line448.php
+
+		-
+			message: "#^Parameter \\#1 \\$class of method Doctrine\\\\ORM\\\\Query\\\\ResultSetMappingBuilder\\:\\:addJoinedEntityFromClassMetadata\\(\\) expects class\\-string, string given\\.$#"
+			count: 1
+			path: docs/extracted_blocks/native-sql_line70.php
+
+		-
+			message: "#^Parameter \\#1 \\$class of method Doctrine\\\\ORM\\\\Query\\\\ResultSetMappingBuilder\\:\\:addRootEntityFromClassMetadata\\(\\) expects class\\-string, string given\\.$#"
+			count: 1
+			path: docs/extracted_blocks/native-sql_line70.php
+
+		-
+			message: "#^Variable \\$entityManager might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/native-sql_line70.php
+
+		-
+			message: "#^Variable \\$rsm might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/native-sql_line91.php
+
+		-
+			message: "#^Attribute class Entity does not exist\\.$#"
+			count: 1
+			path: docs/extracted_blocks/ordered-associations_line19.php
+
+		-
+			message: "#^Attribute class ManyToMany does not exist\\.$#"
+			count: 1
+			path: docs/extracted_blocks/ordered-associations_line19.php
+
+		-
+			message: "#^Attribute class OrderBy does not exist\\.$#"
+			count: 1
+			path: docs/extracted_blocks/ordered-associations_line19.php
+
+		-
+			message: "#^Property User\\:\\:\\$groups has unknown class Collection as its type\\.$#"
+			count: 1
+			path: docs/extracted_blocks/ordered-associations_line19.php
+
+		-
+			message: "#^Property User\\:\\:\\$groups is unused\\.$#"
+			count: 1
+			path: docs/extracted_blocks/ordered-associations_line19.php
+
+		-
+			message: "#^Property User\\:\\:\\$groups has unknown class Collection as its type\\.$#"
+			count: 2
+			path: docs/extracted_blocks/ordered-associations_line32.php
+
+		-
+			message: "#^Property User\\:\\:\\$groups is unused\\.$#"
+			count: 1
+			path: docs/extracted_blocks/ordered-associations_line32.php
+
+		-
+			message: "#^Attribute class AssociationOverrides does not exist\\.$#"
+			count: 1
+			path: docs/extracted_blocks/override-field-association-mappings-in-subclasses_line16.php
+
+		-
+			message: "#^Attribute class AttributeOverrides does not exist\\.$#"
+			count: 1
+			path: docs/extracted_blocks/override-field-association-mappings-in-subclasses_line16.php
+
+		-
+			message: "#^Attribute class Column does not exist\\.$#"
+			count: 3
+			path: docs/extracted_blocks/override-field-association-mappings-in-subclasses_line16.php
+
+		-
+			message: "#^Attribute class Entity does not exist\\.$#"
+			count: 2
+			path: docs/extracted_blocks/override-field-association-mappings-in-subclasses_line16.php
+
+		-
+			message: "#^Attribute class Id does not exist\\.$#"
+			count: 2
+			path: docs/extracted_blocks/override-field-association-mappings-in-subclasses_line16.php
+
+		-
+			message: "#^Attribute class JoinColumn does not exist\\.$#"
+			count: 1
+			path: docs/extracted_blocks/override-field-association-mappings-in-subclasses_line16.php
+
+		-
+			message: "#^Attribute class OneToOne does not exist\\.$#"
+			count: 1
+			path: docs/extracted_blocks/override-field-association-mappings-in-subclasses_line16.php
+
+		-
+			message: "#^Instantiated class AssociationOverride not found\\.$#"
+			count: 1
+			path: docs/extracted_blocks/override-field-association-mappings-in-subclasses_line16.php
+
+		-
+			message: "#^Instantiated class AttributeOverride not found\\.$#"
+			count: 1
+			path: docs/extracted_blocks/override-field-association-mappings-in-subclasses_line16.php
+
+		-
+			message: "#^Instantiated class Column not found\\.$#"
+			count: 1
+			path: docs/extracted_blocks/override-field-association-mappings-in-subclasses_line16.php
+
+		-
+			message: "#^Instantiated class JoinColumn not found\\.$#"
+			count: 1
+			path: docs/extracted_blocks/override-field-association-mappings-in-subclasses_line16.php
+
+		-
+			message: "#^Property Bar\\:\\:\\$id is unused\\.$#"
+			count: 1
+			path: docs/extracted_blocks/override-field-association-mappings-in-subclasses_line16.php
+
+		-
+			message: "#^Variable \\$entityManager might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/pagination_line10.php
+
+		-
+			message: "#^Variable \\$entityManager might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/pagination_line53.php
+
+		-
+			message: "#^Variable \\$em might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/partial-objects_line76.php
+
+		-
+			message: "#^Variable \\$em might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/partial-objects_line84.php
+
+		-
+			message: "#^Instantiated class PHPDriver not found\\.$#"
+			count: 1
+			path: docs/extracted_blocks/php-mapping_line23.php
+
+		-
+			message: "#^Variable \\$em might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/php-mapping_line23.php
+
+		-
+			message: "#^Property Entities\\\\User\\:\\:\\$id is unused\\.$#"
+			count: 1
+			path: docs/extracted_blocks/php-mapping_line33.php
+
+		-
+			message: "#^Property Entities\\\\User\\:\\:\\$username is unused\\.$#"
+			count: 1
+			path: docs/extracted_blocks/php-mapping_line33.php
+
+		-
+			message: "#^Variable \\$metadata might not be defined\\.$#"
+			count: 3
+			path: docs/extracted_blocks/php-mapping_line48.php
+
+		-
+			message: "#^Variable \\$em might not be defined\\.$#"
+			count: 2
+			path: docs/extracted_blocks/php-mapping_line82.php
+
+		-
+			message: "#^Variable \\$em might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/php-mapping_line98.php
+
+		-
+			message: "#^Variable \\$qb might not be defined\\.$#"
+			count: 4
+			path: docs/extracted_blocks/query-builder_line112.php
+
+		-
+			message: "#^Variable \\$qb might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/query-builder_line226.php
+
+		-
+			message: "#^Variable \\$qb might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/query-builder_line240.php
+
+		-
+			message: "#^Variable \\$em might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/query-builder_line27.php
+
+		-
+			message: "#^Variable \\$qb might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/query-builder_line279.php
+
+		-
+			message: "#^Variable \\$qb might not be defined\\.$#"
+			count: 2
+			path: docs/extracted_blocks/query-builder_line297.php
+
+		-
+			message: "#^Variable \\$qb might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/query-builder_line333.php
+
+		-
+			message: "#^Variable \\$qb might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/query-builder_line354.php
+
+		-
+			message: "#^Instantiated class Expr\\\\From not found\\.$#"
+			count: 1
+			path: docs/extracted_blocks/query-builder_line380.php
+
+		-
+			message: "#^Instantiated class Expr\\\\OrderBy not found\\.$#"
+			count: 1
+			path: docs/extracted_blocks/query-builder_line380.php
+
+		-
+			message: "#^Instantiated class Expr\\\\Select not found\\.$#"
+			count: 1
+			path: docs/extracted_blocks/query-builder_line380.php
+
+		-
+			message: "#^Variable \\$qb might not be defined\\.$#"
+			count: 4
+			path: docs/extracted_blocks/query-builder_line380.php
+
+		-
+			message: "#^Variable \\$qb might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/query-builder_line39.php
+
+		-
+			message: "#^Variable \\$qb might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/query-builder_line547.php
+
+		-
+			message: "#^Variable \\$qb might not be defined\\.$#"
+			count: 3
+			path: docs/extracted_blocks/query-builder_line58.php
+
+		-
+			message: "#^Variable \\$qb might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/query-builder_line583.php
+
+		-
+			message: "#^Instantiated class Expr\\\\Comparison not found\\.$#"
+			count: 1
+			path: docs/extracted_blocks/query-builder_line604.php
+
+		-
+			message: "#^Instantiated class Expr\\\\From not found\\.$#"
+			count: 1
+			path: docs/extracted_blocks/query-builder_line604.php
+
+		-
+			message: "#^Instantiated class Expr\\\\OrderBy not found\\.$#"
+			count: 1
+			path: docs/extracted_blocks/query-builder_line604.php
+
+		-
+			message: "#^Instantiated class Expr\\\\Select not found\\.$#"
+			count: 1
+			path: docs/extracted_blocks/query-builder_line604.php
+
+		-
+			message: "#^Variable \\$qb might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/query-builder_line604.php
+
+		-
+			message: "#^Variable \\$qb might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/query-builder_line97.php
+
+		-
+			message: "#^Variable \\$config might not be defined\\.$#"
+			count: 2
+			path: docs/extracted_blocks/resolve-target-entity-listener_line111.php
+
+		-
+			message: "#^Variable \\$connectionOptions might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/resolve-target-entity-listener_line111.php
+
+		-
+			message: "#^Attribute class Cache does not exist\\.$#"
+			count: 1
+			path: docs/extracted_blocks/second-level-cache_line282.php
+
+		-
+			message: "#^Attribute class Column does not exist\\.$#"
+			count: 2
+			path: docs/extracted_blocks/second-level-cache_line282.php
+
+		-
+			message: "#^Attribute class Entity does not exist\\.$#"
+			count: 1
+			path: docs/extracted_blocks/second-level-cache_line282.php
+
+		-
+			message: "#^Attribute class GeneratedValue does not exist\\.$#"
+			count: 1
+			path: docs/extracted_blocks/second-level-cache_line282.php
+
+		-
+			message: "#^Attribute class Id does not exist\\.$#"
+			count: 1
+			path: docs/extracted_blocks/second-level-cache_line282.php
+
+		-
+			message: "#^Attribute class Cache does not exist\\.$#"
+			count: 3
+			path: docs/extracted_blocks/second-level-cache_line366.php
+
+		-
+			message: "#^Attribute class Column does not exist\\.$#"
+			count: 2
+			path: docs/extracted_blocks/second-level-cache_line366.php
+
+		-
+			message: "#^Attribute class Entity does not exist\\.$#"
+			count: 1
+			path: docs/extracted_blocks/second-level-cache_line366.php
+
+		-
+			message: "#^Attribute class GeneratedValue does not exist\\.$#"
+			count: 1
+			path: docs/extracted_blocks/second-level-cache_line366.php
+
+		-
+			message: "#^Attribute class Id does not exist\\.$#"
+			count: 1
+			path: docs/extracted_blocks/second-level-cache_line366.php
+
+		-
+			message: "#^Attribute class JoinColumn does not exist\\.$#"
+			count: 1
+			path: docs/extracted_blocks/second-level-cache_line366.php
+
+		-
+			message: "#^Attribute class ManyToOne does not exist\\.$#"
+			count: 1
+			path: docs/extracted_blocks/second-level-cache_line366.php
+
+		-
+			message: "#^Attribute class OneToMany does not exist\\.$#"
+			count: 1
+			path: docs/extracted_blocks/second-level-cache_line366.php
+
+		-
+			message: "#^Class City not found\\.$#"
+			count: 1
+			path: docs/extracted_blocks/second-level-cache_line366.php
+
+		-
+			message: "#^Property State\\:\\:\\$cities has unknown class City as its type\\.$#"
+			count: 1
+			path: docs/extracted_blocks/second-level-cache_line366.php
+
+		-
+			message: "#^Property State\\:\\:\\$cities has unknown class Collection as its type\\.$#"
+			count: 2
+			path: docs/extracted_blocks/second-level-cache_line366.php
+
+		-
+			message: "#^Property State\\:\\:\\$cities has unknown class City as its type\\.$#"
+			count: 1
+			path: docs/extracted_blocks/second-level-cache_line394.php
+
+		-
+			message: "#^Property State\\:\\:\\$cities has unknown class Collection as its type\\.$#"
+			count: 2
+			path: docs/extracted_blocks/second-level-cache_line394.php
+
+		-
+			message: "#^Class Country does not have a constructor and must be instantiated without any parameters\\.$#"
+			count: 1
+			path: docs/extracted_blocks/second-level-cache_line504.php
+
+		-
+			message: "#^Variable \\$em might not be defined\\.$#"
+			count: 7
+			path: docs/extracted_blocks/second-level-cache_line504.php
+
+		-
+			message: "#^Variable \\$name might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/second-level-cache_line504.php
+
+		-
+			message: "#^Class State does not have a constructor and must be instantiated without any parameters\\.$#"
+			count: 1
+			path: docs/extracted_blocks/second-level-cache_line526.php
+
+		-
+			message: "#^Instantiated class City not found\\.$#"
+			count: 1
+			path: docs/extracted_blocks/second-level-cache_line526.php
+
+		-
+			message: "#^Variable \\$country might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/second-level-cache_line526.php
+
+		-
+			message: "#^Variable \\$em might not be defined\\.$#"
+			count: 11
+			path: docs/extracted_blocks/second-level-cache_line526.php
+
+		-
+			message: "#^Variable \\$name might not be defined\\.$#"
+			count: 2
+			path: docs/extracted_blocks/second-level-cache_line526.php
+
+		-
+			message: "#^Variable \\$this might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/second-level-cache_line640.php
+
+		-
+			message: "#^Variable \\$em might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/second-level-cache_line651.php
+
+		-
+			message: "#^Variable \\$this might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/second-level-cache_line651.php
+
+		-
+			message: "#^Variable \\$em might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/second-level-cache_line663.php
+
+		-
+			message: "#^Variable \\$this might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/second-level-cache_line663.php
+
+		-
+			message: "#^Class Country does not have a constructor and must be instantiated without any parameters\\.$#"
+			count: 1
+			path: docs/extracted_blocks/second-level-cache_line680.php
+
+		-
+			message: "#^Variable \\$em might not be defined\\.$#"
+			count: 6
+			path: docs/extracted_blocks/second-level-cache_line680.php
+
+		-
+			message: "#^Attribute class Entity does not exist\\.$#"
+			count: 1
+			path: docs/extracted_blocks/second-level-cache_line728.php
+
+		-
+			message: "#^Attribute class Id does not exist\\.$#"
+			count: 2
+			path: docs/extracted_blocks/second-level-cache_line728.php
+
+		-
+			message: "#^Attribute class JoinColumn does not exist\\.$#"
+			count: 2
+			path: docs/extracted_blocks/second-level-cache_line728.php
+
+		-
+			message: "#^Attribute class ManyToOne does not exist\\.$#"
+			count: 2
+			path: docs/extracted_blocks/second-level-cache_line728.php
+
+		-
+			message: "#^Class Article does not have a constructor and must be instantiated without any parameters\\.$#"
+			count: 2
+			path: docs/extracted_blocks/second-level-cache_line728.php
+
+		-
+			message: "#^Property Reference\\:\\:\\$source is never read, only written\\.$#"
+			count: 1
+			path: docs/extracted_blocks/second-level-cache_line728.php
+
+		-
+			message: "#^Property Reference\\:\\:\\$target is unused\\.$#"
+			count: 1
+			path: docs/extracted_blocks/second-level-cache_line728.php
+
+		-
+			message: "#^Variable \\$em might not be defined\\.$#"
+			count: 4
+			path: docs/extracted_blocks/second-level-cache_line728.php
+
+		-
+			message: "#^Variable \\$entityManager might not be defined\\.$#"
+			count: 2
+			path: docs/extracted_blocks/security_line127.php
+
+		-
+			message: "#^Variable \\$entityManager might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/security_line66.php
+
+		-
+			message: "#^Attribute class Column does not exist\\.$#"
+			count: 3
+			path: docs/extracted_blocks/security_line98.php
+
+		-
+			message: "#^Attribute class Entity does not exist\\.$#"
+			count: 1
+			path: docs/extracted_blocks/security_line98.php
+
+		-
+			message: "#^Attribute class GeneratedValue does not exist\\.$#"
+			count: 1
+			path: docs/extracted_blocks/security_line98.php
+
+		-
+			message: "#^Attribute class Id does not exist\\.$#"
+			count: 1
+			path: docs/extracted_blocks/security_line98.php
+
+		-
+			message: "#^Variable \\$config might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/sql-table-prefixes_line74.php
+
+		-
+			message: "#^Variable \\$connection might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/sql-table-prefixes_line74.php
+
+		-
+			message: "#^Call to method getConfig\\(\\) on an unknown class Block\\\\AbstractBlock\\.$#"
+			count: 2
+			path: docs/extracted_blocks/strategy-cookbook-introduction_line215.php
+
+		-
+			message: "#^Call to method getStrategyClassName\\(\\) on an unknown class Block\\\\AbstractBlock\\.$#"
+			count: 1
+			path: docs/extracted_blocks/strategy-cookbook-introduction_line215.php
+
+		-
+			message: "#^Call to method setStrategy\\(\\) on an unknown class Block\\\\AbstractBlock\\.$#"
+			count: 1
+			path: docs/extracted_blocks/strategy-cookbook-introduction_line215.php
+
+		-
+			message: "#^Class Block\\\\AbstractBlock not found\\.$#"
+			count: 1
+			path: docs/extracted_blocks/strategy-cookbook-introduction_line215.php
+
+		-
+			message: "#^Parameter \\$view of method BlockStrategyEventListener\\:\\:__construct\\(\\) has invalid type Zend_View_Interface\\.$#"
+			count: 1
+			path: docs/extracted_blocks/strategy-cookbook-introduction_line215.php
+
+		-
+			message: "#^Method BlockStrategyInterface\\:\\:getConfig\\(\\) has invalid return type Core\\\\Model\\\\Config\\\\EntityConfig\\.$#"
+			count: 1
+			path: docs/extracted_blocks/strategy-cookbook-introduction_line64.php
+
+		-
+			message: "#^Method BlockStrategyInterface\\:\\:getView\\(\\) has invalid return type Zend_View_Interface\\.$#"
+			count: 1
+			path: docs/extracted_blocks/strategy-cookbook-introduction_line64.php
+
+		-
+			message: "#^Method BlockStrategyInterface\\:\\:setView\\(\\) has invalid return type Zend_View_Helper_Interface\\.$#"
+			count: 1
+			path: docs/extracted_blocks/strategy-cookbook-introduction_line64.php
+
+		-
+			message: "#^Parameter \\$block of method BlockStrategyInterface\\:\\:setBlockEntity\\(\\) has invalid type AbstractBlock\\.$#"
+			count: 1
+			path: docs/extracted_blocks/strategy-cookbook-introduction_line64.php
+
+		-
+			message: "#^Parameter \\$config of method BlockStrategyInterface\\:\\:setConfig\\(\\) has invalid type Config\\\\EntityConfig\\.$#"
+			count: 1
+			path: docs/extracted_blocks/strategy-cookbook-introduction_line64.php
+
+		-
+			message: "#^Parameter \\$view of method BlockStrategyInterface\\:\\:setView\\(\\) has invalid type Zend_View_Interface\\.$#"
+			count: 2
+			path: docs/extracted_blocks/strategy-cookbook-introduction_line64.php
+
+		-
+			message: "#^Variable \\$em might not be defined\\.$#"
+			count: 3
+			path: docs/extracted_blocks/tools_line156.php
+
+		-
+			message: "#^Variable \\$classes might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/tools_line168.php
+
+		-
+			message: "#^Variable \\$tool might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/tools_line168.php
+
+		-
+			message: "#^Access to undefined constant Doctrine\\\\ORM\\\\Tools\\\\SchemaTool\\:\\:DROP_DATABASE\\.$#"
+			count: 1
+			path: docs/extracted_blocks/tools_line178.php
+
+		-
+			message: "#^Variable \\$classes might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/tools_line178.php
+
+		-
+			message: "#^Variable \\$tool might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/tools_line178.php
+
+		-
+			message: "#^Variable \\$classes might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/tools_line188.php
+
+		-
+			message: "#^Variable \\$tool might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/tools_line188.php
+
+		-
+			message: "#^Function GetEntityManager not found\\.$#"
+			count: 1
+			path: docs/extracted_blocks/tools_line30.php
+
+		-
+			message: "#^Variable \\$cme might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/tools_line300.php
+
+		-
+			message: "#^Variable \\$em might not be defined\\.$#"
+			count: 2
+			path: docs/extracted_blocks/tools_line307.php
+
+		-
+			message: "#^Variable \\$exporter might not be defined\\.$#"
+			count: 2
+			path: docs/extracted_blocks/tools_line307.php
+
+		-
+			message: "#^Variable \\$em might not be defined\\.$#"
+			count: 3
+			path: docs/extracted_blocks/tools_line345.php
+
+		-
+			message: "#^Variable \\$metadata might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/tools_line361.php
+
+		-
+			message: "#^Parameter \\#2 \\$array of function implode expects array\\<string\\>, array\\<string, array\\<int, string\\>\\> given\\.$#"
+			count: 1
+			path: docs/extracted_blocks/tools_line408.php
+
+		-
+			message: "#^Variable \\$entityManager might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/tools_line408.php
+
+		-
+			message: "#^Call to an undefined method Symfony\\\\Component\\\\Console\\\\Application\\:\\:addCommand\\(\\)\\.$#"
+			count: 1
+			path: docs/extracted_blocks/tools_line447.php
+
+		-
+			message: "#^Call to static method addCommands\\(\\) on an unknown class ConsoleRunner\\.$#"
+			count: 1
+			path: docs/extracted_blocks/tools_line447.php
+
+		-
+			message: "#^Instantiated class MyProject\\\\Tools\\\\Console\\\\Commands\\\\MyCustomCommand not found\\.$#"
+			count: 1
+			path: docs/extracted_blocks/tools_line447.php
+
+		-
+			message: "#^Variable \\$helperSet might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/tools_line447.php
+
+		-
+			message: "#^Instantiated class MyProject\\\\Tools\\\\Console\\\\Commands\\\\AnotherCommand not found\\.$#"
+			count: 1
+			path: docs/extracted_blocks/tools_line472.php
+
+		-
+			message: "#^Instantiated class MyProject\\\\Tools\\\\Console\\\\Commands\\\\MyCustomCommand not found\\.$#"
+			count: 1
+			path: docs/extracted_blocks/tools_line472.php
+
+		-
+			message: "#^Instantiated class MyProject\\\\Tools\\\\Console\\\\Commands\\\\OneMoreCommand not found\\.$#"
+			count: 1
+			path: docs/extracted_blocks/tools_line472.php
+
+		-
+			message: "#^Instantiated class MyProject\\\\Tools\\\\Console\\\\Commands\\\\SomethingCommand not found\\.$#"
+			count: 1
+			path: docs/extracted_blocks/tools_line472.php
+
+		-
+			message: "#^Variable \\$cli might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/tools_line472.php
+
+		-
+			message: "#^Call to static method createApplication\\(\\) on an unknown class ConsoleRunner\\.$#"
+			count: 1
+			path: docs/extracted_blocks/tools_line491.php
+
+		-
+			message: "#^Variable \\$helperSet might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/tools_line491.php
+
+		-
+			message: "#^Attribute class Column does not exist\\.$#"
+			count: 1
+			path: docs/extracted_blocks/transactions-and-concurrency_line196.php
+
+		-
+			message: "#^Attribute class Version does not exist\\.$#"
+			count: 1
+			path: docs/extracted_blocks/transactions-and-concurrency_line196.php
+
+		-
+			message: "#^Property User\\:\\:\\$version is unused\\.$#"
+			count: 1
+			path: docs/extracted_blocks/transactions-and-concurrency_line196.php
+
+		-
+			message: "#^Property User\\:\\:\\$version is unused\\.$#"
+			count: 1
+			path: docs/extracted_blocks/transactions-and-concurrency_line207.php
+
+		-
+			message: "#^Attribute class Column does not exist\\.$#"
+			count: 1
+			path: docs/extracted_blocks/transactions-and-concurrency_line240.php
+
+		-
+			message: "#^Attribute class Version does not exist\\.$#"
+			count: 1
+			path: docs/extracted_blocks/transactions-and-concurrency_line240.php
+
+		-
+			message: "#^Property User\\:\\:\\$version is unused\\.$#"
+			count: 1
+			path: docs/extracted_blocks/transactions-and-concurrency_line240.php
+
+		-
+			message: "#^Property User\\:\\:\\$version is unused\\.$#"
+			count: 1
+			path: docs/extracted_blocks/transactions-and-concurrency_line251.php
+
+		-
+			message: "#^Variable \\$em might not be defined\\.$#"
+			count: 2
+			path: docs/extracted_blocks/transactions-and-concurrency_line303.php
+
+		-
+			message: "#^Variable \\$em might not be defined\\.$#"
+			count: 2
+			path: docs/extracted_blocks/transactions-and-concurrency_line324.php
+
+		-
+			message: "#^Variable \\$em might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/transactions-and-concurrency_line373.php
+
+		-
+			message: "#^Variable \\$em might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/transactions-and-concurrency_line383.php
+
+		-
+			message: "#^Call to an undefined method User\\:\\:setName\\(\\)\\.$#"
+			count: 1
+			path: docs/extracted_blocks/transactions-and-concurrency_line42.php
+
+		-
+			message: "#^Variable \\$em might not be defined\\.$#"
+			count: 2
+			path: docs/extracted_blocks/transactions-and-concurrency_line42.php
+
+		-
+			message: "#^Call to an undefined method User\\:\\:setName\\(\\)\\.$#"
+			count: 1
+			path: docs/extracted_blocks/transactions-and-concurrency_line67.php
+
+		-
+			message: "#^Variable \\$em might not be defined\\.$#"
+			count: 5
+			path: docs/extracted_blocks/transactions-and-concurrency_line67.php
+
+		-
+			message: "#^Call to an undefined method User\\:\\:setName\\(\\)\\.$#"
+			count: 2
+			path: docs/extracted_blocks/transactions-and-concurrency_line98.php
+
+		-
+			message: "#^Variable \\$conn might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/transactions-and-concurrency_line98.php
+
+		-
+			message: "#^Variable \\$em might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/transactions-and-concurrency_line98.php
+
+		-
+			message: "#^Instantiated class CustomTypedFieldMapper not found\\.$#"
+			count: 1
+			path: docs/extracted_blocks/typedfieldmapper_line11.php
+
+		-
+			message: "#^Variable \\$configuration might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/typedfieldmapper_line11.php
+
+		-
+			message: "#^Class App\\\\DBAL\\\\Type\\\\CustomIntType not found\\.$#"
+			count: 1
+			path: docs/extracted_blocks/typedfieldmapper_line128.php
+
+		-
+			message: "#^Instantiated class CustomTypedFieldMapper not found\\.$#"
+			count: 1
+			path: docs/extracted_blocks/typedfieldmapper_line128.php
+
+		-
+			message: "#^Parameter \\#2 \\.\\.\\.\\$typedFieldMappers of class Doctrine\\\\ORM\\\\Mapping\\\\ChainTypedFieldMapper constructor expects Doctrine\\\\ORM\\\\Mapping\\\\TypedFieldMapper, CustomTypedFieldMapper given\\.$#"
+			count: 1
+			path: docs/extracted_blocks/typedfieldmapper_line128.php
+
+		-
+			message: "#^Variable \\$configuration might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/typedfieldmapper_line128.php
+
+		-
+			message: "#^Class App\\\\CustomIds\\\\CustomIdObject not found\\.$#"
+			count: 1
+			path: docs/extracted_blocks/typedfieldmapper_line23.php
+
+		-
+			message: "#^Class App\\\\DBAL\\\\Type\\\\CustomIdObjectType not found\\.$#"
+			count: 1
+			path: docs/extracted_blocks/typedfieldmapper_line23.php
+
+		-
+			message: "#^Parameter \\#1 \\$typedFieldMappings of class Doctrine\\\\ORM\\\\Mapping\\\\DefaultTypedFieldMapper constructor expects array\\<'array'\\|'bool'\\|'float'\\|'int'\\|'string'\\|class\\-string, string\\>, array\\{App\\\\CustomIds\\\\CustomIdObject\\: 'App\\\\\\\\DBAL\\\\\\\\Type\\\\\\\\CustomIdObjectType'\\} given\\.$#"
+			count: 1
+			path: docs/extracted_blocks/typedfieldmapper_line23.php
+
+		-
+			message: "#^Variable \\$configuration might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/typedfieldmapper_line23.php
+
+		-
+			message: "#^Attribute class ORM\\\\Column does not exist\\.$#"
+			count: 1
+			path: docs/extracted_blocks/typedfieldmapper_line39.php
+
+		-
+			message: "#^Attribute class ORM\\\\Entity does not exist\\.$#"
+			count: 1
+			path: docs/extracted_blocks/typedfieldmapper_line39.php
+
+		-
+			message: "#^Attribute class ORM\\\\Table does not exist\\.$#"
+			count: 1
+			path: docs/extracted_blocks/typedfieldmapper_line39.php
+
+		-
+			message: "#^Property UserTypedWithCustomTypedField\\:\\:\\$customId has unknown class CustomIdObject as its type\\.$#"
+			count: 1
+			path: docs/extracted_blocks/typedfieldmapper_line39.php
+
+		-
+			message: "#^Property UserTypedWithCustomTypedField\\:\\:\\$customId has unknown class CustomIdObject as its type\\.$#"
+			count: 1
+			path: docs/extracted_blocks/typedfieldmapper_line52.php
+
+		-
+			message: "#^Class App\\\\DBAL\\\\Type\\\\CustomIntType not found\\.$#"
+			count: 1
+			path: docs/extracted_blocks/typedfieldmapper_line85.php
+
+		-
+			message: "#^Variable \\$configuration might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/typedfieldmapper_line85.php
+
+		-
+			message: "#^Variable \\$entityManager might not be defined\\.$#"
+			count: 2
+			path: docs/extracted_blocks/unitofwork_line96.php
+
+		-
+			message: "#^Access to an undefined property Order\\:\\:\\$customer\\.$#"
+			count: 1
+			path: docs/extracted_blocks/validation-of-entities_line116.php
+
+		-
+			message: "#^Access to an undefined property Order\\:\\:\\$plannedShipDate\\.$#"
+			count: 1
+			path: docs/extracted_blocks/validation-of-entities_line116.php
+
+		-
+			message: "#^Attribute class PrePersist does not exist\\.$#"
+			count: 1
+			path: docs/extracted_blocks/validation-of-entities_line116.php
+
+		-
+			message: "#^Attribute class PreUpdate does not exist\\.$#"
+			count: 1
+			path: docs/extracted_blocks/validation-of-entities_line116.php
+
+		-
+			message: "#^Instantiated class OrderRequiresCustomerException not found\\.$#"
+			count: 1
+			path: docs/extracted_blocks/validation-of-entities_line116.php
+
+		-
+			message: "#^Instantiated class ValidateException not found\\.$#"
+			count: 2
+			path: docs/extracted_blocks/validation-of-entities_line116.php
+
+		-
+			message: "#^Throwing object of an unknown class OrderRequiresCustomerException\\.$#"
+			count: 1
+			path: docs/extracted_blocks/validation-of-entities_line116.php
+
+		-
+			message: "#^Throwing object of an unknown class ValidateException\\.$#"
+			count: 2
+			path: docs/extracted_blocks/validation-of-entities_line116.php
+
+		-
+			message: "#^Access to an undefined property Order\\:\\:\\$customer\\.$#"
+			count: 1
+			path: docs/extracted_blocks/validation-of-entities_line33.php
+
+		-
+			message: "#^Access to an undefined property Order\\:\\:\\$orderLines\\.$#"
+			count: 1
+			path: docs/extracted_blocks/validation-of-entities_line33.php
+
+		-
+			message: "#^Instantiated class CustomerOrderLimitExceededException not found\\.$#"
+			count: 1
+			path: docs/extracted_blocks/validation-of-entities_line33.php
+
+		-
+			message: "#^Throwing object of an unknown class CustomerOrderLimitExceededException\\.$#"
+			count: 1
+			path: docs/extracted_blocks/validation-of-entities_line33.php
+
+		-
+			message: "#^Access to an undefined property User\\:\\:\\$commentsRead\\.$#"
+			count: 1
+			path: docs/extracted_blocks/working-with-associations_line131.php
+
+		-
+			message: "#^Access to an undefined property User\\:\\:\\$firstComment\\.$#"
+			count: 1
+			path: docs/extracted_blocks/working-with-associations_line131.php
+
+		-
+			message: "#^Method User\\:\\:getReadComments\\(\\) has invalid return type Collection\\.$#"
+			count: 2
+			path: docs/extracted_blocks/working-with-associations_line131.php
+
+		-
+			message: "#^Variable \\$em might not be defined\\.$#"
+			count: 5
+			path: docs/extracted_blocks/working-with-associations_line150.php
+
+		-
+			message: "#^Variable \\$readCommentId might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/working-with-associations_line150.php
+
+		-
+			message: "#^Variable \\$userId might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/working-with-associations_line150.php
+
+		-
+			message: "#^Access to an undefined property Comment\\:\\:\\$author\\.$#"
+			count: 1
+			path: docs/extracted_blocks/working-with-associations_line171.php
+
+		-
+			message: "#^Access to an undefined property Comment\\:\\:\\$userFavorites\\.$#"
+			count: 1
+			path: docs/extracted_blocks/working-with-associations_line171.php
+
+		-
+			message: "#^Access to an undefined property User\\:\\:\\$commentsAuthored\\.$#"
+			count: 1
+			path: docs/extracted_blocks/working-with-associations_line171.php
+
+		-
+			message: "#^Access to an undefined property User\\:\\:\\$favorites\\.$#"
+			count: 1
+			path: docs/extracted_blocks/working-with-associations_line171.php
+
+		-
+			message: "#^Method Comment\\:\\:getUserFavorites\\(\\) has invalid return type Collection\\.$#"
+			count: 2
+			path: docs/extracted_blocks/working-with-associations_line171.php
+
+		-
+			message: "#^Method User\\:\\:getAuthoredComments\\(\\) has invalid return type Collection\\.$#"
+			count: 2
+			path: docs/extracted_blocks/working-with-associations_line171.php
+
+		-
+			message: "#^Method User\\:\\:getFavoriteComments\\(\\) has invalid return type Collection\\.$#"
+			count: 2
+			path: docs/extracted_blocks/working-with-associations_line171.php
+
+		-
+			message: "#^Variable \\$em might not be defined\\.$#"
+			count: 3
+			path: docs/extracted_blocks/working-with-associations_line171.php
+
+		-
+			message: "#^Variable \\$favoriteComment might not be defined\\.$#"
+			count: 2
+			path: docs/extracted_blocks/working-with-associations_line171.php
+
+		-
+			message: "#^Variable \\$user might not be defined\\.$#"
+			count: 4
+			path: docs/extracted_blocks/working-with-associations_line171.php
+
+		-
+			message: "#^Variable \\$comment might not be defined\\.$#"
+			count: 5
+			path: docs/extracted_blocks/working-with-associations_line228.php
+
+		-
+			message: "#^Variable \\$ithComment might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/working-with-associations_line228.php
+
+		-
+			message: "#^Variable \\$user might not be defined\\.$#"
+			count: 4
+			path: docs/extracted_blocks/working-with-associations_line228.php
+
+		-
+			message: "#^Access to an undefined property Comment\\:\\:\\$userFavorites\\.$#"
+			count: 2
+			path: docs/extracted_blocks/working-with-associations_line295.php
+
+		-
+			message: "#^Access to an undefined property User\\:\\:\\$comments\\.$#"
+			count: 1
+			path: docs/extracted_blocks/working-with-associations_line295.php
+
+		-
+			message: "#^Access to an undefined property User\\:\\:\\$commentsAuthored\\.$#"
+			count: 1
+			path: docs/extracted_blocks/working-with-associations_line295.php
+
+		-
+			message: "#^Access to an undefined property User\\:\\:\\$commentsRead\\.$#"
+			count: 1
+			path: docs/extracted_blocks/working-with-associations_line295.php
+
+		-
+			message: "#^Access to an undefined property User\\:\\:\\$favorites\\.$#"
+			count: 2
+			path: docs/extracted_blocks/working-with-associations_line295.php
+
+		-
+			message: "#^Access to an undefined property User\\:\\:\\$firstComment\\.$#"
+			count: 1
+			path: docs/extracted_blocks/working-with-associations_line295.php
+
+		-
+			message: "#^Call to an undefined method Comment\\:\\:addUserFavorite\\(\\)\\.$#"
+			count: 1
+			path: docs/extracted_blocks/working-with-associations_line295.php
+
+		-
+			message: "#^Call to an undefined method Comment\\:\\:removeUserFavorite\\(\\)\\.$#"
+			count: 1
+			path: docs/extracted_blocks/working-with-associations_line295.php
+
+		-
+			message: "#^Attribute class Column does not exist\\.$#"
+			count: 2
+			path: docs/extracted_blocks/working-with-associations_line34.php
+
+		-
+			message: "#^Attribute class Entity does not exist\\.$#"
+			count: 2
+			path: docs/extracted_blocks/working-with-associations_line34.php
+
+		-
+			message: "#^Attribute class GeneratedValue does not exist\\.$#"
+			count: 2
+			path: docs/extracted_blocks/working-with-associations_line34.php
+
+		-
+			message: "#^Attribute class Id does not exist\\.$#"
+			count: 2
+			path: docs/extracted_blocks/working-with-associations_line34.php
+
+		-
+			message: "#^Attribute class JoinTable does not exist\\.$#"
+			count: 2
+			path: docs/extracted_blocks/working-with-associations_line34.php
+
+		-
+			message: "#^Attribute class ManyToMany does not exist\\.$#"
+			count: 3
+			path: docs/extracted_blocks/working-with-associations_line34.php
+
+		-
+			message: "#^Attribute class ManyToOne does not exist\\.$#"
+			count: 2
+			path: docs/extracted_blocks/working-with-associations_line34.php
+
+		-
+			message: "#^Attribute class OneToMany does not exist\\.$#"
+			count: 1
+			path: docs/extracted_blocks/working-with-associations_line34.php
+
+		-
+			message: "#^Property Comment\\:\\:\\$author is never read, only written\\.$#"
+			count: 1
+			path: docs/extracted_blocks/working-with-associations_line34.php
+
+		-
+			message: "#^Property Comment\\:\\:\\$id is unused\\.$#"
+			count: 1
+			path: docs/extracted_blocks/working-with-associations_line34.php
+
+		-
+			message: "#^Property Comment\\:\\:\\$userFavorites has unknown class Collection as its type\\.$#"
+			count: 2
+			path: docs/extracted_blocks/working-with-associations_line34.php
+
+		-
+			message: "#^Property Comment\\:\\:\\$userFavorites is unused\\.$#"
+			count: 1
+			path: docs/extracted_blocks/working-with-associations_line34.php
+
+		-
+			message: "#^Property User\\:\\:\\$commentsAuthored has unknown class Collection as its type\\.$#"
+			count: 2
+			path: docs/extracted_blocks/working-with-associations_line34.php
+
+		-
+			message: "#^Property User\\:\\:\\$commentsAuthored is unused\\.$#"
+			count: 1
+			path: docs/extracted_blocks/working-with-associations_line34.php
+
+		-
+			message: "#^Property User\\:\\:\\$commentsRead has unknown class Collection as its type\\.$#"
+			count: 2
+			path: docs/extracted_blocks/working-with-associations_line34.php
+
+		-
+			message: "#^Property User\\:\\:\\$commentsRead is unused\\.$#"
+			count: 1
+			path: docs/extracted_blocks/working-with-associations_line34.php
+
+		-
+			message: "#^Property User\\:\\:\\$favorites has unknown class Collection as its type\\.$#"
+			count: 2
+			path: docs/extracted_blocks/working-with-associations_line34.php
+
+		-
+			message: "#^Property User\\:\\:\\$favorites is unused\\.$#"
+			count: 1
+			path: docs/extracted_blocks/working-with-associations_line34.php
+
+		-
+			message: "#^Property User\\:\\:\\$firstComment is never read, only written\\.$#"
+			count: 1
+			path: docs/extracted_blocks/working-with-associations_line34.php
+
+		-
+			message: "#^Property User\\:\\:\\$id is never read, only written\\.$#"
+			count: 1
+			path: docs/extracted_blocks/working-with-associations_line34.php
+
+		-
+			message: "#^Access to an undefined property User\\:\\:\\$commentsRead\\.$#"
+			count: 1
+			path: docs/extracted_blocks/working-with-associations_line361.php
+
+		-
+			message: "#^Variable \\$favoriteComment might not be defined\\.$#"
+			count: 3
+			path: docs/extracted_blocks/working-with-associations_line392.php
+
+		-
+			message: "#^Variable \\$user might not be defined\\.$#"
+			count: 3
+			path: docs/extracted_blocks/working-with-associations_line392.php
+
+		-
+			message: "#^Call to an undefined method User\\:\\:addComment\\(\\)\\.$#"
+			count: 1
+			path: docs/extracted_blocks/working-with-associations_line426.php
+
+		-
+			message: "#^Variable \\$em might not be defined\\.$#"
+			count: 3
+			path: docs/extracted_blocks/working-with-associations_line426.php
+
+		-
+			message: "#^Call to an undefined static method Comment\\:\\:create\\(\\)\\.$#"
+			count: 1
+			path: docs/extracted_blocks/working-with-associations_line441.php
+
+		-
+			message: "#^Call to an undefined static method User\\:\\:new\\(\\)\\.$#"
+			count: 1
+			path: docs/extracted_blocks/working-with-associations_line441.php
+
+		-
+			message: "#^Call to method add\\(\\) on an unknown class Collection\\.$#"
+			count: 1
+			path: docs/extracted_blocks/working-with-associations_line441.php
+
+		-
+			message: "#^Instantiated class ArrayCollection not found\\.$#"
+			count: 1
+			path: docs/extracted_blocks/working-with-associations_line441.php
+
+		-
+			message: "#^Property User\\:\\:\\$comments has unknown class Collection as its type\\.$#"
+			count: 2
+			path: docs/extracted_blocks/working-with-associations_line441.php
+
+		-
+			message: "#^Property User\\:\\:\\$id is never read, only written\\.$#"
+			count: 1
+			path: docs/extracted_blocks/working-with-associations_line441.php
+
+		-
+			message: "#^Attribute class OneToMany does not exist\\.$#"
+			count: 1
+			path: docs/extracted_blocks/working-with-associations_line470.php
+
+		-
+			message: "#^Property User\\:\\:\\$commentsAuthored is unused\\.$#"
+			count: 1
+			path: docs/extracted_blocks/working-with-associations_line470.php
+
+		-
+			message: "#^Call to an undefined method User\\:\\:comment\\(\\)\\.$#"
+			count: 1
+			path: docs/extracted_blocks/working-with-associations_line484.php
+
+		-
+			message: "#^Variable \\$em might not be defined\\.$#"
+			count: 2
+			path: docs/extracted_blocks/working-with-associations_line484.php
+
+		-
+			message: "#^Variable \\$deleteUserId might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/working-with-associations_line501.php
+
+		-
+			message: "#^Variable \\$em might not be defined\\.$#"
+			count: 3
+			path: docs/extracted_blocks/working-with-associations_line501.php
+
+		-
+			message: "#^Access to offset int on an unknown class Addressbook\\\\Collection\\.$#"
+			count: 1
+			path: docs/extracted_blocks/working-with-associations_line578.php
+
+		-
+			message: "#^Attribute class Addressbook\\\\Column does not exist\\.$#"
+			count: 1
+			path: docs/extracted_blocks/working-with-associations_line578.php
+
+		-
+			message: "#^Attribute class Addressbook\\\\Entity does not exist\\.$#"
+			count: 1
+			path: docs/extracted_blocks/working-with-associations_line578.php
+
+		-
+			message: "#^Attribute class Addressbook\\\\GeneratedValue does not exist\\.$#"
+			count: 1
+			path: docs/extracted_blocks/working-with-associations_line578.php
+
+		-
+			message: "#^Attribute class Addressbook\\\\Id does not exist\\.$#"
+			count: 1
+			path: docs/extracted_blocks/working-with-associations_line578.php
+
+		-
+			message: "#^Attribute class Addressbook\\\\OneToMany does not exist\\.$#"
+			count: 1
+			path: docs/extracted_blocks/working-with-associations_line578.php
+
+		-
+			message: "#^Attribute class Addressbook\\\\OneToOne does not exist\\.$#"
+			count: 1
+			path: docs/extracted_blocks/working-with-associations_line578.php
+
+		-
+			message: "#^Class Addressbook\\\\Address not found\\.$#"
+			count: 1
+			path: docs/extracted_blocks/working-with-associations_line578.php
+
+		-
+			message: "#^Class Addressbook\\\\StandingData not found\\.$#"
+			count: 1
+			path: docs/extracted_blocks/working-with-associations_line578.php
+
+		-
+			message: "#^Parameter \\$sd of method Addressbook\\\\Contact\\:\\:newStandingData\\(\\) has invalid type Addressbook\\\\StandingData\\.$#"
+			count: 1
+			path: docs/extracted_blocks/working-with-associations_line578.php
+
+		-
+			message: "#^Property Addressbook\\\\Contact\\:\\:\\$addresses has unknown class Addressbook\\\\Address as its type\\.$#"
+			count: 1
+			path: docs/extracted_blocks/working-with-associations_line578.php
+
+		-
+			message: "#^Property Addressbook\\\\Contact\\:\\:\\$addresses has unknown class Addressbook\\\\Collection as its type\\.$#"
+			count: 2
+			path: docs/extracted_blocks/working-with-associations_line578.php
+
+		-
+			message: "#^Property Addressbook\\\\Contact\\:\\:\\$id is never read, only written\\.$#"
+			count: 1
+			path: docs/extracted_blocks/working-with-associations_line578.php
+
+		-
+			message: "#^Property Addressbook\\\\Contact\\:\\:\\$standingData has unknown class Addressbook\\\\StandingData as its type\\.$#"
+			count: 1
+			path: docs/extracted_blocks/working-with-associations_line578.php
+
+		-
+			message: "#^Property Addressbook\\\\Contact\\:\\:\\$standingData is never read, only written\\.$#"
+			count: 1
+			path: docs/extracted_blocks/working-with-associations_line578.php
+
+		-
+			message: "#^Instantiated class StandingData not found\\.$#"
+			count: 1
+			path: docs/extracted_blocks/working-with-associations_line617.php
+
+		-
+			message: "#^Variable \\$contactId might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/working-with-associations_line617.php
+
+		-
+			message: "#^Variable \\$em might not be defined\\.$#"
+			count: 2
+			path: docs/extracted_blocks/working-with-associations_line617.php
+
+		-
+			message: "#^Variable \\$entityManager might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/working-with-associations_line643.php
+
+		-
+			message: "#^Variable \\$groupId might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/working-with-associations_line643.php
+
+		-
+			message: "#^Attribute class Column does not exist\\.$#"
+			count: 1
+			path: docs/extracted_blocks/working-with-datetime_line17.php
+
+		-
+			message: "#^Attribute class Entity does not exist\\.$#"
+			count: 1
+			path: docs/extracted_blocks/working-with-datetime_line17.php
+
+		-
+			message: "#^Property Article\\:\\:\\$updated is never written, only read\\.$#"
+			count: 1
+			path: docs/extracted_blocks/working-with-datetime_line17.php
+
+		-
+			message: "#^Access to an undefined property Article\\:\\:\\$updated\\.$#"
+			count: 1
+			path: docs/extracted_blocks/working-with-datetime_line38.php
+
+		-
+			message: "#^Attribute class Doctrine\\\\Tests\\\\Models\\\\StockExchange\\\\Column does not exist\\.$#"
+			count: 2
+			path: docs/extracted_blocks/working-with-indexed-associations_line208.php
+
+		-
+			message: "#^Attribute class Doctrine\\\\Tests\\\\Models\\\\StockExchange\\\\Entity does not exist\\.$#"
+			count: 1
+			path: docs/extracted_blocks/working-with-indexed-associations_line208.php
+
+		-
+			message: "#^Attribute class Doctrine\\\\Tests\\\\Models\\\\StockExchange\\\\GeneratedValue does not exist\\.$#"
+			count: 1
+			path: docs/extracted_blocks/working-with-indexed-associations_line208.php
+
+		-
+			message: "#^Attribute class Doctrine\\\\Tests\\\\Models\\\\StockExchange\\\\Id does not exist\\.$#"
+			count: 1
+			path: docs/extracted_blocks/working-with-indexed-associations_line208.php
+
+		-
+			message: "#^Attribute class Doctrine\\\\Tests\\\\Models\\\\StockExchange\\\\ManyToOne does not exist\\.$#"
+			count: 1
+			path: docs/extracted_blocks/working-with-indexed-associations_line208.php
+
+		-
+			message: "#^Attribute class Doctrine\\\\Tests\\\\Models\\\\StockExchange\\\\Table does not exist\\.$#"
+			count: 1
+			path: docs/extracted_blocks/working-with-indexed-associations_line208.php
+
+		-
+			message: "#^Property Doctrine\\\\Tests\\\\Models\\\\StockExchange\\\\Stock\\:\\:\\$id is never read, only written\\.$#"
+			count: 1
+			path: docs/extracted_blocks/working-with-indexed-associations_line208.php
+
+		-
+			message: "#^Property Doctrine\\\\Tests\\\\Models\\\\StockExchange\\\\Stock\\:\\:\\$market is never read, only written\\.$#"
+			count: 1
+			path: docs/extracted_blocks/working-with-indexed-associations_line208.php
+
+		-
+			message: "#^Property Doctrine\\\\Tests\\\\Models\\\\StockExchange\\\\Stock\\:\\:\\$id is never read, only written\\.$#"
+			count: 1
+			path: docs/extracted_blocks/working-with-indexed-associations_line239.php
+
+		-
+			message: "#^Property Doctrine\\\\Tests\\\\Models\\\\StockExchange\\\\Stock\\:\\:\\$market is never read, only written\\.$#"
+			count: 1
+			path: docs/extracted_blocks/working-with-indexed-associations_line239.php
+
+		-
+			message: "#^Instantiated class Market not found\\.$#"
+			count: 1
+			path: docs/extracted_blocks/working-with-indexed-associations_line323.php
+
+		-
+			message: "#^Instantiated class Stock not found\\.$#"
+			count: 2
+			path: docs/extracted_blocks/working-with-indexed-associations_line323.php
+
+		-
+			message: "#^Variable \\$em might not be defined\\.$#"
+			count: 4
+			path: docs/extracted_blocks/working-with-indexed-associations_line323.php
+
+		-
+			message: "#^Variable \\$em might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/working-with-indexed-associations_line340.php
+
+		-
+			message: "#^Variable \\$em might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/working-with-indexed-associations_line359.php
+
+		-
+			message: "#^Attribute class Doctrine\\\\Tests\\\\Models\\\\StockExchange\\\\Column does not exist\\.$#"
+			count: 2
+			path: docs/extracted_blocks/working-with-indexed-associations_line36.php
+
+		-
+			message: "#^Attribute class Doctrine\\\\Tests\\\\Models\\\\StockExchange\\\\Entity does not exist\\.$#"
+			count: 1
+			path: docs/extracted_blocks/working-with-indexed-associations_line36.php
+
+		-
+			message: "#^Attribute class Doctrine\\\\Tests\\\\Models\\\\StockExchange\\\\GeneratedValue does not exist\\.$#"
+			count: 1
+			path: docs/extracted_blocks/working-with-indexed-associations_line36.php
+
+		-
+			message: "#^Attribute class Doctrine\\\\Tests\\\\Models\\\\StockExchange\\\\Id does not exist\\.$#"
+			count: 1
+			path: docs/extracted_blocks/working-with-indexed-associations_line36.php
+
+		-
+			message: "#^Attribute class Doctrine\\\\Tests\\\\Models\\\\StockExchange\\\\OneToMany does not exist\\.$#"
+			count: 1
+			path: docs/extracted_blocks/working-with-indexed-associations_line36.php
+
+		-
+			message: "#^Attribute class Doctrine\\\\Tests\\\\Models\\\\StockExchange\\\\Table does not exist\\.$#"
+			count: 1
+			path: docs/extracted_blocks/working-with-indexed-associations_line36.php
+
+		-
+			message: "#^Access to offset mixed on an unknown class Doctrine\\\\Tests\\\\Models\\\\StockExchange\\\\Collection\\.$#"
+			count: 2
+			path: docs/extracted_blocks/working-with-indexed-associations_line95.php
+
+		-
+			message: "#^Access to offset string on an unknown class Doctrine\\\\Tests\\\\Models\\\\StockExchange\\\\Collection\\.$#"
+			count: 1
+			path: docs/extracted_blocks/working-with-indexed-associations_line95.php
+
+		-
+			message: "#^Call to method toArray\\(\\) on an unknown class Doctrine\\\\Tests\\\\Models\\\\StockExchange\\\\Collection\\.$#"
+			count: 1
+			path: docs/extracted_blocks/working-with-indexed-associations_line95.php
+
+		-
+			message: "#^Property Doctrine\\\\Tests\\\\Models\\\\StockExchange\\\\Market\\:\\:\\$stocks has unknown class Doctrine\\\\Tests\\\\Models\\\\StockExchange\\\\Collection as its type\\.$#"
+			count: 2
+			path: docs/extracted_blocks/working-with-indexed-associations_line95.php
+
+		-
+			message: "#^Variable \\$em might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/working-with-objects_line141.php
+
+		-
+			message: "#^Call to an undefined method User\\:\\:setName\\(\\)\\.$#"
+			count: 1
+			path: docs/extracted_blocks/working-with-objects_line205.php
+
+		-
+			message: "#^Variable \\$em might not be defined\\.$#"
+			count: 2
+			path: docs/extracted_blocks/working-with-objects_line205.php
+
+		-
+			message: "#^Variable \\$em might not be defined\\.$#"
+			count: 2
+			path: docs/extracted_blocks/working-with-objects_line268.php
+
+		-
+			message: "#^Variable \\$user might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/working-with-objects_line268.php
+
+		-
+			message: "#^Variable \\$em might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/working-with-objects_line382.php
+
+		-
+			message: "#^Variable \\$entity might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/working-with-objects_line382.php
+
+		-
+			message: "#^Variable \\$em might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/working-with-objects_line430.php
+
+		-
+			message: "#^Variable \\$serializedEntity might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/working-with-objects_line430.php
+
+		-
+			message: "#^Variable \\$entityManager might not be defined\\.$#"
+			count: 2
+			path: docs/extracted_blocks/working-with-objects_line48.php
+
+		-
+			message: "#^Variable \\$em might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/working-with-objects_line585.php
+
+		-
+			message: "#^Variable \\$em might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/working-with-objects_line614.php
+
+		-
+			message: "#^Variable \\$em might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/working-with-objects_line681.php
+
+		-
+			message: "#^Variable \\$id might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/working-with-objects_line681.php
+
+		-
+			message: "#^Variable \\$em might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/working-with-objects_line693.php
+
+		-
+			message: "#^Variable \\$id might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/working-with-objects_line693.php
+
+		-
+			message: "#^Variable \\$em might not be defined\\.$#"
+			count: 3
+			path: docs/extracted_blocks/working-with-objects_line712.php
+
+		-
+			message: "#^Variable \\$article might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/working-with-objects_line72.php
+
+		-
+			message: "#^Variable \\$article2 might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/working-with-objects_line72.php
+
+		-
+			message: "#^Variable \\$em might not be defined\\.$#"
+			count: 2
+			path: docs/extracted_blocks/working-with-objects_line728.php
+
+		-
+			message: "#^Variable \\$em might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/working-with-objects_line736.php
+
+		-
+			message: "#^Variable \\$em might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/working-with-objects_line743.php
+
+		-
+			message: "#^Variable \\$em might not be defined\\.$#"
+			count: 2
+			path: docs/extracted_blocks/working-with-objects_line753.php
+
+		-
+			message: "#^Variable \\$em might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/working-with-objects_line764.php
+
+		-
+			message: "#^Variable \\$em might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/working-with-objects_line827.php
+
+		-
+			message: "#^Method MyDomain\\\\Model\\\\UserRepository\\:\\:getAllAdminUsers\\(\\) has invalid return type MyDomain\\\\Model\\\\Collection\\.$#"
+			count: 2
+			path: docs/extracted_blocks/working-with-objects_line872.php
+
+		-
+			message: "#^Variable \\$em might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/working-with-objects_line898.php
+
+		-
+			message: "#^Attribute class Column does not exist\\.$#"
+			count: 2
+			path: docs/extracted_blocks/working-with-objects_line97.php
+
+		-
+			message: "#^Attribute class Entity does not exist\\.$#"
+			count: 1
+			path: docs/extracted_blocks/working-with-objects_line97.php
+
+		-
+			message: "#^Attribute class GeneratedValue does not exist\\.$#"
+			count: 1
+			path: docs/extracted_blocks/working-with-objects_line97.php
+
+		-
+			message: "#^Attribute class Id does not exist\\.$#"
+			count: 1
+			path: docs/extracted_blocks/working-with-objects_line97.php
+
+		-
+			message: "#^Attribute class ManyToOne does not exist\\.$#"
+			count: 1
+			path: docs/extracted_blocks/working-with-objects_line97.php
+
+		-
+			message: "#^Attribute class OneToMany does not exist\\.$#"
+			count: 1
+			path: docs/extracted_blocks/working-with-objects_line97.php
+
+		-
+			message: "#^Instantiated class ArrayCollection not found\\.$#"
+			count: 1
+			path: docs/extracted_blocks/working-with-objects_line97.php
+
+		-
+			message: "#^Method Article\\:\\:getComments\\(\\) has invalid return type Collection\\.$#"
+			count: 1
+			path: docs/extracted_blocks/working-with-objects_line97.php
+
+		-
+			message: "#^Property Article\\:\\:\\$comments has unknown class Collection as its type\\.$#"
+			count: 2
+			path: docs/extracted_blocks/working-with-objects_line97.php
+
+		-
+			message: "#^Property Article\\:\\:\\$headline is unused\\.$#"
+			count: 1
+			path: docs/extracted_blocks/working-with-objects_line97.php
+
+		-
+			message: "#^Property Article\\:\\:\\$id is never read, only written\\.$#"
+			count: 1
+			path: docs/extracted_blocks/working-with-objects_line97.php
+
+		-
+			message: "#^Variable \\$em might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/working-with-objects_line97.php
+
+		-
+			message: "#^Variable \\$driver might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/xml-mapping_line47.php
+
+		-
+			message: "#^Variable \\$driver might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/yaml-mapping_line28.php
+
+		-
+			message: "#^Variable \\$config might not be defined\\.$#"
+			count: 1
+			path: docs/extracted_blocks/yaml-mapping_line39.php
