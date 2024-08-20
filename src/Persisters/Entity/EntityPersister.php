@@ -125,6 +125,8 @@ interface EntityPersister
      * Count entities (optionally filtered by a criteria)
      *
      * @param mixed[]|Criteria $criteria
+     *
+     * @psalm-return 0|positive-int
      */
     public function count(array|Criteria $criteria = []): int;
 
