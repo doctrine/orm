@@ -309,16 +309,20 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
         if ($result !== null) {
             $this->cacheLogger?->queryCacheHit($this->regionName, $queryKey);
 
+            if (empty($result)) {
+                return null;
+            } 
+
             return $result[0];
         }
 
         $result = $this->persister->load($criteria, $entity, $assoc, $hints, $lockMode, $limit, $orderBy);
 
         if ($result === null) {
-            return null;
+            $cached = $queryCache->put($queryKey, $rsm, []);
+        } else {
+            $cached = $queryCache->put($queryKey, $rsm, [$result]);
         }
-
-        $cached = $queryCache->put($queryKey, $rsm, [$result]);
 
         $this->cacheLogger?->queryCacheMiss($this->regionName, $queryKey);
 
