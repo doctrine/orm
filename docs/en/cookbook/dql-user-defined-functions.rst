@@ -232,6 +232,33 @@ vendors SQL parser to show us further errors in the parsing
 process, for example if the Unit would not be one of the supported
 values by MySql.
 
+Typed functions
+---------------
+By default, result of custom functions is fetched as-is from the database driver.
+If you want to be sure that the type is always the same, then your custom function needs to 
+implement ``Doctrine\ORM\Query\AST\TypedExpression``. Then, the result is wired
+through ``Doctrine\DBAL\Types\Type::convertToPhpValue()`` of the ``Type`` returned in ``getReturnType()``.
+
+.. code-block:: php
+
+    <?php
+
+    use Doctrine\DBAL\Types\Type;
+    use Doctrine\DBAL\Types\Types;
+    use Doctrine\ORM\Query\AST\Functions\FunctionNode;
+    use Doctrine\ORM\Query\AST\TypedExpression;
+
+    class DateDiff extends FunctionNode implements TypedExpression
+    {
+        // ...
+
+        public function getReturnType(): Type
+        {
+            return Type::getType(Types::INTEGER);
+        }
+    }
+
+
 Conclusion
 ----------
 
