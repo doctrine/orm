@@ -139,12 +139,12 @@ step:
 
     // Create a simple "default" Doctrine ORM configuration for Attributes
     $config = ORMSetup::createAttributeMetadataConfiguration(
-        paths: array(__DIR__."/src"),
+        paths: [__DIR__ . '/src'],
         isDevMode: true,
     );
     // or if you prefer XML
     // $config = ORMSetup::createXMLMetadataConfiguration(
-    //    paths: array(__DIR__."/config/xml"),
+    //    paths: [__DIR__ . '/config/xml'],
     //    isDevMode: true,
     //);
 

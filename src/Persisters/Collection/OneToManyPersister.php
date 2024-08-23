@@ -14,9 +14,12 @@ use Doctrine\ORM\Mapping\OneToManyAssociationMapping;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\Utility\PersisterHelper;
 
+use function array_fill;
+use function array_keys;
 use function array_reverse;
 use function array_values;
 use function assert;
+use function count;
 use function implode;
 use function is_int;
 use function is_string;
@@ -174,9 +177,12 @@ class OneToManyPersister extends AbstractCollectionPersister
 
         if ($targetClass->isInheritanceTypeSingleTable()) {
             $discriminatorColumn = $targetClass->getDiscriminatorColumn();
-            $statement          .= ' AND ' . $discriminatorColumn->name . ' = ?';
-            $parameters[]        = $targetClass->discriminatorValue;
-            $types[]             = $discriminatorColumn->type;
+            $discriminatorValues = $targetClass->discriminatorValue ? [$targetClass->discriminatorValue] : array_keys($targetClass->discriminatorMap);
+            $statement          .= ' AND ' . $discriminatorColumn->name . ' IN (' . implode(', ', array_fill(0, count($discriminatorValues), '?')) . ')';
+            foreach ($discriminatorValues as $discriminatorValue) {
+                $parameters[] = $discriminatorValue;
+                $types[]      = $discriminatorColumn->type;
+            }
         }
 
         $numAffected = $this->conn->executeStatement($statement, $parameters, $types);
