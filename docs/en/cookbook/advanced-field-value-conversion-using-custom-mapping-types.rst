@@ -134,7 +134,7 @@ Now we're going to create the ``point`` type and implement all required methods.
         public function convertToDatabaseValue($value, AbstractPlatform $platform)
         {
             if ($value instanceof Point) {
-                $value = sprintf('POINT(%F %F)', $value->getLongitude(), $value->getLatitude());
+                $value = sprintf('POINT(%F %F)', $value->getLatitude(), $value->getLongitude());
             }
 
             return $value;
