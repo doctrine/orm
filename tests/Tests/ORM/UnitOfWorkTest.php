@@ -649,6 +649,37 @@ class UnitOfWorkTest extends OrmTestCase
 
         $this->_unitOfWork->persist($phone2);
     }
+
+    public function testFieldWithValueObjectsAreNotInChangeSetIfObjectsAreIdentical(): void
+    {
+        $entity = new EntityWithValueObjectField();
+
+        $this->_unitOfWork->persist($entity);
+        $this->_unitOfWork->commit();
+
+        $sameValueObject               = new stdClass();
+        $sameValueObject->someProperty = 1;
+
+        $entity->valueObject = $sameValueObject;
+        $entity->someField   = 'Some New Value';
+
+        $this->_unitOfWork->computeChangeSets();
+        $changeSet = $this->_unitOfWork->getEntityChangeSet($entity);
+
+        $this->assertArrayHasKey('someField', $changeSet);
+        $this->assertArrayNotHasKey('valueObject', $changeSet);
+
+        $differentValueObject               = new stdClass();
+        $differentValueObject->someProperty = 2;
+
+        $entity->valueObject = $differentValueObject;
+
+        $this->_unitOfWork->computeChangeSets();
+        $changeSet = $this->_unitOfWork->getEntityChangeSet($entity);
+
+        $this->assertArrayNotHasKey('someField', $changeSet);
+        $this->assertArrayHasKey('valueObject', $changeSet);
+    }
 }
 
 
@@ -764,5 +795,30 @@ class EntityWithNonCascadingAssociation
     public function __construct()
     {
         $this->id = uniqid(self::class, true);
+    }
+}
+
+#[Entity]
+class EntityWithValueObjectField
+{
+    #[Id]
+    #[Column(type: 'string', length: 255)]
+    #[GeneratedValue(strategy: 'NONE')]
+    public string $id;
+
+    #[Column(type: 'string')]
+    public string $someField;
+
+    #[Column]
+    public object $valueObject;
+
+    public function __construct()
+    {
+        $valueObject               = new stdClass();
+        $valueObject->someProperty = 1;
+
+        $this->id          = uniqid(self::class, true);
+        $this->someField   = 'Some Value';
+        $this->valueObject = $valueObject;
     }
 }
