@@ -8,7 +8,6 @@ use DateTime;
 use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\DBAL\ArrayParameterType;
-use Doctrine\DBAL\Cache\ArrayResult;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Driver;
 use Doctrine\DBAL\Driver\Result;
@@ -22,6 +21,7 @@ use Doctrine\ORM\Query\Parameter;
 use Doctrine\ORM\Query\QueryException;
 use Doctrine\ORM\UnitOfWork;
 use Doctrine\Persistence\Mapping\Driver\MappingDriverChain;
+use Doctrine\Tests\Mocks\ArrayResultFactory;
 use Doctrine\Tests\Mocks\EntityManagerMock;
 use Doctrine\Tests\Models\CMS\CmsAddress;
 use Doctrine\Tests\Models\CMS\CmsGroup;
@@ -361,10 +361,10 @@ class QueryTest extends OrmTestCase
     {
         $entityManager = $this->createTestEntityManagerWithConnection(
             $this->createConnection(
-                new ArrayResult([
+                ArrayResultFactory::createDriverResultFromArray([
                     ['id_0' => 1],
                 ]),
-                new ArrayResult([]),
+                ArrayResultFactory::createDriverResultFromArray([]),
             ),
         );
 
@@ -399,14 +399,14 @@ class QueryTest extends OrmTestCase
     {
         $entityManager = $this->createTestEntityManagerWithConnection(
             $this->createConnection(
-                new ArrayResult([
+                ArrayResultFactory::createDriverResultFromArray([
                     ['id_0' => 1],
                 ]),
-                new ArrayResult([
+                ArrayResultFactory::createDriverResultFromArray([
                     ['id_0' => 1],
                     ['id_0' => 2],
                 ]),
-                new ArrayResult([
+                ArrayResultFactory::createDriverResultFromArray([
                     ['id_0' => 1],
                 ]),
             ),

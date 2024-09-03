@@ -4,9 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Hydration;
 
-use Doctrine\DBAL\Cache\ArrayResult;
 use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\Result;
 use Doctrine\ORM\Internal\Hydration\HydrationException;
 use Doctrine\ORM\Internal\Hydration\ObjectHydrator;
 use Doctrine\ORM\Mapping\ClassMetadata;
@@ -14,6 +12,7 @@ use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\Proxy\InternalProxy;
 use Doctrine\ORM\Proxy\ProxyFactory;
 use Doctrine\ORM\Query\ResultSetMapping;
+use Doctrine\Tests\Mocks\ArrayResultFactory;
 use Doctrine\Tests\Models\CMS\CmsAddress;
 use Doctrine\Tests\Models\CMS\CmsArticle;
 use Doctrine\Tests\Models\CMS\CmsComment;
@@ -1337,7 +1336,7 @@ class ObjectHydratorTest extends HydrationTestCase
         $hydrator       = new ObjectHydrator($this->entityManager);
         $rowNum         = 0;
         $iterableResult = $hydrator->toIterable(
-            new Result(new ArrayResult($resultSet), $this->createMock(Connection::class)),
+            ArrayResultFactory::createWrapperResultFromArray($resultSet, $this->createMock(Connection::class)),
             $rsm,
         );
 
