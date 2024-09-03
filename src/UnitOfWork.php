@@ -680,6 +680,11 @@ class UnitOfWork implements PropertyChangedListener
 
                 // if regular field
                 if (! isset($class->associationMappings[$propName])) {
+                    // if regular field is a Value Object
+                    if (is_object($actualValue) && $orgValue == $actualValue) {
+                        continue;
+                    }
+
                     $changeSet[$propName] = [$orgValue, $actualValue];
 
                     continue;
