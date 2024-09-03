@@ -681,6 +681,7 @@ class UnitOfWork implements PropertyChangedListener
                 // if regular field
                 if (! isset($class->associationMappings[$propName])) {
                     // if regular field is a Value Object
+                    // phpcs:ignore SlevomatCodingStandard.Operators.DisallowEqualOperators.DisallowedEqualOperator
                     if (is_object($actualValue) && $orgValue == $actualValue) {
                         continue;
                     }
