@@ -196,14 +196,10 @@ class Paginator implements Countable, IteratorAggregate
         /** @var array<string, Join[]> $joinsPerRootAlias */
         $joinsPerRootAlias = $query->getDQLPart('join');
 
-        if (count($joinsPerRootAlias) === 0) {
-            return false;
-        }
-
         // For now, do not try to investigate what kind of joins are used. It is, however, doable
-        // to detect a presence of only *ToOne joins via the access to join entity classes'
+        // to detect a presence of only *ToOne joins via the access to joined entity classes'
         // metadata (see: QueryBuilder::getEntityManager()->getClassMetadata(className)).
-        return true;
+        return count($joinsPerRootAlias) > 0;
     }
 
     private function cloneQuery(Query $query): Query
@@ -235,10 +231,11 @@ class Paginator implements Countable, IteratorAggregate
         }
 
         // When not joining onto *ToMany relations, then do not use the more complex CountOutputWalker.
+        // phpcs:ignore SlevomatCodingStandard.ControlStructures.UselessIfConditionWithReturn.UselessIfCondition
         if (
             $forCountQuery
             && $this->queryStyleAutoDetectionEnabled
-            && $this->fetchJoinCollection === false
+            && ! $this->fetchJoinCollection === false
             // CountWalker doesn't support the "having" clause, while CountOutputWalker does.
             && $this->queryHasHavingClause === false
         ) {
