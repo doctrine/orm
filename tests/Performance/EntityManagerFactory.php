@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Doctrine\Performance;
 
 use Doctrine\Common\EventManager;
-use Doctrine\DBAL\Cache\ArrayResult;
 use Doctrine\DBAL\Cache\QueryCacheProfile;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Driver\PDO\SQLite\Driver;
@@ -17,6 +16,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\Driver\AttributeDriver;
 use Doctrine\ORM\Proxy\ProxyFactory;
 use Doctrine\ORM\Tools\SchemaTool;
+use Doctrine\Tests\Mocks\ArrayResultFactory;
 use Doctrine\Tests\TestUtil;
 
 use function array_map;
@@ -67,7 +67,7 @@ final class EntityManagerFactory
             /** {@inheritDoc} */
             public function executeQuery(string $sql, array $params = [], $types = [], QueryCacheProfile|null $qcp = null): Result
             {
-                return new Result(new ArrayResult([]), $this);
+                return ArrayResultFactory::createWrapperResultFromArray([], $this);
             }
         };
 
