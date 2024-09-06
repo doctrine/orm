@@ -13,7 +13,9 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Internal\Hydration\AbstractHydrator;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\QueryException;
+use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\Tools\Pagination\Paginator;
+use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\OrmTestCase;
 use PHPUnit\Framework\MockObject\MockObject;
 
@@ -108,6 +110,18 @@ class PaginatorTest extends OrmTestCase
         $this->expectExceptionMessage('Too many parameters: the query defines 1 parameters and you bound 2');
 
         $this->createPaginatorWithExtraParametersWithoutOutputWalkers([[10]])->getIterator();
+    }
+
+    /** @todo-PR-11595 FINISH TESTS */
+    public function testNewWithAutoDetection(): void
+    {
+        $queryBuilder = new QueryBuilder($this->em);
+        $queryBuilder->select('u');
+        $queryBuilder->from(CmsUser::class, 'u');
+
+        $paginator = Paginator::newWithAutoDetection($queryBuilder);
+
+        $this->assertFalse($paginator->getFetchJoinCollection());
     }
 
     /** @param int[][] $willReturnRows */

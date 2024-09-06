@@ -40,7 +40,6 @@ class Paginator implements Countable, IteratorAggregate
     private readonly Query $query;
     private bool|null $useOutputWalkers = null;
     private int|null $count             = null;
-    private bool $fetchJoinCollection;
     /**
      * @var bool The auto-detection of queries style was added a lot later to this class, and this
      *  class historically was by default using the more complex queries style, which means that
@@ -52,34 +51,39 @@ class Paginator implements Countable, IteratorAggregate
     /** @var bool|null Null means "undetermined". */
     private bool|null $queryHasHavingClause = null;
 
-    /**
-     * @param bool|null $fetchJoinCollection Whether the query joins a collection (true by default). Set
-     *  to null to enable auto-detection of this parameter, however note that the auto-detection requires
-     *  a QueryBuilder to be provided to Paginator, otherwise this parameter goes back to its default value.
-     *  Also, for now, when the auto-detection of this parameter is enabled, then auto-detection
-     *  of $useOutputWalkers and of the CountWalker::HINT_DISTINCT is also enabled.
-     */
+    /** @param bool $fetchJoinCollection Whether the query joins a collection (true by default). */
     public function __construct(
         Query|QueryBuilder $query,
-        bool|null $fetchJoinCollection = true,
+        private readonly bool $fetchJoinCollection = true,
     ) {
-        if ($fetchJoinCollection === null) {
-            $fetchJoinCollection = $this->autoDetectFetchJoinCollection($query);
-        }
-
-        if ($fetchJoinCollection === null) {
-            $this->fetchJoinCollection = true;
-        } else {
-            $this->fetchJoinCollection            = $fetchJoinCollection;
-            $this->queryStyleAutoDetectionEnabled = true;
-        }
-
         if ($query instanceof QueryBuilder) {
-            $this->queryHasHavingClause = $query->getDQLPart('having') !== null;
-            $query                      = $query->getQuery();
+            $query = $query->getQuery();
         }
 
         $this->query = $query;
+    }
+
+    /**
+     * Create an instance of Paginator with auto-detection of whether the provided
+     * query is suitable for simple (and fast) pagination queries, or whether a complex
+     * set of pagination queries has to be used.
+     */
+    public static function newWithAutoDetection(QueryBuilder $queryBuilder): self
+    {
+        /** @var array<string, Join[]> $joinsPerRootAlias */
+        $joinsPerRootAlias = $queryBuilder->getDQLPart('join');
+
+        // For now, only check whether there are any sql joins present in the query. Note,
+        // however, that it is doable to detect a presence of only *ToOne joins via the access to
+        // joined entity classes' metadata (see: QueryBuilder::getEntityManager()->getClassMetadata(className)).
+        $sqlJoinsPresent = count($joinsPerRootAlias) > 0;
+
+        $paginator = new self($queryBuilder, $sqlJoinsPresent);
+
+        $paginator->queryStyleAutoDetectionEnabled = true;
+        $paginator->queryHasHavingClause           = $queryBuilder->getDQLPart('having') !== null;
+
+        return $paginator;
     }
 
     /**
@@ -185,23 +189,6 @@ class Paginator implements Countable, IteratorAggregate
         return new ArrayIterator($result);
     }
 
-    /** @return bool|null Null means that auto-detection could not be carried out. */
-    private function autoDetectFetchJoinCollection(Query|QueryBuilder $query): bool|null
-    {
-        // For now, only working with QueryBuilder is supported.
-        if (! $query instanceof QueryBuilder) {
-            return null;
-        }
-
-        /** @var array<string, Join[]> $joinsPerRootAlias */
-        $joinsPerRootAlias = $query->getDQLPart('join');
-
-        // For now, do not try to investigate what kind of joins are used. It is, however, doable
-        // to detect a presence of only *ToOne joins via the access to joined entity classes'
-        // metadata (see: QueryBuilder::getEntityManager()->getClassMetadata(className)).
-        return count($joinsPerRootAlias) > 0;
-    }
-
     private function cloneQuery(Query $query): Query
     {
         $cloneQuery = clone $query;
@@ -231,18 +218,13 @@ class Paginator implements Countable, IteratorAggregate
         }
 
         // When not joining onto *ToMany relations, then do not use the more complex CountOutputWalker.
-        // phpcs:ignore SlevomatCodingStandard.ControlStructures.UselessIfConditionWithReturn.UselessIfCondition
-        if (
+        return ! (
             $forCountQuery
             && $this->queryStyleAutoDetectionEnabled
-            && ! $this->fetchJoinCollection === false
+            && ! $this->fetchJoinCollection
             // CountWalker doesn't support the "having" clause, while CountOutputWalker does.
             && $this->queryHasHavingClause === false
-        ) {
-            return false;
-        }
-
-        return true;
+        );
     }
 
     /**
@@ -275,7 +257,7 @@ class Paginator implements Countable, IteratorAggregate
             // When not joining onto *ToMany relations, then use a simpler COUNT query in the CountWalker.
             if (
                 $this->queryStyleAutoDetectionEnabled
-                && $this->fetchJoinCollection === false
+                && ! $this->fetchJoinCollection
             ) {
                 $hintDistinctDefaultTrue = false;
             }
