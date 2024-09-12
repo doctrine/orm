@@ -311,7 +311,7 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
 
             if (empty($result)) {
                 return null;
-            } 
+            }
 
             return $result[0];
         }
