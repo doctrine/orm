@@ -18,8 +18,8 @@ Doctrine ORM don't panic. You can get help from different sources:
 -  Report a bug on `GitHub <https://github.com/doctrine/orm/issues>`_.
 -  On `StackOverflow <https://stackoverflow.com/questions/tagged/doctrine-orm>`_
 
-If you need more structure over the different topics you can browse the :doc:`table
-of contents <toc>`.
+If you need more structure over the different topics you can browse the table
+of contents.
 
 Getting Started
 ---------------
@@ -96,7 +96,7 @@ Tutorials
 Changelogs
 ----------
 
-* `Upgrade <https://github.com/doctrine/doctrine2/blob/master/UPGRADE.md>`_
+* `Upgrade <https://github.com/doctrine/orm/blob/HEAD/UPGRADE.md>`_
 
 Cookbook
 --------
@@ -124,5 +124,3 @@ Cookbook
 * **Custom Datatypes**
   :doc:`MySQL Enums <cookbook/mysql-enums>`
   :doc:`Advanced Field Value Conversion <cookbook/advanced-field-value-conversion-using-custom-mapping-types>`
-
-.. include:: toc.rst

@@ -8,7 +8,7 @@ on:
       - .github/workflows/coding-standards.yml
       - bin/**
       - composer.*
-      - lib/**
+      - src/**
       - phpcs.xml.dist
       - tests/**
   push:
@@ -18,10 +18,10 @@ on:
       - .github/workflows/coding-standards.yml
       - bin/**
       - composer.*
-      - lib/**
+      - src/**
       - phpcs.xml.dist
       - tests/**
 
 jobs:
   coding-standards:
-    uses: "doctrine/.github/.github/workflows/coding-standards.yml@3.0.0"
+    uses: "doctrine/.github/.github/workflows/coding-standards.yml@5.0.1"

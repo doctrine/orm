@@ -37,8 +37,8 @@ will still end up with the same reference:
     public function testIdentityMapReference(): void
     {
         $objectA = $this->entityManager->getReference('EntityName', 1);
-        // check for proxyinterface
-        $this->assertInstanceOf('Doctrine\Persistence\Proxy', $objectA);
+        // check entity is not initialized
+        $this->assertTrue($this->entityManager->isUninitializedObject($objectA));
 
         $objectB = $this->entityManager->find('EntityName', 1);
 
@@ -137,7 +137,7 @@ optimize the performance of the Flush Operation:
 .. note::
 
     Flush only a single entity with ``$entityManager->flush($entity)`` is deprecated and will be removed in ORM 3.0.
-    (`Details <https://github.com/doctrine/orm/issues/8459>`_)
+    (\ `Details <https://github.com/doctrine/orm/issues/8459>`_)
 
 Query Internals
 ---------------

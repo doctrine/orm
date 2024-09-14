@@ -253,7 +253,7 @@ Calling ``setParameter()`` automatically infers which type you are setting as
 value. This works for integers, arrays of strings/integers, DateTime instances
 and for managed entities. If you want to set a type explicitly you can call
 the third argument to ``setParameter()`` explicitly. It accepts either a DBAL
-Doctrine\DBAL\ParameterType::* or a DBAL Type name for conversion.
+``Doctrine\DBAL\ParameterType::*`` or a DBAL Type name for conversion.
 
 .. note::
 

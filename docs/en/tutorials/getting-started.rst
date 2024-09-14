@@ -18,7 +18,7 @@ before. There are some prerequisites for the tutorial that have to be
 installed:
 
 - PHP (latest stable version)
-- Composer Package Manager (`Install Composer
+- Composer Package Manager (\ `Install Composer
   <https://getcomposer.org/doc/00-intro.md>`_)
 
 The code of this tutorial is `available on Github <https://github.com/doctrine/doctrine2-orm-tutorial>`_.
@@ -144,7 +144,7 @@ step:
 
     // Create a simple "default" Doctrine ORM configuration for Attributes
     $config = ORMSetup::createAttributeMetadataConfiguration(
-        paths: array(__DIR__."/src"),
+        paths: [__DIR__ . '/src'],
         isDevMode: true,
     );
     // or if you prefer annotation, YAML or XML
@@ -153,7 +153,7 @@ step:
     //    isDevMode: true,
     // );
     // $config = ORMSetup::createXMLMetadataConfiguration(
-    //    paths: array(__DIR__."/config/xml"),
+    //    paths: [__DIR__ . '/config/xml'],
     //    isDevMode: true,
     //);
     // $config = ORMSetup::createYAMLMetadataConfiguration(
@@ -321,7 +321,7 @@ data in your storage, and later in your application when the data is loaded agai
 .. note::
 
     This method, although very common, is inappropriate for Domain Driven
-    Design (`DDD <https://en.wikipedia.org/wiki/Domain-driven_design>`_)
+    Design (\ `DDD <https://en.wikipedia.org/wiki/Domain-driven_design>`_)
     where methods should represent real business operations and not simple
     property change, And business invariants should be maintained both in the
     application state (entities in this case) and in the database, with no
@@ -735,7 +735,7 @@ classes. We'll store them in ``src/Bug.php`` and ``src/User.php``, respectively.
         #[ORM\Id]
         #[ORM\Column(type: 'integer')]
         #[ORM\GeneratedValue]
-        private int $id;
+        private int|null $id;
 
         #[ORM\Column(type: 'string')]
         private string $description;
@@ -1199,21 +1199,21 @@ which translates the YYYY-mm-dd HH:mm:ss database format
 into a PHP DateTime instance and back.
 
 After the field definitions, the two qualified references to the
-user entity are defined. They are created by the ``many-to-one``
-tag. The class name of the related entity has to be specified with
-the ``target-entity`` attribute, which is enough information for
-the database mapper to access the foreign-table. Since
+user entity are defined. They are created by the ``ManyToOne``
+attribute. The class name of the related entity has to be specified with
+the ``targetEntity`` parameter, which is enough information for
+the database mapper to access the foreign table. Since
 ``reporter`` and ``engineer`` are on the owning side of a
-bi-directional relation, we also have to specify the ``inversed-by``
-attribute. They have to point to the field names on the inverse
-side of the relationship. We will see in the next example that the ``inversed-by``
-attribute has a counterpart ``mapped-by`` which makes that
+bi-directional relation, we also have to specify the ``inversedBy``
+parameter. They have to point to the field names on the inverse
+side of the relationship. We will see in the next example that the ``inversedBy``
+parameter has a counterpart ``mappedBy`` which makes that
 the inverse side.
 
 The last definition is for the ``Bug#products`` collection. It
 holds all products where the specific bug occurs. Again
-you have to define the ``target-entity`` and ``field`` attributes
-on the ``many-to-many`` tag.
+you have to define the ``targetEntity`` and ``field`` parameters
+on the ``ManyToMany`` attribute.
 
 Finally, we'll add metadata mappings for the ``User`` entity.
 
@@ -1336,15 +1336,14 @@ Finally, we'll add metadata mappings for the ``User`` entity.
               targetEntity: Bug
               mappedBy: engineer
 
-Here are some new things to mention about the ``one-to-many`` tags.
+Here are some new things to mention about the ``OneToMany`` attribute.
 Remember that we discussed about the inverse and owning side. Now
 both reportedBugs and assignedBugs are inverse relations, which
 means the join details have already been defined on the owning
 side. Therefore we only have to specify the property on the Bug
 class that holds the owning sides.
 
-Update your database schema by running:
-::
+Update your database schema by running::
 
     $ php bin/doctrine orm:schema-tool:update --force
 

@@ -192,6 +192,11 @@ be properly synchronized with the database when
     database in the most efficient way and a single, short transaction,
     taking care of maintaining referential integrity.
 
+.. note::
+
+    Do not make any assumptions in your code about the number of queries
+    it takes to flush changes, about the ordering of ``INSERT``, ``UPDATE``
+    and ``DELETE`` queries or the order in which entities will be processed.
 
 Example:
 
@@ -333,10 +338,11 @@ Performance of different deletion strategies
 Deleting an object with all its associated objects can be achieved
 in multiple ways with very different performance impacts.
 
-1. If an association is marked as ``CASCADE=REMOVE`` Doctrine ORM
-   will fetch this association. If its a Single association it will
-   pass this entity to
-   ``EntityManager#remove()``. If the association is a collection, Doctrine will loop over all    its elements and pass them to``EntityManager#remove()``.
+1. If an association is marked as ``CASCADE=REMOVE`` Doctrine ORM will
+   fetch this association. If it's a Single association it will pass
+   this entity to ``EntityManager#remove()``. If the association is a
+   collection, Doctrine will loop over all its elements and pass them to
+   ``EntityManager#remove()``.
    In both cases the cascade remove semantics are applied recursively.
    For large object graphs this removal strategy can be very costly.
 2. Using a DQL ``DELETE`` statement allows you to delete multiple
@@ -776,6 +782,23 @@ Whenever you query for an entity that has persistent associations
 and these associations are mapped as EAGER, they will automatically
 be loaded together with the entity being queried and is thus
 immediately available to your application.
+
+Eager Loading can also be configured at runtime through
+``AbstractQuery::setFetchMode`` in DQL or Native Queries.
+
+Eager loading for many-to-one and one-to-one associations is using either a
+LEFT JOIN or a second query for fetching the related entity eagerly.
+
+Eager loading for many-to-one associations uses a second query to load
+the collections for several entities at the same time.
+
+When many-to-many, one-to-one or one-to-many associations are eagerly loaded,
+then the global batch size configuration is used to avoid IN(?) queries with
+too many arguments. The default batch size is 100 and can be changed with
+``Configuration::setEagerFetchBatchSize()``.
+
+For eagerly loaded Many-To-Many associations one query has to be made for each
+collection.
 
 By Lazy Loading
 ~~~~~~~~~~~~~~~

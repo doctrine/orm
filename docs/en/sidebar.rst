@@ -31,6 +31,7 @@
       reference/inheritance-mapping
       reference/working-with-objects
       reference/working-with-associations
+      reference/typedfieldmapper
       reference/events
       reference/unitofwork
       reference/unitofwork-associations

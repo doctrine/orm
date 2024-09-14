@@ -63,7 +63,7 @@ Notify
 .. note::
 
     The notify change tracking policy is deprecated and will be removed in ORM 3.0.
-    (`Details <https://github.com/doctrine/orm/issues/8383>`_)
+    (\ `Details <https://github.com/doctrine/orm/issues/8383>`_)
 
 This policy is based on the assumption that the entities notify
 interested listeners of changes to their properties. For that

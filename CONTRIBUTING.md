@@ -23,7 +23,7 @@ You may fix many some of the issues with `vendor/bin/phpcbf`.
 Please try to add a test for your pull-request.
 
 * If you want to fix a bug or provide a reproduce case, create a test file in
-  ``tests/Doctrine/Tests/ORM/Functional/Ticket`` with the name of the ticket,
+  ``tests/Tests/ORM/Functional/Ticket`` with the name of the ticket,
   ``DDC1234Test.php`` for example.
 * If you want to contribute new functionality add unit- or functional tests
   depending on the scope of the feature.
@@ -57,7 +57,7 @@ sqlite database.
 Tips for creating unit tests:
 
 1. If you put a test into the `Ticket` namespace as described above, put the testcase and all entities into the same class.
-   See `https://github.com/doctrine/orm/tree/2.8.x/tests/Doctrine/Tests/ORM/Functional/Ticket/DDC2306Test.php` for an
+   See `https://github.com/doctrine/orm/tree/2.8.x/tests/Tests/ORM/Functional/Ticket/DDC2306Test.php` for an
    example.
 
 ## Getting merged

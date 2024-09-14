@@ -10,29 +10,32 @@ parameters:
         # Fallback logic for DBAL 2
         -
             message: '/Application::add\(\) expects Symfony\\Component\\Console\\Command\\Command/'
-            path: lib/Doctrine/ORM/Tools/Console/ConsoleRunner.php
+            path: src/Tools/Console/ConsoleRunner.php
 
         - '/^Class Doctrine\\DBAL\\Platforms\\SQLAnywherePlatform not found\.$/'
         - '/^Call to method \w+\(\) on an unknown class Doctrine\\DBAL\\Platforms\\SQLAnywherePlatform\.$/'
 
         -
-        	message: '/^Call to an undefined method Doctrine\\DBAL\\Platforms\\AbstractPlatform::getSQLResultCasing\(\)\.$/'
-        	path: lib/Doctrine/ORM/Internal/SQLResultCasing.php
+            message: '/^Call to an undefined method Doctrine\\DBAL\\Platforms\\AbstractPlatform::getSQLResultCasing\(\)\.$/'
+            path: src/Internal/SQLResultCasing.php
         -
-        	message: '/^Parameter \$stmt of method .* has invalid type Doctrine\\DBAL\\Driver\\ResultStatement\.$/'
-        	path: lib/Doctrine/ORM/Internal/Hydration/AbstractHydrator.php
+            message: '/^Parameter \$stmt of method .* has invalid type Doctrine\\DBAL\\Driver\\ResultStatement\.$/'
+            path: src/Internal/Hydration/AbstractHydrator.php
         -
-        	message: '/^Class Doctrine\\DBAL\\Driver\\ResultStatement not found\.$/'
-        	path: lib/Doctrine/ORM/Internal/Hydration/AbstractHydrator.php
+            message: '/^Class Doctrine\\DBAL\\Driver\\ResultStatement not found\.$/'
+            path: src/Internal/Hydration/AbstractHydrator.php
         -
-        	message: '/^Call to static method ensure\(\) on an unknown class Doctrine\\DBAL\\ForwardCompatibility\\Result\.$/'
-        	path: lib/Doctrine/ORM/Internal/Hydration/AbstractHydrator.php
+            message: '/^Call to static method ensure\(\) on an unknown class Doctrine\\DBAL\\ForwardCompatibility\\Result\.$/'
+            path: src/Internal/Hydration/AbstractHydrator.php
+        -
+            message: '/^Instanceof between Doctrine\\DBAL\\Platforms\\AbstractPlatform and Doctrine\\DBAL\\Platforms\\MySQLPlatform will always evaluate to false\.$/'
+            path: src/Utility/LockSqlHelper.php
 
         # False positive
         -
             message: '/^Call to an undefined method Doctrine\\Common\\Cache\\Cache::deleteAll\(\)\.$/'
             count: 1
-            path: lib/Doctrine/ORM/Tools/Console/Command/ClearCache/ResultCommand.php
+            path: src/Tools/Console/Command/ClearCache/ResultCommand.php
 
         # Symfony cache supports passing a key prefix to the clear method.
         - '/^Method Psr\\Cache\\CacheItemPoolInterface\:\:clear\(\) invoked with 1 parameter, 0 required\.$/'
@@ -40,10 +43,10 @@ parameters:
         # Persistence 2 support
         -
             message: '/clear.*invoked with 1 parameter/'
-            path: lib/Doctrine/ORM/EntityRepository.php
+            path: src/EntityRepository.php
         -
             message: '#^Class Doctrine\\Persistence\\ObjectManagerAware not found\.$#'
-            path: lib/Doctrine/ORM/UnitOfWork.php
+            path: src/UnitOfWork.php
         -
             message: '#^Call to method injectObjectManager\(\) on an unknown class Doctrine\\Persistence\\ObjectManagerAware\.$#'
-            path: lib/Doctrine/ORM/UnitOfWork.php
+            path: src/UnitOfWork.php

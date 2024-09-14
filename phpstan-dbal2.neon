@@ -10,9 +10,11 @@ parameters:
         - '/Call to an undefined method Doctrine\\DBAL\\Connection::createSchemaManager\(\)\./'
         # Class name will change in DBAL 3.
         - '/^Class Doctrine\\DBAL\\Platforms\\PostgreSQLPlatform not found\.$/'
+        - '/^Class Doctrine\\DBAL\\Platforms\\AbstractMySQLPlatform not found\.$/'
+        - '/^Class Doctrine\\DBAL\\Platforms\\MySQLPlatform not found\.$/'
         -
             message: '/Doctrine\\DBAL\\Platforms\\MyS(ql|QL)Platform/'
-            path: lib/Doctrine/ORM/Mapping/ClassMetadataFactory.php
+            path: src/Mapping/ClassMetadataFactory.php
 
         # Forward compatibility for DBAL 3.5
         - '/^Call to an undefined method Doctrine\\DBAL\\Platforms\\AbstractPlatform::getAlterSchemaSQL\(\).$/'
@@ -20,39 +22,44 @@ parameters:
         # Forward compatibility for DBAL 3.4
         - '/^Call to an undefined method Doctrine\\DBAL\\Cache\\QueryCacheProfile::[gs]etResultCache\(\)\.$/'
         -
-        	message: '/^Call to an undefined static method Doctrine\\DBAL\\Configuration::[gs]etResultCache\(\)\.$/'
-        	path: lib/Doctrine/ORM/Configuration.php
+            message: '/^Call to an undefined static method Doctrine\\DBAL\\Configuration::[gs]etResultCache\(\)\.$/'
+            path: src/Configuration.php
         -
-        	message: '/^Parameter #3 \$resultCache of class Doctrine\\DBAL\\Cache\\QueryCacheProfile constructor/'
-        	path: lib/Doctrine/ORM/AbstractQuery.php
+            message: '/^Parameter #3 \$resultCache of class Doctrine\\DBAL\\Cache\\QueryCacheProfile constructor/'
+            path: src/AbstractQuery.php
         -
             message: '/^Parameter #2 \$\w+ of method Doctrine\\DBAL\\Platforms\\AbstractPlatform::getDateAdd\w+Expression\(\) expects int, string given\.$/'
-            path: lib/Doctrine/ORM/Query/AST/Functions/DateAddFunction.php
+            path: src/Query/AST/Functions/DateAddFunction.php
         -
             message: '/^Parameter #2 \$\w+ of method Doctrine\\DBAL\\Platforms\\AbstractPlatform::getDateSub\w+Expression\(\) expects int, string given\.$/'
-            path: lib/Doctrine/ORM/Query/AST/Functions/DateSubFunction.php
+            path: src/Query/AST/Functions/DateSubFunction.php
 
         # False positive
         -
             message: '/^Call to an undefined method Doctrine\\Common\\Cache\\Cache::deleteAll\(\)\.$/'
             count: 1
-            path: lib/Doctrine/ORM/Tools/Console/Command/ClearCache/ResultCommand.php
+            path: src/Tools/Console/Command/ClearCache/ResultCommand.php
         # See https://github.com/doctrine/dbal/pull/5129
         -
             message: '/^Parameter #3 \$startPos of method Doctrine\\DBAL\\Platforms\\AbstractPlatform::getLocateExpression\(\) expects int\|false, string given\.$/'
             count: 1
-            path: lib/Doctrine/ORM/Query/AST/Functions/LocateFunction.php
+            path: src/Query/AST/Functions/LocateFunction.php
 
         # Won't get fixed in DBAL 2
         -
             message: "#^Parameter \\#2 \\$start of method Doctrine\\\\DBAL\\\\Platforms\\\\AbstractPlatform\\:\\:getSubstringExpression\\(\\) expects int, string given\\.$#"
             count: 1
-            path: lib/Doctrine/ORM/Query/AST/Functions/SubstringFunction.php
+            path: src/Query/AST/Functions/SubstringFunction.php
 
         -
             message: "#^Parameter \\#3 \\$length of method Doctrine\\\\DBAL\\\\Platforms\\\\AbstractPlatform\\:\\:getSubstringExpression\\(\\) expects int\\|null, string\\|null given\\.$#"
             count: 1
-            path: lib/Doctrine/ORM/Query/AST/Functions/SubstringFunction.php
+            path: src/Query/AST/Functions/SubstringFunction.php
+
+        -
+            message: '#^Class Doctrine\\DBAL\\Platforms\\MySQLPlatform not found\.$#'
+            count: 2
+            path: src/Mapping/ClassMetadataFactory.php
 
         # Symfony cache supports passing a key prefix to the clear method.
         - '/^Method Psr\\Cache\\CacheItemPoolInterface\:\:clear\(\) invoked with 1 parameter, 0 required\.$/'
@@ -60,10 +67,16 @@ parameters:
         # Persistence 2 support
         -
             message: '/clear.*invoked with 1 parameter/'
-            path: lib/Doctrine/ORM/EntityRepository.php
+            path: src/EntityRepository.php
         -
             message: '#^Class Doctrine\\Persistence\\ObjectManagerAware not found\.$#'
-            path: lib/Doctrine/ORM/UnitOfWork.php
+            path: src/UnitOfWork.php
         -
             message: '#^Call to method injectObjectManager\(\) on an unknown class Doctrine\\Persistence\\ObjectManagerAware\.$#'
-            path: lib/Doctrine/ORM/UnitOfWork.php
+            path: src/UnitOfWork.php
+
+        -
+            message: '#contains generic type.*but class.*is not generic#'
+            paths:
+                - src/Mapping/Driver/XmlDriver.php
+                - src/Mapping/Driver/YamlDriver.php

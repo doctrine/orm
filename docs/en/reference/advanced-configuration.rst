@@ -29,7 +29,7 @@ steps of configuration.
 
     $config = new Configuration;
     $config->setMetadataCache($metadataCache);
-    $driverImpl = new AttributeDriver(['/path/to/lib/MyProject/Entities']);
+    $driverImpl = new AttributeDriver(['/path/to/lib/MyProject/Entities'], true);
     $config->setMetadataDriverImpl($driverImpl);
     $config->setQueryCache($queryCache);
     $config->setProxyDir('/path/to/myproject/lib/MyProject/Proxies');
@@ -134,7 +134,7 @@ The attribute driver can be injected in the ``Doctrine\ORM\Configuration``:
     <?php
     use Doctrine\ORM\Mapping\Driver\AttributeDriver;
 
-    $driverImpl = new AttributeDriver(['/path/to/lib/MyProject/Entities']);
+    $driverImpl = new AttributeDriver(['/path/to/lib/MyProject/Entities'], true);
     $config->setMetadataDriverImpl($driverImpl);
 
 The path information to the entities is required for the attribute
@@ -408,7 +408,7 @@ means that you have to register a special autoloader for these classes:
 .. code-block:: php
 
     <?php
-    use Doctrine\Common\Proxy\Autoloader;
+    use Doctrine\ORM\Proxy\Autoloader;
 
     $proxyDir = "/path/to/proxies";
     $proxyNamespace = "MyProxies";

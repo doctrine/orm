@@ -101,7 +101,7 @@ The many-to-many association is only supporting foreign keys in the table defini
 To work with many-to-many tables containing extra columns you have to use the
 foreign keys as primary keys feature of Doctrine ORM.
 
-See :doc:`the tutorial on composite primary keys for more information<../tutorials/composite-primary-keys>`.
+See :doc:`the tutorial on composite primary keys for more information <../tutorials/composite-primary-keys>`.
 
 
 How can i paginate fetch-joined collections?

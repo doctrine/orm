@@ -1,10 +1,10 @@
 Limitations and Known Issues
 ============================
 
-We try to make using Doctrine2 a very pleasant experience.
+We try to make using Doctrine ORM a very pleasant experience.
 Therefore we think it is very important to be honest about the
 current limitations to our users. Much like every other piece of
-software Doctrine2 is not perfect and far from feature complete.
+software the ORM is not perfect and far from feature complete.
 This section should give you an overview of current limitations of
 Doctrine ORM as well as critical known issues that you should know
 about.
@@ -167,13 +167,25 @@ have produced, this is probably fine.
 
 However, to mention known limitations, it is currently not possible to use "class"
 level `annotations <https://github.com/doctrine/orm/pull/1517>`_ or
-`attributes <https://github.com/doctrine/orm/issues/8868>` on traits, and attempts to
+`attributes <https://github.com/doctrine/orm/issues/8868>`_ on traits, and attempts to
 improve parser support for traits as `here <https://github.com/doctrine/annotations/pull/102>`_
 or `there <https://github.com/doctrine/annotations/pull/63>`_ have been abandoned
 due to complexity.
 
 XML mapping configuration probably needs to completely re-configure or otherwise
 copy-and-paste configuration for fields used from traits.
+
+Mapping multiple private fields of the same name
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+When two classes, say a mapped superclass and an entity inheriting from it,
+both contain a ``private`` field of the same name, this will lead to a ``MappingException``.
+
+Since the fields are ``private``, both are technically separate and can contain
+different values at the same time. However, the ``ClassMetadata`` configuration used
+internally by the ORM currently refers to fields by their name only, without taking the
+class containing the field into consideration. This makes it impossible to keep separate
+mapping configuration for both fields.
 
 Known Issues
 ------------

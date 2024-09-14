@@ -1,3 +1,125 @@
+# Upgrade to 2.19
+
+## Deprecate calling `ClassMetadata::getAssociationMappedByTargetField()` with the owning side of an association
+
+Calling
+`Doctrine\ORM\Mapping\ClassMetadata::getAssociationMappedByTargetField()` with
+the owning side of an association returns `null`, which is undocumented, and
+wrong according to the phpdoc of the parent method.
+
+If you do not know whether you are on the owning or inverse side of an association,
+you can use  `Doctrine\ORM\Mapping\ClassMetadata::isAssociationInverseSide()`
+to find out.
+
+## Deprecate `Doctrine\ORM\Query\Lexer::T_*` constants
+
+Use `Doctrine\ORM\Query\TokenType::T_*` instead.
+
+# Upgrade to 2.17
+
+## Deprecate annotations classes for named queries
+
+The following classes have been deprecated:
+
+* `Doctrine\ORM\Mapping\NamedNativeQueries`
+* `Doctrine\ORM\Mapping\NamedNativeQuery`
+* `Doctrine\ORM\Mapping\NamedQueries`
+* `Doctrine\ORM\Mapping\NamedQuery`
+
+## Deprecate `Doctrine\ORM\Query\Exec\AbstractSqlExecutor::_sqlStatements`
+
+Use `Doctrine\ORM\Query\Exec\AbstractSqlExecutor::sqlStatements` instead.
+
+## Undeprecate `Doctrine\ORM\Proxy\Autoloader`
+
+It will be a full-fledged class, no longer extending
+`Doctrine\Common\Proxy\Autoloader` in 3.0.x.
+
+## Deprecated: reliance on the non-optimal defaults that come with the `AUTO` identifier generation strategy
+
+When the `AUTO` identifier generation strategy was introduced, the best
+strategy at the time was selected for each database platform.
+A lot of time has passed since then, and with ORM 3.0.0 and DBAL 4.0.0, support
+for better strategies will be added.
+
+Because of that, it is now deprecated to rely on the historical defaults when
+they differ from what we will be recommended in the future.
+
+Instead, you should pick a strategy for each database platform you use, and it
+will be used when using `AUTO`. As of now, only PostgreSQL is affected by this.
+
+It is recommended that PostgreSQL users configure their existing and new
+applications to use `SEQUENCE` until `doctrine/dbal` 4.0.0 is released:
+
+```php
+use Doctrine\DBAL\Platforms\PostgreSQLPlatform;
+use Doctrine\ORM\Configuration;
+
+assert($configuration instanceof Configuration);
+$configuration->setIdentityGenerationPreferences([
+    PostgreSQLPlatform::CLASS => ClassMetadata::GENERATOR_TYPE_SEQUENCE,
+]);
+```
+
+When DBAL 4 is released, `AUTO` will result in `IDENTITY`, and the above
+configuration should be removed to migrate to it.
+
+## Deprecate `EntityManagerInterface::getPartialReference()`
+
+This method does not have a replacement and will be removed in 3.0.
+
+## Deprecate not-enabling lazy-ghosts
+
+Not enabling lazy ghost objects is deprecated. In ORM 3.0, they will be always enabled.
+Ensure `Doctrine\ORM\Configuration::setLazyGhostObjectEnabled(true)` is called to enable them.
+
+# Upgrade to 2.16
+
+## Deprecated accepting duplicate IDs in the identity map
+
+For any given entity class and ID value, there should be only one object instance
+representing the entity.
+
+In https://github.com/doctrine/orm/pull/10785, a check was added that will guard this
+in the identity map. The most probable cause for violations of this rule are collisions
+of application-provided IDs.
+
+In ORM 2.16.0, the check was added by throwing an exception. In ORM 2.16.1, this will be
+changed to a deprecation notice. ORM 3.0 will make it an exception again. Use
+`\Doctrine\ORM\Configuration::setRejectIdCollisionInIdentityMap()` if you want to opt-in
+to the new mode.
+
+## Potential changes to the order in which `INSERT`s are executed
+
+In https://github.com/doctrine/orm/pull/10547, the commit order computation was improved
+to fix a series of bugs where a correct (working) commit order was previously not found.
+Also, the new computation may get away with fewer queries being executed: By inserting
+referred-to entities first and using their ID values for foreign key fields in subsequent
+`INSERT` statements, additional `UPDATE` statements that were previously necessary can be
+avoided.
+
+When using database-provided, auto-incrementing IDs, this may lead to IDs being assigned
+to entities in a different order than it was previously the case.
+
+## Deprecated returning post insert IDs from `EntityPersister::executeInserts()`
+
+Persisters implementing `\Doctrine\ORM\Persisters\Entity\EntityPersister` should no longer
+return an array of post insert IDs from their `::executeInserts()` method. Make the
+persister call `Doctrine\ORM\UnitOfWork::assignPostInsertId()` instead.
+
+## Changing the way how reflection-based mapping drivers report fields, deprecated the "old" mode
+
+In ORM 3.0, a change will be made regarding how the `AttributeDriver` reports field mappings.
+This change is necessary to be able to detect (and reject) some invalid mapping configurations.
+
+To avoid surprises during 2.x upgrades, the new mode is opt-in. It can be activated on the
+`AttributeDriver` and `AnnotationDriver` by setting the `$reportFieldsWhereDeclared`
+constructor parameter to `true`. It will cause `MappingException`s to be thrown when invalid
+configurations are detected.
+
+Not enabling the new mode will cause a deprecation notice to be raised. In ORM 3.0,
+only the new mode will be available.
+
 # Upgrade to 2.15
 
 ## Deprecated configuring `JoinColumn` on the inverse side of one-to-one associations
@@ -15,7 +137,7 @@ and will be an error in 3.0.
 
 ## Deprecated undeclared entity inheritance
 
-As soon as an entity class inherits from another entity class, inheritance has to 
+As soon as an entity class inherits from another entity class, inheritance has to
 be declared by adding the appropriate configuration for the root entity.
 
 ## Deprecated stubs for "concrete table inheritance"
@@ -1130,7 +1252,7 @@ The EntityRepository now has an interface Doctrine\Persistence\ObjectRepository.
 The annotation reader was heavily refactored between 2.0 and 2.1-RC1. In theory the operation of the new reader should be backwards compatible, but it has to be setup differently to work that way:
 
     // new call to the AnnotationRegistry
-    \Doctrine\Common\Annotations\AnnotationRegistry::registerFile('/doctrine-src/lib/Doctrine/ORM/Mapping/Driver/DoctrineAnnotations.php');
+    \Doctrine\Common\Annotations\AnnotationRegistry::registerFile('/doctrine-src/src/Mapping/Driver/DoctrineAnnotations.php');
 
     $reader = new \Doctrine\Common\Annotations\AnnotationReader();
     $reader->setDefaultAnnotationNamespace('Doctrine\ORM\Mapping\\');
