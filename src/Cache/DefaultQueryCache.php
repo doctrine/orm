@@ -86,7 +86,7 @@ class DefaultQueryCache implements QueryCache
 
         $cacheKeys = new CollectionCacheEntry(array_map($generateKeys, $cacheEntry->result));
         $entries   = $region->getMultiple($cacheKeys);
-        
+
         if ($entries === null) {
             return null;
         }
