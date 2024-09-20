@@ -24,12 +24,16 @@ class Product
     private $id = 42;
 
     /**
+     * @var string
      * @ORM\Column()
      */
     #[ORM\Column()]
-    private string $name;
+    private $name;
 
-    private ?string $image = null;
+    /**
+     * @var string|null
+     */
+    private $image = null;
 
     public function __construct(string $name)
     {
