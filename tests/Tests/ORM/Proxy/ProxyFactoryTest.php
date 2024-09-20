@@ -260,7 +260,7 @@ class ProxyFactoryTest extends OrmTestCase
             ->expects(self::atLeastOnce())
             ->method('loadById')
             ->with(self::equalTo($identifier))
-            ->will(self::returnValue($product));
+            ->willReturn($product);
 
         $persister
             ->expects(self::atLeastOnce())
