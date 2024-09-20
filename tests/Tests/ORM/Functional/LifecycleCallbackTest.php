@@ -132,10 +132,10 @@ class LifecycleCallbackTest extends OrmFunctionalTestCase
         $this->_em->clear();
 
         $reference = $this->_em->getReference(LifecycleCallbackTestEntity::class, $id);
-        self::assertFalse($reference->postLoadCallbackInvoked);
+        self::assertFalse(LifecycleCallbackTestEntity::$staticPostLoadCallbackInvoked);
 
         $reference->getValue(); // trigger proxy load
-        self::assertTrue($reference->postLoadCallbackInvoked);
+        self::assertTrue(LifecycleCallbackTestEntity::$staticPostLoadCallbackInvoked);
     }
 
     /** @group DDC-958 */
@@ -495,6 +495,9 @@ class LifecycleCallbackTestEntity
     public $postLoadCallbackInvoked = false;
 
     /** @var bool */
+    public static $staticPostLoadCallbackInvoked = false;
+
+    /** @var bool */
     public $postLoadCascaderNotNull = false;
 
     /** @var bool */
@@ -546,8 +549,9 @@ class LifecycleCallbackTestEntity
     /** @PostLoad */
     public function doStuffOnPostLoad(): void
     {
-        $this->postLoadCallbackInvoked = true;
-        $this->postLoadCascaderNotNull = isset($this->cascader);
+        $this->postLoadCallbackInvoked       = true;
+        self::$staticPostLoadCallbackInvoked = true;
+        $this->postLoadCascaderNotNull       = isset($this->cascader);
     }
 
     /** @PreUpdate */
