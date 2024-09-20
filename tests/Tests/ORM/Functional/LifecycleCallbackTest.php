@@ -47,6 +47,8 @@ class LifecycleCallbackTest extends OrmFunctionalTestCase
     {
         parent::setUp();
 
+        LifecycleCallbackTestEntity::$staticPostLoadCallbackInvoked = false;
+
         $this->createSchemaForModels(
             LifecycleCallbackEventArgEntity::class,
             LifecycleCallbackTestEntity::class,
