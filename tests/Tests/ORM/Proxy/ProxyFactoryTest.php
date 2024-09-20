@@ -249,7 +249,7 @@ class ProxyFactoryTest extends OrmTestCase
 
         $classMetaData = $this->emMock->getClassMetadata(Product::class);
 
-        $persister  = $this
+        $persister = $this
             ->getMockBuilder(BasicEntityPersister::class)
             ->disableOriginalConstructor()
             ->getMock();
