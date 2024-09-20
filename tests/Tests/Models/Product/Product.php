@@ -13,6 +13,7 @@ use Doctrine\ORM\Mapping as ORM;
 class Product
 {
     /**
+     * @var int
      * @ORM\Id
      * @ORM\Column()
      * @ORM\GeneratedValue
@@ -20,7 +21,7 @@ class Product
     #[ORM\Id]
     #[ORM\Column()]
     #[ORM\GeneratedValue]
-    private int $id = 42;
+    private $id = 42;
 
     /**
      * @ORM\Column()
