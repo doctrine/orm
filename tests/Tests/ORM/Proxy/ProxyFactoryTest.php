@@ -18,6 +18,7 @@ use Doctrine\Tests\Mocks\UnitOfWorkMock;
 use Doctrine\Tests\Models\Company\CompanyEmployee;
 use Doctrine\Tests\Models\Company\CompanyPerson;
 use Doctrine\Tests\Models\ECommerce\ECommerceFeature;
+use Doctrine\Tests\Models\Product\Product;
 use Doctrine\Tests\OrmTestCase;
 use Doctrine\Tests\PHPUnitCompatibility\MockBuilderCompatibilityTools;
 use Exception;
@@ -238,6 +239,41 @@ class ProxyFactoryTest extends OrmTestCase
         self::assertSame(42, $cloned->getId(), 'Expected the Id to be cloned');
         self::assertSame(1000, $cloned->getSalary(), 'Expect properties on the CompanyEmployee class to be cloned');
         self::assertSame('Bob', $cloned->getName(), 'Expect properties on the CompanyPerson class to be cloned');
+    }
+
+    public function testUnmanagedPropertyTriggerProxyLoad(): void
+    {
+        $product = new Product('someName');
+        $product->setImage('someImage');
+        $identifier = ['id' => 42];
+
+        $classMetaData = $this->emMock->getClassMetadata(Product::class);
+
+        $persister  = $this
+            ->getMockBuilder(BasicEntityPersister::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $this->uowMock->setEntityPersister(Product::class, $persister);
+
+        $persister
+            ->expects(self::atLeastOnce())
+            ->method('loadById')
+            ->with(self::equalTo($identifier))
+            ->will(self::returnValue($product));
+
+        $persister
+            ->expects(self::atLeastOnce())
+            ->method('getClassMetadata')
+            ->willReturn($classMetaData);
+
+        $proxy = $this->proxyFactory->getProxy(Product::class, $identifier);
+
+        self::assertFalse($proxy->__isInitialized());
+        $proxy->getId();
+        self::assertFalse($proxy->__isInitialized());
+        $proxy->getImage();
+        self::assertTrue($proxy->__isInitialized());
     }
 }
 
