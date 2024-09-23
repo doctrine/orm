@@ -7,6 +7,7 @@ namespace Doctrine\ORM\Event;
 use Doctrine\Deprecations\Deprecation;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\Event\ManagerEventArgs;
+use Doctrine\Persistence\ObjectManager;
 
 /**
  * Provides event arguments for the postFlush event.
@@ -15,8 +16,23 @@ use Doctrine\Persistence\Event\ManagerEventArgs;
  *
  * @extends ManagerEventArgs<EntityManagerInterface>
  */
-class PostFlushEventArgs extends ManagerEventArgs
+class PostFlushEventArgs extends ManagerEventArgs implements CommitEventIdAware
 {
+    /** @var string|null */
+    private $commitEventId = null;
+
+    public function __construct(ObjectManager $objectManager, ?string $commitEventId = null)
+    {
+        $this->commitEventId = $commitEventId;
+
+        parent::__construct($objectManager);
+    }
+
+    public function getCommitEventId(): ?string
+    {
+        return $this->commitEventId;
+    }
+
     /**
      * Retrieves associated EntityManager.
      *

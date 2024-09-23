@@ -14,8 +14,11 @@ use function sprintf;
 /**
  * Class that holds event arguments for a preUpdate event.
  */
-class PreUpdateEventArgs extends LifecycleEventArgs
+class PreUpdateEventArgs extends LifecycleEventArgs implements CommitEventIdAware
 {
+    /** @var string|null */
+    private $commitEventId = null;
+
     /** @var array<string, array{mixed, mixed}|PersistentCollection> */
     private $entityChangeSet;
 
@@ -24,11 +27,17 @@ class PreUpdateEventArgs extends LifecycleEventArgs
      * @param mixed[][] $changeSet
      * @psalm-param array<string, array{mixed, mixed}|PersistentCollection> $changeSet
      */
-    public function __construct($entity, EntityManagerInterface $em, array &$changeSet)
+    public function __construct($entity, EntityManagerInterface $em, array &$changeSet, ?string $commitEventId = null)
     {
         parent::__construct($entity, $em);
 
         $this->entityChangeSet = &$changeSet;
+        $this->commitEventId   = $commitEventId;
+    }
+
+    public function getCommitEventId(): ?string
+    {
+        return $this->commitEventId;
     }
 
     /**

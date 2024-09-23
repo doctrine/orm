@@ -77,6 +77,8 @@ use function reset;
 use function spl_object_id;
 use function sprintf;
 use function strtolower;
+use function bin2hex;
+use function random_bytes;
 
 /**
  * The UnitOfWork is responsible for tracking changes to objects during an
@@ -334,6 +336,13 @@ class UnitOfWork implements PropertyChangedListener
     private $reflectionPropertiesGetter;
 
     /**
+     * List of event commit IDs.
+     *
+     * @var list<string>
+     */
+    private $eventCommitIds = [];
+
+    /**
      * Initializes a new UnitOfWork instance, bound to the given EntityManager.
      */
     public function __construct(EntityManagerInterface $em)
@@ -383,19 +392,21 @@ class UnitOfWork implements PropertyChangedListener
             $connection->ensureConnectedToPrimary();
         }
 
+        $commitEventId = $this->getNextEventCommitId();
+
         // Raise preFlush
         if ($this->evm->hasListeners(Events::preFlush)) {
-            $this->evm->dispatchEvent(Events::preFlush, new PreFlushEventArgs($this->em));
+            $this->evm->dispatchEvent(Events::preFlush, new PreFlushEventArgs($this->em, $commitEventId));
         }
 
         // Compute changes done since last commit.
         if ($entity === null) {
-            $this->computeChangeSets();
+            $this->computeChangeSets($commitEventId);
         } elseif (is_object($entity)) {
-            $this->computeSingleEntityChangeSet($entity);
+            $this->computeSingleEntityChangeSet($entity, $commitEventId);
         } elseif (is_array($entity)) {
             foreach ($entity as $object) {
-                $this->computeSingleEntityChangeSet($object);
+                $this->computeSingleEntityChangeSet($object, $commitEventId);
             }
         }
 
@@ -407,10 +418,11 @@ class UnitOfWork implements PropertyChangedListener
                 $this->collectionDeletions ||
                 $this->orphanRemovals)
         ) {
-            $this->dispatchOnFlushEvent();
-            $this->dispatchPostFlushEvent();
+            $this->dispatchOnFlushEvent($commitEventId);
+            $this->dispatchPostFlushEvent($commitEventId);
 
             $this->postCommitCleanup($entity);
+            $this->removeEventCommitId($commitEventId);
 
             return; // Nothing to do.
         }
@@ -423,7 +435,7 @@ class UnitOfWork implements PropertyChangedListener
             }
         }
 
-        $this->dispatchOnFlushEvent();
+        $this->dispatchOnFlushEvent($commitEventId);
 
         $conn = $this->em->getConnection();
         $conn->beginTransaction();
@@ -445,12 +457,12 @@ class UnitOfWork implements PropertyChangedListener
                 // into account (new entities referring to other new entities), since all other types (entities
                 // with updates or scheduled deletions) are currently not a problem, since they are already
                 // in the database.
-                $this->executeInserts();
+                $this->executeInserts($commitEventId);
             }
 
             if ($this->entityUpdates) {
                 // Updates do not need to follow a particular order
-                $this->executeUpdates();
+                $this->executeUpdates($commitEventId);
             }
 
             // Extra updates that were requested by persisters.
@@ -470,7 +482,7 @@ class UnitOfWork implements PropertyChangedListener
             // Entity deletions come last. Their order only needs to take care of other deletions
             // (first delete entities depending upon others, before deleting depended-upon entities).
             if ($this->entityDeletions) {
-                $this->executeDeletions();
+                $this->executeDeletions($commitEventId);
             }
 
             // Commit failed silently
@@ -487,6 +499,7 @@ class UnitOfWork implements PropertyChangedListener
             }
 
             $this->afterTransactionRolledBack();
+            $this->removeEventCommitId($commitEventId);
 
             throw $e;
         }
@@ -505,9 +518,10 @@ class UnitOfWork implements PropertyChangedListener
             $coll->takeSnapshot();
         }
 
-        $this->dispatchPostFlushEvent();
+        $this->dispatchPostFlushEvent($commitEventId);
 
         $this->postCommitCleanup($entity);
+        $this->removeEventCommitId($commitEventId);
     }
 
     /** @param object|object[]|null $entity */
@@ -546,12 +560,12 @@ class UnitOfWork implements PropertyChangedListener
     /**
      * Computes the changesets of all entities scheduled for insertion.
      */
-    private function computeScheduleInsertsChangeSets(): void
+    private function computeScheduleInsertsChangeSets(?string $commitEventId = null): void
     {
         foreach ($this->entityInsertions as $entity) {
             $class = $this->em->getClassMetadata(get_class($entity));
 
-            $this->computeChangeSet($class, $entity);
+            $this->computeChangeSet($class, $entity, $commitEventId);
         }
     }
 
@@ -567,7 +581,7 @@ class UnitOfWork implements PropertyChangedListener
      *
      * @throws InvalidArgumentException
      */
-    private function computeSingleEntityChangeSet($entity): void
+    private function computeSingleEntityChangeSet($entity, ?string $commitEventId = null): void
     {
         $state = $this->getEntityState($entity);
 
@@ -597,7 +611,7 @@ class UnitOfWork implements PropertyChangedListener
         $oid = spl_object_id($entity);
 
         if (! isset($this->entityInsertions[$oid]) && ! isset($this->entityDeletions[$oid]) && isset($this->entityStates[$oid])) {
-            $this->computeChangeSet($class, $entity);
+            $this->computeChangeSet($class, $entity, $commitEventId);
         }
     }
 
@@ -672,7 +686,7 @@ class UnitOfWork implements PropertyChangedListener
      *
      * @ignore
      */
-    public function computeChangeSet(ClassMetadata $class, $entity)
+    public function computeChangeSet(ClassMetadata $class, $entity, ?string $commitEventId = null)
     {
         $oid = spl_object_id($entity);
 
@@ -687,7 +701,7 @@ class UnitOfWork implements PropertyChangedListener
         $invoke = $this->listenersInvoker->getSubscribedSystems($class, Events::preFlush) & ~ListenersInvoker::INVOKE_MANAGER;
 
         if ($invoke !== ListenersInvoker::INVOKE_NONE) {
-            $this->listenersInvoker->invoke($class, Events::preFlush, $entity, new PreFlushEventArgs($this->em), $invoke);
+            $this->listenersInvoker->invoke($class, Events::preFlush, $entity, new PreFlushEventArgs($this->em, $commitEventId), $invoke);
         }
 
         $actualData = [];
@@ -861,7 +875,7 @@ class UnitOfWork implements PropertyChangedListener
                 continue;
             }
 
-            $this->computeAssociationChanges($assoc, $val);
+            $this->computeAssociationChanges($assoc, $val, $commitEventId);
 
             if (
                 ! isset($this->entityChangeSets[$oid]) &&
@@ -884,10 +898,10 @@ class UnitOfWork implements PropertyChangedListener
      *
      * @return void
      */
-    public function computeChangeSets()
+    public function computeChangeSets(?string $commitEventId = null)
     {
         // Compute changes for INSERTed entities first. This must always happen.
-        $this->computeScheduleInsertsChangeSets();
+        $this->computeScheduleInsertsChangeSets($commitEventId);
 
         // Compute changes for other MANAGED entities. Change tracking policies take effect here.
         foreach ($this->identityMap as $className => $entities) {
@@ -923,7 +937,7 @@ class UnitOfWork implements PropertyChangedListener
                 $oid = spl_object_id($entity);
 
                 if (! isset($this->entityInsertions[$oid]) && ! isset($this->entityDeletions[$oid]) && isset($this->entityStates[$oid])) {
-                    $this->computeChangeSet($class, $entity);
+                    $this->computeChangeSet($class, $entity, $commitEventId);
                 }
             }
         }
@@ -938,7 +952,7 @@ class UnitOfWork implements PropertyChangedListener
      * @throws ORMInvalidArgumentException
      * @throws ORMException
      */
-    private function computeAssociationChanges(array $assoc, $value): void
+    private function computeAssociationChanges(array $assoc, $value, ?string $commitEventId = null): void
     {
         if ($this->isUninitializedObject($value)) {
             return;
@@ -988,8 +1002,8 @@ class UnitOfWork implements PropertyChangedListener
                         break;
                     }
 
-                    $this->persistNew($targetClass, $entry);
-                    $this->computeChangeSet($targetClass, $entry);
+                    $this->persistNew($targetClass, $entry, $commitEventId);
+                    $this->computeChangeSet($targetClass, $entry, $commitEventId);
 
                     break;
 
@@ -1029,13 +1043,13 @@ class UnitOfWork implements PropertyChangedListener
      *
      * @template T of object
      */
-    private function persistNew(ClassMetadata $class, $entity): void
+    private function persistNew(ClassMetadata $class, $entity, ?string $commitEventId = null): void
     {
         $oid    = spl_object_id($entity);
         $invoke = $this->listenersInvoker->getSubscribedSystems($class, Events::prePersist);
 
         if ($invoke !== ListenersInvoker::INVOKE_NONE) {
-            $this->listenersInvoker->invoke($class, Events::prePersist, $entity, new PrePersistEventArgs($entity, $this->em), $invoke);
+            $this->listenersInvoker->invoke($class, Events::prePersist, $entity, new PrePersistEventArgs($entity, $this->em, $commitEventId), $invoke);
         }
 
         $idGen = $class->idGenerator;
@@ -1167,7 +1181,7 @@ class UnitOfWork implements PropertyChangedListener
     /**
      * Executes entity insertions
      */
-    private function executeInserts(): void
+    private function executeInserts(string $commitEventId): void
     {
         $entities         = $this->computeInsertExecutionOrder();
         $eventsToDispatch = [];
@@ -1216,7 +1230,7 @@ class UnitOfWork implements PropertyChangedListener
                 $event['class'],
                 Events::postPersist,
                 $event['entity'],
-                new PostPersistEventArgs($event['entity'], $this->em),
+                new PostPersistEventArgs($event['entity'], $this->em, $commitEventId),
                 $event['invoke']
             );
         }
@@ -1258,7 +1272,7 @@ class UnitOfWork implements PropertyChangedListener
     /**
      * Executes all entity updates
      */
-    private function executeUpdates(): void
+    private function executeUpdates(string $commitEventId): void
     {
         foreach ($this->entityUpdates as $oid => $entity) {
             $class            = $this->em->getClassMetadata(get_class($entity));
@@ -1267,7 +1281,7 @@ class UnitOfWork implements PropertyChangedListener
             $postUpdateInvoke = $this->listenersInvoker->getSubscribedSystems($class, Events::postUpdate);
 
             if ($preUpdateInvoke !== ListenersInvoker::INVOKE_NONE) {
-                $this->listenersInvoker->invoke($class, Events::preUpdate, $entity, new PreUpdateEventArgs($entity, $this->em, $this->getEntityChangeSet($entity)), $preUpdateInvoke);
+                $this->listenersInvoker->invoke($class, Events::preUpdate, $entity, new PreUpdateEventArgs($entity, $this->em, $this->getEntityChangeSet($entity), $commitEventId), $preUpdateInvoke);
 
                 $this->recomputeSingleEntityChangeSet($class, $entity);
             }
@@ -1279,7 +1293,7 @@ class UnitOfWork implements PropertyChangedListener
             unset($this->entityUpdates[$oid]);
 
             if ($postUpdateInvoke !== ListenersInvoker::INVOKE_NONE) {
-                $this->listenersInvoker->invoke($class, Events::postUpdate, $entity, new PostUpdateEventArgs($entity, $this->em), $postUpdateInvoke);
+                $this->listenersInvoker->invoke($class, Events::postUpdate, $entity, new PostUpdateEventArgs($entity, $this->em, $commitEventId), $postUpdateInvoke);
             }
         }
     }
@@ -1287,7 +1301,7 @@ class UnitOfWork implements PropertyChangedListener
     /**
      * Executes all entity deletions
      */
-    private function executeDeletions(): void
+    private function executeDeletions(string $commitEventId): void
     {
         $entities         = $this->computeDeleteExecutionOrder();
         $eventsToDispatch = [];
@@ -1327,7 +1341,7 @@ class UnitOfWork implements PropertyChangedListener
                 $event['class'],
                 Events::postRemove,
                 $event['entity'],
-                new PostRemoveEventArgs($event['entity'], $this->em),
+                new PostRemoveEventArgs($event['entity'], $this->em, $commitEventId),
                 $event['invoke']
             );
         }
@@ -3226,6 +3240,24 @@ EXCEPTION
         }
     }
 
+    private function getNextEventCommitId(): string
+    {
+        do {
+            $id = bin2hex(random_bytes(12));
+        } while (in_array($id, $this->eventCommitIds));
+
+        $this->eventCommitIds[] = $id;
+
+        return $id;
+    }
+
+    private function removeEventCommitId(string $id): void
+    {
+        if (false !== ($pos = array_search($id, $this->eventCommitIds))) {
+            unset($this->eventCommitIds[$pos]);
+        }
+    }
+
     /**
      * Load all data into the given collections, according to the specified mapping
      *
@@ -3814,17 +3846,17 @@ EXCEPTION
         }
     }
 
-    private function dispatchOnFlushEvent(): void
+    private function dispatchOnFlushEvent(string $commitEventId): void
     {
         if ($this->evm->hasListeners(Events::onFlush)) {
-            $this->evm->dispatchEvent(Events::onFlush, new OnFlushEventArgs($this->em));
+            $this->evm->dispatchEvent(Events::onFlush, new OnFlushEventArgs($this->em, $commitEventId));
         }
     }
 
-    private function dispatchPostFlushEvent(): void
+    private function dispatchPostFlushEvent(string $commitEventId): void
     {
         if ($this->evm->hasListeners(Events::postFlush)) {
-            $this->evm->dispatchEvent(Events::postFlush, new PostFlushEventArgs($this->em));
+            $this->evm->dispatchEvent(Events::postFlush, new PostFlushEventArgs($this->em, $commitEventId));
         }
     }
 
