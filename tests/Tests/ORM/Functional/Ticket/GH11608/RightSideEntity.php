@@ -20,7 +20,7 @@ class RightSideEntity
     #[GeneratedValue]
     public int $id;
 
-    #[OneToMany(targetEntity: ConnectingEntity::class, mappedBy: 'rightSide', indexBy: 'left_side_id')]
+    #[OneToMany(targetEntity: ConnectingEntity::class, mappedBy: 'rightSide', indexBy: 'id')]
     public Collection $leftSideEntities;
 
     public function __construct()
