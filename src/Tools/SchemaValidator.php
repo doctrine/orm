@@ -24,6 +24,7 @@ use Doctrine\ORM\Mapping\FieldMapping;
 use ReflectionEnum;
 use ReflectionNamedType;
 
+use function array_column;
 use function array_diff;
 use function array_filter;
 use function array_key_exists;
@@ -274,6 +275,22 @@ class SchemaValidator
                                 $orderField . ' on ' . $targetMetadata->name . ' that is the inverse side of an association.';
                         continue;
                     }
+                }
+            }
+
+            if ($assoc->isIndexed()) {
+                $joinColumns = array_column($targetMetadata->getAssociationMappings(), 'joinColumns');
+                $joinColumns = array_column($joinColumns, 0);
+                $joinColumns = array_column($joinColumns, 'name');
+
+                $allAvailableIndexNames = [
+                    ...$joinColumns,
+                    ...$targetMetadata->getColumnNames(),
+                ];
+
+                if (! in_array($assoc->indexBy(), $allAvailableIndexNames, true)) {
+                    $ce[] = 'The association ' . $class->name . '#' . $fieldName . ' is indexed by a field ' .
+                        $assoc->indexBy() . ' on ' . $targetMetadata->name . ', but the field doesn\'t exist.';
                 }
             }
         }
