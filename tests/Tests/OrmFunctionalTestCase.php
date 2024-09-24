@@ -167,6 +167,7 @@ use Doctrine\Tests\Models\ValueConversionType\OwningOneToOneCompositeIdForeignKe
 use Doctrine\Tests\Models\ValueConversionType\OwningOneToOneEntity;
 use Doctrine\Tests\Models\VersionedManyToOne\Article;
 use Doctrine\Tests\Models\VersionedManyToOne\Category;
+use Doctrine\Tests\ORM\Functional\Ticket\GH11608;
 use Exception;
 use PHPUnit\Framework\AssertionFailedError;
 use PHPUnit\Framework\Constraint\Count;
@@ -482,6 +483,11 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
         'issue9300' => [
             Models\Issue9300\Issue9300Child::class,
             Models\Issue9300\Issue9300Parent::class,
+        ],
+        GH11608\GH11608Test::class => [
+            GH11608\LeftSideEntity::class,
+            GH11608\RightSideEntity::class,
+            GH11608\ConnectingEntity::class,
         ],
     ];
 
