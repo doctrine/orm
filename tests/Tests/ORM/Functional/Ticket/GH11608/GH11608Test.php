@@ -41,7 +41,6 @@ class GH11608Test extends OrmFunctionalTestCase
 
         $errors = $validator->validateClass($this->_em->getClassMetadata($className));
 
-        var_dump($errors);
         self::assertEmpty($errors);
     }
 
