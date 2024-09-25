@@ -148,7 +148,11 @@ class DefaultQuoteStrategy implements QuoteStrategy
         $columnName  = substr($columnName, -$platform->getMaxIdentifierLength());
         $columnName  = preg_replace('/[^A-Za-z0-9_]/', '', $columnName);
         $columnName  = is_numeric($columnName) ? '_' . $columnName : $columnName;
-
+        
+        // Oracle dont like names starting with underscore
+        if ($platform instanceof OraclePlatform){
+            $columnName = ltrim($columnName, '_');
+        }
         return $this->getSQLResultCasing($platform, $columnName);
     }
 }
