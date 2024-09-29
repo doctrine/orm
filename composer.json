@@ -38,6 +38,7 @@
     "require-dev": {
         "doctrine/coding-standard": "^12.0",
         "phpbench/phpbench": "^1.0",
+        "phpdocumentor/guides-cli": "^1.4",
         "phpstan/phpstan": "1.11.1",
         "phpunit/phpunit": "^10.4.0",
         "psr/log": "^1 || ^2 || ^3",
