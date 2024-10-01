@@ -49,6 +49,8 @@ class EntityRepository implements ObjectRepository, Selectable
 
     /**
      * Creates a new QueryBuilder instance that is prepopulated for this entity name.
+     *
+     * @return QueryBuilder<T>
      */
     public function createQueryBuilder(string $alias, string|null $indexBy = null): QueryBuilder
     {

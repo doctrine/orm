@@ -16,6 +16,7 @@ use function ksort;
  * Represents a native SQL query.
  *
  * @final
+ * @extends AbstractQuery<mixed>
  */
 class NativeQuery extends AbstractQuery
 {

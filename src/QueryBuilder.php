@@ -38,6 +38,8 @@ use function substr;
 /**
  * This class is responsible for building DQL query strings via an object oriented
  * PHP interface.
+ *
+ * @template T
  */
 class QueryBuilder implements Stringable
 {
@@ -251,6 +253,8 @@ class QueryBuilder implements Stringable
      *     $q = $qb->getQuery();
      *     $results = $q->execute();
      * </code>
+     *
+     * @psalm-return Query<T>
      */
     public function getQuery(): Query
     {
@@ -613,6 +617,11 @@ class QueryBuilder implements Stringable
      * </code>
      *
      * @return $this
+     * @psalm-return static<mixed>
+     * @phpstan-return $this<mixed>
+     *
+     * @psalm-this-out static<mixed>
+     * @phpstan-this-out $this<mixed>
      */
     public function select(mixed ...$select): static
     {
