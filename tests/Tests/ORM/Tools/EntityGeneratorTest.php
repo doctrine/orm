@@ -46,9 +46,6 @@ use function unlink;
 
 use const DIRECTORY_SEPARATOR;
 
-/**
- * @runTestsInSeparateProcesses 
- */
 class EntityGeneratorTest extends OrmTestCase
 {
     /** @var EntityGenerator */

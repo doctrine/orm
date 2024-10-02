@@ -1419,7 +1419,7 @@ public function __construct(<params>)
             return '';
         }
 
-        $this->staticReflection[$metadata->name]['methods'][] = $methodName;
+        $this->staticReflection[$metadata->name]['methods'][] = strtolower($methodName);
 
         $replacements = [
             '<name>'        => $this->annotationsPrefix . ucfirst($name),
