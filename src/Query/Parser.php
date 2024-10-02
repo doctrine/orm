@@ -1765,7 +1765,7 @@ final class Parser
     }
 
     /**
-     * NewObjectArg ::= ScalarExpression | "(" Subselect ")"
+     * NewObjectArg ::= ScalarExpression | "(" Subselect ")" | NewObjectExpression
      */
     public function NewObjectArg(): mixed
     {
