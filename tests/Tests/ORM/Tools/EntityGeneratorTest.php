@@ -114,6 +114,7 @@ class EntityGeneratorTest extends OrmTestCase
         $metadata->addLifecycleCallback('loading', 'postLoad');
         $metadata->addLifecycleCallback('logChange', 'prePersist');
         $metadata->addLifecycleCallback('logChange', 'preRemove');
+        $metadata->addLifecycleCallback('logchange', 'preUpdate');
         $metadata->addLifecycleCallback('willBeRemoved', 'preRemove');
         $metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_AUTO);
 
@@ -475,7 +476,7 @@ class EntityGeneratorTest extends OrmTestCase
 
         self::assertEquals($cm->columnNames, $metadata->columnNames);
         self::assertEquals($cm->getTableName(), $metadata->getTableName());
-        self::assertEquals($cm->lifecycleCallbacks, $metadata->lifecycleCallbacks);
+        self::assertEqualsIgnoringCase($cm->lifecycleCallbacks, $metadata->lifecycleCallbacks);
         self::assertEquals($cm->identifier, $metadata->identifier);
         self::assertEquals($cm->idGenerator, $metadata->idGenerator);
         self::assertEquals($cm->customRepositoryClassName, $metadata->customRepositoryClassName);
@@ -516,7 +517,7 @@ class EntityGeneratorTest extends OrmTestCase
 
         self::assertEquals($cm->columnNames, $metadata->columnNames);
         self::assertEquals($cm->getTableName(), $metadata->getTableName());
-        self::assertEquals($cm->lifecycleCallbacks, $metadata->lifecycleCallbacks);
+        self::assertEqualsIgnoringCase($cm->lifecycleCallbacks, $metadata->lifecycleCallbacks);
         self::assertEquals($cm->identifier, $metadata->identifier);
         self::assertEquals($cm->idGenerator, $metadata->idGenerator);
         self::assertEquals($cm->customRepositoryClassName, $metadata->customRepositoryClassName);

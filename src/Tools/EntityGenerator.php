@@ -1275,12 +1275,23 @@ public function __construct(<params>)
 
         $methods = [];
 
-        foreach ($metadata->lifecycleCallbacks as $name => $callbacks) {
+        $lifecycleEventsByCallback = [];
+        foreach ($metadata->lifecycleCallbacks as $event => $callbacks) {
             foreach ($callbacks as $callback) {
-                $methods[] = $this->generateLifecycleCallbackMethod($name, $callback, $metadata);
+                $callbackCaseInsensitive = $callback; 
+                foreach(array_keys($lifecycleEventsByCallback) as $key) {
+                    if(strtolower($key) === strtolower($callback)) {
+                        $callbackCaseInsensitive = $key;
+                        break;
+                    }
+                }
+                $lifecycleEventsByCallback[$callbackCaseInsensitive][] = $event;
             }
         }
-
+        foreach ($lifecycleEventsByCallback as $callback => $events) {
+            $methods[] = $this->generateLifecycleCallbackMethod($events, $callback, $metadata);
+        }
+//        var_dump($methods);
         return implode("\n\n", array_filter($methods));
     }
 
@@ -1408,12 +1419,12 @@ public function __construct(<params>)
     }
 
     /**
-     * @param string $name
+     * @param array $events
      * @param string $methodName
      *
      * @return string
      */
-    protected function generateLifecycleCallbackMethod($name, $methodName, ClassMetadataInfo $metadata)
+    protected function generateLifecycleCallbackMethod(array $events, string $methodName, ClassMetadataInfo $metadata)
     {
         if ($this->hasMethod($methodName, $metadata)) {
             return '';
@@ -1421,8 +1432,14 @@ public function __construct(<params>)
 
         $this->staticReflection[$metadata->name]['methods'][] = strtolower($methodName);
 
+        $eventAnnotations = array_map(
+            function ($event) {
+                return $this->annotationsPrefix . ucfirst($event);
+            },
+            $events
+        );
         $replacements = [
-            '<name>'        => $this->annotationsPrefix . ucfirst($name),
+            '<name>'        => implode("\n * @", $eventAnnotations),
             '<methodName>'  => $methodName,
         ];
 
