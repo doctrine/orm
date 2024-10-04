@@ -1421,11 +1421,12 @@ public function __construct(<params>)
     }
 
     /**
-     * @param string[] $events
+     * @param string|string[] $name
+     * @param string          $methodName
      *
      * @return string
      */
-    protected function generateLifecycleCallbackMethod(array $events, string $methodName, ClassMetadataInfo $metadata)
+    protected function generateLifecycleCallbackMethod($name, $methodName, ClassMetadataInfo $metadata)
     {
         if ($this->hasMethod($methodName, $metadata)) {
             return '';
@@ -1437,7 +1438,7 @@ public function __construct(<params>)
             function ($event) {
                 return $this->annotationsPrefix . ucfirst($event);
             },
-            $events
+            is_array($name) ? $name : [$name]
         );
         $replacements     = [
             '<name>'        => implode("\n * @", $eventAnnotations),
