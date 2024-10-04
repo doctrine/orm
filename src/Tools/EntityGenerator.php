@@ -1278,20 +1278,22 @@ public function __construct(<params>)
         $lifecycleEventsByCallback = [];
         foreach ($metadata->lifecycleCallbacks as $event => $callbacks) {
             foreach ($callbacks as $callback) {
-                $callbackCaseInsensitive = $callback; 
-                foreach(array_keys($lifecycleEventsByCallback) as $key) {
-                    if(strtolower($key) === strtolower($callback)) {
+                $callbackCaseInsensitive = $callback;
+                foreach (array_keys($lifecycleEventsByCallback) as $key) {
+                    if (strtolower($key) === strtolower($callback)) {
                         $callbackCaseInsensitive = $key;
                         break;
                     }
                 }
+
                 $lifecycleEventsByCallback[$callbackCaseInsensitive][] = $event;
             }
         }
+
         foreach ($lifecycleEventsByCallback as $callback => $events) {
             $methods[] = $this->generateLifecycleCallbackMethod($events, $callback, $metadata);
         }
-//        var_dump($methods);
+
         return implode("\n\n", array_filter($methods));
     }
 
@@ -1419,8 +1421,7 @@ public function __construct(<params>)
     }
 
     /**
-     * @param array $events
-     * @param string $methodName
+     * @param string[] $events
      *
      * @return string
      */
@@ -1438,7 +1439,7 @@ public function __construct(<params>)
             },
             $events
         );
-        $replacements = [
+        $replacements     = [
             '<name>'        => implode("\n * @", $eventAnnotations),
             '<methodName>'  => $methodName,
         ];
