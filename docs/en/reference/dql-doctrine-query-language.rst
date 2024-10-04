@@ -1627,7 +1627,7 @@ Select Expressions
     PartialObjectExpression ::= "PARTIAL" IdentificationVariable "." PartialFieldSet
     PartialFieldSet         ::= "{" SimpleStateField {"," SimpleStateField}* "}"
     NewObjectExpression     ::= "NEW" AbstractSchemaName "(" NewObjectArg {"," NewObjectArg}* ")"
-    NewObjectArg            ::= ScalarExpression | "(" Subselect ")"
+    NewObjectArg            ::= ScalarExpression | "(" Subselect ")" | NewObjectExpression
 
 Conditional Expressions
 ~~~~~~~~~~~~~~~~~~~~~~~
