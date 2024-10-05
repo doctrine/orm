@@ -1275,10 +1275,23 @@ public function __construct(<params>)
 
         $methods = [];
 
-        foreach ($metadata->lifecycleCallbacks as $name => $callbacks) {
+        $lifecycleEventsByCallback = [];
+        foreach ($metadata->lifecycleCallbacks as $event => $callbacks) {
             foreach ($callbacks as $callback) {
-                $methods[] = $this->generateLifecycleCallbackMethod($name, $callback, $metadata);
+                $callbackCaseInsensitive = $callback;
+                foreach (array_keys($lifecycleEventsByCallback) as $key) {
+                    if (strtolower($key) === strtolower($callback)) {
+                        $callbackCaseInsensitive = $key;
+                        break;
+                    }
+                }
+
+                $lifecycleEventsByCallback[$callbackCaseInsensitive][] = $event;
             }
+        }
+
+        foreach ($lifecycleEventsByCallback as $callback => $events) {
+            $methods[] = $this->generateLifecycleCallbackMethod($events, $callback, $metadata);
         }
 
         return implode("\n\n", array_filter($methods));
@@ -1408,8 +1421,8 @@ public function __construct(<params>)
     }
 
     /**
-     * @param string $name
-     * @param string $methodName
+     * @param string|string[] $name
+     * @param string          $methodName
      *
      * @return string
      */
@@ -1419,10 +1432,16 @@ public function __construct(<params>)
             return '';
         }
 
-        $this->staticReflection[$metadata->name]['methods'][] = $methodName;
+        $this->staticReflection[$metadata->name]['methods'][] = strtolower($methodName);
 
-        $replacements = [
-            '<name>'        => $this->annotationsPrefix . ucfirst($name),
+        $eventAnnotations = array_map(
+            function ($event) {
+                return $this->annotationsPrefix . ucfirst($event);
+            },
+            is_array($name) ? $name : [$name]
+        );
+        $replacements     = [
+            '<name>'        => implode("\n * @", $eventAnnotations),
             '<methodName>'  => $methodName,
         ];
 
