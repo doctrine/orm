@@ -13,6 +13,9 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 use Doctrine\Tests\Proxies\__CG__\Doctrine\Tests\Models\RelationAsId\Membership as MembershipProxy;
 use Doctrine\Tests\Proxies\__CG__\Doctrine\Tests\Models\RelationAsId\User as UserProxy;
 
+/**
+ * @group pkfk
+ */
 class GetReferenceOnRelationAsIdTest extends OrmFunctionalTestCase
 {
     protected function setUp(): void

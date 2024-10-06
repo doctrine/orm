@@ -434,50 +434,9 @@ class EntityManager implements EntityManagerInterface
             $this->checkLockRequirements($lockMode, $class);
         }
 
-        if (! is_array($id)) {
-            if ($class->isIdentifierComposite) {
-                throw ORMInvalidArgumentException::invalidCompositeIdentifier();
-            }
+        $canonicalId = $this->getCanonicalId($class, $id);
 
-            $id = [$class->identifier[0] => $id];
-        }
-
-        foreach ($id as $i => $value) {
-            if (is_object($value)) {
-                $className = DefaultProxyClassNameResolver::getClass($value);
-                if ($this->metadataFactory->hasMetadataFor($className)) {
-                    $id[$i] = $this->unitOfWork->getSingleIdentifierValue($value);
-
-                    if ($id[$i] === null) {
-                        throw ORMInvalidArgumentException::invalidIdentifierBindingEntity($className);
-                    }
-                }
-            }
-        }
-
-        $sortedId = [];
-
-        foreach ($class->identifier as $identifier) {
-            if (! isset($id[$identifier])) {
-                throw MissingIdentifierField::fromFieldAndClass($identifier, $class->name);
-            }
-
-            if ($id[$identifier] instanceof BackedEnum) {
-                $sortedId[$identifier] = $id[$identifier]->value;
-            } else {
-                $sortedId[$identifier] = $id[$identifier];
-            }
-
-            unset($id[$identifier]);
-        }
-
-        if ($id) {
-            throw UnrecognizedIdentifierFields::fromClassAndFieldNames($class->name, array_keys($id));
-        }
-
-        $unitOfWork = $this->getUnitOfWork();
-
-        $entity = $unitOfWork->tryGetById($sortedId, $class->rootEntityName);
+        $entity = $this->unitOfWork->tryGetById($canonicalId, $class->rootEntityName);
 
         // Check identity map first
         if ($entity !== false) {
@@ -493,32 +452,32 @@ class EntityManager implements EntityManagerInterface
                 case $lockMode === LockMode::NONE:
                 case $lockMode === LockMode::PESSIMISTIC_READ:
                 case $lockMode === LockMode::PESSIMISTIC_WRITE:
-                    $persister = $unitOfWork->getEntityPersister($class->name);
-                    $persister->refresh($sortedId, $entity, $lockMode);
+                    $persister = $this->unitOfWork->getEntityPersister($class->name);
+                    $persister->refresh($canonicalId, $entity, $lockMode);
                     break;
             }
 
             return $entity; // Hit!
         }
 
-        $persister = $unitOfWork->getEntityPersister($class->name);
+        $persister = $this->unitOfWork->getEntityPersister($class->name);
 
         switch (true) {
             case $lockMode === LockMode::OPTIMISTIC:
-                $entity = $persister->load($sortedId);
+                $entity = $persister->load($canonicalId);
 
                 if ($entity !== null) {
-                    $unitOfWork->lock($entity, $lockMode, $lockVersion);
+                    $this->unitOfWork->lock($entity, $lockMode, $lockVersion);
                 }
 
                 return $entity;
 
             case $lockMode === LockMode::PESSIMISTIC_READ:
             case $lockMode === LockMode::PESSIMISTIC_WRITE:
-                return $persister->load($sortedId, null, null, [], $lockMode);
+                return $persister->load($canonicalId, null, null, [], $lockMode);
 
             default:
-                return $persister->loadById($sortedId);
+                return $persister->loadById($canonicalId);
         }
     }
 
@@ -529,39 +488,9 @@ class EntityManager implements EntityManagerInterface
     {
         $class = $this->metadataFactory->getMetadataFor(ltrim($entityName, '\\'));
 
-        if (! is_array($id)) {
-            $id = [$class->identifier[0] => $id];
-        }
+        $canonicalId = $this->getCanonicalId($class, $id);
 
-        foreach ($id as $i => $value) {
-            if (is_object($value)) {
-                $className = DefaultProxyClassNameResolver::getClass($value);
-                if ($this->metadataFactory->hasMetadataFor($className)) {
-                    $id[$i] = $this->unitOfWork->getSingleIdentifierValue($value);
-
-                    if ($id[$i] === null) {
-                        throw ORMInvalidArgumentException::invalidIdentifierBindingEntity($className);
-                    }
-                }
-            }
-        }
-
-        $sortedId = [];
-
-        foreach ($class->identifier as $identifier) {
-            if (! isset($id[$identifier])) {
-                throw MissingIdentifierField::fromFieldAndClass($identifier, $class->name);
-            }
-
-            $sortedId[$identifier] = $id[$identifier];
-            unset($id[$identifier]);
-        }
-
-        if ($id) {
-            throw UnrecognizedIdentifierFields::fromClassAndFieldNames($class->name, array_keys($id));
-        }
-
-        $entity = $this->unitOfWork->tryGetById($sortedId, $class->rootEntityName);
+        $entity = $this->unitOfWork->tryGetById($canonicalId, $class->rootEntityName);
 
         // Check identity map first, if its already in there just return it.
         if ($entity !== false) {
@@ -569,12 +498,12 @@ class EntityManager implements EntityManagerInterface
         }
 
         if ($class->subClasses) {
-            return $this->find($entityName, $sortedId);
+            return $this->find($entityName, $canonicalId);
         }
 
-        $entity = $this->proxyFactory->getProxy($class->name, $sortedId);
+        $entity = $this->proxyFactory->getProxy($class->name, $canonicalId);
 
-        $this->unitOfWork->registerManaged($entity, $sortedId, []);
+        $this->unitOfWork->registerManaged($entity, $canonicalId, []);
 
         return $entity;
     }
@@ -1129,5 +1058,60 @@ class EntityManager implements EntityManagerInterface
 
         // Wrap doctrine/cache to provide PSR-6 interface
         $this->metadataFactory->setCache(CacheAdapter::wrap($metadataCache));
+    }
+
+    /**
+     * @param mixed $id The identitifiers to sort.
+     *
+     * @return mixed The sorted identifiers.
+     *
+     * @throws ORMInvalidArgumentException
+     * @throws MissingIdentifierField
+     * @throws UnrecognizedIdentifierFields
+     */
+    private function getCanonicalId(ClassMetadata $class, $id): mixed
+    {
+        if (! is_array($id)) {
+            if ($class->isIdentifierComposite) {
+                throw ORMInvalidArgumentException::invalidCompositeIdentifier();
+            }
+
+            $id = [$class->identifier[0] => $id];
+        }
+
+        foreach ($id as $i => $value) {
+            if (is_object($value)) {
+                $className = DefaultProxyClassNameResolver::getClass($value);
+                if ($this->metadataFactory->hasMetadataFor($className)) {
+                    $id[$i] = $this->unitOfWork->getSingleIdentifierValue($value);
+
+                    if ($id[$i] === null) {
+                        throw ORMInvalidArgumentException::invalidIdentifierBindingEntity($className);
+                    }
+                }
+            }
+        }
+
+        $canonicalId = [];
+
+        foreach ($class->identifier as $identifier) {
+            if (! isset($id[$identifier])) {
+                throw MissingIdentifierField::fromFieldAndClass($identifier, $class->name);
+            }
+
+            if ($id[$identifier] instanceof BackedEnum) {
+                $canonicalId[$identifier] = $id[$identifier]->value;
+            } else {
+                $canonicalId[$identifier] = $id[$identifier];
+            }
+
+            unset($id[$identifier]);
+        }
+
+        if ($id) {
+            throw UnrecognizedIdentifierFields::fromClassAndFieldNames($class->name, array_keys($id));
+        }
+
+        return $canonicalId;
     }
 }
