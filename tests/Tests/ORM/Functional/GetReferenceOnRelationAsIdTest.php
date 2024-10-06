@@ -13,9 +13,6 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 use Doctrine\Tests\Proxies\__CG__\Doctrine\Tests\Models\RelationAsId\Membership as MembershipProxy;
 use Doctrine\Tests\Proxies\__CG__\Doctrine\Tests\Models\RelationAsId\User as UserProxy;
 
-/**
- * @group pkfk
- */
 class GetReferenceOnRelationAsIdTest extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -64,7 +61,7 @@ class GetReferenceOnRelationAsIdTest extends OrmFunctionalTestCase
 
     public function testThrowsSensiblyIfNotFoundByValue(): void
     {
-        self::markTestSkipped('work in progress');
+        self::markTestSkipped('unable');
         $profile = $this->_em->getReference(Profile::class, 999);
 
         $this->expectException(EntityNotFoundException::class);
@@ -82,7 +79,7 @@ class GetReferenceOnRelationAsIdTest extends OrmFunctionalTestCase
 
     public function testThrowsSensiblyIfNotFoundByValidRelatedEntity(): void
     {
-        self::markTestSkipped('work in progress');
+        self::markTestSkipped('unable');
         $user    = $this->_em->find(User::class, 2);
         $profile = $this->_em->getReference(Profile::class, $user);
 
@@ -92,7 +89,7 @@ class GetReferenceOnRelationAsIdTest extends OrmFunctionalTestCase
 
     public function testThrowsSensiblyIfNotFoundByBrokenRelatedEntity(): void
     {
-        self::markTestSkipped('work in progress');
+        self::markTestSkipped('unable');
         $user     = new User();
         $user->id = 999;
         $profile  = $this->_em->getReference(Profile::class, $user);
@@ -112,7 +109,7 @@ class GetReferenceOnRelationAsIdTest extends OrmFunctionalTestCase
 
     public function testThrowsSensiblyIfNotFoundByValidProxy(): void
     {
-        self::markTestSkipped('work in progress');
+        self::markTestSkipped('unable');
         $user    = $this->_em->getReference(User::class, 2);
         $profile = $this->_em->getReference(Profile::class, $user);
 
@@ -122,7 +119,7 @@ class GetReferenceOnRelationAsIdTest extends OrmFunctionalTestCase
 
     public function testThrowsSensiblyIfNotFoundByBrokenProxy(): void
     {
-        self::markTestSkipped('work in progress');
+        self::markTestSkipped('unable');
         $user    = $this->_em->getReference(User::class, 999);
         $profile = $this->_em->getReference(Profile::class, $user);
 
@@ -165,11 +162,10 @@ class GetReferenceOnRelationAsIdTest extends OrmFunctionalTestCase
         self::assertEquals('Porthos', $fixedPorthos->name);
     }
 
-    public function testCanUpdateRegularId(): void
+    public function testCanUpdateIdRegularId(): void
     {
-        // off-topic
         // "Proxy objects should be transparent to your code."
-        self::markTestSkipped('use case needs to be confirmed');
+        self::markTestSkipped('not a regression?');
 
         $porthos     = $this->_em->getReference(User::class, 2);
         $porthos->id = 9;
@@ -184,7 +180,7 @@ class GetReferenceOnRelationAsIdTest extends OrmFunctionalTestCase
     public function testCanUpdateIdByRelatedProxy(): void
     {
         // "Proxy objects should be transparent to your code."
-        self::markTestSkipped('use case needs to be confirmed');
+        self::markTestSkipped('not a regression?');
 
         $porthos       = $this->_em->getReference(User::class, 2);
         $profile       = $this->_em->getReference(Profile::class, 1);
@@ -200,7 +196,7 @@ class GetReferenceOnRelationAsIdTest extends OrmFunctionalTestCase
     public function testCanUpdateIdByEntity(): void
     {
         // "Proxy objects should be transparent to your code."
-        self::markTestSkipped('use case needs to be confirmed');
+        self::markTestSkipped('not a regression?');
 
         $porthos       = $this->_em->find(User::class, 2);
         $profile       = $this->_em->getReference(Profile::class, 1);
@@ -213,10 +209,10 @@ class GetReferenceOnRelationAsIdTest extends OrmFunctionalTestCase
         self::assertNotNull($profile);
     }
 
-    public function testCanUpdateCompositeId(): void
+    public function testCanUpdateIdCompositeId(): void
     {
         // "Proxy objects should be transparent to your code."
-        self::markTestSkipped('use case needs to be confirmed');
+        self::markTestSkipped('not a regression?');
 
         $membership = $this->_em->getReference(Membership::class, [
             'user' => 1,
