@@ -14,12 +14,12 @@ class Group
 {
     /**
      * @ORM\Id
-     * @ORM\Column
+     * @ORM\Column(type="integer")
      */
-    public int $id;
+    public $id;
 
     /**
-     * @ORM\Column
+     * @ORM\Column(type="string")
      */
-    public string $name;
+    public $name;
 }

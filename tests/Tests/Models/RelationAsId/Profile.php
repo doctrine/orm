@@ -14,12 +14,12 @@ class Profile
 {
     /**
      * @ORM\Id
-     * @ORM\OneToOne
+     * @ORM\OneToOne(targetEntity="User")
      */
-    public User $user;
+    public $user;
 
     /**
-     * @ORM\Column
+     * @ORM\Column(type="string")
      */
-    public string $url;
+    public $url;
 }

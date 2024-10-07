@@ -14,18 +14,18 @@ class Membership
 {
     /**
      * @ORM\Id
-     * @ORM\ManyToOne
+     * @ORM\ManyToOne(targetEntity=User::class)
      */
-    public User $user;
+    public $user;
 
     /**
      * @ORM\Id
-     * @ORM\ManyToOne
+     * @ORM\ManyToOne(targetEntity=Group::class)
      */
-    public Group $group;
+    public $group;
 
     /**
-     * @ORM\Column
+     * @ORM\Column(type="string")
      */
-    public string $role;
+    public $role;
 }
