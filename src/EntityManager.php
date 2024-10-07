@@ -1069,7 +1069,7 @@ class EntityManager implements EntityManagerInterface
      * @throws MissingIdentifierField
      * @throws UnrecognizedIdentifierFields
      */
-    private function getCanonicalId(ClassMetadata $class, $id): mixed
+    private function getCanonicalId(ClassMetadata $class, $id)
     {
         if (! is_array($id)) {
             if ($class->isIdentifierComposite) {
