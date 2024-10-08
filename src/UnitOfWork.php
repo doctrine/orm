@@ -818,7 +818,11 @@ class UnitOfWork implements PropertyChangedListener
 
                         $newValue = clone $actualValue;
                         $newValue->setOwner($entity, $assoc);
-                        $class->reflFields[$propName]->setValue($entity, $newValue);
+                        if (PHP_VERSION_ID >= 80400) {
+                            $class->reflFields[$propName]->setRawValueWithoutLazyInitialization($entity, $newValue);
+                        } else {
+                            $class->reflFields[$propName]->setValue($entity, $newValue);
+                        }
                     }
                 }
 
@@ -2990,7 +2994,11 @@ EXCEPTION
 
         foreach ($data as $field => $value) {
             if (isset($class->fieldMappings[$field])) {
-                $class->reflFields[$field]->setValue($entity, $value);
+                if (PHP_VERSION_ID >= 80400) {
+                    $class->reflFields[$field]->setRawValueWithoutLazyInitialization($entity, $value);
+                } else {
+                    $class->reflFields[$field]->setValue($entity, $value);
+                }
             }
         }
 
@@ -3032,21 +3040,34 @@ EXCEPTION
                         if (isset($data[$field]) && is_object($data[$field]) && isset($this->entityStates[spl_object_id($data[$field])])) {
                             $this->originalEntityData[$oid][$field] = $data[$field];
 
-                            $class->reflFields[$field]->setValue($entity, $data[$field]);
-                            $targetClass->reflFields[$assoc['mappedBy']]->setValue($data[$field], $entity);
+                            if (PHP_VERSION_ID >= 80400) {
+                                $class->reflFields[$field]->setRawValueWithoutLazyInitialization($entity, $data[$field]);
+                                $targetClass->reflFields[$assoc['mappedBy']]->setRawValueWithoutLazyInitialization($data[$field], $entity);
+                            } else {
+                                $class->reflFields[$field]->setValue($entity, $data[$field]);
+                                $targetClass->reflFields[$assoc['mappedBy']]->setValue($data[$field], $entity);
+                            }
 
                             continue 2;
                         }
 
                         // Inverse side of x-to-one can never be lazy
-                        $class->reflFields[$field]->setValue($entity, $this->getEntityPersister($assoc['targetEntity'])->loadOneToOneEntity($assoc, $entity));
+                        if (PHP_VERSION_ID >= 80400) {
+                            $class->reflFields[$field]->setRawValueWithoutLazyInitialization($entity, $this->getEntityPersister($assoc['targetEntity'])->loadOneToOneEntity($assoc, $entity));
+                        } else {
+                            $class->reflFields[$field]->setValue($entity, $this->getEntityPersister($assoc['targetEntity'])->loadOneToOneEntity($assoc, $entity));
+                        }
 
                         continue 2;
                     }
 
                     // use the entity association
                     if (isset($data[$field]) && is_object($data[$field]) && isset($this->entityStates[spl_object_id($data[$field])])) {
-                        $class->reflFields[$field]->setValue($entity, $data[$field]);
+                        if (PHP_VERSION_ID >= 80400) {
+                            $class->reflFields[$field]->setRawValueWithoutLazyInitialization($entity, $data[$field]);
+                        } else {
+                            $class->reflFields[$field]->setValue($entity, $data[$field]);
+                        }
                         $this->originalEntityData[$oid][$field] = $data[$field];
 
                         break;
@@ -3077,7 +3098,11 @@ EXCEPTION
 
                     if (! $associatedId) {
                         // Foreign key is NULL
-                        $class->reflFields[$field]->setValue($entity, null);
+                        if (PHP_VERSION_ID >= 80400) {
+                            $class->reflFields[$field]->setRawValueWithoutLazyInitialization($entity, null);
+                        } else {
+                            $class->reflFields[$field]->setValue($entity, null);
+                        }
                         $this->originalEntityData[$oid][$field] = null;
 
                         break;
@@ -3143,11 +3168,19 @@ EXCEPTION
                     }
 
                     $this->originalEntityData[$oid][$field] = $newValue;
-                    $class->reflFields[$field]->setValue($entity, $newValue);
+                    if (PHP_VERSION_ID >= 80400) {
+                        $class->reflFields[$field]->setRawValueWithoutLazyInitialization($entity, $newValue);
+                    } else {
+                        $class->reflFields[$field]->setValue($entity, $newValue);
+                    }
 
                     if ($assoc['inversedBy'] && $assoc['type'] & ClassMetadata::ONE_TO_ONE && $newValue !== null) {
                         $inverseAssoc = $targetClass->associationMappings[$assoc['inversedBy']];
-                        $targetClass->reflFields[$inverseAssoc['fieldName']]->setValue($newValue, $entity);
+                        if (PHP_VERSION_ID >= 80400) {
+                            $targetClass->reflFields[$inverseAssoc['fieldName']]->setRawValueWithoutLazyInitialization($newValue, $entity);
+                        } else {
+                            $targetClass->reflFields[$inverseAssoc['fieldName']]->setValue($newValue, $entity);
+                        }
                     }
 
                     break;
@@ -3162,7 +3195,11 @@ EXCEPTION
                     if (isset($data[$field]) && $data[$field] instanceof PersistentCollection) {
                         $data[$field]->setOwner($entity, $assoc);
 
-                        $class->reflFields[$field]->setValue($entity, $data[$field]);
+                        if (PHP_VERSION_ID >= 80400) {
+                            $class->reflFields[$field]->setRawValueWithoutLazyInitialization($entity, $data[$field]);
+                        } else {
+                            $class->reflFields[$field]->setValue($entity, $data[$field]);
+                        }
                         $this->originalEntityData[$oid][$field] = $data[$field];
 
                         break;
@@ -3174,7 +3211,11 @@ EXCEPTION
                     $pColl->setInitialized(false);
 
                     $reflField = $class->reflFields[$field];
-                    $reflField->setValue($entity, $pColl);
+                    if (PHP_VERSION_ID >= 80400) {
+                        $reflField->setRawValueWithoutLazyInitialization($entity, $pColl);
+                    } else {
+                        $reflField->setValue($entity, $pColl);
+                    }
 
                     if ($hints['fetchMode'][$class->name][$field] === ClassMetadata::FETCH_EAGER) {
                         $isIteration = isset($hints[Query::HINT_INTERNAL_ITERATION]) && $hints[Query::HINT_INTERNAL_ITERATION];
