@@ -713,6 +713,9 @@
       <code><![CDATA[joinColumnName]]></code>
       <code><![CDATA[joinColumnName]]></code>
     </TooManyArguments>
+    <UndefinedMethod>
+      <code><![CDATA[getHooks]]></code>
+    </UndefinedMethod>
   </file>
   <file src="src/Mapping/ColumnResult.php">
     <MissingConstructor>

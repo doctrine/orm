@@ -3890,7 +3890,7 @@ class ClassMetadataInfo implements ClassMetadata
             }
         }
 
-        if (PHP_VERSION_ID >= 80400 && count($reflectionProperty->getHooks()) > 0) {
+        if (PHP_VERSION_ID >= 80400 && $reflectionProperty !== NULL && count($reflectionProperty->getHooks()) > 0) {
             throw new LogicException('Doctrine ORM does not support property hooks in this version. Check https://github.com/doctrine/orm/issues/11624 for details of versions that support property hooks.');
         }
 
