@@ -1,7 +1,7 @@
 Implementing the Notify ChangeTracking Policy
 =============================================
 
-.. sectionauthor:: Roman Borschel (roman@code-factory.org)
+.. sectionauthor:: Roman Borschel <roman@code-factory.org>
 
 The NOTIFY change-tracking policy is the most effective
 change-tracking policy provided by Doctrine but it requires some

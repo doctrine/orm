@@ -340,7 +340,7 @@ interface EntityManagerInterface extends ObjectManager
      * @psalm-param string|class-string<T> $className
      *
      * @return Mapping\ClassMetadata
-     * @psalm-return Mapping\ClassMetadata<T>
+     * @psalm-return ($className is class-string<T> ? Mapping\ClassMetadata<T> : Mapping\ClassMetadata<object>)
      *
      * @psalm-template T of object
      */

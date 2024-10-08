@@ -1,7 +1,7 @@
 Implementing ArrayAccess for Domain Objects
 ===========================================
 
-.. sectionauthor:: Roman Borschel (roman@code-factory.org)
+.. sectionauthor:: Roman Borschel <roman@code-factory.org>
 
 This recipe will show you how to implement ArrayAccess for your
 domain objects in order to allow more uniform access, for example

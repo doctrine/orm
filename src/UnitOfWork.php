@@ -41,6 +41,7 @@ use Doctrine\ORM\Persisters\Entity\EntityPersister;
 use Doctrine\ORM\Persisters\Entity\JoinedSubclassPersister;
 use Doctrine\ORM\Persisters\Entity\SingleTablePersister;
 use Doctrine\ORM\Proxy\InternalProxy;
+use Doctrine\ORM\Query\SqlWalker;
 use Doctrine\ORM\Utility\IdentifierFlattener;
 use Doctrine\Persistence\Mapping\RuntimeReflectionService;
 use Doctrine\Persistence\NotifyPropertyChanged;
@@ -1292,6 +1293,8 @@ class UnitOfWork implements PropertyChangedListener
         $eventsToDispatch = [];
 
         foreach ($entities as $entity) {
+            $this->removeFromIdentityMap($entity);
+
             $oid       = spl_object_id($entity);
             $class     = $this->em->getClassMetadata(get_class($entity));
             $persister = $this->getEntityPersister($class->name);
@@ -1667,8 +1670,6 @@ class UnitOfWork implements PropertyChangedListener
             return;
         }
 
-        $this->removeFromIdentityMap($entity);
-
         unset($this->entityUpdates[$oid]);
 
         if (! isset($this->entityDeletions[$oid])) {
@@ -1781,18 +1782,15 @@ EXCEPTION
      */
     final public static function getIdHashByIdentifier(array $identifier): string
     {
+        foreach ($identifier as $k => $value) {
+            if ($value instanceof BackedEnum) {
+                $identifier[$k] = $value->value;
+            }
+        }
+
         return implode(
             ' ',
-            array_map(
-                static function ($value) {
-                    if ($value instanceof BackedEnum) {
-                        return $value->value;
-                    }
-
-                    return $value;
-                },
-                $identifier
-            )
+            $identifier
         );
     }
 
@@ -2922,6 +2920,15 @@ EXCEPTION
      */
     public function createEntity($className, array $data, &$hints = [])
     {
+        if (isset($hints[SqlWalker::HINT_PARTIAL])) {
+            Deprecation::trigger(
+                'doctrine/orm',
+                'https://github.com/doctrine/orm/issues/8471',
+                'Partial Objects are deprecated for object hydration (here entity %s)',
+                $className
+            );
+        }
+
         $class = $this->em->getClassMetadata($className);
 
         $id     = $this->identifierFlattener->flattenIdentifier($class, $data);
@@ -3056,10 +3063,7 @@ EXCEPTION
                             } else {
                                 $associatedId[$targetClass->fieldNames[$targetColumn]] = $joinColumnValue;
                             }
-                        } elseif (
-                            $targetClass->containsForeignIdentifier
-                            && in_array($targetClass->getFieldForColumn($targetColumn), $targetClass->identifier, true)
-                        ) {
+                        } elseif (in_array($targetClass->getFieldForColumn($targetColumn), $targetClass->identifier, true)) {
                             // the missing key is part of target's entity primary key
                             $associatedId = [];
                             break;
@@ -3169,9 +3173,9 @@ EXCEPTION
 
                     if ($hints['fetchMode'][$class->name][$field] === ClassMetadata::FETCH_EAGER) {
                         $isIteration = isset($hints[Query::HINT_INTERNAL_ITERATION]) && $hints[Query::HINT_INTERNAL_ITERATION];
-                        if (! $isIteration && $assoc['type'] === ClassMetadata::ONE_TO_MANY) {
+                        if ($assoc['type'] === ClassMetadata::ONE_TO_MANY && ! $isIteration && ! $targetClass->isIdentifierComposite && ! isset($assoc['indexBy'])) {
                             $this->scheduleCollectionForBatchLoading($pColl, $class);
-                        } elseif (($isIteration && $assoc['type'] === ClassMetadata::ONE_TO_MANY) || $assoc['type'] === ClassMetadata::MANY_TO_MANY) {
+                        } else {
                             $this->loadCollection($pColl);
                             $pColl->takeSnapshot();
                         }
@@ -3227,7 +3231,13 @@ EXCEPTION
      *
      * @param PersistentCollection[] $collections
      * @param array<string, mixed>   $mapping
-     * @psalm-param array{targetEntity: class-string, sourceEntity: class-string, mappedBy: string, indexBy: string|null} $mapping
+     * @psalm-param array{
+     *     targetEntity: class-string,
+     *     sourceEntity: class-string,
+     *     mappedBy: string,
+     *     indexBy: string|null,
+     *     orderBy: array<string, string>|null
+     * } $mapping
      */
     private function eagerLoadCollections(array $collections, array $mapping): void
     {
@@ -3244,7 +3254,7 @@ EXCEPTION
                 $entities[] = $collection->getOwner();
             }
 
-            $found = $this->getEntityPersister($targetEntity)->loadAll([$mappedBy => $entities]);
+            $found = $this->getEntityPersister($targetEntity)->loadAll([$mappedBy => $entities], $mapping['orderBy'] ?? null);
 
             $targetClass    = $this->em->getClassMetadata($targetEntity);
             $targetProperty = $targetClass->getReflectionProperty($mappedBy);
@@ -3252,7 +3262,19 @@ EXCEPTION
             foreach ($found as $targetValue) {
                 $sourceEntity = $targetProperty->getValue($targetValue);
 
-                $id     = $this->identifierFlattener->flattenIdentifier($class, $class->getIdentifierValues($sourceEntity));
+                if ($sourceEntity === null && isset($targetClass->associationMappings[$mappedBy]['joinColumns'])) {
+                    // case where the hydration $targetValue itself has not yet fully completed, for example
+                    // in case a bi-directional association is being hydrated and deferring eager loading is
+                    // not possible due to subclassing.
+                    $data = $this->getOriginalEntityData($targetValue);
+                    $id   = [];
+                    foreach ($targetClass->associationMappings[$mappedBy]['joinColumns'] as $joinColumn) {
+                        $id[] = $data[$joinColumn['name']];
+                    }
+                } else {
+                    $id = $this->identifierFlattener->flattenIdentifier($class, $class->getIdentifierValues($sourceEntity));
+                }
+
                 $idHash = implode(' ', $id);
 
                 if (isset($mapping['indexBy'])) {

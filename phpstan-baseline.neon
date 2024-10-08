@@ -136,11 +136,6 @@ parameters:
 			path: src/EntityManager.php
 
 		-
-			message: "#^Template type T of method Doctrine\\\\ORM\\\\EntityManagerInterface\\:\\:getClassMetadata\\(\\) is not referenced in a parameter\\.$#"
-			count: 1
-			path: src/EntityManagerInterface.php
-
-		-
 			message: "#^Method Doctrine\\\\ORM\\\\EntityRepository\\:\\:matching\\(\\) should return Doctrine\\\\Common\\\\Collections\\\\AbstractLazyCollection\\<int, T of object\\>&Doctrine\\\\Common\\\\Collections\\\\Selectable\\<int, T of object\\> but returns Doctrine\\\\ORM\\\\LazyCriteriaCollection\\<\\(int\\|string\\), object\\>\\.$#"
 			count: 1
 			path: src/EntityRepository.php
@@ -169,11 +164,6 @@ parameters:
 			message: "#^Parameter \\#2 \\$class of method Doctrine\\\\ORM\\\\Mapping\\\\QuoteStrategy\\:\\:getSequenceName\\(\\) expects Doctrine\\\\ORM\\\\Mapping\\\\ClassMetadata, Doctrine\\\\ORM\\\\Mapping\\\\ClassMetadataInfo given\\.$#"
 			count: 2
 			path: src/Mapping/ClassMetadataFactory.php
-
-		-
-			message: "#^Method Doctrine\\\\ORM\\\\Mapping\\\\ClassMetadataInfo\\:\\:fullyQualifiedClassName\\(\\) should return class\\-string\\|null but returns string\\|null\\.$#"
-			count: 1
-			path: src/Mapping/ClassMetadataInfo.php
 
 		-
 			message: "#^Method Doctrine\\\\ORM\\\\Mapping\\\\NamingStrategy\\:\\:joinColumnName\\(\\) invoked with 2 parameters, 1 required\\.$#"
@@ -236,7 +226,7 @@ parameters:
 			path: src/Mapping/Driver/XmlDriver.php
 
 		-
-			message: "#^Offset 'version' on \\*NEVER\\* in isset\\(\\) always exists and is always null\\.$#"
+			message: "#^Offset 'version' on \\*NEVER\\* in isset\\(\\) always exists and is not nullable\\.$#"
 			count: 1
 			path: src/Mapping/Driver/XmlDriver.php
 
@@ -331,22 +321,7 @@ parameters:
 			path: src/Query/AST/Functions/DateSubFunction.php
 
 		-
-			message: "#^Parameter \\#1 \\$simpleArithmeticExpr of method Doctrine\\\\ORM\\\\Query\\\\SqlWalker\\:\\:walkSimpleArithmeticExpression\\(\\) expects Doctrine\\\\ORM\\\\Query\\\\AST\\\\SimpleArithmeticExpression, Doctrine\\\\ORM\\\\Query\\\\AST\\\\Node given\\.$#"
-			count: 1
-			path: src/Query/AST/Functions/LengthFunction.php
-
-		-
-			message: "#^Parameter \\#1 \\$simpleArithmeticExpr of method Doctrine\\\\ORM\\\\Query\\\\SqlWalker\\:\\:walkSimpleArithmeticExpression\\(\\) expects Doctrine\\\\ORM\\\\Query\\\\AST\\\\SimpleArithmeticExpression, Doctrine\\\\ORM\\\\Query\\\\AST\\\\Node given\\.$#"
-			count: 1
-			path: src/Query/AST/Functions/LowerFunction.php
-
-		-
-			message: "#^Parameter \\#1 \\$simpleArithmeticExpr of method Doctrine\\\\ORM\\\\Query\\\\SqlWalker\\:\\:walkSimpleArithmeticExpression\\(\\) expects Doctrine\\\\ORM\\\\Query\\\\AST\\\\SimpleArithmeticExpression, Doctrine\\\\ORM\\\\Query\\\\AST\\\\Node given\\.$#"
-			count: 1
-			path: src/Query/AST/Functions/UpperFunction.php
-
-		-
-			message: "#^Method Doctrine\\\\ORM\\\\Query\\\\AST\\\\IndexBy\\:\\:dispatch\\(\\) should return string but returns void\\.$#"
+			message: "#^Method Doctrine\\\\ORM\\\\Query\\\\AST\\\\IndexBy\\:\\:dispatch\\(\\) should return string but returns null\\.$#"
 			count: 1
 			path: src/Query/AST/IndexBy.php
 
@@ -396,11 +371,6 @@ parameters:
 			path: src/Query/Expr/Select.php
 
 		-
-			message: "#^Comparison operation \"\\<\" between null and 102 is always true\\.$#"
-			count: 1
-			path: src/Query/Parser.php
-
-		-
 			message: "#^Method Doctrine\\\\ORM\\\\Query\\\\Parser\\:\\:ArithmeticFactor\\(\\) should return Doctrine\\\\ORM\\\\Query\\\\AST\\\\ArithmeticFactor but returns Doctrine\\\\ORM\\\\Query\\\\AST\\\\Node\\|string\\.$#"
 			count: 1
 			path: src/Query/Parser.php
@@ -416,13 +386,8 @@ parameters:
 			path: src/Query/Parser.php
 
 		-
-			message: "#^Result of && is always true\\.$#"
-			count: 1
-			path: src/Query/Parser.php
-
-		-
 			message: "#^Unreachable statement \\- code above always terminates\\.$#"
-			count: 4
+			count: 3
 			path: src/Query/Parser.php
 
 		-

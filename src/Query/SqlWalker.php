@@ -1053,7 +1053,9 @@ class SqlWalker implements TreeWalker
             }
         }
 
-        if ($relation['fetch'] === ClassMetadata::FETCH_EAGER && $condExpr !== null) {
+        $fetchMode = $this->query->getHint('fetchMode')[$assoc['sourceEntity']][$assoc['fieldName']] ?? $relation['fetch'];
+
+        if ($fetchMode === ClassMetadata::FETCH_EAGER && $condExpr !== null) {
             throw QueryException::eagerFetchJoinWithNotAllowed($assoc['sourceEntity'], $assoc['fieldName']);
         }
 
@@ -2579,7 +2581,7 @@ class SqlWalker implements TreeWalker
     /**
      * Walks down an SimpleArithmeticExpression AST node, thereby generating the appropriate SQL.
      *
-     * @param AST\SimpleArithmeticExpression $simpleArithmeticExpr
+     * @param AST\Node|string $simpleArithmeticExpr
      *
      * @return string
      *

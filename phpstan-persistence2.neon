@@ -31,6 +31,31 @@ parameters:
             message: '/^Instanceof between Doctrine\\DBAL\\Platforms\\AbstractPlatform and Doctrine\\DBAL\\Platforms\\MySQLPlatform will always evaluate to false\.$/'
             path: src/Utility/LockSqlHelper.php
 
+        # Forward compatibility with Collections 3
+        -
+            message: '#^Parameter \$order of anonymous function has invalid type Doctrine\\Common\\Collections\\Order\.$#'
+            path: src/Internal/CriteriaOrderings.php
+
+        -
+            message: '#^Anonymous function has invalid return type Doctrine\\Common\\Collections\\Order\.$#'
+            path: src/Internal/CriteriaOrderings.php
+
+        -
+            message: '#^Access to property \$value on an unknown class Doctrine\\Common\\Collections\\Order\.$#'
+            path: src/Internal/CriteriaOrderings.php
+
+        -
+            message: '#^Call to static method from\(\) on an unknown class Doctrine\\Common\\Collections\\Order\.$#'
+            path: src/Internal/CriteriaOrderings.php
+
+        -
+            message: '#^Call to an undefined method Doctrine\\Common\\Collections\\Criteria\:\:orderings\(\)\.$#'
+            path: src/Internal/CriteriaOrderings.php
+
+        -
+            message: '#^Method .+\:\:mapToOrderEnumIfAvailable\(\) has invalid return type Doctrine\\Common\\Collections\\Order\.$#'
+            path: src/Internal/CriteriaOrderings.php
+
         # False positive
         -
             message: '/^Call to an undefined method Doctrine\\Common\\Cache\\Cache::deleteAll\(\)\.$/'
@@ -39,3 +64,9 @@ parameters:
 
         # Symfony cache supports passing a key prefix to the clear method.
         - '/^Method Psr\\Cache\\CacheItemPoolInterface\:\:clear\(\) invoked with 1 parameter, 0 required\.$/'
+
+        -
+            message: '#contains generic type.*but class.*is not generic#'
+            paths:
+                - src/Mapping/Driver/XmlDriver.php
+                - src/Mapping/Driver/YamlDriver.php

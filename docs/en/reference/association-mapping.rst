@@ -1300,8 +1300,8 @@ This is essentially the same as the following, more verbose, mapping:
              * @var Collection<int, Group>
              */
             #[JoinTable(name: 'User_Group')]
-            #[JoinColumn(name: 'User_id', referencedColumnName: 'id')]
-            #[InverseJoinColumn(name: 'Group_id', referencedColumnName: 'id')]
+            #[JoinColumn(name: 'user_id', referencedColumnName: 'id')]
+            #[InverseJoinColumn(name: 'group_id', referencedColumnName: 'id')]
             #[ManyToMany(targetEntity: Group::class)]
             private Collection $groups;
             // ...
@@ -1333,10 +1333,10 @@ This is essentially the same as the following, more verbose, mapping:
                 <many-to-many field="groups" target-entity="Group">
                     <join-table name="User_Group">
                         <join-columns>
-                            <join-column id="User_id" referenced-column-name="id" />
+                            <join-column id="user_id" referenced-column-name="id" />
                         </join-columns>
                         <inverse-join-columns>
-                            <join-column id="Group_id" referenced-column-name="id" />
+                            <join-column id="group_id" referenced-column-name="id" />
                         </inverse-join-columns>
                     </join-table>
                 </many-to-many>

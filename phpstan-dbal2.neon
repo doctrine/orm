@@ -74,3 +74,9 @@ parameters:
         -
             message: '#^Call to method injectObjectManager\(\) on an unknown class Doctrine\\Persistence\\ObjectManagerAware\.$#'
             path: src/UnitOfWork.php
+
+        -
+            message: '#contains generic type.*but class.*is not generic#'
+            paths:
+                - src/Mapping/Driver/XmlDriver.php
+                - src/Mapping/Driver/YamlDriver.php

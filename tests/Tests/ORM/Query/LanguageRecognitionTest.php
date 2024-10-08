@@ -172,6 +172,11 @@ class LanguageRecognitionTest extends OrmTestCase
         $this->assertValidDQL("SELECT u.name FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE TRIM(u.name) = 'someone'");
     }
 
+    public function testTrimFalsyString(): void
+    {
+        $this->assertValidDQL("SELECT u.name FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE TRIM('0' FROM u.name) = 'someone'");
+    }
+
     public function testArithmeticExpressionsSupportedInWherePart(): void
     {
         $this->assertValidDQL('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE ((u.id + 5000) * u.id + 3) < 10000000');

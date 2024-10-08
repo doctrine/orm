@@ -9,6 +9,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\Common\Collections\Selectable;
+use Doctrine\ORM\Internal\CriteriaOrderings;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use ReturnTypeWillChange;
 use RuntimeException;
@@ -41,6 +42,8 @@ use function spl_object_id;
  */
 final class PersistentCollection extends AbstractLazyCollection implements Selectable
 {
+    use CriteriaOrderings;
+
     /**
      * A snapshot of the collection at the moment it was fetched from the database.
      * This is used to create a diff of the collection at commit time.
@@ -409,11 +412,6 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
         return parent::containsKey($key);
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * @template TMaybeContained
-     */
     public function contains($element): bool
     {
         if (! $this->initialized && $this->getMapping()['fetch'] === ClassMetadata::FETCH_EXTRA_LAZY) {
@@ -671,7 +669,9 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
 
         $criteria = clone $criteria;
         $criteria->where($expression);
-        $criteria->orderBy($criteria->getOrderings() ?: $association['orderBy'] ?? []);
+        $criteria->orderBy(self::mapToOrderEnumIfAvailable(
+            self::getCriteriaOrderings($criteria) ?: $association['orderBy'] ?? []
+        ));
 
         $persister = $this->getUnitOfWork()->getEntityPersister($association['targetEntity']);
 

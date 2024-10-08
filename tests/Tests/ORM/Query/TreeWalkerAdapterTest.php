@@ -7,8 +7,8 @@ namespace Doctrine\Tests\ORM\Query;
 use Doctrine\Deprecations\PHPUnit\VerifyDeprecations;
 use Doctrine\ORM\AbstractQuery;
 use Doctrine\ORM\Mapping\ClassMetadata;
-use Doctrine\ORM\Query\Lexer;
 use Doctrine\ORM\Query\ParserResult;
+use Doctrine\ORM\Query\TokenType;
 use Doctrine\ORM\Query\TreeWalkerAdapter;
 use PHPUnit\Framework\TestCase;
 use stdClass;
@@ -33,7 +33,7 @@ class TreeWalkerAdapterTest extends TestCase
             'relation' => null,
             'map' => null,
             'nestingLevel' => 0,
-            'token' => ['value' => '', 'type' => Lexer::T_NONE, 'position' => 0],
+            'token' => ['value' => '', 'type' => TokenType::T_NONE, 'position' => 0],
         ]);
     }
 
@@ -52,7 +52,7 @@ class TreeWalkerAdapterTest extends TestCase
                     'relation' => null,
                     'map' => null,
                     'nestingLevel' => 0,
-                    'token' => ['value' => '', 'type' => Lexer::T_NONE, 'position' => 0],
+                    'token' => ['value' => '', 'type' => TokenType::T_NONE, 'position' => 0],
                 ]);
             }
         };

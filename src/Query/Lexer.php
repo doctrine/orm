@@ -21,95 +21,249 @@ use function substr;
 /**
  * Scans a DQL query for tokens.
  *
- * @extends AbstractLexer<Lexer::T_*, string>
+ * @extends AbstractLexer<TokenType::T_*, string>
  */
 class Lexer extends AbstractLexer
 {
     // All tokens that are not valid identifiers must be < 100
-    public const T_NONE              = 1;
-    public const T_INTEGER           = 2;
-    public const T_STRING            = 3;
-    public const T_INPUT_PARAMETER   = 4;
-    public const T_FLOAT             = 5;
-    public const T_CLOSE_PARENTHESIS = 6;
-    public const T_OPEN_PARENTHESIS  = 7;
-    public const T_COMMA             = 8;
-    public const T_DIVIDE            = 9;
-    public const T_DOT               = 10;
-    public const T_EQUALS            = 11;
-    public const T_GREATER_THAN      = 12;
-    public const T_LOWER_THAN        = 13;
-    public const T_MINUS             = 14;
-    public const T_MULTIPLY          = 15;
-    public const T_NEGATE            = 16;
-    public const T_PLUS              = 17;
-    public const T_OPEN_CURLY_BRACE  = 18;
-    public const T_CLOSE_CURLY_BRACE = 19;
+    /** @deprecated use {@see TokenType::T_NONE} */
+    public const T_NONE = TokenType::T_NONE;
+
+    /** @deprecated use {@see TokenType::T_INTEGER} */
+    public const T_INTEGER = TokenType::T_INTEGER;
+
+    /** @deprecated use {@see TokenType::T_STRING} */
+    public const T_STRING = TokenType::T_STRING;
+
+    /** @deprecated use {@see TokenType::T_INPUT_PARAMETER} */
+    public const T_INPUT_PARAMETER = TokenType::T_INPUT_PARAMETER;
+
+    /** @deprecated use {@see TokenType::T_FLOAT} */
+    public const T_FLOAT = TokenType::T_FLOAT;
+
+    /** @deprecated use {@see TokenType::T_CLOSE_PARENTHESIS} */
+    public const T_CLOSE_PARENTHESIS = TokenType::T_CLOSE_PARENTHESIS;
+
+    /** @deprecated use {@see TokenType::T_OPEN_PARENTHESIS} */
+    public const T_OPEN_PARENTHESIS = TokenType::T_OPEN_PARENTHESIS;
+
+    /** @deprecated use {@see TokenType::T_COMMA} */
+    public const T_COMMA = TokenType::T_COMMA;
+
+    /** @deprecated use {@see TokenType::T_DIVIDE} */
+    public const T_DIVIDE = TokenType::T_DIVIDE;
+
+    /** @deprecated use {@see TokenType::T_DOT} */
+    public const T_DOT = TokenType::T_DOT;
+
+    /** @deprecated use {@see TokenType::T_EQUALS} */
+    public const T_EQUALS = TokenType::T_EQUALS;
+
+    /** @deprecated use {@see TokenType::T_GREATER_THAN} */
+    public const T_GREATER_THAN = TokenType::T_GREATER_THAN;
+
+    /** @deprecated use {@see TokenType::T_LOWER_THAN} */
+    public const T_LOWER_THAN = TokenType::T_LOWER_THAN;
+
+    /** @deprecated use {@see TokenType::T_MINUS} */
+    public const T_MINUS = TokenType::T_MINUS;
+
+    /** @deprecated use {@see TokenType::T_MULTIPLY} */
+    public const T_MULTIPLY = TokenType::T_MULTIPLY;
+
+    /** @deprecated use {@see TokenType::T_NEGATE} */
+    public const T_NEGATE = TokenType::T_NEGATE;
+
+    /** @deprecated use {@see TokenType::T_PLUS} */
+    public const T_PLUS = TokenType::T_PLUS;
+
+    /** @deprecated use {@see TokenType::T_OPEN_CURLY_BRACE} */
+    public const T_OPEN_CURLY_BRACE = TokenType::T_OPEN_CURLY_BRACE;
+
+    /** @deprecated use {@see TokenType::T_CLOSE_CURLY_BRACE} */
+    public const T_CLOSE_CURLY_BRACE = TokenType::T_CLOSE_CURLY_BRACE;
 
     // All tokens that are identifiers or keywords that could be considered as identifiers should be >= 100
     /** @deprecated No Replacement planned. */
-    public const T_ALIASED_NAME         = 100;
-    public const T_FULLY_QUALIFIED_NAME = 101;
-    public const T_IDENTIFIER           = 102;
+    public const T_ALIASED_NAME = TokenType::T_ALIASED_NAME;
+
+    /** @deprecated use {@see TokenType::T_FULLY_QUALIFIED_NAME} */
+    public const T_FULLY_QUALIFIED_NAME = TokenType::T_FULLY_QUALIFIED_NAME;
+
+    /** @deprecated use {@see TokenType::T_IDENTIFIER} */
+    public const T_IDENTIFIER = TokenType::T_IDENTIFIER;
 
     // All keyword tokens should be >= 200
-    public const T_ALL      = 200;
-    public const T_AND      = 201;
-    public const T_ANY      = 202;
-    public const T_AS       = 203;
-    public const T_ASC      = 204;
-    public const T_AVG      = 205;
-    public const T_BETWEEN  = 206;
-    public const T_BOTH     = 207;
-    public const T_BY       = 208;
-    public const T_CASE     = 209;
-    public const T_COALESCE = 210;
-    public const T_COUNT    = 211;
-    public const T_DELETE   = 212;
-    public const T_DESC     = 213;
-    public const T_DISTINCT = 214;
-    public const T_ELSE     = 215;
-    public const T_EMPTY    = 216;
-    public const T_END      = 217;
-    public const T_ESCAPE   = 218;
-    public const T_EXISTS   = 219;
-    public const T_FALSE    = 220;
-    public const T_FROM     = 221;
-    public const T_GROUP    = 222;
-    public const T_HAVING   = 223;
-    public const T_HIDDEN   = 224;
-    public const T_IN       = 225;
-    public const T_INDEX    = 226;
-    public const T_INNER    = 227;
-    public const T_INSTANCE = 228;
-    public const T_IS       = 229;
-    public const T_JOIN     = 230;
-    public const T_LEADING  = 231;
-    public const T_LEFT     = 232;
-    public const T_LIKE     = 233;
-    public const T_MAX      = 234;
-    public const T_MEMBER   = 235;
-    public const T_MIN      = 236;
-    public const T_NEW      = 237;
-    public const T_NOT      = 238;
-    public const T_NULL     = 239;
-    public const T_NULLIF   = 240;
-    public const T_OF       = 241;
-    public const T_OR       = 242;
-    public const T_ORDER    = 243;
-    public const T_OUTER    = 244;
-    public const T_PARTIAL  = 245;
-    public const T_SELECT   = 246;
-    public const T_SET      = 247;
-    public const T_SOME     = 248;
-    public const T_SUM      = 249;
-    public const T_THEN     = 250;
-    public const T_TRAILING = 251;
-    public const T_TRUE     = 252;
-    public const T_UPDATE   = 253;
-    public const T_WHEN     = 254;
-    public const T_WHERE    = 255;
-    public const T_WITH     = 256;
+    /** @deprecated use {@see TokenType::T_ALL} */
+    public const T_ALL = TokenType::T_ALL;
+
+    /** @deprecated use {@see TokenType::T_AND} */
+    public const T_AND = TokenType::T_AND;
+
+    /** @deprecated use {@see TokenType::T_ANY} */
+    public const T_ANY = TokenType::T_ANY;
+
+    /** @deprecated use {@see TokenType::T_AS} */
+    public const T_AS = TokenType::T_AS;
+
+    /** @deprecated use {@see TokenType::T_ASC} */
+    public const T_ASC = TokenType::T_ASC;
+
+    /** @deprecated use {@see TokenType::T_AVG} */
+    public const T_AVG = TokenType::T_AVG;
+
+    /** @deprecated use {@see TokenType::T_BETWEEN} */
+    public const T_BETWEEN = TokenType::T_BETWEEN;
+
+    /** @deprecated use {@see TokenType::T_BOTH} */
+    public const T_BOTH = TokenType::T_BOTH;
+
+    /** @deprecated use {@see TokenType::T_BY} */
+    public const T_BY = TokenType::T_BY;
+
+    /** @deprecated use {@see TokenType::T_CASE} */
+    public const T_CASE = TokenType::T_CASE;
+
+    /** @deprecated use {@see TokenType::T_COALESCE} */
+    public const T_COALESCE = TokenType::T_COALESCE;
+
+    /** @deprecated use {@see TokenType::T_COUNT} */
+    public const T_COUNT = TokenType::T_COUNT;
+
+    /** @deprecated use {@see TokenType::T_DELETE} */
+    public const T_DELETE = TokenType::T_DELETE;
+
+    /** @deprecated use {@see TokenType::T_DESC} */
+    public const T_DESC = TokenType::T_DESC;
+
+    /** @deprecated use {@see TokenType::T_DISTINCT} */
+    public const T_DISTINCT = TokenType::T_DISTINCT;
+
+    /** @deprecated use {@see TokenType::T_ELSE} */
+    public const T_ELSE = TokenType::T_ELSE;
+
+    /** @deprecated use {@see TokenType::T_EMPTY} */
+    public const T_EMPTY = TokenType::T_EMPTY;
+
+    /** @deprecated use {@see TokenType::T_END} */
+    public const T_END = TokenType::T_END;
+
+    /** @deprecated use {@see TokenType::T_ESCAPE} */
+    public const T_ESCAPE = TokenType::T_ESCAPE;
+
+    /** @deprecated use {@see TokenType::T_EXISTS} */
+    public const T_EXISTS = TokenType::T_EXISTS;
+
+    /** @deprecated use {@see TokenType::T_FALSE} */
+    public const T_FALSE = TokenType::T_FALSE;
+
+    /** @deprecated use {@see TokenType::T_FROM} */
+    public const T_FROM = TokenType::T_FROM;
+
+    /** @deprecated use {@see TokenType::T_GROUP} */
+    public const T_GROUP = TokenType::T_GROUP;
+
+    /** @deprecated use {@see TokenType::T_HAVING} */
+    public const T_HAVING = TokenType::T_HAVING;
+
+    /** @deprecated use {@see TokenType::T_HIDDEN} */
+    public const T_HIDDEN = TokenType::T_HIDDEN;
+
+    /** @deprecated use {@see TokenType::T_IN} */
+    public const T_IN = TokenType::T_IN;
+
+    /** @deprecated use {@see TokenType::T_INDEX} */
+    public const T_INDEX = TokenType::T_INDEX;
+
+    /** @deprecated use {@see TokenType::T_INNER} */
+    public const T_INNER = TokenType::T_INNER;
+
+    /** @deprecated use {@see TokenType::T_INSTANCE} */
+    public const T_INSTANCE = TokenType::T_INSTANCE;
+
+    /** @deprecated use {@see TokenType::T_IS} */
+    public const T_IS = TokenType::T_IS;
+
+    /** @deprecated use {@see TokenType::T_JOIN} */
+    public const T_JOIN = TokenType::T_JOIN;
+
+    /** @deprecated use {@see TokenType::T_LEADING} */
+    public const T_LEADING = TokenType::T_LEADING;
+
+    /** @deprecated use {@see TokenType::T_LEFT} */
+    public const T_LEFT = TokenType::T_LEFT;
+
+    /** @deprecated use {@see TokenType::T_LIKE} */
+    public const T_LIKE = TokenType::T_LIKE;
+
+    /** @deprecated use {@see TokenType::T_MAX} */
+    public const T_MAX = TokenType::T_MAX;
+
+    /** @deprecated use {@see TokenType::T_MEMBER} */
+    public const T_MEMBER = TokenType::T_MEMBER;
+
+    /** @deprecated use {@see TokenType::T_MIN} */
+    public const T_MIN = TokenType::T_MIN;
+
+    /** @deprecated use {@see TokenType::T_NEW} */
+    public const T_NEW = TokenType::T_NEW;
+
+    /** @deprecated use {@see TokenType::T_NOT} */
+    public const T_NOT = TokenType::T_NOT;
+
+    /** @deprecated use {@see TokenType::T_NULL} */
+    public const T_NULL = TokenType::T_NULL;
+
+    /** @deprecated use {@see TokenType::T_NULLIF} */
+    public const T_NULLIF = TokenType::T_NULLIF;
+
+    /** @deprecated use {@see TokenType::T_OF} */
+    public const T_OF = TokenType::T_OF;
+
+    /** @deprecated use {@see TokenType::T_OR} */
+    public const T_OR = TokenType::T_OR;
+
+    /** @deprecated use {@see TokenType::T_ORDER} */
+    public const T_ORDER = TokenType::T_ORDER;
+
+    /** @deprecated use {@see TokenType::T_OUTER} */
+    public const T_OUTER = TokenType::T_OUTER;
+
+    /** @deprecated use {@see TokenType::T_PARTIAL} */
+    public const T_PARTIAL = TokenType::T_PARTIAL;
+
+    /** @deprecated use {@see TokenType::T_SELECT} */
+    public const T_SELECT = TokenType::T_SELECT;
+
+    /** @deprecated use {@see TokenType::T_SET} */
+    public const T_SET = TokenType::T_SET;
+
+    /** @deprecated use {@see TokenType::T_SOME} */
+    public const T_SOME = TokenType::T_SOME;
+
+    /** @deprecated use {@see TokenType::T_SUM} */
+    public const T_SUM = TokenType::T_SUM;
+
+    /** @deprecated use {@see TokenType::T_THEN} */
+    public const T_THEN = TokenType::T_THEN;
+
+    /** @deprecated use {@see TokenType::T_TRAILING} */
+    public const T_TRAILING = TokenType::T_TRAILING;
+
+    /** @deprecated use {@see TokenType::T_TRUE} */
+    public const T_TRUE = TokenType::T_TRUE;
+
+    /** @deprecated use {@see TokenType::T_UPDATE} */
+    public const T_UPDATE = TokenType::T_UPDATE;
+
+    /** @deprecated use {@see TokenType::T_WHEN} */
+    public const T_WHEN = TokenType::T_WHEN;
+
+    /** @deprecated use {@see TokenType::T_WHERE} */
+    public const T_WHERE = TokenType::T_WHERE;
+
+    /** @deprecated use {@see TokenType::T_WITH} */
+    public const T_WITH = TokenType::T_WITH;
 
     /**
      * Creates a new query scanner object.
@@ -150,26 +304,26 @@ class Lexer extends AbstractLexer
      */
     protected function getType(&$value)
     {
-        $type = self::T_NONE;
+        $type = TokenType::T_NONE;
 
         switch (true) {
             // Recognize numeric values
             case is_numeric($value):
                 if (str_contains($value, '.') || stripos($value, 'e') !== false) {
-                    return self::T_FLOAT;
+                    return TokenType::T_FLOAT;
                 }
 
-                return self::T_INTEGER;
+                return TokenType::T_INTEGER;
 
             // Recognize quoted strings
             case $value[0] === "'":
                 $value = str_replace("''", "'", substr($value, 1, strlen($value) - 2));
 
-                return self::T_STRING;
+                return TokenType::T_STRING;
 
             // Recognize identifiers, aliased or qualified names
             case ctype_alpha($value[0]) || $value[0] === '_' || $value[0] === '\\':
-                $name = 'Doctrine\ORM\Query\Lexer::T_' . strtoupper($value);
+                $name = 'Doctrine\ORM\Query\TokenType::T_' . strtoupper($value);
 
                 if (defined($name)) {
                     $type = constant($name);
@@ -187,61 +341,61 @@ class Lexer extends AbstractLexer
                         $value
                     );
 
-                    return self::T_ALIASED_NAME;
+                    return TokenType::T_ALIASED_NAME;
                 }
 
                 if (str_contains($value, '\\')) {
-                    return self::T_FULLY_QUALIFIED_NAME;
+                    return TokenType::T_FULLY_QUALIFIED_NAME;
                 }
 
-                return self::T_IDENTIFIER;
+                return TokenType::T_IDENTIFIER;
 
             // Recognize input parameters
             case $value[0] === '?' || $value[0] === ':':
-                return self::T_INPUT_PARAMETER;
+                return TokenType::T_INPUT_PARAMETER;
 
             // Recognize symbols
             case $value === '.':
-                return self::T_DOT;
+                return TokenType::T_DOT;
 
             case $value === ',':
-                return self::T_COMMA;
+                return TokenType::T_COMMA;
 
             case $value === '(':
-                return self::T_OPEN_PARENTHESIS;
+                return TokenType::T_OPEN_PARENTHESIS;
 
             case $value === ')':
-                return self::T_CLOSE_PARENTHESIS;
+                return TokenType::T_CLOSE_PARENTHESIS;
 
             case $value === '=':
-                return self::T_EQUALS;
+                return TokenType::T_EQUALS;
 
             case $value === '>':
-                return self::T_GREATER_THAN;
+                return TokenType::T_GREATER_THAN;
 
             case $value === '<':
-                return self::T_LOWER_THAN;
+                return TokenType::T_LOWER_THAN;
 
             case $value === '+':
-                return self::T_PLUS;
+                return TokenType::T_PLUS;
 
             case $value === '-':
-                return self::T_MINUS;
+                return TokenType::T_MINUS;
 
             case $value === '*':
-                return self::T_MULTIPLY;
+                return TokenType::T_MULTIPLY;
 
             case $value === '/':
-                return self::T_DIVIDE;
+                return TokenType::T_DIVIDE;
 
             case $value === '!':
-                return self::T_NEGATE;
+                return TokenType::T_NEGATE;
 
             case $value === '{':
-                return self::T_OPEN_CURLY_BRACE;
+                return TokenType::T_OPEN_CURLY_BRACE;
 
             case $value === '}':
-                return self::T_CLOSE_CURLY_BRACE;
+                return TokenType::T_CLOSE_CURLY_BRACE;
 
             // Default
             default:

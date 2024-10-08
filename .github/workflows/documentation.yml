@@ -27,7 +27,7 @@ jobs:
         uses: "shivammathur/setup-php@v2"
         with:
           coverage: "none"
-          php-version: "8.2"
+          php-version: "8.3"
 
       - name: "Remove existing composer file"
         run: "rm composer.json"
@@ -36,13 +36,14 @@ jobs:
         run: "composer require --dev phpdocumentor/guides-cli --no-update"
 
       - name: "Install dependencies with Composer"
-        uses: "ramsey/composer-install@v2"
+        uses: "ramsey/composer-install@v3"
         with:
           dependency-versions: "highest"
 
-      - name: "Add dummy title to the sidebar"
+      - name: "Add orphan metadata where needed"
         run: |
-          printf '%s\n%s\n\n%s\n' "Dummy title" "===========" "$(cat docs/en/sidebar.rst)" > docs/en/sidebar.rst
+          printf '%s\n\n%s\n' ":orphan:" "$(cat docs/en/sidebar.rst)" > docs/en/sidebar.rst
+          printf '%s\n\n%s\n' ":orphan:" "$(cat docs/en/reference/installation.rst)" > docs/en/reference/installation.rst
 
       - name: "Run guides-cli"
-        run: "vendor/bin/guides -vvv --no-progress docs/en 2>&1 | grep -v 'Unknown directive' | ( ! grep WARNING )"
+        run: "vendor/bin/guides -vvv --no-progress docs/en 2>&1 | grep -v 'No template found for rendering directive' | ( ! grep WARNING )"

@@ -249,7 +249,6 @@ class QueryDqlFunctionTest extends OrmFunctionalTestCase
         self::assertEquals(1600000, $result[3]['op']);
     }
 
-    /** @group test */
     public function testOperatorDiv(): void
     {
         $result = $this->_em->createQuery('SELECT m, (m.salary/0.5) AS op FROM Doctrine\Tests\Models\Company\CompanyManager m ORDER BY m.salary ASC')

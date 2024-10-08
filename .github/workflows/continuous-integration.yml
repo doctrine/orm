@@ -80,7 +80,7 @@ jobs:
         if: "${{ matrix.dbal-version != 'default' }}"
 
       - name: "Install dependencies with Composer"
-        uses: "ramsey/composer-install@v2"
+        uses: "ramsey/composer-install@v3"
         with:
           composer-options: "--ignore-platform-req=php+"
 
@@ -97,9 +97,9 @@ jobs:
             ORM_PROXY_IMPLEMENTATION: "${{ matrix.proxy }}"
 
       - name: "Upload coverage file"
-        uses: "actions/upload-artifact@v3"
+        uses: "actions/upload-artifact@v4"
         with:
-          name: "phpunit-${{ matrix.extension }}-${{ matrix.php-version }}-${{ matrix.dbal-version }}-coverage"
+          name: "phpunit-${{ matrix.extension }}-${{ matrix.php-version }}-${{ matrix.dbal-version }}-${{ matrix.proxy }}-coverage"
           path: "coverage*.xml"
 
 
@@ -162,7 +162,7 @@ jobs:
         if: "${{ matrix.dbal-version != 'default' }}"
 
       - name: "Install dependencies with Composer"
-        uses: "ramsey/composer-install@v2"
+        uses: "ramsey/composer-install@v3"
         with:
           composer-options: "--ignore-platform-req=php+"
 
@@ -170,9 +170,9 @@ jobs:
         run: "vendor/bin/phpunit -c ci/github/phpunit/pdo_pgsql.xml --coverage-clover=coverage.xml"
 
       - name: "Upload coverage file"
-        uses: "actions/upload-artifact@v3"
+        uses: "actions/upload-artifact@v4"
         with:
-          name: "${{ github.job }}-${{ matrix.postgres-version }}-${{ matrix.php-version }}-${{ matrix.dbal-version }}-coverage"
+          name: "${{ github.job }}-${{ matrix.postgres-version }}-${{ matrix.php-version }}-${{ matrix.dbal-version }}-${{ matrix.extension }}-coverage"
           path: "coverage.xml"
 
 
@@ -190,7 +190,7 @@ jobs:
           - "default"
           - "3@dev"
         mariadb-version:
-          - "10.9"
+          - "11.4"
         extension:
           - "mysqli"
           - "pdo_mysql"
@@ -204,11 +204,11 @@ jobs:
       mariadb:
         image: "mariadb:${{ matrix.mariadb-version }}"
         env:
-          MYSQL_ALLOW_EMPTY_PASSWORD: yes
-          MYSQL_DATABASE: "doctrine_tests"
+          MARIADB_ALLOW_EMPTY_ROOT_PASSWORD: yes
+          MARIADB_DATABASE: "doctrine_tests"
 
         options: >-
-          --health-cmd "mysqladmin ping --silent"
+          --health-cmd "healthcheck.sh --connect --innodb_initialized"
 
         ports:
           - "3306:3306"
@@ -232,7 +232,7 @@ jobs:
           extensions: "${{ matrix.extension }}"
 
       - name: "Install dependencies with Composer"
-        uses: "ramsey/composer-install@v2"
+        uses: "ramsey/composer-install@v3"
         with:
           composer-options: "--ignore-platform-req=php+"
 
@@ -240,7 +240,7 @@ jobs:
         run: "vendor/bin/phpunit -c ci/github/phpunit/${{ matrix.extension }}.xml --coverage-clover=coverage.xml"
 
       - name: "Upload coverage file"
-        uses: "actions/upload-artifact@v3"
+        uses: "actions/upload-artifact@v4"
         with:
           name: "${{ github.job }}-${{ matrix.mariadb-version }}-${{ matrix.extension }}-${{ matrix.php-version }}-${{ matrix.dbal-version }}-coverage"
           path: "coverage.xml"
@@ -302,7 +302,7 @@ jobs:
         if: "${{ matrix.dbal-version != 'default' }}"
 
       - name: "Install dependencies with Composer"
-        uses: "ramsey/composer-install@v2"
+        uses: "ramsey/composer-install@v3"
         with:
           composer-options: "--ignore-platform-req=php+"
 
@@ -317,7 +317,7 @@ jobs:
             ENABLE_SECOND_LEVEL_CACHE: 1
 
       - name: "Upload coverage files"
-        uses: "actions/upload-artifact@v3"
+        uses: "actions/upload-artifact@v4"
         with:
           name: "${{ github.job }}-${{ matrix.mysql-version }}-${{ matrix.extension }}-${{ matrix.php-version }}-${{ matrix.dbal-version }}-coverage"
           path: "coverage*.xml"
@@ -348,7 +348,7 @@ jobs:
           ini-values: "zend.assertions=1, apc.enable_cli=1"
 
       - name: "Install dependencies with Composer"
-        uses: "ramsey/composer-install@v2"
+        uses: "ramsey/composer-install@v3"
         with:
           dependency-versions: "${{ matrix.deps }}"
 
@@ -372,11 +372,13 @@ jobs:
           fetch-depth: 2
 
       - name: "Download coverage files"
-        uses: "actions/download-artifact@v3"
+        uses: "actions/download-artifact@v4"
         with:
           path: "reports"
 
       - name: "Upload to Codecov"
-        uses: "codecov/codecov-action@v3"
+        uses: "codecov/codecov-action@v4"
         with:
           directory: reports
+        env:
+          CODECOV_TOKEN: "${{ secrets.CODECOV_TOKEN }}"
