@@ -484,7 +484,7 @@ EOPHP;
                 if ($class->hasAssociation($idField)) {
                     $idValue = $em->getReference(
                         $class->getAssociationTargetClass($idField),
-                        $idValue,
+                        $idValue
                     );
                 }
 
