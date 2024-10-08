@@ -16,9 +16,8 @@ use function file_exists;
 use function mkdir;
 
 use const E_ALL;
-use const E_STRICT;
 
-error_reporting(E_ALL | E_STRICT);
+error_reporting(E_ALL);
 date_default_timezone_set('UTC');
 
 if (file_exists(__DIR__ . '/../../vendor/autoload.php')) {
