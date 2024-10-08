@@ -56,11 +56,11 @@ class DDC1238Test extends OrmFunctionalTestCase
 
         $user2 = $this->_em->getReference(DDC1238User::class, $userId);
 
-        //$user->__load();
+        //$this->>initializeObject($user);
 
         self::assertIsInt($user->getId(), 'Even if a proxy is detached, it should still have an identifier');
 
-        $user2->__load();
+        $this->initializeObject($user2);
 
         self::assertIsInt($user2->getId(), 'The managed instance still has an identifier');
     }

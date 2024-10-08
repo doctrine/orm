@@ -34,6 +34,10 @@ class ProxiesLikeEntitiesTest extends OrmFunctionalTestCase
     {
         parent::setUp();
 
+        if (PHP_VERSION_ID >= 80400) {
+            self::markTestSkipped('This test is not necessary for PHP 8.4 using Lazy Objects.');
+        }
+
         $this->createSchemaForModels(
             CmsUser::class,
             CmsTag::class,

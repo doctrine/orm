@@ -982,4 +982,9 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
     {
         return $this->_em->getUnitOfWork()->isUninitializedObject($entity);
     }
+
+    final protected function initializeObject($entity): void
+    {
+        $this->_em->getUnitOfWork()->initializeObject($entity);
+    }
 }

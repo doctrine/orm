@@ -151,7 +151,7 @@ class MergeProxiesTest extends OrmFunctionalTestCase
         self::assertTrue($this->isUninitializedObject($proxy1));
         self::assertTrue($this->isUninitializedObject($proxy2));
 
-        $proxy1->__load();
+        $this->initializeObject($proxy1);
 
         self::assertCount(
             1,
@@ -219,7 +219,7 @@ class MergeProxiesTest extends OrmFunctionalTestCase
             'Loading the merged instance was done via the second entity manager'
         );
 
-        $unManagedProxy->__load();
+        $this->initializeObject($unManagedProxy);
 
         self::assertCount(
             1,

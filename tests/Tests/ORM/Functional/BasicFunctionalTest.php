@@ -575,7 +575,7 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
         $this->_em->persist($user);
         $this->_em->flush();
 
-        self::assertFalse($groupRef->__isInitialized());
+        self::assertTrue($this->isUninitializedObject($groupRef));
 
         $this->_em->clear();
 
