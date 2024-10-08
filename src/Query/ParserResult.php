@@ -6,7 +6,7 @@ namespace Doctrine\ORM\Query;
 
 use Doctrine\ORM\Query\Exec\AbstractSqlExecutor;
 use Doctrine\ORM\Query\Exec\SqlFinalizer;
-use RuntimeException;
+use LogicException;
 
 use function sprintf;
 
@@ -112,7 +112,7 @@ class ParserResult
     public function getSqlFinalizer(): SqlFinalizer
     {
         if ($this->sqlFinalizer === null) {
-            throw new RuntimeException('This ParserResult was not created with an SqlFinalizer');
+            throw new LogicException('This ParserResult was not created with an SqlFinalizer');
         }
 
         return $this->sqlFinalizer;

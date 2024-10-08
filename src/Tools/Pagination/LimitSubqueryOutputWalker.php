@@ -27,6 +27,7 @@ use Doctrine\ORM\Query\ParserResult;
 use Doctrine\ORM\Query\QueryException;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\ORM\Query\SqlOutputWalker;
+use LogicException;
 use RuntimeException;
 
 use function array_diff;
@@ -181,7 +182,7 @@ class LimitSubqueryOutputWalker extends SqlOutputWalker
     public function getFinalizer($AST): SqlFinalizer
     {
         if (! $AST instanceof SelectStatement) {
-            throw new RuntimeException(self::class . ' is to be used on SelectStatements only');
+            throw new LogicException(self::class . ' is to be used on SelectStatements only');
         }
 
         if ($this->platformSupportsRowNumber()) {
