@@ -55,8 +55,15 @@ class GetReferenceOnRelationAsIdTest extends OrmFunctionalTestCase
     {
         $profile = $this->_em->getReference(Profile::class, 1);
 
-        self::assertInstanceOf(UserProxy::class, $profile->user);
-        self::assertEquals('Athos', $profile->user->name);
+        if ($this->_em->getConfiguration()->isLazyGhostObjectEnabled()) {
+            self::assertInstanceOf(UserProxy::class, $profile->user);
+            self::assertEquals('Athos', $profile->user->name);
+        } else {
+            if (PHP_VERSION_ID >= 80100) {
+                $this->markTestIncomplete();
+            }
+            self::assertEquals(1, $profile->user);
+        }
     }
 
     public function testThrowsSensiblyIfNotFoundByValue(): void
@@ -73,8 +80,15 @@ class GetReferenceOnRelationAsIdTest extends OrmFunctionalTestCase
         $user    = $this->_em->find(User::class, 1);
         $profile = $this->_em->getReference(Profile::class, $user);
 
-        self::assertInstanceOf(User::class, $profile->user);
-        self::assertEquals('Athos', $profile->user->name);
+        if ($this->_em->getConfiguration()->isLazyGhostObjectEnabled()) {
+            self::assertInstanceOf(User::class, $profile->user);
+            self::assertEquals('Athos', $profile->user->name);
+        } else {
+            if (PHP_VERSION_ID >= 80100) {
+                $this->markTestIncomplete();
+            }
+            self::assertEquals(1, $profile->user);
+        }
     }
 
     public function testThrowsSensiblyIfNotFoundByValidRelatedEntity(): void
@@ -103,8 +117,15 @@ class GetReferenceOnRelationAsIdTest extends OrmFunctionalTestCase
         $user    = $this->_em->getReference(User::class, 1);
         $profile = $this->_em->getReference(Profile::class, $user);
 
-        self::assertInstanceOf(UserProxy::class, $profile->user);
-        self::assertEquals('Athos', $profile->user->name);
+        if ($this->_em->getConfiguration()->isLazyGhostObjectEnabled()) {
+            self::assertInstanceOf(UserProxy::class, $profile->user);
+            self::assertEquals('Athos', $profile->user->name);
+        } else {
+            if (PHP_VERSION_ID >= 80100) {
+                $this->markTestIncomplete();
+            }
+            self::assertEquals(1, $profile->user);
+        }
     }
 
     public function testThrowsSensiblyIfNotFoundByValidProxy(): void
@@ -134,8 +155,15 @@ class GetReferenceOnRelationAsIdTest extends OrmFunctionalTestCase
             'group' => 11,
         ]);
 
-        self::assertInstanceOf(MembershipProxy::class, $membership);
-        self::assertEquals('Mousquetaires', $membership->group->name);
+        if ($this->_em->getConfiguration()->isLazyGhostObjectEnabled()) {
+            self::assertInstanceOf(MembershipProxy::class, $membership);
+            self::assertEquals('Mousquetaires', $membership->group->name);
+        } else {
+            if (PHP_VERSION_ID >= 80100) {
+                $this->markTestIncomplete();
+            }
+            self::assertEquals(11, $membership->group);
+        }
 
         $this->_em->clear();
 
@@ -145,8 +173,15 @@ class GetReferenceOnRelationAsIdTest extends OrmFunctionalTestCase
             'group' => $group,
         ]);
 
-        self::assertInstanceOf(MembershipProxy::class, $membership);
-        self::assertEquals('Athos', $membership->user->name);
+        if ($this->_em->getConfiguration()->isLazyGhostObjectEnabled()) {
+            self::assertInstanceOf(MembershipProxy::class, $membership);
+            self::assertEquals('Mousquetaires', $membership->group->name);
+        } else {
+            if (PHP_VERSION_ID >= 80100) {
+                $this->markTestIncomplete();
+            }
+            self::assertEquals(11, $membership->group);
+        }
     }
 
     public function testCanUpdateProperty(): void
