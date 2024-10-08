@@ -15,7 +15,7 @@ Index
 -  :ref:`#[AttributeOverride] <attrref_attributeoverride>`
 -  :ref:`#[Column] <attrref_column>`
 -  :ref:`#[Cache] <attrref_cache>`
--  :ref:`#[ChangeTrackingPolicy <attrref_changetrackingpolicy>`
+-  :ref:`#[ChangeTrackingPolicy] <attrref_changetrackingpolicy>`
 -  :ref:`#[CustomIdGenerator] <attrref_customidgenerator>`
 -  :ref:`#[DiscriminatorColumn] <attrref_discriminatorcolumn>`
 -  :ref:`#[DiscriminatorMap] <attrref_discriminatormap>`
