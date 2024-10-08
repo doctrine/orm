@@ -5,40 +5,16 @@ on:
     branches:
       - "*.x"
     paths:
-      - .github/workflows/documentation.yml
-      - docs/**
+      - ".github/workflows/documentation.yml"
+      - "docs/**"
   push:
     branches:
       - "*.x"
     paths:
-      - .github/workflows/documentation.yml
-      - docs/**
+      - ".github/workflows/documentation.yml"
+      - "docs/**"
 
 jobs:
-  validate-with-guides:
-    name: "Validate documentation with phpDocumentor/guides"
-    runs-on: "ubuntu-22.04"
-
-    steps:
-      - name: "Checkout code"
-        uses: "actions/checkout@v4"
-
-      - name: "Install PHP"
-        uses: "shivammathur/setup-php@v2"
-        with:
-          coverage: "none"
-          php-version: "8.3"
-
-      - name: "Remove existing composer file"
-        run: "rm composer.json"
-
-      - name: "Require phpdocumentor/guides-cli"
-        run: "composer require --dev phpdocumentor/guides-cli --no-update"
-
-      - name: "Install dependencies with Composer"
-        uses: "ramsey/composer-install@v3"
-        with:
-          dependency-versions: "highest"
-
-      - name: "Run guides-cli"
-        run: "vendor/bin/guides -vvv --no-progress docs/en 2>&1 | grep -v 'No template found for rendering directive' | ( ! grep WARNING )"
+  documentation:
+    name: "Documentation"
+    uses: "doctrine/.github/.github/workflows/documentation.yml@5.1.0"
