@@ -49,6 +49,7 @@ use Doctrine\Persistence\ObjectManagerAware;
 use Doctrine\Persistence\PropertyChangedListener;
 use Exception;
 use InvalidArgumentException;
+use ReflectionObject;
 use RuntimeException;
 use Throwable;
 use UnexpectedValueException;
@@ -3715,6 +3716,11 @@ EXCEPTION
         if ($obj instanceof PersistentCollection) {
             $obj->initialize();
         }
+
+        if (PHP_VERSION_ID >= 80400) {
+            $reflection = new ReflectionObject($obj);
+            $reflection->initializeLazyObject($obj);
+        }
     }
 
     /**
@@ -3726,6 +3732,10 @@ EXCEPTION
      */
     public function isUninitializedObject($obj): bool
     {
+        if (PHP_VERSION_ID >= 80400) {
+            return $this->em->getClassMetadata(get_class($obj))->reflClass->isUninitializedLazyObject($obj);
+        }
+
         return $obj instanceof InternalProxy && ! $obj->__isInitialized();
     }
 

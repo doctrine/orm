@@ -203,6 +203,21 @@ EOPHP;
      */
     public function getProxy($className, array $identifier)
     {
+        if (PHP_VERSION_ID >= 80400) {
+            $classMetadata   = $this->em->getClassMetadata($className);
+            $entityPersister = $this->uow->getEntityPersister($className);
+
+            $proxy = $classMetadata->reflClass->newLazyGhost(function ($object) use ($identifier, $entityPersister) {
+                $entityPersister->loadById($identifier, $object);
+            });
+
+            foreach ($identifier as $idField => $value) {
+                $classMetadata->reflFields[$idField]->setRawValueWithoutLazyInitialization($proxy, $value);
+            }
+
+            return $proxy;
+        }
+
         if (! $this->isLazyGhostObjectEnabled) {
             return parent::getProxy($className, $identifier);
         }
