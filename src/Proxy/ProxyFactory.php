@@ -212,11 +212,7 @@ EOPHP;
             });
 
             foreach ($identifier as $idField => $value) {
-                // why only here and not in other proxies?
-                if (! empty($classMetadata->fieldMappings[$idField]['enumType'])) {
-                    $value = $classMetadata->fieldMappings[$idField]['enumType']::from($value);
-                }
-                $classMetadata->reflFields[$idField]->setRawValueWithoutLazyInitialization($proxy, $value);
+                $classMetadata->reflFields[$idField]->setValue($proxy, $value);
             }
 
             return $proxy;
