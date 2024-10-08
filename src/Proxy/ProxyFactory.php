@@ -212,7 +212,7 @@ EOPHP;
             });
 
             foreach ($identifier as $idField => $value) {
-                $classMetadata->reflFields[$idField]->setRawValueWithoutInitialization($proxy, $value);
+                $classMetadata->reflFields[$idField]->setRawValueWithoutLazyInitialization($proxy, $value);
             }
 
             return $proxy;
