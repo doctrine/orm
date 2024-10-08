@@ -164,7 +164,7 @@ class MergeProxiesTest extends OrmFunctionalTestCase
             'No queries were executed on the second entity manager, as it is unrelated with the first proxy'
         );
 
-        $proxy2->__load();
+        $this->initializeObject($proxy2);
 
         self::assertCount(
             1,
