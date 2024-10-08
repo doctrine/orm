@@ -3733,7 +3733,7 @@ EXCEPTION
     public function isUninitializedObject($obj): bool
     {
         if (PHP_VERSION_ID >= 80400) {
-            return $this->em->getClassMetadata(get_class($obj))->reflClass->isUninitializedLazyObject($obj);
+            return (new ReflectionObject($obj))->isUninitializedLazyObject($obj);
         }
 
         return $obj instanceof InternalProxy && ! $obj->__isInitialized();
