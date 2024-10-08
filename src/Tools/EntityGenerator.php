@@ -767,6 +767,9 @@ public function __construct(<params>)
 
             if ($fieldMapping['type'] === 'datetime') {
                 $param = $this->getType($fieldMapping['type']) . ' ' . $param;
+                if (! empty($fieldMapping['nullable'])) {
+                    $param = '?' . $param;
+                }
             }
 
             if (! empty($fieldMapping['nullable'])) {
@@ -1385,6 +1388,9 @@ public function __construct(<params>)
         if ($typeHint && ! isset($types[$typeHint])) {
             $variableType   =  '\\' . ltrim($variableType, '\\');
             $methodTypeHint =  '\\' . $typeHint . ' ';
+            if ($defaultValue === 'null') {
+                $methodTypeHint = '?' . $methodTypeHint;
+            }
         }
 
         $replacements = [
