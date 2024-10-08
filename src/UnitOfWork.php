@@ -2954,7 +2954,11 @@ EXCEPTION
             }
 
             if ($this->isUninitializedObject($entity)) {
-                $entity->__setInitialized(true);
+                if (PHP_VERSION_ID >= 80400) {
+                    $class->reflClass->markLazyObjectAsInitialized($entity);
+                } else {
+                    $entity->__setInitialized(true);
+                }
             } else {
                 if (
                     ! isset($hints[Query::HINT_REFRESH])
