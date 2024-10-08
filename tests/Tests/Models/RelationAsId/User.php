@@ -15,11 +15,15 @@ class User
     /**
      * @ORM\Id
      * @ORM\Column(type="integer")
+     *
+     * @var int
      */
     public $id;
 
     /**
      * @ORM\Column(type="string")
+     *
+     * @var string
      */
     public $name;
 }

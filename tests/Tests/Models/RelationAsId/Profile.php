@@ -15,11 +15,15 @@ class Profile
     /**
      * @ORM\Id
      * @ORM\OneToOne(targetEntity="User")
+     *
+     * @var User
      */
     public $user;
 
     /**
      * @ORM\Column(type="string")
+     *
+     * @var string
      */
     public $url;
 }
