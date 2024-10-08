@@ -18,6 +18,7 @@ use Doctrine\ORM\Query\AST\DeleteStatement;
 use Doctrine\ORM\Query\AST\SelectStatement;
 use Doctrine\ORM\Query\AST\UpdateStatement;
 use Doctrine\ORM\Query\Exec\AbstractSqlExecutor;
+use Doctrine\ORM\Query\Exec\SqlFinalizer;
 use Doctrine\ORM\Query\OutputWalker;
 use Doctrine\ORM\Query\Parameter;
 use Doctrine\ORM\Query\ParameterTypeInferer;
@@ -838,6 +839,14 @@ class Query extends AbstractQuery
             if (is_a($outputWalkerClass, OutputWalker::class, true)) {
                 $firstAndMaxResult = '';
             } else {
+                Deprecation::trigger(
+                    'doctrine/orm',
+                    'https://github.com/doctrine/orm/pull/11188/',
+                    'Your output walker class %s should implement %s and provide a %s. This also means the output walker should not use the query firstResult/maxResult values, which should be added in the finalization phase only.',
+                    $outputWalkerClass,
+                    OutputWalker::class,
+                    SqlFinalizer::class
+                );
                 $firstAndMaxResult = '&firstResult=' . $this->firstResult . '&maxResult=' . $this->maxResults;
             }
         }
