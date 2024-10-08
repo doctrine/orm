@@ -3879,7 +3879,7 @@ class ClassMetadataInfo implements ClassMetadata
     private function getAccessibleProperty(ReflectionService $reflService, string $class, string $field): ?ReflectionProperty
     {
         $reflectionProperty = $reflService->getAccessibleProperty($class, $field);
-        if ($reflectionProperty !== null && \PHP_VERSION_ID >= 80100 && $reflectionProperty->isReadOnly()) {
+        if ($reflectionProperty !== null && PHP_VERSION_ID >= 80100 && $reflectionProperty->isReadOnly()) {
             $declaringClass = $reflectionProperty->class;
             if ($declaringClass !== $class) {
                 $reflectionProperty = $reflService->getAccessibleProperty($declaringClass, $field);
@@ -3890,8 +3890,8 @@ class ClassMetadataInfo implements ClassMetadata
             }
         }
 
-        if (\PHP_VERSION_ID >= 80400 && count($reflectionProperty->getHooks()) > 0) {
-            throw new LogicException("Doctrine ORM does not support property hooks in this version. Check https://github.com/doctrine/orm/issues/11624 for details of versions that support property hooks.");
+        if (PHP_VERSION_ID >= 80400 && count($reflectionProperty->getHooks()) > 0) {
+            throw new LogicException('Doctrine ORM does not support property hooks in this version. Check https://github.com/doctrine/orm/issues/11624 for details of versions that support property hooks.');
         }
 
         return $reflectionProperty;
