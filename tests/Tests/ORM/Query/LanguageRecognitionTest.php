@@ -527,6 +527,16 @@ class LanguageRecognitionTest extends OrmTestCase
         $this->assertInvalidDQL('SELECT u FROM UnknownClassName u');
     }
 
+    public function testCorrectPartialObjectLoad(): void
+    {
+        $this->assertValidDQL('SELECT PARTIAL u.{id,name} FROM Doctrine\Tests\Models\CMS\CmsUser u');
+    }
+
+    public function testIncorrectPartialObjectLoadBecauseOfMissingIdentifier(): void
+    {
+        $this->assertInvalidDQL('SELECT PARTIAL u.{name} FROM Doctrine\Tests\Models\CMS\CmsUser u');
+    }
+
     public function testScalarExpressionInSelect(): void
     {
         $this->assertValidDQL('SELECT u, 42 + u.id AS someNumber FROM Doctrine\Tests\Models\CMS\CmsUser u');

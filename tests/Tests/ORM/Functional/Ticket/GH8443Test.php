@@ -14,6 +14,9 @@ use Doctrine\ORM\Mapping\InheritanceType;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\ORM\Mapping\Table;
+use Doctrine\ORM\Query;
+use Doctrine\Tests\Models\Company\CompanyManager;
+use Doctrine\Tests\Models\Company\CompanyPerson;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use PHPUnit\Framework\Attributes\Group;
 
@@ -28,6 +31,35 @@ final class GH8443Test extends OrmFunctionalTestCase
         parent::setUp();
 
         $this->createSchemaForModels(GH8443Foo::class);
+    }
+
+    #[Group('GH-8443')]
+    public function testJoinRootEntityWithForcePartialLoad(): void
+    {
+        $person = new CompanyPerson();
+        $person->setName('John');
+
+        $manager = new CompanyManager();
+        $manager->setName('Adam');
+        $manager->setSalary(1000);
+        $manager->setDepartment('IT');
+        $manager->setTitle('manager');
+
+        $manager->setSpouse($person);
+
+        $this->_em->persist($person);
+        $this->_em->persist($manager);
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $manager = $this->_em->createQuery(
+            "SELECT m from Doctrine\Tests\Models\Company\CompanyManager m
+               JOIN m.spouse s
+               WITH s.name = 'John'",
+        )->setHint(Query::HINT_FORCE_PARTIAL_LOAD, true)->getSingleResult();
+        $this->_em->refresh($manager);
+
+        $this->assertEquals('John', $manager->getSpouse()->getName());
     }
 
     #[Group('GH-8443')]

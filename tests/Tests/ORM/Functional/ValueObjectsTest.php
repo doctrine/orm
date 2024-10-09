@@ -209,12 +209,73 @@ class ValueObjectsTest extends OrmFunctionalTestCase
         self::assertNull($this->_em->find(DDC93Person::class, $person->id));
     }
 
+    public function testPartialDqlOnEmbeddedObjectsField(): void
+    {
+        $person = new DDC93Person('Karl', new DDC93Address('Foo', '12345', 'Gosport', new DDC93Country('England')));
+        $this->_em->persist($person);
+        $this->_em->flush();
+        $this->_em->clear();
+
+        // Prove that the entity was persisted correctly.
+        $dql = 'SELECT p FROM ' . __NAMESPACE__ . '\\DDC93Person p WHERE p.name = :name';
+
+        $person = $this->_em->createQuery($dql)
+            ->setParameter('name', 'Karl')
+            ->getSingleResult();
+
+        self::assertEquals('Gosport', $person->address->city);
+        self::assertEquals('Foo', $person->address->street);
+        self::assertEquals('12345', $person->address->zip);
+        self::assertEquals('England', $person->address->country->name);
+
+        // Clear the EM and prove that the embeddable can be the subject of a partial query.
+        $this->_em->clear();
+
+        $dql = 'SELECT PARTIAL p.{id,address.city} FROM ' . __NAMESPACE__ . '\\DDC93Person p WHERE p.name = :name';
+
+        $person = $this->_em->createQuery($dql)
+            ->setParameter('name', 'Karl')
+            ->getSingleResult();
+
+        // Selected field must be equal, all other fields must be null.
+        self::assertEquals('Gosport', $person->address->city);
+        self::assertNull($person->address->street);
+        self::assertNull($person->address->zip);
+        self::assertNull($person->address->country);
+        self::assertNull($person->name);
+
+        // Clear the EM and prove that the embeddable can be the subject of a partial query regardless of attributes positions.
+        $this->_em->clear();
+
+        $dql = 'SELECT PARTIAL p.{address.city, id} FROM ' . __NAMESPACE__ . '\\DDC93Person p WHERE p.name = :name';
+
+        $person = $this->_em->createQuery($dql)
+            ->setParameter('name', 'Karl')
+            ->getSingleResult();
+
+        // Selected field must be equal, all other fields must be null.
+        self::assertEquals('Gosport', $person->address->city);
+        self::assertNull($person->address->street);
+        self::assertNull($person->address->zip);
+        self::assertNull($person->address->country);
+        self::assertNull($person->name);
+    }
+
     public function testDqlWithNonExistentEmbeddableField(): void
     {
         $this->expectException(QueryException::class);
         $this->expectExceptionMessage('no field or association named address.asdfasdf');
 
         $this->_em->createQuery('SELECT p FROM ' . __NAMESPACE__ . '\\DDC93Person p WHERE p.address.asdfasdf IS NULL')
+            ->execute();
+    }
+
+    public function testPartialDqlWithNonExistentEmbeddableField(): void
+    {
+        $this->expectException(QueryException::class);
+        $this->expectExceptionMessage("no mapped field named 'address.asdfasdf'");
+
+        $this->_em->createQuery('SELECT PARTIAL p.{id,address.asdfasdf} FROM ' . __NAMESPACE__ . '\\DDC93Person p')
             ->execute();
     }
 
