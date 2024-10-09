@@ -1406,21 +1406,21 @@ class SqlWalker
                 //    since it requires outer joining subtables.
                 if ($class->isInheritanceTypeSingleTable() || ! $this->query->getHint(Query::HINT_FORCE_PARTIAL_LOAD)) {
                     foreach ($class->subClasses as $subClassName) {
-                        $subClass = $this->em->getClassMetadata($subClassName);
+                        $subClass      = $this->em->getClassMetadata($subClassName);
                         $sqlTableAlias = $this->getSQLTableAlias($subClass->getTableName(), $dqlAlias);
 
                         foreach ($subClass->fieldMappings as $fieldName => $mapping) {
-                            if (isset($mapping->inherited) || ($partialFieldSet && !in_array($fieldName, $partialFieldSet, true))) {
+                            if (isset($mapping->inherited) || ($partialFieldSet && ! in_array($fieldName, $partialFieldSet, true))) {
                                 continue;
                             }
 
-                            $columnAlias = $this->getSQLColumnAlias($mapping->columnName);
+                            $columnAlias      = $this->getSQLColumnAlias($mapping->columnName);
                             $quotedColumnName = $this->quoteStrategy->getColumnName($fieldName, $subClass, $this->platform);
 
                             $col = $sqlTableAlias . '.' . $quotedColumnName;
 
                             $type = Type::getType($mapping->type);
-                            $col = $type->convertToPHPValueSQL($col, $this->platform);
+                            $col  = $type->convertToPHPValueSQL($col, $this->platform);
 
                             $sqlParts[] = $col . ' AS ' . $columnAlias;
 
