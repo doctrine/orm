@@ -561,13 +561,13 @@ final class Cube extends Shape
 /* Test subject class with overridden factory method for mocking purposes */
 class ClassMetadataFactoryTestSubject extends ClassMetadataFactory
 {
-    /** @psalm-var array<class-string<object>, ClassMetadata> */
+    /** @var array<class-string<object>, ClassMetadata> */
     private $mockMetadata = [];
 
-    /** @psalm-var list<class-string<object>> */
+    /** @var list<class-string<object>> */
     private $requestedClasses = [];
 
-    /** @psalm-param class-string<object> $className */
+    /** @param class-string<object> $className */
     protected function newClassMetadataInstance($className): ClassMetadata
     {
         $this->requestedClasses[] = $className;
@@ -581,7 +581,7 @@ class ClassMetadataFactoryTestSubject extends ClassMetadataFactory
         return $this->mockMetadata[$className];
     }
 
-    /** @psalm-param class-string<object> $className */
+    /** @param class-string<object> $className */
     public function setMetadataForClass(string $className, ClassMetadata $metadata): void
     {
         $this->mockMetadata[$className] = $metadata;

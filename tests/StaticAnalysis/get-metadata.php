@@ -15,18 +15,15 @@ use Doctrine\ORM\Mapping\ClassMetadata;
  */
 abstract class GetMetadata
 {
-    /**
-     * @param string|object $class
-     * @psalm-param class-string|object $class
-     */
+    /** @param class-string|object $class */
     abstract public function getEntityManager($class): EntityManagerInterface;
 
     /**
-     * @psalm-param class-string<TObject> $class
+     * @param class-string<TObject> $class
      *
-     * @psalm-return ClassMetadata<TObject>
+     * @return ClassMetadata<TObject>
      *
-     * @psalm-template TObject of object
+     * @template TObject of object
      */
     public function __invoke(string $class): ClassMetadata
     {

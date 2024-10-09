@@ -305,7 +305,7 @@
       <code><![CDATA[$persister->loadById($sortedId)]]></code>
     </InvalidReturnStatement>
     <InvalidReturnType>
-      <code><![CDATA[?T]]></code>
+      <code><![CDATA[T|null]]></code>
     </InvalidReturnType>
     <MissingReturnType>
       <code><![CDATA[wrapInTransaction]]></code>

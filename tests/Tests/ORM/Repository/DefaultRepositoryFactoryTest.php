@@ -108,10 +108,9 @@ class DefaultRepositoryFactoryTest extends TestCase
     }
 
     /**
-     * @psalm-param class-string<TEntity> $className
+     * @param class-string<TEntity> $className
      *
-     * @return ClassMetadata&MockObject
-     * @psalm-return ClassMetadata<TEntity>&MockObject
+     * @return ClassMetadata<TEntity>&MockObject
      *
      * @template TEntity of object
      */

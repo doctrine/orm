@@ -47,10 +47,7 @@ class AnnotationDriver extends CompatibilityAnnotationDriver
      */
     protected $reader;
 
-    /**
-     * @var int[]
-     * @psalm-var array<class-string, int>
-     */
+    /** @var array<class-string, int> */
     protected $entityAnnotationClasses = [
         Mapping\Entity::class => 1,
         Mapping\MappedSuperclass::class => 2,
@@ -89,8 +86,8 @@ class AnnotationDriver extends CompatibilityAnnotationDriver
     /**
      * {@inheritDoc}
      *
-     * @psalm-param class-string<T> $className
-     * @psalm-param ClassMetadata<T> $metadata
+     * @param class-string<T>  $className
+     * @param ClassMetadata<T> $metadata
      *
      * @template T of object
      */

@@ -63,8 +63,8 @@ class YamlDriver extends FileDriver
     /**
      * {@inheritDoc}
      *
-     * @psalm-param class-string<T> $className
-     * @psalm-param ClassMetadata<T> $metadata
+     * @param class-string<T>  $className
+     * @param ClassMetadata<T> $metadata
      *
      * @template T of object
      */
