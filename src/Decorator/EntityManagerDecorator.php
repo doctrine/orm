@@ -96,6 +96,7 @@ abstract class EntityManagerDecorator extends ObjectManagerDecorator implements 
                 E_USER_NOTICE
             );
 
+            // @phpstan-ignore method.deprecated
             return $this->wrapped->transactional($func);
         }
 

@@ -22,6 +22,7 @@ trait CriteriaOrderings
     private static function getCriteriaOrderings(Criteria $criteria): array
     {
         if (! method_exists(Criteria::class, 'orderings')) {
+            // @phpstan-ignore method.deprecated
             return $criteria->getOrderings();
         }
 

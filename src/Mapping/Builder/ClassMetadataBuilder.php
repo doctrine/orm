@@ -172,6 +172,8 @@ class ClassMetadataBuilder
     /**
      * Adds named query.
      *
+     * @deprecated
+     *
      * @param string $name
      * @param string $dqlQuery
      *

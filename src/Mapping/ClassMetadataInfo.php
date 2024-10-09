@@ -1405,6 +1405,7 @@ class ClassMetadataInfo implements ClassMetadata
      */
     public function getColumnName($fieldName)
     {
+        // @phpstan-ignore property.deprecated
         return $this->columnNames[$fieldName] ?? $fieldName;
     }
 
@@ -1659,6 +1660,7 @@ class ClassMetadataInfo implements ClassMetadata
             $mapping['quoted']     = true;
         }
 
+        // @phpstan-ignore property.deprecated
         $this->columnNames[$mapping['fieldName']] = $mapping['columnName'];
 
         if (isset($this->fieldNames[$mapping['columnName']]) || ($this->discriminatorColumn && $this->discriminatorColumn['name'] === $mapping['columnName'])) {
@@ -1683,6 +1685,7 @@ class ClassMetadataInfo implements ClassMetadata
             }
         }
 
+        // @phpstan-ignore method.deprecated
         if (Type::hasType($mapping['type']) && Type::getType($mapping['type'])->canRequireSQLConversion()) {
             if (isset($mapping['id']) && $mapping['id'] === true) {
                  throw MappingException::sqlConversionNotAllowedForIdentifiers($this->name, $mapping['fieldName'], $mapping['type']);
@@ -2576,6 +2579,7 @@ class ClassMetadataInfo implements ClassMetadata
 
         unset($this->fieldMappings[$fieldName]);
         unset($this->fieldNames[$mapping['columnName']]);
+        // @phpstan-ignore property.deprecated
         unset($this->columnNames[$mapping['fieldName']]);
 
         $overrideMapping = $this->validateAndCompleteFieldMapping($overrideMapping);
@@ -2699,6 +2703,7 @@ class ClassMetadataInfo implements ClassMetadata
      */
     private function isInheritanceType(int $type): bool
     {
+        // @phpstan-ignore classConstant.deprecated
         if ($type === self::INHERITANCE_TYPE_TABLE_PER_CLASS) {
             Deprecation::trigger(
                 'doctrine/orm',
@@ -2710,6 +2715,7 @@ class ClassMetadataInfo implements ClassMetadata
         return $type === self::INHERITANCE_TYPE_NONE ||
                 $type === self::INHERITANCE_TYPE_SINGLE_TABLE ||
                 $type === self::INHERITANCE_TYPE_JOINED ||
+                // @phpstan-ignore classConstant.deprecated
                 $type === self::INHERITANCE_TYPE_TABLE_PER_CLASS;
     }
 
@@ -2766,8 +2772,9 @@ class ClassMetadataInfo implements ClassMetadata
     public function addInheritedFieldMapping(array $fieldMapping)
     {
         $this->fieldMappings[$fieldMapping['fieldName']] = $fieldMapping;
-        $this->columnNames[$fieldMapping['fieldName']]   = $fieldMapping['columnName'];
-        $this->fieldNames[$fieldMapping['columnName']]   = $fieldMapping['fieldName'];
+        // @phpstan-ignore property.deprecated
+        $this->columnNames[$fieldMapping['fieldName']] = $fieldMapping['columnName'];
+        $this->fieldNames[$fieldMapping['columnName']] = $fieldMapping['fieldName'];
 
         if (isset($fieldMapping['generated'])) {
             $this->requiresFetchAfterChange = true;
@@ -3859,6 +3866,7 @@ class ClassMetadataInfo implements ClassMetadata
         if ($schemaName) {
             $sequencePrefix = $schemaName . '.' . $tableName;
 
+            // @phpstan-ignore method.deprecated
             if (! $platform->supportsSchemas() && $platform->canEmulateSchemas()) {
                 $sequencePrefix = $schemaName . '__' . $tableName;
             }

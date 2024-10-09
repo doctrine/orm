@@ -162,8 +162,9 @@ class EntityManager implements EntityManagerInterface
             throw MissingMappingDriverImplementation::create();
         }
 
-        $this->conn         = $conn;
-        $this->config       = $config;
+        $this->conn   = $conn;
+        $this->config = $config;
+        // @phpstan-ignore method.deprecated
         $this->eventManager = $eventManager ?? $conn->getEventManager();
 
         $metadataFactoryClassName = $config->getClassMetadataFactoryName();
@@ -615,6 +616,7 @@ class EntityManager implements EntityManagerInterface
     public function clear($entityName = null)
     {
         if ($entityName !== null && ! is_string($entityName)) {
+            // @phpstan-ignore staticMethod.deprecated
             throw ORMInvalidArgumentException::invalidEntityName($entityName);
         }
 
@@ -1109,6 +1111,7 @@ class EntityManager implements EntityManagerInterface
 
     private function configureLegacyMetadataCache(): void
     {
+        // @phpstan-ignore method.deprecated
         $metadataCache = $this->config->getMetadataCacheImpl();
         if (! $metadataCache) {
             return;
