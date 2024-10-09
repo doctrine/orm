@@ -35,6 +35,7 @@ use PHPUnit\Framework\Attributes\Group;
 class SelectSqlGenerationTest extends OrmTestCase
 {
     private EntityManagerInterface $entityManager;
+    private int $hydrationMode = ORMQuery::HYDRATE_OBJECT;
 
     protected function setUp(): void
     {
@@ -51,6 +52,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         array $queryParams = [],
     ): void {
         $query = $this->entityManager->createQuery($dqlToBeTested);
+        $query->setHydrationMode($this->hydrationMode);
 
         foreach ($queryParams as $name => $value) {
             $query->setParameter($name, $value);
@@ -1321,6 +1323,22 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
+    #[Group('DDC-2519')]
+    public function testPartialWithAssociationIdentifier(): void
+    {
+        $this->hydrationMode = ORMQuery::HYDRATE_ARRAY;
+
+        $this->assertSqlGeneration(
+            'SELECT PARTIAL l.{_source, _target} FROM Doctrine\Tests\Models\Legacy\LegacyUserReference l',
+            'SELECT l0_.iUserIdSource AS iUserIdSource_0, l0_.iUserIdTarget AS iUserIdTarget_1 FROM legacy_users_reference l0_',
+        );
+
+        $this->assertSqlGeneration(
+            'SELECT PARTIAL l.{_description, _source, _target} FROM Doctrine\Tests\Models\Legacy\LegacyUserReference l',
+            'SELECT l0_.description AS description_0, l0_.iUserIdSource AS iUserIdSource_1, l0_.iUserIdTarget AS iUserIdTarget_2 FROM legacy_users_reference l0_',
+        );
+    }
+
     #[Group('DDC-1339')]
     public function testIdentityFunctionInSelectClause(): void
     {
@@ -1391,11 +1409,13 @@ class SelectSqlGenerationTest extends OrmTestCase
     }
 
     #[Group('DDC-1389')]
-    public function testInheritanceTypeSingleTableInChildClass(): void
+    public function testInheritanceTypeSingleTableInChildClassWithDisabledForcePartialLoad(): void
     {
+        $this->hydrationMode = ORMQuery::HYDRATE_ARRAY;
+
         $this->assertSqlGeneration(
             'SELECT fc FROM Doctrine\Tests\Models\Company\CompanyFlexContract fc',
-            "SELECT c0_.id AS id_0, c0_.completed AS completed_1, c0_.hoursWorked AS hoursWorked_2, c0_.pricePerHour AS pricePerHour_3, c0_.maxPrice AS maxPrice_4, c0_.discr AS discr_5, c0_.salesPerson_id AS salesPerson_id_6 FROM company_contracts c0_ WHERE c0_.discr IN ('flexible', 'flexultra')",
+            "SELECT c0_.id AS id_0, c0_.completed AS completed_1, c0_.hoursWorked AS hoursWorked_2, c0_.pricePerHour AS pricePerHour_3, c0_.maxPrice AS maxPrice_4, c0_.discr AS discr_5 FROM company_contracts c0_ WHERE c0_.discr IN ('flexible', 'flexultra')",
         );
     }
 
@@ -1678,6 +1698,22 @@ class SelectSqlGenerationTest extends OrmTestCase
         $this->assertSqlGeneration(
             'SELECT p FROM Doctrine\Tests\Models\CustomType\CustomTypeParent p',
             'SELECT c0_.id AS id_0, -(c0_.customInteger) AS customInteger_1, c0_.child_id AS child_id_2 FROM customtype_parents c0_',
+        );
+    }
+
+    public function testCustomTypeValueSqlForPartialObject(): void
+    {
+        $this->hydrationMode = ORMQuery::HYDRATE_ARRAY;
+
+        if (DBALType::hasType('negative_to_positive')) {
+            DBALType::overrideType('negative_to_positive', NegativeToPositiveType::class);
+        } else {
+            DBALType::addType('negative_to_positive', NegativeToPositiveType::class);
+        }
+
+        $this->assertSqlGeneration(
+            'SELECT partial p.{id, customInteger} FROM Doctrine\Tests\Models\CustomType\CustomTypeParent p',
+            'SELECT c0_.id AS id_0, -(c0_.customInteger) AS customInteger_1 FROM customtype_parents c0_',
         );
     }
 

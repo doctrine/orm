@@ -7,8 +7,8 @@ namespace Doctrine\Performance\Hydration;
 use Doctrine\DBAL\Result;
 use Doctrine\ORM\Internal\Hydration\ArrayHydrator;
 use Doctrine\ORM\Query\ResultSetMapping;
-use Doctrine\Performance\ArrayResultFactory;
 use Doctrine\Performance\EntityManagerFactory;
+use Doctrine\Tests\Mocks\ArrayResultFactory;
 use Doctrine\Tests\Models\CMS\CmsPhonenumber;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use PhpBench\Benchmark\Metadata\Annotations\BeforeMethods;
@@ -62,7 +62,7 @@ final class MixedQueryFetchJoinArrayHydrationPerformanceBench
             ];
         }
 
-        $this->result   = ArrayResultFactory::createFromArray($resultSet);
+        $this->result   = ArrayResultFactory::createWrapperResultFromArray($resultSet);
         $this->hydrator = new ArrayHydrator(EntityManagerFactory::getEntityManager([]));
         $this->rsm      = new ResultSetMapping();
 

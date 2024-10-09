@@ -5,9 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Collections\Collection;
-use Doctrine\DBAL\Cache\ArrayResult;
 use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\Result;
 use Doctrine\ORM\Internal\Hydration\ObjectHydrator;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
@@ -15,6 +13,7 @@ use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Query\ResultSetMapping;
+use Doctrine\Tests\Mocks\ArrayResultFactory;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 final class GH9807Test extends OrmFunctionalTestCase
@@ -63,7 +62,7 @@ final class GH9807Test extends OrmFunctionalTestCase
             ],
         ];
 
-        $stmt = new Result(new ArrayResult($resultSet), $this->createMock(Connection::class));
+        $stmt = ArrayResultFactory::createWrapperResultFromArray($resultSet, $this->createMock(Connection::class));
 
         /** @var GH9807Main[] $result */
         $result = $hydrator->hydrateAll($stmt, $rsm);

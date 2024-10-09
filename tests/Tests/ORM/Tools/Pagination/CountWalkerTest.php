@@ -27,6 +27,20 @@ class CountWalkerTest extends PaginationTestCase
         );
     }
 
+    public function testCountQueryWithoutDistinctUsesCountStar(): void
+    {
+        $query = $this->entityManager->createQuery(
+            'SELECT p, c, a FROM Doctrine\Tests\ORM\Tools\Pagination\BlogPost p JOIN p.category c JOIN p.author a',
+        );
+        $query->setHint(Query::HINT_CUSTOM_TREE_WALKERS, [CountWalker::class]);
+        $query->setHint(CountWalker::HINT_DISTINCT, false);
+
+        self::assertEquals(
+            'SELECT count(*) AS sclr_0 FROM BlogPost b0_ INNER JOIN Category c1_ ON b0_.category_id = c1_.id INNER JOIN Author a2_ ON b0_.author_id = a2_.id',
+            $query->getSQL(),
+        );
+    }
+
     public function testCountQueryMixedResultsWithName(): void
     {
         $query = $this->entityManager->createQuery(

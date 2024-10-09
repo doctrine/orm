@@ -129,6 +129,7 @@ class EntityRepository implements ObjectRepository, Selectable
      * @psalm-param array<string, mixed> $criteria
      *
      * @return int The cardinality of the objects that match the given criteria.
+     * @psalm-return 0|positive-int
      *
      * @todo Add this method to `ObjectRepository` interface in the next major release
      */

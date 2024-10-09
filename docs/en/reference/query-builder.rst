@@ -611,3 +611,21 @@ same query of example 6 written using
       ->add('from', new Expr\From('User', 'u'))
       ->add('where', new Expr\Comparison('u.id', '=', '?1'))
       ->add('orderBy', new Expr\OrderBy('u.name', 'ASC'));
+
+Binding Parameters to Placeholders
+----------------------------------
+
+It is often not necessary to know about the exact placeholder names when
+building a query. You can use a helper method to bind a value to a placeholder
+and directly use that placeholder in your query as a return value:
+
+.. code-block:: php
+
+    <?php
+    // $qb instanceof QueryBuilder
+
+    $qb->select('u')
+        ->from('User', 'u')
+        ->where('u.email = ' .  $qb->createNamedParameter($userInputEmail))
+    ;
+    // SELECT u FROM User u WHERE email = :dcValue1

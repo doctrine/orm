@@ -25,9 +25,12 @@ use function array_filter;
 use function array_keys;
 use function array_map;
 use function array_merge;
+use function array_pop;
 use function assert;
 use function count;
+use function end;
 use function implode;
+use function in_array;
 use function is_array;
 use function is_float;
 use function is_int;
@@ -51,6 +54,11 @@ class SqlWalker
     use LockSqlHelper;
 
     public const HINT_DISTINCT = 'doctrine.distinct';
+
+    /**
+     * Used to mark a query as containing a PARTIAL expression, which needs to be known by SLC.
+     */
+    public const HINT_PARTIAL = 'doctrine.partial';
 
     private readonly ResultSetMapping $rsm;
 
@@ -78,6 +86,13 @@ class SqlWalker
      * Counter for generating indexes.
      */
     private int $newObjectCounter = 0;
+
+    /**
+     * Contains nesting levels of new objects arguments
+     *
+     * @psalm-var array<int, array{0: string|int, 1: int}>
+     */
+    private array $newObjectStack = [];
 
     private readonly EntityManagerInterface $em;
     private readonly Connection $conn;
@@ -1325,7 +1340,17 @@ class SqlWalker
                 break;
 
             default:
-                $dqlAlias    = $expr;
+                // IdentificationVariable or PartialObjectExpression
+                if ($expr instanceof AST\PartialObjectExpression) {
+                    $this->query->setHint(self::HINT_PARTIAL, true);
+
+                    $dqlAlias        = $expr->identificationVariable;
+                    $partialFieldSet = $expr->partialFieldSet;
+                } else {
+                    $dqlAlias        = $expr;
+                    $partialFieldSet = [];
+                }
+
                 $class       = $this->getMetadataForDqlAlias($dqlAlias);
                 $resultAlias = $selectExpression->fieldIdentificationVariable ?: null;
 
@@ -1341,6 +1366,10 @@ class SqlWalker
 
                 // Select all fields from the queried class
                 foreach ($class->fieldMappings as $fieldName => $mapping) {
+                    if ($partialFieldSet && ! in_array($fieldName, $partialFieldSet, true)) {
+                        continue;
+                    }
+
                     $tableName = isset($mapping->inherited)
                         ? $this->em->getClassMetadata($mapping->inherited)->getTableName()
                         : $class->getTableName();
@@ -1367,13 +1396,14 @@ class SqlWalker
 
                 // Add any additional fields of subclasses (excluding inherited fields)
                 // 1) on Single Table Inheritance: always, since its marginal overhead
-                // 2) on Class Table Inheritance
+                // 2) on Class Table Inheritance only if partial objects are disallowed,
+                //    since it requires outer joining subtables.
                 foreach ($class->subClasses as $subClassName) {
                     $subClass      = $this->em->getClassMetadata($subClassName);
                     $sqlTableAlias = $this->getSQLTableAlias($subClass->getTableName(), $dqlAlias);
 
                     foreach ($subClass->fieldMappings as $fieldName => $mapping) {
-                        if (isset($mapping->inherited)) {
+                        if (isset($mapping->inherited) || ($partialFieldSet && ! in_array($fieldName, $partialFieldSet, true))) {
                             continue;
                         }
 
@@ -1461,7 +1491,14 @@ class SqlWalker
     public function walkNewObject(AST\NewObjectExpression $newObjectExpression, string|null $newObjectResultAlias = null): string
     {
         $sqlSelectExpressions = [];
-        $objIndex             = $newObjectResultAlias ?: $this->newObjectCounter++;
+        $objOwner             = $objOwnerIdx = null;
+
+        if ($this->newObjectStack !== []) {
+            [$objOwner, $objOwnerIdx] = end($this->newObjectStack);
+            $objIndex                 = $objOwner . ':' . $objOwnerIdx;
+        } else {
+            $objIndex = $newObjectResultAlias ?: $this->newObjectCounter++;
+        }
 
         foreach ($newObjectExpression->args as $argIndex => $e) {
             $resultAlias = $this->scalarResultCounter++;
@@ -1470,7 +1507,9 @@ class SqlWalker
 
             switch (true) {
                 case $e instanceof AST\NewObjectExpression:
+                    $this->newObjectStack[] = [$objIndex, $argIndex];
                     $sqlSelectExpressions[] = $e->dispatch($this);
+                    array_pop($this->newObjectStack);
                     break;
 
                 case $e instanceof AST\Subselect:
@@ -1524,6 +1563,10 @@ class SqlWalker
                 'objIndex'  => $objIndex,
                 'argIndex'  => $argIndex,
             ];
+
+            if ($objOwner !== null && $objOwnerIdx !== null) {
+                $this->rsm->addNewObjectAsArgument($objIndex, $objOwner, $objOwnerIdx);
+            }
         }
 
         return implode(', ', $sqlSelectExpressions);

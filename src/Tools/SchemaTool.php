@@ -421,18 +421,12 @@ class SchemaTool
      */
     private function gatherColumns(ClassMetadata $class, Table $table): void
     {
-        $pkColumns = [];
-
         foreach ($class->fieldMappings as $mapping) {
             if ($class->isInheritanceTypeSingleTable() && isset($mapping->inherited)) {
                 continue;
             }
 
             $this->gatherColumn($class, $mapping, $table);
-
-            if ($class->isIdentifier($mapping->fieldName)) {
-                $pkColumns[] = $this->quoteStrategy->getColumnName($mapping->fieldName, $class, $this->platform);
-            }
         }
     }
 
