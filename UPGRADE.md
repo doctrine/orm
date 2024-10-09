@@ -15,6 +15,10 @@ able to support PARTIAL objects with PHP 8.4 Lazy Objects and
 Symfony/VarExporter in a better way. When we decided to remove this feature
 these two abstractions did not exist yet.
 
+WARNING: If you want to upgrade to 3.x and still use PARTIAL keyword in DQL
+with array or object hydrators, then you have to directly migrate to ORM 3.3.x or higher.
+PARTIAL keyword in DQL is not available in 3.0, 3.1 and 3.2 of ORM.
+
 ## Deprecate `\Doctrine\ORM\Query\Parser::setCustomOutputTreeWalker()`
 
 Use the `\Doctrine\ORM\Query::HINT_CUSTOM_OUTPUT_WALKER` query hint to set the output walker
