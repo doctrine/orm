@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Query;
 
 use Doctrine\Common\Lexer\Token;
+use Doctrine\Deprecations\Deprecation;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Internal\Hydration\HydrationException;
 use Doctrine\ORM\Mapping\AssociationMapping;
@@ -50,7 +51,7 @@ final class Parser
 {
     /**
      * @readonly Maps BUILT-IN string function names to AST class names.
-     * @psalm-var array<string, class-string<Functions\FunctionNode>>
+     * @var array<string, class-string<Functions\FunctionNode>>
      */
     private static array $stringFunctions = [
         'concat'    => Functions\ConcatFunction::class,
@@ -63,7 +64,7 @@ final class Parser
 
     /**
      * @readonly Maps BUILT-IN numeric function names to AST class names.
-     * @psalm-var array<string, class-string<Functions\FunctionNode>>
+     * @var array<string, class-string<Functions\FunctionNode>>
      */
     private static array $numericFunctions = [
         'length'    => Functions\LengthFunction::class,
@@ -86,7 +87,7 @@ final class Parser
 
     /**
      * @readonly Maps BUILT-IN datetime function names to AST class names.
-     * @psalm-var array<string, class-string<Functions\FunctionNode>>
+     * @var array<string, class-string<Functions\FunctionNode>>
      */
     private static array $datetimeFunctions = [
         'current_date'      => Functions\CurrentDateFunction::class,
@@ -146,7 +147,7 @@ final class Parser
     /**
      * Any additional custom tree walkers that modify the AST.
      *
-     * @psalm-var list<class-string<TreeWalker>>
+     * @var list<class-string<TreeWalker>>
      */
     private array $customTreeWalkers = [];
 
@@ -176,17 +177,24 @@ final class Parser
      * Sets a custom tree walker that produces output.
      * This tree walker will be run last over the AST, after any other walkers.
      *
-     * @psalm-param class-string<SqlWalker> $className
+     * @param class-string<SqlWalker> $className
      */
     public function setCustomOutputTreeWalker(string $className): void
     {
+        Deprecation::trigger(
+            'doctrine/orm',
+            'https://github.com/doctrine/orm/pull/11641',
+            '%s is deprecated, set the output walker class with the \Doctrine\ORM\Query::HINT_CUSTOM_OUTPUT_WALKER query hint instead',
+            __METHOD__,
+        );
+
         $this->customOutputWalker = $className;
     }
 
     /**
      * Adds a custom tree walker for modifying the AST.
      *
-     * @psalm-param class-string<TreeWalker> $className
+     * @param class-string<TreeWalker> $className
      */
     public function addCustomTreeWalker(string $className): void
     {

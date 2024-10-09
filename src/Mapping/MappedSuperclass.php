@@ -10,7 +10,7 @@ use Doctrine\ORM\EntityRepository;
 #[Attribute(Attribute::TARGET_CLASS)]
 final class MappedSuperclass implements MappingAttribute
 {
-    /** @psalm-param class-string<EntityRepository>|null $repositoryClass */
+    /** @param class-string<EntityRepository>|null $repositoryClass */
     public function __construct(
         public readonly string|null $repositoryClass = null,
     ) {

@@ -265,7 +265,7 @@ class ObjectHydrator extends AbstractHydrator
     }
 
     /**
-     * @psalm-param class-string $className
+     * @param class-string $className
      * @psalm-param array<string, mixed> $data
      */
     private function getEntityFromIdentityMap(string $className, array $data): object|bool

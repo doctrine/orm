@@ -10,9 +10,9 @@ use Doctrine\ORM\Mapping\ClassMetadata;
 class MetadataGenerator
 {
     /**
-     * @psalm-param class-string<T> $entityName
+     * @param class-string<T> $entityName
      *
-     * @psalm-return ClassMetadata<T>
+     * @return ClassMetadata<T>
      */
     public function createMetadata(string $entityName): ClassMetadata
     {

@@ -22,8 +22,8 @@ class CollectionCacheKey extends CacheKey
     public readonly array $ownerIdentifier;
 
     /**
+     * @param class-string         $entityClass     The owner entity class.
      * @param array<string, mixed> $ownerIdentifier The identifier of the owning entity.
-     * @param class-string         $entityClass     The owner entity class
      */
     public function __construct(
         public readonly string $entityClass,

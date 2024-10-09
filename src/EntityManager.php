@@ -474,9 +474,9 @@ class EntityManager implements EntityManagerInterface
     /**
      * Gets the repository for an entity class.
      *
-     * @psalm-param class-string<T> $className
+     * @param class-string<T> $className The name of the entity.
      *
-     * @psalm-return EntityRepository<T>
+     * @return EntityRepository<T> The repository class.
      *
      * @template T of object
      */
