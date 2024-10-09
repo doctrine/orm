@@ -203,7 +203,7 @@ class Parser
         Deprecation::trigger(
             'doctrine/orm',
             'https://github.com/doctrine/orm/pull/11641',
-            '%s is deprecated, set the output walker class in a query hint instead',
+            '%s is deprecated, set the output walker class with the \Doctrine\ORM\Query::HINT_CUSTOM_OUTPUT_WALKER query hint instead',
             __METHOD__
         );
 
