@@ -399,7 +399,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     /**
      * Gets the lower-case short name of a class.
      *
-     * @psalm-param class-string $className
+     * @param class-string $className
      */
     private function getShortName(string $className): string
     {

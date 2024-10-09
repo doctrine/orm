@@ -40,7 +40,7 @@ abstract class DatabaseDriverTestCase extends OrmFunctionalTestCase
     /**
      * @param string[] $classNames
      *
-     * @psalm-return array<class-string, ClassMetadata>
+     * @return array<class-string, ClassMetadata>
      */
     protected function extractClassMetadata(array $classNames): array
     {

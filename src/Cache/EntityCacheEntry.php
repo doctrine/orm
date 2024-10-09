@@ -11,8 +11,8 @@ use function array_map;
 class EntityCacheEntry implements CacheEntry
 {
     /**
-     * @param array<string,mixed> $data The entity map data
-     * @psalm-param class-string $class The entity class name
+     * @param class-string        $class The entity class name
+     * @param array<string,mixed> $data  The entity map data
      */
     public function __construct(
         public readonly string $class,

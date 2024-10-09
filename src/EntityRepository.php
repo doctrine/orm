@@ -35,11 +35,11 @@ use function substr;
  */
 class EntityRepository implements ObjectRepository, Selectable
 {
-    /** @psalm-var class-string<T> */
+    /** @var class-string<T> */
     private readonly string $entityName;
     private static Inflector|null $inflector = null;
 
-    /** @psalm-param ClassMetadata<T> $class */
+    /** @param ClassMetadata<T> $class */
     public function __construct(
         private readonly EntityManagerInterface $em,
         private readonly ClassMetadata $class,
@@ -169,7 +169,7 @@ class EntityRepository implements ObjectRepository, Selectable
         ));
     }
 
-    /** @psalm-return class-string<T> */
+    /** @return class-string<T> */
     protected function getEntityName(): string
     {
         return $this->entityName;
