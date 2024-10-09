@@ -1852,14 +1852,6 @@ class Parser
      */
     public function PartialObjectExpression()
     {
-        if ($this->query->getHydrationMode() === Query::HYDRATE_OBJECT) {
-            Deprecation::trigger(
-                'doctrine/orm',
-                'https://github.com/doctrine/orm/issues/8471',
-                'PARTIAL syntax in DQL is deprecated for object hydration.'
-            );
-        }
-
         $this->match(TokenType::T_PARTIAL);
 
         $partialFieldSet = [];

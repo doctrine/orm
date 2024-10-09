@@ -2920,15 +2920,6 @@ EXCEPTION
      */
     public function createEntity($className, array $data, &$hints = [])
     {
-        if (isset($hints[SqlWalker::HINT_PARTIAL])) {
-            Deprecation::trigger(
-                'doctrine/orm',
-                'https://github.com/doctrine/orm/issues/8471',
-                'Partial Objects are deprecated for object hydration (here entity %s)',
-                $className
-            );
-        }
-
         $class = $this->em->getClassMetadata($className);
 
         $id     = $this->identifierFlattener->flattenIdentifier($class, $data);

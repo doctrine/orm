@@ -8,10 +8,12 @@ change in behavior.
 
 Progress on this is tracked at https://github.com/doctrine/orm/issues/11624 .
 
-## PARTIAL DQL syntax is undeprecated for non-object hydration
+## PARTIAL DQL syntax is undeprecated 
 
-Use of the PARTIAL keyword is not deprecated anymore in DQL when used with a hydrator
-that is not creating entities, such as the ArrayHydrator.
+Use of the PARTIAL keyword is not deprecated anymore in DQL, because we will be
+able to support PARTIAL objects with PHP 8.4 Lazy Objects and
+Symfony/VarExporter in a better way. When we decided to remove this feature
+these two abstractions did not exist yet.
 
 ## Deprecate `\Doctrine\ORM\Query\Parser::setCustomOutputTreeWalker()`
 
