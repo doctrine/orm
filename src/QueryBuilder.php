@@ -1361,8 +1361,8 @@ class QueryBuilder implements Stringable
      *      ->orWhere('u.username = ' . $qb->createNamedParameter('Bar', Types::STRING))
      *  </code>
      *
-     * @param ParameterType|ArrayParameterType|string|int|null $type        ParameterType::*, ArrayParameterType::* or \Doctrine\DBAL\Types\Type::* constant
-     * @param non-empty-string|null                            $placeholder The name to bind with. The string must start with a colon ':'.
+     * @param ParameterType|ArrayParameterType|string|null $type        ParameterType::*, ArrayParameterType::* or \Doctrine\DBAL\Types\Type::* constant
+     * @param non-empty-string|null                        $placeholder The name to bind with. The string must start with a colon ':'.
      *
      * @return non-empty-string the placeholder name used.
      */
