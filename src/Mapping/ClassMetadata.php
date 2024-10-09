@@ -1039,6 +1039,7 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
      */
     public function getColumnName(string $fieldName): string
     {
+        // @phpstan-ignore property.deprecated
         return $this->columnNames[$fieldName] ?? $fieldName;
     }
 
@@ -1188,6 +1189,7 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
             $mapping->quoted     = true;
         }
 
+        // @phpstan-ignore property.deprecated
         $this->columnNames[$mapping->fieldName] = $mapping->columnName;
 
         if (isset($this->fieldNames[$mapping->columnName]) || ($this->discriminatorColumn && $this->discriminatorColumn->name === $mapping->columnName)) {
@@ -1768,6 +1770,7 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
 
         unset($this->fieldMappings[$fieldName]);
         unset($this->fieldNames[$mapping->columnName]);
+        // @phpstan-ignore property.deprecated
         unset($this->columnNames[$mapping->fieldName]);
 
         $overrideMapping = $this->validateAndCompleteFieldMapping($overrideMapping);
@@ -1918,8 +1921,9 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
     public function addInheritedFieldMapping(FieldMapping $fieldMapping): void
     {
         $this->fieldMappings[$fieldMapping->fieldName] = $fieldMapping;
-        $this->columnNames[$fieldMapping->fieldName]   = $fieldMapping->columnName;
-        $this->fieldNames[$fieldMapping->columnName]   = $fieldMapping->fieldName;
+        // @phpstan-ignore property.deprecated
+        $this->columnNames[$fieldMapping->fieldName] = $fieldMapping->columnName;
+        $this->fieldNames[$fieldMapping->columnName] = $fieldMapping->fieldName;
 
         if (isset($fieldMapping->generated)) {
             $this->requiresFetchAfterChange = true;

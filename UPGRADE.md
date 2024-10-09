@@ -733,6 +733,14 @@ Use `toIterable()` instead.
 
 # Upgrade to 2.20
 
+## Explictly forbid property hooks
+
+Property hooks are not supported yet by Doctrine ORM. Until support is added,
+they are explicitly forbidden because the support would result in a breaking
+change in behavior.
+
+Progress on this is tracked at https://github.com/doctrine/orm/issues/11624 .
+
 ## PARTIAL DQL syntax is undeprecated for non-object hydration
 
 Use of the PARTIAL keyword is not deprecated anymore in DQL when used with a hydrator
