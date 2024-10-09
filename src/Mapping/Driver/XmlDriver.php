@@ -411,6 +411,7 @@ class XmlDriver extends FileDriver
                         /** @psalm-suppress DeprecatedConstant */
                         $orderBy[(string) $orderByField['name']] = isset($orderByField['direction'])
                             ? (string) $orderByField['direction']
+                            // @phpstan-ignore classConstant.deprecated
                             : (enum_exists(Order::class) ? Order::Ascending->value : Criteria::ASC);
                     }
 
@@ -540,6 +541,7 @@ class XmlDriver extends FileDriver
                         /** @psalm-suppress DeprecatedConstant */
                         $orderBy[(string) $orderByField['name']] = isset($orderByField['direction'])
                             ? (string) $orderByField['direction']
+                            // @phpstan-ignore classConstant.deprecated
                             : (enum_exists(Order::class) ? Order::Ascending->value : Criteria::ASC);
                     }
 

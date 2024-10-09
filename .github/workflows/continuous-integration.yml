@@ -36,6 +36,7 @@ jobs:
           - "8.1"
           - "8.2"
           - "8.3"
+          - "8.4"
         dbal-version:
           - "default"
         extension:
@@ -106,6 +107,7 @@ jobs:
         php-version:
           - "8.2"
           - "8.3"
+          - "8.4"
         dbal-version:
           - "default"
         postgres-version:
@@ -178,6 +180,7 @@ jobs:
         php-version:
           - "8.2"
           - "8.3"
+          - "8.4"
         dbal-version:
           - "default"
           - "4@dev"
@@ -243,6 +246,7 @@ jobs:
         php-version:
           - "8.2"
           - "8.3"
+          - "8.4"
         dbal-version:
           - "default"
         mysql-version:

@@ -301,6 +301,7 @@ class QueryBuilder implements Stringable
         } else {
             // Should never happen with correct joining order. Might be
             // thoughtful to throw exception instead.
+            // @phpstan-ignore method.deprecated
             $rootAlias = $this->getRootAlias();
         }
 
@@ -583,6 +584,7 @@ class QueryBuilder implements Stringable
             $newDqlPart = [];
 
             foreach ($dqlPart as $k => $v) {
+                // @phpstan-ignore method.deprecated
                 $k = is_numeric($k) ? $this->getRootAlias() : $k;
 
                 $newDqlPart[$k] = $v;
