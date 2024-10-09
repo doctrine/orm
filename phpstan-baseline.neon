@@ -171,6 +171,16 @@ parameters:
 			path: src/Proxy/ProxyFactory.php
 
 		-
+			message: "#^Call to an undefined method ReflectionClass\\<object\\>\\:\\:newLazyGhost\\(\\)\\.$#"
+			count: 1
+			path: src/Proxy/ProxyFactory.php
+
+		-
+			message: "#^Call to an undefined method ReflectionProperty\\:\\:setRawValueWithoutLazyInitialization\\(\\)\\.$#"
+			count: 1
+			path: src/Proxy/ProxyFactory.php
+
+		-
 			message: "#^Call to an undefined static method Doctrine\\\\ORM\\\\Proxy\\\\ProxyFactory\\:\\:createLazyGhost\\(\\)\\.$#"
 			count: 1
 			path: src/Proxy/ProxyFactory.php

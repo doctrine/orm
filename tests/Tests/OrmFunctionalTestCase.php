@@ -193,6 +193,7 @@ use function strtolower;
 use function var_export;
 
 use const PHP_EOL;
+use const PHP_VERSION_ID;
 
 /**
  * Base testcase class for all functional ORM testcases.
@@ -941,6 +942,12 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             $this->isSecondLevelCacheEnabled = true;
         }
 
+        $enableLazyProxy = getenv('ENABLE_LAZY_PROXY');
+
+        if (PHP_VERSION_ID >= 80400 && $enableLazyProxy) {
+            $config->setLazyProxyEnabled(true);
+        }
+
         $config->setMetadataDriverImpl(
             $mappingDriver ?? new AttributeDriver([
                 realpath(__DIR__ . '/Models/Cache'),
@@ -1117,5 +1124,10 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
     final protected function isUninitializedObject(object $entity): bool
     {
         return $this->_em->getUnitOfWork()->isUninitializedObject($entity);
+    }
+
+    final protected function initializeObject(object $entity): void
+    {
+        $this->_em->getUnitOfWork()->initializeObject($entity);
     }
 }

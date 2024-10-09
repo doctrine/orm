@@ -163,8 +163,23 @@ EOPHP;
      * @param class-string $className
      * @param array<mixed> $identifier
      */
-    public function getProxy(string $className, array $identifier): InternalProxy
+    public function getProxy(string $className, array $identifier): object
     {
+        if ($this->em->getConfiguration()->isLazyProxyEnabled()) {
+            $classMetadata   = $this->em->getClassMetadata($className);
+            $entityPersister = $this->uow->getEntityPersister($className);
+
+            $proxy = $classMetadata->reflClass->newLazyGhost(static function ($object) use ($identifier, $entityPersister): void {
+                $entityPersister->loadById($identifier, $object);
+            });
+
+            foreach ($identifier as $idField => $value) {
+                $classMetadata->reflFields[$idField]->setRawValueWithoutLazyInitialization($proxy, $value);
+            }
+
+            return $proxy;
+        }
+
         $proxyFactory = $this->proxyFactories[$className] ?? $this->getProxyFactory($className);
 
         return $proxyFactory($identifier);
@@ -182,6 +197,10 @@ EOPHP;
      */
     public function generateProxyClasses(array $classes, string|null $proxyDir = null): int
     {
+        if ($this->em->getConfiguration()->isLazyProxyEnabled()) {
+            return 0;
+        }
+
         $generated = 0;
 
         foreach ($classes as $class) {
