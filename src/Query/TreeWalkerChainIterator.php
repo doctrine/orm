@@ -49,10 +49,7 @@ class TreeWalkerChainIterator implements Iterator, ArrayAccess
         $this->parserResult    = $parserResult;
     }
 
-    /**
-     * @return string|false
-     * @psalm-return class-string<TreeWalker>|false
-     */
+    /** @return class-string<TreeWalker>|false */
     #[ReturnTypeWillChange]
     public function rewind()
     {

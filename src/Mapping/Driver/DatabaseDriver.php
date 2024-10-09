@@ -185,8 +185,8 @@ class DatabaseDriver implements MappingDriver
     /**
      * {@inheritDoc}
      *
-     * @psalm-param class-string<T> $className
-     * @psalm-param ClassMetadata<T> $metadata
+     * @param class-string<T>  $className
+     * @param ClassMetadata<T> $metadata
      *
      * @template T of object
      */
@@ -533,7 +533,7 @@ class DatabaseDriver implements MappingDriver
     /**
      * Returns the mapped class name for a table if it exists. Otherwise return "classified" version.
      *
-     * @psalm-return class-string
+     * @return class-string
      */
     private function getClassNameForTable(string $tableName): string
     {

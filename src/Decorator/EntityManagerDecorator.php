@@ -50,7 +50,7 @@ abstract class EntityManagerDecorator extends ObjectManagerDecorator implements 
     /**
      * {@inheritDoc}
      *
-     * @psalm-param class-string<T> $className
+     * @param class-string<T> $className
      *
      * @psalm-return EntityRepository<T>
      *

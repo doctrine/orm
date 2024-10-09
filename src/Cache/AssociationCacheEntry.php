@@ -21,15 +21,13 @@ class AssociationCacheEntry implements CacheEntry
      * The entity class name
      *
      * @readonly Public only for performance reasons, it should be considered immutable.
-     * @var string
-     * @psalm-var class-string
+     * @var class-string
      */
     public $class;
 
     /**
-     * @param string               $class      The entity class.
+     * @param class-string         $class      The entity class.
      * @param array<string, mixed> $identifier The entity identifier.
-     * @psalm-param class-string $class
      */
     public function __construct($class, array $identifier)
     {

@@ -420,7 +420,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     /**
      * Gets the lower-case short name of a class.
      *
-     * @psalm-param class-string $className
+     * @param class-string $className
      */
     private function getShortName(string $className): string
     {
@@ -850,8 +850,10 @@ DEPRECATION
      */
     protected function getFqcnFromAlias($namespaceAlias, $simpleClassName)
     {
-        /** @psalm-var class-string */
-        return $this->em->getConfiguration()->getEntityNamespace($namespaceAlias) . '\\' . $simpleClassName;
+        /** @var class-string $classString */
+        $classString = $this->em->getConfiguration()->getEntityNamespace($namespaceAlias) . '\\' . $simpleClassName;
+
+        return $classString;
     }
 
     /**

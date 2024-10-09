@@ -31,7 +31,7 @@ use const DIRECTORY_SEPARATOR;
  */
 class EntityRepositoryGenerator
 {
-    /** @psalm-var class-string|null */
+    /** @var class-string|null */
     private $repositoryName;
 
     /** @var string */
@@ -80,7 +80,7 @@ class <className> extends <repositoryName>
     /**
      * Generates the namespace, if class do not have namespace, return empty string instead.
      *
-     * @psalm-param class-string $fullClassName
+     * @param class-string $fullClassName
      */
     private function getClassNamespace(string $fullClassName): string
     {
@@ -90,7 +90,7 @@ class <className> extends <repositoryName>
     /**
      * Generates the class name
      *
-     * @psalm-param class-string $fullClassName
+     * @param class-string $fullClassName
      */
     private function generateClassName(string $fullClassName): string
     {
@@ -108,7 +108,7 @@ class <className> extends <repositoryName>
     /**
      * Generates the namespace statement, if class do not have namespace, return empty string instead.
      *
-     * @psalm-param class-string $fullClassName The full repository class name.
+     * @param class-string $fullClassName The full repository class name.
      */
     private function generateEntityRepositoryNamespace(string $fullClassName): string
     {

@@ -18,8 +18,7 @@ use Doctrine\ORM\EntityRepository;
 final class Entity implements MappingAttribute
 {
     /**
-     * @var string|null
-     * @psalm-var class-string<EntityRepository<T>>|null
+     * @var class-string<EntityRepository<T>>|null
      * @readonly
      */
     public $repositoryClass;

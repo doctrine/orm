@@ -33,8 +33,7 @@ final class ReflectionPropertiesGetter
     }
 
     /**
-     * @param string $className
-     * @psalm-param class-string $className
+     * @param class-string $className
      *
      * @return ReflectionProperty[] indexed by property internal name
      */
@@ -57,7 +56,7 @@ final class ReflectionPropertiesGetter
     }
 
     /**
-     * @psalm-param class-string $className
+     * @param class-string $className
      *
      * @return ReflectionClass[]
      * @psalm-return list<ReflectionClass<object>>

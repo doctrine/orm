@@ -134,7 +134,7 @@ class AnnotationDriverTest extends MappingDriverTestCase
         return $this->createAnnotationDriver();
     }
 
-    /** @psalm-var class-string<object> $entityClassName */
+    /** @var class-string<object> $entityClassName */
     protected function ensureIsLoaded(string $entityClassName): void
     {
         new $entityClassName();
@@ -241,7 +241,7 @@ class AnnotationDriverTest extends MappingDriverTestCase
     }
 
     /**
-     * @psalm-param class-string $class
+     * @param class-string $class
      *
      * @dataProvider provideDiscriminatorColumnTestcases
      */
