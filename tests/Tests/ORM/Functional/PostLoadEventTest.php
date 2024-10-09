@@ -136,6 +136,27 @@ class PostLoadEventTest extends OrmFunctionalTestCase
         $userProxy->getName();
     }
 
+    public function testLoadedProxyPartialShouldTriggerEvent(): void
+    {
+        $eventManager = $this->_em->getEventManager();
+
+        // Should not be invoked during getReference call
+        $mockListener = $this->createMock(PostLoadListener::class);
+
+        // CmsUser (partially loaded), CmsAddress (inverse ToOne), 2 CmsPhonenumber
+        $mockListener
+            ->expects(self::exactly(4))
+            ->method('postLoad')
+            ->will(self::returnValue(true));
+
+        $eventManager->addEventListener([Events::postLoad], $mockListener);
+
+        $query = $this->_em->createQuery('SELECT PARTIAL u.{id, name}, p FROM Doctrine\Tests\Models\CMS\CmsUser u JOIN u.phonenumbers p WHERE u.id = :id');
+
+        $query->setParameter('id', $this->userId);
+        $query->getResult();
+    }
+
     public function testLoadedProxyAssociationToOneShouldTriggerEvent(): void
     {
         $user = $this->_em->find(CmsUser::class, $this->userId);

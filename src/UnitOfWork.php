@@ -12,6 +12,7 @@ use Doctrine\Common\EventManager;
 use Doctrine\DBAL;
 use Doctrine\DBAL\Connections\PrimaryReadReplicaConnection;
 use Doctrine\DBAL\LockMode;
+use Doctrine\Deprecations\Deprecation;
 use Doctrine\ORM\Cache\Persister\CachedPersister;
 use Doctrine\ORM\Event\ListenersInvoker;
 use Doctrine\ORM\Event\OnClearEventArgs;
@@ -2355,10 +2356,6 @@ class UnitOfWork implements PropertyChangedListener
      */
     public function createEntity(string $className, array $data, array &$hints = []): object
     {
-        if (isset($hints[SqlWalker::HINT_PARTIAL])) {
-            throw HydrationException::partialObjectHydrationDisallowed();
-        }
-
         $class = $this->em->getClassMetadata($className);
 
         $id     = $this->identifierFlattener->flattenIdentifier($class, $data);
@@ -2415,6 +2412,18 @@ class UnitOfWork implements PropertyChangedListener
 
         if (isset($this->eagerLoadingEntities[$class->rootEntityName]) && ! $this->eagerLoadingEntities[$class->rootEntityName]) {
             unset($this->eagerLoadingEntities[$class->rootEntityName]);
+        }
+
+        // Properly initialize any unfetched associations, if partial objects are not allowed.
+        if (isset($hints[Query::HINT_FORCE_PARTIAL_LOAD])) {
+            Deprecation::trigger(
+                'doctrine/orm',
+                'https://github.com/doctrine/orm/issues/8471',
+                'Partial Objects are deprecated (here entity %s)',
+                $className,
+            );
+
+            return $entity;
         }
 
         foreach ($class->associationMappings as $field => $assoc) {

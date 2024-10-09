@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Query;
 
 use Doctrine\Common\Lexer\Token;
+use Doctrine\Deprecations\Deprecation;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Internal\Hydration\HydrationException;
 use Doctrine\ORM\Mapping\AssociationMapping;
@@ -1674,10 +1675,6 @@ final class Parser
      */
     public function PartialObjectExpression(): AST\PartialObjectExpression
     {
-        if ($this->query->getHydrationMode() === Query::HYDRATE_OBJECT) {
-            throw HydrationException::partialObjectHydrationDisallowed();
-        }
-
         $this->match(TokenType::T_PARTIAL);
 
         $partialFieldSet = [];

@@ -137,7 +137,7 @@ final class LimitSubqueryOutputWalkerTest extends PaginationTestCase
         );
     }
 
-    public function testCountQueryWithComplexScalarOrderByItemJoined(): void
+    public function testCountQueryWithComplexScalarOrderByItemJoinedWithoutPartial(): void
     {
         $this->entityManager = $this->createTestEntityManagerWithPlatform(new MySQLPlatform());
 

@@ -651,15 +651,6 @@ class UnitOfWorkTest extends OrmTestCase
 
         $this->_unitOfWork->persist($phone2);
     }
-
-    public function testItThrowsWhenCreateEntityWithSqlWalkerPartialQueryHint(): void
-    {
-        $this->expectException(HydrationException::class);
-        $this->expectExceptionMessage('Hydration of entity objects is not allowed when DQL PARTIAL keyword is used.');
-
-        $hints = [SqlWalker::HINT_PARTIAL => true];
-        $this->_unitOfWork->createEntity(VersionedAssignedIdentifierEntity::class, ['id' => 1], $hints);
-    }
 }
 
 

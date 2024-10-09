@@ -116,15 +116,6 @@ class ParserTest extends OrmTestCase
         $parser->match(TokenType::T_SELECT);
     }
 
-    public function testPartialExpressionWithObjectHydratorThrows(): void
-    {
-        $this->expectException(HydrationException::class);
-        $this->expectExceptionMessage('Hydration of entity objects is not allowed when DQL PARTIAL keyword is used.');
-
-        $parser = $this->createParser(CmsUser::class);
-        $parser->PartialObjectExpression();
-    }
-
     private function createParser(string $dql): Parser
     {
         $query = new Query($this->getTestEntityManager());

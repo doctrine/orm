@@ -38,6 +38,7 @@
    reference/native-sql
    reference/change-tracking-policies
    reference/partial-hydration
+   reference/partial-objects
    reference/attributes-reference
    reference/xml-mapping
    reference/php-mapping

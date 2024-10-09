@@ -321,6 +321,11 @@ class SqlWalker
             $sql .= implode(' AND ', array_filter($sqlParts));
         }
 
+        // Ignore subclassing inclusion if partial objects is disallowed
+        if ($this->query->getHint(Query::HINT_FORCE_PARTIAL_LOAD)) {
+            return $sql;
+        }
+
         // LEFT JOIN child class tables
         foreach ($class->subClasses as $subClassName) {
             $subClass   = $this->em->getClassMetadata($subClassName);
@@ -659,7 +664,8 @@ class SqlWalker
             $this->query->setHint(self::HINT_DISTINCT, true);
         }
 
-        $addMetaColumns = $this->query->getHydrationMode() === Query::HYDRATE_OBJECT
+        $addMetaColumns = ! $this->query->getHint(Query::HINT_FORCE_PARTIAL_LOAD) &&
+            $this->query->getHydrationMode() === Query::HYDRATE_OBJECT
             || $this->query->getHint(Query::HINT_INCLUDE_META_COLUMNS);
 
         foreach ($this->selectedClasses as $selectedClass) {
@@ -1398,28 +1404,30 @@ class SqlWalker
                 // 1) on Single Table Inheritance: always, since its marginal overhead
                 // 2) on Class Table Inheritance only if partial objects are disallowed,
                 //    since it requires outer joining subtables.
-                foreach ($class->subClasses as $subClassName) {
-                    $subClass      = $this->em->getClassMetadata($subClassName);
-                    $sqlTableAlias = $this->getSQLTableAlias($subClass->getTableName(), $dqlAlias);
+                if ($class->isInheritanceTypeSingleTable() || ! $this->query->getHint(Query::HINT_FORCE_PARTIAL_LOAD)) {
+                    foreach ($class->subClasses as $subClassName) {
+                        $subClass = $this->em->getClassMetadata($subClassName);
+                        $sqlTableAlias = $this->getSQLTableAlias($subClass->getTableName(), $dqlAlias);
 
-                    foreach ($subClass->fieldMappings as $fieldName => $mapping) {
-                        if (isset($mapping->inherited) || ($partialFieldSet && ! in_array($fieldName, $partialFieldSet, true))) {
-                            continue;
+                        foreach ($subClass->fieldMappings as $fieldName => $mapping) {
+                            if (isset($mapping->inherited) || ($partialFieldSet && !in_array($fieldName, $partialFieldSet, true))) {
+                                continue;
+                            }
+
+                            $columnAlias = $this->getSQLColumnAlias($mapping->columnName);
+                            $quotedColumnName = $this->quoteStrategy->getColumnName($fieldName, $subClass, $this->platform);
+
+                            $col = $sqlTableAlias . '.' . $quotedColumnName;
+
+                            $type = Type::getType($mapping->type);
+                            $col = $type->convertToPHPValueSQL($col, $this->platform);
+
+                            $sqlParts[] = $col . ' AS ' . $columnAlias;
+
+                            $this->scalarResultAliasMap[$resultAlias][] = $columnAlias;
+
+                            $this->rsm->addFieldResult($dqlAlias, $columnAlias, $fieldName, $subClassName);
                         }
-
-                        $columnAlias      = $this->getSQLColumnAlias($mapping->columnName);
-                        $quotedColumnName = $this->quoteStrategy->getColumnName($fieldName, $subClass, $this->platform);
-
-                        $col = $sqlTableAlias . '.' . $quotedColumnName;
-
-                        $type = Type::getType($mapping->type);
-                        $col  = $type->convertToPHPValueSQL($col, $this->platform);
-
-                        $sqlParts[] = $col . ' AS ' . $columnAlias;
-
-                        $this->scalarResultAliasMap[$resultAlias][] = $columnAlias;
-
-                        $this->rsm->addFieldResult($dqlAlias, $columnAlias, $fieldName, $subClassName);
                     }
                 }
 
