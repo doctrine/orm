@@ -166,6 +166,11 @@ parameters:
 			path: src/Mapping/ClassMetadataFactory.php
 
 		-
+			message: "#^Call to an undefined method ReflectionProperty\\:\\:getHooks\\(\\)\\.$#"
+			count: 1
+			path: src/Mapping/ClassMetadataInfo.php
+
+		-
 			message: "#^Method Doctrine\\\\ORM\\\\Mapping\\\\NamingStrategy\\:\\:joinColumnName\\(\\) invoked with 2 parameters, 1 required\\.$#"
 			count: 2
 			path: src/Mapping/ClassMetadataInfo.php
