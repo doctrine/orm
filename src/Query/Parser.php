@@ -10,6 +10,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\AST\Functions;
+use Doctrine\ORM\Query\Exec\SqlFinalizer;
 use LogicException;
 use ReflectionClass;
 
@@ -398,6 +399,14 @@ class Parser
             $finalizer = $outputWalker->getFinalizer($AST);
             $this->parserResult->setSqlFinalizer($finalizer);
         } else {
+            Deprecation::trigger(
+                'doctrine/orm',
+                'https://github.com/doctrine/orm/pull/11188/',
+                'Your output walker class %s should implement %s in order to provide a %s. This also means the output walker should not use the query firstResult/maxResult values, which should be read from the query by the SqlFinalizer only.',
+                $outputWalkerClass,
+                OutputWalker::class,
+                SqlFinalizer::class
+            );
             $executor = $outputWalker->getExecutor($AST);
             $this->parserResult->setSqlExecutor($executor);
         }

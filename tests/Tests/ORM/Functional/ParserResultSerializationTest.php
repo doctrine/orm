@@ -49,8 +49,7 @@ class ParserResultSerializationTest extends OrmFunctionalTestCase
         $this->assertInstanceOf(ParserResult::class, $unserialized);
         $this->assertInstanceOf(ResultSetMapping::class, $unserialized->getResultSetMapping());
         $this->assertEquals(['name' => [0]], $unserialized->getParameterMappings());
-        $this->assertFalse($unserialized->hasSqlFinalizer());
-        $this->assertInstanceOf(SingleSelectExecutor::class, $unserialized->getSqlExecutor());
+        $this->assertNotNull($unserialized->prepareSqlExecutor($query));
     }
 
     /**
@@ -69,8 +68,7 @@ class ParserResultSerializationTest extends OrmFunctionalTestCase
         $this->assertInstanceOf(ParserResult::class, $unserialized);
         $this->assertInstanceOf(ResultSetMapping::class, $unserialized->getResultSetMapping());
         $this->assertEquals(['name' => [0]], $unserialized->getParameterMappings());
-        $this->assertTrue($unserialized->hasSqlFinalizer());
-        $this->assertNotNull($unserialized->getSqlFinalizer());
+        $this->assertNotNull($unserialized->prepareSqlExecutor($query));
     }
 
     /** @return Generator<string, array{Closure(ParserResult): ParserResult}> */

@@ -292,11 +292,7 @@ class Query extends AbstractQuery
 
     private function initializeSqlExecutor(): void
     {
-        if ($this->parserResult->hasSqlFinalizer()) {
-            $this->sqlExecutor = $this->parserResult->getSqlFinalizer()->createExecutor($this);
-        } else {
-            $this->sqlExecutor = $this->parserResult->getSqlExecutor();
-        }
+        $this->sqlExecutor = $this->parserResult->prepareSqlExecutor($this);
     }
 
     /**
@@ -842,7 +838,7 @@ class Query extends AbstractQuery
                 Deprecation::trigger(
                     'doctrine/orm',
                     'https://github.com/doctrine/orm/pull/11188/',
-                    'Your output walker class %s should implement %s and provide a %s. This also means the output walker should not use the query firstResult/maxResult values, which should be added in the finalization phase only.',
+                    'Your output walker class %s should implement %s in order to provide a %s. This also means the output walker should not use the query firstResult/maxResult values, which should be read from the query by the SqlFinalizer only.',
                     $outputWalkerClass,
                     OutputWalker::class,
                     SqlFinalizer::class

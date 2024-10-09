@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Query;
 
+use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\Exec\AbstractSqlExecutor;
 use Doctrine\ORM\Query\Exec\SqlFinalizer;
 use LogicException;
@@ -88,6 +89,7 @@ class ParserResult
      * @param AbstractSqlExecutor $executor
      *
      * @return void
+     * @deprecated
      */
     public function setSqlExecutor($executor)
     {
@@ -97,6 +99,7 @@ class ParserResult
     /**
      * Gets the SQL executor used by this ParserResult.
      *
+     * @deprecated
      * @return ?AbstractSqlExecutor
      */
     public function getSqlExecutor()
@@ -109,24 +112,17 @@ class ParserResult
         $this->sqlFinalizer = $finalizer;
     }
 
-    public function getSqlFinalizer(): SqlFinalizer
+    public function prepareSqlExecutor(Query $query): AbstractSqlExecutor
     {
-        if ($this->sqlFinalizer === null) {
-            throw new LogicException('This ParserResult was not created with an SqlFinalizer');
+        if (null !== $this->sqlFinalizer) {
+            return $this->sqlFinalizer->createExecutor($query);
         }
 
-        return $this->sqlFinalizer;
-    }
+        if (null !== $this->sqlExecutor) {
+            return $this->sqlExecutor;
+        }
 
-    /**
-     * @internal
-     *
-     * @psalm-internal Doctrine\ORM\Query
-     * @psalm-assert-if-true !null $this->sqlFinalizer
-     */
-    public function hasSqlFinalizer(): bool
-    {
-        return $this->sqlFinalizer !== null;
+        throw new LogicException('This ParserResult lacks both the SqlFinalizer as well as the (legacy) SqlExecutor');
     }
 
     /**
