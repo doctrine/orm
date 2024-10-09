@@ -42,6 +42,7 @@ class DefaultQuoteStrategy implements QuoteStrategy
         if (! empty($class->table['schema'])) {
             $tableName = $class->table['schema'] . '.' . $class->table['name'];
 
+            // @phpstan-ignore method.deprecated
             if (! $platform->supportsSchemas() && $platform->canEmulateSchemas()) {
                 $tableName = $class->table['schema'] . '__' . $class->table['name'];
             }
@@ -90,7 +91,8 @@ class DefaultQuoteStrategy implements QuoteStrategy
         $schema = '';
 
         if (isset($association['joinTable']['schema'])) {
-            $schema  = $association['joinTable']['schema'];
+            $schema = $association['joinTable']['schema'];
+            // @phpstan-ignore method.deprecated
             $schema .= ! $platform->supportsSchemas() && $platform->canEmulateSchemas() ? '__' : '.';
         }
 

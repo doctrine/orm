@@ -173,6 +173,7 @@ EOPHP;
             $this->isLazyGhostObjectEnabled = false;
 
             $proxyGenerator = new ProxyGenerator($proxyDir, $proxyNs);
+            // @phpstan-ignore classConstant.deprecatedInterface
             $proxyGenerator->setPlaceholder('baseProxyInterface', LegacyProxy::class);
 
             parent::__construct($proxyGenerator, $em->getMetadataFactory(), $autoGenerate);

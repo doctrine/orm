@@ -3,6 +3,8 @@ includes:
     - phpstan-params.neon
 
 parameters:
+    reportUnmatchedIgnoredErrors: false
+
     ignoreErrors:
         # deprecations from doctrine/dbal:3.x
         - '/^Call to an undefined method Doctrine\\DBAL\\Platforms\\AbstractPlatform::getGuidExpression\(\).$/'
@@ -70,3 +72,13 @@ parameters:
             paths:
                 - src/Mapping/Driver/XmlDriver.php
                 - src/Mapping/Driver/YamlDriver.php
+
+        # Extending a deprecated class conditionally to maintain BC
+        -
+            message: '~deprecated class Doctrine\\Persistence\\Mapping\\Driver\\AnnotationDriver\:~'
+            path: src/Mapping/Driver/CompatibilityAnnotationDriver.php
+
+        # We're sniffing for this deprecated class in order to detect Persistence 2
+        -
+            message: '~deprecated class Doctrine\\Common\\Persistence\\PersistentObject\:~'
+            path: src/EntityManager.php

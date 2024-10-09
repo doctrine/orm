@@ -61,6 +61,11 @@ parameters:
             count: 2
             path: src/Mapping/ClassMetadataFactory.php
 
+        - '~^Call to deprecated method getSQLResultCasing\(\) of class Doctrine\\DBAL\\Platforms\\AbstractPlatform\.$~'
+        -
+            message: '~deprecated class Doctrine\\DBAL\\Tools\\Console\\Command\\ImportCommand\:~'
+            path: src/Tools/Console/ConsoleRunner.php
+
         # Symfony cache supports passing a key prefix to the clear method.
         - '/^Method Psr\\Cache\\CacheItemPoolInterface\:\:clear\(\) invoked with 1 parameter, 0 required\.$/'
 

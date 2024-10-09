@@ -84,7 +84,11 @@ class Lexer extends AbstractLexer
     public const T_CLOSE_CURLY_BRACE = TokenType::T_CLOSE_CURLY_BRACE;
 
     // All tokens that are identifiers or keywords that could be considered as identifiers should be >= 100
-    /** @deprecated No Replacement planned. */
+    /**
+     * @deprecated No Replacement planned.
+     *
+     * @phpstan-ignore classConstant.deprecated
+     */
     public const T_ALIASED_NAME = TokenType::T_ALIASED_NAME;
 
     /** @deprecated use {@see TokenType::T_FULLY_QUALIFIED_NAME} */
@@ -341,6 +345,7 @@ class Lexer extends AbstractLexer
                         $value
                     );
 
+                    // @phpstan-ignore classConstant.deprecated
                     return TokenType::T_ALIASED_NAME;
                 }
 

@@ -981,6 +981,7 @@ class Parser
             return $this->lexer->token->value;
         }
 
+        // @phpstan-ignore classConstant.deprecated
         $this->match(TokenType::T_ALIASED_NAME);
 
         assert($this->lexer->token !== null);
@@ -2577,6 +2578,8 @@ class Parser
      *         AST\InstanceOfExpression|
      *         AST\LikeExpression|
      *         AST\NullComparisonExpression)
+     *
+     * @phpstan-ignore return.deprecatedClass
      */
     public function SimpleConditionalExpression()
     {

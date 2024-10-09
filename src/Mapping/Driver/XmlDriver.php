@@ -122,6 +122,7 @@ class XmlDriver extends FileDriver
         // Evaluate named queries
         if (isset($xmlRoot->{'named-queries'})) {
             foreach ($xmlRoot->{'named-queries'}->{'named-query'} ?? [] as $namedQueryElement) {
+                // @phpstan-ignore method.deprecated
                 $metadata->addNamedQuery(
                     [
                         'name'  => (string) $namedQueryElement['name'],
@@ -134,6 +135,7 @@ class XmlDriver extends FileDriver
         // Evaluate native named queries
         if (isset($xmlRoot->{'named-native-queries'})) {
             foreach ($xmlRoot->{'named-native-queries'}->{'named-native-query'} ?? [] as $nativeQueryElement) {
+                // @phpstan-ignore method.deprecated
                 $metadata->addNamedNativeQuery(
                     [
                         'name'              => isset($nativeQueryElement['name']) ? (string) $nativeQueryElement['name'] : null,
@@ -489,6 +491,7 @@ class XmlDriver extends FileDriver
                         /** @psalm-suppress DeprecatedConstant */
                         $orderBy[(string) $orderByField['name']] = isset($orderByField['direction'])
                             ? (string) $orderByField['direction']
+                            // @phpstan-ignore classConstant.deprecated
                             : (class_exists(Order::class) ? (Order::Ascending)->value : Criteria::ASC);
                     }
 
@@ -618,6 +621,7 @@ class XmlDriver extends FileDriver
                         /** @psalm-suppress DeprecatedConstant */
                         $orderBy[(string) $orderByField['name']] = isset($orderByField['direction'])
                             ? (string) $orderByField['direction']
+                            // @phpstan-ignore classConstant.deprecated
                             : (class_exists(Order::class) ? (Order::Ascending)->value : Criteria::ASC);
                     }
 

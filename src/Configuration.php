@@ -269,6 +269,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
         );
 
         if (! isset($this->_attributes['entityNamespaces'][$entityNamespaceAlias])) {
+            // @phpstan-ignore staticMethod.deprecatedClass
             throw UnknownEntityNamespace::fromNamespaceAlias($entityNamespaceAlias);
         }
 
@@ -314,6 +315,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
     {
         // Compatibility with DBAL 2
         if (! method_exists(parent::class, 'getResultCache')) {
+            // @phpstan-ignore method.deprecated
             $cacheImpl = $this->getResultCacheImpl();
 
             return $cacheImpl ? CacheAdapter::wrap($cacheImpl) : null;
@@ -329,6 +331,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
     {
         // Compatibility with DBAL 2
         if (! method_exists(parent::class, 'setResultCache')) {
+            // @phpstan-ignore method.deprecated
             $this->setResultCacheImpl(DoctrineProvider::wrap($cache));
 
             return;

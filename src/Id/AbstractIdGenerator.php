@@ -73,6 +73,7 @@ abstract class AbstractIdGenerator
             throw new InvalidArgumentException('Unsupported entity manager implementation.');
         }
 
+        // @phpstan-ignore method.deprecated
         return $this->generate($em, $entity);
     }
 

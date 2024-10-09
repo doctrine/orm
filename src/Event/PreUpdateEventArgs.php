@@ -13,6 +13,8 @@ use function sprintf;
 
 /**
  * Class that holds event arguments for a preUpdate event.
+ *
+ * @phpstan-ignore class.extendsDeprecatedClass
  */
 class PreUpdateEventArgs extends LifecycleEventArgs
 {
@@ -26,6 +28,7 @@ class PreUpdateEventArgs extends LifecycleEventArgs
      */
     public function __construct($entity, EntityManagerInterface $em, array &$changeSet)
     {
+        // @phpstan-ignore staticMethod.deprecatedClass
         parent::__construct($entity, $em);
 
         $this->entityChangeSet = &$changeSet;

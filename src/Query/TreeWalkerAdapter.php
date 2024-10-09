@@ -806,6 +806,7 @@ abstract class TreeWalkerAdapter implements TreeWalker
 
     final protected function getMetadataForDqlAlias(string $dqlAlias): ClassMetadata
     {
+        // @phpstan-ignore method.deprecated
         $metadata = $this->_getQueryComponents()[$dqlAlias]['metadata'] ?? null;
 
         if ($metadata === null) {
