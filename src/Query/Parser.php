@@ -200,6 +200,13 @@ class Parser
      */
     public function setCustomOutputTreeWalker($className)
     {
+        Deprecation::trigger(
+            'doctrine/orm',
+            'https://github.com/doctrine/orm/pull/11641',
+            '%s is deprecated, set the output walker class in a query hint instead',
+            __METHOD__
+        );
+
         $this->customOutputWalker = $className;
     }
 
