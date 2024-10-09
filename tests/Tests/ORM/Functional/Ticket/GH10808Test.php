@@ -15,8 +15,6 @@ use Doctrine\ORM\UnitOfWork;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use PHPUnit\Framework\Attributes\Group;
 
-use function get_class;
-
 #[Group('GH10808')]
 class GH10808Test extends OrmFunctionalTestCase
 {
@@ -49,18 +47,11 @@ class GH10808Test extends OrmFunctionalTestCase
         // Clear the EM to prevent the recovery of the loaded instance, which would otherwise result in a proxy.
         $this->_em->clear();
 
+        self::assertTrue($this->_em->getUnitOfWork()->isUninitializedObject($deferredLoadResult->child));
+
         $eagerLoadResult = $query->setHint(UnitOfWork::HINT_DEFEREAGERLOAD, false)->getSingleResult();
 
-        self::assertNotEquals(
-            GH10808AppointmentChild::class,
-            get_class($deferredLoadResult->child),
-            '$deferredLoadResult->child should be a proxy',
-        );
-        self::assertEquals(
-            GH10808AppointmentChild::class,
-            get_class($eagerLoadResult->child),
-            '$eagerLoadResult->child should not be a proxy',
-        );
+        self::assertFalse($this->_em->getUnitOfWork()->isUninitializedObject($eagerLoadResult->child));
     }
 }
 

@@ -583,7 +583,7 @@ parameters:
 			path: src/EntityManager.php
 
 		-
-			message: '#^Method Doctrine\\ORM\\EntityManager\:\:getReference\(\) should return \(T of object\)\|null but returns Doctrine\\ORM\\Proxy\\InternalProxy\.$#'
+			message: '#^Method Doctrine\\ORM\\EntityManager\:\:getReference\(\) should return \(T of object\)\|null but returns object\.$#'
 			identifier: return.type
 			count: 1
 			path: src/EntityManager.php
@@ -2318,12 +2318,6 @@ parameters:
 
 		-
 			message: '#^Method Doctrine\\ORM\\Proxy\\ProxyFactory\:\:generateUseLazyGhostTrait\(\) has parameter \$class with generic interface Doctrine\\Persistence\\Mapping\\ClassMetadata but does not specify its types\: T$#'
-			identifier: missingType.generics
-			count: 1
-			path: src/Proxy/ProxyFactory.php
-
-		-
-			message: '#^Method Doctrine\\ORM\\Proxy\\ProxyFactory\:\:getProxy\(\) return type with generic interface Doctrine\\ORM\\Proxy\\InternalProxy does not specify its types\: T$#'
 			identifier: missingType.generics
 			count: 1
 			path: src/Proxy/ProxyFactory.php
