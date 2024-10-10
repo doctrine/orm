@@ -8,7 +8,7 @@ use Closure;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\Exec\FinalizedSelectExecutor;
 use Doctrine\ORM\Query\Exec\PreparedExecutorFinalizer;
-use Doctrine\ORM\Query\Exec\SqlFinalizer;
+use Doctrine\ORM\Query\Exec\SingleSelectExecutor;
 use Doctrine\ORM\Query\ParserResult;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\Tests\OrmFunctionalTestCase;
@@ -146,11 +146,11 @@ class ParserResultSerializationTest extends OrmFunctionalTestCase
     public function testSymfony44ProvidedData(): void
     {
         $sqlExecutor      = new FinalizedSelectExecutor('test');
-        $sqlFinalizeer    = new PreparedExecutorFinalizer($sqlExecutor);
+        $sqlFinalizer     = new PreparedExecutorFinalizer($sqlExecutor);
         $resultSetMapping = $this->createMock(ResultSetMapping::class);
 
         $parserResult = new ParserResult();
-        $parserResult->setSqlFinalizer($sqlFinalizeer);
+        $parserResult->setSqlFinalizer($sqlFinalizer);
         $parserResult->setResultSetMapping($resultSetMapping);
         $parserResult->addParameterMapping('name', 0);
 
