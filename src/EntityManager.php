@@ -259,7 +259,9 @@ class EntityManager implements EntityManagerInterface
         } finally {
             if (! $successful) {
                 $this->close();
-                $this->conn->rollBack();
+                if ($this->conn->isTransactionActive()) {
+                    $this->conn->rollBack();
+                }
             }
         }
     }
@@ -285,7 +287,9 @@ class EntityManager implements EntityManagerInterface
         } finally {
             if (! $successful) {
                 $this->close();
-                $this->conn->rollBack();
+                if ($this->conn->isTransactionActive()) {
+                    $this->conn->rollBack();
+                }
             }
         }
     }

@@ -29,6 +29,7 @@ use Doctrine\Tests\OrmTestCase;
 use Exception;
 use Generator;
 use InvalidArgumentException;
+use PHPUnit\Framework\Assert;
 use stdClass;
 use TypeError;
 
@@ -407,6 +408,33 @@ class EntityManagerTest extends OrmTestCase
             self::assertNotNull($e->getPrevious());
             self::assertSame('Original exception', $e->getPrevious()->getMessage());
         }
+    }
+
+    /** @dataProvider entityManagerMethodNames */
+    public function testItDoesNotAttemptToRollbackIfNoTransactionIsActive(string $methodName): void
+    {
+        $entityManager = new EntityManagerMock(
+            new class extends ConnectionMock {
+                public function commit(): bool
+                {
+                    throw new Exception('Commit exception that happens after doing the actual commit');
+                }
+
+                public function rollBack(): bool
+                {
+                    Assert::fail('Should not attempt to rollback if no transaction is active');
+                }
+
+                public function isTransactionActive(): bool
+                {
+                    return false;
+                }
+            }
+        );
+
+        $this->expectExceptionMessage('Commit exception');
+        $entityManager->$methodName(static function (): void {
+        });
     }
 
     /** @return Generator<string, array{string}> */
