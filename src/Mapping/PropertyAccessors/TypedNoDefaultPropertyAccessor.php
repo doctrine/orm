@@ -23,7 +23,7 @@ class TypedNoDefaultPropertyAccessor implements PropertyAccessor
             ));
         }
 
-        if (! $this->reflectionProperty->getType()->allowsNull()) {
+        if ($this->reflectionProperty->getType()->allowsNull()) {
             throw new InvalidArgumentException(sprintf(
                 '%s::$%s must not be nullable when used with TypedNoDefaultPropertyAccessor',
                 $this->reflectionProperty->getDeclaringClass()->getName(),

@@ -279,7 +279,11 @@ EOPHP;
         $entityPersister  = $this->uow->getEntityPersister($className);
         $initializer      = $this->createLazyInitializer($class, $entityPersister, $this->identifierFlattener);
         $proxyClassName   = $this->loadProxyClass($class);
-        $identifierFields = array_intersect_key($class->getReflectionProperties(), $identifiers);
+        $identifierFields = [];
+
+        foreach ($identifiers as $identifier => $_) {
+            $identifierFields[$identifier] = $class->getReflectionProperty($identifier);
+        }
 
         $proxyFactory = Closure::bind(static function (array $identifier) use ($initializer, $skippedProperties, $identifierFields, $className): InternalProxy {
             $proxy = self::createLazyGhost(static function (InternalProxy $object) use ($initializer, $identifier): void {
