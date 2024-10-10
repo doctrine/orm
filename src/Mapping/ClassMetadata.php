@@ -569,19 +569,19 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
      * Gets the ReflectionProperties of the mapped class.
      *
      * @return ReflectionProperty[]|null[] An array of ReflectionProperty instances.
-     * @psalm-return array<ReflectionProperty|null>|LegacyReflectionFields<string, ReflectionProperty>
+     * @psalm-return array<ReflectionProperty|null>
      */
-    public function getReflectionProperties(): array|LegacyReflectionFields
+    public function getPropertyAccessors(): array
     {
-        return $this->reflFields;
+        return $this->propertyAccessors;
     }
 
     /**
      * Gets a ReflectionProperty for a specific field of the mapped class.
      */
-    public function getReflectionProperty(string $name): ReflectionProperty|null
+    public function getPropertyAccessor(string $name): PropertyAccessor|null
     {
-        return $this->reflFields[$name];
+        return $this->propertyAccessors[$name];
     }
 
     /**
@@ -595,7 +595,7 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
             throw new BadMethodCallException('Class ' . $this->name . ' has a composite identifier.');
         }
 
-        return $this->reflFields[$this->identifier[0]];
+        return $this->propertyAccessors[$this->identifier[0]];
     }
 
     /**
@@ -612,7 +612,7 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
             $id = [];
 
             foreach ($this->identifier as $idField) {
-                $value = $this->reflFields[$idField]->getValue($entity);
+                $value = $this->propertyAccessors[$idField]->getValue($entity);
 
                 if ($value !== null) {
                     $id[$idField] = $value;
@@ -623,7 +623,7 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
         }
 
         $id    = $this->identifier[0];
-        $value = $this->reflFields[$id]->getValue($entity);
+        $value = $this->propertyAccessors[$id]->getValue($entity);
 
         if ($value === null) {
             return [];
@@ -642,7 +642,7 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
     public function setIdentifierValues(object $entity, array $id): void
     {
         foreach ($id as $idField => $idValue) {
-            $this->reflFields[$idField]->setValue($entity, $idValue);
+            $this->propertyAccessors[$idField]->setValue($entity, $idValue);
         }
     }
 
@@ -651,7 +651,7 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
      */
     public function setFieldValue(object $entity, string $field, mixed $value): void
     {
-        $this->reflFields[$field]->setValue($entity, $value);
+        $this->propertyAccessors[$field]->setValue($entity, $value);
     }
 
     /**
@@ -659,7 +659,7 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
      */
     public function getFieldValue(object $entity, string $field): mixed
     {
-        return $this->reflFields[$field]->getValue($entity);
+        return $this->propertyAccessors[$field]->getValue($entity);
     }
 
     /**

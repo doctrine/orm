@@ -232,8 +232,8 @@ EOPHP;
 
             $class = $entityPersister->getClassMetadata();
 
-            foreach ($class->getReflectionProperties() as $property) {
-                if (! $property || isset($identifier[$property->getName()]) || ! $class->hasField($property->getName()) && ! $class->hasAssociation($property->getName())) {
+            foreach ($class->getPropertyAccessors() as $name => $property) {
+                if (! $property || isset($identifier[$name]) || ! $class->hasField($name) && ! $class->hasAssociation($name)) {
                     continue;
                 }
 
@@ -282,7 +282,7 @@ EOPHP;
         $identifierFields = [];
 
         foreach ($identifiers as $identifier => $_) {
-            $identifierFields[$identifier] = $class->getReflectionProperty($identifier);
+            $identifierFields[$identifier] = $class->getPropertyAccessor($identifier);
         }
 
         $proxyFactory = Closure::bind(static function (array $identifier) use ($initializer, $skippedProperties, $identifierFields, $className): InternalProxy {
