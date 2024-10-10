@@ -15,9 +15,6 @@ use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\QuoteStrategy;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\Query;
-use Doctrine\ORM\Query\Exec\PreparedExecutorFinalizer;
-use Doctrine\ORM\Query\Exec\SingleSelectSqlFinalizer;
-use Doctrine\ORM\Query\Exec\SqlFinalizer;
 use Doctrine\ORM\Utility\HierarchyDiscriminatorResolver;
 use Doctrine\ORM\Utility\PersisterHelper;
 use InvalidArgumentException;
@@ -278,13 +275,13 @@ class SqlWalker implements TreeWalker
     /**
      * Gets an executor that can be used to execute the result of this walker.
      *
-     * @param AST\DeleteStatement|AST\UpdateStatement|AST\SelectStatement $AST
-     *
-     * @return Exec\AbstractSqlExecutor
-     *
      * @deprecated Output walkers should no longer create the executor directly, but instead provide
      *             a SqlFinalizer by implementing the `OutputWalker` interface. Thus, this method is
      *             no longer needed and will be removed in 4.0.
+     *
+     * @param AST\DeleteStatement|AST\UpdateStatement|AST\SelectStatement $AST
+     *
+     * @return Exec\AbstractSqlExecutor
      */
     public function getExecutor($AST)
     {
@@ -300,9 +297,7 @@ class SqlWalker implements TreeWalker
         }
     }
 
-    /**
-     * @psalm-internal Doctrine\ORM
-     */
+    /** @psalm-internal Doctrine\ORM */
     protected function createUpdateStatementExecutor(AST\UpdateStatement $AST): Exec\AbstractSqlExecutor
     {
         $primaryClass = $this->em->getClassMetadata($AST->updateClause->abstractSchemaName);
@@ -312,9 +307,7 @@ class SqlWalker implements TreeWalker
             : new Exec\SingleTableDeleteUpdateExecutor($AST, $this);
     }
 
-    /**
-     * @psalm-internal Doctrine\ORM
-     */
+    /** @psalm-internal Doctrine\ORM */
     protected function createDeleteStatementExecutor(AST\DeleteStatement $AST): Exec\AbstractSqlExecutor
     {
         $primaryClass = $this->em->getClassMetadata($AST->deleteClause->abstractSchemaName);
