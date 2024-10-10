@@ -8,8 +8,8 @@ use Doctrine\DBAL\Result;
 use Doctrine\ORM\Internal\Hydration\ObjectHydrator;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\ResultSetMapping;
-use Doctrine\Performance\ArrayResultFactory;
 use Doctrine\Performance\EntityManagerFactory;
+use Doctrine\Tests\Mocks\ArrayResultFactory;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use PhpBench\Benchmark\Metadata\Annotations\BeforeMethods;
 
