@@ -54,7 +54,7 @@ final class SimpleQueryPartialObjectHydrationPerformanceBench
             ];
         }
 
-        $this->result   = ArrayResultFactory::createFromArray($resultSet);
+        $this->result   = ArrayResultFactory::createWrapperResultFromArray($resultSet);
         $this->hydrator = new ObjectHydrator(EntityManagerFactory::getEntityManager([]));
         $this->rsm      = new ResultSetMapping();
 
