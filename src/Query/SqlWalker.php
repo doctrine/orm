@@ -278,6 +278,8 @@ class SqlWalker implements TreeWalker
      * @param AST\DeleteStatement|AST\UpdateStatement|AST\SelectStatement $AST
      *
      * @return Exec\AbstractSqlExecutor
+     *
+     * @not-deprecated
      */
     public function getExecutor($AST)
     {
