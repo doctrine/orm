@@ -86,10 +86,11 @@ class ParserResult
     /**
      * Sets the SQL executor that should be used for this ParserResult.
      *
+     * @deprecated
+     *
      * @param AbstractSqlExecutor $executor
      *
      * @return void
-     * @deprecated
      */
     public function setSqlExecutor($executor)
     {
@@ -100,6 +101,7 @@ class ParserResult
      * Gets the SQL executor used by this ParserResult.
      *
      * @deprecated
+     *
      * @return ?AbstractSqlExecutor
      */
     public function getSqlExecutor()
@@ -114,11 +116,11 @@ class ParserResult
 
     public function prepareSqlExecutor(Query $query): AbstractSqlExecutor
     {
-        if (null !== $this->sqlFinalizer) {
+        if ($this->sqlFinalizer !== null) {
             return $this->sqlFinalizer->createExecutor($query);
         }
 
-        if (null !== $this->sqlExecutor) {
+        if ($this->sqlExecutor !== null) {
             return $this->sqlExecutor;
         }
 

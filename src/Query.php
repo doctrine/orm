@@ -150,9 +150,6 @@ class Query extends AbstractQuery
      */
     private $parserResult;
 
-    /** @var ?AbstractSqlExecutor */
-    private $sqlExecutor;
-
     /**
      * The first result to return (the "offset").
      *
@@ -260,7 +257,6 @@ class Query extends AbstractQuery
             $parser = new Parser($this);
 
             $this->parserResult = $parser->parse();
-            $this->initializeSqlExecutor();
 
             return $this->parserResult;
         }
@@ -272,7 +268,6 @@ class Query extends AbstractQuery
             if ($cached instanceof ParserResult) {
                 // Cache hit.
                 $this->parserResult = $cached;
-                $this->initializeSqlExecutor();
 
                 return $this->parserResult;
             }
@@ -285,14 +280,7 @@ class Query extends AbstractQuery
 
         $queryCache->save($cacheItem->set($this->parserResult)->expiresAfter($this->queryCacheTTL));
 
-        $this->initializeSqlExecutor();
-
         return $this->parserResult;
-    }
-
-    private function initializeSqlExecutor(): void
-    {
-        $this->sqlExecutor = $this->parserResult->prepareSqlExecutor($this);
     }
 
     /**
@@ -873,8 +861,6 @@ class Query extends AbstractQuery
 
     private function getSqlExecutor(): AbstractSqlExecutor
     {
-        $this->parse();
-
-        return $this->sqlExecutor;
+        return $this->parse()->prepareSqlExecutor($this);
     }
 }
