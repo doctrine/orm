@@ -102,21 +102,4 @@ class ResultSetMappingTest extends OrmTestCase
 
         self::assertTrue($this->_rsm->hasIndexBy('lu'));
     }
-
-    public function testNewObjectNestedArgumentsDeepestLeavesShouldComeFirst(): void
-    {
-        $this->_rsm->addNewObjectAsArgument('objALevel2', 'objALevel1', 0);
-        $this->_rsm->addNewObjectAsArgument('objALevel3', 'objALevel2', 1);
-        $this->_rsm->addNewObjectAsArgument('objBLevel3', 'objBLevel2', 0);
-        $this->_rsm->addNewObjectAsArgument('objBLevel2', 'objBLevel1', 1);
-
-        $expectedArgumentMapping = [
-            'objALevel3' => ['ownerIndex' => 'objALevel2', 'argIndex' => 1],
-            'objALevel2' => ['ownerIndex' => 'objALevel1', 'argIndex' => 0],
-            'objBLevel3' => ['ownerIndex' => 'objBLevel2', 'argIndex' => 0],
-            'objBLevel2' => ['ownerIndex' => 'objBLevel1', 'argIndex' => 1],
-        ];
-
-        self::assertSame($expectedArgumentMapping, $this->_rsm->nestedNewObjectArguments);
-    }
 }

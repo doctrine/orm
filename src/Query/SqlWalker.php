@@ -1510,6 +1510,7 @@ class SqlWalker
                     $this->newObjectStack[] = [$objIndex, $argIndex];
                     $sqlSelectExpressions[] = $e->dispatch($this);
                     array_pop($this->newObjectStack);
+                    $this->rsm->nestedNewObjectArguments[$columnAlias] = ['ownerIndex' => $objIndex, 'argIndex' => $argIndex];
                     break;
 
                 case $e instanceof AST\Subselect:
@@ -1563,10 +1564,6 @@ class SqlWalker
                 'objIndex'  => $objIndex,
                 'argIndex'  => $argIndex,
             ];
-
-            if ($objOwner !== null && $objOwnerIdx !== null) {
-                $this->rsm->addNewObjectAsArgument($objIndex, $objOwner, $objOwnerIdx);
-            }
         }
 
         return implode(', ', $sqlSelectExpressions);
