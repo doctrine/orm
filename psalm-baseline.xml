@@ -1099,6 +1099,11 @@
       <code><![CDATA[$sql]]></code>
     </PropertyNotSetInConstructor>
   </file>
+  <file src="src/ORMSetup.php">
+    <UndefinedClass>
+      <code><![CDATA[MemcachedAdapter::createConnection('memcached://127.0.0.1')]]></code>
+    </UndefinedClass>
+  </file>
   <file src="src/PersistentCollection.php">
     <ImplementedReturnTypeMismatch>
       <code><![CDATA[Collection<TKey, T>]]></code>
@@ -2002,6 +2007,9 @@
     <ArgumentTypeCoercion>
       <code><![CDATA[$stringPattern]]></code>
     </ArgumentTypeCoercion>
+    <DeprecatedMethod>
+      <code><![CDATA[setSqlExecutor]]></code>
+    </DeprecatedMethod>
     <InvalidNullableReturnType>
       <code><![CDATA[AST\SelectStatement|AST\UpdateStatement|AST\DeleteStatement]]></code>
     </InvalidNullableReturnType>
@@ -2706,6 +2714,9 @@
       <code><![CDATA[new ClassLoader('Doctrine', $directory)]]></code>
       <code><![CDATA[new ClassLoader('Symfony\Component', $directory . '/Doctrine')]]></code>
     </DeprecatedClass>
+    <UndefinedClass>
+      <code><![CDATA[Memcached]]></code>
+    </UndefinedClass>
     <UnresolvableInclude>
       <code><![CDATA[require_once $directory . '/Doctrine/Common/ClassLoader.php']]></code>
       <code><![CDATA[require_once dirname($directory) . '/src/ClassLoader.php']]></code>
