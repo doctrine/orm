@@ -29,7 +29,7 @@ class LegacyReflectionFields implements \ArrayAccess, \IteratorAggregate
         }
 
         if (isset($this->classMetadata->propertyAccessors[$field])) {
-            $fieldName = str_contains('.', $field) ? $this->classMetadata->fieldMappings[$field]->originalField : $field;
+            $fieldName = str_contains($field, '.') ? $this->classMetadata->fieldMappings[$field]->originalField : $field;
             $className = $this->classMetadata->name;
 
             if (isset($this->classMetadata->fieldMappings[$field]) && $this->classMetadata->fieldMappings[$field]->originalClass !== null) {
@@ -53,10 +53,18 @@ class LegacyReflectionFields implements \ArrayAccess, \IteratorAggregate
                 }
 
                 if ($this->classMetadata->fieldMappings[$field]->originalField !== null) {
+                    $parentField = str_replace('.' . $fieldName, '', $field);
+
+                    if (!str_contains($parentField, '.')) {
+                        $parentClass = $this->classMetadata->name;
+                    } else {
+                        $parentClass = $this->classMetadata->fieldMappings[$parentField]->originalClass;
+                    }
+
                     $this->reflFields[$field] = new ReflectionEmbeddedProperty(
+                        $this->getAccessibleProperty($parentClass, $parentField),
                         $this->reflFields[$field],
-                        $this->getAccessibleProperty($this->classMetadata->fieldMappings[$field]->originalClass, $this->classMetadata->fieldMappings[$field]->originalField),
-                        $this->classMetadata->embeddedClasses[$fieldName]->class,
+                        $this->classMetadata->fieldMappings[$field]->originalClass,
                     );
                 }
             }
