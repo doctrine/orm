@@ -2,7 +2,7 @@
 
 namespace Doctrine\ORM\Mapping\PropertyAccessors;
 
-use ReflectionProperty;
+use BackedEnum;
 
 class EnumPropertyAccessor implements PropertyAccessor
 {

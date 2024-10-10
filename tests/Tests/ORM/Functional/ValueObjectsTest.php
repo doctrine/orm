@@ -45,30 +45,6 @@ class ValueObjectsTest extends OrmFunctionalTestCase
         );
     }
 
-    public function testMetadataHasReflectionEmbeddablesAccessible(): void
-    {
-        $classMetadata = $this->_em->getClassMetadata(DDC93Person::class);
-
-        if (class_exists(CommonRuntimePublicReflectionProperty::class)) {
-            self::assertInstanceOf(
-                CommonRuntimePublicReflectionProperty::class,
-                $classMetadata->getReflectionProperty('address'),
-            );
-        } elseif (class_exists(RuntimeReflectionProperty::class)) {
-            self::assertInstanceOf(
-                RuntimeReflectionProperty::class,
-                $classMetadata->getReflectionProperty('address'),
-            );
-        } else {
-            self::assertInstanceOf(
-                ReflectionProperty::class,
-                $classMetadata->getReflectionProperty('address'),
-            );
-        }
-
-        self::assertInstanceOf(ReflectionEmbeddedProperty::class, $classMetadata->getReflectionProperty('address.street'));
-    }
-
     public function testCRUD(): void
     {
         $person                   = new DDC93Person();
