@@ -50,7 +50,6 @@ use Doctrine\Persistence\PropertyChangedListener;
 use Exception;
 use InvalidArgumentException;
 use RuntimeException;
-use Throwable;
 use UnexpectedValueException;
 
 use function array_chunk;
@@ -427,6 +426,8 @@ class UnitOfWork implements PropertyChangedListener
         $conn = $this->em->getConnection();
         $conn->beginTransaction();
 
+        $successful = false;
+
         try {
             // Collection deletions (deletions of complete collections)
             foreach ($this->collectionDeletions as $collectionToDelete) {
@@ -478,16 +479,18 @@ class UnitOfWork implements PropertyChangedListener
 
                 throw new OptimisticLockException('Commit failed', $object);
             }
-        } catch (Throwable $e) {
-            $this->em->close();
 
-            if ($conn->isTransactionActive()) {
-                $conn->rollBack();
+            $successful = true;
+        } finally {
+            if (! $successful) {
+                $this->em->close();
+
+                if ($conn->isTransactionActive()) {
+                    $conn->rollBack();
+                }
+
+                $this->afterTransactionRolledBack();
             }
-
-            $this->afterTransactionRolledBack();
-
-            throw $e;
         }
 
         $this->afterTransactionComplete();
