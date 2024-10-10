@@ -4,7 +4,10 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Query;
 
+use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\Exec\AbstractSqlExecutor;
+use Doctrine\ORM\Query\Exec\SqlFinalizer;
+use LogicException;
 
 use function sprintf;
 
@@ -20,14 +23,22 @@ class ParserResult
         'sqlExecutor' => '_sqlExecutor',
         'resultSetMapping' => '_resultSetMapping',
         'parameterMappings' => '_parameterMappings',
+        'sqlFinalizer' => 'sqlFinalizer',
     ];
 
     /**
      * The SQL executor used for executing the SQL.
      *
-     * @var AbstractSqlExecutor
+     * @var ?AbstractSqlExecutor
      */
     private $sqlExecutor;
+
+    /**
+     * The SQL executor used for executing the SQL.
+     *
+     * @var ?SqlFinalizer
+     */
+    private $sqlFinalizer;
 
     /**
      * The ResultSetMapping that describes how to map the SQL result set.
@@ -75,6 +86,8 @@ class ParserResult
     /**
      * Sets the SQL executor that should be used for this ParserResult.
      *
+     * @deprecated
+     *
      * @param AbstractSqlExecutor $executor
      *
      * @return void
@@ -87,11 +100,31 @@ class ParserResult
     /**
      * Gets the SQL executor used by this ParserResult.
      *
-     * @return AbstractSqlExecutor
+     * @deprecated
+     *
+     * @return ?AbstractSqlExecutor
      */
     public function getSqlExecutor()
     {
         return $this->sqlExecutor;
+    }
+
+    public function setSqlFinalizer(SqlFinalizer $finalizer): void
+    {
+        $this->sqlFinalizer = $finalizer;
+    }
+
+    public function prepareSqlExecutor(Query $query): AbstractSqlExecutor
+    {
+        if ($this->sqlFinalizer !== null) {
+            return $this->sqlFinalizer->createExecutor($query);
+        }
+
+        if ($this->sqlExecutor !== null) {
+            return $this->sqlExecutor;
+        }
+
+        throw new LogicException('This ParserResult lacks both the SqlFinalizer as well as the (legacy) SqlExecutor');
     }
 
     /**

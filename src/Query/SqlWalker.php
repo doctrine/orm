@@ -16,7 +16,6 @@ use Doctrine\ORM\Mapping\QuoteStrategy;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Utility\HierarchyDiscriminatorResolver;
-use Doctrine\ORM\Utility\LockSqlHelper;
 use Doctrine\ORM\Utility\PersisterHelper;
 use InvalidArgumentException;
 use LogicException;
@@ -49,8 +48,6 @@ use function trim;
  */
 class SqlWalker implements TreeWalker
 {
-    use LockSqlHelper;
-
     public const HINT_DISTINCT = 'doctrine.distinct';
 
     /**
@@ -278,32 +275,46 @@ class SqlWalker implements TreeWalker
     /**
      * Gets an executor that can be used to execute the result of this walker.
      *
+     * @deprecated Output walkers should no longer create the executor directly, but instead provide
+     *             a SqlFinalizer by implementing the `OutputWalker` interface. Thus, this method is
+     *             no longer needed and will be removed in 4.0.
+     *
      * @param AST\DeleteStatement|AST\UpdateStatement|AST\SelectStatement $AST
      *
      * @return Exec\AbstractSqlExecutor
-     *
-     * @not-deprecated
      */
     public function getExecutor($AST)
     {
         switch (true) {
             case $AST instanceof AST\DeleteStatement:
-                $primaryClass = $this->em->getClassMetadata($AST->deleteClause->abstractSchemaName);
-
-                return $primaryClass->isInheritanceTypeJoined()
-                    ? new Exec\MultiTableDeleteExecutor($AST, $this)
-                    : new Exec\SingleTableDeleteUpdateExecutor($AST, $this);
+                return $this->createDeleteStatementExecutor($AST);
 
             case $AST instanceof AST\UpdateStatement:
-                $primaryClass = $this->em->getClassMetadata($AST->updateClause->abstractSchemaName);
-
-                return $primaryClass->isInheritanceTypeJoined()
-                    ? new Exec\MultiTableUpdateExecutor($AST, $this)
-                    : new Exec\SingleTableDeleteUpdateExecutor($AST, $this);
+                return $this->createUpdateStatementExecutor($AST);
 
             default:
                 return new Exec\SingleSelectExecutor($AST, $this);
         }
+    }
+
+    /** @psalm-internal Doctrine\ORM */
+    protected function createUpdateStatementExecutor(AST\UpdateStatement $AST): Exec\AbstractSqlExecutor
+    {
+        $primaryClass = $this->em->getClassMetadata($AST->updateClause->abstractSchemaName);
+
+        return $primaryClass->isInheritanceTypeJoined()
+            ? new Exec\MultiTableUpdateExecutor($AST, $this)
+            : new Exec\SingleTableDeleteUpdateExecutor($AST, $this);
+    }
+
+    /** @psalm-internal Doctrine\ORM */
+    protected function createDeleteStatementExecutor(AST\DeleteStatement $AST): Exec\AbstractSqlExecutor
+    {
+        $primaryClass = $this->em->getClassMetadata($AST->deleteClause->abstractSchemaName);
+
+        return $primaryClass->isInheritanceTypeJoined()
+            ? new Exec\MultiTableDeleteExecutor($AST, $this)
+            : new Exec\SingleTableDeleteUpdateExecutor($AST, $this);
     }
 
     /**
@@ -561,10 +572,15 @@ class SqlWalker implements TreeWalker
      */
     public function walkSelectStatement(AST\SelectStatement $AST)
     {
-        $limit    = $this->query->getMaxResults();
-        $offset   = $this->query->getFirstResult();
-        $lockMode = $this->query->getHint(Query::HINT_LOCK_MODE) ?: LockMode::NONE;
-        $sql      = $this->walkSelectClause($AST->selectClause)
+        $sql       = $this->createSqlForFinalizer($AST);
+        $finalizer = new Exec\SingleSelectSqlFinalizer($sql);
+
+        return $finalizer->finalizeSql($this->query);
+    }
+
+    protected function createSqlForFinalizer(AST\SelectStatement $AST): string
+    {
+        $sql = $this->walkSelectClause($AST->selectClause)
             . $this->walkFromClause($AST->fromClause)
             . $this->walkWhereClause($AST->whereClause);
 
@@ -585,31 +601,22 @@ class SqlWalker implements TreeWalker
             $sql .= ' ORDER BY ' . $orderBySql;
         }
 
-        $sql = $this->platform->modifyLimitQuery($sql, $limit, $offset);
-
-        if ($lockMode === LockMode::NONE) {
-            return $sql;
-        }
-
-        if ($lockMode === LockMode::PESSIMISTIC_READ) {
-            return $sql . ' ' . $this->getReadLockSQL($this->platform);
-        }
-
-        if ($lockMode === LockMode::PESSIMISTIC_WRITE) {
-            return $sql . ' ' . $this->getWriteLockSQL($this->platform);
-        }
-
-        if ($lockMode !== LockMode::OPTIMISTIC) {
-            throw QueryException::invalidLockMode();
-        }
-
-        foreach ($this->selectedClasses as $selectedClass) {
-            if (! $selectedClass['class']->isVersioned) {
-                throw OptimisticLockException::lockFailed($selectedClass['class']->name);
-            }
-        }
+        $this->assertOptimisticLockingHasAllClassesVersioned();
 
         return $sql;
+    }
+
+    private function assertOptimisticLockingHasAllClassesVersioned(): void
+    {
+        $lockMode = $this->query->getHint(Query::HINT_LOCK_MODE) ?: LockMode::NONE;
+
+        if ($lockMode === LockMode::OPTIMISTIC) {
+            foreach ($this->selectedClasses as $selectedClass) {
+                if (! $selectedClass['class']->isVersioned) {
+                    throw OptimisticLockException::lockFailed($selectedClass['class']->name);
+                }
+            }
+        }
     }
 
     /**

@@ -6,6 +6,7 @@ namespace Doctrine\Tests\ORM\Query;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Query;
+use Doctrine\ORM\Query\AST;
 use Doctrine\ORM\Query\QueryException;
 use Doctrine\ORM\Query\SqlWalker;
 use Doctrine\ORM\Query\TreeWalker;
@@ -110,13 +111,13 @@ class CustomTreeWalkersTest extends OrmTestCase
     }
 }
 
-class AddUnknownQueryComponentWalker extends Query\SqlWalker
+class AddUnknownQueryComponentWalker extends Query\SqlOutputWalker
 {
-    public function walkSelectStatement(Query\AST\SelectStatement $selectStatement): void
+    protected function createSqlForFinalizer(AST\SelectStatement $AST): string
     {
-        parent::walkSelectStatement($selectStatement);
-
         $this->setQueryComponent('x', []);
+
+        return parent::createSqlForFinalizer($AST);
     }
 }
 
