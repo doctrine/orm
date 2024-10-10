@@ -408,8 +408,10 @@ class Parser
                 SqlFinalizer::class
             );
             // @phpstan-ignore method.deprecated
+            /** @psalm-suppress DeprecatedMethod */
             $executor = $outputWalker->getExecutor($AST);
             // @phpstan-ignore method.deprecated
+            /** @psalm-suppress DeprecatedMethod */
             $this->parserResult->setSqlExecutor($executor);
         }
 

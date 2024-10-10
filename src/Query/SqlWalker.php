@@ -300,23 +300,10 @@ class SqlWalker implements TreeWalker
         }
     }
 
-    public function getFinalizer($AST): SqlFinalizer
-    {
-        switch (true) {
-            case $AST instanceof AST\SelectStatement:
-                return new SingleSelectSqlFinalizer($this->createSqlForFinalizer($AST));
-
-            case $AST instanceof AST\UpdateStatement:
-                return new PreparedExecutorFinalizer($this->createUpdateStatementExecutor($AST));
-
-            case $AST instanceof AST\DeleteStatement:
-                return new PreparedExecutorFinalizer($this->createDeleteStatementExecutor($AST));
-        }
-
-        throw new LogicException('Unexpected AST node type');
-    }
-
-    private function createUpdateStatementExecutor(AST\UpdateStatement $AST): Exec\AbstractSqlExecutor
+    /**
+     * @psalm-internal Doctrine\ORM
+     */
+    protected function createUpdateStatementExecutor(AST\UpdateStatement $AST): Exec\AbstractSqlExecutor
     {
         $primaryClass = $this->em->getClassMetadata($AST->updateClause->abstractSchemaName);
 
@@ -325,7 +312,10 @@ class SqlWalker implements TreeWalker
             : new Exec\SingleTableDeleteUpdateExecutor($AST, $this);
     }
 
-    private function createDeleteStatementExecutor(AST\DeleteStatement $AST): Exec\AbstractSqlExecutor
+    /**
+     * @psalm-internal Doctrine\ORM
+     */
+    protected function createDeleteStatementExecutor(AST\DeleteStatement $AST): Exec\AbstractSqlExecutor
     {
         $primaryClass = $this->em->getClassMetadata($AST->deleteClause->abstractSchemaName);
 
