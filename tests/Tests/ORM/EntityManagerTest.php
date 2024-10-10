@@ -21,16 +21,21 @@ use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\UnitOfWork;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
 use Doctrine\Persistence\Mapping\MappingException;
+use Doctrine\Tests\Mocks\ConnectionMock;
+use Doctrine\Tests\Mocks\EntityManagerMock;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\Models\GeoNames\Country;
 use Doctrine\Tests\OrmTestCase;
+use Exception;
 use Generator;
 use InvalidArgumentException;
+use PHPUnit\Framework\Assert;
 use stdClass;
 use TypeError;
 
 use function get_class;
 use function random_int;
+use function sprintf;
 use function sys_get_temp_dir;
 use function uniqid;
 
@@ -381,5 +386,62 @@ class EntityManagerTest extends OrmTestCase
         $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/issues/8459');
 
         $this->entityManager->flush($entity);
+    }
+
+    /** @dataProvider entityManagerMethodNames */
+    public function testItPreservesTheOriginalExceptionOnRollbackFailure(string $methodName): void
+    {
+        $entityManager = new EntityManagerMock(new class extends ConnectionMock {
+            public function rollBack(): bool
+            {
+                throw new Exception('Rollback exception');
+            }
+        });
+
+        try {
+            $entityManager->transactional(static function (): void {
+                throw new Exception('Original exception');
+            });
+            self::fail('Exception expected');
+        } catch (Exception $e) {
+            self::assertSame('Rollback exception', $e->getMessage());
+            self::assertNotNull($e->getPrevious());
+            self::assertSame('Original exception', $e->getPrevious()->getMessage());
+        }
+    }
+
+    /** @dataProvider entityManagerMethodNames */
+    public function testItDoesNotAttemptToRollbackIfNoTransactionIsActive(string $methodName): void
+    {
+        $entityManager = new EntityManagerMock(
+            new class extends ConnectionMock {
+                public function commit(): bool
+                {
+                    throw new Exception('Commit exception that happens after doing the actual commit');
+                }
+
+                public function rollBack(): bool
+                {
+                    Assert::fail('Should not attempt to rollback if no transaction is active');
+                }
+
+                public function isTransactionActive(): bool
+                {
+                    return false;
+                }
+            }
+        );
+
+        $this->expectExceptionMessage('Commit exception');
+        $entityManager->$methodName(static function (): void {
+        });
+    }
+
+    /** @return Generator<string, array{string}> */
+    public function entityManagerMethodNames(): Generator
+    {
+        foreach (['transactional', 'wrapInTransaction'] as $methodName) {
+            yield sprintf('%s()', $methodName) => [$methodName];
+        }
     }
 }

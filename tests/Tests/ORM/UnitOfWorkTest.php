@@ -41,6 +41,7 @@ use Doctrine\Tests\Models\GeoNames\City;
 use Doctrine\Tests\Models\GeoNames\Country;
 use Doctrine\Tests\OrmTestCase;
 use Doctrine\Tests\PHPUnitCompatibility\MockBuilderCompatibilityTools;
+use Exception;
 use PHPUnit\Framework\MockObject\MockObject;
 use stdClass;
 
@@ -970,6 +971,43 @@ class UnitOfWorkTest extends OrmTestCase
         $this->expectExceptionMessageMatches('/another object .* was already present for the same ID/');
 
         $this->_unitOfWork->persist($phone2);
+    }
+
+    public function testItPreservesTheOriginalExceptionOnRollbackFailure(): void
+    {
+        $this->_connectionMock = new class extends ConnectionMock {
+            public function commit(): bool
+            {
+                return false; // this should cause an exception
+            }
+
+            public function rollBack(): bool
+            {
+                throw new Exception('Rollback exception');
+            }
+        };
+        $this->_emMock         = new EntityManagerMock($this->_connectionMock);
+        $this->_unitOfWork     = new UnitOfWorkMock($this->_emMock);
+        $this->_emMock->setUnitOfWork($this->_unitOfWork);
+
+        // Setup fake persister and id generator
+        $userPersister = new EntityPersisterMock($this->_emMock, $this->_emMock->getClassMetadata(ForumUser::class));
+        $userPersister->setMockIdGeneratorType(ClassMetadata::GENERATOR_TYPE_IDENTITY);
+        $this->_unitOfWork->setEntityPersister(ForumUser::class, $userPersister);
+
+        // Create a test user
+        $user           = new ForumUser();
+        $user->username = 'Jasper';
+        $this->_unitOfWork->persist($user);
+
+        try {
+            $this->_unitOfWork->commit();
+            self::fail('Exception expected');
+        } catch (Exception $e) {
+            self::assertSame('Rollback exception', $e->getMessage());
+            self::assertNotNull($e->getPrevious());
+            self::assertSame('Commit failed', $e->getPrevious()->getMessage());
+        }
     }
 }
 

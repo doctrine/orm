@@ -32,7 +32,6 @@ use Doctrine\ORM\Repository\RepositoryFactory;
 use Doctrine\Persistence\Mapping\MappingException;
 use Doctrine\Persistence\ObjectRepository;
 use InvalidArgumentException;
-use Throwable;
 
 use function array_keys;
 use function class_exists;
@@ -246,18 +245,24 @@ class EntityManager implements EntityManagerInterface
 
         $this->conn->beginTransaction();
 
+        $successful = false;
+
         try {
             $return = $func($this);
 
             $this->flush();
             $this->conn->commit();
 
-            return $return ?: true;
-        } catch (Throwable $e) {
-            $this->close();
-            $this->conn->rollBack();
+            $successful = true;
 
-            throw $e;
+            return $return ?: true;
+        } finally {
+            if (! $successful) {
+                $this->close();
+                if ($this->conn->isTransactionActive()) {
+                    $this->conn->rollBack();
+                }
+            }
         }
     }
 
@@ -268,18 +273,24 @@ class EntityManager implements EntityManagerInterface
     {
         $this->conn->beginTransaction();
 
+        $successful = false;
+
         try {
             $return = $func($this);
 
             $this->flush();
             $this->conn->commit();
 
-            return $return;
-        } catch (Throwable $e) {
-            $this->close();
-            $this->conn->rollBack();
+            $successful = true;
 
-            throw $e;
+            return $return;
+        } finally {
+            if (! $successful) {
+                $this->close();
+                if ($this->conn->isTransactionActive()) {
+                    $this->conn->rollBack();
+                }
+            }
         }
     }
 
