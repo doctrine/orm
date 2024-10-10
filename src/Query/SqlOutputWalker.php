@@ -7,6 +7,7 @@ namespace Doctrine\ORM\Query;
 use Doctrine\ORM\Query\Exec\PreparedExecutorFinalizer;
 use Doctrine\ORM\Query\Exec\SingleSelectSqlFinalizer;
 use Doctrine\ORM\Query\Exec\SqlFinalizer;
+use LogicException;
 
 class SqlOutputWalker extends SqlWalker implements OutputWalker
 {
