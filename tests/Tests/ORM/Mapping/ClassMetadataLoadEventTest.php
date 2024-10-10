@@ -14,7 +14,6 @@ use Doctrine\ORM\Mapping\PropertyAccessors\PropertyAccessor;
 use Doctrine\ORM\Mapping\Table;
 use Doctrine\Tests\OrmTestCase;
 use PHPUnit\Framework\Attributes\Group;
-use ReflectionProperty;
 
 class ClassMetadataLoadEventTest extends OrmTestCase
 {
