@@ -51,7 +51,7 @@ class LanguageRecognitionTest extends OrmTestCase
         $parser = new Query\Parser($query);
 
         // We do NOT test SQL output here. That only unnecessarily slows down the tests!
-        $parser->setCustomOutputTreeWalker(NullSqlWalker::class);
+        $query->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, NullSqlWalker::class);
 
         return $parser->parse();
     }

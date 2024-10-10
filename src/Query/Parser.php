@@ -52,7 +52,7 @@ class Parser
 {
     /**
      * @readonly Maps BUILT-IN string function names to AST class names.
-     * @psalm-var array<string, class-string<Functions\FunctionNode>>
+     * @var array<string, class-string<Functions\FunctionNode>>
      */
     private static $stringFunctions = [
         'concat'    => Functions\ConcatFunction::class,
@@ -65,7 +65,7 @@ class Parser
 
     /**
      * @readonly Maps BUILT-IN numeric function names to AST class names.
-     * @psalm-var array<string, class-string<Functions\FunctionNode>>
+     * @var array<string, class-string<Functions\FunctionNode>>
      */
     private static $numericFunctions = [
         'length'    => Functions\LengthFunction::class,
@@ -88,7 +88,7 @@ class Parser
 
     /**
      * @readonly Maps BUILT-IN datetime function names to AST class names.
-     * @psalm-var array<string, class-string<Functions\FunctionNode>>
+     * @var array<string, class-string<Functions\FunctionNode>>
      */
     private static $datetimeFunctions = [
         'current_date'      => Functions\CurrentDateFunction::class,
@@ -163,7 +163,7 @@ class Parser
     /**
      * Any additional custom tree walkers that modify the AST.
      *
-     * @psalm-var list<class-string<TreeWalker>>
+     * @var list<class-string<TreeWalker>>
      */
     private $customTreeWalkers = [];
 
@@ -194,21 +194,26 @@ class Parser
      * Sets a custom tree walker that produces output.
      * This tree walker will be run last over the AST, after any other walkers.
      *
-     * @param string $className
-     * @psalm-param class-string<SqlWalker> $className
+     * @param class-string<SqlWalker> $className
      *
      * @return void
      */
     public function setCustomOutputTreeWalker($className)
     {
+        Deprecation::trigger(
+            'doctrine/orm',
+            'https://github.com/doctrine/orm/pull/11641',
+            '%s is deprecated, set the output walker class with the \Doctrine\ORM\Query::HINT_CUSTOM_OUTPUT_WALKER query hint instead',
+            __METHOD__
+        );
+
         $this->customOutputWalker = $className;
     }
 
     /**
      * Adds a custom tree walker for modifying the AST.
      *
-     * @param string $className
-     * @psalm-param class-string<TreeWalker> $className
+     * @param class-string<TreeWalker> $className
      *
      * @return void
      */
@@ -999,6 +1004,7 @@ class Parser
             return $this->lexer->token->value;
         }
 
+        // @phpstan-ignore classConstant.deprecated
         $this->match(TokenType::T_ALIASED_NAME);
 
         assert($this->lexer->token !== null);
@@ -2595,6 +2601,8 @@ class Parser
      *         AST\InstanceOfExpression|
      *         AST\LikeExpression|
      *         AST\NullComparisonExpression)
+     *
+     * @phpstan-ignore return.deprecatedClass
      */
     public function SimpleConditionalExpression()
     {

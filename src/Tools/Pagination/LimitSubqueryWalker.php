@@ -74,6 +74,7 @@ class LimitSubqueryWalker extends TreeWalkerAdapter
             return;
         }
 
+        // @phpstan-ignore method.deprecated
         $queryComponents = $this->_getQueryComponents();
         foreach ($AST->orderByClause->orderByItems as $item) {
             if ($item->expression instanceof PathExpression) {

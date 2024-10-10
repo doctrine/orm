@@ -73,8 +73,8 @@ class XmlDriver extends FileDriver
     /**
      * {@inheritDoc}
      *
-     * @psalm-param class-string<T> $className
-     * @psalm-param ClassMetadata<T> $metadata
+     * @param class-string<T>  $className
+     * @param ClassMetadata<T> $metadata
      *
      * @template T of object
      */
@@ -122,6 +122,7 @@ class XmlDriver extends FileDriver
         // Evaluate named queries
         if (isset($xmlRoot->{'named-queries'})) {
             foreach ($xmlRoot->{'named-queries'}->{'named-query'} ?? [] as $namedQueryElement) {
+                // @phpstan-ignore method.deprecated
                 $metadata->addNamedQuery(
                     [
                         'name'  => (string) $namedQueryElement['name'],
@@ -134,6 +135,7 @@ class XmlDriver extends FileDriver
         // Evaluate native named queries
         if (isset($xmlRoot->{'named-native-queries'})) {
             foreach ($xmlRoot->{'named-native-queries'}->{'named-native-query'} ?? [] as $nativeQueryElement) {
+                // @phpstan-ignore method.deprecated
                 $metadata->addNamedNativeQuery(
                     [
                         'name'              => isset($nativeQueryElement['name']) ? (string) $nativeQueryElement['name'] : null,
@@ -489,6 +491,7 @@ class XmlDriver extends FileDriver
                         /** @psalm-suppress DeprecatedConstant */
                         $orderBy[(string) $orderByField['name']] = isset($orderByField['direction'])
                             ? (string) $orderByField['direction']
+                            // @phpstan-ignore classConstant.deprecated
                             : (class_exists(Order::class) ? (Order::Ascending)->value : Criteria::ASC);
                     }
 
@@ -618,6 +621,7 @@ class XmlDriver extends FileDriver
                         /** @psalm-suppress DeprecatedConstant */
                         $orderBy[(string) $orderByField['name']] = isset($orderByField['direction'])
                             ? (string) $orderByField['direction']
+                            // @phpstan-ignore classConstant.deprecated
                             : (class_exists(Order::class) ? (Order::Ascending)->value : Criteria::ASC);
                     }
 
@@ -967,19 +971,19 @@ class XmlDriver extends FileDriver
 
         if (isset($xmlElement->entity)) {
             foreach ($xmlElement->entity as $entityElement) {
-                /** @psalm-var class-string $entityName */
+                /** @var class-string $entityName */
                 $entityName          = (string) $entityElement['name'];
                 $result[$entityName] = $entityElement;
             }
         } elseif (isset($xmlElement->{'mapped-superclass'})) {
             foreach ($xmlElement->{'mapped-superclass'} as $mappedSuperClass) {
-                /** @psalm-var class-string $className */
+                /** @var class-string $className */
                 $className          = (string) $mappedSuperClass['name'];
                 $result[$className] = $mappedSuperClass;
             }
         } elseif (isset($xmlElement->embeddable)) {
             foreach ($xmlElement->embeddable as $embeddableElement) {
-                /** @psalm-var class-string $embeddableName */
+                /** @var class-string $embeddableName */
                 $embeddableName          = (string) $embeddableElement['name'];
                 $result[$embeddableName] = $embeddableElement;
             }

@@ -94,7 +94,7 @@ abstract class MappingDriverTestCase extends OrmTestCase
     abstract protected function loadDriver(): MappingDriver;
 
     /**
-     * @psalm-param class-string<object> $entityClassName
+     * @param class-string<object> $entityClassName
      */
     public function createClassMetadata(
         string $entityClassName,

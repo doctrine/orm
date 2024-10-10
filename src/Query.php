@@ -347,6 +347,7 @@ class Query extends AbstractQuery
 
         $cache = method_exists(QueryCacheProfile::class, 'getResultCache')
             ? $this->_queryCacheProfile->getResultCache()
+            // @phpstan-ignore method.deprecated
             : $this->_queryCacheProfile->getResultCacheDriver();
 
         assert($cache !== null);

@@ -11,10 +11,10 @@ use function method_exists;
 trait MockBuilderCompatibilityTools
 {
     /**
-     * @param list<string> $onlyMethods
-     * @psalm-param class-string<TMockedType> $className
+     * @param class-string<TMockedType> $className
+     * @param list<string>              $onlyMethods
      *
-     * @psalm-return MockBuilder<TMockedType>
+     * @return MockBuilder<TMockedType>
      *
      * @template TMockedType of object
      */

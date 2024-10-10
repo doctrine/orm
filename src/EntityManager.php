@@ -30,7 +30,6 @@ use Doctrine\ORM\Query\FilterCollection;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\ORM\Repository\RepositoryFactory;
 use Doctrine\Persistence\Mapping\MappingException;
-use Doctrine\Persistence\ObjectRepository;
 use InvalidArgumentException;
 use Throwable;
 
@@ -162,8 +161,9 @@ class EntityManager implements EntityManagerInterface
             throw MissingMappingDriverImplementation::create();
         }
 
-        $this->conn         = $conn;
-        $this->config       = $config;
+        $this->conn   = $conn;
+        $this->config = $config;
+        // @phpstan-ignore method.deprecated
         $this->eventManager = $eventManager ?? $conn->getEventManager();
 
         $metadataFactoryClassName = $config->getClassMetadataFactoryName();
@@ -406,25 +406,23 @@ class EntityManager implements EntityManagerInterface
     /**
      * Finds an Entity by its identifier.
      *
-     * @param string   $className   The class name of the entity to find.
-     * @param mixed    $id          The identity of the entity to find.
-     * @param int|null $lockMode    One of the \Doctrine\DBAL\LockMode::* constants
-     *    or NULL if no specific lock mode should be used
-     *    during the search.
-     * @param int|null $lockVersion The version of the entity to find when using
-     * optimistic locking.
-     * @psalm-param class-string<T> $className
+     * @param class-string<T> $className   The class name of the entity to find.
+     * @param mixed           $id          The identity of the entity to find.
+     * @param int|null        $lockMode    One of the \Doctrine\DBAL\LockMode::* constants
+     *                                     or NULL if no specific lock mode should be used
+     *                                     during the search.
+     * @param int|null        $lockVersion The version of the entity to find when using
+     *                                     optimistic locking.
      * @psalm-param LockMode::*|null $lockMode
      *
-     * @return object|null The entity instance or NULL if the entity can not be found.
-     * @psalm-return ?T
+     * @return T|null The entity instance or NULL if the entity can not be found.
      *
      * @throws OptimisticLockException
      * @throws ORMInvalidArgumentException
      * @throws TransactionRequiredException
      * @throws ORMException
      *
-     * @template T
+     * @template T of object
      */
     public function find($className, $id, $lockMode = null, $lockVersion = null)
     {
@@ -615,6 +613,7 @@ class EntityManager implements EntityManagerInterface
     public function clear($entityName = null)
     {
         if ($entityName !== null && ! is_string($entityName)) {
+            // @phpstan-ignore staticMethod.deprecated
             throw ORMInvalidArgumentException::invalidEntityName($entityName);
         }
 
@@ -801,11 +800,9 @@ class EntityManager implements EntityManagerInterface
     /**
      * Gets the repository for an entity class.
      *
-     * @param string $entityName The name of the entity.
-     * @psalm-param class-string<T> $entityName
+     * @param class-string<T> $entityName The name of the entity.
      *
-     * @return ObjectRepository|EntityRepository The repository class.
-     * @psalm-return EntityRepository<T>
+     * @return EntityRepository<T> The repository class.
      *
      * @template T of object
      */
@@ -1109,6 +1106,7 @@ class EntityManager implements EntityManagerInterface
 
     private function configureLegacyMetadataCache(): void
     {
+        // @phpstan-ignore method.deprecated
         $metadataCache = $this->config->getMetadataCacheImpl();
         if (! $metadataCache) {
             return;

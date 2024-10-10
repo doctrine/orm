@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Query\AST;
 
+/** @phpstan-ignore class.extendsDeprecatedClass */
 class InSubselectExpression extends InExpression
 {
     /** @var Subselect */
@@ -14,6 +15,7 @@ class InSubselectExpression extends InExpression
         $this->subselect = $subselect;
         $this->not       = $not;
 
+        // @phpstan-ignore staticMethod.deprecatedClass
         parent::__construct($expression);
     }
 }

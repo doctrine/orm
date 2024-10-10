@@ -257,8 +257,7 @@ class ClassMetadataInfo implements ClassMetadata
     /**
      * READ-ONLY: The name of the entity class.
      *
-     * @var string
-     * @psalm-var class-string<T>
+     * @var class-string<T>
      */
     public $name;
 
@@ -275,8 +274,7 @@ class ClassMetadataInfo implements ClassMetadata
      * hierarchy. If the entity is not part of a mapped inheritance hierarchy this is the same
      * as {@link $name}.
      *
-     * @var string
-     * @psalm-var class-string
+     * @var class-string
      */
     public $rootEntityName;
 
@@ -300,8 +298,7 @@ class ClassMetadataInfo implements ClassMetadata
      * The name of the custom repository class used for the entity class.
      * (Optional).
      *
-     * @var string|null
-     * @psalm-var ?class-string<EntityRepository>
+     * @var class-string<EntityRepository>|null
      */
     public $customRepositoryClassName;
 
@@ -323,7 +320,7 @@ class ClassMetadataInfo implements ClassMetadata
      * READ-ONLY: The names of the parent <em>entity</em> classes (ancestors), starting with the
      * nearest one and ending with the root entity class.
      *
-     * @psalm-var list<class-string>
+     * @var list<class-string>
      */
     public $parentClasses = [];
 
@@ -350,7 +347,7 @@ class ClassMetadataInfo implements ClassMetadata
      * For subclasses of such root entities, the list can be reused/passed downwards, it only needs to
      * be filtered accordingly (only keep remaining subclasses)
      *
-     * @psalm-var list<class-string>
+     * @var list<class-string>
      */
     public $subClasses = [];
 
@@ -548,9 +545,7 @@ class ClassMetadataInfo implements ClassMetadata
      *
      * @see discriminatorColumn
      *
-     * @var array<int|string, string>
-     *
-     * @psalm-var array<int|string, class-string>
+     * @var array<int|string, class-string>
      */
     public $discriminatorMap = [];
 
@@ -811,8 +806,7 @@ class ClassMetadataInfo implements ClassMetadata
      * Initializes a new ClassMetadata instance that will hold the object-relational mapping
      * metadata of the class with the given name.
      *
-     * @param string $entityName The name of the entity class the new instance is used for.
-     * @psalm-param class-string<T> $entityName
+     * @param class-string<T> $entityName The name of the entity class the new instance is used for.
      */
     public function __construct($entityName, ?NamingStrategy $namingStrategy = null, ?TypedFieldMapper $typedFieldMapper = null)
     {
@@ -1405,6 +1399,7 @@ class ClassMetadataInfo implements ClassMetadata
      */
     public function getColumnName($fieldName)
     {
+        // @phpstan-ignore property.deprecated
         return $this->columnNames[$fieldName] ?? $fieldName;
     }
 
@@ -1659,6 +1654,7 @@ class ClassMetadataInfo implements ClassMetadata
             $mapping['quoted']     = true;
         }
 
+        // @phpstan-ignore property.deprecated
         $this->columnNames[$mapping['fieldName']] = $mapping['columnName'];
 
         if (isset($this->fieldNames[$mapping['columnName']]) || ($this->discriminatorColumn && $this->discriminatorColumn['name'] === $mapping['columnName'])) {
@@ -1683,6 +1679,7 @@ class ClassMetadataInfo implements ClassMetadata
             }
         }
 
+        // @phpstan-ignore method.deprecated
         if (Type::hasType($mapping['type']) && Type::getType($mapping['type'])->canRequireSQLConversion()) {
             if (isset($mapping['id']) && $mapping['id'] === true) {
                  throw MappingException::sqlConversionNotAllowedForIdentifiers($this->name, $mapping['fieldName'], $mapping['type']);
@@ -2423,7 +2420,7 @@ class ClassMetadataInfo implements ClassMetadata
      * Assumes that the class names in the passed array are in the order:
      * directParent -> directParentParent -> directParentParentParent ... -> root.
      *
-     * @psalm-param list<class-string> $classNames
+     * @param list<class-string> $classNames
      *
      * @return void
      */
@@ -2576,6 +2573,7 @@ class ClassMetadataInfo implements ClassMetadata
 
         unset($this->fieldMappings[$fieldName]);
         unset($this->fieldNames[$mapping['columnName']]);
+        // @phpstan-ignore property.deprecated
         unset($this->columnNames[$mapping['fieldName']]);
 
         $overrideMapping = $this->validateAndCompleteFieldMapping($overrideMapping);
@@ -2699,6 +2697,7 @@ class ClassMetadataInfo implements ClassMetadata
      */
     private function isInheritanceType(int $type): bool
     {
+        // @phpstan-ignore classConstant.deprecated
         if ($type === self::INHERITANCE_TYPE_TABLE_PER_CLASS) {
             Deprecation::trigger(
                 'doctrine/orm',
@@ -2710,6 +2709,7 @@ class ClassMetadataInfo implements ClassMetadata
         return $type === self::INHERITANCE_TYPE_NONE ||
                 $type === self::INHERITANCE_TYPE_SINGLE_TABLE ||
                 $type === self::INHERITANCE_TYPE_JOINED ||
+                // @phpstan-ignore classConstant.deprecated
                 $type === self::INHERITANCE_TYPE_TABLE_PER_CLASS;
     }
 
@@ -2766,8 +2766,9 @@ class ClassMetadataInfo implements ClassMetadata
     public function addInheritedFieldMapping(array $fieldMapping)
     {
         $this->fieldMappings[$fieldMapping['fieldName']] = $fieldMapping;
-        $this->columnNames[$fieldMapping['fieldName']]   = $fieldMapping['columnName'];
-        $this->fieldNames[$fieldMapping['columnName']]   = $fieldMapping['fieldName'];
+        // @phpstan-ignore property.deprecated
+        $this->columnNames[$fieldMapping['fieldName']] = $fieldMapping['columnName'];
+        $this->fieldNames[$fieldMapping['columnName']] = $fieldMapping['fieldName'];
 
         if (isset($fieldMapping['generated'])) {
             $this->requiresFetchAfterChange = true;
@@ -3017,8 +3018,7 @@ class ClassMetadataInfo implements ClassMetadata
     /**
      * Registers a custom repository class for the entity class.
      *
-     * @param string|null $repositoryClassName The class name of the custom mapper.
-     * @psalm-param class-string<EntityRepository>|null $repositoryClassName
+     * @param class-string<EntityRepository>|null $repositoryClassName The class name of the custom mapper.
      *
      * @return void
      */
@@ -3555,8 +3555,7 @@ class ClassMetadataInfo implements ClassMetadata
      *
      * @param string $assocName
      *
-     * @return string
-     * @psalm-return class-string
+     * @return class-string
      *
      * @throws InvalidArgumentException
      */
@@ -3859,6 +3858,7 @@ class ClassMetadataInfo implements ClassMetadata
         if ($schemaName) {
             $sequencePrefix = $schemaName . '.' . $tableName;
 
+            // @phpstan-ignore method.deprecated
             if (! $platform->supportsSchemas() && $platform->canEmulateSchemas()) {
                 $sequencePrefix = $schemaName . '__' . $tableName;
             }
@@ -3875,7 +3875,7 @@ class ClassMetadataInfo implements ClassMetadata
         }
     }
 
-    /** @psalm-param class-string $class */
+    /** @param class-string $class */
     private function getAccessibleProperty(ReflectionService $reflService, string $class, string $field): ?ReflectionProperty
     {
         $reflectionProperty = $reflService->getAccessibleProperty($class, $field);
@@ -3888,6 +3888,10 @@ class ClassMetadataInfo implements ClassMetadata
             if ($reflectionProperty !== null) {
                 $reflectionProperty = new ReflectionReadonlyProperty($reflectionProperty);
             }
+        }
+
+        if (PHP_VERSION_ID >= 80400 && $reflectionProperty !== null && count($reflectionProperty->getHooks()) > 0) {
+            throw new LogicException('Doctrine ORM does not support property hooks in this version. Check https://github.com/doctrine/orm/issues/11624 for details of versions that support property hooks.');
         }
 
         return $reflectionProperty;

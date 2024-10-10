@@ -127,8 +127,7 @@ class UnitOfWork implements PropertyChangedListener
      * Since all classes in a hierarchy must share the same identifier set,
      * we always take the root class name of the hierarchy.
      *
-     * @var mixed[]
-     * @psalm-var array<class-string, array<string, object>>
+     * @var array<class-string, array<string, object>>
      */
     private $identityMap = [];
 
@@ -175,7 +174,7 @@ class UnitOfWork implements PropertyChangedListener
      * This is only used for entities with a change tracking policy of DEFERRED_EXPLICIT.
      * Keys are object ids (spl_object_id).
      *
-     * @psalm-var array<class-string, array<int, mixed>>
+     * @var array<class-string, array<int, mixed>>
      */
     private $scheduledForSynchronization = [];
 
@@ -313,7 +312,7 @@ class UnitOfWork implements PropertyChangedListener
     /**
      * Map of Entity Class-Names and corresponding IDs that should eager loaded when requested.
      *
-     * @psalm-var array<class-string, array<string, mixed>>
+     * @var array<class-string, array<string, mixed>>
      */
     private $eagerLoadingEntities = [];
 
@@ -2907,11 +2906,9 @@ EXCEPTION
      *
      * Internal note: Highly performance-sensitive method.
      *
-     * @param string  $className The name of the entity class.
-     * @param mixed[] $data      The data for the entity.
-     * @param mixed[] $hints     Any hints to account for during reconstitution/lookup of the entity.
-     * @psalm-param class-string $className
-     * @psalm-param array<string, mixed> $hints
+     * @param class-string         $className The name of the entity class.
+     * @param mixed[]              $data      The data for the entity.
+     * @param array<string, mixed> $hints     Any hints to account for during reconstitution/lookup of the entity.
      *
      * @return object The managed entity instance.
      *
@@ -3349,7 +3346,7 @@ EXCEPTION
     /**
      * Gets the identity map of the UnitOfWork.
      *
-     * @psalm-return array<class-string, array<string, object>>
+     * @return array<class-string, array<string, object>>
      */
     public function getIdentityMap()
     {
@@ -3449,9 +3446,8 @@ EXCEPTION
      * Tries to find an entity with the given identifier in the identity map of
      * this UnitOfWork.
      *
-     * @param mixed  $id            The entity identifier to look for.
-     * @param string $rootClassName The name of the root class of the mapped entity hierarchy.
-     * @psalm-param class-string $rootClassName
+     * @param mixed        $id            The entity identifier to look for.
+     * @param class-string $rootClassName The name of the root class of the mapped entity hierarchy.
      *
      * @return object|false Returns the entity with the specified identifier if it exists in
      *                      this UnitOfWork, FALSE otherwise.
@@ -3503,8 +3499,7 @@ EXCEPTION
     /**
      * Gets the EntityPersister for an Entity.
      *
-     * @param string $entityName The name of the Entity.
-     * @psalm-param class-string $entityName
+     * @param class-string $entityName The name of the Entity.
      *
      * @return EntityPersister
      */

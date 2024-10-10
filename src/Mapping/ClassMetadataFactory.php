@@ -420,7 +420,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     /**
      * Gets the lower-case short name of a class.
      *
-     * @psalm-param class-string $className
+     * @param class-string $className
      */
     private function getShortName(string $className): string
     {
@@ -558,6 +558,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     {
         foreach ($parentClass->namedQueries as $name => $query) {
             if (! isset($subClass->namedQueries[$name])) {
+                // @phpstan-ignore method.deprecated
                 $subClass->addNamedQuery(
                     [
                         'name'  => $query['name'],
@@ -575,6 +576,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     {
         foreach ($parentClass->namedNativeQueries as $name => $query) {
             if (! isset($subClass->namedNativeQueries[$name])) {
+                // @phpstan-ignore method.deprecated
                 $subClass->addNamedNativeQuery(
                     [
                         'name'              => $query['name'],
@@ -637,7 +639,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
                 $platform     = $this->getTargetPlatform();
 
                 // Platforms that do not have native IDENTITY support need a sequence to emulate this behaviour.
-                /** @psalm-suppress UndefinedClass, InvalidClass */
+                /** @psalm-suppress UndefinedClass, InvalidClass */ // @phpstan-ignore method.deprecated
                 if (! $platform instanceof MySQLPlatform && ! $platform instanceof SqlitePlatform && ! $platform instanceof SQLServerPlatform && $platform->usesSequenceEmulatedIdentityColumns()) {
                     Deprecation::trigger(
                         'doctrine/orm',
@@ -654,8 +656,9 @@ DEPRECATION
                     $columnName     = $class->getSingleIdentifierColumnName();
                     $quoted         = isset($class->fieldMappings[$fieldName]['quoted']) || isset($class->table['quoted']);
                     $sequencePrefix = $class->getSequencePrefix($this->getTargetPlatform());
-                    $sequenceName   = $this->getTargetPlatform()->getIdentitySequenceName($sequencePrefix, $columnName);
-                    $definition     = [
+                    // @phpstan-ignore method.deprecated
+                    $sequenceName = $this->getTargetPlatform()->getIdentitySequenceName($sequencePrefix, $columnName);
+                    $definition   = [
                         'sequenceName' => $this->truncateSequenceName($sequenceName),
                     ];
 
@@ -711,6 +714,7 @@ DEPRECATION
                 $class->setIdGenerator(new AssignedGenerator());
                 break;
 
+            // @phpstan-ignore classConstant.deprecated
             case ClassMetadata::GENERATOR_TYPE_UUID:
                 Deprecation::trigger(
                     'doctrine/orm',
@@ -718,6 +722,7 @@ DEPRECATION
                     'Mapping for %s: the "UUID" id generator strategy is deprecated with no replacement',
                     $class->name
                 );
+                // @phpstan-ignore new.deprecated
                 $class->setIdGenerator(new UuidGenerator());
                 break;
 
@@ -845,8 +850,10 @@ DEPRECATION
      */
     protected function getFqcnFromAlias($namespaceAlias, $simpleClassName)
     {
-        /** @psalm-var class-string */
-        return $this->em->getConfiguration()->getEntityNamespace($namespaceAlias) . '\\' . $simpleClassName;
+        /** @var class-string $classString */
+        $classString = $this->em->getConfiguration()->getEntityNamespace($namespaceAlias) . '\\' . $simpleClassName;
+
+        return $classString;
     }
 
     /**

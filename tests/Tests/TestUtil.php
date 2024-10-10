@@ -170,14 +170,14 @@ class TestUtil
         }
 
         $evm = $conn->getEventManager();
-        /** @psalm-var class-string<EventSubscriber> $subscriberClass */
+        /** @var class-string<EventSubscriber> $subscriberClass */
         foreach (explode(',', $GLOBALS['db_event_subscribers']) as $subscriberClass) {
             $subscriberInstance = new $subscriberClass();
             $evm->addEventSubscriber($subscriberInstance);
         }
     }
 
-    /** @psalm-return array<string, mixed> */
+    /** @return array<string, mixed> */
     private static function getPrivilegedConnectionParameters(): array
     {
         if (isset($GLOBALS['privileged_db_driver'])) {

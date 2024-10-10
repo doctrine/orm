@@ -42,8 +42,7 @@ class EntityRepository implements ObjectRepository, Selectable
     /**
      * @internal This property will be private in 3.0, call {@see getEntityName()} instead.
      *
-     * @var string
-     * @psalm-var class-string<T>
+     * @var class-string<T>
      */
     protected $_entityName;
 
@@ -287,10 +286,7 @@ class EntityRepository implements ObjectRepository, Selectable
         ));
     }
 
-    /**
-     * @return string
-     * @psalm-return class-string<T>
-     */
+    /** @return class-string<T> */
     protected function getEntityName()
     {
         return $this->_entityName;

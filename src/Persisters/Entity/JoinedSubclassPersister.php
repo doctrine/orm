@@ -250,6 +250,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
 
         // If the database platform supports FKs, just
         // delete the row from the root table. Cascades do the rest.
+        // @phpstan-ignore method.deprecated
         if ($this->platform->supportsForeignKeyConstraints()) {
             $rootClass = $this->em->getClassMetadata($this->class->rootEntityName);
             $rootTable = $this->quoteStrategy->getTableName($rootClass, $this->platform);

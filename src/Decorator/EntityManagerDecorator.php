@@ -50,7 +50,7 @@ abstract class EntityManagerDecorator extends ObjectManagerDecorator implements 
     /**
      * {@inheritDoc}
      *
-     * @psalm-param class-string<T> $className
+     * @param class-string<T> $className
      *
      * @psalm-return EntityRepository<T>
      *
@@ -96,6 +96,7 @@ abstract class EntityManagerDecorator extends ObjectManagerDecorator implements 
                 E_USER_NOTICE
             );
 
+            // @phpstan-ignore method.deprecated
             return $this->wrapped->transactional($func);
         }
 

@@ -305,7 +305,7 @@
       <code><![CDATA[$persister->loadById($sortedId)]]></code>
     </InvalidReturnStatement>
     <InvalidReturnType>
-      <code><![CDATA[?T]]></code>
+      <code><![CDATA[T|null]]></code>
     </InvalidReturnType>
     <MissingReturnType>
       <code><![CDATA[wrapInTransaction]]></code>
@@ -713,6 +713,9 @@
       <code><![CDATA[joinColumnName]]></code>
       <code><![CDATA[joinColumnName]]></code>
     </TooManyArguments>
+    <UndefinedMethod>
+      <code><![CDATA[getHooks]]></code>
+    </UndefinedMethod>
   </file>
   <file src="src/Mapping/ColumnResult.php">
     <MissingConstructor>

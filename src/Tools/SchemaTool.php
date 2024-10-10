@@ -84,6 +84,7 @@ class SchemaTool
         $this->quoteStrategy = $em->getConfiguration()->getQuoteStrategy();
         $this->schemaManager = method_exists(Connection::class, 'createSchemaManager')
             ? $em->getConnection()->createSchemaManager()
+            // @phpstan-ignore method.deprecated
             : $em->getConnection()->getSchemaManager();
     }
 
@@ -311,6 +312,7 @@ class SchemaTool
                         $table->setPrimaryKey($pkColumns);
                     }
                 }
+            // @phpstan-ignore method.deprecated
             } elseif ($class->isInheritanceTypeTablePerClass()) {
                 throw NotSupported::create();
             } else {
@@ -412,7 +414,9 @@ class SchemaTool
                 return ! $asset->isInDefaultNamespace($schema->getName());
             };
 
+            // @phpstan-ignore method.deprecated
             if (array_filter($schema->getSequences() + $schema->getTables(), $filter) && ! $this->platform->canEmulateSchemas()) {
+                // @phpstan-ignore method.deprecated, new.deprecated
                 $schema->visit(new RemoveNamespacedAssets());
             }
         }
@@ -989,10 +993,12 @@ class SchemaTool
         $schemaDiff = $comparator->compareSchemas($fromSchema, $toSchema);
 
         if ($saveMode) {
+            // @phpstan-ignore method.deprecated
             return $schemaDiff->toSaveSql($this->platform);
         }
 
         if (! method_exists(AbstractPlatform::class, 'getAlterSchemaSQL')) {
+            // @phpstan-ignore method.deprecated
             return $schemaDiff->toSql($this->platform);
         }
 

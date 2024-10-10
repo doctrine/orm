@@ -9,10 +9,24 @@ The output walker must not base its workings on the query `firstResult`/`maxResu
 Any operation dependent on `firstResult`/`maxResult` should take place within the `SqlFinalizer::createExecutor()`
 method. Details can be found at https://github.com/doctrine/orm/pull/11188.
 
+## Explictly forbid property hooks
+
+Property hooks are not supported yet by Doctrine ORM. Until support is added,
+they are explicitly forbidden because the support would result in a breaking
+change in behavior.
+
+Progress on this is tracked at https://github.com/doctrine/orm/issues/11624 .
+
 ## PARTIAL DQL syntax is undeprecated for non-object hydration
 
 Use of the PARTIAL keyword is not deprecated anymore in DQL when used with a hydrator
 that is not creating entities, such as the ArrayHydrator.
+
+## Deprecate `\Doctrine\ORM\Query\Parser::setCustomOutputTreeWalker()`
+
+Use the `\Doctrine\ORM\Query::HINT_CUSTOM_OUTPUT_WALKER` query hint to set the output walker
+class instead of setting it through the `\Doctrine\ORM\Query\Parser::setCustomOutputTreeWalker()` method
+on the parser instance.
 
 # Upgrade to 2.19
 
