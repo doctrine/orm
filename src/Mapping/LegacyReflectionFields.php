@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Mapping;
 
 use ArrayAccess;
+use Doctrine\Deprecations\Deprecation;
 use Doctrine\Persistence\Mapping\ReflectionService;
 use Doctrine\Persistence\Reflection\EnumReflectionProperty;
 use IteratorAggregate;
@@ -26,6 +27,12 @@ class LegacyReflectionFields implements ArrayAccess, IteratorAggregate
 
     public function offsetExists($offset): bool
     {
+        Deprecation::trigger(
+            'doctrine/orm',
+            'https://github.com/doctrine/orm/pull/11659',
+            'Access to ClassMetadata::$reflFields is deprecated and will be removed in Doctrine ORM 4.0.',
+        );
+
         return isset($this->classMetadata->propertyAccessors[$offset]);
     }
 
@@ -34,6 +41,12 @@ class LegacyReflectionFields implements ArrayAccess, IteratorAggregate
         if (isset($this->reflFields[$field])) {
             return $this->reflFields[$field];
         }
+
+        Deprecation::trigger(
+            'doctrine/orm',
+            'https://github.com/doctrine/orm/pull/11659',
+            'Access to ClassMetadata::$reflFields is deprecated and will be removed in Doctrine ORM 4.0.',
+        );
 
         if (isset($this->classMetadata->propertyAccessors[$field])) {
             $fieldName = str_contains($field, '.') ? $this->classMetadata->fieldMappings[$field]->originalField : $field;
@@ -112,6 +125,12 @@ class LegacyReflectionFields implements ArrayAccess, IteratorAggregate
 
     public function getIterator(): Traversable
     {
+        Deprecation::trigger(
+            'doctrine/orm',
+            'https://github.com/doctrine/orm/pull/11659',
+            'Access to ClassMetadata::$reflFields is deprecated and will be removed in Doctrine ORM 4.0.',
+        );
+
         $keys = array_keys($this->classMetadata->propertyAccessors);
 
         foreach ($keys as $key) {
