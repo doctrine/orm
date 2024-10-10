@@ -2,13 +2,14 @@
 
 namespace Doctrine\ORM\Mapping\PropertyAccessors;
 
+use Doctrine\ORM\Proxy\InternalProxy;
 use ReflectionProperty;
 
 use function ltrim;
 
 class ObjectCastPropertyAccessor implements PropertyAccessor
 {
-    public function fromNames(string $class, string $name)
+    public static function fromNames(string $class, string $name): self
     {
         $reflectionProperty = new ReflectionProperty($class, $name);
 
@@ -17,7 +18,7 @@ class ObjectCastPropertyAccessor implements PropertyAccessor
         return new self($reflectionProperty, $key);
     }
 
-    public function fromReflectionProperty(ReflectionProperty $reflectionProperty): self
+    public static function fromReflectionProperty(ReflectionProperty $reflectionProperty): self
     {
         $name = $reflectionProperty->getName();
         $key  = $reflectionProperty->isPrivate() ? "\0" . ltrim($reflectionProperty->getDeclaringClass()->getName(), '\\') . "\0" . $name : ($reflectionProperty->isProtected() ? "\0*\0" . $name : $name);
@@ -31,7 +32,17 @@ class ObjectCastPropertyAccessor implements PropertyAccessor
 
     public function setValue(object $object, mixed $value): void
     {
+        if (! ($object instanceof InternalProxy && ! $object->__isInitialized())) {
+            $this->reflectionProperty->setValue($object, $value);
 
+            return;
+        }
+
+        $object->__setInitialized(true);
+
+        $this->reflectionProperty->setValue($object, $value);
+
+        $object->__setInitialized(false);
     }
 
     public function getValue(object $object): mixed
