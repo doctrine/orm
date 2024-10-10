@@ -6,6 +6,7 @@ namespace Doctrine\ORM\Tools;
 
 use BackedEnum;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
+use Doctrine\DBAL\Platforms\PostgreSQLPlatform;
 use Doctrine\DBAL\Schema\AbstractAsset;
 use Doctrine\DBAL\Schema\AbstractSchemaManager;
 use Doctrine\DBAL\Schema\Index;
@@ -176,6 +177,15 @@ class SchemaTool
         $metadataSchemaConfig = $this->schemaManager->createSchemaConfig();
 
         $schema = new Schema([], [], $metadataSchemaConfig);
+
+        // the platform check should be removed once the support for DBAL 3.x is dropped
+        // see https://github.com/doctrine/dbal/pull/4821, https://github.com/doctrine/dbal/pull/4831
+        if ($this->em->getConnection()->getDatabasePlatform() instanceof PostgreSQLPlatform) {
+            $defaultNamespace = $metadataSchemaConfig->getName();
+            if ($defaultNamespace !== null) {
+                $schema->createNamespace($defaultNamespace);
+            }
+        }
 
         $addedFks       = [];
         $blacklistedFks = [];
