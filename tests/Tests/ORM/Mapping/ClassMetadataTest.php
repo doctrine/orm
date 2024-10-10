@@ -975,13 +975,13 @@ class ClassMetadataTest extends OrmTestCase
         self::assertInstanceOf(MyArrayObjectEntity::class, $classMetadata->newInstance());
     }
 
-    public function testWakeupReflectionWithEmbeddableAndStaticReflectionService(): void
+    public function testWakeupReflectionWithEmbeddable(): void
     {
         $classMetadata = new ClassMetadata(TestEntity1::class);
 
         $classMetadata->mapEmbedded(
             [
-                'fieldName'    => 'test',
+                'fieldName'    => 'embedded',
                 'class'        => TestEntity1::class,
                 'columnPrefix' => false,
             ],
@@ -991,14 +991,14 @@ class ClassMetadataTest extends OrmTestCase
             'fieldName' => 'test.embeddedProperty',
             'type' => 'string',
             'originalClass' => TestEntity1::class,
-            'declaredField' => 'test',
-            'originalField' => 'embeddedProperty',
+            'declaredField' => 'embedded',
+            'originalField' => 'name',
         ];
 
         $classMetadata->mapField($field);
         $classMetadata->wakeupReflection(new StaticReflectionService());
 
-        self::assertEquals(['test' => null, 'test.embeddedProperty' => null], $classMetadata->getPropertyAccessors());
+        self::assertEquals(['embedded', 'test.embeddedProperty'], array_keys($classMetadata->getPropertyAccessors()));
     }
 
     public function testGetColumnNamesWithGivenFieldNames(): void
