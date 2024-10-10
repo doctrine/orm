@@ -1865,6 +1865,12 @@
       <code><![CDATA[$this->_sqlStatements = &$this->sqlStatements]]></code>
     </UnsupportedPropertyReferenceUsage>
   </file>
+  <file src="src/Query/Exec/FinalizedSelectExecutor.php">
+    <PropertyNotSetInConstructor>
+      <code><![CDATA[FinalizedSelectExecutor]]></code>
+      <code><![CDATA[FinalizedSelectExecutor]]></code>
+    </PropertyNotSetInConstructor>
+  </file>
   <file src="src/Query/Exec/MultiTableDeleteExecutor.php">
     <InvalidReturnStatement>
       <code><![CDATA[$numDeleted]]></code>
@@ -2053,11 +2059,6 @@
       <code><![CDATA[$AST instanceof AST\SelectStatement]]></code>
       <code><![CDATA[$token === TokenType::T_IDENTIFIER]]></code>
     </RedundantConditionGivenDocblockType>
-  </file>
-  <file src="src/Query/ParserResult.php">
-    <PropertyNotSetInConstructor>
-      <code><![CDATA[$sqlExecutor]]></code>
-    </PropertyNotSetInConstructor>
   </file>
   <file src="src/Query/QueryExpressionVisitor.php">
     <InvalidReturnStatement>
