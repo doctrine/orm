@@ -18,7 +18,6 @@ use Symfony\Component\VarExporter\ProxyHelper;
 
 use function array_combine;
 use function array_flip;
-use function array_intersect_key;
 use function assert;
 use function bin2hex;
 use function chmod;

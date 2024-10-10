@@ -55,6 +55,7 @@ use PHPUnit\Framework\Attributes\Group as TestGroup;
 use ReflectionClass;
 use stdClass;
 
+use function array_keys;
 use function assert;
 use function class_exists;
 use function count;

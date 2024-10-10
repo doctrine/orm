@@ -1,15 +1,22 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ORM\Mapping;
 
-use Doctrine\ORM\Mapping\PropertyAccessors\EmbeddablePropertyAccessor;
+use ArrayAccess;
 use Doctrine\Persistence\Mapping\ReflectionService;
 use Doctrine\Persistence\Reflection\EnumReflectionProperty;
-use ReflectionClass;
+use IteratorAggregate;
+use OutOfBoundsException;
 use ReflectionProperty;
 use Traversable;
 
-class LegacyReflectionFields implements \ArrayAccess, \IteratorAggregate
+use function array_keys;
+use function str_contains;
+use function str_replace;
+
+class LegacyReflectionFields implements ArrayAccess, IteratorAggregate
 {
     private array $reflFields = [];
 
@@ -55,7 +62,7 @@ class LegacyReflectionFields implements \ArrayAccess, \IteratorAggregate
                 if ($this->classMetadata->fieldMappings[$field]->originalField !== null) {
                     $parentField = str_replace('.' . $fieldName, '', $field);
 
-                    if (!str_contains($parentField, '.')) {
+                    if (! str_contains($parentField, '.')) {
                         $parentClass = $this->classMetadata->name;
                     } else {
                         $parentClass = $this->classMetadata->fieldMappings[$parentField]->originalClass;
@@ -72,7 +79,7 @@ class LegacyReflectionFields implements \ArrayAccess, \IteratorAggregate
             return $this->reflFields[$field];
         }
 
-        throw new \OutOfBoundsException('Unknown field: ' . $this->classMetadata->name .' ::$' . $field);
+        throw new OutOfBoundsException('Unknown field: ' . $this->classMetadata->name . ' ::$' . $field);
     }
 
     public function offsetSet($offset, $value): void

@@ -14,7 +14,6 @@ use Doctrine\Instantiator\InstantiatorInterface;
 use Doctrine\ORM\Cache\Exception\NonCacheableEntityAssociation;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Id\AbstractIdGenerator;
-use Doctrine\ORM\Mapping\PropertyAccessors\AccessorFactory;
 use Doctrine\ORM\Mapping\PropertyAccessors\EmbeddablePropertyAccessor;
 use Doctrine\ORM\Mapping\PropertyAccessors\EnumPropertyAccessor;
 use Doctrine\ORM\Mapping\PropertyAccessors\ObjectCastPropertyAccessor;
@@ -23,7 +22,6 @@ use Doctrine\ORM\Mapping\PropertyAccessors\ReadonlyAccessor;
 use Doctrine\ORM\Mapping\PropertyAccessors\TypedNoDefaultPropertyAccessor;
 use Doctrine\Persistence\Mapping\ClassMetadata as PersistenceClassMetadata;
 use Doctrine\Persistence\Mapping\ReflectionService;
-use Doctrine\Persistence\Reflection\EnumReflectionProperty;
 use InvalidArgumentException;
 use LogicException;
 use ReflectionClass;
@@ -580,6 +578,16 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
      * @return ReflectionProperty[]|null[] An array of ReflectionProperty instances.
      * @phpstan-return array<ReflectionProperty|null>
      */
+    public function getReflectionProperties(): array
+    {
+        return $this->reflFields;
+    }
+
+    /**
+     * Gets the ReflectionProperties of the mapped class.
+     *
+     * @return PropertyAccessor[] An array of PropertyAccessor instances.
+     */
     public function getPropertyAccessors(): array
     {
         return $this->propertyAccessors;
@@ -588,9 +596,14 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
     /**
      * Gets a ReflectionProperty for a specific field of the mapped class.
      */
+    public function getReflectionProperty(string $name): ReflectionProperty|null
+    {
+        return $this->reflFields[$name];
+    }
+
     public function getPropertyAccessor(string $name): PropertyAccessor|null
     {
-        return $this->propertyAccessors[$name];
+        return $this->propertyAccessors[$name] ?? null;
     }
 
     /**

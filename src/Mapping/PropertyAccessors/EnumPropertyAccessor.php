@@ -1,8 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ORM\Mapping\PropertyAccessors;
 
 use BackedEnum;
+
+use function array_map;
+use function is_array;
+use function reset;
 
 class EnumPropertyAccessor implements PropertyAccessor
 {
@@ -46,7 +52,7 @@ class EnumPropertyAccessor implements PropertyAccessor
      *
      * @return ($value is int|string|BackedEnum ? BackedEnum : BackedEnum[])
      */
-    private function toEnum($value)
+    private function toEnum(int|string|array|BackedEnum $value)
     {
         if ($value instanceof BackedEnum) {
             return $value;
