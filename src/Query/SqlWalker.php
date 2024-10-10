@@ -15,6 +15,9 @@ use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\QuoteStrategy;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\Query;
+use Doctrine\ORM\Query\Exec\PreparedExecutorFinalizer;
+use Doctrine\ORM\Query\Exec\SingleSelectSqlFinalizer;
+use Doctrine\ORM\Query\Exec\SqlFinalizer;
 use Doctrine\ORM\Utility\HierarchyDiscriminatorResolver;
 use Doctrine\ORM\Utility\PersisterHelper;
 use InvalidArgumentException;
@@ -279,28 +282,56 @@ class SqlWalker implements TreeWalker
      *
      * @return Exec\AbstractSqlExecutor
      *
-     * @not-deprecated
+     * @deprecated Output walkers should no longer create the executor directly, but instead provide
+     *             a SqlFinalizer by implementing the `OutputWalker` interface. Thus, this method is
+     *             no longer needed and will be removed in 4.0.
      */
     public function getExecutor($AST)
     {
         switch (true) {
             case $AST instanceof AST\DeleteStatement:
-                $primaryClass = $this->em->getClassMetadata($AST->deleteClause->abstractSchemaName);
-
-                return $primaryClass->isInheritanceTypeJoined()
-                    ? new Exec\MultiTableDeleteExecutor($AST, $this)
-                    : new Exec\SingleTableDeleteUpdateExecutor($AST, $this);
+                return $this->createDeleteStatementExecutor($AST);
 
             case $AST instanceof AST\UpdateStatement:
-                $primaryClass = $this->em->getClassMetadata($AST->updateClause->abstractSchemaName);
-
-                return $primaryClass->isInheritanceTypeJoined()
-                    ? new Exec\MultiTableUpdateExecutor($AST, $this)
-                    : new Exec\SingleTableDeleteUpdateExecutor($AST, $this);
+                return $this->createUpdateStatementExecutor($AST);
 
             default:
                 return new Exec\SingleSelectExecutor($AST, $this);
         }
+    }
+
+    public function getFinalizer($AST): SqlFinalizer
+    {
+        switch (true) {
+            case $AST instanceof AST\SelectStatement:
+                return new SingleSelectSqlFinalizer($this->createSqlForFinalizer($AST));
+
+            case $AST instanceof AST\UpdateStatement:
+                return new PreparedExecutorFinalizer($this->createUpdateStatementExecutor($AST));
+
+            case $AST instanceof AST\DeleteStatement:
+                return new PreparedExecutorFinalizer($this->createDeleteStatementExecutor($AST));
+        }
+
+        throw new LogicException('Unexpected AST node type');
+    }
+
+    private function createUpdateStatementExecutor(AST\UpdateStatement $AST): Exec\AbstractSqlExecutor
+    {
+        $primaryClass = $this->em->getClassMetadata($AST->updateClause->abstractSchemaName);
+
+        return $primaryClass->isInheritanceTypeJoined()
+            ? new Exec\MultiTableUpdateExecutor($AST, $this)
+            : new Exec\SingleTableDeleteUpdateExecutor($AST, $this);
+    }
+
+    private function createDeleteStatementExecutor(AST\DeleteStatement $AST): Exec\AbstractSqlExecutor
+    {
+        $primaryClass = $this->em->getClassMetadata($AST->deleteClause->abstractSchemaName);
+
+        return $primaryClass->isInheritanceTypeJoined()
+            ? new Exec\MultiTableDeleteExecutor($AST, $this)
+            : new Exec\SingleTableDeleteUpdateExecutor($AST, $this);
     }
 
     /**
