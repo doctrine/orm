@@ -5,7 +5,10 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Tools\Pagination;
 
 use Doctrine\ORM\Query\AST;
-use Doctrine\ORM\Query\SqlWalker;
+use Doctrine\ORM\Query\Exec\FinalizedSelectExecutor;
+use Doctrine\ORM\Query\Exec\PreparedExecutorFinalizer;
+use Doctrine\ORM\Query\Exec\SqlFinalizer;
+use Doctrine\ORM\Query\SqlOutputWalker;
 use Doctrine\ORM\Utility\PersisterHelper;
 use RuntimeException;
 
@@ -22,7 +25,7 @@ use function reset;
  * Returning the type instead of a "real" SQL statement is a slight hack. However, it has the
  * benefit that the DQL -> root entity id type resolution can be cached in the query cache.
  */
-final class RootTypeWalker extends SqlWalker
+final class RootTypeWalker extends SqlOutputWalker
 {
     public function walkSelectStatement(AST\SelectStatement $selectStatement): string
     {
@@ -44,5 +47,14 @@ final class RootTypeWalker extends SqlWalker
             $this->getQuery()
                 ->getEntityManager(),
         )[0];
+    }
+
+    public function getFinalizer(AST\DeleteStatement|AST\UpdateStatement|AST\SelectStatement $AST): SqlFinalizer
+    {
+        if (! $AST instanceof AST\SelectStatement) {
+            throw new RuntimeException(self::class . ' is to be used on SelectStatements only');
+        }
+
+        return new PreparedExecutorFinalizer(new FinalizedSelectExecutor($this->walkSelectStatement($AST)));
     }
 }

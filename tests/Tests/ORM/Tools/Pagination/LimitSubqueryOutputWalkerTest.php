@@ -10,6 +10,7 @@ use Doctrine\DBAL\Platforms\PostgreSQLPlatform;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Tools\Pagination\LimitSubqueryOutputWalker;
 use PHPUnit\Framework\Attributes\Group;
+use Symfony\Component\Cache\Adapter\ArrayAdapter;
 
 final class LimitSubqueryOutputWalkerTest extends PaginationTestCase
 {
@@ -271,6 +272,28 @@ final class LimitSubqueryOutputWalkerTest extends PaginationTestCase
             'SELECT DISTINCT ID_0, MIN(SCLR_4) AS dctrn_minrownum FROM (SELECT a0_.id AS ID_0, a0_.name AS NAME_1, (SELECT MIN(m1_.title) AS SCLR_3 FROM MyBlogPost m1_ WHERE m1_.author_id = a0_.id) AS SCLR_2, ROW_NUMBER() OVER(ORDER BY (SELECT MIN(m1_.title) AS SCLR_5 FROM MyBlogPost m1_ WHERE m1_.author_id = a0_.id) DESC) AS SCLR_4 FROM Author a0_) dctrn_result GROUP BY ID_0 ORDER BY dctrn_minrownum ASC',
             'SELECT a, ( SELECT MIN(bp.title) FROM Doctrine\Tests\ORM\Tools\Pagination\MyBlogPost bp WHERE bp.author = a ) AS HIDDEN first_blog_post FROM Doctrine\Tests\ORM\Tools\Pagination\Author a ORDER BY first_blog_post DESC',
         );
+    }
+
+    public function testParsingQueryWithDifferentLimitOffsetValuesTakesOnlyOneCacheEntry(): void
+    {
+        $queryCache = new ArrayAdapter();
+        $this->entityManager->getConfiguration()->setQueryCache($queryCache);
+
+        $query = $this->createQuery('SELECT p, c, a FROM Doctrine\Tests\ORM\Tools\Pagination\MyBlogPost p JOIN p.category c JOIN p.author a');
+
+        self::assertSame(
+            'SELECT DISTINCT id_0 FROM (SELECT m0_.id AS id_0, m0_.title AS title_1, c1_.id AS id_2, a2_.id AS id_3, a2_.name AS name_4, m0_.author_id AS author_id_5, m0_.category_id AS category_id_6 FROM MyBlogPost m0_ INNER JOIN Category c1_ ON m0_.category_id = c1_.id INNER JOIN Author a2_ ON m0_.author_id = a2_.id) dctrn_result LIMIT 20 OFFSET 10',
+            $query->getSQL(),
+        );
+
+        $query->setFirstResult(30)->setMaxResults(40);
+
+        self::assertSame(
+            'SELECT DISTINCT id_0 FROM (SELECT m0_.id AS id_0, m0_.title AS title_1, c1_.id AS id_2, a2_.id AS id_3, a2_.name AS name_4, m0_.author_id AS author_id_5, m0_.category_id AS category_id_6 FROM MyBlogPost m0_ INNER JOIN Category c1_ ON m0_.category_id = c1_.id INNER JOIN Author a2_ ON m0_.author_id = a2_.id) dctrn_result LIMIT 40 OFFSET 30',
+            $query->getSQL(),
+        );
+
+        self::assertCount(1, $queryCache->getValues());
     }
 
     private function createQuery(string $dql): Query

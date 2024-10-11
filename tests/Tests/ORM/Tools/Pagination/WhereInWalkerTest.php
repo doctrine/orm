@@ -21,9 +21,10 @@ class WhereInWalkerTest extends PaginationTestCase
         $query->setHint(Query::HINT_CUSTOM_TREE_WALKERS, [WhereInWalker::class]);
         $query->setHint(WhereInWalker::HINT_PAGINATOR_HAS_IDS, true);
 
-        $result = (new Parser($query))->parse();
+        $result   = (new Parser($query))->parse();
+        $executor = $result->prepareSqlExecutor($query);
 
-        self::assertEquals($expectedSql, $result->getSqlExecutor()->getSqlStatements());
+        self::assertEquals($expectedSql, $executor->getSqlStatements());
         self::assertEquals([0], $result->getSqlParameterPositions(WhereInWalker::PAGINATOR_ID_ALIAS));
     }
 

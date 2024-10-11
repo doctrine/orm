@@ -6,6 +6,7 @@ namespace Doctrine\Tests\ORM;
 
 use Doctrine\Common\EventManager;
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Driver;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
@@ -19,7 +20,9 @@ use Doctrine\ORM\UnitOfWork;
 use Doctrine\Tests\Mocks\EntityManagerMock;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\OrmTestCase;
+use Exception;
 use Generator;
+use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Group;
 use ReflectionProperty;
@@ -206,5 +209,60 @@ class EntityManagerTest extends OrmTestCase
 
         $em->resetLazyObject();
         $this->assertTrue($em->isOpen());
+    }
+
+    public function testItPreservesTheOriginalExceptionOnRollbackFailure(): void
+    {
+        $driver = $this->createMock(Driver::class);
+        $driver->method('connect')
+            ->willReturn($this->createMock(Driver\Connection::class));
+
+        $entityManager = new EntityManagerMock(new class ([], $driver) extends Connection {
+            public function rollBack(): void
+            {
+                throw new Exception('Rollback exception');
+            }
+        });
+
+        try {
+            $entityManager->wrapInTransaction(static function (): void {
+                throw new Exception('Original exception');
+            });
+            self::fail('Exception expected');
+        } catch (Exception $e) {
+            self::assertSame('Rollback exception', $e->getMessage());
+            self::assertNotNull($e->getPrevious());
+            self::assertSame('Original exception', $e->getPrevious()->getMessage());
+        }
+    }
+
+    public function testItDoesNotAttemptToRollbackIfNoTransactionIsActive(): void
+    {
+        $driver = $this->createMock(Driver::class);
+        $driver->method('connect')
+            ->willReturn($this->createMock(Driver\Connection::class));
+
+        $entityManager = new EntityManagerMock(
+            new class ([], $driver) extends Connection {
+                public function commit(): void
+                {
+                    throw new Exception('Commit exception that happens after doing the actual commit');
+                }
+
+                public function rollBack(): void
+                {
+                    Assert::fail('Should not attempt to rollback if no transaction is active');
+                }
+
+                public function isTransactionActive(): bool
+                {
+                    return false;
+                }
+            },
+        );
+
+        $this->expectExceptionMessage('Commit exception');
+        $entityManager->wrapInTransaction(static function (): void {
+        });
     }
 }

@@ -12,6 +12,7 @@ use Doctrine\ORM\Mapping\AssociationMapping;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\AST\Functions;
+use Doctrine\ORM\Query\Exec\SqlFinalizer;
 use LogicException;
 use ReflectionClass;
 
@@ -352,11 +353,26 @@ final class Parser
             $this->queryComponents = $treeWalkerChain->getQueryComponents();
         }
 
-        $outputWalkerClass = $this->customOutputWalker ?: SqlWalker::class;
+        $outputWalkerClass = $this->customOutputWalker ?: SqlOutputWalker::class;
         $outputWalker      = new $outputWalkerClass($this->query, $this->parserResult, $this->queryComponents);
 
-        // Assign an SQL executor to the parser result
-        $this->parserResult->setSqlExecutor($outputWalker->getExecutor($AST));
+        if ($outputWalker instanceof OutputWalker) {
+            $finalizer = $outputWalker->getFinalizer($AST);
+            $this->parserResult->setSqlFinalizer($finalizer);
+        } else {
+            Deprecation::trigger(
+                'doctrine/orm',
+                'https://github.com/doctrine/orm/pull/11188/',
+                'Your output walker class %s should implement %s in order to provide a %s. This also means the output walker should not use the query firstResult/maxResult values, which should be read from the query by the SqlFinalizer only.',
+                $outputWalkerClass,
+                OutputWalker::class,
+                SqlFinalizer::class,
+            );
+            // @phpstan-ignore method.deprecated
+            $executor = $outputWalker->getExecutor($AST);
+            // @phpstan-ignore method.deprecated
+            $this->parserResult->setSqlExecutor($executor);
+        }
 
         return $this->parserResult;
     }

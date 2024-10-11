@@ -34,6 +34,7 @@ use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\Models\Forum\ForumAvatar;
 use Doctrine\Tests\Models\Forum\ForumUser;
 use Doctrine\Tests\OrmTestCase;
+use Exception as BaseException;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -652,6 +653,47 @@ class UnitOfWorkTest extends OrmTestCase
         $this->_unitOfWork->persist($phone2);
     }
 
+    public function testItPreservesTheOriginalExceptionOnRollbackFailure(): void
+    {
+        $driver = $this->createStub(Driver::class);
+        $driver->method('connect')
+            ->willReturn($this->createMock(Driver\Connection::class));
+
+        $connection        = new class (['platform' => $this->createStub(AbstractPlatform::class)], $driver) extends Connection {
+            public function commit(): void
+            {
+                throw new BaseException('Commit failed');
+            }
+
+            public function rollBack(): void
+            {
+                throw new BaseException('Rollback exception');
+            }
+        };
+        $this->_emMock     = new EntityManagerMock($connection);
+        $this->_unitOfWork = new UnitOfWorkMock($this->_emMock);
+        $this->_emMock->setUnitOfWork($this->_unitOfWork);
+
+        // Setup fake persister and id generator
+        $userPersister = new EntityPersisterMock($this->_emMock, $this->_emMock->getClassMetadata(ForumUser::class));
+        $userPersister->setMockIdGeneratorType(ClassMetadata::GENERATOR_TYPE_IDENTITY);
+        $this->_unitOfWork->setEntityPersister(ForumUser::class, $userPersister);
+
+        // Create a test user
+        $user           = new ForumUser();
+        $user->username = 'Jasper';
+        $this->_unitOfWork->persist($user);
+
+        try {
+            $this->_unitOfWork->commit();
+            self::fail('Exception expected');
+        } catch (BaseException $e) {
+            self::assertSame('Rollback exception', $e->getMessage());
+            self::assertNotNull($e->getPrevious());
+            self::assertSame('Commit failed', $e->getPrevious()->getMessage());
+        }
+    }
+
     public function testItThrowsWhenCreateEntityWithSqlWalkerPartialQueryHint(): void
     {
         $this->expectException(HydrationException::class);
@@ -666,60 +708,52 @@ class UnitOfWorkTest extends OrmTestCase
 #[Entity]
 class VersionedAssignedIdentifierEntity
 {
-    /** @var int */
     #[Id]
     #[Column(type: 'integer')]
-    public $id;
+    public int $id;
 
-    /** @var int */
     #[Version]
     #[Column(type: 'integer')]
-    public $version;
+    public int $version;
 }
 
 #[Entity]
 class EntityWithStringIdentifier
 {
-    /** @var string|null */
     #[Id]
     #[Column(type: 'string', length: 255)]
-    public $id;
+    public string|null $id = null;
 }
 
 #[Entity]
 class EntityWithBooleanIdentifier
 {
-    /** @var bool|null */
     #[Id]
     #[Column(type: 'boolean')]
-    public $id;
+    public bool|null $id = null;
 }
 
 #[Entity]
 class EntityWithCompositeStringIdentifier
 {
-    /** @var string|null */
     #[Id]
     #[Column(type: 'string', length: 255)]
-    public $id1;
+    public string|null $id1 = null;
 
-    /** @var string|null */
     #[Id]
     #[Column(type: 'string', length: 255)]
-    public $id2;
+    public string|null $id2 = null;
 }
 
 #[Entity]
 class EntityWithRandomlyGeneratedField
 {
-    /** @var string */
     #[Id]
     #[Column(type: 'string', length: 255)]
-    public $id;
+    public string $id;
 
-    /** @var int */
     #[Column(type: 'integer')]
-    public $generatedField;
+    public int $generatedField;
 
     public function __construct()
     {
@@ -750,9 +784,8 @@ class EntityWithCascadingAssociation
     #[GeneratedValue(strategy: 'NONE')]
     private string $id;
 
-    /** @var CascadePersistedEntity|null */
     #[ManyToOne(targetEntity: CascadePersistedEntity::class, cascade: ['persist'])]
-    public $cascaded;
+    public CascadePersistedEntity|null $cascaded = null;
 
     public function __construct()
     {
@@ -768,9 +801,8 @@ class EntityWithNonCascadingAssociation
     #[GeneratedValue(strategy: 'NONE')]
     private string $id;
 
-    /** @var CascadePersistedEntity|null */
     #[ManyToOne(targetEntity: CascadePersistedEntity::class)]
-    public $nonCascaded;
+    public CascadePersistedEntity|null $nonCascaded = null;
 
     public function __construct()
     {

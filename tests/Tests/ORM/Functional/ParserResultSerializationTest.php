@@ -6,6 +6,8 @@ namespace Doctrine\Tests\ORM\Functional;
 
 use Closure;
 use Doctrine\ORM\Query;
+use Doctrine\ORM\Query\Exec\FinalizedSelectExecutor;
+use Doctrine\ORM\Query\Exec\PreparedExecutorFinalizer;
 use Doctrine\ORM\Query\Exec\SingleSelectExecutor;
 use Doctrine\ORM\Query\ParserResult;
 use Doctrine\ORM\Query\ResultSetMapping;
@@ -32,7 +34,26 @@ class ParserResultSerializationTest extends OrmFunctionalTestCase
 
     /** @param Closure(ParserResult): ParserResult $toSerializedAndBack */
     #[DataProvider('provideToSerializedAndBack')]
-    public function testSerializeParserResult(Closure $toSerializedAndBack): void
+    public function testSerializeParserResultForQueryWithSqlWalker(Closure $toSerializedAndBack): void
+    {
+        $query = $this->_em
+            ->createQuery('SELECT u FROM Doctrine\Tests\Models\Company\CompanyEmployee u WHERE u.name = :name');
+
+        // Use the (legacy) SqlWalker which directly puts an SqlExecutor instance into the parser result
+        $query->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, Query\SqlWalker::class);
+
+        $parserResult = self::parseQuery($query);
+        $unserialized = $toSerializedAndBack($parserResult);
+
+        $this->assertInstanceOf(ParserResult::class, $unserialized);
+        $this->assertInstanceOf(ResultSetMapping::class, $unserialized->getResultSetMapping());
+        $this->assertEquals(['name' => [0]], $unserialized->getParameterMappings());
+        $this->assertNotNull($unserialized->prepareSqlExecutor($query));
+    }
+
+    /** @param Closure(ParserResult): ParserResult $toSerializedAndBack */
+    #[DataProvider('provideToSerializedAndBack')]
+    public function testSerializeParserResultForQueryWithSqlOutputWalker(Closure $toSerializedAndBack): void
     {
         $query = $this->_em
             ->createQuery('SELECT u FROM Doctrine\Tests\Models\Company\CompanyEmployee u WHERE u.name = :name');
@@ -43,7 +64,7 @@ class ParserResultSerializationTest extends OrmFunctionalTestCase
         $this->assertInstanceOf(ParserResult::class, $unserialized);
         $this->assertInstanceOf(ResultSetMapping::class, $unserialized->getResultSetMapping());
         $this->assertEquals(['name' => [0]], $unserialized->getParameterMappings());
-        $this->assertInstanceOf(SingleSelectExecutor::class, $unserialized->getSqlExecutor());
+        $this->assertNotNull($unserialized->prepareSqlExecutor($query));
     }
 
     /** @return Generator<string, array{Closure(ParserResult): ParserResult}> */
@@ -87,11 +108,12 @@ class ParserResultSerializationTest extends OrmFunctionalTestCase
 
     public function testSymfony44ProvidedData(): void
     {
-        $sqlExecutor      = $this->createMock(SingleSelectExecutor::class);
+        $sqlExecutor      = new FinalizedSelectExecutor('test');
+        $sqlFinalizer     = new PreparedExecutorFinalizer($sqlExecutor);
         $resultSetMapping = $this->createMock(ResultSetMapping::class);
 
         $parserResult = new ParserResult();
-        $parserResult->setSqlExecutor($sqlExecutor);
+        $parserResult->setSqlFinalizer($sqlFinalizer);
         $parserResult->setResultSetMapping($resultSetMapping);
         $parserResult->addParameterMapping('name', 0);
 
@@ -101,7 +123,7 @@ class ParserResultSerializationTest extends OrmFunctionalTestCase
         $this->assertInstanceOf(ParserResult::class, $unserialized);
         $this->assertInstanceOf(ResultSetMapping::class, $unserialized->getResultSetMapping());
         $this->assertEquals(['name' => [0]], $unserialized->getParameterMappings());
-        $this->assertInstanceOf(SingleSelectExecutor::class, $unserialized->getSqlExecutor());
+        $this->assertEquals($sqlExecutor, $unserialized->prepareSqlExecutor($this->createMock(Query::class)));
     }
 
     private static function parseQuery(Query $query): ParserResult

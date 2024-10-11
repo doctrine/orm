@@ -212,14 +212,14 @@
     </ParamNameMismatch>
   </file>
   <file src="src/Internal/Hydration/AbstractHydrator.php">
-    <ReferenceConstraintViolation>
-      <code><![CDATA[return $rowData;]]></code>
-      <code><![CDATA[return $rowData;]]></code>
-    </ReferenceConstraintViolation>
     <PossiblyUndefinedArrayOffset>
       <code><![CDATA[$newObject['args']]]></code>
       <code><![CDATA[$newObject['args']]]></code>
     </PossiblyUndefinedArrayOffset>
+    <ReferenceConstraintViolation>
+      <code><![CDATA[return $rowData;]]></code>
+      <code><![CDATA[return $rowData;]]></code>
+    </ReferenceConstraintViolation>
   </file>
   <file src="src/Internal/Hydration/ArrayHydrator.php">
     <PossiblyInvalidArgument>
@@ -923,6 +923,9 @@
     <ArgumentTypeCoercion>
       <code><![CDATA[$stringPattern]]></code>
     </ArgumentTypeCoercion>
+    <DeprecatedMethod>
+      <code><![CDATA[setSqlExecutor]]></code>
+    </DeprecatedMethod>
     <InvalidNullableReturnType>
       <code><![CDATA[AST\SelectStatement|AST\UpdateStatement|AST\DeleteStatement]]></code>
     </InvalidNullableReturnType>
@@ -1113,6 +1116,12 @@
     </RedundantConditionGivenDocblockType>
   </file>
   <file src="src/Tools/Pagination/LimitSubqueryOutputWalker.php">
+    <InvalidReturnStatement>
+      <code><![CDATA[$abstractSqlExecutor->getSqlStatements()]]></code>
+    </InvalidReturnStatement>
+    <InvalidReturnType>
+      <code><![CDATA[string]]></code>
+    </InvalidReturnType>
     <PossiblyFalseArgument>
       <code><![CDATA[strrpos($orderByItemString, ' ')]]></code>
     </PossiblyFalseArgument>

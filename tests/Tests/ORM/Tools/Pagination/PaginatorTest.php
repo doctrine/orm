@@ -94,7 +94,8 @@ class PaginatorTest extends OrmTestCase
 
     public function testPaginatorNotCaringAboutExtraParametersWithoutOutputWalkers(): void
     {
-        $this->connection->expects(self::exactly(3))->method('executeQuery');
+        $result = $this->getMockBuilder(Result::class)->disableOriginalConstructor()->getMock();
+        $this->connection->expects(self::exactly(3))->method('executeQuery')->willReturn($result);
 
         $this->createPaginatorWithExtraParametersWithoutOutputWalkers([])->count();
         $this->createPaginatorWithExtraParametersWithoutOutputWalkers([[10]])->count();
@@ -103,7 +104,8 @@ class PaginatorTest extends OrmTestCase
 
     public function testgetIteratorDoesCareAboutExtraParametersWithoutOutputWalkersWhenResultIsNotEmpty(): void
     {
-        $this->connection->expects(self::exactly(1))->method('executeQuery');
+        $result = $this->getMockBuilder(Result::class)->disableOriginalConstructor()->getMock();
+        $this->connection->expects(self::exactly(1))->method('executeQuery')->willReturn($result);
         $this->expectException(QueryException::class);
         $this->expectExceptionMessage('Too many parameters: the query defines 1 parameters and you bound 2');
 
