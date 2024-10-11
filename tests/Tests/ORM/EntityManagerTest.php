@@ -399,7 +399,7 @@ class EntityManagerTest extends OrmTestCase
         });
 
         try {
-            $entityManager->transactional(static function (): void {
+            $entityManager->$methodName(static function (): void {
                 throw new Exception('Original exception');
             });
             self::fail('Exception expected');
