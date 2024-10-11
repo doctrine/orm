@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Doctrine\ORM;
 
 use BackedEnum;
+use DateTime;
+use DateTimeImmutable;
 use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -1788,6 +1790,10 @@ EXCEPTION
             if ($value instanceof BackedEnum) {
                 $identifier[$k] = $value->value;
             }
+
+            if ($value instanceof DateTimeImmutable) {
+                $identifier[$k] = $value->format(DateTime::ATOM);
+            }
         }
 
         return implode(
@@ -3049,6 +3055,10 @@ EXCEPTION
                         if ($joinColumnValue !== null) {
                             if ($joinColumnValue instanceof BackedEnum) {
                                 $joinColumnValue = $joinColumnValue->value;
+                            }
+
+                            if ($joinColumnValue instanceof DateTimeImmutable) {
+                                $joinColumnValue = $joinColumnValue->format(DateTime::ATOM);
                             }
 
                             if ($targetClass->containsForeignIdentifier) {

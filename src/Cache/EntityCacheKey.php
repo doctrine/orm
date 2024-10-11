@@ -4,8 +4,12 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Cache;
 
+use function array_map;
 use function implode;
+use function is_scalar;
 use function ksort;
+use function md5;
+use function serialize;
 use function str_replace;
 use function strtolower;
 
@@ -43,6 +47,23 @@ class EntityCacheKey extends CacheKey
         $this->identifier  = $identifier;
         $this->entityClass = $entityClass;
 
-        parent::__construct(str_replace('\\', '.', strtolower($entityClass) . '_' . implode(' ', $identifier)));
+        parent::__construct(
+            str_replace(
+                '\\',
+                '.',
+                strtolower($entityClass) . '_' . $this->serializeIdentifier($identifier)
+            )
+        );
+    }
+
+    /** @param array<int|string|object> $identifier */
+    private function serializeIdentifier(array $identifier): string
+    {
+        return implode(' ', array_map(
+            static function ($id) {
+                return is_scalar($id) ? $id : md5(serialize($id));
+            },
+            $identifier
+        ));
     }
 }

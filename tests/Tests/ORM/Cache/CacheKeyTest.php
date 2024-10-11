@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Cache;
 
+use DateTimeImmutable;
 use Doctrine\Deprecations\PHPUnit\VerifyDeprecations;
 use Doctrine\ORM\Cache\CacheKey;
 use Doctrine\ORM\Cache\CollectionCacheKey;
@@ -15,19 +16,19 @@ class CacheKeyTest extends DoctrineTestCase
 {
     use VerifyDeprecations;
 
-    public function testEntityCacheKeyIdentifierCollision(): void
+    /**
+     * @dataProvider collisionEntityCacheKeyDataProvider
+     */
+    public function testEntityCacheKeyIdentifierCollision(EntityCacheKey $key1, EntityCacheKey $key2): void
     {
-        $key1 = new EntityCacheKey('Foo', ['id' => 1]);
-        $key2 = new EntityCacheKey('Bar', ['id' => 1]);
-
         self::assertNotEquals($key1->hash, $key2->hash);
     }
 
-    public function testEntityCacheKeyIdentifierType(): void
+    /**
+     * @dataProvider equalEntityCacheKeyDataProvider
+     */
+    public function testEntityCacheKeyIdentifierType(EntityCacheKey $key1, EntityCacheKey $key2): void
     {
-        $key1 = new EntityCacheKey('Foo', ['id' => 1]);
-        $key2 = new EntityCacheKey('Foo', ['id' => '1']);
-
         self::assertEquals($key1->hash, $key2->hash);
     }
 
@@ -93,5 +94,31 @@ class CacheKeyTest extends DoctrineTestCase
         };
 
         self::assertSame('my-hash', $key->hash);
+    }
+
+    public function collisionEntityCacheKeyDataProvider(): iterable
+    {
+        yield [
+            new EntityCacheKey('Foo', ['id' => 1]),
+            new EntityCacheKey('Bar', ['id' => 1]),
+        ];
+
+        yield [
+            new EntityCacheKey('Foo', ['id' => 1, 'dt' => new DateTimeImmutable('2022-01-03')]),
+            new EntityCacheKey('Bar', ['id' => 1, 'dt' => new DateTimeImmutable('2022-01-03')]),
+        ];
+    }
+
+    public function equalEntityCacheKeyDataProvider(): iterable
+    {
+        yield [
+            new EntityCacheKey('Foo', ['id' => 1]),
+            new EntityCacheKey('Foo', ['id' => '1']),
+        ];
+
+        yield [
+            new EntityCacheKey('Foo', ['id' => 1, 'dt' => new DateTimeImmutable('2022-01-03')]),
+            new EntityCacheKey('Foo', ['id' => '1', 'dt' => new DateTimeImmutable('2022-01-03')]),
+        ];
     }
 }

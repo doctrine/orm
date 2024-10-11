@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM;
 
+use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\EventManager;
@@ -932,6 +933,38 @@ class UnitOfWorkTest extends OrmTestCase
         // Collection is clean, snapshot has been updated
         self::assertFalse($user->phonenumbers->isDirty());
         self::assertEmpty($user->phonenumbers->getSnapshot());
+    }
+
+    /**
+     * @dataProvider identifierValuesDataProvider
+     */
+    public function testIdentifierHashGetter(array $givenIds, string $expectedHash): void
+    {
+        $hash = UnitOfWork::getIdHashByIdentifier($givenIds);
+
+        self::assertSame($expectedHash, $hash);
+    }
+
+    public static function identifierValuesDataProvider(): iterable
+    {
+        return [
+            [
+                [13],
+                '13',
+            ],
+            [
+                [14, 'test'],
+                '14 test',
+            ],
+            [
+                [
+                    13,
+                    'a2bd21fe-56fa-45a4-acc1-db4d2d93e49d',
+                    new DateTimeImmutable('2012-12-21 21:21:00'),
+                ],
+                '13 a2bd21fe-56fa-45a4-acc1-db4d2d93e49d 2012-12-21T21:21:00+00:00',
+            ],
+        ];
     }
 
     public function testItTriggersADeprecationNoticeWhenApplicationProvidedIdsCollide(): void
