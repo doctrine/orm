@@ -75,6 +75,14 @@ class Query extends AbstractQuery
     public const HINT_REFRESH_ENTITY = 'doctrine.refresh.entity';
 
     /**
+     * The forcePartialLoad query hint forces a particular query to return
+     * partial objects.
+     *
+     * @todo Rename: HINT_OPTIMIZE
+     */
+    public const HINT_FORCE_PARTIAL_LOAD = 'doctrine.forcePartialLoad';
+
+    /**
      * The includeMetaColumns query hint causes meta columns like foreign keys and
      * discriminator columns to be selected and returned as part of the query result.
      *

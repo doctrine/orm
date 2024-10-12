@@ -88,6 +88,15 @@ class QueryException extends Exception implements ORMException
         );
     }
 
+    public static function partialObjectsAreDangerous(): self
+    {
+        return new self(
+            'Loading partial objects is dangerous. Fetch full objects or consider ' .
+            'using a different fetch mode. If you really want partial objects, ' .
+            'set the doctrine.forcePartialLoad query hint to TRUE.',
+        );
+    }
+
     /**
      * @param string[] $assoc
      * @psalm-param array<string, string> $assoc

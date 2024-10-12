@@ -1,11 +1,6 @@
 Partial Hydration
 =================
 
-.. note::
-
-    Creating Partial Objects through DQL was possible in ORM 2,
-    but is only supported for array hydration as of ORM 3.
-
 Partial hydration of entities is allowed in the array hydrator, when
 only a subset of the fields of an entity are loaded from the database
 and the nested results are still created based on the entity relationship structure.

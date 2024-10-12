@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Query;
 
-use Doctrine\ORM\Internal\Hydration\HydrationException;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\Parser;
 use Doctrine\ORM\Query\QueryException;
@@ -114,15 +113,6 @@ class ParserTest extends OrmTestCase
 
         $this->expectException(QueryException::class);
         $parser->match(TokenType::T_SELECT);
-    }
-
-    public function testPartialExpressionWithObjectHydratorThrows(): void
-    {
-        $this->expectException(HydrationException::class);
-        $this->expectExceptionMessage('Hydration of entity objects is not allowed when DQL PARTIAL keyword is used.');
-
-        $parser = $this->createParser(CmsUser::class);
-        $parser->PartialObjectExpression();
     }
 
     private function createParser(string $dql): Parser

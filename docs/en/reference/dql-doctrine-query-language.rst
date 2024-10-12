@@ -533,14 +533,23 @@ back. Instead, you receive only arrays as a flat rectangular result
 set, similar to how you would if you were just using SQL directly
 and joining some data.
 
-If you want to select a partial number of fields for hydration entity in
-the context of array hydration and joins you can use the ``partial`` DQL keyword:
+If you want to select partial objects or fields in array hydration you can use the ``partial``
+DQL keyword:
+
+.. code-block:: php
+
+    <?php
+    $query = $em->createQuery('SELECT partial u.{id, username} FROM CmsUser u');
+    $users = $query->getResult(); // array of partially loaded CmsUser objects
+
+You can use the partial syntax when joining as well:
 
 .. code-block:: php
 
     <?php
     $query = $em->createQuery('SELECT partial u.{id, username}, partial a.{id, name} FROM CmsUser u JOIN u.articles a');
-    $users = $query->getArrayResult(); // array of partially loaded CmsUser and CmsArticle fields
+    $usersArray = $query->getArrayResult(); // array of partially loaded CmsUser and CmsArticle fields
+    $users = $query->getResult(); // array of partially loaded CmsUser objects
 
 "NEW" Operator Syntax
 ^^^^^^^^^^^^^^^^^^^^^
@@ -1427,6 +1436,15 @@ exist mostly internal query hints that are not be consumed in
 userland. However the following few hints are to be used in
 userland:
 
+
+-  ``Query::HINT_FORCE_PARTIAL_LOAD`` - Allows to hydrate objects
+   although not all their columns are fetched. This query hint can be
+   used to handle memory consumption problems with large result-sets
+   that contain char or binary data. Doctrine has no way of implicitly
+   reloading this data. Partially loaded objects have to be passed to
+   ``EntityManager::refresh()`` if they are to be reloaded fully from
+   the database. This query hint is deprecated and will be removed
+   in the future (\ `Details <https://github.com/doctrine/orm/issues/8471>`_)
 -  ``Query::HINT_REFRESH`` - This query is used internally by
    ``EntityManager::refresh()`` and can be used in userland as well.
    If you specify this hint and a query returns the data for an entity
