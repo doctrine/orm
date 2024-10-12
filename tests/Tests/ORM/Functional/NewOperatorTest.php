@@ -4,19 +4,25 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional;
 
+use Doctrine\ORM\Exception\DuplicateFieldException;
+use Doctrine\ORM\Exception\NoMatchingPropertyException;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\QueryException;
 use Doctrine\Tests\Models\CMS\CmsAddress;
 use Doctrine\Tests\Models\CMS\CmsAddressDTO;
+use Doctrine\Tests\Models\CMS\CmsAddressDTONamedArgs;
 use Doctrine\Tests\Models\CMS\CmsEmail;
 use Doctrine\Tests\Models\CMS\CmsPhonenumber;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\Models\CMS\CmsUserDTO;
+use Doctrine\Tests\Models\CMS\CmsUserDTONamedArgs;
+use Doctrine\Tests\Models\CMS\CmsUserDTOVariadicArg;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Group;
 
 use function count;
+use function sprintf;
 
 #[Group('DDC-1574')]
 class NewOperatorTest extends OrmFunctionalTestCase
@@ -1079,6 +1085,327 @@ class NewOperatorTest extends OrmFunctionalTestCase
         self::assertSame($this->fixtures[0]->username, $result[0]['cmsUserUsername']);
         self::assertSame($this->fixtures[1]->username, $result[1]['cmsUserUsername']);
         self::assertSame($this->fixtures[2]->username, $result[2]['cmsUserUsername']);
+    }
+
+    public function testNamedArguments(): void
+    {
+        $dql = <<<'SQL'
+            SELECT
+                new named CmsUserDTONamedArgs(
+                    e.email,
+                    u.name,
+                    CONCAT(a.country, ' ', a.city, ' ', a.zip) AS address
+                ) as user,
+                u.status,
+                u.username as cmsUserUsername
+            FROM
+                Doctrine\Tests\Models\CMS\CmsUser u
+            JOIN
+                u.email e
+            JOIN
+                u.address a
+            ORDER BY
+                u.name
+            SQL;
+
+        $query  = $this->getEntityManager()->createQuery($dql);
+        $result = $query->getResult();
+
+        self::assertCount(3, $result);
+
+        self::assertInstanceOf(CmsUserDTONamedArgs::class, $result[0]['user']);
+        self::assertInstanceOf(CmsUserDTONamedArgs::class, $result[1]['user']);
+        self::assertInstanceOf(CmsUserDTONamedArgs::class, $result[2]['user']);
+
+        self::assertSame($this->fixtures[0]->name, $result[0]['user']->name);
+        self::assertSame($this->fixtures[1]->name, $result[1]['user']->name);
+        self::assertSame($this->fixtures[2]->name, $result[2]['user']->name);
+
+        self::assertSame($this->fixtures[0]->email->email, $result[0]['user']->email);
+        self::assertSame($this->fixtures[1]->email->email, $result[1]['user']->email);
+        self::assertSame($this->fixtures[2]->email->email, $result[2]['user']->email);
+
+        self::assertSame(sprintf(
+            '%s %s %s',
+            $this->fixtures[0]->address->country,
+            $this->fixtures[0]->address->city,
+            $this->fixtures[0]->address->zip,
+        ), $result[0]['user']->address);
+        self::assertSame(
+            sprintf(
+                '%s %s %s',
+                $this->fixtures[1]->address->country,
+                $this->fixtures[1]->address->city,
+                $this->fixtures[1]->address->zip,
+            ),
+            $result[1]['user']->address,
+        );
+        self::assertSame(
+            sprintf(
+                '%s %s %s',
+                $this->fixtures[2]->address->country,
+                $this->fixtures[2]->address->city,
+                $this->fixtures[2]->address->zip,
+            ),
+            $result[2]['user']->address,
+        );
+
+        self::assertSame($this->fixtures[0]->status, $result[0]['status']);
+        self::assertSame($this->fixtures[1]->status, $result[1]['status']);
+        self::assertSame($this->fixtures[2]->status, $result[2]['status']);
+
+        self::assertSame($this->fixtures[0]->username, $result[0]['cmsUserUsername']);
+        self::assertSame($this->fixtures[1]->username, $result[1]['cmsUserUsername']);
+        self::assertSame($this->fixtures[2]->username, $result[2]['cmsUserUsername']);
+    }
+
+    public function testVariadicArgument(): void
+    {
+        $dql = <<<'SQL'
+            SELECT
+                new named CmsUserDTOVariadicArg(
+                    CONCAT(a.country, ' ', a.city, ' ', a.zip) AS address,
+                    e.email,
+                    u.name
+                ) as user,
+                u.status,
+                u.username as cmsUserUsername
+            FROM
+                Doctrine\Tests\Models\CMS\CmsUser u
+            JOIN
+                u.email e
+            JOIN
+                u.address a
+            ORDER BY
+                u.name
+            SQL;
+
+        $query  = $this->getEntityManager()->createQuery($dql);
+        $result = $query->getResult();
+
+        self::assertCount(3, $result);
+
+        self::assertInstanceOf(CmsUserDTOVariadicArg::class, $result[0]['user']);
+        self::assertInstanceOf(CmsUserDTOVariadicArg::class, $result[1]['user']);
+        self::assertInstanceOf(CmsUserDTOVariadicArg::class, $result[2]['user']);
+
+        self::assertSame($this->fixtures[0]->name, $result[0]['user']->name);
+        self::assertSame($this->fixtures[1]->name, $result[1]['user']->name);
+        self::assertSame($this->fixtures[2]->name, $result[2]['user']->name);
+
+        self::assertSame($this->fixtures[0]->email->email, $result[0]['user']->email);
+        self::assertSame($this->fixtures[1]->email->email, $result[1]['user']->email);
+        self::assertSame($this->fixtures[2]->email->email, $result[2]['user']->email);
+
+        self::assertSame(
+            sprintf(
+                '%s %s %s',
+                $this->fixtures[0]->address->country,
+                $this->fixtures[0]->address->city,
+                $this->fixtures[0]->address->zip,
+            ),
+            $result[0]['user']->address,
+        );
+        self::assertSame(
+            sprintf(
+                '%s %s %s',
+                $this->fixtures[1]->address->country,
+                $this->fixtures[1]->address->city,
+                $this->fixtures[1]->address->zip,
+            ),
+            $result[1]['user']->address,
+        );
+        self::assertSame(
+            sprintf(
+                '%s %s %s',
+                $this->fixtures[2]->address->country,
+                $this->fixtures[2]->address->city,
+                $this->fixtures[2]->address->zip,
+            ),
+            $result[2]['user']->address,
+        );
+
+        self::assertSame($this->fixtures[0]->status, $result[0]['status']);
+        self::assertSame($this->fixtures[1]->status, $result[1]['status']);
+        self::assertSame($this->fixtures[2]->status, $result[2]['status']);
+
+        self::assertSame($this->fixtures[0]->username, $result[0]['cmsUserUsername']);
+        self::assertSame($this->fixtures[1]->username, $result[1]['cmsUserUsername']);
+        self::assertSame($this->fixtures[2]->username, $result[2]['cmsUserUsername']);
+    }
+
+    public function testShouldSupportNestedNewOperatorsAndNamedArguments(): void
+    {
+        $dql = '
+            SELECT
+                new named CmsUserDTONamedArgs(
+                    e.email,
+                    u.name as name,
+                    new CmsAddressDTO(
+                        a.country,
+                        a.city,
+                        a.zip
+                    ) as addressDto
+                ) as user,
+                u.status,
+                u.username as cmsUserUsername
+            FROM
+                Doctrine\Tests\Models\CMS\CmsUser u
+            JOIN
+                u.email e
+            JOIN
+                u.address a
+            ORDER BY
+                u.name';
+
+        $query  = $this->getEntityManager()->createQuery($dql);
+        $result = $query->getResult();
+
+        self::assertCount(3, $result);
+
+        self::assertInstanceOf(CmsUserDTONamedArgs::class, $result[0]['user']);
+        self::assertInstanceOf(CmsUserDTONamedArgs::class, $result[1]['user']);
+        self::assertInstanceOf(CmsUserDTONamedArgs::class, $result[2]['user']);
+
+        self::assertNull($result[0]['user']->address);
+        self::assertNull($result[1]['user']->address);
+        self::assertNull($result[2]['user']->address);
+
+        self::assertInstanceOf(CmsAddressDTO::class, $result[0]['user']->addressDto);
+        self::assertInstanceOf(CmsAddressDTO::class, $result[1]['user']->addressDto);
+        self::assertInstanceOf(CmsAddressDTO::class, $result[2]['user']->addressDto);
+
+        self::assertSame($this->fixtures[0]->name, $result[0]['user']->name);
+        self::assertSame($this->fixtures[1]->name, $result[1]['user']->name);
+        self::assertSame($this->fixtures[2]->name, $result[2]['user']->name);
+
+        self::assertSame($this->fixtures[0]->email->email, $result[0]['user']->email);
+        self::assertSame($this->fixtures[1]->email->email, $result[1]['user']->email);
+        self::assertSame($this->fixtures[2]->email->email, $result[2]['user']->email);
+
+        self::assertSame($this->fixtures[0]->address->city, $result[0]['user']->addressDto->city);
+        self::assertSame($this->fixtures[1]->address->city, $result[1]['user']->addressDto->city);
+        self::assertSame($this->fixtures[2]->address->city, $result[2]['user']->addressDto->city);
+
+        self::assertSame($this->fixtures[0]->address->country, $result[0]['user']->addressDto->country);
+        self::assertSame($this->fixtures[1]->address->country, $result[1]['user']->addressDto->country);
+        self::assertSame($this->fixtures[2]->address->country, $result[2]['user']->addressDto->country);
+
+        self::assertSame($this->fixtures[0]->status, $result[0]['status']);
+        self::assertSame($this->fixtures[1]->status, $result[1]['status']);
+        self::assertSame($this->fixtures[2]->status, $result[2]['status']);
+
+        self::assertSame($this->fixtures[0]->username, $result[0]['cmsUserUsername']);
+        self::assertSame($this->fixtures[1]->username, $result[1]['cmsUserUsername']);
+        self::assertSame($this->fixtures[2]->username, $result[2]['cmsUserUsername']);
+    }
+
+    public function testShouldSupportNestedNamedArguments(): void
+    {
+        $dql = '
+            SELECT
+                new named CmsUserDTONamedArgs(
+                    e.email,
+                    u.name as name,
+                    new named CmsAddressDTONamedArgs(
+                        a.zip,
+                        a.city,
+                        a.country 
+                    ) as addressDtoNamedArgs
+                ) as user,
+                u.status,
+                u.username as cmsUserUsername
+            FROM
+                Doctrine\Tests\Models\CMS\CmsUser u
+            JOIN
+                u.email e
+            JOIN
+                u.address a
+            ORDER BY
+                u.name';
+
+        $query  = $this->getEntityManager()->createQuery($dql);
+        $result = $query->getResult();
+
+        self::assertCount(3, $result);
+
+        self::assertInstanceOf(CmsUserDTONamedArgs::class, $result[0]['user']);
+        self::assertInstanceOf(CmsUserDTONamedArgs::class, $result[1]['user']);
+        self::assertInstanceOf(CmsUserDTONamedArgs::class, $result[2]['user']);
+
+        self::assertNull($result[0]['user']->address);
+        self::assertNull($result[1]['user']->address);
+        self::assertNull($result[2]['user']->address);
+
+        self::assertNull($result[0]['user']->addressDto);
+        self::assertNull($result[1]['user']->addressDto);
+        self::assertNull($result[2]['user']->addressDto);
+
+        self::assertInstanceOf(CmsAddressDTONamedArgs::class, $result[0]['user']->addressDtoNamedArgs);
+        self::assertInstanceOf(CmsAddressDTONamedArgs::class, $result[1]['user']->addressDtoNamedArgs);
+        self::assertInstanceOf(CmsAddressDTONamedArgs::class, $result[2]['user']->addressDtoNamedArgs);
+
+        self::assertSame($this->fixtures[0]->name, $result[0]['user']->name);
+        self::assertSame($this->fixtures[1]->name, $result[1]['user']->name);
+        self::assertSame($this->fixtures[2]->name, $result[2]['user']->name);
+
+        self::assertSame($this->fixtures[0]->email->email, $result[0]['user']->email);
+        self::assertSame($this->fixtures[1]->email->email, $result[1]['user']->email);
+        self::assertSame($this->fixtures[2]->email->email, $result[2]['user']->email);
+
+        self::assertSame($this->fixtures[0]->address->city, $result[0]['user']->addressDtoNamedArgs->city);
+        self::assertSame($this->fixtures[1]->address->city, $result[1]['user']->addressDtoNamedArgs->city);
+        self::assertSame($this->fixtures[2]->address->city, $result[2]['user']->addressDtoNamedArgs->city);
+
+        self::assertSame($this->fixtures[0]->address->country, $result[0]['user']->addressDtoNamedArgs->country);
+        self::assertSame($this->fixtures[1]->address->country, $result[1]['user']->addressDtoNamedArgs->country);
+        self::assertSame($this->fixtures[2]->address->country, $result[2]['user']->addressDtoNamedArgs->country);
+
+        self::assertSame($this->fixtures[0]->status, $result[0]['status']);
+        self::assertSame($this->fixtures[1]->status, $result[1]['status']);
+        self::assertSame($this->fixtures[2]->status, $result[2]['status']);
+
+        self::assertSame($this->fixtures[0]->username, $result[0]['cmsUserUsername']);
+        self::assertSame($this->fixtures[1]->username, $result[1]['cmsUserUsername']);
+        self::assertSame($this->fixtures[2]->username, $result[2]['cmsUserUsername']);
+    }
+
+    public function testExceptionIfTwoAliases(): void
+    {
+        $dql = '
+            SELECT
+                new named Doctrine\Tests\Models\CMS\CmsUserDTO(
+                    u.name,
+                    u.username AS name
+                )
+            FROM
+                Doctrine\Tests\Models\CMS\CmsUser u';
+
+        $this->expectException(DuplicateFieldException::class);
+        $this->expectExceptionMessage('Name "name" for "u.username AS name" already in use.');
+
+        $query  = $this->_em->createQuery($dql);
+        $result = $query->getResult();
+    }
+
+    public function testExceptionIfFunctionHasNoAlias(): void
+    {
+        $dql = "
+            SELECT
+                new named Doctrine\Tests\Models\CMS\CmsUserDTO(
+                    u.name,
+                    CASE WHEN (e.email = 'email@test1.com') THEN 'TEST1' ELSE 'OTHER_TEST' END
+                )
+            FROM
+                Doctrine\Tests\Models\CMS\CmsUser u
+            JOIN
+                u.email e";
+
+        $this->expectException(NoMatchingPropertyException::class);
+        $this->expectExceptionMessage('Column name "CASE WHEN (e.email = \'email@test1.com\') THEN \'TEST1\' ELSE \'OTHER_TEST\' END" does not match any property name. Consider aliasing it to the name of an existing property.');
+
+        $query  = $this->_em->createQuery($dql);
+        $result = $query->getResult();
     }
 }
 

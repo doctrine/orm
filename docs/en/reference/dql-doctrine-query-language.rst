@@ -591,7 +591,7 @@ You can also nest several DTO :
             // Bind values to the object properties.
         }
     }
-	
+
     class AddressDTO
     {
         public function __construct(string $street, string $city, string $zip)
@@ -599,14 +599,71 @@ You can also nest several DTO :
             // Bind values to the object properties.
         }
     }
-	
+
 .. code-block:: php
 
     <?php
     $query = $em->createQuery('SELECT NEW CustomerDTO(c.name, e.email, NEW AddressDTO(a.street, a.city, a.zip)) FROM Customer c JOIN c.email e JOIN c.address a');
     $users = $query->getResult(); // array of CustomerDTO
-	
+
 Note that you can only pass scalar expressions or other Data Transfer Objects to the constructor.
+
+If you use your data transfer objects for multiple queries, and you would rather not have to
+specify arguments that precede the ones you are really interested in, you can use named arguments.
+
+Consider the following DTO, which uses optional arguments:
+
+.. code-block:: php
+
+    <?php
+
+    class CustomerDTO
+    {
+        public function __construct(
+            public string|null $name = null,
+            public string|null $email = null,
+            public string|null $city = null,
+            public mixed|null $value = null,
+            public AddressDTO|null $address = null,
+        ) {
+        }
+    }
+
+You can specify arbitrary arguments in an arbitrary order by using the named argument syntax, and the ORM will try to match argument names with the selected column names.
+The syntax relies on the NAMED keyword, like so:
+
+.. code-block:: php
+
+    <?php
+    $query = $em->createQuery('SELECT NEW NAMED CustomerDTO(a.city, c.name) FROM Customer c JOIN c.address a');
+    $users = $query->getResult(); // array of CustomerDTO
+
+    // CustomerDTO => {name : 'SMITH', email: null, city: 'London', value: null}
+
+ORM will also give precedence to column aliases over column names :
+
+.. code-block:: php
+
+    <?php
+    $query = $em->createQuery('SELECT NEW NAMED CustomerDTO(c.name, CONCAT(a.city, ' ' , a.zip) AS value) FROM Customer c JOIN c.address a');
+    $users = $query->getResult(); // array of CustomerDTO
+
+    // CustomerDTO => {name : 'DOE', email: null, city: null, value: 'New York 10011'}
+
+To define a custom name for a DTO constructor argument, you can either alias the column with the ``AS`` keyword.
+
+The ``NAMED`` keyword must precede all DTO you want to instantiate :
+
+.. code-block:: php
+
+    <?php
+    $query = $em->createQuery('SELECT NEW NAMED CustomerDTO(c.name, NEW NAMED AddressDTO(a.street, a.city, a.zip) AS address) FROM Customer c JOIN c.address a');
+    $users = $query->getResult(); // array of CustomerDTO
+
+    // CustomerDTO => {name : 'DOE', email: null, city: null, value: 'New York 10011'}
+
+If two arguments have the same name, a ``DuplicateFieldException`` is thrown.
+If a field cannot be matched with a property name, a ``NoMatchingPropertyException`` is thrown. This typically happens when using functions without aliasing them.
 
 Using INDEX BY
 ~~~~~~~~~~~~~~
@@ -1627,7 +1684,7 @@ Select Expressions
     PartialObjectExpression ::= "PARTIAL" IdentificationVariable "." PartialFieldSet
     PartialFieldSet         ::= "{" SimpleStateField {"," SimpleStateField}* "}"
     NewObjectExpression     ::= "NEW" AbstractSchemaName "(" NewObjectArg {"," NewObjectArg}* ")"
-    NewObjectArg            ::= ScalarExpression | "(" Subselect ")" | NewObjectExpression
+    NewObjectArg            ::= (ScalarExpression | "(" Subselect ")" | NewObjectExpression) ["AS" AliasResultVariable]
 
 Conditional Expressions
 ~~~~~~~~~~~~~~~~~~~~~~~
