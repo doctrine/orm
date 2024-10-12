@@ -12,7 +12,6 @@ use Doctrine\Common\EventManager;
 use Doctrine\DBAL;
 use Doctrine\DBAL\Connections\PrimaryReadReplicaConnection;
 use Doctrine\DBAL\LockMode;
-use Doctrine\Deprecations\Deprecation;
 use Doctrine\ORM\Cache\Persister\CachedPersister;
 use Doctrine\ORM\Event\ListenersInvoker;
 use Doctrine\ORM\Event\OnClearEventArgs;
