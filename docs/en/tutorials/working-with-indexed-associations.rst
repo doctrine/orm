@@ -31,169 +31,18 @@ You can map indexed associations by adding:
 The code and mappings for the Market entity looks like this:
 
 .. configuration-block::
-    .. code-block:: attribute
+    .. literalinclude:: working-with-indexed-associations/Market.php
+        :language: attribute
 
-        <?php
-        namespace Doctrine\Tests\Models\StockExchange;
+    .. literalinclude:: working-with-indexed-associations/Market-annotations.php
+        :language: annotation
 
-        use Doctrine\Common\Collections\ArrayCollection;
-        use Doctrine\Common\Collections\Collection;
+    .. literalinclude:: working-with-indexed-associations/market.xml
+        :language: xml
 
-        #[Entity]
-        #[Table(name: 'exchange_markets')]
-        class Market
-        {
-            #[Id, Column(type: 'integer'), GeneratedValue]
-            private int|null $id = null;
+    .. literalinclude:: working-with-indexed-associations/market.xml
+        :language: yaml
 
-            #[Column(type: 'string')]
-            private string $name;
-
-            /** @var Collection<string, Stock> */
-            #[OneToMany(targetEntity: Stock::class, mappedBy: 'market', indexBy: 'symbol')]
-            private Collection $stocks;
-
-            public function __construct(string $name)
-            {
-                $this->name = $name;
-                $this->stocks = new ArrayCollection();
-            }
-
-            public function getId(): int|null
-            {
-                return $this->id;
-            }
-
-            public function getName(): string
-            {
-                return $this->name;
-            }
-
-            public function addStock(Stock $stock): void
-            {
-                $this->stocks[$stock->getSymbol()] = $stock;
-            }
-
-            public function getStock(string $symbol): Stock
-            {
-                if (!isset($this->stocks[$symbol])) {
-                    throw new \InvalidArgumentException("Symbol is not traded on this market.");
-                }
-
-                return $this->stocks[$symbol];
-            }
-
-            /** @return array<string, Stock> */
-            public function getStocks(): array
-            {
-                return $this->stocks->toArray();
-            }
-        }
-
-    .. code-block:: annotation
-
-        <?php
-        namespace Doctrine\Tests\Models\StockExchange;
-
-        use Doctrine\Common\Collections\ArrayCollection;
-
-        /**
-         * @Entity
-         * @Table(name="exchange_markets")
-         */
-        class Market
-        {
-            /**
-             * @Id @Column(type="integer") @GeneratedValue
-             * @var int
-             */
-            private int|null $id = null;
-
-            /**
-             * @Column(type="string")
-             * @var string
-             */
-            private string $name;
-
-            /**
-             * @OneToMany(targetEntity="Stock", mappedBy="market", indexBy="symbol")
-             * @var Collection<int, Stock>
-             */
-            private Collection $stocks;
-
-            public function __construct($name)
-            {
-                $this->name = $name;
-                $this->stocks = new ArrayCollection();
-            }
-
-            public function getId(): int|null
-            {
-                return $this->id;
-            }
-
-            public function getName(): string
-            {
-                return $this->name;
-            }
-
-            public function addStock(Stock $stock): void
-            {
-                $this->stocks[$stock->getSymbol()] = $stock;
-            }
-
-            public function getStock($symbol): Stock
-            {
-                if (!isset($this->stocks[$symbol])) {
-                    throw new \InvalidArgumentException("Symbol is not traded on this market.");
-                }
-
-                return $this->stocks[$symbol];
-            }
-
-            /** @return array<string, Stock> */
-            public function getStocks(): array
-            {
-                return $this->stocks->toArray();
-            }
-        }
-
-    .. code-block:: xml
-
-        <?xml version="1.0" encoding="UTF-8"?>
-        <doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
-              xmlns:xsi="https://www.w3.org/2001/XMLSchema-instance"
-              xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
-                                  https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
-
-            <entity name="Doctrine\Tests\Models\StockExchange\Market">
-                <id name="id" type="integer">
-                    <generator strategy="AUTO" />
-                </id>
-
-                <field name="name" type="string"/>
-
-                <one-to-many target-entity="Stock" mapped-by="market" field="stocks" index-by="symbol" />
-            </entity>
-        </doctrine-mapping>
-
-    .. code-block:: yaml
-
-        Doctrine\Tests\Models\StockExchange\Market:
-          type: entity
-          id:
-            id:
-              type: integer
-              generator:
-                strategy: AUTO
-          fields:
-            name:
-              type:string
-          oneToMany:
-            stocks:
-              targetEntity: Stock
-              mappedBy: market
-              indexBy: symbol
 
 Inside the ``addStock()`` method you can see how we directly set the key of the association to the symbol,
 so that we can work with the indexed association directly after invoking ``addStock()``. Inside ``getStock($symbol)``

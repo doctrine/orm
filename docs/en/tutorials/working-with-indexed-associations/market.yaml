@@ -1,0 +1,15 @@
+Doctrine\Tests\Models\StockExchange\Market:
+  type: entity
+  id:
+    id:
+      type: integer
+      generator:
+        strategy: AUTO
+  fields:
+    name:
+      type:string
+  oneToMany:
+    stocks:
+      targetEntity: Stock
+      mappedBy: market
+      indexBy: symbol
