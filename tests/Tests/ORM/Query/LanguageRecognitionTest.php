@@ -11,6 +11,7 @@ use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\OneToOne;
+use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\AST\Functions\ConcatFunction;
 use Doctrine\ORM\Query\Parser;
 use Doctrine\ORM\Query\ParserResult;
@@ -56,7 +57,7 @@ class LanguageRecognitionTest extends OrmTestCase
         $parser = new Parser($query);
 
         // We do NOT test SQL output here. That only unnecessarily slows down the tests!
-        $parser->setCustomOutputTreeWalker(NullSqlWalker::class);
+        $query->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, NullSqlWalker::class);
 
         return $parser->parse();
     }

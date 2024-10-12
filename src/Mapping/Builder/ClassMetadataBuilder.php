@@ -169,8 +169,8 @@ class ClassMetadataBuilder
     /**
      * Sets the discriminator column details.
      *
-     * @psalm-param class-string<BackedEnum>|null $enumType
-     * @psalm-param array<string, mixed> $options
+     * @param class-string<BackedEnum>|null $enumType
+     * @param array<string, mixed>          $options
      *
      * @return $this
      */

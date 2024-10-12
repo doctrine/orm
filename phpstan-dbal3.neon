@@ -27,3 +27,10 @@ parameters:
             message: '#Negated boolean expression is always false\.#'
             paths:
                 - src/Mapping/Driver/AttributeDriver.php
+
+        -
+            message: '~^Call to deprecated method getEventManager\(\) of class Doctrine\\DBAL\\Connection\.$~'
+            path: src/EntityManager.php
+        -
+            message: '~deprecated class Doctrine\\DBAL\\Tools\\Console\\Command\\ReservedWordsCommand\:~'
+            path: src/Tools/Console/ConsoleRunner.php

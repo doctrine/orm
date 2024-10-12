@@ -296,7 +296,7 @@ class PostLoadListenerCheckAssociationsArePopulated
 
 class PostLoadListenerLoadEntityInEventHandler
 {
-    /** @psalm-var array<class-string, int> */
+    /** @var array<class-string, int> */
     private array $firedByClasses = [];
 
     public function postLoad(PostLoadEventArgs $event): void

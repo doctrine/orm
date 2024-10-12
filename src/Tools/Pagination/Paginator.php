@@ -183,7 +183,7 @@ class Paginator implements Countable, IteratorAggregate
     /**
      * Appends a custom tree walker to the tree walkers hint.
      *
-     * @psalm-param class-string $walkerClass
+     * @param class-string $walkerClass
      */
     private function appendTreeWalker(Query $query, string $walkerClass): void
     {

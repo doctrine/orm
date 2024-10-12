@@ -22,9 +22,9 @@ interface EntityManagerInterface extends ObjectManager
     /**
      * {@inheritDoc}
      *
-     * @psalm-param class-string<T> $className
+     * @param class-string<T> $className
      *
-     * @psalm-return EntityRepository<T>
+     * @return EntityRepository<T>
      *
      * @template T of object
      */
@@ -151,11 +151,10 @@ interface EntityManagerInterface extends ObjectManager
      * Gets a reference to the entity identified by the given type and identifier
      * without actually loading it, if the entity is not yet loaded.
      *
-     * @param string $entityName The name of the entity type.
-     * @param mixed  $id         The entity identifier.
-     * @psalm-param class-string<T> $entityName
+     * @param class-string<T> $entityName The name of the entity type.
+     * @param mixed           $id         The entity identifier.
      *
-     * @psalm-return T|null
+     * @return T|null The entity reference.
      *
      * @throws ORMException
      *
@@ -232,7 +231,7 @@ interface EntityManagerInterface extends ObjectManager
     /**
      * {@inheritDoc}
      *
-     * @psalm-param string|class-string<T> $className
+     * @param string|class-string<T> $className
      *
      * @psalm-return ($className is class-string<T> ? Mapping\ClassMetadata<T> : Mapping\ClassMetadata<object>)
      *
