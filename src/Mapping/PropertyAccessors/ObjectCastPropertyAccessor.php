@@ -9,6 +9,7 @@ use ReflectionProperty;
 
 use function ltrim;
 
+/** @internal */
 class ObjectCastPropertyAccessor implements PropertyAccessor
 {
     public static function fromNames(string $class, string $name): self

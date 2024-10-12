@@ -6,6 +6,7 @@ namespace Doctrine\ORM\Mapping\PropertyAccessors;
 
 use Doctrine\Instantiator\Instantiator;
 
+/** @internal */
 class EmbeddablePropertyAccessor implements PropertyAccessor
 {
     private static Instantiator|null $instantiator = null;
