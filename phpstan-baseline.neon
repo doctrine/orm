@@ -96,22 +96,22 @@ parameters:
 			path: src/Cache/TimestampQueryCacheValidator.php
 
 		-
-			message: "#^Return type \\(Doctrine\\\\ORM\\\\Mapping\\\\ClassMetadataFactory\\) of method Doctrine\\\\ORM\\\\Decorator\\\\EntityManagerDecorator\\:\\:getMetadataFactory\\(\\) should be compatible with return type \\(Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadataFactory\\<Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadata\\<object\\>\\>\\) of method Doctrine\\\\Persistence\\\\ObjectManager\\:\\:getMetadataFactory\\(\\)$#"
+			message: "#^Return type \\(Doctrine\\\\ORM\\\\Mapping\\\\ClassMetadataFactoryInterface\\) of method Doctrine\\\\ORM\\\\Decorator\\\\EntityManagerDecorator\\:\\:getMetadataFactory\\(\\) should be compatible with return type \\(Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadataFactory\\<Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadata\\<object\\>\\>\\) of method Doctrine\\\\Persistence\\\\ObjectManager\\:\\:getMetadataFactory\\(\\)$#"
 			count: 1
 			path: src/Decorator/EntityManagerDecorator.php
 
 		-
-			message: "#^Return type \\(Doctrine\\\\ORM\\\\Mapping\\\\ClassMetadataFactory\\) of method Doctrine\\\\ORM\\\\Decorator\\\\EntityManagerDecorator\\:\\:getMetadataFactory\\(\\) should be compatible with return type \\(Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadataFactory\\<Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadata\\<object\\>\\>\\) of method Doctrine\\\\Persistence\\\\ObjectManagerDecorator\\<Doctrine\\\\ORM\\\\EntityManagerInterface\\>\\:\\:getMetadataFactory\\(\\)$#"
+			message: "#^Return type \\(Doctrine\\\\ORM\\\\Mapping\\\\ClassMetadataFactoryInterface\\) of method Doctrine\\\\ORM\\\\Decorator\\\\EntityManagerDecorator\\:\\:getMetadataFactory\\(\\) should be compatible with return type \\(Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadataFactory\\<Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadata\\<object\\>\\>\\) of method Doctrine\\\\Persistence\\\\ObjectManagerDecorator\\<Doctrine\\\\ORM\\\\EntityManagerInterface\\>\\:\\:getMetadataFactory\\(\\)$#"
 			count: 1
 			path: src/Decorator/EntityManagerDecorator.php
 
 		-
-			message: "#^Return type \\(Doctrine\\\\ORM\\\\Mapping\\\\ClassMetadataFactory\\) of method Doctrine\\\\ORM\\\\EntityManager\\:\\:getMetadataFactory\\(\\) should be compatible with return type \\(Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadataFactory\\<Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadata\\<object\\>\\>\\) of method Doctrine\\\\Persistence\\\\ObjectManager\\:\\:getMetadataFactory\\(\\)$#"
+			message: "#^Return type \\(Doctrine\\\\ORM\\\\Mapping\\\\ClassMetadataFactoryInterface\\) of method Doctrine\\\\ORM\\\\EntityManager\\:\\:getMetadataFactory\\(\\) should be compatible with return type \\(Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadataFactory\\<Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadata\\<object\\>\\>\\) of method Doctrine\\\\Persistence\\\\ObjectManager\\:\\:getMetadataFactory\\(\\)$#"
 			count: 1
 			path: src/EntityManager.php
 
 		-
-			message: "#^Return type \\(Doctrine\\\\ORM\\\\Mapping\\\\ClassMetadataFactory\\) of method Doctrine\\\\ORM\\\\EntityManagerInterface\\:\\:getMetadataFactory\\(\\) should be compatible with return type \\(Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadataFactory\\<Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadata\\<object\\>\\>\\) of method Doctrine\\\\Persistence\\\\ObjectManager\\:\\:getMetadataFactory\\(\\)$#"
+			message: "#^Return type \\(Doctrine\\\\ORM\\\\Mapping\\\\ClassMetadataFactoryInterface\\) of method Doctrine\\\\ORM\\\\EntityManagerInterface\\:\\:getMetadataFactory\\(\\) should be compatible with return type \\(Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadataFactory\\<Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadata\\<object\\>\\>\\) of method Doctrine\\\\Persistence\\\\ObjectManager\\:\\:getMetadataFactory\\(\\)$#"
 			count: 1
 			path: src/EntityManagerInterface.php
 

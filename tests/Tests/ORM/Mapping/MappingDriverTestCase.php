@@ -10,6 +10,7 @@ use Doctrine\ORM\Events;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
+use Doctrine\ORM\Mapping\ClassMetadataFactoryInterface;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\DefaultNamingStrategy;
 use Doctrine\ORM\Mapping\DefaultTypedFieldMapper;
@@ -92,7 +93,7 @@ abstract class MappingDriverTestCase extends OrmTestCase
         return $class;
     }
 
-    protected function createClassMetadataFactory(EntityManagerInterface|null $em = null): ClassMetadataFactory
+    protected function createClassMetadataFactory(EntityManagerInterface|null $em = null): ClassMetadataFactoryInterface
     {
         $driver  = $this->loadDriver();
         $em    ??= $this->getTestEntityManager();

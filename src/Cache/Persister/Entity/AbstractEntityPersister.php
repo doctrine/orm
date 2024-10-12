@@ -20,7 +20,7 @@ use Doctrine\ORM\Cache\TimestampRegion;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\AssociationMapping;
 use Doctrine\ORM\Mapping\ClassMetadata;
-use Doctrine\ORM\Mapping\ClassMetadataFactory;
+use Doctrine\ORM\Mapping\ClassMetadataFactoryInterface;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\Persisters\Entity\EntityPersister;
 use Doctrine\ORM\Proxy\DefaultProxyClassNameResolver;
@@ -35,7 +35,7 @@ use function sha1;
 abstract class AbstractEntityPersister implements CachedEntityPersister
 {
     protected UnitOfWork $uow;
-    protected ClassMetadataFactory $metadataFactory;
+    protected ClassMetadataFactoryInterface $metadataFactory;
 
     /** @var mixed[] */
     protected array $queuedCache = [];

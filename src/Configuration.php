@@ -6,10 +6,12 @@ namespace Doctrine\ORM;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\ORM\Cache\CacheConfiguration;
+use Doctrine\ORM\Exception\InvalidClassMetadataFactory;
 use Doctrine\ORM\Exception\InvalidEntityRepository;
 use Doctrine\ORM\Internal\Hydration\AbstractHydrator;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
+use Doctrine\ORM\Mapping\ClassMetadataFactoryInterface;
 use Doctrine\ORM\Mapping\DefaultEntityListenerResolver;
 use Doctrine\ORM\Mapping\DefaultNamingStrategy;
 use Doctrine\ORM\Mapping\DefaultQuoteStrategy;
@@ -25,6 +27,7 @@ use Doctrine\ORM\Repository\RepositoryFactory;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
 use LogicException;
 use Psr\Cache\CacheItemPoolInterface;
+use ReflectionClass;
 
 use function class_exists;
 use function is_a;
@@ -375,6 +378,11 @@ class Configuration extends \Doctrine\DBAL\Configuration
      */
     public function setClassMetadataFactoryName(string $cmfName): void
     {
+        $reflectionClass = new ReflectionClass($cmfName);
+        if (! $reflectionClass->implementsInterface(ClassMetadataFactoryInterface::class)) {
+            throw InvalidClassMetadataFactory::create($cmfName);
+        }
+
         $this->attributes['classMetadataFactoryName'] = $cmfName;
     }
 

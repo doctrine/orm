@@ -48,7 +48,7 @@ use function substr;
  *
  * @extends AbstractClassMetadataFactory<ClassMetadata>
  */
-class ClassMetadataFactory extends AbstractClassMetadataFactory
+class ClassMetadataFactory extends AbstractClassMetadataFactory implements ClassMetadataFactoryInterface
 {
     private EntityManagerInterface|null $em       = null;
     private AbstractPlatform|null $targetPlatform = null;
@@ -69,18 +69,6 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
         $this->em = $em;
     }
 
-    /**
-     * @param A $maybeOwningSide
-     *
-     * @return (A is ManyToManyAssociationMapping ? ManyToManyOwningSideMapping : (
-     *     A is OneToOneAssociationMapping ? OneToOneOwningSideMapping : (
-     *     A is OneToManyAssociationMapping ? ManyToOneAssociationMapping : (
-     *     A is ManyToOneAssociationMapping ? ManyToOneAssociationMapping :
-     *     ManyToManyOwningSideMapping|OneToOneOwningSideMapping|ManyToOneAssociationMapping
-     * ))))
-     *
-     * @template A of AssociationMapping
-     */
     final public function getOwningSide(AssociationMapping $maybeOwningSide): OwningSideMapping
     {
         if ($maybeOwningSide instanceof OwningSideMapping) {

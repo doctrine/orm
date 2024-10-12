@@ -168,7 +168,7 @@
       <code><![CDATA[$this->metadataFactory]]></code>
     </InvalidReturnStatement>
     <InvalidReturnType>
-      <code><![CDATA[ClassMetadataFactory]]></code>
+      <code><![CDATA[ClassMetadataFactoryInterface]]></code>
     </InvalidReturnType>
     <PossiblyNullArgument>
       <code><![CDATA[$config->getProxyDir()]]></code>

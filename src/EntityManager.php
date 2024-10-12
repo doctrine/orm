@@ -17,7 +17,7 @@ use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\Exception\UnrecognizedIdentifierFields;
 use Doctrine\ORM\Internal\Hydration\AbstractHydrator;
 use Doctrine\ORM\Mapping\ClassMetadata;
-use Doctrine\ORM\Mapping\ClassMetadataFactory;
+use Doctrine\ORM\Mapping\ClassMetadataFactoryInterface;
 use Doctrine\ORM\Proxy\DefaultProxyClassNameResolver;
 use Doctrine\ORM\Proxy\ProxyFactory;
 use Doctrine\ORM\Query\Expr;
@@ -63,7 +63,7 @@ class EntityManager implements EntityManagerInterface
     /**
      * The metadata factory, used to retrieve the ORM metadata of entity classes.
      */
-    private ClassMetadataFactory $metadataFactory;
+    private ClassMetadataFactoryInterface $metadataFactory;
 
     /**
      * The UnitOfWork used to coordinate object-level transactions.
@@ -154,7 +154,7 @@ class EntityManager implements EntityManagerInterface
         return $this->conn;
     }
 
-    public function getMetadataFactory(): ClassMetadataFactory
+    public function getMetadataFactory(): ClassMetadataFactoryInterface
     {
         return $this->metadataFactory;
     }
