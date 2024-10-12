@@ -18,6 +18,7 @@ use Symfony\Component\VarExporter\ProxyHelper;
 
 use function array_combine;
 use function array_flip;
+use function array_keys;
 use function assert;
 use function bin2hex;
 use function chmod;
@@ -232,7 +233,7 @@ EOPHP;
             $class = $entityPersister->getClassMetadata();
 
             foreach ($class->getPropertyAccessors() as $name => $property) {
-                if (! $property || isset($identifier[$name]) || ! $class->hasField($name) && ! $class->hasAssociation($name)) {
+                if (isset($identifier[$name]) || ! $class->hasField($name) && ! $class->hasAssociation($name)) {
                     continue;
                 }
 
@@ -280,7 +281,7 @@ EOPHP;
         $proxyClassName   = $this->loadProxyClass($class);
         $identifierFields = [];
 
-        foreach ($identifiers as $identifier => $_) {
+        foreach (array_keys($identifiers) as $identifier) {
             $identifierFields[$identifier] = $class->getPropertyAccessor($identifier);
         }
 

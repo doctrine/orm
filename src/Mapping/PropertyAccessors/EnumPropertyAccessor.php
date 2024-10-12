@@ -36,7 +36,7 @@ class EnumPropertyAccessor implements PropertyAccessor
         return $this->fromEnum($enum);
     }
 
-    private function fromEnum($enum)
+    private function fromEnum(array|BackedEnum $enum): int|string|array
     {
         if (is_array($enum)) {
             return array_map(static function (BackedEnum $enum) {

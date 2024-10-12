@@ -598,11 +598,21 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
     }
 
     /**
-     * Gets the ReflectionProperty for the single identifier field.
-     *
      * @throws BadMethodCallException If the class has a composite identifier.
      */
     public function getSingleIdReflectionProperty(): ReflectionProperty|null
+    {
+        if ($this->isIdentifierComposite) {
+            throw new BadMethodCallException('Class ' . $this->name . ' has a composite identifier.');
+        }
+
+        return $this->reflFields[$this->identifier[0]];
+    }
+
+    /**
+     * @throws BadMethodCallException If the class has a composite identifier.
+     */
+    public function getSingleIdPropertyAccessor(): PropertyAccessor|null
     {
         if ($this->isIdentifierComposite) {
             throw new BadMethodCallException('Class ' . $this->name . ' has a composite identifier.');

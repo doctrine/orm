@@ -8,6 +8,7 @@ use ArrayAccess;
 use Doctrine\Deprecations\Deprecation;
 use Doctrine\Persistence\Mapping\ReflectionService;
 use Doctrine\Persistence\Reflection\EnumReflectionProperty;
+use Generator;
 use IteratorAggregate;
 use OutOfBoundsException;
 use ReflectionProperty;
@@ -19,12 +20,14 @@ use function str_replace;
 
 class LegacyReflectionFields implements ArrayAccess, IteratorAggregate
 {
+    /** @var array<string, ReflectionProperty> */
     private array $reflFields = [];
 
     public function __construct(private ClassMetadata $classMetadata, private ReflectionService $reflectionService)
     {
     }
 
+    /** @param string $offset */
     public function offsetExists($offset): bool
     {
         Deprecation::trigger(
@@ -36,6 +39,7 @@ class LegacyReflectionFields implements ArrayAccess, IteratorAggregate
         return isset($this->classMetadata->propertyAccessors[$offset]);
     }
 
+    /** @param string $field */
     public function offsetGet($field): mixed
     {
         if (isset($this->reflFields[$field])) {
@@ -95,11 +99,16 @@ class LegacyReflectionFields implements ArrayAccess, IteratorAggregate
         throw new OutOfBoundsException('Unknown field: ' . $this->classMetadata->name . ' ::$' . $field);
     }
 
+    /**
+     * @param string $offset
+     * @param ReflectionProperty $value
+     */
     public function offsetSet($offset, $value): void
     {
         $this->reflFields[$offset] = $value;
     }
 
+    /** @param string $offset */
     public function offsetUnset($offset): void
     {
         unset($this->reflFields[$offset]);
@@ -123,6 +132,7 @@ class LegacyReflectionFields implements ArrayAccess, IteratorAggregate
         return $reflectionProperty;
     }
 
+    /** @return Generator<string, ReflectionProperty> */
     public function getIterator(): Traversable
     {
         Deprecation::trigger(
