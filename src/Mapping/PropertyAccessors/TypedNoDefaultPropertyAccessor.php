@@ -11,6 +11,7 @@ use ReflectionProperty;
 use function assert;
 use function sprintf;
 
+/** @internal */
 class TypedNoDefaultPropertyAccessor implements PropertyAccessor
 {
     private Closure|null $unsetter = null;

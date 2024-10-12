@@ -10,6 +10,7 @@ use function array_map;
 use function is_array;
 use function reset;
 
+/** @internal */
 class EnumPropertyAccessor implements PropertyAccessor
 {
     public function __construct(private PropertyAccessor $parent, private string $enumType)

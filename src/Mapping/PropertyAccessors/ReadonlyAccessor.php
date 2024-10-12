@@ -10,6 +10,7 @@ use ReflectionProperty;
 
 use function sprintf;
 
+/** @internal */
 class ReadonlyAccessor implements PropertyAccessor
 {
     public function __construct(private PropertyAccessor $parent, private ReflectionProperty $reflectionProperty)
