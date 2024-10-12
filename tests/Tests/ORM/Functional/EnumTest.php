@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional;
 
-use Doctrine\DBAL\Types\EnumType;
 use Doctrine\ORM\AbstractQuery;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Driver\AttributeDriver;
@@ -27,7 +26,6 @@ use Doctrine\Tests\Models\Enums\Unit;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
 
-use function class_exists;
 use function dirname;
 use function sprintf;
 use function uniqid;
@@ -460,11 +458,8 @@ EXCEPTION
     {
         yield Card::class => [Card::class];
         yield TypedCard::class => [TypedCard::class];
-
-        if (class_exists(EnumType::class)) {
-            yield CardNativeEnum::class => [CardNativeEnum::class];
-            yield TypedCardNativeEnum::class => [TypedCardNativeEnum::class];
-        }
+        yield CardNativeEnum::class => [CardNativeEnum::class];
+        yield TypedCardNativeEnum::class => [TypedCardNativeEnum::class];
     }
 
     public function testItAllowsReadingAttributes(): void

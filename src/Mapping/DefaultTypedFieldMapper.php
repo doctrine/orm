@@ -16,7 +16,6 @@ use ReflectionProperty;
 
 use function array_merge;
 use function assert;
-use function defined;
 use function enum_exists;
 use function is_a;
 
@@ -57,10 +56,7 @@ final class DefaultTypedFieldMapper implements TypedFieldMapper
         if (
             ! $type->isBuiltin()
             && enum_exists($type->getName())
-            && (! isset($mapping['type']) || (
-                defined('Doctrine\DBAL\Types\Types::ENUM')
-                && $mapping['type'] === Types::ENUM
-            ))
+            && (! isset($mapping['type']) || $mapping['type'] === Types::ENUM)
         ) {
             $reflection = new ReflectionEnum($type->getName());
             if (! $reflection->isBacked()) {
