@@ -542,7 +542,7 @@ DQL keyword:
     $query = $em->createQuery('SELECT partial u.{id, username} FROM CmsUser u');
     $users = $query->getResult(); // array of partially loaded CmsUser objects
 
-You use the partial syntax when joining as well:
+You can use the partial syntax when joining as well:
 
 .. code-block:: php
 

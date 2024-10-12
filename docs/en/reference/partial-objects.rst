@@ -5,7 +5,7 @@ A partial object is an object whose state is not fully initialized
 after being reconstituted from the database and that is
 disconnected from the rest of its data. The following section will
 describe why partial objects are problematic and what the approach
-of Doctrine2 to this problem is.
+of Doctrine to this problem is.
 
 .. note::
 
