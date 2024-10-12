@@ -74,6 +74,7 @@ Advanced Topics
 * :doc:`Improving Performance <reference/improving-performance>`
 * :doc:`Caching <reference/caching>`
 * :doc:`Partial Hydration <reference/partial-hydration>`
+* :doc:`Partial Objects <reference/partial-objects>`
 * :doc:`Change Tracking Policies <reference/change-tracking-policies>`
 * :doc:`Best Practices <reference/best-practices>`
 * :doc:`Metadata Drivers <reference/metadata-drivers>`

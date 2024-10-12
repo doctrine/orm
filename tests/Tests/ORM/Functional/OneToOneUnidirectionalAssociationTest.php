@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Query;
 use Doctrine\Tests\Models\ECommerce\ECommerceProduct;
 use Doctrine\Tests\Models\ECommerce\ECommerceShipping;
 use Doctrine\Tests\OrmFunctionalTestCase;
@@ -76,6 +77,19 @@ class OneToOneUnidirectionalAssociationTest extends OrmFunctionalTestCase
 
         self::assertInstanceOf(ECommerceShipping::class, $product->getShipping());
         self::assertEquals(1, $product->getShipping()->getDays());
+    }
+
+    public function testDoesNotLazyLoadObjectsIfConfigurationDoesNotAllowIt(): void
+    {
+        $this->createFixture();
+
+        $query = $this->_em->createQuery('select p from Doctrine\Tests\Models\ECommerce\ECommerceProduct p');
+        $query->setHint(Query::HINT_FORCE_PARTIAL_LOAD, true);
+
+        $result  = $query->getResult();
+        $product = $result[0];
+
+        self::assertNull($product->getShipping());
     }
 
     protected function createFixture(): void

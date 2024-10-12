@@ -533,14 +533,23 @@ back. Instead, you receive only arrays as a flat rectangular result
 set, similar to how you would if you were just using SQL directly
 and joining some data.
 
-If you want to select a partial number of fields for hydration entity in
-the context of array hydration and joins you can use the ``partial`` DQL keyword:
+If you want to select partial objects or fields in array hydration you can use the ``partial``
+DQL keyword:
+
+.. code-block:: php
+
+    <?php
+    $query = $em->createQuery('SELECT partial u.{id, username} FROM CmsUser u');
+    $users = $query->getResult(); // array of partially loaded CmsUser objects
+
+You can use the partial syntax when joining as well:
 
 .. code-block:: php
 
     <?php
     $query = $em->createQuery('SELECT partial u.{id, username}, partial a.{id, name} FROM CmsUser u JOIN u.articles a');
-    $users = $query->getArrayResult(); // array of partially loaded CmsUser and CmsArticle fields
+    $usersArray = $query->getArrayResult(); // array of partially loaded CmsUser and CmsArticle fields
+    $users = $query->getResult(); // array of partially loaded CmsUser objects
 
 "NEW" Operator Syntax
 ^^^^^^^^^^^^^^^^^^^^^
@@ -591,7 +600,7 @@ You can also nest several DTO :
             // Bind values to the object properties.
         }
     }
-	
+
     class AddressDTO
     {
         public function __construct(string $street, string $city, string $zip)
@@ -599,14 +608,71 @@ You can also nest several DTO :
             // Bind values to the object properties.
         }
     }
-	
+
 .. code-block:: php
 
     <?php
     $query = $em->createQuery('SELECT NEW CustomerDTO(c.name, e.email, NEW AddressDTO(a.street, a.city, a.zip)) FROM Customer c JOIN c.email e JOIN c.address a');
     $users = $query->getResult(); // array of CustomerDTO
-	
+
 Note that you can only pass scalar expressions or other Data Transfer Objects to the constructor.
+
+If you use your data transfer objects for multiple queries, and you would rather not have to
+specify arguments that precede the ones you are really interested in, you can use named arguments.
+
+Consider the following DTO, which uses optional arguments:
+
+.. code-block:: php
+
+    <?php
+
+    class CustomerDTO
+    {
+        public function __construct(
+            public string|null $name = null,
+            public string|null $email = null,
+            public string|null $city = null,
+            public mixed|null $value = null,
+            public AddressDTO|null $address = null,
+        ) {
+        }
+    }
+
+You can specify arbitrary arguments in an arbitrary order by using the named argument syntax, and the ORM will try to match argument names with the selected column names.
+The syntax relies on the NAMED keyword, like so:
+
+.. code-block:: php
+
+    <?php
+    $query = $em->createQuery('SELECT NEW NAMED CustomerDTO(a.city, c.name) FROM Customer c JOIN c.address a');
+    $users = $query->getResult(); // array of CustomerDTO
+
+    // CustomerDTO => {name : 'SMITH', email: null, city: 'London', value: null}
+
+ORM will also give precedence to column aliases over column names :
+
+.. code-block:: php
+
+    <?php
+    $query = $em->createQuery('SELECT NEW NAMED CustomerDTO(c.name, CONCAT(a.city, ' ' , a.zip) AS value) FROM Customer c JOIN c.address a');
+    $users = $query->getResult(); // array of CustomerDTO
+
+    // CustomerDTO => {name : 'DOE', email: null, city: null, value: 'New York 10011'}
+
+To define a custom name for a DTO constructor argument, you can either alias the column with the ``AS`` keyword.
+
+The ``NAMED`` keyword must precede all DTO you want to instantiate :
+
+.. code-block:: php
+
+    <?php
+    $query = $em->createQuery('SELECT NEW NAMED CustomerDTO(c.name, NEW NAMED AddressDTO(a.street, a.city, a.zip) AS address) FROM Customer c JOIN c.address a');
+    $users = $query->getResult(); // array of CustomerDTO
+
+    // CustomerDTO => {name : 'DOE', email: null, city: null, value: 'New York 10011'}
+
+If two arguments have the same name, a ``DuplicateFieldException`` is thrown.
+If a field cannot be matched with a property name, a ``NoMatchingPropertyException`` is thrown. This typically happens when using functions without aliasing them.
 
 Using INDEX BY
 ~~~~~~~~~~~~~~
@@ -1370,6 +1436,15 @@ exist mostly internal query hints that are not be consumed in
 userland. However the following few hints are to be used in
 userland:
 
+
+-  ``Query::HINT_FORCE_PARTIAL_LOAD`` - Allows to hydrate objects
+   although not all their columns are fetched. This query hint can be
+   used to handle memory consumption problems with large result-sets
+   that contain char or binary data. Doctrine has no way of implicitly
+   reloading this data. Partially loaded objects have to be passed to
+   ``EntityManager::refresh()`` if they are to be reloaded fully from
+   the database. This query hint is deprecated and will be removed
+   in the future (\ `Details <https://github.com/doctrine/orm/issues/8471>`_)
 -  ``Query::HINT_REFRESH`` - This query is used internally by
    ``EntityManager::refresh()`` and can be used in userland as well.
    If you specify this hint and a query returns the data for an entity
@@ -1627,7 +1702,7 @@ Select Expressions
     PartialObjectExpression ::= "PARTIAL" IdentificationVariable "." PartialFieldSet
     PartialFieldSet         ::= "{" SimpleStateField {"," SimpleStateField}* "}"
     NewObjectExpression     ::= "NEW" AbstractSchemaName "(" NewObjectArg {"," NewObjectArg}* ")"
-    NewObjectArg            ::= ScalarExpression | "(" Subselect ")" | NewObjectExpression
+    NewObjectArg            ::= (ScalarExpression | "(" Subselect ")" | NewObjectExpression) ["AS" AliasResultVariable]
 
 Conditional Expressions
 ~~~~~~~~~~~~~~~~~~~~~~~

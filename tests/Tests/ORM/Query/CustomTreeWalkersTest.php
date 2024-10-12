@@ -15,6 +15,7 @@ use Doctrine\ORM\Query\AST\PathExpression;
 use Doctrine\ORM\Query\AST\SelectStatement;
 use Doctrine\ORM\Query\AST\WhereClause;
 use Doctrine\ORM\Query\QueryException;
+use Doctrine\ORM\Query\SqlOutputWalker;
 use Doctrine\ORM\Query\SqlWalker;
 use Doctrine\ORM\Query\TreeWalker;
 use Doctrine\ORM\Query\TreeWalkerAdapter;
@@ -118,15 +119,13 @@ class CustomTreeWalkersTest extends OrmTestCase
     }
 }
 
-class AddUnknownQueryComponentWalker extends SqlWalker
+class AddUnknownQueryComponentWalker extends SqlOutputWalker
 {
-    public function walkSelectStatement(SelectStatement $selectStatement): string
+    protected function createSqlForFinalizer(SelectStatement $selectStatement): string
     {
-        $sql = parent::walkSelectStatement($selectStatement);
-
         $this->setQueryComponent('x', []);
 
-        return $sql;
+        return parent::createSqlForFinalizer($selectStatement);
     }
 }
 

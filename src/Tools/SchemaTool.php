@@ -47,7 +47,7 @@ use function strtolower;
  */
 class SchemaTool
 {
-    private const KNOWN_COLUMN_OPTIONS = ['comment', 'unsigned', 'fixed', 'default'];
+    private const KNOWN_COLUMN_OPTIONS = ['comment', 'unsigned', 'fixed', 'default', 'values'];
 
     private readonly AbstractPlatform $platform;
     private readonly QuoteStrategy $quoteStrategy;

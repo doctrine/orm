@@ -261,7 +261,7 @@ abstract class AbstractHydrator
      */
     protected function gatherRowData(array $data, array &$id, array &$nonemptyComponents): array
     {
-        $rowData = ['data' => []];
+        $rowData = ['data' => [], 'newObjects' => []];
 
         foreach ($data as $key => $value) {
             $cacheKeyInfo = $this->hydrateColumnInfo($key);
@@ -280,10 +280,6 @@ abstract class AbstractHydrator
 
                     if ($value !== null && isset($cacheKeyInfo['enumType'])) {
                         $value = $this->buildEnum($value, $cacheKeyInfo['enumType']);
-                    }
-
-                    if (! isset($rowData['newObjects'])) {
-                        $rowData['newObjects'] = [];
                     }
 
                     $rowData['newObjects'][$objIndex]['class']           = $cacheKeyInfo['class'];
@@ -341,28 +337,22 @@ abstract class AbstractHydrator
         }
 
         foreach ($this->resultSetMapping()->nestedNewObjectArguments as $objIndex => ['ownerIndex' => $ownerIndex, 'argIndex' => $argIndex]) {
-            if (! isset($rowData['newObjects'][$objIndex])) {
+            if (! isset($rowData['newObjects'][$ownerIndex . ':' . $argIndex])) {
                 continue;
             }
 
-            $newObject = $rowData['newObjects'][$objIndex];
-            unset($rowData['newObjects'][$objIndex]);
+            $newObject = $rowData['newObjects'][$ownerIndex . ':' . $argIndex];
+            unset($rowData['newObjects'][$ownerIndex . ':' . $argIndex]);
 
-            $class = $newObject['class'];
-            $args  = $newObject['args'];
-            $obj   = $class->newInstanceArgs($args);
+            $obj = $newObject['class']->newInstanceArgs($newObject['args']);
 
             $rowData['newObjects'][$ownerIndex]['args'][$argIndex] = $obj;
         }
 
-        if (isset($rowData['newObjects'])) {
-            foreach ($rowData['newObjects'] as $objIndex => $newObject) {
-                $class = $newObject['class'];
-                $args  = $newObject['args'];
-                $obj   = $class->newInstanceArgs($args);
+        foreach ($rowData['newObjects'] as $objIndex => $newObject) {
+            $obj = $newObject['class']->newInstanceArgs($newObject['args']);
 
-                $rowData['newObjects'][$objIndex]['obj'] = $obj;
-            }
+            $rowData['newObjects'][$objIndex]['obj'] = $obj;
         }
 
         return $rowData;

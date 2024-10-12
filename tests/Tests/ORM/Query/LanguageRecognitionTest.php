@@ -533,13 +533,11 @@ class LanguageRecognitionTest extends OrmTestCase
 
     public function testCorrectPartialObjectLoad(): void
     {
-        $this->hydrationMode = AbstractQuery::HYDRATE_ARRAY;
         $this->assertValidDQL('SELECT PARTIAL u.{id,name} FROM Doctrine\Tests\Models\CMS\CmsUser u');
     }
 
     public function testIncorrectPartialObjectLoadBecauseOfMissingIdentifier(): void
     {
-        $this->hydrationMode = AbstractQuery::HYDRATE_ARRAY;
         $this->assertInvalidDQL('SELECT PARTIAL u.{name} FROM Doctrine\Tests\Models\CMS\CmsUser u');
     }
 

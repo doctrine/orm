@@ -1326,8 +1326,6 @@ class SelectSqlGenerationTest extends OrmTestCase
     #[Group('DDC-2519')]
     public function testPartialWithAssociationIdentifier(): void
     {
-        $this->hydrationMode = ORMQuery::HYDRATE_ARRAY;
-
         $this->assertSqlGeneration(
             'SELECT PARTIAL l.{_source, _target} FROM Doctrine\Tests\Models\Legacy\LegacyUserReference l',
             'SELECT l0_.iUserIdSource AS iUserIdSource_0, l0_.iUserIdTarget AS iUserIdTarget_1 FROM legacy_users_reference l0_',
@@ -1373,58 +1371,122 @@ class SelectSqlGenerationTest extends OrmTestCase
     }
 
     #[Group('DDC-1389')]
-    public function testInheritanceTypeJoinInRootClass(): void
+    public function testInheritanceTypeJoinInRootClassWithDisabledForcePartialLoad(): void
     {
         $this->assertSqlGeneration(
             'SELECT p FROM Doctrine\Tests\Models\Company\CompanyPerson p',
             'SELECT c0_.id AS id_0, c0_.name AS name_1, c1_.title AS title_2, c2_.salary AS salary_3, c2_.department AS department_4, c2_.startDate AS startDate_5, c0_.discr AS discr_6, c0_.spouse_id AS spouse_id_7, c1_.car_id AS car_id_8 FROM company_persons c0_ LEFT JOIN company_managers c1_ ON c0_.id = c1_.id LEFT JOIN company_employees c2_ ON c0_.id = c2_.id',
+            [ORMQuery::HINT_FORCE_PARTIAL_LOAD => false],
         );
     }
 
     #[Group('DDC-1389')]
-    public function testInheritanceTypeJoinInChildClass(): void
+    public function testInheritanceTypeJoinInRootClassWithEnabledForcePartialLoad(): void
+    {
+        $this->assertSqlGeneration(
+            'SELECT p FROM Doctrine\Tests\Models\Company\CompanyPerson p',
+            'SELECT c0_.id AS id_0, c0_.name AS name_1, c0_.discr AS discr_2 FROM company_persons c0_',
+            [ORMQuery::HINT_FORCE_PARTIAL_LOAD => true],
+        );
+    }
+
+    #[Group('DDC-1389')]
+    public function testInheritanceTypeJoinInChildClassWithDisabledForcePartialLoad(): void
     {
         $this->assertSqlGeneration(
             'SELECT e FROM Doctrine\Tests\Models\Company\CompanyEmployee e',
             'SELECT c0_.id AS id_0, c0_.name AS name_1, c1_.salary AS salary_2, c1_.department AS department_3, c1_.startDate AS startDate_4, c2_.title AS title_5, c0_.discr AS discr_6, c0_.spouse_id AS spouse_id_7, c2_.car_id AS car_id_8 FROM company_employees c1_ INNER JOIN company_persons c0_ ON c1_.id = c0_.id LEFT JOIN company_managers c2_ ON c1_.id = c2_.id',
+            [ORMQuery::HINT_FORCE_PARTIAL_LOAD => false],
         );
     }
 
     #[Group('DDC-1389')]
-    public function testInheritanceTypeJoinInLeafClass(): void
+    public function testInheritanceTypeJoinInChildClassWithEnabledForcePartialLoad(): void
+    {
+        $this->assertSqlGeneration(
+            'SELECT e FROM Doctrine\Tests\Models\Company\CompanyEmployee e',
+            'SELECT c0_.id AS id_0, c0_.name AS name_1, c1_.salary AS salary_2, c1_.department AS department_3, c1_.startDate AS startDate_4, c0_.discr AS discr_5 FROM company_employees c1_ INNER JOIN company_persons c0_ ON c1_.id = c0_.id',
+            [ORMQuery::HINT_FORCE_PARTIAL_LOAD => true],
+        );
+    }
+
+    #[Group('DDC-1389')]
+    public function testInheritanceTypeJoinInLeafClassWithDisabledForcePartialLoad(): void
     {
         $this->assertSqlGeneration(
             'SELECT m FROM Doctrine\Tests\Models\Company\CompanyManager m',
             'SELECT c0_.id AS id_0, c0_.name AS name_1, c1_.salary AS salary_2, c1_.department AS department_3, c1_.startDate AS startDate_4, c2_.title AS title_5, c0_.discr AS discr_6, c0_.spouse_id AS spouse_id_7, c2_.car_id AS car_id_8 FROM company_managers c2_ INNER JOIN company_employees c1_ ON c2_.id = c1_.id INNER JOIN company_persons c0_ ON c2_.id = c0_.id',
+            [ORMQuery::HINT_FORCE_PARTIAL_LOAD => false],
         );
     }
 
     #[Group('DDC-1389')]
-    public function testInheritanceTypeSingleTableInRootClass(): void
+    public function testInheritanceTypeJoinInLeafClassWithEnabledForcePartialLoad(): void
+    {
+        $this->assertSqlGeneration(
+            'SELECT m FROM Doctrine\Tests\Models\Company\CompanyManager m',
+            'SELECT c0_.id AS id_0, c0_.name AS name_1, c1_.salary AS salary_2, c1_.department AS department_3, c1_.startDate AS startDate_4, c2_.title AS title_5, c0_.discr AS discr_6 FROM company_managers c2_ INNER JOIN company_employees c1_ ON c2_.id = c1_.id INNER JOIN company_persons c0_ ON c2_.id = c0_.id',
+            [ORMQuery::HINT_FORCE_PARTIAL_LOAD => true],
+        );
+    }
+
+    #[Group('DDC-1389')]
+    public function testInheritanceTypeSingleTableInRootClassWithDisabledForcePartialLoad(): void
     {
         $this->assertSqlGeneration(
             'SELECT c FROM Doctrine\Tests\Models\Company\CompanyContract c',
             "SELECT c0_.id AS id_0, c0_.completed AS completed_1, c0_.fixPrice AS fixPrice_2, c0_.hoursWorked AS hoursWorked_3, c0_.pricePerHour AS pricePerHour_4, c0_.maxPrice AS maxPrice_5, c0_.discr AS discr_6, c0_.salesPerson_id AS salesPerson_id_7 FROM company_contracts c0_ WHERE c0_.discr IN ('fix', 'flexible', 'flexultra')",
+            [ORMQuery::HINT_FORCE_PARTIAL_LOAD => false],
+        );
+    }
+
+    #[Group('DDC-1389')]
+    public function testInheritanceTypeSingleTableInRootClassWithEnabledForcePartialLoad(): void
+    {
+        $this->assertSqlGeneration(
+            'SELECT c FROM Doctrine\Tests\Models\Company\CompanyContract c',
+            "SELECT c0_.id AS id_0, c0_.completed AS completed_1, c0_.fixPrice AS fixPrice_2, c0_.hoursWorked AS hoursWorked_3, c0_.pricePerHour AS pricePerHour_4, c0_.maxPrice AS maxPrice_5, c0_.discr AS discr_6 FROM company_contracts c0_ WHERE c0_.discr IN ('fix', 'flexible', 'flexultra')",
+            [ORMQuery::HINT_FORCE_PARTIAL_LOAD => true],
         );
     }
 
     #[Group('DDC-1389')]
     public function testInheritanceTypeSingleTableInChildClassWithDisabledForcePartialLoad(): void
     {
-        $this->hydrationMode = ORMQuery::HYDRATE_ARRAY;
-
         $this->assertSqlGeneration(
             'SELECT fc FROM Doctrine\Tests\Models\Company\CompanyFlexContract fc',
-            "SELECT c0_.id AS id_0, c0_.completed AS completed_1, c0_.hoursWorked AS hoursWorked_2, c0_.pricePerHour AS pricePerHour_3, c0_.maxPrice AS maxPrice_4, c0_.discr AS discr_5 FROM company_contracts c0_ WHERE c0_.discr IN ('flexible', 'flexultra')",
+            "SELECT c0_.id AS id_0, c0_.completed AS completed_1, c0_.hoursWorked AS hoursWorked_2, c0_.pricePerHour AS pricePerHour_3, c0_.maxPrice AS maxPrice_4, c0_.discr AS discr_5, c0_.salesPerson_id AS salesPerson_id_6 FROM company_contracts c0_ WHERE c0_.discr IN ('flexible', 'flexultra')",
+            [ORMQuery::HINT_FORCE_PARTIAL_LOAD => false],
         );
     }
 
     #[Group('DDC-1389')]
-    public function testInheritanceTypeSingleTableInLeafClass(): void
+    public function testInheritanceTypeSingleTableInChildClassWithEnabledForcePartialLoad(): void
+    {
+        $this->assertSqlGeneration(
+            'SELECT fc FROM Doctrine\Tests\Models\Company\CompanyFlexContract fc',
+            "SELECT c0_.id AS id_0, c0_.completed AS completed_1, c0_.hoursWorked AS hoursWorked_2, c0_.pricePerHour AS pricePerHour_3, c0_.maxPrice AS maxPrice_4, c0_.discr AS discr_5 FROM company_contracts c0_ WHERE c0_.discr IN ('flexible', 'flexultra')",
+            [ORMQuery::HINT_FORCE_PARTIAL_LOAD => true],
+        );
+    }
+
+    #[Group('DDC-1389')]
+    public function testInheritanceTypeSingleTableInLeafClassWithDisabledForcePartialLoad(): void
     {
         $this->assertSqlGeneration(
             'SELECT fuc FROM Doctrine\Tests\Models\Company\CompanyFlexUltraContract fuc',
             "SELECT c0_.id AS id_0, c0_.completed AS completed_1, c0_.hoursWorked AS hoursWorked_2, c0_.pricePerHour AS pricePerHour_3, c0_.maxPrice AS maxPrice_4, c0_.discr AS discr_5, c0_.salesPerson_id AS salesPerson_id_6 FROM company_contracts c0_ WHERE c0_.discr IN ('flexultra')",
+            [ORMQuery::HINT_FORCE_PARTIAL_LOAD => false],
+        );
+    }
+
+    #[Group('DDC-1389')]
+    public function testInheritanceTypeSingleTableInLeafClassWithEnabledForcePartialLoad(): void
+    {
+        $this->assertSqlGeneration(
+            'SELECT fuc FROM Doctrine\Tests\Models\Company\CompanyFlexUltraContract fuc',
+            "SELECT c0_.id AS id_0, c0_.completed AS completed_1, c0_.hoursWorked AS hoursWorked_2, c0_.pricePerHour AS pricePerHour_3, c0_.maxPrice AS maxPrice_4, c0_.discr AS discr_5 FROM company_contracts c0_ WHERE c0_.discr IN ('flexultra')",
+            [ORMQuery::HINT_FORCE_PARTIAL_LOAD => true],
         );
     }
 
@@ -1703,8 +1765,6 @@ class SelectSqlGenerationTest extends OrmTestCase
 
     public function testCustomTypeValueSqlForPartialObject(): void
     {
-        $this->hydrationMode = ORMQuery::HYDRATE_ARRAY;
-
         if (DBALType::hasType('negative_to_positive')) {
             DBALType::overrideType('negative_to_positive', NegativeToPositiveType::class);
         } else {
@@ -1713,7 +1773,7 @@ class SelectSqlGenerationTest extends OrmTestCase
 
         $this->assertSqlGeneration(
             'SELECT partial p.{id, customInteger} FROM Doctrine\Tests\Models\CustomType\CustomTypeParent p',
-            'SELECT c0_.id AS id_0, -(c0_.customInteger) AS customInteger_1 FROM customtype_parents c0_',
+            'SELECT c0_.id AS id_0, -(c0_.customInteger) AS customInteger_1, c0_.child_id AS child_id_2 FROM customtype_parents c0_',
         );
     }
 
