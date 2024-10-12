@@ -10,6 +10,7 @@ use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\Performance\EntityManagerFactory;
 use Doctrine\Tests\Mocks\ArrayResultFactory;
+use Doctrine\Tests\Models\CMS\CmsAddress;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use PhpBench\Benchmark\Metadata\Annotations\BeforeMethods;
 
@@ -30,18 +31,21 @@ final class SimpleQueryPartialObjectHydrationPerformanceBench
                 'u__status'   => 'developer',
                 'u__username' => 'romanb',
                 'u__name'     => 'Roman',
+                'a__id'       => '1',
             ],
             [
                 'u__id'       => '1',
                 'u__status'   => 'developer',
                 'u__username' => 'romanb',
                 'u__name'     => 'Roman',
+                'a__id'       => '1',
             ],
             [
                 'u__id'       => '2',
                 'u__status'   => 'developer',
                 'u__username' => 'romanb',
                 'u__name'     => 'Roman',
+                'a__id'       => '1',
             ],
         ];
 
@@ -51,6 +55,7 @@ final class SimpleQueryPartialObjectHydrationPerformanceBench
                 'u__status'   => 'developer',
                 'u__username' => 'jwage',
                 'u__name'     => 'Jonathan',
+                'a__id'       => '1',
             ];
         }
 
@@ -63,6 +68,8 @@ final class SimpleQueryPartialObjectHydrationPerformanceBench
         $this->rsm->addFieldResult('u', 'u__status', 'status');
         $this->rsm->addFieldResult('u', 'u__username', 'username');
         $this->rsm->addFieldResult('u', 'u__name', 'name');
+        $this->rsm->addJoinedEntityResult(CmsAddress::class, 'a', 'u', 'address');
+        $this->rsm->addFieldResult('a', 'a__id', 'id');
     }
 
     public function benchHydration(): void

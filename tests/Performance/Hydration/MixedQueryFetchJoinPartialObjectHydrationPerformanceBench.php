@@ -10,6 +10,7 @@ use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\Performance\EntityManagerFactory;
 use Doctrine\Tests\Mocks\ArrayResultFactory;
+use Doctrine\Tests\Models\CMS\CmsAddress;
 use Doctrine\Tests\Models\CMS\CmsPhonenumber;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use PhpBench\Benchmark\Metadata\Annotations\BeforeMethods;
@@ -33,6 +34,7 @@ final class MixedQueryFetchJoinPartialObjectHydrationPerformanceBench
                 'u__name'        => 'Roman',
                 'sclr0'          => 'ROMANB',
                 'p__phonenumber' => '42',
+                'a__id'       => '1',
             ],
             [
                 'u__id'          => '1',
@@ -41,6 +43,7 @@ final class MixedQueryFetchJoinPartialObjectHydrationPerformanceBench
                 'u__name'        => 'Roman',
                 'sclr0'          => 'ROMANB',
                 'p__phonenumber' => '43',
+                'a__id'       => '1',
             ],
             [
                 'u__id'          => '2',
@@ -49,6 +52,7 @@ final class MixedQueryFetchJoinPartialObjectHydrationPerformanceBench
                 'u__name'        => 'Roman',
                 'sclr0'          => 'JWAGE',
                 'p__phonenumber' => '91',
+                'a__id'       => '1',
             ],
         ];
 
@@ -60,6 +64,7 @@ final class MixedQueryFetchJoinPartialObjectHydrationPerformanceBench
                 'u__name'        => 'Jonathan',
                 'sclr0'          => 'JWAGE' . $i,
                 'p__phonenumber' => '91',
+                'a__id'       => '1',
             ];
         }
 
@@ -75,6 +80,8 @@ final class MixedQueryFetchJoinPartialObjectHydrationPerformanceBench
         $this->rsm->addFieldResult('u', 'u__name', 'name');
         $this->rsm->addScalarResult('sclr0', 'nameUpper');
         $this->rsm->addFieldResult('p', 'p__phonenumber', 'phonenumber');
+        $this->rsm->addJoinedEntityResult(CmsAddress::class, 'a', 'u', 'address');
+        $this->rsm->addFieldResult('a', 'a__id', 'id');
     }
 
     public function benchHydration(): void
