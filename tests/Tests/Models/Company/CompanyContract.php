@@ -20,7 +20,7 @@ use Doctrine\ORM\Mapping\ManyToOne;
 #[ORM\Table(name: 'company_contracts')]
 #[ORM\InheritanceType('SINGLE_TABLE')]
 #[ORM\DiscriminatorColumn(name: 'discr', type: 'string')]
-#[ORM\DiscriminatorMap(['fix' => 'CompanyFixContract', 'flexible' => 'CompanyFlexContract', 'flexultra' => 'CompanyFlexUltraContract'])]
+#[ORM\DiscriminatorMap(['fix' => 'CompanyFixContract', 'flexible' => 'CompanyFlexContract', 'flexultra' => 'CompanyFlexUltraContract', 'car' => 'CompanyCarContract'])]
 #[ORM\EntityListeners(['CompanyContractListener'])]
 abstract class CompanyContract
 {

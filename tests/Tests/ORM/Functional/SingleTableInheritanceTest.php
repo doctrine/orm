@@ -7,6 +7,8 @@ namespace Doctrine\Tests\ORM\Functional;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Persisters\MatchingAssociationFieldRequiresObject;
+use Doctrine\Tests\Models\Company\CompanyCar;
+use Doctrine\Tests\Models\Company\CompanyCarContract;
 use Doctrine\Tests\Models\Company\CompanyContract;
 use Doctrine\Tests\Models\Company\CompanyEmployee;
 use Doctrine\Tests\Models\Company\CompanyFixContract;
@@ -412,5 +414,24 @@ class SingleTableInheritanceTest extends OrmFunctionalTestCase
                               ->getSingleResult();
 
         self::assertFalse($this->isUninitializedObject($contract->getSalesPerson()));
+    }
+
+    public function testChildCanHaveNonNullableRelation(): void
+    {
+        $companyCar  = new CompanyCar('BMW');
+        $fixContract = new CompanyFixContract();
+        $carContract = new CompanyCarContract();
+        $carContract->setCompanyCar($companyCar);
+
+        $this->_em->persist($fixContract);
+        $this->_em->persist($companyCar);
+        $this->_em->persist($carContract);
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $repo         = $this->_em->getRepository(CompanyCarContract::class);
+        $carContracts = $repo->findAll();
+
+        self::assertCount(1, $carContracts);
     }
 }
