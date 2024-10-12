@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Persisters\Entity;
 
-use BackedEnum;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\Common\Collections\Expr\Comparison;
 use Doctrine\Common\Collections\Order;
@@ -31,7 +30,7 @@ use Doctrine\ORM\Persisters\Exception\InvalidOrientation;
 use Doctrine\ORM\Persisters\Exception\UnrecognizedField;
 use Doctrine\ORM\Persisters\SqlExpressionVisitor;
 use Doctrine\ORM\Persisters\SqlValueVisitor;
-use Doctrine\ORM\Proxy\DefaultProxyClassNameResolver;
+use Doctrine\ORM\Persisters\Traits\ResolveValuesHelper;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\QueryException;
 use Doctrine\ORM\Query\ResultSetMapping;
@@ -53,7 +52,6 @@ use function assert;
 use function count;
 use function implode;
 use function is_array;
-use function is_object;
 use function reset;
 use function spl_object_id;
 use function sprintf;
@@ -99,6 +97,7 @@ use function trim;
 class BasicEntityPersister implements EntityPersister
 {
     use LockSqlHelper;
+    use ResolveValuesHelper;
 
     /** @var array<string,string> */
     private static array $comparisonMap = [
@@ -1935,62 +1934,6 @@ class BasicEntityPersister implements EntityPersister
             ParameterType::INTEGER => ArrayParameterType::INTEGER,
             ParameterType::ASCII => ArrayParameterType::ASCII,
         };
-    }
-
-    /**
-     * Retrieves the parameters that identifies a value.
-     *
-     * @return mixed[]
-     */
-    private function getValues(mixed $value): array
-    {
-        if (is_array($value)) {
-            $newValue = [];
-
-            foreach ($value as $itemValue) {
-                $newValue = array_merge($newValue, $this->getValues($itemValue));
-            }
-
-            return [$newValue];
-        }
-
-        return $this->getIndividualValue($value);
-    }
-
-    /**
-     * Retrieves an individual parameter value.
-     *
-     * @psalm-return list<mixed>
-     */
-    private function getIndividualValue(mixed $value): array
-    {
-        if (! is_object($value)) {
-            return [$value];
-        }
-
-        if ($value instanceof BackedEnum) {
-            return [$value->value];
-        }
-
-        $valueClass = DefaultProxyClassNameResolver::getClass($value);
-
-        if ($this->em->getMetadataFactory()->isTransient($valueClass)) {
-            return [$value];
-        }
-
-        $class = $this->em->getClassMetadata($valueClass);
-
-        if ($class->isIdentifierComposite) {
-            $newValue = [];
-
-            foreach ($class->getIdentifierValues($value) as $innerValue) {
-                $newValue = array_merge($newValue, $this->getValues($innerValue));
-            }
-
-            return $newValue;
-        }
-
-        return [$this->em->getUnitOfWork()->getSingleIdentifierValue($value)];
     }
 
     public function exists(object $entity, Criteria|null $extraConditions = null): bool

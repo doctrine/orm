@@ -12,9 +12,13 @@ use Doctrine\ORM\Query\Expr\Func;
 use Doctrine\ORM\Tools\SchemaTool;
 use Doctrine\Tests\Models\DataTransferObjects\DtoWithArrayOfEnums;
 use Doctrine\Tests\Models\DataTransferObjects\DtoWithEnum;
+use Doctrine\Tests\Models\Enums\Book;
+use Doctrine\Tests\Models\Enums\BookCategory;
+use Doctrine\Tests\Models\Enums\BookColor;
 use Doctrine\Tests\Models\Enums\Card;
 use Doctrine\Tests\Models\Enums\CardWithDefault;
 use Doctrine\Tests\Models\Enums\CardWithNullable;
+use Doctrine\Tests\Models\Enums\Library;
 use Doctrine\Tests\Models\Enums\Product;
 use Doctrine\Tests\Models\Enums\Quantity;
 use Doctrine\Tests\Models\Enums\Scale;
@@ -515,5 +519,141 @@ EXCEPTION
         $card = $this->_em->find(CardWithDefault::class, $cardId);
 
         self::assertSame(Suit::Hearts, $card->suit);
+    }
+
+    public function testEnumLazyCollectionMatchingWithOneToMany(): void
+    {
+        $this->setUpEntitySchema([Book::class, Library::class]);
+
+        $redBook            = new Book();
+        $redBook->bookColor = BookColor::RED;
+
+        $blueBook            = new Book();
+        $blueBook->bookColor = BookColor::BLUE;
+
+        $library = new Library();
+        $library->addBook($blueBook);
+        $library->addBook($redBook);
+
+        $this->_em->persist($library);
+        $this->_em->persist($blueBook);
+        $this->_em->persist($redBook);
+
+        $this->_em->flush();
+        $libraryId = $library->id;
+
+        unset($library, $redBook, $blueBook);
+
+        $this->_em->clear();
+
+        $library = $this->_em->find(Library::class, $libraryId);
+        $this->assertCount(1, $library->getBooksWithColor(BookColor::RED));
+    }
+
+    public function testEnumInitializedCollectionMatchingWithOneToMany(): void
+    {
+        $this->setUpEntitySchema([Book::class, Library::class]);
+
+        $redBook            = new Book();
+        $redBook->bookColor = BookColor::RED;
+
+        $blueBook            = new Book();
+        $blueBook->bookColor = BookColor::BLUE;
+
+        $library = new Library();
+        $library->addBook($blueBook);
+        $library->addBook($redBook);
+
+        $this->_em->persist($library);
+        $this->_em->persist($blueBook);
+        $this->_em->persist($redBook);
+
+        $this->_em->flush();
+        $libraryId = $library->id;
+
+        unset($library, $redBook, $blueBook);
+
+        $this->_em->clear();
+
+        $library = $this->_em->find(Library::class, $libraryId);
+        $this->assertInstanceOf(Library::class, $library);
+
+        // Load books collection first
+        $this->assertCount(2, $library->getBooks());
+
+        $this->assertCount(1, $library->getBooksWithColor(BookColor::RED));
+    }
+
+    public function testEnumLazyCollectionMatchingWithManyToMany(): void
+    {
+        $this->setUpEntitySchema([Book::class, BookCategory::class, Library::class]);
+
+        $thrillerCategory       = new BookCategory();
+        $thrillerCategory->name = 'thriller';
+
+        $fantasyCategory       = new BookCategory();
+        $fantasyCategory->name = 'fantasy';
+
+        $redBook = new Book();
+        $redBook->addCategory($fantasyCategory);
+        $redBook->addCategory($thrillerCategory);
+        $redBook->bookColor = BookColor::RED;
+
+        $blueBook = new Book();
+        $blueBook->addCategory($thrillerCategory);
+        $blueBook->bookColor = BookColor::BLUE;
+
+        $this->_em->persist($thrillerCategory);
+        $this->_em->persist($fantasyCategory);
+        $this->_em->persist($blueBook);
+        $this->_em->persist($redBook);
+
+        $this->_em->flush();
+        $thrillerCategoryId = $thrillerCategory->id;
+
+        $this->_em->clear();
+        unset($thrillerCategory, $fantasyCategory, $blueBook, $redBook);
+
+        $thrillerCategory = $this->_em->find(BookCategory::class, $thrillerCategoryId);
+        $this->assertCount(1, $thrillerCategory->getBooksWithColor(BookColor::RED));
+    }
+
+    public function testEnumInitializedCollectionMatchingWithManyToMany(): void
+    {
+        $this->setUpEntitySchema([Book::class, BookCategory::class, Library::class]);
+
+        $thrillerCategory       = new BookCategory();
+        $thrillerCategory->name = 'thriller';
+
+        $fantasyCategory       = new BookCategory();
+        $fantasyCategory->name = 'fantasy';
+
+        $redBook = new Book();
+        $redBook->addCategory($fantasyCategory);
+        $redBook->addCategory($thrillerCategory);
+        $redBook->bookColor = BookColor::RED;
+
+        $blueBook = new Book();
+        $blueBook->addCategory($thrillerCategory);
+        $blueBook->bookColor = BookColor::BLUE;
+
+        $this->_em->persist($thrillerCategory);
+        $this->_em->persist($fantasyCategory);
+        $this->_em->persist($blueBook);
+        $this->_em->persist($redBook);
+
+        $this->_em->flush();
+        $thrillerCategoryId = $thrillerCategory->id;
+
+        $this->_em->clear();
+        unset($thrillerCategory, $fantasyCategory, $blueBook, $redBook);
+
+        $thrillerCategory = $this->_em->find(BookCategory::class, $thrillerCategoryId);
+        $this->assertInstanceOf(BookCategory::class, $thrillerCategory);
+
+        // Load books collection first
+        $this->assertCount(2, $thrillerCategory->getBooks());
+
+        $this->assertCount(1, $thrillerCategory->getBooksWithColor(BookColor::RED));
     }
 }
