@@ -35,7 +35,6 @@ use function array_values;
 use function assert;
 use function class_exists;
 use function count;
-use function defined;
 use function enum_exists;
 use function explode;
 use function in_array;
@@ -1233,11 +1232,7 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
                 $this->containsEnumIdentifier = true;
             }
 
-            if (
-                defined('Doctrine\DBAL\Types\Types::ENUM')
-                && $mapping->type === Types::ENUM
-                && ! isset($mapping->options['values'])
-            ) {
+            if ($mapping->type === Types::ENUM && ! isset($mapping->options['values'])) {
                 $mapping->options['values'] = array_column($mapping->enumType::cases(), 'value');
             }
         }
