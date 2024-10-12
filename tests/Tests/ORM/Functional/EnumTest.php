@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional;
 
+use Doctrine\DBAL\Types\EnumType;
 use Doctrine\ORM\AbstractQuery;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Driver\AttributeDriver;
@@ -13,6 +14,7 @@ use Doctrine\ORM\Tools\SchemaTool;
 use Doctrine\Tests\Models\DataTransferObjects\DtoWithArrayOfEnums;
 use Doctrine\Tests\Models\DataTransferObjects\DtoWithEnum;
 use Doctrine\Tests\Models\Enums\Card;
+use Doctrine\Tests\Models\Enums\CardNativeEnum;
 use Doctrine\Tests\Models\Enums\CardWithDefault;
 use Doctrine\Tests\Models\Enums\CardWithNullable;
 use Doctrine\Tests\Models\Enums\Product;
@@ -20,10 +22,12 @@ use Doctrine\Tests\Models\Enums\Quantity;
 use Doctrine\Tests\Models\Enums\Scale;
 use Doctrine\Tests\Models\Enums\Suit;
 use Doctrine\Tests\Models\Enums\TypedCard;
+use Doctrine\Tests\Models\Enums\TypedCardNativeEnum;
 use Doctrine\Tests\Models\Enums\Unit;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
 
+use function class_exists;
 use function dirname;
 use function sprintf;
 use function uniqid;
@@ -55,7 +59,7 @@ class EnumTest extends OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $fetchedCard = $this->_em->find(Card::class, $card->id);
+        $fetchedCard = $this->_em->find($cardClass, $card->id);
 
         $this->assertInstanceOf(Suit::class, $fetchedCard->suit);
         $this->assertEquals(Suit::Clubs, $fetchedCard->suit);
@@ -417,6 +421,10 @@ class EnumTest extends OrmFunctionalTestCase
     #[DataProvider('provideCardClasses')]
     public function testEnumWithNonMatchingDatabaseValueThrowsException(string $cardClass): void
     {
+        if ($cardClass === TypedCardNativeEnum::class) {
+            self::markTestSkipped('MySQL won\'t allow us to insert invalid values in this case.');
+        }
+
         $this->setUpEntitySchema([$cardClass]);
 
         $card       = new $cardClass();
@@ -429,7 +437,7 @@ class EnumTest extends OrmFunctionalTestCase
         $metadata = $this->_em->getClassMetadata($cardClass);
         $this->_em->getConnection()->update(
             $metadata->table['name'],
-            [$metadata->fieldMappings['suit']->columnName => 'invalid'],
+            [$metadata->fieldMappings['suit']->columnName => 'Z'],
             [$metadata->fieldMappings['id']->columnName => $card->id],
         );
 
@@ -437,7 +445,7 @@ class EnumTest extends OrmFunctionalTestCase
         $this->expectExceptionMessage(sprintf(
             <<<'EXCEPTION'
 Context: Trying to hydrate enum property "%s::$suit"
-Problem: Case "invalid" is not listed in enum "Doctrine\Tests\Models\Enums\Suit"
+Problem: Case "Z" is not listed in enum "Doctrine\Tests\Models\Enums\Suit"
 Solution: Either add the case to the enum type or migrate the database column to use another case of the enum
 EXCEPTION
             ,
@@ -447,13 +455,16 @@ EXCEPTION
         $this->_em->find($cardClass, $card->id);
     }
 
-    /** @return array<string, array{class-string}> */
-    public static function provideCardClasses(): array
+    /** @return iterable<string, array{class-string}> */
+    public static function provideCardClasses(): iterable
     {
-        return [
-            Card::class => [Card::class],
-            TypedCard::class => [TypedCard::class],
-        ];
+        yield Card::class => [Card::class];
+        yield TypedCard::class => [TypedCard::class];
+
+        if (class_exists(EnumType::class)) {
+            yield CardNativeEnum::class => [CardNativeEnum::class];
+            yield TypedCardNativeEnum::class => [TypedCardNativeEnum::class];
+        }
     }
 
     public function testItAllowsReadingAttributes(): void

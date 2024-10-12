@@ -402,6 +402,7 @@
   <file src="src/Mapping/DefaultTypedFieldMapper.php">
     <LessSpecificReturnStatement>
       <code><![CDATA[$mapping]]></code>
+      <code><![CDATA[$mapping]]></code>
     </LessSpecificReturnStatement>
     <MoreSpecificReturnType>
       <code><![CDATA[array]]></code>

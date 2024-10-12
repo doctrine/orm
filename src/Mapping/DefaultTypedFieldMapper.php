@@ -16,6 +16,7 @@ use ReflectionProperty;
 
 use function array_merge;
 use function assert;
+use function defined;
 use function enum_exists;
 use function is_a;
 
@@ -49,30 +50,40 @@ final class DefaultTypedFieldMapper implements TypedFieldMapper
     {
         $type = $field->getType();
 
+        if (! $type instanceof ReflectionNamedType) {
+            return $mapping;
+        }
+
         if (
-            ! isset($mapping['type'])
-            && ($type instanceof ReflectionNamedType)
+            ! $type->isBuiltin()
+            && enum_exists($type->getName())
+            && (! isset($mapping['type']) || (
+                defined('Doctrine\DBAL\Types\Types::ENUM')
+                && $mapping['type'] === Types::ENUM
+            ))
         ) {
-            if (! $type->isBuiltin() && enum_exists($type->getName())) {
-                $reflection = new ReflectionEnum($type->getName());
-                if (! $reflection->isBacked()) {
-                    throw MappingException::backedEnumTypeRequired(
-                        $field->class,
-                        $mapping['fieldName'],
-                        $type->getName(),
-                    );
-                }
-
-                assert(is_a($type->getName(), BackedEnum::class, true));
-                $mapping['enumType'] = $type->getName();
-                $type                = $reflection->getBackingType();
-
-                assert($type instanceof ReflectionNamedType);
+            $reflection = new ReflectionEnum($type->getName());
+            if (! $reflection->isBacked()) {
+                throw MappingException::backedEnumTypeRequired(
+                    $field->class,
+                    $mapping['fieldName'],
+                    $type->getName(),
+                );
             }
 
-            if (isset($this->typedFieldMappings[$type->getName()])) {
-                $mapping['type'] = $this->typedFieldMappings[$type->getName()];
-            }
+            assert(is_a($type->getName(), BackedEnum::class, true));
+            $mapping['enumType'] = $type->getName();
+            $type                = $reflection->getBackingType();
+
+            assert($type instanceof ReflectionNamedType);
+        }
+
+        if (isset($mapping['type'])) {
+            return $mapping;
+        }
+
+        if (isset($this->typedFieldMappings[$type->getName()])) {
+            $mapping['type'] = $this->typedFieldMappings[$type->getName()];
         }
 
         return $mapping;
