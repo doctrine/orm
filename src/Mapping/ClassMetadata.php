@@ -7,6 +7,7 @@ namespace Doctrine\ORM\Mapping;
 use BackedEnum;
 use BadMethodCallException;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\Deprecations\Deprecation;
 use Doctrine\Instantiator\Instantiator;
 use Doctrine\Instantiator\InstantiatorInterface;
@@ -23,6 +24,7 @@ use ReflectionNamedType;
 use ReflectionProperty;
 use Stringable;
 
+use function array_column;
 use function array_diff;
 use function array_intersect;
 use function array_key_exists;
@@ -34,6 +36,7 @@ use function array_values;
 use function assert;
 use function class_exists;
 use function count;
+use function defined;
 use function enum_exists;
 use function explode;
 use function in_array;
@@ -1119,9 +1122,7 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
     {
         $field = $this->reflClass->getProperty($mapping['fieldName']);
 
-        $mapping = $this->typedFieldMapper->validateAndComplete($mapping, $field);
-
-        return $mapping;
+        return $this->typedFieldMapper->validateAndComplete($mapping, $field);
     }
 
     /**
@@ -1231,6 +1232,14 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
 
             if (! empty($mapping->id)) {
                 $this->containsEnumIdentifier = true;
+            }
+
+            if (
+                defined('Doctrine\DBAL\Types\Types::ENUM')
+                && $mapping->type === Types::ENUM
+                && ! isset($mapping->options['values'])
+            ) {
+                $mapping->options['values'] = array_column($mapping->enumType::cases(), 'value');
             }
         }
 
