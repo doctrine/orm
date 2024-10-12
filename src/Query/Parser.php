@@ -7,14 +7,19 @@ namespace Doctrine\ORM\Query;
 use Doctrine\Common\Lexer\Token;
 use Doctrine\Deprecations\Deprecation;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Exception\DuplicateFieldException;
+use Doctrine\ORM\Exception\NoMatchingPropertyException;
+use Doctrine\ORM\Internal\Hydration\HydrationException;
 use Doctrine\ORM\Mapping\AssociationMapping;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\AST\Functions;
+use Doctrine\ORM\Query\Exec\SqlFinalizer;
 use LogicException;
 use ReflectionClass;
 
 use function array_intersect;
+use function array_key_exists;
 use function array_search;
 use function assert;
 use function class_exists;
@@ -30,6 +35,7 @@ use function strpos;
 use function strrpos;
 use function strtolower;
 use function substr;
+use function trim;
 
 /**
  * An LL(*) recursive-descent parser for the context-free grammar of the Doctrine Query Language.
@@ -351,11 +357,26 @@ final class Parser
             $this->queryComponents = $treeWalkerChain->getQueryComponents();
         }
 
-        $outputWalkerClass = $this->customOutputWalker ?: SqlWalker::class;
+        $outputWalkerClass = $this->customOutputWalker ?: SqlOutputWalker::class;
         $outputWalker      = new $outputWalkerClass($this->query, $this->parserResult, $this->queryComponents);
 
-        // Assign an SQL executor to the parser result
-        $this->parserResult->setSqlExecutor($outputWalker->getExecutor($AST));
+        if ($outputWalker instanceof OutputWalker) {
+            $finalizer = $outputWalker->getFinalizer($AST);
+            $this->parserResult->setSqlFinalizer($finalizer);
+        } else {
+            Deprecation::trigger(
+                'doctrine/orm',
+                'https://github.com/doctrine/orm/pull/11188/',
+                'Your output walker class %s should implement %s in order to provide a %s. This also means the output walker should not use the query firstResult/maxResult values, which should be read from the query by the SqlFinalizer only.',
+                $outputWalkerClass,
+                OutputWalker::class,
+                SqlFinalizer::class,
+            );
+            // @phpstan-ignore method.deprecated
+            $executor = $outputWalker->getExecutor($AST);
+            // @phpstan-ignore method.deprecated
+            $this->parserResult->setSqlExecutor($executor);
+        }
 
         return $this->parserResult;
     }
@@ -1737,20 +1758,26 @@ final class Parser
      */
     public function NewObjectExpression(): AST\NewObjectExpression
     {
-        $args = [];
+        $useNamedArguments =  false;
+        $args              = [];
+        $argFieldAlias     = [];
         $this->match(TokenType::T_NEW);
+
+        if ($this->lexer->isNextToken(TokenType::T_NAMED)) {
+            $this->match(TokenType::T_NAMED);
+            $useNamedArguments = true;
+        }
 
         $className = $this->AbstractSchemaName(); // note that this is not yet validated
         $token     = $this->lexer->token;
 
         $this->match(TokenType::T_OPEN_PARENTHESIS);
 
-        $args[] = $this->NewObjectArg();
+        $this->addArgument($args, $useNamedArguments);
 
         while ($this->lexer->isNextToken(TokenType::T_COMMA)) {
             $this->match(TokenType::T_COMMA);
-
-            $args[] = $this->NewObjectArg();
+            $this->addArgument($args, $useNamedArguments);
         }
 
         $this->match(TokenType::T_CLOSE_PARENTHESIS);
@@ -1767,29 +1794,71 @@ final class Parser
         return $expression;
     }
 
-    /**
-     * NewObjectArg ::= ScalarExpression | "(" Subselect ")" | NewObjectExpression
-     */
-    public function NewObjectArg(): mixed
+    /** @param array<mixed> $args */
+    public function addArgument(array &$args, bool $useNamedArguments): void
     {
+        $fieldAlias = null;
+
+        if ($useNamedArguments) {
+            $startToken = $this->lexer->lookahead?->position ?? 0;
+
+            $newArg = $this->NewObjectArg($fieldAlias);
+
+            $key = $fieldAlias ?? $newArg->field ?? null;
+
+            if ($key === null) {
+                throw NoMatchingPropertyException::create(trim(substr(
+                    ($this->query->getDQL() ?? ''),
+                    $startToken,
+                    ($this->lexer->lookahead->position ?? 0) - $startToken,
+                )));
+            }
+
+            if (array_key_exists($key, $args)) {
+                throw DuplicateFieldException::create($key, trim(substr(
+                    ($this->query->getDQL() ?? ''),
+                    $startToken,
+                    ($this->lexer->lookahead->position ?? 0) - $startToken,
+                )));
+            }
+
+            $args[$key] = $newArg;
+        } else {
+            $args[] = $this->NewObjectArg($fieldAlias);
+        }
+    }
+
+    /**
+     * NewObjectArg ::= (ScalarExpression | "(" Subselect ")" | NewObjectExpression) ["AS" AliasResultVariable]
+     */
+    public function NewObjectArg(string|null &$fieldAlias = null): mixed
+    {
+        $fieldAlias = null;
+
         assert($this->lexer->lookahead !== null);
         $token = $this->lexer->lookahead;
         $peek  = $this->lexer->glimpse();
 
         assert($peek !== null);
+
+        $expression = null;
+
         if ($token->type === TokenType::T_OPEN_PARENTHESIS && $peek->type === TokenType::T_SELECT) {
             $this->match(TokenType::T_OPEN_PARENTHESIS);
             $expression = $this->Subselect();
             $this->match(TokenType::T_CLOSE_PARENTHESIS);
-
-            return $expression;
+        } elseif ($token->type === TokenType::T_NEW) {
+            $expression = $this->NewObjectExpression();
+        } else {
+            $expression = $this->ScalarExpression();
         }
 
-        if ($token->type === TokenType::T_NEW) {
-            return $this->NewObjectExpression();
+        if ($this->lexer->isNextToken(TokenType::T_AS)) {
+            $this->match(TokenType::T_AS);
+            $fieldAlias = $this->AliasIdentificationVariable();
         }
 
-        return $this->ScalarExpression();
+        return $expression;
     }
 
     /**

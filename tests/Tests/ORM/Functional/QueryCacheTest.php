@@ -44,7 +44,7 @@ class QueryCacheTest extends OrmFunctionalTestCase
     }
 
     #[Depends('testQueryCacheDependsOnHints')]
-    public function testQueryCacheDependsOnFirstResult(array $previous): void
+    public function testQueryCacheDoesNotDependOnFirstResultForDefaultOutputWalker(array $previous): void
     {
         [$query, $cache] = $previous;
         assert($query instanceof Query);
@@ -56,11 +56,11 @@ class QueryCacheTest extends OrmFunctionalTestCase
         $query->setMaxResults(9999);
 
         $query->getResult();
-        self::assertCount($cacheCount + 1, $cache->getValues());
+        self::assertCount($cacheCount, $cache->getValues());
     }
 
     #[Depends('testQueryCacheDependsOnHints')]
-    public function testQueryCacheDependsOnMaxResults(array $previous): void
+    public function testQueryCacheDoesNotDependOnMaxResultsForDefaultOutputWalker(array $previous): void
     {
         [$query, $cache] = $previous;
         assert($query instanceof Query);
@@ -71,7 +71,7 @@ class QueryCacheTest extends OrmFunctionalTestCase
         $query->setMaxResults(10);
 
         $query->getResult();
-        self::assertCount($cacheCount + 1, $cache->getValues());
+        self::assertCount($cacheCount, $cache->getValues());
     }
 
     #[Depends('testQueryCacheDependsOnHints')]

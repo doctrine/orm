@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Query;
 
-use function array_merge;
 use function count;
 
 /**
@@ -546,27 +545,6 @@ class ResultSetMapping
         if ($type) {
             $this->typeMappings[$columnName] = $type;
         }
-
-        return $this;
-    }
-
-    public function addNewObjectAsArgument(string|int $alias, string|int $objOwner, int $objOwnerIdx): static
-    {
-        $owner = [
-            'ownerIndex' => $objOwner,
-            'argIndex' => $objOwnerIdx,
-        ];
-
-        if (! isset($this->nestedNewObjectArguments[$owner['ownerIndex']])) {
-            $this->nestedNewObjectArguments[$alias] = $owner;
-
-            return $this;
-        }
-
-        $this->nestedNewObjectArguments = array_merge(
-            [$alias => $owner],
-            $this->nestedNewObjectArguments,
-        );
 
         return $this;
     }

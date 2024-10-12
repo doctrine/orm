@@ -15,7 +15,6 @@ use Doctrine\ORM\Mapping\QuoteStrategy;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Utility\HierarchyDiscriminatorResolver;
-use Doctrine\ORM\Utility\LockSqlHelper;
 use Doctrine\ORM\Utility\PersisterHelper;
 use InvalidArgumentException;
 use LogicException;
@@ -51,8 +50,6 @@ use function trim;
  */
 class SqlWalker
 {
-    use LockSqlHelper;
-
     public const HINT_DISTINCT = 'doctrine.distinct';
 
     /**
@@ -235,21 +232,38 @@ class SqlWalker
 
     /**
      * Gets an executor that can be used to execute the result of this walker.
+     *
+     * @deprecated Output walkers should no longer create the executor directly, but instead provide
+     *             a SqlFinalizer by implementing the `OutputWalker` interface. Thus, this method is
+     *             no longer needed and will be removed in 4.0.
      */
     public function getExecutor(AST\SelectStatement|AST\UpdateStatement|AST\DeleteStatement $statement): Exec\AbstractSqlExecutor
     {
         return match (true) {
-            $statement instanceof AST\SelectStatement
-                => new Exec\SingleSelectExecutor($statement, $this),
-            $statement instanceof AST\UpdateStatement
-                => $this->em->getClassMetadata($statement->updateClause->abstractSchemaName)->isInheritanceTypeJoined()
-                    ? new Exec\MultiTableUpdateExecutor($statement, $this)
-                    : new Exec\SingleTableDeleteUpdateExecutor($statement, $this),
-            $statement instanceof AST\DeleteStatement
-                => $this->em->getClassMetadata($statement->deleteClause->abstractSchemaName)->isInheritanceTypeJoined()
-                    ? new Exec\MultiTableDeleteExecutor($statement, $this)
-                    : new Exec\SingleTableDeleteUpdateExecutor($statement, $this),
+            $statement instanceof AST\UpdateStatement => $this->createUpdateStatementExecutor($statement),
+            $statement instanceof AST\DeleteStatement => $this->createDeleteStatementExecutor($statement),
+            default => new Exec\SingleSelectExecutor($statement, $this),
         };
+    }
+
+    /** @psalm-internal Doctrine\ORM */
+    protected function createUpdateStatementExecutor(AST\UpdateStatement $AST): Exec\AbstractSqlExecutor
+    {
+        $primaryClass = $this->em->getClassMetadata($AST->updateClause->abstractSchemaName);
+
+        return $primaryClass->isInheritanceTypeJoined()
+            ? new Exec\MultiTableUpdateExecutor($AST, $this)
+            : new Exec\SingleTableDeleteUpdateExecutor($AST, $this);
+    }
+
+    /** @psalm-internal Doctrine\ORM */
+    protected function createDeleteStatementExecutor(AST\DeleteStatement $AST): Exec\AbstractSqlExecutor
+    {
+        $primaryClass = $this->em->getClassMetadata($AST->deleteClause->abstractSchemaName);
+
+        return $primaryClass->isInheritanceTypeJoined()
+            ? new Exec\MultiTableDeleteExecutor($AST, $this)
+            : new Exec\SingleTableDeleteUpdateExecutor($AST, $this);
     }
 
     /**
@@ -484,10 +498,15 @@ class SqlWalker
      */
     public function walkSelectStatement(AST\SelectStatement $selectStatement): string
     {
-        $limit    = $this->query->getMaxResults();
-        $offset   = $this->query->getFirstResult();
-        $lockMode = $this->query->getHint(Query::HINT_LOCK_MODE) ?: LockMode::NONE;
-        $sql      = $this->walkSelectClause($selectStatement->selectClause)
+        $sql       = $this->createSqlForFinalizer($selectStatement);
+        $finalizer = new Exec\SingleSelectSqlFinalizer($sql);
+
+        return $finalizer->finalizeSql($this->query);
+    }
+
+    protected function createSqlForFinalizer(AST\SelectStatement $selectStatement): string
+    {
+        $sql = $this->walkSelectClause($selectStatement->selectClause)
             . $this->walkFromClause($selectStatement->fromClause)
             . $this->walkWhereClause($selectStatement->whereClause);
 
@@ -508,31 +527,22 @@ class SqlWalker
             $sql .= ' ORDER BY ' . $orderBySql;
         }
 
-        $sql = $this->platform->modifyLimitQuery($sql, $limit, $offset);
-
-        if ($lockMode === LockMode::NONE) {
-            return $sql;
-        }
-
-        if ($lockMode === LockMode::PESSIMISTIC_READ) {
-            return $sql . ' ' . $this->getReadLockSQL($this->platform);
-        }
-
-        if ($lockMode === LockMode::PESSIMISTIC_WRITE) {
-            return $sql . ' ' . $this->getWriteLockSQL($this->platform);
-        }
-
-        if ($lockMode !== LockMode::OPTIMISTIC) {
-            throw QueryException::invalidLockMode();
-        }
-
-        foreach ($this->selectedClasses as $selectedClass) {
-            if (! $selectedClass['class']->isVersioned) {
-                throw OptimisticLockException::lockFailed($selectedClass['class']->name);
-            }
-        }
+        $this->assertOptimisticLockingHasAllClassesVersioned();
 
         return $sql;
+    }
+
+    private function assertOptimisticLockingHasAllClassesVersioned(): void
+    {
+        $lockMode = $this->query->getHint(Query::HINT_LOCK_MODE) ?: LockMode::NONE;
+
+        if ($lockMode === LockMode::OPTIMISTIC) {
+            foreach ($this->selectedClasses as $selectedClass) {
+                if (! $selectedClass['class']->isVersioned) {
+                    throw OptimisticLockException::lockFailed($selectedClass['class']->name);
+                }
+            }
+        }
     }
 
     /**
@@ -1518,6 +1528,7 @@ class SqlWalker
                     $this->newObjectStack[] = [$objIndex, $argIndex];
                     $sqlSelectExpressions[] = $e->dispatch($this);
                     array_pop($this->newObjectStack);
+                    $this->rsm->nestedNewObjectArguments[$columnAlias] = ['ownerIndex' => $objIndex, 'argIndex' => $argIndex];
                     break;
 
                 case $e instanceof AST\Subselect:
@@ -1571,10 +1582,6 @@ class SqlWalker
                 'objIndex'  => $objIndex,
                 'argIndex'  => $argIndex,
             ];
-
-            if ($objOwner !== null && $objOwnerIdx !== null) {
-                $this->rsm->addNewObjectAsArgument($objIndex, $objOwner, $objOwnerIdx);
-            }
         }
 
         return implode(', ', $sqlSelectExpressions);
