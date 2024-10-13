@@ -22,11 +22,11 @@ final class AssociationOverride implements MappingAttribute
     public readonly array|null $inverseJoinColumns;
 
     /**
-     * @param string                       $name               The name of the relationship property whose mapping is being overridden.
-     * @param JoinColumn|array<JoinColumn> $joinColumns
-     * @param JoinColumn|array<JoinColumn> $inverseJoinColumns
-     * @param JoinTable|null               $joinTable          The join table that maps the relationship.
-     * @param string|null                  $inversedBy         The name of the association-field on the inverse-side.
+     * @param string                            $name               The name of the relationship property whose mapping is being overridden.
+     * @param JoinColumn|array<JoinColumn>|null $joinColumns
+     * @param JoinColumn|array<JoinColumn>|null $inverseJoinColumns
+     * @param JoinTable|null                    $joinTable          The join table that maps the relationship.
+     * @param string|null                       $inversedBy         The name of the association-field on the inverse-side.
      * @psalm-param 'LAZY'|'EAGER'|'EXTRA_LAZY'|null $fetch
      */
     public function __construct(
