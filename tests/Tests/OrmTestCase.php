@@ -21,7 +21,6 @@ use PHPUnit\Framework\TestCase;
 use Psr\Cache\CacheItemPoolInterface;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
 
-use function method_exists;
 use function realpath;
 use function sprintf;
 
@@ -183,11 +182,6 @@ abstract class OrmTestCase extends TestCase
             ->willReturn($connection);
         $driver->method('getDatabasePlatform')
             ->willReturn($platform);
-
-        if (method_exists(Driver::class, 'getSchemaManager')) {
-            $driver->method('getSchemaManager')
-                ->willReturnCallback([$platform, 'createSchemaManager']);
-        }
 
         return $driver;
     }

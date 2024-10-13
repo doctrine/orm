@@ -185,7 +185,6 @@ use function get_debug_type;
 use function getenv;
 use function implode;
 use function is_object;
-use function method_exists;
 use function realpath;
 use function sprintf;
 use function str_contains;
@@ -952,17 +951,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
         assert($conn !== null);
         $conn->queryLog->reset();
 
-        // get rid of more global state
-        if (method_exists($conn, 'getEventManager')) {
-            $evm = $conn->getEventManager();
-            foreach ($evm->getAllListeners() as $event => $listeners) {
-                foreach ($listeners as $listener) {
-                    $evm->removeEventListener([$event], $listener);
-                }
-            }
-        } else {
-            $evm = new EventManager();
-        }
+        $evm = new EventManager();
 
         if ($enableSecondLevelCache) {
             $evm->addEventListener('loadClassMetadata', new CacheMetadataListener());

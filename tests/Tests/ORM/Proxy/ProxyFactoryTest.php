@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Proxy;
 
-use Doctrine\Common\EventManager;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\ORM\EntityNotFoundException;
@@ -24,7 +23,6 @@ use ReflectionProperty;
 use stdClass;
 
 use function assert;
-use function method_exists;
 use function sys_get_temp_dir;
 
 /**
@@ -47,11 +45,6 @@ class ProxyFactoryTest extends OrmTestCase
         $connection = $this->createMock(Connection::class);
         $connection->method('getDatabasePlatform')
             ->willReturn($platform);
-
-        if (method_exists($connection, 'getEventManager')) {
-            $connection->method('getEventManager')
-                ->willReturn(new EventManager());
-        }
 
         $this->emMock  = new EntityManagerMock($connection);
         $this->uowMock = new UnitOfWorkMock($this->emMock);
