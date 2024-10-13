@@ -483,6 +483,13 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             Models\Issue9300\Issue9300Child::class,
             Models\Issue9300\Issue9300Parent::class,
         ],
+        'issueKanbanBOX' => [
+            Models\IssueKanbanBOX\EntityVersion::class,
+            Models\IssueKanbanBOX\EntityAVersion::class,
+            Models\IssueKanbanBOX\EntityBVersion::class,
+            Models\IssueKanbanBOX\EntityA::class,
+            Models\IssueKanbanBOX\EntityB::class,
+        ],
     ];
 
     /** @param class-string ...$models */
