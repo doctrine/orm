@@ -1036,7 +1036,7 @@ class ObjectHydratorTest extends HydrationTestCase
         $proxyFactory->expects(self::once())
                      ->method('getProxy')
                      ->with(self::equalTo(ECommerceShipping::class), ['id' => 42])
-                     ->will(self::returnValue($proxyInstance));
+                     ->willReturn($proxyInstance);
 
         $this->entityManager->setProxyFactory($proxyFactory);
 
@@ -1084,7 +1084,7 @@ class ObjectHydratorTest extends HydrationTestCase
         $proxyFactory->expects(self::once())
                      ->method('getProxy')
                      ->with(self::equalTo(ECommerceShipping::class), ['id' => 42])
-                     ->will(self::returnValue($proxyInstance));
+                     ->willReturn($proxyInstance);
 
         $this->entityManager->setProxyFactory($proxyFactory);
 

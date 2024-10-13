@@ -253,7 +253,7 @@ class ReadWriteCachedCollectionPersisterTest extends CollectionPersisterTestCase
         $this->region->expects(self::once())
             ->method('lock')
             ->with(self::equalTo($key))
-            ->will(self::returnValue(null));
+            ->willReturn(null);
 
         $this->collectionPersister->expects(self::once())
             ->method('delete')
@@ -278,7 +278,7 @@ class ReadWriteCachedCollectionPersisterTest extends CollectionPersisterTestCase
         $this->region->expects(self::once())
             ->method('lock')
             ->with(self::equalTo($key))
-            ->will(self::returnValue(null));
+            ->willReturn(null);
 
         $this->collectionPersister->expects(self::once())
             ->method('update')
