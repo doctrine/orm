@@ -17,7 +17,6 @@ use Doctrine\Tests\DbalTypes\CustomIdObject;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use PHPUnit\Framework\Attributes\Group;
 
-use function method_exists;
 use function str_replace;
 
 /**
@@ -135,23 +134,19 @@ class GH10747Credit
 
 class GH10747CustomIdObjectHashType extends DBALType
 {
-    public function convertToDatabaseValue(mixed $value, AbstractPlatform $platform): mixed
+    public function convertToDatabaseValue(mixed $value, AbstractPlatform $platform): string
     {
         return $value->id . '_test';
     }
 
-    public function convertToPHPValue(mixed $value, AbstractPlatform $platform): mixed
+    public function convertToPHPValue(mixed $value, AbstractPlatform $platform): CustomIdObject
     {
         return new CustomIdObject(str_replace('_test', '', $value));
     }
 
-    public function getSQLDeclaration(array $fieldDeclaration, AbstractPlatform $platform): string
+    public function getSQLDeclaration(array $column, AbstractPlatform $platform): string
     {
-        if (method_exists($platform, 'getStringTypeDeclarationSQL')) {
-            return $platform->getStringTypeDeclarationSQL($fieldDeclaration);
-        }
-
-        return $platform->getVarcharTypeDeclarationSQL($fieldDeclaration);
+        return $platform->getStringTypeDeclarationSQL($column);
     }
 
     public function getName(): string
