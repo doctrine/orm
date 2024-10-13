@@ -13,11 +13,11 @@ class HierarchyDiscriminatorResolverTest extends TestCase
 {
     public function testResolveDiscriminatorsForClass(): void
     {
-        $childClassMetadata                     = new ClassMetadata('ChildEntity');
+        $childClassMetadata                     = new ClassMetadata(self::class);
         $childClassMetadata->name               = 'Some\Class\Child\Name';
         $childClassMetadata->discriminatorValue = 'child-discriminator';
 
-        $classMetadata                     = new ClassMetadata('Entity');
+        $classMetadata                     = new ClassMetadata(self::class);
         $classMetadata->subClasses         = [$childClassMetadata->name];
         $classMetadata->name               = 'Some\Class\Name';
         $classMetadata->discriminatorValue = 'discriminator';
@@ -41,7 +41,7 @@ class HierarchyDiscriminatorResolverTest extends TestCase
 
     public function testResolveDiscriminatorsForClassWithNoSubclasses(): void
     {
-        $classMetadata                     = new ClassMetadata('Entity');
+        $classMetadata                     = new ClassMetadata(self::class);
         $classMetadata->subClasses         = [];
         $classMetadata->name               = 'Some\Class\Name';
         $classMetadata->discriminatorValue = 'discriminator';

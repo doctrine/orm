@@ -19,7 +19,6 @@ use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\ORM\Mapping\OneToManyAssociationMapping;
 use Doctrine\ORM\Mapping\UnderscoreNamingStrategy;
 use Doctrine\Persistence\Mapping\RuntimeReflectionService;
-use Doctrine\Persistence\Mapping\StaticReflectionService;
 use Doctrine\Tests\DbalTypes\CustomIdObject;
 use Doctrine\Tests\DbalTypes\CustomIdObjectType;
 use Doctrine\Tests\DbalTypes\CustomIntType;
@@ -970,32 +969,6 @@ class ClassMetadataTest extends OrmTestCase
         $classMetadata->wakeupReflection(new RuntimeReflectionService());
 
         self::assertInstanceOf(MyArrayObjectEntity::class, $classMetadata->newInstance());
-    }
-
-    public function testWakeupReflectionWithEmbeddableAndStaticReflectionService(): void
-    {
-        $classMetadata = new ClassMetadata(TestEntity1::class);
-
-        $classMetadata->mapEmbedded(
-            [
-                'fieldName'    => 'test',
-                'class'        => TestEntity1::class,
-                'columnPrefix' => false,
-            ],
-        );
-
-        $field = [
-            'fieldName' => 'test.embeddedProperty',
-            'type' => 'string',
-            'originalClass' => TestEntity1::class,
-            'declaredField' => 'test',
-            'originalField' => 'embeddedProperty',
-        ];
-
-        $classMetadata->mapField($field);
-        $classMetadata->wakeupReflection(new StaticReflectionService());
-
-        self::assertEquals(['test' => null, 'test.embeddedProperty' => null], $classMetadata->getReflectionProperties());
     }
 
     public function testGetColumnNamesWithGivenFieldNames(): void

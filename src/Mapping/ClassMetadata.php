@@ -512,9 +512,9 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
     /**
      * The ReflectionClass instance of the mapped class.
      *
-     * @var ReflectionClass<T>|null
+     * @var ReflectionClass<T>
      */
-    public ReflectionClass|null $reflClass = null;
+    public ReflectionClass $reflClass;
 
     /**
      * Is this entity marked as "read-only"?
@@ -554,6 +554,7 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
         $this->namingStrategy   = $namingStrategy ?? new DefaultNamingStrategy();
         $this->instantiator     = new Instantiator();
         $this->typedFieldMapper = $typedFieldMapper ?? new DefaultTypedFieldMapper();
+        $this->reflClass        = new ReflectionClass($name);
     }
 
     /**
@@ -930,12 +931,7 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
         }
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * Can return null when using static reflection, in violation of the LSP
-     */
-    public function getReflectionClass(): ReflectionClass|null
+    public function getReflectionClass(): ReflectionClass
     {
         return $this->reflClass;
     }
@@ -1104,8 +1100,7 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
      */
     private function isTypedProperty(string $name): bool
     {
-        return isset($this->reflClass)
-               && $this->reflClass->hasProperty($name)
+        return $this->reflClass->hasProperty($name)
                && $this->reflClass->getProperty($name)->hasType();
     }
 
@@ -2565,8 +2560,6 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
             if (! empty($this->embeddedClasses[$property]->columnPrefix)) {
                 $fieldMapping['columnName'] = $this->embeddedClasses[$property]->columnPrefix . $fieldMapping['columnName'];
             } elseif ($this->embeddedClasses[$property]->columnPrefix !== false) {
-                assert($this->reflClass !== null);
-                assert($embeddable->reflClass !== null);
                 $fieldMapping['columnName'] = $this->namingStrategy
                     ->embeddedFieldToColumnName(
                         $property,

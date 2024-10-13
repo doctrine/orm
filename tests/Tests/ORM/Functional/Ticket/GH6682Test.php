@@ -19,7 +19,7 @@ final class GH6682Test extends OrmFunctionalTestCase
             'initialValue'   => '',
         ];
 
-        $classMetadata = new ClassMetadata('test_entity');
+        $classMetadata = new ClassMetadata(self::class);
         $classMetadata->setSequenceGeneratorDefinition($parsedDefinition);
 
         self::assertSame(
