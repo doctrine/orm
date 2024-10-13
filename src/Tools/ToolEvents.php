@@ -20,4 +20,6 @@ class ToolEvents
      * The EventArgs contain the EntityManager and the created Schema instance.
      */
     public const postGenerateSchema = 'postGenerateSchema';
+
+    public const postSchemaChanged = 'postSchemaChanged';
 }

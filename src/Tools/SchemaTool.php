@@ -22,6 +22,7 @@ use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\ORM\Mapping\QuoteStrategy;
 use Doctrine\ORM\Tools\Event\GenerateSchemaEventArgs;
 use Doctrine\ORM\Tools\Event\GenerateSchemaTableEventArgs;
+use Doctrine\ORM\Tools\Event\SchemaChangedEventArgs;
 use Doctrine\ORM\Tools\Exception\MissingColumnException;
 use Doctrine\ORM\Tools\Exception\NotSupported;
 use Throwable;
@@ -73,7 +74,9 @@ class SchemaTool
      */
     public function createSchema(array $classes): void
     {
-        $createSchemaSql = $this->getCreateSchemaSql($classes);
+        $schema = $this->getSchemaFromMetadata($classes);
+
+        $createSchemaSql = $schema->toSql($this->platform);
         $conn            = $this->em->getConnection();
 
         foreach ($createSchemaSql as $sql) {
@@ -83,6 +86,12 @@ class SchemaTool
                 throw ToolsException::schemaToolFailure($sql, $e);
             }
         }
+
+        $eventManager = $this->em->getEventManager();
+        $eventManager->dispatchEvent(
+            ToolEvents::postSchemaChanged,
+            new SchemaChangedEventArgs($this->em, $schema, new Schema(), $createSchemaSql),
+        );
     }
 
     /**
@@ -875,11 +884,23 @@ class SchemaTool
      */
     public function updateSchema(array $classes): void
     {
+        $toSchema   = $this->getSchemaFromMetadata($classes);
+        $fromSchema = $this->createSchemaForComparison($toSchema);
+        $comparator = $this->schemaManager->createComparator();
+        $schemaDiff = $comparator->compareSchemas($fromSchema, $toSchema);
+
+        $sqls = $this->platform->getAlterSchemaSQL($schemaDiff);
         $conn = $this->em->getConnection();
 
-        foreach ($this->getUpdateSchemaSql($classes) as $sql) {
+        foreach ($sqls as $sql) {
             $conn->executeStatement($sql);
         }
+
+        $eventManager = $this->em->getEventManager();
+        $eventManager->dispatchEvent(
+            ToolEvents::postSchemaChanged,
+            new SchemaChangedEventArgs($this->em, $toSchema, $fromSchema, $sqls),
+        );
     }
 
     /**
