@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM;
 
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\EventManager;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Result;
@@ -21,7 +20,6 @@ use stdClass;
 
 use function array_keys;
 use function assert;
-use function method_exists;
 use function serialize;
 use function unserialize;
 
@@ -46,11 +44,6 @@ class PersistentCollectionTest extends OrmTestCase
         $connection = $this->createMock(Connection::class);
         $connection->method('getDatabasePlatform')
             ->willReturn($platform);
-
-        if (method_exists($connection, 'getEventManager')) {
-            $connection->method('getEventManager')
-                ->willReturn(new EventManager());
-        }
 
         $connection->method('executeQuery')
             ->willReturn($this->createMock(Result::class));
