@@ -77,6 +77,63 @@ the embedded object.
         $this->address = new Address();
     }
 
+Nullable Embeddables Hydration
+------------------------------
+In case all fields in the embeddable are null, the entity is hydrated with an empty
+embeddable object. Properties in nullable embeddables should have
+a default value. You can normalize entities on ``postLoad`` event
+(in Doctrine ORM lifecycle events), to avoid getting the empty embeddable object
+instead of a null value.
+
+.. configuration-block::
+
+    .. code-block:: attribute
+
+        <?php
+        use Doctrine\ORM\Mapping\Column;
+        use Doctrine\ORM\Mapping\Embeddable;
+        use Doctrine\ORM\Mapping\Embedded;
+        use Doctrine\ORM\Mapping\Entity;
+
+        #[Entity]
+        class User
+        {
+            #[Embedded(class: Address::class)]
+            private ?Address $address = null;
+        }
+
+        #[Embeddable]
+        class Address
+        {
+            #[Column(type: "string", nullable=true)]
+            private ?string $street = null;
+
+            #[Column(type: "string", nullable=true)]
+            private ?string $postalCode = null;
+
+            #[Column(type: "string", nullable=true)]
+            private ?string $city = null;
+
+            #[Column(type: "string", nullable=true)]
+            private ?string $country = null;
+        }
+
+    .. code-block:: xml
+
+        <doctrine-mapping>
+            <entity name="User">
+                <embedded name="address" class="Address" />
+            </entity>
+
+            <embeddable name="Address">
+                <field name="street" type="string" nullable="true" />
+                <field name="postalCode" type="string" nullable="true" />
+                <field name="city" type="string" nullable="true" />
+                <field name="country" type="string" nullable="true" />
+            </embeddable>
+        </doctrine-mapping>
+
+
 Column Prefixing
 ----------------
 
