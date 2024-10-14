@@ -6,4 +6,4 @@ updates:
       interval: "weekly"
     labels:
       - "CI"
-    target-branch: "2.19.x"
+    target-branch: "2.20.x"
