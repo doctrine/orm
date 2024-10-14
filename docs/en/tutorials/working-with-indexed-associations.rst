@@ -32,9 +32,6 @@ The code and mappings for the Market entity looks like this:
     .. literalinclude:: working-with-indexed-associations/Market.php
         :language: attribute
 
-    .. literalinclude:: working-with-indexed-associations/Market-annotations.php
-        :language: annotation
-
     .. literalinclude:: working-with-indexed-associations/market.xml
         :language: xml
 
