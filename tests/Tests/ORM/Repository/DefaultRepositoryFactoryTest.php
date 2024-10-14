@@ -34,7 +34,7 @@ class DefaultRepositoryFactoryTest extends TestCase
         $this->configuration
             ->expects(self::any())
             ->method('getDefaultRepositoryClassName')
-            ->will(self::returnValue(DDC869PaymentRepository::class));
+            ->willReturn(DDC869PaymentRepository::class);
     }
 
     public function testCreatesRepositoryFromDefaultRepositoryClass(): void
@@ -42,7 +42,7 @@ class DefaultRepositoryFactoryTest extends TestCase
         $this->entityManager
             ->expects(self::any())
             ->method('getClassMetadata')
-            ->will(self::returnCallback($this->buildClassMetadata(...)));
+            ->willReturnCallback($this->buildClassMetadata(...));
 
         self::assertInstanceOf(
             DDC869PaymentRepository::class,
@@ -55,7 +55,7 @@ class DefaultRepositoryFactoryTest extends TestCase
         $this->entityManager
             ->expects(self::any())
             ->method('getClassMetadata')
-            ->will(self::returnCallback($this->buildClassMetadata(...)));
+            ->willReturnCallback($this->buildClassMetadata(...));
 
         self::assertSame(
             $this->repositoryFactory->getRepository($this->entityManager, self::class),
@@ -71,7 +71,7 @@ class DefaultRepositoryFactoryTest extends TestCase
         $this->entityManager
             ->expects(self::any())
             ->method('getClassMetadata')
-            ->will(self::returnValue($customMetadata));
+            ->willReturn($customMetadata);
 
         self::assertInstanceOf(
             DDC753DefaultRepository::class,
@@ -86,11 +86,11 @@ class DefaultRepositoryFactoryTest extends TestCase
 
         $em1->expects(self::any())
             ->method('getClassMetadata')
-            ->will(self::returnCallback($this->buildClassMetadata(...)));
+            ->willReturnCallback($this->buildClassMetadata(...));
 
         $em2->expects(self::any())
             ->method('getClassMetadata')
-            ->will(self::returnCallback($this->buildClassMetadata(...)));
+            ->willReturnCallback($this->buildClassMetadata(...));
 
         $repo1 = $this->repositoryFactory->getRepository($em1, self::class);
         $repo2 = $this->repositoryFactory->getRepository($em2, self::class);
