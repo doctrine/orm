@@ -218,7 +218,7 @@ class ClassMetadataFactoryTest extends OrmTestCase
 
         $conn->expects(self::any())
             ->method('getDatabasePlatform')
-            ->will(self::throwException(new Exception('Exception thrown in test when calling getDatabasePlatform')));
+            ->willThrowException(new Exception('Exception thrown in test when calling getDatabasePlatform'));
 
         $cmf = new ClassMetadataFactory();
         $cmf->setEntityManager($em);

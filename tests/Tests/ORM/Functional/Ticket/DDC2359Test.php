@@ -43,15 +43,15 @@ class DDC2359Test extends TestCase
 
         $configuration
             ->method('getMetadataDriverImpl')
-            ->will(self::returnValue($mockDriver));
+            ->willReturn($mockDriver);
 
-        $entityManager->expects(self::any())->method('getConfiguration')->will(self::returnValue($configuration));
-        $entityManager->expects(self::any())->method('getConnection')->will(self::returnValue($connection));
+        $entityManager->expects(self::any())->method('getConfiguration')->willReturn($configuration);
+        $entityManager->expects(self::any())->method('getConnection')->willReturn($connection);
         $entityManager
             ->method('getEventManager')
-            ->will(self::returnValue($this->createMock(EventManager::class)));
+            ->willReturn($this->createMock(EventManager::class));
 
-        $metadataFactory->method('newClassMetadataInstance')->will(self::returnValue($mockMetadata));
+        $metadataFactory->method('newClassMetadataInstance')->willReturn($mockMetadata);
         $metadataFactory->expects(self::once())->method('wakeupReflection');
 
         $metadataFactory->setEntityManager($entityManager);

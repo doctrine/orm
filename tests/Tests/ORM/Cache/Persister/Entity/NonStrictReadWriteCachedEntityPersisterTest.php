@@ -60,7 +60,7 @@ class NonStrictReadWriteCachedEntityPersisterTest extends EntityPersisterTestCas
 
         $this->entityPersister->expects(self::once())
             ->method('getInserts')
-            ->will(self::returnValue([$entity]));
+            ->willReturn([$entity]);
 
         $this->entityPersister->expects(self::once())
             ->method('executeInserts');

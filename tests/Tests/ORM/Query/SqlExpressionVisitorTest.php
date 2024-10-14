@@ -31,7 +31,7 @@ class SqlExpressionVisitorTest extends TestCase
         $this->persister
             ->expects(self::once())
             ->method('getSelectConditionStatementSQL')
-            ->will(self::returnValue('dummy expression'));
+            ->willReturn('dummy expression');
 
         $expr = $this->visitor->walkCompositeExpression(
             $cb->not(
