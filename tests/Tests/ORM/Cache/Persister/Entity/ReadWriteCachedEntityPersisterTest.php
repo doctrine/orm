@@ -39,7 +39,7 @@ class ReadWriteCachedEntityPersisterTest extends EntityPersisterTestCase
         $this->region->expects(self::once())
             ->method('lock')
             ->with(self::equalTo($key))
-            ->will(self::returnValue($lock));
+            ->willReturn($lock);
 
         $this->em->getUnitOfWork()->registerManaged($entity, ['id' => 1], ['id' => 1, 'name' => 'Foo']);
 
@@ -56,7 +56,7 @@ class ReadWriteCachedEntityPersisterTest extends EntityPersisterTestCase
         $this->region->expects(self::once())
             ->method('lock')
             ->with(self::equalTo($key))
-            ->will(self::returnValue($lock));
+            ->willReturn($lock);
 
         $this->em->getUnitOfWork()->registerManaged($entity, ['id' => 1], ['id' => 1, 'name' => 'Foo']);
 
@@ -73,12 +73,12 @@ class ReadWriteCachedEntityPersisterTest extends EntityPersisterTestCase
         $this->region->expects(self::once())
             ->method('lock')
             ->with(self::equalTo($key))
-            ->will(self::returnValue($lock));
+            ->willReturn($lock);
 
         $this->region->expects(self::once())
             ->method('evict')
             ->with(self::equalTo($key))
-            ->will(self::returnValue($lock));
+            ->willReturn($lock);
 
         $this->em->getUnitOfWork()->registerManaged($entity, ['id' => 1], ['id' => 1, 'name' => 'Foo']);
 
@@ -96,7 +96,7 @@ class ReadWriteCachedEntityPersisterTest extends EntityPersisterTestCase
         $this->region->expects(self::once())
             ->method('lock')
             ->with(self::equalTo($key))
-            ->will(self::returnValue($lock));
+            ->willReturn($lock);
 
         $this->region->expects(self::once())
             ->method('evict')
@@ -121,7 +121,7 @@ class ReadWriteCachedEntityPersisterTest extends EntityPersisterTestCase
         $this->region->expects(self::exactly(2))
             ->method('lock')
             ->with(self::equalTo($key))
-            ->will(self::returnValue($lock));
+            ->willReturn($lock);
 
         $this->region->expects(self::exactly(2))
             ->method('evict')
@@ -152,7 +152,7 @@ class ReadWriteCachedEntityPersisterTest extends EntityPersisterTestCase
         $this->region->expects(self::exactly(2))
             ->method('lock')
             ->with(self::equalTo($key))
-            ->will(self::returnValue($lock));
+            ->willReturn($lock);
 
         $this->region->expects(self::exactly(2))
             ->method('evict')
@@ -182,7 +182,7 @@ class ReadWriteCachedEntityPersisterTest extends EntityPersisterTestCase
         $this->region->expects(self::once())
             ->method('lock')
             ->with(self::equalTo($key))
-            ->will(self::returnValue(null));
+            ->willReturn(null);
 
         $this->entityPersister->expects(self::once())
             ->method('delete')
@@ -206,7 +206,7 @@ class ReadWriteCachedEntityPersisterTest extends EntityPersisterTestCase
         $this->region->expects(self::once())
             ->method('lock')
             ->with(self::equalTo($key))
-            ->will(self::returnValue(null));
+            ->willReturn(null);
 
         $this->entityPersister->expects(self::once())
             ->method('update')

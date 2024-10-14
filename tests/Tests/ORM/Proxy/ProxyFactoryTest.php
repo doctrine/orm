@@ -76,7 +76,7 @@ class ProxyFactoryTest extends OrmTestCase
             ->expects(self::atLeastOnce())
             ->method('loadById')
             ->with(self::equalTo($identifier))
-            ->will(self::returnValue($proxy));
+            ->willReturn($proxy);
 
         $proxy->getDescription();
     }
@@ -133,7 +133,7 @@ class ProxyFactoryTest extends OrmTestCase
         $persister
             ->expects(self::atLeastOnce())
             ->method('load')
-            ->will(self::returnValue(null));
+            ->willReturn(null);
 
         try {
             $proxy->getDescription();
@@ -160,7 +160,7 @@ class ProxyFactoryTest extends OrmTestCase
         $persister
             ->expects(self::atLeastOnce())
             ->method('load')
-            ->will(self::throwException($exception));
+            ->willThrowException($exception);
 
         try {
             $proxy->getDescription();
@@ -186,7 +186,7 @@ class ProxyFactoryTest extends OrmTestCase
         $persister
             ->expects(self::atLeastOnce())
             ->method('load')
-            ->will(self::returnValue(null));
+            ->willReturn(null);
 
         try {
             $cloned = clone $proxy;
