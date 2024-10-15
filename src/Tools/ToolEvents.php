@@ -20,4 +20,11 @@ class ToolEvents
      * The EventArgs contain the EntityManager and the created Schema instance.
      */
     public const postGenerateSchema = 'postGenerateSchema';
+
+    /**
+     * The postGenerateComparisonSchema event is triggered in SchemaTool#createSchemaForComparison()
+     * after a schema is generated from the current database state.
+     * The EventArgs contain the EntityManager and the created Schema instance.
+     */
+    public const postGenerateComparisonSchema = 'postGenerateComparisonSchema';
 }

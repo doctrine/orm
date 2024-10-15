@@ -9,7 +9,10 @@ use Doctrine\DBAL\Driver;
 use Doctrine\DBAL\Driver\Result;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Schema\AbstractSchemaManager;
+use Doctrine\DBAL\Schema\Comparator;
+use Doctrine\DBAL\Schema\Schema;
 use Doctrine\DBAL\Schema\SchemaConfig;
+use Doctrine\DBAL\Schema\SchemaDiff;
 use Doctrine\ORM\Cache\CacheConfiguration;
 use Doctrine\ORM\Cache\CacheFactory;
 use Doctrine\ORM\Cache\DefaultCacheFactory;
@@ -153,9 +156,15 @@ abstract class OrmTestCase extends TestCase
 
     private function createPlatformMock(): AbstractPlatform
     {
+        $schemaDiff = method_exists(SchemaDiff::class, 'toSaveSql')
+            ? new SchemaDiff() // DBAL v3
+            : new SchemaDiff([], [], [], [], [], [], [], []); // DBAL v4
+
         $schemaManager = $this->createMock(AbstractSchemaManager::class);
         $schemaManager->method('createSchemaConfig')
             ->willReturn(new SchemaConfig());
+        $schemaManager->method('createComparator')
+            ->willReturn($this->mockComparator($schemaDiff));
 
         $platform = $this->getMockBuilder(AbstractPlatform::class)
             ->onlyMethods(['supportsIdentityColumns', 'createSchemaManager'])
@@ -166,6 +175,30 @@ abstract class OrmTestCase extends TestCase
             ->willReturn($schemaManager);
 
         return $platform;
+    }
+
+    private function mockComparator(SchemaDiff $schemaDiff): Comparator
+    {
+        $comparator = new class (self::createStub(AbstractPlatform::class)) extends Comparator {
+            public static SchemaDiff $schemaDiff;
+            public Schema|null $oldSchema = null;
+
+            public function compareSchemas(Schema $oldSchema, Schema $newSchema): SchemaDiff
+            {
+                $this->oldSchema = $oldSchema;
+
+                return self::$schemaDiff;
+            }
+
+            public function getOldSchema(): Schema|null
+            {
+                return $this->oldSchema;
+            }
+        };
+
+        $comparator::$schemaDiff = $schemaDiff;
+
+        return $comparator;
     }
 
     private function createDriverMock(AbstractPlatform $platform): Driver

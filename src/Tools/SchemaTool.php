@@ -905,28 +905,44 @@ class SchemaTool
      */
     private function createSchemaForComparison(Schema $toSchema): Schema
     {
-        $connection = $this->em->getConnection();
+        $connection   = $this->em->getConnection();
+        $eventManager = $this->em->getEventManager();
 
         // backup schema assets filter
-        $config         = $connection->getConfiguration();
+        $config = $connection->getConfiguration();
+
+        /**
+         * Explicitly set $previousFilter to callable|null to match DBAL v3 returned types.
+         *
+         * @psalm-var callable|null $previousFilter
+         */
         $previousFilter = $config->getSchemaAssetsFilter();
 
-        if ($previousFilter === null) {
-            return $this->schemaManager->introspectSchema();
+        if ($previousFilter !== null) {
+            // whitelist assets we already know about in $toSchema, use the existing filter otherwise
+            $config->setSchemaAssetsFilter(static function ($asset) use ($previousFilter, $toSchema): bool {
+                $assetName = $asset instanceof AbstractAsset ? $asset->getName() : $asset;
+
+                return $toSchema->hasTable($assetName) || $toSchema->hasSequence($assetName) || $previousFilter($asset);
+            });
         }
-
-        // whitelist assets we already know about in $toSchema, use the existing filter otherwise
-        $config->setSchemaAssetsFilter(static function ($asset) use ($previousFilter, $toSchema): bool {
-            $assetName = $asset instanceof AbstractAsset ? $asset->getName() : $asset;
-
-            return $toSchema->hasTable($assetName) || $toSchema->hasSequence($assetName) || $previousFilter($asset);
-        });
 
         try {
-            return $this->schemaManager->introspectSchema();
+            $schema = $this->schemaManager->introspectSchema();
         } finally {
-            // restore schema assets filter
-            $config->setSchemaAssetsFilter($previousFilter);
+            if ($previousFilter !== null) {
+                // restore schema assets filter
+                $config->setSchemaAssetsFilter($previousFilter);
+            }
         }
+
+        if ($eventManager->hasListeners(ToolEvents::postGenerateComparisonSchema)) {
+            $eventManager->dispatchEvent(
+                ToolEvents::postGenerateComparisonSchema,
+                new GenerateSchemaEventArgs($this->em, $schema),
+            );
+        }
+
+        return $schema;
     }
 }
