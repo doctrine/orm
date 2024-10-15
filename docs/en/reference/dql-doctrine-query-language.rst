@@ -1370,6 +1370,9 @@ userland:
 -  ``Query::HINT_CUSTOM_TREE_WALKERS`` - An array of additional
    ``Doctrine\ORM\Query\TreeWalker`` instances that are attached to
    the DQL query parsing process.
+-  ``Query::HINT_INCLUDE_META_COLUMNS`` - A boolean that causes 
+   meta columns like foreign keys and discriminator columns to be 
+   selected and returned as part of the query result.
 
 Query Cache (DQL Query Only)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
