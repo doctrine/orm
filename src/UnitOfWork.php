@@ -61,6 +61,7 @@ use function array_merge;
 use function array_sum;
 use function array_values;
 use function assert;
+use function count;
 use function current;
 use function func_get_arg;
 use function func_num_args;
@@ -3165,8 +3166,10 @@ EXCEPTION
                     $reflField->setValue($entity, $pColl);
 
                     if ($hints['fetchMode'][$class->name][$field] === ClassMetadata::FETCH_EAGER) {
-                        $isIteration = isset($hints[Query::HINT_INTERNAL_ITERATION]) && $hints[Query::HINT_INTERNAL_ITERATION];
-                        if ($assoc['type'] === ClassMetadata::ONE_TO_MANY && ! $isIteration && ! $targetClass->isIdentifierComposite && ! isset($assoc['indexBy'])) {
+                        $isIteration           = isset($hints[Query::HINT_INTERNAL_ITERATION]) && $hints[Query::HINT_INTERNAL_ITERATION];
+                        $isForeignKeyComposite = count($targetClass->getAssociationMapping($assoc['mappedBy'])['joinColumns']) > 1;
+
+                        if ($assoc['type'] === ClassMetadata::ONE_TO_MANY && ! $isIteration && ! $isForeignKeyComposite && ! isset($assoc['indexBy'])) {
                             $this->scheduleCollectionForBatchLoading($pColl, $class);
                         } else {
                             $this->loadCollection($pColl);
