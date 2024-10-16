@@ -40,7 +40,7 @@ The code and mappings for the Market entity looks like this:
     .. literalinclude:: working-with-indexed-associations/market.xml
         :language: xml
 
-    .. literalinclude:: working-with-indexed-associations/market.xml
+    .. literalinclude:: working-with-indexed-associations/market.yaml
         :language: yaml
 
 
