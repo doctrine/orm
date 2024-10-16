@@ -35,10 +35,6 @@ The code and mappings for the Market entity looks like this:
     .. literalinclude:: working-with-indexed-associations/market.xml
         :language: xml
 
-    .. literalinclude:: working-with-indexed-associations/market.xml
-        :language: yaml
-
-
 Inside the ``addStock()`` method you can see how we directly set the key of the association to the symbol,
 so that we can work with the indexed association directly after invoking ``addStock()``. Inside ``getStock($symbol)``
 we pick a stock traded on the particular market by symbol. If this stock doesn't exist an exception is thrown.
