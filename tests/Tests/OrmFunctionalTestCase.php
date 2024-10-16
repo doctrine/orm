@@ -346,6 +346,13 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             Models\Issue9300\Issue9300Child::class,
             Models\Issue9300\Issue9300Parent::class,
         ],
+        'relation_as_id' => [
+            Models\RelationAsId\User::class,
+            Models\RelationAsId\Profile::class,
+            Models\RelationAsId\Group::class,
+            Models\RelationAsId\Membership::class,
+
+        ],
     ];
 
     /** @param class-string ...$models */
@@ -673,6 +680,13 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             $conn->executeStatement('DELETE FROM issue5989_persons');
             $conn->executeStatement('DELETE FROM issue5989_employees');
             $conn->executeStatement('DELETE FROM issue5989_managers');
+        }
+
+        if (isset($this->_usedModelSets['relation_as_id'])) {
+            $conn->executeStatement('DELETE FROM relation_as_id_membership');
+            $conn->executeStatement('DELETE FROM relation_as_id_profile');
+            $conn->executeStatement('DELETE FROM relation_as_id_group');
+            $conn->executeStatement('DELETE FROM relation_as_id_user');
         }
 
         $this->_em->clear();
