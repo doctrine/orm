@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
+                          https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+    <entity name="Doctrine\Tests\Models\Customer\CustomerType" table="customers" inheritance-type="SINGLE_TABLE">
+        <field name="name" column="name"/>
+        <discriminator-column name="type" type="string"/>
+        <discriminator-map>
+            <discriminator-mapping value="Doctrine\Tests\Models\Customer\InternalCustomer" class="Doctrine\Tests\Models\Customer\InternalCustomer" />
+            <discriminator-mapping value="Doctrine\Tests\Models\Customer\ExternalCustomer" class="Doctrine\Tests\Models\Customer\ExternalCustomer" />
+        </discriminator-map>
+    </entity>
+</doctrine-mapping>
