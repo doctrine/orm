@@ -77,7 +77,7 @@ class DefaultCacheFactoryTest extends OrmTestCase
         $this->factory->expects(self::once())
             ->method('getRegion')
             ->with(self::equalTo($metadata->cache))
-            ->will(self::returnValue($region));
+            ->willReturn($region);
 
         $cachedPersister = $this->factory->buildCachedEntityPersister($em, $persister, $metadata);
 
@@ -97,7 +97,7 @@ class DefaultCacheFactoryTest extends OrmTestCase
         $this->factory->expects(self::once())
             ->method('getRegion')
             ->with(self::equalTo($metadata->cache))
-            ->will(self::returnValue($region));
+            ->willReturn($region);
 
         $cachedPersister = $this->factory->buildCachedEntityPersister($em, $persister, $metadata);
 
@@ -117,7 +117,7 @@ class DefaultCacheFactoryTest extends OrmTestCase
         $this->factory->expects(self::once())
             ->method('getRegion')
             ->with(self::equalTo($metadata->cache))
-            ->will(self::returnValue($region));
+            ->willReturn($region);
 
         $cachedPersister = $this->factory->buildCachedEntityPersister($em, $persister, $metadata);
 
@@ -138,7 +138,7 @@ class DefaultCacheFactoryTest extends OrmTestCase
         $this->factory->expects(self::once())
             ->method('getRegion')
             ->with(self::equalTo($mapping['cache']))
-            ->will(self::returnValue($region));
+            ->willReturn($region);
 
         $cachedPersister = $this->factory->buildCachedCollectionPersister($em, $persister, $mapping);
 
@@ -159,7 +159,7 @@ class DefaultCacheFactoryTest extends OrmTestCase
         $this->factory->expects(self::once())
             ->method('getRegion')
             ->with(self::equalTo($mapping['cache']))
-            ->will(self::returnValue($region));
+            ->willReturn($region);
 
         $cachedPersister = $this->factory->buildCachedCollectionPersister($em, $persister, $mapping);
 
@@ -180,7 +180,7 @@ class DefaultCacheFactoryTest extends OrmTestCase
         $this->factory->expects(self::once())
             ->method('getRegion')
             ->with(self::equalTo($mapping['cache']))
-            ->will(self::returnValue($region));
+            ->willReturn($region);
 
         $cachedPersister = $this->factory->buildCachedCollectionPersister($em, $persister, $mapping);
 

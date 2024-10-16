@@ -53,7 +53,7 @@ class HydrationCompleteHandlerTest extends TestCase
             ->expects(self::any())
             ->method('getSubscribedSystems')
             ->with($metadata)
-            ->will(self::returnValue($listenersFlag));
+            ->willReturn($listenersFlag);
 
         $this->handler->deferPostLoadInvoking($metadata, $entity);
 
@@ -86,7 +86,7 @@ class HydrationCompleteHandlerTest extends TestCase
             ->expects(self::any())
             ->method('getSubscribedSystems')
             ->with($metadata)
-            ->will(self::returnValue($listenersFlag));
+            ->willReturn($listenersFlag);
 
         $this->handler->deferPostLoadInvoking($metadata, $entity);
 
@@ -110,7 +110,7 @@ class HydrationCompleteHandlerTest extends TestCase
             ->expects(self::any())
             ->method('getSubscribedSystems')
             ->with(self::logicalOr($metadata1, $metadata2))
-            ->will(self::returnValue($listenersFlag));
+            ->willReturn($listenersFlag);
 
         $this->handler->deferPostLoadInvoking($metadata1, $entity1);
         $this->handler->deferPostLoadInvoking($metadata2, $entity2);
@@ -144,7 +144,7 @@ class HydrationCompleteHandlerTest extends TestCase
             ->expects(self::any())
             ->method('getSubscribedSystems')
             ->with($metadata)
-            ->will(self::returnValue(ListenersInvoker::INVOKE_NONE));
+            ->willReturn(ListenersInvoker::INVOKE_NONE);
 
         $this->handler->deferPostLoadInvoking($metadata, $entity);
 

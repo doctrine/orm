@@ -101,10 +101,10 @@ class ReflectionPropertiesGetterTest extends TestCase
             ->expects(self::exactly(2))
             ->method('getClass')
             ->with(self::logicalOr(ClassWithMixedProperties::class, ParentClass::class))
-            ->will(self::returnValueMap([
+            ->willReturnMap([
                 [ClassWithMixedProperties::class, new ReflectionClass(ClassWithMixedProperties::class)],
                 [ParentClass::class, new ReflectionClass(ParentClass::class)],
-            ]));
+            ]);
 
         $reflectionService
             ->expects(self::atLeastOnce())

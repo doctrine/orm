@@ -13,6 +13,7 @@ use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\DefaultNamingStrategy;
 use Doctrine\ORM\Mapping\DefaultTypedFieldMapper;
+use Doctrine\ORM\Mapping\Driver\XmlDriver;
 use Doctrine\ORM\Mapping\MappedSuperclass;
 use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\ORM\Mapping\UnderscoreNamingStrategy;
@@ -24,6 +25,7 @@ use Doctrine\Tests\DbalTypes\CustomIntType;
 use Doctrine\Tests\Models\CMS;
 use Doctrine\Tests\Models\CMS\CmsEmail;
 use Doctrine\Tests\Models\Company\CompanyContract;
+use Doctrine\Tests\Models\Customer\CustomerType;
 use Doctrine\Tests\Models\CustomType\CustomTypeParent;
 use Doctrine\Tests\Models\DDC117\DDC117Article;
 use Doctrine\Tests\Models\DDC117\DDC117ArticleDetails;
@@ -1391,6 +1393,20 @@ class ClassMetadataTest extends OrmTestCase
         $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/pull/11309');
 
         $metadata->getAssociationMappedByTargetField('foo');
+    }
+
+    public function testClassNameMappingDiscriminatorValue(): void
+    {
+        $driver     = new XmlDriver(
+            __DIR__ . '/xml',
+            XmlDriver::DEFAULT_FILE_EXTENSION,
+            true
+        );
+        $xmlElement = $driver->getElement(CustomerType::class);
+        self::assertEquals(
+            'Doctrine\Tests\Models\Customer\InternalCustomer',
+            $xmlElement->children()->{'discriminator-map'}->{'discriminator-mapping'}[0]->attributes()['value']
+        );
     }
 }
 

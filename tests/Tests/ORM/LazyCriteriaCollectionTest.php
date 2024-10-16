@@ -33,7 +33,7 @@ class LazyCriteriaCollectionTest extends TestCase
 
     public function testCountIsCached(): void
     {
-        $this->persister->expects(self::once())->method('count')->with($this->criteria)->will(self::returnValue(10));
+        $this->persister->expects(self::once())->method('count')->with($this->criteria)->willReturn(10);
 
         self::assertSame(10, $this->lazyCriteriaCollection->count());
         self::assertSame(10, $this->lazyCriteriaCollection->count());
@@ -42,7 +42,7 @@ class LazyCriteriaCollectionTest extends TestCase
 
     public function testCountIsCachedEvenWithZeroResult(): void
     {
-        $this->persister->expects(self::once())->method('count')->with($this->criteria)->will(self::returnValue(0));
+        $this->persister->expects(self::once())->method('count')->with($this->criteria)->willReturn(0);
 
         self::assertSame(0, $this->lazyCriteriaCollection->count());
         self::assertSame(0, $this->lazyCriteriaCollection->count());
@@ -56,7 +56,7 @@ class LazyCriteriaCollectionTest extends TestCase
             ->expects(self::once())
             ->method('loadCriteria')
             ->with($this->criteria)
-            ->will(self::returnValue(['foo', 'bar', 'baz']));
+            ->willReturn(['foo', 'bar', 'baz']);
 
         // should never call the persister's count
         $this->persister->expects(self::never())->method('count');
@@ -81,7 +81,7 @@ class LazyCriteriaCollectionTest extends TestCase
             ->expects(self::once())
             ->method('loadCriteria')
             ->with($this->criteria)
-            ->will(self::returnValue([$foo, $bar, $baz]));
+            ->willReturn([$foo, $bar, $baz]);
 
         $criteria = new Criteria();
 
@@ -97,14 +97,14 @@ class LazyCriteriaCollectionTest extends TestCase
 
     public function testIsEmptyUsesCountWhenNotInitialized(): void
     {
-        $this->persister->expects(self::once())->method('count')->with($this->criteria)->will(self::returnValue(0));
+        $this->persister->expects(self::once())->method('count')->with($this->criteria)->willReturn(0);
 
         self::assertTrue($this->lazyCriteriaCollection->isEmpty());
     }
 
     public function testIsEmptyIsFalseIfCountIsNotZero(): void
     {
-        $this->persister->expects(self::once())->method('count')->with($this->criteria)->will(self::returnValue(1));
+        $this->persister->expects(self::once())->method('count')->with($this->criteria)->willReturn(1);
 
         self::assertFalse($this->lazyCriteriaCollection->isEmpty());
     }
@@ -116,7 +116,7 @@ class LazyCriteriaCollectionTest extends TestCase
             ->expects(self::once())
             ->method('loadCriteria')
             ->with($this->criteria)
-            ->will(self::returnValue(['foo', 'bar', 'baz']));
+            ->willReturn(['foo', 'bar', 'baz']);
 
         // should never call the persister's count
         $this->persister->expects(self::never())->method('count');
