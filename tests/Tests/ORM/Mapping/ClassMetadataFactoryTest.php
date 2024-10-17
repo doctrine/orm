@@ -530,12 +530,12 @@ class ClassMetadataFactoryTest extends OrmTestCase
         $em     = $this->createEntityManager($driver);
         $cmf->setEntityManager($em);
 
-        $userMetadata = $cmf->getMetadataFor(Cat::class);
+        $catMetadata = $cmf->getMetadataFor(Cat::class);
 
-        self::assertCount(3, $userMetadata->table['indexes']);
-        self::assertSame('lives', $userMetadata->table['indexes'][0]['columns'][0]);
-        self::assertSame(['name', 'label', 'lives'], $userMetadata->table['indexes']['composite_idx']['columns']);
-        self::assertSame('name', $userMetadata->table['indexes'][1]['columns'][0]);
+        self::assertCount(3, $catMetadata->table['indexes']);
+        self::assertSame('lives', $catMetadata->table['indexes'][0]['columns'][0]);
+        self::assertSame(['name', 'label', 'lives'], $catMetadata->table['indexes']['composite_idx']['columns']);
+        self::assertSame('name', $catMetadata->table['indexes'][1]['columns'][0]);
     }
 
     public function testInvalidSubClassCase(): void
