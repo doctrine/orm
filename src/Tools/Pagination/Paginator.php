@@ -10,6 +10,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Internal\SQLResultCasing;
 use Doctrine\ORM\NoResultException;
 use Doctrine\ORM\Query;
+use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\ORM\Query\Parameter;
 use Doctrine\ORM\Query\Parser;
 use Doctrine\ORM\Query\ResultSetMapping;
@@ -21,6 +22,7 @@ use function array_key_exists;
 use function array_map;
 use function array_sum;
 use function assert;
+use function count;
 use function is_string;
 
 /**
@@ -38,6 +40,16 @@ class Paginator implements Countable, IteratorAggregate
     private readonly Query $query;
     private bool|null $useOutputWalkers = null;
     private int|null $count             = null;
+    /**
+     * @var bool The auto-detection of queries style was added a lot later to this class, and this
+     *  class historically was by default using the more complex queries style, which means that
+     *  the simple queries style is potentially very under-tested in production systems. The purpose
+     *  of this variable is to not introduce breaking changes until an impression is developed that
+     *  the simple queries style has been battle-tested enough.
+     */
+    private bool $queryStyleAutoDetectionEnabled = false;
+    /** @var bool|null Null means "undetermined". */
+    private bool|null $queryHasHavingClause = null;
 
     /** @param bool $fetchJoinCollection Whether the query joins a collection (true by default). */
     public function __construct(
@@ -49,6 +61,29 @@ class Paginator implements Countable, IteratorAggregate
         }
 
         $this->query = $query;
+    }
+
+    /**
+     * Create an instance of Paginator with auto-detection of whether the provided
+     * query is suitable for simple (and fast) pagination queries, or whether a complex
+     * set of pagination queries has to be used.
+     */
+    public static function newWithAutoDetection(QueryBuilder $queryBuilder): self
+    {
+        /** @var array<string, Join[]> $joinsPerRootAlias */
+        $joinsPerRootAlias = $queryBuilder->getDQLPart('join');
+
+        // For now, only check whether there are any sql joins present in the query. Note,
+        // however, that it is doable to detect a presence of only *ToOne joins via the access to
+        // joined entity classes' metadata (see: QueryBuilder::getEntityManager()->getClassMetadata(className)).
+        $sqlJoinsPresent = count($joinsPerRootAlias) > 0;
+
+        $paginator = new self($queryBuilder, $sqlJoinsPresent);
+
+        $paginator->queryStyleAutoDetectionEnabled = true;
+        $paginator->queryHasHavingClause           = $queryBuilder->getDQLPart('having') !== null;
+
+        return $paginator;
     }
 
     /**
@@ -171,13 +206,25 @@ class Paginator implements Countable, IteratorAggregate
     /**
      * Determines whether to use an output walker for the query.
      */
-    private function useOutputWalker(Query $query): bool
+    private function useOutputWalker(Query $query, bool $forCountQuery = false): bool
     {
-        if ($this->useOutputWalkers === null) {
-            return (bool) $query->getHint(Query::HINT_CUSTOM_OUTPUT_WALKER) === false;
+        if ($this->useOutputWalkers !== null) {
+            return $this->useOutputWalkers;
         }
 
-        return $this->useOutputWalkers;
+        // When a custom output walker already present, then do not use the Paginator's.
+        if ($query->getHint(Query::HINT_CUSTOM_OUTPUT_WALKER) !== false) {
+            return false;
+        }
+
+        // When not joining onto *ToMany relations, then do not use the more complex CountOutputWalker.
+        return ! (
+            $forCountQuery
+            && $this->queryStyleAutoDetectionEnabled
+            && ! $this->fetchJoinCollection
+            // CountWalker doesn't support the "having" clause, while CountOutputWalker does.
+            && $this->queryHasHavingClause === false
+        );
     }
 
     /**
@@ -205,10 +252,20 @@ class Paginator implements Countable, IteratorAggregate
         $countQuery = $this->cloneQuery($this->query);
 
         if (! $countQuery->hasHint(CountWalker::HINT_DISTINCT)) {
-            $countQuery->setHint(CountWalker::HINT_DISTINCT, true);
+            $hintDistinctDefaultTrue = true;
+
+            // When not joining onto *ToMany relations, then use a simpler COUNT query in the CountWalker.
+            if (
+                $this->queryStyleAutoDetectionEnabled
+                && ! $this->fetchJoinCollection
+            ) {
+                $hintDistinctDefaultTrue = false;
+            }
+
+            $countQuery->setHint(CountWalker::HINT_DISTINCT, $hintDistinctDefaultTrue);
         }
 
-        if ($this->useOutputWalker($countQuery)) {
+        if ($this->useOutputWalker($countQuery, forCountQuery: true)) {
             $platform = $countQuery->getEntityManager()->getConnection()->getDatabasePlatform(); // law of demeter win
 
             $rsm = new ResultSetMapping();
