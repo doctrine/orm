@@ -163,8 +163,43 @@ EOPHP;
      * @param class-string $className
      * @param array<mixed> $identifier
      */
-    public function getProxy(string $className, array $identifier): InternalProxy
+    public function getProxy(string $className, array $identifier): object
     {
+        if ($this->em->getConfiguration()->isLazyProxyEnabled()) {
+            $classMetadata   = $this->em->getClassMetadata($className);
+            $entityPersister = $this->uow->getEntityPersister($className);
+
+            $proxy = $classMetadata->reflClass->newLazyGhost(static function ($object) use ($identifier, $entityPersister): void {
+                $entityPersister->loadById($identifier, $object);
+            });
+
+            foreach ($identifier as $idField => $value) {
+                $classMetadata->reflFields[$idField]->setRawValueWithoutLazyInitialization($proxy, $value);
+            }
+
+            // todo: this skipLazyInitialization for properites calculation must be moved into ClassMetadata partially
+            $identifiers = array_flip($classMetadata->getIdentifierFieldNames());
+            $filter      = ReflectionProperty::IS_PUBLIC | ReflectionProperty::IS_PROTECTED | ReflectionProperty::IS_PRIVATE;
+            $reflector   = $classMetadata->getReflectionClass();
+
+            while ($reflector) {
+                foreach ($reflector->getProperties($filter) as $property) {
+                    $name = $property->name;
+
+                    if ($property->isStatic() || (($classMetadata->hasField($name) || $classMetadata->hasAssociation($name)) && ! isset($identifiers[$name]))) {
+                        continue;
+                    }
+
+                    $property->skipLazyInitialization($proxy);
+                }
+
+                $filter    = ReflectionProperty::IS_PRIVATE;
+                $reflector = $reflector->getParentClass();
+            }
+
+            return $proxy;
+        }
+
         $proxyFactory = $this->proxyFactories[$className] ?? $this->getProxyFactory($className);
 
         return $proxyFactory($identifier);
@@ -182,6 +217,10 @@ EOPHP;
      */
     public function generateProxyClasses(array $classes, string|null $proxyDir = null): int
     {
+        if ($this->em->getConfiguration()->isLazyProxyEnabled()) {
+            return 0;
+        }
+
         $generated = 0;
 
         foreach ($classes as $class) {
