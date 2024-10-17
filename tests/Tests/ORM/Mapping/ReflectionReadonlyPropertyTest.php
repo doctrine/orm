@@ -43,6 +43,9 @@ class ReflectionReadonlyPropertyTest extends TestCase
         self::assertSame($value, $reflection->getValue($entity));
     }
 
+    /**
+     * @return Generator<string, array<string, string|object>>
+     */
     public function sameValueProvider(): Generator
     {
         yield 'string' => [
