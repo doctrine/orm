@@ -7,6 +7,9 @@ namespace Doctrine\Tests\ORM\Mapping;
 use Doctrine\ORM\Mapping\ReflectionReadonlyProperty;
 use Doctrine\Tests\Models\CMS\CmsTag;
 use Doctrine\Tests\Models\ReadonlyProperties\Author;
+use Doctrine\Tests\Models\ReadonlyProperties\Library;
+use Doctrine\Tests\Models\ValueObjects\Uuid;
+use Generator;
 use InvalidArgumentException;
 use LogicException;
 use PHPUnit\Framework\TestCase;
@@ -17,36 +20,89 @@ use ReflectionProperty;
  */
 class ReflectionReadonlyPropertyTest extends TestCase
 {
-    public function testSecondWriteWithSameValue(): void
+    /**
+     * @dataProvider sameValueProvider
+     */
+    public function testSecondWriteWithSameValue(object $entity, string $property, mixed $value, mixed $sameValue): void
     {
-        $author = new Author();
-
-        $wrappedReflection = new ReflectionProperty($author, 'name');
+        $wrappedReflection = new ReflectionProperty($entity, $property);
         $reflection        = new ReflectionReadonlyProperty($wrappedReflection);
 
-        $reflection->setValue($author, 'John Doe');
+        $reflection->setValue($entity, $value);
 
-        self::assertSame('John Doe', $wrappedReflection->getValue($author));
-        self::assertSame('John Doe', $reflection->getValue($author));
+        self::assertSame($value, $wrappedReflection->getValue($entity));
+        self::assertSame($value, $reflection->getValue($entity));
 
-        $reflection->setValue($author, 'John Doe');
+        $reflection->setValue($entity, $sameValue);
 
-        self::assertSame('John Doe', $wrappedReflection->getValue($author));
-        self::assertSame('John Doe', $reflection->getValue($author));
+        /*
+         * Intentionally testing against the initial $value rather than the $sameValue that we just set above one in
+         * order to catch false positives when dealing with object types
+         */
+        self::assertSame($value, $wrappedReflection->getValue($entity));
+        self::assertSame($value, $reflection->getValue($entity));
     }
 
-    public function testSecondWriteWithDifferentValue(): void
+    /**
+     * @return Generator<string, array{entity: object, property: string, value: string|object, sameValue: string|object}>
+     */
+    public static function sameValueProvider(): Generator
     {
-        $author = new Author();
+        yield 'string' => [
+            'entity' => new Author(),
+            'property' => 'name',
+            'value' => 'John Doe',
+            'sameValue' => 'John Doe',
+        ];
 
-        $wrappedReflection = new ReflectionProperty($author, 'name');
+        yield 'uuid' => [
+            'entity' => new Library(),
+            'property' => 'uuid',
+            'value' => new Uuid('438d5dc3-36c9-410a-88db-7a184856ebb8'),
+            'sameValue' => new Uuid('438d5dc3-36c9-410a-88db-7a184856ebb8'),
+        ];
+    }
+
+    /**
+     * @dataProvider differentValueProvider
+     */
+    public function testSecondWriteWithDifferentValue(
+        object $entity,
+        string $property,
+        mixed $value,
+        mixed $differentValue,
+        string $expectedExceptionMessage
+    ): void {
+        $wrappedReflection = new ReflectionProperty($entity, $property);
         $reflection        = new ReflectionReadonlyProperty($wrappedReflection);
 
-        $reflection->setValue($author, 'John Doe');
+        $reflection->setValue($entity, $value);
 
         $this->expectException(LogicException::class);
-        $this->expectExceptionMessage('Attempting to change readonly property Doctrine\Tests\Models\ReadonlyProperties\Author::$name.');
-        $reflection->setValue($author, 'Jane Doe');
+        $this->expectExceptionMessage($expectedExceptionMessage);
+        $reflection->setValue($entity, $differentValue);
+    }
+
+    /**
+     * @return Generator<string, array{entity: object, property: string, value: string|object, sameValue: string|object, expectedExceptionMessage: string}>
+     */
+    public static function differentValueProvider(): Generator
+    {
+        yield 'string' => [
+            'entity' => new Author(),
+            'property' => 'name',
+            'value' => 'John Doe',
+            'differentValue' => 'Jane Doe',
+            'expectedExceptionMessage' => 'Attempting to change readonly property Doctrine\Tests\Models\ReadonlyProperties\Author::$name.',
+        ];
+
+        yield 'uuid' => [
+            'entity' => new Library(),
+            'property' => 'uuid',
+            'value' => new Uuid('438d5dc3-36c9-410a-88db-7a184856ebb8'),
+            'differentValue' => new Uuid('5d5049ee-01fd-4b66-9f82-9f637fff6a7d'),
+            'expectedExceptionMessage' => 'Attempting to change readonly property Doctrine\Tests\Models\ReadonlyProperties\Library::$uuid.',
+        ];
     }
 
     public function testNonReadonlyPropertiesAreForbidden(): void
