@@ -44,9 +44,9 @@ class ReflectionReadonlyPropertyTest extends TestCase
     }
 
     /**
-     * @return Generator<string, array<string, string|object>>
+     * @return Generator<string, array{entity: object, property: string, value: string|object, sameValue: string|object}>
      */
-    public function sameValueProvider(): Generator
+    public static function sameValueProvider(): Generator
     {
         yield 'string' => [
             'entity' => new Author(),
@@ -83,7 +83,10 @@ class ReflectionReadonlyPropertyTest extends TestCase
         $reflection->setValue($entity, $differentValue);
     }
 
-    public function differentValueProvider(): Generator
+    /**
+     * @return Generator<string, array{entity: object, property: string, value: string|object, sameValue: string|object, expectedExceptionMessage: string}>
+     */
+    public static function differentValueProvider(): Generator
     {
         yield 'string' => [
             'entity' => new Author(),
