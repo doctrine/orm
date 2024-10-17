@@ -66,6 +66,7 @@ use function implode;
 use function in_array;
 use function is_array;
 use function is_object;
+use function is_scalar;
 use function reset;
 use function spl_object_id;
 use function sprintf;
@@ -1568,7 +1569,23 @@ class UnitOfWork implements PropertyChangedListener
 
         return implode(
             ' ',
-            $identifier,
+            array_map(
+                static function ($value) {
+                    if ($value instanceof BackedEnum) {
+                        return $value->value;
+                    }
+
+                    if (! is_scalar($value) && ! ($value instanceof Stringable)) {
+                        throw new UnexpectedValueException(sprintf(
+                            'Unexpected identifier value: Expecting scalar or Stringable, got %s.',
+                            get_debug_type($value),
+                        ));
+                    }
+
+                    return $value;
+                },
+                $identifier,
+            ),
         );
     }
 
