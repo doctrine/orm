@@ -686,6 +686,7 @@ Optional parameters:
    make foreign keys work.
 -  **options**:
    See "options" attribute on :ref:`#[Column] <attrref_column>`.
+   It's possible to add other options, for example (PostgreSQL) `['deferrable' => true, 'deferred' => true]`.
 
 Example:
 

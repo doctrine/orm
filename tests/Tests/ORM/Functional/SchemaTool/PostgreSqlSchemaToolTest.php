@@ -11,11 +11,13 @@ use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\ManyToOne;
+use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\ORM\Mapping\Table;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use PHPUnit\Framework\Attributes\Group;
 
 use function array_filter;
+use function array_slice;
 use function implode;
 use function str_starts_with;
 
@@ -42,6 +44,60 @@ class PostgreSqlSchemaToolTest extends OrmFunctionalTestCase
 
         self::assertCount(0, $sql, implode("\n", $sql));
     }
+
+    public function testUpdateSchemaWithJoinColumnWithOptions(): void
+    {
+        $sql = $this->getUpdateSchemaSqlForModels(
+            TestEntityWithJoinColumnWithOptions::class,
+            TestEntityWithJoinColumnWithOptionsRelation::class,
+        );
+
+        $this->assertSame([
+            'CREATE TABLE test (id INT NOT NULL, testRelation1_id INT DEFAULT NULL, testRelation2_id INT DEFAULT NULL, PRIMARY KEY(id))',
+            'CREATE UNIQUE INDEX UNIQ_D87F7E0C331521C6 ON test (testRelation1_id)',
+            'CREATE UNIQUE INDEX UNIQ_D87F7E0C21A08E28 ON test (testRelation2_id)',
+            'CREATE TABLE test_relation (id INT NOT NULL, PRIMARY KEY(id))',
+            'ALTER TABLE test ADD CONSTRAINT FK_D87F7E0C331521C6 FOREIGN KEY (testRelation1_id) REFERENCES test_relation (id) DEFERRABLE INITIALLY DEFERRED',
+            'ALTER TABLE test ADD CONSTRAINT FK_D87F7E0C21A08E28 FOREIGN KEY (testRelation2_id) REFERENCES test_relation (id) NOT DEFERRABLE INITIALLY IMMEDIATE',
+        ], array_slice($sql, 0, 5));
+
+        foreach ($sql as $query) {
+            $this->_em->getConnection()->executeQuery($query);
+        }
+
+        $sql = $this->getUpdateSchemaSqlForModels(
+            TestEntityWithJoinColumnWithOptions::class,
+            TestEntityWithJoinColumnWithOptionsRelation::class,
+        );
+
+        $this->assertSame([], $sql);
+    }
+}
+
+#[Table('test')]
+#[Entity]
+class TestEntityWithJoinColumnWithOptions
+{
+    #[Id]
+    #[Column]
+    private int $id;
+
+    #[OneToOne(targetEntity: TestEntityWithJoinColumnWithOptionsRelation::class)]
+    #[JoinColumn(options: ['deferrable' => true, 'deferred' => true])]
+    private TestEntityWithJoinColumnWithOptionsRelation $testRelation1;
+
+    #[OneToOne(targetEntity: TestEntityWithJoinColumnWithOptionsRelation::class)]
+    #[JoinColumn]
+    private TestEntityWithJoinColumnWithOptionsRelation $testRelation2;
+}
+
+#[Table('test_relation')]
+#[Entity]
+class TestEntityWithJoinColumnWithOptionsRelation
+{
+    #[Id]
+    #[Column]
+    private int $id;
 }
 
 #[Table(name: 'stonewood.screen')]
