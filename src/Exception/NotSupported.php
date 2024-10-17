@@ -8,14 +8,15 @@ use LogicException;
 
 use function sprintf;
 
-/** @deprecated */
 final class NotSupported extends LogicException implements ORMException
 {
+    /** @deprecated */
     public static function create(): self
     {
         return new self('This behaviour is (currently) not supported by Doctrine 2');
     }
 
+    /** @deprecated */
     public static function createForDbal3(string $context): self
     {
         return new self(sprintf(
@@ -29,6 +30,7 @@ EXCEPTION
         ));
     }
 
+    /** @deprecated */
     public static function createForPersistence3(string $context): self
     {
         return new self(sprintf(
@@ -38,6 +40,18 @@ Problem: Feature was deprecated in doctrine/persistence 2.x and is not supported
 Solution: See the doctrine/deprecations logs for new alternative approaches.
 EXCEPTION
             ,
+            $context,
+        ));
+    }
+
+    public static function createForPersistence4(string $context): self
+    {
+        return new self(sprintf(
+            <<<'EXCEPTION'
+            Context: %s
+            Problem: Feature was deprecated in doctrine/persistence 3.x and is not supported by installed doctrine/persistence:4.x
+            Solution: See the doctrine/deprecations logs for new alternative approaches.
+            EXCEPTION,
             $context,
         ));
     }

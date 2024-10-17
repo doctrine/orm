@@ -12,10 +12,12 @@ use Doctrine\DBAL\Types\Type;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\Inflector\Inflector;
 use Doctrine\Inflector\InflectorFactory;
+use Doctrine\ORM\Exception\NotSupported;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\Persistence\Mapping\ClassMetadata as PersistenceClassMetadata;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
+use Doctrine\Persistence\Mapping\StaticReflectionService;
 use InvalidArgumentException;
 use TypeError;
 
@@ -23,6 +25,7 @@ use function array_diff;
 use function array_keys;
 use function array_merge;
 use function assert;
+use function class_exists;
 use function count;
 use function current;
 use function get_debug_type;
@@ -79,6 +82,10 @@ class DatabaseDriver implements MappingDriver
 
     public function __construct(private readonly AbstractSchemaManager $sm)
     {
+        if (! class_exists(StaticReflectionService::class)) {
+            throw NotSupported::createForPersistence4('StaticReflectionService');
+        }
+
         $this->inflector = InflectorFactory::create()->build();
     }
 

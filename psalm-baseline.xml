@@ -298,15 +298,9 @@
       <code><![CDATA[$mapping]]></code>
       <code><![CDATA[$overrideMapping]]></code>
     </InvalidArgument>
-    <InvalidNullableReturnType>
-      <code><![CDATA[ReflectionClass|null]]></code>
-    </InvalidNullableReturnType>
     <InvalidPropertyAssignmentValue>
       <code><![CDATA[$definition]]></code>
     </InvalidPropertyAssignmentValue>
-    <NullableReturnStatement>
-      <code><![CDATA[$this->reflClass]]></code>
-    </NullableReturnStatement>
     <ParamNameMismatch>
       <code><![CDATA[$entity]]></code>
     </ParamNameMismatch>
@@ -340,6 +334,7 @@
     <RedundantCondition>
       <code><![CDATA[$mapping !== false]]></code>
       <code><![CDATA[$mapping !== false]]></code>
+      <code><![CDATA[$this->reflClass]]></code>
     </RedundantCondition>
     <RedundantFunctionCall>
       <code><![CDATA[array_values]]></code>
@@ -474,6 +469,14 @@
       <code><![CDATA[getIndexes]]></code>
     </PossiblyNullReference>
   </file>
+  <file src="src/Mapping/Driver/LoadMappingFileImplementation.php">
+    <LessSpecificImplementedReturnType>
+      <code><![CDATA[array]]></code>
+    </LessSpecificImplementedReturnType>
+    <MissingParamType>
+      <code><![CDATA[$file]]></code>
+    </MissingParamType>
+  </file>
   <file src="src/Mapping/Driver/SimplifiedXmlDriver.php">
     <MissingParamType>
       <code><![CDATA[$fileExtension]]></code>
@@ -525,6 +528,14 @@
     <MoreSpecificImplementedParamType>
       <code><![CDATA[$metadata]]></code>
     </MoreSpecificImplementedParamType>
+  </file>
+  <file src="src/Mapping/GetReflectionClassImplementation.php">
+    <ImplementedReturnTypeMismatch>
+      <code><![CDATA[ReflectionClass]]></code>
+    </ImplementedReturnTypeMismatch>
+    <InvalidNullableReturnType>
+      <code><![CDATA[ReflectionClass]]></code>
+    </InvalidNullableReturnType>
   </file>
   <file src="src/Mapping/ManyToManyInverseSideMapping.php">
     <PropertyNotSetInConstructor>

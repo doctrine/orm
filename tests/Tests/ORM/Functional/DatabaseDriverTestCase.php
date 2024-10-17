@@ -6,10 +6,12 @@ namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\Driver\DatabaseDriver;
+use Doctrine\Persistence\Mapping\StaticReflectionService;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 use function array_keys;
 use function array_map;
+use function class_exists;
 use function count;
 use function implode;
 use function in_array;
@@ -20,6 +22,13 @@ use function strtolower;
  */
 abstract class DatabaseDriverTestCase extends OrmFunctionalTestCase
 {
+    protected function setUp(): void
+    {
+        if (! class_exists(StaticReflectionService::class)) {
+            self::markTestSkipped('This test is not supported by the current installed doctrine/persistence version');
+        }
+    }
+
     /** @psalm-return array<string, ClassMetadata> */
     protected function convertToClassMetadata(array $entityTables, array $manyTables = []): array
     {
