@@ -469,6 +469,13 @@ class QueryTest extends OrmFunctionalTestCase
              ->getSingleScalarResult();
     }
 
+    public function testGetSingleScalarResultOrNullNotThrowsExceptionOnNoResult(): void
+    {
+        $this->expectNotToPerformAssertions();
+        $this->_em->createQuery('select a.id from Doctrine\Tests\Models\CMS\CmsArticle a')
+            ->getSingleScalarResultOrNull();
+    }
+
     public function testGetSingleScalarResultThrowsExceptionOnSingleRowWithMultipleColumns(): void
     {
         $user           = new CmsUser();
@@ -490,6 +497,29 @@ class QueryTest extends OrmFunctionalTestCase
         $this->_em->createQuery('select u from Doctrine\Tests\Models\CMS\CmsUser u')
             ->setMaxResults(1)
             ->getSingleScalarResult();
+    }
+
+    public function testGetSingleScalarResultOrNullThrowsExceptionOnSingleRowWithMultipleColumns(): void
+    {
+        $user           = new CmsUser();
+        $user->name     = 'Javier';
+        $user->username = 'phansys';
+        $user->status   = 'developer';
+
+        $this->_em->persist($user);
+
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $this->expectException(NonUniqueResultException::class);
+        $this->expectExceptionMessage(
+            'The query returned a row containing multiple columns. Change the query or use a different result function'
+            . ' like getScalarResult().',
+        );
+
+        $this->_em->createQuery('select u from Doctrine\Tests\Models\CMS\CmsUser u')
+            ->setMaxResults(1)
+            ->getSingleScalarResultOrNull();
     }
 
     public function testGetSingleScalarResultThrowsExceptionOnNonUniqueResult(): void
@@ -523,6 +553,39 @@ class QueryTest extends OrmFunctionalTestCase
 
         $this->_em->createQuery('select a.id from Doctrine\Tests\Models\CMS\CmsArticle a')
              ->getSingleScalarResult();
+    }
+
+    public function testGetSingleScalarResultOrNullThrowsExceptionOnNonUniqueResult(): void
+    {
+        $user           = new CmsUser();
+        $user->name     = 'Guilherme';
+        $user->username = 'gblanco';
+        $user->status   = 'developer';
+
+        $article1        = new CmsArticle();
+        $article1->topic = 'Doctrine 2';
+        $article1->text  = 'This is an introduction to Doctrine 2.';
+        $user->addArticle($article1);
+
+        $article2        = new CmsArticle();
+        $article2->topic = 'Symfony 2';
+        $article2->text  = 'This is an introduction to Symfony 2.';
+        $user->addArticle($article2);
+
+        $this->_em->persist($user);
+        $this->_em->persist($article1);
+        $this->_em->persist($article2);
+
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $this->expectException(NonUniqueResultException::class);
+        $this->expectExceptionMessage(
+            'The query returned multiple rows. Change the query or use a different result function like getScalarResult().',
+        );
+
+        $this->_em->createQuery('select a.id from Doctrine\Tests\Models\CMS\CmsArticle a')
+            ->getSingleScalarResultOrNull();
     }
 
     public function testModifiedLimitQuery(): void
