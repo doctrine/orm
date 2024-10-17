@@ -440,8 +440,8 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
             $subClass->addInheritedFieldMapping($subClassMapping);
         }
 
-        foreach ($parentClass->reflFields as $name => $field) {
-            $subClass->reflFields[$name] = $field;
+        foreach ($parentClass->propertyAccessors as $name => $field) {
+            $subClass->propertyAccessors[$name] = $field;
         }
     }
 

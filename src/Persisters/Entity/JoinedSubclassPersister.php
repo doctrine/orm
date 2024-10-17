@@ -459,7 +459,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
             ? $this->class->getIdentifierColumnNames()
             : [];
 
-        foreach ($this->class->reflFields as $name => $field) {
+        foreach ($this->class->propertyAccessors as $name => $field) {
             if (
                 isset($this->class->fieldMappings[$name]->inherited)
                     && ! isset($this->class->fieldMappings[$name]->id)
