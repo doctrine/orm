@@ -10,8 +10,12 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Internal\SQLResultCasing;
 use Doctrine\ORM\NoResultException;
 use Doctrine\ORM\Query;
+use Doctrine\ORM\Query\AST\SelectExpression;
+use Doctrine\ORM\Query\AST\SelectStatement;
+use Doctrine\ORM\Query\AST\Subselect;
 use Doctrine\ORM\Query\Parameter;
 use Doctrine\ORM\Query\Parser;
+use Doctrine\ORM\Query\QueryException;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\ORM\QueryBuilder;
 use IteratorAggregate;
@@ -131,7 +135,9 @@ class Paginator implements Countable, IteratorAggregate
                 return new ArrayIterator([]);
             }
 
-            $whereInQuery = $this->cloneQuery($this->query);
+            // all where conditions are reset for queries without sub-select
+            $hasSubselect = $this->queryHasSubselect($this->query);
+            $whereInQuery = $this->cloneQuery($this->query, $hasSubselect);
             $ids          = array_map('current', $foundIdRows);
 
             $this->appendTreeWalker($whereInQuery, WhereInWalker::class);
@@ -154,11 +160,14 @@ class Paginator implements Countable, IteratorAggregate
         return new ArrayIterator($result);
     }
 
-    private function cloneQuery(Query $query): Query
+    private function cloneQuery(Query $query, bool $withParams = true): Query
     {
         $cloneQuery = clone $query;
 
-        $cloneQuery->setParameters(clone $query->getParameters());
+        if ($withParams) {
+            $cloneQuery->setParameters(clone $query->getParameters());
+        }
+
         $cloneQuery->setCacheable(false);
 
         foreach ($query->getHints() as $name => $value) {
@@ -259,5 +268,30 @@ class Paginator implements Countable, IteratorAggregate
         assert(is_string($type));
 
         return array_map(static fn ($id): mixed => $connection->convertToDatabaseValue($id, $type), $identifiers);
+    }
+
+    private function queryHasSubselect(Query $query): bool
+    {
+        try {
+            $AST = $this->query->getAST();
+        } catch (QueryException) {
+            return false;
+        }
+
+        if (! $AST instanceof SelectStatement) {
+            return false;
+        }
+
+        foreach ($AST->selectClause->selectExpressions as $selectExpression) {
+            if (! $selectExpression instanceof SelectExpression) {
+                continue;
+            }
+
+            if ($selectExpression->expression instanceof Subselect) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

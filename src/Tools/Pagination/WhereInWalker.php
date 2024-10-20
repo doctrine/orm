@@ -12,13 +12,17 @@ use Doctrine\ORM\Query\AST\InListExpression;
 use Doctrine\ORM\Query\AST\InputParameter;
 use Doctrine\ORM\Query\AST\NullComparisonExpression;
 use Doctrine\ORM\Query\AST\PathExpression;
+use Doctrine\ORM\Query\AST\SelectExpression;
 use Doctrine\ORM\Query\AST\SelectStatement;
 use Doctrine\ORM\Query\AST\SimpleArithmeticExpression;
+use Doctrine\ORM\Query\AST\Subselect;
 use Doctrine\ORM\Query\AST\WhereClause;
 use Doctrine\ORM\Query\TreeWalkerAdapter;
 use RuntimeException;
 
 use function count;
+use function in_array;
+use function is_string;
 use function reset;
 
 /**
@@ -81,7 +85,7 @@ class WhereInWalker extends TreeWalkerAdapter
 
         $conditionalPrimary                              = new ConditionalPrimary();
         $conditionalPrimary->simpleConditionalExpression = $expression;
-        if ($selectStatement->whereClause) {
+        if ($this->hasSubselect($selectStatement) && $selectStatement->whereClause) {
             if ($selectStatement->whereClause->conditionalExpression instanceof ConditionalTerm) {
                 $selectStatement->whereClause->conditionalExpression->conditionalFactors[] = $conditionalPrimary;
             } elseif ($selectStatement->whereClause->conditionalExpression instanceof ConditionalPrimary) {
@@ -112,5 +116,76 @@ class WhereInWalker extends TreeWalkerAdapter
                 ),
             );
         }
+
+        if ($this->clausesAreUsingOnlyFromIdnetifications($selectStatement)) {
+            foreach ($selectStatement->fromClause->identificationVariableDeclarations as $f) {
+                $f->joins = [];
+            }
+        }
+    }
+
+    private function clausesAreUsingOnlyFromIdnetifications(SelectStatement $selectStatement): bool
+    {
+        $fromAliases = [];
+        foreach ($selectStatement->fromClause->identificationVariableDeclarations as $f) {
+            $fromAliases[] = $f->rangeVariableDeclaration->aliasIdentificationVariable;
+        }
+
+        foreach ($selectStatement->selectClause->selectExpressions as $selectExpression) {
+            if (! $this->isExpressionExistsInFromClause($selectExpression->expression, $fromAliases)) {
+                return false;
+            }
+        }
+
+        if ($selectStatement->groupByClause !== null) {
+            foreach ($selectStatement->groupByClause->groupByItems as $groupByItem) {
+                if (! $this->isExpressionExistsInFromClause($groupByItem->expression, $fromAliases)) {
+                    return false;
+                }
+            }
+        }
+
+        if ($selectStatement->havingClause !== null) {
+            return false;
+        }
+
+        if ($selectStatement->orderByClause !== null) {
+            foreach ($selectStatement->orderByClause->orderByItems as $orderByItem) {
+                if (! $this->isExpressionExistsInFromClause($orderByItem->expression, $fromAliases)) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
+
+    /** @param string[] $fromAliases */
+    private function isExpressionExistsInFromClause(mixed $expression, array $fromAliases): bool
+    {
+        $expressionIdentification = null;
+
+        if ($expression instanceof PathExpression) {
+            $expressionIdentification = $expression->identificationVariable;
+        } elseif (is_string($expression)) {
+            $expressionIdentification = $expression;
+        }
+
+        if ($expressionIdentification === null) {
+            return false;
+        }
+
+        return in_array($expression, $fromAliases, true);
+    }
+
+    private function hasSubselect(SelectStatement $selectStatement): bool
+    {
+        foreach ($selectStatement->selectClause->selectExpressions as $selectExpression) {
+            if ($selectExpression instanceof SelectExpression && $selectExpression->expression instanceof Subselect) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }
