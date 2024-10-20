@@ -65,23 +65,6 @@ switch to extra lazy as shown in these examples:
             public Collection $users;
         }
 
-    .. code-block:: annotation
-
-        <?php
-        namespace Doctrine\Tests\Models\CMS;
-
-        /**
-         * @Entity
-         */
-        class CmsGroup
-        {
-            /**
-             * @ManyToMany(targetEntity="CmsUser", mappedBy="groups", fetch="EXTRA_LAZY")
-             * @var Collection<int, CmsUser>
-             */
-            public Collection $users;
-        }
-
     .. code-block:: xml
 
         <?xml version="1.0" encoding="UTF-8"?>
@@ -95,14 +78,3 @@ switch to extra lazy as shown in these examples:
                 <many-to-many field="users" target-entity="CmsUser" mapped-by="groups" fetch="EXTRA_LAZY" />
             </entity>
         </doctrine-mapping>
-
-    .. code-block:: yaml
-
-        Doctrine\Tests\Models\CMS\CmsGroup:
-          type: entity
-          # ...
-          manyToMany:
-            users:
-              targetEntity: CmsUser
-              mappedBy: groups
-              fetch: EXTRA_LAZY

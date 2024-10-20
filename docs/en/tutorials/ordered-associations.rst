@@ -27,22 +27,6 @@ can specify the ``#[OrderBy]`` in the following way:
             private Collection $groups;
         }
 
-    .. code-block:: annotation
-
-        <?php
-        /** @Entity **/
-        class User
-        {
-            // ...
-
-            /**
-             * @ManyToMany(targetEntity="Group")
-             * @OrderBy({"name" = "ASC"})
-             * @var Collection<int, Group>
-             */
-            private Collection $groups;
-        }
-
     .. code-block:: xml
 
         <doctrine-mapping>
@@ -54,23 +38,6 @@ can specify the ``#[OrderBy]`` in the following way:
                 </many-to-many>
             </entity>
         </doctrine-mapping>
-
-    .. code-block:: yaml
-
-        User:
-          type: entity
-          manyToMany:
-            groups:
-              orderBy: { 'name': 'ASC' }
-              targetEntity: Group
-              joinTable:
-                name: users_groups
-                joinColumns:
-                  user_id:
-                    referencedColumnName: id
-                inverseJoinColumns:
-                  group_id:
-                    referencedColumnName: id
 
 The DQL Snippet in OrderBy is only allowed to consist of
 unqualified, unquoted field names and of an optional ASC/DESC

@@ -47,21 +47,6 @@ Then, an entity using the ``CustomIdObject`` typed field will be correctly assig
             // ...
         }
 
-    .. code-block:: annotation
-
-        <?php
-        /**
-         * @Entity
-         * @Table(name="cms_users_typed_with_custom_typed_field")
-         */
-        class UserTypedWithCustomTypedField
-        {
-            /** @Column */
-            public CustomIdObject $customId;
-
-            // ...
-        }
-
     .. code-block:: xml
 
         <doctrine-mapping>

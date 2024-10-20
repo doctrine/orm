@@ -1,3 +1,0 @@
-[submodule "en/_theme"]
-	path = en/_theme
-	url = https://github.com/doctrine/doctrine-sphinx-theme.git

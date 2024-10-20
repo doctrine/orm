@@ -140,11 +140,6 @@ Now we're going to create the ``point`` type and implement all required methods.
             return $value;
         }
 
-        public function canRequireSQLConversion()
-        {
-            return true;
-        }
-
         public function convertToPHPValueSQL($sqlExpr, AbstractPlatform $platform)
         {
             return sprintf('AsText(%s)', $sqlExpr);

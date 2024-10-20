@@ -1,10 +1,10 @@
 Limitations and Known Issues
 ============================
 
-We try to make using Doctrine2 a very pleasant experience.
+We try to make using Doctrine ORM a very pleasant experience.
 Therefore we think it is very important to be honest about the
 current limitations to our users. Much like every other piece of
-software Doctrine2 is not perfect and far from feature complete.
+software the ORM is not perfect and far from feature complete.
 This section should give you an overview of current limitations of
 Doctrine ORM as well as critical known issues that you should know
 about.
@@ -64,15 +64,6 @@ Where the ``attribute_name`` column contains the key and
 
 The feature request for persistence of primitive value arrays
 `is described in the DDC-298 ticket <https://github.com/doctrine/orm/issues/3743>`_.
-
-Cascade Merge with Bi-directional Associations
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-There are two bugs now that concern the use of cascade merge in combination with bi-directional associations.
-Make sure to study the behavior of cascade merge if you are using it:
-
--  `DDC-875 <https://github.com/doctrine/orm/issues/5398>`_ Merge can sometimes add the same entity twice into a collection
--  `DDC-763 <https://github.com/doctrine/orm/issues/5277>`_ Cascade merge on associated entities can insert too many rows through "Persistence by Reachability"
 
 Custom Persisters
 ~~~~~~~~~~~~~~~~~
@@ -174,6 +165,18 @@ due to complexity.
 
 XML mapping configuration probably needs to completely re-configure or otherwise
 copy-and-paste configuration for fields used from traits.
+
+Mapping multiple private fields of the same name
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+When two classes, say a mapped superclass and an entity inheriting from it,
+both contain a ``private`` field of the same name, this will lead to a ``MappingException``.
+
+Since the fields are ``private``, both are technically separate and can contain
+different values at the same time. However, the ``ClassMetadata`` configuration used
+internally by the ORM currently refers to fields by their name only, without taking the
+class containing the field into consideration. This makes it impossible to keep separate
+mapping configuration for both fields.
 
 Known Issues
 ------------

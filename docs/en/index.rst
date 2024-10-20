@@ -1,4 +1,4 @@
-Welcome to Doctrine 2 ORM's documentation!
+Welcome to Doctrine ORM's documentation!
 ==========================================
 
 The Doctrine documentation is comprised of tutorials, a reference section and
@@ -39,10 +39,8 @@ Mapping Objects onto a Database
   :doc:`Inheritance <reference/inheritance-mapping>`
 
 * **Drivers**:
-  :doc:`Docblock Annotations <reference/annotations-reference>` \|
   :doc:`Attributes <reference/attributes-reference>` \|
   :doc:`XML <reference/xml-mapping>` \|
-  :doc:`YAML <reference/yaml-mapping>` \|
   :doc:`PHP <reference/php-mapping>`
 
 Working with Objects
@@ -75,6 +73,7 @@ Advanced Topics
 * :doc:`TypedFieldMapper <reference/typedfieldmapper>`
 * :doc:`Improving Performance <reference/improving-performance>`
 * :doc:`Caching <reference/caching>`
+* :doc:`Partial Hydration <reference/partial-hydration>`
 * :doc:`Partial Objects <reference/partial-objects>`
 * :doc:`Change Tracking Policies <reference/change-tracking-policies>`
 * :doc:`Best Practices <reference/best-practices>`
@@ -96,7 +95,7 @@ Tutorials
 Changelogs
 ----------
 
-* `Upgrade <https://github.com/doctrine/doctrine2/blob/master/UPGRADE.md>`_
+* `Upgrade <https://github.com/doctrine/orm/blob/HEAD/UPGRADE.md>`_
 
 Cookbook
 --------
@@ -112,7 +111,6 @@ Cookbook
 
 * **Implementation**:
   :doc:`Array Access <cookbook/implementing-arrayaccess-for-domain-objects>` \|
-  :doc:`Notify ChangeTracking Example <cookbook/implementing-the-notify-changetracking-policy>` \|
   :doc:`Working with DateTime <cookbook/working-with-datetime>` \|
   :doc:`Validation <cookbook/validation-of-entities>` \|
   :doc:`Entities in the Session <cookbook/entities-in-session>` \|

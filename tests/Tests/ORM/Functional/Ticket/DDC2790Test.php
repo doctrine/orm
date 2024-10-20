@@ -1,0 +1,79 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Doctrine\Tests\ORM\Functional\Ticket;
+
+use Doctrine\ORM\Event\OnFlushEventArgs;
+use Doctrine\ORM\Events;
+use Doctrine\Tests\Models\CMS\CmsUser;
+use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
+
+use function array_intersect_key;
+use function intval;
+
+#[Group('DDC-2790')]
+class DDC2790Test extends OrmFunctionalTestCase
+{
+    protected function setUp(): void
+    {
+        $this->useModelSet('cms');
+
+        parent::setUp();
+    }
+
+    /**
+     * Verifies that entities scheduled for deletion are not treated as updated by UoW,
+     * even if their properties are changed after the remove() call
+     */
+    public function testIssue(): void
+    {
+        $this->_em->getEventManager()->addEventListener(Events::onFlush, new OnFlushListener());
+
+        $entity           = new CmsUser();
+        $entity->username = 'romanb';
+        $entity->name     = 'Roman';
+
+        $qb = $this->_em->createQueryBuilder();
+        $qb->from($entity::class, 'c');
+        $qb->select('count(c)');
+        $initial = intval($qb->getQuery()->getSingleScalarResult());
+
+        $this->_em->persist($entity);
+        $this->_em->flush();
+
+        $this->_em->remove($entity);
+        // in Doctrine <2.5, this causes an UPDATE statement to be added before the DELETE statement
+        // (and consequently also triggers preUpdate/postUpdate for the entity in question)
+        $entity->name = 'Robin';
+
+        $this->_em->flush();
+
+        $qb = $this->_em->createQueryBuilder();
+        $qb->from($entity::class, 'c');
+        $qb->select('count(c)');
+        $count = intval($qb->getQuery()->getSingleScalarResult());
+        self::assertEquals($initial, $count);
+    }
+}
+
+class OnFlushListener
+{
+    /**
+     * onFLush listener that tries to cancel deletions by calling persist if the entity is listed
+     * as updated in UoW
+     */
+    public function onFlush(OnFlushEventArgs $args): void
+    {
+        $em        = $args->getObjectManager();
+        $uow       = $em->getUnitOfWork();
+        $deletions = $uow->getScheduledEntityDeletions();
+        $updates   = $uow->getScheduledEntityUpdates();
+
+        $undelete = array_intersect_key($deletions, $updates);
+        foreach ($undelete as $d) {
+            $em->persist($d);
+        }
+    }
+}

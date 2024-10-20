@@ -99,12 +99,12 @@ discuss it step by step:
 
         public function parse(\Doctrine\ORM\Query\Parser $parser)
         {
-            $parser->match(Lexer::T_IDENTIFIER); // (2)
-            $parser->match(Lexer::T_OPEN_PARENTHESIS); // (3)
+            $parser->match(TokenType::T_IDENTIFIER); // (2)
+            $parser->match(TokenType::T_OPEN_PARENTHESIS); // (3)
             $this->firstDateExpression = $parser->ArithmeticPrimary(); // (4)
-            $parser->match(Lexer::T_COMMA); // (5)
+            $parser->match(TokenType::T_COMMA); // (5)
             $this->secondDateExpression = $parser->ArithmeticPrimary(); // (6)
-            $parser->match(Lexer::T_CLOSE_PARENTHESIS); // (3)
+            $parser->match(TokenType::T_CLOSE_PARENTHESIS); // (3)
         }
 
         public function getSql(\Doctrine\ORM\Query\SqlWalker $sqlWalker)
@@ -183,23 +183,23 @@ I'll skip the blah and show the code for this function:
 
         public function parse(\Doctrine\ORM\Query\Parser $parser)
         {
-            $parser->match(Lexer::T_IDENTIFIER);
-            $parser->match(Lexer::T_OPEN_PARENTHESIS);
+            $parser->match(TokenType::T_IDENTIFIER);
+            $parser->match(TokenType::T_OPEN_PARENTHESIS);
 
             $this->firstDateExpression = $parser->ArithmeticPrimary();
 
-            $parser->match(Lexer::T_COMMA);
-            $parser->match(Lexer::T_IDENTIFIER);
+            $parser->match(TokenType::T_COMMA);
+            $parser->match(TokenType::T_IDENTIFIER);
 
             $this->intervalExpression = $parser->ArithmeticPrimary();
 
-            $parser->match(Lexer::T_IDENTIFIER);
+            $parser->match(TokenType::T_IDENTIFIER);
 
             /** @var Lexer $lexer */
             $lexer = $parser->getLexer();
             $this->unit = $lexer->token['value'];
 
-            $parser->match(Lexer::T_CLOSE_PARENTHESIS);
+            $parser->match(TokenType::T_CLOSE_PARENTHESIS);
         }
 
         public function getSql(\Doctrine\ORM\Query\SqlWalker $sqlWalker)
@@ -231,6 +231,33 @@ interval unit. However where necessary we rely on the database
 vendors SQL parser to show us further errors in the parsing
 process, for example if the Unit would not be one of the supported
 values by MySql.
+
+Typed functions
+---------------
+By default, result of custom functions is fetched as-is from the database driver.
+If you want to be sure that the type is always the same, then your custom function needs to 
+implement ``Doctrine\ORM\Query\AST\TypedExpression``. Then, the result is wired
+through ``Doctrine\DBAL\Types\Type::convertToPhpValue()`` of the ``Type`` returned in ``getReturnType()``.
+
+.. code-block:: php
+
+    <?php
+
+    use Doctrine\DBAL\Types\Type;
+    use Doctrine\DBAL\Types\Types;
+    use Doctrine\ORM\Query\AST\Functions\FunctionNode;
+    use Doctrine\ORM\Query\AST\TypedExpression;
+
+    class DateDiff extends FunctionNode implements TypedExpression
+    {
+        // ...
+
+        public function getReturnType(): Type
+        {
+            return Type::getType(Types::INTEGER);
+        }
+    }
+
 
 Conclusion
 ----------

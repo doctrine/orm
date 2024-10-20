@@ -4,8 +4,9 @@ Attributes Reference
 PHP 8 adds native support for metadata with its "Attributes" feature.
 Doctrine ORM provides support for mapping metadata using PHP attributes as of version 2.9.
 
-The attributes metadata support is closely modelled after the already existing
-annotation metadata supported since the first version 2.0.
+The attributes metadata support is closely modelled after the already
+existing and now removed annotation metadata supported since the first
+version 2.0.
 
 Index
 -----
@@ -14,7 +15,7 @@ Index
 -  :ref:`#[AttributeOverride] <attrref_attributeoverride>`
 -  :ref:`#[Column] <attrref_column>`
 -  :ref:`#[Cache] <attrref_cache>`
--  :ref:`#[ChangeTrackingPolicy <attrref_changetrackingpolicy>`
+-  :ref:`#[ChangeTrackingPolicy] <attrref_changetrackingpolicy>`
 -  :ref:`#[CustomIdGenerator] <attrref_customidgenerator>`
 -  :ref:`#[DiscriminatorColumn] <attrref_discriminatorcolumn>`
 -  :ref:`#[DiscriminatorMap] <attrref_discriminatormap>`
@@ -310,7 +311,6 @@ Example:
         Entity,
         ChangeTrackingPolicy("DEFERRED_IMPLICIT"),
         ChangeTrackingPolicy("DEFERRED_EXPLICIT"),
-        ChangeTrackingPolicy("NOTIFY")
     ]
     class User {}
 
@@ -485,9 +485,8 @@ used as default.
 Optional parameters:
 
 -  **strategy**: Set the name of the identifier generation strategy.
-   Valid values are ``AUTO``, ``SEQUENCE``, ``IDENTITY``, ``UUID``
-   (deprecated), ``CUSTOM`` and ``NONE``.
-   If not specified, the default value is ``AUTO``.
+   Valid values are ``AUTO``, ``SEQUENCE``, ``IDENTITY``, ``CUSTOM`` and
+   ``NONE``. If not specified, the default value is ``AUTO``.
 
 Example:
 
@@ -712,10 +711,6 @@ details of the database join table. If you do not specify
 ``#[JoinTable]`` on these relations reasonable mapping defaults apply
 using the affected table and the column names.
 
-A notable difference to the annotation metadata support, ``#[JoinColumn]``
-and ``#[InverseJoinColumn]`` can be specified at the property level and are not
-nested within the ``#[JoinTable]`` attribute.
-
 Required attribute:
 
 -  **name**: Database name of the join-table
@@ -931,7 +926,7 @@ Example:
     #[OneToMany(
         targetEntity: "Phonenumber",
         mappedBy: "user",
-        cascade: ["persist", "remove", "merge"],
+        cascade: ["persist", "remove"],
         orphanRemoval: true)
     ]
     public $phonenumbers;

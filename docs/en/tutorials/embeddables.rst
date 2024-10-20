@@ -44,33 +44,6 @@ instead of simply adding the respective columns to the ``User`` class.
             private string $country;
         }
 
-    .. code-block:: annotation
-
-        <?php
-
-        /** @Entity */
-        class User
-        {
-            /** @Embedded(class = "Address") */
-            private Address $address;
-        }
-
-        /** @Embeddable */
-        class Address
-        {
-            /** @Column(type = "string") */
-            private string $street;
-
-            /** @Column(type = "string") */
-            private string $postalCode;
-
-            /** @Column(type = "string") */
-            private string $city;
-
-            /** @Column(type = "string") */
-            private string $country;
-        }
-
     .. code-block:: xml
 
         <doctrine-mapping>
@@ -85,22 +58,6 @@ instead of simply adding the respective columns to the ``User`` class.
                 <field name="country" type="string" />
             </embeddable>
         </doctrine-mapping>
-
-    .. code-block:: yaml
-
-        User:
-          type: entity
-          embedded:
-            address:
-              class: Address
-
-        Address:
-          type: embeddable
-          fields:
-            street: { type: string }
-            postalCode: { type: string }
-            city: { type: string }
-            country: { type: string }
 
 In terms of your database schema, Doctrine will automatically inline all
 columns from the ``Address`` class into the table of the ``User`` class,
@@ -147,31 +104,11 @@ The following example shows you how to set your prefix to ``myPrefix_``:
             private Address $address;
         }
 
-    .. code-block:: annotation
-
-        <?php
-
-        /** @Entity */
-        class User
-        {
-            /** @Embedded(class = "Address", columnPrefix = "myPrefix_") */
-            private $address;
-        }
-
     .. code-block:: xml
 
         <entity name="User">
             <embedded name="address" class="Address" column-prefix="myPrefix_" />
         </entity>
-
-    .. code-block:: yaml
-
-        User:
-          type: entity
-          embedded:
-            address:
-              class: Address
-              columnPrefix: myPrefix_
 
 To have Doctrine drop the prefix and use the value object's property name
 directly, set ``columnPrefix=false`` (``use-column-prefix="false"`` for XML):
@@ -189,31 +126,11 @@ directly, set ``columnPrefix=false`` (``use-column-prefix="false"`` for XML):
             private Address $address;
         }
 
-    .. code-block:: annotation
-
-        <?php
-
-        /** @Entity */
-        class User
-        {
-            /** @Embedded(class = "Address", columnPrefix = false) */
-            private Address $address;
-        }
-
     .. code-block:: xml
 
         <entity name="User">
             <embedded name="address" class="Address" use-column-prefix="false" />
         </entity>
-
-    .. code-block:: yaml
-
-        User:
-          type: entity
-          embedded:
-            address:
-              class: Address
-              columnPrefix: false
 
 
 DQL

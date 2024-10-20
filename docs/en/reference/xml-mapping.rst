@@ -2,7 +2,8 @@ XML Mapping
 ===========
 
 The XML mapping driver enables you to provide the ORM metadata in
-form of XML documents.
+form of XML documents. It requires the ``dom`` extension in order to be
+able to validate your mapping documents against its XML Schema.
 
 The XML driver is backed by an XML Schema document that describes
 the structure of a mapping document. The most recent version of the
@@ -691,7 +692,6 @@ specified by their respective tags:
 
 
 -  ``<cascade-persist />``
--  ``<cascade-merge />``
 -  ``<cascade-remove />``
 -  ``<cascade-refresh />``
 -  ``<cascade-detach />``

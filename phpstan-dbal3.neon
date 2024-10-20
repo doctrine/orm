@@ -1,0 +1,36 @@
+includes:
+    - phpstan-baseline.neon
+    - phpstan-params.neon
+
+parameters:
+    ignoreErrors:
+        # Symfony cache supports passing a key prefix to the clear method.
+        - '/^Method Psr\\Cache\\CacheItemPoolInterface\:\:clear\(\) invoked with 1 parameter, 0 required\.$/'
+
+        # We can be certain that those values are not matched.
+        -
+            message: '~^Match expression does not handle remaining values:~'
+            path: src/Persisters/Entity/BasicEntityPersister.php
+
+        # DBAL 4 compatibility
+        -
+            message: '~^Method Doctrine\\ORM\\Query\\AST\\Functions\\TrimFunction::getTrimMode\(\) never returns .* so it can be removed from the return type\.$~'
+            path: src/Query/AST/Functions/TrimFunction.php
+        -
+            message: '~^Method Doctrine\\ORM\\Persisters\\Entity\\BasicEntityPersister\:\:getArrayBindingType\(\) never returns .* so it can be removed from the return type\.$~'
+            path: src/Persisters/Entity/BasicEntityPersister.php
+
+        - '~^Class Doctrine\\DBAL\\Platforms\\SQLitePlatform not found\.$~'
+
+        # To be removed in 4.0
+        -
+            message: '#Negated boolean expression is always false\.#'
+            paths:
+                - src/Mapping/Driver/AttributeDriver.php
+
+        -
+            message: '~^Call to deprecated method getEventManager\(\) of class Doctrine\\DBAL\\Connection\.$~'
+            path: src/EntityManager.php
+        -
+            message: '~deprecated class Doctrine\\DBAL\\Tools\\Console\\Command\\ReservedWordsCommand\:~'
+            path: src/Tools/Console/ConsoleRunner.php

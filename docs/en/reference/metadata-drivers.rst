@@ -16,13 +16,6 @@ metadata:
 -  **Attributes** (AttributeDriver)
 -  **PHP Code in files or static functions** (PhpDriver)
 
-There are also two deprecated ways to do this:
-
--  **Class DocBlock Annotations** (AnnotationDriver)
--  **YAML files** (YamlDriver)
-
-They will be removed in 3.0, make sure to avoid them.
-
 Something important to note about the above drivers is they are all
 an intermediate step to the same end result. The mapping
 information is populated to ``Doctrine\ORM\Mapping\ClassMetadata``
@@ -44,11 +37,7 @@ an entity.
         $em->getConfiguration()->setMetadataCacheImpl(new ApcuCache());
 
 
-If you want to use one of the included core metadata drivers you need to
-configure it. If you pick the annotation driver despite it being
-deprecated, you will additionally need to install
-``doctrine/annotations``. All the drivers are in the
-``Doctrine\ORM\Mapping\Driver`` namespace:
+All the drivers are in the ``Doctrine\ORM\Mapping\Driver`` namespace:
 
 .. code-block:: php
 
@@ -81,8 +70,8 @@ implements the ``MappingDriver`` interface:
         /**
          * Loads the metadata for the specified class into the provided container.
          *
-         * @psalm-param class-string<T> $className
-         * @psalm-param ClassMetadata<T> $metadata
+         * @param class-string<T> $className
+         * @param ClassMetadata<T> $metadata
          *
          * @return void
          *
@@ -93,8 +82,7 @@ implements the ``MappingDriver`` interface:
         /**
          * Gets the names of all mapped classes known to this driver.
          *
-         * @return array<int, string> The names of all mapped classes known to this driver.
-         * @psalm-return list<class-string>
+         * @return list<class-string> The names of all mapped classes known to this driver.
          */
         public function getAllClassNames();
 
@@ -102,7 +90,7 @@ implements the ``MappingDriver`` interface:
          * Returns whether the class with the specified name should have its metadata loaded.
          * This is only the case if it is either mapped as an Entity or a MappedSuperclass.
          *
-         * @psalm-param class-string $className
+         * @param class-string $className
          *
          * @return bool
          */

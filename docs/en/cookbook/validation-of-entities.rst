@@ -11,7 +11,7 @@ What we offer are hooks to execute any kind of validation.
 .. note::
 
     You don't need to validate your entities in the lifecycle
-    events. Its only one of many options. Of course you can also
+    events. It is only one of many options. Of course you can also
     perform validations in value setters or any other method of your
     entities that are used in your code.
 
@@ -58,29 +58,16 @@ First Attributes:
 .. code-block:: php
 
     <?php
+    use Doctrine\ORM\Mapping\Entity;
+    use Doctrine\ORM\Mapping\HasLifecycleCallbacks;
+    use Doctrine\ORM\Mapping\PrePersist;
+    use Doctrine\ORM\Mapping\PreUpdate;
 
     #[Entity]
     #[HasLifecycleCallbacks]
     class Order
     {
         #[PrePersist, PreUpdate]
-        public function assertCustomerAllowedBuying() {}
-    }
-
-As Annotations:
-
-.. code-block:: php
-
-    <?php
-    /**
-     * @Entity
-     * @HasLifecycleCallbacks
-     */
-    class Order
-    {
-        /**
-         * @PrePersist @PreUpdate
-         */
         public function assertCustomerAllowedBuying() {}
     }
 

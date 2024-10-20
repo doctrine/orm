@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
+                          https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+
+    <entity name="Doctrine\Tests\ORM\Mapping\UserIncorrectAttributes" table="cms_users">
+        <unique-constraints>
+            <unique-constraint columns="name,user_email" name="search_idx">
+                <options>
+                    <option name="where">name IS NOT NULL</option>
+                </options>
+            </unique-constraint>
+            <unique-constraint columns="" fields="name,phone" name="phone_idx"/>
+        </unique-constraints>
+
+        <lifecycle-callbacks>
+            <lifecycle-callback type="prePersist" method="doStuffOnPrePersist"/>
+            <lifecycle-callback type="prePersist" method="doOtherStuffOnPrePersistToo"/>
+            <lifecycle-callback type="postPersist" method="doStuffOnPostPersist"/>
+        </lifecycle-callbacks>
+
+        <id name="id" type="integer" column="id">
+            <generator strategy="AUTO"/>
+            <sequence-generator sequence-name="tablename_seq" allocation-size="100" initial-value="1" />
+            <options>
+                <option name="foo">bar</option>
+                <option name="unsigned">false</option>
+            </options>
+        </id>
+
+        <field field="name" column="name" type="string" length="50" nullable="true" unique="true">
+            <options>
+                <option name="foo">bar</option>
+                <option name="baz">
+                    <option name="key">val</option>
+                </option>
+                <option name="fixed">false</option>
+            </options>
+        </field>
+        <field field="email" column="user_email" type="string" column-definition="CHAR(32) NOT NULL" />
+
+        <field name="version" type="integer" version="true" />
+
+        <many-to-many fieldName="groups" target-entity="Group">
+            <cascade>
+                <cascade-all/>
+            </cascade>
+            <join-table name="cms_users_groups">
+                <join-columns>
+                    <join-column name="user_id" referenced-column-name="id" nullable="false" unique="false" />
+                </join-columns>
+                <inverse-join-columns>
+                    <join-column name="group_id" referenced-column-name="id" column-definition="INT NULL" />
+                </inverse-join-columns>
+            </join-table>
+        </many-to-many>
+    </entity>
+
+</doctrine-mapping>

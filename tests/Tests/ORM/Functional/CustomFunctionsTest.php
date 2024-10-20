@@ -1,0 +1,99 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Doctrine\Tests\ORM\Functional;
+
+use Doctrine\ORM\Query\AST\AggregateExpression;
+use Doctrine\ORM\Query\AST\Functions\FunctionNode;
+use Doctrine\ORM\Query\AST\PathExpression;
+use Doctrine\ORM\Query\Parser;
+use Doctrine\ORM\Query\SqlWalker;
+use Doctrine\ORM\Query\TokenType;
+use Doctrine\Tests\Models\CMS\CmsUser;
+use Doctrine\Tests\OrmFunctionalTestCase;
+
+require_once __DIR__ . '/../../TestInit.php';
+
+class CustomFunctionsTest extends OrmFunctionalTestCase
+{
+    protected function setUp(): void
+    {
+        $this->useModelSet('cms');
+
+        parent::setUp();
+    }
+
+    public function testCustomFunctionDefinedWithCallback(): void
+    {
+        $user           = new CmsUser();
+        $user->name     = 'Bob';
+        $user->username = 'Dylan';
+        $this->_em->persist($user);
+        $this->_em->flush();
+
+        // Instead of defining the function with the class name, we use a callback
+        $this->_em->getConfiguration()->addCustomStringFunction('FOO', static fn ($funcName) => new NoOp($funcName));
+        $this->_em->getConfiguration()->addCustomNumericFunction('BAR', static fn ($funcName) => new NoOp($funcName));
+
+        $query = $this->_em->createQuery('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u'
+            . ' WHERE FOO(u.name) = \'Bob\''
+            . ' AND BAR(1) = 1');
+
+        $users = $query->getResult();
+
+        self::assertCount(1, $users);
+        self::assertSame($user, $users[0]);
+    }
+
+    public function testCustomFunctionOverride(): void
+    {
+        $user           = new CmsUser();
+        $user->name     = 'Bob';
+        $user->username = 'Dylan';
+        $this->_em->persist($user);
+        $this->_em->flush();
+
+        $this->_em->getConfiguration()->addCustomStringFunction('COUNT', 'Doctrine\Tests\ORM\Functional\CustomCount');
+
+        $query = $this->_em->createQuery('SELECT COUNT(DISTINCT u.id) FROM Doctrine\Tests\Models\CMS\CmsUser u');
+
+        $usersCount = $query->getSingleScalarResult();
+
+        self::assertEquals(1, $usersCount);
+    }
+}
+
+class NoOp extends FunctionNode
+{
+    /** @var PathExpression */
+    private $field;
+
+    public function parse(Parser $parser): void
+    {
+        $parser->match(TokenType::T_IDENTIFIER);
+        $parser->match(TokenType::T_OPEN_PARENTHESIS);
+        $this->field = $parser->ArithmeticPrimary();
+        $parser->match(TokenType::T_CLOSE_PARENTHESIS);
+    }
+
+    public function getSql(SqlWalker $sqlWalker): string
+    {
+        return $this->field->dispatch($sqlWalker);
+    }
+}
+
+class CustomCount extends FunctionNode
+{
+    private AggregateExpression|null $aggregateExpression = null;
+
+    public function parse(Parser $parser): void
+    {
+        $this->aggregateExpression = $parser->AggregateExpression();
+    }
+
+    public function getSql(SqlWalker $sqlWalker): string
+    {
+        return $this->aggregateExpression->dispatch($sqlWalker);
+    }
+}

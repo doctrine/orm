@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
+                          https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+
+    <entity name="Doctrine\Tests\Models\Company\CompanyPerson" table="company_persons" inheritance-type="JOINED">
+
+        <discriminator-map >
+            <discriminator-mapping value="person"   class="CompanyPerson" />
+            <discriminator-mapping value="manager"  class="CompanyManager" />
+            <discriminator-mapping value="employee" class="CompanyEmployee" />
+        </discriminator-map>
+
+        <id name="id" type="integer" column="id">
+            <generator strategy="AUTO"/>
+        </id>
+
+        <field name="name" column="name"/>
+
+        <one-to-one field="spouse" target-entity="CompanyPerson">
+            <join-column name="spouse_id" referenced-column-name="id"/>
+        </one-to-one>
+
+        <many-to-many field="friends" target-entity="CompanyPerson">
+            <join-table name="company_persons_friends">
+                <join-columns>
+                    <join-column name="person_id" referenced-column-name="id"/>
+                </join-columns>
+                <inverse-join-columns>
+                    <join-column name="friend_id" referenced-column-name="id"/>
+                </inverse-join-columns>
+            </join-table>
+        </many-to-many>
+    </entity>
+
+</doctrine-mapping>

@@ -253,7 +253,7 @@ Calling ``setParameter()`` automatically infers which type you are setting as
 value. This works for integers, arrays of strings/integers, DateTime instances
 and for managed entities. If you want to set a type explicitly you can call
 the third argument to ``setParameter()`` explicitly. It accepts either a DBAL
-Doctrine\DBAL\ParameterType::* or a DBAL Type name for conversion.
+``Doctrine\DBAL\ParameterType::*`` or a DBAL Type name for conversion.
 
 .. note::
 
@@ -611,3 +611,21 @@ same query of example 6 written using
       ->add('from', new Expr\From('User', 'u'))
       ->add('where', new Expr\Comparison('u.id', '=', '?1'))
       ->add('orderBy', new Expr\OrderBy('u.name', 'ASC'));
+
+Binding Parameters to Placeholders
+----------------------------------
+
+It is often not necessary to know about the exact placeholder names when
+building a query. You can use a helper method to bind a value to a placeholder
+and directly use that placeholder in your query as a return value:
+
+.. code-block:: php
+
+    <?php
+    // $qb instanceof QueryBuilder
+
+    $qb->select('u')
+        ->from('User', 'u')
+        ->where('u.email = ' .  $qb->createNamedParameter($userInputEmail))
+    ;
+    // SELECT u FROM User u WHERE email = :dcValue1

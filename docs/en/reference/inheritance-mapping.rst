@@ -208,44 +208,6 @@ Example:
             // ...
         }
 
-    .. code-block:: annotation
-
-        <?php
-        namespace MyProject\Model;
-
-        /**
-         * @Entity
-         * @InheritanceType("SINGLE_TABLE")
-         * @DiscriminatorColumn(name="discr", type="string")
-         * @DiscriminatorMap({"person" = "Person", "employee" = "Employee"})
-         */
-        class Person
-        {
-            // ...
-        }
-
-        /**
-         * @Entity
-         */
-        class Employee extends Person
-        {
-            // ...
-        }
-
-    .. code-block:: yaml
-
-        MyProject\Model\Person:
-          type: entity
-          inheritanceType: SINGLE_TABLE
-          discriminatorColumn:
-            name: discr
-            type: string
-          discriminatorMap:
-            person: Person
-            employee: Employee
-
-        MyProject\Model\Employee:
-          type: entity
 
 In this example, the ``#[DiscriminatorMap]`` specifies that in the
 discriminator column, a value of "person" identifies a row as being of type
@@ -380,7 +342,7 @@ It is not supported to use overrides in entity inheritance scenarios.
 .. note::
 
     When using traits, make sure not to miss the warnings given in the
-    :doc:`Limitations and Known Issues</reference/limitations-and-known-issues>` chapter.
+    :doc:`Limitations and Known Issues </reference/limitations-and-known-issues>` chapter.
 
 
 Association Override
@@ -439,58 +401,6 @@ Example:
         {
         }
 
-    .. code-block:: annotation
-
-        <?php
-        // user mapping
-        namespace MyProject\Model;
-        /**
-         * @MappedSuperclass
-         */
-        class User
-        {
-            // other fields mapping
-
-            /**
-             * @ManyToMany(targetEntity="Group", inversedBy="users")
-             * @JoinTable(name="users_groups",
-             *  joinColumns={@JoinColumn(name="user_id", referencedColumnName="id")},
-             *  inverseJoinColumns={@JoinColumn(name="group_id", referencedColumnName="id")}
-             * )
-             * @var Collection<int, Group>
-             */
-            protected Collection $groups;
-
-            /**
-             * @ManyToOne(targetEntity="Address")
-             * @JoinColumn(name="address_id", referencedColumnName="id")
-             */
-            protected Address|null $address = null;
-        }
-
-        // admin mapping
-        namespace MyProject\Model;
-        /**
-         * @Entity
-         * @AssociationOverrides({
-         *      @AssociationOverride(name="groups",
-         *          joinTable=@JoinTable(
-         *              name="users_admingroups",
-         *              joinColumns=@JoinColumn(name="adminuser_id"),
-         *              inverseJoinColumns=@JoinColumn(name="admingroup_id")
-         *          )
-         *      ),
-         *      @AssociationOverride(name="address",
-         *          joinColumns=@JoinColumn(
-         *              name="adminaddress_id", referencedColumnName="id"
-         *          )
-         *      )
-         * })
-         */
-        class Admin extends User
-        {
-        }
-
     .. code-block:: xml
 
         <!-- user mapping -->
@@ -500,7 +410,6 @@ Example:
                 <many-to-many field="groups" target-entity="Group" inversed-by="users">
                     <cascade>
                         <cascade-persist/>
-                        <cascade-merge/>
                         <cascade-detach/>
                     </cascade>
                     <join-table name="users_groups">
@@ -537,51 +446,6 @@ Example:
                 </association-overrides>
             </entity>
         </doctrine-mapping>
-    .. code-block:: yaml
-
-        # user mapping
-        MyProject\Model\User:
-          type: mappedSuperclass
-          # other fields mapping
-          manyToOne:
-            address:
-              targetEntity: Address
-              joinColumn:
-                name: address_id
-                referencedColumnName: id
-              cascade: [ persist, merge ]
-          manyToMany:
-            groups:
-              targetEntity: Group
-              joinTable:
-                name: users_groups
-                joinColumns:
-                  user_id:
-                    referencedColumnName: id
-                inverseJoinColumns:
-                  group_id:
-                    referencedColumnName: id
-              cascade: [ persist, merge, detach ]
-
-        # admin mapping
-        MyProject\Model\Admin:
-          type: entity
-          associationOverride:
-            address:
-              joinColumn:
-                adminaddress_id:
-                  name: adminaddress_id
-                  referencedColumnName: id
-            groups:
-              joinTable:
-                name: users_admingroups
-                joinColumns:
-                  adminuser_id:
-                    referencedColumnName: id
-                inverseJoinColumns:
-                  admingroup_id:
-                    referencedColumnName: id
-
 
 Things to note:
 
@@ -645,51 +509,6 @@ Could be used by an entity that extends a mapped superclass to override a field 
         {
         }
 
-    .. code-block:: annotation
-
-        <?php
-        // user mapping
-        namespace MyProject\Model;
-        /**
-         * @MappedSuperclass
-         */
-        class User
-        {
-            /** @Id @GeneratedValue @Column(type="integer", name="user_id", length=150) */
-            protected int|null $id = null;
-
-            /** @Column(name="user_name", nullable=true, unique=false, length=250) */
-            protected string $name;
-
-            // other fields mapping
-        }
-
-        // guest mapping
-        namespace MyProject\Model;
-        /**
-         * @Entity
-         * @AttributeOverrides({
-         *      @AttributeOverride(name="id",
-         *          column=@Column(
-         *              name     = "guest_id",
-         *              type     = "integer",
-         *              length   = 140
-         *          )
-         *      ),
-         *      @AttributeOverride(name="name",
-         *          column=@Column(
-         *              name     = "guest_name",
-         *              nullable = false,
-         *              unique   = true,
-         *              length   = 240
-         *          )
-         *      )
-         * })
-         */
-        class Guest extends User
-        {
-        }
-
     .. code-block:: xml
 
         <!-- user mapping -->
@@ -702,7 +521,6 @@ Could be used by an entity that extends a mapped superclass to override a field 
                 <many-to-one field="address" target-entity="Address">
                     <cascade>
                         <cascade-persist/>
-                        <cascade-merge/>
                     </cascade>
                     <join-column name="address_id" referenced-column-name="id"/>
                 </many-to-one>
@@ -723,42 +541,6 @@ Could be used by an entity that extends a mapped superclass to override a field 
                 </attribute-overrides>
             </entity>
         </doctrine-mapping>
-    .. code-block:: yaml
-
-        # user mapping
-        MyProject\Model\User:
-          type: mappedSuperclass
-          id:
-            id:
-              type: integer
-              column: user_id
-              length: 150
-              generator:
-                strategy: AUTO
-          fields:
-            name:
-              type: string
-              column: user_name
-              length: 250
-              nullable: true
-              unique: false
-          #other fields mapping
-
-
-        # guest mapping
-        MyProject\Model\Guest:
-          type: entity
-          attributeOverride:
-            id:
-              column: guest_id
-              type: integer
-              length: 140
-            name:
-              column: guest_name
-              type: string
-              length: 240
-              nullable: false
-              unique: true
 
 Things to note:
 

@@ -1,97 +1,20 @@
 PHP Mapping
 ===========
 
-Doctrine ORM also allows you to provide the ORM metadata in the form
-of plain PHP code using the ``ClassMetadata`` API. You can write
-the code in PHP files or inside of a static function named
-``loadMetadata($class)`` on the entity class itself.
-
-PHP Files
----------
-
-.. note::
-
-   PHPDriver is deprecated and will be removed in 3.0, use StaticPHPDriver
-   instead.
-
-If you wish to write your mapping information inside PHP files that
-are named after the entity and included to populate the metadata
-for an entity you can do so by using the ``PHPDriver``:
-
-.. code-block:: php
-
-    <?php
-    $driver = new PHPDriver('/path/to/php/mapping/files');
-    $em->getConfiguration()->setMetadataDriverImpl($driver);
-
-Now imagine we had an entity named ``Entities\User`` and we wanted
-to write a mapping file for it using the above configured
-``PHPDriver`` instance:
-
-.. code-block:: php
-
-    <?php
-    namespace Entities;
-
-    class User
-    {
-        private $id;
-        private $username;
-    }
-
-To write the mapping information you just need to create a file
-named ``Entities.User.php`` inside of the
-``/path/to/php/mapping/files`` folder:
-
-.. code-block:: php
-
-    <?php
-    // /path/to/php/mapping/files/Entities.User.php
-
-    $metadata->mapField(array(
-       'id' => true,
-       'fieldName' => 'id',
-       'type' => 'integer'
-    ));
-
-    $metadata->mapField(array(
-       'fieldName' => 'username',
-       'type' => 'string',
-       'options' => array(
-           'fixed' => true,
-           'comment' => "User's login name"
-       )
-    ));
-
-    $metadata->mapField(array(
-       'fieldName' => 'login_count',
-       'type' => 'integer',
-       'nullable' => false,
-       'options' => array(
-           'unsigned' => true,
-           'default' => 0
-       )
-    ));
-
-Now we can easily retrieve the populated ``ClassMetadata`` instance
-where the ``PHPDriver`` includes the file and the
-``ClassMetadataFactory`` caches it for later retrieval:
-
-.. code-block:: php
-
-    <?php
-    $class = $em->getClassMetadata('Entities\User');
-    // or
-    $class = $em->getMetadataFactory()->getMetadataFor('Entities\User');
+Doctrine ORM also allows you to provide the ORM metadata in the form of plain
+PHP code using the ``ClassMetadata`` API. You can write the code in inside of a
+static function named ``loadMetadata($class)`` on the entity class itself.
 
 Static Function
 ---------------
 
-In addition to the PHP files you can also specify your mapping
-information inside of a static function defined on the entity class
-itself. This is useful for cases where you want to keep your entity
-and mapping information together but don't want to use attributes or
-annotations. For this you just need to use the ``StaticPHPDriver``:
+In addition to other drivers using configuration languages you can also
+programatically specify your mapping information inside of a static function
+defined on the entity class itself.
+
+This is useful for cases where you want to keep your entity and mapping
+information together but don't want to use attributes. For this you just
+need to use the ``StaticPHPDriver``:
 
 .. code-block:: php
 
@@ -164,13 +87,11 @@ The API of the ClassMetadataBuilder has the following methods with a fluent inte
 -   ``setTable($name)``
 -   ``addIndex(array $columns, $indexName)``
 -   ``addUniqueConstraint(array $columns, $constraintName)``
--   ``addNamedQuery($name, $dqlQuery)``
 -   ``setJoinedTableInheritance()``
 -   ``setSingleTableInheritance()``
 -   ``setDiscriminatorColumn($name, $type = 'string', $length = 255, $columnDefinition = null, $enumType = null, $options = [])``
 -   ``addDiscriminatorMapClass($name, $class)``
 -   ``setChangeTrackingPolicyDeferredExplicit()``
--   ``setChangeTrackingPolicyNotify()``
 -   ``addLifecycleEvent($methodName, $event)``
 -   ``addManyToOne($name, $targetEntity, $inversedBy = null)``
 -   ``addInverseOneToOne($name, $targetEntity, $mappedBy)``
@@ -272,7 +193,6 @@ Inheritance Getters
 -  ``isInheritanceTypeNone()``
 -  ``isInheritanceTypeJoined()``
 -  ``isInheritanceTypeSingleTable()``
--  ``isInheritanceTypeTablePerClass()``
 -  ``isInheritedField($fieldName)``
 -  ``isInheritedAssociation($fieldName)``
 
@@ -282,7 +202,6 @@ Change Tracking Getters
 
 -  ``isChangeTrackingDeferredExplicit()``
 -  ``isChangeTrackingDeferredImplicit()``
--  ``isChangeTrackingNotify()``
 
 Field & Association Getters
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~

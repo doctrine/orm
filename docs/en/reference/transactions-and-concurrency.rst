@@ -88,7 +88,7 @@ requirement.
 
 A more convenient alternative for explicit transaction demarcation is the use
 of provided control abstractions in the form of
-``Connection#transactional($func)`` and ``EntityManager#transactional($func)``.
+``Connection#transactional($func)`` and ``EntityManager#wrapInTransaction($func)``.
 When used, these control abstractions ensure that you never forget to rollback
 the transaction, in addition to the obvious code reduction. An example that is
 functionally equivalent to the previously shown code looks as follows:
@@ -96,20 +96,22 @@ functionally equivalent to the previously shown code looks as follows:
 .. code-block:: php
 
     <?php
+    // transactional with Connection instance
+    // $conn instanceof Connection
+    $conn->transactional(function($conn) {
+        // ... do some work
+        $user = new User;
+        $user->setName('George');
+    });
+
+    // transactional with EntityManager instance
     // $em instanceof EntityManager
-    $em->transactional(function($em) {
+    $em->wrapInTransaction(function($em) {
         // ... do some work
         $user = new User;
         $user->setName('George');
         $em->persist($user);
     });
-
-.. warning::
-
-    For historical reasons, ``EntityManager#transactional($func)`` will return
-    ``true`` whenever the return value of ``$func`` is loosely false.
-    Some examples of this include ``array()``, ``"0"``, ``""``, ``0``, and
-    ``null``.
 
 The difference between ``Connection#transactional($func)`` and
 ``EntityManager#transactional($func)`` is that the latter
@@ -200,17 +202,6 @@ example we'll use an integer.
             // ...
         }
 
-    .. code-block:: annotation
-
-        <?php
-        class User
-        {
-            // ...
-            /** @Version @Column(type="integer") */
-            private int $version;
-            // ...
-        }
-
     .. code-block:: xml
 
         <doctrine-mapping>
@@ -218,15 +209,6 @@ example we'll use an integer.
             <field name="version" type="integer" version="true" />
           </entity>
         </doctrine-mapping>
-
-    .. code-block:: yaml
-
-        User:
-          type: entity
-          fields:
-            version:
-              type: integer
-              version: true
 
 Alternatively a datetime type can be used (which maps to a SQL
 timestamp or datetime):
@@ -244,17 +226,6 @@ timestamp or datetime):
             // ...
         }
 
-    .. code-block:: annotation
-
-        <?php
-        class User
-        {
-            // ...
-            /** @Version @Column(type="datetime") */
-            private DateTime $version;
-            // ...
-        }
-
     .. code-block:: xml
 
         <doctrine-mapping>
@@ -262,15 +233,6 @@ timestamp or datetime):
             <field name="version" type="datetime" version="true" />
           </entity>
         </doctrine-mapping>
-
-    .. code-block:: yaml
-
-        User:
-          type: entity
-          fields:
-            version:
-              type: datetime
-              version: true
 
 Version numbers (not timestamps) should however be preferred as
 they can not potentially conflict in a highly concurrent

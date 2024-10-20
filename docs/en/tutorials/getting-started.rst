@@ -18,7 +18,7 @@ before. There are some prerequisites for the tutorial that have to be
 installed:
 
 - PHP (latest stable version)
-- Composer Package Manager (`Install Composer
+- Composer Package Manager (\ `Install Composer
   <https://getcomposer.org/doc/00-intro.md>`_)
 
 The code of this tutorial is `available on Github <https://github.com/doctrine/doctrine2-orm-tutorial>`_.
@@ -27,7 +27,7 @@ What is Doctrine?
 -----------------
 
 Doctrine ORM is an `object-relational mapper (ORM) <https://en.wikipedia.org/wiki/Object-relational_mapping>`_
-for PHP 7.1+ that provides transparent persistence for PHP objects. It uses the Data Mapper
+for PHP that provides transparent persistence for PHP objects. It uses the Data Mapper
 pattern at the heart, aiming for a complete separation of your domain/business
 logic from the persistence in a relational database management system.
 
@@ -82,10 +82,9 @@ that directory with the following contents:
 
     {
         "require": {
-            "doctrine/orm": "^2.11.0",
-            "doctrine/dbal": "^3.2",
-            "symfony/yaml": "^5.4",
-            "symfony/cache": "^5.4"
+            "doctrine/orm": "^3",
+            "doctrine/dbal": "^4",
+            "symfony/cache": "^7"
         },
         "autoload": {
             "psr-0": {"": "src/"}
@@ -107,12 +106,8 @@ Add the following directories::
     doctrine2-tutorial
     |-- config
     |   `-- xml
-    |   `-- yaml
     `-- src
 
-.. note::
-    The YAML driver is deprecated and will be removed in version 3.0.
-    It is strongly recommended to switch to one of the other mappings.
 .. note::
     It is strongly recommended that you require ``doctrine/dbal`` in your
     ``composer.json`` as well, because using the ORM means mapping objects
@@ -144,22 +139,14 @@ step:
 
     // Create a simple "default" Doctrine ORM configuration for Attributes
     $config = ORMSetup::createAttributeMetadataConfiguration(
-        paths: array(__DIR__."/src"),
+        paths: [__DIR__ . '/src'],
         isDevMode: true,
     );
-    // or if you prefer annotation, YAML or XML
-    // $config = ORMSetup::createAnnotationMetadataConfiguration(
-    //    paths: array(__DIR__."/src"),
-    //    isDevMode: true,
-    // );
+    // or if you prefer XML
     // $config = ORMSetup::createXMLMetadataConfiguration(
-    //    paths: array(__DIR__."/config/xml"),
+    //    paths: [__DIR__ . '/config/xml'],
     //    isDevMode: true,
     //);
-    // $config = ORMSetup::createYAMLMetadataConfiguration(
-    //    paths: array(__DIR__."/config/yaml"),
-    //    isDevMode: true,
-    // );
 
     // configuring the database connection
     $connection = DriverManager::getConnection([
@@ -169,10 +156,6 @@ step:
 
     // obtaining the entity manager
     $entityManager = new EntityManager($connection, $config);
-
-.. note::
-    The YAML driver is deprecated and will be removed in version 3.0.
-    It is strongly recommended to switch to one of the other mappings.
 
 The ``require_once`` statement sets up the class autoloading for Doctrine and
 its dependencies using Composer's autoloader.
@@ -321,7 +304,7 @@ data in your storage, and later in your application when the data is loaded agai
 .. note::
 
     This method, although very common, is inappropriate for Domain Driven
-    Design (`DDD <https://en.wikipedia.org/wiki/Domain-driven_design>`_)
+    Design (\ `DDD <https://en.wikipedia.org/wiki/Domain-driven_design>`_)
     where methods should represent real business operations and not simple
     property change, And business invariants should be maintained both in the
     application state (entities in this case) and in the database, with no
@@ -500,8 +483,8 @@ language describes how entities, their properties and references should be
 persisted and what constraints should be applied to them.
 
 Metadata for an Entity can be configured using attributes directly in
-the Entity class itself, or in an external XML or YAML file. This
-Getting Started guide will demonstrate metadata mappings using all three
+the Entity class itself, or in an external XML file. This
+Getting Started guide will demonstrate metadata mappings using both
 methods, but you only need to choose one.
 
 .. configuration-block::
@@ -527,33 +510,6 @@ methods, but you only need to choose one.
             // .. (other code)
         }
 
-    .. code-block:: annotation
-
-        <?php
-        // src/Product.php
-
-        use Doctrine\ORM\Mapping as ORM;
-
-        /**
-         * @ORM\Entity
-         * @ORM\Table(name="products")
-         */
-        class Product
-        {
-            /**
-             * @ORM\Id
-             * @ORM\Column(type="integer")
-             * @ORM\GeneratedValue
-             */
-            private int|null $id = null;
-            /**
-             * @ORM\Column(type="string")
-             */
-            private string $name;
-
-            // .. (other code)
-        }
-
     .. code-block:: xml
 
         <!-- config/xml/Product.dcm.xml -->
@@ -570,25 +526,6 @@ methods, but you only need to choose one.
                   <field name="name" type="string" />
               </entity>
         </doctrine-mapping>
-
-.. note::
-    The YAML driver is deprecated and will be removed in version 3.0.
-    It is strongly recommended to switch to one of the other mappings.
-
-    .. code-block:: yaml
-
-        # config/yaml/Product.dcm.yml
-        Product:
-          type: entity
-          table: products
-          id:
-            id:
-              type: integer
-              generator:
-                strategy: AUTO
-          fields:
-            name:
-              type: string
 
 The top-level ``entity`` definition specifies information about
 the class and table name. The primitive type ``Product#name`` is
@@ -735,7 +672,7 @@ classes. We'll store them in ``src/Bug.php`` and ``src/User.php``, respectively.
         #[ORM\Id]
         #[ORM\Column(type: 'integer')]
         #[ORM\GeneratedValue]
-        private int $id;
+        private int|null $id;
 
         #[ORM\Column(type: 'string')]
         private string $description;
@@ -1082,59 +1019,6 @@ the ``Product`` before:
             // ... (other code)
         }
 
-    .. code-block:: annotation
-
-        <?php
-        // src/Bug.php
-
-        use Doctrine\ORM\Mapping as ORM;
-
-        /**
-         * @ORM\Entity
-         * @ORM\Table(name="bugs")
-         */
-        class Bug
-        {
-            /**
-             * @ORM\Id
-             * @ORM\Column(type="integer")
-             * @ORM\GeneratedValue
-             */
-            private int|null $id = null;
-
-            /**
-             * @ORM\Column(type="string")
-             */
-            private string $description;
-
-            /**
-             * @ORM\Column(type="datetime")
-             */
-            private DateTime $created;
-
-            /**
-             * @ORM\Column(type="string")
-             */
-            private string $status;
-
-            /**
-             * @ORM\ManyToOne(targetEntity="User", inversedBy="assignedBugs")
-             */
-            private User|null $engineer;
-
-            /**
-             * @ORM\ManyToOne(targetEntity="User", inversedBy="reportedBugs")
-             */
-            private User|null $reporter;
-
-            /**
-             * @ORM\ManyToMany(targetEntity="Product")
-             */
-            private Collection $products;
-
-            // ... (other code)
-        }
-
     .. code-block:: xml
 
         <!-- config/xml/Bug.dcm.xml -->
@@ -1159,61 +1043,27 @@ the ``Product`` before:
             </entity>
         </doctrine-mapping>
 
-.. note::
-    The YAML driver is deprecated and will be removed in version 3.0.
-    It is strongly recommended to switch to one of the other mappings.
-
-    .. code-block:: yaml
-
-        # config/yaml/Bug.dcm.yml
-        Bug:
-          type: entity
-          table: bugs
-          id:
-            id:
-              type: integer
-              generator:
-                strategy: AUTO
-          fields:
-            description:
-              type: text
-            created:
-              type: datetime
-            status:
-              type: string
-          manyToOne:
-            reporter:
-              targetEntity: User
-              inversedBy: reportedBugs
-            engineer:
-              targetEntity: User
-              inversedBy: assignedBugs
-          manyToMany:
-            products:
-              targetEntity: Product
-
-
 Here we have the entity, id and primitive type definitions.
 For the "created" field we have used the ``datetime`` type,
 which translates the YYYY-mm-dd HH:mm:ss database format
 into a PHP DateTime instance and back.
 
 After the field definitions, the two qualified references to the
-user entity are defined. They are created by the ``many-to-one``
-tag. The class name of the related entity has to be specified with
-the ``target-entity`` attribute, which is enough information for
-the database mapper to access the foreign-table. Since
+user entity are defined. They are created by the ``ManyToOne``
+attribute. The class name of the related entity has to be specified with
+the ``targetEntity`` parameter, which is enough information for
+the database mapper to access the foreign table. Since
 ``reporter`` and ``engineer`` are on the owning side of a
-bi-directional relation, we also have to specify the ``inversed-by``
-attribute. They have to point to the field names on the inverse
-side of the relationship. We will see in the next example that the ``inversed-by``
-attribute has a counterpart ``mapped-by`` which makes that
+bi-directional relation, we also have to specify the ``inversedBy``
+parameter. They have to point to the field names on the inverse
+side of the relationship. We will see in the next example that the ``inversedBy``
+parameter has a counterpart ``mappedBy`` which makes that
 the inverse side.
 
 The last definition is for the ``Bug#products`` collection. It
 holds all products where the specific bug occurs. Again
-you have to define the ``target-entity`` and ``field`` attributes
-on the ``many-to-many`` tag.
+you have to define the ``targetEntity`` and ``field`` parameters
+on the ``ManyToMany`` attribute.
 
 Finally, we'll add metadata mappings for the ``User`` entity.
 
@@ -1249,47 +1099,6 @@ Finally, we'll add metadata mappings for the ``User`` entity.
             // .. (other code)
         }
 
-    .. code-block:: annotation
-
-        <?php
-        // src/User.php
-
-        use Doctrine\ORM\Mapping as ORM;
-
-        /**
-         * @ORM\Entity
-         * @ORM\Table(name="users")
-         */
-        class User
-        {
-            /**
-             * @ORM\Id
-             * @ORM\GeneratedValue
-             * @ORM\Column(type="integer")
-             * @var int
-             */
-            private int|null $id = null;
-
-            /**
-             * @ORM\Column(type="string")
-             * @var string
-             */
-            private string $name;
-
-            /**
-             * @ORM\OneToMany(targetEntity="Bug", mappedBy="reporter")
-             * @var Collection<int, Bug> An ArrayCollection of Bug objects.
-             */
-            private Collection $reportedBugs;
-
-            /**
-             * @ORM\OneToMany(targetEntity="Bug", mappedBy="engineer")
-             * @var Collection<int, Bug> An ArrayCollection of Bug objects.
-             */
-            private Collection $assignedBugs;
-
-            // .. (other code)
-        }
     .. code-block:: xml
 
         <!-- config/xml/User.dcm.xml -->
@@ -1309,32 +1118,6 @@ Finally, we'll add metadata mappings for the ``User`` entity.
                  <one-to-many target-entity="Bug" field="assignedBugs" mapped-by="engineer" />
              </entity>
         </doctrine-mapping>
-
-.. note::
-    The YAML driver is deprecated and will be removed in version 3.0.
-    It is strongly recommended to switch to one of the other mappings.
-
-    .. code-block:: yaml
-
-        # config/yaml/User.dcm.yml
-        User:
-          type: entity
-          table: users
-          id:
-            id:
-              type: integer
-              generator:
-                strategy: AUTO
-          fields:
-            name:
-              type: string
-          oneToMany:
-            reportedBugs:
-              targetEntity: Bug
-              mappedBy: reporter
-            assignedBugs:
-              targetEntity: Bug
-              mappedBy: engineer
 
 Here are some new things to mention about the ``one-to-many`` tags.
 Remember that we discussed about the inverse and owning side. Now
@@ -1800,21 +1583,6 @@ we have to adjust the metadata slightly.
             // ...
         }
 
-    .. code-block:: annotation
-
-        <?php
-
-        use Doctrine\ORM\Mapping as ORM;
-
-        /**
-         * @ORM\Entity(repositoryClass="BugRepository")
-         * @ORM\Table(name="bugs")
-         */
-        class Bug
-        {
-            // ...
-        }
-
     .. code-block:: xml
 
         <doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
@@ -1826,16 +1594,6 @@ we have to adjust the metadata slightly.
 
               </entity>
         </doctrine-mapping>
-
-.. note::
-    The YAML driver is deprecated and will be removed in version 3.0.
-    It is strongly recommended to switch to one of the other mappings.
-
-    .. code-block:: yaml
-
-        Bug:
-          type: entity
-          repositoryClass: BugRepository
 
 Now we can remove our query logic in all the places and instead use them through the EntityRepository.
 As an example here is the code of the first use case "List of Bugs":

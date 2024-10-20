@@ -8,7 +8,7 @@ on:
       - .github/workflows/continuous-integration.yml
       - ci/**
       - composer.*
-      - lib/**
+      - src/**
       - phpunit.xml.dist
       - tests/**
   push:
@@ -18,7 +18,7 @@ on:
       - .github/workflows/continuous-integration.yml
       - ci/**
       - composer.*
-      - lib/**
+      - src/**
       - phpunit.xml.dist
       - tests/**
 
@@ -33,36 +33,33 @@ jobs:
     strategy:
       matrix:
         php-version:
-          - "7.2"
-          - "7.3"
-          - "7.4"
-          - "8.0"
           - "8.1"
           - "8.2"
+          - "8.3"
+          - "8.4"
         dbal-version:
           - "default"
+          - "3.7"
         extension:
+          - "sqlite3"
           - "pdo_sqlite"
-        proxy:
-          - "common"
+        deps:
+          - "highest"
         include:
-          - php-version: "8.0"
-            dbal-version: "2.13"
+          - php-version: "8.2"
+            dbal-version: "4@dev"
             extension: "pdo_sqlite"
           - php-version: "8.2"
-            dbal-version: "3@dev"
-            extension: "pdo_sqlite"
-          - php-version: "8.2"
-            dbal-version: "default"
+            dbal-version: "4@dev"
             extension: "sqlite3"
           - php-version: "8.1"
             dbal-version: "default"
-            proxy: "lazy-ghost"
+            deps: "lowest"
             extension: "pdo_sqlite"
 
     steps:
       - name: "Checkout"
-        uses: "actions/checkout@v3"
+        uses: "actions/checkout@v4"
         with:
           fetch-depth: 2
 
@@ -79,26 +76,25 @@ jobs:
         if: "${{ matrix.dbal-version != 'default' }}"
 
       - name: "Install dependencies with Composer"
-        uses: "ramsey/composer-install@v2"
+        uses: "ramsey/composer-install@v3"
         with:
           composer-options: "--ignore-platform-req=php+"
+          dependency-versions: "${{ matrix.deps }}"
 
       - name: "Run PHPUnit"
         run: "vendor/bin/phpunit -c ci/github/phpunit/${{ matrix.extension }}.xml --coverage-clover=coverage-no-cache.xml"
         env:
             ENABLE_SECOND_LEVEL_CACHE: 0
-            ORM_PROXY_IMPLEMENTATION: "${{ matrix.proxy }}"
 
       - name: "Run PHPUnit with Second Level Cache"
         run: "vendor/bin/phpunit -c ci/github/phpunit/${{ matrix.extension }}.xml --exclude-group performance,non-cacheable,locking_functional --coverage-clover=coverage-cache.xml"
         env:
             ENABLE_SECOND_LEVEL_CACHE: 1
-            ORM_PROXY_IMPLEMENTATION: "${{ matrix.proxy }}"
 
       - name: "Upload coverage file"
-        uses: "actions/upload-artifact@v3"
+        uses: "actions/upload-artifact@v4"
         with:
-          name: "phpunit-${{ matrix.extension }}-${{ matrix.php-version }}-${{ matrix.dbal-version }}-coverage"
+          name: "phpunit-${{ matrix.extension }}-${{ matrix.php-version }}-${{ matrix.dbal-version }}-${{ matrix.deps }}-coverage"
           path: "coverage*.xml"
 
 
@@ -111,21 +107,23 @@ jobs:
       matrix:
         php-version:
           - "8.2"
+          - "8.3"
+          - "8.4"
         dbal-version:
           - "default"
-          - "3@dev"
+          - "3.7"
         postgres-version:
           - "15"
         extension:
           - pdo_pgsql
           - pgsql
         include:
-          - php-version: "8.0"
-            dbal-version: "2.13"
+          - php-version: "8.2"
+            dbal-version: "4@dev"
             postgres-version: "14"
             extension: pdo_pgsql
           - php-version: "8.2"
-            dbal-version: "default"
+            dbal-version: "3.7"
             postgres-version: "9.6"
             extension: pdo_pgsql
 
@@ -143,7 +141,7 @@ jobs:
 
     steps:
       - name: "Checkout"
-        uses: "actions/checkout@v3"
+        uses: "actions/checkout@v4"
         with:
           fetch-depth: 2
 
@@ -160,7 +158,7 @@ jobs:
         if: "${{ matrix.dbal-version != 'default' }}"
 
       - name: "Install dependencies with Composer"
-        uses: "ramsey/composer-install@v2"
+        uses: "ramsey/composer-install@v3"
         with:
           composer-options: "--ignore-platform-req=php+"
 
@@ -168,9 +166,9 @@ jobs:
         run: "vendor/bin/phpunit -c ci/github/phpunit/pdo_pgsql.xml --coverage-clover=coverage.xml"
 
       - name: "Upload coverage file"
-        uses: "actions/upload-artifact@v3"
+        uses: "actions/upload-artifact@v4"
         with:
-          name: "${{ github.job }}-${{ matrix.postgres-version }}-${{ matrix.php-version }}-${{ matrix.dbal-version }}-coverage"
+          name: "${{ github.job }}-${{ matrix.postgres-version }}-${{ matrix.php-version }}-${{ matrix.dbal-version }}-${{ matrix.extension }}-coverage"
           path: "coverage.xml"
 
 
@@ -183,36 +181,34 @@ jobs:
       matrix:
         php-version:
           - "8.2"
+          - "8.3"
+          - "8.4"
         dbal-version:
           - "default"
-          - "3@dev"
+          - "3.7"
+          - "4@dev"
         mariadb-version:
-          - "10.9"
+          - "11.4"
         extension:
           - "mysqli"
           - "pdo_mysql"
-        include:
-          - php-version: "8.0"
-            dbal-version: "2.13"
-            mariadb-version: "10.6"
-            extension: "pdo_mysql"
 
     services:
       mariadb:
         image: "mariadb:${{ matrix.mariadb-version }}"
         env:
-          MYSQL_ALLOW_EMPTY_PASSWORD: yes
-          MYSQL_DATABASE: "doctrine_tests"
+          MARIADB_ALLOW_EMPTY_ROOT_PASSWORD: yes
+          MARIADB_DATABASE: "doctrine_tests"
 
         options: >-
-          --health-cmd "mysqladmin ping --silent"
+          --health-cmd "healthcheck.sh --connect --innodb_initialized"
 
         ports:
           - "3306:3306"
 
     steps:
       - name: "Checkout"
-        uses: "actions/checkout@v3"
+        uses: "actions/checkout@v4"
         with:
           fetch-depth: 2
 
@@ -229,7 +225,7 @@ jobs:
           extensions: "${{ matrix.extension }}"
 
       - name: "Install dependencies with Composer"
-        uses: "ramsey/composer-install@v2"
+        uses: "ramsey/composer-install@v3"
         with:
           composer-options: "--ignore-platform-req=php+"
 
@@ -237,7 +233,7 @@ jobs:
         run: "vendor/bin/phpunit -c ci/github/phpunit/${{ matrix.extension }}.xml --coverage-clover=coverage.xml"
 
       - name: "Upload coverage file"
-        uses: "actions/upload-artifact@v3"
+        uses: "actions/upload-artifact@v4"
         with:
           name: "${{ github.job }}-${{ matrix.mariadb-version }}-${{ matrix.extension }}-${{ matrix.php-version }}-${{ matrix.dbal-version }}-coverage"
           path: "coverage.xml"
@@ -252,9 +248,11 @@ jobs:
       matrix:
         php-version:
           - "8.2"
+          - "8.3"
+          - "8.4"
         dbal-version:
           - "default"
-          - "3@dev"
+          - "3.7"
         mysql-version:
           - "5.7"
           - "8.0"
@@ -262,8 +260,12 @@ jobs:
           - "mysqli"
           - "pdo_mysql"
         include:
-          - php-version: "8.0"
-            dbal-version: "2.13"
+          - php-version: "8.2"
+            dbal-version: "4@dev"
+            mysql-version: "8.0"
+            extension: "mysqli"
+          - php-version: "8.2"
+            dbal-version: "4@dev"
             mysql-version: "8.0"
             extension: "pdo_mysql"
 
@@ -281,7 +283,7 @@ jobs:
 
     steps:
       - name: "Checkout"
-        uses: "actions/checkout@v3"
+        uses: "actions/checkout@v4"
         with:
           fetch-depth: 2
 
@@ -298,7 +300,7 @@ jobs:
         if: "${{ matrix.dbal-version != 'default' }}"
 
       - name: "Install dependencies with Composer"
-        uses: "ramsey/composer-install@v2"
+        uses: "ramsey/composer-install@v3"
         with:
           composer-options: "--ignore-platform-req=php+"
 
@@ -313,44 +315,10 @@ jobs:
             ENABLE_SECOND_LEVEL_CACHE: 1
 
       - name: "Upload coverage files"
-        uses: "actions/upload-artifact@v3"
+        uses: "actions/upload-artifact@v4"
         with:
           name: "${{ github.job }}-${{ matrix.mysql-version }}-${{ matrix.extension }}-${{ matrix.php-version }}-${{ matrix.dbal-version }}-coverage"
           path: "coverage*.xml"
-
-
-  phpunit-lower-php-versions:
-    name: "PHPUnit with SQLite"
-    runs-on: "ubuntu-22.04"
-
-    strategy:
-      matrix:
-        php-version:
-          - "7.1"
-        deps:
-          - "highest"
-          - "lowest"
-
-    steps:
-      - name: "Checkout"
-        uses: "actions/checkout@v3"
-        with:
-          fetch-depth: 2
-
-      - name: "Install PHP"
-        uses: "shivammathur/setup-php@v2"
-        with:
-          php-version: "${{ matrix.php-version }}"
-          ini-values: "zend.assertions=1, apc.enable_cli=1"
-
-      - name: "Install dependencies with Composer"
-        uses: "ramsey/composer-install@v2"
-        with:
-          dependency-versions: "${{ matrix.deps }}"
-
-      - name: "Run PHPUnit"
-        run: "vendor/bin/phpunit -c ci/github/phpunit/pdo_sqlite.xml"
-
 
   upload_coverage:
     name: "Upload coverage to Codecov"
@@ -363,16 +331,18 @@ jobs:
 
     steps:
       - name: "Checkout"
-        uses: "actions/checkout@v3"
+        uses: "actions/checkout@v4"
         with:
           fetch-depth: 2
 
       - name: "Download coverage files"
-        uses: "actions/download-artifact@v3"
+        uses: "actions/download-artifact@v4"
         with:
           path: "reports"
 
       - name: "Upload to Codecov"
-        uses: "codecov/codecov-action@v3"
+        uses: "codecov/codecov-action@v4"
         with:
           directory: reports
+        env:
+          CODECOV_TOKEN: "${{ secrets.CODECOV_TOKEN }}"

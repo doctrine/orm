@@ -338,10 +338,11 @@ Performance of different deletion strategies
 Deleting an object with all its associated objects can be achieved
 in multiple ways with very different performance impacts.
 
-1. If an association is marked as ``CASCADE=REMOVE`` Doctrine ORM
-   will fetch this association. If its a Single association it will
-   pass this entity to
-   ``EntityManager#remove()``. If the association is a collection, Doctrine will loop over all    its elements and pass them to``EntityManager#remove()``.
+1. If an association is marked as ``CASCADE=REMOVE`` Doctrine ORM will
+   fetch this association. If it's a Single association it will pass
+   this entity to ``EntityManager#remove()``. If the association is a
+   collection, Doctrine will loop over all its elements and pass them to
+   ``EntityManager#remove()``.
    In both cases the cascade remove semantics are applied recursively.
    For large object graphs this removal strategy can be very costly.
 2. Using a DQL ``DELETE`` statement allows you to delete multiple
@@ -412,77 +413,6 @@ automatically without invoking the ``detach`` method:
 
 The ``detach`` operation is usually not as frequently needed and
 used as ``persist`` and ``remove``.
-
-Merging entities
-----------------
-
-Merging entities refers to the merging of (usually detached)
-entities into the context of an EntityManager so that they become
-managed again. To merge the state of an entity into an
-EntityManager use the ``EntityManager#merge($entity)`` method. The
-state of the passed entity will be merged into a managed copy of
-this entity and this copy will subsequently be returned.
-
-Example:
-
-.. code-block:: php
-
-    <?php
-    $detachedEntity = unserialize($serializedEntity); // some detached entity
-    $entity = $em->merge($detachedEntity);
-    // $entity now refers to the fully managed copy returned by the merge operation.
-    // The EntityManager $em now manages the persistence of $entity as usual.
-
-
-The semantics of the merge operation, applied to an entity X, are
-as follows:
-
-
--  If X is a detached entity, the state of X is copied onto a
-   pre-existing managed entity instance X' of the same identity.
--  If X is a new entity instance, a new managed copy X' will be
-   created and the state of X is copied onto this managed instance.
--  If X is a removed entity instance, an InvalidArgumentException
-   will be thrown.
--  If X is a managed entity, it is ignored by the merge operation,
-   however, the merge operation is cascaded to entities referenced by
-   relationships from X if these relationships have been mapped with
-   the cascade element value MERGE or ALL (see ":ref:`transitive-persistence`").
--  For all entities Y referenced by relationships from X having the
-   cascade element value MERGE or ALL, Y is merged recursively as Y'.
-   For all such Y referenced by X, X' is set to reference Y'. (Note
-   that if X is managed then X is the same object as X'.)
--  If X is an entity merged to X', with a reference to another
-   entity Y, where cascade=MERGE or cascade=ALL is not specified, then
-   navigation of the same association from X' yields a reference to a
-   managed object Y' with the same persistent identity as Y.
-
-The ``merge`` operation will throw an ``OptimisticLockException``
-if the entity being merged uses optimistic locking through a
-version field and the versions of the entity being merged and the
-managed copy don't match. This usually means that the entity has
-been modified while being detached.
-
-The ``merge`` operation is usually not as frequently needed and
-used as ``persist`` and ``remove``. The most common scenario for
-the ``merge`` operation is to reattach entities to an EntityManager
-that come from some cache (and are therefore detached) and you want
-to modify and persist such an entity.
-
-.. warning::
-
-    If you need to perform multiple merges of entities that share certain subparts
-    of their object-graphs and cascade merge, then you have to call ``EntityManager#clear()`` between the
-    successive calls to ``EntityManager#merge()``. Otherwise you might end up with
-    multiple copies of the "same" object in the database, however with different ids.
-
-.. note::
-
-    If you load some detached entities from a cache and you do
-    not need to persist or delete them or otherwise make use of them
-    without the need for persistence services there is no need to use
-    ``merge``. I.e. you can simply pass detached objects from a cache
-    directly to the view.
 
 
 Synchronization with the Database
@@ -594,7 +524,7 @@ during development.
 .. note::
 
     Do not invoke ``flush`` after every change to an entity
-    or every single invocation of persist/remove/merge/... This is an
+    or every single invocation of persist/remove/... This is an
     anti-pattern and unnecessarily reduces the performance of your
     application. Instead, form units of work that operate on your
     objects and call ``flush`` when you are done. While serving a
@@ -782,6 +712,23 @@ and these associations are mapped as EAGER, they will automatically
 be loaded together with the entity being queried and is thus
 immediately available to your application.
 
+Eager Loading can also be configured at runtime through
+``AbstractQuery::setFetchMode`` in DQL or Native Queries.
+
+Eager loading for many-to-one and one-to-one associations is using either a
+LEFT JOIN or a second query for fetching the related entity eagerly.
+
+Eager loading for many-to-one associations uses a second query to load
+the collections for several entities at the same time.
+
+When many-to-many, one-to-one or one-to-many associations are eagerly loaded,
+then the global batch size configuration is used to avoid IN(?) queries with
+too many arguments. The default batch size is 100 and can be changed with
+``Configuration::setEagerFetchBatchSize()``.
+
+For eagerly loaded Many-To-Many associations one query has to be made for each
+collection.
+
 By Lazy Loading
 ~~~~~~~~~~~~~~~
 
@@ -845,7 +792,7 @@ By default the EntityManager returns a default implementation of
 ``Doctrine\ORM\EntityRepository`` when you call
 ``EntityManager#getRepository($entityClass)``. You can overwrite
 this behaviour by specifying the class name of your own Entity
-Repository in the Attribute, Annotation, XML or YAML metadata. In large
+Repository in the Attribute or XML metadata. In large
 applications that require lots of specialized DQL queries using a
 custom repository is one recommended way of grouping these queries
 in a central location.

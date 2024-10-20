@@ -50,38 +50,6 @@ and year of production as primary keys:
             }
         }
 
-    .. code-block:: annotation
-
-        <?php
-        namespace VehicleCatalogue\Model;
-
-        /**
-         * @Entity
-         */
-        class Car
-        {
-            /** @Id @Column(type="string") */
-            private string $name;
-            /** @Id @Column(type="integer") */
-            private int $year;
-
-            public function __construct($name, $year)
-            {
-                $this->name = $name;
-                $this->year = $year;
-            }
-
-            public function getModelName(): string
-            {
-                return $this->name;
-            }
-
-            public function getYearOfProduction(): int
-            {
-                return $this->year;
-            }
-        }
-
     .. code-block:: xml
 
         <?xml version="1.0" encoding="UTF-8"?>
@@ -95,16 +63,6 @@ and year of production as primary keys:
                 <id field="year" type="integer" />
             </entity>
         </doctrine-mapping>
-
-    .. code-block:: yaml
-
-        VehicleCatalogue\Model\Car:
-          type: entity
-          id:
-            name:
-              type: string
-            year:
-              type: integer
 
 Now you can use this entity:
 
@@ -160,7 +118,6 @@ The semantics of mapping identity through foreign entities are easy:
 -   Only allowed on Many-To-One or One-To-One associations.
 -   Plug an ``#[Id]`` attribute onto every association.
 -   Set an attribute ``association-key`` with the field name of the association in XML.
--   Set a key ``associationKey:`` with the field name of the association in YAML.
 
 Use-Case 1: Dynamic Attributes
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -188,7 +145,7 @@ We keep up the example of an Article with arbitrary attributes, the mapping look
             #[OneToMany(targetEntity: ArticleAttribute::class, mappedBy: 'article', cascade: ['ALL'], indexBy: 'attribute')]
             private Collection $attributes;
 
-            public function addAttribute(string $name, ArticleAttribute $value): void
+            public function addAttribute(string $name, string $value): void
             {
                 $this->attributes[$name] = new ArticleAttribute($name, $value, $this);
             }
@@ -214,57 +171,6 @@ We keep up the example of an Article with arbitrary attributes, the mapping look
             }
         }
 
-    .. code-block:: annotation
-
-        <?php
-        namespace Application\Model;
-
-        use Doctrine\Common\Collections\ArrayCollection;
-
-        /**
-         * @Entity
-         */
-        class Article
-        {
-            /** @Id @Column(type="integer") @GeneratedValue */
-            private int|null $id = null;
-            /** @Column(type="string") */
-            private string $title;
-
-            /**
-             * @OneToMany(targetEntity="ArticleAttribute", mappedBy="article", cascade={"ALL"}, indexBy="attribute")
-             * @var Collection<int, ArticleAttribute>
-             */
-            private Collection $attributes;
-
-            public function addAttribute($name, $value): void
-            {
-                $this->attributes[$name] = new ArticleAttribute($name, $value, $this);
-            }
-        }
-
-        /**
-         * @Entity
-         */
-        class ArticleAttribute
-        {
-            /** @Id @ManyToOne(targetEntity="Article", inversedBy="attributes") */
-            private Article|null $article;
-
-            /** @Id @Column(type="string") */
-            private string $attribute;
-
-            /** @Column(type="string") */
-            private string $value;
-
-            public function __construct($name, $value, $article)
-            {
-                $this->attribute = $name;
-                $this->value = $value;
-                $this->article = $article;
-            }
-        }
-
     .. code-block:: xml
 
         <doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
@@ -282,24 +188,6 @@ We keep up the example of an Article with arbitrary attributes, the mapping look
              <entity>
 
         </doctrine-mapping>
-
-    .. code-block:: yaml
-
-        Application\Model\ArticleAttribute:
-          type: entity
-          id:
-            article:
-              associationKey: true
-            attribute:
-              type: string
-          fields:
-            value:
-              type: string
-          manyToOne:
-            article:
-              targetEntity: Article
-              inversedBy: attributes
-
 
 Use-Case 2: Simple Derived Identity
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -327,26 +215,6 @@ One good example for this is a user-address relationship:
             #[Id, OneToOne(targetEntity: User::class)]
             private User|null $user = null;
         }
-
-    .. code-block:: yaml
-
-        User:
-          type: entity
-          id:
-            id:
-              type: integer
-              generator:
-                strategy: AUTO
-
-        Address:
-          type: entity
-          id:
-            user:
-              associationKey: true
-          oneToOne:
-            user:
-              targetEntity: User
-
 
 Use-Case 3: Join-Table with Metadata
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

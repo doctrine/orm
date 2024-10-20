@@ -464,6 +464,11 @@ hierarchies:
     $query = $em->createQuery('SELECT u FROM Doctrine\Tests\Models\Company\CompanyPerson u WHERE u INSTANCE OF Doctrine\Tests\Models\Company\CompanyEmployee');
     $query = $em->createQuery('SELECT u FROM Doctrine\Tests\Models\Company\CompanyPerson u WHERE u INSTANCE OF ?1');
     $query = $em->createQuery('SELECT u FROM Doctrine\Tests\Models\Company\CompanyPerson u WHERE u NOT INSTANCE OF ?1');
+    $query->setParameter(0, $em->getClassMetadata(CompanyEmployee::class));
+
+.. note::
+    To use a class as parameter, you have to bind its class metadata:
+    ``$query->setParameter(0, $em->getClassMetadata(CompanyEmployee::class);``.
 
 Get all users visible on a given website that have chosen certain gender:
 
@@ -519,8 +524,8 @@ when the DQL is switched to an arbitrary join.
       aggregation (GROUP BY)
 
 
-Partial Object Syntax
-^^^^^^^^^^^^^^^^^^^^^
+Partial Hydration Syntax
+^^^^^^^^^^^^^^^^^^^^^^^^
 
 By default when you run a DQL query in Doctrine and select only a
 subset of the fields for a given entity, you do not receive objects
@@ -528,7 +533,7 @@ back. Instead, you receive only arrays as a flat rectangular result
 set, similar to how you would if you were just using SQL directly
 and joining some data.
 
-If you want to select partial objects you can use the ``partial``
+If you want to select partial objects or fields in array hydration you can use the ``partial``
 DQL keyword:
 
 .. code-block:: php
@@ -537,12 +542,13 @@ DQL keyword:
     $query = $em->createQuery('SELECT partial u.{id, username} FROM CmsUser u');
     $users = $query->getResult(); // array of partially loaded CmsUser objects
 
-You use the partial syntax when joining as well:
+You can use the partial syntax when joining as well:
 
 .. code-block:: php
 
     <?php
     $query = $em->createQuery('SELECT partial u.{id, username}, partial a.{id, name} FROM CmsUser u JOIN u.articles a');
+    $usersArray = $query->getArrayResult(); // array of partially loaded CmsUser and CmsArticle fields
     $users = $query->getResult(); // array of partially loaded CmsUser objects
 
 "NEW" Operator Syntax
@@ -582,7 +588,91 @@ And then use the ``NEW`` DQL keyword :
     $query = $em->createQuery('SELECT NEW CustomerDTO(c.name, e.email, a.city, SUM(o.value)) FROM Customer c JOIN c.email e JOIN c.address a JOIN c.orders o GROUP BY c');
     $users = $query->getResult(); // array of CustomerDTO
 
-Note that you can only pass scalar expressions to the constructor.
+You can also nest several DTO : 
+
+.. code-block:: php
+
+    <?php
+    class CustomerDTO
+    {
+        public function __construct(string $name, string $email, AddressDTO $address, string|null $value = null)
+        {
+            // Bind values to the object properties.
+        }
+    }
+
+    class AddressDTO
+    {
+        public function __construct(string $street, string $city, string $zip)
+        {
+            // Bind values to the object properties.
+        }
+    }
+
+.. code-block:: php
+
+    <?php
+    $query = $em->createQuery('SELECT NEW CustomerDTO(c.name, e.email, NEW AddressDTO(a.street, a.city, a.zip)) FROM Customer c JOIN c.email e JOIN c.address a');
+    $users = $query->getResult(); // array of CustomerDTO
+
+Note that you can only pass scalar expressions or other Data Transfer Objects to the constructor.
+
+If you use your data transfer objects for multiple queries, and you would rather not have to
+specify arguments that precede the ones you are really interested in, you can use named arguments.
+
+Consider the following DTO, which uses optional arguments:
+
+.. code-block:: php
+
+    <?php
+
+    class CustomerDTO
+    {
+        public function __construct(
+            public string|null $name = null,
+            public string|null $email = null,
+            public string|null $city = null,
+            public mixed|null $value = null,
+            public AddressDTO|null $address = null,
+        ) {
+        }
+    }
+
+You can specify arbitrary arguments in an arbitrary order by using the named argument syntax, and the ORM will try to match argument names with the selected column names.
+The syntax relies on the NAMED keyword, like so:
+
+.. code-block:: php
+
+    <?php
+    $query = $em->createQuery('SELECT NEW NAMED CustomerDTO(a.city, c.name) FROM Customer c JOIN c.address a');
+    $users = $query->getResult(); // array of CustomerDTO
+
+    // CustomerDTO => {name : 'SMITH', email: null, city: 'London', value: null}
+
+ORM will also give precedence to column aliases over column names :
+
+.. code-block:: php
+
+    <?php
+    $query = $em->createQuery('SELECT NEW NAMED CustomerDTO(c.name, CONCAT(a.city, ' ' , a.zip) AS value) FROM Customer c JOIN c.address a');
+    $users = $query->getResult(); // array of CustomerDTO
+
+    // CustomerDTO => {name : 'DOE', email: null, city: null, value: 'New York 10011'}
+
+To define a custom name for a DTO constructor argument, you can either alias the column with the ``AS`` keyword.
+
+The ``NAMED`` keyword must precede all DTO you want to instantiate :
+
+.. code-block:: php
+
+    <?php
+    $query = $em->createQuery('SELECT NEW NAMED CustomerDTO(c.name, NEW NAMED AddressDTO(a.street, a.city, a.zip) AS address) FROM Customer c JOIN c.address a');
+    $users = $query->getResult(); // array of CustomerDTO
+
+    // CustomerDTO => {name : 'DOE', email: null, city: null, value: 'New York 10011'}
+
+If two arguments have the same name, a ``DuplicateFieldException`` is thrown.
+If a field cannot be matched with a property name, a ``NoMatchingPropertyException`` is thrown. This typically happens when using functions without aliasing them.
 
 Using INDEX BY
 ~~~~~~~~~~~~~~
@@ -807,7 +897,7 @@ classes have to implement the base class :
     namespace MyProject\Query\AST;
 
     use Doctrine\ORM\Query\AST\Functions\FunctionNode;
-    use Doctrine\ORM\Query\Lexer;
+    use Doctrine\ORM\Query\TokenType;
 
     class MysqlFloor extends FunctionNode
     {
@@ -822,12 +912,12 @@ classes have to implement the base class :
 
         public function parse(\Doctrine\ORM\Query\Parser $parser)
         {
-            $parser->match(Lexer::T_IDENTIFIER);
-            $parser->match(Lexer::T_OPEN_PARENTHESIS);
+            $parser->match(TokenType::T_IDENTIFIER);
+            $parser->match(TokenType::T_OPEN_PARENTHESIS);
 
             $this->simpleArithmeticExpression = $parser->SimpleArithmeticExpression();
 
-            $parser->match(Lexer::T_CLOSE_PARENTHESIS);
+            $parser->match(TokenType::T_CLOSE_PARENTHESIS);
         }
     }
 
@@ -998,7 +1088,7 @@ The Query class
 ---------------
 
 An instance of the ``Doctrine\ORM\Query`` class represents a DQL
-query. You create a Query instance be calling
+query. You create a Query instance by calling
 ``EntityManager#createQuery($dql)``, passing the DQL query string.
 Alternatively you can create an empty ``Query`` instance and invoke
 ``Query#setDQL($dql)`` afterwards. Here are some examples:
@@ -1015,58 +1105,146 @@ Alternatively you can create an empty ``Query`` instance and invoke
     $q = $em->createQuery();
     $q->setDQL('select u from MyProject\Model\User u');
 
-Query Result Formats
-~~~~~~~~~~~~~~~~~~~~
+Query Result Formats (Hydration Modes)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The format in which the result of a DQL SELECT query is returned
-can be influenced by a so-called ``hydration mode``. A hydration
-mode specifies a particular way in which a SQL result set is
-transformed. Each hydration mode has its own dedicated method on
-the Query class. Here they are:
+The way in which the SQL result set of a DQL SELECT query is transformed
+to PHP is determined by the so-called "hydration mode".
 
+``getResult()``
+^^^^^^^^^^^^^^^
 
--  ``Query#getResult()``: Retrieves a collection of objects. The
-   result is either a plain collection of objects (pure) or an array
-   where the objects are nested in the result rows (mixed).
--  ``Query#getSingleResult()``: Retrieves a single object. If the
-   result contains more than one object, an ``NonUniqueResultException``
-   is thrown. If the result contains no objects, an ``NoResultException``
-   is thrown. The pure/mixed distinction does not apply.
--  ``Query#getOneOrNullResult()``: Retrieve a single object. If the
-   result contains more than one object, a ``NonUniqueResultException``
-   is thrown. If no object is found null will be returned.
--  ``Query#getArrayResult()``: Retrieves an array graph (a nested
-   array) that is largely interchangeable with the object graph
-   generated by ``Query#getResult()`` for read-only purposes.
+Retrieves a collection of objects. The result is either a plain collection of objects (pure) or an array
+where the objects are nested in the result rows (mixed):
 
-    .. note::
+.. code-block:: php
 
-        An array graph can differ from the corresponding object
-        graph in certain scenarios due to the difference of the identity
-        semantics between arrays and objects.
+    <?php
+    use Doctrine\ORM\AbstractQuery;
 
+    $query = $em->createQuery('SELECT u FROM User u');
+    $users = $query->getResult();
+    // same as:
+    $users = $query->getResult(AbstractQuery::HYDRATE_OBJECT);
 
+- Objects fetched in a FROM clause are returned as a Set, that means every
+  object is only ever included in the resulting array once. This is the case
+  even when using JOIN or GROUP BY in ways that return the same row for an
+  object multiple times. If the hydrator sees the same object multiple times,
+  then it makes sure it is only returned once.
 
--  ``Query#getScalarResult()``: Retrieves a flat/rectangular result
-   set of scalar values that can contain duplicate data. The
-   pure/mixed distinction does not apply.
--  ``Query#getSingleScalarResult()``: Retrieves a single scalar
-   value from the result returned by the dbms. If the result contains
-   more than a single scalar value, an exception is thrown. The
-   pure/mixed distinction does not apply.
+- If an object is already in memory from a previous query of any kind, then
+  then the previous object is used, even if the database may contain more
+  recent data. This even happens if the previous object is still an unloaded proxy.
 
-Instead of using these methods, you can alternatively use the
-general-purpose method
-``Query#execute(array $params = [], $hydrationMode = Query::HYDRATE_OBJECT)``.
-Using this method you can directly supply the hydration mode as the
-second parameter via one of the Query constants. In fact, the
-methods mentioned earlier are just convenient shortcuts for the
-execute method. For example, the method ``Query#getResult()``
-internally invokes execute, passing in ``Query::HYDRATE_OBJECT`` as
-the hydration mode.
+``getArrayResult()``
+^^^^^^^^^^^^^^^^^^^^
 
-The use of the methods mentioned earlier is generally preferred as
-it leads to more concise code.
+Retrieves an array graph (a nested array) for read-only purposes.
+
+.. note::
+
+    An array graph can differ from the corresponding object
+    graph in certain scenarios due to the difference of the identity
+    semantics between arrays and objects.
+
+.. code-block:: php
+
+    <?php
+    $users = $query->getArrayResult();
+    // same as:
+    $users = $query->getResult(AbstractQuery::HYDRATE_ARRAY);
+
+``getScalarResult()``
+^^^^^^^^^^^^^^^^^^^^^
+
+Retrieves a flat/rectangular result set of scalar values that can contain duplicate data. The
+pure/mixed distinction does not apply.
+
+.. code-block:: php
+
+    <?php
+    $users = $query->getScalarResult();
+    // same as:
+    $users = $query->getResult(AbstractQuery::HYDRATE_SCALAR);
+
+Fields from classes are prefixed by the DQL alias in the result.
+A query of the kind `SELECT u.name ...` returns a key `u_name` in the result rows.
+
+``getSingleScalarResult()``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Retrieves a single scalar value from the result returned by the database. If the result contains
+more than a single scalar value, a ``NonUniqueResultException`` is thrown. The pure/mixed distinction does not apply.
+
+.. code-block:: php
+
+    <?php
+    $query = $em->createQuery('SELECT COUNT(u.id) FROM User u');
+    $numUsers = $query->getSingleScalarResult();
+    // same as:
+    $numUsers = $query->getResult(AbstractQuery::HYDRATE_SINGLE_SCALAR);
+
+``getSingleColumnResult()``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Retrieves an array from a one-dimensional array of scalar values:
+
+.. code-block:: php
+
+    <?php
+    $query = $em->createQuery('SELECT a.id FROM User u');
+    $ids = $query->getSingleColumnResult();
+    // same as:
+    $ids = $query->getResult(AbstractQuery::HYDRATE_SCALAR_COLUMN);
+
+``getSingleResult()``
+^^^^^^^^^^^^^^^^^^^^^
+
+Retrieves a single object. If the result contains more than one object, a ``NonUniqueResultException``
+is thrown. If the result contains no objects, a ``NoResultException`` is thrown. The pure/mixed distinction does not apply.
+
+``getOneOrNullResult()``
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+Retrieves a single object. If the result contains more than one object, a ``NonUniqueResultException``
+is thrown. If no object is found, ``null`` will be returned.
+
+Custom Hydration Modes
+^^^^^^^^^^^^^^^^^^^^^^
+
+You can easily add your own custom hydration modes by first
+creating a class which extends ``AbstractHydrator``:
+
+.. code-block:: php
+
+    <?php
+    namespace MyProject\Hydrators;
+
+    use Doctrine\ORM\Internal\Hydration\AbstractHydrator;
+
+    class CustomHydrator extends AbstractHydrator
+    {
+        protected function _hydrateAll()
+        {
+            return $this->_stmt->fetchAllAssociative();
+        }
+    }
+
+Next you just need to add the class to the ORM configuration:
+
+.. code-block:: php
+
+    <?php
+    $em->getConfiguration()->addCustomHydrationMode('CustomHydrator', 'MyProject\Hydrators\CustomHydrator');
+
+Now the hydrator is ready to be used in your queries:
+
+.. code-block:: php
+
+    <?php
+    $query = $em->createQuery('SELECT u FROM CmsUser u');
+    $results = $query->getResult('CustomHydrator');
 
 Pure and Mixed Results
 ~~~~~~~~~~~~~~~~~~~~~~
@@ -1170,165 +1348,6 @@ will return the rows iterating the different top-level entities.
         [2] => Object (User)
         [3] => Object (Group)
 
-
-Hydration Modes
-~~~~~~~~~~~~~~~
-
-Each of the Hydration Modes makes assumptions about how the result
-is returned to user land. You should know about all the details to
-make best use of the different result formats:
-
-The constants for the different hydration modes are:
-
-
--  ``Query::HYDRATE_OBJECT``
--  ``Query::HYDRATE_ARRAY``
--  ``Query::HYDRATE_SCALAR``
--  ``Query::HYDRATE_SINGLE_SCALAR``
--  ``Query::HYDRATE_SCALAR_COLUMN``
-
-Object Hydration
-^^^^^^^^^^^^^^^^
-
-Object hydration hydrates the result set into the object graph:
-
-.. code-block:: php
-
-    <?php
-    $query = $em->createQuery('SELECT u FROM CmsUser u');
-    $users = $query->getResult(Query::HYDRATE_OBJECT);
-
-Sometimes the behavior in the object hydrator can be confusing, which is
-why we are listing as many of the assumptions here for reference:
-
-- Objects fetched in a FROM clause are returned as a Set, that means every
-  object is only ever included in the resulting array once. This is the case
-  even when using JOIN or GROUP BY in ways that return the same row for an
-  object multiple times. If the hydrator sees the same object multiple times,
-  then it makes sure it is only returned once.
-
-- If an object is already in memory from a previous query of any kind, then
-  then the previous object is used, even if the database may contain more
-  recent data. Data from the database is discarded. This even happens if the
-  previous object is still an unloaded proxy.
-
-This list might be incomplete.
-
-Array Hydration
-^^^^^^^^^^^^^^^
-
-You can run the same query with array hydration and the result set
-is hydrated into an array that represents the object graph:
-
-.. code-block:: php
-
-    <?php
-    $query = $em->createQuery('SELECT u FROM CmsUser u');
-    $users = $query->getResult(Query::HYDRATE_ARRAY);
-
-You can use the ``getArrayResult()`` shortcut as well:
-
-.. code-block:: php
-
-    <?php
-    $users = $query->getArrayResult();
-
-Scalar Hydration
-^^^^^^^^^^^^^^^^
-
-If you want to return a flat rectangular result set instead of an
-object graph you can use scalar hydration:
-
-.. code-block:: php
-
-    <?php
-    $query = $em->createQuery('SELECT u FROM CmsUser u');
-    $users = $query->getResult(Query::HYDRATE_SCALAR);
-    echo $users[0]['u_id'];
-
-The following assumptions are made about selected fields using
-Scalar Hydration:
-
-
-1. Fields from classes are prefixed by the DQL alias in the result.
-   A query of the kind 'SELECT u.name ..' returns a key 'u_name' in
-   the result rows.
-
-Single Scalar Hydration
-^^^^^^^^^^^^^^^^^^^^^^^
-
-If you have a query which returns just a single scalar value you can use
-single scalar hydration:
-
-.. code-block:: php
-
-    <?php
-    $query = $em->createQuery('SELECT COUNT(a.id) FROM CmsUser u LEFT JOIN u.articles a WHERE u.username = ?1 GROUP BY u.id');
-    $query->setParameter(1, 'jwage');
-    $numArticles = $query->getResult(Query::HYDRATE_SINGLE_SCALAR);
-
-You can use the ``getSingleScalarResult()`` shortcut as well:
-
-.. code-block:: php
-
-    <?php
-    $numArticles = $query->getSingleScalarResult();
-
-Scalar Column Hydration
-^^^^^^^^^^^^^^^^^^^^^^^
-
-If you have a query which returns a one-dimensional array of scalar values
-you can use scalar column hydration:
-
-.. code-block:: php
-
-    <?php
-    $query = $em->createQuery('SELECT a.id FROM CmsUser u');
-    $ids = $query->getResult(Query::HYDRATE_SCALAR_COLUMN);
-
-You can use the ``getSingleColumnResult()`` shortcut as well:
-
-.. code-block:: php
-
-    <?php
-    $ids = $query->getSingleColumnResult();
-
-Custom Hydration Modes
-^^^^^^^^^^^^^^^^^^^^^^
-
-You can easily add your own custom hydration modes by first
-creating a class which extends ``AbstractHydrator``:
-
-.. code-block:: php
-
-    <?php
-    namespace MyProject\Hydrators;
-
-    use Doctrine\ORM\Internal\Hydration\AbstractHydrator;
-
-    class CustomHydrator extends AbstractHydrator
-    {
-        protected function _hydrateAll()
-        {
-            return $this->_stmt->fetchAllAssociative();
-        }
-    }
-
-Next you just need to add the class to the ORM configuration:
-
-.. code-block:: php
-
-    <?php
-    $em->getConfiguration()->addCustomHydrationMode('CustomHydrator', 'MyProject\Hydrators\CustomHydrator');
-
-Now the hydrator is ready to be used in your queries:
-
-.. code-block:: php
-
-    <?php
-    $query = $em->createQuery('SELECT u FROM CmsUser u');
-    $results = $query->getResult('CustomHydrator');
-
 Iterating Large Result Sets
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -1381,7 +1400,7 @@ Result Cache API:
     $query->setResultCacheDriver(new ApcCache());
 
     $query->useResultCache(true)
-          ->setResultCacheLifeTime($seconds = 3600);
+          ->setResultCacheLifeTime(3600);
 
     $result = $query->getResult(); // cache miss
 
@@ -1392,7 +1411,7 @@ Result Cache API:
     $result = $query->getResult(); // saved in given result cache id.
 
     // or call useResultCache() with all parameters:
-    $query->useResultCache(true, $seconds = 3600, 'my_query_result');
+    $query->useResultCache(true, 3600, 'my_query_result');
     $result = $query->getResult(); // cache hit!
 
     // Introspection
@@ -1425,7 +1444,7 @@ userland:
    reloading this data. Partially loaded objects have to be passed to
    ``EntityManager::refresh()`` if they are to be reloaded fully from
    the database. This query hint is deprecated and will be removed
-   in the future (`Details <https://github.com/doctrine/orm/issues/8471>`_)
+   in the future (\ `Details <https://github.com/doctrine/orm/issues/8471>`_)
 -  ``Query::HINT_REFRESH`` - This query is used internally by
    ``EntityManager::refresh()`` and can be used in userland as well.
    If you specify this hint and a query returns the data for an entity
@@ -1457,7 +1476,7 @@ several methods to interact with it:
 
 -  ``Query::setQueryCacheDriver($driver)`` - Allows to set a Cache
    instance
--  ``Query::setQueryCacheLifeTime($seconds = 3600)`` - Set lifetime
+-  ``Query::setQueryCacheLifeTime($seconds)`` - Set lifetime
    of the query caching.
 -  ``Query::expireQueryCache($bool)`` - Enforce the expiring of the
    query cache if set to true.
@@ -1582,8 +1601,8 @@ Identifiers
     /* Alias Identification declaration (the "u" of "FROM User u") */
     AliasIdentificationVariable :: = identifier
 
-    /* identifier that must be a class name (the "User" of "FROM User u"), possibly as a fully qualified class name or namespace-aliased */
-    AbstractSchemaName ::= fully_qualified_name | aliased_name | identifier
+    /* identifier that must be a class name (the "User" of "FROM User u"), possibly as a fully qualified class name */
+    AbstractSchemaName ::= fully_qualified_name | identifier
 
     /* Alias ResultVariable declaration (the "total" of "COUNT(*) AS total") */
     AliasResultVariable = identifier
@@ -1683,7 +1702,7 @@ Select Expressions
     PartialObjectExpression ::= "PARTIAL" IdentificationVariable "." PartialFieldSet
     PartialFieldSet         ::= "{" SimpleStateField {"," SimpleStateField}* "}"
     NewObjectExpression     ::= "NEW" AbstractSchemaName "(" NewObjectArg {"," NewObjectArg}* ")"
-    NewObjectArg            ::= ScalarExpression | "(" Subselect ")"
+    NewObjectArg            ::= (ScalarExpression | "(" Subselect ")" | NewObjectExpression) ["AS" AliasResultVariable]
 
 Conditional Expressions
 ~~~~~~~~~~~~~~~~~~~~~~~

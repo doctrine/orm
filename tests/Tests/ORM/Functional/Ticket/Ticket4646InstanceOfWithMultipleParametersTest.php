@@ -1,0 +1,83 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Doctrine\Tests\ORM\Functional\Ticket;
+
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\DiscriminatorColumn;
+use Doctrine\ORM\Mapping\DiscriminatorMap;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\InheritanceType;
+use Doctrine\ORM\Mapping\Table;
+use Doctrine\Tests\OrmFunctionalTestCase;
+
+class Ticket4646InstanceOfWithMultipleParametersTest extends OrmFunctionalTestCase
+{
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->createSchemaForModels(
+            PersonTicket4646Multiple::class,
+            EmployeeTicket4646Multiple::class,
+            ManagerTicket4646Multiple::class,
+            InternTicket4646Multiple::class,
+        );
+    }
+
+    public function testInstanceOf(): void
+    {
+        $this->_em->persist(new PersonTicket4646Multiple());
+        $this->_em->persist(new EmployeeTicket4646Multiple());
+        $this->_em->persist(new ManagerTicket4646Multiple());
+        $this->_em->persist(new InternTicket4646Multiple());
+        $this->_em->flush();
+
+        $dql    = 'SELECT p FROM Doctrine\Tests\ORM\Functional\Ticket\PersonTicket4646Multiple p
+                WHERE p INSTANCE OF (Doctrine\Tests\ORM\Functional\Ticket\EmployeeTicket4646Multiple, Doctrine\Tests\ORM\Functional\Ticket\InternTicket4646Multiple)';
+        $query  = $this->_em->createQuery($dql);
+        $result = $query->getResult();
+
+        self::assertCount(2, $result);
+        self::assertContainsOnlyInstancesOf(PersonTicket4646Multiple::class, $result);
+    }
+}
+
+#[Table(name: 'instance_of_test_multiple_person')]
+#[Entity]
+#[InheritanceType(value: 'JOINED')]
+#[DiscriminatorColumn(name: 'kind', type: 'string')]
+#[DiscriminatorMap(value: ['person' => 'Doctrine\Tests\ORM\Functional\Ticket\PersonTicket4646Multiple', 'employee' => 'Doctrine\Tests\ORM\Functional\Ticket\EmployeeTicket4646Multiple', 'manager' => 'Doctrine\Tests\ORM\Functional\Ticket\ManagerTicket4646Multiple', 'intern' => 'Doctrine\Tests\ORM\Functional\Ticket\InternTicket4646Multiple'])]
+class PersonTicket4646Multiple
+{
+    #[Id]
+    #[GeneratedValue]
+    #[Column(type: 'integer')]
+    private int $id;
+
+    public function getId(): int
+    {
+        return $this->id;
+    }
+}
+
+#[Table(name: 'instance_of_test_multiple_employee')]
+#[Entity]
+class EmployeeTicket4646Multiple extends PersonTicket4646Multiple
+{
+}
+
+#[Table(name: 'instance_of_test_multiple_manager')]
+#[Entity]
+class ManagerTicket4646Multiple extends PersonTicket4646Multiple
+{
+}
+
+#[Table(name: 'instance_of_test_multiple_intern')]
+#[Entity]
+class InternTicket4646Multiple extends PersonTicket4646Multiple
+{
+}

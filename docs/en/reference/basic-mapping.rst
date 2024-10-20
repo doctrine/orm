@@ -47,18 +47,14 @@ mapping metadata:
 -  :doc:`Attributes <attributes-reference>`
 -  :doc:`XML <xml-mapping>`
 -  :doc:`PHP code <php-mapping>`
--  :doc:`Docblock Annotations <annotations-reference>` (deprecated and
-  will be removed in ``doctrine/orm`` 3.0)
--  :doc:`YAML <yaml-mapping>` (deprecated and will be removed in ``doctrine/orm`` 3.0.)
 
 This manual will usually show mapping metadata via attributes, though
-many examples also show the equivalent configuration in annotations,
-YAML and XML.
+many examples also show the equivalent configuration in XML.
 
 .. note::
 
     All metadata drivers perform equally. Once the metadata of a class has been
-    read from the source (attributes, annotations, XML, etc.) it is stored in an instance
+    read from the source (attributes, XML, etc.) it is stored in an instance
     of the ``Doctrine\ORM\Mapping\ClassMetadata`` class which are
     stored in the metadata cache.  If you're not using a metadata cache (not
     recommended!) then the XML driver is the fastest.
@@ -78,17 +74,6 @@ Marking our ``Message`` class as an entity for Doctrine is straightforward:
             // ...
         }
 
-    .. code-block:: annotation
-
-        <?php
-        use Doctrine\ORM\Mapping\Entity;
-
-        /** @Entity */
-        class Message
-        {
-            // ...
-        }
-
     .. code-block:: xml
 
         <doctrine-mapping>
@@ -96,12 +81,6 @@ Marking our ``Message`` class as an entity for Doctrine is straightforward:
               <!-- ... -->
           </entity>
         </doctrine-mapping>
-
-    .. code-block:: yaml
-
-        Message:
-          type: entity
-          # ...
 
 With no additional information, Doctrine expects the entity to be saved
 into a table with the same name as the class in our case ``Message``.
@@ -122,21 +101,6 @@ You can change this by configuring information about the table:
             // ...
         }
 
-    .. code-block:: annotation
-
-        <?php
-        use Doctrine\ORM\Mapping\Entity;
-        use Doctrine\ORM\Mapping\Table;
-
-        /**
-         * @Entity
-         * @Table(name="message")
-         */
-        class Message
-        {
-            // ...
-        }
-
     .. code-block:: xml
 
         <doctrine-mapping>
@@ -144,13 +108,6 @@ You can change this by configuring information about the table:
               <!-- ... -->
           </entity>
         </doctrine-mapping>
-
-    .. code-block:: yaml
-
-        Message:
-          type: entity
-          table: message
-          # ...
 
 Now the class ``Message`` will be saved and fetched from the table ``message``.
 
@@ -183,23 +140,6 @@ specified, ``string`` is used as the default.
             private $postedAt;
         }
 
-    .. code-block:: annotation
-
-        <?php
-        use Doctrine\ORM\Mapping\Entity;
-        use Doctrine\ORM\Mapping\Column;
-
-        /** @Entity */
-        class Message
-        {
-            /** @Column(type="integer") */
-            private $id;
-            /** @Column(length=140) */
-            private $text;
-            /** @Column(type="datetime", name="posted_at") */
-            private $postedAt;
-        }
-
     .. code-block:: xml
 
         <doctrine-mapping>
@@ -209,19 +149,6 @@ specified, ``string`` is used as the default.
             <field name="postedAt" column="posted_at" type="datetime" />
           </entity>
         </doctrine-mapping>
-
-    .. code-block:: yaml
-
-        Message:
-          type: entity
-          fields:
-            id:
-              type: integer
-            text:
-              length: 140
-            postedAt:
-              type: datetime
-              column: posted_at
 
 When we don't explicitly specify a column name via the ``name`` option, Doctrine
 assumes the field name is also the column name. So in this example:
@@ -301,50 +228,12 @@ and a custom ``Doctrine\ORM\Mapping\TypedFieldMapper`` implementation.
 Doctrine Mapping Types
 ----------------------
 
-The ``type`` option used in the ``@Column`` accepts any of the existing
-Doctrine types or even your own custom types. A Doctrine type defines
+The ``type`` option used in the ``@Column`` accepts any of the
+`existing Doctrine DBAL types <https://docs.doctrine-project.org/projects/doctrine-dbal/en/stable/reference/types.html#reference>`_
+or :doc:`your own custom mapping types
+<../cookbook/custom-mapping-types>`. A Doctrine type defines
 the conversion between PHP and SQL types, independent from the database vendor
-you are using. All Mapping Types that ship with Doctrine are fully portable
-between the supported database systems.
-
-As an example, the Doctrine Mapping Type ``string`` defines the
-mapping from a PHP string to a SQL VARCHAR (or VARCHAR2 etc.
-depending on the RDBMS brand). Here is a quick overview of the
-built-in mapping types:
-
--  ``string``: Type that maps a SQL VARCHAR to a PHP string.
--  ``integer``: Type that maps a SQL INT to a PHP integer.
--  ``smallint``: Type that maps a database SMALLINT to a PHP
-   integer.
--  ``bigint``: Type that maps a database BIGINT to a PHP string.
--  ``boolean``: Type that maps a SQL boolean or equivalent (TINYINT) to a PHP boolean.
--  ``decimal``: Type that maps a SQL DECIMAL to a PHP string.
--  ``date``: Type that maps a SQL DATETIME to a PHP DateTime
-   object.
--  ``time``: Type that maps a SQL TIME to a PHP DateTime object.
--  ``datetime``: Type that maps a SQL DATETIME/TIMESTAMP to a PHP
-   DateTime object.
--  ``datetimetz``: Type that maps a SQL DATETIME/TIMESTAMP to a PHP
-   DateTime object with timezone.
--  ``text``: Type that maps a SQL CLOB to a PHP string.
--  ``object``: Type that maps a SQL CLOB to a PHP object using
-   ``serialize()`` and ``unserialize()``
--  ``array``: Type that maps a SQL CLOB to a PHP array using
-   ``serialize()`` and ``unserialize()``
--  ``simple_array``: Type that maps a SQL CLOB to a PHP array using
-   ``implode()`` and ``explode()``, with a comma as delimiter. *IMPORTANT*
-   Only use this type if you are sure that your values cannot contain a ",".
--  ``json_array``: Type that maps a SQL CLOB to a PHP array using
-   ``json_encode()`` and ``json_decode()``
--  ``float``: Type that maps a SQL Float (Double Precision) to a
-   PHP double. *IMPORTANT*: Works only with locale settings that use
-   decimal points as separator.
--  ``guid``: Type that maps a database GUID/UUID to a PHP string. Defaults to
-   varchar but uses a specific type if the platform supports it.
--  ``blob``: Type that maps a SQL BLOB to a PHP resource stream
-
-A cookbook article shows how to define :doc:`your own custom mapping types
-<../cookbook/custom-mapping-types>`.
+you are using.
 
 .. note::
 
@@ -385,20 +274,6 @@ the field that serves as the identifier with the ``#[Id]`` attribute.
             // ...
         }
 
-    .. code-block:: annotation
-
-        <?php
-        class Message
-        {
-            /**
-             * @Id
-             * @Column(type="integer")
-             * @GeneratedValue
-             */
-            private int|null $id = null;
-            // ...
-        }
-
     .. code-block:: xml
 
         <doctrine-mapping>
@@ -410,22 +285,27 @@ the field that serves as the identifier with the ``#[Id]`` attribute.
           </entity>
         </doctrine-mapping>
 
-    .. code-block:: yaml
-
-        Message:
-          type: entity
-          id:
-            id:
-              type: integer
-              generator:
-                strategy: AUTO
-          fields:
-            # fields here
-
 In most cases using the automatic generator strategy (``#[GeneratedValue]``) is
-what you want. It defaults to the identifier generation mechanism your current
-database vendor prefers: AUTO_INCREMENT with MySQL, sequences with PostgreSQL
-and Oracle and so on.
+what you want, but for backwards-compatibility reasons it might not. It
+defaults to the identifier generation mechanism your current database
+vendor preferred at the time that strategy was introduced:
+``AUTO_INCREMENT`` with MySQL, sequences with PostgreSQL and Oracle and
+so on.
+If you are using `doctrine/dbal` 4, we now recommend using ``IDENTITY``
+for PostgreSQL, and ``AUTO`` resolves to it because of that.
+You can stick with ``SEQUENCE`` while still using the ``AUTO``
+strategy, by configuring what it defaults to.
+
+.. code-block:: php
+
+    <?php
+    use Doctrine\DBAL\Platforms\PostgreSQLPlatform;
+    use Doctrine\ORM\Configuration;
+
+    $config = new Configuration();
+    $config->setIdentityGenerationPreferences([
+        PostgreSQLPlatform::class => ClassMetadata::GENERATOR_TYPE_SEQUENCE,
+    ]);
 
 .. _identifier-generation-strategies:
 
@@ -442,25 +322,24 @@ Here is the list of possible generation strategies:
 
 -  ``AUTO`` (default): Tells Doctrine to pick the strategy that is
    preferred by the used database platform. The preferred strategies
-   are IDENTITY for MySQL, SQLite, MsSQL and SQL Anywhere and SEQUENCE
-   for Oracle and PostgreSQL. This strategy provides full portability.
--  ``SEQUENCE``: Tells Doctrine to use a database sequence for ID
-   generation. This strategy does currently not provide full
-   portability. Sequences are supported by Oracle, PostgreSql and
-   SQL Anywhere.
+   are ``IDENTITY`` for MySQL, SQLite, MsSQL and SQL Anywhere and, for
+   historical reasons, ``SEQUENCE`` for Oracle and PostgreSQL. This
+   strategy provides full portability.
 -  ``IDENTITY``: Tells Doctrine to use special identity columns in
    the database that generate a value on insertion of a row. This
    strategy does currently not provide full portability and is
    supported by the following platforms: MySQL/SQLite/SQL Anywhere
-   (AUTO\_INCREMENT), MSSQL (IDENTITY) and PostgreSQL (SERIAL).
--  ``UUID`` (deprecated): Tells Doctrine to use the built-in Universally
-   Unique Identifier generator. This strategy provides full portability.
+   (``AUTO_INCREMENT``), MSSQL (``IDENTITY``) and PostgreSQL (``SERIAL``).
+-  ``SEQUENCE``: Tells Doctrine to use a database sequence for ID
+   generation. This strategy does currently not provide full
+   portability. Sequences are supported by Oracle, PostgreSql and
+   SQL Anywhere.
 -  ``NONE``: Tells Doctrine that the identifiers are assigned (and
    thus generated) by your code. The assignment must take place before
    a new entity is passed to ``EntityManager#persist``. NONE is the
    same as leaving off the ``#[GeneratedValue]`` entirely.
 -  ``CUSTOM``: With this option, you can use the ``#[CustomIdGenerator]`` attribute.
-   It will allow you to pass a :ref:`class of your own to generate the identifiers.<annref_customidgenerator>`
+   It will allow you to pass a :ref:`class of your own to generate the identifiers. <attrref_customidgenerator>`
 
 Sequence Generator
 ^^^^^^^^^^^^^^^^^^
@@ -483,20 +362,6 @@ besides specifying the sequence's name:
             // ...
         }
 
-    .. code-block:: annotation
-
-        <?php
-        class Message
-        {
-            /**
-             * @Id
-             * @GeneratedValue(strategy="SEQUENCE")
-             * @SequenceGenerator(sequenceName="message_seq", initialValue=1, allocationSize=100)
-             */
-            protected int|null $id = null;
-            // ...
-        }
-
     .. code-block:: xml
 
         <doctrine-mapping>
@@ -507,20 +372,6 @@ besides specifying the sequence's name:
             </id>
           </entity>
         </doctrine-mapping>
-
-    .. code-block:: yaml
-
-        Message:
-          type: entity
-          id:
-            id:
-              type: integer
-              generator:
-                strategy: SEQUENCE
-              sequenceGenerator:
-                sequenceName: message_seq
-                allocationSize: 100
-                initialValue: 1
 
 The initial value specifies at which value the sequence should
 start.

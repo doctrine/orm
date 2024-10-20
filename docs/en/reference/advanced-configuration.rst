@@ -111,21 +111,16 @@ Gets or sets the metadata driver implementation that is used by
 Doctrine to acquire the object-relational metadata for your
 classes.
 
-There are currently 5 available implementations:
+There are currently 3 available implementations:
 
 
 -  ``Doctrine\ORM\Mapping\Driver\AttributeDriver``
 -  ``Doctrine\ORM\Mapping\Driver\XmlDriver``
 -  ``Doctrine\ORM\Mapping\Driver\DriverChain``
--  ``Doctrine\ORM\Mapping\Driver\AnnotationDriver`` (deprecated and will
-  be removed in ``doctrine/orm`` 3.0)
--  ``Doctrine\ORM\Mapping\Driver\YamlDriver`` (deprecated and will be
-   removed in ``doctrine/orm`` 3.0)
 
 Throughout the most part of this manual the AttributeDriver is
 used in the examples. For information on the usage of the
-AnnotationDriver, XmlDriver or YamlDriver please refer to the dedicated
-chapters ``Annotation Reference``, ``XML Mapping`` and ``YAML Mapping``.
+XmlDriver please refer to the dedicated chapter ``XML Mapping``.
 
 The attribute driver can be injected in the ``Doctrine\ORM\Configuration``:
 
@@ -155,9 +150,9 @@ Metadata Cache (***RECOMMENDED***)
 
 Gets or sets the cache adapter to use for caching metadata
 information, that is, all the information you supply via attributes,
-annotations, xml or yaml, so that they do not need to be parsed and
-loaded from scratch on every single request which is a waste of
-resources. The cache implementation must implement the PSR-6
+xml, so that they do not need to be parsed and loaded from scratch on
+every single request which is a waste of resources. The cache
+implementation must implement the PSR-6
 ``Psr\Cache\CacheItemPoolInterface`` interface.
 
 Usage of a metadata cache is highly recommended.
@@ -408,7 +403,7 @@ means that you have to register a special autoloader for these classes:
 .. code-block:: php
 
     <?php
-    use Doctrine\Common\Proxy\Autoloader;
+    use Doctrine\ORM\Proxy\Autoloader;
 
     $proxyDir = "/path/to/proxies";
     $proxyNamespace = "MyProxies";
@@ -425,7 +420,7 @@ Multiple Metadata Sources
 
 When using different components using Doctrine ORM you may end up
 with them using two different metadata drivers, for example XML and
-YAML. You can use the MappingDriverChain Metadata implementations to
+PHP. You can use the MappingDriverChain Metadata implementations to
 aggregate these drivers based on namespaces:
 
 .. code-block:: php
@@ -435,7 +430,7 @@ aggregate these drivers based on namespaces:
 
     $chain = new MappingDriverChain();
     $chain->addDriver($xmlDriver, 'Doctrine\Tests\Models\Company');
-    $chain->addDriver($yamlDriver, 'Doctrine\Tests\ORM\Mapping');
+    $chain->addDriver($phpDriver, 'Doctrine\Tests\ORM\Mapping');
 
 Based on the namespace of the entity the loading of entities is
 delegated to the appropriate driver. The chain semantics come from
