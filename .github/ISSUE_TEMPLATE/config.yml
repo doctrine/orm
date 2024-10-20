@@ -1,0 +1,13 @@
+contact_links:
+  - name: Github Discussions
+    url: https://github.com/doctrine/orm/discussions
+    about: ORM-specific support discussions.
+  - name: Doctrine Slack
+    url: https://www.doctrine-project.org/slack
+    about: Join the Doctrine Slack to chat with other Doctrine users and contributors.
+  - name: Doctrine channel on Symfony Slack
+    url: https://symfony-devs.slack.com/messages/C3FQPE6LE/
+    about: 'Communicate with other Symfony developers that use Doctrine in the #doctrine slack channel in the Symfony Devs slack instance.'
+  - name: Laravel Slack
+    url: http://slack.laraveldoctrine.org/
+    about: Communicate with other Laravel developers that use Doctrine in the Laravel Doctrine slack instance.
