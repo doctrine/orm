@@ -160,11 +160,8 @@ class WhereInWalker extends TreeWalkerAdapter
         return true;
     }
 
-    /**
-     * @param mixed    $expression
-     * @param string[] $fromAliases
-     */
-    private function isExpressionExistsInFromClause($expression, array $fromAliases): bool
+    /** @param string[] $fromAliases */
+    private function isExpressionExistsInFromClause(mixed $expression, array $fromAliases): bool
     {
         $expressionIdentification = null;
 

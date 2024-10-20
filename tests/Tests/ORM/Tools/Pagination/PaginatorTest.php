@@ -12,11 +12,12 @@ use Doctrine\ORM\Decorator\EntityManagerDecorator;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Internal\Hydration\AbstractHydrator;
 use Doctrine\ORM\Query;
-use Doctrine\ORM\Query\QueryException;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Doctrine\Tests\OrmTestCase;
 use Generator;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
+
 use function preg_replace;
 
 class PaginatorTest extends OrmTestCase
@@ -112,7 +113,7 @@ class PaginatorTest extends OrmTestCase
     }
 
     /** @param int[][] $willReturnRows */
-    private function createPaginatorWithExtraParametersWithoutOutputWalkers(array $willReturnRows, ?array $results = []): Paginator
+    private function createPaginatorWithExtraParametersWithoutOutputWalkers(array $willReturnRows, array|null $results = []): Paginator
     {
         $this->hydrator->method('hydrateAll')->willReturn($willReturnRows);
         if ($results !== null) {
@@ -127,11 +128,11 @@ class PaginatorTest extends OrmTestCase
         return (new Paginator($query, true))->setUseOutputWalkers(false);
     }
 
-    /** @dataProvider dataRedunandQueryPartsAreRemovedForWhereInWalker */
+    #[DataProvider('dataRedunandQueryPartsAreRemovedForWhereInWalker')]
     public function testRedunandQueryPartsAreRemovedForWhereInWalker(
         string $dql,
         array $params,
-        array $expectedQueries
+        array $expectedQueries,
     ): void {
         $this->hydrator->method('hydrateAll')->willReturn([[10]]);
 

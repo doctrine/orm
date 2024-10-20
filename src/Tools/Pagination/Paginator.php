@@ -274,7 +274,7 @@ class Paginator implements Countable, IteratorAggregate
     {
         try {
             $AST = $this->query->getAST();
-        } catch (QueryException $e) {
+        } catch (QueryException) {
             return false;
         }
 
