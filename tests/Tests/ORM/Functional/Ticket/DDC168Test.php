@@ -25,7 +25,7 @@ class DDC168Test extends OrmFunctionalTestCase
         $this->oldMetadata = $this->_em->getClassMetadata(CompanyEmployee::class);
 
         $metadata = clone $this->oldMetadata;
-        ksort($metadata->reflFields);
+        ksort($metadata->propertyAccessors);
         $this->_em->getMetadataFactory()->setMetadataFor(CompanyEmployee::class, $metadata);
     }
 
