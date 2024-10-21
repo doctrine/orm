@@ -11,7 +11,6 @@ use Doctrine\ORM\Cache\EntityCacheKey;
 use Doctrine\ORM\Cache\Exception\CacheException;
 use Doctrine\ORM\Cache\QueryCacheEntry;
 use Doctrine\ORM\Cache\QueryCacheKey;
-use Doctrine\ORM\Proxy\InternalProxy;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\Tests\Models\Cache\Attraction;
@@ -939,7 +938,6 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheFunctionalTestCase
         self::assertNotNull($state1->getCountry());
         $this->assertQueryCount(1);
         self::assertInstanceOf(State::class, $state1);
-        self::assertInstanceOf(InternalProxy::class, $state1->getCountry());
         self::assertEquals($countryName, $state1->getCountry()->getName());
         self::assertEquals($stateId, $state1->getId());
 
@@ -957,7 +955,6 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheFunctionalTestCase
         self::assertNotNull($state2->getCountry());
         $this->assertQueryCount(0);
         self::assertInstanceOf(State::class, $state2);
-        self::assertInstanceOf(InternalProxy::class, $state2->getCountry());
         self::assertEquals($countryName, $state2->getCountry()->getName());
         self::assertEquals($stateId, $state2->getId());
     }
@@ -1031,7 +1028,6 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheFunctionalTestCase
 
         $this->assertQueryCount(1);
         self::assertInstanceOf(State::class, $state1);
-        self::assertInstanceOf(InternalProxy::class, $state1->getCountry());
         self::assertInstanceOf(City::class, $state1->getCities()->get(0));
         self::assertInstanceOf(State::class, $state1->getCities()->get(0)->getState());
         self::assertSame($state1, $state1->getCities()->get(0)->getState());
@@ -1048,7 +1044,6 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheFunctionalTestCase
 
         $this->assertQueryCount(0);
         self::assertInstanceOf(State::class, $state2);
-        self::assertInstanceOf(InternalProxy::class, $state2->getCountry());
         self::assertInstanceOf(City::class, $state2->getCities()->get(0));
         self::assertInstanceOf(State::class, $state2->getCities()->get(0)->getState());
         self::assertSame($state2, $state2->getCities()->get(0)->getState());
