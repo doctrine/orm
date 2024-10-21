@@ -1568,10 +1568,6 @@ class UnitOfWork implements PropertyChangedListener
             ' ',
             array_map(
                 static function ($value) {
-                    if ($value instanceof BackedEnum) {
-                        return $value->value;
-                    }
-
                     if (! is_scalar($value) && ! ($value instanceof Stringable)) {
                         throw new UnexpectedValueException(sprintf(
                             'Unexpected identifier value: Expecting scalar or Stringable, got %s.',
