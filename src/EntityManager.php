@@ -10,12 +10,12 @@ use Doctrine\Common\EventManager;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\LockMode;
 use Doctrine\ORM\Exception\EntityManagerClosed;
-use Doctrine\ORM\Exception\InvalidHydrationMode;
 use Doctrine\ORM\Exception\MissingIdentifierField;
 use Doctrine\ORM\Exception\MissingMappingDriverImplementation;
 use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\Exception\UnrecognizedIdentifierFields;
 use Doctrine\ORM\Internal\Hydration\AbstractHydrator;
+use Doctrine\ORM\Internal\Hydration\HydratorFactory;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\Proxy\DefaultProxyClassNameResolver;
@@ -105,6 +105,11 @@ class EntityManager implements EntityManagerInterface
     private Cache|null $cache = null;
 
     /**
+     * The hydrator factory to use.
+     */
+    private HydratorFactory $hydratorFactory;
+
+    /**
      * Creates a new EntityManager that operates on the given database connection
      * and uses the given Configuration and EventManager implementations.
      *
@@ -146,6 +151,8 @@ class EntityManager implements EntityManagerInterface
             $cacheFactory = $cacheConfig->getCacheFactory();
             $this->cache  = $cacheFactory->createCache($this);
         }
+
+        $this->hydratorFactory = $this->config->getHydratorFactory();
     }
 
     public function getConnection(): Connection
@@ -541,15 +548,7 @@ class EntityManager implements EntityManagerInterface
 
     public function newHydrator(string|int $hydrationMode): AbstractHydrator
     {
-        return match ($hydrationMode) {
-            Query::HYDRATE_OBJECT => new Internal\Hydration\ObjectHydrator($this),
-            Query::HYDRATE_ARRAY => new Internal\Hydration\ArrayHydrator($this),
-            Query::HYDRATE_SCALAR => new Internal\Hydration\ScalarHydrator($this),
-            Query::HYDRATE_SINGLE_SCALAR => new Internal\Hydration\SingleScalarHydrator($this),
-            Query::HYDRATE_SIMPLEOBJECT => new Internal\Hydration\SimpleObjectHydrator($this),
-            Query::HYDRATE_SCALAR_COLUMN => new Internal\Hydration\ScalarColumnHydrator($this),
-            default => $this->createCustomHydrator((string) $hydrationMode),
-        };
+        return $this->hydratorFactory->create($this, $this->config, $hydrationMode);
     }
 
     public function getProxyFactory(): ProxyFactory
@@ -616,16 +615,5 @@ class EntityManager implements EntityManagerInterface
         }
 
         $this->metadataFactory->setCache($metadataCache);
-    }
-
-    private function createCustomHydrator(string $hydrationMode): AbstractHydrator
-    {
-        $class = $this->config->getCustomHydrationMode($hydrationMode);
-
-        if ($class !== null) {
-            return new $class($this);
-        }
-
-        throw InvalidHydrationMode::fromMode($hydrationMode);
     }
 }
