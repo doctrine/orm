@@ -342,7 +342,7 @@ for the ``$identifier`` parameter is passed. ``$identifier`` values are
 not checked and there is no guarantee that the requested entity instance even
 exists – the method will still return a proxy object.
 
-Its only when the proxy has to be fully initialized or associations cannot
+It is only when the proxy has to be fully initialized or associations cannot
 be written to the database that invalid ``$identifier`` values may lead to
 exceptions.
 
