@@ -803,6 +803,24 @@ abstract class AbstractQuery
     }
 
     /**
+     * Gets the single scalar result of the query, returns null if result is empty.
+     *
+     * Alias for getSingleResult(HYDRATE_SINGLE_SCALAR) and try/catch NoResultException.
+     *
+     * @return bool|float|int|string|null The scalar result.
+     *
+     * @throws NonUniqueResultException If the query result is not unique.
+     */
+    public function getSingleScalarResultOrNull(): mixed
+    {
+        try {
+            return $this->getSingleResult(self::HYDRATE_SINGLE_SCALAR);
+        } catch (NoResultException) {
+            return null;
+        }
+    }
+
+    /**
      * Sets a query hint. If the hint name is not recognized, it is silently ignored.
      *
      * @return $this
