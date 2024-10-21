@@ -17,6 +17,7 @@ can be called without triggering a full load of the collection:
 -  ``Collection#contains($entity)``
 -  ``Collection#containsKey($key)``
 -  ``Collection#count()``
+-  ``Collection#first()``
 -  ``Collection#get($key)``
 -  ``Collection#slice($offset, $length = null)``
 
