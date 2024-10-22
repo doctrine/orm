@@ -1687,7 +1687,7 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
     /**
      * Sets the association to override association mapping of property for an entity relationship.
      *
-     * @psalm-param array<string, mixed> $overrideMapping
+     * @psalm-param array{joinColumns?: array, inversedBy?: ?string, joinTable?: array, fetch?: ?string, cascade?: string[]} $overrideMapping
      *
      * @throws MappingException
      */
@@ -1721,6 +1721,10 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
 
         if (isset($overrideMapping['fetch'])) {
             $mapping['fetch'] = $overrideMapping['fetch'];
+        }
+
+        if (isset($overrideMapping['cascade'])) {
+            $mapping['cascade'] = $overrideMapping['cascade'];
         }
 
         switch ($mapping['type']) {
