@@ -47,6 +47,7 @@ use Doctrine\ORM\Utility\IdentifierFlattener;
 use Doctrine\Persistence\PropertyChangedListener;
 use Exception;
 use InvalidArgumentException;
+use ReflectionObject;
 use RuntimeException;
 use Stringable;
 use UnexpectedValueException;
@@ -61,6 +62,7 @@ use function array_sum;
 use function array_values;
 use function assert;
 use function current;
+use function get_class;
 use function get_debug_type;
 use function implode;
 use function in_array;
@@ -2378,7 +2380,11 @@ class UnitOfWork implements PropertyChangedListener
             }
 
             if ($this->isUninitializedObject($entity)) {
-                $entity->__setInitialized(true);
+                if ($this->em->getConfiguration()->isLazyProxyEnabled()) {
+                    $class->reflClass->markLazyObjectAsInitialized($entity);
+                } else {
+                    $entity->__setInitialized(true);
+                }
             } else {
                 if (
                     ! isset($hints[Query::HINT_REFRESH])
@@ -3034,6 +3040,11 @@ class UnitOfWork implements PropertyChangedListener
         if ($obj instanceof PersistentCollection) {
             $obj->initialize();
         }
+
+        if ($this->em->getConfiguration()->isLazyProxyEnabled()) {
+            $reflection = new ReflectionObject($obj);
+            $reflection->initializeLazyObject($obj);
+        }
     }
 
     /**
@@ -3043,6 +3054,10 @@ class UnitOfWork implements PropertyChangedListener
      */
     public function isUninitializedObject(mixed $obj): bool
     {
+        if ($this->em->getConfiguration()->isLazyProxyEnabled() && ! ($obj instanceof Collection)) {
+            return $this->em->getClassMetadata(get_class($obj))->reflClass->isUninitializedLazyObject($obj);
+        }
+
         return $obj instanceof InternalProxy && ! $obj->__isInitialized();
     }
 

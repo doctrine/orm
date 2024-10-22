@@ -34,6 +34,10 @@ class ProxiesLikeEntitiesTest extends OrmFunctionalTestCase
     {
         parent::setUp();
 
+        if ($this->_em->getConfiguration()->isLazyProxyEnabled()) {
+            self::markTestSkipped('This test is not applicable when lazy proxy is enabled.');
+        }
+
         $this->createSchemaForModels(
             CmsUser::class,
             CmsTag::class,

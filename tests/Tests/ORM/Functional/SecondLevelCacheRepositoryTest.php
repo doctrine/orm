@@ -198,8 +198,6 @@ class SecondLevelCacheRepositoryTest extends SecondLevelCacheFunctionalTestCase
         self::assertInstanceOf(State::class, $entities[1]);
         self::assertInstanceOf(Country::class, $entities[0]->getCountry());
         self::assertInstanceOf(Country::class, $entities[0]->getCountry());
-        self::assertInstanceOf(InternalProxy::class, $entities[0]->getCountry());
-        self::assertInstanceOf(InternalProxy::class, $entities[1]->getCountry());
 
         // load from cache
         $this->getQueryLog()->reset()->enable();
@@ -212,8 +210,6 @@ class SecondLevelCacheRepositoryTest extends SecondLevelCacheFunctionalTestCase
         self::assertInstanceOf(State::class, $entities[1]);
         self::assertInstanceOf(Country::class, $entities[0]->getCountry());
         self::assertInstanceOf(Country::class, $entities[1]->getCountry());
-        self::assertInstanceOf(InternalProxy::class, $entities[0]->getCountry());
-        self::assertInstanceOf(InternalProxy::class, $entities[1]->getCountry());
 
         // invalidate cache
         $this->_em->persist(new State('foo', $this->_em->find(Country::class, $this->countries[0]->getId())));
@@ -231,8 +227,6 @@ class SecondLevelCacheRepositoryTest extends SecondLevelCacheFunctionalTestCase
         self::assertInstanceOf(State::class, $entities[1]);
         self::assertInstanceOf(Country::class, $entities[0]->getCountry());
         self::assertInstanceOf(Country::class, $entities[1]->getCountry());
-        self::assertInstanceOf(InternalProxy::class, $entities[0]->getCountry());
-        self::assertInstanceOf(InternalProxy::class, $entities[1]->getCountry());
 
         // load from cache
         $this->getQueryLog()->reset()->enable();
@@ -245,7 +239,5 @@ class SecondLevelCacheRepositoryTest extends SecondLevelCacheFunctionalTestCase
         self::assertInstanceOf(State::class, $entities[1]);
         self::assertInstanceOf(Country::class, $entities[0]->getCountry());
         self::assertInstanceOf(Country::class, $entities[1]->getCountry());
-        self::assertInstanceOf(InternalProxy::class, $entities[0]->getCountry());
-        self::assertInstanceOf(InternalProxy::class, $entities[1]->getCountry());
     }
 }
