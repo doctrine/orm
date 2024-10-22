@@ -154,6 +154,35 @@ class Paginator implements Countable, IteratorAggregate
         return new ArrayIterator($result);
     }
 
+    /**
+     * Returns Query prepared to count.
+     */
+    protected function getCountQuery(): Query
+    {
+        $countQuery = $this->cloneQuery($this->query);
+
+        if (! $countQuery->hasHint(CountWalker::HINT_DISTINCT)) {
+            $countQuery->setHint(CountWalker::HINT_DISTINCT, true);
+        }
+
+        if ($this->useOutputWalker($countQuery)) {
+            $platform = $countQuery->getEntityManager()->getConnection()->getDatabasePlatform(); // law of demeter win
+
+            $rsm = new ResultSetMapping();
+            $rsm->addScalarResult($this->getSQLResultCasing($platform, 'dctrn_count'), 'count');
+
+            $countQuery->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, CountOutputWalker::class);
+            $countQuery->setResultSetMapping($rsm);
+        } else {
+            $this->appendTreeWalker($countQuery, CountWalker::class);
+            $this->unbindUnusedQueryParams($countQuery);
+        }
+
+        $countQuery->setFirstResult(0)->setMaxResults(null);
+
+        return $countQuery;
+    }
+
     private function cloneQuery(Query $query): Query
     {
         $cloneQuery = clone $query;
@@ -195,35 +224,6 @@ class Paginator implements Countable, IteratorAggregate
 
         $hints[] = $walkerClass;
         $query->setHint(Query::HINT_CUSTOM_TREE_WALKERS, $hints);
-    }
-
-    /**
-     * Returns Query prepared to count.
-     */
-    private function getCountQuery(): Query
-    {
-        $countQuery = $this->cloneQuery($this->query);
-
-        if (! $countQuery->hasHint(CountWalker::HINT_DISTINCT)) {
-            $countQuery->setHint(CountWalker::HINT_DISTINCT, true);
-        }
-
-        if ($this->useOutputWalker($countQuery)) {
-            $platform = $countQuery->getEntityManager()->getConnection()->getDatabasePlatform(); // law of demeter win
-
-            $rsm = new ResultSetMapping();
-            $rsm->addScalarResult($this->getSQLResultCasing($platform, 'dctrn_count'), 'count');
-
-            $countQuery->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, CountOutputWalker::class);
-            $countQuery->setResultSetMapping($rsm);
-        } else {
-            $this->appendTreeWalker($countQuery, CountWalker::class);
-            $this->unbindUnusedQueryParams($countQuery);
-        }
-
-        $countQuery->setFirstResult(0)->setMaxResults(null);
-
-        return $countQuery;
     }
 
     private function unbindUnusedQueryParams(Query $query): void
