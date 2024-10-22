@@ -10,10 +10,10 @@ use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\PropertyAccessors\PropertyAccessor;
 use Doctrine\ORM\Mapping\Table;
 use Doctrine\Tests\OrmTestCase;
 use PHPUnit\Framework\Attributes\Group;
-use ReflectionProperty;
 
 class ClassMetadataLoadEventTest extends OrmTestCase
 {
@@ -26,8 +26,8 @@ class ClassMetadataLoadEventTest extends OrmTestCase
         $evm->addEventListener(Events::loadClassMetadata, $this);
         $classMetadata = $metadataFactory->getMetadataFor(LoadEventTestEntity::class);
         self::assertTrue($classMetadata->hasField('about'));
-        self::assertArrayHasKey('about', $classMetadata->reflFields);
-        self::assertInstanceOf(ReflectionProperty::class, $classMetadata->reflFields['about']);
+        self::assertArrayHasKey('about', $classMetadata->propertyAccessors);
+        self::assertInstanceOf(PropertyAccessor::class, $classMetadata->propertyAccessors['about']);
     }
 
     public function loadClassMetadata(LoadClassMetadataEventArgs $eventArgs): void
