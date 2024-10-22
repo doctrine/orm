@@ -173,6 +173,9 @@ class BasicEntityPersister implements EntityPersister
     private readonly CachedPersisterContext $limitsHandlingContext;
     private readonly CachedPersisterContext $noLimitsContext;
 
+    /** @var ?string */
+    private $filterHash = null;
+
     /**
      * Initializes a new <tt>BasicEntityPersister</tt> that uses the given EntityManager
      * and persists instances of the class described by the given ClassMetadata descriptor.
@@ -1229,7 +1232,7 @@ class BasicEntityPersister implements EntityPersister
      */
     protected function getSelectColumnsSQL(): string
     {
-        if ($this->currentPersisterContext->selectColumnListSql !== null) {
+        if ($this->currentPersisterContext->selectColumnListSql !== null && $this->filterHash === $this->em->getFilters()->getHash()) {
             return $this->currentPersisterContext->selectColumnListSql;
         }
 
@@ -1339,6 +1342,7 @@ class BasicEntityPersister implements EntityPersister
         }
 
         $this->currentPersisterContext->selectColumnListSql = implode(', ', $columnList);
+        $this->filterHash                                   = $this->em->getFilters()->getHash();
 
         return $this->currentPersisterContext->selectColumnListSql;
     }
