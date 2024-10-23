@@ -11,14 +11,14 @@ use function sprintf;
 
 class CompanySQLFilter extends SQLFilter
 {
-    public function addFilterConstraint(ClassMetadata $targetEntity, $targetTableAlias): string
+    public function addFilterConstraint(ClassMetadata $targetEntity, string $targetTableAlias): string
     {
         if ($targetEntity->getName() === User::class) {
-            return sprintf('%s.%s = %s', $targetTableAlias, $targetEntity->fieldMappings['company']['fieldName'], $this->getParameter('company'));
+            return sprintf('%s.%s = %s', $targetTableAlias, $targetEntity->fieldMappings['company']->fieldName, $this->getParameter('company'));
         }
 
         if ($targetEntity->getName() === Order::class) {
-            return sprintf('%s.%s = %s', $targetTableAlias, $targetEntity->fieldMappings['company']['fieldName'], $this->getParameter('company'));
+            return sprintf('%s.%s = %s', $targetTableAlias, $targetEntity->fieldMappings['company']->fieldName, $this->getParameter('company'));
         }
 
         return '';

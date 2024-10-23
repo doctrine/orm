@@ -6,34 +6,20 @@ namespace Doctrine\Tests\ORM\Functional\Ticket\SwitchContextWithFilter;
 
 use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @ORM\Entity
- * @ORM\Table(name="Order_Master")
- */
+#[ORM\Entity]
+#[ORM\Table('Order_Master')]
 class Order
 {
-    /**
-     * @ORM\Id
-     * @ORM\Column(type="integer")
-     * @ORM\GeneratedValue(strategy="AUTO")
-     *
-     * @var int
-     */
-    public $id;
+    #[ORM\Id]
+    #[ORM\Column(type: 'integer')]
+    #[ORM\GeneratedValue(strategy: 'AUTO')]
+    public int $id;
 
-    /**
-     * @ORM\Column(type="string")
-     *
-     * @var string
-     */
-    public $company;
+    #[ORM\Column(type: 'string')]
+    public string $company;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="User", fetch="EAGER")
-     *
-     * @var User
-     */
-    public $user;
+    #[ORM\ManyToOne(targetEntity: User::class, fetch: 'EAGER')]
+    public User $user;
 
     public function __construct(User $user)
     {

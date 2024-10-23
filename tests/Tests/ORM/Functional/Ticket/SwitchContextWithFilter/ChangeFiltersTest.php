@@ -24,9 +24,7 @@ final class ChangeFiltersTest extends OrmFunctionalTestCase
         ]);
     }
 
-    /**
-     * @return non-empty-array<"companyA"|"companyB", array{orderId: int, userId: int}>
-     */
+    /** @return non-empty-array<"companyA"|"companyB", array{orderId: int, userId: int}> */
     private function prepareData(): array
     {
         $user1  = new User(self::COMPANY_A);
@@ -97,7 +95,7 @@ final class ChangeFiltersTest extends OrmFunctionalTestCase
 
         ['companyA' => $companyA, 'companyB' => $companyB] = $this->prepareData();
 
-        $getOrderByIdCache = function (int $orderId): ?Order {
+        $getOrderByIdCache = function (int $orderId): Order|null {
             return $this->_em->createQueryBuilder()
                 ->select('orderMaster, user')
                 ->from(Order::class, 'orderMaster')

@@ -173,8 +173,7 @@ class BasicEntityPersister implements EntityPersister
     private readonly CachedPersisterContext $limitsHandlingContext;
     private readonly CachedPersisterContext $noLimitsContext;
 
-    /** @var ?string */
-    private $filterHash = null;
+    private string|null $filterHash = null;
 
     /**
      * Initializes a new <tt>BasicEntityPersister</tt> that uses the given EntityManager
