@@ -123,7 +123,17 @@ parameters:
 		-
 			message: "#^If condition is always true\\.$#"
 			count: 1
+			path: src/Mapping/ClassMetadata.php
+
+		-
+			message: "#^If condition is always true\\.$#"
+			count: 1
 			path: src/Mapping/ClassMetadataFactory.php
+
+		-
+			message: "#^Method Doctrine\\\\ORM\\\\Mapping\\\\Driver\\\\XmlDriver\\:\\:doLoadMappingFile\\(\\) is unused\\.$#"
+			count: 1
+			path: src/Mapping/Driver/XmlDriver.php
 
 		-
 			message: "#^Method Doctrine\\\\ORM\\\\Mapping\\\\ToOneOwningSideMapping\\:\\:fromMappingArray\\(\\) should return static\\(Doctrine\\\\ORM\\\\Mapping\\\\ToOneOwningSideMapping\\) but returns Doctrine\\\\ORM\\\\Mapping\\\\ManyToOneAssociationMapping\\|Doctrine\\\\ORM\\\\Mapping\\\\OneToOneOwningSideMapping\\.$#"

@@ -3,6 +3,9 @@ includes:
     - phpstan-params.neon
 
 parameters:
+    excludePaths:
+        - src/Mapping/Driver/LoadMappingFileImplementation.php
+        - src/Mapping/GetReflectionClassImplementation.php
     ignoreErrors:
         # Symfony cache supports passing a key prefix to the clear method.
         - '/^Method Psr\\Cache\\CacheItemPoolInterface\:\:clear\(\) invoked with 1 parameter, 0 required\.$/'

@@ -7,10 +7,12 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Embeddable;
+use Doctrine\Persistence\Mapping\StaticReflectionService;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Group;
 
+use function class_exists;
 use function serialize;
 use function unserialize;
 
@@ -18,6 +20,13 @@ use function unserialize;
 #[Group('DDC-3103')]
 class DDC3103Test extends OrmFunctionalTestCase
 {
+    protected function setUp(): void
+    {
+        if (! class_exists(StaticReflectionService::class)) {
+            self::markTestSkipped('This test is not supported by the current installed doctrine/persistence version');
+        }
+    }
+
     public function testIssue(): void
     {
         $classMetadata = new ClassMetadata(DDC3103ArticleId::class);
@@ -39,7 +48,6 @@ class DDC3103Test extends OrmFunctionalTestCase
 #[Embeddable]
 class DDC3103ArticleId
 {
-    /** @var string */
     #[Column(name: 'name', type: 'string', length: 255)]
-    protected $nameValue;
+    protected string $nameValue;
 }

@@ -56,6 +56,7 @@ use ReflectionClass;
 use stdClass;
 
 use function assert;
+use function class_exists;
 use function count;
 use function serialize;
 use function str_contains;
@@ -989,6 +990,10 @@ class ClassMetadataTest extends OrmTestCase
 
     public function testWakeupReflectionWithEmbeddableAndStaticReflectionService(): void
     {
+        if (! class_exists(StaticReflectionService::class)) {
+            self::markTestSkipped('This test is not supported by the current installed doctrine/persistence version');
+        }
+
         $classMetadata = new ClassMetadata(TestEntity1::class);
 
         $classMetadata->mapEmbedded(

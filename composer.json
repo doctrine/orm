@@ -31,7 +31,7 @@
         "doctrine/inflector": "^1.4 || ^2.0",
         "doctrine/instantiator": "^1.3 || ^2",
         "doctrine/lexer": "^3",
-        "doctrine/persistence": "^3.3.1",
+        "doctrine/persistence": "4.0.x-dev",
         "psr/cache": "^1 || ^2 || ^3",
         "symfony/console": "^5.4 || ^6.0 || ^7.0",
         "symfony/var-exporter": "^6.3.9 || ^7.0"
