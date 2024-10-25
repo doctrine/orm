@@ -1,0 +1,44 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Doctrine\Tests\ORM\Functional\Ticket\EncryptedType;
+
+use Doctrine\ORM\Mapping as ORM;
+
+/**
+ * @ORM\Entity
+ */
+class Credential
+{
+    /**
+     * @ORM\Id
+     * @ORM\Column(type="integer")
+     * @ORM\GeneratedValue(strategy="AUTO")
+     *
+     * @var int
+     */
+    public $id;
+
+    /**
+     * @ORM\Column(type="string")
+     *
+     * @var string
+     */
+    public $username;
+
+    /**
+     * @ORM\Column(type="encrypted")
+     *
+     * @var string
+     */
+    public $password;
+
+    public function __construct(
+        string $username,
+        string $password
+    ) {
+        $this->username = $username;
+        $this->password = $password;
+    }
+}
