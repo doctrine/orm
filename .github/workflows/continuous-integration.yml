@@ -119,7 +119,6 @@ jobs:
           - "default"
           - "3@dev"
         postgres-version:
-          - "15"
           - "17"
         extension:
           - pdo_pgsql
