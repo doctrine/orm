@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional\Ticket\EncryptedType;
 
 use Doctrine\DBAL\Types\Type;
+use Doctrine\ORM\Query;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 use function implode;
@@ -26,6 +27,8 @@ final class EncryptedTest extends OrmFunctionalTestCase
         $this->setUpEntitySchema([
             Credential::class,
         ]);
+
+        $this->_em->getConfiguration()->setDefaultQueryHint(Query::HINT_CUSTOM_OUTPUT_WALKER, FixSqlWalker::class);
     }
 
     private function prepareData(): void

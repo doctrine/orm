@@ -6,6 +6,7 @@ namespace Doctrine\Tests\ORM\Functional\Ticket\EncryptedType;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Platforms\MySQLPlatform;
+use Doctrine\DBAL\Platforms\SqlitePlatform;
 use Doctrine\DBAL\Types\BlobType;
 
 use function sprintf;
@@ -30,7 +31,11 @@ final class EncryptedType extends BlobType
             return sprintf('AES_ENCRYPT(%s, \'%s\')', $sqlExpr, $this->getSecret());
         }
 
-        return sprintf('CONCAT(%s, \'%s\')', $sqlExpr, $this->getSecret());
+        if ($platform instanceof SqlitePlatform) {
+            return sprintf('CONCAT(%s, \'%s\')', $sqlExpr, $this->getSecret());
+        }
+
+        return $sqlExpr;
     }
 
     public function convertToPHPValueSQL($sqlExpr, $platform): string
@@ -39,7 +44,11 @@ final class EncryptedType extends BlobType
             return sprintf('AES_DECRYPT(%s, \'%s\')', $sqlExpr, $this->getSecret());
         }
 
-        return sprintf('REPLACE(%s, \'%s\', \'\')', $sqlExpr, $this->getSecret());
+        if ($platform instanceof SqlitePlatform) {
+            return sprintf('REPLACE(%s, \'%s\', \'\')', $sqlExpr, $this->getSecret());
+        }
+
+        return $sqlExpr;
     }
 
     public function convertToPHPValue($value, AbstractPlatform $platform): string
