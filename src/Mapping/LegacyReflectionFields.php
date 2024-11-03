@@ -15,6 +15,8 @@ use ReflectionProperty;
 use Traversable;
 
 use function array_keys;
+use function assert;
+use function is_string;
 use function str_contains;
 use function str_replace;
 
