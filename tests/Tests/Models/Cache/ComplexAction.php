@@ -18,7 +18,7 @@ use Doctrine\ORM\Mapping\Table;
 #[Entity]
 class ComplexAction
 {
-    /** @psalm-var Collection<int, Token> */
+    /** @phpstan-var Collection<int, Token> */
     #[OneToMany(targetEntity: 'Token', cascade: ['persist', 'remove'], mappedBy: 'complexAction')]
     public $tokens;
 

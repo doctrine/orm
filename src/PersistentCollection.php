@@ -35,8 +35,8 @@ use function strtoupper;
  * Similarly, if you remove entities from a collection that is part of a one-many
  * mapping this will only result in the nulling out of the foreign keys on flush.
  *
- * @psalm-template TKey of array-key
- * @psalm-template T
+ * @phpstan-template TKey of array-key
+ * @phpstan-template T
  * @template-extends AbstractLazyCollection<TKey,T>
  * @template-implements Selectable<TKey,T>
  */
@@ -46,7 +46,7 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
      * A snapshot of the collection at the moment it was fetched from the database.
      * This is used to create a diff of the collection at commit time.
      *
-     * @psalm-var array<string|int, mixed>
+     * @phpstan-var array<string|int, mixed>
      */
     private array $snapshot = [];
 
@@ -80,7 +80,7 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
      *
      * @param EntityManagerInterface $em        The EntityManager the collection will be associated with.
      * @param ClassMetadata          $typeClass The class descriptor of the entity type of this collection.
-     * @psalm-param Collection<TKey, T>&Selectable<TKey, T> $collection The collection elements.
+     * @phpstan-param Collection<TKey, T>&Selectable<TKey, T> $collection The collection elements.
      */
     public function __construct(
         private EntityManagerInterface|null $em,
@@ -202,7 +202,7 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
      * INTERNAL:
      * Returns the last snapshot of the elements in the collection.
      *
-     * @psalm-return array<string|int, mixed> The last snapshot of the elements.
+     * @phpstan-return array<string|int, mixed> The last snapshot of the elements.
      */
     public function getSnapshot(): array
     {
@@ -492,7 +492,7 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
      *                with circular references. This solution seems simpler and works well.
      *
      * @return string[]
-     * @psalm-return array{0: string, 1: string}
+     * @phpstan-return array{0: string, 1: string}
      */
     public function __sleep(): array
     {
@@ -526,7 +526,7 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
      * selected slice and NOT change the elements contained in the collection slice is called on.
      *
      * @return mixed[]
-     * @psalm-return array<TKey,T>
+     * @phpstan-return array<TKey,T>
      */
     public function slice(int $offset, int|null $length = null): array
     {
@@ -568,7 +568,7 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
      * Selects all elements from a selectable that match the expression and
      * return a new collection containing these elements.
      *
-     * @psalm-return Collection<TKey, T>
+     * @phpstan-return Collection<TKey, T>
      *
      * @throws RuntimeException
      */

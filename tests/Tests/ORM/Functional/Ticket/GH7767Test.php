@@ -75,7 +75,7 @@ class GH7767ParentEntity
     #[GeneratedValue]
     private int $id;
 
-    /** @psalm-var Collection<int, GH7767ChildEntity>&Selectable<int, GH7767ChildEntity> */
+    /** @phpstan-var Collection<int, GH7767ChildEntity>&Selectable<int, GH7767ChildEntity> */
     #[OneToMany(targetEntity: GH7767ChildEntity::class, mappedBy: 'parent', fetch: 'EXTRA_LAZY', cascade: ['persist'])]
     #[OrderBy(['position' => 'ASC'])]
     private $children;
@@ -85,7 +85,7 @@ class GH7767ParentEntity
         $this->children[] = new GH7767ChildEntity($this, $position);
     }
 
-    /** @psalm-return Collection<int, GH7767ChildEntity>&Selectable<int, GH7767ChildEntity> */
+    /** @phpstan-return Collection<int, GH7767ChildEntity>&Selectable<int, GH7767ChildEntity> */
     public function getChildren(): Collection
     {
         return $this->children;

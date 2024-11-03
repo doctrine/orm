@@ -24,7 +24,7 @@ class Group
     #[Column(type: 'integer', name: '`group-id`')]
     public $id;
 
-    /** @psalm-var Collection<int, User> */
+    /** @phpstan-var Collection<int, User> */
     #[ManyToMany(targetEntity: 'User', mappedBy: 'groups')]
     public $users;
 

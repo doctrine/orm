@@ -82,7 +82,7 @@ class SchemaValidator
      * 2. Check if "mappedBy" and "inversedBy" are consistent to each other.
      * 3. Check if "referencedColumnName" attributes are really pointing to primary key columns.
      *
-     * @psalm-return array<string, list<string>>
+     * @phpstan-return array<string, list<string>>
      */
     public function validateMapping(): array
     {
@@ -104,7 +104,7 @@ class SchemaValidator
      * Validates a single class of the current.
      *
      * @return string[]
-     * @psalm-return list<string>
+     * @phpstan-return list<string>
      */
     public function validateClass(ClassMetadata $class): array
     {

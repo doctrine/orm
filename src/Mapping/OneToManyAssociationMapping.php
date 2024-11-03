@@ -8,7 +8,7 @@ final class OneToManyAssociationMapping extends ToManyInverseSideMapping
 {
     /**
      * @param mixed[] $mappingArray
-     * @psalm-param array{
+     * @phpstan-param array{
      *     fieldName: string,
      *     sourceEntity: class-string,
      *     targetEntity: class-string,
@@ -41,7 +41,7 @@ final class OneToManyAssociationMapping extends ToManyInverseSideMapping
 
     /**
      * @param mixed[] $mappingArray
-     * @psalm-param array{
+     * @phpstan-param array{
      *     fieldName: string,
      *     sourceEntity: class-string,
      *     targetEntity: class-string,

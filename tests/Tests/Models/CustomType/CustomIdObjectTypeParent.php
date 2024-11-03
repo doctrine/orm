@@ -17,7 +17,7 @@ use Doctrine\Tests\DbalTypes\CustomIdObject;
 #[Entity]
 class CustomIdObjectTypeParent
 {
-    /** @psalm-var Collection<int, CustomIdObjectTypeChild> */
+    /** @phpstan-var Collection<int, CustomIdObjectTypeChild> */
     #[OneToMany(targetEntity: 'Doctrine\Tests\Models\CustomType\CustomIdObjectTypeChild', cascade: ['persist', 'remove'], mappedBy: 'parent')]
     public $children;
 

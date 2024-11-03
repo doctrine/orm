@@ -68,7 +68,7 @@ class TrimFunction extends FunctionNode
         $parser->match(TokenType::T_CLOSE_PARENTHESIS);
     }
 
-    /** @psalm-return TrimMode::* */
+    /** @phpstan-return TrimMode::* */
     private function getTrimMode(): TrimMode|int
     {
         if ($this->leading) {

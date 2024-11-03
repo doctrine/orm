@@ -475,12 +475,12 @@ class DDC3322One
     #[GeneratedValue]
     private int $id;
 
-    /** @psalm-var Collection<int, DDC3322ValidEntity1> */
+    /** @phpstan-var Collection<int, DDC3322ValidEntity1> */
     #[OneToMany(targetEntity: 'DDC3322ValidEntity1', mappedBy: 'oneValid')]
     #[OrderBy(['id' => 'ASC'])]
     private $validAssoc;
 
-    /** @psalm-var Collection<int, DDC3322ValidEntity1> */
+    /** @phpstan-var Collection<int, DDC3322ValidEntity1> */
     #[OneToMany(targetEntity: 'DDC3322ValidEntity1', mappedBy: 'oneInvalid')]
     #[OrderBy(['invalidField' => 'ASC'])]
     private $invalidAssoc;
@@ -494,12 +494,12 @@ class DDC3322Two
     #[GeneratedValue]
     private int $id;
 
-    /** @psalm-var Collection<int, DDC3322ValidEntity1> */
+    /** @phpstan-var Collection<int, DDC3322ValidEntity1> */
     #[OneToMany(targetEntity: 'DDC3322ValidEntity1', mappedBy: 'twoValid')]
     #[OrderBy(['manyToOne' => 'ASC'])]
     private $validAssoc;
 
-    /** @psalm-var Collection<int, DDC3322ValidEntity1> */
+    /** @phpstan-var Collection<int, DDC3322ValidEntity1> */
     #[OneToMany(targetEntity: 'DDC3322ValidEntity1', mappedBy: 'twoInvalid')]
     #[OrderBy(['oneToMany' => 'ASC'])]
     private $invalidAssoc;
@@ -517,7 +517,7 @@ class DDC3322Three
     #[OrderBy(['oneToOneOwning' => 'ASC'])]
     private DDC3322ValidEntity1 $validAssoc;
 
-    /** @psalm-var Collection<int, DDC3322ValidEntity1> */
+    /** @phpstan-var Collection<int, DDC3322ValidEntity1> */
     #[OneToMany(targetEntity: 'DDC3322ValidEntity1', mappedBy: 'threeInvalid')]
     #[OrderBy(['oneToOneInverse' => 'ASC'])]
     private $invalidAssoc;
@@ -554,7 +554,7 @@ class Issue9095Child extends Issue9095AbstractChild
 #[MappedSuperclass]
 class InvalidMappedSuperClass
 {
-    /** @psalm-var Collection<int, self> */
+    /** @phpstan-var Collection<int, self> */
     #[ManyToMany(targetEntity: 'InvalidMappedSuperClass', mappedBy: 'invalid')]
     private $selfWhatever;
 }

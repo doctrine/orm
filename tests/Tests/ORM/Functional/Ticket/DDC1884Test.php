@@ -55,7 +55,7 @@ class DDC1884Test extends OrmFunctionalTestCase
     }
 
     /**
-     * @psalm-return array{Car, Car, Car, Car}
+     * @phpstan-return array{Car, Car, Car, Car}
      *
      * @var class-string<Car> $class
      */
@@ -86,7 +86,7 @@ class DDC1884Test extends OrmFunctionalTestCase
     }
 
     /**
-     * @psalm-return array{Driver, Driver}
+     * @phpstan-return array{Driver, Driver}
      *
      * @var class-string<Driver> $class
      */

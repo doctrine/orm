@@ -97,7 +97,7 @@ abstract class AssociationMapping implements ArrayAccess
 
     /**
      * @param mixed[] $mappingArray
-     * @psalm-param array{
+     * @phpstan-param array{
      *     fieldName: string,
      *     sourceEntity: class-string,
      *     targetEntity: class-string,
@@ -153,75 +153,75 @@ abstract class AssociationMapping implements ArrayAccess
     }
 
     /**
-     * @psalm-assert-if-true OwningSideMapping $this
-     * @psalm-assert-if-false InverseSideMapping $this
+     * @phpstan-assert-if-true OwningSideMapping $this
+     * @phpstan-assert-if-false InverseSideMapping $this
      */
     final public function isOwningSide(): bool
     {
         return $this instanceof OwningSideMapping;
     }
 
-    /** @psalm-assert-if-true ToOneAssociationMapping $this */
+    /** @phpstan-assert-if-true ToOneAssociationMapping $this */
     final public function isToOne(): bool
     {
         return $this instanceof ToOneAssociationMapping;
     }
 
-    /** @psalm-assert-if-true ToManyAssociationMapping $this */
+    /** @phpstan-assert-if-true ToManyAssociationMapping $this */
     final public function isToMany(): bool
     {
         return $this instanceof ToManyAssociationMapping;
     }
 
-    /** @psalm-assert-if-true OneToOneOwningSideMapping $this */
+    /** @phpstan-assert-if-true OneToOneOwningSideMapping $this */
     final public function isOneToOneOwningSide(): bool
     {
         return $this->isOneToOne() && $this->isOwningSide();
     }
 
-    /** @psalm-assert-if-true OneToOneOwningSideMapping|ManyToOneAssociationMapping $this */
+    /** @phpstan-assert-if-true OneToOneOwningSideMapping|ManyToOneAssociationMapping $this */
     final public function isToOneOwningSide(): bool
     {
         return $this->isToOne() && $this->isOwningSide();
     }
 
-    /** @psalm-assert-if-true ManyToManyOwningSideMapping $this */
+    /** @phpstan-assert-if-true ManyToManyOwningSideMapping $this */
     final public function isManyToManyOwningSide(): bool
     {
         return $this instanceof ManyToManyOwningSideMapping;
     }
 
-    /** @psalm-assert-if-true OneToOneAssociationMapping $this */
+    /** @phpstan-assert-if-true OneToOneAssociationMapping $this */
     final public function isOneToOne(): bool
     {
         return $this instanceof OneToOneAssociationMapping;
     }
 
-    /** @psalm-assert-if-true OneToManyAssociationMapping $this */
+    /** @phpstan-assert-if-true OneToManyAssociationMapping $this */
     final public function isOneToMany(): bool
     {
         return $this instanceof OneToManyAssociationMapping;
     }
 
-    /** @psalm-assert-if-true ManyToOneAssociationMapping $this */
+    /** @phpstan-assert-if-true ManyToOneAssociationMapping $this */
     final public function isManyToOne(): bool
     {
         return $this instanceof ManyToOneAssociationMapping;
     }
 
-    /** @psalm-assert-if-true ManyToManyAssociationMapping $this */
+    /** @phpstan-assert-if-true ManyToManyAssociationMapping $this */
     final public function isManyToMany(): bool
     {
         return $this instanceof ManyToManyAssociationMapping;
     }
 
-    /** @psalm-assert-if-true ToManyAssociationMapping $this */
+    /** @phpstan-assert-if-true ToManyAssociationMapping $this */
     final public function isOrdered(): bool
     {
         return $this->isToMany() && $this->orderBy() !== [];
     }
 
-    /** @psalm-assert-if-true ToManyAssociationMapping $this */
+    /** @phpstan-assert-if-true ToManyAssociationMapping $this */
     public function isIndexed(): bool
     {
         return false;

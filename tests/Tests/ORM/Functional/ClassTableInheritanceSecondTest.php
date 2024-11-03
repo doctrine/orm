@@ -170,7 +170,7 @@ class CTIRelated2
     #[GeneratedValue]
     private int $id;
 
-    /** @psalm-var Collection<int, CTIChild> */
+    /** @phpstan-var Collection<int, CTIChild> */
     #[ManyToMany(targetEntity: 'CTIChild')]
     private $ctiChildren;
 
@@ -189,7 +189,7 @@ class CTIRelated2
         $this->ctiChildren->add($child);
     }
 
-    /** @psalm-return Collection<int, CTIChild> */
+    /** @phpstan-return Collection<int, CTIChild> */
     public function getCTIChildren(): Collection
     {
         return $this->ctiChildren;

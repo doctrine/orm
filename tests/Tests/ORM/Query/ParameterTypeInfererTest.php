@@ -19,7 +19,7 @@ use PHPUnit\Framework\Attributes\DataProvider;
 
 class ParameterTypeInfererTest extends OrmTestCase
 {
-    /** @psalm-return Generator<string, array{mixed, (ParameterType::*|ArrayParameterType::*|string)}> */
+    /** @phpstan-return Generator<string, array{mixed, (ParameterType::*|ArrayParameterType::*|string)}> */
     public static function providerParameterTypeInferer(): Generator
     {
         yield 'integer' => [1, Types::INTEGER];

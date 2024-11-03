@@ -47,8 +47,8 @@ interface EntityPersister
      *
      * @param mixed[]|Criteria $criteria
      * @param mixed[]|null     $orderBy
-     * @psalm-param AssociationMapping|null $assoc
-     * @psalm-param LockMode::*|null $lockMode
+     * @phpstan-param AssociationMapping|null $assoc
+     * @phpstan-param LockMode::*|null $lockMode
      */
     public function getSelectSQL(
         array|Criteria $criteria,
@@ -71,14 +71,14 @@ interface EntityPersister
      *
      * @param string[] $criteria
      *
-     * @psalm-return array{list<mixed>, list<ParameterType::*|ArrayParameterType::*|string>}
+     * @phpstan-return array{list<mixed>, list<ParameterType::*|ArrayParameterType::*|string>}
      */
     public function expandParameters(array $criteria): array;
 
     /**
      * Expands Criteria Parameters by walking the expressions and grabbing all parameters and types from it.
      *
-     * @psalm-return array{list<mixed>, list<ParameterType::*|ArrayParameterType::*|string>}
+     * @phpstan-return array{list<mixed>, list<ParameterType::*|ArrayParameterType::*|string>}
      */
     public function expandCriteriaParameters(Criteria $criteria): array;
 
@@ -126,7 +126,7 @@ interface EntityPersister
      *
      * @param mixed[]|Criteria $criteria
      *
-     * @psalm-return 0|positive-int
+     * @phpstan-return 0|positive-int
      */
     public function count(array|Criteria $criteria = []): int;
 
@@ -153,10 +153,10 @@ interface EntityPersister
      *                                          for loading the entity.
      * @param int|null                $limit    Limit number of results.
      * @param string[]|null           $orderBy  Criteria to order by.
-     * @psalm-param array<string, mixed>       $criteria
-     * @psalm-param array<string, mixed>       $hints
-     * @psalm-param LockMode::*|null           $lockMode
-     * @psalm-param array<string, string>|null $orderBy
+     * @phpstan-param array<string, mixed>       $criteria
+     * @phpstan-param array<string, mixed>       $hints
+     * @phpstan-param LockMode::*|null           $lockMode
+     * @phpstan-param array<string, string>|null $orderBy
      *
      * @return object|null The loaded and managed entity instance or NULL if the entity can not be found.
      *
@@ -176,7 +176,7 @@ interface EntityPersister
      * Loads an entity by identifier.
      *
      * @param object|null $entity The entity to load the data into. If not specified, a new entity is created.
-     * @psalm-param array<string, mixed> $identifier The entity identifier.
+     * @phpstan-param array<string, mixed> $identifier The entity identifier.
      *
      * @return object|null The loaded and managed entity instance or NULL if the entity can not be found.
      *
@@ -190,7 +190,7 @@ interface EntityPersister
      *
      * @param AssociationMapping $assoc        The association to load.
      * @param object             $sourceEntity The entity that owns the association (not necessarily the "owning side").
-     * @psalm-param array<string, mixed> $identifier The identifier of the entity to load. Must be provided if
+     * @phpstan-param array<string, mixed> $identifier The identifier of the entity to load. Must be provided if
      *                                               the association to load represents the owning side, otherwise
      *                                               the identifier is derived from the $sourceEntity.
      *
@@ -206,10 +206,10 @@ interface EntityPersister
      * @param LockMode|int|null $lockMode One of the \Doctrine\DBAL\LockMode::* constants
      *                                    or NULL if no specific lock mode should be used
      *                                    for refreshing the managed entity.
-     * @psalm-param array<string, mixed> $id The identifier of the entity as an
+     * @phpstan-param array<string, mixed> $id The identifier of the entity as an
      *                                       associative array from column or
      *                                       field names to values.
-     * @psalm-param LockMode::*|null $lockMode
+     * @phpstan-param LockMode::*|null $lockMode
      */
     public function refresh(array $id, object $entity, LockMode|int|null $lockMode = null): void;
 
@@ -223,8 +223,8 @@ interface EntityPersister
     /**
      * Loads a list of entities by a list of field criteria.
      *
-     * @psalm-param array<string, string>|null $orderBy
-     * @psalm-param array<string, mixed>       $criteria
+     * @phpstan-param array<string, string>|null $orderBy
+     * @phpstan-param array<string, mixed>       $criteria
      *
      * @return mixed[]
      */
@@ -276,8 +276,8 @@ interface EntityPersister
     /**
      * Locks all rows of this entity matching the given criteria with the specified pessimistic lock mode.
      *
-     * @psalm-param array<string, mixed> $criteria
-     * @psalm-param LockMode::* $lockMode
+     * @phpstan-param array<string, mixed> $criteria
+     * @phpstan-param LockMode::* $lockMode
      */
     public function lock(array $criteria, LockMode|int $lockMode): void;
 

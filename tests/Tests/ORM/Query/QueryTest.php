@@ -82,7 +82,7 @@ class QueryTest extends OrmTestCase
         self::assertEquals($parameters, $query->getParameters());
     }
 
-    /** @psalm-param LockMode::* $lockMode */
+    /** @phpstan-param LockMode::* $lockMode */
     #[DataProvider('provideLockModes')]
     public function testSetLockMode(LockMode|int $lockMode): void
     {
@@ -97,7 +97,7 @@ class QueryTest extends OrmTestCase
         self::assertSame($lockMode, $query->getHint(Query::HINT_LOCK_MODE));
     }
 
-    /** @psalm-return list<array{LockMode::*}> */
+    /** @phpstan-return list<array{LockMode::*}> */
     public static function provideLockModes(): array
     {
         return [
@@ -238,7 +238,7 @@ class QueryTest extends OrmTestCase
         self::assertEquals($cities, $parameter->getValue());
     }
 
-    /** @psalm-return Generator<string, array{iterable}> */
+    /** @phpstan-return Generator<string, array{iterable}> */
     public static function provideProcessParameterValueIterable(): Generator
     {
         $baseArray = [

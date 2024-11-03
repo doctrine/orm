@@ -6,7 +6,7 @@ namespace Doctrine\ORM\Mapping;
 
 interface ToManyAssociationMapping
 {
-    /** @psalm-assert-if-true string $this->indexBy() */
+    /** @phpstan-assert-if-true string $this->indexBy() */
     public function isIndexed(): bool;
 
     public function indexBy(): string;

@@ -116,7 +116,7 @@ class GH7836ParentEntity
         $this->children[] = new GH7836ChildEntity($this, $position, $name);
     }
 
-    /** @psalm-return Collection<int, GH7836ChildEntity>&Selectable<int, GH7836ChildEntity> */
+    /** @phpstan-return Collection<int, GH7836ChildEntity>&Selectable<int, GH7836ChildEntity> */
     public function getChildren(): Collection
     {
         return $this->children;

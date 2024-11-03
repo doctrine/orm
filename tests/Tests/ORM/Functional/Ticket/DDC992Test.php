@@ -138,11 +138,11 @@ class DDC992Role
     #[Column(name: 'name', type: 'string', length: 45)]
     public $name;
 
-    /** @psalm-var Collection<int, DDC992Role> */
+    /** @phpstan-var Collection<int, DDC992Role> */
     #[ManyToMany(targetEntity: 'DDC992Role', mappedBy: 'extends')]
     public $extendedBy;
 
-    /** @psalm-var Collection<int, DDC992Role> */
+    /** @phpstan-var Collection<int, DDC992Role> */
     #[JoinTable(name: 'RoleRelations')]
     #[JoinColumn(name: 'roleID', referencedColumnName: 'roleID')]
     #[InverseJoinColumn(name: 'extendsRoleID', referencedColumnName: 'roleID')]

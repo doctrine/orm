@@ -176,7 +176,7 @@ class XmlMappingDriverTest extends MappingDriverTestCase
         $this->assertEquals($metadata->getAssociationNames(), $associationNames);
     }
 
-    /** @psalm-return []array{0: class-string, 1: string, 2: list<string>, 3: list<string>} */
+    /** @phpstan-return []array{0: class-string, 1: string, 2: list<string>, 3: list<string>} */
     public static function dataValidSchema(): array
     {
         return [

@@ -29,7 +29,7 @@ use function is_array;
  * Base class for all hydrators. A hydrator is a class that provides some form
  * of transformation of an SQL result set into another structure.
  *
- * @psalm-consistent-constructor
+ * @phpstan-consistent-constructor
  */
 abstract class AbstractHydrator
 {
@@ -86,7 +86,7 @@ abstract class AbstractHydrator
     /**
      * Initiates a row-by-row hydration.
      *
-     * @psalm-param array<string, mixed> $hints
+     * @phpstan-param array<string, mixed> $hints
      *
      * @return Generator<array-key, mixed>
      *
@@ -153,7 +153,7 @@ abstract class AbstractHydrator
     /**
      * Hydrates all rows returned by the passed statement instance at once.
      *
-     * @psalm-param array<string, string> $hints
+     * @phpstan-param array<string, string> $hints
      */
     public function hydrateAll(Result $stmt, ResultSetMapping $resultSetMapping, array $hints = []): mixed
     {
@@ -242,14 +242,14 @@ abstract class AbstractHydrator
      * the values applied. Scalar values are kept in a specific key 'scalars'.
      *
      * @param mixed[] $data SQL Result Row.
-     * @psalm-param array<string, string> $id                 Dql-Alias => ID-Hash.
-     * @psalm-param array<string, bool>   $nonemptyComponents Does this DQL-Alias has at least one non NULL value?
+     * @phpstan-param array<string, string> $id                 Dql-Alias => ID-Hash.
+     * @phpstan-param array<string, bool>   $nonemptyComponents Does this DQL-Alias has at least one non NULL value?
      *
      * @return array<string, array<string, mixed>> An array with all the fields
      *                                             (name => value) of the data
      *                                             row, grouped by their
      *                                             component alias.
-     * @psalm-return array{
+     * @phpstan-return array{
      *                   data: array<array-key, array>,
      *                   newObjects?: array<array-key, array{
      *                       class: ReflectionClass,
@@ -367,10 +367,10 @@ abstract class AbstractHydrator
      * of elements as before.
      *
      * @param mixed[] $data
-     * @psalm-param array<string, mixed> $data
+     * @phpstan-param array<string, mixed> $data
      *
      * @return mixed[] The processed row.
-     * @psalm-return array<string, mixed>
+     * @phpstan-return array<string, mixed>
      */
     protected function gatherScalarRowData(array &$data): array
     {
@@ -405,7 +405,7 @@ abstract class AbstractHydrator
      * @param string $key Column name
      *
      * @return mixed[]|null
-     * @psalm-return array<string, mixed>|null
+     * @phpstan-return array<string, mixed>|null
      */
     protected function hydrateColumnInfo(string $key): array|null
     {
@@ -502,7 +502,7 @@ abstract class AbstractHydrator
 
     /**
      * @return string[]
-     * @psalm-return non-empty-list<string>
+     * @phpstan-return non-empty-list<string>
      */
     private function getDiscriminatorValues(ClassMetadata $classMetadata): array
     {

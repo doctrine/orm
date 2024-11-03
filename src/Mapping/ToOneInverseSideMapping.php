@@ -9,7 +9,7 @@ abstract class ToOneInverseSideMapping extends InverseSideMapping
     /**
      * @param mixed[]      $mappingArray
      * @param class-string $name
-     * @psalm-param array{
+     * @phpstan-param array{
      *     fieldName: string,
      *     sourceEntity: class-string,
      *     targetEntity: class-string,

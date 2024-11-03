@@ -16,13 +16,13 @@ use PHPUnit\Framework\Attributes\Group;
 #[Group('DDC-2575')]
 class DDC2575Test extends OrmFunctionalTestCase
 {
-    /** @psalm-var list<DDC2575Root> */
+    /** @phpstan-var list<DDC2575Root> */
     private array $rootsEntities = [];
 
-    /** @psalm-var list<DDC2575A> */
+    /** @phpstan-var list<DDC2575A> */
     private array $aEntities = [];
 
-    /** @psalm-var list<DDC2575B> */
+    /** @phpstan-var list<DDC2575B> */
     private array $bEntities = [];
 
     protected function setUp(): void

@@ -98,12 +98,12 @@ abstract class OJTICPet
     #[ManyToOne(targetEntity: 'OJTICPet')]
     public $mother;
 
-    /** @psalm-var Collection<int, OJTICPet> */
+    /** @phpstan-var Collection<int, OJTICPet> */
     #[OneToMany(targetEntity: 'OJTICPet', mappedBy: 'mother')]
     #[OrderBy(['name' => 'ASC'])]
     public $children;
 
-    /** @psalm-var Collection<int, OJTICPet> */
+    /** @phpstan-var Collection<int, OJTICPet> */
     #[JoinTable(name: 'OTJIC_Pet_Friends')]
     #[JoinColumn(name: 'pet_id', referencedColumnName: 'id')]
     #[InverseJoinColumn(name: 'friend_id', referencedColumnName: 'id')]

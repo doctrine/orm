@@ -82,7 +82,7 @@ class CascadeRemoveOrderEntityO
     #[JoinColumn(nullable: true, onDelete: 'SET NULL')]
     private CascadeRemoveOrderEntityG|null $oneToOneG = null;
 
-    /** @psalm-var Collection<int, CascadeRemoveOrderEntityG> */
+    /** @phpstan-var Collection<int, CascadeRemoveOrderEntityG> */
     #[OneToMany(targetEntity: 'Doctrine\Tests\ORM\Functional\CascadeRemoveOrderEntityG', mappedBy: 'ownerO', cascade: ['persist', 'remove'])]
     private $oneToManyG;
 
@@ -111,7 +111,7 @@ class CascadeRemoveOrderEntityO
         $this->oneToManyG->add($eG);
     }
 
-    /** @psalm-return array<int, CascadeRemoveOrderEntityG> */
+    /** @phpstan-return array<int, CascadeRemoveOrderEntityG> */
     public function getOneToManyGs(): array
     {
         return $this->oneToManyG->toArray();

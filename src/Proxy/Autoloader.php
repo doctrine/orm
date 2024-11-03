@@ -28,7 +28,7 @@ final class Autoloader
      * 2. Remove namespace separators from remaining class name.
      * 3. Return PHP filename from proxy-dir with the result from 2.
      *
-     * @psalm-param class-string $className
+     * @phpstan-param class-string $className
      *
      * @throws NotAProxyClass
      */

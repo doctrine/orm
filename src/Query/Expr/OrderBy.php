@@ -23,7 +23,7 @@ class OrderBy implements Stringable
     /** @var string[] */
     protected array $allowedClasses = [];
 
-    /** @psalm-var list<string> */
+    /** @phpstan-var list<string> */
     protected array $parts = [];
 
     public function __construct(
@@ -41,13 +41,13 @@ class OrderBy implements Stringable
         $this->parts[] = $sort . ' ' . $order;
     }
 
-    /** @psalm-return 0|positive-int */
+    /** @phpstan-return 0|positive-int */
     public function count(): int
     {
         return count($this->parts);
     }
 
-    /** @psalm-return list<string> */
+    /** @phpstan-return list<string> */
     public function getParts(): array
     {
         return $this->parts;

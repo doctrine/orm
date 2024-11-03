@@ -33,7 +33,7 @@ class InversedOneToManyCompositeIdForeignKeyEntity
     #[Column(type: 'string', length: 255, name: 'some_property')]
     public $someProperty;
 
-    /** @psalm-var Collection<int, OwningManyToOneCompositeIdForeignKeyEntity> */
+    /** @phpstan-var Collection<int, OwningManyToOneCompositeIdForeignKeyEntity> */
     #[OneToMany(targetEntity: 'OwningManyToOneCompositeIdForeignKeyEntity', mappedBy: 'associatedEntity')]
     public $associatedEntities;
 

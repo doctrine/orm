@@ -9,7 +9,7 @@ use Doctrine\Common\Collections\Collection;
 
 class GH7316Article
 {
-    /** @psalm-var Collection<int, mixed> */
+    /** @phpstan-var Collection<int, mixed> */
     private $tags;
 
     public function __construct()

@@ -73,14 +73,14 @@ class DDC809Variant
     #[Id]
     protected $variantId;
 
-    /** @psalm-var Collection<int, DDC809SpecificationValue> */
+    /** @phpstan-var Collection<int, DDC809SpecificationValue> */
     #[JoinTable(name: 'var_spec_value_test')]
     #[JoinColumn(name: 'variant_id', referencedColumnName: 'variant_id')]
     #[InverseJoinColumn(name: 'specification_value_id', referencedColumnName: 'specification_value_id')]
     #[ManyToMany(targetEntity: 'DDC809SpecificationValue', inversedBy: 'Variants')]
     protected $specificationValues;
 
-    /** @psalm-return Collection<int, DDC809SpecificationValue> */
+    /** @phpstan-return Collection<int, DDC809SpecificationValue> */
     public function getSpecificationValues(): Collection
     {
         return $this->specificationValues;
@@ -96,7 +96,7 @@ class DDC809SpecificationValue
     #[Id]
     protected $specificationValueId;
 
-    /** @psalm-var Collection<int,DDC809Variant> */
+    /** @phpstan-var Collection<int,DDC809Variant> */
     #[ManyToMany(targetEntity: 'DDC809Variant', mappedBy: 'SpecificationValues')]
     protected $variants;
 }

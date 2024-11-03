@@ -105,7 +105,7 @@ class Paginator implements Countable, IteratorAggregate
     /**
      * {@inheritDoc}
      *
-     * @psalm-return Traversable<array-key, T>
+     * @phpstan-return Traversable<array-key, T>
      */
     public function getIterator(): Traversable
     {

@@ -83,7 +83,7 @@ class DDC3330Building
     #[GeneratedValue]
     public $id;
 
-    /** @psalm-var Collection<int, DDC3330Hall> */
+    /** @phpstan-var Collection<int, DDC3330Hall> */
     #[OneToMany(targetEntity: 'DDC3330Hall', mappedBy: 'building', cascade: ['persist'])]
     public $halls;
 

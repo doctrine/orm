@@ -114,7 +114,7 @@ class DDC3192Transaction
 
 class DDC3192CurrencyCode extends Type
 {
-    /** @psalm-var array<string, int> */
+    /** @phpstan-var array<string, int> */
     private static array $map = ['BYR' => 974];
 
     /**

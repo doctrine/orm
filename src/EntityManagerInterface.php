@@ -71,10 +71,10 @@ interface EntityManagerInterface extends ObjectManager
      * If an exception occurs during execution of the function or flushing or transaction commit,
      * the transaction is rolled back, the EntityManager closed and the exception re-thrown.
      *
-     * @psalm-param callable(self): T $func The function to execute transactionally.
+     * @phpstan-param callable(self): T $func The function to execute transactionally.
      *
      * @return mixed The value returned from the closure.
-     * @psalm-return T
+     * @phpstan-return T
      *
      * @template T
      */
@@ -117,11 +117,11 @@ interface EntityManagerInterface extends ObjectManager
      *                                       during the search.
      * @param int|null          $lockVersion The version of the entity to find when using
      *                                       optimistic locking.
-     * @psalm-param class-string<T> $className
-     * @psalm-param LockMode::*|null $lockMode
+     * @phpstan-param class-string<T> $className
+     * @phpstan-param LockMode::*|null $lockMode
      *
      * @return object|null The entity instance or NULL if the entity can not be found.
-     * @psalm-return T|null
+     * @phpstan-return T|null
      *
      * @throws OptimisticLockException
      * @throws ORMInvalidArgumentException
@@ -139,7 +139,7 @@ interface EntityManagerInterface extends ObjectManager
      * @param LockMode|int|null $lockMode One of the \Doctrine\DBAL\LockMode::* constants
      *                                    or NULL if no specific lock mode should be used
      *                                    during the search.
-     * @psalm-param LockMode::*|null $lockMode
+     * @phpstan-param LockMode::*|null $lockMode
      *
      * @throws ORMInvalidArgumentException
      * @throws ORMException
@@ -172,7 +172,7 @@ interface EntityManagerInterface extends ObjectManager
     /**
      * Acquire a lock on the given entity.
      *
-     * @psalm-param LockMode::* $lockMode
+     * @phpstan-param LockMode::* $lockMode
      *
      * @throws OptimisticLockException
      * @throws PessimisticLockException
@@ -202,7 +202,7 @@ interface EntityManagerInterface extends ObjectManager
     /**
      * Create a new instance for the given hydration mode.
      *
-     * @psalm-param string|AbstractQuery::HYDRATE_* $hydrationMode
+     * @phpstan-param string|AbstractQuery::HYDRATE_* $hydrationMode
      *
      * @throws ORMException
      */
@@ -233,9 +233,9 @@ interface EntityManagerInterface extends ObjectManager
      *
      * @param string|class-string<T> $className
      *
-     * @psalm-return ($className is class-string<T> ? Mapping\ClassMetadata<T> : Mapping\ClassMetadata<object>)
+     * @phpstan-return ($className is class-string<T> ? Mapping\ClassMetadata<T> : Mapping\ClassMetadata<object>)
      *
-     * @psalm-template T of object
+     * @phpstan-template T of object
      */
     public function getClassMetadata(string $className): Mapping\ClassMetadata;
 }

@@ -16,7 +16,7 @@ use function spl_object_id;
 #[CoversClass(ORMInvalidArgumentException::class)]
 class ORMInvalidArgumentExceptionTest extends TestCase
 {
-    /** @psalm-return list<array{mixed, string}> */
+    /** @phpstan-return list<array{mixed, string}> */
     public static function invalidEntityNames(): array
     {
         return [

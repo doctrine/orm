@@ -27,11 +27,11 @@ class User
     #[Column(type: 'string', length: 255)]
     public $name;
 
-    /** @psalm-var Collection<int, Tweet> */
+    /** @phpstan-var Collection<int, Tweet> */
     #[OneToMany(targetEntity: 'Tweet', mappedBy: 'author', cascade: ['persist'], fetch: 'EXTRA_LAZY')]
     public $tweets;
 
-    /** @psalm-var Collection<int, UserList> */
+    /** @phpstan-var Collection<int, UserList> */
     #[OneToMany(targetEntity: 'UserList', mappedBy: 'owner', fetch: 'EXTRA_LAZY', orphanRemoval: true)]
     public $userLists;
 

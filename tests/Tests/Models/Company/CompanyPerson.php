@@ -43,7 +43,7 @@ class CompanyPerson
     #[JoinColumn(name: 'spouse_id', referencedColumnName: 'id', onDelete: 'CASCADE')]
     private CompanyPerson|null $spouse = null;
 
-    /** @psalm-var Collection<int, CompanyPerson> */
+    /** @phpstan-var Collection<int, CompanyPerson> */
     #[JoinTable(name: 'company_persons_friends')]
     #[JoinColumn(name: 'person_id', referencedColumnName: 'id', onDelete: 'CASCADE')]
     #[InverseJoinColumn(name: 'friend_id', referencedColumnName: 'id', onDelete: 'CASCADE')]
@@ -75,7 +75,7 @@ class CompanyPerson
         return $this->spouse;
     }
 
-    /** @psalm-return Collection<int, CompanyPerson> */
+    /** @phpstan-return Collection<int, CompanyPerson> */
     public function getFriends(): Collection
     {
         return $this->friends;

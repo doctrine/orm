@@ -41,16 +41,16 @@ class Configuration extends \Doctrine\DBAL\Configuration
     /** @var mixed[] */
     protected array $attributes = [];
 
-    /** @psalm-var array<class-string<AbstractPlatform>, ClassMetadata::GENERATOR_TYPE_*> */
+    /** @phpstan-var array<class-string<AbstractPlatform>, ClassMetadata::GENERATOR_TYPE_*> */
     private $identityGenerationPreferences = [];
 
-    /** @psalm-param array<class-string<AbstractPlatform>, ClassMetadata::GENERATOR_TYPE_*> $value */
+    /** @phpstan-param array<class-string<AbstractPlatform>, ClassMetadata::GENERATOR_TYPE_*> $value */
     public function setIdentityGenerationPreferences(array $value): void
     {
         $this->identityGenerationPreferences = $value;
     }
 
-    /** @psalm-return array<class-string<AbstractPlatform>, ClassMetadata::GENERATOR_TYPE_*> $value */
+    /** @phpstan-return array<class-string<AbstractPlatform>, ClassMetadata::GENERATOR_TYPE_*> $value */
     public function getIdentityGenerationPreferences(): array
     {
         return $this->identityGenerationPreferences;
@@ -122,7 +122,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
     /**
      * Sets the entity alias map.
      *
-     * @psalm-param array<string, string> $entityNamespaces
+     * @phpstan-param array<string, string> $entityNamespaces
      */
     public function setEntityNamespaces(array $entityNamespaces): void
     {
@@ -132,7 +132,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
     /**
      * Retrieves the list of registered entity namespace aliases.
      *
-     * @psalm-return array<string, string>
+     * @phpstan-return array<string, string>
      */
     public function getEntityNamespaces(): array
     {
@@ -191,7 +191,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
      * DQL function names are case-insensitive.
      *
      * @param class-string|callable $className Class name or a callable that returns the function.
-     * @psalm-param class-string<FunctionNode>|callable(string):FunctionNode $className
+     * @phpstan-param class-string<FunctionNode>|callable(string):FunctionNode $className
      */
     public function addCustomStringFunction(string $name, string|callable $className): void
     {
@@ -201,7 +201,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
     /**
      * Gets the implementation class name of a registered custom string DQL function.
      *
-     * @psalm-return class-string<FunctionNode>|callable(string):FunctionNode|null
+     * @phpstan-return class-string<FunctionNode>|callable(string):FunctionNode|null
      */
     public function getCustomStringFunction(string $name): string|callable|null
     {
@@ -218,7 +218,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
      *
      * Any previously added string functions are discarded.
      *
-     * @psalm-param array<string, class-string<FunctionNode>|callable(string):FunctionNode> $functions The map of custom
+     * @phpstan-param array<string, class-string<FunctionNode>|callable(string):FunctionNode> $functions The map of custom
      *                                                     DQL string functions.
      */
     public function setCustomStringFunctions(array $functions): void
@@ -236,7 +236,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
      * DQL function names are case-insensitive.
      *
      * @param class-string|callable $className Class name or a callable that returns the function.
-     * @psalm-param class-string<FunctionNode>|callable(string):FunctionNode $className
+     * @phpstan-param class-string<FunctionNode>|callable(string):FunctionNode $className
      */
     public function addCustomNumericFunction(string $name, string|callable $className): void
     {
@@ -246,7 +246,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
     /**
      * Gets the implementation class name of a registered custom numeric DQL function.
      *
-     * @psalm-return ?class-string<FunctionNode>|callable(string):FunctionNode
+     * @phpstan-return class-string<FunctionNode>|callable(string):FunctionNode|null
      */
     public function getCustomNumericFunction(string $name): string|callable|null
     {
@@ -281,7 +281,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
      * DQL function names are case-insensitive.
      *
      * @param string|callable $className Class name or a callable that returns the function.
-     * @psalm-param class-string<FunctionNode>|callable(string):FunctionNode $className
+     * @phpstan-param class-string<FunctionNode>|callable(string):FunctionNode $className
      */
     public function addCustomDatetimeFunction(string $name, string|callable $className): void
     {
@@ -309,7 +309,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
      * Any previously added date/time functions are discarded.
      *
      * @param array $functions The map of custom DQL date/time functions.
-     * @psalm-param array<string, class-string<FunctionNode>|callable(string):FunctionNode> $functions
+     * @phpstan-param array<string, class-string<FunctionNode>|callable(string):FunctionNode> $functions
      */
     public function setCustomDatetimeFunctions(array $functions): void
     {
@@ -538,7 +538,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
     /**
      * Returns query hints, which will be applied to every query in application
      *
-     * @psalm-return array<string, mixed>
+     * @phpstan-return array<string, mixed>
      */
     public function getDefaultQueryHints(): array
     {
@@ -548,7 +548,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
     /**
      * Sets array of query hints, which will be applied to every query in application
      *
-     * @psalm-param array<string, mixed> $defaultQueryHints
+     * @phpstan-param array<string, mixed> $defaultQueryHints
      */
     public function setDefaultQueryHints(array $defaultQueryHints): void
     {

@@ -17,8 +17,8 @@ use Doctrine\DBAL\Types\Type;
  * @link        http://www.doctrine-project.org
  *
  * @todo Rename: AbstractSQLExecutor
- * @psalm-type WrapperParameterType = string|Type|ParameterType::*|ArrayParameterType::*
- * @psalm-type WrapperParameterTypeArray = array<int<0, max>, WrapperParameterType>|array<string, WrapperParameterType>
+ * @phpstan-type WrapperParameterType = string|Type|ParameterType::*|ArrayParameterType::*
+ * @phpstan-type WrapperParameterTypeArray = array<int<0, max>, WrapperParameterType>|array<string, WrapperParameterType>
  */
 abstract class AbstractSqlExecutor
 {
@@ -55,7 +55,7 @@ abstract class AbstractSqlExecutor
      *
      * @param Connection                       $conn   The database connection that is used to execute the queries.
      * @param list<mixed>|array<string, mixed> $params The parameters.
-     * @psalm-param WrapperParameterTypeArray  $types  The parameter types.
+     * @phpstan-param WrapperParameterTypeArray  $types  The parameter types.
      */
     abstract public function execute(Connection $conn, array $params, array $types): Result|int;
 }

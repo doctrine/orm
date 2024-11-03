@@ -586,7 +586,7 @@ class EntityManager implements EntityManagerInterface
     }
 
     /**
-     * @psalm-param LockMode::* $lockMode
+     * @phpstan-param LockMode::* $lockMode
      *
      * @throws OptimisticLockException
      * @throws TransactionRequiredException

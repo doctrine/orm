@@ -24,16 +24,16 @@ use PHPUnit\Framework\Attributes\Group;
 #[Group('DDC-2252')]
 class DDC2252Test extends OrmFunctionalTestCase
 {
-    /** @psalm-var DDC2252User */
+    /** @phpstan-var DDC2252User */
     private $user;
 
-    /** @psalm-var DDC2252MerchantAccount */
+    /** @phpstan-var DDC2252MerchantAccount */
     private $merchant;
 
-    /** @psalm-var DDC2252Membership */
+    /** @phpstan-var DDC2252Membership */
     private $membership;
 
-    /** @psalm-var list<DDC2252Privilege> */
+    /** @phpstan-var list<DDC2252Privilege> */
     private array $privileges = [];
 
     protected function setUp(): void
@@ -161,7 +161,7 @@ class DDC2252User
     #[Column(type: 'integer')]
     protected $uid = 222;
 
-    /** @psalm-var Collection<int, DDC2252Membership> */
+    /** @phpstan-var Collection<int, DDC2252Membership> */
     #[OneToMany(targetEntity: 'DDC2252Membership', mappedBy: 'userAccount', cascade: ['persist'])]
     #[JoinColumn(name: 'uid', referencedColumnName: 'uid')]
     protected $memberships;
@@ -176,7 +176,7 @@ class DDC2252User
         return $this->uid;
     }
 
-    /** @psalm-return Collection<int, DDC2252Membership> */
+    /** @phpstan-return Collection<int, DDC2252Membership> */
     public function getMemberships(): Collection
     {
         return $this->memberships;
@@ -193,7 +193,7 @@ class DDC2252User
 #[HasLifecycleCallbacks]
 class DDC2252Membership
 {
-    /** @psalm-var Collection<int, DDC2252Privilege> */
+    /** @phpstan-var Collection<int, DDC2252Privilege> */
     #[JoinTable(name: 'ddc2252_user_mch_account_privilege')]
     #[JoinColumn(name: 'mch_accountid', referencedColumnName: 'mch_accountid')]
     #[JoinColumn(name: 'uid', referencedColumnName: 'uid')]
@@ -219,7 +219,7 @@ class DDC2252Membership
         $this->privileges[] = $privilege;
     }
 
-    /** @psalm-var Collection<int, DDC2252Privilege> */
+    /** @phpstan-var Collection<int, DDC2252Privilege> */
     public function getPrivileges(): Collection
     {
         return $this->privileges;

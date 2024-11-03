@@ -58,8 +58,8 @@ class GH11341Test extends OrmFunctionalTestCase
     }
 
     /**
-     * @psalm-param class-string $baseClass
-     * @psalm-param class-string $inheritedClass
+     * @phpstan-param class-string $baseClass
+     * @phpstan-param class-string $inheritedClass
      */
     #[DataProvider('dqlStatementsForInstanceOf')]
     public function testInstanceOf(string $baseClass, string $inheritedClass): void

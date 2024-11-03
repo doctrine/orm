@@ -39,7 +39,7 @@ class NewOperatorTest extends OrmFunctionalTestCase
         $this->loadFixtures();
     }
 
-    /** @psalm-return list<array{int}> */
+    /** @phpstan-return list<array{int}> */
     public static function provideDataForHydrationMode(): array
     {
         return [

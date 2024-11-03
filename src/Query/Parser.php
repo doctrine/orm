@@ -40,8 +40,8 @@ use function trim;
  * An LL(*) recursive-descent parser for the context-free grammar of the Doctrine Query Language.
  * Parses a DQL query, reports any errors in it, and generates an AST.
  *
- * @psalm-type DqlToken = Token<TokenType, string>
- * @psalm-type QueryComponent = array{
+ * @phpstan-type DqlToken = Token<TokenType, string>
+ * @phpstan-type QueryComponent = array{
  *                 metadata?: ClassMetadata<object>,
  *                 parent?: string|null,
  *                 relation?: AssociationMapping|null,
@@ -106,19 +106,19 @@ final class Parser
      * and still need to be validated.
      */
 
-    /** @psalm-var list<array{token: DqlToken|null, expression: mixed, nestingLevel: int}> */
+    /** @phpstan-var list<array{token: DqlToken|null, expression: mixed, nestingLevel: int}> */
     private array $deferredIdentificationVariables = [];
 
-    /** @psalm-var list<array{token: DqlToken|null, expression: AST\PartialObjectExpression, nestingLevel: int}> */
+    /** @phpstan-var list<array{token: DqlToken|null, expression: AST\PartialObjectExpression, nestingLevel: int}> */
     private array $deferredPartialObjectExpressions = [];
 
-    /** @psalm-var list<array{token: DqlToken|null, expression: AST\PathExpression, nestingLevel: int}> */
+    /** @phpstan-var list<array{token: DqlToken|null, expression: AST\PathExpression, nestingLevel: int}> */
     private array $deferredPathExpressions = [];
 
-    /** @psalm-var list<array{token: DqlToken|null, expression: mixed, nestingLevel: int}> */
+    /** @phpstan-var list<array{token: DqlToken|null, expression: mixed, nestingLevel: int}> */
     private array $deferredResultVariables = [];
 
-    /** @psalm-var list<array{token: DqlToken|null, expression: AST\NewObjectExpression, nestingLevel: int}> */
+    /** @phpstan-var list<array{token: DqlToken|null, expression: AST\NewObjectExpression, nestingLevel: int}> */
     private array $deferredNewObjectExpressions = [];
 
     /**
@@ -139,7 +139,7 @@ final class Parser
     /**
      * Map of declared query components in the parsed query.
      *
-     * @psalm-var array<string, QueryComponent>
+     * @phpstan-var array<string, QueryComponent>
      */
     private array $queryComponents = [];
 
@@ -162,7 +162,7 @@ final class Parser
      */
     private $customOutputWalker;
 
-    /** @psalm-var array<string, AST\SelectExpression> */
+    /** @phpstan-var array<string, AST\SelectExpression> */
     private array $identVariableExpressions = [];
 
     /**
@@ -436,7 +436,7 @@ final class Parser
      * Generates a new semantical error.
      *
      * @param string $message Optional message.
-     * @psalm-param DqlToken|null $token
+     * @phpstan-param DqlToken|null $token
      *
      * @throws QueryException
      */
@@ -470,7 +470,7 @@ final class Parser
      *
      * @param bool $resetPeek Reset peek after finding the closing parenthesis.
      *
-     * @psalm-return DqlToken|null
+     * @phpstan-return DqlToken|null
      */
     private function peekBeyondClosingParenthesis(bool $resetPeek = true): Token|null
     {
@@ -504,7 +504,7 @@ final class Parser
     /**
      * Checks if the given token indicates a mathematical operator.
      *
-     * @psalm-param DqlToken|null $token
+     * @phpstan-param DqlToken|null $token
      */
     private function isMathOperator(Token|null $token): bool
     {
@@ -1026,7 +1026,7 @@ final class Parser
      *
      * PathExpression ::= IdentificationVariable {"." identifier}*
      *
-     * @psalm-param int-mask-of<AST\PathExpression::TYPE_*> $expectedTypes
+     * @phpstan-param int-mask-of<AST\PathExpression::TYPE_*> $expectedTypes
      */
     public function PathExpression(int $expectedTypes): AST\PathExpression
     {

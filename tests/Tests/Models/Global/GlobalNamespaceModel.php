@@ -29,14 +29,14 @@ class DoctrineGlobalArticle
     #[Column(type: 'text')]
     protected $text;
 
-    /** @psalm-var Collection<int, DoctrineGlobalUser> */
+    /** @phpstan-var Collection<int, DoctrineGlobalUser> */
     #[JoinTable(name: 'author_articles')]
     #[JoinColumn(name: 'article_id', referencedColumnName: 'id')]
     #[InverseJoinColumn(name: 'author_id', referencedColumnName: 'id', unique: true)]
     #[ManyToMany(targetEntity: 'DoctrineGlobalUser')]
     protected $author;
 
-    /** @psalm-var Collection<int, DoctrineGlobalUser> */
+    /** @phpstan-var Collection<int, DoctrineGlobalUser> */
     #[JoinTable(name: 'editor_articles')]
     #[JoinColumn(name: 'article_id', referencedColumnName: 'id')]
     #[InverseJoinColumn(name: 'editor_id', referencedColumnName: 'id', unique: true)]

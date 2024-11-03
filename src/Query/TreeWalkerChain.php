@@ -12,7 +12,7 @@ use Generator;
  * Only the last walker in the chain can emit output. Any previous walkers can modify
  * the AST to influence the final output produced by the last walker.
  *
- * @psalm-import-type QueryComponent from Parser
+ * @phpstan-import-type QueryComponent from Parser
  */
 class TreeWalkerChain implements TreeWalker
 {
@@ -76,7 +76,7 @@ class TreeWalkerChain implements TreeWalker
         }
     }
 
-    /** @psalm-return Generator<int, TreeWalker> */
+    /** @phpstan-return Generator<int, TreeWalker> */
     private function getWalkers(): Generator
     {
         foreach ($this->walkers as $walkerClass) {

@@ -233,7 +233,7 @@ class Train
     #[JoinColumn(nullable: false)]
     public $owner;
 
-    /** @psalm-var Collection<int, Waggon> */
+    /** @phpstan-var Collection<int, Waggon> */
     #[OneToMany(targetEntity: 'Waggon', mappedBy: 'train', cascade: ['persist'])]
     public $waggons;
 

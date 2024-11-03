@@ -32,7 +32,7 @@ class User
     #[Column(type: 'string', length: 255, name: '`user-name`')]
     public $name;
 
-    /** @psalm-var Collection<int, Phone> */
+    /** @phpstan-var Collection<int, Phone> */
     #[OneToMany(targetEntity: 'Phone', mappedBy: 'user', cascade: ['persist'])]
     public $phones;
 
@@ -40,7 +40,7 @@ class User
     #[OneToOne(targetEntity: 'Address', mappedBy: 'user', cascade: ['persist'], fetch: 'EAGER')]
     public $address;
 
-    /** @psalm-var Collection<int, Group> */
+    /** @phpstan-var Collection<int, Group> */
     #[JoinTable(name: '`quote-users-groups`')]
     #[JoinColumn(name: '`user-id`', referencedColumnName: '`user-id`')]
     #[InverseJoinColumn(name: '`group-id`', referencedColumnName: '`group-id`')]
@@ -53,7 +53,7 @@ class User
         $this->groups = new ArrayCollection();
     }
 
-    /** @psalm-return Collection<int, Phone> */
+    /** @phpstan-return Collection<int, Phone> */
     public function getPhones(): Collection
     {
         return $this->phones;
@@ -64,7 +64,7 @@ class User
         return $this->address;
     }
 
-    /** @psalm-return Collection<int, Group> */
+    /** @phpstan-return Collection<int, Group> */
     public function getGroups(): Collection
     {
         return $this->groups;

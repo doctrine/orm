@@ -29,7 +29,7 @@ abstract class SQLFilter implements Stringable
     /**
      * Parameters for the filter.
      *
-     * @psalm-var array<string,array{type: string, value: mixed, is_list: bool}>
+     * @phpstan-var array<string,array{type: string, value: mixed, is_list: bool}>
      */
     private array $parameters = [];
 
@@ -166,7 +166,7 @@ abstract class SQLFilter implements Stringable
     /**
      * Gets the SQL query part to add to a query.
      *
-     * @psalm-param ClassMetadata<object> $targetEntity
+     * @phpstan-param ClassMetadata<object> $targetEntity
      *
      * @return string The constraint SQL if there is available, empty string otherwise.
      */

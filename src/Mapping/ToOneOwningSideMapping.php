@@ -27,7 +27,7 @@ abstract class ToOneOwningSideMapping extends OwningSideMapping implements ToOne
 
     /**
      * @param array<string, mixed> $mappingArray
-     * @psalm-param array{
+     * @phpstan-param array{
      *     fieldName: string,
      *     sourceEntity: class-string,
      *     targetEntity: class-string,
@@ -74,7 +74,7 @@ abstract class ToOneOwningSideMapping extends OwningSideMapping implements ToOne
     /**
      * @param mixed[]      $mappingArray
      * @param class-string $name
-     * @psalm-param array{
+     * @phpstan-param array{
      *     fieldName: string,
      *     sourceEntity: class-string,
      *     targetEntity: class-string,

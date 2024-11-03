@@ -46,7 +46,7 @@ class QueryBuilder implements Stringable
     /**
      * The array of DQL parts collected.
      *
-     * @psalm-var array<string, mixed>
+     * @phpstan-var array<string, mixed>
      */
     private array $dqlParts = [
         'distinct' => false,
@@ -70,7 +70,7 @@ class QueryBuilder implements Stringable
     /**
      * The query parameters.
      *
-     * @psalm-var ArrayCollection<int, Parameter>
+     * @phpstan-var ArrayCollection<int, Parameter>
      */
     private ArrayCollection $parameters;
 
@@ -87,7 +87,7 @@ class QueryBuilder implements Stringable
     /**
      * Keeps root entity alias names for join entities.
      *
-     * @psalm-var array<string, string>
+     * @phpstan-var array<string, string>
      */
     private array $joinRootAliases = [];
 
@@ -104,7 +104,7 @@ class QueryBuilder implements Stringable
     /**
      * Second level query cache mode.
      *
-     * @psalm-var Cache::MODE_*|null
+     * @phpstan-var Cache::MODE_*|null
      */
     protected int|null $cacheMode = null;
 
@@ -203,14 +203,14 @@ class QueryBuilder implements Stringable
         return $this;
     }
 
-    /** @psalm-return Cache::MODE_*|null */
+    /** @phpstan-return Cache::MODE_*|null */
     public function getCacheMode(): int|null
     {
         return $this->cacheMode;
     }
 
     /**
-     * @psalm-param Cache::MODE_* $cacheMode
+     * @phpstan-param Cache::MODE_* $cacheMode
      *
      * @return $this
      */
@@ -350,7 +350,7 @@ class QueryBuilder implements Stringable
      * </code>
      *
      * @return string[]
-     * @psalm-return list<string>
+     * @phpstan-return list<string>
      */
     public function getRootAliases(): array
     {
@@ -360,7 +360,7 @@ class QueryBuilder implements Stringable
             if (is_string($fromClause)) {
                 $spacePos = strrpos($fromClause, ' ');
 
-                /** @psalm-var class-string $from */
+                /** @phpstan-var class-string $from */
                 $from  = substr($fromClause, 0, $spacePos);
                 $alias = substr($fromClause, $spacePos + 1);
 
@@ -387,7 +387,7 @@ class QueryBuilder implements Stringable
      * </code>
      *
      * @return string[]
-     * @psalm-return list<string>
+     * @phpstan-return list<string>
      */
     public function getAllAliases(): array
     {
@@ -407,7 +407,7 @@ class QueryBuilder implements Stringable
      * </code>
      *
      * @return string[]
-     * @psalm-return list<class-string>
+     * @phpstan-return list<class-string>
      */
     public function getRootEntities(): array
     {
@@ -417,7 +417,7 @@ class QueryBuilder implements Stringable
             if (is_string($fromClause)) {
                 $spacePos = strrpos($fromClause, ' ');
 
-                /** @psalm-var class-string $from */
+                /** @phpstan-var class-string $from */
                 $from  = substr($fromClause, 0, $spacePos);
                 $alias = substr($fromClause, $spacePos + 1);
 
@@ -475,7 +475,7 @@ class QueryBuilder implements Stringable
      *        )));
      * </code>
      *
-     * @psalm-param ArrayCollection<int, Parameter> $parameters
+     * @phpstan-param ArrayCollection<int, Parameter> $parameters
      *
      * @return $this
      */
@@ -489,7 +489,7 @@ class QueryBuilder implements Stringable
     /**
      * Gets all defined query parameters for the query being constructed.
      *
-     * @psalm-return ArrayCollection<int, Parameter>
+     * @phpstan-return ArrayCollection<int, Parameter>
      */
     public function getParameters(): ArrayCollection
     {
@@ -557,7 +557,7 @@ class QueryBuilder implements Stringable
      * The available parts are: 'select', 'from', 'join', 'set', 'where',
      * 'groupBy', 'having' and 'orderBy'.
      *
-     * @psalm-param string|object|list<string>|array{join: array<int|string, object>} $dqlPart
+     * @phpstan-param string|object|list<string>|array{join: array<int|string, object>} $dqlPart
      *
      * @return $this
      */
@@ -831,7 +831,7 @@ class QueryBuilder implements Stringable
      *         ->join('u.Phonenumbers', 'p', Expr\Join::WITH, 'p.is_primary = 1');
      * </code>
      *
-     * @psalm-param Expr\Join::ON|Expr\Join::WITH|null $conditionType
+     * @phpstan-param Expr\Join::ON|Expr\Join::WITH|null $conditionType
      *
      * @return $this
      */
@@ -858,7 +858,7 @@ class QueryBuilder implements Stringable
      *         ->from('User', 'u')
      *         ->innerJoin('u.Phonenumbers', 'p', Expr\Join::WITH, 'p.is_primary = 1');
      *
-     * @psalm-param Expr\Join::ON|Expr\Join::WITH|null $conditionType
+     * @phpstan-param Expr\Join::ON|Expr\Join::WITH|null $conditionType
      *
      * @return $this
      */
@@ -899,7 +899,7 @@ class QueryBuilder implements Stringable
      *         ->leftJoin('u.Phonenumbers', 'p', Expr\Join::WITH, 'p.is_primary = 1');
      * </code>
      *
-     * @psalm-param Expr\Join::ON|Expr\Join::WITH|null $conditionType
+     * @phpstan-param Expr\Join::ON|Expr\Join::WITH|null $conditionType
      *
      * @return $this
      */
@@ -1237,7 +1237,7 @@ class QueryBuilder implements Stringable
     /**
      * Gets all query parts.
      *
-     * @psalm-return array<string, mixed> $dqlParts
+     * @phpstan-return array<string, mixed> $dqlParts
      */
     public function getDQLParts(): array
     {
@@ -1297,7 +1297,7 @@ class QueryBuilder implements Stringable
         return $dql;
     }
 
-    /** @psalm-param array<string, mixed> $options */
+    /** @phpstan-param array<string, mixed> $options */
     private function getReducedDQLQueryPart(string $queryPartName, array $options = []): string
     {
         $queryPart = $this->getDQLPart($queryPartName);
@@ -1315,7 +1315,7 @@ class QueryBuilder implements Stringable
      * Resets DQL parts.
      *
      * @param string[]|null $parts
-     * @psalm-param list<string>|null $parts
+     * @phpstan-param list<string>|null $parts
      *
      * @return $this
      */

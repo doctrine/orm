@@ -25,7 +25,7 @@ class DefaultCache implements Cache
 
     /**
      * @var QueryCache[]
-     * @psalm-var array<string, QueryCache>
+     * @phpstan-var array<string, QueryCache>
      */
     private array $queryCaches = [];
 

@@ -22,7 +22,7 @@ class ChildClass
 {
     /**
      * @var Collection|ParentClass[]
-     * @psalm-var Collection<ParentClass>
+     * @phpstan-var Collection<ParentClass>
      */
     #[JoinTable(name: 'parent_child')]
     #[JoinColumn(name: 'child_id1', referencedColumnName: 'id1')]

@@ -67,14 +67,14 @@ class DDC3785Test extends OrmFunctionalTestCase
 #[Entity]
 class DDC3785Asset
 {
-    /** @psalm-var Collection<int, DDC3785Attribute> */
+    /** @phpstan-var Collection<int, DDC3785Attribute> */
     #[JoinTable(name: 'asset_attributes')]
     #[JoinColumn(name: 'asset_id', referencedColumnName: 'id')]
     #[InverseJoinColumn(name: 'attribute_id', referencedColumnName: 'id')]
     #[ManyToMany(targetEntity: 'DDC3785Attribute', cascade: ['persist'], orphanRemoval: true)]
     private $attributes;
 
-    /** @psalm-param list<DDC3785Attribute> $attributes */
+    /** @phpstan-param list<DDC3785Attribute> $attributes */
     public function __construct(
         #[Id]
         #[GeneratedValue(strategy: 'NONE')]
@@ -94,7 +94,7 @@ class DDC3785Asset
         return $this->id;
     }
 
-    /** @psalm-return Collection<int, DDC3785Attribute> */
+    /** @phpstan-return Collection<int, DDC3785Attribute> */
     public function getAttributes()
     {
         return $this->attributes;

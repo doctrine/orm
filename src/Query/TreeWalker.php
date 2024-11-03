@@ -9,21 +9,21 @@ use Doctrine\ORM\AbstractQuery;
 /**
  * Interface for walkers of DQL ASTs (abstract syntax trees).
  *
- * @psalm-import-type QueryComponent from Parser
+ * @phpstan-import-type QueryComponent from Parser
  */
 interface TreeWalker
 {
     /**
      * Initializes TreeWalker with important information about the ASTs to be walked.
      *
-     * @psalm-param array<string, QueryComponent> $queryComponents The query components (symbol table).
+     * @phpstan-param array<string, QueryComponent> $queryComponents The query components (symbol table).
      */
     public function __construct(AbstractQuery $query, ParserResult $parserResult, array $queryComponents);
 
     /**
      * Returns internal queryComponents array.
      *
-     * @psalm-return array<string, QueryComponent>
+     * @phpstan-return array<string, QueryComponent>
      */
     public function getQueryComponents(): array;
 

@@ -28,7 +28,7 @@ class NavPointOfInterest
     #[Column(type: 'integer', name: 'nav_lat')]
     private int $lat;
 
-    /** @psalm-var Collection<int, NavUser> */
+    /** @phpstan-var Collection<int, NavUser> */
     #[JoinTable(name: 'navigation_pois_visitors')]
     #[JoinColumn(name: 'poi_long', referencedColumnName: 'nav_long')]
     #[JoinColumn(name: 'poi_lat', referencedColumnName: 'nav_lat')]
@@ -74,7 +74,7 @@ class NavPointOfInterest
         $this->visitors[] = $user;
     }
 
-    /** @psalm-var Collection<int, NavUser> */
+    /** @phpstan-var Collection<int, NavUser> */
     public function getVisitors(): Collection
     {
         return $this->visitors;

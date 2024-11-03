@@ -40,7 +40,7 @@ class ResolveTargetEntityListener implements EventSubscriber
     /**
      * Adds a target-entity class name to resolve to a new class name.
      *
-     * @psalm-param array<string, mixed> $mapping
+     * @phpstan-param array<string, mixed> $mapping
      */
     public function addResolveTargetEntity(string $originalEntity, string $newEntity, array $mapping): void
     {

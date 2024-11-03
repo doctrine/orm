@@ -26,7 +26,7 @@ class Traveler
     #[Column(type: 'integer')]
     protected $id;
 
-    /** @psalm-var Collection<int, Travel> */
+    /** @phpstan-var Collection<int, Travel> */
     #[Cache('NONSTRICT_READ_WRITE')]
     #[OneToMany(targetEntity: 'Travel', mappedBy: 'traveler', cascade: ['persist', 'remove'], orphanRemoval: true)]
     public $travels;
@@ -73,7 +73,7 @@ class Traveler
         $this->profile = $profile;
     }
 
-    /** @psalm-return Collection<int, Travel> */
+    /** @phpstan-return Collection<int, Travel> */
     public function getTravels(): Collection
     {
         return $this->travels;

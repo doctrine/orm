@@ -13,7 +13,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 
 class OrderedCollectionTest extends OrmFunctionalTestCase
 {
-    /** @psalm-var array<string, RoutingLocation> */
+    /** @phpstan-var array<string, RoutingLocation> */
     protected $locations = [];
 
     protected function setUp(): void

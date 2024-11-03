@@ -65,7 +65,7 @@ class DDC531Item
     #[GeneratedValue(strategy: 'AUTO')]
     public $id;
 
-    /** @psalm-var Collection<int, DDC531Item> */
+    /** @phpstan-var Collection<int, DDC531Item> */
     #[OneToMany(targetEntity: 'DDC531Item', mappedBy: 'parent')]
     protected $children;
 
@@ -84,7 +84,7 @@ class DDC531Item
         return $this->parent;
     }
 
-    /** @psalm-return Collection<int, DDC531Item> */
+    /** @phpstan-return Collection<int, DDC531Item> */
     public function getChildren(): Collection
     {
         return $this->children;

@@ -160,7 +160,7 @@ class TestUtil
         return $parameters;
     }
 
-    /** @psalm-return array<string, mixed> */
+    /** @phpstan-return array<string, mixed> */
     private static function getTestConnectionParameters(): array
     {
         if (! isset($GLOBALS['db_driver'])) {

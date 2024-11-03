@@ -25,7 +25,7 @@ class DDC117Editor
     #[GeneratedValue]
     public $id;
 
-    /** @psalm-var Collection<int, DDC117Translation> */
+    /** @phpstan-var Collection<int, DDC117Translation> */
     #[JoinTable]
     #[JoinColumn(name: 'editor_id', referencedColumnName: 'id')]
     #[InverseJoinColumn(name: 'article_id', referencedColumnName: 'article_id')]

@@ -94,7 +94,7 @@ class DDC599Item
     #[GeneratedValue(strategy: 'AUTO')]
     public $id;
 
-    /** @psalm-var Collection<int, DDC599Child> */
+    /** @phpstan-var Collection<int, DDC599Child> */
     #[OneToMany(targetEntity: 'DDC599Child', mappedBy: 'parent', cascade: ['remove'])]
     protected $children;
 
@@ -103,7 +103,7 @@ class DDC599Item
         $this->children = new ArrayCollection();
     }
 
-    /** @psalm-return Collection<int, DDC599Child> */
+    /** @phpstan-return Collection<int, DDC599Child> */
     public function getChildren(): Collection
     {
         return $this->children;

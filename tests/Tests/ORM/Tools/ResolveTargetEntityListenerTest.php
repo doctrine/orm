@@ -123,14 +123,14 @@ class ResolveTargetEntity implements ResolveTarget
     #[GeneratedValue(strategy: 'AUTO')]
     private int $id;
 
-    /** @psalm-var Collection<int, Target> */
+    /** @phpstan-var Collection<int, Target> */
     #[ManyToMany(targetEntity: 'Doctrine\Tests\ORM\Tools\Target')]
     private $manyToMany;
 
     #[ManyToOne(targetEntity: 'Doctrine\Tests\ORM\Tools\ResolveTarget', inversedBy: 'oneToMany')]
     private ResolveTarget $manyToOne;
 
-    /** @psalm-var Collection<int, ResolveTarget> */
+    /** @phpstan-var Collection<int, ResolveTarget> */
     #[OneToMany(targetEntity: 'Doctrine\Tests\ORM\Tools\ResolveTarget', mappedBy: 'manyToOne')]
     private $oneToMany;
 

@@ -64,7 +64,7 @@ class DDC1300Foo
     #[Column(name: 'fooReference', type: 'string', nullable: true, length: 45)]
     public $fooReference = null;
 
-    /** @psalm-var Collection<int, DDC1300FooLocale> */
+    /** @phpstan-var Collection<int, DDC1300FooLocale> */
     #[OneToMany(targetEntity: 'DDC1300FooLocale', mappedBy: 'foo', cascade: ['persist'])]
     public $fooLocaleRefFoo = null;
 

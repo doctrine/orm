@@ -21,7 +21,7 @@ class Func implements Stringable
     /**
      * Creates a function, with the given argument.
      *
-     * @psalm-param list<mixed>|mixed $arguments
+     * @phpstan-param list<mixed>|mixed $arguments
      */
     public function __construct(
         protected string $name,
@@ -35,7 +35,7 @@ class Func implements Stringable
         return $this->name;
     }
 
-    /** @psalm-return list<mixed> */
+    /** @phpstan-return list<mixed> */
     public function getArguments(): array
     {
         return $this->arguments;

@@ -100,7 +100,7 @@ class GH9109Product
 
     /**
      * @var Collection|GH9109User[]
-     * @psalm-var Collection<int, GH9109User>
+     * @phpstan-var Collection<int, GH9109User>
      */
     #[ManyToMany(targetEntity: 'GH9109User')]
     private $buyers;
@@ -125,7 +125,7 @@ class GH9109Product
         return $this->title;
     }
 
-    /** @psalm-return Collection<int, GH9109User> */
+    /** @phpstan-return Collection<int, GH9109User> */
     public function getBuyers(): Collection
     {
         return $this->buyers;

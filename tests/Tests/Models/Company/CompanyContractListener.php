@@ -10,28 +10,28 @@ use function func_get_args;
 
 class CompanyContractListener
 {
-    /** @psalm-var list<list<mixed>> */
+    /** @phpstan-var list<list<mixed>> */
     public $postPersistCalls;
 
-    /** @psalm-var list<list<mixed>> */
+    /** @phpstan-var list<list<mixed>> */
     public $prePersistCalls;
 
-    /** @psalm-var list<list<mixed>> */
+    /** @phpstan-var list<list<mixed>> */
     public $postUpdateCalls;
 
-    /** @psalm-var list<list<mixed>> */
+    /** @phpstan-var list<list<mixed>> */
     public $preUpdateCalls;
 
-    /** @psalm-var list<list<mixed>> */
+    /** @phpstan-var list<list<mixed>> */
     public $postRemoveCalls;
 
-    /** @psalm-var list<list<mixed>> */
+    /** @phpstan-var list<list<mixed>> */
     public $preRemoveCalls;
 
-    /** @psalm-var list<list<mixed>> */
+    /** @phpstan-var list<list<mixed>> */
     public $preFlushCalls;
 
-    /** @psalm-var list<list<mixed>> */
+    /** @phpstan-var list<list<mixed>> */
     public $postLoadCalls;
 
     #[ORM\PostPersist]

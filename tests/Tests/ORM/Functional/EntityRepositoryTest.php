@@ -86,7 +86,7 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
         return $user1Id;
     }
 
-    /** @psalm-return array{int, int} */
+    /** @phpstan-return array{int, int} */
     public function loadAssociatedFixture(): array
     {
         $address          = new CmsAddress();
@@ -109,7 +109,7 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
         return [$user->id, $address->id];
     }
 
-    /** @psalm-return list<CmsUser> */
+    /** @phpstan-return list<CmsUser> */
     public function loadFixtureUserEmail(): array
     {
         $user1 = new CmsUser();

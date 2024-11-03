@@ -100,7 +100,7 @@ class GH7062Ranking
 {
     /**
      * @var Collection|GH7062RankingPosition[]
-     * @psalm-var Collection<GH7062RankingPosition>
+     * @phpstan-var Collection<GH7062RankingPosition>
      */
     #[OneToMany(targetEntity: GH7062RankingPosition::class, mappedBy: 'ranking', cascade: ['all'])]
     public $positions;

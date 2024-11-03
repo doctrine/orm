@@ -19,7 +19,7 @@ use Symfony\Component\Cache\Adapter\ArrayAdapter;
 #[Group('DDC-2183')]
 abstract class RegionTestCase extends OrmFunctionalTestCase
 {
-    /** @psalm-var TRegion */
+    /** @phpstan-var TRegion */
     protected Region $region;
     protected CacheItemPoolInterface $cacheItemPool;
 
@@ -31,10 +31,10 @@ abstract class RegionTestCase extends OrmFunctionalTestCase
         $this->region        = $this->createRegion();
     }
 
-    /** @psalm-return TRegion */
+    /** @phpstan-return TRegion */
     abstract protected function createRegion(): Region;
 
-    /** @psalm-return list<array{CacheKeyMock, CacheEntryMock}> */
+    /** @phpstan-return list<array{CacheKeyMock, CacheEntryMock}> */
     public static function dataProviderCacheValues(): array
     {
         return [

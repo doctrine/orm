@@ -10,7 +10,7 @@ use function func_get_args;
 
 class CmsAddressListener
 {
-    /** @psalm-var array<string, list<list<mixed>>> */
+    /** @phpstan-var array<string, list<list<mixed>>> */
     public $calls;
 
     public function prePersist(): void

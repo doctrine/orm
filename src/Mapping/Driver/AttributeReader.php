@@ -24,7 +24,7 @@ final class AttributeReader
     private array $isRepeatableAttribute = [];
 
     /**
-     * @psalm-return class-string-map<T, T|RepeatableAttributeCollection<T>>
+     * @phpstan-return class-string-map<T, T|RepeatableAttributeCollection<T>>
      *
      * @template T of MappingAttribute
      */

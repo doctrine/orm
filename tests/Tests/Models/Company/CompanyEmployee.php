@@ -25,11 +25,11 @@ class CompanyEmployee extends CompanyPerson
     #[Column(type: 'datetime', nullable: true)]
     private DateTime|null $startDate = null;
 
-    /** @psalm-var Collection<int, CompanyContract> */
+    /** @phpstan-var Collection<int, CompanyContract> */
     #[ManyToMany(targetEntity: 'CompanyContract', mappedBy: 'engineers', fetch: 'EXTRA_LAZY')]
     public $contracts;
 
-    /** @psalm-var Collection<int, CompanyFlexUltraContract> */
+    /** @phpstan-var Collection<int, CompanyFlexUltraContract> */
     #[OneToMany(targetEntity: 'CompanyFlexUltraContract', mappedBy: 'salesPerson', fetch: 'EXTRA_LAZY')]
     public $soldContracts;
 

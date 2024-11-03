@@ -14,10 +14,10 @@ class GroupBy extends Base
     protected string $preSeparator  = '';
     protected string $postSeparator = '';
 
-    /** @psalm-var list<string> */
+    /** @phpstan-var list<string> */
     protected array $parts = [];
 
-    /** @psalm-return list<string> */
+    /** @phpstan-return list<string> */
     public function getParts(): array
     {
         return $this->parts;

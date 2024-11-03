@@ -81,7 +81,7 @@ class DDC199ParentClass
     #[Column(type: 'string', length: 255)]
     public $parentData;
 
-    /** @psalm-var Collection<int, DDC199RelatedClass> */
+    /** @phpstan-var Collection<int, DDC199RelatedClass> */
     #[OneToMany(targetEntity: 'DDC199RelatedClass', mappedBy: 'parent')]
     public $relatedEntities;
 }

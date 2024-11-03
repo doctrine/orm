@@ -99,7 +99,7 @@ class QueryException extends Exception implements ORMException
 
     /**
      * @param string[] $assoc
-     * @psalm-param array<string, string> $assoc
+     * @phpstan-param array<string, string> $assoc
      */
     public static function overwritingJoinConditionsNotYetSupported(array $assoc): self
     {

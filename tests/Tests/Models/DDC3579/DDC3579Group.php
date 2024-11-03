@@ -20,7 +20,7 @@ class DDC3579Group
     #[Column(type: 'integer')]
     private int $id;
 
-    /** @psalm-var Collection<int, DDC3579Admin> */
+    /** @phpstan-var Collection<int, DDC3579Admin> */
     #[ManyToMany(targetEntity: DDC3579Admin::class, mappedBy: 'groups')]
     private $admins;
 
@@ -46,7 +46,7 @@ class DDC3579Group
         $this->admins[] = $admin;
     }
 
-    /** @psalm-return Collection<int, DDC3579Admin> */
+    /** @phpstan-return Collection<int, DDC3579Admin> */
     public function getAdmins(): Collection
     {
         return $this->admins;

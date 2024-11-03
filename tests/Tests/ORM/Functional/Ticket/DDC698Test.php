@@ -84,7 +84,7 @@ class DDC698Privilege
     #[Column(name: 'name', type: 'string', length: 45)]
     protected $name;
 
-    /** @psalm-var Collection<int, DDC698Role> */
+    /** @phpstan-var Collection<int, DDC698Role> */
     #[ManyToMany(targetEntity: 'DDC698Role', mappedBy: 'privilege')]
     protected $roles;
 }

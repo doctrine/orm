@@ -20,7 +20,7 @@ class EntityWithArrayDefaultArrayValueM2M
     #[GeneratedValue(strategy: 'AUTO')]
     public $id;
 
-    /** @psalm-var Collection<int, SimpleEntity> */
+    /** @phpstan-var Collection<int, SimpleEntity> */
     #[ManyToMany(targetEntity: SimpleEntity::class)]
     public $collection = [];
 }

@@ -492,7 +492,7 @@ class GH6830Category
     #[Column(type: 'string', length: 8, options: ['fixed' => true, 'collation' => 'latin1_bin', 'foo' => 'bar'])]
     public $id;
 
-    /** @psalm-var Collection<int, GH6830Board> */
+    /** @phpstan-var Collection<int, GH6830Board> */
     #[OneToMany(targetEntity: GH6830Board::class, mappedBy: 'category')]
     public $boards;
 }

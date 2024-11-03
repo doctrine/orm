@@ -113,7 +113,7 @@ class GH6531Article
     #[GeneratedValue]
     public $id;
 
-    /** @psalm-var Collection<string, GH6531ArticleAttribute> */
+    /** @phpstan-var Collection<string, GH6531ArticleAttribute> */
     #[OneToMany(targetEntity: GH6531ArticleAttribute::class, mappedBy: 'article', cascade: ['ALL'], indexBy: 'attribute')]
     public $attributes;
 
@@ -148,7 +148,7 @@ class GH6531Order
     #[GeneratedValue]
     public $id;
 
-    /** @psalm-var Collection<int, GH6531OrderItem> */
+    /** @phpstan-var Collection<int, GH6531OrderItem> */
     #[OneToMany(targetEntity: GH6531OrderItem::class, mappedBy: 'order', cascade: ['ALL'])]
     public $items;
 

@@ -144,7 +144,7 @@ class DDC1655Baz
     #[Column(type: 'integer')]
     public $id;
 
-    /** @psalm-var Collection<int, DDC1655Foo> */
+    /** @phpstan-var Collection<int, DDC1655Foo> */
     #[OneToMany(targetEntity: 'DDC1655Foo', mappedBy: 'baz')]
     public $foos = [];
 }

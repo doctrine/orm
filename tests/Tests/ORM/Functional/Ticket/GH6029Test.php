@@ -95,7 +95,7 @@ class GH6029User
     #[GeneratedValue]
     public $id;
 
-    /** @psalm-var Collection<int, GH6029Group> */
+    /** @phpstan-var Collection<int, GH6029Group> */
     #[ManyToMany(targetEntity: GH6029Group::class, cascade: ['all'])]
     public $groups;
 
@@ -134,7 +134,7 @@ class GH6029Product
     #[GeneratedValue]
     public $id;
 
-    /** @psalm-var Collection<int,GH6029Feature> */
+    /** @phpstan-var Collection<int,GH6029Feature> */
     #[OneToMany(targetEntity: GH6029Feature::class, mappedBy: 'product', cascade: ['all'])]
     public $features;
 

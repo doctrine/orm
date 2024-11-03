@@ -20,7 +20,7 @@ use function defined;
 use function enum_exists;
 use function is_a;
 
-/** @psalm-type ScalarName = 'array'|'bool'|'float'|'int'|'string' */
+/** @phpstan-type ScalarName = 'array'|'bool'|'float'|'int'|'string' */
 final class DefaultTypedFieldMapper implements TypedFieldMapper
 {
     /** @var array<class-string|ScalarName, class-string<Type>|string> $typedFieldMappings */

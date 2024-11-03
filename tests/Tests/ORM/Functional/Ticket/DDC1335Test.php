@@ -162,7 +162,7 @@ class DDC1335User
     #[GeneratedValue]
     public int|null $id = null;
 
-    /** @psalm-var Collection<int, DDC1335Phone> */
+    /** @phpstan-var Collection<int, DDC1335Phone> */
     #[OneToMany(targetEntity: 'DDC1335Phone', mappedBy: 'user', cascade: ['persist', 'remove'])]
     public Collection $phones;
 

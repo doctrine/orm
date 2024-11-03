@@ -19,5 +19,3 @@ phpstan-baseline.neon export-ignore
 phpstan-dbal2.neon export-ignore
 phpstan-params.neon export-ignore
 phpstan-persistence2.neon export-ignore
-psalm.xml export-ignore
-psalm-baseline.xml export-ignore

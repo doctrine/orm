@@ -20,7 +20,7 @@ class DDC3899User
     #[Column(type: 'integer')]
     public $id;
 
-    /** @psalm-var Collection<int, DDC3899Contract> */
+    /** @phpstan-var Collection<int, DDC3899Contract> */
     #[OneToMany(targetEntity: 'DDC3899Contract', mappedBy: 'user')]
     public $contracts;
 }

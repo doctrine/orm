@@ -27,34 +27,34 @@ use PHPUnit\Framework\Attributes\Group;
 #[Group('DDC-2183')]
 abstract class SecondLevelCacheFunctionalTestCase extends OrmFunctionalTestCase
 {
-    /** @psalm-var list<Person> */
+    /** @phpstan-var list<Person> */
     protected array $people = [];
 
-    /** @psalm-var list<Address> */
+    /** @phpstan-var list<Address> */
     protected array $addresses = [];
 
-    /** @psalm-var list<Country> */
+    /** @phpstan-var list<Country> */
     protected array $countries = [];
 
-    /** @psalm-var list<State> */
+    /** @phpstan-var list<State> */
     protected array $states = [];
 
-    /** @psalm-var list<City> */
+    /** @phpstan-var list<City> */
     protected array $cities = [];
 
-    /** @psalm-var list<Travel> */
+    /** @phpstan-var list<Travel> */
     protected array $travels = [];
 
-    /** @psalm-var list<Traveler> */
+    /** @phpstan-var list<Traveler> */
     protected array $travelers = [];
 
-    /** @psalm-var list<Attraction> */
+    /** @phpstan-var list<Attraction> */
     protected array $attractions = [];
 
-    /** @psalm-var list<AttractionInfo> */
+    /** @phpstan-var list<AttractionInfo> */
     protected array $attractionsInfo = [];
 
-    /** @psalm-var list<TravelerProfile> */
+    /** @phpstan-var list<TravelerProfile> */
     protected array $travelersWithProfile = [];
 
     protected Cache $cache;

@@ -17,10 +17,10 @@ class Select extends Base
     /** @var string[] */
     protected array $allowedClasses = [Func::class];
 
-    /** @psalm-var list<string|Func> */
+    /** @phpstan-var list<string|Func> */
     protected array $parts = [];
 
-    /** @psalm-return list<string|Func> */
+    /** @phpstan-return list<string|Func> */
     public function getParts(): array
     {
         return $this->parts;

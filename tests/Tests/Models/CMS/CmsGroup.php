@@ -31,7 +31,7 @@ class CmsGroup implements IteratorAggregate
     #[Column(length: 50)]
     public $name;
 
-    /** @psalm-var Collection<int, CmsUser> */
+    /** @phpstan-var Collection<int, CmsUser> */
     #[ManyToMany(targetEntity: 'CmsUser', mappedBy: 'groups')]
     public $users;
 
@@ -55,7 +55,7 @@ class CmsGroup implements IteratorAggregate
         $this->users[] = $user;
     }
 
-    /** @psalm-return Collection<int, CmsUser> */
+    /** @phpstan-return Collection<int, CmsUser> */
     public function getUsers(): Collection
     {
         return $this->users;

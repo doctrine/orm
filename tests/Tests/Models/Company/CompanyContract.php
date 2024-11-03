@@ -35,7 +35,7 @@ abstract class CompanyContract
     #[Column(type: 'boolean')]
     private bool $completed = false;
 
-    /** @psalm-var Collection<int, CompanyEmployee> */
+    /** @phpstan-var Collection<int, CompanyEmployee> */
     #[JoinTable(name: 'company_contract_employees')]
     #[JoinColumn(name: 'contract_id', referencedColumnName: 'id', onDelete: 'CASCADE')]
     #[InverseJoinColumn(name: 'employee_id', referencedColumnName: 'id')]
@@ -72,7 +72,7 @@ abstract class CompanyContract
         $this->salesPerson = $salesPerson;
     }
 
-    /** @psalm-return Collection<int, CompanyEmployee> */
+    /** @phpstan-return Collection<int, CompanyEmployee> */
     public function getEngineers(): Collection
     {
         return $this->engineers;

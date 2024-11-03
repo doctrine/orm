@@ -17,7 +17,7 @@ use PHPUnit\Framework\Attributes\Group;
 
 class ArrayHydratorTest extends HydrationTestCase
 {
-    /** @psalm-return list<array{int|string}> */
+    /** @phpstan-return list<array{int|string}> */
     public static function provideDataForUserEntityResult(): array
     {
         return [

@@ -297,7 +297,7 @@ class DefaultQueryCache implements QueryCache
 
     /**
      * @return mixed[]|null
-     * @psalm-return array{targetEntity: class-string, type: mixed, list?: array[], identifier?: array}|null
+     * @phpstan-return array{targetEntity: class-string, type: mixed, list?: array[], identifier?: array}|null
      */
     private function storeAssociationCache(QueryCacheKey $key, AssociationMapping $assoc, mixed $assocValue): array|null
     {
@@ -348,7 +348,7 @@ class DefaultQueryCache implements QueryCache
         ];
     }
 
-    /** @psalm-return list<mixed>|object|null */
+    /** @phpstan-return list<mixed>|object|null */
     private function getAssociationValue(
         ResultSetMapping $rsm,
         string $assocAlias,
@@ -374,9 +374,9 @@ class DefaultQueryCache implements QueryCache
     }
 
     /**
-     * @psalm-param array<array-key, array{field: string, class: string}> $path
+     * @phpstan-param array<array-key, array{field: string, class: string}> $path
      *
-     * @psalm-return list<mixed>|object|null
+     * @phpstan-return list<mixed>|object|null
      */
     private function getAssociationPathValue(mixed $value, array $path): array|object|null
     {

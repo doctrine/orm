@@ -24,7 +24,7 @@ abstract class PaginatorFactory
         return $this->class;
     }
 
-    /** @psalm-return Paginator<T> */
+    /** @phpstan-return Paginator<T> */
     abstract public function createPaginator(): Paginator;
 }
 

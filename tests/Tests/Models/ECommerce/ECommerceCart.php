@@ -37,7 +37,7 @@ class ECommerceCart
     #[JoinColumn(name: 'customer_id', referencedColumnName: 'id')]
     private ECommerceCustomer|null $customer = null;
 
-    /** @psalm-var Collection<int, ECommerceProduct> */
+    /** @phpstan-var Collection<int, ECommerceProduct> */
     #[JoinTable(name: 'ecommerce_carts_products')]
     #[JoinColumn(name: 'cart_id', referencedColumnName: 'id')]
     #[InverseJoinColumn(name: 'product_id', referencedColumnName: 'id')]
@@ -86,7 +86,7 @@ class ECommerceCart
         return $this->customer;
     }
 
-    /** @psalm-return Collection<int, ECommerceProduct> */
+    /** @phpstan-return Collection<int, ECommerceProduct> */
     public function getProducts(): Collection
     {
         return $this->products;

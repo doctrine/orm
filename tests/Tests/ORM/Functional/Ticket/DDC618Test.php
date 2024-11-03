@@ -141,7 +141,7 @@ class DDC618Author
     #[Column(type: 'string', length: 255)]
     public $name;
 
-    /** @psalm-var Collection<int, DDC618Book> */
+    /** @phpstan-var Collection<int, DDC618Book> */
     #[OneToMany(targetEntity: 'DDC618Book', mappedBy: 'author', cascade: ['persist'])]
     public $books;
 

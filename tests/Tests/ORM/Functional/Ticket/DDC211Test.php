@@ -67,7 +67,7 @@ class DDC211User
     #[Column(name: 'name', type: 'string', length: 255)]
     protected $name;
 
-    /** @psalm-var Collection<int, DDC211Group> */
+    /** @phpstan-var Collection<int, DDC211Group> */
     #[JoinTable(name: 'user_groups')]
     #[JoinColumn(name: 'user_id', referencedColumnName: 'id')]
     #[InverseJoinColumn(name: 'group_id', referencedColumnName: 'id')]
@@ -84,7 +84,7 @@ class DDC211User
         $this->name = $name;
     }
 
-    /** @psalm-return Collection<int, DDC211Group> */
+    /** @phpstan-return Collection<int, DDC211Group> */
     public function getGroups(): Collection
     {
         return $this->groups;
@@ -105,7 +105,7 @@ class DDC211Group
     #[Column(name: 'name', type: 'string', length: 255)]
     protected $name;
 
-    /** @psalm-var Collection<int, DDC211User> */
+    /** @phpstan-var Collection<int, DDC211User> */
     #[ManyToMany(targetEntity: 'DDC211User', mappedBy: 'groups')]
     protected $users;
 
@@ -119,7 +119,7 @@ class DDC211Group
         $this->name = $name;
     }
 
-    /** @psalm-return Collection<int, DDC211User> */
+    /** @phpstan-return Collection<int, DDC211User> */
     public function getUsers(): Collection
     {
         return $this->users;

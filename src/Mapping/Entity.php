@@ -11,7 +11,7 @@ use Doctrine\ORM\EntityRepository;
 #[Attribute(Attribute::TARGET_CLASS)]
 final class Entity implements MappingAttribute
 {
-    /** @psalm-param class-string<EntityRepository<T>>|null $repositoryClass */
+    /** @phpstan-param class-string<EntityRepository<T>>|null $repositoryClass */
     public function __construct(
         public readonly string|null $repositoryClass = null,
         public readonly bool $readOnly = false,

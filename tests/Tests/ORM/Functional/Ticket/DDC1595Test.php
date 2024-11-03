@@ -91,14 +91,14 @@ abstract class DDC1595BaseInheritance
 #[Entity]
 class DDC1595InheritedEntity1 extends DDC1595BaseInheritance
 {
-    /** @psalm-var Collection<int, DDC1595InheritedEntity2> */
+    /** @phpstan-var Collection<int, DDC1595InheritedEntity2> */
     #[JoinTable(name: 'entity1_entity2')]
     #[JoinColumn(name: 'parent', referencedColumnName: 'id')]
     #[InverseJoinColumn(name: 'item', referencedColumnName: 'id')]
     #[ManyToMany(targetEntity: 'DDC1595InheritedEntity2', fetch: 'EXTRA_LAZY')]
     protected $entities;
 
-    /** @psalm-return Collection<int, DDC1595InheritedEntity2> */
+    /** @phpstan-return Collection<int, DDC1595InheritedEntity2> */
     public function getEntities(): Collection
     {
         return $this->entities;

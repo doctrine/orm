@@ -146,7 +146,7 @@ class Group
     #[GeneratedValue]
     public $id;
 
-    /** @psalm-var Collection<int, User> */
+    /** @phpstan-var Collection<int, User> */
     #[ManyToMany(targetEntity: 'User', mappedBy: 'groups')]
     public $users;
 }
@@ -160,7 +160,7 @@ class User
     #[GeneratedValue]
     public $id;
 
-    /** @psalm-var Collection<int, Group> */
+    /** @phpstan-var Collection<int, Group> */
     #[JoinTable(name: 'user_group')]
     #[JoinColumn(name: 'user_id', referencedColumnName: 'id')]
     #[InverseJoinColumn(name: 'group_id', referencedColumnName: 'id')]

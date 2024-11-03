@@ -40,11 +40,11 @@ class ECommerceProduct
     #[JoinColumn(name: 'shipping_id', referencedColumnName: 'id')]
     private ECommerceShipping|null $shipping = null;
 
-    /** @psalm-var Collection<int, ECommerceFeature> */
+    /** @phpstan-var Collection<int, ECommerceFeature> */
     #[OneToMany(targetEntity: 'ECommerceFeature', mappedBy: 'product', cascade: ['persist'])]
     private $features;
 
-    /** @psalm-var Collection<int, ECommerceCategory> */
+    /** @phpstan-var Collection<int, ECommerceCategory> */
     #[JoinTable(name: 'ecommerce_products_categories')]
     #[JoinColumn(name: 'product_id', referencedColumnName: 'id')]
     #[InverseJoinColumn(name: 'category_id', referencedColumnName: 'id')]
@@ -55,7 +55,7 @@ class ECommerceProduct
      * This relation is saved with two records in the association table for
      * simplicity.
      *
-     * @psalm-var Collection<int, ECommerceProduct>
+     * @phpstan-var Collection<int, ECommerceProduct>
      */
     #[JoinTable(name: 'ecommerce_products_related')]
     #[JoinColumn(name: 'product_id', referencedColumnName: 'id')]
@@ -106,7 +106,7 @@ class ECommerceProduct
         $this->shipping = null;
     }
 
-    /** @psalm-return Collection<int, ECommerceFeature> */
+    /** @phpstan-return Collection<int, ECommerceFeature> */
     public function getFeatures(): Collection
     {
         return $this->features;
@@ -150,19 +150,19 @@ class ECommerceProduct
         }
     }
 
-    /** @psalm-param Collection<int, ECommerceCategory> $categories */
+    /** @phpstan-param Collection<int, ECommerceCategory> $categories */
     public function setCategories(Collection $categories): void
     {
         $this->categories = $categories;
     }
 
-    /** @psalm-return Collection<int, ECommerceCategory> $categories */
+    /** @phpstan-return Collection<int, ECommerceCategory> $categories */
     public function getCategories(): Collection
     {
         return $this->categories;
     }
 
-    /** @psalm-return Collection<int, ECommerceProduct> $categories */
+    /** @phpstan-return Collection<int, ECommerceProduct> $categories */
     public function getRelated(): Collection
     {
         return $this->related;

@@ -12,7 +12,7 @@ namespace Doctrine\ORM\Mapping\Builder;
 class OneToManyAssociationBuilder extends AssociationBuilder
 {
     /**
-     * @psalm-param array<string, string> $fieldNames
+     * @phpstan-param array<string, string> $fieldNames
      *
      * @return $this
      */

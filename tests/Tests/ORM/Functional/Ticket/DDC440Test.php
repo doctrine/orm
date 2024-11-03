@@ -149,7 +149,7 @@ class DDC440Client
     #[OneToOne(targetEntity: 'DDC440Phone', fetch: 'EAGER')]
     protected $mainPhone;
 
-    /** @psalm-var Collection<int, DDC440Phone> */
+    /** @phpstan-var Collection<int, DDC440Phone> */
     #[OneToMany(targetEntity: 'DDC440Phone', mappedBy: 'client', cascade: ['persist', 'remove'], fetch: 'EAGER', indexBy: 'id')]
     #[OrderBy(['number' => 'ASC'])]
     protected $phones;
@@ -178,7 +178,7 @@ class DDC440Client
         $value->setClient($this, false);
     }
 
-    /** @psalm-return Collection<int, DDC440Phone> */
+    /** @phpstan-return Collection<int, DDC440Phone> */
     public function getPhones(): Collection
     {
         return $this->phones;

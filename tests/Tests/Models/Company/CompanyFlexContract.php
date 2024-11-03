@@ -22,7 +22,7 @@ class CompanyFlexContract extends CompanyContract
     #[Column(type: 'integer')]
     private int $pricePerHour = 0;
 
-    /** @psalm-var Collection<int, CompanyManager> */
+    /** @phpstan-var Collection<int, CompanyManager> */
     #[JoinTable(name: 'company_contract_managers')]
     #[JoinColumn(name: 'contract_id', referencedColumnName: 'id', onDelete: 'CASCADE')]
     #[InverseJoinColumn(name: 'employee_id', referencedColumnName: 'id')]
@@ -54,7 +54,7 @@ class CompanyFlexContract extends CompanyContract
         $this->pricePerHour = $pricePerHour;
     }
 
-    /** @psalm-return Collection<int, CompanyManager> */
+    /** @phpstan-return Collection<int, CompanyManager> */
     public function getManagers(): Collection
     {
         return $this->managers;

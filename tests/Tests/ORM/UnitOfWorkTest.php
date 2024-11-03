@@ -330,7 +330,7 @@ class UnitOfWorkTest extends OrmTestCase
         self::assertSame($entity, $this->_unitOfWork->getByIdHash($idHash, $entity::class));
     }
 
-    /** @psalm-return array<string, array{object, string}> */
+    /** @phpstan-return array<string, array{object, string}> */
     public static function entitiesWithValidIdentifiersProvider(): array
     {
         $emptyString = new EntityWithStringIdentifier();
@@ -385,7 +385,7 @@ class UnitOfWorkTest extends OrmTestCase
         $this->_unitOfWork->registerManaged($entity, $identifier, []);
     }
 
-    /** @psalm-return array<string, array{object, array<string, mixed>}> */
+    /** @phpstan-return array<string, array{object, array<string, mixed>}> */
     public static function entitiesWithInvalidIdentifiersProvider(): array
     {
         $firstNullString = new EntityWithCompositeStringIdentifier();

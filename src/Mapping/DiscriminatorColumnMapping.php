@@ -35,7 +35,7 @@ final class DiscriminatorColumnMapping implements ArrayAccess
     }
 
     /**
-     * @psalm-param array{
+     * @phpstan-param array{
      *     type: string,
      *     fieldName: string,
      *     name: string,

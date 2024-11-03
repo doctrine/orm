@@ -32,11 +32,11 @@ class ECommerceCategory
     #[Column(type: 'string', length: 50)]
     private string|null $name = null;
 
-    /** @psalm-var Collection<int, ECommerceProduct> */
+    /** @phpstan-var Collection<int, ECommerceProduct> */
     #[ManyToMany(targetEntity: 'ECommerceProduct', mappedBy: 'categories')]
     private $products;
 
-    /** @psalm-var Collection<int, ECommerceCategory> */
+    /** @phpstan-var Collection<int, ECommerceCategory> */
     #[OneToMany(targetEntity: 'ECommerceCategory', mappedBy: 'parent', cascade: ['persist'])]
     private $children;
 
@@ -81,7 +81,7 @@ class ECommerceCategory
         }
     }
 
-    /** @psalm-return Collection<int, ECommerceProduct> */
+    /** @phpstan-return Collection<int, ECommerceProduct> */
     public function getProducts(): Collection
     {
         return $this->products;
@@ -92,7 +92,7 @@ class ECommerceCategory
         $this->parent = $parent;
     }
 
-    /** @psalm-return Collection<int, ECommerceCategory> */
+    /** @phpstan-return Collection<int, ECommerceCategory> */
     public function getChildren(): Collection
     {
         return $this->children;

@@ -18,7 +18,7 @@ class ParentClass
 {
     /**
      * @var Collection|ChildClass[]
-     * @psalm-var Collection<ChildClass>
+     * @phpstan-var Collection<ChildClass>
      */
     #[ManyToMany(targetEntity: ChildClass::class, mappedBy: 'parents', orphanRemoval: true, cascade: ['persist'])]
     public $children;

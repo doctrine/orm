@@ -629,7 +629,7 @@ class AttributeDriver implements MappingDriver
      * Parses the given method.
      *
      * @return list<array{string, string}>
-     * @psalm-return list<array{string, (Events::*)}>
+     * @phpstan-return list<array{string, (Events::*)}>
      */
     private function getMethodCallbacks(ReflectionMethod $method): array
     {
@@ -677,7 +677,7 @@ class AttributeDriver implements MappingDriver
      * Parse the given JoinColumn as array
      *
      * @return mixed[]
-     * @psalm-return array{
+     * @phpstan-return array{
      *                   name: string|null,
      *                   unique: bool,
      *                   nullable: bool,
@@ -709,7 +709,7 @@ class AttributeDriver implements MappingDriver
      * Parse the given Column as array
      *
      * @return mixed[]
-     * @psalm-return array{
+     * @phpstan-return array{
      *                   fieldName: string,
      *                   type: mixed,
      *                   scale: int,

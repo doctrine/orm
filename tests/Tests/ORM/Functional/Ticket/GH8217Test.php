@@ -54,7 +54,7 @@ class GH8217Collection
     #[GeneratedValue]
     public $id;
 
-    /** @psalm-var Collection<int, GH8217CollectionItem> */
+    /** @phpstan-var Collection<int, GH8217CollectionItem> */
     #[OneToMany(targetEntity: 'GH8217CollectionItem', mappedBy: 'collection', cascade: ['persist', 'remove'], orphanRemoval: true)]
     public $items;
 

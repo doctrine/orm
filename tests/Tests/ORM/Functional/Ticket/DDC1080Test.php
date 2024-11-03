@@ -91,7 +91,7 @@ class DDC1080Foo
     #[Column(name: 'fooTitle', type: 'string', length: 255)]
     protected $fooTitle;
 
-    /** @psalm-var Collection<DDC1080FooBar> */
+    /** @phpstan-var Collection<DDC1080FooBar> */
     #[OneToMany(targetEntity: 'DDC1080FooBar', mappedBy: 'foo', cascade: ['persist'])]
     #[OrderBy(['orderNr' => 'ASC'])]
     protected $fooBars;
@@ -111,7 +111,7 @@ class DDC1080Foo
         return $this->fooTitle;
     }
 
-    /** @psalm-return Collection<DDC1080FooBar> */
+    /** @phpstan-return Collection<DDC1080FooBar> */
     public function getFooBars(): Collection
     {
         return $this->fooBars;
@@ -146,7 +146,7 @@ class DDC1080Bar
     #[Column(name: 'barTitle', type: 'string', length: 255)]
     protected $barTitle;
 
-    /** @psalm-var Collection<DDC1080FooBar> */
+    /** @phpstan-var Collection<DDC1080FooBar> */
     #[OneToMany(targetEntity: 'DDC1080FooBar', mappedBy: 'bar', cascade: ['persist'])]
     #[OrderBy(['orderNr' => 'ASC'])]
     protected $fooBars;
@@ -166,7 +166,7 @@ class DDC1080Bar
         return $this->barTitle;
     }
 
-    /** @psalm-return Collection<DDC1080FooBar> */
+    /** @phpstan-return Collection<DDC1080FooBar> */
     public function getFooBars(): Collection
     {
         return $this->fooBars;

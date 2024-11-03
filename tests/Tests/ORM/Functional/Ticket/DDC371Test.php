@@ -84,7 +84,7 @@ class DDC371Parent
     #[Column(type: 'string', length: 255)]
     public $data;
 
-    /** @psalm-var Collection<int, DDC371Child> */
+    /** @phpstan-var Collection<int, DDC371Child> */
     #[OneToMany(targetEntity: 'DDC371Child', mappedBy: 'parent')]
     public $children;
 }

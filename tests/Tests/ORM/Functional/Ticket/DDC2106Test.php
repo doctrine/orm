@@ -58,7 +58,7 @@ class DDC2106Entity
     #[ManyToOne(targetEntity: 'DDC2106Entity', inversedBy: 'children')]
     public $parent;
 
-    /** @psalm-var Collection<int, DDC2106Entity> */
+    /** @phpstan-var Collection<int, DDC2106Entity> */
     #[OneToMany(targetEntity: 'DDC2106Entity', mappedBy: 'parent', cascade: ['persist'])]
     public $children;
 

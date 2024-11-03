@@ -66,7 +66,7 @@ class DDC1925Product
     #[Column(name: 'title', type: 'string', length: 255)]
     private string|null $title = null;
 
-    /** @psalm-var Collection<int, DDC1925User> */
+    /** @phpstan-var Collection<int, DDC1925User> */
     #[JoinTable(name: 'user_purchases')]
     #[JoinColumn(name: 'product_id', referencedColumnName: 'id')]
     #[InverseJoinColumn(name: 'user_id', referencedColumnName: 'id')]

@@ -9,7 +9,7 @@ use Attribute;
 #[Attribute(Attribute::TARGET_CLASS)]
 final class ChangeTrackingPolicy implements MappingAttribute
 {
-    /** @psalm-param 'DEFERRED_IMPLICIT'|'DEFERRED_EXPLICIT' $value */
+    /** @phpstan-param 'DEFERRED_IMPLICIT'|'DEFERRED_EXPLICIT' $value */
     public function __construct(
         public readonly string $value,
     ) {

@@ -23,7 +23,7 @@ class CompanyOrganization
     #[GeneratedValue(strategy: 'AUTO')]
     private int $id;
 
-    /** @psalm-var Collection<int, CompanyEvent> */
+    /** @phpstan-var Collection<int, CompanyEvent> */
     #[OneToMany(targetEntity: 'CompanyEvent', mappedBy: 'organization', cascade: ['persist'], fetch: 'EXTRA_LAZY')]
     public $events;
 
@@ -32,7 +32,7 @@ class CompanyOrganization
         return $this->id;
     }
 
-    /** @psalm-return Collection<int, CompanyEvent> */
+    /** @phpstan-return Collection<int, CompanyEvent> */
     public function getEvents(): Collection
     {
         return $this->events;

@@ -26,7 +26,7 @@ class DDC964User
     #[Column(type: 'integer', name: 'user_id', length: 150)]
     protected $id;
 
-    /** @psalm-var Collection<int, DDC964Group> */
+    /** @phpstan-var Collection<int, DDC964Group> */
     #[ManyToMany(targetEntity: DDC964Group::class, inversedBy: 'users', cascade: ['persist', 'detach'])]
     #[JoinTable(name: 'ddc964_users_groups')]
     #[JoinColumn(name: 'user_id', referencedColumnName: 'id')]
@@ -66,7 +66,7 @@ class DDC964User
         $group->addUser($this);
     }
 
-    /** @psalm-return Collection<int, DDC964Group> */
+    /** @phpstan-return Collection<int, DDC964Group> */
     public function getGroups(): ArrayCollection
     {
         return $this->groups;

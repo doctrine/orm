@@ -68,14 +68,14 @@ class DDC719Group extends MyEntity
     #[Column(type: 'string', nullable: true)]
     protected $description;
 
-    /** @psalm-var Collection<int, DDC719Group> */
+    /** @phpstan-var Collection<int, DDC719Group> */
     #[JoinTable(name: 'groups_groups')]
     #[JoinColumn(name: 'parent_id', referencedColumnName: 'id')]
     #[InverseJoinColumn(name: 'child_id', referencedColumnName: 'id')]
     #[ManyToMany(targetEntity: 'DDC719Group', inversedBy: 'parents')]
     protected $children = null;
 
-    /** @psalm-var Collection<int, DDC719Group> */
+    /** @phpstan-var Collection<int, DDC719Group> */
     #[ManyToMany(targetEntity: 'DDC719Group', mappedBy: 'children')]
     protected $parents = null;
 
@@ -127,19 +127,19 @@ class DDC719Group extends MyEntity
         $this->description = $description;
     }
 
-    /** @psalm-return Collection<int, DDC719Group> */
+    /** @phpstan-return Collection<int, DDC719Group> */
     public function getChildren(): Collection
     {
         return $this->children;
     }
 
-    /** @psalm-return Collection<int, DDC719Group> */
+    /** @phpstan-return Collection<int, DDC719Group> */
     public function getParents(): Collection
     {
         return $this->parents;
     }
 
-    /** @psalm-return Collection<int, Channel> */
+    /** @phpstan-return Collection<int, Channel> */
     public function getChannels(): Collection
     {
         return $this->channels;

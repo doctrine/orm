@@ -29,7 +29,7 @@ class CmsTag
     #[Column(length: 50, name: 'tag_name', nullable: true)]
     public $name;
 
-    /** @psalm-var Collection<int, CmsUser> */
+    /** @phpstan-var Collection<int, CmsUser> */
     #[ManyToMany(targetEntity: 'CmsUser', mappedBy: 'tags')]
     public $users;
 
@@ -48,7 +48,7 @@ class CmsTag
         $this->users[] = $user;
     }
 
-    /** @psalm-return Collection<int, CmsUser> */
+    /** @phpstan-return Collection<int, CmsUser> */
     public function getUsers(): Collection
     {
         return $this->users;

@@ -1068,7 +1068,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
         self::assertThat($this->getQueryLog()->queries, new Count($expectedCount), $message);
     }
 
-    /** @psalm-return array{sql: string, params: array|null, types: array|null} */
+    /** @phpstan-return array{sql: string, params: array|null, types: array|null} */
     final protected function getLastLoggedQuery(int $index = 0): array
     {
         $queries   = $this->getQueryLog()->queries;

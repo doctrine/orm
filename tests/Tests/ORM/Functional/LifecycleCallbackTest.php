@@ -536,7 +536,7 @@ class LifecycleCallbackCascader
     #[GeneratedValue(strategy: 'AUTO')]
     private int $id;
 
-    /** @psalm-var Collection<int, LifecycleCallbackTestEntity> */
+    /** @phpstan-var Collection<int, LifecycleCallbackTestEntity> */
     #[OneToMany(targetEntity: 'LifecycleCallbackTestEntity', mappedBy: 'cascader', cascade: ['persist'])]
     public $entities;
 

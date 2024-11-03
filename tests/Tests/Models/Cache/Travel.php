@@ -34,7 +34,7 @@ class Travel
     #[Column(type: 'date')]
     protected $createdAt;
 
-    /** @psalm-var Collection<int, City> */
+    /** @phpstan-var Collection<int, City> */
     #[JoinTable(name: 'cache_visited_cities')]
     #[JoinColumn(name: 'travel_id', referencedColumnName: 'id')]
     #[InverseJoinColumn(name: 'city_id', referencedColumnName: 'id')]
@@ -67,7 +67,7 @@ class Travel
         $this->traveler = $traveler;
     }
 
-    /** @psalm-return Collection<int, City> */
+    /** @phpstan-return Collection<int, City> */
     public function getVisitedCities(): Collection
     {
         return $this->visitedCities;

@@ -38,7 +38,7 @@ class Company
     #[OneToOne(targetEntity: 'Logo', mappedBy: 'company', cascade: ['persist'], orphanRemoval: true)]
     public $logo;
 
-    /** @psalm-var Collection<int, Department> */
+    /** @phpstan-var Collection<int, Department> */
     #[OneToMany(targetEntity: 'Department', mappedBy: 'company', cascade: ['persist'], orphanRemoval: true)]
     public $departments;
 }

@@ -19,7 +19,7 @@ final class DefaultRepositoryFactory implements RepositoryFactory
      * The list of EntityRepository instances.
      *
      * @var ObjectRepository[]
-     * @psalm-var array<string, EntityRepository>
+     * @phpstan-var array<string, EntityRepository>
      */
     private array $repositoryList = [];
 

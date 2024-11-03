@@ -20,7 +20,7 @@ use function strtolower;
  */
 abstract class DatabaseDriverTestCase extends OrmFunctionalTestCase
 {
-    /** @psalm-return array<string, ClassMetadata> */
+    /** @phpstan-return array<string, ClassMetadata> */
     protected function convertToClassMetadata(array $entityTables, array $manyTables = []): array
     {
         $sm     = $this->createSchemaManager();

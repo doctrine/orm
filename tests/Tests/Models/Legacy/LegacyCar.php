@@ -22,7 +22,7 @@ class LegacyCar
     #[Column(name: 'iCarId', type: 'integer', nullable: false)]
     public $id;
 
-    /** @psalm-var Collection<int, LegacyUser> */
+    /** @phpstan-var Collection<int, LegacyUser> */
     #[ManyToMany(targetEntity: 'LegacyUser', mappedBy: 'cars')]
     public $users;
 
@@ -40,7 +40,7 @@ class LegacyCar
         $this->users[] = $user;
     }
 
-    /** @psalm-return Collection<int, LegacyUser> */
+    /** @phpstan-return Collection<int, LegacyUser> */
     public function getUsers(): Collection
     {
         return $this->users;

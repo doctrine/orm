@@ -12,7 +12,7 @@ class Literal extends Node
     final public const BOOLEAN = 2;
     final public const NUMERIC = 3;
 
-    /** @psalm-param self::* $type */
+    /** @phpstan-param self::* $type */
     public function __construct(
         public int $type,
         public mixed $value,

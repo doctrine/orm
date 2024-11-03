@@ -26,7 +26,7 @@ class InversedManyToManyCompositeIdEntity
     #[Id]
     public $id2;
 
-    /** @psalm-var Collection<int, OwningManyToManyCompositeIdEntity> */
+    /** @phpstan-var Collection<int, OwningManyToManyCompositeIdEntity> */
     #[ManyToMany(targetEntity: 'OwningManyToManyCompositeIdEntity', mappedBy: 'associatedEntities')]
     public $associatedEntities;
 

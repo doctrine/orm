@@ -29,7 +29,7 @@ class Token
     #[Column(type: 'date')]
     public $expiresAt;
 
-    /** @psalm-var Collection<int, Login> */
+    /** @phpstan-var Collection<int, Login> */
     #[OneToMany(targetEntity: 'Login', cascade: ['persist', 'remove'], mappedBy: 'token')]
     public $logins;
 

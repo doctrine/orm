@@ -32,7 +32,7 @@ trait ToManyAssociationMappingImplementation
         return $this->orderBy;
     }
 
-    /** @psalm-assert-if-true !null $this->indexBy */
+    /** @phpstan-assert-if-true !null $this->indexBy */
     final public function isIndexed(): bool
     {
         return $this->indexBy !== null;

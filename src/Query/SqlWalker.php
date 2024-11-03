@@ -45,8 +45,8 @@ use function trim;
 /**
  * The SqlWalker walks over a DQL AST and constructs the corresponding SQL.
  *
- * @psalm-import-type QueryComponent from Parser
- * @psalm-consistent-constructor
+ * @phpstan-import-type QueryComponent from Parser
+ * @phpstan-consistent-constructor
  */
 class SqlWalker
 {
@@ -87,7 +87,7 @@ class SqlWalker
     /**
      * Contains nesting levels of new objects arguments
      *
-     * @psalm-var array<int, array{0: string|int, 1: int}>
+     * @phpstan-var array<int, array{0: string|int, 1: int}>
      */
     private array $newObjectStack = [];
 
@@ -100,7 +100,7 @@ class SqlWalker
     /**
      * Map from result variable names to their SQL column alias names.
      *
-     * @psalm-var array<string|int, string|list<string>>
+     * @phpstan-var array<string|int, string|list<string>>
      */
     private array $scalarResultAliasMap = [];
 
@@ -121,14 +121,14 @@ class SqlWalker
     /**
      * A list of classes that appear in non-scalar SelectExpressions.
      *
-     * @psalm-var array<string, array{class: ClassMetadata, dqlAlias: string, resultAlias: string|null}>
+     * @phpstan-var array<string, array{class: ClassMetadata, dqlAlias: string, resultAlias: string|null}>
      */
     private array $selectedClasses = [];
 
     /**
      * The DQL alias of the root class of the currently traversed query.
      *
-     * @psalm-var list<string>
+     * @phpstan-var list<string>
      */
     private array $rootAliases = [];
 
@@ -148,7 +148,7 @@ class SqlWalker
      */
     private readonly QuoteStrategy $quoteStrategy;
 
-    /** @psalm-param array<string, QueryComponent> $queryComponents The query components (symbol table). */
+    /** @phpstan-param array<string, QueryComponent> $queryComponents The query components (symbol table). */
     public function __construct(
         private readonly Query $query,
         private readonly ParserResult $parserResult,
@@ -191,7 +191,7 @@ class SqlWalker
      * @param string $dqlAlias The DQL alias.
      *
      * @return mixed[]
-     * @psalm-return QueryComponent
+     * @phpstan-return QueryComponent
      */
     public function getQueryComponent(string $dqlAlias): array
     {
@@ -217,7 +217,7 @@ class SqlWalker
     /**
      * Sets or overrides a query component for a given dql alias.
      *
-     * @psalm-param QueryComponent $queryComponent
+     * @phpstan-param QueryComponent $queryComponent
      */
     public function setQueryComponent(string $dqlAlias, array $queryComponent): void
     {
@@ -246,7 +246,7 @@ class SqlWalker
         };
     }
 
-    /** @psalm-internal Doctrine\ORM */
+    /** @internal */
     protected function createUpdateStatementExecutor(AST\UpdateStatement $AST): Exec\AbstractSqlExecutor
     {
         $primaryClass = $this->em->getClassMetadata($AST->updateClause->abstractSchemaName);
@@ -256,7 +256,7 @@ class SqlWalker
             : new Exec\SingleTableDeleteUpdateExecutor($AST, $this);
     }
 
-    /** @psalm-internal Doctrine\ORM */
+    /** @internal */
     protected function createDeleteStatementExecutor(AST\DeleteStatement $AST): Exec\AbstractSqlExecutor
     {
         $primaryClass = $this->em->getClassMetadata($AST->deleteClause->abstractSchemaName);
@@ -398,7 +398,7 @@ class SqlWalker
     /**
      * Generates a discriminator column SQL condition for the class with the given DQL alias.
      *
-     * @psalm-param list<string> $dqlAliases List of root DQL aliases to inspect for discriminator restrictions.
+     * @phpstan-param list<string> $dqlAliases List of root DQL aliases to inspect for discriminator restrictions.
      */
     private function generateDiscriminatorColumnConditionSQL(array $dqlAliases): string
     {
@@ -909,7 +909,7 @@ class SqlWalker
     /**
      * Walks down a JoinAssociationDeclaration AST node, thereby generating the appropriate SQL.
      *
-     * @psalm-param AST\Join::JOIN_TYPE_* $joinType
+     * @phpstan-param AST\Join::JOIN_TYPE_* $joinType
      *
      * @throws QueryException
      */

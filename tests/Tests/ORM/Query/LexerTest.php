@@ -184,7 +184,7 @@ class LexerTest extends OrmTestCase
         self::assertFalse($lexer->moveNext());
     }
 
-    /** @psalm-return list<array{int, string}> */
+    /** @phpstan-return list<array{int, string}> */
     public static function provideTokens(): array
     {
         return [

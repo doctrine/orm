@@ -21,7 +21,7 @@ class InversedOneToManyEntity
     #[Id]
     public $id1;
 
-    /** @psalm-var Collection<int, OwningManyToOneEntity> */
+    /** @phpstan-var Collection<int, OwningManyToOneEntity> */
     #[OneToMany(targetEntity: 'OwningManyToOneEntity', mappedBy: 'associatedEntity')]
     public $associatedEntities;
 

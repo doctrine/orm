@@ -118,7 +118,7 @@ class EntityManagerTest extends OrmTestCase
         self::assertEquals('SELECT 1', $q->getDql());
     }
 
-    /** @psalm-return list<array{string}> */
+    /** @phpstan-return list<array{string}> */
     public static function dataAffectedByErrorIfClosedException(): array
     {
         return [

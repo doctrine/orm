@@ -28,8 +28,6 @@ class SingleSelectSqlFinalizer implements SqlFinalizer
      * This method exists temporarily to support old SqlWalker interfaces.
      *
      * @internal
-     *
-     * @psalm-internal Doctrine\ORM
      */
     public function finalizeSql(Query $query): string
     {

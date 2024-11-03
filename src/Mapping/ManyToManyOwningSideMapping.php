@@ -37,7 +37,7 @@ final class ManyToManyOwningSideMapping extends ToManyOwningSideMapping implemen
 
     /**
      * @param mixed[] $mappingArray
-     * @psalm-param array{
+     * @phpstan-param array{
      *     fieldName: string,
      *     sourceEntity: class-string,
      *     targetEntity: class-string,

@@ -67,7 +67,7 @@ class SchemaTool
     /**
      * Creates the database schema for the given array of ClassMetadata instances.
      *
-     * @psalm-param list<ClassMetadata> $classes
+     * @phpstan-param list<ClassMetadata> $classes
      *
      * @throws ToolsException
      */
@@ -89,7 +89,7 @@ class SchemaTool
      * Gets the list of DDL statements that are required to create the database schema for
      * the given list of ClassMetadata instances.
      *
-     * @psalm-param list<ClassMetadata> $classes
+     * @phpstan-param list<ClassMetadata> $classes
      *
      * @return list<string> The SQL statements needed to create the schema for the classes.
      */
@@ -103,7 +103,7 @@ class SchemaTool
     /**
      * Detects instances of ClassMetadata that don't need to be processed in the SchemaTool context.
      *
-     * @psalm-param array<string, bool> $processedClasses
+     * @phpstan-param array<string, bool> $processedClasses
      */
     private function processingNotRequired(
         ClassMetadata $class,
@@ -164,7 +164,7 @@ class SchemaTool
     /**
      * Creates a Schema instance from a given set of metadata classes.
      *
-     * @psalm-param list<ClassMetadata> $classes
+     * @phpstan-param list<ClassMetadata> $classes
      *
      * @throws NotSupported
      */
@@ -434,7 +434,7 @@ class SchemaTool
      * Creates a column definition as required by the DBAL from an ORM field mapping definition.
      *
      * @param ClassMetadata $class The class that owns the field mapping.
-     * @psalm-param FieldMapping $mapping The field mapping.
+     * @phpstan-param FieldMapping $mapping The field mapping.
      */
     private function gatherColumn(
         ClassMetadata $class,
@@ -502,11 +502,11 @@ class SchemaTool
      * Gathers the SQL for properly setting up the relations of the given class.
      * This includes the SQL for foreign key constraints and join tables.
      *
-     * @psalm-param array<string, array{
+     * @phpstan-param array<string, array{
      *                  foreignTableName: string,
      *                  foreignColumns: list<string>
      *              }>                               $addedFks
-     * @psalm-param array<string, bool>              $blacklistedFks
+     * @phpstan-param array<string, bool>              $blacklistedFks
      *
      * @throws NotSupported
      */
@@ -586,7 +586,7 @@ class SchemaTool
      *
      * TODO: Is there any way to make this code more pleasing?
      *
-     * @psalm-return array{ClassMetadata, string}|null
+     * @phpstan-return array{ClassMetadata, string}|null
      */
     private function getDefiningClass(ClassMetadata $class, string $referencedColumnName): array|null
     {
@@ -617,13 +617,13 @@ class SchemaTool
     /**
      * Gathers columns and fk constraints that are required for one part of relationship.
      *
-     * @psalm-param list<JoinColumnMapping>          $joinColumns
-     * @psalm-param list<string>                     $primaryKeyColumns
-     * @psalm-param array<string, array{
+     * @phpstan-param list<JoinColumnMapping>          $joinColumns
+     * @phpstan-param list<string>                     $primaryKeyColumns
+     * @phpstan-param array<string, array{
      *                  foreignTableName: string,
      *                  foreignColumns: list<string>
      *              }>                               $addedFks
-     * @psalm-param array<string,bool>               $blacklistedFks
+     * @phpstan-param array<string,bool>               $blacklistedFks
      *
      * @throws MissingColumnException
      */
@@ -775,7 +775,7 @@ class SchemaTool
      * In any way when an exception is thrown it is suppressed since drop was
      * issued for all classes of the schema and some probably just don't exist.
      *
-     * @psalm-param list<ClassMetadata> $classes
+     * @phpstan-param list<ClassMetadata> $classes
      */
     public function dropSchema(array $classes): void
     {
@@ -819,7 +819,7 @@ class SchemaTool
     /**
      * Gets SQL to drop the tables defined by the passed classes.
      *
-     * @psalm-param list<ClassMetadata> $classes
+     * @phpstan-param list<ClassMetadata> $classes
      *
      * @return list<string>
      */

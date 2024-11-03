@@ -145,7 +145,7 @@ class HydrationCompleteHandlerTest extends TestCase
         $this->handler->hydrationComplete();
     }
 
-    /** @psalm-return list<array{int}> */
+    /** @phpstan-return list<array{int}> */
     public static function invocationFlagProvider(): array
     {
         return [

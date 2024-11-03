@@ -104,7 +104,7 @@ class DDC1452EntityA
     #[Column]
     public $title;
 
-    /** @psalm-var Collection<int, DDC1452EntityB> */
+    /** @phpstan-var Collection<int, DDC1452EntityB> */
     #[OneToMany(targetEntity: 'DDC1452EntityB', mappedBy: 'entityAFrom')]
     public $entitiesB;
 
@@ -113,7 +113,7 @@ class DDC1452EntityA
         $this->entitiesB = new ArrayCollection();
     }
 
-    /** @psalm-return Collection<int, DDC1452EntityB> */
+    /** @phpstan-return Collection<int, DDC1452EntityB> */
     public function getEntitiesB(): Collection
     {
         return $this->entitiesB;

@@ -100,7 +100,7 @@ class ManyToManySelfReferentialAssociationTest extends AbstractManyToManyAssocia
         $this->assertLoadingOfOwningSide($products);
     }
 
-    /** @psalm-param list<ECommerceProduct> $products */
+    /** @phpstan-param list<ECommerceProduct> $products */
     public function assertLoadingOfOwningSide(array $products): void
     {
         [$firstProduct, $secondProduct] = $products;
@@ -135,7 +135,7 @@ class ManyToManySelfReferentialAssociationTest extends AbstractManyToManyAssocia
         $this->_em->clear();
     }
 
-    /** @psalm-return list<ECommerceProduct> */
+    /** @phpstan-return list<ECommerceProduct> */
     protected function findProducts(): array
     {
         $query = $this->_em->createQuery('SELECT p, r FROM Doctrine\Tests\Models\ECommerce\ECommerceProduct p LEFT JOIN p.related r ORDER BY p.id, r.id');

@@ -303,7 +303,7 @@ class Phrase
     #[JoinColumn(name: 'phrase_type_id', referencedColumnName: 'phrase_type_id')]
     private PhraseType|null $type = null;
 
-    /** @psalm-var Collection<int, Definition> */
+    /** @phpstan-var Collection<int, Definition> */
     #[OneToMany(targetEntity: 'Definition', mappedBy: 'phrase', cascade: ['persist'])]
     private $definitions;
 
@@ -366,7 +366,7 @@ class PhraseType
     #[Column(type: 'string', name: 'phrase_type_abbreviation', unique: true)]
     private string|null $abbreviation = null;
 
-    /** @psalm-var Collection<int, Phrase> */
+    /** @phpstan-var Collection<int, Phrase> */
     #[OneToMany(targetEntity: 'Phrase', mappedBy: 'type')]
     private $phrases;
 

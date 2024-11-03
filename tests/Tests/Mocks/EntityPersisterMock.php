@@ -19,7 +19,7 @@ class EntityPersisterMock extends BasicEntityPersister
     private int $identityColumnValueCounter = 0;
     private int|null $mockIdGeneratorType   = null;
 
-    /** @psalm-var list<array{generatedId: int, entity: object}> */
+    /** @phpstan-var list<array{generatedId: int, entity: object}> */
     private array $postInsertIds = [];
 
     private bool $existsCalled = false;

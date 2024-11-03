@@ -122,7 +122,7 @@ class DebugTest extends OrmTestCase
         self::assertEquals(['foo', 'bar'], $var);
     }
 
-    /** @psalm-return array<string, array{TestAsset\ParentClass, mixed[]}> */
+    /** @phpstan-return array<string, array{TestAsset\ParentClass, mixed[]}> */
     public static function provideAttributesCases(): iterable
     {
         return [
