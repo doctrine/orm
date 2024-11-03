@@ -13,6 +13,7 @@ use function reset;
 /** @internal */
 class EnumPropertyAccessor implements PropertyAccessor
 {
+    /** @param class-string<BackedEnum> $enumType */
     public function __construct(private PropertyAccessor $parent, private string $enumType)
     {
     }
@@ -37,7 +38,12 @@ class EnumPropertyAccessor implements PropertyAccessor
         return $this->fromEnum($enum);
     }
 
-    private function fromEnum(array|BackedEnum $enum): int|string|array
+    /**
+     * @param BackedEnum|BackedEnum[] $enum
+     *
+     * @return ($enum is BackedEnum ? (string|int) : (string[]|int[]))
+     */
+    private function fromEnum($enum)
     {
         if (is_array($enum)) {
             return array_map(static function (BackedEnum $enum) {
@@ -49,22 +55,13 @@ class EnumPropertyAccessor implements PropertyAccessor
     }
 
     /**
-     * @param int|string|int[]|string[]|BackedEnum|BackedEnum[] $value
+     * @param int|string|int[]|string[] $value
      *
-     * @return ($value is int|string|BackedEnum ? BackedEnum : BackedEnum[])
+     * @return ($value is int|string ? BackedEnum : BackedEnum[])
      */
-    private function toEnum(int|string|array|BackedEnum $value)
+    private function toEnum($value)
     {
-        if ($value instanceof BackedEnum) {
-            return $value;
-        }
-
         if (is_array($value)) {
-            $v = reset($value);
-            if ($v instanceof BackedEnum) {
-                return $value;
-            }
-
             return array_map([$this->enumType, 'from'], $value);
         }
 

@@ -14,6 +14,7 @@ class EmbeddablePropertyAccessor implements PropertyAccessor
     public function __construct(
         private PropertyAccessor $parent,
         private PropertyAccessor $child,
+        /** @var class-string */
         private string $embeddedClass,
     ) {
     }

@@ -32,7 +32,7 @@ class LegacyReflectionFields implements ArrayAccess, IteratorAggregate
     }
 
     /** @param string $offset */
-    public function offsetExists($offset): bool
+    public function offsetExists($offset): bool // phpcs:ignore
     {
         Deprecation::trigger(
             'doctrine/orm',
@@ -43,8 +43,12 @@ class LegacyReflectionFields implements ArrayAccess, IteratorAggregate
         return isset($this->classMetadata->propertyAccessors[$offset]);
     }
 
-    /** @param string $field */
-    public function offsetGet($field): mixed
+    /**
+     * @param string $field
+     *
+     * @psalm-suppress LessSpecificImplementedReturnType
+     */
+    public function offsetGet($field): mixed // phpcs:ignore
     {
         if (isset($this->reflFields[$field])) {
             return $this->reflFields[$field];
@@ -60,6 +64,8 @@ class LegacyReflectionFields implements ArrayAccess, IteratorAggregate
             $fieldName = str_contains($field, '.') ? $this->classMetadata->fieldMappings[$field]->originalField : $field;
             $className = $this->classMetadata->name;
 
+            assert(is_string($fieldName));
+
             if (isset($this->classMetadata->fieldMappings[$field]) && $this->classMetadata->fieldMappings[$field]->originalClass !== null) {
                 $className = $this->classMetadata->fieldMappings[$field]->originalClass;
             } elseif (isset($this->classMetadata->fieldMappings[$field]) && $this->classMetadata->fieldMappings[$field]->declared !== null) {
@@ -70,6 +76,7 @@ class LegacyReflectionFields implements ArrayAccess, IteratorAggregate
                 $className = $this->classMetadata->embeddedClasses[$field]->declared;
             }
 
+            /** @psalm-suppress ArgumentTypeCoercion */
             $this->reflFields[$field] = $this->getAccessibleProperty($className, $fieldName);
 
             if (isset($this->classMetadata->fieldMappings[$field])) {
@@ -81,7 +88,8 @@ class LegacyReflectionFields implements ArrayAccess, IteratorAggregate
                 }
 
                 if ($this->classMetadata->fieldMappings[$field]->originalField !== null) {
-                    $parentField = str_replace('.' . $fieldName, '', $field);
+                    $parentField   = str_replace('.' . $fieldName, '', $field);
+                    $originalClass = $this->classMetadata->fieldMappings[$field]->originalClass;
 
                     if (! str_contains($parentField, '.')) {
                         $parentClass = $this->classMetadata->name;
@@ -89,10 +97,13 @@ class LegacyReflectionFields implements ArrayAccess, IteratorAggregate
                         $parentClass = $this->classMetadata->fieldMappings[$parentField]->originalClass;
                     }
 
+                    /** @psalm-var class-string $parentClass */
+                    /** @psalm-var class-string $originalClass */
+
                     $this->reflFields[$field] = new ReflectionEmbeddedProperty(
                         $this->getAccessibleProperty($parentClass, $parentField),
                         $this->reflFields[$field],
-                        $this->classMetadata->fieldMappings[$field]->originalClass,
+                        $originalClass,
                     );
                 }
             }
@@ -104,33 +115,36 @@ class LegacyReflectionFields implements ArrayAccess, IteratorAggregate
     }
 
     /**
-     * @param string $offset
+     * @param string             $offset
      * @param ReflectionProperty $value
      */
-    public function offsetSet($offset, $value): void
+    public function offsetSet($offset, $value): void // phpcs:ignore
     {
         $this->reflFields[$offset] = $value;
     }
 
     /** @param string $offset */
-    public function offsetUnset($offset): void
+    public function offsetUnset($offset): void // phpcs:ignore
     {
         unset($this->reflFields[$offset]);
     }
 
     /** @psalm-param class-string $class */
-    private function getAccessibleProperty(string $class, string $field): ReflectionProperty|null
+    private function getAccessibleProperty(string $class, string $field): ReflectionProperty
     {
         $reflectionProperty = $this->reflectionService->getAccessibleProperty($class, $field);
-        if ($reflectionProperty?->isReadOnly()) {
+
+        assert($reflectionProperty !== null);
+
+        if ($reflectionProperty->isReadOnly()) {
             $declaringClass = $reflectionProperty->class;
             if ($declaringClass !== $class) {
                 $reflectionProperty = $this->reflectionService->getAccessibleProperty($declaringClass, $field);
+
+                assert($reflectionProperty !== null);
             }
 
-            if ($reflectionProperty !== null) {
-                $reflectionProperty = new ReflectionReadonlyProperty($reflectionProperty);
-            }
+            $reflectionProperty = new ReflectionReadonlyProperty($reflectionProperty);
         }
 
         return $reflectionProperty;

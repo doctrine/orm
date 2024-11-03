@@ -576,7 +576,7 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
      * Gets the ReflectionProperties of the mapped class.
      *
      * @return LegacyReflectionFields|ReflectionProperty[] An array of ReflectionProperty instances.
-     * @phpstan-return LegacyReflectionFields|array<ReflectionProperty>
+     * @phpstan-return LegacyReflectionFields|array<string, ReflectionProperty>
      */
     public function getReflectionProperties(): array
     {
@@ -606,9 +606,7 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
         return $this->propertyAccessors[$name] ?? null;
     }
 
-    /**
-     * @throws BadMethodCallException If the class has a composite identifier.
-     */
+    /** @throws BadMethodCallException If the class has a composite identifier. */
     public function getSingleIdReflectionProperty(): ReflectionProperty|null
     {
         if ($this->isIdentifierComposite) {
@@ -618,9 +616,7 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
         return $this->reflFields[$this->identifier[0]];
     }
 
-    /**
-     * @throws BadMethodCallException If the class has a composite identifier.
-     */
+    /** @throws BadMethodCallException If the class has a composite identifier. */
     public function getSingleIdPropertyAccessor(): PropertyAccessor|null
     {
         if ($this->isIdentifierComposite) {
