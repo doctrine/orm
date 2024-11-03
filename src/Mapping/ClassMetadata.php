@@ -578,7 +578,7 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
      * @return LegacyReflectionFields|ReflectionProperty[] An array of ReflectionProperty instances.
      * @phpstan-return LegacyReflectionFields|array<string, ReflectionProperty>
      */
-    public function getReflectionProperties(): array
+    public function getReflectionProperties(): array|LegacyReflectionFields
     {
         return $this->reflFields;
     }
