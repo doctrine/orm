@@ -18,9 +18,13 @@ use function array_keys;
 use function str_contains;
 use function str_replace;
 
+/**
+ * @template-implements ArrayAccess<string, ReflectionProperty|null>
+ * @template-implements IteratorAggregate<string, ReflectionProperty|null>
+ */
 class LegacyReflectionFields implements ArrayAccess, IteratorAggregate
 {
-    /** @var array<string, ReflectionProperty> */
+    /** @var array<string, ReflectionProperty|null> */
     private array $reflFields = [];
 
     public function __construct(private ClassMetadata $classMetadata, private ReflectionService $reflectionService)
