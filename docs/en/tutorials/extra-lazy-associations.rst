@@ -18,6 +18,7 @@ can be called without triggering a full load of the collection:
 -  ``Collection#containsKey($key)``
 -  ``Collection#count()``
 -  ``Collection#get($key)``
+-  ``Collection#isEmpty()``
 -  ``Collection#slice($offset, $length = null)``
 
 For each of the above methods the following semantics apply:
