@@ -56,6 +56,36 @@ class LazyEagerCollectionTest extends OrmFunctionalTestCase
         self::assertSame('12345', $ph->data);
         self::assertSame('6789', $ad->data);
     }
+
+    public function testCascadeDetachBothLazyAndEagerCollections(): void
+    {
+        $user       = new LazyEagerCollectionUser();
+        $user->data = 'Guilherme';
+
+        $ph       = new LazyEagerCollectionPhone();
+        $ph->data = '12345';
+        $user->addPhone($ph);
+
+        $ad       = new LazyEagerCollectionAddress();
+        $ad->data = '6789';
+        $user->addAddress($ad);
+
+        $this->_em->persist($user);
+        $this->_em->persist($ad);
+        $this->_em->persist($ph);
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $user = $this->_em->find(LazyEagerCollectionUser::class, $user->id);
+        $this->_em->detach($user);
+
+        $ph = $user->phones[0];
+        $ad = $user->addresses[0];
+
+        self::assertFalse($this->_em->contains($user));
+        self::assertFalse($this->_em->contains($ph));
+        self::assertFalse($this->_em->contains($ad));
+    }
 }
 
 /**
@@ -78,14 +108,14 @@ class LazyEagerCollectionUser
     public $data;
 
     /**
-     * @ORM\OneToMany(targetEntity="LazyEagerCollectionPhone", cascade={"refresh"}, fetch="EAGER", mappedBy="user")
+     * @ORM\OneToMany(targetEntity="LazyEagerCollectionPhone", cascade={"refresh", "detach"}, fetch="EAGER", mappedBy="user")
      *
      * @var LazyEagerCollectionPhone[]
      */
     public $phones;
 
     /**
-     * @ORM\OneToMany(targetEntity="LazyEagerCollectionAddress", cascade={"refresh"}, mappedBy="user")
+     * @ORM\OneToMany(targetEntity="LazyEagerCollectionAddress", cascade={"refresh", "detach"}, mappedBy="user")
      *
      * @var LazyEagerCollectionAddress[]
      */
