@@ -4,7 +4,10 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Hydration;
 
+use Doctrine\ORM\Exception\InvalidHydrationMode;
 use Doctrine\ORM\Internal\Hydration\AbstractHydrator;
+use Doctrine\ORM\Internal\Hydration\ScalarHydrator;
+use Doctrine\ORM\Query;
 
 class CustomHydratorTest extends HydrationTestCase
 {
@@ -12,11 +15,21 @@ class CustomHydratorTest extends HydrationTestCase
     {
         $em     = $this->getTestEntityManager();
         $config = $em->getConfiguration();
-        $config->addCustomHydrationMode('CustomHydrator', CustomHydrator::class);
 
+        $config->addCustomHydrationMode('CustomHydrator', CustomHydrator::class);
         $hydrator = $em->newHydrator('CustomHydrator');
         self::assertInstanceOf(CustomHydrator::class, $hydrator);
         self::assertNull($config->getCustomHydrationMode('does not exist'));
+
+        $hydrator = $em->newHydrator(Query::HYDRATE_SCALAR);
+        self::assertInstanceOf(ScalarHydrator::class, $hydrator);
+
+        $config->addCustomHydrationMode((string) Query::HYDRATE_SCALAR, CustomHydrator::class);
+        $hydrator = $em->newHydrator(Query::HYDRATE_SCALAR);
+        self::assertInstanceOf(CustomHydrator::class, $hydrator);
+
+        $this->expectException(InvalidHydrationMode::class);
+        $em->newHydrator('does not exist');
     }
 }
 

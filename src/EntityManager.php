@@ -541,15 +541,20 @@ class EntityManager implements EntityManagerInterface
 
     public function newHydrator(string|int $hydrationMode): AbstractHydrator
     {
-        return match ($hydrationMode) {
-            Query::HYDRATE_OBJECT => new Internal\Hydration\ObjectHydrator($this),
-            Query::HYDRATE_ARRAY => new Internal\Hydration\ArrayHydrator($this),
-            Query::HYDRATE_SCALAR => new Internal\Hydration\ScalarHydrator($this),
-            Query::HYDRATE_SINGLE_SCALAR => new Internal\Hydration\SingleScalarHydrator($this),
-            Query::HYDRATE_SIMPLEOBJECT => new Internal\Hydration\SimpleObjectHydrator($this),
-            Query::HYDRATE_SCALAR_COLUMN => new Internal\Hydration\ScalarColumnHydrator($this),
-            default => $this->createCustomHydrator((string) $hydrationMode),
-        };
+        $hydrationClass = $this->config->getCustomHydrationMode((string) $hydrationMode);
+        if ($hydrationClass === null) {
+            $hydrationClass = match ($hydrationMode) {
+                Query::HYDRATE_OBJECT => Internal\Hydration\ObjectHydrator::class,
+                Query::HYDRATE_ARRAY => Internal\Hydration\ArrayHydrator::class,
+                Query::HYDRATE_SCALAR => Internal\Hydration\ScalarHydrator::class,
+                Query::HYDRATE_SINGLE_SCALAR => Internal\Hydration\SingleScalarHydrator::class,
+                Query::HYDRATE_SIMPLEOBJECT => Internal\Hydration\SimpleObjectHydrator::class,
+                Query::HYDRATE_SCALAR_COLUMN => Internal\Hydration\ScalarColumnHydrator::class,
+                default => throw InvalidHydrationMode::fromMode((string) $hydrationMode)
+            };
+        }
+
+        return new $hydrationClass($this);
     }
 
     public function getProxyFactory(): ProxyFactory
@@ -616,16 +621,5 @@ class EntityManager implements EntityManagerInterface
         }
 
         $this->metadataFactory->setCache($metadataCache);
-    }
-
-    private function createCustomHydrator(string $hydrationMode): AbstractHydrator
-    {
-        $class = $this->config->getCustomHydrationMode($hydrationMode);
-
-        if ($class !== null) {
-            return new $class($this);
-        }
-
-        throw InvalidHydrationMode::fromMode($hydrationMode);
     }
 }
