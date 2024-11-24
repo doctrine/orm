@@ -281,7 +281,7 @@ class SchemaValidator
         if (
             ! $class->isInheritanceTypeNone()
             && ! $class->isRootEntity()
-            && ($class->reflClass !== null && ! $class->reflClass->isAbstract())
+            && ! $class->reflClass->isAbstract()
             && ! $class->isMappedSuperclass
             && array_search($class->name, $class->discriminatorMap, true) === false
         ) {

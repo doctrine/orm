@@ -21,7 +21,6 @@ use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\ORM\Mapping\OneToManyAssociationMapping;
 use Doctrine\ORM\Mapping\UnderscoreNamingStrategy;
 use Doctrine\Persistence\Mapping\RuntimeReflectionService;
-use Doctrine\Persistence\Mapping\StaticReflectionService;
 use Doctrine\Tests\DbalTypes\CustomIdObject;
 use Doctrine\Tests\DbalTypes\CustomIdObjectType;
 use Doctrine\Tests\DbalTypes\CustomIntType;
@@ -56,7 +55,6 @@ use ReflectionClass;
 use stdClass;
 
 use function assert;
-use function class_exists;
 use function count;
 use function serialize;
 use function str_contains;
@@ -531,9 +529,12 @@ class ClassMetadataTest extends OrmTestCase
     #[TestGroup('DDC-559')]
     public function testUnderscoreNamingStrategyDefaults(): void
     {
+        $reflService        = new RuntimeReflectionService();
         $namingStrategy     = new UnderscoreNamingStrategy(CASE_UPPER);
         $oneToOneMetadata   = new ClassMetadata(CmsAddress::class, $namingStrategy);
         $manyToManyMetadata = new ClassMetadata(CmsAddress::class, $namingStrategy);
+        $oneToOneMetadata->initializeReflection($reflService);
+        $manyToManyMetadata->initializeReflection($reflService);
 
         $oneToOneMetadata->mapOneToOne(
             [
@@ -569,6 +570,7 @@ class ClassMetadataTest extends OrmTestCase
         self::assertEquals('ID', $manyToManyMetadata->associationMappings['user']->joinTable->inverseJoinColumns[0]->referencedColumnName);
 
         $cm = new ClassMetadata('DoctrineGlobalArticle', $namingStrategy);
+        $cm->initializeReflection(new RuntimeReflectionService());
         $cm->mapManyToMany(['fieldName' => 'author', 'targetEntity' => CmsUser::class]);
         self::assertEquals('DOCTRINE_GLOBAL_ARTICLE_CMS_USER', $cm->associationMappings['author']->joinTable->name);
     }
@@ -861,6 +863,7 @@ class ClassMetadataTest extends OrmTestCase
     public function testAttributeOverrideKeepsDeclaringClass(): void
     {
         $cm = new ClassMetadata(Directory::class);
+        $cm->initializeReflection(new RuntimeReflectionService());
         $cm->mapField(['fieldName' => 'id', 'type' => 'integer', 'declared' => AbstractContentItem::class]);
         $cm->setAttributeOverride('id', ['columnName' => 'new_id']);
 
@@ -872,6 +875,7 @@ class ClassMetadataTest extends OrmTestCase
     public function testAssociationOverrideKeepsDeclaringClass(): void
     {
         $cm = new ClassMetadata(Directory::class);
+        $cm->initializeReflection(new RuntimeReflectionService());
         $cm->mapManyToOne(['fieldName' => 'parentDirectory', 'targetEntity' => Directory::class, 'cascade' => ['remove'], 'declared' => Directory::class]);
         $cm->setAssociationOverride('parentDirectory', ['cascade' => ['remove']]);
 
@@ -883,6 +887,7 @@ class ClassMetadataTest extends OrmTestCase
     public function testAssociationOverrideCanOverrideCascade(): void
     {
         $cm = new ClassMetadata(Directory::class);
+        $cm->initializeReflection(new RuntimeReflectionService());
         $cm->mapManyToOne(['fieldName' => 'parentDirectory', 'targetEntity' => Directory::class, 'cascade' => ['remove'], 'declared' => Directory::class]);
         $cm->setAssociationOverride('parentDirectory', ['cascade' => ['all']]);
 
@@ -988,36 +993,6 @@ class ClassMetadataTest extends OrmTestCase
         self::assertInstanceOf(MyArrayObjectEntity::class, $classMetadata->newInstance());
     }
 
-    public function testWakeupReflectionWithEmbeddableAndStaticReflectionService(): void
-    {
-        if (! class_exists(StaticReflectionService::class)) {
-            self::markTestSkipped('This test is not supported by the current installed doctrine/persistence version');
-        }
-
-        $classMetadata = new ClassMetadata(TestEntity1::class);
-
-        $classMetadata->mapEmbedded(
-            [
-                'fieldName'    => 'test',
-                'class'        => TestEntity1::class,
-                'columnPrefix' => false,
-            ],
-        );
-
-        $field = [
-            'fieldName' => 'test.embeddedProperty',
-            'type' => 'string',
-            'originalClass' => TestEntity1::class,
-            'declaredField' => 'test',
-            'originalField' => 'embeddedProperty',
-        ];
-
-        $classMetadata->mapField($field);
-        $classMetadata->wakeupReflection(new StaticReflectionService());
-
-        self::assertEquals(['test' => null, 'test.embeddedProperty' => null], $classMetadata->getReflectionProperties());
-    }
-
     public function testGetColumnNamesWithGivenFieldNames(): void
     {
         $metadata = new ClassMetadata(CmsUser::class);
@@ -1077,6 +1052,7 @@ class ClassMetadataTest extends OrmTestCase
     public function testItThrowsOnInvalidCallToGetAssociationMappedByTargetField(): void
     {
         $metadata = new ClassMetadata(self::class);
+        $metadata->initializeReflection(new RuntimeReflectionService());
         $metadata->mapOneToOne(['fieldName' => 'foo', 'targetEntity' => 'bar']);
 
         $this->expectException(LogicException::class);

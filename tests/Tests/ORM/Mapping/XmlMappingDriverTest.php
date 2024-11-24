@@ -73,6 +73,7 @@ class XmlMappingDriverTest extends MappingDriverTestCase
         $mappingDriver = $this->loadDriver();
 
         $class = new ClassMetadata(XMLSLC::class);
+        $class->initializeReflection(new RuntimeReflectionService());
         $mappingDriver->loadMetadataForClass(XMLSLC::class, $class);
     }
 

@@ -304,9 +304,6 @@
       <code><![CDATA[$parentReflFields[$embeddedClass->declaredField]]]></code>
     </PossiblyNullArgument>
     <PossiblyNullReference>
-      <code><![CDATA[getProperty]]></code>
-      <code><![CDATA[getProperty]]></code>
-      <code><![CDATA[getProperty]]></code>
       <code><![CDATA[getValue]]></code>
       <code><![CDATA[getValue]]></code>
       <code><![CDATA[getValue]]></code>
@@ -323,6 +320,7 @@
     </PossiblyUndefinedArrayOffset>
     <PropertyNotSetInConstructor>
       <code><![CDATA[$idGenerator]]></code>
+      <code><![CDATA[$reflClass]]></code>
       <code><![CDATA[$table]]></code>
     </PropertyNotSetInConstructor>
     <RedundantCondition>
@@ -442,14 +440,6 @@
       <code><![CDATA[new ReflectionClass($metadata->name)]]></code>
     </TypeDoesNotContainNull>
   </file>
-  <file src="src/Mapping/Driver/LoadMappingFileImplementation.php">
-    <LessSpecificImplementedReturnType>
-      <code><![CDATA[array]]></code>
-    </LessSpecificImplementedReturnType>
-    <MissingParamType>
-      <code><![CDATA[$file]]></code>
-    </MissingParamType>
-  </file>
   <file src="src/Mapping/Driver/SimplifiedXmlDriver.php">
     <MissingParamType>
       <code><![CDATA[$fileExtension]]></code>
@@ -501,14 +491,6 @@
     <MoreSpecificImplementedParamType>
       <code><![CDATA[$metadata]]></code>
     </MoreSpecificImplementedParamType>
-  </file>
-  <file src="src/Mapping/GetReflectionClassImplementation.php">
-    <ImplementedReturnTypeMismatch>
-      <code><![CDATA[ReflectionClass]]></code>
-    </ImplementedReturnTypeMismatch>
-    <InvalidNullableReturnType>
-      <code><![CDATA[ReflectionClass]]></code>
-    </InvalidNullableReturnType>
   </file>
   <file src="src/Mapping/ManyToManyInverseSideMapping.php">
     <PropertyNotSetInConstructor>

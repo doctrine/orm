@@ -41,7 +41,6 @@
                 <referencedClass name="Doctrine\ORM\Tools\Console\Command\GenerateRepositoriesCommand"/>
                 <referencedClass name="Doctrine\ORM\Tools\Console\Helper\EntityManagerHelper"/>
                 <referencedClass name="Doctrine\ORM\Tools\Console\EntityManagerProvider\HelperSetManagerProvider"/>
-                <referencedClass name="Doctrine\Persistence\Mapping\StaticReflectionService"/>
             </errorLevel>
         </DeprecatedClass>
         <DocblockTypeContradiction>
