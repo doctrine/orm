@@ -18,6 +18,7 @@ use Doctrine\ORM\Mapping\PropertyAccessors\EmbeddablePropertyAccessor;
 use Doctrine\ORM\Mapping\PropertyAccessors\EnumPropertyAccessor;
 use Doctrine\ORM\Mapping\PropertyAccessors\ObjectCastPropertyAccessor;
 use Doctrine\ORM\Mapping\PropertyAccessors\PropertyAccessor;
+use Doctrine\ORM\Mapping\PropertyAccessors\RawValuePropertyAccessor;
 use Doctrine\ORM\Mapping\PropertyAccessors\ReadonlyAccessor;
 use Doctrine\ORM\Mapping\PropertyAccessors\TypedNoDefaultPropertyAccessor;
 use Doctrine\Persistence\Mapping\ClassMetadata as PersistenceClassMetadata;
@@ -61,6 +62,8 @@ use function str_replace;
 use function strtolower;
 use function trait_exists;
 use function trim;
+
+use const PHP_VERSION_ID;
 
 /**
  * A <tt>ClassMetadata</tt> instance holds all the object-relational mapping metadata
@@ -2689,7 +2692,10 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
     private function createPropertyAccessor(string $className, string $propertyName): PropertyAccessor
     {
         $reflectionProperty = new ReflectionProperty($className, $propertyName);
-        $accessor           = ObjectCastPropertyAccessor::fromReflectionProperty($reflectionProperty);
+
+        $accessor = PHP_VERSION_ID >= 80400
+            ? RawValuePropertyAccessor::fromReflectionProperty($reflectionProperty)
+            : ObjectCastPropertyAccessor::fromReflectionProperty($reflectionProperty);
 
         if ($reflectionProperty->hasType() && ! $reflectionProperty->getType()->allowsNull()) {
             $accessor = new TypedNoDefaultPropertyAccessor($accessor, $reflectionProperty);
