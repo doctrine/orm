@@ -18,7 +18,6 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
-use function assert;
 use function get_debug_type;
 use function sprintf;
 
@@ -96,13 +95,7 @@ EOT
 
         $ui->comment('Clearing <info>all</info> Query cache entries');
 
-        if ($cache) {
-            $result = $cache->clear();
-        } else {
-            assert($cacheDriver !== null);
-            $result = $cacheDriver->deleteAll();
-        }
-
+        $result  = $cache ? $cache->clear() : $cacheDriver->deleteAll();
         $message = $result ? 'Successfully deleted cache entries.' : 'No cache entries were deleted.';
 
         if ($input->getOption('flush') === true && ! $cache) {

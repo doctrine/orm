@@ -25,7 +25,6 @@ use Doctrine\ORM\Proxy\DefaultProxyClassNameResolver;
 use Doctrine\ORM\UnitOfWork;
 
 use function array_merge;
-use function assert;
 use function serialize;
 use function sha1;
 
@@ -614,9 +613,10 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
      */
     protected function buildCollectionCacheKey(array $association, $ownerId)
     {
-        $metadata = $this->metadataFactory->getMetadataFor($association['sourceEntity']);
-        assert($metadata instanceof ClassMetadata);
-
-        return new CollectionCacheKey($metadata->rootEntityName, $association['fieldName'], $ownerId);
+        return new CollectionCacheKey(
+            $this->metadataFactory->getMetadataFor($association['sourceEntity'])->rootEntityName,
+            $association['fieldName'],
+            $ownerId
+        );
     }
 }

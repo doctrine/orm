@@ -830,7 +830,6 @@ DEPRECATION
      */
     protected function wakeupReflection(ClassMetadataInterface $class, ReflectionService $reflService)
     {
-        assert($class instanceof ClassMetadata);
         $class->wakeupReflection($reflService);
     }
 
@@ -839,7 +838,6 @@ DEPRECATION
      */
     protected function initializeReflection(ClassMetadataInterface $class, ReflectionService $reflService)
     {
-        assert($class instanceof ClassMetadata);
         $class->initializeReflection($reflService);
     }
 

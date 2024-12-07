@@ -7,6 +7,7 @@ parameters:
 
     ignoreErrors:
         # PHPStan doesn't understand our method_exists() safeguards.
+        - '/Call to function method_exists.*/'
         - '/Call to an undefined method Doctrine\\DBAL\\Connection::createSchemaManager\(\)\./'
         # Class name will change in DBAL 3.
         - '/^Class Doctrine\\DBAL\\Platforms\\PostgreSQLPlatform not found\.$/'
@@ -46,6 +47,16 @@ parameters:
             path: src/Query/AST/Functions/LocateFunction.php
 
         # Won't get fixed in DBAL 2
+        -
+            message: '#.*deleteItem.*expects string.*#'
+            count: 1
+            path: src/Query.php
+
+        -
+            message: '#.*get(Drop|Create)SchemaS(ql|QL).*should return list.*but returns array.*#'
+            count: 2
+            path: src/Tools/SchemaTool.php
+
         -
             message: "#^Parameter \\#2 \\$start of method Doctrine\\\\DBAL\\\\Platforms\\\\AbstractPlatform\\:\\:getSubstringExpression\\(\\) expects int, string given\\.$#"
             count: 1

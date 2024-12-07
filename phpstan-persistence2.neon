@@ -98,5 +98,5 @@ parameters:
             path: src/Mapping/ClassMetadataFactory.php
 
         -
-            message: '#^Parameter \#1 \$classNames of method Doctrine\\ORM\\Mapping\\ClassMetadataInfo\<object\>\:\:setParentClasses\(\) expects array\<int, class\-string\>, array\<string\> given\.$#'
+            message: '#^Parameter \#1 \$classNames of method Doctrine\\ORM\\Mapping\\ClassMetadataInfo\<object\>\:\:setParentClasses\(\) expects list\<class\-string\>, array\<string\> given\.$#'
             path: src/Mapping/ClassMetadataFactory.php

@@ -262,7 +262,6 @@ class DefaultQueryCache implements QueryCache
         $region = $persister->getCacheRegion();
 
         $cm = $this->em->getClassMetadata($entityName);
-        assert($cm instanceof ClassMetadata);
 
         foreach ($result as $index => $entity) {
             $identifier = $this->uow->getEntityIdentifier($entity);

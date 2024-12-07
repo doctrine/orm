@@ -9,7 +9,3 @@ parameters:
         Doctrine\ORM\Query\Parser:
             - syntaxError
     phpVersion: 80400
-
-    ignoreErrors:
-        # Remove on 3.0.x
-        - '~^Default value of the parameter #2 \$value \(array\{\}\) of method Doctrine\\ORM\\Query\\AST\\InstanceOfExpression\:\:__construct\(\) is incompatible with type non\-empty\-array<int, Doctrine\\ORM\\Query\\AST\\InputParameter\|string>\.$~'
