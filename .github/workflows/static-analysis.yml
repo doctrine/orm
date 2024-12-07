@@ -9,7 +9,6 @@ on:
       - composer.*
       - src/**
       - phpstan*
-      - psalm*
       - tests/StaticAnalysis/**
   push:
     branches:
@@ -19,7 +18,6 @@ on:
       - composer.*
       - src/**
       - phpstan*
-      - psalm*
       - tests/StaticAnalysis/**
 
 jobs:
