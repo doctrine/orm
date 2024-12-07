@@ -428,6 +428,7 @@ class QueryDqlFunctionTest extends OrmFunctionalTestCase
             SELECT m, m.name AS m_name
             FROM Doctrine\Tests\Models\Company\CompanyManager m
             WHERE m.salary IN (800000 / 8, 100000 * 2)
+            ORDER BY m.name DESC
 SQL;
 
         $result = $this->_em->createQuery($dql)->getArrayResult();
