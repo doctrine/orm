@@ -1056,11 +1056,6 @@ parameters:
 			path: src/Mapping/ClassMetadataFactory.php
 
 		-
-			message: "#^Call to an undefined method ReflectionProperty\\:\\:getHooks\\(\\)\\.$#"
-			count: 1
-			path: src/Mapping/ClassMetadataInfo.php
-
-		-
 			message: "#^Method Doctrine\\\\ORM\\\\Mapping\\\\ClassMetadataInfo\\:\\:_storeAssociationMapping\\(\\) has parameter \\$assocMapping with no value type specified in iterable type array\\.$#"
 			count: 5
 			path: src/Mapping/ClassMetadataInfo.php

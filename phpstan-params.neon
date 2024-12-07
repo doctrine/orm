@@ -8,7 +8,7 @@ parameters:
     earlyTerminatingMethodCalls:
         Doctrine\ORM\Query\Parser:
             - syntaxError
-    phpVersion: 80200
+    phpVersion: 80400
 
     ignoreErrors:
         # Remove on 3.0.x

@@ -48,7 +48,7 @@ jobs:
         uses: "shivammathur/setup-php@v2"
         with:
           coverage: "none"
-          php-version: "8.3"
+          php-version: "8.4"
 
       - name: "Require specific DBAL version"
         run: "composer require doctrine/dbal ^${{ matrix.dbal-version }} --no-update"
@@ -73,4 +73,3 @@ jobs:
       - name: "Run a static analysis with phpstan/phpstan"
         run: "vendor/bin/phpstan analyse -c phpstan-persistence2.neon"
         if: "${{ matrix.dbal-version == 'default' && matrix.persistence-version != 'default'}}"
-
