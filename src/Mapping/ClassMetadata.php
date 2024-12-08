@@ -2688,7 +2688,7 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
         return $sequencePrefix;
     }
 
-    /** @phpstan-param class-string $class */
+    /** @phpstan-param class-string $className */
     private function createPropertyAccessor(string $className, string $propertyName): PropertyAccessor
     {
         $reflectionProperty = new ReflectionProperty($className, $propertyName);
