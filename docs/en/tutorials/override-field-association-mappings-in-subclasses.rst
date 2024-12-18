@@ -9,7 +9,7 @@ i.e. attributes and associations metadata in particular. The example here shows
 the overriding of a class that uses a trait but is similar when extending a base
 class as shown at the end of this tutorial.
 
-Suppose we have a class ExampleEntityWithOverride. This class uses trait ExampleTrait:
+Suppose we have a class ``ExampleEntityWithOverride``. This class uses trait ``ExampleTrait``:
 
 .. code-block:: php
 
@@ -17,22 +17,20 @@ Suppose we have a class ExampleEntityWithOverride. This class uses trait Example
 
     #[Entity]
     #[AttributeOverrides([
-        new AttributeOverride('foo', [
-            'column' => new Column([
-                'name' => 'foo_overridden',
-                'type' => 'integer',
-                'length' => 140,
-                'nullable' => false,
-                'unique' => false,
-            ]),
-        ]),
+        new AttributeOverride('foo', new Column(
+            name: 'foo_overridden',
+            type: 'integer',
+            length: 140,
+            nullable: false,
+            unique: false,
+        )),
     ])]
     #[AssociationOverrides([
         new AssociationOverride('bar', [
-            'joinColumns' => new JoinColumn([
-                'name' => 'example_entity_overridden_bar_id',
-                'referencedColumnName' => 'id',
-            ]),
+            new JoinColumn(
+                name: 'example_entity_overridden_bar_id',
+                referencedColumnName: 'id',
+            ),
         ]),
     ])]
     class ExampleEntityWithOverride
@@ -47,7 +45,7 @@ Suppose we have a class ExampleEntityWithOverride. This class uses trait Example
         private $id;
     }
 
-The docblock is showing metadata override of the attribute and association type. It
+``#[AttributeOverrides]`` contains metadata override of the attribute and association type. It
 basically changes the names of the columns mapped for a property ``foo`` and for
 the association ``bar`` which relates to Bar class shown above. Here is the trait
 which has mapping metadata that is overridden by the attribute above:
