@@ -64,6 +64,7 @@ final class ManyToManyOwningSideMapping extends ToManyOwningSideMapping implemen
                 if (empty($joinColumn['referencedColumnName'])) {
                     $mappingArray['joinTable']['joinColumns'][$key]['referencedColumnName'] = $namingStrategy->referenceColumnName();
                 }
+
                 if (empty($joinColumn['name'])) {
                     $mappingArray['joinTable']['joinColumns'][$key]['name'] = $namingStrategy->joinKeyColumnName(
                         $mappingArray['sourceEntity'],
@@ -78,6 +79,7 @@ final class ManyToManyOwningSideMapping extends ToManyOwningSideMapping implemen
                 if (empty($joinColumn['referencedColumnName'])) {
                     $mappingArray['joinTable']['inverseJoinColumns'][$key]['referencedColumnName'] = $namingStrategy->referenceColumnName();
                 }
+
                 if (empty($joinColumn['name'])) {
                     $mappingArray['joinTable']['inverseJoinColumns'][$key]['name'] = $namingStrategy->joinKeyColumnName(
                         $mappingArray['targetEntity'],

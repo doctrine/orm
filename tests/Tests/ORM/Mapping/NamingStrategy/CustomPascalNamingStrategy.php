@@ -5,6 +5,14 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Mapping\NamingStrategy;
 
 use Doctrine\ORM\Mapping\NamingStrategy;
+use LogicException;
+
+use function sprintf;
+use function str_contains;
+use function strrpos;
+use function strtolower;
+use function substr;
+use function ucfirst;
 
 /**
  * Fully customized naming strategy changing all namings to a PascalCase model. Included to test some behaviours
@@ -16,6 +24,7 @@ class CustomPascalNamingStrategy implements NamingStrategy
      * Returns a table name for an entity class.
      *
      * @param string $className The fully-qualified class name
+     *
      * @return string A table name
      */
     public function classToTableName(string $className): string
@@ -30,14 +39,14 @@ class CustomPascalNamingStrategy implements NamingStrategy
     /**
      * Returns a column name for a property.
      *
-     * @param string $propertyName A property name
+     * @param string      $propertyName A property name
      * @param string|null $className    The fully-qualified class name
      *
      * @return string A column name
      */
-    public function propertyToColumnName(string $propertyName, ?string $className = null): string
+    public function propertyToColumnName(string $propertyName, string|null $className = null): string
     {
-        if (null !== $className && strtolower($propertyName) == strtolower($this->classToTableName($className)) . 'id') {
+        if ($className !== null && strtolower($propertyName) === strtolower($this->classToTableName($className)) . 'id') {
             return 'Id';
         }
 
@@ -47,9 +56,9 @@ class CustomPascalNamingStrategy implements NamingStrategy
     /**
      * Returns a column name for an embedded property.
      */
-    public function embeddedFieldToColumnName(string $propertyName, string $embeddedColumnName, ?string $className = null, $embeddedClassName = null): string
+    public function embeddedFieldToColumnName(string $propertyName, string $embeddedColumnName, string|null $className = null, $embeddedClassName = null): string
     {
-        throw new \LogicException(sprintf('Method %s is not implemented', __METHOD__));
+        throw new LogicException(sprintf('Method %s is not implemented', __METHOD__));
     }
 
     /**
@@ -75,13 +84,13 @@ class CustomPascalNamingStrategy implements NamingStrategy
     /**
      * Returns a join table name.
      *
-     * @param string $sourceEntity The source entity
-     * @param string $targetEntity The target entity
+     * @param string      $sourceEntity The source entity
+     * @param string      $targetEntity The target entity
      * @param string|null $propertyName A property name
      *
      * @return string A join table name
      */
-    public function joinTableName(string $sourceEntity, string $targetEntity, ?string $propertyName = null): string
+    public function joinTableName(string $sourceEntity, string $targetEntity, string|null $propertyName = null): string
     {
         return $this->classToTableName($sourceEntity) . $this->classToTableName($targetEntity);
     }
@@ -94,7 +103,7 @@ class CustomPascalNamingStrategy implements NamingStrategy
      *
      * @return string A join column name
      */
-    public function joinKeyColumnName(string $entityName, ?string $referencedColumnName = null): string
+    public function joinKeyColumnName(string $entityName, string|null $referencedColumnName = null): string
     {
         return $this->classToTableName($entityName) . ($referencedColumnName ?: $this->referenceColumnName());
     }

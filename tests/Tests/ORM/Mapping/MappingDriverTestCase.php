@@ -950,7 +950,7 @@ abstract class MappingDriverTestCase extends OrmTestCase
 
     public function testCustomNamingStrategyIsRespected(): void
     {
-        $ns = new CustomPascalNamingStrategy();
+        $ns       = new CustomPascalNamingStrategy();
         $metadata = $this->createClassMetadata(BlogPostComment::class, $ns);
 
         self::assertEquals('id', $metadata->fieldNames['Id']);
@@ -1565,17 +1565,22 @@ class GH10288EnumTypeBoss extends GH10288EnumTypePerson
 #[Entity]
 class BlogPost
 {
-    #[Id, Column, GeneratedValue(strategy: 'NONE')]
+    #[Id]
+    #[Column]
+    #[GeneratedValue(strategy: 'NONE')]
     public int $id;
 }
 
 #[Entity]
 class BlogPostComment
 {
-    #[Id, Column, GeneratedValue(strategy: 'AUTO')]
+    #[Id]
+    #[Column]
+    #[GeneratedValue(strategy: 'AUTO')]
     public int $id;
 
-    #[ORM\ManyToOne, ORM\JoinColumn(nullable: false)]
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: false)]
     public BlogPost $blogPost;
 
     public static function loadMetadata(ClassMetadata $metadata): void
@@ -1595,12 +1600,9 @@ class BlogPostComment
                 'targetEntity' => BlogPost::class,
                 'joinColumns' =>
                     [
-                        0 =>
-                            [
-                                'nullable' => false,
-                            ],
+                        0 => ['nullable' => false],
                     ],
-            ]
+            ],
         );
     }
 }
