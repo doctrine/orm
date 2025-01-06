@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\Models\TypedProperties;
 
+use BcMath\Number;
 use DateInterval;
 use DateTime;
 use DateTimeImmutable;
@@ -53,6 +54,9 @@ class UserTyped
 
     #[ORM\Embedded]
     public Contact|null $contact = null;
+
+    #[ORM\Column(precision: 5, scale: 2)]
+    public Number|null $bodyHeight = null;
 
     public static function loadMetadata(ClassMetadata $metadata): void
     {
