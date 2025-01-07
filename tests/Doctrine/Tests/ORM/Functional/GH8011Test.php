@@ -7,6 +7,8 @@ namespace Doctrine\Tests\ORM\Functional;
 use Doctrine\Tests\Models\Company\CompanyEmployee;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
+use function count;
+
 /**
  * Functional tests for ordering with arithmetic expression.
  *
@@ -14,15 +16,16 @@ use Doctrine\Tests\OrmFunctionalTestCase;
  */
 class GH8011Test extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->useModelSet('company');
+        
         parent::setUp();
 
         $this->generateFixture();
     }
 
-    public function testOrderWithArithmeticExpressionWithSingleValuedPathExpression()
+    public function testOrderWithArithmeticExpressionWithSingleValuedPathExpression(): void
     {
         $dql = 'SELECT p ' .
             'FROM Doctrine\Tests\Models\Company\CompanyEmployee p ' .
@@ -36,7 +39,7 @@ class GH8011Test extends OrmFunctionalTestCase
         $this->assertEquals('Guilherme B.', $result[1]->getName());
     }
 
-    public function testOrderWithArithmeticExpressionWithLiteralAndSingleValuedPathExpression()
+    public function testOrderWithArithmeticExpressionWithLiteralAndSingleValuedPathExpression(): void
     {
         $dql = 'SELECT p ' .
             'FROM Doctrine\Tests\Models\Company\CompanyEmployee p ' .
@@ -50,7 +53,7 @@ class GH8011Test extends OrmFunctionalTestCase
         $this->assertEquals('Guilherme B.', $result[1]->getName());
     }
 
-    public function testOrderWithArithmeticExpressionWithLiteralAndSingleValuedPathExpression2()
+    public function testOrderWithArithmeticExpressionWithLiteralAndSingleValuedPathExpression2(): void
     {
         $dql = 'SELECT p ' .
             'FROM Doctrine\Tests\Models\Company\CompanyEmployee p ' .
@@ -64,7 +67,7 @@ class GH8011Test extends OrmFunctionalTestCase
         $this->assertEquals('Guilherme B.', $result[1]->getName());
     }
 
-    public function testOrderWithArithmeticExpressionWithSingleValuedPathExpressionAndLiteral()
+    public function testOrderWithArithmeticExpressionWithSingleValuedPathExpressionAndLiteral(): void
     {
         $dql = 'SELECT p ' .
             'FROM Doctrine\Tests\Models\Company\CompanyEmployee p ' .
@@ -78,7 +81,7 @@ class GH8011Test extends OrmFunctionalTestCase
         $this->assertEquals('Guilherme B.', $result[1]->getName());
     }
 
-    public function testOrderWithArithmeticExpressionWithResultVariableAndLiteral()
+    public function testOrderWithArithmeticExpressionWithResultVariableAndLiteral(): void
     {
         $dql = 'SELECT p,  p.salary AS HIDDEN s ' .
             'FROM Doctrine\Tests\Models\Company\CompanyEmployee p ' .
@@ -92,7 +95,7 @@ class GH8011Test extends OrmFunctionalTestCase
         $this->assertEquals('Benjamin E.', $result[1]->getName());
     }
 
-    public function testOrderWithArithmeticExpressionWithResultVariableAndLiteral2()
+    public function testOrderWithArithmeticExpressionWithResultVariableAndLiteral2(): void
     {
         $dql = 'SELECT p,  p.salary AS HIDDEN s ' .
             'FROM Doctrine\Tests\Models\Company\CompanyEmployee p ' .
@@ -106,7 +109,7 @@ class GH8011Test extends OrmFunctionalTestCase
         $this->assertEquals('Benjamin E.', $result[1]->getName());
     }
 
-    public function testOrderWithArithmeticExpressionWithLiteralAndResultVariable()
+    public function testOrderWithArithmeticExpressionWithLiteralAndResultVariable(): void
     {
         $dql = 'SELECT p,  p.salary AS HIDDEN s ' .
             'FROM Doctrine\Tests\Models\Company\CompanyEmployee p ' .
@@ -120,7 +123,7 @@ class GH8011Test extends OrmFunctionalTestCase
         $this->assertEquals('Benjamin E.', $result[1]->getName());
     }
 
-    public function testOrderWithArithmeticExpressionWithLiteralAndResultVariable2()
+    public function testOrderWithArithmeticExpressionWithLiteralAndResultVariable2(): void
     {
         $dql = 'SELECT p,  p.salary AS HIDDEN s ' .
             'FROM Doctrine\Tests\Models\Company\CompanyEmployee p ' .
@@ -134,7 +137,7 @@ class GH8011Test extends OrmFunctionalTestCase
         $this->assertEquals('Benjamin E.', $result[1]->getName());
     }
 
-    public function testOrderWithArithmeticExpressionWithResultVariableAndSingleValuedPathExpression()
+    public function testOrderWithArithmeticExpressionWithResultVariableAndSingleValuedPathExpression(): void
     {
         $dql = 'SELECT p,  p.salary AS HIDDEN s ' .
             'FROM Doctrine\Tests\Models\Company\CompanyEmployee p ' .
@@ -148,7 +151,7 @@ class GH8011Test extends OrmFunctionalTestCase
         $this->assertEquals('Benjamin E.', $result[1]->getName());
     }
 
-    public function testOrderWithArithmeticExpressionWithResultVariableAndSingleValuedPathExpression2()
+    public function testOrderWithArithmeticExpressionWithResultVariableAndSingleValuedPathExpression2(): void
     {
         $dql = 'SELECT p,  p.salary AS HIDDEN s ' .
             'FROM Doctrine\Tests\Models\Company\CompanyEmployee p ' .
@@ -162,7 +165,7 @@ class GH8011Test extends OrmFunctionalTestCase
         $this->assertEquals('Benjamin E.', $result[1]->getName());
     }
 
-    public function testOrderWithArithmeticExpressionWithSingleValuedPathExpressionAndResultVariable()
+    public function testOrderWithArithmeticExpressionWithSingleValuedPathExpressionAndResultVariable(): void
     {
         $dql = 'SELECT p,  p.salary AS HIDDEN s ' .
             'FROM Doctrine\Tests\Models\Company\CompanyEmployee p ' .
@@ -176,7 +179,7 @@ class GH8011Test extends OrmFunctionalTestCase
         $this->assertEquals('Benjamin E.', $result[1]->getName());
     }
 
-    public function generateFixture()
+    public function generateFixture(): void
     {
         $person1 = new CompanyEmployee();
         $person1->setName('Benjamin E.');
