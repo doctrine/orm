@@ -19,7 +19,7 @@ class GH8011Test extends OrmFunctionalTestCase
     protected function setUp(): void
     {
         $this->useModelSet('company');
-        
+
         parent::setUp();
 
         $this->generateFixture();
