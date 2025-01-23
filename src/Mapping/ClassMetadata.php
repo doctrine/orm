@@ -2197,6 +2197,8 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
      * Used for JOINED and SINGLE_TABLE inheritance mapping strategies.
      *
      * @param array<int|string, string> $map
+     *
+     * @throws MappingException
      */
     public function setDiscriminatorMap(array $map): void
     {
