@@ -2165,6 +2165,20 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
                 throw MappingException::invalidDiscriminatorColumnType($this->name, $columnDef['type']);
             }
 
+            if (isset($columnDef['enumType'])) {
+                if (! enum_exists($columnDef['enumType'])) {
+                    throw MappingException::nonEnumTypeMapped($this->name, $columnDef['fieldName'], $columnDef['enumType']);
+                }
+
+                if (
+                    defined('Doctrine\DBAL\Types\Types::ENUM')
+                    && $columnDef['type'] === Types::ENUM
+                    && ! isset($columnDef['options']['values'])
+                ) {
+                    $columnDef['options']['values'] = array_column($columnDef['enumType']::cases(), 'value');
+                }
+            }
+
             $this->discriminatorColumn = DiscriminatorColumnMapping::fromMappingArray($columnDef);
         }
     }
@@ -2200,6 +2214,16 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
                     return $value > 1;
                 }))),
             );
+        }
+
+        $values = $this->discriminatorColumn->options['values'] ?? null;
+
+        if ($values !== null) {
+            $diff = array_diff(array_keys($map), $values);
+
+            if ($diff !== []) {
+                throw MappingException::invalidEntriesInDiscriminatorMap(array_values($diff), $this->name, $this->discriminatorColumn->enumType);
+            }
         }
 
         foreach ($map as $value => $className) {
