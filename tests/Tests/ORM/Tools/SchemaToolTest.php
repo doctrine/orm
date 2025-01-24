@@ -38,6 +38,7 @@ use Doctrine\Tests\Models\Enums\Card;
 use Doctrine\Tests\Models\Enums\Suit;
 use Doctrine\Tests\Models\Forum\ForumAvatar;
 use Doctrine\Tests\Models\Forum\ForumUser;
+use Doctrine\Tests\Models\GH10288\GH10288People;
 use Doctrine\Tests\Models\NullDefault\NullDefaultColumn;
 use Doctrine\Tests\OrmTestCase;
 use PHPUnit\Framework\Attributes\Group;
@@ -253,6 +254,30 @@ class SchemaToolTest extends OrmTestCase
         $column = $table->getColumn('discriminator');
 
         self::assertEquals(255, $column->getLength());
+    }
+
+    public function testSetDiscriminatorColumnWithEnumType(): void
+    {
+        $em         = $this->getTestEntityManager();
+        $schemaTool = new SchemaTool($em);
+        $metadata   = $em->getClassMetadata(FirstEntity::class);
+
+        $metadata->setInheritanceType(ClassMetadata::INHERITANCE_TYPE_SINGLE_TABLE);
+        $metadata->setDiscriminatorColumn(['name' => 'discriminator', 'type' => 'enum', 'enumType' => GH10288People::class]);
+
+        $schema = $schemaTool->getSchemaFromMetadata([$metadata]);
+
+        self::assertTrue($schema->hasTable('first_entity'));
+        $table = $schema->getTable('first_entity');
+
+        self::assertTrue($table->hasColumn('discriminator'));
+        $column = $table->getColumn('discriminator');
+        self::assertEquals(GH10288People::class, $column->getPlatformOption('enumType'));
+        self::assertEquals([0 => 'boss', 1 => 'employee'], $column->getValues());
+
+        $this->expectException(MappingException::class);
+        $this->expectExceptionMessage("The entries 'user' in the discriminator map of class '" . FirstEntity::class . "' do not correspond to enum cases of '" . GH10288People::class . "'.");
+        $metadata->setDiscriminatorMap(['user' => CmsUser::class, 'employee' => CmsEmployee::class]);
     }
 
     public function testDerivedCompositeKey(): void
