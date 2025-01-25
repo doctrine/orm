@@ -1108,7 +1108,9 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
     {
         $schemaManager = $this->createSchemaManager();
         $platform      = $this->_em->getConnection()->getDatabasePlatform();
-        $tableName     = $table->getQuotedName($platform);
+        $tableName     = method_exists($table, 'getObjectName') ?
+            $table->getObjectName($platform)->toSQL($platform)
+            : $table->getQuotedName($platform);
 
         $this->dropTableIfExists($tableName);
         $schemaManager->createTable($table);
