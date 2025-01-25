@@ -24,6 +24,7 @@ use PHPUnit\Framework\Attributes\Group;
 
 use function assert;
 use function reset;
+use function sprintf;
 
 class DDC2138Test extends OrmFunctionalTestCase
 {
@@ -42,8 +43,8 @@ class DDC2138Test extends OrmFunctionalTestCase
 
         $table = $schema->getTable('users_followed_objects');
         assert($table instanceof DbalTable);
-        self::assertTrue($table->columnsAreIndexed(['object_id']));
-        self::assertTrue($table->columnsAreIndexed(['user_id']));
+        self::assertColumnIsIndexed($table, 'object_id');
+        self::assertColumnIsIndexed($table, 'user_id');
         $foreignKeys = $table->getForeignKeys();
         self::assertCount(1, $foreignKeys, 'user_id column has to have FK, but not object_id');
 
@@ -54,6 +55,19 @@ class DDC2138Test extends OrmFunctionalTestCase
         $localColumns = $fk->getLocalColumns();
         self::assertContains('user_id', $localColumns);
         self::assertCount(1, $localColumns);
+    }
+
+    private static function assertColumnIsIndexed(DbalTable $table, string $columnName): void
+    {
+        $columnsIsIndexed = false;
+        foreach ($table->getIndexes() as $index) {
+            if ($index->spansColumns([$columnName])) {
+                $columnsIsIndexed = true;
+                break;
+            }
+        }
+
+        self::assertTrue($columnsIsIndexed, sprintf('Column %s should be indexed.', $columnName));
     }
 }
 

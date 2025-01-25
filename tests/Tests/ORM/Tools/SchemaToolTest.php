@@ -65,7 +65,16 @@ class SchemaToolTest extends OrmTestCase
         $schema = $schemaTool->getSchemaFromMetadata($classes);
 
         self::assertTrue($schema->hasTable('cms_users'), 'Table cms_users should exist.');
-        self::assertTrue($schema->getTable('cms_users')->columnsAreIndexed(['username']), 'username column should be indexed.');
+
+        $usernameIsIndexed = false;
+        foreach ($schema->getTable('cms_users')->getIndexes() as $index) {
+            if ($index->spansColumns(['username'])) {
+                $usernameIsIndexed = true;
+                break;
+            }
+        }
+
+        self::assertTrue($usernameIsIndexed, 'username column should be indexed.');
     }
 
     public function testAttributeOptionsArgument(): void
