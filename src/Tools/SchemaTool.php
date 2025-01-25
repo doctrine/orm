@@ -37,6 +37,7 @@ use function current;
 use function implode;
 use function in_array;
 use function is_numeric;
+use function method_exists;
 use function strtolower;
 
 /**
@@ -729,7 +730,9 @@ class SchemaTool
                     && (($key->getForeignTableName() !== $foreignTableName)
                     || 0 < count(array_diff($key->getForeignColumns(), $foreignColumns)))
                 ) {
-                    $theJoinTable->removeForeignKey($fkName);
+                    method_exists($theJoinTable, 'dropForeignKey')
+                        ? $theJoinTable->dropForeignKey($fkName)
+                        : $theJoinTable->removeForeignKey($fkName);
                     break;
                 }
             }
