@@ -11,6 +11,7 @@ use Doctrine\DBAL\Schema\AbstractSchemaManager;
 use Doctrine\DBAL\Schema\Index;
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\DBAL\Schema\Table;
+use Doctrine\ORM\DbalCompatibility\Table as CompatibilityTable;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\AssociationMapping;
 use Doctrine\ORM\Mapping\ClassMetadata;
@@ -724,11 +725,12 @@ class SchemaTool
             && ($foreignTableName !== $addedFks[$compositeName]['foreignTableName']
             || 0 < count(array_diff($foreignColumns, $addedFks[$compositeName]['foreignColumns'])))
         ) {
-            foreach ($theJoinTable->getForeignKeys() as $fkName => $key) {
+            $theCompatibilityTable = new CompatibilityTable($theJoinTable);
+            foreach ($theCompatibilityTable->getForeignKeys() as $fkName => $key) {
                 if (
-                    count(array_diff($key->getLocalColumns(), $localColumns)) === 0
-                    && (($key->getForeignTableName() !== $foreignTableName)
-                    || 0 < count(array_diff($key->getForeignColumns(), $foreignColumns)))
+                    count(array_diff($key->getReferencingColumns($this->platform), $localColumns)) === 0
+                    && (($key->getReferencedTableName($this->platform) !== $foreignTableName)
+                    || 0 < count(array_diff($key->getReferencedColumns($this->platform), $foreignColumns)))
                 ) {
                     method_exists($theJoinTable, 'dropForeignKey')
                         ? $theJoinTable->dropForeignKey($fkName)

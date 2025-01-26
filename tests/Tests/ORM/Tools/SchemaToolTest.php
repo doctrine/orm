@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Tools;
 
 use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\DbalCompatibility\ForeignKey;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
@@ -294,17 +295,20 @@ class SchemaToolTest extends OrmTestCase
         self::assertCount(2, $childTableForeignKeys);
 
         $expectedColumns = [
-            'joined_derived_identity' => [['keyPart1_id'], ['id']],
-            'joined_derived_root'     => [['keyPart1_id', 'keyPart2'], ['keyPart1_id', 'keyPart2']],
+            '"JOINED_DERIVED_IDENTITY"' => [['keyPart1_id'], ['id']],
+            '"JOINED_DERIVED_ROOT"'     => [['keyPart1_id', 'keyPart2'], ['keyPart1_id', 'keyPart2']],
         ];
 
+        $platform = $em->getConnection()->getDatabasePlatform();
+
         foreach ($childTableForeignKeys as $foreignKey) {
-            self::assertArrayHasKey($foreignKey->getForeignTableName(), $expectedColumns);
+            $compatForeignKey = new ForeignKey($foreignKey);
+            self::assertArrayHasKey($compatForeignKey->getReferencedTableName($platform), $expectedColumns);
 
-            [$localColumns, $foreignColumns] = $expectedColumns[$foreignKey->getForeignTableName()];
+            [$localColumns, $foreignColumns] = $expectedColumns[$compatForeignKey->getReferencedTableName($platform)];
 
-            self::assertSame($localColumns, $foreignKey->getLocalColumns());
-            self::assertSame($foreignColumns, $foreignKey->getForeignColumns());
+            self::assertSame($localColumns, $compatForeignKey->getReferencingColumns($platform));
+            self::assertSame($foreignColumns, $compatForeignKey->getReferencedColumns($platform));
         }
     }
 
