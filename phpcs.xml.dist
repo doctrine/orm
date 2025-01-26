@@ -16,8 +16,8 @@
     <file>src</file>
     <file>tests</file>
 
-    <exclude-pattern>*/tests/Tests/Proxies/__CG__*</exclude-pattern>
-    <exclude-pattern>*/tests/Tests/ORM/Tools/Export/export/*</exclude-pattern>
+    <exclude-pattern>*/tests/Doctrine/Tests/Proxies/__CG__*</exclude-pattern>
+    <exclude-pattern>*/tests/Doctrine/Tests/ORM/Tools/Export/export/*</exclude-pattern>
 
     <rule ref="Doctrine">
         <exclude name="SlevomatCodingStandard.Exceptions.ReferenceThrowableOnly.ReferencedGeneralException"/>
