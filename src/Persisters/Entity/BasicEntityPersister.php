@@ -1560,7 +1560,15 @@ class BasicEntityPersister implements EntityPersister
         $tableAlias   = $this->getSQLTableAlias($class->name, $root);
         $fieldMapping = $class->fieldMappings[$field];
         $sql          = sprintf('%s.%s', $tableAlias, $this->quoteStrategy->getColumnName($field, $class, $this->platform));
-        $columnAlias  = $this->getSQLColumnAlias($fieldMapping['columnName']);
+
+        $columnAlias = null;
+        if ($this->currentPersisterContext->rsm->hasColumnAliasByField($alias, $field)) {
+            $columnAlias = $this->currentPersisterContext->rsm->getColumnAliasByField($alias, $field);
+        }
+
+        if ($columnAlias === null) {
+            $columnAlias = $this->getSQLColumnAlias($fieldMapping['columnName']);
+        }
 
         $this->currentPersisterContext->rsm->addFieldResult($alias, $columnAlias, $field);
         if (! empty($fieldMapping['enumType'])) {

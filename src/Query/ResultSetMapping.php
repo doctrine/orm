@@ -70,6 +70,13 @@ class ResultSetMapping
     public $fieldMappings = [];
 
     /**
+     * Map field names for each class to alias
+     *
+     * @var array<class-string, array<string, array<string, string>>>
+     */
+    public $columnAliasMappings = [];
+
+    /**
      * Maps column names in the result set to the alias/field name to use in the mapped result.
      *
      * @ignore
@@ -335,13 +342,30 @@ class ResultSetMapping
         // column name => alias of owner
         $this->columnOwnerMap[$columnName] = $alias;
         // field name => class name of declaring class
-        $this->declaringClasses[$columnName] = $declaringClass ?: $this->aliasMap[$alias];
+        $declaringClass                      = $declaringClass ?: $this->aliasMap[$alias];
+        $this->declaringClasses[$columnName] = $declaringClass;
+
+        $this->columnAliasMappings[$declaringClass][$alias][$fieldName] = $columnName;
 
         if (! $this->isMixed && $this->scalarMappings) {
             $this->isMixed = true;
         }
 
         return $this;
+    }
+
+    public function hasColumnAliasByField(string $alias, string $fieldName): bool
+    {
+        $declaringClass = $this->aliasMap[$alias];
+
+        return isset($this->columnAliasMappings[$declaringClass][$alias][$fieldName]);
+    }
+
+    public function getColumnAliasByField(string $alias, string $fieldName): string
+    {
+        $declaringClass = $this->aliasMap[$alias];
+
+        return $this->columnAliasMappings[$declaringClass][$alias][$fieldName];
     }
 
     /**

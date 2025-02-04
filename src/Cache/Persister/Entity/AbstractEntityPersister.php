@@ -22,9 +22,11 @@ use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\Persisters\Entity\EntityPersister;
 use Doctrine\ORM\Proxy\DefaultProxyClassNameResolver;
+use Doctrine\ORM\Query\FilterCollection;
 use Doctrine\ORM\UnitOfWork;
 
 use function array_merge;
+use function func_get_args;
 use function serialize;
 use function sha1;
 
@@ -62,6 +64,9 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
     /** @var Cache */
     protected $cache;
 
+    /** @var FilterCollection */
+    protected $filters;
+
     /** @var CacheLogger|null */
     protected $cacheLogger;
 
@@ -91,6 +96,7 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
         $this->region          = $region;
         $this->persister       = $persister;
         $this->cache           = $em->getCache();
+        $this->filters         = $em->getFilters();
         $this->regionName      = $region->getName();
         $this->uow             = $em->getUnitOfWork();
         $this->metadataFactory = $em->getMetadataFactory();
@@ -261,7 +267,7 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
             ? $this->persister->expandCriteriaParameters($criteria)
             : $this->persister->expandParameters($criteria);
 
-        return sha1($query . serialize($params) . serialize($orderBy) . $limit . $offset);
+        return sha1($query . serialize($params) . serialize($orderBy) . $limit . $offset . $this->filters->getHash());
     }
 
     /**
@@ -524,7 +530,7 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
         }
 
         $ownerId = $this->uow->getEntityIdentifier($collection->getOwner());
-        $key     = $this->buildCollectionCacheKey($assoc, $ownerId);
+        $key     = $this->buildCollectionCacheKey($assoc, $ownerId, $this->filters->getHash());
         $list    = $persister->loadCollectionCache($collection, $key);
 
         if ($list !== null) {
@@ -559,7 +565,7 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
         }
 
         $ownerId = $this->uow->getEntityIdentifier($collection->getOwner());
-        $key     = $this->buildCollectionCacheKey($assoc, $ownerId);
+        $key     = $this->buildCollectionCacheKey($assoc, $ownerId, $this->filters->getHash());
         $list    = $persister->loadCollectionCache($collection, $key);
 
         if ($list !== null) {
@@ -611,12 +617,15 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
      *
      * @return CollectionCacheKey
      */
-    protected function buildCollectionCacheKey(array $association, $ownerId)
+    protected function buildCollectionCacheKey(array $association, $ownerId/*, string $filterHash */)
     {
+        $filterHash = (string) (func_get_args()[2] ?? ''); // todo: move to argument in next major release
+
         return new CollectionCacheKey(
             $this->metadataFactory->getMetadataFor($association['sourceEntity'])->rootEntityName,
             $association['fieldName'],
-            $ownerId
+            $ownerId,
+            $filterHash
         );
     }
 }

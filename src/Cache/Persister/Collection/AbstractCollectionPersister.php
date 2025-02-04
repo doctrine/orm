@@ -19,6 +19,7 @@ use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\Persisters\Collection\CollectionPersister;
 use Doctrine\ORM\Proxy\DefaultProxyClassNameResolver;
+use Doctrine\ORM\Query\FilterCollection;
 use Doctrine\ORM\UnitOfWork;
 
 use function array_values;
@@ -55,6 +56,9 @@ abstract class AbstractCollectionPersister implements CachedCollectionPersister
     /** @var string */
     protected $regionName;
 
+    /** @var FilterCollection */
+    protected $filters;
+
     /** @var CollectionHydrator */
     protected $hydrator;
 
@@ -76,6 +80,7 @@ abstract class AbstractCollectionPersister implements CachedCollectionPersister
         $this->region          = $region;
         $this->persister       = $persister;
         $this->association     = $association;
+        $this->filters         = $em->getFilters();
         $this->regionName      = $region->getName();
         $this->uow             = $em->getUnitOfWork();
         $this->metadataFactory = $em->getMetadataFactory();
@@ -189,7 +194,7 @@ abstract class AbstractCollectionPersister implements CachedCollectionPersister
     public function count(PersistentCollection $collection)
     {
         $ownerId = $this->uow->getEntityIdentifier($collection->getOwner());
-        $key     = new CollectionCacheKey($this->sourceEntity->rootEntityName, $this->association['fieldName'], $ownerId);
+        $key     = new CollectionCacheKey($this->sourceEntity->rootEntityName, $this->association['fieldName'], $ownerId, $this->filters->getHash());
         $entry   = $this->region->get($key);
 
         if ($entry !== null) {
@@ -241,7 +246,8 @@ abstract class AbstractCollectionPersister implements CachedCollectionPersister
         $key = new CollectionCacheKey(
             $this->sourceEntity->rootEntityName,
             $this->association['fieldName'],
-            $this->uow->getEntityIdentifier($collection->getOwner())
+            $this->uow->getEntityIdentifier($collection->getOwner()),
+            $this->filters->getHash()
         );
 
         $this->region->evict($key);
