@@ -12,6 +12,7 @@ use Doctrine\ORM\Query\AST\Literal;
 use Doctrine\ORM\Query\AST\PathExpression;
 use Doctrine\ORM\Query\AST\SelectStatement;
 use Doctrine\ORM\Query\AST\WhereClause;
+use Doctrine\ORM\Query\SqlOutputWalker;
 use Doctrine\ORM\Query\SqlWalker;
 use Doctrine\ORM\Query\TreeWalkerAdapter;
 use Doctrine\ORM\Tools\Pagination\Paginator;
@@ -643,7 +644,7 @@ class PaginationTest extends OrmFunctionalTestCase
         self::assertCount(2, $getCountQuery->invoke($paginator)->getParameters());
         self::assertCount(9, $paginator);
 
-        $query->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, SqlWalker::class);
+        $query->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, SqlOutputWalker::class);
 
         $paginator = new Paginator($query);
 
