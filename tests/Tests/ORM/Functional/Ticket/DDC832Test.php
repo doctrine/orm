@@ -42,14 +42,14 @@ class DDC832Test extends OrmFunctionalTestCase
         $platform = $this->_em->getConnection()->getDatabasePlatform();
 
         $sm = $this->createSchemaManager();
-        $sm->dropTable($platform->quoteIdentifier('TREE_INDEX'));
-        $sm->dropTable($platform->quoteIdentifier('INDEX'));
-        $sm->dropTable($platform->quoteIdentifier('LIKE'));
+        $sm->dropTable($platform->quoteSingleIdentifier('TREE_INDEX'));
+        $sm->dropTable($platform->quoteSingleIdentifier('INDEX'));
+        $sm->dropTable($platform->quoteSingleIdentifier('LIKE'));
 
         // DBAL 3
         if ($platform instanceof PostgreSQLPlatform && method_exists($platform, 'getIdentitySequenceName')) {
-            $sm->dropSequence($platform->quoteIdentifier('INDEX_id_seq'));
-            $sm->dropSequence($platform->quoteIdentifier('LIKE_id_seq'));
+            $sm->dropSequence($platform->quoteSingleIdentifier('INDEX_id_seq'));
+            $sm->dropSequence($platform->quoteSingleIdentifier('LIKE_id_seq'));
         }
     }
 
