@@ -30,6 +30,15 @@ class GH10450Test extends OrmTestCase
         yield 'Entity class that redeclares a protected field inherited from a base entity' => [GH10450EntityChildProtected::class];
         yield 'Entity class that redeclares a protected field inherited from a mapped superclass' => [GH10450MappedSuperclassChildProtected::class];
     }
+
+    public function testFieldsOfTransientClassesAreNotConsideredDuplicate(): void
+    {
+        $em = $this->getTestEntityManager();
+
+        $metadata = $em->getClassMetadata(GH10450Cat::class);
+
+        self::assertArrayHasKey('id', $metadata->fieldMappings);
+    }
 }
 
 #[ORM\Entity]
@@ -112,4 +121,27 @@ class GH10450MappedSuperclassChildProtected extends GH10450BaseMappedSuperclassP
 {
     #[ORM\Column(type: 'text', name: 'child')]
     protected string $field;
+}
+
+abstract class GH10450AbstractEntity
+{
+    #[ORM\Column(type: 'integer')]
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    protected int $id;
+}
+
+#[ORM\Entity]
+#[ORM\InheritanceType('SINGLE_TABLE')]
+#[ORM\DiscriminatorMap(['cat' => GH10450Cat::class])]
+#[ORM\DiscriminatorColumn(name: 'type')]
+abstract class GH10450Animal extends GH10450AbstractEntity
+{
+    #[ORM\Column(type: 'text', name: 'base')]
+    private string $field;
+}
+
+#[ORM\Entity]
+class GH10450Cat extends GH10450Animal
+{
 }

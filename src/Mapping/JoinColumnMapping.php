@@ -33,7 +33,7 @@ final class JoinColumnMapping implements ArrayAccess
      * @param array<string, mixed> $mappingArray
      * @phpstan-param array{
      *     name: string,
-     *     referencedColumnName: string,
+     *     referencedColumnName: string|null,
      *     unique?: bool|null,
      *     quoted?: bool|null,
      *     fieldName?: string|null,

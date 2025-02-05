@@ -15,6 +15,7 @@ use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\ORM\Query\Parameter;
 use Doctrine\ORM\Query\ParameterTypeInferer;
 use Doctrine\ORM\QueryBuilder;
+use Doctrine\ORM\QueryType;
 use Doctrine\Tests\Mocks\EntityManagerMock;
 use Doctrine\Tests\Models\Cache\State;
 use Doctrine\Tests\Models\CMS\CmsArticle;
@@ -23,6 +24,7 @@ use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\OrmTestCase;
 use InvalidArgumentException;
 use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\TestCase;
 
 use function array_filter;
 use function class_exists;
@@ -1325,5 +1327,26 @@ class QueryBuilderTest extends OrmTestCase
         self::assertEquals(Types::STRING, $qb->getParameter('test')->getType());
         self::assertEquals(100, $qb->getParameter('dcValue1')->getValue());
         self::assertEquals(Types::INTEGER, $qb->getParameter('dcValue1')->getType());
+    }
+
+    public function testType(): void
+    {
+        $qb = new class ($this->entityManager) extends QueryBuilder {
+            public function test(): void
+            {
+                TestCase::assertSame(QueryType::Select, $this->getType());
+
+                $this->delete();
+                TestCase::assertSame(QueryType::Delete, $this->getType());
+
+                $this->update();
+                TestCase::assertSame(QueryType::Update, $this->getType());
+
+                $this->select();
+                TestCase::assertSame(QueryType::Select, $this->getType());
+            }
+        };
+
+        $qb->test();
     }
 }

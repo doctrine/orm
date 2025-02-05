@@ -22,7 +22,12 @@ trait ReflectionBasedDriver
      */
     private function isRepeatedPropertyDeclaration(ReflectionProperty $property, ClassMetadata $metadata): bool
     {
+        /** @var class-string $declaringClass */
         $declaringClass = $property->class;
+
+        if ($this->isTransient($declaringClass)) {
+            return isset($metadata->fieldMappings[$property->name]);
+        }
 
         if (
             isset($metadata->fieldMappings[$property->name]->declared)

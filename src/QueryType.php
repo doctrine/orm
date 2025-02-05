@@ -2,9 +2,8 @@
 
 declare(strict_types=1);
 
-namespace Doctrine\ORM\Internal;
+namespace Doctrine\ORM;
 
-/** @internal To be used inside the QueryBuilder only. */
 enum QueryType
 {
     case Select;
