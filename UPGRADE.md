@@ -124,6 +124,36 @@ WARNING: This was relaxed in ORM 3.2 when partial was re-allowed for array-hydra
   `Doctrine\ORM\Query::HINT_FORCE_PARTIAL_LOAD` are removed.
 - `Doctrine\ORM\EntityManager*::getPartialReference()` is removed.
 
+## BC BREAK: Enforce ArrayCollection Type on `\Doctrine\ORM\QueryBuilder::setParameters(ArrayCollection $parameters)` 
+
+The argument $parameters can no longer be a key=>value array. Only ArrayCollection types are allowed.
+
+### Before
+
+```php
+$qb = $em->createQueryBuilder()
+    ->select('u')
+    ->from('User', 'u')
+    ->where('u.id = :user_id1 OR u.id = :user_id2')
+    ->setParameter(array(
+        'user_id1' => 1,
+        'user_id2' => 2
+    ));
+```
+
+### After
+
+```php
+$qb = $em->createQueryBuilder()
+    ->select('u')
+    ->from('User', 'u')
+    ->where('u.id = :user_id1 OR u.id = :user_id2')
+    ->setParameter(new ArrayCollection(array(
+        new Parameter('user_id1', 1),
+        new Parameter('user_id2', 2)
+    )));
+```
+
 ## BC BREAK: `Doctrine\ORM\Persister\Entity\EntityPersister::executeInserts()` return type changed to `void`
 
 Implementors should adapt to the new signature, and should call

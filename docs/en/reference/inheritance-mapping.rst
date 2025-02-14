@@ -16,7 +16,7 @@ is common to multiple entity classes.
 Mapped superclasses, just as regular, non-mapped classes, can
 appear in the middle of an otherwise mapped inheritance hierarchy
 (through Single Table Inheritance or Class Table Inheritance). They
-are not query-able, and need not have an ``#[Id]`` property.
+are not query-able, and do not require an ``#[Id]`` property.
 
 No database table will be created for a mapped superclass itself,
 only for entity classes inheriting from it. That  implies that a

@@ -52,6 +52,7 @@ use Doctrine\Tests\OrmTestCase;
 use DoctrineGlobalArticle;
 use LogicException;
 use PHPUnit\Framework\Attributes\Group as TestGroup;
+use PHPUnit\Framework\Attributes\WithoutErrorHandler;
 use ReflectionClass;
 use stdClass;
 
@@ -1075,6 +1076,7 @@ class ClassMetadataTest extends OrmTestCase
         $metadata->addLifecycleCallback('foo', 'bar');
     }
 
+    #[WithoutErrorHandler]
     public function testGettingAnFQCNForNullIsDeprecated(): void
     {
         $metadata = new ClassMetadata(self::class);
@@ -1113,6 +1115,7 @@ class ClassMetadataTest extends OrmTestCase
         );
     }
 
+    #[WithoutErrorHandler]
     public function testDiscriminatorMapWithSameClassMultipleTimesDeprecated(): void
     {
         $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/issues/3519');

@@ -61,10 +61,14 @@ final class ManyToManyOwningSideMapping extends ToManyOwningSideMapping implemen
     {
         if (isset($mappingArray['joinTable']['joinColumns'])) {
             foreach ($mappingArray['joinTable']['joinColumns'] as $key => $joinColumn) {
+                if (empty($joinColumn['referencedColumnName'])) {
+                    $mappingArray['joinTable']['joinColumns'][$key]['referencedColumnName'] = $namingStrategy->referenceColumnName();
+                }
+
                 if (empty($joinColumn['name'])) {
                     $mappingArray['joinTable']['joinColumns'][$key]['name'] = $namingStrategy->joinKeyColumnName(
                         $mappingArray['sourceEntity'],
-                        $joinColumn['referencedColumnName'] ?? null,
+                        $joinColumn['referencedColumnName'] ?? $namingStrategy->referenceColumnName(),
                     );
                 }
             }
@@ -72,10 +76,14 @@ final class ManyToManyOwningSideMapping extends ToManyOwningSideMapping implemen
 
         if (isset($mappingArray['joinTable']['inverseJoinColumns'])) {
             foreach ($mappingArray['joinTable']['inverseJoinColumns'] as $key => $joinColumn) {
+                if (empty($joinColumn['referencedColumnName'])) {
+                    $mappingArray['joinTable']['inverseJoinColumns'][$key]['referencedColumnName'] = $namingStrategy->referenceColumnName();
+                }
+
                 if (empty($joinColumn['name'])) {
                     $mappingArray['joinTable']['inverseJoinColumns'][$key]['name'] = $namingStrategy->joinKeyColumnName(
                         $mappingArray['targetEntity'],
-                        $joinColumn['referencedColumnName'] ?? null,
+                        $joinColumn['referencedColumnName'] ?? $namingStrategy->referenceColumnName(),
                     );
                 }
             }

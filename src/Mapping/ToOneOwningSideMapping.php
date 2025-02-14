@@ -107,6 +107,10 @@ abstract class ToOneOwningSideMapping extends OwningSideMapping implements ToOne
                 if (empty($joinColumn['name'])) {
                     $mappingArray['joinColumns'][$index]['name'] = $namingStrategy->joinColumnName($mappingArray['fieldName'], $name);
                 }
+
+                if (empty($joinColumn['referencedColumnName'])) {
+                    $mappingArray['joinColumns'][$index]['referencedColumnName'] = $namingStrategy->referenceColumnName();
+                }
             }
         }
 

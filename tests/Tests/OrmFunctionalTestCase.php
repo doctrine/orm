@@ -614,7 +614,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
         }
 
         if (isset($this->_usedModelSets['directorytree'])) {
-            $conn->executeStatement('DELETE FROM ' . $platform->quoteIdentifier('file'));
+            $conn->executeStatement('DELETE FROM ' . $platform->quoteSingleIdentifier('file'));
             // MySQL doesn't know deferred deletions therefore only executing the second query gives errors.
             $conn->executeStatement('DELETE FROM Directory WHERE parentDirectory_id IS NOT NULL');
             $conn->executeStatement('DELETE FROM Directory');
@@ -707,17 +707,17 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             $conn->executeStatement(
                 sprintf(
                     'UPDATE %s SET %s = NULL',
-                    $platform->quoteIdentifier('quote-address'),
-                    $platform->quoteIdentifier('user-id'),
+                    $platform->quoteSingleIdentifier('quote-address'),
+                    $platform->quoteSingleIdentifier('user-id'),
                 ),
             );
 
-            $conn->executeStatement('DELETE FROM ' . $platform->quoteIdentifier('quote-users-groups'));
-            $conn->executeStatement('DELETE FROM ' . $platform->quoteIdentifier('quote-group'));
-            $conn->executeStatement('DELETE FROM ' . $platform->quoteIdentifier('quote-phone'));
-            $conn->executeStatement('DELETE FROM ' . $platform->quoteIdentifier('quote-user'));
-            $conn->executeStatement('DELETE FROM ' . $platform->quoteIdentifier('quote-address'));
-            $conn->executeStatement('DELETE FROM ' . $platform->quoteIdentifier('quote-city'));
+            $conn->executeStatement('DELETE FROM ' . $platform->quoteSingleIdentifier('quote-users-groups'));
+            $conn->executeStatement('DELETE FROM ' . $platform->quoteSingleIdentifier('quote-group'));
+            $conn->executeStatement('DELETE FROM ' . $platform->quoteSingleIdentifier('quote-phone'));
+            $conn->executeStatement('DELETE FROM ' . $platform->quoteSingleIdentifier('quote-user'));
+            $conn->executeStatement('DELETE FROM ' . $platform->quoteSingleIdentifier('quote-address'));
+            $conn->executeStatement('DELETE FROM ' . $platform->quoteSingleIdentifier('quote-city'));
         }
 
         if (isset($this->_usedModelSets['vct_onetoone'])) {

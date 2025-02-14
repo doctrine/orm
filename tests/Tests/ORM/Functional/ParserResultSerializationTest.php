@@ -14,6 +14,7 @@ use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use Generator;
 use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\WithoutErrorHandler;
 use ReflectionMethod;
 use Symfony\Component\VarExporter\Instantiator;
 use Symfony\Component\VarExporter\VarExporter;
@@ -34,6 +35,7 @@ class ParserResultSerializationTest extends OrmFunctionalTestCase
 
     /** @param Closure(ParserResult): ParserResult $toSerializedAndBack */
     #[DataProvider('provideToSerializedAndBack')]
+    #[WithoutErrorHandler]
     public function testSerializeParserResultForQueryWithSqlWalker(Closure $toSerializedAndBack): void
     {
         $query = $this->_em
