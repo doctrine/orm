@@ -2,10 +2,21 @@
 // phpcs:ignoreFile
 namespace Doctrine\Tests\Models\PropertyHooks;
 
-use DateTime;
+use Doctrine\DBAL\Types\Types;
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\Table;
 
+#[Entity]
+#[Table(name: 'property_hooks_user')]
 class User
 {
+    #[Id, GeneratedValue, Column(type: Types::INTEGER)]
+    public ?int $id;
+
+    #[Column(type: Types::STRING)]
     public string $first {
         set {
             if (strlen($value) === 0) {
@@ -15,6 +26,7 @@ class User
         }
     }
 
+    #[Column(type: Types::STRING)]
     public string $last {
         set {
             if (strlen($value) === 0) {
@@ -34,6 +46,7 @@ class User
         }
     }
 
+    #[Column(type: Types::STRING)]
     public string $language = 'de' {
         // Override the "read" action with arbitrary logic.
         get => strtoupper($this->language);
