@@ -16,11 +16,8 @@ use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Id\AbstractIdGenerator;
 use Doctrine\ORM\Mapping\PropertyAccessors\EmbeddablePropertyAccessor;
 use Doctrine\ORM\Mapping\PropertyAccessors\EnumPropertyAccessor;
-use Doctrine\ORM\Mapping\PropertyAccessors\ObjectCastPropertyAccessor;
 use Doctrine\ORM\Mapping\PropertyAccessors\PropertyAccessor;
-use Doctrine\ORM\Mapping\PropertyAccessors\RawValuePropertyAccessor;
-use Doctrine\ORM\Mapping\PropertyAccessors\ReadonlyAccessor;
-use Doctrine\ORM\Mapping\PropertyAccessors\TypedNoDefaultPropertyAccessor;
+use Doctrine\ORM\Mapping\PropertyAccessors\PropertyAccessorFactory;
 use Doctrine\Persistence\Mapping\ClassMetadata as PersistenceClassMetadata;
 use Doctrine\Persistence\Mapping\ReflectionService;
 use InvalidArgumentException;
@@ -62,8 +59,6 @@ use function str_replace;
 use function strtolower;
 use function trait_exists;
 use function trim;
-
-use const PHP_VERSION_ID;
 
 /**
  * A <tt>ClassMetadata</tt> instance holds all the object-relational mapping metadata
@@ -832,7 +827,7 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
         foreach ($this->embeddedClasses as $property => $embeddedClass) {
             if (isset($embeddedClass->declaredField)) {
                 assert($embeddedClass->originalField !== null);
-                $childAccessor = $this->createPropertyAccessor(
+                $childAccessor = PropertyAccessorFactory::createPropertyAccessor(
                     $this->embeddedClasses[$embeddedClass->declaredField]->class,
                     $embeddedClass->originalField,
                 );
@@ -846,7 +841,7 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
                 continue;
             }
 
-            $accessor = $this->createPropertyAccessor(
+            $accessor = PropertyAccessorFactory::createPropertyAccessor(
                 $embeddedClass->declared ?? $this->name,
                 $property,
             );
@@ -859,7 +854,7 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
             if (isset($mapping->declaredField) && isset($parentAccessors[$mapping->declaredField])) {
                 assert($mapping->originalField !== null);
                 assert($mapping->originalClass !== null);
-                $accessor = $this->createPropertyAccessor($mapping->originalClass, $mapping->originalField);
+                $accessor = PropertyAccessorFactory::createPropertyAccessor($mapping->originalClass, $mapping->originalField);
 
                 if ($mapping->enumType !== null) {
                     $accessor = new EnumPropertyAccessor(
@@ -877,8 +872,8 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
             }
 
             $this->propertyAccessors[$field] = isset($mapping->declared)
-                ? $this->createPropertyAccessor($mapping->declared, $field)
-                : $this->createPropertyAccessor($this->name, $field);
+                ? PropertyAccessorFactory::createPropertyAccessor($mapping->declared, $field)
+                : PropertyAccessorFactory::createPropertyAccessor($this->name, $field);
 
             if ($mapping->enumType !== null) {
                 $this->propertyAccessors[$field] = new EnumPropertyAccessor(
@@ -890,8 +885,8 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
 
         foreach ($this->associationMappings as $field => $mapping) {
             $this->propertyAccessors[$field] = isset($mapping->declared)
-                ? $this->createPropertyAccessor($mapping->declared, $field)
-                : $this->createPropertyAccessor($this->name, $field);
+                ? PropertyAccessorFactory::createPropertyAccessor($mapping->declared, $field)
+                : PropertyAccessorFactory::createPropertyAccessor($this->name, $field);
         }
     }
 
@@ -2686,25 +2681,5 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
         }
 
         return $sequencePrefix;
-    }
-
-    /** @phpstan-param class-string $className */
-    private function createPropertyAccessor(string $className, string $propertyName): PropertyAccessor
-    {
-        $reflectionProperty = new ReflectionProperty($className, $propertyName);
-
-        $accessor = PHP_VERSION_ID >= 80400
-            ? RawValuePropertyAccessor::fromReflectionProperty($reflectionProperty)
-            : ObjectCastPropertyAccessor::fromReflectionProperty($reflectionProperty);
-
-        if ($reflectionProperty->hasType() && ! $reflectionProperty->getType()->allowsNull()) {
-            $accessor = new TypedNoDefaultPropertyAccessor($accessor, $reflectionProperty);
-        }
-
-        if ($reflectionProperty->isReadOnly()) {
-            $accessor = new ReadonlyAccessor($accessor, $reflectionProperty);
-        }
-
-        return $accessor;
     }
 }
