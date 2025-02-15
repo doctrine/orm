@@ -1,7 +1,20 @@
 # Upgrade to 3.4
 
+## Discriminator Map class duplicates
+
 Using the same class several times in a discriminator map is deprecated.
 In 4.0, this will be an error.
+
+## `Doctrine\ORM\Mapping\ClassMetadata::$reflFields` deprecated
+
+To better support property hooks and lazy proxies in the future, `$reflFields` had to
+be deprecated because we cannot use the PHP internal reflection API directly anymore.
+
+The property was changed from an array to an object of type `LegacyReflectionFields`
+that implements `ArrayAccess`.
+
+Use the new `Doctrine\ORM\Mapping\PropertyAccessors\PropertyAccessor` API and access
+through `Doctrine\ORM\Mapping\ClassMetadata::$propertyAccessors` instead.
 
 # Upgrade to 3.3
 
