@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Mapping\PropertyAccessors;
 
 use Doctrine\ORM\Mapping\PropertyAccessors\ObjectCastPropertyAccessor;
@@ -46,10 +48,12 @@ class ObjectCastPropertyAccessorTest extends OrmTestCase
 
 class ObjectClass
 {
+    /** @var string */
     public $property;
+    /** @var string */
     private $property2;
 
-    public function getProperty2()
+    public function getProperty2(): string
     {
         return $this->property2;
     }
@@ -57,9 +61,10 @@ class ObjectClass
 
 class ObjectClassInternalProxy implements InternalProxy
 {
+    /** @var string */
     public $property;
-    public $isInitialized = false;
-    public $counter = 0;
+    public bool $isInitialized = false;
+    public int $counter        = 0;
 
     public function __setInitialized(bool $initialized): void
     {
