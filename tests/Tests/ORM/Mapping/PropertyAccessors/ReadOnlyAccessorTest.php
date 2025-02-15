@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Mapping\PropertyAccessors;
 
 use Doctrine\ORM\Mapping\PropertyAccessors\PropertyAccessorFactory;
