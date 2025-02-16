@@ -1,0 +1,117 @@
+{
+    "active": true,
+    "name": "Object Relational Mapper",
+    "shortName": "ORM",
+    "slug": "orm",
+    "docsSlug": "doctrine-orm",
+    "versions": [
+        {
+            "name": "4.0",
+            "branchName": "4.0.x",
+            "slug": "latest",
+            "upcoming": true
+        },
+        {
+            "name": "3.4",
+            "branchName": "3.4.x",
+            "slug": "3.4",
+            "upcoming": true
+        },
+        {
+            "name": "3.3",
+            "branchName": "3.3.x",
+            "slug": "3.3",
+            "current": true
+        },
+        {
+            "name": "3.2",
+            "branchName": "3.2.x",
+            "slug": "3.2",
+            "maintained": false
+        },
+        {
+            "name": "3.1",
+            "branchName": "3.1.x",
+            "slug": "3.1",
+            "maintained": false
+        },
+        {
+            "name": "3.0",
+            "branchName": "3.0.x",
+            "slug": "3.0",
+            "maintained": false
+        },
+        {
+            "name": "2.21",
+            "branchName": "2.21.x",
+            "slug": "2.21",
+            "upcoming": true
+        },
+        {
+            "name": "2.20",
+            "branchName": "2.20.x",
+            "slug": "2.20",
+            "maintained": true
+        },
+        {
+            "name": "2.19",
+            "branchName": "2.19.x",
+            "slug": "2.19",
+            "maintained": false
+        },
+        {
+            "name": "2.18",
+            "branchName": "2.18.x",
+            "slug": "2.18",
+            "maintained": false
+        },
+        {
+            "name": "2.17",
+            "branchName": "2.17.x",
+            "slug": "2.17",
+            "maintained": false
+        },
+        {
+            "name": "2.16",
+            "branchName": "2.16.x",
+            "slug": "2.16",
+            "maintained": false
+        },
+        {
+            "name": "2.15",
+            "branchName": "2.15.x",
+            "slug": "2.15",
+            "maintained": false
+        },
+        {
+            "name": "2.14",
+            "branchName": "2.14.x",
+            "slug": "2.14",
+            "maintained": false
+        },
+        {
+            "name": "2.13",
+            "branchName": "2.13.x",
+            "slug": "2.13",
+            "maintained": false
+        },
+        {
+            "name": "2.12",
+            "branchName": "2.12.x",
+            "slug": "2.12",
+            "maintained": false
+        },
+        {
+            "name": "2.11",
+            "branchName": "2.11.x",
+            "slug": "2.11",
+            "maintained": false
+        },
+        {
+            "name": "2.10",
+            "branchName": "2.10.x",
+            "slug": "2.10",
+            "maintained": false
+        }
+    ]
+}

@@ -1,0 +1,33 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Doctrine\Tests\Models\DirectoryTree;
+
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\Table;
+
+#[Table(name: '`file`')]
+#[Entity]
+class File extends AbstractContentItem
+{
+    /** @var string */
+    #[Column(type: 'string', length: 255)]
+    protected $extension = 'html';
+
+    public function __construct(Directory|null $parent = null)
+    {
+        parent::__construct($parent);
+    }
+
+    public function getExtension(): string
+    {
+        return $this->extension;
+    }
+
+    public function setExtension(string $ext): void
+    {
+        $this->extension = $ext;
+    }
+}

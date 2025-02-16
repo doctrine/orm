@@ -63,7 +63,7 @@ This has several benefits:
 - The API is much simpler than the usual ``ResultSetMapping`` API.
 
 One downside is that the builder API does not yet support entities
-with inheritance hierachies.
+with inheritance hierarchies.
 
 .. code-block:: php
 
@@ -71,7 +71,7 @@ with inheritance hierachies.
 
     use Doctrine\ORM\Query\ResultSetMappingBuilder;
 
-    $sql = "SELECT u.id, u.name, a.id AS address_id, a.street, a.city " . 
+    $sql = "SELECT u.id, u.name, a.id AS address_id, a.street, a.city " .
            "FROM users u INNER JOIN address a ON u.address_id = a.id";
 
     $rsm = new ResultSetMappingBuilder($entityManager);
@@ -80,9 +80,7 @@ with inheritance hierachies.
 
 The builder extends the ``ResultSetMapping`` class and as such has all the functionality of it as well.
 
-.. versionadded:: 2.4
-
-Starting with Doctrine ORM 2.4 you can generate the ``SELECT`` clause
+The ``SELECT`` clause can be generated
 from a ``ResultSetMappingBuilder``. You can either cast the builder
 object to ``(string)`` and the DQL aliases are used as SQL table aliases
 or use the ``generateSelectClause($tableAliases)`` method and pass
@@ -92,7 +90,7 @@ a mapping from DQL alias (key) to SQL alias (value)
 
     <?php
 
-    $selectClause = $builder->generateSelectClause(array(
+    $selectClause = $rsm->generateSelectClause(array(
         'u' => 't1',
         'g' => 't2'
     ));
@@ -252,6 +250,40 @@ The first parameter is the name of the column in the SQL result set
 and the second parameter is the result alias under which the value
 of the column will be placed in the transformed Doctrine result.
 
+Special case: DTOs
+...................
+
+You can also use ``ResultSetMapping`` to map the results of a native SQL
+query to a DTO (Data Transfer Object). This is done by adding scalar
+results for each argument of the DTO's constructor, then filling the
+``newObjectMappings`` property of the ``ResultSetMapping`` with
+information about where to map each scalar result:
+
+.. code-block:: php
+
+   <?php
+
+    $rsm = new ResultSetMapping();
+    $rsm->addScalarResult('name', 1, 'string');
+    $rsm->addScalarResult('email', 2, 'string');
+    $rsm->addScalarResult('city', 3, 'string');
+    $rsm->newObjectMappings['name']  = [
+        'className' => CmsUserDTO::class,
+        'objIndex'  => 0, // a result can contain many DTOs, this is the index of the DTO to map to
+        'argIndex'  => 0, // each scalar result can be mapped to a different argument of the DTO constructor
+    ];
+    $rsm->newObjectMappings['email'] = [
+        'className' => CmsUserDTO::class,
+        'objIndex'  => 0,
+        'argIndex'  => 1,
+    ];
+    $rsm->newObjectMappings['city']  = [
+        'className' => CmsUserDTO::class,
+        'objIndex'  => 0,
+        'argIndex'  => 2,
+    ];
+
+
 Meta results
 ~~~~~~~~~~~~
 
@@ -267,7 +299,7 @@ detail:
     <?php
     /**
      * Adds a meta column (foreign key or discriminator column) to the result set.
-     * 
+     *
      * @param string  $alias
      * @param string  $columnAlias
      * @param string  $columnName
@@ -322,10 +354,10 @@ entity.
     $rsm->addEntityResult('User', 'u');
     $rsm->addFieldResult('u', 'id', 'id');
     $rsm->addFieldResult('u', 'name', 'name');
-    
+
     $query = $this->_em->createNativeQuery('SELECT id, name FROM users WHERE name = ?', $rsm);
     $query->setParameter(1, 'romanb');
-    
+
     $users = $query->getResult();
 
 The result would look like this:
@@ -358,10 +390,10 @@ thus owns the foreign key.
     $rsm->addFieldResult('u', 'id', 'id');
     $rsm->addFieldResult('u', 'name', 'name');
     $rsm->addMetaResult('u', 'address_id', 'address_id');
-    
+
     $query = $this->_em->createNativeQuery('SELECT id, name, address_id FROM users WHERE name = ?', $rsm);
     $query->setParameter(1, 'romanb');
-    
+
     $users = $query->getResult();
 
 Foreign keys are used by Doctrine for lazy-loading purposes when
@@ -387,12 +419,12 @@ associations that are lazy.
     $rsm->addFieldResult('a', 'address_id', 'id');
     $rsm->addFieldResult('a', 'street', 'street');
     $rsm->addFieldResult('a', 'city', 'city');
-    
+
     $sql = 'SELECT u.id, u.name, a.id AS address_id, a.street, a.city FROM users u ' .
            'INNER JOIN address a ON u.address_id = a.id WHERE u.name = ?';
     $query = $this->_em->createNativeQuery($sql, $rsm);
     $query->setParameter(1, 'romanb');
-    
+
     $users = $query->getResult();
 
 In this case the nested entity ``Address`` is registered with the
@@ -422,10 +454,10 @@ to map the hierarchy (both use a discriminator column).
     $rsm->addFieldResult('u', 'name', 'name');
     $rsm->addMetaResult('u', 'discr', 'discr'); // discriminator column
     $rsm->setDiscriminatorColumn('u', 'discr');
-    
+
     $query = $this->_em->createNativeQuery('SELECT id, name, discr FROM users WHERE name = ?', $rsm);
     $query->setParameter(1, 'romanb');
-    
+
     $users = $query->getResult();
 
 Note that in the case of Class Table Inheritance, an example as
@@ -433,473 +465,3 @@ above would result in partial objects if any objects in the result
 are actually a subtype of User. When using DQL, Doctrine
 automatically includes the necessary joins for this mapping
 strategy but with native SQL it is your responsibility.
-
-Named Native Query
-------------------
-
-You can also map a native query using a named native query mapping.
-
-To achieve that, you must describe the SQL resultset structure
-using named native query (and sql resultset mappings if is a several resultset mappings).
-
-Like named query, a named native query can be defined at class level or in a XML or YAML file.
-
-
-A resultSetMapping parameter is defined in @NamedNativeQuery,
-it represents the name of a defined @SqlResultSetMapping.
-
-.. configuration-block::
-
-    .. code-block:: php
-
-        <?php
-        namespace MyProject\Model;
-        /**
-         * @NamedNativeQueries({
-         *      @NamedNativeQuery(
-         *          name            = "fetchMultipleJoinsEntityResults",
-         *          resultSetMapping= "mappingMultipleJoinsEntityResults",
-         *          query           = "SELECT u.id AS u_id, u.name AS u_name, u.status AS u_status, a.id AS a_id, a.zip AS a_zip, a.country AS a_country, COUNT(p.phonenumber) AS numphones FROM users u INNER JOIN addresses a ON u.id = a.user_id INNER JOIN phonenumbers p ON u.id = p.user_id GROUP BY u.id, u.name, u.status, u.username, a.id, a.zip, a.country ORDER BY u.username"
-         *      ),
-         * })
-         * @SqlResultSetMappings({
-         *      @SqlResultSetMapping(
-         *          name    = "mappingMultipleJoinsEntityResults",
-         *          entities= {
-         *              @EntityResult(
-         *                  entityClass = "__CLASS__",
-         *                  fields      = {
-         *                      @FieldResult(name = "id",       column="u_id"),
-         *                      @FieldResult(name = "name",     column="u_name"),
-         *                      @FieldResult(name = "status",   column="u_status"),
-         *                  }
-         *              ),
-         *              @EntityResult(
-         *                  entityClass = "Address",
-         *                  fields      = {
-         *                      @FieldResult(name = "id",       column="a_id"),
-         *                      @FieldResult(name = "zip",      column="a_zip"),
-         *                      @FieldResult(name = "country",  column="a_country"),
-         *                  }
-         *              )
-         *          },
-         *          columns = {
-         *              @ColumnResult("numphones")
-         *          }
-         *      )
-         *})
-         */
-         class User
-        {
-            /** @Id @Column(type="integer") @GeneratedValue */
-            public $id;
-
-            /** @Column(type="string", length=50, nullable=true) */
-            public $status;
-
-            /** @Column(type="string", length=255, unique=true) */
-            public $username;
-
-            /** @Column(type="string", length=255) */
-            public $name;
-
-            /** @OneToMany(targetEntity="Phonenumber") */
-            public $phonenumbers;
-
-            /** @OneToOne(targetEntity="Address") */
-            public $address;
-
-            // ....
-        }
-
-    .. code-block:: xml
-
-        <doctrine-mapping>
-            <entity name="MyProject\Model\User">
-                <named-native-queries>
-                    <named-native-query name="fetchMultipleJoinsEntityResults" result-set-mapping="mappingMultipleJoinsEntityResults">
-                        <query>SELECT u.id AS u_id, u.name AS u_name, u.status AS u_status, a.id AS a_id, a.zip AS a_zip, a.country AS a_country, COUNT(p.phonenumber) AS numphones FROM users u INNER JOIN addresses a ON u.id = a.user_id INNER JOIN phonenumbers p ON u.id = p.user_id GROUP BY u.id, u.name, u.status, u.username, a.id, a.zip, a.country ORDER BY u.username</query>
-                    </named-native-query>
-                </named-native-queries>
-                <sql-result-set-mappings>
-                    <sql-result-set-mapping name="mappingMultipleJoinsEntityResults">
-                        <entity-result entity-class="__CLASS__">
-                            <field-result name="id" column="u_id"/>
-                            <field-result name="name" column="u_name"/>
-                            <field-result name="status" column="u_status"/>
-                        </entity-result>
-                        <entity-result entity-class="Address">
-                            <field-result name="id" column="a_id"/>
-                            <field-result name="zip" column="a_zip"/>
-                            <field-result name="country" column="a_country"/>
-                        </entity-result>
-                        <column-result name="numphones"/>
-                    </sql-result-set-mapping>
-                </sql-result-set-mappings>
-            </entity>
-        </doctrine-mapping>
-    .. code-block:: yaml
-
-        MyProject\Model\User:
-          type: entity
-          namedNativeQueries:
-            fetchMultipleJoinsEntityResults:
-              name: fetchMultipleJoinsEntityResults
-              resultSetMapping: mappingMultipleJoinsEntityResults
-              query: SELECT u.id AS u_id, u.name AS u_name, u.status AS u_status, a.id AS a_id, a.zip AS a_zip, a.country AS a_country, COUNT(p.phonenumber) AS numphones FROM users u INNER JOIN addresses a ON u.id = a.user_id INNER JOIN phonenumbers p ON u.id = p.user_id GROUP BY u.id, u.name, u.status, u.username, a.id, a.zip, a.country ORDER BY u.username
-          sqlResultSetMappings:
-            mappingMultipleJoinsEntityResults:
-              name: mappingMultipleJoinsEntityResults
-              columnResult:
-                0:
-                  name: numphones
-              entityResult:
-                0:
-                  entityClass: __CLASS__
-                  fieldResult:
-                    0:
-                      name: id
-                      column: u_id
-                    1:
-                      name: name
-                      column: u_name
-                    2:
-                      name: status
-                      column: u_status
-                1:
-                  entityClass: Address
-                  fieldResult:
-                    0:
-                      name: id
-                      column: a_id
-                    1:
-                      name: zip
-                      column: a_zip
-                    2:
-                      name: country
-                      column: a_country
-
-
-Things to note:
-    - The resultset mapping declares the entities retrieved by this native query.
-    - Each field of the entity is bound to a SQL alias (or column name).
-    - All fields of the entity including the ones of subclasses
-      and the foreign key columns of related entities have to be present in the SQL query.
-    - Field definitions are optional provided that they map to the same
-      column name as the one declared on the class property.
-    - ``__CLASS__`` is an alias for the mapped class
-
-
-In the above example,
-the ``fetchJoinedAddress`` named query use the joinMapping result set mapping.
-This mapping returns 2 entities, User and Address, each property is declared and associated to a column name,
-actually the column name retrieved by the query.
-
-Let's now see an implicit declaration of the property / column.
-
-.. configuration-block::
-
-    .. code-block:: php
-
-        <?php
-        namespace MyProject\Model;
-            /**
-             * @NamedNativeQueries({
-             *      @NamedNativeQuery(
-             *          name                = "findAll",
-             *          resultSetMapping    = "mappingFindAll",
-             *          query               = "SELECT * FROM addresses"
-             *      ),
-             * })
-             * @SqlResultSetMappings({
-             *      @SqlResultSetMapping(
-             *          name    = "mappingFindAll",
-             *          entities= {
-             *              @EntityResult(
-             *                  entityClass = "Address"
-             *              )
-             *          }
-             *      )
-             * })
-             */
-           class Address
-           {
-                /**  @Id @Column(type="integer") @GeneratedValue */
-                public $id;
-
-                /** @Column() */
-                public $country;
-
-                /** @Column() */
-                public $zip;
-
-                /** @Column()*/
-                public $city;
-
-                // ....
-            }
-
-    .. code-block:: xml
-
-        <doctrine-mapping>
-            <entity name="MyProject\Model\Address">
-                <named-native-queries>
-                    <named-native-query name="findAll" result-set-mapping="mappingFindAll">
-                        <query>SELECT * FROM addresses</query>
-                    </named-native-query>
-                </named-native-queries>
-                <sql-result-set-mappings>
-                    <sql-result-set-mapping name="mappingFindAll">
-                        <entity-result entity-class="Address"/>
-                    </sql-result-set-mapping>
-                </sql-result-set-mappings>
-            </entity>
-        </doctrine-mapping>
-    .. code-block:: yaml
-
-        MyProject\Model\Address:
-          type: entity
-          namedNativeQueries:
-            findAll:
-              resultSetMapping: mappingFindAll
-              query: SELECT * FROM addresses
-          sqlResultSetMappings:
-            mappingFindAll:
-              name: mappingFindAll
-              entityResult:
-                address:
-                  entityClass: Address
-
-
-In this example, we only describe the entity member of the result set mapping.
-The property / column mappings is done using the entity mapping values.
-In this case the model property is bound to the model_txt column.
-If the association to a related entity involve a composite primary key,
-a @FieldResult element should be used for each foreign key column.
-The @FieldResult name is composed of the property name for the relationship,
-followed by a dot ("."), followed by the name or the field or property of the primary key.
-
-
-.. configuration-block::
-
-    .. code-block:: php
-
-        <?php
-        namespace MyProject\Model;
-            /**
-             * @NamedNativeQueries({
-             *      @NamedNativeQuery(
-             *          name            = "fetchJoinedAddress",
-             *          resultSetMapping= "mappingJoinedAddress",
-             *          query           = "SELECT u.id, u.name, u.status, a.id AS a_id, a.country AS a_country, a.zip AS a_zip, a.city AS a_city FROM users u INNER JOIN addresses a ON u.id = a.user_id WHERE u.username = ?"
-             *      ),
-             * })
-             * @SqlResultSetMappings({
-             *      @SqlResultSetMapping(
-             *          name    = "mappingJoinedAddress",
-             *          entities= {
-             *              @EntityResult(
-             *                  entityClass = "__CLASS__",
-             *                  fields      = {
-             *                      @FieldResult(name = "id"),
-             *                      @FieldResult(name = "name"),
-             *                      @FieldResult(name = "status"),
-             *                      @FieldResult(name = "address.id", column = "a_id"),
-             *                      @FieldResult(name = "address.zip", column = "a_zip"),
-             *                      @FieldResult(name = "address.city", column = "a_city"),
-             *                      @FieldResult(name = "address.country", column = "a_country"),
-             *                  }
-             *              )
-             *          }
-             *      )
-             * })
-             */
-            class User
-            {
-                /** @Id @Column(type="integer") @GeneratedValue */
-                public $id;
-
-                /** @Column(type="string", length=50, nullable=true) */
-                public $status;
-
-                /** @Column(type="string", length=255, unique=true) */
-                public $username;
-
-                /** @Column(type="string", length=255) */
-                public $name;
-
-                /** @OneToOne(targetEntity="Address") */
-                public $address;
-
-                // ....
-            }
-
-    .. code-block:: xml
-
-        <doctrine-mapping>
-            <entity name="MyProject\Model\User">
-                <named-native-queries>
-                    <named-native-query name="fetchJoinedAddress" result-set-mapping="mappingJoinedAddress">
-                        <query>SELECT u.id, u.name, u.status, a.id AS a_id, a.country AS a_country, a.zip AS a_zip, a.city AS a_city FROM users u INNER JOIN addresses a ON u.id = a.user_id WHERE u.username = ?</query>
-                    </named-native-query>
-                </named-native-queries>
-                <sql-result-set-mappings>
-                    <sql-result-set-mapping name="mappingJoinedAddress">
-                        <entity-result entity-class="__CLASS__">
-                            <field-result name="id"/>
-                            <field-result name="name"/>
-                            <field-result name="status"/>
-                            <field-result name="address.id" column="a_id"/>
-                            <field-result name="address.zip"  column="a_zip"/>
-                            <field-result name="address.city"  column="a_city"/>
-                            <field-result name="address.country" column="a_country"/>
-                        </entity-result>
-                    </sql-result-set-mapping>
-                </sql-result-set-mappings>
-            </entity>
-        </doctrine-mapping>
-    .. code-block:: yaml
-
-        MyProject\Model\User:
-          type: entity
-          namedNativeQueries:
-            fetchJoinedAddress:
-              name: fetchJoinedAddress
-              resultSetMapping: mappingJoinedAddress
-              query: SELECT u.id, u.name, u.status, a.id AS a_id, a.country AS a_country, a.zip AS a_zip, a.city AS a_city FROM users u INNER JOIN addresses a ON u.id = a.user_id WHERE u.username = ?
-          sqlResultSetMappings:
-            mappingJoinedAddress:
-              entityResult:
-                0:
-                  entityClass: __CLASS__
-                  fieldResult:
-                    0:
-                      name: id
-                    1:
-                      name: name
-                    2:
-                      name: status
-                    3:
-                      name: address.id
-                      column: a_id
-                    4:
-                      name: address.zip
-                      column: a_zip
-                    5:
-                      name: address.city
-                      column: a_city
-                    6:
-                      name: address.country
-                      column: a_country
-                    
-
-
-If you retrieve a single entity and if you use the default mapping,
-you can use the resultClass attribute instead of resultSetMapping:
-
-.. configuration-block::
-
-    .. code-block:: php
-
-        <?php
-        namespace MyProject\Model;
-            /**
-             * @NamedNativeQueries({
-             *      @NamedNativeQuery(
-             *          name           = "find-by-id",
-             *          resultClass    = "Address",
-             *          query          = "SELECT * FROM addresses"
-             *      ),
-             * })
-             */
-           class Address
-           {
-                // ....
-           }
-
-    .. code-block:: xml
-
-        <doctrine-mapping>
-            <entity name="MyProject\Model\Address">
-                <named-native-queries>
-                    <named-native-query name="find-by-id" result-class="Address">
-                        <query>SELECT * FROM addresses WHERE id = ?</query>
-                    </named-native-query>
-                </named-native-queries>
-            </entity>
-        </doctrine-mapping>
-    .. code-block:: yaml
-
-        MyProject\Model\Address:
-          type: entity
-          namedNativeQueries:
-            findAll:
-              name: findAll
-              resultClass: Address
-              query: SELECT * FROM addresses
-
-
-In some of your native queries, you'll have to return scalar values,
-for example when building report queries.
-You can map them in the @SqlResultsetMapping through @ColumnResult.
-You actually can even mix, entities and scalar returns in the same native query (this is probably not that common though).
-
-.. configuration-block::
-
-    .. code-block:: php
-
-        <?php
-        namespace MyProject\Model;
-            /**
-             * @NamedNativeQueries({
-             *      @NamedNativeQuery(
-             *          name            = "count",
-             *          resultSetMapping= "mappingCount",
-             *          query           = "SELECT COUNT(*) AS count FROM addresses"
-             *      )
-             * })
-             * @SqlResultSetMappings({
-             *      @SqlResultSetMapping(
-             *          name    = "mappingCount",
-             *          columns = {
-             *              @ColumnResult(
-             *                  name = "count"
-             *              )
-             *          }
-             *      )
-             * })
-             */
-           class Address
-           {
-                // ....
-           }
-
-    .. code-block:: xml
-
-        <doctrine-mapping>
-            <entity name="MyProject\Model\Address">
-                <named-native-query name="count" result-set-mapping="mappingCount">
-                    <query>SELECT COUNT(*) AS count FROM addresses</query>
-                </named-native-query>
-                <sql-result-set-mappings>
-                    <sql-result-set-mapping name="mappingCount">
-                        <column-result name="count"/>
-                    </sql-result-set-mapping>
-                </sql-result-set-mappings>
-            </entity>
-        </doctrine-mapping>
-    .. code-block:: yaml
-
-        MyProject\Model\Address:
-          type: entity
-          namedNativeQueries:
-            count:
-              name: count
-              resultSetMapping: mappingCount
-              query: SELECT COUNT(*) AS count FROM addresses
-          sqlResultSetMappings:
-            mappingCount:
-              name: mappingCount
-              columnResult:
-                count:
-                  name: count

@@ -13,19 +13,13 @@ Database Schema
 How do I set the charset and collation for MySQL tables?
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-You can't set these values inside the annotations, yml or xml mapping files. To make a database
-work with the default charset and collation you should configure MySQL to use it as default charset,
-or create the database with charset and collation details. This way they get inherited to all newly
-created database tables and columns.
+In your mapping configuration, the column definition (for example, the
+``#[Column]`` attribute) has an ``options`` parameter where you can specify
+the ``charset`` and ``collation``. The default values are ``utf8`` and
+``utf8_unicode_ci``, respectively.
 
 Entity Classes
 --------------
-
-I access a variable and its null, what is wrong?
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-If this variable is a public variable then you are violating one of the criteria for entities.
-All properties have to be protected or private for the proxy object pattern to work.
 
 How can I add default values to a column?
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -38,11 +32,12 @@ upon insert:
 
     class User
     {
-        const STATUS_DISABLED = 0;
-        const STATUS_ENABLED = 1;
+        private const STATUS_DISABLED = 0;
+        private const STATUS_ENABLED = 1;
 
-        private $algorithm = "sha1";
-        private $status = self:STATUS_DISABLED;
+        private string $algorithm = "sha1";
+        /** @var self::STATUS_* */
+        private int $status = self::STATUS_DISABLED;
     }
 
 .
@@ -58,7 +53,7 @@ or adding entities to a collection twice. You have to check for both conditions 
 in the code before calling ``$em->flush()`` if you know that unique constraint failures
 can occur.
 
-In `Symfony2 <http://www.symfony.com>`_ for example there is a Unique Entity Validator
+In `Symfony2 <https://www.symfony.com>`_ for example there is a Unique Entity Validator
 to achieve this task.
 
 For collections you can check with ``$collection->contains($entity)`` if an entity is already
@@ -86,7 +81,7 @@ You can solve this exception by:
 How can I filter an association?
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Natively you can't filter associations in 2.0 and 2.1. You should use DQL queries to query for the filtered set of entities.
+You should use DQL queries to query for the filtered set of entities.
 
 I call clear() on a One-To-Many collection but the entities are not deleted
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -104,9 +99,9 @@ How can I add columns to a many-to-many table?
 
 The many-to-many association is only supporting foreign keys in the table definition
 To work with many-to-many tables containing extra columns you have to use the
-foreign keys as primary keys feature of Doctrine introduced in version 2.1.
+foreign keys as primary keys feature of Doctrine ORM.
 
-See :doc:`the tutorial on composite primary keys for more information<../tutorials/composite-primary-keys>`.
+See :doc:`the tutorial on composite primary keys for more information <../tutorials/composite-primary-keys>`.
 
 
 How can i paginate fetch-joined collections?
@@ -118,8 +113,8 @@ over this collection using a LIMIT statement (or vendor equivalent).
 Doctrine does not offer a solution for this out of the box but there are several extensions
 that do:
 
-* `DoctrineExtensions <http://github.com/beberlei/DoctrineExtensions>`_
-* `Pagerfanta <http://github.com/whiteoctober/pagerfanta>`_
+* `DoctrineExtensions <https://github.com/beberlei/DoctrineExtensions>`_
+* `Pagerfanta <https://github.com/whiteoctober/pagerfanta>`_
 
 Why does pagination not work correctly with fetch joins?
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -134,10 +129,10 @@ See the previous question for a solution to this task.
 Inheritance
 -----------
 
-Can I use Inheritance with Doctrine 2?
+Can I use Inheritance with Doctrine ORM?
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- 
-Yes, you can use Single- or Joined-Table Inheritance in Doctrine 2.
+
+Yes, you can use Single- or Joined-Table Inheritance in ORM.
 
 See the documentation chapter on :doc:`inheritance mapping <inheritance-mapping>` for
 the details.
@@ -203,6 +198,21 @@ Can I sort by a function (for example ORDER BY RAND()) in DQL?
 No, it is not supported to sort by function in DQL. If you need this functionality you should either
 use a native-query or come up with another solution. As a side note: Sorting with ORDER BY RAND() is painfully slow
 starting with 1000 rows.
+
+Is it better to write DQL or to generate it with the query builder?
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The purpose of the ``QueryBuilder`` is to generate DQL dynamically,
+which is useful when you have optional filters, conditional joins, etc.
+
+But the ``QueryBuilder`` is not an alternative to DQL, it actually generates DQL
+queries at runtime, which are then interpreted by Doctrine. This means that
+using the ``QueryBuilder`` to build and run a query is actually always slower
+than only running the corresponding DQL query.
+
+So if you only need to generate a query and bind parameters to it,
+you should use plain DQL, as this is a simpler and much more readable solution.
+You should only use the ``QueryBuilder`` when you can't achieve what you want to do with a DQL query.
 
 A Query fails, how can I debug it?
 ----------------------------------

@@ -1,50 +1,47 @@
 Implementing a NamingStrategy
 ==============================
 
-.. versionadded:: 2.3
+Using a naming strategy you can provide rules for generating database identifiers,
+column or table names. This feature helps
+reduce the verbosity of the mapping document, eliminating repetitive noise (eg: ``TABLE_``).
 
-Using a naming strategy you can provide rules for automatically generating
-database identifiers, columns and tables names
-when the table/column name is not given.
-This feature helps reduce the verbosity of the mapping document,
-eliminating repetitive noise (eg: ``TABLE_``).
+.. warning
 
+    The naming strategy is always overridden by entity mapping such as the `Table` attribute.
 
 Configuring a naming strategy
 -----------------------------
 The default strategy used by Doctrine is quite minimal.
 
 By default the ``Doctrine\ORM\Mapping\DefaultNamingStrategy``
-uses the simple class name and the attributes names to generate tables and columns
+uses the simple class name and the attribute names to generate tables and columns.
 
-You can specify a different strategy by calling ``Doctrine\ORM\Configuration#setNamingStrategy()`` :
+You can specify a different strategy by calling ``Doctrine\ORM\Configuration#setNamingStrategy()``:
 
 .. code-block:: php
 
     <?php
     $namingStrategy = new MyNamingStrategy();
-    $configuration()->setNamingStrategy($namingStrategy);
+    $configuration->setNamingStrategy($namingStrategy);
 
 Underscore naming strategy
 ---------------------------
 
-``\Doctrine\ORM\Mapping\UnderscoreNamingStrategy`` is a built-in strategy
-that might be a useful if you want to use a underlying convention.
+``\Doctrine\ORM\Mapping\UnderscoreNamingStrategy`` is a built-in strategy.
 
 .. code-block:: php
 
     <?php
     $namingStrategy = new \Doctrine\ORM\Mapping\UnderscoreNamingStrategy(CASE_UPPER);
-    $configuration()->setNamingStrategy($namingStrategy);
+    $configuration->setNamingStrategy($namingStrategy);
 
-Then SomeEntityName will generate the table SOME_ENTITY_NAME when CASE_UPPER
-or some_entity_name using CASE_LOWER is given.
-
+For SomeEntityName the strategy will generate the table SOME_ENTITY_NAME with the
+``CASE_UPPER`` option, or some_entity_name with the ``CASE_LOWER`` option.
 
 Naming strategy interface
 -------------------------
 The interface ``Doctrine\ORM\Mapping\NamingStrategy`` allows you to specify
-a "naming standard" for database tables and columns.
+a naming strategy for database tables and columns.
 
 .. code-block:: php
 
@@ -78,7 +75,7 @@ a "naming standard" for database tables and columns.
      * @param string $propertyName A property
      * @return string A join column name
      */
-    function joinColumnName($propertyName);
+    function joinColumnName($propertyName, $className = null);
 
     /**
      * Return a join table name
@@ -101,10 +98,11 @@ a "naming standard" for database tables and columns.
 
 Implementing a naming strategy
 -------------------------------
-If you have database naming standards like all tables names should be prefixed
-by the application prefix, all column names should be upper case,
-you can easily achieve such standards by implementing a naming strategy.
-You need to implements NamingStrategy first. Following is an example
+If you have database naming standards, like all table names should be prefixed
+by the application prefix, all column names should be lower case, you can easily
+achieve such standards by implementing a naming strategy.
+
+You need to create a class which implements ``Doctrine\ORM\Mapping\NamingStrategy``.
 
 
 .. code-block:: php
@@ -112,39 +110,30 @@ You need to implements NamingStrategy first. Following is an example
     <?php
     class MyAppNamingStrategy implements NamingStrategy
     {
-        public function classToTableName($className)
+        public function classToTableName(string $className): string
         {
             return 'MyApp_' . substr($className, strrpos($className, '\\') + 1);
         }
-        public function propertyToColumnName($propertyName)
+        public function propertyToColumnName(string $propertyName): string
         {
             return $propertyName;
         }
-        public function referenceColumnName()
+        public function referenceColumnName(): string
         {
             return 'id';
         }
-        public function joinColumnName($propertyName)
+        public function joinColumnName(string $propertyName, ?string $className = null): string
         {
             return $propertyName . '_' . $this->referenceColumnName();
         }
-        public function joinTableName($sourceEntity, $targetEntity, $propertyName = null)
+        public function joinTableName(string $sourceEntity, string $targetEntity, string $propertyName): string
         {
             return strtolower($this->classToTableName($sourceEntity) . '_' .
                     $this->classToTableName($targetEntity));
         }
-        public function joinKeyColumnName($entityName, $referencedColumnName = null)
+        public function joinKeyColumnName(string $entityName, ?string $referencedColumnName): string
         {
             return strtolower($this->classToTableName($entityName) . '_' .
                     ($referencedColumnName ?: $this->referenceColumnName()));
         }
     }
-
-Configuring the namingstrategy is easy if.
-Just set your naming strategy calling ``Doctrine\ORM\Configuration#setNamingStrategy()`` :.
-
-.. code-block:: php
-
-    <?php
-    $namingStrategy = new MyAppNamingStrategy();
-    $configuration()->setNamingStrategy($namingStrategy);

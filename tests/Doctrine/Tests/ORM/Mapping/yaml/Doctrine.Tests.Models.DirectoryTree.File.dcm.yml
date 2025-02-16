@@ -1,6 +1,0 @@
-Doctrine\Tests\Models\DirectoryTree\File:
-  type: entity
-  fields:
-    extension:
-      type: string
-      length: 10

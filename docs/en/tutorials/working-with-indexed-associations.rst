@@ -1,20 +1,16 @@
 Working with Indexed Associations
 =================================
 
-.. note::
-
-    This feature is scheduled for version 2.1 of Doctrine and not included in the 2.0.x series.
-
-Doctrine 2 collections are modelled after PHPs native arrays. PHP arrays are an ordered hashmap, but in
+Doctrine ORM collections are modelled after PHPs native arrays. PHP arrays are an ordered hashmap, but in
 the first version of Doctrine keys retrieved from the database were always numerical unless ``INDEX BY``
-was used. Starting with Doctrine 2.1 you can index your collections by a value in the related entity.
+was used. You can index your collections by a value in the related entity.
 This is a first step towards full ordered hashmap support through the Doctrine ORM.
 The feature works like an implicit ``INDEX BY`` for the selected association but has several
 downsides also:
 
 -  You have to manage both the key and field if you want to change the index by field value.
--  On each request the keys are regenerated from the field value not from the previous collection key.
--  Values of the Index-By keys are never considered during persistence, it only exists for accessing purposes.
+-  On each request the keys are regenerated from the field value, and not from the previous collection key.
+-  Values of the Index-By keys are never considered during persistence. They only exist for accessing purposes.
 -  Fields that are used for the index by feature **HAVE** to be unique in the database. The behavior for multiple entities
    with the same index-by field value is undefined.
 
@@ -27,116 +23,17 @@ Mapping Indexed Associations
 
 You can map indexed associations by adding:
 
-    * ``indexBy`` attribute to any ``@OneToMany`` or ``@ManyToMany`` annotation.
+    * ``indexBy`` argument to any ``#[OneToMany]`` or ``#[ManyToMany]`` attribute.
     * ``index-by`` attribute to any ``<one-to-many />`` or ``<many-to-many />`` xml element.
-    * ``indexBy:`` key-value pair to any association defined in ``manyToMany:`` or ``oneToMany:`` YAML mapping files.
 
 The code and mappings for the Market entity looks like this:
 
 .. configuration-block::
-    .. code-block:: php
+    .. literalinclude:: working-with-indexed-associations/Market.php
+        :language: attribute
 
-        <?php
-        namespace Doctrine\Tests\Models\StockExchange;
-
-        use Doctrine\Common\Collections\ArrayCollection;
-
-        /**
-         * @Entity
-         * @Table(name="exchange_markets")
-         */
-        class Market
-        {
-            /**
-             * @Id @Column(type="integer") @GeneratedValue
-             * @var int
-             */
-            private $id;
-
-            /**
-             * @Column(type="string")
-             * @var string
-             */
-            private $name;
-
-            /**
-             * @OneToMany(targetEntity="Stock", mappedBy="market", indexBy="symbol")
-             * @var Stock[]
-             */
-            private $stocks;
-
-            public function __construct($name)
-            {
-                $this->name = $name;
-                $this->stocks = new ArrayCollection();
-            }
-
-            public function getId()
-            {
-                return $this->id;
-            }
-
-            public function getName()
-            {
-                return $this->name;
-            }
-
-            public function addStock(Stock $stock)
-            {
-                $this->stocks[$stock->getSymbol()] = $stock;
-            }
-
-            public function getStock($symbol)
-            {
-                if (!isset($this->stocks[$symbol])) {
-                    throw new \InvalidArgumentException("Symbol is not traded on this market.");
-                }
-
-                return $this->stocks[$symbol];
-            }
-
-            public function getStocks()
-            {
-                return $this->stocks->toArray();
-            }
-        }
-
-    .. code-block:: xml
-
-        <?xml version="1.0" encoding="UTF-8"?>
-        <doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
-              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-              xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
-                                  http://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
-
-            <entity name="Doctrine\Tests\Models\StockExchange\Market">
-                <id name="id" type="integer">
-                    <generator strategy="AUTO" />
-                </id>
-
-                <field name="name" type="string"/>
-
-                <one-to-many target-entity="Stock" mapped-by="market" field="stocks" index-by="symbol" />
-            </entity>
-        </doctrine-mapping>
-
-    .. code-block:: yaml
-
-        Doctrine\Tests\Models\StockExchange\Market:
-          type: entity
-          id:
-            id:
-              type: integer
-              generator:
-                strategy: AUTO
-          fields:
-            name:
-              type:string
-          oneToMany:
-            stocks:
-              targetEntity: Stock
-              mappedBy: market
-              indexBy: symbol
+    .. literalinclude:: working-with-indexed-associations/market.xml
+        :language: xml
 
 Inside the ``addStock()`` method you can see how we directly set the key of the association to the symbol,
 so that we can work with the indexed association directly after invoking ``addStock()``. Inside ``getStock($symbol)``
@@ -146,44 +43,32 @@ The ``Stock`` entity doesn't contain any special instructions that are new, but 
 here are the code and mappings for it:
 
 .. configuration-block::
-    .. code-block:: php
+    .. code-block:: attribute
 
         <?php
         namespace Doctrine\Tests\Models\StockExchange;
 
-        /**
-         * @Entity
-         * @Table(name="exchange_stocks")
-         */
+        #[Entity]
+        #[Table(name: 'exchange_stocks')]
         class Stock
         {
-            /**
-             * @Id @GeneratedValue @Column(type="integer")
-             * @var int
-             */
-            private $id;
+            #[Id, Column(type: 'integer'), GeneratedValue]
+            private int|null $id = null;
 
-            /**
-             * For real this column would have to be unique=true. But I want to test behavior of non-unique overrides.
-             *
-             * @Column(type="string", unique=true)
-             */
-            private $symbol;
+            #[Column(type: 'string', unique: true)]
+            private string $symbol;
 
-            /**
-             * @ManyToOne(targetEntity="Market", inversedBy="stocks")
-             * @var Market
-             */
-            private $market;
+            #[ManyToOne(targetEntity: Market::class, inversedBy: 'stocks')]
+            private Market|null $market;
 
-            public function __construct($symbol, Market $market)
+            public function __construct(string $symbol, Market $market)
             {
                 $this->symbol = $symbol;
                 $this->market = $market;
                 $market->addStock($this);
             }
 
-            public function getSymbol()
+            public function getSymbol(): string
             {
                 return $this->symbol;
             }
@@ -193,9 +78,9 @@ here are the code and mappings for it:
 
         <?xml version="1.0" encoding="UTF-8"?>
         <doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
-              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xmlns:xsi="https://www.w3.org/2001/XMLSchema-instance"
               xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
-                                  http://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+                                  https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
 
             <entity name="Doctrine\Tests\Models\StockExchange\Stock">
                 <id name="id" type="integer">
@@ -207,27 +92,10 @@ here are the code and mappings for it:
             </entity>
         </doctrine-mapping>
 
-    .. code-block:: yaml
-
-        Doctrine\Tests\Models\StockExchange\Stock:
-          type: entity
-          id:
-            id:
-              type: integer
-              generator:
-                strategy: AUTO
-          fields:
-            symbol:
-              type: string
-          manyToOne:
-            market:
-              targetEntity: Market
-              inversedBy: stocks
-
 Querying indexed associations
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Now that we defined the stocks collection to be indexed by symbol we can take a look at some code,
+Now that we defined the stocks collection to be indexed by symbol, we can take a look at some code
 that makes use of the indexing.
 
 First we will populate our database with two example stocks traded on a single market:
@@ -255,7 +123,7 @@ now query for the market:
     // $em is the EntityManager
     $marketId = 1;
     $symbol = "AAPL";
-    
+
     $market = $em->find("Doctrine\Tests\Models\StockExchange\Market", $marketId);
 
     // Access the stocks by symbol now:
@@ -263,7 +131,7 @@ now query for the market:
 
     echo $stock->getSymbol(); // will print "AAPL"
 
-The implementation ``Market::addStock()`` in combination with ``indexBy`` allows to access the collection
+The implementation of ``Market::addStock()``, in combination with ``indexBy``, allows us to access the collection
 consistently by the Stock symbol. It does not matter if Stock is managed by Doctrine or not.
 
 The same applies to DQL queries: The ``indexBy`` configuration acts as implicit "INDEX BY" to a join association.
@@ -285,14 +153,13 @@ The same applies to DQL queries: The ``indexBy`` configuration acts as implicit 
 
     echo $stock->getSymbol(); // will print "AAPL"
 
-If you want to use ``INDEX BY`` explicitly on an indexed association you are free to do so. Additionally
-indexed associations also work with the ``Collection::slice()`` functionality, no matter if marked as
+If you want to use ``INDEX BY`` explicitly on an indexed association you are free to do so. Additionally,
+indexed associations also work with the ``Collection::slice()`` functionality, even if the association's fetch mode is
 LAZY or EXTRA_LAZY.
 
 Outlook into the Future
 ~~~~~~~~~~~~~~~~~~~~~~~
 
 For the inverse side of a many-to-many associations there will be a way to persist the keys and the order
-as a third and fourth parameter into the join table. This feature is discussed in `DDC-213 <http://www.doctrine-project.org/jira/browse/DDC-213>`_
-This feature cannot be implemented for One-To-Many associations, because they are never the owning side.
-
+as a third and fourth parameter into the join table. This feature is discussed in `#2817 <https://github.com/doctrine/orm/issues/2817>`_
+This feature cannot be implemented for one-to-many associations, because they are never the owning side.

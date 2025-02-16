@@ -3,7 +3,7 @@ Validation of Entities
 
 .. sectionauthor:: Benjamin Eberlei <kontakt@beberlei.de>
 
-Doctrine 2 does not ship with any internal validators, the reason
+Doctrine ORM does not ship with any internal validators, the reason
 being that we think all the frameworks out there already ship with
 quite decent ones that can be integrated into your Domain easily.
 What we offer are hooks to execute any kind of validation.
@@ -11,7 +11,7 @@ What we offer are hooks to execute any kind of validation.
 .. note::
 
     You don't need to validate your entities in the lifecycle
-    events. Its only one of many options. Of course you can also
+    events. It is only one of many options. Of course you can also
     perform validations in value setters or any other method of your
     entities that are used in your code.
 
@@ -25,8 +25,8 @@ the additional benefit of being able to re-use your validation in
 any other part of your domain.
 
 Say we have an ``Order`` with several ``OrderLine`` instances. We
-never want to allow any customer to order for a larger sum than he
-is allowed to:
+never want to allow any customer to order for a larger sum than they
+are allowed to:
 
 .. code-block:: php
 
@@ -36,12 +36,12 @@ is allowed to:
         public function assertCustomerAllowedBuying()
         {
             $orderLimit = $this->customer->getOrderLimit();
-    
+
             $amount = 0;
             foreach ($this->orderLines as $line) {
                 $amount += $line->getAmount();
             }
-    
+
             if ($amount > $orderLimit) {
                 throw new CustomerOrderLimitExceededException();
             }
@@ -53,20 +53,21 @@ code, enforcing it at any time is important so that customers with
 a unknown reputation don't owe your business too much money.
 
 We can enforce this constraint in any of the metadata drivers.
-First Annotations:
+First Attributes:
 
 .. code-block:: php
 
     <?php
-    /**
-     * @Entity
-     * @HasLifecycleCallbacks
-     */
+    use Doctrine\ORM\Mapping\Entity;
+    use Doctrine\ORM\Mapping\HasLifecycleCallbacks;
+    use Doctrine\ORM\Mapping\PrePersist;
+    use Doctrine\ORM\Mapping\PreUpdate;
+
+    #[Entity]
+    #[HasLifecycleCallbacks]
     class Order
     {
-        /**
-         * @PrePersist @PreUpdate
-         */
+        #[PrePersist, PreUpdate]
         public function assertCustomerAllowedBuying() {}
     }
 
@@ -83,13 +84,10 @@ In XML Mappings:
         </entity>
     </doctrine-mapping>
 
-YAML needs some little change yet, to allow multiple lifecycle
-events for one method, this will happen before Beta 1 though.
-
 Now validation is performed whenever you call
 ``EntityManager#persist($order)`` or when you call
 ``EntityManager#flush()`` and an order is about to be updated. Any
-Exception that happens in the lifecycle callbacks will be cached by
+Exception that happens in the lifecycle callbacks will be caught by
 the EntityManager and the current transaction is rolled back.
 
 Of course you can do any type of primitive checks, not null,
@@ -101,19 +99,17 @@ validation callbacks.
     <?php
     class Order
     {
-        /**
-         * @PrePersist @PreUpdate
-         */
+        #[PrePersist, PreUpdate]
         public function validate()
         {
             if (!($this->plannedShipDate instanceof DateTime)) {
                 throw new ValidateException();
             }
-    
+
             if ($this->plannedShipDate->format('U') < time()) {
                 throw new ValidateException();
             }
-    
+
             if ($this->customer == null) {
                 throw new OrderRequiresCustomerException();
             }
@@ -134,4 +130,4 @@ instances. This was already discussed in the previous blog post on
 the Versionable extension, which requires another type of event
 called "onFlush".
 
-Further readings: :doc:`Lifecycle Events <../reference/events>`
+Further readings: :ref:`reference-events-lifecycle-events`

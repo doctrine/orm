@@ -1,0 +1,11 @@
+parameters:
+    level: 7
+    paths:
+        - src
+        - tests/StaticAnalysis
+    excludePaths:
+        - src/Mapping/Driver/AttributeReader.php
+    earlyTerminatingMethodCalls:
+        Doctrine\ORM\Query\Parser:
+            - syntaxError
+    phpVersion: 80400

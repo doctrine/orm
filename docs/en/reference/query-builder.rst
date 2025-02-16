@@ -7,14 +7,20 @@ conditionally constructing a DQL query in several steps.
 It provides a set of classes and methods that is able to
 programmatically build queries, and also provides a fluent API.
 This means that you can change between one methodology to the other
-as you want, and also pick one if you prefer.
+as you want, or just pick a preferred one.
+
+.. note::
+
+    The ``QueryBuilder`` is not an abstraction of DQL, but merely a tool to dynamically build it.
+    You should still use plain DQL when you can, as it is simpler and more readable.
+    More about this in the :doc:`FAQ <faq>`.
 
 Constructing a new QueryBuilder object
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The same way you build a normal Query, you build a ``QueryBuilder``
-object, just providing the correct method name. Here is an example
-how to build a ``QueryBuilder`` object:
+object. Here is an example of how to build a ``QueryBuilder``
+object:
 
 .. code-block:: php
 
@@ -24,9 +30,9 @@ how to build a ``QueryBuilder`` object:
     // example1: creating a QueryBuilder instance
     $qb = $em->createQueryBuilder();
 
-Once you have created an instance of QueryBuilder, it provides a
-set of useful informative functions that you can use. One good
-example is to inspect what type of object the ``QueryBuilder`` is.
+An instance of QueryBuilder has several informative methods.  One
+good example is to inspect what type of object the
+``QueryBuilder`` is.
 
 .. code-block:: php
 
@@ -80,11 +86,11 @@ Working with QueryBuilder
 High level API methods
 ^^^^^^^^^^^^^^^^^^^^^^
 
-To simplify even more the way you build a query in Doctrine, we can take
-advantage of what we call Helper methods. For all base code, there
-is a set of useful methods to simplify a programmer's life. To
-illustrate how to work with them, here is the same example 6
-re-written using ``QueryBuilder`` helper methods:
+The most straightforward way to build a dynamic query with the ``QueryBuilder`` is by taking
+advantage of Helper methods. For all base code, there is a set of
+useful methods to simplify a programmer's life. To illustrate how
+to work with them, here is the same example 6 re-written using
+``QueryBuilder`` helper methods:
 
 .. code-block:: php
 
@@ -97,10 +103,9 @@ re-written using ``QueryBuilder`` helper methods:
        ->orderBy('u.name', 'ASC');
 
 ``QueryBuilder`` helper methods are considered the standard way to
-build DQL queries. Although it is supported, it should be avoided
-to use string based queries and greatly encouraged to use
-``$qb->expr()->*`` methods. Here is a converted example 8 to
-suggested standard way to build queries:
+use the ``QueryBuilder``. The ``$qb->expr()->*`` methods can help you
+build conditional expressions dynamically. Here is a converted example 8 to
+suggested way to build queries with dynamic conditions:
 
 .. code-block:: php
 
@@ -113,7 +118,7 @@ suggested standard way to build queries:
            $qb->expr()->eq('u.id', '?1'),
            $qb->expr()->like('u.nickname', '?2')
        ))
-       ->orderBy('u.surname', 'ASC'));
+       ->orderBy('u.surname', 'ASC');
 
 Here is a complete list of helper methods available in ``QueryBuilder``:
 
@@ -126,7 +131,7 @@ Here is a complete list of helper methods available in ``QueryBuilder``:
         // Example - $qb->select(array('u', 'p'))
         // Example - $qb->select($qb->expr()->select('u', 'p'))
         public function select($select = null);
-        
+
         // addSelect does not override previous calls to select
         //
         // Example - $qb->select('u');
@@ -247,8 +252,23 @@ while the named placeholders start with a : followed by a string.
 Calling ``setParameter()`` automatically infers which type you are setting as
 value. This works for integers, arrays of strings/integers, DateTime instances
 and for managed entities. If you want to set a type explicitly you can call
-the third argument to ``setParameter()`` explicitly. It accepts either a PDO
-type or a DBAL Type name for conversion.
+the third argument to ``setParameter()`` explicitly. It accepts either a DBAL
+``Doctrine\DBAL\ParameterType::*`` or a DBAL Type name for conversion.
+
+.. note::
+
+    Even though passing DateTime instance is allowed, it impacts performance 
+    as by default there is an attempt to load metadata for object, and if it's not found, 
+    type is inferred from the original value.
+    
+.. code-block:: php
+
+    <?php
+    
+    use Doctrine\DBAL\Types\Types;
+    
+    // prevents attempt to load metadata for date time class, improving performance
+    $qb->setParameter('date', new \DateTimeImmutable(), Types::DATETIME_IMMUTABLE)
 
 If you've got several parameters to bind to your query, you can
 also use setParameters() instead of setParameter() with the
@@ -257,10 +277,17 @@ following syntax:
 .. code-block:: php
 
     <?php
+
+    use Doctrine\Common\Collections\ArrayCollection;
+    use Doctrine\ORM\Query\Parameter;
+    
     // $qb instanceof QueryBuilder
 
     // Query here...
-    $qb->setParameters(array(1 => 'value for ?1', 2 => 'value for ?2'));
+    $qb->setParameters(new ArrayCollection([
+        new Parameter('1', 'value for ?1'),
+        new Parameter('2', 'value for ?2')
+    ]));
 
 Getting already bound parameters is easy - simply use the above
 mentioned syntax with "getParameter()" or "getParameters()":
@@ -317,7 +344,7 @@ the Query object which can be retrieved from ``EntityManager#createQuery()``.
 Executing a Query
 ^^^^^^^^^^^^^^^^^
 
-The QueryBuilder is a builder object only, it has no means of actually
+The QueryBuilder is a builder object only -  it has no means of actually
 executing the Query. Additionally a set of parameters such as query hints
 cannot be set on the QueryBuilder itself. This is why you always have to convert
 a querybuilder instance into a Query object:
@@ -334,6 +361,7 @@ a querybuilder instance into a Query object:
 
     // Execute Query
     $result = $query->getResult();
+    $iterableResult = $query->toIterable();
     $single = $query->getSingleResult();
     $array = $query->getArrayResult();
     $scalar = $query->getScalarResult();
@@ -405,6 +433,12 @@ complete list of supported helper methods available:
 
         // Example - $qb->expr()->isNotNull('u.id') => u.id IS NOT NULL
         public function isNotNull($x); // Returns string
+
+        // Example - $qb->expr()->isMemberOf('?1', 'u.groups') => ?1 MEMBER OF u.groups
+        public function isMemberOf($x, $y); // Returns Expr\Comparison instance
+
+        // Example - $qb->expr()->isInstanceOf('u', Employee::class) => u INSTANCE OF Employee
+        public function isInstanceOf($x, $y); // Returns Expr\Comparison instance
 
 
         /** Arithmetic objects **/
@@ -492,6 +526,9 @@ complete list of supported helper methods available:
         // Example - $qb->expr()->sqrt('u.currentBalance')
         public function sqrt($x); // Returns Expr\Func
 
+        // Example - $qb->expr()->mod('u.currentBalance', '10')
+        public function mod($x); // Returns Expr\Func
+
         // Example - $qb->expr()->count('u.firstname')
         public function count($x); // Returns Expr\Func
 
@@ -499,14 +536,32 @@ complete list of supported helper methods available:
         public function countDistinct($x); // Returns Expr\Func
     }
 
+Adding a Criteria to a Query
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+You can also add a :ref:`filtering-collections` to a QueryBuilder by
+using ``addCriteria``:
+
+.. code-block:: php
+
+    <?php
+    use Doctrine\Common\Collections\Criteria;
+    // ...
+
+    $criteria = Criteria::create()
+        ->orderBy(['firstName' => Criteria::ASC]);
+
+    // $qb instanceof QueryBuilder
+    $qb->addCriteria($criteria);
+    // then execute your query like normal
 
 Low Level API
 ^^^^^^^^^^^^^
 
-Now we have describe the low level (thought of as the
-hardcore method) of creating queries. It may be useful to work at
-this level for optimization purposes, but most of the time it is
-preferred to work at a higher level of abstraction.
+Now we will describe the low level method of creating queries.
+It may be useful to work at this level for optimization purposes,
+but most of the time it is preferred to work at a higher level of
+abstraction.
 
 All helper methods in ``QueryBuilder`` actually rely on a single
 one: ``add()``. This method is responsible of building every piece
@@ -522,8 +577,6 @@ of DQL. It takes 3 parameters: ``$dqlPartName``, ``$dqlPart`` and
    should override all previously defined items in ``$dqlPartName`` or
    not (no effect on the ``where`` and ``having`` DQL query parts,
    which always override all previously defined items)
-
--
 
 .. code-block:: php
 
@@ -559,7 +612,20 @@ same query of example 6 written using
       ->add('where', new Expr\Comparison('u.id', '=', '?1'))
       ->add('orderBy', new Expr\OrderBy('u.name', 'ASC'));
 
-Of course this is the hardest way to build a DQL query in Doctrine.
-To simplify some of these efforts, we introduce what we call as
-``Expr`` helper class.
+Binding Parameters to Placeholders
+----------------------------------
 
+It is often not necessary to know about the exact placeholder names when
+building a query. You can use a helper method to bind a value to a placeholder
+and directly use that placeholder in your query as a return value:
+
+.. code-block:: php
+
+    <?php
+    // $qb instanceof QueryBuilder
+
+    $qb->select('u')
+        ->from('User', 'u')
+        ->where('u.email = ' .  $qb->createNamedParameter($userInputEmail))
+    ;
+    // SELECT u FROM User u WHERE email = :dcValue1

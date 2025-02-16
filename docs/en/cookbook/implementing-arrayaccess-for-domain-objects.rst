@@ -1,12 +1,12 @@
 Implementing ArrayAccess for Domain Objects
 ===========================================
 
-.. sectionauthor:: Roman Borschel (roman@code-factory.org)
+.. sectionauthor:: Roman Borschel <roman@code-factory.org>
 
 This recipe will show you how to implement ArrayAccess for your
 domain objects in order to allow more uniform access, for example
 in templates. In these examples we will implement ArrayAccess on a
-`Layer Supertype <http://martinfowler.com/eaaCatalog/layerSupertype.html>`_
+`Layer Supertype <https://martinfowler.com/eaaCatalog/layerSupertype.html>`_
 for all our domain objects.
 
 Option 1

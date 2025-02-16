@@ -1,8 +1,0 @@
-Doctrine\Tests\Models\DDC889\DDC889Class:
-  type: class
-  id:
-    id:
-      type: integer
-      unsigned: true
-      generator:
-        strategy: AUTO

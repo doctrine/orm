@@ -1,0 +1,20 @@
+name: "Documentation"
+
+on:
+  pull_request:
+    branches:
+      - "*.x"
+    paths:
+      - ".github/workflows/documentation.yml"
+      - "docs/**"
+  push:
+    branches:
+      - "*.x"
+    paths:
+      - ".github/workflows/documentation.yml"
+      - "docs/**"
+
+jobs:
+  documentation:
+    name: "Documentation"
+    uses: "doctrine/.github/.github/workflows/documentation.yml@7.2.1"

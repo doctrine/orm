@@ -9,82 +9,74 @@ i.e. attributes and associations metadata in particular. The example here shows
 the overriding of a class that uses a trait but is similar when extending a base
 class as shown at the end of this tutorial.
 
-Suppose we have a class ExampleEntityWithOverride. This class uses trait ExampleTrait:
+Suppose we have a class ``ExampleEntityWithOverride``. This class uses trait ``ExampleTrait``:
 
 .. code-block:: php
 
     <?php
-    /**
-     * @Entity
-     *
-     * @AttributeOverrides({
-     *      @AttributeOverride(name="foo",
-     *          column=@Column(
-     *              name     = "foo_overridden",
-     *              type     = "integer",
-     *              length   = 140,
-     *              nullable = false,
-     *              unique   = false
-     *          )
-     *      )
-     * })
-     *
-     * @AssociationOverrides({
-     *      @AssociationOverride(name="bar",
-     *          joinColumns=@JoinColumn(
-     *              name="example_entity_overridden_bar_id", referencedColumnName="id"
-     *          )
-     *      )
-     * })
-     */
+
+    #[Entity]
+    #[AttributeOverrides([
+        new AttributeOverride('foo', new Column(
+            name: 'foo_overridden',
+            type: 'integer',
+            length: 140,
+            nullable: false,
+            unique: false,
+        )),
+    ])]
+    #[AssociationOverrides([
+        new AssociationOverride('bar', [
+            new JoinColumn(
+                name: 'example_entity_overridden_bar_id',
+                referencedColumnName: 'id',
+            ),
+        ]),
+    ])]
     class ExampleEntityWithOverride
     {
         use ExampleTrait;
     }
 
-    /**
-     * @Entity
-     */
+    #[Entity]
     class Bar
     {
-        /** @Id @Column(type="string") */
+        #[Id, Column(type: 'string')]
         private $id;
     }
 
-The docblock is showing metadata override of the attribute and association type. It
+``#[AttributeOverrides]`` contains metadata override of the attribute and association type. It
 basically changes the names of the columns mapped for a property ``foo`` and for
 the association ``bar`` which relates to Bar class shown above. Here is the trait
-which has mapping metadata that is overridden by the annotation above:
+which has mapping metadata that is overridden by the attribute above:
 
 .. code-block:: php
 
+    <?php
     /**
      * Trait class
      */
     trait ExampleTrait
     {
-        /** @Id @Column(type="string") */
-        private $id;
+        #[Id, Column(type: 'integer')]
+        private int|null $id = null;
 
-        /**
-         * @Column(name="trait_foo", type="integer", length=100, nullable=true, unique=true)
-         */
-        protected $foo;
+        #[Column(name: 'trait_foo', type: 'integer', length: 100, nullable: true, unique: true)]
+        protected int $foo;
 
-        /**
-         * @OneToOne(targetEntity="Bar", cascade={"persist", "merge"})
-         * @JoinColumn(name="example_trait_bar_id", referencedColumnName="id")
-         */
-        protected $bar;
+        #[OneToOne(targetEntity: Bar::class, cascade: ['persist'])]
+        #[JoinColumn(name: 'example_trait_bar_id', referencedColumnName: 'id')]
+        protected Bar|null $bar = null;
     }
 
 The case for just extending a class would be just the same but:
 
 .. code-block:: php
 
+    <?php
     class ExampleEntityWithOverride extends BaseEntityWithSomeMapping
     {
         // ...
     }
 
-Overriding is also supported via XML and YAML (:ref:`examples <inheritence_mapping_overrides>`).
+Overriding is also supported via XML (:ref:`examples <inheritence_mapping_overrides>`).

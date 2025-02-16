@@ -2,15 +2,14 @@ XML Mapping
 ===========
 
 The XML mapping driver enables you to provide the ORM metadata in
-form of XML documents.
+form of XML documents. It requires the ``dom`` extension in order to be
+able to validate your mapping documents against its XML Schema.
 
 The XML driver is backed by an XML Schema document that describes
 the structure of a mapping document. The most recent version of the
 XML Schema document is available online at
-`http://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd <http://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd>`_.
-In order to point to the latest version of the document of a
-particular stable release branch, just append the release number,
-i.e.: doctrine-mapping-2.0.xsd The most convenient way to work with
+`https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd <https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd>`_.
+The most convenient way to work with
 XML mapping files is to use an IDE/editor that can provide
 code-completion based on such an XML Schema document. The following
 is an outline of a XML mapping document with the proper xmlns/xsi
@@ -19,9 +18,9 @@ setup for the latest code in trunk.
 .. code-block:: xml
 
     <doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
-          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xmlns:xsi="https://www.w3.org/2001/XMLSchema-instance"
           xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
-                       https://raw.github.com/doctrine/doctrine2/master/doctrine-mapping.xsd">
+                              https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
 
         ...
 
@@ -88,8 +87,8 @@ Configuration of this client works a little bit different:
 
     <?php
     $namespaces = array(
-        'MyProject\Entities' => '/path/to/files1',
-        'OtherProject\Entities' => '/path/to/files2'
+        '/path/to/files1' => 'MyProject\Entities',
+        '/path/to/files2' => 'OtherProject\Entities'
     );
     $driver = new \Doctrine\ORM\Mapping\Driver\SimplifiedXmlDriver($namespaces);
     $driver->setGlobalBasename('global'); // global.orm.xml
@@ -105,9 +104,9 @@ of several common elements:
     // Doctrine.Tests.ORM.Mapping.User.dcm.xml
     <?xml version="1.0" encoding="UTF-8"?>
     <doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
-          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xmlns:xsi="https://www.w3.org/2001/XMLSchema-instance"
           xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
-                              http://raw.github.com/doctrine/doctrine2/master/doctrine-mapping.xsd">
+                              https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
 
         <entity name="Doctrine\Tests\ORM\Mapping\User" table="cms_users">
 
@@ -187,7 +186,7 @@ specified as the ``<entity />`` element as a direct child of the
 .. code-block:: xml
 
     <doctrine-mapping>
-        <entity name="MyProject\User" table="cms_users" repository-class="MyProject\UserRepository">
+        <entity name="MyProject\User" table="cms_users" schema="schema_name" repository-class="MyProject\UserRepository">
             <!-- definition here -->
         </entity>
     </doctrine-mapping>
@@ -208,9 +207,10 @@ Optional attributes:
 -  **inheritance-type** - The type of inheritance, defaults to none. A
    more detailed description follows in the
    *Defining Inheritance Mappings* section.
--  **read-only** - (>= 2.1) Specifies that this entity is marked as read only and not
+-  **read-only** - Specifies that this entity is marked as read only and not
    considered for change-tracking. Entities of this type can be persisted
    and removed though.
+-  **schema** - The schema the table lies in, for platforms that support schemas
 
 Defining Fields
 ~~~~~~~~~~~~~~~
@@ -257,6 +257,11 @@ Optional attributes:
    table? Defaults to false.
 -  nullable - Should this field allow NULL as a value? Defaults to
    false.
+-  insertable - Should this field be inserted? Defaults to true.
+-  updatable - Should this field be updated? Defaults to true.
+-  generated - Enum of the values ALWAYS, INSERT, NEVER that determines if
+   generated value must be fetched from database after INSERT or UPDATE.
+   Defaults to "NEVER".
 -  version - Should this field be used for optimistic locking? Only
    works on fields with type integer or datetime.
 -  scale - Scale of a decimal type.
@@ -292,7 +297,7 @@ Defining Identity and Generator Strategies
 
 An entity has to have at least one ``<id />`` element. For
 composite keys you can specify more than one id-element, however
-surrogate keys are recommended for use with Doctrine 2. The Id
+surrogate keys are recommended for use with Doctrine ORM. The Id
 field allows to define properties of the identifier and allows a
 subset of the ``<field />`` element attributes:
 
@@ -320,12 +325,12 @@ Using the simplified definition above Doctrine will use no
 identifier strategy for this entity. That means you have to
 manually set the identifier before calling
 ``EntityManager#persist($entity)``. This is the so called
-``ASSIGNED`` strategy.
+``NONE`` strategy.
 
 If you want to switch the identifier generation strategy you have
 to nest a ``<generator />`` element inside the id-element. This of
 course only works for surrogate keys. For composite keys you always
-have to use the ``ASSIGNED`` strategy.
+have to use the ``NONE`` strategy.
 
 .. code-block:: xml
 
@@ -687,9 +692,9 @@ specified by their respective tags:
 
 
 -  ``<cascade-persist />``
--  ``<cascade-merge />``
 -  ``<cascade-remove />``
 -  ``<cascade-refresh />``
+-  ``<cascade-detach />``
 
 Join Column Element
 ~~~~~~~~~~~~~~~~~~~
@@ -765,9 +770,9 @@ entity relationship. You can define this in XML with the "association-key" attri
 .. code-block:: xml
 
     <doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
-          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xmlns:xsi="https://www.w3.org/2001/XMLSchema-instance"
           xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
-                        http://raw.github.com/doctrine/doctrine2/master/doctrine-mapping.xsd">
+                              https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
 
          <entity name="Application\Model\ArticleAttribute">
             <id name="article" association-key="true" />

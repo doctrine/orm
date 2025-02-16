@@ -16,6 +16,23 @@ especially what the strategies presented here provide help with.
     operations.
 
 
+.. note::
+
+    Having an SQL logger enabled when processing batches can have a
+    serious impact on performance and resource usage.
+    To avoid that, you should use a PSR logger implementation that can be
+    disabled at runtime.
+    For example, with Monolog, you can use ``Logger::pushHandler()``
+    to push a ``NullHandler`` to the logger instance, and then pop it
+    when you need to enable logging again.
+
+    With DBAL 2, you can disable the SQL logger like below:
+
+.. code-block:: php
+
+    <?php
+    $em->getConnection()->getConfiguration()->setSQLLogger(null);
+
 Bulk Inserts
 ------------
 
@@ -42,7 +59,7 @@ internally but also mean more work during ``flush``.
             $em->clear(); // Detaches all objects from Doctrine!
         }
     }
-    $em->flush(); //Persist objects that did not make up an entire batch
+    $em->flush(); // Persist objects that did not make up an entire batch
     $em->clear();
 
 Bulk Updates
@@ -66,7 +83,7 @@ Iterating results
 ~~~~~~~~~~~~~~~~~
 
 An alternative solution for bulk updates is to use the
-``Query#iterate()`` facility to iterate over the query results step
+``Query#toIterable()`` facility to iterate over the query results step
 by step instead of loading the whole result into memory at once.
 The following example shows how to do this, combining the iteration
 with the batching strategy that was already used for bulk inserts:
@@ -77,16 +94,14 @@ with the batching strategy that was already used for bulk inserts:
     $batchSize = 20;
     $i = 0;
     $q = $em->createQuery('select u from MyProject\Model\User u');
-    $iterableResult = $q->iterate();
-    foreach ($iterableResult as $row) {
-        $user = $row[0];
+    foreach ($q->toIterable() as $user) {
         $user->increaseCredit();
         $user->calculateNewBonuses();
+        ++$i;
         if (($i % $batchSize) === 0) {
             $em->flush(); // Executes all updates.
             $em->clear(); // Detaches all objects from Doctrine!
         }
-        ++$i;
     }
     $em->flush();
 
@@ -100,7 +115,7 @@ with the batching strategy that was already used for bulk inserts:
 
     Results may be fully buffered by the database client/ connection allocating
     additional memory not visible to the PHP process. For large sets this
-    may easily kill the process for no apparant reason.
+    may easily kill the process for no apparent reason.
 
 
 Bulk Deletes
@@ -128,7 +143,7 @@ Iterating results
 ~~~~~~~~~~~~~~~~~
 
 An alternative solution for bulk deletes is to use the
-``Query#iterate()`` facility to iterate over the query results step
+``Query#toIterable()`` facility to iterate over the query results step
 by step instead of loading the whole result into memory at once.
 The following example shows how to do this:
 
@@ -138,14 +153,13 @@ The following example shows how to do this:
     $batchSize = 20;
     $i = 0;
     $q = $em->createQuery('select u from MyProject\Model\User u');
-    $iterableResult = $q->iterate();
-    while (($row = $iterableResult->next()) !== false) {
-        $em->remove($row[0]);
+    foreach($q->toIterable() as $row) {
+        $em->remove($row);
+        ++$i;
         if (($i % $batchSize) === 0) {
             $em->flush(); // Executes all deletions.
             $em->clear(); // Detaches all objects from Doctrine!
         }
-        ++$i;
     }
     $em->flush();
 
@@ -159,20 +173,18 @@ The following example shows how to do this:
 Iterating Large Results for Data-Processing
 -------------------------------------------
 
-You can use the ``iterate()`` method just to iterate over a large
-result and no UPDATE or DELETE intention. The ``IterableResult``
-instance returned from ``$query->iterate()`` implements the
-Iterator interface so you can process a large result without memory
+You can use the ``toIterable()`` method just to iterate over a large
+result and no UPDATE or DELETE intention. ``$query->toIterable()`` returns ``iterable``
+so you can process a large result without memory
 problems using the following approach:
 
 .. code-block:: php
 
     <?php
     $q = $this->_em->createQuery('select u from MyProject\Model\User u');
-    $iterableResult = $q->iterate();
-    foreach ($iterableResult as $row) {
-        // do stuff with the data in the row, $row[0] is always the object
-    
+    foreach ($q->toIterable() as $row) {
+        // do stuff with the data in the row
+
         // detach from Doctrine, so that it can be Garbage-Collected immediately
         $this->_em->detach($row[0]);
     }
@@ -182,6 +194,3 @@ problems using the following approach:
     Iterating results is not possible with queries that
     fetch-join a collection-valued association. The nature of such SQL
     result sets is not suitable for incremental hydration.
-
-
-

@@ -10,7 +10,7 @@ change it during the life of your project. This decision for a
 specific vendor potentially allows you to make use of powerful SQL
 features that are unique to the vendor.
 
-It is worth to mention that Doctrine 2 also allows you to handwrite
+It is worth to mention that Doctrine ORM also allows you to handwrite
 your SQL instead of extending the DQL parser. Extending DQL is sort of an
 advanced extension point. You can map arbitrary SQL to your objects
 and gain access to vendor specific functionalities using the
@@ -21,7 +21,7 @@ the :doc:`Native Query <../reference/native-sql>` chapter.
 The DQL Parser has hooks to register functions that can then be
 used in your DQL queries and transformed into SQL, allowing to
 extend Doctrines Query capabilities to the vendors strength. This
-post explains the Used-Defined Functions API (UDF) of the Dql
+post explains the User-Defined Functions API (UDF) of the Dql
 Parser and shows some examples to give you some hints how you would
 extend DQL.
 
@@ -45,8 +45,8 @@ configuration:
     $config->addCustomStringFunction($name, $class);
     $config->addCustomNumericFunction($name, $class);
     $config->addCustomDatetimeFunction($name, $class);
-    
-    $em = EntityManager::create($dbParams, $config);
+
+    $em = new EntityManager($connection, $config);
 
 The ``$name`` is the name the function will be referred to in the
 DQL query. ``$class`` is a string of a class-name which has to
@@ -70,7 +70,7 @@ methods, which are quite handy in my opinion:
 Date Diff
 ---------
 
-`Mysql's DateDiff function <http://dev.mysql.com/doc/refman/5.1/en/date-and-time-functions.html#function_datediff>`_
+`Mysql's DateDiff function <https://dev.mysql.com/doc/refman/8.0/en/date-and-time-functions.html#function_datediff>`_
 takes two dates as argument and calculates the difference in days
 with ``date1-date2``.
 
@@ -96,17 +96,17 @@ discuss it step by step:
         // (1)
         public $firstDateExpression = null;
         public $secondDateExpression = null;
-    
+
         public function parse(\Doctrine\ORM\Query\Parser $parser)
         {
-            $parser->match(Lexer::T_IDENTIFIER); // (2)
-            $parser->match(Lexer::T_OPEN_PARENTHESIS); // (3)
+            $parser->match(TokenType::T_IDENTIFIER); // (2)
+            $parser->match(TokenType::T_OPEN_PARENTHESIS); // (3)
             $this->firstDateExpression = $parser->ArithmeticPrimary(); // (4)
-            $parser->match(Lexer::T_COMMA); // (5)
+            $parser->match(TokenType::T_COMMA); // (5)
             $this->secondDateExpression = $parser->ArithmeticPrimary(); // (6)
-            $parser->match(Lexer::T_CLOSE_PARENTHESIS); // (3)
+            $parser->match(TokenType::T_CLOSE_PARENTHESIS); // (3)
         }
-    
+
         public function getSql(\Doctrine\ORM\Query\SqlWalker $sqlWalker)
         {
             return 'DATEDIFF(' .
@@ -131,8 +131,8 @@ generation of a DateDiff FunctionNode somewhere in the AST of the
 dql statement.
 
 The ``ArithmeticPrimary`` method call is the most common
-denominator of valid EBNF tokens taken from the
-`DQL EBNF grammar <http://www.doctrine-project.org/documentation/manual/2_0/en/dql-doctrine-query-language#ebnf>`_
+denominator of valid EBNF tokens taken from the :ref:`DQL EBNF grammar
+<dql_ebnf_grammar>`
 that matches our requirements for valid input into the DateDiff Dql
 function. Picking the right tokens for your methods is a tricky
 business, but the EBNF grammar is pretty helpful finding it, as is
@@ -164,7 +164,7 @@ Date Add
 
 Often useful it the ability to do some simple date calculations in
 your DQL query using
-`MySql's DATE\_ADD function <http://dev.mysql.com/doc/refman/5.1/en/date-and-time-functions.html#function_date-add>`_.
+`MySql's DATE_ADD function <https://dev.mysql.com/doc/refman/8.0/en/date-and-time-functions.html#function_date-add>`_.
 
 I'll skip the blah and show the code for this function:
 
@@ -180,28 +180,28 @@ I'll skip the blah and show the code for this function:
         public $firstDateExpression = null;
         public $intervalExpression = null;
         public $unit = null;
-    
+
         public function parse(\Doctrine\ORM\Query\Parser $parser)
         {
-            $parser->match(Lexer::T_IDENTIFIER);
-            $parser->match(Lexer::T_OPEN_PARENTHESIS);
-    
+            $parser->match(TokenType::T_IDENTIFIER);
+            $parser->match(TokenType::T_OPEN_PARENTHESIS);
+
             $this->firstDateExpression = $parser->ArithmeticPrimary();
-    
-            $parser->match(Lexer::T_COMMA);
-            $parser->match(Lexer::T_IDENTIFIER);
-    
+
+            $parser->match(TokenType::T_COMMA);
+            $parser->match(TokenType::T_IDENTIFIER);
+
             $this->intervalExpression = $parser->ArithmeticPrimary();
-    
-            $parser->match(Lexer::T_IDENTIFIER);
-    
-            /* @var $lexer Lexer */
+
+            $parser->match(TokenType::T_IDENTIFIER);
+
+            /** @var Lexer $lexer */
             $lexer = $parser->getLexer();
             $this->unit = $lexer->token['value'];
-    
-            $parser->match(Lexer::T_CLOSE_PARENTHESIS);
+
+            $parser->match(TokenType::T_CLOSE_PARENTHESIS);
         }
-    
+
         public function getSql(\Doctrine\ORM\Query\SqlWalker $sqlWalker)
         {
             return 'DATE_ADD(' .
@@ -232,6 +232,33 @@ vendors SQL parser to show us further errors in the parsing
 process, for example if the Unit would not be one of the supported
 values by MySql.
 
+Typed functions
+---------------
+By default, result of custom functions is fetched as-is from the database driver.
+If you want to be sure that the type is always the same, then your custom function needs to 
+implement ``Doctrine\ORM\Query\AST\TypedExpression``. Then, the result is wired
+through ``Doctrine\DBAL\Types\Type::convertToPhpValue()`` of the ``Type`` returned in ``getReturnType()``.
+
+.. code-block:: php
+
+    <?php
+
+    use Doctrine\DBAL\Types\Type;
+    use Doctrine\DBAL\Types\Types;
+    use Doctrine\ORM\Query\AST\Functions\FunctionNode;
+    use Doctrine\ORM\Query\AST\TypedExpression;
+
+    class DateDiff extends FunctionNode implements TypedExpression
+    {
+        // ...
+
+        public function getReturnType(): Type
+        {
+            return Type::getType(Types::INTEGER);
+        }
+    }
+
+
 Conclusion
 ----------
 
@@ -240,12 +267,10 @@ functionalities in DQL, we would be excited to see user extensions
 that add vendor specific function packages, for example more math
 functions, XML + GIS Support, Hashing functions and so on.
 
-For 2.0 we will come with the current set of functions, however for
+For ORM we will come with the current set of functions, however for
 a future version we will re-evaluate if we can abstract even more
 vendor sql functions and extend the DQL languages scope.
 
 Code for this Extension to DQL and other Doctrine Extensions can be
 found
-`in my Github DoctrineExtensions repository <http://github.com/beberlei/DoctrineExtensions>`_.
-
-
+`in the GitHub DoctrineExtensions repository <https://github.com/beberlei/DoctrineExtensions>`_.

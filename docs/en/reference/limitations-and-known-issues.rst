@@ -1,12 +1,12 @@
 Limitations and Known Issues
 ============================
 
-We try to make using Doctrine2 a very pleasant experience.
+We try to make using Doctrine ORM a very pleasant experience.
 Therefore we think it is very important to be honest about the
 current limitations to our users. Much like every other piece of
-software Doctrine2 is not perfect and far from feature complete.
+software the ORM is not perfect and far from feature complete.
 This section should give you an overview of current limitations of
-Doctrine 2 as well as critical known issues that you should know
+Doctrine ORM as well as critical known issues that you should know
 about.
 
 Current Limitations
@@ -63,16 +63,7 @@ Where the ``attribute_name`` column contains the key and
 ``$attributes``.
 
 The feature request for persistence of primitive value arrays
-`is described in the DDC-298 ticket <http://www.doctrine-project.org/jira/browse/DDC-298>`_.
-
-Cascade Merge with Bi-directional Associations
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-There are two bugs now that concern the use of cascade merge in combination with bi-directional associations.
-Make sure to study the behavior of cascade merge if you are using it:
-
--  `DDC-875 <http://www.doctrine-project.org/jira/browse/DDC-875>`_ Merge can sometimes add the same entity twice into a collection
--  `DDC-763 <http://www.doctrine-project.org/jira/browse/DDC-763>`_ Cascade merge on associated entities can insert too many rows through "Persistence by Reachability"
+`is described in the DDC-298 ticket <https://github.com/doctrine/orm/issues/3743>`_.
 
 Custom Persisters
 ~~~~~~~~~~~~~~~~~
@@ -83,10 +74,8 @@ Currently there is no way to overwrite the persister implementation
 for a given entity, however there are several use-cases that can
 benefit from custom persister implementations:
 
-
--  `Add Upsert Support <http://www.doctrine-project.org/jira/browse/DDC-668>`_
--  `Evaluate possible ways in which stored-procedures can be used <http://www.doctrine-project.org/jira/browse/DDC-445>`_
--  The previous Filter Rules Feature Request
+-  `Add Upsert Support <https://github.com/doctrine/orm/issues/5178>`_
+-  `Evaluate possible ways in which stored-procedures can be used <https://github.com/doctrine/orm/issues/4946>`_
 
 Persist Keys of Collections
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -96,7 +85,7 @@ PHP Arrays are ordered hash-maps and so should be the
 evaluate a feature that optionally persists and hydrates the keys
 of a Collection instance.
 
-`Ticket DDC-213 <http://www.doctrine-project.org/jira/browse/DDC-213>`_
+`Ticket DDC-213 <https://github.com/doctrine/orm/issues/2817>`_
 
 Mapping many tables to one entity
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -109,18 +98,17 @@ to the same entity.
 Behaviors
 ~~~~~~~~~
 
-Doctrine 2 will **never** include a behavior system like Doctrine 1
+Doctrine ORM will **never** include a behavior system like Doctrine 1
 in the core library. We don't think behaviors add more value than
 they cost pain and debugging hell. Please see the many different
 blog posts we have written on this topics:
 
--  `Doctrine2 "Behaviors" in a Nutshell <http://www.doctrine-project.org/blog/doctrine2-behaviours-nutshell>`_
--  `A re-usable Versionable behavior for Doctrine2 <http://www.doctrine-project.org/blog/doctrine2-versionable>`_
--  `Write your own ORM on top of Doctrine2 <http://www.doctrine-project.org/blog/your-own-orm-doctrine2>`_
--  `Doctrine 2 Behavioral Extensions <http://www.doctrine-project.org/blog/doctrine2-behavioral-extensions>`_
--  `Doctrator <https://github.com/pablodip/doctrator`>_
+-  `Doctrine2 "Behaviors" in a Nutshell <https://www.doctrine-project.org/2010/02/17/doctrine2-behaviours-nutshell.html>`_
+-  `A re-usable Versionable behavior for Doctrine2 <https://www.doctrine-project.org/2010/02/24/doctrine2-versionable.html>`_
+-  `Write your own ORM on top of Doctrine2 <https://www.doctrine-project.org/2010/07/19/your-own-orm-doctrine2.html>`_
+-  `Doctrine ORM Behavioral Extensions <https://www.doctrine-project.org/2010/11/18/doctrine2-behavioral-extensions.html>`_
 
-Doctrine 2 has enough hooks and extension points so that **you** can
+Doctrine ORM has enough hooks and extension points so that **you** can
 add whatever you want on top of it. None of this will ever become
 core functionality of Doctrine2 however, you will have to rely on
 third party extensions for magical behaviors.
@@ -129,13 +117,66 @@ Nested Set
 ~~~~~~~~~~
 
 NestedSet was offered as a behavior in Doctrine 1 and will not be
-included in the core of Doctrine 2. However there are already two
+included in the core of Doctrine ORM. However there are already two
 extensions out there that offer support for Nested Set with
-Doctrine 2:
+ORM:
 
+-  `Doctrine2 Hierarchical-Structural Behavior <https://github.com/guilhermeblanco/Doctrine2-Hierarchical-Structural-Behavior>`_
+-  `Doctrine2 NestedSet <https://github.com/blt04/doctrine2-nestedset>`_
 
--  `Doctrine2 Hierarchical-Structural Behavior <http://github.com/guilhermeblanco/Doctrine2-Hierarchical-Structural-Behavior>`_
--  `Doctrine2 NestedSet <http://github.com/blt04/doctrine2-nestedset>`_
+Using Traits in Entity Classes
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The use of traits in entity or mapped superclasses, at least when they
+include mapping configuration or mapped fields, is currently not
+endorsed by the Doctrine project. The reasons for this are as follows.
+
+Traits were added in PHP 5.4 more than 10 years ago, but at the same time
+more than two years after the initial Doctrine 2 release and the time where
+core components were designed.
+
+In fact, this documentation mentions traits only in the context of
+:doc:`overriding field association mappings in subclasses </tutorials/override-field-association-mappings-in-subclasses>`.
+Coverage of traits in test cases is practically nonexistent.
+
+Thus, you should at least be aware that when using traits in your entity and
+mapped superclasses, you will be in uncharted terrain.
+
+.. warning::
+
+    There be dragons.
+
+From a more technical point of view, traits basically work at the language level
+as if the code contained in them had been copied into the class where the trait
+is used, and even private fields are accessible by the using class. In addition to
+that, some precedence and conflict resolution rules apply.
+
+When it comes to loading mapping configuration, the annotation and attribute drivers
+rely on PHP reflection to inspect class properties including their docblocks.
+As long as the results are consistent with what a solution *without* traits would
+have produced, this is probably fine.
+
+However, to mention known limitations, it is currently not possible to use "class"
+level `annotations <https://github.com/doctrine/orm/pull/1517>`_ or
+`attributes <https://github.com/doctrine/orm/issues/8868>`_ on traits, and attempts to
+improve parser support for traits as `here <https://github.com/doctrine/annotations/pull/102>`_
+or `there <https://github.com/doctrine/annotations/pull/63>`_ have been abandoned
+due to complexity.
+
+XML mapping configuration probably needs to completely re-configure or otherwise
+copy-and-paste configuration for fields used from traits.
+
+Mapping multiple private fields of the same name
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+When two classes, say a mapped superclass and an entity inheriting from it,
+both contain a ``private`` field of the same name, this will lead to a ``MappingException``.
+
+Since the fields are ``private``, both are technically separate and can contain
+different values at the same time. However, the ``ClassMetadata`` configuration used
+internally by the ORM currently refers to fields by their name only, without taking the
+class containing the field into consideration. This makes it impossible to keep separate
+mapping configuration for both fields.
 
 Known Issues
 ------------
@@ -146,17 +187,15 @@ backwards compatibility issues or where no simple fix exists (yet).
 We don't plan to add every bug in the tracker there, just those
 issues that can potentially cause nightmares or pain of any sort.
 
-See the Open Bugs on Jira for more details on `bugs, improvement and feature
-requests
-<http://www.doctrine-project.org/jira/secure/IssueNavigator.jspa?reset=true&mode=hide&pid=10032&resolution=-1&sorter/field=updated&sorter/order=DESC>`_.
+See bugs, improvement and feature requests on `Github issues <https://github.com/doctrine/orm/issues>`_.
 
 Identifier Quoting and Legacy Databases
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 For compatibility reasons between all the supported vendors and
-edge case problems Doctrine 2 does **NOT** do automatic identifier
+edge case problems Doctrine ORM does **NOT** do automatic identifier
 quoting. This can lead to problems when trying to get
-legacy-databases to work with Doctrine 2.
+legacy-databases to work with Doctrine ORM.
 
 
 -  You can quote column-names as described in the

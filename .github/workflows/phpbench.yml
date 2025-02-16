@@ -1,0 +1,54 @@
+
+name: "Performance benchmark"
+
+on:
+  pull_request:
+    branches:
+      - "*.x"
+    paths:
+      - .github/workflows/phpbench.yml
+      - composer.*
+      - src/**
+      - phpbench.json
+      - tests/**
+  push:
+    branches:
+      - "*.x"
+    paths:
+      - .github/workflows/phpbench.yml
+      - composer.*
+      - src/**
+      - phpbench.json
+      - tests/**
+
+env:
+  fail-fast: true
+
+jobs:
+  phpbench:
+    name: "PHPBench"
+    runs-on: "ubuntu-22.04"
+
+    strategy:
+      matrix:
+        php-version:
+          - "8.1"
+
+    steps:
+      - name: "Checkout"
+        uses: "actions/checkout@v4"
+        with:
+          fetch-depth: 2
+
+      - name: "Install PHP"
+        uses: "shivammathur/setup-php@v2"
+        with:
+          php-version: "${{ matrix.php-version }}"
+          coverage: "pcov"
+          ini-values: "zend.assertions=1, apc.enable_cli=1"
+
+      - name: "Install dependencies with Composer"
+        uses: "ramsey/composer-install@v3"
+
+      - name: "Run PHPBench"
+        run: "vendor/bin/phpbench run --report=default"

@@ -1,0 +1,56 @@
+name: "Static Analysis"
+
+on:
+  pull_request:
+    branches:
+      - "*.x"
+    paths:
+      - .github/workflows/static-analysis.yml
+      - composer.*
+      - src/**
+      - phpstan*
+      - tests/StaticAnalysis/**
+  push:
+    branches:
+      - "*.x"
+    paths:
+      - .github/workflows/static-analysis.yml
+      - composer.*
+      - src/**
+      - phpstan*
+      - tests/StaticAnalysis/**
+
+jobs:
+  static-analysis-phpstan:
+    name: Static Analysis with PHPStan
+    runs-on: ubuntu-22.04
+
+    strategy:
+      matrix:
+        include:
+        - dbal-version: default
+          config: phpstan.neon
+        - dbal-version: 3.8.2
+          config: phpstan-dbal3.neon
+
+    steps:
+      - name: "Checkout code"
+        uses: "actions/checkout@v4"
+
+      - name: Install PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          coverage: none
+          php-version: "8.4"
+          tools: cs2pr
+
+      - name: Require specific DBAL version
+        run: "composer require doctrine/dbal ^${{ matrix.dbal-version }} --no-update"
+        if: "${{ matrix.dbal-version != 'default' }}"
+
+
+      - name: Install dependencies with Composer
+        uses: ramsey/composer-install@v2
+
+      - name: Run static analysis with phpstan/phpstan
+        run: "vendor/bin/phpstan analyse -c ${{ matrix.config }} --error-format=checkstyle | cs2pr"

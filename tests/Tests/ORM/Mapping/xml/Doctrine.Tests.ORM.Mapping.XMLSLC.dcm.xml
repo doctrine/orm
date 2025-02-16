@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
+                          https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+    <entity name="Doctrine\Tests\ORM\Mapping\XMLSLC">
+        <cache usage="NONSTRICT_READ_WRITE" />
+        <id name="foo" association-key="true"/>
+        <many-to-one field="foo" target-entity="Doctrine\Tests\ORM\Mapping\XMLSLCFoo">
+            <join-column name="foo_id" referenced-column-name="id" />
+        </many-to-one>
+    </entity>
+</doctrine-mapping>

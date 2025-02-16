@@ -1,0 +1,52 @@
+includes:
+    - phpstan-baseline.neon
+    - phpstan-params.neon
+
+parameters:
+    ignoreErrors:
+        # Symfony cache supports passing a key prefix to the clear method.
+        - '/^Method Psr\\Cache\\CacheItemPoolInterface\:\:clear\(\) invoked with 1 parameter, 0 required\.$/'
+
+        # We can be certain that those values are not matched.
+        -
+            message: '~^Match expression does not handle remaining values:~'
+            path: src/Persisters/Entity/BasicEntityPersister.php
+
+        # DBAL 4 compatibility
+        -
+            message: '~^Method Doctrine\\ORM\\Query\\AST\\Functions\\TrimFunction::getTrimMode\(\) never returns .* so it can be removed from the return type\.$~'
+            path: src/Query/AST/Functions/TrimFunction.php
+        -
+            message: '~^Method Doctrine\\ORM\\Persisters\\Entity\\BasicEntityPersister\:\:getArrayBindingType\(\) never returns .* so it can be removed from the return type\.$~'
+            path: src/Persisters/Entity/BasicEntityPersister.php
+
+        # Compatibility with DBAL 3
+        # See https://github.com/doctrine/dbal/pull/3480
+        -
+            message: '~^Result of method Doctrine\\DBAL\\Connection::commit\(\) \(void\) is used\.$~'
+            path: src/UnitOfWork.php
+        -
+            message: '~^Strict comparison using === between null and false will always evaluate to false\.$~'
+            path: src/UnitOfWork.php
+        -
+            message: '~^Variable \$e on left side of \?\? always exists and is not nullable\.$~'
+            path: src/UnitOfWork.php
+
+        -
+            message: '~^Parameter #1 \$command of method Symfony\\Component\\Console\\Application::add\(\) expects Symfony\\Component\\Console\\Command\\Command, Doctrine\\DBAL\\Tools\\Console\\Command\\ReservedWordsCommand given\.$~'
+            path: src/Tools/Console/ConsoleRunner.php
+
+        -
+            message: '~Strict comparison using \=\=\= between callable\(\)\: mixed and null will always evaluate to false\.~'
+            path: src/Tools/SchemaTool.php
+
+        # To be removed in 4.0
+        -
+            message: '#Negated boolean expression is always false\.#'
+            paths:
+                - src/Mapping/Driver/AttributeDriver.php
+
+        # Compatibility with Persistence 3
+        -
+            message: '#Expression on left side of \?\? is not nullable.#'
+            path: src/Mapping/Driver/AttributeDriver.php

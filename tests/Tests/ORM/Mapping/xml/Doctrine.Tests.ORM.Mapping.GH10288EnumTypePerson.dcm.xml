@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
+                          https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+
+    <entity name="Doctrine\Tests\ORM\Mapping\GH10288EnumTypePerson" inheritance-type="SINGLE_TABLE">
+        <discriminator-column name="discr" enum-type="Doctrine\Tests\Models\GH10288\GH10288People"/>
+        
+        <discriminator-map>
+            <discriminator-mapping value="boss" class="Doctrine\Tests\ORM\Mapping\GH10288EnumTypeBoss" />
+        </discriminator-map>
+
+        <id name="id">
+            <generator strategy="NONE"/>
+        </id>
+    </entity>
+        
+</doctrine-mapping>

@@ -1,0 +1,3427 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '#^Expression "\$setCacheEntry\(\$data\)" on a separate line does not do anything\.$#'
+			identifier: expr.resultUnused
+			count: 1
+			path: src/AbstractQuery.php
+
+		-
+			message: '#^Expression "\$setCacheEntry\(\$stmt\)" on a separate line does not do anything\.$#'
+			identifier: expr.resultUnused
+			count: 1
+			path: src/AbstractQuery.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\AbstractQuery\:\:getParameter\(\) should return Doctrine\\ORM\\Query\\Parameter\|null but returns Doctrine\\ORM\\Query\\Parameter\|false\|null\.$#'
+			identifier: return.type
+			count: 1
+			path: src/AbstractQuery.php
+
+		-
+			message: '#^Parameter \#1 \$stmt of method Doctrine\\ORM\\Internal\\Hydration\\AbstractHydrator\:\:toIterable\(\) expects Doctrine\\DBAL\\Result, Doctrine\\DBAL\\Result\|int given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/AbstractQuery.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Cache\\CacheFactory\:\:buildCachedEntityPersister\(\) has parameter \$metadata with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Cache/CacheFactory.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Cache\\CacheFactory\:\:buildEntityHydrator\(\) has parameter \$metadata with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Cache/CacheFactory.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Cache\\CollectionHydrator\:\:buildCacheEntry\(\) has parameter \$collection with generic interface Doctrine\\Common\\Collections\\Collection but does not specify its types\: TKey, T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Cache/CollectionHydrator.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Cache\\CollectionHydrator\:\:buildCacheEntry\(\) has parameter \$collection with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Cache/CollectionHydrator.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Cache\\CollectionHydrator\:\:buildCacheEntry\(\) has parameter \$collection with no value type specified in iterable type array\|\(Doctrine\\Common\\Collections\\Collection&iterable\)\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Cache/CollectionHydrator.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Cache\\CollectionHydrator\:\:buildCacheEntry\(\) has parameter \$metadata with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Cache/CollectionHydrator.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Cache\\CollectionHydrator\:\:loadCacheEntry\(\) has parameter \$collection with generic class Doctrine\\ORM\\PersistentCollection but does not specify its types\: TKey, T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Cache/CollectionHydrator.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Cache\\CollectionHydrator\:\:loadCacheEntry\(\) has parameter \$metadata with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Cache/CollectionHydrator.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Cache\\DefaultCache\:\:buildCollectionCacheKey\(\) has parameter \$metadata with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Cache/DefaultCache.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Cache\\DefaultCache\:\:buildEntityCacheKey\(\) has parameter \$metadata with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Cache/DefaultCache.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Cache\\DefaultCache\:\:toIdentifierArray\(\) has parameter \$metadata with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Cache/DefaultCache.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Cache\\DefaultCacheFactory\:\:buildCachedEntityPersister\(\) has parameter \$metadata with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Cache/DefaultCacheFactory.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Cache\\DefaultCacheFactory\:\:buildEntityHydrator\(\) has parameter \$metadata with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Cache/DefaultCacheFactory.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Cache\\DefaultCollectionHydrator\:\:buildCacheEntry\(\) has parameter \$collection with generic interface Doctrine\\Common\\Collections\\Collection but does not specify its types\: TKey, T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Cache/DefaultCollectionHydrator.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Cache\\DefaultCollectionHydrator\:\:buildCacheEntry\(\) has parameter \$collection with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Cache/DefaultCollectionHydrator.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Cache\\DefaultCollectionHydrator\:\:buildCacheEntry\(\) has parameter \$collection with no value type specified in iterable type array\|\(Doctrine\\Common\\Collections\\Collection&iterable\)\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Cache/DefaultCollectionHydrator.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Cache\\DefaultCollectionHydrator\:\:buildCacheEntry\(\) has parameter \$metadata with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Cache/DefaultCollectionHydrator.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Cache\\DefaultCollectionHydrator\:\:loadCacheEntry\(\) has parameter \$collection with generic class Doctrine\\ORM\\PersistentCollection but does not specify its types\: TKey, T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Cache/DefaultCollectionHydrator.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Cache\\DefaultCollectionHydrator\:\:loadCacheEntry\(\) has parameter \$metadata with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Cache/DefaultCollectionHydrator.php
+
+		-
+			message: '#^Access to an undefined property Doctrine\\ORM\\Mapping\\ManyToManyInverseSideMapping\|Doctrine\\ORM\\Mapping\\ManyToManyOwningSideMapping\|Doctrine\\ORM\\Mapping\\ManyToOneAssociationMapping\|Doctrine\\ORM\\Mapping\\OneToManyAssociationMapping\|Doctrine\\ORM\\Mapping\\OneToOneInverseSideMapping\|Doctrine\\ORM\\Mapping\\OneToOneOwningSideMapping\:\:\$joinColumnFieldNames\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Cache/DefaultEntityHydrator.php
+
+		-
+			message: '#^Access to an undefined property Doctrine\\ORM\\Mapping\\ManyToManyInverseSideMapping\|Doctrine\\ORM\\Mapping\\ManyToManyOwningSideMapping\|Doctrine\\ORM\\Mapping\\ManyToOneAssociationMapping\|Doctrine\\ORM\\Mapping\\OneToManyAssociationMapping\|Doctrine\\ORM\\Mapping\\OneToOneInverseSideMapping\|Doctrine\\ORM\\Mapping\\OneToOneOwningSideMapping\:\:\$targetToSourceKeyColumns\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Cache/DefaultEntityHydrator.php
+
+		-
+			message: '#^Access to an undefined property Doctrine\\ORM\\Mapping\\ManyToManyOwningSideMapping\|Doctrine\\ORM\\Mapping\\ManyToOneAssociationMapping\|Doctrine\\ORM\\Mapping\\OneToOneOwningSideMapping\:\:\$targetToSourceKeyColumns\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Cache/DefaultEntityHydrator.php
+
+		-
+			message: '#^Call to an undefined method Doctrine\\ORM\\Persisters\\Entity\\EntityPersister\:\:getCacheRegion\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Cache/DefaultEntityHydrator.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Cache\\DefaultEntityHydrator\:\:buildCacheEntry\(\) has parameter \$metadata with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Cache/DefaultEntityHydrator.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Cache\\DefaultEntityHydrator\:\:loadCacheEntry\(\) has parameter \$metadata with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Cache/DefaultEntityHydrator.php
+
+		-
+			message: '#^Parameter \#2 \$data of class Doctrine\\ORM\\Cache\\EntityCacheEntry constructor expects array\<string, mixed\>, array\<int\|string, mixed\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Cache/DefaultEntityHydrator.php
+
+		-
+			message: '#^Unable to resolve the template type T in call to method Doctrine\\ORM\\EntityManagerInterface\:\:getReference\(\)$#'
+			identifier: argument.templateType
+			count: 1
+			path: src/Cache/DefaultEntityHydrator.php
+
+		-
+			message: '#^Access to an undefined property Doctrine\\ORM\\Cache\\CacheEntry\:\:\$class\.$#'
+			identifier: property.notFound
+			count: 2
+			path: src/Cache/DefaultQueryCache.php
+
+		-
+			message: '#^Call to an undefined method Doctrine\\ORM\\Cache\\CacheEntry\:\:resolveAssociationEntries\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: src/Cache/DefaultQueryCache.php
+
+		-
+			message: '#^Call to an undefined method Doctrine\\ORM\\Persisters\\Entity\\EntityPersister\:\:getCacheRegion\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Cache/DefaultQueryCache.php
+
+		-
+			message: '#^Call to an undefined method Doctrine\\ORM\\Persisters\\Entity\\EntityPersister\:\:storeEntityCache\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: src/Cache/DefaultQueryCache.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Cache\\DefaultQueryCache\:\:storeAssociationCache\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 2
+			path: src/Cache/DefaultQueryCache.php
+
+		-
+			message: '#^Parameter \#1 \$className of method Doctrine\\ORM\\EntityManagerInterface\:\:getClassMetadata\(\) expects string, class\-string\|false given\.$#'
+			identifier: argument.type
+			count: 2
+			path: src/Cache/DefaultQueryCache.php
+
+		-
+			message: '#^Parameter \#1 \$entityName of method Doctrine\\ORM\\UnitOfWork\:\:getEntityPersister\(\) expects class\-string, class\-string\|false given\.$#'
+			identifier: argument.type
+			count: 2
+			path: src/Cache/DefaultQueryCache.php
+
+		-
+			message: '#^Parameter \#1 \$entityName of static method Doctrine\\ORM\\Cache\\Exception\\NonCacheableEntity\:\:fromEntity\(\) expects string, class\-string\|false given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Cache/DefaultQueryCache.php
+
+		-
+			message: '#^Parameter \#1 \$result of class Doctrine\\ORM\\Cache\\QueryCacheEntry constructor expects array\<string, mixed\>, array\<int\|string, array\<string, array\<mixed\>\>\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Cache/DefaultQueryCache.php
+
+		-
+			message: '#^Parameter \#2 \$key of method Doctrine\\ORM\\Cache\\Logging\\CacheLogger\:\:entityCacheHit\(\) expects Doctrine\\ORM\\Cache\\EntityCacheKey, Doctrine\\ORM\\Cache\\CacheKey given\.$#'
+			identifier: argument.type
+			count: 2
+			path: src/Cache/DefaultQueryCache.php
+
+		-
+			message: '#^Parameter \#2 \$key of method Doctrine\\ORM\\Cache\\Logging\\CacheLogger\:\:entityCacheMiss\(\) expects Doctrine\\ORM\\Cache\\EntityCacheKey, Doctrine\\ORM\\Cache\\CacheKey given\.$#'
+			identifier: argument.type
+			count: 2
+			path: src/Cache/DefaultQueryCache.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Cache\\EntityHydrator\:\:buildCacheEntry\(\) has parameter \$metadata with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Cache/EntityHydrator.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Cache\\EntityHydrator\:\:loadCacheEntry\(\) has parameter \$metadata with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Cache/EntityHydrator.php
+
+		-
+			message: '#^Access to an undefined property Doctrine\\ORM\\Cache\\CacheEntry\:\:\$identifiers\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Cache/Persister/Collection/AbstractCollectionPersister.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Cache\\Persister\\Collection\\AbstractCollectionPersister\:\:contains\(\) has parameter \$collection with generic class Doctrine\\ORM\\PersistentCollection but does not specify its types\: TKey, T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Cache/Persister/Collection/AbstractCollectionPersister.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Cache\\Persister\\Collection\\AbstractCollectionPersister\:\:containsKey\(\) has parameter \$collection with generic class Doctrine\\ORM\\PersistentCollection but does not specify its types\: TKey, T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Cache/Persister/Collection/AbstractCollectionPersister.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Cache\\Persister\\Collection\\AbstractCollectionPersister\:\:count\(\) has parameter \$collection with generic class Doctrine\\ORM\\PersistentCollection but does not specify its types\: TKey, T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Cache/Persister/Collection/AbstractCollectionPersister.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Cache\\Persister\\Collection\\AbstractCollectionPersister\:\:get\(\) has parameter \$collection with generic class Doctrine\\ORM\\PersistentCollection but does not specify its types\: TKey, T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Cache/Persister/Collection/AbstractCollectionPersister.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Cache\\Persister\\Collection\\AbstractCollectionPersister\:\:getSourceEntityMetadata\(\) return type with generic class Doctrine\\ORM\\Mapping\\ClassMetadata does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Cache/Persister/Collection/AbstractCollectionPersister.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Cache\\Persister\\Collection\\AbstractCollectionPersister\:\:getTargetEntityMetadata\(\) return type with generic class Doctrine\\ORM\\Mapping\\ClassMetadata does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Cache/Persister/Collection/AbstractCollectionPersister.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Cache\\Persister\\Collection\\AbstractCollectionPersister\:\:loadCollectionCache\(\) has parameter \$collection with generic class Doctrine\\ORM\\PersistentCollection but does not specify its types\: TKey, T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Cache/Persister/Collection/AbstractCollectionPersister.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Cache\\Persister\\Collection\\AbstractCollectionPersister\:\:loadCriteria\(\) has parameter \$collection with generic class Doctrine\\ORM\\PersistentCollection but does not specify its types\: TKey, T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Cache/Persister/Collection/AbstractCollectionPersister.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Cache\\Persister\\Collection\\AbstractCollectionPersister\:\:slice\(\) has parameter \$collection with generic class Doctrine\\ORM\\PersistentCollection but does not specify its types\: TKey, T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Cache/Persister/Collection/AbstractCollectionPersister.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Cache\\Persister\\Collection\\AbstractCollectionPersister\:\:storeCollectionCache\(\) has parameter \$elements with generic interface Doctrine\\Common\\Collections\\Collection but does not specify its types\: TKey, T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Cache/Persister/Collection/AbstractCollectionPersister.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Cache\\Persister\\Collection\\AbstractCollectionPersister\:\:storeCollectionCache\(\) has parameter \$elements with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Cache/Persister/Collection/AbstractCollectionPersister.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Cache\\Persister\\Collection\\AbstractCollectionPersister\:\:storeCollectionCache\(\) has parameter \$elements with no value type specified in iterable type array\|\(Doctrine\\Common\\Collections\\Collection&iterable\)\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Cache/Persister/Collection/AbstractCollectionPersister.php
+
+		-
+			message: '#^Parameter \#2 \$key of method Doctrine\\ORM\\Cache\\EntityHydrator\:\:buildCacheEntry\(\) expects Doctrine\\ORM\\Cache\\EntityCacheKey, Doctrine\\ORM\\Cache\\CacheKey given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Cache/Persister/Collection/AbstractCollectionPersister.php
+
+		-
+			message: '#^Parameter \#3 \$entry of method Doctrine\\ORM\\Cache\\CollectionHydrator\:\:loadCacheEntry\(\) expects Doctrine\\ORM\\Cache\\CollectionCacheEntry, Doctrine\\ORM\\Cache\\CacheEntry given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Cache/Persister/Collection/AbstractCollectionPersister.php
+
+		-
+			message: '#^Property Doctrine\\ORM\\Cache\\Persister\\Collection\\AbstractCollectionPersister\:\:\$sourceEntity with generic class Doctrine\\ORM\\Mapping\\ClassMetadata does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Cache/Persister/Collection/AbstractCollectionPersister.php
+
+		-
+			message: '#^Property Doctrine\\ORM\\Cache\\Persister\\Collection\\AbstractCollectionPersister\:\:\$targetEntity with generic class Doctrine\\ORM\\Mapping\\ClassMetadata does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Cache/Persister/Collection/AbstractCollectionPersister.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Cache\\Persister\\Collection\\CachedCollectionPersister\:\:getSourceEntityMetadata\(\) return type with generic class Doctrine\\ORM\\Mapping\\ClassMetadata does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Cache/Persister/Collection/CachedCollectionPersister.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Cache\\Persister\\Collection\\CachedCollectionPersister\:\:getTargetEntityMetadata\(\) return type with generic class Doctrine\\ORM\\Mapping\\ClassMetadata does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Cache/Persister/Collection/CachedCollectionPersister.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Cache\\Persister\\Collection\\CachedCollectionPersister\:\:loadCollectionCache\(\) has parameter \$collection with generic class Doctrine\\ORM\\PersistentCollection but does not specify its types\: TKey, T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Cache/Persister/Collection/CachedCollectionPersister.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Cache\\Persister\\Collection\\CachedCollectionPersister\:\:storeCollectionCache\(\) has parameter \$elements with generic interface Doctrine\\Common\\Collections\\Collection but does not specify its types\: TKey, T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Cache/Persister/Collection/CachedCollectionPersister.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Cache\\Persister\\Collection\\CachedCollectionPersister\:\:storeCollectionCache\(\) has parameter \$elements with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Cache/Persister/Collection/CachedCollectionPersister.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Cache\\Persister\\Collection\\CachedCollectionPersister\:\:storeCollectionCache\(\) has parameter \$elements with no value type specified in iterable type array\|\(Doctrine\\Common\\Collections\\Collection&iterable\)\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Cache/Persister/Collection/CachedCollectionPersister.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Cache\\Persister\\Collection\\NonStrictReadWriteCachedCollectionPersister\:\:delete\(\) has parameter \$collection with generic class Doctrine\\ORM\\PersistentCollection but does not specify its types\: TKey, T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Cache/Persister/Collection/NonStrictReadWriteCachedCollectionPersister.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Cache\\Persister\\Collection\\NonStrictReadWriteCachedCollectionPersister\:\:update\(\) has parameter \$collection with generic class Doctrine\\ORM\\PersistentCollection but does not specify its types\: TKey, T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Cache/Persister/Collection/NonStrictReadWriteCachedCollectionPersister.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Cache\\Persister\\Collection\\ReadOnlyCachedCollectionPersister\:\:update\(\) has parameter \$collection with generic class Doctrine\\ORM\\PersistentCollection but does not specify its types\: TKey, T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Cache/Persister/Collection/ReadOnlyCachedCollectionPersister.php
+
+		-
+			message: '#^Call to an undefined method Doctrine\\ORM\\Cache\\Region\:\:lock\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: src/Cache/Persister/Collection/ReadWriteCachedCollectionPersister.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Cache\\Persister\\Collection\\ReadWriteCachedCollectionPersister\:\:delete\(\) has parameter \$collection with generic class Doctrine\\ORM\\PersistentCollection but does not specify its types\: TKey, T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Cache/Persister/Collection/ReadWriteCachedCollectionPersister.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Cache\\Persister\\Collection\\ReadWriteCachedCollectionPersister\:\:update\(\) has parameter \$collection with generic class Doctrine\\ORM\\PersistentCollection but does not specify its types\: TKey, T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Cache/Persister/Collection/ReadWriteCachedCollectionPersister.php
+
+		-
+			message: '#^Access to an undefined property Doctrine\\ORM\\Cache\\CacheEntry\:\:\$class\.$#'
+			identifier: property.notFound
+			count: 2
+			path: src/Cache/Persister/Entity/AbstractEntityPersister.php
+
+		-
+			message: '#^Call to an undefined method Doctrine\\ORM\\Cache\\Persister\\CachedPersister&Doctrine\\ORM\\Persisters\\Collection\\CollectionPersister\:\:loadCollectionCache\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: src/Cache/Persister/Entity/AbstractEntityPersister.php
+
+		-
+			message: '#^Call to an undefined method Doctrine\\ORM\\Cache\\Persister\\CachedPersister&Doctrine\\ORM\\Persisters\\Collection\\CollectionPersister\:\:storeCollectionCache\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: src/Cache/Persister/Entity/AbstractEntityPersister.php
+
+		-
+			message: '#^Call to an undefined method Doctrine\\ORM\\Persisters\\Entity\\EntityPersister\:\:storeEntityCache\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Cache/Persister/Entity/AbstractEntityPersister.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Cache\\Persister\\Entity\\AbstractEntityPersister\:\:__construct\(\) has parameter \$class with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Cache/Persister/Entity/AbstractEntityPersister.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Cache\\Persister\\Entity\\AbstractEntityPersister\:\:getClassMetadata\(\) return type with generic class Doctrine\\ORM\\Mapping\\ClassMetadata does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Cache/Persister/Entity/AbstractEntityPersister.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Cache\\Persister\\Entity\\AbstractEntityPersister\:\:loadManyToManyCollection\(\) has parameter \$collection with generic class Doctrine\\ORM\\PersistentCollection but does not specify its types\: TKey, T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Cache/Persister/Entity/AbstractEntityPersister.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Cache\\Persister\\Entity\\AbstractEntityPersister\:\:loadOneToManyCollection\(\) has parameter \$collection with generic class Doctrine\\ORM\\PersistentCollection but does not specify its types\: TKey, T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Cache/Persister/Entity/AbstractEntityPersister.php
+
+		-
+			message: '#^Parameter \#3 \$entry of method Doctrine\\ORM\\Cache\\EntityHydrator\:\:loadCacheEntry\(\) expects Doctrine\\ORM\\Cache\\EntityCacheEntry, Doctrine\\ORM\\Cache\\CacheEntry given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Cache/Persister/Entity/AbstractEntityPersister.php
+
+		-
+			message: '#^Call to an undefined method Doctrine\\ORM\\Cache\\Region\:\:lock\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: src/Cache/Persister/Entity/ReadWriteCachedEntityPersister.php
+
+		-
+			message: '#^If condition is always true\.$#'
+			identifier: if.alwaysTrue
+			count: 1
+			path: src/Cache/Persister/Entity/ReadWriteCachedEntityPersister.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Cache\\Persister\\Entity\\ReadWriteCachedEntityPersister\:\:__construct\(\) has parameter \$class with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Cache/Persister/Entity/ReadWriteCachedEntityPersister.php
+
+		-
+			message: '#^Access to an undefined property Doctrine\\ORM\\Cache\\CacheEntry\:\:\$time\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Cache/TimestampQueryCacheValidator.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Configuration\:\:getDefaultRepositoryClassName\(\) return type with generic class Doctrine\\ORM\\EntityRepository does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Configuration.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Configuration\:\:setDefaultRepositoryClassName\(\) has parameter \$className with generic class Doctrine\\ORM\\EntityRepository but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Configuration.php
+
+		-
+			message: '#^Parameter \#2 \$className of method Doctrine\\ORM\\Configuration\:\:addCustomNumericFunction\(\) expects \(callable\(string\)\: Doctrine\\ORM\\Query\\AST\\Functions\\FunctionNode\)\|class\-string\<Doctrine\\ORM\\Query\\AST\\Functions\\FunctionNode\>, class\-string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Configuration.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Decorator\\EntityManagerDecorator\:\:getClassMetadata\(\) return type with generic class Doctrine\\ORM\\Mapping\\ClassMetadata does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Decorator/EntityManagerDecorator.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Decorator\\EntityManagerDecorator\:\:getRepository\(\) return type with generic class Doctrine\\ORM\\EntityRepository does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Decorator/EntityManagerDecorator.php
+
+		-
+			message: '#^Return type \(Doctrine\\ORM\\Mapping\\ClassMetadataFactory\) of method Doctrine\\ORM\\Decorator\\EntityManagerDecorator\:\:getMetadataFactory\(\) should be compatible with return type \(Doctrine\\Persistence\\Mapping\\ClassMetadataFactory\<Doctrine\\Persistence\\Mapping\\ClassMetadata\<object\>\>\) of method Doctrine\\Persistence\\ObjectManager\:\:getMetadataFactory\(\)$#'
+			identifier: method.childReturnType
+			count: 1
+			path: src/Decorator/EntityManagerDecorator.php
+
+		-
+			message: '#^Return type \(Doctrine\\ORM\\Mapping\\ClassMetadataFactory\) of method Doctrine\\ORM\\Decorator\\EntityManagerDecorator\:\:getMetadataFactory\(\) should be compatible with return type \(Doctrine\\Persistence\\Mapping\\ClassMetadataFactory\<Doctrine\\Persistence\\Mapping\\ClassMetadata\<object\>\>\) of method Doctrine\\Persistence\\ObjectManagerDecorator\<Doctrine\\ORM\\EntityManagerInterface\>\:\:getMetadataFactory\(\)$#'
+			identifier: method.childReturnType
+			count: 1
+			path: src/Decorator/EntityManagerDecorator.php
+
+		-
+			message: '#^Call to an undefined method object\:\:setEntityManager\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/EntityManager.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\EntityManager\:\:checkLockRequirements\(\) has parameter \$class with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/EntityManager.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\EntityManager\:\:find\(\) should return \(T of object\)\|null but returns object\.$#'
+			identifier: return.type
+			count: 1
+			path: src/EntityManager.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\EntityManager\:\:find\(\) should return \(T of object\)\|null but returns object\|null\.$#'
+			identifier: return.type
+			count: 3
+			path: src/EntityManager.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\EntityManager\:\:getReference\(\) should return \(T of object\)\|null but returns Doctrine\\ORM\\Proxy\\InternalProxy\.$#'
+			identifier: return.type
+			count: 1
+			path: src/EntityManager.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\EntityManager\:\:getReference\(\) should return \(T of object\)\|null but returns object\|null\.$#'
+			identifier: return.type
+			count: 1
+			path: src/EntityManager.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\EntityManager\:\:isUninitializedObject\(\) has parameter \$value with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/EntityManager.php
+
+		-
+			message: '#^Parameter \#1 \$className of method Doctrine\\Persistence\\Mapping\\AbstractClassMetadataFactory\<Doctrine\\ORM\\Mapping\\ClassMetadata\>\:\:getMetadataFor\(\) expects class\-string, string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/EntityManager.php
+
+		-
+			message: '#^Property Doctrine\\ORM\\EntityManager\:\:\$metadataFactory \(Doctrine\\ORM\\Mapping\\ClassMetadataFactory\) does not accept object\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: src/EntityManager.php
+
+		-
+			message: '#^Return type \(Doctrine\\ORM\\Mapping\\ClassMetadataFactory\) of method Doctrine\\ORM\\EntityManager\:\:getMetadataFactory\(\) should be compatible with return type \(Doctrine\\Persistence\\Mapping\\ClassMetadataFactory\<Doctrine\\Persistence\\Mapping\\ClassMetadata\<object\>\>\) of method Doctrine\\Persistence\\ObjectManager\:\:getMetadataFactory\(\)$#'
+			identifier: method.childReturnType
+			count: 1
+			path: src/EntityManager.php
+
+		-
+			message: '#^Return type \(Doctrine\\ORM\\Mapping\\ClassMetadataFactory\) of method Doctrine\\ORM\\EntityManagerInterface\:\:getMetadataFactory\(\) should be compatible with return type \(Doctrine\\Persistence\\Mapping\\ClassMetadataFactory\<Doctrine\\Persistence\\Mapping\\ClassMetadata\<object\>\>\) of method Doctrine\\Persistence\\ObjectManager\:\:getMetadataFactory\(\)$#'
+			identifier: method.childReturnType
+			count: 1
+			path: src/EntityManagerInterface.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\EntityRepository\:\:findBy\(\) should return list\<T of object\> but returns array\<mixed\>\.$#'
+			identifier: return.type
+			count: 1
+			path: src/EntityRepository.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\EntityRepository\:\:findOneBy\(\) should return \(T of object\)\|null but returns object\|null\.$#'
+			identifier: return.type
+			count: 1
+			path: src/EntityRepository.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\EntityRepository\:\:matching\(\) should return Doctrine\\Common\\Collections\\AbstractLazyCollection\<int, T of object\>&Doctrine\\Common\\Collections\\Selectable\<int, T of object\> but returns Doctrine\\ORM\\LazyCriteriaCollection\<\(int\|string\), object\>\.$#'
+			identifier: return.type
+			count: 1
+			path: src/EntityRepository.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Event\\ListenersInvoker\:\:getSubscribedSystems\(\) has parameter \$metadata with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Event/ListenersInvoker.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Event\\ListenersInvoker\:\:invoke\(\) has parameter \$metadata with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Event/ListenersInvoker.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Event\\OnClassMetadataNotFoundEventArgs\:\:getFoundMetadata\(\) return type with generic interface Doctrine\\Persistence\\Mapping\\ClassMetadata does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Event/OnClassMetadataNotFoundEventArgs.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Event\\OnClassMetadataNotFoundEventArgs\:\:setFoundMetadata\(\) has parameter \$classMetadata with generic interface Doctrine\\Persistence\\Mapping\\ClassMetadata but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Event/OnClassMetadataNotFoundEventArgs.php
+
+		-
+			message: '#^Property Doctrine\\ORM\\Event\\OnClassMetadataNotFoundEventArgs\:\:\$foundMetadata with generic interface Doctrine\\Persistence\\Mapping\\ClassMetadata does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Event/OnClassMetadataNotFoundEventArgs.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Event\\PreUpdateEventArgs\:\:__construct\(\) has parameter \$changeSet with generic class Doctrine\\ORM\\PersistentCollection but does not specify its types\: TKey, T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Event/PreUpdateEventArgs.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Event\\PreUpdateEventArgs\:\:getEntityChangeSet\(\) return type with generic class Doctrine\\ORM\\PersistentCollection does not specify its types\: TKey, T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Event/PreUpdateEventArgs.php
+
+		-
+			message: '#^Property Doctrine\\ORM\\Event\\PreUpdateEventArgs\:\:\$entityChangeSet with generic class Doctrine\\ORM\\PersistentCollection does not specify its types\: TKey, T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Event/PreUpdateEventArgs.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Id\\AssignedGenerator\:\:generateId\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Id/AssignedGenerator.php
+
+		-
+			message: '#^Access to an undefined property Doctrine\\ORM\\Mapping\\ManyToManyInverseSideMapping\|Doctrine\\ORM\\Mapping\\ManyToManyOwningSideMapping\|Doctrine\\ORM\\Mapping\\ManyToOneAssociationMapping\|Doctrine\\ORM\\Mapping\\OneToManyAssociationMapping\|Doctrine\\ORM\\Mapping\\OneToOneInverseSideMapping\|Doctrine\\ORM\\Mapping\\OneToOneOwningSideMapping\:\:\$joinColumns\.$#'
+			identifier: property.notFound
+			count: 2
+			path: src/Internal/Hydration/AbstractHydrator.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Internal\\Hydration\\AbstractHydrator\:\:gatherRowData\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 3
+			path: src/Internal/Hydration/AbstractHydrator.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Internal\\Hydration\\AbstractHydrator\:\:gatherRowData\(\) return type with generic class ReflectionClass does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Internal/Hydration/AbstractHydrator.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Internal\\Hydration\\AbstractHydrator\:\:getClassMetadata\(\) return type with generic class Doctrine\\ORM\\Mapping\\ClassMetadata does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Internal/Hydration/AbstractHydrator.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Internal\\Hydration\\AbstractHydrator\:\:getDiscriminatorValues\(\) has parameter \$classMetadata with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Internal/Hydration/AbstractHydrator.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Internal\\Hydration\\AbstractHydrator\:\:registerManaged\(\) has parameter \$class with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Internal/Hydration/AbstractHydrator.php
+
+		-
+			message: '#^Parameter &\$id by\-ref type of method Doctrine\\ORM\\Internal\\Hydration\\AbstractHydrator\:\:gatherRowData\(\) expects array\<string, string\>, array\<int\|string, string\> given\.$#'
+			identifier: parameterByRef.type
+			count: 1
+			path: src/Internal/Hydration/AbstractHydrator.php
+
+		-
+			message: '#^Parameter &\$nonemptyComponents by\-ref type of method Doctrine\\ORM\\Internal\\Hydration\\AbstractHydrator\:\:gatherRowData\(\) expects array\<string, bool\>, array\<int\|string, bool\> given\.$#'
+			identifier: parameterByRef.type
+			count: 1
+			path: src/Internal/Hydration/AbstractHydrator.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Internal\\Hydration\\ArrayHydrator\:\:hydrateAllData\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Internal/Hydration/ArrayHydrator.php
+
+		-
+			message: '#^Parameter &\$result by\-ref type of method Doctrine\\ORM\\Internal\\Hydration\\ArrayHydrator\:\:hydrateRowData\(\) expects array\<mixed\>, array\<mixed\>\|null given\.$#'
+			identifier: parameterByRef.type
+			count: 1
+			path: src/Internal/Hydration/ArrayHydrator.php
+
+		-
+			message: '#^Access to an undefined property Doctrine\\ORM\\Mapping\\ManyToManyInverseSideMapping\|Doctrine\\ORM\\Mapping\\ManyToManyOwningSideMapping\|Doctrine\\ORM\\Mapping\\ManyToOneAssociationMapping\|Doctrine\\ORM\\Mapping\\OneToManyAssociationMapping\|Doctrine\\ORM\\Mapping\\OneToOneInverseSideMapping\|Doctrine\\ORM\\Mapping\\OneToOneOwningSideMapping\:\:\$inversedBy\.$#'
+			identifier: property.notFound
+			count: 2
+			path: src/Internal/Hydration/ObjectHydrator.php
+
+		-
+			message: '#^Access to an undefined property Doctrine\\ORM\\Mapping\\ManyToManyInverseSideMapping\|Doctrine\\ORM\\Mapping\\ManyToManyOwningSideMapping\|Doctrine\\ORM\\Mapping\\ManyToOneAssociationMapping\|Doctrine\\ORM\\Mapping\\OneToManyAssociationMapping\|Doctrine\\ORM\\Mapping\\OneToOneInverseSideMapping\|Doctrine\\ORM\\Mapping\\OneToOneOwningSideMapping\:\:\$joinColumns\.$#'
+			identifier: property.notFound
+			count: 2
+			path: src/Internal/Hydration/ObjectHydrator.php
+
+		-
+			message: '#^Access to an undefined property Doctrine\\ORM\\Mapping\\ManyToManyInverseSideMapping\|Doctrine\\ORM\\Mapping\\ManyToManyOwningSideMapping\|Doctrine\\ORM\\Mapping\\ManyToOneAssociationMapping\|Doctrine\\ORM\\Mapping\\OneToManyAssociationMapping\|Doctrine\\ORM\\Mapping\\OneToOneInverseSideMapping\|Doctrine\\ORM\\Mapping\\OneToOneOwningSideMapping\:\:\$mappedBy\.$#'
+			identifier: property.notFound
+			count: 3
+			path: src/Internal/Hydration/ObjectHydrator.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Internal\\Hydration\\ObjectHydrator\:\:hydrateAllData\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Internal/Hydration/ObjectHydrator.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Internal\\Hydration\\ObjectHydrator\:\:initRelatedCollection\(\) has parameter \$class with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Internal/Hydration/ObjectHydrator.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Internal\\Hydration\\ObjectHydrator\:\:initRelatedCollection\(\) return type with generic class Doctrine\\ORM\\PersistentCollection does not specify its types\: TKey, T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Internal/Hydration/ObjectHydrator.php
+
+		-
+			message: '#^Parameter \#2 \$assoc of method Doctrine\\ORM\\PersistentCollection\<\(int\|string\),mixed\>\:\:setOwner\(\) expects Doctrine\\ORM\\Mapping\\AssociationMapping&Doctrine\\ORM\\Mapping\\ToManyAssociationMapping, Doctrine\\ORM\\Mapping\\ManyToManyInverseSideMapping\|Doctrine\\ORM\\Mapping\\ManyToManyOwningSideMapping\|Doctrine\\ORM\\Mapping\\ManyToOneAssociationMapping\|Doctrine\\ORM\\Mapping\\OneToManyAssociationMapping\|Doctrine\\ORM\\Mapping\\OneToOneInverseSideMapping\|Doctrine\\ORM\\Mapping\\OneToOneOwningSideMapping given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Internal/Hydration/ObjectHydrator.php
+
+		-
+			message: '#^Property Doctrine\\ORM\\Internal\\Hydration\\ObjectHydrator\:\:\$uninitializedCollections with generic class Doctrine\\ORM\\PersistentCollection does not specify its types\: TKey, T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Internal/Hydration/ObjectHydrator.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Internal\\Hydration\\ScalarColumnHydrator\:\:hydrateAllData\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Internal/Hydration/ScalarColumnHydrator.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Internal\\Hydration\\ScalarHydrator\:\:hydrateAllData\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Internal/Hydration/ScalarHydrator.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Internal\\Hydration\\SimpleObjectHydrator\:\:hydrateAllData\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Internal/Hydration/SimpleObjectHydrator.php
+
+		-
+			message: '#^Property Doctrine\\ORM\\Internal\\Hydration\\SimpleObjectHydrator\:\:\$class with generic class Doctrine\\ORM\\Mapping\\ClassMetadata does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Internal/Hydration/SimpleObjectHydrator.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Internal\\HydrationCompleteHandler\:\:deferPostLoadInvoking\(\) has parameter \$class with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Internal/HydrationCompleteHandler.php
+
+		-
+			message: '#^Property Doctrine\\ORM\\Internal\\StronglyConnectedComponents\:\:\$representingNodes \(array\<int, object\>\) does not accept array\<int\|string, object\>\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: src/Internal/StronglyConnectedComponents.php
+
+		-
+			message: '#^Property Doctrine\\ORM\\Internal\\StronglyConnectedComponents\:\:\$states \(array\<int, 1\|2\|3\>\) does not accept non\-empty\-array\<''''\|int, 1\|2\|3\>\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: src/Internal/StronglyConnectedComponents.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Mapping\\AnsiQuoteStrategy\:\:getColumnAlias\(\) has parameter \$class with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Mapping/AnsiQuoteStrategy.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Mapping\\AnsiQuoteStrategy\:\:getColumnName\(\) has parameter \$class with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Mapping/AnsiQuoteStrategy.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Mapping\\AnsiQuoteStrategy\:\:getIdentifierColumnNames\(\) has parameter \$class with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Mapping/AnsiQuoteStrategy.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Mapping\\AnsiQuoteStrategy\:\:getJoinColumnName\(\) has parameter \$class with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Mapping/AnsiQuoteStrategy.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Mapping\\AnsiQuoteStrategy\:\:getJoinTableName\(\) has parameter \$class with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Mapping/AnsiQuoteStrategy.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Mapping\\AnsiQuoteStrategy\:\:getReferencedJoinColumnName\(\) has parameter \$class with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Mapping/AnsiQuoteStrategy.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Mapping\\AnsiQuoteStrategy\:\:getSequenceName\(\) has parameter \$class with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Mapping/AnsiQuoteStrategy.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Mapping\\AnsiQuoteStrategy\:\:getTableName\(\) has parameter \$class with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Mapping/AnsiQuoteStrategy.php
+
+		-
+			message: '#^Parameter \#1 \$mappingArray of static method Doctrine\\ORM\\Mapping\\JoinTableMapping\:\:fromMappingArray\(\) expects array\{name\: string, quoted\?\: bool\|null, joinColumns\?\: array\<mixed\>, inverseJoinColumns\?\: array\<mixed\>, schema\?\: string\|null, options\?\: array\<string, mixed\>\}, non\-empty\-array\<mixed\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Mapping/AssociationMapping.php
+
+		-
+			message: '#^Property Doctrine\\ORM\\Mapping\\AssociationMapping\:\:\$cache type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Mapping/AssociationMapping.php
+
+		-
+			message: '#^Instanceof between Doctrine\\ORM\\Mapping\\AssociationOverride and Doctrine\\ORM\\Mapping\\AssociationOverride will always evaluate to true\.$#'
+			identifier: instanceof.alwaysTrue
+			count: 1
+			path: src/Mapping/AssociationOverrides.php
+
+		-
+			message: '#^Instanceof between Doctrine\\ORM\\Mapping\\AttributeOverride and Doctrine\\ORM\\Mapping\\AttributeOverride will always evaluate to true\.$#'
+			identifier: instanceof.alwaysTrue
+			count: 1
+			path: src/Mapping/AttributeOverrides.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Mapping\\Builder\\ClassMetadataBuilder\:\:__construct\(\) has parameter \$cm with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Mapping/Builder/ClassMetadataBuilder.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Mapping\\Builder\\ClassMetadataBuilder\:\:getClassMetadata\(\) return type with generic class Doctrine\\ORM\\Mapping\\ClassMetadata does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Mapping/Builder/ClassMetadataBuilder.php
+
+		-
+			message: '#^Parameter \#1 \$repositoryClassName of method Doctrine\\ORM\\Mapping\\ClassMetadata\<object\>\:\:setCustomRepositoryClass\(\) expects class\-string\<Doctrine\\ORM\\EntityRepository\>\|null, string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Mapping/Builder/ClassMetadataBuilder.php
+
+		-
+			message: '#^Parameter \#1 \$mapping of method Doctrine\\ORM\\Mapping\\ClassMetadata\<object\>\:\:mapEmbedded\(\) expects array\{fieldName\: string, class\?\: class\-string, declaredField\?\: string, columnPrefix\?\: string\|false\|null, originalField\?\: string\}, array\<mixed\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Mapping/Builder/EmbeddedBuilder.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Mapping\\Builder\\EntityListenerBuilder\:\:bindEntityListener\(\) has parameter \$metadata with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Mapping/Builder/EntityListenerBuilder.php
+
+		-
+			message: '#^Access to an undefined property Doctrine\\ORM\\Mapping\\ManyToManyInverseSideMapping\|Doctrine\\ORM\\Mapping\\ManyToManyOwningSideMapping\|Doctrine\\ORM\\Mapping\\ManyToOneAssociationMapping\|Doctrine\\ORM\\Mapping\\OneToManyAssociationMapping\|Doctrine\\ORM\\Mapping\\OneToOneInverseSideMapping\|Doctrine\\ORM\\Mapping\\OneToOneOwningSideMapping\:\:\$joinColumns\.$#'
+			identifier: property.notFound
+			count: 4
+			path: src/Mapping/ClassMetadata.php
+
+		-
+			message: '#^If condition is always true\.$#'
+			identifier: if.alwaysTrue
+			count: 1
+			path: src/Mapping/ClassMetadata.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Mapping\\ClassMetadata\:\:inlineEmbeddable\(\) has parameter \$embeddable with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Mapping/ClassMetadata.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Mapping\\ClassMetadata\:\:setAssociationOverride\(\) has parameter \$overrideMapping with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 2
+			path: src/Mapping/ClassMetadata.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Mapping\\ClassMetadata\:\:setCustomRepositoryClass\(\) has parameter \$repositoryClassName with generic class Doctrine\\ORM\\EntityRepository but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Mapping/ClassMetadata.php
+
+		-
+			message: '#^Parameter \#1 \$array \(list\<string\>\) of array_values is already a list, call has no effect\.$#'
+			identifier: arrayValues.list
+			count: 1
+			path: src/Mapping/ClassMetadata.php
+
+		-
+			message: '#^Parameter \#1 \$class of method Doctrine\\Persistence\\Mapping\\ReflectionService\:\:getAccessibleProperty\(\) expects class\-string, string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Mapping/ClassMetadata.php
+
+		-
+			message: '#^Parameter \#1 \$mapping of method Doctrine\\ORM\\Mapping\\ClassMetadata\<T of object\>\:\:validateAndCompleteTypedAssociationMapping\(\) expects array\{type\: 1\|2\|4\|8, fieldName\: string, targetEntity\?\: class\-string\}, non\-empty\-array\<string, mixed\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Mapping/ClassMetadata.php
+
+		-
+			message: '#^Parameter \#1 \$mappingArray of static method Doctrine\\ORM\\Mapping\\AssociationMapping\:\:fromMappingArray\(\) expects array\{fieldName\: string, sourceEntity\: class\-string, targetEntity\: class\-string, cascade\?\: list\<''all''\|''detach''\|''persist''\|''refresh''\|''remove''\>, fetch\?\: 2\|3\|4\|null, inherited\?\: class\-string\|null, declared\?\: class\-string\|null, cache\?\: array\<mixed\>\|null, \.\.\.\}, non\-empty\-array given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Mapping/ClassMetadata.php
+
+		-
+			message: '#^Parameter \#1 \$mappingArray of static method Doctrine\\ORM\\Mapping\\EmbeddedClassMapping\:\:fromMappingArray\(\) expects array\{class\: class\-string, columnPrefix\?\: string\|false\|null, declaredField\?\: string\|null, originalField\?\: string\|null, inherited\?\: class\-string\|null, declared\?\: class\-string\|null\}, array\{class\: string, columnPrefix\: string\|false\|null, declaredField\: string\|null, originalField\: string\|null\} given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Mapping/ClassMetadata.php
+
+		-
+			message: '#^Parameter \#1 \$mappingArray of static method Doctrine\\ORM\\Mapping\\ManyToManyOwningSideMapping\:\:fromMappingArrayAndNamingStrategy\(\) expects array\{fieldName\: string, sourceEntity\: class\-string, targetEntity\: class\-string, cascade\?\: list\<''all''\|''detach''\|''persist''\|''refresh''\|''remove''\>, fetch\?\: 2\|3\|4\|null, inherited\?\: class\-string\|null, declared\?\: class\-string\|null, cache\?\: array\<mixed\>\|null, \.\.\.\}, non\-empty\-array given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Mapping/ClassMetadata.php
+
+		-
+			message: '#^Parameter \#1 \$mappingArray of static method Doctrine\\ORM\\Mapping\\OneToManyAssociationMapping\:\:fromMappingArrayAndName\(\) expects array\{fieldName\: string, sourceEntity\: class\-string, targetEntity\: class\-string, cascade\?\: list\<''all''\|''detach''\|''persist''\|''refresh''\|''remove''\>, fetch\?\: 2\|3\|4\|null, inherited\?\: class\-string\|null, declared\?\: class\-string\|null, cache\?\: array\<mixed\>\|null, \.\.\.\}, non\-empty\-array given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Mapping/ClassMetadata.php
+
+		-
+			message: '#^Parameter \#1 \$mappingArray of static method Doctrine\\ORM\\Mapping\\ToOneInverseSideMapping\:\:fromMappingArrayAndName\(\) expects array\{fieldName\: string, sourceEntity\: class\-string, targetEntity\: class\-string, cascade\?\: list\<''all''\|''detach''\|''persist''\|''refresh''\|''remove''\>, fetch\?\: 2\|3\|4\|null, inherited\?\: class\-string\|null, declared\?\: class\-string\|null, cache\?\: array\<mixed\>\|null, \.\.\.\}, non\-empty\-array given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Mapping/ClassMetadata.php
+
+		-
+			message: '#^Parameter \#1 \$mappingArray of static method Doctrine\\ORM\\Mapping\\ToOneOwningSideMapping\:\:fromMappingArrayAndName\(\) expects array\{fieldName\: string, sourceEntity\: class\-string, targetEntity\: class\-string, cascade\?\: list\<''all''\|''detach''\|''persist''\|''refresh''\|''remove''\>, fetch\?\: 2\|3\|4\|null, inherited\?\: class\-string\|null, declared\?\: class\-string\|null, cache\?\: array\<mixed\>\|null, \.\.\.\}, non\-empty\-array given\.$#'
+			identifier: argument.type
+			count: 2
+			path: src/Mapping/ClassMetadata.php
+
+		-
+			message: '#^Parameter \#2 \$class of method Doctrine\\ORM\\Mapping\\ClassMetadata\<T of object\>\:\:getAccessibleProperty\(\) expects class\-string, string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Mapping/ClassMetadata.php
+
+		-
+			message: '#^Parameter \#3 \$embeddedClass of class Doctrine\\ORM\\Mapping\\ReflectionEmbeddedProperty constructor expects class\-string, string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Mapping/ClassMetadata.php
+
+		-
+			message: '#^Property Doctrine\\ORM\\Mapping\\ClassMetadata\:\:\$customRepositoryClassName with generic class Doctrine\\ORM\\EntityRepository does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Mapping/ClassMetadata.php
+
+		-
+			message: '#^Property Doctrine\\ORM\\Mapping\\ClassMetadata\:\:\$table type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 2
+			path: src/Mapping/ClassMetadata.php
+
+		-
+			message: '#^Property Doctrine\\ORM\\Mapping\\ClassMetadata\<T of object\>\:\:\$customRepositoryClassName \(class\-string\<Doctrine\\ORM\\EntityRepository\>\|null\) does not accept class\-string\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: src/Mapping/ClassMetadata.php
+
+		-
+			message: '#^Property Doctrine\\ORM\\Mapping\\ClassMetadata\<T of object\>\:\:\$discriminatorMap \(array\<int\|string, class\-string\>\) does not accept array\<int\|string, string\>\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: src/Mapping/ClassMetadata.php
+
+		-
+			message: '#^Property Doctrine\\ORM\\Mapping\\ClassMetadata\<T of object\>\:\:\$entityListeners \(array\<string, list\<array\{class\: class\-string, method\: string\}\>\>\) does not accept non\-empty\-array\<string, list\<array\{class\: string, method\: string\}\>\>\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: src/Mapping/ClassMetadata.php
+
+		-
+			message: '#^Property Doctrine\\ORM\\Mapping\\ClassMetadata\<T of object\>\:\:\$subClasses \(list\<class\-string\>\) does not accept non\-empty\-list\<string\>\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: src/Mapping/ClassMetadata.php
+
+		-
+			message: '#^Strict comparison using \!\=\= between Doctrine\\ORM\\Mapping\\FieldMapping and false will always evaluate to true\.$#'
+			identifier: notIdentical.alwaysTrue
+			count: 2
+			path: src/Mapping/ClassMetadata.php
+
+		-
+			message: '#^Template type T is declared as covariant, but occurs in invariant position in property Doctrine\\ORM\\Mapping\\ClassMetadata\:\:\$name\.$#'
+			identifier: generics.variance
+			count: 1
+			path: src/Mapping/ClassMetadata.php
+
+		-
+			message: '#^Template type T is declared as covariant, but occurs in invariant position in property Doctrine\\ORM\\Mapping\\ClassMetadata\:\:\$reflClass\.$#'
+			identifier: generics.variance
+			count: 1
+			path: src/Mapping/ClassMetadata.php
+
+		-
+			message: '#^Unable to resolve the template type C in call to method Doctrine\\ORM\\Mapping\\ClassMetadata\<T of object\>\:\:fullyQualifiedClassName\(\)$#'
+			identifier: argument.templateType
+			count: 1
+			path: src/Mapping/ClassMetadata.php
+
+		-
+			message: '#^If condition is always true\.$#'
+			identifier: if.alwaysTrue
+			count: 1
+			path: src/Mapping/ClassMetadataFactory.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Mapping\\ClassMetadataFactory\:\:addDefaultDiscriminatorMap\(\) has parameter \$class with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Mapping/ClassMetadataFactory.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Mapping\\ClassMetadataFactory\:\:addInheritedEmbeddedClasses\(\) has parameter \$parentClass with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Mapping/ClassMetadataFactory.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Mapping\\ClassMetadataFactory\:\:addInheritedEmbeddedClasses\(\) has parameter \$subClass with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Mapping/ClassMetadataFactory.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Mapping\\ClassMetadataFactory\:\:addInheritedFields\(\) has parameter \$parentClass with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Mapping/ClassMetadataFactory.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Mapping\\ClassMetadataFactory\:\:addInheritedFields\(\) has parameter \$subClass with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Mapping/ClassMetadataFactory.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Mapping\\ClassMetadataFactory\:\:addInheritedIndexes\(\) has parameter \$parentClass with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Mapping/ClassMetadataFactory.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Mapping\\ClassMetadataFactory\:\:addInheritedIndexes\(\) has parameter \$subClass with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Mapping/ClassMetadataFactory.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Mapping\\ClassMetadataFactory\:\:addInheritedRelations\(\) has parameter \$parentClass with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Mapping/ClassMetadataFactory.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Mapping\\ClassMetadataFactory\:\:addInheritedRelations\(\) has parameter \$subClass with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Mapping/ClassMetadataFactory.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Mapping\\ClassMetadataFactory\:\:addMappingInheritanceInformation\(\) has parameter \$parentClass with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Mapping/ClassMetadataFactory.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Mapping\\ClassMetadataFactory\:\:addNestedEmbeddedClasses\(\) has parameter \$parentClass with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Mapping/ClassMetadataFactory.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Mapping\\ClassMetadataFactory\:\:addNestedEmbeddedClasses\(\) has parameter \$subClass with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Mapping/ClassMetadataFactory.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Mapping\\ClassMetadataFactory\:\:completeIdGeneratorMapping\(\) has parameter \$class with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Mapping/ClassMetadataFactory.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Mapping\\ClassMetadataFactory\:\:doLoadMetadata\(\) has parameter \$class with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Mapping/ClassMetadataFactory.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Mapping\\ClassMetadataFactory\:\:doLoadMetadata\(\) has parameter \$parent with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Mapping/ClassMetadataFactory.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Mapping\\ClassMetadataFactory\:\:findAbstractEntityClassesNotListedInDiscriminatorMap\(\) has parameter \$rootEntityClass with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Mapping/ClassMetadataFactory.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Mapping\\ClassMetadataFactory\:\:inheritIdGeneratorMapping\(\) has parameter \$class with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Mapping/ClassMetadataFactory.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Mapping\\ClassMetadataFactory\:\:inheritIdGeneratorMapping\(\) has parameter \$parent with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Mapping/ClassMetadataFactory.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Mapping\\ClassMetadataFactory\:\:initializeReflection\(\) has parameter \$class with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Mapping/ClassMetadataFactory.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Mapping\\ClassMetadataFactory\:\:isEntity\(\) has parameter \$class with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Mapping/ClassMetadataFactory.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Mapping\\ClassMetadataFactory\:\:newClassMetadataInstance\(\) return type with generic class Doctrine\\ORM\\Mapping\\ClassMetadata does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Mapping/ClassMetadataFactory.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Mapping\\ClassMetadataFactory\:\:onNotFoundMetadata\(\) return type with generic class Doctrine\\ORM\\Mapping\\ClassMetadata does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Mapping/ClassMetadataFactory.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Mapping\\ClassMetadataFactory\:\:validateRuntimeMetadata\(\) has parameter \$class with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Mapping/ClassMetadataFactory.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Mapping\\ClassMetadataFactory\:\:validateRuntimeMetadata\(\) has parameter \$parent with generic interface Doctrine\\Persistence\\Mapping\\ClassMetadata but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Mapping/ClassMetadataFactory.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Mapping\\ClassMetadataFactory\:\:wakeupReflection\(\) has parameter \$class with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Mapping/ClassMetadataFactory.php
+
+		-
+			message: '#^Parameter \#1 \$generator of method Doctrine\\ORM\\Mapping\\ClassMetadata\<object\>\:\:setIdGenerator\(\) expects Doctrine\\ORM\\Id\\AbstractIdGenerator, object given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Mapping/ClassMetadataFactory.php
+
+		-
+			message: '#^Parameter \#1 \$rootEntityClass of static method Doctrine\\ORM\\Mapping\\MappingException\:\:missingInheritanceTypeDeclaration\(\) expects class\-string, class\-string\|false given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Mapping/ClassMetadataFactory.php
+
+		-
+			message: '#^Property Doctrine\\ORM\\Mapping\\DefaultEntityListenerResolver\:\:\$instances \(array\<class\-string, object\>\) does not accept array\<string, object\>\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: src/Mapping/DefaultEntityListenerResolver.php
+
+		-
+			message: '#^Access to an undefined property Doctrine\\ORM\\Mapping\\ManyToManyInverseSideMapping\|Doctrine\\ORM\\Mapping\\ManyToManyOwningSideMapping\|Doctrine\\ORM\\Mapping\\ManyToOneAssociationMapping\|Doctrine\\ORM\\Mapping\\OneToManyAssociationMapping\|Doctrine\\ORM\\Mapping\\OneToOneInverseSideMapping\|Doctrine\\ORM\\Mapping\\OneToOneOwningSideMapping\:\:\$joinColumns\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Mapping/DefaultQuoteStrategy.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Mapping\\DefaultQuoteStrategy\:\:getColumnAlias\(\) has parameter \$class with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Mapping/DefaultQuoteStrategy.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Mapping\\DefaultQuoteStrategy\:\:getColumnName\(\) has parameter \$class with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Mapping/DefaultQuoteStrategy.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Mapping\\DefaultQuoteStrategy\:\:getIdentifierColumnNames\(\) has parameter \$class with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Mapping/DefaultQuoteStrategy.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Mapping\\DefaultQuoteStrategy\:\:getJoinColumnName\(\) has parameter \$class with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Mapping/DefaultQuoteStrategy.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Mapping\\DefaultQuoteStrategy\:\:getJoinTableName\(\) has parameter \$class with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Mapping/DefaultQuoteStrategy.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Mapping\\DefaultQuoteStrategy\:\:getReferencedJoinColumnName\(\) has parameter \$class with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Mapping/DefaultQuoteStrategy.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Mapping\\DefaultQuoteStrategy\:\:getSequenceName\(\) has parameter \$class with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Mapping/DefaultQuoteStrategy.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Mapping\\DefaultQuoteStrategy\:\:getTableName\(\) has parameter \$class with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Mapping/DefaultQuoteStrategy.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Mapping\\Driver\\AttributeDriver\:\:isRepeatedPropertyDeclaration\(\) has parameter \$metadata with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Mapping/Driver/AttributeDriver.php
+
+		-
+			message: '#^Parameter \#1 \$mapping of method Doctrine\\ORM\\Mapping\\ClassMetadata\<T of object\>\:\:mapEmbedded\(\) expects array\{fieldName\: string, class\?\: class\-string, declaredField\?\: string, columnPrefix\?\: string\|false\|null, originalField\?\: string\}, array\{fieldName\: string, cache\?\: array\{usage\: int, region\: string\|null\}, class\: string\|null, columnPrefix\: bool\|string\|null\} given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Mapping/Driver/AttributeDriver.php
+
+		-
+			message: '#^Unable to resolve the template type C in call to method Doctrine\\ORM\\Mapping\\ClassMetadata\<T of object\>\:\:fullyQualifiedClassName\(\)$#'
+			identifier: argument.templateType
+			count: 1
+			path: src/Mapping/Driver/AttributeDriver.php
+
+		-
+			message: '#^Cannot call method getName\(\) on Doctrine\\DBAL\\Schema\\Column\|false\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: src/Mapping/Driver/DatabaseDriver.php
+
+		-
+			message: '#^Instanceof between Doctrine\\ORM\\Mapping\\ClassMetadata\<T of object\> and Doctrine\\ORM\\Mapping\\ClassMetadata will always evaluate to true\.$#'
+			identifier: instanceof.alwaysTrue
+			count: 1
+			path: src/Mapping/Driver/DatabaseDriver.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Mapping\\Driver\\DatabaseDriver\:\:__construct\(\) has parameter \$sm with generic class Doctrine\\DBAL\\Schema\\AbstractSchemaManager but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Mapping/Driver/DatabaseDriver.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Mapping\\Driver\\DatabaseDriver\:\:buildFieldMappings\(\) has parameter \$metadata with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Mapping/Driver/DatabaseDriver.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Mapping\\Driver\\DatabaseDriver\:\:buildIndexes\(\) has parameter \$metadata with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Mapping/Driver/DatabaseDriver.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Mapping\\Driver\\DatabaseDriver\:\:buildToOneAssociationMappings\(\) has parameter \$metadata with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Mapping/Driver/DatabaseDriver.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Mapping\\Driver\\DatabaseDriver\:\:getClassNameForTable\(\) should return class\-string but returns string\.$#'
+			identifier: return.type
+			count: 2
+			path: src/Mapping/Driver/DatabaseDriver.php
+
+		-
+			message: '#^Parameter \#2 \$columnName of method Doctrine\\ORM\\Mapping\\Driver\\DatabaseDriver\:\:getFieldNameForColumn\(\) expects string, string\|false given\.$#'
+			identifier: argument.type
+			count: 4
+			path: src/Mapping/Driver/DatabaseDriver.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Mapping\\Driver\\SimplifiedXmlDriver\:\:__construct\(\) has parameter \$fileExtension with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/Mapping/Driver/SimplifiedXmlDriver.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Mapping\\Driver\\SimplifiedXmlDriver\:\:__construct\(\) has parameter \$prefixes with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/Mapping/Driver/SimplifiedXmlDriver.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Mapping\\Driver\\XmlDriver\:\:cacheToArray\(\) should return array\{usage\: int\|null, region\?\: string\} but returns array\{usage\: ''''\|''0''\|int\|null, region\: string\|null\}\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Mapping/Driver/XmlDriver.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Mapping\\Driver\\XmlDriver\:\:columnToArray\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Mapping/Driver/XmlDriver.php
+
+		-
+			message: '#^Parameter \#1 \$columnDef of method Doctrine\\ORM\\Mapping\\ClassMetadata\<T of object\>\:\:setDiscriminatorColumn\(\) expects array\{name\: string\|null, fieldName\?\: string\|null, type\?\: string\|null, length\?\: int\|null, columnDefinition\?\: string\|null, enumType\?\: class\-string\<BackedEnum\>\|null, options\?\: array\<string, mixed\>\|null\}\|Doctrine\\ORM\\Mapping\\DiscriminatorColumnMapping\|null, array\{name\: string\|null, type\: string, length\: int, columnDefinition\: string\|null, enumType\: string\|null, options\?\: array\<int\|string, array\<int\|string, mixed\>\|bool\|string\>\} given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Mapping/Driver/XmlDriver.php
+
+		-
+			message: '#^Parameter \#1 \$data of function simplexml_load_string expects string, string\|false given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Mapping/Driver/XmlDriver.php
+
+		-
+			message: '#^Parameter \#1 \$mapping of method Doctrine\\ORM\\Mapping\\ClassMetadata\<T of object\>\:\:mapEmbedded\(\) expects array\{fieldName\: string, class\?\: class\-string, declaredField\?\: string, columnPrefix\?\: string\|false\|null, originalField\?\: string\}, array\{fieldName\: string, class\: string\|null, columnPrefix\: string\|false\|null\} given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Mapping/Driver/XmlDriver.php
+
+		-
+			message: '#^Parameter \#1 \$repositoryClassName of method Doctrine\\ORM\\Mapping\\ClassMetadata\<T of object\>\:\:setCustomRepositoryClass\(\) expects class\-string\<Doctrine\\ORM\\EntityRepository\>\|null, string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Mapping/Driver/XmlDriver.php
+
+		-
+			message: '#^Parameter \#1 \$repositoryClassName of method Doctrine\\ORM\\Mapping\\ClassMetadata\<T of object\>\:\:setCustomRepositoryClass\(\) expects class\-string\<Doctrine\\ORM\\EntityRepository\>\|null, string\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Mapping/Driver/XmlDriver.php
+
+		-
+			message: '#^Property Doctrine\\ORM\\Mapping\\ClassMetadata\<T of object\>\:\:\$table \(array\{name\: string, schema\?\: string, indexes\?\: array, uniqueConstraints\?\: array, options\?\: array\<string, mixed\>, quoted\?\: bool\}\) does not accept array\{name\: string, schema\?\: string, indexes\?\: array, uniqueConstraints\?\: array, options\: array\<int\|string, array\<int\|string, mixed\>\|bool\|string\>, quoted\?\: bool\}\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: src/Mapping/Driver/XmlDriver.php
+
+		-
+			message: '#^Property Doctrine\\ORM\\Mapping\\FieldMapping\:\:\$declared \(class\-string\|null\) does not accept string\|null\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: src/Mapping/FieldMapping.php
+
+		-
+			message: '#^Property Doctrine\\ORM\\Mapping\\FieldMapping\:\:\$enumType \(class\-string\<BackedEnum\>\|null\) does not accept string\|null\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: src/Mapping/FieldMapping.php
+
+		-
+			message: '#^Property Doctrine\\ORM\\Mapping\\FieldMapping\:\:\$inherited \(class\-string\|null\) does not accept string\|null\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: src/Mapping/FieldMapping.php
+
+		-
+			message: '#^Property Doctrine\\ORM\\Mapping\\FieldMapping\:\:\$options type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Mapping/FieldMapping.php
+
+		-
+			message: '#^Property Doctrine\\ORM\\Mapping\\JoinTableMapping\:\:\$options \(array\<string, mixed\>\) does not accept array\<string, mixed\>\|bool\|string\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: src/Mapping/JoinTableMapping.php
+
+		-
+			message: '#^Property Doctrine\\ORM\\Mapping\\JoinTableMapping\:\:\$quoted \(bool\|null\) does not accept array\<string, mixed\>\|bool\|string\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: src/Mapping/JoinTableMapping.php
+
+		-
+			message: '#^Property Doctrine\\ORM\\Mapping\\JoinTableMapping\:\:\$schema \(string\|null\) does not accept array\<string, mixed\>\|bool\|string\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: src/Mapping/JoinTableMapping.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Mapping\\MappedSuperclass\:\:__construct\(\) has parameter \$repositoryClass with generic class Doctrine\\ORM\\EntityRepository but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Mapping/MappedSuperclass.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Mapping\\QuoteStrategy\:\:getColumnAlias\(\) has parameter \$class with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Mapping/QuoteStrategy.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Mapping\\QuoteStrategy\:\:getColumnName\(\) has parameter \$class with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Mapping/QuoteStrategy.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Mapping\\QuoteStrategy\:\:getIdentifierColumnNames\(\) has parameter \$class with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Mapping/QuoteStrategy.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Mapping\\QuoteStrategy\:\:getJoinColumnName\(\) has parameter \$class with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Mapping/QuoteStrategy.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Mapping\\QuoteStrategy\:\:getJoinTableName\(\) has parameter \$class with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Mapping/QuoteStrategy.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Mapping\\QuoteStrategy\:\:getReferencedJoinColumnName\(\) has parameter \$class with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Mapping/QuoteStrategy.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Mapping\\QuoteStrategy\:\:getSequenceName\(\) has parameter \$class with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Mapping/QuoteStrategy.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Mapping\\QuoteStrategy\:\:getTableName\(\) has parameter \$class with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Mapping/QuoteStrategy.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Mapping\\ReflectionEnumProperty\:\:getValue\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Mapping/ReflectionEnumProperty.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Mapping\\ToOneOwningSideMapping\:\:fromMappingArray\(\) should return static\(Doctrine\\ORM\\Mapping\\ToOneOwningSideMapping\) but returns Doctrine\\ORM\\Mapping\\ManyToOneAssociationMapping\|Doctrine\\ORM\\Mapping\\OneToOneOwningSideMapping\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Mapping/ToOneOwningSideMapping.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Mapping\\ToOneOwningSideMapping\:\:fromMappingArrayAndName\(\) has parameter \$table with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Mapping/ToOneOwningSideMapping.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Mapping\\ToOneOwningSideMapping\:\:fromMappingArrayAndName\(\) should return static\(Doctrine\\ORM\\Mapping\\ToOneOwningSideMapping\) but returns Doctrine\\ORM\\Mapping\\ManyToOneAssociationMapping\|Doctrine\\ORM\\Mapping\\OneToOneOwningSideMapping\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Mapping/ToOneOwningSideMapping.php
+
+		-
+			message: '#^Call to function is_int\(\) with string will always evaluate to false\.$#'
+			identifier: function.impossibleType
+			count: 1
+			path: src/NativeQuery.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\NativeQuery\:\:_doExecute\(\) never returns int so it can be removed from the return type\.$#'
+			identifier: return.unusedType
+			count: 1
+			path: src/NativeQuery.php
+
+		-
+			message: '#^Result of && is always false\.$#'
+			identifier: booleanAnd.alwaysFalse
+			count: 1
+			path: src/NativeQuery.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\ORMInvalidArgumentException\:\:invalidAssociation\(\) has parameter \$targetClass with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/ORMInvalidArgumentException.php
+
+		-
+			message: '#^Call to method Doctrine\\ORM\\Mapping\\AssociationMapping\:\:isToMany\(\) will always evaluate to true\.$#'
+			identifier: method.alreadyNarrowedType
+			count: 1
+			path: src/PersistentCollection.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\PersistentCollection\:\:__construct\(\) has parameter \$typeClass with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/PersistentCollection.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\PersistentCollection\:\:get\(\) should return T\|null but returns object\|null\.$#'
+			identifier: return.type
+			count: 1
+			path: src/PersistentCollection.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\PersistentCollection\:\:getTypeClass\(\) return type with generic class Doctrine\\ORM\\Mapping\\ClassMetadata does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/PersistentCollection.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\PersistentCollection\:\:matching\(\) should return Doctrine\\Common\\Collections\\Collection\<TKey of \(int\|string\), T\> but returns Doctrine\\Common\\Collections\\ArrayCollection\<\(int\|string\), mixed\>\|Doctrine\\ORM\\LazyCriteriaCollection\<\(int\|string\), object\>\.$#'
+			identifier: return.type
+			count: 1
+			path: src/PersistentCollection.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\PersistentCollection\:\:matching\(\) should return Doctrine\\Common\\Collections\\Collection\<TKey of \(int\|string\), T\> but returns Doctrine\\Common\\Collections\\ReadableCollection\<TKey of \(int\|string\), T\>&Doctrine\\Common\\Collections\\Selectable\<TKey of \(int\|string\), T\>\.$#'
+			identifier: return.type
+			count: 1
+			path: src/PersistentCollection.php
+
+		-
+			message: '#^Parameter \#1 \$key of method Doctrine\\ORM\\PersistentCollection\<TKey of \(int\|string\),T\>\:\:set\(\) expects TKey of \(int\|string\), int\|string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/PersistentCollection.php
+
+		-
+			message: '#^Parameter \#2 \$callback of function array_walk expects callable\(object, int\)\: mixed, array\{Doctrine\\Common\\Collections\\Collection\<TKey of \(int\|string\), T\>&Doctrine\\Common\\Collections\\Selectable\<TKey of \(int\|string\), T\>, ''add''\} given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/PersistentCollection.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Persisters\\Collection\\CollectionPersister\:\:contains\(\) has parameter \$collection with generic class Doctrine\\ORM\\PersistentCollection but does not specify its types\: TKey, T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Persisters/Collection/CollectionPersister.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Persisters\\Collection\\CollectionPersister\:\:containsKey\(\) has parameter \$collection with generic class Doctrine\\ORM\\PersistentCollection but does not specify its types\: TKey, T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Persisters/Collection/CollectionPersister.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Persisters\\Collection\\CollectionPersister\:\:count\(\) has parameter \$collection with generic class Doctrine\\ORM\\PersistentCollection but does not specify its types\: TKey, T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Persisters/Collection/CollectionPersister.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Persisters\\Collection\\CollectionPersister\:\:delete\(\) has parameter \$collection with generic class Doctrine\\ORM\\PersistentCollection but does not specify its types\: TKey, T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Persisters/Collection/CollectionPersister.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Persisters\\Collection\\CollectionPersister\:\:get\(\) has parameter \$collection with generic class Doctrine\\ORM\\PersistentCollection but does not specify its types\: TKey, T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Persisters/Collection/CollectionPersister.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Persisters\\Collection\\CollectionPersister\:\:loadCriteria\(\) has parameter \$collection with generic class Doctrine\\ORM\\PersistentCollection but does not specify its types\: TKey, T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Persisters/Collection/CollectionPersister.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Persisters\\Collection\\CollectionPersister\:\:slice\(\) has parameter \$collection with generic class Doctrine\\ORM\\PersistentCollection but does not specify its types\: TKey, T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Persisters/Collection/CollectionPersister.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Persisters\\Collection\\CollectionPersister\:\:update\(\) has parameter \$collection with generic class Doctrine\\ORM\\PersistentCollection but does not specify its types\: TKey, T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Persisters/Collection/CollectionPersister.php
+
+		-
+			message: '#^Access to an undefined property Doctrine\\ORM\\Mapping\\ManyToManyInverseSideMapping\|Doctrine\\ORM\\Mapping\\ManyToManyOwningSideMapping\|Doctrine\\ORM\\Mapping\\ManyToOneAssociationMapping\|Doctrine\\ORM\\Mapping\\OneToManyAssociationMapping\|Doctrine\\ORM\\Mapping\\OneToOneInverseSideMapping\|Doctrine\\ORM\\Mapping\\OneToOneOwningSideMapping\:\:\$joinTable\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Persisters/Collection/ManyToManyPersister.php
+
+		-
+			message: '#^Access to an undefined property Doctrine\\ORM\\Mapping\\ManyToManyInverseSideMapping\|Doctrine\\ORM\\Mapping\\ManyToManyOwningSideMapping\|Doctrine\\ORM\\Mapping\\ManyToOneAssociationMapping\|Doctrine\\ORM\\Mapping\\OneToManyAssociationMapping\|Doctrine\\ORM\\Mapping\\OneToOneInverseSideMapping\|Doctrine\\ORM\\Mapping\\OneToOneOwningSideMapping\:\:\$joinTableColumns\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Persisters/Collection/ManyToManyPersister.php
+
+		-
+			message: '#^Access to an undefined property Doctrine\\ORM\\Mapping\\ManyToManyInverseSideMapping\|Doctrine\\ORM\\Mapping\\ManyToManyOwningSideMapping\|Doctrine\\ORM\\Mapping\\ManyToOneAssociationMapping\|Doctrine\\ORM\\Mapping\\OneToManyAssociationMapping\|Doctrine\\ORM\\Mapping\\OneToOneInverseSideMapping\|Doctrine\\ORM\\Mapping\\OneToOneOwningSideMapping\:\:\$relationToSourceKeyColumns\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Persisters/Collection/ManyToManyPersister.php
+
+		-
+			message: '#^Access to an undefined property Doctrine\\ORM\\Mapping\\ManyToManyInverseSideMapping\|Doctrine\\ORM\\Mapping\\ManyToManyOwningSideMapping\|Doctrine\\ORM\\Mapping\\ManyToOneAssociationMapping\|Doctrine\\ORM\\Mapping\\OneToManyAssociationMapping\|Doctrine\\ORM\\Mapping\\OneToOneInverseSideMapping\|Doctrine\\ORM\\Mapping\\OneToOneOwningSideMapping\:\:\$relationToTargetKeyColumns\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Persisters/Collection/ManyToManyPersister.php
+
+		-
+			message: '#^Access to an undefined property Doctrine\\ORM\\Mapping\\ManyToManyOwningSideMapping\|Doctrine\\ORM\\Mapping\\ManyToOneAssociationMapping\|Doctrine\\ORM\\Mapping\\OneToOneOwningSideMapping\:\:\$joinTable\.$#'
+			identifier: property.notFound
+			count: 2
+			path: src/Persisters/Collection/ManyToManyPersister.php
+
+		-
+			message: '#^Call to function assert\(\) with true will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 2
+			path: src/Persisters/Collection/ManyToManyPersister.php
+
+		-
+			message: '#^Call to method Doctrine\\ORM\\Mapping\\AssociationMapping\:\:isIndexed\(\) will always evaluate to true\.$#'
+			identifier: method.alreadyNarrowedType
+			count: 2
+			path: src/Persisters/Collection/ManyToManyPersister.php
+
+		-
+			message: '#^Instanceof between Doctrine\\ORM\\Mapping\\InverseSideMapping&Doctrine\\ORM\\Mapping\\ManyToManyAssociationMapping and Doctrine\\ORM\\Mapping\\InverseSideMapping will always evaluate to true\.$#'
+			identifier: instanceof.alwaysTrue
+			count: 2
+			path: src/Persisters/Collection/ManyToManyPersister.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Persisters\\Collection\\ManyToManyPersister\:\:collectJoinTableColumnParameters\(\) has parameter \$collection with generic class Doctrine\\ORM\\PersistentCollection but does not specify its types\: TKey, T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Persisters/Collection/ManyToManyPersister.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Persisters\\Collection\\ManyToManyPersister\:\:contains\(\) has parameter \$collection with generic class Doctrine\\ORM\\PersistentCollection but does not specify its types\: TKey, T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Persisters/Collection/ManyToManyPersister.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Persisters\\Collection\\ManyToManyPersister\:\:containsKey\(\) has parameter \$collection with generic class Doctrine\\ORM\\PersistentCollection but does not specify its types\: TKey, T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Persisters/Collection/ManyToManyPersister.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Persisters\\Collection\\ManyToManyPersister\:\:count\(\) has parameter \$collection with generic class Doctrine\\ORM\\PersistentCollection but does not specify its types\: TKey, T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Persisters/Collection/ManyToManyPersister.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Persisters\\Collection\\ManyToManyPersister\:\:delete\(\) has parameter \$collection with generic class Doctrine\\ORM\\PersistentCollection but does not specify its types\: TKey, T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Persisters/Collection/ManyToManyPersister.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Persisters\\Collection\\ManyToManyPersister\:\:generateFilterConditionSQL\(\) has parameter \$targetEntity with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Persisters/Collection/ManyToManyPersister.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Persisters\\Collection\\ManyToManyPersister\:\:get\(\) has parameter \$collection with generic class Doctrine\\ORM\\PersistentCollection but does not specify its types\: TKey, T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Persisters/Collection/ManyToManyPersister.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Persisters\\Collection\\ManyToManyPersister\:\:getDeleteRowSQL\(\) has parameter \$collection with generic class Doctrine\\ORM\\PersistentCollection but does not specify its types\: TKey, T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Persisters/Collection/ManyToManyPersister.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Persisters\\Collection\\ManyToManyPersister\:\:getDeleteRowSQLParameters\(\) has parameter \$collection with generic class Doctrine\\ORM\\PersistentCollection but does not specify its types\: TKey, T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Persisters/Collection/ManyToManyPersister.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Persisters\\Collection\\ManyToManyPersister\:\:getDeleteSQL\(\) has parameter \$collection with generic class Doctrine\\ORM\\PersistentCollection but does not specify its types\: TKey, T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Persisters/Collection/ManyToManyPersister.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Persisters\\Collection\\ManyToManyPersister\:\:getDeleteSQLParameters\(\) has parameter \$collection with generic class Doctrine\\ORM\\PersistentCollection but does not specify its types\: TKey, T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Persisters/Collection/ManyToManyPersister.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Persisters\\Collection\\ManyToManyPersister\:\:getInsertRowSQL\(\) has parameter \$collection with generic class Doctrine\\ORM\\PersistentCollection but does not specify its types\: TKey, T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Persisters/Collection/ManyToManyPersister.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Persisters\\Collection\\ManyToManyPersister\:\:getInsertRowSQLParameters\(\) has parameter \$collection with generic class Doctrine\\ORM\\PersistentCollection but does not specify its types\: TKey, T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Persisters/Collection/ManyToManyPersister.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Persisters\\Collection\\ManyToManyPersister\:\:getJoinTableRestrictions\(\) has parameter \$collection with generic class Doctrine\\ORM\\PersistentCollection but does not specify its types\: TKey, T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Persisters/Collection/ManyToManyPersister.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Persisters\\Collection\\ManyToManyPersister\:\:getJoinTableRestrictionsWithKey\(\) has parameter \$collection with generic class Doctrine\\ORM\\PersistentCollection but does not specify its types\: TKey, T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Persisters/Collection/ManyToManyPersister.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Persisters\\Collection\\ManyToManyPersister\:\:getMapping\(\) has parameter \$collection with generic class Doctrine\\ORM\\PersistentCollection but does not specify its types\: TKey, T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Persisters/Collection/ManyToManyPersister.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Persisters\\Collection\\ManyToManyPersister\:\:getOrderingSql\(\) has parameter \$targetClass with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Persisters/Collection/ManyToManyPersister.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Persisters\\Collection\\ManyToManyPersister\:\:loadCriteria\(\) has parameter \$collection with generic class Doctrine\\ORM\\PersistentCollection but does not specify its types\: TKey, T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Persisters/Collection/ManyToManyPersister.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Persisters\\Collection\\ManyToManyPersister\:\:slice\(\) has parameter \$collection with generic class Doctrine\\ORM\\PersistentCollection but does not specify its types\: TKey, T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Persisters/Collection/ManyToManyPersister.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Persisters\\Collection\\ManyToManyPersister\:\:update\(\) has parameter \$collection with generic class Doctrine\\ORM\\PersistentCollection but does not specify its types\: TKey, T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Persisters/Collection/ManyToManyPersister.php
+
+		-
+			message: '#^Parameter \#1 \$association of method Doctrine\\ORM\\Mapping\\QuoteStrategy\:\:getJoinTableName\(\) expects Doctrine\\ORM\\Mapping\\ManyToManyOwningSideMapping, Doctrine\\ORM\\Mapping\\ManyToManyInverseSideMapping\|Doctrine\\ORM\\Mapping\\ManyToManyOwningSideMapping\|Doctrine\\ORM\\Mapping\\ManyToOneAssociationMapping\|Doctrine\\ORM\\Mapping\\OneToManyAssociationMapping\|Doctrine\\ORM\\Mapping\\OneToOneInverseSideMapping\|Doctrine\\ORM\\Mapping\\OneToOneOwningSideMapping given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Persisters/Collection/ManyToManyPersister.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Persisters\\Collection\\OneToManyPersister\:\:contains\(\) has parameter \$collection with generic class Doctrine\\ORM\\PersistentCollection but does not specify its types\: TKey, T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Persisters/Collection/OneToManyPersister.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Persisters\\Collection\\OneToManyPersister\:\:containsKey\(\) has parameter \$collection with generic class Doctrine\\ORM\\PersistentCollection but does not specify its types\: TKey, T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Persisters/Collection/OneToManyPersister.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Persisters\\Collection\\OneToManyPersister\:\:count\(\) has parameter \$collection with generic class Doctrine\\ORM\\PersistentCollection but does not specify its types\: TKey, T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Persisters/Collection/OneToManyPersister.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Persisters\\Collection\\OneToManyPersister\:\:delete\(\) has parameter \$collection with generic class Doctrine\\ORM\\PersistentCollection but does not specify its types\: TKey, T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Persisters/Collection/OneToManyPersister.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Persisters\\Collection\\OneToManyPersister\:\:deleteEntityCollection\(\) has parameter \$collection with generic class Doctrine\\ORM\\PersistentCollection but does not specify its types\: TKey, T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Persisters/Collection/OneToManyPersister.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Persisters\\Collection\\OneToManyPersister\:\:deleteJoinedEntityCollection\(\) has parameter \$collection with generic class Doctrine\\ORM\\PersistentCollection but does not specify its types\: TKey, T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Persisters/Collection/OneToManyPersister.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Persisters\\Collection\\OneToManyPersister\:\:get\(\) has parameter \$collection with generic class Doctrine\\ORM\\PersistentCollection but does not specify its types\: TKey, T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Persisters/Collection/OneToManyPersister.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Persisters\\Collection\\OneToManyPersister\:\:getMapping\(\) has parameter \$collection with generic class Doctrine\\ORM\\PersistentCollection but does not specify its types\: TKey, T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Persisters/Collection/OneToManyPersister.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Persisters\\Collection\\OneToManyPersister\:\:loadCriteria\(\) has parameter \$collection with generic class Doctrine\\ORM\\PersistentCollection but does not specify its types\: TKey, T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Persisters/Collection/OneToManyPersister.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Persisters\\Collection\\OneToManyPersister\:\:slice\(\) has parameter \$collection with generic class Doctrine\\ORM\\PersistentCollection but does not specify its types\: TKey, T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Persisters/Collection/OneToManyPersister.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Persisters\\Collection\\OneToManyPersister\:\:update\(\) has parameter \$collection with generic class Doctrine\\ORM\\PersistentCollection but does not specify its types\: TKey, T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Persisters/Collection/OneToManyPersister.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Persisters\\Entity\\AbstractEntityInheritancePersister\:\:getSelectColumnSQL\(\) has parameter \$class with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Persisters/Entity/AbstractEntityInheritancePersister.php
+
+		-
+			message: '#^Access to an undefined property Doctrine\\ORM\\Mapping\\ManyToManyInverseSideMapping\|Doctrine\\ORM\\Mapping\\ManyToManyOwningSideMapping\|Doctrine\\ORM\\Mapping\\ManyToOneAssociationMapping\|Doctrine\\ORM\\Mapping\\OneToManyAssociationMapping\|Doctrine\\ORM\\Mapping\\OneToOneInverseSideMapping\|Doctrine\\ORM\\Mapping\\OneToOneOwningSideMapping\:\:\$joinColumns\.$#'
+			identifier: property.notFound
+			count: 5
+			path: src/Persisters/Entity/BasicEntityPersister.php
+
+		-
+			message: '#^Access to an undefined property Doctrine\\ORM\\Mapping\\ManyToManyInverseSideMapping\|Doctrine\\ORM\\Mapping\\ManyToManyOwningSideMapping\|Doctrine\\ORM\\Mapping\\ManyToOneAssociationMapping\|Doctrine\\ORM\\Mapping\\OneToManyAssociationMapping\|Doctrine\\ORM\\Mapping\\OneToOneInverseSideMapping\|Doctrine\\ORM\\Mapping\\OneToOneOwningSideMapping\:\:\$mappedBy\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Persisters/Entity/BasicEntityPersister.php
+
+		-
+			message: '#^Access to an undefined property Doctrine\\ORM\\Mapping\\ManyToManyInverseSideMapping\|Doctrine\\ORM\\Mapping\\ManyToManyOwningSideMapping\|Doctrine\\ORM\\Mapping\\ManyToOneAssociationMapping\|Doctrine\\ORM\\Mapping\\OneToManyAssociationMapping\|Doctrine\\ORM\\Mapping\\OneToOneInverseSideMapping\|Doctrine\\ORM\\Mapping\\OneToOneOwningSideMapping\:\:\$targetToSourceKeyColumns\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Persisters/Entity/BasicEntityPersister.php
+
+		-
+			message: '#^Access to an undefined property Doctrine\\ORM\\Mapping\\ManyToManyOwningSideMapping\|Doctrine\\ORM\\Mapping\\ManyToOneAssociationMapping\|Doctrine\\ORM\\Mapping\\OneToOneOwningSideMapping\:\:\$joinTable\.$#'
+			identifier: property.notFound
+			count: 4
+			path: src/Persisters/Entity/BasicEntityPersister.php
+
+		-
+			message: '#^Access to an undefined property Doctrine\\ORM\\Mapping\\ManyToManyOwningSideMapping\|Doctrine\\ORM\\Mapping\\ManyToOneAssociationMapping\|Doctrine\\ORM\\Mapping\\OneToOneOwningSideMapping\:\:\$relationToTargetKeyColumns\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Persisters/Entity/BasicEntityPersister.php
+
+		-
+			message: '#^Access to an undefined property Doctrine\\ORM\\Mapping\\ManyToManyOwningSideMapping\|Doctrine\\ORM\\Mapping\\ManyToOneAssociationMapping\|Doctrine\\ORM\\Mapping\\OneToOneOwningSideMapping\:\:\$sourceToTargetKeyColumns\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Persisters/Entity/BasicEntityPersister.php
+
+		-
+			message: '#^Call to an undefined method Doctrine\\ORM\\Mapping\\ManyToManyInverseSideMapping\|Doctrine\\ORM\\Mapping\\ManyToManyOwningSideMapping\|Doctrine\\ORM\\Mapping\\ManyToOneAssociationMapping\|Doctrine\\ORM\\Mapping\\OneToManyAssociationMapping\|Doctrine\\ORM\\Mapping\\OneToOneInverseSideMapping\|Doctrine\\ORM\\Mapping\\OneToOneOwningSideMapping\:\:indexBy\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Persisters/Entity/BasicEntityPersister.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Persisters\\Entity\\BasicEntityPersister\:\:__construct\(\) has parameter \$class with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Persisters/Entity/BasicEntityPersister.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Persisters\\Entity\\BasicEntityPersister\:\:expandCriteriaParameters\(\) should return array\{list\<mixed\>, list\<Doctrine\\DBAL\\ArrayParameterType\:\:ASCII\|Doctrine\\DBAL\\ArrayParameterType\:\:BINARY\|Doctrine\\DBAL\\ArrayParameterType\:\:INTEGER\|Doctrine\\DBAL\\ArrayParameterType\:\:STRING\|Doctrine\\DBAL\\ParameterType\:\:ASCII\|Doctrine\\DBAL\\ParameterType\:\:BINARY\|Doctrine\\DBAL\\ParameterType\:\:BOOLEAN\|Doctrine\\DBAL\\ParameterType\:\:INTEGER\|Doctrine\\DBAL\\ParameterType\:\:LARGE_OBJECT\|Doctrine\\DBAL\\ParameterType\:\:NULL\|Doctrine\\DBAL\\ParameterType\:\:STRING\|string\>\} but returns array\{array\<mixed\>, list\<Doctrine\\DBAL\\ArrayParameterType\:\:ASCII\|Doctrine\\DBAL\\ArrayParameterType\:\:BINARY\|Doctrine\\DBAL\\ArrayParameterType\:\:INTEGER\|Doctrine\\DBAL\\ArrayParameterType\:\:STRING\|Doctrine\\DBAL\\ParameterType\:\:ASCII\|Doctrine\\DBAL\\ParameterType\:\:BINARY\|Doctrine\\DBAL\\ParameterType\:\:BOOLEAN\|Doctrine\\DBAL\\ParameterType\:\:INTEGER\|Doctrine\\DBAL\\ParameterType\:\:LARGE_OBJECT\|Doctrine\\DBAL\\ParameterType\:\:NULL\|Doctrine\\DBAL\\ParameterType\:\:STRING\|string\>\}\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Persisters/Entity/BasicEntityPersister.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Persisters\\Entity\\BasicEntityPersister\:\:expandParameters\(\) should return array\{list\<mixed\>, list\<Doctrine\\DBAL\\ArrayParameterType\:\:ASCII\|Doctrine\\DBAL\\ArrayParameterType\:\:BINARY\|Doctrine\\DBAL\\ArrayParameterType\:\:INTEGER\|Doctrine\\DBAL\\ArrayParameterType\:\:STRING\|Doctrine\\DBAL\\ParameterType\:\:ASCII\|Doctrine\\DBAL\\ParameterType\:\:BINARY\|Doctrine\\DBAL\\ParameterType\:\:BOOLEAN\|Doctrine\\DBAL\\ParameterType\:\:INTEGER\|Doctrine\\DBAL\\ParameterType\:\:LARGE_OBJECT\|Doctrine\\DBAL\\ParameterType\:\:NULL\|Doctrine\\DBAL\\ParameterType\:\:STRING\|string\>\} but returns array\{array\<mixed\>, list\<Doctrine\\DBAL\\ArrayParameterType\:\:ASCII\|Doctrine\\DBAL\\ArrayParameterType\:\:BINARY\|Doctrine\\DBAL\\ArrayParameterType\:\:INTEGER\|Doctrine\\DBAL\\ArrayParameterType\:\:STRING\|Doctrine\\DBAL\\ParameterType\:\:ASCII\|Doctrine\\DBAL\\ParameterType\:\:BINARY\|Doctrine\\DBAL\\ParameterType\:\:BOOLEAN\|Doctrine\\DBAL\\ParameterType\:\:INTEGER\|Doctrine\\DBAL\\ParameterType\:\:LARGE_OBJECT\|Doctrine\\DBAL\\ParameterType\:\:NULL\|Doctrine\\DBAL\\ParameterType\:\:STRING\|string\>\}\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Persisters/Entity/BasicEntityPersister.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Persisters\\Entity\\BasicEntityPersister\:\:expandToManyParameters\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Persisters/Entity/BasicEntityPersister.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Persisters\\Entity\\BasicEntityPersister\:\:extractIdentifierTypes\(\) has parameter \$versionedClass with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Persisters/Entity/BasicEntityPersister.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Persisters\\Entity\\BasicEntityPersister\:\:fetchVersionAndNotUpsertableValues\(\) has parameter \$versionedClass with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Persisters/Entity/BasicEntityPersister.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Persisters\\Entity\\BasicEntityPersister\:\:generateFilterConditionSQL\(\) has parameter \$targetEntity with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Persisters/Entity/BasicEntityPersister.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Persisters\\Entity\\BasicEntityPersister\:\:getClassIdentifiersTypes\(\) has parameter \$class with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Persisters/Entity/BasicEntityPersister.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Persisters\\Entity\\BasicEntityPersister\:\:getClassMetadata\(\) return type with generic class Doctrine\\ORM\\Mapping\\ClassMetadata does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Persisters/Entity/BasicEntityPersister.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Persisters\\Entity\\BasicEntityPersister\:\:getIndividualValue\(\) should return list\<mixed\> but returns array\<mixed\>\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Persisters/Entity/BasicEntityPersister.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Persisters\\Entity\\BasicEntityPersister\:\:getSelectColumnAssociationSQL\(\) has parameter \$class with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Persisters/Entity/BasicEntityPersister.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Persisters\\Entity\\BasicEntityPersister\:\:getSelectColumnSQL\(\) has parameter \$class with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Persisters/Entity/BasicEntityPersister.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Persisters\\Entity\\BasicEntityPersister\:\:getTypes\(\) has parameter \$class with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Persisters/Entity/BasicEntityPersister.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Persisters\\Entity\\BasicEntityPersister\:\:getTypes\(\) should return list\<Doctrine\\DBAL\\ArrayParameterType\:\:ASCII\|Doctrine\\DBAL\\ArrayParameterType\:\:BINARY\|Doctrine\\DBAL\\ArrayParameterType\:\:INTEGER\|Doctrine\\DBAL\\ArrayParameterType\:\:STRING\|Doctrine\\DBAL\\ParameterType\:\:ASCII\|Doctrine\\DBAL\\ParameterType\:\:BINARY\|Doctrine\\DBAL\\ParameterType\:\:BOOLEAN\|Doctrine\\DBAL\\ParameterType\:\:INTEGER\|Doctrine\\DBAL\\ParameterType\:\:LARGE_OBJECT\|Doctrine\\DBAL\\ParameterType\:\:NULL\|Doctrine\\DBAL\\ParameterType\:\:STRING\|string\> but returns list\<Doctrine\\DBAL\\ArrayParameterType\:\:ASCII\|Doctrine\\DBAL\\ArrayParameterType\:\:BINARY\|Doctrine\\DBAL\\ArrayParameterType\:\:INTEGER\|Doctrine\\DBAL\\ArrayParameterType\:\:STRING\|int\>\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Persisters/Entity/BasicEntityPersister.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Persisters\\Entity\\BasicEntityPersister\:\:loadCollectionFromStatement\(\) has parameter \$coll with generic class Doctrine\\ORM\\PersistentCollection but does not specify its types\: TKey, T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Persisters/Entity/BasicEntityPersister.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Persisters\\Entity\\BasicEntityPersister\:\:loadManyToManyCollection\(\) has parameter \$collection with generic class Doctrine\\ORM\\PersistentCollection but does not specify its types\: TKey, T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Persisters/Entity/BasicEntityPersister.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Persisters\\Entity\\BasicEntityPersister\:\:loadOneToManyCollection\(\) has parameter \$collection with generic class Doctrine\\ORM\\PersistentCollection but does not specify its types\: TKey, T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Persisters/Entity/BasicEntityPersister.php
+
+		-
+			message: '#^Parameter \#1 \$association of method Doctrine\\ORM\\Mapping\\QuoteStrategy\:\:getJoinTableName\(\) expects Doctrine\\ORM\\Mapping\\ManyToManyOwningSideMapping, Doctrine\\ORM\\Mapping\\ManyToManyOwningSideMapping\|Doctrine\\ORM\\Mapping\\ManyToOneAssociationMapping\|Doctrine\\ORM\\Mapping\\OneToOneOwningSideMapping given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Persisters/Entity/BasicEntityPersister.php
+
+		-
+			message: '#^Parameter \#2 \$lockMode of method Doctrine\\DBAL\\Platforms\\AbstractPlatform\:\:appendLockHint\(\) expects Doctrine\\DBAL\\LockMode, Doctrine\\DBAL\\LockMode\:\:NONE\|Doctrine\\DBAL\\LockMode\:\:OPTIMISTIC\|Doctrine\\DBAL\\LockMode\:\:PESSIMISTIC_READ\|Doctrine\\DBAL\\LockMode\:\:PESSIMISTIC_WRITE\|int given\.$#'
+			identifier: argument.type
+			count: 2
+			path: src/Persisters/Entity/BasicEntityPersister.php
+
+		-
+			message: '#^Parameter \#3 \$hints of method Doctrine\\ORM\\Internal\\Hydration\\AbstractHydrator\:\:hydrateAll\(\) expects array\<string, string\>, array\<string, Doctrine\\ORM\\PersistentCollection\|true\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Persisters/Entity/BasicEntityPersister.php
+
+		-
+			message: '#^Parameter \#3 \$hints of method Doctrine\\ORM\\Internal\\Hydration\\AbstractHydrator\:\:hydrateAll\(\) expects array\<string, string\>, array\<string, true\> given\.$#'
+			identifier: argument.type
+			count: 4
+			path: src/Persisters/Entity/BasicEntityPersister.php
+
+		-
+			message: '#^Property Doctrine\\ORM\\Persisters\\Entity\\CachedPersisterContext\:\:\$sqlTableAliases \(array\<class\-string, string\>\) does not accept array\<string, string\>\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: src/Persisters/Entity/BasicEntityPersister.php
+
+		-
+			message: '#^Strict comparison using \!\=\= between mixed and null will always evaluate to true\.$#'
+			identifier: notIdentical.alwaysTrue
+			count: 1
+			path: src/Persisters/Entity/BasicEntityPersister.php
+
+		-
+			message: '#^Strict comparison using \=\=\= between string and null will always evaluate to false\.$#'
+			identifier: identical.alwaysFalse
+			count: 1
+			path: src/Persisters/Entity/BasicEntityPersister.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Persisters\\Entity\\CachedPersisterContext\:\:__construct\(\) has parameter \$class with generic interface Doctrine\\Persistence\\Mapping\\ClassMetadata but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Persisters/Entity/CachedPersisterContext.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Persisters\\Entity\\EntityPersister\:\:getClassMetadata\(\) return type with generic class Doctrine\\ORM\\Mapping\\ClassMetadata does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Persisters/Entity/EntityPersister.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Persisters\\Entity\\EntityPersister\:\:loadManyToManyCollection\(\) has parameter \$collection with generic class Doctrine\\ORM\\PersistentCollection but does not specify its types\: TKey, T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Persisters/Entity/EntityPersister.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Persisters\\Entity\\EntityPersister\:\:loadOneToManyCollection\(\) has parameter \$collection with generic class Doctrine\\ORM\\PersistentCollection but does not specify its types\: TKey, T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Persisters/Entity/EntityPersister.php
+
+		-
+			message: '#^Access to an undefined property Doctrine\\ORM\\Mapping\\ManyToManyInverseSideMapping\|Doctrine\\ORM\\Mapping\\ManyToManyOwningSideMapping\|Doctrine\\ORM\\Mapping\\ManyToOneAssociationMapping\|Doctrine\\ORM\\Mapping\\OneToManyAssociationMapping\|Doctrine\\ORM\\Mapping\\OneToOneInverseSideMapping\|Doctrine\\ORM\\Mapping\\OneToOneOwningSideMapping\:\:\$joinColumns\.$#'
+			identifier: property.notFound
+			count: 2
+			path: src/Persisters/Entity/JoinedSubclassPersister.php
+
+		-
+			message: '#^Access to an undefined property Doctrine\\ORM\\Mapping\\ManyToManyInverseSideMapping\|Doctrine\\ORM\\Mapping\\ManyToManyOwningSideMapping\|Doctrine\\ORM\\Mapping\\ManyToOneAssociationMapping\|Doctrine\\ORM\\Mapping\\OneToManyAssociationMapping\|Doctrine\\ORM\\Mapping\\OneToOneInverseSideMapping\|Doctrine\\ORM\\Mapping\\OneToOneOwningSideMapping\:\:\$targetToSourceKeyColumns\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Persisters/Entity/JoinedSubclassPersister.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Persisters\\Entity\\JoinedSubclassPersister\:\:fetchVersionAndNotUpsertableValues\(\) has parameter \$versionedClass with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Persisters/Entity/JoinedSubclassPersister.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Persisters\\Entity\\JoinedSubclassPersister\:\:getVersionedClassMetadata\(\) return type with generic class Doctrine\\ORM\\Mapping\\ClassMetadata does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Persisters/Entity/JoinedSubclassPersister.php
+
+		-
+			message: '#^Parameter \#2 \$lockMode of method Doctrine\\DBAL\\Platforms\\AbstractPlatform\:\:appendLockHint\(\) expects Doctrine\\DBAL\\LockMode, Doctrine\\DBAL\\LockMode\:\:NONE\|Doctrine\\DBAL\\LockMode\:\:OPTIMISTIC\|Doctrine\\DBAL\\LockMode\:\:PESSIMISTIC_READ\|Doctrine\\DBAL\\LockMode\:\:PESSIMISTIC_WRITE\|int given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Persisters/Entity/JoinedSubclassPersister.php
+
+		-
+			message: '#^Access to an undefined property Doctrine\\ORM\\Mapping\\ManyToManyInverseSideMapping\|Doctrine\\ORM\\Mapping\\ManyToManyOwningSideMapping\|Doctrine\\ORM\\Mapping\\ManyToOneAssociationMapping\|Doctrine\\ORM\\Mapping\\OneToManyAssociationMapping\|Doctrine\\ORM\\Mapping\\OneToOneInverseSideMapping\|Doctrine\\ORM\\Mapping\\OneToOneOwningSideMapping\:\:\$joinColumns\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Persisters/Entity/SingleTablePersister.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Persisters\\Entity\\SingleTablePersister\:\:generateFilterConditionSQL\(\) has parameter \$targetEntity with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Persisters/Entity/SingleTablePersister.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Persisters\\SqlExpressionVisitor\:\:__construct\(\) has parameter \$classMetadata with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Persisters/SqlExpressionVisitor.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Persisters\\SqlValueVisitor\:\:getParamsAndTypes\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Persisters/SqlValueVisitor.php
+
+		-
+			message: '#^Parameter \#3 \$className of static method Doctrine\\ORM\\Proxy\\Autoloader\:\:resolveFile\(\) expects class\-string, string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Proxy/Autoloader.php
+
+		-
+			message: '#^Parameter \#3 of closure expects class\-string, string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Proxy/Autoloader.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Proxy\\DefaultProxyClassNameResolver\:\:resolveClassName\(\) should return class\-string\<T of object\> but returns class\-string\<Doctrine\\Persistence\\Proxy\<T of object\>\>\|class\-string\<T of object\>\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Proxy/DefaultProxyClassNameResolver.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Proxy\\DefaultProxyClassNameResolver\:\:resolveClassName\(\) should return class\-string\<T of object\> but returns string\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Proxy/DefaultProxyClassNameResolver.php
+
+		-
+			message: '#^Access to an undefined property Doctrine\\Persistence\\Mapping\\ClassMetadata\:\:\$isEmbeddedClass\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Proxy/ProxyFactory.php
+
+		-
+			message: '#^Access to an undefined property Doctrine\\Persistence\\Mapping\\ClassMetadata\:\:\$isMappedSuperclass\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Proxy/ProxyFactory.php
+
+		-
+			message: '#^Call to an undefined static method Doctrine\\ORM\\Proxy\\ProxyFactory\:\:createLazyGhost\(\)\.$#'
+			identifier: staticMethod.notFound
+			count: 1
+			path: src/Proxy/ProxyFactory.php
+
+		-
+			message: '#^Call to function is_bool\(\) with bool will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: src/Proxy/ProxyFactory.php
+
+		-
+			message: '#^Comparison operation "\<" between 0\|1\|2\|3\|4 and 0 is always false\.$#'
+			identifier: smaller.alwaysFalse
+			count: 1
+			path: src/Proxy/ProxyFactory.php
+
+		-
+			message: '#^Comparison operation "\>" between 0\|1\|2\|3\|4 and 4 is always false\.$#'
+			identifier: greater.alwaysFalse
+			count: 1
+			path: src/Proxy/ProxyFactory.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Proxy\\ProxyFactory\:\:createLazyInitializer\(\) has Doctrine\\ORM\\EntityNotFoundException in PHPDoc @throws tag but it''s not thrown\.$#'
+			identifier: throws.unusedType
+			count: 1
+			path: src/Proxy/ProxyFactory.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Proxy\\ProxyFactory\:\:createLazyInitializer\(\) has parameter \$classMetadata with generic interface Doctrine\\Persistence\\Mapping\\ClassMetadata but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Proxy/ProxyFactory.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Proxy\\ProxyFactory\:\:createLazyInitializer\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Proxy/ProxyFactory.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Proxy\\ProxyFactory\:\:createLazyInitializer\(\) return type with generic interface Doctrine\\ORM\\Proxy\\InternalProxy does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Proxy/ProxyFactory.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Proxy\\ProxyFactory\:\:generateProxyClass\(\) has parameter \$class with generic interface Doctrine\\Persistence\\Mapping\\ClassMetadata but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Proxy/ProxyFactory.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Proxy\\ProxyFactory\:\:generateProxyClasses\(\) has parameter \$classes with generic interface Doctrine\\Persistence\\Mapping\\ClassMetadata but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Proxy/ProxyFactory.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Proxy\\ProxyFactory\:\:generateSerializeImpl\(\) has parameter \$class with generic interface Doctrine\\Persistence\\Mapping\\ClassMetadata but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Proxy/ProxyFactory.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Proxy\\ProxyFactory\:\:generateUseLazyGhostTrait\(\) has parameter \$class with generic interface Doctrine\\Persistence\\Mapping\\ClassMetadata but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Proxy/ProxyFactory.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Proxy\\ProxyFactory\:\:getProxy\(\) return type with generic interface Doctrine\\ORM\\Proxy\\InternalProxy does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Proxy/ProxyFactory.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Proxy\\ProxyFactory\:\:loadProxyClass\(\) has parameter \$class with generic interface Doctrine\\Persistence\\Mapping\\ClassMetadata but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Proxy/ProxyFactory.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Proxy\\ProxyFactory\:\:skipClass\(\) has parameter \$metadata with generic interface Doctrine\\Persistence\\Mapping\\ClassMetadata but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Proxy/ProxyFactory.php
+
+		-
+			message: '#^Parameter \#1 \$class of method Doctrine\\ORM\\Utility\\IdentifierFlattener\:\:flattenIdentifier\(\) expects Doctrine\\ORM\\Mapping\\ClassMetadata, Doctrine\\Persistence\\Mapping\\ClassMetadata given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Proxy/ProxyFactory.php
+
+		-
+			message: '#^Parameter \#1 \$filename of function filemtime expects string, string\|false given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Proxy/ProxyFactory.php
+
+		-
+			message: '#^Parameter \#3 \$length of function substr expects int\|null, int\|false given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Proxy/ProxyFactory.php
+
+		-
+			message: '#^Parameter \#3 \$newScope of static method Closure\:\:bind\(\) expects ''static''\|class\-string\|object\|null, string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Proxy/ProxyFactory.php
+
+		-
+			message: '#^Result of \|\| is always false\.$#'
+			identifier: booleanOr.alwaysFalse
+			count: 1
+			path: src/Proxy/ProxyFactory.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Query\:\:processParameterMappings\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Query.php
+
+		-
+			message: '#^Parameter \#1 \$parameters of method Doctrine\\ORM\\AbstractQuery\:\:toIterable\(\) expects array\<mixed\>\|Doctrine\\Common\\Collections\\ArrayCollection\<int, Doctrine\\ORM\\Query\\Parameter\>, iterable\<\(int\|string\), mixed\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Query.php
+
+		-
+			message: '#^Parameter \#2 \$sqlParams of method Doctrine\\ORM\\Query\:\:evictResultSetCache\(\) expects array\<string, mixed\>, list\<mixed\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Query.php
+
+		-
+			message: '#^Property Doctrine\\ORM\\Query\\AST\\Functions\\BitAndFunction\:\:\$firstArithmetic \(Doctrine\\ORM\\Query\\AST\\Node\) does not accept Doctrine\\ORM\\Query\\AST\\Node\|string\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: src/Query/AST/Functions/BitAndFunction.php
+
+		-
+			message: '#^Property Doctrine\\ORM\\Query\\AST\\Functions\\BitAndFunction\:\:\$secondArithmetic \(Doctrine\\ORM\\Query\\AST\\Node\) does not accept Doctrine\\ORM\\Query\\AST\\Node\|string\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: src/Query/AST/Functions/BitAndFunction.php
+
+		-
+			message: '#^Property Doctrine\\ORM\\Query\\AST\\Functions\\BitOrFunction\:\:\$firstArithmetic \(Doctrine\\ORM\\Query\\AST\\Node\) does not accept Doctrine\\ORM\\Query\\AST\\Node\|string\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: src/Query/AST/Functions/BitOrFunction.php
+
+		-
+			message: '#^Property Doctrine\\ORM\\Query\\AST\\Functions\\BitOrFunction\:\:\$secondArithmetic \(Doctrine\\ORM\\Query\\AST\\Node\) does not accept Doctrine\\ORM\\Query\\AST\\Node\|string\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: src/Query/AST/Functions/BitOrFunction.php
+
+		-
+			message: '#^Access to an undefined property Doctrine\\ORM\\Query\\AST\\Node\:\:\$value\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Query/AST/Functions/DateAddFunction.php
+
+		-
+			message: '#^Property Doctrine\\ORM\\Query\\AST\\Functions\\DateAddFunction\:\:\$firstDateExpression \(Doctrine\\ORM\\Query\\AST\\Node\) does not accept Doctrine\\ORM\\Query\\AST\\Node\|string\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: src/Query/AST/Functions/DateAddFunction.php
+
+		-
+			message: '#^Property Doctrine\\ORM\\Query\\AST\\Functions\\DateAddFunction\:\:\$intervalExpression \(Doctrine\\ORM\\Query\\AST\\Node\) does not accept Doctrine\\ORM\\Query\\AST\\Node\|string\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: src/Query/AST/Functions/DateAddFunction.php
+
+		-
+			message: '#^Property Doctrine\\ORM\\Query\\AST\\Functions\\DateDiffFunction\:\:\$date1 \(Doctrine\\ORM\\Query\\AST\\Node\) does not accept Doctrine\\ORM\\Query\\AST\\Node\|string\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: src/Query/AST/Functions/DateDiffFunction.php
+
+		-
+			message: '#^Property Doctrine\\ORM\\Query\\AST\\Functions\\DateDiffFunction\:\:\$date2 \(Doctrine\\ORM\\Query\\AST\\Node\) does not accept Doctrine\\ORM\\Query\\AST\\Node\|string\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: src/Query/AST/Functions/DateDiffFunction.php
+
+		-
+			message: '#^Access to an undefined property Doctrine\\ORM\\Query\\AST\\Node\:\:\$value\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Query/AST/Functions/DateSubFunction.php
+
+		-
+			message: '#^Access to an undefined property Doctrine\\ORM\\Mapping\\ManyToManyInverseSideMapping\|Doctrine\\ORM\\Mapping\\ManyToManyOwningSideMapping\|Doctrine\\ORM\\Mapping\\ManyToOneAssociationMapping\|Doctrine\\ORM\\Mapping\\OneToManyAssociationMapping\|Doctrine\\ORM\\Mapping\\OneToOneInverseSideMapping\|Doctrine\\ORM\\Mapping\\OneToOneOwningSideMapping\:\:\$joinColumns\.$#'
+			identifier: property.notFound
+			count: 2
+			path: src/Query/AST/Functions/IdentityFunction.php
+
+		-
+			message: '#^Parameter \#1 \$joinColumn of method Doctrine\\ORM\\Mapping\\QuoteStrategy\:\:getJoinColumnName\(\) expects Doctrine\\ORM\\Mapping\\JoinColumnMapping, Doctrine\\ORM\\Mapping\\JoinColumnMapping\|false given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Query/AST/Functions/IdentityFunction.php
+
+		-
+			message: '#^Parameter \#1 \$simpleArithmeticExpr of method Doctrine\\ORM\\Query\\SqlWalker\:\:walkSimpleArithmeticExpression\(\) expects Doctrine\\ORM\\Query\\AST\\Node\|string, Doctrine\\ORM\\Query\\AST\\Node\|string\|true given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Query/AST/Functions/LocateFunction.php
+
+		-
+			message: '#^Access to an undefined property Doctrine\\ORM\\Mapping\\ManyToManyInverseSideMapping\|Doctrine\\ORM\\Mapping\\ManyToManyOwningSideMapping\|Doctrine\\ORM\\Mapping\\ManyToOneAssociationMapping\|Doctrine\\ORM\\Mapping\\OneToManyAssociationMapping\|Doctrine\\ORM\\Mapping\\OneToOneInverseSideMapping\|Doctrine\\ORM\\Mapping\\OneToOneOwningSideMapping\:\:\$mappedBy\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Query/AST/Functions/SizeFunction.php
+
+		-
+			message: '#^Access to an undefined property Doctrine\\ORM\\Mapping\\ManyToManyInverseSideMapping\|Doctrine\\ORM\\Mapping\\ManyToManyOwningSideMapping\|Doctrine\\ORM\\Mapping\\ManyToOneAssociationMapping\|Doctrine\\ORM\\Mapping\\OneToManyAssociationMapping\|Doctrine\\ORM\\Mapping\\OneToOneInverseSideMapping\|Doctrine\\ORM\\Mapping\\OneToOneOwningSideMapping\:\:\$targetToSourceKeyColumns\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Query/AST/Functions/SizeFunction.php
+
+		-
+			message: '#^Access to an undefined property Doctrine\\ORM\\Mapping\\ManyToManyOwningSideMapping\|Doctrine\\ORM\\Mapping\\ManyToOneAssociationMapping\|Doctrine\\ORM\\Mapping\\OneToOneOwningSideMapping\:\:\$joinTable\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Query/AST/Functions/SizeFunction.php
+
+		-
+			message: '#^Parameter \#1 \$association of method Doctrine\\ORM\\Mapping\\QuoteStrategy\:\:getJoinTableName\(\) expects Doctrine\\ORM\\Mapping\\ManyToManyOwningSideMapping, Doctrine\\ORM\\Mapping\\ManyToManyOwningSideMapping\|Doctrine\\ORM\\Mapping\\ManyToOneAssociationMapping\|Doctrine\\ORM\\Mapping\\OneToOneOwningSideMapping given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Query/AST/Functions/SizeFunction.php
+
+		-
+			message: '#^Parameter \#2 \$mode of method Doctrine\\DBAL\\Platforms\\AbstractPlatform\:\:getTrimExpression\(\) expects Doctrine\\DBAL\\Platforms\\TrimMode, Doctrine\\DBAL\\Platforms\\TrimMode\:\:BOTH\|Doctrine\\DBAL\\Platforms\\TrimMode\:\:LEADING\|Doctrine\\DBAL\\Platforms\\TrimMode\:\:TRAILING\|Doctrine\\DBAL\\Platforms\\TrimMode\:\:UNSPECIFIED\|int given\.$#'
+			identifier: argument.type
+			count: 2
+			path: src/Query/AST/Functions/TrimFunction.php
+
+		-
+			message: '#^Call to an undefined method Doctrine\\ORM\\Query\\SqlWalker\:\:walkJoinPathExpression\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Query/AST/JoinClassPathExpression.php
+
+		-
+			message: '#^Call to an undefined method Doctrine\\ORM\\Query\\SqlWalker\:\:walkJoinVariableDeclaration\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Query/AST/JoinVariableDeclaration.php
+
+		-
+			message: '#^Call to an undefined method Doctrine\\ORM\\Query\\SqlWalker\:\:walkWhenClauseExpression\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Query/AST/SimpleWhenClause.php
+
+		-
+			message: '#^Call to an undefined method Doctrine\\ORM\\Query\\SqlWalker\:\:walkWhenClauseExpression\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Query/AST/WhenClause.php
+
+		-
+			message: '#^Argument of an invalid type list\<string\>\|string supplied for foreach, only iterables are supported\.$#'
+			identifier: foreach.nonIterable
+			count: 1
+			path: src/Query/Exec/MultiTableDeleteExecutor.php
+
+		-
+			message: '#^Cannot assign new offset to list\<string\>\|string\.$#'
+			identifier: offsetAssign.dimType
+			count: 1
+			path: src/Query/Exec/MultiTableDeleteExecutor.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Query\\Exec\\MultiTableDeleteExecutor\:\:execute\(\) should return int but returns int\|string\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Query/Exec/MultiTableDeleteExecutor.php
+
+		-
+			message: '#^Argument of an invalid type list\<string\>\|string supplied for foreach, only iterables are supported\.$#'
+			identifier: foreach.nonIterable
+			count: 1
+			path: src/Query/Exec/MultiTableUpdateExecutor.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Query\\Exec\\MultiTableUpdateExecutor\:\:execute\(\) should return int but returns int\|string\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Query/Exec/MultiTableUpdateExecutor.php
+
+		-
+			message: '#^Parameter \#3 \$types of method Doctrine\\DBAL\\Connection\:\:executeStatement\(\) expects array\<int\<0, max\>\|string, Doctrine\\DBAL\\ArrayParameterType\|Doctrine\\DBAL\\ParameterType\|Doctrine\\DBAL\\Types\\Type\|string\>, list\<Doctrine\\DBAL\\ArrayParameterType\|Doctrine\\DBAL\\ParameterType\|Doctrine\\DBAL\\Types\\Type\|int\|string\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Query/Exec/MultiTableUpdateExecutor.php
+
+		-
+			message: '#^Parameter \#1 \$sql of method Doctrine\\DBAL\\Connection\:\:executeQuery\(\) expects string, list\<string\>\|string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Query/Exec/SingleSelectExecutor.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Query\\Exec\\SingleTableDeleteUpdateExecutor\:\:execute\(\) should return int but returns int\|string\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Query/Exec/SingleTableDeleteUpdateExecutor.php
+
+		-
+			message: '#^Parameter \#1 \$sql of method Doctrine\\DBAL\\Connection\:\:executeStatement\(\) expects string, list\<string\>\|string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Query/Exec/SingleTableDeleteUpdateExecutor.php
+
+		-
+			message: '#^PHPDoc type array\<string\> of property Doctrine\\ORM\\Query\\Expr\\Andx\:\:\$allowedClasses is not covariant with PHPDoc type list\<class\-string\> of overridden property Doctrine\\ORM\\Query\\Expr\\Base\:\:\$allowedClasses\.$#'
+			identifier: property.phpDocType
+			count: 1
+			path: src/Query/Expr/Andx.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Query\\Expr\\Func\:\:getArguments\(\) should return list\<mixed\> but returns array\<mixed\>\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Query/Expr/Func.php
+
+		-
+			message: '#^PHPDoc type array\<string\> of property Doctrine\\ORM\\Query\\Expr\\Orx\:\:\$allowedClasses is not covariant with PHPDoc type list\<class\-string\> of overridden property Doctrine\\ORM\\Query\\Expr\\Base\:\:\$allowedClasses\.$#'
+			identifier: property.phpDocType
+			count: 1
+			path: src/Query/Expr/Orx.php
+
+		-
+			message: '#^PHPDoc type array\<string\> of property Doctrine\\ORM\\Query\\Expr\\Select\:\:\$allowedClasses is not covariant with PHPDoc type list\<class\-string\> of overridden property Doctrine\\ORM\\Query\\Expr\\Base\:\:\$allowedClasses\.$#'
+			identifier: property.phpDocType
+			count: 1
+			path: src/Query/Expr/Select.php
+
+		-
+			message: '#^Property Doctrine\\ORM\\Query\\Filter\\SQLFilter\:\:\$parameters \(array\<string, array\{type\: string, value\: mixed, is_list\: bool\}\>\) does not accept non\-empty\-array\<string, array\{value\: mixed, type\: Doctrine\\DBAL\\ArrayParameterType\|Doctrine\\DBAL\\ParameterType\|int\|string, is_list\: bool\}\>\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: src/Query/Filter/SQLFilter.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Query\\ParameterTypeInferer\:\:inferType\(\) never returns int so it can be removed from the return type\.$#'
+			identifier: return.unusedType
+			count: 1
+			path: src/Query/ParameterTypeInferer.php
+
+		-
+			message: '#^@readonly property cannot have a default value\.$#'
+			identifier: property.readOnlyByPhpDocDefaultValue
+			count: 3
+			path: src/Query/Parser.php
+
+		-
+			message: '#^Call to an undefined method object\:\:parse\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Query/Parser.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Query\\Parser\:\:CustomFunctionsReturningStrings\(\) should return Doctrine\\ORM\\Query\\AST\\Functions\\FunctionNode but returns object\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Query/Parser.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Query\\Parser\:\:getMetadataForDqlAlias\(\) return type with generic class Doctrine\\ORM\\Mapping\\ClassMetadata does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Query/Parser.php
+
+		-
+			message: '#^Parameter \#1 \$AST of method Doctrine\\ORM\\Query\\Parser\:\:processDeferredNewObjectExpressions\(\) expects Doctrine\\ORM\\Query\\AST\\SelectStatement, Doctrine\\ORM\\Query\\AST\\DeleteStatement\|Doctrine\\ORM\\Query\\AST\\SelectStatement\|Doctrine\\ORM\\Query\\AST\\UpdateStatement given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Query/Parser.php
+
+		-
+			message: '#^Parameter \#1 \$expected of method Doctrine\\ORM\\Query\\Parser\:\:syntaxError\(\) expects string, int\|string given\.$#'
+			identifier: argument.type
+			count: 3
+			path: src/Query/Parser.php
+
+		-
+			message: '#^Parameter \#1 \$expression of class Doctrine\\ORM\\Query\\AST\\ParenthesisExpression constructor expects Doctrine\\ORM\\Query\\AST\\Node, Doctrine\\ORM\\Query\\AST\\Node\|string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Query/Parser.php
+
+		-
+			message: '#^Parameter \#2 \$stringPattern of class Doctrine\\ORM\\Query\\AST\\LikeExpression constructor expects Doctrine\\ORM\\Query\\AST\\Functions\\FunctionNode\|Doctrine\\ORM\\Query\\AST\\InputParameter\|Doctrine\\ORM\\Query\\AST\\Literal\|Doctrine\\ORM\\Query\\AST\\PathExpression, Doctrine\\ORM\\Query\\AST\\Node given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Query/Parser.php
+
+		-
+			message: '#^Parameter \#3 \$length of function substr expects int\|null, int\|false given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Query/Parser.php
+
+		-
+			message: '#^Strict comparison using \=\=\= between 102 and 102 will always evaluate to true\.$#'
+			identifier: identical.alwaysTrue
+			count: 1
+			path: src/Query/Parser.php
+
+		-
+			message: '#^Unreachable statement \- code above always terminates\.$#'
+			identifier: deadCode.unreachable
+			count: 2
+			path: src/Query/Parser.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>position" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: src/Query/Parser.php
+
+		-
+			message: '#^Access to an undefined property Doctrine\\ORM\\Mapping\\ManyToManyInverseSideMapping\|Doctrine\\ORM\\Mapping\\ManyToManyOwningSideMapping\|Doctrine\\ORM\\Mapping\\ManyToOneAssociationMapping\|Doctrine\\ORM\\Mapping\\OneToManyAssociationMapping\|Doctrine\\ORM\\Mapping\\OneToOneInverseSideMapping\|Doctrine\\ORM\\Mapping\\OneToOneOwningSideMapping\:\:\$joinColumns\.$#'
+			identifier: property.notFound
+			count: 2
+			path: src/Query/ResultSetMappingBuilder.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Query\\ResultSetMappingBuilder\:\:isInheritanceSupported\(\) has parameter \$classMetadata with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Query/ResultSetMappingBuilder.php
+
+		-
+			message: '#^Instanceof between Doctrine\\ORM\\Query\\AST\\DeleteStatement and Doctrine\\ORM\\Query\\AST\\DeleteStatement will always evaluate to true\.$#'
+			identifier: instanceof.alwaysTrue
+			count: 1
+			path: src/Query/SqlOutputWalker.php
+
+		-
+			message: '#^Access to an undefined property Doctrine\\ORM\\Mapping\\ManyToManyInverseSideMapping\|Doctrine\\ORM\\Mapping\\ManyToManyOwningSideMapping\|Doctrine\\ORM\\Mapping\\ManyToOneAssociationMapping\|Doctrine\\ORM\\Mapping\\OneToManyAssociationMapping\|Doctrine\\ORM\\Mapping\\OneToOneInverseSideMapping\|Doctrine\\ORM\\Mapping\\OneToOneOwningSideMapping\:\:\$joinColumns\.$#'
+			identifier: property.notFound
+			count: 2
+			path: src/Query/SqlWalker.php
+
+		-
+			message: '#^Access to an undefined property Doctrine\\ORM\\Mapping\\ManyToManyInverseSideMapping\|Doctrine\\ORM\\Mapping\\ManyToManyOwningSideMapping\|Doctrine\\ORM\\Mapping\\ManyToOneAssociationMapping\|Doctrine\\ORM\\Mapping\\OneToManyAssociationMapping\|Doctrine\\ORM\\Mapping\\OneToOneInverseSideMapping\|Doctrine\\ORM\\Mapping\\OneToOneOwningSideMapping\:\:\$mappedBy\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Query/SqlWalker.php
+
+		-
+			message: '#^Access to an undefined property Doctrine\\ORM\\Mapping\\ManyToManyInverseSideMapping\|Doctrine\\ORM\\Mapping\\ManyToManyOwningSideMapping\|Doctrine\\ORM\\Mapping\\ManyToOneAssociationMapping\|Doctrine\\ORM\\Mapping\\OneToManyAssociationMapping\|Doctrine\\ORM\\Mapping\\OneToOneInverseSideMapping\|Doctrine\\ORM\\Mapping\\OneToOneOwningSideMapping\:\:\$sourceToTargetKeyColumns\.$#'
+			identifier: property.notFound
+			count: 2
+			path: src/Query/SqlWalker.php
+
+		-
+			message: '#^Access to an undefined property Doctrine\\ORM\\Mapping\\ManyToManyInverseSideMapping\|Doctrine\\ORM\\Mapping\\ManyToManyOwningSideMapping\|Doctrine\\ORM\\Mapping\\ManyToOneAssociationMapping\|Doctrine\\ORM\\Mapping\\OneToManyAssociationMapping\|Doctrine\\ORM\\Mapping\\OneToOneInverseSideMapping\|Doctrine\\ORM\\Mapping\\OneToOneOwningSideMapping\:\:\$targetToSourceKeyColumns\.$#'
+			identifier: property.notFound
+			count: 3
+			path: src/Query/SqlWalker.php
+
+		-
+			message: '#^Access to an undefined property Doctrine\\ORM\\Mapping\\ManyToManyOwningSideMapping\|Doctrine\\ORM\\Mapping\\ManyToOneAssociationMapping\|Doctrine\\ORM\\Mapping\\OneToOneOwningSideMapping\:\:\$joinColumns\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Query/SqlWalker.php
+
+		-
+			message: '#^Access to an undefined property Doctrine\\ORM\\Mapping\\ManyToManyOwningSideMapping\|Doctrine\\ORM\\Mapping\\ManyToOneAssociationMapping\|Doctrine\\ORM\\Mapping\\OneToOneOwningSideMapping\:\:\$joinTable\.$#'
+			identifier: property.notFound
+			count: 6
+			path: src/Query/SqlWalker.php
+
+		-
+			message: '#^Cannot assign new offset to list\<string\>\|string\.$#'
+			identifier: offsetAssign.dimType
+			count: 2
+			path: src/Query/SqlWalker.php
+
+		-
+			message: '#^Match arm comparison between 3 and 3 is always true\.$#'
+			identifier: match.alwaysTrue
+			count: 1
+			path: src/Query/SqlWalker.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Query\\SqlWalker\:\:generateClassTableInheritanceJoins\(\) has parameter \$class with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Query/SqlWalker.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Query\\SqlWalker\:\:generateFilterConditionSQL\(\) has parameter \$targetEntity with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Query/SqlWalker.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Query\\SqlWalker\:\:getChildDiscriminatorsFromClassMetadata\(\) has parameter \$rootClass with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Query/SqlWalker.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Query\\SqlWalker\:\:getMetadataForDqlAlias\(\) return type with generic class Doctrine\\ORM\\Mapping\\ClassMetadata does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Query/SqlWalker.php
+
+		-
+			message: '#^Parameter \#1 \$association of method Doctrine\\ORM\\Mapping\\QuoteStrategy\:\:getJoinTableName\(\) expects Doctrine\\ORM\\Mapping\\ManyToManyOwningSideMapping, Doctrine\\ORM\\Mapping\\ManyToManyOwningSideMapping\|Doctrine\\ORM\\Mapping\\ManyToOneAssociationMapping\|Doctrine\\ORM\\Mapping\\OneToOneOwningSideMapping given\.$#'
+			identifier: argument.type
+			count: 2
+			path: src/Query/SqlWalker.php
+
+		-
+			message: '#^Parameter \#1 \$condTerm of method Doctrine\\ORM\\Query\\SqlWalker\:\:walkConditionalTerm\(\) expects Doctrine\\ORM\\Query\\AST\\ConditionalFactor\|Doctrine\\ORM\\Query\\AST\\ConditionalPrimary\|Doctrine\\ORM\\Query\\AST\\ConditionalTerm, Doctrine\\ORM\\Query\\AST\\Phase2OptimizableConditional given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Query/SqlWalker.php
+
+		-
+			message: '#^Parameter \#1 \$identVariable of method Doctrine\\ORM\\Query\\SqlWalker\:\:walkEntityIdentificationVariable\(\) expects string, Doctrine\\ORM\\Query\\AST\\Node\|string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Query/SqlWalker.php
+
+		-
+			message: '#^Parameter \#2 \$fieldName of method Doctrine\\ORM\\Query\\ResultSetMapping\:\:addIndexBy\(\) expects string, string\|false given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Query/SqlWalker.php
+
+		-
+			message: '#^Property Doctrine\\ORM\\Query\\SqlWalker\:\:\$selectedClasses \(array\<string, array\{class\: Doctrine\\ORM\\Mapping\\ClassMetadata, dqlAlias\: string, resultAlias\: string\|null\}\>\) does not accept non\-empty\-array\<int\|string, array\{class\: Doctrine\\ORM\\Mapping\\ClassMetadata, dqlAlias\: mixed, resultAlias\: string\|null\}\>\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: src/Query/SqlWalker.php
+
+		-
+			message: '#^Property Doctrine\\ORM\\Query\\SqlWalker\:\:\$selectedClasses with generic class Doctrine\\ORM\\Mapping\\ClassMetadata does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Query/SqlWalker.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Query\\TreeWalkerAdapter\:\:getMetadataForDqlAlias\(\) return type with generic class Doctrine\\ORM\\Mapping\\ClassMetadata does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Query/TreeWalkerAdapter.php
+
+		-
+			message: '#^Argument of an invalid type array\<int\|string, array\<int\|string, object\>\|object\|string\>\|object\|string\|false supplied for foreach, only iterables are supported\.$#'
+			identifier: foreach.nonIterable
+			count: 1
+			path: src/QueryBuilder.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\QueryBuilder\:\:getParameter\(\) should return Doctrine\\ORM\\Query\\Parameter\|null but returns Doctrine\\ORM\\Query\\Parameter\|false\|null\.$#'
+			identifier: return.type
+			count: 1
+			path: src/QueryBuilder.php
+
+		-
+			message: '#^Parameter \#2 \$dqlPart of method Doctrine\\ORM\\QueryBuilder\:\:add\(\) expects array\<''join''\|int\<0, max\>, array\<int\|string, object\>\|string\>\|object\|string, array\{Doctrine\\ORM\\Query\\Expr\\Andx\|Doctrine\\ORM\\Query\\Expr\\Orx\}\|Doctrine\\ORM\\Query\\Expr\\Andx given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/QueryBuilder.php
+
+		-
+			message: '#^Parameter \#2 \$dqlPart of method Doctrine\\ORM\\QueryBuilder\:\:add\(\) expects array\<''join''\|int\<0, max\>, array\<int\|string, object\>\|string\>\|object\|string, array\{Doctrine\\ORM\\Query\\Expr\\Composite\}\|Doctrine\\ORM\\Query\\Expr\\Andx given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/QueryBuilder.php
+
+		-
+			message: '#^Parameter \#2 \$dqlPart of method Doctrine\\ORM\\QueryBuilder\:\:add\(\) expects array\<''join''\|int\<0, max\>, array\<int\|string, object\>\|string\>\|object\|string, non\-empty\-array\<string, Doctrine\\ORM\\Query\\Expr\\Join\> given\.$#'
+			identifier: argument.type
+			count: 2
+			path: src/QueryBuilder.php
+
+		-
+			message: '#^Parameter \#3 \$length of function substr expects int\|null, int\|false given\.$#'
+			identifier: argument.type
+			count: 2
+			path: src/QueryBuilder.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Repository\\DefaultRepositoryFactory\:\:createRepository\(\) return type with generic class Doctrine\\ORM\\EntityRepository does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Repository/DefaultRepositoryFactory.php
+
+		-
+			message: '#^Property Doctrine\\ORM\\Repository\\DefaultRepositoryFactory\:\:\$repositoryList with generic class Doctrine\\ORM\\EntityRepository does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Repository/DefaultRepositoryFactory.php
+
+		-
+			message: '#^Access to an undefined property Doctrine\\Persistence\\Mapping\\ClassMetadata\:\:\$name\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Tools/Console/Command/GenerateProxiesCommand.php
+
+		-
+			message: '#^Parameter \#1 \$filename of function file_exists expects string, string\|false given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Tools/Console/Command/GenerateProxiesCommand.php
+
+		-
+			message: '#^Parameter \#1 \$filename of function is_writable expects string, string\|false given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Tools/Console/Command/GenerateProxiesCommand.php
+
+		-
+			message: '#^Parameter \#2 \$proxyDir of method Doctrine\\ORM\\Proxy\\ProxyFactory\:\:generateProxyClasses\(\) expects string\|null, string\|false given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Tools/Console/Command/GenerateProxiesCommand.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Tools\\Console\\Command\\MappingDescribeCommand\:\:getClassMetadata\(\) return type with generic class Doctrine\\ORM\\Mapping\\ClassMetadata does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Tools/Console/Command/MappingDescribeCommand.php
+
+		-
+			message: '#^Parameter \#1 \$entityListeners of method Doctrine\\ORM\\Tools\\Console\\Command\\MappingDescribeCommand\:\:formatEntityListeners\(\) expects list\<object\>, array\<string, list\<array\{class\: class\-string, method\: string\}\>\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Tools/Console/Command/MappingDescribeCommand.php
+
+		-
+			message: '#^Parameter \#2 \$callback of function array_filter expects \(callable\(class\-string\)\: bool\)\|null, Closure\(mixed\)\: \(0\|1\|false\) given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Tools/Console/Command/MappingDescribeCommand.php
+
+		-
+			message: '#^Parameter \#1 \$classes of method Doctrine\\ORM\\Tools\\SchemaTool\:\:createSchema\(\) expects list\<Doctrine\\ORM\\Mapping\\ClassMetadata\>, array\<mixed\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Tools/Console/Command/SchemaTool/CreateCommand.php
+
+		-
+			message: '#^Parameter \#1 \$classes of method Doctrine\\ORM\\Tools\\SchemaTool\:\:getCreateSchemaSql\(\) expects list\<Doctrine\\ORM\\Mapping\\ClassMetadata\>, array\<mixed\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Tools/Console/Command/SchemaTool/CreateCommand.php
+
+		-
+			message: '#^Parameter \#1 \$classes of method Doctrine\\ORM\\Tools\\SchemaTool\:\:dropSchema\(\) expects list\<Doctrine\\ORM\\Mapping\\ClassMetadata\>, array\<mixed\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Tools/Console/Command/SchemaTool/DropCommand.php
+
+		-
+			message: '#^Parameter \#1 \$classes of method Doctrine\\ORM\\Tools\\SchemaTool\:\:getDropSchemaSQL\(\) expects list\<Doctrine\\ORM\\Mapping\\ClassMetadata\>, array\<mixed\> given\.$#'
+			identifier: argument.type
+			count: 2
+			path: src/Tools/Console/Command/SchemaTool/DropCommand.php
+
+		-
+			message: '#^Parameter \#1 \$classes of method Doctrine\\ORM\\Tools\\SchemaTool\:\:getUpdateSchemaSql\(\) expects list\<Doctrine\\ORM\\Mapping\\ClassMetadata\>, array\<mixed\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Tools/Console/Command/SchemaTool/UpdateCommand.php
+
+		-
+			message: '#^Class Doctrine\\ORM\\Tools\\Console\\MetadataFilter extends generic class FilterIterator but does not specify its types\: TKey, TValue, TIterator$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Tools/Console/MetadataFilter.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Tools\\Console\\MetadataFilter\:\:__construct\(\) has parameter \$metadata with generic class ArrayIterator but does not specify its types\: TKey, TValue$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Tools/Console/MetadataFilter.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Tools\\Console\\MetadataFilter\:\:filter\(\) has parameter \$metadatas with generic interface Doctrine\\Persistence\\Mapping\\ClassMetadata but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Tools/Console/MetadataFilter.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Tools\\Console\\MetadataFilter\:\:filter\(\) return type with generic interface Doctrine\\Persistence\\Mapping\\ClassMetadata does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Tools/Console/MetadataFilter.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Tools\\Console\\MetadataFilter\:\:getInnerIterator\(\) return type with generic interface Doctrine\\Persistence\\Mapping\\ClassMetadata does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Tools/Console/MetadataFilter.php
+
+		-
+			message: '#^Parameter \#1 \$string of function html_entity_decode expects string, string\|false given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Tools/Debug.php
+
+		-
+			message: '#^Parameter \#1 \$stream of function fclose expects resource, resource\|false given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Tools/DebugUnitOfWorkListener.php
+
+		-
+			message: '#^Parameter \#1 \$stream of function fwrite expects resource, resource\|false given\.$#'
+			identifier: argument.type
+			count: 14
+			path: src/Tools/DebugUnitOfWorkListener.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Tools\\Event\\GenerateSchemaTableEventArgs\:\:__construct\(\) has parameter \$classMetadata with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Tools/Event/GenerateSchemaTableEventArgs.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Tools\\Event\\GenerateSchemaTableEventArgs\:\:getClassMetadata\(\) return type with generic class Doctrine\\ORM\\Mapping\\ClassMetadata does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Tools/Event/GenerateSchemaTableEventArgs.php
+
+		-
+			message: '#^Access to an undefined property Doctrine\\ORM\\Mapping\\ManyToManyInverseSideMapping\|Doctrine\\ORM\\Mapping\\ManyToManyOwningSideMapping\|Doctrine\\ORM\\Mapping\\ManyToOneAssociationMapping\|Doctrine\\ORM\\Mapping\\OneToManyAssociationMapping\|Doctrine\\ORM\\Mapping\\OneToOneInverseSideMapping\|Doctrine\\ORM\\Mapping\\OneToOneOwningSideMapping\:\:\$joinColumns\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Tools/Pagination/CountOutputWalker.php
+
+		-
+			message: '#^Access to an undefined property Doctrine\\ORM\\Mapping\\ManyToManyInverseSideMapping\|Doctrine\\ORM\\Mapping\\ManyToManyOwningSideMapping\|Doctrine\\ORM\\Mapping\\ManyToOneAssociationMapping\|Doctrine\\ORM\\Mapping\\OneToManyAssociationMapping\|Doctrine\\ORM\\Mapping\\OneToOneInverseSideMapping\|Doctrine\\ORM\\Mapping\\OneToOneOwningSideMapping\:\:\$joinColumns\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Tools/Pagination/LimitSubqueryOutputWalker.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Tools\\Pagination\\LimitSubqueryOutputWalker\:\:walkSelectStatement\(\) should return string but returns list\<string\>\|string\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Tools/Pagination/LimitSubqueryOutputWalker.php
+
+		-
+			message: '#^Parameter \#3 \$length of function substr expects int\|null, int\|false given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Tools/Pagination/LimitSubqueryOutputWalker.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Tools\\Pagination\\Paginator\:\:count\(\) should return int\<0, max\> but returns int\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Tools/Pagination/Paginator.php
+
+		-
+			message: '#^PHPDoc tag @var for variable \$parameters contains generic interface Doctrine\\Common\\Collections\\Collection but does not specify its types\: TKey, T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Tools/Pagination/Paginator.php
+
+		-
+			message: '#^Parameter \#1 \$parameters of method Doctrine\\ORM\\AbstractQuery\:\:setParameters\(\) expects array\<mixed\>\|Doctrine\\Common\\Collections\\ArrayCollection\<int, Doctrine\\ORM\\Query\\Parameter\>, Doctrine\\Common\\Collections\\Collection&iterable\<Doctrine\\ORM\\Query\\Parameter\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Tools/Pagination/Paginator.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Tools\\ResolveTargetEntityListener\:\:remapAssociation\(\) has parameter \$classMetadata with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Tools/ResolveTargetEntityListener.php
+
+		-
+			message: '#^Parameter \#1 \$className of method Doctrine\\Persistence\\Mapping\\AbstractClassMetadataFactory\<Doctrine\\ORM\\Mapping\\ClassMetadata\>\:\:setMetadataFor\(\) expects class\-string, \(int\|string\) given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Tools/ResolveTargetEntityListener.php
+
+		-
+			message: '#^Access to an undefined property Doctrine\\ORM\\Mapping\\ManyToManyInverseSideMapping\|Doctrine\\ORM\\Mapping\\ManyToManyOwningSideMapping\|Doctrine\\ORM\\Mapping\\ManyToOneAssociationMapping\|Doctrine\\ORM\\Mapping\\OneToManyAssociationMapping\|Doctrine\\ORM\\Mapping\\OneToOneInverseSideMapping\|Doctrine\\ORM\\Mapping\\OneToOneOwningSideMapping\:\:\$joinColumns\.$#'
+			identifier: property.notFound
+			count: 3
+			path: src/Tools/SchemaTool.php
+
+		-
+			message: '#^Call to function is_numeric\(\) with int\<0, max\> will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: src/Tools/SchemaTool.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Tools\\SchemaTool\:\:addDiscriminatorColumnDefinition\(\) has parameter \$class with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Tools/SchemaTool.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Tools\\SchemaTool\:\:createSchema\(\) has parameter \$classes with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Tools/SchemaTool.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Tools\\SchemaTool\:\:dropSchema\(\) has parameter \$classes with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Tools/SchemaTool.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Tools\\SchemaTool\:\:gatherColumn\(\) has parameter \$class with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Tools/SchemaTool.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Tools\\SchemaTool\:\:gatherColumns\(\) has parameter \$class with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Tools/SchemaTool.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Tools\\SchemaTool\:\:gatherRelationJoinColumns\(\) has parameter \$class with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Tools/SchemaTool.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Tools\\SchemaTool\:\:gatherRelationsSql\(\) has parameter \$class with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Tools/SchemaTool.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Tools\\SchemaTool\:\:getCreateSchemaSql\(\) has parameter \$classes with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Tools/SchemaTool.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Tools\\SchemaTool\:\:getDefiningClass\(\) has parameter \$class with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Tools/SchemaTool.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Tools\\SchemaTool\:\:getDefiningClass\(\) return type with generic class Doctrine\\ORM\\Mapping\\ClassMetadata does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Tools/SchemaTool.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Tools\\SchemaTool\:\:getDropSchemaSQL\(\) has parameter \$classes with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Tools/SchemaTool.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Tools\\SchemaTool\:\:getIndexColumns\(\) has parameter \$class with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Tools/SchemaTool.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Tools\\SchemaTool\:\:getSchemaFromMetadata\(\) has parameter \$classes with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Tools/SchemaTool.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Tools\\SchemaTool\:\:getUpdateSchemaSql\(\) has parameter \$classes with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Tools/SchemaTool.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Tools\\SchemaTool\:\:processingNotRequired\(\) has parameter \$class with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Tools/SchemaTool.php
+
+		-
+			message: '#^Negated boolean expression is always false\.$#'
+			identifier: booleanNot.alwaysFalse
+			count: 1
+			path: src/Tools/SchemaTool.php
+
+		-
+			message: '#^Parameter \#1 \$classes of method Doctrine\\ORM\\Tools\\SchemaTool\:\:getUpdateSchemaSql\(\) expects list\<Doctrine\\ORM\\Mapping\\ClassMetadata\>, array\<mixed\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Tools/SchemaTool.php
+
+		-
+			message: '#^Property Doctrine\\ORM\\Tools\\SchemaTool\:\:\$schemaManager with generic class Doctrine\\DBAL\\Schema\\AbstractSchemaManager does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Tools/SchemaTool.php
+
+		-
+			message: '#^Access to an undefined property Doctrine\\ORM\\Mapping\\ManyToManyInverseSideMapping\|Doctrine\\ORM\\Mapping\\ManyToManyOwningSideMapping\|Doctrine\\ORM\\Mapping\\ManyToOneAssociationMapping\|Doctrine\\ORM\\Mapping\\OneToManyAssociationMapping\|Doctrine\\ORM\\Mapping\\OneToOneInverseSideMapping\|Doctrine\\ORM\\Mapping\\OneToOneOwningSideMapping\:\:\$inversedBy\.$#'
+			identifier: property.notFound
+			count: 2
+			path: src/Tools/SchemaValidator.php
+
+		-
+			message: '#^Access to an undefined property Doctrine\\ORM\\Mapping\\ManyToManyInverseSideMapping\|Doctrine\\ORM\\Mapping\\ManyToManyOwningSideMapping\|Doctrine\\ORM\\Mapping\\ManyToOneAssociationMapping\|Doctrine\\ORM\\Mapping\\OneToManyAssociationMapping\|Doctrine\\ORM\\Mapping\\OneToOneInverseSideMapping\|Doctrine\\ORM\\Mapping\\OneToOneOwningSideMapping\:\:\$joinColumns\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Tools/SchemaValidator.php
+
+		-
+			message: '#^Access to an undefined property Doctrine\\ORM\\Mapping\\ManyToManyInverseSideMapping\|Doctrine\\ORM\\Mapping\\ManyToManyOwningSideMapping\|Doctrine\\ORM\\Mapping\\ManyToOneAssociationMapping\|Doctrine\\ORM\\Mapping\\OneToManyAssociationMapping\|Doctrine\\ORM\\Mapping\\OneToOneInverseSideMapping\|Doctrine\\ORM\\Mapping\\OneToOneOwningSideMapping\:\:\$joinTable\.$#'
+			identifier: property.notFound
+			count: 6
+			path: src/Tools/SchemaValidator.php
+
+		-
+			message: '#^Access to an undefined property Doctrine\\ORM\\Mapping\\ManyToManyInverseSideMapping\|Doctrine\\ORM\\Mapping\\ManyToManyOwningSideMapping\|Doctrine\\ORM\\Mapping\\ManyToOneAssociationMapping\|Doctrine\\ORM\\Mapping\\OneToManyAssociationMapping\|Doctrine\\ORM\\Mapping\\OneToOneInverseSideMapping\|Doctrine\\ORM\\Mapping\\OneToOneOwningSideMapping\:\:\$mappedBy\.$#'
+			identifier: property.notFound
+			count: 9
+			path: src/Tools/SchemaValidator.php
+
+		-
+			message: '#^Access to an undefined property Doctrine\\ORM\\Mapping\\ManyToManyInverseSideMapping\|Doctrine\\ORM\\Mapping\\ManyToManyOwningSideMapping\|Doctrine\\ORM\\Mapping\\ManyToOneAssociationMapping\|Doctrine\\ORM\\Mapping\\OneToManyAssociationMapping\|Doctrine\\ORM\\Mapping\\OneToOneInverseSideMapping\|Doctrine\\ORM\\Mapping\\OneToOneOwningSideMapping\:\:\$relationToSourceKeyColumns\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Tools/SchemaValidator.php
+
+		-
+			message: '#^Access to an undefined property Doctrine\\ORM\\Mapping\\ManyToManyInverseSideMapping\|Doctrine\\ORM\\Mapping\\ManyToManyOwningSideMapping\|Doctrine\\ORM\\Mapping\\ManyToOneAssociationMapping\|Doctrine\\ORM\\Mapping\\OneToManyAssociationMapping\|Doctrine\\ORM\\Mapping\\OneToOneInverseSideMapping\|Doctrine\\ORM\\Mapping\\OneToOneOwningSideMapping\:\:\$relationToTargetKeyColumns\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Tools/SchemaValidator.php
+
+		-
+			message: '#^Call to an undefined method Doctrine\\ORM\\Mapping\\ManyToManyInverseSideMapping\|Doctrine\\ORM\\Mapping\\ManyToManyOwningSideMapping\|Doctrine\\ORM\\Mapping\\ManyToOneAssociationMapping\|Doctrine\\ORM\\Mapping\\OneToManyAssociationMapping\|Doctrine\\ORM\\Mapping\\OneToOneInverseSideMapping\|Doctrine\\ORM\\Mapping\\OneToOneOwningSideMapping\:\:orderBy\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Tools/SchemaValidator.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Tools\\SchemaValidator\:\:validateClass\(\) has parameter \$class with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Tools/SchemaValidator.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Tools\\SchemaValidator\:\:validatePropertiesTypes\(\) has parameter \$class with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Tools/SchemaValidator.php
+
+		-
+			message: '#^ Parameter \#3 \$changeSet of class Doctrine\\ORM\\Event\\PreUpdateEventArgs constructor is passed by reference, so it expects variables only$#'
+			identifier: argument.byRef
+			count: 1
+			path: src/UnitOfWork.php
+
+		-
+			message: '#^Access to an undefined property Doctrine\\ORM\\Mapping\\ManyToManyInverseSideMapping\|Doctrine\\ORM\\Mapping\\ManyToManyOwningSideMapping\|Doctrine\\ORM\\Mapping\\ManyToOneAssociationMapping\|Doctrine\\ORM\\Mapping\\OneToManyAssociationMapping\|Doctrine\\ORM\\Mapping\\OneToOneInverseSideMapping\|Doctrine\\ORM\\Mapping\\OneToOneOwningSideMapping\:\:\$inversedBy\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/UnitOfWork.php
+
+		-
+			message: '#^Access to an undefined property Doctrine\\ORM\\Mapping\\ManyToManyInverseSideMapping\|Doctrine\\ORM\\Mapping\\ManyToManyOwningSideMapping\|Doctrine\\ORM\\Mapping\\ManyToOneAssociationMapping\|Doctrine\\ORM\\Mapping\\OneToManyAssociationMapping\|Doctrine\\ORM\\Mapping\\OneToOneInverseSideMapping\|Doctrine\\ORM\\Mapping\\OneToOneOwningSideMapping\:\:\$joinColumns\.$#'
+			identifier: property.notFound
+			count: 3
+			path: src/UnitOfWork.php
+
+		-
+			message: '#^Access to an undefined property Doctrine\\ORM\\Mapping\\ManyToManyInverseSideMapping\|Doctrine\\ORM\\Mapping\\ManyToManyOwningSideMapping\|Doctrine\\ORM\\Mapping\\ManyToOneAssociationMapping\|Doctrine\\ORM\\Mapping\\OneToManyAssociationMapping\|Doctrine\\ORM\\Mapping\\OneToOneInverseSideMapping\|Doctrine\\ORM\\Mapping\\OneToOneOwningSideMapping\:\:\$mappedBy\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/UnitOfWork.php
+
+		-
+			message: '#^Access to an undefined property Doctrine\\ORM\\Mapping\\ManyToManyInverseSideMapping\|Doctrine\\ORM\\Mapping\\ManyToManyOwningSideMapping\|Doctrine\\ORM\\Mapping\\ManyToOneAssociationMapping\|Doctrine\\ORM\\Mapping\\OneToManyAssociationMapping\|Doctrine\\ORM\\Mapping\\OneToOneInverseSideMapping\|Doctrine\\ORM\\Mapping\\OneToOneOwningSideMapping\:\:\$targetToSourceKeyColumns\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/UnitOfWork.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\UnitOfWork\:\:convertSingleFieldIdentifierToPHPValue\(\) has parameter \$class with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/UnitOfWork.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\UnitOfWork\:\:eagerLoadCollections\(\) has parameter \$collections with generic class Doctrine\\ORM\\PersistentCollection but does not specify its types\: TKey, T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/UnitOfWork.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\UnitOfWork\:\:getEntityChangeSet\(\) return type with generic class Doctrine\\ORM\\PersistentCollection does not specify its types\: TKey, T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/UnitOfWork.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\UnitOfWork\:\:hasMissingIdsWhichAreForeignKeys\(\) has parameter \$class with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/UnitOfWork.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\UnitOfWork\:\:isCollectionScheduledForDeletion\(\) has parameter \$coll with generic class Doctrine\\ORM\\PersistentCollection but does not specify its types\: TKey, T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/UnitOfWork.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\UnitOfWork\:\:loadCollection\(\) has parameter \$collection with generic class Doctrine\\ORM\\PersistentCollection but does not specify its types\: TKey, T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/UnitOfWork.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\UnitOfWork\:\:normalizeIdentifier\(\) has parameter \$targetClass with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/UnitOfWork.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\UnitOfWork\:\:scheduleCollectionDeletion\(\) has parameter \$coll with generic class Doctrine\\ORM\\PersistentCollection but does not specify its types\: TKey, T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/UnitOfWork.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\UnitOfWork\:\:scheduleCollectionForBatchLoading\(\) has parameter \$collection with generic class Doctrine\\ORM\\PersistentCollection but does not specify its types\: TKey, T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/UnitOfWork.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\UnitOfWork\:\:scheduleCollectionForBatchLoading\(\) has parameter \$sourceClass with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/UnitOfWork.php
+
+		-
+			message: '#^PHPDoc tag @phpstan\-assert\-if\-true for \$obj contains generic interface Doctrine\\ORM\\Proxy\\InternalProxy but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/UnitOfWork.php
+
+		-
+			message: '#^Parameter \#2 \$assoc of method Doctrine\\ORM\\PersistentCollection\<\(int\|string\),mixed\>\:\:setOwner\(\) expects Doctrine\\ORM\\Mapping\\AssociationMapping&Doctrine\\ORM\\Mapping\\ToManyAssociationMapping, Doctrine\\ORM\\Mapping\\ManyToManyInverseSideMapping\|Doctrine\\ORM\\Mapping\\ManyToManyOwningSideMapping\|Doctrine\\ORM\\Mapping\\ManyToOneAssociationMapping\|Doctrine\\ORM\\Mapping\\OneToManyAssociationMapping\|Doctrine\\ORM\\Mapping\\OneToOneInverseSideMapping\|Doctrine\\ORM\\Mapping\\OneToOneOwningSideMapping given\.$#'
+			identifier: argument.type
+			count: 4
+			path: src/UnitOfWork.php
+
+		-
+			message: '#^Parameter \#2 \$assoc of method Doctrine\\ORM\\PersistentCollection\<\*NEVER\*,\*NEVER\*\>\:\:setOwner\(\) expects Doctrine\\ORM\\Mapping\\AssociationMapping&Doctrine\\ORM\\Mapping\\ToManyAssociationMapping, Doctrine\\ORM\\Mapping\\ManyToManyInverseSideMapping\|Doctrine\\ORM\\Mapping\\ManyToManyOwningSideMapping\|Doctrine\\ORM\\Mapping\\ManyToOneAssociationMapping\|Doctrine\\ORM\\Mapping\\OneToManyAssociationMapping\|Doctrine\\ORM\\Mapping\\OneToOneInverseSideMapping\|Doctrine\\ORM\\Mapping\\OneToOneOwningSideMapping given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/UnitOfWork.php
+
+		-
+			message: '#^Parameter \#2 \$length of function array_chunk expects int\<1, max\>, int given\.$#'
+			identifier: argument.type
+			count: 2
+			path: src/UnitOfWork.php
+
+		-
+			message: '#^Parameter \#3 \$collection of class Doctrine\\ORM\\PersistentCollection constructor expects Doctrine\\Common\\Collections\\Collection\<\(int\|string\), mixed\>&Doctrine\\Common\\Collections\\Selectable\<\(int\|string\), mixed\>, Doctrine\\Common\\Collections\\Collection given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/UnitOfWork.php
+
+		-
+			message: '#^Parameter \#5 \$invoke of method Doctrine\\ORM\\Event\\ListenersInvoker\:\:invoke\(\) expects int\<0, 7\>, int\<min, \-1\>\|int\<1, max\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/UnitOfWork.php
+
+		-
+			message: '#^Parameter &\$visited by\-ref type of method Doctrine\\ORM\\UnitOfWork\:\:cascadeDetach\(\) expects array\<int, object\>, array\<mixed\> given\.$#'
+			identifier: parameterByRef.type
+			count: 2
+			path: src/UnitOfWork.php
+
+		-
+			message: '#^Property Doctrine\\ORM\\UnitOfWork\:\:\$entityChangeSets \(array\<int, array\<string, array\{mixed, mixed\}\>\>\) does not accept non\-empty\-array\<int, array\<string, array\{mixed, mixed\}\|Doctrine\\ORM\\PersistentCollection\>\>\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: src/UnitOfWork.php
+
+		-
+			message: '#^Access to an undefined property Doctrine\\Persistence\\Mapping\\ClassMetadata\:\:\$name\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Utility/HierarchyDiscriminatorResolver.php
+
+		-
+			message: '#^Access to an undefined property Doctrine\\Persistence\\Mapping\\ClassMetadata\:\:\$subClasses\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Utility/HierarchyDiscriminatorResolver.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Utility\\HierarchyDiscriminatorResolver\:\:resolveDiscriminatorsForClass\(\) has parameter \$rootClassMetadata with generic interface Doctrine\\Persistence\\Mapping\\ClassMetadata but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Utility/HierarchyDiscriminatorResolver.php
+
+		-
+			message: '#^Access to an undefined property Doctrine\\ORM\\Mapping\\ManyToManyInverseSideMapping\|Doctrine\\ORM\\Mapping\\ManyToManyOwningSideMapping\|Doctrine\\ORM\\Mapping\\ManyToOneAssociationMapping\|Doctrine\\ORM\\Mapping\\OneToManyAssociationMapping\|Doctrine\\ORM\\Mapping\\OneToOneInverseSideMapping\|Doctrine\\ORM\\Mapping\\OneToOneOwningSideMapping\:\:\$joinColumns\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Utility/IdentifierFlattener.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Utility\\IdentifierFlattener\:\:__construct\(\) has parameter \$metadataFactory with generic interface Doctrine\\Persistence\\Mapping\\ClassMetadataFactory but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Utility/IdentifierFlattener.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Utility\\IdentifierFlattener\:\:flattenIdentifier\(\) has parameter \$class with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Utility/IdentifierFlattener.php
+
+		-
+			message: '#^Access to an undefined property Doctrine\\ORM\\Mapping\\JoinTableMapping\|Doctrine\\ORM\\Mapping\\ManyToManyInverseSideMapping\|Doctrine\\ORM\\Mapping\\ManyToManyOwningSideMapping\|Doctrine\\ORM\\Mapping\\ManyToOneAssociationMapping\|Doctrine\\ORM\\Mapping\\OneToManyAssociationMapping\|Doctrine\\ORM\\Mapping\\OneToOneInverseSideMapping\|Doctrine\\ORM\\Mapping\\OneToOneOwningSideMapping\:\:\$joinColumns\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Utility/PersisterHelper.php
+
+		-
+			message: '#^Access to an undefined property Doctrine\\ORM\\Mapping\\ManyToManyInverseSideMapping\|Doctrine\\ORM\\Mapping\\ManyToManyOwningSideMapping\|Doctrine\\ORM\\Mapping\\ManyToOneAssociationMapping\|Doctrine\\ORM\\Mapping\\OneToManyAssociationMapping\|Doctrine\\ORM\\Mapping\\OneToOneInverseSideMapping\|Doctrine\\ORM\\Mapping\\OneToOneOwningSideMapping\:\:\$joinColumns\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Utility/PersisterHelper.php
+
+		-
+			message: '#^Access to an undefined property Doctrine\\ORM\\Mapping\\ManyToManyInverseSideMapping\|Doctrine\\ORM\\Mapping\\ManyToManyOwningSideMapping\|Doctrine\\ORM\\Mapping\\ManyToOneAssociationMapping\|Doctrine\\ORM\\Mapping\\OneToManyAssociationMapping\|Doctrine\\ORM\\Mapping\\OneToOneInverseSideMapping\|Doctrine\\ORM\\Mapping\\OneToOneOwningSideMapping\:\:\$joinTable\.$#'
+			identifier: property.notFound
+			count: 2
+			path: src/Utility/PersisterHelper.php
+
+		-
+			message: '#^Access to an undefined property Doctrine\\ORM\\Mapping\\ManyToManyInverseSideMapping\|Doctrine\\ORM\\Mapping\\ManyToManyOwningSideMapping\|Doctrine\\ORM\\Mapping\\ManyToOneAssociationMapping\|Doctrine\\ORM\\Mapping\\OneToManyAssociationMapping\|Doctrine\\ORM\\Mapping\\OneToOneInverseSideMapping\|Doctrine\\ORM\\Mapping\\OneToOneOwningSideMapping\:\:\$mappedBy\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Utility/PersisterHelper.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Utility\\PersisterHelper\:\:getTypeOfColumn\(\) has parameter \$class with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Utility/PersisterHelper.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Utility\\PersisterHelper\:\:getTypeOfField\(\) has parameter \$class with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Utility/PersisterHelper.php

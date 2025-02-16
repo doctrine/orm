@@ -1,0 +1,26 @@
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
+                                      https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+
+    <entity name="Doctrine\Tests\Models\CMS\CmsAddress" table="cms_users">
+
+        <entity-listeners>
+            <entity-listener class="CmsAddressListener"/>
+        </entity-listeners>
+
+        <id name="id" type="integer" column="id">
+            <generator strategy="AUTO"/>
+        </id>
+
+        <field name="country" column="country" type="string" length="50"/>
+        <field name="city" column="city" type="string" length="50"/>
+        <field name="zip" column="zip" type="string" length="50"/>
+
+        <one-to-one field="user" target-entity="CmsUser" inversed-by="address">
+            <join-column referenced-column-name="id" />
+        </one-to-one>
+
+    </entity>
+
+</doctrine-mapping>

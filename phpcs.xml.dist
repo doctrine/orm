@@ -1,0 +1,280 @@
+<?xml version="1.0"?>
+<ruleset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         name="PHP_CodeSniffer"
+         xsi:noNamespaceSchemaLocation="vendor/squizlabs/php_codesniffer/phpcs.xsd">
+    <arg name="basepath" value="."/>
+    <arg name="extensions" value="php"/>
+    <arg name="parallel" value="80"/>
+    <arg name="cache" value=".phpcs-cache"/>
+    <arg name="colors"/>
+
+    <!-- Ignore warnings, show progress of the run and show sniff names -->
+    <arg value="nps"/>
+
+    <config name="php_version" value="80100"/>
+
+    <file>src</file>
+    <file>tests</file>
+
+    <exclude-pattern>*/tests/Tests/Proxies/__CG__*</exclude-pattern>
+    <exclude-pattern>*/tests/Tests/ORM/Tools/Export/export/*</exclude-pattern>
+
+    <rule ref="Doctrine">
+        <exclude name="SlevomatCodingStandard.Exceptions.ReferenceThrowableOnly.ReferencedGeneralException"/>
+        <exclude name="SlevomatCodingStandard.ControlStructures.EarlyExit"/>
+        <exclude name="SlevomatCodingStandard.Classes.SuperfluousAbstractClassNaming"/>
+        <exclude name="SlevomatCodingStandard.Classes.SuperfluousExceptionNaming"/>
+        <exclude name="SlevomatCodingStandard.Classes.ModernClassNameReference.ClassNameReferencedViaFunctionCall"/>
+    </rule>
+
+    <rule ref="SlevomatCodingStandard.TypeHints.ParameterTypeHint.MissingNativeTypeHint">
+        <!--
+            that class extends another one inside src/ and can therefore not
+            have more native typehints since its parent cannot have them: that
+            would break signature compatibility.
+        -->
+        <exclude-pattern>tests/Tests/Mocks/HydratorMockStatement.php</exclude-pattern>
+        <exclude-pattern>tests/Tests/Models/Cache/ComplexAction.php</exclude-pattern>
+        <exclude-pattern>tests/Tests/Models/DDC117/DDC117ArticleDetails.php</exclude-pattern>
+        <exclude-pattern>tests/Tests/Models/DDC117/DDC117Translation.php</exclude-pattern>
+        <exclude-pattern>tests/Tests/ORM/Functional/Ticket/DDC2579Test.php</exclude-pattern>
+        <exclude-pattern>tests/Tests/ORM/Functional/ValueObjectsTest.php</exclude-pattern>
+    </rule>
+
+    <rule ref="SlevomatCodingStandard.TypeHints.ParameterTypeHint.MissingAnyTypeHint">
+        <exclude-pattern>tests/*</exclude-pattern>
+    </rule>
+
+    <rule ref="SlevomatCodingStandard.TypeHints.PropertyTypeHint.MissingNativeTypeHint">
+        <exclude-pattern>tests/*</exclude-pattern>
+    </rule>
+
+    <rule ref="PSR1.Classes.ClassDeclaration.MultipleClasses">
+        <exclude-pattern>src/Mapping/Driver/LoadMappingFileImplementation.php</exclude-pattern>
+        <exclude-pattern>src/Mapping/GetReflectionClassImplementation.php</exclude-pattern>
+        <exclude-pattern>tests/*</exclude-pattern>
+    </rule>
+
+    <rule ref="Squiz.Classes.ClassFileName.NoMatch">
+        <exclude-pattern>src/Tools/Console/Helper/EntityManagerHelper.php</exclude-pattern>
+        <exclude-pattern>tests/*</exclude-pattern>
+    </rule>
+
+    <rule ref="Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps">
+        <exclude-pattern>src/Tools/Debug.php</exclude-pattern>
+        <exclude-pattern>tests/Tests/ORM/Tools/DebugTest.php</exclude-pattern>
+    </rule>
+
+    <rule ref="Generic.NamingConventions.UpperCaseConstantName.ClassConstantNotUpperCase">
+        <exclude-pattern>src/Events.php</exclude-pattern>
+        <exclude-pattern>src/Tools/ToolEvents.php</exclude-pattern>
+    </rule>
+
+    <rule ref="SlevomatCodingStandard.Operators.DisallowEqualOperators.DisallowedNotEqualOperator">
+        <exclude-pattern>src/Internal/Hydration/AbstractHydrator.php</exclude-pattern>
+    </rule>
+
+    <rule ref="PSR1.Methods.CamelCapsMethodName.NotCamelCaps">
+        <exclude-pattern>src/Query/Parser.php</exclude-pattern>
+    </rule>
+
+    <rule ref="SlevomatCodingStandard.Namespaces.ReferenceUsedNamesOnly.ReferenceViaFullyQualifiedName">
+        <exclude-pattern>src/Mapping/AssociationOverride.php</exclude-pattern>
+        <exclude-pattern>src/Mapping/AssociationOverrides.php</exclude-pattern>
+        <exclude-pattern>src/Mapping/AttributeOverride.php</exclude-pattern>
+        <exclude-pattern>src/Mapping/AttributeOverrides.php</exclude-pattern>
+        <exclude-pattern>src/Mapping/Cache.php</exclude-pattern>
+        <exclude-pattern>src/Mapping/ChangeTrackingPolicy.php</exclude-pattern>
+        <exclude-pattern>src/Mapping/Column.php</exclude-pattern>
+        <exclude-pattern>src/Mapping/CustomIdGenerator.php</exclude-pattern>
+        <exclude-pattern>src/Mapping/DiscriminatorColumn.php</exclude-pattern>
+        <exclude-pattern>src/Mapping/DiscriminatorMap.php</exclude-pattern>
+        <exclude-pattern>src/Mapping/Embeddable.php</exclude-pattern>
+        <exclude-pattern>src/Mapping/Embedded.php</exclude-pattern>
+        <exclude-pattern>src/Mapping/Entity.php</exclude-pattern>
+        <exclude-pattern>src/Mapping/EntityListeners.php</exclude-pattern>
+        <exclude-pattern>src/Mapping/GeneratedValue.php</exclude-pattern>
+        <exclude-pattern>src/Mapping/HasLifecycleCallbacks.php</exclude-pattern>
+        <exclude-pattern>src/Mapping/Id.php</exclude-pattern>
+        <exclude-pattern>src/Mapping/Index.php</exclude-pattern>
+        <exclude-pattern>src/Mapping/InheritanceType.php</exclude-pattern>
+        <exclude-pattern>src/Mapping/JoinColumn.php</exclude-pattern>
+        <exclude-pattern>src/Mapping/JoinColumns.php</exclude-pattern>
+        <exclude-pattern>src/Mapping/JoinTable.php</exclude-pattern>
+        <exclude-pattern>src/Mapping/ManyToMany.php</exclude-pattern>
+        <exclude-pattern>src/Mapping/ManyToOne.php</exclude-pattern>
+        <exclude-pattern>src/Mapping/MappedSuperclass.php</exclude-pattern>
+        <exclude-pattern>src/Mapping/OneToMany.php</exclude-pattern>
+        <exclude-pattern>src/Mapping/OneToOne.php</exclude-pattern>
+        <exclude-pattern>src/Mapping/OrderBy.php</exclude-pattern>
+        <exclude-pattern>src/Mapping/PostLoad.php</exclude-pattern>
+        <exclude-pattern>src/Mapping/PostPersist.php</exclude-pattern>
+        <exclude-pattern>src/Mapping/PostRemove.php</exclude-pattern>
+        <exclude-pattern>src/Mapping/PostUpdate.php</exclude-pattern>
+        <exclude-pattern>src/Mapping/PreFlush.php</exclude-pattern>
+        <exclude-pattern>src/Mapping/PrePersist.php</exclude-pattern>
+        <exclude-pattern>src/Mapping/PreRemove.php</exclude-pattern>
+        <exclude-pattern>src/Mapping/PreUpdate.php</exclude-pattern>
+        <exclude-pattern>src/Mapping/SequenceGenerator.php</exclude-pattern>
+        <exclude-pattern>src/Mapping/Table.php</exclude-pattern>
+        <exclude-pattern>src/Mapping/UniqueConstraint.php</exclude-pattern>
+        <exclude-pattern>src/Mapping/Version.php</exclude-pattern>
+    </rule>
+
+    <rule ref="SlevomatCodingStandard.Commenting.EmptyComment">
+        <exclude-pattern>src/Cache/DefaultQueryCache.php</exclude-pattern>
+    </rule>
+
+    <rule ref="SlevomatCodingStandard.Commenting.ForbiddenAnnotations">
+        <properties>
+            <property name="forbiddenAnnotations" type="array">
+                <!--
+                    From Doctrine Coding Standard:
+                    Forbid useless annotations - Git and LICENCE file provide more accurate information
+                -->
+                <element value="@api"/>
+                <element value="@author"/>
+                <element value="@category"/>
+                <element value="@copyright"/>
+                <element value="@created"/>
+                <element value="@license"/>
+                <element value="@package"/>
+                <element value="@since"/>
+                <element value="@subpackage"/>
+                <element value="@version"/>
+
+                <!-- Additionally forbid oldschool PHPUnit annotations to force the usage of attributes -->
+                <element value="@covers"/>
+                <element value="@depends"/>
+                <element value="@dataProvider"/>
+                <element value="@group"/>
+                <element value="@requires"/>
+                <element value="@test"/>
+                <element value="@testWith"/>
+            </property>
+        </properties>
+    </rule>
+
+    <rule ref="SlevomatCodingStandard.Classes.SuperfluousInterfaceNaming">
+        <exclude-pattern>src/EntityManagerInterface.php</exclude-pattern>
+    </rule>
+
+    <rule ref="SlevomatCodingStandard.Classes.SuperfluousTraitNaming.SuperfluousSuffix">
+        <exclude-pattern>tests/Tests/Models/DDC1872/DDC1872ExampleTrait.php</exclude-pattern>
+    </rule>
+
+    <rule name="SlevomatCodingStandard.TypeHints.PropertyTypeHint.MissingAnyTypeHint">
+        <exclude-pattern>*/tests/*</exclude-pattern>
+    </rule>
+
+    <rule ref="SlevomatCodingStandard.TypeHints.ParameterTypeHint.MissingTraversableTypeHintSpecification">
+        <exclude-pattern>*/tests/*</exclude-pattern>
+    </rule>
+
+    <rule ref="SlevomatCodingStandard.TypeHints.PropertyTypeHint.MissingTraversableTypeHintSpecification">
+        <exclude-pattern>*/tests/*</exclude-pattern>
+    </rule>
+
+    <rule ref="SlevomatCodingStandard.TypeHints.ReturnTypeHint.MissingTraversableTypeHintSpecification">
+        <exclude-pattern>*/tests/*</exclude-pattern>
+    </rule>
+
+    <!-- intentionally without namespace -->
+    <rule ref="PSR1.Classes.ClassDeclaration.MissingNamespace">
+        <exclude-pattern>tests/Tests/Models/Global/GlobalNamespaceModel.php</exclude-pattern>
+        <exclude-pattern>tests/Tests/Models/DDC3231/DDC3231User1NoNamespace.php</exclude-pattern>
+        <exclude-pattern>tests/Tests/Models/DDC3231/DDC3231User2NoNamespace.php</exclude-pattern>
+    </rule>
+
+    <!-- file with multiple namespaces confuses the sniff -->
+    <rule ref="PSR2.Namespaces.UseDeclaration.UseAfterNamespace">
+        <exclude-pattern>tests/Tests/ORM/Functional/Ticket/DDC2084Test.php</exclude-pattern>
+    </rule>
+
+    <!-- file with multiple namespaces confuses the sniff -->
+    <rule ref="SlevomatCodingStandard.Namespaces.AlphabeticallySortedUses.IncorrectlyOrderedUses">
+        <exclude-pattern>tests/Tests/ORM/Functional/Ticket/DDC2084Test.php</exclude-pattern>
+    </rule>
+
+    <!-- intentionally empty blocks -->
+    <rule ref="Generic.CodeAnalysis.EmptyStatement.DetectedForeach">
+        <exclude-pattern>tests/Tests/ORM/Functional/Ticket/DDC1301Test.php</exclude-pattern>
+        <exclude-pattern>tests/Tests/ORM/Functional/ExtraLazyCollectionTest.php</exclude-pattern>
+    </rule>
+
+    <!--
+        That file is used in a test as a template to create another one with a
+        different namespace. The use statement has to stay.
+    -->
+    <rule ref="SlevomatCodingStandard.Namespaces.UseFromSameNamespace.UseFromSameNamespace">
+        <exclude-pattern>tests/Tests/Models/DDC1590/DDC1590User.php</exclude-pattern>
+    </rule>
+
+
+    <rule ref="Squiz.Classes.ValidClassName.NotCamelCaps">
+        <!-- we need to test what happens with an stdClass proxy -->
+        <exclude-pattern>tests/Tests/Proxy/DefaultProxyClassNameResolverTest.php</exclude-pattern>
+    </rule>
+
+    <rule ref="Squiz.Commenting.FunctionComment.WrongStyle">
+        <!-- https://github.com/squizlabs/PHP_CodeSniffer/issues/1961 -->
+        <exclude-pattern>tests/Tests/Mocks/DatabasePlatformMock.php</exclude-pattern>
+        <exclude-pattern>tests/Tests/Mocks/DriverMock.php</exclude-pattern>
+        <exclude-pattern>tests/Tests/ORM/UnitOfWorkTest.php</exclude-pattern>
+        <exclude-pattern>tests/Tests/ORM/Query/DeleteSqlGenerationTest.php</exclude-pattern>
+    </rule>
+    <rule ref="Squiz.Commenting.FunctionComment.InvalidNoReturn">
+        <!-- https://github.com/squizlabs/PHP_CodeSniffer/issues/2099 -->
+        <exclude-pattern>src/Query/AST/Node.php</exclude-pattern>
+    </rule>
+
+    <rule ref="SlevomatCodingStandard.Commenting.InlineDocCommentDeclaration.NoAssignment">
+        <exclude-pattern>tests/Tests/ORM/Mapping/php/Doctrine.Tests*</exclude-pattern>
+    </rule>
+
+    <rule ref="PSR2.Methods.MethodDeclaration.Underscore">
+        <exclude-pattern>src/AbstractQuery.php</exclude-pattern>
+        <exclude-pattern>src/Mapping/ClassMetadata.php</exclude-pattern>
+        <exclude-pattern>src/NativeQuery.php</exclude-pattern>
+        <exclude-pattern>src/Query.php</exclude-pattern>
+        <exclude-pattern>src/Query/TreeWalkerAdapter.php</exclude-pattern>
+        <exclude-pattern>src/Tools/Export/Driver/AbstractExporter.php</exclude-pattern>
+        <exclude-pattern>src/Tools/Export/Driver/PhpExporter.php</exclude-pattern>
+        <!-- extending a class from another package -->
+        <exclude-pattern>tests/Tests/Mocks/DatabasePlatformMock.php</exclude-pattern>
+        <exclude-pattern>tests/Tests/Mocks/SchemaManagerMock.php</exclude-pattern>
+        <exclude-pattern>tests/Tests/ORM/AbstractQueryTest.php</exclude-pattern>
+        <exclude-pattern>tests/Tests/ORM/Functional/Ticket/DDC3634Test.php</exclude-pattern>
+    </rule>
+
+    <rule ref="Squiz.NamingConventions.ValidVariableName.PublicHasUnderscore">
+        <!-- the impact of changing this would be too big -->
+        <exclude-pattern>tests/Tests/OrmFunctionalTestCase.php</exclude-pattern>
+    </rule>
+    <rule ref="Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps">
+        <!-- Member variable "__isCloning" is not in valid camel caps format -->
+        <exclude-pattern>src/Proxy/ProxyFactory.php</exclude-pattern>
+        <!-- accessing public property __isInitialized__ of a proxy -->
+        <exclude-pattern>tests/Tests/ORM/Functional/ProxiesLikeEntitiesTest.php</exclude-pattern>
+    </rule>
+
+    <rule ref="SlevomatCodingStandard.Namespaces.UnusedUses.MismatchingCaseSensitivity">
+        <!-- Using @group and Group entity in the same file -->
+        <exclude-pattern>tests/Tests/ORM/Functional/Ticket/DDC1885Test.php</exclude-pattern>
+        <exclude-pattern>tests/Tests/ORM/Functional/Ticket/DDC1843Test.php</exclude-pattern>
+        <exclude-pattern>tests/Tests/ORM/Mapping/ClassMetadataFactoryTest.php</exclude-pattern>
+    </rule>
+
+    <rule ref="Generic.CodeAnalysis.EmptyStatement.DetectedElse">
+        <!-- The missing code needs to be implemented someday -->
+        <exclude-pattern>src/Id/TableGenerator.php</exclude-pattern>
+    </rule>
+    <rule ref="Generic.CodeAnalysis.EmptyStatement.DetectedIf">
+        <!-- The missing code needs to be implemented someday -->
+        <exclude-pattern>src/Id/TableGenerator.php</exclude-pattern>
+    </rule>
+    <rule ref="Squiz.Commenting.FunctionComment.ExtraParamComment">
+        <!-- https://github.com/doctrine/orm/issues/8537 -->
+        <exclude-pattern>src/QueryBuilder.php</exclude-pattern>
+    </rule>
+</ruleset>

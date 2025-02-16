@@ -1,0 +1,75 @@
+:orphan:
+
+.. toctree::
+   :caption: Tutorials
+   :depth: 3
+
+   tutorials/getting-started
+   tutorials/getting-started-database
+   tutorials/getting-started-models
+   tutorials/working-with-indexed-associations
+   tutorials/extra-lazy-associations
+   tutorials/composite-primary-keys
+   tutorials/ordered-associations
+   tutorials/override-field-association-mappings-in-subclasses
+   tutorials/pagination
+   tutorials/embeddables
+
+.. toctree::
+   :caption: Reference
+   :depth: 3
+
+   reference/architecture
+   reference/configuration
+   reference/faq
+   reference/basic-mapping
+   reference/association-mapping
+   reference/inheritance-mapping
+   reference/working-with-objects
+   reference/working-with-associations
+   reference/typedfieldmapper
+   reference/events
+   reference/unitofwork
+   reference/unitofwork-associations
+   reference/transactions-and-concurrency
+   reference/batch-processing
+   reference/dql-doctrine-query-language
+   reference/query-builder
+   reference/native-sql
+   reference/change-tracking-policies
+   reference/partial-hydration
+   reference/partial-objects
+   reference/attributes-reference
+   reference/xml-mapping
+   reference/php-mapping
+   reference/caching
+   reference/improving-performance
+   reference/tools
+   reference/metadata-drivers
+   reference/best-practices
+   reference/limitations-and-known-issues
+   tutorials/pagination
+   reference/filters
+   reference/namingstrategy
+   reference/advanced-configuration
+   reference/second-level-cache
+   reference/security
+
+.. toctree::
+   :caption: Cookbook
+   :depth: 3
+
+   cookbook/aggregate-fields
+   cookbook/custom-mapping-types
+   cookbook/decorator-pattern
+   cookbook/dql-custom-walkers
+   cookbook/dql-user-defined-functions
+   cookbook/implementing-arrayaccess-for-domain-objects
+   cookbook/resolve-target-entity-listener
+   cookbook/sql-table-prefixes
+   cookbook/strategy-cookbook-introduction
+   cookbook/validation-of-entities
+   cookbook/working-with-datetime
+   cookbook/mysql-enums
+   cookbook/advanced-field-value-conversion-using-custom-mapping-types
+   cookbook/entities-in-session

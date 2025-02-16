@@ -6,7 +6,7 @@ Aggregate Fields
 You will often come across the requirement to display aggregate
 values of data that can be computed by using the MIN, MAX, COUNT or
 SUM SQL functions. For any ORM this is a tricky issue
-traditionally. Doctrine 2 offers several ways to get access to
+traditionally. Doctrine ORM offers several ways to get access to
 these values and this article will describe all of them from
 different perspectives.
 
@@ -22,7 +22,7 @@ into the account can either be of positive or negative money
 values. Each account has a credit limit and the account is never
 allowed to have a balance below that value.
 
-For simplicity we live in a world were money is composed of
+For simplicity we live in a world where money is composed of
 integers only. Also we omit the receiver/sender name, stated reason
 for transfer and the execution date. These all would have to be
 added on the ``Entry`` object.
@@ -32,63 +32,55 @@ Our entities look like:
 .. code-block:: php
 
     <?php
+
     namespace Bank\Entities;
-    
-    /**
-     * @Entity
-     */
+
+    use Doctrine\ORM\Mapping as ORM;
+    use Doctrine\Common\Collections\ArrayCollection;
+    use Doctrine\Common\Collections\Collection;
+
+    #[ORM\Entity]
     class Account
     {
-        /** @Id @GeneratedValue @Column(type="integer") */
-        private $id;
-    
-        /** @Column(type="string", unique=true) */
-        private $no;
-    
-        /**
-         * @OneToMany(targetEntity="Entry", mappedBy="account", cascade={"persist"})
-         */
-        private $entries;
-    
-        /**
-         * @Column(type="integer")
-         */
-        private $maxCredit = 0;
-    
-        public function __construct($no, $maxCredit = 0)
-        {
-            $this->no = $no;
-            $this->maxCredit = $maxCredit;
-            $this->entries = new \Doctrine\Common\Collections\ArrayCollection();
+        #[ORM\Id]
+        #[ORM\GeneratedValue]
+        #[ORM\Column(type: 'integer')]
+        private ?int $id;
+
+        #[ORM\OneToMany(targetEntity: Entry::class, mappedBy: 'account', cascade: ['persist'])]
+        private Collection $entries;
+
+
+        public function __construct(
+            #[ORM\Column(type: 'string', unique: true)]
+            private string $no,
+
+            #[ORM\Column(type: 'integer')]
+            private int $maxCredit = 0,
+        ) {
+            $this->entries = new ArrayCollection();
         }
     }
-    
-    /**
-     * @Entity
-     */
+
+    #[ORM\Entity]
     class Entry
     {
-        /** @Id @GeneratedValue @Column(type="integer") */
-        private $id;
-    
-        /**
-         * @ManyToOne(targetEntity="Account", inversedBy="entries")
-         */
-        private $account;
-    
-        /**
-         * @Column(type="integer")
-         */
-        private $amount;
-    
-        public function __construct($account, $amount)
-        {
-            $this->account = $account;
-            $this->amount = $amount;
+        #[ORM\Id]
+        #[ORM\GeneratedValue]
+        #[ORM\Column(type: 'integer')]
+        private ?int $id;
+
+        public function __construct(
+            #[ORM\ManyToOne(targetEntity: Account::class, inversedBy: 'entries')]
+            private Account $account,
+
+            #[ORM\Column(type: 'integer')]
+            private int $amount,
+        ) {
             // more stuff here, from/to whom, stated reason, execution date and such
         }
-    
-        public function getAmount()
+
+        public function getAmount(): Amount
         {
             return $this->amount;
         }
@@ -146,12 +138,14 @@ collection, which means we can compute this value at runtime:
     class Account
     {
         // .. previous code
-        public function getBalance()
+
+        public function getBalance(): int
         {
             $balance = 0;
             foreach ($this->entries as $entry) {
                 $balance += $entry->getAmount();
             }
+
             return $balance;
         }
     }
@@ -175,13 +169,11 @@ relation with this method:
     <?php
     class Account
     {
-        public function addEntry($amount)
+        public function addEntry(int $amount): void
         {
             $this->assertAcceptEntryAllowed($amount);
-    
-            $e = new Entry($this, $amount);
-            $this->entries[] = $e;
-            return $e;
+
+            $this->entries[] = new Entry($this, $amount);
         }
     }
 
@@ -190,25 +182,28 @@ Now look at the following test-code for our entities:
 .. code-block:: php
 
     <?php
-    class AccountTest extends \PHPUnit_Framework_TestCase
+
+    use PHPUnit\Framework\TestCase;
+
+    class AccountTest extends TestCase
     {
         public function testAddEntry()
         {
-            $account = new Account("123456", $maxCredit = 200);
+            $account = new Account("123456", maxCredit: 200);
             $this->assertEquals(0, $account->getBalance());
-    
+
             $account->addEntry(500);
             $this->assertEquals(500, $account->getBalance());
-    
+
             $account->addEntry(-700);
             $this->assertEquals(-200, $account->getBalance());
         }
-    
+
         public function testExceedMaxLimit()
         {
-            $account = new Account("123456", $maxCredit = 200);
-    
-            $this->setExpectedException("Exception");
+            $account = new Account("123456", maxCredit: 200);
+
+            $this->expectException(Exception::class);
             $account->addEntry(-1000);
         }
     }
@@ -219,9 +214,12 @@ To enforce our rule we can now implement the assertion in
 .. code-block:: php
 
     <?php
+
     class Account
     {
-        private function assertAcceptEntryAllowed($amount)
+        // .. previous code
+
+        private function assertAcceptEntryAllowed(int $amount): void
         {
             $futureBalance = $this->getBalance() + $amount;
             $allowedMinimalBalance = ($this->maxCredit * -1);
@@ -265,24 +263,20 @@ entries collection) we want to add an aggregate field called
     <?php
     class Account
     {
-        /**
-         * @Column(type="integer")
-         */
-        private $balance = 0;
-    
-        public function getBalance()
+        #[ORM\Column(type: 'integer')]
+        private int $balance = 0;
+
+        public function getBalance(): int
         {
             return $this->balance;
         }
-    
-        public function addEntry($amount)
+
+        public function addEntry(int $amount): void
         {
             $this->assertAcceptEntryAllowed($amount);
-    
-            $e = new Entry($this, $amount);
-            $this->entries[] = $e;
+
+            $this->entries[] = new Entry($this, $amount);
             $this->balance += $amount;
-            return $e;
         }
     }
 
@@ -306,23 +300,26 @@ potentially lead to inconsistent state. See this example:
 .. code-block:: php
 
     <?php
+
+    use Bank\Entities\Account;
+
     // The Account $accId has a balance of 0 and a max credit limit of 200:
     // request 1 account
-    $account1 = $em->find('Bank\Entities\Account', $accId);
-    
+    $account1 = $em->find(Account::class, $accId);
+
     // request 2 account
-    $account2 = $em->find('Bank\Entities\Account', $accId);
-    
+    $account2 = $em->find(Account::class, $accId);
+
     $account1->addEntry(-200);
     $account2->addEntry(-200);
-    
+
     // now request 1 and 2 both flush the changes.
 
 The aggregate field ``Account::$balance`` is now -200, however the
 SUM over all entries amounts yields -400. A violation of our max
 credit rule.
 
-You can use both optimistic or pessimistic locking to save-guard
+You can use both optimistic or pessimistic locking to safe-guard
 your aggregate fields against this kind of race-conditions. Reading
 Eric Evans DDD carefully he mentions that the "Aggregate Root"
 (Account in our example) needs a locking mechanism.
@@ -332,10 +329,12 @@ Optimistic locking is as easy as adding a version column:
 .. code-block:: php
 
     <?php
-    class Amount
+
+    class Account
     {
-        /** @Column(type="integer") @Version */
-        private $version;
+        #[ORM\Column(type: 'integer')]
+        #[ORM\Version]
+        private int $version;
     }
 
 The previous example would then throw an exception in the face of
@@ -349,9 +348,11 @@ the database using a FOR UPDATE.
 .. code-block:: php
 
     <?php
+
+    use Bank\Entities\Account;
     use Doctrine\DBAL\LockMode;
-    
-    $account = $em->find('Bank\Entities\Account', $accId, LockMode::PESSIMISTIC_READ);
+
+    $account = $em->find(Account::class, $accId, LockMode::PESSIMISTIC_WRITE);
 
 Keeping Updates and Deletes in Sync
 -----------------------------------
@@ -372,5 +373,3 @@ field that offers serious performance benefits over iterating all
 the related objects that make up an aggregate value. Finally I
 showed how you can ensure that your aggregate fields do not get out
 of sync due to race-conditions and concurrent access.
-
-
