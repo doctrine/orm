@@ -13,6 +13,8 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
+use function uniqid;
+
 /**
  * PrePersistEventTest
  */
@@ -24,19 +26,19 @@ class PrePersistEventTest extends OrmFunctionalTestCase
 
         $this->createSchemaForModels(
             EntityWithUnmapEntity::class,
-            EntityWithCascadeAssociation::class,
+            EntityWithCascadeAssociation::class
         );
     }
 
     public function testCallingPersistInPrePersistHook(): void
     {
         $entityWithUnmapped = new EntityWithUnmapEntity();
-        $entityWithCascade = new EntityWithCascadeAssociation();
+        $entityWithCascade  = new EntityWithCascadeAssociation();
 
         $entityWithUnmapped->unmapped = $entityWithCascade;
-        $entityWithCascade->cascaded = $entityWithUnmapped;
+        $entityWithCascade->cascaded  = $entityWithUnmapped;
 
-        $this->_em->getEventManager()->addEventListener(Events::prePersist, new PrePersistUnmappedPersistListener);
+        $this->_em->getEventManager()->addEventListener(Events::prePersist, new PrePersistUnmappedPersistListener());
         $this->_em->persist($entityWithUnmapped);
 
         $this->assertTrue($this->_em->getUnitOfWork()->isScheduledForInsert($entityWithCascade));
@@ -53,22 +55,30 @@ class PrePersistUnmappedPersistListener
         if ($object instanceof EntityWithUnmapEntity) {
             $uow = $args->getObjectManager()->getUnitOfWork();
 
-            if (!$uow->isInIdentityMap($object->unmapped) && !$uow->isScheduledForInsert($object->unmapped) && $object->unmapped) {
+            if (! $uow->isInIdentityMap($object->unmapped) && ! $uow->isScheduledForInsert($object->unmapped) && $object->unmapped) {
                 $args->getObjectManager()->persist($object->unmapped);
             }
         }
     }
 }
 
+/** @Entity */
 #[Entity]
 class EntityWithUnmapEntity
 {
+    /**
+     * @var string
+     * @Id
+     * @Column(type="string", length=255)
+     * @GeneratedValue(strategy="NONE")
+     */
     #[Id]
     #[Column(type: 'string', length: 255)]
     #[GeneratedValue(strategy: 'NONE')]
-    public string $id;
+    public $id;
 
-    public EntityWithCascadeAssociation|null $unmapped = null;
+    /** @var ?EntityWithCascadeAssociation  */
+    public $unmapped = null;
 
     public function __construct()
     {
@@ -76,16 +86,27 @@ class EntityWithUnmapEntity
     }
 }
 
+/** @Entity */
 #[Entity]
 class EntityWithCascadeAssociation
 {
+    /**
+     * @var string
+     * @Id
+     * @Column(type="string", length=255)
+     * @GeneratedValue(strategy="NONE")
+     */
     #[Id]
     #[Column(type: 'string', length: 255)]
     #[GeneratedValue(strategy: 'NONE')]
-    public string $id;
+    public $id;
 
+    /**
+     * @var ?EntityWithUnmapEntity
+     * @ManyToOne(targetEntity=EntityWithUnmapEntity::class, cascade={"persist"})
+     */
     #[ManyToOne(targetEntity: EntityWithUnmapEntity::class, cascade: ['persist'])]
-    public EntityWithUnmapEntity|null $cascaded = null;
+    public $cascaded = null;
 
     public function __construct()
     {

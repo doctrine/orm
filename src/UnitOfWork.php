@@ -1060,7 +1060,7 @@ class UnitOfWork implements PropertyChangedListener
         $this->entityStates[$oid] = self::STATE_MANAGED;
 
         if (!isset($this->entityInsertions[$oid])) {
-            $this->scheduleForInsert($entity);;
+            $this->scheduleForInsert($entity);
         }
     }
 
