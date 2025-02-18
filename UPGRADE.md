@@ -135,7 +135,7 @@ $qb = $em->createQueryBuilder()
     ->select('u')
     ->from('User', 'u')
     ->where('u.id = :user_id1 OR u.id = :user_id2')
-    ->setParameter(array(
+    ->setParameters(array(
         'user_id1' => 1,
         'user_id2' => 2
     ));
@@ -148,7 +148,7 @@ $qb = $em->createQueryBuilder()
     ->select('u')
     ->from('User', 'u')
     ->where('u.id = :user_id1 OR u.id = :user_id2')
-    ->setParameter(new ArrayCollection(array(
+    ->setParameters(new ArrayCollection(array(
         new Parameter('user_id1', 1),
         new Parameter('user_id2', 2)
     )));

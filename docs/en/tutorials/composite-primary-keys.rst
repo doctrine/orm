@@ -85,11 +85,12 @@ And for querying you can use arrays to both DQL and EntityRepositories:
     namespace VehicleCatalogue\Model;
 
     // $em is the EntityManager
-    $audi = $em->find("VehicleCatalogue\Model\Car", array("name" => "Audi A8", "year" => 2010));
+    $audi = $em->find("VehicleCatalogue\Model\Car", ["name" => "Audi A8", "year" => 2010]);
 
-    $dql = "SELECT c FROM VehicleCatalogue\Model\Car c WHERE c.id = ?1";
+    $dql = "SELECT c FROM VehicleCatalogue\Model\Car c WHERE c.name = ?1 AND c.year = ?2";
     $audi = $em->createQuery($dql)
-               ->setParameter(1, ["name" => "Audi A8", "year" => 2010])
+               ->setParameter(1, "Audi A8")
+               ->setParameter(2, 2010)
                ->getSingleResult();
 
 You can also use this entity in associations. Doctrine will then generate two foreign keys one for ``name``
