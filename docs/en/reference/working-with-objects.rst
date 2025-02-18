@@ -166,7 +166,7 @@ your code. See the following code:
 
     Traversing the object graph for parts that are lazy-loaded will
     easily trigger lots of SQL queries and will perform badly if used
-    to heavily. Make sure to use DQL to fetch-join all the parts of the
+    too heavily. Make sure to use DQL to fetch-join all the parts of the
     object-graph that you need as efficiently as possible.
 
 

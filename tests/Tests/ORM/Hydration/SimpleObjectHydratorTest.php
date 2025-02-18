@@ -7,11 +7,15 @@ namespace Doctrine\Tests\ORM\Hydration;
 use Doctrine\DBAL\Types\Type as DBALType;
 use Doctrine\ORM\Internal\Hydration\HydrationException;
 use Doctrine\ORM\Internal\Hydration\SimpleObjectHydrator;
+use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\Tests\DbalTypes\GH8565EmployeePayloadType;
 use Doctrine\Tests\DbalTypes\GH8565ManagerPayloadType;
+use Doctrine\Tests\Mocks\ArrayResultFactory;
 use Doctrine\Tests\Models\CMS\CmsAddress;
 use Doctrine\Tests\Models\Company\CompanyPerson;
+use Doctrine\Tests\Models\Enums\Scale;
+use Doctrine\Tests\Models\Enums\Unit;
 use Doctrine\Tests\Models\GH8565\GH8565Employee;
 use Doctrine\Tests\Models\GH8565\GH8565Manager;
 use Doctrine\Tests\Models\GH8565\GH8565Person;
@@ -154,5 +158,26 @@ class SimpleObjectHydratorTest extends HydrationTestCase
         $hydrator = new SimpleObjectHydrator($this->entityManager);
         $result   = $hydrator->hydrateAll($stmt, $rsm);
         self::assertEquals($result[0], $expectedEntity);
+    }
+
+    public function testNotListedValueInEnumArray(): void
+    {
+        $this->expectException(MappingException::class);
+        $this->expectExceptionMessage('Case "unknown_case" is not listed in enum "Doctrine\Tests\Models\Enums\Unit"');
+        $rsm = new ResultSetMapping();
+        $rsm->addEntityResult(Scale::class, 's');
+        $rsm->addFieldResult('s', 's__id', 'id');
+        $rsm->addFieldResult('s', 's__supported_units', 'supportedUnits');
+        $rsm->addEnumResult('s__supported_units', Unit::class);
+        $resultSet = [
+            [
+                's__id' => 1,
+                's__supported_units' => 'g,m,unknown_case',
+            ],
+        ];
+
+        $stmt     = ArrayResultFactory::createWrapperResultFromArray($resultSet);
+        $hydrator = new SimpleObjectHydrator($this->entityManager);
+        $hydrator->hydrateAll($stmt, $rsm);
     }
 }

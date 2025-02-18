@@ -903,8 +903,7 @@ defaults to "id", just as in one-to-one or many-to-one mappings.
 
 Additionally, when using typed properties with Doctrine 2.9 or newer
 you can skip ``targetEntity`` in ``ManyToOne`` and ``OneToOne``
-associations as they will be set based on type. Also ``nullable``
-attribute on ``JoinColumn`` will be inherited from PHP type. So that:
+associations as they will be set based on type. So that:
 
 .. configuration-block::
 
@@ -931,7 +930,7 @@ Is essentially the same as following:
         <?php
         /** One Product has One Shipment. */
         #[OneToOne(targetEntity: Shipment::class)]
-        #[JoinColumn(name: 'shipment_id', referencedColumnName: 'id', nullable: false)]
+        #[JoinColumn(name: 'shipment_id', referencedColumnName: 'id')]
         private Shipment $shipment;
 
     .. code-block:: annotation
@@ -940,7 +939,7 @@ Is essentially the same as following:
         /**
          * One Product has One Shipment.
          * @OneToOne(targetEntity="Shipment")
-         * @JoinColumn(name="shipment_id", referencedColumnName="id", nullable=false)
+         * @JoinColumn(name="shipment_id", referencedColumnName="id")
          */
         private Shipment $shipment;
 

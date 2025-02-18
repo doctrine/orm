@@ -88,6 +88,24 @@ class ReadOnlyTest extends OrmFunctionalTestCase
         self::assertTrue($this->_em->getUnitOfWork()->isReadOnly($user));
     }
 
+    public function testNotReadOnlyQueryHint(): void
+    {
+        $user = new ReadOnlyEntity('beberlei', 1234);
+
+        $this->_em->persist($user);
+
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $query = $this->_em->createQuery('SELECT u FROM ' . ReadOnlyEntity::class . ' u WHERE u.id = ?1');
+        $query->setParameter(1, $user->id);
+        $query->setHint(Query::HINT_READ_ONLY, false);
+
+        $user = $query->getSingleResult();
+
+        self::assertFalse($this->_em->getUnitOfWork()->isReadOnly($user));
+    }
+
     public function testNotReadOnlyIfObjectWasProxyBefore(): void
     {
         $user = new ReadOnlyEntity('beberlei', 1234);
