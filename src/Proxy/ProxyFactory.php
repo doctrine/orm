@@ -174,7 +174,7 @@ EOPHP;
             });
 
             foreach ($identifier as $idField => $value) {
-                $classMetadata->reflFields[$idField]->setRawValueWithoutLazyInitialization($proxy, $value);
+                $classMetadata->propertyAccessors[$idField]->setValue($proxy, $value);
             }
 
             // todo: this skipLazyInitialization for properites calculation must be moved into ClassMetadata partially

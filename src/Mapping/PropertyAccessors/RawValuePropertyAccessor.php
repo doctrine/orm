@@ -5,7 +5,10 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Mapping\PropertyAccessors;
 
 use Doctrine\ORM\Proxy\InternalProxy;
+use LogicException;
 use ReflectionProperty;
+
+use const PHP_VERSION_ID;
 
 use function ltrim;
 
@@ -28,12 +31,15 @@ class RawValuePropertyAccessor implements PropertyAccessor
 
     private function __construct(private ReflectionProperty $reflectionProperty, private string $key)
     {
+        if (PHP_VERSION_ID < 80400) {
+            throw new LogicException('This class requires PHP 8.4 or higher.');
+        }
     }
 
     public function setValue(object $object, mixed $value): void
     {
         if (! ($object instanceof InternalProxy && ! $object->__isInitialized())) {
-            $this->reflectionProperty->setRawValue($object, $value);
+            $this->reflectionProperty->setRawValueWithoutLazyInitialization($object, $value);
 
             return;
         }
