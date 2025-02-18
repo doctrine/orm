@@ -89,17 +89,24 @@ class LimitSubqueryOutputWalker extends SqlOutputWalker
         $this->platform = $query->getEntityManager()->getConnection()->getDatabasePlatform();
         $this->rsm      = $parserResult->getResultSetMapping();
 
-        $query = clone $query;
+        $cloneQuery = clone $query;
+
+        $cloneQuery->setParameters(clone $query->getParameters());
+        $cloneQuery->setCacheable(false);
+
+        foreach ($query->getHints() as $name => $value) {
+            $cloneQuery->setHint($name, $value);
+        }
 
         // Reset limit and offset
-        $this->firstResult = $query->getFirstResult();
-        $this->maxResults  = $query->getMaxResults();
-        $query->setFirstResult(0)->setMaxResults(null);
+        $this->firstResult = $cloneQuery->getFirstResult();
+        $this->maxResults  = $cloneQuery->getMaxResults();
+        $cloneQuery->setFirstResult(0)->setMaxResults(null);
 
-        $this->em            = $query->getEntityManager();
+        $this->em            = $cloneQuery->getEntityManager();
         $this->quoteStrategy = $this->em->getConfiguration()->getQuoteStrategy();
 
-        parent::__construct($query, $parserResult, $queryComponents);
+        parent::__construct($cloneQuery, $parserResult, $queryComponents);
     }
 
     /**

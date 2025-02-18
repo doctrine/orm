@@ -14,6 +14,7 @@
 <phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd"
          colors="true"
+         displayDetailsOnTestsThatTriggerDeprecations="true"
          displayDetailsOnTestsThatTriggerNotices="true"
          displayDetailsOnTestsThatTriggerWarnings="true"
          failOnNotice="true"
@@ -67,5 +68,12 @@
         <var name="privileged_db_port" value="3306"/>
         -->
         <env name="COLUMNS" value="120"/>
+        <env name="DOCTRINE_DEPRECATIONS" value="trigger"/>
     </php>
+
+    <source ignoreSuppressionOfDeprecations="true">
+        <include>
+            <directory>src</directory>
+        </include>
+    </source>
 </phpunit>
