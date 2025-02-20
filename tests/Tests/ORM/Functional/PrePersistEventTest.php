@@ -55,7 +55,7 @@ class PrePersistUnmappedPersistListener
         if ($object instanceof EntityWithUnmapEntity) {
             $uow = $args->getObjectManager()->getUnitOfWork();
 
-            if (! $uow->isInIdentityMap($object->unmapped) && ! $uow->isScheduledForInsert($object->unmapped) && $object->unmapped) {
+            if ($object->unmapped && ! $uow->isInIdentityMap($object->unmapped) && ! $uow->isScheduledForInsert($object->unmapped)) {
                 $args->getObjectManager()->persist($object->unmapped);
             }
         }
