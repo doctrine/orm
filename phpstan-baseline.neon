@@ -2797,12 +2797,6 @@ parameters:
 			path: src/Query/SqlWalker.php
 
 		-
-			message: '#^Property Doctrine\\ORM\\Query\\SqlWalker\:\:\$selectedClasses \(array\<string, array\{class\: Doctrine\\ORM\\Mapping\\ClassMetadata, dqlAlias\: string, resultAlias\: string\|null\}\>\) does not accept non\-empty\-array\<int\|string, array\{class\: Doctrine\\ORM\\Mapping\\ClassMetadata, dqlAlias\: mixed, resultAlias\: string\|null\}\>\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: src/Query/SqlWalker.php
-
-		-
 			message: '#^Property Doctrine\\ORM\\Query\\SqlWalker\:\:\$selectedClasses with generic class Doctrine\\ORM\\Mapping\\ClassMetadata does not specify its types\: T$#'
 			identifier: missingType.generics
 			count: 1
