@@ -60,8 +60,6 @@ use function strtolower;
 use function trait_exists;
 use function trim;
 
-use const PHP_VERSION_ID;
-
 /**
  * A <tt>ClassMetadata</tt> instance holds all the object-relational mapping metadata
  * of an entity and its associations.
