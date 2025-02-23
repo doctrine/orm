@@ -8,9 +8,11 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Query\QueryException;
+use Doctrine\ORM\Tools\Pagination\Paginator;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 use function count;
+use function iterator_to_array;
 
 class EagerFetchCollectionTest extends OrmFunctionalTestCase
 {
@@ -95,6 +97,16 @@ class EagerFetchCollectionTest extends OrmFunctionalTestCase
         $query->setFetchMode(EagerFetchChild::class, 'owner', ORM\ClassMetadata::FETCH_LAZY);
 
         $this->assertIsString($query->getSql());
+    }
+
+    public function testSubselectFetchJoinWithAllowedWhenOverriddenNotEagerPaginator(): void
+    {
+        $query = $this->_em->createQuery('SELECT o, c FROM ' . EagerFetchOwner::class . ' o JOIN o.children c WITH c.id = 1');
+        $query->setMaxResults(1);
+        $query->setFetchMode(EagerFetchChild::class, 'owner', ORM\ClassMetadata::FETCH_LAZY);
+
+        $paginator = new Paginator($query, true);
+        $this->assertIsArray(iterator_to_array($paginator));
     }
 
     public function testEagerFetchWithIterable(): void
