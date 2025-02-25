@@ -55,14 +55,11 @@ class EnumPropertyAccessor implements PropertyAccessor
     }
 
     /**
-     * @param BackedEnum|BackedEnum[]|int|string|int[]|string[] $value
+     * @phpstan-param BackedEnum|BackedEnum[]|int|string|int[]|string[] $value
      *
      * @return ($value is int|string|BackedEnum ? BackedEnum : BackedEnum[])
-     *
-     * @psalm-suppress InvalidReturnStatement
-     * @psalm-suppress PossiblyInvalidArgument
      */
-    private function toEnum($value) // phpcs:ignore
+    private function toEnum($value): BackedEnum|array
     {
         if ($value instanceof BackedEnum) {
             return $value;
