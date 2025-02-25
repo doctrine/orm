@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Mapping\PropertyAccessors;
 
 use BackedEnum;
+use ReflectionProperty;
 
 use function array_map;
 use function is_array;
@@ -75,5 +76,10 @@ class EnumPropertyAccessor implements PropertyAccessor
         }
 
         return $this->enumType::from($value);
+    }
+
+    public function getUnderlyingReflector(): ReflectionProperty
+    {
+        return $this->parent->getUnderlyingReflector();
     }
 }
