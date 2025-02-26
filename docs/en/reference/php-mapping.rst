@@ -73,7 +73,7 @@ To ease the use of the ClassMetadata API (which is very raw) there is a ``ClassM
         public static function loadMetadata(ClassMetadata $metadata)
         {
             $builder = new ClassMetadataBuilder($metadata);
-            $builder->createField('id', 'integer')->isPrimaryKey()->generatedValue()->build();
+            $builder->createField('id', 'integer')->makePrimaryKey()->generatedValue()->build();
             $builder->addField('username', 'string');
         }
     }
