@@ -30,6 +30,10 @@ class GH10808Test extends OrmFunctionalTestCase
 
     public function testDQLDeferredEagerLoad(): void
     {
+        if ($this->_em->getConfiguration()->isLazyProxyEnabled()) {
+            self::markTestSkipped('Test requires lazy loading to be disabled');
+        }
+
         $appointment = new GH10808Appointment();
 
         $this->_em->persist($appointment);
@@ -47,11 +51,18 @@ class GH10808Test extends OrmFunctionalTestCase
         // Clear the EM to prevent the recovery of the loaded instance, which would otherwise result in a proxy.
         $this->_em->clear();
 
-        self::assertTrue($this->_em->getUnitOfWork()->isUninitializedObject($deferredLoadResult->child));
-
         $eagerLoadResult = $query->setHint(UnitOfWork::HINT_DEFEREAGERLOAD, false)->getSingleResult();
 
-        self::assertFalse($this->_em->getUnitOfWork()->isUninitializedObject($eagerLoadResult->child));
+        self::assertNotEquals(
+            GH10808AppointmentChild::class,
+            get_class($deferredLoadResult->child),
+            '$deferredLoadResult->child should be a proxy',
+        );
+        self::assertEquals(
+            GH10808AppointmentChild::class,
+            get_class($eagerLoadResult->child),
+            '$eagerLoadResult->child should not be a proxy',
+        );
     }
 }
 
