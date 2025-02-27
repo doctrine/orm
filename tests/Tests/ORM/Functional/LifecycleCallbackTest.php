@@ -151,7 +151,7 @@ class LifecycleCallbackTest extends OrmFunctionalTestCase
 
         $reference = $this->_em->find(LifecycleCallbackTestEntity::class, $id);
         self::assertTrue($reference::$postLoadCallbackInvoked);
-        $reference->postLoadCallbackInvoked = false;
+        $reference::$postLoadCallbackInvoked = false;
 
         $this->_em->refresh($reference);
         self::assertTrue($reference::$postLoadCallbackInvoked, 'postLoad should be invoked when refresh() is called.');

@@ -24,6 +24,7 @@ use Doctrine\Persistence\Mapping\AbstractClassMetadataFactory;
 use Doctrine\Persistence\Mapping\ClassMetadata as ClassMetadataInterface;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
 use Doctrine\Persistence\Mapping\ReflectionService;
+use LogicException;
 use ReflectionClass;
 use ReflectionException;
 
@@ -40,6 +41,8 @@ use function str_contains;
 use function strlen;
 use function strtolower;
 use function substr;
+
+use const PHP_VERSION_ID;
 
 /**
  * The ClassMetadataFactory is used to create ClassMetadata objects that contain all the
@@ -295,6 +298,14 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
         } elseif ($class->isMappedSuperclass && $class->name === $class->rootEntityName && (count($class->discriminatorMap) || $class->discriminatorColumn)) {
             // second condition is necessary for mapped superclasses in the middle of an inheritance hierarchy
             throw MappingException::noInheritanceOnMappedSuperClass($class->name);
+        }
+
+        foreach ($class->propertyAccessors as $propertyAccessor) {
+            $property = $propertyAccessor->getUnderlyingReflector();
+
+            if (PHP_VERSION_ID >= 80400 && count($property->getHooks()) > 0) {
+                throw new LogicException('Doctrine ORM does not support property hooks without also enabling Configuration::setLazyProxyEnabled(true). Check https://github.com/doctrine/orm/issues/11624 for details of versions that support property hooks.');
+            }
         }
     }
 
