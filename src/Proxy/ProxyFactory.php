@@ -18,7 +18,7 @@ use Symfony\Component\VarExporter\ProxyHelper;
 
 use function array_combine;
 use function array_flip;
-use function array_intersect_key;
+use function array_keys;
 use function assert;
 use function bin2hex;
 use function chmod;
@@ -232,8 +232,8 @@ EOPHP;
 
             $class = $entityPersister->getClassMetadata();
 
-            foreach ($class->getReflectionProperties() as $property) {
-                if (! $property || isset($identifier[$property->getName()]) || ! $class->hasField($property->getName()) && ! $class->hasAssociation($property->getName())) {
+            foreach ($class->getPropertyAccessors() as $name => $property) {
+                if (isset($identifier[$name]) || ! $class->hasField($name) && ! $class->hasAssociation($name)) {
                     continue;
                 }
 
@@ -279,7 +279,11 @@ EOPHP;
         $entityPersister  = $this->uow->getEntityPersister($className);
         $initializer      = $this->createLazyInitializer($class, $entityPersister, $this->identifierFlattener);
         $proxyClassName   = $this->loadProxyClass($class);
-        $identifierFields = array_intersect_key($class->getReflectionProperties(), $identifiers);
+        $identifierFields = [];
+
+        foreach (array_keys($identifiers) as $identifier) {
+            $identifierFields[$identifier] = $class->getPropertyAccessor($identifier);
+        }
 
         $proxyFactory = Closure::bind(static function (array $identifier) use ($initializer, $skippedProperties, $identifierFields, $className): InternalProxy {
             $proxy = self::createLazyGhost(static function (InternalProxy $object) use ($initializer, $identifier): void {

@@ -14,9 +14,12 @@ use Doctrine\Instantiator\InstantiatorInterface;
 use Doctrine\ORM\Cache\Exception\NonCacheableEntityAssociation;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Id\AbstractIdGenerator;
+use Doctrine\ORM\Mapping\PropertyAccessors\EmbeddablePropertyAccessor;
+use Doctrine\ORM\Mapping\PropertyAccessors\EnumPropertyAccessor;
+use Doctrine\ORM\Mapping\PropertyAccessors\PropertyAccessor;
+use Doctrine\ORM\Mapping\PropertyAccessors\PropertyAccessorFactory;
 use Doctrine\Persistence\Mapping\ClassMetadata as PersistenceClassMetadata;
 use Doctrine\Persistence\Mapping\ReflectionService;
-use Doctrine\Persistence\Reflection\EnumReflectionProperty;
 use InvalidArgumentException;
 use LogicException;
 use ReflectionClass;
@@ -56,8 +59,6 @@ use function str_replace;
 use function strtolower;
 use function trait_exists;
 use function trim;
-
-use const PHP_VERSION_ID;
 
 /**
  * A <tt>ClassMetadata</tt> instance holds all the object-relational mapping metadata
@@ -543,9 +544,12 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
     /**
      * The ReflectionProperty instances of the mapped class.
      *
-     * @var array<string, ReflectionProperty|null>
+     * @var LegacyReflectionFields|array<string, ReflectionProperty>
      */
-    public array $reflFields = [];
+    public LegacyReflectionFields|array $reflFields = [];
+
+    /** @var array<string, PropertyAccessors\PropertyAccessor> */
+    public array $propertyAccessors = [];
 
     private InstantiatorInterface|null $instantiator = null;
 
@@ -569,12 +573,22 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
     /**
      * Gets the ReflectionProperties of the mapped class.
      *
-     * @return ReflectionProperty[]|null[] An array of ReflectionProperty instances.
-     * @phpstan-return array<ReflectionProperty|null>
+     * @return LegacyReflectionFields|ReflectionProperty[] An array of ReflectionProperty instances.
+     * @phpstan-return LegacyReflectionFields|array<string, ReflectionProperty>
      */
-    public function getReflectionProperties(): array
+    public function getReflectionProperties(): array|LegacyReflectionFields
     {
         return $this->reflFields;
+    }
+
+    /**
+     * Gets the ReflectionProperties of the mapped class.
+     *
+     * @return PropertyAccessor[] An array of PropertyAccessor instances.
+     */
+    public function getPropertyAccessors(): array
+    {
+        return $this->propertyAccessors;
     }
 
     /**
@@ -585,11 +599,12 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
         return $this->reflFields[$name];
     }
 
-    /**
-     * Gets the ReflectionProperty for the single identifier field.
-     *
-     * @throws BadMethodCallException If the class has a composite identifier.
-     */
+    public function getPropertyAccessor(string $name): PropertyAccessor|null
+    {
+        return $this->propertyAccessors[$name] ?? null;
+    }
+
+    /** @throws BadMethodCallException If the class has a composite identifier. */
     public function getSingleIdReflectionProperty(): ReflectionProperty|null
     {
         if ($this->isIdentifierComposite) {
@@ -597,6 +612,16 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
         }
 
         return $this->reflFields[$this->identifier[0]];
+    }
+
+    /** @throws BadMethodCallException If the class has a composite identifier. */
+    public function getSingleIdPropertyAccessor(): PropertyAccessor|null
+    {
+        if ($this->isIdentifierComposite) {
+            throw new BadMethodCallException('Class ' . $this->name . ' has a composite identifier.');
+        }
+
+        return $this->propertyAccessors[$this->identifier[0]];
     }
 
     /**
@@ -613,7 +638,7 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
             $id = [];
 
             foreach ($this->identifier as $idField) {
-                $value = $this->reflFields[$idField]->getValue($entity);
+                $value = $this->propertyAccessors[$idField]->getValue($entity);
 
                 if ($value !== null) {
                     $id[$idField] = $value;
@@ -624,7 +649,7 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
         }
 
         $id    = $this->identifier[0];
-        $value = $this->reflFields[$id]->getValue($entity);
+        $value = $this->propertyAccessors[$id]->getValue($entity);
 
         if ($value === null) {
             return [];
@@ -643,7 +668,7 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
     public function setIdentifierValues(object $entity, array $id): void
     {
         foreach ($id as $idField => $idValue) {
-            $this->reflFields[$idField]->setValue($entity, $idValue);
+            $this->propertyAccessors[$idField]->setValue($entity, $idValue);
         }
     }
 
@@ -652,7 +677,7 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
      */
     public function setFieldValue(object $entity, string $field, mixed $value): void
     {
-        $this->reflFields[$field]->setValue($entity, $value);
+        $this->propertyAccessors[$field]->setValue($entity, $value);
     }
 
     /**
@@ -660,7 +685,7 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
      */
     public function getFieldValue(object $entity, string $field): mixed
     {
-        return $this->reflFields[$field]->getValue($entity);
+        return $this->propertyAccessors[$field]->getValue($entity);
     }
 
     /**
@@ -794,76 +819,74 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
     {
         // Restore ReflectionClass and properties
         $this->reflClass    = $reflService->getClass($this->name);
+        $this->reflFields   = new LegacyReflectionFields($this, $reflService);
         $this->instantiator = $this->instantiator ?: new Instantiator();
 
-        $parentReflFields = [];
+        $parentAccessors = [];
 
         foreach ($this->embeddedClasses as $property => $embeddedClass) {
             if (isset($embeddedClass->declaredField)) {
                 assert($embeddedClass->originalField !== null);
-                $childProperty = $this->getAccessibleProperty(
-                    $reflService,
+                $childAccessor = PropertyAccessorFactory::createPropertyAccessor(
                     $this->embeddedClasses[$embeddedClass->declaredField]->class,
                     $embeddedClass->originalField,
                 );
-                assert($childProperty !== null);
-                $parentReflFields[$property] = new ReflectionEmbeddedProperty(
-                    $parentReflFields[$embeddedClass->declaredField],
-                    $childProperty,
+
+                $parentAccessors[$property] = new EmbeddablePropertyAccessor(
+                    $parentAccessors[$embeddedClass->declaredField],
+                    $childAccessor,
                     $this->embeddedClasses[$embeddedClass->declaredField]->class,
                 );
 
                 continue;
             }
 
-            $fieldRefl = $this->getAccessibleProperty(
-                $reflService,
+            $accessor = PropertyAccessorFactory::createPropertyAccessor(
                 $embeddedClass->declared ?? $this->name,
                 $property,
             );
 
-            $parentReflFields[$property] = $fieldRefl;
-            $this->reflFields[$property] = $fieldRefl;
+            $parentAccessors[$property]         = $accessor;
+            $this->propertyAccessors[$property] = $accessor;
         }
 
         foreach ($this->fieldMappings as $field => $mapping) {
-            if (isset($mapping->declaredField) && isset($parentReflFields[$mapping->declaredField])) {
+            if (isset($mapping->declaredField) && isset($parentAccessors[$mapping->declaredField])) {
                 assert($mapping->originalField !== null);
                 assert($mapping->originalClass !== null);
-                $childProperty = $this->getAccessibleProperty($reflService, $mapping->originalClass, $mapping->originalField);
-                assert($childProperty !== null);
+                $accessor = PropertyAccessorFactory::createPropertyAccessor($mapping->originalClass, $mapping->originalField);
 
-                if (isset($mapping->enumType)) {
-                    $childProperty = new EnumReflectionProperty(
-                        $childProperty,
+                if ($mapping->enumType !== null) {
+                    $accessor = new EnumPropertyAccessor(
+                        $accessor,
                         $mapping->enumType,
                     );
                 }
 
-                $this->reflFields[$field] = new ReflectionEmbeddedProperty(
-                    $parentReflFields[$mapping->declaredField],
-                    $childProperty,
+                $this->propertyAccessors[$field] = new EmbeddablePropertyAccessor(
+                    $parentAccessors[$mapping->declaredField],
+                    $accessor,
                     $mapping->originalClass,
                 );
                 continue;
             }
 
-            $this->reflFields[$field] = isset($mapping->declared)
-                ? $this->getAccessibleProperty($reflService, $mapping->declared, $field)
-                : $this->getAccessibleProperty($reflService, $this->name, $field);
+            $this->propertyAccessors[$field] = isset($mapping->declared)
+                ? PropertyAccessorFactory::createPropertyAccessor($mapping->declared, $field)
+                : PropertyAccessorFactory::createPropertyAccessor($this->name, $field);
 
-            if (isset($mapping->enumType) && $this->reflFields[$field] !== null) {
-                $this->reflFields[$field] = new EnumReflectionProperty(
-                    $this->reflFields[$field],
+            if ($mapping->enumType !== null) {
+                $this->propertyAccessors[$field] = new EnumPropertyAccessor(
+                    $this->propertyAccessors[$field],
                     $mapping->enumType,
                 );
             }
         }
 
         foreach ($this->associationMappings as $field => $mapping) {
-            $this->reflFields[$field] = isset($mapping->declared)
-                ? $this->getAccessibleProperty($reflService, $mapping->declared, $field)
-                : $this->getAccessibleProperty($reflService, $this->name, $field);
+            $this->propertyAccessors[$field] = isset($mapping->declared)
+                ? PropertyAccessorFactory::createPropertyAccessor($mapping->declared, $field)
+                : PropertyAccessorFactory::createPropertyAccessor($this->name, $field);
         }
     }
 
@@ -2658,27 +2681,5 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
         }
 
         return $sequencePrefix;
-    }
-
-    /** @phpstan-param class-string $class */
-    private function getAccessibleProperty(ReflectionService $reflService, string $class, string $field): ReflectionProperty|null
-    {
-        $reflectionProperty = $reflService->getAccessibleProperty($class, $field);
-        if ($reflectionProperty?->isReadOnly()) {
-            $declaringClass = $reflectionProperty->class;
-            if ($declaringClass !== $class) {
-                $reflectionProperty = $reflService->getAccessibleProperty($declaringClass, $field);
-            }
-
-            if ($reflectionProperty !== null) {
-                $reflectionProperty = new ReflectionReadonlyProperty($reflectionProperty);
-            }
-        }
-
-        if (PHP_VERSION_ID >= 80400 && $reflectionProperty !== null && count($reflectionProperty->getHooks()) > 0) {
-               throw new LogicException('Doctrine ORM does not support property hooks in this version. Check https://github.com/doctrine/orm/issues/11624 for details of versions that support property hooks.');
-        }
-
-        return $reflectionProperty;
     }
 }
