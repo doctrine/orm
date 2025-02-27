@@ -177,26 +177,6 @@ EOPHP;
                 $classMetadata->propertyAccessors[$idField]->setValue($proxy, $value);
             }
 
-            // todo: this skipLazyInitialization for properites calculation must be moved into ClassMetadata partially
-            $identifiers = array_flip($classMetadata->getIdentifierFieldNames());
-            $filter      = ReflectionProperty::IS_PUBLIC | ReflectionProperty::IS_PROTECTED | ReflectionProperty::IS_PRIVATE;
-            $reflector   = $classMetadata->getReflectionClass();
-
-            while ($reflector) {
-                foreach ($reflector->getProperties($filter) as $property) {
-                    $name = $property->name;
-
-                    if ($property->isStatic() || (($classMetadata->hasField($name) || $classMetadata->hasAssociation($name)) && ! isset($identifiers[$name]))) {
-                        continue;
-                    }
-
-                    $property->skipLazyInitialization($proxy);
-                }
-
-                $filter    = ReflectionProperty::IS_PRIVATE;
-                $reflector = $reflector->getParentClass();
-            }
-
             return $proxy;
         }
 
