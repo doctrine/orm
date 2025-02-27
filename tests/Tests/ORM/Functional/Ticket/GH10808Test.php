@@ -15,6 +15,8 @@ use Doctrine\ORM\UnitOfWork;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use PHPUnit\Framework\Attributes\Group;
 
+use function get_class;
+
 #[Group('GH10808')]
 class GH10808Test extends OrmFunctionalTestCase
 {

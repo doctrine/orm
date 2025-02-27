@@ -8,9 +8,9 @@ use Doctrine\ORM\Proxy\InternalProxy;
 use LogicException;
 use ReflectionProperty;
 
-use const PHP_VERSION_ID;
-
 use function ltrim;
+
+use const PHP_VERSION_ID;
 
 /**
  * This is a PHP 8.4 and up only class and replaces ObjectCastPropertyAccessor.
