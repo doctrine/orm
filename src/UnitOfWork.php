@@ -3039,10 +3039,12 @@ class UnitOfWork implements PropertyChangedListener
 
         if ($obj instanceof PersistentCollection) {
             $obj->initialize();
+
+            return;
         }
 
         if ($this->em->getConfiguration()->isLazyProxyEnabled()) {
-            $reflection = new ReflectionObject($obj);
+            $reflection = $this->em->getClassMetadata($obj::class)->getReflectionClass();
             $reflection->initializeLazyObject($obj);
         }
     }
