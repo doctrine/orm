@@ -1334,6 +1334,12 @@ class BasicEntityPersister implements EntityPersister
                     $joinCondition[] = $this->getSQLTableAlias($association->sourceEntity, $assocAlias) . '.' . $sourceCol . ' = '
                         . $this->getSQLTableAlias($association->targetEntity) . '.' . $targetCol;
                 }
+
+                // Add filter SQL
+                $filterSql = $this->generateFilterConditionSQL($eagerEntity, $joinTableAlias);
+                if ($filterSql) {
+                    $joinCondition[] = $filterSql;
+                }
             }
 
             $this->currentPersisterContext->selectJoinSql .= ' ' . $joinTableName . ' ' . $joinTableAlias . ' ON ';

@@ -61,4 +61,9 @@ class TypedNoDefaultPropertyAccessor implements PropertyAccessor
     {
         return $this->reflectionProperty->isInitialized($object) ? $this->parent->getValue($object) : null;
     }
+
+    public function getUnderlyingReflector(): ReflectionProperty
+    {
+        return $this->reflectionProperty;
+    }
 }

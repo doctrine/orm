@@ -31,9 +31,8 @@ class ReadOnlyAccessorTest extends OrmTestCase
 
         $this->assertInstanceOf(ReadonlyAccessor::class, $accessor);
 
-        $this->expectException(LogicException::class);
-
         $accessor->setValue($object, 1);
+        $this->expectException(LogicException::class);
         $accessor->setValue($object, 2);
     }
 }

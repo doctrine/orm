@@ -470,7 +470,7 @@ EXCEPTION
     public function testItAllowsReadingAttributes(): void
     {
         $metadata = $this->_em->getClassMetadata(Card::class);
-        $property = $metadata->reflFields['suit'];
+        $property = $metadata->propertyAccessors['suit']->getUnderlyingReflector();
 
         $attributes = $property->getAttributes();
 

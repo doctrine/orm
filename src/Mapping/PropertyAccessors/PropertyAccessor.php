@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Mapping\PropertyAccessors;
 
+use ReflectionProperty;
+
 /**
  * A property accessor is a class that allows to read and write properties on objects regardless of visibility.
  *
@@ -20,4 +22,6 @@ interface PropertyAccessor
     public function setValue(object $object, mixed $value): void;
 
     public function getValue(object $object): mixed;
+
+    public function getUnderlyingReflector(): ReflectionProperty;
 }

@@ -53,4 +53,9 @@ class ObjectCastPropertyAccessor implements PropertyAccessor
     {
         return ((array) $object)[$this->key] ?? null;
     }
+
+    public function getUnderlyingReflector(): ReflectionProperty
+    {
+        return $this->reflectionProperty;
+    }
 }

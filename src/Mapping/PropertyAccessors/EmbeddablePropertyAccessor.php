@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Mapping\PropertyAccessors;
 
 use Doctrine\Instantiator\Instantiator;
+use ReflectionProperty;
 
 /** @internal */
 class EmbeddablePropertyAccessor implements PropertyAccessor
@@ -43,5 +44,10 @@ class EmbeddablePropertyAccessor implements PropertyAccessor
         }
 
         return $this->child->getValue($embeddedObject);
+    }
+
+    public function getUnderlyingReflector(): ReflectionProperty
+    {
+        return $this->child->getUnderlyingReflector();
     }
 }

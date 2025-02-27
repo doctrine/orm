@@ -45,4 +45,9 @@ class ReadonlyAccessor implements PropertyAccessor
     {
         return $this->parent->getValue($object);
     }
+
+    public function getUnderlyingReflector(): ReflectionProperty
+    {
+        return $this->reflectionProperty;
+    }
 }
