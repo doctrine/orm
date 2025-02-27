@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional;
 
+use Doctrine\DBAL\Platforms\PostgreSQLPlatform;
 use Doctrine\Tests\Models\Company\CompanyEmployee;
 use Doctrine\Tests\OrmFunctionalTestCase;
-
 use function count;
 
 /**
@@ -25,11 +25,21 @@ class GH8011Test extends OrmFunctionalTestCase
         $this->generateFixture();
     }
 
+    private function skipIfPostgres(string $test): void
+    {
+        $platform = $this->_em->getConnection()->getDatabasePlatform();
+        if ($platform instanceof PostgreSQLPlatform) {
+            self::markTestSkipped(
+                'The ' . $test . ' test does not work on postgresql (see https://github.com/doctrine/orm/pull/8012).'
+            );
+        }
+    }
+
     public function testOrderWithArithmeticExpressionWithSingleValuedPathExpression(): void
     {
         $dql = 'SELECT p ' .
-            'FROM Doctrine\Tests\Models\Company\CompanyEmployee p ' .
-            'ORDER BY p.id + p.id ASC';
+               'FROM Doctrine\Tests\Models\Company\CompanyEmployee p ' .
+               'ORDER BY p.id + p.id ASC';
 
         /** @var CompanyEmployee[] $result */
         $result = $this->_em->createQuery($dql)->getResult();
@@ -42,8 +52,8 @@ class GH8011Test extends OrmFunctionalTestCase
     public function testOrderWithArithmeticExpressionWithLiteralAndSingleValuedPathExpression(): void
     {
         $dql = 'SELECT p ' .
-            'FROM Doctrine\Tests\Models\Company\CompanyEmployee p ' .
-            'ORDER BY 1 + p.id ASC';
+               'FROM Doctrine\Tests\Models\Company\CompanyEmployee p ' .
+               'ORDER BY 1 + p.id ASC';
 
         /** @var CompanyEmployee[] $result */
         $result = $this->_em->createQuery($dql)->getResult();
@@ -56,8 +66,8 @@ class GH8011Test extends OrmFunctionalTestCase
     public function testOrderWithArithmeticExpressionWithLiteralAndSingleValuedPathExpression2(): void
     {
         $dql = 'SELECT p ' .
-            'FROM Doctrine\Tests\Models\Company\CompanyEmployee p ' .
-            'ORDER BY ((1 + p.id)) ASC';
+               'FROM Doctrine\Tests\Models\Company\CompanyEmployee p ' .
+               'ORDER BY ((1 + p.id)) ASC';
 
         /** @var CompanyEmployee[] $result */
         $result = $this->_em->createQuery($dql)->getResult();
@@ -70,8 +80,8 @@ class GH8011Test extends OrmFunctionalTestCase
     public function testOrderWithArithmeticExpressionWithSingleValuedPathExpressionAndLiteral(): void
     {
         $dql = 'SELECT p ' .
-            'FROM Doctrine\Tests\Models\Company\CompanyEmployee p ' .
-            'ORDER BY p.id + 1 ASC';
+               'FROM Doctrine\Tests\Models\Company\CompanyEmployee p ' .
+               'ORDER BY p.id + 1 ASC';
 
         /** @var CompanyEmployee[] $result */
         $result = $this->_em->createQuery($dql)->getResult();
@@ -83,9 +93,11 @@ class GH8011Test extends OrmFunctionalTestCase
 
     public function testOrderWithArithmeticExpressionWithResultVariableAndLiteral(): void
     {
-        $dql = 'SELECT p,  p.salary AS HIDDEN s ' .
-            'FROM Doctrine\Tests\Models\Company\CompanyEmployee p ' .
-            'ORDER BY s + 1 DESC';
+        $this->skipIfPostgres(__FUNCTION__);
+
+        $dql = 'SELECT p, p.salary AS HIDDEN s ' .
+               'FROM Doctrine\Tests\Models\Company\CompanyEmployee p ' .
+               'ORDER BY s + 1 DESC';
 
         /** @var CompanyEmployee[] $result */
         $result = $this->_em->createQuery($dql)->getResult();
@@ -97,9 +109,11 @@ class GH8011Test extends OrmFunctionalTestCase
 
     public function testOrderWithArithmeticExpressionWithResultVariableAndLiteral2(): void
     {
-        $dql = 'SELECT p,  p.salary AS HIDDEN s ' .
-            'FROM Doctrine\Tests\Models\Company\CompanyEmployee p ' .
-            'ORDER BY ((s + 1)) DESC';
+        $this->skipIfPostgres(__FUNCTION__);
+
+        $dql = 'SELECT p, p.salary AS HIDDEN s ' .
+               'FROM Doctrine\Tests\Models\Company\CompanyEmployee p ' .
+               'ORDER BY ((s + 1)) DESC';
 
         /** @var CompanyEmployee[] $result */
         $result = $this->_em->createQuery($dql)->getResult();
@@ -111,9 +125,11 @@ class GH8011Test extends OrmFunctionalTestCase
 
     public function testOrderWithArithmeticExpressionWithLiteralAndResultVariable(): void
     {
-        $dql = 'SELECT p,  p.salary AS HIDDEN s ' .
-            'FROM Doctrine\Tests\Models\Company\CompanyEmployee p ' .
-            'ORDER BY 1 + s DESC';
+        $this->skipIfPostgres(__FUNCTION__);
+
+        $dql = 'SELECT p, p.salary AS HIDDEN s ' .
+               'FROM Doctrine\Tests\Models\Company\CompanyEmployee p ' .
+               'ORDER BY 1 + s DESC';
 
         /** @var CompanyEmployee[] $result */
         $result = $this->_em->createQuery($dql)->getResult();
@@ -125,9 +141,11 @@ class GH8011Test extends OrmFunctionalTestCase
 
     public function testOrderWithArithmeticExpressionWithLiteralAndResultVariable2(): void
     {
-        $dql = 'SELECT p,  p.salary AS HIDDEN s ' .
-            'FROM Doctrine\Tests\Models\Company\CompanyEmployee p ' .
-            'ORDER BY ((1 + s)) DESC';
+        $this->skipIfPostgres(__FUNCTION__);
+
+        $dql = 'SELECT p, p.salary AS HIDDEN s ' .
+               'FROM Doctrine\Tests\Models\Company\CompanyEmployee p ' .
+               'ORDER BY ((1 + s)) DESC';
 
         /** @var CompanyEmployee[] $result */
         $result = $this->_em->createQuery($dql)->getResult();
@@ -139,9 +157,11 @@ class GH8011Test extends OrmFunctionalTestCase
 
     public function testOrderWithArithmeticExpressionWithResultVariableAndSingleValuedPathExpression(): void
     {
-        $dql = 'SELECT p,  p.salary AS HIDDEN s ' .
-            'FROM Doctrine\Tests\Models\Company\CompanyEmployee p ' .
-            'ORDER BY s + p.id DESC';
+        $this->skipIfPostgres(__FUNCTION__);
+
+        $dql = 'SELECT p, p.salary AS HIDDEN s ' .
+               'FROM Doctrine\Tests\Models\Company\CompanyEmployee p ' .
+               'ORDER BY s + p.id DESC';
 
         /** @var CompanyEmployee[] $result */
         $result = $this->_em->createQuery($dql)->getResult();
@@ -153,9 +173,11 @@ class GH8011Test extends OrmFunctionalTestCase
 
     public function testOrderWithArithmeticExpressionWithResultVariableAndSingleValuedPathExpression2(): void
     {
-        $dql = 'SELECT p,  p.salary AS HIDDEN s ' .
-            'FROM Doctrine\Tests\Models\Company\CompanyEmployee p ' .
-            'ORDER BY ((s + p.id)) DESC';
+        $this->skipIfPostgres(__FUNCTION__);
+
+        $dql = 'SELECT p, p.salary AS HIDDEN s ' .
+               'FROM Doctrine\Tests\Models\Company\CompanyEmployee p ' .
+               'ORDER BY ((s + p.id)) DESC';
 
         /** @var CompanyEmployee[] $result */
         $result = $this->_em->createQuery($dql)->getResult();
@@ -167,9 +189,11 @@ class GH8011Test extends OrmFunctionalTestCase
 
     public function testOrderWithArithmeticExpressionWithSingleValuedPathExpressionAndResultVariable(): void
     {
-        $dql = 'SELECT p,  p.salary AS HIDDEN s ' .
-            'FROM Doctrine\Tests\Models\Company\CompanyEmployee p ' .
-            'ORDER BY p.id + s DESC';
+        $this->skipIfPostgres(__FUNCTION__);
+
+        $dql = 'SELECT p, p.salary AS HIDDEN s ' .
+               'FROM Doctrine\Tests\Models\Company\CompanyEmployee p ' .
+               'ORDER BY p.id + s DESC';
 
         /** @var CompanyEmployee[] $result */
         $result = $this->_em->createQuery($dql)->getResult();
