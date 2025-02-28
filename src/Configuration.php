@@ -595,18 +595,18 @@ class Configuration extends \Doctrine\DBAL\Configuration
         $this->attributes['schemaIgnoreClasses'] = $schemaIgnoreClasses;
     }
 
-    public function isLazyProxyEnabled(): bool
+    public function isNativeLazyObjectsEnabled(): bool
     {
-        return $this->attributes['lazyProxy'] ?? false;
+        return $this->attributes['nativeLazyObjects'] ?? false;
     }
 
-    public function setLazyProxyEnabled(bool $lazyProxy): void
+    public function enableNativeLazyObjects(bool $nativeLazyObjects): void
     {
         if (PHP_VERSION_ID < 80400) {
             throw new LogicException('Lazy loading proxies require PHP 8.4 or higher.');
         }
 
-        $this->attributes['lazyProxy'] = $lazyProxy;
+        $this->attributes['nativeLazyObjects'] = $nativeLazyObjects;
     }
 
     /**

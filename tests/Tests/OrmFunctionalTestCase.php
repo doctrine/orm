@@ -942,10 +942,10 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             $this->isSecondLevelCacheEnabled = true;
         }
 
-        $enableLazyProxy = getenv('ENABLE_LAZY_PROXY');
+        $enableNativeLazyObjects = getenv('ENABLE_NATIVE_LAZY_OBJECTS');
 
-        if (PHP_VERSION_ID >= 80400 && $enableLazyProxy) {
-            $config->setLazyProxyEnabled(true);
+        if (PHP_VERSION_ID >= 80400 && $enableNativeLazyObjects) {
+            $config->enableNativeLazyObjects(true);
         }
 
         $config->setMetadataDriverImpl(

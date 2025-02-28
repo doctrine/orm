@@ -32,7 +32,7 @@ class GH10808Test extends OrmFunctionalTestCase
 
     public function testDQLDeferredEagerLoad(): void
     {
-        if ($this->_em->getConfiguration()->isLazyProxyEnabled()) {
+        if ($this->_em->getConfiguration()->isNativeLazyObjectsEnabled()) {
             self::markTestSkipped('Test requires lazy loading to be disabled');
         }
 

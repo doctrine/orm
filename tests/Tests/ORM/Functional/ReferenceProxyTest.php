@@ -241,7 +241,7 @@ class ReferenceProxyTest extends OrmFunctionalTestCase
     #[Group('DDC-1604')]
     public function testCommonPersistenceProxy(): void
     {
-        if ($this->_em->getConfiguration()->isLazyProxyEnabled()) {
+        if ($this->_em->getConfiguration()->isNativeLazyObjectsEnabled()) {
             self::markTestSkipped('Test only works with proxy generation disabled.');
         }
 

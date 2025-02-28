@@ -165,7 +165,7 @@ EOPHP;
      */
     public function getProxy(string $className, array $identifier): object
     {
-        if ($this->em->getConfiguration()->isLazyProxyEnabled()) {
+        if ($this->em->getConfiguration()->isNativeLazyObjectsEnabled()) {
             $classMetadata   = $this->em->getClassMetadata($className);
             $entityPersister = $this->uow->getEntityPersister($className);
 
@@ -197,7 +197,7 @@ EOPHP;
      */
     public function generateProxyClasses(array $classes, string|null $proxyDir = null): int
     {
-        if ($this->em->getConfiguration()->isLazyProxyEnabled()) {
+        if ($this->em->getConfiguration()->isNativeLazyObjectsEnabled()) {
             return 0;
         }
 

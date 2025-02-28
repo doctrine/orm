@@ -2378,7 +2378,7 @@ class UnitOfWork implements PropertyChangedListener
             }
 
             if ($this->isUninitializedObject($entity)) {
-                if ($this->em->getConfiguration()->isLazyProxyEnabled()) {
+                if ($this->em->getConfiguration()->isNativeLazyObjectsEnabled()) {
                     $class->reflClass->markLazyObjectAsInitialized($entity);
                 } else {
                     $entity->__setInitialized(true);
@@ -3041,7 +3041,7 @@ class UnitOfWork implements PropertyChangedListener
             return;
         }
 
-        if ($this->em->getConfiguration()->isLazyProxyEnabled()) {
+        if ($this->em->getConfiguration()->isNativeLazyObjectsEnabled()) {
             $reflection = $this->em->getClassMetadata($obj::class)->getReflectionClass();
             $reflection->initializeLazyObject($obj);
         }
@@ -3054,7 +3054,7 @@ class UnitOfWork implements PropertyChangedListener
      */
     public function isUninitializedObject(mixed $obj): bool
     {
-        if ($this->em->getConfiguration()->isLazyProxyEnabled() && ! ($obj instanceof Collection)) {
+        if ($this->em->getConfiguration()->isNativeLazyObjectsEnabled() && ! ($obj instanceof Collection)) {
             return $this->em->getClassMetadata($obj::class)->reflClass->isUninitializedLazyObject($obj);
         }
 
