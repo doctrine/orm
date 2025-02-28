@@ -13,6 +13,7 @@ use Doctrine\ORM\UnitOfWork;
 use Doctrine\ORM\Utility\IdentifierFlattener;
 use Doctrine\Persistence\Mapping\ClassMetadata;
 use Doctrine\Persistence\Proxy;
+use ReflectionClass;
 use ReflectionProperty;
 use Symfony\Component\VarExporter\ProxyHelper;
 
@@ -171,7 +172,7 @@ EOPHP;
 
             $proxy = $classMetadata->reflClass->newLazyGhost(static function ($object) use ($identifier, $entityPersister): void {
                 $entityPersister->loadById($identifier, $object);
-            }, \ReflectionClass::SKIP_INITIALIZATION_ON_SERIALIZE);
+            }, ReflectionClass::SKIP_INITIALIZATION_ON_SERIALIZE);
 
             foreach ($identifier as $idField => $value) {
                 $classMetadata->propertyAccessors[$idField]->setValue($proxy, $value);
