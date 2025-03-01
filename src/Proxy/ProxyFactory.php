@@ -143,11 +143,11 @@ EOPHP;
         private readonly string $proxyNs,
         bool|int $autoGenerate = self::AUTOGENERATE_NEVER,
     ) {
-        if (! $proxyDir) {
+        if (! $proxyDir && ! $em->getConfiguration()->isNativeLazyObjectsEnabled()) {
             throw ORMInvalidArgumentException::proxyDirectoryRequired();
         }
 
-        if (! $proxyNs) {
+        if (! $proxyNs && ! $em->getConfiguration()->isNativeLazyObjectsEnabled()) {
             throw ORMInvalidArgumentException::proxyNamespaceRequired();
         }
 
