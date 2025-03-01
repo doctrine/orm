@@ -43,6 +43,7 @@ use Doctrine\ORM\Utility\PersisterHelper;
 use LengthException;
 
 use function array_combine;
+use function array_key_exists;
 use function array_keys;
 use function array_map;
 use function array_merge;
@@ -1266,11 +1267,19 @@ class BasicEntityPersister implements EntityPersister
 
             $eagerEntity = $this->em->getClassMetadata($assoc->targetEntity);
 
+            $conditionsForInheritance = [];
             if ($eagerEntity->inheritanceType !== ClassMetadata::INHERITANCE_TYPE_NONE) {
-                continue; // now this is why you shouldn't use inheritance
+                if ($eagerEntity->rootEntityName === $eagerEntity->name || $assoc['isOwningSide']) {
+                    continue; // support only not owning side relation with inheritance
+                }
+
+                $conditionsForInheritance[$eagerEntity->discriminatorColumn['fieldName']] = $eagerEntity->discriminatorValue;
             }
 
             $assocAlias = 'e' . ($eagerAliasCounter++);
+
+            $additionalConditions = [$assocAlias => $conditionsForInheritance];
+
             $this->currentPersisterContext->rsm->addJoinedEntityResult($assoc->targetEntity, $assocAlias, 'r', $assocField);
 
             foreach ($eagerEntity->fieldNames as $field) {
@@ -1327,12 +1336,22 @@ class BasicEntityPersister implements EntityPersister
             } else {
                 $this->currentPersisterContext->selectJoinSql .= ' LEFT JOIN';
 
+                $associationTableAlias = $this->getSQLTableAlias($association->sourceEntity, $assocAlias);
+
                 foreach ($association->joinColumns as $joinColumn) {
                     $sourceCol = $this->quoteStrategy->getJoinColumnName($joinColumn, $this->class, $this->platform);
                     $targetCol = $this->quoteStrategy->getReferencedJoinColumnName($joinColumn, $this->class, $this->platform);
 
-                    $joinCondition[] = $this->getSQLTableAlias($association->sourceEntity, $assocAlias) . '.' . $sourceCol . ' = '
+                    $conditionJoinItem = $associationTableAlias . '.' . $sourceCol . ' = '
                         . $this->getSQLTableAlias($association->targetEntity) . '.' . $targetCol;
+
+                    if (array_key_exists($assocAlias, $additionalConditions)) {
+                        foreach ($additionalConditions[$assocAlias] as $key => $value) {
+                            $conditionJoinItem .= sprintf(' AND %s.%s = %s', $associationTableAlias, $key, $this->conn->quote($value));
+                        }
+                    }
+
+                    $joinCondition[] = $conditionJoinItem;
                 }
 
                 // Add filter SQL
