@@ -1269,11 +1269,11 @@ class BasicEntityPersister implements EntityPersister
 
             $conditionsForInheritance = [];
             if ($eagerEntity->inheritanceType !== ClassMetadata::INHERITANCE_TYPE_NONE) {
-                if ($eagerEntity->rootEntityName === $eagerEntity->name || $assoc['isOwningSide']) {
+                if (count($eagerEntity->subClasses) > 0 || $assoc->isOwningSide()) {
                     continue; // support only not owning side relation with inheritance
                 }
 
-                $conditionsForInheritance[$eagerEntity->discriminatorColumn['fieldName']] = $eagerEntity->discriminatorValue;
+                $conditionsForInheritance[$eagerEntity->discriminatorColumn->fieldName] = $eagerEntity->discriminatorValue;
             }
 
             $assocAlias = 'e' . ($eagerAliasCounter++);
