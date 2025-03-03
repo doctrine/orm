@@ -1269,7 +1269,7 @@ class BasicEntityPersister implements EntityPersister
 
             $conditionsForInheritance = [];
             if ($eagerEntity->inheritanceType !== ClassMetadata::INHERITANCE_TYPE_NONE) {
-                if (count($eagerEntity->subClasses) > 0 || $assoc->isOwningSide()) {
+                if (count($eagerEntity->subClasses) > 0 || $assoc->isOwningSide() || $eagerEntity->inheritanceType !== ClassMetadata::INHERITANCE_TYPE_SINGLE_TABLE) {
                     continue; // support only not owning side relation with inheritance
                 }
 
