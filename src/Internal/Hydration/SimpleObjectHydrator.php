@@ -160,7 +160,10 @@ class SimpleObjectHydrator extends AbstractHydrator
                 }
             }
 
-            $fieldName = $cacheKeyInfo['fieldName'];
+            // Meta column field name is actually a column name.  This
+            // prevents possible clashes with actual field names
+            $isMetaColumn = isset($cacheKeyInfo['isMetaColumn']) && $cacheKeyInfo['isMetaColumn'];
+            $fieldName    = $isMetaColumn ? '.column:' . $cacheKeyInfo['fieldName'] : $cacheKeyInfo['fieldName'];
 
             // Prevent overwrite in case of inherit classes using same property name (See AbstractHydrator)
             if (! isset($data[$fieldName]) || ! $valueIsNull) {

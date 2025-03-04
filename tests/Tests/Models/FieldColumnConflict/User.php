@@ -12,16 +12,16 @@ use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\ORM\Mapping\Table;
 
-#[Table(name: "user")]
+#[Table(name: 'user')]
 #[Entity]
 class User
 {
     #[Id]
-    #[Column(type: "integer", name: "user_id")]
+    #[Column(type: 'integer', name: 'user_id')]
     #[GeneratedValue]
     public int $id;
 
     #[OneToOne(targetEntity: UserContent::class)]
-    #[JoinColumn(name: "id", referencedColumnName: "id")]
-    public ?UserContent $userContent;
+    #[JoinColumn(name: 'id', referencedColumnName: 'id')]
+    public UserContent|null $userContent;
 }

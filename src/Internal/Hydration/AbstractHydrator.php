@@ -259,7 +259,7 @@ abstract class AbstractHydrator
      *                   scalars?: array
      *               }
      */
-    protected function gatherRowData(array $data, array &$id, array &$nonemptyComponents): array
+    protected function gatherRowData(array $data, array &$id, array &$nonemptyComponents, bool $prefixColumns = true): array
     {
         $rowData = ['data' => [], 'newObjects' => []];
 
@@ -300,6 +300,12 @@ abstract class AbstractHydrator
 
                 //case (isset($cacheKeyInfo['isMetaColumn'])):
                 default:
+                    // Meta column field name is actually a column name.  This
+                    // prevents possible clashes with actual field names
+                    if (isset($cacheKeyInfo['isMetaColumn']) && $cacheKeyInfo['isMetaColumn'] && $prefixColumns) {
+                        $fieldName = '.column:' . $fieldName;
+                    }
+
                     $dqlAlias = $cacheKeyInfo['dqlAlias'];
                     $type     = $cacheKeyInfo['type'];
 

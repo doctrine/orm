@@ -9,14 +9,14 @@ use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\Table;
 
-#[Table(name: "user_content")]
+#[Table(name: 'user_content')]
 #[Entity]
 class UserContent
 {
     #[Id]
-    #[Column(type: "string")]
-    public $id;
+    #[Column(type: 'string')]
+    public string $id;
 
-    #[Column(type: "string")]
-    public $data;
+    #[Column(type: 'string')]
+    public string $data;
 }

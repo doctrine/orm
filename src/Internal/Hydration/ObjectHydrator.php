@@ -228,10 +228,11 @@ class ObjectHydrator extends AbstractHydrator
                 throw HydrationException::missingDiscriminatorMetaMappingColumn($className, $fieldName, $dqlAlias);
             }
 
-            $discrColumn = $this->resultSetMapping()->metaMappings[$fieldName];
+            $originalDiscrColumn = $this->resultSetMapping()->metaMappings[$fieldName];
+            $discrColumn         = '.column:' . $originalDiscrColumn;
 
             if (! isset($data[$discrColumn])) {
-                throw HydrationException::missingDiscriminatorColumn($className, $discrColumn, $dqlAlias);
+                throw HydrationException::missingDiscriminatorColumn($className, $originalDiscrColumn, $dqlAlias);
             }
 
             if ($data[$discrColumn] === '') {
@@ -278,7 +279,7 @@ class ObjectHydrator extends AbstractHydrator
                 array_map(
                     /** @return mixed */
                     static fn (string $fieldName) => isset($class->associationMappings[$fieldName]) && assert($class->associationMappings[$fieldName]->isToOneOwningSide())
-                        ? $data[$class->associationMappings[$fieldName]->joinColumns[0]->name]
+                        ? $data['.column:' . $class->associationMappings[$fieldName]->joinColumns[0]->name]
                         : $data[$fieldName],
                     $class->identifier,
                 ),

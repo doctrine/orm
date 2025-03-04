@@ -78,7 +78,7 @@ class DefaultEntityHydrator implements EntityHydrator
                         assert($owningAssociation->isToOneOwningSide());
                         $fieldMapping = $targetClassMetadata->fieldMappings[$fieldName];
 
-                        $data[$owningAssociation->targetToSourceKeyColumns[$fieldMapping->columnName]] = $fieldValue;
+                        $data['.column:' . $owningAssociation->targetToSourceKeyColumns[$fieldMapping->columnName]] = $fieldValue;
 
                         continue;
                     }
@@ -88,7 +88,7 @@ class DefaultEntityHydrator implements EntityHydrator
                     assert($assoc->isToOneOwningSide());
                     foreach ($assoc->targetToSourceKeyColumns as $referencedColumn => $localColumn) {
                         if (isset($targetAssoc->sourceToTargetKeyColumns[$referencedColumn])) {
-                            $data[$localColumn] = $fieldValue;
+                            $data['.column:' . $localColumn] = $fieldValue;
                         }
                     }
                 }

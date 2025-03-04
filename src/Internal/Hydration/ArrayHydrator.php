@@ -65,7 +65,7 @@ class ArrayHydrator extends AbstractHydrator
         // 1) Initialize
         $id                 = $this->idTemplate; // initialize the id-memory
         $nonemptyComponents = [];
-        $rowData            = $this->gatherRowData($row, $id, $nonemptyComponents);
+        $rowData            = $this->gatherRowData($row, $id, $nonemptyComponents, false);
 
         // 2) Now hydrate the data found in the current row.
         foreach ($rowData['data'] as $dqlAlias => $data) {

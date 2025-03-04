@@ -57,7 +57,7 @@ class GH7869Test extends OrmTestCase
         ];
 
         $uow = new UnitOfWork($em);
-        $uow->createEntity(GH7869Appointment::class, ['id' => 1, 'patient_id' => 1], $hints);
+        $uow->createEntity(GH7869Appointment::class, ['id' => 1, '.column:patient_id' => 1], $hints);
         $uow->clear();
         $uow->triggerEagerLoads();
 

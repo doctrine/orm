@@ -10,22 +10,22 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 
 class FieldColumnConflictTest extends OrmFunctionalTestCase
 {
-    protected function setUp() : void
+    protected function setUp(): void
     {
         parent::setUp();
 
         $this->createSchemaForModels(User::class, UserContent::class);
     }
 
-    public function testIssue() : void
+    public function testIssue(): void
     {
-        $user = new User();
+        $user     = new User();
         $user->id = 1;
-        
+
         $this->_em->persist($user);
-        
-        $userContent = new UserContent();
-        $userContent->id = 'uuid';
+
+        $userContent       = new UserContent();
+        $userContent->id   = 'uuid';
         $userContent->data = 'data';
 
         $this->_em->persist($userContent);

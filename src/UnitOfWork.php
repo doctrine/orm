@@ -2456,7 +2456,7 @@ class UnitOfWork implements PropertyChangedListener
                     assert($assoc->isToOneOwningSide());
                     // TODO: Is this even computed right in all cases of composite keys?
                     foreach ($assoc->targetToSourceKeyColumns as $targetColumn => $srcColumn) {
-                        $joinColumnValue = $data[$srcColumn] ?? null;
+                        $joinColumnValue = $data['.column:' . $srcColumn] ?? null;
 
                         if ($joinColumnValue !== null) {
                             if ($joinColumnValue instanceof BackedEnum) {
@@ -2667,7 +2667,7 @@ class UnitOfWork implements PropertyChangedListener
                     $data = $this->getOriginalEntityData($targetValue);
                     $id   = [];
                     foreach ($targetClass->associationMappings[$mappedBy]->joinColumns as $joinColumn) {
-                        $id[] = $data[$joinColumn->name];
+                        $id[] = $data['.column:' . $joinColumn->name];
                     }
                 } else {
                     $id = $this->identifierFlattener->flattenIdentifier($class, $class->getIdentifierValues($sourceEntity));
