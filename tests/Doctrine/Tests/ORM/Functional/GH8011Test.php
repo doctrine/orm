@@ -7,7 +7,6 @@ namespace Doctrine\Tests\ORM\Functional;
 use Doctrine\DBAL\Platforms\PostgreSQLPlatform;
 use Doctrine\Tests\Models\Company\CompanyEmployee;
 use Doctrine\Tests\OrmFunctionalTestCase;
-
 use function count;
 
 /**
@@ -195,6 +194,20 @@ class GH8011Test extends OrmFunctionalTestCase
         $dql = 'SELECT p, p.salary AS HIDDEN s ' .
                'FROM Doctrine\Tests\Models\Company\CompanyEmployee p ' .
                'ORDER BY p.id + s DESC';
+
+        /** @var CompanyEmployee[] $result */
+        $result = $this->_em->createQuery($dql)->getResult();
+
+        $this->assertEquals(2, count($result));
+        $this->assertEquals('Guilherme B.', $result[0]->getName());
+        $this->assertEquals('Benjamin E.', $result[1]->getName());
+    }
+
+    public function testOrderWithArithmeticExpressionWithLiteralAndResultVariableUsingHiddenResultVariable(): void
+    {
+        $dql = 'SELECT p, p.salary AS HIDDEN s, 1 + s AS HIDDEN _order ' .
+               'FROM Doctrine\Tests\Models\Company\CompanyEmployee p ' .
+               'ORDER BY _order DESC';
 
         /** @var CompanyEmployee[] $result */
         $result = $this->_em->createQuery($dql)->getResult();
