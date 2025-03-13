@@ -558,7 +558,9 @@ class QueryTest extends OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $data = $this->_em->createQuery('SELECT u FROM ' . CmsUser::class . ' u')
+        $query = 'SELECT u FROM ' . CmsUser::class . ' u ORDER BY u.username';
+
+        $data = $this->_em->createQuery($query)
                   ->setFirstResult(1)
                   ->setMaxResults(2)
                   ->getResult();
@@ -567,7 +569,7 @@ class QueryTest extends OrmFunctionalTestCase
         self::assertEquals('gblanco1', $data[0]->username);
         self::assertEquals('gblanco2', $data[1]->username);
 
-        $data = $this->_em->createQuery('SELECT u FROM ' . CmsUser::class . ' u')
+        $data = $this->_em->createQuery($query)
                   ->setFirstResult(3)
                   ->setMaxResults(2)
                   ->getResult();
@@ -576,7 +578,7 @@ class QueryTest extends OrmFunctionalTestCase
         self::assertEquals('gblanco3', $data[0]->username);
         self::assertEquals('gblanco4', $data[1]->username);
 
-        $data = $this->_em->createQuery('SELECT u FROM ' . CmsUser::class . ' u')
+        $data = $this->_em->createQuery($query)
                   ->setFirstResult(3)
                   ->setMaxResults(2)
                   ->getScalarResult();
