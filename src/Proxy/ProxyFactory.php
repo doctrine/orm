@@ -43,8 +43,10 @@ use function strrpos;
 use function strtr;
 use function substr;
 use function ucfirst;
+use function version_compare;
 
 use const DIRECTORY_SEPARATOR;
+use const PHP_VERSION;
 
 /**
  * This factory is used to create proxy objects for entities at runtime.
@@ -263,7 +265,11 @@ EOPHP;
                 $name = $property->name;
 
                 if ($property->isStatic() || (($class->hasField($name) || $class->hasAssociation($name)) && ! isset($identifiers[$name]))) {
-                    continue;
+                    if (version_compare(PHP_VERSION, '8.4', '<')) {
+                        continue;
+                    } elseif ($property->isPrivateSet() === false) {
+                        continue;
+                    }
                 }
 
                 $prefix = $property->isPrivate() ? "\0" . $property->class . "\0" : ($property->isProtected() ? "\0*\0" : '');
