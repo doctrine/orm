@@ -876,7 +876,7 @@ Specifying an entity listener instance :
     // User.php
 
     #[Entity]
-    #[EntityListeners(["UserListener"])
+    #[EntityListeners(["UserListener"])]
     class User
     {
         // ....
