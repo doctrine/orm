@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Doctrine\Tests\ORM\Functional\Ticket\SkipPrivateSetProperties;
+namespace Doctrine\Tests\ORM\Functional\Ticket\DDC11871;
 
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity]
-#[ORM\Table(name: 'Test_Class_With_Private_Set_Properties_User')]
-class UserPrivateSetProperties
+#[ORM\Table(name: 'DDC11871_User')]
+class DDC11871User
 {
     #[ORM\Id]
     #[ORM\Column(type: 'integer')]
