@@ -16,6 +16,8 @@ use function sprintf;
  * can be serialized.
  *
  * @link        http://www.doctrine-project.org
+ *
+ * @phpstan-import-type QueryComponent from Parser
  */
 class ParserResult
 {
@@ -40,6 +42,13 @@ class ParserResult
      * @phpstan-var array<string|int, list<int>>
      */
     private array $parameterMappings = [];
+
+    /**
+     * Map of declared query components in the parsed query.
+     *
+     * @phpstan-var array<string, QueryComponent>
+     */
+    private array $queryComponents = [];
 
     /**
      * Initializes a new instance of the <tt>ParserResult</tt> class.
@@ -130,6 +139,27 @@ class ParserResult
     public function getParameterMappings(): array
     {
         return $this->parameterMappings;
+    }
+
+    /**
+     * Returns the generated queryComponents array.
+     *
+     * @return array<string, QueryComponent>
+     */
+    public function getQueryComponents(): array
+    {
+        return $this->queryComponents;
+    }
+
+    /**
+     * Sets the queryComponents of the parsed query.
+     *
+     * @param array<string, QueryComponent> $queryComponents
+     * @return void
+     */
+    public function setQueryComponents(array $queryComponents): void
+    {
+        $this->queryComponents = $queryComponents;
     }
 
     /**

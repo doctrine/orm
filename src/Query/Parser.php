@@ -377,6 +377,8 @@ final class Parser
             $this->parserResult->setSqlExecutor($executor);
         }
 
+        $this->parserResult->setQueryComponents($this->queryComponents);
+
         return $this->parserResult;
     }
 
