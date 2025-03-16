@@ -23,7 +23,6 @@ use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\FieldMapping;
 use ReflectionEnum;
 use ReflectionNamedType;
-use ReflectionProperty;
 
 use function array_diff;
 use function array_filter;
@@ -330,7 +329,7 @@ class SchemaValidator
                 array_map(
                     function (FieldMapping $fieldMapping) use ($class): string|null {
                         $fieldName    = $fieldMapping->fieldName;
-                        $propertyType = (new ReflectionProperty($fieldMapping->declared ?: $class->name, $fieldName))->getType();
+                        $propertyType = $class->propertyAccessors[$fieldName]->getUnderlyingReflector()->getType();
 
                         // If the field type is not a built-in type, we cannot check it
                         if (! Type::hasType($fieldMapping->type)) {
