@@ -155,7 +155,6 @@ class ParserResult
      * Sets the queryComponents of the parsed query.
      *
      * @param array<string, QueryComponent> $queryComponents
-     * @return void
      */
     public function setQueryComponents(array $queryComponents): void
     {
