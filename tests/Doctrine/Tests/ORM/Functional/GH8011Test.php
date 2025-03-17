@@ -206,7 +206,7 @@ class GH8011Test extends OrmFunctionalTestCase
 
     public function testOrderWithArithmeticExpressionWithLiteralAndResultVariableUsingHiddenResultVariable(): void
     {
-        $dql = 'SELECT p, p.salary AS HIDDEN s, 1 + s AS HIDDEN _order ' .
+        $dql = 'SELECT p, 1 + p.salary AS HIDDEN _order ' .
                'FROM Doctrine\Tests\Models\Company\CompanyEmployee p ' .
                'ORDER BY _order DESC';
 
