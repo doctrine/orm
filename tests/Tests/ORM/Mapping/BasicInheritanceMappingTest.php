@@ -119,9 +119,9 @@ class BasicInheritanceMappingTest extends OrmTestCase
         $class2 = unserialize(serialize($class));
         $class2->wakeupReflection(new RuntimeReflectionService());
 
-        self::assertArrayHasKey('mapped1', $class2->reflFields);
-        self::assertArrayHasKey('mapped2', $class2->reflFields);
-        self::assertArrayHasKey('mappedRelated1', $class2->reflFields);
+        self::assertArrayHasKey('mapped1', $class2->propertyAccessors);
+        self::assertArrayHasKey('mapped2', $class2->propertyAccessors);
+        self::assertArrayHasKey('mappedRelated1', $class2->propertyAccessors);
     }
 
     #[Group('DDC-1203')]
