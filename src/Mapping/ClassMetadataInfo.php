@@ -1278,7 +1278,6 @@ class ClassMetadataInfo implements ClassMetadata
 
     /**
      * @param string $fieldName
-     * @param array  $cache
      * @phpstan-param array{usage?: int|null, region?: string|null} $cache
      *
      * @return int[]|string[]

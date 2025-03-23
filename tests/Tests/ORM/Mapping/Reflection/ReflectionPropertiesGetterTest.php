@@ -84,7 +84,7 @@ class ReflectionPropertiesGetterTest extends TestCase
 
     public function testPropertyGetterIsIdempotent(): void
     {
-        $getter = (new ReflectionPropertiesGetter(new RuntimeReflectionService()));
+        $getter = new ReflectionPropertiesGetter(new RuntimeReflectionService());
 
         self::assertSame(
             $getter->getProperties(ClassWithMixedProperties::class),
@@ -110,7 +110,7 @@ class ReflectionPropertiesGetterTest extends TestCase
             ->expects(self::atLeastOnce())
             ->method('getAccessibleProperty');
 
-        $getter = (new ReflectionPropertiesGetter($reflectionService));
+        $getter = new ReflectionPropertiesGetter($reflectionService);
 
         self::assertEmpty($getter->getProperties(ClassWithMixedProperties::class));
     }
@@ -127,7 +127,7 @@ class ReflectionPropertiesGetterTest extends TestCase
 
         $reflectionService->expects(self::never())->method('getAccessibleProperty');
 
-        $getter = (new ReflectionPropertiesGetter($reflectionService));
+        $getter = new ReflectionPropertiesGetter($reflectionService);
 
         self::assertEmpty($getter->getProperties(ClassWithMixedProperties::class));
     }

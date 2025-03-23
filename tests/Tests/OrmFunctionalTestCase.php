@@ -679,8 +679,6 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
     }
 
     /**
-     * @param array $classNames
-     *
      * @throws RuntimeException
      */
     protected function setUpEntitySchema(array $classNames): void
