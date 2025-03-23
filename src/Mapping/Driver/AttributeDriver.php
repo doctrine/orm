@@ -684,6 +684,7 @@ class AttributeDriver implements MappingDriver
     {
         $mapping = [
             'name' => $joinColumn->name,
+            'deferrable' => $joinColumn->deferrable,
             'unique' => $joinColumn->unique,
             'nullable' => $joinColumn->nullable,
             'onDelete' => $joinColumn->onDelete,
