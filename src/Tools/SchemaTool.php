@@ -709,6 +709,10 @@ class SchemaTool
             if (isset($joinColumn->onDelete)) {
                 $fkOptions['onDelete'] = $joinColumn->onDelete;
             }
+
+            if (isset($joinColumn->deferrable)) {
+                $fkOptions['deferrable'] = $joinColumn->deferrable;
+            }
         }
 
         // Prefer unique constraints over implicit simple indexes created for foreign keys.

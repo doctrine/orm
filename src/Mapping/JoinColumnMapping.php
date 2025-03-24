@@ -13,6 +13,7 @@ final class JoinColumnMapping implements ArrayAccess
 {
     use ArrayAccessImplementation;
 
+    public bool|null $deferrable         = null;
     public bool|null $unique             = null;
     public bool|null $quoted             = null;
     public string|null $fieldName        = null;
@@ -66,7 +67,7 @@ final class JoinColumnMapping implements ArrayAccess
             }
         }
 
-        foreach (['unique', 'quoted', 'nullable'] as $boolKey) {
+        foreach (['deferrable', 'unique', 'quoted', 'nullable'] as $boolKey) {
             if ($this->$boolKey !== null) {
                 $serialized[] = $boolKey;
             }
