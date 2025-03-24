@@ -170,7 +170,7 @@ EOPHP;
             $classMetadata   = $this->em->getClassMetadata($className);
             $entityPersister = $this->uow->getEntityPersister($className);
 
-            $proxy = $classMetadata->reflClass->newLazyGhost(static function ($object) use ($identifier, $entityPersister): void {
+            $proxy = $classMetadata->reflClass->newLazyGhost(static function (object $object) use ($identifier, $entityPersister): void {
                 $entityPersister->loadById($identifier, $object);
             }, ReflectionClass::SKIP_INITIALIZATION_ON_SERIALIZE);
 
