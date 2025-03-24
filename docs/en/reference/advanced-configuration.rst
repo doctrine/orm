@@ -80,7 +80,7 @@ Native Lazy Objects (***OPTIONAL***)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 With PHP 8.4 we recommend that you use native lazy objects instead of
-the code generation approach using the symfony/var-exporter Ghost trait.
+the code generation approach using the ``symfony/var-exporter`` Ghost trait.
 
 With Doctrine 4, the minimal requirement will become PHP 8.4 and native lazy objects
 will become the only approach to lazy loading.

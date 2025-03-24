@@ -304,7 +304,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
             $property = $propertyAccessor->getUnderlyingReflector();
 
             if (PHP_VERSION_ID >= 80400 && count($property->getHooks()) > 0) {
-                throw new LogicException('Doctrine ORM does not support property hooks without also enabling Configuration::setLazyProxyEnabled(true). Check https://github.com/doctrine/orm/issues/11624 for details of versions that support property hooks.');
+                throw new LogicException('Doctrine ORM does not support property hooks without also enabling Configuration::enableNativeLazyObjects(true). Check https://github.com/doctrine/orm/issues/11624 for details of versions that support property hooks.');
             }
         }
     }
