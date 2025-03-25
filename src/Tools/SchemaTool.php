@@ -9,6 +9,9 @@ use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Schema\AbstractAsset;
 use Doctrine\DBAL\Schema\AbstractSchemaManager;
 use Doctrine\DBAL\Schema\Index;
+use Doctrine\DBAL\Schema\Name\Identifier;
+use Doctrine\DBAL\Schema\Name\UnqualifiedName;
+use Doctrine\DBAL\Schema\PrimaryKeyConstraint;
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\DBAL\Schema\Table;
 use Doctrine\ORM\EntityManagerInterface;
@@ -32,6 +35,7 @@ use function array_filter;
 use function array_flip;
 use function array_intersect_key;
 use function assert;
+use function class_exists;
 use function count;
 use function current;
 use function implode;
@@ -282,7 +286,7 @@ class SchemaTool
                     }
 
                     if ($pkColumns !== []) {
-                        $table->setPrimaryKey($pkColumns);
+                        self::addPrimaryKeyConstraint($table, $pkColumns);
                     }
                 }
             } else {
@@ -306,7 +310,7 @@ class SchemaTool
             }
 
             if (! $table->hasIndex('primary')) {
-                $table->setPrimaryKey($pkColumns);
+                self::addPrimaryKeyConstraint($table, $pkColumns);
             }
 
             // there can be unique indexes automatically created for join column
@@ -572,7 +576,7 @@ class SchemaTool
                     $blacklistedFks,
                 );
 
-                $theJoinTable->setPrimaryKey($primaryKeyColumns);
+                self::addPrimaryKeyConstraint($theJoinTable, $primaryKeyColumns);
             }
         }
     }
@@ -925,6 +929,22 @@ class SchemaTool
         } finally {
             // restore schema assets filter
             $config->setSchemaAssetsFilter($previousFilter);
+        }
+    }
+
+    /** @param string[] $primaryKeyColumns */
+    private function addPrimaryKeyConstraint(Table $table, array $primaryKeyColumns): void
+    {
+        if (class_exists(PrimaryKeyConstraint::class)) {
+            $primaryKeyColumnNames = [];
+
+            foreach ($primaryKeyColumns as $primaryKeyColumn) {
+                $primaryKeyColumnNames[] = new UnqualifiedName(Identifier::unquoted($primaryKeyColumn));
+            }
+
+            $table->addPrimaryKeyConstraint(new PrimaryKeyConstraint(null, $primaryKeyColumnNames, true));
+        } else {
+            $table->setPrimaryKey($primaryKeyColumns);
         }
     }
 }
