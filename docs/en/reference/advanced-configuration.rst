@@ -90,11 +90,11 @@ will become the only approach to lazy loading.
     <?php
     $config->enableNativeLazyObjects(true);
 
-Proxy Directory (**REQUIRED**)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Proxy Directory
+~~~~~~~~~~~~~~~
 
-This setting is not required if you use native lazy objects with PHP 8.4
-and will be removed in the future.
+Required except if you use native lazy objects with PHP 8.4.
+This setting will be removed in the future.
 
 .. code-block:: php
 
@@ -107,11 +107,11 @@ classes. For a detailed explanation on proxy classes and how they
 are used in Doctrine, refer to the "Proxy Objects" section further
 down.
 
-Proxy Namespace (**REQUIRED**)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Proxy Namespace
+~~~~~~~~~~~~~~~
 
-This setting is not required if you use native lazy objects with PHP 8.4
-and will be removed in the future.
+Required except if you use native lazy objects with PHP 8.4.
+This setting will be removed in the future.
 
 .. code-block:: php
 
