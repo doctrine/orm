@@ -2024,7 +2024,7 @@ class UnitOfWork implements PropertyChangedListener
 
         $associationMappings = array_filter(
             $class->associationMappings,
-            static fn (AssociationMapping $assoc): bool => $assoc->isCascadeRefresh()
+            static fn (AssociationMapping $assoc): bool => $assoc->isCascadeRefresh(),
         );
 
         foreach ($associationMappings as $assoc) {
@@ -2065,7 +2065,7 @@ class UnitOfWork implements PropertyChangedListener
 
         $associationMappings = array_filter(
             $class->associationMappings,
-            static fn (AssociationMapping $assoc): bool => $assoc->isCascadeDetach()
+            static fn (AssociationMapping $assoc): bool => $assoc->isCascadeDetach(),
         );
 
         foreach ($associationMappings as $assoc) {
@@ -2111,7 +2111,7 @@ class UnitOfWork implements PropertyChangedListener
 
         $associationMappings = array_filter(
             $class->associationMappings,
-            static fn (AssociationMapping $assoc): bool => $assoc->isCascadePersist()
+            static fn (AssociationMapping $assoc): bool => $assoc->isCascadePersist(),
         );
 
         foreach ($associationMappings as $assoc) {
@@ -2168,7 +2168,7 @@ class UnitOfWork implements PropertyChangedListener
 
         $associationMappings = array_filter(
             $class->associationMappings,
-            static fn (AssociationMapping $assoc): bool => $assoc->isCascadeRemove()
+            static fn (AssociationMapping $assoc): bool => $assoc->isCascadeRemove(),
         );
 
         if ($associationMappings) {

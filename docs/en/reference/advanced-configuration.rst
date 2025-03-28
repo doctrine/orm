@@ -76,7 +76,7 @@ Configuration Options
 The following sections describe all the configuration options
 available on a ``Doctrine\ORM\Configuration`` instance.
 
-Native Lazy Objects (***OPTIONAL***)
+Native Lazy Objects (**OPTIONAL**)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 With PHP 8.4 we recommend that you use native lazy objects instead of
@@ -90,8 +90,8 @@ will become the only approach to lazy loading.
     <?php
     $config->enableNativeLazyObjects(true);
 
-Proxy Directory (***REQUIRED***)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Proxy Directory (**REQUIRED**)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 This setting is not required if you use native lazy objects with PHP 8.4
 and will be removed in the future.
@@ -107,8 +107,8 @@ classes. For a detailed explanation on proxy classes and how they
 are used in Doctrine, refer to the "Proxy Objects" section further
 down.
 
-Proxy Namespace (***REQUIRED***)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Proxy Namespace (**REQUIRED**)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 This setting is not required if you use native lazy objects with PHP 8.4
 and will be removed in the future.
@@ -123,8 +123,8 @@ Gets or sets the namespace to use for generated proxy classes. For
 a detailed explanation on proxy classes and how they are used in
 Doctrine, refer to the "Proxy Objects" section further down.
 
-Metadata Driver (***REQUIRED***)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Metadata Driver (**REQUIRED**)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code-block:: php
 
@@ -164,8 +164,8 @@ accept either a single directory as a string or an array of
 directories. With this feature a single driver can support multiple
 directories of Entities.
 
-Metadata Cache (***RECOMMENDED***)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Metadata Cache (**RECOMMENDED**)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code-block:: php
 
@@ -186,8 +186,8 @@ For development you should use an array cache like
 ``Symfony\Component\Cache\Adapter\ArrayAdapter``
 which only caches data on a per-request basis.
 
-Query Cache (***RECOMMENDED***)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Query Cache (**RECOMMENDED**)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code-block:: php
 
@@ -209,8 +209,8 @@ For development you should use an array cache like
 ``Symfony\Component\Cache\Adapter\ArrayAdapter``
 which only caches data on a per-request basis.
 
-SQL Logger (***Optional***)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
+SQL Logger (**Optional**)
+~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code-block:: php
 
@@ -222,8 +222,8 @@ Gets or sets the logger to use for logging all SQL statements
 executed by Doctrine. The logger class must implement the
 deprecated ``Doctrine\DBAL\Logging\SQLLogger`` interface.
 
-Auto-generating Proxy Classes (***OPTIONAL***)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Auto-generating Proxy Classes (**OPTIONAL**)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 This setting is not required if you use native lazy objects with PHP 8.4
 and will be removed in the future.
@@ -469,7 +469,7 @@ correctly if sub-namespaces use different metadata driver
 implementations.
 
 
-Default Repository (***OPTIONAL***)
+Default Repository (**OPTIONAL**)
 -----------------------------------
 
 Specifies the FQCN of a subclass of the EntityRepository.
@@ -484,7 +484,7 @@ That will be available for all entities without a custom repository class.
 The default value is ``Doctrine\ORM\EntityRepository``.
 Any repository class must be a subclass of EntityRepository otherwise you got an ORMException
 
-Ignoring entities (***OPTIONAL***)
+Ignoring entities (**OPTIONAL**)
 -----------------------------------
 
 Specifies the Entity FQCNs to ignore.

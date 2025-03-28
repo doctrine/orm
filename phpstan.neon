@@ -20,6 +20,18 @@ parameters:
             message: '~^Method Doctrine\\ORM\\Persisters\\Entity\\BasicEntityPersister\:\:getArrayBindingType\(\) never returns .* so it can be removed from the return type\.$~'
             path: src/Persisters/Entity/BasicEntityPersister.php
 
+        -
+            message: '~^Call to static method unquoted\(\) on an unknown class Doctrine\\DBAL\\Schema\\Name\\Identifier\.$~'
+            path: src/Tools/SchemaTool.php
+
+        -
+            message: '~^Instantiated class Doctrine\\DBAL\\Schema\\Name\\UnqualifiedName not found\.$~'
+            path: src/Tools/SchemaTool.php
+
+        -
+            message: '~^Call to an undefined method Doctrine\\DBAL\\Schema\\Table::addPrimaryKeyConstraint\(\)\.$~'
+            path: src/Tools/SchemaTool.php
+
         # Compatibility with DBAL 3
         # See https://github.com/doctrine/dbal/pull/3480
         -
