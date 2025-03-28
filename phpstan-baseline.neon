@@ -2743,18 +2743,6 @@ parameters:
 			path: src/Persisters/Entity/BasicEntityPersister.php
 
 		-
-			message: '#^Method Doctrine\\ORM\\Persisters\\Entity\\BasicEntityPersister\:\:expandCriteriaParameters\(\) should return array\{list\<mixed\>, list\<int\|string\|null\>\} but returns array\{array\<mixed\>, list\<int\|string\|null\>\}\.$#'
-			identifier: return.type
-			count: 1
-			path: src/Persisters/Entity/BasicEntityPersister.php
-
-		-
-			message: '#^Method Doctrine\\ORM\\Persisters\\Entity\\BasicEntityPersister\:\:expandParameters\(\) should return array\{list\<mixed\>, list\<int\|string\|null\>\} but returns array\{array\<mixed\>, list\<int\|string\|null\>\}\.$#'
-			identifier: return.type
-			count: 1
-			path: src/Persisters/Entity/BasicEntityPersister.php
-
-		-
 			message: '#^Method Doctrine\\ORM\\Persisters\\Entity\\BasicEntityPersister\:\:expandToManyParameters\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
@@ -2787,12 +2775,6 @@ parameters:
 		-
 			message: '#^Method Doctrine\\ORM\\Persisters\\Entity\\BasicEntityPersister\:\:getClassMetadata\(\) return type with generic class Doctrine\\ORM\\Mapping\\ClassMetadata does not specify its types\: T$#'
 			identifier: missingType.generics
-			count: 1
-			path: src/Persisters/Entity/BasicEntityPersister.php
-
-		-
-			message: '#^Method Doctrine\\ORM\\Persisters\\Entity\\BasicEntityPersister\:\:getIndividualValue\(\) should return list\<mixed\> but returns array\<mixed\>\.$#'
-			identifier: return.type
 			count: 1
 			path: src/Persisters/Entity/BasicEntityPersister.php
 
@@ -2857,12 +2839,6 @@ parameters:
 			path: src/Persisters/Entity/BasicEntityPersister.php
 
 		-
-			message: '#^Method Doctrine\\ORM\\Persisters\\Entity\\BasicEntityPersister\:\:getTypes\(\) has parameter \$class with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
-			identifier: missingType.generics
-			count: 1
-			path: src/Persisters/Entity/BasicEntityPersister.php
-
-		-
 			message: '#^Method Doctrine\\ORM\\Persisters\\Entity\\BasicEntityPersister\:\:load\(\) has parameter \$assoc with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 5
@@ -2920,18 +2896,6 @@ parameters:
 			message: '#^Offset ''joinTable'' might not exist on array\{cache\?\: array, cascade\: array\<string\>, declared\?\: class\-string, fetch\: mixed, fieldName\: string, id\?\: bool, inherited\?\: class\-string, indexBy\?\: string, \.\.\.\}\.$#'
 			identifier: offsetAccess.notFound
 			count: 8
-			path: src/Persisters/Entity/BasicEntityPersister.php
-
-		-
-			message: '#^Offset ''relationToTargetKeyColumns'' might not exist on array\{cache\?\: array, cascade\: array\<string\>, declared\?\: class\-string, fetch\: mixed, fieldName\: string, id\?\: bool, inherited\?\: class\-string, indexBy\?\: string, \.\.\.\}\.$#'
-			identifier: offsetAccess.notFound
-			count: 1
-			path: src/Persisters/Entity/BasicEntityPersister.php
-
-		-
-			message: '#^Offset ''sourceToTargetKeyColumns'' might not exist on array\{cache\?\: array, cascade\: array\<string\>, declared\?\: class\-string, fetch\: mixed, fieldName\: string, id\?\: bool, inherited\?\: class\-string, indexBy\?\: string, \.\.\.\}\.$#'
-			identifier: offsetAccess.notFound
-			count: 1
 			path: src/Persisters/Entity/BasicEntityPersister.php
 
 		-
@@ -5590,7 +5554,25 @@ parameters:
 			path: src/Utility/PersisterHelper.php
 
 		-
+			message: '#^Method Doctrine\\ORM\\Utility\\PersisterHelper\:\:inferParameterTypes\(\) has parameter \$class with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Utility/PersisterHelper.php
+
+		-
 			message: '#^Offset ''joinTable'' might not exist on array\{cache\?\: array, cascade\: array\<string\>, declared\?\: class\-string, fetch\: mixed, fieldName\: string, id\?\: bool, inherited\?\: class\-string, indexBy\?\: string, \.\.\.\}\.$#'
+			identifier: offsetAccess.notFound
+			count: 1
+			path: src/Utility/PersisterHelper.php
+
+		-
+			message: '#^Offset ''relationToTargetKeyColumns'' might not exist on array\{cache\?\: array, cascade\: array\<string\>, declared\?\: class\-string, fetch\: mixed, fieldName\: string, id\?\: bool, inherited\?\: class\-string, indexBy\?\: string, \.\.\.\}\.$#'
+			identifier: offsetAccess.notFound
+			count: 1
+			path: src/Utility/PersisterHelper.php
+
+		-
+			message: '#^Offset ''sourceToTargetKeyColumns'' might not exist on array\{cache\?\: array, cascade\: array\<string\>, declared\?\: class\-string, fetch\: mixed, fieldName\: string, id\?\: bool, inherited\?\: class\-string, indexBy\?\: string, \.\.\.\}\.$#'
 			identifier: offsetAccess.notFound
 			count: 1
 			path: src/Utility/PersisterHelper.php
