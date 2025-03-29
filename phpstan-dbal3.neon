@@ -22,6 +22,18 @@ parameters:
             message: '~.*getTrimExpression.*expects int.*~'
             path: src/Query/AST/Functions/TrimFunction.php
 
+        -
+            message: '~^Call to static method unquoted\(\) on an unknown class Doctrine\\DBAL\\Schema\\Name\\Identifier\.$~'
+            path: src/Tools/SchemaTool.php
+
+        -
+            message: '~^Instantiated class Doctrine\\DBAL\\Schema\\Name\\UnqualifiedName not found\.$~'
+            path: src/Tools/SchemaTool.php
+
+        -
+            message: '~^Call to an undefined method Doctrine\\DBAL\\Schema\\Table::addPrimaryKeyConstraint\(\)\.$~'
+            path: src/Tools/SchemaTool.php
+
         - '~^Class Doctrine\\DBAL\\Platforms\\SQLitePlatform not found\.$~'
 
         # To be removed in 4.0

@@ -508,7 +508,7 @@ class QueryBuilder implements Stringable
         $key = Parameter::normalizeName($key);
 
         $filteredParameters = $this->parameters->filter(
-            static fn (Parameter $parameter): bool => $key === $parameter->getName()
+            static fn (Parameter $parameter): bool => $key === $parameter->getName(),
         );
 
         return ! $filteredParameters->isEmpty() ? $filteredParameters->first() : null;

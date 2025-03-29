@@ -2024,7 +2024,7 @@ class UnitOfWork implements PropertyChangedListener
 
         $associationMappings = array_filter(
             $class->associationMappings,
-            static fn (AssociationMapping $assoc): bool => $assoc->isCascadeRefresh()
+            static fn (AssociationMapping $assoc): bool => $assoc->isCascadeRefresh(),
         );
 
         foreach ($associationMappings as $assoc) {
@@ -2065,7 +2065,7 @@ class UnitOfWork implements PropertyChangedListener
 
         $associationMappings = array_filter(
             $class->associationMappings,
-            static fn (AssociationMapping $assoc): bool => $assoc->isCascadeDetach()
+            static fn (AssociationMapping $assoc): bool => $assoc->isCascadeDetach(),
         );
 
         foreach ($associationMappings as $assoc) {
@@ -2111,7 +2111,7 @@ class UnitOfWork implements PropertyChangedListener
 
         $associationMappings = array_filter(
             $class->associationMappings,
-            static fn (AssociationMapping $assoc): bool => $assoc->isCascadePersist()
+            static fn (AssociationMapping $assoc): bool => $assoc->isCascadePersist(),
         );
 
         foreach ($associationMappings as $assoc) {
@@ -2168,7 +2168,7 @@ class UnitOfWork implements PropertyChangedListener
 
         $associationMappings = array_filter(
             $class->associationMappings,
-            static fn (AssociationMapping $assoc): bool => $assoc->isCascadeRemove()
+            static fn (AssociationMapping $assoc): bool => $assoc->isCascadeRemove(),
         );
 
         if ($associationMappings) {
@@ -2378,7 +2378,11 @@ class UnitOfWork implements PropertyChangedListener
             }
 
             if ($this->isUninitializedObject($entity)) {
-                $entity->__setInitialized(true);
+                if ($this->em->getConfiguration()->isNativeLazyObjectsEnabled()) {
+                    $class->reflClass->markLazyObjectAsInitialized($entity);
+                } else {
+                    $entity->__setInitialized(true);
+                }
             } else {
                 if (
                     ! isset($hints[Query::HINT_REFRESH])
@@ -3033,6 +3037,13 @@ class UnitOfWork implements PropertyChangedListener
 
         if ($obj instanceof PersistentCollection) {
             $obj->initialize();
+
+            return;
+        }
+
+        if ($this->em->getConfiguration()->isNativeLazyObjectsEnabled()) {
+            $reflection = $this->em->getClassMetadata($obj::class)->getReflectionClass();
+            $reflection->initializeLazyObject($obj);
         }
     }
 
@@ -3043,6 +3054,10 @@ class UnitOfWork implements PropertyChangedListener
      */
     public function isUninitializedObject(mixed $obj): bool
     {
+        if ($this->em->getConfiguration()->isNativeLazyObjectsEnabled() && ! ($obj instanceof Collection)) {
+            return $this->em->getClassMetadata($obj::class)->reflClass->isUninitializedLazyObject($obj);
+        }
+
         return $obj instanceof InternalProxy && ! $obj->__isInitialized();
     }
 

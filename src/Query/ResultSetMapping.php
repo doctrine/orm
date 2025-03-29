@@ -160,6 +160,13 @@ class ResultSetMapping
     public array $newObjectMappings = [];
 
     /**
+     * Maps object Ids in the result set to classnames.
+     *
+     * @phpstan-var array<string|int, class-string>
+     */
+    public array $newObject = [];
+
+    /**
      * Maps last argument for new objects in order to initiate object construction
      *
      * @phpstan-var array<int|string, array{ownerIndex: string|int, argIndex: int|string}>

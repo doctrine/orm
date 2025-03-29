@@ -13,6 +13,7 @@ use Doctrine\ORM\UnitOfWork;
 use Doctrine\ORM\Utility\IdentifierFlattener;
 use Doctrine\Persistence\Mapping\ClassMetadata;
 use Doctrine\Persistence\Proxy;
+use ReflectionClass;
 use ReflectionProperty;
 use Symfony\Component\VarExporter\ProxyHelper;
 
@@ -142,11 +143,11 @@ EOPHP;
         private readonly string $proxyNs,
         bool|int $autoGenerate = self::AUTOGENERATE_NEVER,
     ) {
-        if (! $proxyDir) {
+        if (! $proxyDir && ! $em->getConfiguration()->isNativeLazyObjectsEnabled()) {
             throw ORMInvalidArgumentException::proxyDirectoryRequired();
         }
 
-        if (! $proxyNs) {
+        if (! $proxyNs && ! $em->getConfiguration()->isNativeLazyObjectsEnabled()) {
             throw ORMInvalidArgumentException::proxyNamespaceRequired();
         }
 
@@ -163,8 +164,23 @@ EOPHP;
      * @param class-string $className
      * @param array<mixed> $identifier
      */
-    public function getProxy(string $className, array $identifier): InternalProxy
+    public function getProxy(string $className, array $identifier): object
     {
+        if ($this->em->getConfiguration()->isNativeLazyObjectsEnabled()) {
+            $classMetadata   = $this->em->getClassMetadata($className);
+            $entityPersister = $this->uow->getEntityPersister($className);
+
+            $proxy = $classMetadata->reflClass->newLazyGhost(static function (object $object) use ($identifier, $entityPersister): void {
+                $entityPersister->loadById($identifier, $object);
+            }, ReflectionClass::SKIP_INITIALIZATION_ON_SERIALIZE);
+
+            foreach ($identifier as $idField => $value) {
+                $classMetadata->propertyAccessors[$idField]->setValue($proxy, $value);
+            }
+
+            return $proxy;
+        }
+
         $proxyFactory = $this->proxyFactories[$className] ?? $this->getProxyFactory($className);
 
         return $proxyFactory($identifier);
@@ -182,6 +198,10 @@ EOPHP;
      */
     public function generateProxyClasses(array $classes, string|null $proxyDir = null): int
     {
+        if ($this->em->getConfiguration()->isNativeLazyObjectsEnabled()) {
+            return 0;
+        }
+
         $generated = 0;
 
         foreach ($classes as $class) {

@@ -6,6 +6,9 @@ namespace Doctrine\ORM\Query\AST;
 
 use Doctrine\ORM\Query\SqlWalker;
 
+use function func_get_arg;
+use function func_num_args;
+
 /**
  * NewObjectExpression ::= "NEW" IdentificationVariable "(" NewObjectArg {"," NewObjectArg}* ")"
  *
@@ -13,13 +16,18 @@ use Doctrine\ORM\Query\SqlWalker;
  */
 class NewObjectExpression extends Node
 {
-    /** @param mixed[] $args */
+    /**
+     * @param class-string $className
+     * @param mixed[]      $args
+     */
     public function __construct(public string $className, public array $args)
     {
     }
 
-    public function dispatch(SqlWalker $walker): string
+    public function dispatch(SqlWalker $walker /*, string|null $parentAlias = null */): string
     {
-        return $walker->walkNewObject($this);
+        $parentAlias = func_num_args() > 1 ? func_get_arg(1) : null;
+
+        return $walker->walkNewObject($this, $parentAlias);
     }
 }
