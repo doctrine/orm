@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\Tests\Models\PropertyHooks\User;
@@ -13,6 +15,10 @@ class PropertyHooksTest extends OrmFunctionalTestCase
     {
         parent::setUp();
 
+        if (! $this->_em->getConfiguration()->isNativeLazyObjectsEnabled()) {
+            $this->markTestSkipped('Property hooks require native lazy objects to be enabled.');
+        }
+
         $this->createSchemaForModels(
             User::class,
         );
@@ -20,7 +26,7 @@ class PropertyHooksTest extends OrmFunctionalTestCase
 
     public function testMapPropertyHooks(): void
     {
-        $user = new User();
+        $user           = new User();
         $user->fullName = 'John Doe';
         $user->language = 'EN';
 
@@ -44,7 +50,7 @@ class PropertyHooksTest extends OrmFunctionalTestCase
 
     public function testTriggerLazyLoadingWhenAccessingPropertyHooks(): void
     {
-        $user = new User();
+        $user           = new User();
         $user->fullName = 'Ludwig von Beethoven';
         $user->language = 'DE';
 
@@ -54,9 +60,9 @@ class PropertyHooksTest extends OrmFunctionalTestCase
 
         $user = $this->_em->getReference(User::class, $user->id);
 
-        self::assertEquals('John', $user->first);
-        self::assertEquals('Doe', $user->last);
-        self::assertEquals('John Doe', $user->fullName);
-        self::assertEquals('EN', $user->language, 'The property hook uppercases the language.');
+        self::assertEquals('Ludwig', $user->first);
+        self::assertEquals('von Beethoven', $user->last);
+        self::assertEquals('Ludwig von Beethoven', $user->fullName);
+        self::assertEquals('DE', $user->language, 'The property hook uppercases the language.');
     }
 }
