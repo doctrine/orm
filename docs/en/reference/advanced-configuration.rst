@@ -19,7 +19,7 @@ steps of configuration.
 
     // ...
 
-    if ($applicationMode == "development") {
+    if ($applicationMode === "development") {
         $queryCache = new ArrayAdapter();
         $metadataCache = new ArrayAdapter();
     } else {
@@ -32,13 +32,18 @@ steps of configuration.
     $driverImpl = new AttributeDriver(['/path/to/lib/MyProject/Entities'], true);
     $config->setMetadataDriverImpl($driverImpl);
     $config->setQueryCache($queryCache);
-    $config->setProxyDir('/path/to/myproject/lib/MyProject/Proxies');
-    $config->setProxyNamespace('MyProject\Proxies');
 
-    if ($applicationMode == "development") {
-        $config->setAutoGenerateProxyClasses(true);
+    if (PHP_VERSION_ID > 80400) {
+        $config->enableNativeLazyObjects(true);
     } else {
-        $config->setAutoGenerateProxyClasses(false);
+        $config->setProxyDir('/path/to/myproject/lib/MyProject/Proxies');
+        $config->setProxyNamespace('MyProject\Proxies');
+
+        if ($applicationMode === "development") {
+            $config->setAutoGenerateProxyClasses(true);
+        } else {
+            $config->setAutoGenerateProxyClasses(false);
+        }
     }
 
     $connection = DriverManager::getConnection([
@@ -71,8 +76,25 @@ Configuration Options
 The following sections describe all the configuration options
 available on a ``Doctrine\ORM\Configuration`` instance.
 
-Proxy Directory (**REQUIRED**)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Native Lazy Objects (**OPTIONAL**)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+With PHP 8.4 we recommend that you use native lazy objects instead of
+the code generation approach using the ``symfony/var-exporter`` Ghost trait.
+
+With Doctrine 4, the minimal requirement will become PHP 8.4 and native lazy objects
+will become the only approach to lazy loading.
+
+.. code-block:: php
+
+    <?php
+    $config->enableNativeLazyObjects(true);
+
+Proxy Directory
+~~~~~~~~~~~~~~~
+
+Required except if you use native lazy objects with PHP 8.4.
+This setting will be removed in the future.
 
 .. code-block:: php
 
@@ -85,8 +107,11 @@ classes. For a detailed explanation on proxy classes and how they
 are used in Doctrine, refer to the "Proxy Objects" section further
 down.
 
-Proxy Namespace (**REQUIRED**)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Proxy Namespace
+~~~~~~~~~~~~~~~
+
+Required except if you use native lazy objects with PHP 8.4.
+This setting will be removed in the future.
 
 .. code-block:: php
 
@@ -199,6 +224,9 @@ deprecated ``Doctrine\DBAL\Logging\SQLLogger`` interface.
 
 Auto-generating Proxy Classes (**OPTIONAL**)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+This setting is not required if you use native lazy objects with PHP 8.4
+and will be removed in the future.
 
 Proxy classes can either be generated manually through the Doctrine
 Console or automatically at runtime by Doctrine. The configuration

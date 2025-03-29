@@ -69,7 +69,7 @@ class LifecycleCallbackTest extends OrmFunctionalTestCase
 
         $query  = $this->_em->createQuery('select e from Doctrine\Tests\ORM\Functional\LifecycleCallbackTestEntity e');
         $result = $query->getResult();
-        self::assertTrue($result[0]->postLoadCallbackInvoked);
+        self::assertTrue($result[0]::$postLoadCallbackInvoked);
 
         $result[0]->value = 'hello again';
 
@@ -132,10 +132,10 @@ class LifecycleCallbackTest extends OrmFunctionalTestCase
         $this->_em->clear();
 
         $reference = $this->_em->getReference(LifecycleCallbackTestEntity::class, $id);
-        self::assertFalse($reference->postLoadCallbackInvoked);
+        self::assertArrayNotHasKey('postLoadCallbackInvoked', (array) $reference);
 
         $reference->getValue(); // trigger proxy load
-        self::assertTrue($reference->postLoadCallbackInvoked);
+        self::assertTrue($reference::$postLoadCallbackInvoked);
     }
 
     #[Group('DDC-958')]
@@ -150,11 +150,11 @@ class LifecycleCallbackTest extends OrmFunctionalTestCase
         $this->_em->clear();
 
         $reference = $this->_em->find(LifecycleCallbackTestEntity::class, $id);
-        self::assertTrue($reference->postLoadCallbackInvoked);
-        $reference->postLoadCallbackInvoked = false;
+        self::assertTrue($reference::$postLoadCallbackInvoked);
+        $reference::$postLoadCallbackInvoked = false;
 
         $this->_em->refresh($reference);
-        self::assertTrue($reference->postLoadCallbackInvoked, 'postLoad should be invoked when refresh() is called.');
+        self::assertTrue($reference::$postLoadCallbackInvoked, 'postLoad should be invoked when refresh() is called.');
     }
 
     #[Group('DDC-113')]
@@ -212,7 +212,7 @@ DQL;
             ->createQuery(sprintf($dql, $e1->getId(), $e2->getId()))
             ->getResult();
 
-        self::assertTrue(current($entities)->postLoadCallbackInvoked);
+        self::assertTrue(current($entities)::$postLoadCallbackInvoked);
         self::assertTrue(current($entities)->postLoadCascaderNotNull);
         self::assertTrue(current($entities)->cascader->postLoadCallbackInvoked);
         self::assertEquals(current($entities)->cascader->postLoadEntitiesCount, 2);
@@ -252,7 +252,7 @@ DQL;
         $iterableResult = iterator_to_array($query->toIterable());
 
         foreach ($iterableResult as $entity) {
-            self::assertTrue($entity->postLoadCallbackInvoked);
+            self::assertTrue($entity::$postLoadCallbackInvoked);
             self::assertFalse($entity->postLoadCascaderNotNull);
 
             break;
@@ -276,7 +276,7 @@ DQL;
         $result = iterator_to_array($query->toIterable([], Query::HYDRATE_SIMPLEOBJECT));
 
         foreach ($result as $entity) {
-            self::assertTrue($entity->postLoadCallbackInvoked);
+            self::assertTrue($entity::$postLoadCallbackInvoked);
             self::assertFalse($entity->postLoadCascaderNotNull);
 
             break;
@@ -320,7 +320,7 @@ DQL;
 
         self::assertTrue($fetchedA->postLoadCallbackInvoked);
         foreach ($fetchedA->entities as $fetchJoinedEntB) {
-            self::assertTrue($fetchJoinedEntB->postLoadCallbackInvoked);
+            self::assertTrue($fetchJoinedEntB::$postLoadCallbackInvoked);
         }
     }
 
@@ -455,7 +455,7 @@ class LifecycleCallbackTestEntity
     public $postPersistCallbackInvoked = false;
 
     /** @var bool */
-    public $postLoadCallbackInvoked = false;
+    public static $postLoadCallbackInvoked = false;
 
     /** @var bool */
     public $postLoadCascaderNotNull = false;
@@ -502,7 +502,7 @@ class LifecycleCallbackTestEntity
     #[PostLoad]
     public function doStuffOnPostLoad(): void
     {
-        $this->postLoadCallbackInvoked = true;
+        self::$postLoadCallbackInvoked = true;
         $this->postLoadCascaderNotNull = isset($this->cascader);
     }
 
