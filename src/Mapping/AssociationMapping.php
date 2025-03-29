@@ -132,7 +132,7 @@ abstract class AssociationMapping implements ArrayAccess
                 if (! $mapping instanceof ManyToManyAssociationMapping) {
                     throw new Exception(
                         "Mapping error on field '" .
-                        $mapping->fieldName . '[' . $mapping->sourceEntity . ']' .
+                        $mapping->fieldName . ' [' . $mapping->sourceEntity . ']' .
                         "': relation is not many-to-many, but joinTable is set.",
                     );
                 }
@@ -144,8 +144,8 @@ abstract class AssociationMapping implements ArrayAccess
                 if (! $mapping instanceof ManyToManyOwningSideMapping) {
                     throw new Exception(
                         "Mapping error on field '" .
-                        $mapping->fieldName . '[' . $mapping->sourceEntity . ']' .
-                        "': joinTable can only be set on many-to-many owning side.",
+                        $mapping->fieldName . ' [' . $mapping->sourceEntity . ']' .
+                        "': 'joinTable' can only be set on many-to-many owning side.",
                     );
                 }
 
