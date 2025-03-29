@@ -13,6 +13,7 @@ use Doctrine\ORM\UnitOfWork;
 use Doctrine\ORM\Utility\IdentifierFlattener;
 use Doctrine\Persistence\Mapping\ClassMetadata;
 use Doctrine\Persistence\Proxy;
+use LogicException;
 use ReflectionClass;
 use ReflectionProperty;
 use Symfony\Component\VarExporter\ProxyHelper;
