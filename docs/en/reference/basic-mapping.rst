@@ -214,6 +214,8 @@ These are the "automatic" mapping rules:
 | Any other type        | ``Types::STRING``             |
 +-----------------------+-------------------------------+
 
+.. versionadded:: 2.11
+
 As of version 2.11 Doctrine can also automatically map typed properties using a
 PHP 8.1 enum to set the right ``type`` and ``enumType``.
 
@@ -223,6 +225,70 @@ Since version 2.14 you can specify custom typed field mapping between PHP type a
 and a custom ``Doctrine\ORM\Mapping\TypedFieldMapper`` implementation.
 
 :doc:`Read more about TypedFieldMapper <typedfieldmapper>`.
+
+Property Hooks
+--------------
+
+.. versionadded:: 3.4
+
+Doctrine supports mapping hooked properties as long as they have a backed property
+and are not virtual.
+
+
+.. configuration-block::
+
+    .. code-block:: attribute
+
+        <?php
+        use Doctrine\ORM\Mapping\Column;
+        use Doctrine\DBAL\Types\Types;
+
+        #[Entity]
+        class Message
+        {
+            #[Column(type: Types::INTEGER)]
+            private $id;
+            #[Column(type: Types::STRING)]
+            public string $language = 'de' {
+                // Override the "read" action with arbitrary logic.
+                get => strtoupper($this->language);
+
+                // Override the "write" action with arbitrary logic.
+                set {
+                    $this->language = strtolower($value);
+                }
+            }
+        }
+
+    .. code-block:: xml
+
+        <doctrine-mapping>
+          <entity name="Message">
+            <field name="id" type="integer" />
+            <field name="language" />
+          </entity>
+        </doctrine-mapping>
+
+If you attempt to map a virtual property with `#[Column]` an exception will be thrown.
+
+Some caveats apply to the use of property hooks, as they behave differently when accessing the property through
+the entity or directly through DQL/EntityRepository. Because the property hook can modify the value of the property in a way
+that value and raw value are different, you have to use the raw value representation when querying for the property.
+
+.. code-block:: php
+
+    <?php
+    $queryBuilder = $entityManager->createQueryBuilder();
+    $queryBuilder->select('m')
+        ->from(Message::class, 'm')
+        ->where('m.language = :language')
+        ->setParameter('language', 'de'); // Use lower case here for raw value representation
+
+    $query = $queryBuilder->getQuery();
+    $result = $query->getResult();
+
+    $messageRepository = $entityManager->getRepository(Message::class);
+    $deMessages = $messageRepository->findBy(['language' => 'de']); // Use lower case here for raw value representation
 
 .. _reference-mapping-types:
 
