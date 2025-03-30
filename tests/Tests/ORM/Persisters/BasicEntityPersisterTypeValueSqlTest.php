@@ -133,7 +133,7 @@ class BasicEntityPersisterTypeValueSqlTest extends OrmTestCase
     public function testSelectConditionStatementWithMultipleValuesContainingNull(): void
     {
         self::assertEquals(
-            '(t0.id IN (?) OR t0.id IS NULL)',
+            't0.id IS NULL',
             $this->persister->getSelectConditionStatementSQL('id', [null])
         );
 
@@ -145,6 +145,11 @@ class BasicEntityPersisterTypeValueSqlTest extends OrmTestCase
         self::assertEquals(
             '(t0.id IN (?) OR t0.id IS NULL)',
             $this->persister->getSelectConditionStatementSQL('id', [123, null])
+        );
+
+        self::assertEquals(
+            '(t0.id IN (?, ?) OR t0.id IS NULL)',
+            $this->persister->getSelectConditionStatementSQL('id', [123, null, 234])
         );
     }
 
