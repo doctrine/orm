@@ -33,7 +33,7 @@ class InversedOneToManyEntity
 
     /**
      * @var string
-     * @Column(type="string", name="some_property", length=255)
+     * @Column(type="string", name="some_property", length=255, nullable=true)
      */
     public $someProperty;
 
