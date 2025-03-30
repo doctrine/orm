@@ -48,6 +48,16 @@ class PropertyHooksTest extends OrmFunctionalTestCase
             ->getSingleScalarResult();
 
         $this->assertEquals('en', $language, 'Selecting a field from DQL does not go through the property hook, accessing raw data.');
+
+        $this->_em->clear();
+
+        $user = $this->_em->getRepository(User::class)->findOneBy(['language' => 'EN']);
+
+        self::assertNull($user);
+
+        $user = $this->_em->getRepository(User::class)->findOneBy(['language' => 'en']);
+
+        self::assertNotNull($user);
     }
 
     public function testTriggerLazyLoadingWhenAccessingPropertyHooks(): void
