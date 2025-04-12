@@ -24,7 +24,6 @@ use Doctrine\Persistence\Mapping\AbstractClassMetadataFactory;
 use Doctrine\Persistence\Mapping\ClassMetadata as ClassMetadataInterface;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
 use Doctrine\Persistence\Mapping\ReflectionService;
-use LogicException;
 use ReflectionClass;
 use ReflectionException;
 
@@ -298,14 +297,6 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
         } elseif ($class->isMappedSuperclass && $class->name === $class->rootEntityName && (count($class->discriminatorMap) || $class->discriminatorColumn)) {
             // second condition is necessary for mapped superclasses in the middle of an inheritance hierarchy
             throw MappingException::noInheritanceOnMappedSuperClass($class->name);
-        }
-
-        foreach ($class->propertyAccessors as $propertyAccessor) {
-            $property = $propertyAccessor->getUnderlyingReflector();
-
-            if (PHP_VERSION_ID >= 80400 && count($property->getHooks()) > 0) {
-                throw new LogicException('Doctrine ORM does not support property hooks without also enabling Configuration::enableNativeLazyObjects(true). Check https://github.com/doctrine/orm/issues/11624 for details of versions that support property hooks.');
-            }
         }
     }
 
@@ -710,6 +701,18 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     protected function wakeupReflection(ClassMetadataInterface $class, ReflectionService $reflService): void
     {
         $class->wakeupReflection($reflService);
+
+        if (PHP_VERSION_ID < 80400) {
+            return;
+        }
+
+        foreach ($class->propertyAccessors as $propertyAccessor) {
+            $property = $propertyAccessor->getUnderlyingReflector();
+
+            if ($property->isVirtual()) {
+                throw MappingException::mappingVirtualPropertyNotAllowed($class->name, $property->getName());
+            }
+        }
     }
 
     protected function initializeReflection(ClassMetadataInterface $class, ReflectionService $reflService): void

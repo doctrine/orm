@@ -13,6 +13,7 @@ use Doctrine\ORM\UnitOfWork;
 use Doctrine\ORM\Utility\IdentifierFlattener;
 use Doctrine\Persistence\Mapping\ClassMetadata;
 use Doctrine\Persistence\Proxy;
+use LogicException;
 use ReflectionClass;
 use ReflectionProperty;
 use Symfony\Component\VarExporter\ProxyHelper;
@@ -24,6 +25,7 @@ use function assert;
 use function bin2hex;
 use function chmod;
 use function class_exists;
+use function count;
 use function dirname;
 use function file_exists;
 use function file_put_contents;
@@ -38,6 +40,7 @@ use function preg_match_all;
 use function random_bytes;
 use function rename;
 use function rtrim;
+use function sprintf;
 use function str_replace;
 use function strpos;
 use function strrpos;
@@ -46,6 +49,7 @@ use function substr;
 use function ucfirst;
 
 use const DIRECTORY_SEPARATOR;
+use const PHP_VERSION_ID;
 
 /**
  * This factory is used to create proxy objects for entities at runtime.
@@ -281,6 +285,14 @@ EOPHP;
         while ($reflector) {
             foreach ($reflector->getProperties($filter) as $property) {
                 $name = $property->name;
+
+                if (PHP_VERSION_ID >= 80400 && count($property->getHooks()) > 0) {
+                    throw new LogicException(sprintf(
+                        'Doctrine ORM does not support property hook on %s::%s without using native lazy objects. Check https://github.com/doctrine/orm/issues/11624 for details of versions that support property hooks.',
+                        $property->getDeclaringClass()->getName(),
+                        $property->getName(),
+                    ));
+                }
 
                 if ($property->isStatic() || (($class->hasField($name) || $class->hasAssociation($name)) && ! isset($identifiers[$name]))) {
                     continue;
