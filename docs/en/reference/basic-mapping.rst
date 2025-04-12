@@ -269,7 +269,7 @@ and are not virtual.
           </entity>
         </doctrine-mapping>
 
-If you attempt to map a virtual property with `#[Column]` an exception will be thrown.
+If you attempt to map a virtual property with ``#[Column]`` an exception will be thrown.
 
 Some caveats apply to the use of property hooks, as they behave differently when accessing the property through
 the entity or directly through DQL/EntityRepository. Because the property hook can modify the value of the property in a way
