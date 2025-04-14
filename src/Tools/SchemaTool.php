@@ -319,7 +319,7 @@ class SchemaTool
             $primaryKey = $table->getIndex('primary');
 
             foreach ($table->getIndexes() as $idxKey => $existingIndex) {
-                if ($primaryKey->overrules($existingIndex)) {
+                if (! $existingIndex->isPrimary() && $primaryKey->spansColumns($existingIndex->getColumns())) {
                     $table->dropIndex($idxKey);
                 }
             }
