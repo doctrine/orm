@@ -415,6 +415,28 @@ state you can pass a closure as the third argument. It will be called with
 the arguments proxydir, namespace and className when the proxy file could not
 be found.
 
+Custom Metadata Files Regex
+---------------------------
+
+When using the ``AttributeDriver`` in combination with domain-oriented folder structures,
+it's common to have domain-related classes like tests, fixtures, commands within the same
+directory as entity classes. These should typically be excluded from metadata mapping.
+
+You can define a regular expression to filter which files the driver will consider as mapping sources:
+
+.. code-block:: php
+
+    <?php
+    use Doctrine\ORM\Mapping\Driver\AttributeDriver;
+
+    $driver = new AttributeDriver([__DIR__ . '/src/Domain/User']);
+    $driver->setFileRegex('/^(?!.*(Test|Fixture|Command)\.php$).*\.php$/');
+
+Provided regular expression is going to be matched against each file name during mapping discovery.
+In this example, files ending with ``Test.php``, ``Fixture.php``, or ``Command.php`` will be excluded.
+This allows to ensure that only actual entity classes are taken into account when loading metadata,
+preventing unrelated files from being included by the driver.
+
 Multiple Metadata Sources
 -------------------------
 
