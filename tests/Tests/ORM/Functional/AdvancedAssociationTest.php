@@ -227,8 +227,8 @@ class Type
     private string|null $abbreviation = null;
 
     #[JoinTable(name: 'lemma_type')]
-    #[JoinColumn(name: 'type_id', referencedColumnName: 'type_id')]
-    #[InverseJoinColumn(name: 'lemma_id', referencedColumnName: 'lemma_id')]
+    #[JoinColumn(name: 'type_id', referencedColumnName: 'type_id', nullable: false)]
+    #[InverseJoinColumn(name: 'lemma_id', referencedColumnName: 'lemma_id', nullable: false)]
     #[ManyToMany(targetEntity: 'Lemma')]
     private Collection $lemmas;
 

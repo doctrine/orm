@@ -36,8 +36,8 @@ class Travel
 
     /** @phpstan-var Collection<int, City> */
     #[JoinTable(name: 'cache_visited_cities')]
-    #[JoinColumn(name: 'travel_id', referencedColumnName: 'id')]
-    #[InverseJoinColumn(name: 'city_id', referencedColumnName: 'id')]
+    #[JoinColumn(name: 'travel_id', referencedColumnName: 'id', nullable: false)]
+    #[InverseJoinColumn(name: 'city_id', referencedColumnName: 'id', nullable: false)]
     #[Cache]
     #[ManyToMany(targetEntity: 'City', inversedBy: 'travels', cascade: ['persist', 'remove'])]
     public $visitedCities;
