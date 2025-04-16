@@ -46,8 +46,7 @@ In order to work, this requires certain conventions:
 .. code-block:: php
 
     <?php
-    $locator = $driver->getLocator();
-    $locator->setFileExtension('.xml');
+    $driver->getLocator()->setFileExtension('.xml');
 
 It is recommended to put all XML mapping documents in a single
 folder but you can spread the documents over several folders if you
