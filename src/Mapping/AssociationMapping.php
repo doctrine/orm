@@ -129,13 +129,7 @@ abstract class AssociationMapping implements ArrayAccess
 
         foreach ($mappingArray as $key => $value) {
             if ($key === 'joinTable') {
-                if (! $mapping instanceof ManyToManyAssociationMapping) {
-                    throw new MappingException(
-                        "Mapping error on field '" .
-                        $mapping->fieldName . "' in " . $mapping->sourceEntity .
-                        " : relation is not many-to-many, but 'joinTable' is set.",
-                    );
-                }
+                assert($mapping instanceof ManyToManyAssociationMapping);
 
                 if ($value === [] || $value === null) {
                     continue;

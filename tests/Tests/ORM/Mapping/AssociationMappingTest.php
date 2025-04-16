@@ -93,21 +93,6 @@ final class AssociationMappingTest extends TestCase
         unset($mapping['foo']);
     }
 
-    public function testItThrowsWhenJoinTableIsDefinedOnNonManyToManyProperty(): void
-    {
-        $mapping = [
-            'fieldName' => 'foo',
-            'sourceEntity' => self::class,
-            'targetEntity' => self::class,
-            'joinTable' => 'bar',
-        ];
-
-        $this->expectException(MappingException::class);
-        $this->expectExceptionMessage("Mapping error on field 'foo' in " . self::class . " : relation is not many-to-many, but 'joinTable' is set.");
-
-        OneToManyAssociationMapping::fromMappingArray($mapping);
-    }
-
     public function testItThrowsWhenJoinTableIsDefinedOnManyToManyInverseSideProperty(): void
     {
         $mapping = [
