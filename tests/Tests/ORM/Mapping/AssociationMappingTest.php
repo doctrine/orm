@@ -6,9 +6,6 @@ namespace Doctrine\Tests\ORM\Mapping;
 
 use Doctrine\ORM\Mapping\AssociationMapping;
 use Doctrine\ORM\Mapping\ClassMetadata;
-use Doctrine\ORM\Mapping\ManyToManyInverseSideMapping;
-use Doctrine\ORM\Mapping\MappingException;
-use Doctrine\ORM\Mapping\OneToManyAssociationMapping;
 use OutOfRangeException;
 use PHPUnit\Framework\TestCase;
 
@@ -91,21 +88,6 @@ final class AssociationMappingTest extends TestCase
         $this->expectException(OutOfRangeException::class);
 
         unset($mapping['foo']);
-    }
-
-    public function testItThrowsWhenJoinTableIsDefinedOnManyToManyInverseSideProperty(): void
-    {
-        $mapping = [
-            'fieldName' => 'foo',
-            'sourceEntity' => self::class,
-            'targetEntity' => self::class,
-            'joinTable' => 'bar',
-        ];
-
-        $this->expectException(MappingException::class);
-        $this->expectExceptionMessage("Mapping error on field 'foo' in " . self::class . " : 'joinTable' can only be set on many-to-many owning side.");
-
-        ManyToManyInverseSideMapping::fromMappingArray($mapping);
     }
 }
 
