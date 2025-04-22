@@ -1230,6 +1230,170 @@ class NewOperatorTest extends OrmFunctionalTestCase
         self::assertSame($this->fixtures[2]->address->zip, $result[2]->val2->zip);
     }
 
+    public function testEntityInDtoWithRoot(): void
+    {
+        $dql = '
+            SELECT
+                new CmsDumbDTO(
+                    u.id,
+                    u,
+                    a,
+                    e.email
+                )
+            FROM
+                Doctrine\Tests\Models\CMS\CmsUser u
+            LEFT JOIN
+                u.email e
+            LEFT JOIN
+                u.address a
+            ORDER BY
+                u.name';
+
+        $query  = $this->getEntityManager()->createQuery($dql);
+        $result = $query->getResult();
+
+        self::assertCount(3, $result);
+
+        self::assertInstanceOf(CmsDumbDTO::class, $result[0]);
+        self::assertInstanceOf(CmsDumbDTO::class, $result[1]);
+        self::assertInstanceOf(CmsDumbDTO::class, $result[2]);
+
+        self::assertInstanceOf(CmsUser::class, $result[0]->val2);
+        self::assertInstanceOf(CmsUser::class, $result[1]->val2);
+        self::assertInstanceOf(CmsUser::class, $result[2]->val2);
+
+        self::assertSame($this->fixtures[0]->name, $result[0]->val2->name);
+        self::assertSame($this->fixtures[1]->name, $result[1]->val2->name);
+        self::assertSame($this->fixtures[2]->name, $result[2]->val2->name);
+
+        self::assertSame($this->fixtures[0]->username, $result[0]->val2->username);
+        self::assertSame($this->fixtures[1]->username, $result[1]->val2->username);
+        self::assertSame($this->fixtures[2]->username, $result[2]->val2->username);
+
+        self::assertSame($this->fixtures[0]->status, $result[0]->val2->status);
+        self::assertSame($this->fixtures[1]->status, $result[1]->val2->status);
+        self::assertSame($this->fixtures[2]->status, $result[2]->val2->status);
+
+        self::assertInstanceOf(CmsAddress::class, $result[0]->val3);
+        self::assertInstanceOf(CmsAddress::class, $result[1]->val3);
+        self::assertInstanceOf(CmsAddress::class, $result[2]->val3);
+
+        self::assertSame($this->fixtures[0]->address->city, $result[0]->val3->city);
+        self::assertSame($this->fixtures[1]->address->city, $result[1]->val3->city);
+        self::assertSame($this->fixtures[2]->address->city, $result[2]->val3->city);
+
+        self::assertSame($this->fixtures[0]->address->country, $result[0]->val3->country);
+        self::assertSame($this->fixtures[1]->address->country, $result[1]->val3->country);
+        self::assertSame($this->fixtures[2]->address->country, $result[2]->val3->country);
+
+        self::assertSame($this->fixtures[0]->email->email, $result[0]->val4);
+        self::assertSame($this->fixtures[1]->email->email, $result[1]->val4);
+        self::assertSame($this->fixtures[2]->email->email, $result[2]->val4);
+    }
+
+    public function testEntityInDtoWithoutRoot(): void
+    {
+        $dql = '
+            SELECT
+                new CmsDumbDTO(
+                    u.id,
+                    u.name,
+                    a,
+                    e.email
+                )
+            FROM
+                Doctrine\Tests\Models\CMS\CmsUser u
+            LEFT JOIN
+                u.email e
+            LEFT JOIN
+                u.address a
+            ORDER BY
+                u.name';
+
+        $query  = $this->getEntityManager()->createQuery($dql);
+        $result = $query->getResult();
+
+        self::assertCount(3, $result);
+
+        self::assertInstanceOf(CmsDumbDTO::class, $result[0]);
+        self::assertInstanceOf(CmsDumbDTO::class, $result[1]);
+        self::assertInstanceOf(CmsDumbDTO::class, $result[2]);
+
+        self::assertSame($this->fixtures[0]->name, $result[0]->val2);
+        self::assertSame($this->fixtures[1]->name, $result[1]->val2);
+        self::assertSame($this->fixtures[2]->name, $result[2]->val2);
+
+        self::assertInstanceOf(CmsAddress::class, $result[0]->val3);
+        self::assertInstanceOf(CmsAddress::class, $result[1]->val3);
+        self::assertInstanceOf(CmsAddress::class, $result[2]->val3);
+
+        self::assertSame($this->fixtures[0]->address->city, $result[0]->val3->city);
+        self::assertSame($this->fixtures[1]->address->city, $result[1]->val3->city);
+        self::assertSame($this->fixtures[2]->address->city, $result[2]->val3->city);
+
+        self::assertSame($this->fixtures[0]->address->country, $result[0]->val3->country);
+        self::assertSame($this->fixtures[1]->address->country, $result[1]->val3->country);
+        self::assertSame($this->fixtures[2]->address->country, $result[2]->val3->country);
+
+        self::assertSame($this->fixtures[0]->email->email, $result[0]->val4);
+        self::assertSame($this->fixtures[1]->email->email, $result[1]->val4);
+        self::assertSame($this->fixtures[2]->email->email, $result[2]->val4);
+    }
+
+    public function testOnlyObjectInDto(): void
+    {
+        $dql = '
+            SELECT
+                new CmsDumbDTO(
+                    a,
+                    new CmsDumbDTO(
+                        u.name,
+                        e.email
+                    )
+                )
+            FROM
+                Doctrine\Tests\Models\CMS\CmsUser u
+            LEFT JOIN
+                u.email e
+            LEFT JOIN
+                u.address a
+            ORDER BY
+                u.name';
+
+        $query  = $this->getEntityManager()->createQuery($dql);
+        $result = $query->getResult();
+
+        self::assertCount(3, $result);
+
+        self::assertInstanceOf(CmsDumbDTO::class, $result[0]);
+        self::assertInstanceOf(CmsDumbDTO::class, $result[1]);
+        self::assertInstanceOf(CmsDumbDTO::class, $result[2]);
+
+        self::assertInstanceOf(CmsAddress::class, $result[0]->val1);
+        self::assertInstanceOf(CmsAddress::class, $result[1]->val1);
+        self::assertInstanceOf(CmsAddress::class, $result[2]->val1);
+
+        self::assertSame($this->fixtures[0]->address->city, $result[0]->val1->city);
+        self::assertSame($this->fixtures[1]->address->city, $result[1]->val1->city);
+        self::assertSame($this->fixtures[2]->address->city, $result[2]->val1->city);
+
+        self::assertSame($this->fixtures[0]->address->country, $result[0]->val1->country);
+        self::assertSame($this->fixtures[1]->address->country, $result[1]->val1->country);
+        self::assertSame($this->fixtures[2]->address->country, $result[2]->val1->country);
+
+        self::assertInstanceOf(CmsDumbDTO::class, $result[0]->val2);
+        self::assertInstanceOf(CmsDumbDTO::class, $result[1]->val2);
+        self::assertInstanceOf(CmsDumbDTO::class, $result[2]->val2);
+
+        self::assertSame($this->fixtures[0]->name, $result[0]->val2->val1);
+        self::assertSame($this->fixtures[1]->name, $result[1]->val2->val1);
+        self::assertSame($this->fixtures[2]->name, $result[2]->val2->val1);
+
+        self::assertSame($this->fixtures[0]->email->email, $result[0]->val2->val2);
+        self::assertSame($this->fixtures[1]->email->email, $result[1]->val2->val2);
+        self::assertSame($this->fixtures[2]->email->email, $result[2]->val2->val2);
+    }
+
     public function testNamedArguments(): void
     {
         $dql = <<<'SQL'

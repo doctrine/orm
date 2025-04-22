@@ -19,6 +19,7 @@ use LogicException;
 use ReflectionClass;
 
 use function array_key_exists;
+use function array_keys;
 use function array_map;
 use function array_merge;
 use function count;
@@ -348,12 +349,27 @@ abstract class AbstractHydrator
             }
         }
 
+        $nestedEntities = [];
+        /**@var string $argAlias */
         foreach ($this->resultSetMapping()->nestedNewObjectArguments as ['ownerIndex' => $ownerIndex, 'argIndex' => $argIndex, 'argAlias' => $argAlias]) {
             if (array_key_exists($argAlias, $rowData['newObjects'])) {
                 ksort($rowData['newObjects'][$argAlias]['args']);
                 $rowData['newObjects'][$ownerIndex]['args'][$argIndex] = $rowData['newObjects'][$argAlias]['class']->newInstanceArgs($rowData['newObjects'][$argAlias]['args']);
                 unset($rowData['newObjects'][$argAlias]);
+            } elseif (array_key_exists($argAlias, $rowData['data'])) {
+                if (! array_key_exists($argAlias, $nestedEntities)) {
+                    $nestedEntities[$argAlias]  = '';
+                    $rowData['data'][$argAlias] = $this->hydrateNestedEntity($rowData['data'][$argAlias], $argAlias);
+                }
+
+                $rowData['newObjects'][$ownerIndex]['args'][$argIndex] = $rowData['data'][$argAlias];
+            } else {
+                throw new LogicException($argAlias . ' does not exist');
             }
+        }
+
+        foreach (array_keys($nestedEntities) as $entity) {
+            unset($rowData['data'][$entity]);
         }
 
         foreach ($rowData['newObjects'] as $objIndex => $newObject) {
@@ -364,6 +380,12 @@ abstract class AbstractHydrator
         }
 
         return $rowData;
+    }
+
+    /** @param mixed[] $data pre-hydrated SQL Result Row. */
+    protected function hydrateNestedEntity(array $data, string $dqlAlias): mixed
+    {
+        return $data;
     }
 
     /**

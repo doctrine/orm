@@ -1107,6 +1107,50 @@ final class Parser
     }
 
     /**
+     * EntityAsDtoArgumentExpression ::= IdentificationVariable
+     */
+    public function EntityAsDtoArgumentExpression(): AST\EntityAsDtoArgumentExpression
+    {
+        assert($this->lexer->lookahead !== null);
+        $expression    = null;
+        $identVariable = null;
+        $peek          = $this->lexer->glimpse();
+        $lookaheadType = $this->lexer->lookahead->type;
+        assert($peek !== null);
+
+        assert($lookaheadType === TokenType::T_IDENTIFIER);
+        assert($peek->type !== TokenType::T_DOT);
+        assert($peek->type !== TokenType::T_OPEN_PARENTHESIS);
+
+        $expression = $identVariable = $this->IdentificationVariable();
+
+        // [["AS"] AliasResultVariable]
+        $mustHaveAliasResultVariable = false;
+
+        if ($this->lexer->isNextToken(TokenType::T_AS)) {
+            $this->match(TokenType::T_AS);
+
+            $mustHaveAliasResultVariable = true;
+        }
+
+        $aliasResultVariable = null;
+
+        if ($mustHaveAliasResultVariable || $this->lexer->isNextToken(TokenType::T_IDENTIFIER)) {
+            $token               = $this->lexer->lookahead;
+            $aliasResultVariable = $this->AliasResultVariable();
+
+            // Include AliasResultVariable in query components.
+            $this->queryComponents[$aliasResultVariable] = [
+                'resultVariable' => $expression,
+                'nestingLevel'   => $this->nestingLevel,
+                'token'          => $token,
+            ];
+        }
+
+        return new AST\EntityAsDtoArgumentExpression($expression, $identVariable);
+    }
+
+    /**
      * SelectClause ::= "SELECT" ["DISTINCT"] SelectExpression {"," SelectExpression}
      */
     public function SelectClause(): AST\SelectClause
@@ -1849,6 +1893,8 @@ final class Parser
             $this->match(TokenType::T_CLOSE_PARENTHESIS);
         } elseif ($token->type === TokenType::T_NEW) {
             $expression = $this->NewObjectExpression();
+        } elseif ($token->type === TokenType::T_IDENTIFIER && $peek->type !== TokenType::T_DOT && $peek->type !== TokenType::T_OPEN_PARENTHESIS) {
+            $expression = $this->EntityAsDtoArgumentExpression();
         } else {
             $expression = $this->ScalarExpression();
         }

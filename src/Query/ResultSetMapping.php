@@ -169,7 +169,7 @@ class ResultSetMapping
     /**
      * Maps last argument for new objects in order to initiate object construction
      *
-     * @phpstan-var array<int|string, array{ownerIndex: string|int, argIndex: int|string}>
+     * @phpstan-var array<int|string, array{ownerIndex: string|int, argIndex: int|string, argAlias: string}>
      */
     public array $nestedNewObjectArguments = [];
 
@@ -186,6 +186,13 @@ class ResultSetMapping
      * @phpstan-var array<string, string>
      */
     public array $discriminatorParameters = [];
+
+    /**
+     * Entities nested in Dto's
+     *
+     * @phpstan-var array<string, array<string, (int|string)>>
+     */
+    public array $nestedEntities = [];
 
     /**
      * Adds an entity result to this ResultSetMapping.

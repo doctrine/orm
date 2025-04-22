@@ -70,6 +70,10 @@ class ObjectHydrator extends AbstractHydrator
             $parent = $this->resultSetMapping()->parentAliasMap[$dqlAlias];
 
             if (! isset($this->resultSetMapping()->aliasMap[$parent])) {
+                if (isset($this->resultSetMapping()->nestedEntities[$dqlAlias])) {
+                    continue;
+                }
+
                 throw HydrationException::parentObjectOfRelationNotFound($dqlAlias, $parent);
             }
 
@@ -567,6 +571,16 @@ class ObjectHydrator extends AbstractHydrator
                 $result[$resultKey][$objIndex] = $obj;
             }
         }
+    }
+
+    /** @param mixed[] $data pre-hydrated SQL Result Row. */
+    protected function hydrateNestedEntity(array $data, string $dqlAlias): mixed
+    {
+        if (isset($this->resultSetMapping()->nestedEntities[$dqlAlias])) {
+            return $this->getEntity($data, $dqlAlias);
+        }
+
+        return $data;
     }
 
     /**
