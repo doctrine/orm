@@ -250,7 +250,7 @@ of products purchased and maybe even the current price.
 
         public function __construct(
             #[ManyToOne(targetEntity: Customer::class)]
-            private Customer $customer,
+            private Customer $customer
         ) {
             $this->items = new ArrayCollection();
             $this->created = new DateTime("now");
@@ -295,6 +295,7 @@ of products purchased and maybe even the current price.
             $this->order = $order;
             $this->product = $product;
             $this->offeredPrice = $product->getCurrentPrice();
+            $this->amount = $amount;
         }
     }
 
