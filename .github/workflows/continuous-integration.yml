@@ -9,7 +9,6 @@ on:
       - ci/**
       - composer.*
       - src/**
-      - phpunit.xml.dist
       - tests/**
   push:
     branches:
@@ -19,7 +18,6 @@ on:
       - ci/**
       - composer.*
       - src/**
-      - phpunit.xml.dist
       - tests/**
 
 env:

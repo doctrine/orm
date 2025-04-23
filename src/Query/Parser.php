@@ -1767,6 +1767,7 @@ final class Parser
             $useNamedArguments = true;
         }
 
+        /** @var class-string $className */
         $className = $this->AbstractSchemaName(); // note that this is not yet validated
         $token     = $this->lexer->token;
 
@@ -1854,7 +1855,11 @@ final class Parser
 
         if ($this->lexer->isNextToken(TokenType::T_AS)) {
             $this->match(TokenType::T_AS);
-            $fieldAlias = $this->AliasIdentificationVariable();
+            $this->match(TokenType::T_IDENTIFIER);
+
+            assert($this->lexer->token !== null);
+
+            $fieldAlias = $this->lexer->token->value;
         }
 
         return $expression;

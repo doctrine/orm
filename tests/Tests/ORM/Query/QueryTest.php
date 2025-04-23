@@ -14,6 +14,7 @@ use Doctrine\DBAL\Driver\Result;
 use Doctrine\DBAL\LockMode;
 use Doctrine\DBAL\ParameterType;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
+use Doctrine\DBAL\Schema\Name\UnquotedIdentifierFolding;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Query;
@@ -39,6 +40,7 @@ use Psr\Cache\CacheItemPoolInterface;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
 
 use function array_map;
+use function enum_exists;
 
 class QueryTest extends OrmTestCase
 {
@@ -597,6 +599,7 @@ class QueryTest extends OrmTestCase
             ->will($this->onConsecutiveCalls(...$results));
 
         $platform = $this->getMockBuilder(AbstractPlatform::class)
+            ->setConstructorArgs(enum_exists(UnquotedIdentifierFolding::class) ? [UnquotedIdentifierFolding::UPPER] : [])
             ->onlyMethods(['supportsIdentityColumns'])
             ->getMockForAbstractClass();
         $platform->method('supportsIdentityColumns')

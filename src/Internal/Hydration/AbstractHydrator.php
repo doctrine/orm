@@ -18,12 +18,14 @@ use Generator;
 use LogicException;
 use ReflectionClass;
 
+use function array_key_exists;
 use function array_map;
 use function array_merge;
 use function count;
 use function end;
 use function in_array;
 use function is_array;
+use function ksort;
 
 /**
  * Base class for all hydrators. A hydrator is a class that provides some form
@@ -263,6 +265,17 @@ abstract class AbstractHydrator
     {
         $rowData = ['data' => [], 'newObjects' => []];
 
+        foreach ($this->rsm->newObjectMappings as $mapping) {
+            if (! array_key_exists($mapping['objIndex'], $this->rsm->newObject)) {
+                $this->rsm->newObject[$mapping['objIndex']] = $mapping['className'];
+            }
+        }
+
+        foreach ($this->rsm->newObject as $objIndex => $newObject) {
+            $rowData['newObjects'][$objIndex]['class'] = new ReflectionClass($newObject);
+            $rowData['newObjects'][$objIndex]['args']  = [];
+        }
+
         foreach ($data as $key => $value) {
             $cacheKeyInfo = $this->hydrateColumnInfo($key);
             if ($cacheKeyInfo === null) {
@@ -282,7 +295,6 @@ abstract class AbstractHydrator
                         $value = $this->buildEnum($value, $cacheKeyInfo['enumType']);
                     }
 
-                    $rowData['newObjects'][$objIndex]['class']           = $cacheKeyInfo['class'];
                     $rowData['newObjects'][$objIndex]['args'][$argIndex] = $value;
                     break;
 
@@ -336,21 +348,17 @@ abstract class AbstractHydrator
             }
         }
 
-        foreach ($this->resultSetMapping()->nestedNewObjectArguments as $objIndex => ['ownerIndex' => $ownerIndex, 'argIndex' => $argIndex]) {
-            if (! isset($rowData['newObjects'][$ownerIndex . ':' . $argIndex])) {
-                continue;
+        foreach ($this->resultSetMapping()->nestedNewObjectArguments as ['ownerIndex' => $ownerIndex, 'argIndex' => $argIndex, 'argAlias' => $argAlias]) {
+            if (array_key_exists($argAlias, $rowData['newObjects'])) {
+                ksort($rowData['newObjects'][$argAlias]['args']);
+                $rowData['newObjects'][$ownerIndex]['args'][$argIndex] = $rowData['newObjects'][$argAlias]['class']->newInstanceArgs($rowData['newObjects'][$argAlias]['args']);
+                unset($rowData['newObjects'][$argAlias]);
             }
-
-            $newObject = $rowData['newObjects'][$ownerIndex . ':' . $argIndex];
-            unset($rowData['newObjects'][$ownerIndex . ':' . $argIndex]);
-
-            $obj = $newObject['class']->newInstanceArgs($newObject['args']);
-
-            $rowData['newObjects'][$ownerIndex]['args'][$argIndex] = $obj;
         }
 
         foreach ($rowData['newObjects'] as $objIndex => $newObject) {
-            $obj = $newObject['class']->newInstanceArgs($newObject['args']);
+            ksort($rowData['newObjects'][$objIndex]['args']);
+            $obj = $rowData['newObjects'][$objIndex]['class']->newInstanceArgs($rowData['newObjects'][$objIndex]['args']);
 
             $rowData['newObjects'][$objIndex]['obj'] = $obj;
         }
@@ -454,7 +462,6 @@ abstract class AbstractHydrator
                     'type'                 => Type::getType($this->rsm->typeMappings[$key]),
                     'argIndex'             => $mapping['argIndex'],
                     'objIndex'             => $mapping['objIndex'],
-                    'class'                => new ReflectionClass($mapping['className']),
                     'enumType'             => $this->rsm->enumMappings[$key] ?? null,
                 ];
 

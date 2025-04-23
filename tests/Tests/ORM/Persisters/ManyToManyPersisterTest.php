@@ -7,6 +7,7 @@ namespace Doctrine\Tests\ORM\Persisters;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Driver;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
+use Doctrine\DBAL\Schema\Name\UnquotedIdentifierFolding;
 use Doctrine\ORM\Persisters\Collection\ManyToManyPersister;
 use Doctrine\Tests\Models\ManyToManyPersister\ChildClass;
 use Doctrine\Tests\Models\ManyToManyPersister\OtherParentClass;
@@ -14,6 +15,8 @@ use Doctrine\Tests\Models\ManyToManyPersister\ParentClass;
 use Doctrine\Tests\OrmTestCase;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Group;
+
+use function enum_exists;
 
 #[CoversClass(ManyToManyPersister::class)]
 final class ManyToManyPersisterTest extends OrmTestCase
@@ -31,7 +34,7 @@ final class ManyToManyPersisterTest extends OrmTestCase
             ->onlyMethods(['executeStatement', 'getDatabasePlatform'])
             ->getMock();
         $connection->method('getDatabasePlatform')
-            ->willReturn($this->getMockForAbstractClass(AbstractPlatform::class));
+            ->willReturn($this->getMockForAbstractClass(AbstractPlatform::class, enum_exists(UnquotedIdentifierFolding::class) ? [UnquotedIdentifierFolding::UPPER] : []));
 
         $parent      = new ParentClass(1);
         $otherParent = new OtherParentClass(42);

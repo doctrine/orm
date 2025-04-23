@@ -57,6 +57,8 @@ use function strtolower;
 use function trait_exists;
 use function trim;
 
+use const PHP_VERSION_ID;
+
 /**
  * A <tt>ClassMetadata</tt> instance holds all the object-relational mapping metadata
  * of an entity and its associations.
@@ -2671,6 +2673,10 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
             if ($reflectionProperty !== null) {
                 $reflectionProperty = new ReflectionReadonlyProperty($reflectionProperty);
             }
+        }
+
+        if (PHP_VERSION_ID >= 80400 && $reflectionProperty !== null && count($reflectionProperty->getHooks()) > 0) {
+               throw new LogicException('Doctrine ORM does not support property hooks in this version. Check https://github.com/doctrine/orm/issues/11624 for details of versions that support property hooks.');
         }
 
         return $reflectionProperty;
