@@ -10,6 +10,7 @@ use Doctrine\DBAL\Platforms\MySQLPlatform;
 use Doctrine\DBAL\Platforms\OraclePlatform;
 use Doctrine\DBAL\Platforms\PostgreSQLPlatform;
 use Doctrine\DBAL\Schema\AbstractSchemaManager;
+use Doctrine\DBAL\Schema\NamedObject;
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\DBAL\Schema\Table;
 use Doctrine\DBAL\Types\Type;
@@ -1111,7 +1112,12 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
     {
         $schemaManager = $this->createSchemaManager();
         $platform      = $this->_em->getConnection()->getDatabasePlatform();
-        $tableName     = $table->getQuotedName($platform);
+
+        if ($table instanceof NamedObject) {
+            $tableName = $table->getObjectName()->toSQL($platform);
+        } else {
+            $tableName = $table->getQuotedName($platform);
+        }
 
         $this->dropTableIfExists($tableName);
         $schemaManager->createTable($table);

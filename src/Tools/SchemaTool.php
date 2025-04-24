@@ -8,7 +8,9 @@ use BackedEnum;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Schema\AbstractAsset;
 use Doctrine\DBAL\Schema\AbstractSchemaManager;
+use Doctrine\DBAL\Schema\ForeignKeyConstraintEditor;
 use Doctrine\DBAL\Schema\Index;
+use Doctrine\DBAL\Schema\Index\IndexedColumn;
 use Doctrine\DBAL\Schema\Name\Identifier;
 use Doctrine\DBAL\Schema\Name\UnqualifiedName;
 use Doctrine\DBAL\Schema\PrimaryKeyConstraint;
@@ -34,6 +36,7 @@ use function array_diff_key;
 use function array_filter;
 use function array_flip;
 use function array_intersect_key;
+use function array_map;
 use function assert;
 use function class_exists;
 use function count;
@@ -41,6 +44,7 @@ use function current;
 use function implode;
 use function in_array;
 use function is_numeric;
+use function method_exists;
 use function strtolower;
 
 /**
@@ -319,7 +323,7 @@ class SchemaTool
             $primaryKey = $table->getIndex('primary');
 
             foreach ($table->getIndexes() as $idxKey => $existingIndex) {
-                if (! $existingIndex->isPrimary() && $primaryKey->spansColumns($existingIndex->getColumns())) {
+                if ($existingIndex !== $primaryKey && $primaryKey->spansColumns(self::getIndexedColumns($existingIndex))) {
                     $table->dropIndex($idxKey);
                 }
             }
@@ -350,7 +354,7 @@ class SchemaTool
                         }
                     }
 
-                    $table->addUniqueIndex($uniqIndex->getColumns(), is_numeric($indexName) ? null : $indexName, $indexData['options'] ?? []);
+                    $table->addUniqueIndex(self::getIndexedColumns($uniqIndex), is_numeric($indexName) ? null : $indexName, $indexData['options'] ?? []);
                 }
             }
 
@@ -733,7 +737,18 @@ class SchemaTool
         ) {
             foreach ($theJoinTable->getForeignKeys() as $fkName => $key) {
                 if (
-                    count(array_diff($key->getLocalColumns(), $localColumns)) === 0
+                    class_exists(ForeignKeyConstraintEditor::class)
+                    && count(array_diff(array_map(static fn (UnqualifiedName $name) => $name->toString(), $key->getReferencingColumnNames()), $localColumns)) === 0
+                    && (($key->getReferencedTableName()->toString() !== $foreignTableName)
+                    || 0 < count(array_diff(array_map(static fn (UnqualifiedName $name) => $name->toString(), $key->getReferencedColumnNames()), $foreignColumns)))
+                ) {
+                    $theJoinTable->dropForeignKey($fkName);
+                    break;
+                }
+
+                if (
+                    ! class_exists(ForeignKeyConstraintEditor::class)
+                    && count(array_diff($key->getLocalColumns(), $localColumns)) === 0
                     && (($key->getForeignTableName() !== $foreignTableName)
                     || 0 < count(array_diff($key->getForeignColumns(), $foreignColumns)))
                 ) {
@@ -851,12 +866,22 @@ class SchemaTool
             }
 
             foreach ($schema->getTables() as $table) {
-                $primaryKey = $table->getPrimaryKey();
+                if (method_exists($table, 'getPrimaryKeyConstraint')) {
+                    $primaryKey = $table->getPrimaryKeyConstraint();
+                } else {
+                    $primaryKey = $table->getPrimaryKey();
+                }
+
                 if ($primaryKey === null) {
                     continue;
                 }
 
-                $columns = $primaryKey->getColumns();
+                if ($primaryKey instanceof PrimaryKeyConstraint) {
+                    $columns = array_map(static fn (UnqualifiedName $name) => $name->toString(), $primaryKey->getColumnNames());
+                } else {
+                    $columns = self::getIndexedColumns($primaryKey);
+                }
+
                 if (count($columns) === 1) {
                     $checkSequence = $table->getName() . '_' . $columns[0] . '_seq';
                     if ($deployedSchema->hasSequence($checkSequence) && ! $schema->hasSequence($checkSequence)) {
@@ -946,5 +971,15 @@ class SchemaTool
         } else {
             $table->setPrimaryKey($primaryKeyColumns);
         }
+    }
+
+    /** @return string[] */
+    private static function getIndexedColumns(Index $index): array
+    {
+        if (method_exists(Index::class, 'getIndexedColumns')) {
+            return array_map(static fn (IndexedColumn $indexedColumn) => $indexedColumn->getColumnName()->toString(), $index->getIndexedColumns());
+        }
+
+        return $index->getColumns();
     }
 }
