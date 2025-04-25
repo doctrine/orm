@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Tools;
 
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
@@ -263,7 +264,11 @@ class SchemaToolTest extends OrmTestCase
         $metadata   = $em->getClassMetadata(FirstEntity::class);
 
         $metadata->setInheritanceType(ClassMetadata::INHERITANCE_TYPE_SINGLE_TABLE);
-        $metadata->setDiscriminatorColumn(['name' => 'discriminator', 'type' => 'enum', 'enumType' => GH10288People::class]);
+        $metadata->setDiscriminatorColumn([
+            'name' => 'discriminator',
+            'type' => defined('Doctrine\DBAL\Types\Types::ENUM') ? Types::ENUM : Types::STRING,
+            'enumType' => GH10288People::class,
+        ]);
 
         $schema = $schemaTool->getSchemaFromMetadata([$metadata]);
 
