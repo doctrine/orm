@@ -2518,7 +2518,7 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
      */
     public function fullyQualifiedClassName(string $className): string
     {
-        if (! str_contains($className, '\\') && $this->namespace) {
+        if ($this->namespace && ! str_contains($className, '\\') && class_exists($this->namespace . '\\' . $className)) {
             return $this->namespace . '\\' . $className;
         }
 
