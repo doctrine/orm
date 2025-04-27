@@ -748,7 +748,7 @@ class ClassMetadataTest extends OrmTestCase
         $cm->mapManyToOne(['fieldName' => 'address', 'targetEntity' => 'UnknownClass']);
 
         $this->expectException(MappingException::class);
-        $this->expectExceptionMessage("The target-entity Doctrine\\Tests\\Models\\CMS\\UnknownClass cannot be found in '" . CmsUser::class . "#address'.");
+        $this->expectExceptionMessage("The target-entity UnknownClass cannot be found in '" . CmsUser::class . "#address'.");
 
         $cm->validateAssociations();
     }
