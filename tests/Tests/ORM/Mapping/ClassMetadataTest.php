@@ -109,9 +109,11 @@ class ClassMetadataTest extends OrmTestCase
         self::assertInstanceOf(ReflectionClass::class, $cm->reflClass);
         self::assertEquals(CmsUser::class, $cm->name);
         self::assertEquals('UserParent', $cm->rootEntityName);
-        self::assertEquals([One::class, Two::class, Three::class], $cm->subClasses);
+        self::assertNotEquals([One::class, Two::class, Three::class], $cm->subClasses);
+        self::assertEquals(['One', 'Two', 'Three'], $cm->subClasses);
         self::assertEquals(['UserParent'], $cm->parentClasses);
-        self::assertEquals(UserRepository::class, $cm->customRepositoryClassName);
+        self::assertNotEquals(UserRepository::class, $cm->customRepositoryClassName);
+        self::assertEquals('UserRepository', $cm->customRepositoryClassName);
         self::assertEquals(DiscriminatorColumnMapping::fromMappingArray([
             'name' => 'disc',
             'type' => 'integer',
