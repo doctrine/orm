@@ -50,6 +50,7 @@ final class FieldMapping
      */
     public string|null $inherited = null;
 
+    /** @var class-string|null */
     public string|null $originalClass = null;
     public string|null $originalField = null;
     public bool|null $quoted          = null;
@@ -97,7 +98,7 @@ final class FieldMapping
      *     scale?: int|null,
      *     unique?: bool|null,
      *     inherited?: string|null,
-     *     originalClass?: string|null,
+     *     originalClass?: class-string|null,
      *     originalField?: string|null,
      *     quoted?: bool|null,
      *     declared?: string|null,

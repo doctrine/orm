@@ -286,7 +286,7 @@ abstract class AbstractQuery
         $key = Parameter::normalizeName($key);
 
         $filteredParameters = $this->parameters->filter(
-            static fn (Parameter $parameter): bool => $parameter->getName() === $key
+            static fn (Parameter $parameter): bool => $parameter->getName() === $key,
         );
 
         return ! $filteredParameters->isEmpty() ? $filteredParameters->first() : null;

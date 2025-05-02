@@ -9,7 +9,6 @@ use Doctrine\ORM\Exception\EntityIdentityCollisionException;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\ORMInvalidArgumentException;
 use Doctrine\ORM\PersistentCollection;
-use Doctrine\ORM\Proxy\InternalProxy;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\UnitOfWork;
 use Doctrine\Tests\IterableTester;
@@ -557,7 +556,7 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
         $this->_em->persist($article);
         $this->_em->flush();
 
-        self::assertFalse($userRef->__isInitialized());
+        self::assertTrue($this->isUninitializedObject($userRef));
 
         $this->_em->clear();
 
@@ -592,7 +591,7 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
         $this->_em->persist($user);
         $this->_em->flush();
 
-        self::assertFalse($groupRef->__isInitialized());
+        self::assertTrue($this->isUninitializedObject($groupRef));
 
         $this->_em->clear();
 
@@ -940,8 +939,7 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
                              ->setParameter(1, $article->id)
                              ->setFetchMode(CmsArticle::class, 'user', ClassMetadata::FETCH_EAGER)
                              ->getSingleResult();
-        self::assertInstanceOf(InternalProxy::class, $article->user, 'It IS a proxy, ...');
-        self::assertFalse($this->isUninitializedObject($article->user), '...but its initialized!');
+        self::assertFalse($this->isUninitializedObject($article->user));
         $this->assertQueryCount(2);
     }
 

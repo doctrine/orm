@@ -30,6 +30,8 @@ use function class_exists;
 use function is_a;
 use function strtolower;
 
+use const PHP_VERSION_ID;
+
 /**
  * Configuration container for all configuration options of Doctrine.
  * It combines all configuration options from DBAL & ORM.
@@ -591,6 +593,20 @@ class Configuration extends \Doctrine\DBAL\Configuration
     public function setSchemaIgnoreClasses(array $schemaIgnoreClasses): void
     {
         $this->attributes['schemaIgnoreClasses'] = $schemaIgnoreClasses;
+    }
+
+    public function isNativeLazyObjectsEnabled(): bool
+    {
+        return $this->attributes['nativeLazyObjects'] ?? false;
+    }
+
+    public function enableNativeLazyObjects(bool $nativeLazyObjects): void
+    {
+        if (PHP_VERSION_ID < 80400) {
+            throw new LogicException('Lazy loading proxies require PHP 8.4 or higher.');
+        }
+
+        $this->attributes['nativeLazyObjects'] = $nativeLazyObjects;
     }
 
     /**

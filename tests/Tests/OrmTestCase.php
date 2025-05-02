@@ -9,6 +9,7 @@ use Doctrine\DBAL\Driver;
 use Doctrine\DBAL\Driver\Result;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Schema\AbstractSchemaManager;
+use Doctrine\DBAL\Schema\Name\UnquotedIdentifierFolding;
 use Doctrine\DBAL\Schema\SchemaConfig;
 use Doctrine\ORM\Cache\CacheConfiguration;
 use Doctrine\ORM\Cache\CacheFactory;
@@ -21,6 +22,7 @@ use PHPUnit\Framework\TestCase;
 use Psr\Cache\CacheItemPoolInterface;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
 
+use function enum_exists;
 use function realpath;
 use function sprintf;
 
@@ -39,17 +41,13 @@ abstract class OrmTestCase extends TestCase
      */
     private static CacheItemPoolInterface|null $queryCache = null;
 
-    /** @var bool */
-    protected $isSecondLevelCacheEnabled = false;
+    protected bool $isSecondLevelCacheEnabled = false;
 
-    /** @var bool */
-    protected $isSecondLevelCacheLogEnabled = false;
+    protected bool $isSecondLevelCacheLogEnabled = false;
 
-    /** @var CacheFactory */
-    protected $secondLevelCacheFactory;
+    protected CacheFactory $secondLevelCacheFactory;
 
-    /** @var StatisticsCacheLogger */
-    protected $secondLevelCacheLogger;
+    protected StatisticsCacheLogger $secondLevelCacheLogger;
 
     private CacheItemPoolInterface|null $secondLevelCache = null;
 
@@ -157,6 +155,7 @@ abstract class OrmTestCase extends TestCase
             ->willReturn(new SchemaConfig());
 
         $platform = $this->getMockBuilder(AbstractPlatform::class)
+            ->setConstructorArgs(enum_exists(UnquotedIdentifierFolding::class) ? [UnquotedIdentifierFolding::UPPER] : [])
             ->onlyMethods(['supportsIdentityColumns', 'createSchemaManager'])
             ->getMockForAbstractClass();
         $platform->method('supportsIdentityColumns')

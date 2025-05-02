@@ -8,6 +8,7 @@ use function property_exists;
 
 final class JoinColumnMapping
 {
+    public bool|null $deferrable         = null;
     public bool|null $unique             = null;
     public bool|null $quoted             = null;
     public string|null $fieldName        = null;
@@ -61,7 +62,7 @@ final class JoinColumnMapping
             }
         }
 
-        foreach (['unique', 'quoted', 'nullable'] as $boolKey) {
+        foreach (['deferrable', 'unique', 'quoted', 'nullable'] as $boolKey) {
             if ($this->$boolKey !== null) {
                 $serialized[] = $boolKey;
             }

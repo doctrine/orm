@@ -140,7 +140,7 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
         if ($this->backRefFieldName && $this->getMapping()->isOneToMany()) {
             assert($this->typeClass !== null);
             // Set back reference to owner
-            $this->typeClass->reflFields[$this->backRefFieldName]->setValue(
+            $this->typeClass->propertyAccessors[$this->backRefFieldName]->setValue(
                 $element,
                 $this->owner,
             );
@@ -166,7 +166,7 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
         if ($this->backRefFieldName && $this->getMapping()->isOneToMany()) {
             assert($this->typeClass !== null);
             // Set back reference to owner
-            $this->typeClass->reflFields[$this->backRefFieldName]->setValue(
+            $this->typeClass->propertyAccessors[$this->backRefFieldName]->setValue(
                 $element,
                 $this->owner,
             );

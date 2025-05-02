@@ -16,6 +16,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 use PHPUnit\Framework\Attributes\Group;
 
 use function array_filter;
+use function array_values;
 use function implode;
 use function str_starts_with;
 
@@ -41,6 +42,20 @@ class PostgreSqlSchemaToolTest extends OrmFunctionalTestCase
         $sql = array_filter($sql, static fn ($sql) => str_starts_with($sql, 'DROP SEQUENCE stonewood.'));
 
         self::assertCount(0, $sql, implode("\n", $sql));
+    }
+
+    public function testSetDeferrableForeignKey(): void
+    {
+        $schema = $this->getSchemaForModels(
+            EntityWithSelfReferencingAssociation::class,
+        );
+
+        $table = $schema->getTable('entitywithselfreferencingassociation');
+        $fks   = array_values($table->getForeignKeys());
+
+        self::assertCount(1, $fks);
+
+        self::assertTrue($fks[0]->getOption('deferrable'));
     }
 }
 
@@ -97,4 +112,21 @@ class DDC1657Avatar
     #[GeneratedValue(strategy: 'IDENTITY')]
     #[Column(name: 'pk', type: 'integer', nullable: false)]
     private int $pk;
+}
+
+#[Table(name: 'entitywithselfreferencingassociation')]
+#[Entity]
+class EntityWithSelfReferencingAssociation
+{
+    /**
+     * Identifier
+     */
+    #[Id]
+    #[GeneratedValue(strategy: 'IDENTITY')]
+    #[Column(type: 'integer', nullable: false)]
+    private int $id;
+
+    #[ManyToOne(targetEntity: self::class)]
+    #[JoinColumn(deferrable: true)]
+    private self $parent;
 }
