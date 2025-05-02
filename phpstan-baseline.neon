@@ -1377,7 +1377,7 @@ parameters:
 		-
 			message: '#^Call to method toString\(\) on an unknown class Doctrine\\DBAL\\Schema\\Name\\UnqualifiedName\.$#'
 			identifier: class.notFound
-			count: 4
+			count: 5
 			path: src/Mapping/Driver/DatabaseDriver.php
 
 		-
@@ -1455,7 +1455,7 @@ parameters:
 		-
 			message: '#^Parameter \$name of anonymous function has invalid type Doctrine\\DBAL\\Schema\\Name\\UnqualifiedName\.$#'
 			identifier: class.notFound
-			count: 4
+			count: 5
 			path: src/Mapping/Driver/DatabaseDriver.php
 
 		-
@@ -3177,6 +3177,12 @@ parameters:
 		-
 			message: '#^Class Doctrine\\DBAL\\Schema\\PrimaryKeyConstraint not found\.$#'
 			identifier: class.notFound
+			count: 1
+			path: src/Tools/SchemaTool.php
+
+		-
+			message: '#^Method Doctrine\\DBAL\\Schema\\AbstractSchemaManager\<Doctrine\\DBAL\\Platforms\\AbstractPlatform\>\:\:createComparator\(\) invoked with 1 parameter, 0 required\.$#'
+			identifier: arguments.count
 			count: 1
 			path: src/Tools/SchemaTool.php
 

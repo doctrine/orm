@@ -514,7 +514,7 @@ methods, but you only need to choose one.
 
         <!-- config/xml/Product.dcm.xml -->
         <doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
-                          xmlns:xsi="https://www.w3.org/2001/XMLSchema-instance"
+                          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                           xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
                                               https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
 
@@ -1023,7 +1023,7 @@ the ``Product`` before:
 
         <!-- config/xml/Bug.dcm.xml -->
         <doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
-                          xmlns:xsi="https://www.w3.org/2001/XMLSchema-instance"
+                          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                           xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
                                               https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
 
@@ -1103,7 +1103,7 @@ Finally, we'll add metadata mappings for the ``User`` entity.
 
         <!-- config/xml/User.dcm.xml -->
         <doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
-                          xmlns:xsi="https://www.w3.org/2001/XMLSchema-instance"
+                          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                           xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
                                               https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
 
@@ -1586,7 +1586,7 @@ we have to adjust the metadata slightly.
     .. code-block:: xml
 
         <doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
-              xmlns:xsi="https://www.w3.org/2001/XMLSchema-instance"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
               xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
                                   https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
 

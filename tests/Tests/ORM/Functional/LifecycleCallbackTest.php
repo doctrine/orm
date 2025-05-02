@@ -66,6 +66,7 @@ class LifecycleCallbackTest extends OrmFunctionalTestCase
         self::assertTrue($entity->postPersistCallbackInvoked);
 
         $this->_em->clear();
+        LifecycleCallbackTestEntity::$postLoadCallbackInvoked = false; // Reset the tracking of the postLoad invocation
 
         $query  = $this->_em->createQuery('select e from Doctrine\Tests\ORM\Functional\LifecycleCallbackTestEntity e');
         $result = $query->getResult();
@@ -130,9 +131,11 @@ class LifecycleCallbackTest extends OrmFunctionalTestCase
         $id = $entity->getId();
 
         $this->_em->clear();
+        LifecycleCallbackTestEntity::$postLoadCallbackInvoked = false; // Reset the tracking of the postLoad invocation
 
         $reference = $this->_em->getReference(LifecycleCallbackTestEntity::class, $id);
         self::assertArrayNotHasKey('postLoadCallbackInvoked', (array) $reference);
+        $this->assertTrue($this->isUninitializedObject($reference));
 
         $reference->getValue(); // trigger proxy load
         self::assertTrue($reference::$postLoadCallbackInvoked);
@@ -148,6 +151,7 @@ class LifecycleCallbackTest extends OrmFunctionalTestCase
         $id = $entity->getId();
 
         $this->_em->clear();
+        LifecycleCallbackTestEntity::$postLoadCallbackInvoked = false; // Reset the tracking of the postLoad invocation
 
         $reference = $this->_em->find(LifecycleCallbackTestEntity::class, $id);
         self::assertTrue($reference::$postLoadCallbackInvoked);
@@ -195,6 +199,7 @@ class LifecycleCallbackTest extends OrmFunctionalTestCase
 
         $this->_em->flush();
         $this->_em->clear();
+        LifecycleCallbackTestEntity::$postLoadCallbackInvoked = false; // Reset the tracking of the postLoad invocation
 
         $dql = <<<'DQL'
 SELECT
@@ -214,7 +219,7 @@ DQL;
 
         self::assertTrue(current($entities)::$postLoadCallbackInvoked);
         self::assertTrue(current($entities)->postLoadCascaderNotNull);
-        self::assertTrue(current($entities)->cascader->postLoadCallbackInvoked);
+        self::assertTrue(current($entities)->cascader::$postLoadCallbackInvoked);
         self::assertEquals(current($entities)->cascader->postLoadEntitiesCount, 2);
     }
 
@@ -235,6 +240,8 @@ DQL;
 
         $this->_em->flush();
         $this->_em->clear();
+        LifecycleCallbackTestEntity::$postLoadCallbackInvoked = false; // Reset the tracking of the postLoad invocation
+        LifecycleCallbackCascader::$postLoadCallbackInvoked   = false;
 
         $dql = <<<'DQL'
 SELECT
@@ -268,11 +275,11 @@ DQL;
 
         $this->_em->flush();
         $this->_em->clear();
+        LifecycleCallbackTestEntity::$postLoadCallbackInvoked = false; // Reset the tracking of the postLoad invocation
 
-        $query = $this->_em->createQuery(
+        $query  = $this->_em->createQuery(
             'SELECT e FROM Doctrine\Tests\ORM\Functional\LifecycleCallbackTestEntity AS e',
         );
-
         $result = iterator_to_array($query->toIterable([], Query::HYDRATE_SIMPLEOBJECT));
 
         foreach ($result as $entity) {
@@ -301,6 +308,8 @@ DQL;
 
         $this->_em->flush();
         $this->_em->clear();
+        LifecycleCallbackTestEntity::$postLoadCallbackInvoked = false; // Reset the tracking of the postLoad invocation
+        LifecycleCallbackCascader::$postLoadCallbackInvoked   = false;
 
         $dql = <<<'DQL'
 SELECT
@@ -318,7 +327,7 @@ DQL;
             ->createQuery($dql)->setParameter('entA_id', $entA->getId())
             ->getOneOrNullResult();
 
-        self::assertTrue($fetchedA->postLoadCallbackInvoked);
+        self::assertTrue($fetchedA::$postLoadCallbackInvoked);
         foreach ($fetchedA->entities as $fetchJoinedEntB) {
             self::assertTrue($fetchJoinedEntB::$postLoadCallbackInvoked);
         }
@@ -526,7 +535,7 @@ class LifecycleCallbackCascader
 {
     /* test stuff */
     /** @var bool */
-    public $postLoadCallbackInvoked = false;
+    public static $postLoadCallbackInvoked = false;
 
     /** @var int */
     public $postLoadEntitiesCount = 0;
@@ -548,7 +557,7 @@ class LifecycleCallbackCascader
     #[PostLoad]
     public function doStuffOnPostLoad(): void
     {
-        $this->postLoadCallbackInvoked = true;
+        self::$postLoadCallbackInvoked = true;
         $this->postLoadEntitiesCount   = count($this->entities);
     }
 
