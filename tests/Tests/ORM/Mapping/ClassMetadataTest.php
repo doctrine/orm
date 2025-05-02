@@ -815,6 +815,16 @@ class ClassMetadataTest extends OrmTestCase
         ]);
     }
 
+    public function testFullyQualifiedClassNameNotAppendNamespaceToClassInGlobalNamespace(): void
+    {
+        $metadata            = new ClassMetadata(CmsAddress::class);
+        $metadata->namespace = 'Doctrine\Tests\Models\CMS';
+
+        $this->assertEquals('ArrayObject', $metadata->fullyQualifiedClassName(ArrayObject::class));
+        $this->assertEquals('\ArrayObject', $metadata->fullyQualifiedClassName('\ArrayObject'));
+        $this->assertEquals('Doctrine\Tests\Models\CMS\CmsUser', $metadata->fullyQualifiedClassName('CmsUser'));
+    }
+
     #[TestGroup('DDC-1746')]
     public function testInvalidCascade(): void
     {

@@ -38,6 +38,10 @@ Instead, use `Doctrine\Persistence\Reflection\EnumReflectionProperty` from
 Passing `null` to `Doctrine\ORM\ClassMetadata::fullyQualifiedClassName()` is
 no longer possible.
 
+## Fix result for classes in global namespace in `ClassMetadata::fullyQualifiedClassName()`
+
+If entity class in namespace and given `$className` in global namespace, then method not append namespace to `$className` because class not exists in this namespace.
+
 ## Remove array access
 
 Using array access on instances of the following classes is no longer possible:
