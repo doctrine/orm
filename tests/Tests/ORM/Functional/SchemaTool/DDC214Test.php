@@ -5,11 +5,13 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional\SchemaTool;
 
 use Doctrine\DBAL\Platforms\SQLitePlatform;
+use Doctrine\DBAL\Schema\ComparatorConfig;
 use Doctrine\Tests\Models;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use PHPUnit\Framework\Attributes\Group;
 
 use function array_filter;
+use function class_exists;
 use function implode;
 use function str_contains;
 
@@ -68,7 +70,13 @@ class DDC214Test extends OrmFunctionalTestCase
 
         $fromSchema = $sm->introspectSchema();
         $toSchema   = $this->getSchemaForModels(...$classes);
-        $comparator = $sm->createComparator();
+
+        if (class_exists(ComparatorConfig::class)) {
+            $comparator = $sm->createComparator((new ComparatorConfig())->withReportModifiedIndexes(false));
+        } else {
+            $comparator = $sm->createComparator();
+        }
+
         $schemaDiff = $comparator->compareSchemas($fromSchema, $toSchema);
 
         $sql = $this->_em->getConnection()->getDatabasePlatform()->getAlterSchemaSQL($schemaDiff);

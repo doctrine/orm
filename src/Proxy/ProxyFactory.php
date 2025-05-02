@@ -257,7 +257,7 @@ EOPHP;
             $class = $entityPersister->getClassMetadata();
 
             foreach ($class->getPropertyAccessors() as $name => $property) {
-                if (isset($identifier[$name]) || ! $class->hasField($name) && ! $class->hasAssociation($name)) {
+                if (isset($identifier[$name])) {
                     continue;
                 }
 
@@ -294,7 +294,7 @@ EOPHP;
                     ));
                 }
 
-                if ($property->isStatic() || (($class->hasField($name) || $class->hasAssociation($name)) && ! isset($identifiers[$name]))) {
+                if ($property->isStatic() || ! isset($identifiers[$name])) {
                     continue;
                 }
 

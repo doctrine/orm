@@ -319,11 +319,13 @@ class DatabaseDriver implements MappingDriver
      */
     private function buildIndexes(ClassMetadata $metadata): void
     {
-        $tableName = $metadata->table['name'];
-        $indexes   = $this->tables[$tableName]->getIndexes();
+        $tableName  = $metadata->table['name'];
+        $table      = $this->tables[$tableName];
+        $primaryKey = self::getPrimaryKey($table);
+        $indexes    = $table->getIndexes();
 
         foreach ($indexes as $index) {
-            if ($index->isPrimary()) {
+            if ($index === $primaryKey) {
                 continue;
             }
 
@@ -506,7 +508,7 @@ class DatabaseDriver implements MappingDriver
     private function getTablePrimaryKeys(Table $table): array
     {
         try {
-            if (method_exists($table, 'getPrimaryKeyConstraints')) {
+            if (method_exists($table, 'getPrimaryKeyConstraint')) {
                 return array_map(static fn (UnqualifiedName $name) => $name->toString(), $table->getPrimaryKeyConstraint()->getColumnNames());
             }
 
@@ -593,5 +595,28 @@ class DatabaseDriver implements MappingDriver
         }
 
         return $index->getColumns();
+    }
+
+    private static function getPrimaryKey(Table $table): Index|null
+    {
+        $primaryKeyConstraint = null;
+
+        if (method_exists(Table::class, 'getPrimaryKeyConstraint')) {
+            $primaryKeyConstraint = $table->getPrimaryKeyConstraint();
+        }
+
+        foreach ($table->getIndexes() as $index) {
+            if ($primaryKeyConstraint !== null) {
+                $primaryKeyConstraintColumns = array_map(static fn (UnqualifiedName $name) => $name->toString(), $primaryKeyConstraint->getColumnNames());
+
+                if ($primaryKeyConstraintColumns === self::getIndexedColumns($index)) {
+                    return $index;
+                }
+            } elseif ($index->isPrimary()) {
+                return $index;
+            }
+        }
+
+        return null;
     }
 }
