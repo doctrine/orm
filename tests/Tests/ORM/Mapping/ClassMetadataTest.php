@@ -78,7 +78,7 @@ class ClassMetadataTest extends OrmTestCase
         $cm->initializeReflection(new RuntimeReflectionService());
 
         // Test initial state
-        self::assertTrue(count($cm->getReflectionProperties()) === 0);
+        self::assertTrue(count($cm->getPropertyAccessors()) === 0);
         self::assertInstanceOf(ReflectionClass::class, $cm->reflClass);
         self::assertEquals(CmsUser::class, $cm->name);
         self::assertEquals(CmsUser::class, $cm->rootEntityName);
@@ -104,7 +104,7 @@ class ClassMetadataTest extends OrmTestCase
         $cm->wakeupReflection(new RuntimeReflectionService());
 
         // Check state
-        self::assertTrue(count($cm->getReflectionProperties()) > 0);
+        self::assertTrue(count($cm->getPropertyAccessors()) > 0);
         self::assertEquals('Doctrine\Tests\Models\CMS', $cm->namespace);
         self::assertInstanceOf(ReflectionClass::class, $cm->reflClass);
         self::assertEquals(CmsUser::class, $cm->name);

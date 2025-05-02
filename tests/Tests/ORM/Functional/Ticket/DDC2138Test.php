@@ -6,6 +6,8 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\DBAL\Schema\ForeignKeyConstraint;
+use Doctrine\DBAL\Schema\ForeignKeyConstraintEditor;
+use Doctrine\DBAL\Schema\Name\UnqualifiedName;
 use Doctrine\DBAL\Schema\Table as DbalTable;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\DiscriminatorColumn;
@@ -22,7 +24,9 @@ use Doctrine\Tests\ORM\Functional\Ticket\Doctrine\Common\Collections\Collection;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use PHPUnit\Framework\Attributes\Group;
 
+use function array_map;
 use function assert;
+use function class_exists;
 use function reset;
 
 class DDC2138Test extends OrmFunctionalTestCase
@@ -42,18 +46,37 @@ class DDC2138Test extends OrmFunctionalTestCase
 
         $table = $schema->getTable('users_followed_objects');
         assert($table instanceof DbalTable);
-        self::assertTrue($table->columnsAreIndexed(['object_id']));
-        self::assertTrue($table->columnsAreIndexed(['user_id']));
+        self::assertTrue(self::columnIsIndexed($table, 'object_id'));
+        self::assertTrue(self::columnIsIndexed($table, 'user_id'));
         $foreignKeys = $table->getForeignKeys();
         self::assertCount(1, $foreignKeys, 'user_id column has to have FK, but not object_id');
 
         $fk = reset($foreignKeys);
         assert($fk instanceof ForeignKeyConstraint);
-        self::assertEquals('users', $fk->getForeignTableName());
 
-        $localColumns = $fk->getLocalColumns();
+        if (class_exists(ForeignKeyConstraintEditor::class)) {
+            self::assertEquals('users', $fk->getReferencedTableName()->toString());
+
+            $localColumns = array_map(static fn (UnqualifiedName $name) => $name->toString(), $fk->getReferencingColumnNames());
+        } else {
+            self::assertEquals('users', $fk->getForeignTableName());
+
+            $localColumns = $fk->getLocalColumns();
+        }
+
         self::assertContains('user_id', $localColumns);
         self::assertCount(1, $localColumns);
+    }
+
+    private static function columnIsIndexed(DbalTable $table, string $column): bool
+    {
+        foreach ($table->getIndexes() as $index) {
+            if ($index->spansColumns([$column])) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }
 

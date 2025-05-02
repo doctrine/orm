@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional;
 
 use DateTime;
-use Doctrine\Common\Reflection\RuntimePublicReflectionProperty as CommonRuntimePublicReflectionProperty;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\DiscriminatorColumn;
 use Doctrine\ORM\Mapping\DiscriminatorMap;
@@ -17,15 +16,11 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\InheritanceType;
 use Doctrine\ORM\Mapping\MappedSuperclass;
 use Doctrine\ORM\Mapping\MappingException;
-use Doctrine\ORM\Mapping\ReflectionEmbeddedProperty;
 use Doctrine\ORM\Query\QueryException;
-use Doctrine\Persistence\Reflection\RuntimeReflectionProperty;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Group;
-use ReflectionProperty;
 
-use function class_exists;
 use function sprintf;
 
 #[Group('DDC-93')]
@@ -43,30 +38,6 @@ class ValueObjectsTest extends OrmFunctionalTestCase
             DDC3027Animal::class,
             DDC3027Dog::class,
         );
-    }
-
-    public function testMetadataHasReflectionEmbeddablesAccessible(): void
-    {
-        $classMetadata = $this->_em->getClassMetadata(DDC93Person::class);
-
-        if (class_exists(CommonRuntimePublicReflectionProperty::class)) {
-            self::assertInstanceOf(
-                CommonRuntimePublicReflectionProperty::class,
-                $classMetadata->getReflectionProperty('address'),
-            );
-        } elseif (class_exists(RuntimeReflectionProperty::class)) {
-            self::assertInstanceOf(
-                RuntimeReflectionProperty::class,
-                $classMetadata->getReflectionProperty('address'),
-            );
-        } else {
-            self::assertInstanceOf(
-                ReflectionProperty::class,
-                $classMetadata->getReflectionProperty('address'),
-            );
-        }
-
-        self::assertInstanceOf(ReflectionEmbeddedProperty::class, $classMetadata->getReflectionProperty('address.street'));
     }
 
     public function testCRUD(): void

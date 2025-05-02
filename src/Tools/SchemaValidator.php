@@ -31,7 +31,6 @@ use function array_map;
 use function array_push;
 use function array_search;
 use function array_values;
-use function assert;
 use function class_exists;
 use function class_parents;
 use function count;
@@ -329,9 +328,8 @@ class SchemaValidator
             array_filter(
                 array_map(
                     function (FieldMapping $fieldMapping) use ($class): string|null {
-                        $fieldName = $fieldMapping->fieldName;
-                        assert(isset($class->reflFields[$fieldName]));
-                        $propertyType = $class->reflFields[$fieldName]->getType();
+                        $fieldName    = $fieldMapping->fieldName;
+                        $propertyType = $class->propertyAccessors[$fieldName]->getUnderlyingReflector()->getType();
 
                         // If the field type is not a built-in type, we cannot check it
                         if (! Type::hasType($fieldMapping->type)) {

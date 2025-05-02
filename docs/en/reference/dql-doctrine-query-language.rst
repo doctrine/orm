@@ -674,6 +674,16 @@ The ``NAMED`` keyword must precede all DTO you want to instantiate :
 If two arguments have the same name, a ``DuplicateFieldException`` is thrown.
 If a field cannot be matched with a property name, a ``NoMatchingPropertyException`` is thrown. This typically happens when using functions without aliasing them.
 
+You can hydrate an entity nested in a DTO :
+
+.. code-block:: php
+
+    <?php
+    $query = $em->createQuery('SELECT NEW CustomerDTO(c.name, a AS address) FROM Customer c JOIN c.address a');
+    $users = $query->getResult(); // array of CustomerDTO
+
+    // CustomerDTO => {name : 'DOE', email: null, address : {city: 'New York', zip: '10011', address: 'Abbey Road'}
+
 Using INDEX BY
 ~~~~~~~~~~~~~~
 
@@ -1697,12 +1707,13 @@ Select Expressions
 
 .. code-block:: php
 
-    SelectExpression        ::= (IdentificationVariable | ScalarExpression | AggregateExpression | FunctionDeclaration | PartialObjectExpression | "(" Subselect ")" | CaseExpression | NewObjectExpression) [["AS"] ["HIDDEN"] AliasResultVariable]
-    SimpleSelectExpression  ::= (StateFieldPathExpression | IdentificationVariable | FunctionDeclaration | AggregateExpression | "(" Subselect ")" | ScalarExpression) [["AS"] AliasResultVariable]
-    PartialObjectExpression ::= "PARTIAL" IdentificationVariable "." PartialFieldSet
-    PartialFieldSet         ::= "{" SimpleStateField {"," SimpleStateField}* "}"
-    NewObjectExpression     ::= "NEW" AbstractSchemaName "(" NewObjectArg {"," NewObjectArg}* ")"
-    NewObjectArg            ::= (ScalarExpression | "(" Subselect ")" | NewObjectExpression) ["AS" AliasResultVariable]
+    SelectExpression              ::= (IdentificationVariable | ScalarExpression | AggregateExpression | FunctionDeclaration | PartialObjectExpression | "(" Subselect ")" | CaseExpression | NewObjectExpression) [["AS"] ["HIDDEN"] AliasResultVariable]
+    SimpleSelectExpression        ::= (StateFieldPathExpression | IdentificationVariable | FunctionDeclaration | AggregateExpression | "(" Subselect ")" | ScalarExpression) [["AS"] AliasResultVariable]
+    PartialObjectExpression       ::= "PARTIAL" IdentificationVariable "." PartialFieldSet
+    PartialFieldSet               ::= "{" SimpleStateField {"," SimpleStateField}* "}"
+    NewObjectExpression           ::= "NEW" AbstractSchemaName "(" NewObjectArg {"," NewObjectArg}* ")"
+    NewObjectArg                  ::= (ScalarExpression | "(" Subselect ")" | NewObjectExpression | EntityAsDtoArgumentExpression) ["AS" AliasResultVariable]
+    EntityAsDtoArgumentExpression ::= IdentificationVariable
 
 Conditional Expressions
 ~~~~~~~~~~~~~~~~~~~~~~~

@@ -8,6 +8,7 @@ use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Driver;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Result;
+use Doctrine\DBAL\Schema\Name\UnquotedIdentifierFolding;
 use Doctrine\ORM\Decorator\EntityManagerDecorator;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Internal\Hydration\AbstractHydrator;
@@ -16,6 +17,8 @@ use Doctrine\ORM\Query\QueryException;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Doctrine\Tests\OrmTestCase;
 use PHPUnit\Framework\MockObject\MockObject;
+
+use function enum_exists;
 
 class PaginatorTest extends OrmTestCase
 {
@@ -26,6 +29,7 @@ class PaginatorTest extends OrmTestCase
     protected function setUp(): void
     {
         $platform = $this->getMockBuilder(AbstractPlatform::class)
+            ->setConstructorArgs(enum_exists(UnquotedIdentifierFolding::class) ? [UnquotedIdentifierFolding::UPPER] : [])
             ->onlyMethods(['supportsIdentityColumns'])
             ->getMockForAbstractClass();
         $platform->method('supportsIdentityColumns')
