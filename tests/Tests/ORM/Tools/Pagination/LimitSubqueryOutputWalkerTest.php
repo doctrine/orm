@@ -46,6 +46,24 @@ final class LimitSubqueryOutputWalkerTest extends PaginationTestCase
         $this->entityManager->getConnection()->setDatabasePlatform($platform);
     }
 
+    public function testSubqueryClonedCompletely(): void
+    {
+        $query = $this->createQuery('SELECT p FROM Doctrine\Tests\ORM\Tools\Pagination\MyBlogPost p');
+        $query->setParameter('dummy-param', 123);
+        $query->setHint('dummy-hint', 'dummy-value');
+        $query->setCacheable(true);
+
+        $walker = new LimitSubqueryOutputWalker($query, new Query\ParserResult(), []);
+
+        self::assertNotSame($query, $walker->getQuery());
+        self::assertTrue($walker->getQuery()->hasHint('dummy-hint'));
+        self::assertSame('dummy-value', $walker->getQuery()->getHint('dummy-hint'));
+        self::assertNotSame($query->getParameters(), $walker->getQuery()->getParameters());
+        self::assertInstanceOf(Query\Parameter::class, $param = $walker->getQuery()->getParameter('dummy-param'));
+        self::assertSame(123, $param->getValue());
+        self::assertFalse($walker->getQuery()->isCacheable());
+    }
+
     public function testLimitSubquery(): void
     {
         $query = $this->createQuery('SELECT p, c, a FROM Doctrine\Tests\ORM\Tools\Pagination\MyBlogPost p JOIN p.category c JOIN p.author a');

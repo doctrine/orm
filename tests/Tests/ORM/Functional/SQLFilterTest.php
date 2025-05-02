@@ -537,6 +537,21 @@ class SQLFilterTest extends OrmFunctionalTestCase
         self::assertEquals(2, count($query->getResult()));
     }
 
+    public function testOneToOneInverseSideWithFilter(): void
+    {
+        $this->loadFixtureData();
+
+        $conf = $this->_em->getConfiguration();
+        $conf->addFilter('country', '\Doctrine\Tests\ORM\Functional\CMSCountryFilter');
+        $this->_em->getFilters()->enable('country')->setParameterList('country', ['Germany'], Types::STRING);
+
+        $user = $this->_em->find(CmsUser::class, $this->userId);
+        self::assertNotEmpty($user->address);
+
+        $user2 = $this->_em->find(CmsUser::class, $this->userId2);
+        self::assertEmpty($user2->address);
+    }
+
     public function testManyToManyFilter(): void
     {
         $this->loadFixtureData();

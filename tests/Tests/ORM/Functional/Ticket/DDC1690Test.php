@@ -51,15 +51,20 @@ class DDC1690Test extends OrmFunctionalTestCase
         $parentId = $parent->getId();
         $childId  = $child->getId();
         unset($parent, $child);
+        DDC1690Parent::$addPropertyChangedListenerInvoked = false;
+        DDC1690Child::$addPropertyChangedListenerInvoked  = false;
 
         $parent = $this->_em->find(DDC1690Parent::class, $parentId);
         $child  = $this->_em->find(DDC1690Child::class, $childId);
 
+        self::assertTrue($parent::$addPropertyChangedListenerInvoked);
         self::assertEquals(1, count($parent->listeners));
-        self::assertCount(0, $child->listeners);
+        $this->assertTrue($this->isUninitializedObject($child));
+        self::assertFalse($child::$addPropertyChangedListenerInvoked);
 
         $this->_em->getUnitOfWork()->initializeObject($child);
 
+        self::assertTrue($child::$addPropertyChangedListenerInvoked);
         self::assertCount(1, $child->listeners);
         unset($parent, $child);
 
@@ -107,6 +112,11 @@ class NotifyBaseEntity implements NotifyPropertyChanged
 class DDC1690Parent extends NotifyBaseEntity
 {
     /**
+     * @var bool
+     */
+    public static $addPropertyChangedListenerInvoked = false;
+
+    /**
      * @var int
      * @Id
      * @Column(type="integer")
@@ -151,11 +161,23 @@ class DDC1690Parent extends NotifyBaseEntity
     {
         return $this->child;
     }
+
+    public function addPropertyChangedListener(PropertyChangedListener $listener): void
+    {
+        self::$addPropertyChangedListenerInvoked = true;
+
+        parent::addPropertyChangedListener($listener);
+    }
 }
 
 /** @Entity */
 class DDC1690Child extends NotifyBaseEntity
 {
+    /**
+     * @var bool
+     */
+    public static $addPropertyChangedListenerInvoked = false;
+
     /**
      * @var int
      * @Id
@@ -200,5 +222,12 @@ class DDC1690Child extends NotifyBaseEntity
     public function getParent(): DDC1690Parent
     {
         return $this->parent;
+    }
+
+    public function addPropertyChangedListener(PropertyChangedListener $listener): void
+    {
+        self::$addPropertyChangedListenerInvoked = true;
+
+        parent::addPropertyChangedListener($listener);
     }
 }

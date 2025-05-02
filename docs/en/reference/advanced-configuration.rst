@@ -71,8 +71,8 @@ Configuration Options
 The following sections describe all the configuration options
 available on a ``Doctrine\ORM\Configuration`` instance.
 
-Proxy Directory (***REQUIRED***)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Proxy Directory (**REQUIRED**)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code-block:: php
 
@@ -85,8 +85,8 @@ classes. For a detailed explanation on proxy classes and how they
 are used in Doctrine, refer to the "Proxy Objects" section further
 down.
 
-Proxy Namespace (***REQUIRED***)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Proxy Namespace (**REQUIRED**)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code-block:: php
 
@@ -98,8 +98,8 @@ Gets or sets the namespace to use for generated proxy classes. For
 a detailed explanation on proxy classes and how they are used in
 Doctrine, refer to the "Proxy Objects" section further down.
 
-Metadata Driver (***REQUIRED***)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Metadata Driver (**REQUIRED**)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code-block:: php
 
@@ -144,8 +144,8 @@ accept either a single directory as a string or an array of
 directories. With this feature a single driver can support multiple
 directories of Entities.
 
-Metadata Cache (***RECOMMENDED***)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Metadata Cache (**RECOMMENDED**)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code-block:: php
 
@@ -166,8 +166,8 @@ For development you should use an array cache like
 ``Symfony\Component\Cache\Adapter\ArrayAdapter``
 which only caches data on a per-request basis.
 
-Query Cache (***RECOMMENDED***)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Query Cache (**RECOMMENDED**)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code-block:: php
 
@@ -189,8 +189,8 @@ For development you should use an array cache like
 ``Symfony\Component\Cache\Adapter\ArrayAdapter``
 which only caches data on a per-request basis.
 
-SQL Logger (***Optional***)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
+SQL Logger (**Optional**)
+~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code-block:: php
 
@@ -202,8 +202,8 @@ Gets or sets the logger to use for logging all SQL statements
 executed by Doctrine. The logger class must implement the
 deprecated ``Doctrine\DBAL\Logging\SQLLogger`` interface.
 
-Auto-generating Proxy Classes (***OPTIONAL***)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Auto-generating Proxy Classes (**OPTIONAL**)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Proxy classes can either be generated manually through the Doctrine
 Console or automatically at runtime by Doctrine. The configuration
@@ -446,7 +446,7 @@ correctly if sub-namespaces use different metadata driver
 implementations.
 
 
-Default Repository (***OPTIONAL***)
+Default Repository (**OPTIONAL**)
 -----------------------------------
 
 Specifies the FQCN of a subclass of the EntityRepository.
@@ -461,7 +461,7 @@ That will be available for all entities without a custom repository class.
 The default value is ``Doctrine\ORM\EntityRepository``.
 Any repository class must be a subclass of EntityRepository otherwise you got an ORMException
 
-Ignoring entities (***OPTIONAL***)
+Ignoring entities (**OPTIONAL**)
 -----------------------------------
 
 Specifies the Entity FQCNs to ignore.

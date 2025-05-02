@@ -378,7 +378,7 @@ EOPHP;
             $class = $entityPersister->getClassMetadata();
 
             foreach ($class->getReflectionProperties() as $property) {
-                if (isset($identifier[$property->name]) || ! $class->hasField($property->name) && ! $class->hasAssociation($property->name)) {
+                if (isset($identifier[$property->name])) {
                     continue;
                 }
 
@@ -448,7 +448,7 @@ EOPHP;
             foreach ($reflector->getProperties($filter) as $property) {
                 $name = $property->name;
 
-                if ($property->isStatic() || (($class->hasField($name) || $class->hasAssociation($name)) && ! isset($identifiers[$name]))) {
+                if ($property->isStatic() || ! isset($identifiers[$name])) {
                     continue;
                 }
 

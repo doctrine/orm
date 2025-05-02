@@ -85,7 +85,7 @@ class ORMInvalidArgumentExceptionTest extends TestCase
                 . 'persist operations for entity: stdClass@' . spl_object_id($entity1)
                 . '. To solve this issue: Either explicitly call EntityManager#persist() on this unknown entity '
                 . 'or configure cascade persist this association in the mapping for example '
-                . '@ManyToOne(..,cascade={"persist"}). If you cannot find out which entity causes the problem '
+                . '#[ORM\ManyToOne(..., cascade: [\'persist\'])]. If you cannot find out which entity causes the problem '
                 . 'implement \'baz1#__toString()\' to get a clue.',
             ],
             'two entities found' => [
@@ -104,13 +104,13 @@ class ORMInvalidArgumentExceptionTest extends TestCase
                 . 'cascade persist operations for entity: stdClass@' . spl_object_id($entity1) . '. '
                 . 'To solve this issue: Either explicitly call EntityManager#persist() on this unknown entity '
                 . 'or configure cascade persist this association in the mapping for example '
-                . '@ManyToOne(..,cascade={"persist"}). If you cannot find out which entity causes the problem '
+                . '#[ORM\ManyToOne(..., cascade: [\'persist\'])]. If you cannot find out which entity causes the problem '
                 . 'implement \'baz1#__toString()\' to get a clue.' . "\n"
                 . ' * A new entity was found through the relationship \'foo2#bar2\' that was not configured to '
                 . 'cascade persist operations for entity: stdClass@' . spl_object_id($entity2) . '. To solve '
                 . 'this issue: Either explicitly call EntityManager#persist() on this unknown entity or '
                 . 'configure cascade persist this association in the mapping for example '
-                . '@ManyToOne(..,cascade={"persist"}). If you cannot find out which entity causes the problem '
+                . '#[ORM\ManyToOne(..., cascade: [\'persist\'])]. If you cannot find out which entity causes the problem '
                 . 'implement \'baz2#__toString()\' to get a clue.',
             ],
             'two entities found, one is stringable' => [
@@ -124,7 +124,7 @@ class ORMInvalidArgumentExceptionTest extends TestCase
                 . 'persist operations for entity: ThisIsAStringRepresentationOfEntity3'
                 . '. To solve this issue: Either explicitly call EntityManager#persist() on this unknown entity '
                 . 'or configure cascade persist this association in the mapping for example '
-                . '@ManyToOne(..,cascade={"persist"}).',
+                . '#[ORM\ManyToOne(..., cascade: [\'persist\'])].',
             ],
         ];
     }

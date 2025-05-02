@@ -57,16 +57,17 @@ class DDC2230Test extends OrmFunctionalTestCase
         $this->_em->persist($insertedAddress);
         $this->_em->flush();
         $this->_em->clear();
+        DDC2230Address::$listener = null; // Reset the tracking state
 
         $addressProxy = $this->_em->getReference(DDC2230Address::class, $insertedAddress->id);
         assert($addressProxy instanceof DDC2230Address);
 
         self::assertTrue($this->isUninitializedObject($addressProxy));
-        self::assertNull($addressProxy->listener);
+        self::assertNull($addressProxy::$listener);
 
         $this->_em->getUnitOfWork()->initializeObject($addressProxy);
 
-        self::assertSame($this->_em->getUnitOfWork(), $addressProxy->listener);
+        self::assertSame($this->_em->getUnitOfWork(), $addressProxy::$listener);
     }
 }
 
@@ -102,12 +103,12 @@ class DDC2230Address implements NotifyPropertyChanged
      */
     public $id;
 
-    /** @var \Doctrine\Common\PropertyChangedListener */
-    public $listener;
+    /** @var \Doctrine\Common\PropertyChangedListener|null */
+    public static $listener;
 
     /** {@inheritDoc} */
     public function addPropertyChangedListener(PropertyChangedListener $listener)
     {
-        $this->listener = $listener;
+        self::$listener = $listener;
     }
 }

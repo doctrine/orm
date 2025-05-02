@@ -118,13 +118,11 @@ class ConnectionMock extends Connection
         $this->_platformMock = $platform;
     }
 
-    /** @return array */
     public function getExecuteStatements(): array
     {
         return $this->_executeStatements;
     }
 
-    /** @return array */
     public function getDeletes(): array
     {
         return $this->_deletes;

@@ -49,6 +49,7 @@ use Doctrine\Persistence\PropertyChangedListener;
 use Exception;
 use InvalidArgumentException;
 use RuntimeException;
+use Symfony\Component\VarExporter\Hydrator;
 use UnexpectedValueException;
 
 use function array_chunk;
@@ -2944,6 +2945,11 @@ EXCEPTION
 
             if ($this->isUninitializedObject($entity)) {
                 $entity->__setInitialized(true);
+
+                if ($this->em->getConfiguration()->isLazyGhostObjectEnabled()) {
+                    // Initialize properties that have default values to their default value (similar to what
+                    Hydrator::hydrate($entity, (array) $class->reflClass->newInstanceWithoutConstructor());
+                }
             } else {
                 if (
                     ! isset($hints[Query::HINT_REFRESH])

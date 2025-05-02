@@ -1426,7 +1426,7 @@ Is essentially the same as following:
         <doctrine-mapping>
             <entity class="Product">
                 <one-to-one field="shipment" target-entity="Shipment">
-                    <join-column name="shipment_id" referenced-column-name="id" nulable=false />
+                    <join-column name="shipment_id" referenced-column-name="id" nullable=false />
                 </one-to-one>
             </entity>
         </doctrine-mapping>
