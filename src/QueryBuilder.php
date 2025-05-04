@@ -9,7 +9,6 @@ use Doctrine\Common\Collections\Criteria;
 use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\ParameterType;
 use Doctrine\ORM\Internal\NoUnknownNamedArguments;
-use Doctrine\ORM\Internal\QueryType;
 use Doctrine\ORM\Query\Expr;
 use Doctrine\ORM\Query\Parameter;
 use Doctrine\ORM\Query\QueryExpressionVisitor;
@@ -126,6 +125,11 @@ class QueryBuilder implements Stringable
         private readonly EntityManagerInterface $em,
     ) {
         $this->parameters = new ArrayCollection();
+    }
+
+    final protected function getType(): QueryType
+    {
+        return $this->type;
     }
 
     /**
@@ -504,7 +508,7 @@ class QueryBuilder implements Stringable
         $key = Parameter::normalizeName($key);
 
         $filteredParameters = $this->parameters->filter(
-            static fn (Parameter $parameter): bool => $key === $parameter->getName()
+            static fn (Parameter $parameter): bool => $key === $parameter->getName(),
         );
 
         return ! $filteredParameters->isEmpty() ? $filteredParameters->first() : null;

@@ -62,6 +62,7 @@ use Doctrine\Tests\Models\TypedProperties\UserTyped;
 use Doctrine\Tests\Models\TypedProperties\UserTypedWithCustomTypedField;
 use Doctrine\Tests\Models\Upsertable\Insertable;
 use Doctrine\Tests\Models\Upsertable\Updatable;
+use Doctrine\Tests\ORM\Mapping\NamingStrategy\CustomPascalNamingStrategy;
 use Doctrine\Tests\OrmTestCase;
 use PHPUnit\Framework\Attributes\Depends;
 use stdClass;
@@ -946,6 +947,16 @@ abstract class MappingDriverTestCase extends OrmTestCase
 
         self::assertEquals(Suit::class, $metadata->fieldMappings['suit']->enumType);
     }
+
+    public function testCustomNamingStrategyIsRespected(): void
+    {
+        $ns       = new CustomPascalNamingStrategy();
+        $metadata = $this->createClassMetadata(BlogPostComment::class, $ns);
+
+        self::assertEquals('id', $metadata->fieldNames['Id']);
+        self::assertEquals('Id', $metadata->associationMappings['blogPost']->joinColumns[0]->referencedColumnName);
+        self::assertFalse($metadata->associationMappings['blogPost']->joinColumns[0]->nullable);
+    }
 }
 
 #[ORM\Entity()]
@@ -1546,4 +1557,52 @@ abstract class GH10288EnumTypePerson
 #[Entity]
 class GH10288EnumTypeBoss extends GH10288EnumTypePerson
 {
+}
+
+/**
+ * Two small related entities to test default namings with barebone attributes
+ */
+#[Entity]
+class BlogPost
+{
+    #[Id]
+    #[Column]
+    #[GeneratedValue(strategy: 'NONE')]
+    public int $id;
+}
+
+#[Entity]
+class BlogPostComment
+{
+    #[Id]
+    #[Column]
+    #[GeneratedValue(strategy: 'AUTO')]
+    public int $id;
+
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: false)]
+    public BlogPost $blogPost;
+
+    public static function loadMetadata(ClassMetadata $metadata): void
+    {
+        $metadata->mapField(
+            [
+                'id'                => true,
+                'fieldName'         => 'id',
+                'type'              => 'integer',
+            ],
+        );
+        $metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_AUTO);
+
+        $metadata->mapManyToOne(
+            [
+                'fieldName' => 'blogPost',
+                'targetEntity' => BlogPost::class,
+                'joinColumns' =>
+                    [
+                        0 => ['nullable' => false],
+                    ],
+            ],
+        );
+    }
 }

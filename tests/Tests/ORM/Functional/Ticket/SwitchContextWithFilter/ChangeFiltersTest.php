@@ -4,12 +4,11 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket\SwitchContextWithFilter;
 
-use Doctrine\Tests\OrmFunctionalTestCase;
+use Doctrine\Tests\ORM\Functional\Ticket\SwitchContextWithFilter\Entity\Order;
+use Doctrine\Tests\ORM\Functional\Ticket\SwitchContextWithFilter\Entity\User;
+use Doctrine\Tests\ORM\Functional\Ticket\SwitchContextWithFilter\SQLFilter\CompanySQLFilter;
 
-use function sprintf;
-use function str_replace;
-
-final class ChangeFiltersTest extends OrmFunctionalTestCase
+final class ChangeFiltersTest extends AbstractTestCase
 {
     private const COMPANY_A = 'A';
     private const COMPANY_B = 'B';
@@ -129,12 +128,5 @@ final class ChangeFiltersTest extends OrmFunctionalTestCase
         self::assertInstanceOf(Order::class, $order);
         self::assertInstanceOf(User::class, $order->user);
         self::assertEquals($companyB['userId'], $order->user->id);
-    }
-
-    private function generateMessage(string $message): string
-    {
-        $log = $this->getLastLoggedQuery();
-
-        return sprintf("%s\nSQL: %s", $message, str_replace(['?'], (array) $log['params'], $log['sql']));
     }
 }

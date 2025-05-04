@@ -9,6 +9,7 @@ use Doctrine\Common\Collections\Expr\Comparison;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Driver;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
+use Doctrine\DBAL\Schema\Name\UnquotedIdentifierFolding;
 use Doctrine\DBAL\Types\Type as DBALType;
 use Doctrine\ORM\Mapping\OneToManyAssociationMapping;
 use Doctrine\ORM\Persisters\Entity\BasicEntityPersister;
@@ -23,6 +24,7 @@ use PHPUnit\Framework\Attributes\Group;
 use ReflectionMethod;
 
 use function array_slice;
+use function enum_exists;
 
 class BasicEntityPersisterTypeValueSqlTest extends OrmTestCase
 {
@@ -65,6 +67,7 @@ class BasicEntityPersisterTypeValueSqlTest extends OrmTestCase
             ->willReturn($this->createMock(Driver\Connection::class));
 
         $platform = $this->getMockBuilder(AbstractPlatform::class)
+            ->setConstructorArgs(enum_exists(UnquotedIdentifierFolding::class) ? [UnquotedIdentifierFolding::UPPER] : [])
             ->onlyMethods(['supportsIdentityColumns'])
             ->getMockForAbstractClass();
         $platform->method('supportsIdentityColumns')

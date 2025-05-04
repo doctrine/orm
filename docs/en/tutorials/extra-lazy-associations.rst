@@ -71,7 +71,7 @@ switch to extra lazy as shown in these examples:
 
         <?xml version="1.0" encoding="UTF-8"?>
         <doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
-              xmlns:xsi="https://www.w3.org/2001/XMLSchema-instance"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
               xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
                                   https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
 

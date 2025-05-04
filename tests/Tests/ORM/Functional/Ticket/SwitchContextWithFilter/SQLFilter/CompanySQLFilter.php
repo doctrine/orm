@@ -2,10 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Doctrine\Tests\ORM\Functional\Ticket\SwitchContextWithFilter;
+namespace Doctrine\Tests\ORM\Functional\Ticket\SwitchContextWithFilter\SQLFilter;
 
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Query\Filter\SQLFilter;
+use Doctrine\Tests\ORM\Functional\Ticket\SwitchContextWithFilter\Entity\Order;
+use Doctrine\Tests\ORM\Functional\Ticket\SwitchContextWithFilter\Entity\User;
 
 use function sprintf;
 

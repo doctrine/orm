@@ -201,6 +201,16 @@ class BasicEntityPersister implements EntityPersister
         );
     }
 
+    final protected function isFilterHashUpToDate(): bool
+    {
+        return $this->filterHash === $this->em->getFilters()->getHash();
+    }
+
+    final protected function updateFilterHash(): void
+    {
+        $this->filterHash = $this->em->getFilters()->getHash();
+    }
+
     public function getClassMetadata(): ClassMetadata
     {
         return $this->class;
@@ -470,7 +480,7 @@ class BasicEntityPersister implements EntityPersister
 
             $where[]  = $versionColumn;
             $types[]  = $this->class->fieldMappings[$versionField]->type;
-            $params[] = $this->class->reflFields[$versionField]->getValue($entity);
+            $params[] = $this->class->propertyAccessors[$versionField]->getValue($entity);
 
             switch ($versionFieldType) {
                 case Types::SMALLINT:
@@ -781,7 +791,7 @@ class BasicEntityPersister implements EntityPersister
 
             // Complete bidirectional association, if necessary
             if ($targetEntity !== null && $isInverseSingleValued) {
-                $targetClass->reflFields[$assoc->inversedBy]->setValue($targetEntity, $sourceEntity);
+                $targetClass->propertyAccessors[$assoc->inversedBy]->setValue($targetEntity, $sourceEntity);
             }
 
             return $targetEntity;
@@ -828,7 +838,7 @@ class BasicEntityPersister implements EntityPersister
                 }
             } else {
                 $computedIdentifier[$targetClass->getFieldForColumn($targetKeyColumn)] =
-                    $sourceClass->reflFields[$sourceClass->fieldNames[$sourceKeyColumn]]->getValue($sourceEntity);
+                    $sourceClass->propertyAccessors[$sourceClass->fieldNames[$sourceKeyColumn]]->getValue($sourceEntity);
             }
         }
 
@@ -1045,7 +1055,7 @@ class BasicEntityPersister implements EntityPersister
             switch (true) {
                 case $sourceClass->containsForeignIdentifier:
                     $field = $sourceClass->getFieldForColumn($sourceKeyColumn);
-                    $value = $sourceClass->reflFields[$field]->getValue($sourceEntity);
+                    $value = $sourceClass->propertyAccessors[$field]->getValue($sourceEntity);
 
                     if (isset($sourceClass->associationMappings[$field])) {
                         $value = $this->em->getUnitOfWork()->getEntityIdentifier($value);
@@ -1056,7 +1066,7 @@ class BasicEntityPersister implements EntityPersister
 
                 case isset($sourceClass->fieldNames[$sourceKeyColumn]):
                     $field = $sourceClass->fieldNames[$sourceKeyColumn];
-                    $value = $sourceClass->reflFields[$field]->getValue($sourceEntity);
+                    $value = $sourceClass->propertyAccessors[$field]->getValue($sourceEntity);
 
                     break;
 
@@ -1231,7 +1241,7 @@ class BasicEntityPersister implements EntityPersister
      */
     protected function getSelectColumnsSQL(): string
     {
-        if ($this->currentPersisterContext->selectColumnListSql !== null && $this->filterHash === $this->em->getFilters()->getHash()) {
+        if ($this->currentPersisterContext->selectColumnListSql !== null && $this->isFilterHashUpToDate()) {
             return $this->currentPersisterContext->selectColumnListSql;
         }
 
@@ -1334,6 +1344,12 @@ class BasicEntityPersister implements EntityPersister
                     $joinCondition[] = $this->getSQLTableAlias($association->sourceEntity, $assocAlias) . '.' . $sourceCol . ' = '
                         . $this->getSQLTableAlias($association->targetEntity) . '.' . $targetCol;
                 }
+
+                // Add filter SQL
+                $filterSql = $this->generateFilterConditionSQL($eagerEntity, $joinTableAlias);
+                if ($filterSql) {
+                    $joinCondition[] = $filterSql;
+                }
             }
 
             $this->currentPersisterContext->selectJoinSql .= ' ' . $joinTableName . ' ' . $joinTableAlias . ' ON ';
@@ -1341,7 +1357,7 @@ class BasicEntityPersister implements EntityPersister
         }
 
         $this->currentPersisterContext->selectColumnListSql = implode(', ', $columnList);
-        $this->filterHash                                   = $this->em->getFilters()->getHash();
+        $this->updateFilterHash();
 
         return $this->currentPersisterContext->selectColumnListSql;
     }
@@ -1454,7 +1470,7 @@ class BasicEntityPersister implements EntityPersister
     {
         $columns = [];
 
-        foreach ($this->class->reflFields as $name => $field) {
+        foreach ($this->class->propertyAccessors as $name => $field) {
             if ($this->class->isVersioned && $this->class->versionField === $name) {
                 continue;
             }
@@ -1808,7 +1824,7 @@ class BasicEntityPersister implements EntityPersister
         foreach ($owningAssoc->targetToSourceKeyColumns as $sourceKeyColumn => $targetKeyColumn) {
             if ($sourceClass->containsForeignIdentifier) {
                 $field = $sourceClass->getFieldForColumn($sourceKeyColumn);
-                $value = $sourceClass->reflFields[$field]->getValue($sourceEntity);
+                $value = $sourceClass->propertyAccessors[$field]->getValue($sourceEntity);
 
                 if (isset($sourceClass->associationMappings[$field])) {
                     $value = $this->em->getUnitOfWork()->getEntityIdentifier($value);
@@ -1826,7 +1842,7 @@ class BasicEntityPersister implements EntityPersister
             }
 
             $field = $sourceClass->fieldNames[$sourceKeyColumn];
-            $value = $sourceClass->reflFields[$field]->getValue($sourceEntity);
+            $value = $sourceClass->propertyAccessors[$field]->getValue($sourceEntity);
 
             $criteria[$tableAlias . '.' . $targetKeyColumn] = $value;
             $parameters[]                                   = [

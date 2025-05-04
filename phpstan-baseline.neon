@@ -583,7 +583,7 @@ parameters:
 			path: src/EntityManager.php
 
 		-
-			message: '#^Method Doctrine\\ORM\\EntityManager\:\:getReference\(\) should return \(T of object\)\|null but returns Doctrine\\ORM\\Proxy\\InternalProxy\.$#'
+			message: '#^Method Doctrine\\ORM\\EntityManager\:\:getReference\(\) should return \(T of object\)\|null but returns object\.$#'
 			identifier: return.type
 			count: 1
 			path: src/EntityManager.php
@@ -985,12 +985,6 @@ parameters:
 			path: src/Mapping/ClassMetadata.php
 
 		-
-			message: '#^Parameter \#1 \$class of method Doctrine\\Persistence\\Mapping\\ReflectionService\:\:getAccessibleProperty\(\) expects class\-string, string given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Mapping/ClassMetadata.php
-
-		-
 			message: '#^Parameter \#1 \$mapping of method Doctrine\\ORM\\Mapping\\ClassMetadata\<T of object\>\:\:validateAndCompleteTypedAssociationMapping\(\) expects array\{type\: 1\|2\|4\|8, fieldName\: string, targetEntity\?\: class\-string\}, non\-empty\-array\<string, mixed\> given\.$#'
 			identifier: argument.type
 			count: 1
@@ -1030,18 +1024,6 @@ parameters:
 			message: '#^Parameter \#1 \$mappingArray of static method Doctrine\\ORM\\Mapping\\ToOneOwningSideMapping\:\:fromMappingArrayAndName\(\) expects array\{fieldName\: string, sourceEntity\: class\-string, targetEntity\: class\-string, cascade\?\: list\<''all''\|''detach''\|''persist''\|''refresh''\|''remove''\>, fetch\?\: 2\|3\|4\|null, inherited\?\: class\-string\|null, declared\?\: class\-string\|null, cache\?\: array\<mixed\>\|null, \.\.\.\}, non\-empty\-array given\.$#'
 			identifier: argument.type
 			count: 2
-			path: src/Mapping/ClassMetadata.php
-
-		-
-			message: '#^Parameter \#2 \$class of method Doctrine\\ORM\\Mapping\\ClassMetadata\<T of object\>\:\:getAccessibleProperty\(\) expects class\-string, string given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Mapping/ClassMetadata.php
-
-		-
-			message: '#^Parameter \#3 \$embeddedClass of class Doctrine\\ORM\\Mapping\\ReflectionEmbeddedProperty constructor expects class\-string, string given\.$#'
-			identifier: argument.type
-			count: 1
 			path: src/Mapping/ClassMetadata.php
 
 		-
@@ -1351,8 +1333,68 @@ parameters:
 			path: src/Mapping/Driver/AttributeDriver.php
 
 		-
+			message: '#^Call to an undefined method Doctrine\\DBAL\\Schema\\ForeignKeyConstraint\:\:getReferencedColumnNames\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Mapping/Driver/DatabaseDriver.php
+
+		-
+			message: '#^Call to an undefined method Doctrine\\DBAL\\Schema\\ForeignKeyConstraint\:\:getReferencedTableName\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Mapping/Driver/DatabaseDriver.php
+
+		-
+			message: '#^Call to an undefined method Doctrine\\DBAL\\Schema\\ForeignKeyConstraint\:\:getReferencingColumnNames\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Mapping/Driver/DatabaseDriver.php
+
+		-
+			message: '#^Call to an undefined method Doctrine\\DBAL\\Schema\\Index\:\:getIndexedColumns\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Mapping/Driver/DatabaseDriver.php
+
+		-
+			message: '#^Call to an undefined method Doctrine\\DBAL\\Schema\\Table\:\:getPrimaryKeyConstraint\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Mapping/Driver/DatabaseDriver.php
+
+		-
+			message: '#^Call to method getColumnName\(\) on an unknown class Doctrine\\DBAL\\Schema\\Index\\IndexedColumn\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Mapping/Driver/DatabaseDriver.php
+
+		-
+			message: '#^Call to method getColumnNames\(\) on an unknown class Doctrine\\DBAL\\Schema\\PrimaryKeyConstraint\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Mapping/Driver/DatabaseDriver.php
+
+		-
+			message: '#^Call to method toString\(\) on an unknown class Doctrine\\DBAL\\Schema\\Name\\UnqualifiedName\.$#'
+			identifier: class.notFound
+			count: 5
+			path: src/Mapping/Driver/DatabaseDriver.php
+
+		-
 			message: '#^Cannot call method getName\(\) on Doctrine\\DBAL\\Schema\\Column\|false\.$#'
 			identifier: method.nonObject
+			count: 1
+			path: src/Mapping/Driver/DatabaseDriver.php
+
+		-
+			message: '#^Class Doctrine\\DBAL\\Schema\\Index\\IndexType not found\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Mapping/Driver/DatabaseDriver.php
+
+		-
+			message: '#^Class Doctrine\\DBAL\\Schema\\PrimaryKeyConstraint not found\.$#'
+			identifier: class.notFound
 			count: 1
 			path: src/Mapping/Driver/DatabaseDriver.php
 
@@ -1393,9 +1435,27 @@ parameters:
 			path: src/Mapping/Driver/DatabaseDriver.php
 
 		-
+			message: '#^Parameter \#1 \$array of function sort contains unresolvable type\.$#'
+			identifier: argument.unresolvableType
+			count: 1
+			path: src/Mapping/Driver/DatabaseDriver.php
+
+		-
 			message: '#^Parameter \#2 \$columnName of method Doctrine\\ORM\\Mapping\\Driver\\DatabaseDriver\:\:getFieldNameForColumn\(\) expects string, string\|false given\.$#'
 			identifier: argument.type
 			count: 4
+			path: src/Mapping/Driver/DatabaseDriver.php
+
+		-
+			message: '#^Parameter \$indexedColumn of anonymous function has invalid type Doctrine\\DBAL\\Schema\\Index\\IndexedColumn\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Mapping/Driver/DatabaseDriver.php
+
+		-
+			message: '#^Parameter \$name of anonymous function has invalid type Doctrine\\DBAL\\Schema\\Name\\UnqualifiedName\.$#'
+			identifier: class.notFound
+			count: 5
 			path: src/Mapping/Driver/DatabaseDriver.php
 
 		-
@@ -1501,10 +1561,34 @@ parameters:
 			path: src/Mapping/JoinTableMapping.php
 
 		-
+			message: '#^Method Doctrine\\ORM\\Mapping\\LegacyReflectionFields\:\:__construct\(\) has parameter \$classMetadata with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Mapping/LegacyReflectionFields.php
+
+		-
+			message: '#^Parameter \#1 \$class of method Doctrine\\Persistence\\Mapping\\ReflectionService\:\:getAccessibleProperty\(\) expects class\-string, string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Mapping/LegacyReflectionFields.php
+
+		-
 			message: '#^Method Doctrine\\ORM\\Mapping\\MappedSuperclass\:\:__construct\(\) has parameter \$repositoryClass with generic class Doctrine\\ORM\\EntityRepository but does not specify its types\: T$#'
 			identifier: missingType.generics
 			count: 1
 			path: src/Mapping/MappedSuperclass.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Mapping\\PropertyAccessors\\EnumPropertyAccessor\:\:toEnum\(\) should return array\<BackedEnum\>\|BackedEnum but returns array\<BackedEnum\|int\|string\>\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Mapping/PropertyAccessors/EnumPropertyAccessor.php
+
+		-
+			message: '#^Parameter \#1 \$callback of function array_map expects \(callable\(BackedEnum\|int\|string\)\: mixed\)\|null, array\{class\-string\<BackedEnum\>, ''from''\} given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Mapping/PropertyAccessors/EnumPropertyAccessor.php
 
 		-
 			message: '#^Method Doctrine\\ORM\\Mapping\\QuoteStrategy\:\:getColumnAlias\(\) has parameter \$class with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
@@ -2317,12 +2401,6 @@ parameters:
 			path: src/Proxy/ProxyFactory.php
 
 		-
-			message: '#^Method Doctrine\\ORM\\Proxy\\ProxyFactory\:\:getProxy\(\) return type with generic interface Doctrine\\ORM\\Proxy\\InternalProxy does not specify its types\: T$#'
-			identifier: missingType.generics
-			count: 1
-			path: src/Proxy/ProxyFactory.php
-
-		-
 			message: '#^Method Doctrine\\ORM\\Proxy\\ProxyFactory\:\:loadProxyClass\(\) has parameter \$class with generic interface Doctrine\\Persistence\\Mapping\\ClassMetadata but does not specify its types\: T$#'
 			identifier: missingType.generics
 			count: 1
@@ -2733,7 +2811,7 @@ parameters:
 		-
 			message: '#^Cannot assign new offset to list\<string\>\|string\.$#'
 			identifier: offsetAssign.dimType
-			count: 2
+			count: 3
 			path: src/Query/SqlWalker.php
 
 		-
@@ -2787,12 +2865,6 @@ parameters:
 		-
 			message: '#^Parameter \#2 \$fieldName of method Doctrine\\ORM\\Query\\ResultSetMapping\:\:addIndexBy\(\) expects string, string\|false given\.$#'
 			identifier: argument.type
-			count: 1
-			path: src/Query/SqlWalker.php
-
-		-
-			message: '#^Property Doctrine\\ORM\\Query\\SqlWalker\:\:\$selectedClasses \(array\<string, array\{class\: Doctrine\\ORM\\Mapping\\ClassMetadata, dqlAlias\: string, resultAlias\: string\|null\}\>\) does not accept non\-empty\-array\<int\|string, array\{class\: Doctrine\\ORM\\Mapping\\ClassMetadata, dqlAlias\: mixed, resultAlias\: string\|null\}\>\.$#'
-			identifier: assign.propertyType
 			count: 1
 			path: src/Query/SqlWalker.php
 
@@ -3049,8 +3121,68 @@ parameters:
 			path: src/Tools/SchemaTool.php
 
 		-
+			message: '#^Call to an undefined method Doctrine\\DBAL\\Schema\\ForeignKeyConstraint\:\:getReferencedColumnNames\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Tools/SchemaTool.php
+
+		-
+			message: '#^Call to an undefined method Doctrine\\DBAL\\Schema\\ForeignKeyConstraint\:\:getReferencedTableName\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Tools/SchemaTool.php
+
+		-
+			message: '#^Call to an undefined method Doctrine\\DBAL\\Schema\\ForeignKeyConstraint\:\:getReferencingColumnNames\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Tools/SchemaTool.php
+
+		-
+			message: '#^Call to an undefined method Doctrine\\DBAL\\Schema\\Index\:\:getIndexedColumns\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Tools/SchemaTool.php
+
+		-
+			message: '#^Call to an undefined method Doctrine\\DBAL\\Schema\\Table\:\:dropForeignKey\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Tools/SchemaTool.php
+
+		-
 			message: '#^Call to function is_numeric\(\) with int\<0, max\> will always evaluate to true\.$#'
 			identifier: function.alreadyNarrowedType
+			count: 1
+			path: src/Tools/SchemaTool.php
+
+		-
+			message: '#^Call to method getColumnName\(\) on an unknown class Doctrine\\DBAL\\Schema\\Index\\IndexedColumn\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Tools/SchemaTool.php
+
+		-
+			message: '#^Call to method getColumnNames\(\) on an unknown class Doctrine\\DBAL\\Schema\\PrimaryKeyConstraint\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Tools/SchemaTool.php
+
+		-
+			message: '#^Call to method toString\(\) on an unknown class Doctrine\\DBAL\\Schema\\Name\\UnqualifiedName\.$#'
+			identifier: class.notFound
+			count: 3
+			path: src/Tools/SchemaTool.php
+
+		-
+			message: '#^Class Doctrine\\DBAL\\Schema\\PrimaryKeyConstraint not found\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Tools/SchemaTool.php
+
+		-
+			message: '#^Method Doctrine\\DBAL\\Schema\\AbstractSchemaManager\<Doctrine\\DBAL\\Platforms\\AbstractPlatform\>\:\:createComparator\(\) invoked with 1 parameter, 0 required\.$#'
+			identifier: arguments.count
 			count: 1
 			path: src/Tools/SchemaTool.php
 
@@ -3154,6 +3286,18 @@ parameters:
 			message: '#^Parameter \#1 \$classes of method Doctrine\\ORM\\Tools\\SchemaTool\:\:getUpdateSchemaSql\(\) expects list\<Doctrine\\ORM\\Mapping\\ClassMetadata\>, array\<mixed\> given\.$#'
 			identifier: argument.type
 			count: 1
+			path: src/Tools/SchemaTool.php
+
+		-
+			message: '#^Parameter \$indexedColumn of anonymous function has invalid type Doctrine\\DBAL\\Schema\\Index\\IndexedColumn\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Tools/SchemaTool.php
+
+		-
+			message: '#^Parameter \$name of anonymous function has invalid type Doctrine\\DBAL\\Schema\\Name\\UnqualifiedName\.$#'
+			identifier: class.notFound
+			count: 3
 			path: src/Tools/SchemaTool.php
 
 		-

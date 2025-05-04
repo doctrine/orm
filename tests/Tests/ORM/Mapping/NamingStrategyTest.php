@@ -7,6 +7,7 @@ namespace Doctrine\Tests\ORM\Mapping;
 use Doctrine\ORM\Mapping\DefaultNamingStrategy;
 use Doctrine\ORM\Mapping\NamingStrategy;
 use Doctrine\ORM\Mapping\UnderscoreNamingStrategy;
+use Doctrine\Tests\ORM\Mapping\NamingStrategy\CustomPascalNamingStrategy;
 use Doctrine\Tests\ORM\Mapping\NamingStrategy\JoinColumnClassNamingStrategy;
 use Doctrine\Tests\OrmTestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -33,6 +34,11 @@ class NamingStrategyTest extends OrmTestCase
         return new UnderscoreNamingStrategy(CASE_UPPER);
     }
 
+    private static function customNaming(): CustomPascalNamingStrategy
+    {
+        return new CustomPascalNamingStrategy();
+    }
+
     /**
      * Data Provider for NamingStrategy#classToTableName
      *
@@ -56,6 +62,10 @@ class NamingStrategyTest extends OrmTestCase
             [self::underscoreNamingUpper(), 'NAME', '\Some\Class\Name'],
             [self::underscoreNamingUpper(), 'NAME2_TEST', '\Some\Class\Name2Test'],
             [self::underscoreNamingUpper(), 'NAME2TEST', '\Some\Class\Name2test'],
+
+            // CustomPascalNamingStrategy
+            [self::customNaming(), 'SomeClassName', 'SomeClassName'],
+            [self::customNaming(), 'Name2Test', '\Some\Class\Name2Test'],
         ];
     }
 
@@ -89,6 +99,10 @@ class NamingStrategyTest extends OrmTestCase
             [self::underscoreNamingUpper(), 'SOME_PROPERTY', 'SOME_PROPERTY', 'Some\Class'],
             [self::underscoreNamingUpper(), 'BASE64_ENCODED', 'base64Encoded', 'Some\Class'],
             [self::underscoreNamingUpper(), 'BASE64ENCODED', 'base64encoded', 'Some\Class'],
+
+            // CustomPascalNamingStrategy
+            [self::customNaming(), 'SomeProperty', 'someProperty', 'Some\Class'],
+            [self::customNaming(), 'Base64Encoded', 'base64Encoded', 'Some\Class'],
         ];
     }
 
@@ -116,6 +130,9 @@ class NamingStrategyTest extends OrmTestCase
             // UnderscoreNamingStrategy
             [self::underscoreNamingLower(), 'id'],
             [self::underscoreNamingUpper(), 'ID'],
+
+            // CustomPascalNamingStrategy
+            [self::customNaming(), 'Id'],
         ];
     }
 

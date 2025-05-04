@@ -706,4 +706,13 @@ EXCEPTION
             $entityName,
         ));
     }
+
+    public static function mappingVirtualPropertyNotAllowed(string $entityName, string $propertyName): self
+    {
+        return new self(sprintf(
+            'Mapping virtual property "%s" on entity "%s" is not allowed.',
+            $propertyName,
+            $entityName,
+        ));
+    }
 }

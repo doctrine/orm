@@ -736,6 +736,35 @@ methods:
 
 .. note::
 
-    There is a limitation on the compatibility of Criteria comparisons.
-    You have to use scalar values only as the value in a comparison or
-    the behaviour between different backends is not the same.
+    Depending on whether the collection has already been loaded from the
+    database or not, criteria matching may happen at the database/SQL level
+    or on objects in memory. This may lead to different results and come
+    surprising, for example when a code change in one place leads to a collection
+    becoming initialized and, as a side effect, returning a different result
+    or even breaking a ``matching()`` call somewhere else. Also, collection
+    initialization state in practical use cases may differ from the one covered
+    in unit tests.
+
+    Database level comparisons are based on scalar representations of the values
+    stored in entity properties. The field names passed to expressions correspond
+    to property names. Comparison and sorting may be affected by
+    database-specific behavior. For example, MySQL enum types sort by index position,
+    not lexicographically by value.
+
+    In-memory handling is based on the ``Selectable`` API of `Doctrine Collections <https://www.doctrine-project.org/projects/doctrine-collections/en/stable/index.html#matching>`.
+    In this case, field names passed to expressions are being used to derive accessor
+    method names. Strict type comparisons are used for equal and not-equal checks,
+    and generally PHP language rules are being used for other comparison operators
+    or sorting.
+
+    As a general guidance, for consistent results use the Criteria API with scalar
+    values only. Note that ``DateTime`` and ``DateTimeImmutable`` are two predominant
+    examples of value objects that are *not* scalars.
+
+    Refrain from using special database-level column types or custom Doctrine Types
+    that may lead to database-specific comparison or sorting rules being applied, or
+    to database-level values being different from object field values.
+
+    Provide accessor methods for all entity fields used in criteria expressions,
+    and implement those methods in a way that their return value is the
+    same as the database-level value.

@@ -9,7 +9,8 @@ trait JoinColumnProperties
     /** @param array<string, mixed> $options */
     public function __construct(
         public readonly string|null $name = null,
-        public readonly string $referencedColumnName = 'id',
+        public readonly string|null $referencedColumnName = null,
+        public readonly bool $deferrable = false,
         public readonly bool $unique = false,
         public readonly bool $nullable = true,
         public readonly mixed $onDelete = null,

@@ -41,6 +41,8 @@ use function strlen;
 use function strtolower;
 use function substr;
 
+use const PHP_VERSION_ID;
+
 /**
  * The ClassMetadataFactory is used to create ClassMetadata objects that contain all the
  * metadata mapping information of a class which describes how a class should be mapped
@@ -440,8 +442,8 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
             $subClass->addInheritedFieldMapping($subClassMapping);
         }
 
-        foreach ($parentClass->reflFields as $name => $field) {
-            $subClass->reflFields[$name] = $field;
+        foreach ($parentClass->propertyAccessors as $name => $field) {
+            $subClass->propertyAccessors[$name] = $field;
         }
     }
 
@@ -699,6 +701,18 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     protected function wakeupReflection(ClassMetadataInterface $class, ReflectionService $reflService): void
     {
         $class->wakeupReflection($reflService);
+
+        if (PHP_VERSION_ID < 80400) {
+            return;
+        }
+
+        foreach ($class->propertyAccessors as $propertyAccessor) {
+            $property = $propertyAccessor->getUnderlyingReflector();
+
+            if ($property->isVirtual()) {
+                throw MappingException::mappingVirtualPropertyNotAllowed($class->name, $property->getName());
+            }
+        }
     }
 
     protected function initializeReflection(ClassMetadataInterface $class, ReflectionService $reflService): void

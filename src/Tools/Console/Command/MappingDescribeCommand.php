@@ -64,7 +64,7 @@ EOT);
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $ui = (new SymfonyStyle($input, $output))->getErrorStyle();
+        $ui = new SymfonyStyle($input, $output);
 
         $entityManager = $this->getEntityManager($input);
 
@@ -162,7 +162,7 @@ EOT);
 
         $matches = array_filter(
             $this->getMappedEntities($entityManager),
-            static fn ($mappedEntity) => preg_match('{' . preg_quote($entityName) . '}', $mappedEntity)
+            static fn ($mappedEntity) => preg_match('{' . preg_quote($entityName) . '}', $mappedEntity),
         );
 
         if (! $matches) {

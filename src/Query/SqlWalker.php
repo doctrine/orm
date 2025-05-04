@@ -24,10 +24,8 @@ use function array_filter;
 use function array_keys;
 use function array_map;
 use function array_merge;
-use function array_pop;
 use function assert;
 use function count;
-use function end;
 use function implode;
 use function in_array;
 use function is_array;
@@ -83,13 +81,6 @@ class SqlWalker
      * Counter for generating indexes.
      */
     private int $newObjectCounter = 0;
-
-    /**
-     * Contains nesting levels of new objects arguments
-     *
-     * @phpstan-var array<int, array{0: string|int, 1: int}>
-     */
-    private array $newObjectStack = [];
 
     private readonly EntityManagerInterface $em;
     private readonly Connection $conn;
@@ -582,6 +573,14 @@ class SqlWalker
         }
 
         return implode(', ', $sqlParts);
+    }
+
+    /**
+     * Walks down an EntityAsDtoArgumentExpression AST node, thereby generating the appropriate SQL.
+     */
+    public function walkEntityAsDtoArgumentExpression(AST\EntityAsDtoArgumentExpression $expr): string
+    {
+        return implode(', ', $this->walkObjectExpression($expr->expression, [], $expr->identificationVariable ?: null));
     }
 
     /**
@@ -1365,32 +1364,79 @@ class SqlWalker
                     $partialFieldSet = [];
                 }
 
-                $class       = $this->getMetadataForDqlAlias($dqlAlias);
-                $resultAlias = $selectExpression->fieldIdentificationVariable ?: null;
+                $sql .= implode(', ', $this->walkObjectExpression($dqlAlias, $partialFieldSet, $selectExpression->fieldIdentificationVariable ?: null));
+        }
 
-                if (! isset($this->selectedClasses[$dqlAlias])) {
-                    $this->selectedClasses[$dqlAlias] = [
-                        'class'       => $class,
-                        'dqlAlias'    => $dqlAlias,
-                        'resultAlias' => $resultAlias,
-                    ];
-                }
+        return $sql;
+    }
 
-                $sqlParts = [];
+    /**
+     * Walks down an Object Expression AST node and return Sql Parts
+     *
+     * @param mixed[] $partialFieldSet
+     *
+     * @return string[]
+     */
+    public function walkObjectExpression(string $dqlAlias, array $partialFieldSet, string|null $resultAlias): array
+    {
+        $class = $this->getMetadataForDqlAlias($dqlAlias);
 
-                // Select all fields from the queried class
-                foreach ($class->fieldMappings as $fieldName => $mapping) {
-                    if ($partialFieldSet && ! in_array($fieldName, $partialFieldSet, true)) {
+        if (! isset($this->selectedClasses[$dqlAlias])) {
+            $this->selectedClasses[$dqlAlias] = [
+                'class'       => $class,
+                'dqlAlias'    => $dqlAlias,
+                'resultAlias' => $resultAlias,
+            ];
+        }
+
+        $sqlParts = [];
+
+        // Select all fields from the queried class
+        foreach ($class->fieldMappings as $fieldName => $mapping) {
+            if ($partialFieldSet && ! in_array($fieldName, $partialFieldSet, true)) {
+                continue;
+            }
+
+            $tableName = isset($mapping->inherited)
+                ? $this->em->getClassMetadata($mapping->inherited)->getTableName()
+                : $class->getTableName();
+
+            $sqlTableAlias    = $this->getSQLTableAlias($tableName, $dqlAlias);
+            $columnAlias      = $this->getSQLColumnAlias($mapping->columnName);
+            $quotedColumnName = $this->quoteStrategy->getColumnName($fieldName, $class, $this->platform);
+
+            $col = $sqlTableAlias . '.' . $quotedColumnName;
+
+            $type = Type::getType($mapping->type);
+            $col  = $type->convertToPHPValueSQL($col, $this->platform);
+
+            $sqlParts[] = $col . ' AS ' . $columnAlias;
+
+            $this->scalarResultAliasMap[$resultAlias][] = $columnAlias;
+
+            $this->rsm->addFieldResult($dqlAlias, $columnAlias, $fieldName, $class->name);
+
+            if (! empty($mapping->enumType)) {
+                $this->rsm->addEnumResult($columnAlias, $mapping->enumType);
+            }
+        }
+
+        // Add any additional fields of subclasses (excluding inherited fields)
+        // 1) on Single Table Inheritance: always, since its marginal overhead
+        // 2) on Class Table Inheritance only if partial objects are disallowed,
+        //    since it requires outer joining subtables.
+        if ($class->isInheritanceTypeSingleTable() || ! $this->query->getHint(Query::HINT_FORCE_PARTIAL_LOAD)) {
+            foreach ($class->subClasses as $subClassName) {
+                $subClass      = $this->em->getClassMetadata($subClassName);
+                $sqlTableAlias = $this->getSQLTableAlias($subClass->getTableName(), $dqlAlias);
+
+                foreach ($subClass->fieldMappings as $fieldName => $mapping) {
+                    if (isset($mapping->inherited) || ($partialFieldSet && ! in_array($fieldName, $partialFieldSet, true))) {
                         continue;
                     }
 
-                    $tableName = isset($mapping->inherited)
-                        ? $this->em->getClassMetadata($mapping->inherited)->getTableName()
-                        : $class->getTableName();
-
-                    $sqlTableAlias    = $this->getSQLTableAlias($tableName, $dqlAlias);
                     $columnAlias      = $this->getSQLColumnAlias($mapping->columnName);
-                    $quotedColumnName = $this->quoteStrategy->getColumnName($fieldName, $class, $this->platform);
+                    $quotedColumnName = $this->quoteStrategy->getColumnName($fieldName, $subClass, $this->platform);
 
                     $col = $sqlTableAlias . '.' . $quotedColumnName;
 
@@ -1401,48 +1447,12 @@ class SqlWalker
 
                     $this->scalarResultAliasMap[$resultAlias][] = $columnAlias;
 
-                    $this->rsm->addFieldResult($dqlAlias, $columnAlias, $fieldName, $class->name);
-
-                    if (! empty($mapping->enumType)) {
-                        $this->rsm->addEnumResult($columnAlias, $mapping->enumType);
-                    }
+                    $this->rsm->addFieldResult($dqlAlias, $columnAlias, $fieldName, $subClassName);
                 }
-
-                // Add any additional fields of subclasses (excluding inherited fields)
-                // 1) on Single Table Inheritance: always, since its marginal overhead
-                // 2) on Class Table Inheritance only if partial objects are disallowed,
-                //    since it requires outer joining subtables.
-                if ($class->isInheritanceTypeSingleTable() || ! $this->query->getHint(Query::HINT_FORCE_PARTIAL_LOAD)) {
-                    foreach ($class->subClasses as $subClassName) {
-                        $subClass      = $this->em->getClassMetadata($subClassName);
-                        $sqlTableAlias = $this->getSQLTableAlias($subClass->getTableName(), $dqlAlias);
-
-                        foreach ($subClass->fieldMappings as $fieldName => $mapping) {
-                            if (isset($mapping->inherited) || ($partialFieldSet && ! in_array($fieldName, $partialFieldSet, true))) {
-                                continue;
-                            }
-
-                            $columnAlias      = $this->getSQLColumnAlias($mapping->columnName);
-                            $quotedColumnName = $this->quoteStrategy->getColumnName($fieldName, $subClass, $this->platform);
-
-                            $col = $sqlTableAlias . '.' . $quotedColumnName;
-
-                            $type = Type::getType($mapping->type);
-                            $col  = $type->convertToPHPValueSQL($col, $this->platform);
-
-                            $sqlParts[] = $col . ' AS ' . $columnAlias;
-
-                            $this->scalarResultAliasMap[$resultAlias][] = $columnAlias;
-
-                            $this->rsm->addFieldResult($dqlAlias, $columnAlias, $fieldName, $subClassName);
-                        }
-                    }
-                }
-
-                $sql .= implode(', ', $sqlParts);
+            }
         }
 
-        return $sql;
+        return $sqlParts;
     }
 
     public function walkQuantifiedExpression(AST\QuantifiedExpression $qExpr): string
@@ -1507,26 +1517,23 @@ class SqlWalker
     public function walkNewObject(AST\NewObjectExpression $newObjectExpression, string|null $newObjectResultAlias = null): string
     {
         $sqlSelectExpressions = [];
-        $objOwner             = $objOwnerIdx = null;
-
-        if ($this->newObjectStack !== []) {
-            [$objOwner, $objOwnerIdx] = end($this->newObjectStack);
-            $objIndex                 = $objOwner . ':' . $objOwnerIdx;
-        } else {
-            $objIndex = $newObjectResultAlias ?: $this->newObjectCounter++;
-        }
+        $objIndex             = $newObjectResultAlias ?: $this->newObjectCounter++;
+        $aliasGap             = $newObjectExpression->hasNamedArgs ? null : 0;
 
         foreach ($newObjectExpression->args as $argIndex => $e) {
-            $resultAlias = $this->scalarResultCounter++;
-            $columnAlias = $this->getSQLColumnAlias('sclr');
-            $fieldType   = 'string';
+            if (! $newObjectExpression->hasNamedArgs) {
+                $argIndex += $aliasGap;
+            }
+
+            $resultAlias    = $this->scalarResultCounter++;
+            $columnAlias    = $this->getSQLColumnAlias('sclr');
+            $fieldType      = 'string';
+            $isScalarResult = true;
 
             switch (true) {
                 case $e instanceof AST\NewObjectExpression:
-                    $this->newObjectStack[] = [$objIndex, $argIndex];
-                    $sqlSelectExpressions[] = $e->dispatch($this);
-                    array_pop($this->newObjectStack);
-                    $this->rsm->nestedNewObjectArguments[$columnAlias] = ['ownerIndex' => $objIndex, 'argIndex' => $argIndex];
+                    $sqlSelectExpressions[]                            = $e->dispatch($this, $columnAlias);
+                    $this->rsm->nestedNewObjectArguments[$columnAlias] = ['ownerIndex' => $objIndex, 'argIndex' => $argIndex, 'argAlias' => $columnAlias];
                     break;
 
                 case $e instanceof AST\Subselect:
@@ -1567,20 +1574,37 @@ class SqlWalker
                     $sqlSelectExpressions[] = trim($e->dispatch($this)) . ' AS ' . $columnAlias;
                     break;
 
+                case $e instanceof AST\EntityAsDtoArgumentExpression:
+                    $alias                                             = $e->identificationVariable ?: $columnAlias;
+                    $this->rsm->nestedNewObjectArguments[$columnAlias] = ['ownerIndex' => $objIndex, 'argIndex' => $argIndex, 'argAlias' => $alias];
+                    $this->rsm->nestedEntities[$alias]                 = ['parent' => $objIndex, 'argIndex' => $argIndex, 'type' => 'entity'];
+
+                    $sqlSelectExpressions[] = trim($e->dispatch($this));
+                    break;
+
+                case $e instanceof AST\AllFieldsExpression:
+                    $isScalarResult         = false;
+                    $sqlSelectExpressions[] = $e->dispatch($this, $objIndex, $argIndex, $aliasGap);
+                    break;
+
                 default:
                     $sqlSelectExpressions[] = trim($e->dispatch($this)) . ' AS ' . $columnAlias;
                     break;
             }
 
-            $this->scalarResultAliasMap[$resultAlias] = $columnAlias;
-            $this->rsm->addScalarResult($columnAlias, $resultAlias, $fieldType);
+            if ($isScalarResult) {
+                $this->scalarResultAliasMap[$resultAlias] = $columnAlias;
+                $this->rsm->addScalarResult($columnAlias, $resultAlias, $fieldType);
 
-            $this->rsm->newObjectMappings[$columnAlias] = [
-                'className' => $newObjectExpression->className,
-                'objIndex'  => $objIndex,
-                'argIndex'  => $argIndex,
-            ];
+                $this->rsm->newObjectMappings[$columnAlias] = [
+                    'className' => $newObjectExpression->className,
+                    'objIndex'  => $objIndex,
+                    'argIndex'  => $argIndex,
+                ];
+            }
         }
+
+        $this->rsm->newObject[$objIndex] = $newObjectExpression->className;
 
         return implode(', ', $sqlSelectExpressions);
     }
@@ -2280,6 +2304,42 @@ class SqlWalker
         }
 
         return $resultAlias;
+    }
+
+    public function walkAllEntityFieldsExpression(AST\AllFieldsExpression $expression, int|string $objIndex, int|string $argIndex, int|null &$aliasGap): string
+    {
+        $dqlAlias = $expression->identificationVariable;
+        $class    = $this->getMetadataForDqlAlias($expression->identificationVariable);
+
+        $sqlParts = [];
+        // Select all fields from the queried class
+        foreach ($class->fieldMappings as $fieldName => $mapping) {
+            $tableName = isset($mapping->inherited)
+                ? $this->em->getClassMetadata($mapping->inherited)->getTableName()
+                : $class->getTableName();
+
+            $sqlTableAlias    = $this->getSQLTableAlias($tableName, $dqlAlias);
+            $columnAlias      = $this->getSQLColumnAlias($mapping->columnName);
+            $quotedColumnName = $this->quoteStrategy->getColumnName($fieldName, $class, $this->platform);
+
+            $col = $sqlTableAlias . '.' . $quotedColumnName;
+
+            $type = Type::getType($mapping->type);
+            $col  = $type->convertToPHPValueSQL($col, $this->platform);
+
+            $sqlParts[] = $col . ' AS ' . $columnAlias;
+
+            $this->scalarResultAliasMap[$objIndex][] = $columnAlias;
+
+            $this->rsm->addScalarResult($columnAlias, $objIndex, $mapping->type);
+
+            $this->rsm->newObjectMappings[$columnAlias] = [
+                'objIndex'  => $objIndex,
+                'argIndex'  => $aliasGap === null ? $fieldName : (int) $argIndex + $aliasGap++,
+            ];
+        }
+
+        return implode(', ', $sqlParts);
     }
 
     /**

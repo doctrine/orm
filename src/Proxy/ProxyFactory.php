@@ -13,16 +13,19 @@ use Doctrine\ORM\UnitOfWork;
 use Doctrine\ORM\Utility\IdentifierFlattener;
 use Doctrine\Persistence\Mapping\ClassMetadata;
 use Doctrine\Persistence\Proxy;
+use LogicException;
+use ReflectionClass;
 use ReflectionProperty;
 use Symfony\Component\VarExporter\ProxyHelper;
 
 use function array_combine;
 use function array_flip;
-use function array_intersect_key;
+use function array_keys;
 use function assert;
 use function bin2hex;
 use function chmod;
 use function class_exists;
+use function count;
 use function dirname;
 use function file_exists;
 use function file_put_contents;
@@ -37,6 +40,7 @@ use function preg_match_all;
 use function random_bytes;
 use function rename;
 use function rtrim;
+use function sprintf;
 use function str_replace;
 use function strpos;
 use function strrpos;
@@ -45,6 +49,7 @@ use function substr;
 use function ucfirst;
 
 use const DIRECTORY_SEPARATOR;
+use const PHP_VERSION_ID;
 
 /**
  * This factory is used to create proxy objects for entities at runtime.
@@ -142,11 +147,11 @@ EOPHP;
         private readonly string $proxyNs,
         bool|int $autoGenerate = self::AUTOGENERATE_NEVER,
     ) {
-        if (! $proxyDir) {
+        if (! $proxyDir && ! $em->getConfiguration()->isNativeLazyObjectsEnabled()) {
             throw ORMInvalidArgumentException::proxyDirectoryRequired();
         }
 
-        if (! $proxyNs) {
+        if (! $proxyNs && ! $em->getConfiguration()->isNativeLazyObjectsEnabled()) {
             throw ORMInvalidArgumentException::proxyNamespaceRequired();
         }
 
@@ -163,8 +168,23 @@ EOPHP;
      * @param class-string $className
      * @param array<mixed> $identifier
      */
-    public function getProxy(string $className, array $identifier): InternalProxy
+    public function getProxy(string $className, array $identifier): object
     {
+        if ($this->em->getConfiguration()->isNativeLazyObjectsEnabled()) {
+            $classMetadata   = $this->em->getClassMetadata($className);
+            $entityPersister = $this->uow->getEntityPersister($className);
+
+            $proxy = $classMetadata->reflClass->newLazyGhost(static function (object $object) use ($identifier, $entityPersister): void {
+                $entityPersister->loadById($identifier, $object);
+            }, ReflectionClass::SKIP_INITIALIZATION_ON_SERIALIZE);
+
+            foreach ($identifier as $idField => $value) {
+                $classMetadata->propertyAccessors[$idField]->setValue($proxy, $value);
+            }
+
+            return $proxy;
+        }
+
         $proxyFactory = $this->proxyFactories[$className] ?? $this->getProxyFactory($className);
 
         return $proxyFactory($identifier);
@@ -182,6 +202,10 @@ EOPHP;
      */
     public function generateProxyClasses(array $classes, string|null $proxyDir = null): int
     {
+        if ($this->em->getConfiguration()->isNativeLazyObjectsEnabled()) {
+            return 0;
+        }
+
         $generated = 0;
 
         foreach ($classes as $class) {
@@ -232,8 +256,8 @@ EOPHP;
 
             $class = $entityPersister->getClassMetadata();
 
-            foreach ($class->getReflectionProperties() as $property) {
-                if (! $property || isset($identifier[$property->getName()]) || ! $class->hasField($property->getName()) && ! $class->hasAssociation($property->getName())) {
+            foreach ($class->getPropertyAccessors() as $name => $property) {
+                if (isset($identifier[$name])) {
                     continue;
                 }
 
@@ -262,7 +286,15 @@ EOPHP;
             foreach ($reflector->getProperties($filter) as $property) {
                 $name = $property->name;
 
-                if ($property->isStatic() || (($class->hasField($name) || $class->hasAssociation($name)) && ! isset($identifiers[$name]))) {
+                if (PHP_VERSION_ID >= 80400 && count($property->getHooks()) > 0) {
+                    throw new LogicException(sprintf(
+                        'Doctrine ORM does not support property hook on %s::%s without using native lazy objects. Check https://github.com/doctrine/orm/issues/11624 for details of versions that support property hooks.',
+                        $property->getDeclaringClass()->getName(),
+                        $property->getName(),
+                    ));
+                }
+
+                if ($property->isStatic() || ! isset($identifiers[$name])) {
                     continue;
                 }
 
@@ -279,7 +311,11 @@ EOPHP;
         $entityPersister  = $this->uow->getEntityPersister($className);
         $initializer      = $this->createLazyInitializer($class, $entityPersister, $this->identifierFlattener);
         $proxyClassName   = $this->loadProxyClass($class);
-        $identifierFields = array_intersect_key($class->getReflectionProperties(), $identifiers);
+        $identifierFields = [];
+
+        foreach (array_keys($identifiers) as $identifier) {
+            $identifierFields[$identifier] = $class->getPropertyAccessor($identifier);
+        }
 
         $proxyFactory = Closure::bind(static function (array $identifier) use ($initializer, $skippedProperties, $identifierFields, $className): InternalProxy {
             $proxy = self::createLazyGhost(static function (InternalProxy $object) use ($initializer, $identifier): void {
@@ -383,6 +419,7 @@ EOPHP;
 
     private function generateUseLazyGhostTrait(ClassMetadata $class): string
     {
+        // @phpstan-ignore staticMethod.deprecated (Because we support Symfony < 7.3)
         $code = ProxyHelper::generateLazyGhost($class->getReflectionClass());
         $code = substr($code, 7 + (int) strpos($code, "\n{"));
         $code = substr($code, 0, (int) strpos($code, "\n}"));

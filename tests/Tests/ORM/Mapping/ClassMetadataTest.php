@@ -56,6 +56,7 @@ use PHPUnit\Framework\Attributes\WithoutErrorHandler;
 use ReflectionClass;
 use stdClass;
 
+use function array_keys;
 use function assert;
 use function class_exists;
 use function count;
@@ -80,7 +81,7 @@ class ClassMetadataTest extends OrmTestCase
         $cm->initializeReflection(new RuntimeReflectionService());
 
         // Test initial state
-        self::assertTrue(count($cm->getReflectionProperties()) === 0);
+        self::assertTrue(count($cm->getPropertyAccessors()) === 0);
         self::assertInstanceOf(ReflectionClass::class, $cm->reflClass);
         self::assertEquals(CmsUser::class, $cm->name);
         self::assertEquals(CmsUser::class, $cm->rootEntityName);
@@ -106,7 +107,7 @@ class ClassMetadataTest extends OrmTestCase
         $cm->wakeupReflection(new RuntimeReflectionService());
 
         // Check state
-        self::assertTrue(count($cm->getReflectionProperties()) > 0);
+        self::assertTrue(count($cm->getPropertyAccessors()) > 0);
         self::assertEquals('Doctrine\Tests\Models\CMS', $cm->namespace);
         self::assertInstanceOf(ReflectionClass::class, $cm->reflClass);
         self::assertEquals(CmsUser::class, $cm->name);
@@ -989,7 +990,7 @@ class ClassMetadataTest extends OrmTestCase
         self::assertInstanceOf(MyArrayObjectEntity::class, $classMetadata->newInstance());
     }
 
-    public function testWakeupReflectionWithEmbeddableAndStaticReflectionService(): void
+    public function testWakeupReflectionWithEmbeddable(): void
     {
         if (! class_exists(StaticReflectionService::class)) {
             self::markTestSkipped('This test is not supported by the current installed doctrine/persistence version');
@@ -999,7 +1000,7 @@ class ClassMetadataTest extends OrmTestCase
 
         $classMetadata->mapEmbedded(
             [
-                'fieldName'    => 'test',
+                'fieldName'    => 'embedded',
                 'class'        => TestEntity1::class,
                 'columnPrefix' => false,
             ],
@@ -1009,14 +1010,14 @@ class ClassMetadataTest extends OrmTestCase
             'fieldName' => 'test.embeddedProperty',
             'type' => 'string',
             'originalClass' => TestEntity1::class,
-            'declaredField' => 'test',
-            'originalField' => 'embeddedProperty',
+            'declaredField' => 'embedded',
+            'originalField' => 'name',
         ];
 
         $classMetadata->mapField($field);
         $classMetadata->wakeupReflection(new StaticReflectionService());
 
-        self::assertEquals(['test' => null, 'test.embeddedProperty' => null], $classMetadata->getReflectionProperties());
+        self::assertEquals(['embedded', 'test.embeddedProperty'], array_keys($classMetadata->getPropertyAccessors()));
     }
 
     public function testGetColumnNamesWithGivenFieldNames(): void
