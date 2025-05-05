@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace Doctrine\Tests\ORM\Functional\Ticket\SwitchContextWithFilter;
+namespace Doctrine\Tests\ORM\Functional\Ticket\SwitchContextWithFilter\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity
- * @ORM\Table(name="Order_Master")
+ * @ORM\Table(name="User_Master")
  */
-class Order
+class User
 {
     /**
      * @ORM\Id
@@ -28,16 +28,8 @@ class Order
      */
     public $company;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="User", fetch="EAGER")
-     *
-     * @var User
-     */
-    public $user;
-
-    public function __construct(User $user)
+    public function __construct(string $company)
     {
-        $this->user    = $user;
-        $this->company = $user->company;
+        $this->company = $company;
     }
 }
