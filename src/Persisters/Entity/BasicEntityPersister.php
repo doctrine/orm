@@ -1474,8 +1474,8 @@ class BasicEntityPersister implements EntityPersister
             return $this->platform->getEmptyIdentityInsertSQL($tableName, $identityColumn);
         }
 
-        $values  = [];
-        $columns = array_unique($columns);
+        $placeholders = [];
+        $columns      = array_unique($columns);
 
         foreach ($columns as $column) {
             $placeholder = '?';
@@ -1489,13 +1489,13 @@ class BasicEntityPersister implements EntityPersister
                 $placeholder = $type->convertToDatabaseValueSQL('?', $this->platform);
             }
 
-            $values[] = $placeholder;
+            $placeholders[] = $placeholder;
         }
 
-        $columns = implode(', ', $columns);
-        $values  = implode(', ', $values);
+        $columns      = implode(', ', $columns);
+        $placeholders = implode(', ', $placeholders);
 
-        return sprintf('INSERT INTO %s (%s) VALUES (%s)', $tableName, $columns, $values);
+        return sprintf('INSERT INTO %s (%s) VALUES (%s)', $tableName, $columns, $placeholders);
     }
 
     /**
