@@ -302,8 +302,8 @@ class BasicEntityPersister implements EntityPersister
                 $this->assignDefaultVersionAndUpsertableValues($entity, $id);
             }
 
-            // Unset this queued insert, so that the prepareUpdateData() method knows right away
-            // (for the next entity already) that the current entity has been written to the database
+            // Unset this queued insert, so that the prepareUpdateData() method (called via prepareInsertData() method)
+            // knows right away (for the next entity already) that the current entity has been written to the database
             // and no extra updates need to be scheduled to refer to it.
             //
             // In \Doctrine\ORM\UnitOfWork::executeInserts(), the UoW already removed entities
