@@ -5,14 +5,10 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Mapping;
 
 use InvalidArgumentException;
-use LogicException;
 use ReflectionProperty;
 
-use function assert;
 use function func_get_args;
 use function func_num_args;
-use function is_object;
-use function sprintf;
 
 /** @internal */
 final class ReflectionReadonlyProperty extends ReflectionProperty
@@ -36,14 +32,6 @@ final class ReflectionReadonlyProperty extends ReflectionProperty
     {
         if (func_num_args() < 2 || $objectOrValue === null || ! $this->isInitialized($objectOrValue)) {
             $this->wrappedProperty->setValue(...func_get_args());
-
-            return;
-        }
-
-        assert(is_object($objectOrValue));
-
-        if (parent::getValue($objectOrValue) !== $value) {
-            throw new LogicException(sprintf('Attempting to change readonly property %s::$%s.', $this->class, $this->name));
         }
     }
 }

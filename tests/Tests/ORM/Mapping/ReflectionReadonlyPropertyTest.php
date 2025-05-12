@@ -8,7 +8,6 @@ use Doctrine\ORM\Mapping\ReflectionReadonlyProperty;
 use Doctrine\Tests\Models\CMS\CmsTag;
 use Doctrine\Tests\Models\ReadonlyProperties\Author;
 use InvalidArgumentException;
-use LogicException;
 use PHPUnit\Framework\TestCase;
 use ReflectionProperty;
 
@@ -44,9 +43,10 @@ class ReflectionReadonlyPropertyTest extends TestCase
 
         $reflection->setValue($author, 'John Doe');
 
-        $this->expectException(LogicException::class);
-        $this->expectExceptionMessage('Attempting to change readonly property Doctrine\Tests\Models\ReadonlyProperties\Author::$name.');
         $reflection->setValue($author, 'Jane Doe');
+
+        self::assertSame('John Doe', $wrappedReflection->getValue($author));
+        self::assertSame('John Doe', $reflection->getValue($author));
     }
 
     public function testNonReadonlyPropertiesAreForbidden(): void
