@@ -135,7 +135,13 @@ abstract class AssociationMapping implements ArrayAccess
                     continue;
                 }
 
-                assert($mapping instanceof ManyToManyOwningSideMapping);
+                if (! $mapping instanceof ManyToManyOwningSideMapping) {
+                    throw new MappingException(
+                        "Mapping error on field '" .
+                        $mapping->fieldName . "' in " . $mapping->sourceEntity .
+                        " : 'joinTable' can only be set on many-to-many owning side.",
+                    );
+                }
 
                 $mapping->joinTable = JoinTableMapping::fromMappingArray($value);
 
