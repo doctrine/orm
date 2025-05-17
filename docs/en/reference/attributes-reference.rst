@@ -1133,7 +1133,7 @@ Marker attribute that defines a specified column as version attribute used in
 an :ref:`optimistic locking <transactions-and-concurrency_optimistic-locking>`
 scenario. It only works on :ref:`#[Column] <attrref_column>` attributes that have
 the type ``integer`` or ``datetime``. Setting ``#[Version]`` on a property with
-:ref:`#[Id <attrref_id>` is not supported.
+:ref:`#[Id] <attrref_id>` is not supported.
 
 Example:
 
