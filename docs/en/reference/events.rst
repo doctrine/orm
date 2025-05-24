@@ -930,7 +930,7 @@ Implementing your own resolver:
 Adding entity listeners at runtime
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Sometimes it's more convenient to set listeners dynamically rather than specifying them in `EntityListeners` attribute.
+Sometimes it's more convenient to set listeners dynamically rather than specifying them in ``EntityListeners`` attribute.
 For example, you want to use some listener only at development, or you need to configure the listener instance before use.
 
 .. code-block:: php
