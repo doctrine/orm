@@ -994,8 +994,6 @@ or could be found. This event is not a lifecycle callback.
 SchemaTool Events
 -----------------
 
-.. code-block:: php
-
 It is possible to access the schema metadata during schema changes that are happening in ``Doctrine\ORM\Tools\SchemaTool``.
 There are two different events where you can hook in.
 
