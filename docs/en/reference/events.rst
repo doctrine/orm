@@ -927,6 +927,31 @@ Implementing your own resolver:
     $configurations->setEntityListenerResolver(new MyEntityListenerResolver);
     $entityManager = new EntityManager(.., $configurations, ..);
 
+Adding entity listeners at runtime
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Sometimes it's more convenient to set listeners dynamically rather than specifying them in `EntityListeners` attribute.
+For example, you want to use some listener only at development, or you need to configure the listener instance before use.
+
+.. code-block:: php
+
+    <?php
+    use Doctrine\ORM\Events;
+    use Doctrine\ORM\Mapping\Builder\EntityListenerBuilder;
+    /*...*/
+    $metaData = $entityManager->getClassMetadata($entityClassName);
+    $metaData->addEntityListener(Events::prePersist, $listenerClassName, $listenerMethodName);
+    // or you can use auto binding of listener methods:
+    EntityListenerBuilder::bindEntityListener($metaData, $listenerClassName);
+
+If you want to use a specific listener instance, you need to register it first (this makes sense when you need to setup a listener before use):
+
+.. code-block:: php
+
+    $entityManager->getConfiguration()->getEntityListenerResolver()->register($listenerInstance);
+
+Note: you can add only one instance of a listener class.
+
 .. _reference-events-load-class-metadata:
 
 Load ClassMetadata Event
@@ -968,6 +993,8 @@ or could be found. This event is not a lifecycle callback.
 
 SchemaTool Events
 -----------------
+
+.. code-block:: php
 
 It is possible to access the schema metadata during schema changes that are happening in ``Doctrine\ORM\Tools\SchemaTool``.
 There are two different events where you can hook in.
