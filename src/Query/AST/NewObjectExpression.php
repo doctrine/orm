@@ -16,12 +16,17 @@ use function func_num_args;
  */
 class NewObjectExpression extends Node
 {
+    public bool $hasNamedArgs = false;
+
     /**
      * @param class-string $className
      * @param mixed[]      $args
      */
-    public function __construct(public string $className, public array $args)
+    public function __construct(public string $className, public array $args /*, public bool $hasNamedArgs = false */)
     {
+        if (func_num_args() > 2) {
+            $this->hasNamedArgs = func_get_arg(2);
+        }
     }
 
     public function dispatch(SqlWalker $walker /*, string|null $parentAlias = null */): string
