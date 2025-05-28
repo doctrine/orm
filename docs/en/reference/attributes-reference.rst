@@ -213,12 +213,15 @@ Optional parameters:
    -  ``check``: Adds a check constraint type to the column (might not
       be supported by all vendors).
 
--  **columnDefinition**: DDL SQL snippet that starts after the column
+-  **columnDefinition**: Specify the DDL SQL snippet that starts after the column
    name and specifies the complete (non-portable!) column definition.
    This attribute allows to make use of advanced RMDBS features.
-   However you should make careful use of this feature and the
-   consequences. ``SchemaTool`` will not detect changes on the column correctly
-   anymore if you use ``columnDefinition``.
+   However, as this needs to be specified in the DDL native to the database,
+   the resulting schema changes are no longer portable. If you specify a
+   ``columnDefinition``, the ``SchemaTool`` ignores all other attributes
+   that are normally used to build the definition DDL. Changes to the
+   ``columnDefinition`` are not detected, you will need to manually create a
+   migration to apply changes.
 
    Additionally you should remember that the ``type``
    attribute still handles the conversion between PHP and Database
@@ -261,10 +264,11 @@ Examples:
     )]
     protected $loginCount;
 
-    // MySQL example: full_name char(41) GENERATED ALWAYS AS (concat(firstname,' ',lastname)),
+    // columnDefinition is raw SQL, not DQL. This example works for MySQL:
     #[Column(
         type: "string",
         name: "user_fullname",
+        columnDefinition: "VARCHAR(255) GENERATED ALWAYS AS (concat(firstname,' ',lastname))",
         insertable: false,
         updatable: false
     )]
@@ -366,7 +370,7 @@ Optional parameters:
 
 -  **type**: By default this is string.
 -  **length**: By default this is 255.
--  **columnDefinition**: By default this is null the definition according to the type will be used. This option allows to override it.
+-  **columnDefinition**: Allows to override how the column is generated. See the "columnDefinition" attribute on :ref:`#[Column] <attrref_column>`
 -  **enumType**: By default this is `null`. Allows to map discriminatorColumn value to PHP enum
 -  **options**: See "options" attribute on :ref:`#[Column] <attrref_column>`.
 
@@ -678,8 +682,10 @@ Optional parameters:
 -  **onDelete**: Cascade Action (Database-level)
 -  **columnDefinition**: DDL SQL snippet that starts after the column
    name and specifies the complete (non-portable!) column definition.
-   This attribute enables the use of advanced RMDBS features. Using
-   this attribute on ``#[JoinColumn]`` is necessary if you need slightly
+   This attribute enables the use of advanced RMDBS features. Note that you
+   need to reference columns by their database name (either explicitly set in
+   the mapping or per the current :doc:`naming strategy <namingstrategy>`).
+   Using this attribute on ``#[JoinColumn]`` is necessary if you need
    different column definitions for joining columns, for example
    regarding NULL/NOT NULL defaults. However by default a
    "columnDefinition" attribute on :ref:`#[Column] <attrref_column>` also sets

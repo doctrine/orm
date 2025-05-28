@@ -103,6 +103,7 @@ Cookbook
 
 * **Patterns**:
   :doc:`Aggregate Fields <cookbook/aggregate-fields>` \|
+  :doc:`Generated/Virtual Columns <cookbook/generated-columns>` \|
   :doc:`Decorator Pattern <cookbook/decorator-pattern>` \|
   :doc:`Strategy Pattern <cookbook/strategy-cookbook-introduction>`
 
@@ -123,4 +124,5 @@ Cookbook
 
 * **Custom Datatypes**
   :doc:`MySQL Enums <cookbook/mysql-enums>`
+  :doc:`Custom Mapping Types <cookbook/custom-mapping-types>`
   :doc:`Advanced Field Value Conversion <cookbook/advanced-field-value-conversion-using-custom-mapping-types>`

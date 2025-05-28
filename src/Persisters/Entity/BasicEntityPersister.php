@@ -226,6 +226,16 @@ class BasicEntityPersister implements EntityPersister
         );
     }
 
+    final protected function isFilterHashUpToDate(): bool
+    {
+        return $this->filterHash === $this->em->getFilters()->getHash();
+    }
+
+    final protected function updateFilterHash(): void
+    {
+        $this->filterHash = $this->em->getFilters()->getHash();
+    }
+
     /**
      * {@inheritDoc}
      */
@@ -1274,7 +1284,7 @@ class BasicEntityPersister implements EntityPersister
      */
     protected function getSelectColumnsSQL()
     {
-        if ($this->currentPersisterContext->selectColumnListSql !== null && $this->filterHash === $this->em->getFilters()->getHash()) {
+        if ($this->currentPersisterContext->selectColumnListSql !== null && $this->isFilterHashUpToDate()) {
             return $this->currentPersisterContext->selectColumnListSql;
         }
 
@@ -1387,7 +1397,7 @@ class BasicEntityPersister implements EntityPersister
         }
 
         $this->currentPersisterContext->selectColumnListSql = implode(', ', $columnList);
-        $this->filterHash                                   = $this->em->getFilters()->getHash();
+        $this->updateFilterHash();
 
         return $this->currentPersisterContext->selectColumnListSql;
     }

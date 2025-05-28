@@ -65,6 +65,7 @@
    cookbook/decorator-pattern
    cookbook/dql-custom-walkers
    cookbook/dql-user-defined-functions
+   cookbook/generated-columns
    cookbook/implementing-arrayaccess-for-domain-objects
    cookbook/implementing-the-notify-changetracking-policy
    cookbook/resolve-target-entity-listener
