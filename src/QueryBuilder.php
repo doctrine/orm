@@ -8,6 +8,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\ParameterType;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Internal\NoUnknownNamedArguments;
 use Doctrine\ORM\Internal\QueryType;
 use Doctrine\ORM\Query\Expr;
@@ -442,7 +443,8 @@ class QueryBuilder implements Stringable
      * </code>
      *
      * @param string|int                                       $key  The parameter position or name.
-     * @param ParameterType|ArrayParameterType|string|int|null $type ParameterType::*, ArrayParameterType::* or \Doctrine\DBAL\Types\Type::* constant
+     * @param ParameterType|ArrayParameterType|string|int|null $type ParameterType::*, ArrayParameterType::* or \Doctrine\DBAL\Types\Types::* constant
+     * @phpstan-param ParameterType|ArrayParameterType|Types::*|null $type
      *
      * @return $this
      */
@@ -1363,8 +1365,9 @@ class QueryBuilder implements Stringable
      *      ->orWhere('u.username = ' . $qb->createNamedParameter('Bar', Types::STRING))
      *  </code>
      *
-     * @param ParameterType|ArrayParameterType|string|int|null $type        ParameterType::*, ArrayParameterType::* or \Doctrine\DBAL\Types\Type::* constant
+     * @param ParameterType|ArrayParameterType|string|int|null $type        ParameterType::*, ArrayParameterType::* or \Doctrine\DBAL\Types\Types::* constant
      * @param non-empty-string|null                            $placeholder The name to bind with. The string must start with a colon ':'.
+     * @phpstan-param ParameterType|ArrayParameterType|Types::*|null $type
      *
      * @return non-empty-string the placeholder name used.
      */

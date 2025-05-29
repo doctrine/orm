@@ -25,9 +25,10 @@ use function is_int;
 final class ParameterTypeInferer
 {
     /**
-     * Infers type of a given value, returning a compatible constant:
-     * - Type (\Doctrine\DBAL\Types\Type::*)
-     * - Connection (\Doctrine\DBAL\Connection::PARAM_*)
+     * Infers type of a given value, returning a compatible constant/enum:
+     * - DBAL Type name (\Doctrine\DBAL\Types\Types::*)
+     * - ParameterType
+     * - ArrayParameterType
      */
     public static function inferType(mixed $value): ParameterType|ArrayParameterType|int|string
     {
