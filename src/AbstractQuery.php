@@ -313,7 +313,13 @@ abstract class AbstractQuery
             $parameters = $parameterCollection;
         }
 
-        $this->parameters = $parameters;
+        foreach ($parameters as $parameter) {
+            $this->setParameter(
+                $parameter->getName(),
+                $parameter->getValue(),
+                $parameter->typeWasSpecified() ? $parameter->getType() : null,
+            );
+        }
 
         return $this;
     }

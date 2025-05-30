@@ -987,4 +987,24 @@ class QueryTest extends OrmFunctionalTestCase
         self::assertInstanceOf(CmsUser::class, $users[2]);
         self::assertNull($users[3]);
     }
+
+    public function testSetParametersWontRemoveExistingParameters(): void
+    {
+        $parameters = new ArrayCollection();
+        $parameters->add(new Parameter(1, 'jwage'));
+        $parameters->add(new Parameter(2, 'active'));
+
+        $query = $this->_em->createQuery('SELECT u FROM ' . CmsUser::class . ' u WHERE u.name = ?1 AND u.status = ?2 AND u.username = ?3')
+            ->setParameters($parameters);
+
+        $query->setParameters(new ArrayCollection([
+            new Parameter(1, 'new-jwage'),
+            new Parameter(3, 'test-jwage'),
+        ]))->getResult();
+
+        self::assertSame(
+            [1 => 'new-jwage', 2 => 'active', 3 => 'test-jwage'],
+            $this->getLastLoggedQuery()['params'],
+        );
+    }
 }
