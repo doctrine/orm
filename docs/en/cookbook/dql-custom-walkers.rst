@@ -255,7 +255,6 @@ Modify the Output Walker to get the raw SQL with interpolated parameters
                 });
 
             if (is_string($typeName) && Type::hasType($typeName)) {
-                dump(get_defined_vars(), Type::getType($typeName)->convertToDatabaseValue($value, $platform));
                 return Type::getType($typeName)->convertToDatabaseValue($value, $platform);
             }
             if ($typeName instanceof ParameterType) {
