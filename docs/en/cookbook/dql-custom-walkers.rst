@@ -40,7 +40,8 @@ Now this is all awfully technical, so let me come to some use-cases
 fast to keep you motivated. Using walker implementation you can for
 example:
 
-
+-  Modify the Output walker to get the raw SQL via ``Query->getSQL()``
+   with interpolated parameters.
 -  Modify the AST to generate a Count Query to be used with a
    paginator for any given DQL query.
 -  Modify the Output Walker to generate vendor-specific SQL
@@ -50,7 +51,7 @@ example:
 -  Modify the Output walker to pretty print the SQL for debugging
    purposes.
 
-In this cookbook-entry I will show examples of the first two
+In this cookbook-entry I will show examples of the first three
 points. There are probably much more use-cases.
 
 Generic count query for pagination
@@ -215,3 +216,75 @@ huge benefits with using vendor specific features. This would still
 allow you write DQL queries instead of NativeQueries to make use of
 vendor specific features.
 
+Modify the Output Walker to get the raw SQL with interpolated parameters
+--------------------------------------------------------
+
+.. code-block:: php
+
+    <?php
+    use Doctrine\DBAL\ArrayParameterType;
+    use Doctrine\DBAL\ParameterType;
+    use Doctrine\DBAL\Types\BooleanType;
+    use Doctrine\DBAL\Types\Exception\ValueNotConvertible;
+    use Doctrine\DBAL\Types\Type;
+    use Doctrine\ORM\Query\SqlWalker;
+    use Doctrine\ORM\Query\AST;
+
+    class InterpolateParametersSQLOutputWalker extends SqlWalker
+    {
+        /** {@inheritdoc} */
+        public function walkInputParameter(AST\InputParameter $inputParam): string
+        {
+            $parameter = $this->getQuery()->getParameter($inputParam->name);
+            if ($parameter === null) {
+                return '?';
+            }
+
+            $value = $parameter->getValue();
+            /** @var ParameterType|ArrayParameterType|int|string $typeName */
+            /** @see \Doctrine\ORM\Query\ParameterTypeInferer::inferType() */
+            $typeName = $parameter->getType();
+            $platform = $this->getConnection()->getDatabasePlatform();
+            $processParameterType = static fn(ParameterType $type) => static fn($value): string =>
+                (match ($type) { /** @see Type::getBindingType() */
+                    ParameterType::NULL => 'NULL',
+                    ParameterType::INTEGER => $value,
+                    ParameterType::BOOLEAN => (new BooleanType())->convertToDatabaseValue($value, $platform),
+                    ParameterType::STRING, ParameterType::ASCII => $platform->quoteStringLiteral($value),
+                    default => throw new ValueNotConvertible($value, $type->name)
+                });
+
+            if (is_string($typeName) && Type::hasType($typeName)) {
+                dump(get_defined_vars(), Type::getType($typeName)->convertToDatabaseValue($value, $platform));
+                return Type::getType($typeName)->convertToDatabaseValue($value, $platform);
+            }
+            if ($typeName instanceof ParameterType) {
+                return $processParameterType($typeName)($value);
+            }
+            if ($typeName instanceof ArrayParameterType && is_array($value)) {
+                $type = ArrayParameterType::toElementParameterType($typeName);
+                return implode(', ', array_map($processParameterType($type), $value));
+            }
+
+            throw new ValueNotConvertible($value, $typeName);
+        }
+    }
+
+Then you may get raw SQL with:
+
+.. code-block:: php
+
+    <?php
+    $query
+        ->where('t.int IN (:ints)')->setParameter(':ints', [1, 2])
+        ->orWhere('t.string IN (?0)')->setParameter(0, ['3', '4'])
+        ->orWhere("t.bool = ?1")->setParameter('?1', true)
+        ->orWhere("t.string = :string")->setParameter(':string', 'ABC')
+        ->setHint(\Doctrine\ORM\Query::HINT_CUSTOM_OUTPUT_WALKER, InterpolateParametersSQLOutputWalker::class)
+        ->getSQL();
+
+The where clause of returned SQL should be like:
+
+.. code-block:: sql
+
+    ... WHERE t0_.int IN (1, 2) OR t0_.string IN ('3', '4') OR t0_.bool = 1 OR t0_.string = 'ABC' ...
