@@ -287,4 +287,7 @@ The where clause of returned SQL should be like:
 
 .. code-block:: sql
 
-    ... WHERE t0_.int IN (1, 2) OR t0_.string IN ('3', '4') OR t0_.bool = 1 OR t0_.string = 'ABC' ...
+    WHERE t0_.int IN (1, 2)
+       OR t0_.string IN ('3', '4')
+       OR t0_.bool = 1
+       OR t0_.string = 'ABC'
