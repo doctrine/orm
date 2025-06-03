@@ -227,10 +227,10 @@ Modify the Output Walker to get the raw SQL with interpolated parameters
     use Doctrine\DBAL\Types\BooleanType;
     use Doctrine\DBAL\Types\Exception\ValueNotConvertible;
     use Doctrine\DBAL\Types\Type;
-    use Doctrine\ORM\Query\SqlWalker;
     use Doctrine\ORM\Query\AST;
+    use Doctrine\ORM\Query\SqlOutputWalker;
 
-    class InterpolateParametersSQLOutputWalker extends SqlWalker
+    class InterpolateParametersSQLOutputWalker extends SqlOutputWalker
     {
         /** {@inheritdoc} */
         public function walkInputParameter(AST\InputParameter $inputParam): string
