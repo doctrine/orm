@@ -1,5 +1,40 @@
 # Upgrade to 4.0
 
+## BC BREAK: New argument to `NewObjectExpression::dispatch()`
+
+```diff
+ <?php
+ class NewObjectExpression extends Node
+ {
+     // …
+
+-    public function dispatch(SqlWalker $walker): string
++    public function dispatch(SqlWalker $walker, string|null $parentAlias = null): string
+     {
+         // …
+     }
+ }
+```
+
+## BC BREAK: New argument to `AbstractEntityPersister::buildCollectionCacheKey()`
+
+
+```diff
+ <?php
+ abstract class AbstractEntityPersister implements CachedEntityPersister
+ {
+     // …
+
+     protected function buildCollectionCacheKey(
+         AssociationMapping $association,
+         array $ownerId,
++        string $filterHash
+     ): CollectionCacheKey {
+         // …
+     }
+ }
+```
+
 ## Require implementation of `OutputWalker`, remove `SqlWalker::getExecutor()`
 
 The `SqlWalker::getExecutor()` method is removed. Output walkers should

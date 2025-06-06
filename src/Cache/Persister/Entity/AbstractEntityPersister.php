@@ -29,7 +29,6 @@ use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\ORM\UnitOfWork;
 
 use function array_merge;
-use function func_get_args;
 use function serialize;
 use function sha1;
 
@@ -550,10 +549,8 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
     }
 
     /** @param array<string, mixed> $ownerId */
-    protected function buildCollectionCacheKey(AssociationMapping $association, array $ownerId, /* string $filterHash */): CollectionCacheKey
+    protected function buildCollectionCacheKey(AssociationMapping $association, array $ownerId, string $filterHash): CollectionCacheKey
     {
-        $filterHash = (string) (func_get_args()[2] ?? ''); // todo: move to argument in next major release
-
         return new CollectionCacheKey(
             $this->metadataFactory->getMetadataFor($association->sourceEntity)->rootEntityName,
             $association->fieldName,
