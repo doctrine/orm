@@ -1109,6 +1109,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
 
     public function setLazyGhostObjectEnabled(bool $flag): void
     {
+        // @phpstan-ignore classConstant.deprecatedTrait (Because we support Symfony < 7.3)
         if ($flag && ! trait_exists(LazyGhostTrait::class)) {
             throw new LogicException(
                 'Lazy ghost objects cannot be enabled because the "symfony/var-exporter" library'

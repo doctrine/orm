@@ -568,6 +568,7 @@ EOPHP;
 
     private function generateUseLazyGhostTrait(ClassMetadata $class): string
     {
+        // @phpstan-ignore staticMethod.deprecated (Because we support Symfony < 7.3)
         $code = ProxyHelper::generateLazyGhost($class->getReflectionClass());
         $code = substr($code, 7 + (int) strpos($code, "\n{"));
         $code = substr($code, 0, (int) strpos($code, "\n}"));
