@@ -718,7 +718,7 @@ Eager Loading can also be configured at runtime through
 Eager loading for many-to-one and one-to-one associations is using either a
 LEFT JOIN or a second query for fetching the related entity eagerly.
 
-Eager loading for many-to-one associations uses a second query to load
+Eager loading for one-to-many associations uses a second query to load
 the collections for several entities at the same time.
 
 When many-to-many, one-to-one or one-to-many associations are eagerly loaded,
