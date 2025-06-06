@@ -15,8 +15,8 @@ There is no explicit mapping instruction for generated columns. Instead, you
 specify that the column should not be written to, and define a custom column
 definition.
 
-.. code-block:: php
-    .. literalinclude:: generated-columns/Person.php
+.. literalinclude:: generated-columns/Person.php
+   :language: php
 
 * ``insertable``, ``updatable``: Setting these to false tells Doctrine to never
   write this column - writing to a generated column would result in an error
@@ -40,5 +40,5 @@ Lets assume we have an entity that stores a blogpost as structured JSON.
 To avoid extracting all titles on the fly when listing the posts, we create a
 generated column with the field.
 
-.. code-block:: php
-    .. literalinclude:: generated-columns/Article.php
+.. literalinclude:: generated-columns/Article.php
+   :language: php
