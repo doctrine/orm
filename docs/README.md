@@ -1,18 +1,22 @@
 # Doctrine ORM Documentation
 
+The documentation is written in [ReStructured Text](https://docutils.sourceforge.io/rst.html).
+
 ## How to Generate:
-Using Ubuntu 14.04 LTS:
 
-1. Run ./bin/install-dependencies.sh
-2. Run ./bin/generate-docs.sh
+In the `docs/` folder, run
 
-It will generate the documentation into the build directory of the checkout.
+    composer update
 
+Then compile the documentation with:
 
-## Theme issues
+    make html
 
-If you get a "Theme error", check if the `en/_theme` subdirectory is empty,
-in which case you will need to run:
+This will generate the documentation into the `build` subdirectory.
 
-1. git submodule init
-2. git submodule update
+To browse the documentation, you need to run a webserver:
+
+    cd build/html
+    php -S localhost:8000
+
+Now the documentation is available at [http://localhost:8000](http://localhost:8000).
