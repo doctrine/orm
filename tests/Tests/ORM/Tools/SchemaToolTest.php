@@ -5,6 +5,13 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Tools;
 
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Schema\ForeignKeyConstraintEditor;
+use Doctrine\DBAL\Schema\Index as DbalIndex;
+use Doctrine\DBAL\Schema\Index\IndexedColumn;
+use Doctrine\DBAL\Schema\Index\IndexType;
+use Doctrine\DBAL\Schema\Name\UnqualifiedName;
+use Doctrine\DBAL\Schema\PrimaryKeyConstraintEditor;
+use Doctrine\DBAL\Schema\Table as DbalTable;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
@@ -43,8 +50,12 @@ use Doctrine\Tests\Models\NullDefault\NullDefaultColumn;
 use Doctrine\Tests\OrmTestCase;
 use PHPUnit\Framework\Attributes\Group;
 
+use function array_map;
+use function class_exists;
 use function count;
 use function current;
+use function enum_exists;
+use function method_exists;
 
 class SchemaToolTest extends OrmTestCase
 {
@@ -66,7 +77,7 @@ class SchemaToolTest extends OrmTestCase
         $schema = $schemaTool->getSchemaFromMetadata($classes);
 
         self::assertTrue($schema->hasTable('cms_users'), 'Table cms_users should exist.');
-        self::assertTrue($schema->getTable('cms_users')->columnsAreIndexed(['username']), 'username column should be indexed.');
+        self::assertTrue(self::columnIsIndexed($schema->getTable('cms_users'), 'username'), 'username column should be indexed.');
     }
 
     public function testAttributeOptionsArgument(): void
@@ -230,10 +241,15 @@ class SchemaToolTest extends OrmTestCase
 
         self::assertTrue($schema->hasTable('first_entity'), 'Table first_entity should exist.');
 
-        $indexes = $schema->getTable('first_entity')->getIndexes();
+        $table = $schema->getTable('first_entity');
+
+        self::assertTrue($table->hasIndex('primary'), 'Table should have a primary key.');
+
+        $primaryKey = $table->getIndex('primary');
+        $indexes    = $table->getIndexes();
 
         self::assertCount(1, $indexes, 'there should be only one index');
-        self::assertTrue(current($indexes)->isPrimary(), 'index should be primary');
+        self::assertSame($primaryKey, current($indexes), 'index should be primary');
     }
 
     public function testSetDiscriminatorColumnWithoutLength(): void
@@ -301,13 +317,23 @@ class SchemaToolTest extends OrmTestCase
         self::assertTrue($schema->hasTable('joined_derived_root'));
         self::assertTrue($schema->hasTable('joined_derived_child'));
 
-        $rootTable = $schema->getTable('joined_derived_root');
-        self::assertNotNull($rootTable->getPrimaryKey());
-        self::assertSame(['keyPart1_id', 'keyPart2'], $rootTable->getPrimaryKey()->getColumns());
+        if (class_exists(PrimaryKeyConstraintEditor::class)) {
+            $rootTable = $schema->getTable('joined_derived_root');
+            self::assertNotNull($rootTable->getPrimaryKeyConstraint());
+            self::assertSame(['keyPart1_id', 'keyPart2'], array_map(static fn (UnqualifiedName $name) => $name->toString(), $rootTable->getPrimaryKeyConstraint()->getColumnNames()));
 
-        $childTable = $schema->getTable('joined_derived_child');
-        self::assertNotNull($childTable->getPrimaryKey());
-        self::assertSame(['keyPart1_id', 'keyPart2'], $childTable->getPrimaryKey()->getColumns());
+            $childTable = $schema->getTable('joined_derived_child');
+            self::assertNotNull($childTable->getPrimaryKeyConstraint());
+            self::assertSame(['keyPart1_id', 'keyPart2'], array_map(static fn (UnqualifiedName $name) => $name->toString(), $childTable->getPrimaryKeyConstraint()->getColumnNames()));
+        } else {
+            $rootTable = $schema->getTable('joined_derived_root');
+            self::assertNotNull($rootTable->getPrimaryKey());
+            self::assertSame(['keyPart1_id', 'keyPart2'], self::getIndexedColumns($rootTable->getPrimaryKey()));
+
+            $childTable = $schema->getTable('joined_derived_child');
+            self::assertNotNull($childTable->getPrimaryKey());
+            self::assertSame(['keyPart1_id', 'keyPart2'], self::getIndexedColumns($childTable->getPrimaryKey()));
+        }
 
         $childTableForeignKeys = $childTable->getForeignKeys();
 
@@ -319,12 +345,21 @@ class SchemaToolTest extends OrmTestCase
         ];
 
         foreach ($childTableForeignKeys as $foreignKey) {
-            self::assertArrayHasKey($foreignKey->getForeignTableName(), $expectedColumns);
+            if (class_exists(ForeignKeyConstraintEditor::class)) {
+                self::assertArrayHasKey($foreignKey->getReferencedTableName()->toString(), $expectedColumns);
 
-            [$localColumns, $foreignColumns] = $expectedColumns[$foreignKey->getForeignTableName()];
+                [$localColumns, $foreignColumns] = $expectedColumns[$foreignKey->getReferencedTableName()->toString()];
 
-            self::assertSame($localColumns, $foreignKey->getLocalColumns());
-            self::assertSame($foreignColumns, $foreignKey->getForeignColumns());
+                self::assertSame($localColumns, array_map(static fn (UnqualifiedName $name) => $name->toString(), $foreignKey->getReferencingColumnNames()));
+                self::assertSame($foreignColumns, array_map(static fn (UnqualifiedName $name) => $name->toString(), $foreignKey->getReferencedColumnNames()));
+            } else {
+                self::assertArrayHasKey($foreignKey->getForeignTableName(), $expectedColumns);
+
+                [$localColumns, $foreignColumns] = $expectedColumns[$foreignKey->getForeignTableName()];
+
+                self::assertSame($localColumns, $foreignKey->getLocalColumns());
+                self::assertSame($foreignColumns, $foreignKey->getForeignColumns());
+            }
         }
     }
 
@@ -338,8 +373,8 @@ class SchemaToolTest extends OrmTestCase
         $schema     = $schemaTool->getSchemaFromMetadata([$metadata]);
         $table      = $schema->getTable('field_index');
 
-        self::assertEquals(['index', 'field_name'], $table->getIndex('index')->getColumns());
-        self::assertEquals(['index', 'table'], $table->getIndex('uniq')->getColumns());
+        self::assertEquals(['index', 'field_name'], self::getIndexedColumns($table->getIndex('index')));
+        self::assertEquals(['index', 'table'], self::getIndexedColumns($table->getIndex('uniq')));
     }
 
     public function testIncorrectIndexesBasedOnFields(): void
@@ -417,8 +452,34 @@ class SchemaToolTest extends OrmTestCase
 
         $tableIndex = $tableEntity->getIndex('uniq_2d81a3ed5bf54558875f7fd5');
 
-        self::assertTrue($tableIndex->isUnique());
-        self::assertSame(['field', 'anotherField'], $tableIndex->getColumns());
+        if (enum_exists(IndexType::class)) {
+            self::assertSame(IndexType::UNIQUE, $tableIndex->getType());
+        } else {
+            self::assertTrue($tableIndex->isUnique());
+        }
+
+        self::assertSame(['field', 'anotherField'], self::getIndexedColumns($tableIndex));
+    }
+
+    /** @return string[] */
+    private static function getIndexedColumns(DbalIndex $index): array
+    {
+        if (method_exists(DbalIndex::class, 'getIndexedColumns')) {
+            return array_map(static fn (IndexedColumn $indexedColumn) => $indexedColumn->getColumnName()->toString(), $index->getIndexedColumns());
+        }
+
+        return $index->getColumns();
+    }
+
+    private static function columnIsIndexed(DbalTable $table, string $column): bool
+    {
+        foreach ($table->getIndexes() as $index) {
+            if ($index->spansColumns([$column])) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }
 

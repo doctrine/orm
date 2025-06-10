@@ -11,6 +11,7 @@ use Doctrine\DBAL\Driver;
 use Doctrine\DBAL\Driver\Statement;
 use Doctrine\DBAL\Exception;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
+use Doctrine\DBAL\Schema\Name\UnquotedIdentifierFolding;
 use Doctrine\ORM\EntityNotFoundException;
 use Doctrine\ORM\Exception\EntityIdentityCollisionException;
 use Doctrine\ORM\Mapping\ClassMetadata;
@@ -38,6 +39,7 @@ use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\MockObject\MockObject;
 use stdClass;
 
+use function enum_exists;
 use function random_int;
 use function uniqid;
 
@@ -533,6 +535,7 @@ class UnitOfWorkTest extends OrmTestCase
     public function testCommitThrowOptimisticLockExceptionWhenConnectionCommitFails(): void
     {
         $platform = $this->getMockBuilder(AbstractPlatform::class)
+            ->setConstructorArgs(enum_exists(UnquotedIdentifierFolding::class) ? [UnquotedIdentifierFolding::UPPER] : [])
             ->onlyMethods(['supportsIdentityColumns'])
             ->getMockForAbstractClass();
         $platform->method('supportsIdentityColumns')

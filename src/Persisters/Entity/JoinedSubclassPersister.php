@@ -358,7 +358,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
     protected function getSelectColumnsSQL(): string
     {
         // Create the column list fragment only once
-        if ($this->currentPersisterContext->selectColumnListSql !== null) {
+        if ($this->currentPersisterContext->selectColumnListSql !== null && $this->isFilterHashUpToDate()) {
             return $this->currentPersisterContext->selectColumnListSql;
         }
 
@@ -445,6 +445,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
         }
 
         $this->currentPersisterContext->selectColumnListSql = implode(', ', $columnList);
+        $this->updateFilterHash();
 
         return $this->currentPersisterContext->selectColumnListSql;
     }
@@ -459,7 +460,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
             ? $this->class->getIdentifierColumnNames()
             : [];
 
-        foreach ($this->class->reflFields as $name => $field) {
+        foreach ($this->class->propertyAccessors as $name => $field) {
             if (
                 isset($this->class->fieldMappings[$name]->inherited)
                     && ! isset($this->class->fieldMappings[$name]->id)

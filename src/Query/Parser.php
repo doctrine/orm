@@ -1036,6 +1036,7 @@ final class Parser
         assert($this->lexer->token !== null);
         if ($this->lexer->isNextToken(TokenType::T_DOT)) {
             $this->match(TokenType::T_DOT);
+
             $this->match(TokenType::T_IDENTIFIER);
 
             $field = $this->lexer->token->value;
@@ -1104,6 +1105,64 @@ final class Parser
     public function CollectionValuedPathExpression(): AST\PathExpression
     {
         return $this->PathExpression(AST\PathExpression::TYPE_COLLECTION_VALUED_ASSOCIATION);
+    }
+
+    /**
+     * EntityAsDtoArgumentExpression ::= IdentificationVariable
+     */
+    public function EntityAsDtoArgumentExpression(): AST\EntityAsDtoArgumentExpression
+    {
+        assert($this->lexer->lookahead !== null);
+        $expression    = null;
+        $identVariable = null;
+        $peek          = $this->lexer->glimpse();
+        $lookaheadType = $this->lexer->lookahead->type;
+        assert($peek !== null);
+
+        assert($lookaheadType === TokenType::T_IDENTIFIER);
+        assert($peek->type !== TokenType::T_DOT);
+        assert($peek->type !== TokenType::T_OPEN_PARENTHESIS);
+
+        $expression = $identVariable = $this->IdentificationVariable();
+
+        // [["AS"] AliasResultVariable]
+        $mustHaveAliasResultVariable = false;
+
+        if ($this->lexer->isNextToken(TokenType::T_AS)) {
+            $this->match(TokenType::T_AS);
+
+            $mustHaveAliasResultVariable = true;
+        }
+
+        $aliasResultVariable = null;
+
+        if ($mustHaveAliasResultVariable || $this->lexer->isNextToken(TokenType::T_IDENTIFIER)) {
+            $token               = $this->lexer->lookahead;
+            $aliasResultVariable = $this->AliasResultVariable();
+
+            // Include AliasResultVariable in query components.
+            $this->queryComponents[$aliasResultVariable] = [
+                'resultVariable' => $expression,
+                'nestingLevel'   => $this->nestingLevel,
+                'token'          => $token,
+            ];
+        }
+
+        return new AST\EntityAsDtoArgumentExpression($expression, $identVariable);
+    }
+
+    /**
+     * AllFieldsExpression ::= IdentificationVariable
+     */
+    public function AllFieldsExpression(): AST\AllFieldsExpression
+    {
+        $identVariable = $this->IdentificationVariable();
+        assert($this->lexer->token !== null);
+
+        $this->match(TokenType::T_DOT);
+        $this->match(TokenType::T_MULTIPLY);
+
+        return new AST\AllFieldsExpression($identVariable);
     }
 
     /**
@@ -1767,6 +1826,7 @@ final class Parser
             $useNamedArguments = true;
         }
 
+        /** @var class-string $className */
         $className = $this->AbstractSchemaName(); // note that this is not yet validated
         $token     = $this->lexer->token;
 
@@ -1781,7 +1841,7 @@ final class Parser
 
         $this->match(TokenType::T_CLOSE_PARENTHESIS);
 
-        $expression = new AST\NewObjectExpression($className, $args);
+        $expression = new AST\NewObjectExpression($className, $args, $useNamedArguments);
 
         // Defer NewObjectExpression validation
         $this->deferredNewObjectExpressions[] = [
@@ -1828,7 +1888,7 @@ final class Parser
     }
 
     /**
-     * NewObjectArg ::= (ScalarExpression | "(" Subselect ")" | NewObjectExpression) ["AS" AliasResultVariable]
+     * NewObjectArg ::= ((ScalarExpression | "(" Subselect ")" | NewObjectExpression) ["AS" AliasResultVariable]) | AllFieldsExpression
      */
     public function NewObjectArg(string|null &$fieldAlias = null): mixed
     {
@@ -1848,13 +1908,19 @@ final class Parser
             $this->match(TokenType::T_CLOSE_PARENTHESIS);
         } elseif ($token->type === TokenType::T_NEW) {
             $expression = $this->NewObjectExpression();
+        } elseif ($token->type === TokenType::T_IDENTIFIER && $peek->type !== TokenType::T_DOT && $peek->type !== TokenType::T_OPEN_PARENTHESIS) {
+            $expression = $this->EntityAsDtoArgumentExpression();
         } else {
             $expression = $this->ScalarExpression();
         }
 
         if ($this->lexer->isNextToken(TokenType::T_AS)) {
             $this->match(TokenType::T_AS);
-            $fieldAlias = $this->AliasIdentificationVariable();
+            $this->match(TokenType::T_IDENTIFIER);
+
+            assert($this->lexer->token !== null);
+
+            $fieldAlias = $this->lexer->token->value;
         }
 
         return $expression;
@@ -1934,9 +2000,13 @@ final class Parser
             // it is no function, so it must be a field path
             case $lookahead === TokenType::T_IDENTIFIER:
                 $this->lexer->peek(); // lookahead => '.'
-                $this->lexer->peek(); // lookahead => token after '.'
-                $peek = $this->lexer->peek(); // lookahead => token after the token after the '.'
+                $token = $this->lexer->peek(); // lookahead => token after '.'
+                $peek  = $this->lexer->peek(); // lookahead => token after the token after the '.'
                 $this->lexer->resetPeek();
+
+                if ($token->value === '*') {
+                    return $this->AllFieldsExpression();
+                }
 
                 if ($this->isMathOperator($peek)) {
                     return $this->SimpleArithmeticExpression();

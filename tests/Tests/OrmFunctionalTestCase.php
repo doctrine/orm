@@ -10,6 +10,7 @@ use Doctrine\DBAL\Platforms\MySQLPlatform;
 use Doctrine\DBAL\Platforms\OraclePlatform;
 use Doctrine\DBAL\Platforms\PostgreSQLPlatform;
 use Doctrine\DBAL\Schema\AbstractSchemaManager;
+use Doctrine\DBAL\Schema\NamedObject;
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\DBAL\Schema\Table;
 use Doctrine\DBAL\Types\Type;
@@ -193,6 +194,7 @@ use function strtolower;
 use function var_export;
 
 use const PHP_EOL;
+use const PHP_VERSION_ID;
 
 /**
  * Base testcase class for all functional ORM testcases.
@@ -815,11 +817,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
         $this->_em->clear();
     }
 
-    /**
-     * @param array $classNames
-     *
-     * @throws RuntimeException
-     */
+    /** @throws RuntimeException */
     protected function setUpEntitySchema(array $classNames): void
     {
         if ($this->_em === null) {
@@ -939,6 +937,12 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             $config->setSecondLevelCacheConfiguration($cacheConfig);
 
             $this->isSecondLevelCacheEnabled = true;
+        }
+
+        $enableNativeLazyObjects = getenv('ENABLE_NATIVE_LAZY_OBJECTS');
+
+        if (PHP_VERSION_ID >= 80400 && $enableNativeLazyObjects) {
+            $config->enableNativeLazyObjects(true);
         }
 
         $config->setMetadataDriverImpl(
@@ -1108,7 +1112,12 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
     {
         $schemaManager = $this->createSchemaManager();
         $platform      = $this->_em->getConnection()->getDatabasePlatform();
-        $tableName     = $table->getQuotedName($platform);
+
+        if ($table instanceof NamedObject) {
+            $tableName = $table->getObjectName()->toSQL($platform);
+        } else {
+            $tableName = $table->getQuotedName($platform);
+        }
 
         $this->dropTableIfExists($tableName);
         $schemaManager->createTable($table);
@@ -1117,5 +1126,10 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
     final protected function isUninitializedObject(object $entity): bool
     {
         return $this->_em->getUnitOfWork()->isUninitializedObject($entity);
+    }
+
+    final protected function initializeObject(object $entity): void
+    {
+        $this->_em->getUnitOfWork()->initializeObject($entity);
     }
 }

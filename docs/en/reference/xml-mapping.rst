@@ -18,7 +18,7 @@ setup for the latest code in trunk.
 .. code-block:: xml
 
     <doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
-          xmlns:xsi="https://www.w3.org/2001/XMLSchema-instance"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
           xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
                               https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
 
@@ -46,7 +46,7 @@ In order to work, this requires certain conventions:
 .. code-block:: php
 
     <?php
-    $driver->setFileExtension('.xml');
+    $driver->getLocator()->setFileExtension('.xml');
 
 It is recommended to put all XML mapping documents in a single
 folder but you can spread the documents over several folders if you
@@ -104,7 +104,7 @@ of several common elements:
     // Doctrine.Tests.ORM.Mapping.User.dcm.xml
     <?xml version="1.0" encoding="UTF-8"?>
     <doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
-          xmlns:xsi="https://www.w3.org/2001/XMLSchema-instance"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
           xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
                               https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
 
@@ -770,7 +770,7 @@ entity relationship. You can define this in XML with the "association-key" attri
 .. code-block:: xml
 
     <doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
-          xmlns:xsi="https://www.w3.org/2001/XMLSchema-instance"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
           xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
                               https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
 

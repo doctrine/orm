@@ -8,10 +8,14 @@ use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Platforms\PostgreSQLPlatform;
 use Doctrine\DBAL\Platforms\SQLServerPlatform;
 use Doctrine\DBAL\Schema\AbstractSchemaManager;
+use Doctrine\DBAL\Schema\Name\Identifier;
+use Doctrine\DBAL\Schema\Name\UnqualifiedName;
+use Doctrine\DBAL\Schema\PrimaryKeyConstraint;
 use Doctrine\DBAL\Schema\Table;
 use PHPUnit\Framework\Attributes\Group;
 
 use function array_change_key_case;
+use function class_exists;
 use function count;
 use function strtolower;
 
@@ -36,12 +40,24 @@ class DatabaseDriverTest extends DatabaseDriverTestCase
     {
         $user = new Table('ddc2059_user');
         $user->addColumn('id', 'integer');
-        $user->setPrimaryKey(['id']);
+
+        if (class_exists(PrimaryKeyConstraint::class)) {
+            $user->addPrimaryKeyConstraint(new PrimaryKeyConstraint(null, [new UnqualifiedName(Identifier::unquoted('id'))], true));
+        } else {
+            $user->setPrimaryKey(['id']);
+        }
+
         $project = new Table('ddc2059_project');
         $project->addColumn('id', 'integer');
         $project->addColumn('user_id', 'integer');
         $project->addColumn('user', 'string');
-        $project->setPrimaryKey(['id']);
+
+        if (class_exists(PrimaryKeyConstraint::class)) {
+            $project->addPrimaryKeyConstraint(new PrimaryKeyConstraint(null, [new UnqualifiedName(Identifier::unquoted('id'))], true));
+        } else {
+            $project->setPrimaryKey(['id']);
+        }
+
         $project->addForeignKeyConstraint('ddc2059_user', ['user_id'], ['id']);
 
         $metadata = $this->convertToClassMetadata([$project, $user], []);
@@ -54,7 +70,13 @@ class DatabaseDriverTest extends DatabaseDriverTestCase
     {
         $table = new Table('dbdriver_foo');
         $table->addColumn('id', 'integer');
-        $table->setPrimaryKey(['id']);
+
+        if (class_exists(PrimaryKeyConstraint::class)) {
+            $table->addPrimaryKeyConstraint(new PrimaryKeyConstraint(null, [new UnqualifiedName(Identifier::unquoted('id'))], true));
+        } else {
+            $table->setPrimaryKey(['id']);
+        }
+
         $table->addColumn('bar', 'string', ['notnull' => false, 'length' => 200]);
 
         $this->dropAndCreateTable($table);
@@ -81,13 +103,24 @@ class DatabaseDriverTest extends DatabaseDriverTestCase
     {
         $tableB = new Table('dbdriver_bar');
         $tableB->addColumn('id', 'integer');
-        $tableB->setPrimaryKey(['id']);
+
+        if (class_exists(PrimaryKeyConstraint::class)) {
+            $tableB->addPrimaryKeyConstraint(new PrimaryKeyConstraint(null, [new UnqualifiedName(Identifier::unquoted('id'))], true));
+        } else {
+            $tableB->setPrimaryKey(['id']);
+        }
 
         $this->dropAndCreateTable($tableB);
 
         $tableA = new Table('dbdriver_baz');
         $tableA->addColumn('id', 'integer');
-        $tableA->setPrimaryKey(['id']);
+
+        if (class_exists(PrimaryKeyConstraint::class)) {
+            $tableA->addPrimaryKeyConstraint(new PrimaryKeyConstraint(null, [new UnqualifiedName(Identifier::unquoted('id'))], true));
+        } else {
+            $tableA->setPrimaryKey(['id']);
+        }
+
         $tableA->addColumn('bar_id', 'integer');
         $tableA->addForeignKeyConstraint('dbdriver_bar', ['bar_id'], ['id']);
 
@@ -127,11 +160,21 @@ class DatabaseDriverTest extends DatabaseDriverTestCase
     {
         $tableB = new Table('dbdriver_bar');
         $tableB->addColumn('id', 'integer');
-        $tableB->setPrimaryKey(['id']);
+
+        if (class_exists(PrimaryKeyConstraint::class)) {
+            $tableB->addPrimaryKeyConstraint(new PrimaryKeyConstraint(null, [new UnqualifiedName(Identifier::unquoted('id'))], true));
+        } else {
+            $tableB->setPrimaryKey(['id']);
+        }
 
         $tableA = new Table('dbdriver_baz');
         $tableA->addColumn('id', 'integer');
-        $tableA->setPrimaryKey(['id']);
+
+        if (class_exists(PrimaryKeyConstraint::class)) {
+            $tableA->addPrimaryKeyConstraint(new PrimaryKeyConstraint(null, [new UnqualifiedName(Identifier::unquoted('id'))], true));
+        } else {
+            $tableA->setPrimaryKey(['id']);
+        }
 
         $tableMany = new Table('dbdriver_bar_baz');
         $tableMany->addColumn('bar_id', 'integer');
@@ -148,7 +191,13 @@ class DatabaseDriverTest extends DatabaseDriverTestCase
         $table = new Table('dbdriver_foo');
 
         $table->addColumn('id', 'integer', ['unsigned' => true]);
-        $table->setPrimaryKey(['id']);
+
+        if (class_exists(PrimaryKeyConstraint::class)) {
+            $table->addPrimaryKeyConstraint(new PrimaryKeyConstraint(null, [new UnqualifiedName(Identifier::unquoted('id'))], true));
+        } else {
+            $table->setPrimaryKey(['id']);
+        }
+
         $table->addColumn('column_unsigned', 'integer', ['unsigned' => true]);
         $table->addColumn('column_comment', 'string', ['length' => 16, 'comment' => 'test_comment']);
         $table->addColumn('column_default', 'string', ['length' => 16, 'default' => 'test_default']);

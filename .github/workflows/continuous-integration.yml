@@ -9,7 +9,6 @@ on:
       - ci/**
       - composer.*
       - src/**
-      - phpunit.xml.dist
       - tests/**
   push:
     branches:
@@ -19,7 +18,6 @@ on:
       - ci/**
       - composer.*
       - src/**
-      - phpunit.xml.dist
       - tests/**
 
 env:
@@ -45,17 +43,27 @@ jobs:
           - "pdo_sqlite"
         deps:
           - "highest"
+        lazy_proxy:
+          - "0"
         include:
           - php-version: "8.2"
             dbal-version: "4@dev"
             extension: "pdo_sqlite"
+            lazy_proxy: "0"
           - php-version: "8.2"
             dbal-version: "4@dev"
             extension: "sqlite3"
+            lazy_proxy: "0"
           - php-version: "8.1"
             dbal-version: "default"
             deps: "lowest"
             extension: "pdo_sqlite"
+            lazy_proxy: "0"
+          - php-version: "8.4"
+            dbal-version: "default"
+            deps: "highest"
+            extension: "pdo_sqlite"
+            lazy_proxy: "1"
 
     steps:
       - name: "Checkout"
@@ -85,16 +93,18 @@ jobs:
         run: "vendor/bin/phpunit -c ci/github/phpunit/${{ matrix.extension }}.xml --coverage-clover=coverage-no-cache.xml"
         env:
             ENABLE_SECOND_LEVEL_CACHE: 0
+            ENABLE_LAZY_PROXY: ${{ matrix.lazy_proxy }}
 
       - name: "Run PHPUnit with Second Level Cache"
         run: "vendor/bin/phpunit -c ci/github/phpunit/${{ matrix.extension }}.xml --exclude-group performance,non-cacheable,locking_functional --coverage-clover=coverage-cache.xml"
         env:
             ENABLE_SECOND_LEVEL_CACHE: 1
+            ENABLE_LAZY_PROXY: ${{ matrix.lazy_proxy }}
 
       - name: "Upload coverage file"
         uses: "actions/upload-artifact@v4"
         with:
-          name: "phpunit-${{ matrix.extension }}-${{ matrix.php-version }}-${{ matrix.dbal-version }}-${{ matrix.deps }}-coverage"
+          name: "phpunit-${{ matrix.extension }}-${{ matrix.php-version }}-${{ matrix.dbal-version }}-${{ matrix.deps }}-${{ matrix.lazy_proxy }}-coverage"
           path: "coverage*.xml"
 
 
