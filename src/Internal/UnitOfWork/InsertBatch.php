@@ -37,6 +37,12 @@ final class InsertBatch
     /**
      * Note: Code in here is procedural/ugly due to it being in a hot path of the {@see UnitOfWork}
      *
+     * This method will batch the given entity set by type, preserving their order. For example,
+     * given an input [A1, A2, A3, B1, B2, A4, A5], it will create an [[A1, A2, A3], [B1, B2], [A4, A5]] batch.
+     *
+     * Entities for which the identifier needs to be generated or fetched by a sequence are put as single
+     * items in a batch of their own, since it is unsafe to batch-insert them.
+     *
      * @param list<TEntities> $entities
      *
      * @return list<self<TEntities>>
