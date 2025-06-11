@@ -31,6 +31,7 @@ use Doctrine\ORM\Id\AssignedGenerator;
 use Doctrine\ORM\Internal\HydrationCompleteHandler;
 use Doctrine\ORM\Internal\StronglyConnectedComponents;
 use Doctrine\ORM\Internal\TopologicalSort;
+use Doctrine\ORM\Internal\UnitOfWork\InsertBatch;
 use Doctrine\ORM\Mapping\AssociationMapping;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\MappingException;
@@ -61,7 +62,6 @@ use function array_map;
 use function array_sum;
 use function array_values;
 use function assert;
-use function count;
 use function current;
 use function get_debug_type;
 use function implode;
@@ -1038,41 +1038,18 @@ class UnitOfWork implements PropertyChangedListener
      */
     private function executeInserts(): void
     {
-        $entities         = $this->computeInsertExecutionOrder();
         $eventsToDispatch = [];
-        // @TODO #11977 this is ugly and to be tested: making it work, then refactoring later.
-        //       We assemble micro-batches to process together: this should probably occur in a `private` function?
         // @TODO #11977 test this by verifying the number of executed SQL queries in a flush operation?
         // @TODO #11977 could this be applied also to batch updates? If so, let's raise a new issue.
-        /** @var list<array{class: Mapping\ClassMetadata, entities: non-empty-list<object>}> $batchedByType */
-        $batchedByType = [];
-
-        foreach ($entities as $entity) {
-            $currentClass = ($batchedByType[count($batchedByType) - 1]['class'] ?? null)?->getName();
-            $entityClass  = $this->em->getClassMetadata($entity::class);
-
-            if (
-                $currentClass !== $entityClass->name
-                // don't batch things together, if an ID generator is needed
-                || $entityClass->idGenerator->isPostInsertGenerator()
-            ) {
-                $batchedByType[] = [
-                    'class'    => $entityClass,
-                    'entities' => [$entity],
-                ];
-
-                continue;
-            }
-
-            $batchedByType[count($batchedByType) - 1]['entities'][] = $entity;
-        }
+        /** @var list<InsertBatch<object>> $batchedByType */
+        $batchedByType = InsertBatch::batchByEntityType($this->em, $this->computeInsertExecutionOrder());
 
         foreach ($batchedByType as $batch) {
-            $class     = $batch['class'];
+            $class     = $batch->class;
             $invoke    = $this->listenersInvoker->getSubscribedSystems($class, Events::postPersist);
             $persister = $this->getEntityPersister($class->name);
 
-            foreach ($batch['entities'] as $entity) {
+            foreach ($batch->entities as $entity) {
                 $oid = spl_object_id($entity);
 
                 $persister->addInsert($entity);
@@ -1082,7 +1059,7 @@ class UnitOfWork implements PropertyChangedListener
 
             $persister->executeInserts();
 
-            foreach ($batch['entities'] as $entity) {
+            foreach ($batch->entities as $entity) {
                 $oid = spl_object_id($entity);
 
                 if (! isset($this->entityIdentifiers[$oid])) {
