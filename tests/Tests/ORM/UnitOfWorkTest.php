@@ -32,6 +32,7 @@ use Doctrine\Tests\Models\CMS\CmsPhonenumber;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\Models\Forum\ForumAvatar;
 use Doctrine\Tests\Models\Forum\ForumUser;
+use Doctrine\Tests\Models\MixedToOneIdentity\Country;
 use Doctrine\Tests\OrmTestCase;
 use Exception as BaseException;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -139,6 +140,25 @@ class UnitOfWorkTest extends OrmTestCase
 
         // should have an id
         self::assertIsNumeric($user->id);
+    }
+
+    #[Group('#11977')]
+    public function testMultipleInsertsAreBatchedInThePersister(): void
+    {
+        $userPersister = new EntityPersisterMock($this->_emMock, $this->_emMock->getClassMetadata(Country::class));
+        $this->_unitOfWork->setEntityPersister(Country::class, $userPersister);
+
+        $country1          = new Country();
+        $country1->country = 'Italy';
+        $country2          = new Country();
+        $country2->country = 'Germany';
+
+        $this->_unitOfWork->persist($country1);
+        $this->_unitOfWork->persist($country2);
+        $this->_unitOfWork->commit();
+
+        self::assertCount(2, $userPersister->getInserts());
+        self::assertSame(1, $userPersister->countOfExecuteInsertCalls());
     }
 
     /**

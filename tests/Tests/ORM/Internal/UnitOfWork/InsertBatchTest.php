@@ -10,10 +10,12 @@ use Doctrine\ORM\Id\IdentityGenerator;
 use Doctrine\ORM\Internal\UnitOfWork\InsertBatch;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\MockObject\Stub;
 use PHPUnit\Framework\TestCase;
 
 #[CoversClass(InsertBatch::class)]
+#[Group('#11977')]
 final class InsertBatchTest extends TestCase
 {
     private EntityManagerInterface&Stub $entityManager;

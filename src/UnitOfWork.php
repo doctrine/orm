@@ -1038,11 +1038,9 @@ class UnitOfWork implements PropertyChangedListener
      */
     private function executeInserts(): void
     {
-        $eventsToDispatch = [];
-        // @TODO #11977 test this by verifying the number of executed SQL queries in a flush operation?
-        // @TODO #11977 could this be applied also to batch updates? If so, let's raise a new issue.
         /** @var list<InsertBatch<object>> $batchedByType */
-        $batchedByType = InsertBatch::batchByEntityType($this->em, $this->computeInsertExecutionOrder());
+        $batchedByType    = InsertBatch::batchByEntityType($this->em, $this->computeInsertExecutionOrder());
+        $eventsToDispatch = [];
 
         foreach ($batchedByType as $batch) {
             $class     = $batch->class;

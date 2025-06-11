@@ -13,6 +13,8 @@ use Doctrine\ORM\Persisters\Entity\BasicEntityPersister;
  */
 class EntityPersisterMock extends BasicEntityPersister
 {
+    /** @var int<0, max> */
+    private int $countOfExecuteInsertCalls  = 0;
     private array $inserts                  = [];
     private array $updates                  = [];
     private array $deletes                  = [];
@@ -40,6 +42,8 @@ class EntityPersisterMock extends BasicEntityPersister
 
     public function executeInserts(): void
     {
+        $this->countOfExecuteInsertCalls += 1;
+
         foreach ($this->postInsertIds as $item) {
             $this->em->getUnitOfWork()->assignPostInsertId($item['entity'], $item['generatedId']);
         }
@@ -86,6 +90,7 @@ class EntityPersisterMock extends BasicEntityPersister
 
     public function reset(): void
     {
+        $this->countOfExecuteInsertCalls  = 0;
         $this->existsCalled               = false;
         $this->identityColumnValueCounter = 0;
         $this->inserts                    = [];
@@ -96,5 +101,11 @@ class EntityPersisterMock extends BasicEntityPersister
     public function isExistsCalled(): bool
     {
         return $this->existsCalled;
+    }
+
+    /** @return int<0, max> */
+    public function countOfExecuteInsertCalls(): int
+    {
+        return $this->countOfExecuteInsertCalls;
     }
 }
