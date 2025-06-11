@@ -54,6 +54,7 @@ use function array_map;
 use function class_exists;
 use function count;
 use function current;
+use function defined;
 use function enum_exists;
 use function method_exists;
 
