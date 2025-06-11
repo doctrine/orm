@@ -1038,7 +1038,6 @@ class UnitOfWork implements PropertyChangedListener
      */
     private function executeInserts(): void
     {
-        /** @var list<InsertBatch<object>> $batchedByType */
         $batchedByType    = InsertBatch::batchByEntityType($this->em, $this->computeInsertExecutionOrder());
         $eventsToDispatch = [];
 
