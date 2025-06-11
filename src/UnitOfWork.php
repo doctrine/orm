@@ -61,6 +61,7 @@ use function array_map;
 use function array_sum;
 use function array_values;
 use function assert;
+use function count;
 use function current;
 use function get_debug_type;
 use function implode;
@@ -1039,28 +1040,60 @@ class UnitOfWork implements PropertyChangedListener
     {
         $entities         = $this->computeInsertExecutionOrder();
         $eventsToDispatch = [];
+        // @TODO #11977 this is ugly and to be tested: making it work, then refactoring later.
+        //       We assemble micro-batches to process together: this should probably occur in a `private` function?
+        // @TODO #11977 test this by verifying the number of executed SQL queries in a flush operation?
+        // @TODO #11977 could this be applied also to batch updates? If so, let's raise a new issue.
+        /** @var list<array{class: Mapping\ClassMetadata, entities: non-empty-list<object>}> $batchedByType */
+        $batchedByType = [];
 
         foreach ($entities as $entity) {
-            $oid       = spl_object_id($entity);
-            $class     = $this->em->getClassMetadata($entity::class);
+            $currentClass = ($batchedByType[count($batchedByType) - 1]['class'] ?? null)?->getName();
+            $entityClass  = $this->em->getClassMetadata($entity::class);
+
+            if (
+                $currentClass !== $entityClass->name
+                // don't batch things together, if an ID generator is needed
+                || $entityClass->idGenerator->isPostInsertGenerator()
+            ) {
+                $batchedByType[] = [
+                    'class'    => $entityClass,
+                    'entities' => [$entity],
+                ];
+
+                continue;
+            }
+
+            $batchedByType[count($batchedByType) - 1]['entities'][] = $entity;
+        }
+
+        foreach ($batchedByType as $batch) {
+            $class     = $batch['class'];
+            $invoke    = $this->listenersInvoker->getSubscribedSystems($class, Events::postPersist);
             $persister = $this->getEntityPersister($class->name);
 
-            $persister->addInsert($entity);
+            foreach ($batch['entities'] as $entity) {
+                $oid = spl_object_id($entity);
 
-            unset($this->entityInsertions[$oid]);
+                $persister->addInsert($entity);
+
+                unset($this->entityInsertions[$oid]);
+            }
 
             $persister->executeInserts();
 
-            if (! isset($this->entityIdentifiers[$oid])) {
-                //entity was not added to identity map because some identifiers are foreign keys to new entities.
-                //add it now
-                $this->addToEntityIdentifiersAndEntityMap($class, $oid, $entity);
-            }
+            foreach ($batch['entities'] as $entity) {
+                $oid = spl_object_id($entity);
 
-            $invoke = $this->listenersInvoker->getSubscribedSystems($class, Events::postPersist);
+                if (! isset($this->entityIdentifiers[$oid])) {
+                    //entity was not added to identity map because some identifiers are foreign keys to new entities.
+                    //add it now
+                    $this->addToEntityIdentifiersAndEntityMap($class, $oid, $entity);
+                }
 
-            if ($invoke !== ListenersInvoker::INVOKE_NONE) {
-                $eventsToDispatch[] = ['class' => $class, 'entity' => $entity, 'invoke' => $invoke];
+                if ($invoke !== ListenersInvoker::INVOKE_NONE) {
+                    $eventsToDispatch[] = ['class' => $class, 'entity' => $entity, 'invoke' => $invoke];
+                }
             }
         }
 
