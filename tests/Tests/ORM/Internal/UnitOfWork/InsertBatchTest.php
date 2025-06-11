@@ -103,6 +103,31 @@ final class InsertBatchTest extends TestCase
         self::assertSame(EntityC::class, $batches[2]->class->name);
         self::assertCount(1, $batches[2]->entities);
     }
+
+    public function testWillIsolateBatchesForEntitiesWithGeneratedIdentifiers(): void
+    {
+        $batches = InsertBatch::batchByEntityType(
+            $this->entityManager,
+            [
+                new EntityA(),
+                new EntityA(),
+                new EntityC(),
+                new EntityC(),
+                new EntityA(),
+                new EntityA(),
+            ],
+        );
+
+        self::assertCount(4, $batches);
+        self::assertSame(EntityA::class, $batches[0]->class->name);
+        self::assertCount(2, $batches[0]->entities);
+        self::assertSame(EntityC::class, $batches[1]->class->name);
+        self::assertCount(1, $batches[1]->entities);
+        self::assertSame(EntityC::class, $batches[2]->class->name);
+        self::assertCount(1, $batches[2]->entities);
+        self::assertSame(EntityA::class, $batches[3]->class->name);
+        self::assertCount(2, $batches[3]->entities);
+    }
 }
 
 class EntityA
