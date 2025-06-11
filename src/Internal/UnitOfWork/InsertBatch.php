@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Internal\UnitOfWork;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Id\AssignedGenerator;
 use Doctrine\ORM\Mapping\ClassMetadata;
 
 /**
@@ -55,7 +56,7 @@ final class InsertBatch
 
             if (
                 $currentClass?->name !== $entityClass->name
-                || $entityClass->idGenerator->isPostInsertGenerator()
+                || ! $entityClass->idGenerator instanceof AssignedGenerator
             ) {
                 $currentClass = $entityClass;
                 $batches[]    = new InsertBatch($entityClass, [$entity]);
