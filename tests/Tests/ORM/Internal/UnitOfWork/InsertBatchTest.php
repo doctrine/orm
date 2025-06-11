@@ -57,6 +57,7 @@ final class InsertBatchTest extends TestCase
         );
 
         self::assertCount(1, $batches);
+        self::assertSame(EntityA::class, $batches[0]->class->name);
         self::assertCount(3, $batches[0]->entities);
     }
 
@@ -75,8 +76,11 @@ final class InsertBatchTest extends TestCase
         );
 
         self::assertCount(3, $batches);
+        self::assertSame(EntityA::class, $batches[0]->class->name);
         self::assertCount(2, $batches[0]->entities);
+        self::assertSame(EntityB::class, $batches[1]->class->name);
         self::assertCount(2, $batches[1]->entities);
+        self::assertSame(EntityA::class, $batches[2]->class->name);
         self::assertCount(2, $batches[2]->entities);
     }
 
@@ -92,8 +96,11 @@ final class InsertBatchTest extends TestCase
         );
 
         self::assertCount(3, $batches);
+        self::assertSame(EntityC::class, $batches[0]->class->name);
         self::assertCount(1, $batches[0]->entities);
+        self::assertSame(EntityC::class, $batches[1]->class->name);
         self::assertCount(1, $batches[1]->entities);
+        self::assertSame(EntityC::class, $batches[2]->class->name);
         self::assertCount(1, $batches[2]->entities);
     }
 }
