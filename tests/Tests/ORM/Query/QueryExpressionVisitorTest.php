@@ -63,7 +63,9 @@ class QueryExpressionVisitorTest extends TestCase
             [$cb->notIn('field', ['value']), $qb->notIn('o.field', ':field'), new Parameter('field', ['value'])],
 
             [$cb->contains('field', 'value'), $qb->like('o.field', ':field'), new Parameter('field', '%value%')],
+
             [$cb->memberOf(':field', 'o.field'), $qb->isMemberOf(':field', 'o.field')],
+            [$cb->memberOf('field', 'value'), $qb->isMemberOf(':field', 'o.field'), new Parameter('field', 'value')],
 
             [$cb->startsWith('field', 'value'), $qb->like('o.field', ':field'), new Parameter('field', 'value%')],
             [$cb->endsWith('field', 'value'), $qb->like('o.field', ':field'), new Parameter('field', '%value')],
