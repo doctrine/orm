@@ -57,7 +57,7 @@ class BasicEntityPersisterTypeValueSqlTest extends OrmTestCase
         $method = new ReflectionMethod($this->persister, 'getInsertSQL');
         $sql    = $method->invoke($this->persister);
 
-        self::assertEquals('INSERT INTO customtype_parents (customInteger, child_id) VALUES (ABS(?), ?)', $sql);
+        self::assertEquals('INSERT INTO customtype_parents (customInteger,child_id) VALUES (ABS(?),?)', $sql);
     }
 
     public function testUpdateUsesTypeValuesSQL(): void

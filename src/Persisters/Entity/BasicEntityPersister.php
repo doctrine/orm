@@ -54,6 +54,7 @@ use function count;
 use function implode;
 use function is_array;
 use function is_object;
+use function min;
 use function reset;
 use function spl_object_id;
 use function sprintf;
@@ -154,12 +155,6 @@ class BasicEntityPersister implements EntityPersister
     protected array $quotedColumns = [];
 
     /**
-     * The INSERT SQL statement used for entities handled by this persister.
-     * This SQL is only generated once per request, if at all.
-     */
-    private string|null $insertSql = null;
-
-    /**
      * The quote strategy.
      */
     protected QuoteStrategy $quoteStrategy;
@@ -174,6 +169,8 @@ class BasicEntityPersister implements EntityPersister
     private readonly CachedPersisterContext $noLimitsContext;
 
     private string|null $filterHash = null;
+    /** @var int<1, max> */
+    private int $maxBatchSize = 1;
 
     /**
      * Initializes a new <tt>BasicEntityPersister</tt> that uses the given EntityManager
@@ -244,21 +241,35 @@ class BasicEntityPersister implements EntityPersister
         $idGenerator    = $this->class->idGenerator;
         $isPostInsertId = $idGenerator->isPostInsertGenerator();
 
-        $stmt      = $this->conn->prepare($this->getInsertSQL());
+        // @TODO the last batch may have less inserts than our wished batch size: we need to account for that
+        $batchSize = min($this->maxBatchSize, count($this->queuedInserts));
+        $stmt      = $this->conn->prepare($this->getInsertSQL($batchSize));
         $tableName = $this->class->getTableName();
+
+        $paramIndex = 1;
+        $insertedCount = 0;
 
         foreach ($this->queuedInserts as $key => $entity) {
             $insertData = $this->prepareInsertData($entity);
 
             if (isset($insertData[$tableName])) {
-                $paramIndex = 1;
-
                 foreach ($insertData[$tableName] as $column => $value) {
                     $stmt->bindValue($paramIndex++, $value, $this->columnTypes[$column]);
                 }
             }
 
-            $stmt->executeStatement();
+            $insertedCount += 1;
+
+            if ($isPostInsertId
+                || ($insertedCount % $batchSize === 0)
+                // @TODO batches may have different lengths: each batch will likely need its own SQL generated
+                || $insertedCount === count($this->queuedInserts)
+            ) {
+                $stmt->executeStatement();
+                
+                // reset offset, fill another batch
+                $paramIndex = 1;
+            }
 
             if ($isPostInsertId) {
                 $generatedId = $idGenerator->generateId($this->em, $entity);
@@ -1416,20 +1427,19 @@ class BasicEntityPersister implements EntityPersister
         return ' INNER JOIN ' . $joinTableName . ' ON ' . implode(' AND ', $conditions);
     }
 
-    public function getInsertSQL(): string
+    // @TODO this cached API should not be `public`: let's instead add a `private` API (copy of this) to perform batching. 
+    // @TODO revert all changes to this public API: use a `private` API instead
+    // @TODO write a private method that returns `{fields: non-empty-string, values: non-empty-string}`, which we can reuse to assemble the final SQL.
+    /** @param int<1, max> $batchSize */
+    public function getInsertSQL(int $batchSize = 1): string
     {
-        if ($this->insertSql !== null) {
-            return $this->insertSql;
-        }
-
         $columns   = $this->getInsertColumnList();
         $tableName = $this->quoteStrategy->getTableName($this->class, $this->platform);
 
         if (empty($columns)) {
             $identityColumn  = $this->quoteStrategy->getColumnName($this->class->identifier[0], $this->class, $this->platform);
-            $this->insertSql = $this->platform->getEmptyIdentityInsertSQL($tableName, $identityColumn);
 
-            return $this->insertSql;
+            return $this->platform->getEmptyIdentityInsertSQL($tableName, $identityColumn);;
         }
 
         $values  = [];
@@ -1450,12 +1460,15 @@ class BasicEntityPersister implements EntityPersister
             $values[] = $placeholder;
         }
 
-        $columns = implode(', ', $columns);
-        $values  = implode(', ', $values);
+        $columns = implode(',', $columns);
+        $values  = array_fill(0, min($this->maxBatchSize, $batchSize), '(' . implode(',', $values) . ')');
 
-        $this->insertSql = sprintf('INSERT INTO %s (%s) VALUES (%s)', $tableName, $columns, $values);
-
-        return $this->insertSql;
+        return sprintf(
+            'INSERT INTO %s (%s) VALUES %s',
+            $tableName,
+            $columns,
+            implode(',', $values),
+        );
     }
 
     /**
