@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Persisters;
 
+use Doctrine\Common\EventManager;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Driver;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
@@ -13,6 +14,8 @@ use Doctrine\Tests\Models\Forum\ForumUser;
 use Doctrine\Tests\Models\MixedToOneIdentity\Country;
 use Doctrine\Tests\OrmTestCase;
 use PHPUnit\Framework\MockObject\MockObject;
+
+use function method_exists;
 
 class BasicEntityPersisterTest extends OrmTestCase
 {
@@ -160,10 +163,6 @@ class BasicEntityPersisterTest extends OrmTestCase
                 'INSERT INTO forum_users (username,avatar_id) VALUES (?,?)',
             ))
             ->willReturn($statement);
-        $connection->method('lastInsertId')
-            ->willReturnOnConsecutiveCalls(1, 2, 3);
-        $connection->method('convertToPHPValue')
-            ->willReturnArgument(0);
 
         $statement->expects(self::exactly(3))
             ->method('executeStatement');
@@ -207,6 +206,18 @@ class BasicEntityPersisterTest extends OrmTestCase
         $platform->method('supportsIdentityColumns')
             ->willReturn(true);
 
-        return $this->createMock(Connection::class);
+        $connection = $this->createMock(Connection::class);
+
+        if (method_exists($connection, 'getEventManager')) {
+            $connection->method('getEventManager')
+                ->willReturn(new EventManager());
+        }
+
+        $connection->method('lastInsertId')
+            ->willReturnOnConsecutiveCalls(1, 2, 3);
+        $connection->method('convertToPHPValue')
+            ->willReturnArgument(0);
+
+        return $connection;
     }
 }
