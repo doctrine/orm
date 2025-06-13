@@ -8,6 +8,7 @@ use Doctrine\Common\EventManager;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Driver;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
+use Doctrine\DBAL\Platforms\SQLitePlatform;
 use Doctrine\DBAL\Statement;
 use Doctrine\ORM\Persisters\Entity\BasicEntityPersister;
 use Doctrine\Tests\Models\Forum\ForumUser;
@@ -217,6 +218,8 @@ class BasicEntityPersisterTest extends OrmTestCase
             ->willReturnOnConsecutiveCalls(1, 2, 3);
         $connection->method('convertToPHPValue')
             ->willReturnArgument(0);
+        $connection->method('getDatabasePlatform')
+            ->willReturn(new SQLitePlatform());
 
         return $connection;
     }
