@@ -14,6 +14,7 @@ use Doctrine\DBAL\LockMode;
 use Doctrine\DBAL\ParameterType;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Result;
+use Doctrine\DBAL\Statement;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\EntityManagerInterface;
@@ -43,6 +44,7 @@ use Doctrine\ORM\Utility\PersisterHelper;
 use LengthException;
 
 use function array_combine;
+use function array_fill;
 use function array_keys;
 use function array_map;
 use function array_merge;
@@ -237,16 +239,57 @@ class BasicEntityPersister implements EntityPersister
             return;
         }
 
-        $uow            = $this->em->getUnitOfWork();
-        $idGenerator    = $this->class->idGenerator;
-        $isPostInsertId = $idGenerator->isPostInsertGenerator();
+        $uow                                   = $this->em->getUnitOfWork();
+        $idGenerator                           = $this->class->idGenerator;
+        $isPostInsertId                        = $idGenerator->isPostInsertGenerator();
+        [$insertIntoFragment, $valuesFragment] = $this->getInsertSQLFragments();
 
-        // @TODO the last batch may have less inserts than our wished batch size: we need to account for that
-        $batchSize = min($this->maxBatchSize, count($this->queuedInserts));
-        $stmt      = $this->conn->prepare($this->getInsertSQL($batchSize));
+        $prepareStatement = new class (
+            $isPostInsertId ? 1 : $this->maxBatchSize,
+            $this->conn,
+            $insertIntoFragment,
+            $valuesFragment,
+        ) {
+            /** @var int<0, max> */
+            private int $lastBatchSize        = 0;
+            private Statement|null $statement = null;
+
+            /** @param int<1, max> $maxBatchSize */
+            public function __construct(
+                private readonly int $maxBatchSize,
+                private readonly Connection $connection,
+                private readonly string $insertIntoFragment,
+                private readonly string $valuesFragment,
+            ) {
+            }
+
+            /** @param array<int, object> $queuedInserts */
+            public function prepareStatement(array $queuedInserts): Statement
+            {
+                $currentBatchSize = min($this->maxBatchSize, count($queuedInserts));
+
+                if ($this->statement !== null && $this->lastBatchSize === $currentBatchSize) {
+                    return $this->statement;
+                }
+
+                $this->lastBatchSize = $currentBatchSize;
+
+                return $this->statement = $this->connection->prepare(
+                    $this->insertIntoFragment
+                    . implode(',', array_fill(0, $currentBatchSize, $this->valuesFragment)),
+                );
+            }
+
+            public function shouldFlush(int $insertedAmount): bool
+            {
+                return $insertedAmount % $this->lastBatchSize === 0;
+            }
+        };
+
+        $stmt      = $prepareStatement->prepareStatement($this->queuedInserts);
         $tableName = $this->class->getTableName();
 
-        $paramIndex = 1;
+        $paramIndex    = 1;
         $insertedCount = 0;
 
         foreach ($this->queuedInserts as $key => $entity) {
@@ -260,13 +303,25 @@ class BasicEntityPersister implements EntityPersister
 
             $insertedCount += 1;
 
-            if ($isPostInsertId
-                || ($insertedCount % $batchSize === 0)
-                // @TODO batches may have different lengths: each batch will likely need its own SQL generated
-                || $insertedCount === count($this->queuedInserts)
+            // Unset this queued insert, so that the prepareUpdateData() method knows right away
+            // (for the next entity already) that the current entity has been written to the database
+            // and no extra updates need to be scheduled to refer to it.
+            //
+            // In \Doctrine\ORM\UnitOfWork::executeInserts(), the UoW already removed entities
+            // from its own list (\Doctrine\ORM\UnitOfWork::$entityInsertions) right after they
+            // were given to our addInsert() method.
+            unset($this->queuedInserts[$key]);
+
+            if (
+                $isPostInsertId
+                || $prepareStatement->shouldFlush($insertedCount)
             ) {
                 $stmt->executeStatement();
-                
+
+                if ($this->queuedInserts !== []) {
+                    $stmt = $prepareStatement->prepareStatement($this->queuedInserts);
+                }
+
                 // reset offset, fill another batch
                 $paramIndex = 1;
             }
@@ -283,15 +338,6 @@ class BasicEntityPersister implements EntityPersister
             if ($this->class->requiresFetchAfterChange) {
                 $this->assignDefaultVersionAndUpsertableValues($entity, $id);
             }
-
-            // Unset this queued insert, so that the prepareUpdateData() method knows right away
-            // (for the next entity already) that the current entity has been written to the database
-            // and no extra updates need to be scheduled to refer to it.
-            //
-            // In \Doctrine\ORM\UnitOfWork::executeInserts(), the UoW already removed entities
-            // from its own list (\Doctrine\ORM\UnitOfWork::$entityInsertions) right after they
-            // were given to our addInsert() method.
-            unset($this->queuedInserts[$key]);
         }
     }
 
@@ -1427,19 +1473,23 @@ class BasicEntityPersister implements EntityPersister
         return ' INNER JOIN ' . $joinTableName . ' ON ' . implode(' AND ', $conditions);
     }
 
-    // @TODO this cached API should not be `public`: let's instead add a `private` API (copy of this) to perform batching. 
-    // @TODO revert all changes to this public API: use a `private` API instead
-    // @TODO write a private method that returns `{fields: non-empty-string, values: non-empty-string}`, which we can reuse to assemble the final SQL.
-    /** @param int<1, max> $batchSize */
-    public function getInsertSQL(int $batchSize = 1): string
+    /**
+     * Produces the two SQL fragments needed to assemble an INSERT query, such as `"INSERT INTO (a, b) VALUES "`
+     * and `(?, ?)`, so that we can create a batch of inserts later on.
+     *
+     * @return array{string, string}
+     */
+    private function getInsertSQLFragments(): array
     {
+        // @TODO #11977 cache the two produced fragments
         $columns   = $this->getInsertColumnList();
         $tableName = $this->quoteStrategy->getTableName($this->class, $this->platform);
 
         if (empty($columns)) {
-            $identityColumn  = $this->quoteStrategy->getColumnName($this->class->identifier[0], $this->class, $this->platform);
+            $identityColumn = $this->quoteStrategy->getColumnName($this->class->identifier[0], $this->class, $this->platform);
 
-            return $this->platform->getEmptyIdentityInsertSQL($tableName, $identityColumn);;
+            // @TODO #11977 how to handle this case with batching? Do we care? Should only affect zero-columns generated-value entities?
+            return [$this->platform->getEmptyIdentityInsertSQL($tableName, $identityColumn), ''];
         }
 
         $values  = [];
@@ -1460,15 +1510,26 @@ class BasicEntityPersister implements EntityPersister
             $values[] = $placeholder;
         }
 
-        $columns = implode(',', $columns);
-        $values  = array_fill(0, min($this->maxBatchSize, $batchSize), '(' . implode(',', $values) . ')');
+        return [
+            sprintf(
+                'INSERT INTO %s (%s) VALUES ',
+                $tableName,
+                implode(',', $columns),
+            ),
+            '(' . implode(',', $values) . ')',
+        ];
+    }
 
-        return sprintf(
-            'INSERT INTO %s (%s) VALUES %s',
-            $tableName,
-            $columns,
-            implode(',', $values),
-        );
+    // @TODO this cached API should not be `public`: let's instead add a `private` API (copy of this) to perform batching.
+    // @TODO revert all changes to this public API: use a `private` API instead
+    // @TODO write a private method that returns `{fields: non-empty-string, values: non-empty-string}`, which we can reuse to assemble the final SQL.
+
+    /** @param int<1, max> $batchSize */
+    public function getInsertSQL(int $batchSize = 1): string
+    {
+        [$insertInto, $values] = $this->getInsertSQLFragments();
+
+        return $insertInto . implode(',', array_fill(0, min($this->maxBatchSize, $batchSize), $values));
     }
 
     /**
