@@ -251,6 +251,35 @@ options are interesting in development environment.
 value. This is still possible, ``FALSE`` being equivalent to
 AUTOGENERATE_NEVER and ``TRUE`` to AUTOGENERATE_ALWAYS.
 
+INSERT batch size
+-----------------
+
+By default, when flushing new entities to disk, the ORM will perform a series of
+``INSERT`` statements:
+
+.. code-block:: SQL
+
+    INSERT INTO my_table (a, b) VALUES (?, ?)
+    INSERT INTO my_table (a, b) VALUES (?, ?)
+    INSERT INTO my_table (a, b) VALUES (?, ?)
+
+It is possible to configure the ORM to batch these operations together:
+
+.. code-block:: php
+
+    <?php
+    $config->setPersisterMaximumInsertBatchSize(10);
+
+The ORM will then group operations together:
+
+.. code-block:: SQL
+
+    INSERT INTO my_table (a, b) VALUES (?, ?), (?, ?), (?, ?)
+
+Note that the maximum batch size should be tweaked based on your own performance
+analysis, as well as underlying database connection parameter count and byte
+size limits.
+
 Development vs Production Configuration
 ---------------------------------------
 

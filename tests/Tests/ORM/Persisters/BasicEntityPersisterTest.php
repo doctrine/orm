@@ -9,27 +9,13 @@ use Doctrine\DBAL\Driver;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Statement;
 use Doctrine\ORM\Persisters\Entity\BasicEntityPersister;
-use Doctrine\Tests\Mocks\EntityManagerMock;
-use Doctrine\Tests\Models\CustomType\CustomTypeParent;
 use Doctrine\Tests\Models\Forum\ForumUser;
 use Doctrine\Tests\Models\MixedToOneIdentity\Country;
 use Doctrine\Tests\OrmTestCase;
 use PHPUnit\Framework\MockObject\MockObject;
-use ReflectionProperty;
 
 class BasicEntityPersisterTest extends OrmTestCase
 {
-    protected BasicEntityPersister $persister;
-    protected EntityManagerMock $entityManager;
-
-    protected function setUp(): void
-    {
-        parent::setUp();
-
-        $this->entityManager = $this->getTestEntityManager();
-        $this->persister     = new BasicEntityPersister($this->entityManager, $this->entityManager->getClassMetadata(CustomTypeParent::class));
-    }
-
     public function testExecuteInsertsWithNoQueuedInserts(): void
     {
         $connection = $this->spyConnection();
@@ -68,11 +54,10 @@ class BasicEntityPersisterTest extends OrmTestCase
 
         $entityManager = $this->createTestEntityManagerWithConnection($connection);
 
+        $entityManager->getConfiguration()
+            ->setPersisterMaximumInsertBatchSize(2);
+
         $persister = new BasicEntityPersister($entityManager, $entityManager->getClassMetadata(Country::class));
-
-        $reflectionMaxBatchSize = new ReflectionProperty($persister, 'maxBatchSize');
-
-        $reflectionMaxBatchSize->setValue($persister, 2);
 
         $country1 = new Country();
         $country2 = new Country();
@@ -124,11 +109,10 @@ class BasicEntityPersisterTest extends OrmTestCase
 
         $entityManager = $this->createTestEntityManagerWithConnection($connection);
 
+        $entityManager->getConfiguration()
+            ->setPersisterMaximumInsertBatchSize(100);
+
         $persister = new BasicEntityPersister($entityManager, $entityManager->getClassMetadata(Country::class));
-
-        $reflectionMaxBatchSize = new ReflectionProperty($persister, 'maxBatchSize');
-
-        $reflectionMaxBatchSize->setValue($persister, 100);
 
         $country1 = new Country();
         $country2 = new Country();
@@ -186,11 +170,10 @@ class BasicEntityPersisterTest extends OrmTestCase
 
         $entityManager = $this->createTestEntityManagerWithConnection($connection);
 
+        $entityManager->getConfiguration()
+            ->setPersisterMaximumInsertBatchSize(100);
+
         $persister = new BasicEntityPersister($entityManager, $entityManager->getClassMetadata(ForumUser::class));
-
-        $reflectionMaxBatchSize = new ReflectionProperty($persister, 'maxBatchSize');
-
-        $reflectionMaxBatchSize->setValue($persister, 2);
 
         $entity1     = new ForumUser();
         $entity2     = new ForumUser();

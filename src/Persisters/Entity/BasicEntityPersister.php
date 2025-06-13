@@ -172,7 +172,7 @@ class BasicEntityPersister implements EntityPersister
 
     private string|null $filterHash = null;
     /** @var int<1, max> */
-    private int $maxBatchSize = 1;
+    private int $maxBatchSize;
 
     /**
      * Initializes a new <tt>BasicEntityPersister</tt> that uses the given EntityManager
@@ -186,7 +186,9 @@ class BasicEntityPersister implements EntityPersister
     ) {
         $this->conn                  = $em->getConnection();
         $this->platform              = $this->conn->getDatabasePlatform();
-        $this->quoteStrategy         = $em->getConfiguration()->getQuoteStrategy();
+        $configuration               = $em->getConfiguration();
+        $this->quoteStrategy         = $configuration->getQuoteStrategy();
+        $this->maxBatchSize          = $configuration->getPersisterMaximumInsertBatchSize();
         $this->identifierFlattener   = new IdentifierFlattener($em->getUnitOfWork(), $em->getMetadataFactory());
         $this->noLimitsContext       = $this->currentPersisterContext = new CachedPersisterContext(
             $class,
