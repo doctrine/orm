@@ -754,6 +754,7 @@ class XmlDriver extends FileDriver
       *                   scale?: int,
       *                   unique?: bool,
       *                   nullable?: bool,
+      *                   index?: bool,
       *                   notInsertable?: bool,
       *                   notUpdatable?: bool,
       *                   enumType?: string,
@@ -790,6 +791,10 @@ class XmlDriver extends FileDriver
 
         if (isset($fieldMapping['unique'])) {
             $mapping['unique'] = $this->evaluateBoolean($fieldMapping['unique']);
+        }
+
+        if (isset($fieldMapping['index'])) {
+            $mapping['index'] = $this->evaluateBoolean($fieldMapping['index']);
         }
 
         if (isset($fieldMapping['nullable'])) {
