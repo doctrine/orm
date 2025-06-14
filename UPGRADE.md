@@ -150,7 +150,7 @@ WARNING: This was relaxed in ORM 3.2 when partial was re-allowed for array-hydra
   `Doctrine\ORM\Query::HINT_FORCE_PARTIAL_LOAD` are removed.
 - `Doctrine\ORM\EntityManager*::getPartialReference()` is removed.
 
-## BC BREAK: Enforce ArrayCollection Type on `\Doctrine\ORM\QueryBuilder::setParameters(ArrayCollection $parameters)` 
+## BC BREAK: Enforce ArrayCollection Type on `\Doctrine\ORM\QueryBuilder::setParameters(ArrayCollection $parameters)`
 
 The argument $parameters can no longer be a key=>value array. Only ArrayCollection types are allowed.
 
