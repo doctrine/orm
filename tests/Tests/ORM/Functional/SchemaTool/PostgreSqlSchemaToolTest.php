@@ -56,6 +56,7 @@ class PostgreSqlSchemaToolTest extends OrmFunctionalTestCase
         self::assertCount(1, $fks);
 
         self::assertTrue($fks[0]->getOption('deferrable'));
+        self::assertTrue($fks[0]->getOption('deferred'));
     }
 }
 
@@ -127,6 +128,6 @@ class EntityWithSelfReferencingAssociation
     private int $id;
 
     #[ManyToOne(targetEntity: self::class)]
-    #[JoinColumn(deferrable: true)]
+    #[JoinColumn(deferrable: true, deferred: true)]
     private self $parent;
 }

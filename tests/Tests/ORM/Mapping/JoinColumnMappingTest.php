@@ -18,6 +18,7 @@ final class JoinColumnMappingTest extends TestCase
         $mapping = new JoinColumnMapping('foo', 'id');
 
         $mapping->deferrable           = true;
+        $mapping->deferred             = true;
         $mapping->unique               = true;
         $mapping->quoted               = true;
         $mapping->fieldName            = 'bar';
@@ -31,6 +32,7 @@ final class JoinColumnMappingTest extends TestCase
         assert($resurrectedMapping instanceof JoinColumnMapping);
 
         self::assertTrue($resurrectedMapping->deferrable);
+        self::assertTrue($resurrectedMapping->deferred);
         self::assertSame('foo', $resurrectedMapping->name);
         self::assertTrue($resurrectedMapping->unique);
         self::assertTrue($resurrectedMapping->quoted);
