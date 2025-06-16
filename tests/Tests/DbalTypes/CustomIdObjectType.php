@@ -9,7 +9,7 @@ use Doctrine\DBAL\Types\Type;
 
 class CustomIdObjectType extends Type
 {
-    public const NAME = 'CustomIdObject';
+    final public const string NAME = 'CustomIdObject';
 
     /**
      * {@inheritDoc}

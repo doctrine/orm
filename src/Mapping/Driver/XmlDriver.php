@@ -43,7 +43,7 @@ use function strtoupper;
  */
 class XmlDriver extends FileDriver
 {
-    public const DEFAULT_FILE_EXTENSION = '.dcm.xml';
+    public const string DEFAULT_FILE_EXTENSION = '.dcm.xml';
 
     /**
      * {@inheritDoc}

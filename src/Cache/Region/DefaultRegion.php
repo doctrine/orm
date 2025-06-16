@@ -22,8 +22,8 @@ use function strtr;
  */
 class DefaultRegion implements Region
 {
-    private const REGION_KEY_SEPARATOR = '_';
-    private const REGION_PREFIX        = 'DC2_REGION_';
+    private const string REGION_KEY_SEPARATOR = '_';
+    private const string REGION_PREFIX        = 'DC2_REGION_';
 
     public function __construct(
         private readonly string $name,

@@ -22,7 +22,7 @@ class CountWalker extends TreeWalkerAdapter
     /**
      * Distinct mode hint name.
      */
-    public const HINT_DISTINCT = 'doctrine_paginator.distinct';
+    final public const string HINT_DISTINCT = 'doctrine_paginator.distinct';
 
     public function walkSelectStatement(SelectStatement $selectStatement): void
     {

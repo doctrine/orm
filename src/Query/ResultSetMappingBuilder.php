@@ -27,14 +27,14 @@ class ResultSetMappingBuilder extends ResultSetMapping implements Stringable
      * as they are in the database. This can cause clashes when multiple
      * entities are fetched that have columns with the same name.
      */
-    public const COLUMN_RENAMING_NONE = 1;
+    final public const int COLUMN_RENAMING_NONE = 1;
 
     /**
      * Picking custom renaming allows the user to define the renaming
      * of specific columns with a rename array that contains column names as
      * keys and result alias as values.
      */
-    public const COLUMN_RENAMING_CUSTOM = 2;
+    final public const int COLUMN_RENAMING_CUSTOM = 2;
 
     /**
      * Incremental renaming uses a result set mapping internal counter to add a
@@ -42,7 +42,7 @@ class ResultSetMappingBuilder extends ResultSetMapping implements Stringable
      * you use {@see generateSelectClause()} to generate the SELECT clause for
      * you.
      */
-    public const COLUMN_RENAMING_INCREMENT = 3;
+    final public const int COLUMN_RENAMING_INCREMENT = 3;
 
     private int $sqlCounter = 0;
 

@@ -56,7 +56,7 @@ use function substr;
  */
 class LimitSubqueryOutputWalker extends SqlOutputWalker
 {
-    private const ORDER_BY_PATH_EXPRESSION = '/(?<![a-z0-9_])%s\.%s(?![a-z0-9_])/i';
+    private const string ORDER_BY_PATH_EXPRESSION = '/(?<![a-z0-9_])%s\.%s(?![a-z0-9_])/i';
 
     private readonly AbstractPlatform $platform;
     private readonly ResultSetMapping $rsm;

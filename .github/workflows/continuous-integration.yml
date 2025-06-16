@@ -31,9 +31,6 @@ jobs:
     strategy:
       matrix:
         php-version:
-          - "8.1"
-          - "8.2"
-          - "8.3"
           - "8.4"
         dbal-version:
           - "default"
@@ -45,15 +42,15 @@ jobs:
         lazy_proxy:
           - "0"
         include:
-          - php-version: "8.2"
+          - php-version: "8.4"
             dbal-version: "4@dev"
             extension: "pdo_sqlite"
             lazy_proxy: "0"
-          - php-version: "8.2"
+          - php-version: "8.4"
             dbal-version: "4@dev"
             extension: "sqlite3"
             lazy_proxy: "0"
-          - php-version: "8.1"
+          - php-version: "8.4"
             dbal-version: "default"
             deps: "lowest"
             extension: "pdo_sqlite"
@@ -115,8 +112,6 @@ jobs:
     strategy:
       matrix:
         php-version:
-          - "8.2"
-          - "8.3"
           - "8.4"
         dbal-version:
           - "default"
@@ -126,11 +121,11 @@ jobs:
           - pdo_pgsql
           - pgsql
         include:
-          - php-version: "8.2"
+          - php-version: "8.4"
             dbal-version: "4@dev"
             postgres-version: "14"
             extension: pdo_pgsql
-          - php-version: "8.2"
+          - php-version: "8.4"
             dbal-version: "default"
             postgres-version: "10"
             extension: pdo_pgsql
@@ -188,8 +183,6 @@ jobs:
     strategy:
       matrix:
         php-version:
-          - "8.2"
-          - "8.3"
           - "8.4"
         dbal-version:
           - "default"
@@ -254,8 +247,6 @@ jobs:
     strategy:
       matrix:
         php-version:
-          - "8.2"
-          - "8.3"
           - "8.4"
         dbal-version:
           - "default"
@@ -266,11 +257,11 @@ jobs:
           - "mysqli"
           - "pdo_mysql"
         include:
-          - php-version: "8.2"
+          - php-version: "8.4"
             dbal-version: "4@dev"
             mysql-version: "8.0"
             extension: "mysqli"
-          - php-version: "8.2"
+          - php-version: "8.4"
             dbal-version: "4@dev"
             mysql-version: "8.0"
             extension: "pdo_mysql"

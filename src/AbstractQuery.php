@@ -52,32 +52,32 @@ abstract class AbstractQuery
     /**
      * Hydrates an object graph. This is the default behavior.
      */
-    public const HYDRATE_OBJECT = 1;
+    final public const int HYDRATE_OBJECT = 1;
 
     /**
      * Hydrates an array graph.
      */
-    public const HYDRATE_ARRAY = 2;
+    final public const int HYDRATE_ARRAY = 2;
 
     /**
      * Hydrates a flat, rectangular result set with scalar values.
      */
-    public const HYDRATE_SCALAR = 3;
+    final public const int HYDRATE_SCALAR = 3;
 
     /**
      * Hydrates a single scalar value.
      */
-    public const HYDRATE_SINGLE_SCALAR = 4;
+    final public const int HYDRATE_SINGLE_SCALAR = 4;
 
     /**
      * Very simple object hydrator (optimized for performance).
      */
-    public const HYDRATE_SIMPLEOBJECT = 5;
+    final public const int HYDRATE_SIMPLEOBJECT = 5;
 
     /**
      * Hydrates scalar column value.
      */
-    public const HYDRATE_SCALAR_COLUMN = 6;
+    final public const int HYDRATE_SCALAR_COLUMN = 6;
 
     /**
      * The parameter map of this query.

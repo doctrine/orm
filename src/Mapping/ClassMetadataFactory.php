@@ -58,7 +58,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     /** @var mixed[] */
     private array $embeddablesActiveNesting = [];
 
-    private const NON_IDENTITY_DEFAULT_STRATEGY = [
+    private const array NON_IDENTITY_DEFAULT_STRATEGY = [
         Platforms\OraclePlatform::class => ClassMetadata::GENERATOR_TYPE_SEQUENCE,
     ];
 

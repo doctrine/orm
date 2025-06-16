@@ -21,7 +21,7 @@
         "sort-packages": true
     },
     "require": {
-        "php": "^8.1",
+        "php": "^8.4",
         "composer-runtime-api": "^2",
         "ext-ctype": "*",
         "doctrine/collections": "^2.2",

@@ -42,7 +42,7 @@ use function iterator_to_array;
 #[Group('GH7820')]
 class GH7820Test extends OrmFunctionalTestCase
 {
-    private const SONG = [
+    private const array SONG = [
         'What is this song all about?',
         'Can\'t figure any lyrics out',
         'How do the words to it go?',

@@ -13,12 +13,12 @@ use Stringable;
  */
 class Comparison implements Stringable
 {
-    final public const EQ  = '=';
-    final public const NEQ = '<>';
-    final public const LT  = '<';
-    final public const LTE = '<=';
-    final public const GT  = '>';
-    final public const GTE = '>=';
+    final public const string EQ  = '=';
+    final public const string NEQ = '<>';
+    final public const string LT  = '<';
+    final public const string LTE = '<=';
+    final public const string GT  = '>';
+    final public const string GTE = '>=';
 
     /** Creates a comparison expression with the given arguments. */
     public function __construct(protected mixed $leftExpr, protected string $operator, protected mixed $rightExpr)

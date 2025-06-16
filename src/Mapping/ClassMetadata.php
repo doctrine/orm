@@ -84,33 +84,33 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
      * NONE means the class does not participate in an inheritance hierarchy
      * and therefore does not need an inheritance mapping type.
      */
-    public const INHERITANCE_TYPE_NONE = 1;
+    final public const int INHERITANCE_TYPE_NONE = 1;
 
     /**
      * JOINED means the class will be persisted according to the rules of
      * <tt>Class Table Inheritance</tt>.
      */
-    public const INHERITANCE_TYPE_JOINED = 2;
+    final public const int INHERITANCE_TYPE_JOINED = 2;
 
     /**
      * SINGLE_TABLE means the class will be persisted according to the rules of
      * <tt>Single Table Inheritance</tt>.
      */
-    public const INHERITANCE_TYPE_SINGLE_TABLE = 3;
+    final public const int INHERITANCE_TYPE_SINGLE_TABLE = 3;
 
     /* The Id generator types. */
     /**
      * AUTO means the generator type will depend on what the used platform prefers.
      * Offers full portability.
      */
-    public const GENERATOR_TYPE_AUTO = 1;
+    final public const int GENERATOR_TYPE_AUTO = 1;
 
     /**
      * SEQUENCE means a separate sequence object will be used. Platforms that do
      * not have native sequence support may emulate it. Full portability is currently
      * not guaranteed.
      */
-    public const GENERATOR_TYPE_SEQUENCE = 2;
+    final public const int GENERATOR_TYPE_SEQUENCE = 2;
 
     /**
      * IDENTITY means an identity column is used for id generation. The database
@@ -118,18 +118,18 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
      * native identity columns may emulate them. Full portability is currently
      * not guaranteed.
      */
-    public const GENERATOR_TYPE_IDENTITY = 4;
+    final public const int GENERATOR_TYPE_IDENTITY = 4;
 
     /**
      * NONE means the class does not have a generated id. That means the class
      * must have a natural, manually assigned id.
      */
-    public const GENERATOR_TYPE_NONE = 5;
+    final public const int GENERATOR_TYPE_NONE = 5;
 
     /**
      * CUSTOM means that customer will use own ID generator that supposedly work
      */
-    public const GENERATOR_TYPE_CUSTOM = 7;
+    final public const int GENERATOR_TYPE_CUSTOM = 7;
 
     /**
      * DEFERRED_IMPLICIT means that changes of entities are calculated at commit-time
@@ -138,92 +138,92 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
      *
      * This is the default change tracking policy.
      */
-    public const CHANGETRACKING_DEFERRED_IMPLICIT = 1;
+    final public const int CHANGETRACKING_DEFERRED_IMPLICIT = 1;
 
     /**
      * DEFERRED_EXPLICIT means that changes of entities are calculated at commit-time
      * by doing a property-by-property comparison with the original data. This will
      * be done only for entities that were explicitly saved (through persist() or a cascade).
      */
-    public const CHANGETRACKING_DEFERRED_EXPLICIT = 2;
+    final public const int CHANGETRACKING_DEFERRED_EXPLICIT = 2;
 
     /**
      * Specifies that an association is to be fetched when it is first accessed.
      */
-    public const FETCH_LAZY = 2;
+    final public const int FETCH_LAZY = 2;
 
     /**
      * Specifies that an association is to be fetched when the owner of the
      * association is fetched.
      */
-    public const FETCH_EAGER = 3;
+    final public const int FETCH_EAGER = 3;
 
     /**
      * Specifies that an association is to be fetched lazy (on first access) and that
      * commands such as Collection#count, Collection#slice are issued directly against
      * the database if the collection is not yet initialized.
      */
-    public const FETCH_EXTRA_LAZY = 4;
+    final public const int FETCH_EXTRA_LAZY = 4;
 
     /**
      * Identifies a one-to-one association.
      */
-    public const ONE_TO_ONE = 1;
+    final public const int ONE_TO_ONE = 1;
 
     /**
      * Identifies a many-to-one association.
      */
-    public const MANY_TO_ONE = 2;
+    final public const int MANY_TO_ONE = 2;
 
     /**
      * Identifies a one-to-many association.
      */
-    public const ONE_TO_MANY = 4;
+    final public const int ONE_TO_MANY = 4;
 
     /**
      * Identifies a many-to-many association.
      */
-    public const MANY_TO_MANY = 8;
+    final public const int MANY_TO_MANY = 8;
 
     /**
      * Combined bitmask for to-one (single-valued) associations.
      */
-    public const TO_ONE = 3;
+    final public const int TO_ONE = 3;
 
     /**
      * Combined bitmask for to-many (collection-valued) associations.
      */
-    public const TO_MANY = 12;
+    final public const int TO_MANY = 12;
 
     /**
      * ReadOnly cache can do reads, inserts and deletes, cannot perform updates or employ any locks,
      */
-    public const CACHE_USAGE_READ_ONLY = 1;
+    final public const int CACHE_USAGE_READ_ONLY = 1;
 
     /**
      * Nonstrict Read Write Cache doesn’t employ any locks but can do inserts, update and deletes.
      */
-    public const CACHE_USAGE_NONSTRICT_READ_WRITE = 2;
+    final public const int CACHE_USAGE_NONSTRICT_READ_WRITE = 2;
 
     /**
      * Read Write Attempts to lock the entity before update/delete.
      */
-    public const CACHE_USAGE_READ_WRITE = 3;
+    final public const int CACHE_USAGE_READ_WRITE = 3;
 
     /**
      * The value of this column is never generated by the database.
      */
-    public const GENERATED_NEVER = 0;
+    final public const int GENERATED_NEVER = 0;
 
     /**
      * The value of this column is generated by the database on INSERT, but not on UPDATE.
      */
-    public const GENERATED_INSERT = 1;
+    final public const int GENERATED_INSERT = 1;
 
     /**
      * The value of this column is generated by the database on both INSERT and UDPATE statements.
      */
-    public const GENERATED_ALWAYS = 2;
+    final public const int GENERATED_ALWAYS = 2;
 
     /**
      * READ-ONLY: The namespace the entity class is contained in.

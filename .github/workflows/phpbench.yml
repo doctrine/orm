@@ -32,7 +32,7 @@ jobs:
     strategy:
       matrix:
         php-version:
-          - "8.1"
+          - "8.4"
 
     steps:
       - name: "Checkout"

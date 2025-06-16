@@ -48,12 +48,12 @@ use function trim;
  */
 class SqlWalker
 {
-    public const HINT_DISTINCT = 'doctrine.distinct';
+    final public const string HINT_DISTINCT = 'doctrine.distinct';
 
     /**
      * Used to mark a query as containing a PARTIAL expression, which needs to be known by SLC.
      */
-    public const HINT_PARTIAL = 'doctrine.partial';
+    final public const string HINT_PARTIAL = 'doctrine.partial';
 
     private readonly ResultSetMapping $rsm;
 
