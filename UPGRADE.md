@@ -1,3 +1,16 @@
+# Upgrade to 3.5
+
+## Deprecate methods for configuring no longer configurable features
+
+Since 3.0, lazy ghosts are enabled unconditionally, and so is rejecting ID
+collisions in the identity map.
+
+As a consequence, the following methods are deprecated and will be removed in 4.0:
+* `Doctrine\ORM\Configuration::setLazyGhostObjectEnabled()`
+* `Doctrine\ORM\Configuration::isLazyGhostObjectEnabled()`
+* `Doctrine\ORM\Configuration::setRejectIdCollisionInIdentityMap()`
+* `Doctrine\ORM\Configuration::isRejectIdCollisionInIdentityMapEnabled()`
+
 # Upgrade to 3.4
 
 ## Discriminator Map class duplicates
@@ -26,7 +39,7 @@ The class `Doctrine\ORM\Mapping\Driver\DatabaseDriver` is deprecated without rep
 
 Output walkers should implement the new `\Doctrine\ORM\Query\OutputWalker` interface and create
 `Doctrine\ORM\Query\Exec\SqlFinalizer` instances instead of `Doctrine\ORM\Query\Exec\AbstractSqlExecutor`s.
-The output walker must not base its workings on the query `firstResult`/`maxResult` values, so that the 
+The output walker must not base its workings on the query `firstResult`/`maxResult` values, so that the
 `SqlFinalizer` can be kept in the query cache and used regardless of the actual `firstResult`/`maxResult` values.
 Any operation dependent on `firstResult`/`maxResult` should take place within the `SqlFinalizer::createExecutor()`
 method. Details can be found at https://github.com/doctrine/orm/pull/11188.
@@ -137,7 +150,7 @@ WARNING: This was relaxed in ORM 3.2 when partial was re-allowed for array-hydra
   `Doctrine\ORM\Query::HINT_FORCE_PARTIAL_LOAD` are removed.
 - `Doctrine\ORM\EntityManager*::getPartialReference()` is removed.
 
-## BC BREAK: Enforce ArrayCollection Type on `\Doctrine\ORM\QueryBuilder::setParameters(ArrayCollection $parameters)` 
+## BC BREAK: Enforce ArrayCollection Type on `\Doctrine\ORM\QueryBuilder::setParameters(ArrayCollection $parameters)`
 
 The argument $parameters can no longer be a key=>value array. Only ArrayCollection types are allowed.
 
