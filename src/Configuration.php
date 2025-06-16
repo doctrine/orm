@@ -610,7 +610,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
     }
 
     /**
-     * To be deprecated in 3.1.0
+     * @deprecated lazy ghost objects are always enabled
      *
      * @return true
      */
@@ -619,7 +619,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
         return true;
     }
 
-    /** To be deprecated in 3.1.0 */
+    /** @deprecated lazy ghost objects cannot be disabled */
     public function setLazyGhostObjectEnabled(bool $flag): void
     {
         if (! $flag) {
@@ -630,7 +630,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
         }
     }
 
-    /** To be deprecated in 3.1.0 */
+    /** @deprecated rejecting ID collisions in the identity map cannot be disabled */
     public function setRejectIdCollisionInIdentityMap(bool $flag): void
     {
         if (! $flag) {
@@ -642,7 +642,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
     }
 
     /**
-     * To be deprecated in 3.1.0
+     * @deprecated rejecting ID collisions in the identity map is always enabled
      *
      * @return true
      */

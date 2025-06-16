@@ -89,6 +89,19 @@ The properties `$indexes` and `$uniqueConstraints` have been removed since they 
 The preferred way of defining indices and unique constraints is by
 using the `\Doctrine\ORM\Mapping\UniqueConstraint` and `\Doctrine\ORM\Mapping\Index` attributes.
 
+# Upgrade to 3.5
+
+## Deprecate methods for configuring no longer configurable features
+
+Since 3.0, lazy ghosts are enabled unconditionally, and so is rejecting ID
+collisions in the identity map.
+
+As a consequence, the following methods are deprecated and will be removed in 4.0:
+* `Doctrine\ORM\Configuration::setLazyGhostObjectEnabled()`
+* `Doctrine\ORM\Configuration::isLazyGhostObjectEnabled()`
+* `Doctrine\ORM\Configuration::setRejectIdCollisionInIdentityMap()`
+* `Doctrine\ORM\Configuration::isRejectIdCollisionInIdentityMapEnabled()`
+
 # Upgrade to 3.4
 
 ## Discriminator Map class duplicates
