@@ -685,6 +685,7 @@ You can hydrate an entity nested in a DTO :
     // CustomerDTO => {name : 'DOE', email: null, address : {city: 'New York', zip: '10011', address: 'Abbey Road'}
 
 In a Dto, if you want add all fields of an entity, you can use ``.*`` :
+
 .. code-block:: php
 
     <?php
