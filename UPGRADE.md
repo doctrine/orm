@@ -1,5 +1,17 @@
 # Upgrade to 4.0
 
+## Remove methods for configuring no longer configurable features
+
+Since 3.0, lazy ghosts are enabled unconditionally, and so is rejecting ID
+collisions in the identity map.
+
+As a consequence, the following methods are removed:
+
+* `Doctrine\ORM\Configuration::setLazyGhostObjectEnabled()`
+* `Doctrine\ORM\Configuration::isLazyGhostObjectEnabled()`
+* `Doctrine\ORM\Configuration::setRejectIdCollisionInIdentityMap()`
+* `Doctrine\ORM\Configuration::isRejectIdCollisionInIdentityMapEnabled()`
+
 ## BC BREAK: New argument to `NewObjectExpression::dispatch()`
 
 ```diff

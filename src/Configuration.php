@@ -609,48 +609,6 @@ class Configuration extends \Doctrine\DBAL\Configuration
         $this->attributes['nativeLazyObjects'] = $nativeLazyObjects;
     }
 
-    /**
-     * @deprecated lazy ghost objects are always enabled
-     *
-     * @return true
-     */
-    public function isLazyGhostObjectEnabled(): bool
-    {
-        return true;
-    }
-
-    /** @deprecated lazy ghost objects cannot be disabled */
-    public function setLazyGhostObjectEnabled(bool $flag): void
-    {
-        if (! $flag) {
-            throw new LogicException(<<<'EXCEPTION'
-            The lazy ghost object feature cannot be disabled anymore.
-            Please remove the call to setLazyGhostObjectEnabled(false).
-            EXCEPTION);
-        }
-    }
-
-    /** @deprecated rejecting ID collisions in the identity map cannot be disabled */
-    public function setRejectIdCollisionInIdentityMap(bool $flag): void
-    {
-        if (! $flag) {
-            throw new LogicException(<<<'EXCEPTION'
-                Rejecting ID collisions in the identity map cannot be disabled anymore.
-                Please remove the call to setRejectIdCollisionInIdentityMap(false).
-                EXCEPTION);
-        }
-    }
-
-    /**
-     * @deprecated rejecting ID collisions in the identity map is always enabled
-     *
-     * @return true
-     */
-    public function isRejectIdCollisionInIdentityMapEnabled(): bool
-    {
-        return true;
-    }
-
     public function setEagerFetchBatchSize(int $batchSize = 100): void
     {
         $this->attributes['fetchModeSubselectBatchSize'] = $batchSize;
