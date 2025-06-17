@@ -3057,7 +3057,7 @@ class UnitOfWork implements PropertyChangedListener
      */
     public function isUninitializedObject(mixed $obj): bool
     {
-        if ($this->em->getConfiguration()->isNativeLazyObjectsEnabled() && ! ($obj instanceof Collection)) {
+        if ($this->em->getConfiguration()->isNativeLazyObjectsEnabled() && ! ($obj instanceof Collection) && is_object($obj)) {
             return $this->em->getClassMetadata($obj::class)->reflClass->isUninitializedLazyObject($obj);
         }
 
