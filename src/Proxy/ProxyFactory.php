@@ -132,6 +132,9 @@ EOPHP;
     /** @var array<class-string, Closure> */
     private array $proxyFactories = [];
 
+    private readonly string $proxyDir;
+    private readonly string $proxyNs;
+
     /**
      * Initializes a new instance of the <tt>ProxyFactory</tt> class that is
      * connected to the given <tt>EntityManager</tt>.
@@ -143,8 +146,8 @@ EOPHP;
      */
     public function __construct(
         private readonly EntityManagerInterface $em,
-        private readonly string $proxyDir,
-        private readonly string $proxyNs,
+        string|null $proxyDir = null,
+        string|null $proxyNs = null,
         bool|int $autoGenerate = self::AUTOGENERATE_NEVER,
     ) {
         if (! $proxyDir && ! $em->getConfiguration()->isNativeLazyObjectsEnabled()) {
@@ -158,6 +161,17 @@ EOPHP;
         if (is_int($autoGenerate) ? $autoGenerate < 0 || $autoGenerate > 4 : ! is_bool($autoGenerate)) {
             throw ORMInvalidArgumentException::invalidAutoGenerateMode($autoGenerate);
         }
+
+        if ($proxyDir === null && $em->getConfiguration()->isNativeLazyObjectsEnabled()) {
+            $proxyDir = '';
+        }
+
+        if ($proxyNs === null && $em->getConfiguration()->isNativeLazyObjectsEnabled()) {
+            $proxyNs = '';
+        }
+
+        $this->proxyDir = $proxyDir;
+        $this->proxyNs  = $proxyNs;
 
         $this->uow                 = $em->getUnitOfWork();
         $this->autoGenerate        = (int) $autoGenerate;
