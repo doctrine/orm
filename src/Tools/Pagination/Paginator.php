@@ -33,7 +33,7 @@ class Paginator implements Countable, IteratorAggregate
 {
     use SQLResultCasing;
 
-    public const HINT_ENABLE_DISTINCT = 'paginator.distinct.enable';
+    final public const string HINT_ENABLE_DISTINCT = 'paginator.distinct.enable';
 
     private readonly Query $query;
     private bool|null $useOutputWalkers = null;

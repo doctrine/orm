@@ -9,7 +9,7 @@ use Doctrine\DBAL\Types\StringType;
 
 class UpperCaseStringType extends StringType
 {
-    public const NAME = 'upper_case_string';
+    final public const string NAME = 'upper_case_string';
 
     /**
      * {@inheritDoc}

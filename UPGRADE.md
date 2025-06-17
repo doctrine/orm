@@ -1,5 +1,10 @@
 # Upgrade to 4.0
 
+## BC BREAK: type declarations on constants
+
+All constants in the ORM now have type declarations and are final. You may no
+longer override them in extending types.
+
 ## Remove methods for configuring no longer configurable features
 
 Since 3.0, lazy ghosts are enabled unconditionally, and so is rejecting ID

@@ -25,7 +25,7 @@ final class DefaultTypedFieldMapper implements TypedFieldMapper
     /** @var array<class-string|ScalarName, class-string<Type>|string> $typedFieldMappings */
     private array $typedFieldMappings;
 
-    private const DEFAULT_TYPED_FIELD_MAPPINGS = [
+    private const array DEFAULT_TYPED_FIELD_MAPPINGS = [
         DateInterval::class => Types::DATEINTERVAL,
         DateTime::class => Types::DATETIME_MUTABLE,
         DateTimeImmutable::class => Types::DATETIME_IMMUTABLE,

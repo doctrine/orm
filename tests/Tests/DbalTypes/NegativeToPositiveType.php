@@ -9,7 +9,7 @@ use Doctrine\DBAL\Types\Type;
 
 class NegativeToPositiveType extends Type
 {
-    public const NAME = 'negative_to_positive';
+    final public const string NAME = 'negative_to_positive';
 
     /**
      * {@inheritDoc}

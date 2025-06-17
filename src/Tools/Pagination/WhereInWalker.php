@@ -35,12 +35,12 @@ class WhereInWalker extends TreeWalkerAdapter
     /**
      * ID Count hint name.
      */
-    public const HINT_PAGINATOR_HAS_IDS = 'doctrine.paginator_has_ids';
+    final public const string HINT_PAGINATOR_HAS_IDS = 'doctrine.paginator_has_ids';
 
     /**
      * Primary key alias for query.
      */
-    public const PAGINATOR_ID_ALIAS = 'dpid';
+    final public const string PAGINATOR_ID_ALIAS = 'dpid';
 
     public function walkSelectStatement(SelectStatement $selectStatement): void
     {

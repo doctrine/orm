@@ -157,7 +157,7 @@ class GH5887CustomIdObject implements Stringable
 
 class GH5887CustomIdObjectType extends StringType
 {
-    public const NAME = 'GH5887CustomIdObject';
+    final public const string NAME = 'GH5887CustomIdObject';
 
     /**
      * {@inheritDoc}

@@ -50,7 +50,7 @@ class SchemaValidator
     /**
      * It maps built-in Doctrine types to PHP types
      */
-    private const BUILTIN_TYPES_MAP = [
+    private const array BUILTIN_TYPES_MAP = [
         AsciiStringType::class => ['string'],
         BigIntType::class => ['int', 'string'],
         BooleanType::class => ['bool'],

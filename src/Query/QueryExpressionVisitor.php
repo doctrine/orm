@@ -20,7 +20,7 @@ use function str_starts_with;
  */
 class QueryExpressionVisitor extends ExpressionVisitor
 {
-    private const OPERATOR_MAP = [
+    private const array OPERATOR_MAP = [
         Comparison::GT => Expr\Comparison::GT,
         Comparison::GTE => Expr\Comparison::GTE,
         Comparison::LT  => Expr\Comparison::LT,

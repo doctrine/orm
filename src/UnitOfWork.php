@@ -84,26 +84,26 @@ class UnitOfWork implements PropertyChangedListener
     /**
      * An entity is in MANAGED state when its persistence is managed by an EntityManager.
      */
-    public const STATE_MANAGED = 1;
+    final public const int STATE_MANAGED = 1;
 
     /**
      * An entity is new if it has just been instantiated (i.e. using the "new" operator)
      * and is not (yet) managed by an EntityManager.
      */
-    public const STATE_NEW = 2;
+    final public const int STATE_NEW = 2;
 
     /**
      * A detached entity is an instance with persistent state and identity that is not
      * (or no longer) associated with an EntityManager (and a UnitOfWork).
      */
-    public const STATE_DETACHED = 3;
+    final public const int STATE_DETACHED = 3;
 
     /**
      * A removed entity instance is an instance with a persistent identity,
      * associated with an EntityManager, whose persistent state will be deleted
      * on commit.
      */
-    public const STATE_REMOVED = 4;
+    final public const int STATE_REMOVED = 4;
 
     /**
      * Hint used to collect all primary keys of associated entities during hydration
@@ -111,7 +111,7 @@ class UnitOfWork implements PropertyChangedListener
      *
      * @see https://www.doctrine-project.org/projects/doctrine-orm/en/stable/reference/dql-doctrine-query-language.html#temporarily-change-fetch-mode-in-dql
      */
-    public const HINT_DEFEREAGERLOAD = 'deferEagerLoad';
+    final public const string HINT_DEFEREAGERLOAD = 'deferEagerLoad';
 
     /**
      * The identity map that holds references to all managed entities that have

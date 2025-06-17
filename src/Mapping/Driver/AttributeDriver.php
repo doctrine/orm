@@ -27,7 +27,7 @@ class AttributeDriver implements MappingDriver
     use ColocatedMappingDriver;
     use ReflectionBasedDriver;
 
-    private const ENTITY_ATTRIBUTE_CLASSES = [
+    private const array ENTITY_ATTRIBUTE_CLASSES = [
         Mapping\Entity::class => 1,
         Mapping\MappedSuperclass::class => 2,
     ];

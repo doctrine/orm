@@ -119,7 +119,7 @@ class DDC2579AssocAssoc
 
 class DDC2579Type extends StringType
 {
-    public const NAME = 'ddc2579';
+    final public const string NAME = 'ddc2579';
 
     /**
      * {@inheritDoc}

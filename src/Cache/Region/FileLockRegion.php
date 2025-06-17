@@ -35,7 +35,7 @@ use const LOCK_EX;
  */
 class FileLockRegion implements ConcurrentRegion
 {
-    final public const LOCK_EXTENSION = 'lock';
+    final public const string LOCK_EXTENSION = 'lock';
 
     /**
      * @param numeric-string|int $lockLifetime
