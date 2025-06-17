@@ -28,7 +28,7 @@ class ParserResultTest extends TestCase
     {
         self::assertNull($this->parserResult->getSqlExecutor());
 
-        $executor = $this->getMockForAbstractClass(AbstractSqlExecutor::class);
+        $executor = $this->createMock(AbstractSqlExecutor::class);
         $this->parserResult->setSqlExecutor($executor);
         self::assertSame($executor, $this->parserResult->getSqlExecutor());
     }

@@ -9,8 +9,6 @@ use Doctrine\ORM\Mapping\DefaultQuoteStrategy;
 use Doctrine\Tests\Models\NonPublicSchemaJoins\User as NonPublicSchemaUser;
 use Doctrine\Tests\OrmTestCase;
 
-use function assert;
-
 /**
  * Doctrine\Tests\ORM\Mapping\DefaultQuoteStrategyTest
  */
@@ -25,8 +23,7 @@ class DefaultQuoteStrategyTest extends OrmTestCase
         $em       = $this->getTestEntityManager();
         $metadata = $em->getClassMetadata(NonPublicSchemaUser::class);
         $strategy = new DefaultQuoteStrategy();
-        $platform = $this->getMockForAbstractClass(AbstractPlatform::class);
-        assert($platform instanceof AbstractPlatform);
+        $platform = $this->createStub(AbstractPlatform::class);
 
         self::assertSame(
             'readers.author_reader',

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional;
 
+use Doctrine\DBAL\Connection;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\Exec\AbstractSqlExecutor;
 use Doctrine\ORM\Query\ParserResult;
@@ -121,15 +122,15 @@ class QueryCacheTest extends OrmFunctionalTestCase
 
         $query = $this->_em->createQuery('select ux from Doctrine\Tests\Models\CMS\CmsUser ux');
 
-        $sqlExecMock = $this->getMockBuilder(AbstractSqlExecutor::class)
-                            ->getMockForAbstractClass();
-
-        $sqlExecMock->expects(self::once())
-                    ->method('execute')
-                    ->willReturn(10);
+        $sqlExecutorStub = new class extends AbstractSqlExecutor {
+            public function execute(Connection $conn, array $params, array $types): int
+            {
+                return 10;
+            }
+        };
 
         $parserResultMock = new ParserResult();
-        $parserResultMock->setSqlExecutor($sqlExecMock);
+        $parserResultMock->setSqlExecutor($sqlExecutorStub);
 
         $cache = $this->createMock(CacheItemPoolInterface::class);
 
