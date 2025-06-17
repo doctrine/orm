@@ -39,8 +39,6 @@ use function strlen;
 use function strtolower;
 use function substr;
 
-use const PHP_VERSION_ID;
-
 /**
  * The ClassMetadataFactory is used to create ClassMetadata objects that contain all the
  * metadata mapping information of a class which describes how a class should be mapped
@@ -663,10 +661,6 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     protected function wakeupReflection(ClassMetadataInterface $class, ReflectionService $reflService): void
     {
         $class->wakeupReflection($reflService);
-
-        if (PHP_VERSION_ID < 80400) {
-            return;
-        }
 
         foreach ($class->propertyAccessors as $propertyAccessor) {
             $property = $propertyAccessor->getUnderlyingReflector();

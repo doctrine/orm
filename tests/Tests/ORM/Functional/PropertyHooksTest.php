@@ -8,9 +8,7 @@ use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\Tests\Models\PropertyHooks\MappingVirtualProperty;
 use Doctrine\Tests\Models\PropertyHooks\User;
 use Doctrine\Tests\OrmFunctionalTestCase;
-use PHPUnit\Framework\Attributes\RequiresPhp;
 
-#[RequiresPhp('>= 8.4.0')]
 class PropertyHooksTest extends OrmFunctionalTestCase
 {
     protected function setUp(): void

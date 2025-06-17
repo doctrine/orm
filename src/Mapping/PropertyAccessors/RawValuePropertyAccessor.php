@@ -5,12 +5,9 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Mapping\PropertyAccessors;
 
 use Doctrine\ORM\Proxy\InternalProxy;
-use LogicException;
 use ReflectionProperty;
 
 use function ltrim;
-
-use const PHP_VERSION_ID;
 
 /**
  * This is a PHP 8.4 and up only class and replaces ObjectCastPropertyAccessor.
@@ -31,9 +28,6 @@ class RawValuePropertyAccessor implements PropertyAccessor
 
     private function __construct(private ReflectionProperty $reflectionProperty, private string $key)
     {
-        if (PHP_VERSION_ID < 80400) {
-            throw new LogicException('This class requires PHP 8.4 or higher.');
-        }
     }
 
     public function setValue(object $object, mixed $value): void
