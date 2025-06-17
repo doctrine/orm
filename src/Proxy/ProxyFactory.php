@@ -49,7 +49,6 @@ use function substr;
 use function ucfirst;
 
 use const DIRECTORY_SEPARATOR;
-use const PHP_VERSION_ID;
 
 /**
  * This factory is used to create proxy objects for entities at runtime.
@@ -286,7 +285,7 @@ EOPHP;
             foreach ($reflector->getProperties($filter) as $property) {
                 $name = $property->name;
 
-                if (PHP_VERSION_ID >= 80400 && count($property->getHooks()) > 0) {
+                if (count($property->getHooks()) > 0) {
                     throw new LogicException(sprintf(
                         'Doctrine ORM does not support property hook on %s::%s without using native lazy objects. Check https://github.com/doctrine/orm/issues/11624 for details of versions that support property hooks.',
                         $property->getDeclaringClass()->getName(),

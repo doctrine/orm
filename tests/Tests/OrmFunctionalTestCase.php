@@ -193,7 +193,6 @@ use function strtolower;
 use function var_export;
 
 use const PHP_EOL;
-use const PHP_VERSION_ID;
 
 /**
  * Base testcase class for all functional ORM testcases.
@@ -940,7 +939,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
 
         $enableNativeLazyObjects = getenv('ENABLE_NATIVE_LAZY_OBJECTS');
 
-        if (PHP_VERSION_ID >= 80400 && $enableNativeLazyObjects) {
+        if ($enableNativeLazyObjects) {
             $config->enableNativeLazyObjects(true);
         }
 

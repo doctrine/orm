@@ -23,14 +23,11 @@ use Doctrine\ORM\Query\Filter\SQLFilter;
 use Doctrine\ORM\Repository\DefaultRepositoryFactory;
 use Doctrine\ORM\Repository\RepositoryFactory;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
-use LogicException;
 use Psr\Cache\CacheItemPoolInterface;
 
 use function class_exists;
 use function is_a;
 use function strtolower;
-
-use const PHP_VERSION_ID;
 
 /**
  * Configuration container for all configuration options of Doctrine.
@@ -602,10 +599,6 @@ class Configuration extends \Doctrine\DBAL\Configuration
 
     public function enableNativeLazyObjects(bool $nativeLazyObjects): void
     {
-        if (PHP_VERSION_ID < 80400) {
-            throw new LogicException('Lazy loading proxies require PHP 8.4 or higher.');
-        }
-
         $this->attributes['nativeLazyObjects'] = $nativeLazyObjects;
     }
 

@@ -33,18 +33,7 @@ steps of configuration.
     $config->setMetadataDriverImpl($driverImpl);
     $config->setQueryCache($queryCache);
 
-    if (PHP_VERSION_ID > 80400) {
-        $config->enableNativeLazyObjects(true);
-    } else {
-        $config->setProxyDir('/path/to/myproject/lib/MyProject/Proxies');
-        $config->setProxyNamespace('MyProject\Proxies');
-
-        if ($applicationMode === "development") {
-            $config->setAutoGenerateProxyClasses(true);
-        } else {
-            $config->setAutoGenerateProxyClasses(false);
-        }
-    }
+    $config->enableNativeLazyObjects(true);
 
     $connection = DriverManager::getConnection([
         'driver' => 'pdo_sqlite',
