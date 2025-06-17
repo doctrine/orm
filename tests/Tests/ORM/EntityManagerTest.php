@@ -25,9 +25,10 @@ use Generator;
 use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\RequiresPhp;
+use ReflectionClass;
 use ReflectionProperty;
 use stdClass;
-use Symfony\Component\VarExporter\LazyGhostTrait;
 use TypeError;
 
 class EntityManagerTest extends OrmTestCase
@@ -180,17 +181,12 @@ class EntityManagerTest extends OrmTestCase
     }
 
     /** Resetting the EntityManager relies on lazy objects until https://github.com/doctrine/orm/issues/5933 is resolved */
+    #[RequiresPhp('8.4')]
     public function testLazyGhostEntityManager(): void
     {
-        $em = new class () extends EntityManager {
-            use LazyGhostTrait;
+        $reflector = new ReflectionClass(EntityManager::class);
 
-            public function __construct()
-            {
-            }
-        };
-
-        $em = $em::createLazyGhost(static function ($em): void {
+        $em = $reflector->newLazyGhost($initializer = static function (EntityManager $em): void {
             $r = new ReflectionProperty(EntityManager::class, 'unitOfWork');
             $r->setValue($em, new class () extends UnitOfWork {
                 public function __construct()
@@ -207,7 +203,7 @@ class EntityManagerTest extends OrmTestCase
         $em->close();
         $this->assertFalse($em->isOpen());
 
-        $em->resetLazyObject();
+        $reflector->resetAsLazyGhost($em, $initializer);
         $this->assertTrue($em->isOpen());
     }
 
