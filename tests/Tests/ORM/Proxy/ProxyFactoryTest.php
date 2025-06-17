@@ -120,6 +120,10 @@ class ProxyFactoryTest extends OrmTestCase
     #[Group('DDC-2432')]
     public function testFailedProxyLoadingDoesNotMarkTheProxyAsInitialized(): void
     {
+        if ($this->emMock->getConfiguration()->isNativeLazyObjectsEnabled()) {
+            self::markTestSkipped('This test is not relevant when native lazy objects are enabled');
+        }
+
         $persister = $this->getMockBuilder(BasicEntityPersister::class)
             ->onlyMethods(['load'])
             ->disableOriginalConstructor()
@@ -146,6 +150,10 @@ class ProxyFactoryTest extends OrmTestCase
     #[Group('DDC-2432')]
     public function testFailedProxyCloningDoesNotMarkTheProxyAsInitialized(): void
     {
+        if ($this->emMock->getConfiguration()->isNativeLazyObjectsEnabled()) {
+            self::markTestSkipped('This test is not relevant when native lazy objects are enabled');
+        }
+
         $persister = $this->getMockBuilder(BasicEntityPersister::class)
             ->onlyMethods(['load', 'getClassMetadata'])
             ->disableOriginalConstructor()
@@ -172,6 +180,10 @@ class ProxyFactoryTest extends OrmTestCase
 
     public function testProxyClonesParentFields(): void
     {
+        if ($this->emMock->getConfiguration()->isNativeLazyObjectsEnabled()) {
+            self::markTestSkipped('This test is not relevant when native lazy objects are enabled');
+        }
+
         $companyEmployee = new CompanyEmployee();
         $companyEmployee->setSalary(1000); // A property on the CompanyEmployee
         $companyEmployee->setName('Bob'); // A property on the parent class, CompanyPerson

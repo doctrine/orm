@@ -941,6 +941,13 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
 
         $enableNativeLazyObjects = getenv('ENABLE_NATIVE_LAZY_OBJECTS');
 
+        if ($enableNativeLazyObjects === false) {
+            // If the environment variable is not set, we default to true.
+            // This is OK because environment variables are always strings, and
+            // we are comparing it to a boolean.
+            $enableNativeLazyObjects = true;
+        }
+
         if (PHP_VERSION_ID >= 80400 && $enableNativeLazyObjects) {
             $config->enableNativeLazyObjects(true);
         }
