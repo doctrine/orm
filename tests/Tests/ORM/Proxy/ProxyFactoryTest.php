@@ -122,10 +122,6 @@ class ProxyFactoryTest extends OrmTestCase
     #[Group('DDC-2432')]
     public function testFailedProxyLoadingDoesNotMarkTheProxyAsInitialized(): void
     {
-        if ($this->emMock->getConfiguration()->isNativeLazyObjectsEnabled()) {
-            self::markTestSkipped('This test is not relevant when native lazy objects are enabled');
-        }
-
         $persister = $this->getMockBuilder(BasicEntityPersister::class)
             ->onlyMethods(['load'])
             ->disableOriginalConstructor()
@@ -133,7 +129,6 @@ class ProxyFactoryTest extends OrmTestCase
         $this->uowMock->setEntityPersister(ECommerceFeature::class, $persister);
 
         $proxy = $this->proxyFactory->getProxy(ECommerceFeature::class, ['id' => 42]);
-        assert($proxy instanceof Proxy);
 
         $persister
             ->expects(self::atLeastOnce())
@@ -146,16 +141,24 @@ class ProxyFactoryTest extends OrmTestCase
         } catch (EntityNotFoundException) {
         }
 
-        self::assertFalse($proxy->__isInitialized());
+        self::assertUninitializedLazyObject($proxy);
+    }
+
+    private static function assertUninitializedLazyObject(object $proxy): void
+    {
+        if ($proxy instanceof Proxy) {
+            self::assertFalse($proxy->__isInitialized());
+
+            return;
+        }
+
+        $reflectionClass = new ReflectionClass($proxy);
+        self::assertTrue($reflectionClass->isUninitializedLazyObject($proxy));
     }
 
     #[Group('DDC-2432')]
     public function testFailedProxyCloningDoesNotMarkTheProxyAsInitialized(): void
     {
-        if ($this->emMock->getConfiguration()->isNativeLazyObjectsEnabled()) {
-            self::markTestSkipped('This test is not relevant when native lazy objects are enabled');
-        }
-
         $persister = $this->getMockBuilder(BasicEntityPersister::class)
             ->onlyMethods(['load', 'getClassMetadata'])
             ->disableOriginalConstructor()
@@ -163,7 +166,6 @@ class ProxyFactoryTest extends OrmTestCase
         $this->uowMock->setEntityPersister(ECommerceFeature::class, $persister);
 
         $proxy = $this->proxyFactory->getProxy(ECommerceFeature::class, ['id' => 42]);
-        assert($proxy instanceof Proxy);
 
         $persister
             ->expects(self::atLeastOnce())
@@ -177,7 +179,7 @@ class ProxyFactoryTest extends OrmTestCase
         } catch (EntityNotFoundException) {
         }
 
-        self::assertFalse($proxy->__isInitialized());
+        self::assertUninitializedLazyObject($proxy);
     }
 
     public function testProxyClonesParentFields(): void

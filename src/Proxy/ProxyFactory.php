@@ -185,11 +185,23 @@ EOPHP;
     public function getProxy(string $className, array $identifier): object
     {
         if ($this->em->getConfiguration()->isNativeLazyObjectsEnabled()) {
-            $classMetadata   = $this->em->getClassMetadata($className);
-            $entityPersister = $this->uow->getEntityPersister($className);
+            $classMetadata       = $this->em->getClassMetadata($className);
+            $entityPersister     = $this->uow->getEntityPersister($className);
+            $identifierFlattener = $this->identifierFlattener;
 
-            $proxy = $classMetadata->reflClass->newLazyGhost(static function (object $object) use ($identifier, $entityPersister): void {
-                $entityPersister->loadById($identifier, $object);
+            $proxy = $classMetadata->reflClass->newLazyGhost(static function (object $object) use (
+                $identifier,
+                $entityPersister,
+                $identifierFlattener,
+                $classMetadata,
+            ): void {
+                $original = $entityPersister->loadById($identifier, $object);
+                if ($original === null) {
+                    throw EntityNotFoundException::fromClassNameAndIdentifier(
+                        $classMetadata->getName(),
+                        $identifierFlattener->flattenIdentifier($classMetadata, $identifier),
+                    );
+                }
             }, ReflectionClass::SKIP_INITIALIZATION_ON_SERIALIZE);
 
             foreach ($identifier as $idField => $value) {
