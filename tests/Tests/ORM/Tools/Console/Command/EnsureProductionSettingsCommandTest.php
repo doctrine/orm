@@ -7,6 +7,7 @@ namespace Doctrine\Tests\ORM\Tools\Console\Command;
 use Doctrine\DBAL\Connection;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Tools\Console\ApplicationCompatibility;
 use Doctrine\ORM\Tools\Console\Command\EnsureProductionSettingsCommand;
 use Doctrine\ORM\Tools\Console\EntityManagerProvider\SingleManagerProvider;
 use Doctrine\Tests\DoctrineTestCase;
@@ -18,6 +19,8 @@ use function array_merge;
 
 class EnsureProductionSettingsCommandTest extends DoctrineTestCase
 {
+    use ApplicationCompatibility;
+
     public function testExecute(): void
     {
         $em = $this->createMock(EntityManagerInterface::class);
@@ -103,7 +106,7 @@ class EnsureProductionSettingsCommandTest extends DoctrineTestCase
         array $input = []
     ): int {
         $application = new Application();
-        $application->add(new EnsureProductionSettingsCommand(new SingleManagerProvider($em)));
+        self::addCommandToApplication($application, new EnsureProductionSettingsCommand(new SingleManagerProvider($em)));
 
         $command = $application->find('orm:ensure-production-settings');
         $tester  = new CommandTester($command);

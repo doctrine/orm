@@ -7,6 +7,7 @@ namespace Doctrine\Tests\ORM\Tools\Console\Command;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\MappingException;
+use Doctrine\ORM\Tools\Console\ApplicationCompatibility;
 use Doctrine\ORM\Tools\Console\Command\InfoCommand;
 use Doctrine\ORM\Tools\Console\EntityManagerProvider\SingleManagerProvider;
 use Doctrine\ORM\Tools\Console\Helper\EntityManagerHelper;
@@ -20,6 +21,8 @@ use Symfony\Component\Console\Tester\CommandTester;
 
 class InfoCommandTest extends OrmFunctionalTestCase
 {
+    use ApplicationCompatibility;
+
     /** @var Application */
     private $application;
 
@@ -35,7 +38,7 @@ class InfoCommandTest extends OrmFunctionalTestCase
 
         $this->application = new Application();
 
-        $this->application->add(new InfoCommand(new SingleManagerProvider($this->_em)));
+        self::addCommandToApplication($this->application, new InfoCommand(new SingleManagerProvider($this->_em)));
 
         $this->command = $this->application->find('orm:info');
         $this->tester  = new CommandTester($this->command);
@@ -66,7 +69,7 @@ class InfoCommandTest extends OrmFunctionalTestCase
 
         $application = new Application();
         $application->setHelperSet(new HelperSet(['em' => new EntityManagerHelper($em)]));
-        $application->add(new InfoCommand());
+        self::addCommandToApplication($application, new InfoCommand());
 
         $command = $application->find('orm:info');
         $tester  = new CommandTester($command);
@@ -105,7 +108,7 @@ class InfoCommandTest extends OrmFunctionalTestCase
 
         $application = new Application();
         $application->setHelperSet(new HelperSet(['em' => new EntityManagerHelper($em)]));
-        $application->add(new InfoCommand());
+        self::addCommandToApplication($application, new InfoCommand());
 
         $command = $application->find('orm:info');
         $tester  = new CommandTester($command);

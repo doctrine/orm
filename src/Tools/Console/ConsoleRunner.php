@@ -23,6 +23,8 @@ use function class_exists;
  */
 final class ConsoleRunner
 {
+    use ApplicationCompatibility;
+
     /**
      * Create a Symfony Console HelperSet
      *
@@ -91,7 +93,7 @@ final class ConsoleRunner
         $connectionProvider = new ConnectionFromManagerProvider($entityManagerProvider);
 
         if (class_exists(DBALConsole\Command\ImportCommand::class)) {
-            $cli->add(new DBALConsole\Command\ImportCommand());
+            self::addCommandToApplication($cli, new DBALConsole\Command\ImportCommand());
         }
 
         $cli->addCommands(
