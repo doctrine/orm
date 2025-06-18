@@ -121,7 +121,7 @@ class ProxyFactoryTest extends OrmTestCase
     public function testFailedProxyLoadingDoesNotMarkTheProxyAsInitialized(): void
     {
         if ($this->emMock->getConfiguration()->isNativeLazyObjectsEnabled()) {
-            self::markTestSkipped('This test is not relevant when native lazy objects are enabled');
+            self::markTestSkipped('This test needs to be fixed for native lazy objects');
         }
 
         $persister = $this->getMockBuilder(BasicEntityPersister::class)
