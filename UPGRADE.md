@@ -1,5 +1,16 @@
 # Upgrade to 3.5
 
+## Deprecate not using native lazy objects on PHP 8.4+
+
+Having native lazy objects disabled on PHP 8.4+ is deprecated and will not be
+possible in 4.0.
+
+You can enable them through configuration:
+
+```php
+$config->enableNativeLazyObjects(true);
+```
+
 ## Deprecate methods for configuring no longer configurable features
 
 Since 3.0, lazy ghosts are enabled unconditionally, and so is rejecting ID

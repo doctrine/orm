@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM;
 
+use Doctrine\Deprecations\PHPUnit\VerifyDeprecations;
 use Doctrine\ORM\Cache\CacheConfiguration;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityRepository;
@@ -17,6 +18,8 @@ use Doctrine\ORM\Proxy\ProxyFactory;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
 use Doctrine\Tests\Models\DDC753\DDC753CustomRepository;
 use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\RequiresPhp;
+use PHPUnit\Framework\Attributes\WithoutErrorHandler;
 use PHPUnit\Framework\TestCase;
 use Psr\Cache\CacheItemPoolInterface;
 
@@ -25,6 +28,8 @@ use Psr\Cache\CacheItemPoolInterface;
  */
 class ConfigurationTest extends TestCase
 {
+    use VerifyDeprecations;
+
     private Configuration $configuration;
 
     protected function setUp(): void
@@ -211,5 +216,29 @@ class ConfigurationTest extends TestCase
         $defaultTypedFieldMapper = new DefaultTypedFieldMapper();
         $this->configuration->setTypedFieldMapper($defaultTypedFieldMapper);
         self::assertSame($defaultTypedFieldMapper, $this->configuration->getTypedFieldMapper());
+    }
+
+    #[RequiresPhp('8.4')]
+    #[WithoutErrorHandler]
+    public function testDisablingNativeLazyObjectsIsDeprecated(): void
+    {
+        $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/pull/12005');
+
+        $this->configuration->enableNativeLazyObjects(false);
+    }
+
+    #[RequiresPhp('<8.4')]
+    public function testNotEnablingNativeLazyObjectIsFineOnPhpLowerThan84(): void
+    {
+        $this->expectNoDeprecationWithIdentifier('https://github.com/doctrine/orm/pull/12005');
+        self::assertFalse($this->configuration->isNativeLazyObjectsEnabled());
+    }
+
+    #[RequiresPhp('8.4')]
+    #[WithoutErrorHandler]
+    public function testNotEnablingNativeLazyObjectIsDeprecatedOnPhp84(): void
+    {
+        $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/pull/12005');
+        self::assertFalse($this->configuration->isNativeLazyObjectsEnabled());
     }
 }
