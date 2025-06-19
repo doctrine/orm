@@ -40,29 +40,20 @@ class GH7737Test extends OrmFunctionalTestCase
     #[Test]
     public function memberOfCriteriaShouldBeCompatibleWithQueryBuilder(): void
     {
-        $group1   = $this->_em->find(GH7737Group::class, 1);
-
         $query = $this->_em->createQueryBuilder()
             ->select('person')
             ->from(GH7737Person::class, 'person')
-            ->addCriteria(Criteria::create()->where(Criteria::expr()->memberOf('person.groups', $group1)))
+            ->addCriteria(Criteria::create()->where(Criteria::expr()->memberOf(':group', 'person.groups')))
             ->getQuery();
 
-        $matching = $query->getOneOrNullResult();
+        $group1   = $this->_em->find(GH7737Group::class, 1);
+        $matching = $query->setParameter('group', $group1)->getOneOrNullResult();
 
         self::assertInstanceOf(GH7737Person::class, $matching);
         self::assertSame(1, $matching->id);
 
         $group2      = $this->_em->find(GH7737Group::class, 2);
-
-        $query = $this->_em->createQueryBuilder()
-            ->select('person')
-            ->from(GH7737Person::class, 'person')
-            ->addCriteria(Criteria::create()->where(Criteria::expr()->memberOf('person.groups', $group2)))
-            ->getQuery();
-
-
-        $notMatching = $query->getOneOrNullResult();
+        $notMatching = $query->setParameter('group', $group2)->getOneOrNullResult();
 
         self::assertNull($notMatching);
     }
