@@ -143,6 +143,10 @@ class QueryExpressionVisitor extends ExpressionVisitor
                 return $this->expr->like($field, $placeholder);
 
             case Comparison::MEMBER_OF:
+                if (str_starts_with($comparison->getField(), ':')) {
+                    return $this->expr->isMemberOf($comparison->getField(), $comparison->getValue()->getValue());
+                }
+
                 $this->parameters[] = $parameter;
 
                 return $this->expr->isMemberOf($placeholder, $field);
