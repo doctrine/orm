@@ -1,3 +1,10 @@
+# Upgrade to 3.4.1
+
+## BC BREAK: You can no longer use the `.*` notation to get all fields of an entity in a DTO
+
+This feature was introduced in 3.4.0, and introduces several issues, so we
+decide to remove it before it is used too widely.
+
 # Upgrade to 3.4
 
 ## Discriminator Map class duplicates
