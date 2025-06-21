@@ -7,6 +7,7 @@ namespace Doctrine\Tests\ORM\Tools\Console\Command;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\MappingException;
+use Doctrine\ORM\Tools\Console\ApplicationCompatibility;
 use Doctrine\ORM\Tools\Console\Command\InfoCommand;
 use Doctrine\ORM\Tools\Console\EntityManagerProvider\SingleManagerProvider;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
@@ -18,6 +19,8 @@ use Symfony\Component\Console\Tester\CommandTester;
 
 class InfoCommandTest extends OrmFunctionalTestCase
 {
+    use ApplicationCompatibility;
+
     private Application $application;
     private InfoCommand $command;
     private CommandTester $tester;
@@ -28,7 +31,7 @@ class InfoCommandTest extends OrmFunctionalTestCase
 
         $this->application = new Application();
 
-        $this->application->add(new InfoCommand(new SingleManagerProvider($this->_em)));
+        self::addCommandToApplication($this->application, new InfoCommand(new SingleManagerProvider($this->_em)));
 
         $this->command = $this->application->find('orm:info');
         $this->tester  = new CommandTester($this->command);
@@ -58,7 +61,7 @@ class InfoCommandTest extends OrmFunctionalTestCase
            ->willReturn($configuration);
 
         $application = new Application();
-        $application->add(new InfoCommand(new SingleManagerProvider($em)));
+        self::addCommandToApplication($application, new InfoCommand(new SingleManagerProvider($em)));
 
         $command = $application->find('orm:info');
         $tester  = new CommandTester($command);
@@ -96,7 +99,7 @@ class InfoCommandTest extends OrmFunctionalTestCase
            ->willThrowException(new MappingException('exception message'));
 
         $application = new Application();
-        $application->add(new InfoCommand(new SingleManagerProvider($em)));
+        self::addCommandToApplication($application, new InfoCommand(new SingleManagerProvider($em)));
 
         $command = $application->find('orm:info');
         $tester  = new CommandTester($command);
