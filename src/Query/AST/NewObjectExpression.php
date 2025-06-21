@@ -20,7 +20,7 @@ class NewObjectExpression extends Node
      * @param class-string $className
      * @param mixed[]      $args
      */
-    public function __construct(public string $className, public array $args, public bool $hasNamedArgs = false)
+    public function __construct(public string $className, public array $args)
     {
     }
 
