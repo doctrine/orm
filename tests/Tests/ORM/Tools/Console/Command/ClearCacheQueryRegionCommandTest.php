@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Tools\Console\Command;
 
+use Doctrine\ORM\Tools\Console\ApplicationCompatibility;
 use Doctrine\ORM\Tools\Console\Command\ClearCache\QueryRegionCommand;
 use Doctrine\ORM\Tools\Console\EntityManagerProvider\SingleManagerProvider;
 use Doctrine\Tests\OrmFunctionalTestCase;
@@ -14,6 +15,8 @@ use Symfony\Component\Console\Tester\CommandTester;
 #[Group('DDC-2183')]
 class ClearCacheQueryRegionCommandTest extends OrmFunctionalTestCase
 {
+    use ApplicationCompatibility;
+
     private Application $application;
 
     private QueryRegionCommand $command;
@@ -27,7 +30,7 @@ class ClearCacheQueryRegionCommandTest extends OrmFunctionalTestCase
         $this->command = new QueryRegionCommand(new SingleManagerProvider($this->_em));
 
         $this->application = new Application();
-        $this->application->add($this->command);
+        self::addCommandToApplication($this->application, $this->command);
     }
 
     public function testClearAllRegion(): void

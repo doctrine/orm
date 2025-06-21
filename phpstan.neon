@@ -45,7 +45,7 @@ parameters:
             path: src/UnitOfWork.php
 
         -
-            message: '~^Parameter #1 \$command of method Symfony\\Component\\Console\\Application::add\(\) expects Symfony\\Component\\Console\\Command\\Command, Doctrine\\DBAL\\Tools\\Console\\Command\\ReservedWordsCommand given\.$~'
+            message: '~^Parameter #2 \$command of static method Doctrine\\ORM\\Tools\\Console\\ConsoleRunner::addCommandToApplication\(\) expects Symfony\\Component\\Console\\Command\\Command, Doctrine\\DBAL\\Tools\\Console\\Command\\ReservedWordsCommand given\.$~'
             path: src/Tools/Console/ConsoleRunner.php
 
         -
