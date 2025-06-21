@@ -6,6 +6,7 @@ namespace Doctrine\Tests\ORM\Tools\Console\Command;
 
 use Doctrine\DBAL\Platforms\SQLitePlatform;
 use Doctrine\DBAL\Schema\SchemaDiff;
+use Doctrine\ORM\Tools\Console\ApplicationCompatibility;
 use Doctrine\ORM\Tools\Console\Command\ValidateSchemaCommand;
 use Doctrine\ORM\Tools\Console\EntityManagerProvider\SingleManagerProvider;
 use Doctrine\Tests\OrmFunctionalTestCase;
@@ -22,6 +23,8 @@ use function method_exists;
 #[CoversClass(ValidateSchemaCommand::class)]
 class ValidateSchemaCommandTest extends OrmFunctionalTestCase
 {
+    use ApplicationCompatibility;
+
     private ValidateSchemaCommand $command;
 
     private CommandTester $tester;
@@ -39,7 +42,7 @@ class ValidateSchemaCommandTest extends OrmFunctionalTestCase
         }
 
         $application = new Application();
-        $application->add(new ValidateSchemaCommand(new SingleManagerProvider($this->_em)));
+        self::addCommandToApplication($application, new ValidateSchemaCommand(new SingleManagerProvider($this->_em)));
 
         $this->command = $application->find('orm:validate-schema');
         $this->tester  = new CommandTester($this->command);
