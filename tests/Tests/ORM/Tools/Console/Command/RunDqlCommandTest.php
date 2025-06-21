@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Tools\Console\Command;
 
+use Doctrine\ORM\Tools\Console\ApplicationCompatibility;
 use Doctrine\ORM\Tools\Console\Command\RunDqlCommand;
 use Doctrine\ORM\Tools\Console\EntityManagerProvider\SingleManagerProvider;
 use Doctrine\Tests\Models\Generic\DateTimeModel;
@@ -20,6 +21,8 @@ use function trim;
 #[CoversClass(RunDqlCommand::class)]
 class RunDqlCommandTest extends OrmFunctionalTestCase
 {
+    use ApplicationCompatibility;
+
     private Application $application;
 
     private RunDqlCommand $command;
@@ -35,7 +38,7 @@ class RunDqlCommandTest extends OrmFunctionalTestCase
         $this->command = new RunDqlCommand(new SingleManagerProvider($this->_em));
 
         $this->application = new Application();
-        $this->application->add($this->command);
+        self::addCommandToApplication($this->application, $this->command);
 
         $this->tester = new CommandTester($this->command);
     }

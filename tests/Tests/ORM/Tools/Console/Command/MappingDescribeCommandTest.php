@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Tools\Console\Command;
 
+use Doctrine\ORM\Tools\Console\ApplicationCompatibility;
 use Doctrine\ORM\Tools\Console\Command\MappingDescribeCommand;
 use Doctrine\ORM\Tools\Console\EntityManagerProvider\SingleManagerProvider;
 use Doctrine\Tests\Models\Cache\AttractionInfo;
@@ -19,6 +20,8 @@ use Symfony\Component\Console\Tester\CommandTester;
 #[CoversClass(MappingDescribeCommand::class)]
 class MappingDescribeCommandTest extends OrmFunctionalTestCase
 {
+    use ApplicationCompatibility;
+
     private Application $application;
 
     private MappingDescribeCommand $command;
@@ -30,7 +33,7 @@ class MappingDescribeCommandTest extends OrmFunctionalTestCase
         parent::setUp();
 
         $this->application = new Application();
-        $this->application->add(new MappingDescribeCommand(new SingleManagerProvider($this->_em)));
+        self::addCommandToApplication($this->application, new MappingDescribeCommand(new SingleManagerProvider($this->_em)));
 
         $this->command = $this->application->find('orm:mapping:describe');
         $this->tester  = new CommandTester($this->command);

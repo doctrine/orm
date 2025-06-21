@@ -132,6 +132,9 @@ EOPHP;
     /** @var array<class-string, Closure> */
     private array $proxyFactories = [];
 
+    private readonly string $proxyDir;
+    private readonly string $proxyNs;
+
     /**
      * Initializes a new instance of the <tt>ProxyFactory</tt> class that is
      * connected to the given <tt>EntityManager</tt>.
@@ -143,8 +146,8 @@ EOPHP;
      */
     public function __construct(
         private readonly EntityManagerInterface $em,
-        private readonly string $proxyDir,
-        private readonly string $proxyNs,
+        string|null $proxyDir = null,
+        string|null $proxyNs = null,
         bool|int $autoGenerate = self::AUTOGENERATE_NEVER,
     ) {
         if (! $proxyDir && ! $em->getConfiguration()->isNativeLazyObjectsEnabled()) {
@@ -159,6 +162,17 @@ EOPHP;
             throw ORMInvalidArgumentException::invalidAutoGenerateMode($autoGenerate);
         }
 
+        if ($proxyDir === null && $em->getConfiguration()->isNativeLazyObjectsEnabled()) {
+            $proxyDir = '';
+        }
+
+        if ($proxyNs === null && $em->getConfiguration()->isNativeLazyObjectsEnabled()) {
+            $proxyNs = '';
+        }
+
+        $this->proxyDir = $proxyDir;
+        $this->proxyNs  = $proxyNs;
+
         $this->uow                 = $em->getUnitOfWork();
         $this->autoGenerate        = (int) $autoGenerate;
         $this->identifierFlattener = new IdentifierFlattener($this->uow, $em->getMetadataFactory());
@@ -171,11 +185,23 @@ EOPHP;
     public function getProxy(string $className, array $identifier): object
     {
         if ($this->em->getConfiguration()->isNativeLazyObjectsEnabled()) {
-            $classMetadata   = $this->em->getClassMetadata($className);
-            $entityPersister = $this->uow->getEntityPersister($className);
+            $classMetadata       = $this->em->getClassMetadata($className);
+            $entityPersister     = $this->uow->getEntityPersister($className);
+            $identifierFlattener = $this->identifierFlattener;
 
-            $proxy = $classMetadata->reflClass->newLazyGhost(static function (object $object) use ($identifier, $entityPersister): void {
-                $entityPersister->loadById($identifier, $object);
+            $proxy = $classMetadata->reflClass->newLazyGhost(static function (object $object) use (
+                $identifier,
+                $entityPersister,
+                $identifierFlattener,
+                $classMetadata,
+            ): void {
+                $original = $entityPersister->loadById($identifier, $object);
+                if ($original === null) {
+                    throw EntityNotFoundException::fromClassNameAndIdentifier(
+                        $classMetadata->getName(),
+                        $identifierFlattener->flattenIdentifier($classMetadata, $identifier),
+                    );
+                }
             }, ReflectionClass::SKIP_INITIALIZATION_ON_SERIALIZE);
 
             foreach ($identifier as $idField => $value) {
