@@ -1151,6 +1151,21 @@ final class Parser
     }
 
     /**
+     * AllFieldsExpression ::= "ALLFIELDS(" IdentificationVariable ")"
+     */
+    public function AllFieldsExpression(): AST\AllFieldsExpression
+    {
+        assert($this->lexer->token !== null);
+
+        $this->match(TokenType::T_ALLFIELDS);
+        $this->match(TokenType::T_OPEN_PARENTHESIS);
+        $identVariable = $this->IdentificationVariable();
+        $this->match(TokenType::T_CLOSE_PARENTHESIS);
+
+        return new AST\AllFieldsExpression($identVariable);
+    }
+
+    /**
      * SelectClause ::= "SELECT" ["DISTINCT"] SelectExpression {"," SelectExpression}
      */
     public function SelectClause(): AST\SelectClause
@@ -1826,7 +1841,7 @@ final class Parser
 
         $this->match(TokenType::T_CLOSE_PARENTHESIS);
 
-        $expression = new AST\NewObjectExpression($className, $args);
+        $expression = new AST\NewObjectExpression($className, $args, $useNamedArguments);
 
         // Defer NewObjectExpression validation
         $this->deferredNewObjectExpressions[] = [
@@ -1873,7 +1888,7 @@ final class Parser
     }
 
     /**
-     * NewObjectArg ::= (ScalarExpression | "(" Subselect ")" | NewObjectExpression) ["AS" AliasResultVariable]
+     * NewObjectArg ::= ((ScalarExpression | "(" Subselect ")" | NewObjectExpression) ["AS" AliasResultVariable]) | AllFieldsExpression
      */
     public function NewObjectArg(string|null &$fieldAlias = null): mixed
     {
@@ -1893,6 +1908,8 @@ final class Parser
             $this->match(TokenType::T_CLOSE_PARENTHESIS);
         } elseif ($token->type === TokenType::T_NEW) {
             $expression = $this->NewObjectExpression();
+        } elseif ($token->type === TokenType::T_ALLFIELDS) {
+            $expression = $this->AllFieldsExpression();
         } elseif ($token->type === TokenType::T_IDENTIFIER && $peek->type !== TokenType::T_DOT && $peek->type !== TokenType::T_OPEN_PARENTHESIS) {
             $expression = $this->EntityAsDtoArgumentExpression();
         } else {
@@ -1985,8 +2002,8 @@ final class Parser
             // it is no function, so it must be a field path
             case $lookahead === TokenType::T_IDENTIFIER:
                 $this->lexer->peek(); // lookahead => '.'
-                $this->lexer->peek(); // lookahead => token after '.'
-                $peek = $this->lexer->peek(); // lookahead => token after the token after the '.'
+                $token = $this->lexer->peek(); // lookahead => token after '.'
+                $peek  = $this->lexer->peek(); // lookahead => token after the token after the '.'
                 $this->lexer->resetPeek();
 
                 if ($this->isMathOperator($peek)) {

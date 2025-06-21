@@ -684,6 +684,18 @@ You can hydrate an entity nested in a DTO :
 
     // CustomerDTO => {name : 'DOE', email: null, address : {city: 'New York', zip: '10011', address: 'Abbey Road'}
 
+In a DTO, if you want to add all fields of an entity, you can use ``ALLFIELDS`` :
+
+.. code-block:: php
+
+    <?php
+    $query = $em->createQuery('SELECT NEW NAMED CustomerDTO(c.name, NEW NAMED AddressDTO(ALLFIELDS(a)) AS address) FROM Customer c JOIN c.address a');
+    $users = $query->getResult(); // array of CustomerDTO
+
+    // CustomerDTO => {name : 'DOE', email: null, city: null, address: {id: 18, city: 'New York', zip: '10011'}}
+
+It's mandatory to use named arguments DTOs with the ``ALLFIELDS`` notation because argument order is not guaranteed, otherwise an exception will be thrown.
+
 Using INDEX BY
 ~~~~~~~~~~~~~~
 
@@ -1707,13 +1719,14 @@ Select Expressions
 
 .. code-block:: php
 
-    SelectExpression              ::= (IdentificationVariable | ScalarExpression | AggregateExpression | FunctionDeclaration | PartialObjectExpression | "(" Subselect ")" | CaseExpression | NewObjectExpression) [["AS"] ["HIDDEN"] AliasResultVariable]
-    SimpleSelectExpression        ::= (StateFieldPathExpression | IdentificationVariable | FunctionDeclaration | AggregateExpression | "(" Subselect ")" | ScalarExpression) [["AS"] AliasResultVariable]
+	SelectExpression              ::= (IdentificationVariable | ScalarExpression | AggregateExpression | FunctionDeclaration | PartialObjectExpression | "(" Subselect ")" | CaseExpression | NewObjectExpression) [["AS"] ["HIDDEN"] AliasResultVariable]
+	SimpleSelectExpression        ::= (StateFieldPathExpression | IdentificationVariable | FunctionDeclaration | AggregateExpression | "(" Subselect ")" | ScalarExpression) [["AS"] AliasResultVariable]
     PartialObjectExpression       ::= "PARTIAL" IdentificationVariable "." PartialFieldSet
     PartialFieldSet               ::= "{" SimpleStateField {"," SimpleStateField}* "}"
     NewObjectExpression           ::= "NEW" AbstractSchemaName "(" NewObjectArg {"," NewObjectArg}* ")"
-    NewObjectArg                  ::= (ScalarExpression | "(" Subselect ")" | NewObjectExpression | EntityAsDtoArgumentExpression) ["AS" AliasResultVariable]
+    NewObjectArg                  ::= ((ScalarExpression | "(" Subselect ")" | NewObjectExpression | EntityAsDtoArgumentExpression) ["AS" AliasResultVariable]) | AllFieldsExpression
     EntityAsDtoArgumentExpression ::= IdentificationVariable
+    AllFieldsExpression           ::= "ALLFIELDS(" IdentificationVariable ")"
 
 Conditional Expressions
 ~~~~~~~~~~~~~~~~~~~~~~~
