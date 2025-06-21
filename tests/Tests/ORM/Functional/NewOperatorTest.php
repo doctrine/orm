@@ -12,6 +12,7 @@ use Doctrine\Tests\Models\CMS\CmsAddress;
 use Doctrine\Tests\Models\CMS\CmsAddressDTO;
 use Doctrine\Tests\Models\CMS\CmsAddressDTONamedArgs;
 use Doctrine\Tests\Models\CMS\CmsDumbDTO;
+use Doctrine\Tests\Models\CMS\CmsDumbVariadicDTO;
 use Doctrine\Tests\Models\CMS\CmsEmail;
 use Doctrine\Tests\Models\CMS\CmsPhonenumber;
 use Doctrine\Tests\Models\CMS\CmsUser;
@@ -1569,6 +1570,244 @@ class NewOperatorTest extends OrmFunctionalTestCase
         self::assertSame($this->fixtures[0]->username, $result[0]['cmsUserUsername']);
         self::assertSame($this->fixtures[1]->username, $result[1]['cmsUserUsername']);
         self::assertSame($this->fixtures[2]->username, $result[2]['cmsUserUsername']);
+    }
+
+    public function testShouldSupportNestedNewOperatorsWithAllFieldsForDto(): void
+    {
+        $dql = '
+            SELECT
+                new CmsDumbDTO(
+                    ALLFIELDS(u)
+                )
+            FROM
+                Doctrine\Tests\Models\CMS\CmsUser u
+            JOIN
+                u.email e
+            JOIN
+                u.address a
+            ORDER BY
+                u.name';
+
+        $query = $this->getEntityManager()->createQuery($dql);
+        $this->expectExceptionMessage('All fields expressions must be used with named arguments dto constructor.');
+        $result = $query->getResult();
+    }
+
+    public function testShouldSupportNestedNewOperatorsWithAllFieldsForNamedDto(): void
+    {
+        $dql = '
+            SELECT
+                new NAMED CmsDumbVariadicDTO(
+                    ALLFIELDS(u)
+                )
+            FROM
+                Doctrine\Tests\Models\CMS\CmsUser u
+            JOIN
+                u.email e
+            JOIN
+                u.address a
+            ORDER BY
+                u.name';
+
+        $query  = $this->getEntityManager()->createQuery($dql);
+        $result = $query->getResult();
+
+        self::assertCount(3, $result);
+
+        self::assertInstanceOf(CmsDumbVariadicDTO::class, $result[0]);
+        self::assertInstanceOf(CmsDumbVariadicDTO::class, $result[1]);
+        self::assertInstanceOf(CmsDumbVariadicDTO::class, $result[2]);
+
+        self::assertSame($this->fixtures[0]->status, $result[0]->status);
+        self::assertSame($this->fixtures[1]->status, $result[1]->status);
+        self::assertSame($this->fixtures[2]->status, $result[2]->status);
+
+        self::assertSame($this->fixtures[0]->username, $result[0]->username);
+        self::assertSame($this->fixtures[1]->username, $result[1]->username);
+        self::assertSame($this->fixtures[2]->username, $result[2]->username);
+
+        self::assertSame($this->fixtures[0]->name, $result[0]->name);
+        self::assertSame($this->fixtures[1]->name, $result[1]->name);
+        self::assertSame($this->fixtures[2]->name, $result[2]->name);
+    }
+
+    public function testShouldSupportNestedNewOperatorsWithMultipleAllFieldsForNamedDto(): void
+    {
+        $dql = '
+            SELECT
+                new NAMED CmsDumbVariadicDTO(
+                    ALLFIELDS(u), ALLFIELDS(a)
+                )
+            FROM
+                Doctrine\Tests\Models\CMS\CmsUser u
+            JOIN
+                u.email e
+            JOIN
+                u.address a
+            ORDER BY
+                u.name';
+
+        $query  = $this->getEntityManager()->createQuery($dql);
+        $result = $query->getResult();
+
+        self::assertCount(3, $result);
+
+        self::assertInstanceOf(CmsDumbVariadicDTO::class, $result[0]);
+        self::assertInstanceOf(CmsDumbVariadicDTO::class, $result[1]);
+        self::assertInstanceOf(CmsDumbVariadicDTO::class, $result[2]);
+
+        self::assertSame($this->fixtures[0]->status, $result[0]->status);
+        self::assertSame($this->fixtures[1]->status, $result[1]->status);
+        self::assertSame($this->fixtures[2]->status, $result[2]->status);
+
+        self::assertSame($this->fixtures[0]->username, $result[0]->username);
+        self::assertSame($this->fixtures[1]->username, $result[1]->username);
+        self::assertSame($this->fixtures[2]->username, $result[2]->username);
+
+        self::assertSame($this->fixtures[0]->name, $result[0]->name);
+        self::assertSame($this->fixtures[1]->name, $result[1]->name);
+        self::assertSame($this->fixtures[2]->name, $result[2]->name);
+
+        self::assertSame($this->fixtures[0]->address->city, $result[0]->city);
+        self::assertSame($this->fixtures[1]->address->city, $result[1]->city);
+        self::assertSame($this->fixtures[2]->address->city, $result[2]->city);
+
+        self::assertSame($this->fixtures[0]->address->zip, $result[0]->zip);
+        self::assertSame($this->fixtures[1]->address->zip, $result[1]->zip);
+        self::assertSame($this->fixtures[2]->address->zip, $result[2]->zip);
+
+        self::assertSame($this->fixtures[0]->address->country, $result[0]->country);
+        self::assertSame($this->fixtures[1]->address->country, $result[1]->country);
+        self::assertSame($this->fixtures[2]->address->country, $result[2]->country);
+    }
+
+    public function testShouldSupportNestedNewOperatorsWithAllFieldsForNamedDtoWithOtherValues(): void
+    {
+        $dql = '
+            SELECT
+                new NAMED CmsDumbVariadicDTO(
+                    ALLFIELDS(u), e.email, a.zip, a.country
+                )
+            FROM
+                Doctrine\Tests\Models\CMS\CmsUser u
+            JOIN
+                u.email e
+            JOIN
+                u.address a
+            ORDER BY
+                u.name';
+
+        $query  = $this->getEntityManager()->createQuery($dql);
+        $result = $query->getResult();
+
+        self::assertCount(3, $result);
+
+        self::assertInstanceOf(CmsDumbVariadicDTO::class, $result[0]);
+        self::assertInstanceOf(CmsDumbVariadicDTO::class, $result[1]);
+        self::assertInstanceOf(CmsDumbVariadicDTO::class, $result[2]);
+
+        self::assertSame($this->fixtures[0]->status, $result[0]->status);
+        self::assertSame($this->fixtures[1]->status, $result[1]->status);
+        self::assertSame($this->fixtures[2]->status, $result[2]->status);
+
+        self::assertSame($this->fixtures[0]->username, $result[0]->username);
+        self::assertSame($this->fixtures[1]->username, $result[1]->username);
+        self::assertSame($this->fixtures[2]->username, $result[2]->username);
+
+        self::assertSame($this->fixtures[0]->name, $result[0]->name);
+        self::assertSame($this->fixtures[1]->name, $result[1]->name);
+        self::assertSame($this->fixtures[2]->name, $result[2]->name);
+
+        self::assertSame($this->fixtures[0]->email->email, $result[0]->email);
+        self::assertSame($this->fixtures[1]->email->email, $result[1]->email);
+        self::assertSame($this->fixtures[2]->email->email, $result[2]->email);
+
+        self::assertSame($this->fixtures[0]->address->zip, $result[0]->zip);
+        self::assertSame($this->fixtures[1]->address->zip, $result[1]->zip);
+        self::assertSame($this->fixtures[2]->address->zip, $result[2]->zip);
+
+        self::assertSame($this->fixtures[0]->address->country, $result[0]->country);
+        self::assertSame($this->fixtures[1]->address->country, $result[1]->country);
+        self::assertSame($this->fixtures[2]->address->country, $result[2]->country);
+    }
+
+    public function testShouldSupportNestedNewOperatorsWithAllFieldsForNestedDto(): void
+    {
+        $dql = '
+            SELECT
+                new CmsDumbDTO(
+                    u.name,
+                    e.email,
+                    NEW CmsDumbDTO(
+                        ALLFIELDS(a)
+                    ) as address
+                )
+            FROM
+                Doctrine\Tests\Models\CMS\CmsUser u
+            JOIN
+                u.email e
+            JOIN
+                u.address a
+            ORDER BY
+                u.name';
+
+        $query = $this->getEntityManager()->createQuery($dql);
+        $this->expectExceptionMessage('All fields expressions must be used with named arguments dto constructor.');
+        $result = $query->getResult();
+    }
+
+    public function testShouldSupportNestedNewOperatorsWithAllFieldsForNestedNamedDto(): void
+    {
+        $dql = '
+            SELECT
+                new CmsDumbDTO(
+                    u.name,
+                    e.email,
+                    new NAMED CmsDumbVariadicDTO(
+                        ALLFIELDS(a)
+                    ) as address
+                )
+            FROM
+                Doctrine\Tests\Models\CMS\CmsUser u
+            JOIN
+                u.email e
+            JOIN
+                u.address a
+            ORDER BY
+                u.name';
+
+        $query  = $this->getEntityManager()->createQuery($dql);
+        $result = $query->getResult();
+
+        self::assertCount(3, $result);
+
+        self::assertInstanceOf(CmsDumbDTO::class, $result[0]);
+        self::assertInstanceOf(CmsDumbDTO::class, $result[1]);
+        self::assertInstanceOf(CmsDumbDTO::class, $result[2]);
+
+        self::assertSame($this->fixtures[0]->name, $result[0]->val1);
+        self::assertSame($this->fixtures[1]->name, $result[1]->val1);
+        self::assertSame($this->fixtures[2]->name, $result[2]->val1);
+
+        self::assertSame($this->fixtures[0]->email->email, $result[0]->val2);
+        self::assertSame($this->fixtures[1]->email->email, $result[1]->val2);
+        self::assertSame($this->fixtures[2]->email->email, $result[2]->val2);
+
+        self::assertInstanceOf(CmsDumbVariadicDTO::class, $result[0]->val3);
+        self::assertInstanceOf(CmsDumbVariadicDTO::class, $result[1]->val3);
+        self::assertInstanceOf(CmsDumbVariadicDTO::class, $result[2]->val3);
+
+        self::assertSame($this->fixtures[0]->address->country, $result[0]->val3->country);
+        self::assertSame($this->fixtures[1]->address->country, $result[1]->val3->country);
+        self::assertSame($this->fixtures[2]->address->country, $result[2]->val3->country);
+
+        self::assertSame($this->fixtures[2]->address->city, $result[2]->val3->city);
+        self::assertSame($this->fixtures[0]->address->city, $result[0]->val3->city);
+        self::assertSame($this->fixtures[1]->address->city, $result[1]->val3->city);
+
+        self::assertSame($this->fixtures[2]->address->zip, $result[2]->val3->zip);
+        self::assertSame($this->fixtures[0]->address->zip, $result[0]->val3->zip);
+        self::assertSame($this->fixtures[1]->address->zip, $result[1]->val3->zip);
     }
 
     public function testVariadicArgument(): void
