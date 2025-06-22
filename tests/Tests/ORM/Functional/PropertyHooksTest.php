@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional;
 
+use Doctrine\DBAL\Platforms\AbstractMySQLPlatform;
 use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\Tests\Models\PropertyHooks\MappingVirtualProperty;
 use Doctrine\Tests\Models\PropertyHooks\User;
@@ -14,6 +15,10 @@ class PropertyHooksTest extends OrmFunctionalTestCase
     protected function setUp(): void
     {
         parent::setUp();
+
+        if ($this->_em->getConnection()->getDatabasePlatform() instanceof AbstractMySQLPlatform) {
+            self::markTestSkipped('MySQL/MariaDB is case-insensitive by default, and the logic of this test relies on case sensitivity.');
+        }
 
         if (! $this->_em->getConfiguration()->isNativeLazyObjectsEnabled()) {
             $this->markTestSkipped('Property hooks require native lazy objects to be enabled.');

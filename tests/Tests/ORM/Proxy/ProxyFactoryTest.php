@@ -19,6 +19,8 @@ use Doctrine\Tests\Models\Company\CompanyPerson;
 use Doctrine\Tests\Models\ECommerce\ECommerceFeature;
 use Doctrine\Tests\OrmTestCase;
 use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\RequiresPhp;
+use ReflectionClass;
 use ReflectionProperty;
 use stdClass;
 
@@ -120,7 +122,6 @@ class ProxyFactoryTest extends OrmTestCase
         $this->uowMock->setEntityPersister(ECommerceFeature::class, $persister);
 
         $proxy = $this->proxyFactory->getProxy(ECommerceFeature::class, ['id' => 42]);
-        assert($proxy instanceof Proxy);
 
         $persister
             ->expects(self::atLeastOnce())
@@ -133,7 +134,19 @@ class ProxyFactoryTest extends OrmTestCase
         } catch (EntityNotFoundException) {
         }
 
-        self::assertFalse($proxy->__isInitialized());
+        self::assertUninitializedLazyObject($proxy);
+    }
+
+    private static function assertUninitializedLazyObject(object $proxy): void
+    {
+        if ($proxy instanceof Proxy) {
+            self::assertFalse($proxy->__isInitialized());
+
+            return;
+        }
+
+        $reflectionClass = new ReflectionClass($proxy);
+        self::assertTrue($reflectionClass->isUninitializedLazyObject($proxy));
     }
 
     #[Group('DDC-2432')]
@@ -146,7 +159,6 @@ class ProxyFactoryTest extends OrmTestCase
         $this->uowMock->setEntityPersister(ECommerceFeature::class, $persister);
 
         $proxy = $this->proxyFactory->getProxy(ECommerceFeature::class, ['id' => 42]);
-        assert($proxy instanceof Proxy);
 
         $persister
             ->expects(self::atLeastOnce())
@@ -160,11 +172,15 @@ class ProxyFactoryTest extends OrmTestCase
         } catch (EntityNotFoundException) {
         }
 
-        self::assertFalse($proxy->__isInitialized());
+        self::assertUninitializedLazyObject($proxy);
     }
 
     public function testProxyClonesParentFields(): void
     {
+        if ($this->emMock->getConfiguration()->isNativeLazyObjectsEnabled()) {
+            self::markTestSkipped('This test is not relevant when native lazy objects are enabled');
+        }
+
         $companyEmployee = new CompanyEmployee();
         $companyEmployee->setSalary(1000); // A property on the CompanyEmployee
         $companyEmployee->setName('Bob'); // A property on the parent class, CompanyPerson
@@ -201,6 +217,24 @@ class ProxyFactoryTest extends OrmTestCase
         self::assertSame(42, $cloned->getId(), 'Expected the Id to be cloned');
         self::assertSame(1000, $cloned->getSalary(), 'Expect properties on the CompanyEmployee class to be cloned');
         self::assertSame('Bob', $cloned->getName(), 'Expect properties on the CompanyPerson class to be cloned');
+    }
+
+    #[RequiresPhp('8.4')]
+    public function testProxyFactoryAcceptsNullProxyArgsWhenNativeLazyObjectsAreEnabled(): void
+    {
+        $this->emMock->getConfiguration()->enableNativeLazyObjects(true);
+        $this->proxyFactory = new ProxyFactory(
+            $this->emMock,
+            null,
+            null,
+        );
+        $proxy              = $this->proxyFactory->getProxy(
+            ECommerceFeature::class,
+            ['id' => 42],
+        );
+        $reflection         = new ReflectionClass($proxy);
+
+        self::assertTrue($reflection->isUninitializedLazyObject($proxy));
     }
 }
 

@@ -19,6 +19,7 @@ use function class_exists;
 use function explode;
 use function fwrite;
 use function get_debug_type;
+use function getenv;
 use function in_array;
 use function sprintf;
 use function str_starts_with;
@@ -89,8 +90,23 @@ class TestUtil
 
     public static function configureProxies(Configuration $configuration): void
     {
+        $enableNativeLazyObjects = getenv('ENABLE_NATIVE_LAZY_OBJECTS');
+
+        if ($enableNativeLazyObjects === false) {
+            // If the environment variable is not set, we default to true.
+            // This is OK because environment variables are always strings, and
+            // we are comparing it to a boolean.
+            $enableNativeLazyObjects = true;
+        }
+
         $configuration->setProxyDir(__DIR__ . '/Proxies');
         $configuration->setProxyNamespace('Doctrine\Tests\Proxies');
+
+        if ($enableNativeLazyObjects) {
+            $configuration->enableNativeLazyObjects(true);
+
+            return;
+        }
     }
 
     private static function initializeDatabase(): void

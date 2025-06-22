@@ -51,4 +51,4 @@ jobs:
         uses: "ramsey/composer-install@v3"
 
       - name: "Run PHPBench"
-        run: "vendor/bin/phpbench run --report=default"
+        run: "ENABLE_NATIVE_LAZY_OBJECTS=0 vendor/bin/phpbench run --report=default"

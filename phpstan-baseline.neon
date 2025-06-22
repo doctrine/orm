@@ -2643,7 +2643,7 @@ parameters:
 		-
 			message: '#^Cannot assign new offset to list\<string\>\|string\.$#'
 			identifier: offsetAssign.dimType
-			count: 3
+			count: 2
 			path: src/Query/SqlWalker.php
 
 		-

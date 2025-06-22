@@ -1000,7 +1000,6 @@ final class Parser
         assert($this->lexer->token !== null);
         if ($this->lexer->isNextToken(TokenType::T_DOT)) {
             $this->match(TokenType::T_DOT);
-
             $this->match(TokenType::T_IDENTIFIER);
 
             $field = $this->lexer->token->value;
@@ -1113,20 +1112,6 @@ final class Parser
         }
 
         return new AST\EntityAsDtoArgumentExpression($expression, $identVariable);
-    }
-
-    /**
-     * AllFieldsExpression ::= IdentificationVariable
-     */
-    public function AllFieldsExpression(): AST\AllFieldsExpression
-    {
-        $identVariable = $this->IdentificationVariable();
-        assert($this->lexer->token !== null);
-
-        $this->match(TokenType::T_DOT);
-        $this->match(TokenType::T_MULTIPLY);
-
-        return new AST\AllFieldsExpression($identVariable);
     }
 
     /**
@@ -1805,7 +1790,7 @@ final class Parser
 
         $this->match(TokenType::T_CLOSE_PARENTHESIS);
 
-        $expression = new AST\NewObjectExpression($className, $args, $useNamedArguments);
+        $expression = new AST\NewObjectExpression($className, $args);
 
         // Defer NewObjectExpression validation
         $this->deferredNewObjectExpressions[] = [
@@ -1852,7 +1837,7 @@ final class Parser
     }
 
     /**
-     * NewObjectArg ::= ((ScalarExpression | "(" Subselect ")" | NewObjectExpression) ["AS" AliasResultVariable]) | AllFieldsExpression
+     * NewObjectArg ::= (ScalarExpression | "(" Subselect ")" | NewObjectExpression) ["AS" AliasResultVariable]
      */
     public function NewObjectArg(string|null &$fieldAlias = null): mixed
     {
@@ -1964,13 +1949,9 @@ final class Parser
             // it is no function, so it must be a field path
             case $lookahead === TokenType::T_IDENTIFIER:
                 $this->lexer->peek(); // lookahead => '.'
-                $token = $this->lexer->peek(); // lookahead => token after '.'
-                $peek  = $this->lexer->peek(); // lookahead => token after the token after the '.'
+                $this->lexer->peek(); // lookahead => token after '.'
+                $peek = $this->lexer->peek(); // lookahead => token after the token after the '.'
                 $this->lexer->resetPeek();
-
-                if ($token->value === '*') {
-                    return $this->AllFieldsExpression();
-                }
 
                 if ($this->isMathOperator($peek)) {
                     return $this->SimpleArithmeticExpression();
