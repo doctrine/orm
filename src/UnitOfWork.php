@@ -636,6 +636,10 @@ class UnitOfWork implements PropertyChangedListener
 
             foreach ($actualData as $propName => $actualValue) {
                 if (! isset($class->associationMappings[$propName])) {
+                    if (isset($class->fieldMappings[$propName]) && $class->fieldMappings[$propName]->notInsertable) {
+                        continue;
+                    }
+
                     $changeSet[$propName] = [null, $actualValue];
 
                     continue;
@@ -662,6 +666,10 @@ class UnitOfWork implements PropertyChangedListener
                 }
 
                 $orgValue = $originalData[$propName];
+
+                if (isset($class->fieldMappings[$propName]) && $class->fieldMappings[$propName]->notUpdatable) {
+                    continue;
+                }
 
                 if (! empty($class->fieldMappings[$propName]->enumType)) {
                     if (is_array($orgValue)) {
@@ -1016,6 +1024,10 @@ class UnitOfWork implements PropertyChangedListener
             }
 
             if ($orgValue !== $actualValue) {
+                if (isset($class->fieldMappings[$propName]) && $class->fieldMappings[$propName]->notUpdatable) {
+                    continue;
+                }
+
                 $changeSet[$propName] = [$orgValue, $actualValue];
             }
         }
