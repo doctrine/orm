@@ -134,12 +134,16 @@ class EntityManager implements EntityManagerInterface
 
         $this->repositoryFactory = $config->getRepositoryFactory();
         $this->unitOfWork        = new UnitOfWork($this);
-        $this->proxyFactory      = new ProxyFactory(
-            $this,
-            $config->getProxyDir(),
-            $config->getProxyNamespace(),
-            $config->getAutoGenerateProxyClasses(),
-        );
+        if ($config->isNativeLazyObjectsEnabled()) {
+            $this->proxyFactory = new ProxyFactory($this);
+        } else {
+            $this->proxyFactory = new ProxyFactory(
+                $this,
+                $config->getProxyDir(),
+                $config->getProxyNamespace(),
+                $config->getAutoGenerateProxyClasses(),
+            );
+        }
 
         if ($config->isSecondLevelCacheEnabled()) {
             $cacheConfig  = $config->getSecondLevelCacheConfiguration();

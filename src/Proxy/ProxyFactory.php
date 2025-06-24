@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Proxy;
 
 use Closure;
+use Doctrine\Deprecations\Deprecation;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityNotFoundException;
 use Doctrine\ORM\ORMInvalidArgumentException;
@@ -30,6 +31,7 @@ use function dirname;
 use function file_exists;
 use function file_put_contents;
 use function filemtime;
+use function func_num_args;
 use function is_bool;
 use function is_dir;
 use function is_int;
@@ -150,6 +152,15 @@ EOPHP;
         string|null $proxyNs = null,
         bool|int $autoGenerate = self::AUTOGENERATE_NEVER,
     ) {
+        if (PHP_VERSION_ID >= 80400 && func_num_args() > 1) {
+            Deprecation::trigger(
+                'doctrine/orm',
+                'https://github.com/doctrine/orm/pull/12005',
+                'Passing more than just the EntityManager to the %s is deprecated and will not be possible in Doctrine ORM 4.0.',
+                __METHOD__,
+            );
+        }
+
         if (! $proxyDir && ! $em->getConfiguration()->isNativeLazyObjectsEnabled()) {
             throw ORMInvalidArgumentException::proxyDirectoryRequired();
         }

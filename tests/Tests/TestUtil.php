@@ -100,14 +100,14 @@ class TestUtil
             $enableNativeLazyObjects = true;
         }
 
-        $configuration->setProxyDir(__DIR__ . '/Proxies');
-        $configuration->setProxyNamespace('Doctrine\Tests\Proxies');
-
         if (PHP_VERSION_ID >= 80400 && $enableNativeLazyObjects) {
             $configuration->enableNativeLazyObjects(true);
 
             return;
         }
+
+        $configuration->setProxyDir(__DIR__ . '/Proxies');
+        $configuration->setProxyNamespace('Doctrine\Tests\Proxies');
     }
 
     private static function initializeDatabase(): void
