@@ -1554,7 +1554,7 @@ class Parser
 
         assert($this->lexer->lookahead !== null);
         switch (true) {
-            case $this->isMathOperator($peek):
+            case $this->isMathOperator($peek) || $this->isMathOperator($glimpse):
                 $expr = $this->SimpleArithmeticExpression();
                 break;
 
