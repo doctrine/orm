@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Tools\Console\Command;
 
+use Doctrine\ORM\Tools\Console\ApplicationCompatibility;
 use Doctrine\ORM\Tools\Console\Command\ClearCache\EntityRegionCommand;
 use Doctrine\ORM\Tools\Console\EntityManagerProvider\SingleManagerProvider;
 use Doctrine\Tests\Models\Cache\Country;
@@ -18,6 +19,8 @@ use function trim;
 #[Group('DDC-2183')]
 class ClearCacheEntityRegionCommandTest extends OrmFunctionalTestCase
 {
+    use ApplicationCompatibility;
+
     private Application $application;
 
     private EntityRegionCommand $command;
@@ -31,7 +34,7 @@ class ClearCacheEntityRegionCommandTest extends OrmFunctionalTestCase
         $this->command = new EntityRegionCommand(new SingleManagerProvider($this->_em));
 
         $this->application = new Application();
-        $this->application->add($this->command);
+        self::addCommandToApplication($this->application, $this->command);
     }
 
     public function testClearAllRegion(): void

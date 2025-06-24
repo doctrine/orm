@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ORM;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
+use Doctrine\Deprecations\Deprecation;
 use Doctrine\ORM\Cache\CacheConfiguration;
 use Doctrine\ORM\Exception\InvalidEntityRepository;
 use Doctrine\ORM\Internal\Hydration\AbstractHydrator;
@@ -594,11 +595,29 @@ class Configuration extends \Doctrine\DBAL\Configuration
 
     public function isNativeLazyObjectsEnabled(): bool
     {
-        return $this->attributes['nativeLazyObjects'] ?? false;
+        $nativeLazyObjects = $this->attributes['nativeLazyObjects'] ?? false;
+
+        if (! $nativeLazyObjects) {
+            Deprecation::trigger(
+                'doctrine/orm',
+                'https://github.com/doctrine/orm/pull/12005',
+                'Not enabling native lazy objects is deprecated and will be impossible in Doctrine ORM 4.0.',
+            );
+        }
+
+        return $nativeLazyObjects;
     }
 
     public function enableNativeLazyObjects(bool $nativeLazyObjects): void
     {
+        if (! $nativeLazyObjects) {
+            Deprecation::trigger(
+                'doctrine/orm',
+                'https://github.com/doctrine/orm/pull/12005',
+                'Disabling native lazy objects is deprecated and will be impossible in Doctrine ORM 4.0.',
+            );
+        }
+
         $this->attributes['nativeLazyObjects'] = $nativeLazyObjects;
     }
 

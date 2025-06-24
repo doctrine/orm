@@ -18,6 +18,8 @@ use function assert;
  */
 final class ConsoleRunner
 {
+    use ApplicationCompatibility;
+
     /**
      * Runs console with the given helper set.
      *

@@ -108,6 +108,17 @@ using the `\Doctrine\ORM\Mapping\UniqueConstraint` and `\Doctrine\ORM\Mapping\In
 
 # Upgrade to 3.5
 
+## Deprecate not using native lazy objects on PHP 8.4+
+
+Having native lazy objects disabled on PHP 8.4+ is deprecated and will not be
+possible in 4.0.
+
+You can enable them through configuration:
+
+```php
+$config->enableNativeLazyObjects(true);
+```
+
 ## Deprecate methods for configuring no longer configurable features
 
 Since 3.0, lazy ghosts are enabled unconditionally, and so is rejecting ID
@@ -118,6 +129,13 @@ As a consequence, the following methods are deprecated and will be removed in 4.
 * `Doctrine\ORM\Configuration::isLazyGhostObjectEnabled()`
 * `Doctrine\ORM\Configuration::setRejectIdCollisionInIdentityMap()`
 * `Doctrine\ORM\Configuration::isRejectIdCollisionInIdentityMapEnabled()`
+
+# Upgrade to 3.4.1
+
+## BC BREAK: You can no longer use the `.*` notation to get all fields of an entity in a DTO
+
+This feature was introduced in 3.4.0, and introduces several issues, so we
+decide to remove it before it is used too widely.
 
 # Upgrade to 3.4
 
