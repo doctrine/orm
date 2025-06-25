@@ -22,7 +22,7 @@ objects have been deprecated on PHP 8.4+:
 - `Doctrine\ORM\Configuration::setProxyDir()`
 - `Doctrine\ORM\Configuration::setProxyNamespace()`
 - Passing anything but `null` as $proxyDir argument to `Doctrine\ORM\ORMSetup` methods
-- Passing more than one Argument to `Doctrine\ORM\Proxy\ProxyFactory::__construct()`
+- Passing more than one argument to `Doctrine\ORM\Proxy\ProxyFactory::__construct()`
 
 ## Deprecate methods for configuring no longer configurable features
 
