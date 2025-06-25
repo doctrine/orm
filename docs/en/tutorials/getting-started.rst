@@ -138,12 +138,12 @@ step:
     require_once "vendor/autoload.php";
 
     // Create a simple "default" Doctrine ORM configuration for Attributes
-    $config = ORMSetup::createAttributeMetadataConfiguration(
+    $config = ORMSetup::createAttributeMetadataConfig( // on PHP < 8.4, use ORMSetup::createAttributeMetadataConfiguration()
         paths: [__DIR__ . '/src'],
         isDevMode: true,
     );
     // or if you prefer XML
-    // $config = ORMSetup::createXMLMetadataConfiguration(
+    // $config = ORMSetup::createXMLMetadataConfig( // on PHP < 8.4, use ORMSetup::createXMLMetadataConfiguration()
     //    paths: [__DIR__ . '/config/xml'],
     //    isDevMode: true,
     //);
