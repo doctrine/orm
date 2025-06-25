@@ -64,6 +64,15 @@ class Configuration extends \Doctrine\DBAL\Configuration
      */
     public function setProxyDir(string $dir): void
     {
+        if (PHP_VERSION_ID >= 80400) {
+            Deprecation::triggerIfCalledFromOutside(
+                'doctrine/orm',
+                'https://github.com/doctrine/orm/pull/12005',
+                'Calling %s is deprecated and will not be possible in Doctrine ORM 4.0.',
+                __METHOD__,
+            );
+        }
+
         $this->attributes['proxyDir'] = $dir;
     }
 
@@ -72,6 +81,15 @@ class Configuration extends \Doctrine\DBAL\Configuration
      */
     public function getProxyDir(): string|null
     {
+        if (PHP_VERSION_ID >= 80400) {
+            Deprecation::trigger(
+                'doctrine/orm',
+                'https://github.com/doctrine/orm/pull/12005',
+                'Calling %s is deprecated and will not be possible in Doctrine ORM 4.0.',
+                __METHOD__,
+            );
+        }
+
         return $this->attributes['proxyDir'] ?? null;
     }
 
@@ -82,6 +100,15 @@ class Configuration extends \Doctrine\DBAL\Configuration
      */
     public function getAutoGenerateProxyClasses(): int
     {
+        if (PHP_VERSION_ID >= 80400) {
+            Deprecation::trigger(
+                'doctrine/orm',
+                'https://github.com/doctrine/orm/pull/12005',
+                'Calling %s is deprecated and will not be possible in Doctrine ORM 4.0.',
+                __METHOD__,
+            );
+        }
+
         return $this->attributes['autoGenerateProxyClasses'] ?? ProxyFactory::AUTOGENERATE_ALWAYS;
     }
 
@@ -92,6 +119,15 @@ class Configuration extends \Doctrine\DBAL\Configuration
      */
     public function setAutoGenerateProxyClasses(bool|int $autoGenerate): void
     {
+        if (PHP_VERSION_ID >= 80400) {
+            Deprecation::triggerIfCalledFromOutside(
+                'doctrine/orm',
+                'https://github.com/doctrine/orm/pull/12005',
+                'Calling %s is deprecated and will not be possible in Doctrine ORM 4.0.',
+                __METHOD__,
+            );
+        }
+
         $this->attributes['autoGenerateProxyClasses'] = (int) $autoGenerate;
     }
 
@@ -100,6 +136,15 @@ class Configuration extends \Doctrine\DBAL\Configuration
      */
     public function getProxyNamespace(): string|null
     {
+        if (PHP_VERSION_ID >= 80400) {
+            Deprecation::trigger(
+                'doctrine/orm',
+                'https://github.com/doctrine/orm/pull/12005',
+                'Calling %s is deprecated and will not be possible in Doctrine ORM 4.0.',
+                __METHOD__,
+            );
+        }
+
         return $this->attributes['proxyNamespace'] ?? null;
     }
 
@@ -108,6 +153,15 @@ class Configuration extends \Doctrine\DBAL\Configuration
      */
     public function setProxyNamespace(string $ns): void
     {
+        if (PHP_VERSION_ID >= 80400) {
+            Deprecation::triggerIfCalledFromOutside(
+                'doctrine/orm',
+                'https://github.com/doctrine/orm/pull/12005',
+                'Calling %s is deprecated and will not be possible in Doctrine ORM 4.0.',
+                __METHOD__,
+            );
+        }
+
         $this->attributes['proxyNamespace'] = $ns;
     }
 
