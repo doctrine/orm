@@ -175,6 +175,10 @@ Optional parameters:
 -  **unique**: Boolean value to determine if the value of the column
    should be unique across all rows of the underlying entities table.
 
+-  **index**: Boolean value to generate an index for this column.
+   For more advanced usages, take a look at :ref:`#[Index] <attrref_index>`.
+   If not specified, default value is ``false``.
+
 -  **nullable**: Determines if NULL values allowed for this column.
     If not specified, default value is ``false``.
 
@@ -244,6 +248,9 @@ Examples:
 
     #[Column(type: "string", length: 32, unique: true, nullable: false)]
     protected $username;
+
+    #[Column(type: "string", index: true)]
+    protected $firstName;
 
     #[Column(type: "string", columnDefinition: "CHAR(2) NOT NULL")]
     protected $country;

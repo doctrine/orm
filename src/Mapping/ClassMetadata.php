@@ -1056,6 +1056,13 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
         return $mapping !== false && isset($mapping->nullable) && $mapping->nullable;
     }
 
+    public function isIndexed(string $fieldName): bool
+    {
+        $mapping = $this->getFieldMapping($fieldName);
+
+        return isset($mapping->index) && $mapping->index;
+    }
+
     /**
      * Gets a column name for a field name.
      * If the column name for the field cannot be found, the given field name

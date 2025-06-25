@@ -112,7 +112,6 @@ of several common elements:
 
             <indexes>
                 <index name="name_idx" columns="name"/>
-                <index columns="user_email"/>
             </indexes>
 
             <unique-constraints>
@@ -131,7 +130,7 @@ of several common elements:
             </id>
 
             <field name="name" column="name" type="string" length="50" nullable="true" unique="true" />
-            <field name="email" column="user_email" type="string" column-definition="CHAR(32) NOT NULL" />
+            <field name="email" column="user_email" type="string" index="true" column-definition="CHAR(32) NOT NULL" />
 
             <one-to-one field="address" target-entity="Address" inversed-by="user">
                 <cascade><cascade-remove /></cascade>
@@ -255,6 +254,8 @@ Optional attributes:
    only.
 -  unique - Should this field contain a unique value across the
    table? Defaults to false.
+-  index - Should an index be created for this column? Defaults to
+   false.
 -  nullable - Should this field allow NULL as a value? Defaults to
    false.
 -  insertable - Should this field be inserted? Defaults to true.

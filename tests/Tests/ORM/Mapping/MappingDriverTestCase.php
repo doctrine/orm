@@ -227,11 +227,12 @@ abstract class MappingDriverTestCase extends OrmTestCase
     #[Depends('testEntityTableNameAndInheritance')]
     public function testFieldMappings(ClassMetadata $class): ClassMetadata
     {
-        self::assertEquals(4, count($class->fieldMappings));
+        self::assertEquals(5, count($class->fieldMappings));
         self::assertTrue(isset($class->fieldMappings['id']));
         self::assertTrue(isset($class->fieldMappings['name']));
         self::assertTrue(isset($class->fieldMappings['email']));
         self::assertTrue(isset($class->fieldMappings['version']));
+        self::assertTrue(isset($class->fieldMappings['indexed']));
 
         return $class;
     }
@@ -262,6 +263,7 @@ abstract class MappingDriverTestCase extends OrmTestCase
         self::assertEquals(50, $class->fieldMappings['name']->length);
         self::assertTrue($class->fieldMappings['name']->nullable);
         self::assertTrue($class->fieldMappings['name']->unique);
+        self::assertTrue($class->fieldMappings['indexed']->index);
 
         return $class;
     }
@@ -1006,6 +1008,10 @@ class User
     #[ORM\Version]
     public $version;
 
+    /** @var string */
+    #[ORM\Column(index: true)]
+    public $indexed;
+
     #[ORM\PrePersist]
     public function doStuffOnPrePersist(): void
     {
@@ -1065,6 +1071,12 @@ class User
         $mapping = ['fieldName' => 'version', 'type' => 'integer'];
         $metadata->setVersionMapping($mapping);
         $metadata->mapField($mapping);
+        $metadata->mapField([
+            'fieldName' => 'indexed',
+            'type' => 'string',
+            'columnName' => 'indexed',
+            'index' => true,
+        ]);
         $metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_AUTO);
         $metadata->mapOneToOne(
             [

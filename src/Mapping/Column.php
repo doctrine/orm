@@ -31,6 +31,7 @@ final class Column implements MappingAttribute
         public readonly array $options = [],
         public readonly string|null $columnDefinition = null,
         public readonly string|null $generated = null,
+        public readonly bool $index = false,
     ) {
     }
 }
