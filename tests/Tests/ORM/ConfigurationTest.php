@@ -39,6 +39,7 @@ class ConfigurationTest extends TestCase
         $this->configuration = new Configuration();
     }
 
+    #[WithoutErrorHandler]
     public function testSetGetProxyDir(): void
     {
         self::assertNull($this->configuration->getProxyDir()); // defaults
@@ -47,6 +48,7 @@ class ConfigurationTest extends TestCase
         self::assertSame(__DIR__, $this->configuration->getProxyDir());
     }
 
+    #[WithoutErrorHandler]
     public function testSetGetAutoGenerateProxyClasses(): void
     {
         self::assertSame(ProxyFactory::AUTOGENERATE_ALWAYS, $this->configuration->getAutoGenerateProxyClasses()); // defaults
@@ -61,6 +63,7 @@ class ConfigurationTest extends TestCase
         self::assertSame(ProxyFactory::AUTOGENERATE_FILE_NOT_EXISTS, $this->configuration->getAutoGenerateProxyClasses());
     }
 
+    #[WithoutErrorHandler]
     public function testSetGetProxyNamespace(): void
     {
         self::assertNull($this->configuration->getProxyNamespace()); // defaults

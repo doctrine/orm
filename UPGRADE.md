@@ -119,6 +119,19 @@ You can enable them through configuration:
 $config->enableNativeLazyObjects(true);
 ```
 
+As a consequence, methods, parameters and commands related to userland lazy
+objects have been deprecated on PHP 8.4+:
+
+- `Doctrine\ORM\Tools\Console\Command\GenerateProxiesCommand`
+- `Doctrine\ORM\Configuration::getAutoGenerateProxyClasses()`
+- `Doctrine\ORM\Configuration::getProxyDir()`
+- `Doctrine\ORM\Configuration::getProxyNamespace()`
+- `Doctrine\ORM\Configuration::setAutoGenerateProxyClasses()`
+- `Doctrine\ORM\Configuration::setProxyDir()`
+- `Doctrine\ORM\Configuration::setProxyNamespace()`
+- Passing anything but `null` as $proxyDir argument to `Doctrine\ORM\ORMSetup` methods
+- Passing more than one Argument to `Doctrine\ORM\Proxy\ProxyFactory::__construct()`
+
 ## Deprecate methods for configuring no longer configurable features
 
 Since 3.0, lazy ghosts are enabled unconditionally, and so is rejecting ID

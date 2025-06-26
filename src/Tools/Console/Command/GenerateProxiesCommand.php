@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Tools\Console\Command;
 
+use Doctrine\Deprecations\Deprecation;
 use Doctrine\ORM\Tools\Console\MetadataFilter;
 use InvalidArgumentException;
 use Symfony\Component\Console\Input\InputArgument;
@@ -18,6 +19,8 @@ use function is_writable;
 use function mkdir;
 use function realpath;
 use function sprintf;
+
+use const PHP_VERSION_ID;
 
 /**
  * Command to (re)generate the proxy classes used by doctrine.
@@ -39,6 +42,14 @@ class GenerateProxiesCommand extends AbstractEntityManagerCommand
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
+        if (PHP_VERSION_ID >= 80400) {
+            Deprecation::trigger(
+                'doctrine/orm',
+                'https://github.com/doctrine/orm/pull/12005',
+                'Generating proxies is deprecated and will be impossible in Doctrine ORM 4.0.',
+            );
+        }
+
         $ui = (new SymfonyStyle($input, $output))->getErrorStyle();
 
         $em = $this->getEntityManager($input);

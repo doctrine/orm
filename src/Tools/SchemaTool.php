@@ -505,6 +505,11 @@ class SchemaTool
         if ($isUnique) {
             $table->addUniqueIndex([$columnName]);
         }
+
+        $isIndex = $mapping->index ?? false;
+        if ($isIndex) {
+            $table->addIndex([$columnName]);
+        }
     }
 
     /**

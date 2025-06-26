@@ -65,6 +65,18 @@ class FieldBuilder
     }
 
     /**
+     * Sets indexed.
+     *
+     * @return $this
+     */
+    public function index(bool $flag = true): static
+    {
+        $this->mapping['index'] = $flag;
+
+        return $this;
+    }
+
+    /**
      * Sets column name.
      *
      * @return $this
