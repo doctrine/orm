@@ -184,7 +184,7 @@ class XmlMappingDriverTest extends MappingDriverTestCase
             [
                 User::class,
                 'cms_users',
-                ['name', 'email', 'version', 'id'],
+                ['name', 'email', 'version', 'indexed', 'id'],
                 ['address', 'phonenumbers', 'groups'],
             ],
             [

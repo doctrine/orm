@@ -209,6 +209,7 @@ Field & Association Getters
 
 -  ``isUniqueField($fieldName)``
 -  ``isNullable($fieldName)``
+-  ``isIndexed($fieldName)``
 -  ``getColumnName($fieldName)``
 -  ``getFieldMapping($fieldName)``
 -  ``getAssociationMapping($fieldName)``

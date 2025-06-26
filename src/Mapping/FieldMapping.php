@@ -38,6 +38,8 @@ final class FieldMapping
     public int|null $scale = null;
     /** Whether a unique constraint should be generated for the column. */
     public bool|null $unique = null;
+    /** Whether an index should be generated for the column. */
+    public bool|null $index = null;
     /**
      * @var class-string|null This is set when the field is inherited by this
      * class from another (inheritance) parent <em>entity</em> class. The value
@@ -89,6 +91,7 @@ final class FieldMapping
      *     length?: int|null,
      *     id?: bool|null,
      *     nullable?: bool|null,
+     *     index?: bool|null,
      *     notInsertable?: bool|null,
      *     notUpdatable?: bool|null,
      *     columnDefinition?: string|null,
