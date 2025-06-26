@@ -1464,7 +1464,7 @@ final class Parser
 
         assert($this->lexer->lookahead !== null);
         $expr = match (true) {
-            $this->isMathOperator($peek) => $this->SimpleArithmeticExpression(),
+            $this->isMathOperator($peek) || $this->isMathOperator($glimpse) => $this->SimpleArithmeticExpression(),
             $glimpse !== null && $glimpse->type === TokenType::T_DOT => $this->SingleValuedPathExpression(),
             $this->lexer->peek() && $this->isMathOperator($this->peekBeyondClosingParenthesis()) => $this->ScalarExpression(),
             $this->lexer->lookahead->type === TokenType::T_CASE => $this->CaseExpression(),
