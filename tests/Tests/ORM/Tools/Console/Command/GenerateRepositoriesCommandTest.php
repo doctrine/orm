@@ -7,6 +7,7 @@ namespace Doctrine\Tests\ORM\Tools\Console\Command;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
+use Doctrine\ORM\Tools\Console\ApplicationCompatibility;
 use Doctrine\ORM\Tools\Console\Command\GenerateRepositoriesCommand;
 use Doctrine\ORM\Tools\Console\EntityManagerProvider\SingleManagerProvider;
 use Doctrine\ORM\Tools\Console\Helper\EntityManagerHelper;
@@ -35,6 +36,8 @@ use const DIRECTORY_SEPARATOR;
 
 class GenerateRepositoriesCommandTest extends OrmFunctionalTestCase
 {
+    use ApplicationCompatibility;
+
     /** @var Application */
     private $application;
 
@@ -53,7 +56,7 @@ class GenerateRepositoriesCommandTest extends OrmFunctionalTestCase
         $metadataDriver->addPaths([__DIR__ . '/../../../../Models/DDC3231/']);
 
         $this->application = new Application();
-        $this->application->add(new GenerateRepositoriesCommand(new SingleManagerProvider($this->_em)));
+        self::addCommandToApplication($this->application, new GenerateRepositoriesCommand(new SingleManagerProvider($this->_em)));
     }
 
     public function tearDown(): void
@@ -163,7 +166,7 @@ class GenerateRepositoriesCommandTest extends OrmFunctionalTestCase
 
         $application = new Application();
         $application->setHelperSet(new HelperSet(['em' => new EntityManagerHelper($em)]));
-        $application->add(new GenerateRepositoriesCommand());
+        self::addCommandToApplication($application, new GenerateRepositoriesCommand());
 
         $command = $application->find('orm:generate-repositories');
         $tester  = new CommandTester($command);

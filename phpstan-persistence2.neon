@@ -11,7 +11,7 @@ parameters:
 
         # Fallback logic for DBAL 2
         -
-            message: '/Application::add\(\) expects Symfony\\Component\\Console\\Command\\Command/'
+            message: '/Parameter #2 \$command of static method Doctrine\\ORM\\Tools\\Console\\ConsoleRunner\:\:addCommandToApplication\(\) expects Symfony\\Component\\Console\\Command\\Command/'
             path: src/Tools/Console/ConsoleRunner.php
 
         - '/^Class Doctrine\\DBAL\\Platforms\\SQLAnywherePlatform not found\.$/'
