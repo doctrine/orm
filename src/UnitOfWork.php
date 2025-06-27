@@ -2370,9 +2370,9 @@ class UnitOfWork implements PropertyChangedListener
                     $class->reflClass->markLazyObjectAsInitialized($entity);
                 } else {
                     $entity->__setInitialized(true);
-                }
 
-                Hydrator::hydrate($entity, (array) $class->reflClass->newInstanceWithoutConstructor());
+                    Hydrator::hydrate($entity, (array) $class->reflClass->newInstanceWithoutConstructor());
+                }
             } else {
                 if (
                     ! isset($hints[Query::HINT_REFRESH])
@@ -3037,11 +3037,7 @@ class UnitOfWork implements PropertyChangedListener
         }
     }
 
-    /**
-     * Tests if a value is an uninitialized entity.
-     *
-     * @phpstan-assert-if-true InternalProxy $obj
-     */
+    /** Tests if a value is an uninitialized entity. */
     public function isUninitializedObject(mixed $obj): bool
     {
         if ($this->em->getConfiguration()->isNativeLazyObjectsEnabled() && ! ($obj instanceof Collection) && is_object($obj)) {
