@@ -2383,9 +2383,9 @@ class UnitOfWork implements PropertyChangedListener
                     $class->reflClass->markLazyObjectAsInitialized($entity);
                 } else {
                     $entity->__setInitialized(true);
-                }
 
-                Hydrator::hydrate($entity, (array) $class->reflClass->newInstanceWithoutConstructor());
+                    Hydrator::hydrate($entity, (array) $class->reflClass->newInstanceWithoutConstructor());
+                }
             } else {
                 if (
                     ! isset($hints[Query::HINT_REFRESH])
