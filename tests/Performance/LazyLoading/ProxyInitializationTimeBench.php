@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Performance\LazyLoading;
 
+use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Proxy\InternalProxy as Proxy;
 use Doctrine\Performance\EntityManagerFactory;
 use Doctrine\Performance\Mock\NonProxyLoadingEntityManager;
@@ -25,9 +26,11 @@ final class ProxyInitializationTimeBench
     /** @var Proxy[] */
     private array|null $initializedEmployees = null;
 
+    private EntityManager $em;
+
     public function init(): void
     {
-        $proxyFactory = (new NonProxyLoadingEntityManager(EntityManagerFactory::getEntityManager([])))
+        $proxyFactory = (new NonProxyLoadingEntityManager($this->em = EntityManagerFactory::getEntityManager([])))
             ->getProxyFactory();
 
         for ($i = 0; $i < 10000; ++$i) {
@@ -36,36 +39,36 @@ final class ProxyInitializationTimeBench
             $this->initializedUsers[$i]     = $proxyFactory->getProxy(CmsUser::class, ['id' => $i]);
             $this->initializedEmployees[$i] = $proxyFactory->getProxy(CmsEmployee::class, ['id' => $i]);
 
-            $this->initializedUsers[$i]->__load();
-            $this->initializedEmployees[$i]->__load();
+            $this->em->getUnitOfWork()->initializeObject($this->initializedUsers[$i]);
+            $this->em->getUnitOfWork()->initializeObject($this->initializedEmployees[$i]);
         }
     }
 
     public function benchCmsUserInitialization(): void
     {
         foreach ($this->cmsUsers as $proxy) {
-            $proxy->__load();
+            $this->em->getUnitOfWork()->initializeObject($proxy);
         }
     }
 
     public function benchCmsEmployeeInitialization(): void
     {
         foreach ($this->cmsEmployees as $proxy) {
-            $proxy->__load();
+            $this->em->getUnitOfWork()->initializeObject($proxy);
         }
     }
 
     public function benchInitializationOfAlreadyInitializedCmsUsers(): void
     {
         foreach ($this->initializedUsers as $proxy) {
-            $proxy->__load();
+            $this->em->getUnitOfWork()->initializeObject($proxy);
         }
     }
 
     public function benchInitializationOfAlreadyInitializedCmsEmployees(): void
     {
         foreach ($this->initializedEmployees as $proxy) {
-            $proxy->__load();
+            $this->em->getUnitOfWork()->initializeObject($proxy);
         }
     }
 }
