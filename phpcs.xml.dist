@@ -208,12 +208,6 @@
         <exclude-pattern>tests/Tests/Models/DDC1590/DDC1590User.php</exclude-pattern>
     </rule>
 
-
-    <rule ref="Squiz.Classes.ValidClassName.NotCamelCaps">
-        <!-- we need to test what happens with an stdClass proxy -->
-        <exclude-pattern>tests/Tests/Proxy/DefaultProxyClassNameResolverTest.php</exclude-pattern>
-    </rule>
-
     <rule ref="Squiz.Commenting.FunctionComment.WrongStyle">
         <!-- https://github.com/squizlabs/PHP_CodeSniffer/issues/1961 -->
         <exclude-pattern>tests/Tests/Mocks/DatabasePlatformMock.php</exclude-pattern>

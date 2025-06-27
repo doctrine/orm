@@ -89,7 +89,6 @@ abstract class OrmTestCase extends TestCase
 
         $config = new Configuration();
 
-        TestUtil::configureProxies($config);
         $config->setMetadataCache($metadataCache);
         $config->setQueryCache(self::getSharedQueryCache());
         $config->setMetadataDriverImpl(new AttributeDriver([

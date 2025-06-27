@@ -10,7 +10,6 @@ use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Tests\ORM\Functional\Locking\Doctrine\ORM\Query;
-use Doctrine\Tests\TestUtil;
 use GearmanWorker;
 use InvalidArgumentException;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
@@ -113,8 +112,6 @@ class LockAgentWorker
     protected function createEntityManager(Connection $conn): EntityManagerInterface
     {
         $config = new Configuration();
-        TestUtil::configureProxies($config);
-        $config->setAutoGenerateProxyClasses(true);
 
         $annotDriver = new AttributeDriver([__DIR__ . '/../../../Models/']);
         $config->setMetadataDriverImpl($annotDriver);

@@ -37,12 +37,7 @@ class NonProxyLoadingEntityManager implements EntityManagerInterface
     {
         $config = $this->realEntityManager->getConfiguration();
 
-        return new ProxyFactory(
-            $this,
-            $config->getProxyDir(),
-            $config->getProxyNamespace(),
-            $config->getAutoGenerateProxyClasses(),
-        );
+        return new ProxyFactory($this);
     }
 
     public function getMetadataFactory(): ClassMetadataFactory

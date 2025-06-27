@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Doctrine\ORM;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
-use Doctrine\Deprecations\Deprecation;
 use Doctrine\ORM\Cache\CacheConfiguration;
 use Doctrine\ORM\Exception\InvalidEntityRepository;
 use Doctrine\ORM\Internal\Hydration\AbstractHydrator;
@@ -18,7 +17,6 @@ use Doctrine\ORM\Mapping\EntityListenerResolver;
 use Doctrine\ORM\Mapping\NamingStrategy;
 use Doctrine\ORM\Mapping\QuoteStrategy;
 use Doctrine\ORM\Mapping\TypedFieldMapper;
-use Doctrine\ORM\Proxy\ProxyFactory;
 use Doctrine\ORM\Query\AST\Functions\FunctionNode;
 use Doctrine\ORM\Query\Filter\SQLFilter;
 use Doctrine\ORM\Repository\DefaultRepositoryFactory;
@@ -29,8 +27,6 @@ use Psr\Cache\CacheItemPoolInterface;
 use function class_exists;
 use function is_a;
 use function strtolower;
-
-use const PHP_VERSION_ID;
 
 /**
  * Configuration container for all configuration options of Doctrine.
@@ -56,112 +52,6 @@ class Configuration extends \Doctrine\DBAL\Configuration
     public function getIdentityGenerationPreferences(): array
     {
         return $this->identityGenerationPreferences;
-    }
-
-    /**
-     * Sets the directory where Doctrine generates any necessary proxy class files.
-     */
-    public function setProxyDir(string $dir): void
-    {
-        if (PHP_VERSION_ID >= 80400) {
-            Deprecation::triggerIfCalledFromOutside(
-                'doctrine/orm',
-                'https://github.com/doctrine/orm/pull/12005',
-                'Calling %s is deprecated and will not be possible in Doctrine ORM 4.0.',
-                __METHOD__,
-            );
-        }
-
-        $this->attributes['proxyDir'] = $dir;
-    }
-
-    /**
-     * Gets the directory where Doctrine generates any necessary proxy class files.
-     */
-    public function getProxyDir(): string|null
-    {
-        if (PHP_VERSION_ID >= 80400) {
-            Deprecation::trigger(
-                'doctrine/orm',
-                'https://github.com/doctrine/orm/pull/12005',
-                'Calling %s is deprecated and will not be possible in Doctrine ORM 4.0.',
-                __METHOD__,
-            );
-        }
-
-        return $this->attributes['proxyDir'] ?? null;
-    }
-
-    /**
-     * Gets the strategy for automatically generating proxy classes.
-     *
-     * @return ProxyFactory::AUTOGENERATE_*
-     */
-    public function getAutoGenerateProxyClasses(): int
-    {
-        if (PHP_VERSION_ID >= 80400) {
-            Deprecation::trigger(
-                'doctrine/orm',
-                'https://github.com/doctrine/orm/pull/12005',
-                'Calling %s is deprecated and will not be possible in Doctrine ORM 4.0.',
-                __METHOD__,
-            );
-        }
-
-        return $this->attributes['autoGenerateProxyClasses'] ?? ProxyFactory::AUTOGENERATE_ALWAYS;
-    }
-
-    /**
-     * Sets the strategy for automatically generating proxy classes.
-     *
-     * @param bool|ProxyFactory::AUTOGENERATE_* $autoGenerate True is converted to AUTOGENERATE_ALWAYS, false to AUTOGENERATE_NEVER.
-     */
-    public function setAutoGenerateProxyClasses(bool|int $autoGenerate): void
-    {
-        if (PHP_VERSION_ID >= 80400) {
-            Deprecation::triggerIfCalledFromOutside(
-                'doctrine/orm',
-                'https://github.com/doctrine/orm/pull/12005',
-                'Calling %s is deprecated and will not be possible in Doctrine ORM 4.0.',
-                __METHOD__,
-            );
-        }
-
-        $this->attributes['autoGenerateProxyClasses'] = (int) $autoGenerate;
-    }
-
-    /**
-     * Gets the namespace where proxy classes reside.
-     */
-    public function getProxyNamespace(): string|null
-    {
-        if (PHP_VERSION_ID >= 80400) {
-            Deprecation::trigger(
-                'doctrine/orm',
-                'https://github.com/doctrine/orm/pull/12005',
-                'Calling %s is deprecated and will not be possible in Doctrine ORM 4.0.',
-                __METHOD__,
-            );
-        }
-
-        return $this->attributes['proxyNamespace'] ?? null;
-    }
-
-    /**
-     * Sets the namespace where proxy classes reside.
-     */
-    public function setProxyNamespace(string $ns): void
-    {
-        if (PHP_VERSION_ID >= 80400) {
-            Deprecation::triggerIfCalledFromOutside(
-                'doctrine/orm',
-                'https://github.com/doctrine/orm/pull/12005',
-                'Calling %s is deprecated and will not be possible in Doctrine ORM 4.0.',
-                __METHOD__,
-            );
-        }
-
-        $this->attributes['proxyNamespace'] = $ns;
     }
 
     /**
@@ -647,34 +537,6 @@ class Configuration extends \Doctrine\DBAL\Configuration
     public function setSchemaIgnoreClasses(array $schemaIgnoreClasses): void
     {
         $this->attributes['schemaIgnoreClasses'] = $schemaIgnoreClasses;
-    }
-
-    public function isNativeLazyObjectsEnabled(): bool
-    {
-        $nativeLazyObjects = $this->attributes['nativeLazyObjects'] ?? false;
-
-        if (! $nativeLazyObjects) {
-            Deprecation::trigger(
-                'doctrine/orm',
-                'https://github.com/doctrine/orm/pull/12005',
-                'Not enabling native lazy objects is deprecated and will be impossible in Doctrine ORM 4.0.',
-            );
-        }
-
-        return $nativeLazyObjects;
-    }
-
-    public function enableNativeLazyObjects(bool $nativeLazyObjects): void
-    {
-        if (! $nativeLazyObjects) {
-            Deprecation::trigger(
-                'doctrine/orm',
-                'https://github.com/doctrine/orm/pull/12005',
-                'Disabling native lazy objects is deprecated and will be impossible in Doctrine ORM 4.0.',
-            );
-        }
-
-        $this->attributes['nativeLazyObjects'] = $nativeLazyObjects;
     }
 
     public function setEagerFetchBatchSize(int $batchSize = 100): void

@@ -33,7 +33,6 @@ use PHPUnit\Framework\TestCase;
 
 use function count;
 use function property_exists;
-use function sys_get_temp_dir;
 
 class ObjectHydratorTest extends HydrationTestCase
 {
@@ -1023,12 +1022,7 @@ class ObjectHydratorTest extends HydrationTestCase
         ];
 
         // extending the proxy factory to spy on getProxy()
-        $proxyFactory = new class (
-            $this->entityManager,
-            sys_get_temp_dir(),
-            'Proxies',
-            ProxyFactory::AUTOGENERATE_ALWAYS,
-        ) extends ProxyFactory {
+        $proxyFactory = new class ($this->entityManager) extends ProxyFactory {
             public function getProxy(string $className, array $identifier): object
             {
                 TestCase::assertSame(ECommerceShipping::class, $className);
@@ -1077,12 +1071,7 @@ class ObjectHydratorTest extends HydrationTestCase
         $proxyInstance = new ECommerceShipping();
 
         // extending the proxy factory to spy on getProxy()
-        $proxyFactory = new class (
-            $this->entityManager,
-            sys_get_temp_dir(),
-            'Proxies',
-            ProxyFactory::AUTOGENERATE_ALWAYS,
-        ) extends ProxyFactory {
+        $proxyFactory = new class ($this->entityManager) extends ProxyFactory {
             public function getProxy(string $className, array $identifier): object
             {
                 TestCase::assertSame(ECommerceShipping::class, $className);

@@ -20,10 +20,6 @@ class PropertyHooksTest extends OrmFunctionalTestCase
             self::markTestSkipped('MySQL/MariaDB is case-insensitive by default, and the logic of this test relies on case sensitivity.');
         }
 
-        if (! $this->_em->getConfiguration()->isNativeLazyObjectsEnabled()) {
-            $this->markTestSkipped('Property hooks require native lazy objects to be enabled.');
-        }
-
         $this->createSchemaForModels(
             User::class,
         );

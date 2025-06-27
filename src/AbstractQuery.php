@@ -16,7 +16,6 @@ use Doctrine\ORM\Cache\QueryCacheKey;
 use Doctrine\ORM\Cache\TimestampCacheKey;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\MappingException as ORMMappingException;
-use Doctrine\ORM\Proxy\DefaultProxyClassNameResolver;
 use Doctrine\ORM\Query\Parameter;
 use Doctrine\ORM\Query\QueryException;
 use Doctrine\ORM\Query\ResultSetMapping;
@@ -379,7 +378,7 @@ abstract class AbstractQuery
         }
 
         try {
-            $class = DefaultProxyClassNameResolver::getClass($value);
+            $class = $value::class;
             $value = $this->em->getUnitOfWork()->getSingleIdentifierValue($value);
 
             if ($value === null) {
