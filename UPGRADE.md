@@ -129,8 +129,17 @@ objects have been deprecated on PHP 8.4+:
 - `Doctrine\ORM\Configuration::setAutoGenerateProxyClasses()`
 - `Doctrine\ORM\Configuration::setProxyDir()`
 - `Doctrine\ORM\Configuration::setProxyNamespace()`
-- Passing anything but `null` as $proxyDir argument to `Doctrine\ORM\ORMSetup` methods
-- Passing more than one Argument to `Doctrine\ORM\Proxy\ProxyFactory::__construct()`
+- Passing more than one argument to `Doctrine\ORM\Proxy\ProxyFactory::__construct()`
+
+Additionally, some methods of ORMSetup have been deprecated in favor of a new
+counterpart.
+
+- `Doctrine\ORM\ORMSetup::createAttributeMetadataConfiguration()` is deprecated in favor of
+  `Doctrine\ORM\ORMSetup::createAttributeMetadataConfig()`
+- `Doctrine\ORM\ORMSetup::createXMLMetadataConfiguration()` is deprecated in favor of
+  `Doctrine\ORM\ORMSetup::createXMLMetadataConfig()`
+- `Doctrine\ORM\ORMSetup::createConfiguration()` is deprecated in favor of
+  `Doctrine\ORM\ORMSetup::createConfig()`
 
 ## Deprecate methods for configuring no longer configurable features
 

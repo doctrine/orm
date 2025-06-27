@@ -56,7 +56,8 @@ access point to ORM functionality provided by Doctrine.
         'dbname'   => 'foo',
     ];
 
-    $config = ORMSetup::createAttributeMetadataConfiguration($paths, $isDevMode);
+    $config = ORMSetup::createAttributeMetadataConfig($paths, $isDevMode);
+    // on PHP < 8.4, use ORMSetup::createAttributeMetadataConfiguration() instead
     $connection = DriverManager::getConnection($dbParams, $config);
     $entityManager = new EntityManager($connection, $config);
 
@@ -66,7 +67,8 @@ Or if you prefer XML:
 
     <?php
     $paths = ['/path/to/xml-mappings'];
-    $config = ORMSetup::createXMLMetadataConfiguration($paths, $isDevMode);
+    $config = ORMSetup::createXMLMetadataConfig($paths, $isDevMode);
+    // on PHP < 8.4, use ORMSetup::createXMLMetadataConfiguration() instead
     $connection = DriverManager::getConnection($dbParams, $config);
     $entityManager = new EntityManager($connection, $config);
 
