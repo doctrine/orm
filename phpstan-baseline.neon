@@ -3451,12 +3451,6 @@ parameters:
 			path: src/UnitOfWork.php
 
 		-
-			message: '#^PHPDoc tag @phpstan\-assert\-if\-true for \$obj contains generic interface Doctrine\\ORM\\Proxy\\InternalProxy but does not specify its types\: T$#'
-			identifier: missingType.generics
-			count: 1
-			path: src/UnitOfWork.php
-
-		-
 			message: '#^Parameter \#2 \$assoc of method Doctrine\\ORM\\PersistentCollection\<\(int\|string\),mixed\>\:\:setOwner\(\) expects Doctrine\\ORM\\Mapping\\AssociationMapping&Doctrine\\ORM\\Mapping\\ToManyAssociationMapping, Doctrine\\ORM\\Mapping\\ManyToManyInverseSideMapping\|Doctrine\\ORM\\Mapping\\ManyToManyOwningSideMapping\|Doctrine\\ORM\\Mapping\\ManyToOneAssociationMapping\|Doctrine\\ORM\\Mapping\\OneToManyAssociationMapping\|Doctrine\\ORM\\Mapping\\OneToOneInverseSideMapping\|Doctrine\\ORM\\Mapping\\OneToOneOwningSideMapping given\.$#'
 			identifier: argument.type
 			count: 4
@@ -3495,6 +3489,12 @@ parameters:
 		-
 			message: '#^Property Doctrine\\ORM\\UnitOfWork\:\:\$entityChangeSets \(array\<int, array\<string, array\{mixed, mixed\}\>\>\) does not accept non\-empty\-array\<int, array\<string, array\{mixed, mixed\}\|Doctrine\\ORM\\PersistentCollection\>\>\.$#'
 			identifier: assign.propertyType
+			count: 1
+			path: src/UnitOfWork.php
+
+		-
+			message: '#^Unable to resolve the template type T in call to method static method Symfony\\Component\\VarExporter\\Hydrator\:\:hydrate\(\)$#'
+			identifier: argument.templateType
 			count: 1
 			path: src/UnitOfWork.php
 
