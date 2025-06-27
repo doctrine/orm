@@ -14,8 +14,7 @@ use Doctrine\ORM\Mapping\Table;
 use Doctrine\ORM\UnitOfWork;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use PHPUnit\Framework\Attributes\Group;
-
-use function get_class;
+use ReflectionClass;
 
 #[Group('GH10808')]
 class GH10808Test extends OrmFunctionalTestCase
@@ -32,10 +31,6 @@ class GH10808Test extends OrmFunctionalTestCase
 
     public function testDQLDeferredEagerLoad(): void
     {
-        if ($this->_em->getConfiguration()->isNativeLazyObjectsEnabled()) {
-            self::markTestSkipped('Test requires lazy loading to be disabled');
-        }
-
         $appointment = new GH10808Appointment();
 
         $this->_em->persist($appointment);
@@ -55,14 +50,13 @@ class GH10808Test extends OrmFunctionalTestCase
 
         $eagerLoadResult = $query->setHint(UnitOfWork::HINT_DEFEREAGERLOAD, false)->getSingleResult();
 
-        self::assertNotEquals(
-            GH10808AppointmentChild::class,
-            get_class($deferredLoadResult->child),
-            '$deferredLoadResult->child should be a proxy',
+        $reflector = new ReflectionClass(GH10808AppointmentChild::class);
+        self::assertFalse(
+            $this->isUninitializedObject($deferredLoadResult->child),
+            '$deferredLoadResult->child should be a native lazy object',
         );
-        self::assertEquals(
-            GH10808AppointmentChild::class,
-            get_class($eagerLoadResult->child),
+        self::assertFalse(
+            $this->isUninitializedObject($deferredLoadResult->child),
             '$eagerLoadResult->child should not be a proxy',
         );
     }

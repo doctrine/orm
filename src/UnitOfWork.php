@@ -3050,11 +3050,7 @@ class UnitOfWork implements PropertyChangedListener
         }
     }
 
-    /**
-     * Tests if a value is an uninitialized entity.
-     *
-     * @phpstan-assert-if-true InternalProxy $obj
-     */
+    /** Tests if a value is an uninitialized entity. */
     public function isUninitializedObject(mixed $obj): bool
     {
         if ($this->em->getConfiguration()->isNativeLazyObjectsEnabled() && ! ($obj instanceof Collection) && is_object($obj)) {

@@ -14,8 +14,6 @@ use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use Doctrine\Tests\Proxies\__CG__\Doctrine\Tests\Models\CMS\CmsUser as CmsUserProxy;
 
-use function assert;
-
 /**
  * Test that Doctrine ORM correctly works with proxy instances exactly like with ordinary Entities
  *
@@ -33,10 +31,6 @@ class ProxiesLikeEntitiesTest extends OrmFunctionalTestCase
     protected function setUp(): void
     {
         parent::setUp();
-
-        if ($this->_em->getConfiguration()->isNativeLazyObjectsEnabled()) {
-            self::markTestSkipped('This test is not applicable when lazy proxy is enabled.');
-        }
 
         $this->createSchemaForModels(
             CmsUser::class,
@@ -83,8 +77,7 @@ class ProxiesLikeEntitiesTest extends OrmFunctionalTestCase
     {
         $userId             = $this->user->getId();
         $uninitializedProxy = $this->_em->getReference(CmsUser::class, $userId);
-        assert($uninitializedProxy instanceof CmsUserProxy);
-        self::assertInstanceOf(CmsUserProxy::class, $uninitializedProxy);
+        $this->assertTrue($this->isUninitializedObject($uninitializedProxy));
 
         $this->_em->persist($uninitializedProxy);
         $this->_em->flush();
@@ -116,6 +109,10 @@ class ProxiesLikeEntitiesTest extends OrmFunctionalTestCase
      */
     public function testFindWithProxyName(): void
     {
+        if ($this->_em->getConfiguration()->isNativeLazyObjectsEnabled()) {
+            self::markTestSkipped('There is no such thing as a proxy class name when native lazy objects are enabled.');
+        }
+
         $result = $this->_em->find(CmsUserProxy::class, $this->user->getId());
         self::assertSame($this->user->getId(), $result->getId());
         $this->_em->clear();
