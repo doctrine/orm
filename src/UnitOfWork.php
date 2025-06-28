@@ -31,6 +31,7 @@ use Doctrine\ORM\Id\AssignedGenerator;
 use Doctrine\ORM\Internal\HydrationCompleteHandler;
 use Doctrine\ORM\Internal\StronglyConnectedComponents;
 use Doctrine\ORM\Internal\TopologicalSort;
+use Doctrine\ORM\Internal\UnitOfWork\InsertBatch;
 use Doctrine\ORM\Mapping\AssociationMapping;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\MappingException;
@@ -1037,30 +1038,36 @@ class UnitOfWork implements PropertyChangedListener
      */
     private function executeInserts(): void
     {
-        $entities         = $this->computeInsertExecutionOrder();
+        $batchedByType    = InsertBatch::batchByEntityType($this->em, $this->computeInsertExecutionOrder());
         $eventsToDispatch = [];
 
-        foreach ($entities as $entity) {
-            $oid       = spl_object_id($entity);
-            $class     = $this->em->getClassMetadata($entity::class);
+        foreach ($batchedByType as $batch) {
+            $class     = $batch->class;
+            $invoke    = $this->listenersInvoker->getSubscribedSystems($class, Events::postPersist);
             $persister = $this->getEntityPersister($class->name);
 
-            $persister->addInsert($entity);
+            foreach ($batch->entities as $entity) {
+                $oid = spl_object_id($entity);
 
-            unset($this->entityInsertions[$oid]);
+                $persister->addInsert($entity);
+
+                unset($this->entityInsertions[$oid]);
+            }
 
             $persister->executeInserts();
 
-            if (! isset($this->entityIdentifiers[$oid])) {
-                //entity was not added to identity map because some identifiers are foreign keys to new entities.
-                //add it now
-                $this->addToEntityIdentifiersAndEntityMap($class, $oid, $entity);
-            }
+            foreach ($batch->entities as $entity) {
+                $oid = spl_object_id($entity);
 
-            $invoke = $this->listenersInvoker->getSubscribedSystems($class, Events::postPersist);
+                if (! isset($this->entityIdentifiers[$oid])) {
+                    //entity was not added to identity map because some identifiers are foreign keys to new entities.
+                    //add it now
+                    $this->addToEntityIdentifiersAndEntityMap($class, $oid, $entity);
+                }
 
-            if ($invoke !== ListenersInvoker::INVOKE_NONE) {
-                $eventsToDispatch[] = ['class' => $class, 'entity' => $entity, 'invoke' => $invoke];
+                if ($invoke !== ListenersInvoker::INVOKE_NONE) {
+                    $eventsToDispatch[] = ['class' => $class, 'entity' => $entity, 'invoke' => $invoke];
+                }
             }
         }
 
