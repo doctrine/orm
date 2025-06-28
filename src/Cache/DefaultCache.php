@@ -9,7 +9,6 @@ use Doctrine\ORM\Cache\Persister\CachedPersister;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\ORMInvalidArgumentException;
-use Doctrine\ORM\Proxy\DefaultProxyClassNameResolver;
 use Doctrine\ORM\UnitOfWork;
 
 use function is_array;
@@ -233,7 +232,7 @@ class DefaultCache implements Cache
     private function toIdentifierArray(ClassMetadata $metadata, mixed $identifier): array
     {
         if (is_object($identifier)) {
-            $class = DefaultProxyClassNameResolver::getClass($identifier);
+            $class = $identifier::class;
             if ($this->em->getMetadataFactory()->hasMetadataFor($class)) {
                 $identifier = $this->uow->getSingleIdentifierValue($identifier)
                     ?? throw ORMInvalidArgumentException::invalidIdentifierBindingEntity($class);

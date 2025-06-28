@@ -277,8 +277,7 @@ class UnitOfWorkTest extends OrmTestCase
 
         if (
             is_object($invalidValue) &&
-            ! $invalidValue instanceof ArrayCollection &&
-            $this->_emMock->getConfiguration()->isNativeLazyObjectsEnabled()
+            ! $invalidValue instanceof ArrayCollection
         ) {
             // in the case of stdClass, the changeset is rejected because
             // stdClass is not a valid entity

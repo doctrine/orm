@@ -14,10 +14,8 @@ use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\Driver\AttributeDriver;
-use Doctrine\ORM\Proxy\ProxyFactory;
 use Doctrine\ORM\Tools\SchemaTool;
 use Doctrine\Tests\Mocks\ArrayResultFactory;
-use Doctrine\Tests\TestUtil;
 
 use function array_map;
 use function realpath;
@@ -28,8 +26,6 @@ final class EntityManagerFactory
     {
         $config = new Configuration();
 
-        TestUtil::configureProxies($config);
-        $config->setAutoGenerateProxyClasses(ProxyFactory::AUTOGENERATE_EVAL);
         $config->setMetadataDriverImpl(new AttributeDriver([
             realpath(__DIR__ . '/Models/Cache'),
             realpath(__DIR__ . '/Models/GeoNames'),
@@ -53,8 +49,6 @@ final class EntityManagerFactory
     {
         $config = new Configuration();
 
-        TestUtil::configureProxies($config);
-        $config->setAutoGenerateProxyClasses(ProxyFactory::AUTOGENERATE_EVAL);
         $config->setMetadataDriverImpl(new AttributeDriver([
             realpath(__DIR__ . '/Models/Cache'),
             realpath(__DIR__ . '/Models/Generic'),

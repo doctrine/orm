@@ -42,14 +42,12 @@ use Doctrine\ORM\Persisters\Entity\BasicEntityPersister;
 use Doctrine\ORM\Persisters\Entity\EntityPersister;
 use Doctrine\ORM\Persisters\Entity\JoinedSubclassPersister;
 use Doctrine\ORM\Persisters\Entity\SingleTablePersister;
-use Doctrine\ORM\Proxy\InternalProxy;
 use Doctrine\ORM\Utility\IdentifierFlattener;
 use Doctrine\Persistence\PropertyChangedListener;
 use Exception;
 use InvalidArgumentException;
 use RuntimeException;
 use Stringable;
-use Symfony\Component\VarExporter\Hydrator;
 use UnexpectedValueException;
 
 use function array_chunk;
@@ -2366,13 +2364,7 @@ class UnitOfWork implements PropertyChangedListener
             }
 
             if ($this->isUninitializedObject($entity)) {
-                if ($this->em->getConfiguration()->isNativeLazyObjectsEnabled()) {
-                    $class->reflClass->markLazyObjectAsInitialized($entity);
-                } else {
-                    $entity->__setInitialized(true);
-
-                    Hydrator::hydrate($entity, (array) $class->reflClass->newInstanceWithoutConstructor());
-                }
+                $class->reflClass->markLazyObjectAsInitialized($entity);
             } else {
                 if (
                     ! isset($hints[Query::HINT_REFRESH])
@@ -3019,32 +3011,24 @@ class UnitOfWork implements PropertyChangedListener
      */
     public function initializeObject(object $obj): void
     {
-        if ($obj instanceof InternalProxy) {
-            $obj->__load();
-
-            return;
-        }
-
         if ($obj instanceof PersistentCollection) {
             $obj->initialize();
 
             return;
         }
 
-        if ($this->em->getConfiguration()->isNativeLazyObjectsEnabled()) {
-            $reflection = $this->em->getClassMetadata($obj::class)->getReflectionClass();
-            $reflection->initializeLazyObject($obj);
-        }
+        $reflection = $this->em->getClassMetadata($obj::class)->getReflectionClass();
+        $reflection->initializeLazyObject($obj);
     }
 
     /** Tests if a value is an uninitialized entity. */
     public function isUninitializedObject(mixed $obj): bool
     {
-        if ($this->em->getConfiguration()->isNativeLazyObjectsEnabled() && ! ($obj instanceof Collection) && is_object($obj)) {
-            return $this->em->getClassMetadata($obj::class)->reflClass->isUninitializedLazyObject($obj);
+        if (($obj instanceof Collection) || ! is_object($obj)) {
+            return false;
         }
 
-        return $obj instanceof InternalProxy && ! $obj->__isInitialized();
+        return $this->em->getClassMetadata($obj::class)->reflClass->isUninitializedLazyObject($obj);
     }
 
     /**

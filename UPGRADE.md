@@ -1,5 +1,11 @@
 # Upgrade to 4.0
 
+## BC BREAK: Userland lazy objects are no longer supported
+
+Userland lazy objects are no longer supported.
+[Native lazy objects](https://www.php.net/manual/en/language.oop5.lazy-objects.php)
+are used instead.
+
 ## BC BREAK: type declarations on constants
 
 All constants in the ORM now have type declarations and are final. You may no

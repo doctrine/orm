@@ -31,7 +31,6 @@ use Doctrine\ORM\Persisters\Exception\InvalidOrientation;
 use Doctrine\ORM\Persisters\Exception\UnrecognizedField;
 use Doctrine\ORM\Persisters\SqlExpressionVisitor;
 use Doctrine\ORM\Persisters\SqlValueVisitor;
-use Doctrine\ORM\Proxy\DefaultProxyClassNameResolver;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\QueryException;
 use Doctrine\ORM\Query\ResultSetMapping;
@@ -1997,7 +1996,7 @@ class BasicEntityPersister implements EntityPersister
             return [$value->value];
         }
 
-        $valueClass = DefaultProxyClassNameResolver::getClass($value);
+        $valueClass = $value::class;
 
         if ($this->em->getMetadataFactory()->isTransient($valueClass)) {
             return [$value];

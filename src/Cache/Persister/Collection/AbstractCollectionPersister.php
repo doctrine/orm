@@ -17,7 +17,6 @@ use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\Persisters\Collection\CollectionPersister;
-use Doctrine\ORM\Proxy\DefaultProxyClassNameResolver;
 use Doctrine\ORM\Query\FilterCollection;
 use Doctrine\ORM\UnitOfWork;
 
@@ -111,7 +110,7 @@ abstract class AbstractCollectionPersister implements CachedCollectionPersister
             }
 
             $class     = $this->targetEntity;
-            $className = DefaultProxyClassNameResolver::getClass($elements[$index]);
+            $className = $elements[$index]::class;
 
             if ($className !== $this->targetEntity->name) {
                 $class = $this->metadataFactory->getMetadataFor($className);

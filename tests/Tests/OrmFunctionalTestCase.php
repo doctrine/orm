@@ -906,7 +906,6 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
         //FIXME: two different configs! $conn and the created entity manager have
         // different configs.
         $config = new Configuration();
-        TestUtil::configureProxies($config);
         $config->setMetadataCache(self::$metadataCache);
         $config->setQueryCache(self::$queryCache);
 
@@ -935,19 +934,6 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             $config->setSecondLevelCacheConfiguration($cacheConfig);
 
             $this->isSecondLevelCacheEnabled = true;
-        }
-
-        $enableNativeLazyObjects = getenv('ENABLE_NATIVE_LAZY_OBJECTS');
-
-        if ($enableNativeLazyObjects === false) {
-            // If the environment variable is not set, we default to true.
-            // This is OK because environment variables are always strings, and
-            // we are comparing it to a boolean.
-            $enableNativeLazyObjects = true;
-        }
-
-        if ($enableNativeLazyObjects) {
-            $config->enableNativeLazyObjects(true);
         }
 
         $config->setMetadataDriverImpl(

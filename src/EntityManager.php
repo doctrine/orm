@@ -18,7 +18,6 @@ use Doctrine\ORM\Exception\UnrecognizedIdentifierFields;
 use Doctrine\ORM\Internal\Hydration\AbstractHydrator;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
-use Doctrine\ORM\Proxy\DefaultProxyClassNameResolver;
 use Doctrine\ORM\Proxy\ProxyFactory;
 use Doctrine\ORM\Query\Expr;
 use Doctrine\ORM\Query\FilterCollection;
@@ -129,16 +128,7 @@ class EntityManager implements EntityManagerInterface
 
         $this->repositoryFactory = $config->getRepositoryFactory();
         $this->unitOfWork        = new UnitOfWork($this);
-        if ($config->isNativeLazyObjectsEnabled()) {
-            $this->proxyFactory = new ProxyFactory($this);
-        } else {
-            $this->proxyFactory = new ProxyFactory(
-                $this,
-                $config->getProxyDir(),
-                $config->getProxyNamespace(),
-                $config->getAutoGenerateProxyClasses(),
-            );
-        }
+        $this->proxyFactory      = new ProxyFactory($this);
 
         if ($config->isSecondLevelCacheEnabled()) {
             $cacheConfig  = $config->getSecondLevelCacheConfiguration();
@@ -284,7 +274,7 @@ class EntityManager implements EntityManagerInterface
 
         foreach ($id as $i => $value) {
             if (is_object($value)) {
-                $className = DefaultProxyClassNameResolver::getClass($value);
+                $className = $value::class;
                 if ($this->metadataFactory->hasMetadataFor($className)) {
                     $id[$i] = $this->unitOfWork->getSingleIdentifierValue($value);
 

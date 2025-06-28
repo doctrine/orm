@@ -74,7 +74,6 @@ final class ConsoleRunner
                 new Command\SchemaTool\CreateCommand($entityManagerProvider),
                 new Command\SchemaTool\UpdateCommand($entityManagerProvider),
                 new Command\SchemaTool\DropCommand($entityManagerProvider),
-                new Command\GenerateProxiesCommand($entityManagerProvider),
                 new Command\RunDqlCommand($entityManagerProvider),
                 new Command\ValidateSchemaCommand($entityManagerProvider),
                 new Command\InfoCommand($entityManagerProvider),

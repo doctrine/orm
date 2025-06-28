@@ -40,7 +40,6 @@ use Doctrine\Tests\Models\Quote\Group;
 use Doctrine\Tests\Models\Quote\Phone;
 use Doctrine\Tests\Models\Quote\User;
 use Doctrine\Tests\OrmTestCase;
-use Doctrine\Tests\TestUtil;
 use Exception;
 use InvalidArgumentException;
 use PHPUnit\Framework\Assert;
@@ -231,8 +230,7 @@ class ClassMetadataFactoryTest extends OrmTestCase
 
     protected function createEntityManager(MappingDriver $metadataDriver, $conn = null): EntityManagerMock
     {
-        $config = new Configuration();
-        TestUtil::configureProxies($config);
+        $config       = new Configuration();
         $eventManager = new EventManager();
         if (! $conn) {
             $platform = $this->createMock(AbstractPlatform::class);

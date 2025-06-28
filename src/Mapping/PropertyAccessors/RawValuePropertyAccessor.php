@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Mapping\PropertyAccessors;
 
-use Doctrine\ORM\Proxy\InternalProxy;
 use ReflectionProperty;
 
 use function ltrim;
@@ -32,17 +31,7 @@ class RawValuePropertyAccessor implements PropertyAccessor
 
     public function setValue(object $object, mixed $value): void
     {
-        if (! ($object instanceof InternalProxy && ! $object->__isInitialized())) {
-            $this->reflectionProperty->setRawValueWithoutLazyInitialization($object, $value);
-
-            return;
-        }
-
-        $object->__setInitialized(true);
-
-        $this->reflectionProperty->setRawValue($object, $value);
-
-        $object->__setInitialized(false);
+        $this->reflectionProperty->setRawValueWithoutLazyInitialization($object, $value);
     }
 
     public function getValue(object $object): mixed

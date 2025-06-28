@@ -29,8 +29,6 @@ final class ConsoleRunnerTest extends TestCase
         self::assertTrue($app->has('orm:clear-cache:metadata'));
         self::assertTrue($app->has('orm:clear-cache:query'));
         self::assertTrue($app->has('orm:clear-cache:result'));
-        self::assertTrue($app->has('orm:generate-proxies'));
-        self::assertTrue($app->has('orm:generate:proxies'));
         self::assertTrue($app->has('orm:info'));
         self::assertTrue($app->has('orm:mapping:describe'));
         self::assertTrue($app->has('orm:run-dql'));
