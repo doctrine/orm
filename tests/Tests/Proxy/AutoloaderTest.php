@@ -6,6 +6,7 @@ namespace Doctrine\Tests\Proxy;
 
 use Doctrine\ORM\Proxy\Autoloader;
 use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\WithoutErrorHandler;
 use PHPUnit\Framework\TestCase;
 
 use function class_exists;
@@ -31,6 +32,7 @@ class AutoloaderTest extends TestCase
 
     /** @param class-string $className */
     #[DataProvider('dataResolveFile')]
+    #[WithoutErrorHandler]
     public function testResolveFile(
         string $proxyDir,
         string $proxyNamespace,
@@ -41,6 +43,7 @@ class AutoloaderTest extends TestCase
         self::assertEquals($expectedProxyFile, $actualProxyFile);
     }
 
+    #[WithoutErrorHandler]
     public function testAutoload(): void
     {
         if (file_exists(sys_get_temp_dir() . '/AutoloaderTestClass.php')) {

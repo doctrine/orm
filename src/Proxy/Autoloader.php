@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Proxy;
 
 use Closure;
+use Doctrine\Deprecations\Deprecation;
 
 use function file_exists;
 use function ltrim;
@@ -15,6 +16,7 @@ use function strlen;
 use function substr;
 
 use const DIRECTORY_SEPARATOR;
+use const PHP_VERSION_ID;
 
 /**
  * Special Autoloader for Proxy classes, which are not PSR-0 compliant.
@@ -34,6 +36,15 @@ final class Autoloader
      */
     public static function resolveFile(string $proxyDir, string $proxyNamespace, string $className): string
     {
+        if (PHP_VERSION_ID >= 80400) {
+            Deprecation::trigger(
+                'doctrine/orm',
+                'https://github.com/doctrine/orm/pull/12005',
+                'Class "%s" is deprecated. Use native lazy objects instead.',
+                self::class,
+            );
+        }
+
         if (! str_starts_with($className, $proxyNamespace)) {
             throw new NotAProxyClass($className, $proxyNamespace);
         }
@@ -59,6 +70,15 @@ final class Autoloader
         string $proxyNamespace,
         Closure|null $notFoundCallback = null,
     ): Closure {
+        if (PHP_VERSION_ID >= 80400) {
+            Deprecation::trigger(
+                'doctrine/orm',
+                'https://github.com/doctrine/orm/pull/12005',
+                'Class "%s" is deprecated. Use native lazy objects instead.',
+                self::class,
+            );
+        }
+
         $proxyNamespace = ltrim($proxyNamespace, '\\');
 
         $autoloader = /** @param class-string $className */ static function (string $className) use ($proxyDir, $proxyNamespace, $notFoundCallback): void {
