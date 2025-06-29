@@ -11,7 +11,9 @@ use Doctrine\Tests\Models\Cache\AttractionInfo;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use InvalidArgumentException;
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\Component\Console\Application;
+use Symfony\Component\Console\Tester\CommandCompletionTester;
 use Symfony\Component\Console\Tester\CommandTester;
 
 /**
@@ -76,5 +78,38 @@ class MappingDescribeCommandTest extends OrmFunctionalTestCase
                 'entityName' => 'AttractionFooBar',
             ],
         );
+    }
+
+    /**
+     * @param string[] $input
+     * @param string[] $expectedSuggestions
+     */
+    #[DataProvider('provideCompletionSuggestions')]
+    public function testComplete(array $input, array $expectedSuggestions): void
+    {
+        $this->useModelSet('cache');
+
+        parent::setUp();
+
+        $completionTester = new CommandCompletionTester(new MappingDescribeCommand(new SingleManagerProvider($this->_em)));
+
+        $suggestions = $completionTester->complete($input);
+
+        foreach ($expectedSuggestions as $expected) {
+            self::assertContains($expected, $suggestions);
+        }
+    }
+
+    /** @return iterable<string, array{string[], string[]}> */
+    public static function provideCompletionSuggestions(): iterable
+    {
+        yield 'entityName' => [
+            [''],
+            [
+                'Doctrine\\\\Tests\\\\Models\\\\Cache\\\\Restaurant',
+                'Doctrine\\\\Tests\\\\Models\\\\Cache\\\\Beach',
+                'Doctrine\\\\Tests\\\\Models\\\\Cache\\\\Bar',
+            ],
+        ];
     }
 }
