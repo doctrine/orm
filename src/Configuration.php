@@ -602,7 +602,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
 
     public function enableNativeLazyObjects(bool $nativeLazyObjects): void
     {
-        if (PHP_VERSION_ID < 80400) {
+        if (PHP_VERSION_ID < 80400 && $nativeLazyObjects) {
             throw new LogicException('Lazy loading proxies require PHP 8.4 or higher.');
         }
 
