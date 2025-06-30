@@ -66,7 +66,9 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
 
     public function setEntityManager(EntityManagerInterface $em): void
     {
-        parent::setProxyClassNameResolver(new DefaultProxyClassNameResolver());
+        if (! $em->getConfiguration()->isNativeLazyObjectsEnabled()) {
+            parent::setProxyClassNameResolver(new DefaultProxyClassNameResolver());
+        }
 
         $this->em = $em;
     }
