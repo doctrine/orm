@@ -10,6 +10,8 @@ use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\FieldMapping;
 use Doctrine\Persistence\Mapping\MappingException;
 use InvalidArgumentException;
+use Symfony\Component\Console\Completion\CompletionInput;
+use Symfony\Component\Console\Completion\CompletionSuggestions;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -19,6 +21,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 use function array_filter;
 use function array_map;
 use function array_merge;
+use function array_values;
 use function count;
 use function current;
 use function get_debug_type;
@@ -32,6 +35,7 @@ use function preg_match;
 use function preg_quote;
 use function print_r;
 use function sprintf;
+use function str_replace;
 
 use const JSON_PRETTY_PRINT;
 use const JSON_THROW_ON_ERROR;
@@ -71,6 +75,20 @@ EOT);
         $this->displayEntity($input->getArgument('entityName'), $entityManager, $ui);
 
         return 0;
+    }
+
+    public function complete(CompletionInput $input, CompletionSuggestions $suggestions): void
+    {
+        if ($input->mustSuggestArgumentValuesFor('entityName')) {
+            $entityManager = $this->getEntityManager($input);
+
+            $entities = array_map(
+                static fn (string $fqcn) => str_replace('\\', '\\\\', $fqcn),
+                $this->getMappedEntities($entityManager),
+            );
+
+            $suggestions->suggestValues(array_values($entities));
+        }
     }
 
     /**
