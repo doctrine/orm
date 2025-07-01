@@ -667,7 +667,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
 
     public function enableNativeLazyObjects(bool $nativeLazyObjects): void
     {
-        if (! $nativeLazyObjects) {
+        if (PHP_VERSION_ID >= 80400 && ! $nativeLazyObjects) {
             Deprecation::trigger(
                 'doctrine/orm',
                 'https://github.com/doctrine/orm/pull/12005',
@@ -675,7 +675,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
             );
         }
 
-        if (PHP_VERSION_ID < 80400) {
+        if (PHP_VERSION_ID < 80400 && $nativeLazyObjects) {
             throw new LogicException('Lazy loading proxies require PHP 8.4 or higher.');
         }
 
