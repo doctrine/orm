@@ -9,6 +9,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\Common\Collections\Order;
 use Doctrine\DBAL\Types\Types;
+use Doctrine\Deprecations\PHPUnit\VerifyDeprecations;
 use Doctrine\ORM\Cache;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\Expr\Join;
@@ -24,6 +25,7 @@ use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\OrmTestCase;
 use InvalidArgumentException;
 use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\WithoutErrorHandler;
 use PHPUnit\Framework\TestCase;
 
 use function array_filter;
@@ -35,6 +37,8 @@ use function class_exists;
  */
 class QueryBuilderTest extends OrmTestCase
 {
+    use VerifyDeprecations;
+
     private EntityManagerMock $entityManager;
 
     protected function setUp(): void
@@ -1031,8 +1035,10 @@ class QueryBuilderTest extends OrmTestCase
         self::assertEquals('u', $qb->getRootAlias());
     }
 
+    #[WithoutErrorHandler]
     public function testBCAddJoinWithoutRootAlias(): void
     {
+        $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/pull/12051');
         $qb = $this->entityManager->createQueryBuilder()
             ->select('u')
             ->from(CmsUser::class, 'u')
