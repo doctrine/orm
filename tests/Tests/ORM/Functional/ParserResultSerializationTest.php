@@ -8,7 +8,6 @@ use Closure;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\Exec\FinalizedSelectExecutor;
 use Doctrine\ORM\Query\Exec\PreparedExecutorFinalizer;
-use Doctrine\ORM\Query\Exec\SingleSelectExecutor;
 use Doctrine\ORM\Query\ParserResult;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\Tests\OrmFunctionalTestCase;
@@ -77,8 +76,6 @@ class ParserResultSerializationTest extends OrmFunctionalTestCase
         $this->assertInstanceOf(ParserResult::class, $unserialized);
         $this->assertInstanceOf(ResultSetMapping::class, $unserialized->getResultSetMapping());
         $this->assertEquals(['name' => [0]], $unserialized->getParameterMappings());
-        $this->assertInstanceOf(SingleSelectExecutor::class, $unserialized->getSqlExecutor());
-        $this->assertIsString($unserialized->getSqlExecutor()->getSqlStatements());
     }
 
     /** @return Generator<string, array{string}> */

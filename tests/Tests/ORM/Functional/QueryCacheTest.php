@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\ORM\Query;
-use Doctrine\ORM\Query\Exec\AbstractSqlExecutor;
 use Doctrine\ORM\Query\ParserResult;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use PHPUnit\Framework\Attributes\Depends;
@@ -112,42 +111,6 @@ class QueryCacheTest extends OrmFunctionalTestCase
             ->method('save')
             ->with(self::identicalTo($cacheItem))
             ->willReturn(true);
-
-        $query->getResult();
-    }
-
-    public function testQueryCacheHitDoesNotSaveParserResult(): void
-    {
-        $this->_em->getConfiguration()->setQueryCache($this->createMock(CacheItemPoolInterface::class));
-
-        $query = $this->_em->createQuery('select ux from Doctrine\Tests\Models\CMS\CmsUser ux');
-
-        $sqlExecMock = $this->getMockBuilder(AbstractSqlExecutor::class)
-                            ->getMockForAbstractClass();
-
-        $sqlExecMock->expects(self::once())
-                    ->method('execute')
-                    ->willReturn(10);
-
-        $parserResultMock = new ParserResult();
-        $parserResultMock->setSqlExecutor($sqlExecMock);
-
-        $cache = $this->createMock(CacheItemPoolInterface::class);
-
-        $cacheItem = $this->createMock(CacheItemInterface::class);
-        $cacheItem->method('isHit')->willReturn(true);
-        $cacheItem->method('get')->willReturn($parserResultMock);
-        $cacheItem->expects(self::never())->method('set');
-
-        $cache->expects(self::once())
-            ->method('getItem')
-            ->with(self::isType('string'))
-            ->willReturn($cacheItem);
-
-        $cache->expects(self::never())
-              ->method('save');
-
-        $query->setQueryCache($cache);
 
         $query->getResult();
     }

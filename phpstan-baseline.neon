@@ -2317,12 +2317,6 @@ parameters:
 			path: src/Query/Exec/MultiTableUpdateExecutor.php
 
 		-
-			message: '#^Parameter \#1 \$sql of method Doctrine\\DBAL\\Connection\:\:executeQuery\(\) expects string, list\<string\>\|string given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Query/Exec/SingleSelectExecutor.php
-
-		-
 			message: '#^Method Doctrine\\ORM\\Query\\Exec\\SingleTableDeleteUpdateExecutor\:\:execute\(\) should return int but returns int\|string\.$#'
 			identifier: return.type
 			count: 1
