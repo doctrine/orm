@@ -24,7 +24,6 @@ use InvalidArgumentException;
 use LogicException;
 use ReflectionClass;
 use ReflectionNamedType;
-use ReflectionProperty;
 use Stringable;
 
 use function array_column;
@@ -538,13 +537,6 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
      */
     protected NamingStrategy $namingStrategy;
 
-    /**
-     * The ReflectionProperty instances of the mapped class.
-     *
-     * @var LegacyReflectionFields|array<string, ReflectionProperty>
-     */
-    public LegacyReflectionFields|array $reflFields = [];
-
     /** @var array<string, PropertyAccessors\PropertyAccessor> */
     public array $propertyAccessors = [];
 
@@ -570,17 +562,6 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
     /**
      * Gets the ReflectionProperties of the mapped class.
      *
-     * @return LegacyReflectionFields|ReflectionProperty[] An array of ReflectionProperty instances.
-     * @phpstan-return LegacyReflectionFields|array<string, ReflectionProperty>
-     */
-    public function getReflectionProperties(): array|LegacyReflectionFields
-    {
-        return $this->reflFields;
-    }
-
-    /**
-     * Gets the ReflectionProperties of the mapped class.
-     *
      * @return PropertyAccessor[] An array of PropertyAccessor instances.
      */
     public function getPropertyAccessors(): array
@@ -588,27 +569,9 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
         return $this->propertyAccessors;
     }
 
-    /**
-     * Gets a ReflectionProperty for a specific field of the mapped class.
-     */
-    public function getReflectionProperty(string $name): ReflectionProperty|null
-    {
-        return $this->reflFields[$name];
-    }
-
     public function getPropertyAccessor(string $name): PropertyAccessor|null
     {
         return $this->propertyAccessors[$name] ?? null;
-    }
-
-    /** @throws BadMethodCallException If the class has a composite identifier. */
-    public function getSingleIdReflectionProperty(): ReflectionProperty|null
-    {
-        if ($this->isIdentifierComposite) {
-            throw new BadMethodCallException('Class ' . $this->name . ' has a composite identifier.');
-        }
-
-        return $this->reflFields[$this->identifier[0]];
     }
 
     /** @throws BadMethodCallException If the class has a composite identifier. */
@@ -704,9 +667,8 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
      * That means any metadata properties that are not set or empty or simply have
      * their default value are NOT serialized.
      *
-     * Parts that are also NOT serialized because they can not be properly unserialized:
-     *      - reflClass (ReflectionClass)
-     *      - reflFields (ReflectionProperty array)
+     * Parts that are also NOT serialized because they can not be properly
+     * unserialized, e.g. reflClass (ReflectionClass)
      *
      * @return string[] The names of all the fields that should be serialized.
      */
@@ -816,7 +778,6 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
     {
         // Restore ReflectionClass and properties
         $this->reflClass    = $reflService->getClass($this->name);
-        $this->reflFields   = new LegacyReflectionFields($this, $reflService);
         $this->instantiator = $this->instantiator ?: new Instantiator();
 
         $parentAccessors = [];
