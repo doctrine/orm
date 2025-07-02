@@ -1,3 +1,9 @@
+# Upgrade to 3.6
+
+Using `Doctrine\ORM\QueryBuilder::add('join', ...)` with a list of join parts
+is deprecated in favor of using an associative array of join parts with the
+root alias as key.
+
 # Upgrade to 3.5
 
 ## Deprecate not using native lazy objects on PHP 8.4+

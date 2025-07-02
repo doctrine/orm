@@ -8,6 +8,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\ParameterType;
+use Doctrine\Deprecations\Deprecation;
 use Doctrine\ORM\Internal\NoUnknownNamedArguments;
 use Doctrine\ORM\Query\Expr;
 use Doctrine\ORM\Query\Parameter;
@@ -305,8 +306,13 @@ class QueryBuilder implements Stringable
         } else {
             // Should never happen with correct joining order. Might be
             // thoughtful to throw exception instead.
-            // @phpstan-ignore method.deprecated
-            $rootAlias = $this->getRootAlias();
+            $aliases = $this->getRootAliases();
+
+            if (! isset($aliases[0])) {
+                throw new RuntimeException('No alias was set before invoking getRootAlias().');
+            }
+
+            $rootAlias = $aliases[0];
         }
 
         $this->joinRootAliases[$alias] = $rootAlias;
@@ -582,14 +588,25 @@ class QueryBuilder implements Stringable
             $dqlPart = reset($dqlPart);
         }
 
-        // This is introduced for backwards compatibility reasons.
-        // TODO: Remove for 3.0
         if ($dqlPartName === 'join') {
             $newDqlPart = [];
 
             foreach ($dqlPart as $k => $v) {
-                // @phpstan-ignore method.deprecated
-                $k = is_numeric($k) ? $this->getRootAlias() : $k;
+                if (is_numeric($k)) {
+                    Deprecation::trigger(
+                        'doctrine/orm',
+                        'https://github.com/doctrine/orm/pull/12051',
+                        'Using numeric keys in %s for join parts is deprecated and will not be supported in 4.0. Use an associative array with the root alias as key instead.',
+                        __METHOD__,
+                    );
+                    $aliases = $this->getRootAliases();
+
+                    if (! isset($aliases[0])) {
+                        throw new RuntimeException('No alias was set before invoking add().');
+                    }
+
+                    $k = $aliases[0];
+                }
 
                 $newDqlPart[$k] = $v;
             }
