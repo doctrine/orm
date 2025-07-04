@@ -1,5 +1,11 @@
 # Upgrade to 4.0
 
+## BC BREAK: `Doctrine\ORM\Mapping\LegacyReflectionFields` is removed
+
+The `Doctrine\ORM\Mapping\LegacyReflectionFields` class has been removed.
+Also, `Doctrine\ORM\Mapping\ClassMetadata::$reflFields` has been removed, as
+well as methods depending on it.
+
 ## BC BREAK: Userland lazy objects are no longer supported
 
 Userland lazy objects are no longer supported.

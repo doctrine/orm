@@ -1435,18 +1435,6 @@ parameters:
 			path: src/Mapping/JoinTableMapping.php
 
 		-
-			message: '#^Method Doctrine\\ORM\\Mapping\\LegacyReflectionFields\:\:__construct\(\) has parameter \$classMetadata with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
-			identifier: missingType.generics
-			count: 1
-			path: src/Mapping/LegacyReflectionFields.php
-
-		-
-			message: '#^Parameter \#1 \$class of method Doctrine\\Persistence\\Mapping\\ReflectionService\:\:getAccessibleProperty\(\) expects class\-string, string given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Mapping/LegacyReflectionFields.php
-
-		-
 			message: '#^Method Doctrine\\ORM\\Mapping\\MappedSuperclass\:\:__construct\(\) has parameter \$repositoryClass with generic class Doctrine\\ORM\\EntityRepository but does not specify its types\: T$#'
 			identifier: missingType.generics
 			count: 1
