@@ -516,6 +516,76 @@ class UnitOfWork implements PropertyChangedListener
     }
 
     /**
+     * Determines whether two values are equal.
+     *
+     * This method handles comparison of common Doctrine field value types,
+     * including nulls, DateTime objects, arrays (recursively), and primitive types.
+     * It returns true if the values are considered equal, false otherwise.
+     *
+     * @param mixed $a First value to compare.
+     * @param mixed $b Second value to compare.
+     * @return bool True if values are equal, false if they differ.
+     */
+    private function valuesAreEqual(mixed $a, mixed $b): bool
+    {
+        // Both values are null, considered equal
+        if ($a === null && $b === null) {
+            return true;
+        }
+
+        // One is null but not the other, not equal
+        if ($a === null || $b === null) {
+            return false;
+        }
+
+        // Both are DateTimeInterface instances: compare using spaceship operator
+        if ($a instanceof DateTimeInterface && $b instanceof DateTimeInterface) {
+            return ($a <=> $b) === 0;
+        }
+
+        // Both are arrays: compare recursively
+        if (is_array($a) && is_array($b)) {
+            return $this->arraysAreEqual($a, $b);
+        }
+
+        // For all other types, use strict equality check
+        return $a === $b;
+    }
+
+    /**
+     * Recursively compares two arrays for equality.
+     *
+     * This method checks if both arrays have the same keys and their corresponding values
+     * are equal according to valuesAreEqual(). The order of keys and values matters.
+     *
+     * @param array $a First array to compare.
+     * @param array $b Second array to compare.
+     * @return bool True if arrays are equal, false otherwise.
+     */
+    private function arraysAreEqual(array $a, array $b): bool
+    {
+        // Different count means arrays differ
+        if (count($a) !== count($b)) {
+            return false;
+        }
+
+        // Compare each key/value pair recursively
+        foreach ($a as $key => $valueA) {
+            if (!array_key_exists($key, $b)) {
+                return false;
+            }
+
+            $valueB = $b[$key];
+
+            if (!$this->valuesAreEqual($valueA, $valueB)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
      * Gets the changeset for an entity.
      *
      * @return mixed[][]
@@ -679,7 +749,7 @@ class UnitOfWork implements PropertyChangedListener
                 }
 
                 // skip if value haven't changed
-                if ($orgValue === $actualValue) {
+                if ($this->valuesAreEqual($orgValue, $actualValue)) {
                     continue;
                 }
 
