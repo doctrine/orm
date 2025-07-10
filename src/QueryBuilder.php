@@ -547,6 +547,10 @@ class QueryBuilder implements Stringable
      */
     public function setMaxResults(int|null $maxResults): static
     {
+        if ($this->type === QueryType::Delete || $this->type === QueryType::Update) {
+            throw new RuntimeException('Setting a limit is not supported for delete or update queries.');
+        }
+
         $this->maxResults = $maxResults;
 
         return $this;

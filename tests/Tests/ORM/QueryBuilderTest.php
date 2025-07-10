@@ -27,6 +27,7 @@ use InvalidArgumentException;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\WithoutErrorHandler;
 use PHPUnit\Framework\TestCase;
+use RuntimeException;
 
 use function array_filter;
 use function class_exists;
@@ -70,6 +71,26 @@ class QueryBuilderTest extends OrmTestCase
             ->delete();
 
         $this->assertValidQueryBuilder($qb, 'DELETE Doctrine\Tests\Models\CMS\CmsUser u');
+    }
+
+    public function testDeleteWithLimitNotSupported(): void
+    {
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('Setting a limit is not supported for delete or update queries.');
+
+        $this->entityManager->createQueryBuilder()
+            ->delete(CmsUser::class, 'c')
+            ->setMaxResults(1);
+    }
+
+    public function testUpdateWithLimitNotSupported(): void
+    {
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('Setting a limit is not supported for delete or update queries.');
+
+        $this->entityManager->createQueryBuilder()
+            ->update(CmsUser::class, 'c')
+            ->setMaxResults(1);
     }
 
     public function testUpdateSetsType(): void
