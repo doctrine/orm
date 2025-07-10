@@ -20,7 +20,7 @@ final class BinaryIdPersisterTest extends OrmTestCase
 {
     private EntityManager|null $entityManager = null;
 
-    public function testOneHasManyWithEagerFetchMode(): void
+    public function testOneToManyWithEagerFetchMode(): void
     {
         $entityManager = $this->createEntityManager();
 
