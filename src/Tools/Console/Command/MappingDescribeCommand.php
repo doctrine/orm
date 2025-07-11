@@ -10,6 +10,7 @@ use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\FieldMapping;
 use Doctrine\Persistence\Mapping\MappingException;
 use InvalidArgumentException;
+use JsonException;
 use Symfony\Component\Console\Completion\CompletionInput;
 use Symfony\Component\Console\Completion\CompletionSuggestions;
 use Symfony\Component\Console\Input\InputArgument;
@@ -55,6 +56,7 @@ final class MappingDescribeCommand extends AbstractEntityManagerCommand
              ->addArgument('entityName', InputArgument::REQUIRED, 'Full or partial name of entity')
              ->setDescription('Display information about mapped objects')
              ->addOption('em', null, InputOption::VALUE_REQUIRED, 'Name of the entity manager to operate on')
+             ->addOption('format', null, InputOption::VALUE_REQUIRED, 'Output format (json, xml, yaml)')
              ->setHelp(<<<'EOT'
 The %command.full_name% command describes the metadata for the given full or partial entity class name.
 
@@ -72,7 +74,7 @@ EOT);
 
         $entityManager = $this->getEntityManager($input);
 
-        $this->displayEntity($input->getArgument('entityName'), $entityManager, $ui);
+        $this->displayEntity($input->getArgument('entityName'), $entityManager, $ui, $input->getOption('format'));
 
         return 0;
     }
@@ -100,8 +102,46 @@ EOT);
         string $entityName,
         EntityManagerInterface $entityManager,
         SymfonyStyle $ui,
+        string|null $format,
     ): void {
         $metadata = $this->getClassMetadata($entityName, $entityManager);
+
+        if ($format === 'json') {
+            $ui->text(json_encode(
+                [
+                    'name' => $metadata->name,
+                    'rootEntityName' => $metadata->rootEntityName,
+                    'customGeneratorDefinition' => $this->formatValueToJson($metadata->customGeneratorDefinition),
+                    'customRepositoryClassName' => $metadata->customRepositoryClassName,
+                    'isMappedSuperclass' => $metadata->isMappedSuperclass,
+                    'isEmbeddedClass' => $metadata->isEmbeddedClass,
+                    'parentClasses' => $metadata->parentClasses,
+                    'subClasses' => $metadata->subClasses,
+                    'embeddedClasses' => $metadata->embeddedClasses,
+                    'identifier' => $metadata->identifier,
+                    'inheritanceType' => $metadata->inheritanceType,
+                    'discriminatorColumn' => $this->formatValueToJson($metadata->discriminatorColumn),
+                    'discriminatorValue' => $metadata->discriminatorValue,
+                    'discriminatorMap' => $metadata->discriminatorMap,
+                    'generatorType' => $metadata->generatorType,
+                    'table' => $this->formatValueToJson($metadata->table),
+                    'isIdentifierComposite' => $metadata->isIdentifierComposite,
+                    'containsForeignIdentifier' => $metadata->containsForeignIdentifier,
+                    'containsEnumIdentifier' => $metadata->containsEnumIdentifier,
+                    'sequenceGeneratorDefinition' => $this->formatValueToJson($metadata->sequenceGeneratorDefinition),
+                    'changeTrackingPolicy' => $metadata->changeTrackingPolicy,
+                    'isVersioned' => $metadata->isVersioned,
+                    'versionField' => $metadata->versionField,
+                    'isReadOnly' => $metadata->isReadOnly,
+                    'entityListeners' => $metadata->entityListeners,
+                    'associationMappings' => $this->formatMappingsToJson($metadata->associationMappings),
+                    'fieldMappings' => $this->formatMappingsToJson($metadata->fieldMappings),
+                ],
+                JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR,
+            ));
+
+            return;
+        }
 
         $ui->table(
             ['Field', 'Value'],
@@ -115,7 +155,7 @@ EOT);
                     $this->formatField('Embedded class?', $metadata->isEmbeddedClass),
                     $this->formatField('Parent classes', $metadata->parentClasses),
                     $this->formatField('Sub classes', $metadata->subClasses),
-                    $this->formatField('Embedded classes', $metadata->subClasses),
+                    $this->formatField('Embedded classes', $metadata->embeddedClasses),
                     $this->formatField('Identifier', $metadata->identifier),
                     $this->formatField('Inheritance type', $metadata->inheritanceType),
                     $this->formatField('Discriminator column', $metadata->discriminatorColumn),
@@ -131,7 +171,6 @@ EOT);
                     $this->formatField('Versioned?', $metadata->isVersioned),
                     $this->formatField('Version field', $metadata->versionField),
                     $this->formatField('Read only?', $metadata->isReadOnly),
-
                     $this->formatEntityListeners($metadata->entityListeners),
                 ],
                 [$this->formatField('Association mappings:', '')],
@@ -150,8 +189,8 @@ EOT);
     private function getMappedEntities(EntityManagerInterface $entityManager): array
     {
         $entityClassNames = $entityManager->getConfiguration()
-                                          ->getMetadataDriverImpl()
-                                          ->getAllClassNames();
+            ->getMetadataDriverImpl()
+            ->getAllClassNames();
 
         if (! $entityClassNames) {
             throw new InvalidArgumentException(
@@ -240,6 +279,22 @@ EOT);
         throw new InvalidArgumentException(sprintf('Do not know how to format value "%s"', print_r($value, true)));
     }
 
+    /** @throws JsonException */
+    private function formatValueToJson(mixed $value): mixed
+    {
+        if (is_object($value)) {
+            $value = (array) $value;
+        }
+
+        if (is_array($value)) {
+            foreach ($value as $k => $v) {
+                $value[$k] = $this->formatValueToJson($v);
+            }
+        }
+
+        return $value;
+    }
+
     /**
      * Add the given label and value to the two column table output
      *
@@ -276,6 +331,22 @@ EOT);
             foreach ((array) $mapping as $field => $value) {
                 $output[] = $this->formatField(sprintf('    %s', $field), $this->formatValue($value));
             }
+        }
+
+        return $output;
+    }
+
+    /**
+     * @param array<string, FieldMapping|AssociationMapping> $propertyMappings
+     *
+     * @return array<string, mixed>
+     */
+    private function formatMappingsToJson(array $propertyMappings): array
+    {
+        $output = [];
+
+        foreach ($propertyMappings as $propertyName => $mapping) {
+            $output[$propertyName] = $this->formatValueToJson((array) $mapping);
         }
 
         return $output;
