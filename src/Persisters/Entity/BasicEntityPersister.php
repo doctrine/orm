@@ -1964,6 +1964,7 @@ class BasicEntityPersister implements EntityPersister
             ParameterType::STRING => ArrayParameterType::STRING,
             ParameterType::INTEGER => ArrayParameterType::INTEGER,
             ParameterType::ASCII => ArrayParameterType::ASCII,
+            ParameterType::BINARY => ArrayParameterType::BINARY,
         };
     }
 
