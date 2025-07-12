@@ -1333,68 +1333,50 @@ parameters:
 			path: src/Mapping/Driver/AttributeDriver.php
 
 		-
-			message: '#^Call to an undefined method Doctrine\\DBAL\\Schema\\ForeignKeyConstraint\:\:getReferencedColumnNames\(\)\.$#'
-			identifier: method.notFound
+			message: '#^Call to function method_exists\(\) with ''Doctrine\\\\DBAL\\\\Schema\\\\ForeignKeyConstraint'' and ''getReferencedColumn…'' will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
 			count: 1
 			path: src/Mapping/Driver/DatabaseDriver.php
 
 		-
-			message: '#^Call to an undefined method Doctrine\\DBAL\\Schema\\ForeignKeyConstraint\:\:getReferencedTableName\(\)\.$#'
-			identifier: method.notFound
+			message: '#^Call to function method_exists\(\) with ''Doctrine\\\\DBAL\\\\Schema\\\\ForeignKeyConstraint'' and ''getReferencedTableN…'' will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
 			count: 1
 			path: src/Mapping/Driver/DatabaseDriver.php
 
 		-
-			message: '#^Call to an undefined method Doctrine\\DBAL\\Schema\\ForeignKeyConstraint\:\:getReferencingColumnNames\(\)\.$#'
-			identifier: method.notFound
+			message: '#^Call to function method_exists\(\) with ''Doctrine\\\\DBAL\\\\Schema\\\\ForeignKeyConstraint'' and ''getReferencingColum…'' will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
 			count: 1
 			path: src/Mapping/Driver/DatabaseDriver.php
 
 		-
-			message: '#^Call to an undefined method Doctrine\\DBAL\\Schema\\Index\:\:getIndexedColumns\(\)\.$#'
-			identifier: method.notFound
+			message: '#^Call to function method_exists\(\) with ''Doctrine\\\\DBAL\\\\Schema\\\\Index'' and ''getIndexedColumns'' will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
 			count: 1
 			path: src/Mapping/Driver/DatabaseDriver.php
 
 		-
-			message: '#^Call to an undefined method Doctrine\\DBAL\\Schema\\Table\:\:getPrimaryKeyConstraint\(\)\.$#'
-			identifier: method.notFound
+			message: '#^Call to function method_exists\(\) with ''Doctrine\\\\DBAL\\\\Schema\\\\Table'' and ''getPrimaryKeyConstr…'' will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
 			count: 1
 			path: src/Mapping/Driver/DatabaseDriver.php
 
 		-
-			message: '#^Call to method getColumnName\(\) on an unknown class Doctrine\\DBAL\\Schema\\Index\\IndexedColumn\.$#'
-			identifier: class.notFound
+			message: '#^Call to function method_exists\(\) with Doctrine\\DBAL\\Schema\\Index and ''getType'' will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
 			count: 1
 			path: src/Mapping/Driver/DatabaseDriver.php
 
 		-
-			message: '#^Call to method getColumnNames\(\) on an unknown class Doctrine\\DBAL\\Schema\\PrimaryKeyConstraint\.$#'
-			identifier: class.notFound
-			count: 1
-			path: src/Mapping/Driver/DatabaseDriver.php
-
-		-
-			message: '#^Call to method toString\(\) on an unknown class Doctrine\\DBAL\\Schema\\Name\\UnqualifiedName\.$#'
-			identifier: class.notFound
-			count: 5
+			message: '#^Call to function method_exists\(\) with Doctrine\\DBAL\\Schema\\Table and ''getPrimaryKeyConstr…'' will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 2
 			path: src/Mapping/Driver/DatabaseDriver.php
 
 		-
 			message: '#^Cannot call method getName\(\) on Doctrine\\DBAL\\Schema\\Column\|false\.$#'
 			identifier: method.nonObject
-			count: 1
-			path: src/Mapping/Driver/DatabaseDriver.php
-
-		-
-			message: '#^Class Doctrine\\DBAL\\Schema\\Index\\IndexType not found\.$#'
-			identifier: class.notFound
-			count: 1
-			path: src/Mapping/Driver/DatabaseDriver.php
-
-		-
-			message: '#^Class Doctrine\\DBAL\\Schema\\PrimaryKeyConstraint not found\.$#'
-			identifier: class.notFound
 			count: 1
 			path: src/Mapping/Driver/DatabaseDriver.php
 
@@ -1435,27 +1417,9 @@ parameters:
 			path: src/Mapping/Driver/DatabaseDriver.php
 
 		-
-			message: '#^Parameter \#1 \$array of function sort contains unresolvable type\.$#'
-			identifier: argument.unresolvableType
-			count: 1
-			path: src/Mapping/Driver/DatabaseDriver.php
-
-		-
 			message: '#^Parameter \#2 \$columnName of method Doctrine\\ORM\\Mapping\\Driver\\DatabaseDriver\:\:getFieldNameForColumn\(\) expects string, string\|false given\.$#'
 			identifier: argument.type
 			count: 4
-			path: src/Mapping/Driver/DatabaseDriver.php
-
-		-
-			message: '#^Parameter \$indexedColumn of anonymous function has invalid type Doctrine\\DBAL\\Schema\\Index\\IndexedColumn\.$#'
-			identifier: class.notFound
-			count: 1
-			path: src/Mapping/Driver/DatabaseDriver.php
-
-		-
-			message: '#^Parameter \$name of anonymous function has invalid type Doctrine\\DBAL\\Schema\\Name\\UnqualifiedName\.$#'
-			identifier: class.notFound
-			count: 5
 			path: src/Mapping/Driver/DatabaseDriver.php
 
 		-
@@ -2019,6 +1983,12 @@ parameters:
 		-
 			message: '#^Method Doctrine\\ORM\\Persisters\\Collection\\OneToManyPersister\:\:update\(\) has parameter \$collection with generic class Doctrine\\ORM\\PersistentCollection but does not specify its types\: TKey, T$#'
 			identifier: missingType.generics
+			count: 1
+			path: src/Persisters/Collection/OneToManyPersister.php
+
+		-
+			message: '#^Parameter \#1 \$columns of method Doctrine\\DBAL\\Platforms\\AbstractPlatform\:\:getColumnDeclarationListSQL\(\) expects list\<array\{name\: string, type\: Doctrine\\DBAL\\Types\\Type, default\: mixed, notnull\?\: bool, autoincrement\: bool, columnDefinition\: non\-empty\-string\|null, comment\: string, charset\?\: non\-empty\-string\|null, \.\.\.\}\>, array\<string, array\{name\: string, notnull\: true, type\: Doctrine\\DBAL\\Types\\Type\}\> given\.$#'
+			identifier: argument.type
 			count: 1
 			path: src/Persisters/Collection/OneToManyPersister.php
 
@@ -2611,6 +2581,12 @@ parameters:
 			path: src/Query/Exec/MultiTableDeleteExecutor.php
 
 		-
+			message: '#^Parameter \#1 \$columns of method Doctrine\\DBAL\\Platforms\\AbstractPlatform\:\:getColumnDeclarationListSQL\(\) expects list\<array\{name\: string, type\: Doctrine\\DBAL\\Types\\Type, default\: mixed, notnull\?\: bool, autoincrement\: bool, columnDefinition\: non\-empty\-string\|null, comment\: string, charset\?\: non\-empty\-string\|null, \.\.\.\}\>, array\<string, array\{name\: string, notnull\: true, type\: Doctrine\\DBAL\\Types\\Type\}\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Query/Exec/MultiTableDeleteExecutor.php
+
+		-
 			message: '#^Argument of an invalid type list\<string\>\|string supplied for foreach, only iterables are supported\.$#'
 			identifier: foreach.nonIterable
 			count: 1
@@ -2619,6 +2595,12 @@ parameters:
 		-
 			message: '#^Method Doctrine\\ORM\\Query\\Exec\\MultiTableUpdateExecutor\:\:execute\(\) should return int but returns int\|string\.$#'
 			identifier: return.type
+			count: 1
+			path: src/Query/Exec/MultiTableUpdateExecutor.php
+
+		-
+			message: '#^Parameter \#1 \$columns of method Doctrine\\DBAL\\Platforms\\AbstractPlatform\:\:getColumnDeclarationListSQL\(\) expects list\<array\{name\: string, type\: Doctrine\\DBAL\\Types\\Type, default\: mixed, notnull\?\: bool, autoincrement\: bool, columnDefinition\: non\-empty\-string\|null, comment\: string, charset\?\: non\-empty\-string\|null, \.\.\.\}\>, array\<string, array\{name\: string, notnull\: true, type\: Doctrine\\DBAL\\Types\\Type\}\> given\.$#'
+			identifier: argument.type
 			count: 1
 			path: src/Query/Exec/MultiTableUpdateExecutor.php
 
@@ -3121,32 +3103,71 @@ parameters:
 			path: src/Tools/SchemaTool.php
 
 		-
-			message: '#^Call to an undefined method Doctrine\\DBAL\\Schema\\ForeignKeyConstraint\:\:getReferencedColumnNames\(\)\.$#'
-			identifier: method.notFound
+			message: '''
+				#^Call to deprecated method getColumns\(\) of class Doctrine\\DBAL\\Schema\\Index\:
+				Use \{@see getIndexedColumns\(\)\} instead\.$#
+			'''
+			identifier: method.deprecated
 			count: 1
 			path: src/Tools/SchemaTool.php
 
 		-
-			message: '#^Call to an undefined method Doctrine\\DBAL\\Schema\\ForeignKeyConstraint\:\:getReferencedTableName\(\)\.$#'
-			identifier: method.notFound
+			message: '''
+				#^Call to deprecated method getForeignColumns\(\) of class Doctrine\\DBAL\\Schema\\ForeignKeyConstraint\:
+				Use \{@see getReferencedColumnNames\(\)\} instead\.
+
+				Returns the names of the referenced table columns
+				the foreign key constraint is associated with\.$#
+			'''
+			identifier: method.deprecated
 			count: 1
 			path: src/Tools/SchemaTool.php
 
 		-
-			message: '#^Call to an undefined method Doctrine\\DBAL\\Schema\\ForeignKeyConstraint\:\:getReferencingColumnNames\(\)\.$#'
-			identifier: method.notFound
+			message: '''
+				#^Call to deprecated method getForeignTableName\(\) of class Doctrine\\DBAL\\Schema\\ForeignKeyConstraint\:
+				Use \{@see getReferencedTableName\(\)\} instead\.
+
+				Returns the name of the referenced table
+				the foreign key constraint is associated with\.$#
+			'''
+			identifier: method.deprecated
 			count: 1
 			path: src/Tools/SchemaTool.php
 
 		-
-			message: '#^Call to an undefined method Doctrine\\DBAL\\Schema\\Index\:\:getIndexedColumns\(\)\.$#'
-			identifier: method.notFound
+			message: '''
+				#^Call to deprecated method getLocalColumns\(\) of class Doctrine\\DBAL\\Schema\\ForeignKeyConstraint\:
+				Use \{@see getReferencingColumnNames\(\)\} instead\.$#
+			'''
+			identifier: method.deprecated
 			count: 1
 			path: src/Tools/SchemaTool.php
 
 		-
-			message: '#^Call to an undefined method Doctrine\\DBAL\\Schema\\Table\:\:dropForeignKey\(\)\.$#'
-			identifier: method.notFound
+			message: '''
+				#^Call to deprecated method getPrimaryKey\(\) of class Doctrine\\DBAL\\Schema\\Table\:
+				Use \{@see getPrimaryKeyConstraint\(\)\} instead\.$#
+			'''
+			identifier: method.deprecated
+			count: 1
+			path: src/Tools/SchemaTool.php
+
+		-
+			message: '''
+				#^Call to deprecated method removeForeignKey\(\) of class Doctrine\\DBAL\\Schema\\Table\:
+				Use \{@link dropForeignKey\(\)\} instead\.$#
+			'''
+			identifier: method.deprecated
+			count: 1
+			path: src/Tools/SchemaTool.php
+
+		-
+			message: '''
+				#^Call to deprecated method setPrimaryKey\(\) of class Doctrine\\DBAL\\Schema\\Table\:
+				Use \{@see addPrimaryKeyConstraint\(\)\} instead\.$#
+			'''
+			identifier: method.deprecated
 			count: 1
 			path: src/Tools/SchemaTool.php
 
@@ -3157,32 +3178,14 @@ parameters:
 			path: src/Tools/SchemaTool.php
 
 		-
-			message: '#^Call to method getColumnName\(\) on an unknown class Doctrine\\DBAL\\Schema\\Index\\IndexedColumn\.$#'
-			identifier: class.notFound
+			message: '#^Call to function method_exists\(\) with ''Doctrine\\\\DBAL\\\\Schema\\\\Index'' and ''getIndexedColumns'' will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
 			count: 1
 			path: src/Tools/SchemaTool.php
 
 		-
-			message: '#^Call to method getColumnNames\(\) on an unknown class Doctrine\\DBAL\\Schema\\PrimaryKeyConstraint\.$#'
-			identifier: class.notFound
-			count: 1
-			path: src/Tools/SchemaTool.php
-
-		-
-			message: '#^Call to method toString\(\) on an unknown class Doctrine\\DBAL\\Schema\\Name\\UnqualifiedName\.$#'
-			identifier: class.notFound
-			count: 3
-			path: src/Tools/SchemaTool.php
-
-		-
-			message: '#^Class Doctrine\\DBAL\\Schema\\PrimaryKeyConstraint not found\.$#'
-			identifier: class.notFound
-			count: 1
-			path: src/Tools/SchemaTool.php
-
-		-
-			message: '#^Method Doctrine\\DBAL\\Schema\\AbstractSchemaManager\<Doctrine\\DBAL\\Platforms\\AbstractPlatform\>\:\:createComparator\(\) invoked with 1 parameter, 0 required\.$#'
-			identifier: arguments.count
+			message: '#^Call to function method_exists\(\) with Doctrine\\DBAL\\Schema\\Table and ''getPrimaryKeyConstr…'' will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
 			count: 1
 			path: src/Tools/SchemaTool.php
 
@@ -3289,15 +3292,51 @@ parameters:
 			path: src/Tools/SchemaTool.php
 
 		-
-			message: '#^Parameter \$indexedColumn of anonymous function has invalid type Doctrine\\DBAL\\Schema\\Index\\IndexedColumn\.$#'
-			identifier: class.notFound
+			message: '#^Parameter \#1 \$columnNames of method Doctrine\\DBAL\\Schema\\Table\:\:addIndex\(\) expects non\-empty\-list\<string\>, list\<string\> given\.$#'
+			identifier: argument.type
 			count: 1
 			path: src/Tools/SchemaTool.php
 
 		-
-			message: '#^Parameter \$name of anonymous function has invalid type Doctrine\\DBAL\\Schema\\Name\\UnqualifiedName\.$#'
-			identifier: class.notFound
-			count: 3
+			message: '#^Parameter \#1 \$columnNames of method Doctrine\\DBAL\\Schema\\Table\:\:addUniqueIndex\(\) expects non\-empty\-list\<string\>, array\<string\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Tools/SchemaTool.php
+
+		-
+			message: '#^Parameter \#1 \$columnNames of method Doctrine\\DBAL\\Schema\\Table\:\:setPrimaryKey\(\) expects non\-empty\-list\<string\>, array\<string\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Tools/SchemaTool.php
+
+		-
+			message: '#^Parameter \#1 \$value of static method Doctrine\\DBAL\\Schema\\Name\\Identifier\:\:unquoted\(\) expects non\-empty\-string, string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Tools/SchemaTool.php
+
+		-
+			message: '#^Parameter \#2 \$columnNames of class Doctrine\\DBAL\\Schema\\PrimaryKeyConstraint constructor expects non\-empty\-list\<Doctrine\\DBAL\\Schema\\Name\\UnqualifiedName\>, list\<Doctrine\\DBAL\\Schema\\Name\\UnqualifiedName\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Tools/SchemaTool.php
+
+		-
+			message: '#^Parameter \#2 \$columns of class Doctrine\\DBAL\\Schema\\Index constructor expects non\-empty\-list\<string\>, list\<string\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Tools/SchemaTool.php
+
+		-
+			message: '#^Parameter \#2 \$localColumnNames of method Doctrine\\DBAL\\Schema\\Table\:\:addForeignKeyConstraint\(\) expects non\-empty\-list\<string\>, list\<string\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Tools/SchemaTool.php
+
+		-
+			message: '#^Parameter \#3 \$foreignColumnNames of method Doctrine\\DBAL\\Schema\\Table\:\:addForeignKeyConstraint\(\) expects non\-empty\-list\<string\>, list\<string\> given\.$#'
+			identifier: argument.type
+			count: 1
 			path: src/Tools/SchemaTool.php
 
 		-

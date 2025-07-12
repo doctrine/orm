@@ -34,7 +34,57 @@ parameters:
             message: '~^Call to an undefined method Doctrine\\DBAL\\Schema\\Table::addPrimaryKeyConstraint\(\)\.$~'
             path: src/Tools/SchemaTool.php
 
+        -
+            message: '~^Call to an undefined method Doctrine\\DBAL\\Schema\\ForeignKeyConstraint::get.*\.$~'
+            identifier: method.notFound
+
+        -
+            message: '~createComparator~'
+            identifier: arguments.count
+
+        -
+            message: '~UnqualifiedName~'
+            identifier: class.notFound
+
+        -
+            message: '~IndexedColumn~'
+            identifier: class.notFound
+
+        -
+            message: '~PrimaryKeyConstraint~'
+            identifier: class.notFound
+
+        -
+            message: '~IndexType~'
+            identifier: class.notFound
+
+        -
+            message: '~dropForeignKey~'
+            identifier: method.notFound
+
+        -
+            message: '~getIndexedColumns~'
+            identifier: method.notFound
+
+        -
+            message: '~getPrimaryKeyConstraint~'
+            identifier: method.notFound
+
+        -
+            message: '~PrimaryKeyConstraint~'
+            identifier: class.notFound
+            path: src/Tools/SchemaTool.php
+
+        -
+            message: '~^Call to method toString.*UnqualifiedName\.$~'
+            path: src/Tools/SchemaTool.php
+
         - '~^Class Doctrine\\DBAL\\Platforms\\SQLitePlatform not found\.$~'
+
+        -
+            message: '~sort~'
+            identifier: argument.unresolvableType
+            path: src/Mapping/Driver/DatabaseDriver.php
 
         # To be removed in 4.0
         -
