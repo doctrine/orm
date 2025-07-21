@@ -62,6 +62,7 @@ use function array_map;
 use function array_sum;
 use function array_values;
 use function assert;
+use function count;
 use function current;
 use function get_debug_type;
 use function implode;
@@ -524,6 +525,7 @@ class UnitOfWork implements PropertyChangedListener
      *
      * @param mixed $a First value to compare.
      * @param mixed $b Second value to compare.
+     *
      * @return bool True if values are equal, false if they differ.
      */
     private function valuesAreEqual(mixed $a, mixed $b): bool
@@ -558,8 +560,9 @@ class UnitOfWork implements PropertyChangedListener
      * This method checks if both arrays have the same keys and their corresponding values
      * are equal according to valuesAreEqual(). The order of keys and values matters.
      *
-     * @param array $a First array to compare.
-     * @param array $b Second array to compare.
+     * @param array<string|int, mixed> $a First array to compare.
+     * @param array<string|int, mixed> $b Second array to compare.
+     *
      * @return bool True if arrays are equal, false otherwise.
      */
     private function arraysAreEqual(array $a, array $b): bool
@@ -571,13 +574,13 @@ class UnitOfWork implements PropertyChangedListener
 
         // Compare each key/value pair recursively
         foreach ($a as $key => $valueA) {
-            if (!array_key_exists($key, $b)) {
+            if (! array_key_exists($key, $b)) {
                 return false;
             }
 
             $valueB = $b[$key];
 
-            if (!$this->valuesAreEqual($valueA, $valueB)) {
+            if (! $this->valuesAreEqual($valueA, $valueB)) {
                 return false;
             }
         }
