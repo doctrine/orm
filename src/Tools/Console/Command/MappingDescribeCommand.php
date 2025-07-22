@@ -115,7 +115,7 @@ EOT);
                     $this->formatField('Embedded class?', $metadata->isEmbeddedClass),
                     $this->formatField('Parent classes', $metadata->parentClasses),
                     $this->formatField('Sub classes', $metadata->subClasses),
-                    $this->formatField('Embedded classes', $metadata->subClasses),
+                    $this->formatField('Embedded classes', $metadata->embeddedClasses),
                     $this->formatField('Identifier', $metadata->identifier),
                     $this->formatField('Inheritance type', $metadata->inheritanceType),
                     $this->formatField('Discriminator column', $metadata->discriminatorColumn),
