@@ -76,6 +76,9 @@ Or:
 To output the metadata in JSON format, use the <info>--format</info> option:
   <info>%command.full_name% My\Namespace\Entity\MyEntity --format=json</info>
 
+To use a specific entity manager (e.g., for multi-DB projects), use the <info>--em</info> option:
+  <info>%command.full_name% My\Namespace\Entity\MyEntity --em=my_custom_entity_manager</info>
+
 EOT);
     }
 
