@@ -46,17 +46,18 @@ entities:
     #[Entity]
     class Article
     {
-        const STATUS_VISIBLE = 'visible';
-        const STATUS_INVISIBLE = 'invisible';
+        public const STATUS_VISIBLE = 'visible';
+        public const STATUS_INVISIBLE = 'invisible';
 
         #[Column(type: "string")]
         private $status;
 
-        public function setStatus($status)
+        public function setStatus(string $status): void
         {
-            if (!in_array($status, array(self::STATUS_VISIBLE, self::STATUS_INVISIBLE))) {
+            if (!in_array($status, [self::STATUS_VISIBLE, self::STATUS_INVISIBLE], true)) {
                 throw new \InvalidArgumentException("Invalid status");
             }
+
             $this->status = $status;
         }
     }
@@ -92,36 +93,32 @@ For example for the previous enum type:
 
     class EnumVisibilityType extends Type
     {
-        const ENUM_VISIBILITY = 'enumvisibility';
-        const STATUS_VISIBLE = 'visible';
-        const STATUS_INVISIBLE = 'invisible';
+        private const ENUM_VISIBILITY = 'enumvisibility';
+        private const STATUS_VISIBLE = 'visible';
+        private const STATUS_INVISIBLE = 'invisible';
 
-        public function getSQLDeclaration(array $fieldDeclaration, AbstractPlatform $platform)
+        public function getSQLDeclaration(array $fieldDeclaration, AbstractPlatform $platform): string
         {
             return "ENUM('visible', 'invisible')";
         }
 
-        public function convertToPHPValue($value, AbstractPlatform $platform)
+        public function convertToPHPValue(mixed $value, AbstractPlatform $platform): mixed
         {
             return $value;
         }
 
-        public function convertToDatabaseValue($value, AbstractPlatform $platform)
+        public function convertToDatabaseValue(mixed $value, AbstractPlatform $platform): string
         {
-            if (!in_array($value, array(self::STATUS_VISIBLE, self::STATUS_INVISIBLE))) {
+            if (!in_array($value, [self::STATUS_VISIBLE, self::STATUS_INVISIBLE], true)) {
                 throw new \InvalidArgumentException("Invalid status");
             }
+
             return $value;
         }
 
-        public function getName()
+        public function getName(): string
         {
             return self::ENUM_VISIBILITY;
-        }
-
-        public function requiresSQLCommentHint(AbstractPlatform $platform)
-        {
-            return true;
         }
     }
 
@@ -151,36 +148,32 @@ You can generalize this approach easily to create a base class for enums:
     abstract class EnumType extends Type
     {
         protected $name;
-        protected $values = array();
+        protected $values = [];
 
-        public function getSQLDeclaration(array $fieldDeclaration, AbstractPlatform $platform)
+        public function getSQLDeclaration(array $fieldDeclaration, AbstractPlatform $platform): string
         {
-            $values = array_map(function($val) { return "'".$val."'"; }, $this->values);
+            $values = array_map(fn($val) => "'".$val."'", $this->values);
 
             return "ENUM(".implode(", ", $values).")";
         }
 
-        public function convertToPHPValue($value, AbstractPlatform $platform)
+        public function convertToPHPValue(mixed $value, AbstractPlatform $platform): mixed
         {
             return $value;
         }
 
-        public function convertToDatabaseValue($value, AbstractPlatform $platform)
+        public function convertToDatabaseValue(mixed $value, AbstractPlatform $platform): mixed
         {
-            if (!in_array($value, $this->values)) {
+            if (!in_array($value, $this->values, true)) {
                 throw new \InvalidArgumentException("Invalid '".$this->name."' value.");
             }
+
             return $value;
         }
 
-        public function getName()
+        public function getName(): string
         {
             return $this->name;
-        }
-
-        public function requiresSQLCommentHint(AbstractPlatform $platform)
-        {
-            return true;
         }
     }
 
@@ -194,5 +187,5 @@ With this base class you can define an enum as easily as:
     class EnumVisibilityType extends EnumType
     {
         protected $name = 'enumvisibility';
-        protected $values = array('visible', 'invisible');
+        protected $values = ['visible', 'invisible'];
     }

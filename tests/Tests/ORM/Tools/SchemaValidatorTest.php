@@ -135,7 +135,7 @@ class SchemaValidatorTest extends OrmTestCase
             [
                 'The field Doctrine\Tests\ORM\Tools\DDC3274One#two is on the inverse side of a bi-directional ' .
                 'relationship, but the specified mappedBy association on the target-entity ' .
-                "Doctrine\Tests\ORM\Tools\DDC3274Two#one does not contain the required 'inversedBy=\"two\"' attribute.",
+                "Doctrine\Tests\ORM\Tools\DDC3274Two#one does not contain the required 'inversedBy: \"two\"' attribute.",
             ],
             $ce,
         );
@@ -151,7 +151,7 @@ class SchemaValidatorTest extends OrmTestCase
             [
                 'The field Doctrine\Tests\ORM\Tools\Issue9536Owner#one is on the owning side of a bi-directional ' .
                 'relationship, but the specified inversedBy association on the target-entity ' .
-                "Doctrine\Tests\ORM\Tools\Issue9536Target#two does not contain the required 'mappedBy=\"one\"' " .
+                "Doctrine\Tests\ORM\Tools\Issue9536Target#two does not contain the required 'mappedBy: \"one\"' " .
                 'attribute.',
             ],
             $ce,

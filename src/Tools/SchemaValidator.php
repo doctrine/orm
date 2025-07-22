@@ -153,7 +153,7 @@ class SchemaValidator
                     $ce[] = 'The field ' . $class->name . '#' . $fieldName . ' is on the inverse side of a ' .
                             'bi-directional relationship, but the specified mappedBy association on the target-entity ' .
                             $assoc->targetEntity . '#' . $assoc->mappedBy . ' does not contain the required ' .
-                            "'inversedBy=\"" . $fieldName . "\"' attribute.";
+                            "'inversedBy: \"" . $fieldName . "\"' attribute.";
                 } elseif ($targetMetadata->associationMappings[$assoc->mappedBy]->inversedBy !== $fieldName) {
                     $ce[] = 'The mappings ' . $class->name . '#' . $fieldName . ' and ' .
                             $assoc->targetEntity . '#' . $assoc->mappedBy . ' are ' .
@@ -174,7 +174,7 @@ class SchemaValidator
                     $ce[] = 'The field ' . $class->name . '#' . $fieldName . ' is on the owning side of a ' .
                             'bi-directional relationship, but the specified inversedBy association on the target-entity ' .
                             $assoc->targetEntity . '#' . $assoc->inversedBy . ' does not contain the required ' .
-                            "'mappedBy=\"" . $fieldName . "\"' attribute.";
+                            "'mappedBy: \"" . $fieldName . "\"' attribute.";
                 } elseif ($targetMetadata->associationMappings[$assoc->inversedBy]->mappedBy !== $fieldName) {
                     $ce[] = 'The mappings ' . $class->name . '#' . $fieldName . ' and ' .
                             $assoc->targetEntity . '#' . $assoc->inversedBy . ' are ' .
