@@ -69,6 +69,8 @@ that implements `ArrayAccess`.
 Use the new `Doctrine\ORM\Mapping\PropertyAccessors\PropertyAccessor` API and access
 through `Doctrine\ORM\Mapping\ClassMetadata::$propertyAccessors` instead.
 
+Companion accessor methods are deprecated as well.
+
 # Upgrade to 3.3
 
 ## Deprecate `DatabaseDriver`
