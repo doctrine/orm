@@ -1468,7 +1468,7 @@ class BasicEntityPersister implements EntityPersister
         $columns   = $this->getInsertColumnList();
         $tableName = $this->quoteStrategy->getTableName($this->class, $this->platform);
 
-        if (empty($columns)) {
+        if ($columns === []) {
             $identityColumn = $this->quoteStrategy->getColumnName($this->class->identifier[0], $this->class, $this->platform);
 
             return $this->platform->getEmptyIdentityInsertSQL($tableName, $identityColumn);
