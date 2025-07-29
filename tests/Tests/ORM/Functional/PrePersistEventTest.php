@@ -15,9 +15,6 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 
 use function uniqid;
 
-/**
- * PrePersistEventTest
- */
 class PrePersistEventTest extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -25,14 +22,14 @@ class PrePersistEventTest extends OrmFunctionalTestCase
         parent::setUp();
 
         $this->createSchemaForModels(
-            EntityWithUnmapEntity::class,
+            EntityWithUnmappedEntity::class,
             EntityWithCascadeAssociation::class
         );
     }
 
     public function testCallingPersistInPrePersistHook(): void
     {
-        $entityWithUnmapped = new EntityWithUnmapEntity();
+        $entityWithUnmapped = new EntityWithUnmappedEntity();
         $entityWithCascade  = new EntityWithCascadeAssociation();
 
         $entityWithUnmapped->unmapped = $entityWithCascade;
@@ -52,7 +49,7 @@ class PrePersistUnmappedPersistListener
     {
         $object = $args->getObject();
 
-        if ($object instanceof EntityWithUnmapEntity) {
+        if ($object instanceof EntityWithUnmappedEntity) {
             $uow = $args->getObjectManager()->getUnitOfWork();
 
             if ($object->unmapped && ! $uow->isInIdentityMap($object->unmapped) && ! $uow->isScheduledForInsert($object->unmapped)) {
@@ -64,7 +61,7 @@ class PrePersistUnmappedPersistListener
 
 /** @Entity */
 #[Entity]
-class EntityWithUnmapEntity
+class EntityWithUnmappedEntity
 {
     /**
      * @var string
@@ -102,10 +99,10 @@ class EntityWithCascadeAssociation
     public $id;
 
     /**
-     * @var ?EntityWithUnmapEntity
-     * @ManyToOne(targetEntity=EntityWithUnmapEntity::class, cascade={"persist"})
+     * @var ?EntityWithUnmappedEntity
+     * @ManyToOne(targetEntity=EntityWithUnmappedEntity::class, cascade={"persist"})
      */
-    #[ManyToOne(targetEntity: EntityWithUnmapEntity::class, cascade: ['persist'])]
+    #[ManyToOne(targetEntity: EntityWithUnmappedEntity::class, cascade: ['persist'])]
     public $cascaded = null;
 
     public function __construct()
