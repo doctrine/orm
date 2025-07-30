@@ -12,7 +12,6 @@ use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\Persistence\Mapping\ClassMetadata as PersistenceClassMetadata;
 use Doctrine\Persistence\Mapping\Driver\ColocatedMappingDriver;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
-use InvalidArgumentException;
 use ReflectionClass;
 use ReflectionMethod;
 
@@ -20,7 +19,6 @@ use function assert;
 use function class_exists;
 use function constant;
 use function defined;
-use function sprintf;
 
 class AttributeDriver implements MappingDriver
 {
@@ -34,19 +32,9 @@ class AttributeDriver implements MappingDriver
 
     private readonly AttributeReader $reader;
 
-    /**
-     * @param array<string> $paths
-     * @param true          $reportFieldsWhereDeclared no-op, to be removed in 4.0
-     */
-    public function __construct(array $paths, bool $reportFieldsWhereDeclared = true)
+    /** @param array<string> $paths */
+    public function __construct(array $paths)
     {
-        if (! $reportFieldsWhereDeclared) {
-            throw new InvalidArgumentException(sprintf(
-                'The $reportFieldsWhereDeclared argument is no longer supported, make sure to omit it when calling %s.',
-                __METHOD__,
-            ));
-        }
-
         $this->reader = new AttributeReader();
         $this->addPaths($paths);
     }
