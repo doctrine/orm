@@ -118,6 +118,12 @@ The properties `$indexes` and `$uniqueConstraints` have been removed since they 
 The preferred way of defining indices and unique constraints is by
 using the `\Doctrine\ORM\Mapping\UniqueConstraint` and `\Doctrine\ORM\Mapping\Index` attributes.
 
+# Upgrade to 3.6
+
+Using `Doctrine\ORM\QueryBuilder::add('join', ...)` with a list of join parts
+is deprecated in favor of using an associative array of join parts with the
+root alias as key.
+
 # Upgrade to 3.5
 
 ## Deprecate not using native lazy objects on PHP 8.4+
@@ -188,6 +194,8 @@ that implements `ArrayAccess`.
 
 Use the new `Doctrine\ORM\Mapping\PropertyAccessors\PropertyAccessor` API and access
 through `Doctrine\ORM\Mapping\ClassMetadata::$propertyAccessors` instead.
+
+Companion accessor methods are deprecated as well.
 
 # Upgrade to 3.3
 
