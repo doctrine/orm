@@ -31,8 +31,12 @@ class DDC2825Test extends OrmFunctionalTestCase
     }
 
     #[DataProvider('getTestedClasses')]
-    public function testClassSchemaMappingsValidity(string $className, string $expectedSchemaName, string $expectedTableName): void
-    {
+    public function testClassSchemaMappingsValidity(
+        string $className,
+        string $expectedSchemaName,
+        string $expectedTableName,
+        bool $isQuoted,
+    ): void {
         $classMetadata   = $this->_em->getClassMetadata($className);
         $platform        = $this->_em->getConnection()->getDatabasePlatform();
         $quotedTableName = $this->_em->getConfiguration()->getQuoteStrategy()->getTableName($classMetadata, $platform);
@@ -41,13 +45,22 @@ class DDC2825Test extends OrmFunctionalTestCase
         self::assertEquals($expectedTableName, $classMetadata->table['name']);
         self::assertEquals($expectedSchemaName, $classMetadata->table['schema']);
 
-        $fullTableName = sprintf('%s.%s', $expectedSchemaName, $expectedTableName);
+        $fullTableName = sprintf(
+            $isQuoted ? '"%s"."%s"' : '%s.%s',
+            $expectedSchemaName,
+            $expectedTableName,
+        );
 
         self::assertEquals($fullTableName, $quotedTableName);
 
         // Checks sequence name validity
         self::assertEquals(
-            $fullTableName . '_' . $classMetadata->getSingleIdentifierColumnName() . '_seq',
+            sprintf(
+                '%s.%s_%s_seq',
+                $expectedSchemaName,
+                $expectedTableName,
+                $classMetadata->getSingleIdentifierColumnName(),
+            ),
             $classMetadata->getSequenceName($platform),
         );
     }
@@ -72,9 +85,10 @@ class DDC2825Test extends OrmFunctionalTestCase
     public static function getTestedClasses(): array
     {
         return [
-            [ExplicitSchemaAndTable::class, 'explicit_schema', 'explicit_table'],
-            [SchemaAndTableInTableName::class, 'implicit_schema', 'implicit_table'],
-            [DDC2825ClassWithImplicitlyDefinedSchemaAndQuotedTableName::class, 'myschema', 'order'],
+            [ExplicitSchemaAndTable::class, 'explicit_schema', 'explicit_table', false],
+            [SchemaAndTableInTableName::class, 'implicit_schema', 'implicit_table', false],
+            [DDC2825ClassWithImplicitlyDefinedSchemaAndQuotedTableName::class, 'myschema', 'order', false],
+            [File::class, 'yourschema', 'file', true],
         ];
     }
 }
@@ -88,4 +102,14 @@ class DDC2825ClassWithImplicitlyDefinedSchemaAndQuotedTableName
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
     public $id;
+}
+
+#[ORM\Entity]
+#[ORM\Table(name: '`file`', schema: 'yourschema')]
+class File
+{
+    #[ORM\Id]
+    #[ORM\Column]
+    #[ORM\GeneratedValue]
+    public int $id;
 }
