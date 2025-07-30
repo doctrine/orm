@@ -11,10 +11,3 @@ parameters:
         -
             message: '~^Match expression does not handle remaining values:~'
             path: src/Persisters/Entity/BasicEntityPersister.php
-
-        # To be removed in 4.0
-
-        -
-            message: '#Negated boolean expression is always false\.#'
-            paths:
-                - src/Mapping/Driver/AttributeDriver.php
