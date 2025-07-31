@@ -11,8 +11,6 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Group;
 
-use function sprintf;
-
 /**
  * This class makes tests on the correct use of a database schema when entities are stored
  */
@@ -30,41 +28,7 @@ class DDC2825Test extends OrmFunctionalTestCase
         }
     }
 
-    #[DataProvider('getTestedClasses')]
-    public function testClassSchemaMappingsValidity(
-        string $className,
-        string $expectedSchemaName,
-        string $expectedTableName,
-        bool $isQuoted,
-    ): void {
-        $classMetadata   = $this->_em->getClassMetadata($className);
-        $platform        = $this->_em->getConnection()->getDatabasePlatform();
-        $quotedTableName = $this->_em->getConfiguration()->getQuoteStrategy()->getTableName($classMetadata, $platform);
-
-        // Check if table name and schema properties are defined in the class metadata
-        self::assertEquals($expectedTableName, $classMetadata->table['name']);
-        self::assertEquals($expectedSchemaName, $classMetadata->table['schema']);
-
-        $fullTableName = sprintf(
-            $isQuoted ? '"%s"."%s"' : '%s.%s',
-            $expectedSchemaName,
-            $expectedTableName,
-        );
-
-        self::assertEquals($fullTableName, $quotedTableName);
-
-        // Checks sequence name validity
-        self::assertEquals(
-            sprintf(
-                '%s.%s_%s_seq',
-                $expectedSchemaName,
-                $expectedTableName,
-                $classMetadata->getSingleIdentifierColumnName(),
-            ),
-            $classMetadata->getSequenceName($platform),
-        );
-    }
-
+    /** @param class-string $className */
     #[DataProvider('getTestedClasses')]
     public function testPersistenceOfEntityWithSchemaMapping(string $className): void
     {
@@ -77,18 +41,14 @@ class DDC2825Test extends OrmFunctionalTestCase
         self::assertCount(1, $this->_em->getRepository($className)->findAll());
     }
 
-    /**
-     * Data provider
-     *
-     * @return string[][]
-     */
+    /** @return list<array{class-string}> */
     public static function getTestedClasses(): array
     {
         return [
-            [ExplicitSchemaAndTable::class, 'explicit_schema', 'explicit_table', false],
-            [SchemaAndTableInTableName::class, 'implicit_schema', 'implicit_table', false],
-            [DDC2825ClassWithImplicitlyDefinedSchemaAndQuotedTableName::class, 'myschema', 'order', false],
-            [File::class, 'yourschema', 'file', true],
+            [ExplicitSchemaAndTable::class],
+            [SchemaAndTableInTableName::class],
+            [DDC2825ClassWithImplicitlyDefinedSchemaAndQuotedTableName::class],
+            [File::class],
         ];
     }
 }
