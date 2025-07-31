@@ -41,11 +41,7 @@ class DDC2825Test extends OrmFunctionalTestCase
         self::assertEquals($expectedTableName, $classMetadata->table['name']);
         self::assertEquals($expectedSchemaName, $classMetadata->table['schema']);
 
-        if ($this->_em->getConnection()->getDatabasePlatform()->supportsSchemas()) {
-            $fullTableName = sprintf('%s.%s', $expectedSchemaName, $expectedTableName);
-        } else {
-            $fullTableName = sprintf('%s__%s', $expectedSchemaName, $expectedTableName);
-        }
+        $fullTableName = sprintf('%s.%s', $expectedSchemaName, $expectedTableName);
 
         self::assertEquals($fullTableName, $quotedTableName);
 
