@@ -538,17 +538,11 @@ abstract class AbstractQuery
      */
     public function setResultCache(CacheItemPoolInterface|null $resultCache): static
     {
-        if ($resultCache === null) {
-            if ($this->queryCacheProfile) {
-                $this->queryCacheProfile = new QueryCacheProfile($this->queryCacheProfile->getLifetime(), $this->queryCacheProfile->getCacheKey());
-            }
-
-            return $this;
+        if ($resultCache !== null || $this->queryCacheProfile?->getResultCache() !== null) {
+            $this->queryCacheProfile = $resultCache 
+                ? new QueryCacheProfile($this->queryCacheProfile->getLifetime(), $this->queryCacheProfile->getCacheKey())
+                : $this->queryCacheProfile?->setResultCache($resultCache) ?? new QueryCacheProfile(resultCache: $resultCache);
         }
-
-        $this->queryCacheProfile = $this->queryCacheProfile
-            ? $this->queryCacheProfile->setResultCache($resultCache)
-            : new QueryCacheProfile(0, null, $resultCache);
 
         return $this;
     }
