@@ -229,19 +229,4 @@ class ConfigurationTest extends TestCase
 
         $this->configuration->enableNativeLazyObjects(false);
     }
-
-    #[RequiresPhp('<8.4')]
-    public function testNotEnablingNativeLazyObjectIsFineOnPhpLowerThan84(): void
-    {
-        $this->expectNoDeprecationWithIdentifier('https://github.com/doctrine/orm/pull/12005');
-        self::assertFalse($this->configuration->isNativeLazyObjectsEnabled());
-    }
-
-    #[RequiresPhp('8.4')]
-    #[WithoutErrorHandler]
-    public function testNotEnablingNativeLazyObjectIsDeprecatedOnPhp84(): void
-    {
-        $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/pull/12005');
-        self::assertFalse($this->configuration->isNativeLazyObjectsEnabled());
-    }
 }

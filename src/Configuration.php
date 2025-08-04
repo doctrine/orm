@@ -652,17 +652,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
 
     public function isNativeLazyObjectsEnabled(): bool
     {
-        $nativeLazyObjects = $this->attributes['nativeLazyObjects'] ?? false;
-
-        if (! $nativeLazyObjects && PHP_VERSION_ID >= 80400) {
-            Deprecation::trigger(
-                'doctrine/orm',
-                'https://github.com/doctrine/orm/pull/12005',
-                'Not enabling native lazy objects is deprecated and will be impossible in Doctrine ORM 4.0.',
-            );
-        }
-
-        return $nativeLazyObjects;
+        return $this->attributes['nativeLazyObjects'] ?? false;
     }
 
     public function enableNativeLazyObjects(bool $nativeLazyObjects): void
