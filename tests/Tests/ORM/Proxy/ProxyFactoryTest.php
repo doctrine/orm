@@ -22,9 +22,7 @@ use ReflectionClass;
 class ProxyFactoryTest extends OrmTestCase
 {
     private UnitOfWorkMock $uowMock;
-
     private EntityManagerMock $emMock;
-
     private ProxyFactory $proxyFactory;
 
     protected function setUp(): void
