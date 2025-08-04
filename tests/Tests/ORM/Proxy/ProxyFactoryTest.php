@@ -7,6 +7,7 @@ namespace Doctrine\Tests\ORM\Proxy;
 use Doctrine\Common\EventManager;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
+use Doctrine\Deprecations\PHPUnit\VerifyDeprecations;
 use Doctrine\ORM\EntityNotFoundException;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Persisters\Entity\BasicEntityPersister;
@@ -21,6 +22,7 @@ use Doctrine\Tests\Models\ECommerce\ECommerceFeature;
 use Doctrine\Tests\OrmTestCase;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\RequiresPhp;
+use PHPUnit\Framework\Attributes\WithoutErrorHandler;
 use ReflectionClass;
 use ReflectionProperty;
 use stdClass;
@@ -34,10 +36,10 @@ use function sys_get_temp_dir;
  */
 class ProxyFactoryTest extends OrmTestCase
 {
+    use VerifyDeprecations;
+
     private UnitOfWorkMock $uowMock;
-
     private EntityManagerMock $emMock;
-
     private ProxyFactory $proxyFactory;
 
     protected function setUp(): void
@@ -242,6 +244,37 @@ class ProxyFactoryTest extends OrmTestCase
         $reflection         = new ReflectionClass($proxy);
 
         self::assertTrue($reflection->isUninitializedLazyObject($proxy));
+    }
+
+    #[RequiresPhp('8.4')]
+    #[WithoutErrorHandler]
+    public function testProxyFactoryTriggersDeprecationWhenNativeLazyObjectsAreDisabled(): void
+    {
+        $this->emMock->getConfiguration()->enableNativeLazyObjects(false);
+
+        $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/pull/12005');
+
+        $this->proxyFactory = new ProxyFactory(
+            $this->emMock,
+            sys_get_temp_dir(),
+            'Proxies',
+            ProxyFactory::AUTOGENERATE_ALWAYS,
+        );
+    }
+
+    #[RequiresPhp('< 8.4')]
+    public function testProxyFactoryDoesNotTriggerDeprecationWhenNativeLazyObjectsAreDisabled(): void
+    {
+        $this->emMock->getConfiguration()->enableNativeLazyObjects(false);
+
+        $this->expectNoDeprecationWithIdentifier('https://github.com/doctrine/orm/pull/12005');
+
+        $this->proxyFactory = new ProxyFactory(
+            $this->emMock,
+            sys_get_temp_dir(),
+            'Proxies',
+            ProxyFactory::AUTOGENERATE_ALWAYS,
+        );
     }
 }
 
