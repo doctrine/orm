@@ -152,21 +152,29 @@ EOPHP;
         string|null $proxyNs = null,
         bool|int $autoGenerate = self::AUTOGENERATE_NEVER,
     ) {
-        if (PHP_VERSION_ID >= 80400 && func_num_args() > 1) {
+        if (! $em->getConfiguration()->isNativeLazyObjectsEnabled()) {
+            if (PHP_VERSION_ID >= 80400) {
+                Deprecation::trigger(
+                    'doctrine/orm',
+                    'https://github.com/doctrine/orm/pull/12005',
+                    'Not enabling native lazy objects is deprecated and will be impossible in Doctrine ORM 4.0.',
+                );
+            }
+
+            if (! $proxyDir) {
+                throw ORMInvalidArgumentException::proxyDirectoryRequired();
+            }
+
+            if (! $proxyNs) {
+                throw ORMInvalidArgumentException::proxyNamespaceRequired();
+            }
+        } elseif (PHP_VERSION_ID >= 80400 && func_num_args() > 1) {
             Deprecation::trigger(
                 'doctrine/orm',
                 'https://github.com/doctrine/orm/pull/12005',
                 'Passing more than just the EntityManager to the %s is deprecated and will not be possible in Doctrine ORM 4.0.',
                 __METHOD__,
             );
-        }
-
-        if (! $proxyDir && ! $em->getConfiguration()->isNativeLazyObjectsEnabled()) {
-            throw ORMInvalidArgumentException::proxyDirectoryRequired();
-        }
-
-        if (! $proxyNs && ! $em->getConfiguration()->isNativeLazyObjectsEnabled()) {
-            throw ORMInvalidArgumentException::proxyNamespaceRequired();
         }
 
         if (is_int($autoGenerate) ? $autoGenerate < 0 || $autoGenerate > 4 : ! is_bool($autoGenerate)) {
