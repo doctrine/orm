@@ -35,6 +35,7 @@ final class ORMSetup
         bool $isDevMode = false,
         string|null $proxyDir = null,
         CacheItemPoolInterface|null $cache = null,
+        bool $pathsAsSourceFilePathNames = false,
     ): Configuration {
         if (PHP_VERSION_ID >= 80400) {
             Deprecation::trigger(
@@ -47,7 +48,7 @@ final class ORMSetup
         }
 
         $config = self::createConfiguration($isDevMode, $proxyDir, $cache);
-        $config->setMetadataDriverImpl(new AttributeDriver($paths));
+        $config->setMetadataDriverImpl(new AttributeDriver($paths, true, $pathsAsSourceFilePathNames));
 
         return $config;
     }
@@ -62,9 +63,10 @@ final class ORMSetup
         bool $isDevMode = false,
         string|null $cacheNamespaceSeed = null,
         CacheItemPoolInterface|null $cache = null,
+        bool $pathsAsSourceFilePathNames = false,
     ): Configuration {
         $config = self::createConfig($isDevMode, $cacheNamespaceSeed, $cache);
-        $config->setMetadataDriverImpl(new AttributeDriver($paths));
+        $config->setMetadataDriverImpl(new AttributeDriver($paths, true, $pathsAsSourceFilePathNames));
 
         return $config;
     }

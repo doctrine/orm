@@ -13,6 +13,7 @@ use Doctrine\Persistence\Mapping\ClassMetadata as PersistenceClassMetadata;
 use Doctrine\Persistence\Mapping\Driver\ColocatedMappingDriver;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
 use InvalidArgumentException;
+use LogicException;
 use ReflectionClass;
 use ReflectionMethod;
 
@@ -20,6 +21,8 @@ use function assert;
 use function class_exists;
 use function constant;
 use function defined;
+use function is_array;
+use function property_exists;
 use function sprintf;
 
 class AttributeDriver implements MappingDriver
@@ -35,10 +38,11 @@ class AttributeDriver implements MappingDriver
     private readonly AttributeReader $reader;
 
     /**
-     * @param array<string> $paths
-     * @param true          $reportFieldsWhereDeclared no-op, to be removed in 4.0
+     * @param iterable<string> $paths                      iterable of source file path names {@see $pathsAsSourceFilePathNames}, or an array of directories.
+     * @param true             $reportFieldsWhereDeclared  no-op, to be removed in 4.0
+     * @param bool             $pathsAsSourceFilePathNames use iterable of source files paths instead of directory paths in {@see $paths}
      */
-    public function __construct(array $paths, bool $reportFieldsWhereDeclared = true)
+    public function __construct(iterable $paths, bool $reportFieldsWhereDeclared = true, bool $pathsAsSourceFilePathNames = false)
     {
         if (! $reportFieldsWhereDeclared) {
             throw new InvalidArgumentException(sprintf(
@@ -47,8 +51,19 @@ class AttributeDriver implements MappingDriver
             ));
         }
 
+        if ($pathsAsSourceFilePathNames) {
+            if (! property_exists(static::class, 'sourceFilePathNames')) {
+                throw new LogicException('Source file path names support for AttributeDriver is available since doctrine/persistence 4.1.');
+            }
+
+            $this->sourceFilePathNames = $paths;
+        } elseif (is_array($paths)) {
+            $this->addPaths($paths);
+        } else {
+            throw new LogicException('The $paths argument must be an iterable of source file path names or an array of directories.');
+        }
+
         $this->reader = new AttributeReader();
-        $this->addPaths($paths);
     }
 
     public function isTransient(string $className): bool

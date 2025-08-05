@@ -11,6 +11,7 @@ use Doctrine\ORM\Mapping\Driver\AttributeDriver;
 use Doctrine\ORM\Mapping\JoinColumnMapping;
 use Doctrine\ORM\Mapping\MappingAttribute;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
+use Doctrine\Tests\Mocks\AttributeDriverFactory;
 use Doctrine\Tests\ORM\Mapping\Fixtures\AttributeEntityWithNestedJoinColumns;
 use InvalidArgumentException;
 use stdClass;
@@ -19,9 +20,7 @@ class AttributeDriverTest extends MappingDriverTestCase
 {
     protected function loadDriver(): MappingDriver
     {
-        $paths = [];
-
-        return new AttributeDriver($paths, true);
+        return AttributeDriverFactory::createAttributeDriver();
     }
 
     public function testOriginallyNestedAttributesDeclaredWithoutOriginalParent(): void
@@ -93,7 +92,7 @@ class AttributeDriverTest extends MappingDriverTestCase
     {
         $this->expectException(InvalidArgumentException::class);
 
-        new AttributeDriver([], false);
+        new AttributeDriver([], false, true);
     }
 }
 

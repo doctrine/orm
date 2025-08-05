@@ -37,6 +37,7 @@
         "symfony/var-exporter": "^6.3.9 || ^7.0"
     },
     "require-dev": {
+        "doctrine/persistence": "^3.3.1 || ^4.0 || 4.1.x-dev",
         "doctrine/coding-standard": "^13.0",
         "phpbench/phpbench": "^1.0",
         "phpdocumentor/guides-cli": "^1.4",
