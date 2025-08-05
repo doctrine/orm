@@ -13,14 +13,13 @@ use Doctrine\DBAL\Result;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\Mapping\Driver\AttributeDriver;
 use Doctrine\ORM\Proxy\ProxyFactory;
 use Doctrine\ORM\Tools\SchemaTool;
 use Doctrine\Tests\Mocks\ArrayResultFactory;
+use Doctrine\Tests\Mocks\AttributeDriverFactory;
 use Doctrine\Tests\TestUtil;
 
 use function array_map;
-use function realpath;
 
 final class EntityManagerFactory
 {
@@ -30,10 +29,7 @@ final class EntityManagerFactory
 
         TestUtil::configureProxies($config);
         $config->setAutoGenerateProxyClasses(ProxyFactory::AUTOGENERATE_EVAL);
-        $config->setMetadataDriverImpl(new AttributeDriver([
-            realpath(__DIR__ . '/Models/Cache'),
-            realpath(__DIR__ . '/Models/GeoNames'),
-        ]));
+        $config->setMetadataDriverImpl(AttributeDriverFactory::createAttributeDriver([__DIR__ . '/../Tests/Models/Cache', __DIR__ . '/../Tests/Models/GeoNames']));
 
         $entityManager = new EntityManager(
             DriverManager::getConnection([
@@ -55,11 +51,7 @@ final class EntityManagerFactory
 
         TestUtil::configureProxies($config);
         $config->setAutoGenerateProxyClasses(ProxyFactory::AUTOGENERATE_EVAL);
-        $config->setMetadataDriverImpl(new AttributeDriver([
-            realpath(__DIR__ . '/Models/Cache'),
-            realpath(__DIR__ . '/Models/Generic'),
-            realpath(__DIR__ . '/Models/GeoNames'),
-        ]));
+        $config->setMetadataDriverImpl(AttributeDriverFactory::createAttributeDriver([__DIR__ . '/../Tests/Models/Cache', __DIR__ . '/../Tests/Models/Generic', __DIR__ . '/../Tests/Models/GeoNames']));
 
         // A connection that doesn't really do anything
         $connection = new class ([], new Driver(), null, new EventManager()) extends Connection
