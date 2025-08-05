@@ -11,10 +11,13 @@ use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\ORMSetup;
 use Doctrine\ORM\Tools\SchemaTool;
 use Doctrine\ORM\Tools\SchemaValidator;
+use Doctrine\Tests\Mocks\AttributeDriverFactory;
 use Doctrine\Tests\Mocks\EntityManagerMock;
 use Doctrine\Tests\Models\BinaryPrimaryKey\BinaryIdType;
 use Doctrine\Tests\Models\BinaryPrimaryKey\Category;
 use Doctrine\Tests\OrmTestCase;
+
+use function iterator_to_array;
 
 final class BinaryIdPersisterTest extends OrmTestCase
 {
@@ -63,7 +66,10 @@ final class BinaryIdPersisterTest extends OrmTestCase
             return $this->entityManager;
         }
 
-        $config = ORMSetup::createAttributeMetadataConfiguration([__DIR__ . '/../../Models/BinaryPrimaryKey'], isDevMode: true);
+        $config = ORMSetup::createAttributeMetadataConfiguration(
+            $this->getDriverPaths(),
+            isDevMode: true,
+        );
 
         if (! DbalType::hasType(BinaryIdType::NAME)) {
             DbalType::addType(BinaryIdType::NAME, BinaryIdType::class);
@@ -81,5 +87,17 @@ final class BinaryIdPersisterTest extends OrmTestCase
         $this->entityManager = $entityManager;
 
         return $entityManager;
+    }
+
+    /** @return string[] */
+    private function getDriverPaths(): iterable
+    {
+        $path = __DIR__ . '/../../Models/BinaryPrimaryKey';
+
+        if (! AttributeDriverFactory::isFilePathsSupported()) {
+            return [$path];
+        }
+
+        return iterator_to_array(AttributeDriverFactory::pathFiles($path));
     }
 }

@@ -29,7 +29,7 @@ steps of configuration.
 
     $config = new Configuration;
     $config->setMetadataCache($metadataCache);
-    $driverImpl = new AttributeDriver(['/path/to/lib/MyProject/Entities'], true);
+    $driverImpl = new AttributeDriver(['/path/to/lib/MyProject/Entities']);
     $config->setMetadataDriverImpl($driverImpl);
     $config->setQueryCache($queryCache);
 
@@ -154,7 +154,7 @@ The attribute driver can be injected in the ``Doctrine\ORM\Configuration``:
     <?php
     use Doctrine\ORM\Mapping\Driver\AttributeDriver;
 
-    $driverImpl = new AttributeDriver(['/path/to/lib/MyProject/Entities'], true);
+    $driverImpl = new AttributeDriver(['/path/to/lib/MyProject/Entities']);
     $config->setMetadataDriverImpl($driverImpl);
 
 The path information to the entities is required for the attribute

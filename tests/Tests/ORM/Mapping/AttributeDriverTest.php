@@ -11,17 +11,42 @@ use Doctrine\ORM\Mapping\Driver\AttributeDriver;
 use Doctrine\ORM\Mapping\JoinColumnMapping;
 use Doctrine\ORM\Mapping\MappingAttribute;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
+use Doctrine\Tests\Mocks\AttributeDriverFactory;
+use Doctrine\Tests\Models\Cache\City;
 use Doctrine\Tests\ORM\Mapping\Fixtures\AttributeEntityWithNestedJoinColumns;
 use InvalidArgumentException;
+use LogicException;
 use stdClass;
 
 class AttributeDriverTest extends MappingDriverTestCase
 {
     protected function loadDriver(): MappingDriver
     {
-        $paths = [];
+        return AttributeDriverFactory::createAttributeDriver();
+    }
 
-        return new AttributeDriver($paths, true);
+    public function testDriverCanAcceptListOfFilePaths(): void
+    {
+        if (! AttributeDriverFactory::isFilePathsSupported()) {
+            self::markTestSkipped('This test is only relevant for versions of doctrine/persistence >= 4.1');
+        }
+
+        $driver = new AttributeDriver(['1' => __DIR__ . '/../../Models/Cache/City.php']);
+
+        self::assertSame([], $driver->getPaths(), 'Directory paths must be empty, since file paths are used');
+        self::assertSame([0 => City::class], $driver->getAllClassNames());
+    }
+
+    public function testFilePathsCanBeUsedOnlyStartingFromPersistence41(): void
+    {
+        if (AttributeDriverFactory::isFilePathsSupported()) {
+            self::markTestSkipped('This test is only relevant for versions of doctrine/persistence < 4.1');
+        }
+
+        $this->expectException(LogicException::class);
+        $this->expectExceptionMessage('available since doctrine/persistence 4.1');
+
+        new AttributeDriver([__DIR__ . '/../../Models/Cache/City.php']);
     }
 
     public function testOriginallyNestedAttributesDeclaredWithoutOriginalParent(): void

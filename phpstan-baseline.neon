@@ -1315,6 +1315,13 @@ parameters:
 			path: src/Mapping/DefaultQuoteStrategy.php
 
 		-
+			message: '#^Access to an undefined property Doctrine\\ORM\\Mapping\\Driver\\AttributeDriver\:\:\$filePaths\.$#'
+			identifier: property.notFound # property is available starting from doctrine/persistence 4.1
+			count: 1
+			path: src/Mapping/Driver/AttributeDriver.php
+			reportUnmatched: false
+
+		-
 			message: '#^Method Doctrine\\ORM\\Mapping\\Driver\\AttributeDriver\:\:isRepeatedPropertyDeclaration\(\) has parameter \$metadata with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
 			identifier: missingType.generics
 			count: 1

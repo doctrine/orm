@@ -28,10 +28,10 @@ final class ORMSetup
     /**
      * Creates a configuration with an attribute metadata driver.
      *
-     * @param string[] $paths
+     * @param iterable<string> $paths
      */
     public static function createAttributeMetadataConfiguration(
-        array $paths,
+        iterable $paths,
         bool $isDevMode = false,
         string|null $proxyDir = null,
         CacheItemPoolInterface|null $cache = null,
@@ -47,7 +47,7 @@ final class ORMSetup
         }
 
         $config = self::createConfiguration($isDevMode, $proxyDir, $cache);
-        $config->setMetadataDriverImpl(new AttributeDriver($paths));
+        $config->setMetadataDriverImpl(new AttributeDriver($paths, true));
 
         return $config;
     }
@@ -55,16 +55,16 @@ final class ORMSetup
     /**
      * Creates a configuration with an attribute metadata driver.
      *
-     * @param string[] $paths
+     * @param iterable<string> $paths
      */
     public static function createAttributeMetadataConfig(
-        array $paths,
+        iterable $paths,
         bool $isDevMode = false,
         string|null $cacheNamespaceSeed = null,
         CacheItemPoolInterface|null $cache = null,
     ): Configuration {
         $config = self::createConfig($isDevMode, $cacheNamespaceSeed, $cache);
-        $config->setMetadataDriverImpl(new AttributeDriver($paths));
+        $config->setMetadataDriverImpl(new AttributeDriver($paths, true));
 
         return $config;
     }

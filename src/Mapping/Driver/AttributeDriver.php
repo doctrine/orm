@@ -13,13 +13,18 @@ use Doctrine\Persistence\Mapping\ClassMetadata as PersistenceClassMetadata;
 use Doctrine\Persistence\Mapping\Driver\ColocatedMappingDriver;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
 use InvalidArgumentException;
+use LogicException;
 use ReflectionClass;
 use ReflectionMethod;
+use Traversable;
 
 use function assert;
 use function class_exists;
 use function constant;
 use function defined;
+use function is_file;
+use function property_exists;
+use function reset;
 use function sprintf;
 
 class AttributeDriver implements MappingDriver
@@ -35,10 +40,10 @@ class AttributeDriver implements MappingDriver
     private readonly AttributeReader $reader;
 
     /**
-     * @param array<string> $paths
-     * @param true          $reportFieldsWhereDeclared no-op, to be removed in 4.0
+     * @param iterable<string> $paths                     iterable of source file paths, or an array of directories.
+     * @param true             $reportFieldsWhereDeclared no-op, to be removed in 4.0
      */
-    public function __construct(array $paths, bool $reportFieldsWhereDeclared = true)
+    public function __construct(iterable $paths, bool $reportFieldsWhereDeclared = true)
     {
         if (! $reportFieldsWhereDeclared) {
             throw new InvalidArgumentException(sprintf(
@@ -47,8 +52,19 @@ class AttributeDriver implements MappingDriver
             ));
         }
 
+        $pathsAreFilePaths = $paths instanceof Traversable || ($paths !== [] && is_file(reset($paths)));
+
+        if ($pathsAreFilePaths) {
+            if (! property_exists(self::class, 'filePaths')) {
+                throw new LogicException('Source file paths support for AttributeDriver is available since doctrine/persistence 4.1.');
+            }
+
+            $this->filePaths = $paths;
+        } else {
+            $this->addPaths($paths);
+        }
+
         $this->reader = new AttributeReader();
-        $this->addPaths($paths);
     }
 
     public function isTransient(string $className): bool
