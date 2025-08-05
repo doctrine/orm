@@ -364,7 +364,7 @@ class ClassMetadataBuilderTest extends OrmTestCase
                             [
                                 'name' => 'group_id',
                                 'referencedColumnName' => 'id',
-                                'nullable' => true,
+                                'nullable' => false,
                                 'unique' => false,
                                 'onDelete' => 'CASCADE',
                                 'columnDefinition' => null,
@@ -469,7 +469,7 @@ class ClassMetadataBuilderTest extends OrmTestCase
                             [
                                 'name' => 'group_id',
                                 'referencedColumnName' => 'id',
-                                'nullable' => true,
+                                'nullable' => false,
                                 'unique' => false,
                                 'onDelete' => 'CASCADE',
                                 'columnDefinition' => null,
@@ -539,7 +539,7 @@ class ClassMetadataBuilderTest extends OrmTestCase
                             [
                                 'name' => 'group_id',
                                 'referencedColumnName' => 'id',
-                                'nullable' => true,
+                                'nullable' => false,
                                 'unique' => false,
                                 'onDelete' => 'CASCADE',
                                 'columnDefinition' => null,
@@ -551,7 +551,7 @@ class ClassMetadataBuilderTest extends OrmTestCase
                             [
                                 'name' => 'user_id',
                                 'referencedColumnName' => 'id',
-                                'nullable' => true,
+                                'nullable' => false,
                                 'unique' => false,
                                 'onDelete' => null,
                                 'columnDefinition' => null,
@@ -742,7 +742,7 @@ class ClassMetadataBuilderTest extends OrmTestCase
                             0 => [
                                 'name' => 'group_id',
                                 'referencedColumnName' => 'id',
-                                'nullable' => true,
+                                'nullable' => false,
                                 'unique' => false,
                                 'onDelete' => 'CASCADE',
                                 'columnDefinition' => null,
