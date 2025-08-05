@@ -10,8 +10,11 @@ use Doctrine\ORM\Internal\SQLResultCasing;
 use function array_map;
 use function array_merge;
 use function assert;
+use function explode;
+use function implode;
 use function is_numeric;
 use function preg_replace;
+use function sprintf;
 use function substr;
 
 /**
@@ -38,7 +41,13 @@ class DefaultQuoteStrategy implements QuoteStrategy
         $tableName = $class->table['name'];
 
         if (! empty($class->table['schema'])) {
-            $tableName = $class->table['schema'] . '.' . $class->table['name'];
+            return isset($class->table['quoted'])
+                ? sprintf(
+                    '%s.%s',
+                    $platform->quoteSingleIdentifier($class->table['schema']),
+                    $platform->quoteSingleIdentifier($tableName),
+                )
+                : $class->table['schema'] . '.' . $class->table['name'];
         }
 
         return isset($class->table['quoted'])
@@ -52,7 +61,10 @@ class DefaultQuoteStrategy implements QuoteStrategy
     public function getSequenceName(array $definition, ClassMetadata $class, AbstractPlatform $platform): string
     {
         return isset($definition['quoted'])
-            ? $platform->quoteSingleIdentifier($definition['sequenceName'])
+            ? implode('.', array_map(
+                static fn (string $part) => $platform->quoteSingleIdentifier($part),
+                explode('.', $definition['sequenceName']),
+            ))
             : $definition['sequenceName'];
     }
 
