@@ -1,5 +1,33 @@
 # Upgrade to 3.5.2
 
+## Bugfix: to-one referencing columns involved in a primary key are no longer nullable by default
+
+By default, columns used to establish a to-one relationship that were also part
+of the primary key used to be marked as nullable. This makes no sense, was a bug,
+and has been fixed.
+If you want to delay the migration to the new behavior, you can explicitly mark
+the column as nullable in your mapping.
+
+```diff
+ use Doctrine\ORM\Mapping as ORM;
+
+ #[ORM\Entity]
+ class User
+ {
+     …
+
+     #[ORM\ManyToOne(targetEntity: Group::class)]
++    #[ORM\JoinColumn(name: 'group_id', referencedColumnName: 'id', nullable: true)]
+     private ?Group $group;
+
+     #[ORM\OneToOne(targetEntity: Profile::class)]
++    #[ORM\JoinColumn(name: 'profile_id', referencedColumnName: 'id', nullable: true)]
+     private ?Profile $profile;
+ }
+```
+
+## Bugfix: Many-to-many join table columns are no longer nullable by default
+
 By default, columns inside a many-to-many join table used to be marked as
 nullable. This makes no sense, was a bug, and has been fixed.
 If you want to delay the migration to the new behavior, you can explicitly mark

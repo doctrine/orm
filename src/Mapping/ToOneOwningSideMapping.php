@@ -130,6 +130,10 @@ abstract class ToOneOwningSideMapping extends OwningSideMapping implements ToOne
         $uniqueConstraintColumns = [];
 
         foreach ($mapping->joinColumns as $joinColumn) {
+            if ($joinColumn->nullable === null) {
+                $joinColumn->nullable = ! $mapping->id;
+            }
+
             if ($mapping->isOneToOne() && ! $isInheritanceTypeSingleTable) {
                 if (count($mapping->joinColumns) === 1) {
                     if (empty($mapping->id)) {
