@@ -1,3 +1,25 @@
+# Upgrade to 3.5.2
+
+By default, columns inside a many-to-many join table used to be marked as
+nullable. This makes no sense, was a bug, and has been fixed.
+If you want to delay the migration to the new behavior, you can explicitly mark
+the column as nullable in your mapping.
+
+```diff
+ use Doctrine\ORM\Mapping as ORM;
+
+ #[ORM\Entity]
+ class User
+ {
+     …
+
+     #[ORM\ManyToMany(targetEntity: Group::class)]
++    #[ORM\JoinColumn(name: 'user_id', referencedColumnName: 'id', nullable: true)]
++    #[ORM\InverseJoinColumn(name: 'group_id', referencedColumnName: 'id', nullable: true)]
+     private Collection $groups;
+ }
+```
+
 # Upgrade to 3.5
 
 ## Deprecate not using native lazy objects on PHP 8.4+

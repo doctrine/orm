@@ -127,6 +127,8 @@ final class ManyToManyOwningSideMapping extends ToManyOwningSideMapping implemen
         $mapping->joinTableColumns = [];
 
         foreach ($mapping->joinTable->joinColumns as $joinColumn) {
+            self::defaultToNotNullable($mapping->joinTable, $joinColumn);
+
             if (empty($joinColumn->referencedColumnName)) {
                 $joinColumn->referencedColumnName = $namingStrategy->referenceColumnName();
             }
@@ -150,6 +152,8 @@ final class ManyToManyOwningSideMapping extends ToManyOwningSideMapping implemen
         }
 
         foreach ($mapping->joinTable->inverseJoinColumns as $inverseJoinColumn) {
+            self::defaultToNotNullable($mapping->joinTable, $inverseJoinColumn);
+
             if (empty($inverseJoinColumn->referencedColumnName)) {
                 $inverseJoinColumn->referencedColumnName = $namingStrategy->referenceColumnName();
             }
@@ -189,5 +193,14 @@ final class ManyToManyOwningSideMapping extends ToManyOwningSideMapping implemen
         }
 
         return $serialized;
+    }
+
+    private static function defaultToNotNullable(JoinTableMapping $joinTable, JoinColumnMapping $joinColumn): void
+    {
+        if ($joinColumn->nullable) {
+            return;
+        }
+
+        $joinColumn->nullable = false;
     }
 }
