@@ -3150,7 +3150,7 @@ parameters:
 				Use \{@see getPrimaryKeyConstraint\(\)\} instead\.$#
 			'''
 			identifier: method.deprecated
-			count: 1
+			count: 2
 			path: src/Tools/SchemaTool.php
 
 		-
@@ -3256,12 +3256,6 @@ parameters:
 			path: src/Tools/SchemaTool.php
 
 		-
-			message: '#^Method Doctrine\\ORM\\Tools\\SchemaTool\:\:getIndexColumns\(\) has parameter \$class with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
-			identifier: missingType.generics
-			count: 1
-			path: src/Tools/SchemaTool.php
-
-		-
 			message: '#^Method Doctrine\\ORM\\Tools\\SchemaTool\:\:getSchemaFromMetadata\(\) has parameter \$classes with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
 			identifier: missingType.generics
 			count: 1
@@ -3292,37 +3286,13 @@ parameters:
 			path: src/Tools/SchemaTool.php
 
 		-
-			message: '#^Parameter \#1 \$columnNames of method Doctrine\\DBAL\\Schema\\Table\:\:addIndex\(\) expects non\-empty\-list\<string\>, list\<string\> given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Tools/SchemaTool.php
-
-		-
-			message: '#^Parameter \#1 \$columnNames of method Doctrine\\DBAL\\Schema\\Table\:\:addUniqueIndex\(\) expects non\-empty\-list\<string\>, array\<string\> given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Tools/SchemaTool.php
-
-		-
 			message: '#^Parameter \#1 \$columnNames of method Doctrine\\DBAL\\Schema\\Table\:\:setPrimaryKey\(\) expects non\-empty\-list\<string\>, array\<string\> given\.$#'
 			identifier: argument.type
 			count: 1
 			path: src/Tools/SchemaTool.php
 
 		-
-			message: '#^Parameter \#1 \$value of static method Doctrine\\DBAL\\Schema\\Name\\Identifier\:\:unquoted\(\) expects non\-empty\-string, string given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Tools/SchemaTool.php
-
-		-
-			message: '#^Parameter \#2 \$columnNames of class Doctrine\\DBAL\\Schema\\PrimaryKeyConstraint constructor expects non\-empty\-list\<Doctrine\\DBAL\\Schema\\Name\\UnqualifiedName\>, list\<Doctrine\\DBAL\\Schema\\Name\\UnqualifiedName\> given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Tools/SchemaTool.php
-
-		-
-			message: '#^Parameter \#2 \$columns of class Doctrine\\DBAL\\Schema\\Index constructor expects non\-empty\-list\<string\>, list\<string\> given\.$#'
+			message: '#^Parameter \#1 \$firstColumnName of method Doctrine\\DBAL\\Schema\\PrimaryKeyConstraintEditor\:\:setUnquotedColumnNames\(\) expects non\-empty\-string, string given\.$#'
 			identifier: argument.type
 			count: 1
 			path: src/Tools/SchemaTool.php
@@ -3336,12 +3306,6 @@ parameters:
 		-
 			message: '#^Parameter \#3 \$foreignColumnNames of method Doctrine\\DBAL\\Schema\\Table\:\:addForeignKeyConstraint\(\) expects non\-empty\-list\<string\>, list\<string\> given\.$#'
 			identifier: argument.type
-			count: 1
-			path: src/Tools/SchemaTool.php
-
-		-
-			message: '#^Property Doctrine\\ORM\\Tools\\SchemaTool\:\:\$schemaManager with generic class Doctrine\\DBAL\\Schema\\AbstractSchemaManager does not specify its types\: T$#'
-			identifier: missingType.generics
 			count: 1
 			path: src/Tools/SchemaTool.php
 

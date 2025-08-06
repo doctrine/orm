@@ -10,6 +10,7 @@ use Doctrine\DBAL\Schema\Index as DbalIndex;
 use Doctrine\DBAL\Schema\Index\IndexedColumn;
 use Doctrine\DBAL\Schema\Index\IndexType;
 use Doctrine\DBAL\Schema\Name\UnqualifiedName;
+use Doctrine\DBAL\Schema\PrimaryKeyConstraint;
 use Doctrine\DBAL\Schema\PrimaryKeyConstraintEditor;
 use Doctrine\DBAL\Schema\Table as DbalTable;
 use Doctrine\ORM\Mapping\ClassMetadata;
@@ -52,8 +53,8 @@ use PHPUnit\Framework\Attributes\Group;
 use function array_map;
 use function class_exists;
 use function count;
-use function current;
 use function enum_exists;
+use function in_array;
 use function method_exists;
 
 class SchemaToolTest extends OrmTestCase
@@ -76,7 +77,7 @@ class SchemaToolTest extends OrmTestCase
         $schema = $schemaTool->getSchemaFromMetadata($classes);
 
         self::assertTrue($schema->hasTable('cms_users'), 'Table cms_users should exist.');
-        self::assertTrue(self::columnIsIndexed($schema->getTable('cms_users'), 'username'), 'username column should be indexed.');
+        self::assertTrue($this->columnIsIndexed($schema->getTable('cms_users'), 'username'), 'username column should be indexed.');
     }
 
     public function testAttributeOptionsArgument(): void
@@ -209,8 +210,12 @@ class SchemaToolTest extends OrmTestCase
     }
 
     #[Group('DDC-3671')]
-    public function testSchemaHasProperIndexesFromUniqueConstraintAttribute(): void
+    public function testSchemaHasProperIndexesFromUniqueConstraintAttributeLegacy(): void
     {
+        if (class_exists(PrimaryKeyConstraint::class)) {
+            self::markTestSkipped('This test is valid for DBAL < 4.3 only');
+        }
+
         $em         = $this->getTestEntityManager();
         $schemaTool = new SchemaTool($em);
         $classes    = [
@@ -222,13 +227,40 @@ class SchemaToolTest extends OrmTestCase
         self::assertTrue($schema->hasTable('unique_constraint_attribute_table'));
         $table = $schema->getTable('unique_constraint_attribute_table');
 
-        self::assertCount(2, $table->getIndexes());
+        self::assertCount(1, $this->getIndexesWithoutPrimaryKey($table));
         self::assertTrue($table->hasIndex('primary'));
         self::assertTrue($table->hasIndex('uniq_hash'));
     }
 
-    public function testRemoveUniqueIndexOverruledByPrimaryKey(): void
+    #[Group('DDC-3671')]
+    public function testSchemaHasProperIndexesFromUniqueConstraintAttribute(): void
     {
+        if (! class_exists(PrimaryKeyConstraint::class)) {
+            self::markTestSkipped('This test is valid for DBAL >= 4.3 only');
+        }
+
+        $em         = $this->getTestEntityManager();
+        $schemaTool = new SchemaTool($em);
+        $classes    = [
+            $em->getClassMetadata(UniqueConstraintAttributeModel::class),
+        ];
+
+        $schema = $schemaTool->getSchemaFromMetadata($classes);
+
+        self::assertTrue($schema->hasTable('unique_constraint_attribute_table'));
+        $table = $schema->getTable('unique_constraint_attribute_table');
+
+        self::assertCount(1, $this->getIndexesWithoutPrimaryKey($table));
+        self::assertNotNull($table->getPrimaryKeyConstraint());
+        self::assertTrue($table->hasIndex('uniq_hash'));
+    }
+
+    public function testRemoveUniqueIndexOverruledByPrimaryKeyLegacy(): void
+    {
+        if (class_exists(PrimaryKeyConstraint::class)) {
+            self::markTestSkipped('This test is valid for DBAL < 4.3 only');
+        }
+
         $em         = $this->getTestEntityManager();
         $schemaTool = new SchemaTool($em);
         $classes    = [
@@ -244,11 +276,30 @@ class SchemaToolTest extends OrmTestCase
 
         self::assertTrue($table->hasIndex('primary'), 'Table should have a primary key.');
 
-        $primaryKey = $table->getIndex('primary');
-        $indexes    = $table->getIndexes();
+        self::assertCount(0, $this->getIndexesWithoutPrimaryKey($table), 'there should be no indexes besides the primary key');
+    }
 
-        self::assertCount(1, $indexes, 'there should be only one index');
-        self::assertSame($primaryKey, current($indexes), 'index should be primary');
+    public function testRemoveUniqueIndexOverruledByPrimaryKey(): void
+    {
+        if (! class_exists(PrimaryKeyConstraint::class)) {
+            self::markTestSkipped('This test is valid for DBAL >= 4.3 only');
+        }
+
+        $em         = $this->getTestEntityManager();
+        $schemaTool = new SchemaTool($em);
+        $classes    = [
+            $em->getClassMetadata(FirstEntity::class),
+            $em->getClassMetadata(SecondEntity::class),
+        ];
+
+        $schema = $schemaTool->getSchemaFromMetadata($classes);
+
+        self::assertTrue($schema->hasTable('first_entity'), 'Table first_entity should exist.');
+
+        $table = $schema->getTable('first_entity');
+
+        self::assertNotNull($table->getPrimaryKeyConstraint(), 'Table should have a primary key.');
+        self::assertCount(0, $this->getIndexesWithoutPrimaryKey($table), 'there should be no indexes besides the primary key');
     }
 
     public function testSetDiscriminatorColumnWithoutLength(): void
@@ -435,22 +486,32 @@ class SchemaToolTest extends OrmTestCase
     /** @return string[] */
     private static function getIndexedColumns(DbalIndex $index): array
     {
-        if (method_exists(DbalIndex::class, 'getIndexedColumns')) {
-            return array_map(static fn (IndexedColumn $indexedColumn) => $indexedColumn->getColumnName()->toString(), $index->getIndexedColumns());
+        // DBAL < 4.3
+        if (! method_exists(DbalIndex::class, 'getIndexedColumns')) {
+            return $index->getColumns();
         }
 
-        return $index->getColumns();
+        return array_map(static fn (IndexedColumn $indexedColumn) => $indexedColumn->getColumnName()->getIdentifier()->getValue(), $index->getIndexedColumns());
     }
 
     private static function columnIsIndexed(DbalTable $table, string $column): bool
     {
-        foreach ($table->getIndexes() as $index) {
-            if ($index->spansColumns([$column])) {
+        foreach (self::getIndexesWithoutPrimaryKey($table) as $index) {
+            if (in_array($column, self::getIndexedColumns($index), true)) {
                 return true;
             }
         }
 
         return false;
+    }
+
+    /** @return array<string, DbalIndex> */
+    private static function getIndexesWithoutPrimaryKey(DbalTable $table): array
+    {
+        $indexes = $table->getIndexes();
+        unset($indexes['primary']);
+
+        return $indexes;
     }
 }
 

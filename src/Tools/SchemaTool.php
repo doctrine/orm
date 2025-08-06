@@ -12,7 +12,7 @@ use Doctrine\DBAL\Schema\ComparatorConfig;
 use Doctrine\DBAL\Schema\ForeignKeyConstraintEditor;
 use Doctrine\DBAL\Schema\Index;
 use Doctrine\DBAL\Schema\Index\IndexedColumn;
-use Doctrine\DBAL\Schema\Name\Identifier;
+use Doctrine\DBAL\Schema\IndexEditor;
 use Doctrine\DBAL\Schema\Name\UnqualifiedName;
 use Doctrine\DBAL\Schema\PrimaryKeyConstraint;
 use Doctrine\DBAL\Schema\Schema;
@@ -38,6 +38,7 @@ use function array_filter;
 use function array_flip;
 use function array_intersect_key;
 use function array_map;
+use function array_values;
 use function assert;
 use function class_exists;
 use function count;
@@ -60,6 +61,7 @@ class SchemaTool
 
     private readonly AbstractPlatform $platform;
     private readonly QuoteStrategy $quoteStrategy;
+    /** @var AbstractSchemaManager<AbstractPlatform> */
     private readonly AbstractSchemaManager $schemaManager;
 
     /**
@@ -128,9 +130,10 @@ class SchemaTool
     /**
      * Resolves fields in index mapping to column names
      *
-     * @param mixed[] $indexData index or unique constraint data
+     * @param ClassMetadata<object> $class
+     * @param mixed[]               $indexData index or unique constraint data
      *
-     * @return list<string> Column names from combined fields and columns mappings
+     * @return non-empty-list<non-empty-string> Column names from combined fields and columns mappings
      */
     private function getIndexColumns(ClassMetadata $class, array $indexData): array
     {
@@ -165,6 +168,13 @@ class SchemaTool
                     }
                 }
             }
+        }
+
+        if ($columns === []) {
+            throw MappingException::invalidIndexConfiguration(
+                (string) $class,
+                $indexData['name'] ?? 'unnamed',
+            );
         }
 
         return $columns;
@@ -314,17 +324,13 @@ class SchemaTool
                 }
             }
 
-            if (! $table->hasIndex('primary')) {
-                self::addPrimaryKeyConstraint($table, $pkColumns);
-            }
+            $primaryKey = $this->getPrimaryKeyConstraint($table) ?? $this->addPrimaryKeyConstraint($table, $pkColumns);
 
             // there can be unique indexes automatically created for join column
             // if join column is also primary key we should keep only primary key on this column
             // so, remove indexes overruled by primary key
-            $primaryKey = $table->getIndex('primary');
-
             foreach ($table->getIndexes() as $idxKey => $existingIndex) {
-                if ($existingIndex !== $primaryKey && $primaryKey->spansColumns(self::getIndexedColumns($existingIndex))) {
+                if ($idxKey !== 'primary' && $this->doesIndexOverlapWithPrimaryKey($existingIndex, $primaryKey)) {
                     $table->dropIndex($idxKey);
                 }
             }
@@ -346,7 +352,7 @@ class SchemaTool
 
             if (isset($class->table['uniqueConstraints'])) {
                 foreach ($class->table['uniqueConstraints'] as $indexName => $indexData) {
-                    $uniqIndex = new Index('tmp__' . $indexName, $this->getIndexColumns($class, $indexData), true, false, [], $indexData['options'] ?? []);
+                    $uniqIndex = $this->createIndexForComparison('tmp__' . $indexName, $this->getIndexColumns($class, $indexData), $indexData['options'] ?? []);
 
                     foreach ($table->getIndexes() as $tableIndexName => $tableIndex) {
                         if ($tableIndex->isFulfilledBy($uniqIndex)) {
@@ -872,11 +878,7 @@ class SchemaTool
             }
 
             foreach ($schema->getTables() as $table) {
-                if (method_exists($table, 'getPrimaryKeyConstraint')) {
-                    $primaryKey = $table->getPrimaryKeyConstraint();
-                } else {
-                    $primaryKey = $table->getPrimaryKey();
-                }
+                $primaryKey = $this->getPrimaryKeyConstraint($table);
 
                 if ($primaryKey === null) {
                     continue;
@@ -969,29 +971,84 @@ class SchemaTool
         }
     }
 
-    /** @param string[] $primaryKeyColumns */
-    private function addPrimaryKeyConstraint(Table $table, array $primaryKeyColumns): void
+    private function getPrimaryKeyConstraint(Table $table): PrimaryKeyConstraint|Index|null
     {
-        if (class_exists(PrimaryKeyConstraint::class)) {
-            $primaryKeyColumnNames = [];
-
-            foreach ($primaryKeyColumns as $primaryKeyColumn) {
-                $primaryKeyColumnNames[] = new UnqualifiedName(Identifier::unquoted($primaryKeyColumn));
-            }
-
-            $table->addPrimaryKeyConstraint(new PrimaryKeyConstraint(null, $primaryKeyColumnNames, true));
-        } else {
-            $table->setPrimaryKey($primaryKeyColumns);
+        // DBAL < 4.3
+        if (! method_exists($table, 'getPrimaryKeyConstraint')) {
+            return $table->getPrimaryKey();
         }
+
+        return $table->getPrimaryKeyConstraint();
     }
 
-    /** @return string[] */
-    private static function getIndexedColumns(Index $index): array
+    /** @param string[] $primaryKeyColumns */
+    private function addPrimaryKeyConstraint(Table $table, array $primaryKeyColumns): PrimaryKeyConstraint|Index
     {
-        if (method_exists(Index::class, 'getIndexedColumns')) {
-            return array_map(static fn (IndexedColumn $indexedColumn) => $indexedColumn->getColumnName()->toString(), $index->getIndexedColumns());
+        // DBAL < 4.3
+        if (! class_exists(PrimaryKeyConstraint::class)) {
+            $table->setPrimaryKey($primaryKeyColumns);
+
+            return $table->getPrimaryKey();
         }
 
-        return $index->getColumns();
+        $primaryKeyConstraint = PrimaryKeyConstraint::editor()
+            ->setUnquotedColumnNames(...array_values($primaryKeyColumns))
+            ->setIsClustered(true)
+            ->create();
+
+        $table->addPrimaryKeyConstraint($primaryKeyConstraint);
+
+        return $table->getPrimaryKeyConstraint();
+    }
+
+    /** @return non-empty-list<string> */
+    private static function getIndexedColumns(Index $index): array
+    {
+        // DBAL < 4.3
+        if (! method_exists(Index::class, 'getIndexedColumns')) {
+            return $index->getColumns();
+        }
+
+        return array_map(static fn (IndexedColumn $indexedColumn) => $indexedColumn->getColumnName()->getIdentifier()->getValue(), $index->getIndexedColumns());
+    }
+
+    private function doesIndexOverlapWithPrimaryKey(Index $index, PrimaryKeyConstraint|Index $primaryKey): bool
+    {
+        // DBAL < 4.3
+        if ($primaryKey instanceof Index) {
+            return $index !== $primaryKey && $primaryKey->spansColumns(self::getIndexedColumns($index));
+        }
+
+        $indexedColumns = $index->getIndexedColumns();
+        foreach ($primaryKey->getColumnNames() as $i => $column) {
+            if (
+                ! isset($indexedColumns[$i])
+                || strtolower($column->getIdentifier()->getValue())
+                    !== strtolower($indexedColumns[$i]->getColumnName()->getIdentifier()->getValue())
+            ) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * @param non-empty-string                 $indexName
+     * @param non-empty-list<non-empty-string> $indexColumns
+     * @param array<string, mixed>             $indexOptions
+     */
+    private function createIndexForComparison(string $indexName, array $indexColumns, mixed $indexOptions): Index
+    {
+        // DBAL < 4.3
+        if (! class_exists(IndexEditor::class)) {
+            return new Index($indexName, $indexColumns, true, false, [], $indexOptions);
+        }
+
+        return Index::editor()
+            ->setUnquotedName($indexName)
+            ->setUnquotedColumnNames(...$indexColumns)
+            ->setType(Index\IndexType::UNIQUE)
+            ->create();
     }
 }

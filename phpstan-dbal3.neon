@@ -86,6 +86,9 @@ parameters:
             identifier: argument.unresolvableType
             path: src/Mapping/Driver/DatabaseDriver.php
 
+        - '~undefined static method Doctrine\\DBAL\\Schema\\Index\:\:editor\(\)~'
+        - '~^Method Doctrine\\ORM\\Tools\\SchemaTool\:\:getIndexedColumns\(\) should return non-empty-list<string>~'
+
         # To be removed in 4.0
         -
             message: '#Negated boolean expression is always false\.#'
