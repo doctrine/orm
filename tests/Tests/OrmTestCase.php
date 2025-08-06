@@ -8,9 +8,7 @@ use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Driver;
 use Doctrine\DBAL\Driver\Result;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
-use Doctrine\DBAL\Schema\AbstractSchemaManager;
-use Doctrine\DBAL\Schema\Name\UnquotedIdentifierFolding;
-use Doctrine\DBAL\Schema\SchemaConfig;
+use Doctrine\DBAL\Platforms\SQLitePlatform;
 use Doctrine\ORM\Cache\CacheConfiguration;
 use Doctrine\ORM\Cache\CacheFactory;
 use Doctrine\ORM\Cache\DefaultCacheFactory;
@@ -22,7 +20,6 @@ use PHPUnit\Framework\TestCase;
 use Psr\Cache\CacheItemPoolInterface;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
 
-use function enum_exists;
 use function realpath;
 use function sprintf;
 
@@ -66,9 +63,7 @@ abstract class OrmTestCase extends TestCase
      */
     protected function getTestEntityManager(): EntityManagerMock
     {
-        return $this->buildTestEntityManagerWithPlatform(
-            $this->createConnectionMock($this->createPlatformMock()),
-        );
+        return $this->createTestEntityManagerWithPlatform(new SQLitePlatform());
     }
 
     protected function createTestEntityManagerWithConnection(Connection $connection): EntityManagerMock
@@ -145,24 +140,6 @@ abstract class OrmTestCase extends TestCase
         $connection->method('quote')->willReturnCallback(static fn (string $input) => sprintf("'%s'", $input));
 
         return $connection;
-    }
-
-    private function createPlatformMock(): AbstractPlatform
-    {
-        $schemaManager = $this->createMock(AbstractSchemaManager::class);
-        $schemaManager->method('createSchemaConfig')
-            ->willReturn(new SchemaConfig());
-
-        $platform = $this->getMockBuilder(AbstractPlatform::class)
-            ->setConstructorArgs(enum_exists(UnquotedIdentifierFolding::class) ? [UnquotedIdentifierFolding::UPPER] : [])
-            ->onlyMethods(['supportsIdentityColumns', 'createSchemaManager'])
-            ->getMockForAbstractClass();
-        $platform->method('supportsIdentityColumns')
-            ->willReturn(true);
-        $platform->method('createSchemaManager')
-            ->willReturn($schemaManager);
-
-        return $platform;
     }
 
     private function createDriverMock(AbstractPlatform $platform): Driver
