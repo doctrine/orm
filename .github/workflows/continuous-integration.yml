@@ -124,7 +124,7 @@ jobs:
       - name: "Upload coverage file"
         uses: "actions/upload-artifact@v4"
         with:
-          name: "phpunit-${{ matrix.extension }}-${{ matrix.php-version }}-${{ matrix.dbal-version }}-${{ matrix.deps }}-${{ matrix.native_lazy }}-coverage"
+          name: "phpunit-${{ matrix.extension }}-${{ matrix.php-version }}-${{ matrix.dbal-version }}-${{ matrix.deps }}-${{ matrix.stability }}-${{ matrix.native_lazy }}-coverage"
           path: "coverage*.xml"
 
 
