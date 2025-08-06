@@ -452,6 +452,8 @@ class SelectSqlGenerationTest extends OrmTestCase
 
     public function testSupportsTrimFunction(): void
     {
+        $this->entityManager = $this->createTestEntityManagerWithPlatform(new MySQLPlatform());
+
         $this->assertSqlGeneration(
             "SELECT u.name FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE TRIM(TRAILING ' ' FROM u.name) = 'someone'",
             "SELECT c0_.name AS name_0 FROM cms_users c0_ WHERE TRIM(TRAILING ' ' FROM c0_.name) = 'someone'",
@@ -461,6 +463,8 @@ class SelectSqlGenerationTest extends OrmTestCase
     #[Group('DDC-2668')]
     public function testSupportsTrimLeadingZeroString(): void
     {
+        $this->entityManager = $this->createTestEntityManagerWithPlatform(new MySQLPlatform());
+
         $this->assertSqlGeneration(
             "SELECT u.name FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE TRIM(TRAILING '0' FROM u.name) != ''",
             "SELECT c0_.name AS name_0 FROM cms_users c0_ WHERE TRIM(TRAILING '0' FROM c0_.name) <> ''",
@@ -584,6 +588,8 @@ class SelectSqlGenerationTest extends OrmTestCase
     #[Group('DDC-1802')]
     public function testSupportsNotInExpressionForModFunction(): void
     {
+        $this->entityManager = $this->createTestEntityManagerWithPlatform(new MySQLPlatform());
+
         $this->assertSqlGeneration(
             'SELECT u.name FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE MOD(u.id, 5) NOT IN(1,3,4)',
             'SELECT c0_.name AS name_0 FROM cms_users c0_ WHERE MOD(c0_.id, 5) NOT IN (1, 3, 4)',
@@ -1925,6 +1931,8 @@ SQL,
     #[Group('DDC-2268')]
     public function testCaseThenFunction(): void
     {
+        $this->entityManager = $this->createTestEntityManagerWithPlatform(new PostgreSQLPlatform());
+
         $this->assertSqlGeneration(
             'SELECT CASE WHEN LENGTH(u.name) <> 0 THEN CONCAT(u.id, u.name) ELSE u.id END AS name  FROM Doctrine\Tests\Models\CMS\CmsUser u',
             'SELECT CASE WHEN LENGTH(c0_.name) <> 0 THEN c0_.id || c0_.name ELSE c0_.id END AS sclr_0 FROM cms_users c0_',
