@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Mapping;
 
 use ArrayObject;
+use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\Deprecations\PHPUnit\VerifyDeprecations;
 use Doctrine\ORM\Events;
@@ -50,6 +51,7 @@ use Doctrine\Tests\ORM\Mapping\TypedFieldMapper\CustomIntAsStringTypedFieldMappe
 use Doctrine\Tests\OrmTestCase;
 use DoctrineGlobalArticle;
 use LogicException;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Group as TestGroup;
 use PHPUnit\Framework\Attributes\WithoutErrorHandler;
 use ReflectionClass;
@@ -972,6 +974,47 @@ class ClassMetadataTest extends OrmTestCase
             ['sequenceName' => 'foo', 'quoted' => true, 'allocationSize' => '1', 'initialValue' => '1'],
             $cm->sequenceGeneratorDefinition,
         );
+    }
+
+    #[DataProvider('fullTableNameProvider')]
+    public function testGetSequenceName(
+        string $expectedSequenceName,
+        string $fullTableName,
+    ): void {
+        $cm = new ClassMetadata(self::class);
+        $cm->setIdentifier(['id']);
+        $cm->setPrimaryTable(['name' => $fullTableName]);
+
+        $platform = $this->createStub(AbstractPlatform::class);
+
+        self::assertSame(
+            $expectedSequenceName,
+            $cm->getSequenceName($platform),
+        );
+    }
+
+    /** @return iterable<string, array{string, string}> */
+    public static function fullTableNameProvider(): iterable
+    {
+        yield 'quoted table name with schema' => [
+            'custom.reserved_id_seq',
+            'custom.`reserved`',
+        ];
+
+        yield 'unquoted table name with schema' => [
+            'custom.non_reserved_id_seq',
+            'custom.non_reserved',
+        ];
+
+        yield 'quoted table name without schema' => [
+            'reserved_id_seq',
+            '`reserved`',
+        ];
+
+        yield 'unquoted table name without schema' => [
+            'non_reserved_id_seq',
+            'non_reserved',
+        ];
     }
 
     #[TestGroup('DDC-2700')]

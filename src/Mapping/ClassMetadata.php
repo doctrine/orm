@@ -396,13 +396,9 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
     public DiscriminatorColumnMapping|null $discriminatorColumn = null;
 
     /**
-     * READ-ONLY: The primary table definition. The definition is an array with the
-     * following entries:
+     * READ-ONLY: The primary table definition.
      *
-     * name => <tableName>
-     * schema => <schemaName>
-     * indexes => array
-     * uniqueConstraints => array
+     * "quoted" indicates whether the table name is quoted (with backticks) or not
      *
      * @var mixed[]
      * @phpstan-var array{
