@@ -16,6 +16,8 @@ use Doctrine\Tests\Models\BinaryPrimaryKey\BinaryIdType;
 use Doctrine\Tests\Models\BinaryPrimaryKey\Category;
 use Doctrine\Tests\OrmTestCase;
 
+use const PHP_VERSION_ID;
+
 final class BinaryIdPersisterTest extends OrmTestCase
 {
     private EntityManager|null $entityManager = null;
@@ -64,6 +66,7 @@ final class BinaryIdPersisterTest extends OrmTestCase
         }
 
         $config = ORMSetup::createAttributeMetadataConfiguration([__DIR__ . '/../../Models/BinaryPrimaryKey'], isDevMode: true);
+        $config->enableNativeLazyObjects(PHP_VERSION_ID >= 80400);
 
         if (! DbalType::hasType(BinaryIdType::NAME)) {
             DbalType::addType(BinaryIdType::NAME, BinaryIdType::class);
