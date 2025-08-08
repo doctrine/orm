@@ -25,6 +25,30 @@ class ManyToManyAssociationBuilder extends OneToManyAssociationBuilder
     }
 
     /**
+     * Add Join Columns.
+     *
+     * @return $this
+     */
+    public function addJoinColumn(
+        string $columnName,
+        string $referencedColumnName,
+        bool $nullable = true,
+        bool $unique = false,
+        string|null $onDelete = null,
+        string|null $columnDef = null,
+    ): static {
+        $this->joinColumns[] = [
+            'name' => $columnName,
+            'referencedColumnName' => $referencedColumnName,
+            'unique' => $unique,
+            'onDelete' => $onDelete,
+            'columnDefinition' => $columnDef,
+        ];
+
+        return $this;
+    }
+
+    /**
      * Adds Inverse Join Columns.
      *
      * @return $this
@@ -40,7 +64,6 @@ class ManyToManyAssociationBuilder extends OneToManyAssociationBuilder
         $this->inverseJoinColumns[] = [
             'name' => $columnName,
             'referencedColumnName' => $referencedColumnName,
-            'nullable' => $nullable,
             'unique' => $unique,
             'onDelete' => $onDelete,
             'columnDefinition' => $columnDef,

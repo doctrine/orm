@@ -999,7 +999,7 @@ class User
     /** @var Collection<int, Group> */
     #[ORM\ManyToMany(targetEntity: 'Group', cascade: ['all'])]
     #[ORM\JoinTable(name: 'cms_user_groups')]
-    #[ORM\JoinColumn(name: 'user_id', referencedColumnName: 'id', nullable: false, unique: false)]
+    #[ORM\JoinColumn(name: 'user_id', referencedColumnName: 'id', unique: false)]
     #[ORM\InverseJoinColumn(name: 'group_id', referencedColumnName: 'id', columnDefinition: 'INT NULL')]
     public $groups;
 
