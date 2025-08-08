@@ -132,6 +132,7 @@ class SecondLevelCacheCountQueriesTest extends SecondLevelCacheFunctionalTestCas
         self::assertQueryCountByType('UPDATE', 2);
     }
 
+    /** @return list<array{SupportedCacheUsage}> */
     public static function cacheUsageProvider(): array
     {
         return [
