@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional;
 
+use Doctrine\ORM\Id\AssignedGenerator;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use Doctrine\Tests\Models\Cache\Country;
@@ -62,6 +63,24 @@ class SecondLevelCacheCountQueriesTest extends SecondLevelCacheFunctionalTestCas
         $metadata->enableCache(['usage' => $cacheUsage]);
     }
 
+    private function loadFixturesCountriesWithoutPostInsertIdentifier(): void
+    {
+        $metadata = $this->_em->getClassMetaData(Country::class);
+        $metadata->setIdGenerator(new AssignedGenerator());
+
+        $c1 = new Country('Brazil');
+        $c1->setId(10);
+        $c2 = new Country('Germany');
+        $c2->setId(20);
+
+        $this->countries[] = $c1;
+        $this->countries[] = $c2;
+
+        $this->_em->persist($c1);
+        $this->_em->persist($c2);
+        $this->_em->flush();
+    }
+
     /** @param 'INSERT'|'UPDATE'|'DELETE' $type */
     private function assertQueryCountByType(string $type, int $expectedCount): void
     {
@@ -77,13 +96,30 @@ class SecondLevelCacheCountQueriesTest extends SecondLevelCacheFunctionalTestCas
      *
      * @dataProvider cacheUsageProvider
      */
-    public function testInsert(int $cacheUsage): void
+    public function testInsertWithPostInsertIdentifier(int $cacheUsage): void
     {
         $this->setupCountryModel($cacheUsage);
 
         self::assertQueryCountByType('INSERT', 0);
 
         $this->loadFixturesCountries();
+
+        self::assertCount(2, $this->countries);
+        self::assertQueryCountByType('INSERT', 2);
+    }
+
+    /**
+    /* @param SupportedCacheUsage $cacheUsage
+     *
+     * @dataProvider cacheUsageProvider
+     */
+    public function testInsertWithoutPostInsertIdentifier(int $cacheUsage): void
+    {
+        $this->setupCountryModel($cacheUsage);
+
+        self::assertQueryCountByType('INSERT', 0);
+
+        $this->loadFixturesCountriesWithoutPostInsertIdentifier();
 
         self::assertCount(2, $this->countries);
         self::assertQueryCountByType('INSERT', 2);
