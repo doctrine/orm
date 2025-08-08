@@ -1060,7 +1060,9 @@ class UnitOfWork implements PropertyChangedListener
 
         $this->entityStates[$oid] = self::STATE_MANAGED;
 
-        $this->scheduleForInsert($entity);
+        if (! isset($this->entityInsertions[$oid])) {
+            $this->scheduleForInsert($entity);
+        }
     }
 
     /** @param mixed[] $idValue */

@@ -169,14 +169,6 @@ class BasicEntityPersister implements EntityPersister
     protected $quotedColumns = [];
 
     /**
-     * The INSERT SQL statement used for entities handled by this persister.
-     * This SQL is only generated once per request, if at all.
-     *
-     * @var string|null
-     */
-    private $insertSql;
-
-    /**
      * The quote strategy.
      *
      * @var QuoteStrategy
@@ -310,8 +302,8 @@ class BasicEntityPersister implements EntityPersister
                 $this->assignDefaultVersionAndUpsertableValues($entity, $id);
             }
 
-            // Unset this queued insert, so that the prepareUpdateData() method knows right away
-            // (for the next entity already) that the current entity has been written to the database
+            // Unset this queued insert, so that the prepareUpdateData() method (called via prepareInsertData() method)
+            // knows right away (for the next entity already) that the current entity has been written to the database
             // and no extra updates need to be scheduled to refer to it.
             //
             // In \Doctrine\ORM\UnitOfWork::executeInserts(), the UoW already removed entities
@@ -1473,22 +1465,17 @@ class BasicEntityPersister implements EntityPersister
      */
     public function getInsertSQL()
     {
-        if ($this->insertSql !== null) {
-            return $this->insertSql;
-        }
-
         $columns   = $this->getInsertColumnList();
         $tableName = $this->quoteStrategy->getTableName($this->class, $this->platform);
 
-        if (empty($columns)) {
-            $identityColumn  = $this->quoteStrategy->getColumnName($this->class->identifier[0], $this->class, $this->platform);
-            $this->insertSql = $this->platform->getEmptyIdentityInsertSQL($tableName, $identityColumn);
+        if ($columns === []) {
+            $identityColumn = $this->quoteStrategy->getColumnName($this->class->identifier[0], $this->class, $this->platform);
 
-            return $this->insertSql;
+            return $this->platform->getEmptyIdentityInsertSQL($tableName, $identityColumn);
         }
 
-        $values  = [];
-        $columns = array_unique($columns);
+        $placeholders = [];
+        $columns      = array_unique($columns);
 
         foreach ($columns as $column) {
             $placeholder = '?';
@@ -1502,15 +1489,13 @@ class BasicEntityPersister implements EntityPersister
                 $placeholder = $type->convertToDatabaseValueSQL('?', $this->platform);
             }
 
-            $values[] = $placeholder;
+            $placeholders[] = $placeholder;
         }
 
-        $columns = implode(', ', $columns);
-        $values  = implode(', ', $values);
+        $columns      = implode(', ', $columns);
+        $placeholders = implode(', ', $placeholders);
 
-        $this->insertSql = sprintf('INSERT INTO %s (%s) VALUES (%s)', $tableName, $columns, $values);
-
-        return $this->insertSql;
+        return sprintf('INSERT INTO %s (%s) VALUES (%s)', $tableName, $columns, $placeholders);
     }
 
     /**
