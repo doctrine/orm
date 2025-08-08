@@ -134,7 +134,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
         // Execute all inserts. For each entity:
         // 1) Insert on root table
         // 2) Insert on sub tables
-        foreach ($this->queuedInserts as $entity) {
+        foreach ($this->queuedInserts as $key => $entity) {
             $insertData = $this->prepareInsertData($entity);
 
             // Execute insert on root table
@@ -179,9 +179,16 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
             if ($this->class->requiresFetchAfterChange) {
                 $this->assignDefaultVersionAndUpsertableValues($entity, $id);
             }
-        }
 
-        $this->queuedInserts = [];
+            // Unset this queued insert, so that the prepareUpdateData() method (called via prepareInsertData() method)
+            // knows right away (for the next entity already) that the current entity has been written to the database
+            // and no extra updates need to be scheduled to refer to it.
+            //
+            // In \Doctrine\ORM\UnitOfWork::executeInserts(), the UoW already removed entities
+            // from its own list (\Doctrine\ORM\UnitOfWork::$entityInsertions) right after they
+            // were given to our addInsert() method.
+            unset($this->queuedInserts[$key]);
+        }
     }
 
     public function update(object $entity): void
