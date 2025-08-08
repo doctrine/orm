@@ -73,7 +73,7 @@ class SecondLevelCacheCountQueriesTest extends SecondLevelCacheFunctionalTestCas
     }
 
     /**
-    /* @param SupportedCacheUsage $cacheUsage
+     * @param SupportedCacheUsage $cacheUsage
      *
      * @dataProvider cacheUsageProvider
      */
@@ -90,7 +90,7 @@ class SecondLevelCacheCountQueriesTest extends SecondLevelCacheFunctionalTestCas
     }
 
     /**
-    /* @param SupportedCacheUsage $cacheUsage
+     * @param SupportedCacheUsage $cacheUsage
      *
      * @dataProvider cacheUsageProvider
      */
@@ -110,7 +110,7 @@ class SecondLevelCacheCountQueriesTest extends SecondLevelCacheFunctionalTestCas
     }
 
     /**
-    /* @param SupportedCacheUsage $cacheUsage
+     * @param SupportedCacheUsage $cacheUsage
      *
      * @dataProvider cacheUsageProvider
      */
