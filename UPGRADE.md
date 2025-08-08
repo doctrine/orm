@@ -1,5 +1,7 @@
 # Upgrade to 3.6
 
+## Deprecate `Doctrine\ORM\QueryBuilder::add('join', ...)` with a list of join parts
+
 Using `Doctrine\ORM\QueryBuilder::add('join', ...)` with a list of join parts
 is deprecated in favor of using an associative array of join parts with the
 root alias as key.
