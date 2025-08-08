@@ -16,7 +16,7 @@ class GH10334Foo
 {
     #[Id]
     #[ManyToOne(targetEntity: GH10334FooCollection::class, inversedBy: 'foos')]
-    #[JoinColumn(name: 'foo_collection_id', referencedColumnName: 'id', nullable: false)]
+    #[JoinColumn(name: 'foo_collection_id', referencedColumnName: 'id')]
     #[GeneratedValue]
     protected GH10334FooCollection $collection;
 
