@@ -156,6 +156,7 @@ class FileLockRegion implements ConcurrentRegion
             return null;
         }
 
+        /** @phpstan-ignore method.deprecatedInterface */
         return $this->region->getMultiple($collection);
     }
 

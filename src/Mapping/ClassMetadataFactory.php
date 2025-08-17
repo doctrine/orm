@@ -722,7 +722,7 @@ DEPRECATION
                     'Mapping for %s: the "UUID" id generator strategy is deprecated with no replacement',
                     $class->name
                 );
-                // @phpstan-ignore new.deprecated
+                // @phpstan-ignore method.deprecatedClass, new.deprecatedClass
                 $class->setIdGenerator(new UuidGenerator());
                 break;
 

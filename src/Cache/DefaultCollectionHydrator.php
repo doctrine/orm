@@ -59,7 +59,10 @@ class DefaultCollectionHydrator implements CollectionHydrator
         $targetRegion = $targetPersister->getCacheRegion();
         $list         = [];
 
-        /** @var EntityCacheEntry[]|null $entityEntries */
+        /**
+         * @var EntityCacheEntry[]|null $entityEntries
+         * @phpstan-ignore method.deprecatedInterface
+         */
         $entityEntries = $targetRegion->getMultiple($entry);
 
         if ($entityEntries === null) {

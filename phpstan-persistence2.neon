@@ -100,3 +100,13 @@ parameters:
         -
             message: '#^Parameter \#1 \$classNames of method Doctrine\\ORM\\Mapping\\ClassMetadataInfo\<object\>\:\:setParentClasses\(\) expects list\<class\-string\>, array\<string\> given\.$#'
             path: src/Mapping/ClassMetadataFactory.php
+
+        -
+            message: '#loadMappingFile#'
+            identifier: 'return.type'
+            path: src/Mapping/Driver/XmlDriver.php
+
+        -
+            message: '#injectObjectManager#'
+            identifier: 'method.deprecatedInterface'
+            path: src/UnitOfWork.php

@@ -413,7 +413,7 @@ class SchemaTool
 
             // @phpstan-ignore method.deprecated
             if (array_filter($schema->getSequences() + $schema->getTables(), $filter) && ! $this->platform->canEmulateSchemas()) {
-                // @phpstan-ignore method.deprecated, new.deprecated
+                // @phpstan-ignore method.deprecated, method.deprecatedClass, new.deprecatedClass
                 $schema->visit(new RemoveNamespacedAssets());
             }
         }

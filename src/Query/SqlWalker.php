@@ -2356,7 +2356,9 @@ class SqlWalker implements TreeWalker
      */
     public function walkInListExpression(AST\InListExpression $inExpr): string
     {
+        /** @phpstan-ignore property.deprecatedClass */
         return $this->walkArithmeticExpression($inExpr->expression)
+                /** @phpstan-ignore property.deprecatedClass */
             . ($inExpr->not ? ' NOT' : '') . ' IN ('
             . implode(', ', array_map([$this, 'walkInParameter'], $inExpr->literals))
             . ')';
@@ -2367,7 +2369,9 @@ class SqlWalker implements TreeWalker
      */
     public function walkInSubselectExpression(AST\InSubselectExpression $inExpr): string
     {
+        /** @phpstan-ignore property.deprecatedClass */
         return $this->walkArithmeticExpression($inExpr->expression)
+            /** @phpstan-ignore property.deprecatedClass */
             . ($inExpr->not ? ' NOT' : '') . ' IN ('
             . $this->walkSubselect($inExpr->subselect)
             . ')';

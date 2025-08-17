@@ -58,6 +58,17 @@ parameters:
             path: src/Tools/SchemaTool.php
 
         -
+            message: '#introspectSchema#'
+            count: 2
+            identifier: 'method.notFound'
+            path: src/Tools/SchemaTool.php
+
+        -
+            message: '#getMaxIdentifierLength#'
+            identifier: 'method.deprecatedClass'
+            path: src/Mapping/ClassMetadataFactory.php
+
+        -
             message: "#^Parameter \\#2 \\$start of method Doctrine\\\\DBAL\\\\Platforms\\\\AbstractPlatform\\:\\:getSubstringExpression\\(\\) expects int, string given\\.$#"
             count: 1
             path: src/Query/AST/Functions/SubstringFunction.php

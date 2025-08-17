@@ -39,6 +39,7 @@ abstract class AbstractEntityManagerCommand extends Command
             $helper = $this->getHelper('em');
             assert($helper instanceof EntityManagerHelper);
 
+            /** @phpstan-ignore method.deprecatedClass */
             return $helper->getEntityManager();
         }
 

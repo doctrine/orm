@@ -73,7 +73,7 @@ final class ConsoleRunner
         if ($helperSetOrProvider instanceof HelperSet) {
             $cli->setHelperSet($helperSetOrProvider);
 
-            // @phpstan-ignore new.deprecated
+            // @phpstan-ignore new.deprecatedClass, method.deprecatedClass
             $helperSetOrProvider = new HelperSetManagerProvider($helperSetOrProvider);
         }
 
@@ -86,7 +86,7 @@ final class ConsoleRunner
     public static function addCommands(Application $cli, ?EntityManagerProvider $entityManagerProvider = null): void
     {
         if ($entityManagerProvider === null) {
-            // @phpstan-ignore new.deprecated
+            // @phpstan-ignore new.deprecatedClass, method.deprecatedClass
             $entityManagerProvider = new HelperSetManagerProvider($cli->getHelperSet());
         }
 
@@ -99,7 +99,7 @@ final class ConsoleRunner
         $cli->addCommands(
             [
                 // DBAL Commands
-                // @phpstan-ignore new.deprecated
+                // @phpstan-ignore new.deprecatedClass, method.deprecatedClass
                 new DBALConsole\Command\ReservedWordsCommand($connectionProvider),
                 new DBALConsole\Command\RunSqlCommand($connectionProvider),
 
@@ -113,16 +113,16 @@ final class ConsoleRunner
                 new Command\SchemaTool\CreateCommand($entityManagerProvider),
                 new Command\SchemaTool\UpdateCommand($entityManagerProvider),
                 new Command\SchemaTool\DropCommand($entityManagerProvider),
-                // @phpstan-ignore new.deprecated
+                // @phpstan-ignore new.deprecatedClass
                 new Command\EnsureProductionSettingsCommand($entityManagerProvider),
-                // @phpstan-ignore new.deprecated
+                // @phpstan-ignore new.deprecatedClass
                 new Command\ConvertDoctrine1SchemaCommand(),
-                // @phpstan-ignore new.deprecated
+                // @phpstan-ignore new.deprecatedClass
                 new Command\GenerateRepositoriesCommand($entityManagerProvider),
-                // @phpstan-ignore new.deprecated
+                // @phpstan-ignore new.deprecatedClass
                 new Command\GenerateEntitiesCommand($entityManagerProvider),
                 new Command\GenerateProxiesCommand($entityManagerProvider),
-                // @phpstan-ignore new.deprecated
+                // @phpstan-ignore new.deprecatedClass
                 new Command\ConvertMappingCommand($entityManagerProvider),
                 new Command\RunDqlCommand($entityManagerProvider),
                 new Command\ValidateSchemaCommand($entityManagerProvider),

@@ -23,8 +23,6 @@ use const PHP_EOL;
  * @deprecated 2.7 This class is being removed from the ORM and won't have any replacement
  *
  * @link    www.doctrine-project.org
- *
- * @phpstan-ignore class.extendsDeprecatedClass
  */
 class PhpExporter extends AbstractExporter
 {

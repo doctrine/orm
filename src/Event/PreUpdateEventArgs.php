@@ -28,7 +28,7 @@ class PreUpdateEventArgs extends LifecycleEventArgs
      */
     public function __construct($entity, EntityManagerInterface $em, array &$changeSet)
     {
-        // @phpstan-ignore staticMethod.deprecatedClass
+        // @phpstan-ignore method.deprecatedClass
         parent::__construct($entity, $em);
 
         $this->entityChangeSet = &$changeSet;
