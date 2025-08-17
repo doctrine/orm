@@ -1,5 +1,10 @@
 # Upgrade to 4.0
 
+## BC BREAK: throw on `nullable` on columns that end up being used in a primary key
+
+Specifying `nullable` on join columns that are part of a primary key is
+an error and will cause an exception to be thrown.
+
 ## BC BREAK: `Doctrine\ORM\Mapping\LegacyReflectionFields` is removed
 
 The `Doctrine\ORM\Mapping\LegacyReflectionFields` class has been removed.
