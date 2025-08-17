@@ -120,6 +120,40 @@ using the `\Doctrine\ORM\Mapping\UniqueConstraint` and `\Doctrine\ORM\Mapping\In
 
 # Upgrade to 3.6
 
+## Deprecate specifying `nullable` on columns that end up being used in a primary key
+
+Specifying `nullable` on join columns that are part of a primary key is
+deprecated and will be an error in 4.0.
+
+This can happen when using a join column mapping together with an id mapping,
+or when using a join column mapping or an inverse join column mapping on a
+many-to-many relationship.
+
+```diff
+ class User
+ {
+     #[ORM\Id]
+     #[ORM\Column(type: 'integer')]
+     private int $id;
+
+     #[ORM\Id]
+     #[ORM\ManyToOne(targetEntity: Family::class, inversedBy: 'users')]
+-    #[ORM\JoinColumn(name: 'family_id', referencedColumnName: 'id', nullable: true)]
++    #[ORM\JoinColumn(name: 'family_id', referencedColumnName: 'id')]
+     private ?Family $family;
+
+     #[ORM\ManyToMany(targetEntity: Group::class)]
+     #[ORM\JoinTable(name: 'user_group')]
+-    #[ORM\JoinColumn(name: 'user_id', referencedColumnName: 'id', nullable: true)]
+-    #[ORM\InverseJoinColumn(name: 'group_id', referencedColumnName: 'id', nullable: true)]
++    #[ORM\JoinColumn(name: 'user_id', referencedColumnName: 'id')]
++    #[ORM\InverseJoinColumn(name: 'group_id', referencedColumnName: 'id')]
+     private Collection $groups;
+ }
+```
+
+## Deprecate `Doctrine\ORM\QueryBuilder::add('join', ...)` with a list of join parts
+
 Using `Doctrine\ORM\QueryBuilder::add('join', ...)` with a list of join parts
 is deprecated in favor of using an associative array of join parts with the
 root alias as key.

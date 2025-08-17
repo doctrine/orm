@@ -58,7 +58,7 @@ class DDC3579User
         return $this->groups;
     }
 
-    public static function loadMetadata($metadata): void
+    public static function loadMetadata(ClassMetadata $metadata): void
     {
         $metadata->isMappedSuperclass = true;
 

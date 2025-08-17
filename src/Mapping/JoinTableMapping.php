@@ -79,9 +79,14 @@ final class JoinTableMapping
     /** @return mixed[] */
     public function toArray(): array
     {
-        $array = (array) $this;
+        $array                       = (array) $this;
+        $toArray                     = static function (JoinColumnMapping $column) {
+            $array = (array) $column;
 
-        $toArray                     = static fn (JoinColumnMapping $column): array => (array) $column;
+            unset($array['nullable']);
+
+            return $array;
+        };
         $array['joinColumns']        = array_map($toArray, $array['joinColumns']);
         $array['inverseJoinColumns'] = array_map($toArray, $array['inverseJoinColumns']);
 

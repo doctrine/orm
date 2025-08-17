@@ -119,10 +119,10 @@ class DDC2575A
     public function __construct(
         #[Id]
         #[OneToOne(targetEntity: 'DDC2575Root', inversedBy: 'aRelation')]
-        #[JoinColumn(name: 'root_id', referencedColumnName: 'id', nullable: false, onDelete: 'CASCADE')]
+        #[JoinColumn(name: 'root_id', referencedColumnName: 'id', onDelete: 'CASCADE')]
         public DDC2575Root $rootRelation,
         #[ManyToOne(targetEntity: 'DDC2575B')]
-        #[JoinColumn(name: 'b_id', referencedColumnName: 'id', nullable: false, onDelete: 'CASCADE')]
+        #[JoinColumn(name: 'b_id', referencedColumnName: 'id', onDelete: 'CASCADE')]
         public DDC2575B $bRelation,
     ) {
     }
