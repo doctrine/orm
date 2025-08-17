@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Mapping;
 
+use Doctrine\Deprecations\PHPUnit\VerifyDeprecations;
 use Doctrine\ORM\Mapping\DefaultNamingStrategy;
 use Doctrine\ORM\Mapping\JoinColumnMapping;
 use Doctrine\ORM\Mapping\OneToOneOwningSideMapping;
@@ -17,6 +18,8 @@ use function unserialize;
 
 final class OneToOneOwningSideMappingTest extends TestCase
 {
+    use VerifyDeprecations;
+
     public function testItSurvivesSerialization(): void
     {
         $mapping = new OneToOneOwningSideMapping(
@@ -48,6 +51,15 @@ final class OneToOneOwningSideMappingTest extends TestCase
         array $mappingArray,
     ): void {
         $namingStrategy = new DefaultNamingStrategy();
+        if ($expectDeprecation) {
+            $this->expectDeprecationWithIdentifier(
+                'https://github/doctrine/orm/pull/12125',
+            );
+        } else {
+            $this->expectNoDeprecationWithIdentifier(
+                'https://github/doctrine/orm/pull/12125',
+            );
+        }
 
         $mapping = OneToOneOwningSideMapping::fromMappingArrayAndName(
             $mappingArray,
