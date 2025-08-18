@@ -1375,12 +1375,6 @@ parameters:
 			path: src/Mapping/Driver/DatabaseDriver.php
 
 		-
-			message: '#^Cannot call method getName\(\) on Doctrine\\DBAL\\Schema\\Column\|false\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: src/Mapping/Driver/DatabaseDriver.php
-
-		-
 			message: '#^Instanceof between Doctrine\\ORM\\Mapping\\ClassMetadata\<T of object\> and Doctrine\\ORM\\Mapping\\ClassMetadata will always evaluate to true\.$#'
 			identifier: instanceof.alwaysTrue
 			count: 1
@@ -1411,9 +1405,21 @@ parameters:
 			path: src/Mapping/Driver/DatabaseDriver.php
 
 		-
+			message: '#^Method Doctrine\\ORM\\Mapping\\Driver\\DatabaseDriver\:\:getAssetName\(\) has parameter \$asset with generic class Doctrine\\DBAL\\Schema\\AbstractAsset but does not specify its types\: N$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Mapping/Driver/DatabaseDriver.php
+
+		-
 			message: '#^Method Doctrine\\ORM\\Mapping\\Driver\\DatabaseDriver\:\:getClassNameForTable\(\) should return class\-string but returns string\.$#'
 			identifier: return.type
 			count: 2
+			path: src/Mapping/Driver/DatabaseDriver.php
+
+		-
+			message: '#^Parameter \#1 \$asset of static method Doctrine\\ORM\\Mapping\\Driver\\DatabaseDriver\:\:getAssetName\(\) expects Doctrine\\DBAL\\Schema\\AbstractAsset, Doctrine\\DBAL\\Schema\\Column\|false given\.$#'
+			identifier: argument.type
+			count: 1
 			path: src/Mapping/Driver/DatabaseDriver.php
 
 		-
@@ -3227,6 +3233,12 @@ parameters:
 
 		-
 			message: '#^Method Doctrine\\ORM\\Tools\\SchemaTool\:\:gatherRelationsSql\(\) has parameter \$class with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Tools/SchemaTool.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Tools\\SchemaTool\:\:getAssetName\(\) has parameter \$asset with generic class Doctrine\\DBAL\\Schema\\AbstractAsset but does not specify its types\: N$#'
 			identifier: missingType.generics
 			count: 1
 			path: src/Tools/SchemaTool.php
