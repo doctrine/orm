@@ -7,6 +7,7 @@ namespace Doctrine\ORM\Tools;
 use BackedEnum;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Schema\AbstractAsset;
+use Doctrine\DBAL\Schema\AbstractNamedObject;
 use Doctrine\DBAL\Schema\AbstractSchemaManager;
 use Doctrine\DBAL\Schema\ComparatorConfig;
 use Doctrine\DBAL\Schema\ForeignKeyConstraintEditor;
@@ -735,7 +736,7 @@ class SchemaTool
             $theJoinTable->addUniqueIndex($unique['columns'], is_numeric($indexName) ? null : $indexName);
         }
 
-        $compositeName = $theJoinTable->getName() . '.' . implode('', $localColumns);
+        $compositeName = ($theJoinTable instanceof AbstractNamedObject ? $theJoinTable->getObjectName()->toString() : $theJoinTable->getName()) . '.' . implode('', $localColumns);
         if (
             isset($addedFks[$compositeName])
             && ($foreignTableName !== $addedFks[$compositeName]['foreignTableName']
@@ -859,15 +860,15 @@ class SchemaTool
         $deployedSchema = $this->schemaManager->introspectSchema();
 
         foreach ($schema->getTables() as $table) {
-            if (! $deployedSchema->hasTable($table->getName())) {
-                $schema->dropTable($table->getName());
+            if (! $deployedSchema->hasTable($table instanceof AbstractNamedObject ? $table->getObjectName()->toString() : $table->getName())) {
+                $schema->dropTable($table instanceof AbstractNamedObject ? $table->getObjectName()->toString() : $table->getName());
             }
         }
 
         if ($this->platform->supportsSequences()) {
             foreach ($schema->getSequences() as $sequence) {
-                if (! $deployedSchema->hasSequence($sequence->getName())) {
-                    $schema->dropSequence($sequence->getName());
+                if (! $deployedSchema->hasSequence($sequence instanceof AbstractNamedObject ? $sequence->getObjectName()->toString() : $sequence->getName())) {
+                    $schema->dropSequence($sequence instanceof AbstractNamedObject ? $sequence->getObjectName()->toString() : $sequence->getName());
                 }
             }
 
@@ -889,7 +890,7 @@ class SchemaTool
                 }
 
                 if (count($columns) === 1) {
-                    $checkSequence = $table->getName() . '_' . $columns[0] . '_seq';
+                    $checkSequence = ($table instanceof AbstractNamedObject ? $table->getObjectName()->toString() : $table->getName()) . '_' . $columns[0] . '_seq';
                     if ($deployedSchema->hasSequence($checkSequence) && ! $schema->hasSequence($checkSequence)) {
                         $schema->createSequence($checkSequence);
                     }
@@ -956,7 +957,13 @@ class SchemaTool
 
         // whitelist assets we already know about in $toSchema, use the existing filter otherwise
         $config->setSchemaAssetsFilter(static function ($asset) use ($previousFilter, $toSchema): bool {
-            $assetName = $asset instanceof AbstractAsset ? $asset->getName() : $asset;
+            if ($asset instanceof AbstractNamedObject) {
+                $assetName = $asset->getObjectName()->toString();
+            } elseif ($asset instanceof AbstractAsset) {
+                $assetName = $asset->getName();
+            } else {
+                $assetName = $asset;
+            }
 
             return $toSchema->hasTable($assetName) || $toSchema->hasSequence($assetName) || $previousFilter($asset);
         });
