@@ -132,7 +132,7 @@ final class ManyToManyOwningSideMapping extends ToManyOwningSideMapping implemen
             if ($joinColumn->nullable !== null) {
                 Deprecation::trigger(
                     'doctrine/orm',
-                    'https://github/doctrine/orm/pull/12125',
+                    'https://github.com/doctrine/orm/pull/12126',
                     <<<'DEPRECATION'
                     Specifying the "nullable" attribute for join columns in many-to-many associations (here, %s::$%s) is a no-op.
                     The ORM will always set it to false.
@@ -171,7 +171,7 @@ final class ManyToManyOwningSideMapping extends ToManyOwningSideMapping implemen
             if ($inverseJoinColumn->nullable !== null) {
                 Deprecation::trigger(
                     'doctrine/orm',
-                    'https://github/doctrine/orm/pull/12125',
+                    'https://github.com/doctrine/orm/pull/12126',
                     <<<'DEPRECATION'
                     Specifying the "nullable" attribute for join columns in many-to-many associations (here, %s::$%s) is a no-op.
                     The ORM will always set it to false.

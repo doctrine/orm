@@ -135,7 +135,7 @@ abstract class ToOneOwningSideMapping extends OwningSideMapping implements ToOne
                 if ($joinColumn->nullable !== null) {
                     Deprecation::trigger(
                         'doctrine/orm',
-                        'https://github/doctrine/orm/pull/12125',
+                        'https://github.com/doctrine/orm/pull/12126',
                         <<<'DEPRECATION'
                         Specifying the "nullable" attribute for join columns in to-one associations (here, %s::$%s) that are part of the identifier is a no-op.
                         The ORM will always set it to false.
