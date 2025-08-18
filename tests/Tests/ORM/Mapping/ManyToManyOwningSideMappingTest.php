@@ -53,11 +53,11 @@ final class ManyToManyOwningSideMappingTest extends TestCase
         $namingStrategy = new DefaultNamingStrategy();
         if ($expectDeprecation) {
             $this->expectDeprecationWithIdentifier(
-                'https://github/doctrine/orm/pull/12125',
+                'https://github.com/doctrine/orm/pull/12126',
             );
         } else {
             $this->expectNoDeprecationWithIdentifier(
-                'https://github/doctrine/orm/pull/12125',
+                'https://github.com/doctrine/orm/pull/12126',
             );
         }
 
