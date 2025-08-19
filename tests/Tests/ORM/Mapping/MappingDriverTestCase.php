@@ -1132,7 +1132,6 @@ class User
                             'name' => 'user_id',
                             'referencedColumnName' => 'id',
                             'unique' => false,
-                            'nullable' => false,
                         ],
                     ],
                     'inverseJoinColumns' =>

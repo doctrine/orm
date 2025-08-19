@@ -406,6 +406,28 @@ class MappingException extends PersistenceMappingException implements ORMExcepti
         return new self(sprintf("Discriminator column name on entity class '%s' is not defined.", $className));
     }
 
+    public static function cannotSetNullableOnToOneIdentifierJoinColumns(
+        string $className,
+        string $fieldName,
+    ): self {
+        return new self(sprintf(
+            'Cannot specify the "nullable" attribute for join columns in to-one associations (%s::$%s) that are part of the identifier',
+            $className,
+            $fieldName,
+        ));
+    }
+
+    public static function cannotSetNullableOnManyToManyJoinColumns(
+        string $className,
+        string $fieldName,
+    ): self {
+        return new self(sprintf(
+            'Cannot specify the "nullable" attribute for join columns in many-to-many associations (%s::$%s)',
+            $className,
+            $fieldName,
+        ));
+    }
+
     public static function cannotVersionIdField(string $className, string $fieldName): self
     {
         return new self(sprintf(
