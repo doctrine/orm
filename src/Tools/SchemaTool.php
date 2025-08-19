@@ -14,6 +14,7 @@ use Doctrine\DBAL\Schema\Index;
 use Doctrine\DBAL\Schema\Index\IndexedColumn;
 use Doctrine\DBAL\Schema\Name\Identifier;
 use Doctrine\DBAL\Schema\Name\UnqualifiedName;
+use Doctrine\DBAL\Schema\NamedObject;
 use Doctrine\DBAL\Schema\PrimaryKeyConstraint;
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\DBAL\Schema\Table;
@@ -735,7 +736,7 @@ class SchemaTool
             $theJoinTable->addUniqueIndex($unique['columns'], is_numeric($indexName) ? null : $indexName);
         }
 
-        $compositeName = $theJoinTable->getName() . '.' . implode('', $localColumns);
+        $compositeName = $this->getAssetName($theJoinTable) . '.' . implode('', $localColumns);
         if (
             isset($addedFks[$compositeName])
             && ($foreignTableName !== $addedFks[$compositeName]['foreignTableName']
@@ -859,15 +860,15 @@ class SchemaTool
         $deployedSchema = $this->schemaManager->introspectSchema();
 
         foreach ($schema->getTables() as $table) {
-            if (! $deployedSchema->hasTable($table->getName())) {
-                $schema->dropTable($table->getName());
+            if (! $deployedSchema->hasTable($this->getAssetName($table))) {
+                $schema->dropTable($this->getAssetName($table));
             }
         }
 
         if ($this->platform->supportsSequences()) {
             foreach ($schema->getSequences() as $sequence) {
-                if (! $deployedSchema->hasSequence($sequence->getName())) {
-                    $schema->dropSequence($sequence->getName());
+                if (! $deployedSchema->hasSequence($this->getAssetName($sequence))) {
+                    $schema->dropSequence($this->getAssetName($sequence));
                 }
             }
 
@@ -889,7 +890,7 @@ class SchemaTool
                 }
 
                 if (count($columns) === 1) {
-                    $checkSequence = $table->getName() . '_' . $columns[0] . '_seq';
+                    $checkSequence = $this->getAssetName($table) . '_' . $columns[0] . '_seq';
                     if ($deployedSchema->hasSequence($checkSequence) && ! $schema->hasSequence($checkSequence)) {
                         $schema->createSequence($checkSequence);
                     }
@@ -951,8 +952,9 @@ class SchemaTool
         $previousFilter = $config->getSchemaAssetsFilter();
 
         // whitelist assets we already know about in $toSchema, use the existing filter otherwise
-        $config->setSchemaAssetsFilter(static function ($asset) use ($previousFilter, $toSchema): bool {
-            $assetName = $asset instanceof AbstractAsset ? $asset->getName() : $asset;
+        $getAssetName = $this->getAssetName(...);
+        $config->setSchemaAssetsFilter(static function ($asset) use ($previousFilter, $toSchema, $getAssetName): bool {
+            $assetName = $asset instanceof AbstractAsset ? $getAssetName($asset) : $asset;
 
             return $toSchema->hasTable($assetName) || $toSchema->hasSequence($assetName) || $previousFilter($asset);
         });
@@ -989,5 +991,13 @@ class SchemaTool
         }
 
         return $index->getColumns();
+    }
+
+    private function getAssetName(AbstractAsset $asset): string
+    {
+        return $asset instanceof NamedObject
+            ? $asset->getObjectName()->toString()
+            // DBAL < 4.4
+            : $asset->getName();
     }
 }
