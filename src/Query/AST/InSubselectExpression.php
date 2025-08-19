@@ -13,9 +13,10 @@ class InSubselectExpression extends InExpression
     public function __construct(ArithmeticExpression $expression, Subselect $subselect, bool $not = false)
     {
         $this->subselect = $subselect;
-        $this->not       = $not;
+        // @phpstan-ignore property.deprecatedClass
+        $this->not = $not;
 
-        // @phpstan-ignore staticMethod.deprecatedClass
+        // @phpstan-ignore method.deprecatedClass
         parent::__construct($expression);
     }
 }
