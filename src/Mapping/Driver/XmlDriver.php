@@ -137,7 +137,6 @@ class XmlDriver extends FileDriver
                     ];
 
                     if (isset($discrColumn['options'])) {
-                        assert($discrColumn['options'] instanceof SimpleXMLElement);
                         $columnDef['options'] = $this->parseOptions($discrColumn['options']->children());
                     }
 
