@@ -622,6 +622,9 @@ class DatabaseDriver implements MappingDriver
         return null;
     }
 
+    /**
+     * To be removed once support for DBAL < 4.4 is dropped.
+     */
     private static function getAssetName(AbstractAsset $asset): string
     {
         if ($asset instanceof AbstractNamedObject) {
