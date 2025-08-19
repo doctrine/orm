@@ -79,7 +79,11 @@ parameters:
             message: '~^Call to method toString.*UnqualifiedName\.$~'
             path: src/Tools/SchemaTool.php
 
+        - '~^Call to method getObjectName\(\) on an unknown class Doctrine\\DBAL\\Schema\\NamedObject\.$~'
+
         - '~^Class Doctrine\\DBAL\\Platforms\\SQLitePlatform not found\.$~'
+
+        - '~^Class Doctrine\\DBAL\\Schema\\NamedObject not found\.$~'
 
         -
             message: '~sort~'
