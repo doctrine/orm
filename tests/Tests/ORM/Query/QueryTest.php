@@ -596,7 +596,7 @@ class QueryTest extends OrmTestCase
     {
         $driverConnection = $this->createMock(Driver\Connection::class);
         $driverConnection->method('query')
-            ->will($this->onConsecutiveCalls(...$results));
+            ->willReturnOnConsecutiveCalls(...$results);
 
         $platform = $this->getMockBuilder(AbstractPlatform::class)
             ->setConstructorArgs(enum_exists(UnquotedIdentifierFolding::class) ? [UnquotedIdentifierFolding::UPPER] : [])
