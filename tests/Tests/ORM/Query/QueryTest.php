@@ -600,8 +600,7 @@ class QueryTest extends OrmTestCase
 
         $platform = $this->getMockBuilder(AbstractPlatform::class)
             ->setConstructorArgs(enum_exists(UnquotedIdentifierFolding::class) ? [UnquotedIdentifierFolding::UPPER] : [])
-            ->onlyMethods(['supportsIdentityColumns'])
-            ->getMockForAbstractClass();
+            ->getMock();
         $platform->method('supportsIdentityColumns')
             ->willReturn(true);
 

@@ -146,7 +146,7 @@ abstract class OrmTestCase extends TestCase
         $connection = $this->getMockBuilder(Connection::class)
             ->setConstructorArgs([[], $this->createDriverMock($platform)])
             ->onlyMethods(['quote'])
-            ->getMockForAbstractClass();
+            ->getMock();
         $connection->method('quote')->willReturnCallback(static fn (string $input) => sprintf("'%s'", $input));
 
         return $connection;
