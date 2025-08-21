@@ -551,9 +551,11 @@ class UnitOfWork implements PropertyChangedListener
     private function computeScheduleInsertsChangeSets(): void
     {
         foreach ($this->entityInsertions as $entity) {
-            $class = $this->em->getClassMetadata(get_class($entity));
-
-            $this->computeChangeSet($class, $entity);
+            $oid = spl_object_id($entity);
+            if (!isset($this->entityChangeSets[$oid])) {
+                $class = $this->em->getClassMetadata(get_class($entity));
+                $this->computeChangeSet($class, $entity);
+            }
         }
     }
 
@@ -929,6 +931,8 @@ class UnitOfWork implements PropertyChangedListener
                 }
             }
         }
+
+        $this->computeScheduleInsertsChangeSets();
     }
 
     /**

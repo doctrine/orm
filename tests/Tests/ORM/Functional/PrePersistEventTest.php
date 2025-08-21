@@ -40,6 +40,25 @@ class PrePersistEventTest extends OrmFunctionalTestCase
 
         $this->assertTrue($this->_em->getUnitOfWork()->isScheduledForInsert($entityWithCascade));
         $this->assertTrue($this->_em->getUnitOfWork()->isScheduledForInsert($entityWithUnmapped));
+
+        $this->_em->flush();
+    }
+
+    public function testPersistEntityOnFlushWithPrePersistHook(): void
+    {
+        $this->_em->getEventManager()->addEventListener(Events::prePersist, new PrePersistUnmappedPersistListener());
+
+        $alreadyPersistedEntity  = new EntityWithCascadeAssociation();
+        $this->_em->persist($alreadyPersistedEntity);
+        $this->_em->flush();
+
+        $entityWithUnmapped = new EntityWithUnmappedEntity();
+        $entityWithCascade  = new EntityWithCascadeAssociation();
+
+        $entityWithUnmapped->unmapped = $entityWithCascade;
+        $alreadyPersistedEntity->cascaded = $entityWithUnmapped;
+
+        $this->_em->flush();
     }
 }
 
