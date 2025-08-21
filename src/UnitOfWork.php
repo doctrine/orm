@@ -552,7 +552,7 @@ class UnitOfWork implements PropertyChangedListener
     {
         foreach ($this->entityInsertions as $entity) {
             $oid = spl_object_id($entity);
-            if (!isset($this->entityChangeSets[$oid])) {
+            if (! isset($this->entityChangeSets[$oid])) {
                 $class = $this->em->getClassMetadata(get_class($entity));
                 $this->computeChangeSet($class, $entity);
             }
@@ -932,6 +932,7 @@ class UnitOfWork implements PropertyChangedListener
             }
         }
 
+        // Check again for uncomputed changes that might be added by hooks
         $this->computeScheduleInsertsChangeSets();
     }
 
