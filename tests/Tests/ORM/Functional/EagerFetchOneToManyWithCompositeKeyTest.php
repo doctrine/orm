@@ -7,10 +7,11 @@ namespace Doctrine\Tests\ORM\Functional;
 use Doctrine\Tests\Models\EagerFetchedCompositeOneToMany\RootEntity;
 use Doctrine\Tests\Models\EagerFetchedCompositeOneToMany\SecondLevel;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
 final class EagerFetchOneToManyWithCompositeKeyTest extends OrmFunctionalTestCase
 {
-    /** @ticket 11154 */
+    #[Group('GH11154')]
     public function testItDoesNotThrowAnExceptionWhenTriggeringALoad(): void
     {
         $this->setUpEntitySchema([RootEntity::class, SecondLevel::class]);

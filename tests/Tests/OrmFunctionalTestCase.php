@@ -540,7 +540,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
         $conn = static::$sharedConn;
 
         // In case test is skipped, tearDown is called, but no setup may have run
-        if (! $conn) {
+        if (! $conn || ! isset($this->_em)) {
             return;
         }
 

@@ -11,6 +11,8 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use PHPUnit\Framework\Attributes\Group;
 
+use function substr_count;
+
 #[Group('DDC-3042')]
 class DDC3042Test extends OrmFunctionalTestCase
 {
@@ -23,14 +25,18 @@ class DDC3042Test extends OrmFunctionalTestCase
 
     public function testSQLGenerationDoesNotProvokeAliasCollisions(): void
     {
-        self::assertStringNotMatchesFormat(
-            '%sfield11%sfield11%s',
-            $this
+        self::assertSame(
+            1,
+            substr_count(
+                $this
                 ->_em
                 ->createQuery(
                     'SELECT f, b FROM ' . __NAMESPACE__ . '\DDC3042Foo f JOIN ' . __NAMESPACE__ . '\DDC3042Bar b WITH 1 = 1',
                 )
                 ->getSQL(),
+                'field_11',
+            ),
+            'The alias "field11" should only appear once in the SQL query.',
         );
     }
 }
