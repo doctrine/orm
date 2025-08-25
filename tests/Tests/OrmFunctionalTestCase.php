@@ -22,7 +22,6 @@ use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\Mapping\ClassMetadata;
-use Doctrine\ORM\Mapping\Driver\AttributeDriver;
 use Doctrine\ORM\Tools\DebugUnitOfWorkListener;
 use Doctrine\ORM\Tools\SchemaTool;
 use Doctrine\ORM\Tools\ToolsException;
@@ -31,6 +30,7 @@ use Doctrine\Tests\DbalExtensions\Connection;
 use Doctrine\Tests\DbalExtensions\QueryLog;
 use Doctrine\Tests\DbalTypes\Rot13Type;
 use Doctrine\Tests\EventListener\CacheMetadataListener;
+use Doctrine\Tests\Mocks\AttributeDriverFactory;
 use Doctrine\Tests\Models\Cache\Action;
 use Doctrine\Tests\Models\Cache\Address;
 use Doctrine\Tests\Models\Cache\Attraction;
@@ -187,7 +187,6 @@ use function getenv;
 use function implode;
 use function is_object;
 use function method_exists;
-use function realpath;
 use function sprintf;
 use function str_contains;
 use function strtolower;
@@ -952,12 +951,12 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             $config->enableNativeLazyObjects(true);
         }
 
-        $config->setMetadataDriverImpl(
-            $mappingDriver ?? new AttributeDriver([
-                realpath(__DIR__ . '/Models/Cache'),
-                realpath(__DIR__ . '/Models/GeoNames'),
-            ], true),
-        );
+        $mappingDriver ??= AttributeDriverFactory::createAttributeDriver([
+            __DIR__ . '/Models/Cache',
+            __DIR__ . '/Models/GeoNames',
+        ]);
+
+        $config->setMetadataDriverImpl($mappingDriver);
 
         $conn = $connection ?: static::$sharedConn;
         assert($conn !== null);
