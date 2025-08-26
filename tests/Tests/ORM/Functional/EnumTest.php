@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional;
 
+use Doctrine\Common\Collections\Criteria;
+use Doctrine\Common\Collections\Expr\Comparison;
 use Doctrine\ORM\AbstractQuery;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Driver\AttributeDriver;
@@ -12,9 +14,13 @@ use Doctrine\ORM\Query\Expr\Func;
 use Doctrine\ORM\Tools\SchemaTool;
 use Doctrine\Tests\Models\DataTransferObjects\DtoWithArrayOfEnums;
 use Doctrine\Tests\Models\DataTransferObjects\DtoWithEnum;
+use Doctrine\Tests\Models\Enums\BookCategory;
+use Doctrine\Tests\Models\Enums\BookGenre;
+use Doctrine\Tests\Models\Enums\BookWithGenre;
 use Doctrine\Tests\Models\Enums\Card;
 use Doctrine\Tests\Models\Enums\CardWithDefault;
 use Doctrine\Tests\Models\Enums\CardWithNullable;
+use Doctrine\Tests\Models\Enums\Library;
 use Doctrine\Tests\Models\Enums\Product;
 use Doctrine\Tests\Models\Enums\Quantity;
 use Doctrine\Tests\Models\Enums\Scale;
@@ -22,6 +28,7 @@ use Doctrine\Tests\Models\Enums\Suit;
 use Doctrine\Tests\Models\Enums\TypedCard;
 use Doctrine\Tests\Models\Enums\Unit;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use Generator;
 
 use function dirname;
 use function sprintf;
@@ -523,5 +530,73 @@ EXCEPTION
         $card = $this->_em->find(CardWithDefault::class, $cardId);
 
         self::assertSame(Suit::Hearts, $card->suit);
+    }
+
+    /**
+     * @dataProvider provideGenreMatchingExpressions
+     */
+    public function testEnumCollectionMatchingOnOneToMany(Comparison $comparison): void
+    {
+        $this->setUpEntitySchema([BookWithGenre::class, Library::class, BookCategory::class]);
+
+        $library = new Library();
+
+        $fictionBook          = new BookWithGenre(BookGenre::FICTION);
+        $fictionBook->library = $library;
+
+        $nonfictionBook          = new BookWithGenre(BookGenre::NON_FICTION);
+        $nonfictionBook->library = $library;
+
+        $this->_em->persist($library);
+        $this->_em->persist($nonfictionBook);
+        $this->_em->persist($fictionBook);
+
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $library = $this->_em->find(Library::class, $library->id);
+        self::assertFalse($library->books->isInitialized(), 'Pre-condition: lazy collection');
+
+        $result = $library->books->matching(Criteria::create()->where($comparison));
+
+        self::assertCount(1, $result);
+        self::assertSame($nonfictionBook->id, $result[0]->id);
+    }
+
+    /**
+     * @dataProvider provideGenreMatchingExpressions
+     */
+    public function testEnumCollectionMatchingOnManyToMany(Comparison $comparison): void
+    {
+        $this->setUpEntitySchema([Library::class, BookWithGenre::class, BookCategory::class]);
+
+        $category = new BookCategory();
+
+        $fictionBook = new BookWithGenre(BookGenre::FICTION);
+        $fictionBook->categories->add($category);
+
+        $nonfictionBook = new BookWithGenre(BookGenre::NON_FICTION);
+        $nonfictionBook->categories->add($category);
+
+        $this->_em->persist($category);
+        $this->_em->persist($nonfictionBook);
+        $this->_em->persist($fictionBook);
+
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $category = $this->_em->find(BookCategory::class, $category->id);
+        self::assertFalse($category->books->isInitialized(), 'Pre-condition: lazy collection');
+
+        $result = $category->books->matching(Criteria::create()->where($comparison));
+
+        self::assertCount(1, $result);
+        self::assertSame($nonfictionBook->id, $result[0]->id);
+    }
+
+    public function provideGenreMatchingExpressions(): Generator
+    {
+        yield [Criteria::expr()->eq('genre', BookGenre::NON_FICTION)];
+        yield [Criteria::expr()->in('genre', [BookGenre::NON_FICTION])];
     }
 }
