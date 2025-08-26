@@ -13,7 +13,7 @@ use Doctrine\ORM\Mapping\EntityListenerResolver;
 /**
  * A method invoker based on entity lifecycle.
  */
-class ListenersInvoker
+class ListenersInvoker implements ListenersInvokerInterface
 {
     final public const INVOKE_NONE      = 0;
     final public const INVOKE_LISTENERS = 1;
@@ -26,10 +26,14 @@ class ListenersInvoker
     /** The EventManager used for dispatching events. */
     private readonly EventManager $eventManager;
 
+    /** Listener invoker */
+    private readonly ListenersInvokerInterface $listenersInvoker;
+
     public function __construct(EntityManagerInterface $em)
     {
-        $this->eventManager = $em->getEventManager();
-        $this->resolver     = $em->getConfiguration()->getEntityListenerResolver();
+        $this->eventManager     = $em->getEventManager();
+        $this->resolver         = $em->getConfiguration()->getEntityListenerResolver();
+        $this->listenersInvoker = $em->getConfiguration()->getExternalListenersInvoker() ?? $this;
     }
 
     /**
@@ -77,7 +81,7 @@ class ListenersInvoker
     ): void {
         if ($invoke & self::INVOKE_CALLBACKS) {
             foreach ($metadata->lifecycleCallbacks[$eventName] as $callback) {
-                $entity->$callback($event);
+                $this->listenersInvoker->invokeListener($entity, $callback, [$event]);
             }
         }
 
@@ -87,12 +91,20 @@ class ListenersInvoker
                 $method   = $listener['method'];
                 $instance = $this->resolver->resolve($class);
 
-                $instance->$method($entity, $event);
+                $this->listenersInvoker->invokeListener($instance, $method, [$entity, $event]);
             }
         }
 
         if ($invoke & self::INVOKE_MANAGER) {
             $this->eventManager->dispatchEvent($eventName, $event);
         }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function invokeListener(object $instance, string $method, array $args): void
+    {
+        $instance->$method(...$args);
     }
 }

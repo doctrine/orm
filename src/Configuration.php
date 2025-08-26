@@ -7,6 +7,7 @@ namespace Doctrine\ORM;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\Deprecations\Deprecation;
 use Doctrine\ORM\Cache\CacheConfiguration;
+use Doctrine\ORM\Event\ListenersInvokerInterface;
 use Doctrine\ORM\Exception\InvalidEntityRepository;
 use Doctrine\ORM\Internal\Hydration\AbstractHydrator;
 use Doctrine\ORM\Mapping\ClassMetadata;
@@ -550,6 +551,22 @@ class Configuration extends \Doctrine\DBAL\Configuration
         }
 
         return $this->attributes['entityListenerResolver'];
+    }
+
+    /**
+     * Sets the external listener invoker
+     */
+    public function setExternalListenersInvoker(ListenersInvokerInterface $invoker): void
+    {
+        $this->attributes['externalListenersInvoker'] = $invoker;
+    }
+
+    /**
+     * Gets the external listener invoker
+     */
+    public function getExternalListenersInvoker(): ListenersInvokerInterface|null
+    {
+        return $this->attributes['externalListenersInvoker'] ?? null;
     }
 
     /**
