@@ -9,6 +9,7 @@ use Doctrine\DBAL\Connection;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\Tests\Mocks\AttributeDriverFactory;
 use Doctrine\Tests\ORM\Functional\Locking\Doctrine\ORM\Query;
 use GearmanWorker;
 use InvalidArgumentException;
@@ -113,8 +114,8 @@ class LockAgentWorker
     {
         $config = new Configuration();
 
-        $annotDriver = new AttributeDriver([__DIR__ . '/../../../Models/']);
-        $config->setMetadataDriverImpl($annotDriver);
+        $attributeDriver = AttributeDriverFactory::createAttributeDriver([__DIR__ . '/../../../Models']);
+        $config->setMetadataDriverImpl($attributeDriver);
         $config->setMetadataCache(new ArrayAdapter());
 
         $config->setQueryCache(new ArrayAdapter());

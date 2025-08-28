@@ -15,12 +15,12 @@ use Doctrine\ORM\Cache\DefaultCacheFactory;
 use Doctrine\ORM\Cache\Logging\StatisticsCacheLogger;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\Mapping\Driver\AttributeDriver;
+use Doctrine\Tests\Mocks\AttributeDriverFactory;
 use Doctrine\Tests\Mocks\EntityManagerMock;
 use PHPUnit\Framework\TestCase;
 use Psr\Cache\CacheItemPoolInterface;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
 
-use function realpath;
 use function sprintf;
 
 /**
@@ -48,9 +48,10 @@ abstract class OrmTestCase extends TestCase
 
     private CacheItemPoolInterface|null $secondLevelCache = null;
 
+    /** @param list<string> $paths */
     protected function createAttributeDriver(array $paths = []): AttributeDriver
     {
-        return new AttributeDriver($paths);
+        return AttributeDriverFactory::createAttributeDriver($paths);
     }
 
     /**
@@ -86,9 +87,7 @@ abstract class OrmTestCase extends TestCase
 
         $config->setMetadataCache($metadataCache);
         $config->setQueryCache(self::getSharedQueryCache());
-        $config->setMetadataDriverImpl(new AttributeDriver([
-            realpath(__DIR__ . '/Models/Cache'),
-        ], true));
+        $config->setMetadataDriverImpl(AttributeDriverFactory::createAttributeDriver([__DIR__ . '/Models/Cache']));
 
         if ($this->isSecondLevelCacheEnabled) {
             $cacheConfig = new CacheConfiguration();

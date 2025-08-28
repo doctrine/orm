@@ -13,12 +13,11 @@ use Doctrine\DBAL\Result;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\Mapping\Driver\AttributeDriver;
 use Doctrine\ORM\Tools\SchemaTool;
 use Doctrine\Tests\Mocks\ArrayResultFactory;
+use Doctrine\Tests\Mocks\AttributeDriverFactory;
 
 use function array_map;
-use function realpath;
 
 final class EntityManagerFactory
 {
@@ -26,9 +25,9 @@ final class EntityManagerFactory
     {
         $config = new Configuration();
 
-        $config->setMetadataDriverImpl(new AttributeDriver([
-            realpath(__DIR__ . '/Models/Cache'),
-            realpath(__DIR__ . '/Models/GeoNames'),
+        $config->setMetadataDriverImpl(AttributeDriverFactory::createAttributeDriver([
+            __DIR__ . '/../Tests/Models/Cache',
+            __DIR__ . '/../Tests/Models/GeoNames',
         ]));
 
         $entityManager = new EntityManager(
@@ -49,10 +48,10 @@ final class EntityManagerFactory
     {
         $config = new Configuration();
 
-        $config->setMetadataDriverImpl(new AttributeDriver([
-            realpath(__DIR__ . '/Models/Cache'),
-            realpath(__DIR__ . '/Models/Generic'),
-            realpath(__DIR__ . '/Models/GeoNames'),
+        $config->setMetadataDriverImpl(AttributeDriverFactory::createAttributeDriver([
+            __DIR__ . '/../Tests/Models/Cache',
+            __DIR__ . '/../Tests/Models/Generic',
+            __DIR__ . '/../Tests/Models/GeoNames',
         ]));
 
         // A connection that doesn't really do anything

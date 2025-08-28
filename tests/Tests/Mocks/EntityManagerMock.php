@@ -8,7 +8,6 @@ use Doctrine\Common\EventManager;
 use Doctrine\DBAL\Connection;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityManager;
-use Doctrine\ORM\Mapping\Driver\AttributeDriver;
 use Doctrine\ORM\Proxy\ProxyFactory;
 use Doctrine\ORM\UnitOfWork;
 
@@ -24,7 +23,7 @@ class EntityManagerMock extends EntityManager
     {
         if ($config === null) {
             $config = new Configuration();
-            $config->setMetadataDriverImpl(new AttributeDriver([]));
+            $config->setMetadataDriverImpl(AttributeDriverFactory::createAttributeDriver());
         }
 
         parent::__construct($conn, $config, $eventManager);
