@@ -10,15 +10,15 @@ parameters:
         # We can be certain that those values are not matched.
         -
             message: '~^Match expression does not handle remaining values:~'
-            path: src/Persisters/Entity/BasicEntityPersister.php
+            path: src/Utility/PersisterHelper.php
 
         # DBAL 4 compatibility
         -
             message: '~^Method Doctrine\\ORM\\Query\\AST\\Functions\\TrimFunction::getTrimMode\(\) never returns .* so it can be removed from the return type\.$~'
             path: src/Query/AST/Functions/TrimFunction.php
         -
-            message: '~^Method Doctrine\\ORM\\Persisters\\Entity\\BasicEntityPersister\:\:getArrayBindingType\(\) never returns .* so it can be removed from the return type\.$~'
-            path: src/Persisters/Entity/BasicEntityPersister.php
+            message: '~^Method Doctrine\\ORM\\Utility\\PersisterHelper\:\:getArrayBindingType\(\) never returns .* so it can be removed from the return type\.$~'
+            path: src/Utility/PersisterHelper.php
 
         # Compatibility with DBAL 3
         # See https://github.com/doctrine/dbal/pull/3480

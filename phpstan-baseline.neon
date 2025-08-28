@@ -2023,14 +2023,8 @@ parameters:
 			path: src/Persisters/Entity/BasicEntityPersister.php
 
 		-
-			message: '#^Access to an undefined property Doctrine\\ORM\\Mapping\\ManyToManyOwningSideMapping\|Doctrine\\ORM\\Mapping\\ManyToOneAssociationMapping\|Doctrine\\ORM\\Mapping\\OneToOneOwningSideMapping\:\:\$relationToTargetKeyColumns\.$#'
-			identifier: property.notFound
-			count: 1
-			path: src/Persisters/Entity/BasicEntityPersister.php
-
-		-
-			message: '#^Access to an undefined property Doctrine\\ORM\\Mapping\\ManyToManyOwningSideMapping\|Doctrine\\ORM\\Mapping\\ManyToOneAssociationMapping\|Doctrine\\ORM\\Mapping\\OneToOneOwningSideMapping\:\:\$sourceToTargetKeyColumns\.$#'
-			identifier: property.notFound
+			message: '#^Access to property \$value on an unknown class Doctrine\\ORM\\Persisters\\Entity\\BackedEnum\.$#'
+			identifier: class.notFound
 			count: 1
 			path: src/Persisters/Entity/BasicEntityPersister.php
 
@@ -2041,20 +2035,14 @@ parameters:
 			path: src/Persisters/Entity/BasicEntityPersister.php
 
 		-
+			message: '#^Class Doctrine\\ORM\\Persisters\\Entity\\BackedEnum not found\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Persisters/Entity/BasicEntityPersister.php
+
+		-
 			message: '#^Method Doctrine\\ORM\\Persisters\\Entity\\BasicEntityPersister\:\:__construct\(\) has parameter \$class with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
 			identifier: missingType.generics
-			count: 1
-			path: src/Persisters/Entity/BasicEntityPersister.php
-
-		-
-			message: '#^Method Doctrine\\ORM\\Persisters\\Entity\\BasicEntityPersister\:\:expandCriteriaParameters\(\) should return array\{list\<mixed\>, list\<Doctrine\\DBAL\\ArrayParameterType\:\:ASCII\|Doctrine\\DBAL\\ArrayParameterType\:\:BINARY\|Doctrine\\DBAL\\ArrayParameterType\:\:INTEGER\|Doctrine\\DBAL\\ArrayParameterType\:\:STRING\|Doctrine\\DBAL\\ParameterType\:\:ASCII\|Doctrine\\DBAL\\ParameterType\:\:BINARY\|Doctrine\\DBAL\\ParameterType\:\:BOOLEAN\|Doctrine\\DBAL\\ParameterType\:\:INTEGER\|Doctrine\\DBAL\\ParameterType\:\:LARGE_OBJECT\|Doctrine\\DBAL\\ParameterType\:\:NULL\|Doctrine\\DBAL\\ParameterType\:\:STRING\|string\>\} but returns array\{array\<mixed\>, list\<Doctrine\\DBAL\\ArrayParameterType\:\:ASCII\|Doctrine\\DBAL\\ArrayParameterType\:\:BINARY\|Doctrine\\DBAL\\ArrayParameterType\:\:INTEGER\|Doctrine\\DBAL\\ArrayParameterType\:\:STRING\|Doctrine\\DBAL\\ParameterType\:\:ASCII\|Doctrine\\DBAL\\ParameterType\:\:BINARY\|Doctrine\\DBAL\\ParameterType\:\:BOOLEAN\|Doctrine\\DBAL\\ParameterType\:\:INTEGER\|Doctrine\\DBAL\\ParameterType\:\:LARGE_OBJECT\|Doctrine\\DBAL\\ParameterType\:\:NULL\|Doctrine\\DBAL\\ParameterType\:\:STRING\|string\>\}\.$#'
-			identifier: return.type
-			count: 1
-			path: src/Persisters/Entity/BasicEntityPersister.php
-
-		-
-			message: '#^Method Doctrine\\ORM\\Persisters\\Entity\\BasicEntityPersister\:\:expandParameters\(\) should return array\{list\<mixed\>, list\<Doctrine\\DBAL\\ArrayParameterType\:\:ASCII\|Doctrine\\DBAL\\ArrayParameterType\:\:BINARY\|Doctrine\\DBAL\\ArrayParameterType\:\:INTEGER\|Doctrine\\DBAL\\ArrayParameterType\:\:STRING\|Doctrine\\DBAL\\ParameterType\:\:ASCII\|Doctrine\\DBAL\\ParameterType\:\:BINARY\|Doctrine\\DBAL\\ParameterType\:\:BOOLEAN\|Doctrine\\DBAL\\ParameterType\:\:INTEGER\|Doctrine\\DBAL\\ParameterType\:\:LARGE_OBJECT\|Doctrine\\DBAL\\ParameterType\:\:NULL\|Doctrine\\DBAL\\ParameterType\:\:STRING\|string\>\} but returns array\{array\<mixed\>, list\<Doctrine\\DBAL\\ArrayParameterType\:\:ASCII\|Doctrine\\DBAL\\ArrayParameterType\:\:BINARY\|Doctrine\\DBAL\\ArrayParameterType\:\:INTEGER\|Doctrine\\DBAL\\ArrayParameterType\:\:STRING\|Doctrine\\DBAL\\ParameterType\:\:ASCII\|Doctrine\\DBAL\\ParameterType\:\:BINARY\|Doctrine\\DBAL\\ParameterType\:\:BOOLEAN\|Doctrine\\DBAL\\ParameterType\:\:INTEGER\|Doctrine\\DBAL\\ParameterType\:\:LARGE_OBJECT\|Doctrine\\DBAL\\ParameterType\:\:NULL\|Doctrine\\DBAL\\ParameterType\:\:STRING\|string\>\}\.$#'
-			identifier: return.type
 			count: 1
 			path: src/Persisters/Entity/BasicEntityPersister.php
 
@@ -2095,12 +2083,6 @@ parameters:
 			path: src/Persisters/Entity/BasicEntityPersister.php
 
 		-
-			message: '#^Method Doctrine\\ORM\\Persisters\\Entity\\BasicEntityPersister\:\:getIndividualValue\(\) should return list\<mixed\> but returns array\<mixed\>\.$#'
-			identifier: return.type
-			count: 1
-			path: src/Persisters/Entity/BasicEntityPersister.php
-
-		-
 			message: '#^Method Doctrine\\ORM\\Persisters\\Entity\\BasicEntityPersister\:\:getSelectColumnAssociationSQL\(\) has parameter \$class with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
 			identifier: missingType.generics
 			count: 1
@@ -2109,18 +2091,6 @@ parameters:
 		-
 			message: '#^Method Doctrine\\ORM\\Persisters\\Entity\\BasicEntityPersister\:\:getSelectColumnSQL\(\) has parameter \$class with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
 			identifier: missingType.generics
-			count: 1
-			path: src/Persisters/Entity/BasicEntityPersister.php
-
-		-
-			message: '#^Method Doctrine\\ORM\\Persisters\\Entity\\BasicEntityPersister\:\:getTypes\(\) has parameter \$class with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
-			identifier: missingType.generics
-			count: 1
-			path: src/Persisters/Entity/BasicEntityPersister.php
-
-		-
-			message: '#^Method Doctrine\\ORM\\Persisters\\Entity\\BasicEntityPersister\:\:getTypes\(\) should return list\<Doctrine\\DBAL\\ArrayParameterType\:\:ASCII\|Doctrine\\DBAL\\ArrayParameterType\:\:BINARY\|Doctrine\\DBAL\\ArrayParameterType\:\:INTEGER\|Doctrine\\DBAL\\ArrayParameterType\:\:STRING\|Doctrine\\DBAL\\ParameterType\:\:ASCII\|Doctrine\\DBAL\\ParameterType\:\:BINARY\|Doctrine\\DBAL\\ParameterType\:\:BOOLEAN\|Doctrine\\DBAL\\ParameterType\:\:INTEGER\|Doctrine\\DBAL\\ParameterType\:\:LARGE_OBJECT\|Doctrine\\DBAL\\ParameterType\:\:NULL\|Doctrine\\DBAL\\ParameterType\:\:STRING\|string\> but returns list\<Doctrine\\DBAL\\ArrayParameterType\:\:ASCII\|Doctrine\\DBAL\\ArrayParameterType\:\:BINARY\|Doctrine\\DBAL\\ArrayParameterType\:\:INTEGER\|Doctrine\\DBAL\\ArrayParameterType\:\:STRING\|int\>\.$#'
-			identifier: return.type
 			count: 1
 			path: src/Persisters/Entity/BasicEntityPersister.php
 
@@ -3604,6 +3574,18 @@ parameters:
 			path: src/Utility/PersisterHelper.php
 
 		-
+			message: '#^Access to an undefined property Doctrine\\ORM\\Mapping\\ManyToManyOwningSideMapping\|Doctrine\\ORM\\Mapping\\ManyToOneAssociationMapping\|Doctrine\\ORM\\Mapping\\OneToOneOwningSideMapping\:\:\$relationToTargetKeyColumns\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Utility/PersisterHelper.php
+
+		-
+			message: '#^Access to an undefined property Doctrine\\ORM\\Mapping\\ManyToManyOwningSideMapping\|Doctrine\\ORM\\Mapping\\ManyToOneAssociationMapping\|Doctrine\\ORM\\Mapping\\OneToOneOwningSideMapping\:\:\$sourceToTargetKeyColumns\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Utility/PersisterHelper.php
+
+		-
 			message: '#^Method Doctrine\\ORM\\Utility\\PersisterHelper\:\:getTypeOfColumn\(\) has parameter \$class with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
 			identifier: missingType.generics
 			count: 1
@@ -3612,5 +3594,17 @@ parameters:
 		-
 			message: '#^Method Doctrine\\ORM\\Utility\\PersisterHelper\:\:getTypeOfField\(\) has parameter \$class with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
 			identifier: missingType.generics
+			count: 1
+			path: src/Utility/PersisterHelper.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Utility\\PersisterHelper\:\:inferParameterTypes\(\) has parameter \$class with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Utility/PersisterHelper.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Utility\\PersisterHelper\:\:inferParameterTypes\(\) should return list\<Doctrine\\DBAL\\ArrayParameterType\:\:ASCII\|Doctrine\\DBAL\\ArrayParameterType\:\:BINARY\|Doctrine\\DBAL\\ArrayParameterType\:\:INTEGER\|Doctrine\\DBAL\\ArrayParameterType\:\:STRING\|Doctrine\\DBAL\\ParameterType\:\:ASCII\|Doctrine\\DBAL\\ParameterType\:\:BINARY\|Doctrine\\DBAL\\ParameterType\:\:BOOLEAN\|Doctrine\\DBAL\\ParameterType\:\:INTEGER\|Doctrine\\DBAL\\ParameterType\:\:LARGE_OBJECT\|Doctrine\\DBAL\\ParameterType\:\:NULL\|Doctrine\\DBAL\\ParameterType\:\:STRING\|string\> but returns list\<Doctrine\\DBAL\\ArrayParameterType\:\:ASCII\|Doctrine\\DBAL\\ArrayParameterType\:\:BINARY\|Doctrine\\DBAL\\ArrayParameterType\:\:INTEGER\|Doctrine\\DBAL\\ArrayParameterType\:\:STRING\|int\>\.$#'
+			identifier: return.type
 			count: 1
 			path: src/Utility/PersisterHelper.php

@@ -18,6 +18,7 @@ use PHPUnit\Framework\Attributes\Group;
 
 use function assert;
 use function class_exists;
+use function get_class;
 
 /**
  * Basic many-to-many association tests.
@@ -569,6 +570,44 @@ class ManyToManyBasicAssociationTest extends OrmFunctionalTestCase
 
         $firstGroup = $result->first();
         self::assertEquals('Developers_0', $firstGroup->name);
+
+        self::assertFalse($user->groups->isInitialized(), 'Post-condition: matching does not initialize collection');
+    }
+
+    public function testMatchingWithInCondition(): void
+    {
+        $user = $this->addCmsUserGblancoWithGroups(2);
+        $this->_em->clear();
+
+        $user = $this->_em->find(get_class($user), $user->id);
+
+        $groups = $user->groups;
+        self::assertFalse($user->groups->isInitialized(), 'Pre-condition: lazy collection');
+
+        $criteria = Criteria::create()->where(Criteria::expr()->in('name', ['Developers_1']));
+        $result   = $groups->matching($criteria);
+
+        self::assertCount(1, $result);
+        self::assertEquals('Developers_1', $result[0]->name);
+
+        self::assertFalse($user->groups->isInitialized(), 'Post-condition: matching does not initialize collection');
+    }
+
+    public function testMatchingWithNotInCondition(): void
+    {
+        $user = $this->addCmsUserGblancoWithGroups(2);
+        $this->_em->clear();
+
+        $user = $this->_em->find(get_class($user), $user->id);
+
+        $groups = $user->groups;
+        self::assertFalse($user->groups->isInitialized(), 'Pre-condition: lazy collection');
+
+        $criteria = Criteria::create()->where(Criteria::expr()->notIn('name', ['Developers_0']));
+        $result   = $groups->matching($criteria);
+
+        self::assertCount(1, $result);
+        self::assertEquals('Developers_1', $result[0]->name);
 
         self::assertFalse($user->groups->isInitialized(), 'Post-condition: matching does not initialize collection');
     }
