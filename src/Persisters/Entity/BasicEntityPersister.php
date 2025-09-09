@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Persisters\Entity;
 
-use BackedEnum;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\Common\Collections\Expr\Comparison;
 use Doctrine\Common\Collections\Order;
@@ -31,9 +30,7 @@ use Doctrine\ORM\Persisters\Exception\InvalidOrientation;
 use Doctrine\ORM\Persisters\Exception\UnrecognizedField;
 use Doctrine\ORM\Persisters\SqlExpressionVisitor;
 use Doctrine\ORM\Persisters\SqlValueVisitor;
-use Doctrine\ORM\Proxy\DefaultProxyClassNameResolver;
 use Doctrine\ORM\Query;
-use Doctrine\ORM\Query\QueryException;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\ORM\Repository\Exception\InvalidFindByCall;
 use Doctrine\ORM\UnitOfWork;
@@ -45,7 +42,6 @@ use LengthException;
 use function array_combine;
 use function array_keys;
 use function array_map;
-use function array_merge;
 use function array_search;
 use function array_unique;
 use function array_values;
@@ -53,7 +49,6 @@ use function assert;
 use function count;
 use function implode;
 use function is_array;
-use function is_object;
 use function reset;
 use function spl_object_id;
 use function sprintf;
@@ -353,7 +348,7 @@ class BasicEntityPersister implements EntityPersister
         $types = [];
 
         foreach ($id as $field => $value) {
-            $types = [...$types, ...$this->getTypes($field, $value, $versionedClass)];
+            $types = [...$types, ...PersisterHelper::inferParameterTypes($field, $value, $versionedClass, $this->em)];
         }
 
         return $types;
@@ -919,8 +914,8 @@ class BasicEntityPersister implements EntityPersister
                 continue;
             }
 
-            $sqlParams = [...$sqlParams, ...$this->getValues($value)];
-            $sqlTypes  = [...$sqlTypes, ...$this->getTypes($field, $value, $this->class)];
+            $sqlParams = [...$sqlParams, ...PersisterHelper::convertToParameterValue($value, $this->em)];
+            $sqlTypes  = [...$sqlTypes, ...PersisterHelper::inferParameterTypes($field, $value, $this->class, $this->em)];
         }
 
         return [$sqlParams, $sqlTypes];
@@ -1858,8 +1853,8 @@ class BasicEntityPersister implements EntityPersister
                 continue; // skip null values.
             }
 
-            $types  = [...$types, ...$this->getTypes($field, $value, $this->class)];
-            $params = array_merge($params, $this->getValues($value));
+            $types  = [...$types, ...PersisterHelper::inferParameterTypes($field, $value, $this->class, $this->em)];
+            $params = [...$params, ...PersisterHelper::convertToParameterValue($value, $this->em)];
         }
 
         return [$params, $types];
@@ -1887,128 +1882,11 @@ class BasicEntityPersister implements EntityPersister
                 continue; // skip null values.
             }
 
-            $types  = [...$types, ...$this->getTypes($criterion['field'], $criterion['value'], $criterion['class'])];
-            $params = array_merge($params, $this->getValues($criterion['value']));
+            $types  = [...$types, ...PersisterHelper::inferParameterTypes($criterion['field'], $criterion['value'], $criterion['class'], $this->em)];
+            $params = [...$params, ...PersisterHelper::convertToParameterValue($criterion['value'], $this->em)];
         }
 
         return [$params, $types];
-    }
-
-    /**
-     * Infers field types to be used by parameter type casting.
-     *
-     * @return list<ParameterType|ArrayParameterType|int|string>
-     * @phpstan-return list<ParameterType::*|ArrayParameterType::*|string>
-     *
-     * @throws QueryException
-     */
-    private function getTypes(string $field, mixed $value, ClassMetadata $class): array
-    {
-        $types = [];
-
-        switch (true) {
-            case isset($class->fieldMappings[$field]):
-                $types = array_merge($types, [$class->fieldMappings[$field]->type]);
-                break;
-
-            case isset($class->associationMappings[$field]):
-                $assoc = $this->em->getMetadataFactory()->getOwningSide($class->associationMappings[$field]);
-                $class = $this->em->getClassMetadata($assoc->targetEntity);
-
-                if ($assoc->isManyToManyOwningSide()) {
-                    $columns = $assoc->relationToTargetKeyColumns;
-                } else {
-                    assert($assoc->isToOneOwningSide());
-                    $columns = $assoc->sourceToTargetKeyColumns;
-                }
-
-                foreach ($columns as $column) {
-                    $types[] = PersisterHelper::getTypeOfColumn($column, $class, $this->em);
-                }
-
-                break;
-
-            default:
-                $types[] = ParameterType::STRING;
-                break;
-        }
-
-        if (is_array($value)) {
-            return array_map($this->getArrayBindingType(...), $types);
-        }
-
-        return $types;
-    }
-
-    /** @phpstan-return ArrayParameterType::* */
-    private function getArrayBindingType(ParameterType|int|string $type): ArrayParameterType|int
-    {
-        if (! $type instanceof ParameterType) {
-            $type = Type::getType((string) $type)->getBindingType();
-        }
-
-        return match ($type) {
-            ParameterType::STRING => ArrayParameterType::STRING,
-            ParameterType::INTEGER => ArrayParameterType::INTEGER,
-            ParameterType::ASCII => ArrayParameterType::ASCII,
-            ParameterType::BINARY => ArrayParameterType::BINARY,
-        };
-    }
-
-    /**
-     * Retrieves the parameters that identifies a value.
-     *
-     * @return mixed[]
-     */
-    private function getValues(mixed $value): array
-    {
-        if (is_array($value)) {
-            $newValue = [];
-
-            foreach ($value as $itemValue) {
-                $newValue = array_merge($newValue, $this->getValues($itemValue));
-            }
-
-            return [$newValue];
-        }
-
-        return $this->getIndividualValue($value);
-    }
-
-    /**
-     * Retrieves an individual parameter value.
-     *
-     * @phpstan-return list<mixed>
-     */
-    private function getIndividualValue(mixed $value): array
-    {
-        if (! is_object($value)) {
-            return [$value];
-        }
-
-        if ($value instanceof BackedEnum) {
-            return [$value->value];
-        }
-
-        $valueClass = DefaultProxyClassNameResolver::getClass($value);
-
-        if ($this->em->getMetadataFactory()->isTransient($valueClass)) {
-            return [$value];
-        }
-
-        $class = $this->em->getClassMetadata($valueClass);
-
-        if ($class->isIdentifierComposite) {
-            $newValue = [];
-
-            foreach ($class->getIdentifierValues($value) as $innerValue) {
-                $newValue = array_merge($newValue, $this->getValues($innerValue));
-            }
-
-            return $newValue;
-        }
-
-        return [$this->em->getUnitOfWork()->getSingleIdentifierValue($value)];
     }
 
     public function exists(object $entity, Criteria|null $extraConditions = null): bool
