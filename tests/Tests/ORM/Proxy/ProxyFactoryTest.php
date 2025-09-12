@@ -21,8 +21,8 @@ use Doctrine\Tests\Models\Company\CompanyPerson;
 use Doctrine\Tests\Models\ECommerce\ECommerceFeature;
 use Doctrine\Tests\OrmTestCase;
 use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\IgnoreDeprecations;
 use PHPUnit\Framework\Attributes\RequiresPhp;
-use PHPUnit\Framework\Attributes\WithoutErrorHandler;
 use ReflectionClass;
 use ReflectionProperty;
 use stdClass;
@@ -247,7 +247,7 @@ class ProxyFactoryTest extends OrmTestCase
     }
 
     #[RequiresPhp('8.4')]
-    #[WithoutErrorHandler]
+    #[IgnoreDeprecations]
     public function testProxyFactoryTriggersDeprecationWhenNativeLazyObjectsAreDisabled(): void
     {
         $this->emMock->getConfiguration()->enableNativeLazyObjects(false);
