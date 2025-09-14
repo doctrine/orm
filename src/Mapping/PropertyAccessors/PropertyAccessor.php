@@ -14,8 +14,6 @@ use ReflectionProperty;
  *
  * This abstraction over ReflectionProperty is necessary, because for several features of either Doctrine or PHP, we
  * need to handle edge cases in reflection at a central location in the code.
- *
- * @internal
  */
 interface PropertyAccessor
 {
