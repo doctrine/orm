@@ -748,9 +748,9 @@ class BasicEntityPersister implements EntityPersister
     /**
      * {@inheritDoc}
      */
-    public function loadById(array $identifier, object|null $entity = null): object|null
+    public function loadById(array $identifier, object|null $entity = null, bool $readOnly = false): object|null
     {
-        return $this->load($identifier, $entity);
+        return $this->load($identifier, $entity, hints: [Query::HINT_READ_ONLY => $readOnly]);
     }
 
     /**

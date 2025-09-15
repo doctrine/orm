@@ -130,7 +130,7 @@ interface EntityManagerInterface extends ObjectManager
      *
      * @template T of object
      */
-    public function find(string $className, mixed $id, LockMode|int|null $lockMode = null, int|null $lockVersion = null): object|null;
+    public function find(string $className, mixed $id, LockMode|int|null $lockMode = null, int|null $lockVersion = null, bool $readOnly = false): object|null;
 
     /**
      * Refreshes the persistent state of an object from the database,

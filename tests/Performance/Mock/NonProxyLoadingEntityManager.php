@@ -163,9 +163,9 @@ class NonProxyLoadingEntityManager implements EntityManagerInterface
         return $this->realEntityManager->hasFilters();
     }
 
-    public function find(string $className, mixed $id, LockMode|int|null $lockMode = null, int|null $lockVersion = null): object|null
+    public function find(string $className, mixed $id, LockMode|int|null $lockMode = null, int|null $lockVersion = null, bool $readOnly = false): object|null
     {
-        return $this->realEntityManager->find($className, $id, $lockMode, $lockVersion);
+        return $this->realEntityManager->find($className, $id, $lockMode, $lockVersion, $readOnly);
     }
 
     public function persist(object $object): void

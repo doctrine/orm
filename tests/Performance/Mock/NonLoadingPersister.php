@@ -18,7 +18,7 @@ class NonLoadingPersister extends BasicEntityPersister
         $this->class = $class;
     }
 
-    public function loadById(array $identifier, object|null $entity = null): object|null
+    public function loadById(array $identifier, object|null $entity = null, bool $readOnly = false): object|null
     {
         return $entity ?? new ($this->class->name)();
     }

@@ -3080,9 +3080,6 @@ class UnitOfWork implements PropertyChangedListener
     /**
      * Marks an entity as read-only so that it will not be considered for updates during UnitOfWork#commit().
      *
-     * This operation cannot be undone as some parts of the UnitOfWork now keep gathering information
-     * on this object that might be necessary to perform a correct update.
-     *
      * @throws ORMInvalidArgumentException
      */
     public function markReadOnly(object $object): void
@@ -3092,6 +3089,21 @@ class UnitOfWork implements PropertyChangedListener
         }
 
         $this->readOnlyObjects[spl_object_id($object)] = true;
+    }
+
+    /**
+     * Unmarks an entity as read-only so that it will be considered for updates during UnitOfWork#commit()
+     * even if it was previously fetched as read-only.
+     *
+     * @throws ORMInvalidArgumentException
+     */
+    public function unmarkReadOnly(object $object): void
+    {
+        if (! $this->isInIdentityMap($object)) {
+            throw ORMInvalidArgumentException::readOnlyRequiresManagedEntity($object);
+        }
+
+        unset($this->readOnlyObjects[spl_object_id($object)]);
     }
 
     /**

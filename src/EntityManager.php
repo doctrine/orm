@@ -271,7 +271,7 @@ class EntityManager implements EntityManagerInterface
     /**
      * {@inheritDoc}
      */
-    public function find($className, mixed $id, LockMode|int|null $lockMode = null, int|null $lockVersion = null): object|null
+    public function find($className, mixed $id, LockMode|int|null $lockMode = null, int|null $lockVersion = null, bool $readOnly = false): object|null
     {
         $class = $this->metadataFactory->getMetadataFor(ltrim($className, '\\'));
 
@@ -343,6 +343,10 @@ class EntityManager implements EntityManagerInterface
                     break;
             }
 
+            if (! $readOnly && $unitOfWork->isReadOnly($entity)) {
+                $unitOfWork->unmarkReadOnly($entity);
+            }
+
             return $entity; // Hit!
         }
 
@@ -350,7 +354,7 @@ class EntityManager implements EntityManagerInterface
 
         switch (true) {
             case $lockMode === LockMode::OPTIMISTIC:
-                $entity = $persister->load($sortedId);
+                $entity = $persister->load($sortedId, hints: [Query::HINT_READ_ONLY => $readOnly]);
 
                 if ($entity !== null) {
                     $unitOfWork->lock($entity, $lockMode, $lockVersion);
@@ -360,10 +364,10 @@ class EntityManager implements EntityManagerInterface
 
             case $lockMode === LockMode::PESSIMISTIC_READ:
             case $lockMode === LockMode::PESSIMISTIC_WRITE:
-                return $persister->load($sortedId, null, null, [], $lockMode);
+                return $persister->load($sortedId, null, null, [Query::HINT_READ_ONLY => $readOnly], $lockMode);
 
             default:
-                return $persister->loadById($sortedId);
+                return $persister->loadById($sortedId, readOnly: $readOnly);
         }
     }
 

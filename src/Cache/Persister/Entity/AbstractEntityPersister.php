@@ -371,7 +371,7 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
     /**
      * {@inheritDoc}
      */
-    public function loadById(array $identifier, object|null $entity = null): object|null
+    public function loadById(array $identifier, object|null $entity = null, bool $readOnly = false): object|null
     {
         $cacheKey   = new EntityCacheKey($this->class->rootEntityName, $identifier);
         $cacheEntry = $this->region->get($cacheKey);
@@ -391,7 +391,7 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
             }
         }
 
-        $entity = $this->persister->loadById($identifier, $entity);
+        $entity = $this->persister->loadById($identifier, $entity, $readOnly);
 
         if ($entity === null) {
             return null;

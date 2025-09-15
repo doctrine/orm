@@ -182,7 +182,7 @@ interface EntityPersister
      *
      * @todo Check parameters
      */
-    public function loadById(array $identifier, object|null $entity = null): object|null;
+    public function loadById(array $identifier, object|null $entity = null, bool $readOnly = false): object|null;
 
     /**
      * Loads an entity of this persister's mapped class as part of a single-valued

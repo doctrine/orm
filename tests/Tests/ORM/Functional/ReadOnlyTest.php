@@ -128,7 +128,7 @@ class ReadOnlyTest extends OrmFunctionalTestCase
         self::assertFalse($this->_em->getUnitOfWork()->isReadOnly($user));
     }
 
-    public function testNotWriteableIfObjectWasKnownAsReadOnlyBefore(): void
+    public function testWriteableEvenIfObjectWasKnownAsReadOnlyBefore(): void
     {
         $user = new ReadOnlyEntity('Théo', 1234);
 
@@ -140,7 +140,7 @@ class ReadOnlyTest extends OrmFunctionalTestCase
         $userIntoIdentityMap = $this->getWithReadOnlyHint($user->id, readOnly: true);
         $user                = $this->getWithoutReadOnlyHint($user->id);
 
-        self::assertTrue($this->_em->getUnitOfWork()->isReadOnly($user));
+        self::assertFalse($this->_em->getUnitOfWork()->isReadOnly($user));
     }
 
     private function getWithoutReadOnlyHint(int $id): ReadOnlyEntity
