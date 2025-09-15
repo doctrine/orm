@@ -37,7 +37,7 @@ class ReadOnlyTest extends OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $dbReadOnly = $this->_em->find(ReadOnlyEntity::class, $readOnly->id);
+        $dbReadOnly = $this->getWithoutReadOnlyHint($readOnly->id);
         self::assertEquals('Test1', $dbReadOnly->name);
         self::assertEquals(1234, $dbReadOnly->numericValue);
     }
@@ -77,13 +77,7 @@ class ReadOnlyTest extends OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $dql = 'SELECT u FROM ' . ReadOnlyEntity::class . ' u WHERE u.id = ?1';
-
-        $query = $this->_em->createQuery($dql);
-        $query->setParameter(1, $user->id);
-        $query->setHint(Query::HINT_READ_ONLY, true);
-
-        $user = $query->getSingleResult();
+        $user = $this->getWithReadOnlyHint($user->id, readOnly: true);
 
         self::assertTrue($this->_em->getUnitOfWork()->isReadOnly($user));
     }
@@ -97,11 +91,7 @@ class ReadOnlyTest extends OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $query = $this->_em->createQuery('SELECT u FROM ' . ReadOnlyEntity::class . ' u WHERE u.id = ?1');
-        $query->setParameter(1, $user->id);
-        $query->setHint(Query::HINT_READ_ONLY, false);
-
-        $user = $query->getSingleResult();
+        $user = $this->getWithReadOnlyHint($user->id, readOnly: false);
 
         self::assertFalse($this->_em->getUnitOfWork()->isReadOnly($user));
     }
@@ -117,13 +107,7 @@ class ReadOnlyTest extends OrmFunctionalTestCase
 
         $user = $this->_em->getReference(ReadOnlyEntity::class, $user->id);
 
-        $dql = 'SELECT u FROM ' . ReadOnlyEntity::class . ' u WHERE u.id = ?1';
-
-        $query = $this->_em->createQuery($dql);
-        $query->setParameter(1, $user->id);
-        $query->setHint(Query::HINT_READ_ONLY, true);
-
-        $user = $query->getSingleResult();
+        $user = $this->getWithReadOnlyHint($user->id, readOnly: true);
 
         self::assertFalse($this->_em->getUnitOfWork()->isReadOnly($user));
     }
@@ -137,17 +121,42 @@ class ReadOnlyTest extends OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $userIntoIdentityMap = $this->_em->find(ReadOnlyEntity::class, $user->id);
+        $userIntoIdentityMap = $this->getWithoutReadOnlyHint($user->id);
 
+        $user = $this->getWithReadOnlyHint($user->id, readOnly: true);
+
+        self::assertFalse($this->_em->getUnitOfWork()->isReadOnly($user));
+    }
+
+    public function testNotWriteableIfObjectWasKnownAsReadOnlyBefore(): void
+    {
+        $user = new ReadOnlyEntity('Théo', 1234);
+
+        $this->_em->persist($user);
+
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $userIntoIdentityMap = $this->getWithReadOnlyHint($user->id, readOnly: true);
+        $user                = $this->getWithoutReadOnlyHint($user->id);
+
+        self::assertTrue($this->_em->getUnitOfWork()->isReadOnly($user));
+    }
+
+    private function getWithoutReadOnlyHint(int $id): ReadOnlyEntity
+    {
+        return $this->_em->find(ReadOnlyEntity::class, $id);
+    }
+
+    private function getWithReadOnlyHint(int $id, bool $readOnly): ReadOnlyEntity
+    {
         $dql = 'SELECT u FROM ' . ReadOnlyEntity::class . ' u WHERE u.id = ?1';
 
         $query = $this->_em->createQuery($dql);
-        $query->setParameter(1, $user->id);
-        $query->setHint(Query::HINT_READ_ONLY, true);
+        $query->setParameter(1, $id);
+        $query->setHint(Query::HINT_READ_ONLY, $readOnly);
 
-        $user = $query->getSingleResult();
-
-        self::assertFalse($this->_em->getUnitOfWork()->isReadOnly($user));
+        return $query->getSingleResult();
     }
 }
 
