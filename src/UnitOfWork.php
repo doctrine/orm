@@ -51,6 +51,7 @@ use InvalidArgumentException;
 use RuntimeException;
 use Stringable;
 use Symfony\Component\VarExporter\Hydrator;
+use Throwable;
 use UnexpectedValueException;
 
 use function array_chunk;
@@ -3054,8 +3055,12 @@ class UnitOfWork implements PropertyChangedListener
         }
 
         if ($this->em->getConfiguration()->isNativeLazyObjectsEnabled()) {
-            $reflection = $this->em->getClassMetadata($obj::class)->getReflectionClass();
-            $reflection->initializeLazyObject($obj);
+            try {
+                $reflection = $this->em->getClassMetadata($obj::class)->getReflectionClass();
+                $reflection->initializeLazyObject($obj);
+            } catch (Throwable) {
+                // No-op for non-Doctrine entities according to the ObjectManager::initializeObject() interface documentation.
+            }
         }
     }
 
@@ -3063,7 +3068,11 @@ class UnitOfWork implements PropertyChangedListener
     public function isUninitializedObject(mixed $obj): bool
     {
         if ($this->em->getConfiguration()->isNativeLazyObjectsEnabled() && ! ($obj instanceof Collection) && is_object($obj)) {
-            return $this->em->getClassMetadata($obj::class)->reflClass->isUninitializedLazyObject($obj);
+            try {
+                return $this->em->getClassMetadata($obj::class)->reflClass->isUninitializedLazyObject($obj);
+            } catch (Throwable) {
+                return false;
+            }
         }
 
         return $obj instanceof InternalProxy && ! $obj->__isInitialized();
