@@ -5020,12 +5020,6 @@ parameters:
 			path: src/Tools/ResolveTargetEntityListener.php
 
 		-
-			message: '#^Parameter \#1 \$className of method Doctrine\\Persistence\\Mapping\\AbstractClassMetadataFactory\<Doctrine\\ORM\\Mapping\\ClassMetadata\>\:\:setMetadataFor\(\) expects class\-string, \(int\|string\) given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Tools/ResolveTargetEntityListener.php
-
-		-
 			message: '#^Call to function is_numeric\(\) with int\<0, max\> will always evaluate to true\.$#'
 			identifier: function.alreadyNarrowedType
 			count: 1
