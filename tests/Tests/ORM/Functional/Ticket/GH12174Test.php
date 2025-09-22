@@ -36,7 +36,7 @@ class GH12174Test extends OrmFunctionalTestCase
         );
     }
 
-    public function testIt(): void
+    public function testMappedSuperclassNameCanBeUsedToResolveTargetEntityClass(): void
     {
         $smurf = $this->_em->getClassMetadata(GH12174Smurf::class);
         self::assertTrue($smurf->isMappedSuperclass);
