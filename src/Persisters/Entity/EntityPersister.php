@@ -297,4 +297,6 @@ interface EntityPersister
      * Checks whether the given managed entity exists in the database.
      */
     public function exists(object $entity, Criteria|null $extraConditions = null): bool;
+
+    public function usesReturningClause(): bool;
 }

@@ -12,6 +12,9 @@ use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\LockMode;
 use Doctrine\DBAL\ParameterType;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
+use Doctrine\DBAL\Platforms\MariaDb1052Platform;
+use Doctrine\DBAL\Platforms\PostgreSQLPlatform;
+use Doctrine\DBAL\Platforms\SqlitePlatform;
 use Doctrine\DBAL\Result;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\DBAL\Types\Types;
@@ -164,6 +167,8 @@ class BasicEntityPersister implements EntityPersister
 
     private string|null $filterHash = null;
 
+    private bool $shouldUseReturningClause;
+
     /**
      * Initializes a new <tt>BasicEntityPersister</tt> that uses the given EntityManager
      * and persists instances of the class described by the given ClassMetadata descriptor.
@@ -174,20 +179,23 @@ class BasicEntityPersister implements EntityPersister
         protected EntityManagerInterface $em,
         protected ClassMetadata $class,
     ) {
-        $this->conn                  = $em->getConnection();
-        $this->platform              = $this->conn->getDatabasePlatform();
-        $this->quoteStrategy         = $em->getConfiguration()->getQuoteStrategy();
-        $this->identifierFlattener   = new IdentifierFlattener($em->getUnitOfWork(), $em->getMetadataFactory());
-        $this->noLimitsContext       = $this->currentPersisterContext = new CachedPersisterContext(
+        $this->conn                     = $em->getConnection();
+        $this->platform                 = $this->conn->getDatabasePlatform();
+        $this->quoteStrategy            = $em->getConfiguration()->getQuoteStrategy();
+        $this->identifierFlattener      = new IdentifierFlattener($em->getUnitOfWork(), $em->getMetadataFactory());
+        $this->noLimitsContext          = $this->currentPersisterContext = new CachedPersisterContext(
             $class,
             new Query\ResultSetMapping(),
             false,
         );
-        $this->limitsHandlingContext = new CachedPersisterContext(
+        $this->limitsHandlingContext    = new CachedPersisterContext(
             $class,
             new Query\ResultSetMapping(),
             true,
         );
+        $this->shouldUseReturningClause = $class->isIdGeneratorIdentity()
+            && $em->getConfiguration()->getUseReturningClauseForGeneratingId()
+            && $this->supportsReturningClause($this->platform);
     }
 
     final protected function isFilterHashUpToDate(): bool
@@ -247,11 +255,16 @@ class BasicEntityPersister implements EntityPersister
                 }
             }
 
-            $stmt->executeStatement();
+            $result = $stmt->executeQuery();
 
             if ($isPostInsertId) {
-                $generatedId = $idGenerator->generateId($this->em, $entity);
-                $id          = [$this->class->identifier[0] => $generatedId];
+                if ($this->shouldUseReturningClause) {
+                    $generatedId = $result->fetchOne();
+                } else {
+                    $generatedId = $idGenerator->generateId($this->em, $entity);
+                }
+
+                $id = [$this->class->identifier[0] => $generatedId];
 
                 $uow->assignPostInsertId($entity, $generatedId);
             } else {
@@ -1413,7 +1426,16 @@ class BasicEntityPersister implements EntityPersister
         if ($columns === []) {
             $identityColumn = $this->quoteStrategy->getColumnName($this->class->identifier[0], $this->class, $this->platform);
 
-            return $this->platform->getEmptyIdentityInsertSQL($tableName, $identityColumn);
+            $insertSql = $this->platform->getEmptyIdentityInsertSQL($tableName, $identityColumn);
+
+            if ($this->shouldUseReturningClause) {
+                $insertSql .= sprintf(
+                    ' RETURNING %s',
+                    $this->quoteStrategy->getColumnName($this->class->getSingleIdentifierFieldName(), $this->class, $this->platform),
+                );
+            }
+
+            return $insertSql;
         }
 
         $placeholders = [];
@@ -1437,7 +1459,26 @@ class BasicEntityPersister implements EntityPersister
         $columns      = implode(', ', $columns);
         $placeholders = implode(', ', $placeholders);
 
-        return sprintf('INSERT INTO %s (%s) VALUES (%s)', $tableName, $columns, $placeholders);
+        $insertSql = sprintf('INSERT INTO %s (%s) VALUES (%s)', $tableName, $columns, $placeholders);
+
+        if ($this->shouldUseReturningClause) {
+            $insertSql .= sprintf(
+                ' RETURNING %s',
+                $this->quoteStrategy->getColumnName($this->class->getSingleIdentifierFieldName(), $this->class, $this->platform),
+            );
+        }
+
+        return $insertSql;
+    }
+
+    /**
+     * This should be replaced with a method call from AbstractPlatform
+     */
+    private function supportsReturningClause(AbstractPlatform $platform): bool
+    {
+        return $platform instanceof PostgreSQLPlatform
+            || $platform instanceof MariaDb1052Platform // lowest version 10.5.0 (https://mariadb.com/kb/en/insertreturning/)
+            || $platform instanceof SqlitePlatform;     // lowest version 3.35.0 (https://www.sqlite.org/lang_returning.html)
     }
 
     /**
@@ -2002,5 +2043,10 @@ class BasicEntityPersister implements EntityPersister
             },
             $class->identifier,
         );
+    }
+
+    public function usesReturningClause(): bool
+    {
+        return $this->shouldUseReturningClause;
     }
 }

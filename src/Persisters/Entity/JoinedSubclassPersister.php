@@ -144,11 +144,16 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
                 $rootTableStmt->bindValue($paramIndex++, $value, $this->columnTypes[$columnName]);
             }
 
-            $rootTableStmt->executeStatement();
+            $result = $rootTableStmt->executeQuery();
 
             if ($isPostInsertId) {
-                $generatedId = $idGenerator->generateId($this->em, $entity);
-                $id          = [$this->class->identifier[0] => $generatedId];
+                if ($rootPersister->usesReturningClause()) {
+                    $generatedId = $result->fetchOne();
+                } else {
+                    $generatedId = $idGenerator->generateId($this->em, $entity);
+                }
+
+                $id = [$this->class->identifier[0] => $generatedId];
 
                 $uow->assignPostInsertId($entity, $generatedId);
             } else {

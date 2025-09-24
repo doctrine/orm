@@ -549,6 +549,11 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
         $this->persister->refresh($id, $entity, $lockMode);
     }
 
+    public function usesReturningClause(): bool
+    {
+        return $this->persister->usesReturningClause();
+    }
+
     /** @param array<string, mixed> $ownerId */
     protected function buildCollectionCacheKey(AssociationMapping $association, array $ownerId, /* string $filterHash */): CollectionCacheKey
     {
