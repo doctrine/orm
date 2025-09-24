@@ -4,8 +4,12 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional;
 
+use Doctrine\DBAL\Platforms\MariaDb1052Platform;
+use Doctrine\DBAL\Platforms\PostgreSQLPlatform;
+use Doctrine\DBAL\Platforms\SqlitePlatform;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\Tests\Models\ECommerce\ECommerceCart;
+use Doctrine\Tests\Models\ECommerce\ECommerceCategory;
 use Doctrine\Tests\Models\ECommerce\ECommerceCustomer;
 use Doctrine\Tests\Models\ECommerce\ECommerceFeature;
 use Doctrine\Tests\Models\ECommerce\ECommerceProduct;
@@ -106,5 +110,28 @@ class StandardEntityPersisterTest extends OrmFunctionalTestCase
 
         // Persisted Product now must have 3 Feature items
         self::assertCount(3, $res[0]->getFeatures());
+    }
+
+    public function testInsertWithReturningClause(): void
+    {
+        $this->_em->getConfiguration()->setUseReturningClauseForGeneratingId(true);
+
+        $c = new ECommerceCategory();
+        $c->setName('Electronics');
+
+        $this->_em->persist($c);
+        $this->_em->flush();
+
+        $platform = $this->_em->getConnection()->getDatabasePlatform();
+        if (
+            // this should be replaced with a method call from AbstractPlatform
+            $platform instanceof PostgreSQLPlatform
+            || $platform instanceof MariaDb1052Platform
+            || $platform instanceof SqlitePlatform
+        ) {
+            self::assertStringEndsWith('RETURNING id', $this->getLastLoggedQuery()['sql']);
+        } else {
+            self::assertStringEndsNotWith('RETURNING id', $this->getLastLoggedQuery()['sql']);
+        }
     }
 }
