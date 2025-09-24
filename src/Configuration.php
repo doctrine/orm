@@ -723,4 +723,14 @@ class Configuration extends \Doctrine\DBAL\Configuration
     {
         return $this->attributes['fetchModeSubselectBatchSize'] ?? 100;
     }
+
+    public function setUseReturningClauseForGeneratingId(bool $flag): void
+    {
+        $this->attributes['useReturningClauseForGeneratingId'] = $flag;
+    }
+
+    public function getUseReturningClauseForGeneratingId(): bool
+    {
+        return $this->attributes['useReturningClauseForGeneratingId'] ?? false;
+    }
 }
