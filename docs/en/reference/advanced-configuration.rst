@@ -76,6 +76,8 @@ Configuration Options
 The following sections describe all the configuration options
 available on a ``Doctrine\ORM\Configuration`` instance.
 
+.. _reference-native-lazy-objects:
+
 Native Lazy Objects (**OPTIONAL**)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
