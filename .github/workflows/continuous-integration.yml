@@ -41,6 +41,7 @@ jobs:
           - "8.2"
           - "8.3"
           - "8.4"
+          - "8.5"
         dbal-version:
           - "default"
         extension:
@@ -115,6 +116,7 @@ jobs:
           - "8.2"
           - "8.3"
           - "8.4"
+          - "8.5"
         dbal-version:
           - "default"
           - "3@dev"
@@ -189,6 +191,7 @@ jobs:
           - "8.2"
           - "8.3"
           - "8.4"
+          - "8.5"
         dbal-version:
           - "default"
           - "3@dev"
@@ -260,6 +263,7 @@ jobs:
           - "8.2"
           - "8.3"
           - "8.4"
+          - "8.5"
         dbal-version:
           - "default"
           - "3@dev"
