@@ -27,6 +27,7 @@ use function uniqid;
 use function unlink;
 
 use const E_WARNING;
+use const PHP_VERSION_ID;
 
 /**
  * @extends RegionTestCase<FileLockRegion>
@@ -46,7 +47,9 @@ class FileLockRegionTest extends RegionTestCase
     {
         $reflection = new ReflectionMethod($region, 'getLockFileName');
 
-        $reflection->setAccessible(true);
+        if (PHP_VERSION_ID < 80100) {
+            $reflection->setAccessible(true);
+        }
 
         return $reflection->invoke($region, $key);
     }
@@ -227,7 +230,10 @@ class FileLockRegionTest extends RegionTestCase
         $file     = $this->getFileName($this->region, $key);
         $property = new ReflectionProperty($this->region, 'lockLifetime');
 
-        $property->setAccessible(true);
+        if (PHP_VERSION_ID < 80100) {
+            $property->setAccessible(true);
+        }
+
         $property->setValue($this->region, -10);
 
         self::assertFalse($this->region->contains($key));
@@ -253,7 +259,10 @@ class FileLockRegionTest extends RegionTestCase
         $region              = $this->createRegion();
         $reflectionDirectory = new ReflectionProperty($region, 'directory');
 
-        $reflectionDirectory->setAccessible(true);
+        if (PHP_VERSION_ID < 80100) {
+            $reflectionDirectory->setAccessible(true);
+        }
+
         $reflectionDirectory->setValue($region, str_repeat('a', 10000));
 
         set_error_handler(static function (): bool {

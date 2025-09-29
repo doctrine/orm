@@ -19,6 +19,8 @@ use Doctrine\Tests\Models\Cache\Country;
 use Doctrine\Tests\Models\Cache\State;
 use ReflectionMethod;
 
+use const PHP_VERSION_ID;
+
 /** @group DDC-2183 */
 class SecondLevelCacheQueryCacheTest extends SecondLevelCacheFunctionalTestCase
 {
@@ -804,7 +806,10 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheFunctionalTestCase
 
         $getHash = static function (AbstractQuery $query) {
             $method = new ReflectionMethod($query, 'getHash');
-            $method->setAccessible(true);
+
+            if (PHP_VERSION_ID < 80100) {
+                $method->setAccessible(true);
+            }
 
             return $method->invoke($query);
         };

@@ -27,6 +27,8 @@ use function count;
 use function iterator_to_array;
 use function sprintf;
 
+use const PHP_VERSION_ID;
+
 /** @group DDC-1613 */
 class PaginationTest extends OrmFunctionalTestCase
 {
@@ -630,7 +632,9 @@ class PaginationTest extends OrmFunctionalTestCase
 
         $getCountQuery = new ReflectionMethod($paginator, 'getCountQuery');
 
-        $getCountQuery->setAccessible(true);
+        if (PHP_VERSION_ID < 80100) {
+            $getCountQuery->setAccessible(true);
+        }
 
         self::assertCount(2, $getCountQuery->invoke($paginator)->getParameters());
         self::assertCount(9, $paginator);

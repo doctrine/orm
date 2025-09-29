@@ -16,6 +16,8 @@ use Doctrine\ORM\Persisters\Entity\EntityPersister;
 use Doctrine\Tests\Models\Cache\Country;
 use ReflectionProperty;
 
+use const PHP_VERSION_ID;
+
 /** @group DDC-2183 */
 class ReadWriteCachedEntityPersisterTest extends EntityPersisterTestCase
 {
@@ -116,7 +118,9 @@ class ReadWriteCachedEntityPersisterTest extends EntityPersisterTestCase
         $key       = new EntityCacheKey(Country::class, ['id' => 1]);
         $property  = new ReflectionProperty(ReadWriteCachedEntityPersister::class, 'queuedCache');
 
-        $property->setAccessible(true);
+        if (PHP_VERSION_ID < 80100) {
+            $property->setAccessible(true);
+        }
 
         $this->region->expects(self::exactly(2))
             ->method('lock')
@@ -147,7 +151,9 @@ class ReadWriteCachedEntityPersisterTest extends EntityPersisterTestCase
         $key       = new EntityCacheKey(Country::class, ['id' => 1]);
         $property  = new ReflectionProperty(ReadWriteCachedEntityPersister::class, 'queuedCache');
 
-        $property->setAccessible(true);
+        if (PHP_VERSION_ID < 80100) {
+            $property->setAccessible(true);
+        }
 
         $this->region->expects(self::exactly(2))
             ->method('lock')
@@ -177,7 +183,9 @@ class ReadWriteCachedEntityPersisterTest extends EntityPersisterTestCase
         $key       = new EntityCacheKey(Country::class, ['id' => 1]);
         $property  = new ReflectionProperty(ReadWriteCachedEntityPersister::class, 'queuedCache');
 
-        $property->setAccessible(true);
+        if (PHP_VERSION_ID < 80100) {
+            $property->setAccessible(true);
+        }
 
         $this->region->expects(self::once())
             ->method('lock')
@@ -201,7 +209,9 @@ class ReadWriteCachedEntityPersisterTest extends EntityPersisterTestCase
         $key       = new EntityCacheKey(Country::class, ['id' => 1]);
         $property  = new ReflectionProperty(ReadWriteCachedEntityPersister::class, 'queuedCache');
 
-        $property->setAccessible(true);
+        if (PHP_VERSION_ID < 80100) {
+            $property->setAccessible(true);
+        }
 
         $this->region->expects(self::once())
             ->method('lock')

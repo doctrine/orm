@@ -23,6 +23,8 @@ use function rtrim;
 use function serialize;
 use function unserialize;
 
+use const PHP_VERSION_ID;
+
 class ParserResultSerializationTest extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -112,7 +114,10 @@ class ParserResultSerializationTest extends OrmFunctionalTestCase
         $unserialized = unserialize($serialized);
 
         $r = new ReflectionProperty($unserialized->getSqlExecutor(), '_sqlStatements');
-        $r->setAccessible(true);
+
+        if (PHP_VERSION_ID < 80100) {
+            $r->setAccessible(true);
+        }
 
         $this->assertSame(
             $r->getValue($unserialized->getSqlExecutor()),
@@ -166,7 +171,10 @@ class ParserResultSerializationTest extends OrmFunctionalTestCase
     private static function parseQuery(Query $query): ParserResult
     {
         $r = new ReflectionMethod($query, 'parse');
-        $r->setAccessible(true);
+
+        if (PHP_VERSION_ID < 80100) {
+            $r->setAccessible(true);
+        }
 
         return $r->invoke($query);
     }

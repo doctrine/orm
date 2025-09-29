@@ -11,6 +11,8 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 use PHPUnit\Framework\Assert;
 use ReflectionProperty;
 
+use const PHP_VERSION_ID;
+
 /** @group DDC-3123 */
 class DDC3123Test extends OrmFunctionalTestCase
 {
@@ -44,7 +46,10 @@ class DDC3123Test extends OrmFunctionalTestCase
             public function postFlush(): void
             {
                 $property = new ReflectionProperty(UnitOfWork::class, 'extraUpdates');
-                $property->setAccessible(true);
+
+                if (PHP_VERSION_ID < 80100) {
+                    $property->setAccessible(true);
+                }
 
                 Assert::assertEmpty(
                     $property->getValue($this->uow),

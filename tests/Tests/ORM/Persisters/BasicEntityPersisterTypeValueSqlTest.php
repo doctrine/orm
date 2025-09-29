@@ -19,6 +19,8 @@ use ReflectionMethod;
 
 use function array_shift;
 
+use const PHP_VERSION_ID;
+
 class BasicEntityPersisterTypeValueSqlTest extends OrmTestCase
 {
     /** @var BasicEntityPersister */
@@ -51,7 +53,10 @@ class BasicEntityPersisterTypeValueSqlTest extends OrmTestCase
     public function testGetInsertSQLUsesTypeValuesSQL(): void
     {
         $method = new ReflectionMethod($this->persister, 'getInsertSQL');
-        $method->setAccessible(true);
+
+        if (PHP_VERSION_ID < 80100) {
+            $method->setAccessible(true);
+        }
 
         $sql = $method->invoke($this->persister);
 
@@ -82,7 +87,10 @@ class BasicEntityPersisterTypeValueSqlTest extends OrmTestCase
     public function testGetSelectConditionSQLUsesTypeValuesSQL(): void
     {
         $method = new ReflectionMethod($this->persister, 'getSelectConditionSQL');
-        $method->setAccessible(true);
+
+        if (PHP_VERSION_ID < 80100) {
+            $method->setAccessible(true);
+        }
 
         $sql = $method->invoke($this->persister, ['customInteger' => 1, 'child' => 1]);
 
@@ -94,7 +102,10 @@ class BasicEntityPersisterTypeValueSqlTest extends OrmTestCase
     {
         $persister = new BasicEntityPersister($this->entityManager, $this->entityManager->getClassMetadata(NonAlphaColumnsEntity::class));
         $method    = new ReflectionMethod($persister, 'getSelectColumnsSQL');
-        $method->setAccessible(true);
+
+        if (PHP_VERSION_ID < 80100) {
+            $method->setAccessible(true);
+        }
 
         self::assertEquals('t0."simple-entity-id" AS simpleentityid_1, t0."simple-entity-value" AS simpleentityvalue_2', $method->invoke($persister));
     }

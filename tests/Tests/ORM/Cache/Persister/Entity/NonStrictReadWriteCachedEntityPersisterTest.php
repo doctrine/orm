@@ -15,6 +15,8 @@ use Doctrine\ORM\Persisters\Entity\EntityPersister;
 use Doctrine\Tests\Models\Cache\Country;
 use ReflectionProperty;
 
+use const PHP_VERSION_ID;
+
 /** @group DDC-2183 */
 class NonStrictReadWriteCachedEntityPersisterTest extends EntityPersisterTestCase
 {
@@ -29,7 +31,9 @@ class NonStrictReadWriteCachedEntityPersisterTest extends EntityPersisterTestCas
         $persister = $this->createPersisterDefault();
         $property  = new ReflectionProperty($persister, 'queuedCache');
 
-        $property->setAccessible(true);
+        if (PHP_VERSION_ID < 80100) {
+            $property->setAccessible(true);
+        }
 
         $this->em->getUnitOfWork()->registerManaged($entity, ['id' => 1], ['id' => 1, 'name' => 'Foo']);
 
@@ -51,7 +55,9 @@ class NonStrictReadWriteCachedEntityPersisterTest extends EntityPersisterTestCas
         $entry     = new EntityCacheEntry(Country::class, ['id' => 1, 'name' => 'Foo']);
         $property  = new ReflectionProperty($persister, 'queuedCache');
 
-        $property->setAccessible(true);
+        if (PHP_VERSION_ID < 80100) {
+            $property->setAccessible(true);
+        }
 
         $this->region->expects(self::once())
             ->method('put')
@@ -88,7 +94,9 @@ class NonStrictReadWriteCachedEntityPersisterTest extends EntityPersisterTestCas
         $entry     = new EntityCacheEntry(Country::class, ['id' => 1, 'name' => 'Foo']);
         $property  = new ReflectionProperty($persister, 'queuedCache');
 
-        $property->setAccessible(true);
+        if (PHP_VERSION_ID < 80100) {
+            $property->setAccessible(true);
+        }
 
         $this->region->expects(self::once())
             ->method('put')
@@ -116,7 +124,9 @@ class NonStrictReadWriteCachedEntityPersisterTest extends EntityPersisterTestCas
         $key       = new EntityCacheKey(Country::class, ['id' => 1]);
         $property  = new ReflectionProperty($persister, 'queuedCache');
 
-        $property->setAccessible(true);
+        if (PHP_VERSION_ID < 80100) {
+            $property->setAccessible(true);
+        }
 
         $this->region->expects(self::once())
             ->method('evict')

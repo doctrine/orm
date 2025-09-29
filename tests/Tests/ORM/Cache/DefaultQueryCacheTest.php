@@ -30,6 +30,8 @@ use ReflectionMethod;
 use function microtime;
 use function sprintf;
 
+use const PHP_VERSION_ID;
+
 /** @group DDC-2183 */
 class DefaultQueryCacheTest extends OrmTestCase
 {
@@ -585,7 +587,9 @@ class DefaultQueryCacheTest extends OrmTestCase
         $rsm        = new ResultSetMappingBuilder($this->em);
         $key        = new QueryCacheKey('query.key1', 0);
 
-        $reflection->setAccessible(true);
+        if (PHP_VERSION_ID < 80100) {
+            $reflection->setAccessible(true);
+        }
 
         $germany  = new Country('Germany');
         $bavaria  = new State('Bavaria', $germany);

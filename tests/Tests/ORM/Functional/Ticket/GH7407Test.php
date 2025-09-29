@@ -12,6 +12,8 @@ use ReflectionClass;
 
 use function spl_object_id;
 
+use const PHP_VERSION_ID;
+
 class GH7407Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -81,7 +83,10 @@ class GH7407Test extends OrmFunctionalTestCase
     {
         $reflection = new ReflectionClass($uow);
         $property   = $reflection->getProperty($name);
-        $property->setAccessible(true);
+
+        if (PHP_VERSION_ID < 80100) {
+            $property->setAccessible(true);
+        }
 
         return $property->getValue($uow);
     }
