@@ -26,7 +26,7 @@ final class GH12183Test extends OrmFunctionalTestCase
         $this->_em->clear();
     }
 
-    public function testPaginatorCountWithOutputWalkerAfterQueryHasBeenExecuted(): void
+    public function testPaginatorCountWithTreeWalkerAfterQueryHasBeenExecuted(): void
     {
         $query = $this->_em->createQuery('SELECT a FROM Doctrine\Tests\Models\CMS\CmsArticle a');
 
