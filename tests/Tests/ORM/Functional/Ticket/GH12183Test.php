@@ -19,7 +19,7 @@ final class GH12183Test extends OrmFunctionalTestCase
         $article = new CmsArticle();
 
         $article->topic = 'Loomings';
-        $article->text = 'Call me Ishmael.';
+        $article->text  = 'Call me Ishmael.';
 
         $this->_em->persist($article);
         $this->_em->flush();
