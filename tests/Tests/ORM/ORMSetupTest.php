@@ -22,6 +22,8 @@ use Symfony\Component\Cache\Adapter\ArrayAdapter;
 
 use function sys_get_temp_dir;
 
+use const PHP_VERSION_ID;
+
 class ORMSetupTest extends TestCase
 {
     use VerifyDeprecations;
@@ -104,7 +106,10 @@ class ORMSetupTest extends TestCase
         $cache  = $config->getMetadataCache();
 
         $namespaceProperty = new ReflectionProperty(AbstractAdapter::class, 'namespace');
-        $namespaceProperty->setAccessible(true);
+
+        if (PHP_VERSION_ID < 80100) {
+            $namespaceProperty->setAccessible(true);
+        }
 
         self::assertInstanceOf(ApcuAdapter::class, $cache);
         self::assertSame('dc2_1effb2475fcfba4f9e8b8a1dbc8f3caf:', $namespaceProperty->getValue($cache));

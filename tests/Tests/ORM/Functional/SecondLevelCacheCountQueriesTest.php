@@ -19,6 +19,7 @@ use function strpos;
 use function sys_get_temp_dir;
 
 use const DIRECTORY_SEPARATOR;
+use const PHP_VERSION_ID;
 
 /**
  * @group DDC-2183
@@ -49,7 +50,11 @@ class SecondLevelCacheCountQueriesTest extends SecondLevelCacheFunctionalTestCas
 
         if ($cacheUsage === 0) {
             $metadataCacheReflection = new ReflectionProperty(ClassMetadataInfo::class, 'cache');
-            $metadataCacheReflection->setAccessible(true);
+
+            if (PHP_VERSION_ID < 80100) {
+                $metadataCacheReflection->setAccessible(true);
+            }
+
             $metadataCacheReflection->setValue($metadata, null);
 
             return;

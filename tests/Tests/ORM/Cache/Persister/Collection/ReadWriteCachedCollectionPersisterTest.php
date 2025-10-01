@@ -15,6 +15,8 @@ use Doctrine\ORM\Persisters\Collection\CollectionPersister;
 use Doctrine\Tests\Models\Cache\State;
 use ReflectionProperty;
 
+use const PHP_VERSION_ID;
+
 /** @group DDC-2183 */
 class ReadWriteCachedCollectionPersisterTest extends CollectionPersisterTestCase
 {
@@ -121,7 +123,9 @@ class ReadWriteCachedCollectionPersisterTest extends CollectionPersisterTestCase
         $key        = new CollectionCacheKey(State::class, 'cities', ['id' => 1]);
         $property   = new ReflectionProperty(ReadWriteCachedCollectionPersister::class, 'queuedCache');
 
-        $property->setAccessible(true);
+        if (PHP_VERSION_ID < 80100) {
+            $property->setAccessible(true);
+        }
 
         $this->region->expects(self::once())
             ->method('lock')
@@ -153,7 +157,9 @@ class ReadWriteCachedCollectionPersisterTest extends CollectionPersisterTestCase
         $key        = new CollectionCacheKey(State::class, 'cities', ['id' => 1]);
         $property   = new ReflectionProperty(ReadWriteCachedCollectionPersister::class, 'queuedCache');
 
-        $property->setAccessible(true);
+        if (PHP_VERSION_ID < 80100) {
+            $property->setAccessible(true);
+        }
 
         $this->region->expects(self::once())
             ->method('lock')
@@ -185,7 +191,9 @@ class ReadWriteCachedCollectionPersisterTest extends CollectionPersisterTestCase
         $key        = new CollectionCacheKey(State::class, 'cities', ['id' => 1]);
         $property   = new ReflectionProperty(ReadWriteCachedCollectionPersister::class, 'queuedCache');
 
-        $property->setAccessible(true);
+        if (PHP_VERSION_ID < 80100) {
+            $property->setAccessible(true);
+        }
 
         $this->region->expects(self::once())
             ->method('lock')
@@ -217,7 +225,9 @@ class ReadWriteCachedCollectionPersisterTest extends CollectionPersisterTestCase
         $key        = new CollectionCacheKey(State::class, 'cities', ['id' => 1]);
         $property   = new ReflectionProperty(ReadWriteCachedCollectionPersister::class, 'queuedCache');
 
-        $property->setAccessible(true);
+        if (PHP_VERSION_ID < 80100) {
+            $property->setAccessible(true);
+        }
 
         $this->region->expects(self::once())
             ->method('lock')
@@ -248,7 +258,9 @@ class ReadWriteCachedCollectionPersisterTest extends CollectionPersisterTestCase
         $key        = new CollectionCacheKey(State::class, 'cities', ['id' => 1]);
         $property   = new ReflectionProperty(ReadWriteCachedCollectionPersister::class, 'queuedCache');
 
-        $property->setAccessible(true);
+        if (PHP_VERSION_ID < 80100) {
+            $property->setAccessible(true);
+        }
 
         $this->region->expects(self::once())
             ->method('lock')
@@ -273,7 +285,9 @@ class ReadWriteCachedCollectionPersisterTest extends CollectionPersisterTestCase
         $key        = new CollectionCacheKey(State::class, 'cities', ['id' => 1]);
         $property   = new ReflectionProperty(ReadWriteCachedCollectionPersister::class, 'queuedCache');
 
-        $property->setAccessible(true);
+        if (PHP_VERSION_ID < 80100) {
+            $property->setAccessible(true);
+        }
 
         $this->region->expects(self::once())
             ->method('lock')

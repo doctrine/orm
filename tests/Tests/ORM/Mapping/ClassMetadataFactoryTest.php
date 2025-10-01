@@ -54,6 +54,8 @@ use function class_exists;
 use function count;
 use function sprintf;
 
+use const PHP_VERSION_ID;
+
 class ClassMetadataFactoryTest extends OrmTestCase
 {
     use MockBuilderCompatibilityTools;
@@ -505,7 +507,11 @@ class ClassMetadataFactoryTest extends OrmTestCase
         // not really the cleanest way to check it, but we won't add a getter to the CMF just for the sake of testing.
         $class    = new ReflectionClass(ClassMetadataFactory::class);
         $property = $class->getProperty('em');
-        $property->setAccessible(true);
+
+        if (PHP_VERSION_ID < 80100) {
+            $property->setAccessible(true);
+        }
+
         self::assertSame($entityManager, $property->getValue($classMetadataFactory));
     }
 
