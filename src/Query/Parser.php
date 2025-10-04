@@ -2492,6 +2492,7 @@ final class Parser
 
         assert($token !== null);
         assert($peek !== null);
+        // Handle conditional and null-handling expressions (CASE, COALESCE, NULLIF) by peeking ahead in the token stream
         if ($token->type === TokenType::T_IDENTIFIER || $token->type === TokenType::T_INPUT_PARAMETER || $this->isFunction()) {
             // Peek beyond the matching closing parenthesis.
             $beyond = $this->lexer->peek();
