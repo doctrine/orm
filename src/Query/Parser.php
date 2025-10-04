@@ -2528,6 +2528,7 @@ final class Parser
 
         // Handle arithmetic expressions enclosed in parentheses before an IN operator (e.g., (u.id + 1) IN (...))
         if ($token->type === TokenType::T_OPEN_PARENTHESIS && $peek !== null && $peek->type !== TokenType::T_SELECT) {
+        if ($token->type === TokenType::T_OPEN_PARENTHESIS && $peek->type !== TokenType::T_SELECT) {
             $tokenAfterParenthesis = $this->peekBeyondClosingParenthesis(false);
 
             if ($tokenAfterParenthesis !== null && $tokenAfterParenthesis->type === TokenType::T_NOT) {
@@ -2541,6 +2542,7 @@ final class Parser
                 $token = $tokenAfterParenthesis;
             }
         }
+
         if ($token->type === TokenType::T_IDENTIFIER || $token->type === TokenType::T_INPUT_PARAMETER || $this->isFunction()) {
             // Peek beyond the matching closing parenthesis.
             $beyond = $this->lexer->peek();

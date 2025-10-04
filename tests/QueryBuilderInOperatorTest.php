@@ -16,6 +16,7 @@ class QueryBuilderInOperatorTest extends OrmFunctionalTestCase
     protected function setUp(): void
     {
         parent::setUp();
+
         $this->setUpEntitySchema([
             CmsUser::class,
         ]);
