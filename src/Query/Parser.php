@@ -2492,7 +2492,55 @@ final class Parser
 
         assert($token !== null);
         assert($peek !== null);
+
         // Handle conditional and null-handling expressions (CASE, COALESCE, NULLIF) by peeking ahead in the token stream
+        if ($token->type === TokenType::T_CASE || $token->type === TokenType::T_COALESCE || $token->type === TokenType::T_NULLIF) {
+            if ($token->type === TokenType::T_CASE) {
+
+                // For CASE expressions, peek beyond the matching END keyword
+                $nestingDepth = 1;
+
+                while ($nestingDepth > 0 && ($nextToken = $this->lexer->peek()) !== null) {
+                    if ($nextToken->type === TokenType::T_CASE) {
+                        $nestingDepth++;
+                    } elseif ($nextToken->type === TokenType::T_END) {
+                        $nestingDepth--;
+                    }
+                }
+            } else {
+                // For COALESCE/NULLIF, peek beyond the function's closing parenthesis
+                $this->lexer->peek();
+                $this->peekBeyondClosingParenthesis(false);
+            }
+
+            // Determine what operator follows the expression
+            $operatorToken = $this->lexer->peek();
+
+            if ($operatorToken !== null && $operatorToken->type === TokenType::T_NOT) {
+                $operatorToken = $this->lexer->peek();
+            }
+
+            $this->lexer->resetPeek();
+
+            // Update token for subsequent operator checks
+            $token = $operatorToken;
+        }
+
+        // Handle arithmetic expressions enclosed in parentheses before an IN operator (e.g., (u.id + 1) IN (...))
+        if ($token->type === TokenType::T_OPEN_PARENTHESIS && $peek !== null && $peek->type !== TokenType::T_SELECT) {
+            $tokenAfterParenthesis = $this->peekBeyondClosingParenthesis(false);
+
+            if ($tokenAfterParenthesis !== null && $tokenAfterParenthesis->type === TokenType::T_NOT) {
+                $tokenAfterParenthesis = $this->lexer->peek();
+            }
+
+            $this->lexer->resetPeek();
+
+            // Update token to reflect what comes after the parenthesized expression
+            if ($tokenAfterParenthesis !== null) {
+                $token = $tokenAfterParenthesis;
+            }
+        }
         if ($token->type === TokenType::T_IDENTIFIER || $token->type === TokenType::T_INPUT_PARAMETER || $this->isFunction()) {
             // Peek beyond the matching closing parenthesis.
             $beyond = $this->lexer->peek();
