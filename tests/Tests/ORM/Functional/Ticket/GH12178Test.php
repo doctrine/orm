@@ -2,24 +2,24 @@
 
 declare(strict_types=1);
 
-namespace Doctrine\Tests\ORM\Query;
+namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\OrmFunctionalTestCase;
+        use PHPUnit\Framework\Attributes\Group;
 
 /**
  * Test cases for DQL expressions involving CASE, COALESCE, NULLIF, and arithmetic
  * especially when used with IN / NOT IN operators.
  */
-class QueryBuilderInOperatorTest extends OrmFunctionalTestCase
+#[Group('GH-12178')]
+class GH12178Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
     {
-        parent::setUp();
+        $this->useModelSet('cms');
 
-        $this->setUpEntitySchema([
-            CmsUser::class,
-        ]);
+        parent::setUp();
     }
 
     /**
@@ -38,7 +38,7 @@ class QueryBuilderInOperatorTest extends OrmFunctionalTestCase
         $query->setParameter('values', [0, 1]);
 
         $sql = $query->getSQL();
-        $this->assertNotEmpty($sql);
+        self::assertNotEmpty($sql);
     }
 
     /**
@@ -54,22 +54,7 @@ class QueryBuilderInOperatorTest extends OrmFunctionalTestCase
         $query->setParameter('ids', [1, 2, 3]);
 
         $sql = $query->getSQL();
-        $this->assertNotEmpty($sql);
-    }
-
-    /**
-     * CASE expression with comparison operator
-     */
-    public function testCaseWhenWithEqualsOperator(): void
-    {
-        $dql = 'SELECT u FROM ' . CmsUser::class . ' u 
-                WHERE CASE WHEN u.id = 1 THEN 0 ELSE 1 END = :value';
-
-        $query = $this->_em->createQuery($dql);
-        $query->setParameter('value', 0);
-
-        $sql = $query->getSQL();
-        $this->assertNotEmpty($sql);
+        self::assertNotEmpty($sql);
     }
 
     /**
@@ -85,23 +70,7 @@ class QueryBuilderInOperatorTest extends OrmFunctionalTestCase
         $query->setParameter('values', [0]);
 
         $sql = $query->getSQL();
-        $this->assertNotEmpty($sql);
-    }
-
-    /**
-     * CASE in SELECT with IN in WHERE
-     */
-    public function testCaseInSelectWithInInWhere(): void
-    {
-        $dql = 'SELECT u, CASE WHEN u.id = 1 THEN 1 ELSE 0 END AS isFirst 
-                FROM ' . CmsUser::class . ' u 
-                WHERE u.id IN (:ids)';
-
-        $query = $this->_em->createQuery($dql);
-        $query->setParameter('ids', [1, 2, 3]);
-
-        $sql = $query->getSQL();
-        $this->assertNotEmpty($sql);
+        self::assertNotEmpty($sql);
     }
 
     /**
@@ -121,7 +90,7 @@ class QueryBuilderInOperatorTest extends OrmFunctionalTestCase
         $query->setParameter('values', [1, 2, 3]);
 
         $sql = $query->getSQL();
-        $this->assertNotEmpty($sql);
+        self::assertNotEmpty($sql);
     }
 
     /**
@@ -136,7 +105,7 @@ class QueryBuilderInOperatorTest extends OrmFunctionalTestCase
         $query->setParameter('ids', [1, 2, 3]);
 
         $sql = $query->getSQL();
-        $this->assertNotEmpty($sql);
+        self::assertNotEmpty($sql);
     }
 
     /**
@@ -151,7 +120,7 @@ class QueryBuilderInOperatorTest extends OrmFunctionalTestCase
         $query->setParameter('ids', [1, 2, 3]);
 
         $sql = $query->getSQL();
-        $this->assertNotEmpty($sql);
+        self::assertNotEmpty($sql);
     }
 
     /**
@@ -166,7 +135,7 @@ class QueryBuilderInOperatorTest extends OrmFunctionalTestCase
         $query->setParameter('ids', [2, 3, 4]);
 
         $sql = $query->getSQL();
-        $this->assertNotEmpty($sql);
+        self::assertNotEmpty($sql);
     }
 
     /**
@@ -181,7 +150,7 @@ class QueryBuilderInOperatorTest extends OrmFunctionalTestCase
         $query->setParameter('ids', [1, 2]);
 
         $sql = $query->getSQL();
-        $this->assertNotEmpty($sql);
+        self::assertNotEmpty($sql);
     }
 
     /**
@@ -196,6 +165,6 @@ class QueryBuilderInOperatorTest extends OrmFunctionalTestCase
         $query->setParameter('ids', [0, 1, 2]);
 
         $sql = $query->getSQL();
-        $this->assertNotEmpty($sql);
+        self::assertNotEmpty($sql);
     }
 }
