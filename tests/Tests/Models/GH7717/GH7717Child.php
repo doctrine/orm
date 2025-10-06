@@ -19,8 +19,6 @@ class GH7717Child
      */
     public ?int $id = null;
 
-    /**
-     * @ORM\Column(type="string", nullable=true)
-     */
+    /** @ORM\Column(type="string", nullable=true) */
     public ?string $nullableProperty = null;
 }

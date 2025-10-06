@@ -535,12 +535,6 @@ parameters:
 			path: src/Cache/Persister/Entity/AbstractEntityPersister.php
 
 		-
-			message: '#^Method Doctrine\\ORM\\Cache\\Persister\\Entity\\AbstractEntityPersister\:\:loadAll\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: src/Cache/Persister/Entity/AbstractEntityPersister.php
-
-		-
 			message: '#^Method Doctrine\\ORM\\Cache\\Persister\\Entity\\AbstractEntityPersister\:\:loadManyToManyCollection\(\) has parameter \$assoc with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 5
@@ -851,6 +845,12 @@ parameters:
 			identifier: argument.templateType
 			count: 1
 			path: src/EntityManager.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\EntityRepository\:\:findBy\(\) should return list\<T of object\> but returns array\<mixed\>\.$#'
+			identifier: return.type
+			count: 1
+			path: src/EntityRepository.php
 
 		-
 			message: '#^Method Doctrine\\ORM\\EntityRepository\:\:findOneBy\(\) should return \(T of object\)\|null but returns object\|null\.$#'
@@ -2845,12 +2845,6 @@ parameters:
 			path: src/Persisters/Entity/BasicEntityPersister.php
 
 		-
-			message: '#^Method Doctrine\\ORM\\Persisters\\Entity\\BasicEntityPersister\:\:loadAll\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: src/Persisters/Entity/BasicEntityPersister.php
-
-		-
 			message: '#^Method Doctrine\\ORM\\Persisters\\Entity\\BasicEntityPersister\:\:loadCollectionFromStatement\(\) has parameter \$coll with generic class Doctrine\\ORM\\PersistentCollection but does not specify its types\: TKey, T$#'
 			identifier: missingType.generics
 			count: 1
@@ -3010,12 +3004,6 @@ parameters:
 			message: '#^Method Doctrine\\ORM\\Persisters\\Entity\\EntityPersister\:\:load\(\) has parameter \$assoc with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 5
-			path: src/Persisters/Entity/EntityPersister.php
-
-		-
-			message: '#^Method Doctrine\\ORM\\Persisters\\Entity\\EntityPersister\:\:loadAll\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
 			path: src/Persisters/Entity/EntityPersister.php
 
 		-

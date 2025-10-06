@@ -18,8 +18,6 @@ class InvalidEntity
      */
     protected $key;
 
-    /**
-     * @Column(type="decimal")
-     */
+    /** @Column(type="decimal") */
     protected float $property1;
 }

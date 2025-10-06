@@ -15,9 +15,7 @@ use Doctrine\Tests\ORM\Functional\Ticket\SwitchContextWithFilter\SQLFilter\Pract
 
 final class SwitchContextTest extends AbstractTest
 {
-    /**
-     * @var SQLFilter|PracticeContextSQLFilter
-     */
+    /** @var SQLFilter|PracticeContextSQLFilter */
     private $sqlFilter;
 
     protected function setUp(): void

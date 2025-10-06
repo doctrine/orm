@@ -19,18 +19,12 @@ class ValidEntityWithTypedEnum
      */
     protected int $id;
 
-    /**
-     * @Column(type="string", enumType=StringEntityStatus::class)
-     */
+    /** @Column(type="string", enumType=StringEntityStatus::class) */
     protected StringEntityStatus $status1;
 
-    /**
-     * @Column(type="smallint", enumType=IntEntityStatus::class)
-     */
+    /** @Column(type="smallint", enumType=IntEntityStatus::class) */
     protected IntEntityStatus $status2;
 
-    /**
-     * @Column(type="string", enumType=StringEntityStatus::class)
-     */
+    /** @Column(type="string", enumType=StringEntityStatus::class) */
     protected EntityStatus $status3;
 }

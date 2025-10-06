@@ -6,14 +6,10 @@ namespace Doctrine\Tests\Models\Project;
 
 class Project
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     private $id;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     private $name;
 
     public function __construct(string $id, string $name)

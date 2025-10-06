@@ -111,9 +111,7 @@ class NotifyBaseEntity implements NotifyPropertyChanged
  */
 class DDC1690Parent extends NotifyBaseEntity
 {
-    /**
-     * @var bool
-     */
+    /** @var bool */
     public static $addPropertyChangedListenerInvoked = false;
 
     /**
@@ -173,9 +171,7 @@ class DDC1690Parent extends NotifyBaseEntity
 /** @Entity */
 class DDC1690Child extends NotifyBaseEntity
 {
-    /**
-     * @var bool
-     */
+    /** @var bool */
     public static $addPropertyChangedListenerInvoked = false;
 
     /**

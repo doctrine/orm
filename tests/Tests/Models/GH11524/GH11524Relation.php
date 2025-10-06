@@ -29,9 +29,7 @@ class GH11524Relation
      */
     public $name;
 
-    /**
-     * @var string|null
-     */
+    /** @var string|null */
     private $currentLocale;
 
     public function setCurrentLocale(string $locale): void

@@ -19,18 +19,12 @@ class InvalidEntityWithTypedEnum
      */
     protected int $id;
 
-    /**
-     * @Column(type="integer", enumType=StringEntityStatus::class)
-     */
+    /** @Column(type="integer", enumType=StringEntityStatus::class) */
     protected StringEntityStatus $status1;
 
-    /**
-     * @Column(type="integer", enumType=StringEntityStatus::class)
-     */
+    /** @Column(type="integer", enumType=StringEntityStatus::class) */
     protected IntEntityStatus $status2;
 
-    /**
-     * @Column(type="integer", enumType=StringEntityStatus::class)
-     */
+    /** @Column(type="integer", enumType=StringEntityStatus::class) */
     protected EntityStatus $status3;
 }

@@ -258,6 +258,8 @@ interface EntityPersister
      * @param int|null $offset
      * @phpstan-param array<string, string>|null $orderBy
      * @phpstan-param array<string, mixed>       $criteria
+     *
+     * @return mixed[]
      */
     public function loadAll(array $criteria = [], ?array $orderBy = null, $limit = null, $offset = null);
 
