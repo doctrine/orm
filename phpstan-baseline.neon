@@ -2023,20 +2023,8 @@ parameters:
 			path: src/Persisters/Entity/BasicEntityPersister.php
 
 		-
-			message: '#^Access to property \$value on an unknown class Doctrine\\ORM\\Persisters\\Entity\\BackedEnum\.$#'
-			identifier: class.notFound
-			count: 1
-			path: src/Persisters/Entity/BasicEntityPersister.php
-
-		-
 			message: '#^Call to an undefined method Doctrine\\ORM\\Mapping\\ManyToManyInverseSideMapping\|Doctrine\\ORM\\Mapping\\ManyToManyOwningSideMapping\|Doctrine\\ORM\\Mapping\\ManyToOneAssociationMapping\|Doctrine\\ORM\\Mapping\\OneToManyAssociationMapping\|Doctrine\\ORM\\Mapping\\OneToOneInverseSideMapping\|Doctrine\\ORM\\Mapping\\OneToOneOwningSideMapping\:\:indexBy\(\)\.$#'
 			identifier: method.notFound
-			count: 1
-			path: src/Persisters/Entity/BasicEntityPersister.php
-
-		-
-			message: '#^Class Doctrine\\ORM\\Persisters\\Entity\\BackedEnum not found\.$#'
-			identifier: class.notFound
 			count: 1
 			path: src/Persisters/Entity/BasicEntityPersister.php
 
