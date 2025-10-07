@@ -201,8 +201,10 @@ abstract class AbstractHydrator
                     } else {
                         yield from $result;
                     }
-                } else {
+                } else if (is_object(current($result))) {
                     yield $result;
+                } else {
+                    yield array_merge(...$result);
                 }
             }
         } finally {

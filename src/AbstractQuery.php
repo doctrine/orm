@@ -1144,10 +1144,6 @@ abstract class AbstractQuery
             throw new LogicException('Uninitialized result set mapping.');
         }
 
-        if ($rsm->isMixed && count($rsm->scalarMappings) > 0) {
-            throw QueryException::iterateWithMixedResultNotAllowed();
-        }
-
         $stmt = $this->_doExecute();
 
         return $this->_em->newHydrator($this->_hydrationMode)->toIterable($stmt, $rsm, $this->_hints);
