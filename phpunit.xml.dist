@@ -21,6 +21,7 @@
          failOnNotice="true"
          failOnWarning="true"
          failOnRisky="true"
+         failOnDeprecation="true"
          bootstrap="./tests/Tests/TestInit.php"
          cacheDirectory=".phpunit.cache"
 >

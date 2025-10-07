@@ -9,6 +9,7 @@
          failOnNotice="true"
          failOnWarning="true"
          failOnRisky="true"
+         failOnDeprecation="true"
          cacheDirectory=".phpunit.cache"
 >
     <php>
