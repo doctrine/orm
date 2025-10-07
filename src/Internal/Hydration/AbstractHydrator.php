@@ -25,10 +25,12 @@ use TypeError;
 use function array_map;
 use function array_merge;
 use function count;
+use function current;
 use function end;
 use function get_debug_type;
 use function in_array;
 use function is_array;
+use function is_object;
 use function sprintf;
 
 /**
@@ -201,7 +203,7 @@ abstract class AbstractHydrator
                     } else {
                         yield from $result;
                     }
-                } else if (is_object(current($result))) {
+                } elseif (is_object(current($result))) {
                     yield $result;
                 } else {
                     yield array_merge(...$result);

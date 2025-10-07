@@ -417,7 +417,6 @@ class QueryTest extends OrmFunctionalTestCase
         $article2->text  = 'This is an introduction to Symfony 2.';
         $article2->setAuthor($author);
 
-
         $article3        = new CmsArticle();
         $article3->topic = 'lala 2';
         $article3->text  = 'This is an introduction to Symfony 2.';
@@ -431,7 +430,7 @@ class QueryTest extends OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $query = $this->_em->createQuery('select a, a.topic, a.text from ' . CmsArticle::class . ' a');
+        $query  = $this->_em->createQuery('select a, a.topic, a.text from ' . CmsArticle::class . ' a');
         $result = $query->toIterable();
 
         $it = iterator_to_array($result);
@@ -458,7 +457,6 @@ class QueryTest extends OrmFunctionalTestCase
         $article2->text  = 'This is an introduction to Symfony 2.';
         $article2->setAuthor($author);
 
-
         $article3        = new CmsArticle();
         $article3->topic = 'lala 2';
         $article3->text  = 'This is an introduction to Symfony 2.';
@@ -472,7 +470,7 @@ class QueryTest extends OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $query = $this->_em->createQuery('select a, u, a.topic, a.text from ' . CmsArticle::class . ' a, ' . CmsUser::class . ' u WHERE a.user = u ');
+        $query  = $this->_em->createQuery('select a, u, a.topic, a.text from ' . CmsArticle::class . ' a, ' . CmsUser::class . ' u WHERE a.user = u ');
         $result = $query->toIterable();
 
         $it = iterator_to_array($result);
@@ -485,7 +483,6 @@ class QueryTest extends OrmFunctionalTestCase
         $this->assertEquals('lala 2', $it[2][0]->topic);
         $this->assertEquals('beberlei', $it[2][1]->username);
     }
-
 
     public function testToIterableWithMixedResultIsNotAllowed3(): void
     {
@@ -503,7 +500,6 @@ class QueryTest extends OrmFunctionalTestCase
         $article2->text  = 'This is an introduction to Symfony 2.';
         $article2->setAuthor($author);
 
-
         $article3        = new CmsArticle();
         $article3->topic = 'lala 2';
         $article3->text  = 'This is an introduction to Symfony 2.';
@@ -517,7 +513,7 @@ class QueryTest extends OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $query = $this->_em->createQuery('select a.topic, a.text from ' . CmsArticle::class . ' a ');
+        $query  = $this->_em->createQuery('select a.topic, a.text from ' . CmsArticle::class . ' a ');
         $result = $query->toIterable();
 
         $it = iterator_to_array($result);
