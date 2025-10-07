@@ -20,9 +20,7 @@ class_exists('Doctrine\DBAL\Platforms\PostgreSqlPlatform');
 
 final class LimitSubqueryOutputWalkerTest extends PaginationTestCase
 {
-    /**
-     * @var AbstractPlatform|null
-     */
+    /** @var AbstractPlatform|null */
     private $originalDatabasePlatform;
 
     protected function setUp(): void

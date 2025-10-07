@@ -15,7 +15,9 @@ use Doctrine\ORM\Mapping\Id;
 class CardWithNullable
 {
     /**
-     * @Id @GeneratedValue @Column(type="integer")
+     * @Id
+     * @GeneratedValue
+     * @Column(type="integer")
      * @var int
      */
     #[Id]
