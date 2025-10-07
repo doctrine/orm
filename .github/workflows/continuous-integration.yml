@@ -124,6 +124,40 @@ jobs:
           path: "coverage*.xml"
 
 
+  phpunit-deprecations:
+    name: "PHPUnit (fail on deprecations)"
+    runs-on: "ubuntu-24.04"
+
+    steps:
+      -   name: "Checkout"
+          uses: "actions/checkout@v5"
+          with:
+            fetch-depth: 2
+
+      -   name: "Install PHP"
+          uses: "shivammathur/setup-php@v2"
+          with:
+            php-version: "8.5"
+            extensions: "apcu, pdo, sqlite3"
+            coverage: "pcov"
+            ini-values: "zend.assertions=1, apc.enable_cli=1"
+
+      -   name: "Allow dev dependencies"
+          run: composer config minimum-stability dev
+
+      -   name: "Install dependencies with Composer"
+          uses: "ramsey/composer-install@v3"
+          with:
+            composer-options: "--ignore-platform-req=php+"
+            dependency-versions: "highest"
+
+      -   name: "Run PHPUnit"
+          run: "vendor/bin/phpunit -c ci/github/phpunit/sqlite3.xml --fail-on-deprecation"
+          env:
+            ENABLE_SECOND_LEVEL_CACHE: 0
+            ENABLE_NATIVE_LAZY_OBJECTS: 1
+
+
   phpunit-postgres:
     name: "PHPUnit with PostgreSQL"
     runs-on: "ubuntu-22.04"
