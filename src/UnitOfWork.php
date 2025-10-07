@@ -77,6 +77,8 @@ use function spl_object_id;
 use function sprintf;
 use function strtolower;
 
+use const PHP_VERSION_ID;
+
 /**
  * The UnitOfWork is responsible for tracking changes to objects during an
  * "object-level" transaction and for writing out changes to the database
@@ -3886,7 +3888,9 @@ EXCEPTION
         foreach ($this->reflectionPropertiesGetter->getProperties($class->name) as $prop) {
             $name = $prop->name;
 
-            $prop->setAccessible(true);
+            if (PHP_VERSION_ID < 80100) {
+                $prop->setAccessible(true);
+            }
 
             if (! isset($class->associationMappings[$name])) {
                 if (! $class->isIdentifier($name)) {

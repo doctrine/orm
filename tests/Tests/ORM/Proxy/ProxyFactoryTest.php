@@ -27,6 +27,8 @@ use stdClass;
 use function assert;
 use function sys_get_temp_dir;
 
+use const PHP_VERSION_ID;
+
 /**
  * Test the proxy generator. Its work is generating on-the-fly subclasses of a given model, which implement the Proxy pattern.
  */
@@ -207,7 +209,10 @@ class ProxyFactoryTest extends OrmTestCase
         // Set the id of the CompanyEmployee (which is in the parent CompanyPerson)
         $property = new ReflectionProperty(CompanyPerson::class, 'id');
 
-        $property->setAccessible(true);
+        if (PHP_VERSION_ID < 80100) {
+            $property->setAccessible(true);
+        }
+
         $property->setValue($companyEmployee, 42);
 
         $classMetaData = $this->emMock->getClassMetadata(CompanyEmployee::class);

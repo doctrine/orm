@@ -20,6 +20,8 @@ use ReflectionProperty;
 
 use function array_merge;
 
+use const PHP_VERSION_ID;
+
 /** @group DDC-2183 */
 class DefaultCacheTest extends OrmTestCase
 {
@@ -244,8 +246,11 @@ class DefaultCacheTest extends OrmTestCase
         $method     = new ReflectionMethod($this->cache, 'toIdentifierArray');
         $property   = new ReflectionProperty($entity, 'id');
 
-        $property->setAccessible(true);
-        $method->setAccessible(true);
+        if (PHP_VERSION_ID < 80100) {
+            $property->setAccessible(true);
+            $method->setAccessible(true);
+        }
+
         $property->setValue($entity, $identifier);
 
         self::assertEquals(['id' => $identifier], $method->invoke($this->cache, $metadata, $identifier));

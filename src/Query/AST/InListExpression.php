@@ -14,9 +14,10 @@ class InListExpression extends InExpression
     public function __construct(ArithmeticExpression $expression, array $literals, bool $not = false)
     {
         $this->literals = $literals;
-        $this->not      = $not;
+        // @phpstan-ignore property.deprecatedClass
+        $this->not = $not;
 
-        // @phpstan-ignore staticMethod.deprecatedClass
+        // @phpstan-ignore method.deprecatedClass
         parent::__construct($expression);
     }
 }

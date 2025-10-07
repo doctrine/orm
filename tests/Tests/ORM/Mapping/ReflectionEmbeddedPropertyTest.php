@@ -13,6 +13,8 @@ use Doctrine\Tests\Models\Reflection\ConcreteEmbeddable;
 use PHPUnit\Framework\TestCase;
 use ReflectionProperty;
 
+use const PHP_VERSION_ID;
+
 /**
  * Tests for {@see \Doctrine\ORM\Mapping\ReflectionEmbeddedProperty}
  *
@@ -113,7 +115,9 @@ class ReflectionEmbeddedPropertyTest extends TestCase
     {
         $reflectionProperty = new ReflectionProperty($className, $propertyName);
 
-        $reflectionProperty->setAccessible(true);
+        if (PHP_VERSION_ID < 80100) {
+            $reflectionProperty->setAccessible(true);
+        }
 
         return $reflectionProperty;
     }

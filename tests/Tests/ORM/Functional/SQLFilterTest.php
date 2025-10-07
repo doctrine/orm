@@ -35,6 +35,8 @@ use function count;
 use function in_array;
 use function serialize;
 
+use const PHP_VERSION_ID;
+
 /**
  * Tests SQLFilter functionality.
  *
@@ -303,7 +305,10 @@ class SQLFilterTest extends OrmFunctionalTestCase
         $filter = new MyLocaleFilter($em);
 
         $reflMethod = new ReflectionMethod(SQLFilter::class, 'getConnection');
-        $reflMethod->setAccessible(true);
+
+        if (PHP_VERSION_ID < 80100) {
+            $reflMethod->setAccessible(true);
+        }
 
         self::assertSame($conn, $reflMethod->invoke($filter));
     }

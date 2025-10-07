@@ -45,6 +45,7 @@ use function uniqid;
 use function unlink;
 
 use const DIRECTORY_SEPARATOR;
+use const PHP_VERSION_ID;
 
 class EntityGeneratorTest extends OrmTestCase
 {
@@ -559,10 +560,16 @@ class EntityGeneratorTest extends OrmTestCase
     {
         $r = new ReflectionObject($this->generator);
         $m = $r->getMethod('parseTokensInEntityFile');
-        $m->setAccessible(true);
+
+        if (PHP_VERSION_ID < 80100) {
+            $m->setAccessible(true);
+        }
 
         $p = $r->getProperty('staticReflection');
-        $p->setAccessible(true);
+
+        if (PHP_VERSION_ID < 80100) {
+            $p->setAccessible(true);
+        }
 
         $ret = $m->invoke($this->generator, $php);
         self::assertEquals($classes, array_keys($p->getValue($this->generator)));
@@ -665,7 +672,9 @@ class EntityGeneratorTest extends OrmTestCase
         $constants  = $reflection->getConstants();
         $pattern    = '/^INHERITANCE_TYPE_/';
 
-        $method->setAccessible(true);
+        if (PHP_VERSION_ID < 80100) {
+            $method->setAccessible(true);
+        }
 
         foreach ($constants as $name => $value) {
             if (! preg_match($pattern, $name)) {
@@ -692,7 +701,9 @@ class EntityGeneratorTest extends OrmTestCase
         $constants  = $reflection->getConstants();
         $pattern    = '/^CHANGETRACKING_/';
 
-        $method->setAccessible(true);
+        if (PHP_VERSION_ID < 80100) {
+            $method->setAccessible(true);
+        }
 
         foreach ($constants as $name => $value) {
             if (! preg_match($pattern, $name)) {
@@ -719,7 +730,9 @@ class EntityGeneratorTest extends OrmTestCase
         $constants  = $reflection->getConstants();
         $pattern    = '/^GENERATOR_TYPE_/';
 
-        $method->setAccessible(true);
+        if (PHP_VERSION_ID < 80100) {
+            $method->setAccessible(true);
+        }
 
         foreach ($constants as $name => $value) {
             if (! preg_match($pattern, $name)) {

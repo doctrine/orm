@@ -103,7 +103,8 @@ class DefaultQueryCache implements QueryCache
         };
 
         $cacheKeys = new CollectionCacheEntry(array_map($generateKeys, $cacheEntry->result));
-        $entries   = $region->getMultiple($cacheKeys) ?? [];
+        /** @phpstan-ignore method.deprecatedInterface */
+        $entries = $region->getMultiple($cacheKeys) ?? [];
 
         // @TODO - move to cache hydration component
         foreach ($cacheEntry->result as $index => $entry) {
@@ -167,8 +168,9 @@ class DefaultQueryCache implements QueryCache
                     return new EntityCacheKey($assocMetadata->rootEntityName, $id);
                 };
 
-                $collection   = new PersistentCollection($this->em, $assocMetadata, new ArrayCollection());
-                $assocKeys    = new CollectionCacheEntry(array_map($generateKeys, $assoc['list']));
+                $collection = new PersistentCollection($this->em, $assocMetadata, new ArrayCollection());
+                $assocKeys  = new CollectionCacheEntry(array_map($generateKeys, $assoc['list']));
+                /** @phpstan-ignore method.deprecatedInterface */
                 $assocEntries = $assocRegion->getMultiple($assocKeys);
 
                 foreach ($assoc['list'] as $assocIndex => $assocId) {

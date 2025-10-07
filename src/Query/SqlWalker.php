@@ -1587,7 +1587,9 @@ class SqlWalker implements TreeWalker
 
                     $sqlParts[] = $col . ' AS ' . $columnAlias;
 
-                    $this->scalarResultAliasMap[$resultAlias][] = $columnAlias;
+                    if ($resultAlias !== null) {
+                        $this->scalarResultAliasMap[$resultAlias][] = $columnAlias;
+                    }
 
                     $this->rsm->addFieldResult($dqlAlias, $columnAlias, $fieldName, $class->name);
 
@@ -1622,7 +1624,9 @@ class SqlWalker implements TreeWalker
 
                             $sqlParts[] = $col . ' AS ' . $columnAlias;
 
-                            $this->scalarResultAliasMap[$resultAlias][] = $columnAlias;
+                            if ($resultAlias !== null) {
+                                $this->scalarResultAliasMap[$resultAlias][] = $columnAlias;
+                            }
 
                             $this->rsm->addFieldResult($dqlAlias, $columnAlias, $fieldName, $subClassName);
                         }
@@ -2356,7 +2360,9 @@ class SqlWalker implements TreeWalker
      */
     public function walkInListExpression(AST\InListExpression $inExpr): string
     {
+        /** @phpstan-ignore property.deprecatedClass */
         return $this->walkArithmeticExpression($inExpr->expression)
+                /** @phpstan-ignore property.deprecatedClass */
             . ($inExpr->not ? ' NOT' : '') . ' IN ('
             . implode(', ', array_map([$this, 'walkInParameter'], $inExpr->literals))
             . ')';
@@ -2367,7 +2373,9 @@ class SqlWalker implements TreeWalker
      */
     public function walkInSubselectExpression(AST\InSubselectExpression $inExpr): string
     {
+        /** @phpstan-ignore property.deprecatedClass */
         return $this->walkArithmeticExpression($inExpr->expression)
+            /** @phpstan-ignore property.deprecatedClass */
             . ($inExpr->not ? ' NOT' : '') . ' IN ('
             . $this->walkSubselect($inExpr->subselect)
             . ')';

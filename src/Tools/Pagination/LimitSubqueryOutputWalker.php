@@ -149,7 +149,9 @@ class LimitSubqueryOutputWalker extends SqlOutputWalker
         $selectAliasToExpressionMap = [];
         // Get any aliases that are available for select expressions.
         foreach ($AST->selectClause->selectExpressions as $selectExpression) {
-            $selectAliasToExpressionMap[$selectExpression->fieldIdentificationVariable] = $selectExpression->expression;
+            if ($selectExpression->fieldIdentificationVariable !== null) {
+                $selectAliasToExpressionMap[$selectExpression->fieldIdentificationVariable] = $selectExpression->expression;
+            }
         }
 
         // Rebuild string orderby expressions to use the select expression they're referencing

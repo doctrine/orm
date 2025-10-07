@@ -63,7 +63,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
      */
     private function getVersionedClassMetadata(): ClassMetadata
     {
-        if (isset($this->class->fieldMappings[$this->class->versionField]['inherited'])) {
+        if ($this->class->versionField !== null && isset($this->class->fieldMappings[$this->class->versionField]['inherited'])) {
             $definingClassName = $this->class->fieldMappings[$this->class->versionField]['inherited'];
 
             return $this->em->getClassMetadata($definingClassName);

@@ -19,18 +19,6 @@ parameters:
 			path: src/AbstractQuery.php
 
 		-
-			message: '#^Expression "\$setCacheEntry\(\$data\)" on a separate line does not do anything\.$#'
-			identifier: expr.resultUnused
-			count: 1
-			path: src/AbstractQuery.php
-
-		-
-			message: '#^Expression "\$setCacheEntry\(\$stmt\)" on a separate line does not do anything\.$#'
-			identifier: expr.resultUnused
-			count: 1
-			path: src/AbstractQuery.php
-
-		-
 			message: '#^Method Doctrine\\ORM\\AbstractQuery\:\:getParameter\(\) should return Doctrine\\ORM\\Query\\Parameter\|null but returns Doctrine\\ORM\\Query\\Parameter\|false\|null\.$#'
 			identifier: return.type
 			count: 1
@@ -101,6 +89,12 @@ parameters:
 			identifier: missingType.generics
 			count: 1
 			path: src/Cache/CollectionHydrator.php
+
+		-
+			message: '#^If condition is always false\.$#'
+			identifier: if.alwaysFalse
+			count: 1
+			path: src/Cache/DefaultCache.php
 
 		-
 			message: '#^Method Doctrine\\ORM\\Cache\\DefaultCache\:\:buildCollectionCacheKey\(\) has parameter \$metadata with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
@@ -260,12 +254,6 @@ parameters:
 
 		-
 			message: '#^Parameter \#1 \$entityName of static method Doctrine\\ORM\\Cache\\Exception\\NonCacheableEntity\:\:fromEntity\(\) expects string, class\-string\|false given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Cache/DefaultQueryCache.php
-
-		-
-			message: '#^Parameter \#1 \$result of class Doctrine\\ORM\\Cache\\QueryCacheEntry constructor expects array\<string, mixed\>, array\<int\|string, array\<string, array\<mixed\>\>\> given\.$#'
 			identifier: argument.type
 			count: 1
 			path: src/Cache/DefaultQueryCache.php
@@ -631,6 +619,18 @@ parameters:
 			path: src/Cache/TimestampQueryCacheValidator.php
 
 		-
+			message: '#^Call to function is_a\(\) with arguments class\-string\<Doctrine\\ORM\\EntityRepository\>, ''Doctrine\\\\ORM\\\\EntityRepository'' and true will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: src/Configuration.php
+
+		-
+			message: '#^Call to function is_a\(\) with arguments class\-string\<Doctrine\\ORM\\EntityRepository\>, ''Doctrine\\\\Persistence\\\\ObjectRepository'' and true will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: src/Configuration.php
+
+		-
 			message: '#^Call to function method_exists\(\) with ''Doctrine\\\\DBAL\\\\Configuration'' and ''getResultCache'' will always evaluate to true\.$#'
 			identifier: function.alreadyNarrowedType
 			count: 1
@@ -973,13 +973,13 @@ parameters:
 			path: src/Internal/Hydration/AbstractHydrator.php
 
 		-
-			message: '#^Parameter &\$id by\-ref type of method Doctrine\\ORM\\Internal\\Hydration\\AbstractHydrator\:\:gatherRowData\(\) expects array\<string, string\>, array\<int\|string, string\> given\.$#'
+			message: '#^Parameter &\$id by\-ref type of method Doctrine\\ORM\\Internal\\Hydration\\AbstractHydrator\:\:gatherRowData\(\) expects array\<string, string\>, array\<string\> given\.$#'
 			identifier: parameterByRef.type
 			count: 1
 			path: src/Internal/Hydration/AbstractHydrator.php
 
 		-
-			message: '#^Parameter &\$nonemptyComponents by\-ref type of method Doctrine\\ORM\\Internal\\Hydration\\AbstractHydrator\:\:gatherRowData\(\) expects array\<string, bool\>, array\<int\|string, bool\> given\.$#'
+			message: '#^Parameter &\$nonemptyComponents by\-ref type of method Doctrine\\ORM\\Internal\\Hydration\\AbstractHydrator\:\:gatherRowData\(\) expects array\<string, bool\>, array\<bool\> given\.$#'
 			identifier: parameterByRef.type
 			count: 1
 			path: src/Internal/Hydration/AbstractHydrator.php
@@ -1187,6 +1187,12 @@ parameters:
 			identifier: missingType.iterableValue
 			count: 5
 			path: src/Mapping/ClassMetadata.php
+
+		-
+			message: '#^Call to function is_a\(\) with Doctrine\\DBAL\\Platforms\\OraclePlatform and ''Doctrine\\\\DBAL…'' will always evaluate to false\.$#'
+			identifier: function.impossibleType
+			count: 1
+			path: src/Mapping/ClassMetadataFactory.php
 
 		-
 			message: '#^If condition is always true\.$#'
@@ -1669,7 +1675,7 @@ parameters:
 			path: src/Mapping/ClassMetadataInfo.php
 
 		-
-			message: '#^Property Doctrine\\ORM\\Mapping\\ClassMetadataInfo\<T of object\>\:\:\$embeddedClasses \(array\<string, array\{class\: class\-string, columnPrefix\: string\|null, declaredField\: string\|null, originalField\: string\|null, inherited\?\: class\-string, declared\?\: class\-string\}\>\) does not accept non\-empty\-array\<int\|string, array\{class\: string, columnPrefix\: mixed, declaredField\: mixed, originalField\: mixed, inherited\?\: class\-string, declared\?\: class\-string\}\>\.$#'
+			message: '#^Property Doctrine\\ORM\\Mapping\\ClassMetadataInfo\<T of object\>\:\:\$embeddedClasses \(array\<string, array\{class\: class\-string, columnPrefix\: string\|null, declaredField\: string\|null, originalField\: string\|null, inherited\?\: class\-string, declared\?\: class\-string\}\>\) does not accept non\-empty\-array\<array\{class\: string, columnPrefix\: mixed, declaredField\: mixed, originalField\: mixed, inherited\?\: class\-string, declared\?\: class\-string\}\>\.$#'
 			identifier: assign.propertyType
 			count: 1
 			path: src/Mapping/ClassMetadataInfo.php
@@ -1681,19 +1687,7 @@ parameters:
 			path: src/Mapping/ClassMetadataInfo.php
 
 		-
-			message: '#^Property Doctrine\\ORM\\Mapping\\ClassMetadataInfo\<T of object\>\:\:\$namedNativeQueries \(array\<string, array\<string, mixed\>\>\) does not accept array\<int\|string, array\<string, mixed\>\>\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: src/Mapping/ClassMetadataInfo.php
-
-		-
-			message: '#^Property Doctrine\\ORM\\Mapping\\ClassMetadataInfo\<T of object\>\:\:\$namedQueries \(array\<string, array\<string, mixed\>\>\) does not accept array\<int\|string, array\<string, mixed\>\>\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: src/Mapping/ClassMetadataInfo.php
-
-		-
-			message: '#^Property Doctrine\\ORM\\Mapping\\ClassMetadataInfo\<T of object\>\:\:\$sqlResultSetMappings \(array\<string, array\{name\: string, entities\: array\<mixed\>, columns\: array\<mixed\>\}\>\) does not accept non\-empty\-array\<int\|string, array\<string, mixed\>\>\.$#'
+			message: '#^Property Doctrine\\ORM\\Mapping\\ClassMetadataInfo\<T of object\>\:\:\$sqlResultSetMappings \(array\<string, array\{name\: string, entities\: array\<mixed\>, columns\: array\<mixed\>\}\>\) does not accept non\-empty\-array\<non\-empty\-array\<string, mixed\>\>\.$#'
 			identifier: assign.propertyType
 			count: 1
 			path: src/Mapping/ClassMetadataInfo.php
@@ -1718,6 +1712,12 @@ parameters:
 
 		-
 			message: '#^Template type T is declared as covariant, but occurs in invariant position in property Doctrine\\ORM\\Mapping\\ClassMetadataInfo\:\:\$name\.$#'
+			identifier: generics.variance
+			count: 1
+			path: src/Mapping/ClassMetadataInfo.php
+
+		-
+			message: '#^Template type T is declared as covariant, but occurs in invariant position in return type of method Doctrine\\ORM\\Mapping\\ClassMetadataInfo\:\:getReflectionClass\(\)\.$#'
 			identifier: generics.variance
 			count: 1
 			path: src/Mapping/ClassMetadataInfo.php
@@ -2743,18 +2743,6 @@ parameters:
 			path: src/Persisters/Entity/BasicEntityPersister.php
 
 		-
-			message: '#^Method Doctrine\\ORM\\Persisters\\Entity\\BasicEntityPersister\:\:expandCriteriaParameters\(\) should return array\{list\<mixed\>, list\<int\|string\|null\>\} but returns array\{array\<mixed\>, list\<int\|string\|null\>\}\.$#'
-			identifier: return.type
-			count: 1
-			path: src/Persisters/Entity/BasicEntityPersister.php
-
-		-
-			message: '#^Method Doctrine\\ORM\\Persisters\\Entity\\BasicEntityPersister\:\:expandParameters\(\) should return array\{list\<mixed\>, list\<int\|string\|null\>\} but returns array\{array\<mixed\>, list\<int\|string\|null\>\}\.$#'
-			identifier: return.type
-			count: 1
-			path: src/Persisters/Entity/BasicEntityPersister.php
-
-		-
 			message: '#^Method Doctrine\\ORM\\Persisters\\Entity\\BasicEntityPersister\:\:expandToManyParameters\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
@@ -2787,12 +2775,6 @@ parameters:
 		-
 			message: '#^Method Doctrine\\ORM\\Persisters\\Entity\\BasicEntityPersister\:\:getClassMetadata\(\) return type with generic class Doctrine\\ORM\\Mapping\\ClassMetadata does not specify its types\: T$#'
 			identifier: missingType.generics
-			count: 1
-			path: src/Persisters/Entity/BasicEntityPersister.php
-
-		-
-			message: '#^Method Doctrine\\ORM\\Persisters\\Entity\\BasicEntityPersister\:\:getIndividualValue\(\) should return list\<mixed\> but returns array\<mixed\>\.$#'
-			identifier: return.type
 			count: 1
 			path: src/Persisters/Entity/BasicEntityPersister.php
 
@@ -2857,12 +2839,6 @@ parameters:
 			path: src/Persisters/Entity/BasicEntityPersister.php
 
 		-
-			message: '#^Method Doctrine\\ORM\\Persisters\\Entity\\BasicEntityPersister\:\:getTypes\(\) has parameter \$class with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
-			identifier: missingType.generics
-			count: 1
-			path: src/Persisters/Entity/BasicEntityPersister.php
-
-		-
 			message: '#^Method Doctrine\\ORM\\Persisters\\Entity\\BasicEntityPersister\:\:load\(\) has parameter \$assoc with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 5
@@ -2920,18 +2896,6 @@ parameters:
 			message: '#^Offset ''joinTable'' might not exist on array\{cache\?\: array, cascade\: array\<string\>, declared\?\: class\-string, fetch\: mixed, fieldName\: string, id\?\: bool, inherited\?\: class\-string, indexBy\?\: string, \.\.\.\}\.$#'
 			identifier: offsetAccess.notFound
 			count: 8
-			path: src/Persisters/Entity/BasicEntityPersister.php
-
-		-
-			message: '#^Offset ''relationToTargetKeyColumns'' might not exist on array\{cache\?\: array, cascade\: array\<string\>, declared\?\: class\-string, fetch\: mixed, fieldName\: string, id\?\: bool, inherited\?\: class\-string, indexBy\?\: string, \.\.\.\}\.$#'
-			identifier: offsetAccess.notFound
-			count: 1
-			path: src/Persisters/Entity/BasicEntityPersister.php
-
-		-
-			message: '#^Offset ''sourceToTargetKeyColumns'' might not exist on array\{cache\?\: array, cascade\: array\<string\>, declared\?\: class\-string, fetch\: mixed, fieldName\: string, id\?\: bool, inherited\?\: class\-string, indexBy\?\: string, \.\.\.\}\.$#'
-			identifier: offsetAccess.notFound
-			count: 1
 			path: src/Persisters/Entity/BasicEntityPersister.php
 
 		-
@@ -3197,33 +3161,6 @@ parameters:
 
 		-
 			message: '''
-				#^Call to method __construct\(\) of deprecated class Doctrine\\Common\\Proxy\\AbstractProxyFactory\:
-				The AbstractProxyFactory class is deprecated since doctrine/common 3\.5\.$#
-			'''
-			identifier: staticMethod.deprecatedClass
-			count: 1
-			path: src/Proxy/ProxyFactory.php
-
-		-
-			message: '''
-				#^Call to method generateProxyClasses\(\) of deprecated class Doctrine\\Common\\Proxy\\AbstractProxyFactory\:
-				The AbstractProxyFactory class is deprecated since doctrine/common 3\.5\.$#
-			'''
-			identifier: staticMethod.deprecatedClass
-			count: 1
-			path: src/Proxy/ProxyFactory.php
-
-		-
-			message: '''
-				#^Call to method getProxy\(\) of deprecated class Doctrine\\Common\\Proxy\\AbstractProxyFactory\:
-				The AbstractProxyFactory class is deprecated since doctrine/common 3\.5\.$#
-			'''
-			identifier: staticMethod.deprecatedClass
-			count: 1
-			path: src/Proxy/ProxyFactory.php
-
-		-
-			message: '''
 				#^Class Doctrine\\ORM\\Proxy\\ProxyFactory extends deprecated class Doctrine\\Common\\Proxy\\AbstractProxyFactory\:
 				The AbstractProxyFactory class is deprecated since doctrine/common 3\.5\.$#
 			'''
@@ -3240,15 +3177,6 @@ parameters:
 		-
 			message: '#^Comparison operation "\>" between 0\|1\|2\|3\|4 and 4 is always false\.$#'
 			identifier: greater.alwaysFalse
-			count: 1
-			path: src/Proxy/ProxyFactory.php
-
-		-
-			message: '''
-				#^Instantiation of deprecated class Doctrine\\Common\\Proxy\\ProxyGenerator\:
-				The ProxyGenerator class is deprecated since doctrine/common 3\.5\.$#
-			'''
-			identifier: new.deprecated
 			count: 1
 			path: src/Proxy/ProxyFactory.php
 
@@ -3985,12 +3913,6 @@ parameters:
 			message: '#^Property Doctrine\\ORM\\Query\\SqlWalker\:\:\$queryComponents type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 5
-			path: src/Query/SqlWalker.php
-
-		-
-			message: '#^Property Doctrine\\ORM\\Query\\SqlWalker\:\:\$selectedClasses \(array\<string, array\{class\: Doctrine\\ORM\\Mapping\\ClassMetadata, dqlAlias\: string, resultAlias\: string\|null\}\>\) does not accept non\-empty\-array\<int\|string, array\{class\: Doctrine\\ORM\\Mapping\\ClassMetadata, dqlAlias\: mixed, resultAlias\: string\|null\}\>\.$#'
-			identifier: assign.propertyType
-			count: 1
 			path: src/Query/SqlWalker.php
 
 		-
@@ -5068,6 +4990,12 @@ parameters:
 			path: src/Tools/Pagination/LimitSubqueryOutputWalker.php
 
 		-
+			message: '#^Method Doctrine\\ORM\\Tools\\Pagination\\Paginator\:\:setUseOutputWalkers\(\) should return static\(Doctrine\\ORM\\Tools\\Pagination\\Paginator\<T\>\) but returns \$this\(Doctrine\\ORM\\Tools\\Pagination\\Paginator\<T\>\)\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Tools/Pagination/Paginator.php
+
+		-
 			message: '#^PHPDoc tag @var for variable \$parameters contains generic interface Doctrine\\Common\\Collections\\Collection but does not specify its types\: TKey, T$#'
 			identifier: missingType.generics
 			count: 1
@@ -5590,7 +5518,25 @@ parameters:
 			path: src/Utility/PersisterHelper.php
 
 		-
+			message: '#^Method Doctrine\\ORM\\Utility\\PersisterHelper\:\:inferParameterTypes\(\) has parameter \$class with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Utility/PersisterHelper.php
+
+		-
 			message: '#^Offset ''joinTable'' might not exist on array\{cache\?\: array, cascade\: array\<string\>, declared\?\: class\-string, fetch\: mixed, fieldName\: string, id\?\: bool, inherited\?\: class\-string, indexBy\?\: string, \.\.\.\}\.$#'
+			identifier: offsetAccess.notFound
+			count: 1
+			path: src/Utility/PersisterHelper.php
+
+		-
+			message: '#^Offset ''relationToTargetKeyColumns'' might not exist on array\{cache\?\: array, cascade\: array\<string\>, declared\?\: class\-string, fetch\: mixed, fieldName\: string, id\?\: bool, inherited\?\: class\-string, indexBy\?\: string, \.\.\.\}\.$#'
+			identifier: offsetAccess.notFound
+			count: 1
+			path: src/Utility/PersisterHelper.php
+
+		-
+			message: '#^Offset ''sourceToTargetKeyColumns'' might not exist on array\{cache\?\: array, cascade\: array\<string\>, declared\?\: class\-string, fetch\: mixed, fieldName\: string, id\?\: bool, inherited\?\: class\-string, indexBy\?\: string, \.\.\.\}\.$#'
 			identifier: offsetAccess.notFound
 			count: 1
 			path: src/Utility/PersisterHelper.php

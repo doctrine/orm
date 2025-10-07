@@ -172,10 +172,12 @@ EOPHP;
 
             $this->isLazyGhostObjectEnabled = false;
 
+            // @phpstan-ignore new.deprecatedClass, method.deprecatedClass
             $proxyGenerator = new ProxyGenerator($proxyDir, $proxyNs);
-            // @phpstan-ignore classConstant.deprecatedInterface
+            // @phpstan-ignore classConstant.deprecatedInterface, method.deprecatedClass
             $proxyGenerator->setPlaceholder('baseProxyInterface', LegacyProxy::class);
 
+            // @phpstan-ignore method.deprecatedClass
             parent::__construct($proxyGenerator, $em->getMetadataFactory(), $autoGenerate);
         }
 
@@ -205,6 +207,7 @@ EOPHP;
     public function getProxy($className, array $identifier)
     {
         if (! $this->isLazyGhostObjectEnabled) {
+            // @phpstan-ignore method.deprecatedClass
             return parent::getProxy($className, $identifier);
         }
 
@@ -226,6 +229,7 @@ EOPHP;
     public function generateProxyClasses(array $classes, $proxyDir = null)
     {
         if (! $this->isLazyGhostObjectEnabled) {
+            // @phpstan-ignore method.deprecatedClass
             return parent::generateProxyClasses($classes, $proxyDir);
         }
 
@@ -422,7 +426,10 @@ EOPHP;
                     continue;
                 }
 
-                $property->setAccessible(true);
+                if (PHP_VERSION_ID < 80100) {
+                    $property->setAccessible(true);
+                }
+
                 $property->setValue($proxy, $property->getValue($original));
             }
         };
