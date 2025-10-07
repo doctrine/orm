@@ -13,8 +13,6 @@ class InvalidChildEntity extends InvalidEntity
     /** @Column(type="string") */
     protected int $property2;
 
-    /**
-     * @Column(type="boolean")
-     */
+    /** @Column(type="boolean") */
     private string $anotherProperty;
 }

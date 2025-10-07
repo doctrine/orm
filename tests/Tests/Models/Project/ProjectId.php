@@ -6,9 +6,7 @@ namespace Doctrine\Tests\Models\Project;
 
 class ProjectId
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     private $id;
 
     public function __construct(string $id)

@@ -79,6 +79,7 @@ class GH6123Entity
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
+     *
      * @var int
      */
     #[ORM\Id]

@@ -19,8 +19,6 @@ class GH10336Relation
      */
     public ?int $id = null;
 
-    /**
-     * @ORM\Column(type="string")
-     */
+    /** @ORM\Column(type="string") */
     public string $value;
 }

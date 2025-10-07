@@ -27,9 +27,7 @@ final class AbstractQueryTest extends TestCase
 
         $configuration = new Configuration();
         $configuration->setHydrationCache($cache);
-        $entityManager = $this->createMock(EntityManagerInterface::class);
-        $entityManager->method('getConfiguration')->willReturn($configuration);
-        $query        = $this->getMockForAbstractClass(AbstractQuery::class, [$entityManager]);
+        $query        = $this->createAbstractQuery($configuration);
         $cacheProfile = new QueryCacheProfile();
 
         $query->setHydrationCacheProfile($cacheProfile);
@@ -45,9 +43,7 @@ final class AbstractQueryTest extends TestCase
 
         $configuration = new Configuration();
         $configuration->setHydrationCache($cache);
-        $entityManager = $this->createMock(EntityManagerInterface::class);
-        $entityManager->method('getConfiguration')->willReturn($configuration);
-        $query        = $this->getMockForAbstractClass(AbstractQuery::class, [$entityManager]);
+        $query        = $this->createAbstractQuery($configuration);
         $cacheProfile = new QueryCacheProfile();
 
         $query->setHydrationCacheProfile($cacheProfile);
@@ -61,9 +57,7 @@ final class AbstractQueryTest extends TestCase
 
         $configuration = new Configuration();
         $configuration->setResultCache($cache);
-        $entityManager = $this->createMock(EntityManagerInterface::class);
-        $entityManager->method('getConfiguration')->willReturn($configuration);
-        $query        = $this->getMockForAbstractClass(AbstractQuery::class, [$entityManager]);
+        $query        = $this->createAbstractQuery($configuration);
         $cacheProfile = new QueryCacheProfile();
 
         $query->setResultCacheProfile($cacheProfile);
@@ -74,9 +68,7 @@ final class AbstractQueryTest extends TestCase
     /** @dataProvider provideSettersWithDeprecatedDefault */
     public function testCallingSettersWithoutArgumentsIsDeprecated(string $setter): void
     {
-        $entityManager = $this->createMock(EntityManagerInterface::class);
-        $entityManager->method('getConfiguration')->willReturn(new Configuration());
-        $query = $this->getMockForAbstractClass(AbstractQuery::class, [$entityManager]);
+        $query = $this->createAbstractQuery(new Configuration());
 
         $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/pull/9791');
         $query->$setter();
@@ -95,10 +87,7 @@ final class AbstractQueryTest extends TestCase
     public function testSettingTheResultCacheIsPossibleWithoutCallingDeprecatedMethods(): void
     {
         $cache = $this->createMock(CacheItemPoolInterface::class);
-
-        $entityManager = $this->createMock(EntityManagerInterface::class);
-        $entityManager->method('getConfiguration')->willReturn(new Configuration());
-        $query = $this->getMockForAbstractClass(AbstractQuery::class, [$entityManager]);
+        $query = $this->createAbstractQuery(new Configuration());
 
         $query->setResultCache($cache);
         self::assertSame($cache, CacheAdapter::wrap($query->getResultCacheDriver()));
@@ -107,13 +96,27 @@ final class AbstractQueryTest extends TestCase
 
     public function testSettingTheFetchModeToRandomIntegersIsDeprecated(): void
     {
-        $query = $this->getMockForAbstractClass(
-            AbstractQuery::class,
-            [],
-            '',
-            false // no need to call the constructor
-        );
+        $query = $this->createAbstractQuery(new Configuration());
+
         $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/pull/9777');
         $query->setFetchMode(stdClass::class, 'foo', 42);
+    }
+
+    private function createAbstractQuery(Configuration $configuration): AbstractQuery
+    {
+        $entityManager = $this->createMock(EntityManagerInterface::class);
+        $entityManager->method('getConfiguration')->willReturn($configuration);
+
+        return new class ($entityManager) extends AbstractQuery {
+            public function getSQL(): string
+            {
+                return '';
+            }
+
+            protected function _doExecute(): int
+            {
+                return 0;
+            }
+        };
     }
 }
