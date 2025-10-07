@@ -407,9 +407,9 @@ class ExprTest extends OrmTestCase
         self::assertEquals(['foo DESC', 'bar ASC'], $group->getParts());
 
         // Join
-        $join = new Expr\Join(Expr\Join::INNER_JOIN, 'f.bar', 'b', Expr\Join::ON, 'b.bar_id = 1', 'b.bar_id');
+        $join = new Expr\Join(Expr\Join::INNER_JOIN, 'f.bar', 'b', Expr\Join::WITH, 'b.bar_id = 1', 'b.bar_id');
         self::assertEquals(Expr\Join::INNER_JOIN, $join->getJoinType());
-        self::assertEquals(Expr\Join::ON, $join->getConditionType());
+        self::assertEquals(Expr\Join::WITH, $join->getConditionType());
         self::assertEquals('b.bar_id = 1', $join->getCondition());
         self::assertEquals('b.bar_id', $join->getIndexBy());
         self::assertEquals('f.bar', $join->getJoin());

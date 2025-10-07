@@ -160,11 +160,11 @@ class QueryBuilderTest extends OrmTestCase
         $qb
             ->select('u', 'a')
             ->from(CmsUser::class, 'u')
-            ->innerJoin('u.articles', 'a', Join::ON, $qb->expr()->eq('u.id', 'a.author_id'));
+            ->innerJoin(CmsArticle::class, 'a', Join::ON, $qb->expr()->eq('u.id', 'a.author_id'));
 
         $this->assertValidQueryBuilder(
             $qb,
-            'SELECT u, a FROM Doctrine\Tests\Models\CMS\CmsUser u INNER JOIN u.articles a ON u.id = a.author_id'
+            'SELECT u, a FROM Doctrine\Tests\Models\CMS\CmsUser u INNER JOIN Doctrine\Tests\Models\CMS\CmsArticle a ON u.id = a.author_id'
         );
     }
 
