@@ -11,7 +11,7 @@ parameters:
         # We can be certain that those values are not matched.
         -
             message: '~^Match expression does not handle remaining values:~'
-            path: src/Persisters/Entity/BasicEntityPersister.php
+            path: src/Utility/PersisterHelper.php
 
         # DBAL 4 compatibility
         -
@@ -109,12 +109,12 @@ parameters:
             path: src/Mapping/Driver/AttributeDriver.php
 
         -
-            message: '~^Method Doctrine\\ORM\\Persisters\\Entity\\BasicEntityPersister\:\:getArrayBindingType\(\) never returns .* so it can be removed from the return type\.$~'
-            path: src/Persisters/Entity/BasicEntityPersister.php
+            message: '~^Method Doctrine\\ORM\\Utility\\PersisterHelper\:\:getArrayBindingType\(\) never returns .* so it can be removed from the return type\.$~'
+            path: src/Utility/PersisterHelper.php
 
         -
-            message: '~getTypes.*should return~'
-            path: src/Persisters/Entity/BasicEntityPersister.php
+            message: '~inferParameterTypes.*should return~'
+            path: src/Utility/PersisterHelper.php
 
         -
             message: '~.*appendLockHint.*expects.*LockMode given~'

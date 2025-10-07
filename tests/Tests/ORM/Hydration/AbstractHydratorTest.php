@@ -54,8 +54,9 @@ class AbstractHydratorTest extends OrmFunctionalTestCase
 
         $this->hydrator = $this
             ->getMockBuilder(AbstractHydrator::class)
+            ->onlyMethods(['hydrateAllData'])
             ->setConstructorArgs([$mockEntityManagerInterface])
-            ->getMockForAbstractClass();
+            ->getMock();
     }
 
     /**

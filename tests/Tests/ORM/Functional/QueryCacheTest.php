@@ -122,8 +122,7 @@ class QueryCacheTest extends OrmFunctionalTestCase
 
         $query = $this->_em->createQuery('select ux from Doctrine\Tests\Models\CMS\CmsUser ux');
 
-        $sqlExecMock = $this->getMockBuilder(AbstractSqlExecutor::class)
-                            ->getMockForAbstractClass();
+        $sqlExecMock = $this->createMock(AbstractSqlExecutor::class);
 
         $sqlExecMock->expects(self::once())
                     ->method('execute')

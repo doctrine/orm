@@ -111,7 +111,7 @@ class DefaultRepositoryFactoryTest extends TestCase
     private function buildClassMetadata(string $className): ClassMetadata&MockObject
     {
         $metadata = $this->createMock(ClassMetadata::class);
-        $metadata->method('getName')->will(self::returnValue($className));
+        $metadata->method('getName')->willReturn($className);
         $metadata->name = $className;
 
         $metadata->customRepositoryClassName = null;
