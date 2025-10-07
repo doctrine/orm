@@ -9,6 +9,7 @@ use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Result;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Events;
+use Doctrine\ORM\Exception\NotSupported;
 use Doctrine\ORM\Internal\Hydration\AbstractHydrator;
 use Doctrine\ORM\ORMException;
 use Doctrine\ORM\Query\ResultSetMapping;
@@ -30,7 +31,7 @@ class AbstractHydratorTest extends OrmFunctionalTestCase
     /** @var ResultSetMapping&MockObject */
     private $mockResultMapping;
 
-    /** @var AbstractHydrator&MockObject */
+    /** @var DummyHydrator */
     private $hydrator;
 
     protected function setUp(): void
@@ -56,10 +57,7 @@ class AbstractHydratorTest extends OrmFunctionalTestCase
             ->method('fetchAssociative')
             ->willReturn(false);
 
-        $this->hydrator = $this
-            ->getMockBuilder(AbstractHydrator::class)
-            ->setConstructorArgs([$mockEntityManagerInterface])
-            ->getMockForAbstractClass();
+        $this->hydrator = new DummyHydrator($mockEntityManagerInterface);
     }
 
     /**
@@ -146,11 +144,7 @@ class AbstractHydratorTest extends OrmFunctionalTestCase
                 $this->assertTrue($eventListenerHasBeenRegistered);
             });
 
-        $this
-            ->hydrator
-            ->expects(self::once())
-            ->method('hydrateAllData')
-            ->willThrowException(new ORMException());
+        $this->hydrator->throwException = true;
 
         $this->expectException(ORMException::class);
         $this->hydrator->hydrateAll($this->mockResult, $this->mockResultMapping);
@@ -183,5 +177,21 @@ class AbstractHydratorTest extends OrmFunctionalTestCase
         }
 
         self::assertCount(0, $evm->getListeners(Events::onClear));
+    }
+}
+
+class DummyHydrator extends AbstractHydrator
+{
+    /** @var bool */
+    public $throwException = false;
+
+    /** {@inheritDoc} */
+    protected function hydrateAllData()
+    {
+        if ($this->throwException) {
+            throw NotSupported::create();
+        }
+
+        return [];
     }
 }
