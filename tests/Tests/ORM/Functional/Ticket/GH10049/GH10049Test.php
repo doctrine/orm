@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional\Ticket\GH10049;
 
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\DoesNotPerformAssertions;
 
 class GH10049Test extends OrmFunctionalTestCase
 {
@@ -18,7 +19,7 @@ class GH10049Test extends OrmFunctionalTestCase
         );
     }
 
-    /** @doesNotPerformAssertions */
+    #[DoesNotPerformAssertions]
     public function testInheritedReadOnlyPropertyValueCanBeSet(): void
     {
         $child = new ReadOnlyPropertyInheritor(10049);

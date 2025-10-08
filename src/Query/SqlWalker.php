@@ -1397,7 +1397,9 @@ class SqlWalker
 
             $sqlParts[] = $col . ' AS ' . $columnAlias;
 
-            $this->scalarResultAliasMap[$resultAlias][] = $columnAlias;
+            if ($resultAlias !== null) {
+                $this->scalarResultAliasMap[$resultAlias][] = $columnAlias;
+            }
 
             $this->rsm->addFieldResult($dqlAlias, $columnAlias, $fieldName, $class->name);
 
@@ -1430,7 +1432,9 @@ class SqlWalker
 
                     $sqlParts[] = $col . ' AS ' . $columnAlias;
 
-                    $this->scalarResultAliasMap[$resultAlias][] = $columnAlias;
+                    if ($resultAlias !== null) {
+                        $this->scalarResultAliasMap[$resultAlias][] = $columnAlias;
+                    }
 
                     $this->rsm->addFieldResult($dqlAlias, $columnAlias, $fieldName, $subClassName);
                 }

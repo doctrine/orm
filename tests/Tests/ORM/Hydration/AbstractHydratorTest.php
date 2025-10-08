@@ -10,11 +10,11 @@ use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Result;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Events;
-use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\Internal\Hydration\AbstractHydrator;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\Tests\Models\Hydration\SimpleEntity;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use LogicException;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -27,7 +27,7 @@ class AbstractHydratorTest extends OrmFunctionalTestCase
     private EventManager&MockObject $mockEventManager;
     private Result&MockObject $mockResult;
     private ResultSetMapping&MockObject $mockResultMapping;
-    private AbstractHydrator&MockObject $hydrator;
+    private DummyHydrator $hydrator;
 
     protected function setUp(): void
     {
@@ -52,10 +52,7 @@ class AbstractHydratorTest extends OrmFunctionalTestCase
             ->method('fetchAssociative')
             ->willReturn(false);
 
-        $this->hydrator = $this
-            ->getMockBuilder(AbstractHydrator::class)
-            ->setConstructorArgs([$mockEntityManagerInterface])
-            ->getMockForAbstractClass();
+        $this->hydrator = new DummyHydrator($mockEntityManagerInterface);
     }
 
     /**
@@ -141,13 +138,9 @@ class AbstractHydratorTest extends OrmFunctionalTestCase
                 $this->assertTrue($eventListenerHasBeenRegistered);
             });
 
-        $this
-            ->hydrator
-            ->expects(self::once())
-            ->method('hydrateAllData')
-            ->willThrowException($this->createStub(ORMException::class));
+        $this->hydrator->throwException = true;
 
-        $this->expectException(ORMException::class);
+        $this->expectException(LogicException::class);
         $this->hydrator->hydrateAll($this->mockResult, $this->mockResultMapping);
     }
 
@@ -178,5 +171,20 @@ class AbstractHydratorTest extends OrmFunctionalTestCase
         }
 
         self::assertCount(0, $evm->getListeners(Events::onClear));
+    }
+}
+
+class DummyHydrator extends AbstractHydrator
+{
+    public bool $throwException = false;
+
+    /** @return array{} */
+    protected function hydrateAllData(): array
+    {
+        if ($this->throwException) {
+            throw new LogicException();
+        }
+
+        return [];
     }
 }

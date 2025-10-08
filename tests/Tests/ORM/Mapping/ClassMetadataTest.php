@@ -53,7 +53,7 @@ use DoctrineGlobalArticle;
 use LogicException;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Group as TestGroup;
-use PHPUnit\Framework\Attributes\WithoutErrorHandler;
+use PHPUnit\Framework\Attributes\IgnoreDeprecations;
 use ReflectionClass;
 use stdClass;
 
@@ -1130,7 +1130,7 @@ class ClassMetadataTest extends OrmTestCase
         );
     }
 
-    #[WithoutErrorHandler]
+    #[IgnoreDeprecations]
     public function testDiscriminatorMapWithSameClassMultipleTimesDeprecated(): void
     {
         $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/issues/3519');

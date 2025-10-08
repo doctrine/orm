@@ -10,4 +10,4 @@ parameters:
         # We can be certain that those values are not matched.
         -
             message: '~^Match expression does not handle remaining values:~'
-            path: src/Persisters/Entity/BasicEntityPersister.php
+            path: src/Utility/PersisterHelper.php

@@ -110,7 +110,6 @@ class ParserResultSerializationTest extends OrmFunctionalTestCase
     private static function parseQuery(Query $query): ParserResult
     {
         $r = new ReflectionMethod($query, 'parse');
-        $r->setAccessible(true);
 
         return $r->invoke($query);
     }

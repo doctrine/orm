@@ -48,7 +48,6 @@ class SecondLevelCacheCountQueriesTest extends SecondLevelCacheFunctionalTestCas
 
         if ($cacheUsage === 0) {
             $metadataCacheReflection = new ReflectionProperty(ClassMetadata::class, 'cache');
-            $metadataCacheReflection->setAccessible(true);
             $metadataCacheReflection->setValue($metadata, null);
 
             return;

@@ -1909,18 +1909,6 @@ parameters:
 			path: src/Persisters/Entity/BasicEntityPersister.php
 
 		-
-			message: '#^Access to an undefined property Doctrine\\ORM\\Mapping\\ManyToManyOwningSideMapping\|Doctrine\\ORM\\Mapping\\ManyToOneAssociationMapping\|Doctrine\\ORM\\Mapping\\OneToOneOwningSideMapping\:\:\$relationToTargetKeyColumns\.$#'
-			identifier: property.notFound
-			count: 1
-			path: src/Persisters/Entity/BasicEntityPersister.php
-
-		-
-			message: '#^Access to an undefined property Doctrine\\ORM\\Mapping\\ManyToManyOwningSideMapping\|Doctrine\\ORM\\Mapping\\ManyToOneAssociationMapping\|Doctrine\\ORM\\Mapping\\OneToOneOwningSideMapping\:\:\$sourceToTargetKeyColumns\.$#'
-			identifier: property.notFound
-			count: 1
-			path: src/Persisters/Entity/BasicEntityPersister.php
-
-		-
 			message: '#^Call to an undefined method Doctrine\\ORM\\Mapping\\ManyToManyInverseSideMapping\|Doctrine\\ORM\\Mapping\\ManyToManyOwningSideMapping\|Doctrine\\ORM\\Mapping\\ManyToOneAssociationMapping\|Doctrine\\ORM\\Mapping\\OneToManyAssociationMapping\|Doctrine\\ORM\\Mapping\\OneToOneInverseSideMapping\|Doctrine\\ORM\\Mapping\\OneToOneOwningSideMapping\:\:indexBy\(\)\.$#'
 			identifier: method.notFound
 			count: 1
@@ -1929,18 +1917,6 @@ parameters:
 		-
 			message: '#^Method Doctrine\\ORM\\Persisters\\Entity\\BasicEntityPersister\:\:__construct\(\) has parameter \$class with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
 			identifier: missingType.generics
-			count: 1
-			path: src/Persisters/Entity/BasicEntityPersister.php
-
-		-
-			message: '#^Method Doctrine\\ORM\\Persisters\\Entity\\BasicEntityPersister\:\:expandCriteriaParameters\(\) should return array\{list\<mixed\>, list\<Doctrine\\DBAL\\ArrayParameterType\|Doctrine\\DBAL\\ParameterType\|string\>\} but returns array\{array\<mixed\>, list\<Doctrine\\DBAL\\ArrayParameterType\|Doctrine\\DBAL\\ParameterType\|string\>\}\.$#'
-			identifier: return.type
-			count: 1
-			path: src/Persisters/Entity/BasicEntityPersister.php
-
-		-
-			message: '#^Method Doctrine\\ORM\\Persisters\\Entity\\BasicEntityPersister\:\:expandParameters\(\) should return array\{list\<mixed\>, list\<Doctrine\\DBAL\\ArrayParameterType\|Doctrine\\DBAL\\ParameterType\|string\>\} but returns array\{array\<mixed\>, list\<Doctrine\\DBAL\\ArrayParameterType\|Doctrine\\DBAL\\ParameterType\|string\>\}\.$#'
-			identifier: return.type
 			count: 1
 			path: src/Persisters/Entity/BasicEntityPersister.php
 
@@ -1981,12 +1957,6 @@ parameters:
 			path: src/Persisters/Entity/BasicEntityPersister.php
 
 		-
-			message: '#^Method Doctrine\\ORM\\Persisters\\Entity\\BasicEntityPersister\:\:getIndividualValue\(\) should return list\<mixed\> but returns array\<mixed\>\.$#'
-			identifier: return.type
-			count: 1
-			path: src/Persisters/Entity/BasicEntityPersister.php
-
-		-
 			message: '#^Method Doctrine\\ORM\\Persisters\\Entity\\BasicEntityPersister\:\:getSelectColumnAssociationSQL\(\) has parameter \$class with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
 			identifier: missingType.generics
 			count: 1
@@ -1994,12 +1964,6 @@ parameters:
 
 		-
 			message: '#^Method Doctrine\\ORM\\Persisters\\Entity\\BasicEntityPersister\:\:getSelectColumnSQL\(\) has parameter \$class with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
-			identifier: missingType.generics
-			count: 1
-			path: src/Persisters/Entity/BasicEntityPersister.php
-
-		-
-			message: '#^Method Doctrine\\ORM\\Persisters\\Entity\\BasicEntityPersister\:\:getTypes\(\) has parameter \$class with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
 			identifier: missingType.generics
 			count: 1
 			path: src/Persisters/Entity/BasicEntityPersister.php
@@ -3280,6 +3244,18 @@ parameters:
 			path: src/Utility/PersisterHelper.php
 
 		-
+			message: '#^Access to an undefined property Doctrine\\ORM\\Mapping\\ManyToManyOwningSideMapping\|Doctrine\\ORM\\Mapping\\ManyToOneAssociationMapping\|Doctrine\\ORM\\Mapping\\OneToOneOwningSideMapping\:\:\$relationToTargetKeyColumns\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Utility/PersisterHelper.php
+
+		-
+			message: '#^Access to an undefined property Doctrine\\ORM\\Mapping\\ManyToManyOwningSideMapping\|Doctrine\\ORM\\Mapping\\ManyToOneAssociationMapping\|Doctrine\\ORM\\Mapping\\OneToOneOwningSideMapping\:\:\$sourceToTargetKeyColumns\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Utility/PersisterHelper.php
+
+		-
 			message: '#^Method Doctrine\\ORM\\Utility\\PersisterHelper\:\:getTypeOfColumn\(\) has parameter \$class with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
 			identifier: missingType.generics
 			count: 1
@@ -3287,6 +3263,12 @@ parameters:
 
 		-
 			message: '#^Method Doctrine\\ORM\\Utility\\PersisterHelper\:\:getTypeOfField\(\) has parameter \$class with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Utility/PersisterHelper.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Utility\\PersisterHelper\:\:inferParameterTypes\(\) has parameter \$class with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
 			identifier: missingType.generics
 			count: 1
 			path: src/Utility/PersisterHelper.php
