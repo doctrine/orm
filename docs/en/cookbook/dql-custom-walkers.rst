@@ -219,6 +219,14 @@ vendor specific features.
 Modify the Output Walker to get the raw SQL with interpolated parameters
 --------------------------------------------------------
 
+Sometimes we may want to log or trace the raw SQL being generated from its DQL,
+``$query->getSQL()`` will give us the prepared statment being passed to database
+with all values of SQL params being replaced by positional ``?`` or named ``:name``
+as params are innerpolated into prepared statment by the database while executing the SQL.
+``$query->getParameters()`` will give us details about SQL params that we've provided.
+So we can create an output walker to interpolate all SQL params that will be
+passed into prepared statement in PHP before database handle them internally:
+
 .. code-block:: php
 
     <?php
@@ -269,7 +277,7 @@ Modify the Output Walker to get the raw SQL with interpolated parameters
         }
     }
 
-Then you may get raw SQL with:
+Then you may get the raw SQL with this output walker:
 
 .. code-block:: php
 
@@ -282,7 +290,7 @@ Then you may get raw SQL with:
         ->setHint(\Doctrine\ORM\Query::HINT_CUSTOM_OUTPUT_WALKER, InterpolateParametersSQLOutputWalker::class)
         ->getSQL();
 
-The where clause of returned SQL should be like:
+The where clause of the returned SQL should be like:
 
 .. code-block:: sql
 
