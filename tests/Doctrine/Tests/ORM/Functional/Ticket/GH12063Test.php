@@ -11,7 +11,7 @@ use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-class GH12063 extends OrmFunctionalTestCase
+class GH12063Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
     {
