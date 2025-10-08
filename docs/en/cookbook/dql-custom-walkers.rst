@@ -221,10 +221,10 @@ Modifying the Output Walker to get the raw SQL with interpolated parameters
 
 Sometimes we may want to log or trace the raw SQL being generated from its DQL,
 ``$query->getSQL()`` will give us the prepared statement being passed to database
-with all values of SQL params being replaced by positional ``?`` or named ``:name``
+with all values of SQL parameters being replaced by positional ``?`` or named ``:name``
 as parameters are interpolated into prepared statements by the database while executing the SQL.
-``$query->getParameters()`` will give us details about SQL params that we've provided.
-So we can create an output walker to interpolate all SQL params that will be
+``$query->getParameters()`` will give us details about SQL parameters that we've provided.
+So we can create an output walker to interpolate all SQL parameters that will be
 passed into prepared statement in PHP before database handle them internally:
 
 .. code-block:: php
