@@ -216,7 +216,7 @@ huge benefits with using vendor specific features. This would still
 allow you write DQL queries instead of NativeQueries to make use of
 vendor specific features.
 
-Modify the Output Walker to get the raw SQL with interpolated parameters
+Modifying the Output Walker to get the raw SQL with interpolated parameters
 --------------------------------------------------------
 
 Sometimes we may want to log or trace the raw SQL being generated from its DQL,
