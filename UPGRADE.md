@@ -3,7 +3,14 @@
 We recommend you upgrade to DBAL 3 first before upgrading to ORM 3. See
 the DBAL upgrade docs: https://github.com/doctrine/dbal/blob/3.10.x/UPGRADE.md
 
-It is not required to upgrade to DBAL 4 or up yet.
+Rather than doing several major upgrades at once, we recommend you do the following:
+
+- upgrade to DBAL 3
+- deploy and monitor
+- upgrade to ORM 3
+- deploy and monitor
+- upgrade to DBAL 4
+- deploy and monitor
 
 If you are using Symfony, the recommended minimal Doctrine Bundle version is 2.15
 to run with ORM 3.
