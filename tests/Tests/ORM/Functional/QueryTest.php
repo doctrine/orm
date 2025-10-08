@@ -401,7 +401,7 @@ class QueryTest extends OrmFunctionalTestCase
         }
     }
 
-    public function testToIterableWithMixedResultIsNotAllowed(): void
+    public function testToIterableWithMixedResultEntityScalars(): void
     {
         $author           = new CmsUser();
         $author->name     = 'Ben';
@@ -441,7 +441,7 @@ class QueryTest extends OrmFunctionalTestCase
         $this->assertEquals('lala 2', $it[2][0]->topic);
     }
 
-    public function testToIterableWithMixedResultIsNotAllowed2(): void
+    public function testToIterableWithMixedResultArbitraryJoinsScalars(): void
     {
         $author           = new CmsUser();
         $author->name     = 'Ben';
@@ -484,7 +484,7 @@ class QueryTest extends OrmFunctionalTestCase
         $this->assertEquals('beberlei', $it[2][1]->username);
     }
 
-    public function testToIterableWithMixedResultIsNotAllowed3(): void
+    public function testToIterableWithMixedResultScalarsOnly(): void
     {
         $author           = new CmsUser();
         $author->name     = 'Ben';
