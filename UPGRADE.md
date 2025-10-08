@@ -1,5 +1,16 @@
 # Upgrade to 4.0
 
+## BC BREAK: Internal structure of `Doctrine\ORM\Query\ParserResult` changed
+
+The internal structure of `Doctrine\ORM\Query\ParserResult` changed. Thus, it is no longer possible to unserialize cached parser result instances that
+were created and serialized with the previous major version of the ORM.
+
+You need to clear your query cache when upgrading to the new major version.
+
+## BC BREAK: `Doctrine\ORM\Query\ParserResult` no longer holds `AbstractSqlExecutor`, `Doctrine\ORM\Query\Exec\SingleSelectExecutor` is removed
+
+This finishes the refactoring started in https://github.com/doctrine/orm/pull/11188: `ParserResult` has to be provided with an `Doctrine\ORM\Query\Exec\SqlFinalizer`. The `SingleSelectExecutor` is removed since it has been replaced by `SingleSelectSqlFinalizer`.
+
 ## BC BREAK: throw on `nullable` on columns that end up being used in a primary key
 
 Specifying `nullable` on join columns that are part of a primary key is

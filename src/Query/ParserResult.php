@@ -9,8 +9,6 @@ use Doctrine\ORM\Query\Exec\AbstractSqlExecutor;
 use Doctrine\ORM\Query\Exec\SqlFinalizer;
 use LogicException;
 
-use function sprintf;
-
 /**
  * Encapsulates the resulting components from a DQL query parsing process that
  * can be serialized.
@@ -19,11 +17,6 @@ use function sprintf;
  */
 class ParserResult
 {
-    /**
-     * The SQL executor used for executing the SQL.
-     */
-    private AbstractSqlExecutor|null $sqlExecutor = null;
-
     /**
      * The SQL executor used for executing the SQL.
      */
@@ -68,33 +61,6 @@ class ParserResult
         $this->resultSetMapping = $rsm;
     }
 
-    /**
-     * Sets the SQL executor that should be used for this ParserResult.
-     *
-     * @deprecated
-     */
-    public function setSqlExecutor(AbstractSqlExecutor $executor): void
-    {
-        $this->sqlExecutor = $executor;
-    }
-
-    /**
-     * Gets the SQL executor used by this ParserResult.
-     *
-     * @deprecated
-     */
-    public function getSqlExecutor(): AbstractSqlExecutor
-    {
-        if ($this->sqlExecutor === null) {
-            throw new LogicException(sprintf(
-                'Executor not set yet. Call %s::setSqlExecutor() first.',
-                self::class,
-            ));
-        }
-
-        return $this->sqlExecutor;
-    }
-
     public function setSqlFinalizer(SqlFinalizer $finalizer): void
     {
         $this->sqlFinalizer = $finalizer;
@@ -102,15 +68,11 @@ class ParserResult
 
     public function prepareSqlExecutor(Query $query): AbstractSqlExecutor
     {
-        if ($this->sqlFinalizer !== null) {
-            return $this->sqlFinalizer->createExecutor($query);
+        if ($this->sqlFinalizer === null) {
+            throw new LogicException('No SqlFinalizer has been set; this ParserResult is incomplete.');
         }
 
-        if ($this->sqlExecutor !== null) {
-            return $this->sqlExecutor;
-        }
-
-        throw new LogicException('This ParserResult lacks both the SqlFinalizer as well as the (legacy) SqlExecutor');
+        return $this->sqlFinalizer->createExecutor($query);
     }
 
     /**
