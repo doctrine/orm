@@ -683,6 +683,11 @@ class UnitOfWork implements PropertyChangedListener
                     continue;
                 }
 
+                // skip if Comparator from registry tells us that objects represent equal values
+                if (is_object($orgValue) && is_object($actualValue) && ComparatorRegistry::compare($orgValue, $actualValue) === 0) {
+                    continue;
+                }
+
                 // if regular field
                 if (! isset($class->associationMappings[$propName])) {
                     $changeSet[$propName] = [$orgValue, $actualValue];
