@@ -30,7 +30,6 @@ use PHPUnit\Framework\TestCase;
 use RuntimeException;
 
 use function array_filter;
-use function class_exists;
 
 /**
  * Test case for the QueryBuilder class used to build DQL query string in a
@@ -615,7 +614,7 @@ class QueryBuilderTest extends OrmTestCase
             ->from(CmsUser::class, 'u');
 
         $criteria = new Criteria();
-        $criteria->orderBy(['field' => class_exists(Order::class) ? Order::Descending : Criteria::DESC]);
+        $criteria->orderBy(['field' => Order::Descending]);
 
         $qb->addCriteria($criteria);
 
@@ -632,7 +631,7 @@ class QueryBuilderTest extends OrmTestCase
             ->join('u.article', 'a');
 
         $criteria = new Criteria();
-        $criteria->orderBy(['a.field' => class_exists(Order::class) ? Order::Descending : Criteria::DESC]);
+        $criteria->orderBy(['a.field' => Order::Descending]);
 
         $qb->addCriteria($criteria);
 
