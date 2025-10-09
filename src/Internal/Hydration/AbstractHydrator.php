@@ -23,9 +23,11 @@ use function array_keys;
 use function array_map;
 use function array_merge;
 use function count;
+use function current;
 use function end;
 use function in_array;
 use function is_array;
+use function is_object;
 use function ksort;
 
 /**
@@ -126,8 +128,10 @@ abstract class AbstractHydrator
                     } else {
                         yield from $result;
                     }
-                } else {
+                } elseif (is_object(current($result))) {
                     yield $result;
+                } else {
+                    yield array_merge(...$result);
                 }
             }
         } finally {
