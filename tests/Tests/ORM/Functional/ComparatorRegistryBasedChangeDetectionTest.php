@@ -53,6 +53,24 @@ class ComparatorRegistryBasedChangeDetectionTest extends OrmFunctionalTestCase
         self::assertFalse($this->_em->getUnitOfWork()->isScheduledForUpdate($user));
     }
 
+    public function testChangingMutableObject(): void
+    {
+        ComparatorRegistry::register(\DateTimeInterface::class, function (\DateTimeInterface $a, object $b) {
+            if ($b instanceof \DateTimeInterface) {
+                return $a <=> $b;
+            }
+        });
+
+        $user = new UserTyped();
+        $user->dateTime = new \DateTime();
+        $this->initializeChangesetState($user);
+
+        $user->dateTime->add(new \DateInterval('P7D'));
+        $this->recomputeChangeset($user);
+
+        self::assertTrue($this->_em->getUnitOfWork()->isScheduledForUpdate($user));
+    }
+
     private function initializeChangesetState(object $entity): void
     {
         // Initialize UoW state
