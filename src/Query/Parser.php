@@ -2496,7 +2496,6 @@ final class Parser
         // Handle conditional and null-handling expressions (CASE, COALESCE, NULLIF) by peeking ahead in the token stream
         if ($token->type === TokenType::T_CASE || $token->type === TokenType::T_COALESCE || $token->type === TokenType::T_NULLIF) {
             if ($token->type === TokenType::T_CASE) {
-
                 // For CASE expressions, peek beyond the matching END keyword
                 $nestingDepth = 1;
 

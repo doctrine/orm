@@ -1723,7 +1723,13 @@ Conditional Expressions
     ConditionalExpression       ::= ConditionalTerm {"OR" ConditionalTerm}*
     ConditionalTerm             ::= ConditionalFactor {"AND" ConditionalFactor}*
     ConditionalFactor           ::= ["NOT"] ConditionalPrimary
-    ConditionalPrimary          ::= SimpleConditionalExpression | "(" ConditionalExpression ")"
+    ConditionalPrimary          ::= SimpleConditionalExpression
+                                    | "(" ConditionalExpression ")"
+                                    | CaseExpression
+                                    | CoalesceExpression
+                                    | NullifExpression
+                                    | ArithmeticExpression
+
     SimpleConditionalExpression ::= ComparisonExpression | BetweenExpression | LikeExpression |
                                     InExpression | NullComparisonExpression | ExistsExpression |
                                     EmptyCollectionComparisonExpression | CollectionMemberExpression |
@@ -1819,7 +1825,7 @@ QUANTIFIED/BETWEEN/COMPARISON/LIKE/NULL/EXISTS
     QuantifiedExpression     ::= ("ALL" | "ANY" | "SOME") "(" Subselect ")"
     BetweenExpression        ::= ArithmeticExpression ["NOT"] "BETWEEN" ArithmeticExpression "AND" ArithmeticExpression
     ComparisonExpression     ::= ArithmeticExpression ComparisonOperator ( QuantifiedExpression | ArithmeticExpression )
-    InExpression             ::= ArithmeticExpression ["NOT"] "IN" "(" (InParameter {"," InParameter}* | Subselect) ")"
+    InExpression             ::= (ArithmeticExpression | CaseExpression | CoalesceExpression | NullifExpression) ["NOT"] "IN" "(" (InParameter {"," InParameter}* | Subselect) ")"
     InstanceOfExpression     ::= IdentificationVariable ["NOT"] "INSTANCE" ["OF"] (InstanceOfParameter | "(" InstanceOfParameter {"," InstanceOfParameter}* ")")
     InstanceOfParameter      ::= AbstractSchemaName | InputParameter
     LikeExpression           ::= StringExpression ["NOT"] "LIKE" StringPrimary ["ESCAPE" char]
