@@ -1,3 +1,11 @@
+Note about upgrading: Doctrine uses static and runtime mechanisms to raise
+awareness about deprecated code.
+
+- Use of `@deprecated` docblock that is detected by IDEs (like PHPStorm) or
+  Static Analysis tools (like Psalm, phpstan)
+- Use of our low-overhead runtime deprecation API, details:
+  https://github.com/doctrine/deprecations/
+
 # Upgrade to 3.x General Notes
 
 We recommend you upgrade to DBAL 3 first before upgrading to ORM 3. See
@@ -18,14 +26,6 @@ to run with ORM 3.
 At this point, we recommend upgrading to PHP 8.4 first and then directly from
 ORM 2.19 to 3.5 and up so that you can skip the lazy ghost proxy generation
 and directly start using native lazy objects.
-
-Note about upgrading: Doctrine uses static and runtime mechanisms to raise
-awareness about deprecated code.
-
-- Use of `@deprecated` docblock that is detected by IDEs (like PHPStorm) or
-  Static Analysis tools (like Psalm, phpstan)
-- Use of our low-overhead runtime deprecation API, details:
-  https://github.com/doctrine/deprecations/
 
 # Upgrade to 3.5
 
