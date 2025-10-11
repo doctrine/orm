@@ -10,6 +10,7 @@ use Doctrine\DBAL\Schema\Index as DbalIndex;
 use Doctrine\DBAL\Schema\Index\IndexedColumn;
 use Doctrine\DBAL\Schema\Index\IndexType;
 use Doctrine\DBAL\Schema\Name\UnqualifiedName;
+use Doctrine\DBAL\Schema\PrimaryKeyConstraint;
 use Doctrine\DBAL\Schema\PrimaryKeyConstraintEditor;
 use Doctrine\DBAL\Schema\Table as DbalTable;
 use Doctrine\ORM\Mapping\ClassMetadata;
@@ -432,6 +433,41 @@ class SchemaToolTest extends OrmTestCase
         self::assertSame(['field', 'anotherField'], self::getIndexedColumns($tableIndex));
     }
 
+    public function testQuotedIdentifiers(): void
+    {
+        $em         = $this->getTestEntityManager();
+        $schemaTool = new SchemaTool($em);
+        $classes    = [$em->getClassMetadata(QuotedEntity::class)];
+
+        $schema = $schemaTool->getSchemaFromMetadata($classes);
+
+        self::assertTrue($schema->hasTable('quoted-table'), 'Table quoted-table should exist.');
+
+        $table = $schema->getTable('quoted-table');
+
+        self::assertTrue($table->hasIndex('IDX_AA2790FB50D14D90'));
+
+        // DBAL < 4.3
+        if (! class_exists(PrimaryKeyConstraint::class)) {
+            self::assertTrue($table->isQuoted(), 'The table name must be quoted.');
+            self::assertTrue($table->hasIndex('primary'), 'Table should have a primary key.');
+
+            return;
+        }
+
+        $objectName = $table->getObjectName();
+        self::assertTrue($objectName->getUnqualifiedName()->isQuoted());
+        self::assertSame('quoted-table', $objectName->getUnqualifiedName()->getValue());
+
+        $primaryKey = $table->getPrimaryKeyConstraint();
+        self::assertNotNull($primaryKey);
+        self::assertCount(1, $primaryKey->getColumnNames());
+
+        [$pkColumn] = $primaryKey->getColumnNames();
+        self::assertTrue($pkColumn->getIdentifier()->isQuoted());
+        self::assertSame('quoted-id', $pkColumn->getIdentifier()->getValue());
+    }
+
     /** @return string[] */
     private static function getIndexedColumns(DbalIndex $index): array
     {
@@ -673,4 +709,17 @@ class IncorrectUniqueConstraintByFieldEntity
             ],
         );
     }
+}
+
+#[Entity]
+#[Table(name: '`quoted-table`')]
+#[Index(columns: ['`quoted-name`'])]
+class QuotedEntity
+{
+    #[Id]
+    #[Column(name: '`quoted-id`')]
+    public int $id = 0;
+
+    #[Column(name: '`quoted-name`')]
+    public string $name = '';
 }
