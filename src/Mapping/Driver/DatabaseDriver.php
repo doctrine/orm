@@ -252,7 +252,14 @@ class DatabaseDriver implements MappingDriver
                         ];
                     }
                 } else {
-                    $associationMapping['mappedBy'] = $this->getFieldNameForColumn($manyTable->getName(), current(self::getReferencingColumnNames($myFk)), true);
+                    $associationMapping['mappedBy'] = $this->getFieldNameForColumn(
+                        // @phpstan-ignore function.alreadyNarrowedType (DBAL 3 compatibility)
+                        method_exists(Table::class, 'getObjectName')
+                            ? $manyTable->getObjectName()->toString()
+                            : $manyTable->getName(), // DBAL < 4.4
+                        current(self::getReferencingColumnNames($myFk)),
+                        true,
+                    );
                 }
 
                 $metadata->mapManyToMany($associationMapping);

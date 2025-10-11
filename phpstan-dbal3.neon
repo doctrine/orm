@@ -35,6 +35,14 @@ parameters:
             path: src/Tools/SchemaTool.php
 
         -
+            message: '~^Call to static method quoted\(\) on an unknown class Doctrine\\DBAL\\Schema\\Name\\Identifier\.$~'
+            path: src/Tools/SchemaTool.php
+
+        -
+            message: '~^Call to an undefined method Doctrine\\DBAL\\Schema\\Table\:\:getObjectName\(\)\.$~'
+            path: src/Mapping/Driver/DatabaseDriver.php
+
+        -
             message: '~^Call to an undefined method Doctrine\\DBAL\\Schema\\ForeignKeyConstraint::get.*\.$~'
             identifier: method.notFound
 

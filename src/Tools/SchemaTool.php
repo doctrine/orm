@@ -39,6 +39,7 @@ use function array_filter;
 use function array_flip;
 use function array_intersect_key;
 use function array_map;
+use function array_values;
 use function assert;
 use function class_exists;
 use function count;
@@ -47,6 +48,7 @@ use function implode;
 use function in_array;
 use function is_numeric;
 use function method_exists;
+use function preg_match;
 use function strtolower;
 
 /**
@@ -971,20 +973,26 @@ class SchemaTool
         }
     }
 
-    /** @param string[] $primaryKeyColumns */
+    /** @param non-empty-array<non-empty-string> $primaryKeyColumns */
     private function addPrimaryKeyConstraint(Table $table, array $primaryKeyColumns): void
     {
-        if (class_exists(PrimaryKeyConstraint::class)) {
-            $primaryKeyColumnNames = [];
+        if (! class_exists(PrimaryKeyConstraint::class)) {
+            $table->setPrimaryKey(array_values($primaryKeyColumns));
 
-            foreach ($primaryKeyColumns as $primaryKeyColumn) {
+            return;
+        }
+
+        $primaryKeyColumnNames = [];
+
+        foreach ($primaryKeyColumns as $primaryKeyColumn) {
+            if (preg_match('/^"(.+)"$/', $primaryKeyColumn, $matches) === 1) {
+                $primaryKeyColumnNames[] = new UnqualifiedName(Identifier::quoted($matches[1]));
+            } else {
                 $primaryKeyColumnNames[] = new UnqualifiedName(Identifier::unquoted($primaryKeyColumn));
             }
-
-            $table->addPrimaryKeyConstraint(new PrimaryKeyConstraint(null, $primaryKeyColumnNames, true));
-        } else {
-            $table->setPrimaryKey($primaryKeyColumns);
         }
+
+        $table->addPrimaryKeyConstraint(new PrimaryKeyConstraint(null, $primaryKeyColumnNames, true));
     }
 
     /** @return string[] */
