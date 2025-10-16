@@ -28,6 +28,12 @@ class OwningManyToManyEntity
     public $id2;
 
     /**
+     * @var string
+     * @Column(type="rot13", length=255, nullable=true)
+     */
+    public $field = null;
+
+    /**
      * @var Collection<int, InversedManyToManyEntity>
      * @ManyToMany(targetEntity="InversedManyToManyEntity", inversedBy="associatedEntities")
      * @JoinTable(

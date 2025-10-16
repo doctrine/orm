@@ -257,14 +257,14 @@ class ManyToManyPersister extends AbstractCollectionPersister
 
             if ($value === null && ($operator === Comparison::EQ || $operator === Comparison::NEQ)) {
                 $whereClauses[] = sprintf('te.%s %s NULL', $field, $operator === Comparison::EQ ? 'IS' : 'IS NOT');
-            } else {
-                if ($operator === Comparison::IN) {
-                    $whereClauses[] = sprintf('te.%s IN (?)', $field);
-                } elseif ($operator === Comparison::NIN) {
-                    $whereClauses[] = sprintf('te.%s NOT IN (?)', $field);
-                } else {
-                    $whereClauses[] = sprintf('te.%s %s ?', $field, $operator);
+            } elseif ($operator === Comparison::IN || $operator === Comparison::NIN) {
+                $whereClauses[] = sprintf('te.%s %s (%s)', $field, $operator === Comparison::IN ? 'IN' : 'NOT IN', implode(', ', array_fill(0, count($value), '?')));
+                foreach ($value as $item) {
+                    $params     = array_merge($params, PersisterHelper::convertToParameterValue($item, $this->em));
+                    $paramTypes = array_merge($paramTypes, PersisterHelper::inferParameterTypes($name, $item, $targetClass, $this->em));
                 }
+            } else {
+                $whereClauses[] = sprintf('te.%s %s ?', $field, $operator);
 
                 $params     = array_merge($params, PersisterHelper::convertToParameterValue($value, $this->em));
                 $paramTypes = array_merge($paramTypes, PersisterHelper::inferParameterTypes($name, $value, $targetClass, $this->em));

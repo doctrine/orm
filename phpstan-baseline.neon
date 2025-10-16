@@ -2947,12 +2947,6 @@ parameters:
 			path: src/Persisters/Entity/BasicEntityPersister.php
 
 		-
-			message: '#^Strict comparison using \=\=\= between string and null will always evaluate to false\.$#'
-			identifier: identical.alwaysFalse
-			count: 1
-			path: src/Persisters/Entity/BasicEntityPersister.php
-
-		-
 			message: '#^Method Doctrine\\ORM\\Persisters\\Entity\\CachedPersisterContext\:\:__construct\(\) has parameter \$class with generic interface Doctrine\\Persistence\\Mapping\\ClassMetadata but does not specify its types\: T$#'
 			identifier: missingType.generics
 			count: 1
