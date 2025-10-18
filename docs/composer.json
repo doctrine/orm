@@ -4,7 +4,7 @@
     "type": "library",
     "license": "MIT",
     "require": {
-        "phpdocumentor/guides-cli": "1.7.1",
-        "phpdocumentor/filesystem": "1.7.1"
+        "phpdocumentor/guides-cli": "^1.9",
+        "phpdocumentor/filesystem": "^1.9"
     }
 }
