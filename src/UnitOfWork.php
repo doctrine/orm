@@ -897,11 +897,6 @@ class UnitOfWork implements PropertyChangedListener
         foreach ($this->identityMap as $className => $entities) {
             $class = $this->em->getClassMetadata($className);
 
-            // Skip class if instances are read-only
-            if ($class->isReadOnly) {
-                continue;
-            }
-
             // If change tracking is explicit or happens through notification, then only compute
             // changes on entities of that type that are explicitly marked for synchronization.
             switch (true) {
@@ -920,6 +915,12 @@ class UnitOfWork implements PropertyChangedListener
             foreach ($entitiesToProcess as $entity) {
                 // Ignore uninitialized proxy objects
                 if ($this->isUninitializedObject($entity)) {
+                    continue;
+                }
+
+                // Skip class if instances are read-only
+                if ($class->isReadOnly) {
+                    $this->markReadOnly($entity);
                     continue;
                 }
 
