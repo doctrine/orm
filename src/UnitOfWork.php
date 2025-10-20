@@ -590,6 +590,7 @@ class UnitOfWork implements PropertyChangedListener
 
         if ($class->isReadOnly) {
             $this->markReadOnly($entity);
+
             return;
         }
 
@@ -922,6 +923,7 @@ class UnitOfWork implements PropertyChangedListener
                 // Skip class if instances are read-only
                 if ($class->isReadOnly) {
                     $this->markReadOnly($entity);
+
                     continue;
                 }
 
