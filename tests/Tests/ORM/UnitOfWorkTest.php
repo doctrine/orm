@@ -1009,9 +1009,32 @@ class UnitOfWorkTest extends OrmTestCase
             self::assertSame('Commit failed', $e->getPrevious()->getMessage());
         }
     }
+
+    public function testIsReadOnlyReliability(): void
+    {
+        $entity = new ReadOnlyEntity();
+
+        $this->_unitOfWork->persist($entity);
+        $this->_unitOfWork->computeChangeSets();
+
+        self::assertTrue($this->_unitOfWork->isReadOnly($entity));
+    }
 }
 
-/** @Entity */
+
+/** @Entity(readOnly=true) */
+class ReadOnlyEntity
+{
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     */
+    private $id;
+}
+
+    /** @Entity */
 class NotifyChangedEntity implements NotifyPropertyChanged
 {
     /** @phpstan-var list<PropertyChangedListener> */

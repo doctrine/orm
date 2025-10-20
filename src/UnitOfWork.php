@@ -589,6 +589,7 @@ class UnitOfWork implements PropertyChangedListener
         $this->computeScheduleInsertsChangeSets();
 
         if ($class->isReadOnly) {
+            $this->markReadOnly($entity);
             return;
         }
 
