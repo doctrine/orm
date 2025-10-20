@@ -11,7 +11,7 @@ use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-class GH12063 extends OrmFunctionalTestCase
+class GH12063Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
     {
@@ -67,7 +67,7 @@ enum GH12063Code: string
 class GH12063Association
 {
     #[Id]
-    #[Column]
+    #[Column(length: 3)]
     public GH12063Code $code;
 }
 
@@ -80,6 +80,6 @@ class GH12063Entity
     public int|null $id = null;
 
     #[ORM\ManyToOne]
-    #[ORM\JoinColumn(referencedColumnName: 'code')]
+    #[ORM\JoinColumn(referencedColumnName: 'code', options: ['length' => 3])]
     public GH12063Association $association;
 }
