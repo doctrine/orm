@@ -168,7 +168,7 @@ recommended, at least not as long as an entity instance still holds
 references to proxy objects or is still managed by an EntityManager.
 By default, serializing proxy objects does not initialize them. On
 unserialization, resulting objects are detached from the entity
-manager and cannot be initialiazed anymore. You can implement the
+manager and cannot be initialized anymore. You can implement the
 ``__serialize()`` method if you want to change that behavior, but
 then you need to ensure that you won't generate large serialized
 object graphs and take care of circular associations.
