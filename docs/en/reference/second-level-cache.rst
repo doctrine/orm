@@ -44,7 +44,7 @@ Something like below for an entity region:
 
 
 If the entity holds a collection that also needs to be cached.
-An collection region could look something like:
+A collection region could look something like:
 
 .. code-block:: php
 
