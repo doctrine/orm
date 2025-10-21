@@ -12,6 +12,10 @@ parameters:
             message: '~^Match expression does not handle remaining values:~'
             path: src/Utility/PersisterHelper.php
 
+        # The return type is already narrow enough.
+        - '~^Method Doctrine\\ORM\\Query\\ParameterTypeInferer\:\:inferType\(\) never returns ''[a-z_]+'' so it can be removed from the return type\.$~'
+        - '~^Method Doctrine\\ORM\\Query\\ParameterTypeInferer\:\:inferType\(\) never returns Doctrine\\DBAL\\(?:Array)?ParameterType\:\:[A-Z_]+ so it can be removed from the return type\.$~'
+
         # DBAL 4 compatibility
         -
             message: '~^Method Doctrine\\ORM\\Query\\AST\\Functions\\TrimFunction::getTrimMode\(\) never returns .* so it can be removed from the return type\.$~'

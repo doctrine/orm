@@ -29,7 +29,7 @@ abstract class SQLFilter implements Stringable
     /**
      * Parameters for the filter.
      *
-     * @phpstan-var array<string,array{type: string, value: mixed, is_list: bool}>
+     * @phpstan-var array<string, Parameter>
      */
     private array $parameters = [];
 
@@ -49,7 +49,7 @@ abstract class SQLFilter implements Stringable
      */
     final public function setParameterList(string $name, array $values, string $type = Types::STRING): static
     {
-        $this->parameters[$name] = ['value' => $values, 'type' => $type, 'is_list' => true];
+        $this->parameters[$name] = new Parameter(value: $values, type: $type, isList: true);
 
         // Keep the parameters sorted for the hash
         ksort($this->parameters);
@@ -71,11 +71,11 @@ abstract class SQLFilter implements Stringable
      */
     final public function setParameter(string $name, mixed $value, string|null $type = null): static
     {
-        if ($type === null) {
-            $type = ParameterTypeInferer::inferType($value);
-        }
-
-        $this->parameters[$name] = ['value' => $value, 'type' => $type, 'is_list' => false];
+        $this->parameters[$name] = new Parameter(
+            value: $value,
+            type: $type ?? ParameterTypeInferer::inferType($value),
+            isList: false,
+        );
 
         // Keep the parameters sorted for the hash
         ksort($this->parameters);
@@ -102,11 +102,11 @@ abstract class SQLFilter implements Stringable
             throw new InvalidArgumentException("Parameter '" . $name . "' does not exist.");
         }
 
-        if ($this->parameters[$name]['is_list']) {
+        if ($this->parameters[$name]->isList) {
             throw FilterException::cannotConvertListParameterIntoSingleValue($name);
         }
 
-        return $this->em->getConnection()->quote((string) $this->parameters[$name]['value']);
+        return $this->em->getConnection()->quote((string) $this->parameters[$name]->value);
     }
 
     /**
@@ -124,7 +124,7 @@ abstract class SQLFilter implements Stringable
             throw new InvalidArgumentException("Parameter '" . $name . "' does not exist.");
         }
 
-        if ($this->parameters[$name]['is_list'] === false) {
+        if (! $this->parameters[$name]->isList) {
             throw FilterException::cannotConvertSingleParameterIntoListValue($name);
         }
 
@@ -133,7 +133,7 @@ abstract class SQLFilter implements Stringable
 
         $quoted = array_map(
             static fn (mixed $value): string => $connection->quote((string) $value),
-            $param['value'],
+            $param->value,
         );
 
         return implode(',', $quoted);
@@ -152,7 +152,14 @@ abstract class SQLFilter implements Stringable
      */
     final public function __toString(): string
     {
-        return serialize($this->parameters);
+        return serialize(array_map(
+            static fn (Parameter $value): array => [
+                'value'  => $value->value,
+                'type'   => $value->type,
+                'is_list' => $value->isList,
+            ],
+            $this->parameters,
+        ));
     }
 
     /**
