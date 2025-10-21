@@ -518,7 +518,7 @@ DELETE / UPDATE queries
 DQL UPDATE / DELETE statements are ported directly into a database and bypass
 the second-level cache.
 Entities that are already cached will NOT be invalidated.
-However the cached data could be evicted using the cache API or an special query hint.
+However the cached data could be evicted using the cache API or a special query hint.
 
 
 Execute the ``UPDATE`` and invalidate ``all cache entries`` using ``Query::HINT_CACHE_EVICT``
