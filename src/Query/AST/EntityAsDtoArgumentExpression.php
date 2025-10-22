@@ -16,7 +16,11 @@ class EntityAsDtoArgumentExpression extends Node
     public function __construct(
         public mixed $expression,
         public string|null $identificationVariable,
+        public string|null $aliasVariable = null,
     ) {
+        if (! $aliasVariable) {
+            $this->aliasVariable = $expression;
+        }
     }
 
     public function dispatch(SqlWalker $walker): string
