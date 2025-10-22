@@ -178,6 +178,14 @@ internally by the ORM currently refers to fields by their name only, without tak
 class containing the field into consideration. This makes it impossible to keep separate
 mapping configuration for both fields.
 
+Apart from that, in the case of having multiple ``private`` fields of the same name within
+the class hierarchy an entity or mapped superclass, the Collection filtering API cannot determine
+the right field to look at. Even if only one of these fields is actually mapped, the ``ArrayCollection``
+will not be able to tell, since it does not have access to any metadata.
+
+Thus, to avoid problems in this regard, it is best to avoid having multiple ``private`` fields of the
+same name in class hierarchies containing entity and mapped superclasses.
+
 Known Issues
 ------------
 
