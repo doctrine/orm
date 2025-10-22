@@ -61,6 +61,7 @@ class GH12174Smurf
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
+     *
      * @var int
      */
     #[ORM\Id]
@@ -70,6 +71,7 @@ class GH12174Smurf
 
     /**
      * @ORM\ManyToOne(inversedBy="children", targetEntity="GH12174Smurf")
+     *
      * @var GH12174Smurf
      */
     #[ManyToOne(inversedBy: 'children')]
@@ -77,6 +79,7 @@ class GH12174Smurf
 
     /**
      * @ORM\OneToMany(targetEntity="GH12174Smurf", mappedBy="parent")
+     *
      * @var Collection
      */
     #[OneToMany(targetEntity: self::class, mappedBy: 'parent')]
