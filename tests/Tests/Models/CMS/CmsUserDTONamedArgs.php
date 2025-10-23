@@ -13,6 +13,8 @@ class CmsUserDTONamedArgs
         public int|null $phonenumbers = null,
         public CmsAddressDTO|null $addressDto = null,
         public CmsAddressDTONamedArgs|null $addressDtoNamedArgs = null,
+        public CmsDumbDTO|null $dumb = null,
+        public CmsAddress|null $addressEntity = null,
     ) {
     }
 }
