@@ -67,6 +67,14 @@ Using `Doctrine\ORM\QueryBuilder::add('join', ...)` with a list of join parts
 is deprecated in favor of using an associative array of join parts with the
 root alias as key.
 
+## Deprecate using the `WITH` keyword for arbitrary DQL joins
+
+Using the `WITH` keyword to specify the condition for an arbitrary DQL join is
+deprecated in favor of using the `ON` keyword (similar to the SQL syntax for
+joins).
+The `WITH` keyword is now meant to be used only for filtering conditions in
+association joins.
+
 # Upgrade to 3.5
 
 See the General notes to upgrading to 3.x versions above.

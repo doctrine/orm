@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Query;
 
+use Doctrine\Deprecations\PHPUnit\VerifyDeprecations;
 use Doctrine\ORM\AbstractQuery;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\Column;
@@ -20,9 +21,12 @@ use Doctrine\Tests\Mocks\NullSqlWalker;
 use Doctrine\Tests\OrmTestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\IgnoreDeprecations;
 
 class LanguageRecognitionTest extends OrmTestCase
 {
+    use VerifyDeprecations;
+
     private EntityManagerInterface $entityManager;
     private int $hydrationMode = AbstractQuery::HYDRATE_OBJECT;
 
@@ -262,8 +266,15 @@ class LanguageRecognitionTest extends OrmTestCase
         $this->assertValidDQL('SELECT u.name, a.topic, p.phonenumber FROM Doctrine\Tests\Models\CMS\CmsUser u INNER JOIN u.articles a LEFT JOIN u.phonenumbers p');
     }
 
+    public function testJoinClassPathUsingON(): void
+    {
+        $this->assertValidDQL('SELECT u.name FROM Doctrine\Tests\Models\CMS\CmsUser u JOIN Doctrine\Tests\Models\CMS\CmsArticle a ON a.user = u.id');
+    }
+
+    #[IgnoreDeprecations]
     public function testJoinClassPathUsingWITH(): void
     {
+        $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/issues/12192');
         $this->assertValidDQL('SELECT u.name FROM Doctrine\Tests\Models\CMS\CmsUser u JOIN Doctrine\Tests\Models\CMS\CmsArticle a WITH a.user = u.id');
     }
 
@@ -638,7 +649,7 @@ class LanguageRecognitionTest extends OrmTestCase
     #[Group('DDC-3085')]
     public function testHavingSupportResultVariableInNullComparisonExpression(): void
     {
-        $this->assertValidDQL('SELECT u AS user, SUM(a.id) AS score FROM Doctrine\Tests\Models\CMS\CmsUser u LEFT JOIN Doctrine\Tests\Models\CMS\CmsAddress a WITH a.user = u GROUP BY u HAVING score IS NOT NULL AND score >= 5');
+        $this->assertValidDQL('SELECT u AS user, SUM(a.id) AS score FROM Doctrine\Tests\Models\CMS\CmsUser u LEFT JOIN Doctrine\Tests\Models\CMS\CmsAddress a ON a.user = u GROUP BY u HAVING score IS NOT NULL AND score >= 5');
     }
 
     #[Group('DDC-1858')]

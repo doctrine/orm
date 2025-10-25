@@ -390,7 +390,7 @@ class QueryTest extends OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $query = $this->_em->createQuery('select a, u from ' . CmsArticle::class . ' a JOIN ' . CmsUser::class . ' u WITH a.user = u');
+        $query = $this->_em->createQuery('select a, u from ' . CmsArticle::class . ' a JOIN ' . CmsUser::class . ' u ON a.user = u');
 
         $result = iterator_to_array($query->toIterable());
 
@@ -1061,7 +1061,7 @@ class QueryTest extends OrmFunctionalTestCase
         $query = $this->_em->createQuery('
             SELECT u, p
               FROM Doctrine\Tests\Models\CMS\CmsUser u
-             INNER JOIN Doctrine\Tests\Models\CMS\CmsPhonenumber p WITH u = p.user
+             INNER JOIN Doctrine\Tests\Models\CMS\CmsPhonenumber p ON u = p.user
         ');
         $users = $query->execute();
 
@@ -1094,7 +1094,7 @@ class QueryTest extends OrmFunctionalTestCase
         $query = $this->_em->createQuery('
             SELECT u, p
               FROM Doctrine\Tests\Models\CMS\CmsUser u
-              LEFT JOIN Doctrine\Tests\Models\CMS\CmsPhonenumber p WITH u = p.user
+              LEFT JOIN Doctrine\Tests\Models\CMS\CmsPhonenumber p ON u = p.user
         ');
         $users = $query->execute();
 

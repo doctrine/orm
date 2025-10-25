@@ -39,7 +39,7 @@ class GH6464Test extends OrmFunctionalTestCase
         $query = $this->_em->createQueryBuilder()
             ->select('p')
             ->from(GH6464Post::class, 'p')
-            ->innerJoin(GH6464Author::class, 'a', 'WITH', 'p.authorId = a.id')
+            ->innerJoin(GH6464Author::class, 'a', 'ON', 'p.authorId = a.id')
             ->getQuery();
 
         self::assertDoesNotMatchRegularExpression(

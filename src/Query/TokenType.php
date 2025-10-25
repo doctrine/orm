@@ -90,4 +90,5 @@ enum TokenType: int
     case T_WHERE    = 255;
     case T_WITH     = 256;
     case T_NAMED    = 257;
+    case T_ON       = 258;
 }
