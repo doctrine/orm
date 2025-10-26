@@ -49,7 +49,7 @@ class ManyToManyCriteriaMatchingTest extends OrmFunctionalTestCase
         $associated = $this->_em->find(InversedManyToManyEntity::class, 'associated');
         self::assertFalse($associated->associatedEntities->isInitialized(), 'Pre-condition: lazy collection');
 
-        $result = $associated->associatedEntities->matching(Criteria::create()->where($comparison));
+        $result = $associated->associatedEntities->matching(Criteria::create(true)->where($comparison));
 
         $l = $this->getQueryLog();
 

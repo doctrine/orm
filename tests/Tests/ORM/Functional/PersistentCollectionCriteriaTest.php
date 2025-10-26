@@ -80,7 +80,7 @@ class PersistentCollectionCriteriaTest extends OrmFunctionalTestCase
         $repository = $this->_em->getRepository(User::class);
 
         $user   = $repository->findOneBy(['name' => 'ngal']);
-        $tweets = $user->tweets->matching(new Criteria());
+        $tweets = $user->tweets->matching(Criteria::create(true));
 
         self::assertInstanceOf(LazyCriteriaCollection::class, $tweets);
         self::assertFalse($tweets->isInitialized());
@@ -88,7 +88,7 @@ class PersistentCollectionCriteriaTest extends OrmFunctionalTestCase
         self::assertFalse($tweets->isInitialized());
 
         // Make sure it works with constraints
-        $tweets = $user->tweets->matching(new Criteria(
+        $tweets = $user->tweets->matching(Criteria::create(true)->where(
             Criteria::expr()->eq('content', 'Foo')
         ));
 
@@ -117,7 +117,7 @@ class PersistentCollectionCriteriaTest extends OrmFunctionalTestCase
 
         $parent = $this->_em->find(OwningManyToManyExtraLazyEntity::class, $parent->id2);
 
-        $criteria = Criteria::create()->where(Criteria::expr()->eq('id1', 'Bob'));
+        $criteria = Criteria::create(true)->where(Criteria::expr()->eq('id1', 'Bob'));
 
         $result = $parent->associatedEntities->matching($criteria);
 

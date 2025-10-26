@@ -494,13 +494,13 @@ class ClassTableInheritanceTest extends OrmFunctionalTestCase
         $this->_em->flush();
 
         $repository = $this->_em->getRepository(CompanyEmployee::class);
-        $users      = $repository->matching(new Criteria(
+        $users      = $repository->matching(Criteria::create(true)->where(
             Criteria::expr()->eq('department', 'IT')
         ));
         self::assertCount(1, $users);
 
         $repository = $this->_em->getRepository(CompanyManager::class);
-        $users      = $repository->matching(new Criteria(
+        $users      = $repository->matching(Criteria::create(true)->where(
             Criteria::expr()->eq('department', 'IT')
         ));
         self::assertCount(1, $users);
