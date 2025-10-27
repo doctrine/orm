@@ -43,7 +43,7 @@ class DDC3719Test extends OrmFunctionalTestCase
         $contracts = $manager->managedContracts;
         self::assertCount(2, $contracts);
 
-        $criteria = Criteria::create();
+        $criteria = Criteria::create(true);
         $criteria->where(Criteria::expr()->eq('completed', true));
 
         $completedContracts = $contracts->matching($criteria);

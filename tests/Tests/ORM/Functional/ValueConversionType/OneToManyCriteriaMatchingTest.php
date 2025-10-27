@@ -49,7 +49,7 @@ class OneToManyCriteriaMatchingTest extends OrmFunctionalTestCase
         $entityWithCollection = $this->_em->find(InversedOneToManyEntity::class, 'associated');
         self::assertFalse($entityWithCollection->associatedEntities->isInitialized(), 'Pre-condition: lazy collection');
 
-        $result = $entityWithCollection->associatedEntities->matching(Criteria::create()->where($comparison));
+        $result = $entityWithCollection->associatedEntities->matching(Criteria::create(true)->where($comparison));
 
         $l = $this->getQueryLog();
 
