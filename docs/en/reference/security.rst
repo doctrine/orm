@@ -118,7 +118,7 @@ entity might look like this:
         }
     }
 
-Now the possiblity of mass-assignment exists on this entity and can
+Now the possibility of mass-assignment exists on this entity and can
 be exploited by attackers to set the "isAdmin" flag to true on any
 object when you pass the whole request data to this method like:
 

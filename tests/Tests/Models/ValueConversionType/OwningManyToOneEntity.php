@@ -20,8 +20,12 @@ class OwningManyToOneEntity
     #[Id]
     public $id2;
 
+    /** @var string */
+    #[Column(type: 'rot13', length: 255, nullable: true)]
+    public $field = null;
+
     /** @var InversedOneToManyEntity */
-    #[ManyToOne(targetEntity: 'InversedOneToManyEntity', inversedBy: 'associatedEntities')]
+    #[ManyToOne(targetEntity: InversedOneToManyEntity::class, inversedBy: 'associatedEntities')]
     #[JoinColumn(name: 'associated_id', referencedColumnName: 'id1')]
     public $associatedEntity;
 }

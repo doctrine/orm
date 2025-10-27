@@ -37,6 +37,8 @@ final class GH7717Test extends OrmFunctionalTestCase
 
         $parent = $this->_em->find(GH7717Parent::class, 1);
 
-        $this->assertCount(1, $parent->children->matching(new Criteria(Criteria::expr()->isNull('nullableProperty'))));
+        $this->assertCount(1, $parent->children->matching(Criteria::create(true)->where(
+            Criteria::expr()->isNull('nullableProperty'),
+        )));
     }
 }

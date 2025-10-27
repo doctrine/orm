@@ -437,7 +437,7 @@ class ManyToManyBasicAssociationTest extends OrmFunctionalTestCase
 
         $user = $this->_em->find($user::class, $user->id);
 
-        $criteria = Criteria::create()
+        $criteria = Criteria::create(true)
             ->orderBy(['name' => class_exists(Order::class) ? Order::Ascending : Criteria::ASC]);
 
         self::assertEquals(
@@ -477,7 +477,7 @@ class ManyToManyBasicAssociationTest extends OrmFunctionalTestCase
 
         $user = $this->_em->find($user::class, $user->id);
 
-        $criteria = Criteria::create()
+        $criteria = Criteria::create(true)
             ->orderBy(['name' => class_exists(Order::class) ? Order::Ascending : Criteria::ASC]);
 
         self::assertEquals(
@@ -500,7 +500,7 @@ class ManyToManyBasicAssociationTest extends OrmFunctionalTestCase
         $groups = $user->groups;
         self::assertFalse($user->groups->isInitialized(), 'Pre-condition: lazy collection');
 
-        $criteria = Criteria::create()->setMaxResults(1);
+        $criteria = Criteria::create(true)->setMaxResults(1);
         $result   = $groups->matching($criteria);
 
         self::assertCount(1, $result);
@@ -518,7 +518,7 @@ class ManyToManyBasicAssociationTest extends OrmFunctionalTestCase
         $groups = $user->groups;
         self::assertFalse($user->groups->isInitialized(), 'Pre-condition: lazy collection');
 
-        $criteria = Criteria::create()->setFirstResult(1);
+        $criteria = Criteria::create(true)->setFirstResult(1);
         $result   = $groups->matching($criteria);
 
         self::assertCount(1, $result);
@@ -539,7 +539,7 @@ class ManyToManyBasicAssociationTest extends OrmFunctionalTestCase
         $groups = $user->groups;
         self::assertFalse($user->groups->isInitialized(), 'Pre-condition: lazy collection');
 
-        $criteria = Criteria::create()->setFirstResult(1)->setMaxResults(3);
+        $criteria = Criteria::create(true)->setFirstResult(1)->setMaxResults(3);
         $result   = $groups->matching($criteria);
 
         self::assertCount(3, $result);
@@ -563,7 +563,7 @@ class ManyToManyBasicAssociationTest extends OrmFunctionalTestCase
         $groups = $user->groups;
         self::assertFalse($user->groups->isInitialized(), 'Pre-condition: lazy collection');
 
-        $criteria = Criteria::create()->where(Criteria::expr()->eq('name', (string) 'Developers_0'));
+        $criteria = Criteria::create(true)->where(Criteria::expr()->eq('name', (string) 'Developers_0'));
         $result   = $groups->matching($criteria);
 
         self::assertCount(1, $result);
@@ -584,7 +584,7 @@ class ManyToManyBasicAssociationTest extends OrmFunctionalTestCase
         $groups = $user->groups;
         self::assertFalse($user->groups->isInitialized(), 'Pre-condition: lazy collection');
 
-        $criteria = Criteria::create()->where(Criteria::expr()->in('name', ['Developers_1']));
+        $criteria = Criteria::create(true)->where(Criteria::expr()->in('name', ['Developers_1']));
         $result   = $groups->matching($criteria);
 
         self::assertCount(1, $result);
@@ -603,7 +603,7 @@ class ManyToManyBasicAssociationTest extends OrmFunctionalTestCase
         $groups = $user->groups;
         self::assertFalse($user->groups->isInitialized(), 'Pre-condition: lazy collection');
 
-        $criteria = Criteria::create()->where(Criteria::expr()->notIn('name', ['Developers_0']));
+        $criteria = Criteria::create(true)->where(Criteria::expr()->notIn('name', ['Developers_0']));
         $result   = $groups->matching($criteria);
 
         self::assertCount(1, $result);
