@@ -354,13 +354,13 @@ class SingleTableInheritanceTest extends OrmFunctionalTestCase
         $this->loadFullFixture();
 
         $repository = $this->_em->getRepository(CompanyContract::class);
-        $contracts  = $repository->matching(new Criteria(
+        $contracts  = $repository->matching(Criteria::create(true)->where(
             Criteria::expr()->eq('salesPerson', $this->salesPerson),
         ));
         self::assertCount(3, $contracts);
 
         $repository = $this->_em->getRepository(CompanyFixContract::class);
-        $contracts  = $repository->matching(new Criteria(
+        $contracts  = $repository->matching(Criteria::create(true)->where(
             Criteria::expr()->eq('salesPerson', $this->salesPerson),
         ));
         self::assertCount(1, $contracts);
@@ -376,7 +376,7 @@ class SingleTableInheritanceTest extends OrmFunctionalTestCase
         $this->expectException(MatchingAssociationFieldRequiresObject::class);
         $this->expectExceptionMessage('annot match on Doctrine\Tests\Models\Company\CompanyContract::salesPerson with a non-object value.');
 
-        $contracts = $repository->matching(new Criteria(
+        $contracts = $repository->matching(Criteria::create(true)->where(
             Criteria::expr()->eq('salesPerson', $this->salesPerson->getId()),
         ));
 
