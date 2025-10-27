@@ -9,6 +9,7 @@ use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\LockMode;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Type;
+use Doctrine\Deprecations\Deprecation;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\QuoteStrategy;
@@ -230,6 +231,14 @@ class SqlWalker
      */
     public function getExecutor(AST\SelectStatement|AST\UpdateStatement|AST\DeleteStatement $statement): Exec\AbstractSqlExecutor
     {
+        Deprecation::trigger(
+            'doctrine/orm',
+            'https://github.com/doctrine/orm/pull/11188/',
+            'Output walkers should implement %s. That way, the %s method is no longer needed and will be removed in 4.0',
+            OutputWalker::class,
+            __METHOD__,
+        );
+
         return match (true) {
             $statement instanceof AST\UpdateStatement => $this->createUpdateStatementExecutor($statement),
             $statement instanceof AST\DeleteStatement => $this->createDeleteStatementExecutor($statement),

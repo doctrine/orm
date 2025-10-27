@@ -40,7 +40,7 @@ final class GH7496WithToIterableTest extends OrmFunctionalTestCase
     public function testNonUniqueObjectHydrationDuringIteration(): void
     {
         $q = $this->_em->createQuery(
-            'SELECT b FROM ' . GH7496EntityAinB::class . ' aib JOIN ' . GH7496EntityB::class . ' b WITH aib.eB = b',
+            'SELECT b FROM ' . GH7496EntityAinB::class . ' aib JOIN ' . GH7496EntityB::class . ' b ON aib.eB = b',
         );
 
         $bs = IterableTester::iterableToArray(

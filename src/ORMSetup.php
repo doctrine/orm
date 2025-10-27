@@ -7,6 +7,7 @@ namespace Doctrine\ORM;
 use Doctrine\Deprecations\Deprecation;
 use Doctrine\ORM\Mapping\Driver\AttributeDriver;
 use Doctrine\ORM\Mapping\Driver\XmlDriver;
+use Doctrine\Persistence\Mapping\Driver\ClassLocator;
 use Psr\Cache\CacheItemPoolInterface;
 use Redis;
 use RuntimeException;
@@ -28,10 +29,10 @@ final class ORMSetup
     /**
      * Creates a configuration with an attribute metadata driver.
      *
-     * @param string[] $paths
+     * @param string[]|ClassLocator $paths
      */
     public static function createAttributeMetadataConfiguration(
-        array $paths,
+        array|ClassLocator $paths,
         bool $isDevMode = false,
         string|null $proxyDir = null,
         CacheItemPoolInterface|null $cache = null,
@@ -55,10 +56,10 @@ final class ORMSetup
     /**
      * Creates a configuration with an attribute metadata driver.
      *
-     * @param string[] $paths
+     * @param string[]|ClassLocator $paths
      */
     public static function createAttributeMetadataConfig(
-        array $paths,
+        array|ClassLocator $paths,
         bool $isDevMode = false,
         string|null $cacheNamespaceSeed = null,
         CacheItemPoolInterface|null $cache = null,

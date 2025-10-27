@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Mapping;
 
+use Doctrine\Deprecations\Deprecation;
 use RuntimeException;
 
 use function array_flip;
@@ -131,6 +132,20 @@ abstract class ToOneOwningSideMapping extends OwningSideMapping implements ToOne
 
         foreach ($mapping->joinColumns as $joinColumn) {
             if ($mapping->id) {
+                if ($joinColumn->nullable !== null) {
+                    Deprecation::trigger(
+                        'doctrine/orm',
+                        'https://github.com/doctrine/orm/pull/12126',
+                        <<<'DEPRECATION'
+                        Specifying the "nullable" attribute for join columns in to-one associations (here, %s::$%s) that are part of the identifier is a no-op.
+                        The ORM will always set it to false.
+                        Doing so is deprecated and will be an error in 4.0.
+                        DEPRECATION,
+                        $mapping->sourceEntity,
+                        $mapping->fieldName,
+                    );
+                }
+
                 $joinColumn->nullable = false;
             } elseif ($joinColumn->nullable === null) {
                 $joinColumn->nullable = true;
@@ -200,7 +215,12 @@ abstract class ToOneOwningSideMapping extends OwningSideMapping implements ToOne
 
         $joinColumns = [];
         foreach ($array['joinColumns'] as $column) {
-            $joinColumns[] = (array) $column;
+            $columnArray = (array) $column;
+            if ($this->id) {
+                unset($columnArray['nullable']);
+            }
+
+            $joinColumns[] = $columnArray;
         }
 
         $array['joinColumns'] = $joinColumns;

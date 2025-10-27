@@ -44,26 +44,38 @@ jobs:
           - "pdo_sqlite"
         deps:
           - "highest"
+        stability:
+          - "stable"
         native_lazy:
           - "0"
         include:
           - php-version: "8.2"
             dbal-version: "4@dev"
             extension: "pdo_sqlite"
+            stability: "stable"
             native_lazy: "0"
           - php-version: "8.2"
             dbal-version: "4@dev"
             extension: "sqlite3"
+            stability: "stable"
             native_lazy: "0"
           - php-version: "8.1"
             dbal-version: "default"
             deps: "lowest"
             extension: "pdo_sqlite"
+            stability: "stable"
             native_lazy: "0"
           - php-version: "8.4"
             dbal-version: "default"
             deps: "highest"
             extension: "pdo_sqlite"
+            stability: "stable"
+            native_lazy: "1"
+          - php-version: "8.4"
+            dbal-version: "default"
+            deps: "highest"
+            extension: "sqlite3"
+            stability: "dev"
             native_lazy: "1"
 
     steps:
@@ -79,6 +91,14 @@ jobs:
           extensions: "apcu, pdo, ${{ matrix.extension }}"
           coverage: "pcov"
           ini-values: "zend.assertions=1, apc.enable_cli=1"
+
+      - name: "Allow dev dependencies"
+        run: |
+          composer config minimum-stability dev
+          composer remove --no-update --dev phpbench/phpbench phpdocumentor/guides-cli
+          composer require --no-update symfony/console:^8 symfony/var-exporter:^8 doctrine/dbal:^4.4
+          composer require --dev --no-update symfony/cache:^8
+        if: "${{ matrix.stability == 'dev' }}"
 
       - name: "Require specific DBAL version"
         run: "composer require doctrine/dbal ^${{ matrix.dbal-version }} --no-update"
@@ -121,7 +141,7 @@ jobs:
       - name: "Upload coverage file"
         uses: "actions/upload-artifact@v5"
         with:
-          name: "phpunit-${{ matrix.extension }}-${{ matrix.php-version }}-${{ matrix.dbal-version }}-${{ matrix.deps }}-${{ matrix.native_lazy }}-coverage"
+          name: "phpunit-${{ matrix.extension }}-${{ matrix.php-version }}-${{ matrix.dbal-version }}-${{ matrix.deps }}-${{ matrix.stability }}-${{ matrix.native_lazy }}-coverage"
           path: "coverage*.xml"
 
 

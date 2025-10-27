@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Mapping;
 
+use Doctrine\Deprecations\PHPUnit\VerifyDeprecations;
 use Doctrine\ORM\Mapping\DefaultNamingStrategy;
 use Doctrine\ORM\Mapping\JoinTableMapping;
 use Doctrine\ORM\Mapping\ManyToManyOwningSideMapping;
 use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\WithoutErrorHandler;
 use PHPUnit\Framework\TestCase;
 
 use function assert;
@@ -16,6 +18,8 @@ use function unserialize;
 
 final class ManyToManyOwningSideMappingTest extends TestCase
 {
+    use VerifyDeprecations;
+
     public function testItSurvivesSerialization(): void
     {
         $mapping = new ManyToManyOwningSideMapping(
@@ -38,22 +42,42 @@ final class ManyToManyOwningSideMappingTest extends TestCase
         self::assertSame(['bar' => 'baz'], $resurrectedMapping->relationToTargetKeyColumns);
     }
 
+    /** @param array<string,mixed> $mappingArray */
     #[DataProvider('mappingsProvider')]
-    public function testNullableDefaults(bool $expectedValue, ManyToManyOwningSideMapping $mapping): void
-    {
+    #[WithoutErrorHandler]
+    public function testNullableDefaults(
+        bool $expectDeprecation,
+        bool $expectedValue,
+        array $mappingArray,
+    ): void {
+        $namingStrategy = new DefaultNamingStrategy();
+        if ($expectDeprecation) {
+            $this->expectDeprecationWithIdentifier(
+                'https://github.com/doctrine/orm/pull/12126',
+            );
+        } else {
+            $this->expectNoDeprecationWithIdentifier(
+                'https://github.com/doctrine/orm/pull/12126',
+            );
+        }
+
+        $mapping = ManyToManyOwningSideMapping::fromMappingArrayAndNamingStrategy(
+            $mappingArray,
+            $namingStrategy,
+        );
+
         foreach ($mapping->joinTable->joinColumns as $joinColumn) {
             self::assertSame($expectedValue, $joinColumn->nullable);
         }
     }
 
-    /** @return iterable<string, array{bool, ManyToManyOwningSideMapping}> */
+    /** @return iterable<string, array{bool, bool, array<string,mixed>}> */
     public static function mappingsProvider(): iterable
     {
-        $namingStrategy = new DefaultNamingStrategy();
-
         yield 'defaults to false' => [
             false,
-            ManyToManyOwningSideMapping::fromMappingArrayAndNamingStrategy([
+            false,
+            [
                 'fieldName' => 'foo',
                 'sourceEntity' => self::class,
                 'targetEntity' => self::class,
@@ -67,12 +91,13 @@ final class ManyToManyOwningSideMappingTest extends TestCase
                         ['name' => 'foo_id', 'referencedColumnName' => 'id'],
                     ],
                 ],
-            ], $namingStrategy),
+            ],
         ];
 
         yield 'explicitly marked as nullable' => [
+            true,
             false, // user's intent is ignored at the ORM level
-            ManyToManyOwningSideMapping::fromMappingArrayAndNamingStrategy([
+            [
                 'fieldName' => 'foo',
                 'sourceEntity' => self::class,
                 'targetEntity' => self::class,
@@ -83,11 +108,74 @@ final class ManyToManyOwningSideMappingTest extends TestCase
                         ['name' => 'bar_id', 'referencedColumnName' => 'id', 'nullable' => true],
                     ],
                     'inverseJoinColumns' => [
+                        ['name' => 'foo_id', 'referencedColumnName' => 'id'],
+                    ],
+                ],
+                'id' => true,
+            ],
+        ];
+
+        yield 'explicitly marked as nullable (inverse column)' => [
+            true,
+            false, // user's intent is ignored at the ORM level
+            [
+                'fieldName' => 'foo',
+                'sourceEntity' => self::class,
+                'targetEntity' => self::class,
+                'isOwningSide' => true,
+                'joinTable' => [
+                    'name' => 'bar',
+                    'joinColumns' => [
+                        ['name' => 'bar_id', 'referencedColumnName' => 'id'],
+                    ],
+                    'inverseJoinColumns' => [
                         ['name' => 'foo_id', 'referencedColumnName' => 'id', 'nullable' => true],
                     ],
                 ],
                 'id' => true,
-            ], $namingStrategy),
+            ],
+        ];
+
+        yield 'explicitly marked as not nullable' => [
+            true,
+            false,
+            [
+                'fieldName' => 'foo',
+                'sourceEntity' => self::class,
+                'targetEntity' => self::class,
+                'isOwningSide' => true,
+                'joinTable' => [
+                    'name' => 'bar',
+                    'joinColumns' => [
+                        ['name' => 'bar_id', 'referencedColumnName' => 'id', 'nullable' => false],
+                    ],
+                    'inverseJoinColumns' => [
+                        ['name' => 'foo_id', 'referencedColumnName' => 'id'],
+                    ],
+                ],
+                'id' => true,
+            ],
+        ];
+
+        yield 'explicitly marked as not nullable (inverse column)' => [
+            true,
+            false,
+            [
+                'fieldName' => 'foo',
+                'sourceEntity' => self::class,
+                'targetEntity' => self::class,
+                'isOwningSide' => true,
+                'joinTable' => [
+                    'name' => 'bar',
+                    'joinColumns' => [
+                        ['name' => 'bar_id', 'referencedColumnName' => 'id'],
+                    ],
+                    'inverseJoinColumns' => [
+                        ['name' => 'foo_id', 'referencedColumnName' => 'id', 'nullable' => false],
+                    ],
+                ],
+                'id' => true,
+            ],
         ];
     }
 }

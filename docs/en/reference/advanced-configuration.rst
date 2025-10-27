@@ -29,7 +29,7 @@ steps of configuration.
 
     $config = new Configuration;
     $config->setMetadataCache($metadataCache);
-    $driverImpl = new AttributeDriver(['/path/to/lib/MyProject/Entities'], true);
+    $driverImpl = new AttributeDriver(['/path/to/lib/MyProject/Entities']);
     $config->setMetadataDriverImpl($driverImpl);
     $config->setQueryCache($queryCache);
 
@@ -156,15 +156,59 @@ The attribute driver can be injected in the ``Doctrine\ORM\Configuration``:
     <?php
     use Doctrine\ORM\Mapping\Driver\AttributeDriver;
 
-    $driverImpl = new AttributeDriver(['/path/to/lib/MyProject/Entities'], true);
+    $driverImpl = new AttributeDriver(['/path/to/lib/MyProject/Entities']);
     $config->setMetadataDriverImpl($driverImpl);
 
 The path information to the entities is required for the attribute
 driver, because otherwise mass-operations on all entities through
-the console could not work correctly. All of metadata drivers
-accept either a single directory as a string or an array of
-directories. With this feature a single driver can support multiple
-directories of Entities.
+the console could not work correctly. Metadata drivers can accept either
+a single directory as a string or an array of directories.
+
+AttributeDriver also accepts ``Doctrine\Persistence\Mapping\Driver\ClassLocator``,
+allowing one to customize file discovery logic. You may choose to use Symfony Finder, or
+utilize directory scan with ``FileClassLocator::createFromDirectories()``:
+
+.. code-block:: php
+
+    <?php
+    use Doctrine\ORM\Mapping\Driver\AttributeDriver;
+	use Doctrine\Persistence\Mapping\Driver\FileClassLocator;
+
+	$paths = ['/path/to/lib/MyProject/Entities'];
+	$classLocator = FileClassLocator::createFromDirectories($paths);
+
+    $driverImpl = new AttributeDriver($classLocator);
+    $config->setMetadataDriverImpl($driverImpl);
+
+With this feature, you're empowered to provide a fine-grained iterator of only necessary
+files to the Driver. For example, if you are using Vertical Slice architecture, you can
+exclude ``*Test.php``, ``*Controller.php``, ``*Service.php``, etc.:
+
+.. code-block:: php
+
+    <?php
+	use Symfony\Component\Finder\Finder;
+
+	$finder = new Finder()->files()->in($paths)
+		->name('*.php')
+		->notName(['*Test.php', '*Controller.php', '*Service.php']);
+
+	$classLocator = new FileClassLocator($finder);
+
+If you know the list of class names you want to track, use
+``Doctrine\Persistence\Mapping\Driver\ClassNames``:
+
+.. code-block:: php
+
+    <?php
+	use Doctrine\Persistence\Mapping\Driver\ClassNames;
+	use App\Entity\{Article, Book};
+
+	$entityClasses = [Article::class, Book::class];
+	$classLocator = new ClassNames($entityClasses);
+
+	$driverImpl = new AttributeDriver($classLocator);
+	$config->setMetadataDriverImpl($driverImpl);
 
 Metadata Cache (**RECOMMENDED**)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

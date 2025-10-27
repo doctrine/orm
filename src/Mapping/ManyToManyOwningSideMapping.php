@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Mapping;
 
+use Doctrine\Deprecations\Deprecation;
+
 use function strtolower;
 use function trim;
 
@@ -127,6 +129,20 @@ final class ManyToManyOwningSideMapping extends ToManyOwningSideMapping implemen
         $mapping->joinTableColumns = [];
 
         foreach ($mapping->joinTable->joinColumns as $joinColumn) {
+            if ($joinColumn->nullable !== null) {
+                Deprecation::trigger(
+                    'doctrine/orm',
+                    'https://github.com/doctrine/orm/pull/12126',
+                    <<<'DEPRECATION'
+                    Specifying the "nullable" attribute for join columns in many-to-many associations (here, %s::$%s) is a no-op.
+                    The ORM will always set it to false.
+                    Doing so is deprecated and will be an error in 4.0.
+                    DEPRECATION,
+                    $mapping->sourceEntity,
+                    $mapping->fieldName,
+                );
+            }
+
             $joinColumn->nullable = false;
 
             if (empty($joinColumn->referencedColumnName)) {
@@ -152,6 +168,20 @@ final class ManyToManyOwningSideMapping extends ToManyOwningSideMapping implemen
         }
 
         foreach ($mapping->joinTable->inverseJoinColumns as $inverseJoinColumn) {
+            if ($inverseJoinColumn->nullable !== null) {
+                Deprecation::trigger(
+                    'doctrine/orm',
+                    'https://github.com/doctrine/orm/pull/12126',
+                    <<<'DEPRECATION'
+                    Specifying the "nullable" attribute for join columns in many-to-many associations (here, %s::$%s) is a no-op.
+                    The ORM will always set it to false.
+                    Doing so is deprecated and will be an error in 4.0.
+                    DEPRECATION,
+                    $mapping->targetEntity,
+                    $mapping->fieldName,
+                );
+            }
+
             $inverseJoinColumn->nullable = false;
 
             if (empty($inverseJoinColumn->referencedColumnName)) {

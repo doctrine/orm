@@ -149,3 +149,8 @@ parameters:
         -
             message: '~inferType.*never returns~'
             path: src/Query/ParameterTypeInferer.php
+
+        # Compatibility with Symfony 8
+        -
+            message: '#^Call to function method_exists\(\) with ''Symfony\\\\Component\\\\VarExporter\\\\ProxyHelper'' and ''generateLazyGhost'' will always evaluate to true\.$#'
+            path: src/Proxy/ProxyFactory.php

@@ -160,6 +160,11 @@ EXCEPTION
         return new self('You must configure a proxy directory. See docs for details');
     }
 
+    public static function lazyGhostUnavailable(): self
+    {
+        return new self('Symfony LazyGhost is not available. Please install the "symfony/var-exporter" package version 6.4 or 7 to use this feature or enable PHP 8.4 native lazy objects.');
+    }
+
     public static function proxyNamespaceRequired(): self
     {
         return new self('You must configure a proxy namespace');

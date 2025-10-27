@@ -50,7 +50,7 @@ class DDC1225TestEntity1
 {
     #[Id]
     #[ManyToOne(targetEntity: 'Doctrine\Tests\ORM\Functional\Ticket\DDC1225TestEntity2')]
-    #[JoinColumn(name: 'test_entity2_id', referencedColumnName: 'id', nullable: false)]
+    #[JoinColumn(name: 'test_entity2_id', referencedColumnName: 'id')]
     private DDC1225TestEntity2|null $testEntity2 = null;
 
     public function setTestEntity2(DDC1225TestEntity2 $testEntity2): void

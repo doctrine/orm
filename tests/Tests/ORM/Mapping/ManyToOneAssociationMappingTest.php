@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Mapping;
 
+use Doctrine\Deprecations\PHPUnit\VerifyDeprecations;
 use Doctrine\ORM\Mapping\DefaultNamingStrategy;
 use Doctrine\ORM\Mapping\JoinColumnMapping;
 use Doctrine\ORM\Mapping\ManyToOneAssociationMapping;
 use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\WithoutErrorHandler;
 use PHPUnit\Framework\TestCase;
 
 use function assert;
@@ -16,6 +18,8 @@ use function unserialize;
 
 final class ManyToOneAssociationMappingTest extends TestCase
 {
+    use VerifyDeprecations;
+
     public function testItSurvivesSerialization(): void
     {
         $mapping = new ManyToOneAssociationMapping(
@@ -38,22 +42,45 @@ final class ManyToOneAssociationMappingTest extends TestCase
         self::assertSame(['bar' => 'foo'], $resurrectedMapping->targetToSourceKeyColumns);
     }
 
+    /** @param array<string, mixed> $mappingArray */
     #[DataProvider('mappingsProvider')]
-    public function testNullableDefaults(bool $expectedValue, ManyToOneAssociationMapping $mapping): void
-    {
+    #[WithoutErrorHandler]
+    public function testNullableDefaults(
+        bool $expectDeprecation,
+        bool $expectedValue,
+        array $mappingArray,
+    ): void {
+        $namingStrategy = new DefaultNamingStrategy();
+        if ($expectDeprecation) {
+            $this->expectDeprecationWithIdentifier(
+                'https://github.com/doctrine/orm/pull/12126',
+            );
+        } else {
+            $this->expectNoDeprecationWithIdentifier(
+                'https://github.com/doctrine/orm/pull/12126',
+            );
+        }
+
+        $mapping = ManyToOneAssociationMapping::fromMappingArrayAndName(
+            $mappingArray,
+            $namingStrategy,
+            self::class,
+            null,
+            false,
+        );
+
         foreach ($mapping->joinColumns as $joinColumn) {
             self::assertSame($expectedValue, $joinColumn->nullable);
         }
     }
 
-    /** @return iterable<string, array{bool, ManyToOneAssociationMapping}> */
+    /** @return iterable<string, array{bool, bool, array<string, mixed>}> */
     public static function mappingsProvider(): iterable
     {
-        $namingStrategy = new DefaultNamingStrategy();
-
         yield 'not part of the identifier' => [
+            false,
             true,
-            ManyToOneAssociationMapping::fromMappingArrayAndName([
+            [
                 'fieldName' => 'foo',
                 'sourceEntity' => self::class,
                 'targetEntity' => self::class,
@@ -62,12 +89,13 @@ final class ManyToOneAssociationMappingTest extends TestCase
                     ['name' => 'foo_id', 'referencedColumnName' => 'id'],
                 ],
                 'id' => false,
-            ], $namingStrategy, self::class, null, false),
+            ],
         ];
 
         yield 'part of the identifier' => [
             false,
-            ManyToOneAssociationMapping::fromMappingArrayAndName([
+            false,
+            [
                 'fieldName' => 'foo',
                 'sourceEntity' => self::class,
                 'targetEntity' => self::class,
@@ -76,12 +104,13 @@ final class ManyToOneAssociationMappingTest extends TestCase
                     ['name' => 'foo_id', 'referencedColumnName' => 'id'],
                 ],
                 'id' => true,
-            ], $namingStrategy, self::class, null, false),
+            ],
         ];
 
         yield 'part of the identifier, but explicitly marked as nullable' => [
+            true,
             false, // user's intent is ignored at the ORM level
-            ManyToOneAssociationMapping::fromMappingArrayAndName([
+            [
                 'fieldName' => 'foo',
                 'sourceEntity' => self::class,
                 'targetEntity' => self::class,
@@ -90,7 +119,22 @@ final class ManyToOneAssociationMappingTest extends TestCase
                     ['name' => 'foo_id', 'referencedColumnName' => 'id', 'nullable' => true],
                 ],
                 'id' => true,
-            ], $namingStrategy, self::class, null, false),
+            ],
+        ];
+
+        yield 'part of the identifier, but explicitly marked as not nullable' => [
+            true,
+            false,
+            [
+                'fieldName' => 'foo',
+                'sourceEntity' => self::class,
+                'targetEntity' => self::class,
+                'isOwningSide' => true,
+                'joinColumns' => [
+                    ['name' => 'foo_id', 'referencedColumnName' => 'id', 'nullable' => true],
+                ],
+                'id' => true,
+            ],
         ];
     }
 }
