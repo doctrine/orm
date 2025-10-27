@@ -12,6 +12,9 @@
         {"name": "Jonathan Wage", "email": "jonwage@gmail.com"},
         {"name": "Marco Pivetta", "email": "ocramius@gmail.com"}
     ],
+    "scripts": {
+        "docs": "composer --working-dir docs update && ./docs/vendor/bin/build-docs.sh @additional_args"
+    },
     "config": {
         "allow-plugins": {
             "composer/package-versions-deprecated": true,

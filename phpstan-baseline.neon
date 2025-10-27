@@ -2137,12 +2137,6 @@ parameters:
 			path: src/Persisters/Entity/BasicEntityPersister.php
 
 		-
-			message: '#^Strict comparison using \=\=\= between string and null will always evaluate to false\.$#'
-			identifier: identical.alwaysFalse
-			count: 1
-			path: src/Persisters/Entity/BasicEntityPersister.php
-
-		-
 			message: '#^Method Doctrine\\ORM\\Persisters\\Entity\\CachedPersisterContext\:\:__construct\(\) has parameter \$class with generic interface Doctrine\\Persistence\\Mapping\\ClassMetadata but does not specify its types\: T$#'
 			identifier: missingType.generics
 			count: 1
@@ -3039,12 +3033,6 @@ parameters:
 		-
 			message: '#^Method Doctrine\\ORM\\Tools\\ResolveTargetEntityListener\:\:remapAssociation\(\) has parameter \$classMetadata with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
 			identifier: missingType.generics
-			count: 1
-			path: src/Tools/ResolveTargetEntityListener.php
-
-		-
-			message: '#^Parameter \#1 \$className of method Doctrine\\Persistence\\Mapping\\AbstractClassMetadataFactory\<Doctrine\\ORM\\Mapping\\ClassMetadata\>\:\:setMetadataFor\(\) expects class\-string, \(int\|string\) given\.$#'
-			identifier: argument.type
 			count: 1
 			path: src/Tools/ResolveTargetEntityListener.php
 

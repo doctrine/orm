@@ -3,8 +3,7 @@
     "description": "Documentation for the Object-Relational Mapper\"",
     "type": "library",
     "license": "MIT",
-    "require": {
-        "phpdocumentor/guides-cli": "1.7.1",
-        "phpdocumentor/filesystem": "1.7.1"
+    "require-dev": {
+        "doctrine/docs-builder": "^1.0"
     }
 }

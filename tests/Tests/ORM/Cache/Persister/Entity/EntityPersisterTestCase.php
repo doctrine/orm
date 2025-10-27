@@ -141,7 +141,7 @@ abstract class EntityPersisterTestCase extends OrmTestCase
     public function testInvokeExpandCriteriaParameters(): void
     {
         $persister = $this->createPersisterDefault();
-        $criteria  = new Criteria();
+        $criteria  = Criteria::create(true);
 
         $this->entityPersister->expects(self::once())
             ->method('expandCriteriaParameters')
@@ -320,7 +320,7 @@ abstract class EntityPersisterTestCase extends OrmTestCase
         $rsm       = new ResultSetMappingBuilder($this->em);
         $persister = $this->createPersisterDefault();
         $entity    = new Country('Foo');
-        $criteria  = new Criteria();
+        $criteria  = Criteria::create(true);
 
         $this->em->getUnitOfWork()->registerManaged($entity, ['id' => 1], ['id' => 1, 'name' => 'Foo']);
         $rsm->addEntityResult(Country::class, 'c');
