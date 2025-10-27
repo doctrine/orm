@@ -110,3 +110,9 @@ parameters:
             message: '#injectObjectManager#'
             identifier: 'method.deprecatedInterface'
             path: src/UnitOfWork.php
+
+        -
+            message: '#^Static method Doctrine\\Common\\Collections\\Criteria\:\:create\(\) invoked with 1 parameter, 0 required\.$#'
+            identifier: arguments.count
+            count: 3
+            path: src/Persisters/Collection/OneToManyPersister.php

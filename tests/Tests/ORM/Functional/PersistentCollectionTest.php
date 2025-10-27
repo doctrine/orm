@@ -90,7 +90,7 @@ class PersistentCollectionTest extends OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $criteria = new Criteria();
+        $criteria = Criteria::create(true);
 
         $collectionHolder = $this->_em->find(PersistentCollectionHolder::class, $collectionHolder->getId());
         $collectionHolder->getCollection()->matching($criteria);

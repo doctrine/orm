@@ -557,7 +557,7 @@ EXCEPTION
         $library = $this->_em->find(Library::class, $library->id);
         self::assertFalse($library->books->isInitialized(), 'Pre-condition: lazy collection');
 
-        $result = $library->books->matching(Criteria::create()->where($comparison));
+        $result = $library->books->matching(Criteria::create(true)->where($comparison));
 
         self::assertCount(1, $result);
         self::assertSame($nonfictionBook->id, $result[0]->id);
@@ -588,7 +588,7 @@ EXCEPTION
         $category = $this->_em->find(BookCategory::class, $category->id);
         self::assertFalse($category->books->isInitialized(), 'Pre-condition: lazy collection');
 
-        $result = $category->books->matching(Criteria::create()->where($comparison));
+        $result = $category->books->matching(Criteria::create(true)->where($comparison));
 
         self::assertCount(1, $result);
         self::assertSame($nonfictionBook->id, $result[0]->id);

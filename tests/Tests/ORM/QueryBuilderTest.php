@@ -160,11 +160,11 @@ class QueryBuilderTest extends OrmTestCase
         $qb
             ->select('u', 'a')
             ->from(CmsUser::class, 'u')
-            ->innerJoin('u.articles', 'a', Join::ON, $qb->expr()->eq('u.id', 'a.author_id'));
+            ->innerJoin(CmsArticle::class, 'a', Join::ON, $qb->expr()->eq('u.id', 'a.author_id'));
 
         $this->assertValidQueryBuilder(
             $qb,
-            'SELECT u, a FROM Doctrine\Tests\Models\CMS\CmsUser u INNER JOIN u.articles a ON u.id = a.author_id'
+            'SELECT u, a FROM Doctrine\Tests\Models\CMS\CmsUser u INNER JOIN Doctrine\Tests\Models\CMS\CmsArticle a ON u.id = a.author_id'
         );
     }
 
@@ -476,7 +476,7 @@ class QueryBuilderTest extends OrmTestCase
         $qb->select('u')
             ->from(CmsUser::class, 'u');
 
-        $criteria = new Criteria();
+        $criteria = Criteria::create(true);
         $criteria->where($criteria->expr()->eq('field', 'value'));
 
         $qb->addCriteria($criteria);
@@ -490,7 +490,7 @@ class QueryBuilderTest extends OrmTestCase
         $qb = $this->entityManager->createQueryBuilder();
         $qb->select('alias1')->from(CmsUser::class, 'alias1');
 
-        $criteria = new Criteria();
+        $criteria = Criteria::create(true);
         $criteria->where($criteria->expr()->andX(
             $criteria->expr()->eq('field', 'value1'),
             $criteria->expr()->eq('field', 'value2')
@@ -509,7 +509,7 @@ class QueryBuilderTest extends OrmTestCase
         $qb = $this->entityManager->createQueryBuilder();
         $qb->select('alias1')->from(CmsUser::class, 'alias1');
 
-        $criteria = new Criteria();
+        $criteria = Criteria::create(true);
         $criteria->where($criteria->expr()->eq('field', 'value1'));
         $criteria->andWhere($criteria->expr()->gt('field', 'value2'));
 
@@ -526,7 +526,7 @@ class QueryBuilderTest extends OrmTestCase
         $qb = $this->entityManager->createQueryBuilder();
         $qb->select('alias1')->from(CmsUser::class, 'alias1');
 
-        $criteria = new Criteria();
+        $criteria = Criteria::create(true);
         $criteria->where($criteria->expr()->eq('field1', 'value1'));
         $criteria->andWhere($criteria->expr()->gt('field2', 'value2'));
 
@@ -543,7 +543,7 @@ class QueryBuilderTest extends OrmTestCase
         $qb = $this->entityManager->createQueryBuilder();
         $qb->select('alias1')->from(CmsUser::class, 'alias1');
 
-        $criteria = new Criteria();
+        $criteria = Criteria::create(true);
         $criteria->where($criteria->expr()->eq('field1', 'value1'));
         $criteria->andWhere($criteria->expr()->gt('field2', 'value2'));
 
@@ -560,7 +560,7 @@ class QueryBuilderTest extends OrmTestCase
         $qb = $this->entityManager->createQueryBuilder();
         $qb->select('alias1')->from(CmsUser::class, 'alias1');
 
-        $criteria = new Criteria();
+        $criteria = Criteria::create(true);
         $criteria->where($criteria->expr()->eq('field1', 'value1'));
         $criteria->andWhere($criteria->expr()->gt('field1', 'value2'));
 
@@ -577,7 +577,7 @@ class QueryBuilderTest extends OrmTestCase
         $qb->select('u')
             ->from(CmsUser::class, 'u');
 
-        $criteria = new Criteria();
+        $criteria = Criteria::create(true);
         $criteria->orderBy(['field' => class_exists(Order::class) ? Order::Descending : Criteria::DESC]);
 
         $qb->addCriteria($criteria);
@@ -594,7 +594,7 @@ class QueryBuilderTest extends OrmTestCase
             ->from(CmsUser::class, 'u')
             ->join('u.article', 'a');
 
-        $criteria = new Criteria();
+        $criteria = Criteria::create(true);
         $criteria->orderBy(['a.field' => class_exists(Order::class) ? Order::Descending : Criteria::DESC]);
 
         $qb->addCriteria($criteria);
@@ -609,7 +609,7 @@ class QueryBuilderTest extends OrmTestCase
         $qb->select('u')
             ->from(CmsUser::class, 'u');
 
-        $criteria = new Criteria();
+        $criteria = Criteria::create(true);
         $criteria->setFirstResult(2);
         $criteria->setMaxResults(10);
 
@@ -627,7 +627,7 @@ class QueryBuilderTest extends OrmTestCase
             ->setFirstResult(2)
             ->setMaxResults(10);
 
-        $criteria = new Criteria();
+        $criteria = Criteria::create(true);
 
         $qb->addCriteria($criteria);
 
@@ -932,7 +932,7 @@ class QueryBuilderTest extends OrmTestCase
         $qb->select('alias1')->from(CmsUser::class, 'alias1');
         $qb->join('alias1.articles', 'alias2');
 
-        $criteria = new Criteria();
+        $criteria = Criteria::create(true);
         $criteria->where($criteria->expr()->eq('field', 'value1'));
         $criteria->andWhere($criteria->expr()->gt('alias2.field', 'value2'));
 
@@ -950,7 +950,7 @@ class QueryBuilderTest extends OrmTestCase
         $qb->select('alias1')->from(CmsUser::class, 'alias1');
         $qb->join('alias1.articles', 'alias2');
 
-        $criteria = new Criteria();
+        $criteria = Criteria::create(true);
         $criteria->where($criteria->expr()->eq('alias1.field', 'value1'));
         $criteria->andWhere($criteria->expr()->gt('alias2.field', 'value2'));
 
@@ -968,7 +968,7 @@ class QueryBuilderTest extends OrmTestCase
         $qb->select('alias1')->from(CmsUser::class, 'alias1');
         $qb->join('alias1.articles', 'alias2');
 
-        $criteria = new Criteria();
+        $criteria = Criteria::create(true);
         $criteria->where($criteria->expr()->eq('alias1.field', 'value1'));
         $criteria->andWhere($criteria->expr()->gt('alias2.field', 'value2'));
         $criteria->andWhere($criteria->expr()->lt('alias2.field', 'value3'));

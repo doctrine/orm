@@ -101,8 +101,16 @@ The ``Paginate::count(Query $query)`` looks like:
     {
         static public function count(Query $query)
         {
-            /** @var Query $countQuery */
-            $countQuery = clone $query;
+            /*
+               To avoid changing the $query passed into the method and to make sure a possibly existing
+               ResultSetMapping is discarded, we create a new query object any copy relevant data over.
+            */
+            $countQuery = new Query($query->getEntityManager());
+            $countQuery->setDQL($query->getDQL());
+            $countQuery->setParameters(clone $query->getParameters());
+            foreach ($query->getHints() as $name => $value) {
+                $countQuery->setHint($name, $value);
+            }
 
             $countQuery->setHint(Query::HINT_CUSTOM_TREE_WALKERS, array('DoctrineExtensions\Paginate\CountSqlWalker'));
             $countQuery->setFirstResult(null)->setMaxResults(null);
@@ -111,7 +119,7 @@ The ``Paginate::count(Query $query)`` looks like:
         }
     }
 
-It clones the query, resets the limit clause first and max results
+This resets the limit clause first and max results
 and registers the ``CountSqlWalker`` custom tree walker which
 will modify the AST to execute a count query. The walkers
 implementation is:
