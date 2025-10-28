@@ -1,0 +1,20 @@
+name: "Composer Lint"
+
+on:
+  pull_request:
+    branches:
+      - "*.x"
+    paths:
+      - ".github/workflows/composer-lint.yml"
+      - "composer.json"
+  push:
+    branches:
+      - "*.x"
+    paths:
+      - ".github/workflows/composer-lint.yml"
+      - "composer.json"
+
+jobs:
+  composer-lint:
+    name: "Composer Lint"
+    uses: "doctrine/.github/.github/workflows/composer-lint.yml@12.1.0"
