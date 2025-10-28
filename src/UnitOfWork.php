@@ -343,10 +343,7 @@ class UnitOfWork implements PropertyChangedListener
             $connection->ensureConnectedToPrimary();
         }
 
-        // Raise preFlush
-        if ($this->evm->hasListeners(Events::preFlush)) {
-            $this->evm->dispatchEvent(Events::preFlush, new PreFlushEventArgs($this->em));
-        }
+        $this->dispatchPreFlushEvent();
 
         // Compute changes done since last commit.
         $this->computeChangeSets();
@@ -377,8 +374,7 @@ class UnitOfWork implements PropertyChangedListener
 
         $this->dispatchOnFlushEvent();
 
-        $conn = $this->em->getConnection();
-        $conn->beginTransaction();
+        $connection->beginTransaction();
 
         $successful = false;
 
@@ -429,7 +425,7 @@ class UnitOfWork implements PropertyChangedListener
 
             $commitFailed = false;
             try {
-                if ($conn->commit() === false) {
+                if ($connection->commit() === false) {
                     $commitFailed = true;
                 }
             } catch (DBAL\Exception $e) {
@@ -445,8 +441,8 @@ class UnitOfWork implements PropertyChangedListener
             if (! $successful) {
                 $this->em->close();
 
-                if ($conn->isTransactionActive()) {
-                    $conn->rollBack();
+                if ($connection->isTransactionActive()) {
+                    $connection->rollBack();
                 }
 
                 $this->afterTransactionRolledBack();
@@ -3137,6 +3133,13 @@ class UnitOfWork implements PropertyChangedListener
             if ($persister instanceof CachedPersister) {
                 $callback($persister);
             }
+        }
+    }
+
+    private function dispatchPreFlushEvent(): void
+    {
+        if ($this->evm->hasListeners(Events::preFlush)) {
+            $this->evm->dispatchEvent(Events::preFlush, new PreFlushEventArgs($this->em));
         }
     }
 
