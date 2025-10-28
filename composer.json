@@ -85,19 +85,6 @@
     "bin": [
         "bin/doctrine"
     ],
-    "archive": {
-        "exclude": [
-            "!vendor",
-            "tests",
-            "*phpunit.xml",
-            "build.xml",
-            "build.properties",
-            "composer.phar",
-            "vendor/satooshi",
-            "lib/vendor",
-            "*.swp"
-        ]
-    },
     "config": {
         "allow-plugins": {
             "composer/package-versions-deprecated": true,
