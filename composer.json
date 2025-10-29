@@ -1,29 +1,39 @@
 {
     "name": "doctrine/orm",
-    "type": "library",
     "description": "Object-Relational-Mapper for PHP",
-    "keywords": ["orm", "database"],
-    "homepage": "https://www.doctrine-project.org/projects/orm.html",
     "license": "MIT",
-    "authors": [
-        {"name": "Guilherme Blanco", "email": "guilhermeblanco@gmail.com"},
-        {"name": "Roman Borschel", "email": "roman@code-factory.org"},
-        {"name": "Benjamin Eberlei", "email": "kontakt@beberlei.de"},
-        {"name": "Jonathan Wage", "email": "jonwage@gmail.com"},
-        {"name": "Marco Pivetta", "email": "ocramius@gmail.com"}
+    "type": "library",
+    "keywords": [
+        "orm",
+        "database"
     ],
-    "config": {
-        "allow-plugins": {
-            "composer/package-versions-deprecated": true,
-            "dealerdirect/phpcodesniffer-composer-installer": true,
-            "phpstan/extension-installer": true
+    "authors": [
+        {
+            "name": "Guilherme Blanco",
+            "email": "guilhermeblanco@gmail.com"
         },
-        "sort-packages": true
-    },
+        {
+            "name": "Roman Borschel",
+            "email": "roman@code-factory.org"
+        },
+        {
+            "name": "Benjamin Eberlei",
+            "email": "kontakt@beberlei.de"
+        },
+        {
+            "name": "Jonathan Wage",
+            "email": "jonwage@gmail.com"
+        },
+        {
+            "name": "Marco Pivetta",
+            "email": "ocramius@gmail.com"
+        }
+    ],
+    "homepage": "https://www.doctrine-project.org/projects/orm.html",
     "require": {
         "php": "^8.1",
-        "composer-runtime-api": "^2",
         "ext-ctype": "*",
+        "composer-runtime-api": "^2",
         "doctrine/collections": "^2.2",
         "doctrine/dbal": "^3.8.2 || ^4",
         "doctrine/deprecations": "^0.5.3 || ^1",
@@ -52,16 +62,26 @@
         "symfony/cache": "Provides cache support for Setup Tool with doctrine/cache 2.0"
     },
     "autoload": {
-        "psr-4": { "Doctrine\\ORM\\": "src" }
+        "psr-4": {
+            "Doctrine\\ORM\\": "src"
+        }
     },
     "autoload-dev": {
         "psr-4": {
-            "Doctrine\\Tests\\": "tests/Tests",
+            "Doctrine\\Performance\\": "tests/Performance",
             "Doctrine\\StaticAnalysis\\": "tests/StaticAnalysis",
-            "Doctrine\\Performance\\": "tests/Performance"
+            "Doctrine\\Tests\\": "tests/Tests"
         }
     },
-    "archive": {
-        "exclude": ["!vendor", "tests", "*phpunit.xml", "build.xml", "build.properties", "composer.phar", "vendor/satooshi", "lib/vendor", "*.swp"]
+    "config": {
+        "allow-plugins": {
+            "composer/package-versions-deprecated": true,
+            "dealerdirect/phpcodesniffer-composer-installer": true,
+            "phpstan/extension-installer": true
+        },
+        "sort-packages": true
+    },
+    "scripts": {
+        "docs": "composer --working-dir docs update && ./docs/vendor/bin/build-docs.sh @additional_args"
     }
 }

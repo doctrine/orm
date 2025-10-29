@@ -1394,6 +1394,168 @@ class NewOperatorTest extends OrmFunctionalTestCase
         self::assertSame($this->fixtures[2]->email->email, $result[2]->val2->val2);
     }
 
+    public function testOnlyObjectInNamedDto(): void
+    {
+        $dql = '
+            SELECT
+                new named CmsUserDTOVariadicArg(
+                    a,
+                    new CmsDumbDTO(
+                        u.name,
+                        e.email
+                    ) as dumb
+                )
+            FROM
+                Doctrine\Tests\Models\CMS\CmsUser u
+            LEFT JOIN
+                u.email e
+            LEFT JOIN
+                u.address a
+            ORDER BY
+                u.name';
+
+        $query  = $this->getEntityManager()->createQuery($dql);
+        $result = $query->getResult();
+
+        self::assertCount(3, $result);
+
+        self::assertInstanceOf(CmsUserDTOVariadicArg::class, $result[0]);
+        self::assertInstanceOf(CmsUserDTOVariadicArg::class, $result[1]);
+        self::assertInstanceOf(CmsUserDTOVariadicArg::class, $result[2]);
+
+        self::assertInstanceOf(CmsAddress::class, $result[0]->otherProperties['a']);
+        self::assertInstanceOf(CmsAddress::class, $result[1]->otherProperties['a']);
+        self::assertInstanceOf(CmsAddress::class, $result[2]->otherProperties['a']);
+
+        self::assertSame($this->fixtures[0]->address->city, $result[0]->otherProperties['a']->city);
+        self::assertSame($this->fixtures[1]->address->city, $result[1]->otherProperties['a']->city);
+        self::assertSame($this->fixtures[2]->address->city, $result[2]->otherProperties['a']->city);
+
+        self::assertSame($this->fixtures[0]->address->country, $result[0]->otherProperties['a']->country);
+        self::assertSame($this->fixtures[1]->address->country, $result[1]->otherProperties['a']->country);
+        self::assertSame($this->fixtures[2]->address->country, $result[2]->otherProperties['a']->country);
+
+        self::assertInstanceOf(CmsDumbDTO::class, $result[0]->otherProperties['dumb']);
+        self::assertInstanceOf(CmsDumbDTO::class, $result[1]->otherProperties['dumb']);
+        self::assertInstanceOf(CmsDumbDTO::class, $result[2]->otherProperties['dumb']);
+
+        self::assertSame($this->fixtures[0]->name, $result[0]->otherProperties['dumb']->val1);
+        self::assertSame($this->fixtures[1]->name, $result[1]->otherProperties['dumb']->val1);
+        self::assertSame($this->fixtures[2]->name, $result[2]->otherProperties['dumb']->val1);
+
+        self::assertSame($this->fixtures[0]->email->email, $result[0]->otherProperties['dumb']->val2);
+        self::assertSame($this->fixtures[1]->email->email, $result[1]->otherProperties['dumb']->val2);
+        self::assertSame($this->fixtures[2]->email->email, $result[2]->otherProperties['dumb']->val2);
+    }
+
+    public function testOnlyObjectInNamedDtoWithAlias(): void
+    {
+        $dql = '
+            SELECT
+                new named CmsUserDTOVariadicArg(
+                    a as addr,
+                    new CmsDumbDTO(
+                        u.name,
+                        e.email
+                    ) as dumb
+                )
+            FROM
+                Doctrine\Tests\Models\CMS\CmsUser u
+            LEFT JOIN
+                u.email e
+            LEFT JOIN
+                u.address a
+            ORDER BY
+                u.name';
+
+        $query  = $this->getEntityManager()->createQuery($dql);
+        $result = $query->getResult();
+
+        self::assertCount(3, $result);
+
+        self::assertInstanceOf(CmsUserDTOVariadicArg::class, $result[0]);
+        self::assertInstanceOf(CmsUserDTOVariadicArg::class, $result[1]);
+        self::assertInstanceOf(CmsUserDTOVariadicArg::class, $result[2]);
+
+        self::assertInstanceOf(CmsAddress::class, $result[0]->otherProperties['addr']);
+        self::assertInstanceOf(CmsAddress::class, $result[1]->otherProperties['addr']);
+        self::assertInstanceOf(CmsAddress::class, $result[2]->otherProperties['addr']);
+
+        self::assertSame($this->fixtures[0]->address->city, $result[0]->otherProperties['addr']->city);
+        self::assertSame($this->fixtures[1]->address->city, $result[1]->otherProperties['addr']->city);
+        self::assertSame($this->fixtures[2]->address->city, $result[2]->otherProperties['addr']->city);
+
+        self::assertSame($this->fixtures[0]->address->country, $result[0]->otherProperties['addr']->country);
+        self::assertSame($this->fixtures[1]->address->country, $result[1]->otherProperties['addr']->country);
+        self::assertSame($this->fixtures[2]->address->country, $result[2]->otherProperties['addr']->country);
+
+        self::assertInstanceOf(CmsDumbDTO::class, $result[0]->otherProperties['dumb']);
+        self::assertInstanceOf(CmsDumbDTO::class, $result[1]->otherProperties['dumb']);
+        self::assertInstanceOf(CmsDumbDTO::class, $result[2]->otherProperties['dumb']);
+
+        self::assertSame($this->fixtures[0]->name, $result[0]->otherProperties['dumb']->val1);
+        self::assertSame($this->fixtures[1]->name, $result[1]->otherProperties['dumb']->val1);
+        self::assertSame($this->fixtures[2]->name, $result[2]->otherProperties['dumb']->val1);
+
+        self::assertSame($this->fixtures[0]->email->email, $result[0]->otherProperties['dumb']->val2);
+        self::assertSame($this->fixtures[1]->email->email, $result[1]->otherProperties['dumb']->val2);
+        self::assertSame($this->fixtures[2]->email->email, $result[2]->otherProperties['dumb']->val2);
+    }
+
+    public function testOnlyObjectInNamedDtoWithSameNameAsTheProperties(): void
+    {
+        $dql = '
+            SELECT
+                new named CmsUserDTONamedArgs(
+                    addressEntity,
+                    new CmsDumbDTO(
+                        u.name,
+                        e.email
+                    ) as dumb
+                )
+            FROM
+                Doctrine\Tests\Models\CMS\CmsUser u
+            LEFT JOIN
+                u.email e
+            LEFT JOIN
+                u.address addressEntity
+            ORDER BY
+                u.name';
+
+        $query  = $this->getEntityManager()->createQuery($dql);
+        $result = $query->getResult();
+
+        self::assertCount(3, $result);
+
+        self::assertInstanceOf(CmsUserDTONamedArgs::class, $result[0]);
+        self::assertInstanceOf(CmsUserDTONamedArgs::class, $result[1]);
+        self::assertInstanceOf(CmsUserDTONamedArgs::class, $result[2]);
+
+        self::assertInstanceOf(CmsAddress::class, $result[0]->addressEntity);
+        self::assertInstanceOf(CmsAddress::class, $result[1]->addressEntity);
+        self::assertInstanceOf(CmsAddress::class, $result[2]->addressEntity);
+
+        self::assertSame($this->fixtures[0]->address->city, $result[0]->addressEntity->city);
+        self::assertSame($this->fixtures[1]->address->city, $result[1]->addressEntity->city);
+        self::assertSame($this->fixtures[2]->address->city, $result[2]->addressEntity->city);
+
+        self::assertSame($this->fixtures[0]->address->country, $result[0]->addressEntity->country);
+        self::assertSame($this->fixtures[1]->address->country, $result[1]->addressEntity->country);
+        self::assertSame($this->fixtures[2]->address->country, $result[2]->addressEntity->country);
+
+        self::assertInstanceOf(CmsDumbDTO::class, $result[0]->dumb);
+        self::assertInstanceOf(CmsDumbDTO::class, $result[1]->dumb);
+        self::assertInstanceOf(CmsDumbDTO::class, $result[2]->dumb);
+
+        self::assertSame($this->fixtures[0]->name, $result[0]->dumb->val1);
+        self::assertSame($this->fixtures[1]->name, $result[1]->dumb->val1);
+        self::assertSame($this->fixtures[2]->name, $result[2]->dumb->val1);
+
+        self::assertSame($this->fixtures[0]->email->email, $result[0]->dumb->val2);
+        self::assertSame($this->fixtures[1]->email->email, $result[1]->dumb->val2);
+        self::assertSame($this->fixtures[2]->email->email, $result[2]->dumb->val2);
+    }
+
     public function testNamedArguments(): void
     {
         $dql = <<<'SQL'

@@ -164,14 +164,14 @@ class OneToManyBidirectionalAssociationTest extends OrmFunctionalTestCase
         $product  = $this->_em->find(ECommerceProduct::class, $this->product->getId());
         $features = $product->getFeatures();
 
-        $results = $features->matching(new Criteria(
+        $results = $features->matching(Criteria::create(true)->where(
             Criteria::expr()->eq('description', 'Model writing tutorial'),
         ));
 
         self::assertInstanceOf(Collection::class, $results);
         self::assertCount(1, $results);
 
-        $results = $features->matching(new Criteria());
+        $results = $features->matching(Criteria::create(true));
 
         self::assertInstanceOf(Collection::class, $results);
         self::assertCount(2, $results);
@@ -190,7 +190,7 @@ class OneToManyBidirectionalAssociationTest extends OrmFunctionalTestCase
         $features = $product->getFeatures();
         $features->add($thirdFeature);
 
-        $results = $features->matching(new Criteria(
+        $results = $features->matching(Criteria::create(true)->where(
             Criteria::expr()->eq('description', 'Model writing tutorial'),
         ));
 
@@ -208,14 +208,14 @@ class OneToManyBidirectionalAssociationTest extends OrmFunctionalTestCase
         $thirdFeature->setDescription('Third feature');
         $product->addFeature($thirdFeature);
 
-        $results = $features->matching(new Criteria(
+        $results = $features->matching(Criteria::create(true)->where(
             Criteria::expr()->eq('description', 'Third feature'),
         ));
 
         self::assertInstanceOf(Collection::class, $results);
         self::assertCount(1, $results);
 
-        $results = $features->matching(new Criteria());
+        $results = $features->matching(Criteria::create(true));
 
         self::assertInstanceOf(Collection::class, $results);
         self::assertCount(3, $results);
