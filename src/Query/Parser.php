@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Query;
 
 use Doctrine\Common\Lexer\Token;
+use Doctrine\Deprecations\Deprecation;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Exception\DuplicateFieldException;
 use Doctrine\ORM\Exception\NoMatchingPropertyException;
@@ -1111,7 +1112,7 @@ final class Parser
             ];
         }
 
-        return new AST\EntityAsDtoArgumentExpression($expression, $identVariable);
+        return new AST\EntityAsDtoArgumentExpression($expression, $identVariable, $aliasResultVariable);
     }
 
     /**
@@ -1573,8 +1574,7 @@ final class Parser
 
     /**
      * Join ::= ["LEFT" ["OUTER"] | "INNER"] "JOIN"
-     *          (JoinAssociationDeclaration | RangeVariableDeclaration)
-     *          ["WITH" ConditionalExpression]
+     *          (JoinAssociationDeclaration ["WITH" ConditionalExpression] | RangeVariableDeclaration [("ON" | "WITH") ConditionalExpression])
      */
     public function Join(): AST\Join
     {
@@ -1608,21 +1608,31 @@ final class Parser
 
         $next = $this->lexer->glimpse();
         assert($next !== null);
-        $joinDeclaration = $next->type === TokenType::T_DOT ? $this->JoinAssociationDeclaration() : $this->RangeVariableDeclaration();
-        $adhocConditions = $this->lexer->isNextToken(TokenType::T_WITH);
-        $join            = new AST\Join($joinType, $joinDeclaration);
+        $conditionalExpression = null;
 
-        // Describe non-root join declaration
-        if ($joinDeclaration instanceof AST\RangeVariableDeclaration) {
+        if ($next->type === TokenType::T_DOT) {
+            $joinDeclaration = $this->JoinAssociationDeclaration();
+
+            if ($this->lexer->isNextToken(TokenType::T_WITH)) {
+                $this->match(TokenType::T_WITH);
+                $conditionalExpression = $this->ConditionalExpression();
+            }
+        } else {
+            $joinDeclaration         = $this->RangeVariableDeclaration();
             $joinDeclaration->isRoot = false;
+
+            if ($this->lexer->isNextToken(TokenType::T_ON)) {
+                $this->match(TokenType::T_ON);
+                $conditionalExpression = $this->ConditionalExpression();
+            } elseif ($this->lexer->isNextToken(TokenType::T_WITH)) {
+                $this->match(TokenType::T_WITH);
+                $conditionalExpression = $this->ConditionalExpression();
+                Deprecation::trigger('doctrine/orm', 'https://github.com/doctrine/orm/issues/12192', 'Using WITH for the join condition of arbitrary joins is deprecated. Use ON instead.');
+            }
         }
 
-        // Check for ad-hoc Join conditions
-        if ($adhocConditions) {
-            $this->match(TokenType::T_WITH);
-
-            $join->conditionalExpression = $this->ConditionalExpression();
-        }
+        $join                        = new AST\Join($joinType, $joinDeclaration);
+        $join->conditionalExpression = $conditionalExpression;
 
         return $join;
     }
@@ -1859,6 +1869,7 @@ final class Parser
             $expression = $this->NewObjectExpression();
         } elseif ($token->type === TokenType::T_IDENTIFIER && $peek->type !== TokenType::T_DOT && $peek->type !== TokenType::T_OPEN_PARENTHESIS) {
             $expression = $this->EntityAsDtoArgumentExpression();
+            $fieldAlias = $expression->aliasVariable;
         } else {
             $expression = $this->ScalarExpression();
         }

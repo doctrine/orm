@@ -11,7 +11,6 @@ use Doctrine\ORM\Persisters\Entity\EntityPersister;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use stdClass;
 
 #[CoversClass(LazyCriteriaCollection::class)]
 class LazyCriteriaCollectionTest extends TestCase
@@ -23,7 +22,7 @@ class LazyCriteriaCollectionTest extends TestCase
     protected function setUp(): void
     {
         $this->persister              = $this->createMock(EntityPersister::class);
-        $this->criteria               = new Criteria();
+        $this->criteria               = Criteria::create(true);
         $this->lazyCriteriaCollection = new LazyCriteriaCollection($this->persister, $this->criteria);
     }
 
@@ -64,9 +63,9 @@ class LazyCriteriaCollectionTest extends TestCase
 
     public function testMatchingUsesThePersisterOnlyOnce(): void
     {
-        $foo = new stdClass();
-        $bar = new stdClass();
-        $baz = new stdClass();
+        $foo = new LazyCriteriaCollectionTestObject();
+        $bar = new LazyCriteriaCollectionTestObject();
+        $baz = new LazyCriteriaCollectionTestObject();
 
         $foo->val = 'foo';
         $bar->val = 'bar';
@@ -79,7 +78,7 @@ class LazyCriteriaCollectionTest extends TestCase
             ->with($this->criteria)
             ->willReturn([$foo, $bar, $baz]);
 
-        $criteria = new Criteria();
+        $criteria = Criteria::create(true);
 
         $criteria->andWhere($criteria->expr()->eq('val', 'foo'));
 
@@ -121,4 +120,10 @@ class LazyCriteriaCollectionTest extends TestCase
 
         self::assertFalse($this->lazyCriteriaCollection->isEmpty());
     }
+}
+
+class LazyCriteriaCollectionTestObject
+{
+    /** @var mixed */
+    public $val;
 }

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Schema\ForeignKeyConstraint;
 use Doctrine\DBAL\Schema\ForeignKeyConstraintEditor;
 use Doctrine\DBAL\Schema\Name\UnqualifiedName;
@@ -20,9 +21,9 @@ use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\Table;
-use Doctrine\Tests\ORM\Functional\Ticket\Doctrine\Common\Collections\Collection;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\IgnoreDeprecations;
 
 use function array_map;
 use function assert;
@@ -31,10 +32,15 @@ use function reset;
 
 class DDC2138Test extends OrmFunctionalTestCase
 {
+    /**
+     * With this test, we will create the same foreign key twice which is fine, but we will tap a deprecation
+     * in DBAL 4.4. This has to be fixed during the validation of metadata. For now, we will simply ignore that
+     * deprecation.
+     */
     #[Group('DDC-2138')]
+    #[IgnoreDeprecations]
     public function testForeignKeyOnSTIWithMultipleMapping(): void
     {
-        $em     = $this->_em;
         $schema = $this->getSchemaForModels(
             DDC2138User::class,
             DDC2138Structure::class,
@@ -86,15 +92,13 @@ class DDC2138Test extends OrmFunctionalTestCase
 #[Entity]
 class DDC2138Structure
 {
-    /** @var int */
     #[Id]
-    #[Column(type: 'integer')]
+    #[Column]
     #[GeneratedValue(strategy: 'AUTO')]
-    protected $id;
+    protected int|null $id = null;
 
-    /** @var string */
-    #[Column(type: 'string', length: 32, nullable: true)]
-    protected $name;
+    #[Column(length: 32, nullable: true)]
+    protected string|null $name = null;
 }
 
 #[Table(name: 'users_followed_objects')]
@@ -104,19 +108,10 @@ class DDC2138Structure
 #[DiscriminatorMap([4 => 'DDC2138UserFollowedUser', 3 => 'DDC2138UserFollowedStructure'])]
 abstract class DDC2138UserFollowedObject
 {
-    /** @var int $id */
     #[Column(name: 'id', type: 'integer')]
     #[Id]
     #[GeneratedValue(strategy: 'AUTO')]
-    protected $id;
-
-    /**
-     * Get id
-     */
-    public function getId(): int
-    {
-        return $this->id;
-    }
+    public int|null $id = null;
 }
 
 #[Entity]
@@ -126,26 +121,13 @@ class DDC2138UserFollowedStructure extends DDC2138UserFollowedObject
      * Construct a UserFollowedStructure entity
      */
     public function __construct(
-        #[ManyToOne(targetEntity: 'DDC2138User', inversedBy: 'followedStructures')]
+        #[ManyToOne(inversedBy: 'followedStructures')]
         #[JoinColumn(name: 'user_id', referencedColumnName: 'id', nullable: false)]
-        protected User $user,
-        #[ManyToOne(targetEntity: 'DDC2138Structure')]
+        public DDC2138User $user,
+        #[ManyToOne]
         #[JoinColumn(name: 'object_id', referencedColumnName: 'id', nullable: false)]
-        private Structure $followedStructure,
+        public DDC2138Structure $followedStructure,
     ) {
-    }
-
-    public function getUser(): User
-    {
-        return $this->user;
-    }
-
-    /**
-     * Gets followed structure
-     */
-    public function getFollowedStructure(): Structure
-    {
-        return $this->followedStructure;
     }
 }
 
@@ -156,26 +138,13 @@ class DDC2138UserFollowedUser extends DDC2138UserFollowedObject
      * Construct a UserFollowedUser entity
      */
     public function __construct(
-        #[ManyToOne(targetEntity: 'DDC2138User', inversedBy: 'followedUsers')]
+        #[ManyToOne(inversedBy: 'followedUsers')]
         #[JoinColumn(name: 'user_id', referencedColumnName: 'id', nullable: false)]
-        protected User $user,
-        #[ManyToOne(targetEntity: 'DDC2138User')]
+        public DDC2138User $user,
+        #[ManyToOne]
         #[JoinColumn(name: 'object_id', referencedColumnName: 'id', nullable: false)]
-        private User $followedUser,
+        public DDC2138User $followedUser,
     ) {
-    }
-
-    public function getUser(): User
-    {
-        return $this->user;
-    }
-
-    /**
-     * Gets followed user
-     */
-    public function getFollowedUser(): User
-    {
-        return $this->followedUser;
     }
 }
 
@@ -183,65 +152,25 @@ class DDC2138UserFollowedUser extends DDC2138UserFollowedObject
 #[Entity]
 class DDC2138User
 {
-    /** @var int */
     #[Id]
-    #[Column(type: 'integer')]
+    #[Column]
     #[GeneratedValue(strategy: 'AUTO')]
-    protected $id;
+    public int|null $id = null;
 
-    /** @var string */
-    #[Column(type: 'string', length: 32, nullable: true)]
-    protected $name;
+    #[Column(length: 32, nullable: true)]
+    public string|null $name = null;
 
-    /** @var ArrayCollection $followedUsers */
-    #[OneToMany(targetEntity: 'DDC2138UserFollowedUser', mappedBy: 'user', cascade: ['persist'], orphanRemoval: true)]
-    protected $followedUsers;
+    /** @var Collection<int, DDC2138UserFollowedUser> */
+    #[OneToMany(targetEntity: DDC2138UserFollowedUser::class, mappedBy: 'user', cascade: ['persist'], orphanRemoval: true)]
+    public Collection $followedUsers;
 
-    /** @var ArrayCollection $followedStructures */
-    #[OneToMany(targetEntity: 'DDC2138UserFollowedStructure', mappedBy: 'user', cascade: ['persist'], orphanRemoval: true)]
-    protected $followedStructures;
+    /** @var Collection<int, DDC2138UserFollowedStructure> */
+    #[OneToMany(targetEntity: DDC2138UserFollowedStructure::class, mappedBy: 'user', cascade: ['persist'], orphanRemoval: true)]
+    public Collection $followedStructures;
 
     public function __construct()
     {
         $this->followedUsers      = new ArrayCollection();
         $this->followedStructures = new ArrayCollection();
-    }
-
-    public function addFollowedUser(UserFollowedUser $followedUsers): User
-    {
-        $this->followedUsers[] = $followedUsers;
-
-        return $this;
-    }
-
-    public function removeFollowedUser(UserFollowedUser $followedUsers): User
-    {
-        $this->followedUsers->removeElement($followedUsers);
-
-        return $this;
-    }
-
-    public function getFollowedUsers(): Collection
-    {
-        return $this->followedUsers;
-    }
-
-    public function addFollowedStructure(UserFollowedStructure $followedStructures): User
-    {
-        $this->followedStructures[] = $followedStructures;
-
-        return $this;
-    }
-
-    public function removeFollowedStructure(UserFollowedStructure $followedStructures): User
-    {
-        $this->followedStructures->removeElement($followedStructures);
-
-        return $this;
-    }
-
-    public function getFollowedStructures(): Collection
-    {
-        return $this->followedStructures;
     }
 }

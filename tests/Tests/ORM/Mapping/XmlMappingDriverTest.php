@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Mapping;
 
-use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\Cache\Exception\CacheException;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
@@ -256,8 +255,8 @@ class XmlMappingDriverTest extends MappingDriverTestCase
         $class->initializeReflection(new RuntimeReflectionService());
         $driver->loadMetadataForClass(GH7141Article::class, $class);
 
-        self::assertEquals(
-            Criteria::ASC,
+        self::assertSame(
+            'ASC',
             $class->getMetadataValue('associationMappings')['tags']->orderBy['position'],
         );
     }
@@ -270,8 +269,8 @@ class XmlMappingDriverTest extends MappingDriverTestCase
         $driver = $this->loadDriver();
         $driver->loadMetadataForClass(GH7316Article::class, $class);
 
-        self::assertEquals(
-            Criteria::ASC,
+        self::assertSame(
+            'ASC',
             $class->getMetadataValue('associationMappings')['tags']->orderBy['position'],
         );
     }

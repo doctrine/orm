@@ -10,8 +10,11 @@ use Doctrine\DBAL\Schema\Index as DbalIndex;
 use Doctrine\DBAL\Schema\Index\IndexedColumn;
 use Doctrine\DBAL\Schema\Index\IndexType;
 use Doctrine\DBAL\Schema\Name\UnqualifiedName;
+use Doctrine\DBAL\Schema\PrimaryKeyConstraint;
 use Doctrine\DBAL\Schema\PrimaryKeyConstraintEditor;
 use Doctrine\DBAL\Schema\Table as DbalTable;
+use Doctrine\DBAL\Types\EnumType;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
@@ -45,6 +48,7 @@ use Doctrine\Tests\Models\Enums\Card;
 use Doctrine\Tests\Models\Enums\Suit;
 use Doctrine\Tests\Models\Forum\ForumAvatar;
 use Doctrine\Tests\Models\Forum\ForumUser;
+use Doctrine\Tests\Models\GH10288\GH10288People;
 use Doctrine\Tests\Models\NullDefault\NullDefaultColumn;
 use Doctrine\Tests\OrmTestCase;
 use PHPUnit\Framework\Attributes\Group;
@@ -271,6 +275,38 @@ class SchemaToolTest extends OrmTestCase
         self::assertEquals(255, $column->getLength());
     }
 
+    public function testSetDiscriminatorColumnWithEnumType(): void
+    {
+        if (! class_exists(EnumType::class)) {
+            self::markTestSkipped('Test valid for doctrine/dbal versions with EnumType only.');
+        }
+
+        $em         = $this->getTestEntityManager();
+        $schemaTool = new SchemaTool($em);
+        $metadata   = $em->getClassMetadata(FirstEntity::class);
+
+        $metadata->setInheritanceType(ClassMetadata::INHERITANCE_TYPE_SINGLE_TABLE);
+        $metadata->setDiscriminatorColumn([
+            'name' => 'discriminator',
+            'type' => Types::ENUM,
+            'enumType' => GH10288People::class,
+        ]);
+
+        $schema = $schemaTool->getSchemaFromMetadata([$metadata]);
+
+        self::assertTrue($schema->hasTable('first_entity'));
+        $table = $schema->getTable('first_entity');
+
+        self::assertTrue($table->hasColumn('discriminator'));
+        $column = $table->getColumn('discriminator');
+        self::assertEquals(GH10288People::class, $column->getPlatformOption('enumType'));
+        self::assertEquals([0 => 'boss', 1 => 'employee'], $column->getValues());
+
+        $this->expectException(MappingException::class);
+        $this->expectExceptionMessage("The entries 'user' in the discriminator map of class '" . FirstEntity::class . "' do not correspond to enum cases of '" . GH10288People::class . "'.");
+        $metadata->setDiscriminatorMap(['user' => CmsUser::class, 'employee' => CmsEmployee::class]);
+    }
+
     public function testDerivedCompositeKey(): void
     {
         $em         = $this->getTestEntityManager();
@@ -430,6 +466,41 @@ class SchemaToolTest extends OrmTestCase
         }
 
         self::assertSame(['field', 'anotherField'], self::getIndexedColumns($tableIndex));
+    }
+
+    public function testQuotedIdentifiers(): void
+    {
+        $em         = $this->getTestEntityManager();
+        $schemaTool = new SchemaTool($em);
+        $classes    = [$em->getClassMetadata(QuotedEntity::class)];
+
+        $schema = $schemaTool->getSchemaFromMetadata($classes);
+
+        self::assertTrue($schema->hasTable('quoted-table'), 'Table quoted-table should exist.');
+
+        $table = $schema->getTable('quoted-table');
+
+        self::assertTrue($table->hasIndex('IDX_AA2790FB50D14D90'));
+
+        // DBAL < 4.3
+        if (! class_exists(PrimaryKeyConstraint::class)) {
+            self::assertTrue($table->isQuoted(), 'The table name must be quoted.');
+            self::assertTrue($table->hasIndex('primary'), 'Table should have a primary key.');
+
+            return;
+        }
+
+        $objectName = $table->getObjectName();
+        self::assertTrue($objectName->getUnqualifiedName()->isQuoted());
+        self::assertSame('quoted-table', $objectName->getUnqualifiedName()->getValue());
+
+        $primaryKey = $table->getPrimaryKeyConstraint();
+        self::assertNotNull($primaryKey);
+        self::assertCount(1, $primaryKey->getColumnNames());
+
+        [$pkColumn] = $primaryKey->getColumnNames();
+        self::assertTrue($pkColumn->getIdentifier()->isQuoted());
+        self::assertSame('quoted-id', $pkColumn->getIdentifier()->getValue());
     }
 
     /** @return string[] */
@@ -673,4 +744,17 @@ class IncorrectUniqueConstraintByFieldEntity
             ],
         );
     }
+}
+
+#[Entity]
+#[Table(name: '`quoted-table`')]
+#[Index(columns: ['`quoted-name`'])]
+class QuotedEntity
+{
+    #[Id]
+    #[Column(name: '`quoted-id`')]
+    public int $id = 0;
+
+    #[Column(name: '`quoted-name`')]
+    public string $name = '';
 }

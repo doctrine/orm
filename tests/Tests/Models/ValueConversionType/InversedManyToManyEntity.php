@@ -21,8 +21,12 @@ class InversedManyToManyEntity
     #[Id]
     public $id1;
 
+    /** @var string */
+    #[Column(type: 'rot13', length: 255, nullable: true)]
+    public $field = null;
+
     /** @phpstan-var Collection<int, OwningManyToManyEntity> */
-    #[ManyToMany(targetEntity: 'OwningManyToManyEntity', mappedBy: 'associatedEntities')]
+    #[ManyToMany(targetEntity: OwningManyToManyEntity::class, mappedBy: 'associatedEntities')]
     public $associatedEntities;
 
     public function __construct()
