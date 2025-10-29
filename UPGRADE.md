@@ -1,3 +1,11 @@
+Note about upgrading: Doctrine uses static and runtime mechanisms to raise
+awareness about deprecated code.
+
+- Use of `@deprecated` docblock that is detected by IDEs (like PHPStorm) or
+  Static Analysis tools (like Psalm, phpstan)
+- Use of our low-overhead runtime deprecation API, details:
+  https://github.com/doctrine/deprecations/
+
 # Upgrade to 4.0
 
 ## BC BREAK: throw on `nullable` on columns that end up being used in a primary key
@@ -123,6 +131,28 @@ The properties `$indexes` and `$uniqueConstraints` have been removed since they 
 The preferred way of defining indices and unique constraints is by
 using the `\Doctrine\ORM\Mapping\UniqueConstraint` and `\Doctrine\ORM\Mapping\Index` attributes.
 
+# Upgrade to 3.x General Notes
+
+We recommend you upgrade to DBAL 3 first before upgrading to ORM 3. See
+the DBAL upgrade docs: https://github.com/doctrine/dbal/blob/3.10.x/UPGRADE.md
+
+Rather than doing several major upgrades at once, we recommend you do the following:
+
+- upgrade to DBAL 3
+- deploy and monitor
+- upgrade to ORM 3
+- deploy and monitor
+- upgrade to DBAL 4
+- deploy and monitor
+
+If you are using Symfony, the recommended minimal Doctrine Bundle version is 2.15
+to run with ORM 3.
+
+At this point, we recommend upgrading to PHP 8.4 first and then directly from
+ORM 2.19 to 3.5 and up so that you can skip the lazy ghost proxy generation
+and directly start using native lazy objects.
+>>>>>>> origin/3.6.x
+
 # Upgrade to 3.6
 
 ## Deprecate specifying `nullable` on columns that end up being used in a primary key
@@ -163,7 +193,17 @@ Using `Doctrine\ORM\QueryBuilder::add('join', ...)` with a list of join parts
 is deprecated in favor of using an associative array of join parts with the
 root alias as key.
 
+## Deprecate using the `WITH` keyword for arbitrary DQL joins
+
+Using the `WITH` keyword to specify the condition for an arbitrary DQL join is
+deprecated in favor of using the `ON` keyword (similar to the SQL syntax for
+joins).
+The `WITH` keyword is now meant to be used only for filtering conditions in
+association joins.
+
 # Upgrade to 3.5
+
+See the General notes to upgrading to 3.x versions above.
 
 ## Deprecate not using native lazy objects on PHP 8.4+
 
@@ -218,6 +258,8 @@ decide to remove it before it is used too widely.
 
 # Upgrade to 3.4
 
+See the General notes to upgrading to 3.x versions above.
+
 ## Discriminator Map class duplicates
 
 Using the same class several times in a discriminator map is deprecated.
@@ -238,6 +280,8 @@ Companion accessor methods are deprecated as well.
 
 # Upgrade to 3.3
 
+See the General notes to upgrading to 3.x versions above.
+
 ## Deprecate `DatabaseDriver`
 
 The class `Doctrine\ORM\Mapping\Driver\DatabaseDriver` is deprecated without replacement.
@@ -253,6 +297,8 @@ method. Details can be found at https://github.com/doctrine/orm/pull/11188.
 
 
 # Upgrade to 3.2
+
+See the General notes to upgrading to 3.x versions above.
 
 ## Deprecate the `NotSupported` exception
 
@@ -280,6 +326,8 @@ using the `\Doctrine\ORM\Mapping\UniqueConstraint` and `\Doctrine\ORM\Mapping\In
 
 # Upgrade to 3.1
 
+See the General notes to upgrading to 3.x versions above.
+
 ## Deprecate `Doctrine\ORM\Mapping\ReflectionEnumProperty`
 
 This class is deprecated and will be removed in 4.0.
@@ -302,6 +350,8 @@ Using array access on instances of the following classes is deprecated:
 - `Doctrine\ORM\Mapping\JoinTableMapping`
 
 # Upgrade to 3.0
+
+See the General notes to upgrading to 3.x versions above.
 
 ## BC BREAK: Calling `ClassMetadata::getAssociationMappedByTargetField()` with the owning side of an association now throws an exception
 
@@ -328,6 +378,9 @@ so `$targetEntity` is a first argument now. This change affects only non-named a
 When using the `AUTO` strategy to let Doctrine determine the identity generation mechanism for
 an entity, and when using `doctrine/dbal` 4, PostgreSQL now uses `IDENTITY`
 instead of `SEQUENCE` or `SERIAL`.
+
+There are three ways to handle this change.
+
 * If you want to upgrade your existing tables to identity columns, you will need to follow [migration to identity columns on PostgreSQL](https://www.doctrine-project.org/projects/doctrine-dbal/en/4.0/how-to/postgresql-identity-migration.html)
 * If you want to keep using SQL sequences, you need to configure the ORM this way:
 ```php
@@ -340,6 +393,27 @@ $configuration->setIdentityGenerationPreferences([
     PostgreSQLPlatform::CLASS => ClassMetadata::GENERATOR_TYPE_SEQUENCE,
 ]);
 ```
+* You can change individual entities to use the `SEQUENCE` strategy instead of `AUTO`:
+```php
+
+diff --git a/src/Entity/Example.php b/src/Entity/Example.php
+index 28be8df378..3b7d61bda6 100644
+--- a/src/Entity/Example.php
++++ b/src/Entity/Example.php
+@@ -38,7 +38,7 @@ class Example
+
+     #[ORM\Id]
+     #[ORM\Column(type: 'integer')]
+-    #[ORM\GeneratedValue(strategy: 'AUTO')]
++    #[ORM\GeneratedValue(strategy: 'SEQUENCE')]
+     private int $id;
+
+     #[Assert\Length(max: 255)]
+```
+The later two options require a small database migration that will remove the default
+expression fetching the next value from the sequence. It's not strictly necessary to
+do this migration because the code will work anyway. A benefit of this approach is
+that you can just make and roll out the code changes first and then migrate the database later.
 
 ## BC BREAK: Throw exceptions when using illegal attributes on Embeddable
 

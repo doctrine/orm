@@ -41,9 +41,11 @@ use Doctrine\ORM\Utility\PersisterHelper;
 use LengthException;
 
 use function array_combine;
+use function array_diff_key;
+use function array_fill;
+use function array_flip;
 use function array_keys;
 use function array_map;
-use function array_search;
 use function array_unique;
 use function array_values;
 use function assert;
@@ -914,6 +916,29 @@ class BasicEntityPersister implements EntityPersister
                 continue;
             }
 
+            if ($operator === Comparison::IN || $operator === Comparison::NIN) {
+                if (! is_array($value)) {
+                    $value = [$value];
+                }
+
+                foreach ($value as $item) {
+                    if ($item === null) {
+                        /*
+                         * Compare this to how \Doctrine\ORM\Persisters\Entity\BasicEntityPersister::getSelectConditionStatementSQL
+                         * creates the "[NOT] IN (...)" expression - for NULL values, it does _not_ insert a placeholder in the
+                         * SQL and instead adds an extra ... OR ... IS NULL condition. So we need to skip NULL values here as
+                         * well to create a parameters list that matches the SQL.
+                         */
+                        continue;
+                    }
+
+                    $sqlParams = [...$sqlParams, ...PersisterHelper::convertToParameterValue($item, $this->em)];
+                    $sqlTypes  = [...$sqlTypes, ...PersisterHelper::inferParameterTypes($field, $item, $this->class, $this->em)];
+                }
+
+                continue;
+            }
+
             $sqlParams = [...$sqlParams, ...PersisterHelper::convertToParameterValue($value, $this->em)];
             $sqlTypes  = [...$sqlTypes, ...PersisterHelper::inferParameterTypes($field, $value, $this->class, $this->em)];
         }
@@ -1601,6 +1626,8 @@ class BasicEntityPersister implements EntityPersister
         AssociationMapping|null $assoc = null,
         string|null $comparison = null,
     ): string {
+        $comparison ??= (is_array($value) ? Comparison::IN : Comparison::EQ);
+
         $selectedColumns = [];
         $columns         = $this->getSelectConditionStatementColumnSQL($field, $assoc);
 
@@ -1620,46 +1647,45 @@ class BasicEntityPersister implements EntityPersister
                 $placeholder = $type->convertToDatabaseValueSQL($placeholder, $this->platform);
             }
 
-            if ($comparison !== null) {
-                // special case null value handling
-                if (($comparison === Comparison::EQ || $comparison === Comparison::IS) && $value === null) {
-                    $selectedColumns[] = $column . ' IS NULL';
-
-                    continue;
-                }
-
-                if ($comparison === Comparison::NEQ && $value === null) {
-                    $selectedColumns[] = $column . ' IS NOT NULL';
-
-                    continue;
-                }
-
-                $selectedColumns[] = $column . ' ' . sprintf(self::$comparisonMap[$comparison], $placeholder);
+            // special case null value handling
+            if (($comparison === Comparison::EQ || $comparison === Comparison::IS) && $value === null) {
+                $selectedColumns[] = $column . ' IS NULL';
 
                 continue;
             }
 
-            if (is_array($value)) {
-                $in = sprintf('%s IN (%s)', $column, $placeholder);
+            if ($comparison === Comparison::NEQ && $value === null) {
+                $selectedColumns[] = $column . ' IS NOT NULL';
 
-                if (array_search(null, $value, true) !== false) {
-                    $selectedColumns[] = sprintf('(%s OR %s IS NULL)', $in, $column);
+                continue;
+            }
 
-                    continue;
+            if ($comparison === Comparison::IN || $comparison === Comparison::NIN) {
+                if (! is_array($value)) {
+                    $value = [$value];
                 }
 
-                $selectedColumns[] = $in;
+                $nullKeys      = array_keys($value, null, true);
+                $nonNullValues = array_diff_key($value, array_flip($nullKeys));
+
+                $placeholders = implode(', ', array_fill(0, count($nonNullValues), $placeholder));
+
+                $in = $column . ' ' . sprintf(self::$comparisonMap[$comparison], $placeholders);
+
+                if ($nullKeys) {
+                    if ($nonNullValues) {
+                        $selectedColumns[] = sprintf('(%s OR %s IS NULL)', $in, $column);
+                    } else {
+                        $selectedColumns[] = $column . ' IS NULL';
+                    }
+                } else {
+                    $selectedColumns[] = $in;
+                }
 
                 continue;
             }
 
-            if ($value === null) {
-                $selectedColumns[] = sprintf('%s IS NULL', $column);
-
-                continue;
-            }
-
-            $selectedColumns[] = sprintf('%s = %s', $column, $placeholder);
+            $selectedColumns[] = $column . ' ' . sprintf(self::$comparisonMap[$comparison], $placeholder);
         }
 
         return implode(' AND ', $selectedColumns);
@@ -1849,6 +1875,16 @@ class BasicEntityPersister implements EntityPersister
         foreach ($criteria as $field => $value) {
             if ($value === null) {
                 continue; // skip null values.
+            }
+
+            if (is_array($value)) {
+                $nonNullValues = array_diff_key($value, array_flip(array_keys($value, null, true)));
+                foreach ($nonNullValues as $item) {
+                    $types  = [...$types, ...PersisterHelper::inferParameterTypes($field, $item, $this->class, $this->em)];
+                    $params = [...$params, ...PersisterHelper::convertToParameterValue($item, $this->em)];
+                }
+
+                continue;
             }
 
             $types  = [...$types, ...PersisterHelper::inferParameterTypes($field, $value, $this->class, $this->em)];

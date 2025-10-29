@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional;
 
 use Closure;
+use Doctrine\Deprecations\PHPUnit\VerifyDeprecations;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\Exec\FinalizedSelectExecutor;
 use Doctrine\ORM\Query\Exec\PreparedExecutorFinalizer;
@@ -14,6 +15,7 @@ use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use Generator;
 use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\IgnoreDeprecations;
 use ReflectionMethod;
 use Symfony\Component\VarExporter\Instantiator;
 use Symfony\Component\VarExporter\VarExporter;
@@ -25,6 +27,8 @@ use function unserialize;
 
 class ParserResultSerializationTest extends OrmFunctionalTestCase
 {
+    use VerifyDeprecations;
+
     protected function setUp(): void
     {
         $this->useModelSet('company');
@@ -70,6 +74,7 @@ class ParserResultSerializationTest extends OrmFunctionalTestCase
     }
 
     #[DataProvider('provideSerializedSingleSelectResults')]
+    #[IgnoreDeprecations]
     public function testUnserializeSingleSelectResult(string $serialized): void
     {
         $unserialized = unserialize($serialized);
@@ -77,6 +82,8 @@ class ParserResultSerializationTest extends OrmFunctionalTestCase
         $this->assertInstanceOf(ParserResult::class, $unserialized);
         $this->assertInstanceOf(ResultSetMapping::class, $unserialized->getResultSetMapping());
         $this->assertEquals(['name' => [0]], $unserialized->getParameterMappings());
+
+        $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/pull/11188');
         $this->assertInstanceOf(SingleSelectExecutor::class, $unserialized->getSqlExecutor());
         $this->assertIsString($unserialized->getSqlExecutor()->getSqlStatements());
     }

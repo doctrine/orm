@@ -39,7 +39,7 @@ final class GH6362Test extends OrmFunctionalTestCase
      * SELECT a as base, b, c, d
      * FROM Start a
      * LEFT JOIN a.bases b
-     * LEFT JOIN Child c WITH b.id = c.id
+     * LEFT JOIN Child c ON b.id = c.id
      * LEFT JOIN c.joins d
      */
     #[Group('GH-6362')]

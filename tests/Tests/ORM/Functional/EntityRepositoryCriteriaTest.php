@@ -66,7 +66,7 @@ class EntityRepositoryCriteriaTest extends OrmFunctionalTestCase
         $this->loadFixture();
 
         $repository = $this->_em->getRepository(DateTimeModel::class);
-        $dates      = $repository->matching(new Criteria(
+        $dates      = $repository->matching(Criteria::create(true)->where(
             Criteria::expr()->lte('datetime', new DateTime('today')),
         ));
 
@@ -98,7 +98,7 @@ class EntityRepositoryCriteriaTest extends OrmFunctionalTestCase
         $this->loadNullFieldFixtures();
         $repository = $this->_em->getRepository(DateTimeModel::class);
 
-        $dates = $repository->matching(new Criteria(
+        $dates = $repository->matching(Criteria::create(true)->where(
             Criteria::expr()->isNull('time'),
         ));
 
@@ -110,7 +110,7 @@ class EntityRepositoryCriteriaTest extends OrmFunctionalTestCase
         $this->loadNullFieldFixtures();
         $repository = $this->_em->getRepository(DateTimeModel::class);
 
-        $dates = $repository->matching(new Criteria(
+        $dates = $repository->matching(Criteria::create(true)->where(
             Criteria::expr()->eq('time', null),
         ));
 
@@ -122,7 +122,7 @@ class EntityRepositoryCriteriaTest extends OrmFunctionalTestCase
         $this->loadNullFieldFixtures();
         $repository = $this->_em->getRepository(DateTimeModel::class);
 
-        $dates = $repository->matching(new Criteria(
+        $dates = $repository->matching(Criteria::create(true)->where(
             Criteria::expr()->neq('time', null),
         ));
 
@@ -134,14 +134,14 @@ class EntityRepositoryCriteriaTest extends OrmFunctionalTestCase
         $this->loadFixture();
         $repository = $this->_em->getRepository(DateTimeModel::class);
 
-        $dates = $repository->matching(new Criteria());
+        $dates = $repository->matching(Criteria::create(true));
 
         self::assertFalse($dates->isInitialized());
         self::assertCount(3, $dates);
         self::assertFalse($dates->isInitialized());
 
         // Test it can work even with a constraint
-        $dates = $repository->matching(new Criteria(
+        $dates = $repository->matching(Criteria::create(true)->where(
             Criteria::expr()->lte('datetime', new DateTime('today')),
         ));
 
@@ -169,7 +169,7 @@ class EntityRepositoryCriteriaTest extends OrmFunctionalTestCase
 
         $this->_em->clear();
 
-        $criteria = new Criteria();
+        $criteria = Criteria::create(true);
         $criteria->andWhere($criteria->expr()->contains('content', 'Criteria'));
 
         $user   = $this->_em->find(User::class, $user->id);

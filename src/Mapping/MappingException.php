@@ -330,6 +330,24 @@ class MappingException extends PersistenceMappingException implements ORMExcepti
     }
 
     /**
+     * Returns an exception that indicates that discriminator entries used in a discriminator map
+     * does not exist in the backed enum provided by enumType option.
+     *
+     * @param array<int,int|string> $entries     The discriminator entries that could not be found.
+     * @param string                $owningClass The class that declares the discriminator map.
+     * @param string                $enumType    The enum that entries were checked against.
+     */
+    public static function invalidEntriesInDiscriminatorMap(array $entries, string $owningClass, string $enumType): self
+    {
+        return new self(sprintf(
+            "The entries %s in the discriminator map of class '%s' do not correspond to enum cases of '%s'.",
+            implode(', ', array_map(static fn ($entry): string => sprintf("'%s'", $entry), $entries)),
+            $owningClass,
+            $enumType,
+        ));
+    }
+
+    /**
      * Returns an exception that indicates that a class used in a discriminator map does not exist.
      * An example would be an outdated (maybe renamed) classname.
      *

@@ -17,7 +17,6 @@ use Doctrine\ORM\Cache\TimestampCacheKey;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\MappingException as ORMMappingException;
 use Doctrine\ORM\Query\Parameter;
-use Doctrine\ORM\Query\QueryException;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\Persistence\Mapping\MappingException;
 use LogicException;
@@ -862,10 +861,6 @@ abstract class AbstractQuery
         $rsm = $this->getResultSetMapping();
         if ($rsm === null) {
             throw new LogicException('Uninitialized result set mapping.');
-        }
-
-        if ($rsm->isMixed && count($rsm->scalarMappings) > 0) {
-            throw QueryException::iterateWithMixedResultNotAllowed();
         }
 
         $stmt = $this->_doExecute();

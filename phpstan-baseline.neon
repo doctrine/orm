@@ -2017,12 +2017,6 @@ parameters:
 			path: src/Persisters/Entity/BasicEntityPersister.php
 
 		-
-			message: '#^Strict comparison using \=\=\= between string and null will always evaluate to false\.$#'
-			identifier: identical.alwaysFalse
-			count: 1
-			path: src/Persisters/Entity/BasicEntityPersister.php
-
-		-
 			message: '#^Method Doctrine\\ORM\\Persisters\\Entity\\CachedPersisterContext\:\:__construct\(\) has parameter \$class with generic interface Doctrine\\Persistence\\Mapping\\ClassMetadata but does not specify its types\: T$#'
 			identifier: missingType.generics
 			count: 1
@@ -2321,12 +2315,6 @@ parameters:
 			identifier: property.phpDocType
 			count: 1
 			path: src/Query/Expr/Select.php
-
-		-
-			message: '#^Property Doctrine\\ORM\\Query\\Filter\\SQLFilter\:\:\$parameters \(array\<string, array\{type\: string, value\: mixed, is_list\: bool\}\>\) does not accept non\-empty\-array\<string, array\{value\: mixed, type\: Doctrine\\DBAL\\ArrayParameterType\|Doctrine\\DBAL\\ParameterType\|string, is_list\: bool\}\>\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: src/Query/Filter/SQLFilter.php
 
 		-
 			message: '#^@readonly property cannot have a default value\.$#'
@@ -2737,12 +2725,6 @@ parameters:
 			path: src/Tools/ResolveTargetEntityListener.php
 
 		-
-			message: '#^Parameter \#1 \$className of method Doctrine\\Persistence\\Mapping\\AbstractClassMetadataFactory\<Doctrine\\ORM\\Mapping\\ClassMetadata\>\:\:setMetadataFor\(\) expects class\-string, \(int\|string\) given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Tools/ResolveTargetEntityListener.php
-
-		-
 			message: '#^Access to an undefined property Doctrine\\ORM\\Mapping\\ManyToManyInverseSideMapping\|Doctrine\\ORM\\Mapping\\ManyToManyOwningSideMapping\|Doctrine\\ORM\\Mapping\\ManyToOneAssociationMapping\|Doctrine\\ORM\\Mapping\\OneToManyAssociationMapping\|Doctrine\\ORM\\Mapping\\OneToOneInverseSideMapping\|Doctrine\\ORM\\Mapping\\OneToOneOwningSideMapping\:\:\$joinColumns\.$#'
 			identifier: property.notFound
 			count: 3
@@ -2956,24 +2938,6 @@ parameters:
 			path: src/Tools/SchemaTool.php
 
 		-
-			message: '#^Parameter \#1 \$columnNames of method Doctrine\\DBAL\\Schema\\Table\:\:setPrimaryKey\(\) expects non\-empty\-list\<string\>, array\<string\> given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Tools/SchemaTool.php
-
-		-
-			message: '#^Parameter \#1 \$value of static method Doctrine\\DBAL\\Schema\\Name\\Identifier\:\:unquoted\(\) expects non\-empty\-string, string given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Tools/SchemaTool.php
-
-		-
-			message: '#^Parameter \#2 \$columnNames of class Doctrine\\DBAL\\Schema\\PrimaryKeyConstraint constructor expects non\-empty\-list\<Doctrine\\DBAL\\Schema\\Name\\UnqualifiedName\>, list\<Doctrine\\DBAL\\Schema\\Name\\UnqualifiedName\> given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Tools/SchemaTool.php
-
-		-
 			message: '#^Parameter \#2 \$columns of class Doctrine\\DBAL\\Schema\\Index constructor expects non\-empty\-list\<string\>, list\<string\> given\.$#'
 			identifier: argument.type
 			count: 1
@@ -2981,6 +2945,18 @@ parameters:
 
 		-
 			message: '#^Parameter \#2 \$localColumnNames of method Doctrine\\DBAL\\Schema\\Table\:\:addForeignKeyConstraint\(\) expects non\-empty\-list\<string\>, list\<string\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Tools/SchemaTool.php
+
+		-
+			message: '#^Parameter \#2 \$primaryKeyColumns of method Doctrine\\ORM\\Tools\\SchemaTool\:\:addPrimaryKeyConstraint\(\) expects non\-empty\-array\<non\-empty\-string\>, list\<string\> given\.$#'
+			identifier: argument.type
+			count: 2
+			path: src/Tools/SchemaTool.php
+
+		-
+			message: '#^Parameter \#2 \$primaryKeyColumns of method Doctrine\\ORM\\Tools\\SchemaTool\:\:addPrimaryKeyConstraint\(\) expects non\-empty\-array\<non\-empty\-string\>, non\-empty\-list\<string\> given\.$#'
 			identifier: argument.type
 			count: 1
 			path: src/Tools/SchemaTool.php
