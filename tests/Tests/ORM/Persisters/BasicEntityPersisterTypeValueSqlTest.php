@@ -153,6 +153,15 @@ class BasicEntityPersisterTypeValueSqlTest extends OrmTestCase
         );
     }
 
+    /** @group GH12254 */
+    public function testSelectConditionStatementWithValuesIsEmptyArray(): void
+    {
+        self::assertEquals(
+            't0.id IN (NULL)',
+            $this->persister->getSelectConditionStatementSQL('id', [])
+        );
+    }
+
     public function testCountCondition(): void
     {
         $persister = new BasicEntityPersister($this->entityManager, $this->entityManager->getClassMetadata(NonAlphaColumnsEntity::class));

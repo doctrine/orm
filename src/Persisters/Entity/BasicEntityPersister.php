@@ -1753,6 +1753,11 @@ class BasicEntityPersister implements EntityPersister
                     $value = [$value];
                 }
 
+                if (empty($value)) {
+                    $selectedColumns[] = $column . ' IN (NULL)';
+                    continue;
+                }
+
                 $nullKeys      = array_keys($value, null, true);
                 $nonNullValues = array_diff_key($value, array_flip($nullKeys));
 
@@ -1760,6 +1765,7 @@ class BasicEntityPersister implements EntityPersister
 
                 $in = $column . ' ' . sprintf(self::$comparisonMap[$comparison], $placeholders);
 
+                // @phpstan-ignore if.alwaysTrue (false positive)
                 if ($nullKeys) {
                     if ($nonNullValues) {
                         $selectedColumns[] = sprintf('(%s OR %s IS NULL)', $in, $column);
