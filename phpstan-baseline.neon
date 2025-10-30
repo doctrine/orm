@@ -1057,6 +1057,12 @@ parameters:
 			path: src/Internal/HydrationCompleteHandler.php
 
 		-
+			message: '#^Offset int\|null might not exist on array\<int, object\>\.$#'
+			identifier: offsetAccess.notFound
+			count: 1
+			path: src/Internal/StronglyConnectedComponents.php
+
+		-
 			message: '#^Property Doctrine\\ORM\\Internal\\StronglyConnectedComponents\:\:\$representingNodes \(array\<int, object\>\) does not accept array\<int\|string, object\>\.$#'
 			identifier: assign.propertyType
 			count: 1
@@ -3594,7 +3600,7 @@ parameters:
 		-
 			message: '#^Property Doctrine\\ORM\\Query\\Filter\\SQLFilter\:\:\$parameters \(array\<string, array\{type\: string, value\: mixed, is_list\: bool\}\>\) does not accept non\-empty\-array\<string, array\{value\: mixed, type\: int\|string, is_list\: bool\}\>\.$#'
 			identifier: assign.propertyType
-			count: 1
+			count: 2
 			path: src/Query/Filter/SQLFilter.php
 
 		-
@@ -4174,12 +4180,6 @@ parameters:
 			path: src/Tools/Console/Command/ConvertMappingCommand.php
 
 		-
-			message: '#^Parameter \#2 \$destPath of method Doctrine\\ORM\\Tools\\Console\\Command\\ConvertMappingCommand\:\:getExporter\(\) expects string, string\|false given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Tools/Console/Command/ConvertMappingCommand.php
-
-		-
 			message: '#^Access to an undefined property Doctrine\\Persistence\\Mapping\\ClassMetadata\:\:\$name\.$#'
 			identifier: property.notFound
 			count: 1
@@ -4204,12 +4204,6 @@ parameters:
 			path: src/Tools/Console/Command/GenerateEntitiesCommand.php
 
 		-
-			message: '#^Parameter \#2 \$outputDirectory of method Doctrine\\ORM\\Tools\\EntityGenerator\:\:generate\(\) expects string, string\|false given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Tools/Console/Command/GenerateEntitiesCommand.php
-
-		-
 			message: '#^Access to an undefined property Doctrine\\Persistence\\Mapping\\ClassMetadata\:\:\$name\.$#'
 			identifier: property.notFound
 			count: 1
@@ -4228,12 +4222,6 @@ parameters:
 			path: src/Tools/Console/Command/GenerateProxiesCommand.php
 
 		-
-			message: '#^Parameter \#2 \$proxyDir of method Doctrine\\ORM\\Proxy\\ProxyFactory\:\:generateProxyClasses\(\) expects string\|null, string\|false given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Tools/Console/Command/GenerateProxiesCommand.php
-
-		-
 			message: '#^Access to an undefined property Doctrine\\Persistence\\Mapping\\ClassMetadata\:\:\$customRepositoryClassName\.$#'
 			identifier: property.notFound
 			count: 1
@@ -4247,12 +4235,6 @@ parameters:
 
 		-
 			message: '#^Parameter \#1 \$filename of function is_writable expects string, string\|false given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Tools/Console/Command/GenerateRepositoriesCommand.php
-
-		-
-			message: '#^Parameter \#2 \$outputDirectory of method Doctrine\\ORM\\Tools\\EntityRepositoryGenerator\:\:writeEntityRepositoryClass\(\) expects string, string\|false given\.$#'
 			identifier: argument.type
 			count: 1
 			path: src/Tools/Console/Command/GenerateRepositoriesCommand.php

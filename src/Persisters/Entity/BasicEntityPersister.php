@@ -1765,7 +1765,6 @@ class BasicEntityPersister implements EntityPersister
 
                 $in = $column . ' ' . sprintf(self::$comparisonMap[$comparison], $placeholders);
 
-                // @phpstan-ignore if.alwaysTrue (false positive)
                 if ($nullKeys) {
                     if ($nonNullValues) {
                         $selectedColumns[] = sprintf('(%s OR %s IS NULL)', $in, $column);
