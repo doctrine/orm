@@ -32,6 +32,13 @@ class GH12254Test extends OrmFunctionalTestCase
         $result    = $this->_em->getRepository(GH12254EntityA::class)->findBy(['id' => []]);
         $this->assertEmpty($result);
     }
+
+    public function testFindByInNullableField(): void
+    {
+        $this->_em = $this->getEntityManager();
+        $result    = $this->_em->getRepository(GH12254EntityA::class)->findBy(['name' => []]);
+        $this->assertEmpty($result);
+    }
 }
 
 /**
@@ -46,4 +53,10 @@ class GH12254EntityA
      * @var int
      */
     public $id;
+
+    /**
+     * @Column(type="string", nullable=true)
+     * @var string|null
+     */
+    public $name = null;
 }
