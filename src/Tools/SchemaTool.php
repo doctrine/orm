@@ -9,6 +9,10 @@ use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Schema\AbstractAsset;
 use Doctrine\DBAL\Schema\AbstractSchemaManager;
 use Doctrine\DBAL\Schema\ComparatorConfig;
+use Doctrine\DBAL\Schema\DefaultExpression;
+use Doctrine\DBAL\Schema\DefaultExpression\CurrentDate;
+use Doctrine\DBAL\Schema\DefaultExpression\CurrentTime;
+use Doctrine\DBAL\Schema\DefaultExpression\CurrentTimestamp;
 use Doctrine\DBAL\Schema\ForeignKeyConstraintEditor;
 use Doctrine\DBAL\Schema\Index;
 use Doctrine\DBAL\Schema\Index\IndexedColumn;
@@ -18,6 +22,7 @@ use Doctrine\DBAL\Schema\NamedObject;
 use Doctrine\DBAL\Schema\PrimaryKeyConstraint;
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\DBAL\Schema\Table;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\AssociationMapping;
 use Doctrine\ORM\Mapping\ClassMetadata;
@@ -46,6 +51,7 @@ use function count;
 use function current;
 use function implode;
 use function in_array;
+use function interface_exists;
 use function is_numeric;
 use function method_exists;
 use function preg_match;
@@ -488,6 +494,37 @@ class SchemaTool
 
         // the 'default' option can be overwritten here
         $options = $this->gatherColumnOptions($mapping) + $options;
+
+        if (isset($options['default']) && interface_exists(DefaultExpression::class)) {
+            if (
+                in_array($mapping->type, [
+                    Types::DATETIME_MUTABLE,
+                    Types::DATETIME_IMMUTABLE,
+                    Types::DATETIMETZ_MUTABLE,
+                    Types::DATETIMETZ_IMMUTABLE,
+                ], true)
+                && $options['default'] === $this->platform->getCurrentTimestampSQL()
+            ) {
+                /** @phpstan-ignore class.notFound (if DefaultExpression exists, CurrentTimestamp exists as well) */
+                $options['default'] = new CurrentTimestamp();
+            }
+
+            if (
+                in_array($mapping->type, [Types::TIME_MUTABLE, Types::TIME_IMMUTABLE], true)
+                && $options['default'] === $this->platform->getCurrentTimeSQL()
+            ) {
+                /** @phpstan-ignore class.notFound (if DefaultExpression exists, CurrentTime exists as well) */
+                $options['default'] = new CurrentTime();
+            }
+
+            if (
+                in_array($mapping->type, [Types::DATE_MUTABLE, Types::DATE_IMMUTABLE], true)
+                && $options['default'] === $this->platform->getCurrentDateSQL()
+            ) {
+                /** @phpstan-ignore class.notFound (if DefaultExpression exists, CurrentDate exists as well) */
+                $options['default'] = new CurrentDate();
+            }
+        }
 
         if ($class->isIdGeneratorIdentity() && $class->getIdentifierFieldNames() === [$mapping->fieldName]) {
             $options['autoincrement'] = true;
