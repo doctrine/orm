@@ -129,7 +129,10 @@ class BasicEntityPersisterTypeValueSqlTest extends OrmTestCase
         self::assertEquals('test IS NOT NULL', $statement);
     }
 
-    /** @group DDC-3056 */
+    /**
+     * @group DDC-3056
+     * @group GH12254
+     */
     public function testSelectConditionStatementWithMultipleValuesContainingNull(): void
     {
         self::assertEquals(
@@ -150,6 +153,11 @@ class BasicEntityPersisterTypeValueSqlTest extends OrmTestCase
         self::assertEquals(
             '(t0.id IN (?, ?) OR t0.id IS NULL)',
             $this->persister->getSelectConditionStatementSQL('id', [123, null, 234])
+        );
+
+        self::assertEquals(
+            '1=0',
+            $this->persister->getSelectConditionStatementSQL('id', [])
         );
     }
 
