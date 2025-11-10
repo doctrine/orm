@@ -1754,7 +1754,7 @@ class BasicEntityPersister implements EntityPersister
                 }
 
                 if ($value === []) {
-                    $selectedColumns[] = $column . ' IN (NULL)';
+                    $selectedColumns[] = '1=0';
                     continue;
                 }
 
