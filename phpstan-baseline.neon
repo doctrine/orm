@@ -697,12 +697,6 @@ parameters:
 			path: src/Internal/Hydration/AbstractHydrator.php
 
 		-
-			message: '#^Method Doctrine\\ORM\\Internal\\Hydration\\AbstractHydrator\:\:gatherRowData\(\) should return array\{data\: array\<array\>, newObjects\?\: array\<array\{class\: ReflectionClass, args\: array, obj\: object\}\>, scalars\?\: array\} but returns array\{data\: array, newObjects\: array\<array\{class\: ReflectionClass\<object\>, args\: array, obj\?\: object\}\>, scalars\?\: non\-empty\-array\}\.$#'
-			identifier: return.type
-			count: 1
-			path: src/Internal/Hydration/AbstractHydrator.php
-
-		-
 			message: '#^Method Doctrine\\ORM\\Internal\\Hydration\\AbstractHydrator\:\:getClassMetadata\(\) return type with generic class Doctrine\\ORM\\Mapping\\ClassMetadata does not specify its types\: T$#'
 			identifier: missingType.generics
 			count: 1
@@ -821,6 +815,12 @@ parameters:
 			identifier: missingType.generics
 			count: 1
 			path: src/Internal/HydrationCompleteHandler.php
+
+		-
+			message: '#^Offset int\|null might not exist on array\<int, object\>\.$#'
+			identifier: offsetAccess.notFound
+			count: 1
+			path: src/Internal/StronglyConnectedComponents.php
 
 		-
 			message: '#^Property Doctrine\\ORM\\Internal\\StronglyConnectedComponents\:\:\$representingNodes \(array\<int, object\>\) does not accept array\<int\|string, object\>\.$#'
@@ -1535,6 +1535,12 @@ parameters:
 			identifier: argument.type
 			count: 1
 			path: src/Mapping/LegacyReflectionFields.php
+
+		-
+			message: '#^Strict comparison using \!\=\= between array\<string, string\> and null will always evaluate to true\.$#'
+			identifier: notIdentical.alwaysTrue
+			count: 1
+			path: src/Mapping/ManyToManyOwningSideMapping.php
 
 		-
 			message: '#^Method Doctrine\\ORM\\Mapping\\MappedSuperclass\:\:__construct\(\) has parameter \$repositoryClass with generic class Doctrine\\ORM\\EntityRepository but does not specify its types\: T$#'
@@ -2870,12 +2876,6 @@ parameters:
 
 		-
 			message: '#^Parameter \#1 \$filename of function is_writable expects string, string\|false given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Tools/Console/Command/GenerateProxiesCommand.php
-
-		-
-			message: '#^Parameter \#2 \$proxyDir of method Doctrine\\ORM\\Proxy\\ProxyFactory\:\:generateProxyClasses\(\) expects string\|null, string\|false given\.$#'
 			identifier: argument.type
 			count: 1
 			path: src/Tools/Console/Command/GenerateProxiesCommand.php

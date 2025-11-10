@@ -1668,6 +1668,11 @@ class BasicEntityPersister implements EntityPersister
                     $value = [$value];
                 }
 
+                if ($value === []) {
+                    $selectedColumns[] = '1=0';
+                    continue;
+                }
+
                 $nullKeys      = array_keys($value, null, true);
                 $nonNullValues = array_diff_key($value, array_flip($nullKeys));
 
