@@ -118,6 +118,13 @@ class QueryBuilder implements Stringable
     private int $boundCounter = 0;
 
     /**
+     * The hints to set on the query.
+     *
+     * @var array<string, string|int|bool|iterable<mixed>|object>
+     */
+    private array $hints = [];
+
+    /**
      * Initializes a new <tt>QueryBuilder</tt> that uses the given <tt>EntityManager</tt>.
      *
      * @param EntityManagerInterface $em The EntityManager to use.
@@ -208,6 +215,39 @@ class QueryBuilder implements Stringable
         return $this;
     }
 
+    /** @return array<string, string|int|bool|iterable<mixed>|object> */
+    public function getHints(): array
+    {
+        return $this->hints;
+    }
+
+    /**
+     * Gets the value of a query hint. If the hint name is not recognized, FALSE is returned.
+     *
+     * @return mixed The value of the hint or FALSE, if the hint name is not recognized.
+     */
+    public function getHint(string $name): mixed
+    {
+        return $this->hints[$name] ?? false;
+    }
+
+    public function hasHint(string $name): bool
+    {
+        return isset($this->hints[$name]);
+    }
+
+    /**
+     * Adds hints for the query.
+     *
+     * @return $this
+     */
+    public function setHint(string $name, mixed $value): static
+    {
+        $this->hints[$name] = $value;
+
+        return $this;
+    }
+
     /** @phpstan-return Cache::MODE_*|null */
     public function getCacheMode(): int|null
     {
@@ -286,6 +326,10 @@ class QueryBuilder implements Stringable
 
         if ($this->cacheRegion) {
             $query->setCacheRegion($this->cacheRegion);
+        }
+
+        foreach ($this->hints as $name => $value) {
+            $query->setHint($name, $value);
         }
 
         return $query;
