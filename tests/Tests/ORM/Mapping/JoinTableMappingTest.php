@@ -34,17 +34,4 @@ final class JoinTableMappingTest extends TestCase
         self::assertSame('bar', $resurrectedMapping->name);
         self::assertSame(['foo' => 'bar'], $resurrectedMapping->options);
     }
-
-    public function testConvertingItToAMappingArrayDoesNotContainNullableInformation(): void
-    {
-        $mapping = new JoinTableMapping('bar');
-
-        $mapping->joinColumns        = [new JoinColumnMapping('foo_id', 'id')];
-        $mapping->inverseJoinColumns = [new JoinColumnMapping('bar_id', 'id')];
-
-        $mappingArray = $mapping->toArray();
-        foreach ($mappingArray['joinColumns'] as $joinColumn) {
-            self::assertArrayNotHasKey('nullable', $joinColumn);
-        }
-    }
 }

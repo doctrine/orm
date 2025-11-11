@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Mapping\Driver;
 
+use Doctrine\Common\Collections\Criteria;
+use Doctrine\Common\Collections\Order;
 use Doctrine\ORM\Mapping\Builder\EntityListenerBuilder;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\MappingException;
@@ -19,6 +21,7 @@ use function assert;
 use function constant;
 use function count;
 use function defined;
+use function enum_exists;
 use function explode;
 use function extension_loaded;
 use function file_get_contents;
@@ -406,7 +409,10 @@ class XmlDriver extends FileDriver
                 if (isset($oneToManyElement->{'order-by'})) {
                     $orderBy = [];
                     foreach ($oneToManyElement->{'order-by'}->{'order-by-field'} ?? [] as $orderByField) {
-                        $orderBy[(string) $orderByField['name']] = (string) ($orderByField['direction'] ?? 'ASC');
+                        $orderBy[(string) $orderByField['name']] = isset($orderByField['direction'])
+                            ? (string) $orderByField['direction']
+                            // @phpstan-ignore classConstant.deprecated
+                            : (enum_exists(Order::class) ? Order::Ascending->value : Criteria::ASC);
                     }
 
                     $mapping['orderBy'] = $orderBy;
@@ -532,7 +538,10 @@ class XmlDriver extends FileDriver
                 if (isset($manyToManyElement->{'order-by'})) {
                     $orderBy = [];
                     foreach ($manyToManyElement->{'order-by'}->{'order-by-field'} ?? [] as $orderByField) {
-                        $orderBy[(string) $orderByField['name']] = (string) ($orderByField['direction'] ?? 'ASC');
+                        $orderBy[(string) $orderByField['name']] = isset($orderByField['direction'])
+                            ? (string) $orderByField['direction']
+                            // @phpstan-ignore classConstant.deprecated
+                            : (enum_exists(Order::class) ? Order::Ascending->value : Criteria::ASC);
                     }
 
                     $mapping['orderBy'] = $orderBy;

@@ -80,7 +80,7 @@ class MyEntity1
     public function __construct(
         #[Id]
         #[OneToOne(targetEntity: 'MyEntity2')]
-        #[JoinColumn(name: 'entity2_id', referencedColumnName: 'id')]
+        #[JoinColumn(name: 'entity2_id', referencedColumnName: 'id', nullable: false)]
         private MyEntity2 $entity2,
     ) {
     }

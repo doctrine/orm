@@ -9,10 +9,10 @@ use Doctrine\Common\Collections\Expr\Comparison;
 use Doctrine\DBAL\Types\EnumType;
 use Doctrine\ORM\AbstractQuery;
 use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\Driver\AttributeDriver;
 use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\ORM\Query\Expr\Func;
 use Doctrine\ORM\Tools\SchemaTool;
-use Doctrine\Tests\Mocks\AttributeDriverFactory;
 use Doctrine\Tests\Models\DataTransferObjects\DtoWithArrayOfEnums;
 use Doctrine\Tests\Models\DataTransferObjects\DtoWithEnum;
 use Doctrine\Tests\Models\Enums\BookCategory;
@@ -35,6 +35,7 @@ use Generator;
 use PHPUnit\Framework\Attributes\DataProvider;
 
 use function class_exists;
+use function dirname;
 use function sprintf;
 use function uniqid;
 
@@ -44,9 +45,7 @@ class EnumTest extends OrmFunctionalTestCase
     {
         parent::setUp();
 
-        $mappingDriver = AttributeDriverFactory::createAttributeDriver([__DIR__ . '/../../Models/Enums']);
-
-        $this->_em         = $this->getEntityManager(null, $mappingDriver);
+        $this->_em         = $this->getEntityManager(null, new AttributeDriver([dirname(__DIR__, 2) . '/Models/Enums'], true));
         $this->_schemaTool = new SchemaTool($this->_em);
 
         if ($this->isSecondLevelCacheEnabled) {

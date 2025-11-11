@@ -131,7 +131,7 @@ class LimitSubqueryWalkerTest extends PaginationTestCase
      */
     public function testLimitSubqueryWithArbitraryJoin(): void
     {
-        $dql        = 'SELECT p, c FROM Doctrine\Tests\ORM\Tools\Pagination\MyBlogPost p JOIN Doctrine\Tests\ORM\Tools\Pagination\Category c ON p.category = c';
+        $dql        = 'SELECT p, c FROM Doctrine\Tests\ORM\Tools\Pagination\MyBlogPost p JOIN Doctrine\Tests\ORM\Tools\Pagination\Category c WITH p.category = c';
         $query      = $this->entityManager->createQuery($dql);
         $limitQuery = clone $query;
 
@@ -145,7 +145,7 @@ class LimitSubqueryWalkerTest extends PaginationTestCase
 
     public function testLimitSubqueryWithSortWithArbitraryJoin(): void
     {
-        $dql        = 'SELECT p, c FROM Doctrine\Tests\ORM\Tools\Pagination\MyBlogPost p JOIN Doctrine\Tests\ORM\Tools\Pagination\Category c ON p.category = c ORDER BY p.title';
+        $dql        = 'SELECT p, c FROM Doctrine\Tests\ORM\Tools\Pagination\MyBlogPost p JOIN Doctrine\Tests\ORM\Tools\Pagination\Category c WITH p.category = c ORDER BY p.title';
         $query      = $this->entityManager->createQuery($dql);
         $limitQuery = clone $query;
 

@@ -490,7 +490,7 @@ where you can generate an arbitrary join with the following syntax:
 .. code-block:: php
 
     <?php
-    $query = $em->createQuery('SELECT u FROM User u JOIN Banlist b ON u.email = b.email');
+    $query = $em->createQuery('SELECT u FROM User u JOIN Banlist b WITH u.email = b.email');
 
 With an arbitrary join the result differs from the joins using a mapped property.
 The result of an arbitrary join is an one dimensional array with a mix of the entity from the ``SELECT``
@@ -513,15 +513,13 @@ it loads all the related ``Banlist`` objects corresponding to this ``User``. Thi
 when the DQL is switched to an arbitrary join.
 
 .. note::
-    The differences between WHERE, WITH, ON and HAVING clauses may be
+    The differences between WHERE, WITH and HAVING clauses may be
     confusing.
 
     - WHERE is applied to the results of an entire query
-    - ON is applied to arbitrary joins as the join condition. For
-      arbitrary joins (SELECT f, b FROM Foo f, Bar b ON f.id = b.id)
-      the ON is required, even if it is 1 = 1. WITH is also
-      supported as alternative keyword for that case for BC reasons.
-    - WITH is applied to an association join as an additional condition.
+    - WITH is applied to a join as an additional condition. For
+      arbitrary joins (SELECT f, b FROM Foo f, Bar b WITH f.id = b.id)
+      the WITH is required, even if it is 1 = 1
     - HAVING is applied to the results of a query after
       aggregation (GROUP BY)
 
@@ -1701,13 +1699,8 @@ From, Join and Index by
     SubselectIdentificationVariableDeclaration ::= IdentificationVariableDeclaration
     RangeVariableDeclaration                   ::= AbstractSchemaName ["AS"] AliasIdentificationVariable
     JoinAssociationDeclaration                 ::= JoinAssociationPathExpression ["AS"] AliasIdentificationVariable [IndexBy]
-    Join                                       ::= ["LEFT" ["OUTER"] | "INNER"] "JOIN" (JoinAssociationDeclaration ["WITH" ConditionalExpression] | RangeVariableDeclaration [("ON" | "WITH") ConditionalExpression])
+    Join                                       ::= ["LEFT" ["OUTER"] | "INNER"] "JOIN" (JoinAssociationDeclaration | RangeVariableDeclaration) ["WITH" ConditionalExpression]
     IndexBy                                    ::= "INDEX" "BY" SingleValuedPathExpression
-
-.. note::
-    Using the ``WITH`` keyword for the ``ConditionalExpression`` of a
-    ``RangeVariableDeclaration`` is deprecated and will be removed in
-    ORM 4.0. Use the ``ON`` keyword instead.
 
 Select Expressions
 ~~~~~~~~~~~~~~~~~~

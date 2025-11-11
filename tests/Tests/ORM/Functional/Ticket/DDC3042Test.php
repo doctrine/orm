@@ -31,7 +31,7 @@ class DDC3042Test extends OrmFunctionalTestCase
                 $this
                 ->_em
                 ->createQuery(
-                    'SELECT f, b FROM ' . __NAMESPACE__ . '\DDC3042Foo f JOIN ' . __NAMESPACE__ . '\DDC3042Bar b ON 1 = 1',
+                    'SELECT f, b FROM ' . __NAMESPACE__ . '\DDC3042Foo f JOIN ' . __NAMESPACE__ . '\DDC3042Bar b WITH 1 = 1',
                 )
                 ->getSQL(),
                 'field_11',

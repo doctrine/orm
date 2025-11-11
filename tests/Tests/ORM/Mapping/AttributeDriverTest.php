@@ -10,10 +10,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Driver\AttributeDriver;
 use Doctrine\ORM\Mapping\JoinColumnMapping;
 use Doctrine\ORM\Mapping\MappingAttribute;
-use Doctrine\Persistence\Mapping\Driver\ClassNames;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
-use Doctrine\Tests\Mocks\AttributeDriverFactory;
-use Doctrine\Tests\Models\Cache\City;
 use Doctrine\Tests\ORM\Mapping\Fixtures\AttributeEntityWithNestedJoinColumns;
 use InvalidArgumentException;
 use stdClass;
@@ -22,21 +19,9 @@ class AttributeDriverTest extends MappingDriverTestCase
 {
     protected function loadDriver(): MappingDriver
     {
-        return AttributeDriverFactory::createAttributeDriver();
-    }
+        $paths = [];
 
-    public function testDriverCanAcceptClassLocator(): void
-    {
-        if (! AttributeDriverFactory::isClassLocatorSupported()) {
-            self::markTestSkipped('This test is only relevant for versions of doctrine/persistence >= 4.1');
-        }
-
-        $classLocator = new ClassNames([City::class]);
-
-        $driver = new AttributeDriver($classLocator);
-
-        self::assertSame([], $driver->getPaths(), 'Directory paths must be empty, since file paths are used');
-        self::assertSame([City::class], $driver->getAllClassNames());
+        return new AttributeDriver($paths, true);
     }
 
     public function testOriginallyNestedAttributesDeclaredWithoutOriginalParent(): void

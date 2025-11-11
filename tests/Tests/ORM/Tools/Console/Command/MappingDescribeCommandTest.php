@@ -16,8 +16,6 @@ use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Tester\CommandCompletionTester;
 use Symfony\Component\Console\Tester\CommandTester;
 
-use function json_decode;
-
 /**
  * Tests for {@see \Doctrine\ORM\Tools\Console\Command\MappingDescribeCommand}
  */
@@ -56,25 +54,6 @@ class MappingDescribeCommandTest extends OrmFunctionalTestCase
 
         self::assertStringContainsString(AttractionInfo::class, $display);
         self::assertStringContainsString('Root entity name', $display);
-    }
-
-    public function testShowSpecificFuzzySingleJson(): void
-    {
-        $this->tester->execute([
-            'command' => $this->command->getName(),
-            'entityName' => 'AttractionInfo',
-            '--format' => 'json',
-        ]);
-
-        $display     = $this->tester->getDisplay();
-        $decodedJson = json_decode($display, true);
-
-        self::assertJson($display);
-        self::assertSame(AttractionInfo::class, $decodedJson['name']);
-        self::assertArrayHasKey('rootEntityName', $decodedJson);
-        self::assertArrayHasKey('fieldMappings', $decodedJson);
-        self::assertArrayHasKey('associationMappings', $decodedJson);
-        self::assertArrayHasKey('id', $decodedJson['fieldMappings']);
     }
 
     public function testShowSpecificFuzzyAmbiguous(): void
@@ -131,11 +110,6 @@ class MappingDescribeCommandTest extends OrmFunctionalTestCase
                 'Doctrine\\\\Tests\\\\Models\\\\Cache\\\\Beach',
                 'Doctrine\\\\Tests\\\\Models\\\\Cache\\\\Bar',
             ],
-        ];
-
-        yield 'format option value' => [
-            ['--format='],
-            ['text', 'json'],
         ];
     }
 }

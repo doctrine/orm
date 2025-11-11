@@ -546,7 +546,7 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
      */
     public LegacyReflectionFields|array $reflFields = [];
 
-    /** @var array<string, PropertyAccessor> */
+    /** @var array<string, PropertyAccessors\PropertyAccessor> */
     public array $propertyAccessors = [];
 
     private InstantiatorInterface|null $instantiator = null;
@@ -584,7 +584,7 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
     /**
      * Gets the ReflectionProperties of the mapped class.
      *
-     * @return array<string, PropertyAccessor> An array of PropertyAccessor instances by name.
+     * @return PropertyAccessor[] An array of PropertyAccessor instances.
      */
     public function getPropertyAccessors(): array
     {

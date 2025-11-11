@@ -11,15 +11,10 @@ use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\ORMSetup;
 use Doctrine\ORM\Tools\SchemaTool;
 use Doctrine\ORM\Tools\SchemaValidator;
-use Doctrine\Persistence\Mapping\Driver\ClassLocator;
-use Doctrine\Persistence\Mapping\Driver\FileClassLocator;
-use Doctrine\Tests\Mocks\AttributeDriverFactory;
 use Doctrine\Tests\Mocks\EntityManagerMock;
 use Doctrine\Tests\Models\BinaryPrimaryKey\BinaryIdType;
 use Doctrine\Tests\Models\BinaryPrimaryKey\Category;
 use Doctrine\Tests\OrmTestCase;
-
-use const PHP_VERSION_ID;
 
 final class BinaryIdPersisterTest extends OrmTestCase
 {
@@ -68,11 +63,7 @@ final class BinaryIdPersisterTest extends OrmTestCase
             return $this->entityManager;
         }
 
-        $config = ORMSetup::createAttributeMetadataConfiguration(
-            $this->getClassLocator(),
-            isDevMode: true,
-        );
-        $config->enableNativeLazyObjects(PHP_VERSION_ID >= 80400);
+        $config = ORMSetup::createAttributeMetadataConfiguration([__DIR__ . '/../../Models/BinaryPrimaryKey'], isDevMode: true);
 
         if (! DbalType::hasType(BinaryIdType::NAME)) {
             DbalType::addType(BinaryIdType::NAME, BinaryIdType::class);
@@ -90,17 +81,5 @@ final class BinaryIdPersisterTest extends OrmTestCase
         $this->entityManager = $entityManager;
 
         return $entityManager;
-    }
-
-    /** @return list<string>|ClassLocator */
-    private function getClassLocator(): array|ClassLocator
-    {
-        $paths = [__DIR__ . '/../../Models/BinaryPrimaryKey'];
-
-        if (! AttributeDriverFactory::isClassLocatorSupported()) {
-            return $paths;
-        }
-
-        return FileClassLocator::createFromDirectories($paths);
     }
 }

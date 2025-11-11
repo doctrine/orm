@@ -9,7 +9,6 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\Common\Collections\Order;
 use Doctrine\DBAL\Types\Types;
-use Doctrine\Deprecations\PHPUnit\VerifyDeprecations;
 use Doctrine\ORM\Cache;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\Expr\Join;
@@ -25,11 +24,10 @@ use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\OrmTestCase;
 use InvalidArgumentException;
 use PHPUnit\Framework\Attributes\Group;
-use PHPUnit\Framework\Attributes\WithoutErrorHandler;
 use PHPUnit\Framework\TestCase;
-use RuntimeException;
 
 use function array_filter;
+use function class_exists;
 
 /**
  * Test case for the QueryBuilder class used to build DQL query string in a
@@ -37,8 +35,6 @@ use function array_filter;
  */
 class QueryBuilderTest extends OrmTestCase
 {
-    use VerifyDeprecations;
-
     private EntityManagerMock $entityManager;
 
     protected function setUp(): void
@@ -70,26 +66,6 @@ class QueryBuilderTest extends OrmTestCase
             ->delete();
 
         $this->assertValidQueryBuilder($qb, 'DELETE Doctrine\Tests\Models\CMS\CmsUser u');
-    }
-
-    public function testDeleteWithLimitNotSupported(): void
-    {
-        $this->expectException(RuntimeException::class);
-        $this->expectExceptionMessage('Setting a limit is not supported for delete or update queries.');
-
-        $this->entityManager->createQueryBuilder()
-            ->delete(CmsUser::class, 'c')
-            ->setMaxResults(1);
-    }
-
-    public function testUpdateWithLimitNotSupported(): void
-    {
-        $this->expectException(RuntimeException::class);
-        $this->expectExceptionMessage('Setting a limit is not supported for delete or update queries.');
-
-        $this->entityManager->createQueryBuilder()
-            ->update(CmsUser::class, 'c')
-            ->setMaxResults(1);
     }
 
     public function testUpdateSetsType(): void
@@ -614,7 +590,7 @@ class QueryBuilderTest extends OrmTestCase
             ->from(CmsUser::class, 'u');
 
         $criteria = Criteria::create(true);
-        $criteria->orderBy(['field' => Order::Descending]);
+        $criteria->orderBy(['field' => class_exists(Order::class) ? Order::Descending : Criteria::DESC]);
 
         $qb->addCriteria($criteria);
 
@@ -631,7 +607,7 @@ class QueryBuilderTest extends OrmTestCase
             ->join('u.article', 'a');
 
         $criteria = Criteria::create(true);
-        $criteria->orderBy(['a.field' => Order::Descending]);
+        $criteria->orderBy(['a.field' => class_exists(Order::class) ? Order::Descending : Criteria::DESC]);
 
         $qb->addCriteria($criteria);
 
@@ -1055,10 +1031,8 @@ class QueryBuilderTest extends OrmTestCase
         self::assertEquals('u', $qb->getRootAlias());
     }
 
-    #[WithoutErrorHandler]
     public function testBCAddJoinWithoutRootAlias(): void
     {
-        $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/pull/12051');
         $qb = $this->entityManager->createQueryBuilder()
             ->select('u')
             ->from(CmsUser::class, 'u')

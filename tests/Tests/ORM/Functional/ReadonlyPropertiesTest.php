@@ -4,13 +4,15 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional;
 
+use Doctrine\ORM\Mapping\Driver\AttributeDriver;
 use Doctrine\ORM\Tools\SchemaTool;
-use Doctrine\Tests\Mocks\AttributeDriverFactory;
 use Doctrine\Tests\Models\ReadonlyProperties\Author;
 use Doctrine\Tests\Models\ReadonlyProperties\Book;
 use Doctrine\Tests\Models\ReadonlyProperties\SimpleBook;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use Doctrine\Tests\TestUtil;
+
+use function dirname;
 
 class ReadonlyPropertiesTest extends OrmFunctionalTestCase
 {
@@ -20,9 +22,10 @@ class ReadonlyPropertiesTest extends OrmFunctionalTestCase
             static::$sharedConn = TestUtil::getConnection();
         }
 
-        $attributeDriver = AttributeDriverFactory::createAttributeDriver([__DIR__ . '/../../Models/ReadonlyProperties']);
-
-        $this->_em         = $this->getEntityManager(null, $attributeDriver);
+        $this->_em         = $this->getEntityManager(null, new AttributeDriver(
+            [dirname(__DIR__, 2) . '/Models/ReadonlyProperties'],
+            true,
+        ));
         $this->_schemaTool = new SchemaTool($this->_em);
 
         parent::setUp();
