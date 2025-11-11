@@ -1609,7 +1609,8 @@ final class Parser
 
     /**
      * Join ::= ["LEFT" ["OUTER"] | "INNER"] "JOIN"
-     *          (JoinAssociationDeclaration ["WITH" ConditionalExpression] | RangeVariableDeclaration [("ON" | "WITH") ConditionalExpression])
+     *          (JoinAssociationDeclaration | RangeVariableDeclaration)
+     *          ["WITH" ConditionalExpression]
      */
     public function Join(): AST\Join
     {
@@ -1643,31 +1644,21 @@ final class Parser
 
         $next = $this->lexer->glimpse();
         assert($next !== null);
-        $conditionalExpression = null;
+        $joinDeclaration = $next->type === TokenType::T_DOT ? $this->JoinAssociationDeclaration() : $this->RangeVariableDeclaration();
+        $adhocConditions = $this->lexer->isNextToken(TokenType::T_WITH);
+        $join            = new AST\Join($joinType, $joinDeclaration);
 
-        if ($next->type === TokenType::T_DOT) {
-            $joinDeclaration = $this->JoinAssociationDeclaration();
-
-            if ($this->lexer->isNextToken(TokenType::T_WITH)) {
-                $this->match(TokenType::T_WITH);
-                $conditionalExpression = $this->ConditionalExpression();
-            }
-        } else {
-            $joinDeclaration         = $this->RangeVariableDeclaration();
+        // Describe non-root join declaration
+        if ($joinDeclaration instanceof AST\RangeVariableDeclaration) {
             $joinDeclaration->isRoot = false;
-
-            if ($this->lexer->isNextToken(TokenType::T_ON)) {
-                $this->match(TokenType::T_ON);
-                $conditionalExpression = $this->ConditionalExpression();
-            } elseif ($this->lexer->isNextToken(TokenType::T_WITH)) {
-                $this->match(TokenType::T_WITH);
-                $conditionalExpression = $this->ConditionalExpression();
-                Deprecation::trigger('doctrine/orm', 'https://github.com/doctrine/orm/issues/12192', 'Using WITH for the join condition of arbitrary joins is deprecated. Use ON instead.');
-            }
         }
 
-        $join                        = new AST\Join($joinType, $joinDeclaration);
-        $join->conditionalExpression = $conditionalExpression;
+        // Check for ad-hoc Join conditions
+        if ($adhocConditions) {
+            $this->match(TokenType::T_WITH);
+
+            $join->conditionalExpression = $this->ConditionalExpression();
+        }
 
         return $join;
     }

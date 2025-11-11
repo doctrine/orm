@@ -8,7 +8,6 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\ParameterType;
-use Doctrine\Deprecations\Deprecation;
 use Doctrine\ORM\Internal\NoUnknownNamedArguments;
 use Doctrine\ORM\Query\Expr;
 use Doctrine\ORM\Query\Parameter;
@@ -306,13 +305,8 @@ class QueryBuilder implements Stringable
         } else {
             // Should never happen with correct joining order. Might be
             // thoughtful to throw exception instead.
-            $aliases = $this->getRootAliases();
-
-            if (! isset($aliases[0])) {
-                throw new RuntimeException('No alias was set before invoking getRootAlias().');
-            }
-
-            $rootAlias = $aliases[0];
+            // @phpstan-ignore method.deprecated
+            $rootAlias = $this->getRootAlias();
         }
 
         $this->joinRootAliases[$alias] = $rootAlias;
@@ -547,10 +541,6 @@ class QueryBuilder implements Stringable
      */
     public function setMaxResults(int|null $maxResults): static
     {
-        if ($this->type === QueryType::Delete || $this->type === QueryType::Update) {
-            throw new RuntimeException('Setting a limit is not supported for delete or update queries.');
-        }
-
         $this->maxResults = $maxResults;
 
         return $this;
@@ -592,25 +582,14 @@ class QueryBuilder implements Stringable
             $dqlPart = reset($dqlPart);
         }
 
+        // This is introduced for backwards compatibility reasons.
+        // TODO: Remove for 3.0
         if ($dqlPartName === 'join') {
             $newDqlPart = [];
 
             foreach ($dqlPart as $k => $v) {
-                if (is_numeric($k)) {
-                    Deprecation::trigger(
-                        'doctrine/orm',
-                        'https://github.com/doctrine/orm/pull/12051',
-                        'Using numeric keys in %s for join parts is deprecated and will not be supported in 4.0. Use an associative array with the root alias as key instead.',
-                        __METHOD__,
-                    );
-                    $aliases = $this->getRootAliases();
-
-                    if (! isset($aliases[0])) {
-                        throw new RuntimeException('No alias was set before invoking add().');
-                    }
-
-                    $k = $aliases[0];
-                }
+                // @phpstan-ignore method.deprecated
+                $k = is_numeric($k) ? $this->getRootAlias() : $k;
 
                 $newDqlPart[$k] = $v;
             }

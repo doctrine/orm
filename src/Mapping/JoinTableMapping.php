@@ -84,14 +84,9 @@ final class JoinTableMapping implements ArrayAccess
     /** @return mixed[] */
     public function toArray(): array
     {
-        $array                       = (array) $this;
-        $toArray                     = static function (JoinColumnMapping $column) {
-            $array = (array) $column;
+        $array = (array) $this;
 
-            unset($array['nullable']);
-
-            return $array;
-        };
+        $toArray                     = static fn (JoinColumnMapping $column): array => (array) $column;
         $array['joinColumns']        = array_map($toArray, $array['joinColumns']);
         $array['inverseJoinColumns'] = array_map($toArray, $array['inverseJoinColumns']);
 

@@ -7,7 +7,6 @@ namespace Doctrine\Tests\ORM\Functional;
 use Doctrine\DBAL\Connection;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\Exec\AbstractSqlExecutor;
-use Doctrine\ORM\Query\Exec\SqlFinalizer;
 use Doctrine\ORM\Query\ParserResult;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use PHPUnit\Framework\Attributes\Depends;
@@ -131,11 +130,8 @@ class QueryCacheTest extends OrmFunctionalTestCase
             }
         };
 
-        $sqlFinalizerMock = $this->createMock(SqlFinalizer::class);
-        $sqlFinalizerMock->method('createExecutor')->with($query)->willReturn($sqlExecutorStub);
-
         $parserResultMock = new ParserResult();
-        $parserResultMock->setSqlFinalizer($sqlFinalizerMock);
+        $parserResultMock->setSqlExecutor($sqlExecutorStub);
 
         $cache = $this->createMock(CacheItemPoolInterface::class);
 

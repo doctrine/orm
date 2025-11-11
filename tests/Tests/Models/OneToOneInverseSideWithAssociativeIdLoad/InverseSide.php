@@ -17,7 +17,7 @@ class InverseSide
     /** Associative id (owning identifier) */
     #[Id]
     #[OneToOne(targetEntity: InverseSideIdTarget::class, inversedBy: 'inverseSide')]
-    #[JoinColumn(name: 'associativeId')]
+    #[JoinColumn(nullable: false, name: 'associativeId')]
     public InverseSideIdTarget $associativeId;
 
     #[OneToOne(targetEntity: OwningSide::class, mappedBy: 'inverse')]

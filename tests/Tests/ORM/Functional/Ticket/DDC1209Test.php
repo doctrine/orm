@@ -102,7 +102,7 @@ class DDC1209Two
     public function __construct(
         #[Id]
         #[ManyToOne(targetEntity: 'DDC1209One')]
-        #[JoinColumn(referencedColumnName: 'id')]
+        #[JoinColumn(referencedColumnName: 'id', nullable: false)]
         private DDC1209One $future1,
     ) {
         $this->startingDatetime = new DateTime2();

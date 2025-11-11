@@ -10,7 +10,6 @@ use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\Deprecations\PHPUnit\VerifyDeprecations;
 use Doctrine\ORM\EntityNotFoundException;
 use Doctrine\ORM\Mapping\ClassMetadata;
-use Doctrine\ORM\ORMInvalidArgumentException;
 use Doctrine\ORM\Persisters\Entity\BasicEntityPersister;
 use Doctrine\ORM\Proxy\ProxyFactory;
 use Doctrine\Persistence\Mapping\RuntimeReflectionService;
@@ -23,12 +22,10 @@ use Doctrine\Tests\Models\ECommerce\ECommerceFeature;
 use Doctrine\Tests\OrmTestCase;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\IgnoreDeprecations;
-use PHPUnit\Framework\Attributes\RequiresMethod;
 use PHPUnit\Framework\Attributes\RequiresPhp;
 use ReflectionClass;
 use ReflectionProperty;
 use stdClass;
-use Symfony\Component\VarExporter\ProxyHelper;
 
 use function assert;
 use function method_exists;
@@ -250,7 +247,6 @@ class ProxyFactoryTest extends OrmTestCase
     }
 
     #[RequiresPhp('8.4')]
-    #[RequiresMethod(ProxyHelper::class, 'generateLazyGhost')]
     #[IgnoreDeprecations]
     public function testProxyFactoryTriggersDeprecationWhenNativeLazyObjectsAreDisabled(): void
     {
@@ -274,25 +270,6 @@ class ProxyFactoryTest extends OrmTestCase
         $this->expectNoDeprecationWithIdentifier('https://github.com/doctrine/orm/pull/12005');
 
         $this->proxyFactory = new ProxyFactory(
-            $this->emMock,
-            sys_get_temp_dir(),
-            'Proxies',
-            ProxyFactory::AUTOGENERATE_ALWAYS,
-        );
-    }
-
-    public function testProxyFactoryThrowsIfLazyGhostsAreUnavailable(): void
-    {
-        if (method_exists(ProxyHelper::class, 'generateLazyGhost')) {
-            self::markTestSkipped('This test is not relevant when lazy ghosts are available');
-        }
-
-        $this->emMock->getConfiguration()->enableNativeLazyObjects(false);
-
-        $this->expectException(ORMInvalidArgumentException::class);
-        $this->expectExceptionMessage('Symfony LazyGhost is not available. Please install the "symfony/var-exporter" package version 6.4 or 7 to use this feature or enable PHP 8.4 native lazy objects.');
-
-        new ProxyFactory(
             $this->emMock,
             sys_get_temp_dir(),
             'Proxies',

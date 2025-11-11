@@ -17,6 +17,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 use PHPUnit\Framework\Attributes\Group;
 
 use function assert;
+use function class_exists;
 use function get_class;
 
 /**
@@ -437,7 +438,7 @@ class ManyToManyBasicAssociationTest extends OrmFunctionalTestCase
         $user = $this->_em->find($user::class, $user->id);
 
         $criteria = Criteria::create(true)
-            ->orderBy(['name' => Order::Ascending]);
+            ->orderBy(['name' => class_exists(Order::class) ? Order::Ascending : Criteria::ASC]);
 
         self::assertEquals(
             ['A', 'B', 'C', 'Developers_0'],
@@ -477,7 +478,7 @@ class ManyToManyBasicAssociationTest extends OrmFunctionalTestCase
         $user = $this->_em->find($user::class, $user->id);
 
         $criteria = Criteria::create(true)
-            ->orderBy(['name' => Order::Ascending]);
+            ->orderBy(['name' => class_exists(Order::class) ? Order::Ascending : Criteria::ASC]);
 
         self::assertEquals(
             ['A', 'B', 'C'],

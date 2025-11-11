@@ -8,6 +8,7 @@ use Doctrine\Common\EventManager;
 use Doctrine\DBAL\Connection;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\Mapping\Driver\AttributeDriver;
 use Doctrine\ORM\Proxy\ProxyFactory;
 use Doctrine\ORM\UnitOfWork;
 use Doctrine\Tests\TestUtil;
@@ -25,7 +26,7 @@ class EntityManagerMock extends EntityManager
         if ($config === null) {
             $config = new Configuration();
             TestUtil::configureProxies($config);
-            $config->setMetadataDriverImpl(AttributeDriverFactory::createAttributeDriver());
+            $config->setMetadataDriverImpl(new AttributeDriver([]));
         }
 
         parent::__construct($conn, $config, $eventManager);
