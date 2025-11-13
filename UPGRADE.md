@@ -29,6 +29,95 @@ and directly start using native lazy objects.
 
 # Upgrade to 3.6
 
+## Deprecate using string expression for default values in mappings
+
+Using a string expression for default values in field mappings is deprecated.
+Use `Doctrine\DBAL\Schema\DefaultExpression` instances instead.
+
+Here is how to address this deprecation when mapping entities using PHP attributes:
+
+```diff
+ use DateTime;
++use Doctrine\DBAL\Schema\DefaultExpression\CurrentDate;
++use Doctrine\DBAL\Schema\DefaultExpression\CurrentTime;
++use Doctrine\DBAL\Schema\DefaultExpression\CurrentTimestamp;
+ use Doctrine\ORM\Mapping as ORM;
+
+ #[ORM\Entity]
+ final class TimeEntity
+ {
+     #[ORM\Id]
+     #[ORM\Column]
+     public int $id;
+
+-    #[ORM\Column(options: ['default' => 'CURRENT_TIMESTAMP'], insertable: false, updatable: false)]
++    #[ORM\Column(options: ['default' => new CurrentTimestamp()], insertable: false, updatable: false)]
+     public DateTime $createdAt;
+
+-    #[ORM\Column(options: ['default' => 'CURRENT_TIME'], insertable: false, updatable: false)]
++    #[ORM\Column(options: ['default' => new CurrentTime()], insertable: false, updatable: false)]
+     public DateTime $createdTime;
+
+-    #[ORM\Column(options: ['default' => 'CURRENT_DATE'], insertable: false, updatable: false)]
++    #[ORM\Column(options: ['default' => new CurrentDate()], insertable: false, updatable: false)]
+     public DateTime $createdDate;
+ }
+```
+
+Here is how to do the same when mapping entities using XML:
+
+```diff
+ <?xml version="1.0" encoding="UTF-8"?>
+
+ <doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
+                           https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+
+     <entity name="Doctrine\Tests\ORM\Functional\XmlTimeEntity">
+         <id name="id" type="integer" column="id">
+             <generator strategy="AUTO"/>
+         </id>
+
+         <field name="createdAt" type="datetime" insertable="false" updatable="false">
+             <options>
+-                <option name="default">CURRENT_TIMESTAMP</option>
++                <option name="default">
++                    <object class="Doctrine\DBAL\Schema\DefaultExpression\CurrentTimestamp"/>
++                </option>
+             </options>
+         </field>
+
+         <field name="createdAtImmutable" type="datetime_immutable" insertable="false" updatable="false">
+             <options>
+-                <option name="default">CURRENT_TIMESTAMP</option>
++                <option name="default">
++                    <object class="Doctrine\DBAL\Schema\DefaultExpression\CurrentTimestamp"/>
++                </option>
+             </options>
+         </field>
+
+         <field name="createdTime" type="time" insertable="false" updatable="false">
+             <options>
+-                <option name="default">CURRENT_TIME</option>
++                <option name="default">
++                    <object class="Doctrine\DBAL\Schema\DefaultExpression\CurrentTime"/>
++                </option>
+             </options>
+         </field>
+         <field name="createdDate" type="date" insertable="false" updatable="false">
+             <options>
+-                <option name="default">CURRENT_DATE</option>
++                <option name="default">
++                    <object class="Doctrine\DBAL\Schema\DefaultExpression\CurrentDate"/>
++                </option>
+             </options>
+         </field>
+     </entity>
+ </doctrine-mapping>
+```
+
+
 ## Deprecate `FieldMapping::$default`
 
 The `default` property of `Doctrine\ORM\Mapping\FieldMapping` is deprecated and
