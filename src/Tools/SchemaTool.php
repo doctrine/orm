@@ -484,7 +484,9 @@ class SchemaTool
             $options['scale'] = $mapping->scale;
         }
 
+        /** @phpstan-ignore property.deprecated */
         if (isset($mapping->default)) {
+            /** @phpstan-ignore property.deprecated */
             $options['default'] = $mapping->default;
         }
 

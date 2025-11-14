@@ -247,7 +247,7 @@ class ClassMetadataBuilderTest extends OrmTestCase
             FieldMapping::fromMappingArray([
                 'columnDefinition' => 'foobar',
                 'columnName' => 'username',
-                'default' => 1,
+                'options' => ['default' => 1],
                 'fieldName' => 'name',
                 'length' => 124,
                 'type' => 'integer',
