@@ -604,6 +604,9 @@ abstract class AbstractHydrator
             );
         }
 
+        $reflection = new \ReflectionEnum($enumType);
+        $value =  $reflection->isBacked() && $reflection->getBackingType()?->getName() === 'int' ? (int) $value : $value;
+
         return $enumType::from($value);
     }
 }
