@@ -3352,6 +3352,12 @@ parameters:
 			path: src/UnitOfWork.php
 
 		-
+			message: '#^Access to an undefined property Doctrine\\ORM\\Mapping\\AssociationMapping\:\:\$joinColumns\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/UnitOfWork.php
+
+		-
 			message: '#^Access to an undefined property Doctrine\\ORM\\Mapping\\ManyToManyInverseSideMapping\|Doctrine\\ORM\\Mapping\\ManyToManyOwningSideMapping\|Doctrine\\ORM\\Mapping\\ManyToOneAssociationMapping\|Doctrine\\ORM\\Mapping\\OneToManyAssociationMapping\|Doctrine\\ORM\\Mapping\\OneToOneInverseSideMapping\|Doctrine\\ORM\\Mapping\\OneToOneOwningSideMapping\:\:\$inversedBy\.$#'
 			identifier: property.notFound
 			count: 1
@@ -3366,7 +3372,7 @@ parameters:
 		-
 			message: '#^Access to an undefined property Doctrine\\ORM\\Mapping\\ManyToManyInverseSideMapping\|Doctrine\\ORM\\Mapping\\ManyToManyOwningSideMapping\|Doctrine\\ORM\\Mapping\\ManyToOneAssociationMapping\|Doctrine\\ORM\\Mapping\\OneToManyAssociationMapping\|Doctrine\\ORM\\Mapping\\OneToOneInverseSideMapping\|Doctrine\\ORM\\Mapping\\OneToOneOwningSideMapping\:\:\$mappedBy\.$#'
 			identifier: property.notFound
-			count: 1
+			count: 3
 			path: src/UnitOfWork.php
 
 		-

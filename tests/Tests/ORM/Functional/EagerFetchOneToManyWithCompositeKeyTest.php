@@ -6,6 +6,7 @@ namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\Tests\Models\EagerFetchedCompositeOneToMany\RootEntity;
 use Doctrine\Tests\Models\EagerFetchedCompositeOneToMany\SecondLevel;
+use Doctrine\Tests\Models\EagerFetchedCompositeOneToMany\SecondLevelWithoutCompositePrimaryKey;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use PHPUnit\Framework\Attributes\Group;
 
@@ -14,7 +15,7 @@ final class EagerFetchOneToManyWithCompositeKeyTest extends OrmFunctionalTestCas
     #[Group('GH11154')]
     public function testItDoesNotThrowAnExceptionWhenTriggeringALoad(): void
     {
-        $this->setUpEntitySchema([RootEntity::class, SecondLevel::class]);
+        $this->setUpEntitySchema([RootEntity::class, SecondLevel::class, SecondLevelWithoutCompositePrimaryKey::class]);
 
         $a1 = new RootEntity(1, 'A');
 
