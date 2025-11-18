@@ -598,15 +598,17 @@ abstract class AbstractHydrator
      */
     final protected function buildEnum(mixed $value, string $enumType): BackedEnum|array
     {
+        $reflection  = new ReflectionEnum($enumType);
+        $isIntBacked = $reflection->isBacked() && $reflection->getBackingType()->getName() === 'int';
+
         if (is_array($value)) {
             return array_map(
-                static fn ($value) => $enumType::from($value),
+                static fn ($value) => $enumType::from($isIntBacked ? (int) $value : $value),
                 $value,
             );
         }
 
-        $reflection = new ReflectionEnum($enumType);
-        $value      =  $reflection->isBacked() && $reflection->getBackingType()->getName() === 'int' ? (int) $value : $value;
+        $value = $isIntBacked ? (int) $value : $value;
 
         return $enumType::from($value);
     }
