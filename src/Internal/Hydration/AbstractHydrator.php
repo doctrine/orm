@@ -17,6 +17,7 @@ use Doctrine\ORM\UnitOfWork;
 use Generator;
 use LogicException;
 use ReflectionClass;
+use ReflectionEnum;
 
 use function array_key_exists;
 use function array_keys;
@@ -604,8 +605,8 @@ abstract class AbstractHydrator
             );
         }
 
-        $reflection = new \ReflectionEnum($enumType);
-        $value =  $reflection->isBacked() && $reflection->getBackingType()?->getName() === 'int' ? (int) $value : $value;
+        $reflection = new ReflectionEnum($enumType);
+        $value      =  $reflection->isBacked() && $reflection->getBackingType()->getName() === 'int' ? (int) $value : $value;
 
         return $enumType::from($value);
     }
