@@ -57,7 +57,7 @@ Reference
 ~~~~~~~~~~~~~~~~~~~~~~
 
 In an inheritance hierarchy this attribute allows to override the
-assocation mapping definitions of the parent mappings. It needs to be nested
+association mapping definitions of the parent mappings. It needs to be nested
 within a ``#[AssociationOverrides]`` on the class level.
 
 Required parameters:
@@ -669,7 +669,7 @@ are missing they will be computed considering the field's name and the current
 :doc:`naming strategy <namingstrategy>`.
 
 The ``#[InverseJoinColumn]`` is the same as ``#[JoinColumn]`` and is used in the context
-of a ``#[ManyToMany]`` attribute declaration to specifiy the details of the join table's
+of a ``#[ManyToMany]`` attribute declaration to specify the details of the join table's
 column information used for the join to the inverse entity. This is only required
 on PHP 8.0, where nested attributes are not yet supported.
 
