@@ -68,9 +68,6 @@ final class FieldMapping
     public array|null $options        = null;
     public bool|null $version         = null;
 
-    /** @deprecated Use options with 'default' key instead */
-    public string|int|null $default = null;
-
     /**
      * @param string $type       The type name of the mapped field. Can be one of
      *                           Doctrine's mapping types or a custom mapping type.
@@ -158,7 +155,6 @@ final class FieldMapping
                 'declared',
                 'declaredField',
                 'options',
-                'default',
             ] as $key
         ) {
             if ($this->$key !== null) {
