@@ -24,6 +24,7 @@ use Doctrine\Tests\Models\CMS\CmsGroup;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\OrmTestCase;
 use InvalidArgumentException;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\WithoutErrorHandler;
 use PHPUnit\Framework\TestCase;
@@ -1374,5 +1375,100 @@ class QueryBuilderTest extends OrmTestCase
         };
 
         $qb->test();
+    }
+
+    #[DataProvider('provideHint')]
+    public function testSingleHint(mixed $expected): void
+    {
+        $qb = $this->entityManager->createQueryBuilder()
+            ->delete(CmsUser::class, 'u')
+            ->select('u.id', 'u.username')
+            ->setHint('foo', $expected);
+
+        $this->assertValidQueryBuilder($qb, 'SELECT u.id, u.username FROM Doctrine\Tests\Models\CMS\CmsUser u');
+
+        $query = $qb->getQuery();
+        self::assertTrue($query->hasHint('foo'));
+        self::assertEquals($expected, $query->getHint('foo'));
+    }
+
+    public static function provideHint(): array
+    {
+        return [
+            ['bar'],
+            [new CmsUser()],
+            [['a','b','c']],
+            [1],
+            [true],
+        ];
+    }
+
+    public function testMultipleHints(): void
+    {
+        $object = new CmsUser();
+        $qb     = $this->entityManager->createQueryBuilder()
+            ->delete(CmsUser::class, 'u')
+            ->select('u.id', 'u.username')
+            ->setHint('string', 'bar')
+            ->setHint('object', $object)
+            ->setHint('array', ['a', 'b', 'c'])
+            ->setHint('int', 5)
+            ->setHint('bool', true);
+
+        $this->assertValidQueryBuilder($qb, 'SELECT u.id, u.username FROM Doctrine\Tests\Models\CMS\CmsUser u');
+
+        $query = $qb->getQuery();
+        self::assertTrue($query->hasHint('string'));
+        self::assertTrue($query->hasHint('object'));
+        self::assertTrue($query->hasHint('array'));
+        self::assertTrue($query->hasHint('int'));
+        self::assertTrue($query->hasHint('bool'));
+
+        self::assertEquals('bar', $query->getHint('string'));
+        self::assertInstanceOf(CmsUser::class, $query->getHint('object'));
+        self::assertEquals(['a', 'b', 'c'], $query->getHint('array'));
+        self::assertEquals(5, $query->getHint('int'));
+        self::assertTrue($query->getHint('bool'));
+    }
+
+    public function testHasHint(): void
+    {
+        $qb = $this->entityManager->createQueryBuilder()
+            ->delete(CmsUser::class, 'u')
+            ->select('u.id', 'u.username')
+            ->setHint('foo', 'bar');
+
+        $this->assertValidQueryBuilder($qb, 'SELECT u.id, u.username FROM Doctrine\Tests\Models\CMS\CmsUser u');
+
+        self::assertTrue($qb->hasHint('foo'));
+    }
+
+    public function testGetHint(): void
+    {
+        $qb = $this->entityManager->createQueryBuilder()
+            ->delete(CmsUser::class, 'u')
+            ->select('u.id', 'u.username')
+            ->setHint('foo', 'bar');
+
+        $this->assertValidQueryBuilder($qb, 'SELECT u.id, u.username FROM Doctrine\Tests\Models\CMS\CmsUser u');
+
+        self::assertEquals('bar', $qb->getHint('foo'));
+    }
+
+    public function testGetHints(): void
+    {
+        $object = new CmsUser();
+        $qb     = $this->entityManager->createQueryBuilder()
+            ->delete(CmsUser::class, 'u')
+            ->select('u.id', 'u.username')
+            ->setHint('string', 'bar')
+            ->setHint('object', $object)
+            ->setHint('array', ['a', 'b', 'c'])
+            ->setHint('int', 5)
+            ->setHint('bool', true);
+
+        $this->assertValidQueryBuilder($qb, 'SELECT u.id, u.username FROM Doctrine\Tests\Models\CMS\CmsUser u');
+
+        self::assertCount(5, $qb->getHints('foo'));
     }
 }
