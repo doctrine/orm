@@ -555,6 +555,24 @@ using ``addCriteria``:
     $qb->addCriteria($criteria);
     // then execute your query like normal
 
+Adding hints to a Query
+^^^^^^^^^^^^^^^^^^^^^^^
+
+You can also set query hints to a QueryBuilder by using ``setHint``:
+
+.. code-block:: php
+
+    <?php
+    // ...
+
+    // $qb instanceof QueryBuilder
+    $qb->setHint('hintName', 'hintValue');
+    // then execute your query like normal
+
+The query hint can hold anything the usual query hints can hold
+except null. Those hints will be applied to the query when the
+query is created.
+
 Low Level API
 ^^^^^^^^^^^^^
 

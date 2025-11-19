@@ -155,6 +155,11 @@ and directly start using native lazy objects.
 
 # Upgrade to 3.6
 
+## Deprecate `FieldMapping::$default`
+
+The `default` property of `Doctrine\ORM\Mapping\FieldMapping` is deprecated and
+will be removed in 4.0. Instead, use `FieldMapping::$options['default']`.
+
 ## Deprecate specifying `nullable` on columns that end up being used in a primary key
 
 Specifying `nullable` on join columns that are part of a primary key is

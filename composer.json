@@ -50,7 +50,7 @@
         "phpbench/phpbench": "^1.0",
         "phpdocumentor/guides-cli": "^1.4",
         "phpstan/extension-installer": "^1.4",
-        "phpstan/phpstan": "2.1.22",
+        "phpstan/phpstan": "2.1.23",
         "phpstan/phpstan-deprecation-rules": "^2",
         "phpunit/phpunit": "^11.5.42",
         "psr/log": "^1 || ^2 || ^3",
