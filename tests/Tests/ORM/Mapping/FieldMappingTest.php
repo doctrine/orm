@@ -41,7 +41,6 @@ final class FieldMappingTest extends TestCase
         $mapping->declaredField    = 'id';
         $mapping->options          = ['foo' => 'bar'];
         $mapping->version          = true;
-        $mapping->default          = 'foo';
 
         $resurrectedMapping = unserialize(serialize($mapping));
         assert($resurrectedMapping instanceof FieldMapping);
@@ -65,6 +64,5 @@ final class FieldMappingTest extends TestCase
         self::assertSame('id', $resurrectedMapping->declaredField);
         self::assertSame(['foo' => 'bar'], $resurrectedMapping->options);
         self::assertTrue($resurrectedMapping->version);
-        self::assertSame('foo', $resurrectedMapping->default);
     }
 }

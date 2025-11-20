@@ -8,6 +8,11 @@ awareness about deprecated code.
 
 # Upgrade to 4.0
 
+## BC BREAK: Remove `FieldMapping::$default`
+
+The `default` property of `Doctrine\ORM\Mapping\FieldMapping` has been removed.
+Use `FieldMapping::$options['default']` instead.
+
 ## BC BREAK: throw on `nullable` on columns that end up being used in a primary key
 
 Specifying `nullable` on join columns that are part of a primary key is
