@@ -24,11 +24,16 @@ class RootEntity
     #[ORM\OneToMany(mappedBy: 'root', targetEntity: SecondLevel::class, fetch: 'EAGER')]
     private Collection $secondLevel;
 
+    /** @var Collection<int, SecondLevelWithoutCompositePrimaryKey> */
+    #[ORM\OneToMany(mappedBy: 'root', targetEntity: SecondLevelWithoutCompositePrimaryKey::class, fetch: 'EAGER')]
+    private Collection $anotherSecondLevel;
+
     public function __construct(int $id, string $other)
     {
-        $this->otherKey    = $other;
-        $this->secondLevel = new ArrayCollection();
-        $this->id          = $id;
+        $this->otherKey           = $other;
+        $this->secondLevel        = new ArrayCollection();
+        $this->anotherSecondLevel = new ArrayCollection();
+        $this->id                 = $id;
     }
 
     public function getId(): int|null

@@ -1,0 +1,9 @@
+<doctrine-mapping>
+  <entity name="Message">
+    <field name="text">
+      <options>
+        <option name="default">Hello World!</option>
+      </options>
+    </field>
+  </entity>
+</doctrine-mapping>
