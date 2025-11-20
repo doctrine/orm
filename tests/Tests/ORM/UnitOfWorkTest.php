@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM;
 
+use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\EventManager;
 use Doctrine\DBAL\Connection;
@@ -39,10 +40,8 @@ use Exception as BaseException;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\MockObject\MockObject;
-use stdClass;
-use DateTimeImmutable;
-use DateTimeInterface;
 use ReflectionMethod;
+use stdClass;
 
 use function enum_exists;
 use function is_object;
@@ -101,10 +100,8 @@ class UnitOfWorkTest extends OrmTestCase
         $this->_emMock->setUnitOfWork($this->_unitOfWork);
     }
 
-    /**
-     * @param mixed ...$args
-     */
-    private function invokePrivate(string $method, ...$args): mixed
+    /** @param mixed ...$args */
+    private function invokePrivate(string $method, mixed ...$args): mixed
     {
         $ref = new ReflectionMethod(UnitOfWork::class, $method);
         $ref->setAccessible(true);
@@ -762,7 +759,7 @@ class UnitOfWorkTest extends OrmTestCase
         self::assertTrue($this->invokePrivate('valuesAreEqual', 10, 10));
         self::assertTrue($this->invokePrivate('valuesAreEqual', 'abc', 'abc'));
         self::assertTrue($this->invokePrivate('valuesAreEqual', true, true));
-    
+
         self::assertFalse($this->invokePrivate('valuesAreEqual', 10, 20));
         self::assertFalse($this->invokePrivate('valuesAreEqual', 'abc', 'def'));
         self::assertFalse($this->invokePrivate('valuesAreEqual', true, false));
@@ -782,7 +779,7 @@ class UnitOfWorkTest extends OrmTestCase
         $a = new DateTimeImmutable('2024-01-01 10:00:00');
         $b = new DateTimeImmutable('2024-01-01 10:00:00');
         $c = new DateTimeImmutable('2024-01-01 11:00:00');
-    
+
         self::assertTrue($this->invokePrivate('valuesAreEqual', $a, $b));
         self::assertFalse($this->invokePrivate('valuesAreEqual', $a, $c));
     }
@@ -792,7 +789,7 @@ class UnitOfWorkTest extends OrmTestCase
     {
         $a = new DateTimeImmutable('2024-01-01 10:00:00+02:00');
         $b = new DateTimeImmutable('2024-01-01 08:00:00+00:00');
-    
+
         self::assertTrue($this->invokePrivate('valuesAreEqual', $a, $b));
     }
 
@@ -800,7 +797,7 @@ class UnitOfWorkTest extends OrmTestCase
     public function testValuesAreEqualDateTimeVsNonDateTime(): void
     {
         $a = new DateTimeImmutable('2024-01-01');
-    
+
         self::assertFalse($this->invokePrivate('valuesAreEqual', $a, '2024-01-01'));
     }
 
@@ -809,9 +806,9 @@ class UnitOfWorkTest extends OrmTestCase
     {
         $a = ['x' => 1, 'y' => 2];
         $b = ['x' => 1, 'y' => 2];
-    
+
         self::assertTrue($this->invokePrivate('valuesAreEqual', $a, $b));
-    
+
         $c = ['x' => 1, 'y' => 3];
         self::assertFalse($this->invokePrivate('valuesAreEqual', $a, $c));
     }
@@ -826,7 +823,7 @@ class UnitOfWorkTest extends OrmTestCase
     public function testValuesAreEqualObjects(): void
     {
         $o = new stdClass();
-    
+
         self::assertTrue($this->invokePrivate('valuesAreEqual', $o, $o));
         self::assertFalse($this->invokePrivate('valuesAreEqual', new stdClass(), new stdClass()));
     }
@@ -856,7 +853,7 @@ class UnitOfWorkTest extends OrmTestCase
         $a = ['a' => ['b' => ['c' => 1]]];
         $b = ['a' => ['b' => ['c' => 1]]];
         $c = ['a' => ['b' => ['c' => 2]]];
-    
+
         self::assertTrue($this->invokePrivate('arraysAreEqual', $a, $b));
         self::assertFalse($this->invokePrivate('arraysAreEqual', $a, $c));
     }
@@ -866,7 +863,7 @@ class UnitOfWorkTest extends OrmTestCase
     {
         $a = ['x' => 1, 'y' => 2];
         $b = ['y' => 2, 'x' => 1];
-    
+
         self::assertFalse($this->invokePrivate('arraysAreEqual', $a, $b));
     }
 
