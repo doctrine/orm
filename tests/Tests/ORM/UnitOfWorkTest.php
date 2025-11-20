@@ -40,6 +40,9 @@ use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\MockObject\MockObject;
 use stdClass;
+use DateTimeImmutable;
+use DateTimeInterface;
+use ReflectionMethod;
 
 use function enum_exists;
 use function is_object;
@@ -96,6 +99,17 @@ class UnitOfWorkTest extends OrmTestCase
         // SUT
         $this->_unitOfWork = new UnitOfWorkMock($this->_emMock);
         $this->_emMock->setUnitOfWork($this->_unitOfWork);
+    }
+
+    /**
+     * @param mixed ...$args
+     */
+    private function invokePrivate(string $method, ...$args): mixed
+    {
+        $ref = new ReflectionMethod(UnitOfWork::class, $method);
+        $ref->setAccessible(true);
+
+        return $ref->invoke($this->_unitOfWork, ...$args);
     }
 
     public function testRegisterRemovedOnNewEntityIsIgnored(): void
@@ -728,6 +742,140 @@ class UnitOfWorkTest extends OrmTestCase
             self::assertSame('Commit failed', $e->getPrevious()->getMessage());
         }
     }
+
+    #[Group('#12066')]
+    public function testValuesAreEqualNullVsNull(): void
+    {
+        self::assertTrue($this->invokePrivate('valuesAreEqual', null, null));
+    }
+
+    #[Group('#12066')]
+    public function testValuesAreEqualNullVsNonNull(): void
+    {
+        self::assertFalse($this->invokePrivate('valuesAreEqual', null, 123));
+        self::assertFalse($this->invokePrivate('valuesAreEqual', 123, null));
+    }
+
+    #[Group('#12066')]
+    public function testValuesAreEqualPrimitives(): void
+    {
+        self::assertTrue($this->invokePrivate('valuesAreEqual', 10, 10));
+        self::assertTrue($this->invokePrivate('valuesAreEqual', 'abc', 'abc'));
+        self::assertTrue($this->invokePrivate('valuesAreEqual', true, true));
+    
+        self::assertFalse($this->invokePrivate('valuesAreEqual', 10, 20));
+        self::assertFalse($this->invokePrivate('valuesAreEqual', 'abc', 'def'));
+        self::assertFalse($this->invokePrivate('valuesAreEqual', true, false));
+    }
+
+    #[Group('#12066')]
+    public function testValuesAreEqualStrictTypeComparison(): void
+    {
+        self::assertFalse($this->invokePrivate('valuesAreEqual', 10, '10'));
+        self::assertFalse($this->invokePrivate('valuesAreEqual', 1, true));
+        self::assertFalse($this->invokePrivate('valuesAreEqual', '1', true));
+    }
+
+    #[Group('#12066')]
+    public function testValuesAreEqualDateTime(): void
+    {
+        $a = new DateTimeImmutable('2024-01-01 10:00:00');
+        $b = new DateTimeImmutable('2024-01-01 10:00:00');
+        $c = new DateTimeImmutable('2024-01-01 11:00:00');
+    
+        self::assertTrue($this->invokePrivate('valuesAreEqual', $a, $b));
+        self::assertFalse($this->invokePrivate('valuesAreEqual', $a, $c));
+    }
+
+    #[Group('#12066')]
+    public function testValuesAreEqualDateTimeWithDifferentTimezonesButSameInstant(): void
+    {
+        $a = new DateTimeImmutable('2024-01-01 10:00:00+02:00');
+        $b = new DateTimeImmutable('2024-01-01 08:00:00+00:00');
+    
+        self::assertTrue($this->invokePrivate('valuesAreEqual', $a, $b));
+    }
+
+    #[Group('#12066')]
+    public function testValuesAreEqualDateTimeVsNonDateTime(): void
+    {
+        $a = new DateTimeImmutable('2024-01-01');
+    
+        self::assertFalse($this->invokePrivate('valuesAreEqual', $a, '2024-01-01'));
+    }
+
+    #[Group('#12066')]
+    public function testValuesAreEqualArrayDelegatesToArraysAreEqual(): void
+    {
+        $a = ['x' => 1, 'y' => 2];
+        $b = ['x' => 1, 'y' => 2];
+    
+        self::assertTrue($this->invokePrivate('valuesAreEqual', $a, $b));
+    
+        $c = ['x' => 1, 'y' => 3];
+        self::assertFalse($this->invokePrivate('valuesAreEqual', $a, $c));
+    }
+
+    #[Group('#12066')]
+    public function testValuesAreEqualArrayVsNonArray(): void
+    {
+        self::assertFalse($this->invokePrivate('valuesAreEqual', ['a'], 'a'));
+    }
+
+    #[Group('#12066')]
+    public function testValuesAreEqualObjects(): void
+    {
+        $o = new stdClass();
+    
+        self::assertTrue($this->invokePrivate('valuesAreEqual', $o, $o));
+        self::assertFalse($this->invokePrivate('valuesAreEqual', new stdClass(), new stdClass()));
+    }
+
+    #[Group('#12066')]
+    public function testArraysAreEqualSimple(): void
+    {
+        self::assertTrue($this->invokePrivate('arraysAreEqual', [1, 2], [1, 2]));
+        self::assertFalse($this->invokePrivate('arraysAreEqual', [1], [1, 2]));
+    }
+
+    #[Group('#12066')]
+    public function testArraysAreEqualDifferentKeys(): void
+    {
+        self::assertFalse($this->invokePrivate('arraysAreEqual', ['a' => 1], ['b' => 1]));
+    }
+
+    #[Group('#12066')]
+    public function testArraysAreEqualDifferentValues(): void
+    {
+        self::assertFalse($this->invokePrivate('arraysAreEqual', ['a' => 1], ['a' => 2]));
+    }
+
+    #[Group('#12066')]
+    public function testArraysAreEqualNested(): void
+    {
+        $a = ['a' => ['b' => ['c' => 1]]];
+        $b = ['a' => ['b' => ['c' => 1]]];
+        $c = ['a' => ['b' => ['c' => 2]]];
+    
+        self::assertTrue($this->invokePrivate('arraysAreEqual', $a, $b));
+        self::assertFalse($this->invokePrivate('arraysAreEqual', $a, $c));
+    }
+
+    #[Group('#12066')]
+    public function testArraysAreEqualKeyOrderMatters(): void
+    {
+        $a = ['x' => 1, 'y' => 2];
+        $b = ['y' => 2, 'x' => 1];
+    
+        self::assertFalse($this->invokePrivate('arraysAreEqual', $a, $b));
+    }
+
+    #[Group('#12066')]
+    public function testArraysAreEqualNumericOrderMatters(): void
+    {
+        self::assertFalse($this->invokePrivate('arraysAreEqual', [1, 2, 3], [3, 2, 1]));
+    }
+
 }
 
 
