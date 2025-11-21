@@ -3173,10 +3173,14 @@ EXCEPTION
                     $reflField->setValue($entity, $pColl);
 
                     if ($hints['fetchMode'][$class->name][$field] === ClassMetadata::FETCH_EAGER) {
-                        $isIteration           = isset($hints[Query::HINT_INTERNAL_ITERATION]) && $hints[Query::HINT_INTERNAL_ITERATION];
-                        $isForeignKeyComposite = $targetClass->hasAssociation($assoc['mappedBy']) && count($targetClass->getAssociationMapping($assoc['mappedBy'])['joinColumns'] ?? []) > 1;
-
-                        if ($assoc['type'] === ClassMetadata::ONE_TO_MANY && ! $isIteration && ! $isForeignKeyComposite && ! isset($assoc['indexBy'])) {
+                        if (
+                            $assoc['type'] === ClassMetadata::ONE_TO_MANY
+                            // is iteration
+                            && ! (isset($hints[Query::HINT_INTERNAL_ITERATION]) && $hints[Query::HINT_INTERNAL_ITERATION])
+                            // is foreign key composite
+                            && ! ($targetClass->hasAssociation($assoc['mappedBy']) && count($targetClass->getAssociationMapping($assoc['mappedBy'])['joinColumns'] ?? []) > 1)
+                            && ! isset($assoc['indexBy'])
+                        ) {
                             $this->scheduleCollectionForBatchLoading($pColl, $class);
                         } else {
                             $this->loadCollection($pColl);
