@@ -2595,10 +2595,14 @@ class UnitOfWork implements PropertyChangedListener
                     $reflField->setValue($entity, $pColl);
 
                     if ($hints['fetchMode'][$class->name][$field] === ClassMetadata::FETCH_EAGER) {
-                        $isIteration           = isset($hints[Query::HINT_INTERNAL_ITERATION]) && $hints[Query::HINT_INTERNAL_ITERATION];
-                        $isForeignKeyComposite = $assoc->isOneToMany() && $targetClass->hasAssociation($assoc->mappedBy) && count($targetClass->getAssociationMapping($assoc->mappedBy)->joinColumns) > 1;
-
-                        if (! $isIteration && $assoc->isOneToMany() && ! $isForeignKeyComposite && ! $assoc->isIndexed()) {
+                        if (
+                            $assoc->isOneToMany()
+                            // is iteration
+                            && ! (isset($hints[Query::HINT_INTERNAL_ITERATION]) && $hints[Query::HINT_INTERNAL_ITERATION])
+                            // is foreign key composite
+                            && ! ($targetClass->hasAssociation($assoc->mappedBy) && count($targetClass->getAssociationMapping($assoc->mappedBy)->joinColumns) > 1)
+                            && ! $assoc->isIndexed()
+                        ) {
                             $this->scheduleCollectionForBatchLoading($pColl, $class);
                         } else {
                             $this->loadCollection($pColl);
