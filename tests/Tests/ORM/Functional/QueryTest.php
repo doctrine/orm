@@ -474,7 +474,9 @@ class QueryTest extends OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $query  = $this->_em->createQuery('select a, u, a.topic, a.text from ' . CmsArticle::class . ' a, ' . CmsUser::class . ' u WHERE a.user = u ');
+        $query  = $this->_em->createQuery(
+            'select a, u, a.topic, a.text from ' . CmsArticle::class . ' a, ' . CmsUser::class . ' u WHERE a.user = u order by a.id asc',
+        );
         $result = $query->toIterable();
 
         $it = iterator_to_array($result);
@@ -517,7 +519,9 @@ class QueryTest extends OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $query  = $this->_em->createQuery('select a.topic, a.text from ' . CmsArticle::class . ' a ');
+        $query  = $this->_em->createQuery(
+            'select a.topic, a.text from ' . CmsArticle::class . ' a order by a.id asc',
+        );
         $result = $query->toIterable();
 
         $it = iterator_to_array($result);
@@ -545,7 +549,9 @@ class QueryTest extends OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $query = $this->_em->createQuery('select a from Doctrine\Tests\Models\CMS\CmsArticle a');
+        $query = $this->_em->createQuery(
+            'select a from Doctrine\Tests\Models\CMS\CmsArticle a order by a.id asc',
+        );
 
         $articles      = $query->toIterable();
         $iteratedCount = 0;
