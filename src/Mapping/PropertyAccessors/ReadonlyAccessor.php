@@ -32,7 +32,9 @@ class ReadonlyAccessor implements PropertyAccessor
             return;
         }
 
-        if ($this->parent->getValue($object) !== $value) {
+        // WARNING: do not use strict comparison here, see https://github.com/doctrine/orm/issues/9505
+        // phpcs:ignore SlevomatCodingStandard.Operators.DisallowEqualOperators.DisallowedNotEqualOperator
+        if ($this->parent->getValue($object) != $value) {
             throw new LogicException(sprintf(
                 'Attempting to change readonly property %s::$%s.',
                 $this->reflectionProperty->getDeclaringClass()->getName(),
