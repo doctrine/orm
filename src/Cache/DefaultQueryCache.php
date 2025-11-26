@@ -77,6 +77,7 @@ class DefaultQueryCache implements QueryCache
         $hasRelation = ! empty($rsm->relationMap);
         $persister   = $this->uow->getEntityPersister($entityName);
         assert($persister instanceof CachedEntityPersister);
+        $hints = array_merge($hints, self::$hints);
 
         $region     = $persister->getCacheRegion();
         $regionName = $region->getName();
@@ -101,7 +102,7 @@ class DefaultQueryCache implements QueryCache
             $this->cacheLogger?->entityCacheHit($regionName, $cacheKeys->identifiers[$index]);
 
             if (! $hasRelation) {
-                $result[$index] = $this->uow->createEntity($entityEntry->class, $entityEntry->resolveAssociationEntries($this->em), self::$hints);
+                $result[$index] = $this->uow->createEntity($entityEntry->class, $entityEntry->resolveAssociationEntries($this->em), $hints);
 
                 continue;
             }
@@ -127,7 +128,7 @@ class DefaultQueryCache implements QueryCache
                         return null;
                     }
 
-                    $data[$name] = $this->uow->createEntity($assocEntry->class, $assocEntry->resolveAssociationEntries($this->em), self::$hints);
+                    $data[$name] = $this->uow->createEntity($assocEntry->class, $assocEntry->resolveAssociationEntries($this->em), $hints);
 
                     $this->cacheLogger?->entityCacheHit($assocRegion->getName(), $assocKey);
 
@@ -155,7 +156,7 @@ class DefaultQueryCache implements QueryCache
                         return null;
                     }
 
-                    $element = $this->uow->createEntity($assocEntry->class, $assocEntry->resolveAssociationEntries($this->em), self::$hints);
+                    $element = $this->uow->createEntity($assocEntry->class, $assocEntry->resolveAssociationEntries($this->em), $hints);
 
                     $collection->hydrateSet($assocIndex, $element);
 
@@ -186,7 +187,7 @@ class DefaultQueryCache implements QueryCache
                 }
             }
 
-            $result[$index] = $this->uow->createEntity($entityEntry->class, $data, self::$hints);
+            $result[$index] = $this->uow->createEntity($entityEntry->class, $data, $hints);
         }
 
         $this->uow->hydrationComplete();
