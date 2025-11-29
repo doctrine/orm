@@ -1411,12 +1411,6 @@ parameters:
 			path: src/Mapping/Driver/DatabaseDriver.php
 
 		-
-			message: '#^Parameter \#1 \$asset of static method Doctrine\\ORM\\Mapping\\Driver\\DatabaseDriver\:\:getAssetName\(\) expects Doctrine\\DBAL\\Schema\\AbstractAsset, Doctrine\\DBAL\\Schema\\Column\|false given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Mapping/Driver/DatabaseDriver.php
-
-		-
 			message: '#^Parameter \#2 \$columnName of method Doctrine\\ORM\\Mapping\\Driver\\DatabaseDriver\:\:getFieldNameForColumn\(\) expects string, string\|false given\.$#'
 			identifier: argument.type
 			count: 4
