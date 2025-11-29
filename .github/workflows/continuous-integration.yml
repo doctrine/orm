@@ -84,6 +84,9 @@ jobs:
         run: "composer require doctrine/dbal ^${{ matrix.dbal-version }} --no-update"
         if: "${{ matrix.dbal-version != 'default' }}"
 
+      - name: 'Uninstall phpDocumentor Guides'
+        run: composer remove --no-update --dev phpdocumentor/guides-cli
+
       - name: "Install dependencies with Composer"
         uses: "ramsey/composer-install@v3"
         with:
@@ -145,6 +148,9 @@ jobs:
 
       -   name: "Allow dev dependencies"
           run: composer config minimum-stability dev
+
+      -   name: 'Uninstall phpDocumentor Guides'
+          run: composer remove --no-update --dev phpdocumentor/guides-cli
 
       -   name: "Install dependencies with Composer"
           uses: "ramsey/composer-install@v3"
