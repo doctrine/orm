@@ -98,6 +98,17 @@ parameters:
             identifier: argument.unresolvableType
             path: src/Mapping/Driver/DatabaseDriver.php
 
+        -
+            message: '#^Parameter \#1 \$asset of static method Doctrine\\ORM\\Mapping\\Driver\\DatabaseDriver\:\:getAssetName\(\) expects Doctrine\\DBAL\\Schema\\AbstractAsset, Doctrine\\DBAL\\Schema\\Column\|false given\.$#'
+            identifier: argument.type
+            path: src/Mapping/Driver/DatabaseDriver.php
+
+        -
+            message: '#^Instantiated class Doctrine\\DBAL\\Schema\\DefaultExpression\\\w+ not found\.$#'
+            identifier: class.notFound
+            path: src/Tools/SchemaTool.php
+
+
         # To be removed in 4.0
         -
             message: '#Negated boolean expression is always false\.#'
