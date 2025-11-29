@@ -174,6 +174,7 @@ use PHPUnit\Framework\Constraint\Count;
 use Psr\Cache\CacheItemPoolInterface;
 use RuntimeException;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
+use Symfony\Component\VarExporter\ProxyHelper;
 use Throwable;
 
 use function array_map;
@@ -948,8 +949,15 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             $enableNativeLazyObjects = true;
         }
 
-        if (PHP_VERSION_ID >= 80400 && $enableNativeLazyObjects) {
-            $config->enableNativeLazyObjects(true);
+        if (PHP_VERSION_ID >= 80400) {
+            if (! method_exists(ProxyHelper::class, 'generateLazyGhost')) {
+                // Symfony 8.0 removed the deprecated ProxyHelper::generateLazyGhost method
+                $enableNativeLazyObjects = true;
+            }
+
+            if ($enableNativeLazyObjects) {
+                $config->enableNativeLazyObjects(true);
+            }
         }
 
         $config->setMetadataDriverImpl(
