@@ -12,6 +12,7 @@ use Doctrine\DBAL\DriverManager;
 use Doctrine\DBAL\Exception\DatabaseObjectNotFoundException;
 use Doctrine\DBAL\Platforms\SQLitePlatform;
 use Doctrine\ORM\Configuration;
+use Symfony\Component\VarExporter\ProxyHelper;
 use UnexpectedValueException;
 
 use function assert;
@@ -21,6 +22,7 @@ use function fwrite;
 use function get_debug_type;
 use function getenv;
 use function in_array;
+use function method_exists;
 use function sprintf;
 use function str_starts_with;
 use function strlen;
@@ -100,10 +102,15 @@ class TestUtil
             $enableNativeLazyObjects = true;
         }
 
-        if (PHP_VERSION_ID >= 80400 && $enableNativeLazyObjects) {
-            $configuration->enableNativeLazyObjects(true);
+        if (PHP_VERSION_ID >= 80400) {
+            if (! method_exists(ProxyHelper::class, 'generateLazyGhost')) {
+                // Symfony 8.0 removed the deprecated ProxyHelper::generateLazyGhost method
+                $enableNativeLazyObjects = true;
+            }
 
-            return;
+            if ($enableNativeLazyObjects) {
+                $configuration->enableNativeLazyObjects(true);
+            }
         }
 
         $configuration->setProxyDir(__DIR__ . '/Proxies');
