@@ -497,6 +497,10 @@ class UnitOfWork implements PropertyChangedListener
         foreach ($this->entityInsertions as $entity) {
             $class = $this->em->getClassMetadata($entity::class);
 
+            if (PHP_VERSION_ID >= 80400 && $class->reflClass->isUninitializedLazyObject($entity)) {
+                $class->reflClass->initializeLazyObject($entity);
+            }
+
             $this->computeChangeSet($class, $entity);
         }
     }
