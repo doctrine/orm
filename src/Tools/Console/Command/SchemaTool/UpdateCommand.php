@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Tools\Console\Command\SchemaTool;
 
+use Doctrine\ORM\Tools\Console\CommandCompatibility;
 use Doctrine\ORM\Tools\SchemaTool;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -21,11 +22,12 @@ use function sprintf;
  */
 class UpdateCommand extends AbstractCommand
 {
+    use CommandCompatibility;
+
     /** @var string */
     protected $name = 'orm:schema-tool:update';
 
-    /** @return void */
-    protected function configure()
+    private function doConfigure(): void
     {
         $this->setName($this->name)
              ->setDescription('Executes (or dumps) the SQL needed to update the database schema to match the current mapping metadata')
@@ -70,6 +72,11 @@ on a global level:
     });
 EOT
              );
+    }
+
+    private function doExecute(InputInterface $input, OutputInterface $output): int
+    {
+        return parent::execute($input, $output);
     }
 
     /**

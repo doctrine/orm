@@ -23,8 +23,7 @@ class ValidateSchemaCommand extends AbstractEntityManagerCommand
 {
     use CommandCompatibility;
 
-    /** @return void */
-    protected function configure()
+    private function doConfigure(): void
     {
         $this->setName('orm:validate-schema')
              ->setDescription('Validate the mapping files')

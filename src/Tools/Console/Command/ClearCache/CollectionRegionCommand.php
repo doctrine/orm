@@ -23,8 +23,7 @@ class CollectionRegionCommand extends AbstractEntityManagerCommand
 {
     use CommandCompatibility;
 
-    /** @return void */
-    protected function configure()
+    private function doConfigure(): void
     {
         $this->setName('orm:clear-cache:region:collection')
              ->setDescription('Clear a second-level cache collection region')

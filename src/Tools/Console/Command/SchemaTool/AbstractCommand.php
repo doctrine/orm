@@ -27,6 +27,10 @@ abstract class AbstractCommand extends AbstractEntityManagerCommand
      */
     abstract protected function executeSchemaCommand(InputInterface $input, OutputInterface $output, SchemaTool $schemaTool, array $metadatas, SymfonyStyle $ui);
 
+    private function doConfigure(): void
+    {
+    }
+
     private function doExecute(InputInterface $input, OutputInterface $output): int
     {
         $ui = new SymfonyStyle($input, $output);

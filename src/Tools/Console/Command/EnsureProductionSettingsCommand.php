@@ -22,8 +22,7 @@ class EnsureProductionSettingsCommand extends AbstractEntityManagerCommand
 {
     use CommandCompatibility;
 
-    /** @return void */
-    protected function configure()
+    private function doConfigure(): void
     {
         $this->setName('orm:ensure-production-settings')
              ->setDescription('Verify that Doctrine is properly configured for a production environment')

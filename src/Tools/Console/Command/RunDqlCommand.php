@@ -30,8 +30,7 @@ class RunDqlCommand extends AbstractEntityManagerCommand
 {
     use CommandCompatibility;
 
-    /** @return void */
-    protected function configure()
+    private function doConfigure(): void
     {
         $this->setName('orm:run-dql')
              ->setDescription('Executes arbitrary DQL directly from the command line')
