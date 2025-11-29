@@ -18,30 +18,6 @@ In your mapping configuration, the column definition (for example, the
 the ``charset`` and ``collation``. The default values are ``utf8`` and
 ``utf8_unicode_ci``, respectively.
 
-Entity Classes
---------------
-
-How can I add default values to a column?
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-Doctrine does not support to set the default values in columns through the "DEFAULT" keyword in SQL.
-This is not necessary however, you can just use your class properties as default values. These are then used
-upon insert:
-
-.. code-block:: php
-
-    class User
-    {
-        private const STATUS_DISABLED = 0;
-        private const STATUS_ENABLED = 1;
-
-        private string $algorithm = "sha1";
-        /** @var self::STATUS_* */
-        private int $status = self::STATUS_DISABLED;
-    }
-
-.
-
 Mapping
 -------
 

@@ -23,8 +23,7 @@ class InfoCommand extends AbstractEntityManagerCommand
 {
     use CommandCompatibility;
 
-    /** @return void */
-    protected function configure()
+    private function doConfigure(): void
     {
         $this->setName('orm:info')
              ->setDescription('Show basic information about all mapped entities')

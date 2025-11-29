@@ -40,8 +40,7 @@ class ConvertMappingCommand extends AbstractEntityManagerCommand
 {
     use CommandCompatibility;
 
-    /** @return void */
-    protected function configure()
+    private function doConfigure(): void
     {
         $this->setName('orm:convert-mapping')
              ->setAliases(['orm:convert:mapping'])
