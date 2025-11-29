@@ -66,6 +66,11 @@ jobs:
             deps: "highest"
             extension: "pdo_sqlite"
             native_lazy: "1"
+          - php-version: "8.5"
+            dbal-version: "default"
+            deps: "highest"
+            extension: "pdo_sqlite"
+            native_lazy: "1"
 
     steps:
       - name: "Checkout"
