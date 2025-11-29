@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Tools\Console\Command\SchemaTool;
 
+use Doctrine\ORM\Tools\Console\CommandCompatibility;
 use Doctrine\ORM\Tools\SchemaTool;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -20,8 +21,9 @@ use function sprintf;
  */
 class DropCommand extends AbstractCommand
 {
-    /** @return void */
-    protected function configure()
+    use CommandCompatibility;
+
+    private function doConfigure(): void
     {
         $this->setName('orm:schema-tool:drop')
              ->setDescription('Drop the complete database schema of EntityManager Storage Connection or generate the corresponding SQL output')
@@ -46,6 +48,11 @@ on a global level:
     });
 EOT
              );
+    }
+
+    private function doExecute(InputInterface $input, OutputInterface $output): int
+    {
+        return parent::execute($input, $output);
     }
 
     /**

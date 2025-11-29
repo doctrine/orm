@@ -31,8 +31,7 @@ class GenerateEntitiesCommand extends AbstractEntityManagerCommand
 {
     use CommandCompatibility;
 
-    /** @return void */
-    protected function configure()
+    private function doConfigure(): void
     {
         $this->setName('orm:generate-entities')
              ->setAliases(['orm:generate:entities'])

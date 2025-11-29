@@ -29,8 +29,7 @@ class GenerateProxiesCommand extends AbstractEntityManagerCommand
 {
     use CommandCompatibility;
 
-    /** @return void */
-    protected function configure()
+    private function doConfigure(): void
     {
         $this->setName('orm:generate-proxies')
              ->setAliases(['orm:generate:proxies'])

@@ -21,8 +21,7 @@ class MetadataCommand extends AbstractEntityManagerCommand
 {
     use CommandCompatibility;
 
-    /** @return void */
-    protected function configure()
+    private function doConfigure(): void
     {
         $this->setName('orm:clear-cache:metadata')
              ->setDescription('Clear all metadata cache of the various cache drivers')

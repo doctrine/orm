@@ -30,8 +30,7 @@ class QueryCommand extends AbstractEntityManagerCommand
 {
     use CommandCompatibility;
 
-    /** @return void */
-    protected function configure()
+    private function doConfigure(): void
     {
         $this->setName('orm:clear-cache:query')
              ->setDescription('Clear all query cache of the various cache drivers')

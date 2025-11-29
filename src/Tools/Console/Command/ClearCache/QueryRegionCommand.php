@@ -23,8 +23,7 @@ class QueryRegionCommand extends AbstractEntityManagerCommand
 {
     use CommandCompatibility;
 
-    /** @return void */
-    protected function configure()
+    private function doConfigure(): void
     {
         $this->setName('orm:clear-cache:region:query')
              ->setDescription('Clear a second-level cache query region')

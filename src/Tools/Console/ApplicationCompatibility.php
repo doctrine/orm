@@ -18,11 +18,12 @@ trait ApplicationCompatibility
 {
     private static function addCommandToApplication(Application $application, Command $command): ?Command
     {
+        // @phpstan-ignore function.alreadyNarrowedType (This method did not exist before Symfony 7.4)
         if (method_exists(Application::class, 'addCommand')) {
-            // @phpstan-ignore method.notFound (This method will be added in Symfony 7.4)
             return $application->addCommand($command);
         }
 
+        // @phpstan-ignore method.notFound
         return $application->add($command);
     }
 }
