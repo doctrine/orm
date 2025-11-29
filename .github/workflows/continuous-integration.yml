@@ -84,6 +84,10 @@ jobs:
         run: "composer require doctrine/dbal ^${{ matrix.dbal-version }} --no-update"
         if: "${{ matrix.dbal-version != 'default' }}"
 
+      - name: "Downgrade VarExporter"
+        run: 'composer require --no-update "symfony/var-exporter:^6.4 || ^7.4"'
+        if: "${{ matrix.native_lazy == '0' }}"
+
       - name: "Install dependencies with Composer"
         uses: "ramsey/composer-install@v3"
         with:

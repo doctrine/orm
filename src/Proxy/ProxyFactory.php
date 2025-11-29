@@ -37,6 +37,7 @@ use function is_dir;
 use function is_int;
 use function is_writable;
 use function ltrim;
+use function method_exists;
 use function mkdir;
 use function preg_match_all;
 use function random_bytes;
@@ -159,6 +160,11 @@ EOPHP;
                     'https://github.com/doctrine/orm/pull/12005',
                     'Not enabling native lazy objects is deprecated and will be impossible in Doctrine ORM 4.0.',
                 );
+            }
+
+            // @phpstan-ignore function.impossibleType (This method has been removed in Symfony 8)
+            if (! method_exists(ProxyHelper::class, 'generateLazyGhost')) {
+                throw ORMInvalidArgumentException::lazyGhostUnavailable();
             }
 
             if (! $proxyDir) {
@@ -464,7 +470,7 @@ EOPHP;
 
     private function generateUseLazyGhostTrait(ClassMetadata $class): string
     {
-        // @phpstan-ignore staticMethod.deprecated (Because we support Symfony < 7.3)
+        // @phpstan-ignore staticMethod.notFound (This method has been removed in Symfony 8)
         $code = ProxyHelper::generateLazyGhost($class->getReflectionClass());
         $code = substr($code, 7 + (int) strpos($code, "\n{"));
         $code = substr($code, 0, (int) strpos($code, "\n}"));
