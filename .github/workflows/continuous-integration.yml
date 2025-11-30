@@ -1,4 +1,4 @@
-name: "CI"
+name: "CI: PHPUnit"
 
 on:
   pull_request:
@@ -27,7 +27,14 @@ env:
 
 jobs:
   phpunit-smoke-check:
-    name: "PHPUnit with SQLite"
+    name: >
+      SQLite - 
+      ${{ format('PHP {0} - DBAL {1} - ext. {2} - proxy {3}',
+        matrix.php-version || 'Ø',
+        matrix.dbal-version || 'Ø',
+        matrix.extension || 'Ø',
+        matrix.proxy || 'Ø'
+      ) }}
     runs-on: "ubuntu-22.04"
 
     strategy:
@@ -106,7 +113,13 @@ jobs:
 
 
   phpunit-postgres:
-    name: "PHPUnit with PostgreSQL"
+    name: >
+      ${{ format('PostgreSQL {0} - PHP {1} - DBAL {2} - ext. {3}',
+        matrix.postgres-version || 'Ø',
+        matrix.php-version || 'Ø',
+        matrix.dbal-version || 'Ø',
+        matrix.extension || 'Ø'
+      ) }}
     runs-on: "ubuntu-22.04"
     needs: "phpunit-smoke-check"
 
@@ -181,7 +194,13 @@ jobs:
 
 
   phpunit-mariadb:
-    name: "PHPUnit with MariaDB"
+    name: >
+      ${{ format('MariaDB {0} - PHP {1} - DBAL {2} - ext. {3}',
+        matrix.mariadb-version || 'Ø',
+        matrix.php-version || 'Ø',
+        matrix.dbal-version || 'Ø',
+        matrix.extension || 'Ø'
+      ) }}
     runs-on: "ubuntu-22.04"
     needs: "phpunit-smoke-check"
 
@@ -253,7 +272,13 @@ jobs:
 
 
   phpunit-mysql:
-    name: "PHPUnit with MySQL"
+    name: >
+      ${{ format('MySQL {0} - PHP {1} - DBAL {2} - ext. {3}',
+        matrix.mysql-version || 'Ø',
+        matrix.php-version || 'Ø',
+        matrix.dbal-version || 'Ø',
+        matrix.extension || 'Ø'
+      ) }}
     runs-on: "ubuntu-22.04"
     needs: "phpunit-smoke-check"
 
@@ -332,7 +357,12 @@ jobs:
 
 
   phpunit-lower-php-versions:
-    name: "PHPUnit with SQLite"
+    name: >
+      SQLite - 
+      ${{ format('PHP {0} - deps {1}',
+        matrix.php-version || 'Ø',
+        matrix.deps || 'Ø'
+      ) }}
     runs-on: "ubuntu-22.04"
 
     strategy:
