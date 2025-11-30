@@ -182,6 +182,21 @@ Here is a complete list of ``Column``s attributes (all optional):
 - ``options``: Key-value pairs of options that get passed
   to the underlying database platform when generating DDL statements.
 
+Specifying default values
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+While it is possible to specify default values for properties in your
+PHP class, Doctrine also allows you to specify default values for
+database columns using the ``default`` key in the ``options`` array of
+the ``Column`` attribute.
+
+.. configuration-block::
+   .. literalinclude:: basic-mapping/DefaultValues.php
+       :language: attribute
+
+   .. literalinclude:: basic-mapping/default-values.xml
+       :language: xml
+
 .. _reference-php-mapping-types:
 
 PHP Types Mapping

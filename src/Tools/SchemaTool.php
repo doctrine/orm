@@ -501,7 +501,6 @@ class SchemaTool
                 ], true)
                 && $options['default'] === $this->platform->getCurrentTimestampSQL()
             ) {
-                /** @phpstan-ignore class.notFound (if DefaultExpression exists, CurrentTimestamp exists as well) */
                 $options['default'] = new CurrentTimestamp();
             }
 
@@ -509,7 +508,6 @@ class SchemaTool
                 in_array($mapping->type, [Types::TIME_MUTABLE, Types::TIME_IMMUTABLE], true)
                 && $options['default'] === $this->platform->getCurrentTimeSQL()
             ) {
-                /** @phpstan-ignore class.notFound (if DefaultExpression exists, CurrentTime exists as well) */
                 $options['default'] = new CurrentTime();
             }
 
@@ -517,7 +515,6 @@ class SchemaTool
                 in_array($mapping->type, [Types::DATE_MUTABLE, Types::DATE_IMMUTABLE], true)
                 && $options['default'] === $this->platform->getCurrentDateSQL()
             ) {
-                /** @phpstan-ignore class.notFound (if DefaultExpression exists, CurrentDate exists as well) */
                 $options['default'] = new CurrentDate();
             }
         }
@@ -1038,7 +1035,7 @@ class SchemaTool
     {
         return $asset instanceof NamedObject
             ? $asset->getObjectName()->toString()
-            // DBAL < 4.4
+            // @phpstan-ignore method.deprecated (DBAL < 4.4)
             : $asset->getName();
     }
 }

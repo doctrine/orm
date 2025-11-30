@@ -17,6 +17,7 @@ use ReflectionProperty;
 use Symfony\Component\Cache\Adapter\AbstractAdapter;
 use Symfony\Component\Cache\Adapter\ApcuAdapter;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
+use Symfony\Component\Cache\Adapter\NullAdapter;
 
 class ORMSetupTest extends TestCase
 {
@@ -40,7 +41,7 @@ class ORMSetupTest extends TestCase
     {
         $this->expectNotToPerformAssertions();
 
-        ORMSetup::createXMLMetadataConfig(paths: [], isXsdValidationEnabled: false);
+        ORMSetup::createXMLMetadataConfig(paths: [], cache: new NullAdapter(), isXsdValidationEnabled: false);
     }
 
     #[RequiresPhpExtension('apcu')]
