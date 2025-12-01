@@ -79,8 +79,9 @@ Entities
 An entity is a lightweight, persistent domain object. An entity can
 be any regular PHP class observing the following restrictions:
 
--  An entity class must not be final nor read-only but
-   it may contain final methods or read-only properties.
+-  An entity class can be final or read-only when
+   you use :ref:`native lazy objects <reference-native-lazy-objects>`.
+   It may contain final methods or read-only properties too.
 -  Any two entity classes in a class hierarchy that inherit
    directly or indirectly from one another must not have a mapped
    property with the same name. That is, if B inherits from A then B
@@ -167,7 +168,7 @@ recommended, at least not as long as an entity instance still holds
 references to proxy objects or is still managed by an EntityManager.
 By default, serializing proxy objects does not initialize them. On
 unserialization, resulting objects are detached from the entity
-manager and cannot be initialiazed anymore. You can implement the
+manager and cannot be initialized anymore. You can implement the
 ``__serialize()`` method if you want to change that behavior, but
 then you need to ensure that you won't generate large serialized
 object graphs and take care of circular associations.

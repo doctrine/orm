@@ -11,14 +11,15 @@ use Doctrine\ORM\Mapping\Driver\AttributeDriver;
 use Doctrine\ORM\Mapping\Driver\XmlDriver;
 use Doctrine\ORM\ORMSetup;
 use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\IgnoreDeprecations;
 use PHPUnit\Framework\Attributes\RequiresPhpExtension;
 use PHPUnit\Framework\Attributes\RequiresSetting;
-use PHPUnit\Framework\Attributes\WithoutErrorHandler;
 use PHPUnit\Framework\TestCase;
 use ReflectionProperty;
 use Symfony\Component\Cache\Adapter\AbstractAdapter;
 use Symfony\Component\Cache\Adapter\ApcuAdapter;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
+use Symfony\Component\Cache\Adapter\NullAdapter;
 
 use function sys_get_temp_dir;
 
@@ -28,7 +29,7 @@ class ORMSetupTest extends TestCase
 {
     use VerifyDeprecations;
 
-    #[WithoutErrorHandler]
+    #[IgnoreDeprecations]
     public function testAttributeConfiguration(): void
     {
         if (PHP_VERSION_ID >= 80400) {
@@ -51,7 +52,7 @@ class ORMSetupTest extends TestCase
         self::assertInstanceOf(AttributeDriver::class, $config->getMetadataDriverImpl());
     }
 
-    #[WithoutErrorHandler]
+    #[IgnoreDeprecations]
     public function testXMLConfiguration(): void
     {
         if (PHP_VERSION_ID >= 80400) {
@@ -68,7 +69,7 @@ class ORMSetupTest extends TestCase
     {
         $this->expectNotToPerformAssertions();
 
-        ORMSetup::createXMLMetadataConfig(paths: [], isXsdValidationEnabled: false);
+        ORMSetup::createXMLMetadataConfig(paths: [], cache: new NullAdapter(), isXsdValidationEnabled: false);
     }
 
     #[RequiresPhpExtension('apcu')]
@@ -104,7 +105,7 @@ class ORMSetupTest extends TestCase
     }
 
     #[Group('DDC-1350')]
-    #[WithoutErrorHandler]
+    #[IgnoreDeprecations]
     public function testConfigureProxyDir(): void
     {
         $config = ORMSetup::createAttributeMetadataConfiguration([], true, '/foo');

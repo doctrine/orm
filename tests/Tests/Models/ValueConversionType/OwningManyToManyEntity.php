@@ -24,6 +24,10 @@ class OwningManyToManyEntity
     #[Id]
     public $id2;
 
+    /** @var string */
+    #[Column(type: 'rot13', length: 255, nullable: true)]
+    public $field = null;
+
     /** @var Collection<int, InversedManyToManyEntity> */
     #[JoinTable(name: 'vct_xref_manytomany')]
     #[JoinColumn(name: 'owning_id', referencedColumnName: 'id2')]

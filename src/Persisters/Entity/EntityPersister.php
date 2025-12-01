@@ -69,7 +69,7 @@ interface EntityPersister
     /**
      * Expands the parameters from the given criteria and use the correct binding types if found.
      *
-     * @param string[] $criteria
+     * @param array<string, mixed> $criteria
      *
      * @phpstan-return array{list<mixed>, list<ParameterType::*|ArrayParameterType::*|string>}
      */

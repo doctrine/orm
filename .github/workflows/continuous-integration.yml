@@ -1,4 +1,4 @@
-name: "Continuous Integration"
+name: "CI"
 
 on:
   pull_request:
@@ -35,6 +35,7 @@ jobs:
           - "8.2"
           - "8.3"
           - "8.4"
+          - "8.5"
         dbal-version:
           - "default"
           - "3.7"
@@ -67,7 +68,7 @@ jobs:
 
     steps:
       - name: "Checkout"
-        uses: "actions/checkout@v4"
+        uses: "actions/checkout@v6"
         with:
           fetch-depth: 2
 
@@ -83,6 +84,10 @@ jobs:
         run: "composer require doctrine/dbal ^${{ matrix.dbal-version }} --no-update"
         if: "${{ matrix.dbal-version != 'default' }}"
 
+      - name: "Downgrade VarExporter"
+        run: 'composer require --no-update "symfony/var-exporter:^6.4 || ^7.4"'
+        if: "${{ matrix.native_lazy == '0' }}"
+
       - name: "Install dependencies with Composer"
         uses: "ramsey/composer-install@v3"
         with:
@@ -95,17 +100,67 @@ jobs:
             ENABLE_SECOND_LEVEL_CACHE: 0
             ENABLE_NATIVE_LAZY_OBJECTS: ${{ matrix.native_lazy }}
 
-      - name: "Run PHPUnit with Second Level Cache"
-        run: "vendor/bin/phpunit -c ci/github/phpunit/${{ matrix.extension }}.xml --exclude-group performance,non-cacheable,locking_functional --coverage-clover=coverage-cache.xml"
+      - name: "Run PHPUnit with Second Level Cache and PHPUnit 10"
+        run: |
+          vendor/bin/phpunit -c ci/github/phpunit/${{ matrix.extension }}.xml \
+            --exclude-group=performance,non-cacheable,locking_functional \
+            --coverage-clover=coverage-cache.xml
+        if: "${{ matrix.php-version == '8.1' }}"
+        env:
+            ENABLE_SECOND_LEVEL_CACHE: 1
+            ENABLE_NATIVE_LAZY_OBJECTS: ${{ matrix.native_lazy }}
+
+      - name: "Run PHPUnit with Second Level Cache and PHPUnit 11+"
+        run: |
+          vendor/bin/phpunit -c ci/github/phpunit/${{ matrix.extension }}.xml \
+            --exclude-group=performance \
+            --exclude-group=non-cacheable \
+            --exclude-group=locking_functional \
+            --coverage-clover=coverage-cache.xml
+        if: "${{ matrix.php-version != '8.1' }}"
         env:
             ENABLE_SECOND_LEVEL_CACHE: 1
             ENABLE_NATIVE_LAZY_OBJECTS: ${{ matrix.native_lazy }}
 
       - name: "Upload coverage file"
-        uses: "actions/upload-artifact@v4"
+        uses: "actions/upload-artifact@v5"
         with:
           name: "phpunit-${{ matrix.extension }}-${{ matrix.php-version }}-${{ matrix.dbal-version }}-${{ matrix.deps }}-${{ matrix.native_lazy }}-coverage"
           path: "coverage*.xml"
+
+
+  phpunit-deprecations:
+    name: "PHPUnit (fail on deprecations)"
+    runs-on: "ubuntu-24.04"
+
+    steps:
+      -   name: "Checkout"
+          uses: "actions/checkout@v5"
+          with:
+            fetch-depth: 2
+
+      -   name: "Install PHP"
+          uses: "shivammathur/setup-php@v2"
+          with:
+            php-version: "8.5"
+            extensions: "apcu, pdo, sqlite3"
+            coverage: "pcov"
+            ini-values: "zend.assertions=1, apc.enable_cli=1"
+
+      -   name: "Allow dev dependencies"
+          run: composer config minimum-stability dev
+
+      -   name: "Install dependencies with Composer"
+          uses: "ramsey/composer-install@v3"
+          with:
+            composer-options: "--ignore-platform-req=php+"
+            dependency-versions: "highest"
+
+      -   name: "Run PHPUnit"
+          run: "vendor/bin/phpunit -c ci/github/phpunit/sqlite3.xml --fail-on-deprecation"
+          env:
+            ENABLE_SECOND_LEVEL_CACHE: 0
+            ENABLE_NATIVE_LAZY_OBJECTS: 1
 
 
   phpunit-postgres:
@@ -119,6 +174,7 @@ jobs:
           - "8.2"
           - "8.3"
           - "8.4"
+          - "8.5"
         dbal-version:
           - "default"
           - "3.7"
@@ -151,7 +207,7 @@ jobs:
 
     steps:
       - name: "Checkout"
-        uses: "actions/checkout@v4"
+        uses: "actions/checkout@v6"
         with:
           fetch-depth: 2
 
@@ -176,7 +232,7 @@ jobs:
         run: "vendor/bin/phpunit -c ci/github/phpunit/pdo_pgsql.xml --coverage-clover=coverage.xml"
 
       - name: "Upload coverage file"
-        uses: "actions/upload-artifact@v4"
+        uses: "actions/upload-artifact@v5"
         with:
           name: "${{ github.job }}-${{ matrix.postgres-version }}-${{ matrix.php-version }}-${{ matrix.dbal-version }}-${{ matrix.extension }}-coverage"
           path: "coverage.xml"
@@ -193,6 +249,7 @@ jobs:
           - "8.2"
           - "8.3"
           - "8.4"
+          - "8.5"
         dbal-version:
           - "default"
           - "3.7"
@@ -218,7 +275,7 @@ jobs:
 
     steps:
       - name: "Checkout"
-        uses: "actions/checkout@v4"
+        uses: "actions/checkout@v6"
         with:
           fetch-depth: 2
 
@@ -243,7 +300,7 @@ jobs:
         run: "vendor/bin/phpunit -c ci/github/phpunit/${{ matrix.extension }}.xml --coverage-clover=coverage.xml"
 
       - name: "Upload coverage file"
-        uses: "actions/upload-artifact@v4"
+        uses: "actions/upload-artifact@v5"
         with:
           name: "${{ github.job }}-${{ matrix.mariadb-version }}-${{ matrix.extension }}-${{ matrix.php-version }}-${{ matrix.dbal-version }}-coverage"
           path: "coverage.xml"
@@ -260,6 +317,7 @@ jobs:
           - "8.2"
           - "8.3"
           - "8.4"
+          - "8.5"
         dbal-version:
           - "default"
           - "3.7"
@@ -293,7 +351,7 @@ jobs:
 
     steps:
       - name: "Checkout"
-        uses: "actions/checkout@v4"
+        uses: "actions/checkout@v6"
         with:
           fetch-depth: 2
 
@@ -319,13 +377,27 @@ jobs:
         env:
             ENABLE_SECOND_LEVEL_CACHE: 0
 
-      - name: "Run PHPUnit with Second Level Cache"
-        run: "vendor/bin/phpunit -c ci/github/phpunit/${{ matrix.extension }}.xml --exclude-group performance,non-cacheable,locking_functional --coverage-clover=coverage-no-cache.xml"
+      - name: "Run PHPUnit with Second Level Cache and PHPUnit 10"
+        run: |
+          vendor/bin/phpunit -c ci/github/phpunit/${{ matrix.extension }}.xml \
+            --exclude-group=performance,non-cacheable,locking_functional \
+            --coverage-clover=coverage-no-cache.xml"
+        if: "${{ matrix.php-version == '8.1' }}"
+        env:
+            ENABLE_SECOND_LEVEL_CACHE: 1
+      - name: "Run PHPUnit with Second Level Cache and PHPUnit 11+"
+        run: |
+          vendor/bin/phpunit -c ci/github/phpunit/${{ matrix.extension }}.xml \
+            --exclude-group=performance \
+            --exclude-group=non-cacheable \
+            --exclude-group=locking_functional \
+            --coverage-clover=coverage-no-cache.xml
+        if: "${{ matrix.php-version != '8.1' }}"
         env:
             ENABLE_SECOND_LEVEL_CACHE: 1
 
       - name: "Upload coverage files"
-        uses: "actions/upload-artifact@v4"
+        uses: "actions/upload-artifact@v5"
         with:
           name: "${{ github.job }}-${{ matrix.mysql-version }}-${{ matrix.extension }}-${{ matrix.php-version }}-${{ matrix.dbal-version }}-coverage"
           path: "coverage*.xml"
@@ -343,12 +415,12 @@ jobs:
 
     steps:
       - name: "Checkout"
-        uses: "actions/checkout@v4"
+        uses: "actions/checkout@v6"
         with:
           fetch-depth: 2
 
       - name: "Download coverage files"
-        uses: "actions/download-artifact@v4"
+        uses: "actions/download-artifact@v6"
         with:
           path: "reports"
 

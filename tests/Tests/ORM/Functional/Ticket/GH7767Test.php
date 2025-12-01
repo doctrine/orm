@@ -45,7 +45,7 @@ class GH7767Test extends OrmFunctionalTestCase
         $parent = $this->_em->find(GH7767ParentEntity::class, 1);
         assert($parent instanceof GH7767ParentEntity);
 
-        $children = $parent->getChildren()->matching(Criteria::create());
+        $children = $parent->getChildren()->matching(Criteria::create(true));
 
         self::assertEquals(100, $children[0]->position);
         self::assertEquals(200, $children[1]->position);
@@ -58,7 +58,7 @@ class GH7767Test extends OrmFunctionalTestCase
         assert($parent instanceof GH7767ParentEntity);
 
         $children = $parent->getChildren()->matching(
-            Criteria::create()->orderBy(['position' => class_exists(Order::class) ? Order::Descending : 'DESC']),
+            Criteria::create(true)->orderBy(['position' => class_exists(Order::class) ? Order::Descending : 'DESC']),
         );
 
         self::assertEquals(300, $children[0]->position);

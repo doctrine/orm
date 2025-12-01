@@ -5,8 +5,6 @@
    :depth: 3
 
    tutorials/getting-started
-   tutorials/getting-started-database
-   tutorials/getting-started-models
    tutorials/working-with-indexed-associations
    tutorials/extra-lazy-associations
    tutorials/composite-primary-keys

@@ -14,9 +14,8 @@ use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use Generator;
 use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\Attributes\WithoutErrorHandler;
+use PHPUnit\Framework\Attributes\IgnoreDeprecations;
 use ReflectionMethod;
-use Symfony\Component\VarExporter\Instantiator;
 use Symfony\Component\VarExporter\VarExporter;
 
 use function file_get_contents;
@@ -35,7 +34,7 @@ class ParserResultSerializationTest extends OrmFunctionalTestCase
 
     /** @param Closure(ParserResult): ParserResult $toSerializedAndBack */
     #[DataProvider('provideToSerializedAndBack')]
-    #[WithoutErrorHandler]
+    #[IgnoreDeprecations]
     public function testSerializeParserResultForQueryWithSqlWalker(Closure $toSerializedAndBack): void
     {
         $query = $this->_em
@@ -77,11 +76,6 @@ class ParserResultSerializationTest extends OrmFunctionalTestCase
                 return unserialize(serialize($parserResult));
             },
         ];
-
-        $instantiatorMethod = new ReflectionMethod(Instantiator::class, 'instantiate');
-        if ($instantiatorMethod->getReturnType() === null) {
-            self::markTestSkipped('symfony/var-exporter 5.4+ is required.');
-        }
 
         yield 'symfony/var-exporter' => [
             static function (ParserResult $parserResult): ParserResult {
@@ -131,7 +125,6 @@ class ParserResultSerializationTest extends OrmFunctionalTestCase
     private static function parseQuery(Query $query): ParserResult
     {
         $r = new ReflectionMethod($query, 'parse');
-        $r->setAccessible(true);
 
         return $r->invoke($query);
     }

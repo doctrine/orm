@@ -76,6 +76,8 @@ Configuration Options
 The following sections describe all the configuration options
 available on a ``Doctrine\ORM\Configuration`` instance.
 
+.. _reference-native-lazy-objects:
+
 Native Lazy Objects (**OPTIONAL**)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -302,7 +304,7 @@ requests.
 Connection
 ----------
 
-The ``$connection`` passed as the first argument to he constructor of
+The ``$connection`` passed as the first argument to the constructor of
 ``EntityManager`` has to be an instance of ``Doctrine\DBAL\Connection``.
 You can use the factory ``Doctrine\DBAL\DriverManager::getConnection()``
 to create such a connection. The DBAL configuration is explained in the

@@ -400,13 +400,9 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
     public DiscriminatorColumnMapping|null $discriminatorColumn = null;
 
     /**
-     * READ-ONLY: The primary table definition. The definition is an array with the
-     * following entries:
+     * READ-ONLY: The primary table definition.
      *
-     * name => <tableName>
-     * schema => <schemaName>
-     * indexes => array
-     * uniqueConstraints => array
+     * "quoted" indicates whether the table name is quoted (with backticks) or not
      *
      * @var mixed[]
      * @phpstan-var array{
@@ -544,6 +540,8 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
     /**
      * The ReflectionProperty instances of the mapped class.
      *
+     * @deprecated Use $propertyAccessors instead.
+     *
      * @var LegacyReflectionFields|array<string, ReflectionProperty>
      */
     public LegacyReflectionFields|array $reflFields = [];
@@ -573,6 +571,8 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
     /**
      * Gets the ReflectionProperties of the mapped class.
      *
+     * @deprecated Use getPropertyAccessors() instead.
+     *
      * @return LegacyReflectionFields|ReflectionProperty[] An array of ReflectionProperty instances.
      * @phpstan-return LegacyReflectionFields|array<string, ReflectionProperty>
      */
@@ -593,6 +593,8 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
 
     /**
      * Gets a ReflectionProperty for a specific field of the mapped class.
+     *
+     * @deprecated Use getPropertyAccessor() instead.
      */
     public function getReflectionProperty(string $name): ReflectionProperty|null
     {
@@ -604,7 +606,11 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
         return $this->propertyAccessors[$name] ?? null;
     }
 
-    /** @throws BadMethodCallException If the class has a composite identifier. */
+    /**
+     * @deprecated Use getPropertyAccessor() instead.
+     *
+     * @throws BadMethodCallException If the class has a composite identifier.
+     */
     public function getSingleIdReflectionProperty(): ReflectionProperty|null
     {
         if ($this->isIdentifierComposite) {
@@ -818,7 +824,8 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
     public function wakeupReflection(ReflectionService $reflService): void
     {
         // Restore ReflectionClass and properties
-        $this->reflClass    = $reflService->getClass($this->name);
+        $this->reflClass = $reflService->getClass($this->name);
+        /** @phpstan-ignore property.deprecated */
         $this->reflFields   = new LegacyReflectionFields($this, $reflService);
         $this->instantiator = $this->instantiator ?: new Instantiator();
 

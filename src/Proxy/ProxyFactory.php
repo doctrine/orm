@@ -37,6 +37,7 @@ use function is_dir;
 use function is_int;
 use function is_writable;
 use function ltrim;
+use function method_exists;
 use function mkdir;
 use function preg_match_all;
 use function random_bytes;
@@ -152,21 +153,34 @@ EOPHP;
         string|null $proxyNs = null,
         bool|int $autoGenerate = self::AUTOGENERATE_NEVER,
     ) {
-        if (PHP_VERSION_ID >= 80400 && func_num_args() > 1) {
+        if (! $em->getConfiguration()->isNativeLazyObjectsEnabled()) {
+            if (PHP_VERSION_ID >= 80400) {
+                Deprecation::trigger(
+                    'doctrine/orm',
+                    'https://github.com/doctrine/orm/pull/12005',
+                    'Not enabling native lazy objects is deprecated and will be impossible in Doctrine ORM 4.0.',
+                );
+            }
+
+            // @phpstan-ignore function.impossibleType (This method has been removed in Symfony 8)
+            if (! method_exists(ProxyHelper::class, 'generateLazyGhost')) {
+                throw ORMInvalidArgumentException::lazyGhostUnavailable();
+            }
+
+            if (! $proxyDir) {
+                throw ORMInvalidArgumentException::proxyDirectoryRequired();
+            }
+
+            if (! $proxyNs) {
+                throw ORMInvalidArgumentException::proxyNamespaceRequired();
+            }
+        } elseif (PHP_VERSION_ID >= 80400 && func_num_args() > 1) {
             Deprecation::trigger(
                 'doctrine/orm',
                 'https://github.com/doctrine/orm/pull/12005',
                 'Passing more than just the EntityManager to the %s is deprecated and will not be possible in Doctrine ORM 4.0.',
                 __METHOD__,
             );
-        }
-
-        if (! $proxyDir && ! $em->getConfiguration()->isNativeLazyObjectsEnabled()) {
-            throw ORMInvalidArgumentException::proxyDirectoryRequired();
-        }
-
-        if (! $proxyNs && ! $em->getConfiguration()->isNativeLazyObjectsEnabled()) {
-            throw ORMInvalidArgumentException::proxyNamespaceRequired();
         }
 
         if (is_int($autoGenerate) ? $autoGenerate < 0 || $autoGenerate > 4 : ! is_bool($autoGenerate)) {
@@ -456,7 +470,7 @@ EOPHP;
 
     private function generateUseLazyGhostTrait(ClassMetadata $class): string
     {
-        // @phpstan-ignore staticMethod.deprecated (Because we support Symfony < 7.3)
+        // @phpstan-ignore staticMethod.notFound (This method has been removed in Symfony 8)
         $code = ProxyHelper::generateLazyGhost($class->getReflectionClass());
         $code = substr($code, 7 + (int) strpos($code, "\n{"));
         $code = substr($code, 0, (int) strpos($code, "\n}"));

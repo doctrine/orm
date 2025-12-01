@@ -12,7 +12,7 @@ trait JoinColumnProperties
         public readonly string|null $referencedColumnName = null,
         public readonly bool $deferrable = false,
         public readonly bool $unique = false,
-        public readonly bool $nullable = true,
+        public readonly bool|null $nullable = null,
         public readonly mixed $onDelete = null,
         public readonly string|null $columnDefinition = null,
         public readonly string|null $fieldName = null,

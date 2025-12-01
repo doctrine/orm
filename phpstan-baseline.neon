@@ -1,18 +1,6 @@
 parameters:
 	ignoreErrors:
 		-
-			message: '#^Expression "\$setCacheEntry\(\$data\)" on a separate line does not do anything\.$#'
-			identifier: expr.resultUnused
-			count: 1
-			path: src/AbstractQuery.php
-
-		-
-			message: '#^Expression "\$setCacheEntry\(\$stmt\)" on a separate line does not do anything\.$#'
-			identifier: expr.resultUnused
-			count: 1
-			path: src/AbstractQuery.php
-
-		-
 			message: '#^Method Doctrine\\ORM\\AbstractQuery\:\:getParameter\(\) should return Doctrine\\ORM\\Query\\Parameter\|null but returns Doctrine\\ORM\\Query\\Parameter\|false\|null\.$#'
 			identifier: return.type
 			count: 1
@@ -230,12 +218,6 @@ parameters:
 
 		-
 			message: '#^Parameter \#1 \$entityName of static method Doctrine\\ORM\\Cache\\Exception\\NonCacheableEntity\:\:fromEntity\(\) expects string, class\-string\|false given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Cache/DefaultQueryCache.php
-
-		-
-			message: '#^Parameter \#1 \$result of class Doctrine\\ORM\\Cache\\QueryCacheEntry constructor expects array\<string, mixed\>, array\<int\|string, array\<string, array\<mixed\>\>\> given\.$#'
 			identifier: argument.type
 			count: 1
 			path: src/Cache/DefaultQueryCache.php
@@ -517,6 +499,12 @@ parameters:
 			path: src/Cache/TimestampQueryCacheValidator.php
 
 		-
+			message: '#^Call to function is_a\(\) with arguments class\-string\<Doctrine\\ORM\\EntityRepository\>, ''Doctrine\\\\ORM\\\\EntityRepository'' and true will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: src/Configuration.php
+
+		-
 			message: '#^Method Doctrine\\ORM\\Configuration\:\:getDefaultRepositoryClassName\(\) return type with generic class Doctrine\\ORM\\EntityRepository does not specify its types\: T$#'
 			identifier: missingType.generics
 			count: 1
@@ -557,12 +545,6 @@ parameters:
 			identifier: method.childReturnType
 			count: 1
 			path: src/Decorator/EntityManagerDecorator.php
-
-		-
-			message: '#^Call to an undefined method object\:\:setEntityManager\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: src/EntityManager.php
 
 		-
 			message: '#^Method Doctrine\\ORM\\EntityManager\:\:checkLockRequirements\(\) has parameter \$class with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
@@ -733,13 +715,13 @@ parameters:
 			path: src/Internal/Hydration/AbstractHydrator.php
 
 		-
-			message: '#^Parameter &\$id by\-ref type of method Doctrine\\ORM\\Internal\\Hydration\\AbstractHydrator\:\:gatherRowData\(\) expects array\<string, string\>, array\<int\|string, string\> given\.$#'
+			message: '#^Parameter &\$id by\-ref type of method Doctrine\\ORM\\Internal\\Hydration\\AbstractHydrator\:\:gatherRowData\(\) expects array\<string, string\>, array\<string\> given\.$#'
 			identifier: parameterByRef.type
 			count: 1
 			path: src/Internal/Hydration/AbstractHydrator.php
 
 		-
-			message: '#^Parameter &\$nonemptyComponents by\-ref type of method Doctrine\\ORM\\Internal\\Hydration\\AbstractHydrator\:\:gatherRowData\(\) expects array\<string, bool\>, array\<int\|string, bool\> given\.$#'
+			message: '#^Parameter &\$nonemptyComponents by\-ref type of method Doctrine\\ORM\\Internal\\Hydration\\AbstractHydrator\:\:gatherRowData\(\) expects array\<string, bool\>, array\<bool\> given\.$#'
 			identifier: parameterByRef.type
 			count: 1
 			path: src/Internal/Hydration/AbstractHydrator.php
@@ -833,6 +815,12 @@ parameters:
 			identifier: missingType.generics
 			count: 1
 			path: src/Internal/HydrationCompleteHandler.php
+
+		-
+			message: '#^Offset int\|null might not exist on array\<int, object\>\.$#'
+			identifier: offsetAccess.notFound
+			count: 1
+			path: src/Internal/StronglyConnectedComponents.php
 
 		-
 			message: '#^Property Doctrine\\ORM\\Internal\\StronglyConnectedComponents\:\:\$representingNodes \(array\<int, object\>\) does not accept array\<int\|string, object\>\.$#'
@@ -1076,6 +1064,12 @@ parameters:
 
 		-
 			message: '#^Template type T is declared as covariant, but occurs in invariant position in property Doctrine\\ORM\\Mapping\\ClassMetadata\:\:\$reflClass\.$#'
+			identifier: generics.variance
+			count: 1
+			path: src/Mapping/ClassMetadata.php
+
+		-
+			message: '#^Template type T is declared as covariant, but occurs in invariant position in return type of method Doctrine\\ORM\\Mapping\\ClassMetadata\:\:getReflectionClass\(\)\.$#'
 			identifier: generics.variance
 			count: 1
 			path: src/Mapping/ClassMetadata.php
@@ -1333,69 +1327,45 @@ parameters:
 			path: src/Mapping/Driver/AttributeDriver.php
 
 		-
-			message: '#^Call to an undefined method Doctrine\\DBAL\\Schema\\ForeignKeyConstraint\:\:getReferencedColumnNames\(\)\.$#'
-			identifier: method.notFound
+			message: '#^Call to function method_exists\(\) with ''Doctrine\\\\DBAL\\\\Schema\\\\ForeignKeyConstraint'' and ''getReferencedColumn…'' will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
 			count: 1
 			path: src/Mapping/Driver/DatabaseDriver.php
 
 		-
-			message: '#^Call to an undefined method Doctrine\\DBAL\\Schema\\ForeignKeyConstraint\:\:getReferencedTableName\(\)\.$#'
-			identifier: method.notFound
+			message: '#^Call to function method_exists\(\) with ''Doctrine\\\\DBAL\\\\Schema\\\\ForeignKeyConstraint'' and ''getReferencedTableN…'' will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
 			count: 1
 			path: src/Mapping/Driver/DatabaseDriver.php
 
 		-
-			message: '#^Call to an undefined method Doctrine\\DBAL\\Schema\\ForeignKeyConstraint\:\:getReferencingColumnNames\(\)\.$#'
-			identifier: method.notFound
+			message: '#^Call to function method_exists\(\) with ''Doctrine\\\\DBAL\\\\Schema\\\\ForeignKeyConstraint'' and ''getReferencingColum…'' will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
 			count: 1
 			path: src/Mapping/Driver/DatabaseDriver.php
 
 		-
-			message: '#^Call to an undefined method Doctrine\\DBAL\\Schema\\Index\:\:getIndexedColumns\(\)\.$#'
-			identifier: method.notFound
+			message: '#^Call to function method_exists\(\) with ''Doctrine\\\\DBAL\\\\Schema\\\\Index'' and ''getIndexedColumns'' will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
 			count: 1
 			path: src/Mapping/Driver/DatabaseDriver.php
 
 		-
-			message: '#^Call to an undefined method Doctrine\\DBAL\\Schema\\Table\:\:getPrimaryKeyConstraint\(\)\.$#'
-			identifier: method.notFound
+			message: '#^Call to function method_exists\(\) with ''Doctrine\\\\DBAL\\\\Schema\\\\Table'' and ''getPrimaryKeyConstr…'' will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
 			count: 1
 			path: src/Mapping/Driver/DatabaseDriver.php
 
 		-
-			message: '#^Call to method getColumnName\(\) on an unknown class Doctrine\\DBAL\\Schema\\Index\\IndexedColumn\.$#'
-			identifier: class.notFound
+			message: '#^Call to function method_exists\(\) with Doctrine\\DBAL\\Schema\\Index and ''getType'' will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
 			count: 1
 			path: src/Mapping/Driver/DatabaseDriver.php
 
 		-
-			message: '#^Call to method getColumnNames\(\) on an unknown class Doctrine\\DBAL\\Schema\\PrimaryKeyConstraint\.$#'
-			identifier: class.notFound
-			count: 1
-			path: src/Mapping/Driver/DatabaseDriver.php
-
-		-
-			message: '#^Call to method toString\(\) on an unknown class Doctrine\\DBAL\\Schema\\Name\\UnqualifiedName\.$#'
-			identifier: class.notFound
-			count: 5
-			path: src/Mapping/Driver/DatabaseDriver.php
-
-		-
-			message: '#^Cannot call method getName\(\) on Doctrine\\DBAL\\Schema\\Column\|false\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: src/Mapping/Driver/DatabaseDriver.php
-
-		-
-			message: '#^Class Doctrine\\DBAL\\Schema\\Index\\IndexType not found\.$#'
-			identifier: class.notFound
-			count: 1
-			path: src/Mapping/Driver/DatabaseDriver.php
-
-		-
-			message: '#^Class Doctrine\\DBAL\\Schema\\PrimaryKeyConstraint not found\.$#'
-			identifier: class.notFound
-			count: 1
+			message: '#^Call to function method_exists\(\) with Doctrine\\DBAL\\Schema\\Table and ''getPrimaryKeyConstr…'' will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 2
 			path: src/Mapping/Driver/DatabaseDriver.php
 
 		-
@@ -1429,33 +1399,21 @@ parameters:
 			path: src/Mapping/Driver/DatabaseDriver.php
 
 		-
+			message: '#^Method Doctrine\\ORM\\Mapping\\Driver\\DatabaseDriver\:\:getAssetName\(\) has parameter \$asset with generic class Doctrine\\DBAL\\Schema\\AbstractAsset but does not specify its types\: N$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Mapping/Driver/DatabaseDriver.php
+
+		-
 			message: '#^Method Doctrine\\ORM\\Mapping\\Driver\\DatabaseDriver\:\:getClassNameForTable\(\) should return class\-string but returns string\.$#'
 			identifier: return.type
 			count: 2
 			path: src/Mapping/Driver/DatabaseDriver.php
 
 		-
-			message: '#^Parameter \#1 \$array of function sort contains unresolvable type\.$#'
-			identifier: argument.unresolvableType
-			count: 1
-			path: src/Mapping/Driver/DatabaseDriver.php
-
-		-
 			message: '#^Parameter \#2 \$columnName of method Doctrine\\ORM\\Mapping\\Driver\\DatabaseDriver\:\:getFieldNameForColumn\(\) expects string, string\|false given\.$#'
 			identifier: argument.type
 			count: 4
-			path: src/Mapping/Driver/DatabaseDriver.php
-
-		-
-			message: '#^Parameter \$indexedColumn of anonymous function has invalid type Doctrine\\DBAL\\Schema\\Index\\IndexedColumn\.$#'
-			identifier: class.notFound
-			count: 1
-			path: src/Mapping/Driver/DatabaseDriver.php
-
-		-
-			message: '#^Parameter \$name of anonymous function has invalid type Doctrine\\DBAL\\Schema\\Name\\UnqualifiedName\.$#'
-			identifier: class.notFound
-			count: 5
 			path: src/Mapping/Driver/DatabaseDriver.php
 
 		-
@@ -1571,6 +1529,12 @@ parameters:
 			identifier: argument.type
 			count: 1
 			path: src/Mapping/LegacyReflectionFields.php
+
+		-
+			message: '#^Strict comparison using \!\=\= between array\<string, string\> and null will always evaluate to true\.$#'
+			identifier: notIdentical.alwaysTrue
+			count: 1
+			path: src/Mapping/ManyToManyOwningSideMapping.php
 
 		-
 			message: '#^Method Doctrine\\ORM\\Mapping\\MappedSuperclass\:\:__construct\(\) has parameter \$repositoryClass with generic class Doctrine\\ORM\\EntityRepository but does not specify its types\: T$#'
@@ -2023,6 +1987,12 @@ parameters:
 			path: src/Persisters/Collection/OneToManyPersister.php
 
 		-
+			message: '#^Parameter \#1 \$columns of method Doctrine\\DBAL\\Platforms\\AbstractPlatform\:\:getColumnDeclarationListSQL\(\) expects list\<array\{name\: string, type\: Doctrine\\DBAL\\Types\\Type, default\: mixed, notnull\?\: bool, autoincrement\: bool, columnDefinition\: non\-empty\-string\|null, comment\: string, charset\?\: non\-empty\-string\|null, \.\.\.\}\>, array\<string, array\{name\: string, notnull\: true, type\: Doctrine\\DBAL\\Types\\Type\}\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Persisters/Collection/OneToManyPersister.php
+
+		-
 			message: '#^Method Doctrine\\ORM\\Persisters\\Entity\\AbstractEntityInheritancePersister\:\:getSelectColumnSQL\(\) has parameter \$class with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
 			identifier: missingType.generics
 			count: 1
@@ -2053,18 +2023,6 @@ parameters:
 			path: src/Persisters/Entity/BasicEntityPersister.php
 
 		-
-			message: '#^Access to an undefined property Doctrine\\ORM\\Mapping\\ManyToManyOwningSideMapping\|Doctrine\\ORM\\Mapping\\ManyToOneAssociationMapping\|Doctrine\\ORM\\Mapping\\OneToOneOwningSideMapping\:\:\$relationToTargetKeyColumns\.$#'
-			identifier: property.notFound
-			count: 1
-			path: src/Persisters/Entity/BasicEntityPersister.php
-
-		-
-			message: '#^Access to an undefined property Doctrine\\ORM\\Mapping\\ManyToManyOwningSideMapping\|Doctrine\\ORM\\Mapping\\ManyToOneAssociationMapping\|Doctrine\\ORM\\Mapping\\OneToOneOwningSideMapping\:\:\$sourceToTargetKeyColumns\.$#'
-			identifier: property.notFound
-			count: 1
-			path: src/Persisters/Entity/BasicEntityPersister.php
-
-		-
 			message: '#^Call to an undefined method Doctrine\\ORM\\Mapping\\ManyToManyInverseSideMapping\|Doctrine\\ORM\\Mapping\\ManyToManyOwningSideMapping\|Doctrine\\ORM\\Mapping\\ManyToOneAssociationMapping\|Doctrine\\ORM\\Mapping\\OneToManyAssociationMapping\|Doctrine\\ORM\\Mapping\\OneToOneInverseSideMapping\|Doctrine\\ORM\\Mapping\\OneToOneOwningSideMapping\:\:indexBy\(\)\.$#'
 			identifier: method.notFound
 			count: 1
@@ -2073,18 +2031,6 @@ parameters:
 		-
 			message: '#^Method Doctrine\\ORM\\Persisters\\Entity\\BasicEntityPersister\:\:__construct\(\) has parameter \$class with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
 			identifier: missingType.generics
-			count: 1
-			path: src/Persisters/Entity/BasicEntityPersister.php
-
-		-
-			message: '#^Method Doctrine\\ORM\\Persisters\\Entity\\BasicEntityPersister\:\:expandCriteriaParameters\(\) should return array\{list\<mixed\>, list\<Doctrine\\DBAL\\ArrayParameterType\:\:ASCII\|Doctrine\\DBAL\\ArrayParameterType\:\:BINARY\|Doctrine\\DBAL\\ArrayParameterType\:\:INTEGER\|Doctrine\\DBAL\\ArrayParameterType\:\:STRING\|Doctrine\\DBAL\\ParameterType\:\:ASCII\|Doctrine\\DBAL\\ParameterType\:\:BINARY\|Doctrine\\DBAL\\ParameterType\:\:BOOLEAN\|Doctrine\\DBAL\\ParameterType\:\:INTEGER\|Doctrine\\DBAL\\ParameterType\:\:LARGE_OBJECT\|Doctrine\\DBAL\\ParameterType\:\:NULL\|Doctrine\\DBAL\\ParameterType\:\:STRING\|string\>\} but returns array\{array\<mixed\>, list\<Doctrine\\DBAL\\ArrayParameterType\:\:ASCII\|Doctrine\\DBAL\\ArrayParameterType\:\:BINARY\|Doctrine\\DBAL\\ArrayParameterType\:\:INTEGER\|Doctrine\\DBAL\\ArrayParameterType\:\:STRING\|Doctrine\\DBAL\\ParameterType\:\:ASCII\|Doctrine\\DBAL\\ParameterType\:\:BINARY\|Doctrine\\DBAL\\ParameterType\:\:BOOLEAN\|Doctrine\\DBAL\\ParameterType\:\:INTEGER\|Doctrine\\DBAL\\ParameterType\:\:LARGE_OBJECT\|Doctrine\\DBAL\\ParameterType\:\:NULL\|Doctrine\\DBAL\\ParameterType\:\:STRING\|string\>\}\.$#'
-			identifier: return.type
-			count: 1
-			path: src/Persisters/Entity/BasicEntityPersister.php
-
-		-
-			message: '#^Method Doctrine\\ORM\\Persisters\\Entity\\BasicEntityPersister\:\:expandParameters\(\) should return array\{list\<mixed\>, list\<Doctrine\\DBAL\\ArrayParameterType\:\:ASCII\|Doctrine\\DBAL\\ArrayParameterType\:\:BINARY\|Doctrine\\DBAL\\ArrayParameterType\:\:INTEGER\|Doctrine\\DBAL\\ArrayParameterType\:\:STRING\|Doctrine\\DBAL\\ParameterType\:\:ASCII\|Doctrine\\DBAL\\ParameterType\:\:BINARY\|Doctrine\\DBAL\\ParameterType\:\:BOOLEAN\|Doctrine\\DBAL\\ParameterType\:\:INTEGER\|Doctrine\\DBAL\\ParameterType\:\:LARGE_OBJECT\|Doctrine\\DBAL\\ParameterType\:\:NULL\|Doctrine\\DBAL\\ParameterType\:\:STRING\|string\>\} but returns array\{array\<mixed\>, list\<Doctrine\\DBAL\\ArrayParameterType\:\:ASCII\|Doctrine\\DBAL\\ArrayParameterType\:\:BINARY\|Doctrine\\DBAL\\ArrayParameterType\:\:INTEGER\|Doctrine\\DBAL\\ArrayParameterType\:\:STRING\|Doctrine\\DBAL\\ParameterType\:\:ASCII\|Doctrine\\DBAL\\ParameterType\:\:BINARY\|Doctrine\\DBAL\\ParameterType\:\:BOOLEAN\|Doctrine\\DBAL\\ParameterType\:\:INTEGER\|Doctrine\\DBAL\\ParameterType\:\:LARGE_OBJECT\|Doctrine\\DBAL\\ParameterType\:\:NULL\|Doctrine\\DBAL\\ParameterType\:\:STRING\|string\>\}\.$#'
-			identifier: return.type
 			count: 1
 			path: src/Persisters/Entity/BasicEntityPersister.php
 
@@ -2125,12 +2071,6 @@ parameters:
 			path: src/Persisters/Entity/BasicEntityPersister.php
 
 		-
-			message: '#^Method Doctrine\\ORM\\Persisters\\Entity\\BasicEntityPersister\:\:getIndividualValue\(\) should return list\<mixed\> but returns array\<mixed\>\.$#'
-			identifier: return.type
-			count: 1
-			path: src/Persisters/Entity/BasicEntityPersister.php
-
-		-
 			message: '#^Method Doctrine\\ORM\\Persisters\\Entity\\BasicEntityPersister\:\:getSelectColumnAssociationSQL\(\) has parameter \$class with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
 			identifier: missingType.generics
 			count: 1
@@ -2139,18 +2079,6 @@ parameters:
 		-
 			message: '#^Method Doctrine\\ORM\\Persisters\\Entity\\BasicEntityPersister\:\:getSelectColumnSQL\(\) has parameter \$class with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
 			identifier: missingType.generics
-			count: 1
-			path: src/Persisters/Entity/BasicEntityPersister.php
-
-		-
-			message: '#^Method Doctrine\\ORM\\Persisters\\Entity\\BasicEntityPersister\:\:getTypes\(\) has parameter \$class with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
-			identifier: missingType.generics
-			count: 1
-			path: src/Persisters/Entity/BasicEntityPersister.php
-
-		-
-			message: '#^Method Doctrine\\ORM\\Persisters\\Entity\\BasicEntityPersister\:\:getTypes\(\) should return list\<Doctrine\\DBAL\\ArrayParameterType\:\:ASCII\|Doctrine\\DBAL\\ArrayParameterType\:\:BINARY\|Doctrine\\DBAL\\ArrayParameterType\:\:INTEGER\|Doctrine\\DBAL\\ArrayParameterType\:\:STRING\|Doctrine\\DBAL\\ParameterType\:\:ASCII\|Doctrine\\DBAL\\ParameterType\:\:BINARY\|Doctrine\\DBAL\\ParameterType\:\:BOOLEAN\|Doctrine\\DBAL\\ParameterType\:\:INTEGER\|Doctrine\\DBAL\\ParameterType\:\:LARGE_OBJECT\|Doctrine\\DBAL\\ParameterType\:\:NULL\|Doctrine\\DBAL\\ParameterType\:\:STRING\|string\> but returns list\<Doctrine\\DBAL\\ArrayParameterType\:\:ASCII\|Doctrine\\DBAL\\ArrayParameterType\:\:BINARY\|Doctrine\\DBAL\\ArrayParameterType\:\:INTEGER\|Doctrine\\DBAL\\ArrayParameterType\:\:STRING\|int\>\.$#'
-			identifier: return.type
 			count: 1
 			path: src/Persisters/Entity/BasicEntityPersister.php
 
@@ -2205,12 +2133,6 @@ parameters:
 		-
 			message: '#^Strict comparison using \!\=\= between mixed and null will always evaluate to true\.$#'
 			identifier: notIdentical.alwaysTrue
-			count: 1
-			path: src/Persisters/Entity/BasicEntityPersister.php
-
-		-
-			message: '#^Strict comparison using \=\=\= between string and null will always evaluate to false\.$#'
-			identifier: identical.alwaysFalse
 			count: 1
 			path: src/Persisters/Entity/BasicEntityPersister.php
 
@@ -2611,6 +2533,12 @@ parameters:
 			path: src/Query/Exec/MultiTableDeleteExecutor.php
 
 		-
+			message: '#^Parameter \#1 \$columns of method Doctrine\\DBAL\\Platforms\\AbstractPlatform\:\:getColumnDeclarationListSQL\(\) expects list\<array\{name\: string, type\: Doctrine\\DBAL\\Types\\Type, default\: mixed, notnull\?\: bool, autoincrement\: bool, columnDefinition\: non\-empty\-string\|null, comment\: string, charset\?\: non\-empty\-string\|null, \.\.\.\}\>, array\<string, array\{name\: string, notnull\: true, type\: Doctrine\\DBAL\\Types\\Type\}\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Query/Exec/MultiTableDeleteExecutor.php
+
+		-
 			message: '#^Argument of an invalid type list\<string\>\|string supplied for foreach, only iterables are supported\.$#'
 			identifier: foreach.nonIterable
 			count: 1
@@ -2619,6 +2547,12 @@ parameters:
 		-
 			message: '#^Method Doctrine\\ORM\\Query\\Exec\\MultiTableUpdateExecutor\:\:execute\(\) should return int but returns int\|string\.$#'
 			identifier: return.type
+			count: 1
+			path: src/Query/Exec/MultiTableUpdateExecutor.php
+
+		-
+			message: '#^Parameter \#1 \$columns of method Doctrine\\DBAL\\Platforms\\AbstractPlatform\:\:getColumnDeclarationListSQL\(\) expects list\<array\{name\: string, type\: Doctrine\\DBAL\\Types\\Type, default\: mixed, notnull\?\: bool, autoincrement\: bool, columnDefinition\: non\-empty\-string\|null, comment\: string, charset\?\: non\-empty\-string\|null, \.\.\.\}\>, array\<string, array\{name\: string, notnull\: true, type\: Doctrine\\DBAL\\Types\\Type\}\> given\.$#'
+			identifier: argument.type
 			count: 1
 			path: src/Query/Exec/MultiTableUpdateExecutor.php
 
@@ -2673,7 +2607,7 @@ parameters:
 		-
 			message: '#^Property Doctrine\\ORM\\Query\\Filter\\SQLFilter\:\:\$parameters \(array\<string, array\{type\: string, value\: mixed, is_list\: bool\}\>\) does not accept non\-empty\-array\<string, array\{value\: mixed, type\: Doctrine\\DBAL\\ArrayParameterType\|Doctrine\\DBAL\\ParameterType\|int\|string, is_list\: bool\}\>\.$#'
 			identifier: assign.propertyType
-			count: 1
+			count: 2
 			path: src/Query/Filter/SQLFilter.php
 
 		-
@@ -2947,12 +2881,6 @@ parameters:
 			path: src/Tools/Console/Command/GenerateProxiesCommand.php
 
 		-
-			message: '#^Parameter \#2 \$proxyDir of method Doctrine\\ORM\\Proxy\\ProxyFactory\:\:generateProxyClasses\(\) expects string\|null, string\|false given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Tools/Console/Command/GenerateProxiesCommand.php
-
-		-
 			message: '#^Method Doctrine\\ORM\\Tools\\Console\\Command\\MappingDescribeCommand\:\:getClassMetadata\(\) return type with generic class Doctrine\\ORM\\Mapping\\ClassMetadata does not specify its types\: T$#'
 			identifier: missingType.generics
 			count: 1
@@ -3109,44 +3037,77 @@ parameters:
 			path: src/Tools/ResolveTargetEntityListener.php
 
 		-
-			message: '#^Parameter \#1 \$className of method Doctrine\\Persistence\\Mapping\\AbstractClassMetadataFactory\<Doctrine\\ORM\\Mapping\\ClassMetadata\>\:\:setMetadataFor\(\) expects class\-string, \(int\|string\) given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Tools/ResolveTargetEntityListener.php
-
-		-
 			message: '#^Access to an undefined property Doctrine\\ORM\\Mapping\\ManyToManyInverseSideMapping\|Doctrine\\ORM\\Mapping\\ManyToManyOwningSideMapping\|Doctrine\\ORM\\Mapping\\ManyToOneAssociationMapping\|Doctrine\\ORM\\Mapping\\OneToManyAssociationMapping\|Doctrine\\ORM\\Mapping\\OneToOneInverseSideMapping\|Doctrine\\ORM\\Mapping\\OneToOneOwningSideMapping\:\:\$joinColumns\.$#'
 			identifier: property.notFound
 			count: 3
 			path: src/Tools/SchemaTool.php
 
 		-
-			message: '#^Call to an undefined method Doctrine\\DBAL\\Schema\\ForeignKeyConstraint\:\:getReferencedColumnNames\(\)\.$#'
-			identifier: method.notFound
+			message: '''
+				#^Call to deprecated method getColumns\(\) of class Doctrine\\DBAL\\Schema\\Index\:
+				Use \{@see getIndexedColumns\(\)\} instead\.$#
+			'''
+			identifier: method.deprecated
 			count: 1
 			path: src/Tools/SchemaTool.php
 
 		-
-			message: '#^Call to an undefined method Doctrine\\DBAL\\Schema\\ForeignKeyConstraint\:\:getReferencedTableName\(\)\.$#'
-			identifier: method.notFound
+			message: '''
+				#^Call to deprecated method getForeignColumns\(\) of class Doctrine\\DBAL\\Schema\\ForeignKeyConstraint\:
+				Use \{@see getReferencedColumnNames\(\)\} instead\.
+
+				Returns the names of the referenced table columns
+				the foreign key constraint is associated with\.$#
+			'''
+			identifier: method.deprecated
 			count: 1
 			path: src/Tools/SchemaTool.php
 
 		-
-			message: '#^Call to an undefined method Doctrine\\DBAL\\Schema\\ForeignKeyConstraint\:\:getReferencingColumnNames\(\)\.$#'
-			identifier: method.notFound
+			message: '''
+				#^Call to deprecated method getForeignTableName\(\) of class Doctrine\\DBAL\\Schema\\ForeignKeyConstraint\:
+				Use \{@see getReferencedTableName\(\)\} instead\.
+
+				Returns the name of the referenced table
+				the foreign key constraint is associated with\.$#
+			'''
+			identifier: method.deprecated
 			count: 1
 			path: src/Tools/SchemaTool.php
 
 		-
-			message: '#^Call to an undefined method Doctrine\\DBAL\\Schema\\Index\:\:getIndexedColumns\(\)\.$#'
-			identifier: method.notFound
+			message: '''
+				#^Call to deprecated method getLocalColumns\(\) of class Doctrine\\DBAL\\Schema\\ForeignKeyConstraint\:
+				Use \{@see getReferencingColumnNames\(\)\} instead\.$#
+			'''
+			identifier: method.deprecated
 			count: 1
 			path: src/Tools/SchemaTool.php
 
 		-
-			message: '#^Call to an undefined method Doctrine\\DBAL\\Schema\\Table\:\:dropForeignKey\(\)\.$#'
-			identifier: method.notFound
+			message: '''
+				#^Call to deprecated method getPrimaryKey\(\) of class Doctrine\\DBAL\\Schema\\Table\:
+				Use \{@see getPrimaryKeyConstraint\(\)\} instead\.$#
+			'''
+			identifier: method.deprecated
+			count: 1
+			path: src/Tools/SchemaTool.php
+
+		-
+			message: '''
+				#^Call to deprecated method removeForeignKey\(\) of class Doctrine\\DBAL\\Schema\\Table\:
+				Use \{@link dropForeignKey\(\)\} instead\.$#
+			'''
+			identifier: method.deprecated
+			count: 1
+			path: src/Tools/SchemaTool.php
+
+		-
+			message: '''
+				#^Call to deprecated method setPrimaryKey\(\) of class Doctrine\\DBAL\\Schema\\Table\:
+				Use \{@see addPrimaryKeyConstraint\(\)\} instead\.$#
+			'''
+			identifier: method.deprecated
 			count: 1
 			path: src/Tools/SchemaTool.php
 
@@ -3157,32 +3118,14 @@ parameters:
 			path: src/Tools/SchemaTool.php
 
 		-
-			message: '#^Call to method getColumnName\(\) on an unknown class Doctrine\\DBAL\\Schema\\Index\\IndexedColumn\.$#'
-			identifier: class.notFound
+			message: '#^Call to function method_exists\(\) with ''Doctrine\\\\DBAL\\\\Schema\\\\Index'' and ''getIndexedColumns'' will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
 			count: 1
 			path: src/Tools/SchemaTool.php
 
 		-
-			message: '#^Call to method getColumnNames\(\) on an unknown class Doctrine\\DBAL\\Schema\\PrimaryKeyConstraint\.$#'
-			identifier: class.notFound
-			count: 1
-			path: src/Tools/SchemaTool.php
-
-		-
-			message: '#^Call to method toString\(\) on an unknown class Doctrine\\DBAL\\Schema\\Name\\UnqualifiedName\.$#'
-			identifier: class.notFound
-			count: 3
-			path: src/Tools/SchemaTool.php
-
-		-
-			message: '#^Class Doctrine\\DBAL\\Schema\\PrimaryKeyConstraint not found\.$#'
-			identifier: class.notFound
-			count: 1
-			path: src/Tools/SchemaTool.php
-
-		-
-			message: '#^Method Doctrine\\DBAL\\Schema\\AbstractSchemaManager\<Doctrine\\DBAL\\Platforms\\AbstractPlatform\>\:\:createComparator\(\) invoked with 1 parameter, 0 required\.$#'
-			identifier: arguments.count
+			message: '#^Call to function method_exists\(\) with Doctrine\\DBAL\\Schema\\Table and ''getPrimaryKeyConstr…'' will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
 			count: 1
 			path: src/Tools/SchemaTool.php
 
@@ -3224,6 +3167,12 @@ parameters:
 
 		-
 			message: '#^Method Doctrine\\ORM\\Tools\\SchemaTool\:\:gatherRelationsSql\(\) has parameter \$class with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Tools/SchemaTool.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Tools\\SchemaTool\:\:getAssetName\(\) has parameter \$asset with generic class Doctrine\\DBAL\\Schema\\AbstractAsset but does not specify its types\: N$#'
 			identifier: missingType.generics
 			count: 1
 			path: src/Tools/SchemaTool.php
@@ -3289,15 +3238,45 @@ parameters:
 			path: src/Tools/SchemaTool.php
 
 		-
-			message: '#^Parameter \$indexedColumn of anonymous function has invalid type Doctrine\\DBAL\\Schema\\Index\\IndexedColumn\.$#'
-			identifier: class.notFound
+			message: '#^Parameter \#1 \$columnNames of method Doctrine\\DBAL\\Schema\\Table\:\:addIndex\(\) expects non\-empty\-list\<string\>, list\<string\> given\.$#'
+			identifier: argument.type
 			count: 1
 			path: src/Tools/SchemaTool.php
 
 		-
-			message: '#^Parameter \$name of anonymous function has invalid type Doctrine\\DBAL\\Schema\\Name\\UnqualifiedName\.$#'
-			identifier: class.notFound
-			count: 3
+			message: '#^Parameter \#1 \$columnNames of method Doctrine\\DBAL\\Schema\\Table\:\:addUniqueIndex\(\) expects non\-empty\-list\<string\>, array\<string\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Tools/SchemaTool.php
+
+		-
+			message: '#^Parameter \#2 \$columns of class Doctrine\\DBAL\\Schema\\Index constructor expects non\-empty\-list\<string\>, list\<string\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Tools/SchemaTool.php
+
+		-
+			message: '#^Parameter \#2 \$localColumnNames of method Doctrine\\DBAL\\Schema\\Table\:\:addForeignKeyConstraint\(\) expects non\-empty\-list\<string\>, list\<string\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Tools/SchemaTool.php
+
+		-
+			message: '#^Parameter \#2 \$primaryKeyColumns of method Doctrine\\ORM\\Tools\\SchemaTool\:\:addPrimaryKeyConstraint\(\) expects non\-empty\-array\<non\-empty\-string\>, list\<string\> given\.$#'
+			identifier: argument.type
+			count: 2
+			path: src/Tools/SchemaTool.php
+
+		-
+			message: '#^Parameter \#2 \$primaryKeyColumns of method Doctrine\\ORM\\Tools\\SchemaTool\:\:addPrimaryKeyConstraint\(\) expects non\-empty\-array\<non\-empty\-string\>, non\-empty\-list\<string\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Tools/SchemaTool.php
+
+		-
+			message: '#^Parameter \#3 \$foreignColumnNames of method Doctrine\\DBAL\\Schema\\Table\:\:addForeignKeyConstraint\(\) expects non\-empty\-list\<string\>, list\<string\> given\.$#'
+			identifier: argument.type
+			count: 1
 			path: src/Tools/SchemaTool.php
 
 		-
@@ -3367,6 +3346,12 @@ parameters:
 			path: src/UnitOfWork.php
 
 		-
+			message: '#^Access to an undefined property Doctrine\\ORM\\Mapping\\AssociationMapping\:\:\$joinColumns\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/UnitOfWork.php
+
+		-
 			message: '#^Access to an undefined property Doctrine\\ORM\\Mapping\\ManyToManyInverseSideMapping\|Doctrine\\ORM\\Mapping\\ManyToManyOwningSideMapping\|Doctrine\\ORM\\Mapping\\ManyToOneAssociationMapping\|Doctrine\\ORM\\Mapping\\OneToManyAssociationMapping\|Doctrine\\ORM\\Mapping\\OneToOneInverseSideMapping\|Doctrine\\ORM\\Mapping\\OneToOneOwningSideMapping\:\:\$inversedBy\.$#'
 			identifier: property.notFound
 			count: 1
@@ -3381,7 +3366,7 @@ parameters:
 		-
 			message: '#^Access to an undefined property Doctrine\\ORM\\Mapping\\ManyToManyInverseSideMapping\|Doctrine\\ORM\\Mapping\\ManyToManyOwningSideMapping\|Doctrine\\ORM\\Mapping\\ManyToOneAssociationMapping\|Doctrine\\ORM\\Mapping\\OneToManyAssociationMapping\|Doctrine\\ORM\\Mapping\\OneToOneInverseSideMapping\|Doctrine\\ORM\\Mapping\\OneToOneOwningSideMapping\:\:\$mappedBy\.$#'
 			identifier: property.notFound
-			count: 1
+			count: 3
 			path: src/UnitOfWork.php
 
 		-
@@ -3559,6 +3544,18 @@ parameters:
 			path: src/Utility/PersisterHelper.php
 
 		-
+			message: '#^Access to an undefined property Doctrine\\ORM\\Mapping\\ManyToManyOwningSideMapping\|Doctrine\\ORM\\Mapping\\ManyToOneAssociationMapping\|Doctrine\\ORM\\Mapping\\OneToOneOwningSideMapping\:\:\$relationToTargetKeyColumns\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Utility/PersisterHelper.php
+
+		-
+			message: '#^Access to an undefined property Doctrine\\ORM\\Mapping\\ManyToManyOwningSideMapping\|Doctrine\\ORM\\Mapping\\ManyToOneAssociationMapping\|Doctrine\\ORM\\Mapping\\OneToOneOwningSideMapping\:\:\$sourceToTargetKeyColumns\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Utility/PersisterHelper.php
+
+		-
 			message: '#^Method Doctrine\\ORM\\Utility\\PersisterHelper\:\:getTypeOfColumn\(\) has parameter \$class with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
 			identifier: missingType.generics
 			count: 1
@@ -3567,5 +3564,17 @@ parameters:
 		-
 			message: '#^Method Doctrine\\ORM\\Utility\\PersisterHelper\:\:getTypeOfField\(\) has parameter \$class with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
 			identifier: missingType.generics
+			count: 1
+			path: src/Utility/PersisterHelper.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Utility\\PersisterHelper\:\:inferParameterTypes\(\) has parameter \$class with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Utility/PersisterHelper.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Utility\\PersisterHelper\:\:inferParameterTypes\(\) should return list\<Doctrine\\DBAL\\ArrayParameterType\:\:ASCII\|Doctrine\\DBAL\\ArrayParameterType\:\:BINARY\|Doctrine\\DBAL\\ArrayParameterType\:\:INTEGER\|Doctrine\\DBAL\\ArrayParameterType\:\:STRING\|Doctrine\\DBAL\\ParameterType\:\:ASCII\|Doctrine\\DBAL\\ParameterType\:\:BINARY\|Doctrine\\DBAL\\ParameterType\:\:BOOLEAN\|Doctrine\\DBAL\\ParameterType\:\:INTEGER\|Doctrine\\DBAL\\ParameterType\:\:LARGE_OBJECT\|Doctrine\\DBAL\\ParameterType\:\:NULL\|Doctrine\\DBAL\\ParameterType\:\:STRING\|string\> but returns list\<Doctrine\\DBAL\\ArrayParameterType\:\:ASCII\|Doctrine\\DBAL\\ArrayParameterType\:\:BINARY\|Doctrine\\DBAL\\ArrayParameterType\:\:INTEGER\|Doctrine\\DBAL\\ArrayParameterType\:\:STRING\|int\>\.$#'
+			identifier: return.type
 			count: 1
 			path: src/Utility/PersisterHelper.php

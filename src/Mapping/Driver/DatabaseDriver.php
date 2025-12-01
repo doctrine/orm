@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Mapping\Driver;
 
+use Doctrine\DBAL\Schema\AbstractAsset;
 use Doctrine\DBAL\Schema\AbstractSchemaManager;
 use Doctrine\DBAL\Schema\Column;
 use Doctrine\DBAL\Schema\ForeignKeyConstraint;
@@ -11,6 +12,7 @@ use Doctrine\DBAL\Schema\Index;
 use Doctrine\DBAL\Schema\Index\IndexedColumn;
 use Doctrine\DBAL\Schema\Index\IndexType;
 use Doctrine\DBAL\Schema\Name\UnqualifiedName;
+use Doctrine\DBAL\Schema\NamedObject;
 use Doctrine\DBAL\Schema\PrimaryKeyConstraint;
 use Doctrine\DBAL\Schema\SchemaException;
 use Doctrine\DBAL\Schema\Table;
@@ -143,14 +145,14 @@ class DatabaseDriver implements MappingDriver
         $this->tables = $this->manyToManyTables = $this->classToTableNames = [];
 
         foreach ($entityTables as $table) {
-            $className = $this->getClassNameForTable($table->getName());
+            $className = $this->getClassNameForTable(self::getAssetName($table));
 
-            $this->classToTableNames[$className] = $table->getName();
-            $this->tables[$table->getName()]     = $table;
+            $this->classToTableNames[$className]      = self::getAssetName($table);
+            $this->tables[self::getAssetName($table)] = $table;
         }
 
         foreach ($manyToManyTables as $table) {
-            $this->manyToManyTables[$table->getName()] = $table;
+            $this->manyToManyTables[self::getAssetName($table)] = $table;
         }
     }
 
@@ -219,13 +221,13 @@ class DatabaseDriver implements MappingDriver
                 $localColumn = current(self::getReferencingColumnNames($myFk));
 
                 $associationMapping                 = [];
-                $associationMapping['fieldName']    = $this->getFieldNameForColumn($manyTable->getName(), current(self::getReferencingColumnNames($otherFk)), true);
+                $associationMapping['fieldName']    = $this->getFieldNameForColumn(self::getAssetName($manyTable), current(self::getReferencingColumnNames($otherFk)), true);
                 $associationMapping['targetEntity'] = $this->getClassNameForTable(self::getReferencedTableName($otherFk));
 
-                if (current($manyTable->getColumns())->getName() === $localColumn) {
-                    $associationMapping['inversedBy'] = $this->getFieldNameForColumn($manyTable->getName(), current(self::getReferencingColumnNames($myFk)), true);
+                if (self::getAssetName(current($manyTable->getColumns())) === $localColumn) {
+                    $associationMapping['inversedBy'] = $this->getFieldNameForColumn(self::getAssetName($manyTable), current(self::getReferencingColumnNames($myFk)), true);
                     $associationMapping['joinTable']  = [
-                        'name' => strtolower($manyTable->getName()),
+                        'name' => strtolower(self::getAssetName($manyTable)),
                         'joinColumns' => [],
                         'inverseJoinColumns' => [],
                     ];
@@ -250,7 +252,14 @@ class DatabaseDriver implements MappingDriver
                         ];
                     }
                 } else {
-                    $associationMapping['mappedBy'] = $this->getFieldNameForColumn($manyTable->getName(), current(self::getReferencingColumnNames($myFk)), true);
+                    $associationMapping['mappedBy'] = $this->getFieldNameForColumn(
+                        // @phpstan-ignore function.alreadyNarrowedType (DBAL 3 compatibility)
+                        method_exists(Table::class, 'getObjectName')
+                            ? $manyTable->getObjectName()->toString()
+                            : $manyTable->getName(), // DBAL < 4.4
+                        current(self::getReferencingColumnNames($myFk)),
+                        true,
+                    );
                 }
 
                 $metadata->mapManyToMany($associationMapping);
@@ -270,7 +279,7 @@ class DatabaseDriver implements MappingDriver
         $this->tables = $this->manyToManyTables = $this->classToTableNames = [];
 
         foreach ($this->sm->listTables() as $table) {
-            $tableName   = $table->getName();
+            $tableName   = self::getAssetName($table);
             $foreignKeys = $table->getForeignKeys();
 
             $allForeignKeyColumns = [];
@@ -335,7 +344,7 @@ class DatabaseDriver implements MappingDriver
                 $isUnique = $index->isUnique();
             }
 
-            $indexName      = $index->getName();
+            $indexName      = self::getAssetName($index);
             $indexColumns   = self::getIndexedColumns($index);
             $constraintType = $isUnique
                 ? 'uniqueConstraints'
@@ -364,13 +373,13 @@ class DatabaseDriver implements MappingDriver
         $fieldMappings = [];
 
         foreach ($columns as $column) {
-            if (in_array($column->getName(), $allForeignKeys, true)) {
+            if (in_array(self::getAssetName($column), $allForeignKeys, true)) {
                 continue;
             }
 
             $fieldMapping = $this->buildFieldMapping($tableName, $column);
 
-            if ($primaryKeys && in_array($column->getName(), $primaryKeys, true)) {
+            if ($primaryKeys && in_array(self::getAssetName($column), $primaryKeys, true)) {
                 $fieldMapping['id'] = true;
                 $ids[]              = $fieldMapping;
             }
@@ -411,8 +420,8 @@ class DatabaseDriver implements MappingDriver
     private function buildFieldMapping(string $tableName, Column $column): array
     {
         $fieldMapping = [
-            'fieldName'  => $this->getFieldNameForColumn($tableName, $column->getName(), false),
-            'columnName' => $column->getName(),
+            'fieldName'  => $this->getFieldNameForColumn($tableName, self::getAssetName($column), false),
+            'columnName' => self::getAssetName($column),
             'type'       => Type::getTypeRegistry()->lookupName($column->getType()),
             'nullable'   => ! $column->getNotnull(),
             'options'    => [
@@ -618,5 +627,13 @@ class DatabaseDriver implements MappingDriver
         }
 
         return null;
+    }
+
+    private static function getAssetName(AbstractAsset $asset): string
+    {
+        return $asset instanceof NamedObject
+            ? $asset->getObjectName()->toString()
+            // DBAL < 4.4
+            : $asset->getName();
     }
 }

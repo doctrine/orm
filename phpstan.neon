@@ -10,27 +10,15 @@ parameters:
         # We can be certain that those values are not matched.
         -
             message: '~^Match expression does not handle remaining values:~'
-            path: src/Persisters/Entity/BasicEntityPersister.php
+            path: src/Utility/PersisterHelper.php
 
         # DBAL 4 compatibility
         -
             message: '~^Method Doctrine\\ORM\\Query\\AST\\Functions\\TrimFunction::getTrimMode\(\) never returns .* so it can be removed from the return type\.$~'
             path: src/Query/AST/Functions/TrimFunction.php
         -
-            message: '~^Method Doctrine\\ORM\\Persisters\\Entity\\BasicEntityPersister\:\:getArrayBindingType\(\) never returns .* so it can be removed from the return type\.$~'
-            path: src/Persisters/Entity/BasicEntityPersister.php
-
-        -
-            message: '~^Call to static method unquoted\(\) on an unknown class Doctrine\\DBAL\\Schema\\Name\\Identifier\.$~'
-            path: src/Tools/SchemaTool.php
-
-        -
-            message: '~^Instantiated class Doctrine\\DBAL\\Schema\\Name\\UnqualifiedName not found\.$~'
-            path: src/Tools/SchemaTool.php
-
-        -
-            message: '~^Call to an undefined method Doctrine\\DBAL\\Schema\\Table::addPrimaryKeyConstraint\(\)\.$~'
-            path: src/Tools/SchemaTool.php
+            message: '~^Method Doctrine\\ORM\\Utility\\PersisterHelper\:\:getArrayBindingType\(\) never returns .* so it can be removed from the return type\.$~'
+            path: src/Utility/PersisterHelper.php
 
         # Compatibility with DBAL 3
         # See https://github.com/doctrine/dbal/pull/3480

@@ -1147,7 +1147,7 @@ final class Parser
             ];
         }
 
-        return new AST\EntityAsDtoArgumentExpression($expression, $identVariable);
+        return new AST\EntityAsDtoArgumentExpression($expression, $identVariable, $aliasResultVariable);
     }
 
     /**
@@ -1895,6 +1895,7 @@ final class Parser
             $expression = $this->NewObjectExpression();
         } elseif ($token->type === TokenType::T_IDENTIFIER && $peek->type !== TokenType::T_DOT && $peek->type !== TokenType::T_OPEN_PARENTHESIS) {
             $expression = $this->EntityAsDtoArgumentExpression();
+            $fieldAlias = $expression->aliasVariable;
         } else {
             $expression = $this->ScalarExpression();
         }

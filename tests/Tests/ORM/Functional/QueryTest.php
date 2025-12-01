@@ -403,13 +403,134 @@ class QueryTest extends OrmFunctionalTestCase
         }
     }
 
-    public function testToIterableWithMixedResultIsNotAllowed(): void
+    public function testToIterableWithMixedResultEntityScalars(): void
     {
-        $this->expectException(QueryException::class);
-        $this->expectExceptionMessage('Iterating a query with mixed results (using scalars) is not supported.');
+        $author           = new CmsUser();
+        $author->name     = 'Ben';
+        $author->username = 'beberlei';
 
-        $query = $this->_em->createQuery('select a, a.topic from ' . CmsArticle::class . ' a');
-        $query->toIterable();
+        $article1        = new CmsArticle();
+        $article1->topic = 'Doctrine 2';
+        $article1->text  = 'This is an introduction to Doctrine 2.';
+        $article1->setAuthor($author);
+
+        $article2        = new CmsArticle();
+        $article2->topic = 'Symfony 2';
+        $article2->text  = 'This is an introduction to Symfony 2.';
+        $article2->setAuthor($author);
+
+        $article3        = new CmsArticle();
+        $article3->topic = 'lala 2';
+        $article3->text  = 'This is an introduction to Symfony 2.';
+        $article3->setAuthor($author);
+
+        $this->_em->persist($article1);
+        $this->_em->persist($article2);
+        $this->_em->persist($article3);
+        $this->_em->persist($author);
+
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $query  = $this->_em->createQuery(
+            'select a, a.topic, a.text from ' . CmsArticle::class . ' a order by a.id asc',
+        );
+        $result = $query->toIterable();
+
+        $it = iterator_to_array($result);
+        $this->assertCount(3, $it);
+        $this->assertEquals('Doctrine 2', $it[0]['topic']);
+        $this->assertEquals('Doctrine 2', $it[0][0]->topic);
+        $this->assertEquals('lala 2', $it[2]['topic']);
+        $this->assertEquals('lala 2', $it[2][0]->topic);
+    }
+
+    public function testToIterableWithMixedResultArbitraryJoinsScalars(): void
+    {
+        $author           = new CmsUser();
+        $author->name     = 'Ben';
+        $author->username = 'beberlei';
+
+        $article1        = new CmsArticle();
+        $article1->topic = 'Doctrine 2';
+        $article1->text  = 'This is an introduction to Doctrine 2.';
+        $article1->setAuthor($author);
+
+        $article2        = new CmsArticle();
+        $article2->topic = 'Symfony 2';
+        $article2->text  = 'This is an introduction to Symfony 2.';
+        $article2->setAuthor($author);
+
+        $article3        = new CmsArticle();
+        $article3->topic = 'lala 2';
+        $article3->text  = 'This is an introduction to Symfony 2.';
+        $article3->setAuthor($author);
+
+        $this->_em->persist($article1);
+        $this->_em->persist($article2);
+        $this->_em->persist($article3);
+        $this->_em->persist($author);
+
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $query  = $this->_em->createQuery(
+            'select a, u, a.topic, a.text from ' . CmsArticle::class . ' a, ' . CmsUser::class . ' u WHERE a.user = u order by a.id asc',
+        );
+        $result = $query->toIterable();
+
+        $it = iterator_to_array($result);
+
+        $this->assertCount(3, $it);
+        $this->assertEquals('Doctrine 2', $it[0]['topic']);
+        $this->assertEquals('Doctrine 2', $it[0][0]->topic);
+        $this->assertEquals('beberlei', $it[0][1]->username);
+        $this->assertEquals('lala 2', $it[2]['topic']);
+        $this->assertEquals('lala 2', $it[2][0]->topic);
+        $this->assertEquals('beberlei', $it[2][1]->username);
+    }
+
+    public function testToIterableWithMixedResultScalarsOnly(): void
+    {
+        $author           = new CmsUser();
+        $author->name     = 'Ben';
+        $author->username = 'beberlei';
+
+        $article1        = new CmsArticle();
+        $article1->topic = 'Doctrine 2';
+        $article1->text  = 'This is an introduction to Doctrine 2.';
+        $article1->setAuthor($author);
+
+        $article2        = new CmsArticle();
+        $article2->topic = 'Symfony 2';
+        $article2->text  = 'This is an introduction to Symfony 2.';
+        $article2->setAuthor($author);
+
+        $article3        = new CmsArticle();
+        $article3->topic = 'lala 2';
+        $article3->text  = 'This is an introduction to Symfony 2.';
+        $article3->setAuthor($author);
+
+        $this->_em->persist($article1);
+        $this->_em->persist($article2);
+        $this->_em->persist($article3);
+        $this->_em->persist($author);
+
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $query  = $this->_em->createQuery(
+            'select a.topic, a.text from ' . CmsArticle::class . ' a order by a.id asc',
+        );
+        $result = $query->toIterable();
+
+        $it = iterator_to_array($result);
+
+        $this->assertEquals([
+            ['topic' => 'Doctrine 2', 'text' => 'This is an introduction to Doctrine 2.'],
+            ['topic' => 'Symfony 2', 'text' => 'This is an introduction to Symfony 2.'],
+            ['topic' => 'lala 2', 'text' => 'This is an introduction to Symfony 2.'],
+        ], $it);
     }
 
     public function testIterateResultClearEveryCycle(): void
@@ -428,7 +549,9 @@ class QueryTest extends OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $query = $this->_em->createQuery('select a from Doctrine\Tests\Models\CMS\CmsArticle a');
+        $query = $this->_em->createQuery(
+            'select a from Doctrine\Tests\Models\CMS\CmsArticle a order by a.id asc',
+        );
 
         $articles      = $query->toIterable();
         $iteratedCount = 0;

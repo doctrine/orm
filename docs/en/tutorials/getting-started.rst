@@ -49,8 +49,9 @@ An entity contains persistable properties. A persistable property
 is an instance variable of the entity that is saved into and retrieved from the database
 by Doctrine's data mapping capabilities.
 
-An entity class must not be final nor read-only, although
-it can contain final methods or read-only properties.
+An entity class can be final or read-only when you use
+:ref:`native lazy objects <reference-native-lazy-objects>`.
+It may contain final methods or read-only properties too.
 
 An Example Model: Bug Tracker
 -----------------------------
@@ -534,7 +535,7 @@ the ``id`` tag.  It has a ``generator`` tag nested inside, which
 specifies that the primary key generation mechanism should automatically
 use the database platform's native id generation strategy (for
 example, AUTO INCREMENT in the case of MySql, or Sequences in the
-case of PostgreSql and Oracle).
+case of PostgreSQL and Oracle).
 
 Now that we have defined our first entity and its metadata,
 let's update the database schema:
@@ -1287,7 +1288,7 @@ The console output of this script is then:
     result set to retrieve entities from the database. DQL boils down to a
     Native SQL statement and a ``ResultSetMapping`` instance itself. Using
     Native SQL you could even use stored procedures for data retrieval, or
-    make use of advanced non-portable database queries like PostgreSql's
+    make use of advanced non-portable database queries like PostgreSQL's
     recursive queries.
 
 

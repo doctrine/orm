@@ -11,7 +11,6 @@ build.properties.dev export-ignore
 build.xml export-ignore
 CONTRIBUTING.md export-ignore
 phpunit.xml.dist export-ignore
-run-all.sh export-ignore
 phpcs.xml.dist export-ignore
 phpbench.json export-ignore
 phpstan.neon export-ignore
