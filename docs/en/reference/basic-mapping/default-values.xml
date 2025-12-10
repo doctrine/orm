@@ -5,5 +5,12 @@
         <option name="default">Hello World!</option>
       </options>
     </field>
+    <field name="createdAt" insertable="false" updatable="false">
+      <options>
+        <option name="default">
+            <object class="Doctrine\DBAL\Schema\DefaultExpression\CurrentTimestamp"/>
+        </option>
+      </options>
+    </field>
   </entity>
 </doctrine-mapping>

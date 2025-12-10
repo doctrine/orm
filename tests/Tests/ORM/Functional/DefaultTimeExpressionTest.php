@@ -6,20 +6,148 @@ namespace Doctrine\Tests\ORM\Functional;
 
 use DateTime;
 use DateTimeImmutable;
+use Doctrine\DBAL\Platforms\AbstractMySQLPlatform;
+use Doctrine\DBAL\Schema\DefaultExpression;
+use Doctrine\DBAL\Schema\DefaultExpression\CurrentDate;
+use Doctrine\DBAL\Schema\DefaultExpression\CurrentTime;
+use Doctrine\DBAL\Schema\DefaultExpression\CurrentTimestamp;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\Deprecations\PHPUnit\VerifyDeprecations;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use PHPUnit\Framework\Attributes\IgnoreDeprecations;
+use PHPUnit\Framework\Attributes\RequiresMethod;
+
+use function interface_exists;
 
 class DefaultTimeExpressionTest extends OrmFunctionalTestCase
 {
     use VerifyDeprecations;
 
-    public function testUsingTimeRelatedDefaultExpressionCausesNoDbalDeprecation(): void
+    #[IgnoreDeprecations]
+    #[RequiresMethod(DefaultExpression::class, 'toSQL')]
+    public function testUsingTimeRelatedDefaultExpressionCausesAnOrmDeprecationAndNoDbalDeprecation(): void
     {
+        $platform = $this->_em->getConnection()->getDatabasePlatform();
+
+        if (
+            $platform->getCurrentTimestampSQL() !== 'CURRENT_TIMESTAMP'
+            || $platform->getCurrentTimeSQL() !== 'CURRENT_TIME'
+            || $platform->getCurrentDateSQL() !== 'CURRENT_DATE'
+        ) {
+            $this->markTestSkipped(
+                'This test requires platforms to support exactly CURRENT_TIMESTAMP, CURRENT_TIME and CURRENT_DATE.',
+            );
+        }
+
+        if ($platform instanceof AbstractMySQLPlatform) {
+            $this->markTestSkipped(
+                'MySQL platform does not support CURRENT_TIME or CURRENT_DATE as default expression.',
+            );
+        }
+
+        $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/issues/12252');
+        $this->expectNoDeprecationWithIdentifier('https://github.com/doctrine/dbal/pull/7195');
+
+        $this->createSchemaForModels(LegacyTimeEntity::class);
+        $this->_em->persist($entity = new LegacyTimeEntity());
+        $this->_em->flush();
+        $this->_em->find(LegacyTimeEntity::class, $entity->id);
+    }
+
+    public function testNoDeprecationsAreTrownWhenTheyCannotBeAddressed(): void
+    {
+        if (interface_exists(DefaultExpression::class)) {
+            $this->markTestSkipped(
+                'This test requires Doctrine DBAL 4.3 or lower.',
+            );
+        }
+
+        $platform = $this->_em->getConnection()->getDatabasePlatform();
+
+        if (
+            $platform->getCurrentTimestampSQL() !== 'CURRENT_TIMESTAMP'
+            || $platform->getCurrentTimeSQL() !== 'CURRENT_TIME'
+            || $platform->getCurrentDateSQL() !== 'CURRENT_DATE'
+        ) {
+            $this->markTestSkipped(
+                'This test requires platforms to support exactly CURRENT_TIMESTAMP, CURRENT_TIME and CURRENT_DATE.',
+            );
+        }
+
+        if ($platform instanceof AbstractMySQLPlatform) {
+            $this->markTestSkipped(
+                'MySQL platform does not support CURRENT_TIME or CURRENT_DATE as default expression.',
+            );
+        }
+
+        $this->expectNoDeprecationWithIdentifier('https://github.com/doctrine/orm/issues/12252');
+        $this->expectNoDeprecationWithIdentifier('https://github.com/doctrine/dbal/pull/7195');
+
+        $this->createSchemaForModels(LegacyTimeEntity::class);
+        $this->_em->persist($entity = new LegacyTimeEntity());
+        $this->_em->flush();
+        $this->_em->find(LegacyTimeEntity::class, $entity->id);
+    }
+
+    #[RequiresMethod(DefaultExpression::class, 'toSQL')]
+    public function testUsingDefaultExpressionInstancesCausesNoDeprecation(): void
+    {
+        $platform = $this->_em->getConnection()->getDatabasePlatform();
+
+        if ($platform instanceof AbstractMySQLPlatform) {
+            $this->markTestSkipped('MySQL platform does not support CURRENT_TIME or CURRENT_DATE as default expression.');
+        }
+
+        $this->expectNoDeprecationWithIdentifier('https://github.com/doctrine/orm/issues/12252');
         $this->expectNoDeprecationWithIdentifier('https://github.com/doctrine/dbal/pull/7195');
 
         $this->createSchemaForModels(TimeEntity::class);
+        $this->_em->persist($entity = new TimeEntity());
+        $this->_em->flush();
+        $this->_em->find(TimeEntity::class, $entity->id);
     }
+}
+
+#[ORM\Entity]
+class LegacyTimeEntity
+{
+    #[ORM\Id]
+    #[ORM\Column]
+    #[ORM\GeneratedValue]
+    public int $id;
+
+    #[ORM\Column(
+        type: Types::DATETIME_MUTABLE,
+        options: ['default' => 'CURRENT_TIMESTAMP'],
+        insertable: false,
+        updatable: false,
+    )]
+    public DateTime $createdAt;
+
+    #[ORM\Column(
+        type: Types::DATETIME_IMMUTABLE,
+        options: ['default' => 'CURRENT_TIMESTAMP'],
+        insertable: false,
+        updatable: false,
+    )]
+    public DateTimeImmutable $createdAtImmutable;
+
+    #[ORM\Column(
+        type: Types::TIME_MUTABLE,
+        options: ['default' => 'CURRENT_TIME'],
+        insertable: false,
+        updatable: false,
+    )]
+    public DateTime $createdTime;
+
+    #[ORM\Column(
+        type: Types::DATE_MUTABLE,
+        options: ['default' => 'CURRENT_DATE'],
+        insertable: false,
+        updatable: false,
+    )]
+    public DateTime $createdDate;
 }
 
 #[ORM\Entity]
@@ -27,17 +155,38 @@ class TimeEntity
 {
     #[ORM\Id]
     #[ORM\Column]
+    #[ORM\GeneratedValue]
     public int $id;
 
-    #[ORM\Column(options: ['default' => 'CURRENT_TIMESTAMP'])]
+    #[ORM\Column(
+        type: Types::DATETIME_MUTABLE,
+        options: ['default' => new CurrentTimestamp()],
+        insertable: false,
+        updatable: false,
+    )]
     public DateTime $createdAt;
 
-    #[ORM\Column(options: ['default' => 'CURRENT_TIMESTAMP'])]
+    #[ORM\Column(
+        type: Types::DATETIME_IMMUTABLE,
+        options: ['default' => new CurrentTimestamp()],
+        insertable: false,
+        updatable: false,
+    )]
     public DateTimeImmutable $createdAtImmutable;
 
-    #[ORM\Column(options: ['default' => 'CURRENT_TIME'])]
+    #[ORM\Column(
+        type: Types::TIME_MUTABLE,
+        options: ['default' => new CurrentTime()],
+        insertable: false,
+        updatable: false,
+    )]
     public DateTime $createdTime;
 
-    #[ORM\Column(options: ['default' => 'CURRENT_DATE'])]
+    #[ORM\Column(
+        type: Types::DATE_MUTABLE,
+        options: ['default' => new CurrentDate()],
+        insertable: false,
+        updatable: false,
+    )]
     public DateTime $createdDate;
 }

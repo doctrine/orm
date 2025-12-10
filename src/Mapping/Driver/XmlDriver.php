@@ -16,6 +16,7 @@ use LogicException;
 use SimpleXMLElement;
 
 use function assert;
+use function class_exists;
 use function constant;
 use function count;
 use function defined;
@@ -656,15 +657,30 @@ class XmlDriver extends FileDriver
      * Parses (nested) option elements.
      *
      * @return mixed[] The options array.
-     * @phpstan-return array<int|string, array<int|string, mixed|string>|bool|string>
+     * @phpstan-return array<int|string, array<int|string, mixed|string>|bool|string|object>
      */
     private function parseOptions(SimpleXMLElement|null $options): array
     {
         $array = [];
 
         foreach ($options ?? [] as $option) {
+            $value = null;
             if ($option->count()) {
-                $value = $this->parseOptions($option->children());
+                // Check if this option contains an <object> element
+                $children         = $option->children();
+                $hasObjectElement = false;
+
+                foreach ($children as $child) {
+                    if ($child->getName() === 'object') {
+                        $value            = $this->parseObjectElement($child);
+                        $hasObjectElement = true;
+                        break;
+                    }
+                }
+
+                if (! $hasObjectElement) {
+                    $value = $this->parseOptions($children);
+                }
             } else {
                 $value = (string) $option;
             }
@@ -682,6 +698,33 @@ class XmlDriver extends FileDriver
         }
 
         return $array;
+    }
+
+    /**
+     * Parses an <object> element and returns the instantiated object.
+     *
+     * @param SimpleXMLElement $objectElement The XML element.
+     *
+     * @return object The instantiated object.
+     *
+     * @throws MappingException If the object specification is invalid.
+     * @throws InvalidArgumentException If the class does not exist.
+     */
+    private function parseObjectElement(SimpleXMLElement $objectElement): object
+    {
+        $attributes = $objectElement->attributes();
+
+        if (! isset($attributes->class)) {
+            throw MappingException::missingRequiredOption('object', 'class');
+        }
+
+        $className = (string) $attributes->class;
+
+        if (! class_exists($className)) {
+            throw new InvalidArgumentException(sprintf('Class "%s" does not exist', $className));
+        }
+
+        return new $className();
     }
 
     /**
