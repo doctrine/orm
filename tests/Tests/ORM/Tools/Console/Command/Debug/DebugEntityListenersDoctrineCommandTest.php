@@ -53,24 +53,14 @@ class DebugEntityListenersDoctrineCommandTest extends TestCase
 Entity listeners for Doctrine\Tests\ORM\Tools\Console\Command\Debug\DebugEntityListenersDoctrineCommandTest
 ===========================================================================================================
 
-"postPersist" event
--------------------
-
- ------- ------------------------------------------------------------------------------------ 
-  Order   Listener                                                                            
- ------- ------------------------------------------------------------------------------------ 
-  #1      Doctrine\Tests\ORM\Tools\Console\Command\Debug\Fixtures\BazListener::postPersist()  
- ------- ------------------------------------------------------------------------------------ 
-
-"preUpdate" event
------------------
-
- ------- ---------------------------------------------------------------------------------- 
-  Order   Listener                                                                          
- ------- ---------------------------------------------------------------------------------- 
-  #1      Doctrine\Tests\ORM\Tools\Console\Command\Debug\Fixtures\FooListener::preUpdate()  
-  #2      Doctrine\Tests\ORM\Tools\Console\Command\Debug\Fixtures\BarListener::__invoke()   
- ------- ---------------------------------------------------------------------------------- 
+ ------------- ------- ------------------------------------------------------------------------------------ 
+  Event         Order   Listener                                                                            
+ ------------- ------- ------------------------------------------------------------------------------------ 
+  postPersist   #1      Doctrine\Tests\ORM\Tools\Console\Command\Debug\Fixtures\BazListener::postPersist()  
+ ------------- ------- ------------------------------------------------------------------------------------ 
+  preUpdate     #1      Doctrine\Tests\ORM\Tools\Console\Command\Debug\Fixtures\FooListener::preUpdate()    
+                #2      Doctrine\Tests\ORM\Tools\Console\Command\Debug\Fixtures\BarListener::__invoke()     
+ ------------- ------- ------------------------------------------------------------------------------------ 
 
 
 TXT
@@ -89,14 +79,11 @@ TXT
 Entity listeners for Doctrine\Tests\ORM\Tools\Console\Command\Debug\DebugEntityListenersDoctrineCommandTest
 ===========================================================================================================
 
-"postPersist" event
--------------------
-
- ------- ------------------------------------------------------------------------------------ 
-  Order   Listener                                                                            
- ------- ------------------------------------------------------------------------------------ 
-  #1      Doctrine\Tests\ORM\Tools\Console\Command\Debug\Fixtures\BazListener::postPersist()  
- ------- ------------------------------------------------------------------------------------ 
+ ------------- ------- ------------------------------------------------------------------------------------ 
+  Event         Order   Listener                                                                            
+ ------------- ------- ------------------------------------------------------------------------------------ 
+  postPersist   #1      Doctrine\Tests\ORM\Tools\Console\Command\Debug\Fixtures\BazListener::postPersist()  
+ ------------- ------- ------------------------------------------------------------------------------------ 
 
 
 TXT
@@ -112,13 +99,8 @@ TXT
 
         self::assertSame(<<<'TXT'
 
-Entity listeners for Doctrine\Tests\ORM\Tools\Console\Command\Debug\DebugEntityListenersDoctrineCommandTest
-===========================================================================================================
+ [INFO] No listeners are configured for the "preRemove" event.                                                          
 
-"preRemove" event
------------------
-
- No listeners are configured for this event.
 
 TXT
             , $commandTester->getDisplay(true));

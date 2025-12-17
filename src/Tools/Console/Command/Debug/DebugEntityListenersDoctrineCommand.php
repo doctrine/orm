@@ -7,6 +7,7 @@ namespace Doctrine\ORM\Tools\Console\Command\Debug;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Symfony\Component\Console\Completion\CompletionInput;
 use Symfony\Component\Console\Completion\CompletionSuggestions;
+use Symfony\Component\Console\Helper\TableSeparator;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -77,35 +78,39 @@ EOT);
 
         $eventName = $input->getArgument('event');
 
-        $allListeners = $eventName === null
-            ? $classMetadata->entityListeners
-            : [$eventName => $classMetadata->entityListeners[$eventName] ?? []];
+        if ($eventName === null) {
+            $allListeners = $classMetadata->entityListeners;
+            if (! $allListeners) {
+                $io->info(sprintf('No listeners are configured for the "%s" entity.', $entityName));
 
-        ksort($allListeners);
+                return self::SUCCESS;
+            }
+
+            ksort($allListeners);
+        } else {
+            if (! isset($classMetadata->entityListeners[$eventName])) {
+                $io->info(sprintf('No listeners are configured for the "%s" event.', $eventName));
+
+                return self::SUCCESS;
+            }
+
+            $allListeners = [$eventName => $classMetadata->entityListeners[$eventName]];
+        }
 
         $io->title(sprintf('Entity listeners for <info>%s</info>', $entityName));
 
-        if (! $allListeners) {
-            $io->text('No listeners are configured for this entity.');
-
-            return self::SUCCESS;
-        }
-
+        $rows = [];
         foreach ($allListeners as $event => $listeners) {
-            $io->section(sprintf('"%s" event', $event));
-
-            if (! $listeners) {
-                $io->text('No listeners are configured for this event.');
-                continue;
+            if ($rows) {
+                $rows[] = new TableSeparator();
             }
 
-            $rows = [];
             foreach ($listeners as $order => $listener) {
-                $rows[] = [sprintf('#%d', ++$order), sprintf('%s::%s()', $listener['class'], $listener['method'])];
+                $rows[] = [$order === 0 ? $event : '', sprintf('#%d', ++$order), sprintf('%s::%s()', $listener['class'], $listener['method'])];
             }
-
-            $io->table(['Order', 'Listener'], $rows);
         }
+
+        $io->table(['Event', 'Order', 'Listener'], $rows);
 
         return self::SUCCESS;
     }
