@@ -14,10 +14,16 @@ use Doctrine\Persistence\Mapping\Driver\MappingDriver;
 use Doctrine\Tests\ORM\Tools\Console\Command\Debug\Fixtures\BarListener;
 use Doctrine\Tests\ORM\Tools\Console\Command\Debug\Fixtures\BazListener;
 use Doctrine\Tests\ORM\Tools\Console\Command\Debug\Fixtures\FooListener;
+use PHPUnit\Framework\Attributes\TestWith;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Application;
+use Symfony\Component\Console\Completion\CompletionInput;
+use Symfony\Component\Console\Completion\CompletionSuggestions;
+use Symfony\Component\Console\Completion\Suggestion;
 use Symfony\Component\Console\Tester\CommandTester;
+
+use function array_map;
 
 class DebugEntityListenersDoctrineCommandTest extends TestCase
 {
@@ -47,14 +53,14 @@ class DebugEntityListenersDoctrineCommandTest extends TestCase
 Entity listeners for Doctrine\Tests\ORM\Tools\Console\Command\Debug\DebugEntityListenersDoctrineCommandTest
 ===========================================================================================================
 
-"postPersists" event
---------------------
+"postPersist" event
+-------------------
 
- ------- ------------------------------------------------------------------------------------- 
-  Order   Listener                                                                             
- ------- ------------------------------------------------------------------------------------- 
-  #1      Doctrine\Tests\ORM\Tools\Console\Command\Debug\Fixtures\BazListener::postPersists()  
- ------- ------------------------------------------------------------------------------------- 
+ ------- ------------------------------------------------------------------------------------ 
+  Order   Listener                                                                            
+ ------- ------------------------------------------------------------------------------------ 
+  #1      Doctrine\Tests\ORM\Tools\Console\Command\Debug\Fixtures\BazListener::postPersist()  
+ ------- ------------------------------------------------------------------------------------ 
 
 "preUpdate" event
 -----------------
@@ -75,7 +81,7 @@ TXT
     {
         $commandTester = new CommandTester($this->command);
         $commandTester->execute(
-            ['command' => $this->command->getName(), 'entity' => self::class, 'event' => 'postPersists'],
+            ['command' => $this->command->getName(), 'entity' => self::class, 'event' => 'postPersist'],
         );
 
         self::assertSame(<<<'TXT'
@@ -83,14 +89,14 @@ TXT
 Entity listeners for Doctrine\Tests\ORM\Tools\Console\Command\Debug\DebugEntityListenersDoctrineCommandTest
 ===========================================================================================================
 
-"postPersists" event
---------------------
+"postPersist" event
+-------------------
 
- ------- ------------------------------------------------------------------------------------- 
-  Order   Listener                                                                             
- ------- ------------------------------------------------------------------------------------- 
-  #1      Doctrine\Tests\ORM\Tools\Console\Command\Debug\Fixtures\BazListener::postPersists()  
- ------- ------------------------------------------------------------------------------------- 
+ ------- ------------------------------------------------------------------------------------ 
+  Order   Listener                                                                            
+ ------- ------------------------------------------------------------------------------------ 
+  #1      Doctrine\Tests\ORM\Tools\Console\Command\Debug\Fixtures\BazListener::postPersist()  
+ ------- ------------------------------------------------------------------------------------ 
 
 
 TXT
@@ -118,8 +124,26 @@ TXT
             , $commandTester->getDisplay(true));
     }
 
+    /**
+     * @param list<string> $args
+     * @param list<string> $expectedSuggestions
+     */
+    #[TestWith([['console'], 1, [self::class]])]
+    #[TestWith([['console', self::class], 2, ['preUpdate', 'postPersist']])]
+    #[TestWith([['console', 'NonExistentEntity'], 2, []])]
+    public function testComplete(array $args, int $currentIndex, array $expectedSuggestions): void
+    {
+        $input = CompletionInput::fromTokens($args, $currentIndex);
+        $input->bind($this->command->getDefinition());
+        $suggestions = new CompletionSuggestions();
+
+        $this->command->complete($input, $suggestions);
+
+        self::assertSame($expectedSuggestions, array_map(static fn (Suggestion $suggestion) => $suggestion->getValue(), $suggestions->getValueSuggestions()));
+    }
+
     /** @return MockObject&ManagerRegistry */
-    private function getMockManagerRegistry(): MockObject
+    private function getMockManagerRegistry(): ManagerRegistry
     {
         $mappingDriverMock = $this->createMock(MappingDriver::class);
         $mappingDriverMock->method('getAllClassNames')->willReturn([self::class]);
@@ -130,14 +154,14 @@ TXT
         $classMetadata = new ClassMetadata(self::class);
         $classMetadata->addEntityListener('preUpdate', FooListener::class, 'preUpdate');
         $classMetadata->addEntityListener('preUpdate', BarListener::class, '__invoke');
-        $classMetadata->addEntityListener('postPersists', BazListener::class, 'postPersists');
+        $classMetadata->addEntityListener('postPersist', BazListener::class, 'postPersist');
 
         $emMock = $this->createMock(EntityManagerInterface::class);
         $emMock->method('getConfiguration')->willReturn($config);
         $emMock->method('getClassMetadata')->willReturn($classMetadata);
 
         $doctrineMock = $this->createMock(ManagerRegistry::class);
-        $doctrineMock->method('getManagerNames')->willReturn(['default']);
+        $doctrineMock->method('getManagerNames')->willReturn(['default' => 'entity_manager.default']);
         $doctrineMock->method('getManager')->willReturn($emMock);
         $doctrineMock->method('getManagerForClass')->willReturn($emMock);
 

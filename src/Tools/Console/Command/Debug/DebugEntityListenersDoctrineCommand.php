@@ -51,8 +51,16 @@ EOT);
         $entityName = $input->getArgument('entity');
 
         if ($entityName === null) {
+            $choices = $this->listAllEntities();
+
+            if ($choices === []) {
+                $io->error('No entities are configured.');
+
+                return self::FAILURE;
+            }
+
             /** @var class-string $entityName */
-            $entityName = $io->choice('Which entity do you want to list listeners for?', $this->listAllEntities());
+            $entityName = $io->choice('Which entity do you want to list listeners for?', $choices);
         }
 
         $entityName    = ltrim($entityName, '\\');

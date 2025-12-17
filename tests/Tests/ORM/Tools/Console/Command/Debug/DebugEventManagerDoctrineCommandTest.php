@@ -12,10 +12,16 @@ use Doctrine\Persistence\ManagerRegistry;
 use Doctrine\Tests\ORM\Tools\Console\Command\Debug\Fixtures\BarListener;
 use Doctrine\Tests\ORM\Tools\Console\Command\Debug\Fixtures\BazListener;
 use Doctrine\Tests\ORM\Tools\Console\Command\Debug\Fixtures\FooListener;
+use PHPUnit\Framework\Attributes\TestWith;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Application;
+use Symfony\Component\Console\Completion\CompletionInput;
+use Symfony\Component\Console\Completion\CompletionSuggestions;
+use Symfony\Component\Console\Completion\Suggestion;
 use Symfony\Component\Console\Tester\CommandTester;
+
+use function array_map;
 
 class DebugEventManagerDoctrineCommandTest extends TestCase
 {
@@ -45,14 +51,14 @@ class DebugEventManagerDoctrineCommandTest extends TestCase
 Event listeners for default entity manager
 ==========================================
 
-"postPersists" event
---------------------
+"postPersist" event
+-------------------
 
- ------- ------------------------------------------------------------------------------------- 
-  Order   Listener                                                                             
- ------- ------------------------------------------------------------------------------------- 
-  #1      Doctrine\Tests\ORM\Tools\Console\Command\Debug\Fixtures\BazListener::postPersists()  
- ------- ------------------------------------------------------------------------------------- 
+ ------- ------------------------------------------------------------------------------------ 
+  Order   Listener                                                                            
+ ------- ------------------------------------------------------------------------------------ 
+  #1      Doctrine\Tests\ORM\Tools\Console\Command\Debug\Fixtures\BazListener::postPersist()  
+ ------- ------------------------------------------------------------------------------------ 
 
 "preUpdate" event
 -----------------
@@ -73,7 +79,7 @@ TXT
     {
         $commandTester = new CommandTester($this->command);
         $commandTester->execute(
-            ['command' => $this->command->getName(), 'event' => 'postPersists'],
+            ['command' => $this->command->getName(), 'event' => 'postPersist'],
         );
 
         self::assertSame(<<<'TXT'
@@ -81,14 +87,14 @@ TXT
 Event listeners for default entity manager
 ==========================================
 
-"postPersists" event
---------------------
+"postPersist" event
+-------------------
 
- ------- ------------------------------------------------------------------------------------- 
-  Order   Listener                                                                             
- ------- ------------------------------------------------------------------------------------- 
-  #1      Doctrine\Tests\ORM\Tools\Console\Command\Debug\Fixtures\BazListener::postPersists()  
- ------- ------------------------------------------------------------------------------------- 
+ ------- ------------------------------------------------------------------------------------ 
+  Order   Listener                                                                            
+ ------- ------------------------------------------------------------------------------------ 
+  #1      Doctrine\Tests\ORM\Tools\Console\Command\Debug\Fixtures\BazListener::postPersist()  
+ ------- ------------------------------------------------------------------------------------ 
 
 
 TXT
@@ -116,13 +122,30 @@ TXT
             , $commandTester->getDisplay(true));
     }
 
+    /**
+     * @param list<string> $args
+     * @param list<string> $expectedSuggestions
+     */
+    #[TestWith([['console'], 1, ['preUpdate', 'postPersist']])]
+    #[TestWith([['console', '--em'], 1, ['default']])]
+    public function testComplete(array $args, int $currentIndex, array $expectedSuggestions): void
+    {
+        $input = CompletionInput::fromTokens($args, $currentIndex);
+        $input->bind($this->command->getDefinition());
+        $suggestions = new CompletionSuggestions();
+
+        $this->command->complete($input, $suggestions);
+
+        self::assertSame($expectedSuggestions, array_map(static fn (Suggestion $suggestion) => $suggestion->getValue(), $suggestions->getValueSuggestions()));
+    }
+
     /** @return MockObject&ManagerRegistry */
-    private function getMockManagerRegistry(): MockObject
+    private function getMockManagerRegistry(): ManagerRegistry
     {
         $eventManager = new EventManager();
         $eventManager->addEventListener('preUpdate', new FooListener());
         $eventManager->addEventListener('preUpdate', new BarListener());
-        $eventManager->addEventListener('postPersists', new BazListener());
+        $eventManager->addEventListener('postPersist', new BazListener());
 
         $emMock = $this->createMock(EntityManagerInterface::class);
         $emMock->method('getEventManager')->willReturn($eventManager);
@@ -130,6 +153,7 @@ TXT
         $doctrineMock = $this->createMock(ManagerRegistry::class);
         $doctrineMock->method('getDefaultManagerName')->willReturn('default');
         $doctrineMock->method('getManager')->willReturn($emMock);
+        $doctrineMock->method('getManagerNames')->willReturn(['default' => 'entity_manager.default']);
 
         return $doctrineMock;
     }
