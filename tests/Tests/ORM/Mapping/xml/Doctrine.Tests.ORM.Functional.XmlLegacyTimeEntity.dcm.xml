@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
+                          https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+
+    <entity name="Doctrine\Tests\ORM\Functional\XmlLegacyTimeEntity">
+        <id name="id" type="integer" column="id">
+            <generator strategy="AUTO"/>
+        </id>
+
+        <field name="createdAt" type="datetime" insertable="false" updatable="false">
+            <options>
+                <option name="default">CURRENT_TIMESTAMP</option>
+            </options>
+        </field>
+
+        <field name="createdAtImmutable" type="datetime_immutable" insertable="false" updatable="false">
+            <options>
+                <option name="default">CURRENT_TIMESTAMP</option>
+            </options>
+        </field>
+
+        <field name="createdTime" type="time" insertable="false" updatable="false">
+            <options>
+                <option name="default">CURRENT_TIME</option>
+            </options>
+        </field>
+        <field name="createdDate" type="date" insertable="false" updatable="false">
+            <options>
+                <option name="default">CURRENT_DATE</option>
+            </options>
+        </field>
+    </entity>
+</doctrine-mapping>

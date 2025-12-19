@@ -23,6 +23,7 @@ use Doctrine\DBAL\Schema\PrimaryKeyConstraint;
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\DBAL\Schema\Table;
 use Doctrine\DBAL\Types\Types;
+use Doctrine\Deprecations\Deprecation;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\AssociationMapping;
 use Doctrine\ORM\Mapping\ClassMetadata;
@@ -501,6 +502,16 @@ class SchemaTool
                 ], true)
                 && $options['default'] === $this->platform->getCurrentTimestampSQL()
             ) {
+                Deprecation::trigger(
+                    'doctrine/orm',
+                    'https://github.com/doctrine/orm/issues/12252',
+                    <<<'DEPRECATION'
+                    Using "%s" as a default value for datetime fields is deprecated and
+                    will not be supported in Doctrine ORM 4.0.
+                    Pass a `Doctrine\DBAL\Schema\DefaultExpression\CurrentTimestamp` instance instead.
+                    DEPRECATION,
+                    $this->platform->getCurrentTimestampSQL(),
+                );
                 $options['default'] = new CurrentTimestamp();
             }
 
@@ -508,6 +519,16 @@ class SchemaTool
                 in_array($mapping->type, [Types::TIME_MUTABLE, Types::TIME_IMMUTABLE], true)
                 && $options['default'] === $this->platform->getCurrentTimeSQL()
             ) {
+                Deprecation::trigger(
+                    'doctrine/orm',
+                    'https://github.com/doctrine/orm/issues/12252',
+                    <<<'DEPRECATION'
+                    Using "%s" as a default value for time fields is deprecated and
+                    will not be supported in Doctrine ORM 4.0.
+                    Pass a `Doctrine\DBAL\Schema\DefaultExpression\CurrentTime` instance instead.
+                    DEPRECATION,
+                    $this->platform->getCurrentTimeSQL(),
+                );
                 $options['default'] = new CurrentTime();
             }
 
@@ -515,6 +536,16 @@ class SchemaTool
                 in_array($mapping->type, [Types::DATE_MUTABLE, Types::DATE_IMMUTABLE], true)
                 && $options['default'] === $this->platform->getCurrentDateSQL()
             ) {
+                Deprecation::trigger(
+                    'doctrine/orm',
+                    'https://github.com/doctrine/orm/issues/12252',
+                    <<<'DEPRECATION'
+                    Using "%s" as a default value for date fields is deprecated and
+                    will not be supported in Doctrine ORM 4.0.
+                    Pass a `Doctrine\DBAL\Schema\DefaultExpression\CurrentDate` instance instead.
+                    DEPRECATION,
+                    $this->platform->getCurrentDateSQL(),
+                );
                 $options['default'] = new CurrentDate();
             }
         }

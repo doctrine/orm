@@ -1351,7 +1351,7 @@ parameters:
 			path: src/Mapping/Driver/XmlDriver.php
 
 		-
-			message: '#^Parameter \#1 \$columnDef of method Doctrine\\ORM\\Mapping\\ClassMetadata\<T of object\>\:\:setDiscriminatorColumn\(\) expects array\{name\: string\|null, fieldName\?\: string\|null, type\?\: string\|null, length\?\: int\|null, columnDefinition\?\: string\|null, enumType\?\: class\-string\<BackedEnum\>\|null, options\?\: array\<string, mixed\>\|null\}\|Doctrine\\ORM\\Mapping\\DiscriminatorColumnMapping\|null, array\{name\: string\|null, type\: string, length\: int, columnDefinition\: string\|null, enumType\: string\|null, options\?\: array\<int\|string, array\<int\|string, mixed\>\|bool\|string\>\} given\.$#'
+			message: '#^Parameter \#1 \$columnDef of method Doctrine\\ORM\\Mapping\\ClassMetadata\<T of object\>\:\:setDiscriminatorColumn\(\) expects array\{name\: string\|null, fieldName\?\: string\|null, type\?\: string\|null, length\?\: int\|null, columnDefinition\?\: string\|null, enumType\?\: class\-string\<BackedEnum\>\|null, options\?\: array\<string, mixed\>\|null\}\|Doctrine\\ORM\\Mapping\\DiscriminatorColumnMapping\|null, array\{name\: string\|null, type\: string, length\: int, columnDefinition\: string\|null, enumType\: string\|null, options\?\: array\<int\|string, array\<int\|string, mixed\>\|bool\|object\|string\>\} given\.$#'
 			identifier: argument.type
 			count: 1
 			path: src/Mapping/Driver/XmlDriver.php
@@ -1381,7 +1381,7 @@ parameters:
 			path: src/Mapping/Driver/XmlDriver.php
 
 		-
-			message: '#^Property Doctrine\\ORM\\Mapping\\ClassMetadata\<T of object\>\:\:\$table \(array\{name\: string, schema\?\: string, indexes\?\: array, uniqueConstraints\?\: array, options\?\: array\<string, mixed\>, quoted\?\: bool\}\) does not accept array\{name\: string, schema\?\: string, indexes\?\: array, uniqueConstraints\?\: array, options\: array\<int\|string, array\<int\|string, mixed\>\|bool\|string\>, quoted\?\: bool\}\.$#'
+			message: '#^Property Doctrine\\ORM\\Mapping\\ClassMetadata\<T of object\>\:\:\$table \(array\{name\: string, schema\?\: string, indexes\?\: array, uniqueConstraints\?\: array, options\?\: array\<string, mixed\>, quoted\?\: bool\}\) does not accept array\{name\: string, schema\?\: string, indexes\?\: array, uniqueConstraints\?\: array, options\: array\<int\|string, array\<int\|string, mixed\>\|bool\|object\|string\>, quoted\?\: bool\}\.$#'
 			identifier: assign.propertyType
 			count: 1
 			path: src/Mapping/Driver/XmlDriver.php
