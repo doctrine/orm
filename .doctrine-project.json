@@ -24,36 +24,6 @@
             "current": true
         },
         {
-            "name": "3.5",
-            "slug": "3.5",
-            "maintained": false
-        },
-        {
-            "name": "3.4",
-            "slug": "3.4",
-            "maintained": false
-        },
-        {
-            "name": "3.3",
-            "slug": "3.3",
-            "maintained": false
-        },
-        {
-            "name": "3.2",
-            "slug": "3.2",
-            "maintained": false
-        },
-        {
-            "name": "3.1",
-            "slug": "3.1",
-            "maintained": false
-        },
-        {
-            "name": "3.0",
-            "slug": "3.0",
-            "maintained": false
-        },
-        {
             "name": "2.21",
             "branchName": "2.21.x",
             "slug": "2.21",
@@ -93,26 +63,6 @@
         {
             "name": "2.14",
             "slug": "2.14",
-            "maintained": false
-        },
-        {
-            "name": "2.13",
-            "slug": "2.13",
-            "maintained": false
-        },
-        {
-            "name": "2.12",
-            "slug": "2.12",
-            "maintained": false
-        },
-        {
-            "name": "2.11",
-            "slug": "2.11",
-            "maintained": false
-        },
-        {
-            "name": "2.10",
-            "slug": "2.10",
             "maintained": false
         }
     ]
