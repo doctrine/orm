@@ -1,4 +1,4 @@
-name: "CI"
+name: "CI: PHPUnit"
 
 on:
   pull_request:
@@ -25,7 +25,14 @@ env:
 
 jobs:
   phpunit-smoke-check:
-    name: "PHPUnit with SQLite"
+    name: >
+      SQLite -
+      ${{ format('PHP {0} - DBAL {1} - ext. {2} - proxy {3}',
+        matrix.php-version || 'Ø',
+        matrix.dbal-version || 'Ø',
+        matrix.extension || 'Ø',
+        matrix.proxy || 'Ø'
+      ) }}
     runs-on: "ubuntu-22.04"
 
     strategy:
@@ -143,7 +150,7 @@ jobs:
             ENABLE_NATIVE_LAZY_OBJECTS: ${{ matrix.native_lazy }}
 
       - name: "Upload coverage file"
-        uses: "actions/upload-artifact@v5"
+        uses: "actions/upload-artifact@v6"
         with:
           name: "phpunit-${{ matrix.extension }}-${{ matrix.php-version }}-${{ matrix.dbal-version }}-${{ matrix.deps }}-${{ matrix.stability }}-${{ matrix.native_lazy }}-coverage"
           path: "coverage*.xml"
@@ -184,7 +191,13 @@ jobs:
 
 
   phpunit-postgres:
-    name: "PHPUnit with PostgreSQL"
+    name: >
+      ${{ format('PostgreSQL {0} - PHP {1} - DBAL {2} - ext. {3}',
+        matrix.postgres-version || 'Ø',
+        matrix.php-version || 'Ø',
+        matrix.dbal-version || 'Ø',
+        matrix.extension || 'Ø'
+      ) }}
     runs-on: "ubuntu-22.04"
     needs: "phpunit-smoke-check"
 
@@ -252,14 +265,20 @@ jobs:
         run: "vendor/bin/phpunit -c ci/github/phpunit/pdo_pgsql.xml --coverage-clover=coverage.xml"
 
       - name: "Upload coverage file"
-        uses: "actions/upload-artifact@v5"
+        uses: "actions/upload-artifact@v6"
         with:
           name: "${{ github.job }}-${{ matrix.postgres-version }}-${{ matrix.php-version }}-${{ matrix.dbal-version }}-${{ matrix.extension }}-coverage"
           path: "coverage.xml"
 
 
   phpunit-mariadb:
-    name: "PHPUnit with MariaDB"
+    name: >
+      ${{ format('MariaDB {0} - PHP {1} - DBAL {2} - ext. {3}',
+        matrix.mariadb-version || 'Ø',
+        matrix.php-version || 'Ø',
+        matrix.dbal-version || 'Ø',
+        matrix.extension || 'Ø'
+      ) }}
     runs-on: "ubuntu-22.04"
     needs: "phpunit-smoke-check"
 
@@ -320,14 +339,20 @@ jobs:
         run: "vendor/bin/phpunit -c ci/github/phpunit/${{ matrix.extension }}.xml --coverage-clover=coverage.xml"
 
       - name: "Upload coverage file"
-        uses: "actions/upload-artifact@v5"
+        uses: "actions/upload-artifact@v6"
         with:
           name: "${{ github.job }}-${{ matrix.mariadb-version }}-${{ matrix.extension }}-${{ matrix.php-version }}-${{ matrix.dbal-version }}-coverage"
           path: "coverage.xml"
 
 
   phpunit-mysql:
-    name: "PHPUnit with MySQL"
+    name: >
+      ${{ format('MySQL {0} - PHP {1} - DBAL {2} - ext. {3}',
+        matrix.mysql-version || 'Ø',
+        matrix.php-version || 'Ø',
+        matrix.dbal-version || 'Ø',
+        matrix.extension || 'Ø'
+      ) }}
     runs-on: "ubuntu-22.04"
     needs: "phpunit-smoke-check"
 
@@ -417,7 +442,7 @@ jobs:
             ENABLE_SECOND_LEVEL_CACHE: 1
 
       - name: "Upload coverage files"
-        uses: "actions/upload-artifact@v5"
+        uses: "actions/upload-artifact@v6"
         with:
           name: "${{ github.job }}-${{ matrix.mysql-version }}-${{ matrix.extension }}-${{ matrix.php-version }}-${{ matrix.dbal-version }}-coverage"
           path: "coverage*.xml"
@@ -440,7 +465,7 @@ jobs:
           fetch-depth: 2
 
       - name: "Download coverage files"
-        uses: "actions/download-artifact@v6"
+        uses: "actions/download-artifact@v7"
         with:
           path: "reports"
 
