@@ -344,10 +344,10 @@ the Query object which can be retrieved from ``EntityManager#createQuery()``.
 Executing a Query
 ^^^^^^^^^^^^^^^^^
 
-The QueryBuilder is a builder object only -  it has no means of actually
-executing the Query. Additionally a set of parameters such as query hints
-cannot be set on the QueryBuilder itself. This is why you always have to convert
-a querybuilder instance into a Query object:
+The QueryBuilder is only a builder object - it has no means of actually
+executing the Query. Additional functionality, such as enabling the result cache,
+cannot be set on the QueryBuilder itself. This is why you must always convert
+a QueryBuilder instance into a Query object:
 
 .. code-block:: php
 
@@ -355,8 +355,7 @@ a querybuilder instance into a Query object:
     // $qb instanceof QueryBuilder
     $query = $qb->getQuery();
 
-    // Set additional Query options
-    $query->setQueryHint('foo', 'bar');
+    // Enable the result cache
     $query->enableResultCache(3600, 'my_custom_id');
 
     // Execute Query
