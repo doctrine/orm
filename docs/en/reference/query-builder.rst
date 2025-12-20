@@ -357,7 +357,7 @@ a querybuilder instance into a Query object:
 
     // Set additional Query options
     $query->setQueryHint('foo', 'bar');
-    $query->useResultCache('my_cache_id');
+    $query->enableResultCache(3600, 'my_custom_id');
 
     // Execute Query
     $result = $query->getResult();
