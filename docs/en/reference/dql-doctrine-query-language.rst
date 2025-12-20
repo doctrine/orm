@@ -1409,8 +1409,7 @@ Result Cache API:
 
     $query->setResultCacheDriver(new ApcCache());
 
-    $query->useResultCache(true)
-          ->setResultCacheLifeTime(3600);
+    $query->enableResultCache(3600);
 
     $result = $query->getResult(); // cache miss
 
@@ -1420,8 +1419,8 @@ Result Cache API:
     $query->setResultCacheId('my_query_result');
     $result = $query->getResult(); // saved in given result cache id.
 
-    // or call useResultCache() with all parameters:
-    $query->useResultCache(true, 3600, 'my_query_result');
+    // or call enableResultCache() with all parameters:
+    $query->enableResultCache(3600, 'my_query_result');
     $result = $query->getResult(); // cache hit!
 
     // Introspection
