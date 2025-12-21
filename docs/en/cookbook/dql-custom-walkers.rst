@@ -219,7 +219,8 @@ vendor specific features.
 Modifying the Output Walker to get the raw SQL with interpolated parameters
 ---------------------------------------------------------------------------
 
-Sometimes we may want to log or trace the raw SQL being generated from its DQL,
+Sometimes we may want to log or trace the raw SQL being generated from its DQL
+for profiling slow queries afterwards or audit queries that changed many rows
 ``$query->getSQL()`` will give us the prepared statement being passed to database
 with all values of SQL parameters being replaced by positional ``?`` or named ``:name``
 as parameters are interpolated into prepared statements by the database while executing the SQL.
