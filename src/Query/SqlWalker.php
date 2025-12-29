@@ -518,7 +518,7 @@ class SqlWalker
 
         if (! $this->query->getHint(self::HINT_DISABLE_COLLECTION_ORDER_BY)) {
             $orderBySql = $this->generateOrderedCollectionOrderByItems();
-            if (!$selectStatement->orderByClause && $orderBySql) {
+            if (! $selectStatement->orderByClause && $orderBySql) {
                 $sql .= ' ORDER BY ' . $orderBySql;
             }
         }
