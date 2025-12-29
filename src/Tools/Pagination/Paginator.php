@@ -9,10 +9,12 @@ use Countable;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Internal\SQLResultCasing;
 use Doctrine\ORM\NoResultException;
+use Doctrine\DBAL\Platforms\SQLServerPlatform;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\Parameter;
 use Doctrine\ORM\Query\Parser;
 use Doctrine\ORM\Query\ResultSetMapping;
+use Doctrine\ORM\Query\SqlWalker;
 use Doctrine\ORM\QueryBuilder;
 use IteratorAggregate;
 use Traversable;
@@ -120,6 +122,12 @@ class Paginator implements Countable, IteratorAggregate
             } else {
                 $this->appendTreeWalker($subQuery, LimitSubqueryWalker::class);
                 $this->unbindUnusedQueryParams($subQuery);
+            }
+
+            // disable collection ordering for SQL Server
+            $platform = $subQuery->getEntityManager()->getConnection()->getDatabasePlatform();
+            if ($platform instanceof SQLServerPlatform) {
+                $subQuery->setHint(SqlWalker::HINT_DISABLE_COLLECTION_ORDER_BY, true);
             }
 
             $subQuery->setFirstResult($offset)->setMaxResults($length);
