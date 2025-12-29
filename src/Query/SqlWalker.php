@@ -8,6 +8,7 @@ use BadMethodCallException;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\LockMode;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
+use Doctrine\DBAL\Platforms\SQLServerPlatform;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
@@ -54,11 +55,6 @@ class SqlWalker
      * Used to mark a query as containing a PARTIAL expression, which needs to be known by SLC.
      */
     public const HINT_PARTIAL = 'doctrine.partial';
-
-    /**
-     * Used to prevent nested ORDER BY statements which cause an exception in SQL Server
-     */
-    public const HINT_DISABLE_COLLECTION_ORDER_BY = 'doctrine.disableCollectionOrderBy';
 
     private readonly ResultSetMapping $rsm;
 
@@ -516,9 +512,9 @@ class SqlWalker
             $sql .= $this->walkOrderByClause($selectStatement->orderByClause);
         }
 
-        if (! $this->query->getHint(self::HINT_DISABLE_COLLECTION_ORDER_BY)) {
+        if (! $this->platform instanceof SQLServerPlatform) {
             $orderBySql = $this->generateOrderedCollectionOrderByItems();
-            if (!$selectStatement->orderByClause && $orderBySql) {
+            if (! $selectStatement->orderByClause && $orderBySql) {
                 $sql .= ' ORDER BY ' . $orderBySql;
             }
         }
