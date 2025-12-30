@@ -17,6 +17,7 @@ use Doctrine\ORM\UnitOfWork;
 use Generator;
 use LogicException;
 use ReflectionClass;
+use ReflectionEnum;
 
 use function array_key_exists;
 use function array_keys;
@@ -597,12 +598,17 @@ abstract class AbstractHydrator
      */
     final protected function buildEnum(mixed $value, string $enumType): BackedEnum|array
     {
+        $reflection  = new ReflectionEnum($enumType);
+        $isIntBacked = $reflection->isBacked() && $reflection->getBackingType()->getName() === 'int';
+
         if (is_array($value)) {
             return array_map(
-                static fn ($value) => $enumType::from($value),
+                static fn ($value) => $enumType::from($isIntBacked ? (int) $value : $value),
                 $value,
             );
         }
+
+        $value = $isIntBacked ? (int) $value : $value;
 
         return $enumType::from($value);
     }

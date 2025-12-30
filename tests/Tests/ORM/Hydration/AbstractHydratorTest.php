@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Hydration;
 
+use BackedEnum;
 use Doctrine\Common\EventManager;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
@@ -12,6 +13,8 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Events;
 use Doctrine\ORM\Internal\Hydration\AbstractHydrator;
 use Doctrine\ORM\Query\ResultSetMapping;
+use Doctrine\Tests\Models\Enums\AccessLevel;
+use Doctrine\Tests\Models\Enums\UserStatus;
 use Doctrine\Tests\Models\Hydration\SimpleEntity;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use LogicException;
@@ -144,6 +147,24 @@ class AbstractHydratorTest extends OrmFunctionalTestCase
         $this->hydrator->hydrateAll($this->mockResult, $this->mockResultMapping);
     }
 
+    public function testEnumCastsIntegerBackedEnumValues(): void
+    {
+        $accessLevel = $this->hydrator->buildEnumForTesting('2', AccessLevel::class);
+        $userStatus  = $this->hydrator->buildEnumForTesting('active', UserStatus::class);
+
+        self::assertSame(AccessLevel::User, $accessLevel);
+        self::assertSame(UserStatus::Active, $userStatus);
+    }
+
+    public function testEnumCastsIntegerBackedEnumArrayValues(): void
+    {
+        $accessLevels = $this->hydrator->buildEnumForTesting(['1', '2'], AccessLevel::class);
+        $userStatus   = $this->hydrator->buildEnumForTesting(['active', 'inactive'], UserStatus::class);
+
+        self::assertSame([AccessLevel::Admin, AccessLevel::User], $accessLevels);
+        self::assertSame([UserStatus::Active, UserStatus::Inactive], $userStatus);
+    }
+
     public function testToIterableIfYieldAndBreakBeforeFinishAlwaysCleansUp(): void
     {
         $this->setUpEntitySchema([SimpleEntity::class]);
@@ -177,6 +198,11 @@ class AbstractHydratorTest extends OrmFunctionalTestCase
 class DummyHydrator extends AbstractHydrator
 {
     public bool $throwException = false;
+
+    public function buildEnumForTesting(mixed $value, string $enumType): BackedEnum|array
+    {
+        return $this->buildEnum($value, $enumType);
+    }
 
     /** @return array{} */
     protected function hydrateAllData(): array
