@@ -51,7 +51,7 @@ class DDC2359Test extends TestCase
         $entityManager->expects(self::any())->method('getConnection')->willReturn($connection);
         $entityManager
             ->method('getEventManager')
-            ->willReturn($this->createMock(EventManager::class));
+            ->willReturn(new EventManager());
 
         $metadataFactory->method('newClassMetadataInstance')->willReturn($mockMetadata);
         $metadataFactory->expects(self::once())->method('wakeupReflection');
