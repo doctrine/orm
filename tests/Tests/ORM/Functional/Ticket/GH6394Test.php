@@ -23,7 +23,7 @@ class GH6394Test extends OrmFunctionalTestCase
     }
 
     /**
-     * Test the the version of an entity can be fetched, when the id field and
+     * Test the version of an entity can be fetched, when the id field and
      * the id column are different.
      */
     #[Group('6393')]

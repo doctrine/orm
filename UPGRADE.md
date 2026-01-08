@@ -2301,7 +2301,7 @@ from 2.0 have to configure the annotation driver if they don't use `Configuratio
 
 ## Scalar mappings can now be omitted from DQL result
 
-You are now allowed to mark scalar SELECT expressions as HIDDEN an they are not hydrated anymore.
+You are now allowed to mark scalar SELECT expressions as HIDDEN and they are not hydrated anymore.
 Example:
 
 SELECT u, SUM(a.id) AS HIDDEN numArticles FROM User u LEFT JOIN u.Articles a ORDER BY numArticles DESC HAVING numArticles > 10

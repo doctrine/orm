@@ -1065,7 +1065,7 @@ abstract class AbstractQuery
     }
 
     /**
-     * Executes the query and returns a the resulting Statement object.
+     * Executes the query and returns the resulting Statement object.
      *
      * @return Result|int The executed database statement that holds
      *                    the results, or an integer indicating how

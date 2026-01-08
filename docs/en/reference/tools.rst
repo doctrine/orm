@@ -22,7 +22,7 @@ have to register them yourself.
 All the commands of the Doctrine Console require access to the
 ``EntityManager``. You have to inject it into the console application.
 
-Here is an example of a the project-specific ``bin/doctrine`` binary.
+Here is an example of a project-specific ``bin/doctrine`` binary.
 
 .. code-block:: php
 
