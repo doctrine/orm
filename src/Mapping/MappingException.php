@@ -179,7 +179,7 @@ class MappingException extends PersistenceMappingException implements ORMExcepti
 
     public static function joinTableRequired(string $fieldName): self
     {
-        return new self(sprintf("The mapping of field '%s' requires an the 'joinTable' attribute.", $fieldName));
+        return new self(sprintf("The mapping of field '%s' requires the 'joinTable' attribute.", $fieldName));
     }
 
     /**
