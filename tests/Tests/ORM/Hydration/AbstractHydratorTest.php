@@ -27,7 +27,7 @@ use function iterator_to_array;
 #[CoversClass(AbstractHydrator::class)]
 class AbstractHydratorTest extends OrmFunctionalTestCase
 {
-    private EventManager&MockObject $mockEventManager;
+    private EventManager $eventManager;
     private Result&MockObject $mockResult;
     private ResultSetMapping&MockObject $mockResultMapping;
     private DummyHydrator $hydrator;
@@ -38,7 +38,7 @@ class AbstractHydratorTest extends OrmFunctionalTestCase
 
         $mockConnection             = $this->createMock(Connection::class);
         $mockEntityManagerInterface = $this->createMock(EntityManagerInterface::class);
-        $this->mockEventManager     = $this->createMock(EventManager::class);
+        $this->eventManager         = new EventManager();
         $this->mockResult           = $this->createMock(Result::class);
         $this->mockResultMapping    = $this->createMock(ResultSetMapping::class);
 
@@ -47,7 +47,7 @@ class AbstractHydratorTest extends OrmFunctionalTestCase
             ->willReturn($this->createMock(AbstractPlatform::class));
         $mockEntityManagerInterface
             ->method('getEventManager')
-            ->willReturn($this->mockEventManager);
+            ->willReturn($this->eventManager);
         $mockEntityManagerInterface
             ->method('getConnection')
             ->willReturn($mockConnection);
@@ -66,85 +66,29 @@ class AbstractHydratorTest extends OrmFunctionalTestCase
     #[Group('#1515')]
     public function testOnClearEventListenerIsDetachedOnCleanup(): void
     {
-        $eventListenerHasBeenRegistered = false;
-
-        $this
-            ->mockEventManager
-            ->expects(self::once())
-            ->method('addEventListener')
-            ->with([Events::onClear], $this->hydrator)
-            ->willReturnCallback(function () use (&$eventListenerHasBeenRegistered): void {
-                $this->assertFalse($eventListenerHasBeenRegistered);
-                $eventListenerHasBeenRegistered = true;
-            });
-
-        $this
-            ->mockEventManager
-            ->expects(self::once())
-            ->method('removeEventListener')
-            ->with([Events::onClear], $this->hydrator)
-            ->willReturnCallback(function () use (&$eventListenerHasBeenRegistered): void {
-                $this->assertTrue($eventListenerHasBeenRegistered);
-            });
-
-        iterator_to_array($this->hydrator->toIterable($this->mockResult, $this->mockResultMapping));
+        $iterator = $this->hydrator->toIterable($this->mockResult, $this->mockResultMapping);
+        iterator_to_array($iterator);
+        self::assertTrue($this->hydrator->hasListener);
+        self::assertFalse($this->eventManager->hasListeners(Events::onClear));
     }
 
     #[Group('#6623')]
     public function testHydrateAllRegistersAndClearsAllAttachedListeners(): void
     {
-        $eventListenerHasBeenRegistered = false;
-
-        $this
-            ->mockEventManager
-            ->expects(self::once())
-            ->method('addEventListener')
-            ->with([Events::onClear], $this->hydrator)
-            ->willReturnCallback(function () use (&$eventListenerHasBeenRegistered): void {
-                $this->assertFalse($eventListenerHasBeenRegistered);
-                $eventListenerHasBeenRegistered = true;
-            });
-
-        $this
-            ->mockEventManager
-            ->expects(self::once())
-            ->method('removeEventListener')
-            ->with([Events::onClear], $this->hydrator)
-            ->willReturnCallback(function () use (&$eventListenerHasBeenRegistered): void {
-                $this->assertTrue($eventListenerHasBeenRegistered);
-            });
-
         $this->hydrator->hydrateAll($this->mockResult, $this->mockResultMapping);
+        self::assertTrue($this->hydrator->hasListener);
+        self::assertFalse($this->eventManager->hasListeners(Events::onClear));
     }
 
     #[Group('#8482')]
     public function testHydrateAllClearsAllAttachedListenersEvenOnError(): void
     {
-        $eventListenerHasBeenRegistered = false;
-
-        $this
-            ->mockEventManager
-            ->expects(self::once())
-            ->method('addEventListener')
-            ->with([Events::onClear], $this->hydrator)
-            ->willReturnCallback(function () use (&$eventListenerHasBeenRegistered): void {
-                $this->assertFalse($eventListenerHasBeenRegistered);
-                $eventListenerHasBeenRegistered = true;
-            });
-
-        $this
-            ->mockEventManager
-            ->expects(self::once())
-            ->method('removeEventListener')
-            ->with([Events::onClear], $this->hydrator)
-            ->willReturnCallback(function () use (&$eventListenerHasBeenRegistered): void {
-                $this->assertTrue($eventListenerHasBeenRegistered);
-            });
-
         $this->hydrator->throwException = true;
 
         $this->expectException(LogicException::class);
         $this->hydrator->hydrateAll($this->mockResult, $this->mockResultMapping);
+        self::assertTrue($this->hydrator->hasListener);
+        self::assertFalse($this->eventManager->hasListeners(Events::onClear));
     }
 
     public function testEnumCastsIntegerBackedEnumValues(): void
@@ -198,6 +142,7 @@ class AbstractHydratorTest extends OrmFunctionalTestCase
 class DummyHydrator extends AbstractHydrator
 {
     public bool $throwException = false;
+    public bool $hasListener    = false;
 
     public function buildEnumForTesting(mixed $value, string $enumType): BackedEnum|array
     {
@@ -212,5 +157,10 @@ class DummyHydrator extends AbstractHydrator
         }
 
         return [];
+    }
+
+    public function prepare(): void
+    {
+        $this->hasListener = $this->em->getEventManager()->hasListeners(Events::onClear);
     }
 }
