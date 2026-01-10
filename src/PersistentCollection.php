@@ -504,10 +504,8 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
         $this->em = null;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function first()
+    /** {@inheritDoc} */
+    public function first(): mixed
     {
         if (! $this->initialized && ! $this->isDirty && $this->getMapping()->fetch === ClassMetadata::FETCH_EXTRA_LAZY) {
             $persister = $this->getUnitOfWork()->getCollectionPersister($this->getMapping());
