@@ -19,6 +19,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 use PHPUnit\Framework\Attributes\DoesNotPerformAssertions;
 use PHPUnit\Framework\Attributes\Group;
 
+use function defined;
 use function get_debug_type;
 use function sprintf;
 
@@ -494,13 +495,13 @@ class ClassTableInheritanceTest extends OrmFunctionalTestCase
         $this->_em->flush();
 
         $repository = $this->_em->getRepository(CompanyEmployee::class);
-        $users      = $repository->matching(Criteria::create(true)->where(
+        $users      = $repository->matching((defined(Criteria::class . '::ASC') ? Criteria::create(true) : Criteria::create())->where(
             Criteria::expr()->eq('department', 'IT'),
         ));
         self::assertCount(1, $users);
 
         $repository = $this->_em->getRepository(CompanyManager::class);
-        $users      = $repository->matching(Criteria::create(true)->where(
+        $users      = $repository->matching((defined(Criteria::class . '::ASC') ? Criteria::create(true) : Criteria::create())->where(
             Criteria::expr()->eq('department', 'IT'),
         ));
         self::assertCount(1, $users);

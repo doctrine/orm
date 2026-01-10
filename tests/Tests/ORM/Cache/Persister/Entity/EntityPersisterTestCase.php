@@ -23,6 +23,8 @@ use Doctrine\Tests\OrmTestCase;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\MockObject\MockObject;
 
+use function defined;
+
 #[Group('DDC-2183')]
 abstract class EntityPersisterTestCase extends OrmTestCase
 {
@@ -141,7 +143,7 @@ abstract class EntityPersisterTestCase extends OrmTestCase
     public function testInvokeExpandCriteriaParameters(): void
     {
         $persister = $this->createPersisterDefault();
-        $criteria  = Criteria::create(true);
+        $criteria  = defined(Criteria::class . '::ASC') ? Criteria::create(true) : Criteria::create();
 
         $this->entityPersister->expects(self::once())
             ->method('expandCriteriaParameters')
@@ -320,7 +322,7 @@ abstract class EntityPersisterTestCase extends OrmTestCase
         $rsm       = new ResultSetMappingBuilder($this->em);
         $persister = $this->createPersisterDefault();
         $entity    = new Country('Foo');
-        $criteria  = Criteria::create(true);
+        $criteria  = defined(Criteria::class . '::ASC') ? Criteria::create(true) : Criteria::create();
 
         $this->em->getUnitOfWork()->registerManaged($entity, ['id' => 1], ['id' => 1, 'name' => 'Foo']);
         $rsm->addEntityResult(Country::class, 'c');

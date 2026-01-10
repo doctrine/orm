@@ -12,6 +12,8 @@ use Doctrine\Tests\Models\GeoNames\Admin1AlternateName;
 use Doctrine\Tests\Models\GeoNames\Country;
 use Doctrine\Tests\OrmTestCase;
 
+use function defined;
+
 class BasicEntityPersisterCompositeTypeParametersTest extends OrmTestCase
 {
     protected BasicEntityPersister $persister;
@@ -46,7 +48,7 @@ class BasicEntityPersisterCompositeTypeParametersTest extends OrmTestCase
         $country = new Country('IT', 'Italy');
         $admin1  = new Admin1(10, 'Rome', $country);
 
-        $criteria = Criteria::create(true);
+        $criteria = defined(Criteria::class . '::ASC') ? Criteria::create(true) : Criteria::create();
         $criteria->andWhere(Criteria::expr()->eq('admin1', $admin1));
 
         [$values, $types] = $this->persister->expandCriteriaParameters($criteria);

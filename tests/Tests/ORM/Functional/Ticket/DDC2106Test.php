@@ -16,6 +16,8 @@ use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use PHPUnit\Framework\Attributes\Group;
 
+use function defined;
+
 #[Group('DDC-2106')]
 class DDC2106Test extends OrmFunctionalTestCase
 {
@@ -39,7 +41,7 @@ class DDC2106Test extends OrmFunctionalTestCase
         $entityWithoutId = new DDC2106Entity();
         $this->_em->persist($entityWithoutId);
 
-        $criteria = Criteria::create(true)->where(Criteria::expr()->eq('parent', $entityWithoutId));
+        $criteria = (defined(Criteria::class . '::ASC') ? Criteria::create(true) : Criteria::create())->where(Criteria::expr()->eq('parent', $entityWithoutId));
 
         self::assertCount(0, $entity->children->matching($criteria));
     }

@@ -20,6 +20,7 @@ use PHPUnit\Framework\Attributes\Group;
 
 use function assert;
 use function class_exists;
+use function defined;
 
 #[Group('GH7767')]
 class GH7767Test extends OrmFunctionalTestCase
@@ -45,7 +46,7 @@ class GH7767Test extends OrmFunctionalTestCase
         $parent = $this->_em->find(GH7767ParentEntity::class, 1);
         assert($parent instanceof GH7767ParentEntity);
 
-        $children = $parent->getChildren()->matching(Criteria::create(true));
+        $children = $parent->getChildren()->matching(defined(Criteria::class . '::ASC') ? Criteria::create(true) : Criteria::create());
 
         self::assertEquals(100, $children[0]->position);
         self::assertEquals(200, $children[1]->position);
@@ -58,7 +59,7 @@ class GH7767Test extends OrmFunctionalTestCase
         assert($parent instanceof GH7767ParentEntity);
 
         $children = $parent->getChildren()->matching(
-            Criteria::create(true)->orderBy(['position' => class_exists(Order::class) ? Order::Descending : 'DESC']),
+            (defined(Criteria::class . '::ASC') ? Criteria::create(true) : Criteria::create())->orderBy(['position' => class_exists(Order::class) ? Order::Descending : 'DESC']),
         );
 
         self::assertEquals(300, $children[0]->position);
