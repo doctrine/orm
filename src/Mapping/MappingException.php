@@ -8,6 +8,7 @@ use BackedEnum;
 use Doctrine\ORM\Exception\ORMException;
 use Doctrine\Persistence\Mapping\MappingException as PersistenceMappingException;
 use LibXMLError;
+use Override;
 use ReflectionException;
 use ValueError;
 
@@ -87,6 +88,7 @@ class MappingException extends PersistenceMappingException implements ORMExcepti
         return new self(sprintf("The embed mapping '%s' misses the 'class' attribute.", $fieldName));
     }
 
+    #[Override]
     public static function mappingFileNotFound(string $entityName, string $fileName): self
     {
         return new self(sprintf("No mapping file found named '%s' for class '%s'.", $fileName, $entityName));
@@ -317,6 +319,7 @@ class MappingException extends PersistenceMappingException implements ORMExcepti
         ));
     }
 
+    #[Override]
     public static function fileMappingDriversRequireConfiguredDirectoryPath(string|null $path = null): self
     {
         if (! empty($path)) {

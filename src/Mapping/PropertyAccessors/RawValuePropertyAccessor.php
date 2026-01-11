@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Mapping\PropertyAccessors;
 
+use Override;
 use ReflectionProperty;
 
 use function ltrim;
@@ -29,16 +30,19 @@ class RawValuePropertyAccessor implements PropertyAccessor
     {
     }
 
+    #[Override]
     public function setValue(object $object, mixed $value): void
     {
         $this->reflectionProperty->setRawValueWithoutLazyInitialization($object, $value);
     }
 
+    #[Override]
     public function getValue(object $object): mixed
     {
         return ((array) $object)[$this->key] ?? null;
     }
 
+    #[Override]
     public function getUnderlyingReflector(): ReflectionProperty
     {
         return $this->reflectionProperty;

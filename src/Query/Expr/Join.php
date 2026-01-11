@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Query\Expr;
 
+use Override;
 use Stringable;
 
 use function strtoupper;
@@ -67,6 +68,7 @@ class Join implements Stringable
         return $this->indexBy;
     }
 
+    #[Override]
     public function __toString(): string
     {
         return strtoupper($this->joinType) . ' JOIN ' . $this->join

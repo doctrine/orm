@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Query\AST;
 
 use Doctrine\ORM\Query\SqlWalker;
+use Override;
 
 /**
  * NewObjectExpression ::= "NEW" IdentificationVariable "(" NewObjectArg {"," NewObjectArg}* ")"
@@ -21,6 +22,7 @@ class NewObjectExpression extends Node
     {
     }
 
+    #[Override]
     public function dispatch(SqlWalker $walker, string|null $parentAlias = null): string
     {
         return $walker->walkNewObject($this, $parentAlias);

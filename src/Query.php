@@ -19,6 +19,7 @@ use Doctrine\ORM\Query\ParserResult;
 use Doctrine\ORM\Query\QueryException;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\ORM\Utility\HierarchyDiscriminatorResolver;
+use Override;
 use Psr\Cache\CacheItemPoolInterface;
 
 use function array_keys;
@@ -169,6 +170,7 @@ class Query extends AbstractQuery
      *
      * @return list<string>|string The built sql query or an array of all sql queries.
      */
+    #[Override]
     public function getSQL(): string|array
     {
         return $this->getSqlExecutor()->getSqlStatements();
@@ -184,6 +186,7 @@ class Query extends AbstractQuery
         return $parser->getAST();
     }
 
+    #[Override]
     protected function getResultSetMapping(): ResultSetMapping
     {
         // parse query or load from cache
@@ -248,6 +251,7 @@ class Query extends AbstractQuery
         return $this->parserResult;
     }
 
+    #[Override]
     protected function _doExecute(): Result|int
     {
         $executor = $this->getSqlExecutor();
@@ -491,6 +495,7 @@ class Query extends AbstractQuery
         return $this->expireQueryCache;
     }
 
+    #[Override]
     public function free(): void
     {
         parent::free();
@@ -595,6 +600,7 @@ class Query extends AbstractQuery
     }
 
     /** {@inheritDoc} */
+    #[Override]
     public function toIterable(iterable $parameters = [], $hydrationMode = self::HYDRATE_OBJECT): iterable
     {
         $this->setHint(self::HINT_INTERNAL_ITERATION, true);
@@ -602,6 +608,7 @@ class Query extends AbstractQuery
         return parent::toIterable($parameters, $hydrationMode);
     }
 
+    #[Override]
     public function setHint(string $name, mixed $value): static
     {
         $this->state = self::STATE_DIRTY;
@@ -609,6 +616,7 @@ class Query extends AbstractQuery
         return parent::setHint($name, $value);
     }
 
+    #[Override]
     public function setHydrationMode(string|int $hydrationMode): static
     {
         $this->state = self::STATE_DIRTY;
@@ -669,6 +677,7 @@ class Query extends AbstractQuery
         );
     }
 
+    #[Override]
     protected function getHash(): string
     {
         return sha1(parent::getHash() . '-' . $this->firstResult . '-' . $this->maxResults);
@@ -677,6 +686,7 @@ class Query extends AbstractQuery
     /**
      * Cleanup Query resource when clone is called.
      */
+    #[Override]
     public function __clone()
     {
         parent::__clone();

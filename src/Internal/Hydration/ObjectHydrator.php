@@ -10,6 +10,7 @@ use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\UnitOfWork;
+use Override;
 
 use function array_fill_keys;
 use function array_keys;
@@ -51,6 +52,7 @@ class ObjectHydrator extends AbstractHydrator
     /** @var mixed[] */
     private array $existingCollections = [];
 
+    #[Override]
     protected function prepare(): void
     {
         if (! isset($this->hints[UnitOfWork::HINT_DEFEREAGERLOAD])) {
@@ -108,6 +110,7 @@ class ObjectHydrator extends AbstractHydrator
         }
     }
 
+    #[Override]
     protected function cleanup(): void
     {
         $eagerLoad = isset($this->hints[UnitOfWork::HINT_DEFEREAGERLOAD]) && $this->hints[UnitOfWork::HINT_DEFEREAGERLOAD] === true;
@@ -127,6 +130,7 @@ class ObjectHydrator extends AbstractHydrator
         $this->uow->hydrationComplete();
     }
 
+    #[Override]
     protected function cleanupAfterRowIteration(): void
     {
         $this->identifierMap            =
@@ -139,6 +143,7 @@ class ObjectHydrator extends AbstractHydrator
     /**
      * {@inheritDoc}
      */
+    #[Override]
     protected function hydrateAllData(): array
     {
         $result = [];
@@ -318,6 +323,7 @@ class ObjectHydrator extends AbstractHydrator
      * @param mixed[] $row    The data of the row to process.
      * @param mixed[] $result The result array to fill.
      */
+    #[Override]
     protected function hydrateRowData(array $row, array &$result): void
     {
         // Initialize
@@ -574,6 +580,7 @@ class ObjectHydrator extends AbstractHydrator
     }
 
     /** @param mixed[] $data pre-hydrated SQL Result Row. */
+    #[Override]
     protected function hydrateNestedEntity(array $data, string $dqlAlias): mixed
     {
         if (isset($this->resultSetMapping()->nestedEntities[$dqlAlias])) {
@@ -587,6 +594,7 @@ class ObjectHydrator extends AbstractHydrator
      * When executed in a hydrate() loop we may have to clear internal state to
      * decrease memory consumption.
      */
+    #[Override]
     public function onClear(mixed $eventArgs): void
     {
         parent::onClear($eventArgs);

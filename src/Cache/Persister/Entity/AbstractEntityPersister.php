@@ -26,6 +26,7 @@ use Doctrine\ORM\Persisters\Entity\EntityPersister;
 use Doctrine\ORM\Query\FilterCollection;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\ORM\UnitOfWork;
+use Override;
 
 use function array_merge;
 use function serialize;
@@ -75,6 +76,7 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
         $this->timestampKey    = new TimestampCacheKey($this->class->rootEntityName);
     }
 
+    #[Override]
     public function addInsert(object $entity): void
     {
         $this->persister->addInsert($entity);
@@ -83,11 +85,13 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
     /**
      * {@inheritDoc}
      */
+    #[Override]
     public function getInserts(): array
     {
         return $this->persister->getInserts();
     }
 
+    #[Override]
     public function getSelectSQL(
         array|Criteria $criteria,
         AssociationMapping|null $assoc = null,
@@ -99,21 +103,25 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
         return $this->persister->getSelectSQL($criteria, $assoc, $lockMode, $limit, $offset, $orderBy);
     }
 
+    #[Override]
     public function getCountSQL(array|Criteria $criteria = []): string
     {
         return $this->persister->getCountSQL($criteria);
     }
 
+    #[Override]
     public function getInsertSQL(): string
     {
         return $this->persister->getInsertSQL();
     }
 
+    #[Override]
     public function getResultSetMapping(): ResultSetMapping
     {
         return $this->persister->getResultSetMapping();
     }
 
+    #[Override]
     public function getSelectConditionStatementSQL(
         string $field,
         mixed $value,
@@ -123,6 +131,7 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
         return $this->persister->getSelectConditionStatementSQL($field, $value, $assoc, $comparison);
     }
 
+    #[Override]
     public function exists(object $entity, Criteria|null $extraConditions = null): bool
     {
         if ($extraConditions === null) {
@@ -136,16 +145,19 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
         return $this->persister->exists($entity, $extraConditions);
     }
 
+    #[Override]
     public function getCacheRegion(): Region
     {
         return $this->region;
     }
 
+    #[Override]
     public function getEntityHydrator(): EntityHydrator
     {
         return $this->hydrator;
     }
 
+    #[Override]
     public function storeEntityCache(object $entity, EntityCacheKey $key): bool
     {
         $class     = $this->class;
@@ -223,6 +235,7 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
     /**
      * {@inheritDoc}
      */
+    #[Override]
     public function expandParameters(array $criteria): array
     {
         return $this->persister->expandParameters($criteria);
@@ -231,11 +244,13 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
     /**
      * {@inheritDoc}
      */
+    #[Override]
     public function expandCriteriaParameters(Criteria $criteria): array
     {
         return $this->persister->expandCriteriaParameters($criteria);
     }
 
+    #[Override]
     public function getClassMetadata(): ClassMetadata
     {
         return $this->persister->getClassMetadata();
@@ -244,6 +259,7 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
     /**
      * {@inheritDoc}
      */
+    #[Override]
     public function getManyToManyCollection(
         AssociationMapping $assoc,
         object $sourceEntity,
@@ -256,6 +272,7 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
     /**
      * {@inheritDoc}
      */
+    #[Override]
     public function getOneToManyCollection(
         AssociationMapping $assoc,
         object $sourceEntity,
@@ -265,11 +282,13 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
         return $this->persister->getOneToManyCollection($assoc, $sourceEntity, $offset, $limit);
     }
 
+    #[Override]
     public function getOwningTable(string $fieldName): string
     {
         return $this->persister->getOwningTable($fieldName);
     }
 
+    #[Override]
     public function executeInserts(): void
     {
         // The commit order/foreign key relationships may make it necessary that multiple calls to executeInsert()
@@ -286,6 +305,7 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
     /**
      * {@inheritDoc}
      */
+    #[Override]
     public function load(
         array $criteria,
         object|null $entity = null,
@@ -333,6 +353,7 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
     /**
      * {@inheritDoc}
      */
+    #[Override]
     public function loadAll(
         array $criteria = [],
         array|null $orderBy = null,
@@ -369,6 +390,7 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
     /**
      * {@inheritDoc}
      */
+    #[Override]
     public function loadById(array $identifier, object|null $entity = null): object|null
     {
         $cacheKey   = new EntityCacheKey($this->class->rootEntityName, $identifier);
@@ -418,6 +440,7 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
         return $entity;
     }
 
+    #[Override]
     public function count(array|Criteria $criteria = []): int
     {
         return $this->persister->count($criteria);
@@ -426,6 +449,7 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
     /**
      * {@inheritDoc}
      */
+    #[Override]
     public function loadCriteria(Criteria $criteria): array
     {
         $orderBy     = $criteria->orderings();
@@ -461,6 +485,7 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
     /**
      * {@inheritDoc}
      */
+    #[Override]
     public function loadManyToManyCollection(
         AssociationMapping $assoc,
         object $sourceEntity,
@@ -492,6 +517,7 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
         return $list;
     }
 
+    #[Override]
     public function loadOneToManyCollection(
         AssociationMapping $assoc,
         object $sourceEntity,
@@ -526,6 +552,7 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
     /**
      * {@inheritDoc}
      */
+    #[Override]
     public function loadOneToOneEntity(AssociationMapping $assoc, object $sourceEntity, array $identifier = []): object|null
     {
         return $this->persister->loadOneToOneEntity($assoc, $sourceEntity, $identifier);
@@ -534,6 +561,7 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
     /**
      * {@inheritDoc}
      */
+    #[Override]
     public function lock(array $criteria, LockMode $lockMode): void
     {
         $this->persister->lock($criteria, $lockMode);
@@ -542,6 +570,7 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
     /**
      * {@inheritDoc}
      */
+    #[Override]
     public function refresh(array $id, object $entity, LockMode|null $lockMode = null): void
     {
         $this->persister->refresh($id, $entity, $lockMode);

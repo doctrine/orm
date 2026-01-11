@@ -14,6 +14,7 @@ use Doctrine\ORM\Query\Expr;
 use Doctrine\ORM\Query\Parameter;
 use Doctrine\ORM\Query\QueryExpressionVisitor;
 use InvalidArgumentException;
+use Override;
 use RuntimeException;
 use Stringable;
 
@@ -1453,6 +1454,7 @@ class QueryBuilder implements Stringable
      * Gets a string representation of this QueryBuilder which corresponds to
      * the final DQL query being constructed.
      */
+    #[Override]
     public function __toString(): string
     {
         return $this->getDQL();

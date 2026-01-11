@@ -16,6 +16,7 @@ use Doctrine\ORM\Query\Expr;
 use Doctrine\ORM\Query\FilterCollection;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\Persistence\ObjectManager;
+use Override;
 
 interface EntityManagerInterface extends ObjectManager
 {
@@ -28,6 +29,7 @@ interface EntityManagerInterface extends ObjectManager
      *
      * @template T of object
      */
+    #[Override]
     public function getRepository(string $className): EntityRepository;
 
     /**
@@ -40,6 +42,7 @@ interface EntityManagerInterface extends ObjectManager
      */
     public function getConnection(): Connection;
 
+    #[Override]
     public function getMetadataFactory(): ClassMetadataFactory;
 
     /**
@@ -128,6 +131,7 @@ interface EntityManagerInterface extends ObjectManager
      *
      * @template T of object
      */
+    #[Override]
     public function find(string $className, mixed $id, LockMode|null $lockMode = null, int|null $lockVersion = null): object|null;
 
     /**
@@ -141,6 +145,7 @@ interface EntityManagerInterface extends ObjectManager
      * @throws ORMException
      * @throws TransactionRequiredException
      */
+    #[Override]
     public function refresh(object $object, LockMode|null $lockMode = null): void;
 
     /**
@@ -231,5 +236,6 @@ interface EntityManagerInterface extends ObjectManager
      *
      * @phpstan-template T of object
      */
+    #[Override]
     public function getClassMetadata(string $className): Mapping\ClassMetadata;
 }

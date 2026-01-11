@@ -3,6 +3,7 @@ includes:
     - phpstan-params.neon
 
 parameters:
+    checkMissingOverrideMethodAttribute: true
     ignoreErrors:
         # Symfony cache supports passing a key prefix to the clear method.
         - '/^Method Psr\\Cache\\CacheItemPoolInterface\:\:clear\(\) invoked with 1 parameter, 0 required\.$/'

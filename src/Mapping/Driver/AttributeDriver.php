@@ -13,6 +13,7 @@ use Doctrine\Persistence\Mapping\ClassMetadata as PersistenceClassMetadata;
 use Doctrine\Persistence\Mapping\Driver\ClassLocator;
 use Doctrine\Persistence\Mapping\Driver\ColocatedMappingDriver;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
+use Override;
 use ReflectionClass;
 use ReflectionMethod;
 
@@ -45,6 +46,7 @@ class AttributeDriver implements MappingDriver
         }
     }
 
+    #[Override]
     public function isTransient(string $className): bool
     {
         $classAttributes = $this->reader->getClassAttributes(new ReflectionClass($className));
@@ -67,6 +69,7 @@ class AttributeDriver implements MappingDriver
      *
      * @template T of object
      */
+    #[Override]
     public function loadMetadataForClass(string $className, PersistenceClassMetadata $metadata): void
     {
         $reflectionClass = $metadata->getReflectionClass()

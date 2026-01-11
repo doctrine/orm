@@ -6,9 +6,11 @@ namespace Doctrine\ORM\Cache\Persister\Collection;
 
 use Doctrine\ORM\Cache\Exception\CannotUpdateReadOnlyCollection;
 use Doctrine\ORM\PersistentCollection;
+use Override;
 
 class ReadOnlyCachedCollectionPersister extends NonStrictReadWriteCachedCollectionPersister
 {
+    #[Override]
     public function update(PersistentCollection $collection): void
     {
         if ($collection->isDirty() && $collection->getSnapshot()) {

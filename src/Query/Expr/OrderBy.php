@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Query\Expr;
 
+use Override;
 use Stringable;
 
 use function count;
@@ -53,6 +54,7 @@ class OrderBy implements Stringable
         return $this->parts;
     }
 
+    #[Override]
     public function __toString(): string
     {
         return $this->preSeparator . implode($this->separator, $this->parts) . $this->postSeparator;

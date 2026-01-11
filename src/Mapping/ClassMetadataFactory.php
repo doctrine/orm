@@ -22,6 +22,7 @@ use Doctrine\Persistence\Mapping\AbstractClassMetadataFactory;
 use Doctrine\Persistence\Mapping\ClassMetadata as ClassMetadataInterface;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
 use Doctrine\Persistence\Mapping\ReflectionService;
+use Override;
 use ReflectionClass;
 use ReflectionException;
 
@@ -98,6 +99,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
         return $owningSide;
     }
 
+    #[Override]
     protected function initialize(): void
     {
         $this->driver      = $this->em->getConfiguration()->getMetadataDriverImpl();
@@ -105,6 +107,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
         $this->initialized = true;
     }
 
+    #[Override]
     protected function onNotFoundMetadata(string $className): ClassMetadata|null
     {
         if (! $this->evm->hasListeners(Events::onClassMetadataNotFound)) {
@@ -123,6 +126,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     /**
      * {@inheritDoc}
      */
+    #[Override]
     protected function doLoadMetadata(
         ClassMetadataInterface $class,
         ClassMetadataInterface|null $parent,
@@ -288,6 +292,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
         }
     }
 
+    #[Override]
     protected function newClassMetadataInstance(string $className): ClassMetadata
     {
         return new ClassMetadata(
@@ -655,6 +660,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
         }
     }
 
+    #[Override]
     protected function wakeupReflection(ClassMetadataInterface $class, ReflectionService $reflService): void
     {
         $class->wakeupReflection($reflService);
@@ -668,11 +674,13 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
         }
     }
 
+    #[Override]
     protected function initializeReflection(ClassMetadataInterface $class, ReflectionService $reflService): void
     {
         $class->initializeReflection($reflService);
     }
 
+    #[Override]
     protected function getDriver(): MappingDriver
     {
         assert($this->driver !== null);
@@ -680,6 +688,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
         return $this->driver;
     }
 
+    #[Override]
     protected function isEntity(ClassMetadataInterface $class): bool
     {
         return ! $class->isMappedSuperclass;

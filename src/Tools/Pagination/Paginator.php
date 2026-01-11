@@ -15,6 +15,7 @@ use Doctrine\ORM\Query\Parser;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\ORM\QueryBuilder;
 use IteratorAggregate;
+use Override;
 use Traversable;
 
 use function array_key_exists;
@@ -89,6 +90,7 @@ class Paginator implements Countable, IteratorAggregate
         return $this;
     }
 
+    #[Override]
     public function count(): int
     {
         if ($this->count === null) {
@@ -107,6 +109,7 @@ class Paginator implements Countable, IteratorAggregate
      *
      * @phpstan-return Traversable<array-key, T>
      */
+    #[Override]
     public function getIterator(): Traversable
     {
         $offset = $this->query->getFirstResult();

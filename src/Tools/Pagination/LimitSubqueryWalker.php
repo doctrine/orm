@@ -12,6 +12,7 @@ use Doctrine\ORM\Query\AST\PathExpression;
 use Doctrine\ORM\Query\AST\SelectExpression;
 use Doctrine\ORM\Query\AST\SelectStatement;
 use Doctrine\ORM\Query\TreeWalkerAdapter;
+use Override;
 use RuntimeException;
 
 use function count;
@@ -32,6 +33,7 @@ class LimitSubqueryWalker extends TreeWalkerAdapter
      */
     private int $aliasCounter = 0;
 
+    #[Override]
     public function walkSelectStatement(SelectStatement $selectStatement): void
     {
         // Get the root entity and alias from the AST fromClause

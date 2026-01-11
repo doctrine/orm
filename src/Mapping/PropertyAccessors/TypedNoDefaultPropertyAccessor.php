@@ -6,6 +6,7 @@ namespace Doctrine\ORM\Mapping\PropertyAccessors;
 
 use Closure;
 use InvalidArgumentException;
+use Override;
 use ReflectionProperty;
 
 use function assert;
@@ -35,6 +36,7 @@ class TypedNoDefaultPropertyAccessor implements PropertyAccessor
         }
     }
 
+    #[Override]
     public function setValue(object $object, mixed $value): void
     {
         if ($value === null) {
@@ -57,11 +59,13 @@ class TypedNoDefaultPropertyAccessor implements PropertyAccessor
         $this->parent->setValue($object, $value);
     }
 
+    #[Override]
     public function getValue(object $object): mixed
     {
         return $this->reflectionProperty->isInitialized($object) ? $this->parent->getValue($object) : null;
     }
 
+    #[Override]
     public function getUnderlyingReflector(): ReflectionProperty
     {
         return $this->reflectionProperty;
