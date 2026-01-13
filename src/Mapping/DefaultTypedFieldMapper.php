@@ -11,6 +11,7 @@ use DateTime;
 use DateTimeImmutable;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\DBAL\Types\Types;
+use Override;
 use ReflectionEnum;
 use ReflectionNamedType;
 use ReflectionProperty;
@@ -52,6 +53,7 @@ final class DefaultTypedFieldMapper implements TypedFieldMapper
     /**
      * {@inheritDoc}
      */
+    #[Override]
     public function validateAndComplete(array $mapping, ReflectionProperty $field): array
     {
         $type = $field->getType();

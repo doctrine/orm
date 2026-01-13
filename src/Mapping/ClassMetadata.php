@@ -22,6 +22,7 @@ use Doctrine\Persistence\Mapping\ClassMetadata as PersistenceClassMetadata;
 use Doctrine\Persistence\Mapping\ReflectionService;
 use InvalidArgumentException;
 use LogicException;
+use Override;
 use ReflectionClass;
 use ReflectionNamedType;
 use Stringable;
@@ -589,6 +590,7 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
      *
      * @return array<string, mixed>
      */
+    #[Override]
     public function getIdentifierValues(object $entity): array
     {
         if ($this->isIdentifierComposite) {
@@ -652,6 +654,7 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
      *
      * @todo Construct meaningful string representation.
      */
+    #[Override]
     public function __toString(): string
     {
         return self::class . '@' . spl_object_id($this);
@@ -915,6 +918,7 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
         }
     }
 
+    #[Override]
     public function getReflectionClass(): ReflectionClass
     {
         return $this->reflClass;
@@ -986,6 +990,7 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
     /**
      * Checks whether a field is part of the identifier/primary key field(s).
      */
+    #[Override]
     public function isIdentifier(string $fieldName): bool
     {
         if (! $this->identifier) {
@@ -1405,6 +1410,7 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
     /**
      * {@inheritDoc}
      */
+    #[Override]
     public function getIdentifierFieldNames(): array
     {
         return $this->identifier;
@@ -1456,11 +1462,13 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
     /**
      * {@inheritDoc}
      */
+    #[Override]
     public function getIdentifier(): array
     {
         return $this->identifier;
     }
 
+    #[Override]
     public function hasField(string $fieldName): bool
     {
         return isset($this->fieldMappings[$fieldName]) || isset($this->embeddedClasses[$fieldName]);
@@ -1587,6 +1595,7 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
      *
      * @todo 3.0 Remove this. PersisterHelper should fix it somehow
      */
+    #[Override]
     public function getTypeOfField(string $fieldName): string|null
     {
         return isset($this->fieldMappings[$fieldName])
@@ -2260,17 +2269,20 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
         }
     }
 
+    #[Override]
     public function hasAssociation(string $fieldName): bool
     {
         return isset($this->associationMappings[$fieldName]);
     }
 
+    #[Override]
     public function isSingleValuedAssociation(string $fieldName): bool
     {
         return isset($this->associationMappings[$fieldName])
             && ($this->associationMappings[$fieldName]->isToOne());
     }
 
+    #[Override]
     public function isCollectionValuedAssociation(string $fieldName): bool
     {
         return isset($this->associationMappings[$fieldName])
@@ -2466,6 +2478,7 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
     /**
      * {@inheritDoc}
      */
+    #[Override]
     public function getFieldNames(): array
     {
         return array_keys($this->fieldMappings);
@@ -2474,6 +2487,7 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
     /**
      * {@inheritDoc}
      */
+    #[Override]
     public function getAssociationNames(): array
     {
         return array_keys($this->associationMappings);
@@ -2486,23 +2500,27 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
      *
      * @throws InvalidArgumentException
      */
+    #[Override]
     public function getAssociationTargetClass(string $assocName): string
     {
         return $this->associationMappings[$assocName]->targetEntity
             ?? throw new InvalidArgumentException("Association name expected, '" . $assocName . "' is not an association.");
     }
 
+    #[Override]
     public function getName(): string
     {
         return $this->name;
     }
 
+    #[Override]
     public function isAssociationInverseSide(string $assocName): bool
     {
         return isset($this->associationMappings[$assocName])
             && ! $this->associationMappings[$assocName]->isOwningSide();
     }
 
+    #[Override]
     public function getAssociationMappedByTargetField(string $assocName): string
     {
         $assoc = $this->getAssociationMapping($assocName);

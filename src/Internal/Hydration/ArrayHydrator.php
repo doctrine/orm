@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Internal\Hydration;
 
+use Override;
+
 use function array_key_last;
 use function count;
 use function is_array;
@@ -32,6 +34,7 @@ class ArrayHydrator extends AbstractHydrator
 
     private int $resultCounter = 0;
 
+    #[Override]
     protected function prepare(): void
     {
         $this->isSimpleQuery = count($this->resultSetMapping()->aliasMap) <= 1;
@@ -46,6 +49,7 @@ class ArrayHydrator extends AbstractHydrator
     /**
      * {@inheritDoc}
      */
+    #[Override]
     protected function hydrateAllData(): array
     {
         $result = [];
@@ -60,6 +64,7 @@ class ArrayHydrator extends AbstractHydrator
     /**
      * {@inheritDoc}
      */
+    #[Override]
     protected function hydrateRowData(array $row, array &$result): void
     {
         // 1) Initialize

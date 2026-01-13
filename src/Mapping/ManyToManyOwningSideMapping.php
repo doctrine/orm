@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Mapping;
 
+use Override;
+
 use function strtolower;
 use function trim;
 
@@ -26,6 +28,7 @@ final class ManyToManyOwningSideMapping extends ToManyOwningSideMapping implemen
     public array $relationToTargetKeyColumns = [];
 
     /** @return array<string, mixed> */
+    #[Override]
     public function toArray(): array
     {
         $array = parent::toArray();
@@ -194,6 +197,7 @@ final class ManyToManyOwningSideMapping extends ToManyOwningSideMapping implemen
     }
 
     /** @return list<string> */
+    #[Override]
     public function __sleep(): array
     {
         $serialized   = parent::__sleep();

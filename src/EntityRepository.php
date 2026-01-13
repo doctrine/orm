@@ -15,6 +15,7 @@ use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Query\ResultSetMappingBuilder;
 use Doctrine\ORM\Repository\Exception\InvalidMagicMethodCall;
 use Doctrine\Persistence\ObjectRepository;
+use Override;
 
 use function array_slice;
 use function lcfirst;
@@ -79,6 +80,7 @@ class EntityRepository implements ObjectRepository, Selectable
      * @return object|null The entity instance or NULL if the entity can not be found.
      * @phpstan-return ?T
      */
+    #[Override]
     public function find(mixed $id, LockMode|null $lockMode = null, int|null $lockVersion = null): object|null
     {
         return $this->em->find($this->entityName, $id, $lockMode, $lockVersion);
@@ -89,6 +91,7 @@ class EntityRepository implements ObjectRepository, Selectable
      *
      * @phpstan-return list<T> The entities.
      */
+    #[Override]
     public function findAll(): array
     {
         return $this->findBy([]);
@@ -101,6 +104,7 @@ class EntityRepository implements ObjectRepository, Selectable
      *
      * @phpstan-return list<T>
      */
+    #[Override]
     public function findBy(array $criteria, array|null $orderBy = null, int|null $limit = null, int|null $offset = null): array
     {
         $persister = $this->em->getUnitOfWork()->getEntityPersister($this->entityName);
@@ -116,6 +120,7 @@ class EntityRepository implements ObjectRepository, Selectable
      *
      * @phpstan-return T|null
      */
+    #[Override]
     public function findOneBy(array $criteria, array|null $orderBy = null): object|null
     {
         $persister = $this->em->getUnitOfWork()->getEntityPersister($this->entityName);
@@ -173,6 +178,7 @@ class EntityRepository implements ObjectRepository, Selectable
         return $this->entityName;
     }
 
+    #[Override]
     public function getClassName(): string
     {
         return $this->getEntityName();
@@ -195,6 +201,7 @@ class EntityRepository implements ObjectRepository, Selectable
      *
      * @phpstan-return AbstractLazyCollection<int, T>&Selectable<int, T>
      */
+    #[Override]
     public function matching(Criteria $criteria): AbstractLazyCollection&Selectable
     {
         $persister = $this->em->getUnitOfWork()->getEntityPersister($this->entityName);

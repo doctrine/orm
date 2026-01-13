@@ -9,6 +9,7 @@ use Doctrine\ORM\Query\AST\PathExpression;
 use Doctrine\ORM\Query\AST\SelectExpression;
 use Doctrine\ORM\Query\AST\SelectStatement;
 use Doctrine\ORM\Query\TreeWalkerAdapter;
+use Override;
 use RuntimeException;
 
 use function count;
@@ -24,6 +25,7 @@ class CountWalker extends TreeWalkerAdapter
      */
     final public const string HINT_DISTINCT = 'doctrine_paginator.distinct';
 
+    #[Override]
     public function walkSelectStatement(SelectStatement $selectStatement): void
     {
         if ($selectStatement->havingClause) {

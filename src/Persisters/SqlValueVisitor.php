@@ -8,6 +8,7 @@ use Doctrine\Common\Collections\Expr\Comparison;
 use Doctrine\Common\Collections\Expr\CompositeExpression;
 use Doctrine\Common\Collections\Expr\ExpressionVisitor;
 use Doctrine\Common\Collections\Expr\Value;
+use Override;
 
 /**
  * Extract the values from a criteria/expression
@@ -25,6 +26,7 @@ class SqlValueVisitor extends ExpressionVisitor
      *
      * {@inheritDoc}
      */
+    #[Override]
     public function walkComparison(Comparison $comparison)
     {
         $value = $this->getValueFromComparison($comparison);
@@ -40,6 +42,7 @@ class SqlValueVisitor extends ExpressionVisitor
      *
      * {@inheritDoc}
      */
+    #[Override]
     public function walkCompositeExpression(CompositeExpression $expr)
     {
         foreach ($expr->getExpressionList() as $child) {
@@ -54,6 +57,7 @@ class SqlValueVisitor extends ExpressionVisitor
      *
      * {@inheritDoc}
      */
+    #[Override]
     public function walkValue(Value $value)
     {
         return null;

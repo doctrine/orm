@@ -9,6 +9,7 @@ use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\UnitOfWork;
 use Doctrine\ORM\Utility\IdentifierFlattener;
+use Override;
 
 use function assert;
 use function is_array;
@@ -33,6 +34,7 @@ class DefaultEntityHydrator implements EntityHydrator
         $this->identifierFlattener = new IdentifierFlattener($em->getUnitOfWork(), $em->getMetadataFactory());
     }
 
+    #[Override]
     public function buildCacheEntry(ClassMetadata $metadata, EntityCacheKey $key, object $entity): EntityCacheEntry
     {
         $data = $this->uow->getOriginalEntityData($entity);
@@ -124,6 +126,7 @@ class DefaultEntityHydrator implements EntityHydrator
         return new EntityCacheEntry($metadata->name, $data);
     }
 
+    #[Override]
     public function loadCacheEntry(ClassMetadata $metadata, EntityCacheKey $key, EntityCacheEntry $entry, object|null $entity = null): object|null
     {
         $data  = $entry->data;

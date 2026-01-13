@@ -10,6 +10,7 @@ use Doctrine\ORM\Internal\SQLResultCasing;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Utility\PersisterHelper;
 use InvalidArgumentException;
+use Override;
 use Stringable;
 
 use function in_array;
@@ -269,6 +270,7 @@ class ResultSetMappingBuilder extends ResultSetMapping implements Stringable
         return $sql;
     }
 
+    #[Override]
     public function __toString(): string
     {
         return $this->generateSelectClause([]);

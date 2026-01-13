@@ -6,6 +6,7 @@ namespace Doctrine\ORM\Mapping\PropertyAccessors;
 
 use InvalidArgumentException;
 use LogicException;
+use Override;
 use ReflectionProperty;
 
 use function sprintf;
@@ -24,6 +25,7 @@ class ReadonlyAccessor implements PropertyAccessor
         }
     }
 
+    #[Override]
     public function setValue(object $object, mixed $value): void
     {
         if (! $this->reflectionProperty->isInitialized($object)) {
@@ -41,11 +43,13 @@ class ReadonlyAccessor implements PropertyAccessor
         }
     }
 
+    #[Override]
     public function getValue(object $object): mixed
     {
         return $this->parent->getValue($object);
     }
 
+    #[Override]
     public function getUnderlyingReflector(): ReflectionProperty
     {
         return $this->reflectionProperty;

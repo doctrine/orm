@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Internal\Hydration;
 
+use Override;
+
 /**
  * Hydrator that produces flat, rectangular results of scalar data.
  * The created result is almost the same as a regular SQL result set, except
@@ -14,6 +16,7 @@ class ScalarHydrator extends AbstractHydrator
     /**
      * {@inheritDoc}
      */
+    #[Override]
     protected function hydrateAllData(): array
     {
         $result = [];
@@ -28,6 +31,7 @@ class ScalarHydrator extends AbstractHydrator
     /**
      * {@inheritDoc}
      */
+    #[Override]
     protected function hydrateRowData(array $row, array &$result): void
     {
         $result[] = $this->gatherScalarRowData($row);

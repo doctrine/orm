@@ -16,6 +16,7 @@ use Doctrine\ORM\Query\AST\SelectStatement;
 use Doctrine\ORM\Query\AST\SimpleArithmeticExpression;
 use Doctrine\ORM\Query\AST\WhereClause;
 use Doctrine\ORM\Query\TreeWalkerAdapter;
+use Override;
 use RuntimeException;
 
 use function count;
@@ -42,6 +43,7 @@ class WhereInWalker extends TreeWalkerAdapter
      */
     final public const string PAGINATOR_ID_ALIAS = 'dpid';
 
+    #[Override]
     public function walkSelectStatement(SelectStatement $selectStatement): void
     {
         // Get the root entity and alias from the AST fromClause

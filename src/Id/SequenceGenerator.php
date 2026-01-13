@@ -6,6 +6,7 @@ namespace Doctrine\ORM\Id;
 
 use Doctrine\DBAL\Connections\PrimaryReadReplicaConnection;
 use Doctrine\ORM\EntityManagerInterface;
+use Override;
 
 /**
  * Represents an ID generator that uses a database sequence.
@@ -27,6 +28,7 @@ class SequenceGenerator extends AbstractIdGenerator
     ) {
     }
 
+    #[Override]
     public function generateId(EntityManagerInterface $em, object|null $entity): int
     {
         if ($this->maxValue === null || $this->nextValue === $this->maxValue) {

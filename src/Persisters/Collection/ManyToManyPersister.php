@@ -17,6 +17,7 @@ use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\Persisters\SqlValueVisitor;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Utility\PersisterHelper;
+use Override;
 
 use function array_fill;
 use function array_merge;
@@ -33,6 +34,7 @@ use function sprintf;
  */
 class ManyToManyPersister extends AbstractCollectionPersister
 {
+    #[Override]
     public function delete(PersistentCollection $collection): void
     {
         $mapping = $this->getMapping($collection);
@@ -53,6 +55,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
         $this->conn->executeStatement($this->getDeleteSQL($collection), $this->getDeleteSQLParameters($collection), $types);
     }
 
+    #[Override]
     public function update(PersistentCollection $collection): void
     {
         $mapping = $this->getMapping($collection);
@@ -81,6 +84,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
         }
     }
 
+    #[Override]
     public function get(PersistentCollection $collection, mixed $index): object|null
     {
         $mapping = $this->getMapping($collection);
@@ -106,6 +110,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
         );
     }
 
+    #[Override]
     public function count(PersistentCollection $collection): int
     {
         $conditions  = [];
@@ -162,6 +167,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
     /**
      * {@inheritDoc}
      */
+    #[Override]
     public function slice(PersistentCollection $collection, int $offset, int|null $length = null): array
     {
         $mapping   = $this->getMapping($collection);
@@ -170,6 +176,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
         return $persister->getManyToManyCollection($mapping, $collection->getOwner(), $offset, $length);
     }
 
+    #[Override]
     public function containsKey(PersistentCollection $collection, mixed $key): bool
     {
         $mapping = $this->getMapping($collection);
@@ -189,6 +196,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
         return (bool) $this->conn->fetchOne($sql, $params, $types);
     }
 
+    #[Override]
     public function contains(PersistentCollection $collection, object $element): bool
     {
         if (! $this->isValidEntityState($element)) {
@@ -209,6 +217,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
     /**
      * {@inheritDoc}
      */
+    #[Override]
     public function loadCriteria(PersistentCollection $collection, Criteria $criteria): array
     {
         $mapping       = $this->getMapping($collection);

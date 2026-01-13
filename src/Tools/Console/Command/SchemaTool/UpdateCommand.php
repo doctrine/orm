@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Tools\Console\Command\SchemaTool;
 
 use Doctrine\ORM\Tools\SchemaTool;
+use Override;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -23,6 +24,7 @@ class UpdateCommand extends AbstractCommand
 {
     protected string $name = 'orm:schema-tool:update';
 
+    #[Override]
     protected function configure(): void
     {
         $this->setName($this->name)
@@ -70,6 +72,7 @@ EOT);
     /**
      * {@inheritDoc}
      */
+    #[Override]
     protected function executeSchemaCommand(InputInterface $input, OutputInterface $output, SchemaTool $schemaTool, array $metadatas, SymfonyStyle $ui): int
     {
         $notificationUi = $ui->getErrorStyle();

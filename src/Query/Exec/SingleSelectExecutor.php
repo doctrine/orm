@@ -9,6 +9,7 @@ use Doctrine\DBAL\Result;
 use Doctrine\Deprecations\Deprecation;
 use Doctrine\ORM\Query\AST\SelectStatement;
 use Doctrine\ORM\Query\SqlWalker;
+use Override;
 
 /**
  * Executor that executes the SQL statement for simple DQL SELECT statements.
@@ -34,6 +35,7 @@ class SingleSelectExecutor extends AbstractSqlExecutor
     /**
      * {@inheritDoc}
      */
+    #[Override]
     public function execute(Connection $conn, array $params, array $types): Result
     {
         return $conn->executeQuery($this->sqlStatements, $params, $types, $this->queryCacheProfile);

@@ -47,6 +47,7 @@ use Doctrine\ORM\Utility\IdentifierFlattener;
 use Doctrine\Persistence\PropertyChangedListener;
 use Exception;
 use InvalidArgumentException;
+use Override;
 use RuntimeException;
 use Stringable;
 use UnexpectedValueException;
@@ -2953,6 +2954,7 @@ class UnitOfWork implements PropertyChangedListener
      *
      * {@inheritDoc}
      */
+    #[Override]
     public function propertyChanged(object $sender, string $propertyName, mixed $oldValue, mixed $newValue): void
     {
         $oid   = spl_object_id($sender);

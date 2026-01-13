@@ -6,6 +6,7 @@ namespace Doctrine\ORM\Persisters\Entity;
 
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Override;
 
 use function sprintf;
 
@@ -19,6 +20,7 @@ abstract class AbstractEntityInheritancePersister extends BasicEntityPersister
     /**
      * {@inheritDoc}
      */
+    #[Override]
     protected function prepareInsertData(object $entity): array
     {
         $data = parent::prepareInsertData($entity);
@@ -36,6 +38,7 @@ abstract class AbstractEntityInheritancePersister extends BasicEntityPersister
      */
     abstract protected function getDiscriminatorColumnTableName(): string;
 
+    #[Override]
     protected function getSelectColumnSQL(string $field, ClassMetadata $class, string $alias = 'r'): string
     {
         $tableAlias   = $alias === 'r' ? '' : $alias;

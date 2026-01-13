@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Mapping;
 
+use Override;
 use RuntimeException;
 
 use function array_flip;
@@ -48,6 +49,7 @@ abstract class ToOneOwningSideMapping extends OwningSideMapping implements ToOne
      *     joinColumns?: mixed[]|null,
      * } $mappingArray
      */
+    #[Override]
     public static function fromMappingArray(array $mappingArray): static
     {
         $joinColumns = $mappingArray['joinColumns'] ?? [];
@@ -184,6 +186,7 @@ abstract class ToOneOwningSideMapping extends OwningSideMapping implements ToOne
         return $mapping;
     }
 
+    #[Override]
     public function offsetSet(mixed $offset, mixed $value): void
     {
         if ($offset === 'joinColumns') {
@@ -201,6 +204,7 @@ abstract class ToOneOwningSideMapping extends OwningSideMapping implements ToOne
     }
 
     /** @return array<string, mixed> */
+    #[Override]
     public function toArray(): array
     {
         $array = parent::toArray();
@@ -221,6 +225,7 @@ abstract class ToOneOwningSideMapping extends OwningSideMapping implements ToOne
     }
 
     /** @return list<string> */
+    #[Override]
     public function __sleep(): array
     {
         return [

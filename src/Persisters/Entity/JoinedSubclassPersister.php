@@ -14,6 +14,7 @@ use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Utility\LockSqlHelper;
 use Doctrine\ORM\Utility\PersisterHelper;
 use LengthException;
+use Override;
 
 use function array_combine;
 use function array_keys;
@@ -46,6 +47,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
      */
     private array $quotedTableMap = [];
 
+    #[Override]
     protected function getDiscriminatorColumnTableName(): string
     {
         $class = $this->class->name !== $this->class->rootEntityName
@@ -73,6 +75,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
     /**
      * Gets the name of the table that owns the column the given field is mapped to.
      */
+    #[Override]
     public function getOwningTable(string $fieldName): string
     {
         if (isset($this->owningTableMap[$fieldName])) {
@@ -96,6 +99,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
         return $tableName;
     }
 
+    #[Override]
     public function executeInserts(): void
     {
         if (! $this->queuedInserts) {
@@ -191,6 +195,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
         }
     }
 
+    #[Override]
     public function update(object $entity): void
     {
         $updateData = $this->prepareUpdateData($entity);
@@ -226,6 +231,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
         }
     }
 
+    #[Override]
     public function delete(object $entity): bool
     {
         $identifier = $this->em->getUnitOfWork()->getEntityIdentifier($entity);
@@ -242,6 +248,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
         return (bool) $this->conn->delete($rootTable, $id, $rootTypes);
     }
 
+    #[Override]
     public function getSelectSQL(
         array|Criteria $criteria,
         AssociationMapping|null $assoc = null,
@@ -312,6 +319,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
         return $this->platform->modifyLimitQuery($query, $limit, $offset ?? 0) . $lockSql;
     }
 
+    #[Override]
     public function getCountSQL(array|Criteria $criteria = []): string
     {
         $tableName      = $this->quoteStrategy->getTableName($this->class, $this->platform);
@@ -336,6 +344,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
             . (empty($conditionSql) ? '' : ' WHERE ' . $conditionSql);
     }
 
+    #[Override]
     protected function getLockTablesSql(LockMode $lockMode): string
     {
         $joinSql           = '';
@@ -362,6 +371,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
     /**
      * Ensure this method is never called. This persister overrides getSelectEntitiesSQL directly.
      */
+    #[Override]
     protected function getSelectColumnsSQL(): string
     {
         // Create the column list fragment only once
@@ -460,6 +470,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
     /**
      * {@inheritDoc}
      */
+    #[Override]
     protected function getInsertColumnList(): array
     {
         // Identifier columns must always come first in the column list of subclasses.
@@ -506,6 +517,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
     /**
      * {@inheritDoc}
      */
+    #[Override]
     protected function assignDefaultVersionAndUpsertableValues(object $entity, array $id): void
     {
         $values = $this->fetchVersionAndNotUpsertableValues($this->getVersionedClassMetadata(), $id);
@@ -520,6 +532,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
     /**
      * {@inheritDoc}
      */
+    #[Override]
     protected function fetchVersionAndNotUpsertableValues(ClassMetadata $versionedClass, array $id): mixed
     {
         $columnNames = [];
