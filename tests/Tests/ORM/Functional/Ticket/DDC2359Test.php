@@ -50,7 +50,7 @@ class DDC2359Test extends TestCase
         $entityManager->method('getConnection')->willReturn($connection);
         $entityManager
             ->method('getEventManager')
-            ->willReturn($this->createMock(EventManager::class));
+            ->willReturn(new EventManager());
 
         $metadataFactory->setEntityManager($entityManager);
         $metadataFactory->getMetadataFor(DDC2359Foo::class);

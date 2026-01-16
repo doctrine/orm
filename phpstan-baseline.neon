@@ -619,7 +619,7 @@ parameters:
 			path: src/EntityRepository.php
 
 		-
-			message: '#^Method Doctrine\\ORM\\EntityRepository\:\:matching\(\) should return Doctrine\\Common\\Collections\\AbstractLazyCollection\<int, T of object\>&Doctrine\\Common\\Collections\\Selectable\<int, T of object\> but returns Doctrine\\ORM\\LazyCriteriaCollection\<\(int\|string\), object\>\.$#'
+			message: '#^Method Doctrine\\ORM\\EntityRepository\:\:matching\(\) should return Doctrine\\Common\\Collections\\AbstractLazyCollection\<int, T of object\> but returns Doctrine\\ORM\\LazyCriteriaCollection\<\(int\|string\), object\>\.$#'
 			identifier: return.type
 			count: 1
 			path: src/EntityRepository.php
