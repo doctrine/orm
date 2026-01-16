@@ -36,7 +36,7 @@ class GH10387Test extends OrmTestCase
     {
         yield 'hierarchy with Entity classes only' => [[GH10387EntitiesOnlyRoot::class, GH10387EntitiesOnlyMiddle::class, GH10387EntitiesOnlyLeaf::class]];
         yield 'MappedSuperclass in the middle of the hierarchy' => [[GH10387MappedSuperclassRoot::class, GH10387MappedSuperclassMiddle::class, GH10387MappedSuperclassLeaf::class]];
-        yield 'abstract entity the the root and in the middle of the hierarchy' => [[GH10387AbstractEntitiesRoot::class, GH10387AbstractEntitiesMiddle::class, GH10387AbstractEntitiesLeaf::class]];
+        yield 'abstract entity at the root and in the middle of the hierarchy' => [[GH10387AbstractEntitiesRoot::class, GH10387AbstractEntitiesMiddle::class, GH10387AbstractEntitiesLeaf::class]];
     }
 }
 

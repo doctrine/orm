@@ -133,7 +133,7 @@ Caching mode
   * Read Write cache employs locks before update/delete.
   * Use if data needs to be updated.
   * Slowest strategy.
-  * To use it a the cache region implementation must support locking.
+  * To use it the cache region implementation must support locking.
 
 
 Built-in cached persisters

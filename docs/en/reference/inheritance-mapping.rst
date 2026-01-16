@@ -232,6 +232,23 @@ Example:
             // ...
         }
 
+    .. code-block:: xml
+
+        <doctrine-mapping>
+          <entity name="MyProject\Model\Person" inheritance-type="SINGLE_TABLE">
+            <discriminator-column name="discr" type="string" />
+            <discriminator-map>
+                <discriminator-mapping value="person" class="MyProject\Model\Person"/>
+                <discriminator-mapping value="employee" class="MyProject\Model\Employee"/>
+            </discriminator-map>
+          </entity>
+        </doctrine-mapping>
+
+        <doctrine-mapping>
+            <entity name="MyProject\Model\Employee">
+            </entity>
+        </doctrine-mapping>
+
     .. code-block:: yaml
 
         MyProject\Model\Person:
