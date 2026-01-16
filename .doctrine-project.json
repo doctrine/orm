@@ -12,41 +12,16 @@
             "upcoming": true
         },
         {
-            "name": "3.6",
-            "branchName": "3.6.x",
-            "slug": "3.6",
+            "name": "3.7",
+            "branchName": "3.7.x",
+            "slug": "3.7",
             "upcoming": true
         },
         {
-            "name": "3.5",
-            "branchName": "3.5.x",
-            "slug": "3.5",
+            "name": "3.6",
+            "branchName": "3.6.x",
+            "slug": "3.6",
             "current": true
-        },
-        {
-            "name": "3.4",
-            "slug": "3.4",
-            "maintained": false
-        },
-        {
-            "name": "3.3",
-            "slug": "3.3",
-            "maintained": false
-        },
-        {
-            "name": "3.2",
-            "slug": "3.2",
-            "maintained": false
-        },
-        {
-            "name": "3.1",
-            "slug": "3.1",
-            "maintained": false
-        },
-        {
-            "name": "3.0",
-            "slug": "3.0",
-            "maintained": false
         },
         {
             "name": "2.21",
@@ -88,26 +63,6 @@
         {
             "name": "2.14",
             "slug": "2.14",
-            "maintained": false
-        },
-        {
-            "name": "2.13",
-            "slug": "2.13",
-            "maintained": false
-        },
-        {
-            "name": "2.12",
-            "slug": "2.12",
-            "maintained": false
-        },
-        {
-            "name": "2.11",
-            "slug": "2.11",
-            "maintained": false
-        },
-        {
-            "name": "2.10",
-            "slug": "2.10",
             "maintained": false
         }
     ]
