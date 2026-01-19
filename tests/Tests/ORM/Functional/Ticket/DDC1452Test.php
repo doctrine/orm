@@ -49,7 +49,7 @@ class DDC1452Test extends OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $dql     = 'SELECT a, b, ba FROM ' . __NAMESPACE__ . '\DDC1452EntityA AS a LEFT JOIN a.entitiesB AS b LEFT JOIN b.entityATo AS ba';
+        $dql     = 'SELECT a, b, ba FROM ' . __NAMESPACE__ . '\DDC1452EntityA AS a LEFT JOIN a.entitiesB AS b LEFT JOIN b.entityATo AS ba ORDER BY a.id';
         $results = $this->_em->createQuery($dql)->setMaxResults(1)->getResult();
 
         self::assertSame($results[0], $results[0]->entitiesB[0]->entityAFrom);
