@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ORM;
 
 use DateTimeInterface;
-use Doctrine\Common\EventManager;
+use Doctrine\Common\EventManagerInterface;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\LockMode;
 use Doctrine\ORM\Exception\ORMException;
@@ -180,9 +180,9 @@ interface EntityManagerInterface extends ObjectManager
     public function lock(object $entity, LockMode|int $lockMode, DateTimeInterface|int|null $lockVersion = null): void;
 
     /**
-     * Gets the EventManager used by the EntityManager.
+     * Gets the EventManagerInterface used by the EntityManager.
      */
-    public function getEventManager(): EventManager;
+    public function getEventManager(): EventManagerInterface;
 
     /**
      * Gets the Configuration used by the EntityManager.

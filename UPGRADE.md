@@ -27,6 +27,18 @@ At this point, we recommend upgrading to PHP 8.4 first and then directly from
 ORM 2.19 to 3.5 and up so that you can skip the lazy ghost proxy generation
 and directly start using native lazy objects.
 
+# Upgrade to 3.7
+
+The return type of the following methods has been changed from
+`Doctrine\Common\EventManager` to `Doctrine\Common\EventManagerInterface`:
+
+- `Doctrine\ORM\Decorator\EntityManagerDecorator::getEventManager()`
+- `Doctrine\ORM\EntityManager::getEventManager()`
+- `Doctrine\ORM\EntityManagerInterface::getEventManager()`
+
+All three methods continue to return an instance of `EventManager`, however
+relying on that is deprecated and will no longer be the guaranteed in 4.0.
+
 # Upgrade to 3.6
 
 ## Deprecate using string expression for default values in mappings

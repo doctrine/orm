@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Decorator;
 
 use DateTimeInterface;
-use Doctrine\Common\EventManager;
+use Doctrine\Common\EventManagerInterface;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\LockMode;
 use Doctrine\ORM\Cache;
@@ -122,7 +122,7 @@ abstract class EntityManagerDecorator extends ObjectManagerDecorator implements 
         $this->wrapped->refresh($object, $lockMode);
     }
 
-    public function getEventManager(): EventManager
+    public function getEventManager(): EventManagerInterface
     {
         return $this->wrapped->getEventManager();
     }

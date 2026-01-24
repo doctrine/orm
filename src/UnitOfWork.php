@@ -8,7 +8,7 @@ use BackedEnum;
 use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\Common\EventManager;
+use Doctrine\Common\EventDispatcher;
 use Doctrine\DBAL;
 use Doctrine\DBAL\Connections\PrimaryReadReplicaConnection;
 use Doctrine\DBAL\LockMode;
@@ -261,9 +261,9 @@ class UnitOfWork implements PropertyChangedListener
     private array $collectionPersisters = [];
 
     /**
-     * The EventManager used for dispatching events.
+     * The EventDispatcher used for dispatching events.
      */
-    private readonly EventManager $evm;
+    private readonly EventDispatcher $eventDispatcher;
 
     /**
      * The ListenersInvoker used for dispatching events.
@@ -314,7 +314,7 @@ class UnitOfWork implements PropertyChangedListener
     public function __construct(
         private readonly EntityManagerInterface $em,
     ) {
-        $this->evm                      = $em->getEventManager();
+        $this->eventDispatcher          = $em->getEventManager();
         $this->listenersInvoker         = new ListenersInvoker($em);
         $this->hasCache                 = $em->getConfiguration()->isSecondLevelCacheEnabled();
         $this->identifierFlattener      = new IdentifierFlattener($this, $em->getMetadataFactory());
@@ -2295,7 +2295,7 @@ class UnitOfWork implements PropertyChangedListener
         $this->eagerLoadingCollections          =
         $this->orphanRemovals                   = [];
 
-        $this->evm->dispatchEvent(Events::onClear, new OnClearEventArgs($this->em));
+        $this->eventDispatcher->dispatchEvent(Events::onClear, new OnClearEventArgs($this->em));
     }
 
     /**
@@ -3143,17 +3143,17 @@ class UnitOfWork implements PropertyChangedListener
 
     private function dispatchPreFlushEvent(): void
     {
-        $this->evm->dispatchEvent(Events::preFlush, new PreFlushEventArgs($this->em));
+        $this->eventDispatcher->dispatchEvent(Events::preFlush, new PreFlushEventArgs($this->em));
     }
 
     private function dispatchOnFlushEvent(): void
     {
-        $this->evm->dispatchEvent(Events::onFlush, new OnFlushEventArgs($this->em));
+        $this->eventDispatcher->dispatchEvent(Events::onFlush, new OnFlushEventArgs($this->em));
     }
 
     private function dispatchPostFlushEvent(): void
     {
-        $this->evm->dispatchEvent(Events::postFlush, new PostFlushEventArgs($this->em));
+        $this->eventDispatcher->dispatchEvent(Events::postFlush, new PostFlushEventArgs($this->em));
     }
 
     /**
