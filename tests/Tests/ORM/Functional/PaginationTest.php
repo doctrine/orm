@@ -678,7 +678,7 @@ SQL,
 
     public function testDifferentResultLengthsDoNotRequireExtraQueryCacheEntries(): void
     {
-        $dql   = 'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id >= :id';
+        $dql   = 'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id >= :id ORDER BY u.id';
         $query = $this->_em->createQuery($dql);
         $query->setMaxResults(10);
 
