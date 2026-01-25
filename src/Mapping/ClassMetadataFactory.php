@@ -67,6 +67,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     public function setEntityManager(EntityManagerInterface $em): void
     {
         if (! $em->getConfiguration()->isNativeLazyObjectsEnabled()) {
+            /** @phpstan-ignore method.deprecated (compatibility with legacy proxies) */
             parent::setProxyClassNameResolver(new DefaultProxyClassNameResolver());
         }
 

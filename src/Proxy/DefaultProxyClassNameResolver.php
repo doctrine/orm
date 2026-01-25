@@ -16,9 +16,12 @@ use const PHP_VERSION_ID;
 /**
  * Class-related functionality for objects that might or not be proxy objects
  * at the moment.
+ *
+ * @phpstan-ignore class.implementsDeprecatedInterface (compatibility with legacy proxies)
  */
 final class DefaultProxyClassNameResolver implements ProxyClassNameResolver
 {
+    /** @phpstan-ignore parameter.deprecatedInterface (compatibility with legacy proxies) */
     public function resolveClassName(string $className): string
     {
         if (PHP_VERSION_ID >= 80400) {
@@ -30,12 +33,14 @@ final class DefaultProxyClassNameResolver implements ProxyClassNameResolver
             );
         }
 
+        /** @phpstan-ignore classConstant.deprecatedInterface (compatibility with legacy proxies) */
         $pos = strrpos($className, '\\' . Proxy::MARKER . '\\');
 
         if ($pos === false) {
             return $className;
         }
 
+        /** @phpstan-ignore classConstant.deprecatedInterface (compatibility with legacy proxies) */
         return substr($className, $pos + Proxy::MARKER_LENGTH + 2);
     }
 

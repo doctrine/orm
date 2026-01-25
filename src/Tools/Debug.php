@@ -124,7 +124,8 @@ final class Debug
         $return->__CLASS__ = DefaultProxyClassNameResolver::getClass($var);
 
         if ($var instanceof Proxy) {
-            $return->__IS_PROXY__          = true;
+            $return->__IS_PROXY__ = true;
+            /** @phpstan-ignore method.deprecatedInterface (compatibility with legacy proxies) */
             $return->__PROXY_INITIALIZED__ = $var->__isInitialized();
         }
 

@@ -522,6 +522,7 @@ EOPHP;
 
     private static function generateProxyClassName(string $className, string $proxyNamespace): string
     {
+        /** @phpstan-ignore classConstant.deprecatedInterface (compatibility with legacy proxies) */
         return rtrim($proxyNamespace, '\\') . '\\' . Proxy::MARKER . '\\' . ltrim($className, '\\');
     }
 }

@@ -3045,6 +3045,7 @@ class UnitOfWork implements PropertyChangedListener
     public function initializeObject(object $obj): void
     {
         if ($obj instanceof InternalProxy) {
+            /** @phpstan-ignore method.deprecatedInterface (compatibility with legacy proxies) */
             $obj->__load();
 
             return;
@@ -3069,6 +3070,7 @@ class UnitOfWork implements PropertyChangedListener
             return $this->em->getClassMetadata($obj::class)->reflClass->isUninitializedLazyObject($obj);
         }
 
+        /** @phpstan-ignore method.deprecatedInterface (compatibility with legacy proxies) */
         return $obj instanceof InternalProxy && ! $obj->__isInitialized();
     }
 

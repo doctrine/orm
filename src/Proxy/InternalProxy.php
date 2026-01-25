@@ -11,6 +11,7 @@ use Doctrine\Persistence\Proxy;
  *
  * @template T of object
  * @template-extends Proxy<T>
+ * @phpstan-ignore interface.extendsDeprecatedInterface (compatibility with legacy proxies)
  */
 interface InternalProxy extends Proxy
 {

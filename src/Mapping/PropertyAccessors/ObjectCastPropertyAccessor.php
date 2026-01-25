@@ -36,6 +36,7 @@ class ObjectCastPropertyAccessor implements PropertyAccessor
 
     public function setValue(object $object, mixed $value): void
     {
+        /** @phpstan-ignore method.deprecatedInterface (compatibility with legacy proxies) */
         if (! ($object instanceof InternalProxy && ! $object->__isInitialized())) {
             $this->reflectionProperty->setValue($object, $value);
 
