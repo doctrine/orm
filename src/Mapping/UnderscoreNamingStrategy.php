@@ -97,7 +97,7 @@ class UnderscoreNamingStrategy implements NamingStrategy
 
     private function underscore(string $string): string
     {
-        $string = preg_replace('/(?<=[a-z0-9])([A-Z])/', '_$1', $string);
+        $string = preg_replace('/(?<=[a-z0-9])([A-Z])|(?<=[A-Z])([A-Z][a-z])/', '_$1$2', $string);
 
         if ($this->case === CASE_UPPER) {
             return strtoupper($string);

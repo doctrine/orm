@@ -99,6 +99,7 @@ class NamingStrategyTest extends OrmTestCase
             [self::underscoreNamingUpper(), 'SOME_PROPERTY', 'SOME_PROPERTY', 'Some\Class'],
             [self::underscoreNamingUpper(), 'BASE64_ENCODED', 'base64Encoded', 'Some\Class'],
             [self::underscoreNamingUpper(), 'BASE64ENCODED', 'base64encoded', 'Some\Class'],
+            [self::underscoreNamingLower(), 'some_x_property', 'someXProperty', 'Some\Class'],
 
             // CustomPascalNamingStrategy
             [self::customNaming(), 'SomeProperty', 'someProperty', 'Some\Class'],
