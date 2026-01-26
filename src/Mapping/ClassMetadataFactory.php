@@ -116,10 +116,6 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
 
     protected function onNotFoundMetadata(string $className): ClassMetadata|null
     {
-        if (! $this->evm->hasListeners(Events::onClassMetadataNotFound)) {
-            return null;
-        }
-
         $eventArgs = new OnClassMetadataNotFoundEventArgs($className, $this->em);
 
         $this->evm->dispatchEvent(Events::onClassMetadataNotFound, $eventArgs);
@@ -245,10 +241,10 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
         // During the following event, there may also be updates to the discriminator map as per GH-1257/GH-8402.
         // So, we must not discover the missing subclasses before that.
 
-        if ($this->evm->hasListeners(Events::loadClassMetadata)) {
-            $eventArgs = new LoadClassMetadataEventArgs($class, $this->em);
-            $this->evm->dispatchEvent(Events::loadClassMetadata, $eventArgs);
-        }
+        $this->evm->dispatchEvent(
+            Events::loadClassMetadata,
+            new LoadClassMetadataEventArgs($class, $this->em),
+        );
 
         $this->findAbstractEntityClassesNotListedInDiscriminatorMap($class);
 
