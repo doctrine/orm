@@ -389,20 +389,16 @@ class SchemaTool
                 }
             }
 
-            if ($eventManager->hasListeners(ToolEvents::postGenerateSchemaTable)) {
-                $eventManager->dispatchEvent(
-                    ToolEvents::postGenerateSchemaTable,
-                    new GenerateSchemaTableEventArgs($class, $schema, $table),
-                );
-            }
-        }
-
-        if ($eventManager->hasListeners(ToolEvents::postGenerateSchema)) {
             $eventManager->dispatchEvent(
-                ToolEvents::postGenerateSchema,
-                new GenerateSchemaEventArgs($this->em, $schema),
+                ToolEvents::postGenerateSchemaTable,
+                new GenerateSchemaTableEventArgs($class, $schema, $table),
             );
         }
+
+        $eventManager->dispatchEvent(
+            ToolEvents::postGenerateSchema,
+            new GenerateSchemaEventArgs($this->em, $schema),
+        );
 
         return $schema;
     }

@@ -65,7 +65,7 @@ EOT);
 
             ksort($allListeners);
         } else {
-            $listeners = $eventManager->hasListeners($eventName) ? $eventManager->getListeners($eventName) : [];
+            $listeners = $eventManager->getListeners($eventName);
             if (! $listeners) {
                 $io->info(sprintf('No listeners are configured for the "%s" event.', $eventName));
 

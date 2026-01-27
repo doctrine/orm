@@ -2281,9 +2281,7 @@ class UnitOfWork implements PropertyChangedListener
         $this->eagerLoadingCollections          =
         $this->orphanRemovals                   = [];
 
-        if ($this->evm->hasListeners(Events::onClear)) {
-            $this->evm->dispatchEvent(Events::onClear, new OnClearEventArgs($this->em));
-        }
+        $this->evm->dispatchEvent(Events::onClear, new OnClearEventArgs($this->em));
     }
 
     /**
@@ -3118,23 +3116,17 @@ class UnitOfWork implements PropertyChangedListener
 
     private function dispatchPreFlushEvent(): void
     {
-        if ($this->evm->hasListeners(Events::preFlush)) {
-            $this->evm->dispatchEvent(Events::preFlush, new PreFlushEventArgs($this->em));
-        }
+        $this->evm->dispatchEvent(Events::preFlush, new PreFlushEventArgs($this->em));
     }
 
     private function dispatchOnFlushEvent(): void
     {
-        if ($this->evm->hasListeners(Events::onFlush)) {
-            $this->evm->dispatchEvent(Events::onFlush, new OnFlushEventArgs($this->em));
-        }
+        $this->evm->dispatchEvent(Events::onFlush, new OnFlushEventArgs($this->em));
     }
 
     private function dispatchPostFlushEvent(): void
     {
-        if ($this->evm->hasListeners(Events::postFlush)) {
-            $this->evm->dispatchEvent(Events::postFlush, new PostFlushEventArgs($this->em));
-        }
+        $this->evm->dispatchEvent(Events::postFlush, new PostFlushEventArgs($this->em));
     }
 
     /**
