@@ -142,7 +142,7 @@ final class FieldMapping implements ArrayAccess
     {
         $serialized = ['type', 'fieldName', 'columnName'];
 
-        foreach (['nullable', 'notInsertable', 'notUpdatable', 'id', 'unique', 'version', 'quoted'] as $boolKey) {
+        foreach (['nullable', 'notInsertable', 'notUpdatable', 'id', 'unique', 'version', 'quoted', 'index'] as $boolKey) {
             if ($this->$boolKey) {
                 $serialized[] = $boolKey;
             }
