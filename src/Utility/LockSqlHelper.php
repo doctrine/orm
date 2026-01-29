@@ -14,7 +14,7 @@ use Doctrine\DBAL\Platforms\SQLServerPlatform;
 /** @internal */
 trait LockSqlHelper
 {
-    private function getReadLockSQL(AbstractPlatform $platform): string
+    protected function getReadLockSQL(AbstractPlatform $platform): string
     {
         return match (true) {
             $platform instanceof AbstractMySQLPlatform => 'LOCK IN SHARE MODE',
@@ -23,7 +23,7 @@ trait LockSqlHelper
         };
     }
 
-    private function getWriteLockSQL(AbstractPlatform $platform): string
+    protected function getWriteLockSQL(AbstractPlatform $platform): string
     {
         return match (true) {
             $platform instanceof DB2Platform => 'WITH RR USE AND KEEP UPDATE LOCKS',
