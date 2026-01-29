@@ -1,6 +1,41 @@
 Pagination
 ==========
 
+Doctrine ORM provides two pagination strategies for DQL queries. Both handle
+the low-level SQL plumbing, but they make different trade-offs:
+
+.. list-table::
+   :header-rows: 1
+
+   * - Feature
+     - Offset ``Paginator``
+     - ``CursorPaginator``
+   * - Total count
+     - Yes
+     - No
+   * - Random access to page N
+     - Yes
+     - No
+   * - Stable under concurrent inserts/deletes
+     - No
+     - Yes
+   * - Performance on deep pages
+     - Degrades (OFFSET scan)
+     - Constant (index range scan)
+   * - Requires deterministic ORDER BY
+     - No
+     - Yes
+
+Choose the **Offset Paginator** when you need a total page count or want to
+let users jump to an arbitrary page number.
+
+Choose the **Cursor Paginator** when you need stable, high-performance
+pagination on large datasets and a simple previous/next navigation is
+sufficient.
+
+Offset-Based Pagination
+-----------------------
+
 Doctrine ORM ships with a Paginator for DQL queries. It
 has a very simple API and implements the SPL interfaces ``Countable`` and
 ``IteratorAggregate``.
@@ -58,3 +93,178 @@ In this way the `DISTINCT` keyword will be omitted and can bring important perfo
                            ->setHint(Paginator::HINT_ENABLE_DISTINCT, false)
                            ->setFirstResult(0)
                            ->setMaxResults(100);
+
+Cursor-Based Pagination
+-----------------------
+
+Doctrine ORM ships with a ``CursorPaginator`` for cursor-based pagination of DQL queries.
+Unlike offset-based pagination, cursor pagination uses opaque pointers (cursors) derived
+from the last seen row to fetch the next or previous page. This makes it stable and
+performant on large datasets — no matter how deep you paginate, the database always uses
+an index range scan instead of skipping rows.
+
+.. note::
+
+    Cursor pagination requires a **deterministic ``ORDER BY`` clause**. Every column
+    combination used for sorting must uniquely identify a position in the result set.
+    A common pattern is to sort by a timestamp and then by primary key as a tie-breaker.
+
+Basic Usage
+~~~~~~~~~~~
+
+The ``$cursor`` parameter is an opaque string produced by a previous call to
+``getNextCursorAsString()`` or ``getPreviousCursorAsString()``. On the first request
+it is ``null`` or an empty string ``''`` — both are treated identically as the first
+page. It is typically read from the incoming HTTP query string:
+
+.. code-block:: php
+
+    $cursor = $_GET['cursor'] ?? null; // null or '' on the first page
+
+.. code-block:: php
+
+    <?php
+    use Doctrine\ORM\Tools\CursorPagination\CursorPaginator;
+
+    $dql = 'SELECT p FROM BlogPost p ORDER BY p.createdAt DESC, p.id DESC';
+    $query = $entityManager->createQuery($dql);
+
+    $paginator = (new CursorPaginator($query))
+        ->paginate(cursor: $cursor, limit: 15);
+
+    foreach ($paginator as $post) {
+        echo $post->getTitle() . "\n";
+    }
+
+    echo $paginator->getPreviousCursorAsString(); // previous encoded cursor string
+    echo $paginator->getNextCursorAsString();     // next encoded cursor string
+
+Navigating Pages
+~~~~~~~~~~~~~~~~
+
+Pass the encoded cursor back on subsequent requests to move forward or backward:
+
+.. code-block:: php
+
+    <?php
+    // Next page
+    $paginator->paginate(15, $nextCursor);
+
+    // Previous page
+    $paginator->paginate(15, $previousCursor);
+
+The cursor is an encoded string containing the location at which the next query should begin fetching results, along with the navigation direction.
+
+API Reference
+~~~~~~~~~~~~~
+
+``CursorPaginator::paginate(?string $cursor, int $limit): self``
+    Executes the query and stores the results. Fetches ``$limit + 1`` rows to
+    detect whether a further page exists, then trims the extra row. Returns
+    ``$this`` for chaining.
+
+``CursorPaginator::getNextCursor(): Cursor``
+    Returns the ``Cursor`` object for the next page. Throws a ``LogicException``
+    if there is no next page — call ``hasNextPage()`` first.
+
+``CursorPaginator::getPreviousCursor(): Cursor``
+    Returns the ``Cursor`` object for the previous page. Throws a ``LogicException``
+    if there is no previous page — call ``hasPreviousPage()`` first.
+
+``CursorPaginator::getNextCursorAsString(): string``
+    Returns the encoded cursor to retrieve the next page. Throws a
+    ``LogicException`` if there is no next page — call ``hasNextPage()`` first.
+
+``CursorPaginator::getPreviousCursorAsString(): string``
+    Returns the encoded cursor to retrieve the previous page. Throws a
+    ``LogicException`` if there is no previous page — call ``hasPreviousPage()`` first.
+
+``CursorPaginator::hasNextPage(): bool``
+    Returns whether a next page is available.
+
+``CursorPaginator::hasPreviousPage(): bool``
+    Returns whether a previous page is available.
+
+``CursorPaginator::hasToPaginate(): bool``
+    Returns whether either a next or previous page exists (i.e. the result
+    set spans more than one page).
+
+``CursorPaginator::getValues(): array``
+    Returns the raw entity array for the current page.
+
+``CursorPaginator::getItems(): array``
+    Returns an array of ``CursorItem`` objects, each wrapping an entity and its
+    individual ``Cursor``. Useful when you need per-row cursors.
+
+``CursorPaginator::getCursorForItem(mixed $item, bool $isNext = true): Cursor``
+    Builds a ``Cursor`` pointing at a specific entity. ``$isNext = true`` means
+    "start *after* this item"; ``false`` means "start *before* this item".
+
+``CursorPaginator::count(): int``
+    Returns the number of items on the current page (implements ``Countable``).
+
+**Next page**
+
+.. code-block:: sql
+
+    SELECT ...
+    FROM   post p
+    WHERE  (p.created_at < :cursor_val_0)
+       OR  (p.created_at = :cursor_val_0 AND p.id < :cursor_id_1)
+    ORDER  BY p.created_at DESC, p.id DESC
+    LIMIT  16   -- limit + 1
+
+**Previous page**
+
+.. code-block:: sql
+
+    SELECT ...
+    FROM   post p
+    WHERE  (p.created_at > :cursor_val_0)
+       OR  (p.created_at = :cursor_val_0 AND p.id > :cursor_id_1)
+    ORDER  BY p.created_at ASC, p.id ASC   -- reversed
+    LIMIT  16
+
+HTML Template Example
+~~~~~~~~~~~~~~~~~~~~~
+
+The following example shows how to render a paginated list with previous/next
+navigation links using the ``CursorPaginator`` in a PHP template:
+
+.. literalinclude:: pagination/cursor-pagination.php
+   :language: php
+
+Cursor Encoding
+~~~~~~~~~~~~~~~
+
+A cursor is serialized to a URL-safe string via ``Cursor::encodeToString()`` and
+deserialized back via the static ``Cursor::fromEncodedString()``. The format is a
+JSON object encoded with URL-safe Base64 (no padding):
+
+.. code-block:: json
+
+    {
+        "p.createdAt": "2024-01-15T10:30:00+00:00",
+        "p.id": 42,
+        "_isNext": true
+    }
+
+The ``_isNext`` flag distinguishes next-page cursors from previous-page cursors.
+All other keys are the DQL path expressions (``alias.field``) of the ``ORDER BY``
+columns, and their values are the database representations of the pivot row's
+field values.
+
+If you need a different serialization format (e.g. encryption), build it on top of
+a ``Cursor`` instance: call ``$cursor->toArray()`` to get the raw data, apply your
+own encoding, and reconstruct with ``new Cursor($parameters, $isNext)``.
+
+Limitations
+~~~~~~~~~~~
+
+- Every ``ORDER BY`` column must map to an entity field. Raw SQL expressions or
+  computed columns in ``ORDER BY`` are not supported.
+- ``COUNT`` queries are not available; cursor pagination does not know the total
+  number of results by design. If you need a total count, use the
+  offset-based ``Paginator`` described above.
+- The query must have at least one ``ORDER BY`` item; the paginator throws a
+  ``LogicException`` otherwise.
