@@ -204,4 +204,36 @@ class TypeTest extends OrmFunctionalTestCase
         self::assertInstanceOf(DateTime::class, $dateTimeDb->time);
         self::assertSame('19:27:20', $dateTimeDb->time->format('H:i:s'));
     }
+
+    public function testFindByDateWithString(): void
+    {
+        $dateTime       = new DateTimeModel();
+        $dateTime->date = new DateTime('2009-10-01', new DateTimeZone('Europe/Berlin'));
+
+        $this->_em->persist($dateTime);
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $found = $this->_em->getRepository(DateTimeModel::class)
+                           ->findBy(['date' => '2009-10-01']);
+
+        self::assertCount(1, $found);
+        self::assertSame('2009-10-01', $found[0]->date->format('Y-m-d'));
+    }
+
+    public function testFindByTimeWithString(): void
+    {
+        $dateTime       = new DateTimeModel();
+        $dateTime->time = new DateTime('2010-01-01 19:27:20');
+
+        $this->_em->persist($dateTime);
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $found = $this->_em->getRepository(DateTimeModel::class)
+                           ->findBy(['time' => '19:27:20']);
+
+        self::assertCount(1, $found);
+        self::assertSame('19:27:20', $found[0]->time->format('H:i:s'));
+    }
 }

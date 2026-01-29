@@ -5,9 +5,11 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Utility;
 
 use BackedEnum;
+use DateTimeInterface;
 use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\ParameterType;
 use Doctrine\DBAL\Types\Type;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Proxy\DefaultProxyClassNameResolver;
@@ -17,8 +19,10 @@ use RuntimeException;
 use function array_map;
 use function array_merge;
 use function assert;
+use function in_array;
 use function is_array;
 use function is_object;
+use function is_string;
 use function sprintf;
 
 /**
@@ -29,6 +33,17 @@ use function sprintf;
  */
 class PersisterHelper
 {
+    private const DATE_TIME_TYPES = [
+        Types::DATE_MUTABLE,
+        Types::DATE_IMMUTABLE,
+        Types::DATETIME_MUTABLE,
+        Types::DATETIME_IMMUTABLE,
+        Types::DATETIMETZ_MUTABLE,
+        Types::DATETIMETZ_IMMUTABLE,
+        Types::TIME_MUTABLE,
+        Types::TIME_IMMUTABLE,
+    ];
+
     /**
      * @return list<string>
      *
@@ -130,6 +145,7 @@ class PersisterHelper
         ClassMetadata $class,
         EntityManagerInterface $em,
     ): array {
+        /** @var list<ParameterType::*|string> $types */
         $types = [];
 
         switch (true) {
@@ -159,8 +175,34 @@ class PersisterHelper
                 break;
         }
 
+        $types = self::normalizeDateTimeTypesForValue($types, $value);
+
         if (is_array($value)) {
             return array_map(self::getArrayBindingType(...), $types);
+        }
+
+        return $types;
+    }
+
+    /**
+     * @param list<ParameterType::*|string> $types
+     *
+     * @return list<ParameterType::*|string>
+     */
+    private static function normalizeDateTimeTypesForValue(array $types, mixed $value): array
+    {
+        if ($value instanceof DateTimeInterface) {
+            return $types;
+        }
+
+        if (! is_string($value)) {
+            return $types;
+        }
+
+        foreach ($types as $index => $type) {
+            if (is_string($type) && in_array($type, self::DATE_TIME_TYPES, true)) {
+                $types[$index] = ParameterType::STRING;
+            }
         }
 
         return $types;
