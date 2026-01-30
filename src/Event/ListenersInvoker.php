@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Event;
 
 use Doctrine\Common\EventArgs;
-use Doctrine\Common\EventManager;
+use Doctrine\Common\EventDispatcher;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\EntityListenerResolver;
@@ -23,13 +23,13 @@ class ListenersInvoker
     /** The Entity listener resolver. */
     private readonly EntityListenerResolver $resolver;
 
-    /** The EventManager used for dispatching events. */
-    private readonly EventManager $eventManager;
+    /** The EventDispatcher used for dispatching events. */
+    private readonly EventDispatcher $eventDispatcher;
 
     public function __construct(EntityManagerInterface $em)
     {
-        $this->eventManager = $em->getEventManager();
-        $this->resolver     = $em->getConfiguration()->getEntityListenerResolver();
+        $this->eventDispatcher = $em->getEventManager();
+        $this->resolver        = $em->getConfiguration()->getEntityListenerResolver();
     }
 
     /**
@@ -52,7 +52,7 @@ class ListenersInvoker
             $invoke |= self::INVOKE_LISTENERS;
         }
 
-        if ($this->eventManager->hasListeners($eventName)) {
+        if ($this->eventDispatcher->hasListeners($eventName)) {
             $invoke |= self::INVOKE_MANAGER;
         }
 
@@ -92,7 +92,7 @@ class ListenersInvoker
         }
 
         if ($invoke & self::INVOKE_MANAGER) {
-            $this->eventManager->dispatchEvent($eventName, $event);
+            $this->eventDispatcher->dispatchEvent($eventName, $event);
         }
     }
 }
