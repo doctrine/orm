@@ -7,6 +7,7 @@ namespace Doctrine\ORM;
 use BackedEnum;
 use DateTimeInterface;
 use Doctrine\Common\EventManager;
+use Doctrine\Common\EventManagerInterface;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\LockMode;
 use Doctrine\ORM\Exception\EntityManagerClosed;
@@ -522,7 +523,7 @@ class EntityManager implements EntityManagerInterface
     }
 
     #[Override]
-    public function getEventManager(): EventManager
+    public function getEventManager(): EventManagerInterface
     {
         return $this->eventManager;
     }
