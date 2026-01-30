@@ -33,6 +33,7 @@ final class FieldMappingTest extends TestCase
         $mapping->precision        = 10;
         $mapping->scale            = 2;
         $mapping->unique           = true;
+        $mapping->index            = true;
         $mapping->inherited        = self::class;
         $mapping->originalClass    = self::class;
         $mapping->originalField    = 'id';
@@ -57,6 +58,7 @@ final class FieldMappingTest extends TestCase
         self::assertSame(10, $resurrectedMapping->precision);
         self::assertSame(2, $resurrectedMapping->scale);
         self::assertTrue($resurrectedMapping->unique);
+        self::assertTrue($resurrectedMapping->index);
         self::assertSame(self::class, $resurrectedMapping->inherited);
         self::assertSame(self::class, $resurrectedMapping->originalClass);
         self::assertSame('id', $resurrectedMapping->originalField);
