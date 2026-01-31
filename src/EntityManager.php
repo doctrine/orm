@@ -72,7 +72,7 @@ class EntityManager implements EntityManagerInterface
     /**
      * The event manager that is the central point of the event system.
      */
-    private EventManager $eventManager;
+    private EventManagerInterface $eventManager;
 
     /**
      * The proxy factory used to create dynamic proxies.
@@ -113,7 +113,7 @@ class EntityManager implements EntityManagerInterface
     public function __construct(
         private Connection $conn,
         private Configuration $config,
-        EventManager|null $eventManager = null,
+        EventManagerInterface|null $eventManager = null,
     ) {
         if (! $config->getMetadataDriverImpl()) {
             throw MissingMappingDriverImplementation::create();

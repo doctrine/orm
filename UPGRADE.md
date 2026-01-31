@@ -8,6 +8,15 @@ awareness about deprecated code.
 
 # Upgrade to 4.0
 
+## BC BREAK: EventManager to EventManagerInterface migration
+
+The following methods used to return an instance of `Doctrine\Common\EventManager`,
+and now return an instance of `Doctrine\Common\EventManagerInterface`:
+
+- `Doctrine\ORM\EntityManager::getEventManager()`
+- `Doctrine\ORM\EntityManagerDecorator::getEventManager()`
+- `Doctrine\ORM\EntityManagerInterface::getEventManager()`
+
 ## BC BREAK: Remove `FieldMapping::$default`
 
 The `default` property of `Doctrine\ORM\Mapping\FieldMapping` has been removed.
