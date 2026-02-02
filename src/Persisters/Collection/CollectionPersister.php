@@ -25,6 +25,8 @@ interface CollectionPersister
 
     /**
      * Counts the size of this persistent collection.
+     *
+     * @return non-negative-int
      */
     public function count(PersistentCollection $collection): int;
 

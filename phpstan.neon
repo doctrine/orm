@@ -4,6 +4,12 @@ includes:
 
 parameters:
     checkMissingOverrideMethodAttribute: true
+    excludePaths:
+        # Compatibility shims for Collections 2 vs Collections 3
+        # These have intentional signature mismatches that cannot be resolved
+        - src/PersistentCollectionImplementation.php
+        - src/Persisters/SqlValueVisitorImplementation.php
+
     ignoreErrors:
         # Symfony cache supports passing a key prefix to the clear method.
         - '/^Method Psr\\Cache\\CacheItemPoolInterface\:\:clear\(\) invoked with 1 parameter, 0 required\.$/'
@@ -12,3 +18,10 @@ parameters:
         -
             message: '~^Match expression does not handle remaining values:~'
             path: src/Utility/PersisterHelper.php
+
+        # Methods used by excluded compatibility shim traits
+        -
+            message: '#^Method .* is unused\.$#'
+            paths:
+                - src/PersistentCollection.php
+                - src/Persisters/SqlValueVisitor.php

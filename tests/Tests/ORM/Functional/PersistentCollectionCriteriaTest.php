@@ -15,6 +15,8 @@ use Doctrine\Tests\Models\ValueConversionType\InversedManyToManyExtraLazyEntity;
 use Doctrine\Tests\Models\ValueConversionType\OwningManyToManyExtraLazyEntity;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
+use function defined;
+
 class PersistentCollectionCriteriaTest extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -80,7 +82,7 @@ class PersistentCollectionCriteriaTest extends OrmFunctionalTestCase
         $repository = $this->_em->getRepository(User::class);
 
         $user   = $repository->findOneBy(['name' => 'ngal']);
-        $tweets = $user->tweets->matching(Criteria::create(true));
+        $tweets = $user->tweets->matching(defined(Criteria::class . '::ASC') ? Criteria::create(true) : Criteria::create());
 
         self::assertInstanceOf(LazyCriteriaCollection::class, $tweets);
         self::assertFalse($tweets->isInitialized());
@@ -88,7 +90,7 @@ class PersistentCollectionCriteriaTest extends OrmFunctionalTestCase
         self::assertFalse($tweets->isInitialized());
 
         // Make sure it works with constraints
-        $tweets = $user->tweets->matching(Criteria::create(true)->where(
+        $tweets = $user->tweets->matching((defined(Criteria::class . '::ASC') ? Criteria::create(true) : Criteria::create())->where(
             Criteria::expr()->eq('content', 'Foo'),
         ));
 
@@ -117,7 +119,7 @@ class PersistentCollectionCriteriaTest extends OrmFunctionalTestCase
 
         $parent = $this->_em->find(OwningManyToManyExtraLazyEntity::class, $parent->id2);
 
-        $criteria = Criteria::create(true)->where(Criteria::expr()->eq('id1', 'Bob'));
+        $criteria = (defined(Criteria::class . '::ASC') ? Criteria::create(true) : Criteria::create())->where(Criteria::expr()->eq('id1', 'Bob'));
 
         $result = $parent->associatedEntities->matching($criteria);
 

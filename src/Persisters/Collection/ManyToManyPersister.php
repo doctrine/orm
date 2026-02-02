@@ -110,6 +110,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
         );
     }
 
+    /** @return non-negative-int */
     #[Override]
     public function count(PersistentCollection $collection): int
     {

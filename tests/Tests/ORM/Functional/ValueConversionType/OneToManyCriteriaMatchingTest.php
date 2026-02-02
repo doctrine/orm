@@ -12,6 +12,8 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 use Generator;
 use PHPUnit\Framework\Attributes\DataProvider;
 
+use function defined;
+
 class OneToManyCriteriaMatchingTest extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -48,7 +50,7 @@ class OneToManyCriteriaMatchingTest extends OrmFunctionalTestCase
         $entityWithCollection = $this->_em->find(InversedOneToManyEntity::class, 'associated');
         self::assertFalse($entityWithCollection->associatedEntities->isInitialized(), 'Pre-condition: lazy collection');
 
-        $result = $entityWithCollection->associatedEntities->matching(Criteria::create(true)->where($comparison));
+        $result = $entityWithCollection->associatedEntities->matching((defined(Criteria::class . '::ASC') ? Criteria::create(true) : Criteria::create())->where($comparison));
 
         $l = $this->getQueryLog();
 

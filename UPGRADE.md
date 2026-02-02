@@ -169,6 +169,31 @@ and directly start using native lazy objects.
 
 # Upgrade to 3.7
 
+## Conditional breaking changes
+
+3.7 adds support for `doctrine/collections` 3. If you upgrade to that version
+of `doctrine/collections`, there are breaking changes in `doctrine/orm` as well,
+because of cross-package inheritance and type declarations.
+
+Most notably, `Doctrine\ORM\PersistentCollection::add` no longer returns a boolean:
+
+```diff
+- public function add(mixed $value): bool
++ public function add(mixed $value): void
+```
+
+That method always returned `true`, so you can safely stop using the return
+value before upgrading.
+
+Also, if you extend `Doctrine\ORM\Persisters\SqlValueVisitor`, you need to
+ensure the following methods have a return type in your subclasses:
+
+- `walkComparison()`
+- `walkCompositeExpression()`
+- `walkValue()`
+
+## Deprecate `EventManager` return type in `EntityManager` methods
+
 The return type of the following methods has been changed from
 `Doctrine\Common\EventManager` to `Doctrine\Common\EventManagerInterface`:
 
