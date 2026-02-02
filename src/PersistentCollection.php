@@ -42,6 +42,8 @@ use function strtoupper;
  */
 final class PersistentCollection extends AbstractLazyCollection implements Selectable
 {
+    use PersistentCollectionImplementation;
+
     /**
      * A snapshot of the collection at the moment it was fetched from the database.
      * This is used to create a diff of the collection at commit time.
@@ -402,7 +404,7 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
         }
     }
 
-    public function add(mixed $value): bool
+    private function doAdd(mixed $value): void
     {
         $this->unwrap()->add($value);
 
@@ -411,8 +413,6 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
         if (is_object($value) && $this->em) {
             $this->getUnitOfWork()->cancelOrphanRemoval($value);
         }
-
-        return true;
     }
 
     public function offsetExists(mixed $offset): bool
@@ -616,7 +616,6 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
     public function unwrap(): Selectable&Collection
     {
         assert($this->collection instanceof Collection);
-        assert($this->collection instanceof Selectable);
 
         return $this->collection;
     }

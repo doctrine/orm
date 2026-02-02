@@ -106,6 +106,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
         );
     }
 
+    /** @return non-negative-int */
     public function count(PersistentCollection $collection): int
     {
         $conditions  = [];
