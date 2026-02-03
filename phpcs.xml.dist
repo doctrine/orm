@@ -50,6 +50,8 @@
     </rule>
 
     <rule ref="PSR1.Classes.ClassDeclaration.MultipleClasses">
+        <exclude-pattern>src/Persisters/SqlValueVisitorImplementation.php</exclude-pattern>
+        <exclude-pattern>src/PersistentCollectionImplementation.php</exclude-pattern>
         <exclude-pattern>tests/*</exclude-pattern>
     </rule>
 

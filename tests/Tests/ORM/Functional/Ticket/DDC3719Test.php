@@ -10,6 +10,8 @@ use Doctrine\Tests\Models\Company\CompanyManager;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use PHPUnit\Framework\Attributes\Group;
 
+use function defined;
+
 class DDC3719Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
@@ -44,7 +46,7 @@ class DDC3719Test extends OrmFunctionalTestCase
         $contracts = $manager->managedContracts;
         self::assertCount(2, $contracts);
 
-        $criteria = Criteria::create(true);
+        $criteria = defined(Criteria::class . '::ASC') ? Criteria::create(true) : Criteria::create();
         $criteria->where(Criteria::expr()->eq('completed', true));
 
         $completedContracts = $contracts->matching($criteria);

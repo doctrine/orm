@@ -20,6 +20,7 @@ use PHPUnit\Framework\Attributes\Group;
 
 use function assert;
 use function class_exists;
+use function defined;
 
 #[Group('GH7836')]
 class GH7836Test extends OrmFunctionalTestCase
@@ -45,7 +46,7 @@ class GH7836Test extends OrmFunctionalTestCase
         $parent = $this->_em->find(GH7836ParentEntity::class, 1);
         assert($parent instanceof GH7836ParentEntity);
 
-        $children = $parent->getChildren()->matching(Criteria::create(true));
+        $children = $parent->getChildren()->matching(defined(Criteria::class . '::ASC') ? Criteria::create(true) : Criteria::create());
 
         self::assertSame(100, $children[0]->position);
         self::assertSame('bar', $children[0]->name);
@@ -61,7 +62,7 @@ class GH7836Test extends OrmFunctionalTestCase
         assert($parent instanceof GH7836ParentEntity);
 
         $children = $parent->getChildren()->matching(
-            Criteria::create(true)->orderBy(
+            (defined(Criteria::class . '::ASC') ? Criteria::create(true) : Criteria::create())->orderBy(
                 class_exists(Order::class)
                     ? ['position' => Order::Descending, 'name' => Order::Ascending]
                     : ['position' => 'DESC', 'name' => 'ASC'],
@@ -82,7 +83,7 @@ class GH7836Test extends OrmFunctionalTestCase
         assert($parent instanceof GH7836ParentEntity);
 
         $children = $parent->getChildren()->matching(
-            Criteria::create(true)->orderBy(
+            (defined(Criteria::class . '::ASC') ? Criteria::create(true) : Criteria::create())->orderBy(
                 class_exists(Order::class)
                     ? ['name' => Order::Ascending, 'position' => Order::Ascending]
                     : ['name' => 'ASC', 'position' => 'ASC'],

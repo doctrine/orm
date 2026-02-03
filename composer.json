@@ -34,7 +34,7 @@
         "php": "^8.4",
         "ext-ctype": "*",
         "composer-runtime-api": "^2",
-        "doctrine/collections": "^2.2",
+        "doctrine/collections": "^2.2 || ^3",
         "doctrine/dbal": "^4.2.1",
         "doctrine/deprecations": "^1.1",
         "doctrine/event-manager": "^2.1.1",

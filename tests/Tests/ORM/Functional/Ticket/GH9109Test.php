@@ -15,6 +15,8 @@ use Doctrine\ORM\Mapping\ManyToMany;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use PHPUnit\Framework\Attributes\Group;
 
+use function defined;
+
 #[Group('GH-9109')]
 class GH9109Test extends OrmFunctionalTestCase
 {
@@ -67,7 +69,7 @@ class GH9109Test extends OrmFunctionalTestCase
         self::assertEquals($userLastName, $user->getLastName());
 
         // assert NOT QUOTED will WORK with Criteria
-        $criteria = Criteria::create(true);
+        $criteria = defined(Criteria::class . '::ASC') ? Criteria::create(true) : Criteria::create();
         $criteria->where($criteria->expr()->eq('lastName', $userLastName));
         $user = $persistedProduct->getBuyers()->matching($criteria)->first();
         self::assertInstanceOf(GH9109User::class, $user);
@@ -79,7 +81,7 @@ class GH9109Test extends OrmFunctionalTestCase
         self::assertEquals($userFirstName, $user->getFirstName());
 
         // assert QUOTED will WORK with Criteria
-        $criteria = Criteria::create(true);
+        $criteria = defined(Criteria::class . '::ASC') ? Criteria::create(true) : Criteria::create();
         $criteria->where($criteria->expr()->eq('firstName', $userFirstName));
         $user = $persistedProduct->getBuyers()->matching($criteria)->first();
         self::assertInstanceOf(GH9109User::class, $user);

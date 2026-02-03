@@ -10,6 +10,8 @@ use Doctrine\Tests\Models\GH7717\GH7717Child;
 use Doctrine\Tests\Models\GH7717\GH7717Parent;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
+use function defined;
+
 final class GH7717Test extends OrmFunctionalTestCase
 {
     public function setUp(): void
@@ -37,7 +39,7 @@ final class GH7717Test extends OrmFunctionalTestCase
 
         $parent = $this->_em->find(GH7717Parent::class, 1);
 
-        $this->assertCount(1, $parent->children->matching(Criteria::create(true)->where(
+        $this->assertCount(1, $parent->children->matching((defined(Criteria::class . '::ASC') ? Criteria::create(true) : Criteria::create())->where(
             Criteria::expr()->isNull('nullableProperty'),
         )));
     }

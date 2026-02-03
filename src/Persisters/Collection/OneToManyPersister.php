@@ -21,6 +21,7 @@ use function array_reverse;
 use function array_values;
 use function assert;
 use function count;
+use function defined;
 use function implode;
 use function is_int;
 use function is_string;
@@ -91,10 +92,13 @@ class OneToManyPersister extends AbstractCollectionPersister
         $mapping   = $this->getMapping($collection);
         $persister = $this->uow->getEntityPersister($mapping->targetEntity);
 
+        // Doctrine Collections 2.x support
+        $criteria = defined(Criteria::class . '::ASC') ? Criteria::create(true) : Criteria::create();
+
         // only works with single id identifier entities. Will throw an
         // exception in Entity Persisters if that is not the case for the
         // 'mappedBy' field.
-        $criteria = Criteria::create(true)->where(Criteria::expr()->eq($mapping->mappedBy, $collection->getOwner()));
+        $criteria = $criteria->where(Criteria::expr()->eq($mapping->mappedBy, $collection->getOwner()));
 
         return $persister->count($criteria);
     }
@@ -125,7 +129,8 @@ class OneToManyPersister extends AbstractCollectionPersister
         // only works with single id identifier entities. Will throw an
         // exception in Entity Persisters if that is not the case for the
         // 'mappedBy' field.
-        $criteria = Criteria::create(true);
+        // Doctrine Collections 2.x support
+        $criteria = defined(Criteria::class . '::ASC') ? Criteria::create(true) : Criteria::create();
 
         $criteria->andWhere(Criteria::expr()->eq($mapping->mappedBy, $collection->getOwner()));
         $criteria->andWhere(Criteria::expr()->eq($mapping->indexBy(), $key));
@@ -143,10 +148,12 @@ class OneToManyPersister extends AbstractCollectionPersister
         $mapping   = $this->getMapping($collection);
         $persister = $this->uow->getEntityPersister($mapping->targetEntity);
 
+        // Doctrine Collections 2.x support
+        $criteria = defined(Criteria::class . '::ASC') ? Criteria::create(true) : Criteria::create();
         // only works with single id identifier entities. Will throw an
         // exception in Entity Persisters if that is not the case for the
         // 'mappedBy' field.
-        $criteria = Criteria::create(true)->where(Criteria::expr()->eq($mapping->mappedBy, $collection->getOwner()));
+        $criteria = $criteria->where(Criteria::expr()->eq($mapping->mappedBy, $collection->getOwner()));
 
         return $persister->exists($element, $criteria);
     }

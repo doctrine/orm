@@ -17,6 +17,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 use PHPUnit\Framework\Attributes\Group;
 
 use function assert;
+use function defined;
 use function get_class;
 
 /**
@@ -436,7 +437,7 @@ class ManyToManyBasicAssociationTest extends OrmFunctionalTestCase
 
         $user = $this->_em->find($user::class, $user->id);
 
-        $criteria = Criteria::create(true)
+        $criteria = (defined(Criteria::class . '::ASC') ? Criteria::create(true) : Criteria::create())
             ->orderBy(['name' => Order::Ascending]);
 
         self::assertEquals(
@@ -476,7 +477,7 @@ class ManyToManyBasicAssociationTest extends OrmFunctionalTestCase
 
         $user = $this->_em->find($user::class, $user->id);
 
-        $criteria = Criteria::create(true)
+        $criteria = (defined(Criteria::class . '::ASC') ? Criteria::create(true) : Criteria::create())
             ->orderBy(['name' => Order::Ascending]);
 
         self::assertEquals(
@@ -499,7 +500,7 @@ class ManyToManyBasicAssociationTest extends OrmFunctionalTestCase
         $groups = $user->groups;
         self::assertFalse($user->groups->isInitialized(), 'Pre-condition: lazy collection');
 
-        $criteria = Criteria::create(true)->setMaxResults(1);
+        $criteria = (defined(Criteria::class . '::ASC') ? Criteria::create(true) : Criteria::create())->setMaxResults(1);
         $result   = $groups->matching($criteria);
 
         self::assertCount(1, $result);
@@ -517,7 +518,7 @@ class ManyToManyBasicAssociationTest extends OrmFunctionalTestCase
         $groups = $user->groups;
         self::assertFalse($user->groups->isInitialized(), 'Pre-condition: lazy collection');
 
-        $criteria = Criteria::create(true)->setFirstResult(1);
+        $criteria = (defined(Criteria::class . '::ASC') ? Criteria::create(true) : Criteria::create())->setFirstResult(1);
         $result   = $groups->matching($criteria);
 
         self::assertCount(1, $result);
@@ -538,7 +539,7 @@ class ManyToManyBasicAssociationTest extends OrmFunctionalTestCase
         $groups = $user->groups;
         self::assertFalse($user->groups->isInitialized(), 'Pre-condition: lazy collection');
 
-        $criteria = Criteria::create(true)->setFirstResult(1)->setMaxResults(3);
+        $criteria = (defined(Criteria::class . '::ASC') ? Criteria::create(true) : Criteria::create())->setFirstResult(1)->setMaxResults(3);
         $result   = $groups->matching($criteria);
 
         self::assertCount(3, $result);
@@ -562,7 +563,7 @@ class ManyToManyBasicAssociationTest extends OrmFunctionalTestCase
         $groups = $user->groups;
         self::assertFalse($user->groups->isInitialized(), 'Pre-condition: lazy collection');
 
-        $criteria = Criteria::create(true)->where(Criteria::expr()->eq('name', (string) 'Developers_0'));
+        $criteria = (defined(Criteria::class . '::ASC') ? Criteria::create(true) : Criteria::create())->where(Criteria::expr()->eq('name', (string) 'Developers_0'));
         $result   = $groups->matching($criteria);
 
         self::assertCount(1, $result);
@@ -583,7 +584,7 @@ class ManyToManyBasicAssociationTest extends OrmFunctionalTestCase
         $groups = $user->groups;
         self::assertFalse($user->groups->isInitialized(), 'Pre-condition: lazy collection');
 
-        $criteria = Criteria::create(true)->where(Criteria::expr()->in('name', ['Developers_1']));
+        $criteria = (defined(Criteria::class . '::ASC') ? Criteria::create(true) : Criteria::create())->where(Criteria::expr()->in('name', ['Developers_1']));
         $result   = $groups->matching($criteria);
 
         self::assertCount(1, $result);
@@ -602,7 +603,7 @@ class ManyToManyBasicAssociationTest extends OrmFunctionalTestCase
         $groups = $user->groups;
         self::assertFalse($user->groups->isInitialized(), 'Pre-condition: lazy collection');
 
-        $criteria = Criteria::create(true)->where(Criteria::expr()->notIn('name', ['Developers_0']));
+        $criteria = (defined(Criteria::class . '::ASC') ? Criteria::create(true) : Criteria::create())->where(Criteria::expr()->notIn('name', ['Developers_0']));
         $result   = $groups->matching($criteria);
 
         self::assertCount(1, $result);
