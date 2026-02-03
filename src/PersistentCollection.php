@@ -43,8 +43,6 @@ use function strtoupper;
  */
 final class PersistentCollection extends AbstractLazyCollection implements Selectable
 {
-    use PersistentCollectionImplementation;
-
     /**
      * A snapshot of the collection at the moment it was fetched from the database.
      * This is used to create a diff of the collection at commit time.
@@ -414,7 +412,7 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
     }
 
     #[Override]
-    private function doAdd(mixed $value): void
+    public function add(mixed $value): void
     {
         $this->unwrap()->add($value);
 
