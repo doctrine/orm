@@ -18,8 +18,7 @@ class Rot13Type extends Type
     /**
      * {@inheritDoc}
      *
-     * @param string|null      $value
-     * @param AbstractPlatform $platform
+     * @param string|null $value
      *
      * @return string|null
      */
@@ -35,8 +34,7 @@ class Rot13Type extends Type
     /**
      * {@inheritDoc}
      *
-     * @param string|null      $value
-     * @param AbstractPlatform $platform
+     * @param string|null $value
      *
      * @return string|null
      */
@@ -52,9 +50,6 @@ class Rot13Type extends Type
     /**
      * {@inheritDoc}
      *
-     * @param array            $fieldDeclaration
-     * @param AbstractPlatform $platform
-     *
      * @return string
      */
     public function getSQLDeclaration(array $fieldDeclaration, AbstractPlatform $platform)
@@ -68,8 +63,6 @@ class Rot13Type extends Type
 
     /**
      * {@inheritDoc}
-     *
-     * @param AbstractPlatform $platform
      *
      * @return int|null
      */
