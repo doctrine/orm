@@ -7,6 +7,7 @@ namespace Doctrine\ORM\Persisters;
 use Doctrine\Common\Collections\Expr\Comparison;
 use Doctrine\Common\Collections\Expr\CompositeExpression;
 use Doctrine\Common\Collections\Expr\ExpressionVisitor;
+use Doctrine\Common\Collections\Expr\Value;
 use Override;
 
 /**
@@ -14,8 +15,6 @@ use Override;
  */
 class SqlValueVisitor extends ExpressionVisitor
 {
-    use SqlValueVisitorImplementation;
-
     /** @var mixed[] */
     private array $values = [];
 
@@ -28,7 +27,7 @@ class SqlValueVisitor extends ExpressionVisitor
      * {@inheritDoc}
      */
     #[Override]
-    private function doWalkComparison(Comparison $comparison): mixed
+    public function walkComparison(Comparison $comparison): mixed
     {
         $value = $this->getValueFromComparison($comparison);
 
@@ -44,12 +43,19 @@ class SqlValueVisitor extends ExpressionVisitor
      * {@inheritDoc}
      */
     #[Override]
-    private function doWalkCompositeExpression(CompositeExpression $expr): mixed
+    public function walkCompositeExpression(CompositeExpression $expr): mixed
     {
         foreach ($expr->getExpressionList() as $child) {
             $this->dispatch($child);
         }
 
+        return null;
+    }
+
+    /** Converts a value expression into the target query language part. */
+    #[Override]
+    public function walkValue(Value $value): mixed
+    {
         return null;
     }
 

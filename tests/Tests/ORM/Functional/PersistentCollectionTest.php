@@ -12,7 +12,6 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 use PHPUnit\Framework\Attributes\Group;
 
 use function class_exists;
-use function defined;
 
 class PersistentCollectionTest extends OrmFunctionalTestCase
 {
@@ -90,7 +89,7 @@ class PersistentCollectionTest extends OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $criteria = defined(Criteria::class . '::ASC') ? Criteria::create(true) : Criteria::create();
+        $criteria = Criteria::create();
 
         $collectionHolder = $this->_em->find(PersistentCollectionHolder::class, $collectionHolder->getId());
         $collectionHolder->getCollection()->matching($criteria);
