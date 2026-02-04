@@ -37,7 +37,7 @@
         "doctrine/collections": "^2.2 || ^3",
         "doctrine/dbal": "^3.8.2 || ^4",
         "doctrine/deprecations": "^0.5.3 || ^1",
-        "doctrine/event-manager": "^2.1.1",
+        "doctrine/event-manager": "^2.1.1 || 3.0.x-dev as 2.99.99",
         "doctrine/inflector": "^1.4 || ^2.0",
         "doctrine/instantiator": "^1.3 || ^2",
         "doctrine/lexer": "^3",
