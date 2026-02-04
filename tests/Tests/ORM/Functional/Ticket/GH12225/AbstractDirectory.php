@@ -94,7 +94,7 @@ class AbstractDirectory
         return $this->deletedAt;
     }
 
-    public function setDeletedAt(?DateTimeImmutable $deletedAt): static
+    public function setDeletedAt(?DateTimeImmutable $deletedAt): AbstractDirectory
     {
         $this->deletedAt = $deletedAt;
 
@@ -106,7 +106,7 @@ class AbstractDirectory
         return $this->parent;
     }
 
-    public function setParent(?AbstractDirectory $parent): static
+    public function setParent(?AbstractDirectory $parent): AbstractDirectory
     {
         $this->parent = $parent;
 
