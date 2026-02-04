@@ -35,6 +35,7 @@ use Doctrine\ORM\Mapping\Table;
 class AbstractDirectory
 {
     /**
+     * @var int
      * @Id
      * @GeneratedValue
      * @Column(name="id", type="integer")
@@ -42,32 +43,35 @@ class AbstractDirectory
     #[Id]
     #[GeneratedValue]
     #[Column(name: 'id', type: 'integer')]
-    private int $id;
+    private $id;
 
     /**
+     * @var string
      * @Column(name="dir_key", type="string")
      */
     #[Column(name: 'dir_key', type: 'string')]
-    private string $dirKey;
+    private $dirKey;
 
     /**
+     * @var DateTimeImmutable|null
      * @Column(name="deleted_at", type="datetime_immutable", nullable=true)
      */
     #[Column(name: 'deleted_at', type: 'datetime_immutable', nullable: true)]
-    private ?DateTimeImmutable $deletedAt = null;
+    private $deletedAt = null;
 
     /**
+     * @var AbstractDirectory|null
      * @ManyToOne(targetEntity=AbstractDirectory::class, fetch="LAZY", inversedBy="directories")
      */
     #[ManyToOne(targetEntity: self::class, fetch: 'LAZY', inversedBy: 'directories')]
-    private ?AbstractDirectory $parent = null;
+    private $parent = null;
 
     /**
      * @var Collection<string, self>
      * @OneToMany(mappedBy="parent", targetEntity=AbstractDirectory::class, fetch="EXTRA_LAZY", indexBy="dirKey")
      */
     #[OneToMany(mappedBy: 'parent', targetEntity: self::class, fetch: 'EXTRA_LAZY', indexBy: 'dirKey')]
-    private Collection $children;
+    private $children;
 
     public function __construct(string $dirKey)
     {
