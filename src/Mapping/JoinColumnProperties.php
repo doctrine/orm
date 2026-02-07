@@ -11,6 +11,7 @@ trait JoinColumnProperties
         public readonly string|null $name = null,
         public readonly string|null $referencedColumnName = null,
         public readonly bool $deferrable = false,
+        public readonly bool $deferred = false,
         public readonly bool $unique = false,
         public readonly bool|null $nullable = null,
         public readonly mixed $onDelete = null,

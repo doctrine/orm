@@ -679,6 +679,9 @@ Optional parameters:
    affected entities and should be enforced as such on the database
    constraint level. Defaults to false.
 -  **deferrable**: Determines whether this relation constraint can be deferred. Defaults to false.
+-  **deferred**: Determines whether this deferrable relation
+   constraint can be ``INITIALLY IMMEDIATE`` or ``INITIALLY DEFERRED``.
+   Defaults to false (``INITIALLY IMMEDIATE``).
 -  **nullable**: Determine whether the related entity is required, or if
    null is an allowed state for the relation. Defaults to true.
 -  **onDelete**: Cascade Action (Database-level)
