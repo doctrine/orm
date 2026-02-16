@@ -9,6 +9,7 @@ use Doctrine\Tests\Models\PropertyHooks\User;
 use Doctrine\Tests\OrmTestCase;
 use PHPUnit\Framework\Attributes\RequiresPhp;
 use ReflectionObject;
+use ReflectionClass;
 
 use function trim;
 
@@ -54,8 +55,8 @@ class RawValuePropertyAccessorTest extends OrmTestCase
 
     public function testGetValueOnProxy(): void
     {
-        $reflector = new \ReflectionClass(User::class);
-        $object = $reflector->newLazyGhost(function (User $object) {
+        $reflector = new ReflectionClass(User::class);
+        $object    = $reflector->newLazyGhost(static function (User $object): void {
             $object->id = 1;
         });
 
