@@ -8,8 +8,8 @@ use Doctrine\ORM\Mapping\PropertyAccessors\RawValuePropertyAccessor;
 use Doctrine\Tests\Models\PropertyHooks\User;
 use Doctrine\Tests\OrmTestCase;
 use PHPUnit\Framework\Attributes\RequiresPhp;
-use ReflectionObject;
 use ReflectionClass;
+use ReflectionObject;
 
 use function trim;
 
