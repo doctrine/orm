@@ -53,7 +53,7 @@ class RawValuePropertyAccessor implements PropertyAccessor
 
     public function getValue(object $object): mixed
     {
-        return ((array) $object)[$this->key] ?? null;
+        return $this->reflectionProperty->getRawValue($object);
     }
 
     public function getUnderlyingReflector(): ReflectionProperty
