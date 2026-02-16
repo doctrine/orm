@@ -8,8 +8,6 @@ use Doctrine\ORM\Proxy\InternalProxy;
 use LogicException;
 use ReflectionProperty;
 
-use function ltrim;
-
 use const PHP_VERSION_ID;
 
 /**
@@ -51,7 +49,6 @@ class RawValuePropertyAccessor implements PropertyAccessor
     public function getValue(object $object): mixed
     {
         if ($this->reflectionProperty->isInitialized($object)) {
-
             return $this->reflectionProperty->getRawValue($object);
         }
 
