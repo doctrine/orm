@@ -53,7 +53,7 @@ class RawValuePropertyAccessorTest extends OrmTestCase
         self::assertEquals('EN', $accessor->getValue($object));
     }
 
-    public function testGetValueOnProxy(): void
+    public function testGetValueOnUninitializedProxy(): void
     {
         $reflector = new ReflectionClass(User::class);
         $object    = $reflector->newLazyGhost(static function (User $object): void {
@@ -64,5 +64,14 @@ class RawValuePropertyAccessorTest extends OrmTestCase
         $accessor   = RawValuePropertyAccessor::fromReflectionProperty($reflection->getProperty('id'));
 
         self::assertEquals(1, $accessor->getValue($object));
+    }
+
+    public function testGetValueBeforeInitialization(): void
+    {
+        $object     = new User();
+        $reflection = new ReflectionObject($object);
+        $accessor   = RawValuePropertyAccessor::fromReflectionProperty($reflection->getProperty('id'));
+
+        self::assertEquals(null, $accessor->getValue($object));
     }
 }
