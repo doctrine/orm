@@ -6,6 +6,7 @@ namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\Tests\Models\CMS\CmsAddress;
 use Doctrine\Tests\Models\CMS\CmsArticle;
+use Doctrine\Tests\Models\CMS\CmsBlock;
 use Doctrine\Tests\Models\CMS\CmsEmail;
 use Doctrine\Tests\Models\CMS\CmsGroup;
 use Doctrine\Tests\Models\CMS\CmsPhonenumber;
@@ -13,6 +14,7 @@ use Doctrine\Tests\Models\CMS\CmsTag;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use Doctrine\Tests\Proxies\__CG__\Doctrine\Tests\Models\CMS\CmsUser as CmsUserProxy;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
  * Test that Doctrine ORM correctly works with proxy instances exactly like with ordinary Entities
@@ -37,6 +39,7 @@ class ProxiesLikeEntitiesTest extends OrmFunctionalTestCase
             CmsTag::class,
             CmsPhonenumber::class,
             CmsArticle::class,
+            CmsBlock::class,
             CmsAddress::class,
             CmsEmail::class,
             CmsGroup::class,
@@ -132,6 +135,38 @@ class ProxiesLikeEntitiesTest extends OrmFunctionalTestCase
 
         self::assertSame($this->user->getId(), $result->getId());
         $this->_em->clear();
+    }
+
+    public function testLoadingCollectionOnUninitializedProxy(): void
+    {
+        $article = new CmsArticle();
+        $article->topic = 'Topic';
+        $article->text = 'Text';
+        $article->version = 'Version';
+        $block = new CmsBlock();
+
+        $article->block = $block;
+
+        $this->_em->persist($article);
+        $this->_em->persist($block);
+
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $article = $this->_em->getRepository(CmsArticle::class)->find($article->id);
+
+        try {
+            $this->preventInitializingBlock($article);
+        } catch (\Exception $e) {
+
+        }
+
+        $this->assertCount(0, $article->block->children);
+    }
+
+    private function preventInitializingBlock($article): void
+    {
+        throw new \Exception();
     }
 
     protected function tearDown(): void
