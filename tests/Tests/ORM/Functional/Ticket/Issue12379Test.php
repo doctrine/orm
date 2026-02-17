@@ -7,6 +7,7 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 use Doctrine\Tests\Models\Issue12379\Node;
 use Doctrine\Tests\Models\Issue12379\Page;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use Exception;
 
 class Issue12379Test extends OrmFunctionalTestCase
 {
@@ -37,8 +38,7 @@ class Issue12379Test extends OrmFunctionalTestCase
 
         try {
             $this->preventInitializingNode($page);
-        } catch (\Exception $e) {
-
+        } catch (Exception) {
         }
 
         $this->assertCount(0, $page->node->children);
@@ -46,6 +46,6 @@ class Issue12379Test extends OrmFunctionalTestCase
 
     private function preventInitializingNode($page): void
     {
-        throw new \Exception();
+        throw new Exception();
     }
 }

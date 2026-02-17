@@ -13,7 +13,6 @@ use Doctrine\Tests\Models\CMS\CmsTag;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use Doctrine\Tests\Proxies\__CG__\Doctrine\Tests\Models\CMS\CmsUser as CmsUserProxy;
-use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
  * Test that Doctrine ORM correctly works with proxy instances exactly like with ordinary Entities
@@ -37,6 +36,7 @@ class ProxiesLikeEntitiesTest extends OrmFunctionalTestCase
             CmsUser::class,
             CmsTag::class,
             CmsPhonenumber::class,
+            CmsArticle::class,
             CmsAddress::class,
             CmsEmail::class,
             CmsGroup::class,

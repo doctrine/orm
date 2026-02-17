@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\Issue12379;
 
 use Doctrine\ORM\Mapping as ORM;
@@ -10,8 +12,8 @@ class Page
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    public ?int $id = null;
+    public int|null $id = null;
 
     #[ORM\OneToOne(targetEntity: Node::class)]
-    public ?Node $node = null;
+    public Node|null $node = null;
 }
