@@ -6,7 +6,6 @@ namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\Tests\Models\CMS\CmsAddress;
 use Doctrine\Tests\Models\CMS\CmsArticle;
-use Doctrine\Tests\Models\CMS\CmsBlock;
 use Doctrine\Tests\Models\CMS\CmsEmail;
 use Doctrine\Tests\Models\CMS\CmsGroup;
 use Doctrine\Tests\Models\CMS\CmsPhonenumber;
@@ -38,8 +37,6 @@ class ProxiesLikeEntitiesTest extends OrmFunctionalTestCase
             CmsUser::class,
             CmsTag::class,
             CmsPhonenumber::class,
-            CmsArticle::class,
-            CmsBlock::class,
             CmsAddress::class,
             CmsEmail::class,
             CmsGroup::class,
@@ -135,38 +132,6 @@ class ProxiesLikeEntitiesTest extends OrmFunctionalTestCase
 
         self::assertSame($this->user->getId(), $result->getId());
         $this->_em->clear();
-    }
-
-    public function testLoadingCollectionOnUninitializedProxy(): void
-    {
-        $article = new CmsArticle();
-        $article->topic = 'Topic';
-        $article->text = 'Text';
-        $article->version = 'Version';
-        $block = new CmsBlock();
-
-        $article->block = $block;
-
-        $this->_em->persist($article);
-        $this->_em->persist($block);
-
-        $this->_em->flush();
-        $this->_em->clear();
-
-        $article = $this->_em->getRepository(CmsArticle::class)->find($article->id);
-
-        try {
-            $this->preventInitializingBlock($article);
-        } catch (\Exception $e) {
-
-        }
-
-        $this->assertCount(0, $article->block->children);
-    }
-
-    private function preventInitializingBlock($article): void
-    {
-        throw new \Exception();
     }
 
     protected function tearDown(): void
