@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<doctrine-mapping xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+                  xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
+        http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+
+    <mapped-superclass name="Doctrine\Tests\Models\ResolveTargetOneToOne\BaseVendor"
+                       table="vendor">
+        <id name="id" type="integer">
+            <generator strategy="AUTO"/>
+        </id>
+
+        <field name="name" column="name" type="string"/>
+
+        <one-to-one field="profile"
+                    target-entity="Doctrine\Tests\Models\ResolveTargetOneToOne\Profile"
+                    inversed-by="vendor">
+            <join-column name="profile_id" referenced-column-name="id"/>
+        </one-to-one>
+    </mapped-superclass>
+</doctrine-mapping>

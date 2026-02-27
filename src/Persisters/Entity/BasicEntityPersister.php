@@ -1356,7 +1356,7 @@ class BasicEntityPersister implements EntityPersister
                     $sourceCol = $this->quoteStrategy->getJoinColumnName($joinColumn, $this->class, $this->platform);
                     $targetCol = $this->quoteStrategy->getReferencedJoinColumnName($joinColumn, $this->class, $this->platform);
 
-                    $joinCondition[] = $this->getSQLTableAlias($association->sourceEntity, $assocAlias) . '.' . $sourceCol . ' = '
+                    $joinCondition[] = $joinTableAlias . '.' . $sourceCol . ' = '
                         . $this->getSQLTableAlias($association->targetEntity) . '.' . $targetCol;
                 }
 
