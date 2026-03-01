@@ -586,6 +586,7 @@ class UnitOfWork implements PropertyChangedListener
             $this->listenersInvoker->invoke($class, Events::preFlush, $entity, new PreFlushEventArgs($this->em), $invoke);
         }
 
+        $isNew      = ! isset($this->originalEntityData[$oid]);
         $actualData = [];
 
         foreach ($class->propertyAccessors as $name => $refProp) {
@@ -626,11 +627,15 @@ class UnitOfWork implements PropertyChangedListener
             }
 
             if (( ! $class->isIdentifier($name) || ! $class->isIdGeneratorIdentity()) && ($name !== $class->versionField)) {
+                if (! $isNew && isset($class->fieldMappings[$name]->notUpdatable)) {
+                    continue;
+                }
+
                 $actualData[$name] = $value;
             }
         }
 
-        if (! isset($this->originalEntityData[$oid])) {
+        if ($isNew) {
             // Entity is either NEW or MANAGED but not yet fully persisted (only has an id).
             // These result in an INSERT.
             $this->originalEntityData[$oid] = $actualData;
@@ -638,6 +643,10 @@ class UnitOfWork implements PropertyChangedListener
 
             foreach ($actualData as $propName => $actualValue) {
                 if (! isset($class->associationMappings[$propName])) {
+                    if (isset($class->fieldMappings[$propName]->notInsertable)) {
+                        continue;
+                    }
+
                     $changeSet[$propName] = [null, $actualValue];
 
                     continue;
@@ -990,6 +999,7 @@ class UnitOfWork implements PropertyChangedListener
                 ( ! $class->isIdentifier($name) || ! $class->isIdGeneratorIdentity())
                 && ($name !== $class->versionField)
                 && ! $class->isCollectionValuedAssociation($name)
+                && ! isset($class->fieldMappings[$name]->notUpdatable)
             ) {
                 $actualData[$name] = $refProp->getValue($entity);
             }
