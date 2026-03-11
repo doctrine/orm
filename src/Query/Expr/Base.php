@@ -12,6 +12,7 @@ use function get_class;
 use function get_debug_type;
 use function implode;
 use function in_array;
+use function is_object;
 use function is_string;
 use function sprintf;
 
@@ -31,7 +32,7 @@ abstract class Base
     /** @var string */
     protected $postSeparator = ')';
 
-    /** @var list<class-string> */
+    /** @var list<class-string<Stringable>> */
     protected $allowedClasses = [];
 
     /** @var list<string|Stringable> */
@@ -59,7 +60,7 @@ abstract class Base
     }
 
     /**
-     * @param mixed $arg
+     * @param string|Stringable|null $arg
      *
      * @return $this
      *
@@ -69,7 +70,8 @@ abstract class Base
     {
         if ($arg !== null && (! $arg instanceof self || $arg->count() > 0)) {
             // If we decide to keep Expr\Base instances, we can use this check
-            if (! is_string($arg) && ! in_array(get_class($arg), $this->allowedClasses, true)) {
+            // @phpstan-ignore function.alreadyNarrowedType (input validation)
+            if (! is_string($arg) && ! (is_object($arg) && in_array(get_class($arg), $this->allowedClasses, true))) {
                 throw new InvalidArgumentException(sprintf(
                     "Expression of type '%s' not allowed in this context.",
                     get_debug_type($arg)
