@@ -385,7 +385,7 @@ class ExprTest extends OrmTestCase
     }
 
     /** @return Generator<string, array{mixed}> */
-    public function provideInvalidTypesForAdd(): Generator
+    public static function provideInvalidTypesForAdd(): Generator
     {
         yield 'integer 1' => [1];
         yield 'object' => [(object) ['foo' => 'bar']];
