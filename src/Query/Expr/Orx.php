@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Query\Expr;
 
+use Stringable;
+
 /**
  * Expression class for building DQL OR clauses.
  *
@@ -13,7 +15,7 @@ class Orx extends Composite
 {
     protected string $separator = ' OR ';
 
-    /** @var string[] */
+    /** @var list<class-string<Stringable>> */
     protected array $allowedClasses = [
         Comparison::class,
         Func::class,

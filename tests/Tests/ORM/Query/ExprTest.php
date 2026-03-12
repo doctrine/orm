@@ -374,9 +374,25 @@ class ExprTest extends OrmTestCase
 
     public function testAddThrowsException(): void
     {
-        $this->expectException(InvalidArgumentException::class);
         $orExpr = $this->expr->orX();
+        $this->expectException(InvalidArgumentException::class);
         $orExpr->add($this->expr->quot(5, 2));
+    }
+
+    #[DataProvider('provideInvalidTypesForAdd')]
+    public function testAddThrowsExceptionOnInvalidType(mixed $arg): void
+    {
+        $orExpr = $this->expr->orX();
+        $this->expectException(InvalidArgumentException::class);
+        $orExpr->add($arg);
+    }
+
+    /** @return Generator<string, array{mixed}> */
+    public static function provideInvalidTypesForAdd(): Generator
+    {
+        yield 'integer 1' => [1];
+        yield 'object' => [(object) ['foo' => 'bar']];
+        yield 'array' => [['foo' => 'bar']];
     }
 
     #[Group('DDC-1683')]
