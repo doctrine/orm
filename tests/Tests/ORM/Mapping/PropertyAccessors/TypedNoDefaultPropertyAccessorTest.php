@@ -6,7 +6,9 @@ namespace Doctrine\Tests\ORM\Mapping\PropertyAccessors;
 
 use Doctrine\ORM\Mapping\PropertyAccessors\PropertyAccessorFactory;
 use Doctrine\ORM\Mapping\PropertyAccessors\TypedNoDefaultPropertyAccessor;
+use Doctrine\Tests\Models\PropertyHooks\User;
 use Doctrine\Tests\OrmTestCase;
+use PHPUnit\Framework\Attributes\RequiresPhp;
 
 class TypedNoDefaultPropertyAccessorTest extends OrmTestCase
 {
@@ -34,6 +36,23 @@ class TypedNoDefaultPropertyAccessorTest extends OrmTestCase
 
         $accessor->setValue($object, null);
         $this->assertNull($accessor->getValue($object));
+    }
+
+    #[RequiresPhp('>= 8.4.0')]
+    public function testSetNullOnHookedPropertyDoesNotThrow(): void
+    {
+        $accessor = PropertyAccessorFactory::createPropertyAccessor(User::class, 'first');
+
+        $object = new User();
+        $accessor->setValue($object, 'Alice');
+        $this->assertEquals('Alice', $accessor->getValue($object));
+
+        // Setting null on a non-nullable hooked property should not throw.
+        // Doctrine calls this when uninitializing an entity (e.g. after delete).
+        $accessor->setValue($object, null);
+
+        // Property retains its previous value since unset is not possible on hooked properties.
+        $this->assertEquals('Alice', $accessor->getValue($object));
     }
 }
 

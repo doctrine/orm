@@ -11,6 +11,8 @@ use ReflectionProperty;
 use function assert;
 use function sprintf;
 
+use const PHP_VERSION_ID;
+
 /** @internal */
 class TypedNoDefaultPropertyAccessor implements PropertyAccessor
 {
@@ -38,6 +40,12 @@ class TypedNoDefaultPropertyAccessor implements PropertyAccessor
     public function setValue(object $object, mixed $value): void
     {
         if ($value === null) {
+            // Properties with hooks cannot be unset (PHP throws "Cannot unset hooked property").
+            // If the property has hooks, skip the unset and leave it initialized with its current value.
+            if (PHP_VERSION_ID >= 80400 && $this->reflectionProperty->hasHooks()) {
+                return;
+            }
+
             if ($this->unsetter === null) {
                 $propertyName   = $this->reflectionProperty->getName();
                 $this->unsetter = function () use ($propertyName): void {
