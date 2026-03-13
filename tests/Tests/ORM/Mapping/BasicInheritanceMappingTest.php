@@ -18,6 +18,7 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\Index;
 use Doctrine\ORM\Mapping\InheritanceType;
 use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\Embeddable;
 use Doctrine\ORM\Mapping\MappedSuperclass;
 use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\ORM\Mapping\OneToOne;
@@ -219,6 +220,13 @@ class BasicInheritanceMappingTest extends OrmTestCase
 
         yield 'complex example (Entity Root -> Mapped Superclass -> transient class -> Entity)'
             => [InvalidComplexRoot::class, InvalidComplexEntity::class];
+    }
+
+    public function testEmbeddableSubclassDoesNotTriggerInheritanceDeprecation(): void
+    {
+        $this->expectNoDeprecationWithIdentifier('https://github.com/doctrine/orm/pull/10431');
+
+        $this->cmf->getMetadataFor(EmbeddableSubclass::class);
     }
 
     /** @group DDC-964 */
@@ -541,4 +549,18 @@ class InvalidComplexTransientClass extends InvalidComplexMappedSuperclass
 /** @Entity */
 class InvalidComplexEntity extends InvalidComplexTransientClass
 {
+}
+
+/** @Embeddable */
+class EmbeddableBase
+{
+    /** @Column(type="string") */
+    public $value;
+}
+
+/** @Embeddable */
+class EmbeddableSubclass extends EmbeddableBase
+{
+    /** @Column(type="string") */
+    public $extraValue;
 }

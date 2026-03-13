@@ -161,7 +161,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
         }
 
         if (! $class->isMappedSuperclass) {
-            if ($rootEntityFound && $class->isInheritanceTypeNone()) {
+            if ($rootEntityFound && $class->isInheritanceTypeNone() && ! $class->isEmbeddedClass) {
                 Deprecation::trigger(
                     'doctrine/orm',
                     'https://github.com/doctrine/orm/pull/10431',
