@@ -411,6 +411,59 @@ automatically during hydration and persistence.
 | ``simple_array``  | ``hearts,spades``           | ``array<Suit>``               |
 +-------------------+-----------------------------+-------------------------------+
 
+Nullable Enums
+~~~~~~~~~~~~~~
+
+Enum columns can be nullable. When the database value is ``NULL``, Doctrine
+preserves it as ``null`` without triggering any validation error.
+
+.. code-block:: php
+
+    <?php
+    #[ORM\Column(type: 'string', nullable: true, enumType: Suit::class)]
+    private Suit|null $suit = null;
+
+Default Values
+~~~~~~~~~~~~~~
+
+You can specify a database-level default using an enum case directly in the
+column options:
+
+.. code-block:: php
+
+    <?php
+    #[ORM\Column(options: ['default' => Suit::Hearts])]
+    public Suit $suit;
+
+Using Enums in Queries
+~~~~~~~~~~~~~~~~~~~~~~
+
+Enum instances can be used directly as parameters in DQL, QueryBuilder, and
+repository methods. Doctrine converts them to their scalar value automatically.
+
+.. code-block:: php
+
+    <?php
+    // QueryBuilder
+    $qb = $em->createQueryBuilder();
+    $qb->select('c')
+        ->from(Card::class, 'c')
+        ->where('c.suit = :suit')
+        ->setParameter('suit', Suit::Clubs);
+
+    // Repository
+    $cards = $em->getRepository(Card::class)->findBy(['suit' => Suit::Clubs]);
+
+XML Mapping
+~~~~~~~~~~~
+
+When using XML mapping, the ``enum-type`` attribute is used on ``<field>``
+elements:
+
+.. code-block:: xml
+
+    <field name="suit" type="string" enum-type="App\Entity\Suit" />
+
 .. _reference-mapping-types:
 
 Doctrine Mapping Types
