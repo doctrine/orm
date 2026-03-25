@@ -11,6 +11,9 @@ use Doctrine\Tests\Models\ECommerce\ECommerceCustomer;
 use Doctrine\Tests\Models\ECommerce\ECommerceFeature;
 use Doctrine\Tests\Models\ECommerce\ECommerceProduct;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use ReflectionClass;
+
+use const PHP_VERSION_ID;
 
 /**
  * Tests capabilities of the persister.
@@ -117,12 +120,12 @@ class StandardEntityPersisterTest extends OrmFunctionalTestCase
         }
 
         $initialized = false;
-        $reflector = new \ReflectionClass(CmsUser::class);
-        $lazyGhost = $reflector->newLazyGhost(function (CmsUser $object) use (&$initialized) {
-            $initialized = true;
+        $reflector   = new ReflectionClass(CmsUser::class);
+        $lazyGhost   = $reflector->newLazyGhost(static function (CmsUser $object) use (&$initialized): void {
+            $initialized      = true;
             $object->username = 'lazyGhost';
-            $object->name = 'LazyGhostInitialized';
-            $object->status = 'active';
+            $object->name     = 'LazyGhostInitialized';
+            $object->status   = 'active';
         });
 
         self::assertFalse($initialized, 'Lazy ghost should not be initialized before persist.');

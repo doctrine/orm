@@ -74,6 +74,8 @@ use function spl_object_id;
 use function sprintf;
 use function strtolower;
 
+use const PHP_VERSION_ID;
+
 /**
  * The UnitOfWork is responsible for tracking changes to objects during an
  * "object-level" transaction and for writing out changes to the database
