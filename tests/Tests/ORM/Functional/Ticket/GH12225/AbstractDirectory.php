@@ -89,33 +89,31 @@ class AbstractDirectory
         return $this->dirKey;
     }
 
-    public function getDeletedAt(): ?DateTimeImmutable
+    public function getDeletedAt(): DateTimeImmutable|null
     {
         return $this->deletedAt;
     }
 
-    public function setDeletedAt(?DateTimeImmutable $deletedAt): AbstractDirectory
+    public function setDeletedAt(DateTimeImmutable|null $deletedAt): AbstractDirectory
     {
         $this->deletedAt = $deletedAt;
 
         return $this;
     }
 
-    public function getParent(): ?AbstractDirectory
+    public function getParent(): AbstractDirectory|null
     {
         return $this->parent;
     }
 
-    public function setParent(?AbstractDirectory $parent): AbstractDirectory
+    public function setParent(AbstractDirectory|null $parent): AbstractDirectory
     {
         $this->parent = $parent;
 
         return $this;
     }
 
-    /**
-     * @return Collection<string, self>
-     */
+    /** @return Collection<string, self> */
     public function getChildren(): Collection
     {
         return $this->children;
