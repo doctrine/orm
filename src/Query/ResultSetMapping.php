@@ -250,17 +250,18 @@ class ResultSetMapping
      */
     public function addIndexBy(string $alias, string $fieldName): static
     {
-        $found = false;
+        $found = null;
 
         foreach ([...$this->metaMappings, ...$this->fieldMappings] as $columnName => $columnFieldName) {
             if (! ($columnFieldName === $fieldName && $this->columnOwnerMap[$columnName] === $alias)) {
                 continue;
             }
 
-            $this->addIndexByColumn($alias, $columnName);
-            $found = true;
+            $found = $columnName;
+        }
 
-            break;
+        if ($found !== null) {
+            $this->addIndexByColumn($alias, $found);
         }
 
         /* TODO: check if this exception can be put back, for now it's gone because of assumptions made by some ORM internals
