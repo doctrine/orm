@@ -265,7 +265,7 @@ Mapping PHP Enums
 .. versionadded:: 2.11
 
 Doctrine natively supports mapping PHP backed enums to database columns.
-A backed enum is a PHP enum that has a scalar type (``string`` or ``int``)
+A backed enum is a PHP enum that the same scalar type (``string`` or ``int``)
 assigned to each case. Doctrine stores the scalar value in the database and
 converts it back to the enum instance when hydrating the entity.
 
