@@ -394,10 +394,11 @@ automatically during hydration and persistence.
 .. tip::
 
     Use ``json`` when enum values may contain commas, when you need to store
-    int-backed enums (as it preserves value types), or when the column also
-    stores complex/nested data structures. Prefer ``simple_array`` for a
-    compact, human-readable storage of string-backed enums whose values do not
-    contain commas.
+    int-backed enums (as it preserves value types), when the column also
+    stores complex/nested data structures, or when you want to query individual
+    values using database-native JSON operators (e.g. PostgreSQL ``jsonb``).
+    Prefer ``simple_array`` for a compact, human-readable storage of
+    string-backed enums whose values do not contain commas.
 
 +-------------------+-----------------------------+-------------------------------+
 | Column type       | Database storage            | PHP type                      |
