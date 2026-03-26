@@ -7,3 +7,7 @@ updates:
     labels:
       - "CI"
     target-branch: "2.20.x"
+    groups:
+      doctrine:
+        patterns:
+          - "doctrine/*"
