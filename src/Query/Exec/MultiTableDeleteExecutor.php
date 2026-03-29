@@ -6,7 +6,6 @@ namespace Doctrine\ORM\Query\Exec;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Connections\PrimaryReadReplicaConnection;
-use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Query\AST;
 use Doctrine\ORM\Query\AST\DeleteStatement;
 use Doctrine\ORM\Query\SqlWalker;
@@ -90,7 +89,7 @@ class MultiTableDeleteExecutor extends AbstractSqlExecutor
             $columnDefinitions[$idColumnName] = [
                 'name'    => $idColumnName,
                 'notnull' => true,
-                'type'    => Type::getType(PersisterHelper::getTypeOfColumn($idColumnName, $rootClass, $em)),
+                'type'    => $em->getConfiguration()->getTypeRegistry()->get(PersisterHelper::getTypeOfColumn($idColumnName, $rootClass, $em)),
             ];
         }
 

@@ -179,6 +179,16 @@ class SqlWalker
         return $this->em;
     }
 
+    private function getType(string $name): Type
+    {
+        return $this->em->getConfiguration()->getTypeRegistry()->get($name);
+    }
+
+    private function hasType(string $name): bool
+    {
+        return $this->em->getConfiguration()->getTypeRegistry()->has($name);
+    }
+
     /**
      * Gets the information about a single query component.
      *
@@ -1304,7 +1314,7 @@ class SqlWalker
                 $columnAlias   = $this->getSQLColumnAlias($fieldMapping->columnName);
                 $col           = $sqlTableAlias . '.' . $columnName;
 
-                $type = Type::getType($fieldMapping->type);
+                $type = $this->getType($fieldMapping->type);
                 $col  = $type->convertToPHPValueSQL($col, $this->conn->getDatabasePlatform());
 
                 $sql .= $col . ' AS ' . $columnAlias;
@@ -1360,7 +1370,7 @@ class SqlWalker
                     );
 
                     // @phpstan-ignore method.deprecatedInterface
-                    $this->rsm->addScalarResult($columnAlias, $resultAlias, Type::getTypeRegistry()->lookupName($expr->getReturnType()));
+                    $this->rsm->addScalarResult($columnAlias, $resultAlias, $this->em->getConfiguration()->getTypeRegistry()->lookupName($expr->getReturnType()));
 
                     break;
                 }
@@ -1446,7 +1456,7 @@ class SqlWalker
 
             $col = $sqlTableAlias . '.' . $quotedColumnName;
 
-            $type = Type::getType($mapping->type);
+            $type = $this->getType($mapping->type);
             $col  = $type->convertToPHPValueSQL($col, $this->platform);
 
             $sqlParts[] = $col . ' AS ' . $columnAlias;
@@ -1481,7 +1491,7 @@ class SqlWalker
 
                     $col = $sqlTableAlias . '.' . $quotedColumnName;
 
-                    $type = Type::getType($mapping->type);
+                    $type = $this->getType($mapping->type);
                     $col  = $type->convertToPHPValueSQL($col, $this->platform);
 
                     $sqlParts[] = $col . ' AS ' . $columnAlias;
@@ -1586,7 +1596,7 @@ class SqlWalker
                     $fieldType    = $fieldMapping->type;
                     $col          = trim($e->dispatch($this));
 
-                    $type = Type::getType($fieldType);
+                    $type = $this->getType($fieldType);
                     $col  = $type->convertToPHPValueSQL($col, $this->platform);
 
                     $sqlSelectExpressions[] = $col . ' AS ' . $columnAlias;
@@ -2220,8 +2230,8 @@ class SqlWalker
 
         if ($parameter) {
             $type = $parameter->getType();
-            if (is_string($type) && Type::hasType($type)) {
-                return Type::getType($type)->convertToDatabaseValueSQL('?', $this->platform);
+            if (is_string($type) && $this->hasType($type)) {
+                return $this->getType($type)->convertToDatabaseValueSQL('?', $this->platform);
             }
         }
 

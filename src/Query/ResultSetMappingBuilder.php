@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Query;
 
-use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Internal\SQLResultCasing;
 use Doctrine\ORM\Mapping\ClassMetadata;
@@ -253,7 +252,7 @@ class ResultSetMappingBuilder extends ResultSetMapping implements Stringable
                 $classFieldMapping = $class->fieldMappings[$fieldName];
                 $columnSql         = $tableAlias . '.' . $classFieldMapping->columnName;
 
-                $type      = Type::getType($classFieldMapping->type);
+                $type      = $this->em->getConfiguration()->getTypeRegistry()->get($classFieldMapping->type);
                 $columnSql = $type->convertToPHPValueSQL($columnSql, $this->em->getConnection()->getDatabasePlatform());
 
                 $sql .= $columnSql;
