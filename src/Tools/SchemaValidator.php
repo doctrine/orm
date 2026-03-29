@@ -111,7 +111,7 @@ class SchemaValidator
         $cmf = $this->em->getMetadataFactory();
 
         foreach ($class->fieldMappings as $fieldName => $mapping) {
-            if (! Type::hasType($mapping->type)) {
+            if (! $this->em->getConfiguration()->getTypeRegistry()->has($mapping->type)) {
                 $ce[] = "The field '" . $class->name . '#' . $fieldName . "' uses a non-existent type '" . $mapping->type . "'.";
             }
         }
@@ -343,7 +343,7 @@ class SchemaValidator
                         $propertyType = $class->propertyAccessors[$fieldName]->getUnderlyingReflector()->getType();
 
                         // If the field type is not a built-in type, we cannot check it
-                        if (! Type::hasType($fieldMapping->type)) {
+                        if (! $this->em->getConfiguration()->getTypeRegistry()->has($fieldMapping->type)) {
                             return null;
                         }
 
@@ -352,7 +352,7 @@ class SchemaValidator
                             return null;
                         }
 
-                        $metadataFieldType = $this->findBuiltInType(Type::getType($fieldMapping->type));
+                        $metadataFieldType = $this->findBuiltInType($this->em->getConfiguration()->getTypeRegistry()->get($fieldMapping->type));
 
                         //If the metadata field type is not a mapped built-in type, we cannot check it
                         if ($metadataFieldType === null) {

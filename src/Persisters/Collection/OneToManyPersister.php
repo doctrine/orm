@@ -7,7 +7,6 @@ namespace Doctrine\ORM\Persisters\Collection;
 use BadMethodCallException;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\DBAL\Exception as DBALException;
-use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\EntityNotFoundException;
 use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\ORM\Mapping\OneToManyAssociationMapping;
@@ -224,7 +223,7 @@ class OneToManyPersister extends AbstractCollectionPersister
             $columnDefinitions[$idColumnName] = [
                 'name'    => $idColumnName,
                 'notnull' => true,
-                'type'    => Type::getType(PersisterHelper::getTypeOfColumn($idColumnName, $rootClass, $this->em)),
+                'type'    => $this->em->getConfiguration()->getTypeRegistry()->get(PersisterHelper::getTypeOfColumn($idColumnName, $rootClass, $this->em)),
             ];
         }
 
