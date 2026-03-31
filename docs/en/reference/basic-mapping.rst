@@ -240,7 +240,7 @@ Here is a complete list of ``Column``s attributes (all optional):
 - ``insertable`` (default: ``true``): Whether the column should be inserted.
 - ``updatable`` (default: ``true``): Whether the column should be updated.
 - ``generated`` (default: ``null``): Whether the generated strategy should be ``'NEVER'``, ``'INSERT'`` and ``ALWAYS``.
-- ``enumType`` (requires PHP 8.1 and ``doctrine/orm`` 2.11): The PHP enum class name to convert the database value into.
+- ``enumType`` (requires PHP 8.1 and ``doctrine/orm`` 2.11): The PHP enum class name to convert the database value into. See :ref:`reference-enum-mapping`.
 - ``precision`` (default: 0): The precision for a decimal (exact numeric) column
   (applies only for decimal column),
   which is the maximum number of digits that are stored for the values.
@@ -310,6 +310,160 @@ Since version 2.14 you can specify custom typed field mapping between PHP type a
 and a custom ``Doctrine\ORM\Mapping\TypedFieldMapper`` implementation.
 
 :doc:`Read more about TypedFieldMapper <typedfieldmapper>`.
+
+.. _reference-enum-mapping:
+
+Mapping PHP Enums
+-----------------
+
+.. versionadded:: 2.11
+
+Doctrine natively supports mapping PHP backed enums to database columns.
+A backed enum is a PHP enum that the same scalar type (``string`` or ``int``)
+assigned to each case. Doctrine stores the scalar value in the database and
+converts it back to the enum instance when hydrating the entity.
+
+Using ``enumType`` provides three main benefits:
+
+- **Automatic conversion**: Doctrine handles the conversion in both directions
+  transparently. When loading an entity, scalar values from the database are
+  converted into enum instances. When persisting, enum instances are reduced
+  to their scalar ``->value`` before being sent to the database.
+- **Type-safety**: Entity properties contain enum instances directly. Your
+  getters return ``Suit`` instead of ``string``, removing the need to call
+  ``Suit::from()`` manually.
+- **Validation**: When a database value does not match any enum case, Doctrine
+  throws a ``MappingException`` during hydration instead of silently returning
+  an invalid value.
+
+This feature works with all database platforms supported by Doctrine (MySQL,
+PostgreSQL, SQLite, etc.) as it relies on standard column types (``string``,
+``integer``, ``json``, ``simple_array``) rather than any vendor-specific enum
+type.
+
+.. note::
+
+    This is unrelated to the MySQL-specific ``ENUM`` column type covered in
+    :doc:`the MySQL Enums cookbook entry </cookbook/mysql-enums>`.
+
+Defining an Enum
+~~~~~~~~~~~~~~~~
+
+.. literalinclude:: basic-mapping/Suit.php
+    :language: php
+
+Only backed enums (``string`` or ``int``) are supported. Unit enums (without
+a scalar value) cannot be mapped.
+
+Single-Value Columns
+~~~~~~~~~~~~~~~~~~~~
+
+Use the ``enumType`` option on ``#[Column]`` to map a property to a backed enum.
+The underlying database column stores the enum's scalar value (``string`` or ``int``).
+
+.. literalinclude:: basic-mapping/EnumMapping.php
+    :language: php
+
+When the PHP property is typed with the enum class, Doctrine automatically
+infers the appropriate column type (``string`` for string-backed enums,
+``integer`` for int-backed enums) and sets ``enumType``. You can also specify
+the column ``type`` explicitly.
+
+Storing Collections of Enums
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+You can store multiple enum values in a single column by combining ``enumType``
+with a collection column type: ``json`` or ``simple_array``.
+
+.. note::
+
+    Automatic type inference does not apply to collection columns. When the
+    PHP property is typed as ``array``, Doctrine cannot detect the enum class.
+    You must specify both ``type`` and ``enumType`` explicitly.
+
+.. literalinclude:: basic-mapping/EnumCollectionMapping.php
+    :language: php
+
+With ``json``, the values are stored as a JSON array (e.g. ``["hearts","spades"]``).
+With ``simple_array``, the values are stored as a comma-separated string
+(e.g. ``hearts,spades``).
+
+In both cases, Doctrine converts each element to and from the enum
+automatically during hydration and persistence.
+
+.. tip::
+
+    Use ``json`` when enum values may contain commas, when you need to store
+    int-backed enums (as it preserves value types), when the column also
+    stores complex/nested data structures, or when you want to query individual
+    values using database-native JSON operators (e.g. PostgreSQL ``jsonb``).
+    Prefer ``simple_array`` for a compact, human-readable storage of
+    string-backed enums whose values do not contain commas.
+
++-------------------+-----------------------------+-------------------------------+
+| Column type       | Database storage            | PHP type                      |
++===================+=============================+===============================+
+| ``string``        | ``hearts``                  | ``Suit``                      |
++-------------------+-----------------------------+-------------------------------+
+| ``integer``       | ``1``                       | ``Priority``                  |
++-------------------+-----------------------------+-------------------------------+
+| ``json``          | ``["hearts","spades"]``     | ``array<Suit>``               |
++-------------------+-----------------------------+-------------------------------+
+| ``simple_array``  | ``hearts,spades``           | ``array<Suit>``               |
++-------------------+-----------------------------+-------------------------------+
+
+Nullable Enums
+~~~~~~~~~~~~~~
+
+Enum columns can be nullable. When the database value is ``NULL``, Doctrine
+preserves it as ``null`` without triggering any validation error.
+
+.. code-block:: php
+
+    <?php
+    #[ORM\Column(type: 'string', nullable: true, enumType: Suit::class)]
+    private Suit|null $suit = null;
+
+Default Values
+~~~~~~~~~~~~~~
+
+You can specify a database-level default using an enum case directly in the
+column options:
+
+.. code-block:: php
+
+    <?php
+    #[ORM\Column(options: ['default' => Suit::Hearts])]
+    public Suit $suit;
+
+Using Enums in Queries
+~~~~~~~~~~~~~~~~~~~~~~
+
+Enum instances can be used directly as parameters in DQL, QueryBuilder, and
+repository methods. Doctrine converts them to their scalar value automatically.
+
+.. code-block:: php
+
+    <?php
+    // QueryBuilder
+    $qb = $em->createQueryBuilder();
+    $qb->select('c')
+        ->from(Card::class, 'c')
+        ->where('c.suit = :suit')
+        ->setParameter('suit', Suit::Clubs);
+
+    // Repository
+    $cards = $em->getRepository(Card::class)->findBy(['suit' => Suit::Clubs]);
+
+XML Mapping
+~~~~~~~~~~~
+
+When using XML mapping, the ``enum-type`` attribute is used on ``<field>``
+elements:
+
+.. code-block:: xml
+
+    <field name="suit" type="string" enum-type="App\Entity\Suit" />
 
 .. _reference-mapping-types:
 
