@@ -3568,12 +3568,6 @@ parameters:
 			path: src/Query/Exec/SingleTableDeleteUpdateExecutor.php
 
 		-
-			message: '#^PHPDoc type array\<string\> of property Doctrine\\ORM\\Query\\Expr\\Andx\:\:\$allowedClasses is not covariant with PHPDoc type list\<class\-string\> of overridden property Doctrine\\ORM\\Query\\Expr\\Base\:\:\$allowedClasses\.$#'
-			identifier: property.phpDocType
-			count: 1
-			path: src/Query/Expr/Andx.php
-
-		-
 			message: '#^Cannot cast object\|string to string\.$#'
 			identifier: cast.string
 			count: 1
@@ -3584,18 +3578,6 @@ parameters:
 			identifier: return.type
 			count: 1
 			path: src/Query/Expr/Func.php
-
-		-
-			message: '#^PHPDoc type array\<string\> of property Doctrine\\ORM\\Query\\Expr\\Orx\:\:\$allowedClasses is not covariant with PHPDoc type list\<class\-string\> of overridden property Doctrine\\ORM\\Query\\Expr\\Base\:\:\$allowedClasses\.$#'
-			identifier: property.phpDocType
-			count: 1
-			path: src/Query/Expr/Orx.php
-
-		-
-			message: '#^PHPDoc type array\<string\> of property Doctrine\\ORM\\Query\\Expr\\Select\:\:\$allowedClasses is not covariant with PHPDoc type list\<class\-string\> of overridden property Doctrine\\ORM\\Query\\Expr\\Base\:\:\$allowedClasses\.$#'
-			identifier: property.phpDocType
-			count: 1
-			path: src/Query/Expr/Select.php
 
 		-
 			message: '#^Property Doctrine\\ORM\\Query\\Filter\\SQLFilter\:\:\$parameters \(array\<string, array\{type\: string, value\: mixed, is_list\: bool\}\>\) does not accept non\-empty\-array\<string, array\{value\: mixed, type\: int\|string, is_list\: bool\}\>\.$#'

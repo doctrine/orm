@@ -9,6 +9,7 @@ use Doctrine\ORM\Query\Expr;
 use Doctrine\Tests\Models\Company\CompanyEmployee;
 use Doctrine\Tests\OrmTestCase;
 use Generator;
+use InvalidArgumentException;
 
 /**
  * Test case for the DQL Expr class used for generating DQL snippets through
@@ -366,9 +367,29 @@ class ExprTest extends OrmTestCase
 
     public function testAddThrowsException(): void
     {
-        $this->expectException('InvalidArgumentException');
         $orExpr = $this->expr->orX();
+        $this->expectException(InvalidArgumentException::class);
         $orExpr->add($this->expr->quot(5, 2));
+    }
+
+    /**
+     * @param mixed $arg
+     *
+     * @dataProvider provideInvalidTypesForAdd
+     */
+    public function testAddThrowsExceptionOnInvalidType($arg): void
+    {
+        $orExpr = $this->expr->orX();
+        $this->expectException(InvalidArgumentException::class);
+        $orExpr->add($arg);
+    }
+
+    /** @return Generator<string, array{mixed}> */
+    public static function provideInvalidTypesForAdd(): Generator
+    {
+        yield 'integer 1' => [1];
+        yield 'object' => [(object) ['foo' => 'bar']];
+        yield 'array' => [['foo' => 'bar']];
     }
 
     /** @group DDC-1683 */

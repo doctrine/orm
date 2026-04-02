@@ -430,7 +430,9 @@ class QueryTest extends OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $query  = $this->_em->createQuery('select a, a.topic, a.text from ' . CmsArticle::class . ' a');
+        $query  = $this->_em->createQuery(
+            'select a, a.topic, a.text from ' . CmsArticle::class . ' a order by a.id asc'
+        );
         $result = $query->toIterable();
 
         $it = iterator_to_array($result);
