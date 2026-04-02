@@ -101,7 +101,7 @@ jobs:
         if: "${{ matrix.dbal-version != 'default' }}"
 
       - name: "Install dependencies with Composer"
-        uses: "ramsey/composer-install@v3"
+        uses: "ramsey/composer-install@v4"
         with:
           composer-options: "--ignore-platform-req=php+"
           dependency-versions: "${{ matrix.deps }}"
@@ -237,7 +237,7 @@ jobs:
         if: "${{ matrix.dbal-version != 'default' }}"
 
       - name: "Install dependencies with Composer"
-        uses: "ramsey/composer-install@v3"
+        uses: "ramsey/composer-install@v4"
         with:
           composer-options: "--ignore-platform-req=php+"
 
@@ -308,7 +308,7 @@ jobs:
           extensions: "${{ matrix.extension }}"
 
       - name: "Install dependencies with Composer"
-        uses: "ramsey/composer-install@v3"
+        uses: "ramsey/composer-install@v4"
         with:
           composer-options: "--ignore-platform-req=php+"
 
@@ -387,7 +387,7 @@ jobs:
         if: "${{ matrix.dbal-version != 'default' }}"
 
       - name: "Install dependencies with Composer"
-        uses: "ramsey/composer-install@v3"
+        uses: "ramsey/composer-install@v4"
         with:
           composer-options: "--ignore-platform-req=php+"
 
@@ -444,7 +444,7 @@ jobs:
           path: "reports"
 
       - name: "Upload to Codecov"
-        uses: "codecov/codecov-action@v5"
+        uses: "codecov/codecov-action@v6"
         with:
           directory: reports
         env:
