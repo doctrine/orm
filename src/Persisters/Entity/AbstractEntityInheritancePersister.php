@@ -40,12 +40,20 @@ abstract class AbstractEntityInheritancePersister extends BasicEntityPersister
     {
         $tableAlias   = $alias === 'r' ? '' : $alias;
         $fieldMapping = $class->fieldMappings[$field];
-        $columnAlias  = $this->getSQLColumnAlias($fieldMapping->columnName);
         $sql          = sprintf(
             '%s.%s',
             $this->getSQLTableAlias($class->name, $tableAlias),
             $this->quoteStrategy->getColumnName($field, $class, $this->platform),
         );
+
+        $columnAlias = null;
+        if ($this->currentPersisterContext->rsm->hasColumnAliasByField($alias, $field)) {
+            $columnAlias = $this->currentPersisterContext->rsm->getColumnAliasByField($alias, $field);
+        }
+
+        if ($columnAlias === null) {
+            $columnAlias = $this->getSQLColumnAlias($fieldMapping->columnName);
+        }
 
         $this->currentPersisterContext->rsm->addFieldResult($alias, $columnAlias, $field, $class->name);
 

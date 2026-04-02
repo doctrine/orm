@@ -363,6 +363,10 @@ class ResultSetMapping
 
     public function hasColumnAliasByField(string $alias, string $fieldName): bool
     {
+        if (! isset($this->aliasMap[$alias])) {
+            return false;
+        }
+
         $declaringClass = $this->aliasMap[$alias];
 
         return isset($this->columnAliasMappings[$declaringClass][$alias][$fieldName]);

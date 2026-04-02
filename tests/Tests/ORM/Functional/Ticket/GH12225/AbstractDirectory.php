@@ -1,0 +1,93 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Doctrine\Tests\ORM\Functional\Ticket\GH12225;
+
+use DateTimeImmutable;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\DiscriminatorColumn;
+use Doctrine\ORM\Mapping\DiscriminatorMap;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\Index;
+use Doctrine\ORM\Mapping\InheritanceType;
+use Doctrine\ORM\Mapping\ManyToOne;
+use Doctrine\ORM\Mapping\OneToMany;
+use Doctrine\ORM\Mapping\Table;
+
+#[Entity]
+#[Table(name: 'gh_12225_directory')]
+#[Index(columns: ['dir_key'])]
+#[InheritanceType('SINGLE_TABLE')]
+#[DiscriminatorColumn(name: 'type', type: 'string')]
+#[DiscriminatorMap(['main' => ConcreteDirectory::class])]
+class AbstractDirectory
+{
+    #[Id]
+    #[GeneratedValue]
+    #[Column(name: 'id', type: 'integer')]
+    private int $id;
+
+    #[Column(name: 'dir_key', type: 'string')]
+    private string $dirKey;
+
+    #[Column(name: 'deleted_at', type: 'datetime_immutable', nullable: true)]
+    private DateTimeImmutable|null $deletedAt = null;
+
+    #[ManyToOne(targetEntity: self::class, fetch: 'LAZY', inversedBy: 'directories')]
+    private AbstractDirectory|null $parent = null;
+
+    /** @var Collection<string, self> */
+    #[OneToMany(mappedBy: 'parent', targetEntity: self::class, fetch: 'EXTRA_LAZY', indexBy: 'dirKey')]
+    private Collection $children;
+
+    public function __construct(string $dirKey)
+    {
+        $this->dirKey   = $dirKey;
+        $this->children = new ArrayCollection();
+    }
+
+    public function getId(): int
+    {
+        return $this->id;
+    }
+
+    public function getDirKey(): string
+    {
+        return $this->dirKey;
+    }
+
+    public function getDeletedAt(): DateTimeImmutable|null
+    {
+        return $this->deletedAt;
+    }
+
+    public function setDeletedAt(DateTimeImmutable|null $deletedAt): AbstractDirectory
+    {
+        $this->deletedAt = $deletedAt;
+
+        return $this;
+    }
+
+    public function getParent(): AbstractDirectory|null
+    {
+        return $this->parent;
+    }
+
+    public function setParent(AbstractDirectory|null $parent): AbstractDirectory
+    {
+        $this->parent = $parent;
+
+        return $this;
+    }
+
+    /** @return Collection<string, self> */
+    public function getChildren(): Collection
+    {
+        return $this->children;
+    }
+}
