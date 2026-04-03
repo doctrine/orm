@@ -8,7 +8,7 @@ use BadMethodCallException;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\LockMode;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
-use Doctrine\DBAL\Types\Type;
+use Doctrine\DBAL\Types\TypeRegistry;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\Deprecations\Deprecation;
 use Doctrine\ORM\EntityManagerInterface;
@@ -142,6 +142,8 @@ class SqlWalker
      */
     private readonly QuoteStrategy $quoteStrategy;
 
+    private readonly TypeRegistry $typeRegistry;
+
     /** @phpstan-param array<string, QueryComponent> $queryComponents The query components (symbol table). */
     public function __construct(
         private readonly Query $query,
@@ -153,6 +155,7 @@ class SqlWalker
         $this->conn          = $this->em->getConnection();
         $this->platform      = $this->conn->getDatabasePlatform();
         $this->quoteStrategy = $this->em->getConfiguration()->getQuoteStrategy();
+        $this->typeRegistry  = $this->em->getConfiguration()->getTypeRegistry();
     }
 
     /**
@@ -177,16 +180,6 @@ class SqlWalker
     public function getEntityManager(): EntityManagerInterface
     {
         return $this->em;
-    }
-
-    private function getType(string $name): Type
-    {
-        return $this->em->getConfiguration()->getTypeRegistry()->get($name);
-    }
-
-    private function hasType(string $name): bool
-    {
-        return $this->em->getConfiguration()->getTypeRegistry()->has($name);
     }
 
     /**
@@ -1314,7 +1307,7 @@ class SqlWalker
                 $columnAlias   = $this->getSQLColumnAlias($fieldMapping->columnName);
                 $col           = $sqlTableAlias . '.' . $columnName;
 
-                $type = $this->getType($fieldMapping->type);
+                $type = $this->typeRegistry->get($fieldMapping->type);
                 $col  = $type->convertToPHPValueSQL($col, $this->conn->getDatabasePlatform());
 
                 $sql .= $col . ' AS ' . $columnAlias;
@@ -1370,7 +1363,7 @@ class SqlWalker
                     );
 
                     // @phpstan-ignore method.deprecatedInterface
-                    $this->rsm->addScalarResult($columnAlias, $resultAlias, $this->em->getConfiguration()->getTypeRegistry()->lookupName($expr->getReturnType()));
+                    $this->rsm->addScalarResult($columnAlias, $resultAlias, $this->typeRegistry->lookupName($expr->getReturnType()));
 
                     break;
                 }
@@ -1456,7 +1449,7 @@ class SqlWalker
 
             $col = $sqlTableAlias . '.' . $quotedColumnName;
 
-            $type = $this->getType($mapping->type);
+            $type = $this->typeRegistry->get($mapping->type);
             $col  = $type->convertToPHPValueSQL($col, $this->platform);
 
             $sqlParts[] = $col . ' AS ' . $columnAlias;
@@ -1491,7 +1484,7 @@ class SqlWalker
 
                     $col = $sqlTableAlias . '.' . $quotedColumnName;
 
-                    $type = $this->getType($mapping->type);
+                    $type = $this->typeRegistry->get($mapping->type);
                     $col  = $type->convertToPHPValueSQL($col, $this->platform);
 
                     $sqlParts[] = $col . ' AS ' . $columnAlias;
@@ -1596,7 +1589,7 @@ class SqlWalker
                     $fieldType    = $fieldMapping->type;
                     $col          = trim($e->dispatch($this));
 
-                    $type = $this->getType($fieldType);
+                    $type = $this->typeRegistry->get($fieldType);
                     $col  = $type->convertToPHPValueSQL($col, $this->platform);
 
                     $sqlSelectExpressions[] = $col . ' AS ' . $columnAlias;
@@ -2230,8 +2223,8 @@ class SqlWalker
 
         if ($parameter) {
             $type = $parameter->getType();
-            if (is_string($type) && $this->hasType($type)) {
-                return $this->getType($type)->convertToDatabaseValueSQL('?', $this->platform);
+            if (is_string($type) && $this->typeRegistry->has($type)) {
+                return $this->typeRegistry->get($type)->convertToDatabaseValueSQL('?', $this->platform);
             }
         }
 
