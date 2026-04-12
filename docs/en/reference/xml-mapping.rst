@@ -321,6 +321,8 @@ Optional attributes:
 
 -  column - Name of the column in the database, defaults to the
    field name.
+-  position - Controls the order of fields in a composite identifier.
+   Lower values come first. If not specified, the default value is ``0``.
 
 Using the simplified definition above Doctrine will use no
 identifier strategy for this entity. That means you have to

@@ -141,7 +141,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
             $this->addInheritedFields($class, $parent);
             $this->addInheritedRelations($class, $parent);
             $this->addInheritedEmbeddedClasses($class, $parent);
-            $class->setIdentifier($parent->identifier);
+            $class->setIdentifier($parent->identifier, $parent->identifierPositions);
             $class->setVersioned($parent->isVersioned);
             $class->setVersionField($parent->versionField);
             $class->setDiscriminatorMap($parent->discriminatorMap);

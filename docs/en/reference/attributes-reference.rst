@@ -599,10 +599,13 @@ Example with partial indexes:
 ~~~~~
 
 The annotated instance variable will be marked as entity
-identifier, the primary key in the database. This attribute is a
-marker only and has no required or optional attributes. For
-entities that have multiple identifier columns each column has to
-be marked with ``#[Id]``.
+identifier, the primary key in the database. For entities that have
+multiple identifier columns each column has to be marked with ``#[Id]``.
+
+Optional parameters:
+
+-  **position**: Controls the order of fields in a composite identifier.
+   Lower values come first. If not specified, the default value is ``0``.
 
 Example:
 

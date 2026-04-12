@@ -1173,6 +1173,76 @@ class ClassMetadataTest extends OrmTestCase
         $cm = new ClassMetadata(CMS\CmsUser::class);
         $cm->setDiscriminatorMap(['foo' => CMS\CmsUser::class, 'bar' => CMS\CmsUser::class]);
     }
+
+    public function testCompositeIdentifierOrderingByPosition(): void
+    {
+        $cm = new ClassMetadata(CmsUser::class);
+        $cm->initializeReflection(new RuntimeReflectionService());
+
+        $cm->mapField(['fieldName' => 'username', 'type' => 'string', 'id' => true, 'idPosition' => 2]);
+        $cm->mapField(['fieldName' => 'name', 'type' => 'string', 'id' => true, 'idPosition' => 1]);
+
+        self::assertSame(['name', 'username'], $cm->identifier);
+    }
+
+    public function testCompositeIdentifierSamePositionPreservesInsertionOrder(): void
+    {
+        $cm = new ClassMetadata(CmsUser::class);
+        $cm->initializeReflection(new RuntimeReflectionService());
+
+        $cm->mapField(['fieldName' => 'username', 'type' => 'string', 'id' => true, 'idPosition' => 1]);
+        $cm->mapField(['fieldName' => 'name', 'type' => 'string', 'id' => true, 'idPosition' => 1]);
+
+        self::assertSame(['username', 'name'], $cm->identifier);
+    }
+
+    public function testCompositeIdentifierDefaultPositionPreservesInsertionOrder(): void
+    {
+        $cm = new ClassMetadata(CmsUser::class);
+        $cm->initializeReflection(new RuntimeReflectionService());
+
+        $cm->mapField(['fieldName' => 'username', 'type' => 'string', 'id' => true]);
+        $cm->mapField(['fieldName' => 'name', 'type' => 'string', 'id' => true]);
+
+        self::assertSame(['username', 'name'], $cm->identifier);
+    }
+
+    public function testCompositeIdentifierPositionSurvivesSerialization(): void
+    {
+        $cm = new ClassMetadata(CmsUser::class);
+        $cm->initializeReflection(new RuntimeReflectionService());
+
+        $cm->mapField(['fieldName' => 'username', 'type' => 'string', 'id' => true, 'idPosition' => 2]);
+        $cm->mapField(['fieldName' => 'name', 'type' => 'string', 'id' => true, 'idPosition' => 1]);
+
+        $cm = unserialize(serialize($cm));
+        $cm->wakeupReflection(new RuntimeReflectionService());
+
+        self::assertSame(['name', 'username'], $cm->identifier);
+        self::assertSame(['username' => 2, 'name' => 1], $cm->identifierPositions);
+    }
+
+    public function testSetIdentifierSortsByPosition(): void
+    {
+        $cm = new ClassMetadata(CmsUser::class);
+        $cm->initializeReflection(new RuntimeReflectionService());
+
+        $cm->setIdentifier(['username', 'name'], ['username' => 2, 'name' => 1]);
+
+        self::assertSame(['name', 'username'], $cm->identifier);
+        self::assertSame(['username' => 2, 'name' => 1], $cm->identifierPositions);
+    }
+
+    public function testSetIdentifierWithoutPositionsDefaultsToZero(): void
+    {
+        $cm = new ClassMetadata(CmsUser::class);
+        $cm->initializeReflection(new RuntimeReflectionService());
+
+        $cm->setIdentifier(['username', 'name']);
+
+        self::assertSame(['username', 'name'], $cm->identifier);
+        self::assertSame(['username' => 0, 'name' => 0], $cm->identifierPositions);
+    }
 }
 
 #[MappedSuperclass]
