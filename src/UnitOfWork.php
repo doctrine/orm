@@ -630,27 +630,20 @@ class UnitOfWork implements PropertyChangedListener
             }
         }
 
-        if (! isset($this->originalEntityData[$oid])) {
+        if ($this->isNativeLazyObjectWithEmptyOriginalData($class, $entity, $oid)) {
+            // Native lazy objects can become initialized when Doctrine sets their remaining lazy properties.
+            $this->originalEntityData[$oid] = $actualData;
+            $changeSet                      = $this->computeChangeSetFromActualData($class, $actualData, false);
+
+            if ($changeSet) {
+                $this->entityChangeSets[$oid] = $changeSet;
+                $this->entityUpdates[$oid]    = $entity;
+            }
+        } elseif (! isset($this->originalEntityData[$oid])) {
             // Entity is either NEW or MANAGED but not yet fully persisted (only has an id).
             // These result in an INSERT.
             $this->originalEntityData[$oid] = $actualData;
-            $changeSet                      = [];
-
-            foreach ($actualData as $propName => $actualValue) {
-                if (! isset($class->associationMappings[$propName])) {
-                    $changeSet[$propName] = [null, $actualValue];
-
-                    continue;
-                }
-
-                $assoc = $class->associationMappings[$propName];
-
-                if ($assoc->isToOneOwningSide()) {
-                    $changeSet[$propName] = [null, $actualValue];
-                }
-            }
-
-            $this->entityChangeSets[$oid] = $changeSet;
+            $this->entityChangeSets[$oid]   = $this->computeChangeSetFromActualData($class, $actualData);
         } else {
             // Entity is "fully" MANAGED: it was already fully persisted before
             // and we have a copy of the original data
@@ -2565,6 +2558,7 @@ class UnitOfWork implements PropertyChangedListener
                     if ($assoc->inversedBy !== null && $assoc->isOneToOne() && $newValue !== null) {
                         $inverseAssoc = $targetClass->associationMappings[$assoc->inversedBy];
                         $targetClass->propertyAccessors[$inverseAssoc->fieldName]->setValue($newValue, $entity);
+                        $this->updateOriginalEntityDataIfNativeLazyObjectWasInitialized($targetClass, $newValue);
                     }
 
                     break;
@@ -2965,6 +2959,79 @@ class UnitOfWork implements PropertyChangedListener
         $this->originalEntityData[$oid] = $data;
 
         $this->addToIdentityMap($entity);
+    }
+
+    /**
+     * @param array<string, mixed> $actualData
+     * @phpstan-param ClassMetadata<object> $class
+     *
+     * @return array<string, array{mixed, mixed}>
+     */
+    private function computeChangeSetFromActualData(
+        ClassMetadata $class,
+        array $actualData,
+        bool $includeIdentifierFields = true,
+    ): array {
+        $changeSet = [];
+
+        foreach ($actualData as $propName => $actualValue) {
+            if (! $includeIdentifierFields && $class->isIdentifier($propName)) {
+                continue;
+            }
+
+            if (! isset($class->associationMappings[$propName])) {
+                $changeSet[$propName] = [null, $actualValue];
+
+                continue;
+            }
+
+            $assoc = $class->associationMappings[$propName];
+
+            if ($assoc->isToOneOwningSide()) {
+                $changeSet[$propName] = [null, $actualValue];
+            }
+        }
+
+        return $changeSet;
+    }
+
+    /** @phpstan-param ClassMetadata<object> $class */
+    private function isNativeLazyObjectWithEmptyOriginalData(ClassMetadata $class, object $entity, int $oid): bool
+    {
+        return $this->em->getConfiguration()->isNativeLazyObjectsEnabled()
+            && isset($this->originalEntityData[$oid])
+            && $this->originalEntityData[$oid] === []
+            && ! $class->reflClass->isUninitializedLazyObject($entity);
+    }
+
+    /** @phpstan-param ClassMetadata<object> $class */
+    private function updateOriginalEntityDataIfNativeLazyObjectWasInitialized(ClassMetadata $class, object $entity): void
+    {
+        $oid = spl_object_id($entity);
+
+        if (! $this->isNativeLazyObjectWithEmptyOriginalData($class, $entity, $oid)) {
+            return;
+        }
+
+        $this->originalEntityData[$oid] = $this->getActualEntityData($class, $entity);
+    }
+
+    /**
+     * @phpstan-param ClassMetadata<object> $class
+     *
+     * @return array<string, mixed>
+     */
+    private function getActualEntityData(ClassMetadata $class, object $entity): array
+    {
+        $actualData = [];
+
+        foreach ($class->propertyAccessors as $name => $refProp) {
+            if (( ! $class->isIdentifier($name) || ! $class->isIdGeneratorIdentity()) && ($name !== $class->versionField)) {
+                $actualData[$name] = $refProp->getValue($entity);
+            }
+        }
+
+        return $actualData;
     }
 
     /* PropertyChangedListener implementation */
