@@ -1994,7 +1994,7 @@ class Parser
     }
 
     /**
-     * ScalarExpression ::= SimpleArithmeticExpression | StringPrimary | DateTimePrimary |
+     * ScalarExpression ::= SimpleArithmeticExpression | StringPrimary | DatetimePrimary |
      *                      StateFieldPathExpression | BooleanPrimary | CaseExpression |
      *                      InstanceOfExpression
      *
@@ -2077,14 +2077,14 @@ class Parser
     }
 
     /**
-     * CaseExpression ::= GeneralCaseExpression | SimpleCaseExpression | CoalesceExpression | NullifExpression
+     * CaseExpression ::= GeneralCaseExpression | SimpleCaseExpression | CoalesceExpression | NullIfExpression
      * GeneralCaseExpression ::= "CASE" WhenClause {WhenClause}* "ELSE" ScalarExpression "END"
      * WhenClause ::= "WHEN" ConditionalExpression "THEN" ScalarExpression
      * SimpleCaseExpression ::= "CASE" CaseOperand SimpleWhenClause {SimpleWhenClause}* "ELSE" ScalarExpression "END"
-     * CaseOperand ::= StateFieldPathExpression | TypeDiscriminator
+     * CaseOperand ::= StateFieldPathExpression
      * SimpleWhenClause ::= "WHEN" ScalarExpression "THEN" ScalarExpression
      * CoalesceExpression ::= "COALESCE" "(" ScalarExpression {"," ScalarExpression}* ")"
-     * NullifExpression ::= "NULLIF" "(" ScalarExpression "," ScalarExpression ")"
+     * NullIfExpression ::= "NULLIF" "(" ScalarExpression "," ScalarExpression ")"
      *
      * @return mixed One of the possible expressions or subexpressions.
      */
@@ -2188,7 +2188,7 @@ class Parser
 
     /**
      * SimpleCaseExpression ::= "CASE" CaseOperand SimpleWhenClause {SimpleWhenClause}* "ELSE" ScalarExpression "END"
-     * CaseOperand ::= StateFieldPathExpression | TypeDiscriminator
+     * CaseOperand ::= StateFieldPathExpression
      *
      * @return AST\SimpleCaseExpression
      */
@@ -3603,7 +3603,7 @@ class Parser
     }
 
     /**
-     * FunctionsReturningDateTime ::=
+     * FunctionsReturningDatetime ::=
      *     "CURRENT_DATE" |
      *     "CURRENT_TIME" |
      *     "CURRENT_TIMESTAMP" |
