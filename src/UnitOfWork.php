@@ -35,6 +35,7 @@ use Doctrine\ORM\Internal\UnitOfWork\InsertBatch;
 use Doctrine\ORM\Mapping\AssociationMapping;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\MappingException;
+use Doctrine\ORM\Mapping\PropertyAccessors\ReadonlyAccessor;
 use Doctrine\ORM\Mapping\ToManyInverseSideMapping;
 use Doctrine\ORM\Persisters\Collection\CollectionPersister;
 use Doctrine\ORM\Persisters\Collection\ManyToManyPersister;
@@ -1176,7 +1177,10 @@ class UnitOfWork implements PropertyChangedListener
             // Entity with this $oid after deletion treated as NEW, even if the $oid
             // is obtained by a new entity because the old one went out of scope.
             //$this->entityStates[$oid] = self::STATE_NEW;
-            if (! $class->isIdentifierNatural()) {
+            if (
+                ! $class->isIdentifierNatural() &&
+                ! $class->propertyAccessors[$class->identifier[0]] instanceof ReadonlyAccessor
+            ) {
                 $class->propertyAccessors[$class->identifier[0]]->setValue($entity, null);
             }
 
