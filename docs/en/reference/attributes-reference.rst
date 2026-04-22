@@ -57,7 +57,7 @@ Reference
 ~~~~~~~~~~~~~~~~~~~~~~
 
 In an inheritance hierarchy this attribute allows to override the
-assocation mapping definitions of the parent mappings. It needs to be nested
+association mapping definitions of the parent mappings. It needs to be nested
 within a ``#[AssociationOverrides]`` on the class level.
 
 Required parameters:
