@@ -9,7 +9,7 @@ Static Function
 ---------------
 
 In addition to other drivers using configuration languages you can also
-programatically specify your mapping information inside of a static function
+programmatically specify your mapping information inside of a static function
 defined on the entity class itself.
 
 This is useful for cases where you want to keep your entity and mapping
