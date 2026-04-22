@@ -249,7 +249,7 @@ class XmlDriver extends FileDriver
         }
 
         // The mapping assignment is done in 2 times as a bug might occurs on some php/xml lib versions
-        // The internal SimpleXmlIterator get resetted, to this generate a duplicate field exception
+        // The internal SimpleXmlIterator get reset, to this generate a duplicate field exception
         // Evaluate <field ...> mappings
         if (isset($xmlRoot->field)) {
             foreach ($xmlRoot->field as $fieldMapping) {
