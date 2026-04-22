@@ -1062,7 +1062,7 @@ The output walker must not base its workings on the query `firstResult`/`maxResu
 Any operation dependent on `firstResult`/`maxResult` should take place within the `SqlFinalizer::createExecutor()`
 method. Details can be found at https://github.com/doctrine/orm/pull/11188.
 
-## Explictly forbid property hooks
+## Explicitly forbid property hooks
 
 Property hooks are not supported yet by Doctrine ORM. Until support is added,
 they are explicitly forbidden because the support would result in a breaking
