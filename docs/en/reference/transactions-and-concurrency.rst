@@ -114,7 +114,7 @@ functionally equivalent to the previously shown code looks as follows:
     });
 
 The difference between ``Connection#transactional($func)`` and
-``EntityManager#transactional($func)`` is that the latter
+``EntityManager#wrapInTransaction($func)`` is that the latter
 abstraction flushes the ``EntityManager`` prior to transaction
 commit and in case of an exception the ``EntityManager`` gets closed
 in addition to the transaction rollback.
