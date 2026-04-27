@@ -24,6 +24,7 @@ final class FieldMappingTest extends TestCase
 
         $mapping->length           = 255;
         $mapping->id               = true;
+        $mapping->idPosition       = 2;
         $mapping->nullable         = true;
         $mapping->notInsertable    = true;
         $mapping->notUpdatable     = true;
@@ -49,6 +50,7 @@ final class FieldMappingTest extends TestCase
 
         self::assertSame(255, $resurrectedMapping->length);
         self::assertTrue($resurrectedMapping->id);
+        self::assertSame(2, $resurrectedMapping->idPosition);
         self::assertTrue($resurrectedMapping->nullable);
         self::assertTrue($resurrectedMapping->notInsertable);
         self::assertTrue($resurrectedMapping->notUpdatable);

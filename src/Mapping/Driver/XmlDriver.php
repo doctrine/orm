@@ -15,6 +15,7 @@ use InvalidArgumentException;
 use LogicException;
 use SimpleXMLElement;
 
+use function array_key_exists;
 use function assert;
 use function class_exists;
 use function constant;
@@ -287,13 +288,16 @@ class XmlDriver extends FileDriver
         // Evaluate <id ...> mappings
         $associationIds = [];
         foreach ($xmlRoot->id ?? [] as $idElement) {
+            $position = isset($idElement['position']) ? (int) $idElement['position'] : null;
+
             if (isset($idElement['association-key']) && $this->evaluateBoolean($idElement['association-key'])) {
-                $associationIds[(string) $idElement['name']] = true;
+                $associationIds[(string) $idElement['name']] = $position;
                 continue;
             }
 
-            $mapping       = $this->columnToArray($idElement);
-            $mapping['id'] = true;
+            $mapping               = $this->columnToArray($idElement);
+            $mapping['id']         = true;
+            $mapping['idPosition'] = $position;
 
             $metadata->mapField($mapping);
 
@@ -335,8 +339,9 @@ class XmlDriver extends FileDriver
                     $mapping['targetEntity'] = (string) $oneToOneElement['target-entity'];
                 }
 
-                if (isset($associationIds[$mapping['fieldName']])) {
-                    $mapping['id'] = true;
+                if (array_key_exists($mapping['fieldName'], $associationIds)) {
+                    $mapping['id']         = true;
+                    $mapping['idPosition'] = $associationIds[$mapping['fieldName']];
                 }
 
                 if (isset($oneToOneElement['fetch'])) {
@@ -439,8 +444,9 @@ class XmlDriver extends FileDriver
                     $mapping['targetEntity'] = (string) $manyToOneElement['target-entity'];
                 }
 
-                if (isset($associationIds[$mapping['fieldName']])) {
-                    $mapping['id'] = true;
+                if (array_key_exists($mapping['fieldName'], $associationIds)) {
+                    $mapping['id']         = true;
+                    $mapping['idPosition'] = $associationIds[$mapping['fieldName']];
                 }
 
                 if (isset($manyToOneElement['fetch'])) {

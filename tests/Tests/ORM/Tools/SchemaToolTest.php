@@ -41,6 +41,7 @@ use Doctrine\Tests\Models\CMS\CmsEmployee;
 use Doctrine\Tests\Models\CMS\CmsGroup;
 use Doctrine\Tests\Models\CMS\CmsPhonenumber;
 use Doctrine\Tests\Models\CMS\CmsUser;
+use Doctrine\Tests\Models\CompositeIdWithPosition\CompositeIdEntity;
 use Doctrine\Tests\Models\CompositeKeyInheritance\JoinedDerivedChildClass;
 use Doctrine\Tests\Models\CompositeKeyInheritance\JoinedDerivedIdentityClass;
 use Doctrine\Tests\Models\CompositeKeyInheritance\JoinedDerivedRootClass;
@@ -501,6 +502,29 @@ class SchemaToolTest extends OrmTestCase
         [$pkColumn] = $primaryKey->getColumnNames();
         self::assertTrue($pkColumn->getIdentifier()->isQuoted());
         self::assertSame('quoted-id', $pkColumn->getIdentifier()->getValue());
+    }
+
+    public function testCompositeIdPositionRespectedInSchema(): void
+    {
+        $em         = $this->getTestEntityManager();
+        $schemaTool = new SchemaTool($em);
+
+        $schema = $schemaTool->getSchemaFromMetadata(
+            [$em->getClassMetadata(CompositeIdEntity::class)],
+        );
+
+        $table = $schema->getTable('CompositeIdEntity');
+
+        if (class_exists(PrimaryKeyConstraintEditor::class)) {
+            $pkColumns = array_map(
+                static fn (UnqualifiedName $name) => $name->toString(),
+                $table->getPrimaryKeyConstraint()->getColumnNames(),
+            );
+        } else {
+            $pkColumns = self::getIndexedColumns($table->getPrimaryKey());
+        }
+
+        self::assertSame(['first', 'second', 'third'], $pkColumns);
     }
 
     /** @return string[] */
