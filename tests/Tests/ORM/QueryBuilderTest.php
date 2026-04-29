@@ -26,9 +26,11 @@ use Doctrine\Tests\OrmTestCase;
 use InvalidArgumentException;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\IgnoreDeprecations;
 use PHPUnit\Framework\Attributes\WithoutErrorHandler;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
+use SortDirection;
 
 use function array_filter;
 use function defined;
@@ -471,7 +473,7 @@ class QueryBuilderTest extends OrmTestCase
         $qb = $this->entityManager->createQueryBuilder()
             ->select('u')
             ->from(CmsUser::class, 'u')
-            ->orderBy('u.username', 'ASC');
+            ->orderBy('u.username', SortDirection::Ascending);
 
         $this->assertValidQueryBuilder($qb, 'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u ORDER BY u.username ASC');
     }
@@ -486,12 +488,62 @@ class QueryBuilderTest extends OrmTestCase
         $this->assertValidQueryBuilder($qb, 'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u ORDER BY u.username ASC');
     }
 
+    #[IgnoreDeprecations]
+    public function testLegacyOrderByNull(): void
+    {
+        $qb = $this->entityManager->createQueryBuilder();
+        $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/issues/11313');
+        $qb->select('u')
+            ->from(CmsUser::class, 'u')
+            ->orderBy('u.username', null);
+
+        $this->assertValidQueryBuilder($qb, 'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u ORDER BY u.username ASC');
+    }
+
+    #[IgnoreDeprecations]
+    public function testLegacyOrderByString(): void
+    {
+        $qb = $this->entityManager->createQueryBuilder();
+        $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/issues/11313');
+        $qb->select('u')
+            ->from(CmsUser::class, 'u')
+            ->orderBy('u.username', 'ASC');
+
+        $this->assertValidQueryBuilder($qb, 'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u ORDER BY u.username ASC');
+    }
+
     public function testAddOrderBy(): void
     {
         $qb = $this->entityManager->createQueryBuilder()
             ->select('u')
             ->from(CmsUser::class, 'u')
-            ->orderBy('u.username', 'ASC')
+            ->orderBy('u.username', SortDirection::Ascending)
+            ->addOrderBy('u.username', SortDirection::Descending);
+
+        $this->assertValidQueryBuilder($qb, 'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u ORDER BY u.username ASC, u.username DESC');
+    }
+
+    #[IgnoreDeprecations]
+    public function testLegacyAddOrderByNull(): void
+    {
+        $qb = $this->entityManager->createQueryBuilder();
+        $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/issues/11313');
+        $qb->select('u')
+            ->from(CmsUser::class, 'u')
+            ->orderBy('u.username', SortDirection::Ascending)
+            ->addOrderBy('u.username', null);
+
+        $this->assertValidQueryBuilder($qb, 'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u ORDER BY u.username ASC, u.username ASC');
+    }
+
+    #[IgnoreDeprecations]
+    public function testLegacyAddOrderByString(): void
+    {
+        $qb = $this->entityManager->createQueryBuilder();
+        $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/issues/11313');
+        $qb->select('u')
+            ->from(CmsUser::class, 'u')
+            ->orderBy('u.username', SortDirection::Ascending)
             ->addOrderBy('u.username', 'DESC');
 
         $this->assertValidQueryBuilder($qb, 'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u ORDER BY u.username ASC, u.username DESC');
@@ -502,7 +554,7 @@ class QueryBuilderTest extends OrmTestCase
         $qb = $this->entityManager->createQueryBuilder();
         $qb->select('u')
             ->from(CmsUser::class, 'u')
-            ->orderBy('u.username', 'ASC')
+            ->orderBy('u.username', SortDirection::Ascending)
             ->addOrderBy($qb->expr()->desc('u.username'));
 
         $this->assertValidQueryBuilder($qb, 'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u ORDER BY u.username ASC, u.username DESC');
