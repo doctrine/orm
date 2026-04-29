@@ -1723,12 +1723,6 @@ parameters:
 			path: src/Mapping/ClassMetadataInfo.php
 
 		-
-			message: '#^Template type T is declared as covariant, but occurs in invariant position in return type of method Doctrine\\ORM\\Mapping\\ClassMetadataInfo\:\:getReflectionClass\(\)\.$#'
-			identifier: generics.variance
-			count: 1
-			path: src/Mapping/ClassMetadataInfo.php
-
-		-
 			message: '#^@readonly property cannot have a default value\.$#'
 			identifier: property.readOnlyByPhpDocDefaultValue
 			count: 8
