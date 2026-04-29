@@ -3001,18 +3001,6 @@ parameters:
 			path: src/Tools/Pagination/Paginator.php
 
 		-
-			message: '#^PHPDoc tag @var for variable \$parameters contains generic interface Doctrine\\Common\\Collections\\Collection but does not specify its types\: TKey, T$#'
-			identifier: missingType.generics
-			count: 1
-			path: src/Tools/Pagination/Paginator.php
-
-		-
-			message: '#^Parameter \#1 \$parameters of method Doctrine\\ORM\\AbstractQuery\:\:setParameters\(\) expects array\<mixed\>\|Doctrine\\Common\\Collections\\ArrayCollection\<int, Doctrine\\ORM\\Query\\Parameter\>, Doctrine\\Common\\Collections\\Collection&iterable\<Doctrine\\ORM\\Query\\Parameter\> given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Tools/Pagination/Paginator.php
-
-		-
 			message: '#^Method Doctrine\\ORM\\Tools\\ResolveTargetEntityListener\:\:remapAssociation\(\) has parameter \$classMetadata with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
 			identifier: missingType.generics
 			count: 1

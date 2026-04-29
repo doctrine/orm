@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Doctrine\Tests\ORM\Tools\CursorPagination;
+namespace Doctrine\Tests\ORM\Tools\Pagination;
 
-use Doctrine\ORM\Tools\CursorPagination\Cursor;
-use Doctrine\ORM\Tools\CursorPagination\Exception\InvalidCursor;
+use Doctrine\ORM\Tools\Pagination\Cursor;
+use Doctrine\ORM\Tools\Pagination\Exception\InvalidCursor;
 use JsonException;
 use PHPUnit\Framework\TestCase;
 use ReflectionClass;
@@ -80,7 +80,8 @@ class CursorTest extends TestCase
 
     public function testFromEncodedStringDefaultsToNextWhenIsNextMissing(): void
     {
-        $json    = json_encode(['id' => 10]);
+        $json = json_encode(['id' => 10]);
+        self::assertIsString($json);
         $encoded = rtrim(strtr(base64_encode($json), '+/', '-_'), '=');
 
         $cursor = Cursor::fromEncodedString($encoded);

@@ -19,7 +19,8 @@ use function reset;
  * Infers the DBAL type of the #Id (identifier) column of the given query's root entity, and
  * returns it in place of a real SQL statement.
  *
- * Obtaining this type is a necessary intermediate step for \Doctrine\ORM\Tools\Pagination\Paginator.
+ * Obtaining this type is a necessary intermediate step for \Doctrine\ORM\Tools\Pagination\Paginator
+ * and \Doctrine\ORM\Tools\Pagination\CursorPaginator.
  * We can best do this from a tree walker because it gives us access to the AST.
  *
  * Returning the type instead of a "real" SQL statement is a slight hack. However, it has the

@@ -1,6 +1,6 @@
 <?php
 
-use Doctrine\ORM\Tools\CursorPagination\CursorPaginator;
+use Doctrine\ORM\Tools\Pagination\CursorPaginator;
 
 $cursor = $_GET['cursor'] ?? null;
 
@@ -10,7 +10,7 @@ $query = $entityManager->createQuery('SELECT p FROM BlogPost p ORDER BY p.create
 $paginator = (new CursorPaginator($query))
     ->paginate(cursor: $cursor, limit: 15);
 ?>
-<p><?= $paginator->count() ?> result(s) on this page.</p>
+<p><?= $paginator->getTotalCount() ?> result(s) in total, <?= $paginator->countPageItems() ?> on this page.</p>
 
 <ul>
     <?php foreach ($paginator as $post): ?>
