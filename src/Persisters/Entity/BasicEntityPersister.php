@@ -7,7 +7,6 @@ namespace Doctrine\ORM\Persisters\Entity;
 use BackedEnum;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\Common\Collections\Expr\Comparison;
-use Doctrine\Common\Collections\Order;
 use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\LockMode;
@@ -16,6 +15,7 @@ use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Result;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\DBAL\Types\Types;
+use Doctrine\ORM\Cache\Persister\CompatOrderings;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\AssociationMapping;
 use Doctrine\ORM\Mapping\ClassMetadata;
@@ -96,6 +96,7 @@ use function trim;
  */
 class BasicEntityPersister implements EntityPersister
 {
+    use CompatOrderings;
     use LockSqlHelper;
 
     /** @var array<string,string> */
@@ -875,13 +876,11 @@ class BasicEntityPersister implements EntityPersister
      */
     public function loadCriteria(Criteria $criteria): array
     {
-        $orderBy = array_map(
-            static fn (Order $order): string => $order->value,
-            $criteria->orderings(),
-        );
-        $limit   = $criteria->getMaxResults();
-        $offset  = $criteria->getFirstResult();
-        $query   = $this->getSelectSQL($criteria, null, null, $limit, $offset, $orderBy);
+        $orderBy = $this->getOrderingsAsStringMap($criteria);
+
+        $limit  = $criteria->getMaxResults();
+        $offset = $criteria->getFirstResult();
+        $query  = $this->getSelectSQL($criteria, null, null, $limit, $offset, $orderBy);
 
         [$params, $types] = $this->expandCriteriaParameters($criteria);
 
