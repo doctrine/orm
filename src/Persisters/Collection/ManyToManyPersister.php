@@ -9,6 +9,7 @@ use Doctrine\Common\Collections\Criteria;
 use Doctrine\Common\Collections\Expr\Comparison;
 use Doctrine\DBAL\Exception as DBALException;
 use Doctrine\DBAL\LockMode;
+use Doctrine\ORM\Cache\Persister\CompatOrderings;
 use Doctrine\ORM\Mapping\AssociationMapping;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\InverseSideMapping;
@@ -17,6 +18,7 @@ use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\Persisters\SqlValueVisitor;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Utility\PersisterHelper;
+use SortDirection;
 
 use function array_fill;
 use function array_merge;
@@ -33,6 +35,8 @@ use function sprintf;
  */
 class ManyToManyPersister extends AbstractCollectionPersister
 {
+    use CompatOrderings;
+
     public function delete(PersistentCollection $collection): void
     {
         $mapping = $this->getMapping($collection);
@@ -741,16 +745,25 @@ class ManyToManyPersister extends AbstractCollectionPersister
 
     private function getOrderingSql(Criteria $criteria, ClassMetadata $targetClass): string
     {
-        $orderings = $criteria->orderings();
+        $orderings = $this->getOrderings($criteria);
+
         if ($orderings) {
             $orderBy = [];
             foreach ($orderings as $name => $direction) {
-                $field     = $this->quoteStrategy->getColumnName(
+                $field = $this->quoteStrategy->getColumnName(
                     $name,
                     $targetClass,
                     $this->platform,
                 );
-                $orderBy[] = $field . ' ' . $direction->value;
+
+                if ($direction instanceof SortDirection) {
+                    $directionString = $direction === SortDirection::Ascending ? 'ASC' : 'DESC';
+                } else {
+                    /** @phpstan-ignore property.deprecatedEnum */
+                    $directionString = $direction->value;
+                }
+
+                $orderBy[] = $field . ' ' . $directionString;
             }
 
             return ' ORDER BY ' . implode(', ', $orderBy);

@@ -9,12 +9,14 @@ use Doctrine\Common\Collections\Criteria;
 use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\ParameterType;
 use Doctrine\Deprecations\Deprecation;
+use Doctrine\ORM\Cache\Persister\CompatOrderings;
 use Doctrine\ORM\Internal\NoUnknownNamedArguments;
 use Doctrine\ORM\Query\Expr;
 use Doctrine\ORM\Query\Parameter;
 use Doctrine\ORM\Query\QueryExpressionVisitor;
 use InvalidArgumentException;
 use RuntimeException;
+use SortDirection;
 use Stringable;
 
 use function array_keys;
@@ -41,6 +43,7 @@ use function substr;
  */
 class QueryBuilder implements Stringable
 {
+    use CompatOrderings;
     use NoUnknownNamedArguments;
 
     /**
@@ -1265,7 +1268,9 @@ class QueryBuilder implements Stringable
             }
         }
 
-        foreach ($criteria->orderings() as $sort => $order) {
+        $orderings = $this->getOrderings($criteria);
+
+        foreach ($orderings as $sort => $order) {
             $hasValidAlias = false;
             foreach ($allAliases as $alias) {
                 if (str_starts_with($sort . '.', $alias . '.')) {
@@ -1278,7 +1283,17 @@ class QueryBuilder implements Stringable
                 $sort = $allAliases[0] . '.' . $sort;
             }
 
-            $this->addOrderBy($sort, $order->value);
+            if ($order instanceof SortDirection) {
+                $directionString = match ($order) {
+                    SortDirection::Ascending => 'ASC',
+                    SortDirection::Descending => 'DESC',
+                };
+            } else {
+                /** @phpstan-ignore property.deprecatedEnum */
+                $directionString = $order->value;
+            }
+
+            $this->addOrderBy($sort, $directionString);
         }
 
         // Overwrite limits only if they was set in criteria
