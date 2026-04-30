@@ -257,16 +257,16 @@ the third argument to ``setParameter()`` explicitly. It accepts either a DBAL
 
 .. note::
 
-    Even though passing DateTime instance is allowed, it impacts performance 
-    as by default there is an attempt to load metadata for object, and if it's not found, 
+    Even though passing DateTime instance is allowed, it impacts performance
+    as by default there is an attempt to load metadata for object, and if it's not found,
     type is inferred from the original value.
-    
+
 .. code-block:: php
 
     <?php
-    
+
     use Doctrine\DBAL\Types\Types;
-    
+
     // prevents attempt to load metadata for date time class, improving performance
     $qb->setParameter('date', new \DateTimeImmutable(), Types::DATETIME_IMMUTABLE)
 
@@ -280,7 +280,7 @@ following syntax:
 
     use Doctrine\Common\Collections\ArrayCollection;
     use Doctrine\ORM\Query\Parameter;
-    
+
     // $qb instanceof QueryBuilder
 
     // Query here...
