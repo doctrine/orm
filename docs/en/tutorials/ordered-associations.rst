@@ -73,11 +73,13 @@ can specify the ``#[OrderBy]`` in the following way:
                   group_id:
                     referencedColumnName: id
 
-The DQL Snippet in OrderBy is only allowed to consist of
-unqualified, unquoted field names and of an optional ASC/DESC
-positional statement. Multiple Fields are separated by a comma (,).
-The referenced field names have to exist on the ``targetEntity``
-class of the ``#[ManyToMany]`` or ``#[OneToMany]`` attribute.
+The DQL Snippet representing the field is only allowed to consist of
+unqualified, unquoted field names. The direction can be either ``ASC``
+or ``DESC`` and is mandatory when using attributes, annotations or YAML.
+When using the XML driver, the direction defaults to ``ASC`` if not specified.
+
+The referenced field names have to exist on the ``targetEntity`` class
+of the ``#[ManyToMany]`` or ``#[OneToMany]`` attribute.
 
 The semantics of this feature can be described as follows:
 
