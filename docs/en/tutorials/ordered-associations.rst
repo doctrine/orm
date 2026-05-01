@@ -23,7 +23,7 @@ can specify the ``#[OrderBy]`` in the following way:
             // ...
 
             #[ManyToMany(targetEntity: Group::class)]
-            #[OrderBy(["name" => "ASC"])]
+            #[OrderBy(["name" => "ASC", "createdAt" => "DESC"])]
             private Collection $groups;
         }
 
@@ -37,7 +37,7 @@ can specify the ``#[OrderBy]`` in the following way:
 
             /**
              * @ManyToMany(targetEntity="Group")
-             * @OrderBy({"name" = "ASC"})
+             * @OrderBy({"name" = "ASC", "createdAt" = "DESC"})
              * @var Collection<int, Group>
              */
             private Collection $groups;
@@ -50,6 +50,7 @@ can specify the ``#[OrderBy]`` in the following way:
                 <many-to-many field="groups" target-entity="Group">
                     <order-by>
                         <order-by-field name="name" direction="ASC" />
+                        <order-by-field name="createdAt" direction="DESC" />
                     </order-by>
                 </many-to-many>
             </entity>
@@ -61,7 +62,7 @@ can specify the ``#[OrderBy]`` in the following way:
           type: entity
           manyToMany:
             groups:
-              orderBy: { 'name': 'ASC' }
+              orderBy: { 'name': 'ASC', 'createdAt': 'DESC' }
               targetEntity: Group
               joinTable:
                 name: users_groups

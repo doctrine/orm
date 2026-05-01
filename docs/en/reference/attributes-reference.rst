@@ -958,7 +958,7 @@ Example:
 
     <?php
     #[ManyToMany(targetEntity: "Group")]
-    #[OrderBy(["name" => "ASC"])]
+    #[OrderBy(["name" => "ASC", "createdAt" => "DESC"])]
     private $groups;
 
 The key in ``OrderBy`` is only allowed to consist of

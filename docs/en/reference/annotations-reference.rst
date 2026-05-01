@@ -1056,7 +1056,7 @@ Example:
     <?php
     /**
      * @ManyToMany(targetEntity="Group")
-     * @OrderBy({"name" = "ASC"})
+     * @OrderBy({"name" = "ASC", "createdAt" = "DESC"})
      */
     private $groups;
 
