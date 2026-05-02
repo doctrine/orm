@@ -957,7 +957,7 @@ Example:
 .. code-block:: php
 
     <?php
-    #[ManyToMany(targetEntity: 'Group')]
+    #[ManyToMany(targetEntity: Group::class)]
     #[OrderBy(['name' => 'ASC', 'createdAt' => 'DESC'])]
     private $groups;
 
