@@ -955,13 +955,13 @@ Example:
 .. code-block:: php
 
     <?php
-    #[ManyToMany(targetEntity: "Group")]
-    #[OrderBy(["name" => "ASC"])]
+    #[ManyToMany(targetEntity: Group::class)]
+    #[OrderBy(['name' => 'ASC', 'createdAt' => 'DESC'])]
     private $groups;
 
-The key in ``OrderBy`` is only allowed to consist of
-unqualified, unquoted field names and of an optional ``ASC``/``DESC``
-positional statement. Multiple Fields are separated by a comma (,).
+The keys of the array are only allowed to consist of unqualified,
+unquoted field names and the values can be either ``ASC`` or``DESC``.
+
 The referenced field names have to exist on the ``targetEntity``
 class of the ``#[ManyToMany]`` or ``#[OneToMany]`` attribute.
 
