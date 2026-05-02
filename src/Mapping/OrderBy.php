@@ -9,7 +9,7 @@ use Attribute;
 #[Attribute(Attribute::TARGET_PROPERTY)]
 final class OrderBy implements MappingAttribute
 {
-    /** @param array<string, string> $value */
+    /** @param array<string, 'ASC'|'DESC'> $value */
     public function __construct(
         public readonly array $value,
     ) {
