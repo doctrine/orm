@@ -62,9 +62,15 @@ trait CompatOrderings
         if ($this->isCollections31()) {
             $criteria->orderBy(
                 $criteria->getOrderings() ?: array_map(
-                    static fn (string $order): SortDirection => strtoupper($order) === 'ASC'
-                        ? SortDirection::Ascending
-                        : SortDirection::Descending,
+                    static function (SortDirection|string $order): SortDirection {
+                        if ($order instanceof SortDirection) {
+                            return $order;
+                        }
+
+                        return strtoupper($order) === 'ASC'
+                                        ? SortDirection::Ascending
+                                        : SortDirection::Descending;
+                    },
                     $association->orderBy(),
                 ),
             );
@@ -76,7 +82,15 @@ trait CompatOrderings
             // @phpstan-ignore method.deprecated
             $criteria->orderings() ?: array_map(
                 // @phpstan-ignore staticMethod.deprecatedEnum, return.deprecatedEnum
-                static fn (string $order): Order => Order::from(strtoupper($order)),
+                static function (SortDirection|string $order): Order {
+                    if ($order instanceof SortDirection) {
+                        // @phpstan-ignore classConstant.deprecatedEnum, classConstant.deprecatedEnum
+                        return $order === SortDirection::Ascending ? Order::Ascending : Order::Descending;
+                    }
+
+                    // @phpstan-ignore return.deprecatedEnum, staticMethod.deprecatedEnum
+                    return Order::from(strtoupper($order));
+                },
                 $association->orderBy(),
             ),
         );

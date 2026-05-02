@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
+                                      https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+
+    <entity name="Doctrine\Tests\ORM\Mapping\UserWithInvalidOrderBy" table="user_with_invalid_order">
+        <id name="id" type="integer" column="id">
+            <generator strategy="AUTO"/>
+        </id>
+
+        <one-to-many field="items" target-entity="Phonenumber" mapped-by="user">
+            <order-by>
+                <order-by-field name="name" direction="INVALID" />
+            </order-by>
+        </one-to-many>
+    </entity>
+</doctrine-mapping>

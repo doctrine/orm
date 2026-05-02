@@ -715,4 +715,19 @@ EXCEPTION
             $entityName,
         ));
     }
+
+    public static function invalidOrderByDirection(
+        string $direction,
+        string $orderByField,
+        string $fieldName,
+        string $className,
+    ): self {
+        return new self(sprintf(
+            'Invalid order direction "%s" for field "%s" in association "%s" of class "%s". Valid directions are "ASC" and "DESC".',
+            $direction,
+            $orderByField,
+            $fieldName,
+            $className,
+        ));
+    }
 }

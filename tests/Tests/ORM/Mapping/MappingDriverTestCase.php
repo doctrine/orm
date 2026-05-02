@@ -65,6 +65,7 @@ use Doctrine\Tests\Models\Upsertable\Updatable;
 use Doctrine\Tests\ORM\Mapping\NamingStrategy\CustomPascalNamingStrategy;
 use Doctrine\Tests\OrmTestCase;
 use PHPUnit\Framework\Attributes\Depends;
+use SortDirection;
 use stdClass;
 
 use function assert;
@@ -380,9 +381,45 @@ abstract class MappingDriverTestCase extends OrmTestCase
         self::assertTrue($class->associationMappings['phonenumbers']->orphanRemoval);
 
         // Test Order By
-        self::assertEquals(['number' => 'ASC'], $class->associationMappings['phonenumbers']->orderBy);
+        self::assertEquals(['number' => SortDirection::Ascending], $class->associationMappings['phonenumbers']->orderBy);
 
         return $class;
+    }
+
+    public function testOrderByWithStringValues(): void
+    {
+        $class = $this->createClassMetadata(UserWithStringOrderBy::class);
+
+        self::assertTrue(isset($class->associationMappings['phonenumbersAsc']));
+        self::assertEquals(
+            ['number' => SortDirection::Ascending],
+            $class->associationMappings['phonenumbersAsc']->orderBy,
+        );
+
+        self::assertTrue(isset($class->associationMappings['phonenumbersDesc']));
+        self::assertEquals(
+            ['number' => SortDirection::Descending],
+            $class->associationMappings['phonenumbersDesc']->orderBy,
+        );
+
+        self::assertTrue(isset($class->associationMappings['groupsMixed']));
+        self::assertEquals(
+            ['name' => SortDirection::Ascending, 'id' => SortDirection::Descending],
+            $class->associationMappings['groupsMixed']->orderBy,
+        );
+    }
+
+    public function testOrderByWithInvalidDirection(): void
+    {
+        $driver = $this->loadDriver();
+
+        $this->expectException(MappingException::class);
+
+        // XML driver validates against XSD first, so error message is different but still contains "INVALID"
+        $this->expectExceptionMessageMatches('/INVALID/');
+
+        // This should trigger the exception during metadata creation
+        $this->createClassMetadata(UserWithInvalidOrderBy::class);
     }
 
     #[Depends('testInverseOneToManyAssociation')]
@@ -993,7 +1030,7 @@ class User
 
     /** @var Collection<int, Phonenumber> */
     #[ORM\OneToMany(targetEntity: 'Phonenumber', mappedBy: 'user', cascade: ['persist'], orphanRemoval: true)]
-    #[ORM\OrderBy(['number' => 'ASC'])]
+    #[ORM\OrderBy(['number' => SortDirection::Ascending])]
     public $phonenumbers;
 
     /** @var Collection<int, Group> */
@@ -1107,7 +1144,7 @@ class User
                 'mappedBy' => 'user',
                 'orphanRemoval' => true,
                 'orderBy' =>
-                ['number' => 'ASC'],
+                ['number' => SortDirection::Ascending],
             ],
         );
         $metadata->mapManyToMany(
@@ -1614,6 +1651,111 @@ class BlogPostComment
                     [
                         0 => ['nullable' => false],
                     ],
+            ],
+        );
+    }
+}
+
+/**
+ * Entity to test backward compatibility of string-based OrderBy values
+ */
+#[ORM\Entity]
+class UserWithStringOrderBy
+{
+    #[ORM\Id]
+    #[ORM\Column]
+    #[ORM\GeneratedValue(strategy: 'AUTO')]
+    public int|null $id = null;
+
+    /** @var Collection<int, Phonenumber> */
+    #[ORM\OneToMany(targetEntity: Phonenumber::class, mappedBy: 'user')]
+    #[ORM\OrderBy(['number' => 'ASC'])]
+    public $phonenumbersAsc;
+
+    /** @var Collection<int, Phonenumber> */
+    #[ORM\OneToMany(targetEntity: Phonenumber::class, mappedBy: 'user')]
+    #[ORM\OrderBy(['number' => 'DESC'])]
+    public $phonenumbersDesc;
+
+    /** @var Collection<int, Group> */
+    #[ORM\ManyToMany(targetEntity: Group::class)]
+    #[ORM\OrderBy(['name' => 'ASC', 'id' => 'DESC'])]
+    public $groupsMixed;
+
+    public static function loadMetadata(ClassMetadata $metadata): void
+    {
+        $metadata->mapField(
+            [
+                'id'                 => true,
+                'fieldName'          => 'id',
+                'type'               => 'integer',
+            ],
+        );
+
+        $metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_AUTO);
+
+        $metadata->mapOneToMany(
+            [
+                'fieldName' => 'phonenumbersAsc',
+                'mappedBy' => 'user',
+                'targetEntity' => Phonenumber::class,
+                'orderBy' => ['number' => 'ASC'],
+            ],
+        );
+
+        $metadata->mapOneToMany(
+            [
+                'fieldName' => 'phonenumbersDesc',
+                'mappedBy' => 'user',
+                'targetEntity' => Phonenumber::class,
+                'orderBy' => ['number' => 'DESC'],
+            ],
+        );
+
+        $metadata->mapManyToMany(
+            [
+                'fieldName' => 'groupsMixed',
+                'targetEntity' => Group::class,
+                'orderBy' => ['name' => 'ASC', 'id' => 'DESC'],
+            ],
+        );
+    }
+}
+
+/**
+ * Entity to test invalid order direction handling
+ */
+#[ORM\Entity]
+class UserWithInvalidOrderBy
+{
+    #[ORM\Id]
+    #[ORM\Column]
+    #[ORM\GeneratedValue(strategy: 'AUTO')]
+    public int|null $id = null;
+
+    /** @var Collection<int, Phonenumber> */
+    #[ORM\OneToMany(targetEntity: Phonenumber::class, mappedBy: 'user')]
+    #[ORM\OrderBy(['name' => 'INVALID'])]
+    public $items;
+
+    public static function loadMetadata(ClassMetadata $metadata): void
+    {
+        $metadata->mapField(
+            [
+                'id'                 => true,
+                'fieldName'          => 'id',
+                'type'               => 'integer',
+            ],
+        );
+
+        $metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_AUTO);
+
+        $metadata->mapOneToMany(
+            [
+                'fieldName' => 'items',
+                'mappedBy' => 'user',
+                'targetEntity' => Phonenumber::class,
+                'orderBy' => ['name' => 'INVALID'],
             ],
         );
     }

@@ -17,6 +17,7 @@ use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\OrderBy;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use PHPUnit\Framework\Attributes\Group;
+use SortDirection;
 
 use function assert;
 use function class_exists;
@@ -78,7 +79,7 @@ class GH7767ParentEntity
 
     /** @phpstan-var Collection<int, GH7767ChildEntity>&Selectable<int, GH7767ChildEntity> */
     #[OneToMany(targetEntity: GH7767ChildEntity::class, mappedBy: 'parent', fetch: 'EXTRA_LAZY', cascade: ['persist'])]
-    #[OrderBy(['position' => 'ASC'])]
+    #[OrderBy(['position' => SortDirection::Ascending])]
     private $children;
 
     public function addChild(int $position): void

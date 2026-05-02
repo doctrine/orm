@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Mapping;
 
 use LogicException;
+use SortDirection;
 
 use function sprintf;
 
@@ -22,11 +23,11 @@ trait ToManyAssociationMappingImplementation
     /**
      * A map of field names (of the target entity) to sorting directions
      *
-     * @var array<string, 'asc'|'desc'>
+     * @var array<string, SortDirection|'asc'|'desc'>
      */
     public array $orderBy = [];
 
-    /** @return array<string, 'asc'|'desc'> */
+    /** @return array<string, SortDirection|'asc'|'desc'> */
     final public function orderBy(): array
     {
         return $this->orderBy;

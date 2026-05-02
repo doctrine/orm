@@ -17,6 +17,7 @@ use Doctrine\ORM\Mapping\OrderBy;
 use Doctrine\ORM\Mapping\Table;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use PHPUnit\Framework\Attributes\Group;
+use SortDirection;
 
 #[Group('DDC-1080')]
 class DDC1080Test extends OrmFunctionalTestCase
@@ -93,7 +94,7 @@ class DDC1080Foo
 
     /** @phpstan-var Collection<DDC1080FooBar> */
     #[OneToMany(targetEntity: 'DDC1080FooBar', mappedBy: 'foo', cascade: ['persist'])]
-    #[OrderBy(['orderNr' => 'ASC'])]
+    #[OrderBy(['orderNr' => SortDirection::Ascending])]
     protected $fooBars;
 
     public function __construct()
@@ -148,7 +149,7 @@ class DDC1080Bar
 
     /** @phpstan-var Collection<DDC1080FooBar> */
     #[OneToMany(targetEntity: 'DDC1080FooBar', mappedBy: 'bar', cascade: ['persist'])]
-    #[OrderBy(['orderNr' => 'ASC'])]
+    #[OrderBy(['orderNr' => SortDirection::Ascending])]
     protected $fooBars;
 
     public function __construct()

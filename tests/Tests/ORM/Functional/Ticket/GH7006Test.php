@@ -7,6 +7,7 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use SortDirection;
 
 class GH7006Test extends OrmFunctionalTestCase
 {
@@ -74,7 +75,7 @@ class GH7006PCT
 
     /** @var Collection<int, GH7006PCTFee> */
     #[ORM\OneToMany(targetEntity: GH7006PCTFee::class, mappedBy: 'pct', cascade: ['persist', 'remove'])]
-    #[ORM\OrderBy(['id' => 'ASC'])]
+    #[ORM\OrderBy(['id' => SortDirection::Ascending])]
     public $fees;
 
     public function __construct()

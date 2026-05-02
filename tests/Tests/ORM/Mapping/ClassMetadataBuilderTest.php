@@ -22,6 +22,7 @@ use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\Models\ValueObjects\Name;
 use Doctrine\Tests\OrmTestCase;
 use PHPUnit\Framework\Attributes\Group;
+use SortDirection;
 
 #[Group('DDC-659')]
 class ClassMetadataBuilderTest extends OrmTestCase
@@ -597,7 +598,7 @@ class ClassMetadataBuilderTest extends OrmTestCase
         $this->assertIsFluent(
             $this->builder->createOneToMany('groups', CmsGroup::class)
                         ->mappedBy('test')
-                        ->setOrderBy(['test'])
+                        ->setOrderBy(['test' => SortDirection::Ascending])
                         ->setIndexBy('test')
                         ->build(),
         );
@@ -609,7 +610,7 @@ class ClassMetadataBuilderTest extends OrmTestCase
                     'fieldName' => 'groups',
                     'targetEntity' => CmsGroup::class,
                     'mappedBy' => 'test',
-                    'orderBy' => [0 => 'test'],
+                    'orderBy' => ['test' => SortDirection::Ascending],
                     'indexBy' => 'test',
                     'type' => 4,
                     'isOwningSide' => false,
@@ -630,7 +631,7 @@ class ClassMetadataBuilderTest extends OrmTestCase
         $this->builder->createOneToMany('groups', CmsGroup::class)
                 ->makePrimaryKey()
                 ->mappedBy('test')
-                ->setOrderBy(['test'])
+                ->setOrderBy(['test' => SortDirection::Ascending])
                 ->setIndexBy('test')
                 ->build();
     }

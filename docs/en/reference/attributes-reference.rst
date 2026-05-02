@@ -958,12 +958,19 @@ Example:
 .. code-block:: php
 
     <?php
+
+    use SortDirection;
+
     #[ManyToMany(targetEntity: Group::class)]
-    #[OrderBy(['name' => 'ASC', 'createdAt' => 'DESC'])]
+    #[OrderBy([
+        'name' => SortDirection::Ascending,
+        'createdAt' => SortDirection::Descending,
+    ])]
     private $groups;
 
 The keys of the array are only allowed to consist of unqualified,
-unquoted field names and the values can be either ``ASC`` or ``DESC``.
+unquoted field names and the values can be either a valid `SortDirection` value,
+or a string with the value ``ASC`` or  ``DESC``.
 
 The referenced field names have to exist on the ``targetEntity``
 class of the ``#[ManyToMany]`` or ``#[OneToMany]`` attribute.
