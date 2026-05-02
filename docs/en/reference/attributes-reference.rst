@@ -957,8 +957,8 @@ Example:
 .. code-block:: php
 
     <?php
-    #[ManyToMany(targetEntity: "Group")]
-    #[OrderBy(["name" => "ASC", "createdAt" => "DESC"])]
+    #[ManyToMany(targetEntity: 'Group')]
+    #[OrderBy(['name' => 'ASC', 'createdAt' => 'DESC'])]
     private $groups;
 
 The keys of the array are only allowed to consist of unqualified,

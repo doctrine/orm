@@ -23,7 +23,7 @@ can specify the ``#[OrderBy]`` in the following way:
             // ...
 
             #[ManyToMany(targetEntity: Group::class)]
-            #[OrderBy(["name" => "ASC", "createdAt" => "DESC"])]
+            #[OrderBy(['name' => 'ASC', 'createdAt' => 'DESC'])]
             private Collection $groups;
         }
 
