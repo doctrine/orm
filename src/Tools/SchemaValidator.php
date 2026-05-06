@@ -194,6 +194,12 @@ class SchemaValidator
                         $ce[] = 'If association ' . $class->name . '#' . $fieldName . ' is many-to-many, then the inversed ' .
                                 'side ' . $targetMetadata->name . '#' . $assoc->inversedBy . ' has to be many-to-many as well.';
                     }
+
+                    if (! is_a($targetAssoc->targetEntity, $assoc->sourceEntity, true)) {
+                        $ce[] = 'The association ' . $class->name . '#' . $fieldName . ' refers to the inverse side ' .
+                                $assoc->targetEntity . '#' . $assoc->inversedBy . ' which targets a different entity (' .
+                                $targetAssoc->targetEntity . ').';
+                    }
                 }
             }
 

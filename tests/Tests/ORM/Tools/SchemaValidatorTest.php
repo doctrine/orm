@@ -239,6 +239,21 @@ class SchemaValidatorTest extends OrmTestCase
             $this->validator->validateClass($class),
         );
     }
+
+    public function testOwningSideInversedByTargetsDifferentEntity(): void
+    {
+        $class = $this->em->getClassMetadata(MultipleInversedByOwner2::class);
+        $ce    = $this->validator->validateClass($class);
+
+        self::assertEquals(
+            [
+                'The association Doctrine\Tests\ORM\Tools\MultipleInversedByOwner2#target refers to the inverse side '
+                . 'Doctrine\Tests\ORM\Tools\MultipleInversedByInverse#owners which targets a different entity '
+                . '(Doctrine\Tests\ORM\Tools\MultipleInversedByOwner1).',
+            ],
+            $ce,
+        );
+    }
 }
 
 #[MappedSuperclass]
@@ -557,4 +572,41 @@ class InvalidMappedSuperClass
     /** @phpstan-var Collection<int, self> */
     #[ManyToMany(targetEntity: 'InvalidMappedSuperClass', mappedBy: 'invalid')]
     private $selfWhatever;
+}
+
+#[Entity]
+class MultipleInversedByOwner1
+{
+    #[Id]
+    #[Column]
+    #[GeneratedValue]
+    public int $id;
+
+    #[ManyToOne(targetEntity: MultipleInversedByInverse::class, inversedBy: 'owners')]
+    public MultipleInversedByInverse $target;
+}
+
+#[Entity]
+class MultipleInversedByOwner2
+{
+    #[Id]
+    #[Column]
+    #[GeneratedValue]
+    public int $id;
+
+    #[ManyToOne(targetEntity: MultipleInversedByInverse::class, inversedBy: 'owners')]
+    public MultipleInversedByInverse $target;
+}
+
+#[Entity]
+class MultipleInversedByInverse
+{
+    #[Id]
+    #[Column]
+    #[GeneratedValue]
+    public int $id;
+
+    /** @var Collection<int, MultipleInversedByOwner1> */
+    #[OneToMany(targetEntity: MultipleInversedByOwner1::class, mappedBy: 'target')]
+    public Collection $owners;
 }
