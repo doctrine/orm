@@ -1229,9 +1229,12 @@ class SqlWalker implements TreeWalker
     {
         $orderByItems = array_map([$this, 'walkOrderByItem'], $orderByClause->orderByItems);
 
-        $collectionOrderByItems = $this->generateOrderedCollectionOrderByItems();
-        if ($collectionOrderByItems !== '') {
-            $orderByItems = array_merge($orderByItems, (array) $collectionOrderByItems);
+        if ($orderByClause->includeCollectionOrderByItems) {
+            $collectionOrderByItems = $this->generateOrderedCollectionOrderByItems();
+
+            if ($collectionOrderByItems !== '') {
+                $orderByItems = array_merge($orderByItems, (array) $collectionOrderByItems);
+            }
         }
 
         return ' ORDER BY ' . implode(', ', $orderByItems);

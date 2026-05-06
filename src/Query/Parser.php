@@ -160,6 +160,9 @@ class Parser
      */
     private $nestingLevel = 0;
 
+    /** @var int */
+    private $withJoinConditionNestingLevel = 0;
+
     /**
      * Any additional custom tree walkers that modify the AST.
      *
@@ -1466,7 +1469,7 @@ class Parser
             $orderByItems[] = $this->OrderByItem();
         }
 
-        return new AST\OrderByClause($orderByItems);
+        return new AST\OrderByClause($orderByItems, $this->withJoinConditionNestingLevel === 0);
     }
 
     /**
@@ -1772,7 +1775,13 @@ class Parser
         if ($adhocConditions) {
             $this->match(TokenType::T_WITH);
 
-            $join->conditionalExpression = $this->ConditionalExpression();
+            try {
+                $this->withJoinConditionNestingLevel++;
+
+                $join->conditionalExpression = $this->ConditionalExpression();
+            } finally {
+                $this->withJoinConditionNestingLevel--;
+            }
         }
 
         return $join;

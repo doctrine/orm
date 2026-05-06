@@ -13,11 +13,14 @@ class OrderByClause extends Node
 {
     /** @var OrderByItem[] */
     public $orderByItems = [];
+    /** @var bool */
+    public $includeCollectionOrderByItems = true;
 
     /** @param OrderByItem[] $orderByItems */
-    public function __construct(array $orderByItems)
+    public function __construct(array $orderByItems, bool $includeCollectionOrderByItems)
     {
-        $this->orderByItems = $orderByItems;
+        $this->orderByItems                  = $orderByItems;
+        $this->includeCollectionOrderByItems = $includeCollectionOrderByItems;
     }
 
     /**
