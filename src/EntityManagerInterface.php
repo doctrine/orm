@@ -76,6 +76,7 @@ interface EntityManagerInterface extends ObjectManager
      * @return mixed The value returned from the closure.
      * @phpstan-return T
      *
+     * @param-immediately-invoked-callable $func
      * @template T
      */
     public function wrapInTransaction(callable $func): mixed;
