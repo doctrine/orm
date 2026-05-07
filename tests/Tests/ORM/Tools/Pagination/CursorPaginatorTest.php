@@ -19,6 +19,7 @@ use Doctrine\ORM\Tools\Pagination\CursorPaginator;
 use Doctrine\Tests\OrmTestCase;
 use LogicException;
 use PHPUnit\Framework\MockObject\MockObject;
+use SortDirection;
 
 use function enum_exists;
 
@@ -59,7 +60,7 @@ class CursorPaginatorTest extends OrmTestCase
         $qb = $this->em->createQueryBuilder()
             ->select('p')
             ->from(BlogPost::class, 'p')
-            ->orderBy('p.id', 'ASC');
+            ->orderBy('p.id', SortDirection::Ascending);
 
         $paginator = new CursorPaginator($qb);
 

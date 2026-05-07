@@ -95,12 +95,15 @@ to work with them, here is the same example 6 re-written using
 .. code-block:: php
 
     <?php
+
+    use SortDirection;
+
     // $qb instanceof QueryBuilder
 
     $qb->select('u')
        ->from('User', 'u')
        ->where('u.id = ?1')
-       ->orderBy('u.name', 'ASC');
+       ->orderBy('u.name', SortDirection::Ascending);
 
 ``QueryBuilder`` helper methods are considered the standard way to
 use the ``QueryBuilder``. The ``$qb->expr()->*`` methods can help you
@@ -110,6 +113,9 @@ suggested way to build queries with dynamic conditions:
 .. code-block:: php
 
     <?php
+
+    use SortDirection;
+
     // $qb instanceof QueryBuilder
 
     $qb->select(array('u')) // string 'u' is converted to array internally
@@ -118,7 +124,7 @@ suggested way to build queries with dynamic conditions:
            $qb->expr()->eq('u.id', '?1'),
            $qb->expr()->like('u.nickname', '?2')
        ))
-       ->orderBy('u.surname', 'ASC');
+       ->orderBy('u.surname', SortDirection::Ascending);
 
 Here is a complete list of helper methods available in ``QueryBuilder``:
 
@@ -205,7 +211,7 @@ Here is a complete list of helper methods available in ``QueryBuilder``:
 
         // NOTE: -> orderBy() overrides all previously set ordering conditions
         //
-        // Example - $qb->orderBy('u.surname', 'DESC')
+        // Example - $qb->orderBy('u.surname', \SortDirection::Descending)
         public function orderBy($sort, $order = null);
 
         // Example - $qb->addOrderBy('u.firstName')
@@ -224,12 +230,15 @@ allowed. Binding parameters can simply be achieved as follows:
 .. code-block:: php
 
     <?php
+
+    use SortDirection;
+
     // $qb instanceof QueryBuilder
 
     $qb->select('u')
        ->from('User', 'u')
        ->where('u.id = ?1')
-       ->orderBy('u.name', 'ASC')
+       ->orderBy('u.name', SortDirection::Ascending)
        ->setParameter(1, 100); // Sets ?1 to 100, and thus we will fetch a user with u.id = 100
 
 You are not forced to enumerate your placeholders as the
@@ -238,12 +247,15 @@ alternative syntax is available:
 .. code-block:: php
 
     <?php
+
+    use SortDirection;
+
     // $qb instanceof QueryBuilder
 
     $qb->select('u')
        ->from('User', 'u')
        ->where('u.id = :identifier')
-       ->orderBy('u.name', 'ASC')
+       ->orderBy('u.name', SortDirection::Ascending)
        ->setParameter('identifier', 100); // Sets :identifier to 100, and thus we will fetch a user with u.id = 100
 
 Note that numeric placeholders start with a ? followed by a number
@@ -257,16 +269,16 @@ the third argument to ``setParameter()`` explicitly. It accepts either a DBAL
 
 .. note::
 
-    Even though passing DateTime instance is allowed, it impacts performance 
-    as by default there is an attempt to load metadata for object, and if it's not found, 
+    Even though passing DateTime instance is allowed, it impacts performance
+    as by default there is an attempt to load metadata for object, and if it's not found,
     type is inferred from the original value.
-    
+
 .. code-block:: php
 
     <?php
-    
+
     use Doctrine\DBAL\Types\Types;
-    
+
     // prevents attempt to load metadata for date time class, improving performance
     $qb->setParameter('date', new \DateTimeImmutable(), Types::DATETIME_IMMUTABLE)
 
@@ -280,7 +292,7 @@ following syntax:
 
     use Doctrine\Common\Collections\ArrayCollection;
     use Doctrine\ORM\Query\Parameter;
-    
+
     // $qb instanceof QueryBuilder
 
     // Query here...
@@ -377,6 +389,9 @@ set of useful methods to help build expressions:
 .. code-block:: php
 
     <?php
+
+    use SortDirection;
+
     // $qb instanceof QueryBuilder
 
     // example8: QueryBuilder port of:
@@ -387,7 +402,7 @@ set of useful methods to help build expressions:
            $qb->expr()->eq('u.id', '?1'),
            $qb->expr()->like('u.nickname', '?2')
        ))
-       ->add('orderBy', new Expr\OrderBy('u.name', 'ASC'));
+       ->add('orderBy', new Expr\OrderBy('u.name', SortDirection::Ascending));
 
 Although it still sounds complex, the ability to programmatically
 create conditions are the main feature of ``Expr``. Here it is a
@@ -545,10 +560,11 @@ using ``addCriteria``:
 
     <?php
     use Doctrine\Common\Collections\Criteria;
+    use SortDirection;
     // ...
 
     $criteria = Criteria::create()
-        ->orderBy(['firstName' => Criteria::ASC]);
+        ->orderBy(['firstName' => SortDirection::Ascending]);
 
     // $qb instanceof QueryBuilder
     $qb->addCriteria($criteria);
@@ -619,6 +635,9 @@ same query of example 6 written using
 .. code-block:: php
 
    <?php
+
+   use SortDirection;
+
    // $qb instanceof QueryBuilder
 
    // example7: how to define:
@@ -627,7 +646,7 @@ same query of example 6 written using
    $qb->add('select', new Expr\Select(array('u')))
       ->add('from', new Expr\From('User', 'u'))
       ->add('where', new Expr\Comparison('u.id', '=', '?1'))
-      ->add('orderBy', new Expr\OrderBy('u.name', 'ASC'));
+      ->add('orderBy', new Expr\OrderBy('u.name', SortDirection::Ascending));
 
 Binding Parameters to Placeholders
 ----------------------------------
