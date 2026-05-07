@@ -14,8 +14,10 @@ use Doctrine\ORM\Query\SqlWalker;
 class OrderByClause extends Node
 {
     /** @param OrderByItem[] $orderByItems */
-    public function __construct(public array $orderByItems)
-    {
+    public function __construct(
+        public array $orderByItems,
+        public bool $includeCollectionOrderByItems = true,
+    ) {
     }
 
     public function dispatch(SqlWalker $walker): string

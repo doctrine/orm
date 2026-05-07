@@ -149,6 +149,11 @@ final class Parser
     private int $nestingLevel = 0;
 
     /**
+     * Keeps the nesting level of subqueries in JOIN WITH conditions.
+     */
+    private int $withJoinConditionNestingLevel = 0;
+
+    /**
      * Any additional custom tree walkers that modify the AST.
      *
      * @var list<class-string<TreeWalker>>
@@ -1384,7 +1389,7 @@ final class Parser
             $orderByItems[] = $this->OrderByItem();
         }
 
-        return new AST\OrderByClause($orderByItems);
+        return new AST\OrderByClause($orderByItems, $this->withJoinConditionNestingLevel === 0);
     }
 
     /**
@@ -1650,7 +1655,14 @@ final class Parser
 
             if ($this->lexer->isNextToken(TokenType::T_WITH)) {
                 $this->match(TokenType::T_WITH);
-                $conditionalExpression = $this->ConditionalExpression();
+
+                try {
+                    $this->withJoinConditionNestingLevel++;
+
+                    $conditionalExpression = $this->ConditionalExpression();
+                } finally {
+                    $this->withJoinConditionNestingLevel--;
+                }
             }
         } else {
             $joinDeclaration         = $this->RangeVariableDeclaration();
