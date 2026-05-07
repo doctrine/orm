@@ -6,6 +6,12 @@ parameters:
     reportUnmatchedIgnoredErrors: false
 
     ignoreErrors:
+        -
+            message: '#^Template type T is declared as covariant, but occurs in invariant position in return type of method Doctrine\\ORM\\Mapping\\ClassMetadataInfo\:\:getReflectionClass\(\)\.$#'
+            identifier: generics.variance
+            count: 1
+            path: src/Mapping/ClassMetadataInfo.php
+
         # deprecations from doctrine/dbal:3.x
         - '/^Call to an undefined method Doctrine\\DBAL\\Platforms\\AbstractPlatform::getGuidExpression\(\).$/'
 

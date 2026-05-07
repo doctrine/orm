@@ -160,6 +160,9 @@ class Parser
      */
     private $nestingLevel = 0;
 
+    /** @var int */
+    private $withJoinConditionNestingLevel = 0;
+
     /**
      * Any additional custom tree walkers that modify the AST.
      *
@@ -1466,7 +1469,7 @@ class Parser
             $orderByItems[] = $this->OrderByItem();
         }
 
-        return new AST\OrderByClause($orderByItems);
+        return new AST\OrderByClause($orderByItems, $this->withJoinConditionNestingLevel === 0);
     }
 
     /**
@@ -1772,7 +1775,13 @@ class Parser
         if ($adhocConditions) {
             $this->match(TokenType::T_WITH);
 
-            $join->conditionalExpression = $this->ConditionalExpression();
+            try {
+                $this->withJoinConditionNestingLevel++;
+
+                $join->conditionalExpression = $this->ConditionalExpression();
+            } finally {
+                $this->withJoinConditionNestingLevel--;
+            }
         }
 
         return $join;
@@ -1994,7 +2003,7 @@ class Parser
     }
 
     /**
-     * ScalarExpression ::= SimpleArithmeticExpression | StringPrimary | DateTimePrimary |
+     * ScalarExpression ::= SimpleArithmeticExpression | StringPrimary | DatetimePrimary |
      *                      StateFieldPathExpression | BooleanPrimary | CaseExpression |
      *                      InstanceOfExpression
      *
@@ -2077,14 +2086,14 @@ class Parser
     }
 
     /**
-     * CaseExpression ::= GeneralCaseExpression | SimpleCaseExpression | CoalesceExpression | NullifExpression
+     * CaseExpression ::= GeneralCaseExpression | SimpleCaseExpression | CoalesceExpression | NullIfExpression
      * GeneralCaseExpression ::= "CASE" WhenClause {WhenClause}* "ELSE" ScalarExpression "END"
      * WhenClause ::= "WHEN" ConditionalExpression "THEN" ScalarExpression
      * SimpleCaseExpression ::= "CASE" CaseOperand SimpleWhenClause {SimpleWhenClause}* "ELSE" ScalarExpression "END"
-     * CaseOperand ::= StateFieldPathExpression | TypeDiscriminator
+     * CaseOperand ::= StateFieldPathExpression
      * SimpleWhenClause ::= "WHEN" ScalarExpression "THEN" ScalarExpression
      * CoalesceExpression ::= "COALESCE" "(" ScalarExpression {"," ScalarExpression}* ")"
-     * NullifExpression ::= "NULLIF" "(" ScalarExpression "," ScalarExpression ")"
+     * NullIfExpression ::= "NULLIF" "(" ScalarExpression "," ScalarExpression ")"
      *
      * @return mixed One of the possible expressions or subexpressions.
      */
@@ -2188,7 +2197,7 @@ class Parser
 
     /**
      * SimpleCaseExpression ::= "CASE" CaseOperand SimpleWhenClause {SimpleWhenClause}* "ELSE" ScalarExpression "END"
-     * CaseOperand ::= StateFieldPathExpression | TypeDiscriminator
+     * CaseOperand ::= StateFieldPathExpression
      *
      * @return AST\SimpleCaseExpression
      */
@@ -3603,7 +3612,7 @@ class Parser
     }
 
     /**
-     * FunctionsReturningDateTime ::=
+     * FunctionsReturningDatetime ::=
      *     "CURRENT_DATE" |
      *     "CURRENT_TIME" |
      *     "CURRENT_TIMESTAMP" |

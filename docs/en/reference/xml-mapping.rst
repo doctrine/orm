@@ -143,6 +143,7 @@ of several common elements:
                 </cascade>
                 <order-by>
                     <order-by-field name="number" direction="ASC" />
+                    <order-by-field name="createdAt" direction="DESC" />
                 </order-by>
             </one-to-many>
 
