@@ -9,6 +9,7 @@ use Doctrine\ORM\Query\Expr;
 use Doctrine\Tests\Models\GH12438\VersionableEntity;
 use Doctrine\Tests\Models\GH12438\VersionEntity;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use SortDirection;
 
 use function count;
 
@@ -41,7 +42,7 @@ class GH12438Test extends OrmFunctionalTestCase
             ])
             ->from(VersionableEntity::class, 'versionable')
             ->innerJoin('versionable.versions', 'version')
-            ->orderBy('versionable.id', 'DESC')
+            ->orderBy('versionable.id', SortDirection::Descending)
             ->getQuery()
             ->getResult();
 
@@ -66,7 +67,7 @@ class GH12438Test extends OrmFunctionalTestCase
             ->from(VersionableEntity::class, 'versionable')
             ->leftJoin('versionable.versions', 'version', Expr\Join::WITH, $condition)
             ->setParameter('date', new DateTimeImmutable('2025-03-01'))
-            ->orderBy('versionable.id', 'DESC')
+            ->orderBy('versionable.id', SortDirection::Descending)
             ->getQuery()
             ->getResult();
 
@@ -87,7 +88,7 @@ class GH12438Test extends OrmFunctionalTestCase
             ->from(VersionableEntity::class, 'versionable')
             ->leftJoin($versionFqcn, 'version', Expr\Join::ON, $condition)
             ->setParameter('date', new DateTimeImmutable('2025-03-01'))
-            ->orderBy('version.id', 'ASC')
+            ->orderBy('version.id', SortDirection::Ascending)
             ->getQuery()
             ->getSingleColumnResult();
 
