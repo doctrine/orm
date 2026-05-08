@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Mapping;
 
 use Doctrine\Common\Collections\Collection;
+use Doctrine\Deprecations\PHPUnit\VerifyDeprecations;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Events;
 use Doctrine\ORM\Mapping as ORM;
@@ -16,6 +17,7 @@ use Doctrine\ORM\Mapping\DefaultTypedFieldMapper;
 use Doctrine\ORM\Mapping\DiscriminatorColumn;
 use Doctrine\ORM\Mapping\DiscriminatorColumnMapping;
 use Doctrine\ORM\Mapping\DiscriminatorMap;
+use Doctrine\ORM\Mapping\Driver\XmlDriver;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
@@ -65,6 +67,7 @@ use Doctrine\Tests\Models\Upsertable\Updatable;
 use Doctrine\Tests\ORM\Mapping\NamingStrategy\CustomPascalNamingStrategy;
 use Doctrine\Tests\OrmTestCase;
 use PHPUnit\Framework\Attributes\Depends;
+use PHPUnit\Framework\Attributes\IgnoreDeprecations;
 use SortDirection;
 use stdClass;
 
@@ -77,6 +80,8 @@ use const CASE_UPPER;
 
 abstract class MappingDriverTestCase extends OrmTestCase
 {
+    use VerifyDeprecations;
+
     abstract protected function loadDriver(): MappingDriver;
 
     /** @param class-string<object> $entityClassName */
@@ -386,8 +391,16 @@ abstract class MappingDriverTestCase extends OrmTestCase
         return $class;
     }
 
+    #[IgnoreDeprecations]
     public function testOrderByWithStringValues(): void
     {
+        if ($this->loadDriver() instanceof XmlDriver) {
+            $this->expectNoDeprecationWithIdentifier('https://github.com/doctrine/orm/issues/11313');
+        } else {
+            // there are 3 associations using the string order value
+            $this->doctrineDeprecationsExpectations['https://github.com/doctrine/orm/issues/11313'] = 3;
+        }
+
         $class = $this->createClassMetadata(UserWithStringOrderBy::class);
 
         self::assertTrue(isset($class->associationMappings['phonenumbersAsc']));

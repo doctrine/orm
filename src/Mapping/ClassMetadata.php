@@ -2780,6 +2780,14 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
             if ($direction instanceof SortDirection) {
                 $normalized[$field] = $direction;
             } else {
+                Deprecation::trigger(
+                    'doctrine/orm',
+                    'https://github.com/doctrine/orm/issues/11313',
+                    '%s::%s : Using "%s" as an order by direction is deprecated in favor of passing a SortDirection instance',
+                    $this->name,
+                    $fieldName,
+                    $direction,
+                );
                 $normalized[$field] = match (strtoupper($direction)) {
                     'ASC' => SortDirection::Ascending,
                     'DESC' => SortDirection::Descending,
