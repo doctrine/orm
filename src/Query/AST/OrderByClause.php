@@ -17,7 +17,7 @@ class OrderByClause extends Node
     public $includeCollectionOrderByItems = true;
 
     /** @param OrderByItem[] $orderByItems */
-    public function __construct(array $orderByItems, bool $includeCollectionOrderByItems)
+    public function __construct(array $orderByItems, bool $includeCollectionOrderByItems = true)
     {
         $this->orderByItems                  = $orderByItems;
         $this->includeCollectionOrderByItems = $includeCollectionOrderByItems;
