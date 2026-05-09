@@ -7,10 +7,10 @@ namespace Doctrine\Tests\ORM;
 use BadMethodCallException;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Criteria;
-use Doctrine\Common\Collections\Order;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\Deprecations\PHPUnit\VerifyDeprecations;
 use Doctrine\ORM\Cache;
+use Doctrine\ORM\Cache\Persister\CompatOrderings;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\ORM\Query\Parameter;
@@ -41,6 +41,7 @@ use function defined;
  */
 class QueryBuilderTest extends OrmTestCase
 {
+    use CompatOrderings;
     use VerifyDeprecations;
 
     private EntityManagerMock $entityManager;
@@ -668,7 +669,7 @@ class QueryBuilderTest extends OrmTestCase
             ->from(CmsUser::class, 'u');
 
         $criteria = defined(Criteria::class . '::ASC') ? Criteria::create(true) : Criteria::create();
-        $criteria->orderBy(['field' => Order::Descending]);
+        $criteria->orderBy(['field' => $this->isCollections31() ? SortDirection::Descending : 'DESC']);
 
         $qb->addCriteria($criteria);
 
@@ -685,7 +686,7 @@ class QueryBuilderTest extends OrmTestCase
             ->join('u.article', 'a');
 
         $criteria = defined(Criteria::class . '::ASC') ? Criteria::create(true) : Criteria::create();
-        $criteria->orderBy(['a.field' => Order::Descending]);
+        $criteria->orderBy(['a.field' => $this->isCollections31() ? SortDirection::Descending : 'DESC']);
 
         $qb->addCriteria($criteria);
 

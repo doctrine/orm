@@ -6,8 +6,8 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\Criteria;
-use Doctrine\Common\Collections\Order;
 use Doctrine\Common\Collections\Selectable;
+use Doctrine\ORM\Cache\Persister\CompatOrderings;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
@@ -20,12 +20,13 @@ use PHPUnit\Framework\Attributes\Group;
 use SortDirection;
 
 use function assert;
-use function class_exists;
 use function defined;
 
 #[Group('GH7836')]
 class GH7836Test extends OrmFunctionalTestCase
 {
+    use CompatOrderings;
+
     protected function setUp(): void
     {
         parent::setUp();
@@ -64,8 +65,8 @@ class GH7836Test extends OrmFunctionalTestCase
 
         $children = $parent->getChildren()->matching(
             (defined(Criteria::class . '::ASC') ? Criteria::create(true) : Criteria::create())->orderBy(
-                class_exists(Order::class)
-                    ? ['position' => Order::Descending, 'name' => Order::Ascending]
+                $this->isCollections31()
+                    ? ['position' => SortDirection::Descending, 'name' => SortDirection::Ascending]
                     : ['position' => 'DESC', 'name' => 'ASC'],
             ),
         );
@@ -85,8 +86,8 @@ class GH7836Test extends OrmFunctionalTestCase
 
         $children = $parent->getChildren()->matching(
             (defined(Criteria::class . '::ASC') ? Criteria::create(true) : Criteria::create())->orderBy(
-                class_exists(Order::class)
-                    ? ['name' => Order::Ascending, 'position' => Order::Ascending]
+                $this->isCollections31()
+                    ? ['name' => SortDirection::Ascending, 'position' => SortDirection::Ascending]
                     : ['name' => 'ASC', 'position' => 'ASC'],
             ),
         );

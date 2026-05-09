@@ -6,7 +6,7 @@ namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Criteria;
-use Doctrine\Common\Collections\Order;
+use Doctrine\ORM\Cache\Persister\CompatOrderings;
 use Doctrine\ORM\Mapping\AssociationMapping;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\UnitOfWork;
@@ -15,6 +15,7 @@ use Doctrine\Tests\Models\CMS\CmsTag;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use PHPUnit\Framework\Attributes\Group;
+use SortDirection;
 
 use function assert;
 use function defined;
@@ -26,6 +27,8 @@ use function get_class;
  */
 class ManyToManyBasicAssociationTest extends OrmFunctionalTestCase
 {
+    use CompatOrderings;
+
     protected function setUp(): void
     {
         $this->useModelSet('cms');
@@ -438,7 +441,7 @@ class ManyToManyBasicAssociationTest extends OrmFunctionalTestCase
         $user = $this->_em->find($user::class, $user->id);
 
         $criteria = (defined(Criteria::class . '::ASC') ? Criteria::create(true) : Criteria::create())
-            ->orderBy(['name' => Order::Ascending]);
+            ->orderBy(['name' => $this->isCollections31() ? SortDirection::Ascending : 'ASC']);
 
         self::assertEquals(
             ['A', 'B', 'C', 'Developers_0'],
@@ -478,7 +481,7 @@ class ManyToManyBasicAssociationTest extends OrmFunctionalTestCase
         $user = $this->_em->find($user::class, $user->id);
 
         $criteria = (defined(Criteria::class . '::ASC') ? Criteria::create(true) : Criteria::create())
-            ->orderBy(['name' => Order::Ascending]);
+            ->orderBy(['name' => $this->isCollections31() ? SortDirection::Ascending : 'ASC']);
 
         self::assertEquals(
             ['A', 'B', 'C'],
