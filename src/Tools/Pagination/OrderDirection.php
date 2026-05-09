@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Doctrine\ORM\Tools\CursorPagination;
+namespace Doctrine\ORM\Tools\Pagination;
 
 use Doctrine\ORM\Query\AST\OrderByItem;
 

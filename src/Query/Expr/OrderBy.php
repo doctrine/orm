@@ -4,10 +4,14 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Query\Expr;
 
+use Doctrine\Deprecations\Deprecation;
 use Override;
+use SortDirection;
 use Stringable;
 
 use function count;
+use function func_num_args;
+use function get_debug_type;
 use function implode;
 
 /**
@@ -29,15 +33,42 @@ class OrderBy implements Stringable
 
     public function __construct(
         string|null $sort = null,
-        string|null $order = null,
+        SortDirection|string|null $order = SortDirection::Ascending,
     ) {
+        if (! $order instanceof SortDirection) {
+            Deprecation::trigger(
+                'doctrine/orm',
+                'https://github.com/doctrine/orm/issues/11313',
+                'Passing %s as $order to %s is deprecated, use an instance of SortDirection instead.',
+                get_debug_type($order),
+                __METHOD__,
+            );
+        }
+
         if ($sort) {
             $this->add($sort, $order);
         }
     }
 
-    public function add(string $sort, string|null $order = null): void
+    public function add(string $sort, SortDirection|string|null $order = null): void
     {
+        if (! $order instanceof SortDirection && func_num_args() > 1) {
+            Deprecation::trigger(
+                'doctrine/orm',
+                'https://github.com/doctrine/orm/issues/11313',
+                'Passing %s as $order to %s is deprecated, use an instance of SortDirection instead.',
+                get_debug_type($order),
+                __METHOD__,
+            );
+        }
+
+        if ($order instanceof SortDirection) {
+            $order = match ($order) {
+                SortDirection::Ascending => 'ASC',
+                SortDirection::Descending => 'DESC',
+            };
+        }
+
         $order         = ! $order ? 'ASC' : $order;
         $this->parts[] = $sort . ' ' . $order;
     }

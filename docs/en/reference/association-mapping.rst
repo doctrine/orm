@@ -30,6 +30,13 @@ a property referring to the other side.
 To gain a full understanding of associations you should also read about :doc:`owning and
 inverse sides of associations <unitofwork-associations>`
 
+Composite Foreign Keys
+----------------------
+
+When the target entity has a composite primary key, you need to use multiple
+join column mappings, one for each column of the composite key. See the
+:doc:`Composite and Foreign Keys <../tutorials/composite-primary-keys>` tutorial for details.
+
 Many-To-One, Unidirectional
 ---------------------------
 

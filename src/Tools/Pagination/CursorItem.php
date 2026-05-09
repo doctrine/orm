@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Doctrine\ORM\Tools\CursorPagination;
+namespace Doctrine\ORM\Tools\Pagination;
 
 /**
  * Represents a paginated item with its associated cursor.

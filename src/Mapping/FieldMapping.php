@@ -18,6 +18,7 @@ final class FieldMapping
      * fields of an entity can have the id attribute, forming a composite key.
      */
     public bool|null $id                 = null;
+    public int|null $idPosition          = null;
     public bool|null $nullable           = null;
     public bool|null $notInsertable      = null;
     public bool|null $notUpdatable       = null;
@@ -89,6 +90,7 @@ final class FieldMapping
      *     columnName: string,
      *     length?: int|null,
      *     id?: bool|null,
+     *     idPosition?: int|null,
      *     nullable?: bool|null,
      *     index?: bool|null,
      *     notInsertable?: bool|null,
@@ -143,6 +145,7 @@ final class FieldMapping
 
         foreach (
             [
+                'idPosition',
                 'length',
                 'columnDefinition',
                 'generated',

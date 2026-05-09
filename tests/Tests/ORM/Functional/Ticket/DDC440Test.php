@@ -17,6 +17,7 @@ use Doctrine\ORM\Mapping\OrderBy;
 use Doctrine\ORM\Mapping\Table;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use PHPUnit\Framework\Attributes\Group;
+use SortDirection;
 
 class DDC440Test extends OrmFunctionalTestCase
 {
@@ -151,7 +152,7 @@ class DDC440Client
 
     /** @phpstan-var Collection<int, DDC440Phone> */
     #[OneToMany(targetEntity: 'DDC440Phone', mappedBy: 'client', cascade: ['persist', 'remove'], fetch: 'EAGER', indexBy: 'id')]
-    #[OrderBy(['number' => 'ASC'])]
+    #[OrderBy(['number' => SortDirection::Ascending])]
     protected $phones;
 
     /** @var string */

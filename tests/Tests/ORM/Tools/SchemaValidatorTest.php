@@ -30,6 +30,7 @@ use Doctrine\Tests\Models\ECommerce\ECommerceCart;
 use Doctrine\Tests\OrmTestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Group;
+use SortDirection;
 
 class SchemaValidatorTest extends OrmTestCase
 {
@@ -477,12 +478,12 @@ class DDC3322One
 
     /** @phpstan-var Collection<int, DDC3322ValidEntity1> */
     #[OneToMany(targetEntity: 'DDC3322ValidEntity1', mappedBy: 'oneValid')]
-    #[OrderBy(['id' => 'ASC'])]
+    #[OrderBy(['id' => SortDirection::Ascending])]
     private $validAssoc;
 
     /** @phpstan-var Collection<int, DDC3322ValidEntity1> */
     #[OneToMany(targetEntity: 'DDC3322ValidEntity1', mappedBy: 'oneInvalid')]
-    #[OrderBy(['invalidField' => 'ASC'])]
+    #[OrderBy(['invalidField' => SortDirection::Ascending])]
     private $invalidAssoc;
 }
 
@@ -496,12 +497,12 @@ class DDC3322Two
 
     /** @phpstan-var Collection<int, DDC3322ValidEntity1> */
     #[OneToMany(targetEntity: 'DDC3322ValidEntity1', mappedBy: 'twoValid')]
-    #[OrderBy(['manyToOne' => 'ASC'])]
+    #[OrderBy(['manyToOne' => SortDirection::Ascending])]
     private $validAssoc;
 
     /** @phpstan-var Collection<int, DDC3322ValidEntity1> */
     #[OneToMany(targetEntity: 'DDC3322ValidEntity1', mappedBy: 'twoInvalid')]
-    #[OrderBy(['oneToMany' => 'ASC'])]
+    #[OrderBy(['oneToMany' => SortDirection::Ascending])]
     private $invalidAssoc;
 }
 
@@ -514,12 +515,12 @@ class DDC3322Three
     private int $id;
 
     #[OneToMany(targetEntity: 'DDC3322ValidEntity1', mappedBy: 'threeValid')]
-    #[OrderBy(['oneToOneOwning' => 'ASC'])]
+    #[OrderBy(['oneToOneOwning' => SortDirection::Ascending])]
     private DDC3322ValidEntity1 $validAssoc;
 
     /** @phpstan-var Collection<int, DDC3322ValidEntity1> */
     #[OneToMany(targetEntity: 'DDC3322ValidEntity1', mappedBy: 'threeInvalid')]
-    #[OrderBy(['oneToOneInverse' => 'ASC'])]
+    #[OrderBy(['oneToOneInverse' => SortDirection::Ascending])]
     private $invalidAssoc;
 }
 

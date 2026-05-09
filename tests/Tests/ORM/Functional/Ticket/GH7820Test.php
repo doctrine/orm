@@ -15,6 +15,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\Attributes\Group;
 use Psr\Cache\CacheItemInterface;
+use SortDirection;
 use Stringable;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
 use Symfony\Component\Cache\CacheItem;
@@ -145,7 +146,7 @@ class GH7820Test extends OrmFunctionalTestCase
     {
         $query = $this->_em->getRepository(GH7820Line::class)
             ->createQueryBuilder('l')
-            ->orderBy('l.lineNumber', 'ASC')
+            ->orderBy('l.lineNumber', SortDirection::Ascending)
             ->setMaxResults(100);
 
         return array_map(static fn (GH7820Line $line): string => $line->toString(), iterator_to_array(new Paginator($query)));

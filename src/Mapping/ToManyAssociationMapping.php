@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Mapping;
 
+use SortDirection;
+
 interface ToManyAssociationMapping
 {
     /** @phpstan-assert-if-true string $this->indexBy() */
@@ -11,6 +13,6 @@ interface ToManyAssociationMapping
 
     public function indexBy(): string;
 
-    /** @return array<string, 'asc'|'desc'> */
+    /** @return array<string, SortDirection|'asc'|'desc'> */
     public function orderBy(): array;
 }

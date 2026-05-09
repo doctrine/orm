@@ -18,6 +18,7 @@ use Doctrine\ORM\Utility\HierarchyDiscriminatorResolver;
 use Doctrine\ORM\Utility\PersisterHelper;
 use InvalidArgumentException;
 use LogicException;
+use SortDirection;
 
 use function array_diff;
 use function array_filter;
@@ -98,7 +99,7 @@ class SqlWalker
     /**
      * Map from Table-Alias + Column-Name to OrderBy-Direction.
      *
-     * @var array<string, string>
+     * @var array<string, SortDirection|string>
      */
     private array $orderedColumnsMap = [];
 
@@ -362,7 +363,11 @@ class SqlWalker
                 }
 
                 $this->orderedColumnsMap[$orderedColumn] = $orientation;
-                $orderedColumns[]                        = $orderedColumn . ' ' . $orientation;
+                if ($orientation instanceof SortDirection) {
+                    $orientation = ($orientation === SortDirection::Ascending ? 'ASC' : 'DESC');
+                }
+
+                $orderedColumns[] = $orderedColumn . ' ' . $orientation;
             }
         }
 
@@ -1075,9 +1080,11 @@ class SqlWalker
     {
         $orderByItems = array_map($this->walkOrderByItem(...), $orderByClause->orderByItems);
 
-        $collectionOrderByItems = $this->generateOrderedCollectionOrderByItems();
-        if ($collectionOrderByItems !== '') {
-            $orderByItems = array_merge($orderByItems, (array) $collectionOrderByItems);
+        if ($orderByClause->includeCollectionOrderByItems) {
+            $collectionOrderByItems = $this->generateOrderedCollectionOrderByItems();
+            if ($collectionOrderByItems !== '') {
+                $orderByItems = array_merge($orderByItems, (array) $collectionOrderByItems);
+            }
         }
 
         return ' ORDER BY ' . implode(', ', $orderByItems);

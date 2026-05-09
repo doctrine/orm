@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Doctrine\ORM\Tools\CursorPagination\Exception;
+namespace Doctrine\ORM\Tools\Pagination\Exception;
 
 use InvalidArgumentException;
 use Throwable;

@@ -15,7 +15,9 @@ use InvalidArgumentException;
 use LogicException;
 use Override;
 use SimpleXMLElement;
+use SortDirection;
 
+use function array_key_exists;
 use function assert;
 use function class_exists;
 use function constant;
@@ -287,13 +289,16 @@ class XmlDriver extends FileDriver
         // Evaluate <id ...> mappings
         $associationIds = [];
         foreach ($xmlRoot->id ?? [] as $idElement) {
+            $position = isset($idElement['position']) ? (int) $idElement['position'] : null;
+
             if (isset($idElement['association-key']) && $this->evaluateBoolean($idElement['association-key'])) {
-                $associationIds[(string) $idElement['name']] = true;
+                $associationIds[(string) $idElement['name']] = $position;
                 continue;
             }
 
-            $mapping       = $this->columnToArray($idElement);
-            $mapping['id'] = true;
+            $mapping               = $this->columnToArray($idElement);
+            $mapping['id']         = true;
+            $mapping['idPosition'] = $position;
 
             $metadata->mapField($mapping);
 
@@ -335,8 +340,9 @@ class XmlDriver extends FileDriver
                     $mapping['targetEntity'] = (string) $oneToOneElement['target-entity'];
                 }
 
-                if (isset($associationIds[$mapping['fieldName']])) {
-                    $mapping['id'] = true;
+                if (array_key_exists($mapping['fieldName'], $associationIds)) {
+                    $mapping['id']         = true;
+                    $mapping['idPosition'] = $associationIds[$mapping['fieldName']];
                 }
 
                 if (isset($oneToOneElement['fetch'])) {
@@ -407,7 +413,7 @@ class XmlDriver extends FileDriver
                 if (isset($oneToManyElement->{'order-by'})) {
                     $orderBy = [];
                     foreach ($oneToManyElement->{'order-by'}->{'order-by-field'} ?? [] as $orderByField) {
-                        $orderBy[(string) $orderByField['name']] = (string) ($orderByField['direction'] ?? 'ASC');
+                        $orderBy[(string) $orderByField['name']] = $this->getDirection($orderByField, $className);
                     }
 
                     $mapping['orderBy'] = $orderBy;
@@ -439,8 +445,9 @@ class XmlDriver extends FileDriver
                     $mapping['targetEntity'] = (string) $manyToOneElement['target-entity'];
                 }
 
-                if (isset($associationIds[$mapping['fieldName']])) {
-                    $mapping['id'] = true;
+                if (array_key_exists($mapping['fieldName'], $associationIds)) {
+                    $mapping['id']         = true;
+                    $mapping['idPosition'] = $associationIds[$mapping['fieldName']];
                 }
 
                 if (isset($manyToOneElement['fetch'])) {
@@ -533,7 +540,9 @@ class XmlDriver extends FileDriver
                 if (isset($manyToManyElement->{'order-by'})) {
                     $orderBy = [];
                     foreach ($manyToManyElement->{'order-by'}->{'order-by-field'} ?? [] as $orderByField) {
-                        $orderBy[(string) $orderByField['name']] = (string) ($orderByField['direction'] ?? 'ASC');
+                        $direction = $this->getDirection($orderByField, $className);
+
+                        $orderBy[(string) $orderByField['name']] = $direction;
                     }
 
                     $mapping['orderBy'] = $orderBy;
@@ -979,5 +988,17 @@ class XmlDriver extends FileDriver
         $flag = (string) $element;
 
         return $flag === 'true' || $flag === '1';
+    }
+
+    private function getDirection(SimpleXMLElement $orderByField, string $className): SortDirection
+    {
+        $direction = (string) ($orderByField['direction'] ?? 'ASC');
+
+        assert(in_array($direction, ['ASC', 'DESC'], true));
+
+        return match (strtoupper($direction)) {
+            'ASC' => SortDirection::Ascending,
+            'DESC' => SortDirection::Descending,
+        };
     }
 }

@@ -15,6 +15,7 @@ use Doctrine\Persistence\Mapping\Driver\MappingDriver;
 use Doctrine\Tests\Mocks\AttributeDriverFactory;
 use Doctrine\Tests\Models\Cache\City;
 use Doctrine\Tests\ORM\Mapping\Fixtures\AttributeEntityWithNestedJoinColumns;
+use Doctrine\Tests\ORM\Mapping\Fixtures\CompositeIdWithPosition;
 use stdClass;
 
 class AttributeDriverTest extends MappingDriverTestCase
@@ -101,6 +102,15 @@ class AttributeDriverTest extends MappingDriverTestCase
             ],
             $metadata->associationMappings['assoc']->joinTable->inverseJoinColumns,
         );
+    }
+
+    public function testCompositeIdPositionOrdering(): void
+    {
+        $factory = $this->createClassMetadataFactory();
+
+        $metadata = $factory->getMetadataFor(CompositeIdWithPosition::class);
+
+        self::assertSame(['first', 'second'], $metadata->identifier);
     }
 }
 

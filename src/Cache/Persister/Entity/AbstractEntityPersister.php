@@ -13,6 +13,7 @@ use Doctrine\ORM\Cache\EntityCacheKey;
 use Doctrine\ORM\Cache\EntityHydrator;
 use Doctrine\ORM\Cache\Logging\CacheLogger;
 use Doctrine\ORM\Cache\Persister\CachedPersister;
+use Doctrine\ORM\Cache\Persister\CompatOrderings;
 use Doctrine\ORM\Cache\QueryCacheKey;
 use Doctrine\ORM\Cache\Region;
 use Doctrine\ORM\Cache\TimestampCacheKey;
@@ -27,6 +28,7 @@ use Doctrine\ORM\Query\FilterCollection;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\ORM\UnitOfWork;
 use Override;
+use SortDirection;
 
 use function array_merge;
 use function serialize;
@@ -34,6 +36,8 @@ use function sha1;
 
 abstract class AbstractEntityPersister implements CachedEntityPersister
 {
+    use CompatOrderings;
+
     protected UnitOfWork $uow;
     protected ClassMetadataFactory $metadataFactory;
 
@@ -215,12 +219,13 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
     /**
      * Generates a string of currently query
      *
-     * @param string[]|Criteria         $criteria
-     * @param array<string, Order>|null $orderBy
+     * @param string[]|Criteria                                      $criteria
+     * @param array<string, SortDirection>|array<string, Order>|null $orderBy
      */
     protected function getHash(
         string $query,
         array|Criteria $criteria,
+        // @phpstan-ignore parameter.deprecatedEnum
         array|null $orderBy = null,
         int|null $limit = null,
         int|null $offset = null,
@@ -452,7 +457,7 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
     #[Override]
     public function loadCriteria(Criteria $criteria): array
     {
-        $orderBy     = $criteria->orderings();
+        $orderBy     = $this->getOrderings($criteria);
         $limit       = $criteria->getMaxResults();
         $offset      = $criteria->getFirstResult();
         $query       = $this->persister->getSelectSQL($criteria);

@@ -31,6 +31,7 @@ use Doctrine\Tests\Mocks\EntityManagerMock;
 use Doctrine\Tests\Mocks\MetadataDriverMock;
 use Doctrine\Tests\Models\CMS\CmsArticle;
 use Doctrine\Tests\Models\CMS\CmsUser;
+use Doctrine\Tests\Models\CompositeIdWithPosition\CompositeIdEntity;
 use Doctrine\Tests\Models\DDC4006\DDC4006User;
 use Doctrine\Tests\Models\JoinedInheritanceType\AnotherChildClass;
 use Doctrine\Tests\Models\JoinedInheritanceType\ChildClass;
@@ -413,6 +414,19 @@ class ClassMetadataFactoryTest extends OrmTestCase
         $userMetadata = $cmf->getMetadataFor(DDC4006User::class);
 
         self::assertTrue($userMetadata->isIdGeneratorIdentity());
+    }
+
+    public function testIdentifierPositionsAreInheritedFromMappedSuperclass(): void
+    {
+        $cmf    = new ClassMetadataFactory();
+        $driver = $this->createAttributeDriver([__DIR__ . '/../../Models/CompositeIdWithPosition/']);
+        $em     = $this->createEntityManager($driver);
+        $cmf->setEntityManager($em);
+
+        $metadata = $cmf->getMetadataFor(CompositeIdEntity::class);
+
+        self::assertSame(['first', 'second', 'third'], $metadata->identifier);
+        self::assertSame(['first' => 1, 'second' => 2, 'third' => 3], $metadata->identifierPositions);
     }
 
     public function testInvalidSubClassCase(): void
