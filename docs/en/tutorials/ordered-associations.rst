@@ -17,13 +17,19 @@ can specify the ``#[OrderBy]`` in the following way:
     .. code-block:: attribute
 
         <?php
+
+        use SortDirection;
+
         #[Entity]
         class User
         {
             // ...
 
             #[ManyToMany(targetEntity: Group::class)]
-            #[OrderBy(['name' => 'ASC', 'createdAt' => 'DESC'])]
+            #[OrderBy([
+                'name' => SortDirection::Ascending,
+                'createdAt' => SortDirection::Descending,
+            ])]
             private Collection $groups;
         }
 

@@ -13,6 +13,7 @@ use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\Query\ResultSetMapping;
+use SortDirection;
 
 /**
  * Entity persister interface
@@ -223,8 +224,8 @@ interface EntityPersister
     /**
      * Loads a list of entities by a list of field criteria.
      *
-     * @phpstan-param array<string, string>|null $orderBy
-     * @phpstan-param array<string, mixed>       $criteria
+     * @phpstan-param array<string, SortDirection|string>|null $orderBy
+     * @phpstan-param array<string, mixed>                     $criteria
      *
      * @return mixed[]
      */

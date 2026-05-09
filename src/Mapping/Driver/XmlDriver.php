@@ -14,6 +14,7 @@ use DOMDocument;
 use InvalidArgumentException;
 use LogicException;
 use SimpleXMLElement;
+use SortDirection;
 
 use function array_key_exists;
 use function assert;
@@ -412,7 +413,7 @@ class XmlDriver extends FileDriver
                 if (isset($oneToManyElement->{'order-by'})) {
                     $orderBy = [];
                     foreach ($oneToManyElement->{'order-by'}->{'order-by-field'} ?? [] as $orderByField) {
-                        $orderBy[(string) $orderByField['name']] = (string) ($orderByField['direction'] ?? 'ASC');
+                        $orderBy[(string) $orderByField['name']] = $this->getDirection($orderByField, $className);
                     }
 
                     $mapping['orderBy'] = $orderBy;
@@ -539,7 +540,9 @@ class XmlDriver extends FileDriver
                 if (isset($manyToManyElement->{'order-by'})) {
                     $orderBy = [];
                     foreach ($manyToManyElement->{'order-by'}->{'order-by-field'} ?? [] as $orderByField) {
-                        $orderBy[(string) $orderByField['name']] = (string) ($orderByField['direction'] ?? 'ASC');
+                        $direction = $this->getDirection($orderByField, $className);
+
+                        $orderBy[(string) $orderByField['name']] = $direction;
                     }
 
                     $mapping['orderBy'] = $orderBy;
@@ -980,5 +983,17 @@ class XmlDriver extends FileDriver
         $flag = (string) $element;
 
         return $flag === 'true' || $flag === '1';
+    }
+
+    private function getDirection(SimpleXMLElement $orderByField, string $className): SortDirection
+    {
+        $direction = (string) ($orderByField['direction'] ?? 'ASC');
+
+        assert(in_array($direction, ['ASC', 'DESC'], true));
+
+        return match (strtoupper($direction)) {
+            'ASC' => SortDirection::Ascending,
+            'DESC' => SortDirection::Descending,
+        };
     }
 }

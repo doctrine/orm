@@ -19,6 +19,7 @@ use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\OrderBy;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use SortDirection;
 
 /**
  * Functional tests for the Single Table Inheritance mapping strategy.
@@ -100,7 +101,7 @@ abstract class OJTICPet
 
     /** @phpstan-var Collection<int, OJTICPet> */
     #[OneToMany(targetEntity: 'OJTICPet', mappedBy: 'mother')]
-    #[OrderBy(['name' => 'ASC'])]
+    #[OrderBy(['name' => SortDirection::Ascending])]
     public $children;
 
     /** @phpstan-var Collection<int, OJTICPet> */
@@ -108,7 +109,7 @@ abstract class OJTICPet
     #[JoinColumn(name: 'pet_id', referencedColumnName: 'id')]
     #[InverseJoinColumn(name: 'friend_id', referencedColumnName: 'id')]
     #[ManyToMany(targetEntity: 'OJTICPet')]
-    #[OrderBy(['name' => 'ASC'])]
+    #[OrderBy(['name' => SortDirection::Ascending])]
     public $friends;
 
     public function getName(): string

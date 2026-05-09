@@ -39,6 +39,7 @@ use Doctrine\ORM\Utility\IdentifierFlattener;
 use Doctrine\ORM\Utility\LockSqlHelper;
 use Doctrine\ORM\Utility\PersisterHelper;
 use LengthException;
+use SortDirection;
 
 use function array_combine;
 use function array_diff_key;
@@ -1190,7 +1191,7 @@ class BasicEntityPersister implements EntityPersister
     /**
      * Gets the ORDER BY SQL snippet for ordered collections.
      *
-     * @phpstan-param array<string, string> $orderBy
+     * @phpstan-param array<string, SortDirection|string> $orderBy
      *
      * @throws InvalidOrientation
      * @throws InvalidFindByCall
@@ -1201,6 +1202,10 @@ class BasicEntityPersister implements EntityPersister
         $orderByList = [];
 
         foreach ($orderBy as $fieldName => $orientation) {
+            if ($orientation instanceof SortDirection) {
+                $orientation = ($orientation === SortDirection::Ascending ? 'ASC' : 'DESC');
+            }
+
             $orientation = strtoupper(trim($orientation));
 
             if ($orientation !== 'ASC' && $orientation !== 'DESC') {

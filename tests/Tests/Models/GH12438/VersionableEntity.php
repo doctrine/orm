@@ -13,6 +13,7 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\OrderBy;
 use Doctrine\ORM\Mapping\Table;
+use SortDirection;
 
 #[Entity]
 #[Table(name: 'versionable')]
@@ -25,7 +26,7 @@ class VersionableEntity
 
     /** @var Collection|null */
     #[OneToMany(targetEntity: VersionEntity::class, mappedBy: 'versionable')]
-    #[OrderBy(['versionDate' => 'DESC'])]
+    #[OrderBy(['versionDate' => SortDirection::Descending])]
     private $versions = null;
 
     public function __construct(int $id)
