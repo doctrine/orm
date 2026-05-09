@@ -353,6 +353,19 @@ class XmlMappingDriverTest extends MappingDriverTestCase
 
         self::assertCount(1, $class->fieldMappings);
     }
+
+    public function testOrderByWithInvalidDirection(): void
+    {
+        $driver = $this->loadDriver();
+
+        $this->expectException(MappingException::class);
+
+        // XML driver validates against XSD first, so error message is different but still contains "INVALID"
+        $this->expectExceptionMessageMatches('/INVALID/');
+
+        // This should trigger the exception during metadata creation
+        $this->createClassMetadata(UserWithInvalidOrderBy::class);
+    }
 }
 
 class CTI
@@ -381,4 +394,15 @@ class XMLSLCFoo
 {
     /** @var int */
     public $id;
+}
+
+/**
+ * Entity to test invalid order direction handling
+ */
+class UserWithInvalidOrderBy
+{
+    public int|null $id = null;
+
+    /** @var Collection<int, Phonenumber> */
+    public $items;
 }

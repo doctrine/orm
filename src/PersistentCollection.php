@@ -9,7 +9,6 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\Common\Collections\Selectable;
-use Doctrine\ORM\Cache\Persister\CompatOrderings;
 use Doctrine\ORM\Mapping\AssociationMapping;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ToManyAssociationMapping;
@@ -42,8 +41,6 @@ use function spl_object_id;
  */
 final class PersistentCollection extends AbstractLazyCollection implements Selectable
 {
-    use CompatOrderings;
-
     /**
      * A snapshot of the collection at the moment it was fetched from the database.
      * This is used to create a diff of the collection at commit time.
@@ -612,7 +609,7 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
         $criteria = clone $criteria;
         $criteria->where($expression);
 
-        $this->orderCriteriaByAssociation($criteria, $association);
+        $criteria->orderBy($criteria->getOrderings() ?: $association->orderBy());
 
         $persister = $this->getUnitOfWork()->getEntityPersister($association->targetEntity);
 

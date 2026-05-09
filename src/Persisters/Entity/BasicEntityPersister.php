@@ -15,7 +15,6 @@ use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Result;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\DBAL\Types\Types;
-use Doctrine\ORM\Cache\Persister\CompatOrderings;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\AssociationMapping;
 use Doctrine\ORM\Mapping\ClassMetadata;
@@ -98,7 +97,6 @@ use function trim;
  */
 class BasicEntityPersister implements EntityPersister
 {
-    use CompatOrderings;
     use LockSqlHelper;
 
     /** @var array<string,string> */
@@ -891,7 +889,10 @@ class BasicEntityPersister implements EntityPersister
     #[Override]
     public function loadCriteria(Criteria $criteria): array
     {
-        $orderBy = $this->getOrderingsAsStringMap($criteria);
+        $orderBy = array_map(
+            static fn (SortDirection $order): string => $order === SortDirection::Ascending ? 'ASC' : 'DESC',
+            $criteria->getOrderings(),
+        );
 
         $limit  = $criteria->getMaxResults();
         $offset = $criteria->getFirstResult();
