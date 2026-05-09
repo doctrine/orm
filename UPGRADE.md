@@ -165,7 +165,6 @@ to run with ORM 3.
 At this point, we recommend upgrading to PHP 8.4 first and then directly from
 ORM 2.19 to 3.5 and up so that you can skip the lazy ghost proxy generation
 and directly start using native lazy objects.
->>>>>>> origin/3.6.x
 
 # Upgrade to 3.7
 
