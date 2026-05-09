@@ -15,8 +15,10 @@ use Override;
 class OrderByClause extends Node
 {
     /** @param OrderByItem[] $orderByItems */
-    public function __construct(public array $orderByItems)
-    {
+    public function __construct(
+        public array $orderByItems,
+        public bool $includeCollectionOrderByItems = true,
+    ) {
     }
 
     #[Override]

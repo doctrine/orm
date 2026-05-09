@@ -2,18 +2,18 @@
 
 declare(strict_types=1);
 
-namespace Doctrine\Tests\ORM\Tools\CursorPagination;
+namespace Doctrine\Tests\ORM\Tools\Pagination;
 
 use Doctrine\ORM\Query;
-use Doctrine\ORM\Tools\CursorPagination\CursorWalker;
+use Doctrine\ORM\Tools\Pagination\CursorWalker;
 use LogicException;
 
-class CursorWalkerTest extends CursorPaginationTestCase
+class CursorWalkerTest extends PaginationTestCase
 {
     public function testThrowsExceptionWithoutOrderBy(): void
     {
         $query = $this->entityManager->createQuery(
-            'SELECT p FROM Doctrine\Tests\ORM\Tools\CursorPagination\BlogPost p',
+            'SELECT p FROM Doctrine\Tests\ORM\Tools\Pagination\BlogPost p',
         );
         $query->setHint(Query::HINT_CUSTOM_TREE_WALKERS, [CursorWalker::class]);
 
@@ -26,7 +26,7 @@ class CursorWalkerTest extends CursorPaginationTestCase
     public function testBasicQueryWithOrderBy(): void
     {
         $query = $this->entityManager->createQuery(
-            'SELECT p FROM Doctrine\Tests\ORM\Tools\CursorPagination\BlogPost p ORDER BY p.id ASC',
+            'SELECT p FROM Doctrine\Tests\ORM\Tools\Pagination\BlogPost p ORDER BY p.id ASC',
         );
         $query->setHint(Query::HINT_CUSTOM_TREE_WALKERS, [CursorWalker::class]);
         $query->setHint(CursorWalker::HINT_CURSOR_REVERSE, false);
@@ -41,7 +41,7 @@ class CursorWalkerTest extends CursorPaginationTestCase
     public function testQueryWithReversedOrderBy(): void
     {
         $query = $this->entityManager->createQuery(
-            'SELECT p FROM Doctrine\Tests\ORM\Tools\CursorPagination\BlogPost p ORDER BY p.id ASC',
+            'SELECT p FROM Doctrine\Tests\ORM\Tools\Pagination\BlogPost p ORDER BY p.id ASC',
         );
         $query->setHint(Query::HINT_CUSTOM_TREE_WALKERS, [CursorWalker::class]);
         $query->setHint(CursorWalker::HINT_CURSOR_REVERSE, true);
@@ -56,7 +56,7 @@ class CursorWalkerTest extends CursorPaginationTestCase
     public function testQueryWithMultipleOrderByColumnsReversed(): void
     {
         $query = $this->entityManager->createQuery(
-            'SELECT p FROM Doctrine\Tests\ORM\Tools\CursorPagination\MyBlogPost p ORDER BY p.title ASC, p.id DESC',
+            'SELECT p FROM Doctrine\Tests\ORM\Tools\Pagination\MyBlogPost p ORDER BY p.title ASC, p.id DESC',
         );
         $query->setHint(Query::HINT_CUSTOM_TREE_WALKERS, [CursorWalker::class]);
         $query->setHint(CursorWalker::HINT_CURSOR_REVERSE, true);
@@ -71,7 +71,7 @@ class CursorWalkerTest extends CursorPaginationTestCase
     public function testCursorConditionSingleColumnAsc(): void
     {
         $query = $this->entityManager->createQuery(
-            'SELECT p FROM Doctrine\Tests\ORM\Tools\CursorPagination\BlogPost p ORDER BY p.id ASC',
+            'SELECT p FROM Doctrine\Tests\ORM\Tools\Pagination\BlogPost p ORDER BY p.id ASC',
         );
         $query->setHint(Query::HINT_CUSTOM_TREE_WALKERS, [CursorWalker::class]);
         $query->setHint(CursorWalker::HINT_CURSOR_REVERSE, false);
@@ -86,7 +86,7 @@ class CursorWalkerTest extends CursorPaginationTestCase
     public function testCursorConditionSingleColumnDesc(): void
     {
         $query = $this->entityManager->createQuery(
-            'SELECT p FROM Doctrine\Tests\ORM\Tools\CursorPagination\BlogPost p ORDER BY p.id DESC',
+            'SELECT p FROM Doctrine\Tests\ORM\Tools\Pagination\BlogPost p ORDER BY p.id DESC',
         );
         $query->setHint(Query::HINT_CUSTOM_TREE_WALKERS, [CursorWalker::class]);
         $query->setHint(CursorWalker::HINT_CURSOR_REVERSE, false);
@@ -101,7 +101,7 @@ class CursorWalkerTest extends CursorPaginationTestCase
     public function testCursorConditionWithExistingWhere(): void
     {
         $query = $this->entityManager->createQuery(
-            'SELECT p FROM Doctrine\Tests\ORM\Tools\CursorPagination\BlogPost p WHERE p.id > 5 ORDER BY p.id ASC',
+            'SELECT p FROM Doctrine\Tests\ORM\Tools\Pagination\BlogPost p WHERE p.id > 5 ORDER BY p.id ASC',
         );
         $query->setHint(Query::HINT_CUSTOM_TREE_WALKERS, [CursorWalker::class]);
         $query->setHint(CursorWalker::HINT_CURSOR_REVERSE, false);
@@ -116,7 +116,7 @@ class CursorWalkerTest extends CursorPaginationTestCase
     public function testQueryWithJoinAndOrderByJoinedEntity(): void
     {
         $query = $this->entityManager->createQuery(
-            'SELECT p, a FROM Doctrine\Tests\ORM\Tools\CursorPagination\BlogPost p JOIN p.author a ORDER BY a.name ASC, p.id ASC',
+            'SELECT p, a FROM Doctrine\Tests\ORM\Tools\Pagination\BlogPost p JOIN p.author a ORDER BY a.name ASC, p.id ASC',
         );
         $query->setHint(Query::HINT_CUSTOM_TREE_WALKERS, [CursorWalker::class]);
         $query->setHint(CursorWalker::HINT_CURSOR_REVERSE, false);
@@ -131,7 +131,7 @@ class CursorWalkerTest extends CursorPaginationTestCase
     public function testCursorConditionMultipleColumnsDesc(): void
     {
         $query = $this->entityManager->createQuery(
-            'SELECT p FROM Doctrine\Tests\ORM\Tools\CursorPagination\MyBlogPost p ORDER BY p.title DESC, p.id DESC',
+            'SELECT p FROM Doctrine\Tests\ORM\Tools\Pagination\MyBlogPost p ORDER BY p.title DESC, p.id DESC',
         );
         $query->setHint(Query::HINT_CUSTOM_TREE_WALKERS, [CursorWalker::class]);
         $query->setHint(CursorWalker::HINT_CURSOR_REVERSE, false);
@@ -146,7 +146,7 @@ class CursorWalkerTest extends CursorPaginationTestCase
     public function testCursorConditionMultipleColumnsAsc(): void
     {
         $query = $this->entityManager->createQuery(
-            'SELECT a FROM Doctrine\Tests\ORM\Tools\CursorPagination\Author a ORDER BY a.name ASC, a.id ASC',
+            'SELECT a FROM Doctrine\Tests\ORM\Tools\Pagination\Author a ORDER BY a.name ASC, a.id ASC',
         );
         $query->setHint(Query::HINT_CUSTOM_TREE_WALKERS, [CursorWalker::class]);
         $query->setHint(CursorWalker::HINT_CURSOR_REVERSE, false);
@@ -161,7 +161,7 @@ class CursorWalkerTest extends CursorPaginationTestCase
     public function testCursorConditionThreeColumnsDesc(): void
     {
         $query = $this->entityManager->createQuery(
-            'SELECT p FROM Doctrine\Tests\ORM\Tools\CursorPagination\Person p ORDER BY p.biography DESC, p.name DESC, p.id DESC',
+            'SELECT p FROM Doctrine\Tests\ORM\Tools\Pagination\Person p ORDER BY p.biography DESC, p.name DESC, p.id DESC',
         );
         $query->setHint(Query::HINT_CUSTOM_TREE_WALKERS, [CursorWalker::class]);
         $query->setHint(CursorWalker::HINT_CURSOR_REVERSE, false);
@@ -175,5 +175,35 @@ class CursorWalkerTest extends CursorPaginationTestCase
             'SELECT p0_.id AS id_0, p0_.name AS name_1, p0_.biography AS biography_2 FROM Person p0_ WHERE (p0_.biography < ? OR (p0_.biography = ? AND (p0_.name < ? OR (p0_.name = ? AND (p0_.id < ?))))) ORDER BY p0_.biography DESC, p0_.name DESC, p0_.id DESC',
             $query->getSQL(),
         );
+    }
+
+    public function testNoExceptionWithToManyJoinWhenQueryProducesDuplicatesIsTrue(): void
+    {
+        $query = $this->entityManager->createQuery(
+            'SELECT u, g FROM Doctrine\Tests\ORM\Tools\Pagination\User u JOIN u.groups g ORDER BY u.id ASC',
+        );
+        $query->setHint(Query::HINT_CUSTOM_TREE_WALKERS, [CursorWalker::class]);
+        $query->setHint(CursorWalker::HINT_CURSOR_REVERSE, false);
+        $query->setHint(CursorWalker::HINT_CURSOR_PARAMETERS, []);
+        $query->setHint(CursorWalker::HINT_QUERY_PRODUCES_DUPLICATES, true);
+
+        $sql = $query->getSQL();
+        self::assertIsString($sql);
+        self::assertStringContainsString('JOIN', $sql);
+    }
+
+    public function testNoExceptionWithToOneJoinWhenQueryProducesDuplicatesIsFalse(): void
+    {
+        $query = $this->entityManager->createQuery(
+            'SELECT p, a FROM Doctrine\Tests\ORM\Tools\Pagination\BlogPost p JOIN p.author a ORDER BY a.name ASC, p.id ASC',
+        );
+        $query->setHint(Query::HINT_CUSTOM_TREE_WALKERS, [CursorWalker::class]);
+        $query->setHint(CursorWalker::HINT_CURSOR_REVERSE, false);
+        $query->setHint(CursorWalker::HINT_CURSOR_PARAMETERS, []);
+        $query->setHint(CursorWalker::HINT_QUERY_PRODUCES_DUPLICATES, false);
+
+        $sql = $query->getSQL();
+        self::assertIsString($sql);
+        self::assertStringContainsString('JOIN', $sql);
     }
 }

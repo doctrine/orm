@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Query;
 
+use Doctrine\Deprecations\PHPUnit\VerifyDeprecations;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Query\Expr;
 use Doctrine\ORM\Query\Expr\Andx;
@@ -23,6 +24,8 @@ use Generator;
 use InvalidArgumentException;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\IgnoreDeprecations;
+use SortDirection;
 
 /**
  * Test case for the DQL Expr class used for generating DQL snippets through
@@ -32,6 +35,8 @@ use PHPUnit\Framework\Attributes\Group;
  */
 class ExprTest extends OrmTestCase
 {
+    use VerifyDeprecations;
+
     private EntityManagerInterface $entityManager;
 
     private Expr $expr;
@@ -450,7 +455,7 @@ class ExprTest extends OrmTestCase
         self::assertEquals('+', $math->getOperator());
 
         // OrderBy
-        $order = new OrderBy('foo', 'DESC');
+        $order = new OrderBy('foo', SortDirection::Descending);
         self::assertEquals(['foo DESC'], $order->getParts());
 
         // Andx
@@ -476,5 +481,22 @@ class ExprTest extends OrmTestCase
         $andExpr->add(null);
 
         self::assertEquals(0, $andExpr->count());
+    }
+
+    #[IgnoreDeprecations]
+    public function testLegacyOrderByConstruct(): void
+    {
+        $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/issues/11313');
+        $orderExpr = new OrderBy('u.username', 'DESC');
+        self::assertEquals('u.username DESC', (string) $orderExpr);
+    }
+
+    #[IgnoreDeprecations]
+    public function testLegacyOrderByAdd(): void
+    {
+        $orderExpr = new OrderBy('u.username', SortDirection::Descending);
+        $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/issues/11313');
+        $orderExpr->add('u.lastname', 'DESC');
+        self::assertEquals('u.username DESC, u.lastname DESC', (string) $orderExpr);
     }
 }

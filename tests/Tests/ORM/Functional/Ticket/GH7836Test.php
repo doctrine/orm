@@ -17,6 +17,7 @@ use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\OrderBy;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use PHPUnit\Framework\Attributes\Group;
+use SortDirection;
 
 use function assert;
 
@@ -101,7 +102,7 @@ class GH7836ParentEntity
 
     /** @var Collection<int, GH7836ChildEntity>&Selectable<int, GH7836ChildEntity> */
     #[OneToMany(targetEntity: GH7836ChildEntity::class, mappedBy: 'parent', fetch: 'EXTRA_LAZY', cascade: ['persist'])]
-    #[OrderBy(['position' => 'ASC', 'name' => 'ASC'])]
+    #[OrderBy(['position' => SortDirection::Ascending, 'name' => SortDirection::Ascending])]
     private $children;
 
     public function addChild(int $position, string $name): void

@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Doctrine\ORM\Tools\CursorPagination;
+namespace Doctrine\ORM\Tools\Pagination;
 
-use Doctrine\ORM\Tools\CursorPagination\Exception\InvalidCursor;
+use Doctrine\ORM\Tools\Pagination\Exception\InvalidCursor;
 use JsonException;
 
 use function base64_decode;

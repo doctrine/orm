@@ -9,6 +9,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use SortDirection;
 
 class GH11163Test extends OrmFunctionalTestCase
 {
@@ -79,7 +80,7 @@ class GH11163Bucket
         mappedBy: 'bucket',
         fetch: 'EAGER',
     )]
-    #[ORM\OrderBy(['position' => 'ASC'])]
+    #[ORM\OrderBy(['position' => SortDirection::Ascending])]
     public Collection $items;
 
     public function __construct(int $id)

@@ -599,10 +599,13 @@ Example with partial indexes:
 ~~~~~
 
 The annotated instance variable will be marked as entity
-identifier, the primary key in the database. This attribute is a
-marker only and has no required or optional attributes. For
-entities that have multiple identifier columns each column has to
-be marked with ``#[Id]``.
+identifier, the primary key in the database. For entities that have
+multiple identifier columns each column has to be marked with ``#[Id]``.
+
+Optional parameters:
+
+-  **position**: Controls the order of fields in a composite identifier.
+   Lower values come first. If not specified, the default value is ``0``.
 
 Example:
 
@@ -955,13 +958,20 @@ Example:
 .. code-block:: php
 
     <?php
-    #[ManyToMany(targetEntity: "Group")]
-    #[OrderBy(["name" => "ASC"])]
+
+    use SortDirection;
+
+    #[ManyToMany(targetEntity: Group::class)]
+    #[OrderBy([
+        'name' => SortDirection::Ascending,
+        'createdAt' => SortDirection::Descending,
+    ])]
     private $groups;
 
-The key in ``OrderBy`` is only allowed to consist of
-unqualified, unquoted field names and of an optional ``ASC``/``DESC``
-positional statement. Multiple Fields are separated by a comma (,).
+The keys of the array are only allowed to consist of unqualified,
+unquoted field names and the values can be either a valid `SortDirection` value,
+or a string with the value ``ASC`` or  ``DESC``.
+
 The referenced field names have to exist on the ``targetEntity``
 class of the ``#[ManyToMany]`` or ``#[OneToMany]`` attribute.
 

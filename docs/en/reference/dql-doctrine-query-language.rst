@@ -1610,16 +1610,16 @@ Identifiers
     IdentificationVariable ::= identifier
 
     /* Alias Identification declaration (the "u" of "FROM User u") */
-    AliasIdentificationVariable :: = identifier
+    AliasIdentificationVariable ::= identifier
 
     /* identifier that must be a class name (the "User" of "FROM User u"), possibly as a fully qualified class name */
     AbstractSchemaName ::= fully_qualified_name | identifier
 
     /* Alias ResultVariable declaration (the "total" of "COUNT(*) AS total") */
-    AliasResultVariable = identifier
+    AliasResultVariable ::= identifier
 
     /* ResultVariable identifier usage of mapped field aliases (the "total" of "COUNT(*) AS total") */
-    ResultVariable = identifier
+    ResultVariable ::= identifier
 
     /* identifier that must be a field (the "name" of "u.name") */
     /* This is responsible to know if the field exists in Object, no matter if it's a relation or a simple field */
@@ -1780,7 +1780,7 @@ Scalar and Type Expressions
 
 .. code-block:: php
 
-    ScalarExpression       ::= SimpleArithmeticExpression | StringPrimary | DateTimePrimary | StateFieldPathExpression | BooleanPrimary | CaseExpression | InstanceOfExpression
+    ScalarExpression       ::= SimpleArithmeticExpression | StringPrimary | DatetimePrimary | StateFieldPathExpression | BooleanPrimary | CaseExpression | InstanceOfExpression
     StringExpression       ::= StringPrimary | ResultVariable | "(" Subselect ")"
     StringPrimary          ::= StateFieldPathExpression | string | InputParameter | FunctionsReturningStrings | AggregateExpression | CaseExpression
     BooleanExpression      ::= BooleanPrimary | "(" Subselect ")"
@@ -1806,14 +1806,14 @@ Case Expressions
 
 .. code-block:: php
 
-    CaseExpression        ::= GeneralCaseExpression | SimpleCaseExpression | CoalesceExpression | NullifExpression
+    CaseExpression        ::= GeneralCaseExpression | SimpleCaseExpression | CoalesceExpression | NullIfExpression
     GeneralCaseExpression ::= "CASE" WhenClause {WhenClause}* "ELSE" ScalarExpression "END"
     WhenClause            ::= "WHEN" ConditionalExpression "THEN" ScalarExpression
     SimpleCaseExpression  ::= "CASE" CaseOperand SimpleWhenClause {SimpleWhenClause}* "ELSE" ScalarExpression "END"
-    CaseOperand           ::= StateFieldPathExpression | TypeDiscriminator
+    CaseOperand           ::= StateFieldPathExpression
     SimpleWhenClause      ::= "WHEN" ScalarExpression "THEN" ScalarExpression
     CoalesceExpression    ::= "COALESCE" "(" ScalarExpression {"," ScalarExpression}* ")"
-    NullifExpression      ::= "NULLIF" "(" ScalarExpression "," ScalarExpression ")"
+    NullIfExpression      ::= "NULLIF" "(" ScalarExpression "," ScalarExpression ")"
 
 Other Expressions
 ~~~~~~~~~~~~~~~~~
@@ -1838,7 +1838,7 @@ Functions
 
 .. code-block:: php
 
-    FunctionDeclaration ::= FunctionsReturningStrings | FunctionsReturningNumerics | FunctionsReturningDateTime
+    FunctionDeclaration ::= FunctionsReturningStrings | FunctionsReturningNumerics | FunctionsReturningDatetime
 
     FunctionsReturningNumerics ::=
             "LENGTH" "(" StringPrimary ")" |
@@ -1851,7 +1851,7 @@ Functions
             "BIT_AND" "(" ArithmeticPrimary "," ArithmeticPrimary ")" |
             "BIT_OR" "(" ArithmeticPrimary "," ArithmeticPrimary ")"
 
-    FunctionsReturningDateTime ::=
+    FunctionsReturningDatetime ::=
             "CURRENT_DATE" |
             "CURRENT_TIME" |
             "CURRENT_TIMESTAMP" |

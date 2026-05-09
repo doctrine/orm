@@ -1063,12 +1063,6 @@ parameters:
 			path: src/Mapping/ClassMetadata.php
 
 		-
-			message: '#^Template type T is declared as covariant, but occurs in invariant position in return type of method Doctrine\\ORM\\Mapping\\ClassMetadata\:\:getReflectionClass\(\)\.$#'
-			identifier: generics.variance
-			count: 1
-			path: src/Mapping/ClassMetadata.php
-
-		-
 			message: '#^Unable to resolve the template type C in call to method Doctrine\\ORM\\Mapping\\ClassMetadata\<T of object\>\:\:fullyQualifiedClassName\(\)$#'
 			identifier: argument.templateType
 			count: 1
@@ -2701,18 +2695,6 @@ parameters:
 			path: src/Tools/Pagination/Paginator.php
 
 		-
-			message: '#^PHPDoc tag @var for variable \$parameters contains generic interface Doctrine\\Common\\Collections\\Collection but does not specify its types\: TKey, T$#'
-			identifier: missingType.generics
-			count: 1
-			path: src/Tools/Pagination/Paginator.php
-
-		-
-			message: '#^Parameter \#1 \$parameters of method Doctrine\\ORM\\AbstractQuery\:\:setParameters\(\) expects array\<mixed\>\|Doctrine\\Common\\Collections\\ArrayCollection\<int, Doctrine\\ORM\\Query\\Parameter\>, Doctrine\\Common\\Collections\\Collection&iterable\<Doctrine\\ORM\\Query\\Parameter\> given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Tools/Pagination/Paginator.php
-
-		-
 			message: '#^Method Doctrine\\ORM\\Tools\\ResolveTargetEntityListener\:\:remapAssociation\(\) has parameter \$classMetadata with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
 			identifier: missingType.generics
 			count: 1
@@ -3114,6 +3096,12 @@ parameters:
 		-
 			message: '#^Method Doctrine\\ORM\\UnitOfWork\:\:scheduleCollectionForBatchLoading\(\) has parameter \$sourceClass with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
 			identifier: missingType.generics
+			count: 1
+			path: src/UnitOfWork.php
+
+		-
+			message: '#^Parameter \#1 \$object of method ReflectionClass\<covariant object\>\:\:initializeLazyObject\(\) expects never, object given\.$#'
+			identifier: argument.type
 			count: 1
 			path: src/UnitOfWork.php
 

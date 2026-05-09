@@ -34,7 +34,7 @@
         "php": "^8.4",
         "ext-ctype": "*",
         "composer-runtime-api": "^2",
-        "doctrine/collections": "^3",
+        "doctrine/collections": "^3.1",
         "doctrine/dbal": "^4.2.1",
         "doctrine/deprecations": "^1.1",
         "doctrine/event-manager": "^2.1.1",
@@ -43,7 +43,8 @@
         "doctrine/lexer": "^3",
         "doctrine/persistence": "^4",
         "psr/cache": "^1 || ^2 || ^3",
-        "symfony/console": "^5.4 || ^6.0 || ^7.0 || ^8.0"
+        "symfony/console": "^5.4 || ^6.0 || ^7.0 || ^8.0",
+        "symfony/polyfill-php86": "^1.37"
     },
     "require-dev": {
         "doctrine/coding-standard": "^14.0",

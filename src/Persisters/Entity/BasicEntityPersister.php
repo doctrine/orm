@@ -7,7 +7,6 @@ namespace Doctrine\ORM\Persisters\Entity;
 use BackedEnum;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\Common\Collections\Expr\Comparison;
-use Doctrine\Common\Collections\Order;
 use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\LockMode;
@@ -16,6 +15,7 @@ use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Result;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\DBAL\Types\Types;
+use Doctrine\ORM\Cache\Persister\CompatOrderings;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\AssociationMapping;
 use Doctrine\ORM\Mapping\ClassMetadata;
@@ -40,6 +40,7 @@ use Doctrine\ORM\Utility\LockSqlHelper;
 use Doctrine\ORM\Utility\PersisterHelper;
 use LengthException;
 use Override;
+use SortDirection;
 
 use function array_combine;
 use function array_diff_key;
@@ -97,6 +98,7 @@ use function trim;
  */
 class BasicEntityPersister implements EntityPersister
 {
+    use CompatOrderings;
     use LockSqlHelper;
 
     /** @var array<string,string> */
@@ -889,13 +891,11 @@ class BasicEntityPersister implements EntityPersister
     #[Override]
     public function loadCriteria(Criteria $criteria): array
     {
-        $orderBy = array_map(
-            static fn (Order $order): string => $order->value,
-            $criteria->orderings(),
-        );
-        $limit   = $criteria->getMaxResults();
-        $offset  = $criteria->getFirstResult();
-        $query   = $this->getSelectSQL($criteria, null, null, $limit, $offset, $orderBy);
+        $orderBy = $this->getOrderingsAsStringMap($criteria);
+
+        $limit  = $criteria->getMaxResults();
+        $offset = $criteria->getFirstResult();
+        $query  = $this->getSelectSQL($criteria, null, null, $limit, $offset, $orderBy);
 
         [$params, $types] = $this->expandCriteriaParameters($criteria);
 
@@ -1211,7 +1211,7 @@ class BasicEntityPersister implements EntityPersister
     /**
      * Gets the ORDER BY SQL snippet for ordered collections.
      *
-     * @phpstan-param array<string, string> $orderBy
+     * @phpstan-param array<string, SortDirection|string> $orderBy
      *
      * @throws InvalidOrientation
      * @throws InvalidFindByCall
@@ -1222,6 +1222,10 @@ class BasicEntityPersister implements EntityPersister
         $orderByList = [];
 
         foreach ($orderBy as $fieldName => $orientation) {
+            if ($orientation instanceof SortDirection) {
+                $orientation = ($orientation === SortDirection::Ascending ? 'ASC' : 'DESC');
+            }
+
             $orientation = strtoupper(trim($orientation));
 
             if ($orientation !== 'ASC' && $orientation !== 'DESC') {

@@ -93,13 +93,74 @@ And for querying you can use arrays to both DQL and EntityRepositories:
                ->setParameter(2, 2010)
                ->getSingleResult();
 
-You can also use this entity in associations. Doctrine will then generate two foreign keys one for ``name``
-and to ``year`` to the related entities.
-
 .. note::
 
     This example shows how you can nicely solve the requirement for existing
     values before ``EntityManager#persist()``: By adding them as mandatory values for the constructor.
+
+You can also use this entity in associations. Doctrine will then generate a composite foreign key
+using the ``name`` and ``year`` columns on the related entities.
+
+To define such an association, you need to use multiple join column mappings, one for each
+column of the composite primary key:
+
+.. configuration-block::
+
+    .. code-block:: attribute
+
+        <?php
+        namespace VehicleCatalogue\Model;
+
+        use Doctrine\ORM\Mapping\Column;
+        use Doctrine\ORM\Mapping\Entity;
+        use Doctrine\ORM\Mapping\GeneratedValue;
+        use Doctrine\ORM\Mapping\Id;
+        use Doctrine\ORM\Mapping\JoinColumn;
+        use Doctrine\ORM\Mapping\ManyToOne;
+
+        #[Entity]
+        class Registration
+        {
+            #[Id, Column, GeneratedValue]
+            private int|null $id = null;
+
+            #[ManyToOne(targetEntity: Car::class)]
+            #[JoinColumn(name: 'car_name', referencedColumnName: 'name')]
+            #[JoinColumn(name: 'car_year', referencedColumnName: 'year')]
+            private Car|null $car = null;
+        }
+
+    .. code-block:: xml
+
+        <?xml version="1.0" encoding="UTF-8"?>
+        <doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
+                                  https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+
+            <entity name="VehicleCatalogue\Model\Registration">
+                <id name="id" type="integer">
+                    <generator strategy="AUTO" />
+                </id>
+
+                <many-to-one field="car" target-entity="Car">
+                    <join-column name="car_name" referenced-column-name="name" />
+                    <join-column name="car_year" referenced-column-name="year" />
+                </many-to-one>
+            </entity>
+        </doctrine-mapping>
+
+This generates the following SQL:
+
+.. code-block:: sql
+
+    CREATE TABLE Registration (
+        id INT AUTO_INCREMENT NOT NULL,
+        car_name VARCHAR(255) DEFAULT NULL,
+        car_year INT DEFAULT NULL,
+        PRIMARY KEY(id)
+    ) ENGINE = InnoDB;
+    ALTER TABLE Registration ADD FOREIGN KEY (car_name, car_year) REFERENCES Car(name, year);
 
 Identity through foreign Entities
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -299,6 +360,50 @@ of products purchased and maybe even the current price.
         }
     }
 
+Controlling composite key order
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+When you need a specific field order for a composite identifier, you can set
+an explicit position on each identifier mapping. This applies to both primitive
+identifier fields and association-based identifiers. Lower values come first.
+
+.. configuration-block::
+
+    .. code-block:: attribute
+
+        <?php
+        namespace VehicleCatalogue\Model;
+
+        use Doctrine\ORM\Mapping as ORM;
+
+        #[ORM\Entity]
+        class Car
+        {
+            #[ORM\Id(position: 2)]
+            #[ORM\Column(type: 'string')]
+            private string $name;
+
+            #[ORM\Id(position: 1)]
+            #[ORM\Column(type: 'integer')]
+            private int $year;
+        }
+
+    .. code-block:: xml
+
+        <?xml version="1.0" encoding="UTF-8"?>
+        <doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
+                                  https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+
+            <entity name="VehicleCatalogue\Model\Car">
+                <id name="name" type="string" position="2" />
+                <id name="year" type="integer" position="1" />
+            </entity>
+        </doctrine-mapping>
+
+If you omit ``position``, Doctrine uses ``0``. Identifier fields with the same
+position keep their declaration order.
 
 Performance Considerations
 ~~~~~~~~~~~~~~~~~~~~~~~~~~

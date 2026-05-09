@@ -29,8 +29,10 @@ use Doctrine\Tests\Models\Project\ProjectInvalidMapping;
 use Doctrine\Tests\Models\Project\ProjectName;
 use Doctrine\Tests\Models\ValueObjects\Name;
 use Doctrine\Tests\Models\ValueObjects\Person;
+use Doctrine\Tests\ORM\Mapping\Fixtures\CompositeIdWithPosition;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Group;
+use SortDirection;
 
 use function substr_count;
 
@@ -91,6 +93,13 @@ class XmlMappingDriverTest extends MappingDriverTestCase
         self::assertArrayHasKey('article', $class->associationMappings);
 
         self::assertTrue($class->associationMappings['article']->id);
+    }
+
+    public function testCompositeIdPositionOrdering(): void
+    {
+        $class = $this->createClassMetadata(CompositeIdWithPosition::class);
+
+        self::assertSame(['first', 'second'], $class->identifier);
     }
 
     public function testEmbeddableMapping(): void
@@ -256,7 +265,7 @@ class XmlMappingDriverTest extends MappingDriverTestCase
         $driver->loadMetadataForClass(GH7141Article::class, $class);
 
         self::assertSame(
-            'ASC',
+            SortDirection::Ascending,
             $class->getMetadataValue('associationMappings')['tags']->orderBy['position'],
         );
     }
@@ -270,7 +279,7 @@ class XmlMappingDriverTest extends MappingDriverTestCase
         $driver->loadMetadataForClass(GH7316Article::class, $class);
 
         self::assertSame(
-            'ASC',
+            SortDirection::Ascending,
             $class->getMetadataValue('associationMappings')['tags']->orderBy['position'],
         );
     }

@@ -169,6 +169,122 @@ and directly start using native lazy objects.
 
 # Upgrade to 3.7
 
+## Deprecated using strings or null as sort directions
+
+PHP 8.6 provides a native `\SortDirection` enum that should be used instead of
+strings such as `'ASC'` and `'DESC'` or instead of `null` to indicate no sorting.
+
+`\SortDirection` is polyfilled by the `symfony/polyfill-php86` package, that we
+require.
+
+This applies to the following methods:
+
+- `Doctrine\ORM\QueryBuilder::addOrderBy()`
+- `Doctrine\ORM\QueryBuilder::orderBy()`
+- `Doctrine\ORM\Query\Expr\OrderBy::__construct()`
+- `Doctrine\ORM\Query\Expr\OrderBy::add()`
+
+```diff
+-$qb->orderBy('u.name', 'ASC')
+-   ->addOrderBy('u.createdAt', 'DESC');
++$qb->orderBy('u.name', \SortDirection::Ascending)
++   ->addOrderBy('u.createdAt', \SortDirection::Descending);
+-$qb->orderBy(new Expr\OrderBy('u.name', 'ASC'))
+-   ->addOrderBy(new Expr\OrderBy('u.createdAt', 'DESC'));
++$qb->orderBy(new Expr\OrderBy('u.name', \SortDirection::Ascending))
++   ->addOrderBy(new Expr\OrderBy('u.createdAt', \SortDirection::Descending));
+-$expr = new Expr\OrderBy('u.name', 'ASC');
+-$expr->add('u.createdAt', 'DESC');
++$expr = new Expr\OrderBy('u.name', \SortDirection::Ascending)
++$expr->add('u.createdAt', \SortDirection::Descending);
+```
+
+This also applies to mapping when using either the attribute driver or the
+static PHP driver:
+
+```diff
+ use Doctrine\ORM\Mapping as ORM;
+ use SortDirection;
+
+ #[ORM\Entity]
+ class UserWithStringOrderBy
+ {
+     #[ORM\Id]
+     #[ORM\Column]
+     #[ORM\GeneratedValue(strategy: 'AUTO')]
+     public int|null $id = null;
+
+     /** @var Collection<int, Phonenumber> */
+     #[ORM\OneToMany(targetEntity: Phonenumber::class, mappedBy: 'user')]
+-    #[ORM\OrderBy(['number' => 'ASC'])]
++    #[ORM\OrderBy(['number' => SortDirection::Ascending])]
+     public $phonenumbers;
+
+     /** @var Collection<int, Group> */
+     #[ORM\ManyToMany(targetEntity: Group::class)]
+-    #[ORM\OrderBy(['name' => 'ASC', 'id' => 'DESC'])]
++    #[ORM\OrderBy(['name' => SortDirection::Ascending, 'id' => SortDirection::Descending])]
+     public $groupsMixed;
+
+     public static function loadMetadata(ClassMetadata $metadata): void
+     {
+         $metadata->mapField(
+             [
+                 'id'                 => true,
+                 'fieldName'          => 'id',
+                 'type'               => 'integer',
+             ],
+         );
+
+         $metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_AUTO);
+
+         $metadata->mapOneToMany(
+             [
+                 'fieldName' => 'phonenumbersAsc',
+                 'mappedBy' => 'user',
+                 'targetEntity' => Phonenumber::class,
+-                'orderBy' => ['number' => 'ASC'],
++                'orderBy' => ['number' => SortDirection::Ascending],
+             ],
+         );
+
+         $metadata->mapManyToMany(
+             [
+                 'fieldName' => 'groupsMixed',
+                 'targetEntity' => Group::class,
+-                'orderBy' => ['name' => 'ASC', 'id' => 'DESC'],
++                'orderBy' => ['name' => SortDirection::Ascending, 'id' => SortDirection::Descending],
+             ],
+         );
+     }
+ }
+```
+
+Likewise, using the class metadata builder API with string sort directions is deprecated:
+
+```diff
+ use CmsGroup;
+ use SortDirection;
+
+ $this->builder->createOneToMany('groups', CmsGroup::class)
+             ->mappedBy('test')
+-            ->setOrderBy(['test' => 'ASC'])
++            ->setOrderBy(['test' => SortDirection::Ascending])
+             ->build();
+
+ $this->builder->createManyToMany('other_groups', CmsGroup::class)
+-            ->setOrderBy(['test' => 'ASC'])
++            ->setOrderBy(['test' => SortDirection::Ascending])
+             ->build();
+```
+
+### Breaking changes
+
+We could not find a way to allow the above without introducing a breaking change
+for extending classes. If you extend the querybuilder and override any of the
+above methods, you will need to update the method signature to add support for
+`\SortDirection` as well. Same goes for `Expr\OrderBy::add()`.
+
 ## Conditional breaking changes
 
 3.7 adds support for `doctrine/collections` 3. If you upgrade to that version

@@ -16,6 +16,7 @@ use Doctrine\ORM\Mapping\JoinTable;
 use Doctrine\ORM\Mapping\ManyToMany;
 use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\OrderBy;
+use SortDirection;
 
 #[Entity]
 class RoutingRoute
@@ -31,12 +32,12 @@ class RoutingRoute
     #[JoinColumn(name: 'route_id', referencedColumnName: 'id')]
     #[InverseJoinColumn(name: 'leg_id', referencedColumnName: 'id', unique: true)]
     #[ManyToMany(targetEntity: 'RoutingLeg', cascade: ['all'])]
-    #[OrderBy(['departureDate' => 'ASC'])]
+    #[OrderBy(['departureDate' => SortDirection::Ascending])]
     public $legs;
 
     /** @var Collection<int, RoutingRouteBooking> */
     #[OneToMany(targetEntity: 'RoutingRouteBooking', mappedBy: 'route')]
-    #[OrderBy(['passengerName' => 'ASC'])]
+    #[OrderBy(['passengerName' => SortDirection::Ascending])]
     public $bookings = [];
 
     public function __construct()

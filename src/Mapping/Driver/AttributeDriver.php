@@ -309,8 +309,10 @@ class AttributeDriver implements MappingDriver
             if ($columnAttribute !== null) {
                 $mapping = $this->columnToArray($property->name, $columnAttribute);
 
-                if ($this->reader->getPropertyAttribute($property, Mapping\Id::class)) {
-                    $mapping['id'] = true;
+                $idAttribute = $this->reader->getPropertyAttribute($property, Mapping\Id::class);
+                if ($idAttribute !== null) {
+                    $mapping['id']         = true;
+                    $mapping['idPosition'] = $idAttribute->position;
                 }
 
                 $generatedValueAttribute = $this->reader->getPropertyAttribute($property, Mapping\GeneratedValue::class);
@@ -349,8 +351,10 @@ class AttributeDriver implements MappingDriver
                     throw MappingException::invalidAttributeOnEmbeddable($metadata->name, Mapping\OneToOne::class);
                 }
 
-                if ($this->reader->getPropertyAttribute($property, Mapping\Id::class)) {
-                    $mapping['id'] = true;
+                $idAttribute = $this->reader->getPropertyAttribute($property, Mapping\Id::class);
+                if ($idAttribute !== null) {
+                    $mapping['id']         = true;
+                    $mapping['idPosition'] = $idAttribute->position;
                 }
 
                 $mapping['targetEntity']  = $oneToOneAttribute->targetEntity;
@@ -388,7 +392,8 @@ class AttributeDriver implements MappingDriver
                 $idAttribute = $this->reader->getPropertyAttribute($property, Mapping\Id::class);
 
                 if ($idAttribute !== null) {
-                    $mapping['id'] = true;
+                    $mapping['id']         = true;
+                    $mapping['idPosition'] = $idAttribute->position;
                 }
 
                 $mapping['joinColumns']  = $joinColumns;

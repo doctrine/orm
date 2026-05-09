@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Doctrine\ORM\Tools\CursorPagination;
+namespace Doctrine\ORM\Tools\Pagination;
 
-use Countable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Exception;
+use Doctrine\ORM\Internal\SQLResultCasing;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\AST\PathExpression;
 use Doctrine\ORM\Query\QueryException;
@@ -20,6 +20,9 @@ use Traversable;
 
 use function array_map;
 use function array_reverse;
+use function array_slice;
+use function array_sum;
+use function count;
 
 /**
  * The cursor paginator handles cursor-based pagination for DQL queries.
@@ -27,8 +30,11 @@ use function array_reverse;
  * @template T
  * @implements IteratorAggregate<mixed, T>
  */
-final class CursorPaginator implements IteratorAggregate, Countable
+final class CursorPaginator implements IteratorAggregate
 {
+    use SQLResultCasing;
+    use PaginatorQuery;
+
     private readonly Query $query;
     /** @var Collection<int, T>|null */
     private Collection|null $items = null;
@@ -39,8 +45,11 @@ final class CursorPaginator implements IteratorAggregate, Countable
     private bool $hasMore       = false;
     private Cursor|null $cursor = null;
 
-    public function __construct(Query|QueryBuilder $query)
-    {
+    /** @param bool $queryProducesDuplicates Whether the query joins a collection (true by default). */
+    public function __construct(
+        Query|QueryBuilder $query,
+        private readonly bool $queryProducesDuplicates = true,
+    ) {
         if ($query instanceof QueryBuilder) {
             $query = $query->getQuery();
         }
@@ -57,67 +66,91 @@ final class CursorPaginator implements IteratorAggregate, Countable
     }
 
     /**
-     * Paginates the query with the given limit and optional cursor.
+     * Returns whether the query joins a collection.
      *
-     * @param string|null $cursor The encoded cursor string, null or empty string for the first page.
-     * @param int         $limit  The maximum number of results to return.
-     *
-     * @return $this
+     * @return bool Whether the query joins a collection.
      */
-    public function paginate(string|null $cursor, int $limit): self
+    public function getQueryProducesDuplicates(): bool
     {
-        $this->cursor  = ! empty($cursor) ? Cursor::fromEncodedString($cursor) : null;
-        $shouldReverse = $this->cursor?->isPrevious() ?? false;
-
-        $query = $this->cloneQuery($this->query);
-
-        $this->appendTreeWalker($query);
-
-        $query->setHint(CursorWalker::HINT_CURSOR_REVERSE, $shouldReverse);
-        $query->setHint(CursorWalker::HINT_CURSOR_PARAMETERS, $this->cursor?->getParameters() ?? []);
-
-        $query->setMaxResults($limit + 1);
-
-        $this->items   = new ArrayCollection($query->getResult());
-        $this->hasMore = $this->items->count() > $limit;
-        $this->items   = new ArrayCollection($this->items->slice(0, $limit));
-
-        $this->orderByItems = $query->getHint(CursorWalker::HINT_CURSOR_ORDER_BY_ITEMS) ?: [];
-
-        if ($this->cursor !== null && $this->cursor->isPrevious()) {
-            $this->items = new ArrayCollection(array_reverse($this->items->toArray(), true));
-        }
-
-        return $this;
-    }
-
-    private function cloneQuery(Query $query): Query
-    {
-        $cloneQuery = clone $query;
-
-        $cloneQuery->setParameters(clone $query->getParameters());
-        $cloneQuery->setCacheable(false);
-
-        foreach ($query->getHints() as $name => $value) {
-            $cloneQuery->setHint($name, $value);
-        }
-
-        return $cloneQuery;
+        return $this->queryProducesDuplicates;
     }
 
     /**
-     * Appends a custom tree walker to the tree walkers hint.
+     * Paginates the query with the given limit and optional cursor.
+     *
+     * @param Cursor|string|null $cursor The cursor instance, encoded cursor string, null or empty string for the first page.
+     * @param int                $limit  The maximum number of results to return.
+     *
+     * @return $this
      */
-    private function appendTreeWalker(Query $query): void
+    public function paginate(Cursor|string|null $cursor, int $limit): self
     {
-        $hints = $query->getHint(Query::HINT_CUSTOM_TREE_WALKERS);
-
-        if ($hints === false) {
-            $hints = [];
+        if ($cursor instanceof Cursor) {
+            $this->cursor = $cursor;
+        } else {
+            $this->cursor = ! empty($cursor) ? Cursor::fromEncodedString($cursor) : null;
         }
 
-        $hints[] = CursorWalker::class;
-        $query->setHint(Query::HINT_CUSTOM_TREE_WALKERS, $hints);
+        $shouldReverse = $this->cursor?->isPrevious() ?? false;
+
+        $subQuery = $this->cloneQuery($this->query);
+        $subQuery->expireQueryCache();
+
+        $this->appendTreeWalker($subQuery, CursorWalker::class);
+        $subQuery->setHint(CursorWalker::HINT_QUERY_PRODUCES_DUPLICATES, $this->queryProducesDuplicates);
+
+        if ($this->queryProducesDuplicates) {
+            if ($this->useOutputWalker($subQuery)) {
+                $subQuery->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, LimitSubqueryOutputWalker::class);
+            } else {
+                $this->appendTreeWalker($subQuery, LimitSubqueryWalker::class);
+            }
+        }
+
+        $subQuery->setHint(CursorWalker::HINT_CURSOR_REVERSE, $shouldReverse);
+        $subQuery->setHint(CursorWalker::HINT_CURSOR_PARAMETERS, $this->cursor?->getParameters() ?? []);
+        $subQuery->setFirstResult(0)->setMaxResults($limit + 1);
+
+        if ($this->queryProducesDuplicates) {
+            $foundIdRows        = $subQuery->getScalarResult();
+            $this->orderByItems = $subQuery->getHint(CursorWalker::HINT_CURSOR_ORDER_BY_ITEMS) ?: [];
+            $this->hasMore      = count($foundIdRows) > $limit;
+            $foundIdRows        = array_slice($foundIdRows, 0, $limit);
+
+            // don't do this for an empty id array
+            if ($foundIdRows === []) {
+                $this->items = new ArrayCollection([]);
+
+                return $this;
+            }
+
+            $whereInQuery = $this->cloneQuery($this->query);
+            $ids          = array_map('current', $foundIdRows);
+
+            $this->appendTreeWalker($whereInQuery, WhereInWalker::class);
+            $whereInQuery->setHint(WhereInWalker::HINT_PAGINATOR_HAS_IDS, true);
+            $whereInQuery->setFirstResult(0)->setMaxResults(null);
+            $whereInQuery->setCacheable($this->query->isCacheable());
+
+            $databaseIds = $this->convertWhereInIdentifiersToDatabaseValues($ids);
+            $whereInQuery->setParameter(WhereInWalker::PAGINATOR_ID_ALIAS, $databaseIds);
+
+            $this->items = new ArrayCollection($whereInQuery->getResult());
+        } else {
+            $result        = $subQuery->getResult();
+            $this->hasMore = count($result) > $limit;
+            $result        = array_slice($result, 0, $limit);
+
+            $this->orderByItems = $subQuery->getHint(CursorWalker::HINT_CURSOR_ORDER_BY_ITEMS) ?: [];
+
+            if ($this->cursor !== null && $this->cursor->isPrevious()) {
+                $result = array_reverse($result);
+            }
+
+            $this->items = new ArrayCollection($result);
+        }
+
+        return $this;
     }
 
     /**
@@ -131,10 +164,22 @@ final class CursorPaginator implements IteratorAggregate, Countable
         return $this->items->getIterator();
     }
 
-    #[Override]
-    public function count(): int
+    public function countPageItems(): int
     {
+        if ($this->items === null) {
+            throw new LogicException('The paginator has not been initialized. Call paginate() first.');
+        }
+
         return $this->items->count();
+    }
+
+    public function getTotalCount(): int
+    {
+        if ($this->count === null) {
+            $this->count = (int) array_sum(array_map('current', $this->getCountQuery()->getScalarResult()));
+        }
+
+        return $this->count;
     }
 
     /**

@@ -25,6 +25,7 @@ use LogicException;
 use Override;
 use ReflectionClass;
 use ReflectionNamedType;
+use SortDirection;
 use Stringable;
 
 use function array_column;
@@ -45,6 +46,8 @@ use function count;
 use function defined;
 use function enum_exists;
 use function explode;
+use function func_get_arg;
+use function func_num_args;
 use function implode;
 use function in_array;
 use function interface_exists;
@@ -57,8 +60,10 @@ use function sprintf;
 use function str_contains;
 use function str_replace;
 use function strtolower;
+use function strtoupper;
 use function trait_exists;
 use function trim;
+use function usort;
 
 /**
  * A <tt>ClassMetadata</tt> instance holds all the object-relational mapping metadata
@@ -325,6 +330,13 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
      * @phpstan-var list<string>
      */
     public array $identifier = [];
+
+    /**
+     * READ-ONLY: The position of each identifier field, used to control the order of composite primary key fields.
+     *
+     * @phpstan-var array<string, int>
+     */
+    public array $identifierPositions = [];
 
     /**
      * READ-ONLY: The inheritance mapping type used by the class.
@@ -682,6 +694,7 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
             'fieldNames',
             'embeddedClasses',
             'identifier',
+            'identifierPositions',
             'isIdentifierComposite', // TODO: REMOVE
             'name',
             'namespace', // TODO: REMOVE
@@ -1195,7 +1208,7 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
             }
 
             if (! in_array($mapping->fieldName, $this->identifier, true)) {
-                $this->identifier[] = $mapping->fieldName;
+                $this->registerIdentifierField($mapping->fieldName, $mapping->idPosition);
             }
 
             // Check for composite key
@@ -1294,7 +1307,7 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
                 }
 
                 assert(is_string($mapping['fieldName']));
-                $this->identifier[]              = $mapping['fieldName'];
+                $this->registerIdentifierField($mapping['fieldName'], $mapping['idPosition'] ?? null);
                 $this->containsForeignIdentifier = true;
             }
 
@@ -1310,6 +1323,8 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
                 );
             }
         }
+
+        unset($mapping['idPosition']);
 
         // Mandatory attributes for both sides
         // Mandatory: fieldName, targetEntity
@@ -1453,9 +1468,17 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
      *
      * @phpstan-param list<mixed> $identifier
      */
-    public function setIdentifier(array $identifier): void
+    public function setIdentifier(array $identifier/*, array $positions = []*/): void
     {
-        $this->identifier            = $identifier;
+        $positions = func_num_args() > 1 ? func_get_arg(1) : [];
+
+        $this->identifier          = [];
+        $this->identifierPositions = [];
+
+        foreach ($identifier as $fieldName) {
+            $this->registerIdentifierField($fieldName, $positions[$fieldName] ?? null);
+        }
+
         $this->isIdentifierComposite = (count($this->identifier) > 1);
     }
 
@@ -1955,6 +1978,10 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
     {
         $mapping['type'] = self::ONE_TO_MANY;
 
+        if (isset($mapping['orderBy'])) {
+            $mapping['orderBy'] = $this->normalizeOrderBy($mapping['orderBy'], $mapping['fieldName']);
+        }
+
         $mapping = $this->_validateAndCompleteAssociationMapping($mapping);
 
         $this->_storeAssociationMapping($mapping);
@@ -1982,6 +2009,10 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
     public function mapManyToMany(array $mapping): void
     {
         $mapping['type'] = self::MANY_TO_MANY;
+
+        if (isset($mapping['orderBy'])) {
+            $mapping['orderBy'] = $this->normalizeOrderBy($mapping['orderBy'], $mapping['fieldName']);
+        }
 
         $mapping = $this->_validateAndCompleteAssociationMapping($mapping);
 
@@ -2670,5 +2701,55 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
         }
 
         return $sequencePrefix;
+    }
+
+    private function registerIdentifierField(string $fieldName, int|null $idPosition): void
+    {
+        $this->identifier[]                    = $fieldName;
+        $this->identifierPositions[$fieldName] = $idPosition ?? 0;
+
+        usort(
+            $this->identifier,
+            fn (string $field1, string $field2) => $this->identifierPositions[$field1] <=> $this->identifierPositions[$field2],
+        );
+    }
+
+    /**
+     * Normalizes orderBy array values to SortDirection instances.
+     *
+     * @param array<string, SortDirection|string> $orderBy
+     *
+     * @return array<string, SortDirection>
+     */
+    private function normalizeOrderBy(array $orderBy, string $fieldName): array
+    {
+        $normalized = [];
+
+        foreach ($orderBy as $field => $direction) {
+            if ($direction instanceof SortDirection) {
+                $normalized[$field] = $direction;
+            } else {
+                Deprecation::trigger(
+                    'doctrine/orm',
+                    'https://github.com/doctrine/orm/issues/11313',
+                    '%s::%s : Using "%s" as an order by direction is deprecated in favor of passing a SortDirection instance',
+                    $this->name,
+                    $fieldName,
+                    $direction,
+                );
+                $normalized[$field] = match (strtoupper($direction)) {
+                    'ASC' => SortDirection::Ascending,
+                    'DESC' => SortDirection::Descending,
+                    default => throw MappingException::invalidOrderByDirection(
+                        $direction,
+                        $field,
+                        $fieldName,
+                        $this->name,
+                    ),
+                };
+            }
+        }
+
+        return $normalized;
     }
 }

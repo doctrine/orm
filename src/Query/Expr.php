@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Query;
 
 use Doctrine\ORM\Internal\NoUnknownNamedArguments;
+use SortDirection;
 use Traversable;
 
 use function implode;
@@ -71,7 +72,7 @@ class Expr
      */
     public function asc(mixed $expr): Expr\OrderBy
     {
-        return new Expr\OrderBy($expr, 'ASC');
+        return new Expr\OrderBy($expr, SortDirection::Ascending);
     }
 
     /**
@@ -79,7 +80,7 @@ class Expr
      */
     public function desc(mixed $expr): Expr\OrderBy
     {
-        return new Expr\OrderBy($expr, 'DESC');
+        return new Expr\OrderBy($expr, SortDirection::Descending);
     }
 
     /**

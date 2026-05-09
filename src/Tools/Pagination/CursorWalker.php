@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Doctrine\ORM\Tools\CursorPagination;
+namespace Doctrine\ORM\Tools\Pagination;
 
 use Doctrine\ORM\Query\AST\ComparisonExpression;
 use Doctrine\ORM\Query\AST\ConditionalExpression;
@@ -34,9 +34,10 @@ use function str_replace;
  */
 class CursorWalker extends TreeWalkerAdapter
 {
-    public const string HINT_CURSOR_PARAMETERS     = 'doctrine.cursor.parameters';
-    public const string HINT_CURSOR_REVERSE        = 'doctrine.cursor.reverse';
-    public const string HINT_CURSOR_ORDER_BY_ITEMS = 'doctrine.cursor.order_by_items';
+    public const string HINT_CURSOR_PARAMETERS         = 'doctrine.cursor.parameters';
+    public const string HINT_CURSOR_REVERSE            = 'doctrine.cursor.reverse';
+    public const string HINT_CURSOR_ORDER_BY_ITEMS     = 'doctrine.cursor.order_by_items';
+    public const string HINT_QUERY_PRODUCES_DUPLICATES = 'doctrine.cursor.query_produces_duplicates';
 
     #[Override]
     public function walkSelectStatement(SelectStatement $selectStatement): void

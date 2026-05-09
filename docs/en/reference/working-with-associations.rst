@@ -643,13 +643,14 @@ large collections.
     <?php
 
     use Doctrine\Common\Collections\Criteria;
+    use SortDirection;
 
     $group          = $entityManager->find('Group', $groupId);
     $userCollection = $group->getUsers();
 
     $criteria = Criteria::create()
         ->where(Criteria::expr()->eq("birthday", "1982-02-17"))
-        ->orderBy(array("username" => Criteria::ASC))
+        ->orderBy(array("username" => SortDirection::Ascending))
         ->setFirstResult(0)
         ->setMaxResults(20)
     ;

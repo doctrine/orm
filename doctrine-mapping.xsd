@@ -362,6 +362,7 @@
       <xs:any minOccurs="0" maxOccurs="unbounded" namespace="##other"/>
     </xs:choice>
     <xs:attribute name="name" type="xs:NMTOKEN" use="required" />
+    <xs:attribute name="position" type="xs:integer" default="0" />
     <xs:attribute name="type" type="orm:type" />
     <xs:attribute name="column" type="orm:columntoken" />
     <xs:attribute name="length" type="xs:NMTOKEN" />

@@ -11,8 +11,8 @@ the low-level SQL plumbing, but they make different trade-offs:
      - Offset ``Paginator``
      - ``CursorPaginator``
    * - Total count
-     - Yes
-     - No
+     - Yes (extra query)
+     - Yes (extra query)
    * - Random access to page N
      - Yes
      - No
@@ -26,12 +26,13 @@ the low-level SQL plumbing, but they make different trade-offs:
      - No
      - Yes
 
-Choose the **Offset Paginator** when you need a total page count or want to
-let users jump to an arbitrary page number.
+Choose the **Offset Paginator** when you need random access to an arbitrary
+page number.
 
 Choose the **Cursor Paginator** when you need stable, high-performance
 pagination on large datasets and a simple previous/next navigation is
-sufficient.
+sufficient. A total count is also available via ``getTotalCount()``, at the
+cost of an extra ``COUNT`` query.
 
 Offset-Based Pagination
 -----------------------
@@ -105,17 +106,40 @@ an index range scan instead of skipping rows.
 
 .. note::
 
-    Cursor pagination requires a **deterministic ``ORDER BY`` clause**. Every column
+    Cursor pagination requires a **deterministic ORDER BY clause**. Every column
     combination used for sorting must uniquely identify a position in the result set.
     A common pattern is to sort by a timestamp and then by primary key as a tie-breaker.
+
+Constructor
+~~~~~~~~~~~
+
+.. code-block:: php
+
+    <?php
+    new CursorPaginator(
+        Query|QueryBuilder $query,
+        bool $queryProducesDuplicates = true,
+    )
+
+``$queryProducesDuplicates``
+    Set to ``true`` (default) when the query joins a to-many collection.
+    The paginator then uses a two-query strategy (ID subquery + ``WHERE IN``)
+    to return the correct number of root entities despite duplicate rows.
+    Set to ``false`` when only to-one joins are present — this avoids the
+    subquery overhead and is equivalent to passing ``fetchJoinCollection: false``
+    to the offset-based ``Paginator``.
+    However, passing ``false`` on a query that joins a to-many relation is not
+    detected — arbitrary joins can produce duplicate root entities silently,
+    leading to a corrupt result set.
 
 Basic Usage
 ~~~~~~~~~~~
 
-The ``$cursor`` parameter is an opaque string produced by a previous call to
-``getNextCursorAsString()`` or ``getPreviousCursorAsString()``. On the first request
-it is ``null`` or an empty string ``''`` — both are treated identically as the first
-page. It is typically read from the incoming HTTP query string:
+The ``$cursor`` parameter accepts either an encoded string produced by a previous call to
+``getNextCursorAsString()`` or ``getPreviousCursorAsString()``, or a ``Cursor`` instance
+returned by ``getNextCursor()`` or ``getPreviousCursor()``. On the first request it is
+``null`` or an empty string ``''`` — both are treated identically as the first page.
+It is typically read from the incoming HTTP query string:
 
 .. code-block:: php
 
@@ -124,7 +148,7 @@ page. It is typically read from the incoming HTTP query string:
 .. code-block:: php
 
     <?php
-    use Doctrine\ORM\Tools\CursorPagination\CursorPaginator;
+    use Doctrine\ORM\Tools\Pagination\CursorPaginator;
 
     $dql = 'SELECT p FROM BlogPost p ORDER BY p.createdAt DESC, p.id DESC';
     $query = $entityManager->createQuery($dql);
@@ -148,18 +172,19 @@ Pass the encoded cursor back on subsequent requests to move forward or backward:
 
     <?php
     // Next page
-    $paginator->paginate(15, $nextCursor);
+    $paginator->paginate(cursor: $nextCursor, limit: 15);
 
     // Previous page
-    $paginator->paginate(15, $previousCursor);
+    $paginator->paginate(cursor: $previousCursor, limit: 15);
 
 The cursor is an encoded string containing the location at which the next query should begin fetching results, along with the navigation direction.
 
 API Reference
 ~~~~~~~~~~~~~
 
-``CursorPaginator::paginate(?string $cursor, int $limit): self``
-    Executes the query and stores the results. Fetches ``$limit + 1`` rows to
+``CursorPaginator::paginate(Cursor|string|null $cursor, int $limit): self``
+    Executes the query and stores the results. Accepts either an encoded cursor
+    string or a ``Cursor`` instance directly. Fetches ``$limit + 1`` rows to
     detect whether a further page exists, then trims the extra row. Returns
     ``$this`` for chaining.
 
@@ -200,8 +225,14 @@ API Reference
     Builds a ``Cursor`` pointing at a specific entity. ``$isNext = true`` means
     "start *after* this item"; ``false`` means "start *before* this item".
 
-``CursorPaginator::count(): int``
-    Returns the number of items on the current page (implements ``Countable``).
+``CursorPaginator::countPageItems(): int``
+    Returns the number of items on the current page. Throws a ``LogicException``
+    if ``paginate()`` has not been called yet.
+
+``CursorPaginator::getTotalCount(): int``
+    Executes an extra ``COUNT`` query and returns the total number of matching
+    root entities, ignoring the cursor and limit. Use this when you need to
+    display a total result count alongside previous/next navigation.
 
 **Next page**
 
@@ -263,8 +294,5 @@ Limitations
 
 - Every ``ORDER BY`` column must map to an entity field. Raw SQL expressions or
   computed columns in ``ORDER BY`` are not supported.
-- ``COUNT`` queries are not available; cursor pagination does not know the total
-  number of results by design. If you need a total count, use the
-  offset-based ``Paginator`` described above.
 - The query must have at least one ``ORDER BY`` item; the paginator throws a
   ``LogicException`` otherwise.

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Mapping;
 
+use Doctrine\Deprecations\PHPUnit\VerifyDeprecations;
 use Doctrine\ORM\Mapping\Builder\ClassMetadataBuilder;
 use Doctrine\ORM\Mapping\Builder\EmbeddedBuilder;
 use Doctrine\ORM\Mapping\Builder\FieldBuilder;
@@ -22,10 +23,14 @@ use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\Models\ValueObjects\Name;
 use Doctrine\Tests\OrmTestCase;
 use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\IgnoreDeprecations;
+use SortDirection;
 
 #[Group('DDC-659')]
 class ClassMetadataBuilderTest extends OrmTestCase
 {
+    use VerifyDeprecations;
+
     private ClassMetadata $cm;
     private ClassMetadataBuilder $builder;
 
@@ -597,7 +602,7 @@ class ClassMetadataBuilderTest extends OrmTestCase
         $this->assertIsFluent(
             $this->builder->createOneToMany('groups', CmsGroup::class)
                         ->mappedBy('test')
-                        ->setOrderBy(['test'])
+                        ->setOrderBy(['test' => SortDirection::Ascending])
                         ->setIndexBy('test')
                         ->build(),
         );
@@ -609,7 +614,7 @@ class ClassMetadataBuilderTest extends OrmTestCase
                     'fieldName' => 'groups',
                     'targetEntity' => CmsGroup::class,
                     'mappedBy' => 'test',
-                    'orderBy' => [0 => 'test'],
+                    'orderBy' => ['test' => SortDirection::Ascending],
                     'indexBy' => 'test',
                     'type' => 4,
                     'isOwningSide' => false,
@@ -623,6 +628,35 @@ class ClassMetadataBuilderTest extends OrmTestCase
         );
     }
 
+    #[IgnoreDeprecations]
+    public function testCreateOneToManyWithLegacySortDirection(): void
+    {
+        $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/issues/11313');
+        $this->builder->createOneToMany('groups', CmsGroup::class)
+                    ->mappedBy('test')
+                    ->setOrderBy(['test' => 'ASC'])
+                    ->build();
+
+        self::assertEquals(
+            SortDirection::Ascending,
+            $this->cm->associationMappings['groups']->orderBy['test'],
+        );
+    }
+
+    #[IgnoreDeprecations]
+    public function testCreateManyToManyWithLegacySortDirection(): void
+    {
+        $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/issues/11313');
+        $this->builder->createManyToMany('groups', CmsGroup::class)
+                    ->setOrderBy(['test' => 'ASC'])
+                    ->build();
+
+        self::assertEquals(
+            SortDirection::Ascending,
+            $this->cm->associationMappings['groups']->orderBy['test'],
+        );
+    }
+
     public function testThrowsExceptionOnCreateOneToManyWithIdentity(): void
     {
         $this->expectException(MappingException::class);
@@ -630,7 +664,7 @@ class ClassMetadataBuilderTest extends OrmTestCase
         $this->builder->createOneToMany('groups', CmsGroup::class)
                 ->makePrimaryKey()
                 ->mappedBy('test')
-                ->setOrderBy(['test'])
+                ->setOrderBy(['test' => SortDirection::Ascending])
                 ->setIndexBy('test')
                 ->build();
     }
