@@ -281,6 +281,7 @@ class ProxyFactoryTest extends OrmTestCase
         );
     }
 
+    #[IgnoreDeprecations]
     public function testProxyFactoryThrowsIfLazyGhostsAreUnavailable(): void
     {
         if (method_exists(ProxyHelper::class, 'generateLazyGhost')) {

@@ -75,6 +75,7 @@ class ORMSetupTest extends TestCase
     #[RequiresPhpExtension('apcu')]
     #[RequiresSetting('apc.enable_cli', '1')]
     #[RequiresSetting('apc.enabled', '1')]
+    #[IgnoreDeprecations]
     public function testCacheNamespaceShouldBeGeneratedForApcuWhenUsingLegacyConstructor(): void
     {
         if (PHP_VERSION_ID >= 80400) {
