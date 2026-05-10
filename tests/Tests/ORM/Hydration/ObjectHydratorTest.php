@@ -1022,13 +1022,12 @@ class ObjectHydratorTest extends HydrationTestCase
             ],
         ];
 
+        $args = $this->entityManager->getConfiguration()->isNativeLazyObjectsEnabled() ?
+            [$this->entityManager] :
+            [$this->entityManager, sys_get_temp_dir(), 'Proxies', ProxyFactory::AUTOGENERATE_ALWAYS];
+
         // extending the proxy factory to spy on getProxy()
-        $proxyFactory = new class (
-            $this->entityManager,
-            sys_get_temp_dir(),
-            'Proxies',
-            ProxyFactory::AUTOGENERATE_ALWAYS,
-        ) extends ProxyFactory {
+        $proxyFactory = new class (...$args) extends ProxyFactory {
             public function getProxy(string $className, array $identifier): object
             {
                 TestCase::assertSame(ECommerceShipping::class, $className);
@@ -1076,13 +1075,12 @@ class ObjectHydratorTest extends HydrationTestCase
 
         $proxyInstance = new ECommerceShipping();
 
+        $args = $this->entityManager->getConfiguration()->isNativeLazyObjectsEnabled() ?
+            [$this->entityManager] :
+            [$this->entityManager, sys_get_temp_dir(), 'Proxies', ProxyFactory::AUTOGENERATE_ALWAYS];
+
         // extending the proxy factory to spy on getProxy()
-        $proxyFactory = new class (
-            $this->entityManager,
-            sys_get_temp_dir(),
-            'Proxies',
-            ProxyFactory::AUTOGENERATE_ALWAYS,
-        ) extends ProxyFactory {
+        $proxyFactory = new class (...$args) extends ProxyFactory {
             public function getProxy(string $className, array $identifier): object
             {
                 TestCase::assertSame(ECommerceShipping::class, $className);
