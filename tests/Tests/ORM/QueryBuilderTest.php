@@ -7,10 +7,10 @@ namespace Doctrine\Tests\ORM;
 use BadMethodCallException;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Criteria;
-use Doctrine\Common\Collections\Order;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\Deprecations\PHPUnit\VerifyDeprecations;
 use Doctrine\ORM\Cache;
+use Doctrine\ORM\Cache\Persister\CompatOrderings;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\ORM\Query\Parameter;
@@ -40,6 +40,7 @@ use function array_filter;
  */
 class QueryBuilderTest extends OrmTestCase
 {
+    use CompatOrderings;
     use VerifyDeprecations;
 
     private EntityManagerMock $entityManager;
@@ -667,7 +668,7 @@ class QueryBuilderTest extends OrmTestCase
             ->from(CmsUser::class, 'u');
 
         $criteria = Criteria::create();
-        $criteria->orderBy(['field' => Order::Descending]);
+        $criteria->orderBy(['field' => SortDirection::Descending]);
 
         $qb->addCriteria($criteria);
 
@@ -684,7 +685,7 @@ class QueryBuilderTest extends OrmTestCase
             ->join('u.article', 'a');
 
         $criteria = Criteria::create();
-        $criteria->orderBy(['a.field' => Order::Descending]);
+        $criteria->orderBy(['a.field' => SortDirection::Descending]);
 
         $qb->addCriteria($criteria);
 
