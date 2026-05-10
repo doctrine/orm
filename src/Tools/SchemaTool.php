@@ -588,7 +588,8 @@ class SchemaTool
      *
      * @phpstan-param array<string, array{
      *                  foreignTableName: string,
-     *                  foreignColumns: list<string>
+     *                  foreignColumns: list<string>,
+     *                  fkOptions: array{onDelete?: string, deferrable?: bool, deferred?: bool}
      *              }>                               $addedFks
      * @phpstan-param array<string, bool>              $blacklistedFks
      *
@@ -705,7 +706,8 @@ class SchemaTool
      * @phpstan-param list<string>                     $primaryKeyColumns
      * @phpstan-param array<string, array{
      *                  foreignTableName: string,
-     *                  foreignColumns: list<string>
+     *                  foreignColumns: list<string>,
+     *                  fkOptions: array{onDelete?: string, deferrable?: bool, deferred?: bool}
      *              }>                               $addedFks
      * @phpstan-param array<string,bool>               $blacklistedFks
      *
@@ -720,8 +722,9 @@ class SchemaTool
         array &$addedFks,
         array &$blacklistedFks,
     ): void {
-        $localColumns      = [];
-        $foreignColumns    = [];
+        $localColumns   = [];
+        $foreignColumns = [];
+        /** @var array{onDelete?: string, deferrable?: bool, deferred?: bool} $fkOptions */
         $fkOptions         = [];
         $foreignTableName  = $this->quoteStrategy->getTableName($class, $this->platform);
         $uniqueConstraints = [];
@@ -806,11 +809,37 @@ class SchemaTool
         }
 
         $compositeName = $this->getAssetName($theJoinTable) . '.' . implode('', $localColumns);
-        if (
-            isset($addedFks[$compositeName])
-            && ($foreignTableName !== $addedFks[$compositeName]['foreignTableName']
-            || 0 < count(array_diff($foreignColumns, $addedFks[$compositeName]['foreignColumns'])))
-        ) {
+
+        // Check if an FK constraint already exists for this composite key (table + columns)
+        if (isset($addedFks[$compositeName])) {
+            $existingFk = $addedFks[$compositeName];
+
+            // Determine if the new FK is identical to the existing one
+            $isForeignTableIdentical    = $foreignTableName === $existingFk['foreignTableName'];
+            $areForeignColumnsIdentical = count(array_diff($foreignColumns, $existingFk['foreignColumns'])) === 0
+                && count(array_diff($existingFk['foreignColumns'], $foreignColumns)) === 0;
+
+            // Compare FK options that affect constraint identity (onDelete, deferrable, deferred)
+            $existingOptions     = $existingFk['fkOptions'];
+            $onDeleteMatches     = ($fkOptions['onDelete'] ?? null)
+                === ($existingOptions['onDelete'] ?? null);
+            $deferrableMatches   = ($fkOptions['deferrable'] ?? null)
+                === ($existingOptions['deferrable'] ?? null);
+            $deferredMatches     = ($fkOptions['deferred'] ?? null)
+                === ($existingOptions['deferred'] ?? null);
+            $areOptionsIdentical = $onDeleteMatches && $deferrableMatches && $deferredMatches;
+
+            if ($isForeignTableIdentical && $areForeignColumnsIdentical && $areOptionsIdentical) {
+                // Identical FK already registered - skip adding duplicate.
+                // This prevents attempting to overwrite an existing FK constraint with an identical one.
+                // This scenario occurs in Single Table Inheritance (STI) when multiple child entities
+                // define their own associations using the same join column to the same target entity.
+                // Since all STI entities share the same physical table, having identical FK constraints
+                // is semantically correct and necessary for database normalization.
+                return;
+            }
+
+            // FK exists but is different (conflicting FK) - drop the existing one and blacklist
             foreach ($theJoinTable->getForeignKeys() as $fkName => $key) {
                 if (
                     class_exists(ForeignKeyConstraintEditor::class)
@@ -835,7 +864,13 @@ class SchemaTool
 
             $blacklistedFks[$compositeName] = true;
         } elseif (! isset($blacklistedFks[$compositeName])) {
-            $addedFks[$compositeName] = ['foreignTableName' => $foreignTableName, 'foreignColumns' => $foreignColumns];
+            // No existing FK and not blacklisted - add the new FK constraint
+            // Store FK details including options that affect constraint identity
+            $addedFks[$compositeName] = [
+                'foreignTableName' => $foreignTableName,
+                'foreignColumns' => $foreignColumns,
+                'fkOptions' => $fkOptions,
+            ];
             $theJoinTable->addForeignKeyConstraint(
                 $foreignTableName,
                 $localColumns,
