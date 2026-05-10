@@ -8,14 +8,17 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests;
 
+use Doctrine\Deprecations\Deprecation;
 use Exception;
 
 use function date_default_timezone_set;
 use function error_reporting;
 use function file_exists;
+use function getenv;
 use function mkdir;
 
 use const E_ALL;
+use const PHP_VERSION_ID;
 
 error_reporting(E_ALL);
 date_default_timezone_set('UTC');
@@ -36,4 +39,10 @@ if (! file_exists(__DIR__ . '/Proxies') && ! mkdir(__DIR__ . '/Proxies')) {
 
 if (! file_exists(__DIR__ . '/ORM/Proxy/generated') && ! mkdir(__DIR__ . '/ORM/Proxy/generated')) {
     throw new Exception('Could not create ' . __DIR__ . '/ORM/Proxy/generated Folder.');
+}
+
+$enableNativeLazyObjects = getenv('ENABLE_NATIVE_LAZY_OBJECTS');
+
+if (PHP_VERSION_ID >= 80400 && ($enableNativeLazyObjects === false || $enableNativeLazyObjects === 'true')) {
+    Deprecation::withoutDeduplication();
 }
