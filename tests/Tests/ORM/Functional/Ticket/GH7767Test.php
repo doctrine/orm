@@ -6,8 +6,8 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\Criteria;
-use Doctrine\Common\Collections\Order;
 use Doctrine\Common\Collections\Selectable;
+use Doctrine\ORM\Cache\Persister\CompatOrderings;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
@@ -24,6 +24,8 @@ use function assert;
 #[Group('GH7767')]
 class GH7767Test extends OrmFunctionalTestCase
 {
+    use CompatOrderings;
+
     protected function setUp(): void
     {
         parent::setUp();
@@ -58,7 +60,7 @@ class GH7767Test extends OrmFunctionalTestCase
         assert($parent instanceof GH7767ParentEntity);
 
         $children = $parent->getChildren()->matching(
-            Criteria::create()->orderBy(['position' => Order::Descending]),
+            Criteria::create()->orderBy(['position' => SortDirection::Descending]),
         );
 
         self::assertEquals(300, $children[0]->position);
