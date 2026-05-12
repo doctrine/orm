@@ -25,7 +25,6 @@ use LogicException;
 use Override;
 use ReflectionClass;
 use ReflectionNamedType;
-use SortDirection;
 use Stringable;
 
 use function array_column;
@@ -60,7 +59,6 @@ use function sprintf;
 use function str_contains;
 use function str_replace;
 use function strtolower;
-use function strtoupper;
 use function trait_exists;
 use function trim;
 use function usort;
@@ -1978,10 +1976,6 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
     {
         $mapping['type'] = self::ONE_TO_MANY;
 
-        if (isset($mapping['orderBy'])) {
-            $mapping['orderBy'] = $this->normalizeOrderBy($mapping['orderBy'], $mapping['fieldName']);
-        }
-
         $mapping = $this->_validateAndCompleteAssociationMapping($mapping);
 
         $this->_storeAssociationMapping($mapping);
@@ -2009,10 +2003,6 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
     public function mapManyToMany(array $mapping): void
     {
         $mapping['type'] = self::MANY_TO_MANY;
-
-        if (isset($mapping['orderBy'])) {
-            $mapping['orderBy'] = $this->normalizeOrderBy($mapping['orderBy'], $mapping['fieldName']);
-        }
 
         $mapping = $this->_validateAndCompleteAssociationMapping($mapping);
 
@@ -2712,44 +2702,5 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
             $this->identifier,
             fn (string $field1, string $field2) => $this->identifierPositions[$field1] <=> $this->identifierPositions[$field2],
         );
-    }
-
-    /**
-     * Normalizes orderBy array values to SortDirection instances.
-     *
-     * @param array<string, SortDirection|string> $orderBy
-     *
-     * @return array<string, SortDirection>
-     */
-    private function normalizeOrderBy(array $orderBy, string $fieldName): array
-    {
-        $normalized = [];
-
-        foreach ($orderBy as $field => $direction) {
-            if ($direction instanceof SortDirection) {
-                $normalized[$field] = $direction;
-            } else {
-                Deprecation::trigger(
-                    'doctrine/orm',
-                    'https://github.com/doctrine/orm/issues/11313',
-                    '%s::%s : Using "%s" as an order by direction is deprecated in favor of passing a SortDirection instance',
-                    $this->name,
-                    $fieldName,
-                    $direction,
-                );
-                $normalized[$field] = match (strtoupper($direction)) {
-                    'ASC' => SortDirection::Ascending,
-                    'DESC' => SortDirection::Descending,
-                    default => throw MappingException::invalidOrderByDirection(
-                        $direction,
-                        $field,
-                        $fieldName,
-                        $this->name,
-                    ),
-                };
-            }
-        }
-
-        return $normalized;
     }
 }

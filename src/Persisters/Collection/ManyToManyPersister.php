@@ -9,7 +9,6 @@ use Doctrine\Common\Collections\Criteria;
 use Doctrine\Common\Collections\Expr\Comparison;
 use Doctrine\DBAL\Exception as DBALException;
 use Doctrine\DBAL\LockMode;
-use Doctrine\ORM\Cache\Persister\CompatOrderings;
 use Doctrine\ORM\Mapping\AssociationMapping;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\InverseSideMapping;
@@ -36,8 +35,6 @@ use function sprintf;
  */
 class ManyToManyPersister extends AbstractCollectionPersister
 {
-    use CompatOrderings;
-
     #[Override]
     public function delete(PersistentCollection $collection): void
     {
@@ -754,7 +751,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
 
     private function getOrderingSql(Criteria $criteria, ClassMetadata $targetClass): string
     {
-        $orderings = $this->getOrderings($criteria);
+        $orderings = $criteria->getOrderings();
 
         if ($orderings) {
             $orderBy = [];
@@ -765,12 +762,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
                     $this->platform,
                 );
 
-                if ($direction instanceof SortDirection) {
-                    $directionString = $direction === SortDirection::Ascending ? 'ASC' : 'DESC';
-                } else {
-                    /** @phpstan-ignore property.deprecatedEnum */
-                    $directionString = $direction->value;
-                }
+                $directionString = $direction === SortDirection::Ascending ? 'ASC' : 'DESC';
 
                 $orderBy[] = $field . ' ' . $directionString;
             }

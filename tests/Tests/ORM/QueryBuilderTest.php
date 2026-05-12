@@ -26,7 +26,6 @@ use Doctrine\Tests\OrmTestCase;
 use InvalidArgumentException;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Group;
-use PHPUnit\Framework\Attributes\IgnoreDeprecations;
 use PHPUnit\Framework\Attributes\WithoutErrorHandler;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
@@ -488,30 +487,6 @@ class QueryBuilderTest extends OrmTestCase
         $this->assertValidQueryBuilder($qb, 'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u ORDER BY u.username ASC');
     }
 
-    #[IgnoreDeprecations]
-    public function testLegacyOrderByNull(): void
-    {
-        $qb = $this->entityManager->createQueryBuilder();
-        $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/issues/11313');
-        $qb->select('u')
-            ->from(CmsUser::class, 'u')
-            ->orderBy('u.username', null);
-
-        $this->assertValidQueryBuilder($qb, 'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u ORDER BY u.username ASC');
-    }
-
-    #[IgnoreDeprecations]
-    public function testLegacyOrderByString(): void
-    {
-        $qb = $this->entityManager->createQueryBuilder();
-        $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/issues/11313');
-        $qb->select('u')
-            ->from(CmsUser::class, 'u')
-            ->orderBy('u.username', 'ASC');
-
-        $this->assertValidQueryBuilder($qb, 'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u ORDER BY u.username ASC');
-    }
-
     public function testAddOrderBy(): void
     {
         $qb = $this->entityManager->createQueryBuilder()
@@ -519,32 +494,6 @@ class QueryBuilderTest extends OrmTestCase
             ->from(CmsUser::class, 'u')
             ->orderBy('u.username', SortDirection::Ascending)
             ->addOrderBy('u.username', SortDirection::Descending);
-
-        $this->assertValidQueryBuilder($qb, 'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u ORDER BY u.username ASC, u.username DESC');
-    }
-
-    #[IgnoreDeprecations]
-    public function testLegacyAddOrderByNull(): void
-    {
-        $qb = $this->entityManager->createQueryBuilder();
-        $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/issues/11313');
-        $qb->select('u')
-            ->from(CmsUser::class, 'u')
-            ->orderBy('u.username', SortDirection::Ascending)
-            ->addOrderBy('u.username', null);
-
-        $this->assertValidQueryBuilder($qb, 'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u ORDER BY u.username ASC, u.username ASC');
-    }
-
-    #[IgnoreDeprecations]
-    public function testLegacyAddOrderByString(): void
-    {
-        $qb = $this->entityManager->createQueryBuilder();
-        $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/issues/11313');
-        $qb->select('u')
-            ->from(CmsUser::class, 'u')
-            ->orderBy('u.username', SortDirection::Ascending)
-            ->addOrderBy('u.username', 'DESC');
 
         $this->assertValidQueryBuilder($qb, 'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u ORDER BY u.username ASC, u.username DESC');
     }

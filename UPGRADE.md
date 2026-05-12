@@ -8,6 +8,24 @@ awareness about deprecated code.
 
 # Upgrade to 4.0
 
+## BC BREAK: SortDirection usage is now required
+
+PHP 8.6 provides a native `\SortDirection` enum that must be used instead of
+strings such as `'ASC'` and `'DESC'`.
+
+`\SortDirection` is polyfilled by the `symfony/polyfill-php86` package, that we
+require.
+
+This applies to the following methods:
+
+- `Doctrine\ORM\QueryBuilder::addOrderBy()`
+- `Doctrine\ORM\QueryBuilder::orderBy()`
+- `Doctrine\ORM\Query\Expr\OrderBy::__construct()`
+- `Doctrine\ORM\Query\Expr\OrderBy::add()`
+
+It also applies to mapping when using either the attribute driver or the static
+PHP driver, and it applies when using the class metadata builder API as well.
+
 ## BC BREAK: EventManager to EventManagerInterface migration
 
 The following methods used to return an instance of `Doctrine\Common\EventManager`,
