@@ -27,11 +27,11 @@ jobs:
   phpunit-smoke-check:
     name: >
       SQLite -
-      ${{ format('PHP {0} - DBAL {1} - ext. {2} - proxy {3}',
+      ${{ format('PHP {0} - DBAL {1} - ext. {2} - native lazy obj {3}',
         matrix.php-version || 'Ø',
         matrix.dbal-version || 'Ø',
         matrix.extension || 'Ø',
-        matrix.proxy || 'Ø'
+        matrix.native_lazy || 'Ø'
       ) }}
     runs-on: "ubuntu-22.04"
 
