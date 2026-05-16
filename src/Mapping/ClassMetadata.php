@@ -7,6 +7,7 @@ namespace Doctrine\ORM\Mapping;
 use BackedEnum;
 use BadMethodCallException;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
+use Doctrine\DBAL\Schema\DefaultExpression\CurrentTimestamp;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\Deprecations\Deprecation;
 use Doctrine\Instantiator\Instantiator;
@@ -2482,7 +2483,7 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
             if (in_array($mapping['type'], ['integer', 'bigint', 'smallint'], true)) {
                 $mapping['options']['default'] = 1;
             } elseif ($mapping['type'] === 'datetime') {
-                $mapping['options']['default'] = 'CURRENT_TIMESTAMP';
+                $mapping['options']['default'] = class_exists(CurrentTimestamp::class) ? new CurrentTimestamp() : 'CURRENT_TIMESTAMP';
             } else {
                 throw MappingException::unsupportedOptimisticLockingType($this->name, $mapping['fieldName'], $mapping['type']);
             }
