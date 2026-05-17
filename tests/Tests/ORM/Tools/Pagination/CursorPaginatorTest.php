@@ -16,6 +16,7 @@ use Doctrine\ORM\Query;
 use Doctrine\ORM\Tools\Pagination\Cursor;
 use Doctrine\ORM\Tools\Pagination\CursorItem;
 use Doctrine\ORM\Tools\Pagination\CursorPaginator;
+use Doctrine\ORM\Tools\Pagination\Exception\InvalidCursor;
 use Doctrine\Tests\OrmTestCase;
 use LogicException;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -413,6 +414,17 @@ class CursorPaginatorTest extends OrmTestCase
 
         $this->expectException(LogicException::class);
         $paginator->countPageItems();
+    }
+
+    public function testPaginateThrowsInvalidCursorForNonStringNonCursorNonNull(): void
+    {
+        $query = new Query($this->em);
+        $query->setDQL('SELECT p FROM Doctrine\Tests\ORM\Tools\Pagination\BlogPost p ORDER BY p.id ASC');
+
+        $paginator = new CursorPaginator($query, queryProducesDuplicates: false);
+
+        $this->expectException(InvalidCursor::class);
+        $paginator->paginate(['injected' => 'array'], 10);
     }
 
     public function testDefaultQueryProducesDuplicatesIsTrue(): void
