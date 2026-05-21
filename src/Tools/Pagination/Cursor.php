@@ -9,6 +9,9 @@ use JsonException;
 
 use function base64_decode;
 use function base64_encode;
+use function is_array;
+use function is_scalar;
+use function is_string;
 use function json_decode;
 use function json_encode;
 use function rtrim;
@@ -75,10 +78,14 @@ final class Cursor
      *
      * @see CursorWalker::buildCursorCondition() for the security model around cursor manipulation.
      *
-     * @throws InvalidCursor If decoding fails.
+     * @throws InvalidCursor If decoding fails or the payload is invalid.
      */
-    public static function fromEncodedString(string $encodedString): self
+    public static function fromEncodedString(mixed $encodedString): self
     {
+        if (! is_string($encodedString)) {
+            throw new InvalidCursor('(non-string value)');
+        }
+
         $decoded = base64_decode(strtr($encodedString, '-_', '+/'), strict: true);
 
         if ($decoded === false) {
@@ -86,14 +93,24 @@ final class Cursor
         }
 
         try {
-            $parameters = json_decode($decoded, associative: true, flags: JSON_THROW_ON_ERROR);
+            $parameters = json_decode($decoded, associative: true, depth: 2, flags: JSON_THROW_ON_ERROR);
         } catch (JsonException $e) {
             throw new InvalidCursor($encodedString, $e);
         }
 
-        $isNext = $parameters['_isNext'] ?? true;
+        if (! is_array($parameters)) {
+            throw new InvalidCursor($encodedString);
+        }
+
+        $isNext = (bool) ($parameters['_isNext'] ?? true);
 
         unset($parameters['_isNext']);
+
+        foreach ($parameters as $value) {
+            if (! is_scalar($value) && $value !== null) {
+                throw new InvalidCursor($encodedString);
+            }
+        }
 
         return new self($parameters, $isNext);
     }
