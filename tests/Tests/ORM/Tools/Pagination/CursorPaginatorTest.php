@@ -482,4 +482,32 @@ class CursorPaginatorTest extends OrmTestCase
 
         self::assertSame(1, $paginator->countPageItems());
     }
+
+    public function testGetNextCursorUnwrapsManyToOneAssociationToIdentifier(): void
+    {
+        $author            = new Author();
+        $author->id        = 42;
+        $blogPost1         = new BlogPost();
+        $blogPost1->author = $author;
+
+        $author2           = new Author();
+        $author2->id       = 43;
+        $blogPost2         = new BlogPost();
+        $blogPost2->author = $author2;
+
+        $this->hydrator->method('hydrateAll')->willReturn([$blogPost1, $blogPost2]);
+        $result = $this->createMock(Result::class);
+        $this->connection->method('executeQuery')->willReturn($result);
+
+        $query = new Query($this->em);
+        $query->setDQL('SELECT b FROM Doctrine\Tests\ORM\Tools\Pagination\BlogPost b ORDER BY b.author ASC');
+
+        $paginator = new CursorPaginator($query, queryProducesDuplicates: false);
+        $paginator->paginate(null, 1);
+
+        self::assertTrue($paginator->hasNextPage());
+
+        $cursor = $paginator->getNextCursor();
+        self::assertSame(42, $cursor->getParameters()['b.author']);
+    }
 }
