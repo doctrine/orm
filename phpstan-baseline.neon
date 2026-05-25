@@ -2857,12 +2857,6 @@ parameters:
 			path: src/Tools/Console/Command/MappingDescribeCommand.php
 
 		-
-			message: '#^Parameter \#1 \$entityListeners of method Doctrine\\ORM\\Tools\\Console\\Command\\MappingDescribeCommand\:\:formatEntityListeners\(\) expects list\<object\>, array\<string, list\<array\{class\: class\-string, method\: string\}\>\> given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Tools/Console/Command/MappingDescribeCommand.php
-
-		-
 			message: '#^Parameter \#2 \$callback of function array_filter expects \(callable\(class\-string\)\: bool\)\|null, Closure\(mixed\)\: \(0\|1\|false\) given\.$#'
 			identifier: argument.type
 			count: 1
