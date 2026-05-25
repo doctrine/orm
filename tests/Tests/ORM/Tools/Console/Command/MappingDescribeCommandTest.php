@@ -8,6 +8,7 @@ use Doctrine\ORM\Tools\Console\ApplicationCompatibility;
 use Doctrine\ORM\Tools\Console\Command\MappingDescribeCommand;
 use Doctrine\ORM\Tools\Console\EntityManagerProvider\SingleManagerProvider;
 use Doctrine\Tests\Models\Cache\AttractionInfo;
+use Doctrine\Tests\Models\CMS\CmsAddress;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
@@ -78,5 +79,23 @@ class MappingDescribeCommandTest extends OrmFunctionalTestCase
                 'entityName' => 'AttractionFooBar',
             ]
         );
+    }
+
+    public function testShowEntityWithEntityListeners(): void
+    {
+        $this->tester->execute(
+            [
+                'command'    => $this->command->getName(),
+                'entityName' => CmsAddress::class,
+            ]
+        );
+
+        $display = $this->tester->getDisplay();
+
+        self::assertStringContainsString(CmsAddress::class, $display);
+        self::assertStringContainsString('Entity listeners', $display);
+        self::assertStringContainsString('CmsAddressListener', $display);
+        self::assertStringContainsString('postPersist', $display);
+        self::assertStringContainsString('prePersist', $display);
     }
 }
