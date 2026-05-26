@@ -325,7 +325,13 @@ final class CursorPaginator implements IteratorAggregate
             $fieldName     = $orderByItem->expression->field;
             $orderMetadata = $orderByItem->metadata ?? $metadata;
             $value         = $metadata?->getFieldValue($item, $fieldName) ?? $item->$fieldName;
-            $type          = PersisterHelper::getTypeOfField($fieldName, $orderMetadata, $em)[0];
+
+            if ($value !== null && $orderMetadata !== null && isset($orderMetadata->associationMappings[$fieldName])) {
+                $targetMetadata = $em->getClassMetadata($orderMetadata->associationMappings[$fieldName]->targetEntity);
+                $value          = $targetMetadata->getIdentifierValues($value)[$targetMetadata->getSingleIdentifierFieldName()] ?? null;
+            }
+
+            $type = PersisterHelper::getTypeOfField($fieldName, $orderMetadata, $em)[0];
 
             $result[$orderByItem->paramKey] = $connection->convertToDatabaseValue($value, $type);
         }
