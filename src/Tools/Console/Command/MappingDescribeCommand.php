@@ -376,13 +376,21 @@ EOT);
     /**
      * Format the entity listeners
      *
-     * @phpstan-param list<object> $entityListeners
+     * @phpstan-param array<string, list<array{class: class-string, method: string}>> $entityListeners
      *
      * @return string[]
      * @phpstan-return array{0: string, 1: string}
      */
     private function formatEntityListeners(array $entityListeners): array
     {
-        return $this->formatField('Entity listeners', array_map('get_class', $entityListeners));
+        $listeners = [];
+
+        foreach ($entityListeners as $eventName => $eventListeners) {
+            foreach ($eventListeners as $listener) {
+                $listeners[] = sprintf('%s: %s::%s', $eventName, $listener['class'], $listener['method']);
+            }
+        }
+
+        return $this->formatField('Entity listeners', $listeners);
     }
 }
