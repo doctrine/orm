@@ -12,6 +12,7 @@ use Doctrine\DBAL\Schema\Index\IndexType;
 use Doctrine\DBAL\Schema\Name\UnqualifiedName;
 use Doctrine\DBAL\Schema\PrimaryKeyConstraint;
 use Doctrine\DBAL\Schema\PrimaryKeyConstraintEditor;
+use Doctrine\DBAL\Schema\Schema;
 use Doctrine\DBAL\Schema\Table as DbalTable;
 use Doctrine\DBAL\Types\EnumType;
 use Doctrine\DBAL\Types\Types;
@@ -53,6 +54,7 @@ use Doctrine\Tests\Models\GH10288\GH10288People;
 use Doctrine\Tests\Models\NullDefault\NullDefaultColumn;
 use Doctrine\Tests\OrmTestCase;
 use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\RequiresMethod;
 
 use function array_map;
 use function class_exists;
@@ -525,6 +527,62 @@ class SchemaToolTest extends OrmTestCase
         }
 
         self::assertSame(['first', 'second', 'third'], $pkColumns);
+    }
+
+    #[RequiresMethod(Schema::class, 'edit')]
+    public function testOverwritingSchemaInListener(): void
+    {
+        $em = $this->getTestEntityManager();
+
+        $em->getEventManager()->addEventListener(
+            [ToolEvents::postGenerateSchemaTable, ToolEvents::postGenerateSchema],
+            new class () {
+                public function postGenerateSchemaTable(GenerateSchemaTableEventArgs $eventArgs): void
+                {
+                    $eventArgs->setSchema(new Schema());
+                }
+
+                public function postGenerateSchema(GenerateSchemaEventArgs $eventArgs): void
+                {
+                    $eventArgs->setSchema(new Schema());
+                }
+            },
+        );
+        $schemaTool = new SchemaTool($em);
+
+        $schema = $schemaTool->getSchemaFromMetadata([$em->getClassMetadata(CmsAddress::class)]);
+
+        self::assertFalse(
+            $schema->hasTable('cms_address'),
+            'The original schema should have been overwritten by the listener, so cms_address table should not exist.',
+        );
+    }
+
+    #[RequiresMethod(Schema::class, 'edit')]
+    public function testOverwritingTableInListener(): void
+    {
+        $em = $this->getTestEntityManager();
+
+        $em->getEventManager()->addEventListener(
+            [ToolEvents::postGenerateSchemaTable],
+            new class () {
+                public function postGenerateSchemaTable(GenerateSchemaTableEventArgs $eventArgs): void
+                {
+                    $eventArgs->setClassTable(new DbalTable('just_address'));
+                }
+            },
+        );
+        $schemaTool = new SchemaTool($em);
+
+        $schema = $schemaTool->getSchemaFromMetadata([$em->getClassMetadata(CmsAddress::class)]);
+        self::assertTrue(
+            $schema->hasTable('just_address'),
+            'The original table should have been overwritten by the listener, so just_address table should exist.',
+        );
+        self::assertFalse(
+            $schema->hasTable('cms_address'),
+            'The original table should have been overwritten by the listener, so cms_address table should not exist.',
+        );
     }
 
     /** @return string[] */

@@ -389,11 +389,38 @@ class SchemaTool
                 }
             }
 
+            $tableEventArgs = new GenerateSchemaTableEventArgs($class, $schema, $table);
             $eventManager->dispatchEvent(
                 ToolEvents::postGenerateSchemaTable,
-                new GenerateSchemaTableEventArgs($class, $schema, $table),
+                $tableEventArgs,
             );
+
+            // Always retrieve the schema (listener may have mutated it)
+            $schema = $tableEventArgs->getSchema();
+
+            // If the listener mutated the table, we need to replace it in the schema
+            if ($tableEventArgs->classTableWasMutated()) {
+                $originalTableName = $table->getObjectName();
+                $newTable          = $tableEventArgs->getClassTable();
+
+                // @phpstan-ignore method.notFound (Using unreleased Schema::edit() API)
+                $schemaEditor = $schema->edit();
+                $schemaEditor->dropTable($originalTableName);
+                $schemaEditor->addTable($newTable);
+
+                $schema = $schemaEditor->create();
+                $table  = $newTable;
+            }
         }
+
+        $schemaEventArgs = new GenerateSchemaEventArgs($this->em, $schema);
+        $eventManager->dispatchEvent(
+            ToolEvents::postGenerateSchema,
+            $schemaEventArgs,
+        );
+
+        // Always retrieve the schema (listener may have mutated it)
+        $schema = $schemaEventArgs->getSchema();
 
         $eventManager->dispatchEvent(
             ToolEvents::postGenerateSchema,

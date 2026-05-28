@@ -49,6 +49,10 @@ parameters:
             path: src/Mapping/Driver/DatabaseDriver.php
 
         -
+            message: '~^Call to an undefined method Doctrine\\DBAL\\Schema\\Table\:\:getObjectName\(\)\.$~'
+            path: src/Tools/SchemaTool.php
+
+        -
             message: '~^Call to an undefined method Doctrine\\DBAL\\Schema\\ForeignKeyConstraint::get.*\.$~'
             identifier: method.notFound
 
