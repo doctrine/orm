@@ -55,6 +55,7 @@ use Doctrine\Tests\Models\Cache\TravelerProfile;
 use Doctrine\Tests\Models\Cache\TravelerProfileInfo;
 use Doctrine\Tests\Models\CMS\CmsAddress;
 use Doctrine\Tests\Models\CMS\CmsArticle;
+use Doctrine\Tests\Models\CMS\CmsArticleAssociatedDetail;
 use Doctrine\Tests\Models\CMS\CmsComment;
 use Doctrine\Tests\Models\CMS\CmsEmail;
 use Doctrine\Tests\Models\CMS\CmsGroup;
@@ -269,6 +270,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             CmsGroup::class,
             CmsTag::class,
             CmsArticle::class,
+            CmsArticleAssociatedDetail::class,
             CmsComment::class,
         ],
         'company' => [
@@ -557,6 +559,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             $conn->executeStatement('DELETE FROM cms_addresses');
             $conn->executeStatement('DELETE FROM cms_phonenumbers');
             $conn->executeStatement('DELETE FROM cms_comments');
+            $conn->executeStatement('DELETE FROM cms_article_associated_details');
             $conn->executeStatement('DELETE FROM cms_articles');
             $conn->executeStatement('DELETE FROM cms_users');
             $conn->executeStatement('DELETE FROM cms_emails');
@@ -658,6 +661,11 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             $conn->executeStatement('DELETE FROM JoinedChildClass');
             $conn->executeStatement('DELETE FROM JoinedRootClass');
             $conn->executeStatement('DELETE FROM SingleRootClass');
+        }
+
+        if (isset($this->_usedModelSets['compositekeyrelations'])) {
+            $conn->executeStatement('DELETE FROM InvoiceClass');
+            $conn->executeStatement('DELETE FROM CustomerClass');
         }
 
         if (isset($this->_usedModelSets['taxi'])) {

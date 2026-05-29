@@ -1482,6 +1482,15 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
     }
 
     /**
+     * Whether the entity uses a single-field identifier, and it's set.
+     */
+    public function hasSingleIdentifier(): bool
+    {
+        return ! $this->isIdentifierComposite
+            && isset($this->identifier[0]);
+    }
+
+    /**
      * Gets the name of the single id field. Note that this only works on
      * entity classes that have a single-field pk.
      *
