@@ -63,7 +63,15 @@ class ProxyFactoryTest extends OrmTestCase
         $this->emMock  = new EntityManagerMock($connection);
         $this->uowMock = new UnitOfWorkMock($this->emMock);
         $this->emMock->setUnitOfWork($this->uowMock);
-        $this->proxyFactory = new ProxyFactory($this->emMock, sys_get_temp_dir(), 'Proxies', ProxyFactory::AUTOGENERATE_ALWAYS);
+        $args               = $this->emMock->getConfiguration()->isNativeLazyObjectsEnabled() ?
+            [$this->emMock] :
+            [
+                $this->emMock,
+                sys_get_temp_dir(),
+                'Proxies',
+                ProxyFactory::AUTOGENERATE_ALWAYS,
+            ];
+        $this->proxyFactory = new ProxyFactory(...$args);
     }
 
     public function testReferenceProxyDelegatesLoadingToThePersister(): void
@@ -281,6 +289,7 @@ class ProxyFactoryTest extends OrmTestCase
         );
     }
 
+    #[IgnoreDeprecations]
     public function testProxyFactoryThrowsIfLazyGhostsAreUnavailable(): void
     {
         if (method_exists(ProxyHelper::class, 'generateLazyGhost')) {

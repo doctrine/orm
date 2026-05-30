@@ -88,6 +88,7 @@ class ParserResultSerializationTest extends OrmFunctionalTestCase
     }
 
     #[DataProvider('provideSerializedSingleSelectResults')]
+    #[IgnoreDeprecations]
     public function testUnserializeSingleSelectResult(string $serialized): void
     {
         $unserialized = unserialize($serialized);

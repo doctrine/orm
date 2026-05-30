@@ -68,7 +68,8 @@ final class BinaryIdPersisterTest extends OrmTestCase
             return $this->entityManager;
         }
 
-        $config = ORMSetup::createAttributeMetadataConfiguration(
+        $method = PHP_VERSION_ID >= 80400 ? 'createAttributeMetadataConfig' : 'createAttributeMetadataConfiguration';
+        $config = ORMSetup::$method(
             $this->getClassLocator(),
             isDevMode: true,
         );
