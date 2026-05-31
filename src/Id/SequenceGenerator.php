@@ -100,7 +100,7 @@ class SequenceGenerator extends AbstractIdGenerator implements Serializable
             self::class,
         );
 
-        $this->__unserialize(unserialize($serialized));
+        $this->__unserialize(unserialize($serialized, ['allowed_classes' => false]));
     }
 
     /** @param array<string, mixed> $data */
