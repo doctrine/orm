@@ -2398,6 +2398,7 @@ class UnitOfWork implements PropertyChangedListener
                 } else {
                     $entity->__setInitialized(true);
 
+                    /** @phpstan-ignore staticMethod.deprecatedClass (migrating requires the symfony/deepclone PHP extension) */
                     Hydrator::hydrate($entity, (array) $class->reflClass->newInstanceWithoutConstructor());
                 }
             } else {
