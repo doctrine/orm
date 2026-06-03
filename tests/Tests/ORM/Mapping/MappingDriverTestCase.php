@@ -422,6 +422,7 @@ abstract class MappingDriverTestCase extends OrmTestCase
         );
     }
 
+    #[IgnoreDeprecations]
     public function testOrderByWithInvalidDirection(): void
     {
         $driver = $this->loadDriver();
