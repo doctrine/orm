@@ -2429,7 +2429,18 @@ class UnitOfWork implements PropertyChangedListener
 
         foreach ($data as $field => $value) {
             if (isset($class->fieldMappings[$field])) {
-                $class->propertyAccessors[$field]->setValue($entity, $value);
+                $accessor = $class->propertyAccessors[$field];
+
+                // During refresh, skip already-initialized readonly properties.
+                if (
+                    isset($hints[Query::HINT_REFRESH])
+                    && $accessor instanceof ReadonlyAccessor
+                    && $accessor->getUnderlyingReflector()->isInitialized($entity)
+                ) {
+                    continue;
+                }
+
+                $accessor->setValue($entity, $value);
             }
         }
 
