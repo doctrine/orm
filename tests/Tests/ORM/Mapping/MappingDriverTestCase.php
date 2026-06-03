@@ -422,6 +422,7 @@ abstract class MappingDriverTestCase extends OrmTestCase
         );
     }
 
+    #[IgnoreDeprecations]
     public function testOrderByWithInvalidDirection(): void
     {
         $driver = $this->loadDriver();
@@ -1182,7 +1183,6 @@ class User
                             'name' => 'user_id',
                             'referencedColumnName' => 'id',
                             'unique' => false,
-                            'nullable' => false,
                         ],
                     ],
                     'inverseJoinColumns' =>

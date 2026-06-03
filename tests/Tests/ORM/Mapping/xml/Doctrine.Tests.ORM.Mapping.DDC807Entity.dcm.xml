@@ -6,15 +6,15 @@
 
     <entity name="Doctrine\Tests\ORM\Mapping\DDC807Entity" inheritance-type="SINGLE_TABLE">
         <discriminator-column name="dtype" column-definition="ENUM('ONE','TWO')"/>
-        
+
         <discriminator-map>
             <discriminator-mapping value="ONE" class="DDC807SubClasse1" />
-            <discriminator-mapping value="TWO" class="DDC807SubClasse1" />
+            <discriminator-mapping value="TWO" class="DDC807SubClasse2" />
         </discriminator-map>
 
         <id name="id">
             <generator strategy="NONE"/>
         </id>
     </entity>
-        
+
 </doctrine-mapping>

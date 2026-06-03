@@ -65,6 +65,8 @@ use function array_values;
 use function assert;
 use function count;
 use function current;
+use function deepclone_hydrate;
+use function extension_loaded;
 use function get_debug_type;
 use function implode;
 use function in_array;
@@ -2392,7 +2394,12 @@ class UnitOfWork implements PropertyChangedListener
                 } else {
                     $entity->__setInitialized(true);
 
-                    Hydrator::hydrate($entity, (array) $class->reflClass->newInstanceWithoutConstructor());
+                    if (extension_loaded('deepclone')) {
+                        deepclone_hydrate($entity, (array) $class->reflClass->newInstanceWithoutConstructor());
+                    } else {
+                        /** @phpstan-ignore staticMethod.deprecatedClass */
+                        Hydrator::hydrate($entity, (array) $class->reflClass->newInstanceWithoutConstructor());
+                    }
                 }
             } else {
                 if (
