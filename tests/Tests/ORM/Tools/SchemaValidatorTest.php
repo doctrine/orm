@@ -325,7 +325,7 @@ class DDC1587ValidEntity2
 {
     #[Id]
     #[OneToOne(targetEntity: 'DDC1587ValidEntity1', inversedBy: 'identifier')]
-    #[JoinColumn(name: 'pk_agent', referencedColumnName: 'pk', nullable: false)]
+    #[JoinColumn(name: 'pk_agent', referencedColumnName: 'pk')]
     private DDC1587ValidEntity1 $agent;
 
     #[Column(name: 'num', type: 'string', length: 16, nullable: true)]

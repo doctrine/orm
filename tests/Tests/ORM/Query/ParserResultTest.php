@@ -9,6 +9,7 @@ use Doctrine\ORM\Query\Exec\AbstractSqlExecutor;
 use Doctrine\ORM\Query\ParserResult;
 use Doctrine\ORM\Query\ResultSetMapping;
 use LogicException;
+use PHPUnit\Framework\Attributes\IgnoreDeprecations;
 use PHPUnit\Framework\TestCase;
 
 class ParserResultTest extends TestCase
@@ -28,6 +29,7 @@ class ParserResultTest extends TestCase
         self::assertInstanceOf(ResultSetMapping::class, $this->parserResult->getResultSetMapping());
     }
 
+    #[IgnoreDeprecations]
     public function testItThrowsWhenAttemptingToAccessTheExecutorBeforeItIsSet(): void
     {
         $this->expectException(LogicException::class);
@@ -38,6 +40,7 @@ class ParserResultTest extends TestCase
         $this->parserResult->getSqlExecutor();
     }
 
+    #[IgnoreDeprecations]
     public function testSetGetSqlExecutor(): void
     {
         $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/pull/11188');

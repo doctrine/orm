@@ -209,7 +209,7 @@ class PostLoadEventTest extends OrmFunctionalTestCase
     public function testEventRaisedCorrectTimesWhenOtherEntityLoadedInEventHandler(): void
     {
         $eventManager = $this->_em->getEventManager();
-        $listener     = new PostLoadListenerLoadEntityInEventHandler();
+        $listener     = new PostLoadListenerLoadEntityInEventHandler(! $this->_em->getConfiguration()->isNativeLazyObjectsEnabled());
         $eventManager->addEventListener([Events::postLoad], $listener);
 
         $this->_em->find(CmsUser::class, $this->userId);
@@ -265,11 +265,9 @@ class PostLoadListener
 
 class PostLoadListenerCheckAssociationsArePopulated
 {
-    /** @var bool */
-    public $checked = false;
+    public bool $checked = false;
 
-    /** @var bool */
-    public $populated = false;
+    public bool $populated = false;
 
     public function postLoad(PostLoadEventArgs $event): void
     {
@@ -287,13 +285,20 @@ class PostLoadListenerCheckAssociationsArePopulated
 
 class PostLoadListenerLoadEntityInEventHandler
 {
+    public function __construct(private bool $resolveClassName)
+    {
+    }
+
     /** @var array<class-string, int> */
     private array $firedByClasses = [];
 
     public function postLoad(PostLoadEventArgs $event): void
     {
         $object = $event->getObject();
-        $class  = DefaultProxyClassNameResolver::getClass($object);
+        $class  = $this->resolveClassName ?
+            DefaultProxyClassNameResolver::getClass($object) :
+            $object::class;
+
         if (! isset($this->firedByClasses[$class])) {
             $this->firedByClasses[$class] = 1;
         } else {

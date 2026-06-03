@@ -177,3 +177,36 @@ parameters:
             paths:
                 - src/PersistentCollection.php
                 - src/Persisters/SqlValueVisitor.php
+
+        # DBAL 4/5 Schema Editor API compatibility
+        -
+            message: '~^Class Doctrine\\DBAL\\Schema\\Table constructor invoked with 7 parameters, 1-6 required\.$~'
+            path: src/Tools/SchemaTool.php
+
+        -
+            message: '~^Call to an undefined method Doctrine\\DBAL\\Schema\\SchemaConfig::toTableConfiguration\(\)\.$~'
+            path: src/Tools/SchemaTool.php
+
+        -
+            message: '~^Call to method setAutoincrement\(\) on an unknown class Doctrine\\DBAL\\Schema\\ColumnEditor\.$~'
+            path: src/Tools/SchemaTool.php
+
+        -
+            message: '~^Parameter \$column of anonymous function has invalid type Doctrine\\DBAL\\Schema\\ColumnEditor\.$~'
+            path: src/Tools/SchemaTool.php
+
+        -
+            message: '~^Call to an undefined method Doctrine\\DBAL\\Schema\\Table::edit\(\)\.$~'
+            path: src/Tools/SchemaTool.php
+
+        -
+            message: '~^Call to an undefined method Doctrine\\DBAL\\Schema\\Table::modifyColumnByUnquotedName\(\)\.$~'
+            path: src/Tools/SchemaTool.php
+
+        -
+            message: '~^Instantiated class Doctrine\\DBAL\\Schema\\ColumnEditor not found\.$~'
+            path: src/Tools/SchemaTool.php
+
+        -
+            message: '~^Unknown parameter \$configuration in call to Doctrine\\DBAL\\Schema\\Table constructor\.$~'
+            path: src/Tools/SchemaTool.php

@@ -98,6 +98,11 @@ jobs:
           extensions: "apcu, pdo, ${{ matrix.extension }}"
           coverage: "pcov"
           ini-values: "zend.assertions=1, apc.enable_cli=1"
+          tools: "pie"
+
+      - name: "Install deepclone extension"
+        run: sudo pie install symfony/deepclone
+        if: "${{ matrix.native_lazy == '0' && matrix.php-version != '8.1' }}"
 
       - name: "Allow dev dependencies"
         run: |
