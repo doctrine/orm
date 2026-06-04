@@ -13,6 +13,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
+use function assert;
 use function file_exists;
 use function is_dir;
 use function is_writable;
@@ -42,17 +43,29 @@ class GenerateProxiesCommand extends AbstractEntityManagerCommand
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
+        $ui = (new SymfonyStyle($input, $output))->getErrorStyle();
+
+        $em = $this->getEntityManager($input);
+
         if (PHP_VERSION_ID >= 80400) {
             Deprecation::trigger(
                 'doctrine/orm',
                 'https://github.com/doctrine/orm/pull/12005',
                 'Generating proxies is deprecated and will be impossible in Doctrine ORM 4.0.',
             );
+
+            if ($em->getConfiguration()->isNativeLazyObjectsEnabled()) {
+                $name = $this->getName();
+                assert($name !== null);
+
+                $ui->warning(sprintf(<<<'WARNING'
+                    When using native lazy objects, you do not need to generate proxy classes.
+                    Attempting to do so is a no-op, and %s will be removed in Doctrine ORM 4.0.
+                    WARNING, $name));
+
+                return 0;
+            }
         }
-
-        $ui = (new SymfonyStyle($input, $output))->getErrorStyle();
-
-        $em = $this->getEntityManager($input);
 
         $metadatas = $em->getMetadataFactory()->getAllMetadata();
         $metadatas = MetadataFilter::filter($metadatas, $input->getOption('filter'));
