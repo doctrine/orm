@@ -7,6 +7,7 @@ namespace Doctrine\ORM\Tools\Pagination;
 use ArrayIterator;
 use Countable;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Cache\CacheException;
 use Doctrine\ORM\Internal\SQLResultCasing;
 use Doctrine\ORM\NoResultException;
 use Doctrine\ORM\Query;
@@ -247,6 +248,17 @@ class Paginator implements Countable, IteratorAggregate
 
         if (! $countQuery->hasHint(CountWalker::HINT_DISTINCT)) {
             $countQuery->setHint(CountWalker::HINT_DISTINCT, true);
+        }
+
+        $qcp = $this->query->getQueryCacheProfile();
+        if ($qcp !== null) {
+            try {
+                $countQuery->setResultCacheId($qcp->getCacheKey());
+            } catch (CacheException $cacheException) {
+                // Continue without the cache key if one was not set.
+            }
+
+            $countQuery->setResultCacheLifetime($qcp->getLifetime());
         }
 
         if ($this->useOutputWalker($countQuery)) {
