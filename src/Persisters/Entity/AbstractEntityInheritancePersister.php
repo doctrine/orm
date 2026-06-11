@@ -46,14 +46,12 @@ abstract class AbstractEntityInheritancePersister extends BasicEntityPersister
             $this->quoteStrategy->getColumnName($field, $class, $this->platform),
         );
 
-        $columnAlias = null;
-        if ($this->currentPersisterContext->rsm->hasColumnAliasByField($alias, $field)) {
-            $columnAlias = $this->currentPersisterContext->rsm->getColumnAliasByField($alias, $field);
-        }
-
-        if ($columnAlias === null) {
-            $columnAlias = $this->getSQLColumnAlias($fieldMapping->columnName);
-        }
+        // Reuse the alias if the field was already selected before; the SQL is regenerated
+        // when the filters change, and a second alias for the same field breaks indexBy().
+        // getColumnAliasByField() is of no use here, as it misses fields inherited from a
+        // parent class - the map is keyed by the declaring class.
+        $columnAlias = $this->currentPersisterContext->rsm->columnAliasMappings[$class->name][$alias][$field]
+            ?? $this->getSQLColumnAlias($fieldMapping->columnName);
 
         $this->currentPersisterContext->rsm->addFieldResult($alias, $columnAlias, $field, $class->name);
 
