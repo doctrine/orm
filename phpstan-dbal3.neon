@@ -96,6 +96,8 @@ parameters:
         - '~^Class Doctrine\\DBAL\\Platforms\\SQLitePlatform not found\.$~'
 
         - '~^Class Doctrine\\DBAL\\Schema\\NamedObject not found\.$~'
+        - '~^Class Doctrine\\DBAL\\Schema\\Name\\Parsers not found\.$~'
+        - '~^Call to an undefined static method Doctrine\\DBAL\\Schema\\Index\:\:editor\(\)\.$~'
 
         -
             message: '~sort~'
