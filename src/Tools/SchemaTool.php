@@ -191,6 +191,7 @@ class SchemaTool
      */
     public function getSchemaFromMetadata(array $classes): Schema
     {
+        Deprecation::ignoreDeprecations('https://github.com/doctrine/dbal/pull/7389');
         // Reminder for processed classes, used for hierarchies
         $processedClasses     = [];
         $eventManager         = $this->em->getEventManager();
