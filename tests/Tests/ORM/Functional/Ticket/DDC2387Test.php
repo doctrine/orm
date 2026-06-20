@@ -4,10 +4,14 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\DBAL\Schema\Column;
+use Doctrine\DBAL\Schema\ForeignKeyConstraint;
 use Doctrine\DBAL\Schema\Name\Identifier;
 use Doctrine\DBAL\Schema\Name\UnqualifiedName;
 use Doctrine\DBAL\Schema\PrimaryKeyConstraint;
 use Doctrine\DBAL\Schema\Table;
+use Doctrine\DBAL\Schema\TableEditor;
+use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\Tests\ORM\Functional\DatabaseDriverTestCase;
 use PHPUnit\Framework\Attributes\Group;
@@ -19,26 +23,36 @@ class DDC2387Test extends DatabaseDriverTestCase
     #[Group('DDC-2387')]
     public function testCompositeAssociationKeyDetection(): void
     {
-        $product = new Table('ddc2387_product');
-        $product->addColumn('id', 'integer');
+        $product = new Table(
+            'ddc2387_product',
+            [new Column('id', Type::getType('integer'))],
+        );
 
-        if (class_exists(PrimaryKeyConstraint::class)) {
-            $product->addPrimaryKeyConstraint(new PrimaryKeyConstraint(null, [new UnqualifiedName(Identifier::unquoted('id'))], true));
+        $attributes = new Table(
+            'ddc2387_attributes',
+            [
+                new Column('product_id', Type::getType('integer')),
+                new Column('attribute_name', Type::getType('string')),
+            ],
+        );
+
+        if (class_exists(TableEditor::class)) {
+            $product    = $product->edit()
+                ->addPrimaryKeyConstraint(new PrimaryKeyConstraint(null, [new UnqualifiedName(Identifier::unquoted('id'))], true))
+                ->create();
+            $attributes = $attributes->edit()
+                ->addPrimaryKeyConstraint(new PrimaryKeyConstraint(null, [new UnqualifiedName(Identifier::unquoted('product_id')), new UnqualifiedName(Identifier::unquoted('attribute_name'))], true))
+                ->addForeignKeyConstraint(new ForeignKeyConstraint(
+                    ['product_id'],
+                    'ddc2387_product',
+                    ['product_id'],
+                ))
+                ->create();
         } else {
             $product->setPrimaryKey(['id']);
-        }
-
-        $attributes = new Table('ddc2387_attributes');
-        $attributes->addColumn('product_id', 'integer');
-        $attributes->addColumn('attribute_name', 'string');
-
-        if (class_exists(PrimaryKeyConstraint::class)) {
-            $attributes->addPrimaryKeyConstraint(new PrimaryKeyConstraint(null, [new UnqualifiedName(Identifier::unquoted('product_id')), new UnqualifiedName(Identifier::unquoted('attribute_name'))], true));
-        } else {
             $attributes->setPrimaryKey(['product_id', 'attribute_name']);
+            $attributes->addForeignKeyConstraint('ddc2387_product', ['product_id'], ['product_id']);
         }
-
-        $attributes->addForeignKeyConstraint('ddc2387_product', ['product_id'], ['product_id']);
 
         $metadata = $this->convertToClassMetadata([$product, $attributes], []);
 

@@ -8,10 +8,14 @@ use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Platforms\PostgreSQLPlatform;
 use Doctrine\DBAL\Platforms\SQLServerPlatform;
 use Doctrine\DBAL\Schema\AbstractSchemaManager;
+use Doctrine\DBAL\Schema\Column;
+use Doctrine\DBAL\Schema\ForeignKeyConstraint;
 use Doctrine\DBAL\Schema\Name\Identifier;
 use Doctrine\DBAL\Schema\Name\UnqualifiedName;
 use Doctrine\DBAL\Schema\PrimaryKeyConstraint;
 use Doctrine\DBAL\Schema\Table;
+use Doctrine\DBAL\Schema\TableEditor;
+use Doctrine\DBAL\Types\Type;
 use PHPUnit\Framework\Attributes\Group;
 
 use function array_change_key_case;
@@ -23,8 +27,7 @@ use const CASE_LOWER;
 
 class DatabaseDriverTest extends DatabaseDriverTestCase
 {
-    /** @var AbstractSchemaManager */
-    protected $schemaManager = null;
+    protected AbstractSchemaManager|null $schemaManager = null;
 
     protected function setUp(): void
     {
@@ -38,27 +41,46 @@ class DatabaseDriverTest extends DatabaseDriverTestCase
     #[Group('DDC-2059')]
     public function testIssue2059(): void
     {
-        $user = new Table('ddc2059_user');
-        $user->addColumn('id', 'integer');
+        $user = new Table(
+            'ddc2059_user',
+            [new Column('id', Type::getType('integer'))],
+        );
 
-        if (class_exists(PrimaryKeyConstraint::class)) {
-            $user->addPrimaryKeyConstraint(new PrimaryKeyConstraint(null, [new UnqualifiedName(Identifier::unquoted('id'))], true));
+        $project = new Table(
+            'ddc2059_project',
+            [
+                new Column('id', Type::getType('integer')),
+                new Column('user_id', Type::getType('integer')),
+                new Column('user', Type::getType('string')),
+
+            ],
+        );
+
+        if (class_exists(TableEditor::class)) {
+            $user    = $user->edit()
+                ->addPrimaryKeyConstraint(new PrimaryKeyConstraint(
+                    null,
+                    [new UnqualifiedName(Identifier::unquoted('id'))],
+                    true,
+                ))
+                ->create();
+            $project = $project->edit()
+                ->addPrimaryKeyConstraint(new PrimaryKeyConstraint(
+                    null,
+                    [new UnqualifiedName(Identifier::unquoted('id'))],
+                    true,
+                ))
+                ->addForeignKeyConstraint(new ForeignKeyConstraint(
+                    ['user_id'],
+                    'ddc2059_user',
+                    ['id'],
+                ))
+                ->create();
         } else {
             $user->setPrimaryKey(['id']);
-        }
-
-        $project = new Table('ddc2059_project');
-        $project->addColumn('id', 'integer');
-        $project->addColumn('user_id', 'integer');
-        $project->addColumn('user', 'string');
-
-        if (class_exists(PrimaryKeyConstraint::class)) {
-            $project->addPrimaryKeyConstraint(new PrimaryKeyConstraint(null, [new UnqualifiedName(Identifier::unquoted('id'))], true));
-        } else {
             $project->setPrimaryKey(['id']);
+            $project->addForeignKeyConstraint('ddc2059_user', ['user_id'], ['id']);
         }
-
-        $project->addForeignKeyConstraint('ddc2059_user', ['user_id'], ['id']);
 
         $metadata = $this->convertToClassMetadata([$project, $user], []);
 
@@ -68,16 +90,25 @@ class DatabaseDriverTest extends DatabaseDriverTestCase
 
     public function testLoadMetadataFromDatabase(): void
     {
-        $table = new Table('dbdriver_foo');
-        $table->addColumn('id', 'integer');
+        $table = new Table(
+            'dbdriver_foo',
+            [
+                new Column('id', Type::getType('integer')),
+                new Column('bar', Type::getType('string'), ['notnull' => false, 'length' => 200]),
+            ],
+        );
 
-        if (class_exists(PrimaryKeyConstraint::class)) {
-            $table->addPrimaryKeyConstraint(new PrimaryKeyConstraint(null, [new UnqualifiedName(Identifier::unquoted('id'))], true));
+        if (class_exists(TableEditor::class)) {
+            $table = $table->edit()
+                ->addPrimaryKeyConstraint(new PrimaryKeyConstraint(
+                    null,
+                    [new UnqualifiedName(Identifier::unquoted('id'))],
+                    true,
+                ))
+                ->create();
         } else {
             $table->setPrimaryKey(['id']);
         }
-
-        $table->addColumn('bar', 'string', ['notnull' => false, 'length' => 200]);
 
         $this->dropAndCreateTable($table);
 
@@ -101,29 +132,48 @@ class DatabaseDriverTest extends DatabaseDriverTestCase
 
     public function testLoadMetadataWithForeignKeyFromDatabase(): void
     {
-        $tableB = new Table('dbdriver_bar');
-        $tableB->addColumn('id', 'integer');
+        $tableB = new Table(
+            'dbdriver_bar',
+            [
+                new Column('id', Type::getType('integer')),
+            ],
+        );
 
-        if (class_exists(PrimaryKeyConstraint::class)) {
-            $tableB->addPrimaryKeyConstraint(new PrimaryKeyConstraint(null, [new UnqualifiedName(Identifier::unquoted('id'))], true));
+        $tableA = new Table(
+            'dbdriver_baz',
+            [
+                new Column('id', Type::getType('integer')),
+                new Column('bar_id', Type::getType('integer')),
+            ],
+        );
+
+        if (class_exists(TableEditor::class)) {
+            $tableB = $tableB->edit()
+                ->addPrimaryKeyConstraint(new PrimaryKeyConstraint(
+                    null,
+                    [new UnqualifiedName(Identifier::unquoted('id'))],
+                    true,
+                ))
+                ->create();
+            $tableA = $tableA->edit()
+                ->addPrimaryKeyConstraint(new PrimaryKeyConstraint(
+                    null,
+                    [new UnqualifiedName(Identifier::unquoted('id'))],
+                    true,
+                ))
+                ->addForeignKeyConstraint(new ForeignKeyConstraint(
+                    ['bar_id'],
+                    'dbdriver_bar',
+                    ['id'],
+                ))
+                ->create();
         } else {
             $tableB->setPrimaryKey(['id']);
+            $tableA->setPrimaryKey(['id']);
+            $tableA->addForeignKeyConstraint('dbdriver_bar', ['bar_id'], ['id']);
         }
 
         $this->dropAndCreateTable($tableB);
-
-        $tableA = new Table('dbdriver_baz');
-        $tableA->addColumn('id', 'integer');
-
-        if (class_exists(PrimaryKeyConstraint::class)) {
-            $tableA->addPrimaryKeyConstraint(new PrimaryKeyConstraint(null, [new UnqualifiedName(Identifier::unquoted('id'))], true));
-        } else {
-            $tableA->setPrimaryKey(['id']);
-        }
-
-        $tableA->addColumn('bar_id', 'integer');
-        $tableA->addForeignKeyConstraint('dbdriver_bar', ['bar_id'], ['id']);
-
         $this->dropAndCreateTable($tableA);
 
         $metadatas = $this->extractClassMetadata(['DbdriverBar', 'DbdriverBaz']);
@@ -158,28 +208,56 @@ class DatabaseDriverTest extends DatabaseDriverTestCase
 
     public function testIgnoreManyToManyTableWithoutFurtherForeignKeyDetails(): void
     {
-        $tableB = new Table('dbdriver_bar');
-        $tableB->addColumn('id', 'integer');
+        $tableB = new Table(
+            'dbdriver_bar',
+            [new Column('id', Type::getType('integer'))],
+        );
+
+        $tableA = new Table(
+            'dbdriver_baz',
+            [
+                new Column('id', Type::getType('integer')),
+            ],
+        );
 
         if (class_exists(PrimaryKeyConstraint::class)) {
-            $tableB->addPrimaryKeyConstraint(new PrimaryKeyConstraint(null, [new UnqualifiedName(Identifier::unquoted('id'))], true));
+            $tableB = $tableB->edit()
+                ->addPrimaryKeyConstraint(new PrimaryKeyConstraint(
+                    null,
+                    [new UnqualifiedName(Identifier::unquoted('id'))],
+                    true,
+                ))
+                ->create();
+            $tableA = $tableA->edit()
+                ->addPrimaryKeyConstraint(new PrimaryKeyConstraint(
+                    null,
+                    [new UnqualifiedName(Identifier::unquoted('id'))],
+                    true,
+                ))
+                ->create();
         } else {
             $tableB->setPrimaryKey(['id']);
-        }
-
-        $tableA = new Table('dbdriver_baz');
-        $tableA->addColumn('id', 'integer');
-
-        if (class_exists(PrimaryKeyConstraint::class)) {
-            $tableA->addPrimaryKeyConstraint(new PrimaryKeyConstraint(null, [new UnqualifiedName(Identifier::unquoted('id'))], true));
-        } else {
             $tableA->setPrimaryKey(['id']);
         }
 
-        $tableMany = new Table('dbdriver_bar_baz');
-        $tableMany->addColumn('bar_id', 'integer');
-        $tableMany->addColumn('baz_id', 'integer');
-        $tableMany->addForeignKeyConstraint('dbdriver_bar', ['bar_id'], ['id']);
+        $tableMany = new Table(
+            'dbdriver_bar_baz',
+            [
+                new Column('bar_id', Type::getType('integer')),
+                new Column('baz_id', Type::getType('integer')),
+            ],
+        );
+        if (class_exists(TableEditor::class)) {
+            $tableMany = $tableMany->edit()
+                ->addForeignKeyConstraint(new ForeignKeyConstraint(
+                    ['bar_id'],
+                    'dbdriver_bar',
+                    ['id'],
+                ))
+                ->create();
+        } else {
+            $tableMany->addForeignKeyConstraint('dbdriver_bar', ['bar_id'], ['id']);
+        }
 
         $metadatas = $this->convertToClassMetadata([$tableA, $tableB], [$tableMany]);
 
@@ -188,28 +266,35 @@ class DatabaseDriverTest extends DatabaseDriverTestCase
 
     public function testLoadMetadataFromDatabaseDetail(): void
     {
-        $table = new Table('dbdriver_foo');
+        $table = new Table(
+            'dbdriver_foo',
+            [
+                new Column('id', Type::getType('integer'), ['unsigned' => true]),
+                new Column('column_unsigned', Type::getType('integer'), ['unsigned' => true]),
+                new Column('column_comment', Type::getType('string'), ['length' => 16, 'comment' => 'test_comment']),
+                new Column('column_default', Type::getType('string'), ['length' => 16, 'default' => 'test_default']),
+                new Column('column_decimal', Type::getType('decimal'), ['precision' => 4, 'scale' => 3]),
+                new Column('column_index1', Type::getType('string'), ['length' => 16]),
+                new Column('column_index2', Type::getType('string'), ['length' => 16]),
+                new Column('column_unique_index1', Type::getType('string'), ['length' => 16]),
+                new Column('column_unique_index2', Type::getType('string'), ['length' => 16]),
+            ],
+        );
 
-        $table->addColumn('id', 'integer', ['unsigned' => true]);
+        $table->addIndex(['column_index1', 'column_index2'], 'index1');
+        $table->addUniqueIndex(['column_unique_index1', 'column_unique_index2'], 'unique_index1');
 
-        if (class_exists(PrimaryKeyConstraint::class)) {
-            $table->addPrimaryKeyConstraint(new PrimaryKeyConstraint(null, [new UnqualifiedName(Identifier::unquoted('id'))], true));
+        if (class_exists(TableEditor::class)) {
+            $table = $table->edit()
+                ->addPrimaryKeyConstraint(new PrimaryKeyConstraint(
+                    null,
+                    [new UnqualifiedName(Identifier::unquoted('id'))],
+                    true,
+                ))
+                ->create();
         } else {
             $table->setPrimaryKey(['id']);
         }
-
-        $table->addColumn('column_unsigned', 'integer', ['unsigned' => true]);
-        $table->addColumn('column_comment', 'string', ['length' => 16, 'comment' => 'test_comment']);
-        $table->addColumn('column_default', 'string', ['length' => 16, 'default' => 'test_default']);
-        $table->addColumn('column_decimal', 'decimal', ['precision' => 4, 'scale' => 3]);
-
-        $table->addColumn('column_index1', 'string', ['length' => 16]);
-        $table->addColumn('column_index2', 'string', ['length' => 16]);
-        $table->addIndex(['column_index1', 'column_index2'], 'index1');
-
-        $table->addColumn('column_unique_index1', 'string', ['length' => 16]);
-        $table->addColumn('column_unique_index2', 'string', ['length' => 16]);
-        $table->addUniqueIndex(['column_unique_index1', 'column_unique_index2'], 'unique_index1');
 
         $this->dropAndCreateTable($table);
 
