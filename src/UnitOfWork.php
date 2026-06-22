@@ -75,7 +75,9 @@ use function is_object;
 use function reset;
 use function spl_object_id;
 use function sprintf;
+use function strcmp;
 use function strtolower;
+use function usort;
 
 /**
  * The UnitOfWork is responsible for tracking changes to objects during an
@@ -403,7 +405,9 @@ class UnitOfWork implements PropertyChangedListener
             }
 
             if ($this->entityUpdates) {
-                // Updates do not need to follow a particular order
+                // Updates are executed in a consistent order (class name, then entity ID (hash)) to eliminate deadlock
+                // risk in concurrent update transactions ("Process X waits for ShareLock on transaction Y; blocked
+                // by process Z").
                 $this->executeUpdates();
             }
 
@@ -1123,7 +1127,11 @@ class UnitOfWork implements PropertyChangedListener
      */
     private function executeUpdates(): void
     {
-        foreach ($this->entityUpdates as $oid => $entity) {
+        $entities = $this->computeUpdateExecutionOrder();
+
+        foreach ($entities as $oid => $entity) {
+            $oid = spl_object_id($entity);
+
             $class            = $this->em->getClassMetadata($entity::class);
             $persister        = $this->getEntityPersister($class->name);
             $preUpdateInvoke  = $this->listenersInvoker->getSubscribedSystems($class, Events::preUpdate);
@@ -1255,6 +1263,31 @@ class UnitOfWork implements PropertyChangedListener
         }
 
         return $sort->sort();
+    }
+
+    /** @return list<object> */
+    private function computeUpdateExecutionOrder(): array
+    {
+        $entities = $this->entityUpdates;
+
+        usort($entities, function (object $a, object $b): int {
+            // First, order alphabetically by the class name. If the class names are different, then return immediately.
+            $result = strcmp($a::class, $b::class);
+            if ($result !== 0) {
+                return $result;
+            }
+
+            // Second, when the objects are of the same class, then order them alphabetically by the "id hash". This
+            // covers multiple different cases of entity's id (think multicolumn ids or uuids). Note that ordering
+            // numerical strings alphabetically may result in the following order: "1", "100", "2" but that's fine.
+            // The point here is to have a consistent ordering, not that the (potential) numbers are in numeric order.
+            return strcmp(
+                $this->getIdHashByEntity($a),
+                $this->getIdHashByEntity($b),
+            );
+        });
+
+        return $entities;
     }
 
     /** @return list<object> */
