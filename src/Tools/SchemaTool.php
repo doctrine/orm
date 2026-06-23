@@ -434,8 +434,13 @@ class SchemaTool
             }
 
             if (isset($class->table['options'])) {
-                foreach ($class->table['options'] as $key => $val) {
-                    $table->addOption($key, $val);
+                /** @phpstan-ignore function.impossibleType (method existence depends on DBAL version) */
+                if (method_exists(Schema::class, 'edit')) {
+                    $table = $table->edit()->setOptions($class->table['options'])->create();
+                } else {
+                    foreach ($class->table['options'] as $key => $val) {
+                        $table->addOption($key, $val);
+                    }
                 }
             }
 
