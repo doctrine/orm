@@ -5,11 +5,15 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\ORM\PersistentCollection;
+use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\Models\ECommerce\ECommerceCart;
 use Doctrine\Tests\Models\ECommerce\ECommerceCustomer;
 use Doctrine\Tests\Models\ECommerce\ECommerceFeature;
 use Doctrine\Tests\Models\ECommerce\ECommerceProduct;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use ReflectionClass;
+
+use const PHP_VERSION_ID;
 
 /**
  * Tests capabilities of the persister.
@@ -19,6 +23,7 @@ class StandardEntityPersisterTest extends OrmFunctionalTestCase
     protected function setUp(): void
     {
         $this->useModelSet('ecommerce');
+        $this->useModelSet('cms');
 
         parent::setUp();
     }
@@ -106,5 +111,30 @@ class StandardEntityPersisterTest extends OrmFunctionalTestCase
 
         // Persisted Product now must have 3 Feature items
         self::assertCount(3, $res[0]->getFeatures());
+    }
+
+    public function testPersistLazyGhost(): void
+    {
+        if (PHP_VERSION_ID < 80400) {
+            $this->markTestSkipped('Lazy objects are only available in PHP 8.4+.');
+        }
+
+        $initialized = false;
+        $reflector   = new ReflectionClass(CmsUser::class);
+        $lazyGhost   = $reflector->newLazyGhost(static function (CmsUser $object) use (&$initialized): void {
+            $initialized      = true;
+            $object->username = 'lazyGhost';
+            $object->name     = 'LazyGhostInitialized';
+            $object->status   = 'active';
+        });
+
+        self::assertFalse($initialized, 'Lazy ghost should not be initialized before persist.');
+        $this->_em->persist($lazyGhost);
+        $this->_em->flush();
+        self::assertTrue($initialized, 'Lazy ghost should be initialized during flush.');
+        $this->_em->clear();
+        $retrievedEntity = $this->_em->find(CmsUser::class, $lazyGhost->id);
+        self::assertNotNull($retrievedEntity);
+        self::assertEquals('LazyGhostInitialized', $retrievedEntity->name);
     }
 }
