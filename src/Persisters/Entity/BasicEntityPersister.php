@@ -1265,6 +1265,10 @@ class BasicEntityPersister implements EntityPersister
 
         // Add regular columns to select list
         foreach ($this->class->fieldNames as $field) {
+            $fieldMapping = $this->class->fieldMappings[$field];
+            if ($fieldMapping->selectable === false) {
+                continue;
+            }
             $columnList[] = $this->getSelectColumnSQL($field, $this->class);
         }
 

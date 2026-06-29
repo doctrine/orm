@@ -382,6 +382,9 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
 
         // Add regular columns
         foreach ($this->class->fieldMappings as $fieldName => $mapping) {
+            if ($mapping->selectable === false) {
+                continue;
+            }
             $class = isset($mapping->inherited)
                 ? $this->em->getClassMetadata($mapping->inherited)
                 : $this->class;
@@ -426,6 +429,10 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
             // Add subclass columns
             foreach ($subClass->fieldMappings as $fieldName => $mapping) {
                 if (isset($mapping->inherited)) {
+                    continue;
+                }
+
+                if ($mapping->selectable === false) {
                     continue;
                 }
 
@@ -532,6 +539,10 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
                     ? $this->em->getClassMetadata($column->inherited)
                     : $this->class;
             } else {
+                continue;
+            }
+
+            if ($column->selectable === false) {
                 continue;
             }
 

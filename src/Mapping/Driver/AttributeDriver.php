@@ -765,6 +765,10 @@ class AttributeDriver implements MappingDriver
             $mapping['enumType'] = $column->enumType;
         }
 
+        if ($column->selectable === false) {
+            $mapping['selectable'] = false;
+        }
+
         return $mapping;
     }
 }
