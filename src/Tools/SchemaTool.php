@@ -204,6 +204,7 @@ class SchemaTool
         $blacklistedFks = [];
 
         foreach ($classes as $class) {
+            $columnNames = [];
             if ($this->processingNotRequired($class, $processedClasses)) {
                 continue;
             }
@@ -225,10 +226,11 @@ class SchemaTool
                 // For new schema API: collect join tables to add after this entity table
                 $joinTablesToAdd = [];
 
-                $this->gatherColumns($class, $table);
+                $this->gatherColumns($class, $table, $columnNames);
                 $this->gatherRelationsSql(
                     $class,
                     $table,
+                    $columnNames,
                     $schema,
                     $addedFks,
                     $blacklistedFks,
@@ -247,10 +249,11 @@ class SchemaTool
 
                 foreach ($class->subClasses as $subClassName) {
                     $subClass = $this->em->getClassMetadata($subClassName);
-                    $this->gatherColumns($subClass, $table);
+                    $this->gatherColumns($subClass, $table, $columnNames);
                     $this->gatherRelationsSql(
                         $subClass,
                         $table,
+                        $columnNames,
                         $schema,
                         $addedFks,
                         $blacklistedFks,
@@ -266,13 +269,14 @@ class SchemaTool
                 // Add all non-inherited fields as columns
                 foreach ($class->fieldMappings as $fieldName => $mapping) {
                     if (! isset($mapping->inherited)) {
-                        $this->gatherColumn($class, $mapping, $table);
+                        $this->gatherColumn($class, $mapping, $table, $columnNames);
                     }
                 }
 
                 $this->gatherRelationsSql(
                     $class,
                     $table,
+                    $columnNames,
                     $schema,
                     $addedFks,
                     $blacklistedFks,
@@ -291,7 +295,7 @@ class SchemaTool
                     foreach ($class->identifier as $identifierField) {
                         if (isset($class->fieldMappings[$identifierField]->inherited)) {
                             $idMapping = $class->fieldMappings[$identifierField];
-                            $this->gatherColumn($class, $idMapping, $table);
+                            $this->gatherColumn($class, $idMapping, $table, $columnNames);
                             $columnName = $this->quoteStrategy->getColumnName(
                                 $identifierField,
                                 $class,
@@ -363,10 +367,11 @@ class SchemaTool
                 // For new schema API: collect join tables to add after this entity table
                 $joinTablesToAdd = [];
 
-                $this->gatherColumns($class, $table);
+                $this->gatherColumns($class, $table, $columnNames);
                 $this->gatherRelationsSql(
                     $class,
                     $table,
+                    $columnNames,
                     $schema,
                     $addedFks,
                     $blacklistedFks,
@@ -582,28 +587,32 @@ class SchemaTool
     /**
      * Gathers the column definitions as required by the DBAL of all field mappings
      * found in the given class.
+     *
+     * @param array<string, true> $columnNames
      */
-    private function gatherColumns(ClassMetadata $class, Table $table): void
+    private function gatherColumns(ClassMetadata $class, Table $table, array &$columnNames): void
     {
         foreach ($class->fieldMappings as $mapping) {
             if ($class->isInheritanceTypeSingleTable() && isset($mapping->inherited)) {
                 continue;
             }
 
-            $this->gatherColumn($class, $mapping, $table);
+            $this->gatherColumn($class, $mapping, $table, $columnNames);
         }
     }
 
     /**
      * Creates a column definition as required by the DBAL from an ORM field mapping definition.
      *
-     * @param ClassMetadata $class The class that owns the field mapping.
+     * @param ClassMetadata       $class       The class that owns the field mapping.
+     * @param array<string, true> $columnNames The list of column names already added to the table.
      * @phpstan-param FieldMapping $mapping The field mapping.
      */
     private function gatherColumn(
         ClassMetadata $class,
         FieldMapping $mapping,
         Table $table,
+        array &$columnNames,
     ): void {
         $columnName = $this->quoteStrategy->getColumnName($mapping->fieldName, $class, $this->platform);
         $columnType = $mapping->type;
@@ -709,11 +718,11 @@ class SchemaTool
             $options['autoincrement'] = false;
         }
 
-        if ($table->hasColumn($columnName)) {
-            // required in some inheritance scenarios
+        if (isset($columnNames[$columnName])) {
             $table->modifyColumn($columnName, $options);
         } else {
             $table->addColumn($columnName, $columnType, $options);
+            $columnNames[$columnName] = true;
         }
 
         $isUnique = $mapping->unique ?? false;
@@ -731,6 +740,7 @@ class SchemaTool
      * Gathers the SQL for properly setting up the relations of the given class.
      * This includes the SQL for foreign key constraints and join tables.
      *
+     * @param array<string, true> $columnNames
      * @phpstan-param array<string, array{
      *                  foreignTableName: string,
      *                  foreignColumns: list<string>,
@@ -746,6 +756,7 @@ class SchemaTool
     private function gatherRelationsSql(
         ClassMetadata $class,
         Table $table,
+        array &$columnNames,
         Schema &$schema,
         array &$addedFks,
         array &$blacklistedFks,
@@ -765,6 +776,7 @@ class SchemaTool
                 $this->gatherRelationJoinColumns(
                     $mapping->joinColumns,
                     $table,
+                    $columnNames,
                     $foreignClass,
                     $mapping,
                     $primaryKeyColumns,
@@ -797,11 +809,13 @@ class SchemaTool
                 }
 
                 $primaryKeyColumns = [];
+                $joinColumnNames   = [];
 
                 // Build first FK constraint (relation table => source table)
                 $this->gatherRelationJoinColumns(
                     $joinTable->joinColumns,
                     $theJoinTable,
+                    $joinColumnNames,
                     $class,
                     $mapping,
                     $primaryKeyColumns,
@@ -813,6 +827,7 @@ class SchemaTool
                 $this->gatherRelationJoinColumns(
                     $joinTable->inverseJoinColumns,
                     $theJoinTable,
+                    $joinColumnNames,
                     $foreignClass,
                     $mapping,
                     $primaryKeyColumns,
@@ -870,6 +885,7 @@ class SchemaTool
     /**
      * Gathers columns and fk constraints that are required for one part of relationship.
      *
+     * @param array<string, true> $columnNames
      * @phpstan-param list<JoinColumnMapping>          $joinColumns
      * @phpstan-param list<string>                     $primaryKeyColumns
      * @phpstan-param array<string, array{
@@ -894,6 +910,7 @@ class SchemaTool
     private function gatherRelationJoinColumns(
         array $joinColumns,
         Table $theJoinTable,
+        array &$columnNames,
         ClassMetadata $class,
         AssociationMapping $mapping,
         array &$primaryKeyColumns,
@@ -932,7 +949,7 @@ class SchemaTool
             $localColumns[]      = $quotedColumnName;
             $foreignColumns[]    = $quotedRefColumnName;
 
-            if (! $theJoinTable->hasColumn($quotedColumnName)) {
+            if (! isset($columnNames[$quotedColumnName])) {
                 // Only add the column to the table if it does not exist already.
                 // It might exist already if the foreign key is mapped into a regular
                 // property as well.
@@ -965,6 +982,7 @@ class SchemaTool
                 $columnOptions = $this->gatherColumnOptions($joinColumn) + $columnOptions;
 
                 $theJoinTable->addColumn($quotedColumnName, $fieldMapping->type, $columnOptions);
+                $columnNames[$quotedColumnName] = true;
             }
 
             if (isset($joinColumn->unique) && $joinColumn->unique === true) {
