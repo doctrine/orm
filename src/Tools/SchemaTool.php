@@ -213,11 +213,8 @@ class SchemaTool
                 $table = new Table(
                     name: $tableName,
                     configuration: $metadataSchemaConfig->toTableConfiguration(),
+                    options: $metadataSchemaConfig->getDefaultTableOptions(),
                 );
-                // Add default table options (charset, collation, engine, etc.)
-                foreach ($metadataSchemaConfig->getDefaultTableOptions() as $option => $value) {
-                    $table->addOption($option, $value);
-                }
             } else {
                 $table = $schema->createTable($tableName);
             }

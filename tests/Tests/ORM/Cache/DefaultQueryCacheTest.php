@@ -496,6 +496,28 @@ class DefaultQueryCacheTest extends OrmTestCase
         self::assertFalse($this->queryCache->put($key, $rsm, $result));
     }
 
+    public function testRefreshModeWritesToCache(): void
+    {
+        $result   = [];
+        $rsm      = new ResultSetMappingBuilder($this->em);
+        $metadata = $this->em->getClassMetadata(Country::class);
+        $key      = new QueryCacheKey('query.key1', 0, Cache::MODE_REFRESH);
+
+        $rsm->addRootEntityFromClassMetadata(Country::class, 'c');
+
+        for ($i = 0; $i < 2; $i++) {
+            $name     = 'Country ' . $i;
+            $entity   = new Country($name);
+            $result[] = $entity;
+
+            $metadata->setFieldValue($entity, 'id', $i);
+            $this->em->getUnitOfWork()->registerManaged($entity, ['id' => $i], ['name' => $name]);
+        }
+
+        self::assertTrue($this->queryCache->put($key, $rsm, $result));
+        self::assertArrayHasKey('put', $this->region->calls);
+    }
+
     public function testGetShouldIgnoreOldQueryCacheEntryResult(): void
     {
         $rsm      = new ResultSetMappingBuilder($this->em);
