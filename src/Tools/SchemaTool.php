@@ -6,8 +6,10 @@ namespace Doctrine\ORM\Tools;
 
 use BackedEnum;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
+use Doctrine\DBAL\Platforms\SQLServerPlatform;
 use Doctrine\DBAL\Schema\AbstractAsset;
 use Doctrine\DBAL\Schema\AbstractSchemaManager;
+use Doctrine\DBAL\Schema\Column;
 use Doctrine\DBAL\Schema\ColumnEditor;
 use Doctrine\DBAL\Schema\ComparatorConfig;
 use Doctrine\DBAL\Schema\DefaultExpression;
@@ -17,7 +19,9 @@ use Doctrine\DBAL\Schema\DefaultExpression\CurrentTimestamp;
 use Doctrine\DBAL\Schema\ForeignKeyConstraint;
 use Doctrine\DBAL\Schema\Index;
 use Doctrine\DBAL\Schema\Index\IndexedColumn;
+use Doctrine\DBAL\Schema\Index\IndexType;
 use Doctrine\DBAL\Schema\Name\Identifier;
+use Doctrine\DBAL\Schema\Name\Parsers;
 use Doctrine\DBAL\Schema\Name\UnqualifiedName;
 use Doctrine\DBAL\Schema\NamedObject;
 use Doctrine\DBAL\Schema\PrimaryKeyConstraint;
@@ -25,6 +29,7 @@ use Doctrine\DBAL\Schema\Schema;
 use Doctrine\DBAL\Schema\SchemaConfig;
 use Doctrine\DBAL\Schema\Table;
 use Doctrine\DBAL\Schema\TableEditor;
+use Doctrine\DBAL\Types\Type;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\Deprecations\Deprecation;
 use Doctrine\ORM\EntityManagerInterface;
@@ -213,23 +218,23 @@ class SchemaTool
 
             // @phpstan-ignore function.impossibleType (Using unreleased Schema::edit() API)
             if (method_exists(Schema::class, 'edit')) {
-                $table = new Table(
-                    name: $tableName,
-                    configuration: $metadataSchemaConfig->toTableConfiguration(),
-                    options: $metadataSchemaConfig->getDefaultTableOptions(),
-                );
+                $tableOrEditor = Table::editor()
+                    // @phpstan-ignore staticMethod.notFound (Using unreleased Parsers API)
+                    ->setName(Parsers::parseOptionallyQualifiedName($tableName))
+                    ->setConfiguration($metadataSchemaConfig->toTableConfiguration())
+                    ->setOptions($metadataSchemaConfig->getDefaultTableOptions());
             } else {
-                $table = $schema->createTable($tableName);
+                $tableOrEditor = $schema->createTable($tableName);
             }
 
             if ($class->isInheritanceTypeSingleTable()) {
                 // For new schema API: collect join tables to add after this entity table
                 $joinTablesToAdd = [];
 
-                $this->gatherColumns($class, $table, $columnNames);
+                $this->gatherColumns($class, $tableOrEditor, $columnNames);
                 $this->gatherRelationsSql(
                     $class,
-                    $table,
+                    $tableOrEditor,
                     $columnNames,
                     $schema,
                     $addedFks,
@@ -239,7 +244,7 @@ class SchemaTool
                 );
 
                 // Add the discriminator column
-                $this->addDiscriminatorColumnDefinition($class, $table);
+                $this->addDiscriminatorColumnDefinition($class, $tableOrEditor);
 
                 // Aggregate all the information from all classes in the hierarchy
                 foreach ($class->parentClasses as $parentClassName) {
@@ -249,10 +254,10 @@ class SchemaTool
 
                 foreach ($class->subClasses as $subClassName) {
                     $subClass = $this->em->getClassMetadata($subClassName);
-                    $this->gatherColumns($subClass, $table, $columnNames);
+                    $this->gatherColumns($subClass, $tableOrEditor, $columnNames);
                     $this->gatherRelationsSql(
                         $subClass,
-                        $table,
+                        $tableOrEditor,
                         $columnNames,
                         $schema,
                         $addedFks,
@@ -269,13 +274,13 @@ class SchemaTool
                 // Add all non-inherited fields as columns
                 foreach ($class->fieldMappings as $fieldName => $mapping) {
                     if (! isset($mapping->inherited)) {
-                        $this->gatherColumn($class, $mapping, $table, $columnNames);
+                        $this->gatherColumn($class, $mapping, $tableOrEditor, $columnNames);
                     }
                 }
 
                 $this->gatherRelationsSql(
                     $class,
-                    $table,
+                    $tableOrEditor,
                     $columnNames,
                     $schema,
                     $addedFks,
@@ -286,7 +291,7 @@ class SchemaTool
 
                 // Add the discriminator column only to the root table
                 if ($class->name === $class->rootEntityName) {
-                    $this->addDiscriminatorColumnDefinition($class, $table);
+                    $this->addDiscriminatorColumnDefinition($class, $tableOrEditor);
                 } else {
                     // Add an ID FK column to child tables
                     $pkColumns           = [];
@@ -295,7 +300,7 @@ class SchemaTool
                     foreach ($class->identifier as $identifierField) {
                         if (isset($class->fieldMappings[$identifierField]->inherited)) {
                             $idMapping = $class->fieldMappings[$identifierField];
-                            $this->gatherColumn($class, $idMapping, $table, $columnNames);
+                            $this->gatherColumn($class, $idMapping, $tableOrEditor, $columnNames);
                             $columnName = $this->quoteStrategy->getColumnName(
                                 $identifierField,
                                 $class,
@@ -306,12 +311,12 @@ class SchemaTool
                             if (method_exists(Schema::class, 'edit')) {
                                 // New API: modify column using table editor (creates new table object)
                                 // This is safe because we'll add the table to schema later after all modifications
-                                $table = $table->edit()->modifyColumnByUnquotedName(
+                                $tableOrEditor->modifyColumnByUnquotedName(
                                     $columnName,
                                     static fn (ColumnEditor $column) => $column->setAutoincrement(false),
-                                )->create();
+                                );
                             } else {
-                                $table->getColumn($columnName)->setAutoincrement(false);
+                                $tableOrEditor->getColumn($columnName)->setAutoincrement(false);
                             }
 
                             $pkColumns[]           = $columnName;
@@ -348,7 +353,8 @@ class SchemaTool
 
                     if ($inheritedKeyColumns !== []) {
                         // Add a FK constraint on the ID column
-                        $table->addForeignKeyConstraint(
+                        $this->addForeignKeyConstraint(
+                            $tableOrEditor,
                             $this->quoteStrategy->getTableName(
                                 $this->em->getClassMetadata($class->rootEntityName),
                                 $this->platform,
@@ -360,17 +366,17 @@ class SchemaTool
                     }
 
                     if ($pkColumns !== []) {
-                        self::addPrimaryKeyConstraint($table, $pkColumns);
+                        self::addPrimaryKeyConstraint($tableOrEditor, $pkColumns);
                     }
                 }
             } else {
                 // For new schema API: collect join tables to add after this entity table
                 $joinTablesToAdd = [];
 
-                $this->gatherColumns($class, $table, $columnNames);
+                $this->gatherColumns($class, $tableOrEditor, $columnNames);
                 $this->gatherRelationsSql(
                     $class,
-                    $table,
+                    $tableOrEditor,
                     $columnNames,
                     $schema,
                     $addedFks,
@@ -393,6 +399,12 @@ class SchemaTool
                         $pkColumns[] = $this->quoteStrategy->getJoinColumnName($joinColumn, $class, $this->platform);
                     }
                 }
+            }
+
+            if ($tableOrEditor instanceof TableEditor) {
+                $table = $tableOrEditor->create();
+            } else {
+                $table = $tableOrEditor;
             }
 
             if (! $table->hasIndex('primary')) {
@@ -441,13 +453,12 @@ class SchemaTool
             }
 
             if (isset($class->table['options'])) {
-                /** @phpstan-ignore function.impossibleType (method existence depends on DBAL version) */
-                if (method_exists(Schema::class, 'edit')) {
-                    $table = $table->edit()->setOptions($class->table['options'])->create();
-                } else {
+                if ($table instanceof Table) {
                     foreach ($class->table['options'] as $key => $val) {
                         $table->addOption($key, $val);
                     }
+                } else {
+                    $table->setOptions($class->table['options']);
                 }
             }
 
@@ -516,9 +527,10 @@ class SchemaTool
             // @phpstan-ignore function.impossibleType (Using unreleased Schema::edit() API)
             if (method_exists(Schema::class, 'edit')) {
                 // the table might have been dropped by a listener, so we ignore this error
-                if ($schema->hasTable($fkData['table']->getObjectName()->toString())) {
+                if ($schema->hasTable($fkData['tableName'])) {
                     $schema = $schema->edit()->modifyTable(
-                        $fkData['table']->getObjectName(),
+                        // @phpstan-ignore staticMethod.notFound (Using unreleased Parsers API)
+                        Parsers::parseOptionallyQualifiedName($fkData['tableName']),
                         static function (TableEditor $tableEditor) use ($fkData): void {
                             $tableEditor->addForeignKeyConstraint(new ForeignKeyConstraint(
                                 localColumnNames: $fkData['localColumns'],
@@ -531,6 +543,7 @@ class SchemaTool
                 }
             } else {
                 // Add the FK constraint to the table
+                assert($fkData['table'] instanceof Table);
                 $fkData['table']->addForeignKeyConstraint(
                     $fkData['foreignTableName'],
                     $fkData['localColumns'],
@@ -561,7 +574,7 @@ class SchemaTool
      * Gets a portable column definition as required by the DBAL for the discriminator
      * column of a class.
      */
-    private function addDiscriminatorColumnDefinition(ClassMetadata $class, Table $table): void
+    private function addDiscriminatorColumnDefinition(ClassMetadata $class, Table|TableEditor $tableOrEditor): void
     {
         $discrColumn = $class->discriminatorColumn;
         assert($discrColumn !== null);
@@ -581,7 +594,7 @@ class SchemaTool
         }
 
         $options = $this->gatherColumnOptions($discrColumn) + $options;
-        $table->addColumn($discrColumn->name, $discrColumn->type, $options);
+        $this->addColumn($tableOrEditor, $discrColumn->name, $discrColumn->type, $options);
     }
 
     /**
@@ -590,14 +603,14 @@ class SchemaTool
      *
      * @param array<string, true> $columnNames
      */
-    private function gatherColumns(ClassMetadata $class, Table $table, array &$columnNames): void
+    private function gatherColumns(ClassMetadata $class, Table|TableEditor $tableOrEditor, array &$columnNames): void
     {
         foreach ($class->fieldMappings as $mapping) {
             if ($class->isInheritanceTypeSingleTable() && isset($mapping->inherited)) {
                 continue;
             }
 
-            $this->gatherColumn($class, $mapping, $table, $columnNames);
+            $this->gatherColumn($class, $mapping, $tableOrEditor, $columnNames);
         }
     }
 
@@ -611,7 +624,7 @@ class SchemaTool
     private function gatherColumn(
         ClassMetadata $class,
         FieldMapping $mapping,
-        Table $table,
+        Table|TableEditor $tableOrEditor,
         array &$columnNames,
     ): void {
         $columnName = $this->quoteStrategy->getColumnName($mapping->fieldName, $class, $this->platform);
@@ -719,21 +732,229 @@ class SchemaTool
         }
 
         if (isset($columnNames[$columnName])) {
-            $table->modifyColumn($columnName, $options);
+            $this->modifyColumn($tableOrEditor, $columnName, $options);
         } else {
-            $table->addColumn($columnName, $columnType, $options);
+            $this->addColumn($tableOrEditor, $columnName, $columnType, $options);
             $columnNames[$columnName] = true;
         }
 
         $isUnique = $mapping->unique ?? false;
         if ($isUnique) {
-            $table->addUniqueIndex([$columnName]);
+            $this->addUniqueIndex($tableOrEditor, [$columnName]);
         }
 
         $isIndex = $mapping->index ?? false;
         if ($isIndex) {
-            $table->addIndex([$columnName]);
+            $this->addIndex($tableOrEditor, [$columnName]);
         }
+    }
+
+    /**
+     * @param list<string>         $columnNames
+     * @param array<string, mixed> $indexOptions
+     */
+    private function addIndex(
+        Table|TableEditor $tableOrEditor,
+        array $columnNames,
+        string|null $indexName = null,
+        array $indexOptions = [],
+    ): void {
+        if ($tableOrEditor instanceof Table) {
+            // @phpstan-ignore argument.type (columnNames is validated to be non-empty in caller)
+            $tableOrEditor->addIndex($columnNames, $indexName, [], $indexOptions);
+
+            return;
+        }
+
+        $indexEditor = Index::editor();
+
+        if ($indexName !== null) {
+            // @phpstan-ignore staticMethod.notFound (Using unreleased Parsers API)
+            $indexEditor->setName(Parsers::parseUnqualifiedName($indexName));
+        }
+
+        foreach ($columnNames as $columnName) {
+            $indexEditor->addColumn(new IndexedColumn(
+                // @phpstan-ignore staticMethod.notFound (Using unreleased Parsers API)
+                Parsers::parseUnqualifiedName($columnName),
+                null,
+            ));
+        }
+
+        if (isset($indexOptions['flags']['clustered'])) {
+            $indexEditor->setIsClustered($indexOptions['flags']['clustered']);
+        }
+
+        if (isset($indexOptions['options']['where'])) {
+            $indexEditor->setPredicate($indexOptions['options']['where']);
+        }
+
+        // @phpstan-ignore argument.type (IndexEditor will be converted to Index internally)
+        $tableOrEditor->addIndex($indexEditor);
+    }
+
+    /**
+     * @param list<string>         $columnNames
+     * @param array<string, mixed> $indexOptions
+     */
+    private function addUniqueIndex(
+        Table|TableEditor $tableOrEditor,
+        array $columnNames,
+        string|null $indexName = null,
+        array $indexOptions = [],
+    ): void {
+        if ($tableOrEditor instanceof Table) {
+            // @phpstan-ignore argument.type (columnNames is validated to be non-empty in caller)
+            $tableOrEditor->addUniqueIndex($columnNames, $indexName, $indexOptions);
+
+            return;
+        }
+
+        $indexEditor = Index::editor()
+            ->setType(IndexType::UNIQUE);
+
+        if ($indexName !== null) {
+            // @phpstan-ignore staticMethod.notFound (Using unreleased Parsers API)
+            $indexEditor->setName(Parsers::parseUnqualifiedName($indexName));
+        }
+
+        foreach ($columnNames as $columnName) {
+            $indexEditor->addColumn(new IndexedColumn(
+                // @phpstan-ignore staticMethod.notFound (Using unreleased Parsers API)
+                Parsers::parseUnqualifiedName($columnName),
+                null,
+            ));
+        }
+
+        if (isset($indexOptions['flags']['clustered'])) {
+            $indexEditor->setIsClustered($indexOptions['flags']['clustered']);
+        }
+
+        if (isset($indexOptions['options']['where'])) {
+            $indexEditor->setPredicate($indexOptions['options']['where']);
+        }
+
+        // @phpstan-ignore argument.type (IndexEditor will be converted to Index internally)
+        $tableOrEditor->addIndex($indexEditor);
+    }
+
+    /** @param array<string, mixed> $options */
+    private function addColumn(
+        Table|TableEditor $tableOrEditor,
+        string $name,
+        string $typeName,
+        array $options = [],
+    ): void {
+        if ($tableOrEditor instanceof Table) {
+            $tableOrEditor->addColumn($name, $typeName, $options);
+
+            return;
+        }
+
+        $columnEditor = Column::editor()
+            // @phpstan-ignore staticMethod.notFound (Using unreleased Parsers API)
+            ->setName(Parsers::parseUnqualifiedName($name))
+            ->setType(Type::getType($typeName));
+
+        self::setColumnOptions($columnEditor, $options);
+
+        $column = $columnEditor->create();
+
+        // Handle custom platform options that aren't supported by ColumnEditor
+        $platformOptions      = $options['platformOptions'] ?? [];
+        $knownPlatformOptions = [
+            'charset',
+            'collation',
+            'min',
+            'max',
+            'enumType',
+            SQLServerPlatform::OPTION_DEFAULT_CONSTRAINT_NAME,
+        ];
+
+        foreach ($platformOptions as $key => $value) {
+            if (! in_array($key, $knownPlatformOptions, true)) {
+                $column->setPlatformOption($key, $value);
+            }
+        }
+
+        $tableOrEditor->addColumn($column);
+    }
+
+    /** @param array<string, mixed> $options */
+    private static function setColumnOptions(
+        ColumnEditor $columnEditor,
+        array $options,
+    ): void {
+        $columnEditor->setLength($options['length'] ?? null);
+        $columnEditor->setPrecision($options['precision'] ?? null);
+
+        if (isset($options['scale'])) {
+            $columnEditor->setScale($options['scale']);
+        }
+
+        $columnEditor->setUnsigned($options['unsigned'] ?? false);
+        $columnEditor->setFixed($options['fixed'] ?? false);
+        $columnEditor->setNotNull($options['notnull'] ?? true);
+        $columnEditor->setDefaultValue($options['default'] ?? null);
+        $columnEditor->setAutoincrement($options['autoincrement'] ?? false);
+
+        if (isset($options['comment'])) {
+            $columnEditor->setComment($options['comment']);
+        }
+
+        if (isset($options['values'])) {
+            // @phpstan-ignore nullCoalesce.offset (values key is checked with isset above)
+            $columnEditor->setValues($options['values'] ?? null);
+        }
+
+        $columnEditor->setColumnDefinition($options['columnDefinition'] ?? null);
+        $platformOptions = $options['platformOptions'] ?? [];
+        if (isset($platformOptions['charset'])) {
+            $columnEditor->setCharset($platformOptions['charset']);
+        }
+
+        if (isset($platformOptions['collation'])) {
+            $columnEditor->setCollation($platformOptions['collation']);
+        }
+
+        if (isset($platformOptions['min'])) {
+            $columnEditor->setMinimumValue($platformOptions['min']);
+        }
+
+        if (isset($platformOptions['max'])) {
+            $columnEditor->setMaximumValue($platformOptions['max']);
+        }
+
+        if (isset($platformOptions['enumType'])) {
+            $columnEditor->setEnumType($platformOptions['enumType']);
+        }
+
+        if (isset($platformOptions[SQLServerPlatform::OPTION_DEFAULT_CONSTRAINT_NAME])) {
+            $columnEditor->setDefaultConstraintName(
+                $platformOptions[SQLServerPlatform::OPTION_DEFAULT_CONSTRAINT_NAME],
+            );
+        }
+    }
+
+    /** @param array<string, mixed> $options */
+    private function modifyColumn(
+        Table|TableEditor $tableOrEditor,
+        string $columnName,
+        array $options,
+    ): void {
+        if ($tableOrEditor instanceof Table) {
+            $tableOrEditor->modifyColumn($columnName, $options);
+
+            return;
+        }
+
+        $tableOrEditor->modifyColumn(
+            // @phpstan-ignore staticMethod.notFound (Using unreleased Parsers API)
+            Parsers::parseUnqualifiedName($columnName),
+            static function (ColumnEditor $columnEditor) use ($options): void {
+                self::setColumnOptions($columnEditor, $options);
+            },
+        );
     }
 
     /**
@@ -745,9 +966,11 @@ class SchemaTool
      *                  foreignTableName: string,
      *                  foreignColumns: list<string>,
      *                  localColumns: list<string>,
+     *                  fkName?: string|null,
+     *                  tableName: string,
+     *                  table: Table|TableEditor,
      *                  fkOptions: array{onDelete?: string, deferrable?: bool, deferred?: bool},
-     *                  table: Table
-     *              }>                               $addedFks
+     *              }>                                 $addedFks
      * @phpstan-param array<string, bool>              $blacklistedFks
      * @phpstan-param list<Table>                      $joinTablesToAdd
      *
@@ -755,7 +978,7 @@ class SchemaTool
      */
     private function gatherRelationsSql(
         ClassMetadata $class,
-        Table $table,
+        Table|TableEditor $table,
         array &$columnNames,
         Schema &$schema,
         array &$addedFks,
@@ -893,7 +1116,9 @@ class SchemaTool
      *                  foreignColumns: list<string>,
      *                  localColumns: list<string>,
      *                  fkOptions: array{onDelete?: string, deferrable?: bool, deferred?: bool},
-     *                  table: Table
+     *                  tableName: string,
+     *                  table: Table|TableEditor,
+     *                  fkName?: string|null
      *              }>                               $addedFks
      * @phpstan-param array<string,bool>               $blacklistedFks
      *
@@ -904,12 +1129,14 @@ class SchemaTool
      *                  foreignColumns: list<string>,
      *                  localColumns: list<string>,
      *                  fkOptions: array{onDelete?: string, deferrable?: bool, deferred?: bool},
-     *                  table: Table
+     *                  tableName: string,
+     *                  table: Table|TableEditor,
+     *                  fkName?: string|null
      *              }>                               $addedFks
      */
     private function gatherRelationJoinColumns(
         array $joinColumns,
-        Table $theJoinTable,
+        Table|TableEditor $theJoinTableOrEditor,
         array &$columnNames,
         ClassMetadata $class,
         AssociationMapping $mapping,
@@ -981,7 +1208,7 @@ class SchemaTool
 
                 $columnOptions = $this->gatherColumnOptions($joinColumn) + $columnOptions;
 
-                $theJoinTable->addColumn($quotedColumnName, $fieldMapping->type, $columnOptions);
+                $this->addColumn($theJoinTableOrEditor, $quotedColumnName, $fieldMapping->type, $columnOptions);
                 $columnNames[$quotedColumnName] = true;
             }
 
@@ -1001,10 +1228,11 @@ class SchemaTool
         // Prefer unique constraints over implicit simple indexes created for foreign keys.
         // Also avoids index duplication.
         foreach ($uniqueConstraints as $indexName => $unique) {
-            $theJoinTable->addUniqueIndex($unique['columns'], is_numeric($indexName) ? null : $indexName);
+            $this->addUniqueIndex($theJoinTableOrEditor, $unique['columns'], is_numeric($indexName) ? null : $indexName);
         }
 
-        $compositeName = $this->getAssetName($theJoinTable) . '.' . implode('', $localColumns);
+        $tableName     = $this->getAssetName($theJoinTableOrEditor);
+        $compositeName = $tableName . '.' . implode('', $localColumns);
 
         // Check if an FK constraint already exists for this composite key (table + columns)
         if (isset($addedFks[$compositeName])) {
@@ -1037,8 +1265,7 @@ class SchemaTool
 
             // Add an index for the local columns since we won't be adding a FK
             // (FKs normally create implicit indexes)
-            // @phpstan-ignore argument.type ($localColumns is not empty)
-            $theJoinTable->addIndex($localColumns);
+            $this->addIndex($theJoinTableOrEditor, $localColumns);
         } elseif (! isset($blacklistedFks[$compositeName])) {
             // No existing FK and not blacklisted - store FK metadata for application phase
             $addedFks[$compositeName] = [
@@ -1046,9 +1273,47 @@ class SchemaTool
                 'foreignColumns' => $foreignColumns,
                 'localColumns' => $localColumns,
                 'fkOptions' => $fkOptions,
-                'table' => $theJoinTable,
+                // The editor is turned into a brand new Table once it is complete, so it cannot be
+                // used to reach the table later on: only the name survives that transformation.
+                'tableName' => $tableName,
+                'table' => $theJoinTableOrEditor,
             ];
         }
+    }
+
+    /**
+     * @param list<string>         $localColumns
+     * @param list<string>         $foreignColumns
+     * @param array<string, mixed> $fkOptions
+     */
+    private function addForeignKeyConstraint(
+        Table|TableEditor $table,
+        string $foreignTableName,
+        array $localColumns,
+        array $foreignColumns,
+        array $fkOptions,
+    ): void {
+        if ($table instanceof Table) {
+            $table->addForeignKeyConstraint(
+                $foreignTableName,
+                // @phpstan-ignore argument.type (columns are validated to be non-empty in caller)
+                $localColumns,
+                // @phpstan-ignore argument.type (columns are validated to be non-empty in caller)
+                $foreignColumns,
+                $fkOptions,
+            );
+
+            return;
+        }
+
+        $table->addForeignKeyConstraint(new ForeignKeyConstraint(
+            // @phpstan-ignore argument.type (columns are validated to be non-empty in caller)
+            localColumnNames: $localColumns,
+            foreignTableName: $foreignTableName,
+            // @phpstan-ignore argument.type (columns are validated to be non-empty in caller)
+            foreignColumnNames: $foreignColumns,
+            options: $fkOptions,
+        ));
     }
 
     /** @return mixed[] */
@@ -1247,9 +1512,10 @@ class SchemaTool
     }
 
     /** @param non-empty-array<non-empty-string> $primaryKeyColumns */
-    private function addPrimaryKeyConstraint(Table $table, array $primaryKeyColumns): void
+    private function addPrimaryKeyConstraint(Table|TableEditor $table, array $primaryKeyColumns): void
     {
         if (! class_exists(PrimaryKeyConstraint::class)) {
+            // @phpstan-ignore method.notFound (setPrimaryKey exists on Table but not TableEditor in older DBAL)
             $table->setPrimaryKey(array_values($primaryKeyColumns));
 
             return;
@@ -1278,8 +1544,12 @@ class SchemaTool
         return $index->getColumns();
     }
 
-    private function getAssetName(AbstractAsset $asset): string
+    private function getAssetName(AbstractAsset|TableEditor $asset): string
     {
+        if ($asset instanceof TableEditor) {
+            return $this->getAssetName($asset->create());
+        }
+
         return $asset instanceof NamedObject
             ? $asset->getObjectName()->toString()
             // @phpstan-ignore method.deprecated (DBAL < 4.4)
