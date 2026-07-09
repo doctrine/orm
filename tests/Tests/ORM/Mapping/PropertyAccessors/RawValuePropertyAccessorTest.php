@@ -12,7 +12,7 @@ use ReflectionObject;
 
 use function trim;
 
-#[RequiresPhp(versionRequirement: '>= 8.4.0')]
+#[RequiresPhp('>= 8.4.0')]
 class RawValuePropertyAccessorTest extends OrmTestCase
 {
     public function testSetGetValue(): void
