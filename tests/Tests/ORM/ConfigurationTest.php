@@ -221,7 +221,7 @@ class ConfigurationTest extends TestCase
         self::assertSame($defaultTypedFieldMapper, $this->configuration->getTypedFieldMapper());
     }
 
-    #[RequiresPhp('>=8.4')]
+    #[RequiresPhp('>=8.4.0')]
     #[IgnoreDeprecations]
     public function testDisablingNativeLazyObjectsIsDeprecated(): void
     {
