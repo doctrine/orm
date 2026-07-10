@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Mapping;
 
 use Doctrine\ORM\Mapping\EmbeddedClassMapping;
+use Doctrine\ORM\Mapping\EncryptMapping;
 use PHPUnit\Framework\TestCase;
 
 use function assert;
@@ -21,6 +22,7 @@ final class EmbeddedClassMappingTest extends TestCase
         $mapping->originalField = 'make';
         $mapping->inherited     = self::class; // no
         $mapping->declared      = self::class; // sense
+        $mapping->encrypt       = EncryptMapping::fromMappingArray(['cipher' => 'default_cipher']);
 
         $resurrectedMapping = unserialize(serialize($mapping));
         assert($resurrectedMapping instanceof EmbeddedClassMapping);
@@ -30,5 +32,6 @@ final class EmbeddedClassMappingTest extends TestCase
         self::assertSame('make', $resurrectedMapping->originalField);
         self::assertSame(self::class, $resurrectedMapping->inherited);
         self::assertSame(self::class, $resurrectedMapping->declared);
+        self::assertEquals(EncryptMapping::fromMappingArray(['cipher' => 'default_cipher']), $resurrectedMapping->encrypt);
     }
 }

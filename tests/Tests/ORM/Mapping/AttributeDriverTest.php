@@ -6,10 +6,12 @@ namespace Doctrine\Tests\ORM\Mapping;
 
 use Attribute;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\Encrypt\EncryptQuery;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Driver\AttributeDriver;
 use Doctrine\ORM\Mapping\JoinColumnMapping;
 use Doctrine\ORM\Mapping\MappingAttribute;
+use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\Persistence\Mapping\Driver\ClassNames;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
 use Doctrine\Tests\Mocks\AttributeDriverFactory;
@@ -17,6 +19,7 @@ use Doctrine\Tests\Models\Cache\City;
 use Doctrine\Tests\ORM\Mapping\Fixtures\AttributeEntityWithNestedJoinColumns;
 use Doctrine\Tests\ORM\Mapping\Fixtures\CompositeIdWithPosition;
 use InvalidArgumentException;
+use PHPUnit\Framework\Attributes\DataProvider;
 use stdClass;
 
 class AttributeDriverTest extends MappingDriverTestCase
@@ -120,6 +123,202 @@ class AttributeDriverTest extends MappingDriverTestCase
 
         new AttributeDriver([], false);
     }
+
+    public function testClassLevelEncryptAttributeSetsMetadataEncrypt(): void
+    {
+        $factory  = $this->createClassMetadataFactory();
+        $metadata = $factory->getMetadataFor(AttributeEntityWithClassLevelEncrypt::class);
+
+        self::assertNotNull($metadata->encrypt);
+        self::assertNotNull($metadata->fieldMappings['name']->encrypt);
+    }
+
+    public function testClassLevelEncryptAttributeWithSecondLevelCacheThrowsException(): void
+    {
+        $this->expectException(MappingException::class);
+        $this->expectExceptionMessage(
+            'Because encrypted entity "Doctrine\Tests\ORM\Mapping\AttributeEntityWithClassLevelEncryptAndCache", second level cache is not supported on entity.',
+        );
+
+        $this->createClassMetadataFactory()->getMetadataFor(AttributeEntityWithClassLevelEncryptAndCache::class);
+    }
+
+    public function testFieldLevelEncryptAttributeSetsFieldEncrypt(): void
+    {
+        $factory  = $this->createClassMetadataFactory();
+        $metadata = $factory->getMetadataFor(AttributeEntityWithFieldLevelEncrypt::class);
+
+        self::assertNotNull($metadata->fieldMappings['secret']->encrypt);
+        self::assertNull($metadata->fieldMappings['name']->encrypt);
+    }
+
+    public function testEncryptAttributeConstructorArgumentsArePropagatedToTheFieldMapping(): void
+    {
+        $factory  = $this->createClassMetadataFactory();
+        $metadata = $factory->getMetadataFor(AttributeEntityWithConfiguredFieldLevelEncrypt::class);
+
+        $encrypt = $metadata->fieldMappings['secret']->encrypt;
+
+        self::assertNotNull($encrypt);
+        self::assertSame('my-cipher', $encrypt->cipher);
+        self::assertSame('my-key-provider', $encrypt->keyProvider);
+        self::assertSame(EncryptQuery::Equality, $encrypt->queryType);
+    }
+
+    /** @return iterable<string, array{class-string}> */
+    public static function encryptOnAssociationEntitiesProvider(): iterable
+    {
+        yield 'OneToOne' => [AttributeEntityWithEncryptOnOneToOne::class];
+        yield 'OneToMany' => [AttributeEntityWithEncryptOnOneToMany::class];
+        yield 'ManyToOne' => [AttributeEntityWithEncryptOnManyToOne::class];
+        yield 'ManyToMany' => [AttributeEntityWithEncryptOnManyToMany::class];
+    }
+
+    /** @param class-string $className */
+    #[DataProvider('encryptOnAssociationEntitiesProvider')]
+    public function testEncryptAttributeOnAssociationThrowsException(string $className): void
+    {
+        $this->expectException(MappingException::class);
+        $this->expectExceptionMessage('Encrypted association "assoc" on entity "' . $className . '" is not allowed.');
+
+        $this->createClassMetadataFactory()->getMetadataFor($className);
+    }
+
+    public function testEncryptAttributeOnEmbeddedIsCarriedThroughToEmbeddedMapping(): void
+    {
+        $factory  = $this->createClassMetadataFactory();
+        $metadata = $factory->getMetadataFor(AttributeEntityWithEncryptOnEmbedded::class);
+
+        self::assertNotNull($metadata->embeddedClasses['contact']->encrypt);
+        self::assertNotNull($metadata->getFieldMapping('contact.email')->encrypt);
+    }
+}
+
+#[ORM\Entity]
+#[ORM\Encrypt]
+class AttributeEntityWithClassLevelEncrypt
+{
+    #[ORM\Id]
+    #[ORM\Column(type: 'integer')]
+    #[ORM\GeneratedValue]
+    public int $id;
+
+    #[ORM\Column]
+    public string $name;
+}
+
+#[ORM\Entity]
+#[ORM\Cache]
+#[ORM\Encrypt]
+class AttributeEntityWithClassLevelEncryptAndCache
+{
+    #[ORM\Id]
+    #[ORM\Column(type: 'integer')]
+    #[ORM\GeneratedValue]
+    public int $id;
+}
+
+#[ORM\Entity]
+class AttributeEntityWithFieldLevelEncrypt
+{
+    #[ORM\Id]
+    #[ORM\Column(type: 'integer')]
+    #[ORM\GeneratedValue]
+    public int $id;
+
+    #[ORM\Column]
+    #[ORM\Encrypt]
+    public string $secret;
+
+    #[ORM\Column]
+    public string $name;
+}
+
+#[ORM\Entity]
+class AttributeEntityWithConfiguredFieldLevelEncrypt
+{
+    #[ORM\Id]
+    #[ORM\Column(type: 'integer')]
+    #[ORM\GeneratedValue]
+    public int $id;
+
+    #[ORM\Column]
+    #[ORM\Encrypt(cipher: 'my-cipher', keyProvider: 'my-key-provider', queryType: EncryptQuery::Equality)]
+    public string $secret;
+}
+
+#[ORM\Entity]
+class AttributeEntityWithEncryptOnOneToOne
+{
+    #[ORM\Id]
+    #[ORM\Column(type: 'integer')]
+    #[ORM\GeneratedValue]
+    public int $id;
+
+    #[ORM\OneToOne(targetEntity: self::class)]
+    #[ORM\Encrypt]
+    public self|null $assoc = null;
+}
+
+#[ORM\Entity]
+class AttributeEntityWithEncryptOnOneToMany
+{
+    #[ORM\Id]
+    #[ORM\Column(type: 'integer')]
+    #[ORM\GeneratedValue]
+    public int $id;
+
+    /** @var Collection<int, AttributeEntityWithEncryptOnOneToMany> */
+    #[ORM\OneToMany(targetEntity: self::class, mappedBy: 'assoc')]
+    #[ORM\Encrypt]
+    public Collection $assoc;
+}
+
+#[ORM\Entity]
+class AttributeEntityWithEncryptOnManyToOne
+{
+    #[ORM\Id]
+    #[ORM\Column(type: 'integer')]
+    #[ORM\GeneratedValue]
+    public int $id;
+
+    #[ORM\ManyToOne(targetEntity: self::class)]
+    #[ORM\Encrypt]
+    public self|null $assoc = null;
+}
+
+#[ORM\Entity]
+class AttributeEntityWithEncryptOnManyToMany
+{
+    #[ORM\Id]
+    #[ORM\Column(type: 'integer')]
+    #[ORM\GeneratedValue]
+    public int $id;
+
+    /** @var Collection<int, AttributeEntityWithEncryptOnManyToMany> */
+    #[ORM\ManyToMany(targetEntity: self::class)]
+    #[ORM\Encrypt]
+    public Collection $assoc;
+}
+
+#[ORM\Embeddable]
+class AttributeEncryptableEmbeddable
+{
+    #[ORM\Column]
+    public string|null $email = null;
+}
+
+#[ORM\Entity]
+class AttributeEntityWithEncryptOnEmbedded
+{
+    #[ORM\Id]
+    #[ORM\Column(type: 'integer')]
+    #[ORM\GeneratedValue]
+    public int $id;
+
+    #[ORM\Embedded(class: AttributeEncryptableEmbeddable::class)]
+    #[ORM\Encrypt]
+    public AttributeEncryptableEmbeddable|null $contact = null;
 }
 
 #[ORM\Entity]

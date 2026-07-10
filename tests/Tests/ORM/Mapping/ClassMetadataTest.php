@@ -16,6 +16,7 @@ use Doctrine\ORM\Mapping\DefaultNamingStrategy;
 use Doctrine\ORM\Mapping\DefaultTypedFieldMapper;
 use Doctrine\ORM\Mapping\DiscriminatorColumnMapping;
 use Doctrine\ORM\Mapping\Driver\XmlDriver;
+use Doctrine\ORM\Mapping\EncryptMapping;
 use Doctrine\ORM\Mapping\JoinTableMapping;
 use Doctrine\ORM\Mapping\MappedSuperclass;
 use Doctrine\ORM\Mapping\MappingException;
@@ -1242,6 +1243,188 @@ class ClassMetadataTest extends OrmTestCase
 
         self::assertSame(['username', 'name'], $cm->identifier);
         self::assertSame(['username' => 0, 'name' => 0], $cm->identifierPositions);
+    }
+
+    public function testMapFieldWithEncryptSetsEncryptMapping(): void
+    {
+        $cm = new ClassMetadata(CmsUser::class);
+        $cm->initializeReflection(new RuntimeReflectionService());
+
+        $cm->mapField(['fieldName' => 'name', 'encrypt' => []]);
+
+        $fieldMapping = $cm->getFieldMapping('name');
+
+        self::assertNotNull($fieldMapping->encrypt);
+    }
+
+    #[DataProvider('mapFieldWithEncryptThrowsExceptionProvider')]
+    public function testMapFieldWithEncryptThrowsException(
+        array $fieldMapping,
+        string $expectedExceptionMessage,
+    ): void {
+        $cm = new ClassMetadata(CmsUser::class);
+        $cm->initializeReflection(new RuntimeReflectionService());
+
+        $this->expectException(MappingException::class);
+        $this->expectExceptionMessage($expectedExceptionMessage);
+        $cm->mapField($fieldMapping);
+    }
+
+    /** @return iterable<string, array{array<string, mixed>, string}> */
+    public static function mapFieldWithEncryptThrowsExceptionProvider(): iterable
+    {
+        yield 'encrypt on identifier' => [
+            ['fieldName' => 'id', 'id' => true, 'encrypt' => []],
+            'Encrypted identifier "id" on entity "Doctrine\Tests\Models\CMS\CmsUser" is not allowed.',
+        ];
+
+        yield 'encrypt on generated' => [
+            ['fieldName' => 'status', 'generated' => ClassMetadata::GENERATED_ALWAYS, 'encrypt' => []],
+            'Encrypted generated field "status" on entity "Doctrine\Tests\Models\CMS\CmsUser" is not allowed.',
+        ];
+
+        yield 'encrypt on version field' => [
+            ['fieldName' => 'status', 'version' => true, 'type' => 'integer', 'encrypt' => []],
+            'Encrypted version field "status" on entity "Doctrine\Tests\Models\CMS\CmsUser" is not allowed.',
+        ];
+
+        yield 'encrypt on immutable field (not updatable)' => [
+            ['fieldName' => 'name', 'notUpdatable' => true, 'encrypt' => []],
+            'Encrypted immutable field "name" on entity "Doctrine\Tests\Models\CMS\CmsUser" is not supported.',
+        ];
+
+        yield 'encrypt on immutable field (not insertable)' => [
+            ['fieldName' => 'name', 'notInsertable' => true, 'encrypt' => []],
+            'Encrypted immutable field "name" on entity "Doctrine\Tests\Models\CMS\CmsUser" is not supported.',
+        ];
+    }
+
+    public function testMapFieldWithEncryptAndSecondLevelCacheThrowsException(): void
+    {
+        $cm        = new ClassMetadata(CmsUser::class);
+        $cm->cache = ['usage' => ClassMetadata::CACHE_USAGE_READ_ONLY, 'region' => 'my_region'];
+        $cm->initializeReflection(new RuntimeReflectionService());
+
+        $this->expectException(MappingException::class);
+        $this->expectExceptionMessage('Because encrypted field "name" on entity "Doctrine\Tests\Models\CMS\CmsUser", second level cache is not supported on entity.');
+        $cm->mapField(['fieldName' => 'name', 'encrypt' => []]);
+    }
+
+    public function testClassLevelEncryptIsClonedOntoEligibleFields(): void
+    {
+        $cm          = new ClassMetadata(CmsUser::class);
+        $cm->encrypt = new EncryptMapping();
+        $cm->initializeReflection(new RuntimeReflectionService());
+
+        $cm->mapField(['fieldName' => 'name']);
+        $cm->mapField(['fieldName' => 'username']);
+
+        self::assertNotNull($cm->fieldMappings['name']->encrypt);
+        self::assertNotNull($cm->fieldMappings['username']->encrypt);
+
+        // Each field must get its own clone, not a shared reference.
+        self::assertNotSame($cm->fieldMappings['name']->encrypt, $cm->fieldMappings['username']->encrypt);
+        self::assertEquals($cm->fieldMappings['name']->encrypt, $cm->fieldMappings['username']->encrypt);
+
+        self::assertNotSame($cm->encrypt, $cm->fieldMappings['name']->encrypt);
+        self::assertEquals($cm->encrypt, $cm->fieldMappings['name']->encrypt);
+
+        self::assertNotSame($cm->encrypt, $cm->fieldMappings['username']->encrypt);
+        self::assertEquals($cm->encrypt, $cm->fieldMappings['username']->encrypt);
+    }
+
+    #[DataProvider('classLevelEncryptIsNotAppliedToIneligibleFieldsProvider')]
+    public function testClassLevelEncryptIsNotAppliedToIneligibleFields(array $fieldMapping): void
+    {
+        $cm          = new ClassMetadata(CmsUser::class);
+        $cm->encrypt = new EncryptMapping();
+        $cm->initializeReflection(new RuntimeReflectionService());
+
+        $cm->mapField($fieldMapping);
+
+        self::assertNull($cm->fieldMappings['name']->encrypt);
+    }
+
+    /** @return iterable<string, array{array<string, mixed>}> */
+    public static function classLevelEncryptIsNotAppliedToIneligibleFieldsProvider(): iterable
+    {
+        yield 'class encrypt on identifier' => [
+            ['fieldName' => 'name', 'id' => true],
+        ];
+
+        yield 'class encrypt on generated' => [
+            ['fieldName' => 'name', 'generated' => ClassMetadata::GENERATED_ALWAYS],
+        ];
+
+        yield 'class encrypt on version field' => [
+            ['fieldName' => 'name', 'version' => true, 'type' => 'integer'],
+        ];
+
+        yield 'class encrypt on immutable field (not updatable)' => [
+            ['fieldName' => 'name', 'notUpdatable' => true],
+        ];
+
+        yield 'class encrypt on immutable field (not insertable)' => [
+            ['fieldName' => 'name', 'notInsertable' => true],
+        ];
+    }
+
+    public function testFieldLevelEncryptOverridesClassLevelEncrypt(): void
+    {
+        $cm          = new ClassMetadata(CmsUser::class);
+        $cm->encrypt = EncryptMapping::fromMappingArray(['cipher' => 'class-cipher']);
+        $cm->initializeReflection(new RuntimeReflectionService());
+
+        $cm->mapField(['fieldName' => 'name', 'encrypt' => ['cipher' => 'field-cipher']]);
+
+        self::assertNotEquals($cm->encrypt, $cm->fieldMappings['name']->encrypt);
+        self::assertSame('field-cipher', $cm->fieldMappings['name']->encrypt->cipher);
+    }
+
+    public function testMapEmbeddedCarriesEncryptMapping(): void
+    {
+        $cm = new ClassMetadata(UserTyped::class);
+        $cm->initializeReflection(new RuntimeReflectionService());
+
+        $cm->mapEmbedded([
+            'fieldName' => 'contact',
+            'class' => Contact::class,
+            'encrypt' => [],
+        ]);
+
+        self::assertNotNull($cm->embeddedClasses['contact']->encrypt);
+    }
+
+    public function testInlineEmbeddableAppliesEmbeddableClassLevelEncryptToInlinedFields(): void
+    {
+        $embeddableMetadata          = new ClassMetadata(Contact::class);
+        $embeddableMetadata->encrypt = EncryptMapping::fromMappingArray(['cipher' => 'embedded-cipher']);
+        $embeddableMetadata->initializeReflection(new RuntimeReflectionService());
+        $embeddableMetadata->mapField(['fieldName' => 'email']);
+
+        $cm = new ClassMetadata(UserTyped::class);
+        $cm->initializeReflection(new RuntimeReflectionService());
+        $cm->mapEmbedded(['fieldName' => 'contact', 'class' => Contact::class]);
+
+        $cm->inlineEmbeddable('contact', $embeddableMetadata);
+
+        self::assertNotNull($cm->fieldMappings['contact.email']->encrypt);
+        self::assertSame('embedded-cipher', $cm->fieldMappings['contact.email']->encrypt->cipher);
+    }
+
+    public function testInlineEmbeddablePreservesFieldLevelEncryptFromEmbeddable(): void
+    {
+        $embeddableMetadata = new ClassMetadata(Contact::class);
+        $embeddableMetadata->initializeReflection(new RuntimeReflectionService());
+        $embeddableMetadata->mapField(['fieldName' => 'email', 'encrypt' => ['cipher' => 'field-cipher']]);
+
+        $cm = new ClassMetadata(UserTyped::class);
+        $cm->initializeReflection(new RuntimeReflectionService());
+        $cm->mapEmbedded(['fieldName' => 'contact', 'class' => Contact::class, 'encrypt' => ['cipher' => 'embedded-cipher']]);
+
+        $cm->inlineEmbeddable('contact', $embeddableMetadata);
+
+        self::assertSame('field-cipher', $cm->fieldMappings['contact.email']->encrypt->cipher);
     }
 }
 

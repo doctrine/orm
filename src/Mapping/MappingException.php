@@ -730,4 +730,66 @@ EXCEPTION
             $className,
         ));
     }
+
+    public static function encryptOnIdentifierNotAllowed(string $className, string $fieldName): self
+    {
+        return new self(sprintf(
+            'Encrypted identifier "%s" on entity "%s" is not allowed.',
+            $fieldName,
+            $className,
+        ));
+    }
+
+    public static function encryptOnGeneratedNotAllowed(string $className, string $fieldName): self
+    {
+        return new self(sprintf(
+            'Encrypted generated field "%s" on entity "%s" is not allowed.',
+            $fieldName,
+            $className,
+        ));
+    }
+
+    public static function encryptOnVersionFieldNotAllowed(string $className, string $fieldName): self
+    {
+        return new self(sprintf(
+            'Encrypted version field "%s" on entity "%s" is not allowed.',
+            $fieldName,
+            $className,
+        ));
+    }
+
+    public static function encryptOnAssociationNotAllowed(string $className, string $associationName): self
+    {
+        return new self(sprintf(
+            'Encrypted association "%s" on entity "%s" is not allowed.',
+            $associationName,
+            $className,
+        ));
+    }
+
+    public static function encryptOnImmutableFieldNotSupported(string $className, string $fieldName): self
+    {
+        return new self(sprintf(
+            'Encrypted immutable field "%s" on entity "%s" is not supported.',
+            $fieldName,
+            $className,
+        ));
+    }
+
+    public static function encryptFieldWithSecondLevelCacheNotSupported(string $className, string $fieldName): self
+    {
+        return new self(sprintf(
+            'Because encrypted field "%s" on entity "%s", second level cache is not supported on entity.',
+            $fieldName,
+            $className,
+        ));
+    }
+
+    public static function encryptClassWithSecondLevelCacheNotSupported(string $className): self
+    {
+        return new self(sprintf(
+            'Because encrypted entity "%s", second level cache is not supported on entity.',
+            $className,
+        ));
+    }
 }

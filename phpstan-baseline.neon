@@ -925,7 +925,7 @@ parameters:
 			path: src/Mapping/Builder/ClassMetadataBuilder.php
 
 		-
-			message: '#^Parameter \#1 \$mapping of method Doctrine\\ORM\\Mapping\\ClassMetadata\<object\>\:\:mapEmbedded\(\) expects array\{fieldName\: string, class\?\: class\-string, declaredField\?\: string, columnPrefix\?\: string\|false\|null, originalField\?\: string\}, array\<mixed\> given\.$#'
+			message: '#^Parameter \#1 \$mapping of method Doctrine\\ORM\\Mapping\\ClassMetadata\<object\>\:\:mapEmbedded\(\) expects array\{fieldName\: string, class\?\: class\-string, declaredField\?\: string, columnPrefix\?\: string\|false\|null, originalField\?\: string, encrypt\?\: array\<string, mixed\>\|null\}, array\<mixed\> given\.$#'
 			identifier: argument.type
 			count: 1
 			path: src/Mapping/Builder/EmbeddedBuilder.php
@@ -985,7 +985,7 @@ parameters:
 			path: src/Mapping/ClassMetadata.php
 
 		-
-			message: '#^Parameter \#1 \$mappingArray of static method Doctrine\\ORM\\Mapping\\EmbeddedClassMapping\:\:fromMappingArray\(\) expects array\{class\: class\-string, columnPrefix\?\: string\|false\|null, declaredField\?\: string\|null, originalField\?\: string\|null, inherited\?\: class\-string\|null, declared\?\: class\-string\|null\}, array\{class\: string, columnPrefix\: string\|false\|null, declaredField\: string\|null, originalField\: string\|null\} given\.$#'
+			message: '#^Parameter \#1 \$mappingArray of static method Doctrine\\ORM\\Mapping\\EmbeddedClassMapping\:\:fromMappingArray\(\) expects array\{class\: class\-string, columnPrefix\?\: string\|false\|null, declaredField\?\: string\|null, originalField\?\: string\|null, inherited\?\: class\-string\|null, declared\?\: class\-string\|null, encrypt\?\: array\<string, mixed\>\|null\}, array\{class\: string, columnPrefix\: string\|false\|null, declaredField\: string\|null, originalField\: string\|null, encrypt\: array\<string, mixed\>\|null\} given\.$#'
 			identifier: argument.type
 			count: 1
 			path: src/Mapping/ClassMetadata.php
@@ -1309,7 +1309,7 @@ parameters:
 			path: src/Mapping/Driver/AttributeDriver.php
 
 		-
-			message: '#^Parameter \#1 \$mapping of method Doctrine\\ORM\\Mapping\\ClassMetadata\<T of object\>\:\:mapEmbedded\(\) expects array\{fieldName\: string, class\?\: class\-string, declaredField\?\: string, columnPrefix\?\: string\|false\|null, originalField\?\: string\}, array\{fieldName\: string, cache\?\: array\{usage\: int, region\: string\|null\}, class\: string\|null, columnPrefix\: bool\|string\|null\} given\.$#'
+			message: '#^Parameter \#1 \$mapping of method Doctrine\\ORM\\Mapping\\ClassMetadata\<T of object\>\:\:mapEmbedded\(\) expects array\{fieldName\: string, class\?\: class\-string, declaredField\?\: string, columnPrefix\?\: string\|false\|null, originalField\?\: string, encrypt\?\: array\<string, mixed\>\|null\}, array\{fieldName\: string, cache\?\: array\{usage\: int, region\: string\|null\}, class\: string\|null, columnPrefix\: bool\|string\|null, encrypt\?\: array\{cipher\: string\|null, keyProvider\: string\|null, queryType\: Doctrine\\ORM\\Encrypt\\EncryptQuery\|null\}\} given\.$#'
 			identifier: argument.type
 			count: 1
 			path: src/Mapping/Driver/AttributeDriver.php
@@ -1447,7 +1447,7 @@ parameters:
 			path: src/Mapping/Driver/XmlDriver.php
 
 		-
-			message: '#^Parameter \#1 \$mapping of method Doctrine\\ORM\\Mapping\\ClassMetadata\<T of object\>\:\:mapEmbedded\(\) expects array\{fieldName\: string, class\?\: class\-string, declaredField\?\: string, columnPrefix\?\: string\|false\|null, originalField\?\: string\}, array\{fieldName\: string, class\: string\|null, columnPrefix\: string\|false\|null\} given\.$#'
+			message: '#^Parameter \#1 \$mapping of method Doctrine\\ORM\\Mapping\\ClassMetadata\<T of object\>\:\:mapEmbedded\(\) expects array\{fieldName\: string, class\?\: class\-string, declaredField\?\: string, columnPrefix\?\: string\|false\|null, originalField\?\: string, encrypt\?\: array\<string, mixed\>\|null\}, array\{fieldName\: string, class\: string\|null, columnPrefix\: string\|false\|null\} given\.$#'
 			identifier: argument.type
 			count: 1
 			path: src/Mapping/Driver/XmlDriver.php

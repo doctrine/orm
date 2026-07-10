@@ -6,6 +6,7 @@ namespace Doctrine\ORM\Mapping;
 
 use ArrayAccess;
 
+use function in_array;
 use function property_exists;
 
 /** @template-implements ArrayAccess<string, mixed> */
@@ -42,6 +43,8 @@ final class EmbeddedClassMapping implements ArrayAccess
      */
     public string|null $declared = null;
 
+    public EncryptMapping|null $encrypt = null;
+
     /** @param class-string $class */
     public function __construct(public string $class)
     {
@@ -55,19 +58,25 @@ final class EmbeddedClassMapping implements ArrayAccess
      *     originalField?: string|null,
      *     inherited?: class-string|null,
      *     declared?: class-string|null,
+     *     encrypt?: array<string, mixed>|null,
      * } $mappingArray
      */
     public static function fromMappingArray(array $mappingArray): self
     {
         $mapping = new self($mappingArray['class']);
         foreach ($mappingArray as $key => $value) {
-            if ($key === 'class') {
+            if (in_array($key, ['class', 'encrypt'])) {
                 continue;
             }
 
             if (property_exists($mapping, $key)) {
                 $mapping->$key = $value;
             }
+        }
+
+        $encryptMapping = $mappingArray['encrypt'] ?? null;
+        if ($encryptMapping !== null) {
+            $mapping->encrypt = EncryptMapping::fromMappingArray($encryptMapping);
         }
 
         return $mapping;
@@ -82,7 +91,7 @@ final class EmbeddedClassMapping implements ArrayAccess
             $serialized[] = 'columnPrefix';
         }
 
-        foreach (['declaredField', 'originalField', 'inherited', 'declared'] as $property) {
+        foreach (['declaredField', 'originalField', 'inherited', 'declared', 'encrypt'] as $property) {
             if ($this->$property !== null) {
                 $serialized[] = $property;
             }

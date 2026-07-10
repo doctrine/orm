@@ -277,6 +277,15 @@ class AttributeDriver implements MappingDriver
             $metadata->setChangeTrackingPolicy(constant('Doctrine\ORM\Mapping\ClassMetadata::CHANGETRACKING_' . $changeTrackingAttribute->value));
         }
 
+        // Evaluate Encrypt attribute (class-level default for eligible scalar fields)
+        if (isset($classAttributes[Mapping\Encrypt::class])) {
+            if ($metadata->cache !== null) {
+                throw MappingException::encryptClassWithSecondLevelCacheNotSupported($metadata->name);
+            }
+
+            $metadata->encrypt = Mapping\EncryptMapping::fromAttribute($classAttributes[Mapping\Encrypt::class]);
+        }
+
         foreach ($reflectionClass->getProperties() as $property) {
             if ($this->isRepeatedPropertyDeclaration($property, $metadata)) {
                 continue;
@@ -296,6 +305,9 @@ class AttributeDriver implements MappingDriver
                     ],
                 );
             }
+
+            // Evaluate Encrypt attribute
+            $encryptAttribute = $this->reader->getPropertyAttribute($property, Mapping\Encrypt::class);
 
             // Check for JoinColumn/JoinColumns attributes
             $joinColumns = [];
@@ -334,6 +346,10 @@ class AttributeDriver implements MappingDriver
                     $metadata->setVersionMapping($mapping);
                 }
 
+                if ($encryptAttribute !== null) {
+                    $mapping['encrypt'] = (array) $encryptAttribute;
+                }
+
                 $metadata->mapField($mapping);
 
                 // Check for SequenceGenerator/TableGenerator definition
@@ -360,6 +376,10 @@ class AttributeDriver implements MappingDriver
                     throw MappingException::invalidAttributeOnEmbeddable($metadata->name, Mapping\OneToOne::class);
                 }
 
+                if ($encryptAttribute !== null) {
+                    throw MappingException::encryptOnAssociationNotAllowed($metadata->name, $property->name);
+                }
+
                 $idAttribute = $this->reader->getPropertyAttribute($property, Mapping\Id::class);
                 if ($idAttribute !== null) {
                     $mapping['id']         = true;
@@ -377,6 +397,10 @@ class AttributeDriver implements MappingDriver
             } elseif ($oneToManyAttribute !== null) {
                 if ($metadata->isEmbeddedClass) {
                     throw MappingException::invalidAttributeOnEmbeddable($metadata->name, Mapping\OneToMany::class);
+                }
+
+                if ($encryptAttribute !== null) {
+                    throw MappingException::encryptOnAssociationNotAllowed($metadata->name, $property->name);
                 }
 
                 $mapping['mappedBy']      = $oneToManyAttribute->mappedBy;
@@ -398,6 +422,10 @@ class AttributeDriver implements MappingDriver
                     throw MappingException::invalidAttributeOnEmbeddable($metadata->name, Mapping\ManyToOne::class);
                 }
 
+                if ($encryptAttribute !== null) {
+                    throw MappingException::encryptOnAssociationNotAllowed($metadata->name, $property->name);
+                }
+
                 $idAttribute = $this->reader->getPropertyAttribute($property, Mapping\Id::class);
 
                 if ($idAttribute !== null) {
@@ -414,6 +442,10 @@ class AttributeDriver implements MappingDriver
             } elseif ($manyToManyAttribute !== null) {
                 if ($metadata->isEmbeddedClass) {
                     throw MappingException::invalidAttributeOnEmbeddable($metadata->name, Mapping\ManyToMany::class);
+                }
+
+                if ($encryptAttribute !== null) {
+                    throw MappingException::encryptOnAssociationNotAllowed($metadata->name, $property->name);
                 }
 
                 $joinTable          = [];
@@ -465,6 +497,10 @@ class AttributeDriver implements MappingDriver
             } elseif ($embeddedAttribute !== null) {
                 $mapping['class']        = $embeddedAttribute->class;
                 $mapping['columnPrefix'] = $embeddedAttribute->columnPrefix;
+
+                if ($encryptAttribute !== null) {
+                    $mapping['encrypt'] = (array) $encryptAttribute;
+                }
 
                 $metadata->mapEmbedded($mapping);
             }
