@@ -181,7 +181,7 @@ class EntityManagerTest extends OrmTestCase
     }
 
     /** Resetting the EntityManager relies on lazy objects until https://github.com/doctrine/orm/issues/5933 is resolved */
-    #[RequiresPhp('8.4')]
+    #[RequiresPhp('>=8.4.0')]
     public function testLazyGhostEntityManager(): void
     {
         $reflector = new ReflectionClass(EntityManager::class);

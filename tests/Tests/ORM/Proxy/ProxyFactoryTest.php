@@ -239,7 +239,8 @@ class ProxyFactoryTest extends OrmTestCase
         self::assertSame('Bob', $cloned->getName(), 'Expect properties on the CompanyPerson class to be cloned');
     }
 
-    #[RequiresPhp('8.4')]
+    #[RequiresPhp('>=8.4.0')]
+    #[IgnoreDeprecations]
     public function testProxyFactoryAcceptsNullProxyArgsWhenNativeLazyObjectsAreEnabled(): void
     {
         $this->emMock->getConfiguration()->enableNativeLazyObjects(true);
@@ -257,7 +258,7 @@ class ProxyFactoryTest extends OrmTestCase
         self::assertTrue($reflection->isUninitializedLazyObject($proxy));
     }
 
-    #[RequiresPhp('8.4')]
+    #[RequiresPhp('>=8.4.0')]
     #[RequiresMethod(ProxyHelper::class, 'generateLazyGhost')]
     #[IgnoreDeprecations]
     public function testProxyFactoryTriggersDeprecationWhenNativeLazyObjectsAreDisabled(): void
@@ -274,7 +275,7 @@ class ProxyFactoryTest extends OrmTestCase
         );
     }
 
-    #[RequiresPhp('< 8.4')]
+    #[RequiresPhp('< 8.4.0')]
     public function testProxyFactoryDoesNotTriggerDeprecationWhenNativeLazyObjectsAreDisabled(): void
     {
         $this->emMock->getConfiguration()->enableNativeLazyObjects(false);
