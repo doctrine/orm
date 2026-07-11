@@ -8,9 +8,11 @@ use BackedEnum;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Result;
 use Doctrine\DBAL\Types\Type;
+use Doctrine\ORM\Encrypt\EncryptHelper;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Events;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\EncryptMapping;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\ORM\Tools\Pagination\LimitSubqueryWalker;
 use Doctrine\ORM\UnitOfWork;
@@ -54,6 +56,16 @@ abstract class AbstractHydrator
      */
     protected UnitOfWork $uow;
 
+    protected EncryptHelper $encryptHelper;
+
+    /**
+     * Encrypted result columns, mapped to their EncryptMapping.
+     * Built lazily on the first row of a result set, reset in {@see cleanup()}.
+     *
+     * @var array<string, EncryptMapping>|null
+     */
+    private array|null $encryptedFieldMappings = null;
+
     /**
      * Local ClassMetadata cache to avoid going to the EntityManager all the time.
      *
@@ -85,8 +97,9 @@ abstract class AbstractHydrator
      */
     public function __construct(protected EntityManagerInterface $em)
     {
-        $this->platform = $em->getConnection()->getDatabasePlatform();
-        $this->uow      = $em->getUnitOfWork();
+        $this->platform      = $em->getConnection()->getDatabasePlatform();
+        $this->uow           = $em->getUnitOfWork();
+        $this->encryptHelper = $em->getEncryptHelper();
     }
 
     /**
@@ -120,7 +133,7 @@ abstract class AbstractHydrator
 
                 $result = [];
 
-                $this->hydrateRowData($row, $result);
+                $this->hydrateRowData($this->decryptRowData($row), $result);
 
                 $this->cleanupAfterRowIteration();
                 if (count($result) === 1) {
@@ -205,10 +218,11 @@ abstract class AbstractHydrator
     {
         $this->statement()->free();
 
-        $this->stmt          = null;
-        $this->rsm           = null;
-        $this->cache         = [];
-        $this->metadataCache = [];
+        $this->stmt                   = null;
+        $this->rsm                    = null;
+        $this->cache                  = [];
+        $this->metadataCache          = [];
+        $this->encryptedFieldMappings = null;
 
         $this
             ->em
@@ -611,5 +625,50 @@ abstract class AbstractHydrator
         $value = $isIntBacked ? (int) $value : $value;
 
         return $enumType::from($value);
+    }
+
+    /**
+     * @param array<string, mixed> $row
+     *
+     * @return array<string, mixed>
+     */
+    final protected function decryptRowData(array $row): array
+    {
+        $mappings = $this->encryptedFieldMappings ??= $this->createEncryptedFieldMappings();
+
+        if ($mappings !== []) {
+            $this->encryptHelper->decryptRow($mappings, $row);
+        }
+
+        return $row;
+    }
+
+    /**
+     * Builds the encrypted-column map once per result set: the encrypted columns only depend on the ResultSetMapping.
+     *
+     * @return array<string, EncryptMapping>
+     */
+    private function createEncryptedFieldMappings(): array
+    {
+        if ($this->rsm->isDecryptDisabled() || ! $this->encryptHelper->doesRsmContainEncrypt($this->rsm)) {
+            return [];
+        }
+
+        $mappings = [];
+
+        foreach ($this->rsm->fieldMappings as $column => $fieldName) {
+            if (! isset($this->rsm->declaringClasses[$column])) {
+                continue;
+            }
+
+            $encrypt = $this->em->getClassMetadata($this->rsm->declaringClasses[$column])
+                ->fieldMappings[$fieldName]->encrypt ?? null;
+
+            if ($encrypt !== null) {
+                $mappings[$column] = $encrypt;
+            }
+        }
+
+        return $mappings;
     }
 }

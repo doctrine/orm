@@ -9,6 +9,7 @@ use Doctrine\Common\EventManager;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Result;
+use Doctrine\ORM\Encrypt\EncryptHelper;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Events;
 use Doctrine\ORM\Internal\Hydration\AbstractHydrator;
@@ -51,6 +52,9 @@ class AbstractHydratorTest extends OrmFunctionalTestCase
         $mockEntityManagerInterface
             ->method('getConnection')
             ->willReturn($mockConnection);
+        $mockEntityManagerInterface
+            ->method('getEncryptHelper')
+            ->willReturn(new EncryptHelper($mockEntityManagerInterface));
         $this->mockResult
             ->method('fetchAssociative')
             ->willReturn(false);

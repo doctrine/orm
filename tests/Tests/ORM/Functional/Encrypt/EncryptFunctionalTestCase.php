@@ -16,6 +16,7 @@ use Doctrine\Tests\Models\Encrypt\EncryptPerson;
 use Doctrine\Tests\Models\Encrypt\EncryptTypesEntity;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
+use function is_array;
 use function is_resource;
 use function stream_get_contents;
 
@@ -138,5 +139,27 @@ abstract class EncryptFunctionalTestCase extends OrmFunctionalTestCase
         $jax  = $this->persistCustomer('jax', '123-45-6789', 'again secret');
 
         return [$joe, $jane, $jim, $jax];
+    }
+
+    protected function assertCustomer(string $name, EncryptCustomer|array $customer): void
+    {
+        if (is_array($customer)) {
+            $customer = (object) $customer;
+        }
+
+        self::assertSame($name, $customer->name);
+
+        self::assertSame(match ($name) {
+            'joe', 'jax' => '123-45-6789',
+            'jane' => '987-65-4321',
+            'jim' => '555-55-5555',
+        }, $customer->ssn);
+
+        self::assertSame(match ($name) {
+            'joe' => 'top secret',
+            'jane' => 'other secret',
+            'jim' => 'third secret',
+            'jax' => 'again secret',
+        }, $customer->note);
     }
 }

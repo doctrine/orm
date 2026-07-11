@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Encrypt;
 
+use Doctrine\Tests\Models\Encrypt\EncryptEmployee;
+
 class EncryptWriteTest extends EncryptFunctionalTestCase
 {
     public function testInsertStoresCiphertextInDatabase(): void
@@ -43,5 +45,28 @@ class EncryptWriteTest extends EncryptFunctionalTestCase
         $jaxRawNote = $this->fetchRawColumn('SELECT note FROM encrypt_customers WHERE id = ?', [$jax->id]);
 
         self::assertNotSame($joeRawNote, $jaxRawNote);
+    }
+
+    public function testJoinedInheritanceStoresCiphertextUnderParentTable(): void
+    {
+        $employee             = new EncryptEmployee();
+        $employee->secret     = 'classified';
+        $employee->department = 'r&d';
+
+        $this->_em->persist($employee);
+        $this->_em->flush();
+
+        $rawSecret = $this->fetchRawColumn('SELECT secret FROM encrypt_persons WHERE id = ?', [$employee->id]);
+
+        self::assertNotSame('classified', $rawSecret);
+        self::assertSame('classified', $this->decrypt($rawSecret));
+
+        $this->_em->clear();
+
+        $found = $this->_em->getRepository(EncryptEmployee::class)->findOneBy(['secret' => 'classified']);
+
+        self::assertNotNull($found);
+        self::assertSame($employee->id, $found->id);
+        self::assertSame('classified', $found->secret);
     }
 }

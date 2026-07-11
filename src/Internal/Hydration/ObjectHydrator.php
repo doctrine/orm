@@ -144,7 +144,7 @@ class ObjectHydrator extends AbstractHydrator
         $result = [];
 
         while ($row = $this->statement()->fetchAssociative()) {
-            $this->hydrateRowData($row, $result);
+            $this->hydrateRowData($this->decryptRowData($row), $result);
         }
 
         // Take snapshots from all newly initialized collections
