@@ -2395,12 +2395,6 @@ parameters:
 			path: src/Query.php
 
 		-
-			message: '#^Parameter \#2 \$sqlParams of method Doctrine\\ORM\\Query\:\:evictResultSetCache\(\) expects array\<string, mixed\>, list\<mixed\> given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Query.php
-
-		-
 			message: '#^Property Doctrine\\ORM\\Query\\AST\\Functions\\BitAndFunction\:\:\$firstArithmetic \(Doctrine\\ORM\\Query\\AST\\Node\) does not accept Doctrine\\ORM\\Query\\AST\\Node\|string\.$#'
 			identifier: assign.propertyType
 			count: 1

@@ -10,8 +10,11 @@ use Doctrine\DBAL\LockMode;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\Deprecations\Deprecation;
+use Doctrine\ORM\Encrypt\EncryptHelper;
+use Doctrine\ORM\Encrypt\Exception\UnsupportedEncryptedFieldUsage;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\FieldMapping;
 use Doctrine\ORM\Mapping\QuoteStrategy;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\Query;
@@ -141,6 +144,8 @@ class SqlWalker
      */
     private readonly QuoteStrategy $quoteStrategy;
 
+    private readonly EncryptHelper $encryptHelper;
+
     /** @phpstan-param array<string, QueryComponent> $queryComponents The query components (symbol table). */
     public function __construct(
         private readonly Query $query,
@@ -152,6 +157,7 @@ class SqlWalker
         $this->conn          = $this->em->getConnection();
         $this->platform      = $this->conn->getDatabasePlatform();
         $this->quoteStrategy = $this->em->getConfiguration()->getQuoteStrategy();
+        $this->encryptHelper = $this->em->getEncryptHelper();
     }
 
     /**
@@ -1774,8 +1780,13 @@ class SqlWalker
         $useTableAliasesBefore    = $this->useSqlTableAliases;
         $this->useSqlTableAliases = false;
 
-        $sql      = $this->walkPathExpression($updateItem->pathExpression) . ' = ';
-        $newValue = $updateItem->newValue;
+        $sql       = $this->walkPathExpression($updateItem->pathExpression) . ' = ';
+        $newValue  = $updateItem->newValue;
+        $encrypted = $this->resolveEncryptedPathOperand($updateItem->pathExpression);
+
+        if ($encrypted !== null && $newValue !== null) {
+            $this->registerEncryptedOperand($newValue, $encrypted);
+        }
 
         $sql .= match (true) {
             $newValue instanceof AST\Node => $newValue->dispatch($this),
@@ -2040,9 +2051,22 @@ class SqlWalker
      */
     public function walkInListExpression(AST\InListExpression $inExpr): string
     {
+        $encrypted       = $this->resolveEncryptedPathOperand($inExpr->expression);
+        $walkInParameter = [$this, 'walkInParameter'];
+
+        if ($encrypted !== null) {
+            $this->encryptHelper->assertQueryable($encrypted[0]->name, $encrypted[1]);
+
+            $walkInParameter = function (mixed $literal) use ($encrypted): string {
+                $this->registerEncryptedOperand($literal, $encrypted);
+
+                return $this->walkInParameter($literal);
+            };
+        }
+
         return $this->walkArithmeticExpression($inExpr->expression)
             . ($inExpr->not ? ' NOT' : '') . ' IN ('
-            . implode(', ', array_map($this->walkInParameter(...), $inExpr->literals))
+            . implode(', ', array_map($walkInParameter(...), $inExpr->literals))
             . ')';
     }
 
@@ -2108,6 +2132,12 @@ class SqlWalker
      */
     public function walkBetweenExpression(AST\BetweenExpression $betweenExpr): string
     {
+        $encrypted = $this->resolveEncryptedPathOperand($betweenExpr->expression);
+
+        if ($encrypted !== null) {
+            throw UnsupportedEncryptedFieldUsage::unsupportedOperator($encrypted[0]->name, $encrypted[1]->fieldName, 'BETWEEN');
+        }
+
         $sql = $this->walkArithmeticExpression($betweenExpr->expression);
 
         if ($betweenExpr->not) {
@@ -2126,6 +2156,15 @@ class SqlWalker
     public function walkLikeExpression(AST\LikeExpression $likeExpr): string
     {
         $stringExpr = $likeExpr->stringExpression;
+
+        if (! is_string($stringExpr)) {
+            $encrypted = $this->resolveEncryptedPathOperand($stringExpr);
+
+            if ($encrypted !== null) {
+                throw UnsupportedEncryptedFieldUsage::unsupportedOperator($encrypted[0]->name, $encrypted[1]->fieldName, 'LIKE');
+            }
+        }
+
         if (is_string($stringExpr)) {
             if (! isset($this->queryComponents[$stringExpr]['resultVariable'])) {
                 throw new LogicException(sprintf('No result variable found for string expression "%s".', $stringExpr));
@@ -2168,6 +2207,8 @@ class SqlWalker
      */
     public function walkComparisonExpression(AST\ComparisonExpression $compExpr): string
     {
+        $this->validateEncryptedComparison($compExpr);
+
         $leftExpr  = $compExpr->leftExpression;
         $rightExpr = $compExpr->rightExpression;
         $sql       = '';
@@ -2183,6 +2224,100 @@ class SqlWalker
             : (is_numeric($rightExpr) ? $rightExpr : $this->conn->quote($rightExpr));
 
         return $sql;
+    }
+
+    /**
+     * Validates a comparison where one side is an encrypted field: only equality operators
+     * (=, <>, !=) are supported, and the other side must be a bound parameter, not a literal.
+     * Registers the parameter for encryption when valid.
+     */
+    private function validateEncryptedComparison(AST\ComparisonExpression $compExpr): void
+    {
+        $encrypted = $this->resolveEncryptedPathOperand($compExpr->leftExpression);
+        $otherSide = $compExpr->rightExpression;
+
+        if ($encrypted === null) {
+            $encrypted = $this->resolveEncryptedPathOperand($compExpr->rightExpression);
+            $otherSide = $compExpr->leftExpression;
+        }
+
+        if ($encrypted === null) {
+            return;
+        }
+
+        [$class, $fieldMapping] = $encrypted;
+
+        if (! in_array($compExpr->operator, ['=', '<>', '!='], true)) {
+            throw UnsupportedEncryptedFieldUsage::unsupportedOperator($class->name, $fieldMapping->fieldName, $compExpr->operator);
+        }
+
+        $this->encryptHelper->assertQueryable($class->name, $fieldMapping);
+
+        $this->registerEncryptedOperand($otherSide, $encrypted);
+    }
+
+    /**
+     * Resolves an operand to its class metadata and field mapping when it is a state field
+     * path to an encrypted field, null otherwise.
+     *
+     * @return array{ClassMetadata<object>, FieldMapping}|null
+     */
+    private function resolveEncryptedPathOperand(AST\Node|string $expr): array|null
+    {
+        $expr = $this->unwrapArithmeticOperand($expr);
+
+        if (
+            ! $expr instanceof AST\PathExpression
+            || $expr->type !== AST\PathExpression::TYPE_STATE_FIELD
+            || $expr->field === null
+        ) {
+            return null;
+        }
+
+        $class        = $this->getMetadataForDqlAlias($expr->identificationVariable);
+        $fieldMapping = $class->fieldMappings[$expr->field] ?? null;
+
+        if ($fieldMapping?->encrypt === null) {
+            return null;
+        }
+
+        return [$class, $fieldMapping];
+    }
+
+    /**
+     * The value side of a comparison/IN/SET involving an encrypted field: a DQL literal cannot
+     * be encrypted (it is inlined into the cached SQL), a bound parameter is registered for
+     * encryption at its current SQL position, anything else (e.g. another path) is left alone.
+     *
+     * @param array{ClassMetadata<object>, FieldMapping} $encrypted
+     */
+    private function registerEncryptedOperand(mixed $operand, array $encrypted): void
+    {
+        if ($operand instanceof AST\Node || is_string($operand)) {
+            $operand = $this->unwrapArithmeticOperand($operand);
+        }
+
+        if ($operand instanceof AST\Literal) {
+            throw UnsupportedEncryptedFieldUsage::literal($encrypted[0]->name, $encrypted[1]->fieldName);
+        }
+
+        if ($operand instanceof AST\InputParameter) {
+            $this->parserResult->getEncryptedQuerySetMapping()->addEncryptedParameter($this->sqlParamIndex, $encrypted[0]->name, $encrypted[1]->fieldName);
+        }
+    }
+
+    /**
+     * Unwraps the ArithmeticExpression wrapper around a comparison/IN/SET operand, exposing
+     * the bare node (PathExpression, InputParameter, Literal, ...) the parser's phase-1 AST
+     * optimization collapsed single-term expressions to.
+     */
+    private function unwrapArithmeticOperand(AST\Node|string $expr): AST\Node|string
+    {
+        return $expr instanceof AST\ArithmeticExpression
+            && $expr->isSimpleArithmeticExpression()
+            && $expr->simpleArithmeticExpression !== null
+            ? $expr->simpleArithmeticExpression
+            : $expr;
     }
 
     /**
