@@ -11,6 +11,16 @@ use function sprintf;
 
 final class UnsupportedEncryptedFieldUsage extends LogicException implements ORMException
 {
+    public static function unsupportedOperator(string $className, string $fieldName, string $operator): self
+    {
+        return new self(sprintf(
+            '%s::$%s is encrypted; filtering by an encrypted field only supports equality operators (=, <>, IN, NIN), got "%s".',
+            $className,
+            $fieldName,
+            $operator,
+        ));
+    }
+
     public static function missingQueryType(string $className, string $fieldName): self
     {
         return new self(sprintf(

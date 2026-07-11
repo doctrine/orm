@@ -10,6 +10,7 @@ use Doctrine\Common\Collections\Expr\Comparison;
 use Doctrine\DBAL\Exception as DBALException;
 use Doctrine\DBAL\LockMode;
 use Doctrine\ORM\Cache\Persister\CompatOrderings;
+use Doctrine\ORM\Encrypt\Exception\UnsupportedEncryptedFieldUsage;
 use Doctrine\ORM\Mapping\AssociationMapping;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\InverseSideMapping;
@@ -17,6 +18,7 @@ use Doctrine\ORM\Mapping\ManyToManyAssociationMapping;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\Persisters\SqlValueVisitor;
 use Doctrine\ORM\Query;
+use Doctrine\ORM\Query\EncryptedQuerySetMapping;
 use Doctrine\ORM\Utility\PersisterHelper;
 use SortDirection;
 
@@ -27,6 +29,7 @@ use function assert;
 use function count;
 use function implode;
 use function in_array;
+use function range;
 use function reset;
 use function sprintf;
 
@@ -244,16 +247,32 @@ class ManyToManyPersister extends AbstractCollectionPersister
             $paramTypes[]   = PersisterHelper::getTypeOfColumn($value, $ownerMetadata, $this->em);
         }
 
-        $parameters = $this->expandCriteriaParameters($criteria);
+        $parameters      = $this->expandCriteriaParameters($criteria);
+        $querySetMapping = new EncryptedQuerySetMapping();
 
         foreach ($parameters as $parameter) {
             [$name, $value, $operator] = $parameter;
 
-            $field = $this->quoteStrategy->getColumnName($name, $targetClass, $this->platform);
+            $field        = $this->quoteStrategy->getColumnName($name, $targetClass, $this->platform);
+            $fieldMapping = $targetClass->fieldMappings[$name] ?? null;
+            $encrypt      = $fieldMapping?->encrypt !== null;
+            $countParams  = count($params);
 
             if ($value === null && ($operator === Comparison::EQ || $operator === Comparison::NEQ)) {
                 $whereClauses[] = sprintf('te.%s %s NULL', $field, $operator === Comparison::EQ ? 'IS' : 'IS NOT');
-            } elseif ($operator === Comparison::IN || $operator === Comparison::NIN) {
+
+                continue;
+            }
+
+            if ($encrypt) {
+                if (! in_array($operator, [Comparison::EQ, Comparison::NEQ, Comparison::IN, Comparison::NIN], true)) {
+                    throw UnsupportedEncryptedFieldUsage::unsupportedOperator($targetClass->name, $name, $operator);
+                }
+
+                $this->encryptHelper->assertQueryable($targetClass->name, $fieldMapping);
+            }
+
+            if ($operator === Comparison::IN || $operator === Comparison::NIN) {
                 $whereClauses[] = sprintf('te.%s %s (%s)', $field, $operator === Comparison::IN ? 'IN' : 'NOT IN', implode(', ', array_fill(0, count($value), '?')));
                 foreach ($value as $item) {
                     $params     = array_merge($params, PersisterHelper::convertToParameterValue($item, $this->em));
@@ -264,6 +283,18 @@ class ManyToManyPersister extends AbstractCollectionPersister
 
                 $params     = [...$params, ...PersisterHelper::convertToParameterValue($value, $this->em)];
                 $paramTypes = [...$paramTypes, ...PersisterHelper::inferParameterTypes($name, $value, $targetClass, $this->em)];
+            }
+
+            if ($encrypt) {
+                $nowCountParams = count($params);
+
+                if ($nowCountParams > $countParams) {
+                    $querySetMapping->addEncryptedParameters(
+                        range($countParams, $nowCountParams - 1),
+                        $targetClass->name,
+                        $name,
+                    );
+                }
             }
         }
 
@@ -282,6 +313,10 @@ class ManyToManyPersister extends AbstractCollectionPersister
         $sql .= $this->getOrderingSql($criteria, $targetClass);
 
         $sql .= $this->getLimitSql($criteria);
+
+        if (! $querySetMapping->isEmpty()) {
+            $this->encryptHelper->encryptParameters($querySetMapping, $params, $paramTypes);
+        }
 
         $stmt = $this->conn->executeQuery($sql, $params, $paramTypes);
 
@@ -750,6 +785,10 @@ class ManyToManyPersister extends AbstractCollectionPersister
         if ($orderings) {
             $orderBy = [];
             foreach ($orderings as $name => $direction) {
+                if ($targetClass->fieldMappings[$name]->encrypt !== null) {
+                    throw UnsupportedEncryptedFieldUsage::orderBy($targetClass->name, $name);
+                }
+
                 $field = $this->quoteStrategy->getColumnName(
                     $name,
                     $targetClass,

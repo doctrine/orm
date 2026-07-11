@@ -128,4 +128,15 @@ abstract class EncryptFunctionalTestCase extends OrmFunctionalTestCase
     {
         return (new OpenSSLCipher())->decrypt($envelope, $this->keyProvider);
     }
+
+    /** @return list{EncryptCustomer, EncryptCustomer, EncryptCustomer} */
+    protected function initCustomers(): array
+    {
+        $joe  = $this->persistCustomer('joe', '123-45-6789', 'top secret');
+        $jane = $this->persistCustomer('jane', '987-65-4321', 'other secret');
+        $jim  = $this->persistCustomer('jim', '555-55-5555', 'third secret');
+        $jax  = $this->persistCustomer('jax', '123-45-6789', 'again secret');
+
+        return [$joe, $jane, $jim, $jax];
+    }
 }

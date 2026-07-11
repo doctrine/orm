@@ -6,6 +6,7 @@ namespace Doctrine\ORM\Persisters\Collection;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
+use Doctrine\ORM\Encrypt\EncryptHelper;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\QuoteStrategy;
 use Doctrine\ORM\UnitOfWork;
@@ -19,6 +20,7 @@ abstract class AbstractCollectionPersister implements CollectionPersister
     protected UnitOfWork $uow;
     protected AbstractPlatform $platform;
     protected QuoteStrategy $quoteStrategy;
+    protected EncryptHelper $encryptHelper;
 
     /**
      * Initializes a new instance of a class derived from AbstractCollectionPersister.
@@ -30,6 +32,7 @@ abstract class AbstractCollectionPersister implements CollectionPersister
         $this->conn          = $em->getConnection();
         $this->platform      = $this->conn->getDatabasePlatform();
         $this->quoteStrategy = $em->getConfiguration()->getQuoteStrategy();
+        $this->encryptHelper = $em->getEncryptHelper();
     }
 
     /**

@@ -16,6 +16,8 @@ use Doctrine\DBAL\Result;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Cache\Persister\CompatOrderings;
+use Doctrine\ORM\Encrypt\EncryptHelper;
+use Doctrine\ORM\Encrypt\Exception\UnsupportedEncryptedFieldUsage;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\AssociationMapping;
 use Doctrine\ORM\Mapping\ClassMetadata;
@@ -32,6 +34,7 @@ use Doctrine\ORM\Persisters\Exception\UnrecognizedField;
 use Doctrine\ORM\Persisters\SqlExpressionVisitor;
 use Doctrine\ORM\Persisters\SqlValueVisitor;
 use Doctrine\ORM\Query;
+use Doctrine\ORM\Query\EncryptedQuerySetMapping;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\ORM\Repository\Exception\InvalidFindByCall;
 use Doctrine\ORM\UnitOfWork;
@@ -45,14 +48,19 @@ use function array_combine;
 use function array_diff_key;
 use function array_fill;
 use function array_flip;
+use function array_intersect_key;
 use function array_keys;
 use function array_map;
+use function array_merge;
 use function array_unique;
 use function array_values;
+use function array_walk;
 use function assert;
 use function count;
 use function implode;
+use function in_array;
 use function is_array;
+use function range;
 use function reset;
 use function spl_object_id;
 use function sprintf;
@@ -167,6 +175,8 @@ class BasicEntityPersister implements EntityPersister
     private readonly CachedPersisterContext $limitsHandlingContext;
     private readonly CachedPersisterContext $noLimitsContext;
 
+    private EncryptHelper $encryptHelper;
+
     private string|null $filterHash = null;
 
     /**
@@ -193,6 +203,7 @@ class BasicEntityPersister implements EntityPersister
             new Query\ResultSetMapping(),
             true,
         );
+        $this->encryptHelper         = $this->em->getEncryptHelper();
     }
 
     final protected function isFilterHashUpToDate(): bool
@@ -594,9 +605,10 @@ class BasicEntityPersister implements EntityPersister
      */
     protected function prepareUpdateData(object $entity, bool $isInsert = false): array
     {
-        $versionField = null;
-        $result       = [];
-        $uow          = $this->em->getUnitOfWork();
+        $versionField    = null;
+        $result          = [];
+        $uow             = $this->em->getUnitOfWork();
+        $querySetMapping = new EncryptedQuerySetMapping();
 
         $versioned = $this->class->isVersioned;
         if ($versioned !== false) {
@@ -629,6 +641,10 @@ class BasicEntityPersister implements EntityPersister
                 $this->columnTypes[$columnName] = $fieldMapping->type;
 
                 $result[$this->getOwningTable($field)][$columnName] = $newVal;
+
+                if ($fieldMapping->encrypt !== null) {
+                    $querySetMapping->addEncryptedParameter($columnName, $this->class->name, $field);
+                }
 
                 continue;
             }
@@ -693,6 +709,15 @@ class BasicEntityPersister implements EntityPersister
                 $newValue                            = $newValId ? $newValId[$targetClass->getFieldForColumn($targetColumn)] : null;
                 $result[$owningTable][$sourceColumn] = $newValue instanceof BackedEnum ? $newValue->value : $newValue;
             }
+        }
+
+        if (! $querySetMapping->isEmpty()) {
+            $concatResult = array_merge(...array_values($result));
+            $this->encryptHelper->encryptParameters($querySetMapping, $concatResult, $this->columnTypes);
+
+            array_walk($result, static function (array &$values) use ($concatResult): void {
+                $values = array_intersect_key($concatResult, $values);
+            });
         }
 
         return $result;
@@ -904,7 +929,8 @@ class BasicEntityPersister implements EntityPersister
             return [$sqlParams, $sqlTypes];
         }
 
-        $valueVisitor = new SqlValueVisitor();
+        $valueVisitor    = new SqlValueVisitor();
+        $querySetMapping = new EncryptedQuerySetMapping();
 
         $valueVisitor->dispatch($expression);
 
@@ -915,6 +941,18 @@ class BasicEntityPersister implements EntityPersister
 
             if ($value === null && ($operator === Comparison::EQ || $operator === Comparison::NEQ)) {
                 continue;
+            }
+
+            $fieldMapping = $this->class->fieldMappings[$field] ?? null;
+            $encrypt      = $fieldMapping?->encrypt !== null;
+            $countParams  = count($sqlParams);
+
+            if ($encrypt) {
+                if (! in_array($operator, [Comparison::EQ, Comparison::NEQ, Comparison::IN, Comparison::NIN], true)) {
+                    throw UnsupportedEncryptedFieldUsage::unsupportedOperator($this->class->name, $field, $operator);
+                }
+
+                $this->encryptHelper->assertQueryable($this->class->name, $fieldMapping);
             }
 
             if ($operator === Comparison::IN || $operator === Comparison::NIN) {
@@ -937,11 +975,31 @@ class BasicEntityPersister implements EntityPersister
                     $sqlTypes  = [...$sqlTypes, ...PersisterHelper::inferParameterTypes($field, $item, $this->class, $this->em)];
                 }
 
+                if ($encrypt) {
+                    $nowCountParams = count($sqlParams);
+
+                    if ($nowCountParams > $countParams) {
+                        $querySetMapping->addEncryptedParameters(
+                            range($countParams, $nowCountParams - 1),
+                            $this->class->name,
+                            $field,
+                        );
+                    }
+                }
+
                 continue;
             }
 
             $sqlParams = [...$sqlParams, ...PersisterHelper::convertToParameterValue($value, $this->em)];
             $sqlTypes  = [...$sqlTypes, ...PersisterHelper::inferParameterTypes($field, $value, $this->class, $this->em)];
+
+            if ($encrypt) {
+                $querySetMapping->addEncryptedParameter($countParams, $this->class->name, $field);
+            }
+        }
+
+        if (! $querySetMapping->isEmpty()) {
+            $this->encryptHelper->encryptParameters($querySetMapping, $sqlParams, $sqlTypes);
         }
 
         return [$sqlParams, $sqlTypes];
@@ -1213,6 +1271,10 @@ class BasicEntityPersister implements EntityPersister
             }
 
             if (isset($this->class->fieldMappings[$fieldName])) {
+                if ($this->class->fieldMappings[$fieldName]->encrypt !== null) {
+                    throw UnsupportedEncryptedFieldUsage::orderBy($this->class->name, $fieldName);
+                }
+
                 $tableAlias = isset($this->class->fieldMappings[$fieldName]->inherited)
                     ? $this->getSQLTableAlias($this->class->fieldMappings[$fieldName]->inherited)
                     : $baseTableAlias;
@@ -1881,12 +1943,21 @@ class BasicEntityPersister implements EntityPersister
      */
     public function expandParameters(array $criteria): array
     {
-        $params = [];
-        $types  = [];
+        $params          = [];
+        $types           = [];
+        $querySetMapping = new EncryptedQuerySetMapping();
 
         foreach ($criteria as $field => $value) {
             if ($value === null) {
                 continue; // skip null values.
+            }
+
+            $fieldMapping = $this->class->fieldMappings[$field] ?? null;
+            $encrypt      = $fieldMapping?->encrypt !== null;
+            $countParams  = count($params);
+
+            if ($encrypt) {
+                $this->encryptHelper->assertQueryable($this->class->name, $fieldMapping);
             }
 
             if (is_array($value)) {
@@ -1896,11 +1967,31 @@ class BasicEntityPersister implements EntityPersister
                     $params = [...$params, ...PersisterHelper::convertToParameterValue($item, $this->em)];
                 }
 
+                if ($encrypt) {
+                    $nowCountParams = count($params);
+
+                    if ($nowCountParams > $countParams) {
+                        $querySetMapping->addEncryptedParameters(
+                            range($countParams, $nowCountParams - 1),
+                            $this->class->name,
+                            $field,
+                        );
+                    }
+                }
+
                 continue;
             }
 
             $types  = [...$types, ...PersisterHelper::inferParameterTypes($field, $value, $this->class, $this->em)];
             $params = [...$params, ...PersisterHelper::convertToParameterValue($value, $this->em)];
+
+            if ($encrypt) {
+                $querySetMapping->addEncryptedParameter($countParams, $this->class->name, $field);
+            }
+        }
+
+        if (! $querySetMapping->isEmpty()) {
+            $this->encryptHelper->encryptParameters($querySetMapping, $params, $types);
         }
 
         return [$params, $types];
@@ -1920,16 +2011,41 @@ class BasicEntityPersister implements EntityPersister
      */
     private function expandToManyParameters(array $criteria): array
     {
-        $params = [];
-        $types  = [];
+        $params          = [];
+        $types           = [];
+        $querySetMapping = new EncryptedQuerySetMapping();
 
         foreach ($criteria as $criterion) {
             if ($criterion['value'] === null) {
                 continue; // skip null values.
             }
 
+            $fieldMapping = $criterion['class']->fieldMappings[$criterion['field']] ?? null;
+            $encrypt      = $fieldMapping?->encrypt !== null;
+            $countParams  = count($params);
+
+            if ($encrypt) {
+                $this->encryptHelper->assertQueryable($criterion['class']->name, $fieldMapping);
+            }
+
             $types  = [...$types, ...PersisterHelper::inferParameterTypes($criterion['field'], $criterion['value'], $criterion['class'], $this->em)];
             $params = [...$params, ...PersisterHelper::convertToParameterValue($criterion['value'], $this->em)];
+
+            if ($encrypt) {
+                $nowCountParams = count($params);
+
+                if ($nowCountParams > $countParams) {
+                    $querySetMapping->addEncryptedParameters(
+                        range($countParams, $nowCountParams - 1),
+                        $criterion['class']->name,
+                        $criterion['field'],
+                    );
+                }
+            }
+        }
+
+        if (! $querySetMapping->isEmpty()) {
+            $this->encryptHelper->encryptParameters($querySetMapping, $params, $types);
         }
 
         return [$params, $types];
