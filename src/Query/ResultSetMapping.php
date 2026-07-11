@@ -194,6 +194,8 @@ class ResultSetMapping
      */
     public array $nestedEntities = [];
 
+    public bool $isDecryptDisabled = false;
+
     /**
      * Adds an entity result to this ResultSetMapping.
      *
@@ -587,6 +589,21 @@ class ResultSetMapping
         if ($type) {
             $this->typeMappings[$columnName] = $type;
         }
+
+        return $this;
+    }
+
+    public function isDecryptDisabled(): bool
+    {
+        return $this->isDecryptDisabled;
+    }
+
+    /**
+     * Use to disable decryption when manually create RSM and you want to get raw encrypted values.
+     */
+    public function disableDecrypt(): static
+    {
+        $this->isDecryptDisabled = true;
 
         return $this;
     }
