@@ -7,6 +7,8 @@ namespace Doctrine\Tests\ORM;
 use Doctrine\Deprecations\PHPUnit\VerifyDeprecations;
 use Doctrine\ORM\Cache\CacheConfiguration;
 use Doctrine\ORM\Configuration;
+use Doctrine\ORM\Encrypt\Cipher\CipherRegistry;
+use Doctrine\ORM\Encrypt\KMS\KeyProviderRegistry;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Exception\InvalidEntityRepository;
 use Doctrine\ORM\Mapping as MappingNamespace;
@@ -103,6 +105,24 @@ class ConfigurationTest extends TestCase
         $cache = $this->createStub(CacheItemPoolInterface::class);
         $this->configuration->setMetadataCache($cache);
         self::assertSame($cache, $this->configuration->getMetadataCache());
+    }
+
+    public function testSetGetCipherRegistry(): void
+    {
+        self::assertNull($this->configuration->getCipherRegistry()); // defaults
+
+        $cipherRegistry = $this->createStub(CipherRegistry::class);
+        $this->configuration->setCipherRegistry($cipherRegistry);
+        self::assertSame($cipherRegistry, $this->configuration->getCipherRegistry());
+    }
+
+    public function testSetGetKeyProviderRegistry(): void
+    {
+        self::assertNull($this->configuration->getKeyProviderRegistry()); // defaults
+
+        $keyProviderRegistry = $this->createStub(KeyProviderRegistry::class);
+        $this->configuration->setKeyProviderRegistry($keyProviderRegistry);
+        self::assertSame($keyProviderRegistry, $this->configuration->getKeyProviderRegistry());
     }
 
     public function testAddGetCustomStringFunction(): void

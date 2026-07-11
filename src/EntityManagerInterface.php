@@ -8,6 +8,7 @@ use DateTimeInterface;
 use Doctrine\Common\EventManagerInterface;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\LockMode;
+use Doctrine\ORM\Encrypt\EncryptHelper;
 use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\Internal\Hydration\AbstractHydrator;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
@@ -213,6 +214,11 @@ interface EntityManagerInterface extends ObjectManager
      * Gets the proxy factory used by the EntityManager to create entity proxies.
      */
     public function getProxyFactory(): ProxyFactory;
+
+    /**
+     * Gets the helper coordinating field-level encryption/decryption for this EntityManager.
+     */
+    public function getEncryptHelper(): EncryptHelper;
 
     /**
      * Gets the enabled filters.

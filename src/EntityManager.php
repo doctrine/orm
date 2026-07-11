@@ -10,6 +10,7 @@ use Doctrine\Common\EventManager;
 use Doctrine\Common\EventManagerInterface;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\LockMode;
+use Doctrine\ORM\Encrypt\EncryptHelper;
 use Doctrine\ORM\Exception\EntityManagerClosed;
 use Doctrine\ORM\Exception\InvalidHydrationMode;
 use Doctrine\ORM\Exception\MissingIdentifierField;
@@ -104,6 +105,11 @@ class EntityManager implements EntityManagerInterface
      * The second level cache regions API.
      */
     private Cache|null $cache = null;
+
+    /**
+     * The helper coordinating field-level encryption/decryption.
+     */
+    private EncryptHelper|null $encryptHelper = null;
 
     /**
      * Creates a new EntityManager that operates on the given database connection
@@ -583,6 +589,11 @@ class EntityManager implements EntityManagerInterface
     public function isFiltersStateClean(): bool
     {
         return $this->filterCollection === null || $this->filterCollection->isClean();
+    }
+
+    public function getEncryptHelper(): EncryptHelper
+    {
+        return $this->encryptHelper ??= new EncryptHelper($this);
     }
 
     public function hasFilters(): bool
