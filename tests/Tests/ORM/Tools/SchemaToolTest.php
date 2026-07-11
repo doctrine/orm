@@ -14,10 +14,17 @@ use Doctrine\DBAL\Schema\PrimaryKeyConstraint;
 use Doctrine\DBAL\Schema\PrimaryKeyConstraintEditor;
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\DBAL\Schema\Table as DbalTable;
+use Doctrine\DBAL\Types\BlobType;
 use Doctrine\DBAL\Types\EnumType;
+use Doctrine\DBAL\Types\TextType;
 use Doctrine\DBAL\Types\Types;
+use Doctrine\ORM\Encrypt\Cipher\Cipher;
+use Doctrine\ORM\Encrypt\Cipher\CipherRegistry;
+use Doctrine\ORM\Encrypt\Exception\EncryptConfigurationMissing;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\EncryptMapping;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\Index;
@@ -53,6 +60,7 @@ use Doctrine\Tests\Models\Forum\ForumUser;
 use Doctrine\Tests\Models\GH10288\GH10288People;
 use Doctrine\Tests\Models\NullDefault\NullDefaultColumn;
 use Doctrine\Tests\OrmTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\RequiresMethod;
 
@@ -583,6 +591,71 @@ class SchemaToolTest extends OrmTestCase
             $schema->hasTable('cms_address'),
             'The original table should have been overwritten by the listener, so cms_address table should not exist.',
         );
+    }
+
+    /** @return iterable<string, array{bool, class-string}> */
+    public static function encryptedFieldColumnTypeProvider(): iterable
+    {
+        yield 'binary cipher' => [true, BlobType::class];
+        yield 'non-binary cipher' => [false, TextType::class];
+    }
+
+    /** @param class-string $expectedType */
+    #[DataProvider('encryptedFieldColumnTypeProvider')]
+    public function testEncryptedFieldUsesColumnTypeMatchingCipherBinaryness(bool $cipherIsBinary, string $expectedType): void
+    {
+        $em = $this->createEntityManagerWithEncryptedCmsUserStatus($cipherIsBinary);
+
+        $schema = (new SchemaTool($em))->getSchemaFromMetadata([$em->getClassMetadata(CmsUser::class)]);
+
+        self::assertInstanceOf($expectedType, $schema->getTable('cms_users')->getColumn('status')->getType());
+    }
+
+    public function testEncryptedFieldStripsPlaintextColumnOptions(): void
+    {
+        $em = $this->createEntityManagerWithEncryptedCmsUserStatus(cipherIsBinary: true);
+
+        $statusMapping            = $em->getClassMetadata(CmsUser::class)->fieldMappings['status'];
+        $statusMapping->precision = 10;
+        $statusMapping->scale     = 2;
+        $statusMapping->options   = ['fixed' => true, 'default' => 'foo'];
+
+        $schema = (new SchemaTool($em))->getSchemaFromMetadata([$em->getClassMetadata(CmsUser::class)]);
+        $column = $schema->getTable('cms_users')->getColumn('status');
+
+        // The fixture maps status with length 50; the ciphertext column must not inherit it.
+        self::assertNull($column->getLength());
+        self::assertNull($column->getPrecision());
+        self::assertSame(0, $column->getScale());
+        self::assertFalse($column->getFixed());
+        self::assertNull($column->getDefault());
+    }
+
+    public function testEncryptedFieldWithoutCipherRegistryConfiguredThrowsException(): void
+    {
+        $em = $this->getTestEntityManager();
+
+        $em->getClassMetadata(CmsUser::class)->fieldMappings['status']->encrypt = new EncryptMapping();
+
+        $this->expectException(EncryptConfigurationMissing::class);
+        $this->expectExceptionMessage('Cipher registry is not configured. Call Configuration::setCipherRegistry() to set it.');
+
+        (new SchemaTool($em))->getSchemaFromMetadata([$em->getClassMetadata(CmsUser::class)]);
+    }
+
+    private function createEntityManagerWithEncryptedCmsUserStatus(bool $cipherIsBinary): EntityManagerInterface
+    {
+        $cipher = $this->createStub(Cipher::class);
+        $cipher->method('isBinary')->willReturn($cipherIsBinary);
+
+        $cipherRegistry = $this->createStub(CipherRegistry::class);
+        $cipherRegistry->method('getCipher')->willReturn($cipher);
+
+        $em = $this->getTestEntityManager();
+        $em->getConfiguration()->setCipherRegistry($cipherRegistry);
+        $em->getClassMetadata(CmsUser::class)->fieldMappings['status']->encrypt = new EncryptMapping();
+
+        return $em;
     }
 
     /** @return string[] */
