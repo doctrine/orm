@@ -7,6 +7,7 @@ namespace Doctrine\ORM\Encrypt;
 use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Type;
+use Doctrine\ORM\Encrypt\Cipher\BatchableCipher;
 use Doctrine\ORM\Encrypt\Cipher\Cipher;
 use Doctrine\ORM\Encrypt\Exception\EncryptConfigurationMissing;
 use Doctrine\ORM\Encrypt\Exception\UnsupportedEncryptedFieldUsage;
@@ -17,6 +18,7 @@ use Doctrine\ORM\Mapping\FieldMapping;
 use Doctrine\ORM\Query\EncryptedQuerySetMapping;
 use Doctrine\ORM\Query\ResultSetMapping;
 
+use function array_filter;
 use function array_flip;
 use function array_intersect_key;
 use function array_map;
@@ -208,6 +210,10 @@ final class EncryptHelper
             $plainDbValues[$index] = $this->convertToPlainDbValue($param, $types[$index], $platform);
         }
 
+        if ($cipher instanceof BatchableCipher) {
+            return $this->batchEncrypt($cipher, $keyProvider, $plainDbValues);
+        }
+
         $encrypt = static fn (string|null $plainDbValue): string|null => $plainDbValue === null
             ? null
             : $cipher->encrypt($plainDbValue, $keyProvider);
@@ -218,6 +224,52 @@ final class EncryptHelper
                 : $encrypt($plainDbValue),
             $plainDbValues,
         );
+    }
+
+    /**
+     * @param array<array-key, string|array<array-key, string|null>|null> $plainDbValues
+     *
+     * @return array<array-key, string|array<array-key, string|null>|null>
+     */
+    private function batchEncrypt(BatchableCipher $cipher, KeyProvider $keyProvider, array $plainDbValues): array
+    {
+        $flatPlaintexts = [];
+
+        foreach ($plainDbValues as $index => $plainDbValue) {
+            if (is_array($plainDbValue)) {
+                foreach ($plainDbValue as $subIndex => $subValue) {
+                    if ($subValue !== null) {
+                        $flatPlaintexts[$index . ':' . $subIndex] = $subValue;
+                    }
+                }
+
+                continue;
+            }
+
+            if ($plainDbValue !== null) {
+                $flatPlaintexts[$index] = $plainDbValue;
+            }
+        }
+
+        $flatCiphertexts = $flatPlaintexts === [] ? [] : $cipher->encryptMany($flatPlaintexts, $keyProvider);
+
+        $ciphertexts = [];
+
+        foreach ($plainDbValues as $index => $plainDbValue) {
+            if (is_array($plainDbValue)) {
+                $ciphertexts[$index] = [];
+
+                foreach ($plainDbValue as $subIndex => $subValue) {
+                    $ciphertexts[$index][$subIndex] = $subValue === null ? null : $flatCiphertexts[$index . ':' . $subIndex];
+                }
+
+                continue;
+            }
+
+            $ciphertexts[$index] = $plainDbValue === null ? null : $flatCiphertexts[$index];
+        }
+
+        return $ciphertexts;
     }
 
     /**
@@ -250,12 +302,36 @@ final class EncryptHelper
             $encryptedValues[$column] = $encryptedValue;
         }
 
+        if ($cipher instanceof BatchableCipher) {
+            return $this->batchDecrypt($cipher, $keyProvider, $encryptedValues);
+        }
+
         return array_map(
             static fn (string|null $encryptedValue): string|null => $encryptedValue === null
                 ? null
                 : $cipher->decrypt($encryptedValue, $keyProvider),
             $encryptedValues,
         );
+    }
+
+    /**
+     * @param array<string, string|null> $encryptedValues
+     *
+     * @return array<string, string|null>
+     */
+    private function batchDecrypt(BatchableCipher $cipher, KeyProvider $keyProvider, array $encryptedValues): array
+    {
+        $flatCiphertexts = array_filter($encryptedValues, static fn (string|null $value): bool => $value !== null);
+
+        $flatPlaintexts = $flatCiphertexts === [] ? [] : $cipher->decryptMany($flatCiphertexts, $keyProvider);
+
+        $plaintexts = [];
+
+        foreach ($encryptedValues as $column => $encryptedValue) {
+            $plaintexts[$column] = $encryptedValue === null ? null : $flatPlaintexts[$column];
+        }
+
+        return $plaintexts;
     }
 
     private function convertToPlainDbValue(mixed $value, string $typeName, AbstractPlatform $platform): string|null

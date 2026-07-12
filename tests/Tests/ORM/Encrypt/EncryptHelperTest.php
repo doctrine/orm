@@ -9,6 +9,7 @@ use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Platforms\SQLitePlatform;
 use Doctrine\ORM\Configuration;
+use Doctrine\ORM\Encrypt\Cipher\BatchableCipher;
 use Doctrine\ORM\Encrypt\Cipher\Cipher;
 use Doctrine\ORM\Encrypt\Cipher\CipherRegistry;
 use Doctrine\ORM\Encrypt\EncryptHelper;
@@ -27,6 +28,8 @@ use Doctrine\Tests\Models\CMS\CmsUser;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
+
+use function array_map;
 
 #[CoversClass(EncryptHelper::class)]
 #[CoversClass(EncryptedQuerySetMapping::class)]
@@ -476,6 +479,121 @@ final class EncryptHelperTest extends TestCase
         self::assertSame(['enc(active)', 'enc(joe)'], $params);
     }
 
+    public function testEncryptParametersUsesBatchableCipherEncryptManyWhenAvailable(): void
+    {
+        $cipher = $this->createBatchableEncryptCipher();
+        $cipher->expects(self::once())
+            ->method('encryptMany')
+            ->with(['0' => 'active', '1' => 'joe']);
+
+        $cipherRegistry = $this->createStub(CipherRegistry::class);
+        $cipherRegistry->method('getCipher')->willReturn($cipher);
+
+        $classMetadata = $this->createClassMetadata();
+
+        $nameMapping          = new FieldMapping('string', 'name', 'name');
+        $nameMapping->encrypt = new EncryptMapping();
+
+        $classMetadata->fieldMappings['name'] = $nameMapping;
+
+        $encryptHelper = new EncryptHelper($this->createEntityManager(
+            $cipherRegistry,
+            $this->createKeyProviderRegistry(),
+            $classMetadata,
+        ));
+
+        $querySetMapping = new EncryptedQuerySetMapping();
+        $querySetMapping->addEncryptedParameter(0, CmsUser::class, 'status');
+        $querySetMapping->addEncryptedParameter(1, CmsUser::class, 'name');
+
+        $params = ['active', 'joe'];
+        $types  = ['string', 'string'];
+
+        $encryptHelper->encryptParameters($querySetMapping, $params, $types);
+
+        self::assertSame(['enc(active)', 'enc(joe)'], $params);
+    }
+
+    public function testEncryptParametersBatchableCipherHandlesArrayExpansionParameters(): void
+    {
+        $cipher = $this->createBatchableEncryptCipher();
+        $cipher->expects(self::once())
+            ->method('encryptMany')
+            ->with(['0:0' => 'active', '0:1' => 'inactive']);
+
+        $cipherRegistry = $this->createStub(CipherRegistry::class);
+        $cipherRegistry->method('getCipher')->willReturn($cipher);
+
+        $encryptHelper = new EncryptHelper($this->createEntityManager(
+            $cipherRegistry,
+            $this->createKeyProviderRegistry(),
+            $this->createClassMetadata(),
+        ));
+
+        $querySetMapping = new EncryptedQuerySetMapping();
+        $querySetMapping->addEncryptedParameter(0, CmsUser::class, 'status');
+
+        $params = [['active', 'inactive']];
+        $types  = [ArrayParameterType::STRING];
+
+        $encryptHelper->encryptParameters($querySetMapping, $params, $types);
+
+        self::assertSame([['enc(active)', 'enc(inactive)']], $params);
+    }
+
+    public function testEncryptParametersBatchableCipherSkipsNullValuesInBatchCall(): void
+    {
+        $cipher = $this->createBatchableEncryptCipher();
+        $cipher->expects(self::once())
+            ->method('encryptMany')
+            ->with(['0' => 'active']);
+
+        $cipherRegistry = $this->createStub(CipherRegistry::class);
+        $cipherRegistry->method('getCipher')->willReturn($cipher);
+
+        $encryptHelper = new EncryptHelper($this->createEntityManager(
+            $cipherRegistry,
+            $this->createKeyProviderRegistry(),
+            $this->createClassMetadata(),
+        ));
+
+        $querySetMapping = new EncryptedQuerySetMapping();
+        $querySetMapping->addEncryptedParameter(0, CmsUser::class, 'status');
+        $querySetMapping->addEncryptedParameter(1, CmsUser::class, 'status');
+
+        $params = ['active', null];
+        $types  = ['string', 'string'];
+
+        $encryptHelper->encryptParameters($querySetMapping, $params, $types);
+
+        self::assertSame(['enc(active)', null], $params);
+    }
+
+    public function testEncryptParametersBatchableCipherNotCalledWhenAllValuesAreNull(): void
+    {
+        $cipher = $this->createBatchableEncryptCipher();
+        $cipher->expects(self::never())->method('encryptMany');
+
+        $cipherRegistry = $this->createStub(CipherRegistry::class);
+        $cipherRegistry->method('getCipher')->willReturn($cipher);
+
+        $encryptHelper = new EncryptHelper($this->createEntityManager(
+            $cipherRegistry,
+            $this->createKeyProviderRegistry(),
+            $this->createClassMetadata(),
+        ));
+
+        $querySetMapping = new EncryptedQuerySetMapping();
+        $querySetMapping->addEncryptedParameter(0, CmsUser::class, 'status');
+
+        $params = [null];
+        $types  = ['string'];
+
+        $encryptHelper->encryptParameters($querySetMapping, $params, $types);
+
+        self::assertSame([null], $params);
+    }
+
     /** @return iterable<string, array{array<string, mixed>, array<string, mixed>}> */
     public static function decryptRowProvider(): iterable
     {
@@ -571,6 +689,76 @@ final class EncryptHelperTest extends TestCase
         self::assertSame(['status_1' => 'dec(enc(active))', 'name_2' => 'dec(enc(joe))'], $row);
     }
 
+    public function testDecryptRowUsesBatchableCipherDecryptManyWhenAvailable(): void
+    {
+        $cipher = $this->createBatchableDecryptCipher();
+        $cipher->expects(self::once())
+            ->method('decryptMany')
+            ->with(['status_1' => 'enc(active)', 'name_2' => 'enc(joe)']);
+
+        $cipherRegistry = $this->createStub(CipherRegistry::class);
+        $cipherRegistry->method('getCipher')->willReturn($cipher);
+
+        $encryptHelper = new EncryptHelper($this->createEntityManager(
+            $cipherRegistry,
+            $this->createKeyProviderRegistry(),
+        ));
+
+        $row = ['status_1' => 'enc(active)', 'name_2' => 'enc(joe)'];
+
+        $encryptHelper->decryptRow(
+            ['status_1' => new EncryptMapping(), 'name_2' => new EncryptMapping()],
+            $row,
+        );
+
+        self::assertSame(['status_1' => 'dec(enc(active))', 'name_2' => 'dec(enc(joe))'], $row);
+    }
+
+    public function testDecryptRowBatchableCipherSkipsNullValuesInBatchCall(): void
+    {
+        $cipher = $this->createBatchableDecryptCipher();
+        $cipher->expects(self::once())
+            ->method('decryptMany')
+            ->with(['status_1' => 'enc(active)']);
+
+        $cipherRegistry = $this->createStub(CipherRegistry::class);
+        $cipherRegistry->method('getCipher')->willReturn($cipher);
+
+        $encryptHelper = new EncryptHelper($this->createEntityManager(
+            $cipherRegistry,
+            $this->createKeyProviderRegistry(),
+        ));
+
+        $row = ['status_1' => 'enc(active)', 'name_2' => null];
+
+        $encryptHelper->decryptRow(
+            ['status_1' => new EncryptMapping(), 'name_2' => new EncryptMapping()],
+            $row,
+        );
+
+        self::assertSame(['status_1' => 'dec(enc(active))', 'name_2' => null], $row);
+    }
+
+    public function testDecryptRowBatchableCipherNotCalledWhenAllValuesAreNull(): void
+    {
+        $cipher = $this->createBatchableDecryptCipher();
+        $cipher->expects(self::never())->method('decryptMany');
+
+        $cipherRegistry = $this->createStub(CipherRegistry::class);
+        $cipherRegistry->method('getCipher')->willReturn($cipher);
+
+        $encryptHelper = new EncryptHelper($this->createEntityManager(
+            $cipherRegistry,
+            $this->createKeyProviderRegistry(),
+        ));
+
+        $row = ['status_1' => null];
+
+        $encryptHelper->decryptRow(['status_1' => new EncryptMapping()], $row);
+
+        self::assertSame(['status_1' => null], $row);
+    }
+
     public function testDecryptRowThrowsWhenKeyProviderRegistryNotConfigured(): void
     {
         $encryptHelper = new EncryptHelper($this->createEntityManager($this->createDecryptCipherRegistry()));
@@ -626,6 +814,36 @@ final class EncryptHelperTest extends TestCase
         $cipherRegistry->method('getCipher')->willReturn($this->createDecryptCipher());
 
         return $cipherRegistry;
+    }
+
+    private function createBatchableEncryptCipher(): BatchableCipher
+    {
+        $cipher = $this->createMock(BatchableCipher::class);
+        $cipher->method('isBinary')->willReturn(false);
+        $cipher->expects(self::never())->method('encrypt');
+        $cipher->method('encryptMany')->willReturnCallback(
+            static fn (array $plaintexts): array => array_map(
+                static fn (string $plaintext): string => 'enc(' . $plaintext . ')',
+                $plaintexts,
+            ),
+        );
+
+        return $cipher;
+    }
+
+    private function createBatchableDecryptCipher(): BatchableCipher
+    {
+        $cipher = $this->createMock(BatchableCipher::class);
+        $cipher->method('isBinary')->willReturn(false);
+        $cipher->expects(self::never())->method('decrypt');
+        $cipher->method('decryptMany')->willReturnCallback(
+            static fn (array $ciphertexts): array => array_map(
+                static fn (string $ciphertext): string => 'dec(' . $ciphertext . ')',
+                $ciphertexts,
+            ),
+        );
+
+        return $cipher;
     }
 
     private function createKeyProviderRegistry(): KeyProviderRegistry
