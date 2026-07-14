@@ -224,9 +224,8 @@ class SQLFilterTest extends OrmFunctionalTestCase
     {
         $filterCollection = $this->createMock(FilterCollection::class);
 
-        $em->expects(self::any())
-            ->method('getFilters')
-            ->willReturn($filterCollection);
+        $em->method('getFilters')
+           ->willReturn($filterCollection);
 
         return $filterCollection;
     }

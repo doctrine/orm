@@ -20,7 +20,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 use LogicException;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Group;
-use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\MockObject\Stub;
 
 use function iterator_to_array;
 
@@ -28,34 +28,34 @@ use function iterator_to_array;
 class AbstractHydratorTest extends OrmFunctionalTestCase
 {
     private EventManager $eventManager;
-    private Result&MockObject $mockResult;
-    private ResultSetMapping&MockObject $mockResultMapping;
+    private Result&Stub $mockResult;
+    private ResultSetMapping&Stub $mockResultMapping;
     private DummyHydrator $hydrator;
 
     protected function setUp(): void
     {
         parent::setUp();
 
-        $mockConnection             = $this->createMock(Connection::class);
-        $mockEntityManagerInterface = $this->createMock(EntityManagerInterface::class);
+        $stubConnection             = $this->createStub(Connection::class);
+        $stubEntityManagerInterface = $this->createStub(EntityManagerInterface::class);
         $this->eventManager         = new EventManager();
-        $this->mockResult           = $this->createMock(Result::class);
-        $this->mockResultMapping    = $this->createMock(ResultSetMapping::class);
+        $this->mockResult           = $this->createStub(Result::class);
+        $this->mockResultMapping    = $this->createStub(ResultSetMapping::class);
 
-        $mockConnection
+        $stubConnection
             ->method('getDatabasePlatform')
-            ->willReturn($this->createMock(AbstractPlatform::class));
-        $mockEntityManagerInterface
+            ->willReturn($this->createStub(AbstractPlatform::class));
+        $stubEntityManagerInterface
             ->method('getEventManager')
             ->willReturn($this->eventManager);
-        $mockEntityManagerInterface
+        $stubEntityManagerInterface
             ->method('getConnection')
-            ->willReturn($mockConnection);
+            ->willReturn($stubConnection);
         $this->mockResult
             ->method('fetchAssociative')
             ->willReturn(false);
 
-        $this->hydrator = new DummyHydrator($mockEntityManagerInterface);
+        $this->hydrator = new DummyHydrator($stubEntityManagerInterface);
     }
 
     /**
