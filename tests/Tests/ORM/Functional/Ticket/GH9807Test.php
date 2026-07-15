@@ -62,7 +62,7 @@ final class GH9807Test extends OrmFunctionalTestCase
             ],
         ];
 
-        $stmt = ArrayResultFactory::createWrapperResultFromArray($resultSet, $this->createMock(Connection::class));
+        $stmt = ArrayResultFactory::createWrapperResultFromArray($resultSet, $this->createStub(Connection::class));
 
         /** @var GH9807Main[] $result */
         $result = $hydrator->hydrateAll($stmt, $rsm);

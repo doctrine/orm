@@ -91,7 +91,7 @@ class QueryCacheTest extends OrmFunctionalTestCase
 
     public function testQueryCacheNoHitSaveParserResult(): void
     {
-        $this->_em->getConfiguration()->setQueryCache($this->createMock(CacheItemPoolInterface::class));
+        $this->_em->getConfiguration()->setQueryCache($this->createStub(CacheItemPoolInterface::class));
 
         $query = $this->_em->createQuery('select ux from Doctrine\Tests\Models\CMS\CmsUser ux');
 
@@ -120,7 +120,7 @@ class QueryCacheTest extends OrmFunctionalTestCase
 
     public function testQueryCacheHitDoesNotSaveParserResult(): void
     {
-        $this->_em->getConfiguration()->setQueryCache($this->createMock(CacheItemPoolInterface::class));
+        $this->_em->getConfiguration()->setQueryCache($this->createStub(CacheItemPoolInterface::class));
 
         $query = $this->_em->createQuery('select ux from Doctrine\Tests\Models\CMS\CmsUser ux');
 

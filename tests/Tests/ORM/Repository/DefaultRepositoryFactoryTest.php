@@ -12,7 +12,7 @@ use Doctrine\Tests\Models\DDC753\DDC753DefaultRepository;
 use Doctrine\Tests\Models\DDC753\DDC753EntityWithDefaultCustomRepository;
 use Doctrine\Tests\Models\DDC869\DDC869PaymentRepository;
 use PHPUnit\Framework\Attributes\CoversClass;
-use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\MockObject\Stub;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -21,18 +21,17 @@ use PHPUnit\Framework\TestCase;
 #[CoversClass(DefaultRepositoryFactory::class)]
 class DefaultRepositoryFactoryTest extends TestCase
 {
-    private EntityManagerInterface&MockObject $entityManager;
-    private Configuration&MockObject $configuration;
+    private EntityManagerInterface&Stub $entityManager;
+    private Configuration&Stub $configuration;
     private DefaultRepositoryFactory $repositoryFactory;
 
     protected function setUp(): void
     {
-        $this->configuration     = $this->createMock(Configuration::class);
+        $this->configuration     = $this->createStub(Configuration::class);
         $this->entityManager     = $this->createEntityManager();
         $this->repositoryFactory = new DefaultRepositoryFactory();
 
         $this->configuration
-            ->expects(self::any())
             ->method('getDefaultRepositoryClassName')
             ->willReturn(DDC869PaymentRepository::class);
     }
@@ -40,7 +39,6 @@ class DefaultRepositoryFactoryTest extends TestCase
     public function testCreatesRepositoryFromDefaultRepositoryClass(): void
     {
         $this->entityManager
-            ->expects(self::any())
             ->method('getClassMetadata')
             ->willReturnCallback($this->buildClassMetadata(...));
 
@@ -53,7 +51,6 @@ class DefaultRepositoryFactoryTest extends TestCase
     public function testCreatedRepositoriesAreCached(): void
     {
         $this->entityManager
-            ->expects(self::any())
             ->method('getClassMetadata')
             ->willReturnCallback($this->buildClassMetadata(...));
 
@@ -69,7 +66,6 @@ class DefaultRepositoryFactoryTest extends TestCase
         $customMetadata->customRepositoryClassName = DDC753DefaultRepository::class;
 
         $this->entityManager
-            ->expects(self::any())
             ->method('getClassMetadata')
             ->willReturn($customMetadata);
 
@@ -84,12 +80,10 @@ class DefaultRepositoryFactoryTest extends TestCase
         $em1 = $this->createEntityManager();
         $em2 = $this->createEntityManager();
 
-        $em1->expects(self::any())
-            ->method('getClassMetadata')
+        $em1->method('getClassMetadata')
             ->willReturnCallback($this->buildClassMetadata(...));
 
-        $em2->expects(self::any())
-            ->method('getClassMetadata')
+        $em2->method('getClassMetadata')
             ->willReturnCallback($this->buildClassMetadata(...));
 
         $repo1 = $this->repositoryFactory->getRepository($em1, self::class);
@@ -104,13 +98,13 @@ class DefaultRepositoryFactoryTest extends TestCase
     /**
      * @param class-string<TEntity> $className
      *
-     * @return ClassMetadata<TEntity>&MockObject
+     * @return ClassMetadata<TEntity>&Stub
      *
      * @template TEntity of object
      */
-    private function buildClassMetadata(string $className): ClassMetadata&MockObject
+    private function buildClassMetadata(string $className): ClassMetadata&Stub
     {
-        $metadata = $this->createMock(ClassMetadata::class);
+        $metadata = $this->createStub(ClassMetadata::class);
         $metadata->method('getName')->willReturn($className);
         $metadata->name = $className;
 
@@ -119,9 +113,9 @@ class DefaultRepositoryFactoryTest extends TestCase
         return $metadata;
     }
 
-    private function createEntityManager(): EntityManagerInterface&MockObject
+    private function createEntityManager(): EntityManagerInterface&Stub
     {
-        $entityManager = $this->createMock(EntityManagerInterface::class);
+        $entityManager = $this->createStub(EntityManagerInterface::class);
         $entityManager->method('getConfiguration')->willReturn($this->configuration);
 
         return $entityManager;

@@ -561,7 +561,7 @@ class QueryTest extends OrmTestCase
     public function testGetQueryCacheDriverWithDefaults(): void
     {
         $cache         = $this->createMock(CacheItemPoolInterface::class);
-        $cacheItemMock = $this->createMock(CacheItemInterface::class);
+        $cacheItemMock = $this->createStub(CacheItemInterface::class);
         $cacheItemMock->method('set')->willReturnSelf();
         $cacheItemMock->method('expiresAfter')->willReturnSelf();
         $cache
@@ -578,7 +578,7 @@ class QueryTest extends OrmTestCase
     public function testGetQueryCacheDriverWithCacheExplicitlySet(): void
     {
         $cache         = $this->createMock(CacheItemPoolInterface::class);
-        $cacheItemMock = $this->createMock(CacheItemInterface::class);
+        $cacheItemMock = $this->createStub(CacheItemInterface::class);
         $cacheItemMock->method('set')->willReturnSelf();
         $cacheItemMock->method('expiresAfter')->willReturnSelf();
         $cache
@@ -594,7 +594,7 @@ class QueryTest extends OrmTestCase
 
     private function createConnection(Result ...$results): Connection
     {
-        $driverConnection = $this->createMock(Driver\Connection::class);
+        $driverConnection = $this->createStub(Driver\Connection::class);
         $driverConnection->method('query')
             ->willReturnOnConsecutiveCalls(...$results);
 
@@ -604,7 +604,7 @@ class QueryTest extends OrmTestCase
         $platform->method('supportsIdentityColumns')
             ->willReturn(true);
 
-        $driver = $this->createMock(Driver::class);
+        $driver = $this->createStub(Driver::class);
         $driver->method('connect')
             ->willReturn($driverConnection);
         $driver->method('getDatabasePlatform')

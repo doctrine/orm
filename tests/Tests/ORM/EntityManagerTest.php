@@ -209,9 +209,9 @@ class EntityManagerTest extends OrmTestCase
 
     public function testItPreservesTheOriginalExceptionOnRollbackFailure(): void
     {
-        $driver = $this->createMock(Driver::class);
+        $driver = $this->createStub(Driver::class);
         $driver->method('connect')
-            ->willReturn($this->createMock(Driver\Connection::class));
+            ->willReturn($this->createStub(Driver\Connection::class));
 
         $entityManager = new EntityManagerMock(new class ([], $driver) extends Connection {
             public function rollBack(): void
@@ -234,9 +234,9 @@ class EntityManagerTest extends OrmTestCase
 
     public function testItDoesNotAttemptToRollbackIfNoTransactionIsActive(): void
     {
-        $driver = $this->createMock(Driver::class);
+        $driver = $this->createStub(Driver::class);
         $driver->method('connect')
-            ->willReturn($this->createMock(Driver\Connection::class));
+            ->willReturn($this->createStub(Driver\Connection::class));
 
         $entityManager = new EntityManagerMock(
             new class ([], $driver) extends Connection {

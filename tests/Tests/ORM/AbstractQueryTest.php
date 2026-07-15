@@ -16,11 +16,11 @@ final class AbstractQueryTest extends TestCase
 {
     public function testItMakesHydrationCacheProfilesAwareOfTheResultCache(): void
     {
-        $cache = $this->createMock(CacheItemPoolInterface::class);
+        $cache = $this->createStub(CacheItemPoolInterface::class);
 
         $configuration = new Configuration();
         $configuration->setHydrationCache($cache);
-        $entityManager = $this->createMock(EntityManagerInterface::class);
+        $entityManager = $this->createStub(EntityManagerInterface::class);
         $entityManager->method('getConfiguration')->willReturn($configuration);
         $query        = new TestQuery($entityManager);
         $cacheProfile = new QueryCacheProfile();
@@ -31,11 +31,11 @@ final class AbstractQueryTest extends TestCase
 
     public function testItMakesResultCacheProfilesAwareOfTheResultCache(): void
     {
-        $cache = $this->createMock(CacheItemPoolInterface::class);
+        $cache = $this->createStub(CacheItemPoolInterface::class);
 
         $configuration = new Configuration();
         $configuration->setResultCache($cache);
-        $entityManager = $this->createMock(EntityManagerInterface::class);
+        $entityManager = $this->createStub(EntityManagerInterface::class);
         $entityManager->method('getConfiguration')->willReturn($configuration);
         $query = new TestQuery($entityManager);
         $query->setResultCacheProfile(new QueryCacheProfile());
@@ -45,9 +45,9 @@ final class AbstractQueryTest extends TestCase
 
     public function testSettingTheResultCacheIsPossibleWithoutCallingDeprecatedMethods(): void
     {
-        $cache = $this->createMock(CacheItemPoolInterface::class);
+        $cache = $this->createStub(CacheItemPoolInterface::class);
 
-        $entityManager = $this->createMock(EntityManagerInterface::class);
+        $entityManager = $this->createStub(EntityManagerInterface::class);
         $entityManager->method('getConfiguration')->willReturn(new Configuration());
         $query = new TestQuery($entityManager);
         $query->setResultCache($cache);
