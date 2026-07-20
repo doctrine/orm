@@ -111,6 +111,25 @@ class SchemaValidatorTest extends OrmTestCase
         self::assertEquals([], $ce);
     }
 
+    public function testInvalidManyToOneAsSoleIdentifier(): void
+    {
+        $class = $this->em->getClassMetadata(DDC1649Two::class);
+        $ce    = $this->validator->validateClass($class);
+
+        self::assertEquals(
+            ["The association 'Doctrine\Tests\ORM\Tools\DDC1649Two#one' is a many-to-one association and is the sole identifier of the entity. This effectively makes the association one-to-one; use a one-to-one association instead or add another identifier field."],
+            $ce,
+        );
+    }
+
+    public function testValidManyToOneAsPartOfCompositeIdentifier(): void
+    {
+        $class = $this->em->getClassMetadata(ValidCompositeIdentifier::class);
+        $ce    = $this->validator->validateClass($class);
+
+        self::assertEquals([], $ce);
+    }
+
     #[Group('DDC-1649')]
     public function testInvalidTripleAssociationAsKeyMapping(): void
     {
@@ -119,6 +138,7 @@ class SchemaValidatorTest extends OrmTestCase
 
         self::assertEquals(
             [
+                "The association 'Doctrine\Tests\ORM\Tools\DDC1649Three#two' is a many-to-one association and is the sole identifier of the entity. This effectively makes the association one-to-one; use a one-to-one association instead or add another identifier field.",
                 "Cannot map association 'Doctrine\Tests\ORM\Tools\DDC1649Three#two as identifier, because the target entity 'Doctrine\Tests\ORM\Tools\DDC1649Two' also maps an association as identifier.",
                 "The referenced column name 'id' has to be a primary key column on the target entity class 'Doctrine\Tests\ORM\Tools\DDC1649Two'.",
             ],
@@ -364,6 +384,18 @@ class DDC1649Two
     #[Id]
     #[ManyToOne(targetEntity: 'DDC1649One')]
     public $one;
+}
+
+#[Entity]
+class ValidCompositeIdentifier
+{
+    #[Id]
+    #[Column]
+    public int $id;
+
+    #[Id]
+    #[ManyToOne(targetEntity: 'DDC1649One')]
+    public DDC1649One $one;
 }
 
 #[Entity]
