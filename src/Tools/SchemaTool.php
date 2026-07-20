@@ -570,7 +570,9 @@ class SchemaTool
         Table $table,
     ): void {
         $columnName = $this->quoteStrategy->getColumnName($mapping->fieldName, $class, $this->platform);
-        $columnType = $mapping->type;
+        $columnType = $mapping->encrypt !== null
+            ? $this->em->getEncryptHelper()->getStorageTypeName($mapping->encrypt)
+            : $mapping->type;
 
         $options            = [];
         $options['length']  = $mapping->length ?? null;
@@ -606,6 +608,11 @@ class SchemaTool
 
         // the 'default' option can be overwritten here
         $options = $this->gatherColumnOptions($mapping) + $options;
+
+        // An encrypted column store ciphertexts, not the plaintext values. Some options become irrelevant.
+        if ($mapping->encrypt !== null) {
+            unset($options['length'], $options['precision'], $options['scale'], $options['fixed'], $options['default']);
+        }
 
         if (isset($options['default']) && interface_exists(DefaultExpression::class)) {
             if (

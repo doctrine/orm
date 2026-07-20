@@ -43,12 +43,27 @@ class ParserResult
     private array $parameterMappings = [];
 
     /**
+     * The EncryptedQuerySetMapping that describes which SQL parameters must be encrypted.
+     */
+    private EncryptedQuerySetMapping $encryptedQuerySetMapping;
+
+    /**
      * Initializes a new instance of the <tt>ParserResult</tt> class.
-     * The new instance is initialized with an empty <tt>ResultSetMapping</tt>.
+     * The new instance is initialized with an empty <tt>ResultSetMapping</tt>
+     * and an empty <tt>EncryptedQuerySetMapping</tt>.
      */
     public function __construct()
     {
-        $this->resultSetMapping = new ResultSetMapping();
+        $this->resultSetMapping         = new ResultSetMapping();
+        $this->encryptedQuerySetMapping = new EncryptedQuerySetMapping();
+    }
+
+    /**
+     * Gets the EncryptedQuerySetMapping for the parsed query.
+     */
+    public function getEncryptedQuerySetMapping(): EncryptedQuerySetMapping
+    {
+        return $this->encryptedQuerySetMapping;
     }
 
     /**

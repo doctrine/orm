@@ -10,6 +10,7 @@ use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\LockMode;
 use Doctrine\ORM\Cache;
 use Doctrine\ORM\Configuration;
+use Doctrine\ORM\Encrypt\EncryptHelper;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Internal\Hydration\AbstractHydrator;
@@ -48,6 +49,11 @@ class NonProxyLoadingEntityManager implements EntityManagerInterface
     public function getMetadataFactory(): ClassMetadataFactory
     {
         return $this->realEntityManager->getMetadataFactory();
+    }
+
+    public function getEncryptHelper(): EncryptHelper
+    {
+        return $this->realEntityManager->getEncryptHelper();
     }
 
     public function getClassMetadata(string $className): ClassMetadata

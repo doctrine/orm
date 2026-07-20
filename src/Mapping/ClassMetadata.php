@@ -530,6 +530,12 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
     public array|null $cache = null;
 
     /**
+     * READ-ONLY: Class-level encrypt mapping, applied to every eligible scalar field that does not carry its own
+     * field-level encrypt mapping.
+     */
+    public EncryptMapping|null $encrypt = null;
+
+    /**
      * The ReflectionClass instance of the mapped class.
      *
      * @var ReflectionClass<T>|null
@@ -815,6 +821,10 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
 
         if ($this->cache) {
             $serialized[] = 'cache';
+        }
+
+        if ($this->encrypt !== null) {
+            $serialized[] = 'encrypt';
         }
 
         if ($this->requiresFetchAfterChange) {
@@ -1205,6 +1215,7 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
      *     id?: bool,
      *     generated?: self::GENERATED_*,
      *     enumType?: class-string,
+     *     encrypt?: array<string, mixed>|null,
      * } $mapping The field mapping to validate & complete.
      *
      * @return FieldMapping The updated mapping.
@@ -1292,7 +1303,41 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
             }
         }
 
+        if ($mapping->encrypt !== null) {
+            $violation = $this->getFieldEncryptionViolation($mapping);
+            if ($violation !== null) {
+                throw $violation;
+            }
+        } elseif ($this->encrypt !== null && $this->getFieldEncryptionViolation($mapping) === null) {
+            $mapping->encrypt = clone $this->encrypt;
+        }
+
         return $mapping;
+    }
+
+    private function getFieldEncryptionViolation(FieldMapping $mapping): MappingException|null
+    {
+        if ($mapping->id === true) {
+            return MappingException::encryptOnIdentifierNotAllowed($this->name, $mapping->fieldName);
+        }
+
+        if ($mapping->generated !== null) {
+            return MappingException::encryptOnGeneratedNotAllowed($this->name, $mapping->fieldName);
+        }
+
+        if ($mapping->version === true || $this->versionField === $mapping->fieldName) {
+            return MappingException::encryptOnVersionFieldNotAllowed($this->name, $mapping->fieldName);
+        }
+
+        if ($mapping->notInsertable === true || $mapping->notUpdatable === true) {
+            return MappingException::encryptOnImmutableFieldNotSupported($this->name, $mapping->fieldName);
+        }
+
+        if ($this->cache !== null) {
+            return MappingException::encryptFieldWithSecondLevelCacheNotSupported($this->name, $mapping->fieldName);
+        }
+
+        return null;
     }
 
     /**
@@ -2651,7 +2696,8 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
      *     class?: class-string,
      *     declaredField?: string,
      *     columnPrefix?: string|false|null,
-     *     originalField?: string
+     *     originalField?: string,
+     *     encrypt?: array<string, mixed>|null,
      * } $mapping
      *
      * @throws MappingException
@@ -2676,6 +2722,7 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
             'columnPrefix' => $mapping['columnPrefix'] ?? null,
             'declaredField' => $mapping['declaredField'] ?? null,
             'originalField' => $mapping['originalField'] ?? null,
+            'encrypt' => $mapping['encrypt'] ?? null,
         ]);
     }
 
@@ -2692,6 +2739,11 @@ class ClassMetadata implements PersistenceClassMetadata, Stringable
                 : $property;
             $fieldMapping['originalField'] ??= $fieldMapping['fieldName'];
             $fieldMapping['fieldName']       = $property . '.' . $fieldMapping['fieldName'];
+
+            $encrypt = $originalFieldMapping->encrypt ?? $this->embeddedClasses[$property]->encrypt;
+            if ($encrypt !== null) {
+                $fieldMapping['encrypt'] = (array) $encrypt;
+            }
 
             if (! empty($this->embeddedClasses[$property]->columnPrefix)) {
                 $fieldMapping['columnName'] = $this->embeddedClasses[$property]->columnPrefix . $fieldMapping['columnName'];

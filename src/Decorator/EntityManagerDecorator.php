@@ -10,6 +10,7 @@ use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\LockMode;
 use Doctrine\ORM\Cache;
 use Doctrine\ORM\Configuration;
+use Doctrine\ORM\Encrypt\EncryptHelper;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Internal\Hydration\AbstractHydrator;
@@ -150,6 +151,11 @@ abstract class EntityManagerDecorator extends ObjectManagerDecorator implements 
     public function getProxyFactory(): ProxyFactory
     {
         return $this->wrapped->getProxyFactory();
+    }
+
+    public function getEncryptHelper(): EncryptHelper
+    {
+        return $this->wrapped->getEncryptHelper();
     }
 
     public function getFilters(): FilterCollection

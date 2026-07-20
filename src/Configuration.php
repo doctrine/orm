@@ -7,6 +7,8 @@ namespace Doctrine\ORM;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\Deprecations\Deprecation;
 use Doctrine\ORM\Cache\CacheConfiguration;
+use Doctrine\ORM\Encrypt\Cipher\CipherRegistry;
+use Doctrine\ORM\Encrypt\KMS\KeyProviderRegistry;
 use Doctrine\ORM\Exception\InvalidEntityRepository;
 use Doctrine\ORM\Internal\Hydration\AbstractHydrator;
 use Doctrine\ORM\Mapping\ClassMetadata;
@@ -722,5 +724,37 @@ class Configuration extends \Doctrine\DBAL\Configuration
     public function getEagerFetchBatchSize(): int
     {
         return $this->attributes['fetchModeSubselectBatchSize'] ?? 100;
+    }
+
+    /**
+     * Sets the CipherRegistry used to resolve ciphers for encryption.
+     */
+    public function setCipherRegistry(CipherRegistry|null $cipherRegistry): void
+    {
+        $this->attributes['cipherRegistry'] = $cipherRegistry;
+    }
+
+    /**
+     * Gets the CipherRegistry used to resolve ciphers for encryption.
+     */
+    public function getCipherRegistry(): CipherRegistry|null
+    {
+        return $this->attributes['cipherRegistry'] ?? null;
+    }
+
+    /**
+     * Sets the KeyProviderRegistry used to resolve key providers for #[Encrypt] mappings.
+     */
+    public function setKeyProviderRegistry(KeyProviderRegistry|null $keyProviderRegistry): void
+    {
+        $this->attributes['keyProviderRegistry'] = $keyProviderRegistry;
+    }
+
+    /**
+     * Gets the KeyProviderRegistry used to resolve key providers for #[Encrypt] mappings.
+     */
+    public function getKeyProviderRegistry(): KeyProviderRegistry|null
+    {
+        return $this->attributes['keyProviderRegistry'] ?? null;
     }
 }

@@ -76,6 +76,8 @@ final class FieldMapping implements ArrayAccess
     /** @deprecated Use options with 'default' key instead */
     public string|int|null $default = null;
 
+    public EncryptMapping|null $encrypt = null;
+
     /**
      * @param string $type       The type name of the mapped field. Can be one of
      *                           Doctrine's mapping types or a custom mapping type.
@@ -117,6 +119,7 @@ final class FieldMapping implements ArrayAccess
      *     options?: array<string, mixed>|null,
      *     version?: bool|null,
      *     default?: string|int|null,
+     *     encrypt?: array<string, mixed>|null,
      * } $mappingArray
      */
     public static function fromMappingArray(array $mappingArray): self
@@ -127,13 +130,18 @@ final class FieldMapping implements ArrayAccess
             $mappingArray['columnName'],
         );
         foreach ($mappingArray as $key => $value) {
-            if (in_array($key, ['type', 'fieldName', 'columnName'])) {
+            if (in_array($key, ['type', 'fieldName', 'columnName', 'encrypt'])) {
                 continue;
             }
 
             if (property_exists($mapping, $key)) {
                 $mapping->$key = $value;
             }
+        }
+
+        $encryptMapping = $mappingArray['encrypt'] ?? null;
+        if ($encryptMapping !== null) {
+            $mapping->encrypt = EncryptMapping::fromMappingArray($encryptMapping);
         }
 
         return $mapping;
@@ -166,6 +174,7 @@ final class FieldMapping implements ArrayAccess
                 'declaredField',
                 'options',
                 'default',
+                'encrypt',
             ] as $key
         ) {
             if ($this->$key !== null) {

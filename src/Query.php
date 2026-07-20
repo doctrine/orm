@@ -286,6 +286,12 @@ class Query extends AbstractQuery
 
         [$sqlParams, $types] = $this->processParameterMappings($paramMappings);
 
+        $querySetMapping = $this->parserResult->getEncryptedQuerySetMapping();
+
+        if (! $querySetMapping->isEmpty()) {
+            $this->em->getEncryptHelper()->encryptParameters($querySetMapping, $sqlParams, $types);
+        }
+
         $this->evictResultSetCache(
             $executor,
             $sqlParams,

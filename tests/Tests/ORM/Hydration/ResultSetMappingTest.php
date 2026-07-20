@@ -91,6 +91,15 @@ class ResultSetMappingTest extends OrmTestCase
         self::assertTrue($rms->isMixedResult());
     }
 
+    public function testDisableDecrypt(): void
+    {
+        self::assertFalse($this->_rsm->isDecryptDisabled());
+
+        self::assertSame($this->_rsm, $this->_rsm->disableDecrypt());
+
+        self::assertTrue($this->_rsm->isDecryptDisabled());
+    }
+
     #[Group('DDC-117')]
     public function testIndexByMetadataColumn(): void
     {

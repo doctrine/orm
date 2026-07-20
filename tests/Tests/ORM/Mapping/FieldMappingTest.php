@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Mapping;
 
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\EncryptMapping;
 use Doctrine\ORM\Mapping\FieldMapping;
 use PHPUnit\Framework\TestCase;
 
@@ -44,6 +45,7 @@ final class FieldMappingTest extends TestCase
         $mapping->options          = ['foo' => 'bar'];
         $mapping->version          = true;
         $mapping->default          = 'foo';
+        $mapping->encrypt          = EncryptMapping::fromMappingArray(['cipher' => 'default_cipher']);
 
         $resurrectedMapping = unserialize(serialize($mapping));
         assert($resurrectedMapping instanceof FieldMapping);
@@ -70,5 +72,6 @@ final class FieldMappingTest extends TestCase
         self::assertSame(['foo' => 'bar'], $resurrectedMapping->options);
         self::assertTrue($resurrectedMapping->version);
         self::assertSame('foo', $resurrectedMapping->default);
+        self::assertEquals(EncryptMapping::fromMappingArray(['cipher' => 'default_cipher']), $resurrectedMapping->encrypt);
     }
 }
