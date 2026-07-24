@@ -24,14 +24,14 @@ class SqlWalkerTest extends OrmTestCase
         $this->sqlWalker = new SqlWalker(new Query($this->getTestEntityManager()), new ParserResult(), []);
     }
 
-    #[DataProvider('getColumnNamesAndSqlAliases')]
-    public function testGetSQLTableAlias($tableName, $expectedAlias): void
+    #[DataProvider('getTableNamesAndSqlAliases')]
+    public function testGetSQLTableAlias(string $tableName, string $expectedAlias): void
     {
         self::assertSame($expectedAlias, $this->sqlWalker->getSQLTableAlias($tableName));
     }
 
-    #[DataProvider('getColumnNamesAndSqlAliases')]
-    public function testGetSQLTableAliasIsSameForMultipleCalls($tableName): void
+    #[DataProvider('getTableNames')]
+    public function testGetSQLTableAliasIsSameForMultipleCalls(string $tableName): void
     {
         self::assertSame(
             $this->sqlWalker->getSQLTableAlias($tableName),
@@ -39,17 +39,23 @@ class SqlWalkerTest extends OrmTestCase
         );
     }
 
-    /**
-     * @return string[][]
-     *
-     * @private data provider
-     */
-    public static function getColumnNamesAndSqlAliases(): array
+    /** @return list<array{string, string}> */
+    public static function getTableNamesAndSqlAliases(): array
     {
         return [
             ['aaaaa', 'a0_'],
             ['table', 't0_'],
             ['çtable', 't0_'],
+        ];
+    }
+
+    /** @return list<array{string}> */
+    public static function getTableNames(): array
+    {
+        return [
+            ['aaaaa'],
+            ['table'],
+            ['çtable'],
         ];
     }
 }

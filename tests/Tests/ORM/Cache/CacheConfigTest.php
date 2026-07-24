@@ -42,7 +42,7 @@ class CacheConfigTest extends TestCase
 
     public function testSetGetCacheLogger(): void
     {
-        $logger = $this->createMock(CacheLogger::class);
+        $logger = $this->createStub(CacheLogger::class);
 
         self::assertNull($this->config->getCacheLogger());
 
@@ -53,7 +53,7 @@ class CacheConfigTest extends TestCase
 
     public function testSetGetCacheFactory(): void
     {
-        $factory = $this->createMock(CacheFactory::class);
+        $factory = $this->createStub(CacheFactory::class);
 
         self::assertNull($this->config->getCacheFactory());
 
@@ -64,12 +64,12 @@ class CacheConfigTest extends TestCase
 
     public function testSetGetQueryValidator(): void
     {
-        $factory = $this->createMock(CacheFactory::class);
-        $factory->method('getTimestampRegion')->willReturn($this->createMock(TimestampRegion::class));
+        $factory = $this->createStub(CacheFactory::class);
+        $factory->method('getTimestampRegion')->willReturn($this->createStub(TimestampRegion::class));
 
         $this->config->setCacheFactory($factory);
 
-        $validator = $this->createMock(QueryCacheValidator::class);
+        $validator = $this->createStub(QueryCacheValidator::class);
 
         self::assertInstanceOf(TimestampQueryCacheValidator::class, $this->config->getQueryValidator());
 

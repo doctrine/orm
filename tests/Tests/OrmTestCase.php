@@ -84,7 +84,7 @@ abstract class OrmTestCase extends TestCase
     protected function createTestEntityManagerWithPlatform(AbstractPlatform $platform): EntityManagerMock
     {
         return $this->buildTestEntityManagerWithPlatform(
-            $this->createConnectionMock($platform),
+            $this->createConnectionStub($platform),
         );
     }
 
@@ -140,10 +140,10 @@ abstract class OrmTestCase extends TestCase
             ?? $this->secondLevelCache = new ArrayAdapter();
     }
 
-    private function createConnectionMock(AbstractPlatform $platform): Connection
+    private function createConnectionStub(AbstractPlatform $platform): Connection
     {
         $connection = $this->getMockBuilder(Connection::class)
-            ->setConstructorArgs([[], $this->createDriverMock($platform)])
+            ->setConstructorArgs([[], $this->createDriverStub($platform)])
             ->onlyMethods(['quote'])
             ->getMock();
         $connection->method('quote')->willReturnCallback(static fn (string $input) => sprintf("'%s'", $input));
@@ -151,17 +151,17 @@ abstract class OrmTestCase extends TestCase
         return $connection;
     }
 
-    private function createDriverMock(AbstractPlatform $platform): Driver
+    private function createDriverStub(AbstractPlatform $platform): Driver
     {
-        $result = $this->createMock(Result::class);
+        $result = $this->createStub(Result::class);
         $result->method('fetchAssociative')
             ->willReturn(false);
 
-        $connection = $this->createMock(Driver\Connection::class);
+        $connection = $this->createStub(Driver\Connection::class);
         $connection->method('query')
             ->willReturn($result);
 
-        $driver = $this->createMock(Driver::class);
+        $driver = $this->createStub(Driver::class);
         $driver->method('connect')
             ->willReturn($connection);
         $driver->method('getDatabasePlatform')
