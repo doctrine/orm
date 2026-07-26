@@ -31,6 +31,7 @@ use PHPUnit\Framework\TestCase;
 use RuntimeException;
 
 use function array_filter;
+use function defined;
 
 /**
  * Test case for the QueryBuilder class used to build DQL query string in a
@@ -538,6 +539,64 @@ class QueryBuilderTest extends OrmTestCase
         self::assertEquals('alias1.field = :field AND alias1.field = :field_1', (string) $qb->getDQLPart('where'));
         self::assertNotNull($qb->getParameter('field'));
         self::assertNotNull($qb->getParameter('field_1'));
+    }
+
+    #[Group('GH8702')]
+    public function testAddMultipleCriteriaWhereWithSameField(): void
+    {
+        $qb = $this->entityManager->createQueryBuilder();
+        $qb->select('alias1')->from(CmsUser::class, 'alias1');
+
+        $firstCriteria = defined(Criteria::class . '::ASC') ? Criteria::create(true) : Criteria::create();
+        $firstCriteria->where($firstCriteria->expr()->gte('field', 'value1'));
+
+        $secondCriteria = defined(Criteria::class . '::ASC') ? Criteria::create(true) : Criteria::create();
+        $secondCriteria->where($secondCriteria->expr()->lte('field', 'value2'));
+
+        $qb->addCriteria($firstCriteria);
+        $qb->addCriteria($secondCriteria);
+
+        self::assertEquals('alias1.field >= :field AND alias1.field <= :dcValue1', (string) $qb->getDQLPart('where'));
+        self::assertSame('value1', $qb->getParameter('field')->getValue());
+        self::assertSame('value2', $qb->getParameter('dcValue1')->getValue());
+    }
+
+    #[Group('GH8702')]
+    public function testAddCriteriaDoesNotReplaceExistingParameterWithSameName(): void
+    {
+        $qb = $this->entityManager->createQueryBuilder();
+        $qb->select('alias1')
+            ->from(CmsUser::class, 'alias1')
+            ->where('alias1.id = :field')
+            ->setParameter('field', 42);
+
+        $criteria = defined(Criteria::class . '::ASC') ? Criteria::create(true) : Criteria::create();
+        $criteria->where($criteria->expr()->eq('field', 'value'));
+
+        $qb->addCriteria($criteria);
+
+        self::assertEquals('alias1.id = :field AND alias1.field = :dcValue1', (string) $qb->getDQLPart('where'));
+        self::assertSame(42, $qb->getParameter('field')->getValue());
+        self::assertSame('value', $qb->getParameter('dcValue1')->getValue());
+    }
+
+    #[Group('GH8702')]
+    public function testAddMultipleNullCriteriaWhereWithSameFieldDoesNotAddParameters(): void
+    {
+        $qb = $this->entityManager->createQueryBuilder();
+        $qb->select('alias1')->from(CmsUser::class, 'alias1');
+
+        $firstCriteria = defined(Criteria::class . '::ASC') ? Criteria::create(true) : Criteria::create();
+        $firstCriteria->where($firstCriteria->expr()->eq('field', null));
+
+        $secondCriteria = defined(Criteria::class . '::ASC') ? Criteria::create(true) : Criteria::create();
+        $secondCriteria->where($secondCriteria->expr()->neq('field', null));
+
+        $qb->addCriteria($firstCriteria);
+        $qb->addCriteria($secondCriteria);
+
+        self::assertEquals('alias1.field IS NULL AND alias1.field IS NOT NULL', (string) $qb->getDQLPart('where'));
+        self::assertCount(0, $qb->getParameters());
     }
 
     #[Group('DDC-2844')]
