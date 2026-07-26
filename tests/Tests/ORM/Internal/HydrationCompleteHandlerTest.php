@@ -13,6 +13,7 @@ use Doctrine\Persistence\Event\LifecycleEventArgs;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\MockObject\Stub;
 use PHPUnit\Framework\TestCase;
 use stdClass;
 
@@ -26,27 +27,26 @@ use function in_array;
 class HydrationCompleteHandlerTest extends TestCase
 {
     private ListenersInvoker&MockObject $listenersInvoker;
-    private EntityManagerInterface&MockObject $entityManager;
+    private EntityManagerInterface&Stub $entityManager;
     private HydrationCompleteHandler $handler;
 
     protected function setUp(): void
     {
         $this->listenersInvoker = $this->createMock(ListenersInvoker::class);
-        $this->entityManager    = $this->createMock(EntityManagerInterface::class);
+        $this->entityManager    = $this->createStub(EntityManagerInterface::class);
         $this->handler          = new HydrationCompleteHandler($this->listenersInvoker, $this->entityManager);
     }
 
     #[DataProvider('invocationFlagProvider')]
     public function testDefersPostLoadOfEntity(int $listenersFlag): void
     {
-        $metadata = $this->createMock(ClassMetadata::class);
+        $metadata = $this->createStub(ClassMetadata::class);
         assert($metadata instanceof ClassMetadata);
         $entity        = new stdClass();
         $entityManager = $this->entityManager;
 
         $this
             ->listenersInvoker
-            ->expects(self::any())
             ->method('getSubscribedSystems')
             ->with($metadata)
             ->willReturn($listenersFlag);
@@ -71,13 +71,12 @@ class HydrationCompleteHandlerTest extends TestCase
     #[DataProvider('invocationFlagProvider')]
     public function testDefersPostLoadOfEntityOnlyOnce(int $listenersFlag): void
     {
-        $metadata = $this->createMock(ClassMetadata::class);
+        $metadata = $this->createStub(ClassMetadata::class);
         assert($metadata instanceof ClassMetadata);
         $entity = new stdClass();
 
         $this
             ->listenersInvoker
-            ->expects(self::any())
             ->method('getSubscribedSystems')
             ->with($metadata)
             ->willReturn($listenersFlag);
@@ -93,15 +92,14 @@ class HydrationCompleteHandlerTest extends TestCase
     #[DataProvider('invocationFlagProvider')]
     public function testDefersMultiplePostLoadOfEntity(int $listenersFlag): void
     {
-        $metadata1     = $this->createMock(ClassMetadata::class);
-        $metadata2     = $this->createMock(ClassMetadata::class);
+        $metadata1     = $this->createStub(ClassMetadata::class);
+        $metadata2     = $this->createStub(ClassMetadata::class);
         $entity1       = new stdClass();
         $entity2       = new stdClass();
         $entityManager = $this->entityManager;
 
         $this
             ->listenersInvoker
-            ->expects(self::any())
             ->method('getSubscribedSystems')
             ->with(self::logicalOr($metadata1, $metadata2))
             ->willReturn($listenersFlag);
@@ -127,13 +125,12 @@ class HydrationCompleteHandlerTest extends TestCase
 
     public function testSkipsDeferredPostLoadOfMetadataWithNoInvokedListeners(): void
     {
-        $metadata = $this->createMock(ClassMetadata::class);
+        $metadata = $this->createStub(ClassMetadata::class);
         assert($metadata instanceof ClassMetadata);
         $entity = new stdClass();
 
         $this
             ->listenersInvoker
-            ->expects(self::any())
             ->method('getSubscribedSystems')
             ->with($metadata)
             ->willReturn(ListenersInvoker::INVOKE_NONE);

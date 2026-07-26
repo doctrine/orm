@@ -15,7 +15,7 @@ use Doctrine\Tests\ORM\Tools\Console\Command\Debug\Fixtures\BarListener;
 use Doctrine\Tests\ORM\Tools\Console\Command\Debug\Fixtures\BazListener;
 use Doctrine\Tests\ORM\Tools\Console\Command\Debug\Fixtures\FooListener;
 use PHPUnit\Framework\Attributes\TestWith;
-use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\MockObject\Stub;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Completion\CompletionInput;
@@ -124,29 +124,29 @@ TXT
         self::assertSame($expectedSuggestions, array_map(static fn (Suggestion $suggestion) => $suggestion->getValue(), $suggestions->getValueSuggestions()));
     }
 
-    /** @return MockObject&ManagerRegistry */
+    /** @return Stub&ManagerRegistry */
     private function getMockManagerRegistry(): ManagerRegistry
     {
-        $mappingDriverMock = $this->createMock(MappingDriver::class);
-        $mappingDriverMock->method('getAllClassNames')->willReturn([self::class]);
+        $mappingDriverStub = $this->createStub(MappingDriver::class);
+        $mappingDriverStub->method('getAllClassNames')->willReturn([self::class]);
 
         $config = new Configuration();
-        $config->setMetadataDriverImpl($mappingDriverMock);
+        $config->setMetadataDriverImpl($mappingDriverStub);
 
         $classMetadata = new ClassMetadata(self::class);
         $classMetadata->addEntityListener('preUpdate', FooListener::class, 'preUpdate');
         $classMetadata->addEntityListener('preUpdate', BarListener::class, '__invoke');
         $classMetadata->addEntityListener('postPersist', BazListener::class, 'postPersist');
 
-        $emMock = $this->createMock(EntityManagerInterface::class);
-        $emMock->method('getConfiguration')->willReturn($config);
-        $emMock->method('getClassMetadata')->willReturn($classMetadata);
+        $emStub = $this->createStub(EntityManagerInterface::class);
+        $emStub->method('getConfiguration')->willReturn($config);
+        $emStub->method('getClassMetadata')->willReturn($classMetadata);
 
-        $doctrineMock = $this->createMock(ManagerRegistry::class);
-        $doctrineMock->method('getManagerNames')->willReturn(['default' => 'entity_manager.default']);
-        $doctrineMock->method('getManager')->willReturn($emMock);
-        $doctrineMock->method('getManagerForClass')->willReturn($emMock);
+        $doctrineStub = $this->createStub(ManagerRegistry::class);
+        $doctrineStub->method('getManagerNames')->willReturn(['default' => 'entity_manager.default']);
+        $doctrineStub->method('getManager')->willReturn($emStub);
+        $doctrineStub->method('getManagerForClass')->willReturn($emStub);
 
-        return $doctrineMock;
+        return $doctrineStub;
     }
 }

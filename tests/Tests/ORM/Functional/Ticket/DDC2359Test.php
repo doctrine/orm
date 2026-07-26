@@ -27,9 +27,9 @@ class DDC2359Test extends TestCase
      */
     public function testIssue(): void
     {
-        $mockDriver    = $this->createMock(MappingDriver::class);
-        $mockMetadata  = $this->createMock(ClassMetadata::class);
-        $entityManager = $this->createMock(EntityManager::class);
+        $stubDriver    = $this->createStub(MappingDriver::class);
+        $stubMetadata  = $this->createStub(ClassMetadata::class);
+        $entityManager = $this->createStub(EntityManager::class);
 
         $metadataFactory = $this->getMockBuilder(ClassMetadataFactory::class)
             ->onlyMethods(['newClassMetadataInstance', 'wakeupReflection'])
@@ -39,26 +39,26 @@ class DDC2359Test extends TestCase
             ->onlyMethods(['getMetadataDriverImpl'])
             ->getMock();
 
-        $connection = $this->createMock(Connection::class);
+        $connection = $this->createStub(Connection::class);
 
         $configuration
             ->method('getMetadataDriverImpl')
-            ->willReturn($mockDriver);
+            ->willReturn($stubDriver);
 
-        $entityManager->expects(self::any())->method('getConfiguration')->willReturn($configuration);
-        $entityManager->expects(self::any())->method('getConnection')->willReturn($connection);
+        $entityManager->method('getConfiguration')->willReturn($configuration);
+        $entityManager->method('getConnection')->willReturn($connection);
         $entityManager
             ->method('getEventManager')
             ->willReturn(new EventManager());
 
-        $metadataFactory->method('newClassMetadataInstance')->willReturn($mockMetadata);
+        $metadataFactory->method('newClassMetadataInstance')->willReturn($stubMetadata);
         $metadataFactory->expects(self::once())->method('wakeupReflection');
 
         $metadataFactory->setEntityManager($entityManager);
 
-        $mockMetadata->method('getName')->willReturn(DDC2359Foo::class);
+        $stubMetadata->method('getName')->willReturn(DDC2359Foo::class);
 
-        self::assertSame($mockMetadata, $metadataFactory->getMetadataFor(DDC2359Foo::class));
+        self::assertSame($stubMetadata, $metadataFactory->getMetadataFor(DDC2359Foo::class));
     }
 }
 

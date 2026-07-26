@@ -39,11 +39,11 @@ class PersistentCollectionTest extends OrmTestCase
     {
         parent::setUp();
 
-        $platform = $this->createMock(AbstractPlatform::class);
+        $platform = $this->createStub(AbstractPlatform::class);
         $platform->method('supportsIdentityColumns')
             ->willReturn(true);
 
-        $connection = $this->createMock(Connection::class);
+        $connection = $this->createStub(Connection::class);
         $connection->method('getDatabasePlatform')
             ->willReturn($platform);
 
@@ -53,7 +53,7 @@ class PersistentCollectionTest extends OrmTestCase
         }
 
         $connection->method('executeQuery')
-            ->willReturn($this->createMock(Result::class));
+            ->willReturn($this->createStub(Result::class));
 
         $this->_emMock = new EntityManagerMock($connection);
 

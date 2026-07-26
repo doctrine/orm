@@ -57,11 +57,11 @@ class ClassMetadataFactoryTest extends OrmTestCase
 {
     public function testGetMetadataForSingleClass(): void
     {
-        $platform = $this->createMock(AbstractPlatform::class);
+        $platform = $this->createStub(AbstractPlatform::class);
         $platform->method('supportsSequences')
             ->willReturn(true);
 
-        $driver = $this->createMock(Driver::class);
+        $driver = $this->createStub(Driver::class);
         $driver->method('getDatabasePlatform')
             ->willReturn($platform);
 
@@ -113,7 +113,7 @@ class ClassMetadataFactoryTest extends OrmTestCase
     private function setUpCmfForPlatform(AbstractPlatform $platform, array $preferences = []): ClassMetadataFactoryTestSubject
     {
         $cmf    = new ClassMetadataFactoryTestSubject();
-        $driver = $this->createMock(Driver::class);
+        $driver = $this->createStub(Driver::class);
         $driver->method('getDatabasePlatform')
             ->willReturn($platform);
         $entityManager = $this->createEntityManager(
@@ -234,7 +234,7 @@ class ClassMetadataFactoryTest extends OrmTestCase
     public function testGetAllMetadataWorksWithBadConnection(): void
     {
         // DDC-3551
-        $conn = $this->createMock(Connection::class);
+        $conn = $this->createStub(Connection::class);
 
         if (method_exists($conn, 'getEventManager')) {
             $conn->method('getEventManager')
@@ -244,8 +244,7 @@ class ClassMetadataFactoryTest extends OrmTestCase
         $mockDriver = new MetadataDriverMock();
         $em         = $this->createEntityManager($mockDriver, $conn);
 
-        $conn->expects(self::any())
-            ->method('getDatabasePlatform')
+        $conn->method('getDatabasePlatform')
             ->willThrowException(new Exception('Exception thrown in test when calling getDatabasePlatform'));
 
         $cmf = new ClassMetadataFactory();
@@ -263,11 +262,11 @@ class ClassMetadataFactoryTest extends OrmTestCase
         TestUtil::configureProxies($config);
         $eventManager = new EventManager();
         if (! $conn) {
-            $platform = $this->createMock(AbstractPlatform::class);
+            $platform = $this->createStub(AbstractPlatform::class);
             $platform->method('supportsIdentityColumns')
                 ->willReturn(true);
 
-            $driver = $this->createMock(Driver::class);
+            $driver = $this->createStub(Driver::class);
             $driver->method('getDatabasePlatform')
                 ->willReturn($platform);
 
@@ -384,7 +383,7 @@ class ClassMetadataFactoryTest extends OrmTestCase
     #[\PHPUnit\Framework\Attributes\Group('385')]
     public function testFallbackLoadingCausesEventTriggeringThatCanModifyFetchedMetadata(): void
     {
-        $metadata = $this->createMock(ClassMetadata::class);
+        $metadata = $this->createStub(ClassMetadata::class);
         assert($metadata instanceof ClassMetadata);
         $cmf          = new ClassMetadataFactory();
         $mockDriver   = new MetadataDriverMock();
@@ -423,7 +422,7 @@ class ClassMetadataFactoryTest extends OrmTestCase
     {
         $classMetadataFactory = new ClassMetadataFactory();
 
-        $entityManager = $this->createMock(EntityManagerInterface::class);
+        $entityManager = $this->createStub(EntityManagerInterface::class);
         $classMetadataFactory->setEntityManager($entityManager);
 
         // not really the cleanest way to check it, but we won't add a getter to the CMF just for the sake of testing.

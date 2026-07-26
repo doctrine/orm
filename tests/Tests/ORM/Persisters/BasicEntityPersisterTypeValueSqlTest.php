@@ -63,9 +63,9 @@ class BasicEntityPersisterTypeValueSqlTest extends OrmTestCase
 
     public function testUpdateUsesTypeValuesSQL(): void
     {
-        $driver = $this->createMock(Driver::class);
+        $driver = $this->createStub(Driver::class);
         $driver->method('connect')
-            ->willReturn($this->createMock(Driver\Connection::class));
+            ->willReturn($this->createStub(Driver\Connection::class));
 
         $platform = $this->getMockBuilder(AbstractPlatform::class)
             ->setConstructorArgs(enum_exists(UnquotedIdentifierFolding::class) ? [UnquotedIdentifierFolding::UPPER] : [])
@@ -199,11 +199,11 @@ class BasicEntityPersisterTypeValueSqlTest extends OrmTestCase
     public function testDeleteManyToManyUsesTypeValuesSQL(): void
     {
         $connection = $this->getMockBuilder(Connection::class)
-            ->setConstructorArgs([[], $this->createMock(Driver::class)])
+            ->setConstructorArgs([[], $this->createStub(Driver::class)])
             ->onlyMethods(['delete', 'getDatabasePlatform'])
             ->getMock();
         $connection->method('getDatabasePlatform')
-            ->willReturn($this->createMock(AbstractPlatform::class));
+            ->willReturn($this->createStub(AbstractPlatform::class));
 
         $entityManager = $this->createTestEntityManagerWithConnection($connection);
 

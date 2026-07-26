@@ -77,7 +77,7 @@ final class GH6362Test extends OrmFunctionalTestCase
             ],
         ];
 
-        $stmt     = ArrayResultFactory::createWrapperResultFromArray($resultSet, $this->createMock(Connection::class));
+        $stmt     = ArrayResultFactory::createWrapperResultFromArray($resultSet, $this->createStub(Connection::class));
         $hydrator = new ObjectHydrator($this->_em);
         $result   = $hydrator->hydrateAll($stmt, $rsm);
 

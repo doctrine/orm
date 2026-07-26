@@ -19,7 +19,6 @@ use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\ORM\Tools\ResolveTargetEntityListener;
 use Doctrine\Tests\OrmTestCase;
-use PHPUnit\Framework\Attributes\CoversNothing;
 use PHPUnit\Framework\Attributes\Group;
 
 class ResolveTargetEntityListenerTest extends OrmTestCase
@@ -86,7 +85,6 @@ class ResolveTargetEntityListenerTest extends OrmTestCase
         self::assertEquals(['resolvetargetentity_id', 'target_id'], $meta->joinTableColumns);
     }
 
-    #[CoversNothing]
     #[Group('1572')]
     #[Group('functional')]
     public function testDoesResolveTargetEntitiesInDQLAlsoWithInterfaces(): void
