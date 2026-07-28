@@ -2099,6 +2099,7 @@ class SqlWalker
             AST\Literal::STRING => $this->conn->quote($literal->value),
             AST\Literal::BOOLEAN => (string) $this->conn->getDatabasePlatform()->convertBooleans(strtolower($literal->value) === 'true'),
             AST\Literal::NUMERIC => (string) $literal->value,
+            AST\Literal::NULL => 'NULL',
             default => throw QueryException::invalidLiteral($literal),
         };
     }
