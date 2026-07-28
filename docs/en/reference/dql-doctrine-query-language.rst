@@ -617,7 +617,13 @@ You can also nest several DTO :
     $query = $em->createQuery('SELECT NEW CustomerDTO(c.name, e.email, NEW AddressDTO(a.street, a.city, a.zip)) FROM Customer c JOIN c.email e JOIN c.address a');
     $users = $query->getResult(); // array of CustomerDTO
 
-Note that you can only pass scalar expressions or other Data Transfer Objects to the constructor.
+Note that you can only pass scalar expressions, the ``NULL`` literal or other Data Transfer Objects to the constructor:
+
+.. code-block:: php
+
+    <?php
+    $query = $em->createQuery('SELECT NEW CustomerDTO(c.name, e.email, NEW AddressDTO(a.street, a.city, a.zip), NULL) FROM Customer c JOIN c.email e JOIN c.address a');
+    $users = $query->getResult(); // array of CustomerDTO
 
 If you use your data transfer objects for multiple queries, and you would rather not have to
 specify arguments that precede the ones you are really interested in, you can use named arguments.
@@ -1718,7 +1724,7 @@ Select Expressions
     PartialObjectExpression       ::= "PARTIAL" IdentificationVariable "." PartialFieldSet
     PartialFieldSet               ::= "{" SimpleStateField {"," SimpleStateField}* "}"
     NewObjectExpression           ::= "NEW" AbstractSchemaName "(" NewObjectArg {"," NewObjectArg}* ")"
-    NewObjectArg                  ::= (ScalarExpression | "(" Subselect ")" | NewObjectExpression | EntityAsDtoArgumentExpression) ["AS" AliasResultVariable]
+    NewObjectArg                  ::= (ScalarExpression | "(" Subselect ")" | NewObjectExpression | EntityAsDtoArgumentExpression | "NULL") ["AS" AliasResultVariable]
     EntityAsDtoArgumentExpression ::= IdentificationVariable
 
 Conditional Expressions

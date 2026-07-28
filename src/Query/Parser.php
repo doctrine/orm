@@ -1894,7 +1894,7 @@ final class Parser
     }
 
     /**
-     * NewObjectArg ::= (ScalarExpression | "(" Subselect ")" | NewObjectExpression) ["AS" AliasResultVariable]
+     * NewObjectArg ::= (ScalarExpression | "(" Subselect ")" | NewObjectExpression | "NULL") ["AS" AliasResultVariable]
      */
     public function NewObjectArg(string|null &$fieldAlias = null): mixed
     {
@@ -1914,6 +1914,9 @@ final class Parser
             $this->match(TokenType::T_CLOSE_PARENTHESIS);
         } elseif ($token->type === TokenType::T_NEW) {
             $expression = $this->NewObjectExpression();
+        } elseif ($token->type === TokenType::T_NULL) {
+            $this->match(TokenType::T_NULL);
+            $expression = new AST\NewObjectNullArg();
         } elseif ($token->type === TokenType::T_IDENTIFIER && $peek->type !== TokenType::T_DOT && $peek->type !== TokenType::T_OPEN_PARENTHESIS) {
             $expression = $this->EntityAsDtoArgumentExpression();
             $fieldAlias = $expression->aliasVariable;

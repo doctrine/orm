@@ -1588,6 +1588,10 @@ class SqlWalker
                     $sqlSelectExpressions[] = trim($e->dispatch($this)) . ' AS ' . $columnAlias;
                     break;
 
+                case $e instanceof AST\NewObjectNullArg:
+                    $sqlSelectExpressions[] = $e->dispatch($this) . ' AS ' . $columnAlias;
+                    break;
+
                 case $e instanceof AST\EntityAsDtoArgumentExpression:
                     $alias                                             = $e->identificationVariable ?: $columnAlias;
                     $this->rsm->nestedNewObjectArguments[$columnAlias] = ['ownerIndex' => $objIndex, 'argIndex' => $argIndex, 'argAlias' => $alias];
