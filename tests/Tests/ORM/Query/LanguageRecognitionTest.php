@@ -640,6 +640,36 @@ class LanguageRecognitionTest extends OrmTestCase
         $this->assertValidDQL("select COALESCE(NULLIF(u.name, ''), u.username) as Display FROM Doctrine\Tests\Models\CMS\CmsUser u");
     }
 
+    public function testSelectClauseSupportsNullLiteral(): void
+    {
+        $this->assertValidDQL('SELECT u.name, NULL FROM Doctrine\Tests\Models\CMS\CmsUser u');
+    }
+
+    public function testSelectClauseSupportsAliasedNullLiteral(): void
+    {
+        $this->assertValidDQL('SELECT NULL AS nil FROM Doctrine\Tests\Models\CMS\CmsUser u');
+    }
+
+    public function testSubselectSupportsNullLiteral(): void
+    {
+        $this->assertValidDQL('SELECT u.name FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id IN (SELECT NULL FROM Doctrine\Tests\Models\CMS\CmsUser u2)');
+    }
+
+    public function testGeneralCaseSupportsNullLiteralInThenAndElseClauses(): void
+    {
+        $this->assertValidDQL('SELECT CASE WHEN u.id > 10 THEN NULL ELSE NULL END FROM Doctrine\Tests\Models\CMS\CmsUser u');
+    }
+
+    public function testSimpleCaseSupportsNullLiteralInThenAndElseClauses(): void
+    {
+        $this->assertValidDQL("SELECT CASE u.name WHEN 'admin' THEN NULL ELSE NULL END FROM Doctrine\Tests\Models\CMS\CmsUser u");
+    }
+
+    public function testCoalesceSupportsNullLiteral(): void
+    {
+        $this->assertValidDQL('SELECT COALESCE(NULL, u.name) FROM Doctrine\Tests\Models\CMS\CmsUser u');
+    }
+
     #[Group('DDC-1858')]
     public function testHavingSupportIsNullExpression(): void
     {
@@ -668,6 +698,11 @@ class LanguageRecognitionTest extends OrmTestCase
     public function testNewLiteralWithSubselectExpression(): void
     {
         $this->assertValidDQL('SELECT new ' . __NAMESPACE__ . "\\DummyStruct(u.id, 'foo', (SELECT 1 FROM Doctrine\Tests\Models\CMS\CmsUser su), true) FROM Doctrine\Tests\Models\CMS\CmsUser u");
+    }
+
+    public function testNewNullLiteralExpression(): void
+    {
+        $this->assertValidDQL('SELECT new ' . __NAMESPACE__ . "\\DummyStruct(u.id, 'foo', null, true) FROM Doctrine\Tests\Models\CMS\CmsUser u");
     }
 
     public function testStringPrimaryAcceptsAggregateExpression(): void

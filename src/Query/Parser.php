@@ -1951,7 +1951,7 @@ final class Parser
     /**
      * ScalarExpression ::= SimpleArithmeticExpression | StringPrimary | DatetimePrimary |
      *                      StateFieldPathExpression | BooleanPrimary | CaseExpression |
-     *                      InstanceOfExpression
+     *                      InstanceOfExpression | "NULL"
      *
      * @return mixed One of the possible expressions or subexpressions.
      */
@@ -1978,6 +1978,11 @@ final class Parser
                 $this->match($lookahead);
 
                 return new AST\Literal(AST\Literal::BOOLEAN, $this->lexer->token->value);
+
+            case $lookahead === TokenType::T_NULL:
+                $this->match(TokenType::T_NULL);
+
+                return new AST\Literal(AST\Literal::NULL, null);
 
             case $lookahead === TokenType::T_INPUT_PARAMETER:
                 return match (true) {
@@ -2197,6 +2202,11 @@ final class Parser
             // IdentificationVariable (u)
             case $lookaheadType === TokenType::T_IDENTIFIER && $peek->type !== TokenType::T_OPEN_PARENTHESIS:
                 $expression = $identVariable = $this->IdentificationVariable();
+                break;
+
+            // ScalarExpression (NULL)
+            case $lookaheadType === TokenType::T_NULL:
+                $expression = $this->ScalarExpression();
                 break;
 
             // CaseExpression (CASE ... or NULLIF(...) or COALESCE(...))
