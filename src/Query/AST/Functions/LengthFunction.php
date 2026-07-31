@@ -6,6 +6,7 @@ namespace Doctrine\ORM\Query\AST\Functions;
 
 use Doctrine\DBAL\Types\Type;
 use Doctrine\DBAL\Types\Types;
+use Doctrine\ORM\Query\AST\ExpressionWithReturnType;
 use Doctrine\ORM\Query\AST\Node;
 use Doctrine\ORM\Query\AST\TypedExpression;
 use Doctrine\ORM\Query\Parser;
@@ -16,8 +17,10 @@ use Doctrine\ORM\Query\TokenType;
  * "LENGTH" "(" StringPrimary ")"
  *
  * @link    www.doctrine-project.org
+ *
+ * @phpstan-ignore class.implementsDeprecatedInterface
  */
-class LengthFunction extends FunctionNode implements TypedExpression
+class LengthFunction extends FunctionNode implements ExpressionWithReturnType, TypedExpression
 {
     public Node $stringPrimary;
 
@@ -38,8 +41,14 @@ class LengthFunction extends FunctionNode implements TypedExpression
         $parser->match(TokenType::T_CLOSE_PARENTHESIS);
     }
 
+    public function getReturnTypeName(): string
+    {
+        return Types::INTEGER;
+    }
+
+    /** @deprecated Use {@see getReturnTypeName()} instead. */
     public function getReturnType(): Type
     {
-        return Type::getType(Types::INTEGER);
+        return Type::getType($this->getReturnTypeName());
     }
 }

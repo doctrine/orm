@@ -7,7 +7,10 @@ namespace Doctrine\ORM\Query\AST;
 use Doctrine\DBAL\Types\Type;
 
 /**
- * Provides an API for resolving the type of a Node
+ * Provides an API for resolving the type of a Node.
+ *
+ * @deprecated Implement {@see ExpressionWithReturnType} instead, which returns
+ *             the type name as a string and avoids a static Type lookup.
  */
 interface TypedExpression
 {
