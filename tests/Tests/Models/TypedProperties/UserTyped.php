@@ -19,13 +19,19 @@ class UserTyped
     #[ORM\Id]
     #[ORM\Column]
     #[ORM\GeneratedValue]
-    public int $id;
+    public int|null $id = null; // Intentional null, because of MappingDriverTestCase::testInferredNullability()
 
     #[ORM\Column(length: 50)]
     public string|null $status = null;
 
     #[ORM\Column(length: 255, unique: true)]
     public string $username;
+
+    #[ORM\Column(nullable: true)]
+    public string $firstName;
+
+    #[ORM\Column(nullable: false)]
+    public string|null $lastName = null;
 
     #[ORM\Column]
     public DateInterval $dateInterval;
@@ -49,8 +55,23 @@ class UserTyped
     #[ORM\JoinColumn]
     public CmsEmail $email;
 
+    #[ORM\OneToOne]
+    public CmsEmail|null $emailWithNoJoinColumn;
+
+    #[ORM\OneToOne]
+    #[ORM\JoinColumn(nullable: false)]
+    public CmsEmail|null $emailOverride;
+
     #[ORM\ManyToOne]
-    public CmsEmail|null $mainEmail = null;
+    #[ORM\JoinColumn]
+    public CmsEmail $mainEmail;
+
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: true)]
+    public CmsEmail $mainEmailOverride;
+
+    #[ORM\ManyToOne]
+    public CmsEmail|null $mainEmailWithNoJoinColumn = null;
 
     #[ORM\Embedded]
     public Contact|null $contact = null;
@@ -79,6 +100,7 @@ class UserTyped
                 'length' => 50,
             ],
         );
+
         $metadata->mapField(
             [
                 'fieldName' => 'username',
@@ -86,6 +108,21 @@ class UserTyped
                 'unique' => true,
             ],
         );
+
+        $metadata->mapField(
+            [
+                'fieldName' => 'firstName',
+                'nullable' => true,
+            ],
+        );
+
+        $metadata->mapField(
+            [
+                'fieldName' => 'lastName',
+                'nullable' => false,
+            ],
+        );
+
         $metadata->mapField(
             ['fieldName' => 'dateInterval'],
         );
@@ -119,8 +156,51 @@ class UserTyped
             ],
         );
 
+        $metadata->mapOneToOne(
+            ['fieldName' => 'emailWithNoJoinColumn'],
+        );
+
+        $metadata->mapOneToOne(
+            [
+                'fieldName' => 'emailOverride',
+                'joinColumns' =>
+                    [
+                        0 =>
+                            [
+                                'referencedColumnName' => 'id',
+                                'nullable' => false,
+                            ],
+                    ],
+            ],
+        );
+
         $metadata->mapManyToOne(
-            ['fieldName' => 'mainEmail'],
+            [
+                'fieldName' => 'mainEmail',
+                'joinColumns' =>
+                    [
+                        0 =>
+                            ['referencedColumnName' => 'id'],
+                    ],
+            ],
+        );
+
+        $metadata->mapManyToOne(
+            [
+                'fieldName' => 'mainEmailOverride',
+                'joinColumns' =>
+                    [
+                        0 =>
+                            [
+                                'referencedColumnName' => 'id',
+                                'nullable' => true,
+                            ],
+                    ],
+            ],
+        );
+
+        $metadata->mapManyToOne(
+            ['fieldName' => 'mainEmailWithNoJoinColumn'],
         );
 
         $metadata->mapEmbedded(['fieldName' => 'contact']);

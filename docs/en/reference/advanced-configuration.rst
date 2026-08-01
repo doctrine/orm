@@ -255,7 +255,26 @@ For development you should use an array cache like
 ``Symfony\Component\Cache\Adapter\ArrayAdapter``
 which only caches data on a per-request basis.
 
-SQL Logger (**Optional**)
+Nullability detection (**RECOMMENDED**)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. note::
+
+    Since ORM 3.7.0
+
+.. code-block:: php
+
+    <?php
+    $driver = new \Doctrine\ORM\Mapping\Driver\AttributeDriver($paths, inferNullabilityFromPHPType: true);
+    $config->setMetadataDriverImpl($driver);
+
+Sets whether the mapping driver should infer columns nullability from PHP type declarations.
+This is a per-driver setting, which means different entity mappings can use different modes.
+
+You can always override the inferred nullability by specifying the
+``nullable`` option in the Column or JoinColumn definition.
+
+SQL Logger (**OPTIONAL**)
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code-block:: php

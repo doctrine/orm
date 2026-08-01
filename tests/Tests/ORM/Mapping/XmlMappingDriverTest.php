@@ -40,12 +40,13 @@ use const DIRECTORY_SEPARATOR;
 
 class XmlMappingDriverTest extends MappingDriverTestCase
 {
-    protected function loadDriver(): MappingDriver
+    protected function loadDriver(bool $inferNullabilityFromPHPType = false): MappingDriver
     {
         return new XmlDriver(
             __DIR__ . DIRECTORY_SEPARATOR . 'xml',
             XmlDriver::DEFAULT_FILE_EXTENSION,
             true,
+            $inferNullabilityFromPHPType,
         );
     }
 
