@@ -125,12 +125,13 @@ class MultiTableUpdateExecutor extends AbstractSqlExecutor
 
         // 4. Store DDL for temporary identifier table.
         $columnDefinitions = [];
+        $typeRegistry      = TypeRegistryLocator::fromConnection($em->getConnection());
 
         foreach ($idColumnNames as $idColumnName) {
             $columnDefinitions[$idColumnName] = [
                 'name'    => $idColumnName,
                 'notnull' => true,
-                'type'    => TypeRegistryLocator::fromConnection($em->getConnection())->get(PersisterHelper::getTypeOfColumn($idColumnName, $rootClass, $em)),
+                'type'    => $typeRegistry->get(PersisterHelper::getTypeOfColumn($idColumnName, $rootClass, $em)),
             ];
         }
 

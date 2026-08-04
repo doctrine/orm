@@ -219,12 +219,13 @@ class OneToManyPersister extends AbstractCollectionPersister
         $idColumnNames     = $rootClass->getIdentifierColumnNames();
         $idColumnList      = implode(', ', $idColumnNames);
         $columnDefinitions = [];
+        $typeRegistry      = TypeRegistryLocator::fromConnection($this->em->getConnection());
 
         foreach ($idColumnNames as $idColumnName) {
             $columnDefinitions[$idColumnName] = [
                 'name'    => $idColumnName,
                 'notnull' => true,
-                'type'    => TypeRegistryLocator::fromConnection($this->em->getConnection())->get(PersisterHelper::getTypeOfColumn($idColumnName, $rootClass, $this->em)),
+                'type'    => $typeRegistry->get(PersisterHelper::getTypeOfColumn($idColumnName, $rootClass, $this->em)),
             ];
         }
 
