@@ -238,7 +238,8 @@ class ResultSetMappingBuilder extends ResultSetMapping implements Stringable
      */
     public function generateSelectClause(array $tableAliases = []): string
     {
-        $sql = '';
+        $sql          = '';
+        $typeRegistry = TypeRegistryLocator::fromConnection($this->em->getConnection());
 
         foreach ($this->columnOwnerMap as $columnName => $dqlAlias) {
             $tableAlias = $tableAliases[$dqlAlias] ?? $dqlAlias;
@@ -253,7 +254,7 @@ class ResultSetMappingBuilder extends ResultSetMapping implements Stringable
                 $classFieldMapping = $class->fieldMappings[$fieldName];
                 $columnSql         = $tableAlias . '.' . $classFieldMapping->columnName;
 
-                $type      = TypeRegistryLocator::fromConnection($this->em->getConnection())->get($classFieldMapping->type);
+                $type      = $typeRegistry->get($classFieldMapping->type);
                 $columnSql = $type->convertToPHPValueSQL($columnSql, $this->em->getConnection()->getDatabasePlatform());
 
                 $sql .= $columnSql;

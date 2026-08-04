@@ -108,11 +108,12 @@ class SchemaValidator
      */
     public function validateClass(ClassMetadata $class): array
     {
-        $ce  = [];
-        $cmf = $this->em->getMetadataFactory();
+        $ce           = [];
+        $cmf          = $this->em->getMetadataFactory();
+        $typeRegistry = TypeRegistryLocator::fromConnection($this->em->getConnection());
 
         foreach ($class->fieldMappings as $fieldName => $mapping) {
-            if (! TypeRegistryLocator::fromConnection($this->em->getConnection())->has($mapping->type)) {
+            if (! $typeRegistry->has($mapping->type)) {
                 $ce[] = "The field '" . $class->name . '#' . $fieldName . "' uses a non-existent type '" . $mapping->type . "'.";
             }
         }
@@ -336,15 +337,17 @@ class SchemaValidator
     /** @return list<string> containing the found issues */
     private function validatePropertiesTypes(ClassMetadata $class): array
     {
+        $typeRegistry = TypeRegistryLocator::fromConnection($this->em->getConnection());
+
         return array_values(
             array_filter(
                 array_map(
-                    function (FieldMapping $fieldMapping) use ($class): string|null {
+                    function (FieldMapping $fieldMapping) use ($class, $typeRegistry): string|null {
                         $fieldName    = $fieldMapping->fieldName;
                         $propertyType = $class->propertyAccessors[$fieldName]->getUnderlyingReflector()->getType();
 
                         // If the field type is not a built-in type, we cannot check it
-                        if (! TypeRegistryLocator::fromConnection($this->em->getConnection())->has($fieldMapping->type)) {
+                        if (! $typeRegistry->has($fieldMapping->type)) {
                             return null;
                         }
 
@@ -353,7 +356,7 @@ class SchemaValidator
                             return null;
                         }
 
-                        $metadataFieldType = $this->findBuiltInType(TypeRegistryLocator::fromConnection($this->em->getConnection())->get($fieldMapping->type));
+                        $metadataFieldType = $this->findBuiltInType($typeRegistry->get($fieldMapping->type));
 
                         //If the metadata field type is not a mapped built-in type, we cannot check it
                         if ($metadataFieldType === null) {
