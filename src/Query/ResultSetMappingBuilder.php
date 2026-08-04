@@ -6,6 +6,7 @@ namespace Doctrine\ORM\Query;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Internal\SQLResultCasing;
+use Doctrine\ORM\Internal\TypeRegistryLocator;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Utility\PersisterHelper;
 use InvalidArgumentException;
@@ -252,7 +253,7 @@ class ResultSetMappingBuilder extends ResultSetMapping implements Stringable
                 $classFieldMapping = $class->fieldMappings[$fieldName];
                 $columnSql         = $tableAlias . '.' . $classFieldMapping->columnName;
 
-                $type      = $this->em->getConfiguration()->getTypeRegistry()->get($classFieldMapping->type);
+                $type      = TypeRegistryLocator::fromConnection($this->em->getConnection())->get($classFieldMapping->type);
                 $columnSql = $type->convertToPHPValueSQL($columnSql, $this->em->getConnection()->getDatabasePlatform());
 
                 $sql .= $columnSql;

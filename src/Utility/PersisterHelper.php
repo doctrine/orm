@@ -8,7 +8,9 @@ use BackedEnum;
 use DateTimeInterface;
 use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\ParameterType;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Internal\TypeRegistryLocator;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Proxy\DefaultProxyClassNameResolver;
 use Doctrine\ORM\Query\QueryException;
@@ -210,7 +212,7 @@ class PersisterHelper
     private static function getArrayBindingType(ParameterType|int|string $type, EntityManagerInterface $em): ArrayParameterType|int
     {
         if (! $type instanceof ParameterType) {
-            $type = $em->getConfiguration()->getTypeRegistry()->get((string) $type)->getBindingType();
+            $type = TypeRegistryLocator::fromConnection($em->getConnection())->get((string) $type)->getBindingType();
         }
 
         return match ($type) {

@@ -6,6 +6,7 @@ namespace Doctrine\ORM\Query\Exec;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Connections\PrimaryReadReplicaConnection;
+use Doctrine\ORM\Internal\TypeRegistryLocator;
 use Doctrine\ORM\Query\AST;
 use Doctrine\ORM\Query\AST\UpdateStatement;
 use Doctrine\ORM\Query\ParameterTypeInferer;
@@ -129,7 +130,7 @@ class MultiTableUpdateExecutor extends AbstractSqlExecutor
             $columnDefinitions[$idColumnName] = [
                 'name'    => $idColumnName,
                 'notnull' => true,
-                'type'    => $em->getConfiguration()->getTypeRegistry()->get(PersisterHelper::getTypeOfColumn($idColumnName, $rootClass, $em)),
+                'type'    => TypeRegistryLocator::fromConnection($em->getConnection())->get(PersisterHelper::getTypeOfColumn($idColumnName, $rootClass, $em)),
             ];
         }
 

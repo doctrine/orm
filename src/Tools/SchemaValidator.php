@@ -19,6 +19,7 @@ use Doctrine\DBAL\Types\StringType;
 use Doctrine\DBAL\Types\TextType;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Internal\TypeRegistryLocator;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\FieldMapping;
 use ReflectionEnum;
@@ -111,7 +112,7 @@ class SchemaValidator
         $cmf = $this->em->getMetadataFactory();
 
         foreach ($class->fieldMappings as $fieldName => $mapping) {
-            if (! $this->em->getConfiguration()->getTypeRegistry()->has($mapping->type)) {
+            if (! TypeRegistryLocator::fromConnection($this->em->getConnection())->has($mapping->type)) {
                 $ce[] = "The field '" . $class->name . '#' . $fieldName . "' uses a non-existent type '" . $mapping->type . "'.";
             }
         }
@@ -343,7 +344,7 @@ class SchemaValidator
                         $propertyType = $class->propertyAccessors[$fieldName]->getUnderlyingReflector()->getType();
 
                         // If the field type is not a built-in type, we cannot check it
-                        if (! $this->em->getConfiguration()->getTypeRegistry()->has($fieldMapping->type)) {
+                        if (! TypeRegistryLocator::fromConnection($this->em->getConnection())->has($fieldMapping->type)) {
                             return null;
                         }
 
@@ -352,7 +353,7 @@ class SchemaValidator
                             return null;
                         }
 
-                        $metadataFieldType = $this->findBuiltInType($this->em->getConfiguration()->getTypeRegistry()->get($fieldMapping->type));
+                        $metadataFieldType = $this->findBuiltInType(TypeRegistryLocator::fromConnection($this->em->getConnection())->get($fieldMapping->type));
 
                         //If the metadata field type is not a mapped built-in type, we cannot check it
                         if ($metadataFieldType === null) {

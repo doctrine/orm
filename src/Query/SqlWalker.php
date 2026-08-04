@@ -12,6 +12,7 @@ use Doctrine\DBAL\Types\TypeRegistry;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\Deprecations\Deprecation;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Internal\TypeRegistryLocator;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\QuoteStrategy;
 use Doctrine\ORM\OptimisticLockException;
@@ -155,7 +156,7 @@ class SqlWalker
         $this->conn          = $this->em->getConnection();
         $this->platform      = $this->conn->getDatabasePlatform();
         $this->quoteStrategy = $this->em->getConfiguration()->getQuoteStrategy();
-        $this->typeRegistry  = $this->em->getConfiguration()->getTypeRegistry();
+        $this->typeRegistry  = TypeRegistryLocator::fromConnection($this->conn);
     }
 
     /**

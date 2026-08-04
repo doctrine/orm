@@ -17,6 +17,7 @@ use Doctrine\DBAL\Types\Type;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Cache\Persister\CompatOrderings;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Internal\TypeRegistryLocator;
 use Doctrine\ORM\Mapping\AssociationMapping;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\JoinColumnMapping;
@@ -207,7 +208,7 @@ class BasicEntityPersister implements EntityPersister
 
     final protected function getType(string $name): Type
     {
-        return $this->em->getConfiguration()->getTypeRegistry()->get($name);
+        return TypeRegistryLocator::fromConnection($this->em->getConnection())->get($name);
     }
 
     public function getClassMetadata(): ClassMetadata

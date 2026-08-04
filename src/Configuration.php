@@ -6,8 +6,6 @@ namespace Doctrine\ORM;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Schema\Schema;
-use Doctrine\DBAL\Types\Type;
-use Doctrine\DBAL\Types\TypeRegistry;
 use Doctrine\Deprecations\Deprecation;
 use Doctrine\ORM\Cache\CacheConfiguration;
 use Doctrine\ORM\Exception\InvalidEntityRepository;
@@ -32,7 +30,6 @@ use Psr\Cache\CacheItemPoolInterface;
 
 use function class_exists;
 use function is_a;
-use function method_exists;
 use function strtolower;
 
 use const PHP_VERSION_ID;
@@ -756,20 +753,5 @@ class Configuration extends \Doctrine\DBAL\Configuration
     public function getDefaultStringTypeSchemaLength(): int
     {
         return $this->attributes['defaultStringTypeSchemaLength'] ?? 255;
-    }
-
-    /**
-     * Returns the type registry for this configuration.
-     * Falls back to the global type registry when running against DBAL < 4.5,
-     * which does not have {@see \Doctrine\DBAL\Configuration::getTypeRegistry()}.
-     */
-    public function getTypeRegistry(): TypeRegistry
-    {
-        // @phpstan-ignore function.alreadyNarrowedType (method_exists check is for DBAL v3 compatibility)
-        if (method_exists(parent::class, 'getTypeRegistry')) {
-            return parent::getTypeRegistry();
-        }
-
-        return Type::getTypeRegistry();
     }
 }
