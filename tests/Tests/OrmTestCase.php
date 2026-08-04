@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests;
 
+use Doctrine\DBAL\Configuration as DBALConfiguration;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Driver;
 use Doctrine\DBAL\Driver\Result;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Platforms\SQLitePlatform;
 use Doctrine\DBAL\Schema\Schema;
+use Doctrine\DBAL\Types\TypeRegistry;
 use Doctrine\ORM\Cache\CacheConfiguration;
 use Doctrine\ORM\Cache\CacheFactory;
 use Doctrine\ORM\Cache\DefaultCacheFactory;
@@ -18,6 +20,7 @@ use Doctrine\ORM\Configuration;
 use Doctrine\ORM\Mapping\Driver\AttributeDriver;
 use Doctrine\Tests\Mocks\AttributeDriverFactory;
 use Doctrine\Tests\Mocks\EntityManagerMock;
+use PHPUnit\Framework\MockObject\Stub;
 use PHPUnit\Framework\TestCase;
 use Psr\Cache\CacheItemPoolInterface;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
@@ -89,7 +92,7 @@ abstract class OrmTestCase extends TestCase
     protected function createTestEntityManagerWithPlatform(AbstractPlatform $platform): EntityManagerMock
     {
         return $this->buildTestEntityManagerWithPlatform(
-            $this->createConnectionStub($platform),
+            $this->createConnectionMock($platform),
         );
     }
 
@@ -162,7 +165,29 @@ abstract class OrmTestCase extends TestCase
             ?? $this->secondLevelCache = new ArrayAdapter();
     }
 
-    private function createConnectionStub(AbstractPlatform $platform): Connection
+    /**
+     * Creates a fully stubbed connection with the given platform and a default DBAL
+     * configuration, so that {@see \Doctrine\ORM\Internal\TypeRegistryLocator} can resolve
+     * the type registry. On DBAL >= 4.5, the type registry is injected into the configuration.
+     */
+    final protected function createConnectionStub(AbstractPlatform $platform): Connection&Stub
+    {
+        $configuration = new DBALConfiguration();
+
+        if (method_exists($configuration, 'setTypeRegistry')) {
+            $configuration->setTypeRegistry(new TypeRegistry());
+        }
+
+        $connection = $this->createStub(Connection::class);
+        $connection->method('getDatabasePlatform')
+            ->willReturn($platform);
+        $connection->method('getConfiguration')
+            ->willReturn($configuration);
+
+        return $connection;
+    }
+
+    private function createConnectionMock(AbstractPlatform $platform): Connection
     {
         $connection = $this->getMockBuilder(Connection::class)
             ->setConstructorArgs([[], $this->createDriverStub($platform)])

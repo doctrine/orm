@@ -10,6 +10,7 @@ use Doctrine\DBAL\Result;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Events;
+use Doctrine\ORM\Internal\TypeRegistryLocator;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\ORM\Tools\Pagination\LimitSubqueryWalker;
@@ -91,7 +92,7 @@ abstract class AbstractHydrator
 
     private function getType(string $name): Type
     {
-        return $this->em->getConfiguration()->getTypeRegistry()->get($name);
+        return TypeRegistryLocator::fromConnection($this->em->getConnection())->get($name);
     }
 
     /**
