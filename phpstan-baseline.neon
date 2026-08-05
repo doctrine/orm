@@ -3011,50 +3011,8 @@ parameters:
 
 		-
 			message: '''
-				#^Call to deprecated method getForeignColumns\(\) of class Doctrine\\DBAL\\Schema\\ForeignKeyConstraint\:
-				Use \{@see getReferencedColumnNames\(\)\} instead\.
-
-				Returns the names of the referenced table columns
-				the foreign key constraint is associated with\.$#
-			'''
-			identifier: method.deprecated
-			count: 1
-			path: src/Tools/SchemaTool.php
-
-		-
-			message: '''
-				#^Call to deprecated method getForeignTableName\(\) of class Doctrine\\DBAL\\Schema\\ForeignKeyConstraint\:
-				Use \{@see getReferencedTableName\(\)\} instead\.
-
-				Returns the name of the referenced table
-				the foreign key constraint is associated with\.$#
-			'''
-			identifier: method.deprecated
-			count: 1
-			path: src/Tools/SchemaTool.php
-
-		-
-			message: '''
-				#^Call to deprecated method getLocalColumns\(\) of class Doctrine\\DBAL\\Schema\\ForeignKeyConstraint\:
-				Use \{@see getReferencingColumnNames\(\)\} instead\.$#
-			'''
-			identifier: method.deprecated
-			count: 1
-			path: src/Tools/SchemaTool.php
-
-		-
-			message: '''
 				#^Call to deprecated method getPrimaryKey\(\) of class Doctrine\\DBAL\\Schema\\Table\:
 				Use \{@see getPrimaryKeyConstraint\(\)\} instead\.$#
-			'''
-			identifier: method.deprecated
-			count: 1
-			path: src/Tools/SchemaTool.php
-
-		-
-			message: '''
-				#^Call to deprecated method removeForeignKey\(\) of class Doctrine\\DBAL\\Schema\\Table\:
-				Use \{@link dropForeignKey\(\)\} instead\.$#
 			'''
 			identifier: method.deprecated
 			count: 1
@@ -3221,6 +3179,18 @@ parameters:
 
 		-
 			message: '#^Parameter \#3 \$foreignColumnNames of method Doctrine\\DBAL\\Schema\\Table\:\:addForeignKeyConstraint\(\) expects non\-empty\-list\<string\>, list\<string\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Tools/SchemaTool.php
+
+		-
+			message: '#^Parameter \$foreignColumnNames of class Doctrine\\DBAL\\Schema\\ForeignKeyConstraint constructor expects non\-empty\-list\<string\>, list\<string\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Tools/SchemaTool.php
+
+		-
+			message: '#^Parameter \$localColumnNames of class Doctrine\\DBAL\\Schema\\ForeignKeyConstraint constructor expects non\-empty\-list\<string\>, list\<string\> given\.$#'
 			identifier: argument.type
 			count: 1
 			path: src/Tools/SchemaTool.php

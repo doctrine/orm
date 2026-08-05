@@ -180,6 +180,14 @@ parameters:
 
         # DBAL 4/5 Schema Editor API compatibility
         -
+            message: '~^Parameter \$tableEditor of anonymous function has invalid type .*TableEditor\.$~'
+            path: src/Tools/SchemaTool.php
+
+        -
+            message: '~^Call to method addForeignKeyConstraint\(\) on an unknown class.*TableEditor\.$~'
+            path: src/Tools/SchemaTool.php
+
+        -
             message: '~^Class Doctrine\\DBAL\\Schema\\Table constructor invoked with 7 parameters, 1-6 required\.$~'
             path: src/Tools/SchemaTool.php
 

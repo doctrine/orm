@@ -102,13 +102,48 @@ class MySqlSchemaToolTest extends OrmFunctionalTestCase
             // DBAL 4.3 (see https://github.com/doctrine/dbal/pull/6864)
             self::equalTo('CREATE TABLE cms_phonenumbers (phonenumber VARCHAR(50) NOT NULL, user_id INT DEFAULT NULL, INDEX IDX_F21F790FA76ED395 (user_id), PRIMARY KEY (phonenumber)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB'),
         ));
-        self::assertEquals('ALTER TABLE cms_users ADD CONSTRAINT FK_3AF03EC5A832C1C9 FOREIGN KEY (email_id) REFERENCES cms_emails (id)', $sql[8]);
-        self::assertEquals('ALTER TABLE cms_users_groups ADD CONSTRAINT FK_7EA9409AA76ED395 FOREIGN KEY (user_id) REFERENCES cms_users (id)', $sql[9]);
-        self::assertEquals('ALTER TABLE cms_users_groups ADD CONSTRAINT FK_7EA9409AFE54D947 FOREIGN KEY (group_id) REFERENCES cms_groups (id)', $sql[10]);
-        self::assertEquals('ALTER TABLE cms_users_tags ADD CONSTRAINT FK_93F5A1ADA76ED395 FOREIGN KEY (user_id) REFERENCES cms_users (id)', $sql[11]);
-        self::assertEquals('ALTER TABLE cms_users_tags ADD CONSTRAINT FK_93F5A1ADBAD26311 FOREIGN KEY (tag_id) REFERENCES cms_tags (id)', $sql[12]);
-        self::assertEquals('ALTER TABLE cms_addresses ADD CONSTRAINT FK_ACAC157BA76ED395 FOREIGN KEY (user_id) REFERENCES cms_users (id)', $sql[13]);
-        self::assertEquals('ALTER TABLE cms_phonenumbers ADD CONSTRAINT FK_F21F790FA76ED395 FOREIGN KEY (user_id) REFERENCES cms_users (id)', $sql[14]);
+        self::assertThat($sql[8], self::logicalOr(
+            // DBAL < 4.5
+            self::equalTo('ALTER TABLE cms_users ADD CONSTRAINT FK_3AF03EC5A832C1C9 FOREIGN KEY (email_id) REFERENCES cms_emails (id)'),
+            // DBAL 4.5
+            self::equalTo('ALTER TABLE cms_users ADD FOREIGN KEY (email_id) REFERENCES cms_emails (id)'),
+        ));
+        self::assertThat($sql[9], self::logicalOr(
+            // DBAL < 4.5
+            self::equalTo('ALTER TABLE cms_users_groups ADD CONSTRAINT FK_7EA9409AA76ED395 FOREIGN KEY (user_id) REFERENCES cms_users (id)'),
+            // DBAL 4.5
+            self::equalTo('ALTER TABLE cms_users_groups ADD FOREIGN KEY (user_id) REFERENCES cms_users (id)'),
+        ));
+        self::assertThat($sql[10], self::logicalOr(
+            // DBAL < 4.5
+            self::equalTo('ALTER TABLE cms_users_groups ADD CONSTRAINT FK_7EA9409AFE54D947 FOREIGN KEY (group_id) REFERENCES cms_groups (id)'),
+            // DBAL 4.5
+            self::equalTo('ALTER TABLE cms_users_groups ADD FOREIGN KEY (group_id) REFERENCES cms_groups (id)'),
+        ));
+        self::assertThat($sql[11], self::logicalOr(
+            // DBAL < 4.5
+            self::equalTo('ALTER TABLE cms_users_tags ADD CONSTRAINT FK_93F5A1ADA76ED395 FOREIGN KEY (user_id) REFERENCES cms_users (id)'),
+            // DBAL 4.5
+            self::equalTo('ALTER TABLE cms_users_tags ADD FOREIGN KEY (user_id) REFERENCES cms_users (id)'),
+        ));
+        self::assertThat($sql[12], self::logicalOr(
+            // DBAL < 4.5
+            self::equalTo('ALTER TABLE cms_users_tags ADD CONSTRAINT FK_93F5A1ADBAD26311 FOREIGN KEY (tag_id) REFERENCES cms_tags (id)'),
+            // DBAL 4.5
+            self::equalTo('ALTER TABLE cms_users_tags ADD FOREIGN KEY (tag_id) REFERENCES cms_tags (id)'),
+        ));
+        self::assertThat($sql[13], self::logicalOr(
+            // DBAL < 4.5
+            self::equalTo('ALTER TABLE cms_addresses ADD CONSTRAINT FK_ACAC157BA76ED395 FOREIGN KEY (user_id) REFERENCES cms_users (id)'),
+            // DBAL 4.5
+            self::equalTo('ALTER TABLE cms_addresses ADD FOREIGN KEY (user_id) REFERENCES cms_users (id)'),
+        ));
+        self::assertThat($sql[14], self::logicalOr(
+            // DBAL < 4.5
+            self::equalTo('ALTER TABLE cms_phonenumbers ADD CONSTRAINT FK_F21F790FA76ED395 FOREIGN KEY (user_id) REFERENCES cms_users (id)'),
+            // DBAL 4.5
+            self::equalTo('ALTER TABLE cms_phonenumbers ADD FOREIGN KEY (user_id) REFERENCES cms_users (id)'),
+        ));
 
         self::assertCount(15, $sql);
     }
