@@ -8,10 +8,11 @@ use BackedEnum;
 use DateTimeInterface;
 use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\ParameterType;
+use Doctrine\DBAL\Types\TypeProvider;
 use Doctrine\DBAL\Types\TypeRegistry;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\Internal\TypeRegistryLocator;
+use Doctrine\ORM\Internal\TypeProviderLocator;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Proxy\DefaultProxyClassNameResolver;
 use Doctrine\ORM\Query\QueryException;
@@ -179,9 +180,9 @@ class PersisterHelper
         $types = self::normalizeDateTimeTypesForValue($types, $value);
 
         if (is_array($value)) {
-            $typeRegistry = TypeRegistryLocator::fromConnection($em->getConnection());
+            $typeProvider = TypeProviderLocator::fromConnection($em->getConnection());
 
-            return array_map(static fn ($t) => self::getArrayBindingType($t, $typeRegistry), $types);
+            return array_map(static fn ($t) => self::getArrayBindingType($t, $typeProvider), $types);
         }
 
         return $types;
@@ -212,10 +213,10 @@ class PersisterHelper
     }
 
     /** @phpstan-return ArrayParameterType::* */
-    private static function getArrayBindingType(ParameterType|int|string $type, TypeRegistry $typeRegistry): ArrayParameterType|int
+    private static function getArrayBindingType(ParameterType|int|string $type, TypeProvider|TypeRegistry $typeProvider): ArrayParameterType|int
     {
         if (! $type instanceof ParameterType) {
-            $type = $typeRegistry->get((string) $type)->getBindingType();
+            $type = $typeProvider->get((string) $type)->getBindingType();
         }
 
         return match ($type) {

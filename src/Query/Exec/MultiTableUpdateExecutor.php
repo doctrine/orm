@@ -6,7 +6,7 @@ namespace Doctrine\ORM\Query\Exec;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Connections\PrimaryReadReplicaConnection;
-use Doctrine\ORM\Internal\TypeRegistryLocator;
+use Doctrine\ORM\Internal\TypeProviderLocator;
 use Doctrine\ORM\Query\AST;
 use Doctrine\ORM\Query\AST\UpdateStatement;
 use Doctrine\ORM\Query\ParameterTypeInferer;
@@ -125,13 +125,13 @@ class MultiTableUpdateExecutor extends AbstractSqlExecutor
 
         // 4. Store DDL for temporary identifier table.
         $columnDefinitions = [];
-        $typeRegistry      = TypeRegistryLocator::fromConnection($em->getConnection());
+        $typeProvider      = TypeProviderLocator::fromConnection($em->getConnection());
 
         foreach ($idColumnNames as $idColumnName) {
             $columnDefinitions[$idColumnName] = [
                 'name'    => $idColumnName,
                 'notnull' => true,
-                'type'    => $typeRegistry->get(PersisterHelper::getTypeOfColumn($idColumnName, $rootClass, $em)),
+                'type'    => $typeProvider->get(PersisterHelper::getTypeOfColumn($idColumnName, $rootClass, $em)),
             ];
         }
 

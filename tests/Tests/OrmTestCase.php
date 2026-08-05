@@ -167,7 +167,7 @@ abstract class OrmTestCase extends TestCase
 
     /**
      * Creates a fully stubbed connection with the given platform and a default DBAL
-     * configuration, so that {@see \Doctrine\ORM\Internal\TypeRegistryLocator} can resolve
+     * configuration, so that {@see \Doctrine\ORM\Internal\TypeProviderLocator} can resolve
      * the type registry. On DBAL >= 4.5, the type registry is injected into the configuration.
      */
     final protected function createConnectionStub(AbstractPlatform $platform): Connection&Stub

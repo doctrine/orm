@@ -422,7 +422,9 @@ class DatabaseDriver implements MappingDriver
         $fieldMapping = [
             'fieldName'  => $this->getFieldNameForColumn($tableName, self::getAssetName($column), false),
             'columnName' => self::getAssetName($column),
-            'type'       => Type::getTypeRegistry()->lookupName($column->getType()),
+            'type'       => method_exists($column, 'getTypeName')
+                ? $column->getTypeName()
+                : Type::getTypeRegistry()->lookupName($column->getType()),
             'nullable'   => ! $column->getNotnull(),
             'options'    => [
                 'comment' => $column->getComment(),

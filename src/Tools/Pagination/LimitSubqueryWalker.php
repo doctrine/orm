@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Tools\Pagination;
 
-use Doctrine\ORM\Internal\TypeRegistryLocator;
+use Doctrine\ORM\Internal\TypeProviderLocator;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\AST\Functions\IdentityFunction;
 use Doctrine\ORM\Query\AST\Node;
@@ -51,7 +51,7 @@ class LimitSubqueryWalker extends TreeWalkerAdapter
 
         $query->setHint(
             self::IDENTIFIER_TYPE,
-            TypeRegistryLocator::fromConnection($query->getEntityManager()->getConnection())->get($rootClass->fieldMappings[$identifier]->type),
+            TypeProviderLocator::fromConnection($query->getEntityManager()->getConnection())->get($rootClass->fieldMappings[$identifier]->type),
         );
 
         $query->setHint(self::FORCE_DBAL_TYPE_CONVERSION, true);
