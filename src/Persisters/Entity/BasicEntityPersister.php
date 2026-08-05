@@ -14,11 +14,12 @@ use Doctrine\DBAL\ParameterType;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Result;
 use Doctrine\DBAL\Types\Type;
+use Doctrine\DBAL\Types\TypeProvider;
 use Doctrine\DBAL\Types\TypeRegistry;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Cache\Persister\CompatOrderings;
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\Internal\TypeRegistryLocator;
+use Doctrine\ORM\Internal\TypeProviderLocator;
 use Doctrine\ORM\Mapping\AssociationMapping;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\JoinColumnMapping;
@@ -122,7 +123,7 @@ class BasicEntityPersister implements EntityPersister
      */
     protected Connection $conn;
 
-    private readonly TypeRegistry $typeRegistry;
+    private readonly TypeProvider|TypeRegistry $typeProvider;
 
     /**
      * The database platform.
@@ -185,7 +186,7 @@ class BasicEntityPersister implements EntityPersister
     ) {
         $this->conn                  = $em->getConnection();
         $this->platform              = $this->conn->getDatabasePlatform();
-        $this->typeRegistry          = TypeRegistryLocator::fromConnection($this->conn);
+        $this->typeProvider          = TypeProviderLocator::fromConnection($this->conn);
         $this->quoteStrategy         = $em->getConfiguration()->getQuoteStrategy();
         $this->identifierFlattener   = new IdentifierFlattener($em->getUnitOfWork(), $em->getMetadataFactory());
         $this->noLimitsContext       = $this->currentPersisterContext = new CachedPersisterContext(
@@ -212,7 +213,7 @@ class BasicEntityPersister implements EntityPersister
 
     final protected function getType(string $name): Type
     {
-        return $this->typeRegistry->get($name);
+        return $this->typeProvider->get($name);
     }
 
     public function getClassMetadata(): ClassMetadata

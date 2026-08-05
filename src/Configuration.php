@@ -30,6 +30,7 @@ use Psr\Cache\CacheItemPoolInterface;
 
 use function class_exists;
 use function is_a;
+use function method_exists;
 use function strtolower;
 
 use const PHP_VERSION_ID;
