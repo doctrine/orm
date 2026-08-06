@@ -264,6 +264,7 @@ class ObjectHydrator extends AbstractHydrator
         }
 
         $this->hints['fetchAlias'] = $dqlAlias;
+        $this->hints['isPartial']  = $this->rsm->partialAliases[$dqlAlias] ?? false;
 
         return $this->uow->createEntity($className, $data, $this->hints);
     }

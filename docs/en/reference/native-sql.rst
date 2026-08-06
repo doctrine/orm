@@ -374,6 +374,13 @@ field names are identical but that is not necessary, of course.
 Also note that the query string passed to createNativeQuery is
 **real native SQL**. Doctrine does not touch this SQL in any way.
 
+.. note::
+
+    When native lazy objects are enabled (PHP 8.4+), any fields not
+    included in the result set are transparently fetched on first access
+    rather than remaining null. See :doc:`/reference/partial-objects` for
+    details.
+
 In the previous basic example, a User had no relations and the
 table the class is mapped to owns no foreign keys. The next example
 assumes User has a unidirectional or bidirectional one-to-one

@@ -17,6 +17,7 @@ use Doctrine\Persistence\Proxy;
 use LogicException;
 use ReflectionClass;
 use ReflectionProperty;
+use RuntimeException;
 use Symfony\Component\VarExporter\ProxyHelper;
 
 use function array_combine;
@@ -203,11 +204,52 @@ EOPHP;
         $this->identifierFlattener = new IdentifierFlattener($this->uow, $em->getMetadataFactory());
     }
 
+    /** @param array<string, mixed> $entityIdentifier */
+    public function getEmbeddableProxy(string $className, object $parentEntity, array $entityIdentifier): object
+    {
+        if (! $this->em->getConfiguration()->isNativeLazyObjectsEnabled()) {
+            throw new RuntimeException('Embeddable proxies are only supported with native lazy objects.');
+        }
+
+        $classMetadata       = $this->em->getClassMetadata($className);
+        $entityPersister     = $this->uow->getEntityPersister($parentEntity::class);
+        $identifierFlattener = $this->identifierFlattener;
+        $uow                 = $this->uow;
+
+        $cb = static function (object $object) use (
+            $entityIdentifier,
+            $entityPersister,
+            $identifierFlattener,
+            $classMetadata,
+            $parentEntity,
+            $uow,
+        ): void {
+            // If the parent entity was already fully initialized (e.g. because
+            // another of its properties was accessed first), all embedded fields
+            // were already written as raw values onto this ghost during that
+            // hydration pass. PHP will materialize those raw values automatically
+            // once the initializer returns, so no SELECT is needed.
+            if (! $uow->isUninitializedObject($parentEntity)) {
+                return;
+            }
+
+            $original = $entityPersister->loadById($entityIdentifier, $parentEntity);
+            if ($original === null) {
+                throw EntityNotFoundException::fromClassNameAndIdentifier(
+                    $classMetadata->getName(),
+                    $identifierFlattener->flattenIdentifier($classMetadata, $entityIdentifier),
+                );
+            }
+        };
+
+        return $classMetadata->reflClass->newLazyGhost($cb, ReflectionClass::SKIP_INITIALIZATION_ON_SERIALIZE);
+    }
+
     /**
      * @param class-string $className
      * @param array<mixed> $identifier
      */
-    public function getProxy(string $className, array $identifier): object
+    public function getProxy(string $className, array $identifier, bool $assignIdentifiers = true): object
     {
         if ($this->em->getConfiguration()->isNativeLazyObjectsEnabled()) {
             $classMetadata       = $this->em->getClassMetadata($className);
@@ -229,8 +271,10 @@ EOPHP;
                 }
             }, ReflectionClass::SKIP_INITIALIZATION_ON_SERIALIZE);
 
-            foreach ($identifier as $idField => $value) {
-                $classMetadata->propertyAccessors[$idField]->setValue($proxy, $value);
+            if ($assignIdentifiers) {
+                foreach ($identifier as $idField => $value) {
+                    $classMetadata->propertyAccessors[$idField]->setValue($proxy, $value);
+                }
             }
 
             return $proxy;

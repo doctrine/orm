@@ -109,6 +109,55 @@ class QueryTest extends OrmFunctionalTestCase
         self::assertEquals('Symfony 2', $users[0]->articles[1]->topic);
     }
 
+    public function testJoinPartialObjectHydration(): void
+    {
+        if (! $this->_em->getConfiguration()->isNativeLazyObjectsEnabled()) {
+            $this->markTestSkipped('Test requires native lazy objects to be enabled.');
+        }
+
+        $user           = new CmsUser();
+        $user->name     = 'Guilherme';
+        $user->username = 'gblanco';
+        $user->status   = 'developer';
+
+        $article1        = new CmsArticle();
+        $article1->topic = 'Doctrine 2';
+        $article1->text  = 'This is an introduction to Doctrine 2.';
+        $user->addArticle($article1);
+
+        $article2        = new CmsArticle();
+        $article2->topic = 'Symfony 2';
+        $article2->text  = 'This is an introduction to Symfony 2.';
+        $user->addArticle($article2);
+
+        $this->_em->persist($user);
+        $this->_em->persist($article1);
+        $this->_em->persist($article2);
+
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $query = $this->_em->createQuery('select partial u.{id, username}, partial a.{id, topic} from ' . CmsUser::class . ' u join u.articles a ORDER BY a.topic');
+        $users = $query->getResult();
+
+        $queries          = count($this->getQueryLog()->queries);
+        $topicsByUsername = [];
+        foreach ($users as $user) {
+            $topicsByUsername[$user->username] = $user->articles->map(static fn ($article) => $article->topic)->toArray();
+        }
+
+        self::assertQueryCount($queries);
+        self::assertEquals(['gblanco' => ['Doctrine 2', 'Symfony 2']], $topicsByUsername);
+
+        $userNames = [];
+        foreach ($users as $user) {
+            $userNames[] = $user->name;
+        }
+
+        self::assertQueryCount($queries + 1);
+        self::assertEquals(['Guilherme'], $userNames);
+    }
+
     public function testJoinPartialArrayHydration(): void
     {
         $user           = new CmsUser();

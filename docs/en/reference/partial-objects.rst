@@ -17,11 +17,17 @@ of Doctrine to this problem is.
 
 .. warning::
 
-    Use of partial objects is tricky. Fields that are not retrieved
-    from the database will not be updated by the UnitOfWork even if they
-    get changed in your objects. You can only promote a partial object
-    to a fully-loaded object by calling ``EntityManager#refresh()``
-    or a DQL query with the refresh flag.
+    On PHP versions before 8.4 (or when native lazy objects are not
+    enabled), use of partial objects is tricky. Fields that are not
+    retrieved from the database will not be updated by the UnitOfWork
+    even if they get changed in your objects. You can only promote a
+    partial object to a fully-loaded object by calling
+    ``EntityManager#refresh()`` or a DQL query with the refresh flag.
+
+    On PHP 8.4 with native lazy objects enabled, unloaded fields are
+    transparently fetched from the database on first access, so this
+    limitation no longer applies. See `Transparent lazy loading on PHP 8.4`_
+    below.
 
 
 What is the problem?
@@ -51,9 +57,9 @@ objects is if the programming language/platform allows the ORM tool
 to hook deeply into the object and instrument it in such a way that
 individual fields (not only associations) can be loaded lazily on
 first access. This is possible in Java, for example, through
-bytecode instrumentation. In PHP though this is not possible, so
-there is no way to have "secure" partial objects in an ORM with
-transparent persistence.
+bytecode instrumentation. In PHP this became possible in PHP 8.4
+through native lazy ghost objects. See `Transparent lazy loading on PHP 8.4`_
+for details.
 
 Doctrine, by default, does not allow partial objects. That means,
 any query that only selects partial object data and wants to
@@ -86,3 +92,55 @@ When should I force partial objects?
 Mainly for optimization purposes, but be careful of premature
 optimization as partial objects lead to potentially more fragile
 code.
+
+Transparent lazy loading on PHP 8.4
+------------------------------------
+
+When :ref:`native lazy objects <reference-native-lazy-objects>`
+are enabled (PHP 8.4+), partial objects returned by DQL queries behave
+as **lazy ghosts**: only the fields listed in the ``PARTIAL`` clause are
+loaded eagerly from the database. All other scalar fields remain
+uninitialized in the ghost object.
+
+On first access to any uninitialized field, Doctrine automatically issues
+a ``SELECT`` to load the full entity from the database, transparently
+initializing the ghost. From that point the object is indistinguishable
+from one loaded by a normal (non-partial) query.
+
+.. code-block:: php
+
+    <?php
+    // Only id and name are fetched initially.
+    $q = $em->createQuery("SELECT PARTIAL u.{id, name} FROM MyApp\Domain\User u");
+    $user = $q->getSingleResult();
+
+    // Accessing a loaded field — no additional query fired.
+    echo $user->name;
+
+    // Accessing a non-loaded field — Doctrine fetches the full entity now.
+    echo $user->email; // triggers SELECT, then returns the value
+
+This means the usual caveats about partial objects (broken invariants,
+null-vs-not-loaded ambiguity) no longer apply when native lazy objects
+are enabled: the object always presents complete, correct state to the
+caller, and the initial partial load serves purely as a performance
+optimisation that defers the cost of fetching remaining columns until
+(and unless) they are actually needed.
+
+Mutating a loaded field **before** the lazy initializer fires is safe.
+The in-memory value is preserved and not overwritten when the ghost is
+eventually initialized:
+
+.. code-block:: php
+
+    <?php
+    $user = $em->createQuery("SELECT PARTIAL u.{id, name} FROM MyApp\Domain\User u")
+               ->getSingleResult();
+
+    // 'name' was loaded; change it before accessing any unloaded field.
+    $user->name = 'Bob';
+
+    // Accessing 'email' triggers the lazy load, but 'name' is NOT reset
+    // to the database value — the in-memory change is preserved.
+    echo $user->email;
+    echo $user->name; // 'Bob'
