@@ -34,6 +34,20 @@ and directly start using native lazy objects.
 Using it has no effect, it should have been removed in 3.0.0. Instead, use the
 `Doctrine\ORM\Mapping\JoinColumn` attribute multiple times.
 
+## `LockMode::NONE` is now a no-op
+
+`LockMode::NONE` means "no lock", but it used to be handled like a pessimistic
+lock mode in two places:
+
+- `EntityManager::find()` refreshed an entity that was already in the identity
+  map, discarding any in-memory changes.
+- `EntityManager::lock()` required an active transaction and ran a `SELECT`
+  statement without any lock hint.
+
+Both now do nothing, which is consistent with `EntityManager::refresh()` and
+`Query::setLockMode()`. If you relied on `find()` reloading the entity, call
+`EntityManager::refresh()` explicitly.
+
 ## Deprecated `Doctrine\ORM\Query\AST\TypedExpression`
 
 Implement `Doctrine\ORM\Query\AST\ExpressionWithReturnType` instead, which exposes

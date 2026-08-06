@@ -86,6 +86,44 @@ class LockTest extends OrmFunctionalTestCase
         $this->_em->lock($article, LockMode::OPTIMISTIC, $article->version + 1);
     }
 
+    #[Group('locking')]
+    public function testLockWithLockModeNoneDoesNotRequireTransaction(): void
+    {
+        $article        = new CmsArticle();
+        $article->text  = 'my article';
+        $article->topic = 'Hello';
+
+        $this->_em->persist($article);
+        $this->_em->flush();
+
+        $this->getQueryLog()->reset()->enable();
+
+        $this->_em->lock($article, LockMode::NONE);
+
+        $this->assertQueryCount(0);
+    }
+
+    #[Group('locking')]
+    public function testFindWithLockModeNoneDoesNotRefreshManagedEntity(): void
+    {
+        $article        = new CmsArticle();
+        $article->text  = 'my article';
+        $article->topic = 'Hello';
+
+        $this->_em->persist($article);
+        $this->_em->flush();
+
+        $article->topic = 'Changed in memory';
+
+        $this->getQueryLog()->reset()->enable();
+
+        $found = $this->_em->find(CmsArticle::class, $article->id, LockMode::NONE);
+
+        self::assertSame($article, $found);
+        self::assertSame('Changed in memory', $found->topic);
+        $this->assertQueryCount(0);
+    }
+
     #[Group('DDC-178')]
     #[Group('locking')]
     public function testLockPessimisticReadNoTransactionThrowsException(): void

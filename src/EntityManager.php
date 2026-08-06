@@ -336,7 +336,6 @@ class EntityManager implements EntityManagerInterface
                     $this->lock($entity, $lockMode, $lockVersion);
                     break;
 
-                case $lockMode === LockMode::NONE:
                 case $lockMode === LockMode::PESSIMISTIC_READ:
                 case $lockMode === LockMode::PESSIMISTIC_WRITE:
                     $persister = $unitOfWork->getEntityPersister($class->name);
