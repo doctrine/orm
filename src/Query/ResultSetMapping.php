@@ -43,6 +43,13 @@ class ResultSetMapping
     public array $aliasMap = [];
 
     /**
+     * Whether this alias is for a partially loaded entity
+     *
+     * @var array<string, bool>
+     */
+    public array $partialAliases = [];
+
+    /**
      * Maps alias names to related association field names.
      *
      * @ignore
@@ -220,6 +227,16 @@ class ResultSetMapping
     }
 
     /**
+     * Mark alias as partial entity result to this ResultSetMapping.
+     */
+    public function markPartialEntityResult(string $alias): static
+    {
+        $this->partialAliases[$alias] = true;
+
+        return $this;
+    }
+
+    /**
      * Sets a discriminator column for an entity result or joined entity result.
      * The discriminator column will be used to determine the concrete class name to
      * instantiate.
@@ -392,11 +409,15 @@ class ResultSetMapping
      *
      * @todo Rename: addJoinedEntity
      */
-    public function addJoinedEntityResult(string $class, string $alias, string $parentAlias, string $relation): static
+    public function addJoinedEntityResult(string $class, string $alias, string $parentAlias, string $relation, bool $isPartial = false): static
     {
         $this->aliasMap[$alias]       = $class;
         $this->parentAliasMap[$alias] = $parentAlias;
         $this->relationMap[$alias]    = $relation;
+
+        if ($isPartial) {
+            $this->partialAliases[$alias] = true;
+        }
 
         return $this;
     }

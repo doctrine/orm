@@ -330,6 +330,13 @@ performance but the resulting partial objects will not fully load
 themselves on access of any subtype fields, so accessing fields of
 subtypes after such a query is not safe.
 
+.. note::
+
+    When native lazy objects are enabled (PHP 8.4+), accessing a
+    subtype field on a partial object transparently triggers a
+    ``SELECT`` that loads the full entity, making the access safe.
+    See :doc:`/reference/partial-objects` for details.
+
 There is also another important performance consideration that it is *not possible*
 to query for the base entity without any ``LEFT JOIN``s to the sub-types.
 

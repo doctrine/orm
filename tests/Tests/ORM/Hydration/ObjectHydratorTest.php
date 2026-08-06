@@ -1028,12 +1028,12 @@ class ObjectHydratorTest extends HydrationTestCase
 
         // extending the proxy factory to spy on getProxy()
         $proxyFactory = new class (...$args) extends ProxyFactory {
-            public function getProxy(string $className, array $identifier): object
+            public function getProxy(string $className, array $identifier, bool $assignIdentifiers = false): object
             {
                 TestCase::assertSame(ECommerceShipping::class, $className);
                 TestCase::assertSame(['id' => 42], $identifier);
 
-                return parent::getProxy($className, $identifier);
+                return parent::getProxy($className, $identifier, $assignIdentifiers);
             }
         };
 
@@ -1081,12 +1081,12 @@ class ObjectHydratorTest extends HydrationTestCase
 
         // extending the proxy factory to spy on getProxy()
         $proxyFactory = new class (...$args) extends ProxyFactory {
-            public function getProxy(string $className, array $identifier): object
+            public function getProxy(string $className, array $identifier, bool $assignIdentifiers = false): object
             {
                 TestCase::assertSame(ECommerceShipping::class, $className);
                 TestCase::assertSame(['id' => 42], $identifier);
 
-                return parent::getProxy($className, $identifier);
+                return parent::getProxy($className, $identifier, $assignIdentifiers);
             }
         };
 
