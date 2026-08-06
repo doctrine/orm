@@ -404,20 +404,15 @@ EOPHP;
 
         $fileName = $this->getProxyFileName($class->getName(), $this->proxyDir);
 
-        switch ($this->autoGenerate) {
-            case self::AUTOGENERATE_FILE_NOT_EXISTS_OR_CHANGED:
-                if (file_exists($fileName) && filemtime($fileName) >= filemtime($class->getReflectionClass()->getFileName())) {
-                    break;
-                }
-                // no break
-            case self::AUTOGENERATE_FILE_NOT_EXISTS:
-                if (file_exists($fileName)) {
-                    break;
-                }
-                // no break
-            case self::AUTOGENERATE_ALWAYS:
-                $this->generateProxyClass($class, $fileName, $proxyClassName);
-                break;
+        $needsGeneration = match ($this->autoGenerate) {
+            self::AUTOGENERATE_FILE_NOT_EXISTS_OR_CHANGED => ! file_exists($fileName)
+                || filemtime($fileName) < filemtime($class->getReflectionClass()->getFileName()),
+            self::AUTOGENERATE_FILE_NOT_EXISTS => ! file_exists($fileName),
+            self::AUTOGENERATE_ALWAYS => true,
+            default => false,
+        };
+        if ($needsGeneration) {
+            $this->generateProxyClass($class, $fileName, $proxyClassName);
         }
 
         require $fileName;
