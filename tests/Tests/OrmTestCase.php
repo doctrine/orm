@@ -9,6 +9,7 @@ use Doctrine\DBAL\Driver;
 use Doctrine\DBAL\Driver\Result;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Platforms\SQLitePlatform;
+use Doctrine\DBAL\Schema\Schema;
 use Doctrine\ORM\Cache\CacheConfiguration;
 use Doctrine\ORM\Cache\CacheFactory;
 use Doctrine\ORM\Cache\DefaultCacheFactory;
@@ -111,6 +112,9 @@ abstract class OrmTestCase extends TestCase
         $metadataCache = self::getSharedMetadataCacheImpl();
 
         $config = new Configuration();
+
+        $config->setUseDbalEditorApi(method_exists(Schema::class, 'edit')
+            && $this->getEnv('ENABLE_DBAL_EDITOR_API', true));
 
         TestUtil::configureProxies($config);
         $config->setMetadataCache($metadataCache);

@@ -910,6 +910,9 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
         $config->setMetadataCache(self::$metadataCache);
         $config->setQueryCache(self::$queryCache);
 
+        $config->setUseDbalEditorApi(method_exists(Schema::class, 'edit')
+            && $this->getEnv('ENABLE_DBAL_EDITOR_API', true));
+
         if ($this->resultCache !== null) {
             $config->setResultCache($this->resultCache);
         }
