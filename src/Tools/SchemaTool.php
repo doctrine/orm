@@ -87,7 +87,7 @@ class SchemaTool
         $this->platform         = $em->getConnection()->getDatabasePlatform();
         $this->quoteStrategy    = $em->getConfiguration()->getQuoteStrategy();
         $this->schemaManager    = $em->getConnection()->createSchemaManager();
-        $this->useDbalEditorApi = false;
+        $this->useDbalEditorApi = $em->getConfiguration()->getUseDbalEditorApi();
     }
 
     /**
@@ -216,7 +216,6 @@ class SchemaTool
 
             $tableName = $this->quoteStrategy->getTableName($class, $this->platform);
 
-            /** @phpstan-ignore if.alwaysFalse (might become true very soon) */
             if ($this->useDbalEditorApi) {
                 $table = new Table(
                     name: $tableName,
@@ -304,7 +303,6 @@ class SchemaTool
                                 $this->platform,
                             );
                             // TODO: This seems rather hackish, can we optimize it?
-                            /** @phpstan-ignore if.alwaysFalse (might become true very soon) */
                             if ($this->useDbalEditorApi) {
                                 // New API: modify column using table editor (creates new table object)
                                 // This is safe because we'll add the table to schema later after all modifications
@@ -442,7 +440,6 @@ class SchemaTool
             }
 
             if (isset($class->table['options'])) {
-                /** @phpstan-ignore if.alwaysFalse (might become true very soon) */
                 if ($this->useDbalEditorApi) {
                     $table = $table->edit()->setOptions($class->table['options'])->create();
                 } else {
@@ -455,7 +452,6 @@ class SchemaTool
             $processedClasses[$class->name] = true;
 
             // Add the fully populated table to the schema
-            /** @phpstan-ignore if.alwaysFalse (might become true very soon) */
             if ($this->useDbalEditorApi) {
                 // @phpstan-ignore method.notFound (Using unreleased Schema::edit() API)
                 $schemaEditor = $schema->edit();
@@ -514,7 +510,6 @@ class SchemaTool
                 continue;
             }
 
-            /** @phpstan-ignore if.alwaysFalse (might become true very soon) */
             if ($this->useDbalEditorApi) {
                 // the table might have been dropped by a listener, so we ignore this error
                 if ($schema->hasTable($fkData['table']->getObjectName()->toString())) {
@@ -788,7 +783,6 @@ class SchemaTool
                 $tableName = $this->quoteStrategy->getJoinTableName($mapping, $foreignClass, $this->platform);
 
                 // Create the join table object
-                /** @phpstan-ignore if.alwaysFalse (might become true very soon) */
                 if ($this->useDbalEditorApi) {
                     $theJoinTable = new Table(
                         name: $tableName,
@@ -834,7 +828,6 @@ class SchemaTool
 
                 self::addPrimaryKeyConstraint($theJoinTable, $primaryKeyColumns);
 
-                /** @phpstan-ignore if.alwaysFalse (might become true very soon) */
                 if ($this->useDbalEditorApi) {
                     $joinTablesToAdd[] = $theJoinTable;
                 }
