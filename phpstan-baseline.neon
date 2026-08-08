@@ -3430,12 +3430,6 @@ parameters:
 			path: src/UnitOfWork.php
 
 		-
-			message: '#^Property Doctrine\\ORM\\UnitOfWork\:\:\$entityChangeSets \(array\<int, array\<string, array\{mixed, mixed\}\>\>\) does not accept non\-empty\-array\<int, array\<string, array\{mixed, mixed\}\|Doctrine\\ORM\\PersistentCollection\>\>\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: src/UnitOfWork.php
-
-		-
 			message: '#^Unable to resolve the template type T in call to method static method Symfony\\Component\\VarExporter\\Hydrator\:\:hydrate\(\)$#'
 			identifier: argument.templateType
 			count: 1
