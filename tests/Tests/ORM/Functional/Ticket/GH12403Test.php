@@ -8,12 +8,17 @@ use Doctrine\Tests\Models\GH12403\GH12403ScalarEntity;
 use Doctrine\Tests\Models\OneToOneInverseSideLoad\InverseSide;
 use Doctrine\Tests\Models\OneToOneInverseSideLoad\OwningSide;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use const PHP_VERSION_ID;
 
 /** @see https://github.com/doctrine/orm/issues/12403 */
 class GH12403Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
     {
+        if (PHP_VERSION_ID < 80400) {
+            $this->markTestSkipped('Test requires PHP 8.4+');
+        }
+
         parent::setUp();
 
         $this->createSchemaForModels(GH12403ScalarEntity::class, OwningSide::class, InverseSide::class);
