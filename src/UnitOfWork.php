@@ -666,7 +666,7 @@ class UnitOfWork implements PropertyChangedListener
             $originalData = $this->originalEntityData[$oid];
             $changeSet    = [];
 
-            if ($originalData === [] && ! $this->isUninitializedObject($entity)) {
+            if (PHP_VERSION_ID >= 80400 && $originalData === [] && ! $this->isUninitializedObject($entity)) {
                 $this->reconcileStalePartialLoadTracking($oid, $class, $actualData, $originalData, $changeSet);
             }
 
