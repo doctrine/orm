@@ -15,8 +15,8 @@ class GH12403Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
     {
-        if (PHP_VERSION_ID < 80400) {
-            $this->markTestSkipped('Test requires PHP 8.4+');
+        if (PHP_VERSION_ID < 80400 || !$this->_em->getConfiguration()->isNativeLazyObjectsEnabled()) {
+            $this->markTestSkipped('Test requires PHP 8.4+ and native lazy objects enabled.');
         }
 
         parent::setUp();
