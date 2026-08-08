@@ -312,6 +312,13 @@ class UnitOfWork implements PropertyChangedListener
      * thing from the shape of originalEntityData, which can be legitimately
      * empty for other reasons.
      *
+     * Only trustworthy while the object is still reported as uninitialized by
+     * isUninitializedObject(): PHP can complete a native lazy object's
+     * initialization without going through UnitOfWork::createEntity() (e.g. a
+     * to-one association proxy whose remaining properties all end up set as a
+     * side effect of hydrating the owning side), in which case this entry
+     * becomes stale and computeChangeSet() reconciles it away.
+     *
      * @var array<int, list<string>>
      */
     private array $partialObjectLoadedFields = [];
@@ -686,6 +693,41 @@ class UnitOfWork implements PropertyChangedListener
             $originalData  = $this->originalEntityData[$oid];
             $partialFields = $this->partialObjectLoadedFields[$oid] ?? null;
             $changeSet     = [];
+
+            if ($partialFields !== null && ! $this->isUninitializedObject($entity)) {
+                // PHP itself can complete a native lazy object's initialization without
+                // ever running its registered initializer or going through
+                // UnitOfWork::createEntity() — e.g. a to-one association proxy whose
+                // every property ends up assigned as a side effect of hydrating the
+                // owning side's inverse-association sync. When that happens, the
+                // recorded partial-field list is stale: trusting it here would
+                // permanently hide every field outside that list from change
+                // tracking, even though the entity is (per isUninitializedObject())
+                // no longer partial at all. Drop the stale bookkeeping. We have no
+                // reliable prior value for fields it never learned about, so force
+                // them into this change set (mirroring how brand-new entities are
+                // treated below) to make sure the entity's current value reaches the
+                // database, then adopt it as the baseline for future comparisons.
+                unset($this->partialObjectLoadedFields[$oid]);
+                $partialFields = null;
+
+                foreach ($actualData as $propName => $actualValue) {
+                    if (array_key_exists($propName, $originalData)) {
+                        continue;
+                    }
+
+                    if (
+                        ! isset($class->associationMappings[$propName])
+                        || $class->associationMappings[$propName]->isToOneOwningSide()
+                    ) {
+                        $changeSet[$propName] = [null, $actualValue];
+                    }
+
+                    $originalData[$propName] = $actualValue;
+                }
+
+                $this->originalEntityData[$oid] = $originalData;
+            }
 
             foreach ($actualData as $propName => $actualValue) {
                 if ($partialFields !== null) {
