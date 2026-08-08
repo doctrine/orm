@@ -8,6 +8,7 @@ use Doctrine\Tests\Models\GH12403\GH12403ScalarEntity;
 use Doctrine\Tests\Models\OneToOneInverseSideLoad\InverseSide;
 use Doctrine\Tests\Models\OneToOneInverseSideLoad\OwningSide;
 use Doctrine\Tests\OrmFunctionalTestCase;
+
 use const PHP_VERSION_ID;
 
 /** @see https://github.com/doctrine/orm/issues/12403 */
@@ -17,7 +18,7 @@ class GH12403Test extends OrmFunctionalTestCase
     {
         parent::setUp();
 
-        if (PHP_VERSION_ID < 80400 || !$this->_em->getConfiguration()->isNativeLazyObjectsEnabled()) {
+        if (PHP_VERSION_ID < 80400 || ! $this->_em->getConfiguration()->isNativeLazyObjectsEnabled()) {
             $this->markTestSkipped('Test requires PHP 8.4+ and native lazy objects enabled.');
         }
 
@@ -53,10 +54,18 @@ class GH12403Test extends OrmFunctionalTestCase
 
         $target = $reloadedOwner->inverse;
 
-        self::assertFalse(
-            $this->isUninitializedObject($target),
-            'InverseSide has no scalar fields of its own, so hydrating the owning side leaves it fully assigned and therefore no longer "uninitialized" per PHP, despite never being loaded through UnitOfWork::createEntity().',
-        );
+        if ($this->_em->getConfiguration()->isSecondLevelCacheEnabled()) {
+            // With the Second Level Cache enabled, association hydration takes a
+            // different path (through UnitOfWork::createEntity() via the cache
+            // hydrator) that does not trigger the silent auto-initialization
+            // below, so the target legitimately stays lazy here.
+            self::assertTrue($this->isUninitializedObject($target));
+        } else {
+            self::assertFalse(
+                $this->isUninitializedObject($target),
+                'InverseSide has no scalar fields of its own, so hydrating the owning side leaves it fully assigned and therefore no longer "uninitialized" per PHP, despite never being loaded through UnitOfWork::createEntity().',
+            );
+        }
 
         // A flush must not error out or otherwise mishandle this entity, even
         // though it is now included in change-tracking despite having never
