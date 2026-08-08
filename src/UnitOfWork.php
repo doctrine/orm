@@ -666,6 +666,38 @@ class UnitOfWork implements PropertyChangedListener
             $originalData = $this->originalEntityData[$oid];
             $changeSet    = [];
 
+            if ($originalData === [] && ! $this->isUninitializedObject($entity)) {
+                // A native lazy association proxy is registered with an empty data
+                // snapshot (see registerManaged() callers below) until it is fully
+                // hydrated through UnitOfWork::createEntity(). But PHP can complete
+                // such an object's initialization without ever going through that
+                // method — e.g. hydrating the owning side of a to-one association
+                // assigns the inverse-side property directly onto the still-lazy
+                // proxy, and if that happens to be the proxy's only remaining
+                // property, PHP marks it fully initialized right there. When that
+                // happens this entity is no longer "uninitialized" per
+                // isUninitializedObject(), yet originalEntityData was never
+                // populated, so every field below would be silently and
+                // permanently treated as "a partially omitted one" and skipped
+                // forever. We have no reliable prior value for any of these
+                // fields, so force them into this change set (mirroring how
+                // brand-new entities are treated above) to make sure the entity's
+                // current value reaches the database, then adopt it as the
+                // baseline for future comparisons.
+                foreach ($actualData as $propName => $actualValue) {
+                    if (
+                        ! isset($class->associationMappings[$propName])
+                        || $class->associationMappings[$propName]->isToOneOwningSide()
+                    ) {
+                        $changeSet[$propName] = [null, $actualValue];
+                    }
+
+                    $originalData[$propName] = $actualValue;
+                }
+
+                $this->originalEntityData[$oid] = $originalData;
+            }
+
             foreach ($actualData as $propName => $actualValue) {
                 // skip field, its a partially omitted one!
                 if (! (isset($originalData[$propName]) || array_key_exists($propName, $originalData))) {
