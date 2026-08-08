@@ -15,11 +15,11 @@ class GH12403Test extends OrmFunctionalTestCase
 {
     protected function setUp(): void
     {
+        parent::setUp();
+
         if (PHP_VERSION_ID < 80400 || !$this->_em->getConfiguration()->isNativeLazyObjectsEnabled()) {
             $this->markTestSkipped('Test requires PHP 8.4+ and native lazy objects enabled.');
         }
-
-        parent::setUp();
 
         $this->createSchemaForModels(GH12403ScalarEntity::class, OwningSide::class, InverseSide::class);
     }
