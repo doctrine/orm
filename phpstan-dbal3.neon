@@ -218,3 +218,44 @@ parameters:
         -
             message: '~^Unknown parameter \$configuration in call to Doctrine\\DBAL\\Schema\\Table constructor\.$~'
             path: src/Tools/SchemaTool.php
+
+        # DBAL 4.5+ TableEditor API (not available in DBAL 3)
+        -
+            message: '~^Call to an undefined static method Doctrine\\DBAL\\Schema\\Table::editor\(\)\.$~'
+            path: src/Tools/SchemaTool.php
+
+        -
+            message: '~^Class Doctrine\\DBAL\\Schema\\TableEditor not found\.$~'
+            path: src/Tools/SchemaTool.php
+
+        -
+            message: '~^Call to method .* on an unknown class Doctrine\\DBAL\\Schema\\TableEditor\.$~'
+            path: src/Tools/SchemaTool.php
+
+        -
+            message: '~^Parameter .* has invalid type Doctrine\\DBAL\\Schema\\TableEditor\.$~'
+            path: src/Tools/SchemaTool.php
+
+        -
+            message: '~^Call to an undefined static method Doctrine\\DBAL\\Schema\\Index::editor\(\)\.$~'
+            path: src/Tools/SchemaTool.php
+
+        -
+            message: '~^Call to an undefined static method Doctrine\\DBAL\\Schema\\Column::editor\(\)\.$~'
+            path: src/Tools/SchemaTool.php
+
+        -
+            message: '~^Parameter .* has invalid type Doctrine\\DBAL\\Schema\\ColumnEditor\.$~'
+            path: src/Tools/SchemaTool.php
+
+        -
+            message: '~^Call to method .* on an unknown class Doctrine\\DBAL\\Schema\\ColumnEditor\.$~'
+            path: src/Tools/SchemaTool.php
+
+        -
+            message: '~^Call to static method parseOptionallyQualifiedName\(\) on an unknown class Doctrine\\DBAL\\Schema\\Name\\Parsers\.$~'
+            path: src/Tools/SchemaTool.php
+
+        -
+            message: '~^Access to undefined constant Doctrine\\DBAL\\Platforms\\SQLServerPlatform::OPTION_DEFAULT_CONSTRAINT_NAME\.$~'
+            path: src/Tools/SchemaTool.php
