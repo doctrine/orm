@@ -8,7 +8,6 @@ use BackedEnum;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Schema\AbstractAsset;
 use Doctrine\DBAL\Schema\AbstractSchemaManager;
-use Doctrine\DBAL\Schema\ColumnEditor;
 use Doctrine\DBAL\Schema\ComparatorConfig;
 use Doctrine\DBAL\Schema\DefaultExpression;
 use Doctrine\DBAL\Schema\DefaultExpression\CurrentDate;
@@ -209,16 +208,7 @@ class SchemaTool
 
             $tableName = $this->quoteStrategy->getTableName($class, $this->platform);
 
-            // @phpstan-ignore function.impossibleType (Using unreleased Schema::edit() API)
-            if (method_exists(Schema::class, 'edit')) {
-                $table = new Table(
-                    name: $tableName,
-                    configuration: $metadataSchemaConfig->toTableConfiguration(),
-                    options: $metadataSchemaConfig->getDefaultTableOptions(),
-                );
-            } else {
-                $table = $schema->createTable($tableName);
-            }
+            $table = $schema->createTable($tableName);
 
             if ($class->isInheritanceTypeSingleTable()) {
                 // For new schema API: collect join tables to add after this entity table
@@ -297,17 +287,7 @@ class SchemaTool
                                 $this->platform,
                             );
                             // TODO: This seems rather hackish, can we optimize it?
-                            // @phpstan-ignore function.impossibleType (Using unreleased Schema::edit() API for version detection)
-                            if (method_exists(Schema::class, 'edit')) {
-                                // New API: modify column using table editor (creates new table object)
-                                // This is safe because we'll add the table to schema later after all modifications
-                                $table = $table->edit()->modifyColumnByUnquotedName(
-                                    $columnName,
-                                    static fn (ColumnEditor $column) => $column->setAutoincrement(false),
-                                )->create();
-                            } else {
-                                $table->getColumn($columnName)->setAutoincrement(false);
-                            }
+                            $table->getColumn($columnName)->setAutoincrement(false);
 
                             $pkColumns[]           = $columnName;
                             $inheritedKeyColumns[] = $columnName;
@@ -435,33 +415,12 @@ class SchemaTool
             }
 
             if (isset($class->table['options'])) {
-                /** @phpstan-ignore function.impossibleType (method existence depends on DBAL version) */
-                if (method_exists(Schema::class, 'edit')) {
-                    $table = $table->edit()->setOptions($class->table['options'])->create();
-                } else {
-                    foreach ($class->table['options'] as $key => $val) {
-                        $table->addOption($key, $val);
-                    }
+                foreach ($class->table['options'] as $key => $val) {
+                    $table->addOption($key, $val);
                 }
             }
 
             $processedClasses[$class->name] = true;
-
-            // Add the fully populated table to the schema
-            // @phpstan-ignore function.impossibleType (Using unreleased Schema::edit() API)
-            if (method_exists(Schema::class, 'edit')) {
-                // @phpstan-ignore method.notFound (Using unreleased Schema::edit() API)
-                $schemaEditor = $schema->edit();
-                $schemaEditor->addTable($table);
-
-                // Add any join tables collected during relation processing
-                // This ensures join tables appear right after their owning entity table
-                foreach ($joinTablesToAdd as $joinTable) {
-                    $schemaEditor->addTable($joinTable);
-                }
-
-                $schema = $schemaEditor->create();
-            }
 
             if ($class->isIdGeneratorSequence() && $class->name === $class->rootEntityName) {
                 $seqDef     = $class->sequenceGeneratorDefinition;
@@ -739,22 +698,9 @@ class SchemaTool
                 $tableName = $this->quoteStrategy->getJoinTableName($mapping, $foreignClass, $this->platform);
 
                 // Create the join table object
-                // @phpstan-ignore function.impossibleType (Using unreleased Schema::edit() API)
-                if (method_exists(Schema::class, 'edit')) {
-                    $theJoinTable = new Table(
-                        name: $tableName,
-                        options: $joinTable->options,
-                        configuration: $schemaConfig->toTableConfiguration(),
-                    );
-                    // Add default table options (charset, collation, engine, etc.)
-                    foreach ($schemaConfig->getDefaultTableOptions() as $option => $value) {
-                        $theJoinTable->addOption($option, $value);
-                    }
-                } else {
-                    $theJoinTable = $schema->createTable($tableName);
-                    foreach ($joinTable->options as $key => $val) {
-                        $theJoinTable->addOption($key, $val);
-                    }
+                $theJoinTable = $schema->createTable($tableName);
+                foreach ($joinTable->options as $key => $val) {
+                    $theJoinTable->addOption($key, $val);
                 }
 
                 $primaryKeyColumns = [];
@@ -782,11 +728,6 @@ class SchemaTool
                 );
 
                 self::addPrimaryKeyConstraint($theJoinTable, $primaryKeyColumns);
-
-                // @phpstan-ignore function.impossibleType (Using unreleased Schema::edit() API)
-                if (method_exists(Schema::class, 'edit')) {
-                    $joinTablesToAdd[] = $theJoinTable;
-                }
             }
         }
     }
