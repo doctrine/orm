@@ -4,66 +4,63 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Tools\Pagination;
 
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Exception;
 use Doctrine\ORM\Internal\SQLResultCasing;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\AST\PathExpression;
-use Doctrine\ORM\Query\QueryException;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\Tools\Pagination\Exception\InvalidCursor;
 use Doctrine\ORM\Utility\PersisterHelper;
-use IteratorAggregate;
-use LogicException;
-use Traversable;
 
 use function array_map;
 use function array_reverse;
 use function array_slice;
 use function array_sum;
+use function array_values;
 use function count;
 use function is_string;
 
 /**
  * The cursor paginator handles cursor-based pagination for DQL queries.
  *
- * @template T
- * @implements IteratorAggregate<mixed, T>
+ * The query and the cursor are both passed to {@see paginate()}, which returns
+ * an immutable {@see CursorPage} rather than the paginator itself. The paginator
+ * therefore holds no state beyond its configuration: a single instance can be
+ * shared as a service and reused for any query and any page. This keeps the
+ * result free of temporal coupling and symmetric with {@see OffsetPaginator}.
+ *
+ * Unlike the offset-based {@see Window}, which carries its own page size, a
+ * {@see Cursor} is a pure position: the page size is therefore paginator
+ * configuration and never comes from user input.
+ *
+ * @template-covariant T
+ * @implements PaginatorInterface<T, Cursor|string|null>
  */
-final class CursorPaginator implements IteratorAggregate
+final class CursorPaginator implements PaginatorInterface
 {
     use SQLResultCasing;
     use PaginatorQuery;
 
-    private readonly Query $query;
-    /** @var Collection<int, T>|null */
-    private Collection|null $items = null;
-
-    /** @var list<CursorOrderByItem>|null */
-    private array|null $orderByItems = null;
-
-    private bool $hasMore       = false;
-    private Cursor|null $cursor = null;
-
-    /** @param bool $queryProducesDuplicates Whether the query joins a collection (true by default). */
+    /**
+     * @param int       $limit                   The maximum number of results per page.
+     * @param bool      $queryProducesDuplicates Whether the query joins a collection (true by default).
+     * @param bool|null $useOutputWalkers        Whether to force the use of an output walker. Null (default)
+     *                                           lets the paginator decide.
+     */
     public function __construct(
-        Query|QueryBuilder $query,
+        private readonly int $limit,
         private readonly bool $queryProducesDuplicates = true,
+        bool|null $useOutputWalkers = null,
     ) {
-        if ($query instanceof QueryBuilder) {
-            $query = $query->getQuery();
-        }
-
-        $this->query = $query;
+        $this->useOutputWalkers = $useOutputWalkers;
     }
 
     /**
-     * Returns the query.
+     * Returns the maximum number of results per page.
      */
-    public function getQuery(): Query
+    public function getLimit(): int
     {
-        return $this->query;
+        return $this->limit;
     }
 
     /**
@@ -77,31 +74,27 @@ final class CursorPaginator implements IteratorAggregate
     }
 
     /**
-     * Paginates the query with the given limit and optional cursor.
+     * Executes the query for the given cursor and returns an immutable page.
      *
-     * @param mixed $cursor The cursor instance, encoded cursor string, null or empty string for the first page.
-     *                      Any other type (e.g. array) throws InvalidCursor.
-     * @param int   $limit  The maximum number of results to return.
+     * Fetches $limit + 1 rows to detect whether a further page exists, then
+     * trims the extra row.
      *
-     * @return $this
+     * @param Cursor|string|null $position A cursor instance, an encoded cursor string, or
+     *                                     null/empty string for the first page. Any other
+     *                                     type (e.g. an array) throws InvalidCursor.
      *
-     * @throws InvalidCursor If $cursor is not a Cursor instance, a string, or null.
+     * @return CursorPage<T>
+     *
+     * @throws InvalidCursor If $position is not a Cursor instance, a string, or null.
      */
-    public function paginate(mixed $cursor, int $limit): self
+    public function paginate(Query|QueryBuilder $query, mixed $position = null): CursorPage
     {
-        if ($cursor instanceof Cursor) {
-            $this->cursor = $cursor;
-        } elseif ($cursor === null || (is_string($cursor) && $cursor === '')) {
-            $this->cursor = null;
-        } elseif (is_string($cursor)) {
-            $this->cursor = Cursor::fromEncodedString($cursor);
-        } else {
-            throw new InvalidCursor('(non-string value)');
-        }
+        $query  = $this->resolveQuery($query);
+        $cursor = $this->resolveCursor($position);
 
-        $shouldReverse = $this->cursor?->isPrevious() ?? false;
+        $shouldReverse = $cursor?->isPrevious() ?? false;
 
-        $subQuery = $this->cloneQuery($this->query);
+        $subQuery = $this->cloneQuery($query);
         $subQuery->expireQueryCache();
 
         $this->appendTreeWalker($subQuery, CursorWalker::class);
@@ -116,200 +109,82 @@ final class CursorPaginator implements IteratorAggregate
         }
 
         $subQuery->setHint(CursorWalker::HINT_CURSOR_REVERSE, $shouldReverse);
-        $subQuery->setHint(CursorWalker::HINT_CURSOR_PARAMETERS, $this->cursor?->getParameters() ?? []);
-        $subQuery->setFirstResult(0)->setMaxResults($limit + 1);
+        $subQuery->setHint(CursorWalker::HINT_CURSOR_PARAMETERS, $cursor?->getParameters() ?? []);
+        $subQuery->setFirstResult(0)->setMaxResults($this->limit + 1);
 
         if ($this->queryProducesDuplicates) {
-            $foundIdRows        = $subQuery->getScalarResult();
-            $this->orderByItems = $subQuery->getHint(CursorWalker::HINT_CURSOR_ORDER_BY_ITEMS) ?: [];
-            $this->hasMore      = count($foundIdRows) > $limit;
-            $foundIdRows        = array_slice($foundIdRows, 0, $limit);
+            $foundIdRows  = $subQuery->getScalarResult();
+            $orderByItems = $subQuery->getHint(CursorWalker::HINT_CURSOR_ORDER_BY_ITEMS) ?: [];
+            $hasMore      = count($foundIdRows) > $this->limit;
+            $foundIdRows  = array_slice($foundIdRows, 0, $this->limit);
 
-            // don't do this for an empty id array
             if ($foundIdRows === []) {
-                $this->items = new ArrayCollection([]);
+                $items = [];
+            } else {
+                $whereInQuery = $this->cloneQuery($query);
+                $ids          = array_map('current', $foundIdRows);
 
-                return $this;
+                $this->appendTreeWalker($whereInQuery, WhereInWalker::class);
+                $whereInQuery->setHint(WhereInWalker::HINT_PAGINATOR_HAS_IDS, true);
+                $whereInQuery->setFirstResult(0)->setMaxResults(null);
+                $whereInQuery->setCacheable($query->isCacheable());
+
+                $databaseIds = $this->convertWhereInIdentifiersToDatabaseValues($query, $ids);
+                $whereInQuery->setParameter(WhereInWalker::PAGINATOR_ID_ALIAS, $databaseIds);
+
+                $items = array_values($whereInQuery->getResult());
             }
-
-            $whereInQuery = $this->cloneQuery($this->query);
-            $ids          = array_map('current', $foundIdRows);
-
-            $this->appendTreeWalker($whereInQuery, WhereInWalker::class);
-            $whereInQuery->setHint(WhereInWalker::HINT_PAGINATOR_HAS_IDS, true);
-            $whereInQuery->setFirstResult(0)->setMaxResults(null);
-            $whereInQuery->setCacheable($this->query->isCacheable());
-
-            $databaseIds = $this->convertWhereInIdentifiersToDatabaseValues($ids);
-            $whereInQuery->setParameter(WhereInWalker::PAGINATOR_ID_ALIAS, $databaseIds);
-
-            $this->items = new ArrayCollection($whereInQuery->getResult());
         } else {
-            $result        = $subQuery->getResult();
-            $this->hasMore = count($result) > $limit;
-            $result        = array_slice($result, 0, $limit);
+            $result       = $subQuery->getResult();
+            $hasMore      = count($result) > $this->limit;
+            $result       = array_slice($result, 0, $this->limit);
+            $orderByItems = $subQuery->getHint(CursorWalker::HINT_CURSOR_ORDER_BY_ITEMS) ?: [];
 
-            $this->orderByItems = $subQuery->getHint(CursorWalker::HINT_CURSOR_ORDER_BY_ITEMS) ?: [];
-
-            if ($this->cursor !== null && $this->cursor->isPrevious()) {
+            if ($cursor !== null && $cursor->isPrevious()) {
                 $result = array_reverse($result);
             }
 
-            $this->items = new ArrayCollection($result);
+            $items = array_values($result);
         }
 
-        return $this;
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * @return Traversable<mixed, T>
-     */
-    public function getIterator(): Traversable
-    {
-        return $this->items->getIterator();
-    }
-
-    public function countPageItems(): int
-    {
-        if ($this->items === null) {
-            throw new LogicException('The paginator has not been initialized. Call paginate() first.');
-        }
-
-        return $this->items->count();
-    }
-
-    public function getTotalCount(): int
-    {
-        if ($this->count === null) {
-            $this->count = (int) array_sum(array_map('current', $this->getCountQuery()->getScalarResult()));
-        }
-
-        return $this->count;
-    }
-
-    /**
-     * Returns whether there is a previous page.
-     */
-    public function hasPreviousPage(): bool
-    {
-        return $this->cursor !== null && ($this->cursor->isNext() || $this->hasMore);
-    }
-
-    /**
-     * Returns whether there is a next page.
-     */
-    public function hasNextPage(): bool
-    {
-        return $this->hasMore || ($this->cursor !== null && $this->cursor->isPrevious());
-    }
-
-    /**
-     * Returns the cursor object for the next page.
-     *
-     * @throws LogicException If there is no next page. Check {@see hasNextPage()} first.
-     */
-    public function getNextCursor(): Cursor
-    {
-        if ($this->items->isEmpty() || ! $this->hasNextPage()) {
-            throw new LogicException('There is no next page. Call hasNextPage() before getNextCursor().');
-        }
-
-        return $this->getCursorForItem($this->items->last());
-    }
-
-    /**
-     * Returns the cursor object for the previous page.
-     *
-     * @throws LogicException If there is no previous page. Check {@see hasPreviousPage()} first.
-     */
-    public function getPreviousCursor(): Cursor
-    {
-        if ($this->items->isEmpty() || ! $this->hasPreviousPage()) {
-            throw new LogicException('There is no previous page. Call hasPreviousPage() before getPreviousCursor().');
-        }
-
-        return $this->getCursorForItem($this->items->first(), false);
-    }
-
-    /**
-     * Returns the encoded cursor string for the next page.
-     *
-     * @throws LogicException If there is no next page. Check {@see hasNextPage()} first.
-     */
-    public function getNextCursorAsString(): string
-    {
-        return $this->getNextCursor()->encodeToString();
-    }
-
-    /**
-     * Returns the encoded cursor string for the previous page.
-     *
-     * @throws LogicException If there is no previous page. Check {@see hasPreviousPage()} first.
-     */
-    public function getPreviousCursorAsString(): string
-    {
-        return $this->getPreviousCursor()->encodeToString();
-    }
-
-    /**
-     * Returns the cursor for a given item.
-     *
-     * @param mixed $item   The item to create a cursor for.
-     * @param bool  $isNext Whether the cursor is for the next page.
-     *
-     * @throws Exception
-     * @throws QueryException
-     */
-    public function getCursorForItem(mixed $item, bool $isNext = true): Cursor
-    {
-        return new Cursor($this->getParametersForItem($item), $isNext);
-    }
-
-    /**
-     * Returns items wrapped with their associated cursors.
-     *
-     * @return array<int, CursorItem<T>>
-     *
-     * @throws Exception
-     * @throws QueryException
-     */
-    public function getItems(): array
-    {
-        return array_map(
-            fn (mixed $item) => new CursorItem($item, $this->getCursorForItem($item)),
-            $this->items->toArray(),
+        return new CursorPage(
+            $items,
+            $hasMore,
+            $cursor,
+            fn (): int => (int) array_sum(array_map('current', $this->getCountQuery($query)->getScalarResult())),
+            fn (mixed $item, bool $isNext): Cursor => new Cursor($this->getParametersForItem($query, $item, $orderByItems), $isNext),
         );
     }
 
+    /** @throws InvalidCursor If $position is not a Cursor instance, a string, or null. */
+    private function resolveCursor(mixed $position): Cursor|null
+    {
+        if ($position instanceof Cursor) {
+            return $position;
+        }
+
+        if ($position === null || $position === '') {
+            return null;
+        }
+
+        if (! is_string($position)) {
+            throw new InvalidCursor('(non-string value)');
+        }
+
+        return Cursor::fromEncodedString($position);
+    }
+
     /**
-     * Returns the raw entity values.
+     * @param list<CursorOrderByItem> $orderByItems
      *
-     * @return list<T>
-     */
-    public function getValues(): array
-    {
-        return $this->items->getValues();
-    }
-
-    /**
-     * Returns whether pagination is needed.
-     */
-    public function hasToPaginate(): bool
-    {
-        return $this->hasPreviousPage() || $this->hasNextPage();
-    }
-
-    /**
      * @return array<string, mixed>
      *
      * @throws Query\QueryException
      * @throws Exception
      */
-    private function getParametersForItem(mixed $item): array
+    private function getParametersForItem(Query $query, mixed $item, array $orderByItems): array
     {
-        $em         = $this->query->getEntityManager();
+        $em         = $query->getEntityManager();
         $connection = $em->getConnection();
         $metadata   = $em->getMetadataFactory()->hasMetadataFor($item::class)
             ? $em->getClassMetadata($item::class)
@@ -317,7 +192,7 @@ final class CursorPaginator implements IteratorAggregate
 
         $result = [];
 
-        foreach ($this->orderByItems as $orderByItem) {
+        foreach ($orderByItems as $orderByItem) {
             if (! $orderByItem->expression instanceof PathExpression) {
                 continue;
             }

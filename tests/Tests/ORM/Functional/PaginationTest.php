@@ -15,7 +15,9 @@ use Doctrine\ORM\Query\AST\WhereClause;
 use Doctrine\ORM\Query\SqlOutputWalker;
 use Doctrine\ORM\Query\SqlWalker;
 use Doctrine\ORM\Query\TreeWalkerAdapter;
+use Doctrine\ORM\Tools\Pagination\OffsetPaginator;
 use Doctrine\ORM\Tools\Pagination\Paginator;
+use Doctrine\ORM\Tools\Pagination\Window;
 use Doctrine\Tests\DbalTypes\CustomIdObject;
 use Doctrine\Tests\DbalTypes\CustomIdObjectType;
 use Doctrine\Tests\Models\CMS\CmsArticle;
@@ -29,6 +31,7 @@ use Doctrine\Tests\Models\Pagination\Department;
 use Doctrine\Tests\Models\Pagination\Logo;
 use Doctrine\Tests\Models\Pagination\User1;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use InvalidArgumentException;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Group;
 use ReflectionMethod;
@@ -79,6 +82,111 @@ class PaginationTest extends OrmFunctionalTestCase
         $paginator = new Paginator($query);
         $paginator->setUseOutputWalkers($useOutputWalkers);
         self::assertCount(9, $paginator);
+    }
+
+    public function testOffsetPaginatorReturnsFirstPage(): void
+    {
+        $dql   = 'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u ORDER BY u.id ASC';
+        $query = $this->_em->createQuery($dql);
+
+        $page = (new OffsetPaginator())->paginate($query, new Window(0, 4));
+
+        self::assertCount(4, $page);
+        self::assertSame(9, $page->getTotalCount());
+        self::assertFalse($page->hasPreviousPage());
+        self::assertTrue($page->hasNextPage());
+        self::assertTrue($page->hasToPaginate());
+        self::assertSame(1, $page->getPageNumber());
+        self::assertSame(3, $page->getPageCount());
+        self::assertSame(4, $page->getNextWindow()->getFirstResult());
+        self::assertSame(8, $page->getLastWindow()->getFirstResult());
+    }
+
+    public function testOffsetPaginatorReturnsLastPage(): void
+    {
+        $dql   = 'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u ORDER BY u.id ASC';
+        $query = $this->_em->createQuery($dql);
+
+        $page = (new OffsetPaginator())->paginate($query, new Window(8, 4));
+
+        self::assertCount(1, $page);
+        self::assertSame(9, $page->getTotalCount());
+        self::assertTrue($page->hasPreviousPage());
+        self::assertFalse($page->hasNextPage());
+        self::assertSame(4, $page->getPreviousWindow()->getFirstResult());
+        self::assertSame(8, $page->getLastWindow()->getFirstResult());
+    }
+
+    public function testOffsetPaginatorWithFromPageNumberAndSize(): void
+    {
+        $dql   = 'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u ORDER BY u.id ASC';
+        $query = $this->_em->createQuery($dql);
+
+        $page = (new OffsetPaginator())->paginate($query, Window::fromPageNumberAndSize(2, 4));
+
+        self::assertCount(4, $page);
+        self::assertSame(2, $page->getPageNumber());
+        self::assertTrue($page->hasPreviousPage());
+        self::assertTrue($page->hasNextPage());
+    }
+
+    public function testOffsetPaginatorWithFetchJoin(): void
+    {
+        $dql   = 'SELECT u, g FROM Doctrine\Tests\Models\CMS\CmsUser u JOIN u.groups g ORDER BY u.id ASC';
+        $query = $this->_em->createQuery($dql);
+
+        $page = (new OffsetPaginator())->paginate($query, new Window(0, 4));
+
+        self::assertCount(4, $page);
+        self::assertSame(9, $page->getTotalCount());
+    }
+
+    public function testOffsetPaginatorIsReusableAcrossQueriesAndPages(): void
+    {
+        $users  = $this->_em->createQuery('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u ORDER BY u.id ASC');
+        $groups = $this->_em->createQuery('SELECT g FROM Doctrine\Tests\Models\CMS\CmsGroup g ORDER BY g.id ASC');
+
+        $paginator = new OffsetPaginator();
+
+        $firstPage = $paginator->paginate($users, new Window(0, 4));
+        self::assertCount(4, $firstPage);
+
+        $secondPage = $paginator->paginate($users, $firstPage->getNextWindow());
+        self::assertCount(4, $secondPage);
+        self::assertSame(2, $secondPage->getPageNumber());
+
+        // the first page is unaffected by the second pagination
+        self::assertSame(1, $firstPage->getPageNumber());
+
+        self::assertSame(9, $paginator->paginate($users, new Window(0, 4))->getTotalCount());
+        self::assertSame(3, $paginator->paginate($groups, new Window(0, 4))->getTotalCount());
+    }
+
+    public function testOffsetPaginatorRejectsANonWindowPosition(): void
+    {
+        $dql   = 'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u ORDER BY u.id ASC';
+        $query = $this->_em->createQuery($dql);
+
+        $this->expectException(InvalidArgumentException::class);
+        (new OffsetPaginator())->paginate($query, 42);
+    }
+
+    public function testPaginatorPreservesIndexByKeys(): void
+    {
+        $dql   = 'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u INDEX BY u.id';
+        $query = $this->_em->createQuery($dql)
+            ->setFirstResult(0)
+            ->setMaxResults(3);
+
+        $paginator = new Paginator($query, fetchJoinCollection: false);
+
+        $seen = 0;
+        foreach ($paginator as $key => $user) {
+            self::assertSame($user->id, $key);
+            $seen++;
+        }
+
+        self::assertSame(3, $seen);
     }
 
     public function testCountComplexWithOutputWalker(): void
@@ -641,7 +749,7 @@ class PaginationTest extends OrmFunctionalTestCase
 
         $getCountQuery = new ReflectionMethod($paginator, 'getCountQuery');
 
-        self::assertCount(2, $getCountQuery->invoke($paginator)->getParameters());
+        self::assertCount(2, $getCountQuery->invoke($paginator, $query)->getParameters());
         self::assertCount(9, $paginator);
 
         $query->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, SqlOutputWalker::class);
@@ -650,7 +758,7 @@ class PaginationTest extends OrmFunctionalTestCase
 
         // if select part of query is replaced with count(...) paginator should remove
         // parameters from query object not used in new query.
-        self::assertCount(1, $getCountQuery->invoke($paginator)->getParameters());
+        self::assertCount(1, $getCountQuery->invoke($paginator, $query)->getParameters());
         self::assertCount(9, $paginator);
     }
 
