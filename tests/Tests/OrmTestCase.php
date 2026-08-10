@@ -22,8 +22,12 @@ use Psr\Cache\CacheItemPoolInterface;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
 
 use function class_exists;
+use function filter_var;
+use function getenv;
 use function method_exists;
 use function sprintf;
+
+use const FILTER_VALIDATE_BOOLEAN;
 
 // DBAL 3 compatibility
 class_exists('Doctrine\\DBAL\\Platforms\\SqlitePlatform');
@@ -86,6 +90,20 @@ abstract class OrmTestCase extends TestCase
         return $this->buildTestEntityManagerWithPlatform(
             $this->createConnectionStub($platform),
         );
+    }
+
+    final protected function getEnv(string $name, bool $default): bool
+    {
+        $envVar = getenv($name);
+
+        if ($envVar === false) {
+            // If the environment variable is not set, use the default.
+            // This is OK because environment variables are always strings, and
+            // we are comparing it to a boolean.
+            $envVar = $default;
+        }
+
+        return filter_var($envVar, FILTER_VALIDATE_BOOLEAN);
     }
 
     private function buildTestEntityManagerWithPlatform(Connection $connection): EntityManagerMock
