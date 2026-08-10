@@ -112,12 +112,12 @@ abstract class EntityManagerDecorator extends ObjectManagerDecorator implements 
         $this->wrapped->lock($entity, $lockMode, $lockVersion);
     }
 
-    public function find(string $className, mixed $id, LockMode|int|null $lockMode = null, int|null $lockVersion = null): object|null
+    public function find(string $className, mixed $id, LockMode|int|null $lockMode = LockMode::NONE, int|null $lockVersion = null): object|null
     {
         return $this->wrapped->find($className, $id, $lockMode, $lockVersion);
     }
 
-    public function refresh(object $object, LockMode|int|null $lockMode = null): void
+    public function refresh(object $object, LockMode|int|null $lockMode = LockMode::NONE): void
     {
         $this->wrapped->refresh($object, $lockMode);
     }

@@ -10,6 +10,7 @@ use Doctrine\Common\EventManager;
 use Doctrine\Common\EventManagerInterface;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\LockMode;
+use Doctrine\Deprecations\Deprecation;
 use Doctrine\ORM\Exception\EntityManagerClosed;
 use Doctrine\ORM\Exception\InvalidHydrationMode;
 use Doctrine\ORM\Exception\MissingIdentifierField;
@@ -272,13 +273,22 @@ class EntityManager implements EntityManagerInterface
     /**
      * {@inheritDoc}
      */
-    public function find($className, mixed $id, LockMode|int|null $lockMode = null, int|null $lockVersion = null): object|null
+    public function find($className, mixed $id, LockMode|int|null $lockMode = LockMode::NONE, int|null $lockVersion = null): object|null
     {
+        if ($lockMode === null) {
+            Deprecation::trigger(
+                'doctrine/orm',
+                'https://github.com/doctrine/orm/pull/12548',
+                'Passing null as lock mode to %s() is deprecated and will not be possible in Doctrine ORM 4.0, pass LockMode::NONE instead.',
+                __METHOD__,
+            );
+
+            $lockMode = LockMode::NONE;
+        }
+
         $class = $this->metadataFactory->getMetadataFor(ltrim($className, '\\'));
 
-        if ($lockMode !== null) {
-            $this->checkLockRequirements($lockMode, $class);
-        }
+        $this->checkLockRequirements($lockMode, $class);
 
         if (! is_array($id)) {
             if ($class->isIdentifierComposite) {
@@ -459,8 +469,19 @@ class EntityManager implements EntityManagerInterface
         $this->unitOfWork->remove($object);
     }
 
-    public function refresh(object $object, LockMode|int|null $lockMode = null): void
+    public function refresh(object $object, LockMode|int|null $lockMode = LockMode::NONE): void
     {
+        if ($lockMode === null) {
+            Deprecation::trigger(
+                'doctrine/orm',
+                'https://github.com/doctrine/orm/pull/12548',
+                'Passing null as lock mode to %s() is deprecated and will not be possible in Doctrine ORM 4.0, pass LockMode::NONE instead.',
+                __METHOD__,
+            );
+
+            $lockMode = LockMode::NONE;
+        }
+
         $this->errorIfClosed();
 
         $this->unitOfWork->refresh($object, $lockMode);

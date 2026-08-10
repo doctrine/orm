@@ -48,6 +48,13 @@ Both now do nothing, which is consistent with `EntityManager::refresh()` and
 `Query::setLockMode()`. If you relied on `find()` reloading the entity, call
 `EntityManager::refresh()` explicitly.
 
+## Deprecated passing `null` as lock mode
+
+Since `LockMode::NONE` is now a no-op, passing `null` as lock mode to
+`EntityManager::find()`, `EntityManager::refresh()` or `EntityRepository::find()`
+is deprecated as it is equivalent to passing `LockMode::NONE`. Omit the argument
+or pass `LockMode::NONE` instead.
+
 ## Deprecated `Doctrine\ORM\Query\AST\TypedExpression`
 
 Implement `Doctrine\ORM\Query\AST\ExpressionWithReturnType` instead, which exposes
