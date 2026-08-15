@@ -232,6 +232,24 @@ For development you should use an array cache like
 ``Symfony\Component\Cache\Adapter\ArrayAdapter``
 which only caches data on a per-request basis.
 
+Default String Type Schema Length (**OPTIONAL**)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: php
+
+    <?php
+    $config->setDefaultStringTypeSchemaLength(191);
+    $config->getDefaultStringTypeSchemaLength();
+
+Gets or sets the default length used by the SchemaTool for string columns that
+have no explicit ``length`` value in the mapping. This is used when the schema is
+created from metadata and when discriminator columns are generated for single-table
+inheritance.
+
+The default value is ``255``. Setting it explicitly is useful for platforms or
+storage layouts that require shorter default string lengths, for example MySQL
+``utf8mb4`` schemas that often use ``191`` for indexed varchar columns.
+
 Query Cache (**RECOMMENDED**)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

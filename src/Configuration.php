@@ -723,4 +723,14 @@ class Configuration extends \Doctrine\DBAL\Configuration
     {
         return $this->attributes['fetchModeSubselectBatchSize'] ?? 100;
     }
+
+    public function setDefaultStringTypeSchemaLength(int $length): void
+    {
+        $this->attributes['defaultStringTypeSchemaLength'] = $length;
+    }
+
+    public function getDefaultStringTypeSchemaLength(): int
+    {
+        return $this->attributes['defaultStringTypeSchemaLength'] ?? 255;
+    }
 }
