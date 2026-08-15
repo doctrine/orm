@@ -53,7 +53,7 @@ class GH11501Test extends OrmFunctionalTestCase
 }
 
 #[ORM\Entity]
-#[ORM\Table(name: 'one_to_many_sti_test_entities_parent_join')]
+#[ORM\Table(name: 'one_to_many_single_table_inheritance_test_entities_parent_join')]
 #[ORM\InheritanceType('SINGLE_TABLE')]
 #[ORM\DiscriminatorColumn(name: 'type', type: 'string')]
 #[ORM\DiscriminatorMap([
