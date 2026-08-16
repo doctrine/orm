@@ -40,6 +40,7 @@ use Doctrine\ORM\Tools\Event\GenerateSchemaEventArgs;
 use Doctrine\ORM\Tools\Event\GenerateSchemaTableEventArgs;
 use Doctrine\ORM\Tools\Exception\MissingColumnException;
 use Doctrine\ORM\Tools\Exception\NotSupported;
+use RuntimeException;
 use Throwable;
 
 use function array_diff;
@@ -59,6 +60,7 @@ use function interface_exists;
 use function is_numeric;
 use function method_exists;
 use function preg_match;
+use function sprintf;
 use function strtolower;
 
 /**
@@ -524,6 +526,7 @@ class SchemaTool
                                 foreignTableName: $fkData['foreignTableName'],
                                 foreignColumnNames: $fkData['foreignColumns'],
                                 options: $fkData['fkOptions'],
+                                name: $fkData['name'],
                             ));
                         },
                     )->create();
@@ -535,6 +538,7 @@ class SchemaTool
                     $fkData['localColumns'],
                     $fkData['foreignColumns'],
                     $fkData['fkOptions'],
+                    $fkData['name'],
                 );
             }
         }
@@ -740,6 +744,7 @@ class SchemaTool
      *                  foreignColumns: list<string>,
      *                  localColumns: list<string>,
      *                  fkOptions: array{onDelete?: string, deferrable?: bool, deferred?: bool},
+     *                  name: string|null,
      *                  table: Table
      *              }>                               $addedFks
      * @phpstan-param array<string, bool>              $blacklistedFks
@@ -774,6 +779,7 @@ class SchemaTool
                     $primaryKeyColumns,
                     $addedFks,
                     $blacklistedFks,
+                    null,  // For ToOne, FK name comes from JoinColumn, not a parameter
                 );
             } elseif ($mapping instanceof ManyToManyOwningSideMapping) {
                 // create join table
@@ -811,6 +817,7 @@ class SchemaTool
                     $primaryKeyColumns,
                     $addedFks,
                     $blacklistedFks,
+                    $joinTable->foreignKeyName ?? null,
                 );
 
                 // Build second FK constraint (relation table => target table)
@@ -822,6 +829,7 @@ class SchemaTool
                     $primaryKeyColumns,
                     $addedFks,
                     $blacklistedFks,
+                    $joinTable->inverseForeignKeyName ?? null,
                 );
 
                 self::addPrimaryKeyConstraint($theJoinTable, $primaryKeyColumns);
@@ -881,6 +889,7 @@ class SchemaTool
      *                  foreignColumns: list<string>,
      *                  localColumns: list<string>,
      *                  fkOptions: array{onDelete?: string, deferrable?: bool, deferred?: bool},
+     *                  name: string|null,
      *                  table: Table
      *              }>                               $addedFks
      * @phpstan-param array<string,bool>               $blacklistedFks
@@ -892,6 +901,7 @@ class SchemaTool
      *                  foreignColumns: list<string>,
      *                  localColumns: list<string>,
      *                  fkOptions: array{onDelete?: string, deferrable?: bool, deferred?: bool},
+     *                  name: string|null,
      *                  table: Table
      *              }>                               $addedFks
      */
@@ -903,6 +913,7 @@ class SchemaTool
         array &$primaryKeyColumns,
         array &$addedFks,
         array &$blacklistedFks,
+        string|null $foreignKeyName = null,
     ): void {
         $localColumns   = [];
         $foreignColumns = [];
@@ -990,6 +1001,30 @@ class SchemaTool
             $theJoinTable->addUniqueIndex($unique['columns'], is_numeric($indexName) ? null : $indexName);
         }
 
+        // Extract and validate foreign key name from join columns
+        $foreignKeyNames = [];
+
+        foreach ($joinColumns as $joinColumn) {
+            if ($joinColumn->foreignKeyName !== null) {
+                $foreignKeyNames[] = $joinColumn->foreignKeyName;
+            }
+        }
+
+        $extractedForeignKeyName = match (count($foreignKeyNames)) {
+            0 => null,
+            1 => $foreignKeyNames[0],
+            default => throw new RuntimeException(sprintf(
+                'Only one JoinColumn in a composite foreign key may specify foreignKeyName. ' .
+                '%s::$%s has %d join columns with foreignKeyName specified.',
+                $mapping->sourceEntity,
+                $mapping->fieldName,
+                count($foreignKeyNames),
+            )),
+        };
+
+        // Use parameter FK name (from JoinTable) if provided, otherwise use extracted from JoinColumns
+        $finalForeignKeyName = $foreignKeyName ?? $extractedForeignKeyName;
+
         $compositeName = $this->getAssetName($theJoinTable) . '.' . implode('', $localColumns);
 
         // Check if an FK constraint already exists for this composite key (table + columns)
@@ -1032,6 +1067,7 @@ class SchemaTool
                 'foreignColumns' => $foreignColumns,
                 'localColumns' => $localColumns,
                 'fkOptions' => $fkOptions,
+                'name' => $finalForeignKeyName,
                 'table' => $theJoinTable,
             ];
         }
