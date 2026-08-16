@@ -29,6 +29,11 @@ and directly start using native lazy objects.
 
 # Upgrade to 3.7
 
+## Deprecated `Doctrine\ORM\Mapping\JoinColumns` attribute
+
+Using it has no effect, it should have been removed in 3.0.0. Instead, use the
+`Doctrine\ORM\Mapping\JoinColumn` attribute multiple times.
+
 ## Deprecated `Doctrine\ORM\Query\AST\TypedExpression`
 
 Implement `Doctrine\ORM\Query\AST\ExpressionWithReturnType` instead, which exposes
