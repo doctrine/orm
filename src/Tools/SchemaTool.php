@@ -567,7 +567,7 @@ class SchemaTool
 
         if (strtolower($discrColumn->type) === 'string' && ! isset($discrColumn->length)) {
             $discrColumn->type   = 'string';
-            $discrColumn->length = 255;
+            $discrColumn->length = $this->em->getConfiguration()->getDefaultStringTypeSchemaLength();
         }
 
         $options = [
@@ -623,7 +623,7 @@ class SchemaTool
         $options['platformOptions']['version'] = $class->isVersioned && $class->versionField === $mapping->fieldName;
 
         if (strtolower($columnType) === 'string' && $options['length'] === null) {
-            $options['length'] = 255;
+            $options['length'] = $this->em->getConfiguration()->getDefaultStringTypeSchemaLength();
         }
 
         if (isset($mapping->precision)) {

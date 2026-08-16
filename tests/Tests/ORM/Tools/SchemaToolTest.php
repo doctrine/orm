@@ -278,6 +278,64 @@ class SchemaToolTest extends OrmTestCase
         self::assertEquals(255, $column->getLength());
     }
 
+    public function testSetDefaultStringLength(): void
+    {
+        $em = $this->getTestEntityManager();
+        $em->getConfiguration()->setDefaultStringTypeSchemaLength(191);
+        $schemaTool = new SchemaTool($em);
+        $metadata   = $em->getClassMetadata(FirstEntity::class);
+
+        $schema = $schemaTool->getSchemaFromMetadata([$metadata]);
+
+        self::assertTrue($schema->hasTable('first_entity'));
+        $table = $schema->getTable('first_entity');
+
+        self::assertTrue($table->hasColumn('name'));
+        $column = $table->getColumn('name');
+
+        self::assertEquals(191, $column->getLength());
+    }
+
+    public function testSetDefaultStringLengthDoesNotOverrideExplicitLength(): void
+    {
+        $em = $this->getTestEntityManager();
+        $em->getConfiguration()->setDefaultStringTypeSchemaLength(191);
+        $schemaTool                              = new SchemaTool($em);
+        $metadata                                = $em->getClassMetadata(FirstEntity::class);
+        $metadata->fieldMappings['name']->length = 32;
+
+        $schema = $schemaTool->getSchemaFromMetadata([$metadata]);
+
+        self::assertTrue($schema->hasTable('first_entity'));
+        $table = $schema->getTable('first_entity');
+
+        self::assertTrue($table->hasColumn('name'));
+        $column = $table->getColumn('name');
+
+        self::assertEquals(32, $column->getLength());
+    }
+
+    public function testSetDiscriminatorColumnWithCustomDefaultLength(): void
+    {
+        $em = $this->getTestEntityManager();
+        $em->getConfiguration()->setDefaultStringTypeSchemaLength(191);
+        $schemaTool = new SchemaTool($em);
+        $metadata   = $em->getClassMetadata(FirstEntity::class);
+
+        $metadata->setInheritanceType(ClassMetadata::INHERITANCE_TYPE_SINGLE_TABLE);
+        $metadata->setDiscriminatorColumn(['name' => 'discriminator', 'type' => 'string']);
+
+        $schema = $schemaTool->getSchemaFromMetadata([$metadata]);
+
+        self::assertTrue($schema->hasTable('first_entity'));
+        $table = $schema->getTable('first_entity');
+
+        self::assertTrue($table->hasColumn('discriminator'));
+        $column = $table->getColumn('discriminator');
+
+        self::assertEquals(191, $column->getLength());
+    }
+
     public function testSetDiscriminatorColumnWithEnumType(): void
     {
         if (! class_exists(EnumType::class)) {
