@@ -656,7 +656,7 @@ and "group\_id". The explicit definition of this mapping would be:
 
     <entity class="MyProject\User">
         <many-to-many field="groups" target-entity="Group">
-            <join-table name="cms_users_groups">
+            <join-table name="cms_users_groups" foreign-key-name="fk_user_group_user" inverse-foreign-key-name="fk_user_group_group">
                 <join-columns>
                     <join-column name="user_id" referenced-column-name="id"/>
                 </join-columns>
@@ -671,7 +671,9 @@ Here both the ``<join-columns>`` and ``<inverse-join-columns>``
 tags are necessary to tell Doctrine for which side the specified
 join-columns apply. These are nested inside a ``<join-table />``
 attribute which allows to specify the table name of the
-many-to-many join-table.
+many-to-many join-table. The optional ``foreign-key-name`` and
+``inverse-foreign-key-name`` attributes allow specifying custom names
+for the foreign key constraints.
 
 Cascade Element
 ~~~~~~~~~~~~~~~
@@ -724,6 +726,10 @@ Optional attributes:
 -  on-delete - Foreign Key Cascade action to perform when entity is
    deleted, defaults to NO ACTION/RESTRICT but can be set to
    "CASCADE".
+-  foreign-key-name - Allows you to specify a custom name for the foreign key constraint.
+   If not specified, the name will be generated automatically. For composite foreign
+   keys (multiple ``<join-column>`` elements), exactly one join column must specify
+   ``foreign-key-name``.
 
 Defining Order of To-Many Associations
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

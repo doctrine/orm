@@ -883,7 +883,7 @@ parameters:
 			path: src/Mapping/AnsiQuoteStrategy.php
 
 		-
-			message: '#^Parameter \#1 \$mappingArray of static method Doctrine\\ORM\\Mapping\\JoinTableMapping\:\:fromMappingArray\(\) expects array\{name\: string, quoted\?\: bool\|null, joinColumns\?\: array\<mixed\>, inverseJoinColumns\?\: array\<mixed\>, schema\?\: string\|null, options\?\: array\<string, mixed\>\}, non\-empty\-array\<mixed\> given\.$#'
+			message: '#^Parameter \#1 \$mappingArray of static method Doctrine\\ORM\\Mapping\\JoinTableMapping\:\:fromMappingArray\(\) expects array\{name\: string, quoted\?\: bool\|null, joinColumns\?\: array\<mixed\>, inverseJoinColumns\?\: array\<mixed\>, schema\?\: string\|null, foreignKeyName\?\: string\|null, inverseForeignKeyName\?\: string\|null, options\?\: array\<string, mixed\>\}, non\-empty\-array\<mixed\> given\.$#'
 			identifier: argument.type
 			count: 1
 			path: src/Mapping/AssociationMapping.php

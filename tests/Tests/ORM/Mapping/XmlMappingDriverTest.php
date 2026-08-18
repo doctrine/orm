@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Mapping;
 
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Cache\Exception\CacheException;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
@@ -352,6 +353,43 @@ class XmlMappingDriverTest extends MappingDriverTestCase
 
         self::assertCount(1, $class->fieldMappings);
     }
+
+    public function testXmlCustomForeignKeyNames(): void
+    {
+        $class = $this->createClassMetadata(XmlCustomFKArticle::class);
+
+        // Test ManyToOne with custom FK name
+        $authorMapping = $class->getAssociationMapping('author');
+        self::assertCount(1, $authorMapping->joinColumns);
+        self::assertSame('fk_xml_article_author', $authorMapping->joinColumns[0]->foreignKeyName);
+
+        // Test ManyToMany with custom FK names
+        $tagsMapping = $class->getAssociationMapping('tags');
+        self::assertNotNull($tagsMapping->joinTable);
+        self::assertSame('fk_xml_article_tag_article', $tagsMapping->joinTable->foreignKeyName);
+        self::assertSame('fk_xml_article_tag_tag', $tagsMapping->joinTable->inverseForeignKeyName);
+    }
+}
+
+class XmlCustomFKArticle
+{
+    public int|null $id = null;
+    public string $title;
+    public XmlCustomFKAuthor|null $author = null;
+    /** @var Collection<int, XmlCustomFKTag> */
+    public Collection $tags;
+}
+
+class XmlCustomFKAuthor
+{
+    public int|null $id = null;
+    public string $name;
+}
+
+class XmlCustomFKTag
+{
+    public int|null $id = null;
+    public string $name;
 }
 
 class CTI

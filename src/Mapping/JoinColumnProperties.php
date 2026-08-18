@@ -16,6 +16,7 @@ trait JoinColumnProperties
         public readonly mixed $onDelete = null,
         public readonly string|null $columnDefinition = null,
         public readonly string|null $fieldName = null,
+        public readonly string|null $foreignKeyName = null,
         public readonly array $options = [],
     ) {
     }

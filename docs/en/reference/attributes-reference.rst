@@ -696,6 +696,10 @@ Optional parameters:
    "columnDefinition" attribute on :ref:`#[Column] <attrref_column>` also sets
    the related ``#[JoinColumn]``'s columnDefinition. This is necessary to
    make foreign keys work.
+-  **foreignKeyName**: Allows you to specify a custom name for the foreign key constraint.
+   If not specified, the name will be generated automatically. For composite foreign
+   keys (multiple ``#[JoinColumn]`` attributes), only one join column should specify
+   ``foreignKeyName``.
 -  **options**:
    See "options" attribute on :ref:`#[Column] <attrref_column>`.
 
@@ -708,7 +712,7 @@ Example:
     use Doctrine\ORM\Mapping\JoinColumn;
 
     #[OneToOne(targetEntity: Customer::class)]
-    #[JoinColumn(name: "customer_id", referencedColumnName: "id")]
+    #[JoinColumn(name: "customer_id", referencedColumnName: "id", foreignKeyName: "fk_customer")]
     private $customer;
 
 .. _attrref_jointable:
@@ -727,6 +731,13 @@ Required attribute:
 
 -  **name**: Database name of the join-table
 
+Optional attributes:
+
+-  **foreignKeyName**: Specifies a custom name for the foreign key constraint from the join table
+   to the owning side entity. If not specified, the name will be generated automatically.
+-  **inverseForeignKeyName**: Specifies a custom name for the foreign key constraint from the join
+   table to the inverse side entity. If not specified, the name will be generated automatically.
+
 Example:
 
 .. code-block:: php
@@ -734,9 +745,16 @@ Example:
     <?php
     use Doctrine\ORM\Mapping\ManyToMany;
     use Doctrine\ORM\Mapping\JoinTable;
+    use Doctrine\ORM\Mapping\JoinColumn;
 
-    #[ManyToMany(targetEntity: "Phonenumber")]
-    #[JoinTable(name: "users_phonenumbers")]
+    #[ManyToMany(targetEntity: Phonenumber::class)]
+    #[JoinTable(
+        name: "users_phonenumbers",
+        joinColumns: [new JoinColumn(name: "user_id", referencedColumnName: "id")],
+        inverseJoinColumns: [new JoinColumn(name: "phonenumber_id", referencedColumnName: "id")],
+        foreignKeyName: "fk_users_phonenumbers_user",
+        inverseForeignKeyName: "fk_users_phonenumbers_phonenumber"
+    )]
     public $phonenumbers;
 
 .. _attrref_manytoone:

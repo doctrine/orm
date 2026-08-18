@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
+                          https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+
+    <entity name="Doctrine\Tests\ORM\Mapping\XmlCustomFKArticle" table="xml_custom_fk_article">
+        <id name="id" type="integer" column="id">
+            <generator strategy="AUTO"/>
+        </id>
+
+        <field name="title" type="string" length="255"/>
+
+        <many-to-one field="author" target-entity="Doctrine\Tests\ORM\Mapping\XmlCustomFKAuthor">
+            <join-column name="author_id" referenced-column-name="id" foreign-key-name="fk_xml_article_author"/>
+        </many-to-one>
+
+        <many-to-many field="tags" target-entity="Doctrine\Tests\ORM\Mapping\XmlCustomFKTag">
+            <join-table name="xml_article_tag" foreign-key-name="fk_xml_article_tag_article" inverse-foreign-key-name="fk_xml_article_tag_tag">
+                <join-columns>
+                    <join-column name="article_id" referenced-column-name="id"/>
+                </join-columns>
+                <inverse-join-columns>
+                    <join-column name="tag_id" referenced-column-name="id"/>
+                </inverse-join-columns>
+            </join-table>
+        </many-to-many>
+
+    </entity>
+
+</doctrine-mapping>

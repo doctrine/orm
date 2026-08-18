@@ -518,6 +518,14 @@ class XmlDriver extends FileDriver
                         $joinTable['schema'] = (string) $joinTableElement['schema'];
                     }
 
+                    if (isset($joinTableElement['foreign-key-name'])) {
+                        $joinTable['foreignKeyName'] = (string) $joinTableElement['foreign-key-name'];
+                    }
+
+                    if (isset($joinTableElement['inverse-foreign-key-name'])) {
+                        $joinTable['inverseForeignKeyName'] = (string) $joinTableElement['inverse-foreign-key-name'];
+                    }
+
                     if (isset($joinTableElement->options)) {
                         $joinTable['options'] = $this->parseOptions($joinTableElement->options->children());
                     }
@@ -600,6 +608,14 @@ class XmlDriver extends FileDriver
                         'name'      => (string) $joinTableElement['name'],
                         'schema'    => (string) $joinTableElement['schema'],
                     ];
+
+                    if (isset($joinTableElement['foreign-key-name'])) {
+                        $joinTable['foreignKeyName'] = (string) $joinTableElement['foreign-key-name'];
+                    }
+
+                    if (isset($joinTableElement['inverse-foreign-key-name'])) {
+                        $joinTable['inverseForeignKeyName'] = (string) $joinTableElement['inverse-foreign-key-name'];
+                    }
 
                     if (isset($joinTableElement->options)) {
                         $joinTable['options'] = $this->parseOptions($joinTableElement->options->children());
@@ -750,6 +766,7 @@ class XmlDriver extends FileDriver
      *                   nullable?: bool,
      *                   onDelete?: string,
      *                   columnDefinition?: string,
+     *                   foreignKeyName?: string,
      *                   options?: mixed[]
      *               }
      */
@@ -774,6 +791,10 @@ class XmlDriver extends FileDriver
 
         if (isset($joinColumnElement['column-definition'])) {
             $joinColumn['columnDefinition'] = (string) $joinColumnElement['column-definition'];
+        }
+
+        if (isset($joinColumnElement['foreign-key-name'])) {
+            $joinColumn['foreignKeyName'] = (string) $joinColumnElement['foreign-key-name'];
         }
 
         if (isset($joinColumnElement['options'])) {
