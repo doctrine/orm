@@ -172,7 +172,11 @@ class Configuration extends \Doctrine\DBAL\Configuration
         return $this->attributes['use_dbal_editor_api'] ?? false;
     }
 
-    /** @internal */
+    /**
+     * @internal
+     *
+     * When releasing this, add an UPGRADE note about MySQL's foreign key name length issue
+     */
     public function setUseDbalEditorApi(bool $useDbalEditorApi): void
     {
         /** @phpstan-ignore function.impossibleType (This API is not released yet) */
