@@ -25,22 +25,32 @@ use function array_sum;
 class Paginator implements Countable, IteratorAggregate
 {
     use SQLResultCasing;
+    /** @use PaginatorQuery<T> */
     use PaginatorQuery;
 
     public const HINT_ENABLE_DISTINCT = 'paginator.distinct.enable';
 
     private readonly Query $query;
 
-    /** @param bool $fetchJoinCollection Whether the query joins a collection (true by default). */
+    /**
+     * @param bool $queryProducesDuplicates Whether the query could produce partially duplicated records. One case
+     *  when it does is when it joins a collection.
+     */
     public function __construct(
         Query|QueryBuilder $query,
-        private readonly bool $fetchJoinCollection = true,
+        private readonly bool $queryProducesDuplicates = true,
     ) {
         if ($query instanceof QueryBuilder) {
             $query = $query->getQuery();
         }
 
         $this->query = $query;
+    }
+
+    /** @return self<T> */
+    protected static function doCreateNewWithAutoDetection(Query $query, bool $queryProducesDuplicates): self
+    {
+        return new self($query, $queryProducesDuplicates);
     }
 
     /**
@@ -52,13 +62,21 @@ class Paginator implements Countable, IteratorAggregate
     }
 
     /**
-     * Returns whether the query joins a collection.
+     * @deprecated Use ::getQueryProducesDuplicates() instead.
      *
-     * @return bool Whether the query joins a collection.
+     * Returns whether the query joins a collection.
      */
     public function getFetchJoinCollection(): bool
     {
-        return $this->fetchJoinCollection;
+        return $this->queryProducesDuplicates;
+    }
+
+    /**
+     * Returns whether the query could produce partially duplicated records.
+     */
+    public function getQueryProducesDuplicates(): bool
+    {
+        return $this->queryProducesDuplicates;
     }
 
     public function count(): int
@@ -84,7 +102,7 @@ class Paginator implements Countable, IteratorAggregate
         $offset = $this->query->getFirstResult();
         $length = $this->query->getMaxResults();
 
-        if ($this->fetchJoinCollection && $length !== null) {
+        if ($this->queryProducesDuplicates && $length !== null) {
             $subQuery = $this->cloneQuery($this->query);
 
             if ($this->useOutputWalker($subQuery)) {

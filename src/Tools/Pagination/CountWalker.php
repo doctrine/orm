@@ -24,6 +24,9 @@ class CountWalker extends TreeWalkerAdapter
      */
     public const HINT_DISTINCT = 'doctrine_paginator.distinct';
 
+    /** @internal */
+    public const HINT_DROP_GROUP_BY_CLAUSE = 'doctrine_paginator.drop_group_by_clause';
+
     public function walkSelectStatement(SelectStatement $selectStatement): void
     {
         if ($selectStatement->havingClause) {
@@ -37,13 +40,17 @@ class CountWalker extends TreeWalkerAdapter
             throw new RuntimeException('Cannot count query which selects two FROM components, cannot make distinction');
         }
 
-        $distinct = $this->_getQuery()->getHint(self::HINT_DISTINCT);
+        $dropGroupByClause = $this->_getQuery()->getHint(self::HINT_DROP_GROUP_BY_CLAUSE);
+        $distinct          = $this->_getQuery()->getHint(self::HINT_DISTINCT);
 
         $countPathExpressionOrLiteral = '*';
         if ($distinct) {
-            $fromRoot            = reset($from);
-            $rootAlias           = $fromRoot->rangeVariableDeclaration->aliasIdentificationVariable;
-            $rootClass           = $this->getMetadataForDqlAlias($rootAlias);
+            $fromRoot  = reset($from);
+            $rootAlias = $fromRoot->rangeVariableDeclaration->aliasIdentificationVariable;
+            $rootClass = $this->getMetadataForDqlAlias($rootAlias);
+            // For broader compatibility, only a single id column is supported for the SELECT COUNT(DISTINCT id) query,
+            // despite the fact that multiple popular databases do support running such queries with multiple id columns
+            // (though with a varying syntax).
             $identifierFieldName = $rootClass->getSingleIdentifierFieldName();
 
             $pathType = PathExpression::TYPE_STATE_FIELD;
@@ -65,6 +72,13 @@ class CountWalker extends TreeWalkerAdapter
                 null,
             ),
         ];
+
+        // The GROUP BY clause has a mixed support. There are however cases when the clause produces records count
+        // that is exactly equal to running SELECT COUNT(*) / SELECT COUNT(DISTINCT id), provided that the clause
+        // is removed from the query.
+        if ($dropGroupByClause) {
+            $selectStatement->groupByClause = null;
+        }
 
         // ORDER BY is not needed, only increases query execution through unnecessary sorting.
         $selectStatement->orderByClause = null;

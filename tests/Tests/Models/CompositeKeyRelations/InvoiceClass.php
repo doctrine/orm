@@ -21,7 +21,7 @@ class InvoiceClass
     #[Column(type: 'string')]
     public string $invoiceNumber;
 
-    #[ManyToOne(targetEntity: CustomerClass::class)]
+    #[ManyToOne(targetEntity: CustomerClass::class, inversedBy: 'invoices')]
     #[JoinColumn(name: 'companyCode', referencedColumnName: 'companyCode')]
     #[JoinColumn(name: 'customerCode', referencedColumnName: 'code')]
     public CustomerClass|null $customer;

@@ -31,10 +31,20 @@ class CmsComment implements Stringable
     #[Column(type: 'string', length: 255)]
     public $text;
 
+    /** @var CmsUser|null */
+    #[ManyToOne(targetEntity: 'CmsUser')]
+    #[JoinColumn(name: 'user_id', referencedColumnName: 'id', nullable: true)]
+    public $user;
+
     /** @var CmsArticle */
     #[ManyToOne(targetEntity: 'CmsArticle', inversedBy: 'comments')]
     #[JoinColumn(name: 'article_id', referencedColumnName: 'id')]
     public $article;
+
+    public function setAuthor(CmsUser|null $author): void
+    {
+        $this->user = $author;
+    }
 
     public function setArticle(CmsArticle $article): void
     {

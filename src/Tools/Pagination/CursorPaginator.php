@@ -34,6 +34,7 @@ use function is_string;
 final class CursorPaginator implements IteratorAggregate
 {
     use SQLResultCasing;
+    /** @use PaginatorQuery<T> */
     use PaginatorQuery;
 
     private readonly Query $query;
@@ -56,6 +57,12 @@ final class CursorPaginator implements IteratorAggregate
         }
 
         $this->query = $query;
+    }
+
+    /** @return self<T> */
+    protected static function doCreateNewWithAutoDetection(Query $query, bool $queryProducesDuplicates): self
+    {
+        return new self($query, $queryProducesDuplicates);
     }
 
     /**
