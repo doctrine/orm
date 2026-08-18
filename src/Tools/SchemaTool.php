@@ -524,7 +524,7 @@ class SchemaTool
                                 foreignTableName: $fkData['foreignTableName'],
                                 foreignColumnNames: $fkData['foreignColumns'],
                                 options: $fkData['fkOptions'],
-                                name: $fkData['name'],
+                                name: $fkData['name'] ?? '',
                             ));
                         },
                     )->create();
