@@ -183,7 +183,6 @@ use function array_slice;
 use function assert;
 use function explode;
 use function get_debug_type;
-use function getenv;
 use function implode;
 use function is_object;
 use function method_exists;
@@ -911,11 +910,14 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
         $config->setMetadataCache(self::$metadataCache);
         $config->setQueryCache(self::$queryCache);
 
+        $config->setUseDbalEditorApi(method_exists(Schema::class, 'edit')
+            && $this->getEnv('ENABLE_DBAL_EDITOR_API', true));
+
         if ($this->resultCache !== null) {
             $config->setResultCache($this->resultCache);
         }
 
-        $enableSecondLevelCache = getenv('ENABLE_SECOND_LEVEL_CACHE');
+        $enableSecondLevelCache = $this->getEnv('ENABLE_SECOND_LEVEL_CACHE', false);
 
         if ($this->isSecondLevelCacheEnabled || $enableSecondLevelCache) {
             $cacheConfig = new CacheConfiguration();
@@ -938,16 +940,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             $this->isSecondLevelCacheEnabled = true;
         }
 
-        $enableNativeLazyObjects = getenv('ENABLE_NATIVE_LAZY_OBJECTS');
-
-        if ($enableNativeLazyObjects === false) {
-            // If the environment variable is not set, we default to true.
-            // This is OK because environment variables are always strings, and
-            // we are comparing it to a boolean.
-            $enableNativeLazyObjects = true;
-        }
-
-        if (PHP_VERSION_ID >= 80400 && $enableNativeLazyObjects) {
+        if (PHP_VERSION_ID >= 80400 && $this->getEnv('ENABLE_NATIVE_LAZY_OBJECTS', true)) {
             $config->enableNativeLazyObjects(true);
         }
 

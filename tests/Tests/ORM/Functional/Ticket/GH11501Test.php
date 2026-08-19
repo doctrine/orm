@@ -68,7 +68,11 @@ class GH11501AbstractTestEntity
     public int $id;
 
     #[ORM\ManyToOne(targetEntity: 'GH11501TestEntityHolder', inversedBy: 'testEntities')]
-    #[ORM\JoinColumn(name: 'test_entity_holder_id', referencedColumnName: 'id')]
+    #[ORM\JoinColumn(
+        name: 'test_entity_holder_id',
+        referencedColumnName: 'id',
+        foreignKeyName: 'fk_test_entity_holder_id', // Override the name so it is short enough for MySQL
+    )]
     public GH11501TestEntityHolder $testEntityHolder;
 }
 

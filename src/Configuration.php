@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ORM;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
+use Doctrine\DBAL\Schema\Schema;
 use Doctrine\Deprecations\Deprecation;
 use Doctrine\ORM\Cache\CacheConfiguration;
 use Doctrine\ORM\Exception\InvalidEntityRepository;
@@ -29,6 +30,7 @@ use Psr\Cache\CacheItemPoolInterface;
 
 use function class_exists;
 use function is_a;
+use function method_exists;
 use function strtolower;
 
 use const PHP_VERSION_ID;
@@ -163,6 +165,26 @@ class Configuration extends \Doctrine\DBAL\Configuration
         }
 
         $this->attributes['proxyNamespace'] = $ns;
+    }
+
+    public function getUseDbalEditorApi(): bool
+    {
+        return $this->attributes['use_dbal_editor_api'] ?? false;
+    }
+
+    /**
+     * @internal
+     *
+     * When releasing this, add an UPGRADE note about MySQL's foreign key name length issue
+     */
+    public function setUseDbalEditorApi(bool $useDbalEditorApi): void
+    {
+        /** @phpstan-ignore function.impossibleType (This API is not released yet) */
+        if ($useDbalEditorApi && ! method_exists(Schema::class, 'edit')) {
+            throw new LogicException('Using the DBAL editor API requires doctrine/dbal 4.5 or higher.');
+        }
+
+        $this->attributes['use_dbal_editor_api'] = $useDbalEditorApi;
     }
 
     /**
