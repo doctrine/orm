@@ -6,6 +6,7 @@ namespace Doctrine\Tests\ORM\Functional\Locking;
 
 use Doctrine\DBAL\LockMode;
 use Doctrine\DBAL\Platforms\SQLitePlatform;
+use Doctrine\Deprecations\PHPUnit\VerifyDeprecations;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\TransactionRequiredException;
@@ -16,10 +17,13 @@ use Exception;
 use InvalidArgumentException;
 use PHPUnit\Framework\Attributes\DoesNotPerformAssertions;
 use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\IgnoreDeprecations;
 
 #[Group('locking')]
 class LockTest extends OrmFunctionalTestCase
 {
+    use VerifyDeprecations;
+
     protected function setUp(): void
     {
         $this->useModelSet('cms');
@@ -84,6 +88,92 @@ class LockTest extends OrmFunctionalTestCase
         $this->expectExceptionMessage('Entity ' . CmsArticle::class);
 
         $this->_em->lock($article, LockMode::OPTIMISTIC, $article->version + 1);
+    }
+
+    #[Group('locking')]
+    public function testLockWithLockModeNoneDoesNotRequireTransaction(): void
+    {
+        $article        = new CmsArticle();
+        $article->text  = 'my article';
+        $article->topic = 'Hello';
+
+        $this->_em->persist($article);
+        $this->_em->flush();
+
+        $this->getQueryLog()->reset()->enable();
+
+        $this->_em->lock($article, LockMode::NONE);
+
+        $this->assertQueryCount(0);
+    }
+
+    #[Group('locking')]
+    public function testFindWithLockModeNoneDoesNotRefreshManagedEntity(): void
+    {
+        $article        = new CmsArticle();
+        $article->text  = 'my article';
+        $article->topic = 'Hello';
+
+        $this->_em->persist($article);
+        $this->_em->flush();
+
+        $article->topic = 'Changed in memory';
+
+        $this->getQueryLog()->reset()->enable();
+
+        $found = $this->_em->find(CmsArticle::class, $article->id, LockMode::NONE);
+
+        self::assertSame($article, $found);
+        self::assertSame('Changed in memory', $found->topic);
+        $this->assertQueryCount(0);
+    }
+
+    #[Group('locking')]
+    #[IgnoreDeprecations]
+    public function testFindWithNullLockModeIsDeprecated(): void
+    {
+        $article        = new CmsArticle();
+        $article->text  = 'my article';
+        $article->topic = 'Hello';
+
+        $this->_em->persist($article);
+        $this->_em->flush();
+
+        $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/pull/12548');
+
+        $this->_em->find(CmsArticle::class, $article->id, null);
+    }
+
+    #[Group('locking')]
+    #[IgnoreDeprecations]
+    public function testRefreshWithNullLockModeIsDeprecated(): void
+    {
+        $article        = new CmsArticle();
+        $article->text  = 'my article';
+        $article->topic = 'Hello';
+
+        $this->_em->persist($article);
+        $this->_em->flush();
+
+        $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/pull/12548');
+
+        $this->_em->refresh($article, null);
+    }
+
+    #[Group('locking')]
+    public function testFindWithoutLockModeIsNotDeprecated(): void
+    {
+        $article        = new CmsArticle();
+        $article->text  = 'my article';
+        $article->topic = 'Hello';
+
+        $this->_em->persist($article);
+        $this->_em->flush();
+
+        $this->expectNoDeprecationWithIdentifier('https://github.com/doctrine/orm/pull/12548');
+
+        $this->_em->find(CmsArticle::class, $article->id);
+        $this->_em->refresh($article);
     }
 
     #[Group('DDC-178')]
