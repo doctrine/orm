@@ -10,7 +10,6 @@ use Doctrine\Common\Collections\Criteria;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\Deprecations\PHPUnit\VerifyDeprecations;
 use Doctrine\ORM\Cache;
-use Doctrine\ORM\Cache\Persister\CompatOrderings;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\ORM\Query\Parameter;
@@ -39,7 +38,6 @@ use function array_filter;
  */
 class QueryBuilderTest extends OrmTestCase
 {
-    use CompatOrderings;
     use VerifyDeprecations;
 
     private EntityManagerMock $entityManager;
