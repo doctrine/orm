@@ -858,6 +858,10 @@ class XmlDriver extends FileDriver
             $mapping['enumType'] = (string) $fieldMapping['enum-type'];
         }
 
+        if (isset($fieldMapping['selectable']) && ! $this->evaluateBoolean($fieldMapping['selectable'])) {
+            $mapping['selectable'] = false;
+        }
+
         if (isset($fieldMapping->options)) {
             $mapping['options'] = $this->parseOptions($fieldMapping->options->children());
         }
