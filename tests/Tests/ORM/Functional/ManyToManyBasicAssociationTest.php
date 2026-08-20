@@ -6,7 +6,6 @@ namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Criteria;
-use Doctrine\ORM\Cache\Persister\CompatOrderings;
 use Doctrine\ORM\Mapping\AssociationMapping;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\UnitOfWork;
@@ -26,8 +25,6 @@ use function get_class;
  */
 class ManyToManyBasicAssociationTest extends OrmFunctionalTestCase
 {
-    use CompatOrderings;
-
     protected function setUp(): void
     {
         $this->useModelSet('cms');
