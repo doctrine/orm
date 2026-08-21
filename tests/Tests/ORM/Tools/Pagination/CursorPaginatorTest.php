@@ -16,6 +16,7 @@ use Doctrine\ORM\Query;
 use Doctrine\ORM\Tools\Pagination\Cursor;
 use Doctrine\ORM\Tools\Pagination\CursorItem;
 use Doctrine\ORM\Tools\Pagination\CursorPaginator;
+use Doctrine\ORM\Tools\Pagination\Exception\InvalidCursor;
 use Doctrine\Tests\OrmTestCase;
 use LogicException;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -415,6 +416,17 @@ class CursorPaginatorTest extends OrmTestCase
         $paginator->countPageItems();
     }
 
+    public function testPaginateThrowsInvalidCursorForNonStringNonCursorNonNull(): void
+    {
+        $query = new Query($this->em);
+        $query->setDQL('SELECT p FROM Doctrine\Tests\ORM\Tools\Pagination\BlogPost p ORDER BY p.id ASC');
+
+        $paginator = new CursorPaginator($query, queryProducesDuplicates: false);
+
+        $this->expectException(InvalidCursor::class);
+        $paginator->paginate(['injected' => 'array'], 10);
+    }
+
     public function testDefaultQueryProducesDuplicatesIsTrue(): void
     {
         $query = new Query($this->em);
@@ -469,5 +481,33 @@ class CursorPaginatorTest extends OrmTestCase
         $paginator->paginate(null, 10);
 
         self::assertSame(1, $paginator->countPageItems());
+    }
+
+    public function testGetNextCursorUnwrapsManyToOneAssociationToIdentifier(): void
+    {
+        $author            = new Author();
+        $author->id        = 42;
+        $blogPost1         = new BlogPost();
+        $blogPost1->author = $author;
+
+        $author2           = new Author();
+        $author2->id       = 43;
+        $blogPost2         = new BlogPost();
+        $blogPost2->author = $author2;
+
+        $this->hydrator->method('hydrateAll')->willReturn([$blogPost1, $blogPost2]);
+        $result = $this->createMock(Result::class);
+        $this->connection->method('executeQuery')->willReturn($result);
+
+        $query = new Query($this->em);
+        $query->setDQL('SELECT b FROM Doctrine\Tests\ORM\Tools\Pagination\BlogPost b ORDER BY b.author ASC');
+
+        $paginator = new CursorPaginator($query, queryProducesDuplicates: false);
+        $paginator->paginate(null, 1);
+
+        self::assertTrue($paginator->hasNextPage());
+
+        $cursor = $paginator->getNextCursor();
+        self::assertSame(42, $cursor->getParameters()['b.author']);
     }
 }

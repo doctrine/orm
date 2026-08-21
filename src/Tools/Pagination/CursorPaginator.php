@@ -12,6 +12,7 @@ use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\AST\PathExpression;
 use Doctrine\ORM\Query\QueryException;
 use Doctrine\ORM\QueryBuilder;
+use Doctrine\ORM\Tools\Pagination\Exception\InvalidCursor;
 use Doctrine\ORM\Utility\PersisterHelper;
 use IteratorAggregate;
 use LogicException;
@@ -23,6 +24,7 @@ use function array_reverse;
 use function array_slice;
 use function array_sum;
 use function count;
+use function is_string;
 
 /**
  * The cursor paginator handles cursor-based pagination for DQL queries.
@@ -78,17 +80,24 @@ final class CursorPaginator implements IteratorAggregate
     /**
      * Paginates the query with the given limit and optional cursor.
      *
-     * @param Cursor|string|null $cursor The cursor instance, encoded cursor string, null or empty string for the first page.
-     * @param int                $limit  The maximum number of results to return.
+     * @param mixed $cursor The cursor instance, encoded cursor string, null or empty string for the first page.
+     *                      Any other type (e.g. array) throws InvalidCursor.
+     * @param int   $limit  The maximum number of results to return.
      *
      * @return $this
+     *
+     * @throws InvalidCursor If $cursor is not a Cursor instance, a string, or null.
      */
-    public function paginate(Cursor|string|null $cursor, int $limit): self
+    public function paginate(mixed $cursor, int $limit): self
     {
         if ($cursor instanceof Cursor) {
             $this->cursor = $cursor;
+        } elseif ($cursor === null || (is_string($cursor) && $cursor === '')) {
+            $this->cursor = null;
+        } elseif (is_string($cursor)) {
+            $this->cursor = Cursor::fromEncodedString($cursor);
         } else {
-            $this->cursor = ! empty($cursor) ? Cursor::fromEncodedString($cursor) : null;
+            throw new InvalidCursor('(non-string value)');
         }
 
         $shouldReverse = $this->cursor?->isPrevious() ?? false;
@@ -318,7 +327,13 @@ final class CursorPaginator implements IteratorAggregate
             $fieldName     = $orderByItem->expression->field;
             $orderMetadata = $orderByItem->metadata ?? $metadata;
             $value         = $metadata?->getFieldValue($item, $fieldName) ?? $item->$fieldName;
-            $type          = PersisterHelper::getTypeOfField($fieldName, $orderMetadata, $em)[0];
+
+            if ($value !== null && $orderMetadata !== null && isset($orderMetadata->associationMappings[$fieldName])) {
+                $targetMetadata = $em->getClassMetadata($orderMetadata->associationMappings[$fieldName]->targetEntity);
+                $value          = $targetMetadata->getIdentifierValues($value)[$targetMetadata->getSingleIdentifierFieldName()] ?? null;
+            }
+
+            $type = PersisterHelper::getTypeOfField($fieldName, $orderMetadata, $em)[0];
 
             $result[$orderByItem->paramKey] = $connection->convertToDatabaseValue($value, $type);
         }
