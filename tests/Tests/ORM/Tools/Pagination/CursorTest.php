@@ -95,4 +95,34 @@ class CursorTest extends TestCase
 
         self::assertSame(['id' => 1, '_isNext' => true], $cursor->toArray());
     }
+
+    public function testFromEncodedStringThrowsForNonStringInput(): void
+    {
+        $this->expectException(InvalidCursor::class);
+
+        Cursor::fromEncodedString(['injected' => 'array']);
+    }
+
+    public function testFromEncodedStringThrowsForNonScalarParameterValue(): void
+    {
+        $payload = rtrim(strtr(base64_encode((string) json_encode(['p.id' => [1, 2, 3], '_isNext' => true])), '+/', '-_'), '=');
+        $this->expectException(InvalidCursor::class);
+        Cursor::fromEncodedString($payload);
+    }
+
+    public function testFromEncodedStringCastsIsNextToBool(): void
+    {
+        $payload = rtrim(strtr(base64_encode((string) json_encode(['id' => 10, '_isNext' => 0])), '+/', '-_'), '=');
+        $cursor  = Cursor::fromEncodedString($payload);
+
+        self::assertFalse($cursor->isNext());
+        self::assertTrue($cursor->isPrevious());
+    }
+
+    public function testFromEncodedStringThrowsForNonArrayJson(): void
+    {
+        $payload = rtrim(strtr(base64_encode((string) json_encode('just-a-string')), '+/', '-_'), '=');
+        $this->expectException(InvalidCursor::class);
+        Cursor::fromEncodedString($payload);
+    }
 }
