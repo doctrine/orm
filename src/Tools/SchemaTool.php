@@ -8,6 +8,7 @@ use BackedEnum;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Schema\AbstractAsset;
 use Doctrine\DBAL\Schema\AbstractSchemaManager;
+use Doctrine\DBAL\Schema\ColumnEditor;
 use Doctrine\DBAL\Schema\ComparatorConfig;
 use Doctrine\DBAL\Schema\DefaultExpression;
 use Doctrine\DBAL\Schema\DefaultExpression\CurrentDate;
@@ -21,6 +22,7 @@ use Doctrine\DBAL\Schema\Name\UnqualifiedName;
 use Doctrine\DBAL\Schema\NamedObject;
 use Doctrine\DBAL\Schema\PrimaryKeyConstraint;
 use Doctrine\DBAL\Schema\Schema;
+use Doctrine\DBAL\Schema\SchemaConfig;
 use Doctrine\DBAL\Schema\Table;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\Deprecations\Deprecation;
@@ -204,11 +206,33 @@ class SchemaTool
                 continue;
             }
 
-            $table = $schema->createTable($this->quoteStrategy->getTableName($class, $this->platform));
+            $tableName = $this->quoteStrategy->getTableName($class, $this->platform);
+
+            // @phpstan-ignore function.impossibleType (Using unreleased Schema::edit() API)
+            if (method_exists(Schema::class, 'edit')) {
+                $table = new Table(
+                    name: $tableName,
+                    configuration: $metadataSchemaConfig->toTableConfiguration(),
+                    options: $metadataSchemaConfig->getDefaultTableOptions(),
+                );
+            } else {
+                $table = $schema->createTable($tableName);
+            }
 
             if ($class->isInheritanceTypeSingleTable()) {
+                // For new schema API: collect join tables to add after this entity table
+                $joinTablesToAdd = [];
+
                 $this->gatherColumns($class, $table);
-                $this->gatherRelationsSql($class, $table, $schema, $addedFks, $blacklistedFks);
+                $this->gatherRelationsSql(
+                    $class,
+                    $table,
+                    $schema,
+                    $addedFks,
+                    $blacklistedFks,
+                    $metadataSchemaConfig,
+                    $joinTablesToAdd,
+                );
 
                 // Add the discriminator column
                 $this->addDiscriminatorColumnDefinition($class, $table);
@@ -222,10 +246,21 @@ class SchemaTool
                 foreach ($class->subClasses as $subClassName) {
                     $subClass = $this->em->getClassMetadata($subClassName);
                     $this->gatherColumns($subClass, $table);
-                    $this->gatherRelationsSql($subClass, $table, $schema, $addedFks, $blacklistedFks);
+                    $this->gatherRelationsSql(
+                        $subClass,
+                        $table,
+                        $schema,
+                        $addedFks,
+                        $blacklistedFks,
+                        $metadataSchemaConfig,
+                        $joinTablesToAdd,
+                    );
                     $processedClasses[$subClassName] = true;
                 }
             } elseif ($class->isInheritanceTypeJoined()) {
+                // For new schema API: collect join tables to add after this entity table
+                $joinTablesToAdd = [];
+
                 // Add all non-inherited fields as columns
                 foreach ($class->fieldMappings as $fieldName => $mapping) {
                     if (! isset($mapping->inherited)) {
@@ -233,7 +268,15 @@ class SchemaTool
                     }
                 }
 
-                $this->gatherRelationsSql($class, $table, $schema, $addedFks, $blacklistedFks);
+                $this->gatherRelationsSql(
+                    $class,
+                    $table,
+                    $schema,
+                    $addedFks,
+                    $blacklistedFks,
+                    $metadataSchemaConfig,
+                    $joinTablesToAdd,
+                );
 
                 // Add the discriminator column only to the root table
                 if ($class->name === $class->rootEntityName) {
@@ -253,7 +296,17 @@ class SchemaTool
                                 $this->platform,
                             );
                             // TODO: This seems rather hackish, can we optimize it?
-                            $table->getColumn($columnName)->setAutoincrement(false);
+                            // @phpstan-ignore function.impossibleType (Using unreleased Schema::edit() API for version detection)
+                            if (method_exists(Schema::class, 'edit')) {
+                                // New API: modify column using table editor (creates new table object)
+                                // This is safe because we'll add the table to schema later after all modifications
+                                $table = $table->edit()->modifyColumnByUnquotedName(
+                                    $columnName,
+                                    static fn (ColumnEditor $column) => $column->setAutoincrement(false),
+                                )->create();
+                            } else {
+                                $table->getColumn($columnName)->setAutoincrement(false);
+                            }
 
                             $pkColumns[]           = $columnName;
                             $inheritedKeyColumns[] = $columnName;
@@ -305,8 +358,19 @@ class SchemaTool
                     }
                 }
             } else {
+                // For new schema API: collect join tables to add after this entity table
+                $joinTablesToAdd = [];
+
                 $this->gatherColumns($class, $table);
-                $this->gatherRelationsSql($class, $table, $schema, $addedFks, $blacklistedFks);
+                $this->gatherRelationsSql(
+                    $class,
+                    $table,
+                    $schema,
+                    $addedFks,
+                    $blacklistedFks,
+                    $metadataSchemaConfig,
+                    $joinTablesToAdd,
+                );
             }
 
             $pkColumns = [];
@@ -377,6 +441,22 @@ class SchemaTool
 
             $processedClasses[$class->name] = true;
 
+            // Add the fully populated table to the schema
+            // @phpstan-ignore function.impossibleType (Using unreleased Schema::edit() API)
+            if (method_exists(Schema::class, 'edit')) {
+                // @phpstan-ignore method.notFound (Using unreleased Schema::edit() API)
+                $schemaEditor = $schema->edit();
+                $schemaEditor->addTable($table);
+
+                // Add any join tables collected during relation processing
+                // This ensures join tables appear right after their owning entity table
+                foreach ($joinTablesToAdd as $joinTable) {
+                    $schemaEditor->addTable($joinTable);
+                }
+
+                $schema = $schemaEditor->create();
+            }
+
             if ($class->isIdGeneratorSequence() && $class->name === $class->rootEntityName) {
                 $seqDef     = $class->sequenceGeneratorDefinition;
                 $quotedName = $this->quoteStrategy->getSequenceName($seqDef, $class, $this->platform);
@@ -404,12 +484,12 @@ class SchemaTool
                 $newTable          = $tableEventArgs->getClassTable();
 
                 // @phpstan-ignore method.notFound (Using unreleased Schema::edit() API)
-                $schemaEditor = $schema->edit();
-                $schemaEditor->dropTable($originalTableName);
-                $schemaEditor->addTable($newTable);
+                $schema = $schema->edit()
+                    ->dropTable($originalTableName)
+                    ->addTable($newTable)
+                    ->create();
 
-                $schema = $schemaEditor->create();
-                $table  = $newTable;
+                $table = $newTable;
             }
         }
 
@@ -609,15 +689,18 @@ class SchemaTool
      *                  fkOptions: array{onDelete?: string, deferrable?: bool, deferred?: bool}
      *              }>                               $addedFks
      * @phpstan-param array<string, bool>              $blacklistedFks
+     * @phpstan-param list<Table>                      $joinTablesToAdd
      *
      * @throws NotSupported
      */
     private function gatherRelationsSql(
         ClassMetadata $class,
         Table $table,
-        Schema $schema,
+        Schema &$schema,
         array &$addedFks,
         array &$blacklistedFks,
+        SchemaConfig $schemaConfig,
+        array &$joinTablesToAdd,
     ): void {
         foreach ($class->associationMappings as $id => $mapping) {
             if (isset($mapping->inherited) && ! in_array($id, $class->identifier, true)) {
@@ -642,12 +725,25 @@ class SchemaTool
                 // create join table
                 $joinTable = $mapping->joinTable;
 
-                $theJoinTable = $schema->createTable(
-                    $this->quoteStrategy->getJoinTableName($mapping, $foreignClass, $this->platform),
-                );
+                $tableName = $this->quoteStrategy->getJoinTableName($mapping, $foreignClass, $this->platform);
 
-                foreach ($joinTable->options as $key => $val) {
-                    $theJoinTable->addOption($key, $val);
+                // Create the join table object
+                // @phpstan-ignore function.impossibleType (Using unreleased Schema::edit() API)
+                if (method_exists(Schema::class, 'edit')) {
+                    $theJoinTable = new Table(
+                        name: $tableName,
+                        options: $joinTable->options,
+                        configuration: $schemaConfig->toTableConfiguration(),
+                    );
+                    // Add default table options (charset, collation, engine, etc.)
+                    foreach ($schemaConfig->getDefaultTableOptions() as $option => $value) {
+                        $theJoinTable->addOption($option, $value);
+                    }
+                } else {
+                    $theJoinTable = $schema->createTable($tableName);
+                    foreach ($joinTable->options as $key => $val) {
+                        $theJoinTable->addOption($key, $val);
+                    }
                 }
 
                 $primaryKeyColumns = [];
@@ -675,6 +771,11 @@ class SchemaTool
                 );
 
                 self::addPrimaryKeyConstraint($theJoinTable, $primaryKeyColumns);
+
+                // @phpstan-ignore function.impossibleType (Using unreleased Schema::edit() API)
+                if (method_exists(Schema::class, 'edit')) {
+                    $joinTablesToAdd[] = $theJoinTable;
+                }
             }
         }
     }
