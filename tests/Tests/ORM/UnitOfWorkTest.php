@@ -301,7 +301,7 @@ class UnitOfWorkTest extends OrmTestCase
         ) {
             // in the case of stdClass, the changeset is rejected because
             // stdClass is not a valid entity
-            // when using native lazy objects, this happens because UnitOfWork::isUninitializedObject()
+            // this happens because UnitOfWork::isUninitializedObject()
             // needs to load the class metadata to do its job
             $this->expectException(MappingException::class);
         } else {

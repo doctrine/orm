@@ -264,11 +264,9 @@ class PostLoadListener
 
 class PostLoadListenerCheckAssociationsArePopulated
 {
-    /** @var bool */
-    public $checked = false;
+    public bool $checked = false;
 
-    /** @var bool */
-    public $populated = false;
+    public bool $populated = false;
 
     public function postLoad(PostLoadEventArgs $event): void
     {
@@ -286,6 +284,10 @@ class PostLoadListenerCheckAssociationsArePopulated
 
 class PostLoadListenerLoadEntityInEventHandler
 {
+    public function __construct()
+    {
+    }
+
     /** @var array<class-string, int> */
     private array $firedByClasses = [];
 

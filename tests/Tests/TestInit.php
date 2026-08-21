@@ -8,6 +8,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests;
 
+use Doctrine\Deprecations\Deprecation;
 use Exception;
 
 use function date_default_timezone_set;
@@ -37,3 +38,5 @@ if (! file_exists(__DIR__ . '/Proxies') && ! mkdir(__DIR__ . '/Proxies')) {
 if (! file_exists(__DIR__ . '/ORM/Proxy/generated') && ! mkdir(__DIR__ . '/ORM/Proxy/generated')) {
     throw new Exception('Could not create ' . __DIR__ . '/ORM/Proxy/generated Folder.');
 }
+
+Deprecation::withoutDeduplication();
