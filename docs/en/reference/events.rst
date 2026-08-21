@@ -999,6 +999,15 @@ instance and class metadata.
         }
     }
 
+.. note::
+
+    Starting in ORM 3.6, the ``GenerateSchemaTableEventArgs`` class
+    provides ``setSchema()`` and ``setClassTable()`` methods to replace
+    the schema or table objects. These methods require ``doctrine/dbal``
+    ^4.5 or higher, which provides the Schema Editor API. If called with
+    an earlier DBAL version, a ``BadMethodCallException`` will be
+    thrown.
+
 postGenerateSchema
 ~~~~~~~~~~~~~~~~~~
 
@@ -1024,6 +1033,14 @@ and the EntityManager.
             $em = $eventArgs->getEntityManager();
         }
     }
+
+.. note::
+
+    Starting in ORM 3.6, the ``GenerateSchemaEventArgs`` class provides
+    a ``setSchema()`` method to replace the schema object. This method
+    requires ``doctrine/dbal`` ^4.5 or higher, which provides the Schema
+    Editor API. If called with an earlier DBAL version, a
+    ``BadMethodCallException`` will be thrown.
 
 .. _PrePersistEventArgs: https://github.com/doctrine/orm/blob/HEAD/src/Event/PrePersistEventArgs.php
 .. _PreRemoveEventArgs: https://github.com/doctrine/orm/blob/HEAD/src/Event/PreRemoveEventArgs.php
