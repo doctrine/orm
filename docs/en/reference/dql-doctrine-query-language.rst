@@ -553,6 +553,13 @@ You can use the partial syntax when joining as well:
     $usersArray = $query->getArrayResult(); // array of partially loaded CmsUser and CmsArticle fields
     $users = $query->getResult(); // array of partially loaded CmsUser objects
 
+.. note::
+
+    The objects returned by ``getResult()`` are lazy ghosts. Only the
+    fields listed in the ``PARTIAL`` clause are fetched eagerly; any
+    other field is transparently loaded from the database on first
+    access. See :doc:`/reference/partial-objects` for details.
+
 "NEW" Operator Syntax
 ^^^^^^^^^^^^^^^^^^^^^
 
