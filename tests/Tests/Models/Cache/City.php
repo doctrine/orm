@@ -154,7 +154,7 @@ class City
                 'fieldName' => 'attractions',
                 'targetEntity' => Attraction::class,
                 'mappedBy' => 'city',
-                'orderBy' => ['name' => 'ASC'],
+                'orderBy' => ['name' => SortDirection::Ascending],
             ],
         );
         $metadata->enableAssociationCache('attractions', [
