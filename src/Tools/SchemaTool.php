@@ -14,7 +14,7 @@ use Doctrine\DBAL\Schema\DefaultExpression;
 use Doctrine\DBAL\Schema\DefaultExpression\CurrentDate;
 use Doctrine\DBAL\Schema\DefaultExpression\CurrentTime;
 use Doctrine\DBAL\Schema\DefaultExpression\CurrentTimestamp;
-use Doctrine\DBAL\Schema\ForeignKeyConstraintEditor;
+use Doctrine\DBAL\Schema\ForeignKeyConstraint;
 use Doctrine\DBAL\Schema\Index;
 use Doctrine\DBAL\Schema\Index\IndexedColumn;
 use Doctrine\DBAL\Schema\Name\Identifier;
@@ -24,6 +24,7 @@ use Doctrine\DBAL\Schema\PrimaryKeyConstraint;
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\DBAL\Schema\SchemaConfig;
 use Doctrine\DBAL\Schema\Table;
+use Doctrine\DBAL\Schema\TableEditor;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\Deprecations\Deprecation;
 use Doctrine\ORM\EntityManagerInterface;
@@ -499,6 +500,41 @@ class SchemaTool
             }
         }
 
+        // After all classes have been processed and all FK metadata collected,
+        // apply the non-conflicting FK constraints to their respective tables
+        foreach ($addedFks as $compositeName => $fkData) {
+            // Skip if this composite key was blacklisted due to conflicts
+            if (isset($blacklistedFks[$compositeName])) {
+                continue;
+            }
+
+            // @phpstan-ignore function.impossibleType (Using unreleased Schema::edit() API)
+            if (method_exists(Schema::class, 'edit')) {
+                // the table might have been dropped by a listener, so we ignore this error
+                if ($schema->hasTable($fkData['table']->getObjectName()->toString())) {
+                    $schema = $schema->edit()->modifyTable(
+                        $fkData['table']->getObjectName(),
+                        static function (TableEditor $tableEditor) use ($fkData): void {
+                            $tableEditor->addForeignKeyConstraint(new ForeignKeyConstraint(
+                                localColumnNames: $fkData['localColumns'],
+                                foreignTableName: $fkData['foreignTableName'],
+                                foreignColumnNames: $fkData['foreignColumns'],
+                                options: $fkData['fkOptions'],
+                            ));
+                        },
+                    )->create();
+                }
+            } else {
+                // Add the FK constraint to the table
+                $fkData['table']->addForeignKeyConstraint(
+                    $fkData['foreignTableName'],
+                    $fkData['localColumns'],
+                    $fkData['foreignColumns'],
+                    $fkData['fkOptions'],
+                );
+            }
+        }
+
         $schemaEventArgs = new GenerateSchemaEventArgs($this->em, $schema);
         $eventManager->dispatchEvent(
             ToolEvents::postGenerateSchema,
@@ -692,7 +728,9 @@ class SchemaTool
      * @phpstan-param array<string, array{
      *                  foreignTableName: string,
      *                  foreignColumns: list<string>,
-     *                  fkOptions: array{onDelete?: string, deferrable?: bool, deferred?: bool}
+     *                  localColumns: list<string>,
+     *                  fkOptions: array{onDelete?: string, deferrable?: bool, deferred?: bool},
+     *                  table: Table
      *              }>                               $addedFks
      * @phpstan-param array<string, bool>              $blacklistedFks
      * @phpstan-param list<Table>                      $joinTablesToAdd
@@ -831,11 +869,21 @@ class SchemaTool
      * @phpstan-param array<string, array{
      *                  foreignTableName: string,
      *                  foreignColumns: list<string>,
-     *                  fkOptions: array{onDelete?: string, deferrable?: bool, deferred?: bool}
+     *                  localColumns: list<string>,
+     *                  fkOptions: array{onDelete?: string, deferrable?: bool, deferred?: bool},
+     *                  table: Table
      *              }>                               $addedFks
      * @phpstan-param array<string,bool>               $blacklistedFks
      *
      * @throws MissingColumnException
+     *
+     * @phpstan-param-out array<string, array{
+     *                  foreignTableName: string,
+     *                  foreignColumns: list<string>,
+     *                  localColumns: list<string>,
+     *                  fkOptions: array{onDelete?: string, deferrable?: bool, deferred?: bool},
+     *                  table: Table
+     *              }>                               $addedFks
      */
     private function gatherRelationJoinColumns(
         array $joinColumns,
@@ -954,53 +1002,28 @@ class SchemaTool
             $areOptionsIdentical = $onDeleteMatches && $deferrableMatches && $deferredMatches;
 
             if ($isForeignTableIdentical && $areForeignColumnsIdentical && $areOptionsIdentical) {
-                // Identical FK already registered - skip adding duplicate.
-                // This prevents attempting to overwrite an existing FK constraint with an identical one.
-                // This scenario occurs in Single Table Inheritance (STI) when multiple child entities
-                // define their own associations using the same join column to the same target entity.
-                // Since all STI entities share the same physical table, having identical FK constraints
-                // is semantically correct and necessary for database normalization.
+                // Identical FK already registered - will be skipped during application phase
                 return;
             }
 
-            // FK exists but is different (conflicting FK) - drop the existing one and blacklist
-            foreach ($theJoinTable->getForeignKeys() as $fkName => $key) {
-                if (
-                    class_exists(ForeignKeyConstraintEditor::class)
-                    && count(array_diff(array_map(static fn (UnqualifiedName $name) => $name->toString(), $key->getReferencingColumnNames()), $localColumns)) === 0
-                    && (($key->getReferencedTableName()->toString() !== $foreignTableName)
-                    || 0 < count(array_diff(array_map(static fn (UnqualifiedName $name) => $name->toString(), $key->getReferencedColumnNames()), $foreignColumns)))
-                ) {
-                    $theJoinTable->dropForeignKey($fkName);
-                    break;
-                }
-
-                if (
-                    ! class_exists(ForeignKeyConstraintEditor::class)
-                    && count(array_diff($key->getLocalColumns(), $localColumns)) === 0
-                    && (($key->getForeignTableName() !== $foreignTableName)
-                    || 0 < count(array_diff($key->getForeignColumns(), $foreignColumns)))
-                ) {
-                    $theJoinTable->removeForeignKey($fkName);
-                    break;
-                }
-            }
-
+            // FK exists but is different (conflicting FK) - blacklist this composite key
+            // No FK will be added for this composite key, but we need to ensure an index exists
+            // since FKs normally create indexes automatically
             $blacklistedFks[$compositeName] = true;
+
+            // Add an index for the local columns since we won't be adding a FK
+            // (FKs normally create implicit indexes)
+            // @phpstan-ignore argument.type ($localColumns is not empty)
+            $theJoinTable->addIndex($localColumns);
         } elseif (! isset($blacklistedFks[$compositeName])) {
-            // No existing FK and not blacklisted - add the new FK constraint
-            // Store FK details including options that affect constraint identity
+            // No existing FK and not blacklisted - store FK metadata for application phase
             $addedFks[$compositeName] = [
                 'foreignTableName' => $foreignTableName,
                 'foreignColumns' => $foreignColumns,
+                'localColumns' => $localColumns,
                 'fkOptions' => $fkOptions,
+                'table' => $theJoinTable,
             ];
-            $theJoinTable->addForeignKeyConstraint(
-                $foreignTableName,
-                $localColumns,
-                $foreignColumns,
-                $fkOptions,
-            );
         }
     }
 

@@ -9,6 +9,8 @@ use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\LockMode;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Type;
+use Doctrine\DBAL\Types\Types;
+use Doctrine\Deprecations\Deprecation;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\QuoteStrategy;
@@ -1313,15 +1315,30 @@ class SqlWalker
                     break;
                 }
 
-                if (! $expr instanceof Query\AST\TypedExpression) {
-                    // Conceptually we could resolve field type here by traverse through AST to retrieve field type,
-                    // but this is not a feasible solution; assume 'string'.
-                    $this->rsm->addScalarResult($columnAlias, $resultAlias, 'string');
+                if ($expr instanceof Query\AST\ExpressionWithReturnType) {
+                    $this->rsm->addScalarResult($columnAlias, $resultAlias, $expr->getReturnTypeName());
 
                     break;
                 }
 
-                $this->rsm->addScalarResult($columnAlias, $resultAlias, Type::getTypeRegistry()->lookupName($expr->getReturnType()));
+                if ($expr instanceof Query\AST\TypedExpression) {
+                    Deprecation::trigger(
+                        'doctrine/orm',
+                        'https://github.com/doctrine/orm/pull/12543',
+                        'Implementing %s is deprecated, implement %s instead.',
+                        Query\AST\TypedExpression::class, // @phpstan-ignore classConstant.deprecatedInterface
+                        Query\AST\ExpressionWithReturnType::class,
+                    );
+
+                    // @phpstan-ignore method.deprecatedInterface
+                    $this->rsm->addScalarResult($columnAlias, $resultAlias, Type::getTypeRegistry()->lookupName($expr->getReturnType()));
+
+                    break;
+                }
+
+                // Conceptually we could resolve field type here by traverse through AST to retrieve field type,
+                // but this is not a feasible solution; assume 'string'.
+                $this->rsm->addScalarResult($columnAlias, $resultAlias, Types::STRING);
 
                 break;
 
@@ -1335,7 +1352,7 @@ class SqlWalker
 
                 if (! $hidden) {
                     // We cannot resolve field type here; assume 'string'.
-                    $this->rsm->addScalarResult($columnAlias, $resultAlias, 'string');
+                    $this->rsm->addScalarResult($columnAlias, $resultAlias, Types::STRING);
                 }
 
                 break;
@@ -2075,6 +2092,7 @@ class SqlWalker
             AST\Literal::STRING => $this->conn->quote($literal->value),
             AST\Literal::BOOLEAN => (string) $this->conn->getDatabasePlatform()->convertBooleans(strtolower($literal->value) === 'true'),
             AST\Literal::NUMERIC => (string) $literal->value,
+            AST\Literal::NULL => 'NULL',
             default => throw QueryException::invalidLiteral($literal),
         };
     }

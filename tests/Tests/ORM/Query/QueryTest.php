@@ -108,6 +108,15 @@ class QueryTest extends OrmTestCase
         ];
     }
 
+    public function testSetLockModeNoneDoesNotRequireTransaction(): void
+    {
+        $query = $this->entityManager->createQuery('select u from Doctrine\Tests\Models\CMS\CmsUser u where u.username = ?1');
+        $query->setLockMode(LockMode::NONE);
+
+        self::assertSame(LockMode::NONE, $query->getLockMode());
+        self::assertSame(LockMode::NONE, $query->getHint(Query::HINT_LOCK_MODE));
+    }
+
     public function testFree(): void
     {
         $query = $this->entityManager->createQuery('select u from Doctrine\Tests\Models\CMS\CmsUser u where u.username = ?1');

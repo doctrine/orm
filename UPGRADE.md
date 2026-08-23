@@ -186,6 +186,33 @@ and directly start using native lazy objects.
 
 # Upgrade to 3.7
 
+## Deprecated `Doctrine\ORM\Query\AST\TypedExpression`
+
+Implement `Doctrine\ORM\Query\AST\ExpressionWithReturnType` instead, which exposes
+the DBAL type name directly.
+
+```diff
+-use Doctrine\DBAL\Types\Type;
+ use Doctrine\DBAL\Types\Types;
+-use Doctrine\ORM\Query\AST\TypedExpression;
++use Doctrine\ORM\Query\AST\ExpressionWithReturnType;
+
+-class MyFunction extends FunctionNode implements TypedExpression
++class MyFunction extends FunctionNode implements ExpressionWithReturnType
+ {
+-    public function getReturnType(): Type
++    public function getReturnTypeName(): string
+     {
+-        return Type::getType(Types::INTEGER);
++        return Types::INTEGER;
+     }
+ }
+```
+
+Libraries that need to support older ORM versions can safely implement both
+interfaces at the same time: `SqlWalker` prefers `ExpressionWithReturnType`
+when available and no deprecation is triggered.
+
 ## Deprecated using strings or null as sort directions
 
 PHP 8.6 provides a native `\SortDirection` enum that should be used instead of
