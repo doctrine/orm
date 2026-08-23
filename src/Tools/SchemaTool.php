@@ -478,7 +478,7 @@ class SchemaTool
             // Always retrieve the schema (listener may have mutated it)
             $schema = $tableEventArgs->getSchema();
 
-            // If the listener mutated the table, we need to replace it in the schema
+                // If the listener mutated the table, we need to replace it in the schema
             if ($tableEventArgs->classTableWasMutated()) {
                 $originalTableName = $table->getObjectName();
                 $newTable          = $tableEventArgs->getClassTable();
