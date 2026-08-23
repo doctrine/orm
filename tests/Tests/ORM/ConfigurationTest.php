@@ -37,7 +37,7 @@ class ConfigurationTest extends TestCase
     {
         self::assertNull($this->configuration->getMetadataDriverImpl()); // defaults
 
-        $metadataDriver = $this->createMock(MappingDriver::class);
+        $metadataDriver = $this->createStub(MappingDriver::class);
         $this->configuration->setMetadataDriverImpl($metadataDriver);
         self::assertSame($metadataDriver, $this->configuration->getMetadataDriverImpl());
     }
@@ -45,7 +45,7 @@ class ConfigurationTest extends TestCase
     public function testSetGetQueryCache(): void
     {
         self::assertNull($this->configuration->getQueryCache()); // defaults
-        $queryCache = $this->createMock(CacheItemPoolInterface::class);
+        $queryCache = $this->createStub(CacheItemPoolInterface::class);
         $this->configuration->setQueryCache($queryCache);
         self::assertSame($queryCache, $this->configuration->getQueryCache());
     }
@@ -140,7 +140,7 @@ class ConfigurationTest extends TestCase
     public function testSetGetNamingStrategy(): void
     {
         self::assertInstanceOf(NamingStrategy::class, $this->configuration->getNamingStrategy());
-        $namingStrategy = $this->createMock(NamingStrategy::class);
+        $namingStrategy = $this->createStub(NamingStrategy::class);
         $this->configuration->setNamingStrategy($namingStrategy);
         self::assertSame($namingStrategy, $this->configuration->getNamingStrategy());
     }
@@ -148,7 +148,7 @@ class ConfigurationTest extends TestCase
     public function testSetGetQuoteStrategy(): void
     {
         self::assertInstanceOf(QuoteStrategy::class, $this->configuration->getQuoteStrategy());
-        $quoteStrategy = $this->createMock(QuoteStrategy::class);
+        $quoteStrategy = $this->createStub(QuoteStrategy::class);
         $this->configuration->setQuoteStrategy($quoteStrategy);
         self::assertSame($quoteStrategy, $this->configuration->getQuoteStrategy());
     }
@@ -158,7 +158,7 @@ class ConfigurationTest extends TestCase
     {
         self::assertInstanceOf(EntityListenerResolver::class, $this->configuration->getEntityListenerResolver());
         self::assertInstanceOf(MappingNamespace\DefaultEntityListenerResolver::class, $this->configuration->getEntityListenerResolver());
-        $resolver = $this->createMock(EntityListenerResolver::class);
+        $resolver = $this->createStub(EntityListenerResolver::class);
         $this->configuration->setEntityListenerResolver($resolver);
         self::assertSame($resolver, $this->configuration->getEntityListenerResolver());
     }
@@ -166,7 +166,7 @@ class ConfigurationTest extends TestCase
     #[Group('DDC-2183')]
     public function testSetGetSecondLevelCacheConfig(): void
     {
-        $mockClass = $this->createMock(CacheConfiguration::class);
+        $mockClass = $this->createStub(CacheConfiguration::class);
 
         self::assertNull($this->configuration->getSecondLevelCacheConfiguration());
         $this->configuration->setSecondLevelCacheConfiguration($mockClass);

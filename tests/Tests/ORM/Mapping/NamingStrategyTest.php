@@ -230,7 +230,7 @@ class NamingStrategyTest extends OrmTestCase
 
             // UnderscoreNamingStrategy
             [self::underscoreNamingLower(), 'some_class_name2_test_id', 'SomeClassName2Test', null],
-            [self::underscoreNamingLower(), 'some_class_name_id', 'SomeClassName', null, null],
+            [self::underscoreNamingLower(), 'some_class_name_id', 'SomeClassName', null],
             [self::underscoreNamingLower(), 'class_name_identifier', '\Some\Class\ClassName', 'identifier'],
             [self::underscoreNamingLower(), 'name2_test_identifier', '\Some\Class\Name2Test', 'identifier'],
             [self::underscoreNamingUpper(), 'SOME_CLASS_NAME_ID', 'SomeClassName', null],

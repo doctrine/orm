@@ -20,7 +20,7 @@ class OnClassMetadataNotFoundEventArgsTest extends TestCase
 {
     public function testEventArgsMutability(): void
     {
-        $objectManager = $this->createMock(ObjectManager::class);
+        $objectManager = $this->createStub(ObjectManager::class);
         assert($objectManager instanceof ObjectManager);
 
         $args = new OnClassMetadataNotFoundEventArgs('foo', $objectManager);
@@ -30,7 +30,7 @@ class OnClassMetadataNotFoundEventArgsTest extends TestCase
 
         self::assertNull($args->getFoundMetadata());
 
-        $metadata = $this->createMock(ClassMetadata::class);
+        $metadata = $this->createStub(ClassMetadata::class);
         assert($metadata instanceof ClassMetadata);
 
         $args->setFoundMetadata($metadata);

@@ -92,7 +92,7 @@ class ParserResultSerializationTest extends OrmFunctionalTestCase
     {
         $sqlExecutor      = new FinalizedSelectExecutor('test');
         $sqlFinalizer     = new PreparedExecutorFinalizer($sqlExecutor);
-        $resultSetMapping = $this->createMock(ResultSetMapping::class);
+        $resultSetMapping = $this->createStub(ResultSetMapping::class);
 
         $parserResult = new ParserResult();
         $parserResult->setSqlFinalizer($sqlFinalizer);
@@ -105,7 +105,7 @@ class ParserResultSerializationTest extends OrmFunctionalTestCase
         $this->assertInstanceOf(ParserResult::class, $unserialized);
         $this->assertInstanceOf(ResultSetMapping::class, $unserialized->getResultSetMapping());
         $this->assertEquals(['name' => [0]], $unserialized->getParameterMappings());
-        $this->assertEquals($sqlExecutor, $unserialized->prepareSqlExecutor($this->createMock(Query::class)));
+        $this->assertEquals($sqlExecutor, $unserialized->prepareSqlExecutor($this->createStub(Query::class)));
     }
 
     private static function parseQuery(Query $query): ParserResult

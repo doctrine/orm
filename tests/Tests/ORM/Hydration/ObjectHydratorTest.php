@@ -1324,7 +1324,7 @@ class ObjectHydratorTest extends HydrationTestCase
         $hydrator       = new ObjectHydrator($this->entityManager);
         $rowNum         = 0;
         $iterableResult = $hydrator->toIterable(
-            ArrayResultFactory::createWrapperResultFromArray($resultSet, $this->createMock(Connection::class)),
+            ArrayResultFactory::createWrapperResultFromArray($resultSet, $this->createStub(Connection::class)),
             $rsm,
         );
 

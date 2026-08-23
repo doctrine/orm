@@ -68,19 +68,19 @@ class UnitOfWorkTest extends OrmTestCase
     {
         parent::setUp();
 
-        $platform = $this->createMock(AbstractPlatform::class);
+        $platform = $this->createStub(AbstractPlatform::class);
         $platform->method('supportsIdentityColumns')
             ->willReturn(true);
 
-        $driverStatement = $this->createMock(Statement::class);
+        $driverStatement = $this->createStub(Statement::class);
 
-        $driverConnection = $this->createMock(Driver\Connection::class);
+        $driverConnection = $this->createStub(Driver\Connection::class);
         $driverConnection->method('prepare')
             ->willReturn($driverStatement);
         $driverConnection->method('lastInsertId')
             ->willReturnOnConsecutiveCalls(1, 2, 3, 4, 5, 6);
 
-        $driver = $this->createMock(Driver::class);
+        $driver = $this->createStub(Driver::class);
         $driver->method('getDatabasePlatform')
             ->willReturn($platform);
         $driver->method('connect')
@@ -568,9 +568,9 @@ class UnitOfWorkTest extends OrmTestCase
         $platform->method('supportsIdentityColumns')
             ->willReturn(true);
 
-        $driver = $this->createMock(Driver::class);
+        $driver = $this->createStub(Driver::class);
         $driver->method('connect')
-            ->willReturn($this->createMock(Driver\Connection::class));
+            ->willReturn($this->createStub(Driver\Connection::class));
         $driver->method('getDatabasePlatform')
             ->willReturn($platform);
 
@@ -685,7 +685,7 @@ class UnitOfWorkTest extends OrmTestCase
     {
         $driver = $this->createStub(Driver::class);
         $driver->method('connect')
-            ->willReturn($this->createMock(Driver\Connection::class));
+            ->willReturn($this->createStub(Driver\Connection::class));
 
         $connection        = new class (['platform' => $this->createStub(AbstractPlatform::class)], $driver) extends Connection {
             public function commit(): void

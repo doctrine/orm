@@ -27,8 +27,8 @@ class DDC2359Test extends TestCase
      */
     public function testIssue(): void
     {
-        $mockDriver    = $this->createMock(MappingDriver::class);
-        $entityManager = $this->createMock(EntityManager::class);
+        $mockDriver    = $this->createStub(MappingDriver::class);
+        $entityManager = $this->createStub(EntityManager::class);
 
         $metadataFactory   = $this->getMockBuilder(ClassMetadataFactory::class)
             ->onlyMethods(['wakeupReflection', 'validateRuntimeMetadata'])
@@ -40,7 +40,7 @@ class DDC2359Test extends TestCase
             ->onlyMethods(['getMetadataDriverImpl'])
             ->getMock();
 
-        $connection = $this->createMock(Connection::class);
+        $connection = $this->createStub(Connection::class);
 
         $configuration
             ->method('getMetadataDriverImpl')

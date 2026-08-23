@@ -1352,6 +1352,19 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
+    public function testIdentityFunctionOnInverseSideThrowsQueryException(): void
+    {
+        $this->expectExceptionMessage(
+            'A single-valued association path expression to an inverse side is not supported in DQL queries. ' .
+            'Instead of "u.address" use an explicit join.',
+        );
+
+        $this->assertInvalidSqlGeneration(
+            'SELECT IDENTITY(u.address) FROM Doctrine\Tests\Models\CMS\CmsUser u',
+            QueryException::class,
+        );
+    }
+
     public function testIdentityFunctionInJoinedSubclass(): void
     {
         //relation is in the subclass (CompanyManager) we are querying

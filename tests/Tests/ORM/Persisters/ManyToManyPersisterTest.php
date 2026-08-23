@@ -22,9 +22,9 @@ final class ManyToManyPersisterTest extends OrmTestCase
     #[Group('ManyToManyPersister')]
     public function testDeleteManyToManyCollection(): void
     {
-        $driver = $this->createMock(Driver::class);
+        $driver = $this->createSTub(Driver::class);
         $driver->method('connect')
-            ->willReturn($this->createMock(Driver\Connection::class));
+            ->willReturn($this->createSTub(Driver\Connection::class));
 
         $connection = $this->getMockBuilder(Connection::class)
             ->setConstructorArgs([[], $driver])

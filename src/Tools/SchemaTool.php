@@ -191,6 +191,7 @@ class SchemaTool
      */
     public function getSchemaFromMetadata(array $classes): Schema
     {
+        Deprecation::ignoreDeprecations('https://github.com/doctrine/dbal/pull/7389');
         // Reminder for processed classes, used for hierarchies
         $processedClasses     = [];
         $eventManager         = $this->em->getEventManager();
@@ -434,8 +435,13 @@ class SchemaTool
             }
 
             if (isset($class->table['options'])) {
-                foreach ($class->table['options'] as $key => $val) {
-                    $table->addOption($key, $val);
+                /** @phpstan-ignore function.impossibleType (method existence depends on DBAL version) */
+                if (method_exists(Schema::class, 'edit')) {
+                    $table = $table->edit()->setOptions($class->table['options'])->create();
+                } else {
+                    foreach ($class->table['options'] as $key => $val) {
+                        $table->addOption($key, $val);
+                    }
                 }
             }
 

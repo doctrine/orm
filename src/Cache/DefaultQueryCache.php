@@ -218,7 +218,7 @@ class DefaultQueryCache implements QueryCache
             throw FeatureNotImplemented::partialEntities();
         }
 
-        if (! ($key->cacheMode & Cache::MODE_PUT)) {
+        if (! ($key->cacheMode & Cache::MODE_PUT) && ! ($key->cacheMode & Cache::MODE_REFRESH)) {
             return false;
         }
 

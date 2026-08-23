@@ -60,7 +60,7 @@ class GH9230Test extends OrmFunctionalTestCase
             'json=0' => ['extra', 0, 1],
             'json=0.0' => ['extra', 0.0, 1],
             'json=false' => ['extra', false, 1],
-            'json=""' => ['extra', '', 1, ['""', '1']],
+            'json=""' => ['extra', '', 1],
             'json=null' => ['enabled', null, 1],
         ];
     }
