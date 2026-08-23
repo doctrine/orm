@@ -27,11 +27,11 @@ class ProxyFactoryTest extends OrmTestCase
 
     protected function setUp(): void
     {
-        $platform = $this->createMock(AbstractPlatform::class);
+        $platform = $this->createStub(AbstractPlatform::class);
         $platform->method('supportsIdentityColumns')
             ->willReturn(true);
 
-        $connection = $this->createMock(Connection::class);
+        $connection = $this->createStub(Connection::class);
         $connection->method('getDatabasePlatform')
             ->willReturn($platform);
 

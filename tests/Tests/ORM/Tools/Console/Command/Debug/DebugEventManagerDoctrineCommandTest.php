@@ -129,14 +129,14 @@ TXT
         $eventManager->addEventListener('preUpdate', new BarListener());
         $eventManager->addEventListener('postPersist', new BazListener());
 
-        $emMock = $this->createMock(EntityManagerInterface::class);
-        $emMock->method('getEventManager')->willReturn($eventManager);
+        $emStub = $this->createStub(EntityManagerInterface::class);
+        $emStub->method('getEventManager')->willReturn($eventManager);
 
-        $doctrineMock = $this->createMock(ManagerRegistry::class);
-        $doctrineMock->method('getDefaultManagerName')->willReturn('default');
-        $doctrineMock->method('getManager')->willReturn($emMock);
-        $doctrineMock->method('getManagerNames')->willReturn(['default' => 'entity_manager.default']);
+        $doctrineStub = $this->createStub(ManagerRegistry::class);
+        $doctrineStub->method('getDefaultManagerName')->willReturn('default');
+        $doctrineStub->method('getManager')->willReturn($emStub);
+        $doctrineStub->method('getManagerNames')->willReturn(['default' => 'entity_manager.default']);
 
-        return $doctrineMock;
+        return $doctrineStub;
     }
 }

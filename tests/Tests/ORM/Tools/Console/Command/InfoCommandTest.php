@@ -47,9 +47,9 @@ class InfoCommandTest extends OrmFunctionalTestCase
 
     public function testEmptyEntityClassNames(): void
     {
-        $mappingDriver = $this->createMock(MappingDriver::class);
-        $configuration = $this->createMock(Configuration::class);
-        $em            = $this->createMock(EntityManagerInterface::class);
+        $mappingDriver = $this->createStub(MappingDriver::class);
+        $configuration = $this->createStub(Configuration::class);
+        $em            = $this->createStub(EntityManagerInterface::class);
 
         $mappingDriver->method('getAllClassNames')
                       ->willReturn([]);
@@ -81,8 +81,8 @@ class InfoCommandTest extends OrmFunctionalTestCase
 
     public function testInvalidEntityClassMetadata(): void
     {
-        $mappingDriver = $this->createMock(MappingDriver::class);
-        $configuration = $this->createMock(Configuration::class);
+        $mappingDriver = $this->createStub(MappingDriver::class);
+        $configuration = $this->createStub(Configuration::class);
         $em            = $this->createMock(EntityManagerInterface::class);
 
         $mappingDriver->method('getAllClassNames')

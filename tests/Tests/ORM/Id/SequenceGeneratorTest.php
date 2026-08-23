@@ -16,13 +16,13 @@ class SequenceGeneratorTest extends OrmTestCase
     {
         $sequenceGenerator = new SequenceGenerator('seq', 10);
 
-        $platform = $this->createMock(AbstractPlatform::class);
+        $platform = $this->createStub(AbstractPlatform::class);
         $platform->method('getSequenceNextValSQL')
             ->willReturn('');
 
         $connection = $this->getMockBuilder(Connection::class)
             ->onlyMethods(['fetchOne', 'getDatabasePlatform'])
-            ->setConstructorArgs([[], $this->createMock(Driver::class)])
+            ->setConstructorArgs([[], $this->createStub(Driver::class)])
             ->getMock();
         $connection->method('getDatabasePlatform')
             ->willReturn($platform);

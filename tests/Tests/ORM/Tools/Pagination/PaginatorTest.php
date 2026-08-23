@@ -16,15 +16,17 @@ use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\QueryException;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Doctrine\Tests\OrmTestCase;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\MockObject\Stub;
 
 use function enum_exists;
 
 class PaginatorTest extends OrmTestCase
 {
     private Connection&MockObject $connection;
-    private EntityManagerInterface&MockObject $em;
-    private AbstractHydrator&MockObject $hydrator;
+    private EntityManagerInterface&Stub $em;
+    private AbstractHydrator&Stub $hydrator;
 
     protected function setUp(): void
     {
@@ -34,7 +36,7 @@ class PaginatorTest extends OrmTestCase
         $platform->method('supportsIdentityColumns')
             ->willReturn(true);
 
-        $driver = $this->createMock(Driver::class);
+        $driver = $this->createStub(Driver::class);
         $driver->method('getDatabasePlatform')
             ->willReturn($platform);
 
@@ -48,10 +50,11 @@ class PaginatorTest extends OrmTestCase
             ->setConstructorArgs([$this->createTestEntityManagerWithConnection($this->connection)])
             ->getMock();
 
-        $this->hydrator = $this->createMock(AbstractHydrator::class);
+        $this->hydrator = $this->createStub(AbstractHydrator::class);
         $this->em->method('newHydrator')->willReturn($this->hydrator);
     }
 
+    #[AllowMockObjectsWithoutExpectations]
     public function testExtraParametersAreStrippedWhenWalkerRemovingOriginalSelectElementsIsUsed(): void
     {
         $paramInWhere     = 1;
@@ -76,13 +79,13 @@ class PaginatorTest extends OrmTestCase
         $paginator = (new Paginator($query, true))->setUseOutputWalkers(false);
 
         $receivedParams = [];
-        $resultMock     = $this->createMock(Result::class);
+        $resultStub     = $this->createStub(Result::class);
         $this->connection
             ->method('executeQuery')
-            ->willReturnCallback(static function (string $sql, array $params) use (&$receivedParams, $resultMock): Result {
+            ->willReturnCallback(static function (string $sql, array $params) use (&$receivedParams, $resultStub): Result {
                 $receivedParams[] = $params;
 
-                return $resultMock;
+                return $resultStub;
             });
 
         $paginator->count();

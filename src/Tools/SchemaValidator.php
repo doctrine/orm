@@ -135,6 +135,11 @@ class SchemaValidator
                 return $ce;
             }
 
+            if ($assoc->isManyToOne() && count($class->identifier) === 1 && $class->identifier[0] === $fieldName) {
+                $ce[] = "The association '" . $class->name . '#' . $fieldName . "' is a many-to-one association and is the sole identifier of the entity. " .
+                        'This effectively makes the association one-to-one; use a one-to-one association instead or add another identifier field.';
+            }
+
             if (isset($assoc->id) && $targetMetadata->containsForeignIdentifier) {
                 $ce[] = "Cannot map association '" . $class->name . '#' . $fieldName . ' as identifier, because ' .
                         "the target entity '" . $targetMetadata->name . "' also maps an association as identifier.";

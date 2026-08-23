@@ -45,7 +45,7 @@ class ParserResultTest extends TestCase
     {
         $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/pull/11188');
 
-        $executor = $this->createMock(AbstractSqlExecutor::class);
+        $executor = $this->createStub(AbstractSqlExecutor::class);
         $this->parserResult->setSqlExecutor($executor);
         self::assertSame($executor, $this->parserResult->getSqlExecutor());
     }

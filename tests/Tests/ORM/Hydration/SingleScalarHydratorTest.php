@@ -112,7 +112,6 @@ class SingleScalarHydratorTest extends HydrationTestCase
                     'score' => 10, // Ignored since not part of ResultSetMapping
                 ],
             ],
-            1,
         ];
 
         // Multiple row (NOT OK), multiple columns (NOT OK)
