@@ -10,41 +10,31 @@ use Doctrine\ORM\Query\Parameter;
 use Doctrine\ORM\Query\Parser;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\ORM\Query\TreeWalker;
+use Doctrine\ORM\QueryBuilder;
 
 use function array_key_exists;
 use function array_map;
 use function assert;
+use function is_array;
 use function is_string;
 
 /**
- * Provides the implementation shared by {@see Paginator} and {@see CursorPaginator}.
+ * Provides the implementation shared by {@see Paginator}, {@see OffsetPaginator}
+ * and {@see CursorPaginator}.
+ *
+ * Every method takes the query it works on as an argument, so that the
+ * stateless paginators can serve any query.
  *
  * @internal
  */
 trait PaginatorQuery
 {
-    private int|null $count             = null;
+    /**
+     * Whether to force the use of an output walker. Null lets the paginator
+     * decide. The legacy {@see Paginator} exposes a setter for it, the
+     * stateless paginators take it as a constructor argument.
+     */
     private bool|null $useOutputWalkers = null;
-
-    /**
-     * Returns whether the paginator will use an output walker.
-     */
-    public function getUseOutputWalkers(): bool|null
-    {
-        return $this->useOutputWalkers;
-    }
-
-    /**
-     * Sets whether the paginator will use an output walker.
-     *
-     * @return $this
-     */
-    public function setUseOutputWalkers(bool|null $useOutputWalkers): static
-    {
-        $this->useOutputWalkers = $useOutputWalkers;
-
-        return $this;
-    }
 
     /**
      * Determines whether to use an output walker for the query.
@@ -56,6 +46,11 @@ trait PaginatorQuery
         }
 
         return $this->useOutputWalkers;
+    }
+
+    private function resolveQuery(Query|QueryBuilder $query): Query
+    {
+        return $query instanceof QueryBuilder ? $query->getQuery() : $query;
     }
 
     private function cloneQuery(Query $query): Query
@@ -77,19 +72,19 @@ trait PaginatorQuery
      *
      * @return mixed[]
      */
-    private function convertWhereInIdentifiersToDatabaseValues(array $identifiers): array
+    private function convertWhereInIdentifiersToDatabaseValues(Query $query, array $identifiers): array
     {
-        $query = $this->cloneQuery($this->query);
-        $query->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, RootTypeWalker::class);
+        $typeQuery = $this->cloneQuery($query);
+        $typeQuery->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, RootTypeWalker::class);
 
-        $connection = $this->query->getEntityManager()->getConnection();
-        $type       = $query->getSQL();
+        $connection = $query->getEntityManager()->getConnection();
+        $type       = $typeQuery->getSQL();
         assert(is_string($type));
 
         return array_map(static fn ($id): mixed => $connection->convertToDatabaseValue($id, $type), $identifiers);
     }
 
-    private function getCountQuery(): Query
+    private function getCountQuery(Query $query): Query
     {
         /*
             As opposed to using self::cloneQuery, the following code does not transfer
@@ -100,11 +95,11 @@ trait PaginatorQuery
             In the case of using output walkers, we are even creating a new RSM down below.
             In the case of using a tree walker, we want to have a new RSM created by the parser.
         */
-        $countQuery = new Query($this->query->getEntityManager());
-        $countQuery->setDQL($this->query->getDQL());
-        $countQuery->setParameters(clone $this->query->getParameters());
+        $countQuery = new Query($query->getEntityManager());
+        $countQuery->setDQL($query->getDQL());
+        $countQuery->setParameters(clone $query->getParameters());
         $countQuery->setCacheable(false);
-        foreach ($this->query->getHints() as $name => $value) {
+        foreach ($query->getHints() as $name => $value) {
             $countQuery->setHint($name, $value);
         }
 
@@ -128,6 +123,64 @@ trait PaginatorQuery
         $countQuery->setFirstResult(0)->setMaxResults(null);
 
         return $countQuery;
+    }
+
+    /**
+     * Executes the query for the given offset window and returns the entities.
+     *
+     * Shared by {@see Paginator} and {@see OffsetPaginator}: when a to-many
+     * collection is fetch-joined, it uses the ID subquery + WHERE IN strategy to
+     * return the correct number of root entities despite duplicate rows.
+     *
+     * The result keys are preserved (e.g. for DQL ``INDEX BY``); callers that
+     * need a list should apply {@see array_values()} themselves.
+     *
+     * @return array<mixed>
+     */
+    private function getResultForOffset(Query $query, int $offset, int|null $length, bool $fetchJoinCollection): array
+    {
+        if ($fetchJoinCollection && $length !== null) {
+            $subQuery = $this->cloneQuery($query);
+
+            if ($this->useOutputWalker($subQuery)) {
+                $subQuery->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, LimitSubqueryOutputWalker::class);
+            } else {
+                $this->appendTreeWalker($subQuery, LimitSubqueryWalker::class);
+                $this->unbindUnusedQueryParams($subQuery);
+            }
+
+            $subQuery->setFirstResult($offset)->setMaxResults($length);
+
+            $foundIdRows = $subQuery->getScalarResult();
+
+            // don't do this for an empty id array
+            if ($foundIdRows === []) {
+                return [];
+            }
+
+            $whereInQuery = $this->cloneQuery($query);
+            $ids          = array_map('current', $foundIdRows);
+
+            $this->appendTreeWalker($whereInQuery, WhereInWalker::class);
+            $whereInQuery->setHint(WhereInWalker::HINT_PAGINATOR_HAS_IDS, true);
+            $whereInQuery->setFirstResult(0)->setMaxResults(null);
+            $whereInQuery->setCacheable($query->isCacheable());
+
+            $databaseIds = $this->convertWhereInIdentifiersToDatabaseValues($query, $ids);
+            $whereInQuery->setParameter(WhereInWalker::PAGINATOR_ID_ALIAS, $databaseIds);
+
+            $result = $whereInQuery->getResult($query->getHydrationMode());
+        } else {
+            $result = $this->cloneQuery($query)
+                ->setMaxResults($length)
+                ->setFirstResult($offset)
+                ->setCacheable($query->isCacheable())
+                ->getResult($query->getHydrationMode());
+        }
+
+        assert(is_array($result));
+
+        return $result;
     }
 
     /**

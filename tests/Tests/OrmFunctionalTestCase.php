@@ -183,9 +183,9 @@ use function array_slice;
 use function assert;
 use function explode;
 use function get_debug_type;
-use function getenv;
 use function implode;
 use function is_object;
+use function method_exists;
 use function sprintf;
 use function str_contains;
 use function strtolower;
@@ -908,11 +908,14 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
         $config->setMetadataCache(self::$metadataCache);
         $config->setQueryCache(self::$queryCache);
 
+        $config->setUseDbalEditorApi(method_exists(Schema::class, 'edit')
+            && $this->getEnv('ENABLE_DBAL_EDITOR_API', true));
+
         if ($this->resultCache !== null) {
             $config->setResultCache($this->resultCache);
         }
 
-        $enableSecondLevelCache = getenv('ENABLE_SECOND_LEVEL_CACHE');
+        $enableSecondLevelCache = $this->getEnv('ENABLE_SECOND_LEVEL_CACHE', false);
 
         if ($this->isSecondLevelCacheEnabled || $enableSecondLevelCache) {
             $cacheConfig = new CacheConfiguration();

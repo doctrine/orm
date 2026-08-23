@@ -26,6 +26,7 @@ final class JoinColumnMappingTest extends TestCase
         $mapping->nullable             = true;
         $mapping->referencedColumnName = 'baz';
         $mapping->options              = ['foo' => 'bar'];
+        $mapping->foreignKeyName       = 'fk_foo_bar';
 
         $resurrectedMapping = unserialize(serialize($mapping));
         assert($resurrectedMapping instanceof JoinColumnMapping);
@@ -40,5 +41,19 @@ final class JoinColumnMappingTest extends TestCase
         self::assertTrue($resurrectedMapping->nullable);
         self::assertSame('baz', $resurrectedMapping->referencedColumnName);
         self::assertSame(['foo' => 'bar'], $resurrectedMapping->options);
+        self::assertSame('fk_foo_bar', $resurrectedMapping->foreignKeyName);
+    }
+
+    public function testFromMappingArrayIncludesForeignKeyName(): void
+    {
+        $mapping = JoinColumnMapping::fromMappingArray([
+            'name' => 'user_id',
+            'referencedColumnName' => 'id',
+            'foreignKeyName' => 'fk_article_user',
+        ]);
+
+        self::assertSame('user_id', $mapping->name);
+        self::assertSame('id', $mapping->referencedColumnName);
+        self::assertSame('fk_article_user', $mapping->foreignKeyName);
     }
 }

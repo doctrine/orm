@@ -116,10 +116,11 @@ interface EntityManagerInterface extends ObjectManager
      *
      * @param string        $className   The class name of the entity to find.
      * @param mixed         $id          The identity of the entity to find.
-     * @param LockMode|null $lockMode    The lock mode or NULL if no specific lock mode
-     *                                   should be used during the search.
+     * @param LockMode|null $lockMode    One of the \Doctrine\DBAL\LockMode::* constants.
+     *                                   Passing NULL is deprecated, use LockMode::NONE
+     *                                   instead.
      * @param int|null      $lockVersion The version of the entity to find when using
-     *                                   optimistic locking.
+     *                                       optimistic locking.
      * @phpstan-param class-string<T> $className
      *
      * @return object|null The entity instance or NULL if the entity can not be found.
@@ -133,21 +134,22 @@ interface EntityManagerInterface extends ObjectManager
      * @template T of object
      */
     #[Override]
-    public function find(string $className, mixed $id, LockMode|null $lockMode = null, int|null $lockVersion = null): object|null;
+    public function find(string $className, mixed $id, LockMode|null $lockMode = LockMode::NONE, int|null $lockVersion = null): object|null;
 
     /**
      * Refreshes the persistent state of an object from the database,
      * overriding any local changes that have not yet been persisted.
      *
-     * @param LockMode|null $lockMode The lock mode or NULL if no specific lock mode
-     *                                should be used during the search.
+     * @param LockMode|null $lockMode One of the \Doctrine\DBAL\LockMode::* constants.
+     *                                Passing NULL is deprecated, use LockMode::NONE
+     *                                instead.
      *
      * @throws ORMInvalidArgumentException
      * @throws ORMException
      * @throws TransactionRequiredException
      */
     #[Override]
-    public function refresh(object $object, LockMode|null $lockMode = null): void;
+    public function refresh(object $object, LockMode|null $lockMode = LockMode::NONE): void;
 
     /**
      * Gets a reference to the entity identified by the given type and identifier

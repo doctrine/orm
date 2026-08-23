@@ -53,7 +53,7 @@ class GH11501Test extends OrmFunctionalTestCase
 }
 
 #[ORM\Entity]
-#[ORM\Table(name: 'one_to_many_sti_test_entities_parent_join')]
+#[ORM\Table(name: 'one_to_many_single_table_inheritance_test_entities_parent_join')]
 #[ORM\InheritanceType('SINGLE_TABLE')]
 #[ORM\DiscriminatorColumn(name: 'type', type: 'string')]
 #[ORM\DiscriminatorMap([
@@ -68,7 +68,11 @@ class GH11501AbstractTestEntity
     public int $id;
 
     #[ORM\ManyToOne(targetEntity: 'GH11501TestEntityHolder', inversedBy: 'testEntities')]
-    #[ORM\JoinColumn(name: 'test_entity_holder_id', referencedColumnName: 'id')]
+    #[ORM\JoinColumn(
+        name: 'test_entity_holder_id',
+        referencedColumnName: 'id',
+        foreignKeyName: 'fk_test_entity_holder_id', // Override the name so it is short enough for MySQL
+    )]
     public GH11501TestEntityHolder $testEntityHolder;
 }
 

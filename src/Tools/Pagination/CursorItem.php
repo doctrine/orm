@@ -7,7 +7,7 @@ namespace Doctrine\ORM\Tools\Pagination;
 /**
  * Represents a paginated item with its associated cursor.
  *
- * @template T
+ * @template-covariant T
  */
 final class CursorItem
 {
