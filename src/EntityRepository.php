@@ -12,6 +12,7 @@ use Doctrine\DBAL\LockMode;
 use Doctrine\Inflector\Inflector;
 use Doctrine\Inflector\InflectorFactory;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Query\Expr;
 use Doctrine\ORM\Query\ResultSetMappingBuilder;
 use Doctrine\ORM\Repository\Exception\InvalidMagicMethodCall;
 use Doctrine\Persistence\ObjectRepository;
@@ -187,6 +188,11 @@ class EntityRepository implements ObjectRepository, Selectable
     protected function getEntityManager(): EntityManagerInterface
     {
         return $this->em;
+    }
+
+    final protected function expr(): Expr
+    {
+        return $this->em->getExpressionBuilder();
     }
 
     /** @phpstan-return ClassMetadata<T> */

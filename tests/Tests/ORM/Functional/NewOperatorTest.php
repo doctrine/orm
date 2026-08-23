@@ -266,6 +266,47 @@ class NewOperatorTest extends OrmFunctionalTestCase
         self::assertEquals(123, $result[2]->phonenumbers);
     }
 
+    public function testShouldSupportNullLiteralExpression(): void
+    {
+        $dql = "
+            SELECT
+                new Doctrine\Tests\Models\CMS\CmsUserDTO(
+                    u.name,
+                    'fabio.bat.silva@gmail.com',
+                    null,
+                    123
+                )
+            FROM
+                Doctrine\Tests\Models\CMS\CmsUser u
+            ORDER BY
+                u.name";
+
+        $query  = $this->_em->createQuery($dql);
+        $result = $query->getResult();
+
+        self::assertCount(3, $result);
+
+        self::assertInstanceOf(CmsUserDTO::class, $result[0]);
+        self::assertInstanceOf(CmsUserDTO::class, $result[1]);
+        self::assertInstanceOf(CmsUserDTO::class, $result[2]);
+
+        self::assertEquals($this->fixtures[0]->name, $result[0]->name);
+        self::assertEquals($this->fixtures[1]->name, $result[1]->name);
+        self::assertEquals($this->fixtures[2]->name, $result[2]->name);
+
+        self::assertEquals('fabio.bat.silva@gmail.com', $result[0]->email);
+        self::assertEquals('fabio.bat.silva@gmail.com', $result[1]->email);
+        self::assertEquals('fabio.bat.silva@gmail.com', $result[2]->email);
+
+        self::assertNull($result[0]->address);
+        self::assertNull($result[1]->address);
+        self::assertNull($result[2]->address);
+
+        self::assertEquals(123, $result[0]->phonenumbers);
+        self::assertEquals(123, $result[1]->phonenumbers);
+        self::assertEquals(123, $result[2]->phonenumbers);
+    }
+
     public function testShouldSupportCaseExpression(): void
     {
         $dql = "
