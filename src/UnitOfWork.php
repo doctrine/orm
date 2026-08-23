@@ -35,6 +35,7 @@ use Doctrine\ORM\Internal\UnitOfWork\InsertBatch;
 use Doctrine\ORM\Mapping\AssociationMapping;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\MappingException;
+use Doctrine\ORM\Mapping\PropertyAccessors\PropertyAccessorFactory;
 use Doctrine\ORM\Mapping\PropertyAccessors\ReadonlyAccessor;
 use Doctrine\ORM\Mapping\ToManyInverseSideMapping;
 use Doctrine\ORM\Persisters\Collection\CollectionPersister;
@@ -57,7 +58,10 @@ use function array_chunk;
 use function array_combine;
 use function array_diff_key;
 use function array_filter;
+use function array_flip;
+use function array_intersect_key;
 use function array_key_exists;
+use function array_keys;
 use function array_map;
 use function array_sum;
 use function array_values;
@@ -292,6 +296,22 @@ class UnitOfWork implements PropertyChangedListener
      * @var array<int, true>
      */
     private array $readOnlyObjects = [];
+
+    /**
+     * Maps OIDs of native lazy objects that are not (yet) fully loaded to the
+     * list of scalar field names that are actually known to be loaded: either
+     * the fields selected by a partial DQL query, or an empty list for a
+     * to-one association proxy that hasn't been initialized at all.
+     *
+     * Used during lazy init to determine precisely which fields must not be
+     * overwritten from the full load, and by computeChangeSet() as the source
+     * of truth for which fields to diff — trusted over inferring the same
+     * thing from the shape of originalEntityData, which can be legitimately
+     * empty for other reasons.
+     *
+     * @var array<int, list<string>>
+     */
+    private array $partialObjectLoadedFields = [];
 
     /**
      * Map of Entity Class-Names and corresponding IDs that should eager loaded when requested.
@@ -653,12 +673,17 @@ class UnitOfWork implements PropertyChangedListener
         } else {
             // Entity is "fully" MANAGED: it was already fully persisted before
             // and we have a copy of the original data
-            $originalData = $this->originalEntityData[$oid];
-            $changeSet    = [];
+            $originalData  = $this->originalEntityData[$oid];
+            $partialFields = $this->partialObjectLoadedFields[$oid] ?? null;
+            $changeSet     = [];
 
             foreach ($actualData as $propName => $actualValue) {
-                // skip field, its a partially omitted one!
-                if (! (isset($originalData[$propName]) || array_key_exists($propName, $originalData))) {
+                if ($partialFields !== null) {
+                    if (! in_array($propName, $partialFields, true)) {
+                        continue;
+                    }
+                } elseif (! (isset($originalData[$propName]) || array_key_exists($propName, $originalData))) {
+                    // skip field, its a partially omitted one!
                     continue;
                 }
 
@@ -2318,6 +2343,7 @@ class UnitOfWork implements PropertyChangedListener
         $this->collectionUpdates                =
         $this->extraUpdates                     =
         $this->readOnlyObjects                  =
+        $this->partialObjectLoadedFields        =
         $this->pendingCollectionElementRemovals =
         $this->visitedCollections               =
         $this->eagerLoadingEntities             =
@@ -2393,6 +2419,11 @@ class UnitOfWork implements PropertyChangedListener
         $id     = $this->identifierFlattener->flattenIdentifier($class, $data);
         $idHash = self::getIdHashByIdentifier($id);
 
+        // Holds already-loaded field data when a partial proxy is being fully initialized.
+        // Used to avoid overwriting user-modified fields and to preserve the partial snapshot
+        // in originalEntityData for correct changeset computation.
+        $existingData = [];
+
         if (isset($this->identityMap[$class->rootEntityName][$idHash])) {
             $entity = $this->identityMap[$class->rootEntityName][$idHash];
             $oid    = spl_object_id($entity);
@@ -2411,30 +2442,100 @@ class UnitOfWork implements PropertyChangedListener
                 }
             }
 
-            if ($this->isUninitializedObject($entity)) {
-                $class->reflClass->markLazyObjectAsInitialized($entity);
-            } else {
-                if (
-                    ! isset($hints[Query::HINT_REFRESH])
-                    || (isset($hints[Query::HINT_REFRESH_ENTITY]) && $hints[Query::HINT_REFRESH_ENTITY] !== $entity)
-                ) {
-                    return $entity;
-                }
+            // When a partial proxy (native lazy ghost with only some fields loaded) is being
+            // fully initialized by the lazy ghost initializer, HINT_REFRESH_ENTITY is set to
+            // the proxy itself. Capture the already-loaded field snapshot before overwriting
+            // so that (a) user modifications to partial fields are preserved and (b) the
+            // changeset snapshot reflects the original DB values from the partial query.
+            // Note: $em->refresh() does NOT set HINT_REFRESH_ENTITY, so explicit refreshes
+            // skip this and always do a full overwrite regardless of partial-object status.
+            if (
+                isset($this->partialObjectLoadedFields[$oid], $hints[Query::HINT_REFRESH_ENTITY])
+                && $hints[Query::HINT_REFRESH_ENTITY] === $entity
+            ) {
+                // Restrict $existingData to only the scalar fields loaded in the original
+                // partial query. Other entries in originalEntityData (e.g. association
+                // snapshots added during hydration) must not block the full load from
+                // initialising those fields on the ghost.
+                $partialFields = $this->partialObjectLoadedFields[$oid];
+                $existingData  = array_intersect_key(
+                    $this->originalEntityData[$oid] ?? [],
+                    array_flip($partialFields),
+                );
             }
 
-            $this->originalEntityData[$oid] = $data;
+            if ($this->isUninitializedObject($entity)) {
+                $class->reflClass->markLazyObjectAsInitialized($entity);
+            } elseif (
+                ! isset($hints[Query::HINT_REFRESH])
+                || (isset($hints[Query::HINT_REFRESH_ENTITY]) && $hints[Query::HINT_REFRESH_ENTITY] !== $entity)
+            ) {
+                return $entity;
+            }
+
+            // Merge rather than replace when initializing a partial proxy: existing partial-load
+            // snapshot values take priority so the changeset can detect changes made before lazy
+            // init fired. Fields not yet loaded (not in $existingData) are added from $data.
+            // For regular proxies and explicit refreshes $existingData is empty, so this is
+            // equivalent to a plain assignment.
+            $this->originalEntityData[$oid] = $existingData + $data;
+
+            // Whichever way we got here (lazy ghost initializer, find(), or an explicit
+            // refresh()), $data is always a complete row: the early return above is the
+            // only path left for a caller supplying anything less. The entity can no
+            // longer be considered partially loaded.
+            unset($this->partialObjectLoadedFields[$oid]);
         } else {
-            $entity = $class->newInstance();
-            $oid    = spl_object_id($entity);
+            $allowsPartialLazyObject = isset($hints['isPartial']) && $hints['isPartial'];
+            if ($allowsPartialLazyObject) {
+                $entity = $this->em->getProxyFactory()->getProxy($class->name, $id, false);
+
+                // For each embeddable create a lazy ghost whose initializer
+                // loads the parent entity, so that only accessing an unloaded
+                // embedded field triggers a SELECT rather than loading eagerly.
+                // embeddedClasses is ordered: top-level entries appear before
+                // nested ones (which carry a declaredField), so the loop can
+                // safely reference already-created parent ghosts.
+                $embeddableGhosts = [];
+                foreach ($class->embeddedClasses as $property => $embeddableMapping) {
+                    $embeddableGhost             = $this->em->getProxyFactory()->getEmbeddableProxy(
+                        $embeddableMapping->class,
+                        $entity,
+                        $id,
+                    );
+                    $embeddableGhosts[$property] = $embeddableGhost;
+
+                    if ($embeddableMapping->declaredField !== null) {
+                        // Nested embeddable: wire it onto its parent embeddable ghost.
+                        PropertyAccessorFactory::createPropertyAccessor(
+                            $class->embeddedClasses[$embeddableMapping->declaredField]->class,
+                            $embeddableMapping->originalField,
+                        )->setValue($embeddableGhosts[$embeddableMapping->declaredField], $embeddableGhost);
+                    } else {
+                        // Top-level embeddable: wire it directly onto the entity ghost.
+                        $class->propertyAccessors[$property]->setValue($entity, $embeddableGhost);
+                    }
+                }
+            } else {
+                $entity = $class->newInstance();
+            }
+
+            $oid = spl_object_id($entity);
             $this->registerManaged($entity, $id, $data);
 
             if (isset($hints[Query::HINT_READ_ONLY]) && $hints[Query::HINT_READ_ONLY] === true) {
                 $this->readOnlyObjects[$oid] = true;
             }
+
+            if ($allowsPartialLazyObject) {
+                $this->markAsPartiallyLoaded($entity, array_keys(
+                    array_intersect_key($data, $class->fieldMappings),
+                ));
+            }
         }
 
         foreach ($data as $field => $value) {
-            if (isset($class->fieldMappings[$field])) {
+            if (isset($class->fieldMappings[$field]) && ! array_key_exists($field, $existingData)) {
                 $class->propertyAccessors[$field]->setValue($entity, $value);
             }
         }
@@ -2555,7 +2656,7 @@ class UnitOfWork implements PropertyChangedListener
                                 // We are negating the condition here. Other cases will assume it is valid!
                                 case $hints['fetchMode'][$class->name][$field] !== ClassMetadata::FETCH_EAGER:
                                     $newValue = $this->em->getProxyFactory()->getProxy($assoc->targetEntity, $normalizedAssociatedId);
-                                    $this->registerManaged($newValue, $associatedId, []);
+                                    $this->registerManagedProxy($newValue, $associatedId);
                                     break;
 
                                 // Deferred eager load only works for single identifier classes
@@ -2566,7 +2667,7 @@ class UnitOfWork implements PropertyChangedListener
                                     $this->eagerLoadingEntities[$targetClass->rootEntityName][$relatedIdHash] = current($normalizedAssociatedId);
 
                                     $newValue = $this->em->getProxyFactory()->getProxy($assoc->targetEntity, $normalizedAssociatedId);
-                                    $this->registerManaged($newValue, $associatedId, []);
+                                    $this->registerManagedProxy($newValue, $associatedId);
                                     break;
 
                                 default:
@@ -2982,6 +3083,30 @@ class UnitOfWork implements PropertyChangedListener
         $this->originalEntityData[$oid] = $data;
 
         $this->addToIdentityMap($entity);
+    }
+
+    /**
+     * INTERNAL:
+     * Registers an uninitialized reference/association proxy as managed,
+     * i.e. an entity obtained via {@see \Doctrine\ORM\Proxy\ProxyFactory::getProxy()}
+     * of which no field has been loaded yet.
+     *
+     * @param mixed[] $id The identifier values.
+     */
+    public function registerManagedProxy(object $entity, array $id): void
+    {
+        $this->registerManaged($entity, $id, []);
+        $this->markAsPartiallyLoaded($entity, []);
+    }
+
+    /**
+     * @see self::$partialObjectLoadedFields
+     *
+     * @param list<string> $loadedFields
+     */
+    private function markAsPartiallyLoaded(object $entity, array $loadedFields): void
+    {
+        $this->partialObjectLoadedFields[spl_object_id($entity)] = $loadedFields;
     }
 
     /* PropertyChangedListener implementation */

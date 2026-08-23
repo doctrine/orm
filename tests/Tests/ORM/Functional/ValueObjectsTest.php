@@ -199,6 +199,8 @@ class ValueObjectsTest extends OrmFunctionalTestCase
         self::assertEquals('12345', $person->address->zip);
         self::assertEquals('England', $person->address->country->name);
 
+        $uow = $this->_em->getUnitOfWork();
+
         // Clear the EM and prove that the embeddable can be the subject of a partial query.
         $this->_em->clear();
 
@@ -208,12 +210,28 @@ class ValueObjectsTest extends OrmFunctionalTestCase
             ->setParameter('name', 'Karl')
             ->getSingleResult();
 
-        // Selected field must be equal, all other fields must be null.
+        // Immediately after loading: the entity ghost and its embedded address ghost
+        // are both uninitialized — no SELECT has been issued yet.
+        self::assertTrue($uow->isUninitializedObject($person));
+        self::assertTrue($uow->isUninitializedObject($person->address));
+
+        // Accessing the pre-loaded field (city) does NOT trigger lazy init.
         self::assertEquals('Gosport', $person->address->city);
-        self::assertNull($person->address->street);
-        self::assertNull($person->address->zip);
-        self::assertNull($person->address->country);
-        self::assertNull($person->name);
+        self::assertTrue($uow->isUninitializedObject($person));
+        self::assertTrue($uow->isUninitializedObject($person->address));
+
+        // Accessing an unloaded embedded field triggers the embeddable ghost's
+        // lazy initializer, which calls loadById on the parent entity.
+        // Both the embeddable ghost and the parent entity are now initialized.
+        self::assertEquals('Foo', $person->address->street);
+        self::assertFalse($uow->isUninitializedObject($person));
+        self::assertFalse($uow->isUninitializedObject($person->address));
+
+        // All remaining fields are now available without further queries.
+        self::assertEquals('12345', $person->address->zip);
+        self::assertNotNull($person->address->country);
+        self::assertEquals('England', $person->address->country->name);
+        self::assertEquals('Karl', $person->name);
 
         // Clear the EM and prove that the embeddable can be the subject of a partial query regardless of attributes positions.
         $this->_em->clear();
@@ -224,12 +242,22 @@ class ValueObjectsTest extends OrmFunctionalTestCase
             ->setParameter('name', 'Karl')
             ->getSingleResult();
 
-        // Selected field must be equal, all other fields must be null.
+        // Same lazy-loading semantics regardless of field order in the DQL.
+        self::assertTrue($uow->isUninitializedObject($person));
+        self::assertTrue($uow->isUninitializedObject($person->address));
+
         self::assertEquals('Gosport', $person->address->city);
-        self::assertNull($person->address->street);
-        self::assertNull($person->address->zip);
-        self::assertNull($person->address->country);
-        self::assertNull($person->name);
+        self::assertTrue($uow->isUninitializedObject($person));
+        self::assertTrue($uow->isUninitializedObject($person->address));
+
+        self::assertEquals('Foo', $person->address->street);
+        self::assertFalse($uow->isUninitializedObject($person));
+        self::assertFalse($uow->isUninitializedObject($person->address));
+
+        self::assertEquals('12345', $person->address->zip);
+        self::assertNotNull($person->address->country);
+        self::assertEquals('England', $person->address->country->name);
+        self::assertEquals('Karl', $person->name);
     }
 
     public function testDqlWithNonExistentEmbeddableField(): void

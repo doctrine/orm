@@ -405,7 +405,7 @@ class EntityManager implements EntityManagerInterface
 
         $entity = $this->proxyFactory->getProxy($class->name, $sortedId);
 
-        $this->unitOfWork->registerManaged($entity, $sortedId, []);
+        $this->unitOfWork->registerManagedProxy($entity, $sortedId);
 
         return $entity;
     }

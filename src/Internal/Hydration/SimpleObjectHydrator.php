@@ -41,6 +41,8 @@ class SimpleObjectHydrator extends AbstractHydrator
         }
 
         $this->class = $this->getClassMetadata(reset($this->resultSetMapping()->aliasMap));
+
+        $this->hints['isPartial'] = count($this->rsm->partialAliases) > 0;
     }
 
     #[Override]
