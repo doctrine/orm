@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ORM;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
+use Doctrine\DBAL\Schema\Schema;
 use Doctrine\ORM\Cache\CacheConfiguration;
 use Doctrine\ORM\Exception\InvalidEntityRepository;
 use Doctrine\ORM\Internal\Hydration\AbstractHydrator;
@@ -22,10 +23,12 @@ use Doctrine\ORM\Query\Filter\SQLFilter;
 use Doctrine\ORM\Repository\DefaultRepositoryFactory;
 use Doctrine\ORM\Repository\RepositoryFactory;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
+use LogicException;
 use Psr\Cache\CacheItemPoolInterface;
 
 use function class_exists;
 use function is_a;
+use function method_exists;
 use function strtolower;
 
 /**
@@ -52,6 +55,26 @@ class Configuration extends \Doctrine\DBAL\Configuration
     public function getIdentityGenerationPreferences(): array
     {
         return $this->identityGenerationPreferences;
+    }
+
+    public function getUseDbalEditorApi(): bool
+    {
+        return $this->attributes['use_dbal_editor_api'] ?? false;
+    }
+
+    /**
+     * @internal
+     *
+     * When releasing this, add an UPGRADE note about MySQL's foreign key name length issue
+     */
+    public function setUseDbalEditorApi(bool $useDbalEditorApi): void
+    {
+        /** @phpstan-ignore function.impossibleType (This API is not released yet) */
+        if ($useDbalEditorApi && ! method_exists(Schema::class, 'edit')) {
+            throw new LogicException('Using the DBAL editor API requires doctrine/dbal 4.5 or higher.');
+        }
+
+        $this->attributes['use_dbal_editor_api'] = $useDbalEditorApi;
     }
 
     /**
@@ -547,5 +570,15 @@ class Configuration extends \Doctrine\DBAL\Configuration
     public function getEagerFetchBatchSize(): int
     {
         return $this->attributes['fetchModeSubselectBatchSize'] ?? 100;
+    }
+
+    public function setDefaultStringTypeSchemaLength(int $length): void
+    {
+        $this->attributes['defaultStringTypeSchemaLength'] = $length;
+    }
+
+    public function getDefaultStringTypeSchemaLength(): int
+    {
+        return $this->attributes['defaultStringTypeSchemaLength'] ?? 255;
     }
 }

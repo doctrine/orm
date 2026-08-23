@@ -9,7 +9,9 @@ use function in_array;
 
 final class JoinTableMapping
 {
-    public bool|null $quoted = null;
+    public bool|null $quoted                  = null;
+    public string|null $foreignKeyName        = null;
+    public string|null $inverseForeignKeyName = null;
 
     /** @var list<JoinColumnMapping> */
     public array $joinColumns = [];
@@ -34,6 +36,8 @@ final class JoinTableMapping
      *    joinColumns?: mixed[],
      *    inverseJoinColumns?: mixed[],
      *    schema?: string|null,
+     *    foreignKeyName?: string|null,
+     *    inverseForeignKeyName?: string|null,
      *    options?: array<string, mixed>
      * } $mappingArray
      */
@@ -45,6 +49,14 @@ final class JoinTableMapping
             if (isset($mappingArray[$key])) {
                 $mapping->$key = $mappingArray[$key];
             }
+        }
+
+        if (isset($mappingArray['foreignKeyName'])) {
+            $mapping->foreignKeyName = $mappingArray['foreignKeyName'];
+        }
+
+        if (isset($mappingArray['inverseForeignKeyName'])) {
+            $mapping->inverseForeignKeyName = $mappingArray['inverseForeignKeyName'];
         }
 
         if (isset($mappingArray['joinColumns'])) {
@@ -98,7 +110,7 @@ final class JoinTableMapping
     {
         $serialized = [];
 
-        foreach (['joinColumns', 'inverseJoinColumns', 'name', 'schema', 'options'] as $stringOrArrayKey) {
+        foreach (['joinColumns', 'inverseJoinColumns', 'name', 'schema', 'options', 'foreignKeyName', 'inverseForeignKeyName'] as $stringOrArrayKey) {
             if ($this->$stringOrArrayKey !== null) {
                 $serialized[] = $stringOrArrayKey;
             }

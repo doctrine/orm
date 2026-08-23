@@ -420,6 +420,7 @@
     <xs:attribute name="nullable" type="xs:boolean" default="true" />
     <xs:attribute name="on-delete" type="orm:fk-action" />
     <xs:attribute name="column-definition" type="xs:string" />
+    <xs:attribute name="foreign-key-name" type="xs:string" use="optional" />
     <xs:anyAttribute namespace="##other"/>
   </xs:complexType>
 
@@ -439,6 +440,8 @@
     </xs:choice>
     <xs:attribute name="name" type="xs:NMTOKEN" use="required" />
     <xs:attribute name="schema" type="xs:NMTOKEN" />
+    <xs:attribute name="foreign-key-name" type="xs:string" use="optional" />
+    <xs:attribute name="inverse-foreign-key-name" type="xs:string" use="optional" />
     <xs:anyAttribute namespace="##other"/>
   </xs:complexType>
 

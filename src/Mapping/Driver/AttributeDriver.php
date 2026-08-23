@@ -420,6 +420,14 @@ class AttributeDriver implements MappingDriver
                         $joinTable['options'] = $joinTableAttribute->options;
                     }
 
+                    if ($joinTableAttribute->foreignKeyName !== null) {
+                        $joinTable['foreignKeyName'] = $joinTableAttribute->foreignKeyName;
+                    }
+
+                    if ($joinTableAttribute->inverseForeignKeyName !== null) {
+                        $joinTable['inverseForeignKeyName'] = $joinTableAttribute->inverseForeignKeyName;
+                    }
+
                     foreach ($joinTableAttribute->joinColumns as $joinColumn) {
                         $joinTable['joinColumns'][] = $this->joinColumnToArray($joinColumn);
                     }
@@ -679,6 +687,7 @@ class AttributeDriver implements MappingDriver
      *                   onDelete: mixed,
      *                   columnDefinition: string|null,
      *                   referencedColumnName: string,
+     *                   foreignKeyName: string|null,
      *                   options?: array<string, mixed>
      *               }
      */
@@ -692,6 +701,7 @@ class AttributeDriver implements MappingDriver
             'onDelete' => $joinColumn->onDelete,
             'columnDefinition' => $joinColumn->columnDefinition,
             'referencedColumnName' => $joinColumn->referencedColumnName,
+            'foreignKeyName' => $joinColumn->foreignKeyName,
         ];
 
         if ($joinColumn->options) {

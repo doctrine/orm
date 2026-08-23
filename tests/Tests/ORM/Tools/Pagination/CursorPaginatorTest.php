@@ -13,6 +13,7 @@ use Doctrine\ORM\Decorator\EntityManagerDecorator;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Internal\Hydration\AbstractHydrator;
 use Doctrine\ORM\Query;
+use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\Tools\Pagination\Cursor;
 use Doctrine\ORM\Tools\Pagination\CursorItem;
 use Doctrine\ORM\Tools\Pagination\CursorPaginator;
@@ -48,24 +49,58 @@ class CursorPaginatorTest extends OrmTestCase
             ->getMock();
 
         $this->em = $this->getMockBuilder(EntityManagerDecorator::class)
-            ->onlyMethods(['newHydrator'])
+            ->onlyMethods(['newHydrator', 'createQuery'])
             ->setConstructorArgs([$this->createTestEntityManagerWithConnection($this->connection)])
             ->getMock();
 
         $this->hydrator = $this->createMock(AbstractHydrator::class);
         $this->em->method('newHydrator')->willReturn($this->hydrator);
+
+        // keep queries built through this entity manager (e.g. by a QueryBuilder) bound to
+        // it, so that they go through the mocked hydrator
+        $this->em->method('createQuery')->willReturnCallback(function (string $dql = ''): Query {
+            $query = new Query($this->em);
+            $query->setDQL($dql);
+
+            return $query;
+        });
     }
 
     public function testPaginatorAcceptsQueryBuilder(): void
     {
-        $qb = $this->em->createQueryBuilder()
+        $items = [(object) ['id' => 1]];
+        $this->hydrator->method('hydrateAll')->willReturn($items);
+        $result = $this->createMock(Result::class);
+        $this->connection->method('executeQuery')->willReturn($result);
+
+        // not $this->em->createQueryBuilder(): the decorator would bind the builder to the
+        // wrapped entity manager, bypassing the mocked hydrator.
+        $qb = (new QueryBuilder($this->em))
             ->select('p')
             ->from(BlogPost::class, 'p')
             ->orderBy('p.id', SortDirection::Ascending);
 
-        $paginator = new CursorPaginator($qb);
+        $page = (new CursorPaginator(10, queryProducesDuplicates: false))->paginate($qb, null);
 
-        self::assertInstanceOf(Query::class, $paginator->getQuery());
+        self::assertSame($items, $page->getItems());
+    }
+
+    public function testPaginatorIsReusableAcrossQueriesAndPages(): void
+    {
+        $this->hydrator->method('hydrateAll')->willReturn([(object) ['id' => 1]]);
+        $result = $this->createMock(Result::class);
+        $this->connection->method('executeQuery')->willReturn($result);
+
+        $query = new Query($this->em);
+        $query->setDQL('SELECT p FROM Doctrine\Tests\ORM\Tools\Pagination\BlogPost p ORDER BY p.id ASC');
+
+        $otherQuery = new Query($this->em);
+        $otherQuery->setDQL('SELECT b FROM Doctrine\Tests\ORM\Tools\Pagination\BlogPost b ORDER BY b.id ASC');
+
+        $paginator = new CursorPaginator(10, queryProducesDuplicates: false);
+
+        self::assertCount(1, $paginator->paginate($query, null));
+        self::assertCount(1, $paginator->paginate($otherQuery, null));
     }
 
     public function testHasNextPageWhenMoreResultsExist(): void
@@ -83,12 +118,11 @@ class CursorPaginatorTest extends OrmTestCase
         $query = new Query($this->em);
         $query->setDQL('SELECT p FROM Doctrine\Tests\ORM\Tools\Pagination\BlogPost p ORDER BY p.id ASC');
 
-        $paginator = new CursorPaginator($query, queryProducesDuplicates: false);
-        $paginator->paginate(null, 3);
+        $page = (new CursorPaginator(3, queryProducesDuplicates: false))->paginate($query, null);
 
-        self::assertTrue($paginator->hasNextPage());
-        self::assertFalse($paginator->hasPreviousPage());
-        self::assertSame(3, $paginator->countPageItems());
+        self::assertTrue($page->hasNextPage());
+        self::assertFalse($page->hasPreviousPage());
+        self::assertSame(3, $page->count());
     }
 
     public function testHasNoPagesOnFirstPageWithoutMoreResults(): void
@@ -101,12 +135,11 @@ class CursorPaginatorTest extends OrmTestCase
         $query = new Query($this->em);
         $query->setDQL('SELECT p FROM Doctrine\Tests\ORM\Tools\Pagination\BlogPost p ORDER BY p.id ASC');
 
-        $paginator = new CursorPaginator($query, queryProducesDuplicates: false);
-        $paginator->paginate(null, 10);
+        $page = (new CursorPaginator(10, queryProducesDuplicates: false))->paginate($query, null);
 
-        self::assertFalse($paginator->hasPreviousPage());
-        self::assertFalse($paginator->hasNextPage());
-        self::assertFalse($paginator->hasToPaginate());
+        self::assertFalse($page->hasPreviousPage());
+        self::assertFalse($page->hasNextPage());
+        self::assertFalse($page->hasToPaginate());
     }
 
     public function testGetNextCursorAsStringThrowsWhenNoNextPage(): void
@@ -119,11 +152,10 @@ class CursorPaginatorTest extends OrmTestCase
         $query = new Query($this->em);
         $query->setDQL('SELECT p FROM Doctrine\Tests\ORM\Tools\Pagination\BlogPost p ORDER BY p.id ASC');
 
-        $paginator = new CursorPaginator($query, queryProducesDuplicates: false);
-        $paginator->paginate(null, 10);
+        $page = (new CursorPaginator(10, queryProducesDuplicates: false))->paginate($query, null);
 
         $this->expectException(LogicException::class);
-        $paginator->getNextCursorAsString();
+        $page->getNextCursorAsString();
     }
 
     public function testGetPreviousCursorAsStringThrowsWhenNoPreviousPage(): void
@@ -136,11 +168,10 @@ class CursorPaginatorTest extends OrmTestCase
         $query = new Query($this->em);
         $query->setDQL('SELECT p FROM Doctrine\Tests\ORM\Tools\Pagination\BlogPost p ORDER BY p.id ASC');
 
-        $paginator = new CursorPaginator($query, queryProducesDuplicates: false);
-        $paginator->paginate(null, 10);
+        $page = (new CursorPaginator(10, queryProducesDuplicates: false))->paginate($query, null);
 
         $this->expectException(LogicException::class);
-        $paginator->getPreviousCursorAsString();
+        $page->getPreviousCursorAsString();
     }
 
     public function testGetNextCursorThrowsWhenNoNextPage(): void
@@ -153,11 +184,10 @@ class CursorPaginatorTest extends OrmTestCase
         $query = new Query($this->em);
         $query->setDQL('SELECT p FROM Doctrine\Tests\ORM\Tools\Pagination\BlogPost p ORDER BY p.id ASC');
 
-        $paginator = new CursorPaginator($query, queryProducesDuplicates: false);
-        $paginator->paginate(null, 10);
+        $page = (new CursorPaginator(10, queryProducesDuplicates: false))->paginate($query, null);
 
         $this->expectException(LogicException::class);
-        $paginator->getNextCursor();
+        $page->getNextCursor();
     }
 
     public function testGetPreviousCursorThrowsWhenNoPreviousPage(): void
@@ -170,11 +200,10 @@ class CursorPaginatorTest extends OrmTestCase
         $query = new Query($this->em);
         $query->setDQL('SELECT p FROM Doctrine\Tests\ORM\Tools\Pagination\BlogPost p ORDER BY p.id ASC');
 
-        $paginator = new CursorPaginator($query, queryProducesDuplicates: false);
-        $paginator->paginate(null, 10);
+        $page = (new CursorPaginator(10, queryProducesDuplicates: false))->paginate($query, null);
 
         $this->expectException(LogicException::class);
-        $paginator->getPreviousCursor();
+        $page->getPreviousCursor();
     }
 
     public function testGetNextCursorWhenMoreResultsExist(): void
@@ -190,10 +219,9 @@ class CursorPaginatorTest extends OrmTestCase
         $query = new Query($this->em);
         $query->setDQL('SELECT p FROM Doctrine\Tests\ORM\Tools\Pagination\BlogPost p ORDER BY p.id ASC');
 
-        $paginator = new CursorPaginator($query, queryProducesDuplicates: false);
-        $paginator->paginate(null, 1);
+        $page = (new CursorPaginator(1, queryProducesDuplicates: false))->paginate($query, null);
 
-        $nextCursor = $paginator->getNextCursor();
+        $nextCursor = $page->getNextCursor();
 
         self::assertTrue($nextCursor->isNext());
     }
@@ -211,10 +239,9 @@ class CursorPaginatorTest extends OrmTestCase
         $query = new Query($this->em);
         $query->setDQL('SELECT p FROM Doctrine\Tests\ORM\Tools\Pagination\BlogPost p ORDER BY p.id ASC');
 
-        $paginator = new CursorPaginator($query, queryProducesDuplicates: false);
-        $paginator->paginate(null, 1);
+        $page = (new CursorPaginator(1, queryProducesDuplicates: false))->paginate($query, null);
 
-        self::assertNotEmpty($paginator->getNextCursorAsString());
+        self::assertNotEmpty($page->getNextCursorAsString());
     }
 
     public function testGetPreviousCursorAsStringReturnsStringWhenPreviousPageExists(): void
@@ -230,11 +257,10 @@ class CursorPaginatorTest extends OrmTestCase
         $query = new Query($this->em);
         $query->setDQL('SELECT p FROM Doctrine\Tests\ORM\Tools\Pagination\BlogPost p ORDER BY p.id ASC');
 
-        $cursor    = (new Cursor(['p__id' => 1], true))->encodeToString();
-        $paginator = new CursorPaginator($query, queryProducesDuplicates: false);
-        $paginator->paginate($cursor, 10);
+        $cursor = (new Cursor(['p__id' => 1], true))->encodeToString();
+        $page   = (new CursorPaginator(10, queryProducesDuplicates: false))->paginate($query, $cursor);
 
-        self::assertNotEmpty($paginator->getPreviousCursorAsString());
+        self::assertNotEmpty($page->getPreviousCursorAsString());
     }
 
     public function testEmptyResultSet(): void
@@ -246,12 +272,11 @@ class CursorPaginatorTest extends OrmTestCase
         $query = new Query($this->em);
         $query->setDQL('SELECT p FROM Doctrine\Tests\ORM\Tools\Pagination\BlogPost p ORDER BY p.id ASC');
 
-        $paginator = new CursorPaginator($query, queryProducesDuplicates: false);
-        $paginator->paginate(null, 10);
+        $page = (new CursorPaginator(10, queryProducesDuplicates: false))->paginate($query, null);
 
-        self::assertSame(0, $paginator->countPageItems());
-        self::assertFalse($paginator->hasNextPage());
-        self::assertFalse($paginator->hasPreviousPage());
+        self::assertSame(0, $page->count());
+        self::assertFalse($page->hasNextPage());
+        self::assertFalse($page->hasPreviousPage());
     }
 
     public function testIteratorReturnsItems(): void
@@ -267,18 +292,17 @@ class CursorPaginatorTest extends OrmTestCase
         $query = new Query($this->em);
         $query->setDQL('SELECT p FROM Doctrine\Tests\ORM\Tools\Pagination\BlogPost p ORDER BY p.id ASC');
 
-        $paginator = new CursorPaginator($query, queryProducesDuplicates: false);
-        $paginator->paginate(null, 10);
+        $page = (new CursorPaginator(10, queryProducesDuplicates: false))->paginate($query, null);
 
         $iteratedItems = [];
-        foreach ($paginator as $item) {
+        foreach ($page as $item) {
             $iteratedItems[] = $item;
         }
 
         self::assertCount(2, $iteratedItems);
     }
 
-    public function testGetValuesReturnsRawEntities(): void
+    public function testGetItemsReturnsRawEntities(): void
     {
         $items = [
             (object) ['id' => 1],
@@ -291,17 +315,16 @@ class CursorPaginatorTest extends OrmTestCase
         $query = new Query($this->em);
         $query->setDQL('SELECT p FROM Doctrine\Tests\ORM\Tools\Pagination\BlogPost p ORDER BY p.id ASC');
 
-        $paginator = new CursorPaginator($query, queryProducesDuplicates: false);
-        $paginator->paginate(null, 10);
+        $page = (new CursorPaginator(10, queryProducesDuplicates: false))->paginate($query, null);
 
-        $values = $paginator->getValues();
+        $values = $page->getItems();
 
         self::assertCount(2, $values);
         self::assertSame($items[0], $values[0]);
         self::assertSame($items[1], $values[1]);
     }
 
-    public function testGetItemsReturnsCursorItems(): void
+    public function testGetItemsWithCursorsReturnsCursorItems(): void
     {
         $items = [
             (object) ['id' => 1],
@@ -314,10 +337,9 @@ class CursorPaginatorTest extends OrmTestCase
         $query = new Query($this->em);
         $query->setDQL('SELECT p FROM Doctrine\Tests\ORM\Tools\Pagination\BlogPost p ORDER BY p.id ASC');
 
-        $paginator = new CursorPaginator($query, queryProducesDuplicates: false);
-        $paginator->paginate(null, 10);
+        $page = (new CursorPaginator(10, queryProducesDuplicates: false))->paginate($query, null);
 
-        $cursorItems = $paginator->getItems();
+        $cursorItems = $page->getItemsWithCursors();
 
         self::assertCount(2, $cursorItems);
         self::assertInstanceOf(CursorItem::class, $cursorItems[0]);
@@ -335,11 +357,10 @@ class CursorPaginatorTest extends OrmTestCase
         $query = new Query($this->em);
         $query->setDQL('SELECT p FROM Doctrine\Tests\ORM\Tools\Pagination\BlogPost p ORDER BY p.id ASC');
 
-        $paginator = new CursorPaginator($query, queryProducesDuplicates: false);
-        $paginator->paginate(null, 10);
+        $page = (new CursorPaginator(10, queryProducesDuplicates: false))->paginate($query, null);
 
-        self::assertSame([], $paginator->getItems());
-        self::assertSame([], $paginator->getValues());
+        self::assertSame([], $page->getItemsWithCursors());
+        self::assertSame([], $page->getItems());
     }
 
     public function testPaginateWithCursorInstance(): void
@@ -355,11 +376,10 @@ class CursorPaginatorTest extends OrmTestCase
         $query = new Query($this->em);
         $query->setDQL('SELECT p FROM Doctrine\Tests\ORM\Tools\Pagination\BlogPost p ORDER BY p.id ASC');
 
-        $cursor    = new Cursor(['p.id' => 1], true);
-        $paginator = new CursorPaginator($query, queryProducesDuplicates: false);
-        $paginator->paginate($cursor, 10);
+        $cursor = new Cursor(['p.id' => 1], true);
+        $page   = (new CursorPaginator(10, queryProducesDuplicates: false))->paginate($query, $cursor);
 
-        self::assertNotEmpty($paginator->getPreviousCursorAsString());
+        self::assertNotEmpty($page->getPreviousCursorAsString());
     }
 
     public function testPaginateWithEmptyCursorTreatedAsFirstPage(): void
@@ -372,11 +392,10 @@ class CursorPaginatorTest extends OrmTestCase
         $query = new Query($this->em);
         $query->setDQL('SELECT p FROM Doctrine\Tests\ORM\Tools\Pagination\BlogPost p ORDER BY p.id ASC');
 
-        $paginator = new CursorPaginator($query, queryProducesDuplicates: false);
-        $paginator->paginate('', 10);
+        $page = (new CursorPaginator(10, queryProducesDuplicates: false))->paginate($query, '');
 
-        self::assertFalse($paginator->hasPreviousPage());
-        self::assertFalse($paginator->hasNextPage());
+        self::assertFalse($page->hasPreviousPage());
+        self::assertFalse($page->hasNextPage());
     }
 
     public function testPaginateWithPreviousCursorReversesItems(): void
@@ -395,25 +414,13 @@ class CursorPaginatorTest extends OrmTestCase
 
         $previousCursor = (new Cursor(['p__id' => 3], false))->encodeToString();
 
-        $paginator = new CursorPaginator($query, queryProducesDuplicates: false);
-        $paginator->paginate($previousCursor, 10);
+        $page = (new CursorPaginator(10, queryProducesDuplicates: false))->paginate($query, $previousCursor);
 
-        $values = $paginator->getValues();
+        $values = $page->getItems();
         self::assertCount(3, $values);
         self::assertSame(1, $values[0]->id);
         self::assertSame(2, $values[1]->id);
         self::assertSame(3, $values[2]->id);
-    }
-
-    public function testCountCurrentPageThrowsWhenPaginateNotCalled(): void
-    {
-        $query = new Query($this->em);
-        $query->setDQL('SELECT p FROM Doctrine\Tests\ORM\Tools\Pagination\BlogPost p ORDER BY p.id ASC');
-
-        $paginator = new CursorPaginator($query, queryProducesDuplicates: false);
-
-        $this->expectException(LogicException::class);
-        $paginator->countPageItems();
     }
 
     public function testPaginateThrowsInvalidCursorForNonStringNonCursorNonNull(): void
@@ -421,19 +428,15 @@ class CursorPaginatorTest extends OrmTestCase
         $query = new Query($this->em);
         $query->setDQL('SELECT p FROM Doctrine\Tests\ORM\Tools\Pagination\BlogPost p ORDER BY p.id ASC');
 
-        $paginator = new CursorPaginator($query, queryProducesDuplicates: false);
-
         $this->expectException(InvalidCursor::class);
-        $paginator->paginate(['injected' => 'array'], 10);
+        (new CursorPaginator(10, queryProducesDuplicates: false))->paginate($query, ['injected' => 'array']);
     }
 
     public function testDefaultQueryProducesDuplicatesIsTrue(): void
     {
-        $query = new Query($this->em);
-        $query->setDQL('SELECT p FROM Doctrine\Tests\ORM\Tools\Pagination\BlogPost p ORDER BY p.id ASC');
+        $paginator = new CursorPaginator(10);
 
-        $paginator = new CursorPaginator($query);
-
+        self::assertSame(10, $paginator->getLimit());
         self::assertTrue($paginator->getQueryProducesDuplicates());
     }
 
@@ -444,26 +447,29 @@ class CursorPaginatorTest extends OrmTestCase
         $this->connection->method('executeQuery')->willReturn($result);
 
         $query = new Query($this->em);
-        $query->setDQL('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u');
+        $query->setDQL('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u ORDER BY u.id ASC');
 
-        $paginator = (new CursorPaginator($query, queryProducesDuplicates: false))->setUseOutputWalkers(false);
+        $page = (new CursorPaginator(10, queryProducesDuplicates: false, useOutputWalkers: false))
+            ->paginate($query, null);
 
-        self::assertSame(42, $paginator->getTotalCount());
+        self::assertSame(42, $page->getTotalCount());
     }
 
     public function testGetTotalCountIsCached(): void
     {
         $this->hydrator->method('hydrateAll')->willReturn([[1 => 5]]);
         $result = $this->createMock(Result::class);
-        $this->connection->expects(self::once())->method('executeQuery')->willReturn($result);
+        // one executeQuery for the page query, one for the (cached) count query
+        $this->connection->expects(self::exactly(2))->method('executeQuery')->willReturn($result);
 
         $query = new Query($this->em);
-        $query->setDQL('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u');
+        $query->setDQL('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u ORDER BY u.id ASC');
 
-        $paginator = (new CursorPaginator($query, queryProducesDuplicates: false))->setUseOutputWalkers(false);
+        $page = (new CursorPaginator(10, queryProducesDuplicates: false, useOutputWalkers: false))
+            ->paginate($query, null);
 
-        self::assertSame(5, $paginator->getTotalCount());
-        self::assertSame(5, $paginator->getTotalCount());
+        self::assertSame(5, $page->getTotalCount());
+        self::assertSame(5, $page->getTotalCount());
     }
 
     public function testCloneQueryCopiesExistingHints(): void
@@ -477,10 +483,9 @@ class CursorPaginatorTest extends OrmTestCase
         $query->setDQL('SELECT p FROM Doctrine\Tests\ORM\Tools\Pagination\BlogPost p ORDER BY p.id ASC');
         $query->setHint('custom.hint', 'custom_value');
 
-        $paginator = new CursorPaginator($query, queryProducesDuplicates: false);
-        $paginator->paginate(null, 10);
+        $page = (new CursorPaginator(10, queryProducesDuplicates: false))->paginate($query, null);
 
-        self::assertSame(1, $paginator->countPageItems());
+        self::assertSame(1, $page->count());
     }
 
     public function testGetNextCursorUnwrapsManyToOneAssociationToIdentifier(): void
@@ -502,12 +507,11 @@ class CursorPaginatorTest extends OrmTestCase
         $query = new Query($this->em);
         $query->setDQL('SELECT b FROM Doctrine\Tests\ORM\Tools\Pagination\BlogPost b ORDER BY b.author ASC');
 
-        $paginator = new CursorPaginator($query, queryProducesDuplicates: false);
-        $paginator->paginate(null, 1);
+        $page = (new CursorPaginator(1, queryProducesDuplicates: false))->paginate($query, null);
 
-        self::assertTrue($paginator->hasNextPage());
+        self::assertTrue($page->hasNextPage());
 
-        $cursor = $paginator->getNextCursor();
+        $cursor = $page->getNextCursor();
         self::assertSame(42, $cursor->getParameters()['b.author']);
     }
 }

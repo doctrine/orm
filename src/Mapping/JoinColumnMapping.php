@@ -15,6 +15,7 @@ final class JoinColumnMapping
     public string|null $onDelete         = null;
     public string|null $columnDefinition = null;
     public bool|null $nullable           = null;
+    public string|null $foreignKeyName   = null;
 
     /** @var array<string, mixed>|null */
     public array|null $options = null;
@@ -36,6 +37,7 @@ final class JoinColumnMapping
      *     onDelete?: string|null,
      *     columnDefinition?: string|null,
      *     nullable?: bool|null,
+     *     foreignKeyName?: string|null,
      *     options?: array<string, mixed>|null,
      * } $mappingArray
      */
@@ -56,7 +58,17 @@ final class JoinColumnMapping
     {
         $serialized = [];
 
-        foreach (['name', 'fieldName', 'onDelete', 'columnDefinition', 'referencedColumnName', 'options'] as $stringOrArrayKey) {
+        foreach (
+            [
+                'columnDefinition',
+                'fieldName',
+                'foreignKeyName',
+                'name',
+                'onDelete',
+                'options',
+                'referencedColumnName',
+            ] as $stringOrArrayKey
+        ) {
             if ($this->$stringOrArrayKey !== null) {
                 $serialized[] = $stringOrArrayKey;
             }

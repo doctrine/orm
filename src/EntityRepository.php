@@ -75,14 +75,15 @@ class EntityRepository implements ObjectRepository, Selectable
     /**
      * Finds an entity by its primary key / identifier.
      *
-     * @param LockMode|null $lockMode The lock mode or NULL if no specific lock mode
-     *                                should be used during the search.
+     * @param LockMode|null $lockMode One of the \Doctrine\DBAL\LockMode::* constants.
+     *                                Passing NULL is deprecated, use LockMode::NONE
+     *                                instead.
      *
      * @return object|null The entity instance or NULL if the entity can not be found.
      * @phpstan-return ?T
      */
     #[Override]
-    public function find(mixed $id, LockMode|null $lockMode = null, int|null $lockVersion = null): object|null
+    public function find(mixed $id, LockMode|null $lockMode = LockMode::NONE, int|null $lockVersion = null): object|null
     {
         return $this->em->find($this->entityName, $id, $lockMode, $lockVersion);
     }

@@ -186,6 +186,65 @@ and directly start using native lazy objects.
 
 # Upgrade to 3.7
 
+## Deprecated `Doctrine\ORM\Mapping\JoinColumns` attribute
+
+Using it has no effect, it should have been removed in 3.0.0. Instead, use the
+`Doctrine\ORM\Mapping\JoinColumn` attribute multiple times.
+
+## `LockMode::NONE` is now a no-op
+
+`LockMode::NONE` means "no lock", but it used to be handled like a pessimistic
+lock mode in two places:
+
+- `EntityManager::find()` refreshed an entity that was already in the identity
+  map, discarding any in-memory changes.
+- `EntityManager::lock()` required an active transaction and ran a `SELECT`
+  statement without any lock hint.
+
+Both now do nothing, which is consistent with `EntityManager::refresh()` and
+`Query::setLockMode()`. If you relied on `find()` reloading the entity, call
+`EntityManager::refresh()` explicitly.
+
+## Deprecated passing `null` as lock mode
+
+Since `LockMode::NONE` is now a no-op, passing `null` as lock mode to
+`EntityManager::find()`, `EntityManager::refresh()` or `EntityRepository::find()`
+is deprecated as it is equivalent to passing `LockMode::NONE`. Omit the argument
+or pass `LockMode::NONE` instead.
+
+## Deprecated `Doctrine\ORM\Tools\Pagination\Paginator`
+
+Use `Doctrine\ORM\Tools\Pagination\OffsetPaginator` instead. The first result and
+the maximum number of results are no longer read implicitly from the query: they
+are passed together as a `Window` value object to `paginate()`, which returns an
+immutable, iterable `WindowPage`.
+
+```diff
+-use Doctrine\ORM\Tools\Pagination\Paginator;
++use Doctrine\ORM\Tools\Pagination\OffsetPaginator;
++use Doctrine\ORM\Tools\Pagination\Window;
+
+-$query = $entityManager->createQuery($dql)
+-    ->setFirstResult(0)
+-    ->setMaxResults(25);
++$query = $entityManager->createQuery($dql);
+
+-$paginator = new Paginator($query, fetchJoinCollection: true);
++$page = (new OffsetPaginator(fetchJoinCollection: true))
++    ->paginate($query, new Window(0, 25));
+
+-$total = count($paginator);
++$total = $page->getTotalCount();
+
+-foreach ($paginator as $post) {
++foreach ($page as $post) {
+     // ...
+ }
+```
+
+`Paginator::setUseOutputWalkers()` becomes the `useOutputWalkers` constructor
+argument of `OffsetPaginator`.
+
 ## Deprecated `Doctrine\ORM\Query\AST\TypedExpression`
 
 Implement `Doctrine\ORM\Query\AST\ExpressionWithReturnType` instead, which exposes
