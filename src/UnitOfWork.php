@@ -351,7 +351,7 @@ class UnitOfWork implements PropertyChangedListener
         if ($em->getConfiguration()->isOnRemoveEntitySetIdentifierNull()) {
             Deprecation::trigger(
                 'doctrine/orm',
-                'https://github.com/doctrine/orm/pull/XXXXX',
+                'https://github.com/doctrine/orm/pull/12578',
                 'Not disabling the "onRemoveEntitySetIdentifierNull" configuration option is deprecated.'
                 . ' Call Configuration::setOnRemoveEntitySetIdentifierNull(false) to opt into the new behavior,'
                 . ' which will become the default (and only) behavior in ORM 4.0.',

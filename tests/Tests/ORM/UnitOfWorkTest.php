@@ -117,7 +117,7 @@ class UnitOfWorkTest extends OrmTestCase
         // setUp() already constructed one UnitOfWork with the flag at its default (true),
         // which already incremented the deprecation counter once. Snapshot the counter here,
         // then construct a second UnitOfWork and assert the counter increases again.
-        $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/pull/XXXXX');
+        $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/pull/12578');
 
         new UnitOfWork($this->_emMock);
     }
@@ -126,7 +126,7 @@ class UnitOfWorkTest extends OrmTestCase
     {
         $this->_emMock->getConfiguration()->setOnRemoveEntitySetIdentifierNull(false);
 
-        $this->expectNoDeprecationWithIdentifier('https://github.com/doctrine/orm/pull/XXXXX');
+        $this->expectNoDeprecationWithIdentifier('https://github.com/doctrine/orm/pull/12578');
 
         new UnitOfWork($this->_emMock);
     }
