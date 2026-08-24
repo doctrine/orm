@@ -11,6 +11,7 @@ use Doctrine\Deprecations\PHPUnit\VerifyDeprecations;
 use Doctrine\ORM\Mapping\Driver\XmlDriver;
 use Doctrine\ORM\Tools\SchemaTool;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use LogicException;
 use PHPUnit\Framework\Attributes\IgnoreDeprecations;
 
 class DefaultTimeExpressionXmlTest extends OrmFunctionalTestCase
@@ -41,13 +42,9 @@ class DefaultTimeExpressionXmlTest extends OrmFunctionalTestCase
         );
         $this->_schemaTool = new SchemaTool($this->_em);
 
-        $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/issues/12252');
-        $this->expectNoDeprecationWithIdentifier('https://github.com/doctrine/dbal/pull/7195');
+        $this->expectException(LogicException::class);
 
         $this->createSchemaForModels(XmlLegacyTimeEntity::class);
-        $this->_em->persist($entity = new XmlLegacyTimeEntity());
-        $this->_em->flush();
-        $this->_em->find(XmlLegacyTimeEntity::class, $entity->id);
     }
 
     public function testUsingDefaultExpressionInstancesCausesNoDeprecationXmlDriver(): void
