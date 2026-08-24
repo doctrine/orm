@@ -7,20 +7,17 @@ namespace Doctrine\Tests\ORM\Functional;
 use DateTime;
 use DateTimeImmutable;
 use Doctrine\DBAL\Platforms\AbstractMySQLPlatform;
-use Doctrine\DBAL\Schema\DefaultExpression;
 use Doctrine\Deprecations\PHPUnit\VerifyDeprecations;
 use Doctrine\ORM\Mapping\Driver\XmlDriver;
 use Doctrine\ORM\Tools\SchemaTool;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use PHPUnit\Framework\Attributes\IgnoreDeprecations;
-use PHPUnit\Framework\Attributes\RequiresMethod;
 
 class DefaultTimeExpressionXmlTest extends OrmFunctionalTestCase
 {
     use VerifyDeprecations;
 
     #[IgnoreDeprecations]
-    #[RequiresMethod(DefaultExpression::class, 'toSQL')]
     public function testUsingTimeRelatedDefaultExpressionCausesAnOrmDeprecationAndNoDbalDeprecation(): void
     {
         $platform = $this->_em->getConnection()->getDatabasePlatform();
@@ -53,7 +50,6 @@ class DefaultTimeExpressionXmlTest extends OrmFunctionalTestCase
         $this->_em->find(XmlLegacyTimeEntity::class, $entity->id);
     }
 
-    #[RequiresMethod(DefaultExpression::class, 'toSQL')]
     public function testUsingDefaultExpressionInstancesCausesNoDeprecationXmlDriver(): void
     {
         $platform = $this->_em->getConnection()->getDatabasePlatform();

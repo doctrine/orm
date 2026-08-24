@@ -10,7 +10,6 @@ use Doctrine\DBAL\Schema\AbstractAsset;
 use Doctrine\DBAL\Schema\AbstractSchemaManager;
 use Doctrine\DBAL\Schema\ColumnEditor;
 use Doctrine\DBAL\Schema\ComparatorConfig;
-use Doctrine\DBAL\Schema\DefaultExpression;
 use Doctrine\DBAL\Schema\DefaultExpression\CurrentDate;
 use Doctrine\DBAL\Schema\DefaultExpression\CurrentTime;
 use Doctrine\DBAL\Schema\DefaultExpression\CurrentTimestamp;
@@ -56,7 +55,6 @@ use function count;
 use function current;
 use function implode;
 use function in_array;
-use function interface_exists;
 use function is_numeric;
 use function method_exists;
 use function preg_match;
@@ -929,7 +927,7 @@ class SchemaTool
         // the 'default' option can be overwritten here
         $options = $this->gatherColumnOptions($mapping) + $options;
 
-        if (isset($options['default']) && interface_exists(DefaultExpression::class)) {
+        if (isset($options['default'])) {
             if (
                 in_array($mapping->type, [
                     Types::DATETIME_MUTABLE,
