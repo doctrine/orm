@@ -49,6 +49,41 @@ class UnitOfWorkLifecycleTest extends OrmFunctionalTestCase
         $this->_em->getUnitOfWork()->scheduleForInsert($user);
     }
 
+    public function testRemoveStillSetsIdentifierNullByDefault(): void
+    {
+        $user           = new CmsUser();
+        $user->username = 'beberlei';
+        $user->name     = 'Benjamin';
+        $user->status   = 'active';
+        $this->_em->persist($user);
+        $this->_em->flush();
+
+        $this->_em->remove($user);
+        $this->_em->flush();
+
+        self::assertNull($user->id);
+    }
+
+    public function testRemoveDoesNotSetIdentifierNullWhenFlagIsDisabled(): void
+    {
+        $this->_em->getConfiguration()->setOnRemoveEntitySetIdentifierNull(false);
+
+        $user           = new CmsUser();
+        $user->username = 'beberlei';
+        $user->name     = 'Benjamin';
+        $user->status   = 'active';
+        $this->_em->persist($user);
+        $this->_em->flush();
+
+        $originalId = $user->id;
+        self::assertNotNull($originalId);
+
+        $this->_em->remove($user);
+        $this->_em->flush();
+
+        self::assertSame($originalId, $user->id);
+    }
+
     public function testScheduleInsertTwice(): void
     {
         $user           = new CmsUser();
