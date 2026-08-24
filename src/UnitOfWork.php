@@ -347,16 +347,6 @@ class UnitOfWork implements PropertyChangedListener
         $this->hasCache                 = $em->getConfiguration()->isSecondLevelCacheEnabled();
         $this->identifierFlattener      = new IdentifierFlattener($this, $em->getMetadataFactory());
         $this->hydrationCompleteHandler = new HydrationCompleteHandler($this->listenersInvoker, $em);
-
-        if ($em->getConfiguration()->isOnRemoveEntitySetIdentifierNull()) {
-            Deprecation::trigger(
-                'doctrine/orm',
-                'https://github.com/doctrine/orm/pull/12578',
-                'Not disabling the "onRemoveEntitySetIdentifierNull" configuration option is deprecated.'
-                . ' Call Configuration::setOnRemoveEntitySetIdentifierNull(false) to opt into the new behavior,'
-                . ' which will become the default (and only) behavior in ORM 4.0.',
-            );
-        }
     }
 
     /**
@@ -1230,6 +1220,14 @@ class UnitOfWork implements PropertyChangedListener
                 ! $class->isIdentifierNatural() &&
                 ! $class->propertyAccessors[$class->identifier[0]] instanceof ReadonlyAccessor
             ) {
+                Deprecation::trigger(
+                    'doctrine/orm',
+                    'https://github.com/doctrine/orm/pull/12578',
+                    'Not disabling the "onRemoveEntitySetIdentifierNull" configuration option is deprecated.'
+                    . ' Call Configuration::setOnRemoveEntitySetIdentifierNull(false) to opt into the new behavior,'
+                    . ' which will become the default (and only) behavior in ORM 4.0.',
+                );
+
                 $class->propertyAccessors[$class->identifier[0]]->setValue($entity, null);
             }
 

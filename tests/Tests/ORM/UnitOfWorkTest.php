@@ -12,7 +12,6 @@ use Doctrine\DBAL\Driver\Statement;
 use Doctrine\DBAL\Exception;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Schema\Name\UnquotedIdentifierFolding;
-use Doctrine\Deprecations\PHPUnit\VerifyDeprecations;
 use Doctrine\ORM\EntityNotFoundException;
 use Doctrine\ORM\Exception\EntityIdentityCollisionException;
 use Doctrine\ORM\Mapping\ClassMetadata;
@@ -39,7 +38,6 @@ use Doctrine\Tests\OrmTestCase;
 use Exception as BaseException;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Group;
-use PHPUnit\Framework\Attributes\IgnoreDeprecations;
 use PHPUnit\Framework\MockObject\Stub;
 use stdClass;
 
@@ -53,8 +51,6 @@ use function uniqid;
  */
 class UnitOfWorkTest extends OrmTestCase
 {
-    use VerifyDeprecations;
-
     /**
      * SUT
      */
@@ -109,26 +105,6 @@ class UnitOfWorkTest extends OrmTestCase
         self::assertFalse($this->_unitOfWork->isScheduledForDelete($user));
         $this->_unitOfWork->scheduleForDelete($user);
         self::assertFalse($this->_unitOfWork->isScheduledForDelete($user));
-    }
-
-    #[IgnoreDeprecations]
-    public function testConstructingUnitOfWorkTriggersDeprecationWhenOnRemoveEntitySetIdentifierNullIsLeftEnabled(): void
-    {
-        // setUp() already constructed one UnitOfWork with the flag at its default (true),
-        // which already incremented the deprecation counter once. Snapshot the counter here,
-        // then construct a second UnitOfWork and assert the counter increases again.
-        $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/pull/12578');
-
-        new UnitOfWork($this->_emMock);
-    }
-
-    public function testConstructingUnitOfWorkDoesNotTriggerDeprecationWhenFlagIsDisabled(): void
-    {
-        $this->_emMock->getConfiguration()->setOnRemoveEntitySetIdentifierNull(false);
-
-        $this->expectNoDeprecationWithIdentifier('https://github.com/doctrine/orm/pull/12578');
-
-        new UnitOfWork($this->_emMock);
     }
 
     /* Operational tests */
