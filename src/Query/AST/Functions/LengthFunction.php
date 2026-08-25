@@ -4,11 +4,9 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Query\AST\Functions;
 
-use Doctrine\DBAL\Types\Type;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Query\AST\ExpressionWithReturnType;
 use Doctrine\ORM\Query\AST\Node;
-use Doctrine\ORM\Query\AST\TypedExpression;
 use Doctrine\ORM\Query\Parser;
 use Doctrine\ORM\Query\SqlWalker;
 use Doctrine\ORM\Query\TokenType;
@@ -18,10 +16,8 @@ use Override;
  * "LENGTH" "(" StringPrimary ")"
  *
  * @link    www.doctrine-project.org
- *
- * @phpstan-ignore class.implementsDeprecatedInterface
  */
-class LengthFunction extends FunctionNode implements ExpressionWithReturnType, TypedExpression
+class LengthFunction extends FunctionNode implements ExpressionWithReturnType
 {
     public Node $stringPrimary;
 
@@ -48,12 +44,5 @@ class LengthFunction extends FunctionNode implements ExpressionWithReturnType, T
     public function getReturnTypeName(): string
     {
         return Types::INTEGER;
-    }
-
-    /** @deprecated Use {@see getReturnTypeName()} instead. */
-    #[Override]
-    public function getReturnType(): Type
-    {
-        return Type::getType($this->getReturnTypeName());
     }
 }

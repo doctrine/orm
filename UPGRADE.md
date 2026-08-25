@@ -245,6 +245,30 @@ Using array access on instances of the following classes is no longer possible:
 - `Doctrine\ORM\Mapping\JoinColumnMapping`
 - `Doctrine\ORM\Mapping\JoinTableMapping`
 
+## Remove `Doctrine\ORM\Query\AST\TypedExpression`
+
+The interface `Doctrine\ORM\Query\AST\TypedExpression` is removed. Implement
+`Doctrine\ORM\Query\AST\ExpressionWithReturnType` instead, which returns the
+DBAL type name as a string.
+
+```diff
+-use Doctrine\DBAL\Types\Type;
+ use Doctrine\DBAL\Types\Types;
+-use Doctrine\ORM\Query\AST\TypedExpression;
++use Doctrine\ORM\Query\AST\ExpressionWithReturnType;
+
+-class MyFunction extends FunctionNode implements TypedExpression
++class MyFunction extends FunctionNode implements ExpressionWithReturnType
+ {
+-    public function getReturnType(): Type
++    public function getReturnTypeName(): string
+     {
+-        return Type::getType(Types::INTEGER);
++        return Types::INTEGER;
+     }
+ }
+```
+
 ## Remove properties `$indexes` and `$uniqueConstraints` from `Doctrine\ORM\Mapping\Table`
 
 The properties `$indexes` and `$uniqueConstraints` have been removed since they had no effect at all.
