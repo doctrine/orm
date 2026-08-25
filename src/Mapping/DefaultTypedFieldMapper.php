@@ -18,7 +18,6 @@ use ReflectionProperty;
 
 use function array_merge;
 use function assert;
-use function defined;
 use function enum_exists;
 use function is_a;
 
@@ -32,6 +31,7 @@ final class DefaultTypedFieldMapper implements TypedFieldMapper
         DateInterval::class => Types::DATEINTERVAL,
         DateTime::class => Types::DATETIME_MUTABLE,
         DateTimeImmutable::class => Types::DATETIME_IMMUTABLE,
+        Number::class => Types::NUMBER,
         'array' => Types::JSON,
         'bool' => Types::BOOLEAN,
         'float' => Types::FLOAT,
@@ -42,12 +42,10 @@ final class DefaultTypedFieldMapper implements TypedFieldMapper
     /** @param array<class-string|ScalarName, class-string<Type>|string> $typedFieldMappings */
     public function __construct(array $typedFieldMappings = [])
     {
-        $defaultMappings = self::DEFAULT_TYPED_FIELD_MAPPINGS;
-        if (defined(Types::class . '::NUMBER')) { // DBAL 4.3+
-            $defaultMappings[Number::class] = Types::NUMBER;
-        }
-
-        $this->typedFieldMappings = array_merge($defaultMappings, $typedFieldMappings);
+        $this->typedFieldMappings = array_merge(
+            self::DEFAULT_TYPED_FIELD_MAPPINGS,
+            $typedFieldMappings,
+        );
     }
 
     /**

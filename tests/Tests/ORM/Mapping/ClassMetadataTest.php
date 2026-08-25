@@ -59,7 +59,6 @@ use stdClass;
 
 use function assert;
 use function count;
-use function defined;
 use function serialize;
 use function str_contains;
 use function str_replace;
@@ -200,11 +199,8 @@ class ClassMetadataTest extends OrmTestCase
         $cm->mapField(['fieldName' => 'float']);
         self::assertEquals('float', $cm->getTypeOfField('float'));
 
-        // number, requires DBAL 4.3+
-        if (defined(Types::class . '::NUMBER')) {
-            $cm->mapField(['fieldName' => 'bodyHeight']);
-            self::assertEquals('number', $cm->getTypeOfField('bodyHeight'));
-        }
+        $cm->mapField(['fieldName' => 'bodyHeight']);
+        self::assertEquals('number', $cm->getTypeOfField('bodyHeight'));
     }
 
     #[TestGroup('GH10313')]
