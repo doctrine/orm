@@ -10,7 +10,6 @@ use Doctrine\DBAL\Schema\Index as DbalIndex;
 use Doctrine\DBAL\Schema\Index\IndexedColumn;
 use Doctrine\DBAL\Schema\Index\IndexType;
 use Doctrine\DBAL\Schema\Name\UnqualifiedName;
-use Doctrine\DBAL\Schema\PrimaryKeyConstraint;
 use Doctrine\DBAL\Schema\PrimaryKeyConstraintEditor;
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\DBAL\Schema\Table as DbalTable;
@@ -542,14 +541,6 @@ class SchemaToolTest extends OrmTestCase
         $table = $schema->getTable('quoted-table');
 
         self::assertTrue($table->hasIndex('IDX_AA2790FB50D14D90'));
-
-        // DBAL < 4.3
-        if (! class_exists(PrimaryKeyConstraint::class)) {
-            self::assertTrue($table->isQuoted(), 'The table name must be quoted.');
-            self::assertTrue($table->hasIndex('primary'), 'Table should have a primary key.');
-
-            return;
-        }
 
         $objectName = $table->getObjectName();
         self::assertTrue($objectName->getUnqualifiedName()->isQuoted());

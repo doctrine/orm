@@ -2794,12 +2794,6 @@ parameters:
 			path: src/Tools/SchemaTool.php
 
 		-
-			message: '#^Method Doctrine\\ORM\\Tools\\SchemaTool\:\:getAssetName\(\) has parameter \$asset with generic class Doctrine\\DBAL\\Schema\\AbstractAsset but does not specify its types\: N$#'
-			identifier: missingType.generics
-			count: 1
-			path: src/Tools/SchemaTool.php
-
-		-
 			message: '#^Method Doctrine\\ORM\\Tools\\SchemaTool\:\:getCreateSchemaSql\(\) has parameter \$classes with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
 			identifier: missingType.generics
 			count: 1
