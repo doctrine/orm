@@ -209,6 +209,7 @@ As a consequence, the following methods are removed:
 The `SqlWalker::getExecutor()` method is removed. Output walkers should
 implement the `\Doctrine\ORM\Query\OutputWalker` interface and create
 `Doctrine\ORM\Query\Exec\SqlFinalizer` instances.
+`Doctrine\ORM\Query\Exec\SingleSelectExecutor` is removed as well.
 
 ## Remove `DatabaseDriver`
 
