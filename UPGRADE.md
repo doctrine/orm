@@ -8,6 +8,13 @@ awareness about deprecated code.
 
 # Upgrade to 4.0
 
+## Forbid using the `WITH` keyword for arbitrary DQL joins
+
+Using the `WITH` keyword to specify the condition for an arbitrary DQL join is
+forbidden. Instead, use the `ON` keyword (similar to the SQL syntax for joins).
+The `WITH` keyword is now meant to be used only for filtering conditions in
+association joins.
+
 ## Removed support for string expression for default values of temporal fields in mappings
 
 Using a string expression for default values of temporal fields is no longer supported.

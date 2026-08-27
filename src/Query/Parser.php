@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Query;
 
 use Doctrine\Common\Lexer\Token;
-use Doctrine\Deprecations\Deprecation;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Exception\DuplicateFieldException;
 use Doctrine\ORM\Exception\NoMatchingPropertyException;
@@ -1579,7 +1578,7 @@ final class Parser
 
     /**
      * Join ::= ["LEFT" ["OUTER"] | "INNER"] "JOIN"
-     *          (JoinAssociationDeclaration ["WITH" ConditionalExpression] | RangeVariableDeclaration [("ON" | "WITH") ConditionalExpression])
+     *          (JoinAssociationDeclaration ["WITH" ConditionalExpression] | RangeVariableDeclaration ["ON" ConditionalExpression])
      */
     public function Join(): AST\Join
     {
@@ -1636,10 +1635,6 @@ final class Parser
             if ($this->lexer->isNextToken(TokenType::T_ON)) {
                 $this->match(TokenType::T_ON);
                 $conditionalExpression = $this->ConditionalExpression();
-            } elseif ($this->lexer->isNextToken(TokenType::T_WITH)) {
-                $this->match(TokenType::T_WITH);
-                $conditionalExpression = $this->ConditionalExpression();
-                Deprecation::trigger('doctrine/orm', 'https://github.com/doctrine/orm/issues/12192', 'Using WITH for the join condition of arbitrary joins is deprecated. Use ON instead.');
             }
         }
 

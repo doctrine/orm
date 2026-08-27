@@ -519,8 +519,7 @@ when the DQL is switched to an arbitrary join.
     - WHERE is applied to the results of an entire query
     - ON is applied to arbitrary joins as the join condition. For
       arbitrary joins (SELECT f, b FROM Foo f, Bar b ON f.id = b.id)
-      the ON is required, even if it is 1 = 1. WITH is also
-      supported as alternative keyword for that case for BC reasons.
+      the ON is required, even if it is 1 = 1.
     - WITH is applied to an association join as an additional condition.
     - HAVING is applied to the results of a query after
       aggregation (GROUP BY)
@@ -1707,13 +1706,8 @@ From, Join and Index by
     SubselectIdentificationVariableDeclaration ::= IdentificationVariableDeclaration
     RangeVariableDeclaration                   ::= AbstractSchemaName ["AS"] AliasIdentificationVariable
     JoinAssociationDeclaration                 ::= JoinAssociationPathExpression ["AS"] AliasIdentificationVariable [IndexBy]
-    Join                                       ::= ["LEFT" ["OUTER"] | "INNER"] "JOIN" (JoinAssociationDeclaration ["WITH" ConditionalExpression] | RangeVariableDeclaration [("ON" | "WITH") ConditionalExpression])
+    Join                                       ::= ["LEFT" ["OUTER"] | "INNER"] "JOIN" (JoinAssociationDeclaration ["WITH" ConditionalExpression] | RangeVariableDeclaration ["ON" ConditionalExpression])
     IndexBy                                    ::= "INDEX" "BY" SingleValuedPathExpression
-
-.. note::
-    Using the ``WITH`` keyword for the ``ConditionalExpression`` of a
-    ``RangeVariableDeclaration`` is deprecated and will be removed in
-    ORM 4.0. Use the ``ON`` keyword instead.
 
 Select Expressions
 ~~~~~~~~~~~~~~~~~~
