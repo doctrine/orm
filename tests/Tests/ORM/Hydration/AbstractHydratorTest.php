@@ -52,6 +52,14 @@ class AbstractHydratorTest extends OrmFunctionalTestCase
             ->expects(self::any())
             ->method('getConnection')
             ->willReturn($mockConnection);
+        $mockEntityManagerInterface
+            ->expects(self::any())
+            ->method('getUnitOfWork')
+            ->willReturn($this->_em->getUnitOfWork());
+        $mockEntityManagerInterface
+            ->expects(self::any())
+            ->method('getMetadataFactory')
+            ->willReturn($this->_em->getMetadataFactory());
         $this->mockResult
             ->expects(self::any())
             ->method('fetchAssociative')
