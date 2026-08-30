@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-use Doctrine\ORM\Tools\Pagination\Paginator;
+use Doctrine\ORM\Tools\Pagination\OffsetPaginator;
+use Doctrine\ORM\Tools\Pagination\Window;
 use Doctrine\Tests\Models\CMS\CmsArticle;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use PHPUnit\Framework\Attributes\Group;
@@ -33,13 +34,8 @@ final class GH7829Test extends OrmFunctionalTestCase
         $this->getQueryLog()->reset()->enable();
 
         $query = $this->_em->createQuery('SELECT a FROM Doctrine\Tests\Models\CMS\CmsArticle a');
-        $query->setMaxResults(1);
 
-        $paginator = new Paginator($query, true);
-        $paginator->setUseOutputWalkers(false);
-
-        $paginator->count();
-        $paginator->getIterator();
+        (new OffsetPaginator(true, false))->paginate($query, new Window(0, 1));
 
         $this->assertQueryCount(3);
     }
@@ -50,11 +46,7 @@ final class GH7829Test extends OrmFunctionalTestCase
 
         $query = $this->_em->createQuery('SELECT a FROM Doctrine\Tests\Models\CMS\CmsArticle a');
 
-        $paginator = new Paginator($query, true);
-        $paginator->setUseOutputWalkers(false);
-
-        $paginator->count();
-        $paginator->getIterator();
+        (new OffsetPaginator(false, false))->paginate($query, new Window(0, 1));
 
         $this->assertQueryCount(2);
     }

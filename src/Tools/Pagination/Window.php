@@ -20,7 +20,7 @@ use function max;
  *
  * The window is passed explicitly to {@see OffsetPaginator::paginate()}, instead
  * of being derived implicitly from {@see \Doctrine\ORM\Query::setFirstResult()}
- * and {@see \Doctrine\ORM\Query::setMaxResults()}.
+ * and {@see \Doctrine\ORM\Query::setMaxResults()} on the paginated query.
  */
 final class Window
 {

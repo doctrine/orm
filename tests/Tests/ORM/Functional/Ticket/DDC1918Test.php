@@ -4,13 +4,12 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-use Doctrine\ORM\Tools\Pagination\Paginator;
+use Doctrine\ORM\Tools\Pagination\OffsetPaginator;
+use Doctrine\ORM\Tools\Pagination\Window;
 use Doctrine\Tests\Models\CMS\CmsGroup;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use PHPUnit\Framework\Attributes\Group;
-
-use function iterator_to_array;
 
 #[Group('DDC-1918')]
 class DDC1918Test extends OrmFunctionalTestCase
@@ -46,22 +45,11 @@ class DDC1918Test extends OrmFunctionalTestCase
         $this->_em->flush();
 
         $query = $this->_em->createQuery('SELECT u, g FROM Doctrine\Tests\Models\CMS\CmsUser u JOIN u.groups g');
-        $query->setFirstResult(6);
-        $query->setMaxResults(3);
 
-        $paginator = new Paginator($query, true);
-        self::assertCount(3, iterator_to_array($paginator));
+        $paginator = new OffsetPaginator(true);
 
-        $query->setFirstResult(8);
-        $query->setMaxResults(3);
-
-        $paginator = new Paginator($query, true);
-        self::assertCount(2, iterator_to_array($paginator));
-
-        $query->setFirstResult(10);
-        $query->setMaxResults(3);
-
-        $paginator = new Paginator($query, true);
-        self::assertCount(0, iterator_to_array($paginator));
+        self::assertCount(3, $paginator->paginate($query, new Window(6, 3)));
+        self::assertCount(2, $paginator->paginate($query, new Window(8, 3)));
+        self::assertCount(0, $paginator->paginate($query, new Window(10, 3)));
     }
 }

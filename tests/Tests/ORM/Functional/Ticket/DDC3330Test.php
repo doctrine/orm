@@ -12,10 +12,9 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\Table;
-use Doctrine\ORM\Tools\Pagination\Paginator;
+use Doctrine\ORM\Tools\Pagination\OffsetPaginator;
+use Doctrine\ORM\Tools\Pagination\Window;
 use Doctrine\Tests\OrmFunctionalTestCase;
-
-use function iterator_to_array;
 
 /**
  * Functional tests for paginator with collection order
@@ -47,12 +46,11 @@ class DDC3330Test extends OrmFunctionalTestCase
             ' FROM Doctrine\Tests\ORM\Functional\Ticket\DDC3330Building b' .
             ' LEFT JOIN b.halls h' .
             ' ORDER BY b.id ASC, h.name DESC',
-        )
-        ->setMaxResults(3);
+        );
 
-        $paginator = new Paginator($query, true);
+        $page = (new OffsetPaginator(true))->paginate($query, new Window(0, 3));
 
-        self::assertCount(3, iterator_to_array($paginator), 'Count is not correct for pagination');
+        self::assertCount(3, $page, 'Count is not correct for pagination');
     }
 
     /**

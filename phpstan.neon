@@ -6,11 +6,8 @@ parameters:
     checkMissingOverrideMethodAttribute: true
 
     ignoreErrors:
-        # Paginator is deprecated in favor of OffsetPaginator, but internal code and the
-        # static-analysis fixture still legitimately reference it until its removal in 4.0.
-        -
-            identifier: classConstant.deprecatedClass
-            path: src/Tools/Pagination/LimitSubqueryWalker.php
+        # Paginator is deprecated in favor of OffsetPaginator, but the static-analysis
+        # fixture still legitimately references it until its removal in 4.0.
         -
             identifier: return.deprecatedClass
             path: tests/StaticAnalysis/Tools/Pagination/paginator-covariant.php

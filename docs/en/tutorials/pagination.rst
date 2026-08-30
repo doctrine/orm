@@ -105,7 +105,7 @@ queries described are executed.
     ``fetchJoinCollection`` set to ``true`` might affect results if you use
     aggregations in your query.
 
-Alternatively, the ``Paginator::HINT_ENABLE_DISTINCT`` query hint instructs
+Alternatively, the ``PaginatorInterface::HINT_ENABLE_DISTINCT`` query hint instructs
 Doctrine that the query will not produce "duplicate" rows (only to-one relations
 are joined), so the ``DISTINCT`` keyword is omitted, which can bring important
 performance improvements:
@@ -114,12 +114,12 @@ performance improvements:
 
     <?php
     use Doctrine\ORM\Tools\Pagination\OffsetPaginator;
-    use Doctrine\ORM\Tools\Pagination\Paginator;
+    use Doctrine\ORM\Tools\Pagination\PaginatorInterface;
     use Doctrine\ORM\Tools\Pagination\Window;
 
     $dql   = 'SELECT u, p FROM User u JOIN u.mainPicture p ORDER BY u.id ASC';
     $query = $entityManager->createQuery($dql)
-                           ->setHint(Paginator::HINT_ENABLE_DISTINCT, false);
+                           ->setHint(PaginatorInterface::HINT_ENABLE_DISTINCT, false);
 
     $page = (new OffsetPaginator())->paginate($query, new Window(0, 100));
 
