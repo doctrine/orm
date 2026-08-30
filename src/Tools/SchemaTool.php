@@ -17,6 +17,7 @@ use Doctrine\DBAL\Schema\DefaultExpression\CurrentTimestamp;
 use Doctrine\DBAL\Schema\ForeignKeyConstraint;
 use Doctrine\DBAL\Schema\Index;
 use Doctrine\DBAL\Schema\Index\IndexedColumn;
+use Doctrine\DBAL\Schema\Index\IndexType;
 use Doctrine\DBAL\Schema\Name\Identifier;
 use Doctrine\DBAL\Schema\Name\UnqualifiedName;
 use Doctrine\DBAL\Schema\NamedObject;
@@ -414,7 +415,38 @@ class SchemaTool
 
             if (isset($class->table['uniqueConstraints'])) {
                 foreach ($class->table['uniqueConstraints'] as $indexName => $indexData) {
-                    $uniqIndex = new Index('tmp__' . $indexName, $this->getIndexColumns($class, $indexData), true, false, [], $indexData['options'] ?? []);
+                    /** @phpstan-ignore function.alreadyNarrowedType (legacy DBAL compatibility) */
+                    if (method_exists(Index::class, 'editor')) {
+                        $editor = Index::editor();
+                        $editor->setUnquotedName('tmp__' . $indexName);
+                        $columns = array_map(
+                            static function (string $colName): IndexedColumn {
+                                assert($colName !== '');
+
+                                return new IndexedColumn(
+                                    UnqualifiedName::unquoted($colName),
+                                    null,
+                                );
+                            },
+                            $this->getIndexColumns($class, $indexData),
+                        );
+                        $editor->setColumns(...$columns);
+                        $editor->setType(IndexType::UNIQUE);
+                        if (isset($indexData['options']['predicate'])) {
+                            $editor->setPredicate($indexData['options']['predicate']);
+                        }
+
+                        $uniqIndex = $editor->create();
+                    } else {
+                        $uniqIndex = new Index(
+                            'tmp__' . $indexName,
+                            $this->getIndexColumns($class, $indexData),
+                            true,
+                            false,
+                            [],
+                            $indexData['options'] ?? [],
+                        );
+                    }
 
                     foreach ($table->getIndexes() as $tableIndexName => $tableIndex) {
                         if ($tableIndex->isFulfilledBy($uniqIndex)) {
