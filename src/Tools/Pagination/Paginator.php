@@ -30,7 +30,8 @@ class Paginator implements Countable, IteratorAggregate
     use SQLResultCasing;
     use PaginatorQuery;
 
-    public const HINT_ENABLE_DISTINCT = 'paginator.distinct.enable';
+    /** @deprecated Use {@see PaginatorInterface::HINT_ENABLE_DISTINCT} instead. */
+    public const HINT_ENABLE_DISTINCT = PaginatorInterface::HINT_ENABLE_DISTINCT;
 
     private readonly Query $query;
     private int|null $count = null;

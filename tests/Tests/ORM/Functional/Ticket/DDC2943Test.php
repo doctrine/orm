@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\ORM\Cache;
-use Doctrine\ORM\Tools\Pagination\Paginator;
+use Doctrine\ORM\Tools\Pagination\OffsetPaginator;
+use Doctrine\ORM\Tools\Pagination\Window;
+use Doctrine\ORM\Tools\Pagination\WindowPage;
 use Doctrine\Tests\Models\Cache\Country;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use PHPUnit\Framework\Attributes\Group;
@@ -38,16 +40,17 @@ class DDC2943Test extends OrmFunctionalTestCase
         $region = $this->_em->getCache()->getEntityCacheRegion(Country::class);
         $dql    = 'SELECT c FROM Doctrine\Tests\Models\Cache\Country c';
         $query  = $this->_em->createQuery($dql)
-            ->setCacheable(true)
-            ->setFirstResult(0)
-            ->setMaxResults(2);
+            ->setCacheable(true);
 
-        $this->assertPaginatorQueryPut(new Paginator(clone $query), $region->getName(), 4, 2);
+        $paginator = new OffsetPaginator();
+        $window    = new Window(0, 2);
+
+        $this->assertPaginatorQueryPut($paginator->paginate($query, $window), $region->getName(), 4, 2);
 
         $this->_em->clear();
         $this->secondLevelCacheLogger->clearStats();
 
-        $this->assertPaginatorQueryHit(new Paginator(clone $query), $region->getName(), 4, 2);
+        $this->assertPaginatorQueryHit($paginator->paginate($query, $window), $region->getName(), 4, 2);
     }
 
     public function testIssueNonFetchJoin(): void
@@ -57,22 +60,24 @@ class DDC2943Test extends OrmFunctionalTestCase
         $region = $this->_em->getCache()->getEntityCacheRegion(Country::class);
         $dql    = 'SELECT c FROM Doctrine\Tests\Models\Cache\Country c';
         $query  = $this->_em->createQuery($dql)
-            ->setCacheable(true)
-            ->setFirstResult(0)
-            ->setMaxResults(2);
+            ->setCacheable(true);
 
-        $this->assertPaginatorQueryPut(new Paginator(clone $query, false), $region->getName(), 4, 2);
+        $paginator = new OffsetPaginator(false);
+        $window    = new Window(0, 2);
+
+        $this->assertPaginatorQueryPut($paginator->paginate($query, $window), $region->getName(), 4, 2);
 
         $this->_em->clear();
         $this->secondLevelCacheLogger->clearStats();
 
-        $this->assertPaginatorQueryHit(new Paginator(clone $query, false), $region->getName(), 4, 2);
+        $this->assertPaginatorQueryHit($paginator->paginate($query, $window), $region->getName(), 4, 2);
     }
 
-    public function assertPaginatorQueryPut(Paginator $paginator, $regionName, $count, $pageSize): void
+    /** @param WindowPage<mixed> $page */
+    public function assertPaginatorQueryPut(WindowPage $page, $regionName, $count, $pageSize): void
     {
-        self::assertCount($count, $paginator);
-        self::assertCount($pageSize, $paginator->getIterator());
+        self::assertSame($count, $page->getTotalCount());
+        self::assertCount($pageSize, $page);
 
         self::assertEquals(0, $this->secondLevelCacheLogger->getRegionHitCount(Cache::DEFAULT_QUERY_REGION_NAME));
         self::assertEquals(1, $this->secondLevelCacheLogger->getRegionPutCount(Cache::DEFAULT_QUERY_REGION_NAME));
@@ -80,10 +85,11 @@ class DDC2943Test extends OrmFunctionalTestCase
         self::assertEquals($count, $this->secondLevelCacheLogger->getRegionPutCount($regionName));
     }
 
-    public function assertPaginatorQueryHit(Paginator $paginator, $regionName, $count, $pageSize): void
+    /** @param WindowPage<mixed> $page */
+    public function assertPaginatorQueryHit(WindowPage $page, $regionName, $count, $pageSize): void
     {
-        self::assertCount($count, $paginator);
-        self::assertCount($pageSize, $paginator->getIterator());
+        self::assertSame($count, $page->getTotalCount());
+        self::assertCount($pageSize, $page);
 
         self::assertEquals(1, $this->secondLevelCacheLogger->getRegionHitCount(Cache::DEFAULT_QUERY_REGION_NAME));
         self::assertEquals(0, $this->secondLevelCacheLogger->getRegionPutCount(Cache::DEFAULT_QUERY_REGION_NAME));
