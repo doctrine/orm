@@ -7,9 +7,11 @@ namespace Doctrine\ORM\Internal\Hydration;
 use BackedEnum;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Result;
-use Doctrine\DBAL\Types\Type;
+use Doctrine\DBAL\Types\TypeProvider;
+use Doctrine\DBAL\Types\TypeRegistry;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Events;
+use Doctrine\ORM\Internal\TypeProviderLocator;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\ORM\Tools\Pagination\LimitSubqueryWalker;
@@ -54,6 +56,8 @@ abstract class AbstractHydrator
      */
     protected UnitOfWork $uow;
 
+    private readonly TypeProvider|TypeRegistry $typeProvider;
+
     /**
      * Local ClassMetadata cache to avoid going to the EntityManager all the time.
      *
@@ -85,8 +89,9 @@ abstract class AbstractHydrator
      */
     public function __construct(protected EntityManagerInterface $em)
     {
-        $this->platform = $em->getConnection()->getDatabasePlatform();
-        $this->uow      = $em->getUnitOfWork();
+        $this->platform     = $em->getConnection()->getDatabasePlatform();
+        $this->uow          = $em->getUnitOfWork();
+        $this->typeProvider = TypeProviderLocator::fromConnection($em->getConnection());
     }
 
     /**
@@ -458,7 +463,7 @@ abstract class AbstractHydrator
                 $columnInfo    = [
                     'isIdentifier' => in_array($fieldName, $classMetadata->identifier, true),
                     'fieldName'    => $fieldName,
-                    'type'         => Type::getType($fieldMapping->type),
+                    'type'         => $this->typeProvider->get($fieldMapping->type),
                     'dqlAlias'     => $ownerMap,
                     'enumType'     => $this->rsm->enumMappings[$key] ?? null,
                 ];
@@ -486,7 +491,7 @@ abstract class AbstractHydrator
                     'isScalar'             => true,
                     'isNewObjectParameter' => true,
                     'fieldName'            => $this->rsm->scalarMappings[$key],
-                    'type'                 => Type::getType($this->rsm->typeMappings[$key]),
+                    'type'                 => $this->typeProvider->get($this->rsm->typeMappings[$key]),
                     'argIndex'             => $mapping['argIndex'],
                     'objIndex'             => $mapping['objIndex'],
                     'enumType'             => $this->rsm->enumMappings[$key] ?? null,
@@ -495,7 +500,7 @@ abstract class AbstractHydrator
             case isset($this->rsm->scalarMappings[$key], $this->hints[LimitSubqueryWalker::FORCE_DBAL_TYPE_CONVERSION]):
                 return $this->cache[$key] = [
                     'fieldName' => $this->rsm->scalarMappings[$key],
-                    'type'      => Type::getType($this->rsm->typeMappings[$key]),
+                    'type'      => $this->typeProvider->get($this->rsm->typeMappings[$key]),
                     'dqlAlias'  => '',
                     'enumType'  => $this->rsm->enumMappings[$key] ?? null,
                 ];
@@ -504,7 +509,7 @@ abstract class AbstractHydrator
                 return $this->cache[$key] = [
                     'isScalar'  => true,
                     'fieldName' => $this->rsm->scalarMappings[$key],
-                    'type'      => Type::getType($this->rsm->typeMappings[$key]),
+                    'type'      => $this->typeProvider->get($this->rsm->typeMappings[$key]),
                     'enumType'  => $this->rsm->enumMappings[$key] ?? null,
                 ];
 
@@ -513,7 +518,7 @@ abstract class AbstractHydrator
                 $fieldName = $this->rsm->metaMappings[$key];
                 $dqlAlias  = $this->rsm->columnOwnerMap[$key];
                 $type      = isset($this->rsm->typeMappings[$key])
-                    ? Type::getType($this->rsm->typeMappings[$key])
+                    ? $this->typeProvider->get($this->rsm->typeMappings[$key])
                     : null;
 
                 // Cache metadata fetch
