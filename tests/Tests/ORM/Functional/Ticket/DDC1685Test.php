@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-use Doctrine\ORM\Tools\Pagination\Paginator;
+use Doctrine\ORM\Query;
+use Doctrine\ORM\Tools\Pagination\OffsetPaginator;
+use Doctrine\ORM\Tools\Pagination\Window;
 use Doctrine\Tests\Models\DDC117\DDC117Article;
 use Doctrine\Tests\Models\DDC117\DDC117ArticleDetails;
 use Doctrine\Tests\OrmFunctionalTestCase;
@@ -14,7 +16,8 @@ use RuntimeException;
 #[Group('DDC-1685')]
 class DDC1685Test extends OrmFunctionalTestCase
 {
-    private Paginator $paginator;
+    private Query $query;
+    private Window $window;
 
     protected function setUp(): void
     {
@@ -32,40 +35,40 @@ class DDC1685Test extends OrmFunctionalTestCase
         $this->_em->persist($articleDetails);
         $this->_em->flush();
 
-        $dql   = 'SELECT ad FROM Doctrine\Tests\Models\DDC117\DDC117ArticleDetails ad';
-        $query = $this->_em->createQuery($dql);
-        $query->setMaxResults(1);
+        $dql = 'SELECT ad FROM Doctrine\Tests\Models\DDC117\DDC117ArticleDetails ad';
 
-        $this->paginator = new Paginator($query);
+        $this->query  = $this->_em->createQuery($dql);
+        $this->window = new Window(0, 1);
     }
 
     public function testPaginateCount(): void
     {
-        self::assertCount(1, $this->paginator);
+        $page = (new OffsetPaginator())->paginate($this->query, $this->window);
+
+        self::assertSame(1, $page->getTotalCount());
     }
 
     public function testPaginateIterate(): void
     {
-        foreach ($this->paginator as $ad) {
+        $page = (new OffsetPaginator())->paginate($this->query, $this->window);
+
+        foreach ($page as $ad) {
             self::assertInstanceOf(DDC117ArticleDetails::class, $ad);
         }
     }
 
     public function testPaginateCountNoOutputWalkers(): void
     {
-        $this->paginator->setUseOutputWalkers(false);
-        self::assertCount(1, $this->paginator);
+        $page = (new OffsetPaginator(false, false))->paginate($this->query, $this->window);
+
+        self::assertSame(1, $page->getTotalCount());
     }
 
     public function testPaginateIterateNoOutputWalkers(): void
     {
-        $this->paginator->setUseOutputWalkers(false);
-
         $this->expectException(RuntimeException::class);
-        $this->expectExceptionMessage('Paginating an entity with foreign key as identifier only works when using the Output Walkers. Call Paginator#setUseOutputWalkers(true) before iterating the paginator.');
+        $this->expectExceptionMessage('Paginating an entity with foreign key as identifier only works when using the Output Walkers. Pass $useOutputWalkers = true to the paginator constructor.');
 
-        foreach ($this->paginator as $ad) {
-            self::assertInstanceOf(DDC117ArticleDetails::class, $ad);
-        }
+        (new OffsetPaginator(true, false))->paginate($this->query, $this->window);
     }
 }

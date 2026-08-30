@@ -6,7 +6,7 @@ namespace Doctrine\Tests\ORM\Tools\Pagination;
 
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Tools\Pagination\LimitSubqueryWalker;
-use Doctrine\ORM\Tools\Pagination\Paginator;
+use Doctrine\ORM\Tools\Pagination\PaginatorInterface;
 use PHPUnit\Framework\Attributes\Group;
 
 #[Group('DDC-1613')]
@@ -33,7 +33,7 @@ class LimitSubqueryWalkerTest extends PaginationTestCase
         $limitQuery = clone $query;
 
         $limitQuery->setHint(Query::HINT_CUSTOM_TREE_WALKERS, [LimitSubqueryWalker::class]);
-        $limitQuery->setHint(Paginator::HINT_ENABLE_DISTINCT, false);
+        $limitQuery->setHint(PaginatorInterface::HINT_ENABLE_DISTINCT, false);
 
         self::assertEquals(
             'SELECT m0_.id AS id_0 FROM MyBlogPost m0_ INNER JOIN Category c1_ ON m0_.category_id = c1_.id INNER JOIN Author a2_ ON m0_.author_id = a2_.id',

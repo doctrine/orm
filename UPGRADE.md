@@ -364,6 +364,21 @@ immutable, iterable `WindowPage`.
 `Paginator::setUseOutputWalkers()` becomes the `useOutputWalkers` constructor
 argument of `OffsetPaginator`.
 
+## Deprecated `Paginator::HINT_ENABLE_DISTINCT`
+
+The query hint is now declared as
+`Doctrine\ORM\Tools\Pagination\PaginatorInterface::HINT_ENABLE_DISTINCT`, and applies
+to both `OffsetPaginator` and `CursorPaginator`. Its value is unchanged, so hints set
+as a raw string keep working.
+
+```diff
+-use Doctrine\ORM\Tools\Pagination\Paginator;
++use Doctrine\ORM\Tools\Pagination\PaginatorInterface;
+
+-$query->setHint(Paginator::HINT_ENABLE_DISTINCT, false);
++$query->setHint(PaginatorInterface::HINT_ENABLE_DISTINCT, false);
+```
+
 ## Deprecated `Doctrine\ORM\Query\AST\TypedExpression`
 
 Implement `Doctrine\ORM\Query\AST\ExpressionWithReturnType` instead, which exposes
