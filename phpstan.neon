@@ -6,15 +6,6 @@ parameters:
     checkMissingOverrideMethodAttribute: true
 
     ignoreErrors:
-        # Paginator is deprecated in favor of OffsetPaginator, but the static-analysis
-        # fixture still legitimately references it until its removal in 4.0.
-        -
-            identifier: return.deprecatedClass
-            path: tests/StaticAnalysis/Tools/Pagination/paginator-covariant.php
-        -
-            identifier: parameter.deprecatedClass
-            path: tests/StaticAnalysis/Tools/Pagination/paginator-covariant.php
-
         # Symfony cache supports passing a key prefix to the clear method.
         - '/^Method Psr\\Cache\\CacheItemPoolInterface\:\:clear\(\) invoked with 1 parameter, 0 required\.$/'
 
