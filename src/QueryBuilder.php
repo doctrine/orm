@@ -131,6 +131,13 @@ class QueryBuilder implements Stringable
     private array $hints = [];
 
     /**
+     * Association paths to preload on the result, see {@see self::preload()}.
+     *
+     * @var list<string>
+     */
+    private array $preload = [];
+
+    /**
      * Initializes a new <tt>QueryBuilder</tt> that uses the given <tt>EntityManager</tt>.
      *
      * @param EntityManagerInterface $em The EntityManager to use.
@@ -300,6 +307,25 @@ class QueryBuilder implements Stringable
     }
 
     /**
+     * Preloads the given association paths on the entities this query returns.
+     *
+     * See {@see AbstractQuery::preload()}; the paths are handed to the Query this
+     * builder creates:
+     *
+     *     $qb->select('u')->from(User::class, 'u')->preload(['articles.comments']);
+     *
+     * @param list<string> $paths
+     */
+    public function preload(array $paths): static
+    {
+        foreach ($paths as $path) {
+            $this->preload[] = $path;
+        }
+
+        return $this;
+    }
+
+    /**
      * Constructs a Query instance from the current specifications of the builder.
      *
      * <code>
@@ -336,6 +362,10 @@ class QueryBuilder implements Stringable
 
         foreach ($this->hints as $name => $value) {
             $query->setHint($name, $value);
+        }
+
+        if ($this->preload !== []) {
+            $query->preload($this->preload);
         }
 
         return $query;

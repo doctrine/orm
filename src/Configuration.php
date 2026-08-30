@@ -24,6 +24,7 @@ use Doctrine\ORM\Query\AST\Functions\FunctionNode;
 use Doctrine\ORM\Query\Filter\SQLFilter;
 use Doctrine\ORM\Repository\DefaultRepositoryFactory;
 use Doctrine\ORM\Repository\RepositoryFactory;
+use Doctrine\ORM\StrictLoading\StrictLoading;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
 use LogicException;
 use Psr\Cache\CacheItemPoolInterface;
@@ -48,6 +49,8 @@ class Configuration extends \Doctrine\DBAL\Configuration
 
     /** @phpstan-var array<class-string<AbstractPlatform>, ClassMetadata::GENERATOR_TYPE_*> */
     private $identityGenerationPreferences = [];
+
+    private StrictLoading|null $strictLoading = null;
 
     /** @phpstan-param array<class-string<AbstractPlatform>, ClassMetadata::GENERATOR_TYPE_*> $value */
     public function setIdentityGenerationPreferences(array $value): void
@@ -754,5 +757,21 @@ class Configuration extends \Doctrine\DBAL\Configuration
     public function getDefaultStringTypeSchemaLength(): int
     {
         return $this->attributes['defaultStringTypeSchemaLength'] ?? 255;
+    }
+
+    /**
+     * Returns the (mutable) strict loading configuration of this EntityManager.
+     *
+     * Strict loading is disabled by default; switch it on with
+     * {@see StrictLoading::setMode()}.
+     */
+    public function getStrictLoading(): StrictLoading
+    {
+        return $this->strictLoading ??= new StrictLoading();
+    }
+
+    public function setStrictLoading(StrictLoading $strictLoading): void
+    {
+        $this->strictLoading = $strictLoading;
     }
 }

@@ -170,6 +170,16 @@ EXCEPTION
         return new self('You must configure a proxy namespace');
     }
 
+    public static function preloadOfUnknownAssociation(string $className, string $fieldName, string $path): self
+    {
+        return new self(sprintf(
+            'Cannot preload "%s" of %s: there is no such association. It was reached through the path "%s".',
+            $fieldName,
+            $className,
+            $path,
+        ));
+    }
+
     public static function proxyDirectoryNotWritable(string $proxyDirectory): self
     {
         return new self(sprintf('Your proxy directory "%s" must be writable', $proxyDirectory));

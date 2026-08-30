@@ -13,6 +13,7 @@ use Doctrine\ORM\Cache\Persister\CompatOrderings;
 use Doctrine\ORM\Mapping\AssociationMapping;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ToManyAssociationMapping;
+use Doctrine\ORM\StrictLoading\LazyLoad;
 use RuntimeException;
 use UnexpectedValueException;
 
@@ -129,6 +130,29 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
     }
 
     /**
+     * Reports to strict loading that this collection is about to hit the database.
+     *
+     * Loading the whole collection is reported as a collection lazy load; a
+     * query that an uninitialized EXTRA_LAZY collection runs on its own -
+     * count(), contains(), slice(), … - is reported as a collection query,
+     * together with the operation name.
+     */
+    private function checkStrictLoading(string|null $extraLazyOperation = null): void
+    {
+        $strictLoading = $this->em?->getConfiguration()->getStrictLoading();
+
+        if ($strictLoading === null || ! $strictLoading->isActive()) {
+            return;
+        }
+
+        $mapping = $this->getMapping();
+
+        $strictLoading->check($extraLazyOperation === null
+            ? LazyLoad::collection($mapping->sourceEntity, $mapping->fieldName)
+            : LazyLoad::collectionQuery($mapping->sourceEntity, $mapping->fieldName, $extraLazyOperation));
+    }
+
+    /**
      * INTERNAL:
      * Adds an element to a collection during hydration. This will automatically
      * complete bidirectional associations in the case of a one-to-many association.
@@ -184,6 +208,8 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
         if ($this->initialized || ! $this->association) {
             return;
         }
+
+        $this->checkStrictLoading();
 
         $this->doInitialize();
 
@@ -344,6 +370,8 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
             ! $this->initialized && $this->getMapping()->fetch === ClassMetadata::FETCH_EXTRA_LAZY
             && isset($this->getMapping()->indexBy)
         ) {
+            $this->checkStrictLoading('containsKey');
+
             $persister = $this->getUnitOfWork()->getCollectionPersister($this->getMapping());
 
             return $this->unwrap()->containsKey($key) || $persister->containsKey($this, $key);
@@ -355,6 +383,8 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
     public function contains(mixed $element): bool
     {
         if (! $this->initialized && $this->getMapping()->fetch === ClassMetadata::FETCH_EXTRA_LAZY) {
+            $this->checkStrictLoading('contains');
+
             $persister = $this->getUnitOfWork()->getCollectionPersister($this->getMapping());
 
             return $this->unwrap()->contains($element) || $persister->contains($this, $element);
@@ -372,7 +402,12 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
         ) {
             assert($this->em !== null);
             assert($this->typeClass !== null);
-            if (! $this->typeClass->isIdentifierComposite && $this->typeClass->isIdentifier($this->getMapping()->indexBy)) {
+
+            $indexBy = $this->getMapping()->indexBy;
+
+            $this->checkStrictLoading('get');
+
+            if (! $this->typeClass->isIdentifierComposite && $this->typeClass->isIdentifier($indexBy)) {
                 return $this->em->find($this->typeClass->name, $key);
             }
 
@@ -385,6 +420,8 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
     public function count(): int
     {
         if (! $this->initialized && $this->association !== null && $this->getMapping()->fetch === ClassMetadata::FETCH_EXTRA_LAZY) {
+            $this->checkStrictLoading('count');
+
             $persister = $this->getUnitOfWork()->getCollectionPersister($this->association);
 
             return $persister->count($this) + ($this->isDirty ? $this->unwrap()->count() : 0);
@@ -508,6 +545,8 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
     public function first(): mixed
     {
         if (! $this->initialized && ! $this->isDirty && $this->getMapping()->fetch === ClassMetadata::FETCH_EXTRA_LAZY) {
+            $this->checkStrictLoading('first');
+
             $persister = $this->getUnitOfWork()->getCollectionPersister($this->getMapping());
 
             return array_values($persister->slice($this, 0, 1))[0] ?? false;
@@ -529,6 +568,8 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
     public function slice(int $offset, int|null $length = null): array
     {
         if (! $this->initialized && ! $this->isDirty && $this->getMapping()->fetch === ClassMetadata::FETCH_EXTRA_LAZY) {
+            $this->checkStrictLoading('slice');
+
             $persister = $this->getUnitOfWork()->getCollectionPersister($this->getMapping());
 
             return $persister->slice($this, $offset, $length);
@@ -579,6 +620,10 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
         if ($this->initialized) {
             return $this->unwrap()->matching($criteria);
         }
+
+        // Filtering an uninitialized association queries the database, just like
+        // loading it would.
+        $this->checkStrictLoading('matching');
 
         $association = $this->getMapping();
         if ($association->isManyToMany()) {

@@ -172,10 +172,18 @@ abstract class AbstractHydrator
         $this->em->getEventManager()->addEventListener([Events::onClear], $this);
         $this->prepare();
 
+        // Hydrating a row can hydrate more rows: an inverse to-one association, a
+        // to-one association to a class with subclasses, and the eager to-one
+        // fallback all load through a persister while this hydration is running.
+        // The UnitOfWork needs to know about that so a nested hydration does not
+        // flush the batch this one is still collecting.
+        $this->uow->enterHydration();
+
         try {
             $result = $this->hydrateAllData();
         } finally {
             $this->cleanup();
+            $this->uow->leaveHydration();
         }
 
         return $result;

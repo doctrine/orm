@@ -10,6 +10,8 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityNotFoundException;
 use Doctrine\ORM\ORMInvalidArgumentException;
 use Doctrine\ORM\Persisters\Entity\EntityPersister;
+use Doctrine\ORM\StrictLoading\LazyLoad;
+use Doctrine\ORM\StrictLoading\StrictLoading;
 use Doctrine\ORM\UnitOfWork;
 use Doctrine\ORM\Utility\IdentifierFlattener;
 use Doctrine\Persistence\Mapping\ClassMetadata;
@@ -255,13 +257,17 @@ EOPHP;
             $classMetadata       = $this->em->getClassMetadata($className);
             $entityPersister     = $this->uow->getEntityPersister($className);
             $identifierFlattener = $this->identifierFlattener;
+            $strictLoading       = $this->em->getConfiguration()->getStrictLoading();
 
             $proxy = $classMetadata->reflClass->newLazyGhost(static function (object $object) use (
                 $identifier,
                 $entityPersister,
                 $identifierFlattener,
                 $classMetadata,
+                $strictLoading,
             ): void {
+                $strictLoading->check(LazyLoad::entity($classMetadata->getName(), $identifier));
+
                 $original = $entityPersister->loadById($identifier, $object);
                 if ($original === null) {
                     throw EntityNotFoundException::fromClassNameAndIdentifier(
@@ -333,9 +339,11 @@ EOPHP;
      *
      * @throws EntityNotFoundException
      */
-    private function createLazyInitializer(ClassMetadata $classMetadata, EntityPersister $entityPersister, IdentifierFlattener $identifierFlattener): Closure
+    private function createLazyInitializer(ClassMetadata $classMetadata, EntityPersister $entityPersister, IdentifierFlattener $identifierFlattener, StrictLoading $strictLoading): Closure
     {
-        return static function (InternalProxy $proxy, array $identifier) use ($entityPersister, $classMetadata, $identifierFlattener): void {
+        return static function (InternalProxy $proxy, array $identifier) use ($entityPersister, $classMetadata, $identifierFlattener, $strictLoading): void {
+            $strictLoading->check(LazyLoad::entity($classMetadata->getName(), $identifier));
+
             $original = $entityPersister->loadById($identifier);
 
             if ($original === null) {
@@ -404,7 +412,7 @@ EOPHP;
 
         $className        = $class->getName(); // aliases and case sensitivity
         $entityPersister  = $this->uow->getEntityPersister($className);
-        $initializer      = $this->createLazyInitializer($class, $entityPersister, $this->identifierFlattener);
+        $initializer      = $this->createLazyInitializer($class, $entityPersister, $this->identifierFlattener, $this->em->getConfiguration()->getStrictLoading());
         $proxyClassName   = $this->loadProxyClass($class);
         $identifierFields = [];
 

@@ -28,6 +28,7 @@ use Doctrine\ORM\Exception\EntityIdentityCollisionException;
 use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\Exception\UnexpectedAssociationValue;
 use Doctrine\ORM\Id\AssignedGenerator;
+use Doctrine\ORM\Internal\AssociationBatchLoader;
 use Doctrine\ORM\Internal\HydrationCompleteHandler;
 use Doctrine\ORM\Internal\StronglyConnectedComponents;
 use Doctrine\ORM\Internal\TopologicalSort;
@@ -37,7 +38,7 @@ use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\ORM\Mapping\PropertyAccessors\PropertyAccessorFactory;
 use Doctrine\ORM\Mapping\PropertyAccessors\ReadonlyAccessor;
-use Doctrine\ORM\Mapping\ToManyInverseSideMapping;
+use Doctrine\ORM\Mapping\ToManyAssociationMapping;
 use Doctrine\ORM\Persisters\Collection\CollectionPersister;
 use Doctrine\ORM\Persisters\Collection\ManyToManyPersister;
 use Doctrine\ORM\Persisters\Collection\OneToManyPersister;
@@ -55,7 +56,6 @@ use Stringable;
 use Symfony\Component\VarExporter\Hydrator;
 use UnexpectedValueException;
 
-use function array_chunk;
 use function array_combine;
 use function array_diff_key;
 use function array_filter;
@@ -67,7 +67,6 @@ use function array_map;
 use function array_sum;
 use function array_values;
 use function assert;
-use function count;
 use function current;
 use function deepclone_hydrate;
 use function extension_loaded;
@@ -323,8 +322,16 @@ class UnitOfWork implements PropertyChangedListener
      */
     private array $eagerLoadingEntities = [];
 
-    /** @var array<string, array<string, mixed>> */
+    /** @var array<string, array{items: array<string, PersistentCollection<array-key, object>>, mapping: AssociationMapping&ToManyAssociationMapping}> */
     private array $eagerLoadingCollections = [];
+
+    /**
+     * How many hydrations are currently running. Hydrating one row can start
+     * another hydration, see {@see enterHydration()}.
+     */
+    private int $hydrationDepth = 0;
+
+    private readonly AssociationBatchLoader $associationBatchLoader;
 
     protected bool $hasCache = false;
 
@@ -345,6 +352,7 @@ class UnitOfWork implements PropertyChangedListener
         $this->listenersInvoker         = new ListenersInvoker($em);
         $this->hasCache                 = $em->getConfiguration()->isSecondLevelCacheEnabled();
         $this->identifierFlattener      = new IdentifierFlattener($this, $em->getMetadataFactory());
+        $this->associationBatchLoader   = new AssociationBatchLoader($em, $this);
         $this->hydrationCompleteHandler = new HydrationCompleteHandler($this->listenersInvoker, $em);
     }
 
@@ -364,6 +372,16 @@ class UnitOfWork implements PropertyChangedListener
      * @throws Exception
      */
     public function commit(): void
+    {
+        $this->withoutStrictLoading($this->doCommit(...));
+    }
+
+    /**
+     * Flushing loads data on purpose: computing change sets, cascading
+     * operations and orphan removal all initialize what they need. Strict
+     * loading is therefore suspended for the whole flush, see {@see commit()}.
+     */
+    private function doCommit(): void
     {
         $connection = $this->em->getConnection();
 
@@ -1837,7 +1855,9 @@ class UnitOfWork implements PropertyChangedListener
     {
         $visited = [];
 
-        $this->doPersist($entity, $visited);
+        $this->withoutStrictLoading(function () use ($entity, &$visited): void {
+            $this->doPersist($entity, $visited);
+        });
     }
 
     /**
@@ -1917,7 +1937,10 @@ class UnitOfWork implements PropertyChangedListener
     {
         $visited = [];
 
-        $this->doRemove($entity, $visited);
+        // Cascading a removal intentionally initializes collections and proxies.
+        $this->withoutStrictLoading(function () use ($entity, &$visited): void {
+            $this->doRemove($entity, $visited);
+        });
     }
 
     /**
@@ -2044,7 +2067,9 @@ class UnitOfWork implements PropertyChangedListener
     {
         $visited = [];
 
-        $this->doRefresh($entity, $visited, $lockMode);
+        $this->withoutStrictLoading(function () use ($entity, &$visited, $lockMode): void {
+            $this->doRefresh($entity, $visited, $lockMode);
+        });
     }
 
     /**
@@ -2292,6 +2317,12 @@ class UnitOfWork implements PropertyChangedListener
      */
     public function lock(object $entity, LockMode|int $lockMode, DateTimeInterface|int|null $lockVersion = null): void
     {
+        $this->withoutStrictLoading(fn () => $this->doLock($entity, $lockMode, $lockVersion));
+    }
+
+    /** @phpstan-param LockMode::*|int $lockMode */
+    private function doLock(object $entity, LockMode|int $lockMode, DateTimeInterface|int|null $lockVersion = null): void
+    {
         if ($this->getEntityState($entity, self::STATE_DETACHED) !== self::STATE_MANAGED) {
             throw ORMInvalidArgumentException::entityNotManaged($entity);
         }
@@ -2364,6 +2395,8 @@ class UnitOfWork implements PropertyChangedListener
         $this->eagerLoadingEntities             =
         $this->eagerLoadingCollections          =
         $this->orphanRemovals                   = [];
+
+        $this->em->getConfiguration()->getStrictLoading()->reset();
 
         $this->eventDispatcher->dispatchEvent(Events::onClear, new OnClearEventArgs($this->em));
     }
@@ -2741,12 +2774,14 @@ class UnitOfWork implements PropertyChangedListener
 
                     if ($hints['fetchMode'][$class->name][$field] === ClassMetadata::FETCH_EAGER) {
                         if (
-                            $assoc->isOneToMany()
-                            // is iteration
-                            && ! (isset($hints[Query::HINT_INTERNAL_ITERATION]) && $hints[Query::HINT_INTERNAL_ITERATION])
-                            // is foreign key composite
-                            && ! ($targetClass->hasAssociation($assoc->mappedBy) && count($targetClass->getAssociationMapping($assoc->mappedBy)->joinColumns) > 1)
-                            && ! $assoc->isIndexed()
+                            // is iteration: rows are hydrated one by one, so there is
+                            // nothing to batch them with
+                            ! (isset($hints[Query::HINT_INTERNAL_ITERATION]) && $hints[Query::HINT_INTERNAL_ITERATION])
+                            // Loading from the second-level cache does not go through ObjectHydrator,
+                            // so deferred batch eager loads are never flushed there. Load immediately
+                            // instead (also allows hitting the collection cache region).
+                            && ! isset($hints[Query::HINT_CACHE_ENABLED])
+                            && $this->associationBatchLoader->canBatchLoad($pColl->getMapping())
                         ) {
                             $this->scheduleCollectionForBatchLoading($pColl, $class);
                         } else {
@@ -2772,97 +2807,32 @@ class UnitOfWork implements PropertyChangedListener
             return;
         }
 
+        // A nested hydration must not flush what the hydration around it is still
+        // collecting: doing so turns one batched query into one query per row.
+        if ($this->hydrationDepth > 1) {
+            return;
+        }
+
         // avoid infinite recursion
         $eagerLoadingEntities       = $this->eagerLoadingEntities;
         $this->eagerLoadingEntities = [];
 
         foreach ($eagerLoadingEntities as $entityName => $ids) {
-            if (! $ids) {
-                continue;
-            }
-
-            $class   = $this->em->getClassMetadata($entityName);
-            $batches = array_chunk($ids, $this->em->getConfiguration()->getEagerFetchBatchSize());
-
-            foreach ($batches as $batchedIds) {
-                $this->getEntityPersister($entityName)->loadAll(
-                    array_combine($class->identifier, [$batchedIds]),
-                );
-            }
+            $this->associationBatchLoader->initializeEntities($entityName, $ids);
         }
 
         $eagerLoadingCollections       = $this->eagerLoadingCollections; // avoid recursion
         $this->eagerLoadingCollections = [];
 
         foreach ($eagerLoadingCollections as $group) {
-            $this->eagerLoadCollections($group['items'], $group['mapping']);
-        }
-    }
-
-    /**
-     * Load all data into the given collections, according to the specified mapping
-     *
-     * @param PersistentCollection[] $collections
-     */
-    private function eagerLoadCollections(array $collections, ToManyInverseSideMapping $mapping): void
-    {
-        $targetEntity = $mapping->targetEntity;
-        $class        = $this->em->getClassMetadata($mapping->sourceEntity);
-        $mappedBy     = $mapping->mappedBy;
-
-        $batches = array_chunk($collections, $this->em->getConfiguration()->getEagerFetchBatchSize(), true);
-
-        foreach ($batches as $collectionBatch) {
-            $entities = [];
-
-            foreach ($collectionBatch as $collection) {
-                $entities[] = $collection->getOwner();
-            }
-
-            $found = $this->getEntityPersister($targetEntity)->loadAll([$mappedBy => $entities], $mapping->orderBy);
-
-            $targetClass    = $this->em->getClassMetadata($targetEntity);
-            $targetProperty = $targetClass->getPropertyAccessor($mappedBy);
-            assert($targetProperty !== null);
-
-            foreach ($found as $targetValue) {
-                $sourceEntity = $targetProperty->getValue($targetValue);
-
-                if ($sourceEntity === null && isset($targetClass->associationMappings[$mappedBy]->joinColumns)) {
-                    // case where the hydration $targetValue itself has not yet fully completed, for example
-                    // in case a bi-directional association is being hydrated and deferring eager loading is
-                    // not possible due to subclassing.
-                    $data = $this->getOriginalEntityData($targetValue);
-                    $id   = [];
-                    foreach ($targetClass->associationMappings[$mappedBy]->joinColumns as $joinColumn) {
-                        $id[] = $data[$joinColumn->name];
-                    }
-                } else {
-                    $id = $this->identifierFlattener->flattenIdentifier($class, $class->getIdentifierValues($sourceEntity));
-                }
-
-                $idHash = implode(' ', $id);
-
-                if ($mapping->indexBy !== null) {
-                    $indexByProperty = $targetClass->getPropertyAccessor($mapping->indexBy);
-                    assert($indexByProperty !== null);
-                    $collectionBatch[$idHash]->hydrateSet($indexByProperty->getValue($targetValue), $targetValue);
-                } else {
-                    $collectionBatch[$idHash]->add($targetValue);
-                }
-            }
-        }
-
-        foreach ($collections as $association) {
-            $association->setInitialized(true);
-            $association->takeSnapshot();
+            $this->associationBatchLoader->loadCollections($group['items'], $group['mapping']);
         }
     }
 
     /**
      * Initializes (loads) an uninitialized persistent collection of an entity.
      *
-     * @todo Maybe later move to EntityManager#initialize($proxyOrCollection). See DDC-733.
+     * @param PersistentCollection<array-key, object> $collection The collection to initialize.
      */
     public function loadCollection(PersistentCollection $collection): void
     {
@@ -3217,9 +3187,59 @@ class UnitOfWork implements PropertyChangedListener
     }
 
     /**
+     * Runs an ORM-internal operation that is allowed to load data from the
+     * database, no matter how strict loading is configured.
+     *
+     * @param callable():T $operation
+     *
+     * @return T
+     *
+     * @template T
+     */
+    private function withoutStrictLoading(callable $operation): mixed
+    {
+        $strictLoading = $this->em->getConfiguration()->getStrictLoading();
+        $strictLoading->suspend();
+
+        try {
+            return $operation();
+        } finally {
+            $strictLoading->resume();
+        }
+    }
+
+    /**
+     * INTERNAL: tells the UnitOfWork that a hydration has started.
+     *
+     * @internal called by {@see \Doctrine\ORM\Internal\Hydration\AbstractHydrator}
+     */
+    public function enterHydration(): void
+    {
+        ++$this->hydrationDepth;
+    }
+
+    /**
+     * INTERNAL: tells the UnitOfWork that a hydration has finished.
+     *
+     * @internal called by {@see \Doctrine\ORM\Internal\Hydration\AbstractHydrator}
+     */
+    public function leaveHydration(): void
+    {
+        if ($this->hydrationDepth > 0) {
+            --$this->hydrationDepth;
+        }
+    }
+
+    /**
      * Helper method to initialize a lazy loading proxy or persistent collection.
      */
     public function initializeObject(object $obj): void
+    {
+        // Explicitly asking for initialization is never a strict loading violation.
+        $this->withoutStrictLoading(fn () => $this->doInitializeObject($obj));
+    }
+
+    private function doInitializeObject(object $obj): void
     {
         if ($obj instanceof InternalProxy) {
             $obj->__load();

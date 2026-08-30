@@ -39,6 +39,7 @@ class EntityRepository implements ObjectRepository, Selectable
     /** @var class-string<T> */
     private readonly string $entityName;
     private static Inflector|null $inflector = null;
+    private Preloader|null $preloader        = null;
 
     /** @param ClassMetadata<T> $class */
     public function __construct(
@@ -77,24 +78,33 @@ class EntityRepository implements ObjectRepository, Selectable
      * @param LockMode|int|null $lockMode One of the \Doctrine\DBAL\LockMode::* constants.
      *                                    Passing NULL is deprecated, use LockMode::NONE
      *                                    instead.
+     * @param list<string>      $preload  Association paths to preload, see {@see self::preload()}.
      * @phpstan-param LockMode::*|null $lockMode
      *
      * @return object|null The entity instance or NULL if the entity can not be found.
      * @phpstan-return ?T
      */
-    public function find(mixed $id, LockMode|int|null $lockMode = LockMode::NONE, int|null $lockVersion = null): object|null
+    public function find(mixed $id, LockMode|int|null $lockMode = LockMode::NONE, int|null $lockVersion = null, array $preload = []): object|null
     {
-        return $this->em->find($this->entityName, $id, $lockMode, $lockVersion);
+        $entity = $this->em->find($this->entityName, $id, $lockMode, $lockVersion);
+
+        if ($entity !== null && $preload !== []) {
+            $this->preloader()->preload([$entity], $preload);
+        }
+
+        return $entity;
     }
 
     /**
      * Finds all entities in the repository.
      *
+     * @param list<string> $preload Association paths to preload, see {@see self::preload()}.
+     *
      * @phpstan-return list<T> The entities.
      */
-    public function findAll(): array
+    public function findAll(array $preload = []): array
     {
-        return $this->findBy([]);
+        return $this->findBy([], preload: $preload);
     }
 
     /**
@@ -102,28 +112,43 @@ class EntityRepository implements ObjectRepository, Selectable
      *
      * {@inheritDoc}
      *
+     * @param list<string> $preload Association paths to preload, see {@see self::preload()}.
+     *
      * @phpstan-return list<T>
      */
-    public function findBy(array $criteria, array|null $orderBy = null, int|null $limit = null, int|null $offset = null): array
+    public function findBy(array $criteria, array|null $orderBy = null, int|null $limit = null, int|null $offset = null, array $preload = []): array
     {
         $persister = $this->em->getUnitOfWork()->getEntityPersister($this->entityName);
 
-        return $persister->loadAll($criteria, $orderBy, $limit, $offset);
+        $entities = $persister->loadAll($criteria, $orderBy, $limit, $offset);
+
+        if ($preload !== []) {
+            $this->preloader()->preload($entities, $preload);
+        }
+
+        return $entities;
     }
 
     /**
      * Finds a single entity by a set of criteria.
      *
+     * @param list<string> $preload Association paths to preload, see {@see self::preload()}.
      * @phpstan-param array<string, mixed> $criteria
      * @phpstan-param array<string, string>|null $orderBy
      *
      * @phpstan-return T|null
      */
-    public function findOneBy(array $criteria, array|null $orderBy = null): object|null
+    public function findOneBy(array $criteria, array|null $orderBy = null, array $preload = []): object|null
     {
         $persister = $this->em->getUnitOfWork()->getEntityPersister($this->entityName);
 
-        return $persister->load($criteria, null, null, [], null, 1, $orderBy);
+        $entity = $persister->load($criteria, null, null, [], null, 1, $orderBy);
+
+        if ($entity !== null && $preload !== []) {
+            $this->preloader()->preload([$entity], $preload);
+        }
+
+        return $entity;
     }
 
     /**
@@ -139,6 +164,33 @@ class EntityRepository implements ObjectRepository, Selectable
     public function count(array $criteria = []): int
     {
         return $this->em->getUnitOfWork()->getEntityPersister($this->entityName)->count($criteria);
+    }
+
+    /**
+     * Loads the given association paths for all given entities at once.
+     *
+     *     $users = $repository->findBy(['active' => true]);
+     *     $repository->preload($users, ['articles.comments', 'address']);
+     *
+     * This is {@see EntityManagerInterface::preload()}, scoped to the entities
+     * of this repository. A path may walk several associations; passing no path
+     * initializes the given entities themselves.
+     *
+     * @param iterable<T>  $entities
+     * @param list<string> $paths
+     */
+    public function preload(iterable $entities, array $paths = []): void
+    {
+        $this->preloader()->preload($entities, $paths);
+    }
+
+    /**
+     * Preloading is not on {@see EntityManagerInterface} yet, so the repository
+     * keeps its own {@see Preloader} rather than delegating to the manager.
+     */
+    private function preloader(): Preloader
+    {
+        return $this->preloader ??= new Preloader($this->em);
     }
 
     /**

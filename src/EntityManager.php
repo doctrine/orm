@@ -81,6 +81,8 @@ class EntityManager implements EntityManagerInterface
      */
     private ProxyFactory $proxyFactory;
 
+    private Preloader|null $preloader = null;
+
     /**
      * The repository factory used to create dynamic repositories.
      */
@@ -557,6 +559,34 @@ class EntityManager implements EntityManagerInterface
     public function isOpen(): bool
     {
         return ! $this->closed;
+    }
+
+    /**
+     * Loads the given association paths for entities that are already in memory.
+     *
+     * Where a fetch join or an eager fetch mode loads associations while a query
+     * is hydrated, this loads them afterwards - for entities that came from a
+     * repository method, a paginator, or the second level cache:
+     *
+     *     $users = $repository->findAll();
+     *     $entityManager->preload($users, ['articles.comments', 'address']);
+     *
+     * A path may walk several associations. Passing no path initializes the
+     * given entities themselves, which is useful for a list of references. Each
+     * association is loaded for all entities at once, in batches of
+     * {@see Configuration::getEagerFetchBatchSize()}.
+     *
+     * A preload always loads the whole association: it marks collections as
+     * initialized.
+     *
+     * @param iterable<object> $entities
+     * @param list<string>     $paths
+     */
+    public function preload(iterable $entities, array $paths = []): void
+    {
+        $this->preloader ??= new Preloader($this);
+
+        $this->preloader->preload($entities, $paths);
     }
 
     public function getUnitOfWork(): UnitOfWork

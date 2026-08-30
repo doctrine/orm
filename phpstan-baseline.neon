@@ -1783,6 +1783,16 @@ parameters:
 			path: src/Persisters/Collection/ManyToManyPersister.php
 
 		-
+			message: '#^Call to method Doctrine\\ORM\\Mapping\\AssociationMapping\:\:isIndexed\(\) will always evaluate to true\.$#'
+			identifier: method.alreadyNarrowedType
+			count: 1
+			path: src/Internal/AssociationBatchLoader.php
+		-
+			message: '#^Call to method Doctrine\\ORM\\Mapping\\ToManyAssociationMapping\:\:isIndexed\(\) will always evaluate to true\.$#'
+			identifier: method.alreadyNarrowedType
+			count: 1
+			path: src/Internal/AssociationBatchLoader.php
+		-
 			message: '#^Instanceof between Doctrine\\ORM\\Mapping\\InverseSideMapping&Doctrine\\ORM\\Mapping\\ManyToManyAssociationMapping and Doctrine\\ORM\\Mapping\\InverseSideMapping will always evaluate to true\.$#'
 			identifier: instanceof.alwaysTrue
 			count: 2
@@ -3295,7 +3305,7 @@ parameters:
 			message: '#^Access to an undefined property Doctrine\\ORM\\Mapping\\AssociationMapping\:\:\$joinColumns\.$#'
 			identifier: property.notFound
 			count: 1
-			path: src/UnitOfWork.php
+			path: src/Internal/AssociationBatchLoader.php
 
 		-
 			message: '#^Access to an undefined property Doctrine\\ORM\\Mapping\\ManyToManyInverseSideMapping\|Doctrine\\ORM\\Mapping\\ManyToManyOwningSideMapping\|Doctrine\\ORM\\Mapping\\ManyToOneAssociationMapping\|Doctrine\\ORM\\Mapping\\OneToManyAssociationMapping\|Doctrine\\ORM\\Mapping\\OneToOneInverseSideMapping\|Doctrine\\ORM\\Mapping\\OneToOneOwningSideMapping\:\:\$inversedBy\.$#'
@@ -3312,7 +3322,7 @@ parameters:
 		-
 			message: '#^Access to an undefined property Doctrine\\ORM\\Mapping\\ManyToManyInverseSideMapping\|Doctrine\\ORM\\Mapping\\ManyToManyOwningSideMapping\|Doctrine\\ORM\\Mapping\\ManyToOneAssociationMapping\|Doctrine\\ORM\\Mapping\\OneToManyAssociationMapping\|Doctrine\\ORM\\Mapping\\OneToOneInverseSideMapping\|Doctrine\\ORM\\Mapping\\OneToOneOwningSideMapping\:\:\$mappedBy\.$#'
 			identifier: property.notFound
-			count: 3
+			count: 1
 			path: src/UnitOfWork.php
 
 		-
@@ -3327,11 +3337,6 @@ parameters:
 			count: 1
 			path: src/UnitOfWork.php
 
-		-
-			message: '#^Method Doctrine\\ORM\\UnitOfWork\:\:eagerLoadCollections\(\) has parameter \$collections with generic class Doctrine\\ORM\\PersistentCollection but does not specify its types\: TKey, T$#'
-			identifier: missingType.generics
-			count: 1
-			path: src/UnitOfWork.php
 
 		-
 			message: '#^Method Doctrine\\ORM\\UnitOfWork\:\:getEntityChangeSet\(\) return type with generic class Doctrine\\ORM\\PersistentCollection does not specify its types\: TKey, T$#'
@@ -3351,11 +3356,6 @@ parameters:
 			count: 1
 			path: src/UnitOfWork.php
 
-		-
-			message: '#^Method Doctrine\\ORM\\UnitOfWork\:\:loadCollection\(\) has parameter \$collection with generic class Doctrine\\ORM\\PersistentCollection but does not specify its types\: TKey, T$#'
-			identifier: missingType.generics
-			count: 1
-			path: src/UnitOfWork.php
 
 		-
 			message: '#^Method Doctrine\\ORM\\UnitOfWork\:\:normalizeIdentifier\(\) has parameter \$targetClass with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
@@ -3399,11 +3399,6 @@ parameters:
 			count: 1
 			path: src/UnitOfWork.php
 
-		-
-			message: '#^Parameter \#2 \$length of function array_chunk expects int\<1, max\>, int given\.$#'
-			identifier: argument.type
-			count: 2
-			path: src/UnitOfWork.php
 
 		-
 			message: '#^Parameter \#5 \$invoke of method Doctrine\\ORM\\Event\\ListenersInvoker\:\:invoke\(\) expects int\<0, 7\>, int\<min, \-1\>\|int\<1, max\> given\.$#'

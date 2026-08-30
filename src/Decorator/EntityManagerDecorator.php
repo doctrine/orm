@@ -16,6 +16,7 @@ use Doctrine\ORM\Internal\Hydration\AbstractHydrator;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\NativeQuery;
+use Doctrine\ORM\Preloader;
 use Doctrine\ORM\Proxy\ProxyFactory;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\Expr;
@@ -32,6 +33,8 @@ use Doctrine\Persistence\ObjectManagerDecorator;
  */
 abstract class EntityManagerDecorator extends ObjectManagerDecorator implements EntityManagerInterface
 {
+    private Preloader|null $preloader = null;
+
     public function __construct(EntityManagerInterface $wrapped)
     {
         $this->wrapped = $wrapped;
@@ -100,6 +103,21 @@ abstract class EntityManagerDecorator extends ObjectManagerDecorator implements 
     public function getReference(string $entityName, mixed $id): object|null
     {
         return $this->wrapped->getReference($entityName, $id);
+    }
+
+    /**
+     * See {@see EntityManager::preload()}. This is not part of
+     * {@see EntityManagerInterface} yet, so the wrapped manager is preloaded
+     * directly instead of forwarding the call.
+     *
+     * @param iterable<object> $entities
+     * @param list<string>     $paths
+     */
+    public function preload(iterable $entities, array $paths = []): void
+    {
+        $this->preloader ??= new Preloader($this->wrapped);
+
+        $this->preloader->preload($entities, $paths);
     }
 
     public function close(): void

@@ -42,6 +42,8 @@
    reference/php-mapping
    reference/caching
    reference/improving-performance
+   reference/preloading
+   reference/strict-loading
    reference/tools
    reference/metadata-drivers
    reference/best-practices

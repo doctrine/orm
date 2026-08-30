@@ -71,6 +71,8 @@ Advanced Topics
 * :doc:`NamingStrategy <reference/namingstrategy>`
 * :doc:`TypedFieldMapper <reference/typedfieldmapper>`
 * :doc:`Improving Performance <reference/improving-performance>`
+* :doc:`Preloading Associations <reference/preloading>`
+* :doc:`Strict Loading <reference/strict-loading>`
 * :doc:`Caching <reference/caching>`
 * :doc:`Partial Hydration <reference/partial-hydration>`
 * :doc:`Partial Objects <reference/partial-objects>`

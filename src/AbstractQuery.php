@@ -105,6 +105,15 @@ abstract class AbstractQuery
      */
     protected string|int $hydrationMode = self::HYDRATE_OBJECT;
 
+    /**
+     * Association paths to preload on the result, see {@see self::preload()}.
+     *
+     * @var list<string>
+     */
+    private array $preload = [];
+
+    private Preloader|null $preloader = null;
+
     protected QueryCacheProfile|null $queryCacheProfile = null;
 
     /**
@@ -859,6 +868,14 @@ abstract class AbstractQuery
             $this->setParameters($parameters);
         }
 
+        if ($this->preload !== []) {
+            throw new LogicException(
+                'Preloading is not possible with toIterable(), which hydrates one row at a time:'
+                . ' there is nothing to load the associations for in one query. Use getResult(),'
+                . ' or a fetch join.',
+            );
+        }
+
         $rsm = $this->getResultSetMapping();
         if ($rsm === null) {
             throw new LogicException('Uninitialized result set mapping.');
@@ -867,6 +884,30 @@ abstract class AbstractQuery
         $stmt = $this->_doExecute();
 
         return $this->em->newHydrator($this->hydrationMode)->toIterable($stmt, $rsm, $this->hints);
+    }
+
+    /**
+     * Preloads the given association paths on the entities this query returns.
+     *
+     * This is {@see EntityManagerInterface::preload()} applied to the result, for
+     * associations that cannot be fetch joined - a second collection next to one
+     * that is already joined, for instance:
+     *
+     *     $query->preload(['comments', 'author.address'])->getResult();
+     *
+     * Each association is loaded for all returned entities at once, after
+     * hydration. {@see self::toIterable()} cannot preload, because it hydrates
+     * one row at a time.
+     *
+     * @param list<string> $paths
+     */
+    public function preload(array $paths): static
+    {
+        foreach ($paths as $path) {
+            $this->preload[] = $path;
+        }
+
+        return $this;
     }
 
     /**
@@ -879,11 +920,57 @@ abstract class AbstractQuery
         ArrayCollection|array|null $parameters = null,
         string|int|null $hydrationMode = null,
     ): mixed {
-        if ($this->cacheable && $this->isCacheEnabled()) {
-            return $this->executeUsingQueryCache($parameters, $hydrationMode);
+        $result = $this->cacheable && $this->isCacheEnabled()
+            ? $this->executeUsingQueryCache($parameters, $hydrationMode)
+            : $this->executeIgnoreQueryCache($parameters, $hydrationMode);
+
+        if ($this->preload !== [] && is_array($result)) {
+            $this->preloader()->preload($this->entitiesIn($result), $this->preload);
         }
 
-        return $this->executeIgnoreQueryCache($parameters, $hydrationMode);
+        return $result;
+    }
+
+    /**
+     * Preloading is not on {@see EntityManagerInterface} yet, so the query keeps
+     * its own {@see Preloader} rather than delegating to the manager.
+     */
+    private function preloader(): Preloader
+    {
+        return $this->preloader ??= new Preloader($this->em);
+    }
+
+    /**
+     * The entities in a query result, so that a mixed result - a root entity
+     * next to scalar values - can be preloaded too.
+     *
+     * @param mixed[] $result
+     *
+     * @return list<object>
+     */
+    private function entitiesIn(array $result): array
+    {
+        $entities = [];
+
+        foreach ($result as $row) {
+            if (is_object($row)) {
+                $entities[] = $row;
+
+                continue;
+            }
+
+            if (! is_array($row)) {
+                continue;
+            }
+
+            foreach ($row as $value) {
+                if (is_object($value)) {
+                    $entities[] = $value;
+                }
+            }
+        }
+
+        return $entities;
     }
 
     /**
