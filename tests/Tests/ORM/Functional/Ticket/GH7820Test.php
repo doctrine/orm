@@ -10,7 +10,8 @@ use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\Id;
-use Doctrine\ORM\Tools\Pagination\Paginator;
+use Doctrine\ORM\Tools\Pagination\OffsetPaginator;
+use Doctrine\ORM\Tools\Pagination\Window;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\Attributes\Group;
@@ -22,10 +23,9 @@ use Symfony\Component\Cache\CacheItem;
 
 use function array_map;
 use function is_string;
-use function iterator_to_array;
 
 /**
- * When using a {@see \Doctrine\ORM\Tools\Pagination\Paginator} to iterate over a query
+ * When using a {@see \Doctrine\ORM\Tools\Pagination\OffsetPaginator} to iterate over a query
  * that has entities with a custom DBAL type used in the identifier, then `$id->__toString()`
  * is used implicitly by {@see \PDOStatement::bindValue()}, instead of being converted by the
  * expected {@see \Doctrine\DBAL\Types\Type::convertToDatabaseValue()}.
@@ -146,10 +146,11 @@ class GH7820Test extends OrmFunctionalTestCase
     {
         $query = $this->_em->getRepository(GH7820Line::class)
             ->createQueryBuilder('l')
-            ->orderBy('l.lineNumber', SortDirection::Ascending)
-            ->setMaxResults(100);
+            ->orderBy('l.lineNumber', SortDirection::Ascending);
 
-        return array_map(static fn (GH7820Line $line): string => $line->toString(), iterator_to_array(new Paginator($query)));
+        $page = (new OffsetPaginator())->paginate($query, new Window(0, 100));
+
+        return array_map(static fn (GH7820Line $line): string => $line->toString(), $page->getItems());
     }
 }
 

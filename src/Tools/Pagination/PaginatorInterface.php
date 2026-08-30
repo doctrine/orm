@@ -25,6 +25,12 @@ use Doctrine\ORM\QueryBuilder;
 interface PaginatorInterface
 {
     /**
+     * Query hint disabling the DISTINCT keyword in the identifier subquery, for
+     * queries where duplicate root identifiers cannot occur.
+     */
+    public const HINT_ENABLE_DISTINCT = 'paginator.distinct.enable';
+
+    /**
      * Executes the query for the given position and returns an immutable page.
      *
      * @param TPosition $position

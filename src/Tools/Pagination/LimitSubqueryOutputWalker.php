@@ -547,7 +547,7 @@ class LimitSubqueryOutputWalker extends SqlOutputWalker
         }
 
         if (count($sqlIdentifier) === 0) {
-            throw new RuntimeException('The Paginator does not support Queries which only yield ScalarResults.');
+            throw new RuntimeException('Paginators do not support Queries which only yield ScalarResults.');
         }
 
         if (count($rootIdentifier) !== count($sqlIdentifier)) {
