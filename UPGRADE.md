@@ -8,6 +8,61 @@ awareness about deprecated code.
 
 # Upgrade to 4.0
 
+## Removed `Doctrine\ORM\Tools\Pagination\Paginator`
+
+The class deprecated in 3.7 has been removed. Use
+`Doctrine\ORM\Tools\Pagination\OffsetPaginator` instead: the first result and the
+maximum number of results are no longer read implicitly from the query, they are
+passed together as a `Window` value object to `paginate()`, which returns an
+immutable, iterable `WindowPage`.
+
+```diff
+-use Doctrine\ORM\Tools\Pagination\Paginator;
++use Doctrine\ORM\Tools\Pagination\OffsetPaginator;
++use Doctrine\ORM\Tools\Pagination\Window;
+
+-$query = $entityManager->createQuery($dql)
+-    ->setFirstResult(0)
+-    ->setMaxResults(25);
++$query = $entityManager->createQuery($dql);
+
+-$paginator = new Paginator($query, fetchJoinCollection: true);
++$page = (new OffsetPaginator(fetchJoinCollection: true))
++    ->paginate($query, new Window(0, 25));
+
+-$total = count($paginator);
++$total = $page->getTotalCount();
+
+-foreach ($paginator as $post) {
++foreach ($page as $post) {
+     // ...
+ }
+```
+
+`Paginator::setUseOutputWalkers()` becomes the `useOutputWalkers` constructor
+argument of `OffsetPaginator`.
+
+A `Window` always carries a page size, so paginating without a limit is no longer
+possible: run the query itself when you want every row.
+
+`WindowPage::getItems()` returns a list, whereas iterating the legacy `Paginator`
+preserved the result keys of a DQL `INDEX BY` clause.
+
+## Removed `Paginator::HINT_ENABLE_DISTINCT`
+
+The constant deprecated in 3.7 has been removed along with its class. Use
+`Doctrine\ORM\Tools\Pagination\PaginatorInterface::HINT_ENABLE_DISTINCT` instead, which
+applies to both `OffsetPaginator` and `CursorPaginator`. Its value is unchanged,
+so hints set as a raw string keep working.
+
+```diff
+-use Doctrine\ORM\Tools\Pagination\Paginator;
++use Doctrine\ORM\Tools\Pagination\PaginatorInterface;
+
+-$query->setHint(Paginator::HINT_ENABLE_DISTINCT, false);
++$query->setHint(PaginatorInterface::HINT_ENABLE_DISTINCT, false);
+```
+
 ## Forbid using the `WITH` keyword for arbitrary DQL joins
 
 Using the `WITH` keyword to specify the condition for an arbitrary DQL join is

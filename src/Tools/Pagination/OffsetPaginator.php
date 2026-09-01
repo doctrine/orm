@@ -24,9 +24,7 @@ use function sprintf;
  * which returns an immutable, iterable {@see WindowPage} rather than the
  * paginator itself. The paginator therefore holds no state beyond its
  * configuration: a single instance can be shared as a service and reused for
- * any query and any page. This avoids the implicit offset handling and the
- * stateful API of the legacy {@see Paginator}, which this class is intended to
- * replace.
+ * any query and any page.
  *
  * @template-covariant T
  * @implements PaginatorInterface<T, Window>
