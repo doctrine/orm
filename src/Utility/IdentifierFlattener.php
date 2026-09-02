@@ -55,7 +55,7 @@ final class IdentifierFlattener
         $flatId = [];
 
         foreach ($class->identifier as $field) {
-            if (isset($class->associationMappings[$field]) && isset($id[$field]) && is_a($id[$field], $class->associationMappings[$field]['targetEntity'])) {
+            if (isset($class->associationMappings[$field]) && isset($id[$field]) && is_a($id[$field], $class->associationMappings[$field]['targetEntity'], true)) {
                 $targetClassMetadata = $this->metadataFactory->getMetadataFor(
                     $class->associationMappings[$field]['targetEntity']
                 );
