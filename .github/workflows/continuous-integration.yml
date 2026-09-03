@@ -103,7 +103,7 @@ jobs:
 
       - name: "Install deepclone extension"
         run: sudo pie install symfony/deepclone
-        if: "${{ matrix.native_lazy == '0' && matrix.php-version != '8.1' }}"
+        if: "${{ matrix.native_lazy == '0' && matrix.php-version != '8.1' && matrix.php-version != '8.6' }}"
 
       - name: "Allow dev dependencies"
         run: |
