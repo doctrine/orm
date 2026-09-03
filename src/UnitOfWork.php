@@ -2747,6 +2747,10 @@ class UnitOfWork implements PropertyChangedListener
                             // is foreign key composite
                             && ! ($targetClass->hasAssociation($assoc->mappedBy) && count($targetClass->getAssociationMapping($assoc->mappedBy)->joinColumns) > 1)
                             && ! $assoc->isIndexed()
+                            // Loading from the second-level cache does not go through ObjectHydrator,
+                            // so deferred batch eager loads are never flushed there. Load immediately
+                            // instead (also allows hitting the collection cache region).
+                            && ! isset($hints[Query::HINT_CACHE_ENABLED])
                         ) {
                             $this->scheduleCollectionForBatchLoading($pColl, $class);
                         } else {

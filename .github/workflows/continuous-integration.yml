@@ -43,6 +43,7 @@ jobs:
           - "8.3"
           - "8.4"
           - "8.5"
+          - "8.6"
         dbal-version:
           - "default"
           - "3.7"
@@ -102,7 +103,7 @@ jobs:
 
       - name: "Install deepclone extension"
         run: sudo pie install symfony/deepclone
-        if: "${{ matrix.native_lazy == '0' && matrix.php-version != '8.1' }}"
+        if: "${{ matrix.native_lazy == '0' && matrix.php-version != '8.1' && matrix.php-version != '8.6' }}"
 
       - name: "Allow dev dependencies"
         run: |
@@ -216,6 +217,7 @@ jobs:
           - "8.3"
           - "8.4"
           - "8.5"
+          - "8.6"
         dbal-version:
           - "default"
           - "3.7"
@@ -299,6 +301,7 @@ jobs:
           - "8.3"
           - "8.4"
           - "8.5"
+          - "8.6"
         dbal-version:
           - "default"
           - "3.7"
@@ -375,6 +378,7 @@ jobs:
           - "8.3"
           - "8.4"
           - "8.5"
+          - "8.6"
         dbal-version:
           - "default"
           - "3.7"

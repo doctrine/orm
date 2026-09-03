@@ -15,10 +15,10 @@ the first time its accessed. If you mark an association as extra lazy the follow
 can be called without triggering a full load of the collection:
 
 -  ``Collection#contains($entity)``
--  ``Collection#containsKey($key)``
+-  ``Collection#containsKey($key)`` only if the association includes an ``indexBy`` field.
 -  ``Collection#count()``
 -  ``Collection#first()``
--  ``Collection#get($key)``
+-  ``Collection#get($key)`` only if the association includes an ``indexBy`` field.
 -  ``Collection#isEmpty()``
 -  ``Collection#slice($offset, $length = null)``
 
