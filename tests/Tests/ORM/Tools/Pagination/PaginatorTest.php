@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Tools\Pagination;
 
+use Doctrine\DBAL\Cache\QueryCacheProfile;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Driver;
 use Doctrine\DBAL\Result;
@@ -83,6 +84,43 @@ class PaginatorTest extends OrmTestCase
             [$paramInWhere],
             [$paramInSubSelect, $paramInWhere, $returnedIds],
         ], $receivedParams);
+    }
+
+    public function testPaginatorCountWillUseCacheFromOriginalQuery(): void
+    {
+        $paramInWhere   = 1;
+        $returnedCounts = [50];
+
+        $this->hydrator->method('hydrateAll')->willReturn([$returnedCounts]);
+
+        $lifetime = 10;
+        $key      = 'the-key';
+
+        $query = new Query($this->em);
+        $query->setDQL(
+            'SELECT u
+            FROM Doctrine\\Tests\\Models\\CMS\\CmsUser u
+            WHERE u.id = :paramInWhere'
+        );
+        $query->setParameters(['paramInWhere' => $paramInWhere]);
+        $query->setMaxResults(1);
+        $query->enableResultCache($lifetime, $key);
+        $queryCacheProfile = $query->getQueryCacheProfile();
+        $paginator         = (new Paginator($query, true))->setUseOutputWalkers(false);
+
+        $resultStub = $this->createStub(Result::class);
+        $this->connection
+            ->method('executeQuery')
+            ->willReturnCallback(static function (string $sql, array $params, array $types, ?QueryCacheProfile $qcp) use ($key, $lifetime, $queryCacheProfile, $resultStub): Result {
+                self::assertNotNull($qcp);
+                self::assertNotSame($queryCacheProfile, $qcp);
+                self::assertSame($lifetime, $qcp->getLifetime());
+                self::assertSame($key, $qcp->getCacheKey());
+
+                return $resultStub;
+            });
+
+        $paginator->count();
     }
 
     public function testPaginatorNotCaringAboutExtraParametersWithoutOutputWalkers(): void
