@@ -221,6 +221,17 @@ class ConfigurationTest extends TestCase
         self::assertSame($defaultTypedFieldMapper, $this->configuration->getTypedFieldMapper());
     }
 
+    public function testSetIsInferParameterTypesEnabled(): void
+    {
+        self::assertFalse($this->configuration->isInferParameterTypesEnabled());
+
+        $this->configuration->setInferParameterTypes(true);
+        self::assertTrue($this->configuration->isInferParameterTypesEnabled());
+
+        $this->configuration->setInferParameterTypes(false);
+        self::assertFalse($this->configuration->isInferParameterTypesEnabled());
+    }
+
     #[RequiresPhp('>=8.4.0')]
     #[IgnoreDeprecations]
     public function testDisablingNativeLazyObjectsIsDeprecated(): void

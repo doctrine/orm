@@ -77,6 +77,7 @@ use Doctrine\Tests\Models\CompositeKeyInheritance\SingleRootClass;
 use Doctrine\Tests\Models\CustomType\CustomIdObjectTypeChild;
 use Doctrine\Tests\Models\CustomType\CustomIdObjectTypeParent;
 use Doctrine\Tests\Models\CustomType\CustomTypeChild;
+use Doctrine\Tests\Models\CustomType\CustomTypeInferredParameter;
 use Doctrine\Tests\Models\CustomType\CustomTypeParent;
 use Doctrine\Tests\Models\CustomType\CustomTypeUpperCase;
 use Doctrine\Tests\Models\DDC117\DDC117ApproveChanges;
@@ -342,6 +343,9 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             CustomTypeChild::class,
             CustomTypeParent::class,
             CustomTypeUpperCase::class,
+        ],
+        'custom_type_inferred_parameter' => [
+            CustomTypeInferredParameter::class,
         ],
         'compositekeyinheritance' => [
             JoinedRootClass::class,
@@ -651,6 +655,10 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             $conn->executeStatement('DELETE FROM customtype_parents');
             $conn->executeStatement('DELETE FROM customtype_children');
             $conn->executeStatement('DELETE FROM customtype_uppercases');
+        }
+
+        if (isset($this->_usedModelSets['custom_type_inferred_parameter'])) {
+            $conn->executeStatement('DELETE FROM customtype_inferred_parameters');
         }
 
         if (isset($this->_usedModelSets['compositekeyinheritance'])) {
