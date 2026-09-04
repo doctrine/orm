@@ -10,7 +10,6 @@ use Doctrine\Common\EventManager;
 use Doctrine\Common\EventManagerInterface;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\LockMode;
-use Doctrine\Deprecations\Deprecation;
 use Doctrine\ORM\Exception\EntityManagerClosed;
 use Doctrine\ORM\Exception\InvalidHydrationMode;
 use Doctrine\ORM\Exception\MissingIdentifierField;
@@ -273,19 +272,8 @@ class EntityManager implements EntityManagerInterface
      * {@inheritDoc}
      */
     #[Override]
-    public function find($className, mixed $id, LockMode|null $lockMode = LockMode::NONE, int|null $lockVersion = null): object|null
+    public function find($className, mixed $id, LockMode $lockMode = LockMode::NONE, int|null $lockVersion = null): object|null
     {
-        if ($lockMode === null) {
-            Deprecation::trigger(
-                'doctrine/orm',
-                'https://github.com/doctrine/orm/pull/12548',
-                'Passing null as lock mode to %s() is deprecated and will not be possible in Doctrine ORM 4.0, pass LockMode::NONE instead.',
-                __METHOD__,
-            );
-
-            $lockMode = LockMode::NONE;
-        }
-
         $class = $this->metadataFactory->getMetadataFor(ltrim($className, '\\'));
 
         $this->checkLockRequirements($lockMode, $class);
@@ -475,19 +463,8 @@ class EntityManager implements EntityManagerInterface
     }
 
     #[Override]
-    public function refresh(object $object, LockMode|null $lockMode = LockMode::NONE): void
+    public function refresh(object $object, LockMode $lockMode = LockMode::NONE): void
     {
-        if ($lockMode === null) {
-            Deprecation::trigger(
-                'doctrine/orm',
-                'https://github.com/doctrine/orm/pull/12548',
-                'Passing null as lock mode to %s() is deprecated and will not be possible in Doctrine ORM 4.0, pass LockMode::NONE instead.',
-                __METHOD__,
-            );
-
-            $lockMode = LockMode::NONE;
-        }
-
         $this->errorIfClosed();
 
         $this->unitOfWork->refresh($object, $lockMode);

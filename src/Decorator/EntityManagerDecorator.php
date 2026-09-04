@@ -129,13 +129,13 @@ abstract class EntityManagerDecorator extends ObjectManagerDecorator implements 
     }
 
     #[Override]
-    public function find(string $className, mixed $id, LockMode|null $lockMode = LockMode::NONE, int|null $lockVersion = null): object|null
+    public function find(string $className, mixed $id, LockMode $lockMode = LockMode::NONE, int|null $lockVersion = null): object|null
     {
         return $this->wrapped->find($className, $id, $lockMode, $lockVersion);
     }
 
     #[Override]
-    public function refresh(object $object, LockMode|null $lockMode = LockMode::NONE): void
+    public function refresh(object $object, LockMode $lockMode = LockMode::NONE): void
     {
         $this->wrapped->refresh($object, $lockMode);
     }

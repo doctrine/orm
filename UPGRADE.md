@@ -63,6 +63,18 @@ so hints set as a raw string keep working.
 +$query->setHint(PaginatorInterface::HINT_ENABLE_DISTINCT, false);
 ```
 
+## Forbid passing `null` as lock mode
+
+Passing `null` as lock mode to `EntityManager::find()`,
+`EntityManager::refresh()` or `EntityRepository::find()` is no longer possible.
+Since `LockMode::NONE` is a no-op, omit the argument or pass `LockMode::NONE`
+instead.
+
+```diff
+-$entityManager->find(User::class, $id, null);
++$entityManager->find(User::class, $id);
+```
+
 ## Forbid using the `WITH` keyword for arbitrary DQL joins
 
 Using the `WITH` keyword to specify the condition for an arbitrary DQL join is
