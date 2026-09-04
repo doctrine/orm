@@ -1800,6 +1800,8 @@ class SqlWalker
         $sql      = $this->walkPathExpression($updateItem->pathExpression) . ' = ';
         $newValue = $updateItem->newValue;
 
+        $this->recordParameterType($newValue, $this->resolveParameterType($updateItem->pathExpression));
+
         $sql .= match (true) {
             $newValue instanceof AST\Node => $newValue->dispatch($this),
             $newValue === null => 'NULL',
@@ -2063,6 +2065,12 @@ class SqlWalker
      */
     public function walkInListExpression(AST\InListExpression $inExpr): string
     {
+        $type = $this->resolveParameterType($inExpr->expression);
+
+        foreach ($inExpr->literals as $literal) {
+            $this->recordParameterType($literal, $type);
+        }
+
         return $this->walkArithmeticExpression($inExpr->expression)
             . ($inExpr->not ? ' NOT' : '') . ' IN ('
             . implode(', ', array_map($this->walkInParameter(...), $inExpr->literals))
@@ -2132,6 +2140,11 @@ class SqlWalker
      */
     public function walkBetweenExpression(AST\BetweenExpression $betweenExpr): string
     {
+        $type = $this->resolveParameterType($betweenExpr->expression);
+
+        $this->recordParameterType($betweenExpr->leftBetweenExpression, $type);
+        $this->recordParameterType($betweenExpr->rightBetweenExpression, $type);
+
         $sql = $this->walkArithmeticExpression($betweenExpr->expression);
 
         if ($betweenExpr->not) {
@@ -2196,6 +2209,14 @@ class SqlWalker
         $rightExpr = $compExpr->rightExpression;
         $sql       = '';
 
+        $type = $this->resolveParameterType($leftExpr);
+
+        if ($type === null) {
+            $this->recordParameterType($leftExpr, $this->resolveParameterType($rightExpr));
+        } else {
+            $this->recordParameterType($rightExpr, $type);
+        }
+
         $sql .= $leftExpr instanceof AST\Node
             ? $leftExpr->dispatch($this)
             : (is_numeric($leftExpr) ? $leftExpr : $this->conn->quote($leftExpr));
@@ -2207,6 +2228,92 @@ class SqlWalker
             : (is_numeric($rightExpr) ? $rightExpr : $this->conn->quote($rightExpr));
 
         return $sql;
+    }
+
+    /**
+     * Resolves the type of the field a comparison, IN or SET operand refers to.
+     *
+     * @return string|null The name of the DBAL type the field is mapped to.
+     */
+    private function resolveParameterType(AST\Node|string|null $expr): string|null
+    {
+        $expr = $this->unwrapOperand($expr);
+
+        if (! $expr instanceof AST\PathExpression || $expr->field === null) {
+            return null;
+        }
+
+        $class = $this->getMetadataForDqlAlias($expr->identificationVariable);
+        $types = PersisterHelper::getTypeOfField($expr->field, $class, $this->em);
+
+        if (count($types) !== 1 || ! Type::hasType($types[0])) {
+            return null;
+        }
+
+        if (Type::getType($types[0])->convertToDatabaseValueSQL('?', $this->platform) !== '?') {
+            return null;
+        }
+
+        return $types[0];
+    }
+
+    /**
+     * Records the type of the field a bind parameter is compared or assigned to, in the
+     * QuerySetMapping.
+     *
+     * Anything but a bare input parameter is skipped: an operand such as CONCAT(:a, :b) or a
+     * subselect holds parameters of its own, which have nothing to do with the field.
+     */
+    private function recordParameterType(mixed $operand, string|null $type): void
+    {
+        if ($type === null) {
+            return;
+        }
+
+        $operand = $operand instanceof AST\Node || is_string($operand) ? $this->unwrapOperand($operand) : $operand;
+
+        if (! $operand instanceof AST\InputParameter) {
+            return;
+        }
+
+        $this->parserResult->getQuerySetMapping()->addParameter($operand->name, $type);
+    }
+
+    /**
+     * Unwraps the arithmetic nodes a comparison, IN or SET operand may be wrapped in, exposing
+     * the bare node underneath.
+     *
+     * The parser collapses single term expressions itself, but tree walkers building an AST by
+     * hand do not, so the wrappers have to be collapsed here as well.
+     */
+    private function unwrapOperand(AST\Node|string|null $expr): AST\Node|string|null
+    {
+        while (true) {
+            switch (true) {
+                case $expr instanceof AST\ArithmeticExpression && $expr->isSimpleArithmeticExpression():
+                    $expr = $expr->simpleArithmeticExpression;
+                    break;
+
+                case $expr instanceof AST\SimpleArithmeticExpression && count($expr->arithmeticTerms) === 1:
+                    $expr = $expr->arithmeticTerms[0];
+                    break;
+
+                case $expr instanceof AST\ArithmeticTerm && count($expr->arithmeticFactors) === 1:
+                    $expr = $expr->arithmeticFactors[0];
+                    break;
+
+                case $expr instanceof AST\ArithmeticFactor && $expr->sign === null:
+                    $expr = $expr->arithmeticPrimary;
+                    break;
+
+                case $expr instanceof AST\ParenthesisExpression:
+                    $expr = $expr->expression;
+                    break;
+
+                default:
+                    return $expr;
+            }
+        }
     }
 
     /**

@@ -22,11 +22,6 @@ parameters:
         # Symfony cache supports passing a key prefix to the clear method.
         - '/^Method Psr\\Cache\\CacheItemPoolInterface\:\:clear\(\) invoked with 1 parameter, 0 required\.$/'
 
-        # We can be certain that those values are not matched.
-        -
-            message: '~^Match expression does not handle remaining values:~'
-            path: src/Utility/PersisterHelper.php
-
         # The return type is already narrow enough.
         - '~^Method Doctrine\\ORM\\Query\\ParameterTypeInferer\:\:inferType\(\) never returns ''[a-z_]+'' so it can be removed from the return type\.$~'
         - '~^Method Doctrine\\ORM\\Query\\ParameterTypeInferer\:\:inferType\(\) never returns Doctrine\\DBAL\\(?:Array)?ParameterType\:\:[A-Z_]+ so it can be removed from the return type\.$~'
@@ -35,9 +30,6 @@ parameters:
         -
             message: '~^Method Doctrine\\ORM\\Query\\AST\\Functions\\TrimFunction::getTrimMode\(\) never returns .* so it can be removed from the return type\.$~'
             path: src/Query/AST/Functions/TrimFunction.php
-        -
-            message: '~^Method Doctrine\\ORM\\Utility\\PersisterHelper\:\:getArrayBindingType\(\) never returns .* so it can be removed from the return type\.$~'
-            path: src/Utility/PersisterHelper.php
 
         # Compatibility with DBAL 3
         # See https://github.com/doctrine/dbal/pull/3480

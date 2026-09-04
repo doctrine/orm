@@ -43,6 +43,11 @@ class ParserResult
     private array $parameterMappings = [];
 
     /**
+     * The QuerySetMapping that describes how the bind parameters map to mapped fields.
+     */
+    private QuerySetMapping|null $querySetMapping = null;
+
+    /**
      * Initializes a new instance of the <tt>ParserResult</tt> class.
      * The new instance is initialized with an empty <tt>ResultSetMapping</tt>.
      */
@@ -67,6 +72,16 @@ class ParserResult
     public function setResultSetMapping(ResultSetMapping $rsm): void
     {
         $this->resultSetMapping = $rsm;
+    }
+
+    /**
+     * Gets the QuerySetMapping for the parsed query.
+     *
+     * @return QuerySetMapping The query set mapping of the parsed query
+     */
+    public function getQuerySetMapping(): QuerySetMapping
+    {
+        return $this->querySetMapping ??= new QuerySetMapping();
     }
 
     /**
