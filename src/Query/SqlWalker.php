@@ -56,6 +56,11 @@ class SqlWalker
      */
     public const HINT_PARTIAL = 'doctrine.partial';
 
+    /**
+     * Used to prevent nested ORDER BY statements which cause an exception in SQL Server
+     */
+    public const HINT_DISABLE_COLLECTION_ORDER_BY = 'doctrine.disableCollectionOrderBy';
+
     private readonly ResultSetMapping $rsm;
 
     /**
@@ -520,9 +525,11 @@ class SqlWalker
             $sql .= $this->walkOrderByClause($selectStatement->orderByClause);
         }
 
-        $orderBySql = $this->generateOrderedCollectionOrderByItems();
-        if (! $selectStatement->orderByClause && $orderBySql) {
-            $sql .= ' ORDER BY ' . $orderBySql;
+        if (! $this->query->getHint(self::HINT_DISABLE_COLLECTION_ORDER_BY)) {
+            $orderBySql = $this->generateOrderedCollectionOrderByItems();
+            if (! $selectStatement->orderByClause && $orderBySql) {
+                $sql .= ' ORDER BY ' . $orderBySql;
+            }
         }
 
         $this->assertOptimisticLockingHasAllClassesVersioned();

@@ -26,6 +26,7 @@ use Doctrine\ORM\Query\ParserResult;
 use Doctrine\ORM\Query\QueryException;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\ORM\Query\SqlOutputWalker;
+use Doctrine\ORM\Query\SqlWalker;
 use LogicException;
 use RuntimeException;
 
@@ -102,6 +103,11 @@ class LimitSubqueryOutputWalker extends SqlOutputWalker
         $this->firstResult = $cloneQuery->getFirstResult();
         $this->maxResults  = $cloneQuery->getMaxResults();
         $cloneQuery->setFirstResult(0)->setMaxResults(null);
+
+        if ($this->platform instanceof SQLServerPlatform) {
+            // disable collection‑based ORDER BY for the inner select
+            $cloneQuery->setHint(SqlWalker::HINT_DISABLE_COLLECTION_ORDER_BY, true);
+        }
 
         $this->em            = $cloneQuery->getEntityManager();
         $this->quoteStrategy = $this->em->getConfiguration()->getQuoteStrategy();
