@@ -1255,14 +1255,22 @@ class QueryBuilder implements Stringable
             throw new Query\QueryException('No aliases are set before invoking addCriteria().');
         }
 
-        $visitor = new QueryExpressionVisitor($this->getAllAliases());
+        $visitor = new QueryExpressionVisitor(
+            $this->getAllAliases(),
+            function (Parameter $parameter): string {
+                if ($this->getParameter($parameter->getName()) === null) {
+                    $this->parameters->add($parameter);
+
+                    return ':' . $parameter->getName();
+                }
+
+                return $this->createNamedParameter($parameter->getValue(), $parameter->getType());
+            },
+        );
 
         $whereExpression = $criteria->getWhereExpression();
         if ($whereExpression) {
             $this->andWhere($visitor->dispatch($whereExpression));
-            foreach ($visitor->getParameters() as $parameter) {
-                $this->parameters->add($parameter);
-            }
         }
 
         foreach ($criteria->orderings() as $sort => $order) {
