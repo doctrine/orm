@@ -7,10 +7,13 @@ namespace Doctrine\Tests\ORM\Query;
 use Doctrine\Deprecations\PHPUnit\VerifyDeprecations;
 use Doctrine\ORM\Query\Exec\AbstractSqlExecutor;
 use Doctrine\ORM\Query\ParserResult;
+use Doctrine\ORM\Query\QuerySetMapping;
 use Doctrine\ORM\Query\ResultSetMapping;
 use LogicException;
 use PHPUnit\Framework\Attributes\IgnoreDeprecations;
 use PHPUnit\Framework\TestCase;
+
+use function unserialize;
 
 class ParserResultTest extends TestCase
 {
@@ -27,6 +30,26 @@ class ParserResultTest extends TestCase
     public function testGetRsm(): void
     {
         self::assertInstanceOf(ResultSetMapping::class, $this->parserResult->getResultSetMapping());
+    }
+
+    public function testGetQsm(): void
+    {
+        $qsm = $this->parserResult->getQuerySetMapping();
+
+        self::assertInstanceOf(QuerySetMapping::class, $qsm);
+        self::assertTrue($qsm->isEmpty());
+        self::assertSame($qsm, $this->parserResult->getQuerySetMapping());
+    }
+
+    public function testGetQsmOnAnInstanceUnserializedWithoutOne(): void
+    {
+        $legacy = 'O:31:"Doctrine\ORM\Query\ParserResult":1:'
+            . "{s:50:\"\0Doctrine\\ORM\\Query\\ParserResult\0parameterMappings\";a:0:{}}";
+
+        $parserResult = unserialize($legacy);
+
+        self::assertInstanceOf(ParserResult::class, $parserResult);
+        self::assertTrue($parserResult->getQuerySetMapping()->isEmpty());
     }
 
     #[IgnoreDeprecations]
