@@ -216,18 +216,22 @@ class PersisterHelper
         return $types;
     }
 
-    /** @phpstan-return ArrayParameterType::* */
-    private static function getArrayBindingType(ParameterType|int|string $type, TypeProvider|TypeRegistry $typeProvider): ArrayParameterType|int
+    /**
+     * Returns the type to bind an array of values of the given type with.
+     *
+     * @phpstan-return ArrayParameterType::*
+     */
+    public static function getArrayBindingType(ParameterType|int|string $type, TypeProvider|TypeRegistry $typeProvider): ArrayParameterType|int
     {
-        if (! $type instanceof ParameterType) {
-            $type = $typeProvider->get((string) $type)->getBindingType();
+        if (is_string($type)) {
+            $type = $typeProvider->get($type)->getBindingType();
         }
 
         return match ($type) {
-            ParameterType::STRING => ArrayParameterType::STRING,
-            ParameterType::INTEGER => ArrayParameterType::INTEGER,
+            ParameterType::INTEGER, ParameterType::BOOLEAN => ArrayParameterType::INTEGER,
             ParameterType::ASCII => ArrayParameterType::ASCII,
-            ParameterType::BINARY => ArrayParameterType::BINARY,
+            ParameterType::BINARY, ParameterType::LARGE_OBJECT => ArrayParameterType::BINARY,
+            default => ArrayParameterType::STRING,
         };
     }
 

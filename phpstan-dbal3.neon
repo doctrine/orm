@@ -27,11 +27,6 @@ parameters:
         # Symfony cache supports passing a key prefix to the clear method.
         - '/^Method Psr\\Cache\\CacheItemPoolInterface\:\:clear\(\) invoked with 1 parameter, 0 required\.$/'
 
-        # We can be certain that those values are not matched.
-        -
-            message: '~^Match expression does not handle remaining values:~'
-            path: src/Utility/PersisterHelper.php
-
         # DBAL 3 compatibility
         -
             message: '~^Class Doctrine\\DBAL\\Platforms\\SqlitePlatform referenced with incorrect case: Doctrine\\DBAL\\Platforms\\SQLitePlatform\.$~'
@@ -170,10 +165,6 @@ parameters:
         -
             message: '#Expression on left side of \?\? is not nullable.#'
             path: src/Mapping/Driver/AttributeDriver.php
-
-        -
-            message: '~^Method Doctrine\\ORM\\Utility\\PersisterHelper\:\:getArrayBindingType\(\) never returns .* so it can be removed from the return type\.$~'
-            path: src/Utility/PersisterHelper.php
 
         -
             message: '~inferParameterTypes.*should return~'
