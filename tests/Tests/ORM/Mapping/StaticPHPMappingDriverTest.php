@@ -14,7 +14,7 @@ use const DIRECTORY_SEPARATOR;
 
 class StaticPHPMappingDriverTest extends MappingDriverTestCase
 {
-    protected function loadDriver(): MappingDriver
+    protected function loadDriver(bool $inferNullabilityFromPHPType = false): MappingDriver
     {
         return new StaticPHPDriver(__DIR__ . DIRECTORY_SEPARATOR . 'php');
     }

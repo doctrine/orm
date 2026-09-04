@@ -36,6 +36,7 @@ final class ORMSetup
         bool $isDevMode = false,
         string|null $proxyDir = null,
         CacheItemPoolInterface|null $cache = null,
+        bool $inferNullabilityFromPHPType = false,
     ): Configuration {
         if (PHP_VERSION_ID >= 80400) {
             Deprecation::trigger(
@@ -48,7 +49,7 @@ final class ORMSetup
         }
 
         $config = self::createConfiguration($isDevMode, $proxyDir, $cache);
-        $config->setMetadataDriverImpl(new AttributeDriver($paths));
+        $config->setMetadataDriverImpl(new AttributeDriver($paths, inferNullabilityFromPHPType: $inferNullabilityFromPHPType));
 
         return $config;
     }
@@ -63,9 +64,10 @@ final class ORMSetup
         bool $isDevMode = false,
         string|null $cacheNamespaceSeed = null,
         CacheItemPoolInterface|null $cache = null,
+        bool $inferNullabilityFromPHPType = false,
     ): Configuration {
         $config = self::createConfig($isDevMode, $cacheNamespaceSeed, $cache);
-        $config->setMetadataDriverImpl(new AttributeDriver($paths));
+        $config->setMetadataDriverImpl(new AttributeDriver($paths, inferNullabilityFromPHPType: $inferNullabilityFromPHPType));
 
         return $config;
     }
@@ -81,6 +83,7 @@ final class ORMSetup
         string|null $proxyDir = null,
         CacheItemPoolInterface|null $cache = null,
         bool $isXsdValidationEnabled = true,
+        bool $inferNullabilityFromPHPType = false,
     ): Configuration {
         if (PHP_VERSION_ID >= 80400) {
             Deprecation::trigger(
@@ -93,7 +96,7 @@ final class ORMSetup
         }
 
         $config = self::createConfiguration($isDevMode, $proxyDir, $cache);
-        $config->setMetadataDriverImpl(new XmlDriver($paths, XmlDriver::DEFAULT_FILE_EXTENSION, $isXsdValidationEnabled));
+        $config->setMetadataDriverImpl(new XmlDriver($paths, XmlDriver::DEFAULT_FILE_EXTENSION, $isXsdValidationEnabled, $inferNullabilityFromPHPType));
 
         return $config;
     }
@@ -109,12 +112,14 @@ final class ORMSetup
         string|null $cacheNamespaceSeed = null,
         CacheItemPoolInterface|null $cache = null,
         bool $isXsdValidationEnabled = true,
+        bool $inferNullabilityFromPHPType = false,
     ): Configuration {
         $config = self::createConfig($isDevMode, $cacheNamespaceSeed, $cache);
         $config->setMetadataDriverImpl(new XmlDriver(
             $paths,
             XmlDriver::DEFAULT_FILE_EXTENSION,
             $isXsdValidationEnabled,
+            $inferNullabilityFromPHPType,
         ));
 
         return $config;

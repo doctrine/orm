@@ -16,10 +16,14 @@ class SimplifiedXmlDriver extends XmlDriver
     /**
      * {@inheritDoc}
      */
-    public function __construct($prefixes, $fileExtension = self::DEFAULT_FILE_EXTENSION, bool $isXsdValidationEnabled = true)
-    {
+    public function __construct(
+        $prefixes,
+        $fileExtension = self::DEFAULT_FILE_EXTENSION,
+        bool $isXsdValidationEnabled = true,
+        bool $inferNullabilityFromPHPType = false,
+    ) {
         $locator = new SymfonyFileLocator((array) $prefixes, $fileExtension);
 
-        parent::__construct($locator, $fileExtension, $isXsdValidationEnabled);
+        parent::__construct($locator, $fileExtension, $isXsdValidationEnabled, $inferNullabilityFromPHPType);
     }
 }
