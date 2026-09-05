@@ -41,19 +41,4 @@ abstract class Vehicle
     {
         return $this->id;
     }
-
-    public function getName(): string
-    {
-        return $this->name;
-    }
-
-    public function getDeletedAt(): DateTimeImmutable|null
-    {
-        return $this->deletedAt;
-    }
-
-    public function setDeletedAt(DateTimeImmutable|null $deletedAt): void
-    {
-        $this->deletedAt = $deletedAt;
-    }
 }

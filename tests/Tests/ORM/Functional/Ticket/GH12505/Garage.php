@@ -37,11 +37,6 @@ class Garage
         $this->cars = new ArrayCollection();
     }
 
-    public function getId(): int
-    {
-        return $this->id;
-    }
-
     public function addCar(Car $car): void
     {
         $this->cars[] = $car;
