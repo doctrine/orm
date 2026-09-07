@@ -363,7 +363,7 @@ class Query extends AbstractQuery
     {
         $sqlParams = [];
         $types     = [];
-        $qsm       = $this->shouldInferParameterTypes() ? $this->parserResult->getQuerySetMapping() : null;
+        $bpm       = $this->shouldInferParameterTypes() ? $this->parserResult->getBindParameterMapping() : null;
 
         foreach ($this->parameters as $parameter) {
             $key = $parameter->getName();
@@ -374,7 +374,7 @@ class Query extends AbstractQuery
 
             [$value, $type] = $this->resolveParameterValue($parameter);
 
-            $inferredType = $parameter->typeWasSpecified() ? null : $qsm?->getParameterType($key);
+            $inferredType = $parameter->typeWasSpecified() ? null : $bpm?->getParameterType($key);
 
             if ($inferredType !== null) {
                 [$value, $type] = $this->applyInferredParameterType($value, $inferredType);

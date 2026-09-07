@@ -6,10 +6,10 @@ namespace Doctrine\Tests\ORM\Query;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Query;
+use Doctrine\ORM\Query\BindParameterMapping;
 use Doctrine\ORM\Query\Parser;
 use Doctrine\ORM\Query\ParserResult;
 use Doctrine\ORM\Query\QueryException;
-use Doctrine\ORM\Query\QuerySetMapping;
 use Doctrine\ORM\Tools\Pagination\LimitSubqueryOutputWalker;
 use Doctrine\ORM\Tools\Pagination\WhereInWalker;
 use Doctrine\Tests\Models\CMS\CmsUser;
@@ -23,7 +23,7 @@ use function assert;
 /**
  * Tests the types the SqlWalker records for the bind parameters of a query.
  */
-class QuerySetMappingWalkerTest extends OrmTestCase
+class BindParameterMappingWalkerTest extends OrmTestCase
 {
     private EntityManagerInterface $entityManager;
 
@@ -155,9 +155,9 @@ class QuerySetMappingWalkerTest extends OrmTestCase
         $query->setHint(Query::HINT_CUSTOM_TREE_WALKERS, [WhereInWalker::class]);
         $query->setHint(WhereInWalker::HINT_PAGINATOR_HAS_IDS, true);
 
-        $qsm = (new Parser($query))->parse()->getQuerySetMapping();
+        $bpm = (new Parser($query))->parse()->getBindParameterMapping();
 
-        self::assertSame('integer', $qsm->getParameterType(WhereInWalker::PAGINATOR_ID_ALIAS));
+        self::assertSame('integer', $bpm->getParameterType(WhereInWalker::PAGINATOR_ID_ALIAS));
     }
 
     /**
@@ -174,20 +174,20 @@ class QuerySetMappingWalkerTest extends OrmTestCase
 
         $parserResult = (new ReflectionProperty(Query::class, 'parserResult'))->getValue($query);
         assert($parserResult instanceof ParserResult);
-        $qsm = $parserResult->getQuerySetMapping();
+        $bpm = $parserResult->getBindParameterMapping();
 
-        self::assertSame('string', $qsm->getParameterType('p'));
-        self::assertSame([], $qsm->ambiguousParameters);
+        self::assertSame('string', $bpm->getParameterType('p'));
+        self::assertSame([], $bpm->ambiguousParameters);
     }
 
     public function testAParameterUsedAgainstTwoFieldsIsAmbiguous(): void
     {
-        $qsm = $this->parse(
+        $bpm = $this->parse(
             'SELECT u FROM ' . CmsUser::class . ' u WHERE u.username = :p OR u.id = :p',
         );
 
-        self::assertTrue($qsm->isEmpty());
-        self::assertSame(['p' => true], $qsm->ambiguousParameters);
+        self::assertTrue($bpm->isEmpty());
+        self::assertSame(['p' => true], $bpm->ambiguousParameters);
     }
 
     /**
@@ -196,29 +196,29 @@ class QuerySetMappingWalkerTest extends OrmTestCase
      */
     public function testAParameterUsedAgainstTwoFieldsOfTheSameTypeIsNotAmbiguous(): void
     {
-        $qsm = $this->parse(
+        $bpm = $this->parse(
             'SELECT u FROM ' . CmsUser::class . ' u WHERE u.username = :p OR u.name = :p',
         );
 
-        self::assertSame('string', $qsm->getParameterType('p'));
-        self::assertSame([], $qsm->ambiguousParameters);
+        self::assertSame('string', $bpm->getParameterType('p'));
+        self::assertSame([], $bpm->ambiguousParameters);
     }
 
     public function testAParameterUsedTwiceAgainstTheSameFieldIsNotAmbiguous(): void
     {
-        $qsm = $this->parse(
+        $bpm = $this->parse(
             'SELECT u FROM ' . CmsUser::class . ' u WHERE u.username = :p OR u.username = :p',
         );
 
-        self::assertSame('string', $qsm->getParameterType('p'));
-        self::assertSame([], $qsm->ambiguousParameters);
+        self::assertSame('string', $bpm->getParameterType('p'));
+        self::assertSame([], $bpm->ambiguousParameters);
     }
 
-    private function parse(string $dql): QuerySetMapping
+    private function parse(string $dql): BindParameterMapping
     {
         $query = new Query($this->entityManager);
         $query->setDQL($dql);
 
-        return (new Parser($query))->parse()->getQuerySetMapping();
+        return (new Parser($query))->parse()->getBindParameterMapping();
     }
 }

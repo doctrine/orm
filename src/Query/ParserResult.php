@@ -43,9 +43,9 @@ class ParserResult
     private array $parameterMappings = [];
 
     /**
-     * The QuerySetMapping that describes how the bind parameters map to mapped fields.
+     * The BindParameterMapping that describes how the bind parameters map to corresponding DBAL type.
      */
-    private QuerySetMapping|null $querySetMapping = null;
+    private BindParameterMapping|null $bindParameterMapping = null;
 
     /**
      * Initializes a new instance of the <tt>ParserResult</tt> class.
@@ -75,13 +75,13 @@ class ParserResult
     }
 
     /**
-     * Gets the QuerySetMapping for the parsed query.
+     * Gets the BindParameterMapping for the parsed query.
      *
-     * @return QuerySetMapping The query set mapping of the parsed query
+     * @return BindParameterMapping The query set mapping of the parsed query
      */
-    public function getQuerySetMapping(): QuerySetMapping
+    public function getBindParameterMapping(): BindParameterMapping
     {
-        return $this->querySetMapping ??= new QuerySetMapping();
+        return $this->bindParameterMapping ??= new BindParameterMapping();
     }
 
     /**
