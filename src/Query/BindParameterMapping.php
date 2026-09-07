@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Query;
 
 /**
- * A QuerySetMapping describes how the bind parameters of a query map to the type of the mapped
+ * A BindParameterMapping describes how the bind parameters of a query map to the type of the mapped
  * fields they are compared or assigned to. It is the counterpart of {@see ResultSetMapping}.
  *
  * Parameters are keyed the same way as {@see ParserResult::$parameterMappings}, by DQL parameter
@@ -20,7 +20,7 @@ namespace Doctrine\ORM\Query;
  *
  * @see ResultSetMapping
  */
-class QuerySetMapping
+class BindParameterMapping
 {
     /**
      * Maps DQL parameters to the name of the DBAL type of the field they are compared or
@@ -41,7 +41,7 @@ class QuerySetMapping
     public array $ambiguousParameters = [];
 
     /**
-     * Adds a parameter mapping to this QuerySetMapping.
+     * Adds a parameter mapping to this BindParameterMapping.
      *
      * @param string|int $parameter The name or position of the DQL parameter.
      * @param string     $type      The name of the DBAL type the field is mapped to.

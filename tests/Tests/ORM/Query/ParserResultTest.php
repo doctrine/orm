@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Query;
 
 use Doctrine\Deprecations\PHPUnit\VerifyDeprecations;
+use Doctrine\ORM\Query\BindParameterMapping;
 use Doctrine\ORM\Query\Exec\AbstractSqlExecutor;
 use Doctrine\ORM\Query\ParserResult;
-use Doctrine\ORM\Query\QuerySetMapping;
 use Doctrine\ORM\Query\ResultSetMapping;
 use LogicException;
 use PHPUnit\Framework\Attributes\IgnoreDeprecations;
@@ -32,16 +32,16 @@ class ParserResultTest extends TestCase
         self::assertInstanceOf(ResultSetMapping::class, $this->parserResult->getResultSetMapping());
     }
 
-    public function testGetQsm(): void
+    public function testGetBpm(): void
     {
-        $qsm = $this->parserResult->getQuerySetMapping();
+        $bpm = $this->parserResult->getBindParameterMapping();
 
-        self::assertInstanceOf(QuerySetMapping::class, $qsm);
-        self::assertTrue($qsm->isEmpty());
-        self::assertSame($qsm, $this->parserResult->getQuerySetMapping());
+        self::assertInstanceOf(BindParameterMapping::class, $bpm);
+        self::assertTrue($bpm->isEmpty());
+        self::assertSame($bpm, $this->parserResult->getBindParameterMapping());
     }
 
-    public function testGetQsmOnAnInstanceUnserializedWithoutOne(): void
+    public function testGetBpmOnAnInstanceUnserializedWithoutOne(): void
     {
         $legacy = 'O:31:"Doctrine\ORM\Query\ParserResult":1:'
             . "{s:50:\"\0Doctrine\\ORM\\Query\\ParserResult\0parameterMappings\";a:0:{}}";
@@ -49,7 +49,7 @@ class ParserResultTest extends TestCase
         $parserResult = unserialize($legacy);
 
         self::assertInstanceOf(ParserResult::class, $parserResult);
-        self::assertTrue($parserResult->getQuerySetMapping()->isEmpty());
+        self::assertTrue($parserResult->getBindParameterMapping()->isEmpty());
     }
 
     #[IgnoreDeprecations]

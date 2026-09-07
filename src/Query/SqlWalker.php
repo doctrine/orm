@@ -2259,7 +2259,7 @@ class SqlWalker
 
     /**
      * Records the type of the field a bind parameter is compared or assigned to, in the
-     * QuerySetMapping.
+     * BindParameterMapping.
      *
      * Anything but a bare input parameter is skipped: an operand such as CONCAT(:a, :b) or a
      * subselect holds parameters of its own, which have nothing to do with the field.
@@ -2276,7 +2276,7 @@ class SqlWalker
             return;
         }
 
-        $this->parserResult->getQuerySetMapping()->addParameter($operand->name, $type);
+        $this->parserResult->getBindParameterMapping()->addParameter($operand->name, $type);
     }
 
     /**
