@@ -697,6 +697,8 @@ class QueryBuilder implements Stringable
      * </code>
      *
      * @return $this
+     *
+     * @no-named-arguments
      */
     public function select(mixed ...$select): static
     {
@@ -745,6 +747,8 @@ class QueryBuilder implements Stringable
      * </code>
      *
      * @return $this
+     *
+     * @no-named-arguments
      */
     public function addSelect(mixed ...$select): static
     {
@@ -1129,6 +1133,8 @@ class QueryBuilder implements Stringable
      * </code>
      *
      * @return $this
+     *
+     * @no-named-arguments
      */
     public function groupBy(string ...$groupBy): static
     {
@@ -1149,6 +1155,8 @@ class QueryBuilder implements Stringable
      * </code>
      *
      * @return $this
+     *
+     * @no-named-arguments
      */
     public function addGroupBy(string ...$groupBy): static
     {
