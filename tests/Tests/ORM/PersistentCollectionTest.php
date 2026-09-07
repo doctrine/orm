@@ -6,7 +6,6 @@ namespace Doctrine\Tests\ORM;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\EventManager;
-use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Result;
 use Doctrine\ORM\PersistentCollection;
@@ -43,9 +42,7 @@ class PersistentCollectionTest extends OrmTestCase
         $platform->method('supportsIdentityColumns')
             ->willReturn(true);
 
-        $connection = $this->createStub(Connection::class);
-        $connection->method('getDatabasePlatform')
-            ->willReturn($platform);
+        $connection = $this->createConnectionStub($platform);
 
         if (method_exists($connection, 'getEventManager')) {
             $connection->method('getEventManager')

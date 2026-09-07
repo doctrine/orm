@@ -7,8 +7,8 @@ namespace Doctrine\ORM\Persisters\Collection;
 use BadMethodCallException;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\DBAL\Exception as DBALException;
-use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\EntityNotFoundException;
+use Doctrine\ORM\Internal\TypeProviderLocator;
 use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\ORM\Mapping\OneToManyAssociationMapping;
 use Doctrine\ORM\PersistentCollection;
@@ -219,12 +219,13 @@ class OneToManyPersister extends AbstractCollectionPersister
         $idColumnNames     = $rootClass->getIdentifierColumnNames();
         $idColumnList      = implode(', ', $idColumnNames);
         $columnDefinitions = [];
+        $typeProvider      = TypeProviderLocator::fromConnection($this->em->getConnection());
 
         foreach ($idColumnNames as $idColumnName) {
             $columnDefinitions[$idColumnName] = [
                 'name'    => $idColumnName,
                 'notnull' => true,
-                'type'    => Type::getType(PersisterHelper::getTypeOfColumn($idColumnName, $rootClass, $this->em)),
+                'type'    => $typeProvider->get(PersisterHelper::getTypeOfColumn($idColumnName, $rootClass, $this->em)),
             ];
         }
 
