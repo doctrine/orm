@@ -31,9 +31,12 @@ use Doctrine\ORM\Id\AssignedGenerator;
 use Doctrine\ORM\Internal\HydrationCompleteHandler;
 use Doctrine\ORM\Internal\StronglyConnectedComponents;
 use Doctrine\ORM\Internal\TopologicalSort;
+use Doctrine\ORM\Internal\UnitOfWork\ConstraintEdgePlanner;
+use Doctrine\ORM\Internal\UnitOfWork\DeletionCandidate;
 use Doctrine\ORM\Internal\UnitOfWork\InsertBatch;
 use Doctrine\ORM\Mapping\AssociationMapping;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\ManyToManyOwningSideMapping;
 use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\ORM\Mapping\PropertyAccessors\ReadonlyAccessor;
 use Doctrine\ORM\Mapping\ToManyInverseSideMapping;
@@ -288,6 +291,15 @@ class UnitOfWork implements PropertyChangedListener
     private array $orphanRemovals = [];
 
     /**
+     * Entity deletions whose provenance is orphan removal: keys of entities
+     * materialized into {@link $entityDeletions} by the orphan removal loop of
+     * {@link commit()}.
+     *
+     * @var array<int, true>
+     */
+    private array $orphanDeletions = [];
+
+    /**
      * Read-Only objects are never evaluated
      *
      * @var array<int, true>
@@ -377,7 +389,16 @@ class UnitOfWork implements PropertyChangedListener
 
         if ($this->orphanRemovals) {
             foreach ($this->orphanRemovals as $orphan) {
+                $oid          = spl_object_id($orphan);
+                $wasScheduled = isset($this->entityDeletions[$oid]);
+
                 $this->remove($orphan);
+
+                // Deletions materialized here originate from orphan removal: only
+                // they are candidates for early execution before insertions (#6776).
+                if (! $wasScheduled && isset($this->entityDeletions[$oid])) {
+                    $this->orphanDeletions[$oid] = true;
+                }
             }
         }
 
@@ -397,6 +418,15 @@ class UnitOfWork implements PropertyChangedListener
                 if ($this->em->getClassMetadata($owner::class)->isChangeTrackingDeferredImplicit() || $this->isScheduledForDirtyCheck($owner)) {
                     $this->getCollectionPersister($collectionToDelete->getMapping())->delete($collectionToDelete);
                 }
+            }
+
+            // Orphan deletions that collide with pending insertions on a unique
+            // constraint must run before those insertions (#6776): execute the
+            // foreign-key-safe collision subset early, all remaining deletions at
+            // their usual place after the insertions.
+            $earlyOrphanDeletions = $this->computeEarlyOrphanDeletions();
+            if ($earlyOrphanDeletions) {
+                $this->executeDeletions($earlyOrphanDeletions);
             }
 
             if ($this->entityInsertions) {
@@ -490,6 +520,7 @@ class UnitOfWork implements PropertyChangedListener
         $this->pendingCollectionElementRemovals =
         $this->visitedCollections               =
         $this->orphanRemovals                   =
+        $this->orphanDeletions                  =
         $this->entityChangeSets                 =
         $this->scheduledForSynchronization      = [];
     }
@@ -1158,11 +1189,73 @@ class UnitOfWork implements PropertyChangedListener
     }
 
     /**
-     * Executes all entity deletions
+     * Computes the subset of orphan deletions that collide with pending
+     * insertions on a metadata-declared unique constraint and are safe to
+     * execute before those insertions (#6776).
+     *
+     * A colliding orphan is eligible only when no pending operation of this
+     * flush holds an owning to-one reference to it (foreign key soundness);
+     * otherwise it stays on the baseline commit order.
+     *
+     * @return array<int, object>
      */
-    private function executeDeletions(): void
+    private function computeEarlyOrphanDeletions(): array
     {
-        $entities         = $this->computeDeleteExecutionOrder();
+        if (! $this->orphanDeletions || ! $this->entityInsertions) {
+            return [];
+        }
+
+        $candidates = [];
+        foreach ($this->orphanDeletions as $oid => $ignored) {
+            if (isset($this->entityDeletions[$oid])) {
+                $candidates[] = new DeletionCandidate($this->entityDeletions[$oid], DeletionCandidate::PROVENANCE_ORPHAN);
+            }
+        }
+
+        if (! $candidates) {
+            return [];
+        }
+
+        // Pending many-to-many collection operations delete their join rows only
+        // after the early-deletion seam: candidates of the element class stay on
+        // the baseline commit order (S1 (iv)).
+        $manyToManyTargetClasses = [];
+        foreach ($this->collectionUpdates as $collection) {
+            $mapping = $collection->getMapping();
+            if ($mapping instanceof ManyToManyOwningSideMapping) {
+                $manyToManyTargetClasses[$mapping->targetEntity] = true;
+            }
+        }
+
+        foreach ($this->collectionDeletions as $collection) {
+            $mapping = $collection->getMapping();
+            if ($mapping instanceof ManyToManyOwningSideMapping) {
+                $manyToManyTargetClasses[$mapping->targetEntity] = true;
+            }
+        }
+
+        return ConstraintEdgePlanner::planEarlyDeletions(
+            $candidates,
+            $this->entityInsertions,
+            $this->entityUpdates,
+            $this->entityDeletions,
+            $this->originalEntityData,
+            $this->entityChangeSets,
+            $manyToManyTargetClasses,
+            fn (string $class): ClassMetadata => $this->em->getClassMetadata($class),
+        )->earlyDeletions();
+    }
+
+    /**
+     * Executes all entity deletions
+     *
+     * @param array<int, object>|null $deletions Subset of the scheduled entity
+     *                                           deletions to execute; null for
+     *                                           all of them.
+     */
+    private function executeDeletions(array|null $deletions = null): void
+    {
+        $entities         = $this->computeDeleteExecutionOrder($deletions);
         $eventsToDispatch = [];
 
         foreach ($entities as $entity) {
@@ -1267,13 +1360,21 @@ class UnitOfWork implements PropertyChangedListener
         return $sort->sort();
     }
 
-    /** @return list<object> */
-    private function computeDeleteExecutionOrder(): array
+    /**
+     * @param array<int, object>|null $deletions Subset of the scheduled entity
+     *                                           deletions to order; null for
+     *                                           all of them.
+     *
+     * @return list<object>
+     */
+    private function computeDeleteExecutionOrder(array|null $deletions = null): array
     {
         $stronglyConnectedComponents = new StronglyConnectedComponents();
         $sort                        = new TopologicalSort();
 
-        foreach ($this->entityDeletions as $entity) {
+        $deletions ??= $this->entityDeletions;
+
+        foreach ($deletions as $entity) {
             $stronglyConnectedComponents->addNode($entity);
             $sort->addNode($entity);
         }
@@ -1283,7 +1384,7 @@ class UnitOfWork implements PropertyChangedListener
         // in such a group, _all_ of the other entities will be removed as well. So,
         // we need to treat those groups like a single entity when performing delete
         // order topological sorting.
-        foreach ($this->entityDeletions as $entity) {
+        foreach ($deletions as $entity) {
             $class = $this->em->getClassMetadata($entity::class);
 
             foreach ($class->associationMappings as $assoc) {
@@ -1320,7 +1421,7 @@ class UnitOfWork implements PropertyChangedListener
         $stronglyConnectedComponents->findStronglyConnectedComponents();
 
         // Now do the actual topological sorting to find the delete order.
-        foreach ($this->entityDeletions as $entity) {
+        foreach ($deletions as $entity) {
             $class = $this->em->getClassMetadata($entity::class);
 
             // Get the entities representing the SCC
@@ -2309,7 +2410,8 @@ class UnitOfWork implements PropertyChangedListener
         $this->visitedCollections               =
         $this->eagerLoadingEntities             =
         $this->eagerLoadingCollections          =
-        $this->orphanRemovals                   = [];
+        $this->orphanRemovals                   =
+        $this->orphanDeletions                  = [];
 
         if ($this->evm->hasListeners(Events::onClear)) {
             $this->evm->dispatchEvent(Events::onClear, new OnClearEventArgs($this->em));
