@@ -908,9 +908,12 @@ join columns default to the simple, unqualified class name of the
 targeted class followed by "\_id". The referencedColumnName always
 defaults to "id", just as in one-to-one or many-to-one mappings.
 
-Additionally, when using typed properties with Doctrine 2.9 or newer
+Additionally, when using typed properties with ORM 2.9 or newer
 you can skip ``targetEntity`` in ``ManyToOne`` and ``OneToOne``
-associations as they will be set based on type. So that:
+associations as they will be set based on type. Also with ORM 3.7
+or newer, the ``nullable`` attribute on ``JoinColumn`` will be inferred
+from PHP type when using ``inferNullabilityFromPHPType: true`` in the
+mapping driver constructor. So that:
 
 .. configuration-block::
 

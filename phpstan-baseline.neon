@@ -973,7 +973,7 @@ parameters:
 			path: src/Mapping/ClassMetadata.php
 
 		-
-			message: '#^Parameter \#1 \$mapping of method Doctrine\\ORM\\Mapping\\ClassMetadata\<T of object\>\:\:validateAndCompleteTypedAssociationMapping\(\) expects array\{type\: 1\|2\|4\|8, fieldName\: string, targetEntity\?\: class\-string\}, non\-empty\-array\<string, mixed\> given\.$#'
+			message: '#^Parameter \#1 \$mapping of method Doctrine\\ORM\\Mapping\\ClassMetadata\<T of object\>\:\:validateAndCompleteTypedAssociationMapping\(\) expects array\{type\: 1\|2\|4\|8, fieldName\: string, targetEntity\?\: class\-string, joinColumns\: array\<int, array\<string, mixed\>\>\|null\}, non\-empty\-array\<string, mixed\> given\.$#'
 			identifier: argument.type
 			count: 1
 			path: src/Mapping/ClassMetadata.php

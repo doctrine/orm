@@ -10,6 +10,9 @@ use BackedEnum;
 #[Attribute(Attribute::TARGET_PROPERTY)]
 final class Column implements MappingAttribute
 {
+    public readonly bool $nullable;
+    public readonly bool $nullableSet;
+
     /**
      * @param int|null                      $precision The precision for a decimal (exact numeric) column (Applies only for decimal column).
      * @param int|null                      $scale     The scale for a decimal (exact numeric) column (Applies only for decimal column).
@@ -24,7 +27,7 @@ final class Column implements MappingAttribute
         public readonly int|null $precision = null,
         public readonly int|null $scale = null,
         public readonly bool $unique = false,
-        public readonly bool $nullable = false,
+        bool|null $nullable = null,
         public readonly bool $insertable = true,
         public readonly bool $updatable = true,
         public readonly string|null $enumType = null,
@@ -33,5 +36,7 @@ final class Column implements MappingAttribute
         public readonly string|null $generated = null,
         public readonly bool $index = false,
     ) {
+        $this->nullable    = $nullable ?? false;
+        $this->nullableSet = $nullable !== null;
     }
 }

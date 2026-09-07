@@ -12,6 +12,8 @@
 
     <field name="status" length="50"/>
     <field name="username" length="255" unique="true"/>
+    <field name="firstName" nullable="true"/>
+    <field name="lastName" nullable="false"/>
     <field name="dateInterval"/>
     <field name="dateTime"/>
     <field name="dateTimeImmutable"/>
@@ -24,7 +26,24 @@
       <join-column/>
     </one-to-one>
 
-    <many-to-one field="mainEmail"/>
+    <one-to-one field="emailWithNoJoinColumn" orphan-removal="true">
+      <cascade><cascade-persist /></cascade>
+    </one-to-one>
+
+    <one-to-one field="emailOverride" orphan-removal="true">
+      <cascade><cascade-persist /></cascade>
+      <join-column nullable="false" />
+    </one-to-one>
+
+    <many-to-one field="mainEmail">
+      <join-column/>
+    </many-to-one>
+
+    <many-to-one field="mainEmailOverride">
+      <join-column nullable="true" />
+    </many-to-one>
+    
+    <many-to-one field="mainEmailWithNoJoinColumn"/>
 
     <embedded name="contact" />
   </entity>

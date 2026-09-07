@@ -181,6 +181,7 @@ Optional parameters:
 
 -  **nullable**: Determines if NULL values allowed for this column.
     If not specified, default value is ``false``.
+    Since ORM 3.7, default can be inferred from PHP type when using ``inferNullabilityFromPHPType: true`` in the mapping driver constructor.
 
 -  **insertable**: Boolean value to determine if the column should be
    included when inserting a new row into the underlying entities table.
@@ -684,6 +685,7 @@ Optional parameters:
 -  **deferrable**: Determines whether this relation constraint can be deferred. Defaults to false.
 -  **nullable**: Determine whether the related entity is required, or if
    null is an allowed state for the relation. Defaults to true.
+   Since ORM 3.7, default can be inferred from PHP type when using ``inferNullabilityFromPHPType: true`` in the mapping driver constructor.
 -  **onDelete**: Cascade Action (Database-level)
 -  **columnDefinition**: DDL SQL snippet that starts after the column
    name and specifies the complete (non-portable!) column definition.
