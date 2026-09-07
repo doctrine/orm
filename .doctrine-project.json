@@ -12,16 +12,21 @@
             "upcoming": true
         },
         {
-            "name": "3.7",
-            "branchName": "3.7.x",
-            "slug": "3.7",
+            "name": "3.8",
+            "branchName": "3.8.x",
+            "slug": "3.8",
             "upcoming": true
         },
         {
-            "name": "3.6",
-            "branchName": "3.6.x",
-            "slug": "3.6",
+            "name": "3.7",
+            "branchName": "3.7.x",
+            "slug": "3.7",
             "current": true
+        },
+        {
+            "name": "3.6",
+            "slug": "3.6",
+            "maintained": false
         },
         {
             "name": "2.21",
