@@ -12,6 +12,7 @@ use Doctrine\ORM\Query\Parser;
 use Doctrine\ORM\Query\ParserResult;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\ORM\Query\SqlOutputWalker;
+use Doctrine\ORM\Query\SqlWalker;
 use RuntimeException;
 
 use function array_diff;
@@ -56,6 +57,10 @@ class CountOutputWalker extends SqlOutputWalker
     protected function createSqlForFinalizer(SelectStatement $selectStatement): string
     {
         if ($this->platform instanceof SQLServerPlatform) {
+            // disable collection‑based ORDER BY for the inner select
+            $query = $this->getQuery();
+            $query->setHint(SqlWalker::HINT_DISABLE_COLLECTION_ORDER_BY, true);
+            // preserve original clearing also that is only partially sufficient
             $selectStatement->orderByClause = null;
         }
 
