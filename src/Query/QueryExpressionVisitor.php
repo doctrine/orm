@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Query;
 
+use Closure;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Expr\Comparison;
 use Doctrine\Common\Collections\Expr\CompositeExpression;
@@ -32,11 +33,19 @@ class QueryExpressionVisitor extends ExpressionVisitor
     /** @var list<mixed> */
     private array $parameters = [];
 
-    /** @param mixed[] $queryAliases */
+    /** @var Closure(Parameter): non-empty-string|null */
+    private readonly Closure|null $parameterBinder;
+
+    /**
+     * @param mixed[]                                      $queryAliases
+     * @param (callable(Parameter): non-empty-string)|null $parameterBinder
+     */
     public function __construct(
         private readonly array $queryAliases,
+        callable|null $parameterBinder = null,
     ) {
-        $this->expr = new Expr();
+        $this->expr            = new Expr();
+        $this->parameterBinder = $parameterBinder === null ? null : Closure::fromCallable($parameterBinder);
     }
 
     /**
@@ -103,19 +112,14 @@ class QueryExpressionVisitor extends ExpressionVisitor
             }
         }
 
-        $parameter   = new Parameter($parameterName, $this->walkValue($comparison->getValue()));
-        $placeholder = ':' . $parameterName;
+        $parameter = new Parameter($parameterName, $this->walkValue($comparison->getValue()));
 
         switch ($comparison->getOperator()) {
             case Comparison::IN:
-                $this->parameters[] = $parameter;
-
-                return $this->expr->in($field, $placeholder);
+                return $this->expr->in($field, $this->bindParameter($parameter));
 
             case Comparison::NIN:
-                $this->parameters[] = $parameter;
-
-                return $this->expr->notIn($field, $placeholder);
+                return $this->expr->notIn($field, $this->bindParameter($parameter));
 
             case Comparison::EQ:
             case Comparison::IS:
@@ -123,54 +127,55 @@ class QueryExpressionVisitor extends ExpressionVisitor
                     return $this->expr->isNull($field);
                 }
 
-                $this->parameters[] = $parameter;
-
-                return $this->expr->eq($field, $placeholder);
+                return $this->expr->eq($field, $this->bindParameter($parameter));
 
             case Comparison::NEQ:
                 if ($this->walkValue($comparison->getValue()) === null) {
                     return $this->expr->isNotNull($field);
                 }
 
-                $this->parameters[] = $parameter;
-
-                return $this->expr->neq($field, $placeholder);
+                return $this->expr->neq($field, $this->bindParameter($parameter));
 
             case Comparison::CONTAINS:
                 $parameter->setValue('%' . $parameter->getValue() . '%', $parameter->getType());
-                $this->parameters[] = $parameter;
 
-                return $this->expr->like($field, $placeholder);
+                return $this->expr->like($field, $this->bindParameter($parameter));
 
             case Comparison::MEMBER_OF:
                 return $this->expr->isMemberOf($comparison->getField(), $comparison->getValue()->getValue());
 
             case Comparison::STARTS_WITH:
                 $parameter->setValue($parameter->getValue() . '%', $parameter->getType());
-                $this->parameters[] = $parameter;
 
-                return $this->expr->like($field, $placeholder);
+                return $this->expr->like($field, $this->bindParameter($parameter));
 
             case Comparison::ENDS_WITH:
                 $parameter->setValue('%' . $parameter->getValue(), $parameter->getType());
-                $this->parameters[] = $parameter;
 
-                return $this->expr->like($field, $placeholder);
+                return $this->expr->like($field, $this->bindParameter($parameter));
 
             default:
                 $operator = self::convertComparisonOperator($comparison->getOperator());
                 if ($operator) {
-                    $this->parameters[] = $parameter;
-
                     return new Expr\Comparison(
                         $field,
                         $operator,
-                        $placeholder,
+                        $this->bindParameter($parameter),
                     );
                 }
 
                 throw new RuntimeException('Unknown comparison operator: ' . $comparison->getOperator());
         }
+    }
+
+    /** @return non-empty-string */
+    private function bindParameter(Parameter $parameter): string
+    {
+        $this->parameters[] = $parameter;
+
+        return $this->parameterBinder === null
+            ? ':' . $parameter->getName()
+            : ($this->parameterBinder)($parameter);
     }
 
     public function walkValue(Value $value): mixed
