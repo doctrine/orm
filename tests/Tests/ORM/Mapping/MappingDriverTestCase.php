@@ -64,6 +64,7 @@ use Doctrine\Tests\Models\TypedProperties\UserTyped;
 use Doctrine\Tests\Models\TypedProperties\UserTypedWithCustomTypedField;
 use Doctrine\Tests\Models\Upsertable\Insertable;
 use Doctrine\Tests\Models\Upsertable\Updatable;
+use Doctrine\Tests\Models\Upsertable\Selectable;
 use Doctrine\Tests\ORM\Mapping\NamingStrategy\CustomPascalNamingStrategy;
 use Doctrine\Tests\OrmTestCase;
 use PHPUnit\Framework\Attributes\Depends;
@@ -992,6 +993,16 @@ abstract class MappingDriverTestCase extends OrmTestCase
 
         self::assertSame(ClassMetadata::GENERATED_ALWAYS, $mapping->generated);
         self::assertNull($metadata->getFieldMapping('updatableContent')->notUpdatable);
+    }
+
+    public function testSelectableColumn(): void
+    {
+        $metadata = $this->createClassMetadata(Selectable::class);
+
+        $mapping = $metadata->getFieldMapping('nonSelectableContent');
+
+        self::assertFalse($mapping->selectable);
+        self::assertNull($metadata->getFieldMapping('selectableContent')->selectable);
     }
 
     public function testEnumType(): void
