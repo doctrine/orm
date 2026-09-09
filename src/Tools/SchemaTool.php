@@ -496,14 +496,7 @@ class SchemaTool
         );
 
         // Always retrieve the schema (listener may have mutated it)
-        $schema = $schemaEventArgs->getSchema();
-
-        $eventManager->dispatchEvent(
-            ToolEvents::postGenerateSchema,
-            new GenerateSchemaEventArgs($this->em, $schema),
-        );
-
-        return $schema;
+        return $schemaEventArgs->getSchema();
     }
 
     /**
@@ -834,14 +827,7 @@ class SchemaTool
         );
 
         // Always retrieve the schema (listener may have mutated it)
-        $schema = $schemaEventArgs->getSchema();
-
-        $eventManager->dispatchEvent(
-            ToolEvents::postGenerateSchema,
-            new GenerateSchemaEventArgs($this->em, $schema),
-        );
-
-        return $schema;
+        return $schemaEventArgs->getSchema();
     }
 
     /**
