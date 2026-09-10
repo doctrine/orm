@@ -1336,12 +1336,14 @@ class SchemaTool
             // FK exists but is different (conflicting FK) - blacklist this composite key
             // No FK will be added for this composite key, but we need to ensure an index exists
             // since FKs normally create indexes automatically
-            $blacklistedFks[$compositeName] = true;
+            if (! isset($blacklistedFks[$compositeName])) {
+                // Add an index for the local columns since we won't be adding a FK
+                // (FKs normally create implicit indexes).
+                // @phpstan-ignore argument.type ($localColumns is not empty)
+                $theJoinTable->addIndex($localColumns);
+            }
 
-            // Add an index for the local columns since we won't be adding a FK
-            // (FKs normally create implicit indexes)
-            // @phpstan-ignore argument.type ($localColumns is not empty)
-            $theJoinTable->addIndex($localColumns);
+            $blacklistedFks[$compositeName] = true;
         } elseif (! isset($blacklistedFks[$compositeName])) {
             // No existing FK and not blacklisted - store FK metadata for application phase
             $addedFks[$compositeName] = [
