@@ -187,7 +187,7 @@ class SchemaToolTest extends OrmTestCase
         $schema = $schemaTool->getSchemaFromMetadata($classes);
 
         self::assertEquals(count($classes), $listener->tableCalls);
-        self::assertTrue($listener->schemaCalled);
+        self::assertSame(1, $listener->schemaCalls);
     }
 
     public function testNullDefaultNotAddedToPlatformOptions(): void
@@ -682,8 +682,8 @@ class GenerateSchemaEventListener
     /** @var int */
     public $tableCalls = 0;
 
-    /** @var bool */
-    public $schemaCalled = false;
+    /** @var int */
+    public $schemaCalls = 0;
 
     public function postGenerateSchemaTable(GenerateSchemaTableEventArgs $eventArgs): void
     {
@@ -692,7 +692,7 @@ class GenerateSchemaEventListener
 
     public function postGenerateSchema(GenerateSchemaEventArgs $eventArgs): void
     {
-        $this->schemaCalled = true;
+        $this->schemaCalls++;
     }
 }
 
