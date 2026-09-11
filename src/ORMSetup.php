@@ -10,6 +10,7 @@ use Doctrine\ORM\Mapping\Driver\XmlDriver;
 use Doctrine\Persistence\Mapping\Driver\ClassLocator;
 use Psr\Cache\CacheItemPoolInterface;
 use Redis;
+use RedisException;
 use RuntimeException;
 use Symfony\Component\Cache\Adapter\ApcuAdapter;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
@@ -199,10 +200,14 @@ final class ORMSetup
         }
 
         if (extension_loaded('redis')) {
-            $redis = new Redis();
-            $redis->connect('127.0.0.1');
+            try {
+                $redis = new Redis();
+                $redis->connect('127.0.0.1');
 
-            return new RedisAdapter($redis, $namespace);
+                return new RedisAdapter($redis, $namespace);
+            } catch (RedisException) {
+                // Fall through to ArrayAdapter if Redis connection fails
+            }
         }
 
         return new ArrayAdapter();
