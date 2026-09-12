@@ -18,6 +18,7 @@ use Doctrine\DBAL\Schema\ForeignKeyConstraint;
 use Doctrine\DBAL\Schema\Index;
 use Doctrine\DBAL\Schema\Index\IndexedColumn;
 use Doctrine\DBAL\Schema\Name\Identifier;
+use Doctrine\DBAL\Schema\Name\Parsers;
 use Doctrine\DBAL\Schema\Name\UnqualifiedName;
 use Doctrine\DBAL\Schema\NamedObject;
 use Doctrine\DBAL\Schema\PrimaryKeyConstraint;
@@ -723,12 +724,31 @@ class SchemaTool
                         $indexData['flags'] = [];
                     }
 
-                    $table->addIndex(
-                        $this->getIndexColumns($class, $indexData),
-                        is_numeric($indexName) ? null : $indexName,
-                        (array) $indexData['flags'],
-                        $indexData['options'] ?? [],
-                    );
+                    $indexEditor = Index::editor();
+
+                    foreach ($this->getIndexColumns($class, $indexData) as $columnName) {
+                        $indexEditor->addColumn(new IndexedColumn(
+                            /** @phpstan-ignore staticMethod.notFound (Parsers::parseUnqualifiedName() is unreleased) */
+                            Parsers::parseUnqualifiedName($columnName),
+                            null,
+                        ));
+                    }
+
+                    if (isset($indexData['flags']['clustered'])) {
+                        $indexEditor->setIsClustered($indexData['flags']['clustered']);
+                    }
+
+                    if (isset($indexData['options']['where'])) {
+                        $indexEditor->setPredicate($indexData['options']['where']);
+                    }
+
+                    if (! is_numeric($indexName)) {
+                        /** @phpstan-ignore staticMethod.notFound (Parsers::parseUnqualifiedName() is unreleased) */
+                        $indexEditor->setName(Parsers::parseUnqualifiedName($indexName));
+                    }
+
+                    /** @phpstan-ignore method.notFound (IndexEditor::addToTable() is unreleased) */
+                    $indexEditor->addToTable($table);
                 }
             }
 

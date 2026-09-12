@@ -9,11 +9,14 @@ use Doctrine\DBAL\Schema\ForeignKeyConstraintEditor;
 use Doctrine\DBAL\Schema\Index as DbalIndex;
 use Doctrine\DBAL\Schema\Index\IndexedColumn;
 use Doctrine\DBAL\Schema\Index\IndexType;
+use Doctrine\DBAL\Schema\Name\Identifier;
 use Doctrine\DBAL\Schema\Name\UnqualifiedName;
+use Doctrine\DBAL\Schema\Name\UnquotedIdentifierFolding;
 use Doctrine\DBAL\Schema\PrimaryKeyConstraint;
 use Doctrine\DBAL\Schema\PrimaryKeyConstraintEditor;
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\DBAL\Schema\Table as DbalTable;
+use Doctrine\DBAL\Schema\TableEditor;
 use Doctrine\DBAL\Types\EnumType;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping\ClassMetadata;
@@ -541,7 +544,26 @@ class SchemaToolTest extends OrmTestCase
 
         $table = $schema->getTable('quoted-table');
 
-        self::assertTrue($table->hasIndex('IDX_AA2790FB50D14D90'));
+        $foundIndex = false;
+        if (class_exists(TableEditor::class)) {
+            foreach ($table->getIndexes() as $index) {
+                foreach ($index->getIndexedColumns() as $column) {
+                    if (
+                        $column->getColumnName()->getIdentifier()->equals(
+                            Identifier::quoted('quoted-name'),
+                            UnquotedIdentifierFolding::NONE,
+                        )
+                    ) {
+                        $foundIndex = true;
+                        break 2;
+                    }
+                }
+            }
+        } elseif ($table->hasIndex('IDX_AA2790FB50D14D90')) {
+            $foundIndex = true;
+        }
+
+        self::assertTrue($foundIndex, 'Index on quoted-name should exist.');
 
         // DBAL < 4.3
         if (! class_exists(PrimaryKeyConstraint::class)) {
