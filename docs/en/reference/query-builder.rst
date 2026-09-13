@@ -214,8 +214,10 @@ Here is a complete list of helper methods available in ``QueryBuilder``:
         // Example - $qb->orderBy('u.surname', \SortDirection::Descending)
         public function orderBy($sort, $order = null);
 
-        // Example - $qb->addOrderBy('u.firstName')
-        public function addOrderBy($sort, $order = null); // Default $order = 'ASC'
+        // Example - $qb->addOrderBy('u.firstName', \SortDirection::Ascending)
+        // NOTE: the default is \SortDirection::Ascending when $order is omitted;
+        // passing strings or null as $order is deprecated
+        public function addOrderBy($sort, $order = null);
     }
 
 Binding parameters to your query
