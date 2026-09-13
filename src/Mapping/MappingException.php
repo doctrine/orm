@@ -730,29 +730,4 @@ EXCEPTION
             $className,
         ));
     }
-
-    /**
-     * @param class-string $className
-     * @param class-string $conflictingClassName
-     */
-    public static function conflictingJoinColumnConfiguration(
-        string $className,
-        string $fieldName,
-        string $conflictingClassName,
-        string $conflictingFieldName,
-        string $foreignTableName,
-    ): self {
-        return new self(sprintf(
-            'Detected conflicting join column configuration between "%s#%s" and "%s#%s": both associations ' .
-            'reference the same table "%s" through the same join column(s), but declare different JoinColumn ' .
-            'configuration (e.g. "nullable", "onDelete" or "deferrable"). Associations that belong to the same ' .
-            'single table inheritance hierarchy and share a join column must declare identical configuration ' .
-            'for that column, otherwise use a different column name for each association.',
-            $className,
-            $fieldName,
-            $conflictingClassName,
-            $conflictingFieldName,
-            $foreignTableName,
-        ));
-    }
 }

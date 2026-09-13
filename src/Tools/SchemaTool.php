@@ -68,6 +68,18 @@ use function strtolower;
  * <tt>ClassMetadata</tt> class descriptors.
  *
  * @link    www.doctrine-project.org
+ *
+ * @phpstan-type AddedForeignKeyMetadata = array{
+ *                  className: class-string,
+ *                  fieldName: string,
+ *                  foreignTableName: string,
+ *                  foreignColumns: list<string>,
+ *                  localColumns: list<string>,
+ *                  notNullColumns: list<bool>,
+ *                  fkOptions: array{onDelete?: string, deferrable?: bool, deferred?: bool},
+ *                  name: string|null,
+ *                  table: Table
+ *              }
  */
 class SchemaTool
 {
@@ -1023,17 +1035,7 @@ class SchemaTool
      * Gathers the SQL for properly setting up the relations of the given class.
      * This includes the SQL for foreign key constraints and join tables.
      *
-     * @phpstan-param array<string, array{
-     *                  className: class-string,
-     *                  fieldName: string,
-     *                  foreignTableName: string,
-     *                  foreignColumns: list<string>,
-     *                  localColumns: list<string>,
-     *                  notNullColumns: list<bool>,
-     *                  fkOptions: array{onDelete?: string, deferrable?: bool, deferred?: bool},
-     *                  name: string|null,
-     *                  table: Table
-     *              }>                               $addedFks
+     * @phpstan-param array<string, AddedForeignKeyMetadata> $addedFks
      * @phpstan-param array<string, bool>              $blacklistedFks
      * @phpstan-param list<Table>                      $joinTablesToAdd
      *
@@ -1169,33 +1171,12 @@ class SchemaTool
      *
      * @phpstan-param list<JoinColumnMapping>          $joinColumns
      * @phpstan-param list<string>                     $primaryKeyColumns
-     * @phpstan-param array<string, array{
-     *                  className: class-string,
-     *                  fieldName: string,
-     *                  foreignTableName: string,
-     *                  foreignColumns: list<string>,
-     *                  localColumns: list<string>,
-     *                  notNullColumns: list<bool>,
-     *                  fkOptions: array{onDelete?: string, deferrable?: bool, deferred?: bool},
-     *                  name: string|null,
-     *                  table: Table
-     *              }>                               $addedFks
+     * @phpstan-param array<string, AddedForeignKeyMetadata> $addedFks
      * @phpstan-param array<string,bool>               $blacklistedFks
      *
      * @throws MissingColumnException
-     * @throws MappingException
      *
-     * @phpstan-param-out array<string, array{
-     *                  className: class-string,
-     *                  fieldName: string,
-     *                  foreignTableName: string,
-     *                  foreignColumns: list<string>,
-     *                  localColumns: list<string>,
-     *                  notNullColumns: list<bool>,
-     *                  fkOptions: array{onDelete?: string, deferrable?: bool, deferred?: bool},
-     *                  name: string|null,
-     *                  table: Table
-     *              }>                               $addedFks
+     * @phpstan-param-out array<string, AddedForeignKeyMetadata> $addedFks
      */
     private function gatherRelationJoinColumns(
         array $joinColumns,
@@ -1356,17 +1337,28 @@ class SchemaTool
                 // Both associations reference the same foreign table and columns, so they
                 // describe the same relationship, yet their JoinColumn configuration
                 // conflicts (e.g. nullability, onDelete or deferrable). There is no single
-                // foreign key definition that could honor both mappings, so rather than
-                // silently keeping one of them - or dropping the constraint altogether, as
-                // happened before this check was introduced - we fail loudly and point to
-                // the two conflicting associations.
-                throw MappingException::conflictingJoinColumnConfiguration(
+                // foreign key definition that could honor both mappings. For backwards
+                // compatibility, the association registered first still wins - exactly as
+                // before this check was introduced - but this is now surfaced instead of
+                // being silently ignored, since relying on registration order is fragile.
+                Deprecation::trigger(
+                    'doctrine/orm',
+                    'https://github.com/doctrine/orm/pull/12612',
+                    'Association "%s#%s" and association "%s#%s" declare conflicting JoinColumn ' .
+                    'configuration (e.g. "nullable", "onDelete" or "deferrable") while referencing ' .
+                    'the same table "%s" through the same join column(s). The generated column and ' .
+                    'foreign key currently depend on which association is processed first, which is ' .
+                    'unreliable and deprecated. Declare identical JoinColumn configuration for the ' .
+                    'shared column(s), or use a different column name for each association. Doctrine ' .
+                    'ORM 4.0 will raise a MappingException instead.',
                     $existingFk['className'],
                     $existingFk['fieldName'],
                     $mapping->sourceEntity,
                     $mapping->fieldName,
                     $foreignTableName,
                 );
+
+                return;
             }
 
             // FK exists but targets a different entity/columns (conflicting FK) - blacklist

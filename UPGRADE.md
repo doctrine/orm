@@ -281,19 +281,22 @@ The return type of the following methods has been changed from
 All three methods continue to return an instance of `EventManager`, however
 relying on that is deprecated and will no longer be the guaranteed in 4.0.
 
-## `SchemaTool` rejects conflicting join column configuration in STI hierarchies
+## Deprecated conflicting join column configuration in STI hierarchies
 
 If two associations that belong to the same single table inheritance
 hierarchy use the same join column and target the same entity, but declare
 different `JoinColumn` configuration (for example, a different `nullable`,
-`onDelete`, or `deferrable` value), `SchemaTool` used to silently omit the
-foreign key constraint for that column instead of generating it.
+`onDelete`, or `deferrable` value), `SchemaTool` silently generates the
+column and foreign key based on whichever of the two associations happens to
+be processed first, ignoring the other one entirely.
 
-`SchemaTool` now throws a `Doctrine\ORM\Mapping\MappingException` for this
-case instead, since there is no single foreign key definition that can
-satisfy both associations at once. Make sure every association that shares a
-join column and target entity declares identical `JoinColumn` configuration,
-or use a distinct column name for each association.
+This is now deprecated. The schema generated for this release is unchanged
+to avoid a breaking change, but a run-time deprecation notice is now raised
+to help you find and fix affected mappings. A future major version will
+raise a `Doctrine\ORM\Mapping\MappingException` instead. Make sure every
+association that shares a join column and target entity declares identical
+`JoinColumn` configuration, or use a distinct column name for each
+association.
 
 # Upgrade to 3.6
 

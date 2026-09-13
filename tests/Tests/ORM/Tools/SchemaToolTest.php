@@ -16,6 +16,7 @@ use Doctrine\DBAL\Schema\Schema;
 use Doctrine\DBAL\Schema\Table as DbalTable;
 use Doctrine\DBAL\Types\EnumType;
 use Doctrine\DBAL\Types\Types;
+use Doctrine\Deprecations\PHPUnit\VerifyDeprecations;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\DiscriminatorColumn;
@@ -58,6 +59,7 @@ use Doctrine\Tests\Models\NullDefault\NullDefaultColumn;
 use Doctrine\Tests\OrmTestCase;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\RequiresMethod;
+use PHPUnit\Framework\Attributes\WithoutErrorHandler;
 
 use function array_map;
 use function class_exists;
@@ -65,10 +67,11 @@ use function count;
 use function current;
 use function enum_exists;
 use function method_exists;
-use function sprintf;
 
 class SchemaToolTest extends OrmTestCase
 {
+    use VerifyDeprecations;
+
     public function testAddUniqueIndexForUniqueFieldAttribute(): void
     {
         $em         = $this->getTestEntityManager();
@@ -436,22 +439,27 @@ class SchemaToolTest extends OrmTestCase
     }
 
     #[Group('GH-12609')]
-    public function testConflictingSingleTableInheritanceAssociationsTargetingSameEntityAreRejected(): void
+    #[WithoutErrorHandler]
+    public function testConflictingSingleTableInheritanceAssociationsTargetingSameEntityAreDeprecated(): void
     {
         $em         = $this->getTestEntityManager();
         $schemaTool = new SchemaTool($em);
 
-        $this->expectException(MappingException::class);
-        $this->expectExceptionMessage(sprintf(
-            'Detected conflicting join column configuration between "%s#ref" and "%s#ref"',
-            GH12609ChildOne::class,
-            GH12609ChildThree::class,
-        ));
+        $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/pull/12612');
 
-        $schemaTool->getSchemaFromMetadata([
+        $schema = $schemaTool->getSchemaFromMetadata([
             $em->getClassMetadata(GH12609Base::class),
             $em->getClassMetadata(GH12609Ref::class),
         ]);
+
+        // The pre-existing behavior (the association processed first determines the
+        // generated column/constraint) is intentionally left untouched for this release
+        // to avoid a breaking change - only a deprecation notice is raised. GH12609ChildOne
+        // is processed first and declares the column as NOT NULL.
+        $table = $schema->getTable('gh12609_base');
+        self::assertTrue($table->hasColumn('ref_id'));
+        self::assertTrue($table->getColumn('ref_id')->getNotnull());
+        self::assertCount(1, $table->getForeignKeys());
     }
 
     #[Group('GH-12609')]
