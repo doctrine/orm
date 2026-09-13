@@ -1024,9 +1024,12 @@ class SchemaTool
      * This includes the SQL for foreign key constraints and join tables.
      *
      * @phpstan-param array<string, array{
+     *                  className: class-string,
+     *                  fieldName: string,
      *                  foreignTableName: string,
      *                  foreignColumns: list<string>,
      *                  localColumns: list<string>,
+     *                  notNullColumns: list<bool>,
      *                  fkOptions: array{onDelete?: string, deferrable?: bool, deferred?: bool},
      *                  name: string|null,
      *                  table: Table
@@ -1167,9 +1170,12 @@ class SchemaTool
      * @phpstan-param list<JoinColumnMapping>          $joinColumns
      * @phpstan-param list<string>                     $primaryKeyColumns
      * @phpstan-param array<string, array{
+     *                  className: class-string,
+     *                  fieldName: string,
      *                  foreignTableName: string,
      *                  foreignColumns: list<string>,
      *                  localColumns: list<string>,
+     *                  notNullColumns: list<bool>,
      *                  fkOptions: array{onDelete?: string, deferrable?: bool, deferred?: bool},
      *                  name: string|null,
      *                  table: Table
@@ -1177,11 +1183,15 @@ class SchemaTool
      * @phpstan-param array<string,bool>               $blacklistedFks
      *
      * @throws MissingColumnException
+     * @throws MappingException
      *
      * @phpstan-param-out array<string, array{
+     *                  className: class-string,
+     *                  fieldName: string,
      *                  foreignTableName: string,
      *                  foreignColumns: list<string>,
      *                  localColumns: list<string>,
+     *                  notNullColumns: list<bool>,
      *                  fkOptions: array{onDelete?: string, deferrable?: bool, deferred?: bool},
      *                  name: string|null,
      *                  table: Table
@@ -1203,6 +1213,7 @@ class SchemaTool
         $fkOptions         = [];
         $foreignTableName  = $this->quoteStrategy->getTableName($class, $this->platform);
         $uniqueConstraints = [];
+        $notNullColumns    = [];
 
         foreach ($joinColumns as $joinColumn) {
             [$definingClass, $referencedFieldName] = $this->getDefiningClass(
@@ -1228,6 +1239,12 @@ class SchemaTool
             $primaryKeyColumns[] = $quotedColumnName;
             $localColumns[]      = $quotedColumnName;
             $foreignColumns[]    = $quotedRefColumnName;
+
+            // Track the effective NOT NULL constraint requested for this column so that
+            // conflicting requirements between associations sharing the same join column
+            // can be detected below, mirroring the default applied a few lines down when
+            // the column itself is created.
+            $notNullColumns[] = isset($joinColumn->nullable) ? ! $joinColumn->nullable : false;
 
             if (! $theJoinTable->hasColumn($quotedColumnName)) {
                 // Only add the column to the table if it does not exist already.
@@ -1319,23 +1336,42 @@ class SchemaTool
                 && count(array_diff($existingFk['foreignColumns'], $foreignColumns)) === 0;
 
             // Compare FK options that affect constraint identity (onDelete, deferrable, deferred)
-            $existingOptions     = $existingFk['fkOptions'];
-            $onDeleteMatches     = ($fkOptions['onDelete'] ?? null)
+            $existingOptions      = $existingFk['fkOptions'];
+            $onDeleteMatches      = ($fkOptions['onDelete'] ?? null)
                 === ($existingOptions['onDelete'] ?? null);
-            $deferrableMatches   = ($fkOptions['deferrable'] ?? null)
+            $deferrableMatches    = ($fkOptions['deferrable'] ?? null)
                 === ($existingOptions['deferrable'] ?? null);
-            $deferredMatches     = ($fkOptions['deferred'] ?? null)
+            $deferredMatches      = ($fkOptions['deferred'] ?? null)
                 === ($existingOptions['deferred'] ?? null);
-            $areOptionsIdentical = $onDeleteMatches && $deferrableMatches && $deferredMatches;
+            $areNotNullFlagsEqual = $notNullColumns === $existingFk['notNullColumns'];
+            $areOptionsIdentical  = $onDeleteMatches && $deferrableMatches && $deferredMatches
+                && $areNotNullFlagsEqual;
 
             if ($isForeignTableIdentical && $areForeignColumnsIdentical && $areOptionsIdentical) {
                 // Identical FK already registered - will be skipped during application phase
                 return;
             }
 
-            // FK exists but is different (conflicting FK) - blacklist this composite key
-            // No FK will be added for this composite key, but we need to ensure an index exists
-            // since FKs normally create indexes automatically
+            if ($isForeignTableIdentical && $areForeignColumnsIdentical) {
+                // Both associations reference the same foreign table and columns, so they
+                // describe the same relationship, yet their JoinColumn configuration
+                // conflicts (e.g. nullability, onDelete or deferrable). There is no single
+                // foreign key definition that could honor both mappings, so rather than
+                // silently keeping one of them - or dropping the constraint altogether, as
+                // happened before this check was introduced - we fail loudly and point to
+                // the two conflicting associations.
+                throw MappingException::conflictingJoinColumnConfiguration(
+                    $existingFk['className'],
+                    $existingFk['fieldName'],
+                    $mapping->sourceEntity,
+                    $mapping->fieldName,
+                    $foreignTableName,
+                );
+            }
+
+            // FK exists but targets a different entity/columns (conflicting FK) - blacklist
+            // this composite key. No FK will be added for this composite key, but we need to
+            // ensure an index exists since FKs normally create indexes automatically
             $blacklistedFks[$compositeName] = true;
 
             // Add an index for the local columns since we won't be adding a FK
@@ -1345,9 +1381,12 @@ class SchemaTool
         } elseif (! isset($blacklistedFks[$compositeName])) {
             // No existing FK and not blacklisted - store FK metadata for application phase
             $addedFks[$compositeName] = [
+                'className' => $mapping->sourceEntity,
+                'fieldName' => $mapping->fieldName,
                 'foreignTableName' => $foreignTableName,
                 'foreignColumns' => $foreignColumns,
                 'localColumns' => $localColumns,
+                'notNullColumns' => $notNullColumns,
                 'fkOptions' => $fkOptions,
                 'name' => $finalForeignKeyName,
                 'table' => $theJoinTable,

@@ -18,9 +18,12 @@ use Doctrine\DBAL\Types\EnumType;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\DiscriminatorColumn;
+use Doctrine\ORM\Mapping\DiscriminatorMap;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\Index;
+use Doctrine\ORM\Mapping\InheritanceType;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\MappingException;
@@ -62,6 +65,7 @@ use function count;
 use function current;
 use function enum_exists;
 use function method_exists;
+use function sprintf;
 
 class SchemaToolTest extends OrmTestCase
 {
@@ -429,6 +433,42 @@ class SchemaToolTest extends OrmTestCase
                 self::assertSame($foreignColumns, $foreignKey->getForeignColumns());
             }
         }
+    }
+
+    #[Group('GH-12609')]
+    public function testConflictingSingleTableInheritanceAssociationsTargetingSameEntityAreRejected(): void
+    {
+        $em         = $this->getTestEntityManager();
+        $schemaTool = new SchemaTool($em);
+
+        $this->expectException(MappingException::class);
+        $this->expectExceptionMessage(sprintf(
+            'Detected conflicting join column configuration between "%s#ref" and "%s#ref"',
+            GH12609ChildOne::class,
+            GH12609ChildThree::class,
+        ));
+
+        $schemaTool->getSchemaFromMetadata([
+            $em->getClassMetadata(GH12609Base::class),
+            $em->getClassMetadata(GH12609Ref::class),
+        ]);
+    }
+
+    #[Group('GH-12609')]
+    public function testIdenticalSingleTableInheritanceAssociationsShareOneForeignKey(): void
+    {
+        $em         = $this->getTestEntityManager();
+        $schemaTool = new SchemaTool($em);
+
+        $schema = $schemaTool->getSchemaFromMetadata([
+            $em->getClassMetadata(GH12609IdenticalBase::class),
+            $em->getClassMetadata(GH12609IdenticalRef::class),
+        ]);
+
+        $table = $schema->getTable('gh12609_identical_base');
+
+        self::assertTrue($table->hasColumn('ref_id'));
+        self::assertCount(1, $table->getForeignKeys());
     }
 
     public function testIndexesBasedOnFields(): void
@@ -897,4 +937,88 @@ class QuotedEntity
 
     #[Column(name: '`quoted-name`')]
     public string $name = '';
+}
+
+#[Entity]
+#[Table(name: 'gh12609_base')]
+#[InheritanceType('SINGLE_TABLE')]
+#[DiscriminatorColumn(name: 'dtype', type: 'string')]
+#[DiscriminatorMap([
+    'one' => GH12609ChildOne::class,
+    'two' => GH12609ChildTwo::class,
+    'three' => GH12609ChildThree::class,
+])]
+class GH12609Base
+{
+    #[Id]
+    #[Column]
+    private int $id;
+}
+
+#[Entity]
+class GH12609ChildOne extends GH12609Base
+{
+    #[ManyToOne(targetEntity: GH12609Ref::class)]
+    #[JoinColumn(name: 'ref_id', nullable: false)]
+    private GH12609Ref $ref;
+}
+
+#[Entity]
+class GH12609ChildTwo extends GH12609Base
+{
+}
+
+#[Entity]
+class GH12609ChildThree extends GH12609Base
+{
+    #[ManyToOne(targetEntity: GH12609Ref::class)]
+    #[JoinColumn(name: 'ref_id', nullable: true)]
+    private GH12609Ref|null $ref = null;
+}
+
+#[Entity]
+class GH12609Ref
+{
+    #[Id]
+    #[Column]
+    private int $id;
+}
+
+#[Entity]
+#[Table(name: 'gh12609_identical_base')]
+#[InheritanceType('SINGLE_TABLE')]
+#[DiscriminatorColumn(name: 'dtype', type: 'string')]
+#[DiscriminatorMap([
+    'one' => GH12609IdenticalChildOne::class,
+    'two' => GH12609IdenticalChildTwo::class,
+])]
+class GH12609IdenticalBase
+{
+    #[Id]
+    #[Column]
+    private int $id;
+}
+
+#[Entity]
+class GH12609IdenticalChildOne extends GH12609IdenticalBase
+{
+    #[ManyToOne(targetEntity: GH12609IdenticalRef::class)]
+    #[JoinColumn(name: 'ref_id', nullable: false)]
+    private GH12609IdenticalRef $ref;
+}
+
+#[Entity]
+class GH12609IdenticalChildTwo extends GH12609IdenticalBase
+{
+    #[ManyToOne(targetEntity: GH12609IdenticalRef::class)]
+    #[JoinColumn(name: 'ref_id', nullable: false)]
+    private GH12609IdenticalRef $ref;
+}
+
+#[Entity]
+class GH12609IdenticalRef
+{
+    #[Id]
+    #[Column]
+    private int $id;
 }
