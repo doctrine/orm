@@ -21,9 +21,11 @@ use Doctrine\DBAL\Types\EnumType;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\DiscriminatorMap;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\Index;
+use Doctrine\ORM\Mapping\InheritanceType;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\MappingException;
@@ -190,7 +192,7 @@ class SchemaToolTest extends OrmTestCase
         $schema = $schemaTool->getSchemaFromMetadata($classes);
 
         self::assertEquals(count($classes), $listener->tableCalls);
-        self::assertTrue($listener->schemaCalled);
+        self::assertSame(1, $listener->schemaCalls);
     }
 
     public function testNullDefaultNotAddedToPlatformOptions(): void
@@ -369,6 +371,24 @@ class SchemaToolTest extends OrmTestCase
         $this->expectException(MappingException::class);
         $this->expectExceptionMessage("The entries 'user' in the discriminator map of class '" . FirstEntity::class . "' do not correspond to enum cases of '" . GH10288People::class . "'.");
         $metadata->setDiscriminatorMap(['user' => CmsUser::class, 'employee' => CmsEmployee::class]);
+    }
+
+    #[Group('GH-12606')]
+    public function testConflictingSingleTableInheritanceAssociationIndexesAreAddedOnce(): void
+    {
+        $em         = $this->getTestEntityManager();
+        $schemaTool = new SchemaTool($em);
+
+        $schema = $schemaTool->getSchemaFromMetadata([
+            $em->getClassMetadata(GH12606Media::class),
+            $em->getClassMetadata(GH12606Housing::class),
+            $em->getClassMetadata(GH12606Location::class),
+            $em->getClassMetadata(GH12606Person::class),
+        ]);
+
+        $table = $schema->getTable('gh12606_media');
+
+        self::assertTrue(self::columnIsIndexed($table, 'reference_id'));
     }
 
     public function testDerivedCompositeKey(): void
@@ -699,13 +719,76 @@ class TestEntityWithAttributeOptionsArgument
     private string $test;
 }
 
+#[Entity]
+class GH12606Housing
+{
+    #[Id]
+    #[Column]
+    private int $id;
+}
+
+#[Entity]
+class GH12606Location
+{
+    #[Id]
+    #[Column]
+    private int $id;
+}
+
+#[Entity]
+class GH12606Person
+{
+    #[Id]
+    #[Column]
+    private int $id;
+}
+
+#[Entity]
+#[Table(name: 'gh12606_media')]
+#[InheritanceType('SINGLE_TABLE')]
+#[DiscriminatorMap([
+    'housing' => GH12606HousingImage::class,
+    'location' => GH12606LocationImage::class,
+    'person' => GH12606PersonImage::class,
+])]
+class GH12606Media
+{
+    #[Id]
+    #[Column]
+    private int $id;
+}
+
+#[Entity]
+class GH12606HousingImage extends GH12606Media
+{
+    #[ManyToOne(targetEntity: GH12606Housing::class)]
+    #[JoinColumn(name: 'reference_id')]
+    private GH12606Housing $housing;
+}
+
+#[Entity]
+class GH12606LocationImage extends GH12606Media
+{
+    #[ManyToOne(targetEntity: GH12606Location::class)]
+    #[JoinColumn(name: 'reference_id')]
+    private GH12606Location $location;
+}
+
+#[Entity]
+class GH12606PersonImage extends GH12606Media
+{
+    #[ManyToOne(targetEntity: GH12606Person::class)]
+    #[JoinColumn(name: 'reference_id')]
+    private GH12606Person $person;
+}
+
 class GenerateSchemaEventListener
 {
     /** @var int */
     public $tableCalls = 0;
 
-    /** @var bool */
-    public $schemaCalled = false;
+    /** @var int */
+    public $schemaCalls = 0;
 
     public function postGenerateSchemaTable(GenerateSchemaTableEventArgs $eventArgs): void
     {
@@ -714,7 +797,7 @@ class GenerateSchemaEventListener
 
     public function postGenerateSchema(GenerateSchemaEventArgs $eventArgs): void
     {
-        $this->schemaCalled = true;
+        $this->schemaCalls++;
     }
 }
 
