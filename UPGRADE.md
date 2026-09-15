@@ -145,6 +145,18 @@ This applies to the following methods:
 - `Doctrine\ORM\Query\Expr\OrderBy::__construct()`
 - `Doctrine\ORM\Query\Expr\OrderBy::add()`
 
+This deprecation does NOT apply to `EntityRepository::findBy()` and
+`findOneBy()`: since `doctrine/persistence` 3.x and 4.x document strings as
+the only order values in `ObjectRepository`, these methods keep accepting
+strings (`'ASC'` / `'DESC'`, case-insensitive) without deprecation. Both
+strings and `\SortDirection` are accepted; static analysis only allows
+`\SortDirection` when the repository is typed as `EntityRepository`, not as
+`Doctrine\Persistence\ObjectRepository`. `doctrine/persistence` 5.0 will
+also accept `\SortDirection` in `ObjectRepository`, at which point the enum
+form will be statically valid regardless of how the repository is typed.
+Sort directions given to `matching()` / `Criteria` are also not deprecated
+(handled by `doctrine/collections`).
+
 ```diff
 -$qb->orderBy('u.name', 'ASC')
 -   ->addOrderBy('u.createdAt', 'DESC');
@@ -245,6 +257,13 @@ We could not find a way to allow the above without introducing a breaking change
 for extending classes. If you extend the querybuilder and override any of the
 above methods, you will need to update the method signature to add support for
 `\SortDirection` as well. Same goes for `Expr\OrderBy::add()`.
+
+`EntityRepository::findBy()` and `findOneBy()` keep their native signature
+(`array|null $orderBy`), but their documented `$orderBy` type is widened to
+also accept `\SortDirection`. If you extend `EntityRepository` and override
+`findBy()` or `findOneBy()`, you will need to update the method docblock to
+add support for `\SortDirection` as well. The `ObjectRepository` interface
+is unchanged.
 
 ## Conditional breaking changes
 
