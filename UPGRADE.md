@@ -151,9 +151,11 @@ the only order values in `ObjectRepository`, these methods keep accepting
 strings (`'ASC'` / `'DESC'`, case-insensitive) without deprecation. Both
 strings and `\SortDirection` are accepted; static analysis only allows
 `\SortDirection` when the repository is typed as `EntityRepository`, not as
-`Doctrine\Persistence\ObjectRepository`. Sort directions given to
-`matching()` / `Criteria` are also not deprecated (handled by
-`doctrine/collections`).
+`Doctrine\Persistence\ObjectRepository`. `doctrine/persistence` 5.0 will
+also accept `\SortDirection` in `ObjectRepository`, at which point the enum
+form will be statically valid regardless of how the repository is typed.
+Sort directions given to `matching()` / `Criteria` are also not deprecated
+(handled by `doctrine/collections`).
 
 ```diff
 -$qb->orderBy('u.name', 'ASC')
@@ -258,13 +260,10 @@ above methods, you will need to update the method signature to add support for
 
 `EntityRepository::findBy()` and `findOneBy()` keep their native signature
 (`array|null $orderBy`), but their documented `$orderBy` type is widened to
-also accept `\SortDirection`. This is an assumed static-analysis BC break for
-custom repositories that override one of these methods and forward `$orderBy`
-to `parent::*()`: an override whose docblock reproduces the previous type (the
-`ObjectRepository` string union for `findBy()`, or `array<string, string>` for
-`findOneBy()`) triggers an `argument.type` error at that call. Widen the
-override docblock to keep static analysis passing. The `ObjectRepository`
-interface is unchanged.
+also accept `\SortDirection`. If you extend `EntityRepository` and override
+`findBy()` or `findOneBy()`, you will need to update the method docblock to
+add support for `\SortDirection` as well. The `ObjectRepository` interface
+is unchanged.
 
 ## Conditional breaking changes
 
