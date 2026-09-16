@@ -132,6 +132,9 @@ parameters:
             identifier: class.notFound
             path: src/Tools/SchemaTool.php
 
+        -
+            identifier: argument.type
+            path: src/Decorator/EntityManagerDecorator.php
 
         # To be removed in 4.0
         -

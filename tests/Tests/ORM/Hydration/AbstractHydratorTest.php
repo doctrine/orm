@@ -86,9 +86,13 @@ class AbstractHydratorTest extends OrmFunctionalTestCase
         $this->hydrator->throwException = true;
 
         $this->expectException(LogicException::class);
-        $this->hydrator->hydrateAll($this->mockResult, $this->mockResultMapping);
-        self::assertTrue($this->hydrator->hasListener);
-        self::assertFalse($this->eventManager->hasListeners(Events::onClear));
+
+        try {
+            $this->hydrator->hydrateAll($this->mockResult, $this->mockResultMapping);
+        } finally {
+            self::assertTrue($this->hydrator->hasListener);
+            self::assertFalse($this->eventManager->hasListeners(Events::onClear));
+        }
     }
 
     public function testEnumCastsIntegerBackedEnumValues(): void
