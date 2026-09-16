@@ -10,7 +10,6 @@ use Doctrine\ORM\Mapping\Driver\XmlDriver;
 use Doctrine\Persistence\Mapping\Driver\ClassLocator;
 use Psr\Cache\CacheItemPoolInterface;
 use Redis;
-use RedisException;
 use RuntimeException;
 use Symfony\Component\Cache\Adapter\ApcuAdapter;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
@@ -20,6 +19,9 @@ use Symfony\Component\Cache\Adapter\RedisAdapter;
 use function apcu_enabled;
 use function class_exists;
 use function extension_loaded;
+use function fclose;
+use function fsockopen;
+use function is_resource;
 use function md5;
 use function sys_get_temp_dir;
 
@@ -196,17 +198,23 @@ final class ORMSetup
         }
 
         if (MemcachedAdapter::isSupported()) {
-            return new MemcachedAdapter(MemcachedAdapter::createConnection('memcached://127.0.0.1'), $namespace);
+            $connection = @fsockopen('127.0.0.1', 11211);
+            if (is_resource($connection)) {
+                fclose($connection);
+
+                return new MemcachedAdapter(MemcachedAdapter::createConnection('memcached://127.0.0.1'), $namespace);
+            }
         }
 
         if (extension_loaded('redis')) {
-            try {
+            $connection = @fsockopen('127.0.0.1', 6379);
+            if (is_resource($connection)) {
+                fclose($connection);
+
                 $redis = new Redis();
                 $redis->connect('127.0.0.1');
 
                 return new RedisAdapter($redis, $namespace);
-            } catch (RedisException) {
-                // Fall through to ArrayAdapter if Redis connection fails
             }
         }
 
