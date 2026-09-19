@@ -6,7 +6,6 @@ namespace Doctrine\Tests\ORM\Hydration;
 
 use BackedEnum;
 use Doctrine\Common\EventManager;
-use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Result;
 use Doctrine\ORM\EntityManagerInterface;
@@ -36,15 +35,12 @@ class AbstractHydratorTest extends OrmFunctionalTestCase
     {
         parent::setUp();
 
-        $stubConnection             = $this->createStub(Connection::class);
+        $stubConnection             = $this->createConnectionStub($this->createStub(AbstractPlatform::class));
         $stubEntityManagerInterface = $this->createStub(EntityManagerInterface::class);
         $this->eventManager         = new EventManager();
         $this->mockResult           = $this->createStub(Result::class);
         $this->mockResultMapping    = $this->createStub(ResultSetMapping::class);
 
-        $stubConnection
-            ->method('getDatabasePlatform')
-            ->willReturn($this->createStub(AbstractPlatform::class));
         $stubEntityManagerInterface
             ->method('getEventManager')
             ->willReturn($this->eventManager);
