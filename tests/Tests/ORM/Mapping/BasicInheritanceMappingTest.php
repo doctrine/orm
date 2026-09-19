@@ -157,6 +157,19 @@ class BasicInheritanceMappingTest extends OrmTestCase
         self::assertArrayHasKey('id', $class->fieldMappings);
     }
 
+    #[Group('GH-12390')]
+    public function testSequenceDefinitionFromMappedSuperclassIsInherited(): void
+    {
+        $class = $this->cmf->getMetadataFor(SuperclassEntity::class);
+        assert($class instanceof ClassMetadata);
+
+        self::assertInstanceOf(IdSequenceGenerator::class, $class->idGenerator);
+        self::assertSame(
+            ['sequenceName' => 'foo', 'allocationSize' => '1', 'initialValue' => '10'],
+            $class->sequenceGeneratorDefinition,
+        );
+    }
+
     #[Group('DDC-1156')]
     #[Group('DDC-1218')]
     #[Group('GH-10927')]
