@@ -62,10 +62,12 @@ use Doctrine\Tests\Models\GH10288\GH10288People;
 use Doctrine\Tests\Models\TypedProperties\Contact;
 use Doctrine\Tests\Models\TypedProperties\UserTyped;
 use Doctrine\Tests\Models\TypedProperties\UserTypedWithCustomTypedField;
+use Doctrine\Tests\Models\TypedProperties\UserTypedWithIdAssociation;
 use Doctrine\Tests\Models\Upsertable\Insertable;
 use Doctrine\Tests\Models\Upsertable\Updatable;
 use Doctrine\Tests\ORM\Mapping\NamingStrategy\CustomPascalNamingStrategy;
 use Doctrine\Tests\OrmTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Depends;
 use PHPUnit\Framework\Attributes\IgnoreDeprecations;
 use SortDirection;
@@ -82,17 +84,19 @@ abstract class MappingDriverTestCase extends OrmTestCase
 {
     use VerifyDeprecations;
 
-    abstract protected function loadDriver(): MappingDriver;
+    abstract protected function loadDriver(bool $inferNullabilityFromPHPType = false): MappingDriver;
 
     /** @param class-string<object> $entityClassName */
     public function createClassMetadata(
         string $entityClassName,
         NamingStrategy|null $namingStrategy = null,
         TypedFieldMapper|null $typedFieldMapper = null,
+        bool $inferNullabilityFromPHPType = false,
     ): ClassMetadata {
-        $mappingDriver = $this->loadDriver();
+        $mappingDriver = $this->loadDriver($inferNullabilityFromPHPType);
 
-        $class = new ClassMetadata($entityClassName, $namingStrategy, $typedFieldMapper);
+        $class                              = new ClassMetadata($entityClassName, $namingStrategy, $typedFieldMapper);
+        $class->inferNullabilityFromPHPType = $inferNullabilityFromPHPType;
         $class->initializeReflection(new RuntimeReflectionService());
         $mappingDriver->loadMetadataForClass($entityClassName, $class);
 
@@ -1009,6 +1013,105 @@ abstract class MappingDriverTestCase extends OrmTestCase
         self::assertEquals('id', $metadata->fieldNames['Id']);
         self::assertEquals('Id', $metadata->associationMappings['blogPost']->joinColumns[0]->referencedColumnName);
         self::assertFalse($metadata->associationMappings['blogPost']->joinColumns[0]->nullable);
+    }
+
+    private static function joinColumnNullability(ClassMetadata $metadata, string $fieldName): bool|null
+    {
+        $mapping = $metadata->getAssociationMapping($fieldName);
+        self::assertInstanceOf(ORM\ToOneOwningSideMapping::class, $mapping);
+
+        return $mapping->joinColumns[0]->nullable;
+    }
+
+    /** @return iterable<string, array{bool}> */
+    public static function inferNullabilityFromPHPTypeProvider(): iterable
+    {
+        yield 'inference enabled' => [true];
+        yield 'inference disabled' => [false];
+    }
+
+    /** Without a PHP type there is nothing to infer from, so the old defaults must be kept. */
+    #[DataProvider('inferNullabilityFromPHPTypeProvider')]
+    public function testUntypedPropertiesKeepTheirDefaultNullability(bool $inferNullabilityFromPHPType): void
+    {
+        $metadata = $this->createClassMetadata(User::class, inferNullabilityFromPHPType: $inferNullabilityFromPHPType);
+
+        self::assertTrue($metadata->isNullable('name')); // Explicit
+        self::assertFalse($metadata->isNullable('email')); // Default for fields
+        self::assertTrue(self::joinColumnNullability($metadata, 'address')); // Default for join columns
+    }
+
+    public function testFieldNullabilityIsInferredFromPHPType(): void
+    {
+        $metadata = $this->createClassMetadata(UserTyped::class, inferNullabilityFromPHPType: true);
+
+        self::assertTrue($metadata->isNullable('status')); // string|null
+        self::assertFalse($metadata->isNullable('username')); // string
+    }
+
+    public function testExplicitFieldNullabilityWins(): void
+    {
+        $metadata = $this->createClassMetadata(UserTyped::class, inferNullabilityFromPHPType: true);
+
+        self::assertTrue($metadata->isNullable('firstName')); // string, but nullable: true
+        self::assertFalse($metadata->isNullable('lastName')); // string|null, but nullable: false
+    }
+
+    /** An uninitialized identifier is a common pattern, so identifiers never inherit nullability. */
+    public function testIdentifierFieldNullabilityIsNotInferred(): void
+    {
+        $metadata = $this->createClassMetadata(UserTyped::class, inferNullabilityFromPHPType: true);
+
+        self::assertFalse($metadata->isNullable('id'));
+    }
+
+    public function testAssociationNullabilityIsInferredFromPHPType(): void
+    {
+        $metadata = $this->createClassMetadata(UserTyped::class, inferNullabilityFromPHPType: true);
+
+        // Non-nullable PHP type, with and without an explicitly declared join column
+        self::assertFalse(self::joinColumnNullability($metadata, 'email'));
+        self::assertFalse(self::joinColumnNullability($metadata, 'mainEmail'));
+
+        // Nullable PHP type, with and without an explicitly declared join column
+        self::assertTrue(self::joinColumnNullability($metadata, 'emailWithNoJoinColumn'));
+        self::assertTrue(self::joinColumnNullability($metadata, 'mainEmailWithNoJoinColumn'));
+    }
+
+    public function testExplicitJoinColumnNullabilityWins(): void
+    {
+        $metadata = $this->createClassMetadata(UserTyped::class, inferNullabilityFromPHPType: true);
+
+        self::assertFalse(self::joinColumnNullability($metadata, 'emailOverride')); // CmsEmail|null, but nullable: false
+        self::assertTrue(self::joinColumnNullability($metadata, 'mainEmailOverride')); // CmsEmail, but nullable: true
+    }
+
+    /** Join columns of Id associations are always NOT NULL, and setting "nullable" for them is deprecated. */
+    public function testIdentifierAssociationNullabilityIsNotInferred(): void
+    {
+        $this->expectNoDeprecationWithIdentifier('https://github.com/doctrine/orm/pull/12126');
+
+        $metadata = $this->createClassMetadata(UserTypedWithIdAssociation::class, inferNullabilityFromPHPType: true);
+
+        self::assertFalse(self::joinColumnNullability($metadata, 'nullableEmail'));
+        self::assertFalse(self::joinColumnNullability($metadata, 'nonNullableEmail'));
+    }
+
+    public function testNullabilityIsNotInferredWhenDisabled(): void
+    {
+        $metadata = $this->createClassMetadata(UserTyped::class);
+
+        self::assertFalse($metadata->isNullable('id'));
+        self::assertFalse($metadata->isNullable('status'));
+        self::assertFalse($metadata->isNullable('username'));
+        self::assertTrue($metadata->isNullable('firstName')); // Explicit
+        self::assertFalse($metadata->isNullable('lastName')); // Explicit
+
+        foreach (['email', 'mainEmail', 'mainEmailOverride', 'emailWithNoJoinColumn', 'mainEmailWithNoJoinColumn'] as $fieldName) {
+            self::assertTrue(self::joinColumnNullability($metadata, $fieldName));
+        }
+
+        self::assertFalse(self::joinColumnNullability($metadata, 'emailOverride')); // Explicit
     }
 }
 

@@ -54,6 +54,7 @@ class XmlDriver extends FileDriver
         string|array|FileLocator $locator,
         string $fileExtension = self::DEFAULT_FILE_EXTENSION,
         private readonly bool $isXsdValidationEnabled = true,
+        private readonly bool $inferNullabilityFromPHPType = false,
     ) {
         if (! extension_loaded('simplexml')) {
             throw new LogicException(
@@ -81,6 +82,8 @@ class XmlDriver extends FileDriver
      */
     public function loadMetadataForClass($className, PersistenceClassMetadata $metadata): void
     {
+        $metadata->inferNullabilityFromPHPType = $this->inferNullabilityFromPHPType;
+
         $xmlRoot = $this->getElement($className);
 
         if ($xmlRoot->getName() === 'entity') {

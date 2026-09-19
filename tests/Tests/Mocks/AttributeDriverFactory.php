@@ -13,17 +13,19 @@ use function interface_exists;
 final class AttributeDriverFactory
 {
     /** @param list<string> $paths */
-    public static function createAttributeDriver(array $paths = []): AttributeDriver
-    {
+    public static function createAttributeDriver(
+        array $paths = [],
+        bool $inferNullabilityFromPHPType = false,
+    ): AttributeDriver {
         if (! self::isClassLocatorSupported()) {
             // Persistence < 4.1
-            return new AttributeDriver($paths);
+            return new AttributeDriver($paths, inferNullabilityFromPHPType: $inferNullabilityFromPHPType);
         }
 
         // Persistence >= 4.1
         $classLocator = FileClassLocator::createFromDirectories($paths);
 
-        return new AttributeDriver($classLocator);
+        return new AttributeDriver($classLocator, inferNullabilityFromPHPType: $inferNullabilityFromPHPType);
     }
 
     /** Supported since doctrine/persistence >= 4.1 */
