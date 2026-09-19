@@ -1299,29 +1299,25 @@ class SchemaTool
         if (isset($addedFks[$compositeName])) {
             $existingFk = $addedFks[$compositeName];
 
-            // Determine if the new FK is identical to the existing one
+            // Determine if the new FK targets the same table/columns as the existing one.
             $isForeignTableIdentical    = $foreignTableName === $existingFk['foreignTableName'];
             $areForeignColumnsIdentical = count(array_diff($foreignColumns, $existingFk['foreignColumns'])) === 0
                 && count(array_diff($existingFk['foreignColumns'], $foreignColumns)) === 0;
 
-            // Compare FK options that affect constraint identity (onDelete, deferrable, deferred)
-            $existingOptions     = $existingFk['fkOptions'];
-            $onDeleteMatches     = ($fkOptions['onDelete'] ?? null)
-                === ($existingOptions['onDelete'] ?? null);
-            $deferrableMatches   = ($fkOptions['deferrable'] ?? null)
-                === ($existingOptions['deferrable'] ?? null);
-            $deferredMatches     = ($fkOptions['deferred'] ?? null)
-                === ($existingOptions['deferred'] ?? null);
-            $areOptionsIdentical = $onDeleteMatches && $deferrableMatches && $deferredMatches;
-
-            if ($isForeignTableIdentical && $areForeignColumnsIdentical && $areOptionsIdentical) {
-                // Identical FK already registered - will be skipped during application phase
+            if ($isForeignTableIdentical && $areForeignColumnsIdentical) {
+                // Both associations reference the same foreign table and columns, so a
+                // single foreign key can satisfy both, even if their JoinColumn
+                // configuration (e.g. nullable, onDelete, deferrable) differs. There is no
+                // single definition that could honor two conflicting configurations at
+                // once, so the association registered first keeps "winning" here, exactly
+                // like before the two-pass rewrite introduced in GH-12528: the constraint
+                // is no longer silently dropped just because the JoinColumn options disagree.
                 return;
             }
 
-            // FK exists but is different (conflicting FK) - blacklist this composite key
-            // No FK will be added for this composite key, but we need to ensure an index exists
-            // since FKs normally create indexes automatically
+            // FK exists but targets a different table/columns (conflicting FK) - blacklist
+            // this composite key. No FK will be added for this composite key, but we need
+            // to ensure an index exists since FKs normally create indexes automatically.
             if (! isset($blacklistedFks[$compositeName])) {
                 // Add an index for the local columns since we won't be adding a FK
                 // (FKs normally create implicit indexes).
