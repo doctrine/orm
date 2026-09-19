@@ -16,6 +16,7 @@ use Doctrine\ORM\Query\Expr;
 use Doctrine\ORM\Query\ResultSetMappingBuilder;
 use Doctrine\ORM\Repository\Exception\InvalidMagicMethodCall;
 use Doctrine\Persistence\ObjectRepository;
+use SortDirection;
 
 use function array_slice;
 use function lcfirst;
@@ -102,6 +103,8 @@ class EntityRepository implements ObjectRepository, Selectable
      *
      * {@inheritDoc}
      *
+     * @phpstan-param array<string, SortDirection|'asc'|'desc'|'ASC'|'DESC'>|null $orderBy
+     *
      * @phpstan-return list<T>
      */
     public function findBy(array $criteria, array|null $orderBy = null, int|null $limit = null, int|null $offset = null): array
@@ -115,7 +118,7 @@ class EntityRepository implements ObjectRepository, Selectable
      * Finds a single entity by a set of criteria.
      *
      * @phpstan-param array<string, mixed> $criteria
-     * @phpstan-param array<string, string>|null $orderBy
+     * @phpstan-param array<string, SortDirection|'asc'|'desc'|'ASC'|'DESC'>|null $orderBy
      *
      * @phpstan-return T|null
      */
