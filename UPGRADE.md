@@ -27,6 +27,25 @@ At this point, we recommend upgrading to PHP 8.4 first and then directly from
 ORM 2.19 to 3.5 and up so that you can skip the lazy ghost proxy generation
 and directly start using native lazy objects.
 
+# Upgrade to 3.8
+
+## Deprecated conflicting join column configuration in STI hierarchies
+
+If two associations that belong to the same single table inheritance
+hierarchy use the same join column and target the same entity, but declare
+different `JoinColumn` configuration (for example, a different `nullable`,
+`onDelete`, or `deferrable` value), `SchemaTool` generates the column and
+foreign key based on whichever of the two associations happens to be
+processed first, ignoring the other one entirely.
+
+This is now deprecated. The schema generated for this release is unchanged
+to avoid a breaking change, but a run-time deprecation notice is now raised
+to help you find and fix affected mappings. A future major version will
+raise a `Doctrine\ORM\Mapping\MappingException` instead. Make sure every
+association that shares a join column and target entity declares identical
+`JoinColumn` configuration, or use a distinct column name for each
+association.
+
 # Upgrade to 3.7
 
 ## Deprecated `Doctrine\ORM\Mapping\JoinColumns` attribute

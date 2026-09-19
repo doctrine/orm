@@ -19,8 +19,10 @@ use Doctrine\DBAL\Schema\Table as DbalTable;
 use Doctrine\DBAL\Schema\TableEditor;
 use Doctrine\DBAL\Types\EnumType;
 use Doctrine\DBAL\Types\Types;
+use Doctrine\Deprecations\PHPUnit\VerifyDeprecations;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\DiscriminatorColumn;
 use Doctrine\ORM\Mapping\DiscriminatorMap;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\Id;
@@ -60,6 +62,7 @@ use Doctrine\Tests\Models\NullDefault\NullDefaultColumn;
 use Doctrine\Tests\OrmTestCase;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\RequiresMethod;
+use PHPUnit\Framework\Attributes\WithoutErrorHandler;
 
 use function array_map;
 use function class_exists;
@@ -70,6 +73,8 @@ use function method_exists;
 
 class SchemaToolTest extends OrmTestCase
 {
+    use VerifyDeprecations;
+
     public function testAddUniqueIndexForUniqueFieldAttribute(): void
     {
         $em         = $this->getTestEntityManager();
@@ -389,6 +394,51 @@ class SchemaToolTest extends OrmTestCase
         $table = $schema->getTable('gh12606_media');
 
         self::assertTrue(self::columnIsIndexed($table, 'reference_id'));
+    }
+
+    #[Group('GH-12609')]
+    #[WithoutErrorHandler]
+    public function testConflictingSingleTableInheritanceAssociationsTargetingSameEntityAreDeprecated(): void
+    {
+        $em         = $this->getTestEntityManager();
+        $schemaTool = new SchemaTool($em);
+
+        $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/pull/12612');
+
+        $schema = $schemaTool->getSchemaFromMetadata([
+            $em->getClassMetadata(GH12609Base::class),
+            $em->getClassMetadata(GH12609Ref::class),
+        ]);
+
+        // GH12609ChildOne and GH12609ChildThree both map a "ref_id" column to
+        // GH12609Ref, but declare conflicting JoinColumn configuration (nullable:
+        // false vs. nullable: true). There is no single foreign key definition that
+        // could honor both associations at once, so - exactly as before the two-pass
+        // rewrite introduced in GH-12528 - the association registered first
+        // (GH12609ChildOne, which declares the column as NOT NULL) wins, and the
+        // conflict is now surfaced as a deprecation notice instead of being silently
+        // ignored. A foreign key is still generated, unlike on 3.7.0/3.7.1.
+        $table = $schema->getTable('gh12609_base');
+        self::assertTrue($table->hasColumn('ref_id'));
+        self::assertTrue($table->getColumn('ref_id')->getNotnull());
+        self::assertCount(1, $table->getForeignKeys());
+    }
+
+    #[Group('GH-12609')]
+    public function testIdenticalSingleTableInheritanceAssociationsShareOneForeignKey(): void
+    {
+        $em         = $this->getTestEntityManager();
+        $schemaTool = new SchemaTool($em);
+
+        $schema = $schemaTool->getSchemaFromMetadata([
+            $em->getClassMetadata(GH12609IdenticalBase::class),
+            $em->getClassMetadata(GH12609IdenticalRef::class),
+        ]);
+
+        $table = $schema->getTable('gh12609_identical_base');
+
+        self::assertTrue($table->hasColumn('ref_id'));
+        self::assertCount(1, $table->getForeignKeys());
     }
 
     public function testDerivedCompositeKey(): void
@@ -780,6 +830,90 @@ class GH12606PersonImage extends GH12606Media
     #[ManyToOne(targetEntity: GH12606Person::class)]
     #[JoinColumn(name: 'reference_id')]
     private GH12606Person $person;
+}
+
+#[Entity]
+#[Table(name: 'gh12609_base')]
+#[InheritanceType('SINGLE_TABLE')]
+#[DiscriminatorColumn(name: 'dtype', type: 'string')]
+#[DiscriminatorMap([
+    'one' => GH12609ChildOne::class,
+    'two' => GH12609ChildTwo::class,
+    'three' => GH12609ChildThree::class,
+])]
+class GH12609Base
+{
+    #[Id]
+    #[Column]
+    private int $id;
+}
+
+#[Entity]
+class GH12609ChildOne extends GH12609Base
+{
+    #[ManyToOne(targetEntity: GH12609Ref::class)]
+    #[JoinColumn(name: 'ref_id', nullable: false)]
+    private GH12609Ref $ref;
+}
+
+#[Entity]
+class GH12609ChildTwo extends GH12609Base
+{
+}
+
+#[Entity]
+class GH12609ChildThree extends GH12609Base
+{
+    #[ManyToOne(targetEntity: GH12609Ref::class)]
+    #[JoinColumn(name: 'ref_id', nullable: true)]
+    private GH12609Ref|null $ref = null;
+}
+
+#[Entity]
+class GH12609Ref
+{
+    #[Id]
+    #[Column]
+    private int $id;
+}
+
+#[Entity]
+#[Table(name: 'gh12609_identical_base')]
+#[InheritanceType('SINGLE_TABLE')]
+#[DiscriminatorColumn(name: 'dtype', type: 'string')]
+#[DiscriminatorMap([
+    'one' => GH12609IdenticalChildOne::class,
+    'two' => GH12609IdenticalChildTwo::class,
+])]
+class GH12609IdenticalBase
+{
+    #[Id]
+    #[Column]
+    private int $id;
+}
+
+#[Entity]
+class GH12609IdenticalChildOne extends GH12609IdenticalBase
+{
+    #[ManyToOne(targetEntity: GH12609IdenticalRef::class)]
+    #[JoinColumn(name: 'ref_id', nullable: false)]
+    private GH12609IdenticalRef $ref;
+}
+
+#[Entity]
+class GH12609IdenticalChildTwo extends GH12609IdenticalBase
+{
+    #[ManyToOne(targetEntity: GH12609IdenticalRef::class)]
+    #[JoinColumn(name: 'ref_id', nullable: false)]
+    private GH12609IdenticalRef $ref;
+}
+
+#[Entity]
+class GH12609IdenticalRef
+{
+    #[Id]
+    #[Column]
+    private int $id;
 }
 
 class GenerateSchemaEventListener

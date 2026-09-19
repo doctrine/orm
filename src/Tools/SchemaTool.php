@@ -69,6 +69,18 @@ use function strtolower;
  * <tt>ClassMetadata</tt> class descriptors.
  *
  * @link    www.doctrine-project.org
+ *
+ * @phpstan-type AddedForeignKeyMetadata = array{
+ *                  className: class-string,
+ *                  fieldName: string,
+ *                  foreignTableName: string,
+ *                  foreignColumns: list<string>,
+ *                  localColumns: list<string>,
+ *                  notNullColumns: list<bool>,
+ *                  fkOptions: array{onDelete?: string, deferrable?: bool, deferred?: bool},
+ *                  name: string|null,
+ *                  table: Table
+ *              }
  */
 class SchemaTool
 {
@@ -1029,14 +1041,7 @@ class SchemaTool
      * Gathers the SQL for properly setting up the relations of the given class.
      * This includes the SQL for foreign key constraints and join tables.
      *
-     * @phpstan-param array<string, array{
-     *                  foreignTableName: string,
-     *                  foreignColumns: list<string>,
-     *                  localColumns: list<string>,
-     *                  fkOptions: array{onDelete?: string, deferrable?: bool, deferred?: bool},
-     *                  name: string|null,
-     *                  table: Table
-     *              }>                               $addedFks
+     * @phpstan-param array<string, AddedForeignKeyMetadata> $addedFks
      * @phpstan-param array<string, bool>              $blacklistedFks
      * @phpstan-param list<Table>                      $joinTablesToAdd
      *
@@ -1172,26 +1177,12 @@ class SchemaTool
      *
      * @phpstan-param list<JoinColumnMapping>          $joinColumns
      * @phpstan-param list<string>                     $primaryKeyColumns
-     * @phpstan-param array<string, array{
-     *                  foreignTableName: string,
-     *                  foreignColumns: list<string>,
-     *                  localColumns: list<string>,
-     *                  fkOptions: array{onDelete?: string, deferrable?: bool, deferred?: bool},
-     *                  name: string|null,
-     *                  table: Table
-     *              }>                               $addedFks
+     * @phpstan-param array<string, AddedForeignKeyMetadata> $addedFks
      * @phpstan-param array<string,bool>               $blacklistedFks
      *
      * @throws MissingColumnException
      *
-     * @phpstan-param-out array<string, array{
-     *                  foreignTableName: string,
-     *                  foreignColumns: list<string>,
-     *                  localColumns: list<string>,
-     *                  fkOptions: array{onDelete?: string, deferrable?: bool, deferred?: bool},
-     *                  name: string|null,
-     *                  table: Table
-     *              }>                               $addedFks
+     * @phpstan-param-out array<string, AddedForeignKeyMetadata> $addedFks
      */
     private function gatherRelationJoinColumns(
         array $joinColumns,
@@ -1209,6 +1200,7 @@ class SchemaTool
         $fkOptions         = [];
         $foreignTableName  = $this->quoteStrategy->getTableName($class, $this->platform);
         $uniqueConstraints = [];
+        $notNullColumns    = [];
 
         foreach ($joinColumns as $joinColumn) {
             [$definingClass, $referencedFieldName] = $this->getDefiningClass(
@@ -1234,6 +1226,12 @@ class SchemaTool
             $primaryKeyColumns[] = $quotedColumnName;
             $localColumns[]      = $quotedColumnName;
             $foreignColumns[]    = $quotedRefColumnName;
+
+            // Track the effective NOT NULL constraint requested for this column so that
+            // conflicting requirements between associations sharing the same join column
+            // can be detected below, mirroring the default applied a few lines down when
+            // the column itself is created.
+            $notNullColumns[] = isset($joinColumn->nullable) ? ! $joinColumn->nullable : false;
 
             if (! $theJoinTable->hasColumn($quotedColumnName)) {
                 // Only add the column to the table if it does not exist already.
@@ -1319,29 +1317,62 @@ class SchemaTool
         if (isset($addedFks[$compositeName])) {
             $existingFk = $addedFks[$compositeName];
 
-            // Determine if the new FK is identical to the existing one
+            // Determine if the new FK targets the same table/columns as the existing one.
             $isForeignTableIdentical    = $foreignTableName === $existingFk['foreignTableName'];
             $areForeignColumnsIdentical = count(array_diff($foreignColumns, $existingFk['foreignColumns'])) === 0
                 && count(array_diff($existingFk['foreignColumns'], $foreignColumns)) === 0;
 
-            // Compare FK options that affect constraint identity (onDelete, deferrable, deferred)
-            $existingOptions     = $existingFk['fkOptions'];
-            $onDeleteMatches     = ($fkOptions['onDelete'] ?? null)
-                === ($existingOptions['onDelete'] ?? null);
-            $deferrableMatches   = ($fkOptions['deferrable'] ?? null)
-                === ($existingOptions['deferrable'] ?? null);
-            $deferredMatches     = ($fkOptions['deferred'] ?? null)
-                === ($existingOptions['deferred'] ?? null);
-            $areOptionsIdentical = $onDeleteMatches && $deferrableMatches && $deferredMatches;
+            if ($isForeignTableIdentical && $areForeignColumnsIdentical) {
+                // Compare FK options that affect constraint identity (onDelete, deferrable,
+                // deferred), as well as the effective NOT NULL constraint requested for the
+                // join column(s), to tell apart associations that are genuinely identical
+                // from ones that merely target the same table and columns.
+                $existingOptions      = $existingFk['fkOptions'];
+                $onDeleteMatches      = ($fkOptions['onDelete'] ?? null)
+                    === ($existingOptions['onDelete'] ?? null);
+                $deferrableMatches    = ($fkOptions['deferrable'] ?? null)
+                    === ($existingOptions['deferrable'] ?? null);
+                $deferredMatches      = ($fkOptions['deferred'] ?? null)
+                    === ($existingOptions['deferred'] ?? null);
+                $areNotNullFlagsEqual = $notNullColumns === $existingFk['notNullColumns'];
 
-            if ($isForeignTableIdentical && $areForeignColumnsIdentical && $areOptionsIdentical) {
-                // Identical FK already registered - will be skipped during application phase
+                if ($onDeleteMatches && $deferrableMatches && $deferredMatches && $areNotNullFlagsEqual) {
+                    // Identical FK already registered - will be skipped during application phase
+                    return;
+                }
+
+                // Both associations reference the same foreign table and columns, so they
+                // describe the same relationship, yet their JoinColumn configuration
+                // conflicts (e.g. nullability, onDelete or deferrable). There is no single
+                // foreign key definition that could honor both mappings. For backwards
+                // compatibility, the association registered first still wins - exactly as
+                // before this check was introduced - but this is now surfaced instead of
+                // being silently ignored, since relying on registration order is fragile.
+                Deprecation::trigger(
+                    'doctrine/orm',
+                    'https://github.com/doctrine/orm/pull/12612',
+                    <<<'DEPRECATION'
+                    Association "%s#%s" and association "%s#%s" declare conflicting JoinColumn
+                    configuration (e.g. "nullable", "onDelete" or "deferrable") while referencing
+                    the same table "%s" through the same join column(s). The generated column and
+                    foreign key currently depend on which association is processed first, which is
+                    unreliable and deprecated. Declare identical JoinColumn configuration for the
+                    shared column(s), or use a different column name for each association. Doctrine
+                    ORM 4.0 will raise a MappingException instead.
+                    DEPRECATION,
+                    $existingFk['className'],
+                    $existingFk['fieldName'],
+                    $mapping->sourceEntity,
+                    $mapping->fieldName,
+                    $foreignTableName,
+                );
+
                 return;
             }
 
-            // FK exists but is different (conflicting FK) - blacklist this composite key
-            // No FK will be added for this composite key, but we need to ensure an index exists
-            // since FKs normally create indexes automatically
+            // FK exists but targets a different table/columns (conflicting FK) - blacklist
+            // this composite key. No FK will be added for this composite key, but we need
+            // to ensure an index exists since FKs normally create indexes automatically.
             if (! isset($blacklistedFks[$compositeName])) {
                 // Add an index for the local columns since we won't be adding a FK
                 // (FKs normally create implicit indexes).
@@ -1353,9 +1384,12 @@ class SchemaTool
         } elseif (! isset($blacklistedFks[$compositeName])) {
             // No existing FK and not blacklisted - store FK metadata for application phase
             $addedFks[$compositeName] = [
+                'className' => $mapping->sourceEntity,
+                'fieldName' => $mapping->fieldName,
                 'foreignTableName' => $foreignTableName,
                 'foreignColumns' => $foreignColumns,
                 'localColumns' => $localColumns,
+                'notNullColumns' => $notNullColumns,
                 'fkOptions' => $fkOptions,
                 'name' => $finalForeignKeyName,
                 'table' => $theJoinTable,
