@@ -1591,8 +1591,8 @@ class SchemaTool
     {
         $getType = 'getType';
 
-        // @phpstan-ignore function.alreadyNarrowedType (DBAL < 4.3 has no Index::getType())
-        if (method_exists($existingIndex, $getType)) {
+        // @phpstan-ignore function.alreadyNarrowedType, function.alreadyNarrowedType (DBAL < 4.3 has no Index::getType())
+        if (method_exists($existingIndex, $getType) && method_exists($candidateIndex, $getType)) {
             $existingTypeName  = self::getIndexTypeName($existingIndex->{$getType}());
             $candidateTypeName = self::getIndexTypeName($candidateIndex->{$getType}());
 
