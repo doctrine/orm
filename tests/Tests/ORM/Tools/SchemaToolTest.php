@@ -19,6 +19,7 @@ use Doctrine\DBAL\Schema\Table as DbalTable;
 use Doctrine\DBAL\Schema\TableEditor;
 use Doctrine\DBAL\Types\EnumType;
 use Doctrine\DBAL\Types\Types;
+use Doctrine\Deprecations\PHPUnit\VerifyDeprecations;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\DiscriminatorColumn;
@@ -61,6 +62,7 @@ use Doctrine\Tests\Models\NullDefault\NullDefaultColumn;
 use Doctrine\Tests\OrmTestCase;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\RequiresMethod;
+use PHPUnit\Framework\Attributes\WithoutErrorHandler;
 
 use function array_map;
 use function class_exists;
@@ -71,6 +73,8 @@ use function method_exists;
 
 class SchemaToolTest extends OrmTestCase
 {
+    use VerifyDeprecations;
+
     public function testAddUniqueIndexForUniqueFieldAttribute(): void
     {
         $em         = $this->getTestEntityManager();
@@ -393,10 +397,13 @@ class SchemaToolTest extends OrmTestCase
     }
 
     #[Group('GH-12609')]
-    public function testConflictingSingleTableInheritanceAssociationsTargetingSameEntityStillGenerateForeignKey(): void
+    #[WithoutErrorHandler]
+    public function testConflictingSingleTableInheritanceAssociationsTargetingSameEntityAreDeprecated(): void
     {
         $em         = $this->getTestEntityManager();
         $schemaTool = new SchemaTool($em);
+
+        $this->expectDeprecationWithIdentifier('https://github.com/doctrine/orm/pull/12612');
 
         $schema = $schemaTool->getSchemaFromMetadata([
             $em->getClassMetadata(GH12609Base::class),
@@ -408,9 +415,9 @@ class SchemaToolTest extends OrmTestCase
         // false vs. nullable: true). There is no single foreign key definition that
         // could honor both associations at once, so - exactly as before the two-pass
         // rewrite introduced in GH-12528 - the association registered first
-        // (GH12609ChildOne, which declares the column as NOT NULL) wins. What matters
-        // for this regression test is that a foreign key is generated at all, instead
-        // of being silently dropped as it was on 3.7.0.
+        // (GH12609ChildOne, which declares the column as NOT NULL) wins, and the
+        // conflict is now surfaced as a deprecation notice instead of being silently
+        // ignored. A foreign key is still generated, unlike on 3.7.0/3.7.1.
         $table = $schema->getTable('gh12609_base');
         self::assertTrue($table->hasColumn('ref_id'));
         self::assertTrue($table->getColumn('ref_id')->getNotnull());
