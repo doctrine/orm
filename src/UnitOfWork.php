@@ -47,6 +47,7 @@ use Doctrine\ORM\Persisters\Entity\JoinedSubclassPersister;
 use Doctrine\ORM\Persisters\Entity\SingleTablePersister;
 use Doctrine\ORM\Proxy\InternalProxy;
 use Doctrine\ORM\Utility\IdentifierFlattener;
+use Doctrine\Persistence\Mapping\MappingException as PersistenceMappingException;
 use Doctrine\Persistence\PropertyChangedListener;
 use Exception;
 use InvalidArgumentException;
@@ -3288,8 +3289,12 @@ class UnitOfWork implements PropertyChangedListener
         }
 
         if ($this->em->getConfiguration()->isNativeLazyObjectsEnabled()) {
-            $reflection = $this->em->getClassMetadata($obj::class)->getReflectionClass();
-            $reflection->initializeLazyObject($obj);
+            try {
+                $reflection = $this->em->getClassMetadata($obj::class)->getReflectionClass();
+                $reflection->initializeLazyObject($obj);
+            } catch (PersistenceMappingException) {
+                // No-op for non-Doctrine entities according to the ObjectManager::initializeObject() interface documentation.
+            }
         }
     }
 
@@ -3297,7 +3302,11 @@ class UnitOfWork implements PropertyChangedListener
     public function isUninitializedObject(mixed $obj): bool
     {
         if ($this->em->getConfiguration()->isNativeLazyObjectsEnabled() && ! ($obj instanceof Collection) && is_object($obj)) {
-            return $this->em->getClassMetadata($obj::class)->reflClass->isUninitializedLazyObject($obj);
+            try {
+                return $this->em->getClassMetadata($obj::class)->reflClass->isUninitializedLazyObject($obj);
+            } catch (PersistenceMappingException) {
+                return false;
+            }
         }
 
         return $obj instanceof InternalProxy && ! $obj->__isInitialized();
