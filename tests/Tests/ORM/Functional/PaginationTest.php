@@ -194,10 +194,12 @@ class PaginationTest extends OrmFunctionalTestCase
         $dql   = 'SELECT g, COUNT(u.id) AS userCount FROM Doctrine\Tests\Models\CMS\CmsGroup g LEFT JOIN g.users u GROUP BY g HAVING COUNT(u.id) > 0';
         $query = $this->_em->createQuery($dql);
 
+        $page = (new OffsetPaginator(false, false))->paginate($query, new Window(0, self::WHOLE_RESULT_SET));
+
         $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('Cannot count query that uses a HAVING clause. Use the output walkers for pagination');
 
-        (new OffsetPaginator(false, false))->paginate($query, new Window(0, self::WHOLE_RESULT_SET));
+        $page->getTotalCount();
     }
 
     #[DataProvider('useOutputWalkers')]
@@ -602,10 +604,12 @@ class PaginationTest extends OrmFunctionalTestCase
         // Tree walkers for pagination, which leads to an exception. If the query works, the output walkers were used
         $query->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, SqlOutputWalker::class);
 
+        $page = (new OffsetPaginator(false))->paginate($query, new Window(0, self::WHOLE_RESULT_SET));
+
         $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('Cannot count query that uses a HAVING clause. Use the output walkers for pagination');
 
-        (new OffsetPaginator(false))->paginate($query, new Window(0, self::WHOLE_RESULT_SET));
+        $page->getTotalCount();
     }
 
     /**

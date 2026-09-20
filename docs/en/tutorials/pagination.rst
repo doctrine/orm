@@ -138,17 +138,23 @@ API Reference
     Returns the number of items on the current page (SPL ``Countable``).
 
 ``WindowPage::getTotalCount(): int``
-    Returns the total number of matching root entities, ignoring the window.
+    Executes an extra ``COUNT`` query and returns the total number of matching
+    root entities, ignoring the window. The query only runs when this method is
+    called, and its result is memoized: paginating without ever asking for the
+    total, as "load more" navigation does, costs no ``COUNT`` query at all.
 
 ``WindowPage::getPageNumber(): int`` / ``WindowPage::getPageCount(): int``
     Return the 1-based number of the current page and the total number of pages.
-    ``getPageCount()`` is at least ``1``, even for an empty result set.
+    ``getPageCount()`` is at least ``1``, even for an empty result set, and
+    relies on ``getTotalCount()``.
 
 ``WindowPage::hasNextPage(): bool`` / ``WindowPage::hasPreviousPage(): bool``
-    Return whether a next / previous page is available.
+    Return whether a next / previous page is available. ``hasNextPage()`` relies
+    on ``getTotalCount()``.
 
 ``WindowPage::hasToPaginate(): bool``
-    Returns whether the result set spans more than one page.
+    Returns whether the result set spans more than one page. Relies on
+    ``getTotalCount()``.
 
 ``WindowPage::getNextWindow(): Window`` / ``WindowPage::getPreviousWindow(): Window``
     Return the ``Window`` for the next / previous page. Throw a ``LogicException``

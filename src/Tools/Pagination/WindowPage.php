@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Tools\Pagination;
 
 use ArrayIterator;
+use Closure;
 use LogicException;
 use Traversable;
 
@@ -27,10 +28,17 @@ use function max;
  */
 final class WindowPage implements Page
 {
-    /** @param list<T> $items */
+    /** Memoizes the total count when it is provided lazily. */
+    private int|null $resolvedTotalCount = null;
+
+    /**
+     * @param list<T>            $items
+     * @param int|Closure(): int $totalCount The total number of matching root entities, or a closure
+     *                                       running the COUNT query on demand.
+     */
     public function __construct(
         private readonly array $items,
-        private readonly int $totalCount,
+        private readonly int|Closure $totalCount,
         private readonly Window $window,
     ) {
     }
@@ -61,10 +69,15 @@ final class WindowPage implements Page
 
     /**
      * Returns the total number of matching root entities, ignoring the window.
+     *
+     * When the page was built with a lazy total count, as {@see OffsetPaginator}
+     * does, this runs the COUNT query on the first call and memoizes its result.
      */
     public function getTotalCount(): int
     {
-        return $this->totalCount;
+        return $this->resolvedTotalCount ??= $this->totalCount instanceof Closure
+            ? ($this->totalCount)()
+            : $this->totalCount;
     }
 
     /**
@@ -85,13 +98,13 @@ final class WindowPage implements Page
 
     /**
      * Returns the total number of pages, at least 1 even for an empty result
-     * set.
+     * set. Relies on {@see getTotalCount()}.
      */
     public function getPageCount(): int
     {
         $maxResults = $this->window->getMaxResults();
 
-        return max(1, intdiv($this->totalCount + $maxResults - 1, $maxResults));
+        return max(1, intdiv($this->getTotalCount() + $maxResults - 1, $maxResults));
     }
 
     public function hasPreviousPage(): bool
@@ -99,17 +112,19 @@ final class WindowPage implements Page
         return $this->window->getFirstResult() > 0;
     }
 
+    /** Relies on {@see getTotalCount()}. */
     public function hasNextPage(): bool
     {
-        return $this->window->getFirstResult() + count($this->items) < $this->totalCount;
+        return $this->window->getFirstResult() + count($this->items) < $this->getTotalCount();
     }
 
     /**
-     * Returns whether the result set spans more than one page.
+     * Returns whether the result set spans more than one page. Relies on
+     * {@see getTotalCount()}.
      */
     public function hasToPaginate(): bool
     {
-        return $this->totalCount > count($this->items);
+        return $this->getTotalCount() > count($this->items);
     }
 
     /** @throws LogicException If there is no next page. Check {@see hasNextPage()} first. */
