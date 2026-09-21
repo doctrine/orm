@@ -258,7 +258,7 @@ Optional attributes:
 -  index - Should an index be created for this column? Defaults to
    false.
 -  nullable - Should this field allow NULL as a value? Defaults to
-   false.
+   false. Since ORM 3.7, default can be inferred from PHP type when using ``inferNullabilityFromPHPType: true`` in the mapping driver constructor.
 -  insertable - Should this field be inserted? Defaults to true.
 -  updatable - Should this field be updated? Defaults to true.
 -  generated - Enum of the values ALWAYS, INSERT, NEVER that determines if
@@ -723,6 +723,7 @@ Optional attributes:
    This makes sense for Many-To-Many join-columns only to simulate a
    one-to-many unidirectional using a join-table.
 -  nullable - should the join column be nullable, defaults to true.
+   Since ORM 3.7, default can be inferred from PHP type when using ``inferNullabilityFromPHPType: true`` in the mapping driver constructor.
 -  on-delete - Foreign Key Cascade action to perform when entity is
    deleted, defaults to NO ACTION/RESTRICT but can be set to
    "CASCADE".

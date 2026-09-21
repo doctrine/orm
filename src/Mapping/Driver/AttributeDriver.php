@@ -39,8 +39,11 @@ class AttributeDriver implements MappingDriver
      * @param string[]|ClassLocator $paths                     a ClassLocator, or an array of directories.
      * @param true                  $reportFieldsWhereDeclared no-op, to be removed in 4.0
      */
-    public function __construct(array|ClassLocator $paths, bool $reportFieldsWhereDeclared = true)
-    {
+    public function __construct(
+        array|ClassLocator $paths,
+        bool $reportFieldsWhereDeclared = true,
+        private readonly bool $inferNullabilityFromPHPType = false,
+    ) {
         if (! $reportFieldsWhereDeclared) {
             throw new InvalidArgumentException(sprintf(
                 'The $reportFieldsWhereDeclared argument is no longer supported, make sure to omit it when calling %s.',
@@ -81,6 +84,8 @@ class AttributeDriver implements MappingDriver
      */
     public function loadMetadataForClass(string $className, PersistenceClassMetadata $metadata): void
     {
+        $metadata->inferNullabilityFromPHPType = $this->inferNullabilityFromPHPType;
+
         $reflectionClass = $metadata->getReflectionClass()
             // this happens when running attribute driver in combination with
             // static reflection services. This is not the nicest fix
@@ -297,15 +302,6 @@ class AttributeDriver implements MappingDriver
                 );
             }
 
-            // Check for JoinColumn/JoinColumns attributes
-            $joinColumns = [];
-
-            $joinColumnAttributes = $this->reader->getPropertyAttributeCollection($property, Mapping\JoinColumn::class);
-
-            foreach ($joinColumnAttributes as $joinColumnAttribute) {
-                $joinColumns[] = $this->joinColumnToArray($joinColumnAttribute);
-            }
-
             // Field can only be attributed with one of:
             // Column, OneToOne, OneToMany, ManyToOne, ManyToMany, Embedded
             $columnAttribute     = $this->reader->getPropertyAttribute($property, Mapping\Column::class);
@@ -315,8 +311,18 @@ class AttributeDriver implements MappingDriver
             $manyToManyAttribute = $this->reader->getPropertyAttribute($property, Mapping\ManyToMany::class);
             $embeddedAttribute   = $this->reader->getPropertyAttribute($property, Mapping\Embedded::class);
 
+            // Check for JoinColumn/JoinColumns attributes
+            $joinColumns = [];
+
+            $joinColumnAttributes = $this->reader->getPropertyAttributeCollection($property, Mapping\JoinColumn::class);
+
+            foreach ($joinColumnAttributes as $joinColumnAttribute) {
+                $joinColumns[] = $this->joinColumnToArray($joinColumnAttribute, $this->inferNullabilityFromPHPType && (
+                    $oneToOneAttribute !== null || $manyToOneAttribute !== null));
+            }
+
             if ($columnAttribute !== null) {
-                $mapping = $this->columnToArray($property->name, $columnAttribute);
+                $mapping = $this->columnToArray($property->name, $columnAttribute, $this->inferNullabilityFromPHPType);
 
                 $idAttribute = $this->reader->getPropertyAttribute($property, Mapping\Id::class);
                 if ($idAttribute !== null) {
@@ -492,10 +498,12 @@ class AttributeDriver implements MappingDriver
 
                 // Check for JoinColumn/JoinColumns attributes
                 if ($associationOverride->joinColumns) {
-                    $joinColumns = [];
+                    $inferNullabilityFromPHPType = $this->inferNullabilityFromPHPType && isset($metadata->associationMappings[$fieldName])
+                        && $metadata->associationMappings[$fieldName]['type'] & ClassMetadata::TO_ONE;
 
+                    $joinColumns = [];
                     foreach ($associationOverride->joinColumns as $joinColumn) {
-                        $joinColumns[] = $this->joinColumnToArray($joinColumn);
+                        $joinColumns[] = $this->joinColumnToArray($joinColumn, $inferNullabilityFromPHPType);
                     }
 
                     $override['joinColumns'] = $joinColumns;
@@ -549,7 +557,7 @@ class AttributeDriver implements MappingDriver
             $attributeOverridesAnnot = $classAttributes[Mapping\AttributeOverrides::class];
 
             foreach ($attributeOverridesAnnot->overrides as $attributeOverride) {
-                $mapping = $this->columnToArray($attributeOverride->name, $attributeOverride->column);
+                $mapping = $this->columnToArray($attributeOverride->name, $attributeOverride->column, $this->inferNullabilityFromPHPType);
 
                 $metadata->setAttributeOverride($attributeOverride->name, $mapping);
             }
@@ -692,7 +700,7 @@ class AttributeDriver implements MappingDriver
      * @phpstan-return array{
      *                   name: string|null,
      *                   unique: bool,
-     *                   nullable: bool,
+     *                   nullable?: bool,
      *                   onDelete: mixed,
      *                   columnDefinition: string|null,
      *                   referencedColumnName: string,
@@ -700,18 +708,21 @@ class AttributeDriver implements MappingDriver
      *                   options?: array<string, mixed>
      *               }
      */
-    private function joinColumnToArray(Mapping\JoinColumn|Mapping\InverseJoinColumn $joinColumn): array
+    private function joinColumnToArray(Mapping\JoinColumn|Mapping\InverseJoinColumn $joinColumn, bool $inferNullabilityFromPHPType = false): array
     {
         $mapping = [
             'name' => $joinColumn->name,
             'deferrable' => $joinColumn->deferrable,
             'unique' => $joinColumn->unique,
-            'nullable' => $joinColumn->nullable,
             'onDelete' => $joinColumn->onDelete,
             'columnDefinition' => $joinColumn->columnDefinition,
             'referencedColumnName' => $joinColumn->referencedColumnName,
             'foreignKeyName' => $joinColumn->foreignKeyName,
         ];
+
+        if (! $inferNullabilityFromPHPType || $joinColumn->nullable !== null) {
+            $mapping['nullable'] = $joinColumn->nullable;
+        }
 
         if ($joinColumn->options) {
             $mapping['options'] = $joinColumn->options;
@@ -730,7 +741,7 @@ class AttributeDriver implements MappingDriver
      *                   scale: int,
      *                   length: int,
      *                   unique: bool,
-     *                   nullable: bool,
+     *                   nullable?: bool|null,
      *                   index: bool,
      *                   precision: int,
      *                   enumType?: class-string,
@@ -739,7 +750,7 @@ class AttributeDriver implements MappingDriver
      *                   columnDefinition?: string
      *               }
      */
-    private function columnToArray(string $fieldName, Mapping\Column $column): array
+    private function columnToArray(string $fieldName, Mapping\Column $column, bool $inferNullabilityFromPHPType = false): array
     {
         $mapping = [
             'fieldName' => $fieldName,
@@ -747,10 +758,13 @@ class AttributeDriver implements MappingDriver
             'scale'     => $column->scale,
             'length'    => $column->length,
             'unique'    => $column->unique,
-            'nullable'  => $column->nullable,
             'index'     => $column->index,
             'precision' => $column->precision,
         ];
+
+        if (! $inferNullabilityFromPHPType || $column->nullableSet) {
+            $mapping['nullable'] = $column->nullable;
+        }
 
         if ($column->options) {
             $mapping['options'] = $column->options;

@@ -21,9 +21,9 @@ use stdClass;
 
 class AttributeDriverTest extends MappingDriverTestCase
 {
-    protected function loadDriver(): MappingDriver
+    protected function loadDriver(bool $inferNullabilityFromPHPType = false): MappingDriver
     {
-        return AttributeDriverFactory::createAttributeDriver();
+        return AttributeDriverFactory::createAttributeDriver(inferNullabilityFromPHPType: $inferNullabilityFromPHPType);
     }
 
     public function testDriverCanAcceptClassLocator(): void
