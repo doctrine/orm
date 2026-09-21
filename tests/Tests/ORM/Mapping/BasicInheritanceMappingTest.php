@@ -194,6 +194,63 @@ class BasicInheritanceMappingTest extends OrmTestCase
     }
 
     /**
+     * Ensure unnamed indexes are inherited from the mapped superclass
+     * even when the entity declares unnamed indexes of its own.
+     *
+     * @group GH-12179
+     */
+    public function testMappedSuperclassUnnamedIndexes(): void
+    {
+        $class = $this->cmf->getMetadataFor(EntityUnnamedIndexSubClass::class);
+        assert($class instanceof ClassMetadata);
+
+        self::assertSame(
+            [
+                ['columns' => ['name']],
+                ['columns' => ['mapped1']],
+            ],
+            $class->table['uniqueConstraints']
+        );
+
+        // The indexes on mapped3 and mapped4 are declared by both classes: they must not be duplicated
+        self::assertSame(
+            [
+                ['columns' => ['code']],
+                ['columns' => ['mapped3']],
+                ['fields' => ['mapped4']],
+                ['columns' => ['mapped2']],
+            ],
+            $class->table['indexes']
+        );
+    }
+
+    /**
+     * Ensure a named index of the entity replaces an unnamed index of the
+     * mapped superclass on the same columns instead of duplicating it.
+     *
+     * @group GH-12179
+     */
+    public function testMappedSuperclassUnnamedIndexOverriddenByNamedIndex(): void
+    {
+        $class = $this->cmf->getMetadataFor(EntityNamedIndexSubClass::class);
+        assert($class instanceof ClassMetadata);
+
+        self::assertSame(
+            [['columns' => ['mapped1']]],
+            $class->table['uniqueConstraints']
+        );
+
+        self::assertSame(
+            [
+                'IDX_MAPPED2' => ['columns' => ['mapped2']],
+                0 => ['columns' => ['mapped3']],
+                1 => ['fields' => ['mapped4']],
+            ],
+            $class->table['indexes']
+        );
+    }
+
+    /**
      * @dataProvider invalidHierarchyDeclarationClasses
      */
     public function testUndeclaredHierarchyRejection(string $rootEntity, string $childClass): void
@@ -354,6 +411,83 @@ class EntityIndexSubClass extends MappedSuperclassBaseIndex
      * @Column(type="string", length=255)
      */
     private $name;
+}
+
+/**
+ * @MappedSuperclass
+ * @Table(
+ *  uniqueConstraints={@UniqueConstraint(columns={"mapped1"})},
+ *  indexes={@Index(columns={"mapped2"}), @Index(columns={"mapped3"}), @Index(fields={"mapped4"})}
+ * )
+ */
+class MappedSuperclassBaseUnnamedIndex
+{
+    /**
+     * @var string
+     * @Column(type="string", length=255)
+     */
+    private $mapped1;
+
+    /**
+     * @var string
+     * @Column(type="string", length=255)
+     */
+    private $mapped2;
+
+    /**
+     * @var string
+     * @Column(type="string", length=255)
+     */
+    private $mapped3;
+
+    /**
+     * @var string
+     * @Column(type="string", length=255)
+     */
+    private $mapped4;
+}
+
+/**
+ * @Entity
+ * @Table(
+ *  uniqueConstraints={@UniqueConstraint(columns={"name"})},
+ *  indexes={@Index(columns={"code"}), @Index(columns={"mapped3"}), @Index(fields={"mapped4"})}
+ * )
+ */
+class EntityUnnamedIndexSubClass extends MappedSuperclassBaseUnnamedIndex
+{
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     */
+    private $id;
+
+    /**
+     * @var string
+     * @Column(type="string", length=255)
+     */
+    private $name;
+
+    /**
+     * @var string
+     * @Column(type="string", length=255)
+     */
+    private $code;
+}
+
+/**
+ * @Entity
+ * @Table(indexes={@Index(name="IDX_MAPPED2", columns={"mapped2"})})
+ */
+class EntityNamedIndexSubClass extends MappedSuperclassBaseUnnamedIndex
+{
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     */
+    private $id;
 }
 
 /**
