@@ -58,6 +58,10 @@ final class OffsetPaginator implements PaginatorInterface
     /**
      * Executes the query for the given window and returns an immutable page.
      *
+     * As in {@see CursorPaginator}, the COUNT query is deferred: it only runs
+     * when {@see WindowPage::getTotalCount()}, or one of the methods relying on
+     * it, is called.
+     *
      * @param Window $position The window to fetch. Use {@see Window::fromPageNumberAndSize()}
      *                         to build it from a 1-based page number and a page size.
      *
@@ -85,12 +89,12 @@ final class OffsetPaginator implements PaginatorInterface
             $this->fetchJoinCollection,
         ));
 
-        try {
-            $totalCount = (int) array_sum(array_map('current', $this->getCountQuery($query)->getScalarResult()));
-        } catch (NoResultException) {
-            $totalCount = 0;
-        }
-
-        return new WindowPage($items, $totalCount, $position);
+        return new WindowPage($items, function () use ($query): int {
+            try {
+                return (int) array_sum(array_map('current', $this->getCountQuery($query)->getScalarResult()));
+            } catch (NoResultException) {
+                return 0;
+            }
+        }, $position);
     }
 }
