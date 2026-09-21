@@ -746,6 +746,19 @@ class Configuration extends \Doctrine\DBAL\Configuration
         return $this->attributes['fetchModeSubselectBatchSize'] ?? 100;
     }
 
+    /**
+     * Set enable/disable type infer of bind parameters. By default, its disabled.
+     */
+    public function setInferParameterTypes(bool $inferParameterTypes): void
+    {
+        $this->attributes['inferParameterTypes'] = $inferParameterTypes;
+    }
+
+    public function isInferParameterTypesEnabled(): bool
+    {
+        return $this->attributes['inferParameterTypes'] ?? false;
+    }
+
     public function setDefaultStringTypeSchemaLength(int $length): void
     {
         $this->attributes['defaultStringTypeSchemaLength'] = $length;
