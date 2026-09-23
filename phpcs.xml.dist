@@ -157,6 +157,15 @@
         </properties>
     </rule>
 
+    <rule ref="SlevomatCodingStandard.Classes.RequireConstructorPropertyPromotion">
+        <!--
+            the properties are typed more narrowly (int<0, max> and int<1, max>)
+            than the constructor parameters, which have to accept any integer so
+            that the validation performed in the constructor is not dead code
+        -->
+        <exclude-pattern>src/Tools/Pagination/Window.php</exclude-pattern>
+    </rule>
+
     <rule ref="SlevomatCodingStandard.Classes.SuperfluousInterfaceNaming">
         <exclude-pattern>src/EntityManagerInterface.php</exclude-pattern>
         <!-- the Paginator name is taken by the deprecated class until its removal in 4.0 -->
