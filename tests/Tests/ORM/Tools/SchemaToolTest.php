@@ -21,6 +21,7 @@ use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\DiscriminatorColumn;
 use Doctrine\ORM\Mapping\DiscriminatorMap;
 use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\Index;
 use Doctrine\ORM\Mapping\InheritanceType;
@@ -726,6 +727,41 @@ class SchemaToolTest extends OrmTestCase
 
         return false;
     }
+
+    public function testSingleTableInheritanceWithSameForeignKeyInChildrenDoesNotTriggerDeprecation(): void
+    {
+        $em         = $this->getTestEntityManager();
+        $schemaTool = new SchemaTool($em);
+
+        $schema = $schemaTool->getSchemaFromMetadata([
+            $em->getClassMetadata(STIBox::class),
+            $em->getClassMetadata(STILocation::class),
+            $em->getClassMetadata(STIBoxContainer::class),
+            $em->getClassMetadata(STIPackedBoxContainer::class),
+        ]);
+
+        self::assertTrue($schema->hasTable('sti_location'));
+
+        $table = $schema->getTable('sti_location');
+
+        self::assertCount(1, $table->getForeignKeys());
+
+        $foreignKeys = $table->getForeignKeys();
+        $foreignKey  = current($foreignKeys);
+
+        if (! class_exists(ForeignKeyConstraintEditor::class)) {
+            self::assertSame('sti_box', $foreignKey->getForeignTableName());
+            self::assertSame(['box_id'], $foreignKey->getLocalColumns());
+
+            return;
+        }
+
+        self::assertSame('sti_box', $foreignKey->getReferencedTableName()->toString());
+        self::assertSame(['box_id'], array_map(
+            static fn (UnqualifiedName $name) => $name->toString(),
+            $foreignKey->getReferencingColumnNames(),
+        ));
+    }
 }
 
 #[Table(options: ['foo' => 'bar', 'baz' => ['key' => 'val']])]
@@ -1107,4 +1143,43 @@ class QuotedEntity
 
     #[Column(name: '`quoted-name`')]
     public string $name = '';
+}
+
+#[Entity]
+#[Table(name: 'sti_box')]
+class STIBox
+{
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
+    public int|null $id = null;
+}
+
+#[Entity]
+#[Table(name: 'sti_location')]
+#[InheritanceType('SINGLE_TABLE')]
+#[DiscriminatorColumn(name: 'type', type: 'string')]
+#[DiscriminatorMap(['box_container' => STIBoxContainer::class, 'packed_box_container' => STIPackedBoxContainer::class])]
+abstract class STILocation
+{
+    #[Id]
+    #[Column(type: 'integer')]
+    #[GeneratedValue]
+    public int|null $id = null;
+}
+
+#[Entity]
+class STIBoxContainer extends STILocation
+{
+    #[ManyToOne(targetEntity: STIBox::class)]
+    #[JoinColumn(name: 'box_id', referencedColumnName: 'id')]
+    public STIBox|null $box = null;
+}
+
+#[Entity]
+class STIPackedBoxContainer extends STILocation
+{
+    #[ManyToOne(targetEntity: STIBox::class)]
+    #[JoinColumn(name: 'box_id', referencedColumnName: 'id')]
+    public STIBox|null $box = null;
 }
