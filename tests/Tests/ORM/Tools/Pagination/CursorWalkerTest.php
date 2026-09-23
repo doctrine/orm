@@ -113,6 +113,25 @@ class CursorWalkerTest extends PaginationTestCase
         );
     }
 
+    public function testCursorConditionDoesNotOverwriteAParameterOfThePaginatedQuery(): void
+    {
+        $query = $this->entityManager->createQuery(
+            'SELECT p FROM Doctrine\Tests\ORM\Tools\Pagination\BlogPost p WHERE p.id <= :p_id_0 ORDER BY p.id ASC',
+        );
+        $query->setParameter('p_id_0', 5);
+        $query->setHint(Query::HINT_CUSTOM_TREE_WALKERS, [CursorWalker::class]);
+        $query->setHint(CursorWalker::HINT_CURSOR_REVERSE, false);
+        $query->setHint(CursorWalker::HINT_CURSOR_PARAMETERS, ['p.id' => 10]);
+
+        self::assertEquals(
+            'SELECT b0_.id AS id_0, b0_.author_id AS author_id_1, b0_.category_id AS category_id_2 FROM BlogPost b0_ WHERE b0_.id <= ? AND (b0_.id > ?) ORDER BY b0_.id ASC',
+            $query->getSQL(),
+        );
+
+        self::assertSame(5, $query->getParameter('p_id_0')?->getValue());
+        self::assertSame(10, $query->getParameter('dctrn_cursor_0')?->getValue());
+    }
+
     public function testQueryWithJoinAndOrderByJoinedEntity(): void
     {
         $query = $this->entityManager->createQuery(

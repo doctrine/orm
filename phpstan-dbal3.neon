@@ -3,6 +3,7 @@ includes:
     - phpstan-params.neon
 
 parameters:
+    treatPhpDocTypesAsCertain: false
     reportUnmatchedIgnoredErrors: false # Some errors in the baseline only apply to DBAL 4
     excludePaths:
         # Compatibility shims for Collections 2 vs Collections 3
@@ -30,6 +31,11 @@ parameters:
         -
             message: '~^Match expression does not handle remaining values:~'
             path: src/Utility/PersisterHelper.php
+
+        # DBAL 3 compatibility
+        -
+            message: '~^Class Doctrine\\DBAL\\Platforms\\SqlitePlatform referenced with incorrect case: Doctrine\\DBAL\\Platforms\\SQLitePlatform\.$~'
+            path: src/Utility/LockSqlHelper.php
 
         # DBAL 4 compatibility
         -

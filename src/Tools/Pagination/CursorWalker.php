@@ -19,7 +19,6 @@ use Doctrine\ORM\Query\TreeWalkerAdapter;
 use LogicException;
 
 use function count;
-use function str_replace;
 
 /**
  * @internal
@@ -37,6 +36,13 @@ class CursorWalker extends TreeWalkerAdapter
     public const HINT_CURSOR_REVERSE            = 'doctrine.cursor.reverse';
     public const HINT_CURSOR_ORDER_BY_ITEMS     = 'doctrine.cursor.order_by_items';
     public const HINT_QUERY_PRODUCES_DUPLICATES = 'doctrine.cursor.query_produces_duplicates';
+
+    /**
+     * Prefix of the parameters bound for the cursor predicate. Names are
+     * namespaced so that they cannot collide with the parameters of the
+     * paginated query, whose values would then be silently overwritten.
+     */
+    private const CURSOR_PARAMETER_PREFIX = 'dctrn_cursor_';
 
     public function walkSelectStatement(SelectStatement $selectStatement): void
     {
@@ -138,7 +144,7 @@ class CursorWalker extends TreeWalkerAdapter
 
         $operator = $direction->operator();
 
-        $paramName  = str_replace('.', '_', $paramKey) . '_' . $index;
+        $paramName  = self::CURSOR_PARAMETER_PREFIX . $index;
         $paramValue = $cursorParameters[$paramKey] ?? null;
 
         // Security note: $paramKey is derived from the DQL ORDER BY AST, not from the

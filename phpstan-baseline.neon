@@ -133,12 +133,6 @@ parameters:
 			path: src/Cache/DefaultEntityHydrator.php
 
 		-
-			message: '#^Call to method Doctrine\\ORM\\Mapping\\AssociationMapping\:\:isToOneOwningSide\(\) will always evaluate to true\.$#'
-			identifier: method.alreadyNarrowedType
-			count: 1
-			path: src/Cache/DefaultEntityHydrator.php
-
-		-
 			message: '#^Method Doctrine\\ORM\\Cache\\DefaultEntityHydrator\:\:buildCacheEntry\(\) has parameter \$metadata with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
 			identifier: missingType.generics
 			count: 1
@@ -485,12 +479,6 @@ parameters:
 			identifier: property.notFound
 			count: 1
 			path: src/Cache/TimestampQueryCacheValidator.php
-
-		-
-			message: '#^Call to function is_a\(\) with arguments class\-string\<Doctrine\\ORM\\EntityRepository\>, ''Doctrine\\\\ORM\\\\EntityRepository'' and true will always evaluate to true\.$#'
-			identifier: function.alreadyNarrowedType
-			count: 1
-			path: src/Configuration.php
 
 		-
 			message: '#^Method Doctrine\\ORM\\Configuration\:\:getDefaultRepositoryClassName\(\) return type with generic class Doctrine\\ORM\\EntityRepository does not specify its types\: T$#'
@@ -865,18 +853,6 @@ parameters:
 			path: src/Mapping/AssociationMapping.php
 
 		-
-			message: '#^Instanceof between Doctrine\\ORM\\Mapping\\AssociationOverride and Doctrine\\ORM\\Mapping\\AssociationOverride will always evaluate to true\.$#'
-			identifier: instanceof.alwaysTrue
-			count: 1
-			path: src/Mapping/AssociationOverrides.php
-
-		-
-			message: '#^Instanceof between Doctrine\\ORM\\Mapping\\AttributeOverride and Doctrine\\ORM\\Mapping\\AttributeOverride will always evaluate to true\.$#'
-			identifier: instanceof.alwaysTrue
-			count: 1
-			path: src/Mapping/AttributeOverrides.php
-
-		-
 			message: '#^Method Doctrine\\ORM\\Mapping\\Builder\\ClassMetadataBuilder\:\:__construct\(\) has parameter \$cm with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
 			identifier: missingType.generics
 			count: 1
@@ -927,12 +903,6 @@ parameters:
 		-
 			message: '#^Method Doctrine\\ORM\\Mapping\\ClassMetadata\:\:setCustomRepositoryClass\(\) has parameter \$repositoryClassName with generic class Doctrine\\ORM\\EntityRepository but does not specify its types\: T$#'
 			identifier: missingType.generics
-			count: 1
-			path: src/Mapping/ClassMetadata.php
-
-		-
-			message: '#^Parameter \#1 \$array \(list\<string\>\) of array_values is already a list, call has no effect\.$#'
-			identifier: arrayValues.list
 			count: 1
 			path: src/Mapping/ClassMetadata.php
 
@@ -1037,12 +1007,6 @@ parameters:
 			identifier: argument.templateType
 			count: 1
 			path: src/Mapping/ClassMetadata.php
-
-		-
-			message: '#^If condition is always true\.$#'
-			identifier: if.alwaysTrue
-			count: 1
-			path: src/Mapping/ClassMetadataFactory.php
 
 		-
 			message: '#^Method Doctrine\\ORM\\Mapping\\ClassMetadataFactory\:\:addDefaultDiscriminatorMap\(\) has parameter \$class with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
@@ -1309,20 +1273,8 @@ parameters:
 			path: src/Mapping/Driver/DatabaseDriver.php
 
 		-
-			message: '#^Call to function method_exists\(\) with Doctrine\\DBAL\\Schema\\Index and ''getType'' will always evaluate to true\.$#'
-			identifier: function.alreadyNarrowedType
-			count: 1
-			path: src/Mapping/Driver/DatabaseDriver.php
-
-		-
 			message: '#^Call to function method_exists\(\) with Doctrine\\DBAL\\Schema\\Table and ''getPrimaryKeyConstr…'' will always evaluate to true\.$#'
 			identifier: function.alreadyNarrowedType
-			count: 2
-			path: src/Mapping/Driver/DatabaseDriver.php
-
-		-
-			message: '#^Instanceof between Doctrine\\ORM\\Mapping\\ClassMetadata\<T of object\> and Doctrine\\ORM\\Mapping\\ClassMetadata will always evaluate to true\.$#'
-			identifier: instanceof.alwaysTrue
 			count: 1
 			path: src/Mapping/Driver/DatabaseDriver.php
 
@@ -1477,7 +1429,7 @@ parameters:
 			path: src/Mapping/LegacyReflectionFields.php
 
 		-
-			message: '#^Strict comparison using \!\=\= between array\<string, string\> and null will always evaluate to true\.$#'
+			message: '#^Strict comparison using \!\=\= between array and null will always evaluate to true\.$#'
 			identifier: notIdentical.alwaysTrue
 			count: 1
 			path: src/Mapping/ManyToManyOwningSideMapping.php
@@ -1577,12 +1529,6 @@ parameters:
 			identifier: return.type
 			count: 1
 			path: src/Mapping/ToOneOwningSideMapping.php
-
-		-
-			message: '#^Call to function is_int\(\) with string will always evaluate to false\.$#'
-			identifier: function.impossibleType
-			count: 1
-			path: src/NativeQuery.php
 
 		-
 			message: '#^Method Doctrine\\ORM\\NativeQuery\:\:_doExecute\(\) never returns int so it can be removed from the return type\.$#'
@@ -1927,12 +1873,6 @@ parameters:
 			path: src/Persisters/Entity/BasicEntityPersister.php
 
 		-
-			message: '#^Call to method Doctrine\\ORM\\Mapping\\AssociationMapping\:\:isToOneOwningSide\(\) will always evaluate to true\.$#'
-			identifier: method.alreadyNarrowedType
-			count: 1
-			path: src/Persisters/Entity/BasicEntityPersister.php
-
-		-
 			message: '#^Method Doctrine\\ORM\\Persisters\\Entity\\BasicEntityPersister\:\:__construct\(\) has parameter \$class with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
 			identifier: missingType.generics
 			count: 1
@@ -2143,18 +2083,6 @@ parameters:
 			path: src/Proxy/ProxyFactory.php
 
 		-
-			message: '#^Comparison operation "\<" between 0\|1\|2\|3\|4 and 0 is always false\.$#'
-			identifier: smaller.alwaysFalse
-			count: 1
-			path: src/Proxy/ProxyFactory.php
-
-		-
-			message: '#^Comparison operation "\>" between 0\|1\|2\|3\|4 and 4 is always false\.$#'
-			identifier: greater.alwaysFalse
-			count: 1
-			path: src/Proxy/ProxyFactory.php
-
-		-
 			message: '#^Method Doctrine\\ORM\\Proxy\\ProxyFactory\:\:createLazyInitializer\(\) has Doctrine\\ORM\\EntityNotFoundException in PHPDoc @throws tag but it''s not thrown\.$#'
 			identifier: throws.unusedType
 			count: 1
@@ -2235,12 +2163,6 @@ parameters:
 		-
 			message: '#^Parameter \#3 \$newScope of static method Closure\:\:bind\(\) expects ''static''\|class\-string\|object\|null, string given\.$#'
 			identifier: argument.type
-			count: 1
-			path: src/Proxy/ProxyFactory.php
-
-		-
-			message: '#^Result of \|\| is always false\.$#'
-			identifier: booleanOr.alwaysFalse
 			count: 1
 			path: src/Proxy/ProxyFactory.php
 
@@ -2497,12 +2419,6 @@ parameters:
 			path: src/Query/Parser.php
 
 		-
-			message: '#^Strict comparison using \=\=\= between 102 and 102 will always evaluate to true\.$#'
-			identifier: identical.alwaysTrue
-			count: 1
-			path: src/Query/Parser.php
-
-		-
 			message: '#^Unreachable statement \- code above always terminates\.$#'
 			identifier: deadCode.unreachable
 			count: 2
@@ -2527,27 +2443,9 @@ parameters:
 			path: src/Query/SqlOutputWalker.php
 
 		-
-			message: '#^Call to method Doctrine\\ORM\\Mapping\\AssociationMapping\:\:isManyToMany\(\) will always evaluate to true\.$#'
-			identifier: method.alreadyNarrowedType
-			count: 1
-			path: src/Query/SqlWalker.php
-
-		-
-			message: '#^Call to method Doctrine\\ORM\\Mapping\\AssociationMapping\:\:isToOneOwningSide\(\) will always evaluate to true\.$#'
-			identifier: method.alreadyNarrowedType
-			count: 1
-			path: src/Query/SqlWalker.php
-
-		-
 			message: '#^Cannot assign new offset to list\<string\>\|string\.$#'
 			identifier: offsetAssign.dimType
 			count: 2
-			path: src/Query/SqlWalker.php
-
-		-
-			message: '#^Match arm comparison between 4 and 4 is always true\.$#'
-			identifier: match.alwaysTrue
-			count: 1
 			path: src/Query/SqlWalker.php
 
 		-
@@ -2830,12 +2728,6 @@ parameters:
 			path: src/Tools/SchemaTool.php
 
 		-
-			message: '#^Call to function method_exists\(\) with Doctrine\\DBAL\\Schema\\Table and ''getPrimaryKeyConstr…'' will always evaluate to true\.$#'
-			identifier: function.alreadyNarrowedType
-			count: 1
-			path: src/Tools/SchemaTool.php
-
-		-
 			message: '#^Method Doctrine\\ORM\\Tools\\SchemaTool\:\:addDiscriminatorColumnDefinition\(\) has parameter \$class with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
 			identifier: missingType.generics
 			count: 1
@@ -3040,18 +2932,6 @@ parameters:
 			path: src/UnitOfWork.php
 
 		-
-			message: '#^Call to method Doctrine\\ORM\\Mapping\\AssociationMapping\:\:isToMany\(\) will always evaluate to true\.$#'
-			identifier: method.alreadyNarrowedType
-			count: 1
-			path: src/UnitOfWork.php
-
-		-
-			message: '#^Call to method Doctrine\\ORM\\Mapping\\AssociationMapping\:\:isToOneOwningSide\(\) will always evaluate to true\.$#'
-			identifier: method.alreadyNarrowedType
-			count: 1
-			path: src/UnitOfWork.php
-
-		-
 			message: '#^Method Doctrine\\ORM\\UnitOfWork\:\:convertSingleFieldIdentifierToPHPValue\(\) has parameter \$class with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
 			identifier: missingType.generics
 			count: 1
@@ -3164,12 +3044,6 @@ parameters:
 			identifier: missingType.generics
 			count: 1
 			path: src/Utility/IdentifierFlattener.php
-
-		-
-			message: '#^Call to method Doctrine\\ORM\\Mapping\\AssociationMapping\:\:isToOneOwningSide\(\) will always evaluate to true\.$#'
-			identifier: method.alreadyNarrowedType
-			count: 1
-			path: src/Utility/PersisterHelper.php
 
 		-
 			message: '#^Method Doctrine\\ORM\\Utility\\PersisterHelper\:\:getTypeOfColumn\(\) has parameter \$class with generic class Doctrine\\ORM\\Mapping\\ClassMetadata but does not specify its types\: T$#'
