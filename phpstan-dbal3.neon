@@ -241,3 +241,8 @@ parameters:
         -
             message: '~^Unknown parameter \$configuration in call to Doctrine\\DBAL\\Schema\\Table constructor\.$~'
             path: src/Tools/SchemaTool.php
+
+        # That file is not intended for use with DBAL 3
+        -
+            message: '~.*~'
+            path: src/Tools/ExperimentalSchemaTool.php
