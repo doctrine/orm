@@ -42,6 +42,7 @@ use Doctrine\ORM\Tools\Exception\MissingColumnException;
 use Doctrine\ORM\Tools\Exception\NotSupported;
 use RuntimeException;
 use Throwable;
+use UnitEnum;
 
 use function array_diff;
 use function array_diff_key;
@@ -417,7 +418,7 @@ class SchemaTool
                     $uniqIndex = new Index('tmp__' . $indexName, $this->getIndexColumns($class, $indexData), true, false, [], $indexData['options'] ?? []);
 
                     foreach ($table->getIndexes() as $tableIndexName => $tableIndex) {
-                        if ($tableIndex->isFulfilledBy($uniqIndex)) {
+                        if (self::isIndexRedundantForUniqueConstraint($tableIndex, $uniqIndex)) {
                             $table->dropIndex($tableIndexName);
                             break;
                         }
@@ -730,7 +731,7 @@ class SchemaTool
                     $uniqIndex = new Index('tmp__' . $indexName, $this->getIndexColumns($class, $indexData), true, false, [], $indexData['options'] ?? []);
 
                     foreach ($table->getIndexes() as $tableIndexName => $tableIndex) {
-                        if ($tableIndex->isFulfilledBy($uniqIndex)) {
+                        if (self::isIndexRedundantForUniqueConstraint($tableIndex, $uniqIndex)) {
                             $table->dropIndex($tableIndexName);
                             break;
                         }
@@ -1564,6 +1565,40 @@ class SchemaTool
         }
 
         return $index->getColumns();
+    }
+
+    /**
+     * Unique constraints can replace ordinary indexes on the same columns, but not
+     * platform-specific indexes such as fulltext or spatial whose flags they do not fulfill.
+     */
+    private static function isIndexRedundantForUniqueConstraint(Index $existingIndex, Index $uniqueIndex): bool
+    {
+        return $existingIndex->isFulfilledBy($uniqueIndex)
+            && self::indexFlagsAreCompatible($existingIndex);
+    }
+
+    /**
+     * Whether a unique constraint can replace $existingIndex given its platform-specific type.
+     *
+     * Unflagged indexes remain compatible with unique constraints so they can still be
+     * deduplicated. Fulltext and spatial indexes keep their own semantics.
+     */
+    private static function indexFlagsAreCompatible(Index $existingIndex): bool
+    {
+        // @phpstan-ignore function.alreadyNarrowedType (DBAL < 4.3 has no Index::getType())
+        if (method_exists($existingIndex, 'getType')) {
+            $existingTypeName = self::getIndexTypeName($existingIndex->getType());
+
+            return $existingTypeName !== 'FULLTEXT' && $existingTypeName !== 'SPATIAL';
+        }
+
+        // @phpstan-ignore method.deprecated (DBAL < 4.3: getFlags() is the supported API before getType())
+        return $existingIndex->getFlags() === [];
+    }
+
+    private static function getIndexTypeName(mixed $type): string
+    {
+        return $type instanceof UnitEnum ? $type->name : '';
     }
 
     private function getAssetName(AbstractAsset $asset): string

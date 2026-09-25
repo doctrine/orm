@@ -64,7 +64,9 @@ use function class_exists;
 use function count;
 use function current;
 use function enum_exists;
+use function in_array;
 use function method_exists;
+use function strtolower;
 
 class SchemaToolTest extends OrmTestCase
 {
@@ -679,6 +681,95 @@ class SchemaToolTest extends OrmTestCase
         );
     }
 
+    #[Group('GH-5593')]
+    public function testFulltextIndexIsPreservedAlongsideUniqueConstraint(): void
+    {
+        $table = $this->getSchemaTableForEntity(GH5593FulltextWithUniqueConstraint::class);
+
+        self::assertTrue($table->hasIndex('search_idx'));
+        self::assertTrue($table->hasIndex('uniq_title'));
+
+        $fulltextIndex = $table->getIndex('search_idx');
+        $uniqueIndex   = $table->getIndex('uniq_title');
+
+        self::assertSame(['title'], self::getIndexedColumns($fulltextIndex));
+        self::assertSame(['title'], self::getIndexedColumns($uniqueIndex));
+        self::assertIndexIsFulltext($fulltextIndex);
+        self::assertIndexIsUnique($uniqueIndex);
+        self::assertFalse(self::indexIsUnique($fulltextIndex));
+    }
+
+    #[Group('GH-5593')]
+    public function testFulltextIndexIsPreservedAlongsideColumnLevelUnique(): void
+    {
+        $table = $this->getSchemaTableForEntity(GH5593FulltextWithColumnUnique::class);
+
+        self::assertTrue($table->hasIndex('search_idx'));
+        self::assertIndexIsFulltext($table->getIndex('search_idx'));
+        self::assertSame(['title'], self::getIndexedColumns($table->getIndex('search_idx')));
+
+        $uniqueIndex = self::findUniqueNonPrimaryIndex($table);
+        self::assertNotNull($uniqueIndex, 'Column-level unique mapping should produce a unique index.');
+        self::assertIndexIsUnique($uniqueIndex);
+        self::assertSame(['title'], self::getIndexedColumns($uniqueIndex));
+        self::assertFalse(self::indexIsUnique($table->getIndex('search_idx')));
+    }
+
+    #[Group('GH-5593')]
+    public function testCompositeFulltextAndUniqueIndexesOnSameColumnsArePreserved(): void
+    {
+        $table = $this->getSchemaTableForEntity(GH5593CompositeFulltextAndUnique::class);
+
+        self::assertTrue($table->hasIndex('fulltext_ab'));
+        self::assertTrue($table->hasIndex('fulltext_c'));
+        self::assertTrue($table->hasIndex('uniq_ab'));
+        self::assertTrue($table->hasIndex('uniq_ac'));
+
+        self::assertSame(['a', 'b'], self::getIndexedColumns($table->getIndex('fulltext_ab')));
+        self::assertSame(['c'], self::getIndexedColumns($table->getIndex('fulltext_c')));
+        self::assertSame(['a', 'b'], self::getIndexedColumns($table->getIndex('uniq_ab')));
+        self::assertSame(['a', 'c'], self::getIndexedColumns($table->getIndex('uniq_ac')));
+
+        self::assertIndexIsFulltext($table->getIndex('fulltext_ab'));
+        self::assertIndexIsFulltext($table->getIndex('fulltext_c'));
+        self::assertIndexIsUnique($table->getIndex('uniq_ab'));
+        self::assertIndexIsUnique($table->getIndex('uniq_ac'));
+    }
+
+    #[Group('GH-5593')]
+    public function testUnflaggedIndexCoveredByUniqueConstraintIsDeduplicated(): void
+    {
+        $table = $this->getSchemaTableForEntity(GH5593UnflaggedIndexWithUniqueConstraint::class);
+
+        self::assertFalse($table->hasIndex('idx_name'));
+        self::assertTrue($table->hasIndex('uniq_name'));
+        self::assertTrue($table->hasIndex('idx_other'));
+
+        self::assertIndexIsUnique($table->getIndex('uniq_name'));
+        self::assertSame(['name'], self::getIndexedColumns($table->getIndex('uniq_name')));
+        self::assertSame(['other'], self::getIndexedColumns($table->getIndex('idx_other')));
+        self::assertFalse(self::indexIsUnique($table->getIndex('idx_other')));
+        self::assertFalse(self::indexIsFulltext($table->getIndex('idx_other')));
+    }
+
+    #[Group('GH-5593')]
+    public function testPartialIndexOptionsStillPreventDeduplication(): void
+    {
+        $table = $this->getSchemaTableForEntity(GH5593PartialIndexWithUniqueConstraint::class);
+
+        self::assertTrue($table->hasIndex('idx_partial'));
+        self::assertFalse($table->hasIndex('idx_covered_partial'));
+        self::assertTrue($table->hasIndex('uniq_name'));
+        self::assertTrue($table->hasIndex('uniq_code'));
+
+        self::assertSame(['name'], self::getIndexedColumns($table->getIndex('idx_partial')));
+        self::assertSame(['name'], self::getIndexedColumns($table->getIndex('uniq_name')));
+        self::assertSame(['code'], self::getIndexedColumns($table->getIndex('uniq_code')));
+        self::assertSame('name IS NOT NULL', self::getIndexPredicate($table->getIndex('idx_partial')));
+        self::assertSame('code IS NOT NULL', self::getIndexPredicate($table->getIndex('uniq_code')));
+        self::assertNull(self::getIndexPredicate($table->getIndex('uniq_name')));
+    }
+
     #[RequiresMethod(Schema::class, 'edit')]
     public function testOverwritingTableInListener(): void
     {
@@ -706,6 +797,18 @@ class SchemaToolTest extends OrmTestCase
         );
     }
 
+    private function getSchemaTableForEntity(string $className): DbalTable
+    {
+        $em         = $this->getTestEntityManager();
+        $schemaTool = new SchemaTool($em);
+        $schema     = $schemaTool->getSchemaFromMetadata([$em->getClassMetadata($className)]);
+        $tables     = $schema->getTables();
+
+        self::assertCount(1, $tables);
+
+        return current($tables);
+    }
+
     /** @return string[] */
     private static function getIndexedColumns(DbalIndex $index): array
     {
@@ -725,6 +828,58 @@ class SchemaToolTest extends OrmTestCase
         }
 
         return false;
+    }
+
+    private static function assertIndexIsUnique(DbalIndex $index): void
+    {
+        self::assertTrue(self::indexIsUnique($index), 'Index should be unique.');
+    }
+
+    private static function assertIndexIsFulltext(DbalIndex $index): void
+    {
+        self::assertTrue(self::indexIsFulltext($index), 'Index should be fulltext.');
+    }
+
+    private static function indexIsUnique(DbalIndex $index): bool
+    {
+        if (enum_exists(IndexType::class)) {
+            return $index->getType() === IndexType::UNIQUE;
+        }
+
+        return $index->isUnique();
+    }
+
+    private static function indexIsFulltext(DbalIndex $index): bool
+    {
+        if (enum_exists(IndexType::class)) {
+            return $index->getType() === IndexType::FULLTEXT;
+        }
+
+        return in_array('fulltext', $index->getFlags(), true);
+    }
+
+    private static function findUniqueNonPrimaryIndex(DbalTable $table): DbalIndex|null
+    {
+        foreach ($table->getIndexes() as $indexName => $index) {
+            if (strtolower((string) $indexName) === 'primary') {
+                continue;
+            }
+
+            if (self::indexIsUnique($index)) {
+                return $index;
+            }
+        }
+
+        return null;
+    }
+
+    private static function getIndexPredicate(DbalIndex $index): string|null
+    {
+        if (method_exists($index, 'getPredicate')) {
+            return $index->getPredicate();
+        }
+
+        return $index->hasOption('where') ? $index->getOption('where') : null;
     }
 }
 
@@ -1094,6 +1249,92 @@ class IncorrectUniqueConstraintByFieldEntity
             ],
         );
     }
+}
+
+#[Entity]
+#[Table(name: 'gh5593_fulltext_unique')]
+#[Index(name: 'search_idx', columns: ['title'], flags: ['fulltext'])]
+#[UniqueConstraint(name: 'uniq_title', columns: ['title'])]
+class GH5593FulltextWithUniqueConstraint
+{
+    #[Id]
+    #[Column]
+    public int $id = 0;
+
+    #[Column(length: 255)]
+    public string $title = '';
+}
+
+#[Entity]
+#[Table(name: 'gh5593_fulltext_column_unique')]
+#[Index(name: 'search_idx', columns: ['title'], flags: ['fulltext'])]
+class GH5593FulltextWithColumnUnique
+{
+    #[Id]
+    #[Column]
+    public int $id = 0;
+
+    #[Column(length: 255, unique: true)]
+    public string $title = '';
+}
+
+#[Entity]
+#[Table(name: 'gh5593_composite_fulltext_unique')]
+#[Index(name: 'fulltext_ab', columns: ['a', 'b'], flags: ['fulltext'])]
+#[Index(name: 'fulltext_c', columns: ['c'], flags: ['fulltext'])]
+#[UniqueConstraint(name: 'uniq_ab', columns: ['a', 'b'])]
+#[UniqueConstraint(name: 'uniq_ac', columns: ['a', 'c'])]
+class GH5593CompositeFulltextAndUnique
+{
+    #[Id]
+    #[Column]
+    public int $id = 0;
+
+    #[Column(length: 255)]
+    public string $a = '';
+
+    #[Column(length: 255)]
+    public string $b = '';
+
+    #[Column(length: 255)]
+    public string $c = '';
+}
+
+#[Entity]
+#[Table(name: 'gh5593_unflagged_unique')]
+#[Index(name: 'idx_name', columns: ['name'])]
+#[Index(name: 'idx_other', columns: ['other'])]
+#[UniqueConstraint(name: 'uniq_name', columns: ['name'])]
+class GH5593UnflaggedIndexWithUniqueConstraint
+{
+    #[Id]
+    #[Column]
+    public int $id = 0;
+
+    #[Column(length: 255)]
+    public string $name = '';
+
+    #[Column(length: 255)]
+    public string $other = '';
+}
+
+#[Entity]
+#[Table(name: 'gh5593_partial_unique')]
+#[Index(name: 'idx_partial', columns: ['name'], options: ['where' => 'name IS NOT NULL'])]
+#[Index(name: 'idx_covered_partial', columns: ['code'], options: ['where' => 'code IS NOT NULL'])]
+#[UniqueConstraint(name: 'uniq_name', columns: ['name'])]
+#[UniqueConstraint(name: 'uniq_code', columns: ['code'], options: ['where' => 'code IS NOT NULL'])]
+class GH5593PartialIndexWithUniqueConstraint
+{
+    #[Id]
+    #[Column]
+    public int $id = 0;
+
+    #[Column(length: 255)]
+    public string $name = '';
+
+    #[Column(length: 255)]
+    public string $code = '';
 }
 
 #[Entity]
