@@ -1849,7 +1849,7 @@ parameters:
 			path: src/Persisters/Collection/OneToManyPersister.php
 
 		-
-			message: '#^Parameter \#1 \$columns of method Doctrine\\DBAL\\Platforms\\AbstractPlatform\:\:getColumnDeclarationListSQL\(\) expects list\<array\{name\: string, type\: Doctrine\\DBAL\\Types\\Type, default\: mixed, notnull\?\: bool, autoincrement\: bool, columnDefinition\: non\-empty\-string\|null, comment\: string, charset\?\: non\-empty\-string\|null, \.\.\.\}\>, array\<string, array\{name\: string, notnull\: true, type\: Doctrine\\DBAL\\Types\\Type\}\> given\.$#'
+			message: '#^Parameter \#1 \$columns of method Doctrine\\DBAL\\Platforms\\AbstractPlatform\:\:getColumnDeclarationListSQL\(\) expects list\<array\{name\: string, type\?\: Doctrine\\DBAL\\Types\\Type, typeName\?\: string, default\?\: mixed, notnull\?\: bool, autoincrement\?\: bool, columnDefinition\?\: non\-empty\-string\|null, comment\?\: string, \.\.\.\}\>, array\<string, array\{name\: string, notnull\: true, type\: Doctrine\\DBAL\\Types\\Type\}\> given\.$#'
 			identifier: argument.type
 			count: 1
 			path: src/Persisters/Collection/OneToManyPersister.php
@@ -2305,7 +2305,7 @@ parameters:
 			path: src/Query/Exec/MultiTableDeleteExecutor.php
 
 		-
-			message: '#^Parameter \#1 \$columns of method Doctrine\\DBAL\\Platforms\\AbstractPlatform\:\:getColumnDeclarationListSQL\(\) expects list\<array\{name\: string, type\: Doctrine\\DBAL\\Types\\Type, default\: mixed, notnull\?\: bool, autoincrement\: bool, columnDefinition\: non\-empty\-string\|null, comment\: string, charset\?\: non\-empty\-string\|null, \.\.\.\}\>, array\<string, array\{name\: string, notnull\: true, type\: Doctrine\\DBAL\\Types\\Type\}\> given\.$#'
+			message: '#^Parameter \#1 \$columns of method Doctrine\\DBAL\\Platforms\\AbstractPlatform\:\:getColumnDeclarationListSQL\(\) expects list\<array\{name\: string, type\?\: Doctrine\\DBAL\\Types\\Type, typeName\?\: string, default\?\: mixed, notnull\?\: bool, autoincrement\?\: bool, columnDefinition\?\: non\-empty\-string\|null, comment\?\: string, \.\.\.\}\>, array\<string, array\{name\: string, notnull\: true, type\: Doctrine\\DBAL\\Types\\Type\}\> given\.$#'
 			identifier: argument.type
 			count: 1
 			path: src/Query/Exec/MultiTableDeleteExecutor.php
@@ -2323,7 +2323,7 @@ parameters:
 			path: src/Query/Exec/MultiTableUpdateExecutor.php
 
 		-
-			message: '#^Parameter \#1 \$columns of method Doctrine\\DBAL\\Platforms\\AbstractPlatform\:\:getColumnDeclarationListSQL\(\) expects list\<array\{name\: string, type\: Doctrine\\DBAL\\Types\\Type, default\: mixed, notnull\?\: bool, autoincrement\: bool, columnDefinition\: non\-empty\-string\|null, comment\: string, charset\?\: non\-empty\-string\|null, \.\.\.\}\>, array\<string, array\{name\: string, notnull\: true, type\: Doctrine\\DBAL\\Types\\Type\}\> given\.$#'
+			message: '#^Parameter \#1 \$columns of method Doctrine\\DBAL\\Platforms\\AbstractPlatform\:\:getColumnDeclarationListSQL\(\) expects list\<array\{name\: string, type\?\: Doctrine\\DBAL\\Types\\Type, typeName\?\: string, default\?\: mixed, notnull\?\: bool, autoincrement\?\: bool, columnDefinition\?\: non\-empty\-string\|null, comment\?\: string, \.\.\.\}\>, array\<string, array\{name\: string, notnull\: true, type\: Doctrine\\DBAL\\Types\\Type\}\> given\.$#'
 			identifier: argument.type
 			count: 1
 			path: src/Query/Exec/MultiTableUpdateExecutor.php
@@ -2357,6 +2357,12 @@ parameters:
 			identifier: return.type
 			count: 1
 			path: src/Query/Expr/Func.php
+
+		-
+			message: '#^Method Doctrine\\ORM\\Query\\ParameterTypeInferer\:\:inferType\(\) never returns ''datetime_utc…'' so it can be removed from the return type\.$#'
+			identifier: return.unusedType
+			count: 1
+			path: src/Query/ParameterTypeInferer.php
 
 		-
 			message: '#^Method Doctrine\\ORM\\Query\\ParameterTypeInferer\:\:inferType\(\) never returns int so it can be removed from the return type\.$#'
