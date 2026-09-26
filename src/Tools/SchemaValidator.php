@@ -59,6 +59,7 @@ class SchemaValidator
         GuidType::class => ['string'],
         IntegerType::class => ['int'],
         JsonType::class => ['array'],
+        /** @phpstan-ignore classConstant.deprecatedClass (to be removed) */
         SimpleArrayType::class => ['array'],
         SmallIntType::class => ['int'],
         StringType::class => ['string'],
